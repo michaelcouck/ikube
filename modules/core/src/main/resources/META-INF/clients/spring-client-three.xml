@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:property="http://www.springframework.org/schema/p"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:context="http://www.springframework.org/schema/context"
+
+	xsi:schemaLocation="
+			http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+            http://www.springframework.org/schema/aop
+            http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+            http://www.springframework.org/schema/util
+            http://www.springframework.org/schema/util/spring-util.xsd
+            http://www.springframework.org/schema/context
+            http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+	<context:property-placeholder
+		location="classpath:/META-INF/spring.properties" />
+
+	<bean
+		class="ikube.IndexEngine"
+		property:actions-ref="actions">
+		<constructor-arg ref="faqIndexContext.three" />
+	</bean>
+
+	<bean
+		id="faqIndexContext.three"
+		class="ikube.model.IndexContext"
+		property:indexName="faq"
+		property:maxAge="${max.age}"
+		property:compoundFile="${compound.file}"
+		property:bufferedDocs="${buffered.docs}"
+		property:bufferSize="${buffer.size}"
+		property:batchSize="${jdbc.batch.size}"
+		property:mergeFactor="${merge.factor}"
+		property:maxFieldLength="${max.field.length}"
+		property:maxReadLength="${max.read.length}"
+		property:queueTimeout="${max.age}"
+		property:indexDirectoryPath="${index.directory.path}"
+		property:serverName="jackal.three"
+		property:indexables-ref="faqIndexables.three"
+		property:indexableVisitors-ref="faqIndexableVisitors.three" />
+	<util:list id="faqIndexables.three">
+		<ref local="faqTable.three" />
+	</util:list>
+	<util:list id="faqIndexableVisitors.three">
+		<ref local="faqTableVisitor.three" />
+	</util:list>
+
+	<bean
+		id="faqTableVisitor.three"
+		class="ikube.index.visitor.database.IndexableTableVisitor"
+		property:indexContext-ref="faqIndexContext.three"
+		property:indexableType="ikube.model.IndexableTable"
+		property:indexableColumnVisitor-ref="faqColumnVisitor.three"
+		property:dataBase-ref="ikube.database.DataBaseOdb" />
+	<bean
+		id="faqColumnVisitor.three"
+		class="ikube.index.visitor.database.IndexableColumnVisitor"
+		property:indexableType="ikube.model.IndexableColumn" />
+
+	<bean
+		id="faqTable.three"
+		class="ikube.model.IndexableTable"
+		property:name="faq"
+		property:sql="select * from faq"
+		property:dataSource-ref="nonXaDataSource"
+		property:children-ref="faqColumns.three" />
+	<util:set id="faqColumns.three">
+		<ref local="faqId.three" />
+		<ref local="creationtimestamp.three" />
+		<ref local="modifiedtimestamp.three" />
+		<ref local="creator.three" />
+		<ref local="modifier.three" />
+		<ref local="question.three" />
+		<ref local="answer.three" />
+	</util:set>
+	<bean
+		id="faqId.three"
+		class="ikube.model.IndexableColumn"
+		property:name="faqId" />
+	<bean
+		id="creationtimestamp.three"
+		class="ikube.model.IndexableColumn"
+		property:name="creationtimestamp" />
+	<bean
+		id="modifiedtimestamp.three"
+		class="ikube.model.IndexableColumn"
+		property:name="modifiedtimestamp" />
+	<bean
+		id="creator.three"
+		class="ikube.model.IndexableColumn"
+		property:name="creator" />
+	<bean
+		id="modifier.three"
+		class="ikube.model.IndexableColumn"
+		property:name="modifier" />
+	<bean
+		id="question.three"
+		class="ikube.model.IndexableColumn"
+		property:name="question"
+		property:fieldName="contents" />
+	<bean
+		id="answer.three"
+		class="ikube.model.IndexableColumn"
+		property:name="answer"
+		property:fieldName="contents" />
+
+</beans>

@@ -1,0 +1,19 @@
+03.11.10
+
+* Finish the clustering support - 3 *
+* Implementation of updating the index with deltas from the client - 3
+* Implement the synchronisation between the servers - 1 *
+* Front end for configuration, monitoring etc. - 10
+* Add the file and url visitors - 10
+* Add the other parsers - 3
+* Testing - 10
+* Web site - 1
+* Documentation - 1
+
+Total - 42
+
+Other things:
+* Add a shutdown hook for the Spring objects that need to be closed when the context gets re-freshed.
+* Add a reporting module that checks the database connection, the indexes in the different contexts and sends
+  the result to a mail address. Perhaps dome profiling information, etc.
+

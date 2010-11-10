@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:property="http://www.springframework.org/schema/p"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:context="http://www.springframework.org/schema/context"
+
+	xsi:schemaLocation="
+			http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+            http://www.springframework.org/schema/aop
+            http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+            http://www.springframework.org/schema/util
+            http://www.springframework.org/schema/util/spring-util.xsd
+            http://www.springframework.org/schema/context
+            http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+	<context:property-placeholder
+		location="classpath:/META-INF/spring.properties" />
+
+	<bean
+		class="ikube.IndexEngine"
+		property:actions-ref="actions">
+		<constructor-arg ref="faqIndexContext.two" />
+	</bean>
+
+	<bean
+		id="faqIndexContext.two"
+		class="ikube.model.IndexContext"
+		property:indexName="faq"
+		property:maxAge="${max.age}"
+		property:compoundFile="${compound.file}"
+		property:bufferedDocs="${buffered.docs}"
+		property:bufferSize="${buffer.size}"
+		property:batchSize="${jdbc.batch.size}"
+		property:mergeFactor="${merge.factor}"
+		property:maxFieldLength="${max.field.length}"
+		property:maxReadLength="${max.read.length}"
+		property:queueTimeout="${max.age}"
+		property:indexDirectoryPath="${index.directory.path}"
+		property:serverName="jackal.two"
+		property:indexables-ref="faqIndexables.two"
+		property:indexableVisitors-ref="faqIndexableVisitors.two" />
+	<util:list id="faqIndexables.two">
+		<ref local="faqTable.two" />
+	</util:list>
+	<util:list id="faqIndexableVisitors.two">
+		<ref local="faqTableVisitor.two" />
+	</util:list>
+
+	<bean
+		id="faqTableVisitor.two"
+		class="ikube.index.visitor.database.IndexableTableVisitor"
+		property:indexContext-ref="faqIndexContext.two"
+		property:indexableType="ikube.model.IndexableTable"
+		property:indexableColumnVisitor-ref="faqColumnVisitor.two"
+		property:dataBase-ref="ikube.database.DataBaseOdb" />
+	<bean
+		id="faqColumnVisitor.two"
+		class="ikube.index.visitor.database.IndexableColumnVisitor"
+		property:indexableType="ikube.model.IndexableColumn" />
+
+	<bean
+		id="faqTable.two"
+		class="ikube.model.IndexableTable"
+		property:name="faq"
+		property:sql="select * from faq"
+		property:dataSource-ref="nonXaDataSource"
+		property:children-ref="faqColumns.two" />
+	<util:set id="faqColumns.two">
+		<ref local="faqId.two" />
+		<ref local="creationtimestamp.two" />
+		<ref local="modifiedtimestamp.two" />
+		<ref local="creator.two" />
+		<ref local="modifier.two" />
+		<ref local="question.two" />
+		<ref local="answer.two" />
+	</util:set>
+	<bean
+		id="faqId.two"
+		class="ikube.model.IndexableColumn"
+		property:name="faqId" />
+	<bean
+		id="creationtimestamp.two"
+		class="ikube.model.IndexableColumn"
+		property:name="creationtimestamp" />
+	<bean
+		id="modifiedtimestamp.two"
+		class="ikube.model.IndexableColumn"
+		property:name="modifiedtimestamp" />
+	<bean
+		id="creator.two"
+		class="ikube.model.IndexableColumn"
+		property:name="creator" />
+	<bean
+		id="modifier.two"
+		class="ikube.model.IndexableColumn"
+		property:name="modifier" />
+	<bean
+		id="question.two"
+		class="ikube.model.IndexableColumn"
+		property:name="question"
+		property:fieldName="contents" />
+	<bean
+		id="answer.two"
+		class="ikube.model.IndexableColumn"
+		property:name="answer"
+		property:fieldName="contents" />
+
+</beans>
