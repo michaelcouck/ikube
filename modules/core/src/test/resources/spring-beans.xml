@@ -87,7 +87,7 @@
 	<aop:config proxy-target-class="false">
 		<aop:aspect ref="ikube.toolkit.ProfilingAspect">
 			<!--<aop:around method="profile" pointcut="execution(* ikube.service.*.*(..))" />-->
-			<aop:around method="profile" pointcut="execution(* ikube.index.visitor.database.*.*(..))" />
+			<!--<aop:around method="profile" pointcut="execution(* ikube.index.visitor.database.*.*(..))" />-->
 		</aop:aspect>
 	</aop:config>
 

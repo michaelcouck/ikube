@@ -8,9 +8,7 @@ import java.util.TimerTask;
 
 import org.apache.log4j.Logger;
 
-
 import EDU.oswego.cs.dl.util.concurrent.PooledExecutor;
-
 
 public class Timer extends TimerTask {
 

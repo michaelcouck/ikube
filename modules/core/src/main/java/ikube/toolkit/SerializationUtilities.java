@@ -10,8 +10,6 @@ import java.io.UnsupportedEncodingException;
 
 import org.apache.log4j.Logger;
 
-
-
 public class SerializationUtilities {
 
 	private static Logger LOGGER = Logger.getLogger(SerializationUtilities.class);

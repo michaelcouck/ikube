@@ -18,8 +18,6 @@ import org.apache.lucene.search.highlight.Highlighter;
 import org.apache.lucene.search.highlight.QueryScorer;
 import org.apache.lucene.search.highlight.Scorer;
 
-
-
 /**
  * This action does the actual search on the index. The searcher that is current in the Instance is passed to this action. The search is
  * done on the index. The results are then processed for use in the front end. A list of maps is generated from the results. There are three
@@ -38,12 +36,11 @@ import org.apache.lucene.search.highlight.Scorer;
  */
 public abstract class Search {
 
-	/** The query parsers for various query fields. */
-	private static final Map<String, QueryParser> QUERY_PARSERS = new HashMap<String, QueryParser>();
-
 	protected Logger logger;
 	/** The searcher that will be used for the search. */
 	protected Searcher searcher;
+	/** The query parsers for various query fields. */
+	private final Map<String, QueryParser> queryParsers = new HashMap<String, QueryParser>();
 	/** Whether to generate fragments for the search string or not. */
 	protected boolean fragment;
 	/** The start position in the search results to return maps from. */
@@ -191,10 +188,10 @@ public abstract class Search {
 	 * @return the query parser for the particular field
 	 */
 	protected QueryParser getQueryParser(String searchField) {
-		QueryParser queryParser = QUERY_PARSERS.get(searchField);
+		QueryParser queryParser = queryParsers.get(searchField);
 		if (queryParser == null) {
 			queryParser = new QueryParser(IConstants.VERSION, searchField, IConstants.ANALYZER);
-			QUERY_PARSERS.put(searchField, queryParser);
+			queryParsers.put(searchField, queryParser);
 		}
 		return queryParser;
 	}

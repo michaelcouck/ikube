@@ -18,7 +18,7 @@ import org.apache.log4j.Logger;
 @SuppressWarnings("unchecked")
 public class SearcherWebServiceExecuter implements ISearcherWebServiceExecuter {
 
-	private Logger logger = Logger.getLogger(this.getClass());
+	private Logger logger;
 	private String endpointUri;
 	private String configurationName;
 	private String searchString;
@@ -29,6 +29,7 @@ public class SearcherWebServiceExecuter implements ISearcherWebServiceExecuter {
 	private int resultsSizeMinimum;
 
 	public SearcherWebServiceExecuter() {
+		this.logger = Logger.getLogger(this.getClass());
 		ListenerManager.addListener(new IListener() {
 			@Override
 			public void handleNotification(Event event) {

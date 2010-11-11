@@ -10,8 +10,6 @@ import org.apache.lucene.search.MultiSearcher;
 import org.apache.lucene.search.Searchable;
 import org.apache.lucene.store.Directory;
 
-
-
 /**
  * This class takes the searcher and tries to close the searcher on the directory.
  *

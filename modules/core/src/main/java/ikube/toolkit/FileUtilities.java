@@ -16,8 +16,6 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
-
-
 public class FileUtilities {
 
 	private static Logger LOGGER = Logger.getLogger(FileUtilities.class);

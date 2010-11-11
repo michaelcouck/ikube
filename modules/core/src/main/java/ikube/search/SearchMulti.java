@@ -13,8 +13,6 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Searcher;
 import org.apache.lucene.search.TopDocs;
 
-
-
 /**
  * @see Search
  * @author Michael Couck

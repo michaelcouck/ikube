@@ -3,8 +3,10 @@ package ikube.database;
 import ikube.IConstants;
 import ikube.model.Database;
 import ikube.model.Ip;
+import ikube.toolkit.FileUtilities;
 import ikube.toolkit.InitialContextFactory;
 
+import java.io.File;
 import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.sql.Timestamp;
@@ -39,6 +41,8 @@ public class DataBaseInjector implements BeanFactoryPostProcessor, Ordered {
 
 	public DataBaseInjector() {
 		this.logger = Logger.getLogger(this.getClass());
+		// Try to delete the local database file first
+		FileUtilities.deleteFiles(new File("."), new String[] { IConstants.DATABASE_FILE, ".transaction" });
 	}
 
 	/**

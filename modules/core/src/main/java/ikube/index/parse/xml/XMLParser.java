@@ -12,8 +12,6 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
-
-
 /**
  * @author Michael Couck
  * @since 03.09.10

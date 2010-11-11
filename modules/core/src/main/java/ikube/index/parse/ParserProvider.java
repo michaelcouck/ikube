@@ -10,8 +10,6 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-
-
 public class ParserProvider {
 
 	private static Logger LOGGER = Logger.getLogger(ParserProvider.class);

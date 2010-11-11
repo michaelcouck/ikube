@@ -18,8 +18,6 @@ import java.sql.Types;
 
 import org.apache.log4j.Logger;
 
-
-
 public class ColumnContentProvider implements IContentProvider<IndexableColumn> {
 
 	private Logger logger = Logger.getLogger(this.getClass());

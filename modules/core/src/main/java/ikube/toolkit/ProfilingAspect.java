@@ -21,8 +21,6 @@ import org.dom4j.DocumentFactory;
 import org.dom4j.Element;
 import org.springframework.core.Ordered;
 
-
-
 /**
  * This aspect is a simple profiling aspect. This aspect can be used to profile all the methods and gather the overall times to at least
  * give an indication as to where the time is going. Essentially there can be a timer that can dump the data from time so time.

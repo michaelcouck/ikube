@@ -25,14 +25,14 @@
 
 	<build>
 		<plugins>
-			<plugin>
+			<!--<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-resources-plugin</artifactId>
 				<version>2.4.3</version>
 				<configuration>
 					<encoding>UTF8</encoding>
 				</configuration>
-			</plugin>
+			</plugin>-->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -46,7 +46,7 @@
 					</compilerArguments>
 				</configuration>
 			</plugin>
-			<plugin>
+			<!--<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>jdepend-maven-plugin</artifactId>
 			</plugin>
@@ -71,7 +71,7 @@
 					<keywords>true</keywords>
 					<additionalparam>-sourceclasspath ${project.build.outputDirectory}</additionalparam>
 				</configuration>
-			</plugin>
+			</plugin>-->
 		</plugins>
 	</build>
 

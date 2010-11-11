@@ -13,8 +13,6 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-
-
 public class IndexEngine implements IIndexEngine {
 
 	private Logger logger = Logger.getLogger(this.getClass());
@@ -46,7 +44,6 @@ public class IndexEngine implements IIndexEngine {
 					logger.info("Server already working : " + indexContext.getIndexName() + ", " + indexContext.getServerName());
 					return;
 				}
-				// ClusterManager.setWorking(indexContext, null, Boolean.TRUE);
 				logger.info("Starting working : " + this);
 				for (IAction<IndexContext, Boolean> action : actions) {
 					try {
@@ -59,8 +56,6 @@ public class IndexEngine implements IIndexEngine {
 				logger.info("Finished working : " + this);
 			} catch (Exception e) {
 				logger.error("Exception in the index engine : " + indexContext.getIndexName() + ", " + indexContext.getServerName(), e);
-			} finally {
-				// ClusterManager.setWorking(indexContext, null, Boolean.FALSE);
 			}
 		}
 	}

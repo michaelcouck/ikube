@@ -5,8 +5,6 @@ import ikube.model.Lock;
 import java.util.List;
 import java.util.Map;
 
-
-
 /**
  * Interface for database objects. Database objects support access to the persistent store.
  *

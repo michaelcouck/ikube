@@ -15,7 +15,8 @@ Total - 42
 Other things:
 * Add a shutdown hook for the Spring objects that need to be closed when the context gets re-freshed.
 * Add a reporting module that checks the database connection, the indexes in the different contexts and sends
-   the result to a mail address. Perhaps dome profiling information, etc.
+   the result to a mail address. Perhaps some profiling information, etc. *
 * Add a configuration for a file system
 * Add a configuration for a mail account
-* Add a database tester to re-connect if the database becomes dis-connected
+* Add a database tester to re-connect if the database becomes dis-connecte
+* Delete the database file on startup locally *

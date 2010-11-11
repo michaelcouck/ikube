@@ -15,8 +15,6 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.LockObtainFailedException;
 
-
-
 public class IndexManager {
 
 	private static Logger LOGGER = Logger.getLogger(IndexManager.class);
