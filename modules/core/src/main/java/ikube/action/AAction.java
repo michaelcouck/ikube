@@ -50,6 +50,11 @@ public abstract class AAction<E, F> implements IAction<E, F> {
 			logger.debug("Latest index directory null : ");
 			return Boolean.FALSE;
 		}
+		long time = Long.parseLong(latestIndexDirectory.getName());
+		if (System.currentTimeMillis() - time > indexContext.getMaxAge()) {
+			logger.info("Index out of date : " + latestIndexDirectory);
+			return Boolean.FALSE;
+		}
 		// Check that there are indexes in the index directory
 		File[] serverIndexDirectories = latestIndexDirectory.listFiles();
 		if (serverIndexDirectories == null || serverIndexDirectories.length == 0) {

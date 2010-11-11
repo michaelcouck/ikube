@@ -12,6 +12,7 @@ public class IndexableColumn extends Indexable<IndexableColumn> {
 	private transient volatile int columnType;
 
 	private String fieldName;
+	private boolean idColumn;
 	private boolean stored = Boolean.FALSE;
 	private boolean analyzed = Boolean.TRUE;
 	private boolean vectored = Boolean.TRUE;
@@ -27,6 +28,14 @@ public class IndexableColumn extends Indexable<IndexableColumn> {
 
 	public void setFieldName(final String fieldName) {
 		this.fieldName = fieldName;
+	}
+
+	public boolean isIdColumn() {
+		return idColumn;
+	}
+
+	public void setIdColumn(boolean idColumn) {
+		this.idColumn = idColumn;
 	}
 
 	public boolean isStored() {

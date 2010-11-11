@@ -9,7 +9,7 @@ public class Database extends Persistable {
 
 	private String ip;
 	private int port;
-	private Timestamp start;
+	private transient Timestamp start;
 
 	public String getIp() {
 		return ip;

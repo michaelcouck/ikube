@@ -5,7 +5,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import ikube.BaseTest;
-import ikube.model.Database;
 import ikube.model.Indexable;
 import ikube.model.IndexableColumn;
 import ikube.model.Lock;
@@ -13,7 +12,6 @@ import ikube.model.Server;
 import ikube.toolkit.ApplicationContextManager;
 
 import java.lang.reflect.Field;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -223,23 +221,6 @@ public class DataBaseOdbTest extends BaseTest {
 				logger.error("Exception waiting for handlers to finish : ", e);
 			}
 		}
-	}
-
-	@Test
-	public void open() throws Exception {
-		// Try to open another database to the server
-		DataBaseOdb dataBase = new DataBaseOdb(Boolean.FALSE);
-		assertNotNull(dataBase);
-		// Now put something in it and check the operation
-		Database database = new Database();
-		database.setIp("dummy.ip");
-		database.setPort(50001);
-		database.setStart(new Timestamp(System.currentTimeMillis()));
-		dataBase.persist(database);
-		List<Database> databases = dataBase.find(Database.class, 0, Integer.MAX_VALUE);
-		assertTrue(databases.size() == 1);
-		assertEquals(database, databases.get(0));
-		dataBase.close();
 	}
 
 	/**

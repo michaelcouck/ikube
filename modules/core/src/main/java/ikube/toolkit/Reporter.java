@@ -40,16 +40,16 @@ public class Reporter implements IListener {
 					list.add(servers);
 					// Get the index files
 					File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
-					list.add(latestIndexDirectory);
+					list.add(latestIndexDirectory.getAbsolutePath());
 					File[] serverIndexDirectories = latestIndexDirectory.listFiles();
 					if (serverIndexDirectories != null && serverIndexDirectories.length > 0) {
 						for (File serverIndexDirectory : serverIndexDirectories) {
-							list.add(serverIndexDirectory);
+							list.add(serverIndexDirectory.getAbsolutePath());
 							if (serverIndexDirectory != null) {
 								File[] indexFiles = serverIndexDirectory.listFiles();
 								if (indexFiles != null) {
 									for (File indexFile : indexFiles) {
-										list.add(indexFile);
+										list.add(indexFile.getAbsolutePath());
 									}
 								}
 							}

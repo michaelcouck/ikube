@@ -25,10 +25,7 @@ public abstract class IndexableVisitor<I extends Indexable<?>> {
 	protected Logger logger = Logger.getLogger(this.getClass());
 	private String indexableType;
 	protected IndexContext indexContext;
-	private Map<String, File> tempFiles;
-	{
-		this.tempFiles = new HashMap<String, File>();
-	}
+	private Map<String, File> tempFiles = new HashMap<String, File>();
 
 	public String getIndexableType() {
 		return indexableType;

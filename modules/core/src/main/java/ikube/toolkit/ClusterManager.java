@@ -23,7 +23,7 @@ public class ClusterManager {
 
 	/**
 	 * This method checks to see if this server is working on this index.
-	 * 
+	 *
 	 * @param indexContext
 	 *            the index context that this check is for
 	 * @return whether this server is working on this index
@@ -43,7 +43,7 @@ public class ClusterManager {
 
 	/**
 	 * Simply sets the working flag for this server for this index.
-	 * 
+	 *
 	 * @param working
 	 *            the working object to set
 	 * @param isWorking
@@ -79,7 +79,7 @@ public class ClusterManager {
 
 	/**
 	 * Returns whether any servers are working on any action other than this action.
-	 * 
+	 *
 	 * @param actionName
 	 *            the action name to check if any other servers are doing anything else
 	 * @param indexContext
@@ -123,7 +123,7 @@ public class ClusterManager {
 
 	/**
 	 * Checks to see if there are any other servers working on this index, with this action.
-	 * 
+	 *
 	 * @param actionName
 	 *            the name of the action we want to see if there are any servers working on
 	 * @param indexContext
@@ -228,6 +228,9 @@ public class ClusterManager {
 			Batch batch = dataBase.find(Batch.class, parameters, Boolean.TRUE);
 			if (batch == null) {
 				batch = new Batch();
+				batch.setIndexName(indexContext.getIndexName());
+				LOGGER.info("Persisting batch : " + batch);
+				dataBase.persist(batch);
 			}
 			batch.setNextRowNumber(0);
 			dataBase.merge(batch);
@@ -249,6 +252,8 @@ public class ClusterManager {
 			if (batch == null) {
 				batch = new Batch();
 				batch.setIndexName(indexContext.getIndexName());
+				LOGGER.info("Persisting batch : " + batch);
+				dataBase.persist(batch);
 			}
 			// Get the next row number
 			nextBatchNumber = batch.getNextRowNumber();
@@ -263,7 +268,7 @@ public class ClusterManager {
 
 	/**
 	 * Gets the working flag for this server and index.
-	 * 
+	 *
 	 * @param indexContext
 	 *            the index context for the index
 	 * @return the working flag for the server and index
@@ -289,7 +294,7 @@ public class ClusterManager {
 
 	/**
 	 * Returns all the working flags for all the servers for this index configuration.
-	 * 
+	 *
 	 * @param indexContext
 	 *            the index context to access for all servers
 	 * @return the list of working flags for all servers for this index

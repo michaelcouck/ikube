@@ -85,6 +85,9 @@ public class IndexableTableVisitor<I> extends IndexableVisitor<IndexableTable> {
 		logger.debug("Doing row : " + resultSet.getRow() + ", " + Thread.currentThread().hashCode());
 		ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
 		Document document = new Document();
+		// TODO - add the id field
+		// String id = "";
+		// addStringField(IConstants.ID, id, document, Store.YES, Index.ANALYZED, TermVector.YES);
 		((IndexableColumnVisitor) indexableColumnVisitor).setDocument(document);
 		for (int i = 1; i <= resultSetMetaData.getColumnCount(); i++) {
 			String columnName = resultSetMetaData.getColumnName(i);

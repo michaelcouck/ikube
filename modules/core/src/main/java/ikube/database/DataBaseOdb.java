@@ -1,129 +1,36 @@
 package ikube.database;
 
 import ikube.IConstants;
-import ikube.model.Database;
 import ikube.model.Lock;
-import ikube.toolkit.InitialContextFactory;
 
 import java.lang.reflect.Field;
-import java.net.InetAddress;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NameNotFoundException;
 import javax.persistence.Id;
 
 import org.apache.log4j.Logger;
 import org.neodatis.odb.ODB;
-import org.neodatis.odb.ODBFactory;
-import org.neodatis.odb.ODBServer;
 import org.neodatis.odb.OID;
 import org.neodatis.odb.Objects;
-import org.neodatis.odb.OdbConfiguration;
 import org.neodatis.odb.core.query.IQuery;
 import org.neodatis.odb.core.query.criteria.And;
 import org.neodatis.odb.core.query.criteria.ICriterion;
 import org.neodatis.odb.core.query.criteria.Where;
 import org.neodatis.odb.impl.core.query.criteria.CriteriaQuery;
-import org.neodatis.tool.DLogger;
 
 public class DataBaseOdb implements IDataBase {
 
 	private Logger logger;
-
 	private ODB odb;
-	private ODBServer server;
-
 	private long lockTimeout = 3000;
 	private Map<Class<?>, Field> idFields;
 
-	public DataBaseOdb(boolean local) {
+	public DataBaseOdb() {
 		this.logger = Logger.getLogger(this.getClass());
 		this.idFields = new HashMap<Class<?>, Field>();
-		configureDatabase();
-		openDatabase(local);
-	}
-
-	private void openDatabase(boolean local) {
-		try {
-			String initialContextFactory = System.getProperty(Context.INITIAL_CONTEXT_FACTORY);
-			if (initialContextFactory == null) {
-				// This should be taken out and put somewhere in the configuration
-				System.setProperty(Context.INITIAL_CONTEXT_FACTORY, InitialContextFactory.class.getName());
-			}
-			logger.info("Using initial context factory : " + System.getProperty(Context.INITIAL_CONTEXT_FACTORY));
-			logger.info("Looking for database in JNDI : " + IConstants.DATABASE);
-			// Try to find a database connection in JNDI
-			Database database = (Database) new InitialContext().lookup(IConstants.DATABASE);
-			if (database != null) {
-				String ip = database.getIp();
-				int port = database.getPort();
-				this.odb = ODBFactory.openClient(ip, port, IConstants.DATABASE);
-				logger.info("Got JNDI database : " + database + ", " + this.odb);
-			}
-		} catch (NameNotFoundException e) {
-			logger.info("Database not found in JNDI, will open on localhost : " + e.getMessage());
-		} catch (Exception e) {
-			logger.info("Couldn't open database on ip, will try top open on localhost : ", e);
-		}
-		if (this.odb == null) {
-			try {
-				logger.info("Trying to open database server on localhost : ");
-				// Try to open the server and connect to it on this host
-				this.server = ODBFactory.openServer(IConstants.PORT);
-				this.server.addBase(IConstants.DATABASE, IConstants.DATABASE_FILE);
-				this.server.startServer(Boolean.TRUE);
-				String ip = InetAddress.getLocalHost().getHostAddress();
-				this.odb = ODBFactory.openClient(ip, IConstants.PORT, IConstants.DATABASE);
-				// Publish the database in JNDI
-				Database database = new Database();
-				database.setIp(ip);
-				database.setPort(IConstants.PORT);
-				database.setStart(new Timestamp(System.currentTimeMillis()));
-				try {
-					new InitialContext().rebind(IConstants.DATABASE, database);
-					logger.info("Published the database to JNDI : " + database);
-				} catch (Exception e) {
-					logger.error("Exception publishing the database to JNDI : ", e);
-				}
-				logger.info("Opened the database no the localhost : " + database);
-			} catch (Exception e) {
-				logger.warn("Couldn't open server and client, will try to open database on local file : ", e);
-			}
-		}
-		if (this.odb == null) {
-			try {
-				logger.info("Trying to open the database on the file system : ");
-				// Finally just get a file database if we can't connect to a server database
-				this.odb = ODBFactory.open(IConstants.DATABASE_FILE);
-				logger.info("Finally got the database open locally. This is not an ideal situation!");
-			} catch (Exception e) {
-				logger.error("Couldn't open the database on the file system! System not operational!", e);
-			}
-		}
-	}
-
-	private void configureDatabase() {
-		DLogger.register(new ikube.database.Logger());
-		OdbConfiguration.setDebugEnabled(Boolean.FALSE);
-		OdbConfiguration.setDebugEnabled(5, Boolean.FALSE);
-		OdbConfiguration.setLogAll(Boolean.FALSE);
-		// OdbConfiguration.lockObjectsOnSelect(Boolean.TRUE);
-		// OdbConfiguration.useMultiThread(Boolean.FALSE, 1);
-		// OdbConfiguration.setAutomaticallyIncreaseCacheSize(Boolean.TRUE);
-		// OdbConfiguration.setAutomaticCloseFileOnExit(Boolean.TRUE);
-		OdbConfiguration.setDisplayWarnings(Boolean.FALSE);
-		// OdbConfiguration.setMultiThreadExclusive(Boolean.TRUE);
-		// OdbConfiguration.setReconnectObjectsToSession(Boolean.TRUE);
-		OdbConfiguration.setUseCache(Boolean.TRUE);
-		OdbConfiguration.setUseIndex(Boolean.TRUE);
-		OdbConfiguration.setUseMultiBuffer(Boolean.FALSE);
-		OdbConfiguration.setShareSameVmConnectionMultiThread(Boolean.FALSE);
 	}
 
 	@Override
@@ -331,14 +238,16 @@ public class DataBaseOdb implements IDataBase {
 		}
 	}
 
+	@Injection(type = ODB.class)
+	public void setOdb(ODB odb) {
+		this.odb = odb;
+	}
+
 	protected synchronized void close() {
 		try {
 			if (this.odb != null && !this.odb.isClosed()) {
 				this.odb.commit();
 				this.odb.close();
-			}
-			if (this.server != null) {
-				this.server.close();
 			}
 		} finally {
 			notifyAll();
