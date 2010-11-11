@@ -1,6 +1,5 @@
 package ikube.cluster;
 
-import ikube.IConstants;
 import ikube.database.IDataBase;
 import ikube.model.IndexContext;
 import ikube.model.Lock;
@@ -37,7 +36,7 @@ public class ClusterTest {
 
 	private void init() {
 		// We get the production configuration file for the cluster test
-		ApplicationContextManager.getApplicationContext(new String[] { IConstants.SPRING_CONFIGURATION_FILE });
+		ApplicationContextManager.getApplicationContext(new String[] { "/cluster/spring.xml" });
 		Map<String, IndexContext> contexts = ApplicationContextManager.getBeans(IndexContext.class);
 		for (IndexContext indexContext : contexts.values()) {
 			File baseIndexDirectory = FileUtilities.getFile(indexContext.getIndexDirectoryPath(), Boolean.TRUE);

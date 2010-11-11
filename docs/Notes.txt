@@ -1,0 +1,5 @@
+11.11.10
+* Three tests types:
+   1) Unit tests with their own configuration in memory
+   2) Cluster test with its own configuration
+   3) Integration/production test with it's own configuration

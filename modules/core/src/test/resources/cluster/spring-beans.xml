@@ -36,18 +36,6 @@
 		property:local="false"
 		property:ips-ref="ips" />
 	<util:list id="ips">
-		<bean class="ikube.model.Ip" property:ip="192.168.0.100" />
-		<bean class="ikube.model.Ip" property:ip="192.168.0.101" />
-		<bean class="ikube.model.Ip" property:ip="192.168.0.102" />
-		<bean class="ikube.model.Ip" property:ip="192.168.0.103" />
-		<bean class="ikube.model.Ip" property:ip="192.168.0.104" />
-		<bean class="ikube.model.Ip" property:ip="192.168.0.105" />
-		<bean class="ikube.model.Ip" property:ip="192.168.0.106" />
-		<bean class="ikube.model.Ip" property:ip="192.168.0.107" />
-		<bean class="ikube.model.Ip" property:ip="192.168.0.108" />
-		<bean class="ikube.model.Ip" property:ip="192.168.0.109" />
-		<bean class="ikube.model.Ip" property:ip="192.168.0.110" />
-		<bean class="ikube.model.Ip" property:ip="192.168.0.111" />
 	</util:list>
 
 	<bean
