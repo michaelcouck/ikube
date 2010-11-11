@@ -121,7 +121,7 @@ public class DataBaseInjector implements BeanFactoryPostProcessor, Ordered {
 					break;
 				}
 			} catch (Exception e) {
-				logger.warn("Couldn't find database at : " + ip, e);
+				logger.warn("Couldn't find database at : " + ip + ", reason : " + e.getMessage());
 			}
 		}
 		return odb;

@@ -74,6 +74,8 @@
 								<exclude>**/*$*.*</exclude>
 								<exclude>**/*ATest*.java</exclude>
 								<exclude>**/*Suite*.java</exclude>
+								<exclude>**/*Delete*.java</exclude>
+								<exclude>**/*AAction*.java</exclude>
 							</excludes>
 						</configuration>
 					</execution>

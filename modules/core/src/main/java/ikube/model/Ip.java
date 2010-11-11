@@ -15,4 +15,8 @@ public class Ip extends Persistable {
 		this.ip = ip;
 	}
 
+	public String toString() {
+		return "[" + getIp() + "]";
+	}
+
 }

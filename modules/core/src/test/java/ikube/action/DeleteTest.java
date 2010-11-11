@@ -11,8 +11,10 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.Lock;
+import org.junit.Ignore;
 import org.junit.Test;
 
+@Ignore
 public class DeleteTest extends BaseActionTest {
 
 	private Delete delete = new Delete();

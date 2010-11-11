@@ -18,3 +18,4 @@ Other things:
    the result to a mail address. Perhaps dome profiling information, etc.
 * Add a configuration for a file system
 * Add a configuration for a mail account
+* Add a database tester to re-connect if the database becomes dis-connected
