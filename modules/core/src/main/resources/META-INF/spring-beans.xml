@@ -33,21 +33,12 @@
 	<bean
 		class="ikube.database.DataBaseInjector"
 		destroy-method="close"
-		property:local="false"
+		property:local="true"
 		property:ips-ref="ips" />
 	<util:list id="ips">
-		<bean class="ikube.model.Ip" property:ip="192.168.0.100" />
-		<bean class="ikube.model.Ip" property:ip="192.168.0.101" />
-		<bean class="ikube.model.Ip" property:ip="192.168.0.102" />
-		<bean class="ikube.model.Ip" property:ip="192.168.0.103" />
-		<bean class="ikube.model.Ip" property:ip="192.168.0.104" />
-		<bean class="ikube.model.Ip" property:ip="192.168.0.105" />
-		<bean class="ikube.model.Ip" property:ip="192.168.0.106" />
-		<bean class="ikube.model.Ip" property:ip="192.168.0.107" />
-		<bean class="ikube.model.Ip" property:ip="192.168.0.108" />
-		<bean class="ikube.model.Ip" property:ip="192.168.0.109" />
-		<bean class="ikube.model.Ip" property:ip="192.168.0.110" />
-		<bean class="ikube.model.Ip" property:ip="192.168.0.111" />
+		<bean class="ikube.model.Ip" property:ip="127.0.0.1" />
+		<!--<bean class="ikube.model.Ip" property:ip="192.168.0.101" />
+		<bean class="ikube.model.Ip" property:ip="192.168.0.102" />-->
 	</util:list>
 
 	<bean
@@ -78,7 +69,7 @@
 		<ref local="ikube.action.Open" />
 		<ref local="ikube.action.Index" />
 		<ref local="ikube.action.Delete" />
-		<ref local="ikube.action.Synchronize" />
+		<!--<ref local="ikube.action.Synchronize" />-->
 	</util:list>
 
 	<bean
@@ -98,9 +89,12 @@
 	<aop:config proxy-target-class="false">
 		<aop:aspect ref="ikube.toolkit.ProfilingAspect">
 			<!--<aop:around method="profile" pointcut="execution(* ikube.service.*.*(..))" />-->
-			<aop:around method="profile" pointcut="execution(* ikube.index.visitor.database.*.*(..))" />
+			<!--<aop:around method="profile" pointcut="execution(* ikube.index.visitor.database.*.*(..))" />-->
 		</aop:aspect>
 	</aop:config>
+
+	<bean
+		class="ikube.cluster.ServicePublisher" />
 
 	<bean
 		id="ikube.service.SearcherWebService"
@@ -193,9 +187,9 @@
 			<list>
 				<ref local="ikube.toolkit.Timer.Scheduler" />
 				<!--<ref local="ikube.toolkit.Timer.DeadLock.Scheduler" />-->
-				<ref local="ikube.toolkit.Timer.Profiling.Scheduler" />
+				<!--<ref local="ikube.toolkit.Timer.Profiling.Scheduler" />-->
 				<ref local="ikube.toolkit.Timer.WebService.Scheduler" />
-				<ref local="ikube.toolkit.Timer.Reporter.Scheduler" />
+				<!--<ref local="ikube.toolkit.Timer.Reporter.Scheduler" />-->
 			</list>
 		</property>
 	</bean>

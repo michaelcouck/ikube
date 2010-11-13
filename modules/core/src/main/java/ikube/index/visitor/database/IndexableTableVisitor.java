@@ -44,7 +44,7 @@ public class IndexableTableVisitor<I> extends IndexableVisitor<IndexableTable> {
 			resultSet = getResultSet(indexableTable);
 			long nextRowNumber = moveToBatch(resultSet);
 			while (nextRowNumber > 0 && resultSet.next()) {
-				// Thread.sleep(250);
+				Thread.sleep(250);
 				doRow(indexableColumns, resultSet);
 				if (resultSet.getRow() >= nextRowNumber) {
 					nextRowNumber = moveToBatch(resultSet);

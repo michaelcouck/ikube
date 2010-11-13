@@ -2,7 +2,6 @@ package ikube;
 
 import ikube.cluster.ClusterTest;
 import ikube.database.IDataBase;
-import ikube.logging.Logging;
 import ikube.model.IndexContext;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.DataLoader;
@@ -12,12 +11,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
-
-public abstract class BaseTest {
+public abstract class BaseTest extends ATest {
 
 	static {
-		Logging.configure();
 		try {
 			// Delete the database file
 			FileUtilities.deleteFiles(new File("."), new String[] { IConstants.DATABASE_FILE, ".transaction" });
@@ -40,7 +36,6 @@ public abstract class BaseTest {
 		}
 	}
 
-	protected Logger logger = Logger.getLogger(this.getClass());
 	protected IndexContext indexContext = ApplicationContextManager.getBean("faqIndexContext");
 
 	protected static void delete(IDataBase dataBase, Class<?>... klasses) {
@@ -50,27 +45,6 @@ public abstract class BaseTest {
 				dataBase.remove(object);
 			}
 		}
-	}
-
-	/**
-	 * Returns the max read length byte array plus 1000, i.e. more than the max bytes that the application can read. This forces the indexer
-	 * to get a reader rather than a string.
-	 *
-	 * @param string
-	 *            the string to copy to the byte array until the max read length is exceeded
-	 * @return the byte array of the string copied several times more than the max read meength
-	 */
-	protected byte[] getBytes(String string) {
-		byte[] bytes = new byte[(int) (IConstants.MAX_READ_LENGTH + 1000)];
-		for (int offset = 0; offset < bytes.length;) {
-			byte[] segment = string.getBytes();
-			if (offset + segment.length >= bytes.length) {
-				break;
-			}
-			System.arraycopy(segment, 0, bytes, offset, segment.length);
-			offset += segment.length;
-		}
-		return bytes;
 	}
 
 }

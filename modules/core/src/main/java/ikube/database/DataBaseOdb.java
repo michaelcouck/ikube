@@ -72,7 +72,7 @@ public class DataBaseOdb implements IDataBase {
 		} catch (Exception e) {
 			logger.error("", e);
 		} finally {
-			this.odb.commit();
+			// this.odb.commit();
 		}
 		return null;
 	}
@@ -100,7 +100,7 @@ public class DataBaseOdb implements IDataBase {
 		} catch (Exception e) {
 			logger.error("", e);
 		} finally {
-			this.odb.commit();
+			// this.odb.commit();
 			notifyAll();
 		}
 		return null;
@@ -136,7 +136,7 @@ public class DataBaseOdb implements IDataBase {
 		} catch (Exception e) {
 			logger.error("", e);
 		} finally {
-			this.odb.commit();
+			// this.odb.commit();
 			notifyAll();
 		}
 		return list;
