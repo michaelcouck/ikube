@@ -6,6 +6,8 @@ import org.apache.lucene.util.Version;
 
 public interface IConstants {
 
+	public String IKUBE = "ikube";
+
 	/** We expect the configuration file to be in the META-INF as seems to be the fashion at the moment. */
 	public String META_INF = "/META-INF/";
 	/** Maps mime types to file extensions.. */

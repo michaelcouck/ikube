@@ -250,7 +250,7 @@
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
-			<version>1.2.8</version>
+			<version>1.2.16</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
@@ -477,6 +477,13 @@
 			<groupId>org.apache.geronimo.specs</groupId>
 			<artifactId>geronimo-ejb_3.0_spec</artifactId>
 			<version>1.0.1</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>jgroups</groupId>
+			<artifactId>jgroups</artifactId>
+			<version>2.8.0.GA</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>

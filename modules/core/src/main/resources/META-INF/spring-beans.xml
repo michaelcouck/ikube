@@ -95,6 +95,8 @@
 
 	<bean
 		class="ikube.cluster.ServicePublisher" />
+	<bean
+		class="ikube.cluster.ServiceSubscriber" />
 
 	<bean
 		id="ikube.service.SearcherWebService"
@@ -150,6 +152,10 @@
 		class="ikube.toolkit.Timer"
 		property:type="report" />
 	<bean
+		id="ikube.toolkit.Timer.Clustering"
+		class="ikube.toolkit.Timer"
+		property:type="clustering" />
+	<bean
 		id="ikube.toolkit.Timer.Scheduler"
 		class="org.springframework.scheduling.timer.ScheduledTimerTask"
 		property:delay="${delay}"
@@ -179,6 +185,12 @@
 		property:delay="${report.delay}"
 		property:period="${report.period}"
 		property:timerTask-ref="ikube.toolkit.Timer.Reporter" />
+	<bean
+		id="ikube.toolkit.Timer.Clustering.Scheduler"
+		class="org.springframework.scheduling.timer.ScheduledTimerTask"
+		property:delay="${cluster.delay}"
+		property:period="${cluster.period}"
+		property:timerTask-ref="ikube.toolkit.Timer.Clustering" />
 
 	<bean
 		class="org.springframework.scheduling.timer.TimerFactoryBean"
@@ -190,6 +202,7 @@
 				<!--<ref local="ikube.toolkit.Timer.Profiling.Scheduler" />-->
 				<ref local="ikube.toolkit.Timer.WebService.Scheduler" />
 				<!--<ref local="ikube.toolkit.Timer.Reporter.Scheduler" />-->
+				<ref local="ikube.toolkit.Timer.Clustering.Scheduler" />
 			</list>
 		</property>
 	</bean>

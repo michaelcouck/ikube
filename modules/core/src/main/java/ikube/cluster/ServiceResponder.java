@@ -109,7 +109,7 @@ public final class ServiceResponder implements Runnable {
 					sendQueuedPacket();
 				}
 			} catch (SocketTimeoutException e) {
-				logger.error("", e);
+				logger.error(e.getMessage());
 				// This exception is by design to break the blocking from socket.receive
 			} catch (IOException e) {
 				logger.error("", e);

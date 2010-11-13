@@ -16,6 +16,7 @@ public class Event extends Persistable {
 	public static final String SERVICE = "service";
 	public static final String DEAD_LOCK = "deadLock";
 	public static final String REPORT = "report";
+	public static final String CLUSTERING = "clustering";
 
 	private String type;
 	private Timestamp timestamp;

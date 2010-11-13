@@ -1,63 +1,65 @@
 package ikube.cluster;
 
+import ikube.ATest;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.Vector;
 
-public class TestClient implements ServiceBrowserListener {
+import org.junit.Test;
+
+public class TestClient extends ATest implements ServiceBrowserListener {
 
 	public static final String SERVICE_NAME = "discoveryDemo";
 
-	public static void main(String[] args) {
+	@Test
+	public void main() {
 		new TestClient();
 	}
 
 	ServiceBrowser browser;
 	Vector<ServiceDescription> descriptors;
 
-	TestClient() {
+	public TestClient() {
 		descriptors = new Vector<ServiceDescription>();
 		browser = new ServiceBrowser();
 		browser.addServiceBrowserListener(this);
 		browser.setServiceName(SERVICE_NAME);
-		browser.startListener();
-		browser.startLookup();
-		System.out.println("Browser started. Will search for 2 secs.");
-		try {
-			Thread.sleep(2000);
-		} catch (InterruptedException ie) {
-			// ignore
-		}
-		browser.stopLookup();
-		browser.stopListener();
-
-		if (descriptors.size() > 0) {
-			System.out.println("\n---DEMO SERVERS---");
-			for (ServiceDescription descriptor : descriptors) {
-				System.out.println(descriptor.toString());
-			}
-
-			System.out.println("\n---FIRST SERVER'S TIME IS---");
-			ServiceDescription descriptor = descriptors.get(0);
+		while (true) {
+			browser.startListener();
+			browser.startLookup();
+			logger.info("Browser started. Will search for 2 secs.");
 			try {
-				Socket socket = new Socket(descriptor.getAddress(), descriptor.getPort());
-				InputStreamReader reader = new InputStreamReader(socket.getInputStream());
-				BufferedReader bufferedReader = new BufferedReader(reader);
-				String line = bufferedReader.readLine();
-				System.out.println(line);
-				socket.close();
-			} catch (IOException ie) {
-				System.err.println("Exception: " + ie);
-				System.exit(1);
+				Thread.sleep(10000);
+			} catch (InterruptedException ie) {
+				// ignore
 			}
-		} else {
-			System.out.println("\n---NO DEMO SERVERS FOUND---");
+			browser.stopLookup();
+			browser.stopListener();
+			if (descriptors.size() > 0) {
+				logger.info("\n---DEMO SERVERS---");
+				for (ServiceDescription descriptor : descriptors) {
+					logger.info(descriptor.toString());
+				}
+				logger.info("\n---FIRST SERVER'S TIME IS---");
+				ServiceDescription descriptor = descriptors.get(0);
+				try {
+					Socket socket = new Socket(descriptor.getAddress(), descriptor.getPort());
+					InputStreamReader reader = new InputStreamReader(socket.getInputStream());
+					BufferedReader bufferedReader = new BufferedReader(reader);
+					String line = bufferedReader.readLine();
+					System.out.println(line);
+					socket.close();
+				} catch (IOException ie) {
+					logger.info("Exception: " + ie);
+				}
+			} else {
+				logger.info("\n---NO DEMO SERVERS FOUND---");
+			}
 		}
-
-		System.out.println("\nThat's all folks.");
-		System.exit(0);
+		// logger.info("\nThat's all folks.");
 	}
 
 	public void serviceReply(ServiceDescription descriptor) {

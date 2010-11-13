@@ -1,6 +1,6 @@
 package ikube.cluster;
 
-import ikube.BaseTest;
+import ikube.ATest;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -12,7 +12,7 @@ import java.util.Date;
 
 import org.junit.Test;
 
-public class TestServer extends BaseTest {
+public class TestServer extends ATest {
 
 	public static final String SERVICE_NAME = "discoveryDemo";
 	public static final String SERVICE_INSTANCE_NAME = "Demo_Server";
@@ -26,9 +26,8 @@ public class TestServer extends BaseTest {
 		try {
 			serverSocket = new ServerSocket();
 			serverSocket.bind(new InetSocketAddress(InetAddress.getLocalHost(), 0));
-		} catch (IOException ioe) {
-			System.err.println("Could not bind a server socket to a free port: " + ioe);
-
+		} catch (IOException e) {
+			logger.error("", e);
 		}
 
 		/*
@@ -60,11 +59,11 @@ public class TestServer extends BaseTest {
 		 * Now we'll just hang out for a while until you stop the program. Any incoming connections will just have this machine's current
 		 * time spit at them, and the connection will be closed.
 		 */
-		System.out.println("Responder listening. Now taking connections...");
+		logger.info("Responder listening. Now taking connections...");
 		while (true) {
 			try {
 				Socket socket = serverSocket.accept();
-				System.out.println("Connection from: " + socket.getInetAddress());
+				logger.info("Connection from: " + socket.getInetAddress());
 				OutputStreamWriter writer = new OutputStreamWriter(socket.getOutputStream());
 				writer.write(new Date().toString() + "\r\n");
 				writer.flush();
