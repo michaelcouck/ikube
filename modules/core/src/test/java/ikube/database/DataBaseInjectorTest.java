@@ -6,9 +6,11 @@ import ikube.toolkit.ApplicationContextManager;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.neodatis.odb.ODB;
 
+@Ignore
 public class DataBaseInjectorTest extends BaseTest {
 
 	private DataBaseOdb dataBase = ApplicationContextManager.getBean(DataBaseOdb.class);

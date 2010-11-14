@@ -1,11 +1,12 @@
 package ikube;
 
 import ikube.action.IAction;
+import ikube.cluster.IClusterManager;
 import ikube.listener.IListener;
 import ikube.listener.ListenerManager;
 import ikube.model.Event;
 import ikube.model.IndexContext;
-import ikube.toolkit.ClusterManager;
+import ikube.toolkit.ApplicationContextManager;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -21,7 +22,7 @@ public class IndexEngine implements IIndexEngine {
 
 	public IndexEngine(IndexContext indexContext) {
 		this.indexContext = indexContext;
-		this.getServerName();
+		this.setServerName(this.indexContext);
 		IListener listener = new IListener() {
 			@Override
 			public void handleNotification(Event event) {
@@ -40,7 +41,8 @@ public class IndexEngine implements IIndexEngine {
 		if (event.getType().equals(Event.TIMER)) {
 			logger.debug("Notification : " + this + ", " + event);
 			try {
-				if (ClusterManager.isWorking(indexContext)) {
+				IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
+				if (clusterManager.isWorking(indexContext)) {
 					logger.info("Server already working : " + indexContext.getIndexName() + ", " + indexContext.getServerName());
 					return;
 				}
@@ -60,7 +62,7 @@ public class IndexEngine implements IIndexEngine {
 		}
 	}
 
-	private String getServerName() {
+	private void setServerName(IndexContext indexContext) {
 		if (indexContext.getServerName() == null) {
 			try {
 				indexContext.setServerName(InetAddress.getLocalHost().getHostAddress());
@@ -69,7 +71,6 @@ public class IndexEngine implements IIndexEngine {
 				logger.error("Exception accessing the localhost?", e);
 			}
 		}
-		return indexContext.getServerName();
 	}
 
 	public void setActions(List<IAction<IndexContext, Boolean>> actions) {

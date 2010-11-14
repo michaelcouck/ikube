@@ -38,17 +38,16 @@ public interface IConstants {
 	public String FRAGMENT_SEPERATOR = "...";
 	public Version VERSION = Version.LUCENE_30;
 
-	public String INDEX = "index";
 	public String ID = "id";
+	public String IP = "ip";
+	public String INDEX = "index";
+	public String NAME = "name";
 	public String SCORE = "score";
 	public String CONTENTS = "contents";
 	public String FRAGMENT = "fragment";
 	public String TOTAL = "total";
 	public String DURATION = "duration";
 	public String TITLE = "title";
-
-	public String INDEX_NAME = "indexName";
-	public String SERVER_NAME = "serverName";
 
 	public String ENCODING = "UTF8";
 

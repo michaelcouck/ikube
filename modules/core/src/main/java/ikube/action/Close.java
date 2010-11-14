@@ -1,7 +1,6 @@
 package ikube.action;
 
 import ikube.model.IndexContext;
-import ikube.toolkit.ClusterManager;
 
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
@@ -32,12 +31,12 @@ public class Close extends AAction<IndexContext, Boolean> {
 			return Boolean.FALSE;
 		}
 		String actionName = getClass().getName();
-		if (ClusterManager.anyWorking(actionName, indexContext)) {
+		if (getClusterManager().anyWorking(indexContext, actionName)) {
 			logger.debug("Close : Other servers working : " + actionName);
 			return Boolean.FALSE;
 		}
 		try {
-			ClusterManager.setWorking(indexContext, actionName, Boolean.TRUE);
+			getClusterManager().setWorking(indexContext, actionName, Boolean.TRUE, System.currentTimeMillis());
 			Searchable[] searchables = multiSearcher.getSearchables();
 			if (searchables != null && searchables.length > 0) {
 				for (Searchable searchable : searchables) {
@@ -57,7 +56,7 @@ public class Close extends AAction<IndexContext, Boolean> {
 			}
 			indexContext.setMultiSearcher(null);
 		} finally {
-			ClusterManager.setWorking(indexContext, null, Boolean.FALSE);
+			getClusterManager().setWorking(indexContext, null, Boolean.FALSE, 0);
 		}
 		return Boolean.TRUE;
 	}

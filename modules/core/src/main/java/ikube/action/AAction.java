@@ -1,6 +1,8 @@
 package ikube.action;
 
+import ikube.cluster.IClusterManager;
 import ikube.model.IndexContext;
+import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
@@ -17,6 +19,14 @@ import org.apache.lucene.store.FSDirectory;
 public abstract class AAction<E, F> implements IAction<E, F> {
 
 	protected Logger logger = Logger.getLogger(this.getClass());
+	private IClusterManager clusterManager;
+
+	protected IClusterManager getClusterManager() {
+		if (clusterManager == null) {
+			clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
+		}
+		return clusterManager;
+	}
 
 	protected boolean isIndexCurrent(IndexContext indexContext) {
 		File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());

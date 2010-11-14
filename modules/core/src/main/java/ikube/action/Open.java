@@ -3,7 +3,6 @@ package ikube.action;
 import ikube.listener.ListenerManager;
 import ikube.model.Event;
 import ikube.model.IndexContext;
-import ikube.toolkit.ClusterManager;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
@@ -16,8 +15,6 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.MultiSearcher;
 import org.apache.lucene.search.Searchable;
 import org.apache.lucene.store.FSDirectory;
-
-
 
 /**
  * @author Michael Couck
@@ -50,12 +47,12 @@ public class Open extends AAction<IndexContext, Boolean> {
 			return Boolean.FALSE;
 		}
 		String actionName = getClass().getName();
-		if (ClusterManager.anyWorking(actionName, indexContext)) {
+		if (getClusterManager().anyWorking(indexContext, actionName)) {
 			logger.debug("Servers working : ");
 			return Boolean.FALSE;
 		}
 		try {
-			ClusterManager.setWorking(indexContext, actionName, Boolean.TRUE);
+			getClusterManager().setWorking(indexContext, actionName, Boolean.TRUE, System.currentTimeMillis());
 			ArrayList<Searchable> searchers = new ArrayList<Searchable>();
 			File[] serverIndexDirectories = latestIndexDirectory.listFiles();
 			if (serverIndexDirectories != null) {
@@ -92,7 +89,7 @@ public class Open extends AAction<IndexContext, Boolean> {
 				logger.error("Exception opening the multi searcher", e);
 			}
 		} finally {
-			ClusterManager.setWorking(indexContext, null, Boolean.FALSE);
+			getClusterManager().setWorking(indexContext, null, Boolean.FALSE, 0);
 		}
 		return Boolean.TRUE;
 	}

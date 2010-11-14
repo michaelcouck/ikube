@@ -1,5 +1,6 @@
 package ikube.model;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 
 import javax.persistence.Entity;
@@ -21,6 +22,8 @@ public class Event extends Persistable {
 	private String type;
 	private Timestamp timestamp;
 	private boolean consumed;
+	/** And arbitrary object to pass around. */
+	private Serializable object;
 
 	private transient IndexContext indexContext;
 
@@ -53,6 +56,14 @@ public class Event extends Persistable {
 
 	public void setConsumed(final boolean consumed) {
 		this.consumed = consumed;
+	}
+
+	public Serializable getObject() {
+		return object;
+	}
+
+	public void setObject(Serializable object) {
+		this.object = object;
 	}
 
 	@Transient

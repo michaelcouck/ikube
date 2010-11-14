@@ -7,7 +7,6 @@ import org.jgroups.JChannel;
 
 public abstract class Service {
 
-	protected static final long SLEEP = 5000;
 	protected static final String CONFIGURATION = "META-INF/cluster/mping.xml";
 
 	protected Logger logger = Logger.getLogger(this.getClass());
@@ -16,6 +15,7 @@ public abstract class Service {
 	static {
 		try {
 			CHANNEL = new JChannel(CONFIGURATION);
+			CHANNEL.enableStats(Boolean.TRUE);
 			CHANNEL.connect(IConstants.IKUBE);
 		} catch (Exception e) {
 			e.printStackTrace();

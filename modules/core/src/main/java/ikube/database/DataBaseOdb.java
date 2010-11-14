@@ -13,6 +13,7 @@ import javax.persistence.Id;
 
 import org.apache.log4j.Logger;
 import org.neodatis.odb.ODB;
+import org.neodatis.odb.ODBFactory;
 import org.neodatis.odb.OID;
 import org.neodatis.odb.Objects;
 import org.neodatis.odb.core.query.IQuery;
@@ -31,6 +32,7 @@ public class DataBaseOdb implements IDataBase {
 	public DataBaseOdb() {
 		this.logger = Logger.getLogger(this.getClass());
 		this.idFields = new HashMap<Class<?>, Field>();
+		this.odb = ODBFactory.open(IConstants.DATABASE_FILE);
 	}
 
 	@Override

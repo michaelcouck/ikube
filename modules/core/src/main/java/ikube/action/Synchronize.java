@@ -3,14 +3,13 @@ package ikube.action;
 import ikube.model.IndexContext;
 import ikube.model.Server;
 import ikube.service.ISynchronizationWebService;
-import ikube.toolkit.ClusterManager;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import javax.xml.namespace.QName;
@@ -32,25 +31,29 @@ public class Synchronize extends AAction<IndexContext, Boolean> {
 	public Boolean execute(IndexContext indexContext) {
 		try {
 			String actionName = getClass().getName();
-			if (ClusterManager.anyWorking(actionName, indexContext)) {
+			if (getClusterManager().anyWorking(indexContext, actionName)) {
 				return Boolean.FALSE;
 			}
-			ClusterManager.setWorking(indexContext, actionName, Boolean.TRUE);
+			getClusterManager().setWorking(indexContext, actionName, Boolean.TRUE, System.currentTimeMillis());
 			File baseDirectory = FileUtilities.getFile(indexContext.getIndexDirectoryPath(), Boolean.TRUE);
 			File latestDirectory = FileUtilities.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
 			logger.info("Base directory : " + baseDirectory + ", " + latestDirectory);
 			if (latestDirectory == null) {
 				return Boolean.FALSE;
 			}
-			List<Server> servers = ClusterManager.getServers(indexContext);
+			Server thisServer = getClusterManager().getServer(indexContext);
+			Map<String, Server> servers = getClusterManager().getServers(indexContext);
 			logger.info("Servers : " + servers);
-			for (Server server : servers) {
-				String serverIpAddress = server.getServerIpAddress();
+			for (Server server : servers.values()) {
+				String serverIpAddress = server.getIp();
 				logger.info("Server : " + server);
+				if (server.getIp().equals(thisServer.getIp())) {
+					continue;
+				}
 				writeToServer(serverIpAddress, baseDirectory, latestDirectory);
 			}
 		} finally {
-			ClusterManager.setWorking(indexContext, null, Boolean.FALSE);
+			getClusterManager().setWorking(indexContext, null, Boolean.FALSE, 0);
 		}
 		return Boolean.TRUE;
 	}

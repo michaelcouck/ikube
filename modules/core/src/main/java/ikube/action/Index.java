@@ -3,7 +3,6 @@ package ikube.action;
 import ikube.index.visitor.IndexableVisitor;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
-import ikube.toolkit.ClusterManager;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.IndexManager;
 
@@ -29,7 +28,7 @@ public class Index extends AAction<IndexContext, Boolean> {
 				// be that there are more than one 'configurations' defined on this
 				// physical machine, meaning that the index is current but that this
 				// instance should join the others in in the index
-				if (!ClusterManager.areWorking(actionName, indexContext)) {
+				if (!getClusterManager().areWorking(indexContext, actionName)) {
 					// Nothing to do but go home
 					return Boolean.FALSE;
 				} else {
@@ -47,11 +46,12 @@ public class Index extends AAction<IndexContext, Boolean> {
 			// If we get here then there are two possibilities:
 			// 1) The index is not current and we will start the index
 			// 2) The index is current and there are other servers working on the index, so we join them
-			long lastWorkingStartTime = ClusterManager.getLastWorkingTime(actionName, indexContext);
+			long lastWorkingStartTime = getClusterManager().getLastWorkingTime(indexContext, actionName);
 			if (lastWorkingStartTime <= 0) {
-				logger.debug("Other servers working : ");
+				logger.debug("Other servers working on different actions : ");
 				return Boolean.FALSE;
 			}
+			// getClusterManager().setWorking(indexContext, actionName, Boolean.TRUE, lastWorkingStartTime);
 			logger.debug("Index : Last working time : " + lastWorkingStartTime + ", " + Thread.currentThread().hashCode());
 			// Start the indexing for this server
 			IndexManager.openIndexWriter(indexContext, lastWorkingStartTime);
@@ -69,7 +69,7 @@ public class Index extends AAction<IndexContext, Boolean> {
 			}
 			IndexManager.closeIndexWriter(indexContext);
 		} finally {
-			ClusterManager.setWorking(indexContext, null, Boolean.FALSE);
+			getClusterManager().setWorking(indexContext, null, Boolean.FALSE, 0);
 		}
 		logger.debug("Index : Finished indexing : " + indexContext.getIndexName() + ", " + indexContext.getServerName() + ", "
 				+ Thread.currentThread().hashCode());

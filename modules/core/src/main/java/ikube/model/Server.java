@@ -1,71 +1,75 @@
 package ikube.model;
 
-import java.sql.Timestamp;
-
 import javax.persistence.Entity;
 
 @Entity()
 public class Server extends Persistable {
 
-	private String indexName;
-	private String serverName;
-	private String serverIpAddress;
-	private String actionName;
-	private Timestamp start;
-	private boolean indexing;
+	/** The ip of this machine. */
+	private String ip;
+	/** The name of the index that this server is currently working on if any. */
+	private String index;
+	/** The name of the action that this server is currently working on if any. */
+	private String action;
+	/** The batch number of this server. */
+	private int batch;
+	/** The start time of this action. */
+	private long start;
+	/** Whether this server is working. */
+	private boolean working;
 
-	public String getIndexName() {
-		return indexName;
+	public String getIp() {
+		return ip;
 	}
 
-	public void setIndexName(final String indexName) {
-		this.indexName = indexName;
+	public void setIp(String serverIpAddress) {
+		this.ip = serverIpAddress;
 	}
 
-	public String getServerName() {
-		return serverName;
+	public String getIndex() {
+		return index;
 	}
 
-	public void setServerName(final String serverName) {
-		this.serverName = serverName;
+	public void setIndex(final String indexName) {
+		this.index = indexName;
 	}
 
-	public String getServerIpAddress() {
-		return serverIpAddress;
+	public String getAction() {
+		return action;
 	}
 
-	public void setServerIpAddress(String serverIpAddress) {
-		this.serverIpAddress = serverIpAddress;
+	public void setAction(final String actionName) {
+		this.action = actionName;
 	}
 
-	public String getActionName() {
-		return actionName;
+	public int getBatch() {
+		return batch;
 	}
 
-	public void setActionName(final String actionName) {
-		this.actionName = actionName;
+	public void setBatch(int batch) {
+		this.batch = batch;
 	}
 
-	public Timestamp getStart() {
+	public long getStart() {
 		return start;
 	}
 
-	public void setStart(final Timestamp start) {
+	public void setStart(final long start) {
 		this.start = start;
 	}
 
 	public boolean isWorking() {
-		return indexing;
+		return working;
 	}
 
 	public void setWorking(final boolean indexing) {
-		this.indexing = indexing;
+		this.working = indexing;
 	}
 
 	public String toString() {
 		final StringBuilder builder = new StringBuilder("[");
-		builder.append(getId()).append(", ").append(isWorking()).append(", ").append(getIndexName()).append(", ").append(getServerName())
-				.append(", ").append(getServerIpAddress()).append(", ").append(getActionName()).append(", ").append(getStart());
+		builder.append(getId()).append(", ").append(isWorking()).append(", ").append(getIndex()).append(", ").append(getIp()).append(", ")
+				.append(getAction()).append(", ").append(getBatch()).append(", ").append(getStart());
 		builder.append("]");
 		return builder.toString();
 	}

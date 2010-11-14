@@ -25,19 +25,13 @@
 	<aop:aspectj-autoproxy proxy-target-class="true" />
 
 	<bean
+		class="ikube.cluster.ClusterManager" />
+
+	<bean
 		id="ikube.database.DataBaseOdb"
 		class="ikube.database.DataBaseOdb"
 		destroy-method="close">
 	</bean>
-
-	<bean
-		class="ikube.database.DataBaseInjector"
-		destroy-method="close"
-		property:local="false"
-		property:ips-ref="ips" />
-	<util:list id="ips">
-		<bean class="ikube.model.Ip" property:ip="127.0.0.1" />
-	</util:list>
 
 	<bean
 		id="ikube.action.Close"
@@ -67,7 +61,7 @@
 		<ref local="ikube.action.Open" />
 		<ref local="ikube.action.Index" />
 		<ref local="ikube.action.Delete" />
-		<ref local="ikube.action.Synchronize" />
+		<!--<ref local="ikube.action.Synchronize" />-->
 	</util:list>
 
 	<bean
@@ -87,7 +81,7 @@
 	<aop:config proxy-target-class="false">
 		<aop:aspect ref="ikube.toolkit.ProfilingAspect">
 			<!--<aop:around method="profile" pointcut="execution(* ikube.service.*.*(..))" />-->
-			<!--<aop:around method="profile" pointcut="execution(* ikube.index.visitor.database.*.*(..))" />-->
+			<aop:around method="profile" pointcut="execution(* ikube.index.visitor.database.*.*(..))" />
 		</aop:aspect>
 	</aop:config>
 

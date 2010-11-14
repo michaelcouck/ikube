@@ -31,17 +31,6 @@
 	</bean>
 
 	<bean
-		class="ikube.database.DataBaseInjector"
-		destroy-method="close"
-		property:local="true"
-		property:ips-ref="ips" />
-	<util:list id="ips">
-		<bean class="ikube.model.Ip" property:ip="127.0.0.1" />
-		<!--<bean class="ikube.model.Ip" property:ip="192.168.0.101" />
-		<bean class="ikube.model.Ip" property:ip="192.168.0.102" />-->
-	</util:list>
-
-	<bean
 		id="ikube.action.Close"
 		class="ikube.action.Close" />
 	<bean
@@ -93,10 +82,10 @@
 		</aop:aspect>
 	</aop:config>
 
-	<bean
+	<!--<bean
 		class="ikube.cluster.ServicePublisher" />
 	<bean
-		class="ikube.cluster.ServiceSubscriber" />
+		class="ikube.cluster.ServiceSubscriber" />-->
 
 	<bean
 		id="ikube.service.SearcherWebService"

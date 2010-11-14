@@ -1,7 +1,6 @@
 package ikube.action;
 
 import ikube.model.IndexContext;
-import ikube.toolkit.ClusterManager;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
@@ -29,7 +28,7 @@ public class Delete extends AAction<IndexContext, Boolean> {
 			return Boolean.FALSE;
 		}
 		String actionName = getClass().getName();
-		if (ClusterManager.anyWorking(actionName, indexContext)) {
+		if (getClusterManager().anyWorking(indexContext, actionName)) {
 			return Boolean.FALSE;
 		}
 		try {
@@ -37,7 +36,7 @@ public class Delete extends AAction<IndexContext, Boolean> {
 			if (indexDirectoriesList.size() < 2) {
 				return Boolean.FALSE;
 			}
-			ClusterManager.setWorking(indexContext, actionName, Boolean.TRUE);
+			getClusterManager().setWorking(indexContext, actionName, Boolean.TRUE, System.currentTimeMillis());
 			Collections.sort(indexDirectoriesList, new Comparator<File>() {
 				@Override
 				public int compare(File o1, File o2) {
@@ -65,7 +64,7 @@ public class Delete extends AAction<IndexContext, Boolean> {
 				FileUtilities.deleteFile(indexDirectory, 1);
 			}
 		} finally {
-			ClusterManager.setWorking(indexContext, null, Boolean.FALSE);
+			getClusterManager().setWorking(indexContext, null, Boolean.FALSE, 0);
 		}
 		return Boolean.TRUE;
 	}

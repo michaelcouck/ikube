@@ -1,8 +1,7 @@
 package ikube.toolkit;
 
-import ikube.IConstants;
+import ikube.cluster.IClusterManager;
 import ikube.listener.IListener;
-import ikube.model.Database;
 import ikube.model.Event;
 import ikube.model.IndexContext;
 import ikube.model.Server;
@@ -12,8 +11,6 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import javax.naming.InitialContext;
 
 import org.apache.log4j.Logger;
 
@@ -28,16 +25,13 @@ public class Reporter implements IListener {
 				List<Object> list = new ArrayList<Object>();
 				list.add(InetAddress.getLocalHost().getHostAddress());
 
-				// Get the database
-				Database database = getDatabase();
-				list.add(database);
-
 				// Get the index contexts
 				Map<String, IndexContext> indexContexts = ApplicationContextManager.getBeans(IndexContext.class);
+				IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
 				for (IndexContext indexContext : indexContexts.values()) {
 					// Get the servers
-					List<Server> servers = ClusterManager.getServers(indexContext);
-					list.add(servers);
+					Map<String, Server> servers = clusterManager.getServers(indexContext);
+					list.add(servers.values());
 					// Get the index files
 					File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
 					list.add(latestIndexDirectory.getAbsolutePath());
@@ -63,11 +57,6 @@ public class Reporter implements IListener {
 				logger.error("", e);
 			}
 		}
-	}
-
-	protected Database getDatabase() throws Exception {
-		Database database = (Database) new InitialContext().lookup(IConstants.DATABASE);
-		return database;
 	}
 
 }

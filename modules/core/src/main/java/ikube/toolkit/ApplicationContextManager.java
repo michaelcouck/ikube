@@ -97,6 +97,7 @@ public class ApplicationContextManager {
 		if (APPLICATION_CONTEXT == null) {
 			LOGGER.info("Loading the application context with configurations : " + Arrays.asList(configLocations));
 			APPLICATION_CONTEXT = new ClassPathXmlApplicationContext(configLocations, ApplicationContextManager.class);
+			LOGGER.info("Loaded the application context with configurations : " + Arrays.asList(configLocations));
 		}
 		return APPLICATION_CONTEXT;
 	}

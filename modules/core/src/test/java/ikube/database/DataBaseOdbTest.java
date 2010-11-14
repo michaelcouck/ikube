@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import ikube.BaseTest;
+import ikube.IConstants;
 import ikube.model.Indexable;
 import ikube.model.IndexableColumn;
 import ikube.model.Lock;
@@ -113,17 +114,16 @@ public class DataBaseOdbTest extends BaseTest {
 
 	@Test
 	public void findClassParametersUnique() {
-		// Class<T> klass, Map<String, Object> parameters, boolean unique
-		String indexName = "indexName";
-		String serverName = "serverName";
+		String ip = "ip";
+		String index = "index";
 		Server server = new Server();
-		server.setIndexName(indexName);
-		server.setServerName(serverName);
+		server.setIp(ip);
+		server.setIndex(index);
 		DATABASE.persist(server);
 
 		Map<String, Object> parameters = new HashMap<String, Object>();
-		parameters.put(indexName, indexName);
-		parameters.put(serverName, serverName);
+		parameters.put(IConstants.IP, ip);
+		parameters.put(IConstants.INDEX, index);
 
 		Server persisted = DATABASE.find(Server.class, parameters, Boolean.TRUE);
 		assertNotNull(persisted);
@@ -135,16 +135,15 @@ public class DataBaseOdbTest extends BaseTest {
 
 	@Test
 	public void findClassParametersFirstMax() {
-		// Class<T> klass, Map<String, Object> parameters, int firstResult, int maxResults
 		String indexName = "indexName";
 		for (int i = 0; i < 100; i++) {
 			Server server = new Server();
-			server.setIndexName(indexName);
+			server.setIndex(indexName);
 			DATABASE.persist(server);
 		}
 
 		Map<String, Object> parameters = new HashMap<String, Object>();
-		parameters.put(indexName, indexName);
+		parameters.put(IConstants.INDEX, indexName);
 
 		int first = 0;
 		int max = 10;

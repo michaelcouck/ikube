@@ -18,9 +18,6 @@
             http://www.springframework.org/schema/context
             http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
-	<context:property-placeholder
-		location="classpath:/spring.properties" />
-
 	<bean
 		class="ikube.IndexEngine"
 		property:actions-ref="actions">
@@ -41,7 +38,6 @@
 		property:maxReadLength="${max.read.length}"
 		property:queueTimeout="${max.age}"
 		property:indexDirectoryPath="${index.directory.path}"
-		property:serverName="jackal"
 		property:indexables-ref="faqIndexables"
 		property:indexableVisitors-ref="faqIndexableVisitors" />
 	<util:list id="faqIndexables">

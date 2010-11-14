@@ -1,7 +1,6 @@
 package ikube.action;
 
 import ikube.model.IndexContext;
-import ikube.toolkit.ClusterManager;
 
 /**
  * @author Michael Couck
@@ -14,9 +13,9 @@ public class Reset extends AAction<IndexContext, Boolean> {
 	public Boolean execute(IndexContext indexContext) {
 		try {
 			String actionName = getClass().getName();
-			return ClusterManager.resetWorkings(actionName, indexContext);
+			return getClusterManager().resetWorkings(indexContext, actionName);
 		} finally {
-			ClusterManager.setWorking(indexContext, null, Boolean.FALSE);
+			getClusterManager().setWorking(indexContext, null, Boolean.FALSE, 0);
 		}
 	}
 

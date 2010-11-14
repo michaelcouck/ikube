@@ -1,11 +1,10 @@
 package ikube.index.visitor.database;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
 import ikube.BaseTest;
-import ikube.index.visitor.database.IndexableTableVisitor;
 import ikube.model.Indexable;
 import ikube.model.IndexableTable;
 import ikube.toolkit.ApplicationContextManager;
@@ -19,8 +18,6 @@ import java.util.List;
 import org.apache.lucene.index.IndexWriter;
 import org.junit.Before;
 import org.junit.Test;
-
-
 
 public class IndexableTableVisitorTest extends BaseTest {
 
@@ -65,13 +62,15 @@ public class IndexableTableVisitorTest extends BaseTest {
 	@Test
 	public void getResultSet() throws Exception {
 		// IndexableTable
-		visitor.getResultSet(indexableTable);
+		ResultSet resultSet = visitor.getResultSet(indexableTable.getSql(), indexableTable.getDataSource().getConnection());
+		assertNotNull(resultSet);
 	}
 
 	@Test
 	public void moveToBatch() throws Exception {
 		// ResultSet
-		visitor.moveToBatch(resultSet);
+		int nextRowNumber = visitor.moveToBatch(resultSet);
+		assertTrue(nextRowNumber > 0);
 	}
 
 }

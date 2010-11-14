@@ -9,10 +9,9 @@ import ikube.toolkit.FileUtilities;
 import java.io.File;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
-@Ignore
+// @Ignore
 public class AActionTest extends BaseActionTest {
 
 	private AAction<IndexContext, Boolean> aAction;
@@ -54,7 +53,7 @@ public class AActionTest extends BaseActionTest {
 		File baseIndexDirectory = FileUtilities.getFile(indexContext.getIndexDirectoryPath(), Boolean.TRUE);
 		FileUtilities.deleteFile(baseIndexDirectory, 1);
 		boolean shouldReopen = aAction.shouldReopen(indexContext);
-		assertFalse(shouldReopen);
+		assertFalse(shouldReopen && !baseIndexDirectory.exists());
 
 		File latestIndexDirectory = FileUtilities.getFile(baseIndexDirectory.getAbsolutePath() + File.separator
 				+ Long.toString(System.currentTimeMillis()), Boolean.TRUE);

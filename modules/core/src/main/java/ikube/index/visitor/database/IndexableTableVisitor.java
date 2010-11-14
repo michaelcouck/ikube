@@ -1,12 +1,13 @@
 package ikube.index.visitor.database;
 
+import ikube.cluster.IClusterManager;
 import ikube.database.IDataBase;
 import ikube.index.visitor.IndexableVisitor;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.model.IndexableColumn;
 import ikube.model.IndexableTable;
-import ikube.toolkit.ClusterManager;
+import ikube.toolkit.ApplicationContextManager;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -41,10 +42,10 @@ public class IndexableTableVisitor<I> extends IndexableVisitor<IndexableTable> {
 		});
 		ResultSet resultSet = null;
 		try {
-			resultSet = getResultSet(indexableTable);
+			resultSet = getResultSet(indexableTable.getSql(), indexableTable.getDataSource().getConnection());
 			long nextRowNumber = moveToBatch(resultSet);
 			while (nextRowNumber > 0 && resultSet.next()) {
-				Thread.sleep(250);
+				// Thread.sleep(200);
 				doRow(indexableColumns, resultSet);
 				if (resultSet.getRow() >= nextRowNumber) {
 					nextRowNumber = moveToBatch(resultSet);
@@ -59,12 +60,17 @@ public class IndexableTableVisitor<I> extends IndexableVisitor<IndexableTable> {
 	}
 
 	protected int moveToBatch(ResultSet resultSet) throws Exception {
-		int nextBatchNumber = ClusterManager.getNextBatchNumber(indexContext);
+		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
+		int nextBatchNumber = clusterManager.getNextBatchNumber(indexContext);
 		int currentRow = resultSet.getRow();
 		if (currentRow <= 0) {
 			// Move the cursor to the first row
 			resultSet.next();
 		}
+		// if (nextBatchNumber > 0) {
+		// close(resultSet);
+		// resultSet = getResultSet(sql, connection);
+		// }
 		while (resultSet.getRow() < nextBatchNumber) {
 			if (!resultSet.next()) {
 				// We return -1 when we get to the end of the results
@@ -80,9 +86,20 @@ public class IndexableTableVisitor<I> extends IndexableVisitor<IndexableTable> {
 		return nextBatchNumber + (int) indexContext.getBatchSize();
 	}
 
+	protected ResultSet getResultSet(String sql, Connection connection) throws Exception {
+		Statement statement = connection.createStatement(/* ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY */);
+		logger.info("Sql : " + sql + ", " + Thread.currentThread().hashCode());
+		ResultSet resultSet = statement.executeQuery(sql);
+		return resultSet;
+	}
+
 	@SuppressWarnings( { "unchecked" })
 	protected void doRow(List indexableColumns, ResultSet resultSet) throws Exception {
-		logger.debug("Doing row : " + resultSet.getRow() + ", " + Thread.currentThread().hashCode());
+		if (logger.isDebugEnabled()) {
+			if (resultSet.getRow() % 1000 == 0) {
+				logger.debug("Doing row : " + resultSet.getRow() + ", " + Thread.currentThread().hashCode());
+			}
+		}
 		ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
 		Document document = new Document();
 		// TODO - add the id field
@@ -103,16 +120,6 @@ public class IndexableTableVisitor<I> extends IndexableVisitor<IndexableTable> {
 			indexableColumn.accept(indexableColumnVisitor);
 		}
 		indexContext.getIndexWriter().addDocument(document);
-	}
-
-	protected ResultSet getResultSet(final IndexableTable indexableTable) throws Exception {
-		Connection connection = indexableTable.getDataSource().getConnection();
-		// NOTE : Refer to the note 05.11.10
-		Statement statement = connection.createStatement(/* ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY */);
-		String sql = indexableTable.getSql();
-		logger.info("Sql : " + sql + ", " + Thread.currentThread().hashCode());
-		ResultSet resultSet = statement.executeQuery(sql);
-		return resultSet;
 	}
 
 	protected int binarySearch(List<Indexable<?>> list, String name) {
