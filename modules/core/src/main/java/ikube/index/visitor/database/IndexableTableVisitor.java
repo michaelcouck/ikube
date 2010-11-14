@@ -16,6 +16,7 @@ import java.sql.Statement;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
@@ -67,6 +68,7 @@ public class IndexableTableVisitor<I> extends IndexableVisitor<IndexableTable> {
 			// Move the cursor to the first row
 			resultSet.next();
 		}
+		long start = System.currentTimeMillis();
 		// if (nextBatchNumber > 0) {
 		// close(resultSet);
 		// resultSet = getResultSet(sql, connection);
@@ -77,10 +79,12 @@ public class IndexableTableVisitor<I> extends IndexableVisitor<IndexableTable> {
 				return -1;
 			}
 		}
+		long end = System.currentTimeMillis();
 		int rowAfter = resultSet.getRow();
 		if (logger.isInfoEnabled()) {
-			StringBuilder builder = new StringBuilder("Next batch number : ").append(nextBatchNumber).append(", moved from : ").append(
-					currentRow).append(", to : ").append(rowAfter).append(", runnable : ").append(this);
+			StringBuilder builder = new StringBuilder("Next batch number : ").append(nextBatchNumber).append(", moved from : ")
+					.append(currentRow).append(", to : ").append(rowAfter).append(", duration : ")
+					.append(TimeUnit.MILLISECONDS.toSeconds(end - start)).append(", runnable : ").append(this);
 			logger.info(builder.toString());
 		}
 		return nextBatchNumber + (int) indexContext.getBatchSize();
@@ -93,7 +97,7 @@ public class IndexableTableVisitor<I> extends IndexableVisitor<IndexableTable> {
 		return resultSet;
 	}
 
-	@SuppressWarnings( { "unchecked" })
+	@SuppressWarnings({ "unchecked" })
 	protected void doRow(List indexableColumns, ResultSet resultSet) throws Exception {
 		if (logger.isDebugEnabled()) {
 			if (resultSet.getRow() % 1000 == 0) {
