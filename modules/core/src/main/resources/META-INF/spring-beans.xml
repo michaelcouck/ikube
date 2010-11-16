@@ -25,7 +25,11 @@
 	<aop:aspectj-autoproxy proxy-target-class="true" />
 
 	<bean
-		class="ikube.cluster.ClusterManager" />
+		id="ikube.cluster.LockManager"
+		class="ikube.cluster.LockManager" />
+	<bean
+		class="ikube.action.SynchronizedActionHandlerAspect"
+		property:lockManager-ref="ikube.cluster.LockManager" />
 
 	<bean
 		id="ikube.database.DataBaseOdb"
@@ -80,8 +84,10 @@
 		class="ikube.toolkit.ProfilingAspect" />
 	<aop:config proxy-target-class="false">
 		<aop:aspect ref="ikube.toolkit.ProfilingAspect">
-			<!--<aop:around method="profile" pointcut="execution(* ikube.service.*.*(..))" />-->
 			<aop:around method="profile" pointcut="execution(* ikube.index.visitor.database.*.*(..))" />
+		</aop:aspect>
+		<aop:aspect ref="ikube.action.SynchronizedActionHandlerAspect">
+			<aop:around method="execute" pointcut="execution(* ikube.action.*.execute(..))" />
 		</aop:aspect>
 	</aop:config>
 

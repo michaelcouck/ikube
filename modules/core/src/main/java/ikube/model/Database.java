@@ -4,6 +4,10 @@ import java.sql.Timestamp;
 
 import javax.persistence.Entity;
 
+/**
+ * @deprecated Model changed to cluster synchronisation
+ * @author Michael Couck
+ */
 @Entity()
 public class Database extends Persistable {
 

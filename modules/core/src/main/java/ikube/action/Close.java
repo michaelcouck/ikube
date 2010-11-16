@@ -31,12 +31,12 @@ public class Close extends AAction<IndexContext, Boolean> {
 			return Boolean.FALSE;
 		}
 		String actionName = getClass().getName();
-		if (getClusterManager().anyWorking(indexContext, actionName)) {
+		if (getLockManager().anyWorking(indexContext, actionName)) {
 			logger.debug("Close : Other servers working : " + actionName);
 			return Boolean.FALSE;
 		}
 		try {
-			getClusterManager().setWorking(indexContext, actionName, Boolean.TRUE, System.currentTimeMillis());
+			getLockManager().setWorking(indexContext, actionName, Boolean.TRUE, System.currentTimeMillis());
 			Searchable[] searchables = multiSearcher.getSearchables();
 			if (searchables != null && searchables.length > 0) {
 				for (Searchable searchable : searchables) {
@@ -56,7 +56,7 @@ public class Close extends AAction<IndexContext, Boolean> {
 			}
 			indexContext.setMultiSearcher(null);
 		} finally {
-			getClusterManager().setWorking(indexContext, null, Boolean.FALSE, 0);
+			getLockManager().setWorking(indexContext, null, Boolean.FALSE, 0);
 		}
 		return Boolean.TRUE;
 	}

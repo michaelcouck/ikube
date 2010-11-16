@@ -25,7 +25,8 @@
 	<aop:aspectj-autoproxy proxy-target-class="true" />
 
 	<bean
-		class="ikube.cluster.ClusterManager" />
+		id="ikube.cluster.LockManager"
+		class="ikube.cluster.LockManager" />
 
 	<bean
 		id="ikube.database.DataBaseOdb"
@@ -76,12 +77,18 @@
 	</bean>
 
 	<bean
-		id="ikube.toolkit.ProfilingAspect"
-		class="ikube.toolkit.ProfilingAspect" />
+		id="ikube.aspect.Profiling"
+		class="ikube.aspect.Profiling" />
+	<bean
+		id="ikube.aspect.SynchronizedActionHandler"
+		class="ikube.aspect.SynchronizedActionHandler"
+		property:lockManager-ref="ikube.cluster.LockManager" />
 	<aop:config proxy-target-class="false">
-		<aop:aspect ref="ikube.toolkit.ProfilingAspect">
-			<!--<aop:around method="profile" pointcut="execution(* ikube.service.*.*(..))" />-->
+		<aop:aspect ref="ikube.aspect.Profiling">
 			<aop:around method="profile" pointcut="execution(* ikube.index.visitor.database.*.*(..))" />
+		</aop:aspect>
+		<aop:aspect ref="ikube.aspect.SynchronizedActionHandler">
+			<aop:around method="execute" pointcut="execution(* ikube.action.*.execute(..))" />
 		</aop:aspect>
 	</aop:config>
 
@@ -135,6 +142,10 @@
 		class="ikube.toolkit.Timer"
 		property:type="deadLock" />
 	<bean
+		id="ikube.toolkit.Timer.LockManager"
+		class="ikube.toolkit.Timer"
+		property:type="clustering" />
+	<bean
 		id="ikube.toolkit.Timer.Scheduler"
 		class="org.springframework.scheduling.timer.ScheduledTimerTask"
 		property:delay="${delay}"
@@ -158,6 +169,12 @@
 		property:delay="${dead.lock.delay}"
 		property:period="${dead.lock.period}"
 		property:timerTask-ref="ikube.toolkit.Timer.DeadLock" />
+	<bean
+		id="ikube.toolkit.Timer.LockManager.Scheduler"
+		class="org.springframework.scheduling.timer.ScheduledTimerTask"
+		property:delay="${lock.manager.delay}"
+		property:period="${lock.manager.period}"
+		property:timerTask-ref="ikube.toolkit.Timer.LockManager" />
 
 	<bean
 		class="org.springframework.scheduling.timer.TimerFactoryBean"
@@ -168,6 +185,7 @@
 				<!--<ref local="ikube.toolkit.Timer.DeadLock.Scheduler" />-->
 				<!--<ref local="ikube.toolkit.Timer.Profiling.Scheduler" />-->
 				<ref local="ikube.toolkit.Timer.WebService.Scheduler" />
+				<ref local="ikube.toolkit.Timer.LockManager.Scheduler" />
 			</list>
 		</property>
 	</bean>

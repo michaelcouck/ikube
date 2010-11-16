@@ -1,16 +1,17 @@
 package ikube.toolkit;
 
-import ikube.cluster.IClusterManager;
+import ikube.cluster.ILockManager;
 import ikube.listener.IListener;
 import ikube.model.Event;
 import ikube.model.IndexContext;
-import ikube.model.Token;
+import ikube.model.Server;
 
 import java.io.File;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -27,11 +28,11 @@ public class Reporter implements IListener {
 
 				// Get the index contexts
 				Map<String, IndexContext> indexContexts = ApplicationContextManager.getBeans(IndexContext.class);
-				IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
+				ILockManager clusterManager = ApplicationContextManager.getBean(ILockManager.class);
 				for (IndexContext indexContext : indexContexts.values()) {
 					// Get the servers
-					Map<String, Token> tokens = clusterManager.getServers(indexContext);
-					list.add(tokens.values());
+					Set<Server> servers = clusterManager.getServers(indexContext);
+					list.add(servers);
 					// Get the index files
 					File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
 					list.add(latestIndexDirectory.getAbsolutePath());

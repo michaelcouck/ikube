@@ -1,7 +1,7 @@
 package ikube.action;
 
 import ikube.model.IndexContext;
-import ikube.model.Token;
+import ikube.model.Server;
 import ikube.service.ISynchronizationWebService;
 import ikube.toolkit.FileUtilities;
 
@@ -9,7 +9,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import javax.xml.namespace.QName;
@@ -31,29 +31,29 @@ public class Synchronize extends AAction<IndexContext, Boolean> {
 	public Boolean execute(IndexContext indexContext) {
 		try {
 			String actionName = getClass().getName();
-			if (getClusterManager().anyWorking(indexContext, actionName)) {
+			if (getLockManager().anyWorking(indexContext, actionName)) {
 				return Boolean.FALSE;
 			}
-			getClusterManager().setWorking(indexContext, actionName, Boolean.TRUE, System.currentTimeMillis());
+			getLockManager().setWorking(indexContext, actionName, Boolean.TRUE, System.currentTimeMillis());
 			File baseDirectory = FileUtilities.getFile(indexContext.getIndexDirectoryPath(), Boolean.TRUE);
 			File latestDirectory = FileUtilities.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
 			logger.info("Base directory : " + baseDirectory + ", " + latestDirectory);
 			if (latestDirectory == null) {
 				return Boolean.FALSE;
 			}
-			Token thisServer = getClusterManager().getServer(indexContext);
-			Map<String, Token> tokens = getClusterManager().getServers(indexContext);
+			Server thisServer = getLockManager().getServer(indexContext);
+			Set<Server> tokens = getLockManager().getServers(indexContext);
 			logger.info("Servers : " + tokens);
-			for (Token token : tokens.values()) {
-				String serverIpAddress = token.getIp();
-				logger.info("Server : " + token);
-				if (token.getIp().equals(thisServer.getIp())) {
+			for (Server server : tokens) {
+				logger.info("Server : " + server);
+				if (server.getAddress().compareTo(thisServer.getAddress()) == 0) {
 					continue;
 				}
-				writeToServer(serverIpAddress, baseDirectory, latestDirectory);
+				String ip = server.getIp();
+				writeToServer(ip, baseDirectory, latestDirectory);
 			}
 		} finally {
-			getClusterManager().setWorking(indexContext, null, Boolean.FALSE, 0);
+			getLockManager().setWorking(indexContext, null, Boolean.FALSE, 0);
 		}
 		return Boolean.TRUE;
 	}

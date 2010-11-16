@@ -8,12 +8,10 @@ import ikube.BaseTest;
 import ikube.IConstants;
 import ikube.model.Indexable;
 import ikube.model.IndexableColumn;
-import ikube.model.Lock;
 import ikube.model.Token;
 import ikube.toolkit.ApplicationContextManager;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,12 +27,12 @@ public class DataBaseOdbTest extends BaseTest {
 	@BeforeClass
 	public static void beforeClass() {
 		DATABASE = ApplicationContextManager.getBean(DataBaseOdb.class);
-		delete(DATABASE, Indexable.class, IndexableColumn.class, Lock.class, Token.class);
+		delete(DATABASE, Indexable.class, IndexableColumn.class, Token.class);
 	}
 
 	@AfterClass
 	public static void afterClass() {
-		delete(DATABASE, Indexable.class, IndexableColumn.class, Lock.class, Token.class);
+		delete(DATABASE, Indexable.class, IndexableColumn.class, Token.class);
 	}
 
 	@Test
@@ -115,15 +113,12 @@ public class DataBaseOdbTest extends BaseTest {
 	@Test
 	public void findClassParametersUnique() {
 		String ip = "ip";
-		String index = "index";
 		Token token = new Token();
 		token.setIp(ip);
-		token.setIndex(index);
 		DATABASE.persist(token);
 
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		parameters.put(IConstants.IP, ip);
-		parameters.put(IConstants.INDEX, index);
 
 		Token persisted = DATABASE.find(Token.class, parameters, Boolean.TRUE);
 		assertNotNull(persisted);
@@ -135,15 +130,15 @@ public class DataBaseOdbTest extends BaseTest {
 
 	@Test
 	public void findClassParametersFirstMax() {
-		String indexName = "indexName";
+		String ip = "ipAddress";
 		for (int i = 0; i < 100; i++) {
 			Token token = new Token();
-			token.setIndex(indexName);
+			token.setIp(ip);
 			DATABASE.persist(token);
 		}
 
 		Map<String, Object> parameters = new HashMap<String, Object>();
-		parameters.put(IConstants.INDEX, indexName);
+		parameters.put(IConstants.IP, ip);
 
 		int first = 0;
 		int max = 10;
@@ -161,40 +156,40 @@ public class DataBaseOdbTest extends BaseTest {
 		assertEquals(10, tokens.size());
 	}
 
-	@Test
-	public void lockRelease() throws Exception {
-		List<Thread> threads = new ArrayList<Thread>();
-		Thread thread = null;
-		for (int i = 0; i < 3; i++) {
-			thread = new Thread() {
-				int iterations;
-
-				public void run() {
-					while (iterations++ < 10) {
-						try {
-							Thread.sleep((long) (Math.random() * 10));
-						} catch (Exception e) {
-							logger.error("", e);
-						}
-						logger.info("Locking : " + this.hashCode());
-						Lock lock = DATABASE.lock(Indexable.class);
-						logger.info("Got lock : " + this.hashCode());
-						try {
-							Thread.sleep((long) (Math.random() * 10));
-						} catch (Exception e) {
-							logger.error("", e);
-						}
-						logger.info("Releasing : " + this.hashCode());
-						DATABASE.release(lock);
-						logger.info("Released : " + this.hashCode());
-					}
-				}
-			};
-			thread.start();
-			threads.add(thread);
-		}
-		waitForClients(threads);
-	}
+	// @Test
+	// public void lockRelease() throws Exception {
+	// List<Thread> threads = new ArrayList<Thread>();
+	// Thread thread = null;
+	// for (int i = 0; i < 3; i++) {
+	// thread = new Thread() {
+	// int iterations;
+	//
+	// public void run() {
+	// while (iterations++ < 10) {
+	// try {
+	// Thread.sleep((long) (Math.random() * 10));
+	// } catch (Exception e) {
+	// logger.error("", e);
+	// }
+	// logger.info("Locking : " + this.hashCode());
+	// Lock lock = DATABASE.lock(Indexable.class);
+	// logger.info("Got lock : " + this.hashCode());
+	// try {
+	// Thread.sleep((long) (Math.random() * 10));
+	// } catch (Exception e) {
+	// logger.error("", e);
+	// }
+	// logger.info("Releasing : " + this.hashCode());
+	// DATABASE.release(lock);
+	// logger.info("Released : " + this.hashCode());
+	// }
+	// }
+	// };
+	// thread.start();
+	// threads.add(thread);
+	// }
+	// waitForClients(threads);
+	// }
 
 	/**
 	 * This method just joins the threads in the group until they are all finished.

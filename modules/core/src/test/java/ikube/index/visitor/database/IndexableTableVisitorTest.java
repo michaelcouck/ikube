@@ -65,7 +65,8 @@ public class IndexableTableVisitorTest extends BaseTest {
 	@Test
 	public void getResultSet() throws Exception {
 		// IndexableTable
-		ResultSet resultSet = indexableTableVisitor.getResultSet(indexableTable, idColumn, 0);
+		ResultSet resultSet = indexableTableVisitor.getResultSet(indexableTable.getDataSource().getConnection(), indexableTable, idColumn,
+				0);
 		assertNotNull(resultSet);
 	}
 

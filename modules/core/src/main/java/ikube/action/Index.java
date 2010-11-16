@@ -28,7 +28,7 @@ public class Index extends AAction<IndexContext, Boolean> {
 				// be that there are more than one 'configurations' defined on this
 				// physical machine, meaning that the index is current but that this
 				// instance should join the others in in the index
-				if (!getClusterManager().areWorking(indexContext, actionName)) {
+				if (!getLockManager().areWorking(indexContext, actionName)) {
 					// Nothing to do but go home
 					return Boolean.FALSE;
 				} else {
@@ -46,7 +46,8 @@ public class Index extends AAction<IndexContext, Boolean> {
 			// If we get here then there are two possibilities:
 			// 1) The index is not current and we will start the index
 			// 2) The index is current and there are other servers working on the index, so we join them
-			long lastWorkingStartTime = getClusterManager().getLastWorkingTime(indexContext, actionName);
+			getLockManager().setWorking(indexContext, this.getClass().getName(), Boolean.TRUE, System.currentTimeMillis());
+			long lastWorkingStartTime = getLockManager().getLastWorkingTime(indexContext, actionName);
 			if (lastWorkingStartTime <= 0) {
 				logger.debug("Other servers working on different actions : ");
 				return Boolean.FALSE;
@@ -69,7 +70,7 @@ public class Index extends AAction<IndexContext, Boolean> {
 			}
 			IndexManager.closeIndexWriter(indexContext);
 		} finally {
-			getClusterManager().setWorking(indexContext, null, Boolean.FALSE, 0);
+			getLockManager().setWorking(indexContext, null, Boolean.FALSE, 0);
 		}
 		logger.debug("Index : Finished indexing : " + indexContext.getIndexName() + ", " + indexContext.getServerName() + ", "
 				+ Thread.currentThread().hashCode());

@@ -1,6 +1,7 @@
 package ikube.model;
 
-import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import javax.persistence.Entity;
 
@@ -9,16 +10,14 @@ public class Token extends Persistable {
 
 	/** The ip of the server that has the token. */
 	private String ip;
-	/** The name of the index that this server is currently working on if any. */
-	private String index;
-	/** The name of the action that this server is currently working on if any. */
-	private String action;
-	/** The batch number that this server started with. */
-	private int batch;
 	/** The time the token was accepted. */
 	private long start;
-	/** Deprecated - whether this server is working. */
-	private boolean working;
+	/** The current list of servers. */
+	private Set<Server> servers;
+
+	public Token() {
+		this.servers = new TreeSet<Server>();
+	}
 
 	public String getIp() {
 		return ip;
@@ -26,30 +25,6 @@ public class Token extends Persistable {
 
 	public void setIp(String serverIpAddress) {
 		this.ip = serverIpAddress;
-	}
-
-	public String getIndex() {
-		return index;
-	}
-
-	public void setIndex(final String indexName) {
-		this.index = indexName;
-	}
-
-	public String getAction() {
-		return action;
-	}
-
-	public void setAction(final String actionName) {
-		this.action = actionName;
-	}
-
-	public int getBatch() {
-		return batch;
-	}
-
-	public void setBatch(int batch) {
-		this.batch = batch;
 	}
 
 	public long getStart() {
@@ -60,19 +35,17 @@ public class Token extends Persistable {
 		this.start = start;
 	}
 
-	public boolean isWorking() {
-		return working;
+	public void setServer(Server server) {
+		this.servers.add(server);
 	}
 
-	public void setWorking(final boolean indexing) {
-		this.working = indexing;
+	public Set<Server> getServers() {
+		return servers;
 	}
 
 	public String toString() {
-		final StringBuilder builder = new StringBuilder("[");
-		builder.append(getId()).append(", ").append(isWorking()).append(", ").append(getIndex()).append(", ").append(getIp()).append(", ")
-				.append(getAction()).append(", ").append(getBatch()).append(", ").append(getStart());
-		builder.append("]");
+		StringBuilder builder = new StringBuilder("[").append(getId()).append(", ").append(getIp()).append(", ").append(getStart()).append(
+				"]");
 		return builder.toString();
 	}
 

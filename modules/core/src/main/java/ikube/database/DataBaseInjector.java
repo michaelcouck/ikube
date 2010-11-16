@@ -2,7 +2,6 @@ package ikube.database;
 
 import ikube.IConstants;
 import ikube.model.Database;
-import ikube.model.Ip;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.InitialContextFactory;
 
@@ -10,7 +9,6 @@ import java.io.File;
 import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.sql.Timestamp;
-import java.util.List;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -28,6 +26,7 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.core.Ordered;
 
 /**
+ * @deprecated Model changed to cluster synchronisation
  * @author Michael Couck
  * @since 11.11.10
  * @version 01.00
@@ -35,8 +34,6 @@ import org.springframework.core.Ordered;
 public class DataBaseInjector implements BeanFactoryPostProcessor, Ordered {
 
 	private Logger logger;
-	private List<Ip> ips;
-	private boolean local;
 	private ODBServer server;
 
 	public DataBaseInjector() {
@@ -52,15 +49,7 @@ public class DataBaseInjector implements BeanFactoryPostProcessor, Ordered {
 	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
 		logger.info("Processing beans : ");
 		configureDatabase();
-		ODB odb = null;
-		if (local) {
-			odb = openLocalDatabase();
-		} else {
-			odb = openRemoteDatabase();
-		}
-		if (odb == null) {
-			odb = openLocalDatabase();
-		}
+		ODB odb = openLocalDatabase();
 		logger.info("Got ODB : " + odb);
 		String[] beanNames = beanFactory.getBeanDefinitionNames();
 		for (String beanName : beanNames) {
@@ -97,38 +86,6 @@ public class DataBaseInjector implements BeanFactoryPostProcessor, Ordered {
 			logger.error("Couldn't open the database on the file system! System not operational!", e);
 		}
 		return null;
-	}
-
-	protected ODB openRemoteDatabase() {
-		ODB odb = openRemoteDatabaseWithIps();
-		if (odb != null) {
-			return odb;
-		}
-		odb = openRemoteDatabaseWithJndi();
-		if (odb != null) {
-			return odb;
-		}
-		odb = openLocalDatabaseServer();
-		return odb;
-	}
-
-	protected ODB openRemoteDatabaseWithIps() {
-		// Find the databases defined in the configuration, this will be the
-		// ip addresses of the other servers. We check them first to see if they have
-		// a database open
-		ODB odb = null;
-		for (Ip ip : ips) {
-			try {
-				logger.info("Trying ip : " + ip);
-				odb = ODBFactory.openClient(ip.getIp(), IConstants.PORT, IConstants.DATABASE);
-				if (odb != null) {
-					break;
-				}
-			} catch (Exception e) {
-				logger.warn("Couldn't find database at : " + ip + ", reason : " + e.getMessage());
-			}
-		}
-		return odb;
 	}
 
 	protected ODB openRemoteDatabaseWithJndi() {
@@ -203,14 +160,6 @@ public class DataBaseInjector implements BeanFactoryPostProcessor, Ordered {
 		OdbConfiguration.setUseIndex(Boolean.TRUE);
 		OdbConfiguration.setUseMultiBuffer(Boolean.FALSE);
 		OdbConfiguration.setShareSameVmConnectionMultiThread(Boolean.FALSE);
-	}
-
-	public void setIps(List<Ip> ips) {
-		this.ips = ips;
-	}
-
-	public void setLocal(boolean local) {
-		this.local = local;
 	}
 
 	public void close() {

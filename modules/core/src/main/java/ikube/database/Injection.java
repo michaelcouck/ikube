@@ -6,6 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * @deprecated Not using a remote database anymore
  * @author Michael Couck
  * @since 11.11.10
  * @version 01.00

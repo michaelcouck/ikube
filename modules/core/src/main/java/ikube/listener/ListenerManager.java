@@ -5,11 +5,9 @@ import ikube.model.IndexContext;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-
 
 import EDU.oswego.cs.dl.util.concurrent.PooledExecutor;
 
@@ -60,7 +58,7 @@ public class ListenerManager {
 	 *            the event for distribution
 	 */
 	private static final void notifyListeners(final Event event) {
-		LISTENERS = Arrays.asList(LISTENERS.toArray(new IListener[LISTENERS.size()]));
+		// List<IListener> listeners = Arrays.asList(LISTENERS.toArray(new IListener[LISTENERS.size()]));
 		for (final IListener listener : LISTENERS) {
 			try {
 				POOLED_EXECUTER.execute(new Runnable() {

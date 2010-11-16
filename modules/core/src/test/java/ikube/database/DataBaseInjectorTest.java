@@ -11,6 +11,7 @@ import org.junit.Test;
 import org.neodatis.odb.ODB;
 
 @Ignore
+@SuppressWarnings("deprecation")
 public class DataBaseInjectorTest extends BaseTest {
 
 	private DataBaseOdb dataBase = ApplicationContextManager.getBean(DataBaseOdb.class);
@@ -40,28 +41,6 @@ public class DataBaseInjectorTest extends BaseTest {
 		ODB odb = dataBaseInjector.openLocalDatabaseServer();
 		assertNotNull(odb);
 		odb.close();
-		dataBaseInjector.close();
-	}
-
-	@Test
-	public void openRemoteDatabase() {
-		ODB localOdbFomeServer = dataBaseInjector.openLocalDatabaseServer();
-		assertNotNull(localOdbFomeServer);
-		ODB remoteOdbFromServer = dataBaseInjector.openRemoteDatabase();
-		assertNotNull(remoteOdbFromServer);
-		localOdbFomeServer.close();
-		remoteOdbFromServer.close();
-		dataBaseInjector.close();
-	}
-
-	@Test
-	public void openRemoteDatabaseWithIps() {
-		ODB localOdbFomeServer = dataBaseInjector.openLocalDatabaseServer();
-		assertNotNull(localOdbFomeServer);
-		ODB remoteOdbFromServer = dataBaseInjector.openRemoteDatabaseWithIps();
-		assertNotNull(remoteOdbFromServer);
-		localOdbFomeServer.close();
-		remoteOdbFromServer.close();
 		dataBaseInjector.close();
 	}
 

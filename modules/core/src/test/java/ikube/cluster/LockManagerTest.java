@@ -25,17 +25,18 @@ public class LockManagerTest extends ATest {
 		final List<Exception> exceptions = new ArrayList<Exception>();
 		Thread thread = new Thread(new Runnable() {
 			public void run() {
-				int iterations = 50;
+				int iterations = 500;
 				while (--iterations >= 0) {
 					try {
-						if (iterations == 35) {
+						if (iterations == 350) {
+							// Close one
 							lockManagerOne.close();
 						}
-						if (iterations == 20) {
+						if (iterations == 250) {
 							// Open the closed lock manager again
 							lockManagerOne.open();
 						}
-						if (iterations == 5) {
+						if (iterations == 150) {
 							// Close number two
 							lockManagerTwo.close();
 						}
