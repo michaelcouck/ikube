@@ -26,7 +26,7 @@ public class IndexContext extends Persistable {
 	private double bufferSize;
 
 	/** Jdbc properties. */
-	private double batchSize;
+	private long batchSize;
 
 	private long maxReadLength;
 	/** Not mandatory, default implementation determined. */
@@ -110,11 +110,11 @@ public class IndexContext extends Persistable {
 		this.bufferSize = bufferSize;
 	}
 
-	public double getBatchSize() {
+	public long getBatchSize() {
 		return batchSize;
 	}
 
-	public void setBatchSize(final double batchSize) {
+	public void setBatchSize(final long batchSize) {
 		this.batchSize = batchSize;
 	}
 

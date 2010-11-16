@@ -6,6 +6,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import ikube.BaseTest;
 import ikube.model.Indexable;
+import ikube.model.IndexableColumn;
 import ikube.model.IndexableTable;
 import ikube.toolkit.ApplicationContextManager;
 
@@ -23,7 +24,7 @@ public class IndexableTableVisitorTest extends BaseTest {
 
 	private IndexableTable indexableTable = ApplicationContextManager.getBean("faqTable");
 	private List<Indexable<?>> indexableColumns = indexableTable.getChildren();
-	private IndexableTableVisitor<Indexable<?>> visitor = ApplicationContextManager.getBean("faqTableVisitor");
+	private IndexableTableVisitor<Indexable<?>> indexableTableVisitor = ApplicationContextManager.getBean("faqTableVisitor");
 	{
 		Collections.sort(indexableColumns, new Comparator<Indexable<?>>() {
 			@Override
@@ -32,6 +33,8 @@ public class IndexableTableVisitorTest extends BaseTest {
 			}
 		});
 	}
+	private IndexableColumn idColumn = indexableTableVisitor.getIdColumn(indexableColumns);
+
 	private ResultSet resultSet = mock(ResultSet.class);
 	private ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
 
@@ -43,9 +46,9 @@ public class IndexableTableVisitorTest extends BaseTest {
 	@Test
 	public void binarySearch() {
 		// List<Indexable<?>>, String
-		int index = visitor.binarySearch(indexableColumns, "faqId");
+		int index = indexableTableVisitor.binarySearch(indexableColumns, "faqId");
 		assertTrue(index > -1);
-		index = visitor.binarySearch(indexableColumns, "someOtherColumnName");
+		index = indexableTableVisitor.binarySearch(indexableColumns, "someOtherColumnName");
 		logger.info("Column index : " + index);
 		assertTrue(index < 0);
 	}
@@ -55,22 +58,15 @@ public class IndexableTableVisitorTest extends BaseTest {
 		// List, ResultSet
 		IndexWriter indexWriter = mock(IndexWriter.class);
 		indexContext.setIndexWriter(indexWriter);
-		visitor.doRow(indexableColumns, resultSet);
+		indexableTableVisitor.doRow(indexableTable, idColumn, resultSet);
 		indexContext.setIndexWriter(null);
 	}
 
 	@Test
 	public void getResultSet() throws Exception {
 		// IndexableTable
-		ResultSet resultSet = visitor.getResultSet(indexableTable.getSql(), indexableTable.getDataSource().getConnection());
+		ResultSet resultSet = indexableTableVisitor.getResultSet(indexableTable, idColumn, 0);
 		assertNotNull(resultSet);
-	}
-
-	@Test
-	public void moveToBatch() throws Exception {
-		// ResultSet
-		int nextRowNumber = visitor.moveToBatch(resultSet);
-		assertTrue(nextRowNumber > 0);
 	}
 
 }

@@ -1,5 +1,6 @@
 package ikube.index.visitor.database;
 
+import ikube.IConstants;
 import ikube.cluster.IClusterManager;
 import ikube.database.IDataBase;
 import ikube.index.visitor.IndexableVisitor;
@@ -16,10 +17,12 @@ import java.sql.Statement;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field.Index;
+import org.apache.lucene.document.Field.Store;
+import org.apache.lucene.document.Field.TermVector;
 
 public class IndexableTableVisitor<I> extends IndexableVisitor<IndexableTable> {
 
@@ -30,12 +33,11 @@ public class IndexableTableVisitor<I> extends IndexableVisitor<IndexableTable> {
 
 	@Override
 	public void visit(final IndexableTable indexableTable) {
-		final List<Indexable<?>> indexableColumns = indexableTable.getChildren();
-		if (indexableColumns == null) {
+		if (indexableTable.getChildren() == null || indexableTable.getChildren().size() == 0) {
 			logger.warn("No columns configured for this table : " + indexableTable.getName());
 			return;
 		}
-		Collections.sort(indexableColumns, new Comparator<Indexable<?>>() {
+		Collections.sort(indexableTable.getChildren(), new Comparator<Indexable<?>>() {
 			@Override
 			public int compare(Indexable<?> o1, Indexable<?> o2) {
 				return o1.getName().compareTo(o2.getName());
@@ -43,15 +45,23 @@ public class IndexableTableVisitor<I> extends IndexableVisitor<IndexableTable> {
 		});
 		ResultSet resultSet = null;
 		try {
-			resultSet = getResultSet(indexableTable.getSql(), indexableTable.getDataSource().getConnection());
-			long nextRowNumber = moveToBatch(resultSet);
-			while (nextRowNumber > 0 && resultSet.next()) {
-				// Thread.sleep(200);
-				doRow(indexableColumns, resultSet);
-				if (resultSet.getRow() >= nextRowNumber) {
-					nextRowNumber = moveToBatch(resultSet);
+			IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
+			int nextRow = clusterManager.getNextBatchNumber(indexContext);
+			IndexableColumn idColumn = getIdColumn(indexableTable.getChildren());
+			resultSet = getResultSet(indexableTable, idColumn, nextRow);
+			do {
+				if (!resultSet.next()) {
+					nextRow = clusterManager.getNextBatchNumber(indexContext);
+					resultSet = getResultSet(indexableTable, idColumn, nextRow);
+					if (!resultSet.next()) {
+						logger.info("No more results : ");
+						break;
+					}
+					break;
 				}
-			}
+				// Thread.sleep(250);
+				doRow(indexableTable, idColumn, resultSet);
+			} while (true);
 		} catch (Exception e) {
 			logger.error("Exception indexing the table : " + indexableTable.getName() + ", " + indexableTable.getSql(), e);
 		} finally {
@@ -60,63 +70,41 @@ public class IndexableTableVisitor<I> extends IndexableVisitor<IndexableTable> {
 		logger.info("Finished indexing table : " + indexableTable.getName());
 	}
 
-	protected int moveToBatch(ResultSet resultSet) throws Exception {
-		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
-		int nextBatchNumber = clusterManager.getNextBatchNumber(indexContext);
-		int currentRow = resultSet.getRow();
-		if (currentRow <= 0) {
-			// Move the cursor to the first row
-			resultSet.next();
-		}
-		long start = System.currentTimeMillis();
-		// if (nextBatchNumber > 0) {
-		// close(resultSet);
-		// resultSet = getResultSet(sql, connection);
-		// }
-		while (resultSet.getRow() < nextBatchNumber) {
-			if (!resultSet.next()) {
-				// We return -1 when we get to the end of the results
-				return -1;
-			}
-		}
-		long end = System.currentTimeMillis();
-		int rowAfter = resultSet.getRow();
-		if (logger.isInfoEnabled()) {
-			StringBuilder builder = new StringBuilder("Next batch number : ").append(nextBatchNumber).append(", moved from : ")
-					.append(currentRow).append(", to : ").append(rowAfter).append(", duration : ")
-					.append(TimeUnit.MILLISECONDS.toSeconds(end - start)).append(", runnable : ").append(this);
-			logger.info(builder.toString());
-		}
-		return nextBatchNumber + (int) indexContext.getBatchSize();
-	}
-
-	protected ResultSet getResultSet(String sql, Connection connection) throws Exception {
-		Statement statement = connection.createStatement(/* ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY */);
+	protected ResultSet getResultSet(IndexableTable indexableTable, IndexableColumn idColumn, long nextRow) throws Exception {
+		// ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY
+		String predicate = "";// " where " + idColumn.getName() + " > " + nextRow;
+		Connection connection = indexableTable.getDataSource().getConnection();
+		Statement statement = connection.createStatement();
+		String sql = indexableTable.getSql() + predicate;
 		logger.info("Sql : " + sql + ", " + Thread.currentThread().hashCode());
-		ResultSet resultSet = statement.executeQuery(sql);
-		return resultSet;
+		return statement.executeQuery(sql);
 	}
 
-	@SuppressWarnings({ "unchecked" })
-	protected void doRow(List indexableColumns, ResultSet resultSet) throws Exception {
+	@SuppressWarnings("unchecked")
+	protected void doRow(final IndexableTable indexableTable, IndexableColumn idColumn, ResultSet resultSet) throws Exception {
+		List<Indexable<?>> children = indexableTable.getChildren();
+		Object rowId = resultSet.getObject(idColumn.getName());
+
 		if (logger.isDebugEnabled()) {
-			if (resultSet.getRow() % 1000 == 0) {
-				logger.debug("Doing row : " + resultSet.getRow() + ", " + Thread.currentThread().hashCode());
+			if (resultSet.getRow() % 10 == 0) {
+				StringBuilder builder = new StringBuilder("Id : ").append(rowId).append(", row : ").append(resultSet.getRow()).append(
+						", thread : ").append(Thread.currentThread().hashCode());
+				logger.debug(builder.toString());
 			}
 		}
-		ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
+
 		Document document = new Document();
-		// TODO - add the id field
-		// String id = "";
-		// addStringField(IConstants.ID, id, document, Store.YES, Index.ANALYZED, TermVector.YES);
+		String id = new StringBuilder(indexableTable.getName()).append(".").append(idColumn.getName()).append(".").append(rowId).toString();
+		addStringField(IConstants.ID, id, document, Store.YES, Index.ANALYZED, TermVector.YES);
 		((IndexableColumnVisitor) indexableColumnVisitor).setDocument(document);
+		ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
 		for (int i = 1; i <= resultSetMetaData.getColumnCount(); i++) {
 			String columnName = resultSetMetaData.getColumnName(i);
-			int index = binarySearch(indexableColumns, columnName);
+			int index = binarySearch(children, columnName);
 			if (index < 0) {
 				continue;
 			}
-			IndexableColumn indexableColumn = (IndexableColumn) indexableColumns.get(index);
+			IndexableColumn indexableColumn = (IndexableColumn) children.get(index);
 			int columnType = resultSetMetaData.getColumnType(i);
 			Object object = resultSet.getObject(i);
 			indexableColumn.setColumnType(columnType);
@@ -124,6 +112,16 @@ public class IndexableTableVisitor<I> extends IndexableVisitor<IndexableTable> {
 			indexableColumn.accept(indexableColumnVisitor);
 		}
 		indexContext.getIndexWriter().addDocument(document);
+	}
+
+	protected IndexableColumn getIdColumn(List<Indexable<?>> indexableColumns) {
+		for (Indexable<?> indexable : indexableColumns) {
+			if (((IndexableColumn) indexable).isIdColumn()) {
+				return (IndexableColumn) indexable;
+			}
+		}
+		logger.warn("No id column defined for table : " + indexableColumns);
+		return null;
 	}
 
 	protected int binarySearch(List<Indexable<?>> list, String name) {

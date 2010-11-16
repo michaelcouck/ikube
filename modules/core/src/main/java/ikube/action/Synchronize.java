@@ -1,7 +1,7 @@
 package ikube.action;
 
 import ikube.model.IndexContext;
-import ikube.model.Server;
+import ikube.model.Token;
 import ikube.service.ISynchronizationWebService;
 import ikube.toolkit.FileUtilities;
 
@@ -41,13 +41,13 @@ public class Synchronize extends AAction<IndexContext, Boolean> {
 			if (latestDirectory == null) {
 				return Boolean.FALSE;
 			}
-			Server thisServer = getClusterManager().getServer(indexContext);
-			Map<String, Server> servers = getClusterManager().getServers(indexContext);
-			logger.info("Servers : " + servers);
-			for (Server server : servers.values()) {
-				String serverIpAddress = server.getIp();
-				logger.info("Server : " + server);
-				if (server.getIp().equals(thisServer.getIp())) {
+			Token thisServer = getClusterManager().getServer(indexContext);
+			Map<String, Token> tokens = getClusterManager().getServers(indexContext);
+			logger.info("Servers : " + tokens);
+			for (Token token : tokens.values()) {
+				String serverIpAddress = token.getIp();
+				logger.info("Server : " + token);
+				if (token.getIp().equals(thisServer.getIp())) {
 					continue;
 				}
 				writeToServer(serverIpAddress, baseDirectory, latestDirectory);

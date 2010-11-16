@@ -79,7 +79,8 @@
 	<bean
 		id="faqId.two"
 		class="ikube.model.IndexableColumn"
-		property:name="faqId" />
+		property:name="faqId"
+		property:idColumn="true" />
 	<bean
 		id="creationtimestamp.two"
 		class="ikube.model.IndexableColumn"

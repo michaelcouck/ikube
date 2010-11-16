@@ -4,7 +4,7 @@ import ikube.cluster.IClusterManager;
 import ikube.listener.IListener;
 import ikube.model.Event;
 import ikube.model.IndexContext;
-import ikube.model.Server;
+import ikube.model.Token;
 
 import java.io.File;
 import java.net.InetAddress;
@@ -30,8 +30,8 @@ public class Reporter implements IListener {
 				IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
 				for (IndexContext indexContext : indexContexts.values()) {
 					// Get the servers
-					Map<String, Server> servers = clusterManager.getServers(indexContext);
-					list.add(servers.values());
+					Map<String, Token> tokens = clusterManager.getServers(indexContext);
+					list.add(tokens.values());
 					// Get the index files
 					File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
 					list.add(latestIndexDirectory.getAbsolutePath());

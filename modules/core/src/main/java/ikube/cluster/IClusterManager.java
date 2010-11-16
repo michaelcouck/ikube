@@ -1,13 +1,13 @@
 package ikube.cluster;
 
 import ikube.model.IndexContext;
-import ikube.model.Server;
+import ikube.model.Token;
 
 import java.util.Map;
 
 public interface IClusterManager {
 
-	public Server getServer(IndexContext indexContext);
+	public Token getServer(IndexContext indexContext);
 
 	public Boolean isWorking(IndexContext indexContext);
 
@@ -41,6 +41,6 @@ public interface IClusterManager {
 
 	public int getNextBatchNumber(IndexContext indexContext);
 
-	public Map<String, Server> getServers(IndexContext indexContext);
+	public Map<String, Token> getServers(IndexContext indexContext);
 
 }

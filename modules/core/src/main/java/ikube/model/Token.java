@@ -1,21 +1,23 @@
 package ikube.model;
 
+import java.util.List;
+
 import javax.persistence.Entity;
 
 @Entity()
-public class Server extends Persistable {
+public class Token extends Persistable {
 
-	/** The ip of this machine. */
+	/** The ip of the server that has the token. */
 	private String ip;
 	/** The name of the index that this server is currently working on if any. */
 	private String index;
 	/** The name of the action that this server is currently working on if any. */
 	private String action;
-	/** The batch number of this server. */
+	/** The batch number that this server started with. */
 	private int batch;
-	/** The start time of this action. */
+	/** The time the token was accepted. */
 	private long start;
-	/** Whether this server is working. */
+	/** Deprecated - whether this server is working. */
 	private boolean working;
 
 	public String getIp() {

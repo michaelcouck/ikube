@@ -31,7 +31,7 @@ public class Timer extends TimerTask {
 					event.setType(type);
 					event.setConsumed(Boolean.FALSE);
 					event.setTimestamp(new Timestamp(System.currentTimeMillis()));
-					logger.debug("Firing start event : " + event);
+					logger.info("Firing event : " + event);
 					ListenerManager.fireEvent(event);
 				}
 			});

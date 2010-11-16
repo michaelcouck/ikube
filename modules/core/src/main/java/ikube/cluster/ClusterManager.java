@@ -2,18 +2,20 @@ package ikube.cluster;
 
 import ikube.IConstants;
 import ikube.model.IndexContext;
-import ikube.model.Lock;
-import ikube.model.Server;
+import ikube.model.Token;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.jgroups.Address;
 import org.jgroups.JChannel;
 import org.jgroups.Message;
 import org.jgroups.ReceiverAdapter;
+import org.jgroups.View;
 
 public class ClusterManager extends ReceiverAdapter implements IClusterManager {
 
@@ -21,9 +23,7 @@ public class ClusterManager extends ReceiverAdapter implements IClusterManager {
 
 	private Logger logger = Logger.getLogger(ClusterManager.class);
 	private JChannel channel;
-	private Map<String, Server> servers = new HashMap<String, Server>();
-	private Lock lock;
-	private long lockTimeout = 1000;
+	private Map<String, Token> tokens = new HashMap<String, Token>();
 
 	public ClusterManager() {
 		try {
@@ -34,51 +34,53 @@ public class ClusterManager extends ReceiverAdapter implements IClusterManager {
 		} catch (Exception e) {
 			logger.error("", e);
 		}
-		lock = new Lock();
-		lock.setClassName(null);
-		lock.setLocked(Boolean.FALSE);
-		lock.setStart(0);
 	}
 
 	@Override
-	public synchronized void receive(Message message) {
+	public void receive(Message message) {
 		Object object = message.getObject();
 		logger.info("Message : " + object);
 		if (object != null) {
-			if (Server.class.isAssignableFrom(object.getClass())) {
-				Server server = (Server) object;
-				servers.put(server.getIp(), server);
-				release();
+			if (Token.class.isAssignableFrom(object.getClass())) {
+				Token token = (Token) object;
+				tokens.put(token.getIp(), token);
 			}
 		}
-		notifyAll();
+	}
+
+	public void viewAccepted(View view) {
+		logger.info("View : " + view);
+		for (Token token : tokens.values()) {
+			publish(token);
+		}
+	}
+
+	public void suspect(Address address) {
+		logger.info("Suspected address : " + address);
 	}
 
 	@Override
-	public synchronized Server getServer(IndexContext indexContext) {
-		lock();
-		Server thisServer = servers.get(indexContext.getServerName());
+	public Token getServer(IndexContext indexContext) {
+		Token thisServer = tokens.get(indexContext.getServerName());
 		if (thisServer == null) {
-			thisServer = new Server();
+			thisServer = new Token();
 			thisServer.setIp(indexContext.getServerName());
-			publish(thisServer);
+			tokens.put(thisServer.getIp(), thisServer);
+			// publish(thisServer);
 		}
-		notifyAll();
 		return thisServer;
 	}
 
 	@Override
 	public synchronized boolean anyWorking(IndexContext indexContext, String actionName) {
-		lock();
 		try {
 			logger.info("Action : " + actionName + ", " + Thread.currentThread().hashCode());
-			for (Server server : servers.values()) {
-				if (server.isWorking() && !actionName.equals(server.getAction())) {
+			for (Token token : tokens.values()) {
+				if (token.isWorking() && !actionName.equals(token.getAction())) {
 					return Boolean.TRUE;
 				}
 			}
 		} finally {
-			release();
 			notifyAll();
 		}
 		return Boolean.FALSE;
@@ -86,16 +88,14 @@ public class ClusterManager extends ReceiverAdapter implements IClusterManager {
 
 	@Override
 	public synchronized boolean areWorking(IndexContext indexContext, String actionName) {
-		lock();
 		try {
-			logger.info("Action : " + actionName);
-			for (Server server : servers.values()) {
-				if (server.isWorking() && indexContext.getIndexName().equals(server.getIndex()) && actionName.equals(server.getAction())) {
+			logger.info("Action : " + actionName + ", " + Thread.currentThread().hashCode());
+			for (Token token : tokens.values()) {
+				if (token.isWorking() && indexContext.getIndexName().equals(token.getIndex()) && actionName.equals(token.getAction())) {
 					return Boolean.TRUE;
 				}
 			}
 		} finally {
-			release();
 			notifyAll();
 		}
 		return Boolean.FALSE;
@@ -103,29 +103,28 @@ public class ClusterManager extends ReceiverAdapter implements IClusterManager {
 
 	@Override
 	public synchronized long getLastWorkingTime(IndexContext indexContext, String actionName) {
-		lock();
 		long time = System.currentTimeMillis();
 		try {
-			logger.info("Servers : " + servers + ", " + Thread.currentThread().hashCode());
-			Server thisServer = getServer(indexContext);
-			for (Server server : servers.values()) {
-				if (!server.isWorking()) {
+			logger.info("Servers : " + tokens + ", " + Thread.currentThread().hashCode());
+			Token thisServer = getServer(indexContext);
+			for (Token token : tokens.values()) {
+				if (!token.isWorking()) {
 					continue;
 				}
-				if (!indexContext.getIndexName().equals(server.getIndex())) {
+				if (!indexContext.getIndexName().equals(token.getIndex())) {
 					continue;
 				}
 				// This means that there is a server working on this index but with
 				// a different action
-				if (!actionName.equals(server.getAction())) {
+				if (!actionName.equals(token.getAction())) {
 					time = -1;
 					break;
 				}
-				long start = server.getStart();
+				long start = token.getStart();
 				// We want the start time of the first server, so if the start time
 				// of this server is lower than the existing start time then take that
 				if (start < time && start > 0) {
-					logger.info("Taking start time of server : " + server);
+					logger.info("Taking start time of server : " + token);
 					time = start;
 				}
 			}
@@ -133,10 +132,9 @@ public class ClusterManager extends ReceiverAdapter implements IClusterManager {
 			thisServer.setAction(actionName);
 			thisServer.setBatch(0);
 			thisServer.setWorking(Boolean.TRUE);
-			publish(thisServer);
-			logger.info("Time : " + time + ", " + servers + ", " + Thread.currentThread().hashCode());
+			// publish(thisServer);
+			logger.info("Time : " + time + ", " + tokens + ", " + Thread.currentThread().hashCode());
 		} finally {
-			// release();
 			notifyAll();
 		}
 		return time;
@@ -144,131 +142,92 @@ public class ClusterManager extends ReceiverAdapter implements IClusterManager {
 
 	@Override
 	public synchronized int getNextBatchNumber(IndexContext indexContext) {
-		lock();
 		int batch = 0;
 		try {
 			String index = indexContext.getIndexName();
-			Server thisServer = getServer(indexContext);
-			for (Server server : servers.values()) {
-				if (server.isWorking() && index.equals(server.getIndex())) {
-					if (server.getBatch() > batch) {
-						batch = server.getBatch();
+			Token thisServer = getServer(indexContext);
+			for (Token token : tokens.values()) {
+				if (token.isWorking() && index.equals(token.getIndex())) {
+					if (token.getBatch() > batch) {
+						batch = token.getBatch();
 					}
 				}
 			}
-			logger.info("Batch : " + batch + ", " + thisServer);
+			logger.info("Batch : " + batch + ", " + thisServer + ", " + Thread.currentThread().hashCode());
 			// Set the batch for this server to the batch plus
 			// the increment in the context
 			thisServer.setBatch(batch + (int) indexContext.getBatchSize());
 			// Publish this server to the cluster
-			publish(thisServer);
+			// publish(thisServer);
 		} finally {
-			// release();
 			notifyAll();
 		}
 		return batch;
 	}
 
 	@Override
-	public Map<String, Server> getServers(IndexContext indexContext) {
-		return servers;
+	public Map<String, Token> getServers(IndexContext indexContext) {
+		return tokens;
 	}
 
 	@Override
 	public synchronized Boolean isWorking(IndexContext indexContext) {
-		lock();
 		try {
-			Server thisServer = getServer(indexContext);
-			logger.info("This server : " + thisServer);
+			Token thisServer = getServer(indexContext);
+			logger.info("This server : " + thisServer + ", " + Thread.currentThread().hashCode());
 			return thisServer != null && thisServer.isWorking();
 		} finally {
-			release();
 			notifyAll();
 		}
 	}
 
 	@Override
 	public synchronized boolean resetWorkings(IndexContext indexContext, String actionName) {
-		lock();
 		try {
 			// Check that there are no servers working
-			for (Server server : servers.values()) {
-				if (server.isWorking()) {
+			for (Token token : tokens.values()) {
+				if (token.isWorking()) {
+					logger.info("Servers working, not resetting : " + Thread.currentThread().hashCode());
 					return Boolean.FALSE;
 				}
 			}
-			logger.info("Servers : " + servers);
-			List<Server> synchronizedServers = Arrays.asList(servers.values().toArray(new Server[servers.size()]));
-			for (Server server : synchronizedServers) {
-				server.setAction(null);
-				server.setBatch(0);
-				server.setStart(0);
-				server.setWorking(Boolean.FALSE);
-				publish(server);
-				lock();
+			logger.info("No server working, resetting : " + tokens + ", " + Thread.currentThread().hashCode());
+			List<Token> synchronizedServers = Arrays.asList(tokens.values().toArray(new Token[tokens.size()]));
+			for (Token token : synchronizedServers) {
+				token.setAction(null);
+				token.setBatch(0);
+				token.setStart(0);
+				token.setWorking(Boolean.FALSE);
+				// publish(server);
 			}
 			return Boolean.TRUE;
 		} finally {
-			// release();
 			notifyAll();
 		}
 	}
 
 	@Override
 	public synchronized void setWorking(IndexContext indexContext, String actionName, boolean isWorking, long start) {
-		lock();
 		try {
-			Server thisServer = getServer(indexContext);
+			Token thisServer = getServer(indexContext);
 			thisServer.setIndex(indexContext.getIndexName());
 			thisServer.setWorking(isWorking);
 			thisServer.setAction(actionName);
 			thisServer.setStart(start);
-			publish(thisServer);
-			logger.info("This server : " + thisServer + ", " + servers);
-		} finally {
-			// release();
-			notifyAll();
-		}
-	}
-
-	protected synchronized Lock lock() {
-		try {
-			while (lock.isLocked()) {
-				try {
-					notifyAll();
-					wait(100);
-				} catch (InterruptedException e) {
-					logger.error("Interrupted : ", e);
-				}
-				if (lock.isLocked() && System.currentTimeMillis() - lock.getStart() > lockTimeout) {
-					break;
-				}
-			}
-			lock.setStart(System.currentTimeMillis());
-			lock.setLocked(Boolean.TRUE);
-		} finally {
-			notifyAll();
-		}
-		return lock;
-	}
-
-	protected synchronized void release() {
-		try {
-			lock.setLocked(Boolean.FALSE);
-			lock.setStart(0);
-			lock.setClassName(null);
+			// publish(thisServer);
+			logger.info("This server : " + thisServer + ", " + tokens + ", " + Thread.currentThread().hashCode());
 		} finally {
 			notifyAll();
 		}
 	}
 
-	protected synchronized void publish(Server server) {
+	protected synchronized void publish(Serializable serializable) {
 		try {
 			Message message = new Message();
-			message.setObject(server);
+			message.setObject(serializable);
 			channel.send(message);
 		} catch (Exception e) {
-			logger.error("Exception publishing the server to the cluster : " + server, e);
+			logger.error("Exception publishing to the cluster : " + serializable, e);
 		}
 	}
 

@@ -9,7 +9,7 @@ import ikube.IConstants;
 import ikube.model.Indexable;
 import ikube.model.IndexableColumn;
 import ikube.model.Lock;
-import ikube.model.Server;
+import ikube.model.Token;
 import ikube.toolkit.ApplicationContextManager;
 
 import java.lang.reflect.Field;
@@ -29,12 +29,12 @@ public class DataBaseOdbTest extends BaseTest {
 	@BeforeClass
 	public static void beforeClass() {
 		DATABASE = ApplicationContextManager.getBean(DataBaseOdb.class);
-		delete(DATABASE, Indexable.class, IndexableColumn.class, Lock.class, Server.class);
+		delete(DATABASE, Indexable.class, IndexableColumn.class, Lock.class, Token.class);
 	}
 
 	@AfterClass
 	public static void afterClass() {
-		delete(DATABASE, Indexable.class, IndexableColumn.class, Lock.class, Server.class);
+		delete(DATABASE, Indexable.class, IndexableColumn.class, Lock.class, Token.class);
 	}
 
 	@Test
@@ -116,20 +116,20 @@ public class DataBaseOdbTest extends BaseTest {
 	public void findClassParametersUnique() {
 		String ip = "ip";
 		String index = "index";
-		Server server = new Server();
-		server.setIp(ip);
-		server.setIndex(index);
-		DATABASE.persist(server);
+		Token token = new Token();
+		token.setIp(ip);
+		token.setIndex(index);
+		DATABASE.persist(token);
 
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		parameters.put(IConstants.IP, ip);
 		parameters.put(IConstants.INDEX, index);
 
-		Server persisted = DATABASE.find(Server.class, parameters, Boolean.TRUE);
+		Token persisted = DATABASE.find(Token.class, parameters, Boolean.TRUE);
 		assertNotNull(persisted);
 
 		DATABASE.remove(persisted);
-		persisted = DATABASE.find(Server.class, parameters, Boolean.TRUE);
+		persisted = DATABASE.find(Token.class, parameters, Boolean.TRUE);
 		assertNull(persisted);
 	}
 
@@ -137,9 +137,9 @@ public class DataBaseOdbTest extends BaseTest {
 	public void findClassParametersFirstMax() {
 		String indexName = "indexName";
 		for (int i = 0; i < 100; i++) {
-			Server server = new Server();
-			server.setIndex(indexName);
-			DATABASE.persist(server);
+			Token token = new Token();
+			token.setIndex(indexName);
+			DATABASE.persist(token);
 		}
 
 		Map<String, Object> parameters = new HashMap<String, Object>();
@@ -147,18 +147,18 @@ public class DataBaseOdbTest extends BaseTest {
 
 		int first = 0;
 		int max = 10;
-		List<Server> servers = DATABASE.find(Server.class, parameters, first, max);
-		assertEquals(max, servers.size());
+		List<Token> tokens = DATABASE.find(Token.class, parameters, first, max);
+		assertEquals(max, tokens.size());
 
 		first = 10;
 		max = 50;
-		servers = DATABASE.find(Server.class, parameters, first, max);
-		assertEquals(max, servers.size());
+		tokens = DATABASE.find(Token.class, parameters, first, max);
+		assertEquals(max, tokens.size());
 
 		first = 90;
 		max = 100;
-		servers = DATABASE.find(Server.class, parameters, first, max);
-		assertEquals(10, servers.size());
+		tokens = DATABASE.find(Token.class, parameters, first, max);
+		assertEquals(10, tokens.size());
 	}
 
 	@Test

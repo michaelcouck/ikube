@@ -16,11 +16,13 @@ import org.neodatis.odb.ODB;
 import org.neodatis.odb.ODBFactory;
 import org.neodatis.odb.OID;
 import org.neodatis.odb.Objects;
+import org.neodatis.odb.OdbConfiguration;
 import org.neodatis.odb.core.query.IQuery;
 import org.neodatis.odb.core.query.criteria.And;
 import org.neodatis.odb.core.query.criteria.ICriterion;
 import org.neodatis.odb.core.query.criteria.Where;
 import org.neodatis.odb.impl.core.query.criteria.CriteriaQuery;
+import org.neodatis.tool.DLogger;
 
 public class DataBaseOdb implements IDataBase {
 
@@ -32,7 +34,26 @@ public class DataBaseOdb implements IDataBase {
 	public DataBaseOdb() {
 		this.logger = Logger.getLogger(this.getClass());
 		this.idFields = new HashMap<Class<?>, Field>();
+		configureDatabase();
 		this.odb = ODBFactory.open(IConstants.DATABASE_FILE);
+	}
+
+	private void configureDatabase() {
+		DLogger.register(new ikube.database.Logger());
+		OdbConfiguration.setDebugEnabled(Boolean.FALSE);
+		OdbConfiguration.setDebugEnabled(5, Boolean.FALSE);
+		OdbConfiguration.setLogAll(Boolean.FALSE);
+		// OdbConfiguration.lockObjectsOnSelect(Boolean.TRUE);
+		OdbConfiguration.useMultiThread(Boolean.FALSE, 3);
+		// OdbConfiguration.setAutomaticallyIncreaseCacheSize(Boolean.TRUE);
+		// OdbConfiguration.setAutomaticCloseFileOnExit(Boolean.TRUE);
+		OdbConfiguration.setDisplayWarnings(Boolean.FALSE);
+		OdbConfiguration.setMultiThreadExclusive(Boolean.FALSE);
+		// OdbConfiguration.setReconnectObjectsToSession(Boolean.TRUE);
+		OdbConfiguration.setUseCache(Boolean.TRUE);
+		OdbConfiguration.setUseIndex(Boolean.TRUE);
+		OdbConfiguration.setUseMultiBuffer(Boolean.FALSE);
+		OdbConfiguration.setShareSameVmConnectionMultiThread(Boolean.FALSE);
 	}
 
 	@Override
@@ -187,7 +208,6 @@ public class DataBaseOdb implements IDataBase {
 		return null;
 	}
 
-	@Override
 	public synchronized Lock lock(Class<?> klass) {
 		Lock lock = null;
 		try {
@@ -226,7 +246,6 @@ public class DataBaseOdb implements IDataBase {
 		return lock;
 	}
 
-	@Override
 	public synchronized void release(Lock lock) {
 		try {
 			// logger.debug("Releasing : " + Thread.currentThread().hashCode());

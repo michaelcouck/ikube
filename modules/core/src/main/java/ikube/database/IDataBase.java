@@ -1,7 +1,5 @@
 package ikube.database;
 
-import ikube.model.Lock;
-
 import java.util.List;
 import java.util.Map;
 
@@ -115,9 +113,5 @@ public interface IDataBase {
 	 * @return <T> the list of objects that conform to the narrowing parameters
 	 */
 	public <T> List<T> find(Class<T> klass, Map<String, Object> parameters, int firstResult, int maxResults);
-
-	public Lock lock(Class<?> klass);
-
-	public void release(Lock lock);
 
 }

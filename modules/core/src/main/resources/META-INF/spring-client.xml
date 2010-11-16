@@ -43,7 +43,8 @@
 		property:queueTimeout="${max.age}"
 		property:indexDirectoryPath="${index.directory.path}"
 		property:indexables-ref="faqIndexables"
-		property:indexableVisitors-ref="faqIndexableVisitors" />
+		property:indexableVisitors-ref="faqIndexableVisitors"
+		property:serverName="*" />
 	<util:list id="faqIndexables">
 		<ref local="faqTable" />
 	</util:list>

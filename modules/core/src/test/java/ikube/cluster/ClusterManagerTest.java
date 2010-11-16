@@ -6,7 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import ikube.BaseTest;
-import ikube.model.Server;
+import ikube.model.Token;
 import ikube.toolkit.ApplicationContextManager;
 
 import java.net.InetAddress;
@@ -21,9 +21,9 @@ public class ClusterManagerTest extends BaseTest {
 	private String actionName = "actionName";
 	private String ipAddress;
 	private ClusterManager clusterManager;
-	private Server thisServer;
-	private Server otherServer;
-	private Map<String, Server> servers;
+	private Token thisServer;
+	private Token otherServer;
+	private Map<String, Token> tokens;
 
 	@Before
 	public void before() {
@@ -36,7 +36,7 @@ public class ClusterManagerTest extends BaseTest {
 			clusterManager = ApplicationContextManager.getBean(ClusterManager.class);
 			thisServer = getServer(actionName, indexContext.getIndexName(), ipAddress, Boolean.TRUE);
 			otherServer = getServer(actionName, indexContext.getIndexName(), "255.255.255.255", Boolean.TRUE);
-			servers = clusterManager.getServers(indexContext);
+			tokens = clusterManager.getServers(indexContext);
 		}
 	}
 
@@ -46,28 +46,28 @@ public class ClusterManagerTest extends BaseTest {
 		boolean anyWorking = clusterManager.anyWorking(indexContext, actionName);
 		assertFalse(anyWorking);
 		// Set this server working and there are still no servers working on another action
-		servers.put(thisServer.getIp(), thisServer);
+		tokens.put(thisServer.getIp(), thisServer);
 		anyWorking = clusterManager.anyWorking(indexContext, actionName);
 		assertFalse(anyWorking);
 
 		// Set another server working on a different action
 		otherServer.setAction(actionName + System.currentTimeMillis());
-		servers.put(otherServer.getIp(), otherServer);
+		tokens.put(otherServer.getIp(), otherServer);
 		anyWorking = clusterManager.anyWorking(indexContext, actionName);
 		assertTrue(anyWorking);
 
-		servers.clear();
+		tokens.clear();
 	}
 
 	@Test
 	public void areWorking() {
-		Map<String, Server> servers = clusterManager.getServers(indexContext);
+		Map<String, Token> tokens = clusterManager.getServers(indexContext);
 
 		boolean areWorking = clusterManager.areWorking(indexContext, actionName);
 		assertFalse(areWorking);
 		// Set this server working
 		thisServer.setWorking(Boolean.TRUE);
-		servers.put(thisServer.getIp(), thisServer);
+		tokens.put(thisServer.getIp(), thisServer);
 
 		areWorking = clusterManager.areWorking(indexContext, actionName);
 		assertTrue(areWorking);
@@ -77,12 +77,12 @@ public class ClusterManagerTest extends BaseTest {
 		// Set another server working
 		otherServer.setWorking(Boolean.TRUE);
 		otherServer.setAction(actionName);
-		servers.put(otherServer.getIp(), otherServer);
+		tokens.put(otherServer.getIp(), otherServer);
 
 		areWorking = clusterManager.areWorking(indexContext, actionName);
 		assertTrue(areWorking);
 
-		servers.clear();
+		tokens.clear();
 	}
 
 	@Test
@@ -93,8 +93,8 @@ public class ClusterManagerTest extends BaseTest {
 		thisServer.setStart(time);
 		otherServer.setStart(time + plus);
 		otherServer.setAction(actionName);
-		servers.put(thisServer.getIp(), thisServer);
-		servers.put(otherServer.getIp(), otherServer);
+		tokens.put(thisServer.getIp(), thisServer);
+		tokens.put(otherServer.getIp(), otherServer);
 
 		long lastWorkingTime = clusterManager.getLastWorkingTime(indexContext, actionName);
 		assertEquals(time, lastWorkingTime);
@@ -105,14 +105,14 @@ public class ClusterManagerTest extends BaseTest {
 		lastWorkingTime = clusterManager.getLastWorkingTime(indexContext, actionName);
 		assertEquals(-1, lastWorkingTime);
 
-		servers.clear();
+		tokens.clear();
 	}
 
 	@Test
 	public void getNextBatchNumber() {
 		// Set this server working
 		thisServer.setWorking(Boolean.TRUE);
-		servers.put(thisServer.getIp(), thisServer);
+		tokens.put(thisServer.getIp(), thisServer);
 		int nextBatchNumber = clusterManager.getNextBatchNumber(indexContext);
 		assertEquals(0, nextBatchNumber);
 
@@ -122,16 +122,16 @@ public class ClusterManagerTest extends BaseTest {
 		otherServer.setIndex(indexContext.getIndexName());
 		otherServer.setStart(System.currentTimeMillis());
 		otherServer.setWorking(Boolean.TRUE);
-		servers.put(otherServer.getIp(), otherServer);
+		tokens.put(otherServer.getIp(), otherServer);
 		nextBatchNumber = clusterManager.getNextBatchNumber(indexContext);
 		assertEquals(otherServer.getBatch(), nextBatchNumber);
 
-		servers.clear();
+		tokens.clear();
 	}
 
 	@Test
 	public void isWorking() {
-		servers.put(thisServer.getIp(), thisServer);
+		tokens.put(thisServer.getIp(), thisServer);
 
 		thisServer.setWorking(Boolean.FALSE);
 		boolean isWorking = clusterManager.isWorking(indexContext);
@@ -141,25 +141,25 @@ public class ClusterManagerTest extends BaseTest {
 		isWorking = clusterManager.isWorking(indexContext);
 		assertTrue(isWorking);
 
-		servers.clear();
+		tokens.clear();
 	}
 
 	@Test
 	public void receive() {
-		servers.clear();
+		tokens.clear();
 
 		Message message = new Message();
 		clusterManager.receive(message);
 
-		Server server = servers.get(thisServer.getIp());
-		assertNull(server);
+		Token token = tokens.get(thisServer.getIp());
+		assertNull(token);
 
 		message.setObject(thisServer);
 		clusterManager.receive(message);
-		server = servers.get(thisServer.getIp());
-		assertNotNull(server);
+		token = tokens.get(thisServer.getIp());
+		assertNotNull(token);
 
-		servers.clear();
+		tokens.clear();
 	}
 
 	@Test
@@ -169,7 +169,7 @@ public class ClusterManagerTest extends BaseTest {
 		assertTrue(reset);
 		// Set a server working
 		thisServer.setWorking(Boolean.TRUE);
-		servers.put(thisServer.getIp(), thisServer);
+		tokens.put(thisServer.getIp(), thisServer);
 		reset = clusterManager.resetWorkings(indexContext, actionName);
 		assertFalse(reset);
 		thisServer.setWorking(Boolean.FALSE);
@@ -178,13 +178,13 @@ public class ClusterManagerTest extends BaseTest {
 		assertTrue(reset);
 		assertEquals(0, thisServer.getBatch());
 
-		servers.clear();
+		tokens.clear();
 	}
 
 	@Test
 	public void setWorking() {
 		thisServer.setWorking(Boolean.FALSE);
-		servers.put(thisServer.getIp(), thisServer);
+		tokens.put(thisServer.getIp(), thisServer);
 		boolean isWorking = clusterManager.isWorking(indexContext);
 		assertFalse(isWorking);
 
@@ -196,20 +196,20 @@ public class ClusterManagerTest extends BaseTest {
 
 		// Set another server working
 		otherServer.setWorking(Boolean.TRUE);
-		servers.put(otherServer.getIp(), otherServer);
+		tokens.put(otherServer.getIp(), otherServer);
 		isWorking = clusterManager.isWorking(indexContext);
 		assertFalse(isWorking);
 
-		servers.clear();
+		tokens.clear();
 	}
 
-	private Server getServer(String actionName, String indexName, String ipAddress, boolean isWorking) {
-		Server server = new Server();
-		server.setAction(actionName);
-		server.setIndex(indexName);
-		server.setIp(ipAddress);
-		server.setWorking(isWorking);
-		return server;
+	private Token getServer(String actionName, String indexName, String ipAddress, boolean isWorking) {
+		Token token = new Token();
+		token.setAction(actionName);
+		token.setIndex(indexName);
+		token.setIp(ipAddress);
+		token.setWorking(isWorking);
+		return token;
 	}
 
 }

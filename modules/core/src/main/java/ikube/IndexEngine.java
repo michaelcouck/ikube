@@ -70,6 +70,9 @@ public class IndexEngine implements IIndexEngine {
 				indexContext.setServerName("localhost?");
 				logger.error("Exception accessing the localhost?", e);
 			}
+		} else if (indexContext.getServerName().equals("*")) {
+			// Choose a random name for this server
+			indexContext.setServerName(Long.toHexString(System.nanoTime()));
 		}
 	}
 

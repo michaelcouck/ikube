@@ -25,6 +25,9 @@
 	<aop:aspectj-autoproxy proxy-target-class="true" />
 
 	<bean
+		class="ikube.cluster.ClusterManager" />
+
+	<bean
 		id="ikube.database.DataBaseOdb"
 		class="ikube.database.DataBaseOdb"
 		destroy-method="close">
@@ -78,14 +81,9 @@
 	<aop:config proxy-target-class="false">
 		<aop:aspect ref="ikube.toolkit.ProfilingAspect">
 			<!--<aop:around method="profile" pointcut="execution(* ikube.service.*.*(..))" />-->
-			<!--<aop:around method="profile" pointcut="execution(* ikube.index.visitor.database.*.*(..))" />-->
+			<aop:around method="profile" pointcut="execution(* ikube.index.visitor.database.*.*(..))" />
 		</aop:aspect>
 	</aop:config>
-
-	<!--<bean
-		class="ikube.cluster.ServicePublisher" />
-	<bean
-		class="ikube.cluster.ServiceSubscriber" />-->
 
 	<bean
 		id="ikube.service.SearcherWebService"
@@ -100,12 +98,12 @@
 		property:implementors-ref="implementors"
 		init-method="publish" />
 	<util:list id="addresses">
-		<value>http://localhost:8081/service/ISearcherWebService</value>
-		<value>http://localhost:8082/service/ISynchronizationWebService</value>
+		<!--<value>http://localhost:8081/service/ISearcherWebService</value>
+		<value>http://localhost:8082/service/ISynchronizationWebService</value>-->
 	</util:list>
 	<util:list id="implementors">
-		<ref local="ikube.service.SearcherWebService" />
-		<ref local="ikube.service.SynchronizationWebService" />
+		<!--<ref local="ikube.service.SearcherWebService" />
+		<ref local="ikube.service.SynchronizationWebService" />-->
 	</util:list>
 	<bean
 		id="ikube.service.SearcherWebServiceExecuter"
@@ -189,9 +187,9 @@
 				<ref local="ikube.toolkit.Timer.Scheduler" />
 				<!--<ref local="ikube.toolkit.Timer.DeadLock.Scheduler" />-->
 				<!--<ref local="ikube.toolkit.Timer.Profiling.Scheduler" />-->
-				<ref local="ikube.toolkit.Timer.WebService.Scheduler" />
+				<!--<ref local="ikube.toolkit.Timer.WebService.Scheduler" />-->
 				<!--<ref local="ikube.toolkit.Timer.Reporter.Scheduler" />-->
-				<ref local="ikube.toolkit.Timer.Clustering.Scheduler" />
+				<!--<ref local="ikube.toolkit.Timer.Clustering.Scheduler" />-->
 			</list>
 		</property>
 	</bean>
