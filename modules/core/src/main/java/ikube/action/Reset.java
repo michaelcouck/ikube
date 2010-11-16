@@ -13,9 +13,9 @@ public class Reset extends AAction<IndexContext, Boolean> {
 	public Boolean execute(IndexContext indexContext) {
 		try {
 			String actionName = getClass().getName();
-			return getLockManager().resetWorkings(indexContext, actionName);
+			return getClusterManager().resetWorkings(indexContext, actionName);
 		} finally {
-			getLockManager().setWorking(indexContext, null, Boolean.FALSE, 0);
+			getClusterManager().setWorking(indexContext, null, Boolean.FALSE, 0);
 		}
 	}
 

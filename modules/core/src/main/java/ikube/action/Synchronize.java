@@ -1,8 +1,10 @@
 package ikube.action;
 
+import ikube.cluster.ILockManager;
 import ikube.model.IndexContext;
 import ikube.model.Server;
 import ikube.service.ISynchronizationWebService;
+import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
@@ -31,18 +33,19 @@ public class Synchronize extends AAction<IndexContext, Boolean> {
 	public Boolean execute(IndexContext indexContext) {
 		try {
 			String actionName = getClass().getName();
-			if (getLockManager().anyWorking(indexContext, actionName)) {
+			if (getClusterManager().anyWorking(indexContext, actionName)) {
 				return Boolean.FALSE;
 			}
-			getLockManager().setWorking(indexContext, actionName, Boolean.TRUE, System.currentTimeMillis());
+			getClusterManager().setWorking(indexContext, actionName, Boolean.TRUE, System.currentTimeMillis());
 			File baseDirectory = FileUtilities.getFile(indexContext.getIndexDirectoryPath(), Boolean.TRUE);
 			File latestDirectory = FileUtilities.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
 			logger.info("Base directory : " + baseDirectory + ", " + latestDirectory);
 			if (latestDirectory == null) {
 				return Boolean.FALSE;
 			}
-			Server thisServer = getLockManager().getServer(indexContext);
-			Set<Server> tokens = getLockManager().getServers(indexContext);
+			ILockManager lockManager = ApplicationContextManager.getBean(ILockManager.class);
+			Server thisServer = lockManager.getServer();
+			Set<Server> tokens = getClusterManager().getServers(indexContext);
 			logger.info("Servers : " + tokens);
 			for (Server server : tokens) {
 				logger.info("Server : " + server);
@@ -53,7 +56,7 @@ public class Synchronize extends AAction<IndexContext, Boolean> {
 				writeToServer(ip, baseDirectory, latestDirectory);
 			}
 		} finally {
-			getLockManager().setWorking(indexContext, null, Boolean.FALSE, 0);
+			getClusterManager().setWorking(indexContext, null, Boolean.FALSE, 0);
 		}
 		return Boolean.TRUE;
 	}

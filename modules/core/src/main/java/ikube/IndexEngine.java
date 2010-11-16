@@ -1,7 +1,7 @@
 package ikube;
 
 import ikube.action.IAction;
-import ikube.cluster.ILockManager;
+import ikube.cluster.IClusterManager;
 import ikube.listener.IListener;
 import ikube.listener.ListenerManager;
 import ikube.model.Event;
@@ -41,8 +41,8 @@ public class IndexEngine implements IIndexEngine {
 		if (event.getType().equals(Event.TIMER)) {
 			logger.debug("Notification : " + this + ", " + event);
 			try {
-				ILockManager lockManager = ApplicationContextManager.getBean(ILockManager.class);
-				if (lockManager.isWorking(indexContext)) {
+				IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
+				if (clusterManager.isWorking(indexContext)) {
 					logger.info("Server already working : " + indexContext.getIndexName() + ", " + indexContext.getServerName());
 					return;
 				}

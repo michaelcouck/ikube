@@ -1,7 +1,7 @@
 package ikube.index.visitor.database;
 
 import ikube.IConstants;
-import ikube.cluster.ILockManager;
+import ikube.cluster.IClusterManager;
 import ikube.database.IDataBase;
 import ikube.index.visitor.IndexableVisitor;
 import ikube.model.IndexContext;
@@ -45,20 +45,20 @@ public class IndexableTableVisitor<I> extends IndexableVisitor<IndexableTable> {
 		});
 		ResultSet resultSet = null;
 		try {
-			ILockManager lockManager = ApplicationContextManager.getBean(ILockManager.class);
+			IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
 			// First get the id number from the last server
-			long idNumber = lockManager.getIdNumber(indexContext);
+			long idNumber = clusterManager.getIdNumber(indexContext);
 			IndexableColumn idColumn = getIdColumn(indexableTable.getChildren());
 			Connection connection = indexableTable.getDataSource().getConnection();
 			// This number can be 0 so get it from the table
 			idNumber = getIdNumber(connection, indexableTable, idColumn, idNumber);
-			lockManager.setIdNumber(indexContext, idNumber + indexContext.getBatchSize());
+			clusterManager.setIdNumber(indexContext, idNumber + indexContext.getBatchSize());
 			resultSet = getResultSet(connection, indexableTable, idColumn, idNumber);
 			do {
 				if (!resultSet.next()) {
-					idNumber = lockManager.getIdNumber(indexContext);
+					idNumber = clusterManager.getIdNumber(indexContext);
 					idNumber = getIdNumber(connection, indexableTable, idColumn, idNumber);
-					lockManager.setIdNumber(indexContext, idNumber + indexContext.getBatchSize());
+					clusterManager.setIdNumber(indexContext, idNumber + indexContext.getBatchSize());
 					resultSet = getResultSet(connection, indexableTable, idColumn, idNumber);
 					if (!resultSet.next()) {
 						logger.info("No more results : ");

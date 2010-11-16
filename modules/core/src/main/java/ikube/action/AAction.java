@@ -1,6 +1,6 @@
 package ikube.action;
 
-import ikube.cluster.ILockManager;
+import ikube.cluster.IClusterManager;
 import ikube.model.IndexContext;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
@@ -19,13 +19,13 @@ import org.apache.lucene.store.FSDirectory;
 public abstract class AAction<E, F> implements IAction<E, F> {
 
 	protected Logger logger = Logger.getLogger(this.getClass());
-	private ILockManager lockManager;
+	private IClusterManager clusterManager;
 
-	protected ILockManager getLockManager() {
-		if (lockManager == null) {
-			lockManager = ApplicationContextManager.getBean(ILockManager.class);
+	protected IClusterManager getClusterManager() {
+		if (clusterManager == null) {
+			clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
 		}
-		return lockManager;
+		return clusterManager;
 	}
 
 	protected boolean isIndexCurrent(IndexContext indexContext) {

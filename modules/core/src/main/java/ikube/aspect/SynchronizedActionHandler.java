@@ -36,15 +36,15 @@ public class SynchronizedActionHandler implements ISynchronizedActionHandler {
 			}
 			logger.debug("Proceeding : " + call + ", " + Thread.currentThread().hashCode());
 			call.proceed();
-//			pooledExecuter.execute(new Runnable() {
-//				public void run() {
-//					try {
-//						call.proceed();
-//					} catch (Throwable e) {
-//						logger.error("Exception executing the action : " + call, e);
-//					}
-//				}
-//			});
+			// pooledExecuter.execute(new Runnable() {
+			// public void run() {
+			// try {
+			// call.proceed();
+			// } catch (Throwable e) {
+			// logger.error("Exception executing the action : " + call, e);
+			// }
+			// }
+			// });
 			return Boolean.TRUE;
 		} finally {
 			notifyAll();

@@ -1,6 +1,6 @@
 package ikube.toolkit;
 
-import ikube.cluster.ILockManager;
+import ikube.cluster.IClusterManager;
 import ikube.listener.IListener;
 import ikube.model.Event;
 import ikube.model.IndexContext;
@@ -28,7 +28,7 @@ public class Reporter implements IListener {
 
 				// Get the index contexts
 				Map<String, IndexContext> indexContexts = ApplicationContextManager.getBeans(IndexContext.class);
-				ILockManager clusterManager = ApplicationContextManager.getBean(ILockManager.class);
+				IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
 				for (IndexContext indexContext : indexContexts.values()) {
 					// Get the servers
 					Set<Server> servers = clusterManager.getServers(indexContext);
