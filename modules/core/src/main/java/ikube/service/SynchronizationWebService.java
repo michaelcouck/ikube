@@ -20,14 +20,15 @@ public class SynchronizationWebService implements ISynchronizationWebService {
 	private Logger logger = Logger.getLogger(this.getClass());
 
 	@Override
-	public Boolean wantsFile(String baseDirectory, String latestDirectory, String serverDirectory, String file) {
-		File indexFile = getIndexFile(baseDirectory, latestDirectory, serverDirectory, file);
+	public Boolean wantsFile(String baseDirectory, String latestDirectory, String serverDirectory, String contextDirectory, String file) {
+		File indexFile = getIndexFile(baseDirectory, latestDirectory, serverDirectory, contextDirectory, file);
 		return !indexFile.exists();
 	}
 
 	@Override
-	public Boolean writeIndexFile(String baseDirectory, String latestDirectory, String serverDirectory, String file, byte[] bytes) {
-		File indexFile = getIndexFile(baseDirectory, latestDirectory, serverDirectory, file);
+	public Boolean writeIndexFile(String baseDirectory, String latestDirectory, String serverDirectory, String contextDirectory,
+			String file, byte[] bytes) {
+		File indexFile = getIndexFile(baseDirectory, latestDirectory, serverDirectory, contextDirectory, file);
 		if (!indexFile.exists()) {
 			FileUtilities.getFile(indexFile.getAbsolutePath(), Boolean.FALSE);
 		}
@@ -39,7 +40,7 @@ public class SynchronizationWebService implements ISynchronizationWebService {
 			outputStream.write(bytes);
 		} catch (Exception e) {
 			logger.error("Exception writing the data to the index file : " + indexFile, e);
-			// TODO - try to delete this file
+			FileUtilities.deleteFile(indexFile, 1);
 			return Boolean.FALSE;
 		} finally {
 			try {
@@ -51,13 +52,21 @@ public class SynchronizationWebService implements ISynchronizationWebService {
 		return Boolean.TRUE;
 	}
 
-	protected File getIndexFile(String baseDirectory, String latestDirectory, String serverDirectory, String file) {
-		StringBuilder builder = new StringBuilder(baseDirectory).append(File.separator);
-		builder.append(latestDirectory).append(File.separator);
-		builder.append(serverDirectory).append(File.separator);
-		File serverIndexDirectory = FileUtilities.getFile(builder.toString(), Boolean.TRUE);
-		File indexFile = new File(serverIndexDirectory, file);
-		logger.info("Index file : " + indexFile);
+	protected File getIndexFile(String baseDirectory, String latestDirectory, String serverDirectory, String contextDirectory, String file) {
+		StringBuilder builder = new StringBuilder();
+
+		builder.append(baseDirectory);
+		builder.append(File.separator);
+		builder.append(latestDirectory);
+		builder.append(File.separator);
+		builder.append(serverDirectory);
+		builder.append(File.separator);
+		builder.append(contextDirectory);
+		builder.append(File.separator);
+		builder.append(file);
+
+		File indexFile = new File(builder.toString());
+		logger.info("Index file : " + indexFile + ", " + builder);
 		return indexFile;
 	}
 

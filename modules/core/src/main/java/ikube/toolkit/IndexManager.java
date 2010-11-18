@@ -1,6 +1,7 @@
 package ikube.toolkit;
 
 import ikube.IConstants;
+import ikube.logging.Logging;
 import ikube.model.IndexContext;
 
 import java.io.File;
@@ -31,10 +32,12 @@ public class IndexManager {
 		builder.append(indexContext.getName());
 
 		File indexDirectory = FileUtilities.getFile(builder.toString(), Boolean.TRUE);
-		LOGGER.info("Index directory time : " + time + ", date : " + new Date(time) + ", writing index to directory " + indexDirectory);
+		LOGGER.info(Logging.getString("Index directory time : ", time, ", date : ", new Date(time), ", writing index to directory ",
+				indexDirectory));
+		IndexWriter indexWriter = null;
 		try {
 			Directory directory = FSDirectory.open(indexDirectory);
-			IndexWriter indexWriter = new IndexWriter(directory, IConstants.ANALYZER, true, MaxFieldLength.UNLIMITED);
+			indexWriter = new IndexWriter(directory, IConstants.ANALYZER, true, MaxFieldLength.UNLIMITED);
 			indexWriter.setUseCompoundFile(indexContext.isCompoundFile());
 			indexWriter.setMaxBufferedDocs(indexContext.getBufferedDocs());
 			indexWriter.setMaxFieldLength(indexContext.getMaxFieldLength());
@@ -43,8 +46,9 @@ public class IndexManager {
 			indexContext.setIndexWriter(indexWriter);
 		} catch (CorruptIndexException e) {
 			LOGGER.error("We expected a new index and got a corrupt one.", e);
-
-			deleteIndex(indexDirectory);
+			LOGGER.warn("Didn't initialise the index writer. Will try to delete the index directory.");
+			closeIndexWriter(indexContext);
+			FileUtilities.deleteFile(indexDirectory, 3);
 		} catch (LockObtainFailedException e) {
 			LOGGER.error("Failed to obtain the lock on the directory. Check the file system permissions.", e);
 		} catch (IOException e) {
@@ -58,34 +62,30 @@ public class IndexManager {
 	public static void closeIndexWriter(IndexContext indexContext) {
 		if (indexContext != null && indexContext.getIndexWriter() != null) {
 			IndexWriter indexWriter = indexContext.getIndexWriter();
-			Directory directory = indexWriter.getDirectory();
-			try {
-				indexWriter.commit();
-				indexWriter.optimize();
-			} catch (CorruptIndexException e) {
-				LOGGER.error("Corrput index : ", e);
-			} catch (IOException e) {
-				LOGGER.error("IO optimising the index : ", e);
-			}
-			try {
-				indexWriter.close(Boolean.TRUE);
-			} catch (Exception e) {
-				LOGGER.error("Exception closing the index writer : ", e);
-			}
-			try {
-				IndexWriter.unlock(directory);
-			} catch (Exception e) {
-				LOGGER.error("Exception releasing the lock on the index writer : ", e);
-			}
+			closeIndexWriter(indexWriter);
 			indexContext.setIndexWriter(null);
 		}
 	}
 
-	private static void deleteIndex(File indexDirectoryFolder) {
-		if (indexDirectoryFolder != null && indexDirectoryFolder.exists() && !indexDirectoryFolder.isFile()) {
-			// Something went wrong so try to delete the index directory
-			LOGGER.warn("Didn't initialise the index writer. Will try to delete the index directory.");
-			FileUtilities.deleteFile(indexDirectoryFolder, 3);
+	private static void closeIndexWriter(IndexWriter indexWriter) {
+		Directory directory = indexWriter.getDirectory();
+		try {
+			indexWriter.commit();
+			indexWriter.optimize();
+		} catch (CorruptIndexException e) {
+			LOGGER.error("Corrput index : ", e);
+		} catch (IOException e) {
+			LOGGER.error("IO optimising the index : ", e);
+		}
+		try {
+			indexWriter.close(Boolean.TRUE);
+		} catch (Exception e) {
+			LOGGER.error("Exception closing the index writer : ", e);
+		}
+		try {
+			IndexWriter.unlock(directory);
+		} catch (Exception e) {
+			LOGGER.error("Exception releasing the lock on the index writer : ", e);
 		}
 	}
 

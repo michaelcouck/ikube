@@ -37,9 +37,8 @@ public class Synchronize extends AAction<IndexContext, Boolean> {
 				return Boolean.FALSE;
 			}
 			getClusterManager().setWorking(indexContext, actionName, Boolean.TRUE, System.currentTimeMillis());
-			File baseDirectory = FileUtilities.getFile(indexContext.getIndexDirectoryPath(), Boolean.TRUE);
 			File latestDirectory = FileUtilities.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
-			logger.info("Base directory : " + baseDirectory + ", " + latestDirectory);
+			logger.info("Latest index directory : " + latestDirectory);
 			if (latestDirectory == null) {
 				return Boolean.FALSE;
 			}
@@ -48,12 +47,13 @@ public class Synchronize extends AAction<IndexContext, Boolean> {
 			Set<Server> tokens = getClusterManager().getServers();
 			logger.info("Servers : " + tokens);
 			for (Server server : tokens) {
-				logger.info("Server : " + server);
 				if (server.getAddress().compareTo(thisServer.getAddress()) == 0) {
+					logger.debug("Own server : " + server);
 					continue;
 				}
+				logger.info("Server : " + server);
 				String ip = server.getIp();
-				writeToServer(ip, baseDirectory, latestDirectory);
+				writeToServer(ip, latestDirectory);
 			}
 		} finally {
 			getClusterManager().setWorking(indexContext, null, Boolean.FALSE, 0);
@@ -61,7 +61,7 @@ public class Synchronize extends AAction<IndexContext, Boolean> {
 		return Boolean.TRUE;
 	}
 
-	protected void writeToServer(String serverIpAddress, File baseDirectory, File latestDirectory) {
+	protected void writeToServer(String serverIpAddress, File latestDirectory) {
 		try {
 			// Get the web service for this server
 			ISynchronizationWebService synchronizationWebService = getSynchronizationWebService(serverIpAddress);
@@ -69,16 +69,26 @@ public class Synchronize extends AAction<IndexContext, Boolean> {
 			File[] serverIndexDirectories = latestDirectory.listFiles();
 			for (File serverDirectory : serverIndexDirectories) {
 				logger.info("Checking server directory : " + serverDirectory);
-				File[] indexFiles = serverDirectory.listFiles();
-				for (File file : indexFiles) {
-					logger.info("Sending file : " + file);
-					Boolean wantsFile = synchronizationWebService.wantsFile(baseDirectory.getName(), latestDirectory.getName(),
-							serverDirectory.getName(), file.getName());
-					if (!wantsFile) {
-						continue;
+				File[] contextDirectories = serverDirectory.listFiles();
+				if (contextDirectories != null) {
+					for (File contextDirectory : contextDirectories) {
+						File[] indexFiles = contextDirectory.listFiles();
+						for (File file : indexFiles) {
+							logger.info("Sending file : " + file);
+							File baseDirectory = latestDirectory.getParentFile();
+							String baseName = baseDirectory.getName();
+							String latestName = latestDirectory.getName();
+							String serverName = serverDirectory.getName();
+							String contextName = contextDirectory.getName();
+							String fileName = file.getName();
+							Boolean wantsFile = synchronizationWebService
+									.wantsFile(baseName, latestName, serverName, contextName, fileName);
+							if (!wantsFile) {
+								continue;
+							}
+							writeFile(synchronizationWebService, baseName, latestName, serverName, contextName, fileName);
+						}
 					}
-					writeFile(synchronizationWebService, baseDirectory.getName(), latestDirectory.getName(), serverDirectory.getName(),
-							file);
 				}
 			}
 		} catch (Exception e) {
@@ -87,7 +97,7 @@ public class Synchronize extends AAction<IndexContext, Boolean> {
 	}
 
 	protected void writeFile(ISynchronizationWebService synchronizationWebService, String baseDirectory, String latestDirectory,
-			String serverDirectory, File file) {
+			String serverDirectory, String contextDirectory, String file) {
 		InputStream inputStream = null;
 		try {
 			inputStream = new FileInputStream(file);
@@ -100,8 +110,8 @@ public class Synchronize extends AAction<IndexContext, Boolean> {
 					System.arraycopy(bytes, 0, holder, 0, holder.length);
 					bytes = holder;
 				}
-				writeMore = synchronizationWebService
-						.writeIndexFile(baseDirectory, latestDirectory, serverDirectory, file.getName(), bytes);
+				writeMore = synchronizationWebService.writeIndexFile(baseDirectory, latestDirectory, serverDirectory, contextDirectory,
+						file, bytes);
 			}
 		} catch (Exception e) {
 			logger.error("Exception writing file to server : " + file, e);
@@ -115,12 +125,13 @@ public class Synchronize extends AAction<IndexContext, Boolean> {
 	}
 
 	protected ISynchronizationWebService getSynchronizationWebService(String ipAddress) throws Exception {
-		logger.info("Accessing the web service on : " + ipAddress);
+		logger.info("Accessing the web service at : " + ipAddress);
 		QName serviceName = new QName(this.targetNamespace, this.serviceName);
 		String replacedEndpointUri = pattern.matcher(this.endpointUri).replaceAll(ipAddress);
 		URL wsdlURL = new URL(replacedEndpointUri);
 		Service service = Service.create(wsdlURL, serviceName);
 		ISynchronizationWebService synchronizationService = service.getPort(ISynchronizationWebService.class);
+		logger.info("Got the web service at : " + ipAddress);
 		return synchronizationService;
 	}
 

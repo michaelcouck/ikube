@@ -81,8 +81,8 @@ public abstract class AAction<E, F> implements IAction<E, F> {
 		// Check that there are indexes in the index directory
 		File[] serverIndexDirectories = latestIndexDirectory.listFiles();
 		if (serverIndexDirectories == null || serverIndexDirectories.length == 0) {
-			logger.warn("Server directories null or empty, deleted perhaps : " + latestIndexDirectory + ", index name : "
-					+ indexContext.getIndexName());
+			logger.warn(Logging.getString("Server directories null or empty, deleted perhaps : ", latestIndexDirectory, ", index name : ",
+					indexContext.getIndexName()));
 			return Boolean.FALSE;
 		}
 		// Now we check the latest server index directories against the directories
@@ -100,10 +100,9 @@ public abstract class AAction<E, F> implements IAction<E, F> {
 					FSDirectory fsDirectory = (FSDirectory) indexReader.directory();
 					File searchIndexDirectory = fsDirectory.getFile();
 					if (logger.isDebugEnabled()) {
-						String indexDirectoryPath = indexDirectory.getAbsolutePath();
-						String searchDirectoryPath = searchIndexDirectory.getAbsolutePath();
-						String message = Logging.getString("Index directory : ", indexDirectoryPath, ", index directory : ",
-								searchDirectoryPath);
+						String indexPath = indexDirectory.getAbsolutePath();
+						String searchPath = searchIndexDirectory.getAbsolutePath();
+						String message = Logging.getString("Index directory : ", indexPath, ", index directory : ", searchPath);
 						logger.debug(message);
 					}
 					if (directoriesEqual(indexDirectory, searchIndexDirectory)) {
@@ -113,7 +112,7 @@ public abstract class AAction<E, F> implements IAction<E, F> {
 					}
 				}
 				if (!indexAlreadyOpen) {
-					logger.debug("Found new index directory : " + indexDirectory + " will try to re-open : ");
+					logger.debug(Logging.getString("Found new index directory : ", indexDirectory, " will try to re-open : "));
 					return Boolean.TRUE;
 				}
 			}
@@ -127,7 +126,7 @@ public abstract class AAction<E, F> implements IAction<E, F> {
 			directory = FSDirectory.open(indexDirectory);
 			boolean exists = IndexReader.indexExists(directory);
 			boolean locked = IndexWriter.isLocked(directory);
-			logger.info("Server index directory : " + indexDirectory + ", exists : " + exists + ", locked : " + locked);
+			logger.info(Logging.getString("Server index directory : ", indexDirectory, ", exists : ", exists, ", locked : ", locked));
 			// Could be that the index is still being written, unlikely, or
 			// that there are directories in the base directory that are
 			// not index directories

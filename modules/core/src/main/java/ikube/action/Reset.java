@@ -16,7 +16,9 @@ public class Reset extends AAction<IndexContext, Boolean> {
 			getClusterManager().setWorking(indexContext, getClass().getName(), Boolean.TRUE, System.currentTimeMillis());
 			if (!anyWorking) {
 				logger.debug("Resetting : " + !anyWorking + ", " + indexContext);
-				// Reset this index context
+				// Reset this index context. At the moment we only reset the
+				// id for the tables, but in the not too distant future we reset the
+				// urls and files that are in the database
 				indexContext.setIdNumber(0);
 				return Boolean.TRUE;
 			} else {

@@ -65,7 +65,7 @@ public class IndexableTableVisitor<I> extends IndexableVisitor<IndexableTable> {
 						break;
 					}
 				}
-				Thread.sleep(100);
+				// Thread.sleep(100);
 				doRow(indexableTable, idColumn, resultSet);
 			} while (true);
 		} catch (Exception e) {
@@ -188,7 +188,7 @@ public class IndexableTableVisitor<I> extends IndexableVisitor<IndexableTable> {
 		Object rowId = resultSet.getObject(idColumn.getName());
 
 		if (logger.isDebugEnabled()) {
-			if (resultSet.getRow() % 3 == 0) {
+			if (resultSet.getRow() % 100000 == 0) {
 				StringBuilder builder = new StringBuilder("Id : ").append(rowId).append(", row : ").append(resultSet.getRow()).append(
 						", thread : ").append(Thread.currentThread().hashCode());
 				logger.debug(builder.toString());

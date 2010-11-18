@@ -11,8 +11,9 @@ public interface ISynchronizationWebService {
 	public String SERVICE_NAME = "synchronization";
 	public String TARGET_NAMESPACE = "http://ikube.synchronization/";
 
-	public Boolean wantsFile(String baseDirectory, String latestDirectory, String serverDirectory, String file);
+	public Boolean wantsFile(String baseDirectory, String latestDirectory, String serverDirectory, String contextDirectory, String file);
 
-	public Boolean writeIndexFile(String baseDirectory, String latestDirectory, String serverDirectory, String file, byte[] bytes);
+	public Boolean writeIndexFile(String baseDirectory, String latestDirectory, String serverDirectory, String contextDirectory,
+			String file, byte[] bytes);
 
 }

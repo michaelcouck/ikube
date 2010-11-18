@@ -17,7 +17,9 @@ public class ClusterTest {
 	@Test
 	@Ignore
 	public void start() throws Exception {
-		ApplicationContextManager.getApplicationContext(new String[] { "/cluster/spring.xml" });
+		// IConstants.SPRING_CONFIGURATION_FILE
+		String configurationFile = "/cluster/spring.xml";
+		ApplicationContextManager.getApplicationContext(new String[] { configurationFile });
 		// Delete all the old index directories
 		Map<String, IndexContext> contexts = ApplicationContextManager.getBeans(IndexContext.class);
 		for (IndexContext indexContext : contexts.values()) {

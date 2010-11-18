@@ -27,34 +27,22 @@
 	<bean
 		id="ikube.cluster.LockManager"
 		class="ikube.cluster.LockManager"
-		property:timeout="3000" />
+		property:timeout="10000" />
 	<bean
 		class="ikube.cluster.ClusterManager"
 		property:lockManager-ref="ikube.cluster.LockManager" />
 	<bean
 		class="ikube.IndexEngine"
-		property:actions-ref="actions">
-	</bean>
+		property:actions-ref="actions" />
 	<bean
 		id="ikube.database.DataBaseOdb"
 		class="ikube.database.DataBaseOdb"
-		destroy-method="close">
-	</bean>
-	<bean
-		id="ikube.action.Close"
-		class="ikube.action.Close" />
-	<bean
-		id="ikube.action.Delete"
-		class="ikube.action.Delete" />
-	<bean
-		id="ikube.action.Index"
-		class="ikube.action.Index" />
-	<bean
-		id="ikube.action.Open"
-		class="ikube.action.Open" />
-	<bean
-		id="ikube.action.Reset"
-		class="ikube.action.Reset" />
+		destroy-method="close" />
+	<bean id="ikube.action.Close" class="ikube.action.Close" />
+	<bean id="ikube.action.Delete" class="ikube.action.Delete" />
+	<bean id="ikube.action.Index" class="ikube.action.Index" />
+	<bean id="ikube.action.Open" class="ikube.action.Open" />
+	<bean id="ikube.action.Reset" class="ikube.action.Reset" />
 	<bean
 		id="ikube.action.Synchronize"
 		class="ikube.action.Synchronize"
@@ -68,17 +56,13 @@
 		<ref local="ikube.action.Open" />
 		<ref local="ikube.action.Index" />
 		<ref local="ikube.action.Delete" />
-		<!--<ref local="ikube.action.Synchronize" />-->
+		<ref local="ikube.action.Synchronize" />
 	</util:list>
 
-	<bean
-		id="ikube.index.parse.mime.MimeMapper"
-		class="ikube.index.parse.mime.MimeMapper">
+	<bean id="ikube.index.parse.mime.MimeMapper" class="ikube.index.parse.mime.MimeMapper">
 		<constructor-arg value="/META-INF/mime/mime-mapping.xml" />
 	</bean>
-	<bean
-		id="ikube.index.parse.mime.MimeTypes"
-		class="ikube.index.parse.mime.MimeTypes">
+	<bean id="ikube.index.parse.mime.MimeTypes" class="ikube.index.parse.mime.MimeTypes">
 		<constructor-arg value="/META-INF/mime/mime-types.xml" />
 	</bean>
 
@@ -134,66 +118,37 @@
 	<bean
 		id="ikube.toolkit.Timer"
 		class="ikube.toolkit.Timer"
-		property:type="timer" />
+		property:type="timer"
+		property:delay="${delay}"
+		property:period="${period}" />
 	<bean
 		id="ikube.toolkit.Timer.Profiling"
 		class="ikube.toolkit.Timer"
-		property:type="profiling" />
+		property:type="profiling"
+		property:delay="${profiling.delay}"
+		property:period="${profiling.period}" />
 	<bean
 		id="ikube.toolkit.Timer.WebService"
 		class="ikube.toolkit.Timer"
-		property:type="service" />
-	<bean
-		id="ikube.toolkit.Timer.DeadLock"
-		class="ikube.toolkit.Timer"
-		property:type="deadLock" />
+		property:type="service"
+		property:delay="${web.service.delay}"
+		property:period="${web.service.period}" />
 	<bean
 		id="ikube.toolkit.Timer.LockManager"
 		class="ikube.toolkit.Timer"
-		property:type="clustering" />
-	<bean
-		id="ikube.toolkit.Timer.Scheduler"
-		class="org.springframework.scheduling.timer.ScheduledTimerTask"
-		property:delay="${delay}"
-		property:period="${period}"
-		property:timerTask-ref="ikube.toolkit.Timer" />
-	<bean
-		id="ikube.toolkit.Timer.Profiling.Scheduler"
-		class="org.springframework.scheduling.timer.ScheduledTimerTask"
-		property:delay="${profiling.delay}"
-		property:period="${profiling.period}"
-		property:timerTask-ref="ikube.toolkit.Timer.Profiling" />
-	<bean
-		id="ikube.toolkit.Timer.WebService.Scheduler"
-		class="org.springframework.scheduling.timer.ScheduledTimerTask"
-		property:delay="${web.service.delay}"
-		property:period="${web.service.period}"
-		property:timerTask-ref="ikube.toolkit.Timer.WebService" />
-	<bean
-		id="ikube.toolkit.Timer.DeadLock.Scheduler"
-		class="org.springframework.scheduling.timer.ScheduledTimerTask"
-		property:delay="${dead.lock.delay}"
-		property:period="${dead.lock.period}"
-		property:timerTask-ref="ikube.toolkit.Timer.DeadLock" />
-	<bean
-		id="ikube.toolkit.Timer.LockManager.Scheduler"
-		class="org.springframework.scheduling.timer.ScheduledTimerTask"
+		property:type="clustering"
 		property:delay="${lock.manager.delay}"
-		property:period="${lock.manager.period}"
-		property:timerTask-ref="ikube.toolkit.Timer.LockManager" />
+		property:period="${lock.manager.period}" />
+
+	<util:list id="scheduled.tasks">
+		<ref local="ikube.toolkit.Timer" />
+		<ref local="ikube.toolkit.Timer.Profiling" />
+		<ref local="ikube.toolkit.Timer.WebService" />
+		<ref local="ikube.toolkit.Timer.LockManager" />
+	</util:list>
 
 	<bean
-		class="org.springframework.scheduling.timer.TimerFactoryBean"
-		lazy-init="false">
-		<property name="scheduledTimerTasks">
-			<list>
-				<ref local="ikube.toolkit.Timer.Scheduler" />
-				<!--<ref local="ikube.toolkit.Timer.DeadLock.Scheduler" />-->
-				<!--<ref local="ikube.toolkit.Timer.Profiling.Scheduler" />-->
-				<ref local="ikube.toolkit.Timer.WebService.Scheduler" />
-				<ref local="ikube.toolkit.Timer.LockManager.Scheduler" />
-			</list>
-		</property>
+		class="ikube.toolkit.Scheduler">
+		<constructor-arg ref="scheduled.tasks" />
 	</bean>
-
 </beans>

@@ -4,16 +4,17 @@ import ikube.listener.ListenerManager;
 import ikube.model.Event;
 
 import java.sql.Timestamp;
-import java.util.TimerTask;
 
 import org.apache.log4j.Logger;
 
 import EDU.oswego.cs.dl.util.concurrent.PooledExecutor;
 
-public class Timer extends TimerTask {
+public class Timer implements Runnable {
 
 	private Logger logger = Logger.getLogger(this.getClass());
 	private String type;
+	private long delay;
+	private long period;
 	private PooledExecutor pooledExecutor;
 	private int threads = 1;
 
@@ -46,6 +47,22 @@ public class Timer extends TimerTask {
 
 	public void setType(String type) {
 		this.type = type;
+	}
+
+	public long getDelay() {
+		return delay;
+	}
+
+	public void setDelay(long delay) {
+		this.delay = delay;
+	}
+
+	public long getPeriod() {
+		return period;
+	}
+
+	public void setPeriod(long period) {
+		this.period = period;
 	}
 
 }
