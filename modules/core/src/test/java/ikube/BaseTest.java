@@ -8,6 +8,7 @@ import ikube.toolkit.DataLoader;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,6 +37,13 @@ public abstract class BaseTest extends ATest {
 		}
 	}
 
+	protected String ip;
+	{
+		try {
+			ip = InetAddress.getLocalHost().getHostAddress();
+		} catch (Exception e) {
+		}
+	}
 	protected IndexContext indexContext = ApplicationContextManager.getBean("faqIndexContext");
 
 	protected static void delete(IDataBase dataBase, Class<?>... klasses) {

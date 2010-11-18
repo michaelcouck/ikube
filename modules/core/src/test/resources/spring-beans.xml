@@ -26,14 +26,20 @@
 
 	<bean
 		id="ikube.cluster.LockManager"
-		class="ikube.cluster.LockManager" />
-
+		class="ikube.cluster.LockManager"
+		property:timeout="3000" />
+	<bean
+		class="ikube.cluster.ClusterManager"
+		property:lockManager-ref="ikube.cluster.LockManager" />
+	<bean
+		class="ikube.IndexEngine"
+		property:actions-ref="actions">
+	</bean>
 	<bean
 		id="ikube.database.DataBaseOdb"
 		class="ikube.database.DataBaseOdb"
 		destroy-method="close">
 	</bean>
-
 	<bean
 		id="ikube.action.Close"
 		class="ikube.action.Close" />
@@ -87,9 +93,9 @@
 		<aop:aspect ref="ikube.aspect.Profiling">
 			<aop:around method="profile" pointcut="execution(* ikube.index.visitor.database.*.*(..))" />
 		</aop:aspect>
-		<aop:aspect ref="ikube.aspect.SynchronizedActionHandler">
+		<!--<aop:aspect ref="ikube.aspect.SynchronizedActionHandler">
 			<aop:around method="execute" pointcut="execution(* ikube.action.*.execute(..))" />
-		</aop:aspect>
+		</aop:aspect>-->
 	</aop:config>
 
 	<bean

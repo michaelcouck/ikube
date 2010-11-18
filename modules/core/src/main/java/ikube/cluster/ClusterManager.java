@@ -4,6 +4,7 @@ import ikube.model.IndexContext;
 import ikube.model.Server;
 import ikube.model.Token;
 
+import java.util.Iterator;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -18,16 +19,14 @@ public class ClusterManager implements IClusterManager {
 	}
 
 	@Override
-	public synchronized boolean anyWorking(IndexContext indexContext, String actionName) {
+	public synchronized boolean anyWorking(String actionName) {
 		try {
 			Token token = lockManager.getToken();
-			Server thisServer = lockManager.getServer();
 			for (Server server : token.getServers()) {
-				if (thisServer.compareTo(server) == 0) {
-					continue;
-				}
-				if (server.isWorking() && !actionName.equals(server.getAction())) {
-					return Boolean.TRUE;
+				for (IndexContext indexContext : server.getIndexContexts()) {
+					if (indexContext.isWorking() && !actionName.equals(indexContext.getAction())) {
+						return Boolean.TRUE;
+					}
 				}
 			}
 			return Boolean.FALSE;
@@ -37,16 +36,15 @@ public class ClusterManager implements IClusterManager {
 	}
 
 	@Override
-	public synchronized boolean areWorking(IndexContext indexContext, String actionName) {
+	public synchronized boolean areWorking(String indexName, String actionName) {
 		try {
 			Token token = lockManager.getToken();
-			Server thisServer = lockManager.getServer();
 			for (Server server : token.getServers()) {
-				if (thisServer.compareTo(server) == 0) {
-					continue;
-				}
-				if (server.isWorking() && indexContext.getIndexName().equals(server.getIndex()) && actionName.equals(server.getAction())) {
-					return Boolean.TRUE;
+				for (IndexContext indexContext : server.getIndexContexts()) {
+					if (indexContext.isWorking() && indexName.equals(indexContext.getIndexName())
+							&& actionName.equals(indexContext.getAction())) {
+						return Boolean.TRUE;
+					}
 				}
 			}
 			return Boolean.FALSE;
@@ -56,37 +54,34 @@ public class ClusterManager implements IClusterManager {
 	}
 
 	@Override
-	public synchronized long getLastWorkingTime(IndexContext indexContext, String actionName) {
+	public synchronized long getLastWorkingTime(String indexName, String actionName) {
 		long time = System.currentTimeMillis();
 		try {
 			Token token = lockManager.getToken();
-			Server thisServer = lockManager.getServer();
 			logger.info("Servers : " + token.getServers() + ", " + Thread.currentThread().hashCode());
 			for (Server server : token.getServers()) {
-				if (!server.isWorking()) {
-					continue;
-				}
-				if (!indexContext.getIndexName().equals(server.getIndex())) {
-					continue;
-				}
-				// This means that there is a server working on this index but with a different action
-				if (!actionName.equals(server.getAction())) {
-					logger.debug("Another action on this index : " + server);
-					time = -1;
-					break;
-				}
-				long start = server.getStart();
-				// We want the start time of the first server, so if the start time
-				// of this server is lower than the existing start time then take that
-				if (start < time && start > 0) {
-					logger.info("Taking start time of server : " + token);
-					time = start;
+				for (IndexContext indexContext : server.getIndexContexts()) {
+					if (!indexContext.isWorking()) {
+						continue;
+					}
+					if (!indexName.equals(indexContext.getIndexName())) {
+						continue;
+					}
+					// This means that there is a server working on this index but with a different action
+					if (!actionName.equals(indexContext.getAction())) {
+						logger.debug("Another action on this index : " + server);
+						time = -1;
+						break;
+					}
+					long start = indexContext.getStart();
+					// We want the start time of the first server, so if the start time
+					// of this server is lower than the existing start time then take that
+					if (start < time && start > 0) {
+						logger.info("Taking start time of server : " + token);
+						time = start;
+					}
 				}
 			}
-			thisServer.setStart(time);
-			thisServer.setAction(actionName);
-			thisServer.setIdNumber(0);
-			thisServer.setWorking(Boolean.TRUE);
 			logger.info("Time : " + time + ", " + token.getServers() + ", " + Thread.currentThread().hashCode());
 		} finally {
 			notifyAll();
@@ -99,77 +94,53 @@ public class ClusterManager implements IClusterManager {
 	 * will wrap it in a 'transaction'
 	 */
 	@Override
-	public synchronized long getIdNumber(IndexContext indexContext) {
+	public synchronized long getIdNumber(String indexName) {
 		long idNumber = 0;
 		try {
 			Token token = lockManager.getToken();
-			Server thisServer = lockManager.getServer();
-			String index = indexContext.getIndexName();
 			for (Server server : token.getServers()) {
-				if (server.isWorking() && index.equals(server.getIndex())) {
-					if (server.getIdNumber() > idNumber) {
-						idNumber = server.getIdNumber();
+				for (IndexContext indexContext : server.getIndexContexts()) {
+					if (indexContext.isWorking() && indexName.equals(indexContext.getIndexName())) {
+						if (indexContext.getIdNumber() > idNumber) {
+							idNumber = indexContext.getIdNumber();
+						}
 					}
 				}
 			}
-			logger.info("Get id number : " + idNumber + ", " + thisServer + ", " + Thread.currentThread().hashCode());
-		} finally {
-			notifyAll();
-		}
-		return idNumber;
-	}
-
-	public synchronized void setIdNumber(IndexContext indexContext, long idNumber) {
-		try {
-			Server thisServer = lockManager.getServer();
-			logger.debug("Setting id number : " + idNumber + ", " + thisServer + ", " + Thread.currentThread().hashCode());
-			thisServer.setIdNumber(idNumber);
+			logger.info("Get id number : " + idNumber + ", " + Thread.currentThread().hashCode());
+			return idNumber;
 		} finally {
 			notifyAll();
 		}
 	}
 
-	@Override
-	public synchronized Set<Server> getServers(IndexContext indexContext) {
+	public synchronized void setIdNumber(String indexName, long idNumber) {
 		try {
-			Token token = lockManager.getToken();
-			return token.getServers();
-		} finally {
-			notifyAll();
-		}
-	}
-
-	@Override
-	public synchronized boolean isWorking(IndexContext indexContext) {
-		try {
-			Server thisServer = lockManager.getServer();
-			return thisServer.isWorking();
-		} finally {
-			notifyAll();
-		}
-	}
-
-	@Override
-	public synchronized boolean resetWorkings(IndexContext indexContext, String actionName) {
-		try {
-			// Check that there are no servers working
-			Token token = lockManager.getToken();
-			for (Server server : token.getServers()) {
-				if (server.isWorking()) {
-					logger.info("Servers working, not resetting : " + Thread.currentThread().hashCode());
-					return Boolean.FALSE;
+			logger.debug("Setting id number : " + idNumber + ", " + Thread.currentThread().hashCode());
+			Server server = lockManager.getServer();
+			for (IndexContext indexContext : server.getIndexContexts()) {
+				if (indexName.equals(indexContext.getIndexName())) {
+					indexContext.setIdNumber(idNumber);
 				}
 			}
-			logger.info("No server working, resetting : " + token.getServers() + ", " + Thread.currentThread().hashCode());
-			for (Server server : token.getServers()) {
-				if (server.isWorking()) {
-					server.setAction(null);
-					server.setIdNumber(0);
-					server.setStart(0);
-					server.setWorking(Boolean.FALSE);
-				}
-			}
-			return Boolean.TRUE;
+		} finally {
+			notifyAll();
+		}
+	}
+
+	@Override
+	public synchronized Set<Server> getServers() {
+		try {
+			return lockManager.getToken().getServers();
+		} finally {
+			notifyAll();
+		}
+	}
+
+	@Override
+	public synchronized Server getServer() {
+		try {
+			return lockManager.getServer();
 		} finally {
 			notifyAll();
 		}
@@ -178,16 +149,41 @@ public class ClusterManager implements IClusterManager {
 	@Override
 	public synchronized void setWorking(IndexContext indexContext, String actionName, boolean isWorking, long start) {
 		try {
-			Server thisServer = lockManager.getServer();
-			thisServer.setAction(actionName);
-			thisServer.setIndex(indexContext.getIndexName());
-			thisServer.setStart(start);
-			thisServer.setWorking(isWorking);
-			logger.debug("Set working : " + thisServer + ", " + Thread.currentThread().hashCode());
-			// Thread.dumpStack();
+			indexContext.setAction(actionName);
+			indexContext.setStart(start);
+			indexContext.setWorking(isWorking);
+			// We add the context here which will then over ride the context in the local server. This need't
+			// be done every time as the local server object is always local and in this Jvm the contexts in the
+			// server are the instances from the configuration, not from the other servers
+			lockManager.getServer().getIndexContexts().add(indexContext);
+			logger.debug("Set working : " + indexContext + ", " + Thread.currentThread().hashCode());
 		} finally {
 			notifyAll();
 		}
+	}
+
+	@Override
+	public boolean anyWorkingOnIndex(IndexContext indexContext) {
+		Iterator<Server> iterator = lockManager.getToken().getServers().iterator();
+		while (iterator.hasNext()) {
+			Server server = iterator.next();
+			for (IndexContext otherIndexContext : server.getIndexContexts()) {
+				if (indexContext.getName().equals(otherIndexContext.getName())) {
+					continue;
+				}
+				if (!indexContext.getIndexName().equals(otherIndexContext.getIndexName())) {
+					continue;
+				}
+				if (indexContext.isWorking()) {
+					return Boolean.TRUE;
+				}
+			}
+		}
+		return Boolean.FALSE;
+	}
+
+	public void setLockManager(ILockManager lockManager) {
+		this.lockManager = lockManager;
 	}
 
 }

@@ -19,14 +19,9 @@
             http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
 	<bean
-		class="ikube.IndexEngine"
-		property:actions-ref="actions">
-		<constructor-arg ref="faqIndexContext.one" />
-	</bean>
-
-	<bean
 		id="faqIndexContext.one"
 		class="ikube.model.IndexContext"
+		property:name="jackal.one"
 		property:indexName="faq"
 		property:maxAge="${max.age}"
 		property:compoundFile="${compound.file}"
@@ -38,7 +33,6 @@
 		property:maxReadLength="${max.read.length}"
 		property:queueTimeout="${max.age}"
 		property:indexDirectoryPath="${index.directory.path}"
-		property:serverName="jackal.one"
 		property:indexables-ref="faqIndexables.one"
 		property:indexableVisitors-ref="faqIndexableVisitors.one" />
 	<util:list id="faqIndexables.one">

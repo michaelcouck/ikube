@@ -1,6 +1,7 @@
 package ikube.action;
 
 import ikube.cluster.IClusterManager;
+import ikube.logging.Logging;
 import ikube.model.IndexContext;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
@@ -54,6 +55,18 @@ public abstract class AAction<E, F> implements IAction<E, F> {
 	 * @return whether the index should be re-opened
 	 */
 	protected boolean shouldReopen(IndexContext indexContext) {
+		// If there is no searcher open then try to open one
+		MultiSearcher multiSearcher = indexContext.getMultiSearcher();
+		if (multiSearcher == null) {
+			logger.debug("Multi searcher null, should try to reopen : ");
+			return Boolean.TRUE;
+		}
+		// No searchables, also try to reopen an index searcher
+		Searchable[] searchables = multiSearcher.getSearchables();
+		if (searchables == null || searchables.length == 0) {
+			logger.debug("No searchables open, should try to reopen : ");
+			return Boolean.TRUE;
+		}
 		// First check that there is an index directory
 		File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
 		if (latestIndexDirectory == null) {
@@ -72,53 +85,49 @@ public abstract class AAction<E, F> implements IAction<E, F> {
 					+ indexContext.getIndexName());
 			return Boolean.FALSE;
 		}
-		// If there is no searcher open then try to open one
-		MultiSearcher multiSearcher = indexContext.getMultiSearcher();
-		if (multiSearcher == null) {
-			logger.debug("Multi searcher null, should try to reopen : ");
-			return Boolean.TRUE;
-		}
-		// No searchables, also try to reopen an index searcher
-		Searchable[] searchables = multiSearcher.getSearchables();
-		if (searchables == null || searchables.length == 0) {
-			logger.debug("No searchables open, should try to reopen : ");
-			return Boolean.TRUE;
-		}
 		// Now we check the latest server index directories against the directories
 		// in the existing multi-searcher. If there are server index directories that are
 		// not included in the searchables then try to close the multi searcher and
 		// re-open it
 		for (File serverIndexDirectory : serverIndexDirectories) {
-			// Now check that there is a searchable open on the server index directory
-			boolean indexAlreadyOpen = Boolean.FALSE;
-			for (Searchable searchable : searchables) {
-				IndexSearcher indexSearcher = (IndexSearcher) searchable;
-				IndexReader indexReader = indexSearcher.getIndexReader();
-				FSDirectory fsDirectory = (FSDirectory) indexReader.directory();
-				File searchIndexDirectory = fsDirectory.getFile();
-				logger.debug("Server index directory : " + serverIndexDirectory.getAbsolutePath() + ", index directory : "
-						+ searchIndexDirectory.getAbsolutePath());
-				if (directoriesEqual(serverIndexDirectory, searchIndexDirectory)) {
-					// indexAlreadyOpen = Boolean.TRUE;
-					indexAlreadyOpen = directoryExistsAndNotLocked(serverIndexDirectory);
-					break;
+			File[] indexDirectories = serverIndexDirectory.listFiles();
+			for (File indexDirectory : indexDirectories) {
+				// Now check that there is a searchable open on the server index directory
+				boolean indexAlreadyOpen = Boolean.FALSE;
+				for (Searchable searchable : searchables) {
+					IndexSearcher indexSearcher = (IndexSearcher) searchable;
+					IndexReader indexReader = indexSearcher.getIndexReader();
+					FSDirectory fsDirectory = (FSDirectory) indexReader.directory();
+					File searchIndexDirectory = fsDirectory.getFile();
+					if (logger.isDebugEnabled()) {
+						String indexDirectoryPath = indexDirectory.getAbsolutePath();
+						String searchDirectoryPath = searchIndexDirectory.getAbsolutePath();
+						String message = Logging.getString("Index directory : ", indexDirectoryPath, ", index directory : ",
+								searchDirectoryPath);
+						logger.debug(message);
+					}
+					if (directoriesEqual(indexDirectory, searchIndexDirectory)) {
+						// indexAlreadyOpen = Boolean.TRUE;
+						indexAlreadyOpen = directoryExistsAndNotLocked(indexDirectory);
+						break;
+					}
 				}
-			}
-			if (!indexAlreadyOpen) {
-				logger.debug("Found new index directory : " + serverIndexDirectory + " will try to re-open : ");
-				return Boolean.TRUE;
+				if (!indexAlreadyOpen) {
+					logger.debug("Found new index directory : " + indexDirectory + " will try to re-open : ");
+					return Boolean.TRUE;
+				}
 			}
 		}
 		return Boolean.FALSE;
 	}
 
-	private boolean directoryExistsAndNotLocked(File serverIndexDirectory) {
+	private boolean directoryExistsAndNotLocked(File indexDirectory) {
 		Directory directory = null;
 		try {
-			directory = FSDirectory.open(serverIndexDirectory);
+			directory = FSDirectory.open(indexDirectory);
 			boolean exists = IndexReader.indexExists(directory);
 			boolean locked = IndexWriter.isLocked(directory);
-			logger.info("Server index directory : " + serverIndexDirectory + ", exists : " + exists + ", locked : " + locked);
+			logger.info("Server index directory : " + indexDirectory + ", exists : " + exists + ", locked : " + locked);
 			// Could be that the index is still being written, unlikely, or
 			// that there are directories in the base directory that are
 			// not index directories
@@ -141,15 +150,14 @@ public abstract class AAction<E, F> implements IAction<E, F> {
 		return Boolean.FALSE;
 	}
 
-	private boolean directoriesEqual(File serverIndexDirectory, File searchIndexDirectory) {
+	private boolean directoriesEqual(File directoryOne, File directoryTwo) {
 		// Just check the server directory name and the parent folder name, should be
 		// something like '1234567890/jackal' or '1234567890/127.0.0.1'
-		String serverIndexDirectoryName = serverIndexDirectory.getName();
-		String searchIndexDirectoryName = searchIndexDirectory.getName();
-		String serverIndexDirectoryParentName = serverIndexDirectory.getParentFile().getName();
-		String searchIndexDirectoryParentName = searchIndexDirectory.getParentFile().getName();
-		return serverIndexDirectoryName.equals(searchIndexDirectoryName)
-				&& serverIndexDirectoryParentName.equals(searchIndexDirectoryParentName);
+		String nameOne = directoryOne.getName();
+		String nameTwo = directoryTwo.getName();
+		String parentNameOne = directoryOne.getParentFile().getName();
+		String parentNameTwo = directoryTwo.getParentFile().getName();
+		return nameOne.equals(nameTwo) && parentNameOne.equals(parentNameTwo);
 
 	}
 

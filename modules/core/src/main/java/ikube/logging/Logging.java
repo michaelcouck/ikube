@@ -38,4 +38,15 @@ public class Logging {
 		LOGGER = Logger.getLogger(Logging.class);
 	}
 
+	public static String getString(Object... objects) {
+		if (objects == null || objects.length == 0) {
+			return "";
+		}
+		StringBuilder builder = new StringBuilder();
+		for (Object object : objects) {
+			builder.append(object);
+		}
+		return builder.toString();
+	}
+
 }

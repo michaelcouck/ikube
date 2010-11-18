@@ -31,7 +31,7 @@ public class Close extends AAction<IndexContext, Boolean> {
 			return Boolean.FALSE;
 		}
 		String actionName = getClass().getName();
-		if (getClusterManager().anyWorking(indexContext, actionName)) {
+		if (getClusterManager().anyWorking(actionName)) {
 			logger.debug("Close : Other servers working : " + actionName);
 			return Boolean.FALSE;
 		}

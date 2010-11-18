@@ -33,7 +33,7 @@ public class Synchronize extends AAction<IndexContext, Boolean> {
 	public Boolean execute(IndexContext indexContext) {
 		try {
 			String actionName = getClass().getName();
-			if (getClusterManager().anyWorking(indexContext, actionName)) {
+			if (getClusterManager().anyWorking(actionName)) {
 				return Boolean.FALSE;
 			}
 			getClusterManager().setWorking(indexContext, actionName, Boolean.TRUE, System.currentTimeMillis());
@@ -45,7 +45,7 @@ public class Synchronize extends AAction<IndexContext, Boolean> {
 			}
 			ILockManager lockManager = ApplicationContextManager.getBean(ILockManager.class);
 			Server thisServer = lockManager.getServer();
-			Set<Server> tokens = getClusterManager().getServers(indexContext);
+			Set<Server> tokens = getClusterManager().getServers();
 			logger.info("Servers : " + tokens);
 			for (Server server : tokens) {
 				logger.info("Server : " + server);

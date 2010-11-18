@@ -1,10 +1,8 @@
 package ikube.action;
 
 import static org.junit.Assert.assertTrue;
-
 import ikube.BaseTest;
 import ikube.IConstants;
-import ikube.action.Index;
 import ikube.search.SearchMulti;
 import ikube.toolkit.FileUtilities;
 
@@ -18,8 +16,6 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.junit.Before;
 import org.junit.Test;
-
-
 
 public class IndexTest extends BaseTest {
 
@@ -41,8 +37,9 @@ public class IndexTest extends BaseTest {
 		indexContext.setMaxAge(maxAge);
 
 		File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
-		File serverIndexDirectory = new File(latestIndexDirectory, indexContext.getServerName());
-		Directory directory = FSDirectory.open(serverIndexDirectory);
+		File serverIndexDirectory = new File(latestIndexDirectory, ip);
+		File contextIndexDirectory = new File(serverIndexDirectory, indexContext.getName());
+		Directory directory = FSDirectory.open(contextIndexDirectory);
 		IndexReader indexReader = IndexReader.open(directory);
 		assertTrue(indexReader.numDocs() > 0);
 
@@ -55,7 +52,7 @@ public class IndexTest extends BaseTest {
 		searchMulti.setSearchString("acrylic also because definately baklava potpie", "morale urban", "unwrap indignation ");
 
 		List<Map<String, String>> results = searchMulti.execute();
-		assertTrue(results.size() > 0);
+		assertTrue(results.size() > 1);
 		for (Map<String, String> result : results) {
 			logger.warn("Result : ");
 			for (String key : result.keySet()) {
@@ -67,7 +64,7 @@ public class IndexTest extends BaseTest {
 		indexReader.close();
 		indexSearcher.close();
 
-		// FileUtilities.deleteFile(latestIndexDirectory, 1);
+		FileUtilities.deleteFile(latestIndexDirectory, 1);
 	}
 
 }

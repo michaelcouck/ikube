@@ -44,21 +44,21 @@ public class IndexableTableVisitor<I> extends IndexableVisitor<IndexableTable> {
 			}
 		});
 		ResultSet resultSet = null;
+		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
 		try {
-			IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
 			// First get the id number from the last server
-			long idNumber = clusterManager.getIdNumber(indexContext);
+			long idNumber = clusterManager.getIdNumber(indexContext.getIndexName());
 			IndexableColumn idColumn = getIdColumn(indexableTable.getChildren());
 			Connection connection = indexableTable.getDataSource().getConnection();
 			// This number can be 0 so get it from the table
 			idNumber = getIdNumber(connection, indexableTable, idColumn, idNumber);
-			clusterManager.setIdNumber(indexContext, idNumber + indexContext.getBatchSize());
+			clusterManager.setIdNumber(indexContext.getIndexName(), idNumber + indexContext.getBatchSize());
 			resultSet = getResultSet(connection, indexableTable, idColumn, idNumber);
 			do {
 				if (!resultSet.next()) {
-					idNumber = clusterManager.getIdNumber(indexContext);
+					idNumber = clusterManager.getIdNumber(indexContext.getIndexName());
 					idNumber = getIdNumber(connection, indexableTable, idColumn, idNumber);
-					clusterManager.setIdNumber(indexContext, idNumber + indexContext.getBatchSize());
+					clusterManager.setIdNumber(indexContext.getIndexName(), idNumber + indexContext.getBatchSize());
 					resultSet = getResultSet(connection, indexableTable, idColumn, idNumber);
 					if (!resultSet.next()) {
 						logger.info("No more results : ");

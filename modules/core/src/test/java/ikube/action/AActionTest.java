@@ -36,16 +36,21 @@ public class AActionTest extends BaseActionTest {
 		boolean indexCurrent = aAction.isIndexCurrent(indexContext);
 		assertFalse(indexCurrent);
 
-		String indexDirectory = new StringBuilder(indexContext.getIndexDirectoryPath()).append(File.separator).append(
-				System.currentTimeMillis()).append(File.separator).append(indexContext.getServerName()).toString();
-		File currentIndexDirectory = FileUtilities.getFile(indexDirectory, Boolean.TRUE);
-		currentIndexDirectory.mkdirs();
+		StringBuilder builder = new StringBuilder();
+		builder.append(indexContext.getIndexDirectoryPath());
+		builder.append(File.separator);
+		builder.append(System.currentTimeMillis());
+		builder.append(File.separator);
+		builder.append(indexContext.getName());
+
+		File contextIndexDirectory = FileUtilities.getFile(builder.toString(), Boolean.TRUE);
 
 		indexCurrent = aAction.isIndexCurrent(indexContext);
 		assertTrue(indexCurrent);
 		indexContext.setMaxAge(maxAge);
 
-		FileUtilities.deleteFile(currentIndexDirectory, 1);
+		FileUtilities.deleteFile(contextIndexDirectory, 1);
+		assertFalse(contextIndexDirectory.exists());
 	}
 
 	@Test
@@ -53,40 +58,46 @@ public class AActionTest extends BaseActionTest {
 		File baseIndexDirectory = FileUtilities.getFile(indexContext.getIndexDirectoryPath(), Boolean.TRUE);
 		FileUtilities.deleteFile(baseIndexDirectory, 1);
 		boolean shouldReopen = aAction.shouldReopen(indexContext);
-		assertFalse(shouldReopen && !baseIndexDirectory.exists());
-
-		File latestIndexDirectory = FileUtilities.getFile(baseIndexDirectory.getAbsolutePath() + File.separator
-				+ Long.toString(System.currentTimeMillis()), Boolean.TRUE);
-
-		shouldReopen = aAction.shouldReopen(indexContext);
-		assertFalse(shouldReopen);
-
-		String filePath = latestIndexDirectory.getAbsolutePath() + File.separatorChar + indexContext.getServerName();
-		File serverIndexDirectory = FileUtilities.getFile(filePath, Boolean.TRUE);
-
-		shouldReopen = aAction.shouldReopen(indexContext);
-		assertTrue(shouldReopen);
+		// Searcher null in the context
+		assertTrue(shouldReopen /* && !baseIndexDirectory.exists() */);
 
 		indexContext.setMultiSearcher(multiSearcher);
 
-		createIndex(latestIndexDirectory, indexContext.getServerName());
+		// No searchables in the searcher
+		shouldReopen = aAction.shouldReopen(indexContext);
+		assertTrue(shouldReopen);
+
+		StringBuilder builder = new StringBuilder();
+		builder.append(indexContext.getIndexDirectoryPath());
+		builder.append(File.separator);
+		builder.append(System.currentTimeMillis());
+		builder.append(File.separator);
+		builder.append(ip);
+		builder.append(File.separator);
+		builder.append(indexContext.getName());
+		File contextIndexDirectory = createIndex(new File(builder.toString()));
 
 		when(indexSearcher.getIndexReader()).thenReturn(indexReader);
 		when(indexReader.directory()).thenReturn(fsDirectory);
-		when(fsDirectory.getFile()).thenReturn(new File(serverIndexDirectory.getAbsolutePath()));
+		when(fsDirectory.getFile()).thenReturn(new File(contextIndexDirectory.getAbsolutePath()));
 		when(multiSearcher.getSearchables()).thenReturn(searchables);
 
+		// All the directories are in the searcher
 		shouldReopen = aAction.shouldReopen(indexContext);
 		assertFalse(shouldReopen);
 
 		// Create a new server index directory
-		createIndex(latestIndexDirectory, "anotherServerIndex");
+		File anotherContextIndexDirectory = createIndex(new File(builder.toString().replace(indexContext.getName(), "anotherContextIndex")));
 
 		shouldReopen = aAction.shouldReopen(indexContext);
 		assertTrue(shouldReopen);
 
 		indexContext.setMultiSearcher(null);
-		FileUtilities.deleteFile(baseIndexDirectory, 1);
+		FileUtilities.deleteFile(contextIndexDirectory, 1);
+		FileUtilities.deleteFile(anotherContextIndexDirectory, 1);
+
+		assertFalse(contextIndexDirectory.exists());
+		assertFalse(anotherContextIndexDirectory.exists());
 	}
 
 }

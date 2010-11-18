@@ -11,19 +11,19 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.MultiSearcher;
 
 @Entity()
-public class IndexContext extends Persistable {
+public class IndexContext extends Persistable implements Comparable<IndexContext> {
 
-	/** Set in the Spring configuration. */
-	private String indexName;
+	private String name;
 	private long maxAge;
+	private String indexName;
 	private long queueTimeout;
 
 	/** Lucene properties. */
-	private boolean compoundFile;
-	private int bufferedDocs;
-	private int maxFieldLength;
 	private int mergeFactor;
+	private int bufferedDocs;
 	private double bufferSize;
+	private int maxFieldLength;
+	private boolean compoundFile;
 
 	/** Jdbc properties. */
 	private long batchSize;
@@ -32,19 +32,31 @@ public class IndexContext extends Persistable {
 	/** Not mandatory, default implementation determined. */
 	private String indexDirectoryPath;
 
-	/** These are passed to other servers in the cluster. So they are not transient but they should not be stored. */
-	private String latestIndexDirectoryName;
-	private String indexFileName;
-
 	private List<Indexable<?>> indexables;
+	/** These can't be sent down the wire. */
 	private transient List<IndexableVisitor<Indexable<?>>> indexableVisitors;
 
-	/** Dynamically set at runtime. */
-	private String serverName;
+	/** The time the action was started. */
+	private long start;
+	/** The name of the action that is being executed on this configuration. */
+	private String action;
+	/** The next id number to use for select. */
+	private long idNumber;
+	/** Whether this server is working. */
+	private boolean working;
+
 	/** Can be null if there are no indexes running. */
 	private transient IndexWriter indexWriter;
 	/** Can be null if there is no index created. */
 	private transient MultiSearcher multiSearcher;
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(final String serverName) {
+		this.name = serverName;
+	}
 
 	public String getIndexName() {
 		return indexName;
@@ -134,30 +146,53 @@ public class IndexContext extends Persistable {
 		this.indexDirectoryPath = indexDirectoryPath;
 	}
 
-	@Transient
-	public String getLatestIndexDirectoryName() {
-		return latestIndexDirectoryName;
-	}
-
-	public void setLatestIndexDirectoryName(String latestIndexDirectoryName) {
-		this.latestIndexDirectoryName = latestIndexDirectoryName;
-	}
-
-	@Transient
-	public String getIndexFileName() {
-		return indexFileName;
-	}
-
-	public void setIndexFileName(String indexFileName) {
-		this.indexFileName = indexFileName;
-	}
-
 	public List<Indexable<?>> getIndexables() {
 		return indexables;
 	}
 
 	public void setIndexables(final List<Indexable<?>> indexables) {
 		this.indexables = indexables;
+	}
+
+	@Override
+	public int compareTo(IndexContext o) {
+		return getName().compareTo(o.getName());
+	}
+
+	@Transient
+	public long getStart() {
+		return start;
+	}
+
+	public void setStart(long start) {
+		this.start = start;
+	}
+
+	@Transient
+	public String getAction() {
+		return action;
+	}
+
+	public void setAction(String action) {
+		this.action = action;
+	}
+
+	@Transient
+	public long getIdNumber() {
+		return idNumber;
+	}
+
+	public void setIdNumber(long idNumber) {
+		this.idNumber = idNumber;
+	}
+
+	@Transient
+	public boolean isWorking() {
+		return working;
+	}
+
+	public void setWorking(boolean working) {
+		this.working = working;
 	}
 
 	@Transient
@@ -167,15 +202,6 @@ public class IndexContext extends Persistable {
 
 	public void setIndexableVisitors(final List<IndexableVisitor<Indexable<?>>> indexableVisitors) {
 		this.indexableVisitors = indexableVisitors;
-	}
-
-	@Transient
-	public String getServerName() {
-		return serverName;
-	}
-
-	public void setServerName(final String serverName) {
-		this.serverName = serverName;
 	}
 
 	@Transient

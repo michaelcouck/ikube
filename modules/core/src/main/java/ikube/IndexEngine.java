@@ -1,28 +1,23 @@
 package ikube;
 
 import ikube.action.IAction;
-import ikube.cluster.IClusterManager;
 import ikube.listener.IListener;
 import ikube.listener.ListenerManager;
 import ikube.model.Event;
 import ikube.model.IndexContext;
 import ikube.toolkit.ApplicationContextManager;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
 public class IndexEngine implements IIndexEngine {
 
 	private Logger logger = Logger.getLogger(this.getClass());
-	private IndexContext indexContext;
 	private List<IAction<IndexContext, Boolean>> actions;
 
-	public IndexEngine(IndexContext indexContext) {
-		this.indexContext = indexContext;
-		this.setServerName(this.indexContext);
+	public IndexEngine() {
 		IListener listener = new IListener() {
 			@Override
 			public void handleNotification(Event event) {
@@ -30,50 +25,42 @@ public class IndexEngine implements IIndexEngine {
 			}
 		};
 		ListenerManager.addListener(listener);
-		logger.info("Index engine : " + this + ", index : " + indexContext.getIndexName() + ", server : " + indexContext.getServerName());
+		logger.info("Index engine : " + this);
 	}
 
 	private void handleNotification(Event event) {
-		if (actions == null) {
-			logger.warn("No actions configured for index engine : " + indexContext.getIndexName());
+		if (!event.getType().equals(Event.TIMER)) {
+			return;
 		}
-		// Execute the logic to start the indexing
-		if (event.getType().equals(Event.TIMER)) {
-			logger.debug("Notification : " + this + ", " + event);
+		Map<String, IndexContext> indexContexts = ApplicationContextManager.getBeans(IndexContext.class);
+		logger.debug("Contexts : " + indexContexts);
+		for (IndexContext indexContext : indexContexts.values()) {
+			if (actions == null || actions.size() == 0) {
+				logger.warn("No actions configured for index engine : " + indexContext.getIndexName());
+				continue;
+			}
 			try {
-				IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
-				if (clusterManager.isWorking(indexContext)) {
-					logger.info("Server already working : " + indexContext.getIndexName() + ", " + indexContext.getServerName());
-					return;
+				if (indexContext.isWorking()) {
+					logger.info("Already working : " + indexContext.getIndexName() + ", " + indexContext.getName());
+					continue;
 				}
-				logger.info("Starting working : " + this);
+				logger.info("Starting working : " + indexContext);
 				for (IAction<IndexContext, Boolean> action : actions) {
+					logger.debug("Executing action : " + action + ", " + Thread.currentThread().hashCode());
+					boolean success = Boolean.FALSE;
 					try {
-						logger.debug("Executing action : " + action + ", " + Thread.currentThread().hashCode());
-						action.execute(indexContext);
+						success = action.execute(indexContext);
 					} catch (Exception e) {
 						logger.error("Exception executing action : " + action, e);
 					}
+					logger.debug("Action succeeded : " + success + ", " + Thread.currentThread().hashCode());
 				}
 				logger.info("Finished working : " + this);
 			} catch (Exception e) {
-				logger.error("Exception in the index engine : " + indexContext.getIndexName() + ", " + indexContext.getServerName(), e);
+				logger.error("Exception in the index engine : " + indexContext.getIndexName() + ", " + indexContext.getName(), e);
 			}
 		}
-	}
 
-	private void setServerName(IndexContext indexContext) {
-		if (indexContext.getServerName() == null) {
-			try {
-				indexContext.setServerName(InetAddress.getLocalHost().getHostAddress());
-			} catch (UnknownHostException e) {
-				indexContext.setServerName("localhost?");
-				logger.error("Exception accessing the localhost?", e);
-			}
-		} else if (indexContext.getServerName().equals("*")) {
-			// Choose a random name for this server
-			indexContext.setServerName(Long.toHexString(System.nanoTime()));
-		}
 	}
 
 	public void setActions(List<IAction<IndexContext, Boolean>> actions) {

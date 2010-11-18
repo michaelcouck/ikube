@@ -11,10 +11,8 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.Lock;
-import org.junit.Ignore;
 import org.junit.Test;
 
-@Ignore
 public class DeleteTest extends BaseActionTest {
 
 	private Delete delete = new Delete();
@@ -23,7 +21,6 @@ public class DeleteTest extends BaseActionTest {
 	public void execute() throws Exception {
 		File baseIndexDirectory = FileUtilities.getFile(indexContext.getIndexDirectoryPath(), Boolean.TRUE);
 		FileUtilities.deleteFile(baseIndexDirectory, 1);
-		assertFalse(baseIndexDirectory.exists());
 		baseIndexDirectory = FileUtilities.getFile(indexContext.getIndexDirectoryPath(), Boolean.TRUE);
 		assertTrue(baseIndexDirectory.exists());
 
@@ -32,20 +29,19 @@ public class DeleteTest extends BaseActionTest {
 		assertFalse(deleted);
 		/*******************************************/
 
-		String filePath = baseIndexDirectory.getAbsolutePath() + File.separator + System.currentTimeMillis();
-		File latestIndexDirectory = FileUtilities.getFile(filePath, Boolean.TRUE);
-		assertTrue(latestIndexDirectory.exists());
-		File serverIndexDirectory = createIndex(latestIndexDirectory, indexContext.getServerName());
-		assertTrue(serverIndexDirectory.exists());
+		String contextIndexDirectoryPath = getContextIndexDirectoryPath(indexContext);
+		File contextIndexDirectory = FileUtilities.getFile(contextIndexDirectoryPath, Boolean.TRUE);
+		assertTrue(contextIndexDirectory.exists());
+		int baseDirectorySize = baseIndexDirectory.listFiles().length;
 
 		// Only one directory so nothing to delete
 		deleted = delete.execute(indexContext);
-		assertFalse(deleted);
+		assertFalse(deleted && baseDirectorySize == 1);
 		assertEquals(1, baseIndexDirectory.listFiles().length);
 		/**************************************************/
 
-		filePath = baseIndexDirectory.getAbsolutePath() + File.separator + System.currentTimeMillis();
-		latestIndexDirectory = FileUtilities.getFile(filePath, Boolean.TRUE);
+		contextIndexDirectoryPath = getContextIndexDirectoryPath(indexContext);
+		File anotherContextIndexDirectory = FileUtilities.getFile(contextIndexDirectoryPath, Boolean.TRUE);
 		assertEquals(2, baseIndexDirectory.listFiles().length);
 		// Two directories so one should be gone
 		deleted = delete.execute(indexContext);
@@ -53,12 +49,12 @@ public class DeleteTest extends BaseActionTest {
 		assertEquals(1, baseIndexDirectory.listFiles().length);
 
 		/****************************/
-		filePath = baseIndexDirectory.getAbsolutePath() + File.separator + System.currentTimeMillis();
-		latestIndexDirectory = FileUtilities.getFile(filePath, Boolean.TRUE);
+		contextIndexDirectoryPath = getContextIndexDirectoryPath(indexContext);
+		File andAnotherContextIndexDirectory = FileUtilities.getFile(contextIndexDirectoryPath, Boolean.TRUE);
 		assertEquals(2, baseIndexDirectory.listFiles().length);
 
-		serverIndexDirectory = createIndex(latestIndexDirectory, indexContext.getServerName());
-		Directory directory = FSDirectory.open(serverIndexDirectory);
+		File indexDirectory = createIndex(andAnotherContextIndexDirectory);
+		Directory directory = FSDirectory.open(indexDirectory);
 		Lock lock = directory.makeLock(IndexWriter.WRITE_LOCK_NAME);
 		lock.obtain(1000);
 		assertTrue(IndexWriter.isLocked(directory));
@@ -72,12 +68,12 @@ public class DeleteTest extends BaseActionTest {
 		directory.clearLock(IndexWriter.WRITE_LOCK_NAME);
 
 		/*************************************/
-		filePath = baseIndexDirectory.getAbsolutePath() + File.separator + System.currentTimeMillis();
-		latestIndexDirectory = FileUtilities.getFile(filePath, Boolean.TRUE);
+		contextIndexDirectoryPath = getContextIndexDirectoryPath(indexContext);
+		File andYetAnotherContextIndexDirectory = FileUtilities.getFile(contextIndexDirectoryPath, Boolean.TRUE);
 		assertEquals(3, baseIndexDirectory.listFiles().length);
 
-		serverIndexDirectory = createIndex(latestIndexDirectory, indexContext.getServerName());
-		directory = FSDirectory.open(serverIndexDirectory);
+		indexDirectory = createIndex(andYetAnotherContextIndexDirectory);
+		directory = FSDirectory.open(indexDirectory);
 		lock = directory.makeLock(IndexWriter.WRITE_LOCK_NAME);
 		lock.obtain(1000);
 		assertTrue(IndexWriter.isLocked(directory));
@@ -91,6 +87,15 @@ public class DeleteTest extends BaseActionTest {
 		directory.clearLock(IndexWriter.WRITE_LOCK_NAME);
 
 		FileUtilities.deleteFile(baseIndexDirectory, 1);
+		FileUtilities.deleteFile(contextIndexDirectory, 1);
+		FileUtilities.deleteFile(anotherContextIndexDirectory, 1);
+		FileUtilities.deleteFile(andAnotherContextIndexDirectory, 1);
+		FileUtilities.deleteFile(andYetAnotherContextIndexDirectory, 1);
+
+		assertFalse(contextIndexDirectory.exists());
+		assertFalse(anotherContextIndexDirectory.exists());
+		assertFalse(andAnotherContextIndexDirectory.exists());
+		assertFalse(andYetAnotherContextIndexDirectory.exists());
 	}
 
 }

@@ -3,6 +3,7 @@ package ikube.action;
 import static org.mockito.Mockito.mock;
 import ikube.BaseTest;
 import ikube.IConstants;
+import ikube.model.IndexContext;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
@@ -38,14 +39,22 @@ public abstract class BaseActionTest extends BaseTest {
 	 * @return
 	 * @throws Exception
 	 */
-	protected File createIndex(File latestIndexDirectory, String serverName) throws Exception {
-		String filePath = latestIndexDirectory.getAbsolutePath() + File.separatorChar + serverName;
-		File serverIndexDirectory = FileUtilities.getFile(filePath, Boolean.TRUE);
-		logger.info("Creating Lucene index in : " + serverIndexDirectory);
+	protected File createIndex(File latestIndexDirectory, String ip, String contextName) throws Exception {
+		StringBuilder builder = new StringBuilder();
+		builder.append(latestIndexDirectory.getAbsolutePath());
+		builder.append(File.separator);
+		builder.append(ip);
+		builder.append(File.separator);
+		builder.append(contextName);
+		return createIndex(FileUtilities.getFile(builder.toString(), Boolean.TRUE));
+	}
+
+	protected File createIndex(File contextIndexDirectory) throws Exception {
+		logger.info("Creating Lucene index in : " + contextIndexDirectory);
 		Directory directory = null;
 		IndexWriter indexWriter = null;
 		try {
-			directory = FSDirectory.open(serverIndexDirectory);
+			directory = FSDirectory.open(contextIndexDirectory);
 			indexWriter = new IndexWriter(directory, IConstants.ANALYZER, MaxFieldLength.UNLIMITED);
 			Document document = new Document();
 			document.add(new Field(IConstants.CONTENTS, "Michael Couck", Store.YES, Index.ANALYZED));
@@ -56,10 +65,26 @@ public abstract class BaseActionTest extends BaseTest {
 			try {
 				directory.close();
 			} finally {
-				indexWriter.close();
+				try {
+					indexWriter.close();
+				} catch (Exception e) {
+					logger.error("", e);
+				}
 			}
 		}
-		return serverIndexDirectory;
+		return contextIndexDirectory;
+	}
+
+	protected String getContextIndexDirectoryPath(IndexContext indexContext) {
+		StringBuilder builder = new StringBuilder();
+		builder.append(indexContext.getIndexDirectoryPath());
+		builder.append(File.separator);
+		builder.append(System.currentTimeMillis());
+		builder.append(File.separator);
+		builder.append(ip);
+		builder.append(File.separator);
+		builder.append(indexContext.getName());
+		return builder.toString();
 	}
 
 }

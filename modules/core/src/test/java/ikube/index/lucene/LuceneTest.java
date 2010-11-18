@@ -9,6 +9,7 @@ import ikube.toolkit.FileUtilities;
 import ikube.toolkit.IndexManager;
 
 import java.io.File;
+import java.net.InetAddress;
 import java.util.List;
 import java.util.Map;
 
@@ -25,8 +26,6 @@ import org.apache.lucene.search.Searchable;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-
 
 /**
  * Various tests for Lucene indexes, including language indexing and searching.
@@ -49,7 +48,8 @@ public class LuceneTest extends BaseTest {
 		File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
 		FileUtilities.deleteFile(latestIndexDirectory, 1);
 
-		IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis());
+		String ip = InetAddress.getLocalHost().getHostAddress();
+		IndexWriter indexWriter = IndexManager.openIndexWriter(ip, indexContext, System.currentTimeMillis());
 		Document document = new Document();
 		Field field = new Field(IConstants.CONTENTS, string, Store.YES, Index.ANALYZED, TermVector.YES);
 		document.add(field);

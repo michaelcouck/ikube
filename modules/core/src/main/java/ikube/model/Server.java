@@ -1,21 +1,27 @@
 package ikube.model;
 
+import java.util.Set;
+import java.util.TreeSet;
+
 import org.jgroups.Address;
 
 public class Server extends Persistable implements Comparable<Server> {
 
+	/** The real ip address of this server. */
 	private String ip;
+	/** The JGroups address of this machine. */
 	private Address address;
-	/** The time the action was started. */
-	private long start;
-	/** The name of the index that this server is currently working on if any. */
-	private String index;
-	/** The name of the action that this server is currently working on if any. */
-	private String action;
-	/** The last id number that this server started with. */
-	private long idNumber;
-	/** Whether this server is working. */
-	private boolean working;
+
+	/**
+	 * The contexts in this server. These get passed around in the token => server => contexts, but this copy of the contexts are 'local',
+	 * i.e. we don't get them from the other servers. So they have all local data. We use the data in the other servers => contexts to
+	 * update this server.
+	 */
+	private Set<IndexContext> indexContexts;
+
+	public Server() {
+		this.indexContexts = new TreeSet<IndexContext>();
+	}
 
 	public String getIp() {
 		return ip;
@@ -33,44 +39,12 @@ public class Server extends Persistable implements Comparable<Server> {
 		this.address = address;
 	}
 
-	public long getStart() {
-		return start;
+	public Set<IndexContext> getIndexContexts() {
+		return indexContexts;
 	}
 
-	public void setStart(final long start) {
-		this.start = start;
-	}
-
-	public String getIndex() {
-		return index;
-	}
-
-	public void setIndex(final String indexName) {
-		this.index = indexName;
-	}
-
-	public String getAction() {
-		return action;
-	}
-
-	public void setAction(final String actionName) {
-		this.action = actionName;
-	}
-
-	public long getIdNumber() {
-		return idNumber;
-	}
-
-	public void setIdNumber(long idNumber) {
-		this.idNumber = idNumber;
-	}
-
-	public boolean isWorking() {
-		return working;
-	}
-
-	public void setWorking(final boolean indexing) {
-		this.working = indexing;
+	public void setIndexContexts(Set<IndexContext> indexContexts) {
+		this.indexContexts = indexContexts;
 	}
 
 	@Override
@@ -80,8 +54,7 @@ public class Server extends Persistable implements Comparable<Server> {
 
 	public String toString() {
 		final StringBuilder builder = new StringBuilder("[");
-		builder.append(getId()).append(", ").append(isWorking()).append(", ").append(getIndex()).append(", ").append(getAddress()).append(
-				", ").append(getAction()).append(", ").append(getIdNumber()).append(", ").append(getStart());
+		builder.append(getId()).append(",").append(getIp()).append(", ").append(getAddress());
 		builder.append("]");
 		return builder.toString();
 	}

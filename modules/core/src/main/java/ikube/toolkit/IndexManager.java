@@ -19,18 +19,21 @@ public class IndexManager {
 
 	private static Logger LOGGER = Logger.getLogger(IndexManager.class);
 
-	public static synchronized IndexWriter openIndexWriter(IndexContext indexContext, long time) {
-		IndexManager.closeIndexWriter(indexContext);
+	public static synchronized IndexWriter openIndexWriter(String ip, IndexContext indexContext, long time) {
+		StringBuilder builder = new StringBuilder();
 
-		String indexDirectoryPath = indexContext.getIndexDirectoryPath();
-		String serverName = indexContext.getServerName();
-		String indexDirectory = new StringBuilder(indexDirectoryPath).append(File.separator).append(time).append(File.separator).append(
-				serverName).toString();
-		File indexDirectoryFolder = FileUtilities.getFile(indexDirectory, Boolean.TRUE);
-		LOGGER.info("Index directory time : " + time + ", date : " + new Date(time) + ", writing index to directory "
-				+ indexDirectoryFolder);
+		builder.append(indexContext.getIndexDirectoryPath());
+		builder.append(File.separator);
+		builder.append(time);
+		builder.append(File.separator);
+		builder.append(ip);
+		builder.append(File.separator);
+		builder.append(indexContext.getName());
+
+		File indexDirectory = FileUtilities.getFile(builder.toString(), Boolean.TRUE);
+		LOGGER.info("Index directory time : " + time + ", date : " + new Date(time) + ", writing index to directory " + indexDirectory);
 		try {
-			Directory directory = FSDirectory.open(indexDirectoryFolder);
+			Directory directory = FSDirectory.open(indexDirectory);
 			IndexWriter indexWriter = new IndexWriter(directory, IConstants.ANALYZER, true, MaxFieldLength.UNLIMITED);
 			indexWriter.setUseCompoundFile(indexContext.isCompoundFile());
 			indexWriter.setMaxBufferedDocs(indexContext.getBufferedDocs());
@@ -40,7 +43,8 @@ public class IndexManager {
 			indexContext.setIndexWriter(indexWriter);
 		} catch (CorruptIndexException e) {
 			LOGGER.error("We expected a new index and got a corrupt one.", e);
-			deleteIndex(indexDirectoryFolder);
+
+			deleteIndex(indexDirectory);
 		} catch (LockObtainFailedException e) {
 			LOGGER.error("Failed to obtain the lock on the directory. Check the file system permissions.", e);
 		} catch (IOException e) {

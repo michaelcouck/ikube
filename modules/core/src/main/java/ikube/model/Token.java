@@ -5,26 +5,32 @@ import java.util.TreeSet;
 
 import javax.persistence.Entity;
 
+import org.jgroups.Address;
+
 @Entity()
 public class Token extends Persistable {
 
-	/** The ip of the server that has the token. */
-	private String ip;
-	/** The time the token was accepted. */
+	/** The address of the server that has the token. */
+	private Address address;
+	/** The time the token was sent. */
 	private long start;
-	/** The current list of servers. */
+	/**
+	 * The current list of servers. This list includes ourselves but we keep the local copy of this server, i.e. we don't take all the
+	 * servers that are in the token. The token on this server is always local, we just populate it with the servers in the token that is
+	 * sent to us.
+	 */
 	private Set<Server> servers;
 
 	public Token() {
 		this.servers = new TreeSet<Server>();
 	}
 
-	public String getIp() {
-		return ip;
+	public Address getAddress() {
+		return address;
 	}
 
-	public void setIp(String serverIpAddress) {
-		this.ip = serverIpAddress;
+	public void setAddress(Address address) {
+		this.address = address;
 	}
 
 	public long getStart() {
@@ -44,8 +50,8 @@ public class Token extends Persistable {
 	}
 
 	public String toString() {
-		StringBuilder builder = new StringBuilder("[").append(getId()).append(", ").append(getIp()).append(", ").append(getStart()).append(
-				"]");
+		StringBuilder builder = new StringBuilder("[").append(getId()).append(", ").append(getAddress()).append(", ").append(getStart())
+				.append(", ").append(getServers()).append("]");
 		return builder.toString();
 	}
 

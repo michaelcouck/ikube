@@ -47,7 +47,7 @@ public class Open extends AAction<IndexContext, Boolean> {
 			return Boolean.FALSE;
 		}
 		String actionName = getClass().getName();
-		if (getClusterManager().anyWorking(indexContext, actionName)) {
+		if (getClusterManager().anyWorking(actionName)) {
 			logger.debug("Servers working : ");
 			return Boolean.FALSE;
 		}
@@ -57,26 +57,29 @@ public class Open extends AAction<IndexContext, Boolean> {
 			File[] serverIndexDirectories = latestIndexDirectory.listFiles();
 			if (serverIndexDirectories != null) {
 				for (File serverIndexDirectory : serverIndexDirectories) {
-					try {
-						FSDirectory directory = FSDirectory.open(serverIndexDirectory);
-						boolean exists = IndexReader.indexExists(directory);
-						boolean locked = IndexWriter.isLocked(directory);
-						if (!exists || locked) {
-							// We don't open locked directories. Could be
-							// that one configuration is still indexing on this
-							// file system, but we still want to open the index
-							// on the other new indexes. Of course if the index
-							// doesn't exist in the directory for some odd reason
-							// then we just ignore it, and the problem will eventually
-							// get deleted(at the next full index of course).
-							continue;
+					File[] contextIndexDirectories = serverIndexDirectory.listFiles();
+					for (File contextIndexDirectory : contextIndexDirectories) {
+						try {
+							FSDirectory directory = FSDirectory.open(contextIndexDirectory);
+							boolean exists = IndexReader.indexExists(directory);
+							boolean locked = IndexWriter.isLocked(directory);
+							if (!exists || locked) {
+								// We don't open locked directories. Could be
+								// that one configuration is still indexing on this
+								// file system, but we still want to open the index
+								// on the other new indexes. Of course if the index
+								// doesn't exist in the directory for some odd reason
+								// then we just ignore it, and the problem will eventually
+								// get deleted(at the next full index of course).
+								continue;
+							}
+							IndexReader reader = IndexReader.open(directory, Boolean.TRUE);
+							Searchable searcher = new IndexSearcher(reader);
+							searchers.add(searcher);
+							logger.debug("Opened searcher on : " + contextIndexDirectory + ", exists : " + exists + ", locked : " + locked);
+						} catch (Exception e) {
+							logger.error("Exception opening directory : " + contextIndexDirectory, e);
 						}
-						IndexReader reader = IndexReader.open(directory, Boolean.TRUE);
-						Searchable searcher = new IndexSearcher(reader);
-						searchers.add(searcher);
-						logger.debug("Opened searcher on : " + serverIndexDirectory + ", exists : " + exists + ", locked : " + locked);
-					} catch (Exception e) {
-						logger.error("Exception opening directory : " + serverIndexDirectory, e);
 					}
 				}
 			}

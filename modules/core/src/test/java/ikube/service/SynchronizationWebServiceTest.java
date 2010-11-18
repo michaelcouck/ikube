@@ -18,7 +18,7 @@ public class SynchronizationWebServiceTest extends BaseTest {
 	private SynchronizationWebService synchronizationWebService;
 	private String baseDirectory = "./index";
 	private String latestDirectory = Long.toString(System.currentTimeMillis());
-	private String serverDirectory = indexContext.getServerName();
+	private String serverDirectory = indexContext.getName();
 	private String file = "dummy.cfs";
 
 	@Before

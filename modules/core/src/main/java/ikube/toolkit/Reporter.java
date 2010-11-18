@@ -31,7 +31,7 @@ public class Reporter implements IListener {
 				IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
 				for (IndexContext indexContext : indexContexts.values()) {
 					// Get the servers
-					Set<Server> servers = clusterManager.getServers(indexContext);
+					Set<Server> servers = clusterManager.getServers();
 					list.add(servers);
 					// Get the index files
 					File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());

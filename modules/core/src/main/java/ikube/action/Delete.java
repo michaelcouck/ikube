@@ -22,40 +22,37 @@ public class Delete extends AAction<IndexContext, Boolean> {
 
 	@Override
 	public Boolean execute(IndexContext indexContext) {
-		File baseIndexDirectory = FileUtilities.getFile(indexContext.getIndexDirectoryPath(), Boolean.TRUE);
-		File[] indexDirectories = baseIndexDirectory.listFiles();
-		if (indexDirectories == null || indexDirectories.length < 1) {
+		String actionName = getClass().getName();
+		if (getClusterManager().anyWorking(actionName)) {
 			return Boolean.FALSE;
 		}
-		String actionName = getClass().getName();
-		if (getClusterManager().anyWorking(indexContext, actionName)) {
+		File baseIndexDirectory = FileUtilities.getFile(indexContext.getIndexDirectoryPath(), Boolean.TRUE);
+		File[] timeIndexDirectories = baseIndexDirectory.listFiles();
+		if (timeIndexDirectories == null || timeIndexDirectories.length < 2) {
 			return Boolean.FALSE;
 		}
 		try {
-			List<File> indexDirectoriesList = Arrays.asList(indexDirectories);
-			if (indexDirectoriesList.size() < 2) {
-				return Boolean.FALSE;
-			}
 			getClusterManager().setWorking(indexContext, actionName, Boolean.TRUE, System.currentTimeMillis());
-			Collections.sort(indexDirectoriesList, new Comparator<File>() {
+			List<File> timeIndexDirectoriesList = Arrays.asList(timeIndexDirectories);
+			Collections.sort(timeIndexDirectoriesList, new Comparator<File>() {
 				@Override
 				public int compare(File o1, File o2) {
 					return o1.getName().compareTo(o2.getName());
 				}
 			});
-			logger.debug("Index directories : " + indexDirectoriesList);
+			logger.debug("Index directories : " + timeIndexDirectoriesList);
 			// Check if the last directory has a lock
-			File lastIndexDirectory = indexDirectoriesList.get(indexDirectoriesList.size() - 1);
+			File latestIndexDirectory = timeIndexDirectoriesList.get(timeIndexDirectoriesList.size() - 1);
 			boolean lastIndexLocked = Boolean.FALSE;
 			try {
-				lastIndexLocked = isLocked(lastIndexDirectory);
+				lastIndexLocked = isLocked(latestIndexDirectory);
 			} catch (Exception e) {
 				logger.error("Exception checking which directories to delete : ", e);
 			}
 
-			int indexDirectoriesListSize = indexDirectoriesList.size();
+			int indexDirectoriesListSize = timeIndexDirectoriesList.size();
 			int indexesToDelete = lastIndexLocked ? indexDirectoriesListSize - 2 : indexDirectoriesListSize - 1;
-			for (File indexDirectory : indexDirectoriesList) {
+			for (File indexDirectory : timeIndexDirectoriesList) {
 				logger.debug("Indexes to delete : " + indexesToDelete + ", " + indexDirectory);
 				if (--indexesToDelete < 0) {
 					break;
@@ -69,27 +66,33 @@ public class Delete extends AAction<IndexContext, Boolean> {
 		return Boolean.TRUE;
 	}
 
-	protected boolean isLocked(File indexDirectory) {
-		File[] serverIndexDirectories = indexDirectory.listFiles();
+	protected boolean isLocked(File latestIndexDirectory) {
+		File[] serverIndexDirectories = latestIndexDirectory.listFiles();
 		if (serverIndexDirectories == null || serverIndexDirectories.length == 0) {
 			return Boolean.FALSE;
 		}
 		for (File serverIndexDirectory : serverIndexDirectories) {
-			Directory directory = null;
-			try {
-				directory = FSDirectory.open(serverIndexDirectory);
-				if (IndexWriter.isLocked(directory)) {
-					return Boolean.TRUE;
-				}
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				if (directory != null) {
-					try {
-						IndexWriter.unlock(directory);
-						directory.close();
-					} catch (Exception e) {
-						logger.error("Exception closing the directory : " + directory, e);
+			File[] contextIndexDirectories = serverIndexDirectory.listFiles();
+			if (contextIndexDirectories == null || contextIndexDirectories.length == 0) {
+				continue;
+			}
+			for (File contextIndexDirectory : contextIndexDirectories) {
+				Directory directory = null;
+				try {
+					directory = FSDirectory.open(contextIndexDirectory);
+					if (IndexWriter.isLocked(directory)) {
+						return Boolean.TRUE;
+					}
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					if (directory != null) {
+						try {
+							IndexWriter.unlock(directory);
+							directory.close();
+						} catch (Exception e) {
+							logger.error("Exception closing the directory : " + directory, e);
+						}
 					}
 				}
 			}
