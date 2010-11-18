@@ -14,7 +14,6 @@ import org.apache.lucene.search.Searcher;
 import org.apache.lucene.search.TopDocs;
 
 /**
- * @see Search
  * @author Michael Couck
  * @since 02.09.08
  * @version 01.00
@@ -26,23 +25,6 @@ public class SearchMulti extends Search {
 	/** The fields in index to add to the search. */
 	private String[] searchFields;
 
-	/**
-	 * Constructor takes the searcher and the search string to look for. For each search one of these lightweight classes is created
-	 * specifying the fragment parameter, the start and end of the results to return and the maximum results to return.
-	 *
-	 * @param configuration
-	 *            the configuration for the search
-	 * @param searchStrings
-	 *            the strings that we are looking for in the index
-	 * @param searchfields
-	 *            the fields in the index to search
-	 * @param fragment
-	 *            whether to fragment the results like ...the best <b>fragment</b> of them all...
-	 * @param firstResult
-	 *            the start in the index results. This facilitates paging from clients
-	 * @param maxResults
-	 *            the end in the results to return. Also part of the paging functionality
-	 */
 	public SearchMulti(Searcher searcher) {
 		super(searcher);
 	}

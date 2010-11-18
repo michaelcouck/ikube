@@ -46,9 +46,9 @@ public class IndexableTableVisitorTest extends BaseTest {
 	@Test
 	public void binarySearch() {
 		// List<Indexable<?>>, String
-		int index = indexableTableVisitor.binarySearch(indexableColumns, "faqId");
+		int index = indexableTableVisitor.getColumnIndex(indexableColumns, "faqId");
 		assertTrue(index > -1);
-		index = indexableTableVisitor.binarySearch(indexableColumns, "someOtherColumnName");
+		index = indexableTableVisitor.getColumnIndex(indexableColumns, "someOtherColumnName");
 		logger.info("Column index : " + index);
 		assertTrue(index < 0);
 	}

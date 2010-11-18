@@ -202,7 +202,7 @@ public class IndexableTableVisitor<I> extends IndexableVisitor<IndexableTable> {
 		ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
 		for (int i = 1; i <= resultSetMetaData.getColumnCount(); i++) {
 			String columnName = resultSetMetaData.getColumnName(i);
-			int index = binarySearch(children, columnName);
+			int index = getColumnIndex(children, columnName);
 			if (index < 0) {
 				continue;
 			}
@@ -226,7 +226,7 @@ public class IndexableTableVisitor<I> extends IndexableVisitor<IndexableTable> {
 		return null;
 	}
 
-	protected int binarySearch(List<Indexable<?>> list, String name) {
+	protected int getColumnIndex(List<Indexable<?>> list, String name) {
 		int low = 0;
 		int high = list.size() - 1;
 		name = name.toLowerCase();
@@ -240,9 +240,9 @@ public class IndexableTableVisitor<I> extends IndexableVisitor<IndexableTable> {
 			else if (cmp > 0)
 				high = mid - 1;
 			else
-				return mid; // key found
+				return mid;
 		}
-		return -(low + 1); // key not found
+		return -(low + 1);
 	}
 
 	protected void closeAll(ResultSet resultSet) {

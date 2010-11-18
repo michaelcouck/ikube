@@ -1,22 +1,34 @@
 03.11.10
-
-* Finish the clustering support - 3 *
-* Implementation of updating the index with deltas from the client - 3
-* Implement the synchronisation between the servers - 1 *
-* Front end for configuration, monitoring etc. - 10
-* Add the file and url visitors - 10
+* Wiki - 1
+* Testing - 5
 * Add the other parsers - 3
-* Testing - 10
-* Web site - 1
-* Documentation - 1
+* Add the file and url visitors - 10
+* Implementation of updating the index with deltas from the client - 3
 
-Total - 42
+Total - 23
+
+Done:
+* Finish the clustering support - 3 *
+* Implement the synchronisation between the servers - 1 *
+
+
 
 Other things:
-* Add a shutdown hook for the Spring objects that need to be closed when the context gets re-freshed.
-* Add a reporting module that checks the database connection, the indexes in the different contexts and sends
-   the result to a mail address. Perhaps some profiling information, etc. *
 * Add a configuration for a file system
 * Add a configuration for a mail account
-* Add a database tester to re-connect if the database becomes dis-connecte
+* Add a database tester to re-connect if the database becomes disconnect
+* Add sorting to the multi and single searchers
+* Is there automatically language support, i.e. are languages handled transparently
+* Add changes in the data to results? I.e. save the previous data and in the results
+   offer a series of documents representing how they changes over the
+   indexes/periods
+* Add a shutdown hook for the Spring objects that need to be closed when the context
+  gets refreshed.
+
 * Delete the database file on startup locally *
+* Add a reporting module that checks the database connection, the indexes in the different contexts and sends
+   the result to a mail address. Perhaps some profiling information, etc. *
+
+
+Won't Do:
+* Front end for configuration, monitoring etc. - 10

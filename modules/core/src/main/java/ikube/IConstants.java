@@ -6,42 +6,34 @@ import org.apache.lucene.util.Version;
 
 public interface IConstants {
 
+	/** Application name. */
 	public String IKUBE = "ikube";
 
 	/** We expect the configuration file to be in the META-INF as seems to be the fashion at the moment. */
-	public String META_INF = "/META-INF/";
+	public String META_INF = "/META-INF";
+
+	/** Where the whole application is wired together. */
+	public String SPRING_CONFIGURATION_FILE = META_INF + "/spring.xml";
+
 	/** Maps mime types to file extensions.. */
-	public String MIME_TYPES = META_INF + "mime/mime-types.xml";
+	public String MIME_TYPES = META_INF + "/mime/mime-types.xml";
 	/** Maps parsers to mime types. */
-	public String MIME_MAPPING = META_INF + "mime/mime-mapping.xml";
+	public String MIME_MAPPING = META_INF + "/mime/mime-mapping.xml";
 
 	/** The database file name. */
 	public String DATABASE_FILE = "ikube.odb";
-	/** The database name in JNDI. */
-	public String DATABASE = "database";
-	/** The port of the database. */
-	public int PORT = 8000;
-
-	public String SPRING_CONFIGURATION_FILE = META_INF + "spring.xml";
 
 	public Analyzer ANALYZER = new StandardAnalyzer(Version.LUCENE_29);
-	public boolean COMPOUND_FILE = Boolean.TRUE;
-	public int BUFFERED_DOCS = 100;
-	public int MAX_FIELD_LENGTH = 10000;
-	public int MERGE_FACTOR = 100;
-	public long RAM_BUFFER_SIZE = 256;
 	public long MAX_READ_LENGTH = 1000000;
 	public int MAX_RESULT_FIELD_LENGTH = 1000;
 
-	public String READER_FILE_SUFFIX = ".igenius";
+	public String READER_FILE_SUFFIX = ".ikube";
 	public int MAX_FRAGMENTS = 3;
 	public String FRAGMENT_SEPERATOR = "...";
 	public Version VERSION = Version.LUCENE_30;
 
 	public String ID = "id";
-	public String IP = "ip";
 	public String INDEX = "index";
-	public String NAME = "name";
 	public String SCORE = "score";
 	public String CONTENTS = "contents";
 	public String FRAGMENT = "fragment";
@@ -51,8 +43,4 @@ public interface IConstants {
 
 	public String ENCODING = "UTF8";
 
-	public String CLASS_NAME = "className";
-
-	public int SOURCE_PORT = 8082;
-	public int TARGET_PORT = 8083;
 }

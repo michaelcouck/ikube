@@ -1,5 +1,7 @@
 package ikube.service;
 
+import ikube.logging.Logging;
+
 import java.util.List;
 
 import javax.xml.ws.Binding;
@@ -33,8 +35,9 @@ public class WebServicePublisher implements IWebServicePublisher {
 				implementor = implementors.get(index);
 				Endpoint endpoint = Endpoint.publish(address, implementor);
 				Binding binding = endpoint.getBinding();
-				logger.info("Endpoint : " + endpoint + ", binding : " + binding);
-				logger.info("Implementor : " + implementor + ", on address : " + address);
+				String message = Logging.getString("Endpoint : ", endpoint, ", binding : ", binding, ", implementor : ", implementor,
+						", on address : ", address);
+				logger.info(message);
 			} catch (Exception e) {
 				logger.error("Exception publishing web service : " + address + ", " + implementor, e);
 			}

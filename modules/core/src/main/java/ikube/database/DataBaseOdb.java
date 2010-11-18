@@ -27,7 +27,6 @@ public class DataBaseOdb implements IDataBase {
 
 	private Logger logger;
 	private ODB odb;
-	// private long lockTimeout = 3000;
 	private Map<Class<?>, Field> idFields;
 
 	public DataBaseOdb() {
@@ -93,8 +92,6 @@ public class DataBaseOdb implements IDataBase {
 			return objects.getFirst();
 		} catch (Exception e) {
 			logger.error("", e);
-		} finally {
-			// this.odb.commit();
 		}
 		return null;
 	}
@@ -122,7 +119,6 @@ public class DataBaseOdb implements IDataBase {
 		} catch (Exception e) {
 			logger.error("", e);
 		} finally {
-			// this.odb.commit();
 			notifyAll();
 		}
 		return null;
@@ -158,7 +154,6 @@ public class DataBaseOdb implements IDataBase {
 		} catch (Exception e) {
 			logger.error("", e);
 		} finally {
-			// this.odb.commit();
 			notifyAll();
 		}
 		return list;
@@ -207,58 +202,6 @@ public class DataBaseOdb implements IDataBase {
 		return null;
 	}
 
-	// public synchronized Lock lock(Class<?> klass) {
-	// Lock lock = null;
-	// try {
-	// String className = klass.getName();
-	// Map<String, Object> parameters = new HashMap<String, Object>();
-	// parameters.put(IConstants.CLASS_NAME, className);
-	// lock = find(Lock.class, parameters, Boolean.TRUE);
-	// if (lock == null) {
-	// lock = new Lock();
-	// lock.setClassName(className);
-	// lock.setLocked(Boolean.TRUE);
-	// persist(lock);
-	// } else {
-	// while (lock.isLocked()) {
-	// try {
-	// // logger.debug("Going into wait : " + Thread.currentThread().hashCode() + ", " + lock);
-	// notifyAll();
-	// wait(100);
-	// } catch (InterruptedException e) {
-	// logger.error("Interrupted : ", e);
-	// }
-	// lock = find(Lock.class, parameters, Boolean.TRUE);
-	// // logger.debug("Woken up : " + Thread.currentThread().hashCode() + ", " + lock);
-	// if (lock.isLocked() && System.currentTimeMillis() - lock.getStart() > lockTimeout) {
-	// break;
-	// }
-	// }
-	// lock.setStart(System.currentTimeMillis());
-	// lock.setLocked(Boolean.TRUE);
-	// merge(lock);
-	// }
-	// } finally {
-	// // logger.debug("Notifying : " + Thread.currentThread().hashCode() + ", " + lock);
-	// notifyAll();
-	// }
-	// return lock;
-	// }
-	//
-	// public synchronized void release(Lock lock) {
-	// try {
-	// // logger.debug("Releasing : " + Thread.currentThread().hashCode());
-	// if (lock != null) {
-	// lock.setLocked(Boolean.FALSE);
-	// merge(lock);
-	// }
-	// } finally {
-	// // logger.debug("Notifying : " + Thread.currentThread().hashCode() + ", " + lock);
-	// notifyAll();
-	// }
-	// }
-
-	// @Injection(type = ODB.class)
 	public void setOdb(ODB odb) {
 		this.odb = odb;
 	}

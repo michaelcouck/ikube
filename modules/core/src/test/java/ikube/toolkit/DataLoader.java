@@ -1,8 +1,5 @@
 package ikube.toolkit;
 
-import ikube.toolkit.ApplicationContextManager;
-import ikube.toolkit.FileUtilities;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -22,7 +19,6 @@ import org.dbunit.dataset.xml.FlatXmlDataSet;
 import org.dbunit.dataset.xml.FlatXmlProducer;
 import org.dbunit.operation.DatabaseOperation;
 import org.xml.sax.InputSource;
-
 
 public class DataLoader {
 

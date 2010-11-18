@@ -13,7 +13,6 @@ import org.apache.lucene.search.Searcher;
 import org.apache.lucene.search.TopDocs;
 
 /**
- * @see Search
  * @author Michael Couck
  * @since 22.08.08
  * @version 01.00
@@ -25,21 +24,6 @@ public class SearchSingle extends Search {
 	/** The field to search in the index. */
 	private String searchField;
 
-	/**
-	 * Constructor takes the searcher and the search string to look for. For each search one of these lightweight classes is created
-	 * specifying the fragment parameter, the start and end of the results to return and the maximum results to return.
-	 *
-	 * @param configuration
-	 *            the configuration to use for the search
-	 * @param searchString
-	 *            the string that we are looking for in the index
-	 * @param fragment
-	 *            whether to fragment the results like ...the best <b>fragment</b> of them all...
-	 * @param firstResult
-	 *            the start in the index results. This facilitates paging from clients
-	 * @param maxResults
-	 *            the end in the results to return. Also part of the paging functionality
-	 */
 	public SearchSingle(Searcher searcher) {
 		super(searcher);
 	}

@@ -40,7 +40,7 @@ public abstract class Search {
 	/** The searcher that will be used for the search. */
 	protected Searcher searcher;
 	/** The query parsers for various query fields. */
-	private final Map<String, QueryParser> queryParsers = new HashMap<String, QueryParser>();
+	private final Map<String, QueryParser> queryParsers;
 	/** Whether to generate fragments for the search string or not. */
 	protected boolean fragment;
 	/** The start position in the search results to return maps from. */
@@ -48,24 +48,10 @@ public abstract class Search {
 	/** The end position in the results to stop returning results from. */
 	protected int maxResults;
 
-	/**
-	 * Constructor takes the searcher and the search string to look for. For each search one of these lightweight classes is created
-	 * specifying the fragment parameter, the start and end of the results to return and the maximum results to return.
-	 *
-	 * @param searcher
-	 *            the searcher to use for the search
-	 * @param searchString
-	 *            the string that we are looking for in the index
-	 * @param fragment
-	 *            whether to fragment the results like ...the best <b>fragment</b> of them all...
-	 * @param firstResult
-	 *            the start in the index results. This facilitates paging from clients
-	 * @param maxResults
-	 *            the end in the results to return. Also part of the paging functionality
-	 */
 	Search(Searcher searcher) {
-		this.searcher = searcher;
 		this.logger = Logger.getLogger(this.getClass());
+		this.searcher = searcher;
+		this.queryParsers = new HashMap<String, QueryParser>();
 	}
 
 	/**
