@@ -32,7 +32,6 @@ public class Timer implements Runnable {
 					event.setType(type);
 					event.setConsumed(Boolean.FALSE);
 					event.setTimestamp(new Timestamp(System.currentTimeMillis()));
-					// logger.info("Firing event : " + event);
 					ListenerManager.fireEvent(event);
 				}
 			});

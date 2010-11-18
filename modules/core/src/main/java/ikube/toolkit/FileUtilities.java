@@ -75,34 +75,38 @@ public class FileUtilities {
 		FileUtilities.deleteFile(file, maxRetryCount, 0);
 	}
 
-	public static File getFile(String filePath, boolean directory) {
-		File file = new File(filePath);
-		if (directory) {
-			if (file.exists() && file.isDirectory()) {
-				return file;
-			}
-			boolean created = file.mkdirs();
-			if (created && file.exists()) {
-				return file;
-			}
-		} else {
-			if (file.exists() && file.isFile()) {
-				return file;
-			}
-			File parent = file.getParentFile();
-			parent = FileUtilities.getFile(parent.getAbsolutePath(), Boolean.TRUE);
-			if (parent != null) {
-				try {
-					boolean created = file.createNewFile();
-					if (created && file.exists()) {
-						return file;
+	public static synchronized File getFile(String filePath, boolean directory) {
+		try {
+			File file = new File(filePath);
+			if (directory) {
+				if (file.exists() && file.isDirectory()) {
+					return file;
+				}
+				boolean created = file.mkdirs();
+				if (created && file.exists()) {
+					return file;
+				}
+			} else {
+				if (file.exists() && file.isFile()) {
+					return file;
+				}
+				File parent = file.getParentFile();
+				parent = FileUtilities.getFile(parent.getAbsolutePath(), Boolean.TRUE);
+				if (parent != null) {
+					try {
+						boolean created = file.createNewFile();
+						if (created && file.exists()) {
+							return file;
+						}
+					} catch (IOException e) {
+						LOGGER.error("Exception creating file : " + file, e);
 					}
-				} catch (IOException e) {
-					LOGGER.error("Exception creating file : " + file, e);
 				}
 			}
+			return null;
+		} finally {
+			FileUtilities.class.notifyAll();
 		}
-		return null;
 	}
 
 	protected void deleteTempFiles() {
@@ -138,28 +142,32 @@ public class FileUtilities {
 		}
 	}
 
-	public static File getLatestIndexDirectory(String baseIndexDirectoryPath) {
-		File baseIndexDirectory = FileUtilities.getFile(baseIndexDirectoryPath, Boolean.TRUE);
-		LOGGER.debug("Base index directory : " + baseIndexDirectory);
-		File[] indexDirectories = baseIndexDirectory.listFiles();
-		File latestIndexDirectory = null;
-		for (File indexDirectory : indexDirectories) {
-			LOGGER.debug("Index directory : " + indexDirectory);
-			if (!indexDirectory.isDirectory()) {
-				continue;
+	public static synchronized File getLatestIndexDirectory(String baseIndexDirectoryPath) {
+		try {
+			File baseIndexDirectory = FileUtilities.getFile(baseIndexDirectoryPath, Boolean.TRUE);
+			LOGGER.debug("Base index directory : " + baseIndexDirectory);
+			File[] indexDirectories = baseIndexDirectory.listFiles();
+			File latestIndexDirectory = null;
+			for (File indexDirectory : indexDirectories) {
+				LOGGER.debug("Index directory : " + indexDirectory);
+				if (!indexDirectory.isDirectory()) {
+					continue;
+				}
+				String indexDirectoryName = indexDirectory.getName();
+				long indexDirectoryTime = Long.parseLong(indexDirectoryName);
+				if (latestIndexDirectory == null) {
+					latestIndexDirectory = indexDirectory;
+					continue;
+				}
+				long latestIndexDirectoryTime = Long.parseLong(latestIndexDirectory.getName());
+				if (indexDirectoryTime > latestIndexDirectoryTime) {
+					latestIndexDirectory = indexDirectory;
+				}
 			}
-			String indexDirectoryName = indexDirectory.getName();
-			long indexDirectoryTime = Long.parseLong(indexDirectoryName);
-			if (latestIndexDirectory == null) {
-				latestIndexDirectory = indexDirectory;
-				continue;
-			}
-			long latestIndexDirectoryTime = Long.parseLong(latestIndexDirectory.getName());
-			if (indexDirectoryTime > latestIndexDirectoryTime) {
-				latestIndexDirectory = indexDirectory;
-			}
+			return latestIndexDirectory;
+		} finally {
+			FileUtilities.class.notifyAll();
 		}
-		return latestIndexDirectory;
 	}
 
 	/**
