@@ -2,7 +2,6 @@ package ikube.index.visitor.database;
 
 import ikube.IConstants;
 import ikube.cluster.IClusterManager;
-import ikube.database.IDataBase;
 import ikube.index.visitor.IndexableVisitor;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
@@ -29,7 +28,6 @@ public class IndexableTableVisitor<I> extends IndexableVisitor<IndexableTable> {
 	private Logger logger = Logger.getLogger(this.getClass());
 	private IndexContext indexContext;
 	private IndexableVisitor<Indexable<?>> indexableColumnVisitor;
-	private IDataBase dataBase;
 
 	@Override
 	public void visit(final IndexableTable indexableTable) {
@@ -80,9 +78,9 @@ public class IndexableTableVisitor<I> extends IndexableVisitor<IndexableTable> {
 	 * Examples: minimum id value - 4549731 <br>
 	 * 1) nextRow = 0, batch = 10 - select * from faq where faqId >= 4549731 and faqId < 4549741<br>
 	 * 2) nextRow = 10,batch = 10 - select * from faq where faqId >= 4549741 and faqId < 4549751<br>
-	 *
+	 * 
 	 * ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY
-	 *
+	 * 
 	 * @param connection
 	 * @param indexableTable
 	 * @param idColumn
@@ -189,8 +187,8 @@ public class IndexableTableVisitor<I> extends IndexableVisitor<IndexableTable> {
 
 		if (logger.isDebugEnabled()) {
 			if (resultSet.getRow() % 100000 == 0) {
-				StringBuilder builder = new StringBuilder("Id : ").append(rowId).append(", row : ").append(resultSet.getRow()).append(
-						", thread : ").append(Thread.currentThread().hashCode());
+				StringBuilder builder = new StringBuilder("Id : ").append(rowId).append(", row : ").append(resultSet.getRow())
+						.append(", thread : ").append(Thread.currentThread().hashCode());
 				logger.debug(builder.toString());
 			}
 		}
@@ -310,14 +308,6 @@ public class IndexableTableVisitor<I> extends IndexableVisitor<IndexableTable> {
 
 	public void setIndexableColumnVisitor(IndexableVisitor<Indexable<?>> indexableColumnVisitor) {
 		this.indexableColumnVisitor = indexableColumnVisitor;
-	}
-
-	public IDataBase getDataBase() {
-		return dataBase;
-	}
-
-	public void setDataBase(IDataBase dataBase) {
-		this.dataBase = dataBase;
 	}
 
 }

@@ -47,8 +47,7 @@
 		class="ikube.index.visitor.database.IndexableTableVisitor"
 		property:indexContext-ref="faqIndexContext.one"
 		property:indexableType="ikube.model.IndexableTable"
-		property:indexableColumnVisitor-ref="faqColumnVisitor.one"
-		property:dataBase-ref="ikube.database.DataBaseOdb" />
+		property:indexableColumnVisitor-ref="faqColumnVisitor.one" />
 	<bean
 		id="faqColumnVisitor.one"
 		class="ikube.index.visitor.database.IndexableColumnVisitor"
