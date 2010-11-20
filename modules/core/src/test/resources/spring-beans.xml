@@ -69,17 +69,10 @@
 	<bean
 		id="ikube.aspect.Profiling"
 		class="ikube.aspect.Profiling" />
-	<bean
-		id="ikube.aspect.SynchronizedActionHandler"
-		class="ikube.aspect.SynchronizedActionHandler"
-		property:lockManager-ref="ikube.cluster.LockManager" />
 	<aop:config proxy-target-class="false">
 		<aop:aspect ref="ikube.aspect.Profiling">
 			<aop:around method="profile" pointcut="execution(* ikube.index.visitor.database.*.*(..))" />
 		</aop:aspect>
-		<!--<aop:aspect ref="ikube.aspect.SynchronizedActionHandler">
-			<aop:around method="execute" pointcut="execution(* ikube.action.*.execute(..))" />
-		</aop:aspect>-->
 	</aop:config>
 
 	<bean

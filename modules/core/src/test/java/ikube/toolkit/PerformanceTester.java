@@ -19,11 +19,11 @@ public class PerformanceTester {
 	public interface IPerform {
 		public boolean log();
 
-		public void execute();
+		public void execute() throws Exception;
 	}
 
 	public static abstract class APerform implements IPerform {
-		public void execute() {
+		public void execute() throws Exception {
 		}
 
 		public boolean log() {
@@ -43,7 +43,7 @@ public class PerformanceTester {
 	 *            the number of executions to perform
 	 * @return the number of executions per second
 	 */
-	public static double execute(IPerform perform, String type, double iterations) {
+	public static double execute(IPerform perform, String type, double iterations) throws Exception {
 		double start = System.currentTimeMillis();
 		for (int i = 0; i < iterations; i++) {
 			perform.execute();

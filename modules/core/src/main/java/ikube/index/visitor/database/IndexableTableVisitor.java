@@ -88,15 +88,19 @@ public class IndexableTableVisitor<I> extends IndexableVisitor<IndexableTable> {
 	 * @return
 	 * @throws Exception
 	 */
-	protected ResultSet getResultSet(Connection connection, IndexableTable indexableTable, IndexableColumn idColumn, long idNumber)
+	public ResultSet getResultSet(Connection connection, IndexableTable indexableTable, IndexableColumn idColumn, long idNumber)
 			throws Exception {
 
 		StringBuilder builder = new StringBuilder(indexableTable.getSql());
 		builder.append(" where ");
+		builder.append(indexableTable.getName());
+		builder.append(".");
 		builder.append(idColumn.getName());
 		builder.append(" >= ");
 		builder.append(idNumber);
 		builder.append(" and ");
+		builder.append(indexableTable.getName());
+		builder.append(".");
 		builder.append(idColumn.getName());
 		builder.append(" < ");
 		builder.append(idNumber + indexContext.getBatchSize());
@@ -106,7 +110,7 @@ public class IndexableTableVisitor<I> extends IndexableVisitor<IndexableTable> {
 		return statement.executeQuery(builder.toString());
 	}
 
-	protected long getIdNumber(Connection connection, IndexableTable indexableTable, IndexableColumn idColumn, long idNumber)
+	public long getIdNumber(Connection connection, IndexableTable indexableTable, IndexableColumn idColumn, long idNumber)
 			throws Exception {
 		if (idNumber == 0) {
 			// If the idNumber is 0 then we are the first, so we take the first id in the table
@@ -125,14 +129,18 @@ public class IndexableTableVisitor<I> extends IndexableVisitor<IndexableTable> {
 		return idNumber;
 	}
 
-	protected long getCount(Connection connection, IndexableTable indexableTable, IndexableColumn idColumn, long idNumber) throws Exception {
+	public long getCount(Connection connection, IndexableTable indexableTable, IndexableColumn idColumn, long idNumber) throws Exception {
 		StringBuilder builder = new StringBuilder("select count(*) from ");
 		builder.append(indexableTable.getName());
 		builder.append(" where ");
+		builder.append(indexableTable.getName());
+		builder.append(".");
 		builder.append(idColumn.getName());
 		builder.append(" > ");
 		builder.append(idNumber);
 		builder.append(" and ");
+		builder.append(indexableTable.getName());
+		builder.append(".");
 		builder.append(idColumn.getName());
 		builder.append(" < ");
 		builder.append(idNumber + indexContext.getBatchSize());
@@ -147,7 +155,7 @@ public class IndexableTableVisitor<I> extends IndexableVisitor<IndexableTable> {
 		return count;
 	}
 
-	protected long getMinId(Connection connection, IndexableTable indexableTable, IndexableColumn idColumn) throws Exception {
+	public long getMinId(Connection connection, IndexableTable indexableTable, IndexableColumn idColumn) throws Exception {
 		// If the idNumber is 0 then we are the first, so we take the first id in the table
 		StringBuilder builder = new StringBuilder("select min(");
 		builder.append(idColumn.getName());
@@ -164,7 +172,7 @@ public class IndexableTableVisitor<I> extends IndexableVisitor<IndexableTable> {
 		return minId;
 	}
 
-	protected long getMaxId(Connection connection, IndexableTable indexableTable, IndexableColumn idColumn) throws Exception {
+	public long getMaxId(Connection connection, IndexableTable indexableTable, IndexableColumn idColumn) throws Exception {
 		StringBuilder builder = new StringBuilder("select max(");
 		builder.append(idColumn.getName());
 		builder.append(") from ");
@@ -181,7 +189,7 @@ public class IndexableTableVisitor<I> extends IndexableVisitor<IndexableTable> {
 	}
 
 	@SuppressWarnings("unchecked")
-	protected void doRow(final IndexableTable indexableTable, IndexableColumn idColumn, ResultSet resultSet) throws Exception {
+	public void doRow(final IndexableTable indexableTable, IndexableColumn idColumn, ResultSet resultSet) throws Exception {
 		List<Indexable<?>> children = indexableTable.getChildren();
 		Object rowId = resultSet.getObject(idColumn.getName());
 
@@ -214,7 +222,7 @@ public class IndexableTableVisitor<I> extends IndexableVisitor<IndexableTable> {
 		indexContext.getIndexWriter().addDocument(document);
 	}
 
-	protected IndexableColumn getIdColumn(List<Indexable<?>> indexableColumns) {
+	public IndexableColumn getIdColumn(List<Indexable<?>> indexableColumns) {
 		for (Indexable<?> indexable : indexableColumns) {
 			if (((IndexableColumn) indexable).isIdColumn()) {
 				return (IndexableColumn) indexable;
@@ -224,7 +232,7 @@ public class IndexableTableVisitor<I> extends IndexableVisitor<IndexableTable> {
 		return null;
 	}
 
-	protected int getColumnIndex(List<Indexable<?>> list, String name) {
+	public int getColumnIndex(List<Indexable<?>> list, String name) {
 		int low = 0;
 		int high = list.size() - 1;
 		name = name.toLowerCase();

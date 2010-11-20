@@ -31,7 +31,7 @@ public abstract class BaseTest extends ATest {
 			stringPatterns = new String[] { "data.xml" };
 			files = FileUtilities.findFilesRecursively(folder, stringPatterns, new ArrayList<File>());
 			file = files.get(0);
-			dataLoader.setData(file.getAbsolutePath());
+			dataLoader.insertDataSet(file.getAbsolutePath());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

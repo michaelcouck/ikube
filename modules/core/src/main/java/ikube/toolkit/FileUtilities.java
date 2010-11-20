@@ -204,7 +204,7 @@ public class FileUtilities {
 	 *
 	 * @param file
 	 *            the file to read the contents from
-	 * @return the file contents in a byte array output steram
+	 * @return the file contents in a byte array output stream
 	 * @throws Exception
 	 */
 	public static ByteArrayOutputStream getContents(File file) {

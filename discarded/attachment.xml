@@ -1,0 +1,5 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+	<!-- ATTACHMENTID="1" -->
+	<ATTACHMENT NAME="name" ATTACHMENT="attachment" LENGTH="1000" FAQID="faqid" />
+</dataset>
