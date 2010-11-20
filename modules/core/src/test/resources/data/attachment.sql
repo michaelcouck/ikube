@@ -1,0 +1,13 @@
+INSERT INTO DB2ADMIN.ATTACHMENT (
+	ATTACHMENT,
+	LENGTH,
+	NAME,
+	FAQID
+)
+    VALUES
+(
+	?,
+	?,
+	?,
+	?
+)

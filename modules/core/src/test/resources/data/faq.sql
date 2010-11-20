@@ -1,0 +1,22 @@
+INSERT INTO DB2ADMIN.FAQ
+	(
+		ANSWER,
+		CREATIONTIMESTAMP,
+		CREATOR,
+		GANG,
+		MODIFIEDTIMESTAMP,
+		MODIFIER,
+		PUBLISHED,
+		QUESTION
+	)
+	VALUES
+	(
+		?,
+		?,
+		?,
+		?,
+		?,
+		?,
+		?,
+		?
+	)
