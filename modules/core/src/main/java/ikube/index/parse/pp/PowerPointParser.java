@@ -2,8 +2,9 @@ package ikube.index.parse.pp;
 
 import ikube.index.parse.IParser;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import org.apache.log4j.Logger;
 import org.apache.poi.poifs.eventfilesystem.POIFSReader;
@@ -24,18 +25,19 @@ public class PowerPointParser implements IParser, POIFSReaderListener {
 	/** Logger for the parser class. */
 	private Logger LOGGER = Logger.getLogger(PowerPointParser.class);
 	/** The output stream for the parsed data. */
-	private ByteArrayOutputStream bos = new ByteArrayOutputStream();
+	private ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public final String parse(String string) throws Exception {
+	public final OutputStream parse(InputStream inputStream) throws Exception {
 		POIFSReader reader = new POIFSReader();
 		reader.registerListener(this);
-		ByteArrayInputStream bis = new ByteArrayInputStream(string.getBytes());
-		reader.read(bis);
-		return bos.toString();
+		reader.read(inputStream);
+		OutputStream outputStream = new ByteArrayOutputStream();
+		outputStream.write(byteArrayOutputStream.toString().getBytes());
+		return outputStream;
 	}
 
 	/**
@@ -53,8 +55,8 @@ public class PowerPointParser implements IParser, POIFSReaderListener {
 				long type = LittleEndian.getUShort(buffer, i + 2);
 				long size = LittleEndian.getUInt(buffer, i + 4);
 				if (type == 4008L) {
-					bos.write(32);
-					bos.write(buffer, i + 4 + 4, (int) size);
+					byteArrayOutputStream.write(32);
+					byteArrayOutputStream.write(buffer, i + 4 + 4, (int) size);
 					i = (i + 4 + 4 + (int) size) - 1;
 				}
 			}

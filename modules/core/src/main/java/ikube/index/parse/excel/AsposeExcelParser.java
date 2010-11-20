@@ -2,6 +2,9 @@ package ikube.index.parse.excel;
 
 import ikube.index.parse.IParser;
 
+import java.io.InputStream;
+import java.io.OutputStream;
+
 /**
  * This parser needs to be implemented. The documentation to the Aspose Excel parser is
  * http://www.aspose.com/documentation/product-suites/index.html
@@ -16,7 +19,7 @@ public class AsposeExcelParser implements IParser {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public String parse(String string) throws Exception {
+	public OutputStream parse(InputStream inputStream) throws Exception {
 		return null;
 	}
 

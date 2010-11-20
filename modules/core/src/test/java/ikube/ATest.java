@@ -21,7 +21,7 @@ public abstract class ATest {
 	 * @return the byte array of the string copied several times more than the max read length
 	 */
 	protected byte[] getBytes(String string) {
-		byte[] bytes = new byte[(int) (IConstants.MAX_READ_LENGTH + 1000)];
+		byte[] bytes = new byte[(int) (IConstants.MAX_READ_LENGTH + IConstants.MAX_READ_LENGTH + 1000)];
 		for (int offset = 0; offset < bytes.length;) {
 			byte[] segment = string.getBytes();
 			if (offset + segment.length >= bytes.length) {

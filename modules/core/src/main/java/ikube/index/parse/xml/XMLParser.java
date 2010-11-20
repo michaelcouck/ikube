@@ -2,8 +2,10 @@ package ikube.index.parse.xml;
 
 import ikube.index.parse.IParser;
 
-import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.List;
@@ -30,12 +32,14 @@ public class XMLParser implements IParser {
 	}
 
 	@Override
-	public final String parse(String string) throws Exception {
-		Document doc = saxReader.read(new ByteArrayInputStream(string.getBytes()));
+	public final OutputStream parse(InputStream inputStream) throws Exception {
+		Document doc = saxReader.read(inputStream);
 		Element root = doc.getRootElement();
 		StringWriter writer = new StringWriter();
 		visit(root, writer);
-		return writer.toString();
+		OutputStream outputStream = new ByteArrayOutputStream();
+		outputStream.write(writer.toString().getBytes());
+		return outputStream;
 	}
 
 	/**

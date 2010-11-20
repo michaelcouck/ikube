@@ -3,13 +3,13 @@ package ikube.index.content;
 import ikube.IConstants;
 import ikube.model.IndexableColumn;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.Reader;
-import java.io.StringWriter;
-import java.io.Writer;
 import java.lang.reflect.Method;
 import java.sql.Blob;
 import java.sql.Clob;
@@ -26,7 +26,7 @@ public class ColumnContentProvider implements IContentProvider<IndexableColumn> 
 		Object object = indexable.getObject();
 		int columnType = indexable.getColumnType();
 		if (object == null) {
-			return "null";
+			return "";
 		}
 
 		// BugFix for Oracle and Db2 it seems: Oracle seems to think that a Blob is a NULL
@@ -88,7 +88,7 @@ public class ColumnContentProvider implements IContentProvider<IndexableColumn> 
 			case Types.BINARY:
 			case Types.VARBINARY:
 			case Types.LONGVARBINARY:
-				result = new String((byte[]) object);
+				result = new ByteArrayInputStream((byte[]) object);
 				break;
 
 			case Types.OTHER:
@@ -120,28 +120,14 @@ public class ColumnContentProvider implements IContentProvider<IndexableColumn> 
 					}
 				}
 				int read = 0;
-				byte[] bytes = new byte[1024];
-				char[] chars = new char[bytes.length];
-				File file = null;
-				Writer writer = new StringWriter();
-				int totalBytesWritten = 0;
+				byte[] bytes = new byte[1024 * 256];
+				File file = File.createTempFile(Long.toString(System.currentTimeMillis()), IConstants.READER_FILE_SUFFIX);
+				OutputStream outputStream = new FileOutputStream(file);
 				while (inputStream != null && (read = inputStream.read(bytes)) > 0) {
-					writer.write(new String(bytes, 0, read));
-					totalBytesWritten += read;
-					if (totalBytesWritten > IConstants.MAX_READ_LENGTH && !FileWriter.class.isAssignableFrom(writer.getClass())) {
-						String string = writer.toString();
-						file = File.createTempFile(Long.toString(System.currentTimeMillis()), IConstants.READER_FILE_SUFFIX);
-						logger.debug("Created temp file : " + file);
-						writer = new FileWriter(file);
-						writer.write(string);
-					}
+					outputStream.write(bytes, 0, read);
 				}
-				writer.close();
-				if (FileWriter.class.isAssignableFrom(writer.getClass())) {
-					result = new FileReader(file);
-				} else {
-					result = writer.toString();
-				}
+				outputStream.close();
+				result = new FileInputStream(file);
 				break;
 			case Types.CLOB:
 				// Get an input stream method, as this can be different for each driver blob or clob
@@ -159,27 +145,14 @@ public class ColumnContentProvider implements IContentProvider<IndexableColumn> 
 					}
 				}
 				read = 0;
-				chars = new char[1024];
-				file = null;
-				writer = new StringWriter();
-				totalBytesWritten = 0;
+				char[] chars = new char[1024 * 256];
+				file = File.createTempFile(Long.toString(System.currentTimeMillis()), IConstants.READER_FILE_SUFFIX);
+				outputStream = new FileOutputStream(file);
 				while (clobReader != null && (read = clobReader.read(chars)) > 0) {
-					writer.write(chars, 0, read);
-					totalBytesWritten += read;
-					if (totalBytesWritten > IConstants.MAX_READ_LENGTH && !FileWriter.class.isAssignableFrom(writer.getClass())) {
-						String string = writer.toString();
-						file = File.createTempFile(Long.toString(System.currentTimeMillis()), IConstants.READER_FILE_SUFFIX);
-						logger.debug("Created temp file : " + file);
-						writer = new FileWriter(file);
-						writer.write(string);
-					}
+					outputStream.write(String.valueOf(chars).getBytes(), 0, read);
 				}
-				writer.close();
-				if (FileWriter.class.isAssignableFrom(writer.getClass())) {
-					result = new FileReader(file);
-				} else {
-					result = writer.toString();
-				}
+				outputStream.close();
+				result = new FileInputStream(file);
 				break;
 			}
 		} catch (Exception e) {

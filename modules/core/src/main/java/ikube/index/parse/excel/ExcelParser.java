@@ -2,7 +2,9 @@ package ikube.index.parse.excel;
 
 import ikube.index.parse.IParser;
 
-import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Iterator;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
@@ -25,13 +27,12 @@ public class ExcelParser implements IParser {
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public String parse(String string) throws Exception {
-		StringBuilder content = new StringBuilder();
-		POIFSFileSystem fs = new POIFSFileSystem(new ByteArrayInputStream(string.getBytes()));
+	public OutputStream parse(InputStream inputStream) throws Exception {
+		POIFSFileSystem fs = new POIFSFileSystem(inputStream);
 		HSSFWorkbook workbook = new HSSFWorkbook(fs);
-
+		OutputStream outputStream = new ByteArrayOutputStream();
 		if (workbook == null) {
-			return string;
+			return outputStream;
 		}
 		for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
 			HSSFSheet sheet = workbook.getSheetAt(i);
@@ -62,12 +63,12 @@ public class ExcelParser implements IParser {
 						text = cell.toString();
 						break;
 					}
-					content.append(text);
-					content.append(" ");
+					outputStream.write(text.getBytes());
+					outputStream.write(" ".getBytes());
 				}
 			}
 		}
-		return content.toString();
+		return outputStream;
 	}
 
 }

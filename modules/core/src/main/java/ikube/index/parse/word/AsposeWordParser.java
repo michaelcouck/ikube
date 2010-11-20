@@ -4,6 +4,9 @@ package ikube.index.parse.word;
 
 import ikube.index.parse.IParser;
 
+import java.io.InputStream;
+import java.io.OutputStream;
+
 import org.apache.log4j.Logger;
 
 // import com.aspose.words.Document;
@@ -26,7 +29,7 @@ public class AsposeWordParser implements IParser {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public String parse(String string) {
+	public OutputStream parse(InputStream inputStream) {
 		try {
 			// Open the document we want to convert.
 			// ByteArrayInputStream inputStream = new ByteArrayInputStream(resource.getBytes());

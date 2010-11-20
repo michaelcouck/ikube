@@ -57,7 +57,7 @@
 		id="faqTable.two"
 		class="ikube.model.IndexableTable"
 		property:name="faq"
-		property:sql="select * from faq"
+		property:sql="select * from faq as faq join attachment as attachment on faq.faqid = attachment.faqid"
 		property:dataSource-ref="nonXaDataSource"
 		property:children-ref="faqColumns.two" />
 	<util:set id="faqColumns.two">

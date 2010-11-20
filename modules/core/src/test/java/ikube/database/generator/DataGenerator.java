@@ -23,6 +23,7 @@ import javax.sql.DataSource;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class DataGenerator extends ATest {
@@ -56,6 +57,7 @@ public class DataGenerator extends ATest {
 	}
 
 	@Test
+	@Ignore
 	public void generate() throws Exception {
 		final String faqInsert = getContents(faqSqlFilePath).toString();
 		final String attachmentInsert = getContents(attachmentSqlFilePath).toString();

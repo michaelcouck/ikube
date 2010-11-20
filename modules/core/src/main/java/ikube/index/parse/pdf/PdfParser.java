@@ -2,14 +2,16 @@ package ikube.index.parse.pdf;
 
 import ikube.index.parse.IParser;
 
-import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import org.apache.log4j.Logger;
-import org.pdfbox.pdfparser.PDFParser;
-import org.pdfbox.pdmodel.PDDocument;
-import org.pdfbox.pdmodel.PDDocumentInformation;
-import org.pdfbox.util.PDFTextStripper;
+import org.apache.pdfbox.pdfparser.PDFParser;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDDocumentInformation;
+import org.apache.pdfbox.util.PDFTextStripper;
 
 // import com.asprise.util.pdf.PDFReader;
 
@@ -29,42 +31,18 @@ public class PdfParser implements IParser {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public final String parse(String string) throws Exception {
-		return parsePDFBox(string.getBytes());
+	public final OutputStream parse(InputStream inputStream) throws Exception {
+		return parsePDFBox(inputStream);
 		// return parseAsprise(bytes);
+		// return null;
 	}
 
-	// protected String parseAsprise(byte[] bytes) throws Exception {
-	// StringBuilder content = new StringBuilder();
-	// ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
-	// PDFReader reader = new PDFReader(bis);
-	// try {
-	// reader.open();
-	// int pages = reader.getNumberOfPages();
-	// for (int i = 0; i < pages; i++) {
-	// String text = reader.extractTextFromPage(i);
-	// content.append(text);
-	// content.append(" ");
-	// LOGGER.debug("Page " + i + ": " + text);
-	// }
-	// } finally {
-	// try {
-	// if (reader != null) {
-	// reader.close();
-	// }
-	// } catch (IOException e) {
-	// LOGGER.error("Exception closing the PDF reader", e);
-	// }
-	// }
-	// return content.toString();
-	// }
-
-	protected String parsePDFBox(byte[] bytes) throws Exception {
+	protected OutputStream parsePDFBox(InputStream inputStream) throws Exception {
 		// In memory representation of pdf file
-		StringBuilder content = new StringBuilder();
+		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 		PDDocument pdf = null;
 		try {
-			PDFParser parser = new PDFParser(new ByteArrayInputStream(bytes));
+			PDFParser parser = new PDFParser(inputStream);
 			parser.parse();
 			pdf = parser.getPDDocument();
 			if (pdf.isEncrypted()) {
@@ -75,11 +53,11 @@ public class PdfParser implements IParser {
 			// collect text
 			PDFTextStripper stripper = new PDFTextStripper();
 			String text = stripper.getText(pdf);
-			content.append(text);
+			byteArrayOutputStream.write(text.getBytes());
 			// collect title
 			PDDocumentInformation info = pdf.getDocumentInformation();
 			String title = info.getTitle();
-			content.append(title);
+			byteArrayOutputStream.write(title.getBytes());
 			// more useful info, currently not used. please keep them for future use.
 			// pdf.getPageCount();info.getAuthor();info.getSubject();info.getKeywords();
 			// info.getCreator();info.getProducer();info.getTrapped();formatDate(info.getCreationDate())
@@ -90,11 +68,12 @@ public class PdfParser implements IParser {
 					pdf.getDocument().close();
 					pdf.close();
 				} catch (IOException e) {
-					LOGGER.error("Exception thrown closing pdf " + new String(bytes), e);
+					LOGGER.error("Exception thrown closing pdf : " + inputStream, e);
 				} catch (Exception t) {
-					LOGGER.error("Exception thrown closing pdf " + new String(bytes), t);
+					LOGGER.error("Exception thrown closing pdf : " + inputStream, t);
 				}
 		}
-		return content.toString();
+		return byteArrayOutputStream;
 	}
+
 }

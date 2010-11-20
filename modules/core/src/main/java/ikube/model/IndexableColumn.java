@@ -17,6 +17,12 @@ public class IndexableColumn extends Indexable<IndexableColumn> {
 	private boolean analyzed = Boolean.TRUE;
 	private boolean vectored = Boolean.TRUE;
 
+	/**
+	 * This is the column where the name of the column is stored. In the case of a file in the database the name of the file can be used to
+	 * get the correct parser for that type of content. This will typically be a sibling in the same table.
+	 */
+	private IndexableColumn indexableColumn;
+
 	@Override
 	public <V extends IndexableVisitor<Indexable<?>>> void accept(final V visitor) {
 		visitor.visit(this);
@@ -60,6 +66,14 @@ public class IndexableColumn extends Indexable<IndexableColumn> {
 
 	public void setVectored(final boolean vectored) {
 		this.vectored = vectored;
+	}
+
+	public IndexableColumn getIndexableColumn() {
+		return indexableColumn;
+	}
+
+	public void setIndexableColumn(IndexableColumn indexableColumn) {
+		this.indexableColumn = indexableColumn;
 	}
 
 	@Transient

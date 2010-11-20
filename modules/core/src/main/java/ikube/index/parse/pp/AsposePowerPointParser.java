@@ -2,6 +2,9 @@ package ikube.index.parse.pp;
 
 import ikube.index.parse.IParser;
 
+import java.io.InputStream;
+import java.io.OutputStream;
+
 /**
  * This parser needs to be implemented. The documentation to the Aspose PowerPoint parser is
  * http://www.aspose.com/documentation/product-suites/index.html
@@ -16,7 +19,7 @@ public class AsposePowerPointParser implements IParser {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public final String parse(String string) {
+	public final OutputStream parse(InputStream inputStream) {
 		return null;
 	}
 }

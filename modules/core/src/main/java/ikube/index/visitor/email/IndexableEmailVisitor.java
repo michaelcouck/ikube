@@ -5,7 +5,9 @@ import ikube.index.parse.ParserProvider;
 import ikube.index.visitor.IndexableVisitor;
 import ikube.model.IndexableEmail;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Date;
 import java.util.Properties;
 
@@ -96,9 +98,10 @@ public class IndexableEmailVisitor<I> extends IndexableVisitor<IndexableEmail> {
 				if (StringUtils.isNotEmpty(messageContent)) {
 					byte[] bytes = messageContent.getBytes();
 					IParser parser = ParserProvider.getParser(message.getContentType(), bytes);
-					String parsedMessageContent = parser.parse(messageContent);
+					OutputStream outputStream = parser.parse(new ByteArrayInputStream(bytes));
+					String fieldContent = outputStream.toString();
 					// Add the content field to the document
-					addStringField(indexableMail.getContentField(), parsedMessageContent, document, mustStore, analyzed, termVector);
+					addStringField(indexableMail.getContentField(), fieldContent, document, mustStore, analyzed, termVector);
 				}
 			}
 			folder.close(true);

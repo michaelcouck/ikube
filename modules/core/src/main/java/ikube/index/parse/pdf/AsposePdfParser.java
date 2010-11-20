@@ -5,6 +5,9 @@ package ikube.index.parse.pdf;
 
 import ikube.index.parse.IParser;
 
+import java.io.InputStream;
+import java.io.OutputStream;
+
 import org.apache.log4j.Logger;
 
 // import com.aspose.pdf.kit.PdfExtractor;
@@ -26,7 +29,7 @@ public class AsposePdfParser implements IParser {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public String parse(String string) {
+	public OutputStream parse(InputStream inputStream) {
 		try {
 			// // Get the bytes to convert to text
 			// ByteArrayInputStream inputStream = new ByteArrayInputStream(resource.getBytes());

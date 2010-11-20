@@ -78,9 +78,9 @@ public class IndexableTableVisitor<I> extends IndexableVisitor<IndexableTable> {
 	 * Examples: minimum id value - 4549731 <br>
 	 * 1) nextRow = 0, batch = 10 - select * from faq where faqId >= 4549731 and faqId < 4549741<br>
 	 * 2) nextRow = 10,batch = 10 - select * from faq where faqId >= 4549741 and faqId < 4549751<br>
-	 * 
+	 *
 	 * ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY
-	 * 
+	 *
 	 * @param connection
 	 * @param indexableTable
 	 * @param idColumn
@@ -92,7 +92,11 @@ public class IndexableTableVisitor<I> extends IndexableVisitor<IndexableTable> {
 			throws Exception {
 
 		StringBuilder builder = new StringBuilder(indexableTable.getSql());
-		builder.append(" where ");
+		if (builder.toString().toLowerCase().contains("where")) {
+			builder.append(" and ");
+		} else {
+			builder.append(" where ");
+		}
 		builder.append(indexableTable.getName());
 		builder.append(".");
 		builder.append(idColumn.getName());
@@ -110,8 +114,7 @@ public class IndexableTableVisitor<I> extends IndexableVisitor<IndexableTable> {
 		return statement.executeQuery(builder.toString());
 	}
 
-	public long getIdNumber(Connection connection, IndexableTable indexableTable, IndexableColumn idColumn, long idNumber)
-			throws Exception {
+	public long getIdNumber(Connection connection, IndexableTable indexableTable, IndexableColumn idColumn, long idNumber) throws Exception {
 		if (idNumber == 0) {
 			// If the idNumber is 0 then we are the first, so we take the first id in the table
 			long minId = getMinId(connection, indexableTable, idColumn);
@@ -195,8 +198,8 @@ public class IndexableTableVisitor<I> extends IndexableVisitor<IndexableTable> {
 
 		if (logger.isDebugEnabled()) {
 			if (resultSet.getRow() % 100000 == 0) {
-				StringBuilder builder = new StringBuilder("Id : ").append(rowId).append(", row : ").append(resultSet.getRow())
-						.append(", thread : ").append(Thread.currentThread().hashCode());
+				StringBuilder builder = new StringBuilder("Id : ").append(rowId).append(", row : ").append(resultSet.getRow()).append(
+						", thread : ").append(Thread.currentThread().hashCode());
 				logger.debug(builder.toString());
 			}
 		}
@@ -255,8 +258,12 @@ public class IndexableTableVisitor<I> extends IndexableVisitor<IndexableTable> {
 		Statement statement = null;
 		Connection connection = null;
 		try {
-			statement = resultSet.getStatement();
-			connection = statement.getConnection();
+			if (resultSet != null) {
+				statement = resultSet.getStatement();
+			}
+			if (statement != null) {
+				connection = statement.getConnection();
+			}
 		} catch (Exception e) {
 			logger.error("Exception getting the statement and connection from the result set : ", e);
 		}

@@ -1,6 +1,11 @@
 package ikube.index.parse.html;
 
 import ikube.index.parse.IParser;
+
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+
 import net.htmlparser.jericho.MasonTagTypes;
 import net.htmlparser.jericho.MicrosoftTagTypes;
 import net.htmlparser.jericho.PHPTagTypes;
@@ -21,12 +26,14 @@ public class HtmlParser implements IParser {
 	}
 
 	@Override
-	public final String parse(String string) throws Exception {
-		Source source = new Source(string);
+	public final OutputStream parse(InputStream inputStream) throws Exception {
+		Source source = new Source(inputStream);
 		source.fullSequentialParse();
 		TextExtractor textExtractor = new TextExtractor(source);
 		textExtractor.setIncludeAttributes(true);
-		return textExtractor.toString();
+		OutputStream outputStream = new ByteArrayOutputStream();
+		outputStream.write(textExtractor.toString().getBytes());
+		return outputStream;
 	}
 
 }

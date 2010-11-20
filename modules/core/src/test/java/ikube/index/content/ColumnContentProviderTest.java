@@ -4,11 +4,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
-import ikube.BaseTest;
-import ikube.index.content.ColumnContentProvider;
-import ikube.index.content.IContentProvider;
+import ikube.ATest;
 import ikube.model.IndexableColumn;
+import ikube.toolkit.FileUtilities;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -21,9 +19,7 @@ import java.sql.Types;
 
 import org.junit.Test;
 
-
-
-public class ColumnContentProviderTest extends BaseTest {
+public class ColumnContentProviderTest extends ATest {
 
 	@Test
 	public void getContent() throws Exception {
@@ -34,24 +30,25 @@ public class ColumnContentProviderTest extends BaseTest {
 		when(indexable.getColumnType()).thenReturn(Types.BOOLEAN);
 		when(indexable.getObject()).thenReturn(Boolean.TRUE);
 		Object result = contentProvider.getContent(indexable);
-		assertEquals(Boolean.TRUE.toString(), result);
+		assertEquals(Boolean.TRUE.toString(), result.toString());
 
 		when(indexable.getColumnType()).thenReturn(Types.INTEGER);
 		when(indexable.getObject()).thenReturn(Integer.MAX_VALUE);
 		result = contentProvider.getContent(indexable);
-		assertEquals(Integer.toString(Integer.MAX_VALUE), result);
+		assertEquals(Integer.toString(Integer.MAX_VALUE), result.toString());
 
 		long time = System.currentTimeMillis();
 		when(indexable.getColumnType()).thenReturn(Types.TIMESTAMP);
 		when(indexable.getObject()).thenReturn(new Timestamp(time));
 		result = contentProvider.getContent(indexable);
-		assertEquals(Long.toString(time), result);
+		assertEquals(Long.toString(time), result.toString());
 
 		String string = "12456";
 		byte[] bytes = string.getBytes();
 		when(indexable.getColumnType()).thenReturn(Types.LONGVARBINARY);
 		when(indexable.getObject()).thenReturn(bytes);
 		result = contentProvider.getContent(indexable);
+		result = FileUtilities.getContents((InputStream) result, Integer.MAX_VALUE).toString();
 		assertEquals(new String(bytes), result);
 
 		Blob blob = mock(Blob.class);
@@ -60,7 +57,8 @@ public class ColumnContentProviderTest extends BaseTest {
 		when(indexable.getColumnType()).thenReturn(Types.BLOB);
 		when(indexable.getObject()).thenReturn(blob);
 		result = contentProvider.getContent(indexable);
-		assertEquals(string, result);
+		result = FileUtilities.getContents((InputStream) result, Integer.MAX_VALUE).toString();
+		assertEquals(string, result.toString());
 
 		string = "Michael Couck ";
 		bytes = getBytes(string);
@@ -69,10 +67,10 @@ public class ColumnContentProviderTest extends BaseTest {
 		when(indexable.getColumnType()).thenReturn(Types.BLOB);
 		when(indexable.getObject()).thenReturn(blob);
 		result = contentProvider.getContent(indexable);
-		Reader reader = (Reader) result;
-		char[] chars = new char[1024];
-		while (reader.read(chars) > -1) {
-			String resultString = new String(chars);
+		bytes = new byte[1024];
+
+		while (((InputStream) result).read(bytes) > -1) {
+			String resultString = new String(bytes);
 			assertTrue(resultString.contains(string));
 		}
 
@@ -82,10 +80,9 @@ public class ColumnContentProviderTest extends BaseTest {
 		when(indexable.getColumnType()).thenReturn(Types.CLOB);
 		when(indexable.getObject()).thenReturn(clob);
 		result = contentProvider.getContent(indexable);
-		reader = (Reader) result;
-		chars = new char[128];
-		while (reader.read(chars) > -1) {
-			String resultString = new String(chars);
+
+		while (((InputStream) result).read(bytes) > -1) {
+			String resultString = new String(bytes);
 			assertTrue(resultString.contains(string));
 		}
 	}

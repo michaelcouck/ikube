@@ -57,7 +57,9 @@
 		id="faqTable"
 		class="ikube.model.IndexableTable"
 		property:name="faq"
-		property:sql="select * from faq"
+		property:sql="select faq.faqid, faq.answer, faq.creationtimestamp, faq.creator, faq.gang, faq.modifiedtimestamp, faq.modifier,
+			faq.published, faq.question, attachment.attachmentid, attachment.name, attachment.attachment,
+			attachment.length, attachment.faqid from faq, attachment where faq.faqid = attachment.faqid"
 		property:dataSource-ref="nonXaDataSource"
 		property:children-ref="faqColumns" />
 	<util:set id="faqColumns">
@@ -68,6 +70,10 @@
 		<ref local="modifier" />
 		<ref local="question" />
 		<ref local="answer" />
+		<ref local="attachmentid" />
+		<ref local="name" />
+		<ref local="attachment" />
+		<ref local="length" />
 	</util:set>
 	<bean
 		id="faqId"
@@ -100,6 +106,27 @@
 		class="ikube.model.IndexableColumn"
 		property:name="answer"
 		property:fieldName="contents" />
+	<bean
+		id="attachmentid"
+		class="ikube.model.IndexableColumn"
+		property:name="attachmentid"
+		property:fieldName="attachmentid" />
+	<bean
+		id="name"
+		class="ikube.model.IndexableColumn"
+		property:name="name"
+		property:fieldName="name" />
+	<bean
+		id="attachment"
+		class="ikube.model.IndexableColumn"
+		property:name="attachment"
+		property:fieldName="attachment"
+		property:indexableColumn-ref="name" />
+	<bean
+		id="length"
+		class="ikube.model.IndexableColumn"
+		property:name="length"
+		property:fieldName="length" />
 
 	<bean
 		class="ikube.toolkit.Mailer"

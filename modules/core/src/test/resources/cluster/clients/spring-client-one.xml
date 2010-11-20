@@ -57,7 +57,9 @@
 		id="faqTable.one"
 		class="ikube.model.IndexableTable"
 		property:name="faq"
-		property:sql="select * from faq as faq join attachment as attachment on faq.faqid = attachment.faqid"
+		property:sql="select faq.faqid, faq.answer, faq.creationtimestamp, faq.creator, faq.gang, faq.modifiedtimestamp, faq.modifier,
+			faq.published, faq.question, attachment.attachmentid, attachment.name, attachment.attachment,
+			attachment.length, attachment.faqid from faq, attachment where faq.faqid = attachment.faqid"
 		property:dataSource-ref="nonXaDataSource"
 		property:children-ref="faqColumns.one" />
 	<util:set id="faqColumns.one">
@@ -68,6 +70,10 @@
 		<ref local="modifier.one" />
 		<ref local="question.one" />
 		<ref local="answer.one" />
+		<ref local="attachmentid.one" />
+		<ref local="name.one" />
+		<ref local="attachment.one" />
+		<ref local="length.one" />
 	</util:set>
 	<bean
 		id="faqId.one"
@@ -100,5 +106,26 @@
 		class="ikube.model.IndexableColumn"
 		property:name="answer"
 		property:fieldName="contents" />
+	<bean
+		id="attachmentid.one"
+		class="ikube.model.IndexableColumn"
+		property:name="attachmentid"
+		property:fieldName="attachmentid" />
+	<bean
+		id="name.one"
+		class="ikube.model.IndexableColumn"
+		property:name="name"
+		property:fieldName="name" />
+	<bean
+		id="attachment.one"
+		class="ikube.model.IndexableColumn"
+		property:name="attachment"
+		property:fieldName="attachment"
+		property:indexableColumn-ref="name.one" />
+	<bean
+		id="length.one"
+		class="ikube.model.IndexableColumn"
+		property:name="length"
+		property:fieldName="length" />
 
 </beans>
