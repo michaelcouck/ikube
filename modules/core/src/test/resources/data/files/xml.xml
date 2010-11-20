@@ -36,6 +36,7 @@
 		property:indexables-ref="faqIndexables"
 		property:indexableVisitors-ref="faqIndexableVisitors" />
 	<util:list id="faqIndexables">
+		Hello world
 		<ref local="faqTable" />
 	</util:list>
 	<util:list id="faqIndexableVisitors">

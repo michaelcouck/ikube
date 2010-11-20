@@ -50,6 +50,11 @@ public class FileUtilities {
 		return files;
 	}
 
+	public static File findFile(File folder, String[] stringPatterns, List<File> files) {
+		files = FileUtilities.findFilesRecursively(folder, stringPatterns, files);
+		return files.size() > 0 ? files.get(0) : null;
+	}
+
 	public static List<File> findFilesRecursively(File folder, String[] stringPatterns, List<File> files) {
 		if (folder.isDirectory()) {
 			File[] folderFiles = FileUtilities.findFiles(folder, stringPatterns);

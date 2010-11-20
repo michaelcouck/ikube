@@ -2,11 +2,10 @@ package ikube.toolkit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-
 import ikube.BaseTest;
 import ikube.IConstants;
-import ikube.toolkit.FileUtilities;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -15,8 +14,6 @@ import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-
 
 public class FileUtilitiesTest extends BaseTest {
 
@@ -85,6 +82,12 @@ public class FileUtilitiesTest extends BaseTest {
 
 		FileUtilities.deleteFiles(folder, stringPatterns);
 		assertFalse(file.exists());
+	}
+
+	@Test
+	public void findFile() {
+		File file = FileUtilities.findFile(new File("."), new String[] { "mime-types.xml" }, new ArrayList<File>());
+		assertNotNull(file);
 	}
 
 }

@@ -1,5 +1,7 @@
 package ikube;
 
+import ikube.index.parse.mime.MimeMapper;
+import ikube.index.parse.mime.MimeTypes;
 import ikube.logging.Logging;
 
 import org.apache.log4j.Logger;
@@ -8,6 +10,8 @@ public abstract class ATest {
 
 	static {
 		Logging.configure();
+		new MimeTypes("/META-INF/mime/mime-types.xml");
+		new MimeMapper("/META-INF/mime/mime-mapping.xml");
 	}
 
 	protected Logger logger = Logger.getLogger(this.getClass());
