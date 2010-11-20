@@ -121,7 +121,8 @@ public class ColumnContentProvider implements IContentProvider<IndexableColumn> 
 				}
 				int read = 0;
 				byte[] bytes = new byte[1024 * 256];
-				File file = File.createTempFile(Long.toString(System.currentTimeMillis()), IConstants.READER_FILE_SUFFIX);
+				File file = File.createTempFile(Long.toString(System.nanoTime()), IConstants.READER_FILE_SUFFIX);
+				logger.debug("Temp file : " + file.getAbsolutePath());
 				OutputStream outputStream = new FileOutputStream(file);
 				while (inputStream != null && (read = inputStream.read(bytes)) > 0) {
 					outputStream.write(bytes, 0, read);
@@ -146,7 +147,8 @@ public class ColumnContentProvider implements IContentProvider<IndexableColumn> 
 				}
 				read = 0;
 				char[] chars = new char[1024 * 256];
-				file = File.createTempFile(Long.toString(System.currentTimeMillis()), IConstants.READER_FILE_SUFFIX);
+				file = File.createTempFile(Long.toString(System.nanoTime()), IConstants.READER_FILE_SUFFIX);
+				logger.debug("Temp file : " + file.getAbsolutePath());
 				outputStream = new FileOutputStream(file);
 				while (clobReader != null && (read = clobReader.read(chars)) > 0) {
 					outputStream.write(String.valueOf(chars).getBytes(), 0, read);

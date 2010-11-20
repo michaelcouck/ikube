@@ -1,10 +1,13 @@
 package ikube.index.parse.html;
 
+import ikube.IConstants;
 import ikube.index.parse.IParser;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.Reader;
 
 import net.htmlparser.jericho.MasonTagTypes;
 import net.htmlparser.jericho.MicrosoftTagTypes;
@@ -27,12 +30,13 @@ public class HtmlParser implements IParser {
 
 	@Override
 	public final OutputStream parse(InputStream inputStream) throws Exception {
-		Source source = new Source(inputStream);
+		Reader reader = new InputStreamReader(inputStream, IConstants.ENCODING);
+		Source source = new Source(reader);
 		source.fullSequentialParse();
 		TextExtractor textExtractor = new TextExtractor(source);
 		textExtractor.setIncludeAttributes(true);
 		OutputStream outputStream = new ByteArrayOutputStream();
-		outputStream.write(textExtractor.toString().getBytes());
+		outputStream.write(textExtractor.toString().getBytes(IConstants.ENCODING));
 		return outputStream;
 	}
 

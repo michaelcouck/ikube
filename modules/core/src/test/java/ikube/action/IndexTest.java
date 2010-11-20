@@ -64,7 +64,7 @@ public class IndexTest extends BaseTest {
 		indexReader.close();
 		indexSearcher.close();
 
-		FileUtilities.deleteFile(latestIndexDirectory, 1);
+		// FileUtilities.deleteFile(latestIndexDirectory, 1);
 	}
 
 }

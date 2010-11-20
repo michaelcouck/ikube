@@ -1,11 +1,14 @@
 package ikube.index.parse.xml;
 
+import ikube.IConstants;
 import ikube.index.parse.IParser;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.List;
@@ -13,6 +16,7 @@ import java.util.List;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
+import org.xml.sax.InputSource;
 
 /**
  * @author Michael Couck
@@ -33,12 +37,14 @@ public class XMLParser implements IParser {
 
 	@Override
 	public final OutputStream parse(InputStream inputStream) throws Exception {
-		Document doc = saxReader.read(inputStream);
+		Reader reader = new InputStreamReader(inputStream, IConstants.ENCODING);
+		InputSource inputSource = new InputSource(reader);
+		Document doc = saxReader.read(inputSource);
 		Element root = doc.getRootElement();
 		StringWriter writer = new StringWriter();
 		visit(root, writer);
 		OutputStream outputStream = new ByteArrayOutputStream();
-		outputStream.write(writer.toString().getBytes());
+		outputStream.write(writer.toString().getBytes(IConstants.ENCODING));
 		return outputStream;
 	}
 

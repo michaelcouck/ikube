@@ -64,7 +64,7 @@ public class Index extends AAction<IndexContext, Boolean> {
 				for (IndexableVisitor<Indexable<?>> indexableVisitor : indexableVisitors) {
 					for (Indexable<?> indexable : indexables) {
 						if (indexableVisitor.getIndexableType().equals(indexable.getClass().getName())) {
-							// logger.debug("Visiting indexable : " + indexable + ", " + indexableVisitor);
+							logger.debug(Logging.getString("Visiting indexable : ", indexable, ", ", indexableVisitor));
 							indexable.accept(indexableVisitor);
 						}
 					}

@@ -1,5 +1,6 @@
 package ikube.index.visitor.database;
 
+import ikube.IConstants;
 import ikube.index.content.ColumnContentProvider;
 import ikube.index.content.IContentProvider;
 import ikube.index.parse.IParser;
@@ -59,7 +60,7 @@ public class IndexableColumnVisitor<I> extends IndexableVisitor<IndexableColumn>
 				// Read some bytes from the input stream to try to work out
 				// what the mime type is from the data
 				if (String.class.isAssignableFrom(content.getClass())) {
-					bytes = ((String) content).getBytes();
+					bytes = ((String) content).getBytes(IConstants.ENCODING);
 					inputStream = new ByteArrayInputStream(bytes);
 				} else if (InputStream.class.isAssignableFrom(content.getClass())) {
 					inputStream = (InputStream) content;
@@ -69,8 +70,10 @@ public class IndexableColumnVisitor<I> extends IndexableVisitor<IndexableColumn>
 				}
 			}
 
+			logger.debug("Before parse : " + new String(bytes, IConstants.ENCODING));
 			IParser parser = ParserProvider.getParser(mimeType, bytes);
 			OutputStream parsedOutputStream = parser.parse(inputStream);
+			logger.debug("After parse : " + new String(bytes));
 			if (ByteArrayOutputStream.class.isAssignableFrom(parsedOutputStream.getClass())) {
 				String fieldContent = parsedOutputStream.toString();
 				addStringField(fieldName, fieldContent, document, store, analyzed, termVector);

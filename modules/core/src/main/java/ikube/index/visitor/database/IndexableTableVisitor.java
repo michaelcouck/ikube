@@ -28,6 +28,12 @@ public class IndexableTableVisitor<I> extends IndexableVisitor<IndexableTable> {
 	private Logger logger = Logger.getLogger(this.getClass());
 	private IndexContext indexContext;
 	private IndexableVisitor<Indexable<?>> indexableColumnVisitor;
+	private Comparator<Indexable<?>> childrenComparator = new Comparator<Indexable<?>>() {
+		@Override
+		public int compare(Indexable<?> o1, Indexable<?> o2) {
+			return o1.getName().compareTo(o2.getName());
+		}
+	};
 
 	@Override
 	public void visit(final IndexableTable indexableTable) {
@@ -35,35 +41,25 @@ public class IndexableTableVisitor<I> extends IndexableVisitor<IndexableTable> {
 			logger.warn("No columns configured for this table : " + indexableTable.getName());
 			return;
 		}
-		Collections.sort(indexableTable.getChildren(), new Comparator<Indexable<?>>() {
-			@Override
-			public int compare(Indexable<?> o1, Indexable<?> o2) {
-				return o1.getName().compareTo(o2.getName());
-			}
-		});
+		Collections.sort(indexableTable.getChildren(), childrenComparator);
 		ResultSet resultSet = null;
-		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
 		try {
-			// First get the id number from the last server
-			long idNumber = clusterManager.getIdNumber(indexContext.getIndexName());
 			IndexableColumn idColumn = getIdColumn(indexableTable.getChildren());
 			Connection connection = indexableTable.getDataSource().getConnection();
-			// This number can be 0 so get it from the table
-			idNumber = getIdNumber(connection, indexableTable, idColumn, idNumber);
-			clusterManager.setIdNumber(indexContext.getIndexName(), idNumber + indexContext.getBatchSize());
+			// First get the id number of the last row to be indexed
+			long idNumber = getIdNumber(connection, indexableTable, idColumn);
+			// Get the result set starting at the id number specified in the parameter list
 			resultSet = getResultSet(connection, indexableTable, idColumn, idNumber);
 			do {
 				if (!resultSet.next()) {
-					idNumber = clusterManager.getIdNumber(indexContext.getIndexName());
-					idNumber = getIdNumber(connection, indexableTable, idColumn, idNumber);
-					clusterManager.setIdNumber(indexContext.getIndexName(), idNumber + indexContext.getBatchSize());
+					idNumber = getIdNumber(connection, indexableTable, idColumn);
 					resultSet = getResultSet(connection, indexableTable, idColumn, idNumber);
 					if (!resultSet.next()) {
 						logger.info("No more results : ");
 						break;
 					}
 				}
-				// Thread.sleep(100);
+				Thread.sleep(1000);
 				doRow(indexableTable, idColumn, resultSet);
 			} while (true);
 		} catch (Exception e) {
@@ -72,6 +68,34 @@ public class IndexableTableVisitor<I> extends IndexableVisitor<IndexableTable> {
 			closeAll(resultSet);
 		}
 		logger.info("Finished indexing table : " + indexableTable.getName());
+	}
+
+	public long getIdNumber(Connection connection, IndexableTable indexableTable, IndexableColumn idColumn) throws Exception {
+		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
+		long idNumber = clusterManager.getIdNumber(indexContext.getName());
+		idNumber = getIdNumber(connection, indexableTable, idColumn, idNumber);
+		clusterManager.setIdNumber(indexContext.getIndexName(), idNumber + indexContext.getBatchSize());
+		return idNumber;
+
+	}
+
+	protected long getIdNumber(Connection connection, IndexableTable indexableTable, IndexableColumn idColumn, long idNumber)
+			throws Exception {
+		if (idNumber == 0) {
+			// If the idNumber is 0 then we are the first, so we take the first id in the table
+			long minId = getMinId(connection, indexableTable, idColumn);
+			idNumber = minId;
+		} else {
+			// Check that there are results between the id number and the id number + batch size
+			long count = getCount(connection, indexableTable, idColumn, idNumber);
+			if (count == 0) {
+				long maxId = getMaxId(connection, indexableTable, idColumn);
+				if (idNumber < maxId) {
+					return getIdNumber(connection, indexableTable, idColumn, idNumber + indexContext.getBatchSize());
+				}
+			}
+		}
+		return idNumber;
 	}
 
 	/**
@@ -112,24 +136,6 @@ public class IndexableTableVisitor<I> extends IndexableVisitor<IndexableTable> {
 		Statement statement = connection.createStatement();
 		logger.info("Sql : " + builder + ", " + Thread.currentThread().hashCode());
 		return statement.executeQuery(builder.toString());
-	}
-
-	public long getIdNumber(Connection connection, IndexableTable indexableTable, IndexableColumn idColumn, long idNumber) throws Exception {
-		if (idNumber == 0) {
-			// If the idNumber is 0 then we are the first, so we take the first id in the table
-			long minId = getMinId(connection, indexableTable, idColumn);
-			idNumber = minId;
-		} else {
-			// Check that there are results between the id number and the id number + batch size
-			long count = getCount(connection, indexableTable, idColumn, idNumber);
-			if (count == 0) {
-				long maxId = getMaxId(connection, indexableTable, idColumn);
-				if (idNumber < maxId) {
-					return getIdNumber(connection, indexableTable, idColumn, idNumber + indexContext.getBatchSize());
-				}
-			}
-		}
-		return idNumber;
 	}
 
 	public long getCount(Connection connection, IndexableTable indexableTable, IndexableColumn idColumn, long idNumber) throws Exception {

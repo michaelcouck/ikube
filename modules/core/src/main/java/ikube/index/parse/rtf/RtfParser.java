@@ -1,11 +1,13 @@
 package ikube.index.parse.rtf;
 
+import ikube.IConstants;
 import ikube.index.parse.IParser;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.Reader;
 import java.net.URL;
 
 import javax.swing.text.DefaultStyledDocument;
@@ -28,8 +30,9 @@ public class RtfParser implements IParser {
 	public final OutputStream parse(InputStream inputStream) throws Exception {
 		RTFEditorKit kit = new RTFEditorKit();
 		Document doc = kit.createDefaultDocument();
-		kit.read(inputStream, doc, 0);
-		byte[] bytes = doc.getText(0, doc.getLength()).getBytes();
+		Reader reader = new InputStreamReader(inputStream, IConstants.ENCODING);
+		kit.read(reader, doc, 0);
+		byte[] bytes = doc.getText(0, doc.getLength()).getBytes(IConstants.ENCODING);
 		OutputStream outputStream = new ByteArrayOutputStream();
 		outputStream.write(bytes);
 		return outputStream;

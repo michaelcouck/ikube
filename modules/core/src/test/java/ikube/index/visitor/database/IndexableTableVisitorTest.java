@@ -70,4 +70,59 @@ public class IndexableTableVisitorTest extends BaseTest {
 		assertNotNull(resultSet);
 	}
 
+	@Test
+	public void getColumnIndex() {
+		// List<Indexable<?>>, String
+	}
+
+	@Test
+	public void getCount() {
+		// Connection, IndexableTable, IndexableColumn, long
+	}
+
+	@Test
+	public void getIdColumn() {
+		// List<Indexable<?>>
+	}
+
+	@Test
+	public void getIdNumber() {
+		// Connection, IndexableTable, IndexableColumn, long
+	}
+
+	@Test
+	public void getIndexableColumnVisitor() {
+
+	}
+
+	@Test
+	public void getIndexContext() {
+
+	}
+
+	@Test
+	public void getMaxId() {
+		// Connection, IndexableTable, IndexableColumn
+	}
+
+	@Test
+	public void getMinId() {
+		// Connection, IndexableTable, IndexableColumn
+	}
+
+	@Test
+	public void setIndexableColumnVisitor() {
+		// IndexableVisitor<Indexable<?>>
+	}
+
+	@Test
+	public void setIndexContext() {
+		// IndexContext
+	}
+
+	@Test
+	public void visit() {
+		// IndexableTable
+	}
+
 }

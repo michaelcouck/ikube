@@ -62,7 +62,7 @@ public class IndexableColumnVisitorTest extends BaseTest {
 		this.indexableColumnVisitor.visit(indexable);
 		Field field = document.getField(fieldName);
 		assertNotNull(field);
-		assertNotNull(field.readerValue());
+		assertNotNull(field.stringValue());
 	}
 
 }
