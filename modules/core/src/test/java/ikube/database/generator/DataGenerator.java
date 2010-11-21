@@ -119,7 +119,7 @@ public class DataGenerator extends ATest {
 						}
 					}
 				}
-			}, "Database insert : ", 10000);
+			}, "Database insert : ", 10);
 		} finally {
 			connection.close();
 		}

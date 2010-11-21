@@ -159,7 +159,7 @@ public class DataLoader {
 	public static void main(String[] args) {
 		ApplicationContextManager.getApplicationContext("/data/spring.xml");
 		DataLoader dataLoader = new DataLoader();
-		dataLoader.writeDataSet(new String[] { "faq", "attachment" }, "./output.xml");
+		dataLoader.writeDataSet(new String[] { "faq", "attachment" }, "./modules/core/src/test/resources/data/data.xml");
 	}
 
 }

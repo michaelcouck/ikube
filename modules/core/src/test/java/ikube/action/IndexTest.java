@@ -54,7 +54,7 @@ public class IndexTest extends BaseActionTest {
 		searchMulti.setFragment(true);
 		searchMulti.setMaxResults(10);
 		searchMulti.setSearchField(IConstants.CONTENTS, "creator", "modifier");
-		searchMulti.setSearchString("investigatory nontransferable quotability", "premises", "strapless");
+		searchMulti.setSearchString("bravery windpipe cochlea solemnize", "crackling", "atmospherically villi");
 
 		List<Map<String, String>> results = searchMulti.execute();
 		assertTrue(results.size() > 1);
