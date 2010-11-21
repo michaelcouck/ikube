@@ -1,3 +1,4 @@
+
 package ikube.index.visitor.database;
 
 import static org.junit.Assert.assertEquals;
@@ -17,6 +18,11 @@ import org.apache.lucene.document.Field;
 import org.junit.Before;
 import org.junit.Test;
 
+/**
+ * @author Michael Couck
+ * @since 21.11.10
+ * @version 01.00
+ */
 public class IndexableColumnVisitorTest extends BaseTest {
 
 	private IndexableColumnVisitor<IndexableColumn> indexableColumnVisitor;

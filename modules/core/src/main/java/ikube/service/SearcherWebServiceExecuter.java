@@ -15,6 +15,11 @@ import javax.xml.ws.Service;
 
 import org.apache.log4j.Logger;
 
+/**
+ * @author Michael Couck
+ * @since 21.11.10
+ * @version 01.00
+ */
 @SuppressWarnings("unchecked")
 public class SearcherWebServiceExecuter implements ISearcherWebServiceExecuter {
 

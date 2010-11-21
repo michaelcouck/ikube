@@ -6,6 +6,11 @@ import java.util.List;
 
 import javax.persistence.Entity;
 
+/**
+ * @author Michael Couck
+ * @since 21.11.10
+ * @version 01.00
+ */
 @Entity()
 public abstract class Indexable<E> extends Persistable {
 

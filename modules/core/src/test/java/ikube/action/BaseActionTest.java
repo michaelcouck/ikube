@@ -16,6 +16,11 @@ import org.apache.lucene.index.IndexWriter.MaxFieldLength;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
+/**
+ * @author Michael Couck
+ * @since 21.11.10
+ * @version 01.00
+ */
 public abstract class BaseActionTest extends BaseTest {
 
 	/**

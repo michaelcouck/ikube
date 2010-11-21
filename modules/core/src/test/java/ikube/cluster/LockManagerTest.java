@@ -10,6 +10,11 @@ import org.jgroups.JChannel;
 import org.junit.Ignore;
 import org.junit.Test;
 
+/**
+ * @author Michael Couck
+ * @since 21.11.10
+ * @version 01.00
+ */
 @Ignore
 public class LockManagerTest extends ATest {
 

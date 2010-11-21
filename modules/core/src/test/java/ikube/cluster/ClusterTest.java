@@ -9,6 +9,11 @@ import java.util.Map;
 
 import org.junit.Test;
 
+/**
+ * @author Michael Couck
+ * @since 21.11.10
+ * @version 01.00
+ */
 public class ClusterTest {
 
 	public static long SLEEP = 3600000;

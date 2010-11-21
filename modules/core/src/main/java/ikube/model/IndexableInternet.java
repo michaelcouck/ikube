@@ -2,8 +2,15 @@ package ikube.model;
 
 import ikube.index.visitor.IndexableVisitor;
 
+import javax.persistence.Entity;
 import javax.persistence.Transient;
 
+/**
+ * @author Michael Couck
+ * @since 21.11.10
+ * @version 01.00
+ */
+@Entity()
 public class IndexableInternet extends Indexable<IndexableInternet> {
 
 	private transient String currentUrl;

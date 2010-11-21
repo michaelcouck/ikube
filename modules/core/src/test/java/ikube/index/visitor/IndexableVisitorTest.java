@@ -23,6 +23,11 @@ import org.apache.lucene.document.Field.TermVector;
 import org.junit.Before;
 import org.junit.Test;
 
+/**
+ * @author Michael Couck
+ * @since 21.11.10
+ * @version 01.00
+ */
 public class IndexableVisitorTest extends BaseTest {
 
 	private IndexableVisitor<?> indexableVisitor;

@@ -19,6 +19,11 @@ import java.sql.Types;
 
 import org.junit.Test;
 
+/**
+ * @author Michael Couck
+ * @since 21.11.10
+ * @version 01.00
+ */
 public class ColumnContentProviderTest extends ATest {
 
 	@Test

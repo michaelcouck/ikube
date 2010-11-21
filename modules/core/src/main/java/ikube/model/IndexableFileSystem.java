@@ -4,6 +4,11 @@ import ikube.index.visitor.IndexableVisitor;
 
 import javax.persistence.Entity;
 
+/**
+ * @author Michael Couck
+ * @since 21.11.10
+ * @version 01.00
+ */
 @Entity()
 public class IndexableFileSystem extends Indexable<IndexableFileSystem> {
 

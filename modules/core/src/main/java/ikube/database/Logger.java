@@ -2,6 +2,11 @@ package ikube.database;
 
 import org.neodatis.tool.ILogger;
 
+/**
+ * @author Michael Couck
+ * @since 21.11.10
+ * @version 01.00
+ */
 public class Logger implements ILogger {
 
 	private org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(this.getClass());

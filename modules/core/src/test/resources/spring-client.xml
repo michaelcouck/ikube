@@ -36,20 +36,34 @@
 		property:indexables-ref="faqIndexables"
 		property:indexableVisitors-ref="faqIndexableVisitors" />
 	<util:list id="faqIndexables">
+		<ref local="files" />
 		<ref local="ikubeMail" />
+		<ref local="ikubeWiki" />
 		<ref local="faqTable" />
 	</util:list>
 	<util:list id="faqIndexableVisitors">
+		<ref local="filesVisitor" />
 		<ref local="ikubeMailVisitor" />
+		<ref local="ikubeWikiVisitor" />
 		<ref local="faqTableVisitor" />
 	</util:list>
 
 	<!-- Indexable visitors -->
 	<bean
+		id="ikubeWikiVisitor"
+		class="ikube.index.visitor.internet.IndexableInternetVisitor"
+		property:indexableType="ikube.model.IndexableInternet"
+		property:indexContext-ref="faqIndexContext" />
+	<bean
 		id="ikubeMailVisitor"
 		class="ikube.index.visitor.email.IndexableEmailVisitor"
 		property:indexContext-ref="faqIndexContext"
 		property:indexableType="ikube.model.IndexableEmail" />
+	<bean
+		id="filesVisitor"
+		class="ikube.index.visitor.filesystem.IndexableFileSystemVisitor"
+		property:indexableType="ikube.model.IndexableFileSystem"
+		property:indexContext-ref="faqIndexContext" />
 	<bean
 		id="faqTableVisitor"
 		class="ikube.index.visitor.database.IndexableTableVisitor"
@@ -150,6 +164,24 @@
 		property:secureSocketLayer="true"
 		property:titleField="title"
 		property:username="ikube.ikube@gmail.com" />
+
+	<bean
+		id="files"
+		class="ikube.model.IndexableFileSystem"
+		property:contentFieldName="contents"
+		property:excludedPattern=".*(.svn).*|.*(database).*"
+		property:lastModifiedFieldName="lastmodified"
+		property:lengthFieldName="length"
+		property:name="files"
+		property:nameFieldName="name"
+		property:path="${files.path}"
+		property:pathFieldName="path" />
+
+	<bean
+		id="ikubeWiki"
+		class="ikube.model.IndexableInternet"
+		property:name="ikubeWiki"
+		property:url="http://code.google.com/p/ikube/wiki/PageName" />
 
 	<!-- Utility classes -->
 	<bean

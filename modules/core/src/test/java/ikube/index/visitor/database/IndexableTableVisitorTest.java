@@ -20,6 +20,11 @@ import org.apache.lucene.index.IndexWriter;
 import org.junit.Before;
 import org.junit.Test;
 
+/**
+ * @author Michael Couck
+ * @since 21.11.10
+ * @version 01.00
+ */
 public class IndexableTableVisitorTest extends BaseTest {
 
 	private IndexableTable indexableTable = ApplicationContextManager.getBean("faqTable");

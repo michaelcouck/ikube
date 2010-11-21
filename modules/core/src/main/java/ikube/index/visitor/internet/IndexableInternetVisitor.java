@@ -17,7 +17,12 @@ import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
 
-public class IndexableInternetVisitor extends IndexableVisitor<IndexableInternet> {
+/**
+ * @author Michael Couck
+ * @since 21.11.10
+ * @version 01.00
+ */
+public class IndexableInternetVisitor<T> extends IndexableVisitor<IndexableInternet> {
 
 	private HttpClient httpClient = new DefaultHttpClient();
 
@@ -43,6 +48,8 @@ public class IndexableInternetVisitor extends IndexableVisitor<IndexableInternet
 			TermVector termVector = indexable.isVectored() ? TermVector.YES : TermVector.NO;
 
 			addStringField(indexable.getName(), fieldContents, document, store, analyzed, termVector);
+
+			getIndexContext().getIndexWriter().addDocument(document);
 		} catch (Exception e) {
 			logger.error("Exception reading the url : " + indexable.getUrl(), e);
 		}

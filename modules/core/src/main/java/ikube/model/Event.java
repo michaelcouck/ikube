@@ -6,6 +6,11 @@ import java.sql.Timestamp;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
 
+/**
+ * @author Michael Couck
+ * @since 21.11.10
+ * @version 01.00
+ */
 @Entity()
 public class Event extends Persistable {
 

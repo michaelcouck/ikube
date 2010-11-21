@@ -17,14 +17,19 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
+/**
+ * @author Michael Couck
+ * @since 21.11.10
+ * @version 01.00
+ */
 public class FileUtilities {
 
 	private static Logger LOGGER = Logger.getLogger(FileUtilities.class);
 
 	public static void deleteFiles(File folder, String[] stringPatterns) {
-		File[] tempFiles = FileUtilities.findFiles(folder, stringPatterns);
+		List<File> tempFiles = FileUtilities.findFilesRecursively(folder, stringPatterns, new ArrayList<File>());
 		for (File tempFile : tempFiles) {
-			FileUtilities.deleteFile(tempFile, 3);
+			FileUtilities.deleteFile(tempFile, 1);
 		}
 	}
 

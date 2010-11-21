@@ -26,7 +26,12 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-// @Ignore
+/**
+ * @author Michael Couck
+ * @since 21.11.10
+ * @version 01.00
+ */
+@Ignore
 public class DataGenerator extends ATest {
 
 	private String faqSqlFilePath = "faq.sql";

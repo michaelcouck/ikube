@@ -10,6 +10,11 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+/**
+ * @author Michael Couck
+ * @since 21.11.10
+ * @version 01.00
+ */
 public class ParserProvider {
 
 	private static Logger LOGGER = Logger.getLogger(ParserProvider.class);

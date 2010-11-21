@@ -3,6 +3,11 @@ package ikube.service;
 import javax.jws.WebService;
 import javax.jws.soap.SOAPBinding;
 
+/**
+ * @author Michael Couck
+ * @since 21.11.10
+ * @version 01.00
+ */
 @SOAPBinding(style = SOAPBinding.Style.RPC)
 @WebService(name = ISynchronizationWebService.NAME, targetNamespace = ISynchronizationWebService.TARGET_NAMESPACE, serviceName = ISynchronizationWebService.SERVICE_NAME)
 public interface ISynchronizationWebService {

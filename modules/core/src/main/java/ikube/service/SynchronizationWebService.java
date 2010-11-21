@@ -12,6 +12,11 @@ import javax.jws.soap.SOAPBinding;
 
 import org.apache.log4j.Logger;
 
+/**
+ * @author Michael Couck
+ * @since 21.11.10
+ * @version 01.00
+ */
 @Remote(ISynchronizationWebService.class)
 @SOAPBinding(style = SOAPBinding.Style.RPC)
 @WebService(name = ISynchronizationWebService.NAME, targetNamespace = ISynchronizationWebService.TARGET_NAMESPACE, serviceName = ISynchronizationWebService.SERVICE_NAME)

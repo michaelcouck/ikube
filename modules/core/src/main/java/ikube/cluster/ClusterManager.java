@@ -10,6 +10,11 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+/**
+ * @author Michael Couck
+ * @since 21.11.10
+ * @version 01.00
+ */
 public class ClusterManager implements IClusterManager {
 
 	private Logger logger;

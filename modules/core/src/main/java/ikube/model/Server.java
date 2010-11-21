@@ -3,8 +3,16 @@ package ikube.model;
 import java.util.Set;
 import java.util.TreeSet;
 
+import javax.persistence.Entity;
+
 import org.jgroups.Address;
 
+/**
+ * @author Michael Couck
+ * @since 21.11.10
+ * @version 01.00
+ */
+@Entity()
 public class Server extends Persistable implements Comparable<Server> {
 
 	/** The real ip address of this server. */

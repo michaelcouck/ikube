@@ -9,6 +9,11 @@ import org.apache.log4j.Logger;
 
 import EDU.oswego.cs.dl.util.concurrent.PooledExecutor;
 
+/**
+ * @author Michael Couck
+ * @since 21.11.10
+ * @version 01.00
+ */
 public class Timer implements Runnable {
 
 	private Logger logger = Logger.getLogger(this.getClass());

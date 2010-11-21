@@ -9,6 +9,11 @@ import javax.xml.ws.Endpoint;
 
 import org.apache.log4j.Logger;
 
+/**
+ * @author Michael Couck
+ * @since 21.11.10
+ * @version 01.00
+ */
 public class WebServicePublisher implements IWebServicePublisher {
 
 	private Logger logger = Logger.getLogger(this.getClass());

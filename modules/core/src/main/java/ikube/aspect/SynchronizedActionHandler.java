@@ -5,6 +5,11 @@ import ikube.cluster.ILockManager;
 import org.apache.log4j.Logger;
 import org.aspectj.lang.ProceedingJoinPoint;
 
+/**
+ * @author Michael Couck
+ * @since 21.11.10
+ * @version 01.00
+ */
 public class SynchronizedActionHandler implements ISynchronizedActionHandler {
 
 	private Logger logger;

@@ -11,6 +11,11 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author Michael Couck
+ * @since 21.11.10
+ * @version 01.00
+ */
 public abstract class BaseTest extends ATest {
 
 	static {
@@ -18,7 +23,7 @@ public abstract class BaseTest extends ATest {
 			ClusterTest.SLEEP = 1000;
 
 			// Delete the database file
-			FileUtilities.deleteFiles(new File("."), new String[] { IConstants.DATABASE_FILE, ".transaction" });
+			FileUtilities.deleteFiles(new File("."), new String[] { IConstants.DATABASE_FILE, ".transaction", "serenity.odb" });
 			ApplicationContextManager.getApplicationContext(new String[] { "/spring.xml" });
 			// Delete all the old index directories
 			Map<String, IndexContext> contexts = ApplicationContextManager.getBeans(IndexContext.class);

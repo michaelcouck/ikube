@@ -5,6 +5,11 @@ import ikube.index.visitor.IndexableVisitor;
 import javax.persistence.Entity;
 import javax.sql.DataSource;
 
+/**
+ * @author Michael Couck
+ * @since 21.11.10
+ * @version 01.00
+ */
 @Entity()
 public class IndexableTable extends Indexable<IndexableTable> {
 

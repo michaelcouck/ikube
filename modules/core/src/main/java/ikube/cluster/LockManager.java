@@ -22,6 +22,11 @@ import org.jgroups.Message;
 import org.jgroups.ReceiverAdapter;
 import org.jgroups.View;
 
+/**
+ * @author Michael Couck
+ * @since 21.11.10
+ * @version 01.00
+ */
 public class LockManager extends ReceiverAdapter implements ILockManager {
 
 	protected static final String CONFIGURATION = "META-INF/cluster/udp.xml";

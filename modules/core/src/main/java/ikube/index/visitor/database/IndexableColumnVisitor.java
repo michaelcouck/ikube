@@ -24,6 +24,11 @@ import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
 
+/**
+ * @author Michael Couck
+ * @since 21.11.10
+ * @version 01.00
+ */
 public class IndexableColumnVisitor<I> extends IndexableVisitor<IndexableColumn> {
 
 	private Logger logger;

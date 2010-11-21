@@ -13,6 +13,11 @@ import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.Lock;
 import org.junit.Test;
 
+/**
+ * @author Michael Couck
+ * @since 21.11.10
+ * @version 01.00
+ */
 public class DeleteTest extends BaseActionTest {
 
 	private Delete delete = new Delete();

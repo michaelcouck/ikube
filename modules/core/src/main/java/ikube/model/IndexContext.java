@@ -10,6 +10,11 @@ import javax.persistence.Transient;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.MultiSearcher;
 
+/**
+ * @author Michael Couck
+ * @since 21.11.10
+ * @version 01.00
+ */
 @Entity()
 public class IndexContext extends Persistable implements Comparable<IndexContext> {
 

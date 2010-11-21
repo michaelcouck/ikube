@@ -1,5 +1,10 @@
 package ikube.toolkit;
 
+/**
+ * @author Michael Couck
+ * @since 21.11.10
+ * @version 01.00
+ */
 public class HashUtilities {
 
 	/**

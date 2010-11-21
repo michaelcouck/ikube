@@ -10,6 +10,11 @@ import java.io.OutputStream;
 
 import org.junit.Test;
 
+/**
+ * @author Michael Couck
+ * @since 21.11.10
+ * @version 01.00
+ */
 public class PdfParserTest extends ATest {
 
 	@Test
