@@ -19,9 +19,9 @@
             http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
 	<bean
-		id="faqIndexContext.one"
+		id="faqIndexContext.five"
 		class="ikube.model.IndexContext"
-		property:name="ikube.one"
+		property:name="ikube.five"
 		property:indexName="faq"
 		property:maxAge="${max.age}"
 		property:compoundFile="${compound.file}"
@@ -33,112 +33,112 @@
 		property:maxReadLength="${max.read.length}"
 		property:queueTimeout="${max.age}"
 		property:indexDirectoryPath="${index.directory.path}"
-		property:indexables-ref="faqIndexables.one"
-		property:indexableVisitors-ref="faqIndexableVisitors.one" />
-	<util:list id="faqIndexables.one">
-		<ref local="ikubeMail.one" />
-		<ref local="faqTable.one" />
+		property:indexables-ref="faqIndexables.five"
+		property:indexableVisitors-ref="faqIndexableVisitors.five" />
+	<util:list id="faqIndexables.five">
+		<ref local="ikubeMail.five" />
+		<ref local="faqTable.five" />
 	</util:list>
-	<util:list id="faqIndexableVisitors.one">
-		<ref local="ikubeMailVisitor.one" />
-		<ref local="faqTableVisitor.one" />
+	<util:list id="faqIndexableVisitors.five">
+		<ref local="ikubeMailVisitor.five" />
+		<ref local="faqTableVisitor.five" />
 	</util:list>
 
 	<!-- Indexable visitors -->
 	<bean
-		id="ikubeMailVisitor.one"
+		id="ikubeMailVisitor.five"
 		class="ikube.index.visitor.email.IndexableEmailVisitor"
-		property:indexContext-ref="faqIndexContext.one"
+		property:indexContext-ref="faqIndexContext.five"
 		property:indexableType="ikube.model.IndexableEmail" />
 	<bean
-		id="faqTableVisitor.one"
+		id="faqTableVisitor.five"
 		class="ikube.index.visitor.database.IndexableTableVisitor"
-		property:indexContext-ref="faqIndexContext.one"
+		property:indexContext-ref="faqIndexContext.five"
 		property:indexableType="ikube.model.IndexableTable"
-		property:indexableColumnVisitor-ref="faqColumnVisitor.one" />
+		property:indexableColumnVisitor-ref="faqColumnVisitor.five" />
 	<bean
-		id="faqColumnVisitor.one"
+		id="faqColumnVisitor.five"
 		class="ikube.index.visitor.database.IndexableColumnVisitor"
 		property:indexableType="ikube.model.IndexableColumn" />
 
 	<!-- Indexables -->
 	<bean
-		id="faqTable.one"
+		id="faqTable.five"
 		class="ikube.model.IndexableTable"
 		property:name="faq"
 		property:sql="select faq.faqid, faq.answer, faq.creationtimestamp, faq.creator, faq.gang, faq.modifiedtimestamp, faq.modifier,
 			faq.published, faq.question, attachment.attachmentid, attachment.name, attachment.attachment,
 			attachment.length, attachment.faqid from faq, attachment where faq.faqid = attachment.faqid"
 		property:dataSource-ref="nonXaDataSource"
-		property:children-ref="faqColumns.one" />
-	<util:set id="faqColumns.one">
-		<ref local="faqId.one" />
-		<ref local="creationtimestamp.one" />
-		<ref local="modifiedtimestamp.one" />
-		<ref local="creator.one" />
-		<ref local="modifier.one" />
-		<ref local="question.one" />
-		<ref local="answer.one" />
-		<ref local="attachmentid.one" />
-		<ref local="name.one" />
-		<ref local="attachment.one" />
-		<ref local="length.one" />
+		property:children-ref="faqColumns.five" />
+	<util:set id="faqColumns.five">
+		<ref local="faqId.five" />
+		<ref local="creationtimestamp.five" />
+		<ref local="modifiedtimestamp.five" />
+		<ref local="creator.five" />
+		<ref local="modifier.five" />
+		<ref local="question.five" />
+		<ref local="answer.five" />
+		<ref local="attachmentid.five" />
+		<ref local="name.five" />
+		<ref local="attachment.five" />
+		<ref local="length.five" />
 	</util:set>
 	<bean
-		id="faqId.one"
+		id="faqId.five"
 		class="ikube.model.IndexableColumn"
 		property:name="faqId"
 		property:idColumn="true" />
 	<bean
-		id="creationtimestamp.one"
+		id="creationtimestamp.five"
 		class="ikube.model.IndexableColumn"
 		property:name="creationtimestamp" />
 	<bean
-		id="modifiedtimestamp.one"
+		id="modifiedtimestamp.five"
 		class="ikube.model.IndexableColumn"
 		property:name="modifiedtimestamp" />
 	<bean
-		id="creator.one"
+		id="creator.five"
 		class="ikube.model.IndexableColumn"
 		property:name="creator" />
 	<bean
-		id="modifier.one"
+		id="modifier.five"
 		class="ikube.model.IndexableColumn"
 		property:name="modifier" />
 	<bean
-		id="question.one"
+		id="question.five"
 		class="ikube.model.IndexableColumn"
 		property:name="question"
 		property:fieldName="contents" />
 	<bean
-		id="answer.one"
+		id="answer.five"
 		class="ikube.model.IndexableColumn"
 		property:name="answer"
 		property:fieldName="contents" />
 	<bean
-		id="attachmentid.one"
+		id="attachmentid.five"
 		class="ikube.model.IndexableColumn"
 		property:name="attachmentid"
 		property:fieldName="attachmentid" />
 	<bean
-		id="name.one"
+		id="name.five"
 		class="ikube.model.IndexableColumn"
 		property:name="name"
 		property:fieldName="name" />
 	<bean
-		id="attachment.one"
+		id="attachment.five"
 		class="ikube.model.IndexableColumn"
 		property:name="attachment"
 		property:fieldName="attachment"
-		property:indexableColumn-ref="name.one" />
+		property:indexableColumn-ref="name.five" />
 	<bean
-		id="length.one"
+		id="length.five"
 		class="ikube.model.IndexableColumn"
 		property:name="length"
 		property:fieldName="length" />
 
 	<bean
-		id="ikubeMail.one"
+		id="ikubeMail.five"
 		class="ikube.model.IndexableEmail"
 		property:idField="identifier"
 		property:contentField="email"

@@ -21,7 +21,7 @@
 	<bean
 		id="faqIndexContext.three"
 		class="ikube.model.IndexContext"
-		property:name="jackal.three"
+		property:name="ikube.three"
 		property:indexName="faq"
 		property:maxAge="${max.age}"
 		property:compoundFile="${compound.file}"
@@ -36,12 +36,20 @@
 		property:indexables-ref="faqIndexables.three"
 		property:indexableVisitors-ref="faqIndexableVisitors.three" />
 	<util:list id="faqIndexables.three">
+		<ref local="ikubeMail.three" />
 		<ref local="faqTable.three" />
 	</util:list>
 	<util:list id="faqIndexableVisitors.three">
+		<ref local="ikubeMailVisitor.three" />
 		<ref local="faqTableVisitor.three" />
 	</util:list>
 
+	<!-- Indexable visitors -->
+	<bean
+		id="ikubeMailVisitor.three"
+		class="ikube.index.visitor.email.IndexableEmailVisitor"
+		property:indexContext-ref="faqIndexContext.three"
+		property:indexableType="ikube.model.IndexableEmail" />
 	<bean
 		id="faqTableVisitor.three"
 		class="ikube.index.visitor.database.IndexableTableVisitor"
@@ -53,11 +61,14 @@
 		class="ikube.index.visitor.database.IndexableColumnVisitor"
 		property:indexableType="ikube.model.IndexableColumn" />
 
+	<!-- Indexables -->
 	<bean
 		id="faqTable.three"
 		class="ikube.model.IndexableTable"
 		property:name="faq"
-		property:sql="select * from faq as faq join attachment as attachment on faq.faqid = attachment.faqid"
+		property:sql="select faq.faqid, faq.answer, faq.creationtimestamp, faq.creator, faq.gang, faq.modifiedtimestamp, faq.modifier,
+			faq.published, faq.question, attachment.attachmentid, attachment.name, attachment.attachment,
+			attachment.length, attachment.faqid from faq, attachment where faq.faqid = attachment.faqid"
 		property:dataSource-ref="nonXaDataSource"
 		property:children-ref="faqColumns.three" />
 	<util:set id="faqColumns.three">
@@ -68,6 +79,10 @@
 		<ref local="modifier.three" />
 		<ref local="question.three" />
 		<ref local="answer.three" />
+		<ref local="attachmentid.three" />
+		<ref local="name.three" />
+		<ref local="attachment.three" />
+		<ref local="length.three" />
 	</util:set>
 	<bean
 		id="faqId.three"
@@ -100,5 +115,52 @@
 		class="ikube.model.IndexableColumn"
 		property:name="answer"
 		property:fieldName="contents" />
+	<bean
+		id="attachmentid.three"
+		class="ikube.model.IndexableColumn"
+		property:name="attachmentid"
+		property:fieldName="attachmentid" />
+	<bean
+		id="name.three"
+		class="ikube.model.IndexableColumn"
+		property:name="name"
+		property:fieldName="name" />
+	<bean
+		id="attachment.three"
+		class="ikube.model.IndexableColumn"
+		property:name="attachment"
+		property:fieldName="attachment"
+		property:indexableColumn-ref="name.three" />
+	<bean
+		id="length.three"
+		class="ikube.model.IndexableColumn"
+		property:name="length"
+		property:fieldName="length" />
+
+	<bean
+		id="ikubeMail.three"
+		class="ikube.model.IndexableEmail"
+		property:idField="identifier"
+		property:contentField="email"
+		property:mailHost="pop.gmail.com"
+		property:name="ikube.email"
+		property:password="caherline"
+		property:port="995"
+		property:protocol="pop3"
+		property:secureSocketLayer="true"
+		property:titleField="title"
+		property:username="ikube.ikube@gmail.com" />
+
+	<!-- Utility classes -->
+	<bean
+		class="ikube.toolkit.Mailer"
+		property:auth="true"
+		property:mailHost="smtp.gmail.com"
+		property:password="caherline"
+		property:port="465"
+		property:protocol="pop3"
+		property:recipients="ikube.ikube@gmail.com"
+		property:sender="ikube.ikube@gmail.com"
+		property:user="ikube.ikube" />
 
 </beans>

@@ -25,20 +25,17 @@ import org.xml.sax.InputSource;
  */
 public class XMLParser implements IParser {
 
-	private SAXReader saxReader;
-
-	public XMLParser() {
-		this.saxReader = new SAXReader();
-		this.saxReader.setValidation(false);
-		this.saxReader.setIgnoreComments(false);
-		this.saxReader.setIncludeExternalDTDDeclarations(false);
-		this.saxReader.setIncludeInternalDTDDeclarations(false);
-	}
-
 	@Override
 	public final OutputStream parse(InputStream inputStream) throws Exception {
 		Reader reader = new InputStreamReader(inputStream, IConstants.ENCODING);
 		InputSource inputSource = new InputSource(reader);
+
+		SAXReader saxReader = new SAXReader();
+		saxReader.setValidation(false);
+		saxReader.setIgnoreComments(false);
+		saxReader.setIncludeExternalDTDDeclarations(false);
+		saxReader.setIncludeInternalDTDDeclarations(false);
+
 		Document doc = saxReader.read(inputSource);
 		Element root = doc.getRootElement();
 		StringWriter writer = new StringWriter();
@@ -50,7 +47,7 @@ public class XMLParser implements IParser {
 
 	/**
 	 * Visits each tag up and down the tree recursively getting the text content from the tag.
-	 *
+	 * 
 	 * @param parent
 	 *            the parent tag to start recursing
 	 * @param content

@@ -21,7 +21,7 @@
 	<bean
 		id="faqIndexContext.two"
 		class="ikube.model.IndexContext"
-		property:name="jackal.two"
+		property:name="ikube.two"
 		property:indexName="faq"
 		property:maxAge="${max.age}"
 		property:compoundFile="${compound.file}"
@@ -36,12 +36,20 @@
 		property:indexables-ref="faqIndexables.two"
 		property:indexableVisitors-ref="faqIndexableVisitors.two" />
 	<util:list id="faqIndexables.two">
+		<ref local="ikubeMail.two" />
 		<ref local="faqTable.two" />
 	</util:list>
 	<util:list id="faqIndexableVisitors.two">
+		<ref local="ikubeMailVisitor.two" />
 		<ref local="faqTableVisitor.two" />
 	</util:list>
 
+	<!-- Indexable visitors -->
+	<bean
+		id="ikubeMailVisitor.two"
+		class="ikube.index.visitor.email.IndexableEmailVisitor"
+		property:indexContext-ref="faqIndexContext.two"
+		property:indexableType="ikube.model.IndexableEmail" />
 	<bean
 		id="faqTableVisitor.two"
 		class="ikube.index.visitor.database.IndexableTableVisitor"
@@ -53,11 +61,14 @@
 		class="ikube.index.visitor.database.IndexableColumnVisitor"
 		property:indexableType="ikube.model.IndexableColumn" />
 
+	<!-- Indexables -->
 	<bean
 		id="faqTable.two"
 		class="ikube.model.IndexableTable"
 		property:name="faq"
-		property:sql="select * from faq as faq join attachment as attachment on faq.faqid = attachment.faqid"
+		property:sql="select faq.faqid, faq.answer, faq.creationtimestamp, faq.creator, faq.gang, faq.modifiedtimestamp, faq.modifier,
+			faq.published, faq.question, attachment.attachmentid, attachment.name, attachment.attachment,
+			attachment.length, attachment.faqid from faq, attachment where faq.faqid = attachment.faqid"
 		property:dataSource-ref="nonXaDataSource"
 		property:children-ref="faqColumns.two" />
 	<util:set id="faqColumns.two">
@@ -68,6 +79,10 @@
 		<ref local="modifier.two" />
 		<ref local="question.two" />
 		<ref local="answer.two" />
+		<ref local="attachmentid.two" />
+		<ref local="name.two" />
+		<ref local="attachment.two" />
+		<ref local="length.two" />
 	</util:set>
 	<bean
 		id="faqId.two"
@@ -100,5 +115,52 @@
 		class="ikube.model.IndexableColumn"
 		property:name="answer"
 		property:fieldName="contents" />
+	<bean
+		id="attachmentid.two"
+		class="ikube.model.IndexableColumn"
+		property:name="attachmentid"
+		property:fieldName="attachmentid" />
+	<bean
+		id="name.two"
+		class="ikube.model.IndexableColumn"
+		property:name="name"
+		property:fieldName="name" />
+	<bean
+		id="attachment.two"
+		class="ikube.model.IndexableColumn"
+		property:name="attachment"
+		property:fieldName="attachment"
+		property:indexableColumn-ref="name.two" />
+	<bean
+		id="length.two"
+		class="ikube.model.IndexableColumn"
+		property:name="length"
+		property:fieldName="length" />
+
+	<bean
+		id="ikubeMail.two"
+		class="ikube.model.IndexableEmail"
+		property:idField="identifier"
+		property:contentField="email"
+		property:mailHost="pop.gmail.com"
+		property:name="ikube.email"
+		property:password="caherline"
+		property:port="995"
+		property:protocol="pop3"
+		property:secureSocketLayer="true"
+		property:titleField="title"
+		property:username="ikube.ikube@gmail.com" />
+
+	<!-- Utility classes -->
+	<bean
+		class="ikube.toolkit.Mailer"
+		property:auth="true"
+		property:mailHost="smtp.gmail.com"
+		property:password="caherline"
+		property:port="465"
+		property:protocol="pop3"
+		property:recipients="ikube.ikube@gmail.com"
+		property:sender="ikube.ikube@gmail.com"
+		property:user="ikube.ikube" />
 
 </beans>
