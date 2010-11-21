@@ -134,9 +134,14 @@ public class IndexableTableVisitor<I> extends IndexableVisitor<IndexableTable> {
 		builder.append(" < ");
 		builder.append(idNumber + getIndexContext().getBatchSize());
 
+		int prefetchSize = 300;
 		Statement statement = connection.createStatement();
+		statement.setFetchSize(prefetchSize);
+		statement.setMaxRows((int) getIndexContext().getBatchSize());
 		logger.info("Sql : " + builder + ", " + Thread.currentThread().hashCode());
-		return statement.executeQuery(builder.toString());
+		ResultSet resultSet = statement.executeQuery(builder.toString());
+		resultSet.setFetchSize(prefetchSize);
+		return resultSet;
 	}
 
 	public long getCount(Connection connection, IndexableTable indexableTable, IndexableColumn idColumn, long idNumber) throws Exception {
@@ -221,7 +226,7 @@ public class IndexableTableVisitor<I> extends IndexableVisitor<IndexableTable> {
 		Object rowId = resultSet.getObject(idColumn.getName());
 
 		if (logger.isDebugEnabled()) {
-			if (resultSet.getRow() % 10 == 0) {
+			if (resultSet.getRow() % 1000 == 0) {
 				StringBuilder builder = new StringBuilder("Id : ").append(rowId).append(", row : ").append(resultSet.getRow()).append(
 						", thread : ").append(Thread.currentThread().hashCode());
 				logger.debug(builder.toString());
