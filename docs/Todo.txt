@@ -6,20 +6,17 @@
    3) Multiple data sources - 1
    4) Large volumes - 1
    5) Performance - 1
-* Add the file and url visitors - 10
+* Add the file and url visitors - 5
 * Implementation of updating the index with deltas from the client - 3
 
-Total - 25
+Total - 16
 
 Done:
 * Finish the clustering support - 3 *
 * Implement the synchronisation between the servers - 1 *
-* Add the other parsers - 3
-
+* Add the other parsers - 3 *
 
 Other things:
-* Add a configuration for a file system
-* Add a configuration for a mail account
 * Add a database tester to re-connect if the database becomes disconnect
 * Add sorting to the multi and single searchers
 * Is there automatically language support, i.e. are languages handled transparently
@@ -28,13 +25,14 @@ Other things:
    indexes/periods
 * Add a shutdown hook for the Spring objects that need to be closed when the context
   gets refreshed.
-* Test the parsers
 
-Done;:
+Done:
 * Delete the database file on startup locally *
 * Add a reporting module that checks the database connection, the indexes in the different contexts and sends
    the result to a mail address. Perhaps some profiling information, etc. *
-
+* Add a configuration for a file system *
+* Add a configuration for a mail account *
+* Test the parsers *
 
 Won't Do:
 * Front end for configuration, monitoring etc. - 10

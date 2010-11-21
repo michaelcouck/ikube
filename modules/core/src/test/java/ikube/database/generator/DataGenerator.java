@@ -76,14 +76,17 @@ public class DataGenerator extends ATest {
 					ResultSet resultSet = null;
 					try {
 						preparedStatement = connection.prepareStatement(faqInsert, PreparedStatement.RETURN_GENERATED_KEYS);
-						preparedStatement.setString(1, generateText((int) (Math.random() * 100))); // ANSWER
+						String string = generateText((int) (Math.random() * 40), 1024);
+						preparedStatement.setString(1, string); // ANSWER
 						preparedStatement.setTimestamp(2, new Timestamp(System.currentTimeMillis())); // CREATIONTIMESTAMP
-						preparedStatement.setString(3, generateText(3)); // CREATOR
-						preparedStatement.setString(4, generateText(1)); // GANG
-						preparedStatement.setTimestamp(5, new Timestamp(System.currentTimeMillis())); // MODIFIEDTIMESTAMP
-						preparedStatement.setString(6, generateText(2)); // MODIFIER
-						preparedStatement.setInt(7, 1); // PUBLISHED
-						preparedStatement.setString(8, generateText((int) (Math.random() * 50))); // QUESTION
+						string = generateText(3, 32);
+						preparedStatement.setString(3, string); // CREATOR
+						preparedStatement.setTimestamp(4, new Timestamp(System.currentTimeMillis())); // MODIFIEDTIMESTAMP
+						string = generateText(2, 32);
+						preparedStatement.setString(5, string); // MODIFIER
+						preparedStatement.setInt(6, 1); // PUBLISHED
+						string = generateText((int) (Math.random() * 40), 1024);
+						preparedStatement.setString(7, string); // QUESTION
 						preparedStatement.executeUpdate();
 						resultSet = preparedStatement.getGeneratedKeys();
 						while (resultSet.next()) {
@@ -116,7 +119,7 @@ public class DataGenerator extends ATest {
 						}
 					}
 				}
-			}, "Database insert : ", 10000000);
+			}, "Database insert : ", 10000);
 		} finally {
 			connection.close();
 		}
@@ -144,7 +147,7 @@ public class DataGenerator extends ATest {
 		}
 	}
 
-	protected String generateText(int count) {
+	protected String generateText(int count, int maxLength) {
 		StringBuilder builder = new StringBuilder();
 		for (int i = 0; i < count; i++) {
 			int index = (int) (Math.random() * (words.size() - 1));
@@ -152,12 +155,26 @@ public class DataGenerator extends ATest {
 			builder.append(word);
 			builder.append(" ");
 		}
+		if (builder.length() > maxLength) {
+			return builder.substring(0, maxLength);
+		}
 		return builder.toString();
 	}
 
 	@After
 	public void after() throws Exception {
 		this.connection.close();
+	}
+
+	public static void main(String[] args) {
+		try {
+			DataGenerator dataGenerator = new DataGenerator();
+			dataGenerator.before();
+			dataGenerator.generate();
+			dataGenerator.after();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 }

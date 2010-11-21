@@ -55,7 +55,8 @@
 		class="ikube.index.visitor.database.IndexableTableVisitor"
 		property:indexContext-ref="faqIndexContext.three"
 		property:indexableType="ikube.model.IndexableTable"
-		property:indexableColumnVisitor-ref="faqColumnVisitor.three" />
+		property:indexableColumnVisitor-ref="faqColumnVisitor.three"
+		property:fetchSize="${jdbc.fetch.size}" />
 	<bean
 		id="faqColumnVisitor.three"
 		class="ikube.index.visitor.database.IndexableColumnVisitor"
@@ -66,7 +67,7 @@
 		id="faqTable.three"
 		class="ikube.model.IndexableTable"
 		property:name="faq"
-		property:sql="select faq.faqid, faq.answer, faq.creationtimestamp, faq.creator, faq.gang, faq.modifiedtimestamp, faq.modifier,
+		property:sql="select faq.faqid, faq.answer, faq.creationtimestamp, faq.creator, faq.modifiedtimestamp, faq.modifier,
 			faq.published, faq.question, attachment.attachmentid, attachment.name, attachment.attachment,
 			attachment.length, attachment.faqid from faq, attachment where faq.faqid = attachment.faqid"
 		property:dataSource-ref="nonXaDataSource"

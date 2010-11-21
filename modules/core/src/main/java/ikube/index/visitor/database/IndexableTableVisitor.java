@@ -28,6 +28,7 @@ import org.apache.lucene.document.Field.TermVector;
  */
 public class IndexableTableVisitor<I> extends IndexableVisitor<IndexableTable> {
 
+	private int fetchSize;
 	private IndexableVisitor<Indexable<?>> indexableColumnVisitor;
 	private Comparator<Indexable<?>> childrenComparator = new Comparator<Indexable<?>>() {
 		@Override
@@ -134,13 +135,12 @@ public class IndexableTableVisitor<I> extends IndexableVisitor<IndexableTable> {
 		builder.append(" < ");
 		builder.append(idNumber + getIndexContext().getBatchSize());
 
-		int prefetchSize = 300;
 		Statement statement = connection.createStatement();
-		statement.setFetchSize(prefetchSize);
+		statement.setFetchSize(fetchSize);
 		statement.setMaxRows((int) getIndexContext().getBatchSize());
 		logger.info("Sql : " + builder + ", " + Thread.currentThread().hashCode());
 		ResultSet resultSet = statement.executeQuery(builder.toString());
-		resultSet.setFetchSize(prefetchSize);
+		resultSet.setFetchSize(fetchSize);
 		return resultSet;
 	}
 
@@ -226,7 +226,7 @@ public class IndexableTableVisitor<I> extends IndexableVisitor<IndexableTable> {
 		Object rowId = resultSet.getObject(idColumn.getName());
 
 		if (logger.isDebugEnabled()) {
-			if (resultSet.getRow() % 1000 == 0) {
+			if (resultSet.getRow() % getIndexContext().getBatchSize() == 0) {
 				StringBuilder builder = new StringBuilder("Id : ").append(rowId).append(", row : ").append(resultSet.getRow()).append(
 						", thread : ").append(Thread.currentThread().hashCode());
 				logger.debug(builder.toString());
@@ -336,6 +336,10 @@ public class IndexableTableVisitor<I> extends IndexableVisitor<IndexableTable> {
 			logger.error("Exception closing the result set : ", e);
 		}
 
+	}
+
+	public void setFetchSize(int fetchSize) {
+		this.fetchSize = fetchSize;
 	}
 
 	public IndexableVisitor<Indexable<?>> getIndexableColumnVisitor() {
