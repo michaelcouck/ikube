@@ -3,6 +3,7 @@ package ikube.index.visitor.email;
 import ikube.index.parse.IParser;
 import ikube.index.parse.ParserProvider;
 import ikube.index.visitor.IndexableVisitor;
+import ikube.logging.Logging;
 import ikube.model.IndexableEmail;
 
 import java.io.ByteArrayInputStream;
@@ -24,7 +25,6 @@ import javax.mail.URLName;
 import javax.mail.internet.MimeMultipart;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
@@ -43,8 +43,6 @@ public class IndexableEmailVisitor<I> extends IndexableVisitor<IndexableEmail> {
 	static final String SSL_FACTORY = "javax.net.ssl.SSLSocketFactory";
 	static final String MAIL_PROTOCOL = "pop3";
 
-	private Logger logger = Logger.getLogger(this.getClass());
-
 	@Override
 	public void visit(IndexableEmail indexableMail) {
 		javax.mail.Store store = null;
@@ -52,12 +50,9 @@ public class IndexableEmailVisitor<I> extends IndexableVisitor<IndexableEmail> {
 			store = getStore(indexableMail);
 			store.connect();
 		} catch (MessagingException e) {
-			final StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.append("Could not connect to the mail server:");
-			stringBuilder.append(indexableMail.getMailHost());
-			stringBuilder.append(" port:");
-			stringBuilder.append(indexableMail.getPort());
-			logger.error(stringBuilder, e);
+			String message = Logging.getString("Could not connect to the mail server : ", indexableMail.getMailHost(), " port : ",
+					indexableMail.getPort());
+			logger.error(message, e);
 			if (logger.isDebugEnabled()) {
 				logger.debug(e.getStackTrace());
 			}
@@ -77,13 +72,21 @@ public class IndexableEmailVisitor<I> extends IndexableVisitor<IndexableEmail> {
 				int messageNumber = message.getMessageNumber();
 				long timestamp = recievedDate != null ? recievedDate.getTime() : sentDate != null ? sentDate.getTime() : 0l;
 
-				logger.info("Recieved : " + recievedDate);
-				logger.info("Sent : " + sentDate);
-				logger.info("Message number : " + messageNumber);
-				logger.info("Timestamp : " + timestamp);
+				if (logger.isDebugEnabled()) {
+					logger.debug("Recieved : " + recievedDate);
+					logger.debug("Sent : " + sentDate);
+					logger.debug("Message number : " + messageNumber);
+					logger.debug("Timestamp : " + timestamp);
+				}
 
-				StringBuilder builder = new StringBuilder(indexableMail.getMailHost()).append(".").append(indexableMail.getUsername())
-						.append(".").append(messageNumber).append(".").append(timestamp);
+				StringBuilder builder = new StringBuilder();
+				builder.append(indexableMail.getMailHost());
+				builder.append(".");
+				builder.append(indexableMail.getUsername());
+				builder.append(".");
+				builder.append(messageNumber);
+				builder.append(".");
+				builder.append(timestamp);
 
 				Store mustStore = indexableMail.isStored() ? Store.YES : Store.NO;
 				Index analyzed = indexableMail.isAnalyzed() ? Index.ANALYZED : Index.NOT_ANALYZED;
@@ -103,6 +106,7 @@ public class IndexableEmailVisitor<I> extends IndexableVisitor<IndexableEmail> {
 					// Add the content field to the document
 					addStringField(indexableMail.getContentField(), fieldContent, document, mustStore, analyzed, termVector);
 				}
+				getIndexContext().getIndexWriter().addDocument(document);
 			}
 			folder.close(true);
 		} catch (MessagingException e) {
@@ -212,7 +216,7 @@ public class IndexableEmailVisitor<I> extends IndexableVisitor<IndexableEmail> {
 				return new PasswordAuthentication(username, password);
 			}
 		});
-		session.setDebug(Boolean.TRUE);
+		session.setDebug(Boolean.FALSE);
 
 		javax.mail.Store store;
 		if (indexableMail.isSecureSocketLayer()) {

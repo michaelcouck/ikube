@@ -19,8 +19,12 @@ public class DeleteTest extends BaseActionTest {
 
 	@Test
 	public void execute() throws Exception {
+		String indexDirectoryPath = indexContext.getIndexDirectoryPath();
+		indexContext.setIndexDirectoryPath("./somethingDifferent");
+
 		File baseIndexDirectory = FileUtilities.getFile(indexContext.getIndexDirectoryPath(), Boolean.TRUE);
 		FileUtilities.deleteFile(baseIndexDirectory, 1);
+		assertFalse(baseIndexDirectory.exists());
 		baseIndexDirectory = FileUtilities.getFile(indexContext.getIndexDirectoryPath(), Boolean.TRUE);
 		assertTrue(baseIndexDirectory.exists());
 
@@ -32,11 +36,10 @@ public class DeleteTest extends BaseActionTest {
 		String contextIndexDirectoryPath = getContextIndexDirectoryPath(indexContext);
 		File contextIndexDirectory = FileUtilities.getFile(contextIndexDirectoryPath, Boolean.TRUE);
 		assertTrue(contextIndexDirectory.exists());
-		int baseDirectorySize = baseIndexDirectory.listFiles().length;
 
 		// Only one directory so nothing to delete
 		deleted = delete.execute(indexContext);
-		assertFalse(deleted && baseDirectorySize == 1);
+		assertFalse(deleted);
 		assertEquals(1, baseIndexDirectory.listFiles().length);
 		/**************************************************/
 
@@ -86,12 +89,15 @@ public class DeleteTest extends BaseActionTest {
 		lock.release();
 		directory.clearLock(IndexWriter.WRITE_LOCK_NAME);
 
-		FileUtilities.deleteFile(baseIndexDirectory, 1);
-		FileUtilities.deleteFile(contextIndexDirectory, 1);
-		FileUtilities.deleteFile(anotherContextIndexDirectory, 1);
-		FileUtilities.deleteFile(andAnotherContextIndexDirectory, 1);
-		FileUtilities.deleteFile(andYetAnotherContextIndexDirectory, 1);
+		indexContext.setIndexDirectoryPath(indexDirectoryPath);
 
+		FileUtilities.deleteFile(andYetAnotherContextIndexDirectory, 1);
+		FileUtilities.deleteFile(andAnotherContextIndexDirectory, 1);
+		FileUtilities.deleteFile(anotherContextIndexDirectory, 1);
+		FileUtilities.deleteFile(contextIndexDirectory, 1);
+		FileUtilities.deleteFile(baseIndexDirectory, 1);
+
+		assertFalse(baseIndexDirectory.exists());
 		assertFalse(contextIndexDirectory.exists());
 		assertFalse(anotherContextIndexDirectory.exists());
 		assertFalse(andAnotherContextIndexDirectory.exists());

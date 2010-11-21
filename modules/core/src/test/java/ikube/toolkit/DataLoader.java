@@ -30,6 +30,12 @@ public class DataLoader {
 		this.logger = Logger.getLogger(this.getClass());
 	}
 
+	/**
+	 * Creates the tables for the unit tests.
+	 *
+	 * @param filePath
+	 *            the path to the sql to create the tables
+	 */
 	public void createTables(String filePath) {
 		Connection connection = null;
 		try {
@@ -50,6 +56,14 @@ public class DataLoader {
 		}
 	}
 
+	/**
+	 * Gets the data from the database and writes a DBUnit file to the fiel system with the data set in it.
+	 *
+	 * @param tableNames
+	 *            the names of the tables to select from
+	 * @param filePath
+	 *            the path to the output file for the data set
+	 */
 	public void writeDataSet(String[] tableNames, String filePath) {
 		Connection connection = null;
 		try {
@@ -135,6 +149,12 @@ public class DataLoader {
 		} catch (Exception e) {
 			logger.error("", e);
 		}
+	}
+
+	public static void main(String[] args) {
+		ApplicationContextManager.getApplicationContext("/data/spring.xml");
+		DataLoader dataLoader = new DataLoader();
+		dataLoader.writeDataSet(new String[] { "faq", "attachment" }, "./output.xml");
 	}
 
 }

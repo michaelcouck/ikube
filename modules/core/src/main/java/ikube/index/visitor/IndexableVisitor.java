@@ -24,7 +24,7 @@ public abstract class IndexableVisitor<I extends Indexable<?>> {
 
 	protected Logger logger = Logger.getLogger(this.getClass());
 	private String indexableType;
-	protected IndexContext indexContext;
+	private IndexContext indexContext;
 	private Map<String, File> tempFiles = new HashMap<String, File>();
 
 	public String getIndexableType() {
@@ -58,6 +58,18 @@ public abstract class IndexableVisitor<I extends Indexable<?>> {
 		}
 	}
 
+	/**
+	 * TODO - remove me.
+	 *
+	 * Note: This cannot be used because it is too slow going to the file system.
+	 *
+	 * @param fieldName
+	 * @param document
+	 * @param store
+	 * @param termVector
+	 * @param reader
+	 * @throws Exception
+	 */
 	protected void addReaderField(String fieldName, Document document, Store store, TermVector termVector, Reader reader) throws Exception {
 		Field field = document.getField(fieldName);
 		if (field == null) {

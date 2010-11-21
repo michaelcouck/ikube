@@ -10,7 +10,6 @@ import ikube.toolkit.FileUtilities;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.OutputStream;
-import java.util.ArrayList;
 
 import org.junit.Test;
 
@@ -18,11 +17,10 @@ public class RtfParserTest extends ATest {
 
 	@Test
 	public void parse() throws Exception {
-		File file = FileUtilities.findFile(new File("."), new String[] { "rtf.rtf" }, new ArrayList<File>());
+		File file = FileUtilities.findFile(new File("."), new String[] { "rtf.rtf" });
 		byte[] bytes = FileUtilities.getContents(file).toByteArray();
 		IParser parser = ParserProvider.getParser("text/rtf", bytes);
 		OutputStream parsed = parser.parse(new ByteArrayInputStream(bytes));
-		logger.info("Parsed : " + parsed);
 		assertNotNull(parsed);
 		assertTrue(parsed.toString().length() > 0);
 		assertTrue(parsed.toString().contains("Michael"));

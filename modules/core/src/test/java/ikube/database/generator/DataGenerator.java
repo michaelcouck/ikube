@@ -23,8 +23,10 @@ import javax.sql.DataSource;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
+@Ignore
 public class DataGenerator extends ATest {
 
 	private String faqSqlFilePath = "faq.sql";
@@ -112,6 +114,8 @@ public class DataGenerator extends ATest {
 		fileContents.put("pdf.pdf", null);
 		fileContents.put("doc.doc", null);
 		fileContents.put("rtf.rtf", null);
+		fileContents.put("pot.pot", null);
+		fileContents.put("xls.xls", null);
 		for (String fileName : fileContents.keySet()) {
 			byte[] bytes = getContents(fileName).toByteArray();
 			fileContents.put(fileName, bytes);

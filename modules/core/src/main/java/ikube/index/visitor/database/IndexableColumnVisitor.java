@@ -10,11 +10,13 @@ import ikube.model.IndexableColumn;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
+import java.nio.ByteBuffer;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
@@ -49,31 +51,37 @@ public class IndexableColumnVisitor<I> extends IndexableVisitor<IndexableColumn>
 			if (indexable.getIndexableColumn() != null) {
 				if (indexable.getIndexableColumn().getObject() != null) {
 					mimeType = indexable.getIndexableColumn().getObject().toString();
-					logger.debug("Got mime type : " + mimeType);
+					// logger.debug("Got mime type : " + mimeType);
 				}
 			}
+
+			// logger.debug("Content : " + content);
 
 			byte[] bytes = new byte[1024];
 			InputStream inputStream = null;
-			if (mimeType == null) {
-				mimeType = "text/html";
-				// Read some bytes from the input stream to try to work out
-				// what the mime type is from the data
-				if (String.class.isAssignableFrom(content.getClass())) {
-					bytes = ((String) content).getBytes(IConstants.ENCODING);
-					inputStream = new ByteArrayInputStream(bytes);
-				} else if (InputStream.class.isAssignableFrom(content.getClass())) {
-					inputStream = (InputStream) content;
-					// inputStream.mark(bytes.length);
-					// inputStream.read(bytes);
-					// inputStream.reset();
+
+			if (String.class.isAssignableFrom(content.getClass())) {
+				bytes = ((String) content).getBytes(IConstants.ENCODING);
+				inputStream = new ByteArrayInputStream(bytes);
+			} else if (InputStream.class.isAssignableFrom(content.getClass())) {
+				inputStream = (InputStream) content;
+				if (FileInputStream.class.isAssignableFrom(inputStream.getClass())) {
+					ByteBuffer byteBuffer = ByteBuffer.allocate(bytes.length);
+					((FileInputStream) inputStream).getChannel().read(byteBuffer);
+					((FileInputStream) inputStream).getChannel().position(0);
+					bytes = byteBuffer.array();
+				} else if (ByteArrayInputStream.class.isAssignableFrom(inputStream.getClass())) {
+					((ByteArrayInputStream) inputStream).mark(bytes.length);
+					((ByteArrayInputStream) inputStream).read(bytes);
+					((ByteArrayInputStream) inputStream).reset();
 				}
 			}
 
-			logger.debug("Before parse : " + new String(bytes, IConstants.ENCODING));
+			// logger.debug("Bytes : " + new String(bytes, IConstants.ENCODING));
 			IParser parser = ParserProvider.getParser(mimeType, bytes);
 			OutputStream parsedOutputStream = parser.parse(inputStream);
-			logger.debug("After parse : " + new String(bytes));
+			// logger.debug("After parse : " + parsedOutputStream);
+
 			if (ByteArrayOutputStream.class.isAssignableFrom(parsedOutputStream.getClass())) {
 				String fieldContent = parsedOutputStream.toString();
 				addStringField(fieldName, fieldContent, document, store, analyzed, termVector);
@@ -81,7 +89,7 @@ public class IndexableColumnVisitor<I> extends IndexableVisitor<IndexableColumn>
 				Reader reader = new InputStreamReader(inputStream);
 				addReaderField(fieldName, document, store, termVector, reader);
 			} else {
-
+				logger.error("Type not supported from the parser : " + content.getClass().getName());
 			}
 		} catch (Exception e) {
 			logger.error("Exception accessing the column content : ", e);

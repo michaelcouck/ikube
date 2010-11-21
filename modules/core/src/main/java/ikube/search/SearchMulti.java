@@ -37,6 +37,7 @@ public class SearchMulti extends Search {
 		List<Map<String, String>> results = new ArrayList<Map<String, String>>();
 		long duration = 0;
 		long totalHits = 0;
+		long scoreHits = 0;
 
 		try {
 			Query query = MultiFieldQueryParser.parse(IConstants.VERSION, searchStrings, searchFields, IConstants.ANALYZER);
@@ -44,7 +45,8 @@ public class SearchMulti extends Search {
 			TopDocs topDocs = searcher.search(query, firstResult + maxResults);
 			duration = System.currentTimeMillis() - start;
 			totalHits = topDocs.totalHits;
-			for (int i = 0; i < topDocs.totalHits; i++) {
+			scoreHits = topDocs.scoreDocs.length;
+			for (int i = 0; i < totalHits && i < scoreHits; i++) {
 				if (i < firstResult) {
 					continue;
 				}

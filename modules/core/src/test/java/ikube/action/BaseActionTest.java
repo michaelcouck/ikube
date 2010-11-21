@@ -1,6 +1,5 @@
 package ikube.action;
 
-import static org.mockito.Mockito.mock;
 import ikube.BaseTest;
 import ikube.IConstants;
 import ikube.model.IndexContext;
@@ -12,24 +11,12 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
-import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriter.MaxFieldLength;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.MultiSearcher;
-import org.apache.lucene.search.Searchable;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
-import org.apache.lucene.store.Lock;
 
 public abstract class BaseActionTest extends BaseTest {
-
-	protected MultiSearcher multiSearcher = mock(MultiSearcher.class);
-	protected IndexSearcher indexSearcher = mock(IndexSearcher.class);
-	protected IndexReader indexReader = mock(IndexReader.class);
-	protected FSDirectory fsDirectory = mock(FSDirectory.class);
-	protected Searchable[] searchables = new Searchable[] { indexSearcher };
-	protected Lock lock = mock(Lock.class);
 
 	/**
 	 * Creates a real Lucene index in the directory specified.
@@ -75,6 +62,14 @@ public abstract class BaseActionTest extends BaseTest {
 		return contextIndexDirectory;
 	}
 
+	/**
+	 * Returns the path to the latest index directory for this server and this context. The result will be something like
+	 * './faq/1234567890/127.0.0.1/faqContext'.
+	 *
+	 * @param indexContext
+	 *            the index context to get the directory path for
+	 * @return the directory path to the latest index directory for this servers and context
+	 */
 	protected String getContextIndexDirectoryPath(IndexContext indexContext) {
 		StringBuilder builder = new StringBuilder();
 		builder.append(indexContext.getIndexDirectoryPath());

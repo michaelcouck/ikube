@@ -7,6 +7,7 @@ import ikube.toolkit.FileUtilities;
 import ikube.toolkit.PerformanceTester;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.InputStream;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -26,38 +27,27 @@ public class ParserPerformanceTest extends ATest {
 
 	@Test
 	public void htmlParserJerichoCompare() throws Exception {
-		// final HtmlParser htmlParser = new HtmlParser();
-		final HtmlParser jerichoParser = new HtmlParser();
-
-		InputStream inputStream = ParserPerformanceTest.class.getResourceAsStream("/index.html");
-		final byte[] bytes = FileUtilities.getContents(inputStream, Integer.MAX_VALUE).toByteArray();
-
+		final HtmlParser htmlParser = new HtmlParser();
+		File file = FileUtilities.findFile(new File("."), new String[] { "html.html" });
+		byte[] bytes = FileUtilities.getContents(file).toByteArray();
+		final InputStream inputStream = new ByteArrayInputStream(bytes);
 		double executionsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
 			public void execute() {
 				try {
-					// htmlParser.parse(bytes);
+					htmlParser.parse(inputStream);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
 		}, "HTML Parser : ", iterations);
-		// assertTrue(executionsPerSecond > 0);
-
-		executionsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
-			public void execute() {
-				try {
-					jerichoParser.parse(new ByteArrayInputStream(bytes));
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		}, "Jericho Parser : ", iterations);
 		assertTrue(executionsPerSecond > 100);
 	}
 
 	@Test
 	public void pattern() throws Exception {
-		InputStream inputStream = this.getClass().getResourceAsStream("/index.html");
+		File file = FileUtilities.findFile(new File("."), new String[] { "html.html" });
+		byte[] bytes = FileUtilities.getContents(file).toByteArray();
+		InputStream inputStream = new ByteArrayInputStream(bytes);
 		final String string = FileUtilities.getContents(inputStream, Integer.MAX_VALUE).toString();
 		// (@)?(href=')?(HREF=')?(HREF=\")?(href=\")?
 		// This pattern will extract the urls form the log so we can check them

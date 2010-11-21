@@ -78,7 +78,7 @@ public abstract class Search {
 			String content = document.get(fieldName);
 			// If the content is not stored in the index then there is no fragment
 			if (content == null) {
-				logger.debug("No field stored content : " + fieldName);
+				// logger.debug("No field stored content : " + fieldName);
 				return fragment;
 			}
 			StringReader stringReader = new StringReader(content);

@@ -86,7 +86,7 @@ public class FileUtilitiesTest extends BaseTest {
 
 	@Test
 	public void findFile() {
-		File file = FileUtilities.findFile(new File("."), new String[] { "mime-types.xml" }, new ArrayList<File>());
+		File file = FileUtilities.findFile(new File("."), new String[] { "mime-types.xml" });
 		assertNotNull(file);
 	}
 

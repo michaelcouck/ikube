@@ -1,5 +1,6 @@
 package ikube.index.parse.pdf;
 
+import static org.junit.Assert.assertTrue;
 import ikube.ATest;
 import ikube.toolkit.FileUtilities;
 
@@ -14,10 +15,10 @@ public class PdfParserTest extends ATest {
 	@Test
 	public void test() throws Exception {
 		PdfParser pdfParser = new PdfParser();
-		File file = new File("./modules/core/src/test/resources/data/files/pdf.pdf");
+		File file = FileUtilities.findFile(new File("."), new String[] { "pdf.pdf" });
 		byte[] bytes = FileUtilities.getContents(file).toByteArray();
 		OutputStream parsed = pdfParser.parse(new ByteArrayInputStream(bytes));
-		logger.debug("Parsed : " + parsed.toString());
+		assertTrue(parsed.toString().contains("Application form for affiliation"));
 	}
 
 }

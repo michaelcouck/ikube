@@ -1,14 +1,10 @@
 package ikube.index.content;
 
-import ikube.IConstants;
 import ikube.model.IndexableColumn;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.Reader;
 import java.lang.reflect.Method;
 import java.sql.Blob;
@@ -121,14 +117,17 @@ public class ColumnContentProvider implements IContentProvider<IndexableColumn> 
 				}
 				int read = 0;
 				byte[] bytes = new byte[1024 * 256];
-				File file = File.createTempFile(Long.toString(System.nanoTime()), IConstants.READER_FILE_SUFFIX);
-				logger.debug("Temp file : " + file.getAbsolutePath());
-				OutputStream outputStream = new FileOutputStream(file);
+				// File file = File.createTempFile(Long.toString(System.nanoTime()), IConstants.READER_FILE_SUFFIX);
+				// logger.debug("Temp file : " + file.getAbsolutePath());
+				// OutputStream outputStream = new FileOutputStream(file);
+				ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 				while (inputStream != null && (read = inputStream.read(bytes)) > 0) {
 					outputStream.write(bytes, 0, read);
 				}
+				result = new ByteArrayInputStream(outputStream.toByteArray());
 				outputStream.close();
-				result = new FileInputStream(file);
+				// outputStream.close();
+				// result = new FileInputStream(file);
 				break;
 			case Types.CLOB:
 				// Get an input stream method, as this can be different for each driver blob or clob
@@ -147,14 +146,17 @@ public class ColumnContentProvider implements IContentProvider<IndexableColumn> 
 				}
 				read = 0;
 				char[] chars = new char[1024 * 256];
-				file = File.createTempFile(Long.toString(System.nanoTime()), IConstants.READER_FILE_SUFFIX);
-				logger.debug("Temp file : " + file.getAbsolutePath());
-				outputStream = new FileOutputStream(file);
+				// file = File.createTempFile(Long.toString(System.nanoTime()), IConstants.READER_FILE_SUFFIX);
+				// logger.debug("Temp file : " + file.getAbsolutePath());
+				// outputStream = new FileOutputStream(file);
+				outputStream = new ByteArrayOutputStream();
 				while (clobReader != null && (read = clobReader.read(chars)) > 0) {
 					outputStream.write(String.valueOf(chars).getBytes(), 0, read);
 				}
+				result = new ByteArrayInputStream(outputStream.toByteArray());
 				outputStream.close();
-				result = new FileInputStream(file);
+				// outputStream.close();
+				// result = new FileInputStream(file);
 				break;
 			}
 		} catch (Exception e) {

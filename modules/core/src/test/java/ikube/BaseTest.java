@@ -8,42 +8,38 @@ import ikube.toolkit.DataLoader;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
-import java.net.InetAddress;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public abstract class BaseTest extends ATest {
 
 	static {
 		try {
+			ClusterTest.SLEEP = 1000;
+
 			// Delete the database file
 			FileUtilities.deleteFiles(new File("."), new String[] { IConstants.DATABASE_FILE, ".transaction" });
 			ApplicationContextManager.getApplicationContext(new String[] { "/spring.xml" });
-			ClusterTest.SLEEP = 1000;
+			// Delete all the old index directories
+			Map<String, IndexContext> contexts = ApplicationContextManager.getBeans(IndexContext.class);
+			for (IndexContext indexContext : contexts.values()) {
+				File baseIndexDirectory = FileUtilities.getFile(indexContext.getIndexDirectoryPath(), Boolean.TRUE);
+				FileUtilities.deleteFile(baseIndexDirectory, 1);
+			}
+
 			DataLoader dataLoader = new DataLoader();
 			File folder = new File(".");
 
-			String[] stringPatterns = new String[] { "createTables.sql" };
-			List<File> files = FileUtilities.findFilesRecursively(folder, stringPatterns, new ArrayList<File>());
-			File file = files.get(0);
+			File file = FileUtilities.findFile(folder, new String[] { "tables.sql" });
 			dataLoader.createTables(file.getAbsolutePath());
 
-			stringPatterns = new String[] { "data.xml" };
-			files = FileUtilities.findFilesRecursively(folder, stringPatterns, new ArrayList<File>());
-			file = files.get(0);
+			file = FileUtilities.findFile(folder, new String[] { "data.xml" });
 			dataLoader.insertDataSet(file.getAbsolutePath());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	protected String ip;
-	{
-		try {
-			ip = InetAddress.getLocalHost().getHostAddress();
-		} catch (Exception e) {
-		}
-	}
 	protected IndexContext indexContext = ApplicationContextManager.getBean("faqIndexContext");
 
 	protected static void delete(IDataBase dataBase, Class<?>... klasses) {

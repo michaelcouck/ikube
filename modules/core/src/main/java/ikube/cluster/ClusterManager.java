@@ -1,5 +1,6 @@
 package ikube.cluster;
 
+import ikube.logging.Logging;
 import ikube.model.IndexContext;
 import ikube.model.Server;
 import ikube.model.Token;
@@ -58,7 +59,6 @@ public class ClusterManager implements IClusterManager {
 		long time = System.currentTimeMillis();
 		try {
 			Token token = lockManager.getToken();
-			logger.info("Servers : " + token.getServers() + ", " + Thread.currentThread().hashCode());
 			for (Server server : token.getServers()) {
 				for (IndexContext indexContext : server.getIndexContexts()) {
 					if (!indexContext.isWorking()) {
@@ -82,7 +82,9 @@ public class ClusterManager implements IClusterManager {
 					}
 				}
 			}
-			logger.info("Time : " + time + ", " + token.getServers() + ", " + Thread.currentThread().hashCode());
+			if (logger.isDebugEnabled()) {
+				logger.debug(Logging.getString("Time : ", time, ", ", token.getServers(), ", ", Thread.currentThread().hashCode()));
+			}
 		} finally {
 			notifyAll();
 		}
@@ -107,7 +109,9 @@ public class ClusterManager implements IClusterManager {
 					}
 				}
 			}
-			logger.info("Get id number : " + idNumber + ", " + Thread.currentThread().hashCode());
+			if (logger.isDebugEnabled()) {
+				logger.debug(Logging.getString("Get id number : ", idNumber, ", ", Thread.currentThread().hashCode()));
+			}
 			return idNumber;
 		} finally {
 			notifyAll();
@@ -116,8 +120,10 @@ public class ClusterManager implements IClusterManager {
 
 	public synchronized void setIdNumber(String indexName, long idNumber) {
 		try {
-			logger.debug("Setting id number : " + idNumber + ", " + Thread.currentThread().hashCode());
 			Server server = lockManager.getServer();
+			if (logger.isDebugEnabled()) {
+				logger.debug(Logging.getString("Setting id number : ", idNumber, ", ", server, ", ", Thread.currentThread().hashCode()));
+			}
 			for (IndexContext indexContext : server.getIndexContexts()) {
 				if (indexName.equals(indexContext.getIndexName())) {
 					indexContext.setIdNumber(idNumber);
@@ -156,7 +162,9 @@ public class ClusterManager implements IClusterManager {
 			// be done every time as the local server object is always local and in this Jvm the contexts in the
 			// server are the instances from the configuration, not from the other servers
 			lockManager.getServer().getIndexContexts().add(indexContext);
-			logger.debug("Set working : " + indexContext + ", " + Thread.currentThread().hashCode());
+			if (logger.isDebugEnabled()) {
+				logger.info(Logging.getString("Set working : ", indexContext, ", ", Thread.currentThread().hashCode()));
+			}
 		} finally {
 			notifyAll();
 		}

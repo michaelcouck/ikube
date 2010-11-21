@@ -8,23 +8,16 @@ import ikube.toolkit.FileUtilities;
 
 import java.io.File;
 
-import org.junit.Before;
 import org.junit.Test;
 
-// @Ignore
 public class AActionTest extends BaseActionTest {
 
-	private AAction<IndexContext, Boolean> aAction;
-
-	@Before
-	public void before() {
-		this.aAction = new AAction<IndexContext, Boolean>() {
-			@Override
-			public Boolean execute(IndexContext e) {
-				return null;
-			}
-		};
-	}
+	private AAction<IndexContext, Boolean> aAction = new AAction<IndexContext, Boolean>() {
+		@Override
+		public Boolean execute(IndexContext e) {
+			return null;
+		}
+	};
 
 	@Test
 	public void indexCurrent() throws Exception {

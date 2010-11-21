@@ -5,7 +5,6 @@ import ikube.model.IndexableEmail;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.Mailer;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -18,27 +17,20 @@ import org.junit.Test;
  */
 public class IndexableEmailVisitorTest extends BaseTest {
 
-	final String username = "isearch.eu@gmail.com";
-	final String password = "caherline";
-	final String host = "pop.gmail.com";
-	final String port = "995";
-
 	@Test
-	@Ignore
+	@SuppressWarnings("unchecked")
 	public void visit() throws Exception {
 		Mailer mailer = ApplicationContextManager.getBean(Mailer.class);
 		mailer.sendMail("MailVisitorTest Subject", "Mail visitor test mail body");
 
-		IndexableEmailVisitor<IndexableEmail> indexableEmailVisitor = new IndexableEmailVisitor<IndexableEmail>();
-		IndexableEmail indexableEmail = new IndexableEmail();
-		indexableEmail.setMailHost(host);
-		indexableEmail.setUsername(username);
-		indexableEmail.setPassword(password);
-		indexableEmail.setPort(port);
-		indexableEmail.setSecureSocketLayer(true);
+		indexContext.setIndexWriter(indexWriter);
+
+		IndexableEmail indexableEmail = ApplicationContextManager.getBean(IndexableEmail.class);
+		IndexableEmailVisitor<IndexableEmail> indexableEmailVisitor = ApplicationContextManager.getBean(IndexableEmailVisitor.class);
+
 		indexableEmailVisitor.visit(indexableEmail);
 
-		// TODO - implement this test
+		// TODO - check that there is some data in the index from the mail
 	}
 
 }

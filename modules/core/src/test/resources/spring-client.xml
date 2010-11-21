@@ -36,12 +36,20 @@
 		property:indexables-ref="faqIndexables"
 		property:indexableVisitors-ref="faqIndexableVisitors" />
 	<util:list id="faqIndexables">
+		<ref local="ikubeMail" />
 		<ref local="faqTable" />
 	</util:list>
 	<util:list id="faqIndexableVisitors">
+		<ref local="ikubeMailVisitor" />
 		<ref local="faqTableVisitor" />
 	</util:list>
 
+	<!-- Indexable visitors -->
+	<bean
+		id="ikubeMailVisitor"
+		class="ikube.index.visitor.email.IndexableEmailVisitor"
+		property:indexContext-ref="faqIndexContext"
+		property:indexableType="ikube.model.IndexableEmail" />
 	<bean
 		id="faqTableVisitor"
 		class="ikube.index.visitor.database.IndexableTableVisitor"
@@ -53,6 +61,7 @@
 		class="ikube.index.visitor.database.IndexableColumnVisitor"
 		property:indexableType="ikube.model.IndexableColumn" />
 
+	<!-- Indexables -->
 	<bean
 		id="faqTable"
 		class="ikube.model.IndexableTable"
@@ -129,12 +138,27 @@
 		property:fieldName="length" />
 
 	<bean
+		id="ikubeMail"
+		class="ikube.model.IndexableEmail"
+		property:idField="identifier"
+		property:contentField="email"
+		property:mailHost="pop.gmail.com"
+		property:name="ikube.email"
+		property:password="caherline"
+		property:port="995"
+		property:protocol="pop3"
+		property:secureSocketLayer="true"
+		property:titleField="title"
+		property:username="ikube.ikube@gmail.com" />
+
+	<!-- Utility classes -->
+	<bean
 		class="ikube.toolkit.Mailer"
 		property:auth="true"
 		property:mailHost="smtp.gmail.com"
 		property:password="caherline"
 		property:port="465"
-		property:protocol="smtp"
+		property:protocol="pop3"
 		property:recipients="ikube.ikube@gmail.com"
 		property:sender="ikube.ikube@gmail.com"
 		property:user="ikube.ikube" />

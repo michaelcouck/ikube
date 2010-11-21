@@ -84,17 +84,21 @@ public class Open extends AAction<IndexContext, Boolean> {
 				}
 			}
 			try {
-				Searchable[] searchables = searchers.toArray(new IndexSearcher[searchers.size()]);
-				MultiSearcher multiSearcher = new MultiSearcher(searchables);
-				indexContext.setMultiSearcher(multiSearcher);
-				ListenerManager.fireEvent(indexContext, Event.SEARCHER_OPENED, new Timestamp(System.currentTimeMillis()), Boolean.FALSE);
+				if (searchers.size() > 0) {
+					Searchable[] searchables = searchers.toArray(new IndexSearcher[searchers.size()]);
+					MultiSearcher multiSearcher = new MultiSearcher(searchables);
+					indexContext.setMultiSearcher(multiSearcher);
+					ListenerManager
+							.fireEvent(indexContext, Event.SEARCHER_OPENED, new Timestamp(System.currentTimeMillis()), Boolean.FALSE);
+					return Boolean.TRUE;
+				}
 			} catch (Exception e) {
 				logger.error("Exception opening the multi searcher", e);
 			}
 		} finally {
 			getClusterManager().setWorking(indexContext, null, Boolean.FALSE, 0);
 		}
-		return Boolean.TRUE;
+		return Boolean.FALSE;
 	}
 
 }
