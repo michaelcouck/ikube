@@ -26,7 +26,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-@Ignore
+// @Ignore
 public class DataGenerator extends ATest {
 
 	private String faqSqlFilePath = "faq.sql";
@@ -66,33 +66,50 @@ public class DataGenerator extends ATest {
 				@Override
 				public void execute() throws Exception {
 					// Insert the faq
-					PreparedStatement preparedStatement = connection.prepareStatement(faqInsert, PreparedStatement.RETURN_GENERATED_KEYS);
-					preparedStatement.setString(1, generateText((int) (Math.random() * 100))); // ANSWER
-					preparedStatement.setTimestamp(2, new Timestamp(System.currentTimeMillis())); // CREATIONTIMESTAMP
-					preparedStatement.setString(3, generateText(3)); // CREATOR
-					preparedStatement.setString(4, generateText(1)); // GANG
-					preparedStatement.setTimestamp(5, new Timestamp(System.currentTimeMillis())); // MODIFIEDTIMESTAMP
-					preparedStatement.setString(6, generateText(2)); // MODIFIER
-					preparedStatement.setInt(7, 1); // PUBLISHED
-					preparedStatement.setString(8, generateText((int) (Math.random() * 50))); // QUESTION
-					preparedStatement.executeUpdate();
-					ResultSet resultSet = preparedStatement.getGeneratedKeys();
-					while (resultSet.next()) {
-						long faqId = resultSet.getLong(1);
-						for (String fileName : fileContents.keySet()) {
-							// Insert the attachment
-							byte[] bytes = fileContents.get(fileName);
-							InputStream inputStream = new ByteArrayInputStream(bytes);
-							preparedStatement = connection.prepareStatement(attachmentInsert, PreparedStatement.NO_GENERATED_KEYS);
-							preparedStatement.setBinaryStream(1, inputStream, bytes.length); // ATTACHMENT
-							preparedStatement.setInt(2, bytes.length); // LENGTH
-							preparedStatement.setString(3, fileName); // NAME
-							preparedStatement.setLong(4, faqId); // FAQID
-							preparedStatement.executeUpdate();
+					PreparedStatement preparedStatement = null;
+					PreparedStatement attachmentPreparedStatement = null;
+					ResultSet resultSet = null;
+					try {
+						preparedStatement = connection.prepareStatement(faqInsert, PreparedStatement.RETURN_GENERATED_KEYS);
+						preparedStatement.setString(1, generateText((int) (Math.random() * 100))); // ANSWER
+						preparedStatement.setTimestamp(2, new Timestamp(System.currentTimeMillis())); // CREATIONTIMESTAMP
+						preparedStatement.setString(3, generateText(3)); // CREATOR
+						preparedStatement.setString(4, generateText(1)); // GANG
+						preparedStatement.setTimestamp(5, new Timestamp(System.currentTimeMillis())); // MODIFIEDTIMESTAMP
+						preparedStatement.setString(6, generateText(2)); // MODIFIER
+						preparedStatement.setInt(7, 1); // PUBLISHED
+						preparedStatement.setString(8, generateText((int) (Math.random() * 50))); // QUESTION
+						preparedStatement.executeUpdate();
+						resultSet = preparedStatement.getGeneratedKeys();
+						while (resultSet.next()) {
+							long faqId = resultSet.getLong(1);
+							for (String fileName : fileContents.keySet()) {
+								// Insert the attachment
+								byte[] bytes = fileContents.get(fileName);
+								InputStream inputStream = new ByteArrayInputStream(bytes);
+								attachmentPreparedStatement = connection.prepareStatement(attachmentInsert,
+										PreparedStatement.NO_GENERATED_KEYS);
+								attachmentPreparedStatement.setBinaryStream(1, inputStream, bytes.length); // ATTACHMENT
+								attachmentPreparedStatement.setInt(2, bytes.length); // LENGTH
+								attachmentPreparedStatement.setString(3, fileName); // NAME
+								attachmentPreparedStatement.setLong(4, faqId); // FAQID
+								attachmentPreparedStatement.executeUpdate();
+								attachmentPreparedStatement.close();
+							}
+						}
+						preparedStatement.close();
+						resultSet.close();
+					} catch (Exception e) {
+						logger.error("", e);
+					} finally {
+						try {
+							resultSet.close();
+							attachmentPreparedStatement.close();
+							preparedStatement.close();
+						} catch (Exception e) {
+							logger.error("", e);
 						}
 					}
-					resultSet.close();
-					preparedStatement.close();
 				}
 			}, "Database insert : ", 10000000);
 		} finally {
