@@ -15,7 +15,7 @@ import javax.persistence.Transient;
 public class Event extends Persistable {
 
 	public static final String TIMER = "timer";
-	public static final String PROFILING = "profiling";
+	public static final String PROFILE = "profile";
 	public static final String SEARCHER_OPENED = "searcherOpened";
 	public static final String RESULTS = "results";
 	public static final String NO_RESULTS = "noResults";

@@ -32,7 +32,7 @@
 		class="ikube.cluster.ClusterManager"
 		property:lockManager-ref="ikube.cluster.LockManager" />
 	<bean
-		class="ikube.aspect.SynchronizedActionHandler"
+		class="ikube.aspect.Synchronize"
 		property:lockManager-ref="ikube.cluster.LockManager" />
 	<bean
 		id="ikube.database.DataBaseOdb"
@@ -72,10 +72,10 @@
 	</bean>
 
 	<bean
-		id="ikube.aspect.Profiling"
-		class="ikube.aspect.Profiling" />
+		id="ikube.aspect.Profile"
+		class="ikube.aspect.Profile" />
 	<aop:config proxy-target-class="false">
-		<aop:aspect ref="ikube.aspect.Profiling">
+		<aop:aspect ref="ikube.aspect.Profile">
 			<aop:around method="profile" pointcut="execution(* ikube.index.visitor.database.*.*(..))" />
 		</aop:aspect>
 	</aop:config>
@@ -126,9 +126,9 @@
 		property:delay="${report.delay}"
 		property:period="${report.period}" />
 	<bean
-		id="ikube.toolkit.Timer.Profiling"
+		id="ikube.toolkit.Timer.Profile"
 		class="ikube.toolkit.Timer"
-		property:type="profiling"
+		property:type="profile"
 		property:delay="${profiling.delay}"
 		property:period="${profiling.period}" />
 	<bean
@@ -146,7 +146,7 @@
 
 	<util:list id="scheduled.tasks">
 		<ref local="ikube.toolkit.Timer" />
-		<ref local="ikube.toolkit.Timer.Profiling" />
+		<ref local="ikube.toolkit.Timer.Profile" />
 		<ref local="ikube.toolkit.Timer.WebService" />
 		<ref local="ikube.toolkit.Timer.LockManager" />
 	</util:list>

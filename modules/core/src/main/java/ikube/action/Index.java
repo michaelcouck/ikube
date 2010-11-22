@@ -16,7 +16,7 @@ import java.util.List;
  * @since 21.11.10
  * @version 01.00
  */
-public class Index extends AAction<IndexContext, Boolean> {
+public class Index extends Action<IndexContext, Boolean> {
 
 	@Override
 	public Boolean execute(IndexContext indexContext) {

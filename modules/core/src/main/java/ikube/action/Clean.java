@@ -7,7 +7,7 @@ import ikube.model.IndexContext;
  * @since 20.11.10
  * @version 01.00
  */
-public class Clean extends AAction<IndexContext, Boolean> {
+public class Clean extends Action<IndexContext, Boolean> {
 
 	@Override
 	public Boolean execute(IndexContext indexContext) {

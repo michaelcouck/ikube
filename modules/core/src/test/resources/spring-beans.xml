@@ -35,6 +35,9 @@
 		class="ikube.IndexEngine"
 		property:actions-ref="actions" />
 	<bean
+		id="ikube.aspect.Monitor"
+		class="ikube.aspect.Monitor" />
+	<bean
 		id="ikube.database.DataBaseOdb"
 		class="ikube.database.DataBaseOdb"
 		destroy-method="close" />
@@ -67,12 +70,18 @@
 	</bean>
 
 	<bean
-		id="ikube.aspect.Profiling"
-		class="ikube.aspect.Profiling" />
+		id="ikube.aspect.Profile"
+		class="ikube.aspect.Profile" />
 	<aop:config proxy-target-class="false">
-		<aop:aspect ref="ikube.aspect.Profiling">
+		<!--<aop:aspect ref="ikube.aspect.Profile">
 			<aop:around method="profile" pointcut="execution(* ikube.index.visitor.database.*.*(..))" />
-		</aop:aspect>
+		</aop:aspect>-->
+		<!--<aop:aspect ref="ikube.aspect.Monitor">
+			<aop:around method="monitor" pointcut="execution(* ikube.index.visitor.database.*.*(..))" />
+		</aop:aspect>-->
+		<!--<aop:aspect ref="ikube.aspect.Monitor">
+			<aop:around method="monitor" pointcut="execution(* ikube.index.visitor.filesystem.*.*(..))" />
+		</aop:aspect>-->
 	</aop:config>
 
 	<bean
@@ -82,6 +91,10 @@
 		id="ikube.service.SynchronizationWebService"
 		class="ikube.service.SynchronizationWebService" />
 	<bean
+		id="ikube.service.MonitorWebService"
+		class="ikube.service.MonitorWebService"
+		property:monitor-ref="ikube.aspect.Monitor" />
+	<bean
 		id="ikube.service.WebServicePublisher"
 		class="ikube.service.WebServicePublisher"
 		property:addresses-ref="addresses"
@@ -90,10 +103,12 @@
 	<util:list id="addresses">
 		<value>http://localhost:8081/service/ISearcherWebService</value>
 		<value>http://localhost:8082/service/ISynchronizationWebService</value>
+		<value>http://localhost:8083/service/IMonitorWebService</value>
 	</util:list>
 	<util:list id="implementors">
 		<ref local="ikube.service.SearcherWebService" />
 		<ref local="ikube.service.SynchronizationWebService" />
+		<ref local="ikube.service.MonitorWebService" />
 	</util:list>
 	<bean
 		id="ikube.service.SearcherWebServiceExecuter"
@@ -115,9 +130,9 @@
 		property:delay="${delay}"
 		property:period="${period}" />
 	<bean
-		id="ikube.toolkit.Timer.Profiling"
+		id="ikube.toolkit.Timer.Profile"
 		class="ikube.toolkit.Timer"
-		property:type="profiling"
+		property:type="profile"
 		property:delay="${profiling.delay}"
 		property:period="${profiling.period}" />
 	<bean
@@ -135,7 +150,7 @@
 
 	<util:list id="scheduled.tasks">
 		<ref local="ikube.toolkit.Timer" />
-		<ref local="ikube.toolkit.Timer.Profiling" />
+		<ref local="ikube.toolkit.Timer.Profile" />
 		<ref local="ikube.toolkit.Timer.WebService" />
 		<ref local="ikube.toolkit.Timer.LockManager" />
 	</util:list>

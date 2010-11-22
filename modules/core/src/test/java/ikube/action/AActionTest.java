@@ -17,7 +17,7 @@ import org.junit.Test;
  */
 public class AActionTest extends BaseActionTest {
 
-	private AAction<IndexContext, Boolean> aAction = new AAction<IndexContext, Boolean>() {
+	private Action<IndexContext, Boolean> action = new Action<IndexContext, Boolean>() {
 		@Override
 		public Boolean execute(IndexContext e) {
 			return null;
@@ -31,7 +31,7 @@ public class AActionTest extends BaseActionTest {
 		indexContext.setMaxAge(newMaxAge);
 		Thread.sleep(newMaxAge);
 
-		boolean indexCurrent = aAction.isIndexCurrent(indexContext);
+		boolean indexCurrent = action.isIndexCurrent(indexContext);
 		assertFalse(indexCurrent);
 
 		StringBuilder builder = new StringBuilder();
@@ -43,7 +43,7 @@ public class AActionTest extends BaseActionTest {
 
 		File contextIndexDirectory = FileUtilities.getFile(builder.toString(), Boolean.TRUE);
 
-		indexCurrent = aAction.isIndexCurrent(indexContext);
+		indexCurrent = action.isIndexCurrent(indexContext);
 		assertTrue(indexCurrent);
 		indexContext.setMaxAge(maxAge);
 
@@ -55,14 +55,14 @@ public class AActionTest extends BaseActionTest {
 	public void shoudReopen() throws Exception {
 		File baseIndexDirectory = FileUtilities.getFile(indexContext.getIndexDirectoryPath(), Boolean.TRUE);
 		FileUtilities.deleteFile(baseIndexDirectory, 1);
-		boolean shouldReopen = aAction.shouldReopen(indexContext);
+		boolean shouldReopen = action.shouldReopen(indexContext);
 		// Searcher null in the context
 		assertTrue(shouldReopen /* && !baseIndexDirectory.exists() */);
 
 		indexContext.setMultiSearcher(multiSearcher);
 
 		// No searchables in the searcher
-		shouldReopen = aAction.shouldReopen(indexContext);
+		shouldReopen = action.shouldReopen(indexContext);
 		assertTrue(shouldReopen);
 
 		StringBuilder builder = new StringBuilder();
@@ -81,13 +81,13 @@ public class AActionTest extends BaseActionTest {
 		when(multiSearcher.getSearchables()).thenReturn(searchables);
 
 		// All the directories are in the searcher
-		shouldReopen = aAction.shouldReopen(indexContext);
+		shouldReopen = action.shouldReopen(indexContext);
 		assertFalse(shouldReopen);
 
 		// Create a new server index directory
 		File anotherContextIndexDirectory = createIndex(new File(builder.toString().replace(indexContext.getName(), "anotherContextIndex")));
 
-		shouldReopen = aAction.shouldReopen(indexContext);
+		shouldReopen = action.shouldReopen(indexContext);
 		assertTrue(shouldReopen);
 
 		indexContext.setMultiSearcher(null);

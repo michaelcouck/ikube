@@ -22,7 +22,7 @@ import javax.xml.ws.Service;
  * @since 31.10.10
  * @version 01.00
  */
-public class Synchronize extends AAction<IndexContext, Boolean> {
+public class Synchronize extends Action<IndexContext, Boolean> {
 
 	private String endpointUri;
 	private String serviceName;

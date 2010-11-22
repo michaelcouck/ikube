@@ -7,7 +7,7 @@ import ikube.model.IndexContext;
  * @since 31.10.10
  * @version 01.00
  */
-public class Reset extends AAction<IndexContext, Boolean> {
+public class Reset extends Action<IndexContext, Boolean> {
 
 	@Override
 	public Boolean execute(IndexContext indexContext) {
