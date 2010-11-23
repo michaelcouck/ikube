@@ -19,12 +19,12 @@ import org.junit.Test;
  * @since 21.11.10
  * @version 01.00
  */
-public class PpParserTest extends ATest {
+public class PowerPointParserTest extends ATest {
 
 	@Test
 	@Ignore
 	public void parse() throws Exception {
-		File file = FileUtilities.findFile(new File("."), new String[] { "helloworld.pot" });
+		File file = FileUtilities.findFile(new File("."), new String[] { "pot.pot" });
 		byte[] bytes = FileUtilities.getContents(file).toByteArray();
 		IParser parser = ParserProvider.getParser("application/vnd.ms-powerpoint", bytes);
 		OutputStream parsed = parser.parse(new ByteArrayInputStream(bytes));

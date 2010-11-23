@@ -3,7 +3,6 @@ package ikube.database.generator;
 import ikube.ATest;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
-import ikube.toolkit.PerformanceTester;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -34,9 +33,6 @@ import org.junit.Test;
 @Ignore
 public class DataGenerator extends ATest {
 
-	private String faqSqlFilePath = "faq.sql";
-	private String attachmentSqlFilePath = "attachment.sql";
-
 	private String wordsFilePath = "/data/words.txt";
 	private String configurationFilePath = "/data/spring.xml";
 
@@ -64,71 +60,67 @@ public class DataGenerator extends ATest {
 
 	@Test
 	public void generate() throws Exception {
-		final String faqInsert = getContents(faqSqlFilePath).toString();
-		final String attachmentInsert = getContents(attachmentSqlFilePath).toString();
 		try {
-			PerformanceTester.execute(new PerformanceTester.APerform() {
-				@Override
-				public void execute() throws Exception {
-					// Insert the faq
-					PreparedStatement preparedStatement = null;
-					PreparedStatement attachmentPreparedStatement = null;
-					ResultSet resultSet = null;
-					try {
-						preparedStatement = connection.prepareStatement(faqInsert, PreparedStatement.RETURN_GENERATED_KEYS);
-						String string = generateText((int) (Math.random() * 40), 1024);
-						preparedStatement.setString(1, string); // ANSWER
-						preparedStatement.setTimestamp(2, new Timestamp(System.currentTimeMillis())); // CREATIONTIMESTAMP
-						string = generateText(3, 32);
-						preparedStatement.setString(3, string); // CREATOR
-						preparedStatement.setTimestamp(4, new Timestamp(System.currentTimeMillis())); // MODIFIEDTIMESTAMP
-						string = generateText(2, 32);
-						preparedStatement.setString(5, string); // MODIFIER
-						preparedStatement.setInt(6, 1); // PUBLISHED
-						string = generateText((int) (Math.random() * 40), 1024);
-						preparedStatement.setString(7, string); // QUESTION
-						preparedStatement.executeUpdate();
-						resultSet = preparedStatement.getGeneratedKeys();
-						while (resultSet.next()) {
-							long faqId = resultSet.getLong(1);
-							for (String fileName : fileContents.keySet()) {
-								// Insert the attachment
-								byte[] bytes = fileContents.get(fileName);
-								InputStream inputStream = new ByteArrayInputStream(bytes);
-								attachmentPreparedStatement = connection.prepareStatement(attachmentInsert,
-										PreparedStatement.NO_GENERATED_KEYS);
-								attachmentPreparedStatement.setBinaryStream(1, inputStream, bytes.length); // ATTACHMENT
-								attachmentPreparedStatement.setInt(2, bytes.length); // LENGTH
-								attachmentPreparedStatement.setString(3, fileName); // NAME
-								attachmentPreparedStatement.setLong(4, faqId); // FAQID
-								attachmentPreparedStatement.executeUpdate();
-								attachmentPreparedStatement.close();
-							}
-						}
-						preparedStatement.close();
-						resultSet.close();
-					} catch (Exception e) {
-						logger.error("", e);
-					} finally {
-						try {
-							resultSet.close();
-							attachmentPreparedStatement.close();
-							preparedStatement.close();
-						} catch (Exception e) {
-							logger.error("", e);
-						}
-					}
-				}
-			}, "Database insert : ", 10000);
+			connection.setAutoCommit(Boolean.FALSE);
+			insertFaqs();
+			insertAttachments();
 		} finally {
 			connection.close();
 		}
 	}
 
+	int inserts = 1000;
+
+	protected void insertFaqs() throws Exception {
+		String faqInsert = "INSERT INTO FAQ (ANSWER, CREATIONTIMESTAMP, CREATOR, MODIFIEDTIMESTAMP, MODIFIER, PUBLISHED, QUESTION) VALUES (?,?,?,?,?,?,?)";
+		PreparedStatement preparedStatement = connection.prepareStatement(faqInsert, PreparedStatement.RETURN_GENERATED_KEYS);
+		for (int i = 0; i < inserts; i++) {
+			String string = generateText((int) (Math.random() * 40), 1024);
+			preparedStatement.setString(1, string); // ANSWER
+			preparedStatement.setTimestamp(2, new Timestamp(System.currentTimeMillis())); // CREATIONTIMESTAMP
+			string = generateText(3, 32);
+			preparedStatement.setString(3, string); // CREATOR
+			preparedStatement.setTimestamp(4, new Timestamp(System.currentTimeMillis())); // MODIFIEDTIMESTAMP
+			string = generateText(2, 32);
+			preparedStatement.setString(5, string); // MODIFIER
+			preparedStatement.setInt(6, 1); // PUBLISHED
+			string = generateText((int) (Math.random() * 40), 1024);
+			preparedStatement.setString(7, string); // QUESTION
+			preparedStatement.addBatch();
+		}
+		preparedStatement.executeBatch();
+		connection.commit();
+		preparedStatement.close();
+	}
+
+	protected void insertAttachments() throws Exception {
+		String faqIdSelect = "SELECT FAQID FROM FAQ ORDER BY FAQID DESC";
+		String attachmentInsert = "INSERT INTO ATTACHMENT (ATTACHMENT, LENGTH, NAME, FAQID) VALUES(?,?,?,	?)";
+		PreparedStatement attachmentPreparedStatement = null;
+		ResultSet faqIdResultSet = connection.createStatement().executeQuery(faqIdSelect);
+		for (int i = 0; i < inserts && faqIdResultSet.next(); i++) {
+			long faqId = faqIdResultSet.getLong(1);
+			attachmentPreparedStatement = connection.prepareStatement(attachmentInsert, PreparedStatement.NO_GENERATED_KEYS);
+			for (String fileName : fileContents.keySet()) {
+				// Insert the attachment
+				byte[] bytes = fileContents.get(fileName);
+				InputStream inputStream = new ByteArrayInputStream(bytes);
+				attachmentPreparedStatement.setBinaryStream(1, inputStream, bytes.length); // ATTACHMENT
+				attachmentPreparedStatement.setInt(2, bytes.length); // LENGTH
+				attachmentPreparedStatement.setString(3, fileName); // NAME
+				attachmentPreparedStatement.setLong(4, faqId); // FAQID
+				attachmentPreparedStatement.addBatch();
+			}
+		}
+		attachmentPreparedStatement.executeBatch();
+		connection.commit();
+		faqIdResultSet.close();
+		attachmentPreparedStatement.close();
+	}
+
 	protected ByteArrayOutputStream getContents(String fileName) {
 		String[] stringPatterns = new String[] { fileName };
-		List<File> files = FileUtilities.findFilesRecursively(new File("."), stringPatterns, new ArrayList<File>());
-		File file = files.get(0);
+		File file = FileUtilities.findFile(new File("."), stringPatterns);
 		return FileUtilities.getContents(file);
 	}
 
