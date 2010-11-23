@@ -24,7 +24,7 @@ public class ListenerManager {
 	private static List<IListener> LISTENERS = new ArrayList<IListener>();
 	private static PooledExecutor POOLED_EXECUTER = new PooledExecutor();
 	static {
-		POOLED_EXECUTER.createThreads(3);
+		POOLED_EXECUTER.createThreads(1);
 	}
 
 	/**

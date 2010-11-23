@@ -152,16 +152,4 @@
 		property:titleField="title"
 		property:username="ikube.ikube@gmail.com" />
 
-	<!-- Utility classes -->
-	<bean
-		class="ikube.toolkit.Mailer"
-		property:auth="true"
-		property:mailHost="smtp.gmail.com"
-		property:password="caherline"
-		property:port="465"
-		property:protocol="pop3"
-		property:recipients="ikube.ikube@gmail.com"
-		property:sender="ikube.ikube@gmail.com"
-		property:user="ikube.ikube" />
-
 </beans>

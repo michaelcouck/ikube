@@ -48,21 +48,23 @@ public class IndexableTableVisitor<I> extends IndexableVisitor<IndexableTable> {
 		try {
 			IndexableColumn idColumn = getIdColumn(indexableTable.getChildren());
 			Connection connection = indexableTable.getDataSource().getConnection();
-			// First get the id number of the last row to be indexed
-			long idNumber = getIdNumber(connection, indexableTable, idColumn);
 			// Get the result set starting at the id number specified in the parameter list
-			resultSet = getResultSet(connection, indexableTable, idColumn, idNumber);
+			resultSet = getResultSet(connection, indexableTable, idColumn);
 			do {
+				if (resultSet == null) {
+					break;
+				}
+				// Thread.sleep(1000);
+				doRow(indexableTable, idColumn, resultSet);
 				if (!resultSet.next()) {
-					idNumber = getIdNumber(connection, indexableTable, idColumn);
-					resultSet = getResultSet(connection, indexableTable, idColumn, idNumber);
-					if (!resultSet.next()) {
+					close(resultSet.getStatement());
+					close(resultSet);
+					resultSet = getResultSet(connection, indexableTable, idColumn);
+					if (resultSet == null) {
 						logger.info("No more results : ");
 						break;
 					}
 				}
-				// Thread.sleep(1000);
-				doRow(indexableTable, idColumn, resultSet);
 			} while (true);
 		} catch (Exception e) {
 			logger.error("Exception indexing the table : " + indexableTable.getName() + ", " + indexableTable.getSql(), e);
@@ -72,41 +74,13 @@ public class IndexableTableVisitor<I> extends IndexableVisitor<IndexableTable> {
 		logger.info("Finished indexing table : " + indexableTable.getName());
 	}
 
-	public long getIdNumber(Connection connection, IndexableTable indexableTable, IndexableColumn idColumn) throws Exception {
-		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
-		long idNumber = clusterManager.getIdNumber(getIndexContext().getIndexName());
-		idNumber = getIdNumber(connection, indexableTable, idColumn, idNumber);
-		clusterManager.setIdNumber(getIndexContext().getIndexName(), idNumber + getIndexContext().getBatchSize());
-		return idNumber;
-
-	}
-
-	protected long getIdNumber(Connection connection, IndexableTable indexableTable, IndexableColumn idColumn, long idNumber)
-			throws Exception {
-		if (idNumber == 0) {
-			// If the idNumber is 0 then we are the first, so we take the first id in the table
-			long minId = getMinId(connection, indexableTable, idColumn);
-			idNumber = minId;
-		} else {
-			// Check that there are results between the id number and the id number + batch size
-			long count = getCount(connection, indexableTable, idColumn, idNumber);
-			if (count == 0) {
-				long maxId = getMaxId(connection, indexableTable, idColumn);
-				if (idNumber < maxId) {
-					return getIdNumber(connection, indexableTable, idColumn, idNumber + getIndexContext().getBatchSize());
-				}
-			}
-		}
-		return idNumber;
-	}
-
 	/**
 	 * Examples: minimum id value - 4549731 <br>
 	 * 1) nextRow = 0, batch = 10 - select * from faq where faqId >= 4549731 and faqId < 4549741<br>
 	 * 2) nextRow = 10,batch = 10 - select * from faq where faqId >= 4549741 and faqId < 4549751<br>
-	 *
+	 * 
 	 * ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY
-	 *
+	 * 
 	 * @param connection
 	 * @param indexableTable
 	 * @param idColumn
@@ -114,8 +88,15 @@ public class IndexableTableVisitor<I> extends IndexableVisitor<IndexableTable> {
 	 * @return
 	 * @throws Exception
 	 */
-	public ResultSet getResultSet(Connection connection, IndexableTable indexableTable, IndexableColumn idColumn, long idNumber)
-			throws Exception {
+	protected ResultSet getResultSet(Connection connection, IndexableTable indexableTable, IndexableColumn idColumn) throws Exception {
+		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
+		// Get the max id and see if the idNumber has reached the max, if not then
+		// get the next id and see if there are some results in this interval
+		long maxId = getMaxId(connection, indexableTable, idColumn);
+		long idNumber = clusterManager.getIdNumber(getIndexContext().getIndexName());
+		if (idNumber > maxId) {
+			return null;
+		}
 
 		StringBuilder builder = new StringBuilder(indexableTable.getSql());
 		if (builder.toString().toLowerCase().contains("where")) {
@@ -136,68 +117,18 @@ public class IndexableTableVisitor<I> extends IndexableVisitor<IndexableTable> {
 		builder.append(idNumber + getIndexContext().getBatchSize());
 
 		Statement statement = connection.createStatement();
-		statement.setFetchSize(fetchSize);
-		statement.setMaxRows((int) getIndexContext().getBatchSize());
+		// statement.setFetchSize(fetchSize);
+		// statement.setMaxRows((int) getIndexContext().getBatchSize());
 		logger.info("Sql : " + builder + ", " + Thread.currentThread().hashCode());
 		ResultSet resultSet = statement.executeQuery(builder.toString());
-		resultSet.setFetchSize(fetchSize);
+		// resultSet.setFetchSize(fetchSize);
+		if (!resultSet.next()) {
+			return getResultSet(connection, indexableTable, idColumn);
+		}
 		return resultSet;
 	}
 
-	public long getCount(Connection connection, IndexableTable indexableTable, IndexableColumn idColumn, long idNumber) throws Exception {
-		long count = 0;
-		Statement statement = null;
-		ResultSet resultSet = null;
-		try {
-			StringBuilder builder = new StringBuilder("select count(*) from ");
-			builder.append(indexableTable.getName());
-			builder.append(" where ");
-			builder.append(indexableTable.getName());
-			builder.append(".");
-			builder.append(idColumn.getName());
-			builder.append(" > ");
-			builder.append(idNumber);
-			builder.append(" and ");
-			builder.append(indexableTable.getName());
-			builder.append(".");
-			builder.append(idColumn.getName());
-			builder.append(" < ");
-			builder.append(idNumber + getIndexContext().getBatchSize());
-			statement = connection.createStatement();
-			resultSet = statement.executeQuery(builder.toString());
-			if (resultSet.next()) {
-				count = resultSet.getLong(1);
-			}
-		} finally {
-			close(resultSet);
-			close(statement);
-		}
-		return count;
-	}
-
-	public long getMinId(Connection connection, IndexableTable indexableTable, IndexableColumn idColumn) throws Exception {
-		// If the idNumber is 0 then we are the first, so we take the first id in the table
-		long minId = 0;
-		Statement statement = null;
-		ResultSet resultSet = null;
-		try {
-			StringBuilder builder = new StringBuilder("select min(");
-			builder.append(idColumn.getName());
-			builder.append(") from ");
-			builder.append(indexableTable.getName());
-			statement = connection.createStatement();
-			resultSet = statement.executeQuery(builder.toString());
-			if (resultSet.next()) {
-				minId = resultSet.getLong(1);
-			}
-		} finally {
-			close(resultSet);
-			close(statement);
-		}
-		return minId;
-	}
-
-	public long getMaxId(Connection connection, IndexableTable indexableTable, IndexableColumn idColumn) throws Exception {
+	protected long getMaxId(Connection connection, IndexableTable indexableTable, IndexableColumn idColumn) throws Exception {
 		long maxId = 0;
 		Statement statement = null;
 		ResultSet resultSet = null;
@@ -221,14 +152,14 @@ public class IndexableTableVisitor<I> extends IndexableVisitor<IndexableTable> {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void doRow(final IndexableTable indexableTable, IndexableColumn idColumn, ResultSet resultSet) throws Exception {
+	protected void doRow(final IndexableTable indexableTable, IndexableColumn idColumn, ResultSet resultSet) throws Exception {
 		List<Indexable<?>> children = indexableTable.getChildren();
 		Object rowId = resultSet.getObject(idColumn.getName());
 
 		if (logger.isDebugEnabled()) {
 			if (resultSet.getRow() % getIndexContext().getBatchSize() == 0) {
-				StringBuilder builder = new StringBuilder("Id : ").append(rowId).append(", row : ").append(resultSet.getRow()).append(
-						", thread : ").append(Thread.currentThread().hashCode());
+				StringBuilder builder = new StringBuilder("Id : ").append(rowId).append(", row : ").append(resultSet.getRow())
+						.append(", thread : ").append(Thread.currentThread().hashCode());
 				logger.debug(builder.toString());
 			}
 		}
@@ -254,7 +185,7 @@ public class IndexableTableVisitor<I> extends IndexableVisitor<IndexableTable> {
 		getIndexContext().getIndexWriter().addDocument(document);
 	}
 
-	public IndexableColumn getIdColumn(List<Indexable<?>> indexableColumns) {
+	protected IndexableColumn getIdColumn(List<Indexable<?>> indexableColumns) {
 		for (Indexable<?> indexable : indexableColumns) {
 			if (((IndexableColumn) indexable).isIdColumn()) {
 				return (IndexableColumn) indexable;
@@ -264,7 +195,7 @@ public class IndexableTableVisitor<I> extends IndexableVisitor<IndexableTable> {
 		return null;
 	}
 
-	public int getColumnIndex(List<Indexable<?>> list, String name) {
+	protected int getColumnIndex(List<Indexable<?>> list, String name) {
 		int low = 0;
 		int high = list.size() - 1;
 		name = name.toLowerCase();
@@ -306,7 +237,6 @@ public class IndexableTableVisitor<I> extends IndexableVisitor<IndexableTable> {
 			return;
 		}
 		try {
-			// logger.info("Closing statement : " + statement);
 			statement.close();
 		} catch (Exception e) {
 			logger.error("Exception closing the statement : ", e);
@@ -318,7 +248,6 @@ public class IndexableTableVisitor<I> extends IndexableVisitor<IndexableTable> {
 			return;
 		}
 		try {
-			// logger.info("Closing connection : " + connection);
 			connection.close();
 		} catch (Exception e) {
 			logger.error("Exception closing the connection : ", e);
@@ -330,7 +259,6 @@ public class IndexableTableVisitor<I> extends IndexableVisitor<IndexableTable> {
 			return;
 		}
 		try {
-			// logger.info("Closing result set : " + resultSet);
 			resultSet.close();
 		} catch (Exception e) {
 			logger.error("Exception closing the result set : ", e);

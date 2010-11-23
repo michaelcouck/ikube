@@ -31,7 +31,7 @@ import org.junit.Test;
  * @since 21.11.10
  * @version 01.00
  */
-@Ignore
+// @Ignore
 public class DataGenerator extends ATest {
 
 	private String wordsFilePath = "/data/words.txt";
@@ -64,7 +64,7 @@ public class DataGenerator extends ATest {
 		try {
 			connection.setAutoCommit(Boolean.FALSE);
 			String type = "";
-			int iterations = 1;
+			int iterations = 10;
 			PerformanceTester.execute(new PerformanceTester.APerform() {
 				@Override
 				public void execute() throws Exception {
@@ -80,7 +80,7 @@ public class DataGenerator extends ATest {
 	int inserts = 1000;
 
 	protected void insertFaqs() throws Exception {
-		String faqInsert = "INSERT INTO FAQ (ANSWER, CREATIONTIMESTAMP, CREATOR, MODIFIEDTIMESTAMP, MODIFIER, PUBLISHED, QUESTION) VALUES (?,?,?,?,?,?,?)";
+		String faqInsert = "INSERT INTO DB2ADMIN.FAQ (DB2ADMIN.FAQ.ANSWER, DB2ADMIN.FAQ.CREATIONTIMESTAMP, DB2ADMIN.FAQ.CREATOR, DB2ADMIN.FAQ.MODIFIEDTIMESTAMP, DB2ADMIN.FAQ.MODIFIER, DB2ADMIN.FAQ.PUBLISHED, QUESTION) VALUES (?,?,?,?,?,?,?)";
 		PreparedStatement preparedStatement = connection.prepareStatement(faqInsert, PreparedStatement.RETURN_GENERATED_KEYS);
 		for (int i = 0; i < inserts; i++) {
 			String string = generateText((int) (Math.random() * 40), 1024);
@@ -102,8 +102,8 @@ public class DataGenerator extends ATest {
 	}
 
 	protected void insertAttachments() throws Exception {
-		String faqIdSelect = "SELECT FAQID FROM FAQ ORDER BY FAQID DESC";
-		String attachmentInsert = "INSERT INTO ATTACHMENT (ATTACHMENT, LENGTH, NAME, FAQID) VALUES(?,?,?,	?)";
+		String faqIdSelect = "SELECT DB2ADMIN.FAQ.FAQID FROM DB2ADMIN.FAQ ORDER BY DB2ADMIN.FAQ.FAQID DESC";
+		String attachmentInsert = "INSERT INTO DB2ADMIN.ATTACHMENT (DB2ADMIN.ATTACHMENT.ATTACHMENT, DB2ADMIN.ATTACHMENT.LENGTH, DB2ADMIN.ATTACHMENT.NAME, DB2ADMIN.ATTACHMENT.FAQID) VALUES(?,?,?,?)";
 		PreparedStatement attachmentPreparedStatement = null;
 		ResultSet faqIdResultSet = connection.createStatement().executeQuery(faqIdSelect);
 		for (int i = 0; i < inserts && faqIdResultSet.next(); i++) {
@@ -139,7 +139,7 @@ public class DataGenerator extends ATest {
 		fileContents.put("pdf.pdf", null);
 		fileContents.put("doc.doc", null);
 		fileContents.put("rtf.rtf", null);
-		fileContents.put("pot.pot", null);
+		fileContents.put("ppt.ppt", null);
 		fileContents.put("xls.xls", null);
 		for (String fileName : fileContents.keySet()) {
 			byte[] bytes = getContents(fileName).toByteArray();

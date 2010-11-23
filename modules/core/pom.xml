@@ -56,7 +56,7 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
 					<forkMode>once</forkMode>
-					<argLine>-javaagent:../../serenity/serenity.jar -Xms512m -Xmx1024m ${included.adapters} ${included.packages} ${excluded.packages} ${write.classes} ${clean.classes}</argLine>
+					<!-- argLine>-javaagent:../../serenity/serenity.jar -Xms512m -Xmx1024m ${included.adapters} ${included.packages} ${excluded.packages} ${write.classes} ${clean.classes}</argLine -->
 				</configuration>
 			</plugin>
 		</plugins>

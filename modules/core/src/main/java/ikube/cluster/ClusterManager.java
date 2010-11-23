@@ -103,20 +103,25 @@ public class ClusterManager implements IClusterManager {
 	@Override
 	public synchronized long getIdNumber(String indexName) {
 		long idNumber = 0;
+		long batchSize = 0;
 		try {
 			Token token = lockManager.getToken();
 			for (Server server : token.getServers()) {
 				for (IndexContext indexContext : server.getIndexContexts()) {
 					if (indexContext.isWorking() && indexName.equals(indexContext.getIndexName())) {
-						if (indexContext.getIdNumber() > idNumber) {
+						if (indexContext.getIdNumber() >= idNumber) {
 							idNumber = indexContext.getIdNumber();
+							batchSize = indexContext.getBatchSize();
+							indexContext.setIdNumber(idNumber + batchSize);
 						}
 					}
 				}
 			}
 			if (logger.isDebugEnabled()) {
-				logger.debug(Logging.getString("Get id number : ", idNumber, ", ", Thread.currentThread().hashCode()));
+				logger.debug(Logging.getString("Get id number : ", idNumber, ", batch size : ", batchSize, ", thread : ", Thread
+						.currentThread().hashCode()));
 			}
+			// setIdNumber(indexName, idNumber + batchSize);
 			return idNumber;
 		} finally {
 			notifyAll();
@@ -126,11 +131,12 @@ public class ClusterManager implements IClusterManager {
 	public synchronized void setIdNumber(String indexName, long idNumber) {
 		try {
 			Server server = lockManager.getServer();
-			if (logger.isDebugEnabled()) {
-				logger.debug(Logging.getString("Setting id number : ", idNumber, ", ", server, ", ", Thread.currentThread().hashCode()));
-			}
 			for (IndexContext indexContext : server.getIndexContexts()) {
 				if (indexName.equals(indexContext.getIndexName())) {
+					if (logger.isDebugEnabled()) {
+						logger.debug(Logging.getString("Setting id number : ", idNumber, ", ", server, ", ", Thread.currentThread()
+								.hashCode()));
+					}
 					indexContext.setIdNumber(idNumber);
 				}
 			}
