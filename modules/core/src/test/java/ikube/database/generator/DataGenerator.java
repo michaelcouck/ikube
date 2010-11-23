@@ -3,6 +3,7 @@ package ikube.database.generator;
 import ikube.ATest;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
+import ikube.toolkit.PerformanceTester;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -62,8 +63,15 @@ public class DataGenerator extends ATest {
 	public void generate() throws Exception {
 		try {
 			connection.setAutoCommit(Boolean.FALSE);
-			insertFaqs();
-			insertAttachments();
+			String type = "";
+			int iterations = 1;
+			PerformanceTester.execute(new PerformanceTester.APerform() {
+				@Override
+				public void execute() throws Exception {
+					insertFaqs();
+					insertAttachments();
+				}
+			}, type, iterations);
 		} finally {
 			connection.close();
 		}
