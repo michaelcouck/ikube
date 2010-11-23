@@ -23,6 +23,7 @@ public class Event extends Persistable {
 	public static final String DEAD_LOCK = "deadLock";
 	public static final String REPORT = "report";
 	public static final String CLUSTERING = "clustering";
+	public static final String LINK = "link";
 
 	private String type;
 	private Timestamp timestamp;
@@ -52,13 +53,6 @@ public class Event extends Persistable {
 		return consumed;
 	}
 
-	public String toString() {
-		final StringBuilder builder = new StringBuilder("[");
-		builder.append(getId()).append(",").append(getType()).append(".").append(getTimestamp());
-		builder.append("]");
-		return builder.toString();
-	}
-
 	public void setConsumed(final boolean consumed) {
 		this.consumed = consumed;
 	}
@@ -78,6 +72,13 @@ public class Event extends Persistable {
 
 	public void setIndexContext(final IndexContext indexContext) {
 		this.indexContext = indexContext;
+	}
+
+	public String toString() {
+		final StringBuilder builder = new StringBuilder("[");
+		builder.append(getId()).append(",").append(getType()).append(".").append(getTimestamp());
+		builder.append("]");
+		return builder.toString();
 	}
 
 }

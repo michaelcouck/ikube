@@ -2,7 +2,10 @@ package ikube.model;
 
 import ikube.index.visitor.IndexableVisitor;
 
+import java.io.File;
+
 import javax.persistence.Entity;
+import javax.persistence.Transient;
 
 /**
  * @author Michael Couck
@@ -11,6 +14,8 @@ import javax.persistence.Entity;
  */
 @Entity()
 public class IndexableFileSystem extends Indexable<IndexableFileSystem> {
+
+	private transient File currentFile;
 
 	private String path;
 	private String nameFieldName;
@@ -116,6 +121,15 @@ public class IndexableFileSystem extends Indexable<IndexableFileSystem> {
 
 	public void setVectored(final boolean vectored) {
 		this.vectored = vectored;
+	}
+
+	@Transient
+	public File getCurrentFile() {
+		return currentFile;
+	}
+
+	public void setCurrentFile(File currentFile) {
+		this.currentFile = currentFile;
 	}
 
 }

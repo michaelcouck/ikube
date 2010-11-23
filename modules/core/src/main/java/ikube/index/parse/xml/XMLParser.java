@@ -47,7 +47,7 @@ public class XMLParser implements IParser {
 
 	/**
 	 * Visits each tag up and down the tree recursively getting the text content from the tag.
-	 * 
+	 *
 	 * @param parent
 	 *            the parent tag to start recursing
 	 * @param content

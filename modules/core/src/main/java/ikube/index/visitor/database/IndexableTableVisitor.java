@@ -78,9 +78,9 @@ public class IndexableTableVisitor<I> extends IndexableVisitor<IndexableTable> {
 	 * Examples: minimum id value - 4549731 <br>
 	 * 1) nextRow = 0, batch = 10 - select * from faq where faqId >= 4549731 and faqId < 4549741<br>
 	 * 2) nextRow = 10,batch = 10 - select * from faq where faqId >= 4549741 and faqId < 4549751<br>
-	 * 
+	 *
 	 * ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY
-	 * 
+	 *
 	 * @param connection
 	 * @param indexableTable
 	 * @param idColumn
@@ -117,11 +117,11 @@ public class IndexableTableVisitor<I> extends IndexableVisitor<IndexableTable> {
 		builder.append(idNumber + getIndexContext().getBatchSize());
 
 		Statement statement = connection.createStatement();
-		// statement.setFetchSize(fetchSize);
-		// statement.setMaxRows((int) getIndexContext().getBatchSize());
+		statement.setFetchSize(fetchSize);
+		statement.setMaxRows((int) getIndexContext().getBatchSize());
 		logger.info("Sql : " + builder + ", " + Thread.currentThread().hashCode());
 		ResultSet resultSet = statement.executeQuery(builder.toString());
-		// resultSet.setFetchSize(fetchSize);
+		resultSet.setFetchSize(fetchSize);
 		if (!resultSet.next()) {
 			return getResultSet(connection, indexableTable, idColumn);
 		}

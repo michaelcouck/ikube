@@ -53,7 +53,8 @@
 		id="ikubeWikiVisitor"
 		class="ikube.index.visitor.internet.IndexableInternetVisitor"
 		property:indexableType="ikube.model.IndexableInternet"
-		property:indexContext-ref="faqIndexContext" />
+		property:indexContext-ref="faqIndexContext"
+		property:dataBase-ref="ikube.database.DataBaseOdb" />
 	<bean
 		id="ikubeMailVisitor"
 		class="ikube.index.visitor.email.IndexableEmailVisitor"

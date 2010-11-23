@@ -23,6 +23,9 @@ public class ColumnContentProvider implements IContentProvider<IndexableColumn> 
 
 	private Logger logger = Logger.getLogger(this.getClass());
 
+	/**
+	 * TODO - we need to parse the data here and return a file input stream if it is too large.
+	 */
 	public Object getContent(IndexableColumn indexable) {
 		Object object = indexable.getObject();
 		int columnType = indexable.getColumnType();

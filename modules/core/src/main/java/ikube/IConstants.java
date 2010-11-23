@@ -45,6 +45,9 @@ public interface IConstants {
 	public String TOTAL = "total";
 	public String DURATION = "duration";
 	public String TITLE = "title";
+	public String NAME = "name";
+	public String URL = "url";
+	public String INDEXED = "indexed";
 
 	public String ENCODING = "UTF8";
 

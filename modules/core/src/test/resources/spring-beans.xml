@@ -41,6 +41,10 @@
 		id="ikube.database.DataBaseOdb"
 		class="ikube.database.DataBaseOdb"
 		destroy-method="close" />
+	<bean
+		class="ikube.listener.ParserListener"
+		property:dataBase-ref="ikube.database.DataBaseOdb" />
+
 	<bean id="ikube.action.Close" class="ikube.action.Close" />
 	<bean id="ikube.action.Delete" class="ikube.action.Delete" />
 	<bean id="ikube.action.Index" class="ikube.action.Index" />

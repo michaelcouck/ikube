@@ -31,7 +31,7 @@ import org.junit.Test;
  * @since 21.11.10
  * @version 01.00
  */
-// @Ignore
+@Ignore
 public class DataGenerator extends ATest {
 
 	private String wordsFilePath = "/data/words.txt";

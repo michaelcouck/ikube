@@ -1,14 +1,14 @@
 package ikube.index.visitor.filesystem;
 
+import ikube.index.content.FileContentProvider;
+import ikube.index.content.IContentProvider;
 import ikube.index.parse.IParser;
 import ikube.index.parse.ParserProvider;
 import ikube.index.visitor.IndexableVisitor;
 import ikube.model.IndexableFileSystem;
-import ikube.toolkit.FileUtilities;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.regex.Pattern;
 
@@ -18,6 +18,8 @@ import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
 
 /**
+ * TODO - when the file is visited then post to the cluster. Only one server will index the files.
+ *
  * @author Cristi Bozga
  * @since 05.11.10
  * @version 01.00
@@ -25,6 +27,11 @@ import org.apache.lucene.document.Field.TermVector;
 public class IndexableFileSystemVisitor<I> extends IndexableVisitor<IndexableFileSystem> {
 
 	private Pattern pattern;
+	private IContentProvider<IndexableFileSystem> contentProvider;
+
+	public IndexableFileSystemVisitor() {
+		this.contentProvider = new FileContentProvider();
+	}
 
 	@Override
 	public void visit(IndexableFileSystem indexableFileSystem) {
@@ -35,7 +42,9 @@ public class IndexableFileSystemVisitor<I> extends IndexableVisitor<IndexableFil
 						+ " could not be found;");
 				return;
 			}
-			if (isExcluded(file, getPattern(indexableFileSystem.getExcludedPattern()))) {
+			Pattern pattern = getPattern(indexableFileSystem.getExcludedPattern());
+			boolean isExcluded = isExcluded(file, pattern);
+			if (isExcluded) {
 				return;
 			}
 			if (file.isDirectory()) {
@@ -70,12 +79,14 @@ public class IndexableFileSystemVisitor<I> extends IndexableVisitor<IndexableFil
 			Document document = new Document();
 
 			// TODO - this can be very large so we have to use a reader if necessary
-			ByteArrayOutputStream byteArrayOutputStream = FileUtilities.getContents(file);
-			ByteArrayInputStream inputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+			InputStream inputStream = (InputStream) contentProvider.getContent(indexableFileSystem);
+
 			byte[] bytes = new byte[1024];
-			inputStream.mark(bytes.length);
-			inputStream.read(bytes);
-			inputStream.reset();
+			if (inputStream.markSupported()) {
+				inputStream.mark(Integer.MAX_VALUE);
+				inputStream.read(bytes);
+				inputStream.reset();
+			}
 
 			IParser parser = ParserProvider.getParser(file.getName(), bytes);
 			OutputStream parsedOutputStream = parser.parse(inputStream);
