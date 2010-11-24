@@ -1,5 +1,8 @@
 package ikube.model;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import ikube.index.visitor.IndexableVisitor;
 
 import javax.persistence.Entity;
@@ -15,10 +18,26 @@ public class IndexableInternet extends Indexable<IndexableInternet> {
 
 	private transient String currentUrl;
 
+	private URI uri;
 	private String url;
 	private boolean stored = Boolean.FALSE;
 	private boolean analyzed = Boolean.TRUE;
 	private boolean vectored = Boolean.TRUE;
+
+	public URI getUri() {
+		if (uri == null) {
+			try {
+				uri = new URI(getUrl());
+			} catch (URISyntaxException e) {
+				e.printStackTrace();
+			}
+		}
+		return uri;
+	}
+
+	public void setUri(URI uri) {
+		this.uri = uri;
+	}
 
 	public String getUrl() {
 		return url;

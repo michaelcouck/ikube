@@ -9,8 +9,6 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import EDU.oswego.cs.dl.util.concurrent.PooledExecutor;
-
 /**
  * This interface just holds the listener manager that will fire the events to the listeners.
  *
@@ -22,10 +20,6 @@ public class ListenerManager {
 
 	private static Logger LOGGER = Logger.getLogger(ListenerManager.class);
 	private static List<IListener> LISTENERS = new ArrayList<IListener>();
-	private static PooledExecutor POOLED_EXECUTER = new PooledExecutor();
-	static {
-		POOLED_EXECUTER.createThreads(1);
-	}
 
 	/**
 	 * @param listener
@@ -58,14 +52,9 @@ public class ListenerManager {
 	 *            the event for distribution
 	 */
 	private static final void notifyListeners(final Event event) {
-		// List<IListener> listeners = Arrays.asList(LISTENERS.toArray(new IListener[LISTENERS.size()]));
 		for (final IListener listener : LISTENERS) {
 			try {
-				POOLED_EXECUTER.execute(new Runnable() {
-					public void run() {
-						listener.handleNotification(event);
-					}
-				});
+				listener.handleNotification(event);
 				if (event.isConsumed()) {
 					break;
 				}

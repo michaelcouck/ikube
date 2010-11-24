@@ -40,7 +40,24 @@
 	<bean
 		id="ikube.database.DataBaseOdb"
 		class="ikube.database.DataBaseOdb"
-		destroy-method="close" />
+		init-method="initialise"
+		destroy-method="close">
+		<property name="indexes">
+			<list>
+				<bean
+					id="ikube.database.Index.Url"
+					class="ikube.database.Index"
+					property:className="ikube.model.Url">
+					<property name="fieldNames">
+						<list>
+							<value>url</value>
+							<value>name</value>
+						</list>
+					</property>
+				</bean>
+			</list>
+		</property>
+	</bean>
 	<bean
 		class="ikube.listener.ParserListener"
 		property:dataBase-ref="ikube.database.DataBaseOdb" />

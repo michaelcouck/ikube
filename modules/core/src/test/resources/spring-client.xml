@@ -33,19 +33,20 @@
 		property:maxReadLength="${max.read.length}"
 		property:queueTimeout="${max.age}"
 		property:indexDirectoryPath="${index.directory.path}"
-		property:indexables-ref="faqIndexables"
-		property:indexableVisitors-ref="faqIndexableVisitors" />
-	<util:list id="faqIndexables">
-		<ref local="files" />
-		<ref local="ikubeMail" />
-		<ref local="ikubeWiki" />
-		<ref local="faqTable" />
-	</util:list>
+		property:indexableVisitors-ref="faqIndexableVisitors"
+		property:indexables-ref="faqIndexables" />
 	<util:list id="faqIndexableVisitors">
 		<ref local="filesVisitor" />
 		<ref local="ikubeMailVisitor" />
 		<ref local="ikubeWikiVisitor" />
 		<ref local="faqTableVisitor" />
+	</util:list>
+	<util:list id="faqIndexables">
+		<ref local="files" />
+		<ref local="oki" />
+		<ref local="ikubeMail" />
+		<ref local="ikubeWiki" />
+		<ref local="faqTable" />
 	</util:list>
 
 	<!-- Indexable visitors -->
@@ -54,7 +55,8 @@
 		class="ikube.index.visitor.internet.IndexableInternetVisitor"
 		property:indexableType="ikube.model.IndexableInternet"
 		property:indexContext-ref="faqIndexContext"
-		property:dataBase-ref="ikube.database.DataBaseOdb" />
+		property:dataBase-ref="ikube.database.DataBaseOdb"
+		property:threads="3" />
 	<bean
 		id="ikubeMailVisitor"
 		class="ikube.index.visitor.email.IndexableEmailVisitor"
@@ -183,7 +185,13 @@
 		id="ikubeWiki"
 		class="ikube.model.IndexableInternet"
 		property:name="ikubeWiki"
-		property:url="http://code.google.com/p/ikube/wiki/PageName" />
+		property:url="http://code.google.com/p/ikube" />
+	<!-- http://www.oki.com/ -->
+	<bean
+		id="oki"
+		class="ikube.model.IndexableInternet"
+		property:name="oki"
+		property:url="http://localhost/million/adapt.html" />
 
 	<!-- Utility classes -->
 	<bean

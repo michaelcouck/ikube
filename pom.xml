@@ -365,13 +365,6 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpclient</artifactId>
-			<version>4.1-alpha2</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>jstl</artifactId>
 			<version>1.2</version>
@@ -466,13 +459,6 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
-		<!--<dependency>
-			<groupId>com.adobe.pdf</groupId>
-			<artifactId>pcfi</artifactId>
-			<version>2010.08.09</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>-->
 		<dependency>
 			<groupId>org.apache.pdfbox</groupId>
 			<artifactId>pdfbox</artifactId>
@@ -480,6 +466,27 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
+		<dependency>
+			<groupId>bouncycastle</groupId>
+			<artifactId>bcmail-jdk16</artifactId>
+			<version>140</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>commons-httpclient</groupId>
+			<artifactId>commons-httpclient</artifactId>
+			<version>3.1</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<!--<dependency>
+			<groupId>com.adobe.pdf</groupId>
+			<artifactId>pcfi</artifactId>
+			<version>2010.08.09</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>-->
 		<!--<dependency>
 			<groupId>org.apache</groupId>
 			<artifactId>jempbox</artifactId>

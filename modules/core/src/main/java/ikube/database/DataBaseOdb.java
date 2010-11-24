@@ -33,15 +33,12 @@ public class DataBaseOdb implements IDataBase {
 	private Logger logger;
 	private ODB odb;
 	private Map<Class<?>, Field> idFields;
+	private List<Index> indexes;
 
-	public DataBaseOdb() {
+	public void initialise() {
 		this.logger = Logger.getLogger(this.getClass());
 		this.idFields = new HashMap<Class<?>, Field>();
-		configureDatabase();
-		this.odb = ODBFactory.open(IConstants.DATABASE_FILE);
-	}
 
-	private void configureDatabase() {
 		DLogger.register(new ikube.database.Logger());
 		OdbConfiguration.setDebugEnabled(Boolean.FALSE);
 		OdbConfiguration.setDebugEnabled(5, Boolean.FALSE);
@@ -57,6 +54,23 @@ public class DataBaseOdb implements IDataBase {
 		OdbConfiguration.setUseIndex(Boolean.TRUE);
 		OdbConfiguration.setUseMultiBuffer(Boolean.FALSE);
 		OdbConfiguration.setShareSameVmConnectionMultiThread(Boolean.FALSE);
+
+		if (indexes != null) {
+			for (Index index : indexes) {
+				Class<?> klass = null;
+				try {
+					klass = Class.forName(index.getClassName());
+				} catch (ClassNotFoundException e) {
+					logger.error("Exception creating index for class : " + index.getClassName(), e);
+					continue;
+				}
+				this.odb = ODBFactory.open(IConstants.DATABASE_FILE);
+				if (!this.odb.getClassRepresentation(klass).existIndex(klass.getSimpleName())) {
+					String[] fieldNames = index.getFieldNames().toArray(new String[index.getFieldNames().size()]);
+					this.odb.getClassRepresentation(klass).addIndexOn(klass.getSimpleName(), fieldNames, Boolean.TRUE);
+				}
+			}
+		}
 	}
 
 	@Override
@@ -82,7 +96,7 @@ public class DataBaseOdb implements IDataBase {
 	}
 
 	@Override
-	public <T> T find(Class<T> klass, Long id) {
+	public synchronized <T> T find(Class<T> klass, Long id) {
 		try {
 			String idFieldName = getIdFieldName(klass);
 			ICriterion criterion = Where.equal(idFieldName, id);
@@ -97,6 +111,8 @@ public class DataBaseOdb implements IDataBase {
 			return objects.getFirst();
 		} catch (Exception e) {
 			logger.error("", e);
+		} finally {
+			notifyAll();
 		}
 		return null;
 	}
@@ -130,9 +146,13 @@ public class DataBaseOdb implements IDataBase {
 	}
 
 	@Override
-	public <T> List<T> find(Class<T> klass, int firstResult, int maxResults) {
-		Map<String, Object> parameters = new HashMap<String, Object>();
-		return find(klass, parameters, firstResult, maxResults);
+	public synchronized <T> List<T> find(Class<T> klass, int firstResult, int maxResults) {
+		try {
+			Map<String, Object> parameters = new HashMap<String, Object>();
+			return find(klass, parameters, firstResult, maxResults);
+		} finally {
+			notifyAll();
+		}
 	}
 
 	@Override
@@ -279,6 +299,10 @@ public class DataBaseOdb implements IDataBase {
 	protected synchronized String getIdFieldName(Class<?> klass) {
 		Field field = getIdField(klass, null);
 		return field != null ? field.getName() : null;
+	}
+
+	public void setIndexes(List<Index> indexes) {
+		this.indexes = indexes;
 	}
 
 }

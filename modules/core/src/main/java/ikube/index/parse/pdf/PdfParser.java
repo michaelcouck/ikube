@@ -57,7 +57,9 @@ public class PdfParser implements IParser {
 			// collect title
 			PDDocumentInformation info = pdf.getDocumentInformation();
 			String title = info.getTitle();
-			byteArrayOutputStream.write(title.getBytes());
+			if (title != null) {
+				byteArrayOutputStream.write(title.getBytes());
+			}
 			// more useful info, currently not used. please keep them for future use.
 			// pdf.getPageCount();info.getAuthor();info.getSubject();info.getKeywords();
 			// info.getCreator();info.getProducer();info.getTrapped();formatDate(info.getCreationDate())
