@@ -145,39 +145,39 @@
 		property:start="0" />
 
 	<bean
-		id="ikube.toolkit.Timer"
-		class="ikube.toolkit.Timer"
+		id="ikube.listener.Schedule"
+		class="ikube.listener.Schedule"
 		property:type="timer"
 		property:delay="${delay}"
 		property:period="${period}" />
 	<bean
-		id="ikube.toolkit.Timer.Profile"
-		class="ikube.toolkit.Timer"
+		id="ikube.listener.Schedule.Profile"
+		class="ikube.listener.Schedule"
 		property:type="profile"
 		property:delay="${profiling.delay}"
 		property:period="${profiling.period}" />
 	<bean
-		id="ikube.toolkit.Timer.WebService"
-		class="ikube.toolkit.Timer"
+		id="ikube.listener.Schedule.WebService"
+		class="ikube.listener.Schedule"
 		property:type="service"
 		property:delay="${web.service.delay}"
 		property:period="${web.service.period}" />
 	<bean
-		id="ikube.toolkit.Timer.LockManager"
-		class="ikube.toolkit.Timer"
+		id="ikube.listener.Schedule.LockManager"
+		class="ikube.listener.Schedule"
 		property:type="clustering"
 		property:delay="${lock.manager.delay}"
 		property:period="${lock.manager.period}" />
 
 	<util:list id="scheduled.tasks">
-		<ref local="ikube.toolkit.Timer" />
-		<ref local="ikube.toolkit.Timer.Profile" />
-		<ref local="ikube.toolkit.Timer.WebService" />
-		<ref local="ikube.toolkit.Timer.LockManager" />
+		<ref local="ikube.listener.Schedule" />
+		<ref local="ikube.listener.Schedule.Profile" />
+		<ref local="ikube.listener.Schedule.WebService" />
+		<ref local="ikube.listener.Schedule.LockManager" />
 	</util:list>
 
 	<bean
-		class="ikube.toolkit.Scheduler">
+		class="ikube.listener.Scheduler">
 		<constructor-arg ref="scheduled.tasks" />
 	</bean>
 </beans>

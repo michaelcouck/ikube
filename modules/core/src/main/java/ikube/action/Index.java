@@ -1,12 +1,12 @@
 package ikube.action;
 
+import ikube.index.IndexManager;
 import ikube.index.visitor.IndexableVisitor;
 import ikube.logging.Logging;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.model.Server;
 import ikube.toolkit.FileUtilities;
-import ikube.toolkit.IndexManager;
 
 import java.io.File;
 import java.util.List;

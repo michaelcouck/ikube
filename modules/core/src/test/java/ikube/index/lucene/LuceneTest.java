@@ -4,9 +4,9 @@ import static org.junit.Assert.assertEquals;
 
 import ikube.BaseTest;
 import ikube.IConstants;
+import ikube.index.IndexManager;
 import ikube.search.SearchSingle;
 import ikube.toolkit.FileUtilities;
-import ikube.toolkit.IndexManager;
 
 import java.io.File;
 import java.net.InetAddress;
