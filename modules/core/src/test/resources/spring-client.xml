@@ -43,9 +43,9 @@
 	</util:list>
 	<util:list id="faqIndexables">
 		<ref local="files" />
-		<ref local="oki" />
+		<ref local="ikokoon" />
 		<ref local="ikubeMail" />
-		<ref local="ikubeWiki" />
+		<!--<ref local="ikubeWiki" />-->
 		<ref local="faqTable" />
 	</util:list>
 
@@ -182,16 +182,15 @@
 		property:pathFieldName="path" />
 
 	<bean
-		id="ikubeWiki"
+		id="ikokoon"
 		class="ikube.model.IndexableInternet"
-		property:name="ikubeWiki"
-		property:url="http://code.google.com/p/ikube" />
-	<!-- http://www.oki.com/ -->
-	<bean
-		id="oki"
+		property:name="ikokoon"
+		property:url="http://ikokoon.eu/ikokoon/index.html" />
+	<!--<bean
+		id="localhost"
 		class="ikube.model.IndexableInternet"
-		property:name="oki"
-		property:url="http://localhost/million/adapt.html" />
+		property:name="localhost"
+		property:url="http://localhost/million/adapt.html" />-->
 
 	<!-- Utility classes -->
 	<bean

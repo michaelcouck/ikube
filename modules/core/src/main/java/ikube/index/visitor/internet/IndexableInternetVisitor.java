@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import net.htmlparser.jericho.Attribute;
 import net.htmlparser.jericho.HTMLElementName;
@@ -46,6 +47,11 @@ import org.apache.lucene.document.Field.TermVector;
  * @version 01.00
  */
 public class IndexableInternetVisitor<T> extends IndexableVisitor<IndexableInternet> {
+
+	/** Accepted protocols. */
+	private final Pattern PROTOCOL_PATTERN = Pattern.compile("(http).*|(www).*|(https).*|(ftp).*");
+	/** The pattern regular expression to match a url. */
+	private final Pattern EXCLUDED_PATTERN = Pattern.compile(".*news.*|.*javascript.*|.*mailto.*|.*plugintest.*|.*skype.*");
 
 	private IDataBase dataBase;
 	private int threads;
@@ -187,24 +193,29 @@ public class IndexableInternetVisitor<T> extends IndexableVisitor<IndexableInter
 				if (StartTag.class.isAssignableFrom(tag.getClass())) {
 					Attribute attribute = ((StartTag) tag).getAttributes().get("href");
 					if (attribute != null) {
-						String reference = attribute.getValue();
+						String link = attribute.getValue();
+						if (link == null) {
+							continue;
+						}
 						Url newUrl = new Url();
-						if (reference.startsWith("http")) {
+						if (PROTOCOL_PATTERN.matcher(link).matches()) {
 							String baseHost = indexable.getUrl();
-							if (!reference.contains(baseHost)) {
+							if (!link.contains(baseHost)) {
 								continue;
 							}
-							newUrl.setUrl(reference);
+							newUrl.setUrl(link);
 						} else {
-							if (reference != null && reference.toLowerCase().startsWith("javascript")) {
+							String lowerCaseLink = link.toLowerCase();
+							if (EXCLUDED_PATTERN.matcher(lowerCaseLink).matches()) {
 								continue;
 							}
-							URI uri = UriUtilities.resolve(baseUri, reference);
+							URI uri = UriUtilities.resolve(baseUri, link);
 							String baseHost = indexable.getUri().getHost();
 							String uriString = uri.toString();
 							if (!uriString.contains(baseHost)) {
 								continue;
 							}
+							// TODO - strip the session id off the link
 							newUrl.setUrl(uri.toString());
 						}
 						newUrl.setName(indexable.getName());

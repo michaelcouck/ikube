@@ -68,6 +68,10 @@ public class IndexableFileSystemVisitor<I> extends IndexableVisitor<IndexableFil
 				if (file.isDirectory()) {
 					visitFolder(indexableFileSystem, file);
 				} else {
+					if (!file.exists() || !file.canRead()) {
+						logger.info("Skipping file : " + file.getAbsolutePath());
+						continue;
+					}
 					visitFile(indexableFileSystem, file);
 				}
 			}
@@ -77,6 +81,7 @@ public class IndexableFileSystemVisitor<I> extends IndexableVisitor<IndexableFil
 	public void visitFile(IndexableFileSystem indexableFileSystem, File file) {
 		try {
 			Document document = new Document();
+			indexableFileSystem.setCurrentFile(file);
 
 			// TODO - this can be very large so we have to use a reader if necessary
 			InputStream inputStream = (InputStream) contentProvider.getContent(indexableFileSystem);

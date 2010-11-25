@@ -26,9 +26,6 @@ public class FileContentProvider implements IContentProvider<IndexableFileSystem
 	public Object getContent(IndexableFileSystem indexable) {
 		try {
 			File file = indexable.getCurrentFile();
-			if (file == null) {
-				return new ByteArrayInputStream(new byte[0]);
-			}
 			InputStream inputStream = new FileInputStream(file);
 			ByteArrayOutputStream byteArrayOutputStream = FileUtilities.getContents(inputStream, Integer.MAX_VALUE);
 			return new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
