@@ -2,6 +2,7 @@ package ikube.database.generator;
 
 import ikube.ATest;
 import ikube.toolkit.ApplicationContextManager;
+import ikube.toolkit.DataLoader;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.PerformanceTester;
 
@@ -64,7 +65,6 @@ public class DataGenerator extends ATest {
 		try {
 			connection.setAutoCommit(Boolean.FALSE);
 			String type = "";
-			int iterations = 10;
 			PerformanceTester.execute(new PerformanceTester.APerform() {
 				@Override
 				public void execute() throws Exception {
@@ -75,9 +75,13 @@ public class DataGenerator extends ATest {
 		} finally {
 			connection.close();
 		}
+		logger.info("Inserted : " + (iterations * inserts) + (iterations * inserts * fileContents.size()));
+		// iterations * inserts + (iterations * inserts * docs)
+		// 80000
 	}
 
 	int inserts = 1000;
+	int iterations = 1000 - 10;
 
 	protected void insertFaqs() throws Exception {
 		String faqInsert = "INSERT INTO DB2ADMIN.FAQ (DB2ADMIN.FAQ.ANSWER, DB2ADMIN.FAQ.CREATIONTIMESTAMP, DB2ADMIN.FAQ.CREATOR, DB2ADMIN.FAQ.MODIFIEDTIMESTAMP, DB2ADMIN.FAQ.MODIFIER, DB2ADMIN.FAQ.PUBLISHED, QUESTION) VALUES (?,?,?,?,?,?,?)";
@@ -104,11 +108,10 @@ public class DataGenerator extends ATest {
 	protected void insertAttachments() throws Exception {
 		String faqIdSelect = "SELECT DB2ADMIN.FAQ.FAQID FROM DB2ADMIN.FAQ ORDER BY DB2ADMIN.FAQ.FAQID DESC";
 		String attachmentInsert = "INSERT INTO DB2ADMIN.ATTACHMENT (DB2ADMIN.ATTACHMENT.ATTACHMENT, DB2ADMIN.ATTACHMENT.LENGTH, DB2ADMIN.ATTACHMENT.NAME, DB2ADMIN.ATTACHMENT.FAQID) VALUES(?,?,?,?)";
-		PreparedStatement attachmentPreparedStatement = null;
+		PreparedStatement attachmentPreparedStatement = connection.prepareStatement(attachmentInsert, PreparedStatement.NO_GENERATED_KEYS);
 		ResultSet faqIdResultSet = connection.createStatement().executeQuery(faqIdSelect);
 		for (int i = 0; i < inserts && faqIdResultSet.next(); i++) {
 			long faqId = faqIdResultSet.getLong(1);
-			attachmentPreparedStatement = connection.prepareStatement(attachmentInsert, PreparedStatement.NO_GENERATED_KEYS);
 			for (String fileName : fileContents.keySet()) {
 				// Insert the attachment
 				byte[] bytes = fileContents.get(fileName);
@@ -170,6 +173,10 @@ public class DataGenerator extends ATest {
 		try {
 			DataGenerator dataGenerator = new DataGenerator();
 			dataGenerator.before();
+
+			// DataLoader dataLoader = new DataLoader();
+			// dataLoader.createTables("./modules/core/src/test/resources/data/tables.sql");
+
 			dataGenerator.generate();
 			dataGenerator.after();
 		} catch (Exception e) {

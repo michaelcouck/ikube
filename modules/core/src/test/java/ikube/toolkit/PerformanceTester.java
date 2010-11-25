@@ -4,7 +4,7 @@ import org.apache.log4j.Logger;
 
 /**
  * This class is just a convenience class to see what the performance is for a method or set of methods.
- *
+ * 
  * @author Michael Couck
  * @since 10.02.10
  * @version 01.00
@@ -34,7 +34,7 @@ public class PerformanceTester {
 	/**
 	 * Executes the perform object a set number of times, prints the duration and iterations per second to the log and returns the number of
 	 * iterations per second.
-	 *
+	 * 
 	 * @param perform
 	 *            the interface that will call the object to be executed
 	 * @param type
@@ -46,7 +46,11 @@ public class PerformanceTester {
 	public static double execute(IPerform perform, String type, double iterations) throws Exception {
 		double start = System.currentTimeMillis();
 		for (int i = 0; i < iterations; i++) {
+			long executionStart = System.currentTimeMillis();
 			perform.execute();
+			if (perform.log()) {
+				LOGGER.warn("Execution in : " + (System.currentTimeMillis() - executionStart));
+			}
 		}
 		double end = System.currentTimeMillis();
 		double duration = (end - start) / 1000d;
