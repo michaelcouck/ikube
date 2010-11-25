@@ -46,7 +46,27 @@
 					</compilerArguments>
 				</configuration>
 			</plugin>
+
+			<!-- Hangs. -->
 			<!--<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<configuration>
+					<doclet>gr.spinellis.umlgraph.doclet.UmlGraphDoc</doclet>
+					<docletArtifact>
+						<groupId>gr.spinellis</groupId>
+						<artifactId>UmlGraph</artifactId>
+						<version>4.4</version>
+					</docletArtifact>
+					<additionalparam>
+						-inferrel -inferdep -quiet -hide java.* -collpackages java.util.* -qualify
+						-postfixpackage -nodefontsize 9
+						-nodefontpackagesize 7
+					</additionalparam>
+				</configuration>
+			</plugin>-->
+
+			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>jdepend-maven-plugin</artifactId>
 			</plugin>
@@ -71,7 +91,7 @@
 					<keywords>true</keywords>
 					<additionalparam>-sourceclasspath ${project.build.outputDirectory}</additionalparam>
 				</configuration>
-			</plugin>-->
+			</plugin>
 		</plugins>
 	</build>
 
