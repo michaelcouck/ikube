@@ -52,6 +52,7 @@ public class IndexableTableVisitor<I> extends IndexableVisitor<IndexableTable> {
 			resultSet = getResultSet(connection, indexableTable, idColumn);
 			do {
 				if (resultSet == null) {
+					logger.info("No more results : ");
 					break;
 				}
 				// Thread.sleep(1000);
@@ -60,10 +61,6 @@ public class IndexableTableVisitor<I> extends IndexableVisitor<IndexableTable> {
 					close(resultSet.getStatement());
 					close(resultSet);
 					resultSet = getResultSet(connection, indexableTable, idColumn);
-					if (resultSet == null) {
-						logger.info("No more results : ");
-						break;
-					}
 				}
 			} while (true);
 		} catch (Exception e) {
@@ -158,8 +155,8 @@ public class IndexableTableVisitor<I> extends IndexableVisitor<IndexableTable> {
 
 		if (logger.isDebugEnabled()) {
 			if (resultSet.getRow() % getIndexContext().getBatchSize() == 0) {
-				StringBuilder builder = new StringBuilder("Id : ").append(rowId).append(", row : ").append(resultSet.getRow())
-						.append(", thread : ").append(Thread.currentThread().hashCode());
+				StringBuilder builder = new StringBuilder("Id : ").append(rowId).append(", row : ").append(resultSet.getRow()).append(
+						", thread : ").append(Thread.currentThread().hashCode());
 				logger.debug(builder.toString());
 			}
 		}
