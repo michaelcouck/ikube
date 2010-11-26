@@ -15,6 +15,7 @@ import javax.persistence.Entity;
 public abstract class Indexable<E> extends Persistable {
 
 	private String name;
+	private Indexable<?> parent;
 	private List<Indexable<?>> children;
 
 	public abstract <V extends IndexableVisitor<Indexable<?>>> void accept(V visitor);
@@ -27,12 +28,25 @@ public abstract class Indexable<E> extends Persistable {
 		return name;
 	}
 
+	public Indexable<?> getParent() {
+		return parent;
+	}
+
+	protected void setParent(Indexable<?> parent) {
+		this.parent = parent;
+	}
+
 	public List<Indexable<?>> getChildren() {
 		return children;
 	}
 
 	public void setChildren(final List<Indexable<?>> children) {
 		this.children = children;
+		if (this.children != null) {
+			for (Indexable<?> child : children) {
+				child.setParent(this);
+			}
+		}
 	}
 
 }

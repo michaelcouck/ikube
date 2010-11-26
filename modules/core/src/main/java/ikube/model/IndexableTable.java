@@ -14,6 +14,8 @@ import javax.sql.DataSource;
 public class IndexableTable extends Indexable<IndexableTable> {
 
 	private String sql;
+	private String predicate;
+	private boolean primary;
 	private DataSource dataSource;
 
 	@Override
@@ -21,12 +23,28 @@ public class IndexableTable extends Indexable<IndexableTable> {
 		visitor.visit(this);
 	}
 
+	public boolean isPrimary() {
+		return primary;
+	}
+
+	public void setPrimary(boolean primary) {
+		this.primary = primary;
+	}
+
 	public String getSql() {
 		return sql;
 	}
 
-	public void setSql(final String predicate) {
-		this.sql = predicate;
+	public void setSql(final String sql) {
+		this.sql = sql;
+	}
+
+	public String getPredicate() {
+		return predicate;
+	}
+
+	public void setPredicate(String predicate) {
+		this.predicate = predicate;
 	}
 
 	public DataSource getDataSource() {

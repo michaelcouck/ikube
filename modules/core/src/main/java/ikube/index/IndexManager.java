@@ -6,10 +6,20 @@ import ikube.model.IndexContext;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
+import java.io.Writer;
 import java.util.Date;
 
 import org.apache.log4j.Logger;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field;
+import org.apache.lucene.document.Field.Index;
+import org.apache.lucene.document.Field.Store;
+import org.apache.lucene.document.Field.TermVector;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriter.MaxFieldLength;
@@ -66,6 +76,53 @@ public class IndexManager {
 			return indexContext.getIndexWriter();
 		} finally {
 			IndexManager.class.notifyAll();
+		}
+	}
+
+	public static void addStringField(String fieldName, String fieldContent, Document document, Store store, Index analyzed,
+			TermVector termVector) {
+		Field field = document.getField(fieldName);
+		if (field == null) {
+			field = new Field(fieldName, fieldContent, store, analyzed, termVector);
+			document.add(field);
+		} else {
+			String fieldValue = field.stringValue();
+			StringBuilder builder = new StringBuilder(fieldValue).append(" ").append(fieldContent);
+			field.setValue(builder.toString());
+		}
+	}
+
+	public static void addReaderField(String fieldName, Document document, Store store, TermVector termVector, Reader reader)
+			throws Exception {
+		Field field = document.getField(fieldName);
+		if (field == null) {
+			field = new Field(fieldName, reader, termVector);
+			document.add(field);
+		} else {
+			Reader fieldReader = field.readerValue();
+			if (fieldReader == null) {
+				fieldReader = new StringReader(field.stringValue());
+			}
+			File tempFile = File.createTempFile(Long.toString(System.nanoTime()), IConstants.READER_FILE_SUFFIX);
+			Writer writer = new FileWriter(tempFile, false);
+			int read = -1;
+			char[] chars = new char[1024];
+			while ((read = fieldReader.read(chars)) > -1) {
+				writer.write(chars, 0, read);
+			}
+			while ((read = reader.read(chars)) > -1) {
+				writer.write(chars, 0, read);
+			}
+			Reader finalReader = new FileReader(tempFile);
+			// This is a string field, and could be stored so we check that
+			if (store.isStored()) {
+				// Remove the field and add it again
+				document.removeField(fieldName);
+				field = new Field(fieldName, finalReader, termVector);
+				document.add(field);
+			} else {
+				field.setValue(finalReader);
+			}
 		}
 	}
 

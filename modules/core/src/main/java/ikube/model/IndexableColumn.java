@@ -13,11 +13,12 @@ import javax.persistence.Transient;
 @Entity()
 public class IndexableColumn extends Indexable<IndexableColumn> {
 
-	private transient volatile Object object;
-	private transient volatile int columnType;
+	private transient Object object;
+	private transient int columnType;
 
 	private String fieldName;
 	private boolean idColumn;
+	private IndexableColumn foreignKey;
 	private boolean stored = Boolean.FALSE;
 	private boolean analyzed = Boolean.TRUE;
 	private boolean vectored = Boolean.TRUE;
@@ -47,6 +48,14 @@ public class IndexableColumn extends Indexable<IndexableColumn> {
 
 	public void setIdColumn(boolean idColumn) {
 		this.idColumn = idColumn;
+	}
+
+	public IndexableColumn getForeignKey() {
+		return foreignKey;
+	}
+
+	public void setForeignKey(IndexableColumn foreignKey) {
+		this.foreignKey = foreignKey;
 	}
 
 	public boolean isStored() {
