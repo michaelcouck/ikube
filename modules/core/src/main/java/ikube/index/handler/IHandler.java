@@ -5,6 +5,6 @@ import ikube.model.Indexable;
 
 public interface IHandler<T extends Indexable<?>> {
 
-	public void handle(IndexContext indexContext, T indexable);
+	public void handle(IndexContext indexContext, T indexable) throws Exception;
 
 }

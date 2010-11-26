@@ -19,8 +19,6 @@ public class IndexableTable extends Indexable<IndexableTable> {
 	private boolean primary;
 	private transient DataSource dataSource;
 
-	private long idNumber;
-
 	@Override
 	public <V extends IndexableVisitor<Indexable<?>>> void accept(final V visitor) {
 		visitor.visit(this);
@@ -48,14 +46,6 @@ public class IndexableTable extends Indexable<IndexableTable> {
 
 	public void setPredicate(String predicate) {
 		this.predicate = predicate;
-	}
-
-	public long getIdNumber() {
-		return idNumber;
-	}
-
-	public void setIdNumber(long idNumber) {
-		this.idNumber = idNumber;
 	}
 
 	@Transient

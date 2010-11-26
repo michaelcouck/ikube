@@ -42,7 +42,7 @@
 		id="faqTable"
 		class="ikube.model.IndexableTable"
 		property:name="faq"
-		property:predicate="where faq.faqid > 0"
+		property:predicate="${faq.predicate}"
 		property:primary="true"
 		property:dataSource-ref="nonXaDataSource"
 		property:children-ref="faqColumns" />

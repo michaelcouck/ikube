@@ -8,8 +8,10 @@ import org.apache.log4j.Logger;
 public abstract class Handler implements IHandler<Indexable<?>> {
 
 	protected Logger logger;
+
 	private IHandler<Indexable<?>> prev;
 	private IHandler<Indexable<?>> next;
+	private int threads;
 
 	public Handler(IHandler<Indexable<?>> previous) {
 		this.prev = previous;
@@ -20,7 +22,7 @@ public abstract class Handler implements IHandler<Indexable<?>> {
 	}
 
 	@Override
-	public void handle(IndexContext indexContext, Indexable<?> indexable) {
+	public void handle(IndexContext indexContext, Indexable<?> indexable) throws Exception {
 		if (this.next != null) {
 			this.next.handle(indexContext, indexable);
 		}
@@ -28,6 +30,14 @@ public abstract class Handler implements IHandler<Indexable<?>> {
 
 	private void setNext(IHandler<Indexable<?>> next) {
 		this.next = next;
+	}
+
+	public int getThreads() {
+		return threads;
+	}
+
+	public void setThreads(int threads) {
+		this.threads = threads;
 	}
 
 }

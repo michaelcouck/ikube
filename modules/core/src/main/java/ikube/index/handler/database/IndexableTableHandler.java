@@ -46,45 +46,27 @@ public class IndexableTableHandler extends Handler {
 	}
 
 	@Override
-	public void handle(final IndexContext indexContext, final Indexable<?> indexable) {
+	public void handle(final IndexContext indexContext, final Indexable<?> indexable) throws Exception {
 		// Sort the hierarchy all the way down
 		sortIndexables(indexable.getChildren());
 		Thread thread = null;
 		if (IndexableTable.class.isAssignableFrom(indexable.getClass())) {
-			final IndexableTable indexableTable = (IndexableTable) indexable;
-			for (int i = 0; i < 3; i++) {
+			IndexableTable indexableTable = (IndexableTable) indexable;
+			for (int i = 0; i < getThreads(); i++) {
+				String serialised = SerializationUtilities.serialize(indexableTable);
+				final IndexableTable cloneIndexableTable = (IndexableTable) SerializationUtilities.deserialize(serialised);
+				final Connection connection = indexableTable.getDataSource().getConnection();
 				thread = new Thread(new Runnable() {
 					public void run() {
-						try {
-							String serialised = SerializationUtilities.serialize(indexableTable);
-							IndexableTable cloneIndexableTable = (IndexableTable) SerializationUtilities.deserialize(serialised);
-							Connection connection = indexableTable.getDataSource().getConnection();
-							handleTable(indexContext, cloneIndexableTable, connection, null);
-						} catch (SQLException e) {
-							logger.error("", e);
-						}
+						handleTable(indexContext, cloneIndexableTable, connection, null);
 					}
 				});
 				thread.start();
 			}
 		}
-		try {
-			thread.join();
-		} catch (InterruptedException e) {
-			logger.error("", e);
-		}
+		thread.join();
 		// Do the next handler in the chain
 		super.handle(indexContext, indexable);
-	}
-
-	protected void sortIndexables(List<Indexable<?>> indexables) {
-		Collections.sort(indexables, Indexable.COMPARATOR);
-		for (Indexable<?> indexable : indexables) {
-			List<Indexable<?>> children = indexable.getChildren();
-			if (children != null) {
-				sortIndexables(children);
-			}
-		}
 	}
 
 	protected void handleTable(IndexContext indexContext, IndexableTable indexableTable, Connection connection, Document document) {
@@ -167,137 +149,159 @@ public class IndexableTableHandler extends Handler {
 		}
 	}
 
-	protected ResultSet getResultSet(IndexContext indexContext, IndexableTable indexableTable, Connection connection) throws Exception {
-		long idNumber = indexableTable.getIdNumber();
-		indexableTable.setIdNumber(idNumber + indexContext.getBatchSize());
-		String sql = buildSql(indexContext, indexableTable, idNumber);
-		PreparedStatement preparedStatement = connection.prepareStatement(sql);
-		setParameters(indexableTable, preparedStatement);
-		ResultSet resultSet = preparedStatement.executeQuery();
-		if (!resultSet.next()) {
-			long maxId = getMaxId(indexableTable, connection);
-			DatabaseUtilities.close(resultSet);
-			DatabaseUtilities.close(preparedStatement);
-			if (idNumber > maxId) {
-				return null;
-			}
-			return getResultSet(indexContext, indexableTable, connection);
-		}
-		return resultSet;
-	}
+	protected synchronized ResultSet getResultSet(IndexContext indexContext, IndexableTable indexableTable, Connection connection)
+			throws Exception {
+		try {
+			long idNumber = 0;
 
-	protected void setParameters(IndexableTable indexableTable, PreparedStatement preparedStatement) {
-		List<Indexable<?>> children = indexableTable.getChildren();
-		for (Indexable<?> child : children) {
-			if (IndexableColumn.class.isAssignableFrom(child.getClass())) {
-				IndexableColumn indexableColumn = (IndexableColumn) child;
-				if (indexableColumn.getForeignKey() != null) {
-					IndexableColumn foreignKey = indexableColumn.getForeignKey();
-					try {
-						Object parameter = foreignKey.getObject();
-						// logger.debug("Parameter : " + parameter);
-						preparedStatement.setObject(1, parameter);
-					} catch (SQLException e) {
-						logger.error("Exception setting the parameters : " + indexableTable + ", " + indexableTable.getChildren(), e);
-					}
-				}
+			if (indexableTable.isPrimary()) {
+				idNumber = indexContext.getIdNumber();
+				indexContext.setIdNumber(idNumber + indexContext.getBatchSize());
 			}
+
+			String sql = buildSql(indexContext, indexableTable, idNumber);
+			PreparedStatement preparedStatement = connection.prepareStatement(sql);
+			setParameters(indexableTable, preparedStatement);
+			ResultSet resultSet = preparedStatement.executeQuery();
+			if (!resultSet.next()) {
+				long maxId = getMaxId(indexableTable, connection);
+				DatabaseUtilities.close(resultSet);
+				DatabaseUtilities.close(preparedStatement);
+				if (idNumber > maxId) {
+					return null;
+				}
+				return getResultSet(indexContext, indexableTable, connection);
+			}
+			return resultSet;
+		} finally {
+			notifyAll();
 		}
 	}
 
-	protected String buildSql(IndexContext indexContext, IndexableTable indexableTable, long idNumber) throws Exception {
-		StringBuilder builder = new StringBuilder();
-		builder.append("select ");
-		List<Indexable<?>> children = indexableTable.getChildren();
-		boolean first = Boolean.TRUE;
-		for (Indexable<?> child : children) {
-			if (IndexableColumn.class.isAssignableFrom(child.getClass())) {
-				IndexableColumn indexableColumn = (IndexableColumn) child;
-				if (!first) {
-					builder.append(", ");
-				} else {
-					first = Boolean.FALSE;
-				}
-				builder.append(indexableTable.getName());
-				builder.append(".");
-				builder.append(indexableColumn.getName());
-			}
-		}
-		builder.append(" from ");
-		builder.append(indexableTable.getName());
-
-		if (indexableTable.getPredicate() != null) {
-			builder.append(" ");
-			builder.append(indexableTable.getPredicate());
-		}
-
-		if (!indexableTable.isPrimary()) {
+	protected synchronized void setParameters(IndexableTable indexableTable, PreparedStatement preparedStatement) {
+		try {
+			List<Indexable<?>> children = indexableTable.getChildren();
 			for (Indexable<?> child : children) {
 				if (IndexableColumn.class.isAssignableFrom(child.getClass())) {
 					IndexableColumn indexableColumn = (IndexableColumn) child;
 					if (indexableColumn.getForeignKey() != null) {
-						if (indexableTable.getPredicate() == null) {
-							builder.append(" where ");
-						} else {
-							builder.append(" and ");
+						IndexableColumn foreignKey = indexableColumn.getForeignKey();
+						try {
+							Object parameter = foreignKey.getObject();
+							// logger.debug("Parameter : " + parameter);
+							preparedStatement.setObject(1, parameter);
+						} catch (SQLException e) {
+							logger.error("Exception setting the parameters : " + indexableTable + ", " + indexableTable.getChildren(), e);
 						}
-						builder.append(indexableTable.getName());
-						builder.append(".");
-						builder.append(indexableColumn.getName());
-						builder.append(" = ");
-						builder.append("?");
-						break;
 					}
 				}
 			}
+		} finally {
+			notifyAll();
 		}
-
-		if (indexableTable.isPrimary()) {
-			if (indexableTable.getPredicate() == null) {
-				builder.append(" where ");
-			} else {
-				builder.append(" and ");
-			}
-			String idColumnName = getIdColumn(indexableTable.getChildren()).getName();
-			builder.append(idColumnName);
-			builder.append(" > ");
-			builder.append(idNumber);
-			builder.append(" and ");
-			builder.append(idColumnName);
-			builder.append(" <= ");
-			builder.append(idNumber + indexContext.getBatchSize());
-			logger.info("Sql : " + builder.toString());
-		}
-
-		String sql = builder.toString();
-		// logger.info("Sql : " + sql);
-		return sql;
 	}
 
-	protected long getMaxId(IndexableTable indexableTable, Connection connection) throws Exception {
-		IndexableColumn idColumn = getIdColumn(indexableTable.getChildren());
-
-		long maxId = 0;
-		Statement statement = null;
-		ResultSet resultSet = null;
-
+	protected synchronized String buildSql(IndexContext indexContext, IndexableTable indexableTable, long idNumber) throws Exception {
 		try {
-			StringBuilder builder = new StringBuilder("select max(");
-			builder.append(idColumn.getName());
-			builder.append(") from ");
-			builder.append(indexableTable.getName());
-			statement = connection.createStatement();
-			resultSet = statement.executeQuery(builder.toString());
-			if (resultSet.next()) {
-				maxId = resultSet.getLong(1);
+			StringBuilder builder = new StringBuilder();
+			builder.append("select ");
+			List<Indexable<?>> children = indexableTable.getChildren();
+			boolean first = Boolean.TRUE;
+			for (Indexable<?> child : children) {
+				if (IndexableColumn.class.isAssignableFrom(child.getClass())) {
+					IndexableColumn indexableColumn = (IndexableColumn) child;
+					if (!first) {
+						builder.append(", ");
+					} else {
+						first = Boolean.FALSE;
+					}
+					builder.append(indexableTable.getName());
+					builder.append(".");
+					builder.append(indexableColumn.getName());
+				}
 			}
-		} finally {
-			DatabaseUtilities.close(resultSet);
-			DatabaseUtilities.close(statement);
-		}
+			builder.append(" from ");
+			builder.append(indexableTable.getName());
 
-		logger.debug("Max id : " + maxId);
-		return maxId;
+			if (indexableTable.getPredicate() != null) {
+				builder.append(" ");
+				builder.append(indexableTable.getPredicate());
+			}
+
+			if (!indexableTable.isPrimary()) {
+				for (Indexable<?> child : children) {
+					if (IndexableColumn.class.isAssignableFrom(child.getClass())) {
+						IndexableColumn indexableColumn = (IndexableColumn) child;
+						if (indexableColumn.getForeignKey() != null) {
+							if (indexableTable.getPredicate() == null) {
+								builder.append(" where ");
+							} else {
+								builder.append(" and ");
+							}
+							builder.append(indexableTable.getName());
+							builder.append(".");
+							builder.append(indexableColumn.getName());
+							builder.append(" = ");
+							builder.append("?");
+							break;
+						}
+					}
+				}
+			}
+
+			if (indexableTable.isPrimary()) {
+				if (indexableTable.getPredicate() == null) {
+					builder.append(" where ");
+				} else {
+					builder.append(" and ");
+				}
+				String idColumnName = getIdColumn(indexableTable.getChildren()).getName();
+				builder.append(idColumnName);
+				builder.append(" > ");
+				builder.append(idNumber);
+				builder.append(" and ");
+				builder.append(idColumnName);
+				builder.append(" <= ");
+				builder.append(idNumber + indexContext.getBatchSize());
+				logger.info("Sql : " + builder.toString());
+			}
+
+			String sql = builder.toString();
+			// logger.info("Sql : " + sql);
+			return sql;
+		} finally {
+			notifyAll();
+		}
+	}
+
+	protected synchronized long getMaxId(IndexableTable indexableTable, Connection connection) throws Exception {
+		try {
+			IndexableColumn idColumn = getIdColumn(indexableTable.getChildren());
+
+			long maxId = 0;
+			Statement statement = null;
+			ResultSet resultSet = null;
+
+			try {
+				StringBuilder builder = new StringBuilder("select max(");
+				builder.append(idColumn.getName());
+				builder.append(") from ");
+				builder.append(indexableTable.getName());
+				statement = connection.createStatement();
+				resultSet = statement.executeQuery(builder.toString());
+				if (resultSet.next()) {
+					maxId = resultSet.getLong(1);
+				}
+			} finally {
+				DatabaseUtilities.close(resultSet);
+				DatabaseUtilities.close(statement);
+			}
+
+			logger.debug("Max id : " + maxId);
+			return maxId;
+		} finally {
+			notifyAll();
+		}
 	}
 
 	protected IndexableColumn getIdColumn(List<Indexable<?>> indexableColumns) {
@@ -413,6 +417,16 @@ public class IndexableTableHandler extends Handler {
 				return mid;
 		}
 		return -(low + 1);
+	}
+
+	protected void sortIndexables(List<Indexable<?>> indexables) {
+		Collections.sort(indexables, Indexable.COMPARATOR);
+		for (Indexable<?> indexable : indexables) {
+			List<Indexable<?>> children = indexable.getChildren();
+			if (children != null) {
+				sortIndexables(children);
+			}
+		}
 	}
 
 }

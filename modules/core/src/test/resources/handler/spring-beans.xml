@@ -26,7 +26,8 @@
 
 	<bean
 		id="faqTableHandler"
-		class="ikube.index.handler.database.IndexableTableHandler">
+		class="ikube.index.handler.database.IndexableTableHandler"
+		property:threads="3">
 		<constructor-arg><null /></constructor-arg>
 	</bean>
 
