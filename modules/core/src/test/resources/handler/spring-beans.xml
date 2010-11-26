@@ -26,8 +26,23 @@
 
 	<bean
 		id="faqTableHandler"
-		class="ikube.index.handler.database.IndexableTableHandler" />
+		class="ikube.index.handler.database.IndexableTableHandler">
+		<constructor-arg><null /></constructor-arg>
+	</bean>
 
+	<bean
+		id="ikube.cluster.LockManager"
+		class="ikube.cluster.LockManager"
+		property:timeout="10000" />
+	<bean
+		class="ikube.cluster.ClusterManager"
+		property:lockManager-ref="ikube.cluster.LockManager" />
+	<bean
+		class="ikube.IndexEngine"
+		property:actions-ref="actions" />
+	<bean
+		id="ikube.aspect.Monitor"
+		class="ikube.aspect.Monitor" />
 	<bean
 		id="ikube.database.DataBaseOdb"
 		class="ikube.database.DataBaseOdb"
@@ -49,12 +64,127 @@
 			</list>
 		</property>
 	</bean>
+	<bean
+		class="ikube.listener.ParserListener"
+		property:dataBase-ref="ikube.database.DataBaseOdb" />
+
+	<bean id="ikube.action.Close" class="ikube.action.Close" />
+	<bean id="ikube.action.Delete" class="ikube.action.Delete" />
+	<bean id="ikube.action.Index" class="ikube.action.Index" />
+	<bean id="ikube.action.Open" class="ikube.action.Open" />
+	<bean id="ikube.action.Reset" class="ikube.action.Reset" />
+	<bean
+		id="ikube.action.Synchronize"
+		class="ikube.action.Synchronize"
+		property:ipAddressPattern="ip.address"
+		property:serviceName="synchronization"
+		property:targetNamespace="http://ikube.synchronization/"
+		property:endpointUri="http://ip.address:8082/service/ISynchronizationWebService?wsdl" />
+	<util:list id="actions">
+		<ref local="ikube.action.Reset" />
+		<ref local="ikube.action.Close" />
+		<ref local="ikube.action.Open" />
+		<ref local="ikube.action.Index" />
+		<ref local="ikube.action.Delete" />
+		<ref local="ikube.action.Synchronize" />
+	</util:list>
 
 	<bean id="ikube.index.parse.mime.MimeMapper" class="ikube.index.parse.mime.MimeMapper">
 		<constructor-arg value="/META-INF/mime/mime-mapping.xml" />
 	</bean>
 	<bean id="ikube.index.parse.mime.MimeTypes" class="ikube.index.parse.mime.MimeTypes">
 		<constructor-arg value="/META-INF/mime/mime-types.xml" />
+	</bean>
+
+	<bean
+		id="ikube.aspect.Profile"
+		class="ikube.aspect.Profile" />
+	<aop:config proxy-target-class="false">
+		<!--<aop:aspect ref="ikube.aspect.Profile">
+			<aop:around method="profile" pointcut="execution(* ikube.index.visitor.database.*.*(..))" />
+		</aop:aspect>-->
+		<!--<aop:aspect ref="ikube.aspect.Monitor">
+			<aop:around method="monitor" pointcut="execution(* ikube.index.visitor.database.*.*(..))" />
+		</aop:aspect>-->
+		<!--<aop:aspect ref="ikube.aspect.Monitor">
+			<aop:around method="monitor" pointcut="execution(* ikube.index.visitor.filesystem.*.*(..))" />
+		</aop:aspect>-->
+	</aop:config>
+
+	<bean
+		id="ikube.service.SearcherWebService"
+		class="ikube.service.SearcherWebService" />
+	<bean
+		id="ikube.service.SynchronizationWebService"
+		class="ikube.service.SynchronizationWebService" />
+	<bean
+		id="ikube.service.MonitorWebService"
+		class="ikube.service.MonitorWebService"
+		property:monitor-ref="ikube.aspect.Monitor" />
+	<bean
+		id="ikube.service.WebServicePublisher"
+		class="ikube.service.WebServicePublisher"
+		property:addresses-ref="addresses"
+		property:implementors-ref="implementors"
+		init-method="publish" />
+	<util:list id="addresses">
+		<value>http://localhost:8081/service/ISearcherWebService</value>
+		<value>http://localhost:8082/service/ISynchronizationWebService</value>
+		<value>http://localhost:8083/service/IMonitorWebService</value>
+	</util:list>
+	<util:list id="implementors">
+		<ref local="ikube.service.SearcherWebService" />
+		<ref local="ikube.service.SynchronizationWebService" />
+		<ref local="ikube.service.MonitorWebService" />
+	</util:list>
+	<bean
+		id="ikube.service.SearcherWebServiceExecuter"
+		class="ikube.service.SearcherWebServiceExecuter"
+		property:configurationName="faq"
+		property:end="101"
+		property:endpointUri="http://localhost:8081/service/ISearcherWebService?wsdl"
+		property:fieldName="contents"
+		property:fragment="true"
+		property:resultsSizeMinimum="1"
+		property:searchString="clinch crackerjack books gall thoroughgoing
+			tall pissed committee greathearted cyborg devotional tremor"
+		property:start="0" />
+
+	<bean
+		id="ikube.listener.Schedule"
+		class="ikube.listener.Schedule"
+		property:type="timer"
+		property:delay="${delay}"
+		property:period="${period}" />
+	<bean
+		id="ikube.listener.Schedule.Profile"
+		class="ikube.listener.Schedule"
+		property:type="profile"
+		property:delay="${profiling.delay}"
+		property:period="${profiling.period}" />
+	<bean
+		id="ikube.listener.Schedule.WebService"
+		class="ikube.listener.Schedule"
+		property:type="service"
+		property:delay="${web.service.delay}"
+		property:period="${web.service.period}" />
+	<bean
+		id="ikube.listener.Schedule.LockManager"
+		class="ikube.listener.Schedule"
+		property:type="clustering"
+		property:delay="${lock.manager.delay}"
+		property:period="${lock.manager.period}" />
+
+	<util:list id="scheduled.tasks">
+		<ref local="ikube.listener.Schedule" />
+		<ref local="ikube.listener.Schedule.Profile" />
+		<ref local="ikube.listener.Schedule.WebService" />
+		<ref local="ikube.listener.Schedule.LockManager" />
+	</util:list>
+
+	<bean
+		class="ikube.listener.Scheduler">
+		<constructor-arg ref="scheduled.tasks" />
 	</bean>
 
 </beans>

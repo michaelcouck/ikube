@@ -2,6 +2,7 @@ package ikube.model;
 
 import ikube.index.visitor.IndexableVisitor;
 
+import java.util.Comparator;
 import java.util.List;
 
 import javax.persistence.Entity;
@@ -13,6 +14,13 @@ import javax.persistence.Entity;
  */
 @Entity()
 public abstract class Indexable<E> extends Persistable {
+
+	public static Comparator<Indexable<?>> COMPARATOR = new Comparator<Indexable<?>>() {
+		@Override
+		public int compare(Indexable<?> o1, Indexable<?> o2) {
+			return o1.getName().compareTo(o2.getName());
+		}
+	};
 
 	private String name;
 	private Indexable<?> parent;

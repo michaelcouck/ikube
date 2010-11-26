@@ -3,6 +3,7 @@ package ikube.model;
 import ikube.index.visitor.IndexableVisitor;
 
 import javax.persistence.Entity;
+import javax.persistence.Transient;
 import javax.sql.DataSource;
 
 /**
@@ -16,7 +17,9 @@ public class IndexableTable extends Indexable<IndexableTable> {
 	private String sql;
 	private String predicate;
 	private boolean primary;
-	private DataSource dataSource;
+	private transient DataSource dataSource;
+
+	private long idNumber;
 
 	@Override
 	public <V extends IndexableVisitor<Indexable<?>>> void accept(final V visitor) {
@@ -47,6 +50,15 @@ public class IndexableTable extends Indexable<IndexableTable> {
 		this.predicate = predicate;
 	}
 
+	public long getIdNumber() {
+		return idNumber;
+	}
+
+	public void setIdNumber(long idNumber) {
+		this.idNumber = idNumber;
+	}
+
+	@Transient
 	public DataSource getDataSource() {
 		return dataSource;
 	}

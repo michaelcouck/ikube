@@ -34,7 +34,7 @@ public class LockManager extends ReceiverAdapter implements ILockManager {
 	 * The token timeout. This is the maximum time we expect to not get the token. In the case of 3000 milliseconds, the average time to
 	 * deliver a message is about 5 milliseconds so we can have many failures before we timeout. We have to set the timer to about 500
 	 * milliseconds so that the actions have enough time to do some logic. If the token times out before the actions are finished the logic
-	 * then there will be a problem with synchronization.
+	 * then there will be a problem with synchronisation.
 	 */
 	private long timeout = 3000;
 
