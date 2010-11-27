@@ -16,7 +16,7 @@ import org.junit.Test;
  * @version 01.00
  */
 @Ignore
-public class IndexableInternetVisitorTest extends BaseTest {
+public class IndexableInternetHandlerTest extends BaseTest {
 
 	@Test
 	public void visit() throws Exception {

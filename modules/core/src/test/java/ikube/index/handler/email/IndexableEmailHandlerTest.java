@@ -15,7 +15,7 @@ import org.junit.Test;
  * @since this century
  * @version 102235366.2215.3688.744RC112556
  */
-public class IndexableEmailVisitorTest extends BaseTest {
+public class IndexableEmailHandlerTest extends BaseTest {
 
 	@Test
 	public void visit() throws Exception {

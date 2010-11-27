@@ -11,7 +11,7 @@ import org.junit.Test;
  * @since 21.11.10
  * @version 01.00
  */
-public class IndexableFileSystemVisitorTest extends BaseTest {
+public class IndexableFileSystemHandlerTest extends BaseTest {
 
 	@Test
 	public void implementMe() throws Exception {
