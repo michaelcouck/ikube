@@ -1,5 +1,6 @@
 package ikube.index.handler;
 
+import ikube.database.IDataBase;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
 
@@ -12,6 +13,7 @@ public abstract class Handler implements IHandler<Indexable<?>> {
 	private IHandler<Indexable<?>> prev;
 	private IHandler<Indexable<?>> next;
 	private int threads;
+	private IDataBase dataBase;
 
 	public Handler(IHandler<Indexable<?>> previous) {
 		this.prev = previous;
@@ -38,6 +40,14 @@ public abstract class Handler implements IHandler<Indexable<?>> {
 
 	public void setThreads(int threads) {
 		this.threads = threads;
+	}
+
+	public IDataBase getDataBase() {
+		return dataBase;
+	}
+
+	public void setDataBase(IDataBase dataBase) {
+		this.dataBase = dataBase;
 	}
 
 }
