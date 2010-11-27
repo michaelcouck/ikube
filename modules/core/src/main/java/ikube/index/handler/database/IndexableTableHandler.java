@@ -8,6 +8,7 @@ import ikube.index.handler.Handler;
 import ikube.index.handler.IHandler;
 import ikube.index.parse.IParser;
 import ikube.index.parse.ParserProvider;
+import ikube.logging.Logging;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.model.IndexableColumn;
@@ -278,7 +279,7 @@ public class IndexableTableHandler extends Handler {
 				builder.append(idColumnName);
 				builder.append(" <= ");
 				builder.append(idNumber + indexContext.getBatchSize());
-				logger.info("Sql : " + builder.toString());
+				logger.info(Logging.getString("Sql : ", builder.toString(), Thread.currentThread().hashCode()));
 			}
 
 			String sql = builder.toString();
@@ -336,7 +337,16 @@ public class IndexableTableHandler extends Handler {
 	}
 
 	protected void handleColumn(IndexableColumn indexable, Document document) {
+		InputStream inputStream = null;
+		OutputStream parsedOutputStream = null;
 		try {
+			String mimeType = null;
+			if (indexable.getNameColumn() != null) {
+				if (indexable.getNameColumn().getObject() != null) {
+					mimeType = indexable.getNameColumn().getObject().toString();
+				}
+			}
+
 			Object content = contentProvider.getContent(indexable);
 			if (content == null) {
 				return;
@@ -346,16 +356,7 @@ public class IndexableTableHandler extends Handler {
 			Index analyzed = indexable.isAnalyzed() ? Index.ANALYZED : Index.NOT_ANALYZED;
 			TermVector termVector = indexable.isVectored() ? TermVector.YES : TermVector.NO;
 
-			String mimeType = null;
-			if (indexable.getNameColumn() != null) {
-				if (indexable.getNameColumn().getObject() != null) {
-					mimeType = indexable.getNameColumn().getObject().toString();
-					// logger.debug("Got mime type : " + mimeType);
-				}
-			}
-
 			byte[] bytes = new byte[1024];
-			InputStream inputStream = null;
 
 			if (String.class.isAssignableFrom(content.getClass())) {
 				bytes = ((String) content).getBytes(IConstants.ENCODING);
@@ -370,10 +371,8 @@ public class IndexableTableHandler extends Handler {
 				inputStream.reset();
 			}
 
-			// logger.debug("Bytes : " + new String(bytes, IConstants.ENCODING));
 			IParser parser = ParserProvider.getParser(mimeType, bytes);
-			OutputStream parsedOutputStream = parser.parse(inputStream);
-			// logger.debug("After parse : " + parsedOutputStream);
+			parsedOutputStream = parser.parse(inputStream);
 
 			if (ByteArrayOutputStream.class.isAssignableFrom(parsedOutputStream.getClass())) {
 				String fieldContent = parsedOutputStream.toString();
@@ -386,6 +385,21 @@ public class IndexableTableHandler extends Handler {
 			}
 		} catch (Exception e) {
 			logger.error("Exception accessing the column content : ", e);
+		} finally {
+			try {
+				if (inputStream != null) {
+					inputStream.close();
+				}
+			} catch (Exception e) {
+				logger.error("", e);
+			}
+			try {
+				if (parsedOutputStream != null) {
+					parsedOutputStream.close();
+				}
+			} catch (Exception e) {
+				logger.error("", e);
+			}
 		}
 	}
 

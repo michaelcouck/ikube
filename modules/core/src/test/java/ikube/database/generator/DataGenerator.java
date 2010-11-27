@@ -68,7 +68,7 @@ public class DataGenerator extends ATest {
 			PerformanceTester.execute(new PerformanceTester.APerform() {
 				@Override
 				public void execute() throws Exception {
-					insertFaqs();
+					// insertFaqs();
 					insertAttachments();
 				}
 			}, type, iterations);
@@ -80,8 +80,8 @@ public class DataGenerator extends ATest {
 		// 80000
 	}
 
-	int inserts = 100;
-	int iterations = 100;
+	int inserts = 8;
+	int iterations = 1000;
 
 	protected void insertFaqs() throws Exception {
 		String faqInsert = "INSERT INTO DB2ADMIN.FAQ (DB2ADMIN.FAQ.ANSWER, DB2ADMIN.FAQ.CREATIONTIMESTAMP, DB2ADMIN.FAQ.CREATOR, DB2ADMIN.FAQ.MODIFIEDTIMESTAMP, DB2ADMIN.FAQ.MODIFIER, DB2ADMIN.FAQ.PUBLISHED, QUESTION) VALUES (?,?,?,?,?,?,?)";

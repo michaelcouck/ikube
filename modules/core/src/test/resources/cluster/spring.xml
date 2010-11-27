@@ -16,8 +16,8 @@
 	<import resource="../spring-jdbc.xml" />
 	<import resource="../spring-beans.xml" />
 	<import resource="clients/spring-client-one.xml" />
-	<import resource="clients/spring-client-two.xml" />
-	<import resource="clients/spring-client-three.xml" />
+	<!--<import resource="clients/spring-client-two.xml" />
+	<import resource="clients/spring-client-three.xml" />-->
 	<!--<import resource="clients/spring-client-four.xml" />
 	<import resource="clients/spring-client-five.xml" />
 	<import resource="clients/spring-client-six.xml" />-->

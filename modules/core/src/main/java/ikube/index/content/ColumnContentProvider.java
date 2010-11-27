@@ -42,6 +42,9 @@ public class ColumnContentProvider implements IContentProvider<IndexableColumn> 
 		}
 
 		Object result = "";
+		InputStream inputStream = null;
+		ByteArrayOutputStream outputStream = null;
+		Reader clobReader = null;
 		try {
 			// Get the data for the object according to the class type
 			switch (columnType) {
@@ -112,7 +115,6 @@ public class ColumnContentProvider implements IContentProvider<IndexableColumn> 
 				// Get an input stream method, as this can be different for each driver blob or clob
 				// for both Oracle or DB2 the input stream are both implemented. If at any stage another
 				// database is used then this has to be re-tested
-				InputStream inputStream = null;
 				if (Blob.class.isAssignableFrom(object.getClass())) {
 					inputStream = ((Blob) object).getBinaryStream();
 				} else {
@@ -128,20 +130,16 @@ public class ColumnContentProvider implements IContentProvider<IndexableColumn> 
 				// File file = File.createTempFile(Long.toString(System.nanoTime()), IConstants.READER_FILE_SUFFIX);
 				// logger.debug("Temp file : " + file.getAbsolutePath());
 				// OutputStream outputStream = new FileOutputStream(file);
-				ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+				outputStream = new ByteArrayOutputStream();
 				while (inputStream != null && (read = inputStream.read(bytes)) > 0) {
 					outputStream.write(bytes, 0, read);
 				}
 				result = new ByteArrayInputStream(outputStream.toByteArray());
-				outputStream.close();
-				// outputStream.close();
-				// result = new FileInputStream(file);
 				break;
 			case Types.CLOB:
 				// Get an input stream method, as this can be different for each driver blob or clob
 				// for both Oracle or DB2 the input stream are both implemented. If at any stage another
 				// database is used then this has to be re-tested
-				Reader clobReader = null;
 				if (Clob.class.isAssignableFrom(object.getClass())) {
 					clobReader = ((Clob) object).getCharacterStream();
 				} else {
@@ -162,9 +160,6 @@ public class ColumnContentProvider implements IContentProvider<IndexableColumn> 
 					outputStream.write(String.valueOf(chars).getBytes(), 0, read);
 				}
 				result = new ByteArrayInputStream(outputStream.toByteArray());
-				outputStream.close();
-				// outputStream.close();
-				// result = new FileInputStream(file);
 				break;
 			}
 		} catch (Exception e) {
@@ -172,6 +167,28 @@ public class ColumnContentProvider implements IContentProvider<IndexableColumn> 
 			@SuppressWarnings("unused")
 			String identifier = indexable.getName();
 			// We need to log this in the database too via an event
+		} finally {
+			if (inputStream != null) {
+				try {
+					inputStream.close();
+				} catch (Exception e) {
+					logger.error("", e);
+				}
+			}
+			if (outputStream != null) {
+				try {
+					outputStream.close();
+				} catch (Exception e) {
+					logger.error("", e);
+				}
+			}
+			if (clobReader != null) {
+				try {
+					clobReader.close();
+				} catch (Exception e) {
+					logger.error("", e);
+				}
+			}
 		}
 		return result;
 	}
@@ -179,11 +196,11 @@ public class ColumnContentProvider implements IContentProvider<IndexableColumn> 
 	/**
 	 * Finds a method in an object that has as return type the class of the second parameter. For example in the Blob object for Oracle
 	 * there is a method getBinaryStream that returns an input stream to the blob.
-	 *
+	 * 
 	 * In DB2 it's getInputStream. We, due to the inability of these database vendors to implement the java.sq.Blob interface, have to guess
 	 * what the method is. We don't care if it is a string stream or an ASCII stream the final data will be read in bytes and converted to
 	 * string anyway.
-	 *
+	 * 
 	 * @param object
 	 *            the object that we need to find a method on
 	 * @param klass
