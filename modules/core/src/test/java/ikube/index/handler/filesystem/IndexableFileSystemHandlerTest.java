@@ -17,11 +17,11 @@ public class IndexableFileSystemHandlerTest extends BaseTest {
 	public void implementMe() throws Exception {
 		indexContext.setIndexWriter(indexWriter);
 		IndexableFileSystem indexableFileSystem = ApplicationContextManager.getBean(IndexableFileSystem.class);
-		IndexableFilesystemHandler indexableFileSystemVisitor = ApplicationContextManager.getBean(IndexableFilesystemHandler.class);
-		indexableFileSystemVisitor.handle(indexContext, indexableFileSystem);
+		IndexableFilesystemHandler indexableFileSystemHandler = ApplicationContextManager.getBean(IndexableFilesystemHandler.class);
+		indexableFileSystemHandler.handle(indexContext, indexableFileSystem);
 
 		// TODO - verify that there are some records indexed. This must wait until
-		// the clustering logic is decided upon for the url visitor as this will have an impact on
+		// the clustering logic is decided upon for the url handler as this will have an impact on
 		// the way the data is shared in the cluster
 	}
 

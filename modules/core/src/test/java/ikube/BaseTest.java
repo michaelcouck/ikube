@@ -45,7 +45,7 @@ public abstract class BaseTest extends ATest {
 		}
 	}
 
-	protected IndexContext indexContext = ApplicationContextManager.getBean("faqIndexContext");
+	protected IndexContext indexContext = ApplicationContextManager.getBean(IndexContext.class);
 
 	protected static void delete(IDataBase dataBase, Class<?>... klasses) {
 		for (Class<?> klass : klasses) {

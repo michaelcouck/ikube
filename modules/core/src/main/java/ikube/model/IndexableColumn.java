@@ -25,7 +25,7 @@ public class IndexableColumn extends Indexable<IndexableColumn> {
 	 * This is the column where the name of the column is stored. In the case of a file in the database the name of the file can be used to
 	 * get the correct parser for that type of content. This will typically be a sibling in the same table.
 	 */
-	private IndexableColumn indexableColumn;
+	private IndexableColumn nameColumn;
 
 	public String getFieldName() {
 		return fieldName;
@@ -75,12 +75,12 @@ public class IndexableColumn extends Indexable<IndexableColumn> {
 		this.vectored = vectored;
 	}
 
-	public IndexableColumn getIndexableColumn() {
-		return indexableColumn;
+	public IndexableColumn getNameColumn() {
+		return nameColumn;
 	}
 
-	public void setIndexableColumn(IndexableColumn indexableColumn) {
-		this.indexableColumn = indexableColumn;
+	public void setNameColumn(IndexableColumn indexableColumn) {
+		this.nameColumn = indexableColumn;
 	}
 
 	@Transient

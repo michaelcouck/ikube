@@ -19,10 +19,10 @@
             http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
 	<bean
-		id="faqIndexContext"
+		id="indexContext"
 		class="ikube.model.IndexContext"
-		property:name="jackal"
-		property:indexName="faq"
+		property:name="localhost"
+		property:indexName="index"
 		property:maxAge="${max.age}"
 		property:compoundFile="${compound.file}"
 		property:bufferedDocs="${buffered.docs}"
@@ -33,63 +33,23 @@
 		property:maxReadLength="${max.read.length}"
 		property:queueTimeout="${max.age}"
 		property:indexDirectoryPath="${index.directory.path}"
-		property:indexableVisitors-ref="faqIndexableVisitors"
-		property:indexables-ref="faqIndexables" />
-	<util:list id="faqIndexableVisitors">
-		<ref local="filesVisitor" />
-		<ref local="ikubeMailVisitor" />
-		<ref local="ikubeWikiVisitor" />
-		<ref local="faqTableVisitor" />
-	</util:list>
-	<util:list id="faqIndexables">
-		<ref local="files" />
-		<ref local="ikokoon" />
-		<ref local="ikubeMail" />
-		<!--<ref local="ikubeWiki" />-->
-		<ref local="faqTable" />
+		property:indexables-ref="indexables" />
+	<util:list id="indexables">
+		<ref local="mail" />
+		<ref local="internet" />
+		<ref local="filesystem" />
+		<ref local="tableOne" />
 	</util:list>
 
-	<!-- Indexable visitors -->
 	<bean
-		id="ikubeWikiVisitor"
-		class="ikube.index.visitor.internet.IndexableInternetVisitor"
-		property:indexableType="ikube.model.IndexableInternet"
-		property:indexContext-ref="faqIndexContext"
-		property:dataBase-ref="ikube.database.DataBaseOdb"
-		property:threads="3" />
-	<bean
-		id="ikubeMailVisitor"
-		class="ikube.index.visitor.email.IndexableEmailVisitor"
-		property:indexContext-ref="faqIndexContext"
-		property:indexableType="ikube.model.IndexableEmail" />
-	<bean
-		id="filesVisitor"
-		class="ikube.index.visitor.filesystem.IndexableFileSystemVisitor"
-		property:indexableType="ikube.model.IndexableFileSystem"
-		property:indexContext-ref="faqIndexContext" />
-	<bean
-		id="faqTableVisitor"
-		class="ikube.index.visitor.database.IndexableTableVisitor"
-		property:indexContext-ref="faqIndexContext"
-		property:indexableType="ikube.model.IndexableTable"
-		property:indexableColumnVisitor-ref="faqColumnVisitor"
-		property:fetchSize="${jdbc.fetch.size}" />
-	<bean
-		id="faqColumnVisitor"
-		class="ikube.index.visitor.database.IndexableColumnVisitor"
-		property:indexableType="ikube.model.IndexableColumn" />
-
-	<!-- Indexables -->
-	<bean
-		id="faqTable"
+		id="tableOne"
 		class="ikube.model.IndexableTable"
 		property:name="faq"
-		property:sql="select faq.faqid, faq.answer, faq.creationtimestamp, faq.creator, faq.modifiedtimestamp, faq.modifier,
-			faq.published, faq.question, attachment.attachmentid, attachment.name, attachment.attachment,
-			attachment.length, attachment.faqid from faq, attachment where faq.faqid = attachment.faqid"
+		property:predicate="${faq.predicate}"
+		property:primary="true"
 		property:dataSource-ref="nonXaDataSource"
-		property:children-ref="faqColumns" />
-	<util:set id="faqColumns">
+		property:children-ref="columnsOne" />
+	<util:list id="columnsOne">
 		<ref local="faqId" />
 		<ref local="creationtimestamp" />
 		<ref local="modifiedtimestamp" />
@@ -97,11 +57,9 @@
 		<ref local="modifier" />
 		<ref local="question" />
 		<ref local="answer" />
-		<ref local="attachmentid" />
-		<ref local="name" />
-		<ref local="attachment" />
-		<ref local="length" />
-	</util:set>
+		<ref local="tableTwo" />
+	</util:list>
+
 	<bean
 		id="faqId"
 		class="ikube.model.IndexableColumn"
@@ -133,11 +91,34 @@
 		class="ikube.model.IndexableColumn"
 		property:name="answer"
 		property:fieldName="contents" />
+
+	<bean
+		id="tableTwo"
+		class="ikube.model.IndexableTable"
+		property:name="attachment"
+		property:primary="false"
+		property:dataSource-ref="nonXaDataSource"
+		property:children-ref="columnsTwo" />
+	<util:list id="columnsTwo">
+		<ref local="attachmentFaqId" />
+		<ref local="attachmentid" />
+		<ref local="name" />
+		<ref local="attachment" />
+		<ref local="length" />
+	</util:list>
+
+	<bean
+		id="attachmentFaqId"
+		class="ikube.model.IndexableColumn"
+		property:name="faqid"
+		property:fieldName="attachmentfaqId"
+		property:foreignKey-ref="faqId" />
 	<bean
 		id="attachmentid"
 		class="ikube.model.IndexableColumn"
 		property:name="attachmentid"
-		property:fieldName="attachmentid" />
+		property:fieldName="attachmentid"
+		property:idColumn="true" />
 	<bean
 		id="name"
 		class="ikube.model.IndexableColumn"
@@ -148,7 +129,7 @@
 		class="ikube.model.IndexableColumn"
 		property:name="attachment"
 		property:fieldName="attachment"
-		property:indexableColumn-ref="name" />
+		property:nameColumn-ref="name" />
 	<bean
 		id="length"
 		class="ikube.model.IndexableColumn"
@@ -156,7 +137,7 @@
 		property:fieldName="length" />
 
 	<bean
-		id="ikubeMail"
+		id="mail"
 		class="ikube.model.IndexableEmail"
 		property:idField="identifier"
 		property:contentField="email"
@@ -170,7 +151,13 @@
 		property:username="ikube.ikube@gmail.com" />
 
 	<bean
-		id="files"
+		id="internet"
+		class="ikube.model.IndexableInternet"
+		property:name="ikokoon"
+		property:url="http://ikokoon.eu/ikokoon/index.html" />
+	
+	<bean
+		id="filesystem"
 		class="ikube.model.IndexableFileSystem"
 		property:contentFieldName="contents"
 		property:excludedPattern=".*(.svn).*|.*(database).*"
@@ -180,17 +167,6 @@
 		property:nameFieldName="name"
 		property:path="${files.path}"
 		property:pathFieldName="path" />
-
-	<bean
-		id="ikokoon"
-		class="ikube.model.IndexableInternet"
-		property:name="ikokoon"
-		property:url="http://ikokoon.eu/ikokoon/index.html" />
-	<!--<bean
-		id="localhost"
-		class="ikube.model.IndexableInternet"
-		property:name="localhost"
-		property:url="http://localhost/million/adapt.html" />-->
 
 	<!-- Utility classes -->
 	<bean

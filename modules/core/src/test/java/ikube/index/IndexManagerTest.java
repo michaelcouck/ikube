@@ -20,7 +20,7 @@ import org.junit.Test;
 public class IndexManagerTest extends ATest {
 
 	private String fieldName = "fieldName";
-	private Document document;
+	private Document document = new Document();
 	private Store store = Store.YES;
 	private TermVector termVector = TermVector.YES;
 	private Index index = Index.ANALYZED;

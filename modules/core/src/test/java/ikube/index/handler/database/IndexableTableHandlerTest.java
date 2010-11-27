@@ -10,8 +10,10 @@ import ikube.toolkit.FileUtilities;
 import java.io.File;
 import java.net.InetAddress;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
+@Ignore
 public class IndexableTableHandlerTest extends ATest {
 
 	@Test

@@ -46,8 +46,8 @@ public class IndexableTableHandler extends Handler {
 
 	@Override
 	public void handle(final IndexContext indexContext, final Indexable<?> indexable) throws Exception {
-		Thread thread = null;
 		if (IndexableTable.class.isAssignableFrom(indexable.getClass())) {
+			Thread thread = null;
 			IndexableTable indexableTable = (IndexableTable) indexable;
 			for (int i = 0; i < getThreads(); i++) {
 				final IndexableTable cloneIndexableTable = (IndexableTable) SerializationUtilities.clone(indexableTable);
@@ -59,8 +59,8 @@ public class IndexableTableHandler extends Handler {
 				});
 				thread.start();
 			}
+			thread.join();
 		}
-		thread.join();
 		// Do the next handler in the chain
 		super.handle(indexContext, indexable);
 	}
@@ -93,7 +93,7 @@ public class IndexableTableHandler extends Handler {
 					IndexableColumn indexableColumn = (IndexableColumn) indexable;
 					Object object = resultSet.getObject(indexableColumn.getName());
 					indexableColumn.setObject(object);
-					if (indexableColumn.getIndexableColumn() != null) {
+					if (indexableColumn.getNameColumn() != null) {
 						continue;
 					}
 					handleColumn(indexableColumn, document);
@@ -107,7 +107,7 @@ public class IndexableTableHandler extends Handler {
 						break;
 					}
 					IndexableColumn indexableColumn = (IndexableColumn) indexable;
-					if (indexableColumn.getIndexableColumn() == null) {
+					if (indexableColumn.getNameColumn() == null) {
 						continue;
 					}
 					handleColumn(indexableColumn, document);
@@ -375,9 +375,9 @@ public class IndexableTableHandler extends Handler {
 			TermVector termVector = indexable.isVectored() ? TermVector.YES : TermVector.NO;
 
 			String mimeType = null;
-			if (indexable.getIndexableColumn() != null) {
-				if (indexable.getIndexableColumn().getObject() != null) {
-					mimeType = indexable.getIndexableColumn().getObject().toString();
+			if (indexable.getNameColumn() != null) {
+				if (indexable.getNameColumn().getObject() != null) {
+					mimeType = indexable.getNameColumn().getObject().toString();
 					// logger.debug("Got mime type : " + mimeType);
 				}
 			}

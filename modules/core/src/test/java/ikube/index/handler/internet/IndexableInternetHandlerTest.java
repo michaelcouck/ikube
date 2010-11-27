@@ -22,8 +22,8 @@ public class IndexableInternetHandlerTest extends BaseTest {
 	public void visit() throws Exception {
 		indexContext.setIndexWriter(indexWriter);
 		IndexableInternet indexableInternet = ApplicationContextManager.getBean("oki");
-		IndexableInternetHandler indexableInternetVisitor = ApplicationContextManager.getBean(IndexableInternetHandler.class);
-		indexableInternetVisitor.handle(indexContext, indexableInternet);
+		IndexableInternetHandler indexableInternetHandler = ApplicationContextManager.getBean(IndexableInternetHandler.class);
+		indexableInternetHandler.handle(indexContext, indexableInternet);
 	}
 
 	// @Test

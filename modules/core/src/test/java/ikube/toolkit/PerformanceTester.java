@@ -46,11 +46,7 @@ public class PerformanceTester {
 	public static double execute(IPerform perform, String type, double iterations) throws Exception {
 		double start = System.currentTimeMillis();
 		for (int i = 0; i < iterations; i++) {
-			long executionStart = System.currentTimeMillis();
 			perform.execute();
-			if (perform.log()) {
-				LOGGER.warn("Execution in : " + (System.currentTimeMillis() - executionStart));
-			}
 		}
 		double end = System.currentTimeMillis();
 		double duration = (end - start) / 1000d;

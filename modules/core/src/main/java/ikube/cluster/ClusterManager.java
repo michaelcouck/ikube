@@ -97,7 +97,7 @@ public class ClusterManager implements IClusterManager {
 	}
 
 	/**
-	 * TODO - this method is called from the visitors so we need to extract an action from this method so that the synchronisation aspect
+	 * TODO - this method is called from the handlers so we need to extract an action from this method so that the synchronisation aspect
 	 * will wrap it in a 'transaction'
 	 */
 	@Override

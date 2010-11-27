@@ -82,6 +82,31 @@
 		<ref local="ikube.action.Delete" />
 		<ref local="ikube.action.Synchronize" />
 	</util:list>
+	
+	<bean
+		class="ikube.index.handler.internet.IndexableInternetHandler"
+		property:dataBase-ref="ikube.database.DataBaseOdb"
+		property:threads="3">
+		<constructor-arg><null /></constructor-arg>
+	</bean>
+	<bean
+		class="ikube.index.handler.email.IndexableEmailHandler"
+		property:dataBase-ref="ikube.database.DataBaseOdb"
+		property:threads="3">
+		<constructor-arg><null /></constructor-arg>
+	</bean>
+	<bean
+		class="ikube.index.handler.filesystem.IndexableFilesystemHandler"
+		property:dataBase-ref="ikube.database.DataBaseOdb"
+		property:threads="3">
+		<constructor-arg><null /></constructor-arg>
+	</bean>
+	<bean
+		class="ikube.index.handler.database.IndexableTableHandler"
+		property:dataBase-ref="ikube.database.DataBaseOdb"
+		property:threads="1">
+		<constructor-arg><null /></constructor-arg>
+	</bean>
 
 	<bean id="ikube.index.parse.mime.MimeMapper" class="ikube.index.parse.mime.MimeMapper">
 		<constructor-arg value="/META-INF/mime/mime-mapping.xml" />
@@ -95,13 +120,13 @@
 		class="ikube.aspect.Profile" />
 	<aop:config proxy-target-class="false">
 		<!--<aop:aspect ref="ikube.aspect.Profile">
-			<aop:around method="profile" pointcut="execution(* ikube.index.visitor.database.*.*(..))" />
+			<aop:around method="profile" pointcut="execution(* ikube.index.handler.database.*.*(..))" />
 		</aop:aspect>-->
 		<!--<aop:aspect ref="ikube.aspect.Monitor">
-			<aop:around method="monitor" pointcut="execution(* ikube.index.visitor.database.*.*(..))" />
+			<aop:around method="monitor" pointcut="execution(* ikube.index.handler.database.*.*(..))" />
 		</aop:aspect>-->
 		<!--<aop:aspect ref="ikube.aspect.Monitor">
-			<aop:around method="monitor" pointcut="execution(* ikube.index.visitor.filesystem.*.*(..))" />
+			<aop:around method="monitor" pointcut="execution(* ikube.index.handler.filesystem.*.*(..))" />
 		</aop:aspect>-->
 	</aop:config>
 
