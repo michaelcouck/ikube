@@ -25,4 +25,9 @@ public class IndexableTableHandlerTest extends ATest {
 		IndexManager.closeIndexWriter(indexContext);
 	}
 
+	public static void main(String[] args) throws Exception {
+		IndexableTableHandlerTest indexableTableHandlerTest = new IndexableTableHandlerTest();
+		indexableTableHandlerTest.handle();
+	}
+
 }

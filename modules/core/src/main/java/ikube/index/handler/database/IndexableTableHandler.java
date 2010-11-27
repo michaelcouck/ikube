@@ -28,7 +28,6 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.lucene.document.Document;
@@ -47,8 +46,6 @@ public class IndexableTableHandler extends Handler {
 
 	@Override
 	public void handle(final IndexContext indexContext, final Indexable<?> indexable) throws Exception {
-		// Sort the hierarchy all the way down
-		sortIndexables(indexable.getChildren());
 		Thread thread = null;
 		if (IndexableTable.class.isAssignableFrom(indexable.getClass())) {
 			IndexableTable indexableTable = (IndexableTable) indexable;
@@ -77,51 +74,60 @@ public class IndexableTableHandler extends Handler {
 				if (resultSet == null) {
 					break;
 				}
-
 				// Set the column types
 				setColumnTypes(children, resultSet);
-
+				// Set the id field if this is a primary table
 				if (indexableTable.isPrimary()) {
 					document = new Document();
 					setIdField(children, indexableTable, document, resultSet);
 				}
-				// Handle all the columns that are 'normal'
-				for (Indexable<?> child : children) {
-					if (IndexableColumn.class.isAssignableFrom(child.getClass())) {
-						IndexableColumn indexableColumn = (IndexableColumn) child;
-						Object object = resultSet.getObject(indexableColumn.getName());
-						indexableColumn.setObject(object);
-						if (indexableColumn.getIndexableColumn() != null) {
-							continue;
-						}
-						handleColumn(indexableColumn, document);
+				// Handle all the columns that are 'normal', i.e. that don't have references
+				// to the values in other columns, like the attachment that needs the name
+				// from the name column
+				ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
+				for (int i = 1; i <= resultSetMetaData.getColumnCount(); i++) {
+					Indexable<?> indexable = children.get(i - 1);
+					if (!IndexableColumn.class.isAssignableFrom(indexable.getClass())) {
+						break;
 					}
+					IndexableColumn indexableColumn = (IndexableColumn) indexable;
+					Object object = resultSet.getObject(indexableColumn.getName());
+					indexableColumn.setObject(object);
+					if (indexableColumn.getIndexableColumn() != null) {
+						continue;
+					}
+					handleColumn(indexableColumn, document);
 				}
-				// Handle all the columns that rely on another column
-				for (Indexable<?> child : children) {
-					if (IndexableColumn.class.isAssignableFrom(child.getClass())) {
-						IndexableColumn indexableColumn = (IndexableColumn) child;
-						if (indexableColumn.getIndexableColumn() == null) {
-							continue;
-						}
-						Object object = resultSet.getObject(indexableColumn.getName());
-						indexableColumn.setObject(object);
-						handleColumn(indexableColumn, document);
+				// Handle all the columns that rely on another column, like the attachment
+				// column that needs the name from the name column to get the content type
+				// for the parser
+				for (int i = 1; i <= resultSetMetaData.getColumnCount(); i++) {
+					Indexable<?> indexable = children.get(i - 1);
+					if (!IndexableColumn.class.isAssignableFrom(indexable.getClass())) {
+						break;
 					}
+					IndexableColumn indexableColumn = (IndexableColumn) indexable;
+					if (indexableColumn.getIndexableColumn() == null) {
+						continue;
+					}
+					handleColumn(indexableColumn, document);
 				}
 				// Handle all the sub tables
-				for (Indexable<?> child : children) {
-					if (IndexableTable.class.isAssignableFrom(child.getClass())) {
-						IndexableTable childIndexableTable = (IndexableTable) child;
+				for (Indexable<?> indexable : children) {
+					if (IndexableTable.class.isAssignableFrom(indexable.getClass())) {
+						IndexableTable childIndexableTable = (IndexableTable) indexable;
 						handleTable(indexContext, childIndexableTable, connection, document);
 					}
 				}
+				// Add the document to the index if this is the primary table
 				if (indexableTable.isPrimary()) {
 					indexContext.getIndexWriter().addDocument(document);
 				}
-
+				// Move to the next row in the result set
 				if (!resultSet.next()) {
+					// If the table is not primary then we have exhausted the results
 					if (indexableTable.isPrimary()) {
+						// We need to see if there are any more results
 						resultSet = getResultSet(indexContext, indexableTable, connection);
 					} else {
 						break;
@@ -131,7 +137,8 @@ public class IndexableTableHandler extends Handler {
 		} catch (Exception e) {
 			logger.error("Exception indexing table : " + indexableTable, e);
 		} finally {
-			// Close the result set and the statement
+			// Close the result set and the statement for this
+			// table, could be the sub table of course
 			Statement statement = null;
 			try {
 				if (resultSet != null) {
@@ -143,6 +150,8 @@ public class IndexableTableHandler extends Handler {
 			DatabaseUtilities.close(resultSet);
 			DatabaseUtilities.close(statement);
 		}
+		// Once we finish all the results in the primary table
+		// then we can close the connection too
 		if (indexableTable.isPrimary()) {
 			DatabaseUtilities.closeAll(resultSet);
 		}
@@ -154,6 +163,10 @@ public class IndexableTableHandler extends Handler {
 			long idNumber = 0;
 
 			if (indexableTable.isPrimary()) {
+				long minId = getMinId(indexableTable, connection);
+				if (idNumber < minId) {
+					idNumber = minId;
+				}
 				idNumber = indexContext.getIdNumber();
 				indexContext.setIdNumber(idNumber + indexContext.getBatchSize());
 			}
@@ -163,13 +176,16 @@ public class IndexableTableHandler extends Handler {
 			setParameters(indexableTable, preparedStatement);
 			ResultSet resultSet = preparedStatement.executeQuery();
 			if (!resultSet.next()) {
-				long maxId = getMaxId(indexableTable, connection);
-				DatabaseUtilities.close(resultSet);
-				DatabaseUtilities.close(preparedStatement);
-				if (idNumber > maxId) {
-					return null;
+				if (indexableTable.isPrimary()) {
+					long maxId = getMaxId(indexableTable, connection);
+					DatabaseUtilities.close(resultSet);
+					DatabaseUtilities.close(preparedStatement);
+					if (idNumber > maxId) {
+						return null;
+					}
+					return getResultSet(indexContext, indexableTable, connection);
 				}
-				return getResultSet(indexContext, indexableTable, connection);
+				return null;
 			}
 			return resultSet;
 		} finally {
@@ -296,8 +312,38 @@ public class IndexableTableHandler extends Handler {
 				DatabaseUtilities.close(statement);
 			}
 
-			logger.debug("Max id : " + maxId);
+			// logger.debug("Max id : " + maxId);
 			return maxId;
+		} finally {
+			notifyAll();
+		}
+	}
+
+	protected synchronized long getMinId(IndexableTable indexableTable, Connection connection) throws Exception {
+		try {
+			IndexableColumn idColumn = getIdColumn(indexableTable.getChildren());
+
+			long minId = 0;
+			Statement statement = null;
+			ResultSet resultSet = null;
+
+			try {
+				StringBuilder builder = new StringBuilder("select min(");
+				builder.append(idColumn.getName());
+				builder.append(") from ");
+				builder.append(indexableTable.getName());
+				statement = connection.createStatement();
+				resultSet = statement.executeQuery(builder.toString());
+				if (resultSet.next()) {
+					minId = resultSet.getLong(1);
+				}
+			} finally {
+				DatabaseUtilities.close(resultSet);
+				DatabaseUtilities.close(statement);
+			}
+
+			// logger.debug("Max id : " + maxId);
+			return minId;
 		} finally {
 			notifyAll();
 		}
@@ -388,43 +434,15 @@ public class IndexableTableHandler extends Handler {
 	protected void setColumnTypes(List<Indexable<?>> children, ResultSet resultSet) throws Exception {
 		ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
 		for (int i = 1; i <= resultSetMetaData.getColumnCount(); i++) {
-			String columnName = resultSetMetaData.getColumnName(i);
-			int index = getColumnIndex(children, columnName);
-			if (index < 0) {
+			Indexable<?> indexable = children.get(i - 1);
+			// Tables are at the end of the list so once we
+			// get to the tables then we will exit the loop
+			if (!IndexableColumn.class.isAssignableFrom(indexable.getClass())) {
 				continue;
 			}
-			IndexableColumn indexableColumn = (IndexableColumn) children.get(index);
 			int columnType = resultSetMetaData.getColumnType(i);
+			IndexableColumn indexableColumn = (IndexableColumn) indexable;
 			indexableColumn.setColumnType(columnType);
-		}
-	}
-
-	protected int getColumnIndex(List<Indexable<?>> list, String name) {
-		int low = 0;
-		int high = list.size() - 1;
-		name = name.toLowerCase();
-		while (low <= high) {
-			int mid = (low + high) >>> 1;
-			Indexable<?> midVal = list.get(mid);
-			String midValName = midVal.getName().toLowerCase();
-			int cmp = midValName.compareTo(name);
-			if (cmp < 0)
-				low = mid + 1;
-			else if (cmp > 0)
-				high = mid - 1;
-			else
-				return mid;
-		}
-		return -(low + 1);
-	}
-
-	protected void sortIndexables(List<Indexable<?>> indexables) {
-		Collections.sort(indexables, Indexable.COMPARATOR);
-		for (Indexable<?> indexable : indexables) {
-			List<Indexable<?>> children = indexable.getChildren();
-			if (children != null) {
-				sortIndexables(children);
-			}
 		}
 	}
 
