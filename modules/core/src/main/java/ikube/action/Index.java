@@ -1,15 +1,17 @@
 package ikube.action;
 
 import ikube.index.IndexManager;
-import ikube.index.visitor.IndexableVisitor;
+import ikube.index.handler.Handler;
 import ikube.logging.Logging;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.model.Server;
+import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Michael Couck
@@ -23,11 +25,6 @@ public class Index extends Action<IndexContext, Boolean> {
 		long thread = Thread.currentThread().hashCode();
 		try {
 			List<Indexable<?>> indexables = indexContext.getIndexables();
-			List<IndexableVisitor<Indexable<?>>> indexableVisitors = indexContext.getIndexableVisitors();
-			if (indexables == null || indexables.size() == 0 || indexableVisitors == null || indexableVisitors.size() == 0) {
-				logger.warn(Logging.getString("No indexables or visitors configured for the context : ", indexContext.getIndexName()));
-				return Boolean.FALSE;
-			}
 			String actionName = getClass().getName();
 			boolean indexCurrent = isIndexCurrent(indexContext);
 			logger.debug(Logging.getString("Index current : ", indexCurrent, ", ", thread));
@@ -66,12 +63,10 @@ public class Index extends Action<IndexContext, Boolean> {
 			// Start the indexing for this server
 			IndexManager.openIndexWriter(server.getIp(), indexContext, lastWorkingStartTime);
 			try {
-				for (IndexableVisitor<Indexable<?>> indexableVisitor : indexableVisitors) {
+				Map<String, Handler> handlers = ApplicationContextManager.getBeans(Handler.class);
+				for (Handler handler : handlers.values()) {
 					for (Indexable<?> indexable : indexables) {
-						if (indexableVisitor.getIndexableType().equals(indexable.getClass().getName())) {
-							logger.debug(Logging.getString("Visiting indexable : ", indexable, ", ", indexableVisitor));
-							indexable.accept(indexableVisitor);
-						}
+						handler.handle(indexContext, indexable);
 					}
 				}
 			} catch (Exception e) {

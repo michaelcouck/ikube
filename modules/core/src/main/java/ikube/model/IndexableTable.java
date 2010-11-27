@@ -1,7 +1,5 @@
 package ikube.model;
 
-import ikube.index.visitor.IndexableVisitor;
-
 import javax.persistence.Entity;
 import javax.persistence.Transient;
 import javax.sql.DataSource;
@@ -18,11 +16,6 @@ public class IndexableTable extends Indexable<IndexableTable> {
 	private String predicate;
 	private boolean primary;
 	private transient DataSource dataSource;
-
-	@Override
-	public <V extends IndexableVisitor<Indexable<?>>> void accept(final V visitor) {
-		visitor.visit(this);
-	}
 
 	public boolean isPrimary() {
 		return primary;

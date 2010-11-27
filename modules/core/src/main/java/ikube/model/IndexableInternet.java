@@ -3,8 +3,6 @@ package ikube.model;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import ikube.index.visitor.IndexableVisitor;
-
 import javax.persistence.Entity;
 import javax.persistence.Transient;
 
@@ -78,11 +76,6 @@ public class IndexableInternet extends Indexable<IndexableInternet> {
 
 	public void setCurrentUrl(String currentUrl) {
 		this.currentUrl = currentUrl;
-	}
-
-	@Override
-	public <V extends IndexableVisitor<Indexable<?>>> void accept(V visitor) {
-		visitor.visit(this);
 	}
 
 }

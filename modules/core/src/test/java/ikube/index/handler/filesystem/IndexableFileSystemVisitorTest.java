@@ -1,4 +1,4 @@
-package ikube.index.visitor.filesystem;
+package ikube.index.handler.filesystem;
 
 import ikube.BaseTest;
 import ikube.model.IndexableFileSystem;
@@ -14,13 +14,11 @@ import org.junit.Test;
 public class IndexableFileSystemVisitorTest extends BaseTest {
 
 	@Test
-	@SuppressWarnings("unchecked")
-	public void implementMe() {
+	public void implementMe() throws Exception {
 		indexContext.setIndexWriter(indexWriter);
 		IndexableFileSystem indexableFileSystem = ApplicationContextManager.getBean(IndexableFileSystem.class);
-		IndexableFileSystemVisitor<IndexableFileSystem> indexableFileSystemVisitor = ApplicationContextManager
-				.getBean(IndexableFileSystemVisitor.class);
-		indexableFileSystemVisitor.visit(indexableFileSystem);
+		IndexableFilesystemHandler indexableFileSystemVisitor = ApplicationContextManager.getBean(IndexableFilesystemHandler.class);
+		indexableFileSystemVisitor.handle(indexContext, indexableFileSystem);
 
 		// TODO - verify that there are some records indexed. This must wait until
 		// the clustering logic is decided upon for the url visitor as this will have an impact on

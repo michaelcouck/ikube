@@ -1,7 +1,5 @@
 package ikube.model;
 
-import ikube.index.visitor.IndexableVisitor;
-
 import java.util.List;
 
 import javax.persistence.Entity;
@@ -38,8 +36,6 @@ public class IndexContext extends Persistable implements Comparable<IndexContext
 	private String indexDirectoryPath;
 
 	private List<Indexable<?>> indexables;
-	/** These can't be sent down the wire. */
-	private transient List<IndexableVisitor<Indexable<?>>> indexableVisitors;
 
 	/** The time the action was started. */
 	private long start;
@@ -198,15 +194,6 @@ public class IndexContext extends Persistable implements Comparable<IndexContext
 
 	public void setWorking(boolean working) {
 		this.working = working;
-	}
-
-	@Transient
-	public List<IndexableVisitor<Indexable<?>>> getIndexableVisitors() {
-		return indexableVisitors;
-	}
-
-	public void setIndexableVisitors(final List<IndexableVisitor<Indexable<?>>> indexableVisitors) {
-		this.indexableVisitors = indexableVisitors;
 	}
 
 	@Transient

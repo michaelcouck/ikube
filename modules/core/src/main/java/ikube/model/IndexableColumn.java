@@ -1,7 +1,5 @@
 package ikube.model;
 
-import ikube.index.visitor.IndexableVisitor;
-
 import javax.persistence.Entity;
 import javax.persistence.Transient;
 
@@ -28,11 +26,6 @@ public class IndexableColumn extends Indexable<IndexableColumn> {
 	 * get the correct parser for that type of content. This will typically be a sibling in the same table.
 	 */
 	private IndexableColumn indexableColumn;
-
-	@Override
-	public <V extends IndexableVisitor<Indexable<?>>> void accept(final V visitor) {
-		visitor.visit(this);
-	}
 
 	public String getFieldName() {
 		return fieldName;

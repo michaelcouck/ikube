@@ -1,7 +1,5 @@
 package ikube.model;
 
-import ikube.index.visitor.IndexableVisitor;
-
 import java.util.List;
 
 import javax.persistence.Entity;
@@ -17,8 +15,6 @@ public abstract class Indexable<E> extends Persistable {
 	private String name;
 	private Indexable<?> parent;
 	private List<Indexable<?>> children;
-
-	public abstract <V extends IndexableVisitor<Indexable<?>>> void accept(V visitor);
 
 	public void setName(final String name) {
 		this.name = name;

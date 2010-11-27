@@ -1,7 +1,5 @@
 package ikube.model;
 
-import ikube.index.visitor.IndexableVisitor;
-
 import javax.persistence.Entity;
 
 /**
@@ -25,11 +23,6 @@ public class IndexableEmail extends Indexable<IndexableEmail> {
 	private String port;
 	private String protocol;
 	private boolean secureSocketLayer;
-
-	@Override
-	public <V extends IndexableVisitor<Indexable<?>>> void accept(V visitor) {
-		visitor.visit(this);
-	}
 
 	public String getIdField() {
 		return idField;

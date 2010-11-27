@@ -1,7 +1,5 @@
 package ikube.model;
 
-import ikube.index.visitor.IndexableVisitor;
-
 import java.io.File;
 
 import javax.persistence.Entity;
@@ -29,11 +27,6 @@ public class IndexableFileSystem extends Indexable<IndexableFileSystem> {
 	private boolean stored = Boolean.FALSE;
 	private boolean analyzed = Boolean.TRUE;
 	private boolean vectored = Boolean.TRUE;
-
-	@Override
-	public <V extends IndexableVisitor<Indexable<?>>> void accept(V visitor) {
-		visitor.visit(this);
-	}
 
 	public String getPath() {
 		return path;
