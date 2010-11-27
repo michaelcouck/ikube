@@ -53,8 +53,7 @@ public class IndexableTableHandler extends Handler {
 		if (IndexableTable.class.isAssignableFrom(indexable.getClass())) {
 			IndexableTable indexableTable = (IndexableTable) indexable;
 			for (int i = 0; i < getThreads(); i++) {
-				String serialised = SerializationUtilities.serialize(indexableTable);
-				final IndexableTable cloneIndexableTable = (IndexableTable) SerializationUtilities.deserialize(serialised);
+				final IndexableTable cloneIndexableTable = (IndexableTable) SerializationUtilities.clone(indexableTable);
 				final Connection connection = indexableTable.getDataSource().getConnection();
 				thread = new Thread(new Runnable() {
 					public void run() {
@@ -90,11 +89,11 @@ public class IndexableTableHandler extends Handler {
 				for (Indexable<?> child : children) {
 					if (IndexableColumn.class.isAssignableFrom(child.getClass())) {
 						IndexableColumn indexableColumn = (IndexableColumn) child;
+						Object object = resultSet.getObject(indexableColumn.getName());
+						indexableColumn.setObject(object);
 						if (indexableColumn.getIndexableColumn() != null) {
 							continue;
 						}
-						Object object = resultSet.getObject(indexableColumn.getName());
-						indexableColumn.setObject(object);
 						handleColumn(indexableColumn, document);
 					}
 				}

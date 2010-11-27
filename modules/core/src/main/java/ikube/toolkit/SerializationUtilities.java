@@ -45,4 +45,8 @@ public class SerializationUtilities {
 		return xmlDecoder.readObject();
 	}
 
+	public static Object clone(Object object) {
+		return SerializationUtilities.deserialize(SerializationUtilities.serialize(object));
+	}
+
 }
