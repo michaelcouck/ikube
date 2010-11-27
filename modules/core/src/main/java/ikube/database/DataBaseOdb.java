@@ -78,7 +78,7 @@ public class DataBaseOdb implements IDataBase {
 		try {
 			// Set the id of this object
 			Object idFieldValue = getIdFieldValue(object);
-			if (idFieldValue != null && Long.class.isAssignableFrom(idFieldValue.getClass()) && ((Long) idFieldValue).longValue() != 0l) {
+			if (idFieldValue != null && Long.class.isAssignableFrom(idFieldValue.getClass()) && ((Long) idFieldValue).longValue() != 0) {
 				logger.info("Object already stored : " + object + ", will merge");
 			} else {
 				OID oid = this.odb.store(object);

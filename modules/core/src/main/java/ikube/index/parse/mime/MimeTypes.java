@@ -68,7 +68,7 @@ public final class MimeTypes {
 		if (type == null) {
 			return null;
 		}
-		MimeType mimeType = (MimeType) types.get(type);
+		MimeType mimeType = types.get(type);
 		if (mimeType == null) {
 			for (MimeType m : types.values()) {
 				String[] extensions = m.getExtensions();

@@ -1,6 +1,7 @@
 package ikube.database.generator;
 
 import ikube.ATest;
+import ikube.logging.Logging;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.PerformanceTester;
@@ -74,13 +75,13 @@ public class DataGenerator extends ATest {
 		} finally {
 			connection.close();
 		}
-		logger.info("Inserted : " + (iterations * inserts) + (iterations * inserts * fileContents.size()));
+		logger.info(Logging.getString("Inserted : ", (iterations * inserts), (iterations * inserts * fileContents.size())));
 		// iterations * inserts + (iterations * inserts * docs)
 		// 80000
 	}
 
-	int inserts = 10;
-	int iterations = 10;
+	int inserts = 100;
+	int iterations = 100;
 
 	protected void insertFaqs() throws Exception {
 		String faqInsert = "INSERT INTO DB2ADMIN.FAQ (DB2ADMIN.FAQ.ANSWER, DB2ADMIN.FAQ.CREATIONTIMESTAMP, DB2ADMIN.FAQ.CREATOR, DB2ADMIN.FAQ.MODIFIEDTIMESTAMP, DB2ADMIN.FAQ.MODIFIER, DB2ADMIN.FAQ.PUBLISHED, QUESTION) VALUES (?,?,?,?,?,?,?)";

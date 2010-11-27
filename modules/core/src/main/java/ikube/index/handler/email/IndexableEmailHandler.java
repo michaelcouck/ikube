@@ -79,7 +79,7 @@ public class IndexableEmailHandler extends Handler {
 				Date recievedDate = message.getReceivedDate();
 				Date sentDate = message.getSentDate();
 				int messageNumber = message.getMessageNumber();
-				long timestamp = recievedDate != null ? recievedDate.getTime() : sentDate != null ? sentDate.getTime() : 0l;
+				long timestamp = recievedDate != null ? recievedDate.getTime() : sentDate != null ? sentDate.getTime() : 0;
 
 				if (logger.isDebugEnabled()) {
 					logger.debug("Recieved : " + recievedDate);

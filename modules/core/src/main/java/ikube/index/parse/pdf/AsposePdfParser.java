@@ -23,7 +23,7 @@ import org.apache.log4j.Logger;
 public class AsposePdfParser implements IParser {
 
 	/** Logger for the parser class. */
-	private Logger LOGGER = Logger.getLogger(AsposePdfParser.class);
+	private Logger logger = Logger.getLogger(AsposePdfParser.class);
 
 	/**
 	 * {@inheritDoc}
@@ -44,8 +44,9 @@ public class AsposePdfParser implements IParser {
 			// extractor.getText(outputStream); // path + "text.txt"
 			// // Set the parsed bytes in the resource for futher processing
 			// resource.setBytes(outputStream.toByteArray());
+			logger.info("Implement me.");
 		} catch (Exception t) {
-			LOGGER.error("Exception parsing PDF doc with the Aspose parser", t);
+			logger.error("Exception parsing PDF doc with the Aspose parser", t);
 		}
 		return null;
 	}

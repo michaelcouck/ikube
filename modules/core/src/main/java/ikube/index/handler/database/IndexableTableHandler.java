@@ -56,7 +56,7 @@ public class IndexableTableHandler extends Handler {
 					public void run() {
 						handleTable(indexContext, cloneIndexableTable, connection, null);
 					}
-				});
+				}, IndexableTableHandler.class.getSimpleName() + "." + i);
 				thread.start();
 			}
 			thread.join();
@@ -163,7 +163,7 @@ public class IndexableTableHandler extends Handler {
 			long idNumber = 0;
 
 			if (indexableTable.isPrimary()) {
-				long minId = getMinId(indexableTable, connection);
+				long minId = getIdFunction(indexableTable, connection, "min");
 				if (idNumber < minId) {
 					idNumber = minId;
 				}
@@ -177,7 +177,7 @@ public class IndexableTableHandler extends Handler {
 			ResultSet resultSet = preparedStatement.executeQuery();
 			if (!resultSet.next()) {
 				if (indexableTable.isPrimary()) {
-					long maxId = getMaxId(indexableTable, connection);
+					long maxId = getIdFunction(indexableTable, connection, "max");
 					DatabaseUtilities.close(resultSet);
 					DatabaseUtilities.close(preparedStatement);
 					if (idNumber > maxId) {
@@ -289,7 +289,7 @@ public class IndexableTableHandler extends Handler {
 		}
 	}
 
-	protected synchronized long getMaxId(IndexableTable indexableTable, Connection connection) throws Exception {
+	protected synchronized long getIdFunction(IndexableTable indexableTable, Connection connection, String function) throws Exception {
 		try {
 			IndexableColumn idColumn = getIdColumn(indexableTable.getChildren());
 
@@ -298,7 +298,9 @@ public class IndexableTableHandler extends Handler {
 			ResultSet resultSet = null;
 
 			try {
-				StringBuilder builder = new StringBuilder("select max(");
+				StringBuilder builder = new StringBuilder("select ");
+				builder.append(function);
+				builder.append("(");
 				builder.append(idColumn.getName());
 				builder.append(") from ");
 				builder.append(indexableTable.getName());
@@ -314,36 +316,6 @@ public class IndexableTableHandler extends Handler {
 
 			// logger.debug("Max id : " + maxId);
 			return maxId;
-		} finally {
-			notifyAll();
-		}
-	}
-
-	protected synchronized long getMinId(IndexableTable indexableTable, Connection connection) throws Exception {
-		try {
-			IndexableColumn idColumn = getIdColumn(indexableTable.getChildren());
-
-			long minId = 0;
-			Statement statement = null;
-			ResultSet resultSet = null;
-
-			try {
-				StringBuilder builder = new StringBuilder("select min(");
-				builder.append(idColumn.getName());
-				builder.append(") from ");
-				builder.append(indexableTable.getName());
-				statement = connection.createStatement();
-				resultSet = statement.executeQuery(builder.toString());
-				if (resultSet.next()) {
-					minId = resultSet.getLong(1);
-				}
-			} finally {
-				DatabaseUtilities.close(resultSet);
-				DatabaseUtilities.close(statement);
-			}
-
-			// logger.debug("Max id : " + maxId);
-			return minId;
 		} finally {
 			notifyAll();
 		}

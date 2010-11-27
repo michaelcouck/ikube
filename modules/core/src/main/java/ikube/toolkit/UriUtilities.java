@@ -38,7 +38,7 @@ public class UriUtilities {
 			throw new IllegalArgumentException("Reference URI may nor be null");
 		}
 		String s = reference.toString();
-		if (s.startsWith("?")) {
+		if (s.charAt(0) == '?') {
 			return resolveReferenceStartingWithQueryString(baseURI, reference);
 		}
 		boolean emptyReference = s.length() == 0;

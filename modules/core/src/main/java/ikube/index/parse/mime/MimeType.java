@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 /**
  * Defines a Mime Content Type.
- *
+ * 
  * @author Jerome Charron - http://frutch.free.fr/
  * @author Hari Kodungallur
  */
@@ -36,7 +36,7 @@ public final class MimeType {
 
 	/**
 	 * Creates a MimeType from a String.
-	 *
+	 * 
 	 * @param name
 	 *            the MIME content type String.
 	 */
@@ -55,7 +55,7 @@ public final class MimeType {
 
 	/**
 	 * Creates a MimeType with the given primary type and sub type.
-	 *
+	 * 
 	 * @param primary
 	 *            the content type primary type.
 	 * @param sub
@@ -90,7 +90,7 @@ public final class MimeType {
 
 	/**
 	 * Return the name of this mime-type.
-	 *
+	 * 
 	 * @return the name of this mime-type.
 	 */
 	public String getName() {
@@ -99,7 +99,7 @@ public final class MimeType {
 
 	/**
 	 * Return the primary type of this mime-type.
-	 *
+	 * 
 	 * @return the primary type of this mime-type.
 	 */
 	public String getPrimaryType() {
@@ -108,7 +108,7 @@ public final class MimeType {
 
 	/**
 	 * Return the sub type of this mime-type.
-	 *
+	 * 
 	 * @return the sub type of this mime-type.
 	 */
 	public String getSubType() {
@@ -116,9 +116,9 @@ public final class MimeType {
 	}
 
 	/**
-	 * Indicates if an object is equal to this mime-type. The specified object is equal to this mime-type if it is not null, and it is an instance of
-	 * MimeType and its name is equals to this mime-type.
-	 *
+	 * Indicates if an object is equal to this mime-type. The specified object is equal to this mime-type if it is not null, and it is an
+	 * instance of MimeType and its name is equals to this mime-type.
+	 * 
 	 * @param object
 	 *            the reference object with which to compare.
 	 * @return <code>true</code> if this mime-type is equal to the object argument; <code>false</code> otherwise.
@@ -127,6 +127,7 @@ public final class MimeType {
 		try {
 			return ((MimeType) object).getName().equals(this.name);
 		} catch (Exception e) {
+			e.printStackTrace();
 			return false;
 		}
 	}
@@ -138,7 +139,7 @@ public final class MimeType {
 
 	/**
 	 * Return the description of this mime-type.
-	 *
+	 * 
 	 * @return the description of this mime-type.
 	 */
 	String getDescription() {
@@ -147,7 +148,7 @@ public final class MimeType {
 
 	/**
 	 * Set the description of this mime-type.
-	 *
+	 * 
 	 * @param description
 	 *            the description of this mime-type.
 	 */
@@ -157,7 +158,7 @@ public final class MimeType {
 
 	/**
 	 * Add a supported extension.
-	 *
+	 * 
 	 * @param the
 	 *            extension to add to the list of extensions associated to this mime-type.
 	 */
@@ -168,7 +169,7 @@ public final class MimeType {
 
 	/**
 	 * Return the extensions of this mime-type
-	 *
+	 * 
 	 * @return the extensions associated to this mime-type.
 	 */
 	@SuppressWarnings("unchecked")

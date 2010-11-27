@@ -15,7 +15,7 @@ import org.apache.log4j.Logger;
  * This is the Word parser implementation for the Aspose parsers. An alternative to the POI library which seems to have memory leaks in it,
  * this could be as a result of throwing exceptions and then not cleaning the memory, but in any event not suited to mass data processing
  * requirements.
- *
+ * 
  * @author Michael Couck
  * @since 17.04.08
  * @version 01.00
@@ -23,7 +23,7 @@ import org.apache.log4j.Logger;
 public class AsposeWordParser implements IParser {
 
 	/** Logger for the parser class. */
-	private Logger LOGGER = Logger.getLogger(AsposeWordParser.class);
+	private Logger logger = Logger.getLogger(AsposeWordParser.class);
 
 	/**
 	 * {@inheritDoc}
@@ -35,8 +35,9 @@ public class AsposeWordParser implements IParser {
 			// ByteArrayInputStream inputStream = new ByteArrayInputStream(resource.getBytes());
 			// Document document = new Document(inputStream);
 			// resource.setBytes(document.getText().getBytes());
+			logger.info("Implement me.");
 		} catch (Exception t) {
-			LOGGER.error("Exception parsing Word doc with the Aspose parser", t);
+			logger.error("Exception parsing Word doc with the Aspose parser", t);
 		}
 		return null;
 	}

@@ -66,10 +66,10 @@ final class MimeTypesReader {
 		String description = null;
 		MimeType type = null;
 
-		Attribute nameAttribute = (Attribute) element.attribute("name");
+		Attribute nameAttribute = element.attribute("name");
 		if (nameAttribute != null)
 			name = nameAttribute.getValue();
-		Attribute descriptionAttribute = (Attribute) element.attribute("description");
+		Attribute descriptionAttribute = element.attribute("description");
 		if (descriptionAttribute != null)
 			description = descriptionAttribute.getValue();
 

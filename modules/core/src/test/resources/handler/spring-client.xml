@@ -120,7 +120,7 @@
 		class="ikube.model.IndexableColumn"
 		property:name="attachment"
 		property:fieldName="attachment"
-		property:indexableColumn-ref="name" />
+		property:nameColumn-ref="name" />
 	<bean
 		id="length"
 		class="ikube.model.IndexableColumn"

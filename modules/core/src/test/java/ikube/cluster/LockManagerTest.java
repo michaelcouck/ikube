@@ -52,6 +52,7 @@ public class LockManagerTest extends ATest {
 						try {
 							Thread.sleep(sleep);
 						} catch (InterruptedException e) {
+							logger.info("", e);
 						}
 						verifyThatOnlyOneOrLessServersHaveTheToken(lockManagers);
 					}
