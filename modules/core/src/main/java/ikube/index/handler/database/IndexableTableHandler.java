@@ -18,11 +18,8 @@ import ikube.toolkit.SerializationUtilities;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.Reader;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -37,6 +34,12 @@ import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
 
 public class IndexableTableHandler extends Handler {
+
+	class ByteOutputStream extends ByteArrayOutputStream {
+		byte[] getBytes() {
+			return buf;
+		}
+	}
 
 	private IContentProvider<IndexableColumn> contentProvider;
 
@@ -154,7 +157,7 @@ public class IndexableTableHandler extends Handler {
 		// Once we finish all the results in the primary table
 		// then we can close the connection too
 		if (indexableTable.isPrimary()) {
-			DatabaseUtilities.closeAll(resultSet);
+			DatabaseUtilities.close(connection);
 		}
 	}
 
@@ -339,6 +342,7 @@ public class IndexableTableHandler extends Handler {
 	protected void handleColumn(IndexableColumn indexable, Document document) {
 		InputStream inputStream = null;
 		OutputStream parsedOutputStream = null;
+		ByteOutputStream byteOutputStream = null;
 		try {
 			String mimeType = null;
 			if (indexable.getNameColumn() != null) {
@@ -347,8 +351,9 @@ public class IndexableTableHandler extends Handler {
 				}
 			}
 
-			Object content = contentProvider.getContent(indexable);
-			if (content == null) {
+			byteOutputStream = new ByteOutputStream();
+			contentProvider.getContent(indexable, byteOutputStream);
+			if (byteOutputStream.size() == 0) {
 				return;
 			}
 			String fieldName = indexable.getFieldName() != null ? indexable.getFieldName() : indexable.getName();
@@ -358,12 +363,7 @@ public class IndexableTableHandler extends Handler {
 
 			byte[] bytes = new byte[1024];
 
-			if (String.class.isAssignableFrom(content.getClass())) {
-				bytes = ((String) content).getBytes(IConstants.ENCODING);
-				inputStream = new ByteArrayInputStream(bytes);
-			} else if (InputStream.class.isAssignableFrom(content.getClass())) {
-				inputStream = (InputStream) content;
-			}
+			inputStream = new ByteArrayInputStream(byteOutputStream.getBytes());
 
 			if (inputStream.markSupported()) {
 				inputStream.mark(bytes.length);
@@ -372,34 +372,40 @@ public class IndexableTableHandler extends Handler {
 			}
 
 			IParser parser = ParserProvider.getParser(mimeType, bytes);
-			parsedOutputStream = parser.parse(inputStream);
+			parsedOutputStream = parser.parse(inputStream, new ByteOutputStream());
 
-			if (ByteArrayOutputStream.class.isAssignableFrom(parsedOutputStream.getClass())) {
-				String fieldContent = parsedOutputStream.toString();
-				IndexManager.addStringField(fieldName, fieldContent, document, store, analyzed, termVector);
-			} else if (FileOutputStream.class.isAssignableFrom(parsedOutputStream.getClass())) {
-				Reader reader = new InputStreamReader(inputStream);
-				IndexManager.addReaderField(fieldName, document, store, termVector, reader);
-			} else {
-				logger.error("Type not supported from the parser : " + content.getClass().getName());
-			}
+			// String fieldContent = parsedOutputStream.toString();
+			// IndexManager.addStringField(fieldName, fieldContent, document, store, analyzed, termVector);
 		} catch (Exception e) {
 			logger.error("Exception accessing the column content : ", e);
 		} finally {
-			try {
-				if (inputStream != null) {
-					inputStream.close();
-				}
-			} catch (Exception e) {
-				logger.error("", e);
+			close(inputStream);
+			inputStream = null;
+			close(parsedOutputStream);
+			parsedOutputStream = null;
+			close(byteOutputStream);
+			byteOutputStream = null;
+			indexable.setObject(null);
+		}
+	}
+
+	protected void close(OutputStream outputStream) {
+		try {
+			if (outputStream != null) {
+				outputStream.close();
 			}
-			try {
-				if (parsedOutputStream != null) {
-					parsedOutputStream.close();
-				}
-			} catch (Exception e) {
-				logger.error("", e);
+		} catch (Exception e) {
+			logger.error("", e);
+		}
+	}
+
+	protected void close(InputStream inputStream) {
+		try {
+			if (inputStream != null) {
+				inputStream.close();
 			}
+		} catch (Exception e) {
+			logger.error("", e);
 		}
 	}
 

@@ -11,6 +11,7 @@ import ikube.model.IndexableFileSystem;
 import ikube.toolkit.FileUtilities;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -90,7 +91,7 @@ public class IndexableFilesystemHandler extends Handler {
 			}
 
 			IParser parser = ParserProvider.getParser(file.getName(), bytes);
-			OutputStream parsedOutputStream = parser.parse(inputStream);
+			OutputStream parsedOutputStream = parser.parse(inputStream, new ByteArrayOutputStream());
 
 			Store store = indexableFileSystem.isStored() ? Store.YES : Store.NO;
 			Index analyzed = indexableFileSystem.isAnalyzed() ? Index.ANALYZED : Index.NOT_ANALYZED;

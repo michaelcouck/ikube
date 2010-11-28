@@ -29,7 +29,7 @@ public class AsposePdfParser implements IParser {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public OutputStream parse(InputStream inputStream) {
+	public OutputStream parse(InputStream inputStream, OutputStream outputStream) {
 		try {
 			// // Get the bytes to convert to text
 			// ByteArrayInputStream inputStream = new ByteArrayInputStream(resource.getBytes());
@@ -48,6 +48,6 @@ public class AsposePdfParser implements IParser {
 		} catch (Exception t) {
 			logger.error("Exception parsing PDF doc with the Aspose parser", t);
 		}
-		return null;
+		return outputStream;
 	}
 }

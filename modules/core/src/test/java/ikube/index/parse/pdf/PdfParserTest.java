@@ -5,6 +5,7 @@ import ikube.ATest;
 import ikube.toolkit.FileUtilities;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.OutputStream;
 
@@ -22,7 +23,7 @@ public class PdfParserTest extends ATest {
 		PdfParser pdfParser = new PdfParser();
 		File file = FileUtilities.findFile(new File("."), new String[] { "pdf.pdf" });
 		byte[] bytes = FileUtilities.getContents(file).toByteArray();
-		OutputStream parsed = pdfParser.parse(new ByteArrayInputStream(bytes));
+		OutputStream parsed = pdfParser.parse(new ByteArrayInputStream(bytes), new ByteArrayOutputStream());
 		assertTrue(parsed.toString().contains("Application form for affiliation"));
 	}
 

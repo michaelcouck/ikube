@@ -29,7 +29,7 @@ public class AsposeWordParser implements IParser {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public OutputStream parse(InputStream inputStream) {
+	public OutputStream parse(InputStream inputStream, OutputStream outputStream) {
 		try {
 			// Open the document we want to convert.
 			// ByteArrayInputStream inputStream = new ByteArrayInputStream(resource.getBytes());
@@ -39,7 +39,7 @@ public class AsposeWordParser implements IParser {
 		} catch (Exception t) {
 			logger.error("Exception parsing Word doc with the Aspose parser", t);
 		}
-		return null;
+		return outputStream;
 	}
 
 }

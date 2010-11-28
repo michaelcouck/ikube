@@ -3,7 +3,6 @@ package ikube.index.parse.xml;
 import ikube.IConstants;
 import ikube.index.parse.IParser;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -26,7 +25,7 @@ import org.xml.sax.InputSource;
 public class XMLParser implements IParser {
 
 	@Override
-	public final OutputStream parse(InputStream inputStream) throws Exception {
+	public final OutputStream parse(InputStream inputStream, OutputStream outputStream) throws Exception {
 		Reader reader = new InputStreamReader(inputStream, IConstants.ENCODING);
 		InputSource inputSource = new InputSource(reader);
 
@@ -40,14 +39,13 @@ public class XMLParser implements IParser {
 		Element root = doc.getRootElement();
 		StringWriter writer = new StringWriter();
 		visit(root, writer);
-		OutputStream outputStream = new ByteArrayOutputStream();
 		outputStream.write(writer.toString().getBytes(IConstants.ENCODING));
 		return outputStream;
 	}
 
 	/**
 	 * Visits each tag up and down the tree recursively getting the text content from the tag.
-	 *
+	 * 
 	 * @param parent
 	 *            the parent tag to start recursing
 	 * @param content

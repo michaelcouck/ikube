@@ -3,11 +3,10 @@ package ikube.index.content;
 import ikube.model.IndexableFileSystem;
 import ikube.toolkit.FileUtilities;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 import org.apache.log4j.Logger;
 
@@ -20,19 +19,15 @@ public class FileContentProvider implements IContentProvider<IndexableFileSystem
 
 	private Logger logger = Logger.getLogger(this.getClass());
 
-	/**
-	 * TODO - we need to parse the data here and return a file input stream if it is too large.
-	 */
-	public Object getContent(IndexableFileSystem indexable) {
+	@Override
+	public void getContent(IndexableFileSystem indexable, OutputStream outputStream) {
 		try {
 			File file = indexable.getCurrentFile();
 			InputStream inputStream = new FileInputStream(file);
-			ByteArrayOutputStream byteArrayOutputStream = FileUtilities.getContents(inputStream, Integer.MAX_VALUE);
-			return new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+			outputStream = FileUtilities.getContents(inputStream, Integer.MAX_VALUE);
 		} catch (Exception e) {
 			logger.error("Exception accessing file : " + indexable.getCurrentFile(), e);
 		}
-		return null;
 	}
 
 }

@@ -4,6 +4,7 @@ import static org.junit.Assert.assertTrue;
 import ikube.ATest;
 import ikube.toolkit.FileUtilities;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -22,7 +23,7 @@ public class TextParserTest extends ATest {
 		TextParser textParser = new TextParser();
 		File file = FileUtilities.findFile(new File("."), new String[] { "txt.txt" });
 		InputStream inputStream = new FileInputStream(file);
-		OutputStream outputStream = textParser.parse(inputStream);
+		OutputStream outputStream = textParser.parse(inputStream, new ByteArrayOutputStream());
 		String string = outputStream.toString();
 		logger.debug("Parsed : " + string);
 		assertTrue(string.contains(russian));

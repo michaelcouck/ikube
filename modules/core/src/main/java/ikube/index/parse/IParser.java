@@ -10,6 +10,6 @@ import java.io.OutputStream;
  */
 public interface IParser {
 
-	public OutputStream parse(InputStream inputStream) throws Exception;
+	public OutputStream parse(InputStream inputStream, OutputStream outputStream) throws Exception;
 
 }

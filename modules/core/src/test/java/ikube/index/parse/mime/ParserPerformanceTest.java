@@ -7,6 +7,7 @@ import ikube.toolkit.FileUtilities;
 import ikube.toolkit.PerformanceTester;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.util.regex.Matcher;
@@ -34,7 +35,7 @@ public class ParserPerformanceTest extends ATest {
 		double executionsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
 			public void execute() {
 				try {
-					htmlParser.parse(inputStream);
+					htmlParser.parse(inputStream, new ByteArrayOutputStream());
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

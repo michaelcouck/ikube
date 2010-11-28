@@ -19,8 +19,8 @@ public class AsposeExcelParser implements IParser {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public OutputStream parse(InputStream inputStream) throws Exception {
-		return null;
+	public OutputStream parse(InputStream inputStream, OutputStream outputStream) throws Exception {
+		return outputStream;
 	}
 
 }

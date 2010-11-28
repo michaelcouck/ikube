@@ -2,7 +2,6 @@ package ikube.index.parse.word;
 
 import ikube.index.parse.IParser;
 
-import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -11,7 +10,7 @@ import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 
 /**
  * Parser for the Word format.
- *
+ * 
  * @author Michael Couck
  * @since 12.05.04
  * @version 01.00<br>
@@ -26,10 +25,9 @@ public class MSWordParser implements IParser {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public final OutputStream parse(InputStream inputStream) throws Exception {
+	public final OutputStream parse(InputStream inputStream, OutputStream outputStream) throws Exception {
 		POIFSFileSystem fileSystem = new POIFSFileSystem(inputStream);
 		WordExtractor extractor = new WordExtractor(fileSystem);
-		OutputStream outputStream = new ByteArrayOutputStream();
 		outputStream.write(extractor.getText().trim().getBytes());
 		return outputStream;
 	}

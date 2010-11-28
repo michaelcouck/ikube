@@ -9,6 +9,7 @@ import ikube.toolkit.FileUtilities;
 import ikube.toolkit.PerformanceTester;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -28,7 +29,7 @@ public class ExcelParserTest extends ATest {
 		byte[] bytes = FileUtilities.getContents(file).toByteArray();
 		IParser parser = ParserProvider.getParser("application/vnd.ms-excel", bytes);
 		InputStream inputStream = new ByteArrayInputStream(bytes);
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < 3; i++) {
 			performance(inputStream, parser);
 		}
 	}
@@ -38,7 +39,7 @@ public class ExcelParserTest extends ATest {
 			@Override
 			public void execute() throws Exception {
 				inputStream.reset();
-				OutputStream parsed = parser.parse(inputStream);
+				OutputStream parsed = parser.parse(inputStream, new ByteArrayOutputStream());
 				assertNotNull(parsed);
 				assertTrue(parsed.toString().length() > 0);
 				assertTrue(parsed.toString().contains("Michael"));

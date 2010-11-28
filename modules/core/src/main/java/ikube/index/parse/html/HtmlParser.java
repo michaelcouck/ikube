@@ -3,7 +3,6 @@ package ikube.index.parse.html;
 import ikube.IConstants;
 import ikube.index.parse.IParser;
 
-import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -29,13 +28,12 @@ public class HtmlParser implements IParser {
 	}
 
 	@Override
-	public final OutputStream parse(InputStream inputStream) throws Exception {
+	public final OutputStream parse(InputStream inputStream, OutputStream outputStream) throws Exception {
 		Reader reader = new InputStreamReader(inputStream, IConstants.ENCODING);
 		Source source = new Source(reader);
 		source.fullSequentialParse();
 		TextExtractor textExtractor = new TextExtractor(source);
 		textExtractor.setIncludeAttributes(true);
-		OutputStream outputStream = new ByteArrayOutputStream();
 		outputStream.write(textExtractor.toString().getBytes(IConstants.ENCODING));
 		return outputStream;
 	}

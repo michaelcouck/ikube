@@ -15,7 +15,7 @@ import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 
 /**
  * Parser for the MS excel format.
- *
+ * 
  * @author Michael Couck
  * @since 12.05.04
  * @version 01.00
@@ -27,10 +27,9 @@ public class ExcelParser implements IParser {
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public OutputStream parse(InputStream inputStream) throws Exception {
+	public OutputStream parse(InputStream inputStream, OutputStream outputStream) throws Exception {
 		POIFSFileSystem fs = new POIFSFileSystem(inputStream);
 		HSSFWorkbook workbook = new HSSFWorkbook(fs);
-		OutputStream outputStream = new ByteArrayOutputStream();
 		if (workbook == null) {
 			return outputStream;
 		}

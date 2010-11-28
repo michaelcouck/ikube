@@ -8,6 +8,7 @@ import ikube.index.parse.ParserProvider;
 import ikube.toolkit.FileUtilities;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.OutputStream;
 
@@ -25,10 +26,10 @@ public class XmlParserTest extends ATest {
 		File file = FileUtilities.findFile(new File("."), new String[] { "xml.xml" });
 		byte[] bytes = FileUtilities.getContents(file).toByteArray();
 		IParser parser = ParserProvider.getParser("text/xml", bytes);
-		OutputStream parsed = parser.parse(new ByteArrayInputStream(bytes));
+		OutputStream parsed = parser.parse(new ByteArrayInputStream(bytes), new ByteArrayOutputStream());
 		assertNotNull(parsed);
 		assertTrue(parsed.toString().length() > 0);
-		assertTrue(parsed.toString().contains("Hello"));
+		assertTrue(parsed.toString().contains("ikube"));
 	}
 
 }

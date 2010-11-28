@@ -5,6 +5,7 @@ import ikube.ATest;
 import ikube.toolkit.FileUtilities;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.net.URL;
 
@@ -22,7 +23,7 @@ public class HtmlParserTest extends ATest {
 		URL url = new URL("http://www.oki.com");
 		HtmlParser parser = new HtmlParser();
 		byte[] bytes = FileUtilities.getContents(url.openStream(), Integer.MAX_VALUE).toByteArray();
-		OutputStream parsed = parser.parse(new ByteArrayInputStream(bytes));
+		OutputStream parsed = parser.parse(new ByteArrayInputStream(bytes), new ByteArrayOutputStream());
 		assertTrue(parsed.toString().indexOf("Oki") > -1);
 	}
 

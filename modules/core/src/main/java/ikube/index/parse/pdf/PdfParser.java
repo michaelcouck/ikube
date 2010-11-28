@@ -2,7 +2,6 @@ package ikube.index.parse.pdf;
 
 import ikube.index.parse.IParser;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -17,7 +16,7 @@ import org.apache.pdfbox.util.PDFTextStripper;
 
 /**
  * Parser for the PDF format.
- *
+ * 
  * @author Michael Couck
  * @since 12.05.04
  * @version 01.00
@@ -31,15 +30,14 @@ public class PdfParser implements IParser {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public final OutputStream parse(InputStream inputStream) throws Exception {
-		return parsePDFBox(inputStream);
+	public final OutputStream parse(InputStream inputStream, OutputStream outputStream) throws Exception {
+		return parsePDFBox(inputStream, outputStream);
 		// return parseAsprise(bytes);
 		// return null;
 	}
 
-	protected OutputStream parsePDFBox(InputStream inputStream) throws Exception {
+	protected OutputStream parsePDFBox(InputStream inputStream, OutputStream outputStream) throws Exception {
 		// In memory representation of pdf file
-		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 		PDDocument pdf = null;
 		try {
 			PDFParser parser = new PDFParser(inputStream);
@@ -53,12 +51,12 @@ public class PdfParser implements IParser {
 			// collect text
 			PDFTextStripper stripper = new PDFTextStripper();
 			String text = stripper.getText(pdf);
-			byteArrayOutputStream.write(text.getBytes());
+			outputStream.write(text.getBytes());
 			// collect title
 			PDDocumentInformation info = pdf.getDocumentInformation();
 			String title = info.getTitle();
 			if (title != null) {
-				byteArrayOutputStream.write(title.getBytes());
+				outputStream.write(title.getBytes());
 			}
 			// more useful info, currently not used. please keep them for future use.
 			// pdf.getPageCount();info.getAuthor();info.getSubject();info.getKeywords();
@@ -75,7 +73,7 @@ public class PdfParser implements IParser {
 					LOGGER.error("Exception thrown closing pdf : " + inputStream, t);
 				}
 		}
-		return byteArrayOutputStream;
+		return outputStream;
 	}
 
 }

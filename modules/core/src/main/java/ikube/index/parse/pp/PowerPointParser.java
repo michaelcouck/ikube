@@ -15,7 +15,7 @@ import org.apache.poi.util.LittleEndian;
 
 /**
  * Parser and extractor for the PowerPoint format.
- *
+ * 
  * @author Michael Couck
  * @since 12.05.04
  * @version 01.00
@@ -31,11 +31,10 @@ public class PowerPointParser implements IParser, POIFSReaderListener {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public final OutputStream parse(InputStream inputStream) throws Exception {
+	public final OutputStream parse(InputStream inputStream, OutputStream outputStream) throws Exception {
 		POIFSReader reader = new POIFSReader();
 		reader.registerListener(this);
 		reader.read(inputStream);
-		OutputStream outputStream = new ByteArrayOutputStream();
 		outputStream.write(byteArrayOutputStream.toString().getBytes());
 		return outputStream;
 	}

@@ -158,7 +158,7 @@ public class IndexableInternetHandler extends Handler {
 			byteArrayInputStream.reset();
 
 			IParser parser = ParserProvider.getParser(contentType, bytes);
-			OutputStream outputStream = parser.parse(byteArrayInputStream);
+			OutputStream outputStream = parser.parse(byteArrayInputStream, new ByteArrayOutputStream());
 			// TODO - Add the title field
 			// TODO - Add the contents field
 			String fieldContents = outputStream.toString();

@@ -31,7 +31,7 @@ public class IndexTest extends BaseActionTest {
 		String indexDirectoryPath = indexContext.getIndexDirectoryPath();
 
 		indexContext.setMaxAge(0);
-		indexContext.setIndexDirectoryPath("./somthingDifferent");
+		indexContext.setIndexDirectoryPath("./somethingDifferent");
 		File baseIndexDirectory = new File(indexContext.getIndexDirectoryPath());
 
 		boolean done = index.execute(indexContext);

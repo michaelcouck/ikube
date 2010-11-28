@@ -10,6 +10,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -76,7 +77,7 @@ public class FileUtilities {
 	/**
 	 * Deletes the file/folder recursively. If the file cannot be deleted then the file is set to delete on exit of the JVM, which doesn't
 	 * generally work of course, but we try anyway.
-	 *
+	 * 
 	 * @param file
 	 *            the file/folder to delete
 	 * @param maxRetryCount
@@ -183,7 +184,7 @@ public class FileUtilities {
 
 	/**
 	 * Writes the contents of a byte array to a file.
-	 *
+	 * 
 	 * @param file
 	 *            the file to write to
 	 * @param bytes
@@ -212,7 +213,7 @@ public class FileUtilities {
 
 	/**
 	 * Reads the contents of the file and returns the contents in a byte array form.
-	 *
+	 * 
 	 * @param file
 	 *            the file to read the contents from
 	 * @return the file contents in a byte array output stream
@@ -232,7 +233,7 @@ public class FileUtilities {
 
 	/**
 	 * Reads the contents of the file and returns the contents in a byte array form.
-	 *
+	 * 
 	 * @param inputStream
 	 *            the file to read the contents from
 	 * @param maxLength
@@ -261,6 +262,41 @@ public class FileUtilities {
 			}
 		}
 		return bos;
+	}
+
+	/**
+	 * Reads the contents of the file and returns the contents in a byte array form.
+	 * 
+	 * @param inputStream
+	 *            the file to read the contents from
+	 * @param bos
+	 *            the output stream to write the data to
+	 * @param maxLength
+	 *            the maximum number of bytes to read into the buffer
+	 * @return the file contents in a byte array output stream
+	 * @throws Exception
+	 */
+	public static void getContents(InputStream inputStream, OutputStream bos, long maxLength) {
+		if (inputStream == null) {
+			return;
+		}
+		try {
+			int read = -1;
+			int total = 0;
+			byte[] bytes = new byte[1024];
+			while ((read = inputStream.read(bytes)) > -1 && total < maxLength) {
+				total += read;
+				bos.write(bytes, 0, read);
+			}
+		} catch (Exception e) {
+			LOGGER.error("Exception accessing the file contents.", e);
+		} finally {
+			try {
+				inputStream.close();
+			} catch (Exception e) {
+				LOGGER.error("Exception closing input stream " + inputStream, e);
+			}
+		}
 	}
 
 }

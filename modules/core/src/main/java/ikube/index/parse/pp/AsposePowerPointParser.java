@@ -19,7 +19,7 @@ public class AsposePowerPointParser implements IParser {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public final OutputStream parse(InputStream inputStream) {
-		return null;
+	public final OutputStream parse(InputStream inputStream, OutputStream outputStream) {
+		return outputStream;
 	}
 }

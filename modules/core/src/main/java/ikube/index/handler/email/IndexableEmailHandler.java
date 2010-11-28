@@ -11,6 +11,7 @@ import ikube.model.Indexable;
 import ikube.model.IndexableEmail;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Date;
@@ -110,7 +111,7 @@ public class IndexableEmailHandler extends Handler {
 				if (StringUtils.isNotEmpty(messageContent)) {
 					byte[] bytes = messageContent.getBytes();
 					IParser parser = ParserProvider.getParser(message.getContentType(), bytes);
-					OutputStream outputStream = parser.parse(new ByteArrayInputStream(bytes));
+					OutputStream outputStream = parser.parse(new ByteArrayInputStream(bytes), new ByteArrayOutputStream());
 					String fieldContent = outputStream.toString();
 					// Add the content field to the document
 					IndexManager.addStringField(indexableMail.getContentField(), fieldContent, document, mustStore, analyzed, termVector);

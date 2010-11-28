@@ -2,7 +2,6 @@ package ikube.index.parse.text;
 
 import ikube.index.parse.IParser;
 
-import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -15,7 +14,7 @@ import java.io.OutputStream;
 public class TextParser implements IParser {
 
 	@Override
-	public final OutputStream parse(InputStream inputStream) throws Exception {
+	public final OutputStream parse(InputStream inputStream, OutputStream outputStream) throws Exception {
 		StringBuilder builder = new StringBuilder();
 		InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
 		int read = -1;
@@ -28,7 +27,6 @@ public class TextParser implements IParser {
 				}
 			}
 		}
-		OutputStream outputStream = new ByteArrayOutputStream();
 		outputStream.write(builder.toString().getBytes());
 		return outputStream;
 	}

@@ -1,5 +1,7 @@
 package ikube.index.content;
 
+import java.io.OutputStream;
+
 import ikube.model.Indexable;
 
 /**
@@ -9,6 +11,6 @@ import ikube.model.Indexable;
  */
 public interface IContentProvider<I extends Indexable<?>> {
 
-	public Object getContent(I indexable);
+	public void getContent(I indexable, OutputStream outputStream);
 
 }

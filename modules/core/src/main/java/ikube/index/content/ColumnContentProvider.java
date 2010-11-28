@@ -1,9 +1,10 @@
 package ikube.index.content;
 
 import ikube.model.IndexableColumn;
+import ikube.toolkit.FileUtilities;
 
-import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.Reader;
 import java.lang.reflect.Method;
 import java.sql.Blob;
@@ -22,30 +23,32 @@ public class ColumnContentProvider implements IContentProvider<IndexableColumn> 
 
 	private Logger logger = Logger.getLogger(this.getClass());
 
-	/**
-	 * TODO - we need to parse the data here and return a file input stream if it is too large.
-	 */
-	public Object getContent(IndexableColumn indexable) {
+	public ColumnContentProvider() {
+		this.logger = Logger.getLogger(this.getClass());
+	}
+
+	@Override
+	public void getContent(IndexableColumn indexable, OutputStream outputStream) {
 		Object object = indexable.getObject();
 		int columnType = indexable.getColumnType();
 		if (object == null) {
-			return "";
+			return;
 		}
 
-		// BugFix for Oracle and Db2 it seems: Oracle seems to think that a Blob is a NULL
-		// type so we'll just reset the type to Blob in this case
+		// BugFix for Oracle and Db2: Oracle seems to think that a
+		// Blob is a NULL type so we'll just reset the type to Blob in this case
 		if (Blob.class.isAssignableFrom(object.getClass()) && columnType != Types.BLOB) {
 			columnType = Types.BLOB;
 		} else if (Clob.class.isAssignableFrom(object.getClass()) && columnType != Types.CLOB) {
 			columnType = Types.CLOB;
 		}
 
-		Object result = "";
+		InputStream inputStream = null;
 		try {
 			// Get the data for the object according to the class type
 			switch (columnType) {
 			case Types.BOOLEAN:
-				result = object.toString();
+				outputStream.write(object.toString().getBytes());
 				break;
 
 			case Types.BIT:
@@ -58,13 +61,13 @@ public class ColumnContentProvider implements IContentProvider<IndexableColumn> 
 			case Types.DOUBLE:
 			case Types.NUMERIC:
 			case Types.DECIMAL:
-				result = object.toString();
+				outputStream.write(object.toString().getBytes());
 				break;
 
 			case Types.CHAR:
 			case Types.VARCHAR:
 			case Types.LONGVARCHAR:
-				result = object.toString();
+				outputStream.write(object.toString().getBytes());
 				break;
 
 			case Types.DATE:
@@ -84,14 +87,15 @@ public class ColumnContentProvider implements IContentProvider<IndexableColumn> 
 					}
 				}
 				if (timestamp != null) {
-					result = Long.toString(timestamp.getTime());
+					String string = Long.toString(timestamp.getTime());
+					outputStream.write(string.getBytes());
 				}
 				break;
 
 			case Types.BINARY:
 			case Types.VARBINARY:
 			case Types.LONGVARBINARY:
-				result = new ByteArrayInputStream((byte[]) object);
+				outputStream.write((byte[]) object);
 				break;
 
 			case Types.OTHER:
@@ -104,14 +108,13 @@ public class ColumnContentProvider implements IContentProvider<IndexableColumn> 
 				break;
 
 			case Types.NULL:
-				result = "null";
+				outputStream.write("null".getBytes());
 				break;
 
 			case Types.BLOB:
 				// Get an input stream method, as this can be different for each driver blob or clob
 				// for both Oracle or DB2 the input stream are both implemented. If at any stage another
 				// database is used then this has to be re-tested
-				InputStream inputStream = null;
 				if (Blob.class.isAssignableFrom(object.getClass())) {
 					inputStream = ((Blob) object).getBinaryStream();
 				} else {
@@ -122,7 +125,7 @@ public class ColumnContentProvider implements IContentProvider<IndexableColumn> 
 						inputStream = (InputStream) method.invoke(object, (Object[]) null);
 					}
 				}
-				result = inputStream;
+				FileUtilities.getContents(inputStream, outputStream, Integer.MAX_VALUE);
 				break;
 			case Types.CLOB:
 				// Get an input stream method, as this can be different for each driver blob or clob
@@ -139,13 +142,21 @@ public class ColumnContentProvider implements IContentProvider<IndexableColumn> 
 						reader = (Reader) method.invoke(object, (Object[]) null);
 					}
 				}
-				result = new ReaderInputStream(reader);
+				inputStream = new ReaderInputStream(reader);
+				FileUtilities.getContents(inputStream, outputStream, Integer.MAX_VALUE);
 				break;
 			}
 		} catch (Exception e) {
 			logger.error("Exception accessing data from column.", e);
+		} finally {
+			try {
+				if (inputStream != null) {
+					inputStream.close();
+				}
+			} catch (Exception e) {
+				logger.error("Exception closing the input stream to the database : ", e);
+			}
 		}
-		return result;
 	}
 
 	/**
