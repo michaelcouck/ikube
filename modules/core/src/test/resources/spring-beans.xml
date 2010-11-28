@@ -104,7 +104,7 @@
 	<bean
 		class="ikube.index.handler.database.IndexableTableHandler"
 		property:dataBase-ref="ikube.database.DataBaseOdb"
-		property:threads="5">
+		property:threads="10">
 		<constructor-arg><null /></constructor-arg>
 	</bean>
 
