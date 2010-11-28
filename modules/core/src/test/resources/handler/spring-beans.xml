@@ -12,7 +12,7 @@
 	<bean
 		id="faqTableHandler"
 		class="ikube.index.handler.database.IndexableTableHandler"
-		property:threads="1">
+		property:threads="5">
 		<constructor-arg><null /></constructor-arg>
 	</bean>
 

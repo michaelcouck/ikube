@@ -1,9 +1,9 @@
 package ikube.index.parse;
 
-import ikube.index.parse.html.HtmlParser;
 import ikube.index.parse.mime.MimeMapper;
 import ikube.index.parse.mime.MimeType;
 import ikube.index.parse.mime.MimeTypes;
+import ikube.index.parse.text.TextParser;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,15 +34,15 @@ public class ParserProvider {
 				LOGGER.error("Exception creating mime type for text parser", t);
 			}
 		}
-		// Initialise the parser
+		// Initialize the parser
 		String parserClass = MimeMapper.getParserClass(mimeType.getName());
 		IParser parser = null;
 		try {
 			parser = PARSERS.get(parserClass);
 			if (parser == null) {
 				if (parserClass == null) {
-					// The fall-back parser is the HTML parser
-					parserClass = HtmlParser.class.getName();
+					// The fall-back parser is the text parser
+					parserClass = TextParser.class.getName();
 				}
 				parser = (IParser) Class.forName(parserClass).newInstance();
 				PARSERS.put(parserClass, parser);

@@ -32,11 +32,11 @@
 		<ref local="faqTable" />
 	</util:list>
 
+	<!-- property:predicate="${faq.predicate}" -->
 	<bean
 		id="faqTable"
 		class="ikube.model.IndexableTable"
-		property:name="faq"
-		property:predicate="${faq.predicate}"
+		property:name="db2admin.faq"
 		property:primary="true"
 		property:dataSource-ref="nonXaDataSource"
 		property:children-ref="faqColumns" />
@@ -83,19 +83,21 @@
 		property:name="answer"
 		property:fieldName="contents" />
 
+	<!-- property:predicate="${attachment.predicate}" -->
 	<bean
 		id="attachmentTable"
 		class="ikube.model.IndexableTable"
-		property:name="attachment"
+		property:name="db2admin.attachment"
 		property:primary="false"
+		property:predicate="${attachment.predicate}"
 		property:dataSource-ref="nonXaDataSource"
 		property:children-ref="attachmentColumns" />
 	<util:list id="attachmentColumns">
-		<ref local="attachmentFaqId" />
 		<ref local="attachmentid" />
 		<ref local="name" />
 		<ref local="attachment" />
 		<ref local="length" />
+		<ref local="attachmentFaqId" />
 	</util:list>
 
 	<bean

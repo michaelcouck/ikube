@@ -285,9 +285,7 @@ public class IndexableTableHandler extends Handler {
 				logger.info(Logging.getString("Sql : ", builder.toString(), ", thread : ", Thread.currentThread().hashCode()));
 			}
 
-			String sql = builder.toString();
-			// logger.info("Sql : " + sql);
-			return sql;
+			return builder.toString();
 		} finally {
 			notifyAll();
 		}
@@ -318,7 +316,6 @@ public class IndexableTableHandler extends Handler {
 				DatabaseUtilities.close(statement);
 			}
 
-			// logger.debug("Max id : " + maxId);
 			return maxId;
 		} finally {
 			notifyAll();
@@ -356,6 +353,9 @@ public class IndexableTableHandler extends Handler {
 			if (byteOutputStream.size() == 0) {
 				return;
 			}
+
+			// logger.debug(Logging.getString("Size : ", byteOutputStream.size()));
+
 			String fieldName = indexable.getFieldName() != null ? indexable.getFieldName() : indexable.getName();
 			Store store = indexable.isStored() ? Store.YES : Store.NO;
 			Index analyzed = indexable.isAnalyzed() ? Index.ANALYZED : Index.NOT_ANALYZED;
@@ -374,10 +374,11 @@ public class IndexableTableHandler extends Handler {
 			IParser parser = ParserProvider.getParser(mimeType, bytes);
 			parsedOutputStream = parser.parse(inputStream, new ByteOutputStream());
 
-			// String fieldContent = parsedOutputStream.toString();
-			// IndexManager.addStringField(fieldName, fieldContent, document, store, analyzed, termVector);
+			String fieldContent = parsedOutputStream.toString();
+			IndexManager.addStringField(fieldName, fieldContent, document, store, analyzed, termVector);
 		} catch (Exception e) {
-			logger.error("Exception accessing the column content : ", e);
+			byteOutputStream.reset();
+			logger.error("Exception accessing the column content : " + byteOutputStream.toString(), e);
 		} finally {
 			close(inputStream);
 			inputStream = null;
@@ -385,7 +386,6 @@ public class IndexableTableHandler extends Handler {
 			parsedOutputStream = null;
 			close(byteOutputStream);
 			byteOutputStream = null;
-			indexable.setObject(null);
 		}
 	}
 

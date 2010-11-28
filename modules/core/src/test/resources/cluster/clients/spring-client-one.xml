@@ -35,9 +35,9 @@
 		property:indexDirectoryPath="${index.directory.path}"
 		property:indexables-ref="indexables" />
 	<util:list id="indexables">
-		<!--<ref local="mail" />-->
-		<!--<ref local="internet" />-->
-		<!--<ref local="filesystem" />-->
+		<ref local="mail" />
+		<ref local="internet" />
+		<ref local="filesystem" />
 		<ref local="tableOne" />
 	</util:list>
 
@@ -57,7 +57,7 @@
 		<ref local="modifier" />
 		<ref local="question" />
 		<ref local="answer" />
-		<!--<ref local="tableTwo" />-->
+		<ref local="tableTwo" />
 	</util:list>
 
 	<bean
@@ -101,19 +101,13 @@
 		property:dataSource-ref="nonXaDataSource"
 		property:children-ref="columnsTwo" />
 	<util:list id="columnsTwo">
-		<ref local="attachmentFaqId" />
 		<ref local="attachmentid" />
 		<ref local="name" />
-		<!--<ref local="attachment" />-->
+		<ref local="attachment" />
 		<ref local="length" />
+		<ref local="attachmentFaqId" />
 	</util:list>
 
-	<bean
-		id="attachmentFaqId"
-		class="ikube.model.IndexableColumn"
-		property:name="faqid"
-		property:fieldName="attachmentfaqId"
-		property:foreignKey-ref="faqId" />
 	<bean
 		id="attachmentid"
 		class="ikube.model.IndexableColumn"
@@ -136,6 +130,12 @@
 		class="ikube.model.IndexableColumn"
 		property:name="length"
 		property:fieldName="length" />
+	<bean
+		id="attachmentFaqId"
+		class="ikube.model.IndexableColumn"
+		property:name="faqid"
+		property:fieldName="attachmentfaqId"
+		property:foreignKey-ref="faqId" />
 
 	<bean
 		id="mail"
