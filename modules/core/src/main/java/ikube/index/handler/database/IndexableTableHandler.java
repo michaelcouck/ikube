@@ -164,11 +164,11 @@ public class IndexableTableHandler extends Handler {
 			long idNumber = 0;
 
 			if (indexableTable.isPrimary()) {
+				idNumber = indexContext.getIdNumber();
 				long minId = getIdFunction(indexableTable, connection, "min");
 				if (idNumber < minId) {
 					idNumber = minId;
 				}
-				idNumber = indexContext.getIdNumber();
 				indexContext.setIdNumber(idNumber + indexContext.getBatchSize());
 			}
 
@@ -279,7 +279,7 @@ public class IndexableTableHandler extends Handler {
 				builder.append(idColumnName);
 				builder.append(" <= ");
 				builder.append(idNumber + indexContext.getBatchSize());
-				logger.info(Logging.getString("Sql : ", builder.toString(), Thread.currentThread().hashCode()));
+				logger.info(Logging.getString("Sql : ", builder.toString(), ", thread : ", Thread.currentThread().hashCode()));
 			}
 
 			String sql = builder.toString();

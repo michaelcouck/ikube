@@ -125,6 +125,9 @@ public class ColumnContentProvider implements IContentProvider<IndexableColumn> 
 						inputStream = (InputStream) method.invoke(object, (Object[]) null);
 					}
 				}
+				if (true) {
+					return inputStream;
+				}
 				int read = 0;
 				byte[] bytes = new byte[1024 * 256];
 				// File file = File.createTempFile(Long.toString(System.nanoTime()), IConstants.READER_FILE_SUFFIX);
@@ -149,6 +152,9 @@ public class ColumnContentProvider implements IContentProvider<IndexableColumn> 
 						// Get the input stream and read the data from the column
 						clobReader = (Reader) method.invoke(object, (Object[]) null);
 					}
+				}
+				if (true) {
+					return inputStream;
 				}
 				read = 0;
 				char[] chars = new char[1024 * 256];
