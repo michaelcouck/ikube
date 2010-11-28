@@ -3,7 +3,6 @@ package ikube.index.content;
 import ikube.model.IndexableColumn;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.Reader;
 import java.lang.reflect.Method;
@@ -42,9 +41,6 @@ public class ColumnContentProvider implements IContentProvider<IndexableColumn> 
 		}
 
 		Object result = "";
-		InputStream inputStream = null;
-		ByteArrayOutputStream outputStream = null;
-		Reader clobReader = null;
 		try {
 			// Get the data for the object according to the class type
 			switch (columnType) {
@@ -115,6 +111,7 @@ public class ColumnContentProvider implements IContentProvider<IndexableColumn> 
 				// Get an input stream method, as this can be different for each driver blob or clob
 				// for both Oracle or DB2 the input stream are both implemented. If at any stage another
 				// database is used then this has to be re-tested
+				InputStream inputStream = null;
 				if (Blob.class.isAssignableFrom(object.getClass())) {
 					inputStream = ((Blob) object).getBinaryStream();
 				} else {
@@ -125,76 +122,28 @@ public class ColumnContentProvider implements IContentProvider<IndexableColumn> 
 						inputStream = (InputStream) method.invoke(object, (Object[]) null);
 					}
 				}
-				if (true) {
-					return inputStream;
-				}
-				int read = 0;
-				byte[] bytes = new byte[1024 * 256];
-				// File file = File.createTempFile(Long.toString(System.nanoTime()), IConstants.READER_FILE_SUFFIX);
-				// logger.debug("Temp file : " + file.getAbsolutePath());
-				// OutputStream outputStream = new FileOutputStream(file);
-				outputStream = new ByteArrayOutputStream();
-				while (inputStream != null && (read = inputStream.read(bytes)) > 0) {
-					outputStream.write(bytes, 0, read);
-				}
-				result = new ByteArrayInputStream(outputStream.toByteArray());
+				result = inputStream;
 				break;
 			case Types.CLOB:
 				// Get an input stream method, as this can be different for each driver blob or clob
 				// for both Oracle or DB2 the input stream are both implemented. If at any stage another
 				// database is used then this has to be re-tested
+				Reader reader = null;
 				if (Clob.class.isAssignableFrom(object.getClass())) {
-					clobReader = ((Clob) object).getCharacterStream();
+					reader = ((Clob) object).getCharacterStream();
 				} else {
 					method = findMethod(object, Reader.class);
 					if (method != null) {
 						method.setAccessible(true);
 						// Get the input stream and read the data from the column
-						clobReader = (Reader) method.invoke(object, (Object[]) null);
+						reader = (Reader) method.invoke(object, (Object[]) null);
 					}
 				}
-				if (true) {
-					return inputStream;
-				}
-				read = 0;
-				char[] chars = new char[1024 * 256];
-				// file = File.createTempFile(Long.toString(System.nanoTime()), IConstants.READER_FILE_SUFFIX);
-				// logger.debug("Temp file : " + file.getAbsolutePath());
-				// outputStream = new FileOutputStream(file);
-				outputStream = new ByteArrayOutputStream();
-				while (clobReader != null && (read = clobReader.read(chars)) > 0) {
-					outputStream.write(String.valueOf(chars).getBytes(), 0, read);
-				}
-				result = new ByteArrayInputStream(outputStream.toByteArray());
+				result = new ReaderInputStream(reader);
 				break;
 			}
 		} catch (Exception e) {
 			logger.error("Exception accessing data from column.", e);
-			@SuppressWarnings("unused")
-			String identifier = indexable.getName();
-			// We need to log this in the database too via an event
-		} finally {
-			if (inputStream != null) {
-				try {
-					inputStream.close();
-				} catch (Exception e) {
-					logger.error("", e);
-				}
-			}
-			if (outputStream != null) {
-				try {
-					outputStream.close();
-				} catch (Exception e) {
-					logger.error("", e);
-				}
-			}
-			if (clobReader != null) {
-				try {
-					clobReader.close();
-				} catch (Exception e) {
-					logger.error("", e);
-				}
-			}
 		}
 		return result;
 	}
