@@ -89,7 +89,6 @@
 		class="ikube.model.IndexableTable"
 		property:name="db2admin.attachment"
 		property:primary="false"
-		property:predicate="${attachment.predicate}"
 		property:dataSource-ref="nonXaDataSource"
 		property:children-ref="attachmentColumns" />
 	<util:list id="attachmentColumns">

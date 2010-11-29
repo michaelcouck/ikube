@@ -56,14 +56,15 @@ public class IndexableInternetHandler extends Handler {
 	}
 
 	@Override
-	public void handle(IndexContext indexContext, Indexable<?> indexable) throws Exception {
+	public List<Thread> handle(IndexContext indexContext, Indexable<?> indexable) throws Exception {
 		if (IndexableInternet.class.isAssignableFrom(indexable.getClass())) {
-			handleInternet(indexContext, (IndexableInternet) indexable);
+			return handleInternet(indexContext, (IndexableInternet) indexable);
 		}
-		super.handle(indexContext, indexable);
+		// super.handle(indexContext, indexable);
+		return new ArrayList<Thread>();
 	}
 
-	protected void handleInternet(final IndexContext indexContext, final IndexableInternet indexable) {
+	protected List<Thread> handleInternet(final IndexContext indexContext, final IndexableInternet indexable) {
 		final List<Thread> synchronizedThreads = Collections.synchronizedList(new ArrayList<Thread>());
 		try {
 			// The start url
@@ -100,11 +101,11 @@ public class IndexableInternetHandler extends Handler {
 				synchronizedThreads.add(thread);
 				thread.start();
 			}
-			thread.join();
 		} catch (Exception e) {
 			logger.error("Exception reading the url : " + indexable.getUrl(), e);
 		}
 		logger.debug("Finished indexing : ");
+		return synchronizedThreads;
 	}
 
 	protected synchronized Url getNextUrl(final IndexableInternet indexable, final List<Thread> synchronizedThreads) {

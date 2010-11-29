@@ -26,6 +26,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.lucene.document.Document;
@@ -39,6 +40,10 @@ public class IndexableTableHandler extends Handler {
 		byte[] getBytes() {
 			return buf;
 		}
+
+		int getCount() {
+			return count;
+		}
 	}
 
 	private IContentProvider<IndexableColumn> contentProvider;
@@ -49,24 +54,23 @@ public class IndexableTableHandler extends Handler {
 	}
 
 	@Override
-	public void handle(final IndexContext indexContext, final Indexable<?> indexable) throws Exception {
+	public List<Thread> handle(final IndexContext indexContext, final Indexable<?> indexable) throws Exception {
+		List<Thread> threads = new ArrayList<Thread>();
 		if (IndexableTable.class.isAssignableFrom(indexable.getClass())) {
-			Thread thread = null;
 			IndexableTable indexableTable = (IndexableTable) indexable;
 			for (int i = 0; i < getThreads(); i++) {
 				final IndexableTable cloneIndexableTable = (IndexableTable) SerializationUtilities.clone(indexableTable);
 				final Connection connection = indexableTable.getDataSource().getConnection();
-				thread = new Thread(new Runnable() {
+				Thread thread = new Thread(new Runnable() {
 					public void run() {
 						handleTable(indexContext, cloneIndexableTable, connection, null);
 					}
 				}, IndexableTableHandler.class.getSimpleName() + "." + i);
 				thread.start();
+				threads.add(thread);
 			}
-			thread.join();
 		}
-		// Do the next handler in the chain
-		super.handle(indexContext, indexable);
+		return threads;
 	}
 
 	protected void handleTable(IndexContext indexContext, IndexableTable indexableTable, Connection connection, Document document) {
@@ -354,30 +358,30 @@ public class IndexableTableHandler extends Handler {
 				return;
 			}
 
-			// logger.debug(Logging.getString("Size : ", byteOutputStream.size()));
+			// if (logger.isDebugEnabled()) {
+			// byte[] buffer = new byte[byteOutputStream.getCount()];
+			// System.arraycopy(byteOutputStream.getBytes(), 0, buffer, 0, byteOutputStream.getCount());
+			// String content = new String(buffer);
+			// logger.debug(Logging.getString("Mime type : ", mimeType, ", size : ", buffer.length/* , content */));
+			// }
+
+			byte[] buffer = byteOutputStream.getBytes();
+			int length = Math.min(buffer.length, 1024);
+			byte[] bytes = new byte[length];
+
+			System.arraycopy(buffer, 0, bytes, 0, bytes.length);
+
+			inputStream = new ByteArrayInputStream(buffer, 0, byteOutputStream.getCount());
+			IParser parser = ParserProvider.getParser(mimeType, bytes);
+			parsedOutputStream = parser.parse(inputStream, new ByteOutputStream());
 
 			String fieldName = indexable.getFieldName() != null ? indexable.getFieldName() : indexable.getName();
 			Store store = indexable.isStored() ? Store.YES : Store.NO;
 			Index analyzed = indexable.isAnalyzed() ? Index.ANALYZED : Index.NOT_ANALYZED;
 			TermVector termVector = indexable.isVectored() ? TermVector.YES : TermVector.NO;
-
-			byte[] bytes = new byte[1024];
-
-			inputStream = new ByteArrayInputStream(byteOutputStream.getBytes());
-
-			if (inputStream.markSupported()) {
-				inputStream.mark(bytes.length);
-				inputStream.read(bytes);
-				inputStream.reset();
-			}
-
-			IParser parser = ParserProvider.getParser(mimeType, bytes);
-			parsedOutputStream = parser.parse(inputStream, new ByteOutputStream());
-
 			String fieldContent = parsedOutputStream.toString();
 			IndexManager.addStringField(fieldName, fieldContent, document, store, analyzed, termVector);
 		} catch (Exception e) {
-			byteOutputStream.reset();
 			logger.error("Exception accessing the column content : " + byteOutputStream.toString(), e);
 		} finally {
 			close(inputStream);

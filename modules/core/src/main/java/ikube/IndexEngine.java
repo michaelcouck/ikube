@@ -49,7 +49,7 @@ public class IndexEngine implements IIndexEngine {
 					logger.info("Already working : " + indexContext.getIndexName() + ", " + indexContext.getName());
 					continue;
 				}
-				// indexContext.setWorking(Boolean.TRUE);
+				indexContext.setWorking(Boolean.TRUE);
 				logger.info("Starting working : " + indexContext);
 				for (IAction<IndexContext, Boolean> action : actions) {
 					logger.debug("Executing action : " + action + ", " + Thread.currentThread().hashCode());

@@ -242,15 +242,15 @@ public class FileUtilities {
 	 * @throws Exception
 	 */
 	public static ByteArrayOutputStream getContents(InputStream inputStream, long maxLength) {
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 		if (inputStream == null) {
-			return bos;
+			return byteArrayOutputStream;
 		}
 		try {
 			byte[] bytes = new byte[1024];
 			int read;
-			while ((read = inputStream.read(bytes)) > -1 && bos.size() < maxLength) {
-				bos.write(bytes, 0, read);
+			while ((read = inputStream.read(bytes)) > -1 && byteArrayOutputStream.size() < maxLength) {
+				byteArrayOutputStream.write(bytes, 0, read);
 			}
 		} catch (Exception e) {
 			LOGGER.error("Exception accessing the file contents.", e);
@@ -261,7 +261,7 @@ public class FileUtilities {
 				LOGGER.error("Exception closing input stream " + inputStream, e);
 			}
 		}
-		return bos;
+		return byteArrayOutputStream;
 	}
 
 	/**
@@ -269,14 +269,14 @@ public class FileUtilities {
 	 * 
 	 * @param inputStream
 	 *            the file to read the contents from
-	 * @param bos
+	 * @param outputStream
 	 *            the output stream to write the data to
 	 * @param maxLength
 	 *            the maximum number of bytes to read into the buffer
 	 * @return the file contents in a byte array output stream
 	 * @throws Exception
 	 */
-	public static void getContents(InputStream inputStream, OutputStream bos, long maxLength) {
+	public static void getContents(InputStream inputStream, OutputStream outputStream, long maxLength) {
 		if (inputStream == null) {
 			return;
 		}
@@ -286,7 +286,7 @@ public class FileUtilities {
 			byte[] bytes = new byte[1024];
 			while ((read = inputStream.read(bytes)) > -1 && total < maxLength) {
 				total += read;
-				bos.write(bytes, 0, read);
+				outputStream.write(bytes, 0, read);
 			}
 		} catch (Exception e) {
 			LOGGER.error("Exception accessing the file contents.", e);

@@ -15,6 +15,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import org.apache.lucene.document.Document;
@@ -28,11 +30,12 @@ public class IndexableFilesystemHandler extends Handler {
 		super(previous);
 	}
 
-	public void handle(final IndexContext indexContext, final Indexable<?> indexable) throws Exception {
+	public List<Thread> handle(final IndexContext indexContext, final Indexable<?> indexable) throws Exception {
 		if (IndexableFileSystem.class.isAssignableFrom(indexable.getClass())) {
 			handleFilesystem(indexContext, (IndexableFileSystem) indexable);
 		}
-		super.handle(indexContext, indexable);
+		// super.handle(indexContext, indexable);
+		return new ArrayList<Thread>();
 	}
 
 	protected void handleFilesystem(final IndexContext indexContext, IndexableFileSystem indexableFileSystem) {

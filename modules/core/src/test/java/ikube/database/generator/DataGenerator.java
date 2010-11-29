@@ -44,6 +44,9 @@ public class DataGenerator extends ATest {
 
 	private Map<String, byte[]> fileContents;
 
+	private int inserts = 10;
+	private int iterations = 10;
+
 	@Before
 	public void before() throws Exception {
 		ApplicationContextManager.getApplicationContext(configurationFilePath);
@@ -79,9 +82,6 @@ public class DataGenerator extends ATest {
 		// iterations * inserts + (iterations * inserts * docs)
 		// 80000
 	}
-
-	int inserts = 100;
-	int iterations = 10000;
 
 	protected void insertFaqs() throws Exception {
 		String faqInsert = "INSERT INTO DB2ADMIN.FAQ (DB2ADMIN.FAQ.ANSWER, DB2ADMIN.FAQ.CREATIONTIMESTAMP, DB2ADMIN.FAQ.CREATOR, DB2ADMIN.FAQ.MODIFIEDTIMESTAMP, DB2ADMIN.FAQ.MODIFIER, DB2ADMIN.FAQ.PUBLISHED, QUESTION) VALUES (?,?,?,?,?,?,?)";
@@ -130,8 +130,7 @@ public class DataGenerator extends ATest {
 	}
 
 	protected ByteArrayOutputStream getContents(String fileName) {
-		String[] stringPatterns = new String[] { fileName };
-		File file = FileUtilities.findFile(new File("."), stringPatterns);
+		File file = FileUtilities.findFile(new File("."), fileName);
 		return FileUtilities.getContents(file);
 	}
 
@@ -146,6 +145,7 @@ public class DataGenerator extends ATest {
 		fileContents.put("xls.xls", null);
 		for (String fileName : fileContents.keySet()) {
 			byte[] bytes = getContents(fileName).toByteArray();
+			// logger.debug("File contents : " + new String(bytes));
 			fileContents.put(fileName, bytes);
 		}
 	}

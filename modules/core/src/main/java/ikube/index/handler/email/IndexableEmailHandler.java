@@ -14,7 +14,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Properties;
 
 import javax.mail.Authenticator;
@@ -47,11 +49,12 @@ public class IndexableEmailHandler extends Handler {
 	}
 
 	@Override
-	public void handle(final IndexContext indexContext, final Indexable<?> indexable) throws Exception {
+	public List<Thread> handle(final IndexContext indexContext, final Indexable<?> indexable) throws Exception {
 		if (IndexableEmail.class.isAssignableFrom(indexable.getClass())) {
 			handleEmail(indexContext, (IndexableEmail) indexable);
 		}
-		super.handle(indexContext, indexable);
+		// super.handle(indexContext, indexable);
+		return new ArrayList<Thread>();
 	}
 
 	protected void handleEmail(final IndexContext indexContext, IndexableEmail indexableMail) {
