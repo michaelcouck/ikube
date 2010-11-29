@@ -1,5 +1,6 @@
 package ikube.cluster;
 
+import ikube.IConstants;
 import ikube.model.IndexContext;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
@@ -29,6 +30,8 @@ public class ClusterTest {
 	}
 
 	public static void main(String[] args) throws Exception {
+		FileUtilities.deleteFiles(new File("."), IConstants.DATABASE_FILE, IConstants.TRANSACTION_FILES);
+
 		String configurationFile = "/cluster/spring.xml";
 		ApplicationContextManager.getApplicationContext(configurationFile);
 

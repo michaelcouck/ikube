@@ -27,7 +27,7 @@ public class FileUtilities {
 
 	private static Logger LOGGER = Logger.getLogger(FileUtilities.class);
 
-	public static void deleteFiles(File folder, String[] stringPatterns) {
+	public static void deleteFiles(File folder, String... stringPatterns) {
 		List<File> tempFiles = FileUtilities.findFilesRecursively(folder, stringPatterns, new ArrayList<File>());
 		for (File tempFile : tempFiles) {
 			FileUtilities.deleteFile(tempFile, 1);

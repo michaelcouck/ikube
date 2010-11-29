@@ -43,17 +43,17 @@ public class DataBaseOdb implements IDataBase {
 		OdbConfiguration.setDebugEnabled(Boolean.FALSE);
 		OdbConfiguration.setDebugEnabled(5, Boolean.FALSE);
 		OdbConfiguration.setLogAll(Boolean.FALSE);
-		// OdbConfiguration.lockObjectsOnSelect(Boolean.TRUE);
-		OdbConfiguration.useMultiThread(Boolean.FALSE, 3);
+		// OdbConfiguration.lockObjectsOnSelect(Boolean.FALSE);
+		// OdbConfiguration.useMultiThread(Boolean.FALSE, 3);
 		// OdbConfiguration.setAutomaticallyIncreaseCacheSize(Boolean.TRUE);
 		// OdbConfiguration.setAutomaticCloseFileOnExit(Boolean.TRUE);
 		OdbConfiguration.setDisplayWarnings(Boolean.FALSE);
-		OdbConfiguration.setMultiThreadExclusive(Boolean.FALSE);
+		OdbConfiguration.setMultiThreadExclusive(Boolean.TRUE);
 		// OdbConfiguration.setReconnectObjectsToSession(Boolean.TRUE);
-		OdbConfiguration.setUseCache(Boolean.TRUE);
-		OdbConfiguration.setUseIndex(Boolean.TRUE);
-		OdbConfiguration.setUseMultiBuffer(Boolean.FALSE);
-		OdbConfiguration.setShareSameVmConnectionMultiThread(Boolean.FALSE);
+		// OdbConfiguration.setUseCache(Boolean.TRUE);
+		// OdbConfiguration.setUseIndex(Boolean.TRUE);
+		// OdbConfiguration.setUseMultiBuffer(Boolean.TRUE);
+		// OdbConfiguration.setShareSameVmConnectionMultiThread(Boolean.TRUE);
 
 		this.odb = ODBFactory.open(IConstants.DATABASE_FILE);
 		if (indexes != null) {
@@ -148,8 +148,20 @@ public class DataBaseOdb implements IDataBase {
 	@Override
 	public synchronized <T> List<T> find(Class<T> klass, int firstResult, int maxResults) {
 		try {
-			Map<String, Object> parameters = new HashMap<String, Object>();
-			return find(klass, parameters, firstResult, maxResults);
+			List<T> list = new ArrayList<T>();
+			IQuery query = new CriteriaQuery(klass);
+			Objects<T> objects = odb.getObjects(query);
+			if (objects.size() == 0) {
+				return list;
+			}
+			for (int i = 0; i < firstResult && objects.hasNext(); i++) {
+				objects.next();
+			}
+			for (int i = 0; i < maxResults && objects.hasNext(); i++) {
+				T t = objects.next();
+				list.add(t);
+			}
+			return list;
 		} finally {
 			notifyAll();
 		}
@@ -213,9 +225,19 @@ public class DataBaseOdb implements IDataBase {
 	@Override
 	public synchronized <T> T remove(Class<T> klass, Long id) {
 		try {
-			T object = find(klass, id);
+			String idFieldName = getIdFieldName(klass);
+			ICriterion criterion = Where.equal(idFieldName, id);
+			CriteriaQuery criteriaQuery = new CriteriaQuery(klass, criterion);
+			Objects<T> objects = this.odb.getObjects(criteriaQuery);
+			if (objects.size() > 1) {
+				throw new RuntimeException("Object id not unique : ");
+			}
+			if (objects.size() == 0) {
+				return null;
+			}
+			T object = objects.getFirst();
 			if (object != null) {
-				remove(object);
+				this.odb.delete(object);
 			}
 			return object;
 		} catch (Exception e) {
@@ -225,10 +247,6 @@ public class DataBaseOdb implements IDataBase {
 			notifyAll();
 		}
 		return null;
-	}
-
-	public void setOdb(ODB odb) {
-		this.odb = odb;
 	}
 
 	protected synchronized void close() {
@@ -242,7 +260,7 @@ public class DataBaseOdb implements IDataBase {
 		}
 	}
 
-	protected synchronized <T> void setIdField(T object, long id) {
+	protected/* synchronized */<T> void setIdField(T object, long id) {
 		Field idField = getIdField(object.getClass(), null);
 		if (idField != null) {
 			try {
@@ -257,7 +275,7 @@ public class DataBaseOdb implements IDataBase {
 		}
 	}
 
-	protected synchronized Field getIdField(Class<?> klass, Class<?> superKlass) {
+	protected/* synchronized */Field getIdField(Class<?> klass, Class<?> superKlass) {
 		Field idField = idFields.get(klass);
 		if (idField != null) {
 			return idField;
@@ -280,7 +298,7 @@ public class DataBaseOdb implements IDataBase {
 		return null;
 	}
 
-	protected synchronized <T> Object getIdFieldValue(T object) {
+	protected/* synchronized */<T> Object getIdFieldValue(T object) {
 		Field idField = getIdField(object.getClass(), null);
 		if (idField != null) {
 			try {
@@ -296,7 +314,7 @@ public class DataBaseOdb implements IDataBase {
 		return null;
 	}
 
-	protected synchronized String getIdFieldName(Class<?> klass) {
+	protected/* synchronized */String getIdFieldName(Class<?> klass) {
 		Field field = getIdField(klass, null);
 		return field != null ? field.getName() : null;
 	}

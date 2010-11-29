@@ -27,6 +27,8 @@ public interface IConstants {
 
 	/** The database file name. */
 	public String DATABASE_FILE = "ikube.odb";
+	/** The transaction files from Neodatis. */
+	public String TRANSACTION_FILES = ".transaction";
 
 	public Analyzer ANALYZER = new StandardAnalyzer(Version.LUCENE_29);
 	public long MAX_READ_LENGTH = 1000000;

@@ -35,9 +35,9 @@
 		property:indexDirectoryPath="${index.directory.path}"
 		property:indexables-ref="indexables" />
 	<util:list id="indexables">
-		<ref local="mail" />
-		<ref local="internet" />
-		<ref local="filesystem" />
+		<!--<ref local="mail" />-->
+		<!--<ref local="internet" />-->
+		<!--<ref local="filesystem" />-->
 		<ref local="tableOne" />
 	</util:list>
 
@@ -152,8 +152,8 @@
 	<bean
 		id="internet"
 		class="ikube.model.IndexableInternet"
-		property:name="oki"
-		property:url="http://www.oki.com/" />
+		property:name="localhost"
+		property:url="http://localhost/million/adapt.html" />
 	
 	<bean
 		id="filesystem"

@@ -44,8 +44,8 @@ public class DataGenerator extends ATest {
 
 	private Map<String, byte[]> fileContents;
 
-	private int inserts = 10;
-	private int iterations = 10;
+	private int inserts = 100;
+	private int iterations = 10000;
 
 	@Before
 	public void before() throws Exception {
