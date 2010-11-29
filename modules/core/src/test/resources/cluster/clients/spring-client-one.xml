@@ -98,6 +98,7 @@
 		class="ikube.model.IndexableTable"
 		property:name="attachment"
 		property:primary="false"
+		property:predicate="${attachment.predicate}"
 		property:dataSource-ref="nonXaDataSource"
 		property:children-ref="columnsTwo" />
 	<util:list id="columnsTwo">
