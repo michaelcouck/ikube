@@ -1,13 +1,16 @@
 package ikube.index.handler.internet;
 
+import static org.junit.Assert.*;
+
 import ikube.BaseTest;
+import ikube.action.Reset;
+import ikube.database.IDataBase;
 import ikube.model.IndexableInternet;
+import ikube.model.Url;
 import ikube.toolkit.ApplicationContextManager;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -15,54 +18,22 @@ import org.junit.Test;
  * @since 21.11.10
  * @version 01.00
  */
-@Ignore
 public class IndexableInternetHandlerTest extends BaseTest {
 
 	@Test
 	public void visit() throws Exception {
 		indexContext.setIndexWriter(indexWriter);
-		IndexableInternet indexableInternet = ApplicationContextManager.getBean("oki");
+		IndexableInternet indexableInternet = ApplicationContextManager.getBean(IndexableInternet.class);
 		IndexableInternetHandler indexableInternetHandler = ApplicationContextManager.getBean(IndexableInternetHandler.class);
-		indexableInternetHandler.handle(indexContext, indexableInternet);
-	}
+		ApplicationContextManager.getBean(Reset.class).execute(indexContext);
+		List<Thread> threads = indexableInternetHandler.handle(indexContext, indexableInternet);
 
-	// @Test
-	public void waitForResources() {
-		List<Thread> threads = new ArrayList<Thread>();
-		for (int i = 0; i < 3; i++) {
-			Thread thread = new Thread(new Runnable() {
-				public void run() {
-					try {
-						Thread.sleep(3000);
-						waitForThread();
-					} catch (InterruptedException e) {
-						logger.error("", e);
-					}
-				}
-			}, Integer.toString(i));
-			threads.add(thread);
-			thread.start();
-		}
-		while (true) {
-			for (Thread thread : threads) {
-				logger.debug(thread + ", " + thread.getState());
-				try {
-					Thread.sleep(250);
-				} catch (InterruptedException e) {
-					logger.error("", e);
-				}
-			}
-		}
-	}
+		waitForThreads(threads);
 
-	protected synchronized void waitForThread() {
-		try {
-			wait();
-		} catch (InterruptedException e) {
-			logger.error("", e);
-		} finally {
-			notifyAll();
-		}
+		IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
+		List<Url> urls = dataBase.find(Url.class, Integer.MIN_VALUE, Integer.MAX_VALUE);
+		logger.info("Urls crawled : " + urls);
+		assertTrue(urls.size() > 40);
 	}
 
 }

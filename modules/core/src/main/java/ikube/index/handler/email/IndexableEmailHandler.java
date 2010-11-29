@@ -39,6 +39,11 @@ import org.apache.lucene.document.Field.TermVector;
 
 import com.sun.mail.pop3.POP3SSLStore;
 
+/**
+ * @author Michael Couck
+ * @since 29.11.10
+ * @version 01.00
+ */
 public class IndexableEmailHandler extends Handler {
 
 	static final String SSL_FACTORY = "javax.net.ssl.SSLSocketFactory";

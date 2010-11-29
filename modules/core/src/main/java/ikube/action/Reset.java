@@ -1,6 +1,11 @@
 package ikube.action;
 
+import ikube.database.IDataBase;
 import ikube.model.IndexContext;
+import ikube.model.Url;
+
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author Michael Couck
@@ -13,12 +18,24 @@ public class Reset extends Action<IndexContext, Boolean> {
 	public Boolean execute(IndexContext indexContext) {
 		try {
 			boolean anyWorking = getClusterManager().anyWorkingOnIndex(indexContext);
-			getClusterManager().setWorking(indexContext, getClass().getName(), Boolean.TRUE, System.currentTimeMillis());
 			if (!anyWorking) {
+				getClusterManager().setWorking(indexContext, getClass().getName(), Boolean.TRUE, System.currentTimeMillis());
 				logger.debug("Resetting : " + !anyWorking + ", " + indexContext);
-				// Reset this index context. At the moment we only reset the
-				// id for the tables, but in the not too distant future we reset the
-				// urls and files that are in the database
+
+				int batch = 1000;
+				IDataBase dataBase = getDataBase();
+				List<Url> urls = dataBase.find(Url.class, 0, batch);
+				Iterator<Url> iterator = urls.iterator();
+				while (iterator.hasNext()) {
+					Url url = iterator.next();
+					logger.debug("Deleting url : " + url);
+					dataBase.remove(url);
+					if (!iterator.hasNext()) {
+						urls = dataBase.find(Url.class, 0, batch);
+						iterator = urls.iterator();
+					}
+				}
+
 				indexContext.setIdNumber(0);
 				return Boolean.TRUE;
 			} else {

@@ -1,5 +1,6 @@
 package ikube.model;
 
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -15,6 +16,7 @@ import javax.persistence.Transient;
 public class IndexableInternet extends Indexable<IndexableInternet> {
 
 	private transient String currentUrl;
+	private transient InputStream currentInputStream;
 
 	private URI uri;
 	private String url;
@@ -76,6 +78,15 @@ public class IndexableInternet extends Indexable<IndexableInternet> {
 
 	public void setCurrentUrl(String currentUrl) {
 		this.currentUrl = currentUrl;
+	}
+
+	@Transient
+	public InputStream getCurrentInputStream() {
+		return currentInputStream;
+	}
+
+	public void setCurrentInputStream(InputStream currentInputStream) {
+		this.currentInputStream = currentInputStream;
 	}
 
 }

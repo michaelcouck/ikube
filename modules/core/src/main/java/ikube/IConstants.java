@@ -48,6 +48,7 @@ public interface IConstants {
 	public String NAME = "name";
 	public String URL = "url";
 	public String INDEXED = "indexed";
+	public String HASH = "hash";
 
 	public String ENCODING = "UTF8";
 

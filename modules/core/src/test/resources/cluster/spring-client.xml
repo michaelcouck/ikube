@@ -45,7 +45,6 @@
 		id="tableOne"
 		class="ikube.model.IndexableTable"
 		property:name="faq"
-		property:predicate="${faq.predicate}"
 		property:primary="true"
 		property:dataSource-ref="nonXaDataSource"
 		property:children-ref="columnsOne" />
@@ -100,19 +99,13 @@
 		property:dataSource-ref="nonXaDataSource"
 		property:children-ref="columnsTwo" />
 	<util:list id="columnsTwo">
-		<ref local="attachmentFaqId" />
 		<ref local="attachmentid" />
 		<ref local="name" />
 		<ref local="attachment" />
 		<ref local="length" />
+		<ref local="attachmentFaqId" />
 	</util:list>
 
-	<bean
-		id="attachmentFaqId"
-		class="ikube.model.IndexableColumn"
-		property:name="faqid"
-		property:fieldName="attachmentfaqId"
-		property:foreignKey-ref="faqId" />
 	<bean
 		id="attachmentid"
 		class="ikube.model.IndexableColumn"
@@ -135,6 +128,12 @@
 		class="ikube.model.IndexableColumn"
 		property:name="length"
 		property:fieldName="length" />
+	<bean
+		id="attachmentFaqId"
+		class="ikube.model.IndexableColumn"
+		property:name="faqid"
+		property:fieldName="attachmentfaqId"
+		property:foreignKey-ref="faqId" />
 
 	<bean
 		id="mail"
@@ -153,8 +152,8 @@
 	<bean
 		id="internet"
 		class="ikube.model.IndexableInternet"
-		property:name="ikokoon"
-		property:url="http://www.ikokoon.eu/ikokoon/index.html" />
+		property:name="oki"
+		property:url="http://www.oki.com/" />
 	
 	<bean
 		id="filesystem"

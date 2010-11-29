@@ -416,6 +416,7 @@
 	<mime-type name="text/html" description="Hypertext Markup Language (HTML)">
 		<ext>htm</ext>
 		<ext>html</ext>
+		<ext>xhtml</ext>
 		<magic offset="0" value="&lt;!DOCTYPE HTML" />
 		<magic offset="0" value="&lt;!doctype html" />
 		<magic offset="0" value="&lt;HTML" />

@@ -6,6 +6,7 @@ import ikube.index.parse.mime.MimeTypes;
 import ikube.logging.Logging;
 
 import java.net.InetAddress;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.index.IndexReader;
@@ -44,6 +45,26 @@ public abstract class ATest {
 			ip = InetAddress.getLocalHost().getHostAddress();
 		} catch (Exception e) {
 			logger.error("127.0.0.1 is best", e);
+		}
+	}
+
+	protected void waitForThreads(List<Thread> threads) {
+		outer: while (true) {
+			Thread currentThread = Thread.currentThread();
+			for (Thread thread : threads) {
+				logger.info("Thread : " + thread);
+				if (thread.isAlive()) {
+					try {
+						logger.info("Going into join : " + thread + ", this thread : " + currentThread);
+						thread.join();
+						logger.info("Coming out of join : " + thread + ", " + currentThread);
+					} catch (InterruptedException e) {
+						logger.error("Interrupted waiting for thread : " + thread + ", this thread : " + Thread.currentThread(), e);
+					}
+					continue outer;
+				}
+			}
+			break;
 		}
 	}
 

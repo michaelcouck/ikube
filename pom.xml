@@ -532,6 +532,20 @@
 			<type>jar</type>
 			<scope>provided</scope>
 		</dependency>-->
+		<!--<dependency>
+			<groupId>aspose</groupId>
+			<artifactId>aspose-pdf-jdk16</artifactId>
+			<version>2.7.0</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>aspose</groupId>
+			<artifactId>aspose-pdf-kit</artifactId>
+			<version>3.5.0</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>-->
 	</dependencies>
 
 	<repositories>

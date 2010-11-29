@@ -3,6 +3,7 @@ package ikube.index.parse;
 import ikube.ATest;
 import ikube.index.parse.excel.ExcelParser;
 import ikube.index.parse.html.HtmlParser;
+import ikube.index.parse.pdf.AsposePdfParser;
 import ikube.index.parse.pdf.PdfParser;
 import ikube.index.parse.pp.PowerPointParser;
 import ikube.index.parse.rtf.RtfParser;
@@ -121,6 +122,19 @@ public class ParserPerformanceTest extends ATest {
 			public void execute() throws Exception {
 				InputStream inputStream = new FileInputStream(file);
 				rtfParser.parse(inputStream, new ByteArrayOutputStream());
+			}
+		}, "Rtf parser", 100);
+	}
+
+	@Test
+	public void asposePdfPerformance() throws Exception {
+		final File file = FileUtilities.findFile(new File("."), "pdf.pdf");
+		final AsposePdfParser pdfParser = new AsposePdfParser();
+		PerformanceTester.execute(new PerformanceTester.APerform() {
+			@Override
+			public void execute() throws Exception {
+				InputStream inputStream = new FileInputStream(file);
+				pdfParser.parse(inputStream, new ByteArrayOutputStream());
 			}
 		}, "Rtf parser", 100);
 	}

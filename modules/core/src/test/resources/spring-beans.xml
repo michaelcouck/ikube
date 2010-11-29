@@ -41,10 +41,11 @@
 		id="ikube.database.DataBaseOdb"
 		class="ikube.database.DataBaseOdb"
 		init-method="initialise"
+		lazy-init="false"
 		destroy-method="close">
 		<property name="indexes">
 			<list>
-				<bean
+				<!--<bean
 					id="ikube.database.Index.Url"
 					class="ikube.database.Index"
 					property:className="ikube.model.Url">
@@ -54,7 +55,7 @@
 							<value>name</value>
 						</list>
 					</property>
-				</bean>
+				</bean>-->
 			</list>
 		</property>
 	</bean>
@@ -86,19 +87,19 @@
 	<bean
 		class="ikube.index.handler.internet.IndexableInternetHandler"
 		property:dataBase-ref="ikube.database.DataBaseOdb"
-		property:threads="3">
+		property:threads="${internet.handler.threads}">
 		<constructor-arg><null /></constructor-arg>
 	</bean>
 	<bean
 		class="ikube.index.handler.email.IndexableEmailHandler"
 		property:dataBase-ref="ikube.database.DataBaseOdb"
-		property:threads="3">
+		property:threads="${email.handler.threads}">
 		<constructor-arg><null /></constructor-arg>
 	</bean>
 	<bean
 		class="ikube.index.handler.filesystem.IndexableFilesystemHandler"
 		property:dataBase-ref="ikube.database.DataBaseOdb"
-		property:threads="3">
+		property:threads="${filesystem.handler.threads}">
 		<constructor-arg><null /></constructor-arg>
 	</bean>
 	<bean

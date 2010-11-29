@@ -55,6 +55,7 @@ public class DataBaseOdb implements IDataBase {
 		OdbConfiguration.setUseMultiBuffer(Boolean.FALSE);
 		OdbConfiguration.setShareSameVmConnectionMultiThread(Boolean.FALSE);
 
+		this.odb = ODBFactory.open(IConstants.DATABASE_FILE);
 		if (indexes != null) {
 			for (Index index : indexes) {
 				Class<?> klass = null;
@@ -64,7 +65,6 @@ public class DataBaseOdb implements IDataBase {
 					logger.error("Exception creating index for class : " + index.getClassName(), e);
 					continue;
 				}
-				this.odb = ODBFactory.open(IConstants.DATABASE_FILE);
 				if (!this.odb.getClassRepresentation(klass).existIndex(klass.getSimpleName())) {
 					String[] fieldNames = index.getFieldNames().toArray(new String[index.getFieldNames().size()]);
 					this.odb.getClassRepresentation(klass).addIndexOn(klass.getSimpleName(), fieldNames, Boolean.TRUE);

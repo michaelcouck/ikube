@@ -24,6 +24,11 @@ import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
 
+/**
+ * @author Michael Couck
+ * @since 29.11.10
+ * @version 01.00
+ */
 public class IndexableFilesystemHandler extends Handler {
 
 	public IndexableFilesystemHandler(IHandler<Indexable<?>> previous) {

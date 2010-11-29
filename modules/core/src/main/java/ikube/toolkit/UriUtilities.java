@@ -32,10 +32,10 @@ public class UriUtilities {
 	 */
 	public static URI resolve(final URI baseURI, URI reference) {
 		if (baseURI == null) {
-			throw new IllegalArgumentException("Base URI may nor be null");
+			throw new IllegalArgumentException("Base URI may not be null");
 		}
 		if (reference == null) {
-			throw new IllegalArgumentException("Reference URI may nor be null");
+			throw new IllegalArgumentException("Reference URI may not be null");
 		}
 		String s = reference.toString();
 		if (s.charAt(0) == '?') {

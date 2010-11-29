@@ -1,12 +1,14 @@
 package ikube.action;
 
 import ikube.cluster.IClusterManager;
+import ikube.database.IDataBase;
 import ikube.logging.Logging;
 import ikube.model.IndexContext;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.index.IndexReader;
@@ -26,12 +28,20 @@ public abstract class Action<E, F> implements IAction<E, F> {
 
 	protected Logger logger = Logger.getLogger(this.getClass());
 	private IClusterManager clusterManager;
+	private IDataBase dataBase;
 
 	protected IClusterManager getClusterManager() {
 		if (clusterManager == null) {
 			clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
 		}
 		return clusterManager;
+	}
+
+	protected IDataBase getDataBase() {
+		if (this.dataBase == null) {
+			this.dataBase = ApplicationContextManager.getBean(IDataBase.class);
+		}
+		return this.dataBase;
 	}
 
 	protected boolean isIndexCurrent(IndexContext indexContext) {
@@ -54,7 +64,7 @@ public abstract class Action<E, F> implements IAction<E, F> {
 	/**
 	 * This method returns whether the searcher should be re-opened on a new index. If there is a new index, or if there is an index added
 	 * by another server then the searcher should be opened again.
-	 *
+	 * 
 	 * @param indexContext
 	 *            the index context for the index
 	 * @return whether the index should be re-opened
@@ -162,7 +172,26 @@ public abstract class Action<E, F> implements IAction<E, F> {
 		String parentNameOne = directoryOne.getParentFile().getName();
 		String parentNameTwo = directoryTwo.getParentFile().getName();
 		return nameOne.equals(nameTwo) && parentNameOne.equals(parentNameTwo);
+	}
 
+	protected void waitForThreads(List<Thread> threads) {
+		outer: while (true) {
+			Thread currentThread = Thread.currentThread();
+			for (Thread thread : threads) {
+				logger.info("Thread : " + thread);
+				if (thread.isAlive()) {
+					try {
+						logger.info("Going into join : " + thread + ", this thread : " + currentThread);
+						thread.join();
+						logger.info("Coming out of join : " + thread + ", " + currentThread);
+					} catch (InterruptedException e) {
+						logger.error("Interrupted waiting for thread : " + thread + ", this thread : " + Thread.currentThread(), e);
+					}
+					continue outer;
+				}
+			}
+			break;
+		}
 	}
 
 }

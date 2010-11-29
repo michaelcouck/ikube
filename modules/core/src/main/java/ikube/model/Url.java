@@ -13,6 +13,7 @@ public class Url extends Persistable {
 	private String url;
 	private String name;
 	private Boolean indexed;
+	private Long hash;
 
 	public String getUrl() {
 		return url;
@@ -36,6 +37,14 @@ public class Url extends Persistable {
 
 	public void setIndexed(Boolean indexed) {
 		this.indexed = indexed;
+	}
+
+	public Long getHash() {
+		return hash;
+	}
+
+	public void setHash(Long hash) {
+		this.hash = hash;
 	}
 
 	public String toString() {

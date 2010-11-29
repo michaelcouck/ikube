@@ -2,6 +2,7 @@ package ikube.index.handler.database;
 
 import ikube.IConstants;
 import ikube.index.IndexManager;
+import ikube.index.content.ByteOutputStream;
 import ikube.index.content.ColumnContentProvider;
 import ikube.index.content.IContentProvider;
 import ikube.index.handler.Handler;
@@ -17,7 +18,6 @@ import ikube.toolkit.DatabaseUtilities;
 import ikube.toolkit.SerializationUtilities;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.sql.Connection;
@@ -34,17 +34,12 @@ import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
 
+/**
+ * @author Michael Couck
+ * @since 29.11.10
+ * @version 01.00
+ */
 public class IndexableTableHandler extends Handler {
-
-	class ByteOutputStream extends ByteArrayOutputStream {
-		byte[] getBytes() {
-			return buf;
-		}
-
-		int getCount() {
-			return count;
-		}
-	}
 
 	private IContentProvider<IndexableColumn> contentProvider;
 
