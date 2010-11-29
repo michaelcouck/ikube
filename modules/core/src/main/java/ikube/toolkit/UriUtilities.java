@@ -3,13 +3,24 @@ package ikube.toolkit;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Stack;
+import java.util.regex.Pattern;
 
 public class UriUtilities {
+
+	/** Accepted protocols. */
+	protected static final Pattern PROTOCOL_PATTERN = Pattern.compile("(http).*|(www).*|(https).*|(ftp).*");
+	/** The pattern regular expression to match a url. */
+	protected static final Pattern EXCLUDED_PATTERN = Pattern.compile(".*news.*|.*javascript.*|.*mailto.*|.*plugintest.*|.*skype.*");
+	/** The pattern to strip the JSessionId form the urls. */
+	protected static final Pattern JSESSIONID_PATTERN = Pattern
+			.compile("([;_]?((?i)l|j|bv_)?((?i)sid|phpsessid|sessionid)=.*?)(\\?|&amp;|#|$)");
+	/** The anchor pattern. */
+	protected static final Pattern ANCHOR_PATTERN = Pattern.compile("#[^#]*$");
 
 	/**
 	 * Resolves a URI reference against a base URI. Work-around for bug in java.net.URI
 	 * (<http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4708535>)
-	 *
+	 * 
 	 * @param baseURI
 	 *            the base URI
 	 * @param reference
@@ -23,7 +34,7 @@ public class UriUtilities {
 	/**
 	 * Resolves a URI reference against a base URI. Work-around for bugs in java.net.URI (e.g.
 	 * <http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4708535>)
-	 *
+	 * 
 	 * @param baseURI
 	 *            the base URI
 	 * @param reference
@@ -55,7 +66,7 @@ public class UriUtilities {
 
 	/**
 	 * Removes dot segments according to RFC 3986, section 5.2.4
-	 *
+	 * 
 	 * @param uri
 	 *            the original URI
 	 * @return the URI without dot segments
@@ -92,7 +103,7 @@ public class UriUtilities {
 
 	/**
 	 * Resolves a reference starting with a query string.
-	 *
+	 * 
 	 * @param baseURI
 	 *            the base URI
 	 * @param reference
@@ -103,6 +114,22 @@ public class UriUtilities {
 		String baseUri = baseURI.toString();
 		baseUri = baseUri.indexOf('?') > -1 ? baseUri.substring(0, baseUri.indexOf('?')) : baseUri;
 		return URI.create(baseUri + reference.toString());
+	}
+
+	public static boolean isExcluded(String string) {
+		return EXCLUDED_PATTERN.matcher(string).matches();
+	}
+
+	public static boolean isInternetProtocol(String string) {
+		return PROTOCOL_PATTERN.matcher(string).matches();
+	}
+
+	public static String stripJSessionId(String string, String replacement) {
+		return JSESSIONID_PATTERN.matcher(string).replaceAll(replacement);
+	}
+
+	public static String stripAnchor(String string, String replacement) {
+		return ANCHOR_PATTERN.matcher(string).replaceAll(replacement);
 	}
 
 }

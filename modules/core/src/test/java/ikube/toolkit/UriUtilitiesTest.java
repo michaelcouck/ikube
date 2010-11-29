@@ -1,5 +1,6 @@
 package ikube.toolkit;
 
+import static org.junit.Assert.assertFalse;
 import ikube.ATest;
 
 import java.net.URI;
@@ -65,5 +66,23 @@ public class UriUtilitiesTest extends ATest {
 		pattern = Pattern.compile("([;_]?((?i)l|j|bv_)?((?i)sid|phpsessid|sessionid)=.*?)(\\?|&amp;|#|$)");
 		replaced = pattern.matcher(reference).replaceAll("?");
 		logger.info("Replaced : " + replaced);
+	}
+
+	@Test
+	public void strip() {
+		String url = "http://www.ikokoon.eu/ikokoon/index.html#anchor";
+		String stripped = UriUtilities.stripAnchor(url, "");
+		logger.info("Stripped : " + stripped);
+		assertFalse(stripped.contains("#"));
+
+		url = "http://www.ikokoon.eu/ikokoon/index.html?query=string#anchor";
+		stripped = UriUtilities.stripAnchor(url, "");
+		logger.info("Stripped : " + stripped);
+		assertFalse(stripped.contains("#"));
+
+		url = "http://www.ikokoon.eu/ikokoon/#anchor?can=the&query=string&be=here";
+		stripped = UriUtilities.stripAnchor(url, "");
+		logger.info("Stripped : " + stripped);
+		assertFalse(stripped.contains("#"));
 	}
 }

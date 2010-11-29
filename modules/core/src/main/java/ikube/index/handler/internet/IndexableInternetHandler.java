@@ -32,7 +32,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 import javax.swing.text.html.HTML;
 
@@ -55,14 +54,6 @@ import org.apache.lucene.document.Field.TermVector;
  * @version 01.00
  */
 public class IndexableInternetHandler extends Handler {
-
-	/** Accepted protocols. */
-	private static final Pattern PROTOCOL_PATTERN = Pattern.compile("(http).*|(www).*|(https).*|(ftp).*");
-	/** The pattern regular expression to match a url. */
-	private static final Pattern EXCLUDED_PATTERN = Pattern.compile(".*news.*|.*javascript.*|.*mailto.*|.*plugintest.*|.*skype.*");
-	/** The pattern to strip the JSessionId form the urls. */
-	private static final Pattern JSESSIONID_PATTERN = Pattern
-			.compile("([;_]?((?i)l|j|bv_)?((?i)sid|phpsessid|sessionid)=.*?)(\\?|&amp;|#|$)");
 
 	private IContentProvider<IndexableInternet> contentProvider;
 
@@ -228,21 +219,22 @@ public class IndexableInternetHandler extends Handler {
 							if (link == null) {
 								continue;
 							}
-							if (EXCLUDED_PATTERN.matcher(link.toLowerCase()).matches()) {
+							if (UriUtilities.isExcluded(link.toLowerCase())) {
 								continue;
 							}
 							URI uri = UriUtilities.resolve(baseUri, link);
 							String resolvedLink = uri.toString();
-							if (!PROTOCOL_PATTERN.matcher(resolvedLink).matches()) {
+							if (!UriUtilities.isInternetProtocol(resolvedLink)) {
 								continue;
 							}
 							if (!resolvedLink.contains(baseHost)) {
 								continue;
 							}
 							String replacement = resolvedLink.contains("?") ? "?" : "";
-							String strippedLink = JSESSIONID_PATTERN.matcher(resolvedLink).replaceAll(replacement);
+							String strippedSessionLink = UriUtilities.stripJSessionId(resolvedLink, replacement);
+							String strippedAnchorLink = UriUtilities.stripAnchor(strippedSessionLink, "");
 							Url newUrl = new Url();
-							newUrl.setUrl(strippedLink);
+							newUrl.setUrl(strippedAnchorLink);
 							newUrl.setName(indexable.getName());
 							newUrl.setIndexed(Boolean.FALSE);
 							// Persist the url in the database

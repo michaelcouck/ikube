@@ -1,7 +1,6 @@
 package ikube.index.handler.internet;
 
-import static org.junit.Assert.*;
-
+import static org.junit.Assert.assertTrue;
 import ikube.BaseTest;
 import ikube.action.Reset;
 import ikube.database.IDataBase;
