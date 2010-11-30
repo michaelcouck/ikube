@@ -116,16 +116,6 @@ public class DataBaseOdb implements IDataBase {
 		try {
 			if (t != null) {
 				this.odb.delete(t);
-				// String idFieldName = getIdFieldName(t.getClass());
-				// Object id = getIdFieldValue(t);
-				// IQuery query = new CriteriaQuery(t.getClass(), Where.equal(idFieldName, id));
-				// Objects<T> objects = this.odb.getObjects(query, Boolean.TRUE);
-				// if (objects.size() == 1) {
-				// Object object = objects.getFirst();
-				// if (object != null) {
-				// this.odb.delete(object);
-				// }
-				// }
 			}
 		} catch (Exception e) {
 			logger.error("", e);
@@ -176,7 +166,7 @@ public class DataBaseOdb implements IDataBase {
 		} catch (Exception e) {
 			logger.error("", e);
 		} finally {
-			this.odb.commit();
+			// this.odb.commit();
 			notifyAll();
 		}
 		return null;
@@ -197,7 +187,7 @@ public class DataBaseOdb implements IDataBase {
 		} catch (Exception e) {
 			logger.error("", e);
 		} finally {
-			this.odb.commit();
+			// this.odb.commit();
 			notifyAll();
 		}
 		return list;
@@ -226,7 +216,7 @@ public class DataBaseOdb implements IDataBase {
 		} catch (Exception e) {
 			logger.error("", e);
 		} finally {
-			this.odb.commit();
+			// this.odb.commit();
 			notifyAll();
 		}
 		return list;

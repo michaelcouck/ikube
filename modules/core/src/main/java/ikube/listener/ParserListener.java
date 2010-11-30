@@ -21,7 +21,7 @@ public class ParserListener implements IListener {
 	}
 
 	@Override
-	public synchronized void handleNotification(Event event) {
+	public/* synchronized */void handleNotification(Event event) {
 		try {
 			if (event.getType().equals(Event.LINK)) {
 				Url url = (Url) event.getObject();
@@ -38,7 +38,7 @@ public class ParserListener implements IListener {
 		} catch (Exception e) {
 			logger.error("Exception persisting the new link : " + event, e);
 		} finally {
-			notifyAll();
+			// notifyAll();
 		}
 	}
 

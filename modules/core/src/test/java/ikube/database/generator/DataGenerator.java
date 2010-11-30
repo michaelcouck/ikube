@@ -13,9 +13,11 @@ import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -107,12 +109,29 @@ public class DataGenerator extends ATest {
 
 	protected void insertAttachments() throws Exception {
 		String faqIdSelect = "SELECT DB2ADMIN.FAQ.FAQID FROM DB2ADMIN.FAQ ORDER BY DB2ADMIN.FAQ.FAQID DESC";
-		String attachmentInsert = "INSERT INTO DB2ADMIN.ATTACHMENT (DB2ADMIN.ATTACHMENT.ATTACHMENT, DB2ADMIN.ATTACHMENT.LENGTH, DB2ADMIN.ATTACHMENT.NAME, DB2ADMIN.ATTACHMENT.FAQID) VALUES(?,?,?,?)";
-		PreparedStatement attachmentPreparedStatement = connection.prepareStatement(attachmentInsert, PreparedStatement.NO_GENERATED_KEYS);
-		ResultSet faqIdResultSet = connection.createStatement().executeQuery(faqIdSelect);
-		for (int i = 0; i < inserts && faqIdResultSet.next(); i++) {
+
+		List<Long> faqIds = new ArrayList<Long>();
+		Statement statement = connection.createStatement();
+		ResultSet faqIdResultSet = statement.executeQuery(faqIdSelect);
+		while (faqIdResultSet.next()) {
 			long faqId = faqIdResultSet.getLong(1);
+			faqIds.add(faqId);
+		}
+		faqIdResultSet.close();
+		statement.close();
+
+		Iterator<Long> faqIdIterator = faqIds.iterator();
+		String attachmentInsert = "INSERT INTO DB2ADMIN.ATTACHMENT (DB2ADMIN.ATTACHMENT.ATTACHMENT, DB2ADMIN.ATTACHMENT.LENGTH, "
+				+ "DB2ADMIN.ATTACHMENT.NAME, DB2ADMIN.ATTACHMENT.FAQID) VALUES(?,?,?,?)";
+		PreparedStatement attachmentPreparedStatement = connection.prepareStatement(attachmentInsert, PreparedStatement.NO_GENERATED_KEYS);
+		for (int i = 0; i < inserts; i++) {
 			for (String fileName : fileContents.keySet()) {
+				if (!faqIdIterator.hasNext()) {
+					faqIdIterator = faqIds.iterator();
+				}
+
+				long faqId = faqIdIterator.next();
+
 				// Insert the attachment
 				byte[] bytes = fileContents.get(fileName);
 				InputStream inputStream = new ByteArrayInputStream(bytes);
@@ -125,7 +144,6 @@ public class DataGenerator extends ATest {
 		}
 		attachmentPreparedStatement.executeBatch();
 		connection.commit();
-		faqIdResultSet.close();
 		attachmentPreparedStatement.close();
 	}
 

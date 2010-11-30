@@ -154,7 +154,7 @@
 		id="internet"
 		class="ikube.model.IndexableInternet"
 		property:name="internet"
-		property:url="http://localhost/million/adapt.html" />
+		property:url="http://jackal/million/adapt.html" />
 	
 	<bean
 		id="filesystem"

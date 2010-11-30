@@ -9,9 +9,7 @@ import ikube.index.handler.Handler;
 import ikube.index.handler.IHandler;
 import ikube.index.parse.IParser;
 import ikube.index.parse.ParserProvider;
-import ikube.listener.ListenerManager;
 import ikube.logging.Logging;
-import ikube.model.Event;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.model.IndexableInternet;
@@ -27,9 +25,7 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.lang.Thread.State;
 import java.net.URI;
-import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,40 +68,38 @@ public class IndexableInternetHandler extends Handler {
 	}
 
 	protected List<Thread> handleInternet(final IndexContext indexContext, final IndexableInternet internetIndexable) {
-		final List<Thread> threads = Collections.synchronizedList(new ArrayList<Thread>());
-		try {
-			// The start url
-			seedUrl(internetIndexable);
-			for (int i = 0; i < getThreads(); i++) {
-				Thread thread = new Thread(new Runnable() {
-					public void run() {
-						HttpClient httpClient = new HttpClient();
-						while (true) {
-							Url url = getNextUrl(internetIndexable, threads);
-							if (url == null) {
-								return;
-							}
+		final List<Thread> threads = new ArrayList<Thread>();
+		// The start url
+		seedUrl(internetIndexable);
+		for (int i = 0; i < getThreads(); i++) {
+			Thread thread = new Thread(new Runnable() {
+				public void run() {
+					HttpClient httpClient = new HttpClient();
+					while (true) {
+						List<Url> urls = getNextUrls(internetIndexable, threads);
+						if (urls.size() == 0) {
+							return;
+						}
+						for (Url url : urls) {
 							handleUrl(indexContext, internetIndexable, url, httpClient);
 						}
 					}
-				}, this.getClass().getSimpleName() + "." + i);
-				threads.add(thread);
-				thread.start();
-			}
-		} catch (Exception e) {
-			logger.error("Exception reading the url : " + internetIndexable.getUrl(), e);
+				}
+			}, this.getClass().getSimpleName() + "." + i);
+			threads.add(thread);
+			thread.start();
 		}
 		return threads;
 	}
 
-	protected synchronized Url getNextUrl(final IndexableInternet indexable, final List<Thread> synchronizedThreads) {
+	protected synchronized List<Url> getNextUrls(final IndexableInternet indexable, final List<Thread> threads) {
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		parameters.put(IConstants.NAME, indexable.getName());
 		parameters.put(IConstants.INDEXED, Boolean.FALSE);
-		Url url = getDataBase().find(Url.class, parameters, Boolean.FALSE);
-		if (url == null) {
-			for (Thread thread : synchronizedThreads) {
-				logger.debug(Logging.getString("Thread : ", thread, ", ", Thread.currentThread()));
+		List<Url> urls = getDataBase().find(Url.class, parameters, 0, 100);
+		if (urls.size() == 0) {
+			for (Thread thread : threads) {
+				// logger.debug(Logging.getString("Thread : ", thread, ", ", Thread.currentThread()));
 				if (thread.equals(Thread.currentThread())) {
 					continue;
 				}
@@ -113,20 +107,22 @@ public class IndexableInternetHandler extends Handler {
 				if (thread.getState().equals(State.RUNNABLE)) {
 					logger.debug(Logging.getString("Going into wait : ", Thread.currentThread()));
 					try {
-						wait(1000);
+						wait(100);
 					} catch (InterruptedException e) {
 						logger.error("", e);
 					}
-					return getNextUrl(indexable, synchronizedThreads);
+					return getNextUrls(indexable, threads);
 				}
 			}
 		}
-		if (url != null) {
-			url.setIndexed(Boolean.TRUE);
-			getDataBase().merge(url);
+		if (urls.size() > 0) {
+			for (Url url : urls) {
+				url.setIndexed(Boolean.TRUE);
+				getDataBase().merge(url);
+			}
 		}
 		notifyAll();
-		return url;
+		return urls;
 	}
 
 	protected void handleUrl(IndexContext indexContext, IndexableInternet indexable, Url url, HttpClient httpClient) {
@@ -239,7 +235,7 @@ public class IndexableInternetHandler extends Handler {
 							newUrl.setName(indexable.getName());
 							newUrl.setIndexed(Boolean.FALSE);
 							// Persist the url in the database
-							fireEvent(newUrl);
+							persistUrl(newUrl);
 						} catch (Exception e) {
 							logger.error("Exception extracting link : " + tag, e);
 						}
@@ -258,16 +254,19 @@ public class IndexableInternetHandler extends Handler {
 		url.setName(indexable.getName());
 		url.setIndexed(Boolean.FALSE);
 
-		fireEvent(url);
+		persistUrl(url);
 	}
 
-	protected void fireEvent(Url url) {
-		Event event = new Event();
-		event.setConsumed(Boolean.FALSE);
-		event.setObject(url);
-		event.setTimestamp(new Timestamp(System.currentTimeMillis()));
-		event.setType(Event.LINK);
-		ListenerManager.fireEvent(event);
+	protected void persistUrl(Url url) {
+		Map<String, Object> parameters = new HashMap<String, Object>();
+		parameters.put(IConstants.URL, url.getUrl());
+		parameters.put(IConstants.NAME, url.getName());
+		Url dbUrl = getDataBase().find(Url.class, parameters, Boolean.TRUE);
+		// logger.debug("Event : " + event + ", " + dbUrl + ", " + url);
+		if (dbUrl == null) {
+			// logger.debug("Persisting : " + url);
+			getDataBase().persist(url);
+		}
 	}
 
 }

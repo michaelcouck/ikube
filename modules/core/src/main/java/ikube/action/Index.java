@@ -45,19 +45,19 @@ public class Index extends Action<IndexContext, Boolean> {
 			Server server = getClusterManager().getServer();
 			// Start the indexing for this server
 			IndexManager.openIndexWriter(server.getIp(), indexContext, lastWorkingStartTime);
-			try {
-				Map<String, Handler> handlers = ApplicationContextManager.getBeans(Handler.class);
-				for (Handler handler : handlers.values()) {
-					for (Indexable<?> indexable : indexables) {
+			Map<String, Handler> handlers = ApplicationContextManager.getBeans(Handler.class);
+			for (Handler handler : handlers.values()) {
+				for (Indexable<?> indexable : indexables) {
+					try {
 						// Execute each handler and wait for the threads to finish
 						logger.info("Executing handler : " + handler);
 						List<Thread> threads = handler.handle(indexContext, indexable);
 						logger.info("Threads to wait for : " + threads);
 						waitForThreads(threads);
+					} catch (Exception e) {
+						logger.error("Exception indexing data : " + indexContext.getIndexName(), e);
 					}
 				}
-			} catch (Exception e) {
-				logger.error("Exception indexing data : " + indexContext.getIndexName(), e);
 			}
 		} finally {
 			IndexManager.closeIndexWriter(indexContext);

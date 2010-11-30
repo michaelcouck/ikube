@@ -10,7 +10,6 @@ import ikube.toolkit.ApplicationContextManager;
 
 import java.util.List;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -21,8 +20,7 @@ import org.junit.Test;
 public class IndexableInternetHandlerTest extends BaseTest {
 
 	@Test
-	@Ignore
-	public void visit() throws Exception {
+	public void handle() throws Exception {
 		indexContext.setIndexWriter(indexWriter);
 		IndexableInternet indexableInternet = ApplicationContextManager.getBean(IndexableInternet.class);
 		IndexableInternetHandler indexableInternetHandler = ApplicationContextManager.getBean(IndexableInternetHandler.class);
@@ -35,6 +33,11 @@ public class IndexableInternetHandlerTest extends BaseTest {
 		List<Url> urls = dataBase.find(Url.class, Integer.MIN_VALUE, Integer.MAX_VALUE);
 		logger.info("Urls crawled : " + urls);
 		assertTrue(urls.size() > 40);
+	}
+
+	public static void main(String[] args) throws Exception {
+		IndexableInternetHandlerTest indexableInternetHandlerTest = new IndexableInternetHandlerTest();
+		indexableInternetHandlerTest.handle();
 	}
 
 }
