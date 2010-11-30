@@ -5,7 +5,7 @@ import java.util.Map;
 
 /**
  * Interface for database objects. Database objects support access to the persistent store.
- *
+ * 
  * @author Michael Couck
  * @since 20.04.09
  * @version 01.00
@@ -14,7 +14,7 @@ public interface IDataBase {
 
 	/**
 	 * This method removed the specified entity from the database.
-	 *
+	 * 
 	 * @param <T>
 	 * @param t
 	 * @return
@@ -22,19 +22,8 @@ public interface IDataBase {
 	public <T> T remove(T t);
 
 	/**
-	 * Removes an object from the database. The entity is completely deleted.
-	 *
-	 * @param klass
-	 *            the class of the object to be removed
-	 * @param id
-	 *            the id of the object to be deleted, cannot be null
-	 * @return returns the object deleted
-	 */
-	public <T> T remove(Class<T> klass, Long id);
-
-	/**
 	 * Persists an object in the database.
-	 *
+	 * 
 	 * @param object
 	 *            the object to be persisted
 	 * @return the refreshed object from the database, typically this object will have the unique id filled in by the database
@@ -44,7 +33,7 @@ public interface IDataBase {
 	/**
 	 * Merges the object parameter with the object from the database. In the case where a primitive field is changed in the object and this
 	 * change needs to be persisted the merge will update the database with the new value.
-	 *
+	 * 
 	 * @param object
 	 *            the object to be merged or updated in the database
 	 * @return the refreshed object from the database, typically this will be exactly the same as the object to be merged
@@ -52,21 +41,10 @@ public interface IDataBase {
 	public <T> T merge(T object);
 
 	/**
-	 * Finds an object by it's unique id.
-	 *
-	 * @param klass
-	 *            the class of the object to find
-	 * @param id
-	 *            the id of the object to find
-	 * @return the object with the specified unique id or null if no such object exists
-	 */
-	public <T> T find(Class<T> klass, Long id);
-
-	/**
 	 * Finds a single object in the database restricted by the parameter values. Note that this method will return the first entity that
 	 * matches the parameter list which could be random, based on the underlying implementation of the object relational layer. Unless of
 	 * course the unique flag is set, in which case if there is a non unique result then null will be returned, and some error logging.
-	 *
+	 * 
 	 * @param <T>
 	 *            the object from the database
 	 * @param klass
@@ -81,7 +59,7 @@ public interface IDataBase {
 
 	/**
 	 * Selects all the objects in the database that conform to the class type, limited by the max results parameter.
-	 *
+	 * 
 	 * @param klass
 	 *            the class of object to select
 	 * @param firstResult
@@ -97,7 +75,7 @@ public interface IDataBase {
 	 * limited to a max results and the starting position in the result set allows paging functionality. Note that for paging the select
 	 * needs to have an order-by clause. This is because the first index in the result set needs to be at the same position. Also in the
 	 * case where there are objects added to the database between paging the paging results will not be accurate.
-	 *
+	 * 
 	 * @param <T>
 	 *            the type of class for the results
 	 * @param klass

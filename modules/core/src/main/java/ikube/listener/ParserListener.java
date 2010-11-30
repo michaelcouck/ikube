@@ -21,14 +21,14 @@ public class ParserListener implements IListener {
 	}
 
 	@Override
-	public/* synchronized */void handleNotification(Event event) {
+	public synchronized void handleNotification(Event event) {
 		try {
 			if (event.getType().equals(Event.LINK)) {
 				Url url = (Url) event.getObject();
 				Map<String, Object> parameters = new HashMap<String, Object>();
 				parameters.put(IConstants.URL, url.getUrl());
 				parameters.put(IConstants.NAME, url.getName());
-				Url dbUrl = dataBase.find(Url.class, parameters, Boolean.FALSE);
+				Url dbUrl = dataBase.find(Url.class, parameters, Boolean.TRUE);
 				// logger.debug("Event : " + event + ", " + dbUrl + ", " + url);
 				if (dbUrl == null) {
 					// logger.debug("Persisting : " + url);
@@ -36,9 +36,9 @@ public class ParserListener implements IListener {
 				}
 			}
 		} catch (Exception e) {
-			logger.error("Exception persisting the link : " + event.getObject(), e);
+			logger.error("Exception persisting the new link : " + event, e);
 		} finally {
-			// notifyAll();
+			notifyAll();
 		}
 	}
 

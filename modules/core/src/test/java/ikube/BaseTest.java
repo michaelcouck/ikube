@@ -1,14 +1,12 @@
 package ikube;
 
 import ikube.cluster.ClusterTest;
-import ikube.database.IDataBase;
 import ikube.model.IndexContext;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.DataLoader;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -46,14 +44,5 @@ public abstract class BaseTest extends ATest {
 	}
 
 	protected IndexContext indexContext = ApplicationContextManager.getBean(IndexContext.class);
-
-	protected static void delete(IDataBase dataBase, Class<?>... klasses) {
-		for (Class<?> klass : klasses) {
-			List<?> objects = dataBase.find(klass, 0, Integer.MAX_VALUE);
-			for (Object object : objects) {
-				dataBase.remove(object);
-			}
-		}
-	}
 
 }

@@ -142,8 +142,8 @@ public class ColumnContentProvider implements IContentProvider<IndexableColumn> 
 						reader = (Reader) method.invoke(object, (Object[]) null);
 					}
 				}
-				inputStream = new ReaderInputStream(reader);
-				FileUtilities.getContents(inputStream, outputStream, Integer.MAX_VALUE);
+				// inputStream = new ReaderInputStream(reader);
+				FileUtilities.getContents(reader, outputStream, Integer.MAX_VALUE);
 				break;
 			}
 		} catch (Exception e) {

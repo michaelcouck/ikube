@@ -41,7 +41,7 @@ public class ParserPerformanceTest extends ATest {
 				}
 			}
 		}, "HTML Parser : ", iterations);
-		assertTrue(executionsPerSecond > 100);
+		assertTrue(executionsPerSecond > 10);
 	}
 
 	@Test
@@ -62,7 +62,7 @@ public class ParserPerformanceTest extends ATest {
 				}
 			}
 		}, "Pattern matcher : ", iterations);
-		assertTrue(executionsPerSecond > 100);
+		assertTrue(executionsPerSecond > 10);
 	}
 
 }

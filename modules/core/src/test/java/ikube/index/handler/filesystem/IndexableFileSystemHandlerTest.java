@@ -14,7 +14,7 @@ import org.junit.Test;
 public class IndexableFileSystemHandlerTest extends BaseTest {
 
 	@Test
-	public void implementMe() throws Exception {
+	public void handle() throws Exception {
 		indexContext.setIndexWriter(indexWriter);
 		IndexableFileSystem indexableFileSystem = ApplicationContextManager.getBean(IndexableFileSystem.class);
 		IndexableFilesystemHandler indexableFileSystemHandler = ApplicationContextManager.getBean(IndexableFilesystemHandler.class);

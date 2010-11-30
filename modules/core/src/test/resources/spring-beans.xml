@@ -45,7 +45,7 @@
 		destroy-method="close">
 		<property name="indexes">
 			<list>
-				<!--<bean
+				<bean
 					id="ikube.database.Index.Url"
 					class="ikube.database.Index"
 					property:className="ikube.model.Url">
@@ -55,7 +55,7 @@
 							<value>name</value>
 						</list>
 					</property>
-				</bean>-->
+				</bean>
 			</list>
 		</property>
 	</bean>

@@ -1,6 +1,7 @@
 package ikube;
 
 import static org.mockito.Mockito.mock;
+import ikube.database.IDataBase;
 import ikube.index.parse.mime.MimeMapper;
 import ikube.index.parse.mime.MimeTypes;
 import ikube.logging.Logging;
@@ -45,6 +46,15 @@ public abstract class ATest {
 			ip = InetAddress.getLocalHost().getHostAddress();
 		} catch (Exception e) {
 			logger.error("127.0.0.1 is best", e);
+		}
+	}
+
+	protected static void delete(IDataBase dataBase, Class<?>... klasses) {
+		for (Class<?> klass : klasses) {
+			List<?> objects = dataBase.find(klass, 0, Integer.MAX_VALUE);
+			for (Object object : objects) {
+				dataBase.remove(object);
+			}
 		}
 	}
 

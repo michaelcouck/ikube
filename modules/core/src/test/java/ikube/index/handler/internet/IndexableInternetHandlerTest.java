@@ -10,6 +10,7 @@ import ikube.toolkit.ApplicationContextManager;
 
 import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -20,6 +21,7 @@ import org.junit.Test;
 public class IndexableInternetHandlerTest extends BaseTest {
 
 	@Test
+	@Ignore
 	public void visit() throws Exception {
 		indexContext.setIndexWriter(indexWriter);
 		IndexableInternet indexableInternet = ApplicationContextManager.getBean(IndexableInternet.class);

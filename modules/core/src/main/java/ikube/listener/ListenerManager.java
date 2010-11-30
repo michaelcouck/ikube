@@ -9,9 +9,11 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import EDU.oswego.cs.dl.util.concurrent.PooledExecutor;
+
 /**
  * This interface just holds the listener manager that will fire the events to the listeners.
- *
+ * 
  * @author Michael Couck
  * @since 17.04.10
  * @version 01.00
@@ -20,6 +22,7 @@ public class ListenerManager {
 
 	private static Logger LOGGER = Logger.getLogger(ListenerManager.class);
 	private static List<IListener> LISTENERS = new ArrayList<IListener>();
+	private static PooledExecutor POOLED_EXECUTER = new PooledExecutor(5);
 
 	/**
 	 * @param listener
@@ -47,14 +50,18 @@ public class ListenerManager {
 
 	/**
 	 * Notifies all the listeners for a particular instance of an event.
-	 *
+	 * 
 	 * @param event
 	 *            the event for distribution
 	 */
 	private static final void notifyListeners(final Event event) {
 		for (final IListener listener : LISTENERS) {
 			try {
-				listener.handleNotification(event);
+				POOLED_EXECUTER.execute(new Runnable() {
+					public void run() {
+						listener.handleNotification(event);
+					}
+				});
 				if (event.isConsumed()) {
 					break;
 				}

@@ -11,6 +11,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -295,6 +296,33 @@ public class FileUtilities {
 				inputStream.close();
 			} catch (Exception e) {
 				LOGGER.error("Exception closing input stream " + inputStream, e);
+			}
+		}
+	}
+
+	public static void getContents(Reader reader, OutputStream outputStream, long maxLength) {
+		if (reader == null) {
+			return;
+		}
+		try {
+			int read = -1;
+			int total = 0;
+			char[] chars = new char[1024];
+			while ((read = reader.read(chars)) > -1 && total < maxLength) {
+				total += read;
+				byte[] bytes = new byte[read];
+				for (int i = 0; i < read; i++) {
+					bytes[i] = (byte) chars[i];
+				}
+				outputStream.write(bytes, 0, bytes.length);
+			}
+		} catch (Exception e) {
+			LOGGER.error("Exception accessing the file contents.", e);
+		} finally {
+			try {
+				reader.close();
+			} catch (Exception e) {
+				LOGGER.error("Exception closing input stream " + reader, e);
 			}
 		}
 	}

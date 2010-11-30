@@ -153,8 +153,8 @@
 	<bean
 		id="internet"
 		class="ikube.model.IndexableInternet"
-		property:name="ikokoon"
-		property:url="http://www.ikokoon.eu/ikokoon/index.html" />
+		property:name="internet"
+		property:url="http://localhost/million/adapt.html" />
 	
 	<bean
 		id="filesystem"

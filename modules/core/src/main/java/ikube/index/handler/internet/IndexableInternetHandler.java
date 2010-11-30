@@ -88,7 +88,7 @@ public class IndexableInternetHandler extends Handler {
 							handleUrl(indexContext, internetIndexable, url, httpClient);
 						}
 					}
-				}, IndexableInternetHandler.class.getSimpleName() + "." + i);
+				}, this.getClass().getSimpleName() + "." + i);
 				threads.add(thread);
 				thread.start();
 			}
@@ -105,15 +105,14 @@ public class IndexableInternetHandler extends Handler {
 		Url url = getDataBase().find(Url.class, parameters, Boolean.FALSE);
 		if (url == null) {
 			for (Thread thread : synchronizedThreads) {
-				// logger.debug("Thread : " + thread + ", " + Thread.currentThread());
+				logger.debug(Logging.getString("Thread : ", thread, ", ", Thread.currentThread()));
 				if (thread.equals(Thread.currentThread())) {
 					continue;
 				}
 				// Check that there is one thread still active
 				if (thread.getState().equals(State.RUNNABLE)) {
-					logger.debug("Going into wait : " + Thread.currentThread());
+					logger.debug(Logging.getString("Going into wait : ", Thread.currentThread()));
 					try {
-						notifyAll();
 						wait(1000);
 					} catch (InterruptedException e) {
 						logger.error("", e);
@@ -130,23 +129,8 @@ public class IndexableInternetHandler extends Handler {
 		return url;
 	}
 
-	protected synchronized boolean isDuplicate(Long hash) {
-		try {
-			Map<String, Object> parameters = new HashMap<String, Object>();
-			parameters.put(IConstants.HASH, hash);
-			Url duplicate = getDataBase().find(Url.class, parameters, Boolean.FALSE);
-			if (duplicate != null) {
-				logger.debug(Logging.getString("Duplicate : ", duplicate));
-				return Boolean.TRUE;
-			}
-			return Boolean.FALSE;
-		} finally {
-			notifyAll();
-		}
-	}
-
 	protected void handleUrl(IndexContext indexContext, IndexableInternet indexable, Url url, HttpClient httpClient) {
-		logger.debug(Logging.getString("Doing url : ", url.getUrl(), ", ", Thread.currentThread()));
+		logger.debug("Doing url : " + url.getUrl() + ", " + Thread.currentThread());
 		GetMethod get = null;
 		ByteOutputStream byteOutputStream = null;
 		try {
@@ -175,9 +159,12 @@ public class IndexableInternetHandler extends Handler {
 			// TODO - Add the contents field
 			String fieldContents = outputStream.toString();
 
+			Map<String, Object> parameters = new HashMap<String, Object>();
 			Long hash = HashUtilities.hash(fieldContents);
-			if (isDuplicate(hash)) {
-				logger.debug(Logging.getString("Found duplicate url : ", url));
+			parameters.put(IConstants.HASH, hash);
+			Url duplicate = getDataBase().find(Url.class, parameters, Boolean.FALSE);
+			if (duplicate != null) {
+				logger.debug("Found duplicate data : " + duplicate);
 				return;
 			}
 
@@ -202,7 +189,7 @@ public class IndexableInternetHandler extends Handler {
 			try {
 				get.releaseConnection();
 			} catch (Exception e) {
-				logger.error("Exception releasing the connection : ", e);
+				logger.error("", e);
 			}
 		}
 	}

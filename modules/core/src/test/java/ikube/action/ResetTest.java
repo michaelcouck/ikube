@@ -28,7 +28,7 @@ public class ResetTest extends BaseActionTest {
 		dataBase.persist(url);
 
 		List<Url> urls = dataBase.find(Url.class, Integer.MIN_VALUE, Integer.MAX_VALUE);
-		assertTrue(urls.size() == 1);
+		assertTrue(urls.size() > 0);
 
 		reset.execute(indexContext);
 
