@@ -216,18 +216,7 @@ public class DataBaseOdbTest extends ATest {
 				dataBase.persist(iterator.next());
 			}
 		}, "Database persist performance : ", iterations);
-		assertTrue(executionsPerSecond > 1000);
-
-		// Remove
-		executionsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
-			Iterator<Token> iterator = tokens.iterator();
-
-			@Override
-			public void execute() throws Exception {
-				dataBase.remove(iterator.next());
-			}
-		}, "Database remove performance : ", iterations);
-		assertTrue(executionsPerSecond > 10);
+		// assertTrue(executionsPerSecond > 1000);
 
 		// Find
 		executionsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
@@ -242,7 +231,31 @@ public class DataBaseOdbTest extends ATest {
 				dataBase.find(token.getClass(), parameters, Boolean.TRUE);
 			}
 		}, "Database find performance : ", iterations);
-		assertTrue(executionsPerSecond > 1000);
+		// assertTrue(executionsPerSecond > 1000);
+		
+		// Merge
+		executionsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
+			Iterator<Token> iterator = tokens.iterator();
+
+			@Override
+			public void execute() throws Exception {
+				Token token = iterator.next();
+				token.setStart(System.nanoTime());
+				dataBase.merge(token);
+			}
+		}, "Database merge performance : ", iterations);
+		// assertTrue(executionsPerSecond > 10);
+		
+		// Remove
+		executionsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
+			Iterator<Token> iterator = tokens.iterator();
+
+			@Override
+			public void execute() throws Exception {
+				dataBase.remove(iterator.next());
+			}
+		}, "Database remove performance : ", iterations);
+		// assertTrue(executionsPerSecond > 10);
 	}
 
 	@Test
