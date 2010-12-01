@@ -6,6 +6,7 @@ import ikube.index.IndexManager;
 import ikube.index.content.ByteOutputStream;
 import ikube.index.content.IContentProvider;
 import ikube.index.content.InternetContentProvider;
+import ikube.index.handler.internet.IndexableInternetHandler;
 import ikube.index.parse.IParser;
 import ikube.index.parse.ParserProvider;
 import ikube.logging.Logging;
@@ -23,9 +24,11 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.lang.Thread.State;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.swing.text.html.HTML;
 
@@ -37,6 +40,7 @@ import net.htmlparser.jericho.Tag;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.jcs.access.exception.CacheException;
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Index;
@@ -46,8 +50,7 @@ import org.apache.lucene.document.Field.TermVector;
 public class Crawler implements Runnable {
 
 	private static Logger logger;
-	private static IDataBase dataBase;
-
+	// private static IDataBase dataBase;
 	private List<Thread> threads;
 	private IndexContext indexContext;
 	private IndexableInternet indexableInternet;
@@ -57,7 +60,7 @@ public class Crawler implements Runnable {
 		Crawler.logger = Logger.getLogger(this.getClass());
 		this.indexContext = indexContext;
 		this.indexableInternet = indexableInternet;
-		Crawler.dataBase = dataBase;
+		// Crawler.dataBase = dataBase;
 		this.threads = threads;
 		this.contentProvider = new InternetContentProvider();
 	}
@@ -79,10 +82,11 @@ public class Crawler implements Runnable {
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		parameters.put(IConstants.NAME, indexable.getName());
 		parameters.put(IConstants.INDEXED, Boolean.FALSE);
-		List<Url> urls = dataBase.find(Url.class, parameters, 0, 100);
-		if (urls.size() == 0) {
+
+		Set<?> keys = IndexableInternetHandler.IN.getGroupKeys(IConstants.URL);
+
+		if (keys.size() == 0) {
 			for (Thread thread : threads) {
-				// logger.debug(Logging.getString("Thread : ", thread, ", ", Thread.currentThread()));
 				if (thread.equals(Thread.currentThread())) {
 					continue;
 				}
@@ -98,10 +102,22 @@ public class Crawler implements Runnable {
 				}
 			}
 		}
-		if (urls.size() > 0) {
-			for (Url url : urls) {
+		List<Url> urls = new ArrayList<Url>();
+		if (keys.size() > 0) {
+			int size = 10;
+			for (Object key : keys) {
+				Url url = (Url) IndexableInternetHandler.IN.getFromGroup(key, IConstants.URL);
 				url.setIndexed(Boolean.TRUE);
-				dataBase.merge(url);
+				urls.add(url);
+				IndexableInternetHandler.IN.remove(key, IConstants.URL);
+				try {
+					IndexableInternetHandler.OUT.putInGroup(key, IConstants.URL, url);
+				} catch (Exception e) {
+					logger.error("", e);
+				}
+				if (urls.size() >= size) {
+					break;
+				}
 			}
 		}
 		Crawler.class.notifyAll();
@@ -138,17 +154,16 @@ public class Crawler implements Runnable {
 			// TODO - Add the contents field
 			String fieldContents = outputStream.toString();
 
-			Map<String, Object> parameters = new HashMap<String, Object>();
 			Long hash = HashUtilities.hash(fieldContents);
-			parameters.put(IConstants.HASH, hash);
-			Url duplicate = dataBase.find(Url.class, parameters, Boolean.FALSE);
+			// Url duplicate = dataBase.find(Url.class, parameters, Boolean.FALSE);
+			Url duplicate = (Url) IndexableInternetHandler.HASH.getFromGroup(hash, IConstants.URL);
 			if (duplicate != null) {
-				logger.debug("Found duplicate data : " + duplicate);
+				logger.debug("Found duplicate data : " + duplicate + ", url : " + url);
 				return;
 			}
 
 			url.setHash(hash);
-			dataBase.merge(url);
+			IndexableInternetHandler.HASH.putInGroup(hash, IConstants.URL, url);
 
 			Document document = new Document();
 			Store store = indexable.isStored() ? Store.YES : Store.NO;
@@ -228,16 +243,32 @@ public class Crawler implements Runnable {
 		}
 	}
 
-	protected void persistUrl(Url url) {
-		Map<String, Object> parameters = new HashMap<String, Object>();
-		parameters.put(IConstants.URL, url.getUrl());
-		parameters.put(IConstants.NAME, url.getName());
-		Url dbUrl = dataBase.find(Url.class, parameters, Boolean.TRUE);
-		// logger.debug("Event : " + event + ", " + dbUrl + ", " + url);
-		if (dbUrl == null) {
-			// logger.debug("Persisting : " + url);
-			dataBase.persist(url);
+	protected static synchronized void persistUrl(Url url) {
+		try {
+			// Check if it is in any of the caches
+			Object object = IndexableInternetHandler.IN.getFromGroup(url.getUrl(), IConstants.URL);
+			if (object != null) {
+				return;
+			}
+			object = IndexableInternetHandler.OUT.getFromGroup(url.getUrl(), IConstants.URL);
+			if (object != null) {
+				return;
+			}
+			IndexableInternetHandler.IN.putInGroup(url.getUrl(), IConstants.URL, url);
+		} catch (CacheException e) {
+			logger.error("Exception setting the url in the cache : " + url, e);
+		} finally {
+			Crawler.class.notifyAll();
 		}
+		// Map<String, Object> parameters = new HashMap<String, Object>();
+		// parameters.put(IConstants.URL, url.getUrl());
+		// parameters.put(IConstants.NAME, url.getName());
+		// Url dbUrl = dataBase.find(Url.class, parameters, Boolean.TRUE);
+		// // logger.debug("Event : " + event + ", " + dbUrl + ", " + url);
+		// if (dbUrl == null) {
+		// // logger.debug("Persisting : " + url);
+		// dataBase.persist(url);
+		// }
 	}
 
 }

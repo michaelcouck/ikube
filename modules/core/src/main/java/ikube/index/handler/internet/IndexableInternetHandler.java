@@ -1,5 +1,6 @@
 package ikube.index.handler.internet;
 
+import ikube.IConstants;
 import ikube.index.handler.Handler;
 import ikube.index.handler.IHandler;
 import ikube.index.handler.internet.crawler.Crawler;
@@ -11,12 +12,28 @@ import ikube.model.Url;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.jcs.JCS;
+
 /**
  * @author Michael Couck
  * @since 29.11.10
  * @version 01.00
  */
 public class IndexableInternetHandler extends Handler {
+
+	public static JCS IN;
+	public static JCS OUT;
+	public static JCS HASH;
+
+	static {
+		try {
+			IN = JCS.getInstance(IConstants.IN);
+			OUT = JCS.getInstance(IConstants.OUT);
+			HASH = JCS.getInstance(IConstants.HASH);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
 	public IndexableInternetHandler(IHandler<Indexable<?>> previous) {
 		super(previous);
@@ -54,7 +71,11 @@ public class IndexableInternetHandler extends Handler {
 		url.setName(indexableInternet.getName());
 		url.setIndexed(Boolean.FALSE);
 
-		getDataBase().persist(url);
+		try {
+			IN.putInGroup(url.getUrl(), IConstants.URL, url);
+		} catch (Exception e) {
+			logger.error("", e);
+		}
 	}
 
 }

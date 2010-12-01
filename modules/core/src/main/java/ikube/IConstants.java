@@ -54,5 +54,8 @@ public interface IConstants {
 	public String START = "start";
 
 	public String ENCODING = "UTF8";
+	
+	public String IN = "in";
+	public String OUT = "out";
 
 }

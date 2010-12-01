@@ -12,10 +12,11 @@ import javax.sql.DataSource;
 @Entity()
 public class IndexableTable extends Indexable<IndexableTable> {
 
+	private transient DataSource dataSource;
+
 	private String sql;
 	private String predicate;
 	private boolean primary;
-	private transient DataSource dataSource;
 
 	public boolean isPrimary() {
 		return primary;
