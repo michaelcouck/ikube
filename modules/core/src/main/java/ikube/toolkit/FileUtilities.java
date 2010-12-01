@@ -36,21 +36,23 @@ public class FileUtilities {
 	}
 
 	public static File[] findFiles(File folder, String[] stringPatterns) {
-		final Pattern[] patterns = new Pattern[stringPatterns.length];
-		int index = 0;
+		boolean first = Boolean.TRUE;
+		StringBuilder builder = new StringBuilder();
 		for (String stringPattern : stringPatterns) {
-			StringBuilder builder = new StringBuilder(".*(").append(stringPattern).append(").*");
-			patterns[index++] = Pattern.compile(builder.toString());
+			if (!first) {
+				builder.append("|");
+			} else {
+				first = Boolean.FALSE;
+			}
+			builder.append(".*(").append(stringPattern).append(").*");
 		}
+		final Pattern pattern = Pattern.compile(builder.toString());
 		File[] files = folder.listFiles(new FileFilter() {
 			@Override
 			public boolean accept(File file) {
 				String pathName = file.getName();
-				// LOGGER.debug("Path name : " + pathName);
-				for (Pattern pattern : patterns) {
-					if (pattern.matcher(pathName).matches()) {
-						return Boolean.TRUE;
-					}
+				if (pattern.matcher(pathName).matches()) {
+					return Boolean.TRUE;
 				}
 				return Boolean.FALSE;
 			}
@@ -218,7 +220,6 @@ public class FileUtilities {
 	 * @param file
 	 *            the file to read the contents from
 	 * @return the file contents in a byte array output stream
-	 * @throws Exception
 	 */
 	public static ByteArrayOutputStream getContents(File file) {
 		InputStream inputStream = null;
@@ -240,7 +241,6 @@ public class FileUtilities {
 	 * @param maxLength
 	 *            the maximum number of bytes to read into the buffer
 	 * @return the file contents in a byte array output stream
-	 * @throws Exception
 	 */
 	public static ByteArrayOutputStream getContents(InputStream inputStream, long maxLength) {
 		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -274,8 +274,6 @@ public class FileUtilities {
 	 *            the output stream to write the data to
 	 * @param maxLength
 	 *            the maximum number of bytes to read into the buffer
-	 * @return the file contents in a byte array output stream
-	 * @throws Exception
 	 */
 	public static void getContents(InputStream inputStream, OutputStream outputStream, long maxLength) {
 		if (inputStream == null) {
@@ -290,7 +288,7 @@ public class FileUtilities {
 				outputStream.write(bytes, 0, read);
 			}
 		} catch (Exception e) {
-			LOGGER.error("Exception accessing the file contents.", e);
+			LOGGER.error("Exception accessing the stream contents.", e);
 		} finally {
 			try {
 				inputStream.close();

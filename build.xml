@@ -8,22 +8,26 @@
 		<delete dir="${tomcat.1.webapps}/${ikube.dir}" failonerror="true" />
 		<delete dir="${tomcat.2.webapps}/${ikube.dir}" failonerror="true" />
 		<delete dir="${tomcat.3.webapps}/${ikube.dir}" failonerror="true" />
+		<delete dir="${tomcat.ikube.webapps}/${ikube.dir}" failonerror="true" />
 
 		<delete dir="D:/Cluster/faq" failonerror="true" />
 
-		<delete dir="${tomcat.1.bin}/faq" failonerror="true" />
-		<delete dir="${tomcat.2.bin}/faq" failonerror="true" />
-		<delete dir="${tomcat.3.bin}/faq" failonerror="true" />
+		<delete dir="${tomcat.1.bin}/index" failonerror="true" />
+		<delete dir="${tomcat.2.bin}/index" failonerror="true" />
+		<delete dir="${tomcat.3.bin}/index" failonerror="true" />
+		<delete dir="${tomcat.ikube.bin}/index" failonerror="true" />
 
 		<delete file="${tomcat.1.webapps}/${ikube.war}" failonerror="true" />
 		<delete file="${tomcat.2.webapps}/${ikube.war}" failonerror="true" />
 		<delete file="${tomcat.3.webapps}/${ikube.war}" failonerror="true" />
+		<delete file="${tomcat.ikube.webapps}/${ikube.war}" failonerror="true" />
 
 		<copy file="${target.directory}/${ikube.war}" todir="${tomcat.1.webapps}" overwrite="true" failonerror="true" />
 		<copy file="${target.directory}/${ikube.war}" todir="${tomcat.2.webapps}" overwrite="true" failonerror="true" />
 		<copy file="${target.directory}/${ikube.war}" todir="${tomcat.3.webapps}" overwrite="true" failonerror="true" />
+		<copy file="${target.directory}/${ikube.war}" todir="${tomcat.ikube.webapps}" overwrite="true" failonerror="true" />
 	</target>
-
+	
 	<target name="cluster">
 		<exec spawn="false" executable="${cluster.directory}/startup.bat" />
 	</target>

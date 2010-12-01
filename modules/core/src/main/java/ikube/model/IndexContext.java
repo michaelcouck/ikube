@@ -50,6 +50,12 @@ public class IndexContext extends Persistable implements Comparable<IndexContext
 	private transient IndexWriter indexWriter;
 	/** Can be null if there is no index created. */
 	private transient MultiSearcher multiSearcher;
+	/** The cache for the crawlers. */
+	private transient Cache cache;
+
+	public IndexContext() {
+		this.cache = new Cache();
+	}
 
 	public String getName() {
 		return name;
@@ -212,6 +218,11 @@ public class IndexContext extends Persistable implements Comparable<IndexContext
 
 	public void setMultiSearcher(final MultiSearcher multiSearcher) {
 		this.multiSearcher = multiSearcher;
+	}
+
+	@Transient
+	public Cache getCache() {
+		return this.cache;
 	}
 
 }

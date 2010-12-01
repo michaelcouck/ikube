@@ -35,8 +35,8 @@ public class Reset extends Action<IndexContext, Boolean> {
 						iterator = urls.iterator();
 					}
 				}
-
 				indexContext.setIdNumber(0);
+				indexContext.getCache().clear();
 				return Boolean.TRUE;
 			} else {
 				logger.debug("Not resetting : " + !anyWorking + ", " + indexContext);

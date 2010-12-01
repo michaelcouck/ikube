@@ -147,7 +147,7 @@
 		id="internet"
 		class="ikube.model.IndexableInternet"
 		property:name="internet"
-		property:url="http://www.oki.com/" />
+		property:url="http://jackal/million/adapt.html" />
 	
 	<bean
 		id="filesystem"

@@ -55,6 +55,8 @@ public class Url extends Persistable {
 		builder.append(getName());
 		builder.append(", ");
 		builder.append(getUrl());
+		builder.append(", ");
+		builder.append(getHash());
 		builder.append("]");
 		return builder.toString();
 	}
