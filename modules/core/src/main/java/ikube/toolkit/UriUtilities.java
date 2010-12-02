@@ -5,17 +5,31 @@ import java.net.URISyntaxException;
 import java.util.Stack;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.Logger;
+
 public class UriUtilities {
 
+	protected static Logger LOGGER = Logger.getLogger(UriUtilities.class);
+
 	/** Accepted protocols. */
-	protected static final Pattern PROTOCOL_PATTERN = Pattern.compile("(http).*|(www).*|(https).*|(ftp).*");
+	protected static final Pattern PROTOCOL_PATTERN;
 	/** The pattern regular expression to match a url. */
-	protected static final Pattern EXCLUDED_PATTERN = Pattern.compile(".*news.*|.*javascript.*|.*mailto.*|.*plugintest.*|.*skype.*");
+	protected static final Pattern EXCLUDED_PATTERN;
 	/** The pattern to strip the JSessionId form the urls. */
-	protected static final Pattern JSESSIONID_PATTERN = Pattern
-			.compile("([;_]?((?i)l|j|bv_)?((?i)sid|phpsessid|sessionid)=.*?)(\\?|&amp;|#|$)");
+	protected static final Pattern JSESSIONID_PATTERN;
 	/** The anchor pattern. */
-	protected static final Pattern ANCHOR_PATTERN = Pattern.compile("#[^#]*$");
+	protected static final Pattern ANCHOR_PATTERN;
+	/** The space pattern. */
+	protected static final Pattern SPACE_PATTERN;
+
+	static {
+		SPACE_PATTERN = Pattern.compile(" \n\r");
+		ANCHOR_PATTERN = Pattern.compile("#[^#]*$");
+		PROTOCOL_PATTERN = Pattern.compile("(http).*|(www).*|(https).*|(ftp).*");
+		EXCLUDED_PATTERN = Pattern.compile("(news).*|(javascript).*|(mailto).*|(plugintest).*|(skype).*");
+		JSESSIONID_PATTERN = Pattern.compile("([;_]?((?i)l|j|bv_)?((?i)sid|phpsessid|sessionid)=.*?)(\\?|&amp;|#|$)");
+
+	}
 
 	/**
 	 * Resolves a URI reference against a base URI. Work-around for bug in java.net.URI
@@ -28,7 +42,13 @@ public class UriUtilities {
 	 * @return the resulting URI
 	 */
 	public static URI resolve(final URI baseURI, final String reference) {
-		return resolve(baseURI, URI.create(reference));
+		// Strip the space characters from the reference
+		String strippedReference = UriUtilities.stripBlanks(reference, "");
+		URI referenceUri = URI.create(strippedReference);
+		// TODO - this has to be cleaned because the URI
+		// class is too strict, especially with ':' characters etc.
+		// We'll end up losing half the links in a complex site
+		return UriUtilities.resolve(baseURI, referenceUri);
 	}
 
 	/**
@@ -117,7 +137,27 @@ public class UriUtilities {
 	}
 
 	public static boolean isExcluded(String string) {
-		return EXCLUDED_PATTERN.matcher(string).matches();
+		if (string == null) {
+			return Boolean.TRUE;
+		}
+		// Blank link is useless
+		if (string.equals("")) {
+			return Boolean.TRUE;
+		}
+		// Check that there is at least one character in the link
+		char[] chars = string.toCharArray();
+		boolean containsCharacters = Boolean.FALSE;
+		for (char c : chars) {
+			if (Character.isLetterOrDigit(c)) {
+				containsCharacters = Boolean.TRUE;
+				break;
+			}
+		}
+		if (!containsCharacters) {
+			return Boolean.TRUE;
+		}
+		String lowerCaseString = string.toLowerCase();
+		return EXCLUDED_PATTERN.matcher(lowerCaseString).matches();
 	}
 
 	public static boolean isInternetProtocol(String string) {
@@ -130,6 +170,10 @@ public class UriUtilities {
 
 	public static String stripAnchor(String string, String replacement) {
 		return ANCHOR_PATTERN.matcher(string).replaceAll(replacement);
+	}
+
+	public static String stripBlanks(String string, String replacement) {
+		return SPACE_PATTERN.matcher(string).replaceAll(replacement);
 	}
 
 }

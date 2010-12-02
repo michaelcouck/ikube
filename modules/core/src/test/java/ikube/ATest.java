@@ -60,13 +60,10 @@ public abstract class ATest {
 
 	protected void waitForThreads(List<Thread> threads) {
 		outer: while (true) {
-			Thread currentThread = Thread.currentThread();
 			for (Thread thread : threads) {
 				if (thread.isAlive()) {
 					try {
-						logger.info("Going into join : " + thread + ", this thread : " + currentThread);
 						thread.join();
-						logger.info("Coming out of join : " + thread + ", " + currentThread);
 					} catch (InterruptedException e) {
 						logger.error("Interrupted waiting for thread : " + thread + ", this thread : " + Thread.currentThread(), e);
 					}

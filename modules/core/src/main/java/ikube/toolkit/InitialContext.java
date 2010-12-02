@@ -23,7 +23,7 @@ public class InitialContext extends MemoryContext implements Serializable {
 	/**
 	 * Constructor.
 	 */
-	public InitialContext(Hashtable env) {
+	public InitialContext(Hashtable<?, ?> env) {
 		super(env);
 	}
 

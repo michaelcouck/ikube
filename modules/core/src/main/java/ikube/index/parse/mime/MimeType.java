@@ -26,11 +26,9 @@ public final class MimeType {
 	/** The Mime-Type description */
 	private String description = null;
 	/** The Mime-Type associated extensions */
-	@SuppressWarnings("unchecked")
-	private ArrayList extensions = null;
+	private ArrayList<String> extensions = null;
 	/** The magic bytes associated to this Mime-Type */
-	@SuppressWarnings("unchecked")
-	private ArrayList magics = null;
+	private ArrayList<Magic> magics = null;
 	/** The minimum length of data to provides for magic analyzis */
 	private int minLength = 0;
 
@@ -66,7 +64,6 @@ public final class MimeType {
 	}
 
 	/** Init method used by constructors. */
-	@SuppressWarnings("unchecked")
 	private void init(String primary, String sub) throws MimeTypeException {
 		// Preliminary checks...
 		if ((primary == null) || (primary.length() <= 0) || (!isValid(primary))) {
@@ -84,8 +81,8 @@ public final class MimeType {
 		this.name = primary + SEPARATOR + sub;
 		this.primary = primary;
 		this.sub = clearedSub;
-		this.extensions = new ArrayList();
-		this.magics = new ArrayList();
+		this.extensions = new ArrayList<String>();
+		this.magics = new ArrayList<MimeType.Magic>();
 	}
 
 	/**
@@ -162,7 +159,6 @@ public final class MimeType {
 	 * @param the
 	 *            extension to add to the list of extensions associated to this mime-type.
 	 */
-	@SuppressWarnings("unchecked")
 	void addExtension(String ext) {
 		extensions.add(ext);
 	}
@@ -172,12 +168,10 @@ public final class MimeType {
 	 * 
 	 * @return the extensions associated to this mime-type.
 	 */
-	@SuppressWarnings("unchecked")
 	String[] getExtensions() {
 		return (String[]) extensions.toArray(new String[extensions.size()]);
 	}
 
-	@SuppressWarnings("unchecked")
 	void addMagic(int offset, String type, String magic) {
 		// Some preliminary checks...
 		if ((magic == null) || (magic.length() < 1)) {

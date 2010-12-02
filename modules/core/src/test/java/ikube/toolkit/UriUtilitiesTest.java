@@ -1,6 +1,7 @@
 package ikube.toolkit;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import ikube.ATest;
 
 import java.net.URI;
@@ -84,5 +85,13 @@ public class UriUtilitiesTest extends ATest {
 		stripped = UriUtilities.stripAnchor(url, "");
 		logger.info("Stripped : " + stripped);
 		assertFalse(stripped.contains("#"));
+	}
+
+	@Test
+	public void isExcluded() {
+		String string = "JavaScript";
+		assertTrue(UriUtilities.isExcluded(string));
+		string = "not a javascript link";
+		assertFalse(UriUtilities.isExcluded(string));
 	}
 }

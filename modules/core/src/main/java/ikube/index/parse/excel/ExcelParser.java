@@ -2,7 +2,6 @@ package ikube.index.parse.excel;
 
 import ikube.index.parse.IParser;
 
-import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Iterator;
@@ -26,19 +25,15 @@ public class ExcelParser implements IParser {
 	 * {@inheritDoc}
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public OutputStream parse(InputStream inputStream, OutputStream outputStream) throws Exception {
 		POIFSFileSystem fs = new POIFSFileSystem(inputStream);
 		HSSFWorkbook workbook = new HSSFWorkbook(fs);
-		if (workbook == null) {
-			return outputStream;
-		}
 		for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
 			HSSFSheet sheet = workbook.getSheetAt(i);
-			Iterator rowIterator = sheet.rowIterator();
+			Iterator<?> rowIterator = sheet.rowIterator();
 			while (rowIterator.hasNext()) {
 				HSSFRow row = (HSSFRow) rowIterator.next();
-				Iterator cellIterator = row.cellIterator();
+				Iterator<?> cellIterator = row.cellIterator();
 				while (cellIterator.hasNext()) {
 					HSSFCell cell = (HSSFCell) cellIterator.next();
 					String text = "";

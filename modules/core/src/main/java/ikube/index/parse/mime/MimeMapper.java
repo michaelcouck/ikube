@@ -11,24 +11,22 @@ import org.dom4j.io.SAXReader;
 
 /**
  * Maps mime types to parser classes.
- *
+ * 
  * @author Michael Couck
  * @since 12.05.04
  * @version 01.00
  */
 public class MimeMapper {
 
-	@SuppressWarnings("unchecked")
-	private static HashMap mapping = new HashMap();
+	private static HashMap<String, String> MAPPING = new HashMap<String, String>();
 
-	@SuppressWarnings("unchecked")
 	public MimeMapper(String filePath) {
 		try {
 			InputStream inputStream = getClass().getResourceAsStream(filePath);
 			SAXReader reader = new SAXReader();
 			Document doc = reader.read(inputStream);
 			Element root = doc.getRootElement();
-			List allElements = root.elements();
+			List<?> allElements = root.elements();
 			for (int i = 0; i < allElements.size(); i++) {
 				Element element = (Element) allElements.get(i);
 				if (element.getName().equals("mime-type")) {
@@ -37,7 +35,7 @@ public class MimeMapper {
 					if (type != null && parser != null) {
 						try {
 							// System.out.println(type.getValue() + ":" + parser.getValue());
-							mapping.put(type.getValue(), parser.getValue());
+							MAPPING.put(type.getValue(), parser.getValue());
 						} catch (Exception t) {
 							t.printStackTrace();
 						}
@@ -50,7 +48,7 @@ public class MimeMapper {
 	}
 
 	public static String getParserClass(String mimeType) {
-		return (String) mapping.get(mimeType);
+		return (String) MAPPING.get(mimeType);
 	}
 
 }

@@ -80,9 +80,9 @@ public class UrlHandler implements Runnable {
 		try {
 			get = new GetMethod(url.getUrl());
 			httpClient.executeMethod(get);
-			InputStream inputStream = get.getResponseBodyAsStream();
+			InputStream responseInputStream = get.getResponseBodyAsStream();
 
-			indexable.setCurrentInputStream(inputStream);
+			indexable.setCurrentInputStream(responseInputStream);
 
 			String contentType = URI.create(url.getUrl()).toURL().getFile();
 
@@ -97,8 +97,8 @@ public class UrlHandler implements Runnable {
 
 			IParser parser = ParserProvider.getParser(contentType, bytes);
 
-			inputStream = new ByteArrayInputStream(buffer, 0, byteOutputStream.getCount());
-			OutputStream outputStream = parser.parse(inputStream, new ByteArrayOutputStream());
+			ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(buffer, 0, byteOutputStream.getCount());
+			OutputStream outputStream = parser.parse(byteArrayInputStream, new ByteArrayOutputStream());
 			// TODO - Add the title field
 			// TODO - Add the contents field
 			String fieldContents = outputStream.toString();
@@ -123,8 +123,8 @@ public class UrlHandler implements Runnable {
 
 			indexContext.getIndexWriter().addDocument(document);
 
-			inputStream.reset();
-			extractLinks(indexable, url, inputStream);
+			byteArrayInputStream.reset();
+			extractLinks(indexable, url, byteArrayInputStream);
 		} catch (Exception e) {
 			logger.error("Exception accessing url : " + url, e);
 		} finally {
@@ -162,7 +162,7 @@ public class UrlHandler implements Runnable {
 							if (link == null) {
 								continue;
 							}
-							if (UriUtilities.isExcluded(link.toLowerCase())) {
+							if (UriUtilities.isExcluded(link.trim().toLowerCase())) {
 								continue;
 							}
 							URI uri = UriUtilities.resolve(baseUri, link);

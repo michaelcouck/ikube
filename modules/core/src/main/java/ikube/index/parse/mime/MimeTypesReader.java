@@ -11,7 +11,7 @@ import org.dom4j.io.SAXReader;
 
 /**
  * A reader for the mime-types DTD compliant XML files.
- *
+ * 
  * @author Jerome Charron - http://frutch.free.fr/
  */
 final class MimeTypesReader {
@@ -42,11 +42,10 @@ final class MimeTypesReader {
 	}
 
 	/** Read Element named mime-types. */
-	@SuppressWarnings("unchecked")
 	private MimeType[] readMimeTypes(Element rootElement) {
-		ArrayList types = new ArrayList();
+		ArrayList<MimeType> types = new ArrayList<MimeType>();
 		// All the mime-type elements
-		List allElements = rootElement.elements();
+		List<?> allElements = rootElement.elements();
 		for (int i = 0; i < allElements.size(); i++) {
 			Element mimeType = (Element) allElements.get(i);
 			if (mimeType.getName().equals("mime-type")) {
@@ -60,7 +59,6 @@ final class MimeTypesReader {
 	}
 
 	/** Read Element named mime-type. */
-	@SuppressWarnings("unchecked")
 	private MimeType readMimeType(Element element) {
 		String name = null;
 		String description = null;
@@ -86,7 +84,7 @@ final class MimeTypesReader {
 		}
 		type.setDescription(description);
 
-		List children = element.elements();
+		List<?> children = element.elements();
 		for (int i = 0; i < children.size(); i++) {
 			Element child = (Element) children.get(i);
 			// System.out.println("MimeTypesReader:" + child.getName());

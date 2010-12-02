@@ -1,7 +1,6 @@
 package ikube.model;
 
 import ikube.IConstants;
-import ikube.logging.Logging;
 
 import java.lang.Thread.State;
 import java.util.ArrayList;
@@ -55,7 +54,7 @@ public class Cache {
 				// and them selves die, sé là vie, a tragedy, Russian fairy tale
 				// where everyone dies in the end
 				if (thread.getState().equals(State.RUNNABLE)) {
-					logger.debug(Logging.getString("Waiting : ", Thread.currentThread()));
+					// logger.debug(Logging.getString("Waiting : ", Thread.currentThread()));
 					try {
 						wait(waitTime);
 					} catch (InterruptedException e) {
@@ -120,7 +119,7 @@ public class Cache {
 		}
 		return null;
 	}
-	
+
 	public int getTotal(String group) {
 		return this.all.getGroupKeys(group).size();
 	}
