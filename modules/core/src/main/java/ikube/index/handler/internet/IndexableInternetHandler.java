@@ -1,7 +1,7 @@
 package ikube.index.handler.internet;
 
 import ikube.index.handler.Handler;
-import ikube.index.handler.IHandler;
+import ikube.index.handler.internet.process.Worker;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.model.IndexableInternet;
@@ -17,10 +17,6 @@ import java.util.List;
  */
 public class IndexableInternetHandler extends Handler {
 
-	public IndexableInternetHandler(IHandler<Indexable<?>> previous) {
-		super(previous);
-	}
-
 	@Override
 	public List<Thread> handle(final IndexContext indexContext, Indexable<?> indexable) throws Exception {
 		if (IndexableInternet.class.isAssignableFrom(indexable.getClass())) {
@@ -34,9 +30,8 @@ public class IndexableInternetHandler extends Handler {
 		// The start url
 		seedUrl(indexContext, indexableInternet);
 		for (int i = 0; i < getThreads(); i++) {
-			UrlHandler crawler = new UrlHandler(indexContext, indexableInternet, getDataBase(), threads);
-			Thread thread = new Thread(crawler, this.getClass().getSimpleName() + "." + i);
-			threads.add(thread);
+			Worker worker = new Worker(indexContext, indexableInternet, threads);
+			threads.add(new Thread(worker, this.getClass().getSimpleName() + "." + i));
 		}
 		for (Thread thread : threads) {
 			thread.start();

@@ -2,7 +2,6 @@ package ikube.index.handler.filesystem;
 
 import ikube.index.IndexManager;
 import ikube.index.handler.Handler;
-import ikube.index.handler.IHandler;
 import ikube.index.parse.IParser;
 import ikube.index.parse.ParserProvider;
 import ikube.model.IndexContext;
@@ -31,15 +30,10 @@ import org.apache.lucene.document.Field.TermVector;
  */
 public class IndexableFilesystemHandler extends Handler {
 
-	public IndexableFilesystemHandler(IHandler<Indexable<?>> previous) {
-		super(previous);
-	}
-
 	public List<Thread> handle(final IndexContext indexContext, final Indexable<?> indexable) throws Exception {
 		if (IndexableFileSystem.class.isAssignableFrom(indexable.getClass())) {
 			handleFilesystem(indexContext, (IndexableFileSystem) indexable);
 		}
-		// super.handle(indexContext, indexable);
 		return new ArrayList<Thread>();
 	}
 

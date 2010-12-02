@@ -2,7 +2,6 @@ package ikube.index.handler.email;
 
 import ikube.index.IndexManager;
 import ikube.index.handler.Handler;
-import ikube.index.handler.IHandler;
 import ikube.index.parse.IParser;
 import ikube.index.parse.ParserProvider;
 import ikube.logging.Logging;
@@ -40,7 +39,7 @@ import org.apache.lucene.document.Field.TermVector;
 import com.sun.mail.pop3.POP3SSLStore;
 
 /**
- * @author Michael Couck
+ * @author Bruno Barin
  * @since 29.11.10
  * @version 01.00
  */
@@ -49,16 +48,11 @@ public class IndexableEmailHandler extends Handler {
 	static final String SSL_FACTORY = "javax.net.ssl.SSLSocketFactory";
 	static final String MAIL_PROTOCOL = "pop3";
 
-	public IndexableEmailHandler(IHandler<Indexable<?>> previous) {
-		super(previous);
-	}
-
 	@Override
 	public List<Thread> handle(final IndexContext indexContext, final Indexable<?> indexable) throws Exception {
 		if (IndexableEmail.class.isAssignableFrom(indexable.getClass())) {
 			handleEmail(indexContext, (IndexableEmail) indexable);
 		}
-		// super.handle(indexContext, indexable);
 		return new ArrayList<Thread>();
 	}
 

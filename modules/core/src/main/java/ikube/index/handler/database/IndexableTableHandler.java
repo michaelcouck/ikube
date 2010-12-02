@@ -6,7 +6,6 @@ import ikube.index.content.ByteOutputStream;
 import ikube.index.content.ColumnContentProvider;
 import ikube.index.content.IContentProvider;
 import ikube.index.handler.Handler;
-import ikube.index.handler.IHandler;
 import ikube.index.parse.IParser;
 import ikube.index.parse.ParserProvider;
 import ikube.logging.Logging;
@@ -43,8 +42,7 @@ public class IndexableTableHandler extends Handler {
 
 	private IContentProvider<IndexableColumn> contentProvider;
 
-	public IndexableTableHandler(IHandler<Indexable<?>> previous) {
-		super(previous);
+	public IndexableTableHandler() {
 		this.contentProvider = new ColumnContentProvider();
 	}
 

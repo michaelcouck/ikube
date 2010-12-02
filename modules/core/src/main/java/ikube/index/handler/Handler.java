@@ -1,10 +1,7 @@
 package ikube.index.handler;
 
 import ikube.database.IDataBase;
-import ikube.model.IndexContext;
 import ikube.model.Indexable;
-
-import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -15,32 +12,10 @@ import org.apache.log4j.Logger;
  */
 public abstract class Handler implements IHandler<Indexable<?>> {
 
-	protected Logger logger;
+	protected Logger logger = Logger.getLogger(this.getClass());
 
-	private IHandler<Indexable<?>> prev;
-	private IHandler<Indexable<?>> next;
 	private int threads;
 	private IDataBase dataBase;
-
-	public Handler(IHandler<Indexable<?>> previous) {
-		this.prev = previous;
-		if (this.prev != null) {
-			((Handler) previous).setNext(this);
-		}
-		this.logger = Logger.getLogger(this.getClass());
-	}
-
-	@Override
-	public List<Thread> handle(IndexContext indexContext, Indexable<?> indexable) throws Exception {
-		if (this.next != null) {
-			return this.next.handle(indexContext, indexable);
-		}
-		return null;
-	}
-
-	private void setNext(IHandler<Indexable<?>> next) {
-		this.next = next;
-	}
 
 	public int getThreads() {
 		return threads;
