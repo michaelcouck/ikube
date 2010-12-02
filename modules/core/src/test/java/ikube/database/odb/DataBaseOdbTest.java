@@ -1,4 +1,4 @@
-package ikube.database;
+package ikube.database.odb;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import ikube.ATest;
 import ikube.IConstants;
+import ikube.database.odb.DataBaseOdb;
 import ikube.logging.Logging;
 import ikube.model.Indexable;
 import ikube.model.IndexableColumn;
@@ -219,6 +220,7 @@ public class DataBaseOdbTest extends ATest {
 		}
 
 		// Persist
+		@SuppressWarnings("unused")
 		double executionsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
 			Iterator<Token> iterator = tokens.iterator();
 

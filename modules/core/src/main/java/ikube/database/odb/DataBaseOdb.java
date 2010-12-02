@@ -1,6 +1,7 @@
-package ikube.database;
+package ikube.database.odb;
 
 import ikube.IConstants;
+import ikube.database.IDataBase;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -74,7 +75,7 @@ public class DataBaseOdb implements IDataBase {
 	}
 
 	protected void configureDataBase() {
-		DLogger.register(new ikube.database.Logger());
+		DLogger.register(new ikube.database.odb.Logger());
 		OdbConfiguration.setDebugEnabled(Boolean.FALSE);
 		OdbConfiguration.setDebugEnabled(5, Boolean.FALSE);
 		OdbConfiguration.setLogAll(Boolean.FALSE);

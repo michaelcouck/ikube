@@ -38,16 +38,16 @@
 		id="ikube.aspect.Monitor"
 		class="ikube.aspect.Monitor" />
 	<bean
-		id="ikube.database.DataBaseOdb"
-		class="ikube.database.DataBaseOdb"
+		id="ikube.database.odb.DataBaseOdb"
+		class="ikube.database.odb.DataBaseOdb"
 		init-method="initialise"
 		lazy-init="false"
 		destroy-method="close">
 		<property name="indexes">
 			<list>
 				<bean
-					id="ikube.database.Index.Url"
-					class="ikube.database.Index"
+					id="ikube.database.odb.Index.Url"
+					class="ikube.database.odb.Index"
 					property:className="ikube.model.Url">
 					<property name="fieldNames">
 						<list>
@@ -61,7 +61,7 @@
 	</bean>
 	<bean
 		class="ikube.listener.ParserListener"
-		property:dataBase-ref="ikube.database.DataBaseOdb" />
+		property:dataBase-ref="ikube.database.odb.DataBaseOdb" />
 
 	<bean id="ikube.action.Close" class="ikube.action.Close" />
 	<bean id="ikube.action.Delete" class="ikube.action.Delete" />
@@ -86,25 +86,25 @@
 	
 	<bean
 		class="ikube.index.handler.internet.IndexableInternetHandler"
-		property:dataBase-ref="ikube.database.DataBaseOdb"
+		property:dataBase-ref="ikube.database.odb.DataBaseOdb"
 		property:threads="${internet.handler.threads}">
 		<constructor-arg><null /></constructor-arg>
 	</bean>
 	<bean
 		class="ikube.index.handler.email.IndexableEmailHandler"
-		property:dataBase-ref="ikube.database.DataBaseOdb"
+		property:dataBase-ref="ikube.database.odb.DataBaseOdb"
 		property:threads="${email.handler.threads}">
 		<constructor-arg><null /></constructor-arg>
 	</bean>
 	<bean
 		class="ikube.index.handler.filesystem.IndexableFilesystemHandler"
-		property:dataBase-ref="ikube.database.DataBaseOdb"
+		property:dataBase-ref="ikube.database.odb.DataBaseOdb"
 		property:threads="${filesystem.handler.threads}">
 		<constructor-arg><null /></constructor-arg>
 	</bean>
 	<bean
 		class="ikube.index.handler.database.IndexableTableHandler"
-		property:dataBase-ref="ikube.database.DataBaseOdb"
+		property:dataBase-ref="ikube.database.odb.DataBaseOdb"
 		property:threads="${table.handler.threads}">
 		<constructor-arg><null /></constructor-arg>
 	</bean>

@@ -1,4 +1,4 @@
-package ikube.index.handler.internet.crawler;
+package ikube.index.handler.internet;
 
 import ikube.IConstants;
 import ikube.database.IDataBase;
@@ -40,7 +40,7 @@ import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
 
-public class Crawler implements Runnable {
+public class UrlHandler implements Runnable {
 
 	private Logger logger;
 	private List<Thread> threads;
@@ -48,7 +48,7 @@ public class Crawler implements Runnable {
 	private IndexableInternet indexableInternet;
 	private IContentProvider<IndexableInternet> contentProvider;
 
-	public Crawler(IndexContext indexContext, IndexableInternet indexableInternet, IDataBase dataBase, List<Thread> threads) {
+	public UrlHandler(IndexContext indexContext, IndexableInternet indexableInternet, IDataBase dataBase, List<Thread> threads) {
 		this.logger = Logger.getLogger(this.getClass());
 		this.threads = threads;
 		this.indexContext = indexContext;

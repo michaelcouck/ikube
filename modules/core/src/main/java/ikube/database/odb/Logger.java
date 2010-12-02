@@ -1,4 +1,4 @@
-package ikube.database;
+package ikube.database.odb;
 
 import org.neodatis.tool.ILogger;
 
