@@ -62,7 +62,6 @@ public abstract class ATest {
 		outer: while (true) {
 			Thread currentThread = Thread.currentThread();
 			for (Thread thread : threads) {
-				logger.info("Thread : " + thread);
 				if (thread.isAlive()) {
 					try {
 						logger.info("Going into join : " + thread + ", this thread : " + currentThread);

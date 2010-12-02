@@ -7,9 +7,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
-import java.net.URL;
 
-import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Document;
 import javax.swing.text.rtf.RTFEditorKit;
 
@@ -36,15 +34,4 @@ public class RtfParser implements IParser {
 		return outputStream;
 	}
 
-	/**
-	 * This method is from SearchBlox.
-	 */
-	protected String parseContent(URL url, String string) throws Exception {
-		String content = "";
-		DefaultStyledDocument defaultstyleddocument = new DefaultStyledDocument();
-		RTFEditorKit kit = new RTFEditorKit();
-		kit.read(new InputStreamReader(url.openStream(), string), defaultstyleddocument, 0);
-		content = defaultstyleddocument.getText(0, defaultstyleddocument.getLength());
-		return content;
-	}
 }

@@ -33,7 +33,7 @@ public class IndexEngine implements IIndexEngine {
 		logger.info("Index engine : " + this);
 	}
 
-	private void handleNotification(Event event) {
+	protected void handleNotification(Event event) {
 		if (!event.getType().equals(Event.TIMER)) {
 			return;
 		}

@@ -18,7 +18,7 @@ import org.junit.Test;
 public class IndexableEmailHandlerTest extends BaseTest {
 
 	@Test
-	public void visit() throws Exception {
+	public void handle() throws Exception {
 		Mailer mailer = ApplicationContextManager.getBean(Mailer.class);
 		mailer.sendMail("MailhandlerTest Subject", "Mail handler test mail body");
 

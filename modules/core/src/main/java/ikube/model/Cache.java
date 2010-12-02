@@ -120,6 +120,10 @@ public class Cache {
 		}
 		return null;
 	}
+	
+	public int getTotal(String group) {
+		return this.all.getGroupKeys(group).size();
+	}
 
 	public synchronized void clear() {
 		try {

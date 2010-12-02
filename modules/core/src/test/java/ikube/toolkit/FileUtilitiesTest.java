@@ -95,4 +95,13 @@ public class FileUtilitiesTest extends BaseTest {
 		assertNotNull(file);
 	}
 
+	@Test
+	public void setContents() throws Exception {
+		String data = "Michael Couck";
+		File tempFile = File.createTempFile("temp", ".file");
+		FileUtilities.setContents(tempFile.getAbsolutePath(), data.getBytes());
+		assertTrue(tempFile.exists());
+		assertTrue(tempFile.length() > 5);
+	}
+
 }

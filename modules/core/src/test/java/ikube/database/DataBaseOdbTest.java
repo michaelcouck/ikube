@@ -75,6 +75,17 @@ public class DataBaseOdbTest extends ATest {
 		assertNotNull(fieldName);
 		assertEquals("id", fieldName);
 	}
+	
+	@Test
+	public void getIdFieldValue() {
+		// Class<?>
+		Long id = System.currentTimeMillis();
+		Token token = new Token();
+		token.setId(id);
+		Object idFieldValue = dataBase.getIdFieldValue(token);
+		assertNotNull(idFieldValue);
+		assertEquals(id, idFieldValue);
+	}
 
 	@Test
 	public void setIdField() {

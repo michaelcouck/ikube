@@ -1,6 +1,7 @@
 package ikube;
 
 import ikube.cluster.ClusterTest;
+import ikube.database.generator.DataGenerator;
 import ikube.model.IndexContext;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.DataLoader;
@@ -38,6 +39,11 @@ public abstract class BaseTest extends ATest {
 
 			file = FileUtilities.findFile(folder, new String[] { "data.xml" });
 			dataLoader.insertDataSet(file.getAbsolutePath());
+
+			DataGenerator dataGenerator = new DataGenerator();
+			dataGenerator.before();
+			dataGenerator.generate();
+			dataGenerator.after();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

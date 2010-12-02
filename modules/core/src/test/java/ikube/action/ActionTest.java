@@ -15,7 +15,7 @@ import org.junit.Test;
  * @since 21.11.10
  * @version 01.00
  */
-public class AActionTest extends BaseActionTest {
+public class ActionTest extends BaseActionTest {
 
 	private Action<IndexContext, Boolean> action = new Action<IndexContext, Boolean>() {
 		@Override

@@ -128,11 +128,11 @@ public class IndexableTableHandler extends Handler {
 				}
 				// Move to the next row in the result set
 				if (!resultSet.next()) {
-					// If the table is not primary then we have exhausted the results
 					if (indexableTable.isPrimary()) {
 						// We need to see if there are any more results
 						resultSet = getResultSet(indexContext, indexableTable, connection);
 					} else {
+						// If the table is not primary then we have exhausted the results
 						break;
 					}
 				}
@@ -352,13 +352,6 @@ public class IndexableTableHandler extends Handler {
 			if (byteOutputStream.size() == 0) {
 				return;
 			}
-
-			// if (logger.isDebugEnabled()) {
-			// byte[] buffer = new byte[byteOutputStream.getCount()];
-			// System.arraycopy(byteOutputStream.getBytes(), 0, buffer, 0, byteOutputStream.getCount());
-			// String content = new String(buffer);
-			// logger.debug(Logging.getString("Mime type : ", mimeType, ", size : ", buffer.length/* , content */));
-			// }
 
 			byte[] buffer = byteOutputStream.getBytes();
 			int length = Math.min(buffer.length, 1024);

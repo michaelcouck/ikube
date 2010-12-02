@@ -148,7 +148,7 @@
 		id="internet"
 		class="ikube.model.IndexableInternet"
 		property:name="internet"
-		property:url="http://ikube/million/adapt.html" />
+		property:url="http://www.ikokoon.eu/ikokoon/index.html" />
 	
 	<bean
 		id="filesystem"

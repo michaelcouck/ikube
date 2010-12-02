@@ -2,10 +2,9 @@ package ikube.index.handler.internet;
 
 import static org.junit.Assert.assertTrue;
 import ikube.BaseTest;
+import ikube.IConstants;
 import ikube.action.Reset;
-import ikube.database.IDataBase;
 import ikube.model.IndexableInternet;
-import ikube.model.Url;
 import ikube.toolkit.ApplicationContextManager;
 
 import java.util.List;
@@ -29,10 +28,9 @@ public class IndexableInternetHandlerTest extends BaseTest {
 
 		waitForThreads(threads);
 
-		IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
-		List<Url> urls = dataBase.find(Url.class, Integer.MIN_VALUE, Integer.MAX_VALUE);
-		logger.info("Urls crawled : " + urls);
-		assertTrue(urls.size() > 40);
+		int totalUrlsCrawled = indexContext.getCache().getTotal(IConstants.URL);
+		logger.info("Urls crawled : " + totalUrlsCrawled);
+		assertTrue(totalUrlsCrawled > 40);
 	}
 
 	public static void main(String[] args) throws Exception {

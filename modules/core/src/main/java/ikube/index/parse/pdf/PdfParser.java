@@ -2,7 +2,6 @@ package ikube.index.parse.pdf;
 
 import ikube.index.parse.IParser;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -11,8 +10,6 @@ import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 import org.apache.pdfbox.util.PDFTextStripper;
-
-// import com.asprise.util.pdf.PDFReader;
 
 /**
  * Parser for the PDF format.
@@ -32,28 +29,26 @@ public class PdfParser implements IParser {
 	@Override
 	public final OutputStream parse(InputStream inputStream, OutputStream outputStream) throws Exception {
 		return parsePDFBox(inputStream, outputStream);
-		// return parseAsprise(bytes);
-		// return null;
 	}
 
 	protected OutputStream parsePDFBox(InputStream inputStream, OutputStream outputStream) throws Exception {
 		// In memory representation of pdf file
-		PDDocument pdf = null;
+		PDDocument pdfDocument = null;
 		try {
 			PDFParser parser = new PDFParser(inputStream);
 			parser.parse();
-			pdf = parser.getPDDocument();
-			if (pdf.isEncrypted()) {
+			pdfDocument = parser.getPDDocument();
+			if (pdfDocument.isEncrypted()) {
 				// Just try using the default password and move on
 				// DecryptDocument decr = new DecryptDocument(pdf);
 				// decr.decryptDocument("");
 			}
 			// collect text
 			PDFTextStripper stripper = new PDFTextStripper();
-			String text = stripper.getText(pdf);
+			String text = stripper.getText(pdfDocument);
 			outputStream.write(text.getBytes());
 			// collect title
-			PDDocumentInformation info = pdf.getDocumentInformation();
+			PDDocumentInformation info = pdfDocument.getDocumentInformation();
 			String title = info.getTitle();
 			if (title != null) {
 				outputStream.write(title.getBytes());
@@ -63,12 +58,10 @@ public class PdfParser implements IParser {
 			// info.getCreator();info.getProducer();info.getTrapped();formatDate(info.getCreationDate())
 			// formatDate(info.getModificationDate());
 		} finally {
-			if (pdf != null)
+			if (pdfDocument != null)
 				try {
-					pdf.getDocument().close();
-					pdf.close();
-				} catch (IOException e) {
-					LOGGER.error("Exception thrown closing pdf : " + inputStream, e);
+					pdfDocument.getDocument().close();
+					pdfDocument.close();
 				} catch (Exception t) {
 					LOGGER.error("Exception thrown closing pdf : " + inputStream, t);
 				}

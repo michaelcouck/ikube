@@ -46,8 +46,8 @@ public class DataGenerator extends ATest {
 
 	private Map<String, byte[]> fileContents;
 
-	private int inserts = 100;
-	private int iterations = 10000;
+	private int inserts = 1;
+	private int iterations = 10;
 
 	@Before
 	public void before() throws Exception {
@@ -86,7 +86,7 @@ public class DataGenerator extends ATest {
 	}
 
 	protected void insertFaqs() throws Exception {
-		String faqInsert = "INSERT INTO DB2ADMIN.FAQ (DB2ADMIN.FAQ.ANSWER, DB2ADMIN.FAQ.CREATIONTIMESTAMP, DB2ADMIN.FAQ.CREATOR, DB2ADMIN.FAQ.MODIFIEDTIMESTAMP, DB2ADMIN.FAQ.MODIFIER, DB2ADMIN.FAQ.PUBLISHED, QUESTION) VALUES (?,?,?,?,?,?,?)";
+		String faqInsert = "INSERT INTO FAQ (ANSWER, CREATIONTIMESTAMP, CREATOR, MODIFIEDTIMESTAMP, MODIFIER, PUBLISHED, QUESTION) VALUES (?,?,?,?,?,?,?)";
 		PreparedStatement preparedStatement = connection.prepareStatement(faqInsert, PreparedStatement.RETURN_GENERATED_KEYS);
 		for (int i = 0; i < inserts; i++) {
 			String string = generateText((int) (Math.random() * 40), 1024);
@@ -108,7 +108,7 @@ public class DataGenerator extends ATest {
 	}
 
 	protected void insertAttachments() throws Exception {
-		String faqIdSelect = "SELECT DB2ADMIN.FAQ.FAQID FROM DB2ADMIN.FAQ ORDER BY DB2ADMIN.FAQ.FAQID DESC";
+		String faqIdSelect = "SELECT FAQID FROM FAQ ORDER BY FAQID DESC";
 
 		List<Long> faqIds = new ArrayList<Long>();
 		Statement statement = connection.createStatement();
@@ -121,8 +121,7 @@ public class DataGenerator extends ATest {
 		statement.close();
 
 		Iterator<Long> faqIdIterator = faqIds.iterator();
-		String attachmentInsert = "INSERT INTO DB2ADMIN.ATTACHMENT (DB2ADMIN.ATTACHMENT.ATTACHMENT, DB2ADMIN.ATTACHMENT.LENGTH, "
-				+ "DB2ADMIN.ATTACHMENT.NAME, DB2ADMIN.ATTACHMENT.FAQID) VALUES(?,?,?,?)";
+		String attachmentInsert = "INSERT INTO ATTACHMENT (ATTACHMENT, LENGTH, NAME, FAQID) VALUES(?,?,?,?)";
 		PreparedStatement attachmentPreparedStatement = connection.prepareStatement(attachmentInsert, PreparedStatement.NO_GENERATED_KEYS);
 		for (int i = 0; i < inserts; i++) {
 			for (String fileName : fileContents.keySet()) {
