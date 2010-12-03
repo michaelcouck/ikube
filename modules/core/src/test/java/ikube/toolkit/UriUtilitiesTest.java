@@ -1,5 +1,6 @@
 package ikube.toolkit;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import ikube.ATest;
@@ -15,7 +16,7 @@ public class UriUtilitiesTest extends ATest {
 	public void url() throws Exception {
 		URI baseUri = new URI("http://www.ikokoon.eu/ikokoon/index.html?language=russian");
 		String reference = "/ikokoon/info/about.html;jsessionid=96069DDCEF2D6525AA946B529817214E?language=russian";
-		URI resolved = UriUtilities.resolve(baseUri, reference);
+		String resolved = UriUtilities.resolve(baseUri, reference);
 		logger.info("Resolved : " + resolved);
 
 		String string = baseUri.getAuthority();
@@ -89,9 +90,30 @@ public class UriUtilitiesTest extends ATest {
 
 	@Test
 	public void isExcluded() {
-		String string = "JavaScript";
+		String string = "JavaScript:";
 		assertTrue(UriUtilities.isExcluded(string));
+		
+		string = "javascript:¨var someVar = null;";
+		assertTrue(UriUtilities.isExcluded(string));
+		
 		string = "not a javascript link";
 		assertFalse(UriUtilities.isExcluded(string));
+	}
+
+	@Test
+	public void resolve() {
+		URI baseURI = URI
+				.create("http://www.ikokoon.eu/ikokoon/info/about.html;jsessionid=96069DDCEF2D6525AA946B529817214E?language=russian");
+		String reference = "/software/free.html;jsessionid=96069DDCEF2D6525AA946B529817214E?language=english";
+		String resolved = UriUtilities.resolve(baseURI, reference);
+		logger.debug("Resolved : " + resolved);
+	}
+
+	@Test
+	public void stripBlanks() {
+		String url = "http://www.google.be/support/googleanalytics/bin/answer.py?answer=81977&cbid=1ervhd4u13k8d&src=cb&lev= index";
+		String expected = "http://www.google.be/support/googleanalytics/bin/answer.py?answer=81977&cbid=1ervhd4u13k8d&src=cb&lev=index";
+		String stripped = UriUtilities.stripBlanks(url);
+		assertEquals(expected, stripped);
 	}
 }

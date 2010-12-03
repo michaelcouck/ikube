@@ -19,14 +19,11 @@ public class UriUtilities {
 	protected static final Pattern JSESSIONID_PATTERN;
 	/** The anchor pattern. */
 	protected static final Pattern ANCHOR_PATTERN;
-	/** The space pattern. */
-	protected static final Pattern SPACE_PATTERN;
 
 	static {
-		SPACE_PATTERN = Pattern.compile(" \n\r");
 		ANCHOR_PATTERN = Pattern.compile("#[^#]*$");
 		PROTOCOL_PATTERN = Pattern.compile("(http).*|(www).*|(https).*|(ftp).*");
-		EXCLUDED_PATTERN = Pattern.compile("(news).*|(javascript).*|(mailto).*|(plugintest).*|(skype).*");
+		EXCLUDED_PATTERN = Pattern.compile("^news.*|^javascript.*|^mailto.*|^plugintest.*|^skype.*");
 		JSESSIONID_PATTERN = Pattern.compile("([;_]?((?i)l|j|bv_)?((?i)sid|phpsessid|sessionid)=.*?)(\\?|&amp;|#|$)");
 
 	}
@@ -41,14 +38,27 @@ public class UriUtilities {
 	 *            the URI reference
 	 * @return the resulting URI
 	 */
-	public static URI resolve(final URI baseURI, final String reference) {
+	public static String resolve(final URI baseURI, final String reference) {
+		StringBuilder builder = new StringBuilder();
 		// Strip the space characters from the reference
-		String strippedReference = UriUtilities.stripBlanks(reference, "");
-		URI referenceUri = URI.create(strippedReference);
-		// TODO - this has to be cleaned because the URI
-		// class is too strict, especially with ':' characters etc.
-		// We'll end up losing half the links in a complex site
-		return UriUtilities.resolve(baseURI, referenceUri);
+		String trimmedReference = UriUtilities.stripBlanks(reference);
+		int index = trimmedReference.indexOf('?');
+		URI uri = null;
+		String query = "";
+		if (index > -1) {
+			query = trimmedReference.substring(index);
+			String strippedReference = trimmedReference.substring(0, index);
+			uri = URI.create(strippedReference);
+		} else {
+			uri = URI.create(trimmedReference);
+		}
+
+		URI resolved = resolve(baseURI, uri);
+
+		builder.append(resolved.toString());
+		builder.append(query);
+
+		return builder.toString();
 	}
 
 	/**
@@ -69,6 +79,9 @@ public class UriUtilities {
 			throw new IllegalArgumentException("Reference URI may not be null");
 		}
 		String s = reference.toString();
+		if (s == null || s.length() == 0) {
+			return URI.create(s);
+		}
 		if (s.charAt(0) == '?') {
 			return resolveReferenceStartingWithQueryString(baseURI, reference);
 		}
@@ -172,8 +185,16 @@ public class UriUtilities {
 		return ANCHOR_PATTERN.matcher(string).replaceAll(replacement);
 	}
 
-	public static String stripBlanks(String string, String replacement) {
-		return SPACE_PATTERN.matcher(string).replaceAll(replacement);
+	public static String stripBlanks(String string) {
+		StringBuilder builder = new StringBuilder();
+		char[] chars = string.toCharArray();
+		for (char c : chars) {
+			if (Character.isSpaceChar(c) || Character.isWhitespace(c)) {
+				continue;
+			}
+			builder.append(c);
+		}
+		return builder.toString();
 	}
 
 }

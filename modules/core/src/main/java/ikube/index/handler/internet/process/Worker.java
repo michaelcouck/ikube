@@ -7,6 +7,7 @@ import ikube.index.content.IContentProvider;
 import ikube.index.content.InternetContentProvider;
 import ikube.index.parse.IParser;
 import ikube.index.parse.ParserProvider;
+import ikube.index.parse.xml.XMLParser;
 import ikube.model.Cache;
 import ikube.model.IndexContext;
 import ikube.model.IndexableInternet;
@@ -64,6 +65,10 @@ public class Worker implements Runnable {
 			}
 			for (Url url : urls) {
 				handleUrl(indexContext, indexableInternet, url, httpClient);
+				try {
+					Thread.sleep(indexContext.getThrottle());
+				} catch (Exception e) {
+				}
 			}
 		}
 	}
@@ -93,7 +98,21 @@ public class Worker implements Runnable {
 			IParser parser = ParserProvider.getParser(contentType, bytes);
 
 			ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(buffer, 0, byteOutputStream.getCount());
-			OutputStream outputStream = parser.parse(byteArrayInputStream, new ByteArrayOutputStream());
+			OutputStream outputStream = null;
+
+			try {
+				outputStream = parser.parse(byteArrayInputStream, new ByteArrayOutputStream());
+			} catch (Exception e) {
+				// If this is an XML exception then try the HTML parser
+				if (XMLParser.class.isAssignableFrom(parser.getClass())) {
+					contentType = "html";
+					parser = ParserProvider.getParser(contentType, bytes);
+					outputStream = parser.parse(byteArrayInputStream, new ByteArrayOutputStream());
+				} else {
+					throw e;
+				}
+			}
+
 			// TODO - Add the title field
 			// TODO - Add the contents field
 			String fieldContents = outputStream.toString();

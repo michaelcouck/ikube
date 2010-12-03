@@ -45,11 +45,11 @@ public class Extractor {
 							if (link == null) {
 								continue;
 							}
+							// logger.debug("Link : " + link);
 							if (UriUtilities.isExcluded(link.trim().toLowerCase())) {
 								continue;
 							}
-							URI uri = UriUtilities.resolve(baseUri, link);
-							String resolvedLink = uri.toString();
+							String resolvedLink = UriUtilities.resolve(baseUri, link);
 							if (!UriUtilities.isInternetProtocol(resolvedLink)) {
 								continue;
 							}

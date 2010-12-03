@@ -20,6 +20,7 @@ public class IndexContext extends Persistable implements Comparable<IndexContext
 	private long maxAge;
 	private String indexName;
 	private long queueTimeout;
+	private long throttle;
 
 	/** Lucene properties. */
 	private int mergeFactor;
@@ -87,6 +88,14 @@ public class IndexContext extends Persistable implements Comparable<IndexContext
 
 	public void setQueueTimeout(final long queueTimeout) {
 		this.queueTimeout = queueTimeout;
+	}
+
+	public long getThrottle() {
+		return throttle;
+	}
+
+	public void setThrottle(long throttle) {
+		this.throttle = throttle;
 	}
 
 	public boolean isCompoundFile() {

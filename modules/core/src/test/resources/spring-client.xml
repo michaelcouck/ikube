@@ -26,6 +26,7 @@
 		property:maxFieldLength="${max.field.length}"
 		property:maxReadLength="${max.read.length}"
 		property:queueTimeout="${max.age}"
+		property:throttle="${throttle}"
 		property:indexDirectoryPath="${index.directory.path}"
 		property:indexables-ref="indexables" />
 	<util:list id="indexables">
@@ -148,7 +149,7 @@
 		id="internet"
 		class="ikube.model.IndexableInternet"
 		property:name="internet"
-		property:url="http://www.ikokoon.eu/ikokoon/index.html" />
+		property:url="http://www.google.be" />
 	
 	<bean
 		id="filesystem"
