@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import ikube.BaseTest;
 import ikube.IConstants;
 
 import java.io.File;
@@ -20,7 +19,7 @@ import org.junit.Test;
  * @since 21.11.10
  * @version 01.00
  */
-public class FileUtilitiesTest extends BaseTest {
+public class FileUtilitiesTest {
 
 	private File folder = new File(".");
 	private File file = new File(folder, IConstants.READER_FILE_SUFFIX);

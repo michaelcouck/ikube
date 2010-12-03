@@ -28,14 +28,22 @@ public class FileUtilities {
 
 	private static Logger LOGGER = Logger.getLogger(FileUtilities.class);
 
-	public static void deleteFiles(File folder, String... stringPatterns) {
-		List<File> tempFiles = FileUtilities.findFilesRecursively(folder, stringPatterns, new ArrayList<File>());
-		for (File tempFile : tempFiles) {
-			FileUtilities.deleteFile(tempFile, 1);
+	public static void deleteFiles(File file, String... stringPatterns) {
+		if (file.isDirectory()) {
+			File[] childFiles = file.listFiles();
+			if (childFiles != null && childFiles.length > 0) {
+				for (File childFile : childFiles) {
+					deleteFiles(childFile, stringPatterns);
+				}
+			}
+		}
+		Pattern pattern = getPattern(stringPatterns);
+		if (pattern.matcher(file.getName()).matches()) {
+			FileUtilities.deleteFile(file, 1);
 		}
 	}
 
-	public static File[] findFiles(File folder, String[] stringPatterns) {
+	protected static Pattern getPattern(String... stringPatterns) {
 		boolean first = Boolean.TRUE;
 		StringBuilder builder = new StringBuilder();
 		for (String stringPattern : stringPatterns) {
@@ -46,7 +54,12 @@ public class FileUtilities {
 			}
 			builder.append(".*(").append(stringPattern).append(").*");
 		}
-		final Pattern pattern = Pattern.compile(builder.toString());
+		Pattern pattern = Pattern.compile(builder.toString());
+		return pattern;
+	}
+
+	public static File[] findFiles(File folder, String[] stringPatterns) {
+		final Pattern pattern = getPattern(stringPatterns);
 		File[] files = folder.listFiles(new FileFilter() {
 			@Override
 			public boolean accept(File file) {
@@ -324,5 +337,5 @@ public class FileUtilities {
 			}
 		}
 	}
-	
+
 }
