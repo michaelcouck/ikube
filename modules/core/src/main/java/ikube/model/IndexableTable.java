@@ -14,9 +14,17 @@ public class IndexableTable extends Indexable<IndexableTable> {
 
 	private transient DataSource dataSource;
 
-	private String sql;
+	private String schema;
 	private String predicate;
 	private boolean primary;
+
+	public String getSchema() {
+		return schema;
+	}
+
+	public void setSchema(String schema) {
+		this.schema = schema;
+	}
 
 	public boolean isPrimary() {
 		return primary;
@@ -24,14 +32,6 @@ public class IndexableTable extends Indexable<IndexableTable> {
 
 	public void setPrimary(boolean primary) {
 		this.primary = primary;
-	}
-
-	public String getSql() {
-		return sql;
-	}
-
-	public void setSql(final String sql) {
-		this.sql = sql;
 	}
 
 	public String getPredicate() {

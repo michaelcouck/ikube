@@ -17,13 +17,15 @@ import java.util.Map;
  */
 public abstract class BaseTest extends ATest {
 
+	private static String SPRING_CONFIGURATION_FILE = "/spring.xml";
+
 	static {
 		try {
 			ClusterTest.SLEEP = 1000;
 
 			// Delete the database file
-			FileUtilities.deleteFiles(new File("."), new String[] { IConstants.DATABASE_FILE, ".transaction", "serenity.odb" });
-			ApplicationContextManager.getApplicationContext(new String[] { "/spring.xml" });
+			FileUtilities.deleteFiles(new File("."), IConstants.DATABASE_FILE, ".transaction", ".odb");
+			ApplicationContextManager.getApplicationContext(SPRING_CONFIGURATION_FILE);
 			// Delete all the old index directories
 			Map<String, IndexContext> contexts = ApplicationContextManager.getBeans(IndexContext.class);
 			for (IndexContext indexContext : contexts.values()) {
@@ -32,13 +34,8 @@ public abstract class BaseTest extends ATest {
 			}
 
 			DataLoader dataLoader = new DataLoader();
-			File folder = new File(".");
-
-			File file = FileUtilities.findFile(folder, new String[] { "tables.sql" });
-			dataLoader.createTables(file.getAbsolutePath());
-
-			file = FileUtilities.findFile(folder, new String[] { "data.xml" });
-			dataLoader.insertDataSet(file.getAbsolutePath());
+			File sqlFile = FileUtilities.findFile(new File("."), new String[] { "tables.sql" });
+			dataLoader.createTables(sqlFile.getAbsolutePath());
 
 			DataGenerator dataGenerator = new DataGenerator();
 			dataGenerator.before();

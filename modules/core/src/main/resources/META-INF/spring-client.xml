@@ -39,6 +39,7 @@
 		id="tableOne"
 		class="ikube.model.IndexableTable"
 		property:name="faq"
+		property:schema="db2admin"
 		property:primary="true"
 		property:dataSource-ref="nonXaDataSource"
 		property:children-ref="columnsOne" />
@@ -89,6 +90,7 @@
 		id="tableTwo"
 		class="ikube.model.IndexableTable"
 		property:name="attachment"
+		property:schema="db2admin"
 		property:primary="false"
 		property:dataSource-ref="nonXaDataSource"
 		property:children-ref="columnsTwo" />

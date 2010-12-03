@@ -40,6 +40,7 @@
 		id="tableOne"
 		class="ikube.model.IndexableTable"
 		property:name="faq"
+		property:schema="db2admin"
 		property:predicate="${faq.predicate}"
 		property:primary="true"
 		property:dataSource-ref="nonXaDataSource"
@@ -91,6 +92,7 @@
 		id="tableTwo"
 		class="ikube.model.IndexableTable"
 		property:name="attachment"
+		property:schema="db2admin"
 		property:primary="false"
 		property:dataSource-ref="nonXaDataSource"
 		property:children-ref="columnsTwo" />
@@ -149,7 +151,7 @@
 		id="internet"
 		class="ikube.model.IndexableInternet"
 		property:name="internet"
-		property:url="http://www.google.be" />
+		property:url="http://www.ikokoon.eu/ikokoon/index.html" />
 	
 	<bean
 		id="filesystem"

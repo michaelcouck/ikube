@@ -46,7 +46,7 @@ public class DataGenerator extends ATest {
 
 	private Map<String, byte[]> fileContents;
 
-	private int inserts = 1;
+	private int inserts = 10;
 	private int iterations = 10;
 
 	@Before
@@ -80,13 +80,13 @@ public class DataGenerator extends ATest {
 		} finally {
 			connection.close();
 		}
-		logger.info(Logging.getString("Inserted : ", (iterations * inserts), (iterations * inserts * fileContents.size())));
-		// iterations * inserts + (iterations * inserts * docs)
-		// 80000
+		int faqs = (iterations * inserts);
+		int attachments = (iterations * inserts * fileContents.size());
+		logger.info(Logging.getString("Inserted faqs : ", faqs, ", attachments : ", attachments));
 	}
 
 	protected void insertFaqs() throws Exception {
-		String faqInsert = "INSERT INTO FAQ (ANSWER, CREATIONTIMESTAMP, CREATOR, MODIFIEDTIMESTAMP, MODIFIER, PUBLISHED, QUESTION) VALUES (?,?,?,?,?,?,?)";
+		String faqInsert = "INSERT INTO DB2ADMIN.FAQ (ANSWER, CREATIONTIMESTAMP, CREATOR, MODIFIEDTIMESTAMP, MODIFIER, PUBLISHED, QUESTION) VALUES (?,?,?,?,?,?,?)";
 		PreparedStatement preparedStatement = connection.prepareStatement(faqInsert, PreparedStatement.RETURN_GENERATED_KEYS);
 		for (int i = 0; i < inserts; i++) {
 			String string = generateText((int) (Math.random() * 40), 1024);
@@ -108,7 +108,7 @@ public class DataGenerator extends ATest {
 	}
 
 	protected void insertAttachments() throws Exception {
-		String faqIdSelect = "SELECT FAQID FROM FAQ ORDER BY FAQID DESC";
+		String faqIdSelect = "SELECT FAQID FROM DB2ADMIN.FAQ ORDER BY FAQID DESC";
 
 		List<Long> faqIds = new ArrayList<Long>();
 		Statement statement = connection.createStatement();
@@ -121,7 +121,7 @@ public class DataGenerator extends ATest {
 		statement.close();
 
 		Iterator<Long> faqIdIterator = faqIds.iterator();
-		String attachmentInsert = "INSERT INTO ATTACHMENT (ATTACHMENT, LENGTH, NAME, FAQID) VALUES(?,?,?,?)";
+		String attachmentInsert = "INSERT INTO DB2ADMIN.ATTACHMENT (NAME, LENGTH, FAQID, ATTACHMENT) VALUES(?,?,?,?)";
 		PreparedStatement attachmentPreparedStatement = connection.prepareStatement(attachmentInsert, PreparedStatement.NO_GENERATED_KEYS);
 		for (int i = 0; i < inserts; i++) {
 			for (String fileName : fileContents.keySet()) {
@@ -134,10 +134,11 @@ public class DataGenerator extends ATest {
 				// Insert the attachment
 				byte[] bytes = fileContents.get(fileName);
 				InputStream inputStream = new ByteArrayInputStream(bytes);
-				attachmentPreparedStatement.setBinaryStream(1, inputStream, bytes.length); // ATTACHMENT
+
+				attachmentPreparedStatement.setString(1, fileName); // NAME
 				attachmentPreparedStatement.setInt(2, bytes.length); // LENGTH
-				attachmentPreparedStatement.setString(3, fileName); // NAME
-				attachmentPreparedStatement.setLong(4, faqId); // FAQID
+				attachmentPreparedStatement.setLong(3, faqId); // FAQID
+				attachmentPreparedStatement.setBinaryStream(4, inputStream, bytes.length); // ATTACHMENT
 				attachmentPreparedStatement.addBatch();
 			}
 		}
