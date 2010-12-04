@@ -44,7 +44,6 @@ public class IndexableInternetHandler extends Handler {
 
 		Url url = new Url();
 		url.setUrl(urlString);
-		url.setName(indexableInternet.getName());
 		url.setIndexed(Boolean.FALSE);
 
 		indexContext.getCache().setUrl(url);

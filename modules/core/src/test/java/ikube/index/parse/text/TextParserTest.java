@@ -25,7 +25,7 @@ public class TextParserTest extends ATest {
 		InputStream inputStream = new FileInputStream(file);
 		OutputStream outputStream = textParser.parse(inputStream, new ByteArrayOutputStream());
 		String string = outputStream.toString();
-		logger.debug("Parsed : " + string);
+		// logger.debug("Parsed : " + string);
 		assertTrue(string.contains(russian));
 		assertTrue(string.contains(japanese));
 		assertTrue(string.contains(arabic));

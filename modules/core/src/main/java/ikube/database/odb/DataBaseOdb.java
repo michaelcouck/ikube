@@ -74,6 +74,14 @@ public class DataBaseOdb implements IDataBase {
 		}
 	}
 
+	protected void updateIndex(Class<?> klass) {
+		this.odb.getClassRepresentation(klass).rebuildIndex(klass.getSimpleName(), Boolean.TRUE);
+	}
+
+	protected void deleteIndex(Class<?> klass) {
+		this.odb.getClassRepresentation(klass).deleteIndex(klass.getSimpleName(), Boolean.TRUE);
+	}
+
 	protected void configureDataBase() {
 		DLogger.register(new ikube.database.odb.Logger());
 		OdbConfiguration.setDebugEnabled(Boolean.FALSE);
@@ -100,7 +108,7 @@ public class DataBaseOdb implements IDataBase {
 	public synchronized <T> T persist(T object) {
 		try {
 			if (object != null) {
-				// setIdField(object, System.nanoTime());
+				setIdField(object, System.nanoTime());
 				this.odb.store(object);
 			}
 		} catch (Exception e) {
@@ -116,7 +124,7 @@ public class DataBaseOdb implements IDataBase {
 	public synchronized <T> T remove(T t) {
 		try {
 			if (t != null) {
-				this.odb.delete(t);
+				this.odb.deleteCascade(t);
 			}
 		} catch (Exception e) {
 			logger.error("", e);

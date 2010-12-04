@@ -6,7 +6,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import ikube.ATest;
 import ikube.IConstants;
-import ikube.database.odb.DataBaseOdb;
 import ikube.logging.Logging;
 import ikube.model.Indexable;
 import ikube.model.IndexableColumn;
@@ -17,15 +16,14 @@ import ikube.toolkit.PerformanceTester;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
@@ -35,30 +33,21 @@ import org.junit.Test;
  */
 public class DataBaseOdbTest extends ATest {
 
-	private static DataBaseOdb dataBase;
-	private static String dataBaseFile = "ikube.test.odb";
-
-	@BeforeClass
-	public static void beforeClass() {
-		FileUtilities.deleteFiles(new File("."), dataBaseFile);
-		dataBase = new DataBaseOdb();
-		dataBase.initialise(dataBaseFile);
-	}
-
-	@AfterClass
-	public static void afterClass() {
-		dataBase.close();
-		FileUtilities.deleteFiles(new File("."), dataBaseFile);
-	}
+	private DataBaseOdb dataBase;
+	private String dataBaseFile = "ikube.test.odb";
 
 	@Before
 	public void before() {
-		delete(dataBase, Indexable.class, IndexableColumn.class, Token.class);
+		FileUtilities.deleteFiles(new File("."), dataBaseFile);
+		dataBase = new DataBaseOdb();
+		dataBase.setIndexes(Arrays.asList(new Index(Token.class.getName(), Arrays.asList(IConstants.ID))));
+		dataBase.initialise(dataBaseFile);
 	}
 
 	@After
 	public void after() {
-		delete(dataBase, Indexable.class, IndexableColumn.class, Token.class);
+		dataBase.close();
+		FileUtilities.deleteFiles(new File("."), dataBaseFile);
 	}
 
 	@Test
@@ -76,7 +65,7 @@ public class DataBaseOdbTest extends ATest {
 		assertNotNull(fieldName);
 		assertEquals("id", fieldName);
 	}
-	
+
 	@Test
 	public void getIdFieldValue() {
 		// Class<?>
@@ -106,6 +95,10 @@ public class DataBaseOdbTest extends ATest {
 		parameters.put(IConstants.ID, indexable.getId());
 		Indexable<?> found = dataBase.find(indexable.getClass(), parameters, Boolean.TRUE);
 		assertNotNull(found);
+
+		dataBase.remove(indexable);
+		found = dataBase.find(indexable.getClass(), parameters, Boolean.TRUE);
+		assertNull(found);
 	}
 
 	@Test
@@ -121,6 +114,10 @@ public class DataBaseOdbTest extends ATest {
 		parameters.put(IConstants.NAME, name);
 		Indexable<?> merged = dataBase.find(indexable.getClass(), parameters, Boolean.TRUE);
 		assertEquals(indexable.getName(), merged.getName());
+
+		dataBase.remove(indexable);
+		Indexable<?> found = dataBase.find(indexable.getClass(), parameters, Boolean.TRUE);
+		assertNull(found);
 	}
 
 	@Test
@@ -209,7 +206,7 @@ public class DataBaseOdbTest extends ATest {
 
 	@Test
 	public void performance() throws Exception {
-		int iterations = 1000;
+		int iterations = 100;
 
 		final List<Token> tokens = new ArrayList<Token>();
 		for (int i = 0; i < iterations; i++) {
@@ -245,7 +242,7 @@ public class DataBaseOdbTest extends ATest {
 			}
 		}, "Database find performance : ", iterations);
 		// assertTrue(executionsPerSecond > 1000);
-		
+
 		// Merge
 		executionsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
 			Iterator<Token> iterator = tokens.iterator();
@@ -258,14 +255,19 @@ public class DataBaseOdbTest extends ATest {
 			}
 		}, "Database merge performance : ", iterations);
 		// assertTrue(executionsPerSecond > 10);
-		
+
 		// Remove
+		dataBase.deleteIndex(Token.class);
 		executionsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
 			Iterator<Token> iterator = tokens.iterator();
 
 			@Override
 			public void execute() throws Exception {
-				dataBase.remove(iterator.next());
+				try {
+					dataBase.remove(iterator.next());
+				} catch (Exception e) {
+					throw e;
+				}
 			}
 		}, "Database remove performance : ", iterations);
 		// assertTrue(executionsPerSecond > 10);
@@ -331,14 +333,10 @@ public class DataBaseOdbTest extends ATest {
 	}
 
 	public static void main(String[] args) throws Exception {
-		DataBaseOdbTest.beforeClass();
-
 		DataBaseOdbTest dataBaseOdbTest = new DataBaseOdbTest();
 		dataBaseOdbTest.before();
 		dataBaseOdbTest.threading();
-
 		dataBaseOdbTest.after();
-		DataBaseOdbTest.afterClass();
 	}
 
 }

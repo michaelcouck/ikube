@@ -23,7 +23,6 @@ public class ResetTest extends BaseActionTest {
 		indexContext.setIdNumber(1);
 		IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
 		Url url = new Url();
-		url.setName("internet");
 		url.setUrl("dummy");
 		dataBase.persist(url);
 

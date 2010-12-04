@@ -27,7 +27,7 @@ public class ParserListener implements IListener {
 				Url url = (Url) event.getObject();
 				Map<String, Object> parameters = new HashMap<String, Object>();
 				parameters.put(IConstants.URL, url.getUrl());
-				parameters.put(IConstants.NAME, url.getName());
+				// parameters.put(IConstants.NAME, url.getName());
 				Url dbUrl = dataBase.find(Url.class, parameters, Boolean.TRUE);
 				// logger.debug("Event : " + event + ", " + dbUrl + ", " + url);
 				if (dbUrl == null) {

@@ -7,6 +7,8 @@ import ikube.index.content.IContentProvider;
 import ikube.index.content.InternetContentProvider;
 import ikube.index.parse.IParser;
 import ikube.index.parse.ParserProvider;
+import ikube.index.parse.mime.MimeType;
+import ikube.index.parse.mime.MimeTypes;
 import ikube.index.parse.xml.XMLParser;
 import ikube.model.Cache;
 import ikube.model.IndexContext;
@@ -27,6 +29,7 @@ import java.util.List;
 import javax.swing.text.html.HTML;
 
 import net.htmlparser.jericho.Attribute;
+import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.HTMLElementName;
 import net.htmlparser.jericho.Source;
 import net.htmlparser.jericho.StartTag;
@@ -74,6 +77,7 @@ public class IndexableInternetCrawler implements Runnable {
 				return;
 			}
 			for (Url url : urls) {
+				logger.debug("Doing url : " + url.getUrl() + ", " + Thread.currentThread());
 				// Get the content from the url
 				ByteOutputStream byteOutputStream = getContentFromUrl(indexableInternet, url);
 				// Parse the content from the url
@@ -104,6 +108,8 @@ public class IndexableInternetCrawler implements Runnable {
 			indexable.setCurrentInputStream(responseInputStream);
 
 			contentProvider.getContent(indexable, byteOutputStream);
+
+			url.setRawContent(byteOutputStream.getBytes());
 
 			return byteOutputStream;
 		} catch (Exception e) {
@@ -146,10 +152,9 @@ public class IndexableInternetCrawler implements Runnable {
 				}
 			}
 
-			// TODO - Add the title field
-			// TODO - Add the contents field
-			String fieldContents = outputStream.toString();
-			return fieldContents;
+			url.setContentType(contentType);
+
+			return outputStream.toString();
 		} catch (Exception e) {
 			logger.error("", e);
 		} finally {
@@ -159,7 +164,6 @@ public class IndexableInternetCrawler implements Runnable {
 	}
 
 	protected void addDocumentToIndex(IndexableInternet indexable, Url url, String parsedContent) {
-		logger.debug("Doing url : " + url.getUrl() + ", " + Thread.currentThread());
 		try {
 			Long hash = HashUtilities.hash(parsedContent);
 			url.setHash(hash);
@@ -176,12 +180,40 @@ public class IndexableInternetCrawler implements Runnable {
 			Index analyzed = indexable.isAnalyzed() ? Index.ANALYZED : Index.NOT_ANALYZED;
 			TermVector termVector = indexable.isVectored() ? TermVector.YES : TermVector.NO;
 
-			setIdField(indexable, document);
+			// Add the title field
+			MimeType mimeType = MimeTypes.getMimeType(url.getContentType(), url.getRawContent());
+			if (mimeType != null && mimeType.getPrimaryType().contains(HTMLElementName.HTML)) {
+				InputStream inputStream = new ByteArrayInputStream(url.getRawContent());
+				Reader reader = new InputStreamReader(inputStream, IConstants.ENCODING);
+				Source source = new Source(reader);
+				Element titleElement = source.getNextElement(0, HTMLElementName.TITLE);
+				if (titleElement != null) {
+					String title = titleElement.getContent().toString();
+					IndexManager.addStringField(IConstants.TITLE, title, document, store, analyzed, termVector);
+				}
+			} else {
+				// Add the url as the title
+				IndexManager.addStringField(IConstants.TITLE, url.getUrl(), document, store, analyzed, termVector);
+			}
+
+			// Add the id field
+			StringBuilder builder = new StringBuilder();
+			builder.append(indexableInternet.getName());
+			builder.append(".");
+			builder.append(indexableInternet.getCurrentUrl());
+			String id = builder.toString();
+			IndexManager.addStringField(IConstants.ID, id, document, Store.YES, Index.ANALYZED, TermVector.YES);
+
+			// Add the contents field
 			IndexManager.addStringField(indexable.getName(), parsedContent, document, store, analyzed, termVector);
 
 			indexContext.getIndexWriter().addDocument(document);
 		} catch (Exception e) {
 			logger.error("Exception accessing url : " + url, e);
+		} finally {
+			url.setParsedContent(null);
+			url.setRawContent(null);
+			url.setTitle(null);
 		}
 	}
 
@@ -217,7 +249,6 @@ public class IndexableInternetCrawler implements Runnable {
 								String strippedAnchorLink = UriUtilities.stripAnchor(strippedSessionLink, "");
 								Url newUrl = new Url();
 								newUrl.setUrl(strippedAnchorLink);
-								newUrl.setName(indexableInternet.getName());
 								newUrl.setIndexed(Boolean.FALSE);
 
 								Cache cache = indexContext.getCache();
@@ -232,15 +263,6 @@ public class IndexableInternetCrawler implements Runnable {
 		} catch (Exception e) {
 			logger.error("", e);
 		}
-	}
-
-	protected void setIdField(IndexableInternet indexableInternet, Document document) throws Exception {
-		StringBuilder builder = new StringBuilder();
-		builder.append(indexableInternet.getName());
-		builder.append(".");
-		builder.append(indexableInternet.getCurrentUrl());
-		String id = builder.toString();
-		IndexManager.addStringField(IConstants.ID, id, document, Store.YES, Index.ANALYZED, TermVector.YES);
 	}
 
 }

@@ -7,6 +7,14 @@ public class Index {
 	private String className;
 	private List<String> fieldNames;
 
+	public Index() {
+	}
+	
+	public Index(String className, List<String> fieldNames) {
+		setClassName(className);
+		setFieldNames(fieldNames);
+	}
+
 	public String getClassName() {
 		return className;
 	}

@@ -11,7 +11,10 @@ import javax.persistence.Entity;
 public class Url extends Persistable {
 
 	private String url;
-	private String name;
+	private String title;
+	private String contentType;
+	private byte[] rawContent;
+	private String parsedContent;
 	private Boolean indexed;
 	private Long hash;
 
@@ -23,12 +26,36 @@ public class Url extends Persistable {
 		this.url = url;
 	}
 
-	public String getName() {
-		return name;
+	public String getTitle() {
+		return title;
 	}
 
-	public void setName(String indexName) {
-		this.name = indexName;
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public String getContentType() {
+		return contentType;
+	}
+
+	public void setContentType(String contentType) {
+		this.contentType = contentType;
+	}
+
+	public byte[] getRawContent() {
+		return rawContent;
+	}
+
+	public void setRawContent(byte[] rawContent) {
+		this.rawContent = rawContent;
+	}
+
+	public String getParsedContent() {
+		return parsedContent;
+	}
+
+	public void setParsedContent(String parsedContent) {
+		this.parsedContent = parsedContent;
 	}
 
 	public Boolean isIndexed() {
@@ -51,8 +78,6 @@ public class Url extends Persistable {
 		StringBuilder builder = new StringBuilder();
 		builder.append("[");
 		builder.append(getId());
-		builder.append(", ");
-		builder.append(getName());
 		builder.append(", ");
 		builder.append(getUrl());
 		builder.append(", ");
