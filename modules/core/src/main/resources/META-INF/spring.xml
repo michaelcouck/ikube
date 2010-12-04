@@ -13,8 +13,8 @@
 	<context:property-placeholder
 		location="classpath:/META-INF/spring.properties" />
 
-	<import resource="spring-jdbc.xml" />
-	<import resource="spring-beans.xml" />
-	<import resource="spring-client.xml" />
+	<import resource="classpath:/META-INF/spring-jdbc.xml" />
+	<import resource="classpath:/META-INF/spring-beans.xml" />
+	<import resource="classpath:/META-INF/spring-client.xml" />
 
 </beans>

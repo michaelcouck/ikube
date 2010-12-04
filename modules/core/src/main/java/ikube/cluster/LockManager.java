@@ -53,6 +53,7 @@ public class LockManager extends ReceiverAdapter implements ILockManager {
 	public LockManager() {
 		this.logger = Logger.getLogger(this.getClass());
 		this.message = new Message();
+		this.logger.debug("Opening lock manager : " + this);
 		open();
 	}
 
@@ -89,12 +90,14 @@ public class LockManager extends ReceiverAdapter implements ILockManager {
 			} catch (Exception e) {
 				logger.error("Exception opening channel : " + channel, e);
 			}
+			this.logger.debug("Finished opening lock manager : " + this);
 		} finally {
 			notifyAll();
 		}
 	}
 
 	protected synchronized void handleNotification(Event event) {
+		this.logger.debug("Handle notification : " + event + ", " + this);
 		try {
 			// Check that the channel is still open
 			if (channel == null || !channel.isOpen() || !channel.isConnected()) {
@@ -116,8 +119,9 @@ public class LockManager extends ReceiverAdapter implements ILockManager {
 				if (age > timeout) {
 					Address firstAddress = membersList.get(0);
 					if (logger.isDebugEnabled()) {
-						StringBuilder builder = new StringBuilder("Token has timed out : ").append(this.token).append(", this : ").append(
-								this.server.getAddress()).append(", first : ").append(firstAddress).append(", thread : ").append(thread);
+						StringBuilder builder = new StringBuilder("Token has timed out : ").append(this.token).append(", this : ")
+								.append(this.server.getAddress()).append(", first : ").append(firstAddress).append(", thread : ")
+								.append(thread);
 						logger.debug(builder);
 					}
 					this.token.setServer(this.server);
@@ -132,8 +136,8 @@ public class LockManager extends ReceiverAdapter implements ILockManager {
 					return;
 				} else {
 					if (logger.isDebugEnabled()) {
-						logger.debug(new StringBuilder("We don't have the token, it is at : ").append(token).append(", ").append(
-								this.server.getAddress()).append(", ").append(thread));
+						logger.debug(new StringBuilder("We don't have the token, it is at : ").append(token).append(", ")
+								.append(this.server.getAddress()).append(", ").append(thread));
 					}
 					return;
 				}
@@ -147,6 +151,7 @@ public class LockManager extends ReceiverAdapter implements ILockManager {
 	}
 
 	protected synchronized void publishToTarget(List<Address> membersList) throws Exception {
+		this.logger.debug("Publishing : " + membersList + ", " + this);
 		// We will publish this token so add ourselves
 		this.token.setServer(this.server);
 		// Get the index of ourselves in the list
@@ -161,8 +166,8 @@ public class LockManager extends ReceiverAdapter implements ILockManager {
 			targetAddress = membersList.get(index);
 		}
 		if (logger.isDebugEnabled()) {
-			logger.debug(new StringBuilder("Target : ").append(targetAddress).append(", index : ").append(index).append(
-					", local address : ").append(this.server.getAddress()));
+			logger.debug(new StringBuilder("Target : ").append(targetAddress).append(", index : ").append(index)
+					.append(", local address : ").append(this.server.getAddress()));
 		}
 		this.token.setServer(this.server);
 		// We set the target address as we don't have the token anymore, i.e. we are blocked
@@ -173,7 +178,7 @@ public class LockManager extends ReceiverAdapter implements ILockManager {
 		channel.send(message);
 		// NOTE : This doesn't work because two servers can send to two
 		// different individual targets and the holders can then be different and
-		// never normalise
+		// never normalize
 		// channel.send(targetAddress, this.server.getAddress(), this.token);
 	}
 
@@ -186,6 +191,7 @@ public class LockManager extends ReceiverAdapter implements ILockManager {
 
 	@Override
 	public synchronized void receive(Message message) {
+		this.logger.debug("Receiving : " + message + ", " + this);
 		try {
 			if (this.server == null || this.token == null) {
 				// Means that we have been removed from the cluster but
@@ -205,8 +211,9 @@ public class LockManager extends ReceiverAdapter implements ILockManager {
 			this.token.setServer(this.server);
 			if (logger.isDebugEnabled()) {
 				long duration = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - this.token.getStart());
-				StringBuilder builder = new StringBuilder("Target : ").append(token.getAddress()).append(", local : ").append(
-						this.server.getAddress()).append(", source : ").append(message.getSrc()).append(", duration : ").append(duration);
+				StringBuilder builder = new StringBuilder("Target : ").append(token.getAddress()).append(", local : ")
+						.append(this.server.getAddress()).append(", source : ").append(message.getSrc()).append(", duration : ")
+						.append(duration);
 				logger.info(builder);
 			}
 		} finally {
