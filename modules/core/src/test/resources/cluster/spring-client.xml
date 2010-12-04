@@ -57,7 +57,7 @@
 		<ref local="modifier" />
 		<ref local="question" />
 		<ref local="answer" />
-		<ref local="tableTwo" />
+		<!--<ref local="tableTwo" />-->
 	</util:list>
 
 	<bean

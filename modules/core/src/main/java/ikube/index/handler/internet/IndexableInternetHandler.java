@@ -1,7 +1,6 @@
 package ikube.index.handler.internet;
 
 import ikube.index.handler.Handler;
-import ikube.index.handler.internet.process.Worker;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.model.IndexableInternet;
@@ -30,8 +29,8 @@ public class IndexableInternetHandler extends Handler {
 		// The start url
 		seedUrl(indexContext, indexableInternet);
 		for (int i = 0; i < getThreads(); i++) {
-			Worker worker = new Worker(indexContext, indexableInternet, threads);
-			threads.add(new Thread(worker, this.getClass().getSimpleName() + "." + i));
+			IndexableInternetCrawler indexableInternetCrawler = new IndexableInternetCrawler(indexContext, indexableInternet, threads);
+			threads.add(new Thread(indexableInternetCrawler, this.getClass().getSimpleName() + "." + i));
 		}
 		for (Thread thread : threads) {
 			thread.start();

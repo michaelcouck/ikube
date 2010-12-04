@@ -1,4 +1,4 @@
-package ikube.index.handler.internet.process;
+package ikube.index.handler.internet;
 
 import ikube.IConstants;
 import ikube.index.IndexManager;
@@ -13,13 +13,24 @@ import ikube.model.IndexContext;
 import ikube.model.IndexableInternet;
 import ikube.model.Url;
 import ikube.toolkit.HashUtilities;
+import ikube.toolkit.UriUtilities;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.Reader;
 import java.net.URI;
 import java.util.List;
+
+import javax.swing.text.html.HTML;
+
+import net.htmlparser.jericho.Attribute;
+import net.htmlparser.jericho.HTMLElementName;
+import net.htmlparser.jericho.Source;
+import net.htmlparser.jericho.StartTag;
+import net.htmlparser.jericho.Tag;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
@@ -34,26 +45,25 @@ import org.apache.lucene.document.Field.TermVector;
  * @since 29.11.10
  * @version 01.00
  */
-public class Worker implements Runnable {
+public class IndexableInternetCrawler implements Runnable {
 
 	private Logger logger;
 	private List<Thread> threads;
 	private IndexContext indexContext;
 	private IndexableInternet indexableInternet;
 	private IContentProvider<IndexableInternet> contentProvider;
-	private Extractor extractor;
+	private HttpClient httpClient;
 
-	public Worker(IndexContext indexContext, IndexableInternet indexableInternet, List<Thread> threads) {
+	public IndexableInternetCrawler(IndexContext indexContext, IndexableInternet indexableInternet, List<Thread> threads) {
 		this.logger = Logger.getLogger(this.getClass());
 		this.threads = threads;
 		this.indexContext = indexContext;
 		this.indexableInternet = indexableInternet;
 		this.contentProvider = new InternetContentProvider();
-		this.extractor = new Extractor();
+		this.httpClient = new HttpClient();
 	}
 
 	public void run() {
-		HttpClient httpClient = new HttpClient();
 		Cache cache = indexContext.getCache();
 		while (true) {
 			List<Url> urls = cache.getUrlBatch(threads);
@@ -64,7 +74,15 @@ public class Worker implements Runnable {
 				return;
 			}
 			for (Url url : urls) {
-				handleUrl(indexContext, indexableInternet, url, httpClient);
+				// Get the content from the url
+				ByteOutputStream byteOutputStream = getContentFromUrl(indexableInternet, url);
+				// Parse the content from the url
+				String parsedContent = getParsedContent(url, byteOutputStream);
+				// Add the document to the index
+				addDocumentToIndex(indexableInternet, url, parsedContent);
+				InputStream inputStream = new ByteArrayInputStream(byteOutputStream.getBytes());
+				// Extract the links from the url if any
+				extractLinksFromContent(indexableInternet, url, inputStream);
 				try {
 					Thread.sleep(indexContext.getThrottle());
 				} catch (Exception e) {
@@ -73,21 +91,36 @@ public class Worker implements Runnable {
 		}
 	}
 
-	protected void handleUrl(IndexContext indexContext, IndexableInternet indexable, Url url, HttpClient httpClient) {
-		logger.debug("Doing url : " + url.getUrl() + ", " + Thread.currentThread());
+	protected ByteOutputStream getContentFromUrl(IndexableInternet indexable, Url url) {
 		GetMethod get = null;
 		ByteOutputStream byteOutputStream = null;
 		try {
+			byteOutputStream = new ByteOutputStream();
+
 			get = new GetMethod(url.getUrl());
 			httpClient.executeMethod(get);
 			InputStream responseInputStream = get.getResponseBodyAsStream();
 
 			indexable.setCurrentInputStream(responseInputStream);
 
-			String contentType = URI.create(url.getUrl()).toURL().getFile();
-
-			byteOutputStream = new ByteOutputStream();
 			contentProvider.getContent(indexable, byteOutputStream);
+
+			return byteOutputStream;
+		} catch (Exception e) {
+			logger.error("", e);
+		} finally {
+			try {
+				get.releaseConnection();
+			} catch (Exception e) {
+				logger.error("", e);
+			}
+		}
+		return byteOutputStream;
+	}
+
+	protected String getParsedContent(Url url, ByteOutputStream byteOutputStream) {
+		try {
+			String contentType = URI.create(url.getUrl()).toURL().getFile();
 
 			// The actual byte buffer of data
 			byte[] buffer = byteOutputStream.getBytes();
@@ -116,8 +149,19 @@ public class Worker implements Runnable {
 			// TODO - Add the title field
 			// TODO - Add the contents field
 			String fieldContents = outputStream.toString();
+			return fieldContents;
+		} catch (Exception e) {
+			logger.error("", e);
+		} finally {
+			// Nothing
+		}
+		return null;
+	}
 
-			Long hash = HashUtilities.hash(fieldContents);
+	protected void addDocumentToIndex(IndexableInternet indexable, Url url, String parsedContent) {
+		logger.debug("Doing url : " + url.getUrl() + ", " + Thread.currentThread());
+		try {
+			Long hash = HashUtilities.hash(parsedContent);
 			url.setHash(hash);
 
 			Cache cache = indexContext.getCache();
@@ -133,20 +177,60 @@ public class Worker implements Runnable {
 			TermVector termVector = indexable.isVectored() ? TermVector.YES : TermVector.NO;
 
 			setIdField(indexable, document);
-			IndexManager.addStringField(indexable.getName(), fieldContents, document, store, analyzed, termVector);
+			IndexManager.addStringField(indexable.getName(), parsedContent, document, store, analyzed, termVector);
 
 			indexContext.getIndexWriter().addDocument(document);
-
-			byteArrayInputStream.reset();
-			extractor.extractLinks(indexContext, indexable, url, byteArrayInputStream);
 		} catch (Exception e) {
 			logger.error("Exception accessing url : " + url, e);
-		} finally {
-			try {
-				get.releaseConnection();
-			} catch (Exception e) {
-				logger.error("", e);
+		}
+	}
+
+	protected void extractLinksFromContent(IndexableInternet indexableInternet, Url baseUrl, InputStream inputStream) {
+		try {
+			Reader reader = new InputStreamReader(inputStream, IConstants.ENCODING);
+			Source source = new Source(reader);
+			List<Tag> tags = source.getAllTags();
+			URI baseUri = new URI(baseUrl.getUrl());
+			String baseHost = indexableInternet.getUri().getHost();
+			for (Tag tag : tags) {
+				if (tag.getName().equals(HTMLElementName.A)) {
+					if (StartTag.class.isAssignableFrom(tag.getClass())) {
+						Attribute attribute = ((StartTag) tag).getAttributes().get(HTML.Attribute.HREF.toString());
+						if (attribute != null) {
+							try {
+								String link = attribute.getValue();
+								if (link == null) {
+									continue;
+								}
+								if (UriUtilities.isExcluded(link.trim().toLowerCase())) {
+									continue;
+								}
+								String resolvedLink = UriUtilities.resolve(baseUri, link);
+								if (!UriUtilities.isInternetProtocol(resolvedLink)) {
+									continue;
+								}
+								if (!resolvedLink.contains(baseHost)) {
+									continue;
+								}
+								String replacement = resolvedLink.contains("?") ? "?" : "";
+								String strippedSessionLink = UriUtilities.stripJSessionId(resolvedLink, replacement);
+								String strippedAnchorLink = UriUtilities.stripAnchor(strippedSessionLink, "");
+								Url newUrl = new Url();
+								newUrl.setUrl(strippedAnchorLink);
+								newUrl.setName(indexableInternet.getName());
+								newUrl.setIndexed(Boolean.FALSE);
+
+								Cache cache = indexContext.getCache();
+								cache.setUrl(newUrl);
+							} catch (Exception e) {
+								logger.error("Exception extracting link : " + tag, e);
+							}
+						}
+					}
+				}
 			}
+		} catch (Exception e) {
+			logger.error("", e);
 		}
 	}
 
