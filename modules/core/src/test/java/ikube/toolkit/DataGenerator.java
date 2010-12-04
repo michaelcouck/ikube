@@ -1,10 +1,9 @@
-package ikube.database.generator;
+package ikube.toolkit;
 
 import ikube.ATest;
 import ikube.logging.Logging;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
-import ikube.toolkit.PerformanceTester;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

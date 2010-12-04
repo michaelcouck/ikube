@@ -1,9 +1,9 @@
 package ikube;
 
 import ikube.cluster.ClusterTest;
-import ikube.database.generator.DataGenerator;
 import ikube.model.IndexContext;
 import ikube.toolkit.ApplicationContextManager;
+import ikube.toolkit.DataGenerator;
 import ikube.toolkit.DataLoader;
 import ikube.toolkit.FileUtilities;
 
