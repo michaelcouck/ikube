@@ -5,6 +5,7 @@ import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.model.IndexableInternet;
 import ikube.model.Url;
+import ikube.toolkit.HashUtilities;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,9 +29,11 @@ public class IndexableInternetHandler extends Handler {
 		List<Thread> threads = new ArrayList<Thread>();
 		// The start url
 		seedUrl(indexContext, indexableInternet);
+		String name = this.getClass().getSimpleName();
 		for (int i = 0; i < getThreads(); i++) {
 			IndexableInternetCrawler indexableInternetCrawler = new IndexableInternetCrawler(indexContext, indexableInternet, threads);
-			threads.add(new Thread(indexableInternetCrawler, this.getClass().getSimpleName() + "." + i));
+			Thread thread = new Thread(indexableInternetCrawler, name + "." + i);
+			threads.add(thread);
 		}
 		for (Thread thread : threads) {
 			thread.start();
@@ -45,8 +48,9 @@ public class IndexableInternetHandler extends Handler {
 		Url url = new Url();
 		url.setUrl(urlString);
 		url.setIndexed(Boolean.FALSE);
+		url.setHash(HashUtilities.hash(url.getUrl()));
 
-		indexContext.getCache().setUrl(url);
+		indexContext.getCache().set(url.getHash(), url);
 	}
 
 }

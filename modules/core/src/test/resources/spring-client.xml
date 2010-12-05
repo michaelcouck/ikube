@@ -60,33 +60,40 @@
 		id="faqId"
 		class="ikube.model.IndexableColumn"
 		property:name="faqId"
-		property:idColumn="true" />
+		property:idColumn="true"
+		property:columnClass="java.lang.Long" />
 	<bean
 		id="creationtimestamp"
 		class="ikube.model.IndexableColumn"
-		property:name="creationtimestamp" />
+		property:name="creationtimestamp"
+		property:columnClass="java.sql.Timestamp" />
 	<bean
 		id="modifiedtimestamp"
 		class="ikube.model.IndexableColumn"
-		property:name="modifiedtimestamp" />
+		property:name="modifiedtimestamp"
+		property:columnClass="java.sql.Timestamp" />
 	<bean
 		id="creator"
 		class="ikube.model.IndexableColumn"
-		property:name="creator" />
+		property:name="creator"
+		property:columnClass="java.lang.String" />
 	<bean
 		id="modifier"
 		class="ikube.model.IndexableColumn"
-		property:name="modifier" />
+		property:name="modifier"
+		property:columnClass="java.lang.String" />
 	<bean
 		id="question"
 		class="ikube.model.IndexableColumn"
 		property:name="question"
-		property:fieldName="contents" />
+		property:fieldName="contents"
+		property:columnClass="java.lang.String" />
 	<bean
 		id="answer"
 		class="ikube.model.IndexableColumn"
 		property:name="answer"
-		property:fieldName="contents" />
+		property:fieldName="contents"
+		property:columnClass="java.lang.String" />
 
 	<bean
 		id="tableTwo"
@@ -109,29 +116,34 @@
 		class="ikube.model.IndexableColumn"
 		property:name="faqid"
 		property:fieldName="attachmentfaqId"
-		property:foreignKey-ref="faqId" />
+		property:foreignKey-ref="faqId"
+		property:columnClass="java.lang.Long" />
 	<bean
 		id="attachmentid"
 		class="ikube.model.IndexableColumn"
 		property:name="attachmentid"
 		property:fieldName="attachmentid"
-		property:idColumn="true" />
+		property:idColumn="true"
+		property:columnClass="java.lang.Long" />
 	<bean
 		id="name"
 		class="ikube.model.IndexableColumn"
 		property:name="name"
-		property:fieldName="name" />
+		property:fieldName="name"
+		property:columnClass="java.lang.String" />
 	<bean
 		id="attachment"
 		class="ikube.model.IndexableColumn"
 		property:name="attachment"
 		property:fieldName="attachment"
-		property:nameColumn-ref="name" />
+		property:nameColumn-ref="name"
+		property:columnClass="java.sql.Blob" />
 	<bean
 		id="length"
 		class="ikube.model.IndexableColumn"
 		property:name="length"
-		property:fieldName="length" />
+		property:fieldName="length"
+		property:columnClass="java.lang.Long" />
 
 	<bean
 		id="mail"

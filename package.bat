@@ -1,3 +1,3 @@
-set MAVEN_OPTS=-Xms256m -Xmx1024m -XX:MaxPermSize=128m
+set MAVEN_OPTS=-Xms128m -Xmx512m -XX:MaxPermSize=64m
 rem dotuml:generate javadoc:javadoc
 mvn package -DskipTests=true

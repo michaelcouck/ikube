@@ -2,7 +2,6 @@ package ikube.index.handler.internet;
 
 import static org.junit.Assert.assertTrue;
 import ikube.BaseTest;
-import ikube.IConstants;
 import ikube.action.Reset;
 import ikube.model.IndexableInternet;
 import ikube.toolkit.ApplicationContextManager;
@@ -28,7 +27,7 @@ public class IndexableInternetHandlerTest extends BaseTest {
 
 		waitForThreads(threads);
 
-		int totalUrlsCrawled = indexContext.getCache().getTotal(IConstants.URL);
+		int totalUrlsCrawled = indexContext.getCache().size();
 		logger.info("Urls crawled : " + totalUrlsCrawled);
 		assertTrue(totalUrlsCrawled > 40);
 	}

@@ -1,5 +1,6 @@
 package ikube.index.parse;
 
+import static org.junit.Assert.assertTrue;
 import ikube.ATest;
 import ikube.index.parse.excel.ExcelParser;
 import ikube.index.parse.html.HtmlParser;
@@ -12,10 +13,13 @@ import ikube.index.parse.xml.XMLParser;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.PerformanceTester;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.junit.Test;
 
@@ -123,6 +127,27 @@ public class ParserPerformanceTest extends ATest {
 				rtfParser.parse(inputStream, new ByteArrayOutputStream());
 			}
 		}, "Rtf parser", 100);
+	}
+
+	@Test
+	public void pattern() throws Exception {
+		File file = FileUtilities.findFile(new File("."), new String[] { "html.html" });
+		byte[] bytes = FileUtilities.getContents(file).toByteArray();
+		InputStream inputStream = new ByteArrayInputStream(bytes);
+		final String string = FileUtilities.getContents(inputStream, Integer.MAX_VALUE).toString();
+		// (@)?(href=')?(HREF=')?(HREF=\")?(href=\")?
+		// This pattern will extract the urls form the log so we can check them
+		final Pattern pattern = Pattern
+				.compile("(http://|https://)[a-zA-Z_0-9\\-]+(\\.\\w[a-zA-Z_0-9\\-]+)+(/[#&\\n\\-=?\\+\\%/\\.\\w]+)?");
+		double executionsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
+			public void execute() {
+				Matcher matcher = pattern.matcher(string);
+				while (matcher.find()) {
+					matcher.group();
+				}
+			}
+		}, "Pattern matcher : ", 1000);
+		assertTrue(executionsPerSecond > 10);
 	}
 
 }

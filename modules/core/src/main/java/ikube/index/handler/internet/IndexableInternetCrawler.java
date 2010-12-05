@@ -1,6 +1,7 @@
 package ikube.index.handler.internet;
 
 import ikube.IConstants;
+import ikube.cluster.cache.ICache;
 import ikube.index.IndexManager;
 import ikube.index.content.ByteOutputStream;
 import ikube.index.content.IContentProvider;
@@ -10,7 +11,6 @@ import ikube.index.parse.ParserProvider;
 import ikube.index.parse.mime.MimeType;
 import ikube.index.parse.mime.MimeTypes;
 import ikube.index.parse.xml.XMLParser;
-import ikube.model.Cache;
 import ikube.model.IndexContext;
 import ikube.model.IndexableInternet;
 import ikube.model.Url;
@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
+import java.lang.Thread.State;
 import java.net.URI;
 import java.util.List;
 
@@ -51,6 +52,7 @@ import org.apache.lucene.document.Field.TermVector;
 public class IndexableInternetCrawler implements Runnable {
 
 	private Logger logger;
+	private long waitTime = 1000;
 	private List<Thread> threads;
 	private IndexContext indexContext;
 	private IndexableInternet indexableInternet;
@@ -67,9 +69,8 @@ public class IndexableInternetCrawler implements Runnable {
 	}
 
 	public void run() {
-		Cache cache = indexContext.getCache();
 		while (true) {
-			List<Url> urls = cache.getUrlBatch(threads);
+			List<Url> urls = getBatch(threads);
 			if (urls.size() == 0) {
 				// If we have no more urls it means that
 				// there are not more in the cache and all the
@@ -77,7 +78,7 @@ public class IndexableInternetCrawler implements Runnable {
 				return;
 			}
 			for (Url url : urls) {
-				logger.debug("Doing url : " + url.getUrl() + ", " + Thread.currentThread());
+				logger.debug("Doing url : " + url.getUrl() + ", " + Thread.currentThread().hashCode());
 				// Get the content from the url
 				ByteOutputStream byteOutputStream = getContentFromUrl(indexableInternet, url);
 				// Parse the content from the url
@@ -92,6 +93,36 @@ public class IndexableInternetCrawler implements Runnable {
 				} catch (Exception e) {
 				}
 			}
+		}
+	}
+
+	protected synchronized List<Url> getBatch(List<Thread> threads) {
+		try {
+			ICache<Url> cache = indexContext.getCache();
+			List<Url> urls = cache.getBatch(Url.class, new ICache.IAction<Url>() {
+				@Override
+				public void execute(Url url) {
+					url.setIndexed(Boolean.TRUE);
+				}
+			});
+			if (urls.size() == 0) {
+				for (Thread thread : threads) {
+					if (thread.equals(Thread.currentThread())) {
+						continue;
+					}
+					if (thread.getState().equals(State.RUNNABLE)) {
+						try {
+							wait(waitTime);
+						} catch (InterruptedException e) {
+							logger.error("", e);
+						}
+						return getBatch(threads);
+					}
+				}
+			}
+			return urls;
+		} finally {
+			notifyAll();
 		}
 	}
 
@@ -166,10 +197,10 @@ public class IndexableInternetCrawler implements Runnable {
 	protected void addDocumentToIndex(IndexableInternet indexable, Url url, String parsedContent) {
 		try {
 			Long hash = HashUtilities.hash(parsedContent);
-			url.setHash(hash);
+			url.setContentHash(hash);
 
-			Cache cache = indexContext.getCache();
-			Url duplicate = cache.getUrlWithHash(url);
+			ICache<Url> cache = indexContext.getCache();
+			Url duplicate = cache.get(url.getContentHash());
 			if (duplicate != null) {
 				logger.debug("Found duplicate data : " + duplicate + ", url : " + url);
 				return;
@@ -249,10 +280,11 @@ public class IndexableInternetCrawler implements Runnable {
 								String strippedAnchorLink = UriUtilities.stripAnchor(strippedSessionLink, "");
 								Url newUrl = new Url();
 								newUrl.setUrl(strippedAnchorLink);
+								newUrl.setHash(HashUtilities.hash(newUrl.getUrl()));
 								newUrl.setIndexed(Boolean.FALSE);
 
-								Cache cache = indexContext.getCache();
-								cache.setUrl(newUrl);
+								ICache<Url> cache = indexContext.getCache();
+								cache.set(newUrl.getHash(), newUrl);
 							} catch (Exception e) {
 								logger.error("Exception extracting link : " + tag, e);
 							}

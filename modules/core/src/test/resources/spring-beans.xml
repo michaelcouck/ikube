@@ -25,12 +25,7 @@
 	<aop:aspectj-autoproxy proxy-target-class="true" />
 
 	<bean
-		id="ikube.cluster.LockManager"
-		class="ikube.cluster.LockManager"
-		property:timeout="10000" />
-	<bean
-		class="ikube.cluster.ClusterManager"
-		property:lockManager-ref="ikube.cluster.LockManager" />
+		class="ikube.cluster.ClusterManagerLocal" />
 	<bean
 		class="ikube.IndexEngine"
 		property:actions-ref="actions" />
@@ -69,9 +64,6 @@
 			</list>
 		</property>
 	</bean>
-	<bean
-		class="ikube.listener.ParserListener"
-		property:dataBase-ref="ikube.database.odb.DataBaseOdb" />
 
 	<bean id="ikube.action.Close" class="ikube.action.Close" />
 	<bean id="ikube.action.Delete" class="ikube.action.Delete" />

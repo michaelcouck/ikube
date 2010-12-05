@@ -1,5 +1,8 @@
 package ikube.model;
 
+import ikube.cluster.cache.HazelcastCache;
+import ikube.cluster.cache.ICache;
+
 import java.util.List;
 
 import javax.persistence.Entity;
@@ -52,10 +55,10 @@ public class IndexContext extends Persistable implements Comparable<IndexContext
 	/** Can be null if there is no index created. */
 	private transient MultiSearcher multiSearcher;
 	/** The cache for the crawlers. */
-	private transient Cache cache;
+	private transient ICache<Url> cache;
 
 	public IndexContext() {
-		this.cache = new Cache();
+		this.cache = new HazelcastCache();
 	}
 
 	public String getName() {
@@ -230,7 +233,7 @@ public class IndexContext extends Persistable implements Comparable<IndexContext
 	}
 
 	@Transient
-	public Cache getCache() {
+	public ICache<Url> getCache() {
 		return this.cache;
 	}
 

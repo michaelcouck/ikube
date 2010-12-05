@@ -11,12 +11,14 @@ import javax.persistence.Entity;
 public class Url extends Persistable {
 
 	private String url;
-	private String title;
 	private String contentType;
-	private byte[] rawContent;
-	private String parsedContent;
 	private Boolean indexed;
 	private Long hash;
+	private Long contentHash;
+
+	private transient String title;
+	private transient byte[] rawContent;
+	private transient String parsedContent;
 
 	public String getUrl() {
 		return url;
@@ -74,10 +76,20 @@ public class Url extends Persistable {
 		this.hash = hash;
 	}
 
+	public Long getContentHash() {
+		return contentHash;
+	}
+
+	public void setContentHash(Long contentHash) {
+		this.contentHash = contentHash;
+	}
+
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 		builder.append("[");
 		builder.append(getId());
+		builder.append(", ");
+		builder.append(isIndexed());
 		builder.append(", ");
 		builder.append(getUrl());
 		builder.append(", ");

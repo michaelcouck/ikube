@@ -131,7 +131,7 @@ public class LockManager extends ReceiverAdapter implements ILockManager {
 					channel.send(message);
 					// NOTE : This doesn't work because two servers can send to two
 					// different individual targets and the holders can then be different and
-					// never normalise
+					// never normalize
 					// channel.send(firstAddress, this.server.getAddress(), this.token);
 					return;
 				} else {

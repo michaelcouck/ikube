@@ -1,9 +1,11 @@
-package ikube.model;
+package ikube.cluster.cache;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import ikube.ATest;
+import ikube.cluster.cache.Cache;
+import ikube.model.Url;
 import ikube.toolkit.PerformanceTester;
 
 import java.util.ArrayList;
@@ -78,7 +80,7 @@ public class CacheTest extends ATest {
 				url.setUrl(Long.toHexString(nanoTime));
 				cache.setUrl(url);
 			}
-		}, "Cache set : ", iterations);
+		}, "JGroupsCache set : ", iterations);
 		assertTrue(executionsPerSecond > 1000);
 	}
 

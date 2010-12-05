@@ -20,6 +20,7 @@ public class IndexableColumn extends Indexable<IndexableColumn> {
 	private boolean stored = Boolean.FALSE;
 	private boolean analyzed = Boolean.TRUE;
 	private boolean vectored = Boolean.TRUE;
+	private String columnClass;
 
 	/**
 	 * This is the column where the name of the column is stored. In the case of a file in the database the name of the file can be used to
@@ -81,6 +82,14 @@ public class IndexableColumn extends Indexable<IndexableColumn> {
 
 	public void setNameColumn(IndexableColumn indexableColumn) {
 		this.nameColumn = indexableColumn;
+	}
+
+	public String getColumnClass() {
+		return columnClass;
+	}
+
+	public void setColumnClass(String columnClass) {
+		this.columnClass = columnClass;
 	}
 
 	@Transient

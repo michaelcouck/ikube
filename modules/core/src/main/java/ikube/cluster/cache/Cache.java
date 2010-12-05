@@ -1,6 +1,7 @@
-package ikube.model;
+package ikube.cluster.cache;
 
 import ikube.IConstants;
+import ikube.model.Url;
 
 import java.lang.Thread.State;
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ public class Cache {
 	private JCS out;
 	private JCS hash;
 	private JCS all;
+
 	private int batchSize = 100;
 	private long waitTime = 100;
 
@@ -29,6 +31,7 @@ public class Cache {
 
 	protected void initialise() {
 		try {
+			JCS.setConfigFilename("/cache.ccf");
 			in = JCS.getInstance(IConstants.IN + "." + hashCode());
 			out = JCS.getInstance(IConstants.OUT + "." + hashCode());
 			hash = JCS.getInstance(IConstants.HASH + "." + hashCode());

@@ -20,6 +20,9 @@ public interface IConstants {
 	/** Where the whole application is wired together. */
 	public String SPRING_CONFIGURATION_FILE = META_INF + "/spring.xml";
 
+	/** The properties for the JGroups cache and cluster support. */
+	public String JGROUPS_CONFIGURATION_FILE = META_INF + "/cluster/udp.xml";
+
 	/** Maps mime types to file extensions.. */
 	public String MIME_TYPES = META_INF + "/mime/mime-types.xml";
 	/** Maps parsers to mime types. */
@@ -54,7 +57,7 @@ public interface IConstants {
 	public String START = "start";
 
 	public String ENCODING = "UTF8";
-	
+
 	public String IN = "in";
 	public String OUT = "out";
 	public String ALL = "all";
