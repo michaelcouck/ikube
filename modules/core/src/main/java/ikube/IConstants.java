@@ -23,6 +23,9 @@ public interface IConstants {
 	/** The properties for the JGroups cache and cluster support. */
 	public String JGROUPS_CONFIGURATION_FILE = META_INF + "/cluster/udp.xml";
 
+	/** The properties for the Hazelcast cache and cluster support. */
+	public String HAZELCAST_CONFIGURATION_FILE = META_INF + "/cluster/hazelcast.xml";
+
 	/** Maps mime types to file extensions.. */
 	public String MIME_TYPES = META_INF + "/mime/mime-types.xml";
 	/** Maps parsers to mime types. */

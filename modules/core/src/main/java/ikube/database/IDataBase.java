@@ -41,6 +41,20 @@ public interface IDataBase {
 	public <T> T merge(T object);
 
 	/**
+	 * Access the object of a particular class with the id.
+	 * 
+	 * @param <T>
+	 *            the type of object
+	 * @param klass
+	 *            the class of the object
+	 * @param id
+	 *            the id of the object
+	 * @return the object or null if there is no such object or a runtime exception if there is more than one result, meaning of course that
+	 *         there is a constraint violation, like unique indexes etc.
+	 */
+	public <T> T find(Class<T> klass, Long id);
+
+	/**
 	 * Finds a single object in the database restricted by the parameter values. Note that this method will return the first entity that
 	 * matches the parameter list which could be random, based on the underlying implementation of the object relational layer. Unless of
 	 * course the unique flag is set, in which case if there is a non unique result then null will be returned, and some error logging.

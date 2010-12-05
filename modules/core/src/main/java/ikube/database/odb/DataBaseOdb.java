@@ -154,6 +154,20 @@ public class DataBaseOdb implements IDataBase {
 	}
 
 	@Override
+	public <T> T find(Class<T> klass, Long id) {
+		String idFieldName = getIdFieldName(klass);
+		IQuery query = new CriteriaQuery(klass, Where.equal(idFieldName, id));
+		Objects<T> objects = this.odb.getObjects(query);
+		if (objects.size() > 1) {
+			throw new RuntimeException("Duplicate key : " + id + ", " + klass);
+		}
+		if (objects.size() == 1) {
+			return objects.getFirst();
+		}
+		return null;
+	}
+
+	@Override
 	public synchronized <T> T find(Class<T> klass, Map<String, Object> parameters, boolean unique) {
 		try {
 			And and = new And();
@@ -265,7 +279,6 @@ public class DataBaseOdb implements IDataBase {
 		if (idField != null) {
 			return idField;
 		}
-		// logger.info("Getting id for field : " + klass + ", " + superKlass);
 		Field[] fields = superKlass != null ? superKlass.getDeclaredFields() : klass.getDeclaredFields();
 		for (Field field : fields) {
 			Id idAnnotation = field.getAnnotation(Id.class);

@@ -15,6 +15,7 @@ public class HazelcastCache implements ICache<Url> {
 	private Map<Long, Url> urls;
 
 	public HazelcastCache() {
+		Hazelcast.getConfig().setXmlConfig(IConstants.HAZELCAST_CONFIGURATION_FILE);
 		urls = Hazelcast.getMap(IConstants.URL);
 	}
 
