@@ -1,11 +1,11 @@
 package ikube.action;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import ikube.database.IDataBase;
+import ikube.cluster.IClusterManager;
 import ikube.model.Url;
 import ikube.toolkit.ApplicationContextManager;
-
-import java.util.List;
+import ikube.toolkit.HashUtilities;
 
 import org.junit.Test;
 
@@ -20,19 +20,19 @@ public class ResetTest extends BaseActionTest {
 
 	@Test
 	public void execute() throws Exception {
-		indexContext.setIdNumber(1);
-		IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
+		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
 		Url url = new Url();
 		url.setUrl("dummy");
-		dataBase.persist(url);
+		url.setId(HashUtilities.hash(url.getUrl()));
+		clusterManager.set(Url.class, url.getId(), url);
 
-		List<Url> urls = dataBase.find(Url.class, Integer.MIN_VALUE, Integer.MAX_VALUE);
-		assertTrue(urls.size() > 0);
+		int size = clusterManager.size(Url.class);
+		assertTrue(size >= 1);
 
 		reset.execute(indexContext);
 
-		urls = dataBase.find(Url.class, Integer.MIN_VALUE, Integer.MAX_VALUE);
-		assertTrue(urls.size() == 0);
+		size = clusterManager.size(Url.class);
+		assertEquals(0, size);
 	}
 
 }

@@ -1,11 +1,8 @@
 package ikube.action;
 
-import ikube.database.IDataBase;
+import ikube.model.Batch;
 import ikube.model.IndexContext;
 import ikube.model.Url;
-
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * @author Michael Couck
@@ -17,33 +14,17 @@ public class Reset extends Action<IndexContext, Boolean> {
 	@Override
 	public Boolean execute(IndexContext indexContext) {
 		try {
-			boolean anyWorking = getClusterManager().anyWorkingOnIndex(indexContext);
-			if (!anyWorking) {
-				getClusterManager().setWorking(indexContext, getClass().getName(), Boolean.TRUE, System.currentTimeMillis());
-				logger.debug("Resetting : " + !anyWorking + ", " + indexContext);
-
-				int batch = 1000;
-				IDataBase dataBase = getDataBase();
-				List<Url> urls = dataBase.find(Url.class, 0, batch);
-				Iterator<Url> iterator = urls.iterator();
-				while (iterator.hasNext()) {
-					Url url = iterator.next();
-					logger.debug("Deleting url : " + url);
-					dataBase.remove(url);
-					if (!iterator.hasNext()) {
-						urls = dataBase.find(Url.class, 0, batch);
-						iterator = urls.iterator();
-					}
-				}
-				indexContext.setIdNumber(0);
-				indexContext.getCache().clear();
-				return Boolean.TRUE;
-			} else {
-				logger.debug("Not resetting : " + !anyWorking + ", " + indexContext);
+			boolean anyWorking = getClusterManager().anyWorkingOnIndex(indexContext.getIndexName());
+			logger.debug("Resetting : " + !anyWorking + ", " + indexContext);
+			if (anyWorking) {
+				return Boolean.FALSE;
 			}
-			return Boolean.FALSE;
+			getClusterManager().setWorking(indexContext.getIndexName(), getClass().getName(), Boolean.TRUE, System.currentTimeMillis());
+			getClusterManager().clear(Url.class);
+			getClusterManager().clear(Batch.class);
+			return Boolean.TRUE;
 		} finally {
-			getClusterManager().setWorking(indexContext, null, Boolean.FALSE, 0);
+			getClusterManager().setWorking(indexContext.getIndexName(), null, Boolean.FALSE, 0);
 		}
 	}
 

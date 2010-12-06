@@ -22,6 +22,7 @@
 		property:bufferedDocs="${buffered.docs}"
 		property:bufferSize="${buffer.size}"
 		property:batchSize="${jdbc.batch.size}"
+		property:internetBatchSize="${internet.batch.size}"
 		property:mergeFactor="${merge.factor}"
 		property:maxFieldLength="${max.field.length}"
 		property:maxReadLength="${max.read.length}"

@@ -1,12 +1,16 @@
 package ikube;
 
 import ikube.action.IAction;
+import ikube.cluster.IClusterManager;
 import ikube.listener.IListener;
 import ikube.listener.ListenerManager;
 import ikube.model.Event;
 import ikube.model.IndexContext;
+import ikube.model.Server;
 import ikube.toolkit.ApplicationContextManager;
+import ikube.toolkit.FileUtilities;
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 
@@ -19,10 +23,18 @@ import org.apache.log4j.Logger;
  */
 public class IndexEngine implements IIndexEngine {
 
-	private Logger logger = Logger.getLogger(this.getClass());
+	static {
+		// Try to clean the database files
+		File dotDirectory = new File(".");
+		FileUtilities.deleteFiles(dotDirectory, IConstants.DATABASE_FILE);
+		FileUtilities.deleteFiles(dotDirectory, IConstants.TRANSACTION_FILES);
+	}
+
+	private Logger logger;
 	private List<IAction<IndexContext, Boolean>> actions;
 
 	public IndexEngine() {
+		logger = Logger.getLogger(this.getClass());
 		IListener listener = new IListener() {
 			@Override
 			public void handleNotification(Event event) {
@@ -37,6 +49,18 @@ public class IndexEngine implements IIndexEngine {
 		if (!event.getType().equals(Event.TIMER)) {
 			return;
 		}
+		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
+		Server server = clusterManager.getServer();
+
+		// If this server is working on anything then return
+		if (server.isWorking()) {
+			logger.debug("This server working : " + server);
+			return;
+		}
+
+		// Publish the server to the cluster for good measure
+		clusterManager.set(Server.class, server.getId(), server);
+
 		Map<String, IndexContext> indexContexts = ApplicationContextManager.getBeans(IndexContext.class);
 		logger.debug("Contexts : " + indexContexts);
 		for (IndexContext indexContext : indexContexts.values()) {
@@ -45,11 +69,6 @@ public class IndexEngine implements IIndexEngine {
 				continue;
 			}
 			try {
-				if (indexContext.isWorking()) {
-					logger.info("Already working : " + indexContext.getIndexName() + ", " + indexContext.getName());
-					continue;
-				}
-				indexContext.setWorking(Boolean.TRUE);
 				logger.info("Starting working : " + indexContext);
 				for (IAction<IndexContext, Boolean> action : actions) {
 					logger.debug("Executing action : " + action + ", " + Thread.currentThread().hashCode());
@@ -64,6 +83,8 @@ public class IndexEngine implements IIndexEngine {
 				logger.info("Finished working : " + this);
 			} catch (Exception e) {
 				logger.error("Exception in the index engine : " + indexContext.getIndexName() + ", " + indexContext.getName(), e);
+			} finally {
+				clusterManager.setWorking(indexContext.getIndexName(), null, Boolean.FALSE, System.currentTimeMillis());
 			}
 		}
 

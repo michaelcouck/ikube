@@ -23,7 +23,7 @@ public class Delete extends Action<IndexContext, Boolean> {
 	@Override
 	public Boolean execute(IndexContext indexContext) {
 		String actionName = getClass().getName();
-		if (getClusterManager().anyWorking(actionName)) {
+		if (getClusterManager().anyWorkingOnIndex(indexContext.getIndexName())) {
 			return Boolean.FALSE;
 		}
 		File baseIndexDirectory = FileUtilities.getFile(indexContext.getIndexDirectoryPath(), Boolean.TRUE);
@@ -32,7 +32,7 @@ public class Delete extends Action<IndexContext, Boolean> {
 			return Boolean.FALSE;
 		}
 		try {
-			getClusterManager().setWorking(indexContext, actionName, Boolean.TRUE, System.currentTimeMillis());
+			getClusterManager().setWorking(indexContext.getIndexName(), actionName, Boolean.TRUE, System.currentTimeMillis());
 			List<File> timeIndexDirectoriesList = Arrays.asList(timeIndexDirectories);
 			Collections.sort(timeIndexDirectoriesList, new Comparator<File>() {
 				@Override
@@ -61,7 +61,7 @@ public class Delete extends Action<IndexContext, Boolean> {
 				FileUtilities.deleteFile(indexDirectory, 1);
 			}
 		} finally {
-			getClusterManager().setWorking(indexContext, null, Boolean.FALSE, 0);
+			getClusterManager().setWorking(indexContext.getIndexName(), null, Boolean.FALSE, 0);
 		}
 		return Boolean.TRUE;
 	}

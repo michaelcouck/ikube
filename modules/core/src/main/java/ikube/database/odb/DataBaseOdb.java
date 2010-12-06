@@ -92,11 +92,11 @@ public class DataBaseOdb implements IDataBase {
 		// OdbConfiguration.setAutomaticallyIncreaseCacheSize(Boolean.TRUE);
 		// OdbConfiguration.setAutomaticCloseFileOnExit(Boolean.TRUE);
 		OdbConfiguration.setDisplayWarnings(Boolean.TRUE);
-		// OdbConfiguration.setMultiThreadExclusive(Boolean.FALSE);
+		OdbConfiguration.setMultiThreadExclusive(Boolean.TRUE);
 		// OdbConfiguration.setReconnectObjectsToSession(Boolean.TRUE);
 		OdbConfiguration.setUseCache(Boolean.TRUE);
 		OdbConfiguration.setUseIndex(Boolean.TRUE);
-		OdbConfiguration.setUseMultiBuffer(Boolean.TRUE);
+		OdbConfiguration.setUseMultiBuffer(Boolean.FALSE);
 		// OdbConfiguration.setShareSameVmConnectionMultiThread(Boolean.FALSE);
 	}
 
@@ -108,7 +108,10 @@ public class DataBaseOdb implements IDataBase {
 	public synchronized <T> T persist(T object) {
 		try {
 			if (object != null) {
-				setIdField(object, System.nanoTime());
+				Object idFieldValue = getIdFieldValue(object);
+				if (idFieldValue == null) {
+					setIdField(object, System.nanoTime());
+				}
 				this.odb.store(object);
 			}
 		} catch (Exception e) {

@@ -1,7 +1,7 @@
 package ikube.index.handler.internet;
 
 import ikube.IConstants;
-import ikube.cluster.cache.ICache;
+import ikube.cluster.IClusterManager;
 import ikube.index.IndexManager;
 import ikube.index.content.ByteOutputStream;
 import ikube.index.content.IContentProvider;
@@ -14,6 +14,7 @@ import ikube.index.parse.xml.XMLParser;
 import ikube.model.IndexContext;
 import ikube.model.IndexableInternet;
 import ikube.model.Url;
+import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.HashUtilities;
 import ikube.toolkit.UriUtilities;
 
@@ -98,13 +99,8 @@ public class IndexableInternetCrawler implements Runnable {
 
 	protected synchronized List<Url> getBatch(List<Thread> threads) {
 		try {
-			ICache<Url> cache = indexContext.getCache();
-			List<Url> urls = cache.getBatch(Url.class, new ICache.IAction<Url>() {
-				@Override
-				public void execute(Url url) {
-					url.setIndexed(Boolean.TRUE);
-				}
-			});
+			IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
+			List<Url> urls = clusterManager.getBatch(indexContext.getInternetBatchSize());
 			if (urls.size() == 0) {
 				for (Thread thread : threads) {
 					if (thread.equals(Thread.currentThread())) {
@@ -197,10 +193,10 @@ public class IndexableInternetCrawler implements Runnable {
 	protected void addDocumentToIndex(IndexableInternet indexable, Url url, String parsedContent) {
 		try {
 			Long hash = HashUtilities.hash(parsedContent);
-			url.setContentHash(hash);
+			url.setHash(hash);
 
-			ICache<Url> cache = indexContext.getCache();
-			Url duplicate = cache.get(url.getContentHash());
+			IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
+			Url duplicate = clusterManager.get(Url.class, "hash = " + hash);
 			if (duplicate != null) {
 				logger.debug("Found duplicate data : " + duplicate + ", url : " + url);
 				return;
@@ -280,11 +276,11 @@ public class IndexableInternetCrawler implements Runnable {
 								String strippedAnchorLink = UriUtilities.stripAnchor(strippedSessionLink, "");
 								Url newUrl = new Url();
 								newUrl.setUrl(strippedAnchorLink);
-								newUrl.setHash(HashUtilities.hash(newUrl.getUrl()));
+								newUrl.setId(HashUtilities.hash(newUrl.getUrl()));
 								newUrl.setIndexed(Boolean.FALSE);
 
-								ICache<Url> cache = indexContext.getCache();
-								cache.set(newUrl.getHash(), newUrl);
+								IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
+								clusterManager.set(Url.class, newUrl.getId(), newUrl);
 							} catch (Exception e) {
 								logger.error("Exception extracting link : " + tag, e);
 							}

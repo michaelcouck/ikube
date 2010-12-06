@@ -11,7 +11,7 @@ import org.apache.lucene.store.Directory;
 
 /**
  * This class takes the searcher and tries to close the searcher on the directory.
- *
+ * 
  * @author Michael Couck
  * @since 24.08.08
  * @version 01.00
@@ -20,6 +20,11 @@ public class Close extends Action<IndexContext, Boolean> {
 
 	@Override
 	public Boolean execute(IndexContext indexContext) {
+		String actionName = getClass().getName();
+		if (getClusterManager().anyWorkingOnIndex(indexContext.getIndexName())) {
+			logger.debug("Close : Other servers working : " + actionName);
+			return Boolean.FALSE;
+		}
 		MultiSearcher multiSearcher = indexContext.getMultiSearcher();
 		if (multiSearcher == null) {
 			logger.debug("No index searcher yet in context, please build the index : ");
@@ -30,13 +35,8 @@ public class Close extends Action<IndexContext, Boolean> {
 			logger.debug("Shouldn't re-open : " + shouldReopen);
 			return Boolean.FALSE;
 		}
-		String actionName = getClass().getName();
-		if (getClusterManager().anyWorking(actionName)) {
-			logger.debug("Close : Other servers working : " + actionName);
-			return Boolean.FALSE;
-		}
 		try {
-			getClusterManager().setWorking(indexContext, actionName, Boolean.TRUE, System.currentTimeMillis());
+			getClusterManager().setWorking(indexContext.getIndexName(), actionName, Boolean.TRUE, System.currentTimeMillis());
 			Searchable[] searchables = multiSearcher.getSearchables();
 			if (searchables != null && searchables.length > 0) {
 				for (Searchable searchable : searchables) {
@@ -56,7 +56,7 @@ public class Close extends Action<IndexContext, Boolean> {
 			}
 			indexContext.setMultiSearcher(null);
 		} finally {
-			getClusterManager().setWorking(indexContext, null, Boolean.FALSE, 0);
+			getClusterManager().setWorking(indexContext.getIndexName(), null, Boolean.FALSE, 0);
 		}
 		return Boolean.TRUE;
 	}

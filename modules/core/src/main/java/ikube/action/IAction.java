@@ -7,6 +7,6 @@ package ikube.action;
  */
 public interface IAction<E, F> {
 
-	public F execute(E e);
+	public F execute(E e) throws Exception;
 
 }

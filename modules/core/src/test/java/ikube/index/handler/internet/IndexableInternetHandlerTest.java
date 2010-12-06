@@ -3,7 +3,9 @@ package ikube.index.handler.internet;
 import static org.junit.Assert.assertTrue;
 import ikube.BaseTest;
 import ikube.action.Reset;
+import ikube.cluster.IClusterManager;
 import ikube.model.IndexableInternet;
+import ikube.model.Url;
 import ikube.toolkit.ApplicationContextManager;
 
 import java.util.List;
@@ -27,14 +29,10 @@ public class IndexableInternetHandlerTest extends BaseTest {
 
 		waitForThreads(threads);
 
-		int totalUrlsCrawled = indexContext.getCache().size();
+		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
+		int totalUrlsCrawled = clusterManager.size(Url.class);
 		logger.info("Urls crawled : " + totalUrlsCrawled);
 		assertTrue(totalUrlsCrawled > 40);
-	}
-
-	public static void main(String[] args) throws Exception {
-		IndexableInternetHandlerTest indexableInternetHandlerTest = new IndexableInternetHandlerTest();
-		indexableInternetHandlerTest.handle();
 	}
 
 }

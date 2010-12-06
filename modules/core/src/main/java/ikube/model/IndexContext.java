@@ -1,8 +1,5 @@
 package ikube.model;
 
-import ikube.cluster.cache.HazelcastCache;
-import ikube.cluster.cache.ICache;
-
 import java.util.List;
 
 import javax.persistence.Entity;
@@ -33,7 +30,9 @@ public class IndexContext extends Persistable implements Comparable<IndexContext
 	private boolean compoundFile;
 
 	/** Jdbc properties. */
-	private long batchSize;
+	private int batchSize;
+	/** Internet properties. */
+	private int internetBatchSize;
 
 	private long maxReadLength;
 	/** Not mandatory, default implementation determined. */
@@ -41,25 +40,10 @@ public class IndexContext extends Persistable implements Comparable<IndexContext
 
 	private List<Indexable<?>> indexables;
 
-	/** The time the action was started. */
-	private long start;
-	/** The name of the action that is being executed on this configuration. */
-	private String action;
-	/** The next id number to use for select. */
-	private long idNumber;
-	/** Whether this server is working. */
-	private boolean working;
-
 	/** Can be null if there are no indexes running. */
 	private transient IndexWriter indexWriter;
 	/** Can be null if there is no index created. */
 	private transient MultiSearcher multiSearcher;
-	/** The cache for the crawlers. */
-	private transient ICache<Url> cache;
-
-	public IndexContext() {
-		this.cache = new HazelcastCache();
-	}
 
 	public String getName() {
 		return name;
@@ -141,12 +125,20 @@ public class IndexContext extends Persistable implements Comparable<IndexContext
 		this.bufferSize = bufferSize;
 	}
 
-	public long getBatchSize() {
+	public int getBatchSize() {
 		return batchSize;
 	}
 
-	public void setBatchSize(final long batchSize) {
+	public void setBatchSize(final int batchSize) {
 		this.batchSize = batchSize;
+	}
+
+	public int getInternetBatchSize() {
+		return internetBatchSize;
+	}
+
+	public void setInternetBatchSize(int internetBatchSize) {
+		this.internetBatchSize = internetBatchSize;
 	}
 
 	public long getMaxReadLength() {
@@ -179,42 +171,6 @@ public class IndexContext extends Persistable implements Comparable<IndexContext
 	}
 
 	@Transient
-	public long getStart() {
-		return start;
-	}
-
-	public void setStart(long start) {
-		this.start = start;
-	}
-
-	@Transient
-	public String getAction() {
-		return action;
-	}
-
-	public void setAction(String action) {
-		this.action = action;
-	}
-
-	@Transient
-	public long getIdNumber() {
-		return idNumber;
-	}
-
-	public void setIdNumber(long idNumber) {
-		this.idNumber = idNumber;
-	}
-
-	@Transient
-	public boolean isWorking() {
-		return working;
-	}
-
-	public void setWorking(boolean working) {
-		this.working = working;
-	}
-
-	@Transient
 	public IndexWriter getIndexWriter() {
 		return indexWriter;
 	}
@@ -230,11 +186,6 @@ public class IndexContext extends Persistable implements Comparable<IndexContext
 
 	public void setMultiSearcher(final MultiSearcher multiSearcher) {
 		this.multiSearcher = multiSearcher;
-	}
-
-	@Transient
-	public ICache<Url> getCache() {
-		return this.cache;
 	}
 
 }

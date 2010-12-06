@@ -1,8 +1,9 @@
 package ikube.cluster;
 
-import ikube.model.IndexContext;
 import ikube.model.Server;
+import ikube.model.Url;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -14,7 +15,7 @@ public interface IClusterManager {
 
 	/**
 	 * Sets the working flag for this index context.
-	 *
+	 * 
 	 * @param indexContext
 	 *            the index context that will start working
 	 * @param actionName
@@ -24,11 +25,11 @@ public interface IClusterManager {
 	 * @param start
 	 *            the start time of the action
 	 */
-	public void setWorking(IndexContext indexContext, String actionName, boolean isWorking, long start);
+	public void setWorking(String indexName, String actionName, boolean isWorking, long start);
 
 	/**
 	 * Returns whether any servers are working on any action other than this action.
-	 *
+	 * 
 	 * @param actionName
 	 *            the action name to check if any other servers are doing anything else
 	 * @return whether there are any servers working on any other action than the one specified in the parameter list
@@ -37,7 +38,7 @@ public interface IClusterManager {
 
 	/**
 	 * Checks to see if there are any other servers working on this index, with this action.
-	 *
+	 * 
 	 * @param actionName
 	 *            the name of the action we want to see if there are any servers working on
 	 * @return whether there are any servers working on this index with this action, other than ourselves of course
@@ -46,7 +47,7 @@ public interface IClusterManager {
 
 	/**
 	 * Returns the last working time of any context in any server that has this name and is doing this action.
-	 *
+	 * 
 	 * @param indexName
 	 *            the name of the index, could be 'faq' for example
 	 * @param actionName
@@ -58,7 +59,7 @@ public interface IClusterManager {
 
 	/**
 	 * Returns the next id from one of the servers. The id would be the id in the table for this index.
-	 *
+	 * 
 	 * @param indexName
 	 *            the name of the index currently getting executed
 	 * @return the id of the next row in the table for this index
@@ -73,9 +74,21 @@ public interface IClusterManager {
 
 	/**
 	 * Returns whether there are any servers working on this index.
-	 *
+	 * 
 	 * @return whether there are any servers working on the index specified
 	 */
-	public boolean anyWorkingOnIndex(IndexContext indexContext);
+	public boolean anyWorkingOnIndex(String indexName);
+
+	/** Below here the access to the cluster wide cache. */
+
+	public List<Url> getBatch(int size);
+
+	public <T> T get(Class<T> klass, String sql);
+
+	public <T> void set(Class<T> klass, Long id, T t);
+
+	public <T> void clear(Class<T> klass);
+
+	public <T> int size(Class<T> klass);
 
 }

@@ -2,6 +2,7 @@ package ikube.cluster.cache;
 
 import ikube.database.IDataBase;
 import ikube.model.Url;
+import ikube.toolkit.ApplicationContextManager;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -10,27 +11,33 @@ import java.util.Map;
 
 import com.hazelcast.core.MapStore;
 
-public class DataBaseOdbMapStore implements MapStore<Long, Url> {
+public class DataBaseOdbMapStore<T> implements MapStore<Long, T> {
 
 	private IDataBase dataBase;
 
-	@Override
-	public Url load(Long key) {
-		return dataBase.find(Url.class, key);
+	public DataBaseOdbMapStore() {
+		dataBase = ApplicationContextManager.getBean(IDataBase.class);
 	}
 
 	@Override
-	public Map<Long, Url> loadAll(Collection<Long> keys) {
+	@SuppressWarnings("unchecked")
+	public T load(Long key) {
+		return (T) dataBase.find(Object.class, key);
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public Map<Long, T> loadAll(Collection<Long> keys) {
 		List<Url> list = dataBase.find(Url.class, 0, Integer.MAX_VALUE);
 		Map<Long, Url> map = new HashMap<Long, Url>();
 		for (Url url : list) {
-			map.put(url.getHash(), url);
+			map.put(url.getId(), url);
 		}
-		return map;
+		return (Map<Long, T>) map;
 	}
 
 	@Override
-	public void store(Long key, Url value) {
+	public void store(Long key, T value) {
 		Url url = dataBase.find(Url.class, key);
 		if (url == null) {
 			dataBase.persist(value);
@@ -38,9 +45,10 @@ public class DataBaseOdbMapStore implements MapStore<Long, Url> {
 	}
 
 	@Override
-	public void storeAll(Map<Long, Url> map) {
+	@SuppressWarnings("unchecked")
+	public void storeAll(Map<Long, T> map) {
 		for (Long key : map.keySet()) {
-			Url url = dataBase.find(Url.class, key);
+			T url = (T) dataBase.find(Object.class, key);
 			if (url == null) {
 				dataBase.persist(map.get(key));
 			}

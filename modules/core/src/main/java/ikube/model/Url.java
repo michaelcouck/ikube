@@ -13,8 +13,8 @@ public class Url extends Persistable {
 	private String url;
 	private String contentType;
 	private Boolean indexed;
+	/** The hash of the content. */
 	private Long hash;
-	private Long contentHash;
 
 	private transient String title;
 	private transient byte[] rawContent;
@@ -74,14 +74,6 @@ public class Url extends Persistable {
 
 	public void setHash(Long hash) {
 		this.hash = hash;
-	}
-
-	public Long getContentHash() {
-		return contentHash;
-	}
-
-	public void setContentHash(Long contentHash) {
-		this.contentHash = contentHash;
 	}
 
 	public String toString() {

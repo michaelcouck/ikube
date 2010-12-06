@@ -42,6 +42,7 @@
 		property:name="faq"
 		property:schema="db2admin"
 		property:primary="true"
+		property:predicate="${faq.predicate}"
 		property:dataSource-ref="nonXaDataSource"
 		property:children-ref="columnsOne" />
 	<util:list id="columnsOne">

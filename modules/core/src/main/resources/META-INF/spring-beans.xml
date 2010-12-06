@@ -23,17 +23,28 @@
 
 	<context:annotation-config />
 	<aop:aspectj-autoproxy proxy-target-class="true" />
-
-	<bean
-		class="ikube.cluster.ClusterManagerLocal" />
+	
 	<bean
 		class="ikube.IndexEngine"
 		property:actions-ref="actions" />
+	<util:list id="actions">
+		<ref local="ikube.action.Reset" />
+		<ref local="ikube.action.Close" />
+		<ref local="ikube.action.Open" />
+		<ref local="ikube.action.Index" />
+		<ref local="ikube.action.Delete" />
+	</util:list>
+	<bean id="ikube.action.Close" class="ikube.action.Close" />
+	<bean id="ikube.action.Delete" class="ikube.action.Delete" />
+	<bean id="ikube.action.Index" class="ikube.action.Index" />
+	<bean id="ikube.action.Open" class="ikube.action.Open" />
+	<bean id="ikube.action.Reset" class="ikube.action.Reset" />
+	
 	<bean
 		id="ikube.database.odb.DataBaseOdb"
 		class="ikube.database.odb.DataBaseOdb"
+		lazy-init="true"
 		init-method="initialise"
-		lazy-init="false"
 		destroy-method="close">
 		<property name="indexes">
 			<list>
@@ -43,43 +54,40 @@
 					property:className="ikube.model.Url">
 					<property name="fieldNames">
 						<list>
-							<value>id</value>
+							<!--<value>id</value>
 							<value>url</value>
+							<value>hash</value>-->
 						</list>
 					</property>
 				</bean>
 			</list>
 		</property>
 	</bean>
-
-	<bean id="ikube.action.Reset" class="ikube.action.Reset" />
-	<bean id="ikube.action.Close" class="ikube.action.Close" />
-	<bean id="ikube.action.Open" class="ikube.action.Open" />
-	<bean id="ikube.action.Index" class="ikube.action.Index" />
-	<bean id="ikube.action.Delete" class="ikube.action.Delete" />
-	<util:list id="actions">
-		<ref local="ikube.action.Reset" />
-		<ref local="ikube.action.Close" />
-		<ref local="ikube.action.Open" />
-		<ref local="ikube.action.Index" />
-		<ref local="ikube.action.Delete" />
-	</util:list>
+	
+	<bean
+		class="ikube.cluster.ClusterManager"
+		lazy-init="true"
+		init-method="initialise"
+		property:serverAddress="serverOne">
+		<property name="cache">
+			<bean
+				id="ikube.cluster.cache.Cache"
+				class="ikube.cluster.cache.Cache"
+				lazy-init="true" />
+		</property>
+	</bean>
 	
 	<bean
 		class="ikube.index.handler.internet.IndexableInternetHandler"
-		property:dataBase-ref="ikube.database.odb.DataBaseOdb"
 		property:threads="${internet.handler.threads}" />
 	<bean
 		class="ikube.index.handler.email.IndexableEmailHandler"
-		property:dataBase-ref="ikube.database.odb.DataBaseOdb"
 		property:threads="${email.handler.threads}" />
 	<bean
 		class="ikube.index.handler.filesystem.IndexableFilesystemHandler"
-		property:dataBase-ref="ikube.database.odb.DataBaseOdb"
 		property:threads="${filesystem.handler.threads}" />
 	<bean
 		class="ikube.index.handler.database.IndexableTableHandler"
-		property:dataBase-ref="ikube.database.odb.DataBaseOdb"
 		property:threads="${table.handler.threads}" />
 
 	<bean id="ikube.index.parse.mime.MimeMapper" class="ikube.index.parse.mime.MimeMapper">
@@ -90,16 +98,52 @@
 	</bean>
 
 	<bean
-		id="ikube.listener.Schedule"
-		class="ikube.listener.Schedule"
-		property:type="timer"
-		property:delay="${delay}"
-		property:period="${period}" />
+		id="ikube.service.SearcherWebService"
+		class="ikube.service.SearcherWebService" />
+	<bean
+		id="ikube.service.WebServicePublisher"
+		class="ikube.service.WebServicePublisher"
+		property:addresses-ref="addresses"
+		property:implementors-ref="implementors"
+		init-method="publish" />
+	<util:list id="addresses">
+		<!--<value>http://localhost:8081/service/ISearcherWebService</value>-->
+	</util:list>
+	<util:list id="implementors">
+		<!--<ref local="ikube.service.SearcherWebService" />-->
+	</util:list>
+	<bean
+		id="ikube.service.SearcherWebServiceExecuter"
+		class="ikube.service.SearcherWebServiceExecuter"
+		property:configurationName="faq"
+		property:end="101"
+		property:endpointUri="http://localhost:8081/service/ISearcherWebService?wsdl"
+		property:fieldName="contents"
+		property:fragment="true"
+		property:resultsSizeMinimum="1"
+		property:searchString="clinch crackerjack books gall thoroughgoing
+			tall pissed committee greathearted cyborg devotional tremor"
+		property:start="0" />
+
 	<bean
 		class="ikube.listener.Scheduler">
 		<constructor-arg ref="scheduled.tasks" />
 	</bean>
 	<util:list id="scheduled.tasks">
 		<ref local="ikube.listener.Schedule" />
+		<!--<ref local="ikube.listener.Schedule.WebService" />-->
 	</util:list>
+	
+	<bean
+		id="ikube.listener.Schedule"
+		class="ikube.listener.Schedule"
+		property:type="timer"
+		property:delay="${delay}"
+		property:period="${period}" />
+	<bean
+		id="ikube.listener.Schedule.WebService"
+		class="ikube.listener.Schedule"
+		property:type="service"
+		property:delay="${web.service.delay}"
+		property:period="${web.service.period}" />
 </beans>

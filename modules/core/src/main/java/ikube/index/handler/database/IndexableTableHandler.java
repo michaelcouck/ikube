@@ -1,6 +1,7 @@
 package ikube.index.handler.database;
 
 import ikube.IConstants;
+import ikube.cluster.IClusterManager;
 import ikube.index.IndexManager;
 import ikube.index.content.ByteOutputStream;
 import ikube.index.content.ColumnContentProvider;
@@ -13,6 +14,7 @@ import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.model.IndexableColumn;
 import ikube.model.IndexableTable;
+import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.DatabaseUtilities;
 import ikube.toolkit.SerializationUtilities;
 
@@ -48,6 +50,10 @@ public class IndexableTableHandler extends Handler {
 
 	@Override
 	public List<Thread> handle(final IndexContext indexContext, final Indexable<?> indexable) throws Exception {
+		// Seed the batch before we start
+		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
+		long idNumber = clusterManager.getIdNumber(indexContext.getIndexName());
+		logger.debug("Starting with id : " + idNumber);
 		List<Thread> threads = new ArrayList<Thread>();
 		if (IndexableTable.class.isAssignableFrom(indexable.getClass())) {
 			IndexableTable indexableTable = (IndexableTable) indexable;
@@ -164,12 +170,13 @@ public class IndexableTableHandler extends Handler {
 			long nextIdNumber = 0;
 
 			if (indexableTable.isPrimary()) {
-				nextIdNumber = indexContext.getIdNumber();
+				IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
+				nextIdNumber = clusterManager.getIdNumber(indexContext.getIndexName());
 				long minId = getIdFunction(indexableTable, connection, "min");
 				if (nextIdNumber < minId) {
 					nextIdNumber = minId;
 				}
-				indexContext.setIdNumber(nextIdNumber + indexContext.getBatchSize());
+				clusterManager.setIdNumber(indexContext.getIndexName(), nextIdNumber + indexContext.getBatchSize());
 			}
 
 			String sql = buildSql(indexContext, indexableTable, nextIdNumber);

@@ -32,7 +32,7 @@ public class ClusterTest {
 	public static void main(String[] args) throws Exception {
 		FileUtilities.deleteFiles(new File("."), IConstants.DATABASE_FILE, IConstants.TRANSACTION_FILES);
 		
-		// "/cluster/spring.xml"
+		// "/cluster/spring.xml", "/META-INF/spring.xml"
 		String configurationFile = "/META-INF/spring.xml";
 		ApplicationContextManager.getApplicationContext(configurationFile);
 

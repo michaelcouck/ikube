@@ -1,10 +1,12 @@
 package ikube.index.handler.internet;
 
+import ikube.cluster.IClusterManager;
 import ikube.index.handler.Handler;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.model.IndexableInternet;
 import ikube.model.Url;
+import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.HashUtilities;
 
 import java.util.ArrayList;
@@ -48,9 +50,10 @@ public class IndexableInternetHandler extends Handler {
 		Url url = new Url();
 		url.setUrl(urlString);
 		url.setIndexed(Boolean.FALSE);
-		url.setHash(HashUtilities.hash(url.getUrl()));
+		url.setId(HashUtilities.hash(url.getUrl()));
 
-		indexContext.getCache().set(url.getHash(), url);
+		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
+		clusterManager.set(Url.class, url.getId(), url);
 	}
 
 }

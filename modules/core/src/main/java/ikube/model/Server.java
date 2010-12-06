@@ -1,11 +1,6 @@
 package ikube.model;
 
-import java.util.Set;
-import java.util.TreeSet;
-
 import javax.persistence.Entity;
-
-import org.jgroups.Address;
 
 /**
  * @author Michael Couck
@@ -13,56 +8,62 @@ import org.jgroups.Address;
  * @version 01.00
  */
 @Entity()
-public class Server extends Persistable implements Comparable<Server> {
+public class Server extends Persistable {
 
-	/** The real ip address of this server. */
-	private String ip;
-	/** The JGroups address of this machine. */
-	private Address address;
+	/** The time the action was started. */
+	private long start;
+	/** The name of the currently executing index. */
+	private String indexName;
+	/** The name of the action that is being executed on this configuration. */
+	private String action;
+	/** Whether this server is working. */
+	private boolean working;
+	/** The address of this machine. */
+	private String address;
 
-	/**
-	 * The contexts in this server. These get passed around in the token => server => contexts, but this copy of the contexts are 'local',
-	 * i.e. we don't get them from the other servers. So they have all local data. We use the data in the other servers => contexts to
-	 * update this server.
-	 */
-	private Set<IndexContext> indexContexts;
-
-	public Server() {
-		this.indexContexts = new TreeSet<IndexContext>();
+	public long getStart() {
+		return start;
 	}
 
-	public String getIp() {
-		return ip;
+	public void setStart(long start) {
+		this.start = start;
 	}
 
-	public void setIp(String ip) {
-		this.ip = ip;
+	public String getIndexName() {
+		return indexName;
 	}
 
-	public Address getAddress() {
+	public void setIndexName(String indexName) {
+		this.indexName = indexName;
+	}
+
+	public String getAction() {
+		return action;
+	}
+
+	public void setAction(String action) {
+		this.action = action;
+	}
+
+	public boolean isWorking() {
+		return working;
+	}
+
+	public void setWorking(boolean working) {
+		this.working = working;
+	}
+
+	public String getAddress() {
 		return address;
 	}
 
-	public void setAddress(Address address) {
+	public void setAddress(String address) {
 		this.address = address;
-	}
-
-	public Set<IndexContext> getIndexContexts() {
-		return indexContexts;
-	}
-
-	public void setIndexContexts(Set<IndexContext> indexContexts) {
-		this.indexContexts = indexContexts;
-	}
-
-	@Override
-	public int compareTo(Server o) {
-		return o.getAddress().compareTo(getAddress());
 	}
 
 	public String toString() {
 		final StringBuilder builder = new StringBuilder("[");
-		builder.append(getId()).append(",").append(getIp()).append(", ").append(getAddress());
+		builder.append(getId()).append(", ").append(getAddress());
 		builder.append("]");
 		return builder.toString();
 	}

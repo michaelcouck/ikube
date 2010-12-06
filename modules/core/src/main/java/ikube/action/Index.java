@@ -19,32 +19,31 @@ import java.util.Map;
 public class Index extends Action<IndexContext, Boolean> {
 
 	@Override
-	public Boolean execute(IndexContext indexContext) {
-		long thisThread = Thread.currentThread().hashCode();
+	public Boolean execute(IndexContext indexContext) throws Exception {
+		boolean indexCurrent = isIndexCurrent(indexContext);
+		logger.debug(Logging.getString("Index current : ", indexCurrent));
+		if (indexCurrent) {
+			return Boolean.FALSE;
+		}
+		List<Indexable<?>> indexables = indexContext.getIndexables();
+		String actionName = getClass().getName();
+		if (getClusterManager().anyWorking(actionName)) {
+			// Other servers working on an action other than this action. These
+			// actions need to be atomic, i.e. only one server executing one action
+			// at a time, other than the indexing action of course
+			logger.debug("Other servers working on different actions : ");
+			return Boolean.FALSE;
+		}
 		try {
-			List<Indexable<?>> indexables = indexContext.getIndexables();
-			String actionName = getClass().getName();
-			boolean indexCurrent = isIndexCurrent(indexContext);
-			logger.debug(Logging.getString("Index current : ", indexCurrent, ", ", thisThread));
-			if (indexCurrent) {
-				return Boolean.FALSE;
-			}
-			if (getClusterManager().anyWorking(actionName)) {
-				// Other servers working on an action other than this action. These
-				// actions need to be atomic, i.e. only one server executing one action
-				// at a time, other than the indexing action of course
-				logger.debug("Other servers working on different actions : ");
-				return Boolean.FALSE;
-			}
 			// If we get here then there are two possibilities:
 			// 1) The index is not current and we will start the index
 			// 2) The index is current and there are other servers working on the index, so we join them
-			getClusterManager().setWorking(indexContext, this.getClass().getName(), Boolean.TRUE, System.currentTimeMillis());
+			getClusterManager().setWorking(indexContext.getIndexName(), actionName, Boolean.TRUE, System.currentTimeMillis());
 			long lastWorkingStartTime = getClusterManager().getLastWorkingTime(indexContext.getIndexName(), actionName);
-			logger.debug(Logging.getString("Index : Last working time : ", lastWorkingStartTime, ", ", thisThread));
+			logger.debug(Logging.getString("Index : Last working time : ", lastWorkingStartTime));
 			Server server = getClusterManager().getServer();
 			// Start the indexing for this server
-			IndexManager.openIndexWriter(server.getIp(), indexContext, lastWorkingStartTime);
+			IndexManager.openIndexWriter(server.getAddress(), indexContext, lastWorkingStartTime);
 			Map<String, Handler> handlers = ApplicationContextManager.getBeans(Handler.class);
 			for (Handler handler : handlers.values()) {
 				for (Indexable<?> indexable : indexables) {
@@ -61,11 +60,11 @@ public class Index extends Action<IndexContext, Boolean> {
 			}
 		} finally {
 			IndexManager.closeIndexWriter(indexContext);
-			getClusterManager().setWorking(indexContext, null, Boolean.FALSE, 0);
+			getClusterManager().setWorking(indexContext.getIndexName(), null, Boolean.FALSE, 0);
 		}
 		String indexName = indexContext.getIndexName();
 		String contextName = indexContext.getName();
-		logger.debug(Logging.getString("Index : Finished indexing : ", indexName, ", ", contextName, ", ", thisThread));
+		logger.debug(Logging.getString("Index : Finished indexing : ", indexName, ", ", contextName));
 		return Boolean.TRUE;
 	}
 
