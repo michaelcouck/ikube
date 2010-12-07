@@ -35,6 +35,25 @@ public class IndexEngine implements IIndexEngine {
 
 	public IndexEngine() {
 		logger = Logger.getLogger(this.getClass());
+
+		ListenerManager.addListener(new IListener() {
+			@Override
+			public void handleNotification(Event event) {
+				// We set the cluster object if not set already
+				IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
+				Server server = clusterManager.getServer();
+				clusterManager.set(Server.class, server.getId(), server);
+
+				Map<String, IndexContext> indexContexts = ApplicationContextManager.getBeans(IndexContext.class);
+				logger.debug("Contexts : " + indexContexts);
+				for (IndexContext indexContext : indexContexts.values()) {
+					long idNumber = clusterManager.getIdNumber(indexContext.getIndexName(), indexContext.getBatchSize());
+					logger.debug("Id number : " + idNumber);
+				}
+				ListenerManager.removeListener(this);
+			}
+		});
+
 		IListener listener = new IListener() {
 			@Override
 			public void handleNotification(Event event) {
@@ -57,9 +76,6 @@ public class IndexEngine implements IIndexEngine {
 			logger.debug("This server working : " + server);
 			return;
 		}
-
-		// Publish the server to the cluster for good measure
-		clusterManager.set(Server.class, server.getId(), server);
 
 		Map<String, IndexContext> indexContexts = ApplicationContextManager.getBeans(IndexContext.class);
 		logger.debug("Contexts : " + indexContexts);

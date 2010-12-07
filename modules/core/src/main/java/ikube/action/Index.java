@@ -51,8 +51,10 @@ public class Index extends Action<IndexContext, Boolean> {
 						// Execute each handler and wait for the threads to finish
 						logger.info("Executing handler : " + handler);
 						List<Thread> threads = handler.handle(indexContext, indexable);
-						logger.info("Threads to wait for : " + threads);
-						waitForThreads(threads);
+						if (threads.size() > 0) {
+							logger.info("Threads to wait for : " + threads);
+							waitForThreads(threads);
+						}
 					} catch (Exception e) {
 						logger.error("Exception indexing data : " + indexContext.getIndexName(), e);
 					}

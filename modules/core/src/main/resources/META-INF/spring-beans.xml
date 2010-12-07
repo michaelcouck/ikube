@@ -98,9 +98,6 @@
 	</bean>
 
 	<bean
-		id="ikube.service.SearcherWebService"
-		class="ikube.service.SearcherWebService" />
-	<bean
 		id="ikube.service.WebServicePublisher"
 		class="ikube.service.WebServicePublisher"
 		property:addresses-ref="addresses"
@@ -110,7 +107,9 @@
 		<!--<value>http://localhost:8081/service/ISearcherWebService</value>-->
 	</util:list>
 	<util:list id="implementors">
-		<!--<ref local="ikube.service.SearcherWebService" />-->
+		<!--<bean
+			id="ikube.service.SearcherWebService"
+			class="ikube.service.SearcherWebService" />-->
 	</util:list>
 	<bean
 		id="ikube.service.SearcherWebServiceExecuter"

@@ -92,10 +92,10 @@ public class UriUtilitiesTest extends ATest {
 	public void isExcluded() {
 		String string = "JavaScript:";
 		assertTrue(UriUtilities.isExcluded(string));
-		
+
 		string = "javascript:¨var someVar = null;";
 		assertTrue(UriUtilities.isExcluded(string));
-		
+
 		string = "not a javascript link";
 		assertFalse(UriUtilities.isExcluded(string));
 	}
@@ -115,5 +115,13 @@ public class UriUtilitiesTest extends ATest {
 		String expected = "http://www.google.be/support/googleanalytics/bin/answer.py?answer=81977&cbid=1ervhd4u13k8d&src=cb&lev=index";
 		String stripped = UriUtilities.stripBlanks(url);
 		assertEquals(expected, stripped);
+	}
+
+	@Test
+	public void stripCarriageReturn() {
+		String string = "\r\nAnd the string. \n\r";
+		String stripped = UriUtilities.stripCarriageReturn(string);
+		logger.debug("Stripped : " + stripped);
+		assertEquals("And the string. ", stripped);
 	}
 }

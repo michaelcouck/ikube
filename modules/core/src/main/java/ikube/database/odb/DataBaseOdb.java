@@ -44,7 +44,7 @@ public class DataBaseOdb implements IDataBase {
 	}
 
 	public void initialise() {
-		initialise(IConstants.DATABASE_FILE);
+		initialise(System.nanoTime() + "." + IConstants.DATABASE_FILE);
 	}
 
 	protected void initialise(String dataBaseFile) {

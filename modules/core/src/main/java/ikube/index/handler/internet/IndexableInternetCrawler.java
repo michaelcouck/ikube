@@ -53,7 +53,7 @@ import org.apache.lucene.document.Field.TermVector;
 public class IndexableInternetCrawler implements Runnable {
 
 	private Logger logger;
-	private long waitTime = 1000;
+	private long waitTime = 3000;
 	private List<Thread> threads;
 	private IndexContext indexContext;
 	private IndexableInternet indexableInternet;
@@ -115,6 +115,9 @@ public class IndexableInternetCrawler implements Runnable {
 						return getBatch(threads);
 					}
 				}
+				// TODO - we need to check to see if there are any other servers
+				// running the internet handler, in that case we need to wait for these
+				// servers to run out of threads
 			}
 			return urls;
 		} finally {

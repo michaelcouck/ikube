@@ -50,10 +50,6 @@ public class IndexableTableHandler extends Handler {
 
 	@Override
 	public List<Thread> handle(final IndexContext indexContext, final Indexable<?> indexable) throws Exception {
-		// Seed the batch before we start
-		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
-		long idNumber = clusterManager.getIdNumber(indexContext.getIndexName());
-		logger.debug("Starting with id : " + idNumber);
 		List<Thread> threads = new ArrayList<Thread>();
 		if (IndexableTable.class.isAssignableFrom(indexable.getClass())) {
 			IndexableTable indexableTable = (IndexableTable) indexable;
@@ -129,6 +125,7 @@ public class IndexableTableHandler extends Handler {
 				// Add the document to the index if this is the primary table
 				if (indexableTable.isPrimary()) {
 					indexContext.getIndexWriter().addDocument(document);
+					Thread.sleep(indexContext.getThrottle());
 				}
 				// Move to the next row in the result set
 				if (!resultSet.next()) {
@@ -171,12 +168,11 @@ public class IndexableTableHandler extends Handler {
 
 			if (indexableTable.isPrimary()) {
 				IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
-				nextIdNumber = clusterManager.getIdNumber(indexContext.getIndexName());
+				nextIdNumber = clusterManager.getIdNumber(indexContext.getIndexName(), indexContext.getBatchSize());
 				long minId = getIdFunction(indexableTable, connection, "min");
 				if (nextIdNumber < minId) {
 					nextIdNumber = minId;
 				}
-				clusterManager.setIdNumber(indexContext.getIndexName(), nextIdNumber + indexContext.getBatchSize());
 			}
 
 			String sql = buildSql(indexContext, indexableTable, nextIdNumber);

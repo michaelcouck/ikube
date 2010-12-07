@@ -2,6 +2,7 @@ package ikube.cluster;
 
 import ikube.cluster.cache.ICache;
 import ikube.cluster.cache.ICache.ICriteria;
+import ikube.logging.Logging;
 import ikube.model.Batch;
 import ikube.model.Server;
 import ikube.model.Url;
@@ -104,11 +105,14 @@ public class ClusterManager implements IClusterManager {
 	}
 
 	@Override
-	public synchronized long getIdNumber(String indexName) {
+	public synchronized long getIdNumber(String indexName, long batchSize) {
 		ILock lock = null;
 		try {
 			Long hash = HashUtilities.hash(indexName);
+
 			lock = Hazelcast.getLock(hash);
+			lock.lock();
+
 			Batch batch = cache.get(Batch.class, hash);
 			if (batch == null) {
 				batch = new Batch();
@@ -117,27 +121,15 @@ public class ClusterManager implements IClusterManager {
 				batch.setIdNumber(new Long(0));
 				cache.set(Batch.class, hash, batch);
 			}
-			return batch.getIdNumber();
+			logger.info(Logging.getString("Acquired lock : ", lock, ",", lock.getLockObject(), ", ", Thread.currentThread().hashCode()));
+			long idNumber = batch.getIdNumber();
+			batch.setIdNumber(idNumber + batchSize);
+			cache.set(Batch.class, hash, batch);
+			return idNumber;
 		} finally {
 			if (lock != null) {
 				lock.unlock();
 			}
-			notifyAll();
-		}
-	}
-
-	public synchronized void setIdNumber(String indexName, long idNumber) {
-		try {
-			Long hash = HashUtilities.hash(indexName);
-			Batch batch = cache.get(Batch.class, hash);
-			if (batch == null) {
-				batch = new Batch();
-				batch.setId(hash);
-				batch.setIndexName(indexName);
-			}
-			batch.setIdNumber(new Long(idNumber));
-			cache.set(Batch.class, hash, batch);
-		} finally {
 			notifyAll();
 		}
 	}

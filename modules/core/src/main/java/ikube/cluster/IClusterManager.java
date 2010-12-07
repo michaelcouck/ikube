@@ -64,9 +64,7 @@ public interface IClusterManager {
 	 *            the name of the index currently getting executed
 	 * @return the id of the next row in the table for this index
 	 */
-	public long getIdNumber(String indexName);
-
-	public void setIdNumber(String indexName, long idNumber);
+	public long getIdNumber(String indexName, long batchSize);
 
 	public Set<Server> getServers();
 

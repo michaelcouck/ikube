@@ -19,13 +19,15 @@ public class UriUtilities {
 	protected static final Pattern JSESSIONID_PATTERN;
 	/** The anchor pattern. */
 	protected static final Pattern ANCHOR_PATTERN;
+	/**  The carriage return/line feed pattern. */
+	protected static final Pattern CARRIAGE_LINE_FEED_PATTERN;
 
 	static {
 		ANCHOR_PATTERN = Pattern.compile("#[^#]*$");
+		CARRIAGE_LINE_FEED_PATTERN = Pattern.compile("[\n\r]");
 		PROTOCOL_PATTERN = Pattern.compile("(http).*|(www).*|(https).*|(ftp).*");
 		EXCLUDED_PATTERN = Pattern.compile("^news.*|^javascript.*|^mailto.*|^plugintest.*|^skype.*");
 		JSESSIONID_PATTERN = Pattern.compile("([;_]?((?i)l|j|bv_)?((?i)sid|phpsessid|sessionid)=.*?)(\\?|&amp;|#|$)");
-
 	}
 
 	/**
@@ -189,12 +191,16 @@ public class UriUtilities {
 		StringBuilder builder = new StringBuilder();
 		char[] chars = string.toCharArray();
 		for (char c : chars) {
-			if (Character.isSpaceChar(c) || Character.isWhitespace(c)) {
+			if (Character.isWhitespace(c) || Character.isSpaceChar(c)) {
 				continue;
 			}
 			builder.append(c);
 		}
 		return builder.toString();
+	}
+	
+	public static String stripCarriageReturn(String string) {
+		return CARRIAGE_LINE_FEED_PATTERN.matcher(string).replaceAll("");
 	}
 
 }

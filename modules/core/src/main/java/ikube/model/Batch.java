@@ -29,4 +29,16 @@ public class Batch extends Persistable {
 		this.indexName = indexName;
 	}
 
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("[");
+		builder.append(getId());
+		builder.append(",");
+		builder.append(getIndexName());
+		builder.append(", ");
+		builder.append(getIdNumber());
+		builder.append("]");
+		return builder.toString();
+	}
+
 }
