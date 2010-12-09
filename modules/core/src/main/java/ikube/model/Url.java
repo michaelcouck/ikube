@@ -12,9 +12,9 @@ public class Url extends Persistable {
 
 	private String url;
 	private String contentType;
-	private Boolean indexed;
+	private boolean indexed;
 	/** The hash of the content. */
-	private Long hash;
+	private long hash;
 
 	private transient String title;
 	private transient byte[] rawContent;
@@ -60,19 +60,19 @@ public class Url extends Persistable {
 		this.parsedContent = parsedContent;
 	}
 
-	public Boolean isIndexed() {
+	public boolean isIndexed() {
 		return indexed;
 	}
 
-	public void setIndexed(Boolean indexed) {
+	public void setIndexed(boolean indexed) {
 		this.indexed = indexed;
 	}
 
-	public Long getHash() {
+	public long getHash() {
 		return hash;
 	}
 
-	public void setHash(Long hash) {
+	public void setHash(long hash) {
 		this.hash = hash;
 	}
 

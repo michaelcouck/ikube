@@ -1,7 +1,6 @@
 package ikube.action;
 
 import ikube.cluster.IClusterManager;
-import ikube.database.IDataBase;
 import ikube.logging.Logging;
 import ikube.model.IndexContext;
 import ikube.toolkit.ApplicationContextManager;
@@ -28,20 +27,12 @@ public abstract class Action<E, F> implements IAction<E, F> {
 
 	protected Logger logger = Logger.getLogger(this.getClass());
 	private IClusterManager clusterManager;
-	private IDataBase dataBase;
 
 	protected IClusterManager getClusterManager() {
 		if (clusterManager == null) {
 			clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
 		}
 		return clusterManager;
-	}
-
-	protected IDataBase getDataBase() {
-		if (this.dataBase == null) {
-			this.dataBase = ApplicationContextManager.getBean(IDataBase.class);
-		}
-		return this.dataBase;
 	}
 
 	protected boolean isIndexCurrent(IndexContext indexContext) {
@@ -180,9 +171,9 @@ public abstract class Action<E, F> implements IAction<E, F> {
 			for (Thread thread : threads) {
 				if (thread.isAlive()) {
 					try {
-						logger.info("Going into join : " + thread + ", this thread : " + currentThread);
+						logger.info(Logging.getString("Going into join : ", thread, ", this thread : ", currentThread));
 						thread.join();
-						logger.info("Coming out of join : " + thread + ", " + currentThread);
+						logger.info(Logging.getString("Coming out of join : ", thread, ", ", currentThread));
 					} catch (InterruptedException e) {
 						logger.error("Interrupted waiting for thread : " + thread + ", this thread : " + Thread.currentThread(), e);
 					}

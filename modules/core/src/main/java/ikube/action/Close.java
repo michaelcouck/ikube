@@ -21,7 +21,8 @@ public class Close extends Action<IndexContext, Boolean> {
 	@Override
 	public Boolean execute(IndexContext indexContext) {
 		String actionName = getClass().getName();
-		if (getClusterManager().anyWorkingOnIndex(indexContext.getIndexName())) {
+		String indexName = indexContext.getIndexName();
+		if (getClusterManager().anyWorkingOnIndex(indexName)) {
 			logger.debug("Close : Other servers working : " + actionName);
 			return Boolean.FALSE;
 		}
@@ -36,7 +37,7 @@ public class Close extends Action<IndexContext, Boolean> {
 			return Boolean.FALSE;
 		}
 		try {
-			getClusterManager().setWorking(indexContext.getIndexName(), actionName, Boolean.TRUE, System.currentTimeMillis());
+			getClusterManager().setWorking(indexName, actionName, null, Boolean.TRUE);
 			Searchable[] searchables = multiSearcher.getSearchables();
 			if (searchables != null && searchables.length > 0) {
 				for (Searchable searchable : searchables) {
@@ -56,7 +57,7 @@ public class Close extends Action<IndexContext, Boolean> {
 			}
 			indexContext.setMultiSearcher(null);
 		} finally {
-			getClusterManager().setWorking(indexContext.getIndexName(), null, Boolean.FALSE, 0);
+			getClusterManager().setWorking(indexName, null, null, Boolean.FALSE);
 		}
 		return Boolean.TRUE;
 	}

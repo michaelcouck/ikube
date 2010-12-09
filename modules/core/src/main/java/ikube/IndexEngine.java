@@ -100,7 +100,7 @@ public class IndexEngine implements IIndexEngine {
 			} catch (Exception e) {
 				logger.error("Exception in the index engine : " + indexContext.getIndexName() + ", " + indexContext.getName(), e);
 			} finally {
-				clusterManager.setWorking(indexContext.getIndexName(), null, Boolean.FALSE, System.currentTimeMillis());
+				clusterManager.setWorking(indexContext.getIndexName(), null, null, Boolean.FALSE);
 			}
 		}
 

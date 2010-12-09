@@ -14,18 +14,15 @@ import java.util.Set;
 public interface IClusterManager {
 
 	/**
-	 * Sets the working flag for this index context.
+	 * Sets the working flag for this index, this action and that handler that is executing the indexable.
 	 * 
-	 * @param indexContext
-	 *            the index context that will start working
+	 * @param indexName
 	 * @param actionName
-	 *            the action that will be executed on the context
+	 * @param handlerName
 	 * @param isWorking
-	 *            whether it is working or not
-	 * @param start
-	 *            the start time of the action
+	 * @return
 	 */
-	public void setWorking(String indexName, String actionName, boolean isWorking, long start);
+	public long setWorking(String indexName, String actionName, String handlerName, boolean isWorking);
 
 	/**
 	 * Returns whether any servers are working on any action other than this action.
@@ -39,23 +36,13 @@ public interface IClusterManager {
 	/**
 	 * Checks to see if there are any other servers working on this index, with this action.
 	 * 
+	 * @param indexName
+	 *            the name of the index that we want to start working on
 	 * @param actionName
 	 *            the name of the action we want to see if there are any servers working on
 	 * @return whether there are any servers working on this index with this action, other than ourselves of course
 	 */
 	public boolean areWorking(String indexName, String actionName);
-
-	/**
-	 * Returns the last working time of any context in any server that has this name and is doing this action.
-	 * 
-	 * @param indexName
-	 *            the name of the index, could be 'faq' for example
-	 * @param actionName
-	 *            the name of the action that is being executed by the server, something like ikube.action.Index for example
-	 * @return the start time of the first index context to start, or the current time if no other servers are executing any actions on this
-	 *         context
-	 */
-	public long getLastWorkingTime(String indexName, String actionName);
 
 	/**
 	 * Returns the next id from one of the servers. The id would be the id in the table for this index.
@@ -66,13 +53,21 @@ public interface IClusterManager {
 	 */
 	public long getIdNumber(String indexName, long batchSize);
 
+	/**
+	 * @return the servers in the cluster
+	 */
 	public Set<Server> getServers();
 
+	/**
+	 * @return this server object
+	 */
 	public Server getServer();
 
 	/**
 	 * Returns whether there are any servers working on this index.
 	 * 
+	 * @param indexName
+	 *            the name of the index
 	 * @return whether there are any servers working on the index specified
 	 */
 	public boolean anyWorkingOnIndex(String indexName);

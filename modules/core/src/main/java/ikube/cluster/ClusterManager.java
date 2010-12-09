@@ -12,6 +12,7 @@ import java.net.InetAddress;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
@@ -24,6 +25,11 @@ import com.hazelcast.core.ILock;
  * @version 01.00
  */
 public class ClusterManager implements IClusterManager {
+
+	protected static long lockTimeout = 3000;
+	protected static String URL_LOCK = "urlLock";
+	protected static String BATCH_LOCK = "batchLock";
+	protected static String SERVER_LOCK = "serverLock";
 
 	protected Logger logger;
 	protected Server server;
@@ -60,7 +66,7 @@ public class ClusterManager implements IClusterManager {
 				if (server.getAddress().equals(this.server.getAddress())) {
 					continue;
 				}
-				if (server.isWorking() && actionName.equals(server.getAction())) {
+				if (server.isWorking() && actionName.equals(server.getAction().getActionName())) {
 					return Boolean.TRUE;
 				}
 			}
@@ -78,7 +84,8 @@ public class ClusterManager implements IClusterManager {
 				if (server.getAddress().equals(this.server.getAddress())) {
 					continue;
 				}
-				if (indexName.equals(server.getIndexName()) && actionName.equals(server.getAction()) && server.isWorking()) {
+				if (indexName.equals(server.getAction().getIndexName()) && actionName.equals(server.getAction().getActionName())
+						&& server.isWorking()) {
 					return Boolean.TRUE;
 				}
 			}
@@ -89,47 +96,27 @@ public class ClusterManager implements IClusterManager {
 	}
 
 	@Override
-	public synchronized long getLastWorkingTime(String indexName, String actionName) {
-		long time = System.currentTimeMillis();
-		try {
-			List<Server> servers = cache.get(Server.class, null, null, Integer.MAX_VALUE);
-			for (Server server : servers) {
-				if (indexName.equals(server.getIndexName()) && actionName.equals(server.getAction()) && server.isWorking()) {
-					time = Math.max(time, server.getStart());
-				}
-			}
-		} finally {
-			notifyAll();
-		}
-		return time;
-	}
-
-	@Override
 	public synchronized long getIdNumber(String indexName, long batchSize) {
 		ILock lock = null;
 		try {
-			Long hash = HashUtilities.hash(indexName);
-
-			lock = Hazelcast.getLock(hash);
-			lock.lock();
-
-			Batch batch = cache.get(Batch.class, hash);
+			lock = lock(BATCH_LOCK);
+			if (lock == null) {
+				return 0;
+			}
+			Long id = HashUtilities.hash(indexName);
+			Batch batch = cache.get(Batch.class, id);
 			if (batch == null) {
 				batch = new Batch();
-				batch.setId(hash);
+				batch.setId(id);
 				batch.setIndexName(indexName);
 				batch.setIdNumber(new Long(0));
-				cache.set(Batch.class, hash, batch);
 			}
-			logger.info(Logging.getString("Acquired lock : ", lock, ",", lock.getLockObject(), ", ", Thread.currentThread().hashCode()));
 			long idNumber = batch.getIdNumber();
 			batch.setIdNumber(idNumber + batchSize);
-			cache.set(Batch.class, hash, batch);
+			cache.set(Batch.class, id, batch);
 			return idNumber;
 		} finally {
-			if (lock != null) {
-				lock.unlock();
-			}
+			unlock(lock);
 			notifyAll();
 		}
 	}
@@ -153,14 +140,64 @@ public class ClusterManager implements IClusterManager {
 	}
 
 	@Override
-	public synchronized void setWorking(String indexName, String actionName, boolean isWorking, long start) {
+	public synchronized long setWorking(String indexName, String actionName, String handlerName, boolean isWorking) {
+		ILock lock = null;
 		try {
-			this.server.setIndexName(indexName);
-			this.server.setAction(actionName);
-			this.server.setStart(start);
+			lock = lock(SERVER_LOCK);
+			if (lock == null) {
+				return 0;
+			}
+
+			long lastStartTime = System.currentTimeMillis();
+			List<Server> servers = cache.get(Server.class, null, null, Integer.MAX_VALUE);
+			for (Server server : servers) {
+				if (indexName == null || actionName == null) {
+					continue;
+				}
+				if (indexName.equals(server.getAction().getIndexName()) && actionName.equals(server.getAction().getActionName())
+						&& server.isWorking()) {
+					lastStartTime = Math.min(lastStartTime, server.getAction().getStartTime());
+				}
+			}
+
+			this.server.getAction().setIndexName(indexName);
+			this.server.getAction().setActionName(actionName);
+			this.server.getAction().setStartTime(lastStartTime);
 			this.server.setWorking(isWorking);
 			// Publish the fact that this server is starting to work on an action
 			cache.set(Server.class, server.getId(), server);
+			return lastStartTime;
+		} finally {
+			unlock(lock);
+			notifyAll();
+		}
+	}
+
+	private synchronized ILock lock(String lockName) {
+		try {
+			ILock lock = Hazelcast.getLock(lockName);
+			boolean acquired = Boolean.FALSE;
+			try {
+				acquired = lock.tryLock(lockTimeout, TimeUnit.MILLISECONDS);
+			} catch (InterruptedException e) {
+				logger.error("", e);
+			}
+			if (!acquired) {
+				logger.warn(Logging.getString("Failed to acquire lock : ", lockName, ", ", Thread.currentThread().hashCode()));
+				return null;
+			}
+			// logger.info(Logging.getString("Acquired lock : ", lock, ", ", Thread.currentThread().hashCode()));
+			return lock;
+		} finally {
+			notifyAll();
+		}
+	}
+
+	private synchronized void unlock(ILock lock) {
+		try {
+			if (lock != null) {
+				lock.unlock();
+			}
 		} finally {
 			notifyAll();
 		}
@@ -171,7 +208,7 @@ public class ClusterManager implements IClusterManager {
 		try {
 			List<Server> servers = cache.get(Server.class, null, null, Integer.MAX_VALUE);
 			for (Server server : servers) {
-				if (server.isWorking() && indexName.equals(server.getIndexName())) {
+				if (server.isWorking() && indexName.equals(server.getAction().getIndexName())) {
 					return Boolean.TRUE;
 				}
 			}
@@ -183,9 +220,15 @@ public class ClusterManager implements IClusterManager {
 
 	@Override
 	public synchronized List<Url> getBatch(int size) {
+		ILock lock = null;
 		try {
+			lock = lock(URL_LOCK);
+			if (lock == null) {
+				return null;
+			}
 			return cache.get(Url.class, criteria, action, size);
 		} finally {
+			unlock(lock);
 			notifyAll();
 		}
 	}

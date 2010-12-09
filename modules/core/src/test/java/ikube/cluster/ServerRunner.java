@@ -15,8 +15,7 @@ public class ServerRunner {
 
 	public static void main(String[] args) {
 		String serverAddress = args[0];
-		// "/cluster/spring.xml", "/META-INF/spring.xml"
-		String configurationFile = "/META-INF/spring.xml";
+		String configurationFile = args[1];
 		ApplicationContextManager.getApplicationContext(configurationFile);
 		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
 		clusterManager.getServer().setAddress(serverAddress);

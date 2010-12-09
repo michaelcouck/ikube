@@ -13,18 +13,20 @@ public class Reset extends Action<IndexContext, Boolean> {
 
 	@Override
 	public Boolean execute(IndexContext indexContext) {
+		String actionName = getClass().getName();
+		String indexName = indexContext.getIndexName();
 		try {
-			boolean anyWorking = getClusterManager().anyWorkingOnIndex(indexContext.getIndexName());
+			boolean anyWorking = getClusterManager().anyWorkingOnIndex(indexName);
 			logger.debug("Resetting : " + !anyWorking + ", " + indexContext);
 			if (anyWorking) {
 				return Boolean.FALSE;
 			}
-			getClusterManager().setWorking(indexContext.getIndexName(), getClass().getName(), Boolean.TRUE, System.currentTimeMillis());
+			getClusterManager().setWorking(indexName, actionName, null, Boolean.TRUE);
 			getClusterManager().clear(Url.class);
 			getClusterManager().clear(Batch.class);
 			return Boolean.TRUE;
 		} finally {
-			getClusterManager().setWorking(indexContext.getIndexName(), null, Boolean.FALSE, 0);
+			getClusterManager().setWorking(indexName, null, null, Boolean.FALSE);
 		}
 	}
 

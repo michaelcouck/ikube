@@ -8,41 +8,80 @@ import javax.persistence.Entity;
  * @version 01.00
  */
 @Entity()
-public class Server extends Persistable {
+public class Server extends Persistable implements Comparable<Server> {
 
-	/** The time the action was started. */
-	private long start;
-	/** The name of the currently executing index. */
-	private String indexName;
-	/** The name of the action that is being executed on this configuration. */
-	private String action;
-	/** Whether this server is working. */
-	private boolean working;
+	public class Action extends Persistable {
+
+		/** The handler that is currently active. */
+		private String handlerName;
+		/** The actionName of the action that is being executed on this configuration. */
+		private String actionName;
+		/** The actionName of the currently executing index. */
+		private String indexName;
+		/** The time the action was started. */
+		private long startTime;
+
+		public Action() {
+		}
+
+		public Action(String handlerName, String actionName, String indexName, long startTime) {
+			this.handlerName = handlerName;
+			this.actionName = actionName;
+			this.indexName = indexName;
+			this.startTime = startTime;
+		}
+
+		public String getHandlerName() {
+			return handlerName;
+		}
+
+		public void setHandlerName(String handlerName) {
+			this.handlerName = handlerName;
+		}
+
+		public String getActionName() {
+			return actionName;
+		}
+
+		public void setActionName(String actionName) {
+			this.actionName = actionName;
+		}
+
+		public String getIndexName() {
+			return indexName;
+		}
+
+		public void setIndexName(String indexName) {
+			this.indexName = indexName;
+		}
+
+		public long getStartTime() {
+			return startTime;
+		}
+
+		public void setStartTime(long startTime) {
+			this.startTime = startTime;
+		}
+
+	}
+
 	/** The address of this machine. */
 	private String address;
+	/** Whether this server is working. */
+	private boolean working;
+	/** The details about the action that this server is executing. */
+	private Action action;
 
-	public long getStart() {
-		return start;
+	public Server() {
+		this.action = new Action();
 	}
 
-	public void setStart(long start) {
-		this.start = start;
+	public String getAddress() {
+		return address;
 	}
 
-	public String getIndexName() {
-		return indexName;
-	}
-
-	public void setIndexName(String indexName) {
-		this.indexName = indexName;
-	}
-
-	public String getAction() {
-		return action;
-	}
-
-	public void setAction(String action) {
-		this.action = action;
+	public void setAddress(String address) {
+		this.address = address;
 	}
 
 	public boolean isWorking() {
@@ -53,12 +92,17 @@ public class Server extends Persistable {
 		this.working = working;
 	}
 
-	public String getAddress() {
-		return address;
+	public Action getAction() {
+		return action;
 	}
 
-	public void setAddress(String address) {
-		this.address = address;
+	public void setAction(Action action) {
+		this.action = action;
+	}
+
+	@Override
+	public int compareTo(Server o) {
+		return this.getAddress().compareTo(o.getAddress());
 	}
 
 	public String toString() {

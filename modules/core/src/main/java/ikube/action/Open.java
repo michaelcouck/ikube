@@ -47,12 +47,13 @@ public class Open extends Action<IndexContext, Boolean> {
 			return Boolean.FALSE;
 		}
 		String actionName = getClass().getName();
-		if (getClusterManager().anyWorkingOnIndex(indexContext.getIndexName())) {
+		String indexName = indexContext.getIndexName();
+		if (getClusterManager().anyWorkingOnIndex(indexName)) {
 			logger.debug("Servers working : ");
 			return Boolean.FALSE;
 		}
 		try {
-			getClusterManager().setWorking(indexContext.getIndexName(), actionName, Boolean.TRUE, System.currentTimeMillis());
+			getClusterManager().setWorking(indexName, actionName, null, Boolean.TRUE);
 			ArrayList<Searchable> searchers = new ArrayList<Searchable>();
 			File[] serverIndexDirectories = latestIndexDirectory.listFiles();
 			if (serverIndexDirectories != null) {
@@ -96,7 +97,7 @@ public class Open extends Action<IndexContext, Boolean> {
 				logger.error("Exception opening the multi searcher", e);
 			}
 		} finally {
-			getClusterManager().setWorking(indexContext.getIndexName(), null, Boolean.FALSE, 0);
+			getClusterManager().setWorking(indexName, null, null, Boolean.FALSE);
 		}
 		return Boolean.FALSE;
 	}

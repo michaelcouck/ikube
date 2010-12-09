@@ -29,19 +29,16 @@ public class Cache implements ICache {
 
 	@Override
 	public <T> T get(Class<T> klass, Long hash) {
-		// logger.info("Getting : " + klass + ", " + hash);
 		return getMap(klass).get(hash);
 	}
 
 	@Override
 	public <T> void set(Class<T> klass, Long hash, T t) {
-		// logger.info("Setting : " + klass + ", " + hash + ", " + t);
 		getMap(klass).put(hash, t);
 	}
 
 	@Override
 	public <T> void remove(Class<T> klass, Long hash) {
-		// logger.info("Removing : " + klass + ", " + hash);
 		getMap(klass).remove(hash);
 	}
 
@@ -53,7 +50,6 @@ public class Cache implements ICache {
 			T t = map.get(key);
 			if (criteria != null) {
 				boolean evaluated = criteria.evaluate(t);
-				// logger.info("T : " + evaluated + ", " + klass + ", " + t);
 				if (!evaluated) {
 					continue;
 				}
@@ -71,7 +67,6 @@ public class Cache implements ICache {
 
 	@Override
 	public <T> void clear(Class<T> klass) {
-		// logger.info("Clearing : " + klass);
 		getMap(klass).clear();
 	}
 

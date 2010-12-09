@@ -29,7 +29,8 @@ public class ClusterTest {
 		Logging.configure();
 	}
 
-	public static long SLEEP = 3600000;
+	// 3600000
+	public static long SLEEP = 600000;
 	private static Logger LOGGER = Logger.getLogger(ClusterTest.class);
 
 	@Test
@@ -43,14 +44,15 @@ public class ClusterTest {
 	}
 
 	public static void main(String[] args) throws Exception {
-		// , "serverTwo", "serverThree"
-		args = new String[] { "serverOne" };
+		args = new String[] { "serverOne", "serverTwo", "serverThree" };
 		final List<Process> processes = new ArrayList<Process>();
 		FileUtilities.deleteFiles(new File("."), IConstants.DATABASE_FILE, IConstants.TRANSACTION_FILES);
 		Map<String, String> environment = System.getenv();
 		String classpath = System.getProperty("java.class.path");
+		// "/cluster/spring.xml", "/META-INF/spring.xml"
+		String configurationFile = "/META-INF/spring.xml";
 		for (final String serverAddress : args) {
-			String[] command = { "javaw", "-cp", classpath, ServerRunner.class.getCanonicalName(), serverAddress };
+			String[] command = { "javaw", "-cp", classpath, ServerRunner.class.getCanonicalName(), serverAddress, configurationFile };
 			ProcessBuilder processBuilder = new ProcessBuilder(command);
 
 			processBuilder.redirectErrorStream(Boolean.TRUE);
@@ -81,17 +83,17 @@ public class ClusterTest {
 				}
 			}).start();
 		}
-		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-			public void run() {
-				for (Process process : processes) {
-					LOGGER.info("Destroying process : " + process);
-					process.destroy();
-				}
-			}
-		}));
+
 		LOGGER.info("Going to sleep : " + Thread.currentThread().hashCode());
 		Thread.sleep(SLEEP);
 		LOGGER.info("Waking up : " + Thread.currentThread().hashCode());
+
+		for (Process process : processes) {
+			LOGGER.info("Destroying process : " + process);
+			process.destroy();
+		}
+
+		FileUtilities.deleteFiles(new File("."), IConstants.DATABASE_FILE, IConstants.TRANSACTION_FILES);
 		System.exit(0);
 	}
 
