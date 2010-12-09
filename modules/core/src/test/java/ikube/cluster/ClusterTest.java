@@ -43,7 +43,7 @@ public class ClusterTest {
 	}
 
 	public static void main(String[] args) throws Exception {
-		args = new String[] { "serverOne", "serverTwo", "serverThree" };
+		args = new String[] { "serverOne"/* , "serverTwo", "serverThree" */};
 		final List<Process> processes = new ArrayList<Process>();
 		FileUtilities.deleteFiles(new File("."), IConstants.DATABASE_FILE, IConstants.TRANSACTION_FILES);
 		Map<String, String> environment = System.getenv();

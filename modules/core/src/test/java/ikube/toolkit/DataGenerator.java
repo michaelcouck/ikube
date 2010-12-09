@@ -42,8 +42,8 @@ public class DataGenerator extends ATest {
 
 	private Map<String, byte[]> fileContents;
 
-	private int inserts = 1000;
-	private int iterations = 1000000;
+	private int batch = 1000;
+	private int iterations = 10000 - (322);
 
 	@Before
 	public void before() throws Exception {
@@ -76,15 +76,15 @@ public class DataGenerator extends ATest {
 		} finally {
 			connection.close();
 		}
-		int faqs = (iterations * inserts);
-		int attachments = (iterations * inserts * fileContents.size());
+		int faqs = (iterations * batch);
+		int attachments = (iterations * batch * fileContents.size());
 		logger.info(Logging.getString("Inserted faqs : ", faqs, ", attachments : ", attachments));
 	}
 
 	protected void insertFaqs() throws Exception {
 		String faqInsert = "INSERT INTO DB2ADMIN.FAQ (ANSWER, CREATIONTIMESTAMP, CREATOR, MODIFIEDTIMESTAMP, MODIFIER, PUBLISHED, QUESTION) VALUES (?,?,?,?,?,?,?)";
 		PreparedStatement preparedStatement = connection.prepareStatement(faqInsert, PreparedStatement.RETURN_GENERATED_KEYS);
-		for (int i = 0; i < inserts; i++) {
+		for (int i = 0; i < batch; i++) {
 			String string = generateText((int) (Math.random() * 40), 128);
 			preparedStatement.setString(1, string); // ANSWER
 			preparedStatement.setTimestamp(2, new Timestamp(System.currentTimeMillis())); // CREATIONTIMESTAMP
@@ -119,7 +119,7 @@ public class DataGenerator extends ATest {
 		Iterator<Long> faqIdIterator = faqIds.iterator();
 		String attachmentInsert = "INSERT INTO DB2ADMIN.ATTACHMENT (NAME, LENGTH, FAQID, ATTACHMENT) VALUES(?,?,?,?)";
 		PreparedStatement attachmentPreparedStatement = connection.prepareStatement(attachmentInsert, PreparedStatement.NO_GENERATED_KEYS);
-		for (int i = 0; i < inserts; i++) {
+		for (int i = 0; i < batch; i++) {
 			for (String fileName : fileContents.keySet()) {
 				if (!faqIdIterator.hasNext()) {
 					faqIdIterator = faqIds.iterator();
