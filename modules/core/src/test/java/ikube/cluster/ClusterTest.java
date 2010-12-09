@@ -29,8 +29,7 @@ public class ClusterTest {
 		Logging.configure();
 	}
 
-	// 3600000
-	public static long SLEEP = 600000;
+	public static long SLEEP = 1000 * 60 * 60 * 5;
 	private static Logger LOGGER = Logger.getLogger(ClusterTest.class);
 
 	@Test
@@ -49,7 +48,6 @@ public class ClusterTest {
 		FileUtilities.deleteFiles(new File("."), IConstants.DATABASE_FILE, IConstants.TRANSACTION_FILES);
 		Map<String, String> environment = System.getenv();
 		String classpath = System.getProperty("java.class.path");
-		// "/cluster/spring.xml", "/META-INF/spring.xml"
 		String configurationFile = "/META-INF/spring.xml";
 		for (final String serverAddress : args) {
 			String[] command = { "javaw", "-cp", classpath, ServerRunner.class.getCanonicalName(), serverAddress, configurationFile };

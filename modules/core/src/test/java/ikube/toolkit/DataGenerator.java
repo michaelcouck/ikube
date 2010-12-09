@@ -2,10 +2,7 @@ package ikube.toolkit;
 
 import ikube.ATest;
 import ikube.logging.Logging;
-import ikube.toolkit.ApplicationContextManager;
-import ikube.toolkit.FileUtilities;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
@@ -45,8 +42,8 @@ public class DataGenerator extends ATest {
 
 	private Map<String, byte[]> fileContents;
 
-	private int inserts = 1;
-	private int iterations = 1;
+	private int inserts = 1000;
+	private int iterations = 1000000;
 
 	@Before
 	public void before() throws Exception {
@@ -88,7 +85,7 @@ public class DataGenerator extends ATest {
 		String faqInsert = "INSERT INTO DB2ADMIN.FAQ (ANSWER, CREATIONTIMESTAMP, CREATOR, MODIFIEDTIMESTAMP, MODIFIER, PUBLISHED, QUESTION) VALUES (?,?,?,?,?,?,?)";
 		PreparedStatement preparedStatement = connection.prepareStatement(faqInsert, PreparedStatement.RETURN_GENERATED_KEYS);
 		for (int i = 0; i < inserts; i++) {
-			String string = generateText((int) (Math.random() * 40), 1024);
+			String string = generateText((int) (Math.random() * 40), 128);
 			preparedStatement.setString(1, string); // ANSWER
 			preparedStatement.setTimestamp(2, new Timestamp(System.currentTimeMillis())); // CREATIONTIMESTAMP
 			string = generateText(3, 32);
@@ -97,7 +94,7 @@ public class DataGenerator extends ATest {
 			string = generateText(2, 32);
 			preparedStatement.setString(5, string); // MODIFIER
 			preparedStatement.setInt(6, 1); // PUBLISHED
-			string = generateText((int) (Math.random() * 40), 1024);
+			string = generateText((int) (Math.random() * 40), 128);
 			preparedStatement.setString(7, string); // QUESTION
 			preparedStatement.addBatch();
 		}
@@ -132,12 +129,12 @@ public class DataGenerator extends ATest {
 
 				// Insert the attachment
 				byte[] bytes = fileContents.get(fileName);
-				InputStream inputStream = new ByteArrayInputStream(bytes);
+				// InputStream inputStream = new ByteArrayInputStream(bytes);
 
 				attachmentPreparedStatement.setString(1, fileName); // NAME
 				attachmentPreparedStatement.setInt(2, bytes.length); // LENGTH
 				attachmentPreparedStatement.setLong(3, faqId); // FAQID
-				attachmentPreparedStatement.setBinaryStream(4, inputStream, bytes.length); // ATTACHMENT
+				attachmentPreparedStatement.setBinaryStream(4, null, 0); // ATTACHMENT
 				attachmentPreparedStatement.addBatch();
 			}
 		}
