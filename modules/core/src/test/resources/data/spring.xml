@@ -14,5 +14,6 @@
 		location="classpath:/data/spring.properties" />
 
 	<import resource="../spring-jdbc.xml" />
+	<import resource="../spring-client.xml" />
 
 </beans>

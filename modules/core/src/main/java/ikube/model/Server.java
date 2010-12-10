@@ -63,6 +63,21 @@ public class Server extends Persistable implements Comparable<Server> {
 			this.startTime = startTime;
 		}
 
+		public String toString() {
+			final StringBuilder builder = new StringBuilder("[");
+			builder.append(getId());
+			builder.append(", ");
+			builder.append(getStartTime());
+			builder.append(", ");
+			builder.append(getIndexName());
+			builder.append(", ");
+			builder.append(getActionName());
+			builder.append(", ");
+			builder.append(getHandlerName());
+			builder.append("]");
+			return builder.toString();
+		}
+
 	}
 
 	/** The address of this machine. */

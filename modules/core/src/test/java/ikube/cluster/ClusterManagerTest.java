@@ -205,12 +205,12 @@ public class ClusterManagerTest extends BaseTest {
 		Server cacheServer = clusterManager.getServer();
 		assertFalse(cacheServer.isWorking());
 
-		clusterManager.setWorking(indexName, actionName, handlerName, Boolean.FALSE);
+		long lastWorkingTime = clusterManager.setWorking(indexName, actionName, handlerName, Boolean.FALSE);
 
 		cacheServer = clusterManager.getServer();
 		assertFalse(cacheServer.isWorking());
 
-		clusterManager.setWorking(indexName, actionName, handlerName, Boolean.TRUE);
+		lastWorkingTime = clusterManager.setWorking(indexName, actionName, handlerName, Boolean.TRUE);
 
 		cacheServer = clusterManager.getServer();
 		assertTrue(cacheServer.isWorking());

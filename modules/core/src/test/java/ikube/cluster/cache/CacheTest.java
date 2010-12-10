@@ -68,7 +68,7 @@ public class CacheTest extends BaseTest {
 				Thread.sleep(1);
 			}
 		}, "Cache set : ", iterations);
-		assertTrue(executionsPerSecond > 100);
+		assertTrue(executionsPerSecond > 10);
 	}
 
 }

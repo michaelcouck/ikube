@@ -51,4 +51,16 @@ public class IndexableTable extends Indexable<IndexableTable> {
 		this.dataSource = dataSource;
 	}
 
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("[");
+		builder.append(getName());
+		builder.append(", ");
+		builder.append(getSchema());
+		builder.append(", ");
+		builder.append(getPredicate());
+		builder.append("]");
+		return builder.toString();
+	}
+
 }

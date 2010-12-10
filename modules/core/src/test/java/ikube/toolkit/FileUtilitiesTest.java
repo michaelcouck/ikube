@@ -46,11 +46,12 @@ public class FileUtilitiesTest {
 		assertTrue(file.exists());
 
 		File[] files = FileUtilities.findFiles(folder, stringPatterns);
-		assertEquals(1, files.length);
+		int initialLength = files.length;
+		assertTrue(initialLength >= 1);
 		file.delete();
 
 		files = FileUtilities.findFiles(folder, stringPatterns);
-		assertEquals(0, files.length);
+		assertEquals(initialLength - 1, files.length);
 	}
 
 	@Test
@@ -59,13 +60,14 @@ public class FileUtilitiesTest {
 		file.createNewFile();
 		assertTrue(file.exists());
 
-		List<File> files = new ArrayList<File>();
-		FileUtilities.findFilesRecursively(folder, stringPatterns, files);
-		assertEquals(1, files.size());
+		List<File> files = FileUtilities.findFilesRecursively(folder, stringPatterns, new ArrayList<File>());
+		int initialLength = files.size();
+		assertTrue(initialLength >= 1);
 		files.clear();
 
-		FileUtilities.findFilesRecursively(folder, new String[] { ".xml" }, files);
-		assertTrue(files.size() > 0);
+		files = FileUtilities.findFilesRecursively(folder, new String[] { ".xml" }, files);
+		initialLength = files.size();
+		assertTrue(initialLength >= 1);
 	}
 
 	@Test

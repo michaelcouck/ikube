@@ -1,11 +1,11 @@
 03.11.10
 * Wiki - 1
 * Testing - 7
-   1) Cluster - 3
+   1) Cluster - 3 *
    2) Linux - 1
    3) Multiple data sources - 1
    4) Large volumes - 1
-   5) Performance - 1
+   5) Performance - 1 *
 * Add the file and url visitors - 5
 * Implementation of updating the index with deltas from the client - 3
 
@@ -13,7 +13,7 @@ Total - 16
 
 Done:
 * Finish the clustering support - 3 *
-* Implement the synchronisation between the servers - 1 *
+* Implement the synchronization between the servers - 1 *
 * Add the other parsers - 3 *
 
 Other things:
@@ -25,6 +25,14 @@ Other things:
    indexes/periods
 * Add a shutdown hook for the Spring objects that need to be closed when the context
   gets refreshed.
+* Security
+* Stemming
+* Taxonomy
+* Spelling checking
+* Phonetic search
+* Result clustering
+* Boosting
+* Reporting (e.g. Google Analytics)
 
 Done:
 * Delete the database file on startup locally *

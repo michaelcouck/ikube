@@ -151,6 +151,7 @@ public class ClusterManager implements IClusterManager {
 			long lastStartTime = System.currentTimeMillis();
 			List<Server> servers = cache.get(Server.class, null, null, Integer.MAX_VALUE);
 			for (Server server : servers) {
+				logger.info("Server : " + server);
 				if (indexName == null || actionName == null) {
 					continue;
 				}

@@ -54,6 +54,7 @@
 		<ref local="modifier" />
 		<ref local="question" />
 		<ref local="answer" />
+		<ref local="published" />
 		<ref local="tableTwo" />
 	</util:list>
 
@@ -77,24 +78,34 @@
 		id="creator"
 		class="ikube.model.IndexableColumn"
 		property:name="creator"
-		property:columnClass="java.lang.String" />
+		property:columnClass="java.lang.String"
+		property:columnLength="32" />
 	<bean
 		id="modifier"
 		class="ikube.model.IndexableColumn"
 		property:name="modifier"
-		property:columnClass="java.lang.String" />
+		property:columnClass="java.lang.String"
+		property:columnLength="32" />
 	<bean
 		id="question"
 		class="ikube.model.IndexableColumn"
 		property:name="question"
 		property:fieldName="contents"
-		property:columnClass="java.lang.String" />
+		property:columnClass="java.lang.String"
+		property:columnLength="1024" />
 	<bean
 		id="answer"
 		class="ikube.model.IndexableColumn"
 		property:name="answer"
 		property:fieldName="contents"
-		property:columnClass="java.lang.String" />
+		property:columnClass="java.lang.String"
+		property:columnLength="1024" />
+	<bean
+		id="published"
+		class="ikube.model.IndexableColumn"
+		property:name="published"
+		property:fieldName="published"
+		property:columnClass="java.lang.Boolean" />
 
 	<bean
 		id="tableTwo"
@@ -131,20 +142,22 @@
 		class="ikube.model.IndexableColumn"
 		property:name="name"
 		property:fieldName="name"
-		property:columnClass="java.lang.String" />
+		property:columnClass="java.lang.String"
+		property:columnLength="64" />
 	<bean
 		id="attachment"
 		class="ikube.model.IndexableColumn"
 		property:name="attachment"
 		property:fieldName="attachment"
 		property:nameColumn-ref="name"
-		property:columnClass="java.sql.Blob" />
+		property:columnClass="java.sql.Blob"
+		property:columnLength="100000" />
 	<bean
 		id="length"
 		class="ikube.model.IndexableColumn"
 		property:name="length"
 		property:fieldName="length"
-		property:columnClass="java.lang.Long" />
+		property:columnClass="java.lang.Integer" />
 
 	<bean
 		id="mail"

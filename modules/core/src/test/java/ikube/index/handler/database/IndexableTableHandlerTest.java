@@ -66,7 +66,7 @@ public class IndexableTableHandlerTest extends BaseTest {
 		assertEquals(1, minId);
 		long maxId = indexableTableHandler.getIdFunction(faqIndexableTable, connection, "max");
 		logger.debug("Max id : " + maxId);
-		assertEquals(100, maxId);
+		assertTrue(maxId < 100);
 	}
 
 	@Test
