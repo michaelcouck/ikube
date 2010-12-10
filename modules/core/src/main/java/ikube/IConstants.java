@@ -59,7 +59,7 @@ public interface IConstants {
 	public String HASH = "hash";
 	public String START = "start";
 
-	public String ENCODING = "UTF8";
+	public String ENCODING = "UTF-8";
 
 	public String IN = "in";
 	public String OUT = "out";

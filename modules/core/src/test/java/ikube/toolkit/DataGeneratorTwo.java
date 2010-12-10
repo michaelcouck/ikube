@@ -25,7 +25,7 @@ public class DataGeneratorTwo {
 	private Logger logger = Logger.getLogger(this.getClass());
 	private List<String> words;
 	private String wordsFilePath = "/data/words.txt";
-	private int iterations = 10000;
+	private int iterations;
 
 	public DataGeneratorTwo(int iterations) {
 		this.iterations = iterations;
@@ -57,6 +57,8 @@ public class DataGeneratorTwo {
 		// Build the insert sql
 		StringBuilder builder = new StringBuilder();
 		builder.append("insert into ");
+		builder.append(indexableTable.getSchema());
+		builder.append(".");
 		builder.append(indexableTable.getName());
 		builder.append(" (");
 		boolean first = Boolean.TRUE;
@@ -71,10 +73,6 @@ public class DataGeneratorTwo {
 					builder.append(", ");
 				}
 				IndexableColumn indexableColumn = (IndexableColumn) indexable;
-				builder.append(indexableTable.getSchema());
-				builder.append(".");
-				builder.append(indexableTable.getName());
-				builder.append(".");
 				builder.append(indexableColumn.getName());
 			}
 		}

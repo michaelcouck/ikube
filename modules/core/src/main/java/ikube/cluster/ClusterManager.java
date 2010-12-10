@@ -26,10 +26,10 @@ import com.hazelcast.core.ILock;
  */
 public class ClusterManager implements IClusterManager {
 
-	protected static long lockTimeout = 3000;
 	protected static String URL_LOCK = "urlLock";
 	protected static String BATCH_LOCK = "batchLock";
 	protected static String SERVER_LOCK = "serverLock";
+	protected static long LOCK_TIMEOUT = 3000;
 
 	protected Logger logger;
 	protected Server server;
@@ -59,42 +59,42 @@ public class ClusterManager implements IClusterManager {
 	}
 
 	@Override
-	public synchronized boolean anyWorking(String actionName) {
+	public synchronized boolean anyWorking() {
+		ILock lock = null;
 		try {
+			lock = lock(SERVER_LOCK);
+			if (lock == null) {
+				return Boolean.TRUE;
+			}
 			List<Server> servers = cache.get(Server.class, null, null, Integer.MAX_VALUE);
 			for (Server server : servers) {
 				if (server.getAddress().equals(this.server.getAddress())) {
 					continue;
 				}
-				if (server.isWorking() && actionName.equals(server.getAction().getActionName())) {
+				if (server.isWorking()) {
 					return Boolean.TRUE;
 				}
 			}
-			return Boolean.FALSE;
 		} finally {
+			unlock(lock);
 			notifyAll();
 		}
+		return Boolean.FALSE;
 	}
 
-	@Override
-	public synchronized boolean areWorking(String indexName, String actionName) {
-		try {
-			List<Server> servers = cache.get(Server.class, null, null, Integer.MAX_VALUE);
-			for (Server server : servers) {
-				if (server.getAddress().equals(this.server.getAddress())) {
-					continue;
-				}
-				if (indexName.equals(server.getAction().getIndexName()) && actionName.equals(server.getAction().getActionName())
-						&& server.isWorking()) {
-					return Boolean.TRUE;
-				}
-			}
-			return Boolean.FALSE;
-		} finally {
-			notifyAll();
-		}
-	}
-
+	/**
+	 * TODO - Note: The batch id of the next row needs to be keyed on the indexable table not on the index name. For this we need to store
+	 * the batch numbers for each of the tables that are indexed throughout the cluster in the action(s). The data hierarchy for the data is
+	 * as follows:
+	 * 
+	 * <pre>
+	 * Server => 
+	 * 		1) Action => Index name => Action name => Handler name => Indexable name => Perhaps the id of the next row
+	 * 		2) Action => Index name => Action name => Handler name => Indexable name => Perhaps the id of the next row
+	 * 		3) Action => Index name => Action name => Handler name => Indexable name => Perhaps the id of the next row
+	 * </pre>
+	 * 
+	 */
 	@Override
 	public synchronized long getIdNumber(String indexName, long batchSize) {
 		ILock lock = null;
@@ -152,9 +152,6 @@ public class ClusterManager implements IClusterManager {
 			List<Server> servers = cache.get(Server.class, null, null, Integer.MAX_VALUE);
 			for (Server server : servers) {
 				logger.info("Server : " + server);
-				if (indexName == null || actionName == null) {
-					continue;
-				}
 				if (indexName.equals(server.getAction().getIndexName()) && actionName.equals(server.getAction().getActionName())
 						&& server.isWorking()) {
 					lastStartTime = Math.min(lastStartTime, server.getAction().getStartTime());
@@ -179,7 +176,7 @@ public class ClusterManager implements IClusterManager {
 			ILock lock = Hazelcast.getLock(lockName);
 			boolean acquired = Boolean.FALSE;
 			try {
-				acquired = lock.tryLock(lockTimeout, TimeUnit.MILLISECONDS);
+				acquired = lock.tryLock(LOCK_TIMEOUT, TimeUnit.MILLISECONDS);
 			} catch (InterruptedException e) {
 				logger.error("", e);
 			}
@@ -199,21 +196,6 @@ public class ClusterManager implements IClusterManager {
 			if (lock != null) {
 				lock.unlock();
 			}
-		} finally {
-			notifyAll();
-		}
-	}
-
-	@Override
-	public synchronized boolean anyWorkingOnIndex(String indexName) {
-		try {
-			List<Server> servers = cache.get(Server.class, null, null, Integer.MAX_VALUE);
-			for (Server server : servers) {
-				if (server.isWorking() && indexName.equals(server.getAction().getIndexName())) {
-					return Boolean.TRUE;
-				}
-			}
-			return Boolean.FALSE;
 		} finally {
 			notifyAll();
 		}

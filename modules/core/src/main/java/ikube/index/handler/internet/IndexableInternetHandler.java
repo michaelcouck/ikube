@@ -1,9 +1,9 @@
 package ikube.index.handler.internet;
 
 import ikube.cluster.IClusterManager;
-import ikube.index.handler.Handler;
+import ikube.index.handler.IndexableHandler;
+import ikube.index.handler.IndexableHandlerType;
 import ikube.model.IndexContext;
-import ikube.model.Indexable;
 import ikube.model.IndexableInternet;
 import ikube.model.Url;
 import ikube.toolkit.ApplicationContextManager;
@@ -17,14 +17,12 @@ import java.util.List;
  * @since 29.11.10
  * @version 01.00
  */
-public class IndexableInternetHandler extends Handler {
+public class IndexableInternetHandler extends IndexableHandler<IndexableInternet> {
 
 	@Override
-	public List<Thread> handle(final IndexContext indexContext, Indexable<?> indexable) throws Exception {
-		if (IndexableInternet.class.isAssignableFrom(indexable.getClass())) {
-			return handleInternet(indexContext, (IndexableInternet) indexable);
-		}
-		return new ArrayList<Thread>();
+	@IndexableHandlerType(type = IndexableInternet.class)
+	public List<Thread> handle(final IndexContext indexContext, IndexableInternet indexable) throws Exception {
+		return handleInternet(indexContext, indexable);
 	}
 
 	protected List<Thread> handleInternet(final IndexContext indexContext, final IndexableInternet indexableInternet) {

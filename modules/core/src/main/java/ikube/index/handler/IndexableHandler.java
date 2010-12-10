@@ -9,7 +9,7 @@ import org.apache.log4j.Logger;
  * @since 29.11.10
  * @version 01.00
  */
-public abstract class Handler implements IHandler<Indexable<?>> {
+public abstract class IndexableHandler<T extends Indexable<?>> implements IHandler<T> {
 
 	protected Logger logger = Logger.getLogger(this.getClass());
 

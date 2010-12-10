@@ -22,47 +22,39 @@ public class Delete extends Action<IndexContext, Boolean> {
 
 	@Override
 	public Boolean execute(IndexContext indexContext) {
-		String actionName = getClass().getName();
-		String indexName = indexContext.getIndexName();
-		if (getClusterManager().anyWorkingOnIndex(indexName)) {
-			return Boolean.FALSE;
-		}
 		File baseIndexDirectory = FileUtilities.getFile(indexContext.getIndexDirectoryPath(), Boolean.TRUE);
 		File[] timeIndexDirectories = baseIndexDirectory.listFiles();
 		if (timeIndexDirectories == null || timeIndexDirectories.length < 2) {
 			return Boolean.FALSE;
 		}
-		try {
-			getClusterManager().setWorking(indexName, actionName, null, Boolean.TRUE);
-			List<File> timeIndexDirectoriesList = Arrays.asList(timeIndexDirectories);
-			Collections.sort(timeIndexDirectoriesList, new Comparator<File>() {
-				@Override
-				public int compare(File o1, File o2) {
-					return o1.getName().compareTo(o2.getName());
-				}
-			});
-			logger.debug("Index directories : " + timeIndexDirectoriesList);
-			// Check if the last directory has a lock
-			File latestIndexDirectory = timeIndexDirectoriesList.get(timeIndexDirectoriesList.size() - 1);
-			boolean lastIndexLocked = Boolean.FALSE;
-			try {
-				lastIndexLocked = isLocked(latestIndexDirectory);
-			} catch (Exception e) {
-				logger.error("Exception checking which directories to delete : ", e);
-			}
 
-			int indexDirectoriesListSize = timeIndexDirectoriesList.size();
-			int indexesToDelete = lastIndexLocked ? indexDirectoriesListSize - 2 : indexDirectoriesListSize - 1;
-			for (File indexDirectory : timeIndexDirectoriesList) {
-				logger.debug("Indexes to delete : " + indexesToDelete + ", " + indexDirectory);
-				if (--indexesToDelete < 0) {
-					break;
-				}
-				logger.debug("Deleting index : " + indexDirectory);
-				FileUtilities.deleteFile(indexDirectory, 1);
+		List<File> timeIndexDirectoriesList = Arrays.asList(timeIndexDirectories);
+		Collections.sort(timeIndexDirectoriesList, new Comparator<File>() {
+			@Override
+			public int compare(File o1, File o2) {
+				return o1.getName().compareTo(o2.getName());
 			}
-		} finally {
-			getClusterManager().setWorking(indexName, null, null, Boolean.FALSE);
+		});
+
+		logger.debug("Index directories : " + timeIndexDirectoriesList);
+		// Check if the last directory has a lock
+		File latestIndexDirectory = timeIndexDirectoriesList.get(timeIndexDirectoriesList.size() - 1);
+		boolean lastIndexLocked = Boolean.FALSE;
+		try {
+			lastIndexLocked = isLocked(latestIndexDirectory);
+		} catch (Exception e) {
+			logger.error("Exception checking which directories to delete : ", e);
+		}
+
+		int indexDirectoriesListSize = timeIndexDirectoriesList.size();
+		int indexesToDelete = lastIndexLocked ? indexDirectoriesListSize - 2 : indexDirectoriesListSize - 1;
+		for (File indexDirectory : timeIndexDirectoriesList) {
+			logger.debug("Indexes to delete : " + indexesToDelete + ", " + indexDirectory);
+			if (--indexesToDelete < 0) {
+				break;
+			}
+			logger.debug("Deleting index : " + indexDirectory);
+			FileUtilities.deleteFile(indexDirectory, 1);
 		}
 		return Boolean.TRUE;
 	}

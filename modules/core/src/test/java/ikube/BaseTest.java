@@ -3,7 +3,7 @@ package ikube;
 import ikube.cluster.ClusterTest;
 import ikube.model.IndexContext;
 import ikube.toolkit.ApplicationContextManager;
-import ikube.toolkit.DataGenerator;
+import ikube.toolkit.DataGeneratorTwo;
 import ikube.toolkit.DataLoader;
 import ikube.toolkit.FileUtilities;
 
@@ -37,10 +37,8 @@ public abstract class BaseTest extends ATest {
 			File sqlFile = FileUtilities.findFile(new File("."), new String[] { "tables.sql" });
 			dataLoader.createTables(sqlFile.getAbsolutePath());
 
-			DataGenerator dataGenerator = new DataGenerator();
-			dataGenerator.before();
-			dataGenerator.generate();
-			dataGenerator.after();
+			DataGeneratorTwo dataGenerator = new DataGeneratorTwo(1);
+			dataGenerator.generate(SPRING_CONFIGURATION_FILE);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

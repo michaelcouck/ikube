@@ -1,19 +1,18 @@
 package ikube.index.handler.email;
 
 import ikube.index.IndexManager;
-import ikube.index.handler.Handler;
+import ikube.index.handler.IndexableHandler;
+import ikube.index.handler.IndexableHandlerType;
 import ikube.index.parse.IParser;
 import ikube.index.parse.ParserProvider;
 import ikube.logging.Logging;
 import ikube.model.IndexContext;
-import ikube.model.Indexable;
 import ikube.model.IndexableEmail;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
@@ -43,17 +42,16 @@ import com.sun.mail.pop3.POP3SSLStore;
  * @since 29.11.10
  * @version 01.00
  */
-public class IndexableEmailHandler extends Handler {
+public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 
 	static final String SSL_FACTORY = "javax.net.ssl.SSLSocketFactory";
 	static final String MAIL_PROTOCOL = "pop3";
 
 	@Override
-	public List<Thread> handle(final IndexContext indexContext, final Indexable<?> indexable) throws Exception {
-		if (IndexableEmail.class.isAssignableFrom(indexable.getClass())) {
-			handleEmail(indexContext, (IndexableEmail) indexable);
-		}
-		return new ArrayList<Thread>();
+	@IndexableHandlerType(type = IndexableEmail.class)
+	public List<Thread> handle(final IndexContext indexContext, final IndexableEmail indexable) throws Exception {
+		handleEmail(indexContext, (IndexableEmail) indexable);
+		return null;
 	}
 
 	protected void handleEmail(final IndexContext indexContext, IndexableEmail indexableMail) {

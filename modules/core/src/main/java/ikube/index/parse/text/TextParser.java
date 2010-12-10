@@ -1,5 +1,6 @@
 package ikube.index.parse.text;
 
+import ikube.IConstants;
 import ikube.index.parse.IParser;
 
 import java.io.InputStream;
@@ -16,7 +17,7 @@ public class TextParser implements IParser {
 	@Override
 	public final OutputStream parse(InputStream inputStream, OutputStream outputStream) throws Exception {
 		StringBuilder builder = new StringBuilder();
-		InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+		InputStreamReader inputStreamReader = new InputStreamReader(inputStream, IConstants.ENCODING);
 		int read = -1;
 		char[] chars = new char[1024];
 		while ((read = inputStreamReader.read(chars)) > -1) {

@@ -1,13 +1,15 @@
 package ikube.action;
 
 import ikube.index.IndexManager;
-import ikube.index.handler.Handler;
+import ikube.index.handler.IndexableHandler;
+import ikube.index.handler.IndexableHandlerType;
 import ikube.logging.Logging;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.model.Server;
 import ikube.toolkit.ApplicationContextManager;
 
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 
@@ -27,13 +29,6 @@ public class Index extends Action<IndexContext, Boolean> {
 		}
 		List<Indexable<?>> indexables = indexContext.getIndexables();
 		String actionName = getClass().getName();
-		if (getClusterManager().anyWorking(actionName)) {
-			// Other servers working on an action other than this action. These
-			// actions need to be atomic, i.e. only one server executing one action
-			// at a time, other than the indexing action of course
-			logger.debug("Other servers working on different actions : ");
-			return Boolean.FALSE;
-		}
 		String indexName = indexContext.getIndexName();
 		try {
 			// If we get here then there are two possibilities:
@@ -44,30 +39,53 @@ public class Index extends Action<IndexContext, Boolean> {
 			Server server = getClusterManager().getServer();
 			// Start the indexing for this server
 			IndexManager.openIndexWriter(server.getAddress(), indexContext, lastWorkingStartTime);
-			Map<String, Handler> handlers = ApplicationContextManager.getBeans(Handler.class);
-			for (Handler handler : handlers.values()) {
-				for (Indexable<?> indexable : indexables) {
-					try {
-						// Execute each handler and wait for the threads to finish
-						logger.info("Executing handler : " + handler);
-						getClusterManager().setWorking(indexName, actionName, handler.getClass().toString(), Boolean.TRUE);
-						List<Thread> threads = handler.handle(indexContext, indexable);
-						if (threads.size() > 0) {
-							logger.info("Threads to wait for : " + threads);
-							waitForThreads(threads);
-						}
-					} catch (Exception e) {
-						logger.error("Exception indexing data : " + indexContext.getIndexName(), e);
+			@SuppressWarnings("rawtypes")
+			Map<String, IndexableHandler> indexableHandlers = ApplicationContextManager.getBeans(IndexableHandler.class);
+			for (Indexable<?> indexable : indexables) {
+				try {
+					// Get the right handler for this indexable
+					IndexableHandler<Indexable<?>> handler = getHandler(indexableHandlers, indexable);
+					if (handler == null) {
+						logger.warn("Not handling indexable : " + indexable);
+						continue;
 					}
+					// Execute the handler and wait for the threads to finish
+					logger.info("Executing handler : " + handler);
+					getClusterManager().setWorking(indexName, actionName, handler.getClass().toString(), Boolean.TRUE);
+					List<Thread> threads = handler.handle(indexContext, indexable);
+					if (threads != null && threads.size() > 0) {
+						logger.info("Threads to wait for : " + threads);
+						waitForThreads(threads);
+					}
+				} catch (Exception e) {
+					logger.error("Exception indexing data : " + indexContext.getIndexName(), e);
 				}
 			}
 		} finally {
 			IndexManager.closeIndexWriter(indexContext);
-			getClusterManager().setWorking(indexName, null, null, Boolean.FALSE);
+			getClusterManager().setWorking(indexName, "", "", Boolean.FALSE);
 		}
 		String contextName = indexContext.getName();
 		logger.debug(Logging.getString("Index : Finished indexing : ", indexName, ", ", contextName));
 		return Boolean.TRUE;
+	}
+
+	protected IndexableHandler<Indexable<?>> getHandler(@SuppressWarnings("rawtypes") Map<String, IndexableHandler> indexableHandlers,
+			Indexable<?> indexable) {
+		for (IndexableHandler<Indexable<?>> handler : indexableHandlers.values()) {
+			Method[] methods = handler.getClass().getMethods();
+			for (Method method : methods) {
+				IndexableHandlerType indexableHandlerType = method.getAnnotation(IndexableHandlerType.class);
+				if (indexableHandlerType == null) {
+					continue;
+				}
+				if (indexableHandlerType.type().equals(indexable.getClass())) {
+					return handler;
+				}
+			}
+		}
+		logger.warn("No handler for type : " + indexable);
+		return null;
 	}
 
 }

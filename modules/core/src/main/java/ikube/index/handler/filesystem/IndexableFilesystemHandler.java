@@ -1,11 +1,11 @@
 package ikube.index.handler.filesystem;
 
 import ikube.index.IndexManager;
-import ikube.index.handler.Handler;
+import ikube.index.handler.IndexableHandler;
+import ikube.index.handler.IndexableHandlerType;
 import ikube.index.parse.IParser;
 import ikube.index.parse.ParserProvider;
 import ikube.model.IndexContext;
-import ikube.model.Indexable;
 import ikube.model.IndexableFileSystem;
 import ikube.toolkit.FileUtilities;
 
@@ -14,7 +14,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -28,13 +27,13 @@ import org.apache.lucene.document.Field.TermVector;
  * @since 29.11.10
  * @version 01.00
  */
-public class IndexableFilesystemHandler extends Handler {
+public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSystem> {
 
-	public List<Thread> handle(final IndexContext indexContext, final Indexable<?> indexable) throws Exception {
-		if (IndexableFileSystem.class.isAssignableFrom(indexable.getClass())) {
-			handleFilesystem(indexContext, (IndexableFileSystem) indexable);
-		}
-		return new ArrayList<Thread>();
+	@Override
+	@IndexableHandlerType(type = IndexableFileSystem.class)
+	public List<Thread> handle(final IndexContext indexContext, final IndexableFileSystem indexable) throws Exception {
+		handleFilesystem(indexContext, indexable);
+		return null;
 	}
 
 	protected void handleFilesystem(final IndexContext indexContext, IndexableFileSystem indexableFileSystem) {

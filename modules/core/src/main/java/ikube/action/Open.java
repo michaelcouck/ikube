@@ -40,64 +40,51 @@ public class Open extends Action<IndexContext, Boolean> {
 		}
 		// See if there are any index directories that are new and not included
 		// in the directories of the existing searchers
-		// Find the last index directory created
 		boolean shouldReopen = shouldReopen(indexContext);
 		if (!shouldReopen) {
 			logger.debug("Shouldn't open : ");
 			return Boolean.FALSE;
 		}
-		String actionName = getClass().getName();
-		String indexName = indexContext.getIndexName();
-		if (getClusterManager().anyWorkingOnIndex(indexName)) {
-			logger.debug("Servers working : ");
-			return Boolean.FALSE;
-		}
-		try {
-			getClusterManager().setWorking(indexName, actionName, null, Boolean.TRUE);
-			ArrayList<Searchable> searchers = new ArrayList<Searchable>();
-			File[] serverIndexDirectories = latestIndexDirectory.listFiles();
-			if (serverIndexDirectories != null) {
-				for (File serverIndexDirectory : serverIndexDirectories) {
-					File[] contextIndexDirectories = serverIndexDirectory.listFiles();
-					for (File contextIndexDirectory : contextIndexDirectories) {
-						try {
-							FSDirectory directory = FSDirectory.open(contextIndexDirectory);
-							boolean exists = IndexReader.indexExists(directory);
-							boolean locked = IndexWriter.isLocked(directory);
-							if (!exists || locked) {
-								// We don't open locked directories. Could be
-								// that one configuration is still indexing on this
-								// file system, but we still want to open the index
-								// on the other new indexes. Of course if the index
-								// doesn't exist in the directory for some odd reason
-								// then we just ignore it, and the problem will eventually
-								// get deleted(at the next full index of course).
-								continue;
-							}
-							IndexReader reader = IndexReader.open(directory, Boolean.TRUE);
-							Searchable searcher = new IndexSearcher(reader);
-							searchers.add(searcher);
-							logger.debug("Opened searcher on : " + contextIndexDirectory + ", exists : " + exists + ", locked : " + locked);
-						} catch (Exception e) {
-							logger.error("Exception opening directory : " + contextIndexDirectory, e);
+		ArrayList<Searchable> searchers = new ArrayList<Searchable>();
+		File[] serverIndexDirectories = latestIndexDirectory.listFiles();
+		if (serverIndexDirectories != null) {
+			for (File serverIndexDirectory : serverIndexDirectories) {
+				File[] contextIndexDirectories = serverIndexDirectory.listFiles();
+				for (File contextIndexDirectory : contextIndexDirectories) {
+					try {
+						FSDirectory directory = FSDirectory.open(contextIndexDirectory);
+						boolean exists = IndexReader.indexExists(directory);
+						boolean locked = IndexWriter.isLocked(directory);
+						if (!exists || locked) {
+							// We don't open locked directories. Could be
+							// that one configuration is still indexing on this
+							// file system, but we still want to open the index
+							// on the other new indexes. Of course if the index
+							// doesn't exist in the directory for some odd reason
+							// then we just ignore it, and the problem will eventually
+							// get deleted(at the next full index of course).
+							continue;
 						}
+						IndexReader reader = IndexReader.open(directory, Boolean.TRUE);
+						Searchable searcher = new IndexSearcher(reader);
+						searchers.add(searcher);
+						logger.debug("Opened searcher on : " + contextIndexDirectory + ", exists : " + exists + ", locked : " + locked);
+					} catch (Exception e) {
+						logger.error("Exception opening directory : " + contextIndexDirectory, e);
 					}
 				}
 			}
-			try {
-				if (searchers.size() > 0) {
-					Searchable[] searchables = searchers.toArray(new IndexSearcher[searchers.size()]);
-					MultiSearcher multiSearcher = new MultiSearcher(searchables);
-					indexContext.setMultiSearcher(multiSearcher);
-					ListenerManager
-							.fireEvent(indexContext, Event.SEARCHER_OPENED, new Timestamp(System.currentTimeMillis()), Boolean.FALSE);
-					return Boolean.TRUE;
-				}
-			} catch (Exception e) {
-				logger.error("Exception opening the multi searcher", e);
+		}
+		try {
+			if (searchers.size() > 0) {
+				Searchable[] searchables = searchers.toArray(new IndexSearcher[searchers.size()]);
+				MultiSearcher multiSearcher = new MultiSearcher(searchables);
+				indexContext.setMultiSearcher(multiSearcher);
+				ListenerManager.fireEvent(indexContext, Event.SEARCHER_OPENED, new Timestamp(System.currentTimeMillis()), Boolean.FALSE);
+				return Boolean.TRUE;
 			}
-		} finally {
-			getClusterManager().setWorking(indexName, null, null, Boolean.FALSE);
+		} catch (Exception e) {
+			logger.error("Exception opening the multi searcher", e);
 		}
 		return Boolean.FALSE;
 	}

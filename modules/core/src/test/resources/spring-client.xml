@@ -92,14 +92,14 @@
 		property:name="question"
 		property:fieldName="contents"
 		property:columnClass="java.lang.String"
-		property:columnLength="1024" />
+		property:columnLength="128" />
 	<bean
 		id="answer"
 		class="ikube.model.IndexableColumn"
 		property:name="answer"
 		property:fieldName="contents"
 		property:columnClass="java.lang.String"
-		property:columnLength="1024" />
+		property:columnLength="128" />
 	<bean
 		id="published"
 		class="ikube.model.IndexableColumn"
@@ -151,7 +151,7 @@
 		property:fieldName="attachment"
 		property:nameColumn-ref="name"
 		property:columnClass="java.sql.Blob"
-		property:columnLength="100000" />
+		property:columnLength="1024" />
 	<bean
 		id="length"
 		class="ikube.model.IndexableColumn"

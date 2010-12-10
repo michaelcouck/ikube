@@ -12,6 +12,7 @@ import javax.sql.DataSource;
 @Entity()
 public class IndexableTable extends Indexable<IndexableTable> {
 
+	/** TODO - the datasource needs to be configured else where. */
 	private transient DataSource dataSource;
 
 	private String schema;

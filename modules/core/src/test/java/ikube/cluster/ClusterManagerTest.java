@@ -64,50 +64,6 @@ public class ClusterManagerTest extends BaseTest {
 	}
 
 	@Test
-	public void anyWorking() throws Exception {
-		// String
-		boolean anyWorking = clusterManager.anyWorking(Index.class.getName());
-		assertFalse(anyWorking);
-
-		clusterManager.set(Server.class, serverLocal.getId(), serverLocal);
-
-		anyWorking = clusterManager.anyWorking(Index.class.getName());
-		assertFalse(anyWorking);
-
-		serverRemote.setWorking(Boolean.TRUE);
-		clusterManager.set(Server.class, serverRemote.getId(), serverRemote);
-
-		anyWorking = clusterManager.anyWorking(Index.class.getName());
-		assertTrue(anyWorking);
-	}
-
-	@Test
-	public void anyWorkingOnIndex() {
-		// String
-		boolean anyWorkingOnIndex = clusterManager.anyWorkingOnIndex(indexContext.getIndexName());
-		assertFalse(anyWorkingOnIndex);
-
-		serverLocal.setWorking(Boolean.TRUE);
-		clusterManager.set(Server.class, serverLocal.getId(), serverLocal);
-
-		anyWorkingOnIndex = clusterManager.anyWorkingOnIndex(indexContext.getIndexName());
-		assertTrue(anyWorkingOnIndex);
-	}
-
-	@Test
-	public void areWorking() {
-		// String, String
-		boolean areWorking = clusterManager.areWorking(indexName, actionName);
-		assertFalse(areWorking);
-
-		serverRemote.setWorking(Boolean.TRUE);
-		clusterManager.set(Server.class, serverRemote.getId(), serverRemote);
-
-		areWorking = clusterManager.areWorking(indexName, actionName);
-		assertTrue(areWorking);
-	}
-
-	@Test
 	public void clear() {
 		// Class<T>
 		Set<Server> servers = clusterManager.getServers();

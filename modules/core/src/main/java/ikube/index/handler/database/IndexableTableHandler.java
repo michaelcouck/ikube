@@ -6,7 +6,8 @@ import ikube.index.IndexManager;
 import ikube.index.content.ByteOutputStream;
 import ikube.index.content.ColumnContentProvider;
 import ikube.index.content.IContentProvider;
-import ikube.index.handler.Handler;
+import ikube.index.handler.IndexableHandler;
+import ikube.index.handler.IndexableHandlerType;
 import ikube.index.parse.IParser;
 import ikube.index.parse.ParserProvider;
 import ikube.logging.Logging;
@@ -40,7 +41,7 @@ import org.apache.lucene.document.Field.TermVector;
  * @since 29.11.10
  * @version 01.00
  */
-public class IndexableTableHandler extends Handler {
+public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 
 	private IContentProvider<IndexableColumn> contentProvider;
 
@@ -49,21 +50,19 @@ public class IndexableTableHandler extends Handler {
 	}
 
 	@Override
-	public List<Thread> handle(final IndexContext indexContext, final Indexable<?> indexable) throws Exception {
+	@IndexableHandlerType(type = IndexableTable.class)
+	public List<Thread> handle(final IndexContext indexContext, final IndexableTable indexable) throws Exception {
 		List<Thread> threads = new ArrayList<Thread>();
-		if (IndexableTable.class.isAssignableFrom(indexable.getClass())) {
-			IndexableTable indexableTable = (IndexableTable) indexable;
-			for (int i = 0; i < getThreads(); i++) {
-				final IndexableTable cloneIndexableTable = (IndexableTable) SerializationUtilities.clone(indexableTable);
-				final Connection connection = indexableTable.getDataSource().getConnection();
-				Thread thread = new Thread(new Runnable() {
-					public void run() {
-						handleTable(indexContext, cloneIndexableTable, connection, null);
-					}
-				}, IndexableTableHandler.class.getSimpleName() + "." + i);
-				thread.start();
-				threads.add(thread);
-			}
+		for (int i = 0; i < getThreads(); i++) {
+			final IndexableTable cloneIndexableTable = (IndexableTable) SerializationUtilities.clone(indexable);
+			final Connection connection = indexable.getDataSource().getConnection();
+			Thread thread = new Thread(new Runnable() {
+				public void run() {
+					handleTable(indexContext, cloneIndexableTable, connection, null);
+				}
+			}, IndexableTableHandler.class.getSimpleName() + "." + i);
+			thread.start();
+			threads.add(thread);
 		}
 		return threads;
 	}
