@@ -68,7 +68,7 @@
 		class="ikube.cluster.ClusterManager"
 		lazy-init="true"
 		init-method="initialise"
-		property:serverAddress="serverOne">
+		property:address="serverOne">
 		<property name="cache">
 			<bean
 				id="ikube.cluster.cache.Cache"

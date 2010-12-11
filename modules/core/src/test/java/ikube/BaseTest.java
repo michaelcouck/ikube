@@ -37,7 +37,7 @@ public abstract class BaseTest extends ATest {
 			File sqlFile = FileUtilities.findFile(new File("."), new String[] { "tables.sql" });
 			dataLoader.createTables(sqlFile.getAbsolutePath());
 
-			DataGeneratorTwo dataGenerator = new DataGeneratorTwo(1);
+			DataGeneratorTwo dataGenerator = new DataGeneratorTwo(1, 1);
 			dataGenerator.generate(SPRING_CONFIGURATION_FILE);
 		} catch (Exception e) {
 			e.printStackTrace();

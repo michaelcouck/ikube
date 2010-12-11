@@ -12,6 +12,7 @@ import ikube.model.IndexableColumn;
 import ikube.model.Url;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.PerformanceTester;
+import ikube.toolkit.ThreadUtilities;
 
 import java.io.File;
 import java.lang.reflect.Field;
@@ -327,7 +328,7 @@ public class DataBaseOdbTest extends ATest {
 			threads.add(thread);
 			thread.start();
 		}
-		waitForThreads(threads);
+		ThreadUtilities.waitForThreads(threads);
 		assertTrue(Boolean.TRUE);
 	}
 

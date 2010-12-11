@@ -17,7 +17,7 @@ public class Cache implements ICache {
 	protected Logger logger;
 	private Map<Class<?>, Map<Long, ?>> maps;
 
-	public Cache() {
+	public void initialise() {
 		logger = Logger.getLogger(this.getClass());
 		maps = new HashMap<Class<?>, Map<Long, ?>>();
 	}

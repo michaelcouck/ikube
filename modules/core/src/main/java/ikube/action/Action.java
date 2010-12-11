@@ -7,7 +7,6 @@ import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
-import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.index.IndexReader;
@@ -163,23 +162,6 @@ public abstract class Action<E, F> implements IAction<E, F> {
 		String parentNameOne = directoryOne.getParentFile().getName();
 		String parentNameTwo = directoryTwo.getParentFile().getName();
 		return nameOne.equals(nameTwo) && parentNameOne.equals(parentNameTwo);
-	}
-
-	protected void waitForThreads(List<Thread> threads) {
-		outer: while (true) {
-			for (Thread thread : threads) {
-				if (thread.isAlive()) {
-					try {
-						// Wait for the threads to finish the action
-						thread.join();
-					} catch (InterruptedException e) {
-						logger.error("Interrupted waiting for thread : " + thread + ", this thread : " + Thread.currentThread(), e);
-					}
-					continue outer;
-				}
-			}
-			break;
-		}
 	}
 
 }

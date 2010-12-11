@@ -7,6 +7,7 @@ import ikube.cluster.IClusterManager;
 import ikube.model.IndexableInternet;
 import ikube.model.Url;
 import ikube.toolkit.ApplicationContextManager;
+import ikube.toolkit.ThreadUtilities;
 
 import java.util.List;
 
@@ -27,7 +28,7 @@ public class IndexableInternetHandlerTest extends BaseTest {
 		ApplicationContextManager.getBean(Reset.class).execute(indexContext);
 		List<Thread> threads = indexableInternetHandler.handle(indexContext, indexableInternet);
 
-		waitForThreads(threads);
+		ThreadUtilities.waitForThreads(threads);
 
 		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
 		int totalUrlsCrawled = clusterManager.size(Url.class);

@@ -1,13 +1,14 @@
 package ikube.action;
 
 import ikube.index.IndexManager;
-import ikube.index.handler.IndexableHandler;
+import ikube.index.handler.IHandler;
 import ikube.index.handler.IndexableHandlerType;
 import ikube.logging.Logging;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.model.Server;
 import ikube.toolkit.ApplicationContextManager;
+import ikube.toolkit.ThreadUtilities;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -40,11 +41,11 @@ public class Index extends Action<IndexContext, Boolean> {
 			// Start the indexing for this server
 			IndexManager.openIndexWriter(server.getAddress(), indexContext, lastWorkingStartTime);
 			@SuppressWarnings("rawtypes")
-			Map<String, IndexableHandler> indexableHandlers = ApplicationContextManager.getBeans(IndexableHandler.class);
+			Map<String, IHandler> indexableHandlers = ApplicationContextManager.getBeans(IHandler.class);
 			for (Indexable<?> indexable : indexables) {
 				try {
 					// Get the right handler for this indexable
-					IndexableHandler<Indexable<?>> handler = getHandler(indexableHandlers, indexable);
+					IHandler<Indexable<?>> handler = getHandler(indexableHandlers, indexable);
 					if (handler == null) {
 						logger.warn("Not handling indexable : " + indexable);
 						continue;
@@ -55,7 +56,7 @@ public class Index extends Action<IndexContext, Boolean> {
 					List<Thread> threads = handler.handle(indexContext, indexable);
 					if (threads != null && threads.size() > 0) {
 						logger.info("Threads to wait for : " + threads);
-						waitForThreads(threads);
+						ThreadUtilities.waitForThreads(threads);
 					}
 				} catch (Exception e) {
 					logger.error("Exception indexing data : " + indexContext.getIndexName(), e);
@@ -70,9 +71,9 @@ public class Index extends Action<IndexContext, Boolean> {
 		return Boolean.TRUE;
 	}
 
-	protected IndexableHandler<Indexable<?>> getHandler(@SuppressWarnings("rawtypes") Map<String, IndexableHandler> indexableHandlers,
+	protected IHandler<Indexable<?>> getHandler(@SuppressWarnings("rawtypes") Map<String, IHandler> indexableHandlers,
 			Indexable<?> indexable) {
-		for (IndexableHandler<Indexable<?>> handler : indexableHandlers.values()) {
+		for (IHandler<Indexable<?>> handler : indexableHandlers.values()) {
 			Method[] methods = handler.getClass().getMethods();
 			for (Method method : methods) {
 				IndexableHandlerType indexableHandlerType = method.getAnnotation(IndexableHandlerType.class);

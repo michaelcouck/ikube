@@ -26,6 +26,9 @@
 		property:password="${jdbc.password}"
 		property:user="${jdbc.user}"
 		property:checkoutTimeout="${jdbc.checkOutTimeout}"
-		property:numHelperThreads="${jdbc.numHelperThreads}" />
+		property:numHelperThreads="${jdbc.numHelperThreads}"
+		property:autoCommitOnClose="true"
+		property:debugUnreturnedConnectionStackTraces="true"
+		property:unreturnedConnectionTimeout="6000000" />
 
 </beans>

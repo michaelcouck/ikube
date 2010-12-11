@@ -1,14 +1,15 @@
 package ikube.cluster;
 
 import ikube.cluster.cache.ICache;
-import ikube.cluster.cache.ICache.ICriteria;
 import ikube.logging.Logging;
 import ikube.model.Batch;
 import ikube.model.Server;
+import ikube.model.Server.Action;
 import ikube.model.Url;
 import ikube.toolkit.HashUtilities;
 
 import java.net.InetAddress;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -30,12 +31,15 @@ public class ClusterManager implements IClusterManager {
 	protected static String BATCH_LOCK = "batchLock";
 	protected static String SERVER_LOCK = "serverLock";
 	protected static long LOCK_TIMEOUT = 3000;
+	protected static double MAX_ACTION_SIZE = 10;
+	protected static double ACTION_PRUNE_RATIO = 0.5;
 
 	protected Logger logger;
-	protected Server server;
+	/** The address of this server. This can be set in the configuration. The default is the ip address. */
+	protected String address;
 	protected ICache cache;
 
-	private ICache.ICriteria<Url> criteria = new ICriteria<Url>() {
+	private ICache.ICriteria<Url> criteria = new ICache.ICriteria<Url>() {
 		@Override
 		public boolean evaluate(Url t) {
 			return !t.isIndexed();
@@ -49,13 +53,12 @@ public class ClusterManager implements IClusterManager {
 		}
 	};
 
+	public ClusterManager() throws Exception {
+		this.address = InetAddress.getLocalHost().getHostAddress();
+	}
+
 	public void initialise() throws Exception {
 		this.logger = Logger.getLogger(this.getClass());
-		if (this.server == null) {
-			this.server = new Server();
-			this.server.setAddress(InetAddress.getLocalHost().getHostAddress());
-			this.server.setId(HashUtilities.hash(server.getAddress()));
-		}
 	}
 
 	@Override
@@ -68,7 +71,7 @@ public class ClusterManager implements IClusterManager {
 			}
 			List<Server> servers = cache.get(Server.class, null, null, Integer.MAX_VALUE);
 			for (Server server : servers) {
-				if (server.getAddress().equals(this.server.getAddress())) {
+				if (server.getAddress().equals(this.address)) {
 					continue;
 				}
 				if (server.isWorking()) {
@@ -133,6 +136,13 @@ public class ClusterManager implements IClusterManager {
 	@Override
 	public synchronized Server getServer() {
 		try {
+			Server server = cache.get(Server.class, HashUtilities.hash(address));
+			if (server == null) {
+				server = new Server();
+				server.setAddress(address);
+				server.setId(HashUtilities.hash(server.getAddress()));
+				cache.set(Server.class, server.getId(), server);
+			}
 			return server;
 		} finally {
 			notifyAll();
@@ -141,6 +151,7 @@ public class ClusterManager implements IClusterManager {
 
 	@Override
 	public synchronized long setWorking(String indexName, String actionName, String handlerName, boolean isWorking) {
+		// logger.info("Set working : ");
 		ILock lock = null;
 		try {
 			lock = lock(SERVER_LOCK);
@@ -150,19 +161,38 @@ public class ClusterManager implements IClusterManager {
 
 			long lastStartTime = System.currentTimeMillis();
 			List<Server> servers = cache.get(Server.class, null, null, Integer.MAX_VALUE);
+			// Find the first start time for the action we want to start in any of the servers
 			for (Server server : servers) {
-				logger.info("Server : " + server);
-				if (indexName.equals(server.getAction().getIndexName()) && actionName.equals(server.getAction().getActionName())
-						&& server.isWorking()) {
-					lastStartTime = Math.min(lastStartTime, server.getAction().getStartTime());
+				// logger.info("Server : " + server);
+				for (Action action : server.getActions()) {
+					if (indexName.equals(action.getIndexName()) && actionName.equals(action.getActionName()) && server.isWorking()) {
+						lastStartTime = Math.min(lastStartTime, action.getStartTime());
+					}
 				}
 			}
 
-			this.server.getAction().setIndexName(indexName);
-			this.server.getAction().setActionName(actionName);
-			this.server.getAction().setStartTime(lastStartTime);
-			this.server.setWorking(isWorking);
+			Server server = getServer();
+
+			// Prune the actions in this server
+			List<Action> actions = server.getActions();
+			if (actions.size() > MAX_ACTION_SIZE) {
+				Iterator<Action> iterator = actions.iterator();
+				double prunedSize = MAX_ACTION_SIZE * ACTION_PRUNE_RATIO;
+				while (true) {
+					/* Action action = */iterator.next();
+					// logger.info("Removing action : " + action);
+					iterator.remove();
+					if (actions.size() <= prunedSize) {
+						break;
+					}
+				}
+			}
+
+			server.setWorking(isWorking);
+			server.getActions().add(server.new Action(handlerName, actionName, indexName, lastStartTime));
+
 			// Publish the fact that this server is starting to work on an action
+			// logger.info("Setting : " + server);
 			cache.set(Server.class, server.getId(), server);
 			return lastStartTime;
 		} finally {
@@ -195,6 +225,7 @@ public class ClusterManager implements IClusterManager {
 		try {
 			if (lock != null) {
 				lock.unlock();
+				// logger.info(Logging.getString("Unlocked : ", lock, ", ", Thread.currentThread().hashCode()));
 			}
 		} finally {
 			notifyAll();
@@ -263,10 +294,8 @@ public class ClusterManager implements IClusterManager {
 		}
 	}
 
-	public void setServerAddress(String serverAddress) {
-		this.server = new Server();
-		this.server.setAddress(serverAddress);
-		this.server.setId(HashUtilities.hash(server.getAddress()));
+	public void setAddress(String address) {
+		this.address = address;
 	}
 
 }

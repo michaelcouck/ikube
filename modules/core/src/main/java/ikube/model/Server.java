@@ -1,5 +1,8 @@
 package ikube.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.Entity;
 
 /**
@@ -85,10 +88,10 @@ public class Server extends Persistable implements Comparable<Server> {
 	/** Whether this server is working. */
 	private boolean working;
 	/** The details about the action that this server is executing. */
-	private Action action;
+	private List<Action> actions;
 
 	public Server() {
-		this.action = new Action();
+		this.actions = new ArrayList<Server.Action>();
 	}
 
 	public String getAddress() {
@@ -107,12 +110,8 @@ public class Server extends Persistable implements Comparable<Server> {
 		this.working = working;
 	}
 
-	public Action getAction() {
-		return action;
-	}
-
-	public void setAction(Action action) {
-		this.action = action;
+	public List<Action> getActions() {
+		return actions;
 	}
 
 	@Override

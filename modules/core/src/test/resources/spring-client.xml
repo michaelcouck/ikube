@@ -56,6 +56,7 @@
 		<ref local="answer" />
 		<ref local="published" />
 		<ref local="tableTwo" />
+		<ref local="tableThree" />
 	</util:list>
 
 	<bean
@@ -117,7 +118,7 @@
 		property:children-ref="columnsTwo" />
 	<util:list id="columnsTwo">
 		<ref local="attachmentFaqId" />
-		<ref local="attachmentid" />
+		<ref local="attachmentId" />
 		<ref local="name" />
 		<ref local="attachment" />
 		<ref local="length" />
@@ -126,15 +127,15 @@
 	<bean
 		id="attachmentFaqId"
 		class="ikube.model.IndexableColumn"
-		property:name="faqid"
-		property:fieldName="attachmentfaqId"
+		property:name="faqId"
+		property:fieldName="attachmentFaqId"
 		property:foreignKey-ref="faqId"
 		property:columnClass="java.lang.Long" />
 	<bean
-		id="attachmentid"
+		id="attachmentId"
 		class="ikube.model.IndexableColumn"
-		property:name="attachmentid"
-		property:fieldName="attachmentid"
+		property:name="attachmentId"
+		property:fieldName="attachmentId"
 		property:idColumn="true"
 		property:columnClass="java.lang.Long" />
 	<bean
@@ -151,14 +152,143 @@
 		property:fieldName="attachment"
 		property:nameColumn-ref="name"
 		property:columnClass="java.sql.Blob"
-		property:columnLength="1024" />
+		property:columnLength="128" />
 	<bean
 		id="length"
 		class="ikube.model.IndexableColumn"
 		property:name="length"
 		property:fieldName="length"
 		property:columnClass="java.lang.Integer" />
+	
+	<bean
+		id="tableThree"
+		class="ikube.model.IndexableTable"
+		property:name="version"
+		property:schema="db2admin"
+		property:primary="false"
+		property:dataSource-ref="nonXaDataSource"
+		property:children-ref="columnsThree" />
+	<util:list id="columnsThree">
+		<ref local="versionFaqId" />
+		<ref local="versionId" />
+		<ref local="versionCreationtimestamp" />
+		<ref local="versionModifiedtimestamp" />
+		<ref local="versionCreator" />
+		<ref local="versionModifier" />
+		<ref local="versionQuestion" />
+		<ref local="versionAnswer" />
+		<ref local="versionPublished" />
+		<ref local="tableFour" />
+	</util:list>
 
+	<bean
+		id="versionFaqId"
+		class="ikube.model.IndexableColumn"
+		property:name="faqId"
+		property:fieldName="versionfaqId"
+		property:foreignKey-ref="faqId"
+		property:columnClass="java.lang.Long" />
+	<bean
+		id="versionId"
+		class="ikube.model.IndexableColumn"
+		property:name="versionId"
+		property:idColumn="true"
+		property:columnClass="java.lang.Long" />
+	<bean
+		id="versionCreationtimestamp"
+		class="ikube.model.IndexableColumn"
+		property:name="creationtimestamp"
+		property:columnClass="java.sql.Timestamp" />
+	<bean
+		id="versionModifiedtimestamp"
+		class="ikube.model.IndexableColumn"
+		property:name="modifiedtimestamp"
+		property:columnClass="java.sql.Timestamp" />
+	<bean
+		id="versionCreator"
+		class="ikube.model.IndexableColumn"
+		property:name="creator"
+		property:columnClass="java.lang.String"
+		property:columnLength="32" />
+	<bean
+		id="versionModifier"
+		class="ikube.model.IndexableColumn"
+		property:name="modifier"
+		property:columnClass="java.lang.String"
+		property:columnLength="32" />
+	<bean
+		id="versionQuestion"
+		class="ikube.model.IndexableColumn"
+		property:name="question"
+		property:fieldName="versionContents"
+		property:columnClass="java.lang.String"
+		property:columnLength="128" />
+	<bean
+		id="versionAnswer"
+		class="ikube.model.IndexableColumn"
+		property:name="answer"
+		property:fieldName="versionContents"
+		property:columnClass="java.lang.String"
+		property:columnLength="128" />
+	<bean
+		id="versionPublished"
+		class="ikube.model.IndexableColumn"
+		property:name="published"
+		property:fieldName="versionPublished"
+		property:columnClass="java.lang.Boolean" />
+		
+	<bean
+		id="tableFour"
+		class="ikube.model.IndexableTable"
+		property:name="versionAttachment"
+		property:schema="db2admin"
+		property:primary="false"
+		property:dataSource-ref="nonXaDataSource"
+		property:children-ref="columnsFour" />
+	<util:list id="columnsFour">
+		<ref local="attachmentVersionId" />
+		<ref local="versionAttachmentId" />
+		<ref local="versionName" />
+		<ref local="versionAttachment" />
+		<ref local="versionLength" />
+	</util:list>
+
+	<bean
+		id="attachmentVersionId"
+		class="ikube.model.IndexableColumn"
+		property:name="versionId"
+		property:fieldName="attachmentVersionId"
+		property:foreignKey-ref="versionId"
+		property:columnClass="java.lang.Long" />
+	<bean
+		id="versionAttachmentId"
+		class="ikube.model.IndexableColumn"
+		property:name="attachmentId"
+		property:fieldName="versionAttachmentId"
+		property:idColumn="true"
+		property:columnClass="java.lang.Long" />
+	<bean
+		id="versionName"
+		class="ikube.model.IndexableColumn"
+		property:name="name"
+		property:fieldName="versionName"
+		property:columnClass="java.lang.String"
+		property:columnLength="64" />
+	<bean
+		id="versionAttachment"
+		class="ikube.model.IndexableColumn"
+		property:name="attachment"
+		property:fieldName="versionAttachment"
+		property:nameColumn-ref="versionName"
+		property:columnClass="java.sql.Blob"
+		property:columnLength="128" />
+	<bean
+		id="versionLength"
+		class="ikube.model.IndexableColumn"
+		property:name="length"
+		property:fieldName="versionLength"
+		property:columnClass="java.lang.Integer" />
+		
 	<bean
 		id="mail"
 		class="ikube.model.IndexableEmail"

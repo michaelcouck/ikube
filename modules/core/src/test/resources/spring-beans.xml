@@ -26,7 +26,9 @@
 	
 	<bean
 		id="ikube.cluster.cache.Cache"
-		class="ikube.cluster.cache.Cache" />
+		class="ikube.cluster.cache.Cache"
+		lazy-init="true"
+		init-method="initialise" />
 	<bean
 		class="ikube.cluster.ClusterManager"
 		lazy-init="true"
@@ -38,8 +40,8 @@
 	<bean
 		id="ikube.database.odb.DataBaseOdb"
 		class="ikube.database.odb.DataBaseOdb"
-		init-method="initialise"
 		lazy-init="false"
+		init-method="initialise"
 		destroy-method="close">
 		<property name="indexes">
 			<list>

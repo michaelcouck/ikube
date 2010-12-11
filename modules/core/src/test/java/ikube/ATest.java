@@ -63,22 +63,6 @@ public abstract class ATest {
 		}
 	}
 
-	protected void waitForThreads(List<Thread> threads) {
-		outer: while (true) {
-			for (Thread thread : threads) {
-				if (thread.isAlive()) {
-					try {
-						thread.join();
-					} catch (InterruptedException e) {
-						logger.error("Interrupted waiting for thread : " + thread + ", this thread : " + Thread.currentThread(), e);
-					}
-					continue outer;
-				}
-			}
-			break;
-		}
-	}
-
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static void quickSort(Comparable[] c, int start, int end) {
 		if (end <= start) {
@@ -108,7 +92,7 @@ public abstract class ATest {
 		quickSort(c, j + 1, end);
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		Integer[] arr = new Integer[5];
 		System.out.println("inserting: ");
 		for (int i = 0; i < arr.length; i++) {

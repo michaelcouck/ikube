@@ -26,9 +26,11 @@ public class DataGeneratorTwo {
 	private List<String> words;
 	private String wordsFilePath = "/data/words.txt";
 	private int iterations;
+	private int threads;
 
-	public DataGeneratorTwo(int iterations) {
+	public DataGeneratorTwo(int iterations, int threads) {
 		this.iterations = iterations;
+		this.threads = threads;
 		this.words = new ArrayList<String>();
 		InputStream inputStream = this.getClass().getResourceAsStream(wordsFilePath);
 		String words = FileUtilities.getContents(inputStream, Integer.MAX_VALUE).toString();
@@ -38,22 +40,41 @@ public class DataGeneratorTwo {
 		}
 	}
 
-	public void generate(String configLocation) {
+	public List<Thread> generate(String configLocation) throws Exception {
+		List<Thread> threads = new ArrayList<Thread>();
 		// Get all the tables in the configuration
 		ApplicationContextManager.getApplicationContext(configLocation);
 		Map<String, IndexableTable> indexableTables = ApplicationContextManager.getBeans(IndexableTable.class);
-		for (IndexableTable indexableTable : indexableTables.values()) {
+		logger.info("Inserting : " + (this.threads * this.iterations * indexableTables.size()) + " records.");
+		for (final IndexableTable indexableTable : indexableTables.values()) {
 			if (!indexableTable.isPrimary()) {
 				continue;
 			}
-			for (int i = 0; i < iterations; i++) {
-				generate(indexableTable);
+			for (int j = 0; j < this.threads; j++) {
+				final Connection connection = indexableTable.getDataSource().getConnection();
+				Thread thread = new Thread(new Runnable() {
+					public void run() {
+						try {
+							PerformanceTester.execute(new PerformanceTester.APerform() {
+								@Override
+								public void execute() throws Exception {
+									IndexableTable clonedIndexableTable = (IndexableTable) SerializationUtilities.clone(indexableTable);
+									generate(clonedIndexableTable, connection);
+								}
+							}, "Data generator two : ", iterations);
+						} catch (Exception e) {
+							logger.error("", e);
+						}
+					}
+				});
+				thread.start();
+				threads.add(thread);
 			}
 		}
+		return threads;
 	}
 
-	protected void generate(IndexableTable indexableTable) {
-		logger.info("Doing table : " + indexableTable);
+	protected void generate(IndexableTable indexableTable, Connection connection) {
 		// Build the insert sql
 		StringBuilder builder = new StringBuilder();
 		builder.append("insert into ");
@@ -93,13 +114,10 @@ public class DataGeneratorTwo {
 			}
 		}
 		builder.append(")");
-		logger.info("Sql : " + builder.toString());
-		Connection connection = null;
 		PreparedStatement preparedStatement = null;
 		ResultSet ids = null;
 		try {
 			// Get the prepared statement
-			connection = indexableTable.getDataSource().getConnection();
 			preparedStatement = connection.prepareStatement(builder.toString(), Statement.RETURN_GENERATED_KEYS);
 			// Set the parameters based on the index column's column class
 			int parameterIndex = 1;
@@ -119,7 +137,6 @@ public class DataGeneratorTwo {
 					} else {
 						parameter = indexableColumn.getForeignKey().getObject();
 					}
-					logger.info("Setting parameter : " + parameterIndex + ", " + parameter + ", " + indexableColumn);
 					preparedStatement.setObject(parameterIndex, parameter);
 					parameterIndex++;
 				}
@@ -135,16 +152,16 @@ public class DataGeneratorTwo {
 				// Do the child tables
 				for (Indexable<?> indexable : indexableTable.getChildren()) {
 					if (IndexableTable.class.isAssignableFrom(indexable.getClass())) {
-						generate((IndexableTable) indexable);
+						generate((IndexableTable) indexable, connection);
 					}
 				}
 			}
+			connection.commit();
 		} catch (SQLException e) {
 			logger.error("", e);
 		} finally {
 			DatabaseUtilities.close(ids);
 			DatabaseUtilities.close(preparedStatement);
-			DatabaseUtilities.close(connection);
 		}
 	}
 
@@ -193,10 +210,12 @@ public class DataGeneratorTwo {
 		return builder.toString();
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		String configLocation = "/data/spring.xml";
-		DataGeneratorTwo dataGeneratorTwo = new DataGeneratorTwo(10);
-		dataGeneratorTwo.generate(configLocation);
+		DataGeneratorTwo dataGeneratorTwo = new DataGeneratorTwo(1000, 3);
+		List<Thread> threads = dataGeneratorTwo.generate(configLocation);
+		ThreadUtilities.waitForThreads(threads);
+		System.out.println("Finished generation : ");
 	}
 
 }

@@ -1,10 +1,8 @@
 package ikube.cluster;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import ikube.BaseTest;
 import ikube.action.Index;
 import ikube.index.handler.database.IndexableTableHandler;
@@ -13,8 +11,10 @@ import ikube.model.Server;
 import ikube.model.Url;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.HashUtilities;
+import ikube.toolkit.ThreadUtilities;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -42,13 +42,13 @@ public class ClusterManagerTest extends BaseTest {
 		indexName = indexContext.getIndexName();
 
 		serverLocal = new Server();
-		serverLocal.setAction(serverLocal.new Action(handlerName, actionName, indexName, System.currentTimeMillis()));
+		serverLocal.getActions().add(serverLocal.new Action(handlerName, actionName, indexName, System.currentTimeMillis()));
 		serverLocal.setAddress(InetAddress.getLocalHost().getHostName());
 		serverLocal.setId(HashUtilities.hash(serverLocal.getAddress()));
 		serverLocal.setWorking(Boolean.FALSE);
 
 		serverRemote = new Server();
-		serverRemote.setAction(serverRemote.new Action(handlerName, actionName, indexName, System.currentTimeMillis()));
+		serverRemote.getActions().add(serverRemote.new Action(handlerName, actionName, indexName, System.currentTimeMillis()));
 		serverRemote.setAddress(InetAddress.getLocalHost().getHostName() + "serverRemote");
 		serverRemote.setId(HashUtilities.hash(serverRemote.getAddress()));
 		serverRemote.setWorking(Boolean.FALSE);
@@ -158,18 +158,32 @@ public class ClusterManagerTest extends BaseTest {
 	@Test
 	public void setWorking() {
 		// String, String, String, boolean
-		Server cacheServer = clusterManager.getServer();
-		assertFalse(cacheServer.isWorking());
+		List<Thread> threads = new ArrayList<Thread>();
+		// Set a remote server working
+		final long startWorkingTime = System.currentTimeMillis();
+		Server remote = new Server();
+		remote.setAddress("remote");
+		remote.setWorking(Boolean.TRUE);
+		remote.getActions().add(remote.new Action(handlerName, actionName, indexName, startWorkingTime));
+		remote.setId(HashUtilities.hash(remote.getAddress()));
+		clusterManager.set(Server.class, remote.getId(), remote);
 
-		long lastWorkingTime = clusterManager.setWorking(indexName, actionName, handlerName, Boolean.FALSE);
+		int threadSize = 1;
+		for (int i = 0; i < threadSize; i++) {
+			Thread thread = new Thread(new Runnable() {
+				public void run() {
+					for (int i = 0; i < 100; i++) {
+						long lastWorkingTime = clusterManager.setWorking(indexName, actionName, handlerName, Boolean.TRUE);
+						logger.info("Last working time : " + lastWorkingTime + ", " + startWorkingTime);
+						assertEquals(startWorkingTime, lastWorkingTime);
+					}
+				}
+			}, "ClusterManagerTestThread : " + i);
+			threads.add(thread);
+			thread.start();
+		}
 
-		cacheServer = clusterManager.getServer();
-		assertFalse(cacheServer.isWorking());
-
-		lastWorkingTime = clusterManager.setWorking(indexName, actionName, handlerName, Boolean.TRUE);
-
-		cacheServer = clusterManager.getServer();
-		assertTrue(cacheServer.isWorking());
+		ThreadUtilities.waitForThreads(threads);
 	}
 
 	@Test
@@ -188,6 +202,13 @@ public class ClusterManagerTest extends BaseTest {
 
 		size = clusterManager.size(Url.class);
 		assertEquals(iterations, size);
+	}
+
+	public static void main(String[] args) throws Exception {
+		ClusterManagerTest clusterManagerTest = new ClusterManagerTest();
+		clusterManagerTest.before();
+		clusterManagerTest.setWorking();
+		clusterManagerTest.after();
 	}
 
 }

@@ -10,6 +10,7 @@ import ikube.model.IndexableColumn;
 import ikube.model.IndexableTable;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.DatabaseUtilities;
+import ikube.toolkit.ThreadUtilities;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -150,7 +151,7 @@ public class IndexableTableHandlerTest extends BaseTest {
 		// IndexContext, IndexableTable, Connection, Document
 		indexContext.setIndexWriter(indexWriter);
 		List<Thread> threads = indexableTableHandler.handle(indexContext, faqIndexableTable);
-		waitForThreads(threads);
+		ThreadUtilities.waitForThreads(threads);
 		// We just need to succeed, the integration tests test the
 		// data that is indexed and validates it
 	}

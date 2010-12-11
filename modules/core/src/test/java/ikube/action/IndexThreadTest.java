@@ -1,6 +1,7 @@
 package ikube.action;
 
 import ikube.ATest;
+import ikube.toolkit.ThreadUtilities;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,8 +14,6 @@ import org.junit.Test;
  * @version 01.00
  */
 public class IndexThreadTest extends ATest {
-
-	private Index index = new Index();
 
 	@Test
 	public void waitForThreads() {
@@ -33,7 +32,7 @@ public class IndexThreadTest extends ATest {
 			thread.start();
 			threads.add(thread);
 		}
-		index.waitForThreads(threads);
+		ThreadUtilities.waitForThreads(threads);
 	}
 
 }
