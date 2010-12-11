@@ -198,7 +198,7 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 	/**
 	 * Returns a connection to the mail server given a Mail visitable
 	 * 
-	 * @param mailVisitable
+	 * @param indexableMail
 	 *            The {@link IndexableEmail} indexable object
 	 * @return The {@link Store} object that holds a connection to the mail server.
 	 * @throws NoSuchProviderException

@@ -17,7 +17,7 @@ import org.junit.Test;
  */
 public class ActionTest extends BaseActionTest {
 
-	private Action<IndexContext, Boolean> action = new Action<IndexContext, Boolean>() {
+	private Action action = new Action() {
 		@Override
 		public Boolean execute(IndexContext e) {
 			return null;

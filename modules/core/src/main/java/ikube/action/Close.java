@@ -16,7 +16,7 @@ import org.apache.lucene.store.Directory;
  * @since 24.08.08
  * @version 01.00
  */
-public class Close extends Action<IndexContext, Boolean> {
+public class Close extends Action {
 
 	@Override
 	public Boolean execute(IndexContext indexContext) {

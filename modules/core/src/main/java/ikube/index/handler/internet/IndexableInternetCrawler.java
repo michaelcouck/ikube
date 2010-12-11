@@ -11,6 +11,7 @@ import ikube.index.parse.ParserProvider;
 import ikube.index.parse.mime.MimeType;
 import ikube.index.parse.mime.MimeTypes;
 import ikube.index.parse.xml.XMLParser;
+import ikube.logging.Logging;
 import ikube.model.IndexContext;
 import ikube.model.IndexableInternet;
 import ikube.model.Url;
@@ -201,7 +202,7 @@ public class IndexableInternetCrawler implements Runnable {
 			IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
 			Url duplicate = clusterManager.get(Url.class, "hash = " + hash);
 			if (duplicate != null) {
-				logger.debug("Found duplicate data : " + duplicate + ", url : " + url);
+				logger.debug(Logging.getString("Found duplicate data : ", duplicate, ", url : ", url));
 				return;
 			}
 

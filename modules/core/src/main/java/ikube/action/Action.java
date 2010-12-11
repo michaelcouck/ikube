@@ -22,7 +22,7 @@ import org.apache.lucene.store.FSDirectory;
  * @since 21.11.10
  * @version 01.00
  */
-public abstract class Action<E, F> implements IAction<E, F> {
+public abstract class Action implements IAction<IndexContext, Boolean> {
 
 	protected Logger logger = Logger.getLogger(this.getClass());
 	private IClusterManager clusterManager;
@@ -139,11 +139,9 @@ public abstract class Action<E, F> implements IAction<E, F> {
 				return Boolean.TRUE;
 			} else {
 				logger.info("Non existant or locked directory found, will not open on this one yet : " + directory);
-				// return Boolean.FALSE;
 			}
 		} catch (Exception e) {
 			logger.error("Exception checking the directories : ", e);
-			return Boolean.FALSE;
 		} finally {
 			try {
 				directory.close();

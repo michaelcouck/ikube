@@ -9,7 +9,7 @@ import ikube.model.Url;
  * @since 31.10.10
  * @version 01.00
  */
-public class Reset extends Action<IndexContext, Boolean> {
+public class Reset extends Action {
 
 	@Override
 	public Boolean execute(IndexContext indexContext) {

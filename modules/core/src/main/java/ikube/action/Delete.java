@@ -18,7 +18,7 @@ import org.apache.lucene.store.FSDirectory;
  * @since 31.10.10
  * @version 01.00
  */
-public class Delete extends Action<IndexContext, Boolean> {
+public class Delete extends Action {
 
 	@Override
 	public Boolean execute(IndexContext indexContext) {

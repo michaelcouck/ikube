@@ -41,7 +41,6 @@ public class SearcherWebService implements ISearcherWebService {
 		ListenerManager.addListener(new IListener() {
 			@Override
 			public void handleNotification(Event event) {
-				// logger.info("Notified : " + event);
 				if (event.getType().equals(Event.SEARCHER_OPENED)) {
 					IndexContext indexContext = event.getIndexContext();
 					setMultiSearcher(indexContext);
@@ -68,14 +67,12 @@ public class SearcherWebService implements ISearcherWebService {
 				results.add(notification);
 				return SerializationUtilities.serialize(results);
 			}
-			// logger.info("Index name : " + indexName + ", " + searchString + ", " + searchField + ", " + start + ", " + end);
 			searchSingle.setFirstResult(start);
 			searchSingle.setFragment(fragment);
 			searchSingle.setMaxResults(end);
 			searchSingle.setSearchField(searchField);
 			searchSingle.setSearchString(searchString);
 			List<Map<String, String>> results = searchSingle.execute();
-			// logger.info("Results : " + results);
 			return SerializationUtilities.serialize(results);
 		} catch (Exception e) {
 			logger.error("Exception doing search on index : " + indexName + ", " + searchString + ", " + searchField + ", " + fragment
@@ -95,20 +92,17 @@ public class SearcherWebService implements ISearcherWebService {
 				results.add(notification);
 				return SerializationUtilities.serialize(results);
 			}
-			// logger.info("Index name : " + indexName + ", " + Arrays.asList(searchStrings) + ", " + Arrays.asList(searchFields) + ", " +
-			// start
-			// + ", " + end);
 			searchMulti.setFirstResult(start);
 			searchMulti.setFragment(fragment);
 			searchMulti.setMaxResults(end);
 			searchMulti.setSearchField(searchFields);
 			searchMulti.setSearchString(searchStrings);
 			List<Map<String, String>> results = searchMulti.execute();
-			// logger.info("Results : " + results);
 			return SerializationUtilities.serialize(results);
 		} catch (Exception e) {
-			logger.error("Exception doing search on index : " + indexName + ", " + Arrays.asList(searchStrings) + ", "
-					+ Arrays.asList(searchFields) + ", " + fragment + ", " + start + ", " + end, e);
+			logger.error(
+					"Exception doing search on index : " + indexName + ", " + Arrays.asList(searchStrings) + ", "
+							+ Arrays.asList(searchFields) + ", " + fragment + ", " + start + ", " + end, e);
 		}
 		return "Exception thrown during search.";
 	}
