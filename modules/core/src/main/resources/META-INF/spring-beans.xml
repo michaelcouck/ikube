@@ -73,7 +73,8 @@
 			<bean
 				id="ikube.cluster.cache.Cache"
 				class="ikube.cluster.cache.Cache"
-				lazy-init="true" />
+				lazy-init="true"
+				init-method="initialise" />
 		</property>
 	</bean>
 	
