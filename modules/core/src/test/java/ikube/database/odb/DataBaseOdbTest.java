@@ -1,6 +1,7 @@
 package ikube.database.odb;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -10,6 +11,7 @@ import ikube.logging.Logging;
 import ikube.model.Indexable;
 import ikube.model.IndexableColumn;
 import ikube.model.Url;
+import ikube.toolkit.DatabaseUtilities;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.PerformanceTester;
 import ikube.toolkit.ThreadUtilities;
@@ -54,7 +56,7 @@ public class DataBaseOdbTest extends ATest {
 	@Test
 	public void getIdField() {
 		// Class<?>
-		Field field = dataBase.getIdField(IndexableColumn.class, null);
+		Field field = DatabaseUtilities.getIdField(IndexableColumn.class, null);
 		assertNotNull(field);
 		assertEquals("id", field.getName());
 	}
@@ -62,7 +64,7 @@ public class DataBaseOdbTest extends ATest {
 	@Test
 	public void getIdFieldName() {
 		// Class<?>
-		String fieldName = dataBase.getIdFieldName(IndexableColumn.class);
+		String fieldName = DatabaseUtilities.getIdFieldName(IndexableColumn.class);
 		assertNotNull(fieldName);
 		assertEquals("id", fieldName);
 	}
@@ -73,7 +75,7 @@ public class DataBaseOdbTest extends ATest {
 		Long id = System.currentTimeMillis();
 		Url token = new Url();
 		token.setId(id);
-		Object idFieldValue = dataBase.getIdFieldValue(token);
+		Object idFieldValue = DatabaseUtilities.getIdFieldValue(token);
 		assertNotNull(idFieldValue);
 		assertEquals(id, idFieldValue);
 	}
@@ -82,7 +84,7 @@ public class DataBaseOdbTest extends ATest {
 	public void setIdField() {
 		// T, long
 		Indexable<IndexableColumn> indexable = new IndexableColumn();
-		dataBase.setIdField(indexable, Long.MAX_VALUE);
+		DatabaseUtilities.setIdField(indexable, Long.MAX_VALUE);
 		assertEquals(Long.MAX_VALUE, indexable.getId());
 	}
 
@@ -100,6 +102,44 @@ public class DataBaseOdbTest extends ATest {
 		dataBase.remove(indexable);
 		found = dataBase.find(indexable.getClass(), parameters, Boolean.TRUE);
 		assertNull(found);
+	}
+
+	@Test
+	public void findLong() {
+		Url url = new Url();
+		url.setId(System.nanoTime());
+		dataBase.persist(url);
+
+		Object dataBaseObject = dataBase.find(url.getId());
+		assertNotNull(dataBaseObject);
+	}
+
+	@Test
+	public void findClassLong() {
+		// Class<T>, Long
+		Url url = new Url();
+		url.setId(System.nanoTime());
+		dataBase.persist(url);
+
+		Url dataBaseUrl = dataBase.find(Url.class, url.getId());
+		assertNotNull(dataBaseUrl);
+
+		dataBase.remove(url);
+	}
+
+	@Test
+	public void removeClassLong() {
+		// Class<T>, Long
+		Url url = new Url();
+		url.setId(System.nanoTime());
+		dataBase.persist(url);
+		Url dataBaseUrl = dataBase.find(Url.class, url.getId());
+		assertNotNull(dataBaseUrl);
+
+		dataBase.remove(Url.class, url.getId());
+
+		dataBaseUrl = dataBase.find(Url.class, url.getId());
+		assertNull(dataBaseUrl);
 	}
 
 	@Test
@@ -163,18 +203,21 @@ public class DataBaseOdbTest extends ATest {
 
 		int first = 0;
 		int max = 10;
-		List<Url> tokens = dataBase.find(Url.class, first, max);
-		assertEquals(max, tokens.size());
+		List<Url> firstResults = dataBase.find(Url.class, first, max);
+		assertEquals(max, firstResults.size());
 
 		first = 10;
 		max = 50;
-		tokens = dataBase.find(Url.class, first, max);
-		assertEquals(max, tokens.size());
+		List<Url> secondResults = dataBase.find(Url.class, first, max);
+		assertEquals(max - first, secondResults.size());
 
 		first = 90;
 		max = 100;
-		tokens = dataBase.find(Url.class, first, max);
-		assertEquals(10, tokens.size());
+		List<Url> thirdResults = dataBase.find(Url.class, first, max);
+		assertEquals(max - first, thirdResults.size());
+
+		assertFalse(firstResults.removeAll(secondResults));
+		assertFalse(secondResults.removeAll(thirdResults));
 	}
 
 	@Test
@@ -182,7 +225,7 @@ public class DataBaseOdbTest extends ATest {
 		String urlString = "localhost";
 		for (int i = 0; i < 100; i++) {
 			Url url = new Url();
-			url.setId(i);
+			url.setId(System.nanoTime());
 			url.setUrl(urlString);
 			dataBase.persist(url);
 		}
@@ -191,18 +234,21 @@ public class DataBaseOdbTest extends ATest {
 		parameters.put(IConstants.URL, urlString);
 		int first = 0;
 		int max = 10;
-		List<Url> tokens = dataBase.find(Url.class, parameters, first, max);
-		assertEquals(max, tokens.size());
+		List<Url> firstResults = dataBase.find(Url.class, parameters, first, max);
+		assertEquals(max, firstResults.size());
 
 		first = 10;
 		max = 50;
-		tokens = dataBase.find(Url.class, parameters, first, max);
-		assertEquals(max, tokens.size());
+		List<Url> secondResults = dataBase.find(Url.class, parameters, first, max);
+		assertEquals(max - first, secondResults.size());
 
 		first = 90;
 		max = 100;
-		tokens = dataBase.find(Url.class, parameters, first, max);
-		assertEquals(10, tokens.size());
+		List<Url> thirdResults = dataBase.find(Url.class, parameters, first, max);
+		assertEquals(max - first, thirdResults.size());
+
+		assertFalse(firstResults.removeAll(secondResults));
+		assertFalse(secondResults.removeAll(thirdResults));
 	}
 
 	@Test
@@ -282,6 +328,7 @@ public class DataBaseOdbTest extends ATest {
 			Thread thread = new Thread(new Runnable() {
 				public void run() {
 					String localhost = null;
+					long id = 0;
 					for (int i = 0; i < iterations; i++) {
 						double random = Math.random();
 						if (random < 0.25) {
@@ -289,12 +336,14 @@ public class DataBaseOdbTest extends ATest {
 							Url token = new Url();
 							localhost = "localhost." + System.nanoTime();
 							token.setUrl(localhost);
+							id = System.nanoTime();
+							token.setId(id);
 							log("Persisting : ", i, token);
 							dataBase.persist(token);
 						} else if (random >= 0.25 && random < 0.5) {
 							// Find
 							Map<String, Object> parameters = new HashMap<String, Object>();
-							parameters.put(IConstants.URL, localhost);
+							parameters.put(IConstants.ID, id);
 							log("Finding : ", i, null);
 							dataBase.find(Url.class, parameters, Boolean.FALSE);
 						} else if (random >= 5 && random < 0.75) {

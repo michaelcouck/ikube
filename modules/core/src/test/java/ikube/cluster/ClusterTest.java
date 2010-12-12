@@ -1,7 +1,7 @@
 package ikube.cluster;
 
+import ikube.ATest;
 import ikube.IConstants;
-import ikube.logging.Logging;
 import ikube.model.IndexContext;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
@@ -23,11 +23,7 @@ import org.junit.Test;
  * @since 21.11.10
  * @version 01.00
  */
-public class ClusterTest {
-
-	static {
-		Logging.configure();
-	}
+public class ClusterTest extends ATest {
 
 	public static long SLEEP = 1000 * 60 * 60 * 5;
 	private static Logger LOGGER = Logger.getLogger(ClusterTest.class);

@@ -116,11 +116,10 @@ public class ClusterManagerTest extends BaseTest {
 	@Test
 	public void getIdNumber() {
 		// String, long
-		long idNumber = clusterManager.getIdNumber(indexName, batchSize);
-		assertEquals(0, idNumber);
+		long startIdNumber = clusterManager.getIdNumber(indexName, batchSize);
 
-		idNumber = clusterManager.getIdNumber(indexName, batchSize);
-		assertEquals(batchSize, idNumber);
+		long idNumber = clusterManager.getIdNumber(indexName, batchSize);
+		assertEquals(startIdNumber + batchSize, idNumber);
 	}
 
 	@Test

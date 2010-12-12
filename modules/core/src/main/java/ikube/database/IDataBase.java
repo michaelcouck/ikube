@@ -22,6 +22,16 @@ public interface IDataBase {
 	public <T> T remove(T t);
 
 	/**
+	 * 
+	 * 
+	 * @param <T>
+	 * @param klass
+	 * @param id
+	 * @return
+	 */
+	public <T> T remove(Class<T> klass, Long id);
+
+	/**
 	 * Persists an object in the database.
 	 * 
 	 * @param object
@@ -39,6 +49,19 @@ public interface IDataBase {
 	 * @return the refreshed object from the database, typically this will be exactly the same as the object to be merged
 	 */
 	public <T> T merge(T object);
+
+	/**
+	 * Finds an object by the if field only. This method will be very expensive as each object in the database is iterated through and the
+	 * id field found by reflection and compared to the parameter. Also only the first object will be returned. This method assumes that
+	 * every object in the database has a database scope unique id.
+	 * 
+	 * @param <T>
+	 *            the type of object to find
+	 * @param id
+	 *            the id of the object
+	 * @return the first object with the or or null if no such object can be found
+	 */
+	public <T> T find(Long id);
 
 	/**
 	 * Access the object of a particular class with the id.
@@ -76,13 +99,13 @@ public interface IDataBase {
 	 * 
 	 * @param klass
 	 *            the class of object to select
-	 * @param firstResult
+	 * @param startIndex
 	 *            the first result in the result set, used for paging
-	 * @param maxResults
-	 *            the maximum results to return in the list
+	 * @param endIndex
+	 *            the last object in the results, i.e. the index of the last result
 	 * @return the list of objects from the database specified by the class type
 	 */
-	public <T> List<T> find(Class<T> klass, int firstResult, int maxResults);
+	public <T> List<T> find(Class<T> klass, int startIndex, int endIndex);
 
 	/**
 	 * Finds a list of objects in the database that conform to the parameters specified in the method signature. The results are also
@@ -98,12 +121,12 @@ public interface IDataBase {
 	 *            the name of the query. Note that these queries are in the persistent classes them selves
 	 * @param parameters
 	 *            the narrowing parameters for the select
-	 * @param firstResult
+	 * @param startIndex
 	 *            the index of the first result in the result set
-	 * @param maxResults
-	 *            the maximum results to return
+	 * @param endIndex
+	 *            the last object in the results, i.e. the index of the last result
 	 * @return <T> the list of objects that conform to the narrowing parameters
 	 */
-	public <T> List<T> find(Class<T> klass, Map<String, Object> parameters, int firstResult, int maxResults);
+	public <T> List<T> find(Class<T> klass, Map<String, Object> parameters, int startIndex, int endIndex);
 
 }

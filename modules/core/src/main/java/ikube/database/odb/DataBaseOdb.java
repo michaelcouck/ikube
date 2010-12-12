@@ -2,14 +2,14 @@ package ikube.database.odb;
 
 import ikube.IConstants;
 import ikube.database.IDataBase;
+import ikube.model.Persistable;
+import ikube.toolkit.DatabaseUtilities;
 
-import java.lang.reflect.Field;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-
-import javax.persistence.Id;
 
 import org.apache.log4j.Logger;
 import org.neodatis.odb.ODB;
@@ -20,6 +20,7 @@ import org.neodatis.odb.OdbConfiguration;
 import org.neodatis.odb.core.query.IQuery;
 import org.neodatis.odb.core.query.criteria.And;
 import org.neodatis.odb.core.query.criteria.Where;
+import org.neodatis.odb.core.query.nq.NativeQuery;
 import org.neodatis.odb.impl.core.query.criteria.CriteriaQuery;
 import org.neodatis.tool.DLogger;
 
@@ -35,12 +36,10 @@ public class DataBaseOdb implements IDataBase {
 	private ODB odb;
 	private List<Index> indexes;
 
-	private Map<Class<?>, Field> idFields;
 	private boolean initialised = Boolean.FALSE;
 
 	public DataBaseOdb() {
 		this.logger = Logger.getLogger(this.getClass());
-		this.idFields = new HashMap<Class<?>, Field>();
 	}
 
 	public void initialise() {
@@ -108,14 +107,19 @@ public class DataBaseOdb implements IDataBase {
 	public synchronized <T> T persist(T object) {
 		try {
 			if (object != null) {
-				Object idFieldValue = getIdFieldValue(object);
+				Object idFieldValue = DatabaseUtilities.getIdFieldValue(object);
 				if (idFieldValue == null) {
-					setIdField(object, System.nanoTime());
+					DatabaseUtilities.setIdField(object, System.nanoTime());
+				}
+				// Check for duplicate keys
+				Object duplicate = find(object.getClass(), (Long) idFieldValue);
+				if (duplicate != null) {
+					throw new RuntimeException("Duplicate key for object : " + idFieldValue + ", " + object + ", " + object.getClass());
 				}
 				this.odb.store(object);
 			}
 		} catch (Exception e) {
-			logger.error("", e);
+			logger.error("Exception persisting object : " + object, e);
 		} finally {
 			this.odb.commit();
 			notifyAll();
@@ -130,12 +134,22 @@ public class DataBaseOdb implements IDataBase {
 				this.odb.deleteCascade(t);
 			}
 		} catch (Exception e) {
-			logger.error("", e);
+			logger.error("Exception removing object : " + t, e);
 		} finally {
 			this.odb.commit();
 			notifyAll();
 		}
 		return t;
+	}
+
+	public synchronized <T> T remove(Class<T> klass, Long id) {
+		try {
+			T t = find(klass, id);
+			this.odb.delete(t);
+			return t;
+		} finally {
+			notifyAll();
+		}
 	}
 
 	@Override
@@ -148,7 +162,7 @@ public class DataBaseOdb implements IDataBase {
 				}
 			}
 		} catch (Exception e) {
-			logger.error("", e);
+			logger.error("Exception merging object : " + t, e);
 		} finally {
 			this.odb.commit();
 			notifyAll();
@@ -156,18 +170,61 @@ public class DataBaseOdb implements IDataBase {
 		return t;
 	}
 
+	/**
+	 * Note: This method is EXPENSIVE! Use only in emergency.
+	 */
 	@Override
-	public <T> T find(Class<T> klass, Long id) {
-		String idFieldName = getIdFieldName(klass);
-		IQuery query = new CriteriaQuery(klass, Where.equal(idFieldName, id));
-		Objects<T> objects = this.odb.getObjects(query);
-		if (objects.size() > 1) {
-			throw new RuntimeException("Duplicate key : " + id + ", " + klass);
-		}
-		if (objects.size() == 1) {
+	public synchronized <T> T find(final Long id) {
+		try {
+			IQuery query = new NativeQuery() {
+				{
+					setPolymorphic(Boolean.TRUE);
+				}
+
+				@Override
+				public boolean match(Object object) {
+					if (!Persistable.class.isAssignableFrom(object.getClass())) {
+						return Boolean.FALSE;
+					}
+					Object idFieldValue = DatabaseUtilities.getIdFieldValue(object);
+					return id.equals(idFieldValue);
+				}
+
+				@Override
+				public Class<Object> getObjectType() {
+					return Object.class;
+				}
+			};
+
+			Objects<T> objects = this.odb.getObjects(query);
+			if (objects.size() == 0) {
+				return null;
+			}
+			if (objects.size() > 1) {
+				logger.info("More than one object returned from query : ");
+			}
 			return objects.getFirst();
+		} finally {
+			notifyAll();
 		}
-		return null;
+	}
+
+	@Override
+	public synchronized <T> T find(Class<T> klass, Long id) {
+		try {
+			String idFieldName = DatabaseUtilities.getIdFieldName(klass);
+			IQuery query = new CriteriaQuery(klass, Where.equal(idFieldName, id));
+			Objects<T> objects = this.odb.getObjects(query);
+			if (objects.size() > 1) {
+				throw new RuntimeException("Duplicate key : " + id + ", " + klass);
+			}
+			if (objects.size() == 1) {
+				return objects.getFirst();
+			}
+			return null;
+		} finally {
+			notifyAll();
+		}
 	}
 
 	@Override
@@ -184,43 +241,40 @@ public class DataBaseOdb implements IDataBase {
 			Objects<T> objects = odb.getObjects(query);
 			if (unique && objects.size() > 1) {
 				logger.warn("More than one objects returned from : " + klass + "," + parameters);
-				throw new RuntimeException("More than one object returned by unique query : " + klass + ", " + parameters);
+				throw new RuntimeException("More than one object returned by unique query : " + klass + ", " + parameters + ", " + unique);
 			}
 			if (objects.size() > 0) {
 				return objects.getFirst();
 			}
 		} catch (Exception e) {
-			logger.error("", e);
+			logger.error("Exception finding object : " + klass + ", " + parameters + ", " + unique, e);
 		} finally {
-			// this.odb.commit();
 			notifyAll();
 		}
 		return null;
 	}
 
 	@Override
-	public synchronized <T> List<T> find(Class<T> klass, int firstResult, int maxResults) {
+	public synchronized <T> List<T> find(Class<T> klass, int startIndex, int endIndex) {
 		List<T> list = new ArrayList<T>();
 		try {
 			IQuery query = new CriteriaQuery(klass);
-			Objects<T> objects = odb.getObjects(query);
-			for (int i = 0; i < firstResult && objects.hasNext(); i++) {
-				objects.next();
-			}
-			for (int i = 0; i < maxResults && objects.hasNext(); i++) {
-				list.add(objects.next());
-			}
+			Objects<T> objects = odb.getObjects(query, Boolean.TRUE, startIndex, endIndex);
+			// return getFirstMax(objects, startIndex, endIndex);
+			@SuppressWarnings("unchecked")
+			T[] array = (T[]) Array.newInstance(klass, objects.size());
+			System.arraycopy(objects.toArray(), 0, array, 0, array.length);
+			return Arrays.asList(array);
 		} catch (Exception e) {
-			logger.error("", e);
+			logger.error("Exception finding object : " + klass + ", " + startIndex + ", " + endIndex, e);
 		} finally {
-			// this.odb.commit();
 			notifyAll();
 		}
 		return list;
 	}
 
 	@Override
-	public synchronized <T> List<T> find(Class<T> klass, Map<String, Object> parameters, int firstResult, int maxResults) {
+	public synchronized <T> List<T> find(Class<T> klass, Map<String, Object> parameters, int startIndex, int endIndex) {
 		List<T> list = new ArrayList<T>();
 		try {
 			And criterion = new And();
@@ -229,21 +283,30 @@ public class DataBaseOdb implements IDataBase {
 				criterion.add(Where.equal(field, value));
 			}
 			IQuery query = new CriteriaQuery(klass, criterion);
-			Objects<T> objects = odb.getObjects(query);
-			if (objects.size() == 0) {
-				return list;
-			}
-			for (int i = 0; i < firstResult && objects.hasNext(); i++) {
-				objects.next();
-			}
-			for (int i = 0; i < maxResults && objects.hasNext(); i++) {
-				list.add(objects.next());
-			}
+			Objects<T> objects = odb.getObjects(query, Boolean.TRUE, startIndex, endIndex);
+			// return getFirstMax(objects, startIndex, endIndex);
+			@SuppressWarnings("unchecked")
+			T[] array = (T[]) Array.newInstance(klass, objects.size());
+			System.arraycopy(objects.toArray(), 0, array, 0, array.length);
+			return Arrays.asList(array);
 		} catch (Exception e) {
-			logger.error("", e);
+			logger.error("Exception finding objects : " + klass + ", " + parameters + ", " + startIndex + ", " + endIndex, e);
 		} finally {
-			// this.odb.commit();
 			notifyAll();
+		}
+		return list;
+	}
+
+	protected <T> List<T> getFirstMax(Objects<T> objects, int firstResult, int maxResults) {
+		List<T> list = new ArrayList<T>();
+		if (objects.size() == 0) {
+			return list;
+		}
+		for (int i = 0; i < firstResult && objects.hasNext(); i++) {
+			objects.next();
+		}
+		for (int i = 0; i < maxResults && objects.hasNext(); i++) {
+			list.add(objects.next());
 		}
 		return list;
 	}
@@ -257,70 +320,6 @@ public class DataBaseOdb implements IDataBase {
 		} finally {
 			notifyAll();
 		}
-	}
-
-	protected synchronized <T> void setIdField(T object, long id) {
-		if (object == null) {
-			return;
-		}
-		Field idField = getIdField(object.getClass(), null);
-		if (idField != null) {
-			try {
-				idField.set(object, id);
-			} catch (IllegalArgumentException e) {
-				logger.error("Can't set the id : " + id + ", in the field : " + idField + ", of object : " + object, e);
-			} catch (IllegalAccessException e) {
-				logger.error("Field not accessible : " + idField, e);
-			}
-		} else {
-			logger.warn("No id field defined for object : " + object);
-		}
-	}
-
-	protected synchronized Field getIdField(Class<?> klass, Class<?> superKlass) {
-		Field idField = idFields.get(klass);
-		if (idField != null) {
-			return idField;
-		}
-		Field[] fields = superKlass != null ? superKlass.getDeclaredFields() : klass.getDeclaredFields();
-		for (Field field : fields) {
-			Id idAnnotation = field.getAnnotation(Id.class);
-			if (idAnnotation != null) {
-				idFields.put(klass, field);
-				field.setAccessible(Boolean.TRUE);
-				return field;
-			}
-		}
-		// Try the super classes
-		Class<?> superClass = superKlass != null ? superKlass.getSuperclass() : klass.getSuperclass();
-		if (superClass != null && !Object.class.getName().equals(superClass.getName())) {
-			return getIdField(klass, superClass);
-		}
-		return null;
-	}
-
-	protected synchronized <T> Object getIdFieldValue(T object) {
-		if (object == null) {
-			return null;
-		}
-		Field idField = getIdField(object.getClass(), null);
-		if (idField != null) {
-			try {
-				return idField.get(object);
-			} catch (IllegalArgumentException e) {
-				logger.error("Can't get the id in the field : " + idField + ", of object : " + object, e);
-			} catch (IllegalAccessException e) {
-				logger.error("Field not accessible : " + idField, e);
-			}
-		} else {
-			logger.warn("No id field defined for object : " + object);
-		}
-		return null;
-	}
-
-	protected synchronized String getIdFieldName(Class<?> klass) {
-		Field field = getIdField(klass, null);
-		return field != null ? field.getName() : null;
 	}
 
 	public void setIndexes(List<Index> indexes) {

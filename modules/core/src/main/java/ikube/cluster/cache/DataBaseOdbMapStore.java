@@ -1,79 +1,112 @@
 package ikube.cluster.cache;
 
 import ikube.database.IDataBase;
-import ikube.model.Url;
+
 import ikube.toolkit.ApplicationContextManager;
+import ikube.toolkit.DatabaseUtilities;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+
+import org.apache.log4j.Logger;
 
 import com.hazelcast.core.MapStore;
 
-public class DataBaseOdbMapStore<T> implements MapStore<Long, T> {
+public class DataBaseOdbMapStore implements MapStore<Long, Object> {
 
+	private Logger logger = Logger.getLogger(this.getClass());
 	private IDataBase dataBase;
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public T load(Long key) {
-		return (T) getDataBase().find(Object.class, key);
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	public Map<Long, T> loadAll(Collection<Long> keys) {
-		List<Url> list = getDataBase().find(Url.class, 0, Integer.MAX_VALUE);
-		Map<Long, Url> map = new HashMap<Long, Url>();
-		for (Url url : list) {
-			map.put(url.getId(), url);
-		}
-		return (Map<Long, T>) map;
-	}
-
-	@Override
-	public void store(Long key, T value) {
-		Url url = getDataBase().find(Url.class, key);
-		if (url == null) {
-			getDataBase().persist(value);
+	public synchronized Object load(Long key) {
+		try {
+			return getDataBase().find(key);
+		} finally {
+			notifyAll();
 		}
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public void storeAll(Map<Long, T> map) {
-		for (Long key : map.keySet()) {
-			T url = (T) getDataBase().find(Object.class, key);
-			if (url == null) {
-				getDataBase().persist(map.get(key));
+	public synchronized Map<Long, Object> loadAll(Collection<Long> keys) {
+		try {
+			Map<Long, Object> map = new HashMap<Long, Object>();
+			for (Long key : keys) {
+				Object object = getDataBase().find(key);
+				Long id = (Long) DatabaseUtilities.getIdFieldValue(object);
+				map.put(id, object);
 			}
+			return map;
+		} finally {
+			notifyAll();
 		}
 	}
 
 	@Override
-	public void delete(Long key) {
-		Url url = getDataBase().find(Url.class, key);
-		if (url != null) {
-			getDataBase().remove(url);
-		}
-	}
-
-	@Override
-	public void deleteAll(Collection<Long> keys) {
-		for (Long key : keys) {
-			Url url = getDataBase().find(Url.class, key);
-			if (url != null) {
-				getDataBase().remove(url);
+	public synchronized void store(Long key, Object value) {
+		try {
+			Long id = (Long ) DatabaseUtilities.getIdFieldValue(value);
+			Object object = getDataBase().find(value.getClass(), id);
+			if (object == null) {
+				getDataBase().persist(value);
 			}
+		} finally {
+			notifyAll();
 		}
 	}
 
-	private IDataBase getDataBase() {
-		if (dataBase == null) {
-			dataBase = ApplicationContextManager.getBean(IDataBase.class);
+	@Override
+	public synchronized void storeAll(Map<Long, Object> map) {
+		try {
+			for (Long key : map.keySet()) {
+				Object object = map.get(key);
+				Object persistable = getDataBase().find(object.getClass(), key);
+				if (persistable == null) {
+					getDataBase().persist(map.get(key));
+				}
+			}
+		} finally {
+			notifyAll();
 		}
-		return dataBase;
+	}
+
+	@Override
+	public synchronized void delete(Long key) {
+		try {
+			Object object = getDataBase().find(key);
+			if (object != null) {
+				getDataBase().remove(object);
+			}
+		} finally {
+			notifyAll();
+		}
+	}
+
+	@Override
+	public synchronized void deleteAll(Collection<Long> keys) {
+		try {
+			for (Long key : keys) {
+				logger.debug("Key : " + key);
+				Object object = getDataBase().find(key);
+				logger.debug("Object : " + object);
+				if (object != null) {
+					getDataBase().remove(object);
+				}
+			}
+		} finally {
+			notifyAll();
+		}
+	}
+
+	private synchronized IDataBase getDataBase() {
+		try {
+			if (dataBase == null) {
+				dataBase = ApplicationContextManager.getBean(IDataBase.class);
+			}
+			return dataBase;
+		} finally {
+			notifyAll();
+		}
 	}
 
 }
