@@ -43,7 +43,7 @@ public class DataGenerator extends ATest {
 	private Map<String, byte[]> fileContents;
 
 	private int batch = 1000;
-	private int iterations = 10000 - (322);
+	private int iterations = 100000 - (10285);
 
 	@Before
 	public void before() throws Exception {

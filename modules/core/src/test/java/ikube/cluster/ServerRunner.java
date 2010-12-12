@@ -17,8 +17,8 @@ public class ServerRunner {
 		String serverAddress = args[0];
 		String configurationFile = args[1];
 		ApplicationContextManager.getApplicationContext(configurationFile);
-		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
-		clusterManager.getServer().setAddress(serverAddress);
+		ClusterManager clusterManager = ApplicationContextManager.getBean(ClusterManager.class);
+		clusterManager.setAddress(serverAddress);
 
 		// Delete all the old index directories
 		Map<String, IndexContext> contexts = ApplicationContextManager.getBeans(IndexContext.class);

@@ -150,13 +150,16 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 			} catch (Exception e) {
 				logger.error("", e);
 			}
+			// logger.info("Closing result set : " + resultSet);
 			DatabaseUtilities.close(resultSet);
+			// logger.info("Closing statement : " + statement);
 			DatabaseUtilities.close(statement);
 		}
 		// Once we finish all the results in the primary table
 		// then we can close the connection too
 		if (indexableTable.isPrimary()) {
-			DatabaseUtilities.close(connection);
+			DatabaseUtilities.closeAll(resultSet);
+			// DatabaseUtilities.close(connection);
 		}
 	}
 
@@ -179,9 +182,9 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 			setParameters(indexableTable, preparedStatement);
 			ResultSet resultSet = preparedStatement.executeQuery();
 			if (!resultSet.next()) {
+				DatabaseUtilities.close(resultSet);
+				DatabaseUtilities.close(preparedStatement);
 				if (indexableTable.isPrimary()) {
-					DatabaseUtilities.close(resultSet);
-					DatabaseUtilities.close(preparedStatement);
 					long maxId = getIdFunction(indexableTable, connection, "max");
 					if (nextIdNumber > maxId) {
 						return null;
@@ -277,7 +280,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 					}
 				}
 			}
-
+			// logger.info(Logging.getString("Sql : ", builder.toString(), ", thread : ", Thread.currentThread().hashCode()));
 			return builder.toString();
 		} finally {
 			notifyAll();
