@@ -58,13 +58,12 @@ public class PdfParser implements IParser {
 			// info.getCreator();info.getProducer();info.getTrapped();formatDate(info.getCreationDate())
 			// formatDate(info.getModificationDate());
 		} finally {
-			if (pdfDocument != null)
-				try {
-					pdfDocument.getDocument().close();
-					pdfDocument.close();
-				} catch (Exception t) {
-					LOGGER.error("Exception thrown closing pdf : " + inputStream, t);
-				}
+			try {
+				pdfDocument.getDocument().close();
+				pdfDocument.close();
+			} catch (Exception t) {
+				LOGGER.error("Exception thrown closing pdf : " + inputStream, t);
+			}
 		}
 		return outputStream;
 	}

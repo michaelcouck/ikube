@@ -22,7 +22,6 @@ import org.neodatis.odb.core.query.criteria.And;
 import org.neodatis.odb.core.query.criteria.Where;
 import org.neodatis.odb.core.query.nq.NativeQuery;
 import org.neodatis.odb.impl.core.query.criteria.CriteriaQuery;
-import org.neodatis.tool.DLogger;
 
 /**
  * @author Michael Couck
@@ -82,7 +81,7 @@ public class DataBaseOdb implements IDataBase {
 	}
 
 	protected void configureDataBase() {
-		DLogger.register(new ikube.database.odb.Logger());
+		// DLogger.register(new ikube.database.odb.Logger());
 		OdbConfiguration.setDebugEnabled(Boolean.FALSE);
 		OdbConfiguration.setDebugEnabled(5, Boolean.FALSE);
 		OdbConfiguration.setLogAll(Boolean.FALSE);
@@ -260,7 +259,6 @@ public class DataBaseOdb implements IDataBase {
 		try {
 			IQuery query = new CriteriaQuery(klass);
 			Objects<T> objects = odb.getObjects(query, Boolean.TRUE, startIndex, endIndex);
-			// return getFirstMax(objects, startIndex, endIndex);
 			@SuppressWarnings("unchecked")
 			T[] array = (T[]) Array.newInstance(klass, objects.size());
 			System.arraycopy(objects.toArray(), 0, array, 0, array.length);
@@ -284,7 +282,6 @@ public class DataBaseOdb implements IDataBase {
 			}
 			IQuery query = new CriteriaQuery(klass, criterion);
 			Objects<T> objects = odb.getObjects(query, Boolean.TRUE, startIndex, endIndex);
-			// return getFirstMax(objects, startIndex, endIndex);
 			@SuppressWarnings("unchecked")
 			T[] array = (T[]) Array.newInstance(klass, objects.size());
 			System.arraycopy(objects.toArray(), 0, array, 0, array.length);
@@ -293,20 +290,6 @@ public class DataBaseOdb implements IDataBase {
 			logger.error("Exception finding objects : " + klass + ", " + parameters + ", " + startIndex + ", " + endIndex, e);
 		} finally {
 			notifyAll();
-		}
-		return list;
-	}
-
-	protected <T> List<T> getFirstMax(Objects<T> objects, int firstResult, int maxResults) {
-		List<T> list = new ArrayList<T>();
-		if (objects.size() == 0) {
-			return list;
-		}
-		for (int i = 0; i < firstResult && objects.hasNext(); i++) {
-			objects.next();
-		}
-		for (int i = 0; i < maxResults && objects.hasNext(); i++) {
-			list.add(objects.next());
 		}
 		return list;
 	}

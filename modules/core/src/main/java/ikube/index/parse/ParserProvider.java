@@ -22,22 +22,20 @@ public class ParserProvider {
 	private static Map<String, IParser> PARSERS = new HashMap<String, IParser>();
 
 	public static IParser getParser(String mimeTypeString, byte[] bytes) {
-		MimeType mimeType = MimeTypes.getMimeTypeFromName(mimeTypeString);
-		if (mimeType == null) {
-			mimeType = MimeTypes.getMimeType(bytes);
-		}
-		// We go for the default and send it to the HTML parser which will do it's best to parse the data
-		if (mimeType == null) {
-			try {
-				mimeType = new MimeType("text/html");
-			} catch (Exception t) {
-				LOGGER.error("Exception creating mime type for text parser", t);
-			}
-		}
-		// Initialize the parser
-		String parserClass = MimeMapper.getParserClass(mimeType.getName());
+		MimeType mimeType = null;
+		String parserClass = null;
 		IParser parser = null;
 		try {
+			mimeType = MimeTypes.getMimeTypeFromName(mimeTypeString);
+			if (mimeType == null) {
+				mimeType = MimeTypes.getMimeType(bytes);
+			}
+			// We go for the default and send it to the HTML parser which will do it's best to parse the data
+			if (mimeType == null) {
+				mimeType = new MimeType("text/html");
+			}
+			// Initialize the parser
+			parserClass = MimeMapper.getParserClass(mimeType.getName());
 			parser = PARSERS.get(parserClass);
 			if (parser == null) {
 				if (parserClass == null) {
@@ -47,11 +45,12 @@ public class ParserProvider {
 				parser = (IParser) Class.forName(parserClass).newInstance();
 				PARSERS.put(parserClass, parser);
 			}
+			return parser;
 		} catch (Exception t) {
 			LOGGER.error("Exception instanciating parser " + parserClass + " does a parser exist for the mime type " + mimeType
 					+ " and name " + mimeTypeString + "?", t);
 		}
-		return parser;
+		return null;
 	}
 
 }

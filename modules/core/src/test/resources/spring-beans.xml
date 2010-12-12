@@ -141,7 +141,7 @@
 	</util:list>
 
 	<bean
-		class="ikube.listener.Scheduler">
-		<constructor-arg ref="scheduled.tasks" />
-	</bean>
+		class="ikube.listener.Scheduler"
+		init-method="initialize"
+		property:schedules-ref="scheduled.tasks" />
 </beans>

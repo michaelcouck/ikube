@@ -125,9 +125,9 @@
 		property:start="0" />
 
 	<bean
-		class="ikube.listener.Scheduler">
-		<constructor-arg ref="scheduled.tasks" />
-	</bean>
+		class="ikube.listener.Scheduler"
+		init-method="initialize"
+		property:schedules-ref="scheduled.tasks" />
 	<util:list id="scheduled.tasks">
 		<ref local="ikube.listener.Schedule" />
 		<!--<ref local="ikube.listener.Schedule.WebService" />-->

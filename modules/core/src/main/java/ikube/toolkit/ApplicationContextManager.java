@@ -23,12 +23,8 @@ public class ApplicationContextManager {
 	private static ApplicationContext APPLICATION_CONTEXT;
 
 	static {
-		try {
-			Logging.configure();
-			LOGGER = Logger.getLogger(ApplicationContextManager.class);
-		} catch (Exception e) {
-			LOGGER.error("Exception starting the logging and Bitronix configuration", e);
-		}
+		Logging.configure();
+		LOGGER = Logger.getLogger(ApplicationContextManager.class);
 	}
 
 	/**
@@ -39,11 +35,7 @@ public class ApplicationContextManager {
 	public static synchronized ApplicationContext getApplicationContext() {
 		try {
 			if (APPLICATION_CONTEXT == null) {
-				try {
-					APPLICATION_CONTEXT = getApplicationContext(IConstants.SPRING_CONFIGURATION_FILE);
-				} catch (Exception e) {
-					LOGGER.error("Exception initilizing the application context for Spring", e);
-				}
+				APPLICATION_CONTEXT = getApplicationContext(IConstants.SPRING_CONFIGURATION_FILE);
 			}
 			return APPLICATION_CONTEXT;
 		} finally {

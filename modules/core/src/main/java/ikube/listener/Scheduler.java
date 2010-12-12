@@ -18,10 +18,12 @@ import org.apache.log4j.Logger;
 public class Scheduler {
 
 	private Logger logger;
-	private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(10);
+	private ScheduledExecutorService scheduler;
+	private List<Schedule> schedules;
 
-	public Scheduler(List<Schedule> schedules) {
+	protected void initialize() {
 		this.logger = Logger.getLogger(this.getClass());
+		scheduler = Executors.newScheduledThreadPool(10);
 		for (final Schedule schedule : schedules) {
 			try {
 				scheduler.scheduleAtFixedRate(new Runnable() {
@@ -37,6 +39,10 @@ public class Scheduler {
 				logger.error("", e);
 			}
 		}
+	}
+
+	public void setSchedules(List<Schedule> schedules) {
+		this.schedules = schedules;
 	}
 
 }
