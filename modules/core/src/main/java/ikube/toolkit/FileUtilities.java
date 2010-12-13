@@ -337,5 +337,15 @@ public class FileUtilities {
 			}
 		}
 	}
+	
+	public static void main(String[] args) {
+		File file = new File("I:/index/example.txt");
+		String content = FileUtilities.getContents(file).toString();
+		System.out.println("Content : " + content);
+		
+		file = new File("//ikube/d/index/example.txt");
+		content = FileUtilities.getContents(file).toString();
+		System.out.println("Content : " + content);
+	}
 
 }
