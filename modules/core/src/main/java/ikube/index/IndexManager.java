@@ -40,13 +40,13 @@ public class IndexManager {
 		try {
 			StringBuilder builder = new StringBuilder();
 
-			builder.append(indexContext.getIndexDirectoryPath());
+			builder.append(indexContext.getIndexDirectoryPath()); // Path
 			builder.append(File.separator);
-			builder.append(time);
+			builder.append(indexContext.getName()); // Index name
 			builder.append(File.separator);
-			builder.append(ip);
+			builder.append(time); // Time
 			builder.append(File.separator);
-			builder.append(indexContext.getName());
+			builder.append(ip); // Ip
 
 			File indexDirectory = FileUtilities.getFile(builder.toString(), Boolean.TRUE);
 			LOGGER.info(Logging.getString("Index directory time : ", time, ", date : ", new Date(time), ", writing index to directory ",

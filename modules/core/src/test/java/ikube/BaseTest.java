@@ -20,24 +20,24 @@ public abstract class BaseTest extends ATest {
 	private static String SPRING_CONFIGURATION_FILE = "/spring.xml";
 
 	static {
+		ClusterTest.SLEEP = 1000;
+
+		// Delete the database file
+		FileUtilities.deleteFiles(new File("."), IConstants.DATABASE_FILE, ".transaction", ".odb");
+		ApplicationContextManager.getApplicationContext(SPRING_CONFIGURATION_FILE);
+		// Delete all the old index directories
+		Map<String, IndexContext> contexts = ApplicationContextManager.getBeans(IndexContext.class);
+		for (IndexContext indexContext : contexts.values()) {
+			File baseIndexDirectory = FileUtilities.getFile(indexContext.getIndexDirectoryPath(), Boolean.TRUE);
+			FileUtilities.deleteFile(baseIndexDirectory, 1);
+		}
+
+		DataLoader dataLoader = new DataLoader();
+		File sqlFile = FileUtilities.findFile(new File("."), new String[] { "tables.sql" });
+		dataLoader.createTables(sqlFile.getAbsolutePath());
+
+		DataGeneratorTwo dataGenerator = new DataGeneratorTwo(1, 1);
 		try {
-			ClusterTest.SLEEP = 1000;
-
-			// Delete the database file
-			FileUtilities.deleteFiles(new File("."), IConstants.DATABASE_FILE, ".transaction", ".odb");
-			ApplicationContextManager.getApplicationContext(SPRING_CONFIGURATION_FILE);
-			// Delete all the old index directories
-			Map<String, IndexContext> contexts = ApplicationContextManager.getBeans(IndexContext.class);
-			for (IndexContext indexContext : contexts.values()) {
-				File baseIndexDirectory = FileUtilities.getFile(indexContext.getIndexDirectoryPath(), Boolean.TRUE);
-				FileUtilities.deleteFile(baseIndexDirectory, 1);
-			}
-
-			DataLoader dataLoader = new DataLoader();
-			File sqlFile = FileUtilities.findFile(new File("."), new String[] { "tables.sql" });
-			dataLoader.createTables(sqlFile.getAbsolutePath());
-
-			DataGeneratorTwo dataGenerator = new DataGeneratorTwo(1, 1);
 			dataGenerator.generate(SPRING_CONFIGURATION_FILE);
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -34,23 +34,37 @@ public class Reporter implements IListener {
 				// Get the index contexts
 				Map<String, IndexContext> indexContexts = ApplicationContextManager.getBeans(IndexContext.class);
 				IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
+				Set<Server> servers = clusterManager.getServers();
+				list.add(servers);
 				for (IndexContext indexContext : indexContexts.values()) {
-					// Get the servers
-					Set<Server> servers = clusterManager.getServers();
-					list.add(servers);
 					// Get the index files
-					File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
-					list.add(latestIndexDirectory.getAbsolutePath());
-					File[] serverIndexDirectories = latestIndexDirectory.listFiles();
-					if (serverIndexDirectories != null && serverIndexDirectories.length > 0) {
-						for (File serverIndexDirectory : serverIndexDirectories) {
-							list.add(serverIndexDirectory.getAbsolutePath());
-							if (serverIndexDirectory != null) {
+					File baseIndexDirectory = FileUtilities.getFile(indexContext.getIndexDirectoryPath(), Boolean.TRUE);
+					list.add(baseIndexDirectory.getAbsolutePath());
+					File[] contextIndexDirectories = baseIndexDirectory.listFiles();
+					if (contextIndexDirectories == null) {
+						continue;
+					}
+					for (File contextIndexDirectory : contextIndexDirectories) {
+						if (contextIndexDirectory == null) {
+							continue;
+						}
+						list.add(contextIndexDirectory.getAbsolutePath());
+						File[] timeIndexDirectories = contextIndexDirectory.listFiles();
+						if (timeIndexDirectories == null) {
+							continue;
+						}
+						for (File timeIndexDirectory : timeIndexDirectories) {
+							File[] serverIndexDirectories = timeIndexDirectory.listFiles();
+							if (serverIndexDirectories == null) {
+								continue;
+							}
+							for (File serverIndexDirectory : serverIndexDirectories) {
 								File[] indexFiles = serverIndexDirectory.listFiles();
-								if (indexFiles != null) {
-									for (File indexFile : indexFiles) {
-										list.add(indexFile.getAbsolutePath());
-									}
+								if (indexFiles == null) {
+									continue;
+								}
+								for (File indexFile : indexFiles) {
+									list.add(indexFile.getAbsolutePath());
 								}
 							}
 						}

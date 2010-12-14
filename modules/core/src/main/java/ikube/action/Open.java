@@ -3,7 +3,6 @@ package ikube.action;
 import ikube.listener.ListenerManager;
 import ikube.model.Event;
 import ikube.model.IndexContext;
-import ikube.toolkit.FileUtilities;
 
 import java.io.File;
 import java.sql.Timestamp;
@@ -33,11 +32,6 @@ public class Open extends Action {
 			logger.debug("Index searcher still active, will not open : ");
 			return Boolean.FALSE;
 		}
-		File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
-		if (latestIndexDirectory == null) {
-			logger.debug("No index created for : " + indexContext.getIndexName());
-			return Boolean.FALSE;
-		}
 		// See if there are any index directories that are new and not included
 		// in the directories of the existing searchers
 		boolean shouldReopen = shouldReopen(indexContext);
@@ -45,14 +39,21 @@ public class Open extends Action {
 			logger.debug("Shouldn't open : ");
 			return Boolean.FALSE;
 		}
+		// path => index name => time => ip
 		ArrayList<Searchable> searchers = new ArrayList<Searchable>();
-		File[] serverIndexDirectories = latestIndexDirectory.listFiles();
-		if (serverIndexDirectories != null) {
-			for (File serverIndexDirectory : serverIndexDirectories) {
-				File[] contextIndexDirectories = serverIndexDirectory.listFiles();
-				for (File contextIndexDirectory : contextIndexDirectories) {
+
+		File baseIndexDirectory = new File(indexContext.getIndexDirectoryPath());
+		File[] contextIndexDirectories = baseIndexDirectory.listFiles();
+		if (contextIndexDirectories == null) {
+			return Boolean.FALSE;
+		}
+		for (File contextIndexDirectory : contextIndexDirectories) {
+			File[] timeIndexDirectories = contextIndexDirectory.listFiles();
+			for (File timeIndexDirectory : timeIndexDirectories) {
+				File[] serverIndexDirectories = timeIndexDirectory.listFiles();
+				for (File serverIndexDirectory : serverIndexDirectories) {
 					try {
-						FSDirectory directory = FSDirectory.open(contextIndexDirectory);
+						FSDirectory directory = FSDirectory.open(serverIndexDirectory);
 						boolean exists = IndexReader.indexExists(directory);
 						boolean locked = IndexWriter.isLocked(directory);
 						if (!exists || locked) {
@@ -68,13 +69,14 @@ public class Open extends Action {
 						IndexReader reader = IndexReader.open(directory, Boolean.TRUE);
 						Searchable searcher = new IndexSearcher(reader);
 						searchers.add(searcher);
-						logger.debug("Opened searcher on : " + contextIndexDirectory + ", exists : " + exists + ", locked : " + locked);
+						logger.debug("Opened searcher on : " + serverIndexDirectory + ", exists : " + exists + ", locked : " + locked);
 					} catch (Exception e) {
 						logger.error("Exception opening directory : " + contextIndexDirectory, e);
 					}
 				}
 			}
 		}
+
 		try {
 			if (searchers.size() > 0) {
 				Searchable[] searchables = searchers.toArray(new IndexSearcher[searchers.size()]);

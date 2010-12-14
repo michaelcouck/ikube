@@ -13,7 +13,7 @@ import org.apache.log4j.Logger;
 
 import com.hazelcast.core.MapStore;
 
-public class DataBaseOdbMapStore implements MapStore<Long, Object> {
+public class CacheMapStore implements MapStore<Long, Object> {
 
 	private Logger logger = Logger.getLogger(this.getClass());
 	private IDataBase dataBase;

@@ -25,7 +25,7 @@ public abstract class BaseActionTest extends BaseTest {
 
 	/**
 	 * Creates a real Lucene index in the directory specified.
-	 *
+	 * 
 	 * @param latestIndexDirectory
 	 * @param serverName
 	 * @return
@@ -35,18 +35,20 @@ public abstract class BaseActionTest extends BaseTest {
 		StringBuilder builder = new StringBuilder();
 		builder.append(latestIndexDirectory.getAbsolutePath());
 		builder.append(File.separator);
-		builder.append(ip);
-		builder.append(File.separator);
 		builder.append(contextName);
+		builder.append(File.separator);
+		builder.append(System.currentTimeMillis());
+		builder.append(File.separator);
+		builder.append(ip);
 		return createIndex(FileUtilities.getFile(builder.toString(), Boolean.TRUE));
 	}
 
-	protected File createIndex(File contextIndexDirectory) throws Exception {
-		logger.info("Creating Lucene index in : " + contextIndexDirectory);
+	protected File createIndex(File indexDirectory) throws Exception {
+		logger.info("Creating Lucene index in : " + indexDirectory);
 		Directory directory = null;
 		IndexWriter indexWriter = null;
 		try {
-			directory = FSDirectory.open(contextIndexDirectory);
+			directory = FSDirectory.open(indexDirectory);
 			indexWriter = new IndexWriter(directory, IConstants.ANALYZER, MaxFieldLength.UNLIMITED);
 			Document document = new Document();
 			document.add(new Field(IConstants.CONTENTS, "Michael Couck", Store.YES, Index.ANALYZED));
@@ -64,26 +66,26 @@ public abstract class BaseActionTest extends BaseTest {
 				}
 			}
 		}
-		return contextIndexDirectory;
+		return indexDirectory;
 	}
 
 	/**
 	 * Returns the path to the latest index directory for this server and this context. The result will be something like
-	 * './faq/1234567890/127.0.0.1/faqContext'.
-	 *
+	 * './index/faq/1234567890/127.0.0.1'.
+	 * 
 	 * @param indexContext
 	 *            the index context to get the directory path for
 	 * @return the directory path to the latest index directory for this servers and context
 	 */
-	protected String getContextIndexDirectoryPath(IndexContext indexContext) {
+	protected String getServerIndexDirectoryPath(IndexContext indexContext) {
 		StringBuilder builder = new StringBuilder();
 		builder.append(indexContext.getIndexDirectoryPath());
+		builder.append(File.separator);
+		builder.append(indexContext.getName());
 		builder.append(File.separator);
 		builder.append(System.currentTimeMillis());
 		builder.append(File.separator);
 		builder.append(ip);
-		builder.append(File.separator);
-		builder.append(indexContext.getName());
 		return builder.toString();
 	}
 

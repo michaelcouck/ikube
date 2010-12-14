@@ -23,17 +23,17 @@ public class CloseTest extends BaseActionTest {
 	public void execute() throws Exception {
 		indexContext.setMultiSearcher(multiSearcher);
 
-		File contextIndexDirectory = createIndex(new File(getContextIndexDirectoryPath(indexContext)));
+		String serverIndexDirectoryPath = getServerIndexDirectoryPath(indexContext);
+		File serverIndexDirectory = createIndex(new File(serverIndexDirectoryPath));
 		boolean closed = close.execute(indexContext);
 		assertTrue(closed);
 
-		File anotherContextIndexDirectory = createIndex(new File(getContextIndexDirectoryPath(indexContext).replace(indexContext.getName(),
-				"anotherContext")));
+		File anotherServerIndexDirectory = createIndex(new File(serverIndexDirectoryPath.replace(ip, "127.0.0.2")));
 		indexContext.setMultiSearcher(multiSearcher);
 		when(indexSearcher.getIndexReader()).thenReturn(indexReader);
 		when(indexReader.directory()).thenReturn(fsDirectory);
 		when(lock.isLocked()).thenReturn(Boolean.FALSE);
-		when(fsDirectory.getFile()).thenReturn(new File(contextIndexDirectory.getAbsolutePath()));
+		when(fsDirectory.getFile()).thenReturn(new File(serverIndexDirectoryPath));
 		when(fsDirectory.makeLock(anyString())).thenReturn(lock);
 		when(multiSearcher.getSearchables()).thenReturn(searchables);
 
@@ -46,10 +46,10 @@ public class CloseTest extends BaseActionTest {
 		closed = close.execute(indexContext);
 		assertTrue(closed);
 
-		FileUtilities.deleteFile(contextIndexDirectory, 1);
-		FileUtilities.deleteFile(anotherContextIndexDirectory, 1);
-		assertFalse(contextIndexDirectory.exists());
-		assertFalse(anotherContextIndexDirectory.exists());
+		FileUtilities.deleteFile(serverIndexDirectory, 1);
+		FileUtilities.deleteFile(anotherServerIndexDirectory, 1);
+		assertFalse(serverIndexDirectory.exists());
+		assertFalse(anotherServerIndexDirectory.exists());
 	}
 
 }

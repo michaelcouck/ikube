@@ -20,7 +20,7 @@ public class ActionTest extends BaseActionTest {
 	private Action action = new Action() {
 		@Override
 		public Boolean execute(IndexContext e) {
-			return null;
+			return Boolean.FALSE;
 		}
 	};
 
@@ -37,18 +37,20 @@ public class ActionTest extends BaseActionTest {
 		StringBuilder builder = new StringBuilder();
 		builder.append(indexContext.getIndexDirectoryPath());
 		builder.append(File.separator);
+		builder.append(indexContext.getName());
+		builder.append(File.separator);
 		builder.append(System.currentTimeMillis());
 		builder.append(File.separator);
-		builder.append(indexContext.getName());
+		builder.append(ip);
+		File serverIndexDirectory = FileUtilities.getFile(builder.toString(), Boolean.TRUE);
 
-		File contextIndexDirectory = FileUtilities.getFile(builder.toString(), Boolean.TRUE);
+		indexContext.setMaxAge(maxAge);
 
 		indexCurrent = action.isIndexCurrent(indexContext);
 		assertTrue(indexCurrent);
-		indexContext.setMaxAge(maxAge);
 
-		FileUtilities.deleteFile(contextIndexDirectory, 1);
-		assertFalse(contextIndexDirectory.exists());
+		FileUtilities.deleteFile(serverIndexDirectory, 1);
+		assertFalse(serverIndexDirectory.exists());
 	}
 
 	@Test
@@ -68,16 +70,16 @@ public class ActionTest extends BaseActionTest {
 		StringBuilder builder = new StringBuilder();
 		builder.append(indexContext.getIndexDirectoryPath());
 		builder.append(File.separator);
+		builder.append(indexContext.getName());
+		builder.append(File.separator);
 		builder.append(System.currentTimeMillis());
 		builder.append(File.separator);
 		builder.append(ip);
-		builder.append(File.separator);
-		builder.append(indexContext.getName());
-		File contextIndexDirectory = createIndex(new File(builder.toString()));
+		File serverIndexDirectory = createIndex(new File(builder.toString()));
 
 		when(indexSearcher.getIndexReader()).thenReturn(indexReader);
 		when(indexReader.directory()).thenReturn(fsDirectory);
-		when(fsDirectory.getFile()).thenReturn(new File(contextIndexDirectory.getAbsolutePath()));
+		when(fsDirectory.getFile()).thenReturn(new File(serverIndexDirectory.getAbsolutePath()));
 		when(multiSearcher.getSearchables()).thenReturn(searchables);
 
 		// All the directories are in the searcher
@@ -85,17 +87,17 @@ public class ActionTest extends BaseActionTest {
 		assertFalse(shouldReopen);
 
 		// Create a new server index directory
-		File anotherContextIndexDirectory = createIndex(new File(builder.toString().replace(indexContext.getName(), "anotherContextIndex")));
+		File anotherServerIndexDirectory = createIndex(new File(builder.toString().replace(ip, "127.0.0.2")));
 
 		shouldReopen = action.shouldReopen(indexContext);
 		assertTrue(shouldReopen);
 
 		indexContext.setMultiSearcher(null);
-		FileUtilities.deleteFile(contextIndexDirectory, 1);
-		FileUtilities.deleteFile(anotherContextIndexDirectory, 1);
+		FileUtilities.deleteFile(serverIndexDirectory, 1);
+		FileUtilities.deleteFile(anotherServerIndexDirectory, 1);
 
-		assertFalse(contextIndexDirectory.exists());
-		assertFalse(anotherContextIndexDirectory.exists());
+		assertFalse(serverIndexDirectory.exists());
+		assertFalse(anotherServerIndexDirectory.exists());
 	}
 
 }

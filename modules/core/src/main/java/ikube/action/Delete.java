@@ -5,13 +5,7 @@ import ikube.toolkit.FileUtilities;
 
 import java.io.File;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
-
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.FSDirectory;
 
 /**
  * @author Michael Couck
@@ -23,74 +17,56 @@ public class Delete extends Action {
 	@Override
 	public Boolean execute(IndexContext indexContext) {
 		File baseIndexDirectory = FileUtilities.getFile(indexContext.getIndexDirectoryPath(), Boolean.TRUE);
-		File[] timeIndexDirectories = baseIndexDirectory.listFiles();
-		if (timeIndexDirectories == null || timeIndexDirectories.length < 2) {
+		File[] contextIndexDirectories = baseIndexDirectory.listFiles();
+		if (contextIndexDirectories == null) {
 			return Boolean.FALSE;
 		}
-
-		List<File> timeIndexDirectoriesList = Arrays.asList(timeIndexDirectories);
-		Collections.sort(timeIndexDirectoriesList, new Comparator<File>() {
-			@Override
-			public int compare(File o1, File o2) {
-				return o1.getName().compareTo(o2.getName());
-			}
-		});
-
-		logger.debug("Index directories : " + timeIndexDirectoriesList);
-		// Check if the last directory has a lock
-		File latestIndexDirectory = timeIndexDirectoriesList.get(timeIndexDirectoriesList.size() - 1);
-		boolean lastIndexLocked = Boolean.FALSE;
-		try {
-			lastIndexLocked = isLocked(latestIndexDirectory);
-		} catch (Exception e) {
-			logger.error("Exception checking which directories to delete : ", e);
-		}
-
-		int indexDirectoriesListSize = timeIndexDirectoriesList.size();
-		int indexesToDelete = lastIndexLocked ? indexDirectoriesListSize - 2 : indexDirectoriesListSize - 1;
-		for (File indexDirectory : timeIndexDirectoriesList) {
-			logger.debug("Indexes to delete : " + indexesToDelete + ", " + indexDirectory);
-			if (--indexesToDelete < 0) {
-				break;
-			}
-			logger.debug("Deleting index : " + indexDirectory);
-			FileUtilities.deleteFile(indexDirectory, 1);
-		}
-		return Boolean.TRUE;
-	}
-
-	protected boolean isLocked(File latestIndexDirectory) {
-		File[] serverIndexDirectories = latestIndexDirectory.listFiles();
-		if (serverIndexDirectories == null || serverIndexDirectories.length == 0) {
+		if (contextIndexDirectories.length == 0) {
 			return Boolean.FALSE;
 		}
-		for (File serverIndexDirectory : serverIndexDirectories) {
-			File[] contextIndexDirectories = serverIndexDirectory.listFiles();
-			if (contextIndexDirectories == null || contextIndexDirectories.length == 0) {
+		for (File contextIndexDirectory : contextIndexDirectories) {
+			if (!contextIndexDirectory.getName().equals(indexContext.getName())) {
 				continue;
 			}
-			for (File contextIndexDirectory : contextIndexDirectories) {
-				Directory directory = null;
-				try {
-					directory = FSDirectory.open(contextIndexDirectory);
-					if (IndexWriter.isLocked(directory)) {
-						return Boolean.TRUE;
-					}
-				} catch (Exception e) {
-					logger.error("", e);
-				} finally {
-					if (directory != null) {
-						try {
-							IndexWriter.unlock(directory);
-							directory.close();
-						} catch (Exception e) {
-							logger.error("Exception closing the directory : " + directory, e);
-						}
-					}
+			File[] timeIndexDirectories = contextIndexDirectory.listFiles();
+			if (timeIndexDirectories == null) {
+				continue;
+			}
+			if (timeIndexDirectories.length <= 1) {
+				return Boolean.FALSE;
+			}
+			Arrays.sort(timeIndexDirectories, new Comparator<File>() {
+				@Override
+				public int compare(File o1, File o2) {
+					return o1.getName().compareTo(o2.getName());
+				}
+			});
+			// Check if the last index directory is locked
+			boolean latestIndexDirectoryIsLocked = Boolean.FALSE;
+			File latestIndexDirectory = timeIndexDirectories[timeIndexDirectories.length - 1];
+			File[] serverIndexDirectories = latestIndexDirectory.listFiles();
+			for (File serverIndexDirectory : serverIndexDirectories) {
+				if (directoryExistsAndIsLocked(serverIndexDirectory)) {
+					latestIndexDirectoryIsLocked = Boolean.TRUE;
+					break;
 				}
 			}
+			int indexesToRemain = latestIndexDirectoryIsLocked ? 2 : 1;
+			// We delete all the indexes except the last one, i.e. the latest index.
+			// In the case that there is an index running then the latest index directory will
+			// be locked, in that case we leave the last two indexes, i.e. the the latest index
+			// and the index being created
+			int indexesToDelete = timeIndexDirectories.length - indexesToRemain;
+			if (indexesToDelete == 0) {
+				return Boolean.FALSE;
+			}
+			for (int i = 0; i < indexesToDelete; i++) {
+				File indexToDelete = timeIndexDirectories[i];
+				logger.info("Deleting index directory : " + indexToDelete);
+				FileUtilities.deleteFile(indexToDelete, 1);
+			}
 		}
-		return Boolean.FALSE;
+		return Boolean.TRUE;
 	}
 
 }

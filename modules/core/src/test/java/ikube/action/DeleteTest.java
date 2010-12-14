@@ -25,11 +25,9 @@ public class DeleteTest extends BaseActionTest {
 	@Test
 	public void execute() throws Exception {
 		String indexDirectoryPath = indexContext.getIndexDirectoryPath();
-		indexContext.setIndexDirectoryPath("./somethingDifferent");
-
+		indexContext.setIndexDirectoryPath("./deleteTest");
 		File baseIndexDirectory = FileUtilities.getFile(indexContext.getIndexDirectoryPath(), Boolean.TRUE);
 		FileUtilities.deleteFile(baseIndexDirectory, 1);
-		assertFalse(baseIndexDirectory.exists());
 		baseIndexDirectory = FileUtilities.getFile(indexContext.getIndexDirectoryPath(), Boolean.TRUE);
 		assertTrue(baseIndexDirectory.exists());
 
@@ -38,50 +36,52 @@ public class DeleteTest extends BaseActionTest {
 		assertFalse(deleted);
 		/*******************************************/
 
-		String contextIndexDirectoryPath = getContextIndexDirectoryPath(indexContext);
-		File contextIndexDirectory = FileUtilities.getFile(contextIndexDirectoryPath, Boolean.TRUE);
-		assertTrue(contextIndexDirectory.exists());
+		String serverIndexDirectoryPath = getServerIndexDirectoryPath(indexContext);
+		File serverIndexDirectory = FileUtilities.getFile(serverIndexDirectoryPath, Boolean.TRUE);
+		createIndex(serverIndexDirectory);
+		assertTrue(serverIndexDirectory.exists());
 
 		// Only one directory so nothing to delete
 		deleted = delete.execute(indexContext);
 		assertFalse(deleted);
-		assertEquals(1, baseIndexDirectory.listFiles().length);
+		assertEquals(1, serverIndexDirectory.getParentFile().listFiles().length);
 		/**************************************************/
 
-		contextIndexDirectoryPath = getContextIndexDirectoryPath(indexContext);
-		File anotherContextIndexDirectory = FileUtilities.getFile(contextIndexDirectoryPath, Boolean.TRUE);
-		assertEquals(2, baseIndexDirectory.listFiles().length);
+		String anotherServerIndexDirectoryPath = getServerIndexDirectoryPath(indexContext);
+		File anotherServerIndexDirectory = FileUtilities.getFile(anotherServerIndexDirectoryPath, Boolean.TRUE);
+		createIndex(anotherServerIndexDirectory);
+		assertEquals(2, anotherServerIndexDirectory.getParentFile().getParentFile().listFiles().length);
 		// Two directories so one should be gone
 		deleted = delete.execute(indexContext);
 		assertTrue(deleted);
-		assertEquals(1, baseIndexDirectory.listFiles().length);
+		assertEquals(1, anotherServerIndexDirectory.getParentFile().getParentFile().listFiles().length);
 
 		/****************************/
-		contextIndexDirectoryPath = getContextIndexDirectoryPath(indexContext);
-		File andAnotherContextIndexDirectory = FileUtilities.getFile(contextIndexDirectoryPath, Boolean.TRUE);
-		assertEquals(2, baseIndexDirectory.listFiles().length);
+		String yetAnotherServerIndexDirectoryPath = getServerIndexDirectoryPath(indexContext);
+		File yetAnotherServerIndexDirectory = FileUtilities.getFile(yetAnotherServerIndexDirectoryPath, Boolean.TRUE);
+		createIndex(yetAnotherServerIndexDirectory);
+		assertEquals(2, yetAnotherServerIndexDirectory.getParentFile().getParentFile().listFiles().length);
 
-		File indexDirectory = createIndex(andAnotherContextIndexDirectory);
-		Directory directory = FSDirectory.open(indexDirectory);
+		Directory directory = FSDirectory.open(yetAnotherServerIndexDirectory);
 		Lock lock = directory.makeLock(IndexWriter.WRITE_LOCK_NAME);
 		lock.obtain(1000);
 		assertTrue(IndexWriter.isLocked(directory));
 
 		// Two directories, one locked there should be two left
 		deleted = delete.execute(indexContext);
-		assertTrue(deleted);
-		assertEquals(2, baseIndexDirectory.listFiles().length);
+		assertFalse(deleted);
+		assertEquals(2, yetAnotherServerIndexDirectory.getParentFile().getParentFile().listFiles().length);
 
 		lock.release();
 		directory.clearLock(IndexWriter.WRITE_LOCK_NAME);
 
 		/*************************************/
-		contextIndexDirectoryPath = getContextIndexDirectoryPath(indexContext);
-		File andYetAnotherContextIndexDirectory = FileUtilities.getFile(contextIndexDirectoryPath, Boolean.TRUE);
-		assertEquals(3, baseIndexDirectory.listFiles().length);
+		String andYetAnotherServerIndexDirectoryPath = getServerIndexDirectoryPath(indexContext);
+		File andYetAnotherServerIndexDirectory = FileUtilities.getFile(andYetAnotherServerIndexDirectoryPath, Boolean.TRUE);
+		createIndex(andYetAnotherServerIndexDirectory);
+		assertEquals(3, andYetAnotherServerIndexDirectory.getParentFile().getParentFile().listFiles().length);
 
-		indexDirectory = createIndex(andYetAnotherContextIndexDirectory);
-		directory = FSDirectory.open(indexDirectory);
+		directory = FSDirectory.open(andYetAnotherServerIndexDirectory);
 		lock = directory.makeLock(IndexWriter.WRITE_LOCK_NAME);
 		lock.obtain(1000);
 		assertTrue(IndexWriter.isLocked(directory));
@@ -89,24 +89,24 @@ public class DeleteTest extends BaseActionTest {
 		// Three directories, one locked, one should be gone
 		deleted = delete.execute(indexContext);
 		assertTrue(deleted);
-		assertEquals(2, baseIndexDirectory.listFiles().length);
+		assertEquals(2, andYetAnotherServerIndexDirectory.getParentFile().getParentFile().listFiles().length);
 
 		lock.release();
 		directory.clearLock(IndexWriter.WRITE_LOCK_NAME);
 
-		indexContext.setIndexDirectoryPath(indexDirectoryPath);
-
-		FileUtilities.deleteFile(andYetAnotherContextIndexDirectory, 1);
-		FileUtilities.deleteFile(andAnotherContextIndexDirectory, 1);
-		FileUtilities.deleteFile(anotherContextIndexDirectory, 1);
-		FileUtilities.deleteFile(contextIndexDirectory, 1);
+		FileUtilities.deleteFile(andYetAnotherServerIndexDirectory, 1);
+		FileUtilities.deleteFile(yetAnotherServerIndexDirectory, 1);
+		FileUtilities.deleteFile(anotherServerIndexDirectory, 1);
+		FileUtilities.deleteFile(serverIndexDirectory, 1);
 		FileUtilities.deleteFile(baseIndexDirectory, 1);
 
 		assertFalse(baseIndexDirectory.exists());
-		assertFalse(contextIndexDirectory.exists());
-		assertFalse(anotherContextIndexDirectory.exists());
-		assertFalse(andAnotherContextIndexDirectory.exists());
-		assertFalse(andYetAnotherContextIndexDirectory.exists());
+		assertFalse(serverIndexDirectory.exists());
+		assertFalse(anotherServerIndexDirectory.exists());
+		assertFalse(yetAnotherServerIndexDirectory.exists());
+		assertFalse(andYetAnotherServerIndexDirectory.exists());
+		
+		indexContext.setIndexDirectoryPath(indexDirectoryPath);
 	}
 
 }

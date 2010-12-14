@@ -43,8 +43,6 @@ public abstract class Action implements IAction<IndexContext, Boolean> {
 		long indexDirectoryTime = Long.parseLong(indexDirectoryName);
 		long currentTime = System.currentTimeMillis();
 		long indexAge = currentTime - indexDirectoryTime;
-		// logger.debug("Directory time : " + indexDirectoryTime + ", " + new Date(indexDirectoryTime) + ", index age : " + indexAge
-		// + ", max age : " + indexContext.getMaxAge());
 		if (indexAge < indexContext.getMaxAge()) {
 			return Boolean.TRUE;
 		}
@@ -72,69 +70,53 @@ public abstract class Action implements IAction<IndexContext, Boolean> {
 			logger.debug("No searchables open, should try to reopen : ");
 			return Boolean.TRUE;
 		}
-		// First check that there is an index directory
-		File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
-		if (latestIndexDirectory == null) {
-			logger.debug("Latest index directory null : ");
+		if (!isIndexCurrent(indexContext)) {
 			return Boolean.FALSE;
 		}
-		long time = Long.parseLong(latestIndexDirectory.getName());
-		if (System.currentTimeMillis() - time > indexContext.getMaxAge()) {
-			logger.info("Index out of date : " + latestIndexDirectory);
+		File baseIndexDirectory = new File(indexContext.getIndexDirectoryPath());
+		File[] contextIndexDirectories = baseIndexDirectory.listFiles();
+		if (contextIndexDirectories == null) {
 			return Boolean.FALSE;
 		}
-		// Check that there are indexes in the index directory
-		File[] serverIndexDirectories = latestIndexDirectory.listFiles();
-		if (serverIndexDirectories == null || serverIndexDirectories.length == 0) {
-			logger.warn(Logging.getString("Server directories null or empty, deleted perhaps : ", latestIndexDirectory, ", index name : ",
-					indexContext.getIndexName()));
-			return Boolean.FALSE;
-		}
-		// Now we check the latest server index directories against the directories
-		// in the existing multi-searcher. If there are server index directories that are
-		// not included in the searchables then try to close the multi searcher and
-		// re-open it
-		for (File serverIndexDirectory : serverIndexDirectories) {
-			File[] indexDirectories = serverIndexDirectory.listFiles();
-			for (File indexDirectory : indexDirectories) {
-				// Now check that there is a searchable open on the server index directory
-				boolean indexAlreadyOpen = Boolean.FALSE;
-				for (Searchable searchable : searchables) {
-					IndexSearcher indexSearcher = (IndexSearcher) searchable;
-					IndexReader indexReader = indexSearcher.getIndexReader();
-					FSDirectory fsDirectory = (FSDirectory) indexReader.directory();
-					File searchIndexDirectory = fsDirectory.getFile();
-					if (logger.isDebugEnabled()) {
-						String indexPath = indexDirectory.getAbsolutePath();
-						String searchPath = searchIndexDirectory.getAbsolutePath();
-						String message = Logging.getString("Index directory : ", indexPath, ", index directory : ", searchPath);
-						logger.debug(message);
-					}
-					if (directoriesEqual(indexDirectory, searchIndexDirectory)) {
-						// indexAlreadyOpen = Boolean.TRUE;
-						indexAlreadyOpen = directoryExistsAndNotLocked(indexDirectory);
-						break;
-					}
+		for (File contextIndexDirectory : contextIndexDirectories) {
+			File[] timeIndexDirectories = contextIndexDirectory.listFiles();
+			if (timeIndexDirectories == null) {
+				continue;
+			}
+			for (File timeIndexDirectory : timeIndexDirectories) {
+				File[] serverIndexDirectories = timeIndexDirectory.listFiles();
+				if (serverIndexDirectories == null) {
+					continue;
 				}
-				if (!indexAlreadyOpen) {
-					logger.debug(Logging.getString("Found new index directory : ", indexDirectory, " will try to re-open : "));
-					return Boolean.TRUE;
+				for (File serverIndexDirectory : serverIndexDirectories) {
+					boolean indexAlreadyOpen = Boolean.FALSE;
+					for (Searchable searchable : searchables) {
+						IndexSearcher indexSearcher = (IndexSearcher) searchable;
+						IndexReader indexReader = indexSearcher.getIndexReader();
+						FSDirectory fsDirectory = (FSDirectory) indexReader.directory();
+						File indexDirectory = fsDirectory.getFile();
+						if (directoriesEqual(serverIndexDirectory, indexDirectory)) {
+							indexAlreadyOpen = directoryExistsAndNotLocked(serverIndexDirectory);
+							break;
+						}
+					}
+					if (!indexAlreadyOpen) {
+						logger.debug(Logging.getString("Found new index directory : ", serverIndexDirectory, " will try to re-open : "));
+						return Boolean.TRUE;
+					}
 				}
 			}
 		}
 		return Boolean.FALSE;
 	}
 
-	private boolean directoryExistsAndNotLocked(File indexDirectory) {
+	protected boolean directoryExistsAndNotLocked(File indexDirectory) {
 		Directory directory = null;
 		try {
 			directory = FSDirectory.open(indexDirectory);
 			boolean exists = IndexReader.indexExists(directory);
 			boolean locked = IndexWriter.isLocked(directory);
 			logger.info(Logging.getString("Server index directory : ", indexDirectory, ", exists : ", exists, ", locked : ", locked));
-			// Could be that the index is still being written, unlikely, or
-			// that there are directories in the base directory that are
-			// not index directories
 			if (exists && !locked) {
 				return Boolean.TRUE;
 			} else {
@@ -152,9 +134,31 @@ public abstract class Action implements IAction<IndexContext, Boolean> {
 		return Boolean.FALSE;
 	}
 
+	protected boolean directoryExistsAndIsLocked(File indexDirectory) {
+		Directory directory = null;
+		try {
+			directory = FSDirectory.open(indexDirectory);
+			boolean exists = IndexReader.indexExists(directory);
+			boolean locked = IndexWriter.isLocked(directory);
+			logger.info(Logging.getString("Server index directory : ", indexDirectory, ", exists : ", exists, ", locked : ", locked));
+			if (exists && locked) {
+				return Boolean.TRUE;
+			} else {
+				logger.info("Locked directory : " + directory);
+			}
+		} catch (Exception e) {
+			logger.error("Exception checking the directories : ", e);
+		} finally {
+			try {
+				directory.close();
+			} catch (Exception e) {
+				logger.error("Exception closing the directory : " + directory, e);
+			}
+		}
+		return Boolean.FALSE;
+	}
+
 	private boolean directoriesEqual(File directoryOne, File directoryTwo) {
-		// Just check the server directory name and the parent folder name, should be
-		// something like '1234567890/jackal' or '1234567890/127.0.0.1'
 		String nameOne = directoryOne.getName();
 		String nameTwo = directoryTwo.getName();
 		String parentNameOne = directoryOne.getParentFile().getName();

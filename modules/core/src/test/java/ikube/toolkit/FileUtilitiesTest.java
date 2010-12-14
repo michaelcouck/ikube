@@ -23,6 +23,8 @@ public class FileUtilitiesTest {
 
 	private File folder = new File(".");
 	private File file = new File(folder, IConstants.READER_FILE_SUFFIX);
+	private File one = FileUtilities.getFile("./directory/1234567890", Boolean.TRUE);
+	private File two = FileUtilities.getFile("./directory/1234567891", Boolean.TRUE);
 	private String[] stringPatterns = new String[] { IConstants.READER_FILE_SUFFIX };
 
 	@Before
@@ -37,6 +39,7 @@ public class FileUtilitiesTest {
 		if (file.exists()) {
 			file.delete();
 		}
+		FileUtilities.deleteFile(one.getParentFile(), 1);
 	}
 
 	@Test
@@ -103,6 +106,27 @@ public class FileUtilitiesTest {
 		FileUtilities.setContents(tempFile.getAbsolutePath(), data.getBytes());
 		assertTrue(tempFile.exists());
 		assertTrue(tempFile.length() > 5);
+	}
+
+	@Test
+	public void getLatestIndexDirectoryFileFile() {
+		// File, File
+		File latest = FileUtilities.getLatestIndexDirectory(one, two);
+		assertEquals(one, latest);
+	}
+
+	@Test
+	public void getLatestIndexDirectoryString() {
+		// String
+		File latest = FileUtilities.getLatestIndexDirectory(one.getParentFile().getAbsolutePath());
+		assertEquals(one.getName(), latest.getName());
+	}
+
+	@Test
+	public void getOldestIndexDirectoryFilefile() {
+		// File, File
+		File latest = FileUtilities.getOldestIndexDirectory(one, two);
+		assertEquals(one, latest);
 	}
 
 }

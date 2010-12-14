@@ -174,28 +174,54 @@ public class FileUtilities {
 		try {
 			File baseIndexDirectory = FileUtilities.getFile(baseIndexDirectoryPath, Boolean.TRUE);
 			LOGGER.debug("Base index directory : " + baseIndexDirectory);
-			File[] indexDirectories = baseIndexDirectory.listFiles();
-			File latestIndexDirectory = null;
-			for (File indexDirectory : indexDirectories) {
-				LOGGER.debug("Index directory : " + indexDirectory);
-				if (!indexDirectory.isDirectory()) {
-					continue;
-				}
-				String indexDirectoryName = indexDirectory.getName();
-				long indexDirectoryTime = Long.parseLong(indexDirectoryName);
-				if (latestIndexDirectory == null) {
-					latestIndexDirectory = indexDirectory;
-					continue;
-				}
-				long latestIndexDirectoryTime = Long.parseLong(latestIndexDirectory.getName());
-				if (indexDirectoryTime > latestIndexDirectoryTime) {
-					latestIndexDirectory = indexDirectory;
-				}
-			}
-			return latestIndexDirectory;
+			return getLatestIndexDirectory(baseIndexDirectory, null);
 		} finally {
 			FileUtilities.class.notifyAll();
 		}
+	}
+
+	protected static synchronized File getLatestIndexDirectory(File file, File latestSoFar) {
+		if (file.isDirectory()) {
+			if (FileUtilities.isDigits(file.getName())) {
+				if (latestSoFar == null) {
+					latestSoFar = file;
+				} else {
+					latestSoFar = getOldestIndexDirectory(file, latestSoFar);
+				}
+			}
+			// Do this children
+			File[] children = file.listFiles();
+			for (File child : children) {
+				latestSoFar = getLatestIndexDirectory(child, latestSoFar);
+			}
+		}
+		return latestSoFar;
+	}
+
+	protected static synchronized File getOldestIndexDirectory(File one, File two) {
+		long oneTime = Long.parseLong(one.getName());
+		long twoTime = Long.parseLong(two.getName());
+		return oneTime < twoTime ? one : two;
+	}
+
+	/**
+	 * Verifies that all the characters in a string are digits, ie. the string is a number.
+	 * 
+	 * @param string
+	 *            the string to verify for digit data
+	 * @return whether every character in a string is a digit
+	 */
+	public static boolean isDigits(String string) {
+		if (string == null || string.trim().equals("")) {
+			return false;
+		}
+		char[] chars = string.toCharArray();
+		for (char c : chars) {
+			if (!Character.isDigit(c)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**
@@ -337,12 +363,12 @@ public class FileUtilities {
 			}
 		}
 	}
-	
+
 	public static void main(String[] args) {
 		File file = new File("I:/index/example.txt");
 		String content = FileUtilities.getContents(file).toString();
 		System.out.println("Content : " + content);
-		
+
 		file = new File("//ikube/d/index/example.txt");
 		content = FileUtilities.getContents(file).toString();
 		System.out.println("Content : " + content);

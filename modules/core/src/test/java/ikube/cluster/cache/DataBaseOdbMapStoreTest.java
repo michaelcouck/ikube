@@ -20,13 +20,13 @@ import org.junit.Test;
 public class DataBaseOdbMapStoreTest extends BaseTest {
 
 	private IDataBase dataBase;
-	private DataBaseOdbMapStore dataBaseOdbMapStore;
+	private CacheMapStore cacheMapStore;
 
 	@Before
 	public void before() {
 		dataBase = ApplicationContextManager.getBean(IDataBase.class);
 		delete(dataBase, Url.class);
-		dataBaseOdbMapStore = new DataBaseOdbMapStore();
+		cacheMapStore = new CacheMapStore();
 	}
 
 	@After
@@ -42,7 +42,7 @@ public class DataBaseOdbMapStoreTest extends BaseTest {
 		Url dataBaseUrl = dataBase.find(Url.class, url.getId());
 		assertNotNull(dataBaseUrl);
 
-		dataBaseOdbMapStore.delete(url.getId());
+		cacheMapStore.delete(url.getId());
 
 		dataBaseUrl = dataBase.find(Url.class, url.getId());
 		assertNull(dataBaseUrl);
@@ -56,7 +56,7 @@ public class DataBaseOdbMapStoreTest extends BaseTest {
 		int urlSize = dataBase.find(Url.class, 0, Integer.MAX_VALUE).size();
 		assertEquals(urls.size(), urlSize);
 
-		dataBaseOdbMapStore.deleteAll(urls.keySet());
+		cacheMapStore.deleteAll(urls.keySet());
 
 		urlSize = dataBase.find(Url.class, 0, Integer.MAX_VALUE).size();
 		assertEquals(0, urlSize);
@@ -68,7 +68,7 @@ public class DataBaseOdbMapStoreTest extends BaseTest {
 		Url url = getUrl("localhost");
 		url.setId(System.nanoTime());
 		dataBase.persist(url);
-		Object dataBaseUrl = dataBaseOdbMapStore.load(url.getId());
+		Object dataBaseUrl = cacheMapStore.load(url.getId());
 		assertNotNull(dataBaseUrl);
 	}
 
@@ -77,7 +77,7 @@ public class DataBaseOdbMapStoreTest extends BaseTest {
 		// Collection<Long>
 		Map<Long, Object> keys = getUrls(Boolean.TRUE);
 
-		Map<Long, Object> map = dataBaseOdbMapStore.loadAll(keys.keySet());
+		Map<Long, Object> map = cacheMapStore.loadAll(keys.keySet());
 		assertEquals(keys.size(), map.size());
 	}
 
@@ -85,7 +85,7 @@ public class DataBaseOdbMapStoreTest extends BaseTest {
 	public void store() throws Exception {
 		// Long, T
 		Url url = getUrl("localhost");
-		dataBaseOdbMapStore.store(url.getId(), url);
+		cacheMapStore.store(url.getId(), url);
 
 		Url dataBaseUrl = dataBase.find(Url.class, url.getId());
 		assertNotNull(dataBaseUrl);
@@ -95,7 +95,7 @@ public class DataBaseOdbMapStoreTest extends BaseTest {
 	public void storeAll() throws Exception {
 		// Map<Long, T>
 		Map<Long, Object> keys = getUrls(Boolean.FALSE);
-		dataBaseOdbMapStore.storeAll(keys);
+		cacheMapStore.storeAll(keys);
 
 		List<Url> urls = dataBase.find(Url.class, 0, Integer.MAX_VALUE);
 		assertEquals(keys.size(), urls.size());
