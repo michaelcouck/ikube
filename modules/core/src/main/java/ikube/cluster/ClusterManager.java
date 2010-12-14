@@ -2,7 +2,6 @@ package ikube.cluster;
 
 import ikube.cluster.cache.ICache;
 import ikube.logging.Logging;
-import ikube.model.Batch;
 import ikube.model.Server;
 import ikube.model.Server.Action;
 import ikube.model.Url;
@@ -28,7 +27,6 @@ import com.hazelcast.core.ILock;
 public class ClusterManager implements IClusterManager {
 
 	protected static String URL_LOCK = "urlLock";
-	protected static String BATCH_LOCK = "batchLock";
 	protected static String SERVER_LOCK = "serverLock";
 	protected static long LOCK_TIMEOUT = 3000;
 	protected static double MAX_ACTION_SIZE = 10;
@@ -86,37 +84,56 @@ public class ClusterManager implements IClusterManager {
 	}
 
 	/**
-	 * TODO - Note: The batch id of the next row needs to be keyed on the indexable table not on the index name. For this we need to store
-	 * the batch numbers for each of the tables that are indexed throughout the cluster in the action(s). The data hierarchy for the data is
-	 * as follows:
-	 * 
 	 * <pre>
 	 * Server => 
-	 * 		1) Action => Index name => Action name => Handler name => Indexable name => Perhaps the id of the next row
-	 * 		2) Action => Index name => Action name => Handler name => Indexable name => Perhaps the id of the next row
-	 * 		3) Action => Index name => Action name => Handler name => Indexable name => Perhaps the id of the next row
+	 * 		Action =>
+	 * 			Index name => 
+	 * 			Indexable name => 
+	 * 			Id number =>
 	 * </pre>
 	 * 
 	 */
 	@Override
-	public synchronized long getIdNumber(String indexName, long batchSize) {
+	public synchronized long getIdNumber(String indexName, String indexableName, long batchSize) {
 		ILock lock = null;
 		try {
-			lock = lock(BATCH_LOCK);
+			lock = lock(SERVER_LOCK);
 			if (lock == null) {
 				return 0;
 			}
-			Long id = HashUtilities.hash(indexName);
-			Batch batch = cache.get(Batch.class, id);
-			if (batch == null) {
-				batch = new Batch();
-				batch.setId(id);
-				batch.setIndexName(indexName);
-				batch.setIdNumber(new Long(0));
+			long idNumber = 0;
+			List<Server> servers = cache.get(Server.class, null, null, Integer.MAX_VALUE);
+			// We look for the largest row id from any of the servers
+			for (Server server : servers) {
+				for (Action action : server.getActions()) {
+					if (action.getIndexableName().equals(indexableName) && action.getIndexName().equals(indexName)) {
+						if (action.getIdNumber() > idNumber) {
+							idNumber = action.getIdNumber();
+						}
+					}
+				}
 			}
-			long idNumber = batch.getIdNumber();
-			batch.setIdNumber(idNumber + batchSize);
-			cache.set(Batch.class, id, batch);
+			// We find the action for this server
+			Server server = getServer();
+			List<Action> actions = server.getActions();
+			Action batchAction = null;
+			for (Action action : actions) {
+				if (action.getIndexableName().equals(indexableName) && action.getIndexName().equals(indexName)) {
+					batchAction = action;
+					break;
+				}
+			}
+			if (batchAction == null) {
+				batchAction = server.new Action();
+				batchAction.setIdNumber(idNumber);
+				batchAction.setIndexableName(indexableName);
+				batchAction.setIndexName(indexName);
+				batchAction.setStartTime(System.currentTimeMillis());
+				batchAction.setId(System.nanoTime());
+				actions.add(batchAction);
+			}
+			// Publish the server to the cluster
+			cache.set(Server.class, server.getId(), server);
 			return idNumber;
 		} finally {
 			unlock(lock);
@@ -150,7 +167,7 @@ public class ClusterManager implements IClusterManager {
 	}
 
 	@Override
-	public synchronized long setWorking(String indexName, String actionName, String handlerName, boolean isWorking) {
+	public synchronized long setWorking(String indexName, String indexableName, boolean isWorking) {
 		// logger.info("Set working : ");
 		ILock lock = null;
 		try {
@@ -165,7 +182,7 @@ public class ClusterManager implements IClusterManager {
 			for (Server server : servers) {
 				// logger.info("Server : " + server);
 				for (Action action : server.getActions()) {
-					if (indexName.equals(action.getIndexName()) && actionName.equals(action.getActionName()) && server.isWorking()) {
+					if (indexName.equals(action.getIndexName()) && indexableName.equals(action.getIndexableName()) && server.isWorking()) {
 						lastStartTime = Math.min(lastStartTime, action.getStartTime());
 					}
 				}
@@ -189,7 +206,7 @@ public class ClusterManager implements IClusterManager {
 			}
 
 			server.setWorking(isWorking);
-			server.getActions().add(server.new Action(handlerName, actionName, indexName, lastStartTime));
+			server.getActions().add(server.new Action(0, null, indexName, lastStartTime));
 
 			// Publish the fact that this server is starting to work on an action
 			// logger.info("Setting : " + server);

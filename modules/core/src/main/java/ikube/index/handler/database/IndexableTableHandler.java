@@ -170,7 +170,8 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 
 			if (indexableTable.isPrimary()) {
 				IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
-				nextIdNumber = clusterManager.getIdNumber(indexContext.getIndexName(), indexContext.getBatchSize());
+				nextIdNumber = clusterManager.getIdNumber(indexContext.getIndexName(), indexableTable.getName(),
+						indexContext.getBatchSize());
 				long minId = getIdFunction(indexableTable, connection, "min");
 				if (nextIdNumber < minId) {
 					nextIdNumber = minId;

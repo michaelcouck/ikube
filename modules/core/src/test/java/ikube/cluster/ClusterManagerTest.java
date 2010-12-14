@@ -4,9 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import ikube.BaseTest;
-import ikube.action.Index;
-import ikube.index.handler.database.IndexableTableHandler;
-import ikube.model.Batch;
 import ikube.model.Server;
 import ikube.model.Url;
 import ikube.toolkit.ApplicationContextManager;
@@ -28,8 +25,6 @@ public class ClusterManagerTest extends BaseTest {
 	private Server serverRemote;
 
 	private String indexName;
-	private String actionName;
-	private String handlerName;
 
 	private int batchSize = 10;
 
@@ -37,18 +32,16 @@ public class ClusterManagerTest extends BaseTest {
 
 	@Before
 	public void before() throws Exception {
-		handlerName = IndexableTableHandler.class.getName();
-		actionName = Index.class.getName();
 		indexName = indexContext.getIndexName();
 
 		serverLocal = new Server();
-		serverLocal.getActions().add(serverLocal.new Action(handlerName, actionName, indexName, System.currentTimeMillis()));
+		serverLocal.getActions().add(serverLocal.new Action(0, null, indexName, System.currentTimeMillis()));
 		serverLocal.setAddress(InetAddress.getLocalHost().getHostName());
 		serverLocal.setId(HashUtilities.hash(serverLocal.getAddress()));
 		serverLocal.setWorking(Boolean.FALSE);
 
 		serverRemote = new Server();
-		serverRemote.getActions().add(serverRemote.new Action(handlerName, actionName, indexName, System.currentTimeMillis()));
+		serverRemote.getActions().add(serverRemote.new Action(0, null, indexName, System.currentTimeMillis()));
 		serverRemote.setAddress(InetAddress.getLocalHost().getHostName() + "serverRemote");
 		serverRemote.setId(HashUtilities.hash(serverRemote.getAddress()));
 		serverRemote.setWorking(Boolean.FALSE);
@@ -59,7 +52,6 @@ public class ClusterManagerTest extends BaseTest {
 	@After
 	public void after() {
 		clusterManager.clear(Url.class);
-		clusterManager.clear(Batch.class);
 		clusterManager.clear(Server.class);
 	}
 
@@ -116,9 +108,9 @@ public class ClusterManagerTest extends BaseTest {
 	@Test
 	public void getIdNumber() {
 		// String, long
-		long startIdNumber = clusterManager.getIdNumber(indexName, batchSize);
-
-		long idNumber = clusterManager.getIdNumber(indexName, batchSize);
+		String indexableName = "faq";
+		long startIdNumber = clusterManager.getIdNumber(indexableName, indexName, batchSize);
+		long idNumber = clusterManager.getIdNumber(indexableName, indexName, batchSize);
 		assertEquals(startIdNumber + batchSize, idNumber);
 	}
 
@@ -163,7 +155,7 @@ public class ClusterManagerTest extends BaseTest {
 		Server remote = new Server();
 		remote.setAddress("remote");
 		remote.setWorking(Boolean.TRUE);
-		remote.getActions().add(remote.new Action(handlerName, actionName, indexName, startWorkingTime));
+		remote.getActions().add(remote.new Action(0, null, indexName, startWorkingTime));
 		remote.setId(HashUtilities.hash(remote.getAddress()));
 		clusterManager.set(Server.class, remote.getId(), remote);
 
@@ -172,7 +164,7 @@ public class ClusterManagerTest extends BaseTest {
 			Thread thread = new Thread(new Runnable() {
 				public void run() {
 					for (int i = 0; i < 100; i++) {
-						long lastWorkingTime = clusterManager.setWorking(indexName, actionName, handlerName, Boolean.TRUE);
+						long lastWorkingTime = clusterManager.setWorking(indexName, "", Boolean.TRUE);
 						logger.info("Last working time : " + lastWorkingTime + ", " + startWorkingTime);
 						assertEquals(startWorkingTime, lastWorkingTime);
 					}

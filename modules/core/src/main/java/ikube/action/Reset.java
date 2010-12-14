@@ -1,6 +1,5 @@
 package ikube.action;
 
-import ikube.model.Batch;
 import ikube.model.IndexContext;
 import ikube.model.Url;
 
@@ -18,7 +17,7 @@ public class Reset extends Action {
 			return Boolean.FALSE;
 		}
 		getClusterManager().clear(Url.class);
-		getClusterManager().clear(Batch.class);
+		// TODO - clear the server actions
 		return Boolean.TRUE;
 	}
 

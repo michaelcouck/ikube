@@ -29,13 +29,12 @@ public class Index extends Action {
 			return Boolean.FALSE;
 		}
 		List<Indexable<?>> indexables = indexContext.getIndexables();
-		String actionName = getClass().getName();
 		String indexName = indexContext.getIndexName();
 		try {
 			// If we get here then there are two possibilities:
 			// 1) The index is not current and we will start the index
 			// 2) The index is current and there are other servers working on the index, so we join them
-			long lastWorkingStartTime = getClusterManager().setWorking(indexName, actionName, null, Boolean.TRUE);
+			long lastWorkingStartTime = getClusterManager().setWorking(indexName, "", Boolean.TRUE);
 			logger.debug(Logging.getString("Index : Last working time : ", lastWorkingStartTime));
 			Server server = getClusterManager().getServer();
 			// Start the indexing for this server
@@ -52,7 +51,7 @@ public class Index extends Action {
 					}
 					// Execute the handler and wait for the threads to finish
 					logger.info("Executing handler : " + handler);
-					getClusterManager().setWorking(indexName, actionName, handler.getClass().toString(), Boolean.TRUE);
+					getClusterManager().setWorking(indexName, indexable.getName(), Boolean.TRUE);
 					List<Thread> threads = handler.handle(indexContext, indexable);
 					if (threads != null && threads.size() > 0) {
 						logger.info("Threads to wait for : " + threads);
@@ -64,7 +63,7 @@ public class Index extends Action {
 			}
 		} finally {
 			IndexManager.closeIndexWriter(indexContext);
-			getClusterManager().setWorking(indexName, "", "", Boolean.FALSE);
+			getClusterManager().setWorking(indexName, "", Boolean.FALSE);
 		}
 		String contextName = indexContext.getName();
 		logger.debug(Logging.getString("Index : Finished indexing : ", indexName, ", ", contextName));

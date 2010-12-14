@@ -15,10 +15,10 @@ public class Server extends Persistable implements Comparable<Server> {
 
 	public class Action extends Persistable {
 
-		/** The handler that is currently active. */
-		private String handlerName;
-		/** The actionName of the action that is being executed on this configuration. */
-		private String actionName;
+		/** The row id of the next row. */
+		private long idNumber;
+		/** The currently executing indexable. */
+		private String indexableName;
 		/** The actionName of the currently executing index. */
 		private String indexName;
 		/** The time the action was started. */
@@ -27,27 +27,27 @@ public class Server extends Persistable implements Comparable<Server> {
 		public Action() {
 		}
 
-		public Action(String handlerName, String actionName, String indexName, long startTime) {
-			this.handlerName = handlerName;
-			this.actionName = actionName;
+		public Action(long idNumber, String indexableName, String indexName, long startTime) {
+			this.idNumber = idNumber;
+			this.indexableName = indexableName;
 			this.indexName = indexName;
 			this.startTime = startTime;
 		}
 
-		public String getHandlerName() {
-			return handlerName;
+		public long getIdNumber() {
+			return idNumber;
 		}
 
-		public void setHandlerName(String handlerName) {
-			this.handlerName = handlerName;
+		public void setIdNumber(long idNumber) {
+			this.idNumber = idNumber;
 		}
 
-		public String getActionName() {
-			return actionName;
+		public String getIndexableName() {
+			return indexableName;
 		}
 
-		public void setActionName(String actionName) {
-			this.actionName = actionName;
+		public void setIndexableName(String indexableName) {
+			this.indexableName = indexableName;
 		}
 
 		public String getIndexName() {
@@ -73,10 +73,6 @@ public class Server extends Persistable implements Comparable<Server> {
 			builder.append(getStartTime());
 			builder.append(", ");
 			builder.append(getIndexName());
-			builder.append(", ");
-			builder.append(getActionName());
-			builder.append(", ");
-			builder.append(getHandlerName());
 			builder.append("]");
 			return builder.toString();
 		}

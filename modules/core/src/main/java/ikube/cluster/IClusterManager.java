@@ -34,7 +34,7 @@ public interface IClusterManager {
 	 * @param isWorking
 	 * @return
 	 */
-	public long setWorking(String indexName, String actionName, String handlerName, boolean isWorking);
+	public long setWorking(String indexName, String indexableName, boolean isWorking);
 
 	/**
 	 * @return whether there are any servers in the cluster that are working
@@ -48,7 +48,7 @@ public interface IClusterManager {
 	 *            the name of the index currently getting executed
 	 * @return the id of the next row in the table for this index
 	 */
-	public long getIdNumber(String indexName, long batchSize);
+	public long getIdNumber(String indexableName, String indexName, long batchSize);
 
 	/**
 	 * @return the servers in the cluster
