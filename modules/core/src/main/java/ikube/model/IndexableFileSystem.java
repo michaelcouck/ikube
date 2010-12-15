@@ -24,10 +24,6 @@ public class IndexableFileSystem extends Indexable<IndexableFileSystem> {
 	private String excludedPattern;
 	private String includedPattern;
 
-	private boolean stored = Boolean.FALSE;
-	private boolean analyzed = Boolean.TRUE;
-	private boolean vectored = Boolean.TRUE;
-
 	public String getPath() {
 		return path;
 	}
@@ -90,30 +86,6 @@ public class IndexableFileSystem extends Indexable<IndexableFileSystem> {
 
 	public void setIncludedPattern(String includedPattern) {
 		this.includedPattern = includedPattern;
-	}
-
-	public boolean isStored() {
-		return stored;
-	}
-
-	public void setStored(final boolean stored) {
-		this.stored = stored;
-	}
-
-	public boolean isAnalyzed() {
-		return analyzed;
-	}
-
-	public void setAnalyzed(final boolean analyzed) {
-		this.analyzed = analyzed;
-	}
-
-	public boolean isVectored() {
-		return vectored;
-	}
-
-	public void setVectored(final boolean vectored) {
-		this.vectored = vectored;
 	}
 
 	@Transient

@@ -17,9 +17,6 @@ public class IndexableColumn extends Indexable<IndexableColumn> {
 	private String fieldName;
 	private boolean idColumn;
 	private IndexableColumn foreignKey;
-	private boolean stored = Boolean.FALSE;
-	private boolean analyzed = Boolean.TRUE;
-	private boolean vectored = Boolean.TRUE;
 
 	/** These values are only used for generating data. */
 	private String columnClass;
@@ -53,30 +50,6 @@ public class IndexableColumn extends Indexable<IndexableColumn> {
 
 	public void setForeignKey(IndexableColumn foreignKey) {
 		this.foreignKey = foreignKey;
-	}
-
-	public boolean isStored() {
-		return stored;
-	}
-
-	public void setStored(final boolean stored) {
-		this.stored = stored;
-	}
-
-	public boolean isAnalyzed() {
-		return analyzed;
-	}
-
-	public void setAnalyzed(final boolean analyzed) {
-		this.analyzed = analyzed;
-	}
-
-	public boolean isVectored() {
-		return vectored;
-	}
-
-	public void setVectored(final boolean vectored) {
-		this.vectored = vectored;
 	}
 
 	public IndexableColumn getNameColumn() {

@@ -24,12 +24,12 @@ import org.apache.lucene.search.highlight.Scorer;
  * standard fields in each map. Each map then represents one record or result from the search. The three standard items in the map are the
  * index in the lucene result set, id of the record and the score that the result got. Optionally the fragment generated from the result if
  * this is specified.
- *
+ * 
  * The id of the record generated using the name of the object indexed and the primary field in the database.
- *
+ * 
  * For paging functionality the search method can be called specifying the start and end parameters which will give logical paging. Although
  * the search will be done for each page forward the search is so fast that this is not relevant.
- *
+ * 
  * @author Michael Couck
  * @since 22.08.08
  * @version 01.00
@@ -41,6 +41,14 @@ public abstract class Search {
 	protected Searcher searcher;
 	/** The query parsers for various query fields. */
 	private final Map<String, QueryParser> queryParsers;
+
+	/** The search string that we are looking for. */
+	protected String[] searchStrings;
+	/** The fields in index to add to the search. */
+	protected String[] searchFields;
+	/** The fields to sort the results by. */
+	protected String[] sortFields;
+
 	/** Whether to generate fragments for the search string or not. */
 	protected boolean fragment;
 	/** The start position in the search results to return maps from. */
@@ -61,7 +69,7 @@ public abstract class Search {
 	 * jumps...the lazy dog...'.<br>
 	 * <br>
 	 * The fragments are from the current document, so calling get next document will move the document to the next on in the Hits object.
-	 *
+	 * 
 	 * @param the
 	 *            document to get the fragments from
 	 * @param fieldName
@@ -92,7 +100,7 @@ public abstract class Search {
 
 	/**
 	 * Adds the fields to the results.
-	 *
+	 * 
 	 * @param document
 	 *            the document to get the fields from to add to the result
 	 * @param result
@@ -114,23 +122,31 @@ public abstract class Search {
 
 	/**
 	 * Sets the strings that will be searched for.
-	 *
+	 * 
 	 * @param searchStrings
 	 *            the search strings
 	 */
-	public abstract void setSearchString(String... searchStrings);
+	public void setSearchString(String... searchStrings) {
+		this.searchStrings = searchStrings;
+	}
 
 	/**
 	 * Sets the fields in the index that will be searched for.
-	 *
+	 * 
 	 * @param searchFields
 	 *            the fields in the index to search through
 	 */
-	public abstract void setSearchField(String... searchFields);
+	public void setSearchField(String... searchFields) {
+		this.searchFields = searchFields;
+	}
+
+	public void setSortField(String... sortFields) {
+		this.sortFields = sortFields;
+	}
 
 	/**
 	 * This executed the search with the parameters set for the search fields and the search strings.
-	 *
+	 * 
 	 * @return the results which are a list of maps. Each map has the fields in it if they are strings, not readers, and the map entries for
 	 *         index, score, fragment, total and duration
 	 */
@@ -138,7 +154,7 @@ public abstract class Search {
 
 	/**
 	 * Sets whether the fragment made of the best part of the document should be included in the search results.
-	 *
+	 * 
 	 * @param fragment
 	 *            the flag for generating the best fragments in the results
 	 */
@@ -148,7 +164,7 @@ public abstract class Search {
 
 	/**
 	 * Sets the first result in the index.
-	 *
+	 * 
 	 * @param start
 	 *            the first result to return from the results
 	 */
@@ -158,7 +174,7 @@ public abstract class Search {
 
 	/**
 	 * Sets the maximum results to return.
-	 *
+	 * 
 	 * @param maxResults
 	 *            the maximum results to return
 	 */
@@ -168,7 +184,7 @@ public abstract class Search {
 
 	/**
 	 * Access to the query parsers for a particular field in the documents.
-	 *
+	 * 
 	 * @param searchField
 	 *            the name of the field that needs to be searched
 	 * @return the query parser for the particular field

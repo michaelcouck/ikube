@@ -19,11 +19,6 @@ import org.apache.lucene.search.TopDocs;
  */
 public class SearchSingle extends Search {
 
-	/** The search string that we are looking for. */
-	private String searchString;
-	/** The field to search in the index. */
-	private String searchField;
-
 	public SearchSingle(Searcher searcher) {
 		super(searcher);
 	}
@@ -42,7 +37,7 @@ public class SearchSingle extends Search {
 
 		try {
 			int maxHits = firstResult + maxResults;
-			Query query = getQueryParser(searchField).parse(searchString);
+			Query query = getQueryParser(searchFields[0]).parse(searchStrings[0]);
 			long start = System.currentTimeMillis();
 			TopDocs topDocs = searcher.search(query, maxHits);
 			duration = System.currentTimeMillis() - start;
@@ -61,13 +56,13 @@ public class SearchSingle extends Search {
 				addFieldsToResults(document, result);
 
 				if (fragment) {
-					String fragment = getFragments(document, searchField, query);
+					String fragment = getFragments(document, searchFields[0], query);
 					result.put(IConstants.FRAGMENT, fragment);
 				}
 				results.add(result);
 			}
 		} catch (Exception e) {
-			logger.error("Exception searching for string " + searchString + " in searcher " + searcher, e);
+			logger.error("Exception searching for string " + searchStrings[0] + " in searcher " + searcher, e);
 		}
 
 		// Add the search results size as a last result
@@ -77,24 +72,6 @@ public class SearchSingle extends Search {
 		results.add(statistics);
 
 		return results;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void setSearchString(String... searchString) {
-		// TODO - normalise the text
-		// Normalizer.normalize(sequence, Form.NFD, 0); // 1.6?
-		this.searchString = searchString[0];
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void setSearchField(String... searchFields) {
-		this.searchField = searchFields[0];
 	}
 
 }

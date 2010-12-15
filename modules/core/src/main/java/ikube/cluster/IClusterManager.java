@@ -48,6 +48,8 @@ public interface IClusterManager {
 	 * @return the id of the next row in the table for this index
 	 */
 	public long getIdNumber(String indexableName, String indexName, long batchSize);
+	
+	public boolean isHandled(String indexableName, String indexName);
 
 	/**
 	 * @return the servers in the cluster

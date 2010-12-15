@@ -8,7 +8,7 @@ import org.junit.Test;
 public class IntegrationTest extends ATest {
 
 	@Test
-	// @Ignore
+	@Ignore
 	public void index() throws Exception {
 		ApplicationContextManager.getApplicationContext(IConstants.SPRING_CONFIGURATION_FILE);
 		// And we sleep until the index is created

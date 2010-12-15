@@ -20,9 +20,6 @@ public class IndexableInternet extends Indexable<IndexableInternet> {
 
 	private URI uri;
 	private String url;
-	private boolean stored = Boolean.FALSE;
-	private boolean analyzed = Boolean.TRUE;
-	private boolean vectored = Boolean.TRUE;
 
 	public URI getUri() {
 		if (uri == null) {
@@ -45,30 +42,6 @@ public class IndexableInternet extends Indexable<IndexableInternet> {
 
 	public void setUrl(String url) {
 		this.url = url;
-	}
-
-	public boolean isStored() {
-		return stored;
-	}
-
-	public void setStored(final boolean stored) {
-		this.stored = stored;
-	}
-
-	public boolean isAnalyzed() {
-		return analyzed;
-	}
-
-	public void setAnalyzed(final boolean analyzed) {
-		this.analyzed = analyzed;
-	}
-
-	public boolean isVectored() {
-		return vectored;
-	}
-
-	public void setVectored(final boolean vectored) {
-		this.vectored = vectored;
 	}
 
 	@Transient

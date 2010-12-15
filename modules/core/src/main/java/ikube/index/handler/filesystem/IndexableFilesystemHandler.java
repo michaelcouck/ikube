@@ -1,5 +1,6 @@
 package ikube.index.handler.filesystem;
 
+import ikube.cluster.IClusterManager;
 import ikube.index.IndexManager;
 import ikube.index.handler.IndexableHandler;
 import ikube.index.handler.IndexableHandlerType;
@@ -7,6 +8,7 @@ import ikube.index.parse.IParser;
 import ikube.index.parse.ParserProvider;
 import ikube.model.IndexContext;
 import ikube.model.IndexableFileSystem;
+import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
 
 import java.io.ByteArrayInputStream;
@@ -38,6 +40,15 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 
 	protected void handleFilesystem(final IndexContext indexContext, IndexableFileSystem indexableFileSystem) {
 		try {
+			// We need to check the cluster to see if this indexable is already handled by
+			// one of the other servers. The file system is very fast and there is no need to
+			// cluster the indexing
+			IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
+			boolean isHandled = clusterManager.isHandled(indexableFileSystem.getName(), indexContext.getIndexName());
+			if (isHandled) {
+				return;
+			}
+
 			File baseFile = new File(indexableFileSystem.getPath());
 			Pattern pattern = getPattern(indexableFileSystem.getExcludedPattern());
 			if (baseFile.isDirectory()) {

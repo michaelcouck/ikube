@@ -1,5 +1,6 @@
 package ikube.index.handler.email;
 
+import ikube.cluster.IClusterManager;
 import ikube.index.IndexManager;
 import ikube.index.handler.IndexableHandler;
 import ikube.index.handler.IndexableHandlerType;
@@ -8,6 +9,7 @@ import ikube.index.parse.ParserProvider;
 import ikube.logging.Logging;
 import ikube.model.IndexContext;
 import ikube.model.IndexableEmail;
+import ikube.toolkit.ApplicationContextManager;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -50,6 +52,12 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 	@Override
 	@IndexableHandlerType(type = IndexableEmail.class)
 	public List<Thread> handle(final IndexContext indexContext, final IndexableEmail indexable) throws Exception {
+		// First check to see if this indexable is handled by another server
+		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
+		boolean isHandled = clusterManager.isHandled(indexable.getName(), indexContext.getIndexName());
+		if (isHandled) {
+			return null;
+		}
 		handleEmail(indexContext, (IndexableEmail) indexable);
 		return null;
 	}

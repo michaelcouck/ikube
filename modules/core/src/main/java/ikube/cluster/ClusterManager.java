@@ -216,6 +216,28 @@ public class ClusterManager implements IClusterManager {
 		}
 	}
 
+	@Override
+	public synchronized boolean isHandled(String indexableName, String indexName) {
+		try {
+			Server thisServer = getServer();
+			List<Server> servers = getServers();
+			for (Server server : servers) {
+				if (server.equals(thisServer)) {
+					continue;
+				}
+				for (Action action : server.getActions()) {
+					if (action.getIndexName().equals(indexName) && action.getIndexableName().equals(indexableName)) {
+						logger.info("File share already indexed by : " + server);
+						return Boolean.TRUE;
+					}
+				}
+			}
+			return Boolean.FALSE;
+		} finally {
+
+		}
+	}
+
 	private synchronized ILock lock(String lockName) {
 		try {
 			ILock lock = Hazelcast.getLock(lockName);

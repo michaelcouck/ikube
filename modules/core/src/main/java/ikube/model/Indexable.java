@@ -16,6 +16,10 @@ public abstract class Indexable<E> extends Persistable {
 	private Indexable<?> parent;
 	private List<Indexable<?>> children;
 
+	private boolean stored = Boolean.FALSE;
+	private boolean analyzed = Boolean.FALSE;
+	private boolean vectored = Boolean.FALSE;
+
 	public void setName(final String name) {
 		this.name = name;
 	}
@@ -43,6 +47,30 @@ public abstract class Indexable<E> extends Persistable {
 				child.setParent(this);
 			}
 		}
+	}
+
+	public boolean isStored() {
+		return stored;
+	}
+
+	public void setStored(final boolean stored) {
+		this.stored = stored;
+	}
+
+	public boolean isAnalyzed() {
+		return analyzed;
+	}
+
+	public void setAnalyzed(final boolean analyzed) {
+		this.analyzed = analyzed;
+	}
+
+	public boolean isVectored() {
+		return vectored;
+	}
+
+	public void setVectored(final boolean vectored) {
+		this.vectored = vectored;
 	}
 
 }
