@@ -1,5 +1,6 @@
 package ikube.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +14,7 @@ import javax.persistence.Entity;
 @Entity()
 public class Server extends Persistable implements Comparable<Server> {
 
-	public class Action extends Persistable {
+	public class Action implements Serializable {
 
 		/** The row id of the next row. */
 		private long idNumber;
@@ -68,11 +69,11 @@ public class Server extends Persistable implements Comparable<Server> {
 
 		public String toString() {
 			final StringBuilder builder = new StringBuilder("[");
-			builder.append(getId());
-			builder.append(", ");
-			builder.append(getStartTime());
+			builder.append(getIndexableName());
 			builder.append(", ");
 			builder.append(getIndexName());
+			builder.append(", ");
+			builder.append(getStartTime());
 			builder.append("]");
 			return builder.toString();
 		}

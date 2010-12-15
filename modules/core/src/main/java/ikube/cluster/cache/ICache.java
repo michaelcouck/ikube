@@ -12,18 +12,18 @@ public interface ICache {
 		public boolean evaluate(T t);
 	}
 
-	public <T> int size(Class<T> klass);
+	public <T> int size(String name);
 
-	public <T> void clear(Class<T> klass);
+	public <T> void clear(String name);
 
-	public <T> T get(Class<T> klass, Long id);
+	public <T> T get(String name, Long id);
 
-	public <T> T get(Class<T> klass, String sql);
+	public <T> T get(String name, String sql);
 
-	public <T> void set(Class<T> klass, Long id, T t);
+	public <T> void set(String name, Long id, T t);
 
-	public <T> void remove(Class<T> klass, Long id);
+	public <T> void remove(String name, Long id);
 
-	public <T> List<T> get(Class<T> klass, ICriteria<T> criteria, IAction<T> action, int size);
+	public <T> List<T> get(String name, ICriteria<T> criteria, IAction<T> action, int size);
 
 }

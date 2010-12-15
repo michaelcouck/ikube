@@ -29,15 +29,15 @@ public class CacheTest extends BaseTest {
 
 	@After
 	public void after() {
-		cache.clear(Url.class);
+		cache.clear(Url.class.getName());
 	}
 
 	@Test
 	public void setUrl() {
-		cache.set(Url.class, url.getHash(), url);
-		Url url = cache.get(Url.class, this.url.getHash());
+		cache.set(Url.class.getName(), url.getHash(), url);
+		Url url = cache.get(Url.class.getName(), this.url.getHash());
 		assertNotNull(url);
-		cache.clear(Url.class);
+		cache.clear(Url.class.getName());
 	}
 
 	@Test
@@ -47,12 +47,12 @@ public class CacheTest extends BaseTest {
 			Url url = new Url();
 			url.setHash(System.nanoTime());
 			url.setUrl(Integer.toHexString(i));
-			cache.set(Url.class, url.getHash(), url);
+			cache.set(Url.class.getName(), url.getHash(), url);
 			Thread.sleep(1);
 		}
-		List<Url> batchUrls = cache.get(Url.class, null, null, 100);
+		List<Url> batchUrls = cache.get(Url.class.getName(), null, null, 100);
 		assertEquals(size, batchUrls.size());
-		cache.clear(Url.class);
+		cache.clear(Url.class.getName());
 	}
 
 	@Test
@@ -64,7 +64,7 @@ public class CacheTest extends BaseTest {
 				Url url = new Url();
 				url.setHash(nanoTime);
 				url.setUrl(Long.toHexString(nanoTime));
-				cache.set(Url.class, url.getHash(), url);
+				cache.set(Url.class.getName(), url.getHash(), url);
 				Thread.sleep(1);
 			}
 		}, "Cache set : ", iterations);

@@ -15,37 +15,38 @@ import com.hazelcast.query.SqlPredicate;
 public class Cache implements ICache {
 
 	protected Logger logger;
-	private Map<Class<?>, Map<Long, ?>> maps;
+	private Map<String, Map<Long, ?>> maps;
 
 	public void initialise() {
 		logger = Logger.getLogger(this.getClass());
-		maps = new HashMap<Class<?>, Map<Long, ?>>();
+		maps = new HashMap<String, Map<Long, ?>>();
 	}
 
 	@Override
-	public <T> int size(Class<T> klass) {
-		return getMap(klass).size();
+	public <T> int size(String name) {
+		return getMap(name).size();
 	}
 
 	@Override
-	public <T> T get(Class<T> klass, Long hash) {
-		return getMap(klass).get(hash);
+	@SuppressWarnings("unchecked")
+	public <T> T get(String name, Long hash) {
+		return (T) getMap(name).get(hash);
 	}
 
 	@Override
-	public <T> void set(Class<T> klass, Long hash, T t) {
-		getMap(klass).put(hash, t);
+	public <T> void set(String name, Long hash, T t) {
+		getMap(name).put(hash, t);
 	}
 
 	@Override
-	public <T> void remove(Class<T> klass, Long hash) {
-		getMap(klass).remove(hash);
+	public <T> void remove(String name, Long hash) {
+		getMap(name).remove(hash);
 	}
 
 	@Override
-	public <T> List<T> get(Class<T> klass, ICriteria<T> criteria, IAction<T> action, int size) {
+	public <T> List<T> get(String name, ICriteria<T> criteria, IAction<T> action, int size) {
 		List<T> batch = new ArrayList<T>();
-		Map<Long, T> map = getMap(klass);
+		Map<Long, T> map = getMap(name);
 		for (Long key : map.keySet()) {
 			T t = map.get(key);
 			if (criteria != null) {
@@ -66,14 +67,14 @@ public class Cache implements ICache {
 	}
 
 	@Override
-	public <T> void clear(Class<T> klass) {
-		getMap(klass).clear();
+	public <T> void clear(String name) {
+		getMap(name).clear();
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T> T get(Class<T> klass, String sql) {
-		Map<Long, T> map = getMap(klass);
+	public <T> T get(String name, String sql) {
+		Map<Long, T> map = getMap(name);
 		if (IMap.class.isAssignableFrom(map.getClass())) {
 			Collection<Object> collection = ((IMap<Long, T>) map).values(new SqlPredicate(sql));
 			if (collection.size() == 0) {
@@ -85,11 +86,11 @@ public class Cache implements ICache {
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T> Map<Long, T> getMap(Class<T> klass) {
-		Map<Long, T> map = (Map<Long, T>) maps.get(klass);
+	private <T> Map<Long, T> getMap(String name) {
+		Map<Long, T> map = (Map<Long, T>) maps.get(name);
 		if (map == null) {
-			map = Hazelcast.getMap(klass.getSimpleName());
-			maps.put(klass, map);
+			map = Hazelcast.getMap(name);
+			maps.put(name, map);
 		}
 		return map;
 	}

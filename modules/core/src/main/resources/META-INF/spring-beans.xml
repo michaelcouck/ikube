@@ -64,11 +64,11 @@
 		</property>
 	</bean>
 	
+	<!-- property:address="serverOne" -->
 	<bean
 		class="ikube.cluster.ClusterManager"
 		lazy-init="true"
-		init-method="initialise"
-		property:address="serverOne">
+		init-method="initialise">
 		<property name="cache">
 			<bean
 				id="ikube.cluster.cache.Cache"

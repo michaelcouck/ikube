@@ -4,7 +4,6 @@ import ikube.model.Server;
 import ikube.model.Url;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author Michael Couck
@@ -53,7 +52,7 @@ public interface IClusterManager {
 	/**
 	 * @return the servers in the cluster
 	 */
-	public Set<Server> getServers();
+	public List<Server> getServers();
 
 	/**
 	 * @return this server object

@@ -10,8 +10,6 @@ import ikube.toolkit.HashUtilities;
 import java.net.InetAddress;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
@@ -47,7 +45,7 @@ public class ClusterManager implements IClusterManager {
 		@Override
 		public void execute(Url url) {
 			url.setIndexed(Boolean.TRUE);
-			cache.set(Url.class, url.getId(), url);
+			cache.set(Url.class.getName(), url.getId(), url);
 		}
 	};
 
@@ -67,7 +65,7 @@ public class ClusterManager implements IClusterManager {
 			if (lock == null) {
 				return Boolean.TRUE;
 			}
-			List<Server> servers = cache.get(Server.class, null, null, Integer.MAX_VALUE);
+			List<Server> servers = cache.get(Server.class.getName(), null, null, Integer.MAX_VALUE);
 			for (Server server : servers) {
 				if (server.getAddress().equals(this.address)) {
 					continue;
@@ -91,7 +89,6 @@ public class ClusterManager implements IClusterManager {
 	 * 			Indexable name => 
 	 * 			Id number =>
 	 * </pre>
-	 * 
 	 */
 	@Override
 	public synchronized long getIdNumber(String indexName, String indexableName, long batchSize) {
@@ -102,10 +99,11 @@ public class ClusterManager implements IClusterManager {
 				return 0;
 			}
 			long idNumber = 0;
-			List<Server> servers = cache.get(Server.class, null, null, Integer.MAX_VALUE);
+			List<Server> servers = cache.get(Server.class.getName(), null, null, Integer.MAX_VALUE);
 			// We look for the largest row id from any of the servers
 			for (Server server : servers) {
 				for (Action action : server.getActions()) {
+					logger.info("Action : " + action + ", server : " + server.getAddress());
 					if (action.getIndexableName().equals(indexableName) && action.getIndexName().equals(indexName)) {
 						if (action.getIdNumber() > idNumber) {
 							idNumber = action.getIdNumber();
@@ -116,24 +114,24 @@ public class ClusterManager implements IClusterManager {
 			// We find the action for this server
 			Server server = getServer();
 			List<Action> actions = server.getActions();
-			Action batchAction = null;
+			Action currentAction = null;
 			for (Action action : actions) {
 				if (action.getIndexableName().equals(indexableName) && action.getIndexName().equals(indexName)) {
-					batchAction = action;
+					currentAction = action;
 					break;
 				}
 			}
-			if (batchAction == null) {
-				batchAction = server.new Action();
-				batchAction.setIdNumber(idNumber);
-				batchAction.setIndexableName(indexableName);
-				batchAction.setIndexName(indexName);
-				batchAction.setStartTime(System.currentTimeMillis());
-				batchAction.setId(System.nanoTime());
-				actions.add(batchAction);
+			if (currentAction == null) {
+				currentAction = server.new Action();
+				currentAction.setIndexableName(indexableName);
+				currentAction.setIndexName(indexName);
+				currentAction.setStartTime(System.currentTimeMillis());
+				actions.add(currentAction);
 			}
+			// Set the next row number to the current + the batch size
+			currentAction.setIdNumber(idNumber + batchSize);
 			// Publish the server to the cluster
-			cache.set(Server.class, server.getId(), server);
+			cache.set(Server.class.getName(), server.getId(), server);
 			return idNumber;
 		} finally {
 			unlock(lock);
@@ -142,9 +140,9 @@ public class ClusterManager implements IClusterManager {
 	}
 
 	@Override
-	public synchronized Set<Server> getServers() {
+	public synchronized List<Server> getServers() {
 		try {
-			return new TreeSet<Server>(cache.get(Server.class, null, null, Integer.MAX_VALUE));
+			return cache.get(Server.class.getName(), null, null, Integer.MAX_VALUE);
 		} finally {
 			notifyAll();
 		}
@@ -153,12 +151,12 @@ public class ClusterManager implements IClusterManager {
 	@Override
 	public synchronized Server getServer() {
 		try {
-			Server server = cache.get(Server.class, HashUtilities.hash(address));
+			Server server = cache.get(Server.class.getName(), HashUtilities.hash(address));
 			if (server == null) {
 				server = new Server();
 				server.setAddress(address);
 				server.setId(HashUtilities.hash(server.getAddress()));
-				cache.set(Server.class, server.getId(), server);
+				cache.set(Server.class.getName(), server.getId(), server);
 			}
 			return server;
 		} finally {
@@ -177,10 +175,10 @@ public class ClusterManager implements IClusterManager {
 			}
 
 			long lastStartTime = System.currentTimeMillis();
-			List<Server> servers = cache.get(Server.class, null, null, Integer.MAX_VALUE);
+			List<Server> servers = cache.get(Server.class.getName(), null, null, Integer.MAX_VALUE);
 			// Find the first start time for the action we want to start in any of the servers
 			for (Server server : servers) {
-				// logger.info("Server : " + server);
+				logger.info("Server : " + server);
 				for (Action action : server.getActions()) {
 					if (indexName.equals(action.getIndexName()) && indexableName.equals(action.getIndexableName()) && server.isWorking()) {
 						lastStartTime = Math.min(lastStartTime, action.getStartTime());
@@ -206,11 +204,11 @@ public class ClusterManager implements IClusterManager {
 			}
 
 			server.setWorking(isWorking);
-			server.getActions().add(server.new Action(0, null, indexName, lastStartTime));
+			server.getActions().add(server.new Action(0, indexableName, indexName, lastStartTime));
 
 			// Publish the fact that this server is starting to work on an action
 			// logger.info("Setting : " + server);
-			cache.set(Server.class, server.getId(), server);
+			cache.set(Server.class.getName(), server.getId(), server);
 			return lastStartTime;
 		} finally {
 			unlock(lock);
@@ -257,7 +255,7 @@ public class ClusterManager implements IClusterManager {
 			if (lock == null) {
 				return null;
 			}
-			return cache.get(Url.class, criteria, action, size);
+			return cache.get(Url.class.getName(), criteria, action, size);
 		} finally {
 			unlock(lock);
 			notifyAll();
@@ -267,7 +265,7 @@ public class ClusterManager implements IClusterManager {
 	@Override
 	public synchronized <T> T get(Class<T> klass, String sql) {
 		try {
-			return cache.get(klass, sql);
+			return cache.get(klass.getName(), sql);
 		} finally {
 			notifyAll();
 		}
@@ -276,9 +274,9 @@ public class ClusterManager implements IClusterManager {
 	@Override
 	public synchronized <T> void set(Class<T> klass, Long id, T t) {
 		try {
-			T exists = cache.get(klass, id);
+			T exists = cache.get(klass.getName(), id);
 			if (exists == null) {
-				cache.set(klass, id, t);
+				cache.set(klass.getName(), id, t);
 			}
 		} finally {
 			notifyAll();
@@ -296,7 +294,7 @@ public class ClusterManager implements IClusterManager {
 	@Override
 	public synchronized <T> void clear(Class<T> klass) {
 		try {
-			this.cache.clear(klass);
+			this.cache.clear(klass.getName());
 		} finally {
 			notifyAll();
 		}
@@ -305,7 +303,7 @@ public class ClusterManager implements IClusterManager {
 	@Override
 	public synchronized <T> int size(Class<T> klass) {
 		try {
-			return this.cache.size(klass);
+			return this.cache.size(klass.getName());
 		} finally {
 			notifyAll();
 		}

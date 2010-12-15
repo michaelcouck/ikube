@@ -13,7 +13,6 @@ import ikube.toolkit.ThreadUtilities;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import org.junit.After;
 import org.junit.Before;
@@ -25,23 +24,24 @@ public class ClusterManagerTest extends BaseTest {
 	private Server serverRemote;
 
 	private String indexName;
+	private String indexableName;
 
 	private int batchSize = 10;
 
+	/** The class under test. */
 	private IClusterManager clusterManager;
 
 	@Before
 	public void before() throws Exception {
 		indexName = indexContext.getIndexName();
+		indexableName = "faq";
 
 		serverLocal = new Server();
-		serverLocal.getActions().add(serverLocal.new Action(0, null, indexName, System.currentTimeMillis()));
 		serverLocal.setAddress(InetAddress.getLocalHost().getHostName());
 		serverLocal.setId(HashUtilities.hash(serverLocal.getAddress()));
 		serverLocal.setWorking(Boolean.FALSE);
 
 		serverRemote = new Server();
-		serverRemote.getActions().add(serverRemote.new Action(0, null, indexName, System.currentTimeMillis()));
 		serverRemote.setAddress(InetAddress.getLocalHost().getHostName() + "serverRemote");
 		serverRemote.setId(HashUtilities.hash(serverRemote.getAddress()));
 		serverRemote.setWorking(Boolean.FALSE);
@@ -57,27 +57,45 @@ public class ClusterManagerTest extends BaseTest {
 
 	@Test
 	public void clear() {
-		// Class<T>
-		Set<Server> servers = clusterManager.getServers();
+		// What we want to achieve here is to add some object to the
+		// cache then clear the cache and it should be removed form the map. So
+		// we add a server
+		List<Server> servers = clusterManager.getServers();
 		assertEquals(0, servers.size());
-
 		clusterManager.set(Server.class, serverLocal.getId(), serverLocal);
 
+		// Verify that the server is present in the cache
 		servers = clusterManager.getServers();
 		assertEquals(1, servers.size());
+
+		// Clear the cache
+		clusterManager.clear(Server.class);
+
+		// Verify that the server is no longer in the cache
+		servers = clusterManager.getServers();
+		assertEquals(0, servers.size());
 	}
 
 	@Test
 	public void get() {
-		// Class<T>, String
+		// What we want to achieve here is to set an object
+		// in the cache then do a sql like query on the cache and
+		// we should get the server back again
 		String sql = "id = " + this.serverLocal.getId();
 		Server server = clusterManager.get(Server.class, sql);
 		assertNull(server);
 
+		// Set the server in the cache
 		clusterManager.set(Server.class, this.serverLocal.getId(), this.serverLocal);
 
+		// Perform the query and verify that we get the server as a result
 		server = clusterManager.get(Server.class, sql);
 		assertNotNull(server);
+
+		// Remove the server and verify that there are no results from the query
+		clusterManager.clear(Server.class);
+		server = clusterManager.get(Server.class, sql);
+		assertNull(server);
 	}
 
 	@Test
@@ -116,7 +134,7 @@ public class ClusterManagerTest extends BaseTest {
 
 	@Test
 	public void getServers() {
-		Set<Server> servers = clusterManager.getServers();
+		List<Server> servers = clusterManager.getServers();
 		assertEquals(0, servers.size());
 
 		clusterManager.set(Server.class, serverLocal.getId(), serverLocal);
@@ -152,19 +170,16 @@ public class ClusterManagerTest extends BaseTest {
 		List<Thread> threads = new ArrayList<Thread>();
 		// Set a remote server working
 		final long startWorkingTime = System.currentTimeMillis();
-		Server remote = new Server();
-		remote.setAddress("remote");
-		remote.setWorking(Boolean.TRUE);
-		remote.getActions().add(remote.new Action(0, null, indexName, startWorkingTime));
-		remote.setId(HashUtilities.hash(remote.getAddress()));
-		clusterManager.set(Server.class, remote.getId(), remote);
+		serverRemote.setWorking(Boolean.TRUE);
+		serverRemote.getActions().add(serverRemote.new Action(0, indexableName, indexName, startWorkingTime));
+		clusterManager.set(Server.class, serverRemote.getId(), serverRemote);
 
-		int threadSize = 1;
+		int threadSize = 3;
 		for (int i = 0; i < threadSize; i++) {
 			Thread thread = new Thread(new Runnable() {
 				public void run() {
 					for (int i = 0; i < 100; i++) {
-						long lastWorkingTime = clusterManager.setWorking(indexName, "", Boolean.TRUE);
+						long lastWorkingTime = clusterManager.setWorking(indexName, indexableName, Boolean.TRUE);
 						logger.info("Last working time : " + lastWorkingTime + ", " + startWorkingTime);
 						assertEquals(startWorkingTime, lastWorkingTime);
 					}

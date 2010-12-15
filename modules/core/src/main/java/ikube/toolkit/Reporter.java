@@ -11,7 +11,6 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -34,7 +33,7 @@ public class Reporter implements IListener {
 				// Get the index contexts
 				Map<String, IndexContext> indexContexts = ApplicationContextManager.getBeans(IndexContext.class);
 				IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
-				Set<Server> servers = clusterManager.getServers();
+				List<Server> servers = clusterManager.getServers();
 				list.add(servers);
 				for (IndexContext indexContext : indexContexts.values()) {
 					// Get the index files

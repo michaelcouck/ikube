@@ -54,9 +54,10 @@ public class Index extends Action {
 					getClusterManager().setWorking(indexName, indexable.getName(), Boolean.TRUE);
 					List<Thread> threads = handler.handle(indexContext, indexable);
 					if (threads != null && threads.size() > 0) {
-						logger.info("Threads to wait for : " + threads);
+						logger.info("Waiting for threads : " + threads);
 						ThreadUtilities.waitForThreads(threads);
 					}
+					// TODO - Wait for all the other servers to finish this indexable
 				} catch (Exception e) {
 					logger.error("Exception indexing data : " + indexContext.getIndexName(), e);
 				}
