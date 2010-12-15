@@ -25,7 +25,7 @@ public class Delete extends Action {
 			return Boolean.FALSE;
 		}
 		for (File contextIndexDirectory : contextIndexDirectories) {
-			if (!contextIndexDirectory.getName().equals(indexContext.getName())) {
+			if (!contextIndexDirectory.getName().equals(indexContext.getIndexName())) {
 				continue;
 			}
 			File[] timeIndexDirectories = contextIndexDirectory.listFiles();

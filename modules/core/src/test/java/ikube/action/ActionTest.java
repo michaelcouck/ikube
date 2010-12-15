@@ -37,7 +37,7 @@ public class ActionTest extends BaseActionTest {
 		StringBuilder builder = new StringBuilder();
 		builder.append(indexContext.getIndexDirectoryPath());
 		builder.append(File.separator);
-		builder.append(indexContext.getName());
+		builder.append(indexContext.getIndexName());
 		builder.append(File.separator);
 		builder.append(System.currentTimeMillis());
 		builder.append(File.separator);
@@ -70,7 +70,7 @@ public class ActionTest extends BaseActionTest {
 		StringBuilder builder = new StringBuilder();
 		builder.append(indexContext.getIndexDirectoryPath());
 		builder.append(File.separator);
-		builder.append(indexContext.getName());
+		builder.append(indexContext.getIndexName());
 		builder.append(File.separator);
 		builder.append(System.currentTimeMillis());
 		builder.append(File.separator);

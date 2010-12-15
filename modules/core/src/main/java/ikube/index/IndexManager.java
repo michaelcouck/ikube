@@ -42,7 +42,7 @@ public class IndexManager {
 
 			builder.append(indexContext.getIndexDirectoryPath()); // Path
 			builder.append(File.separator);
-			builder.append(indexContext.getName()); // Index name
+			builder.append(indexContext.getIndexName()); // Index name
 			builder.append(File.separator);
 			builder.append(time); // Time
 			builder.append(File.separator);

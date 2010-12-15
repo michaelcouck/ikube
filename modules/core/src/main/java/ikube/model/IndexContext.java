@@ -16,7 +16,6 @@ import org.apache.lucene.search.MultiSearcher;
 @Entity()
 public class IndexContext extends Persistable implements Comparable<IndexContext> {
 
-	private String name;
 	private long maxAge;
 	private String indexName;
 	private long queueTimeout;
@@ -44,14 +43,6 @@ public class IndexContext extends Persistable implements Comparable<IndexContext
 	private transient IndexWriter indexWriter;
 	/** Can be null if there is no index created. */
 	private transient MultiSearcher multiSearcher;
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(final String serverName) {
-		this.name = serverName;
-	}
 
 	public String getIndexName() {
 		return indexName;
@@ -167,7 +158,7 @@ public class IndexContext extends Persistable implements Comparable<IndexContext
 
 	@Override
 	public int compareTo(IndexContext o) {
-		return getName().compareTo(o.getName());
+		return getIndexName().compareTo(o.getIndexName());
 	}
 
 	@Transient

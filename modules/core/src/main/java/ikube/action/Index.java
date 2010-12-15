@@ -58,6 +58,7 @@ public class Index extends Action {
 						ThreadUtilities.waitForThreads(threads);
 					}
 					// TODO - Wait for all the other servers to finish this indexable
+					// TODO - reset the urls in the cache
 				} catch (Exception e) {
 					logger.error("Exception indexing data : " + indexContext.getIndexName(), e);
 				}
@@ -66,7 +67,7 @@ public class Index extends Action {
 			IndexManager.closeIndexWriter(indexContext);
 			getClusterManager().setWorking(indexName, "", Boolean.FALSE);
 		}
-		String contextName = indexContext.getName();
+		String contextName = indexContext.getIndexName();
 		logger.debug(Logging.getString("Index : Finished indexing : ", indexName, ", ", contextName));
 		return Boolean.TRUE;
 	}

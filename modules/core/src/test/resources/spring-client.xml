@@ -15,7 +15,6 @@
 	<bean
 		id="indexContext"
 		class="ikube.model.IndexContext"
-		property:name="localhost"
 		property:indexName="index"
 		property:maxAge="${max.age}"
 		property:compoundFile="${compound.file}"

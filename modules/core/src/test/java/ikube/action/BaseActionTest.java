@@ -81,7 +81,7 @@ public abstract class BaseActionTest extends BaseTest {
 		StringBuilder builder = new StringBuilder();
 		builder.append(indexContext.getIndexDirectoryPath());
 		builder.append(File.separator);
-		builder.append(indexContext.getName());
+		builder.append(indexContext.getIndexName());
 		builder.append(File.separator);
 		builder.append(System.currentTimeMillis());
 		builder.append(File.separator);

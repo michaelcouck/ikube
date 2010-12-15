@@ -212,7 +212,7 @@ public class DataGeneratorTwo {
 
 	public static void main(String[] args) throws Exception {
 		String configLocation = "/data/spring.xml";
-		DataGeneratorTwo dataGeneratorTwo = new DataGeneratorTwo(1000000, 10);
+		DataGeneratorTwo dataGeneratorTwo = new DataGeneratorTwo(90000, 10);
 		List<Thread> threads = dataGeneratorTwo.generate(configLocation);
 		ThreadUtilities.waitForThreads(threads);
 		System.out.println("Finished generation : ");
