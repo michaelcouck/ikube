@@ -11,6 +11,8 @@ import java.io.OutputStream;
 import org.apache.log4j.Logger;
 
 /**
+ * This class allows writing the data returned from a file to the output stream specified in the parameter list.
+ * 
  * @author Michael Couck
  * @since 23.11.10
  * @version 01.00

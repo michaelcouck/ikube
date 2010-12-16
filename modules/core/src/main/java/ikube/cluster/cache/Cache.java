@@ -12,9 +12,19 @@ import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.IMap;
 import com.hazelcast.query.SqlPredicate;
 
+/**
+ * @see ICache
+ * @author Michael Couck
+ * @since 15.12.10
+ * @version 01.00
+ */
 public class Cache implements ICache {
 
 	protected Logger logger;
+	/**
+	 * This is a map of maps for objects. These maps are propagated throughout the cluster. Typically the name of the map is the name of the
+	 * class that it contains, however in some cases this is not convenient.
+	 */
 	private Map<String, Map<Long, ?>> maps;
 
 	public void initialise() {
@@ -22,34 +32,56 @@ public class Cache implements ICache {
 		maps = new HashMap<String, Map<Long, ?>>();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public <T> int size(String name) {
+	public int size(String name) {
 		return getMap(name).size();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T> T get(String name, Long hash) {
-		return (T) getMap(name).get(hash);
+	public <T> T get(String name, Long id) {
+		return (T) getMap(name).get(id);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public <T> void set(String name, Long hash, T t) {
-		getMap(name).put(hash, t);
+	public <T> void set(String name, Long id, T t) {
+		getMap(name).put(id, t);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public <T> void remove(String name, Long hash) {
-		getMap(name).remove(hash);
+	public void remove(String name, Long id) {
+		getMap(name).remove(id);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public <T> List<T> get(String name, ICriteria<T> criteria, IAction<T> action, int size) {
-		List<T> batch = new ArrayList<T>();
+		// This method returns a batch of objects determined by the
+		// criteria. In the case of urls it will iterate through ALL the urls in the map. The logic to access
+		// a batch of urls must be changed, when a url is indexed then it should be moved to another map
+		// and only the not yet crawled urls will remain in this map. Anything up to 100 000 urls is fine, but
+		// 1 000 000 000 could be a small problem.
+		List<T> list = new ArrayList<T>();
 		Map<Long, T> map = getMap(name);
-		for (Long key : map.keySet()) {
-			T t = map.get(key);
+		for (Long id : map.keySet()) {
+			T t = map.get(id);
 			if (criteria != null) {
+				// The result from the criteria evaluation determines whether
+				// the object will be included in the result batch returned
 				boolean evaluated = criteria.evaluate(t);
 				if (!evaluated) {
 					continue;
@@ -58,19 +90,25 @@ public class Cache implements ICache {
 			if (action != null) {
 				action.execute(t);
 			}
-			batch.add(t);
-			if (batch.size() >= size) {
+			list.add(t);
+			if (list.size() >= size) {
 				break;
 			}
 		}
-		return batch;
+		return list;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public <T> void clear(String name) {
+	public void clear(String name) {
 		getMap(name).clear();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T> T get(String name, String sql) {

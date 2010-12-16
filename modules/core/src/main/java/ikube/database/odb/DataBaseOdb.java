@@ -41,7 +41,7 @@ public class DataBaseOdb implements IDataBase {
 		this.logger = Logger.getLogger(this.getClass());
 	}
 
-	public void initialise() {
+	protected void initialise() {
 		initialise(System.nanoTime() + "." + IConstants.DATABASE_FILE);
 	}
 
@@ -141,6 +141,7 @@ public class DataBaseOdb implements IDataBase {
 		return t;
 	}
 
+	@Override
 	public synchronized <T> T remove(Class<T> klass, Long id) {
 		try {
 			T t = find(klass, id);

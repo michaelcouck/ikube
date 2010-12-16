@@ -8,6 +8,9 @@ import java.util.Arrays;
 import java.util.Comparator;
 
 /**
+ * This action deletes the old indexes. There should always be one index, and potentially an index that is being generated. Any other index
+ * files should be deleted. 
+ * 
  * @author Michael Couck
  * @since 31.10.10
  * @version 01.00

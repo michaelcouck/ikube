@@ -5,6 +5,8 @@ import ikube.model.Indexable;
 import org.apache.log4j.Logger;
 
 /**
+ * Base class for the handlers that contains access to common functionality like the threads etc.
+ * 
  * @author Michael Couck
  * @since 29.11.10
  * @version 01.00

@@ -16,18 +16,23 @@ public interface IDataBase {
 	 * This method removed the specified entity from the database.
 	 * 
 	 * @param <T>
+	 *            the type of object that will be removed
 	 * @param t
-	 * @return
+	 *            the object that must be removed
+	 * @return the removed object, i.e. a refresh
 	 */
 	public <T> T remove(T t);
 
 	/**
-	 * 
+	 * Removes the object defined by the type and the id.
 	 * 
 	 * @param <T>
+	 *            the type of object that will be removed
 	 * @param klass
+	 *            the class of object to remove
 	 * @param id
-	 * @return
+	 *            the id of the object to remove
+	 * @return the removed object, or null if no such object is found to remove
 	 */
 	public <T> T remove(Class<T> klass, Long id);
 

@@ -15,6 +15,12 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * This class executes the handlers on the indexables, effectively creating the index. Each indexable has a handler that is implemented to
+ * handle it. Each handler is configured with an annotation that specifies the type of indexable that it can handle. This class then
+ * iterates over all the indexables in the context for the index, finds the correct handler and calls the
+ * {@link IHandler#handle(IndexContext, Indexable)} method with the indexable. The return value from this method from the handlers is a list
+ * of threads. The caller must then wait for all the threads to finish and die before continuing.
+ * 
  * @author Michael Couck
  * @since 21.11.10
  * @version 01.00
@@ -72,6 +78,16 @@ public class Index extends Action {
 		return Boolean.TRUE;
 	}
 
+	/**
+	 * This method finds the correct handler for the indexable.
+	 * 
+	 * @param indexableHandlers
+	 *            a map of all the handlers in the configuration
+	 * @param indexable
+	 *            the indexable to find the handler for
+	 * @return the handler for the indexable or null if there is no handler for the indexable. This will fail with a warning if there is no
+	 *         handler for the indexable
+	 */
 	protected IHandler<Indexable<?>> getHandler(@SuppressWarnings("rawtypes") Map<String, IHandler> indexableHandlers,
 			Indexable<?> indexable) {
 		for (IHandler<Indexable<?>> handler : indexableHandlers.values()) {

@@ -3,6 +3,8 @@ package ikube.index.content;
 import java.io.ByteArrayOutputStream;
 
 /**
+ * This is just a wrapper class that allows access to the internal byte[].
+ * 
  * @author Michael Couck
  * @since 29.11.10
  * @version 01.00

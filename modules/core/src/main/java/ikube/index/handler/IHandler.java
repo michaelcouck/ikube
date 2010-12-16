@@ -1,11 +1,22 @@
 package ikube.index.handler;
 
+import ikube.index.handler.email.IndexableEmailHandler;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
+import ikube.model.IndexableEmail;
 
+import java.net.URL;
 import java.util.List;
 
+import org.apache.lucene.index.IndexWriter;
+
 /**
+ * This is the interface for handlers. Handlers handle indexables. Indexables are essentially sources of data, like an {@link URL} object
+ * for example. Any type of data source can then be defined simply by creating another indexable type and mapping the handler to it. For
+ * example in the case of email, there is an {@link IndexableEmail} indexable and an {@link IndexableEmailHandler} that handles it. All
+ * handlers get the index context passed to them. Using the data in the context that is common to the handlers like the {@link IndexWriter}
+ * they can perform their logic to extract the data from their indexable and add it to the index.
+ * 
  * @author Michael Couck
  * @since 29.11.10
  * @version 01.00

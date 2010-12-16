@@ -18,6 +18,10 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
 /**
+ * This is the base class for actions. Actions execute handlers on indexables. Actions may include opening the searcher on a new index,
+ * indexing or deleting the old indexes. This class is intended to be sub-classed. Common methods in this base class is checking that the
+ * index is current, i.e. has not expired and whether the searcher should be re-opened on the nex index.
+ * 
  * @author Michael Couck
  * @since 21.11.10
  * @version 01.00

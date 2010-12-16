@@ -54,7 +54,7 @@ public class IndexableTableHandlerTest extends BaseTest {
 				+ "and db2admin.faq.faqId <= 100";
 		// IndexContext, IndexableTable, long
 		long nextIdNumber = 0;
-		String sql = indexableTableHandler.buildSql(indexContext, faqIndexableTable, nextIdNumber);
+		String sql = indexableTableHandler.buildSql(faqIndexableTable, indexContext.getBatchSize(), nextIdNumber);
 		logger.debug("Sql : " + sql);
 		assertEquals(expectedSql, sql);
 	}

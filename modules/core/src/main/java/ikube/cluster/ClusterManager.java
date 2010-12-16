@@ -53,10 +53,6 @@ public class ClusterManager implements IClusterManager {
 		this.address = InetAddress.getLocalHost().getHostAddress();
 	}
 
-	public void initialise() throws Exception {
-		this.logger = Logger.getLogger(this.getClass());
-	}
-
 	@Override
 	public synchronized boolean anyWorking() {
 		ILock lock = null;
@@ -315,14 +311,6 @@ public class ClusterManager implements IClusterManager {
 		}
 	}
 
-	public synchronized void setCache(ICache cache) {
-		try {
-			this.cache = cache;
-		} finally {
-			notifyAll();
-		}
-	}
-
 	@Override
 	public synchronized <T> void clear(Class<T> klass) {
 		try {
@@ -341,7 +329,17 @@ public class ClusterManager implements IClusterManager {
 		}
 	}
 
-	public void setAddress(String address) {
+	/** Initialization methods called form Spring. */
+
+	protected void initialise() throws Exception {
+		this.logger = Logger.getLogger(this.getClass());
+	}
+
+	protected void setCache(ICache cache) {
+		this.cache = cache;
+	}
+
+	protected void setAddress(String address) {
 		this.address = address;
 	}
 

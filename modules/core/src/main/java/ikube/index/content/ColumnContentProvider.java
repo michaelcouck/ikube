@@ -15,13 +15,15 @@ import java.sql.Types;
 import org.apache.log4j.Logger;
 
 /**
+ * This class allows writing an object returned from a column in a database to the output stream specified in the parameter list.
+ * 
  * @author Michael Couck
  * @since 21.11.10
  * @version 01.00
  */
 public class ColumnContentProvider implements IContentProvider<IndexableColumn> {
 
-	private Logger logger = Logger.getLogger(this.getClass());
+	private Logger logger;
 
 	public ColumnContentProvider() {
 		this.logger = Logger.getLogger(this.getClass());
@@ -37,6 +39,9 @@ public class ColumnContentProvider implements IContentProvider<IndexableColumn> 
 
 		// BugFix for Oracle and Db2: Oracle seems to think that a
 		// Blob is a NULL type so we'll just reset the type to Blob in this case
+		// 15.12.10: It seems that both Oracle and DB2 now respect the type
+		// making this redundant, could be removed. However we can't be sure
+		// which versions of the drivers are being used by clients, so just leave it.
 		if (Blob.class.isAssignableFrom(object.getClass()) && columnType != Types.BLOB) {
 			columnType = Types.BLOB;
 		} else if (Clob.class.isAssignableFrom(object.getClass()) && columnType != Types.CLOB) {

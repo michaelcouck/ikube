@@ -1,11 +1,9 @@
 03.11.10
-* Wiki - 3
-* Testing - 7 * 1/2
-   2) Linux - 1
-   3) Multiple data sources - 1
-* Implementation of updating the index with deltas from the client - 3
 
-Total - 16
+* Cluster testing - 1
+* Wiki/documentation/JavaDoc - 3
+
+Total - 4
 
 Done:
 * Cluster - 3 *
@@ -15,10 +13,11 @@ Done:
 * Performance - 1 *
 * Large volumes - 1 *
 * Add the file and url visitors - 5 *
+* Multiple data sources - 1 *
+* Testing - 7 *
 
 Other things:
-* Add a database tester to re-connect if the database becomes disconnect
-* Add sorting to the multi and single searchers
+* Add a database tester to re-connect if the database becomes disconnected
 * Is there automatically language support, i.e. are languages handled transparently
 * Add changes in the data to results? I.e. save the previous data and in the results
    offer a series of documents representing how they changed over the
@@ -31,7 +30,6 @@ Other things:
 * Spelling checking
 * Phonetic search
 * Result clustering
-* Boosting
 * Reporting (e.g. Google Analytics)
 * Add a maximum documents per server parameter
 
@@ -42,6 +40,10 @@ Done:
 * Add a configuration for a file system *
 * Add a configuration for a mail account *
 * Test the parsers *
+* Add sorting to the multi and single searchers *
 
 Won't Do:
 * Front end for configuration, monitoring etc. - 10
+* Boosting
+* Linux testing - 1
+* Implementation of updating the index with deltas from the client - 3

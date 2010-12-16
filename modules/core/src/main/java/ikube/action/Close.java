@@ -25,11 +25,14 @@ public class Close extends Action {
 			logger.debug("No index searcher yet in context, please build the index : ");
 			return Boolean.FALSE;
 		}
+		// First check to see if there are any new indexes, if there are no
+		// new indexes then we shouldn't close the searcher
 		boolean shouldReopen = shouldReopen(indexContext);
 		if (!shouldReopen) {
 			logger.debug("Shouldn't re-open : " + shouldReopen);
 			return Boolean.FALSE;
 		}
+		// Get all the searchables from the searcher and close them one by one
 		Searchable[] searchables = multiSearcher.getSearchables();
 		if (searchables != null && searchables.length > 0) {
 			for (Searchable searchable : searchables) {
@@ -47,6 +50,9 @@ public class Close extends Action {
 				}
 			}
 		}
+		// See the searcher to null so the open action
+		// will then be invoked to re-open the searcher
+		// during the next iteration over the actions
 		indexContext.setMultiSearcher(null);
 		return Boolean.TRUE;
 	}
