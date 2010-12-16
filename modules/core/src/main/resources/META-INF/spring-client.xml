@@ -27,7 +27,7 @@
 		property:maxReadLength="${max.read.length}"
 		property:queueTimeout="${max.age}"
 		property:throttle="${throttle}"
-		property:indexDirectoryPath="${index.directory.path}"
+		property:indexDirectoryPath="${index.directory.path.one}"
 		property:indexables-ref="indexables" />
 	<bean
 		id="indexContextTwo"
@@ -44,7 +44,7 @@
 		property:maxReadLength="${max.read.length}"
 		property:queueTimeout="${max.age}"
 		property:throttle="${throttle}"
-		property:indexDirectoryPath="${index.directory.path}"
+		property:indexDirectoryPath="${index.directory.path.two}"
 		property:indexables-ref="indexables" />
 	<bean
 		id="indexContextThree"
@@ -61,7 +61,7 @@
 		property:maxReadLength="${max.read.length}"
 		property:queueTimeout="${max.age}"
 		property:throttle="${throttle}"
-		property:indexDirectoryPath="${index.directory.path}"
+		property:indexDirectoryPath="${index.directory.path.three}"
 		property:indexables-ref="indexables" />
 	<util:list id="indexables">
 		<ref local="mail" />
@@ -97,7 +97,7 @@
 		<ref local="question" />
 		<ref local="answer" />
 		<ref local="published" />
-		<ref local="tableTwo" />
+		<!--<ref local="tableTwo" />-->
 		<!--<ref local="tableThree" />-->
 	</util:list>
 
