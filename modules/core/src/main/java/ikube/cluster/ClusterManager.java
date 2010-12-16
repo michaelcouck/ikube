@@ -103,7 +103,7 @@ public class ClusterManager implements IClusterManager {
 			// We look for the largest row id from any of the servers
 			for (Server server : servers) {
 				for (Action action : server.getActions()) {
-					logger.info("Action : " + action + ", server : " + server.getAddress());
+					// logger.info("Action : " + action + ", server : " + server.getAddress());
 					if (action.getIndexableName().equals(indexableName) && action.getIndexName().equals(indexName)) {
 						if (action.getIdNumber() > idNumber) {
 							idNumber = action.getIdNumber();
