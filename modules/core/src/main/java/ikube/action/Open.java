@@ -82,7 +82,7 @@ public class Open extends Action {
 				Searchable[] searchables = searchers.toArray(new IndexSearcher[searchers.size()]);
 				MultiSearcher multiSearcher = new MultiSearcher(searchables);
 				indexContext.setMultiSearcher(multiSearcher);
-				ListenerManager.fireEvent(indexContext, Event.SEARCHER_OPENED, new Timestamp(System.currentTimeMillis()), Boolean.FALSE);
+				ListenerManager.fireEvent(Event.SEARCHER_OPENED, new Timestamp(System.currentTimeMillis()), indexContext, Boolean.FALSE);
 				return Boolean.TRUE;
 			}
 		} catch (Exception e) {

@@ -6,6 +6,7 @@ import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.DataGeneratorTwo;
 import ikube.toolkit.DataLoader;
 import ikube.toolkit.FileUtilities;
+import ikube.toolkit.PerformanceTester;
 
 import java.io.File;
 import java.util.Map;
@@ -36,14 +37,15 @@ public abstract class BaseTest extends ATest {
 		File sqlFile = FileUtilities.findFile(new File("."), new String[] { "tables.sql" });
 		dataLoader.createTables(sqlFile.getAbsolutePath());
 
-		DataGeneratorTwo dataGenerator = new DataGeneratorTwo(1, 1);
-		try {
-			dataGenerator.generate(SPRING_CONFIGURATION_FILE);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		PerformanceTester.execute(new PerformanceTester.APerform() {
+			@Override
+			public void execute() throws Exception {
+				DataGeneratorTwo dataGenerator = new DataGeneratorTwo(100, 1);
+				dataGenerator.generate(SPRING_CONFIGURATION_FILE);
+			}
+		}, "Data generator two insertion : ", 1);
 	}
 
-	protected IndexContext indexContext = ApplicationContextManager.getBean(IndexContext.class);
+	protected IndexContext indexContext = ApplicationContextManager.getBean("indexContextOne");
 
 }

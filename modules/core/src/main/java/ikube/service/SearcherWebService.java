@@ -42,8 +42,11 @@ public class SearcherWebService implements ISearcherWebService {
 			@Override
 			public void handleNotification(Event event) {
 				if (event.getType().equals(Event.SEARCHER_OPENED)) {
-					IndexContext indexContext = event.getIndexContext();
-					setMultiSearcher(indexContext);
+					Object object = event.getObject();
+					if (IndexContext.class.isAssignableFrom(object.getClass())) {
+						IndexContext indexContext = (IndexContext) object;
+						setMultiSearcher(indexContext);
+					}
 				}
 			}
 		});

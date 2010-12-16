@@ -156,10 +156,10 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 			DatabaseUtilities.close(statement);
 		}
 		// Once we finish all the results in the primary table
-		// then we can close the connection too
+		// then we can close the connection too. Each thread gets
+		// it's own connection so we don't overlap threads/connections
 		if (indexableTable.isPrimary()) {
-			DatabaseUtilities.closeAll(resultSet);
-			// DatabaseUtilities.close(connection);
+			DatabaseUtilities.close(connection);
 		}
 	}
 

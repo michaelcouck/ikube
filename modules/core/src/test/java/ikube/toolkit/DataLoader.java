@@ -50,9 +50,9 @@ public class DataLoader {
 			StringTokenizer tokenizer = new StringTokenizer(contents, ";", Boolean.FALSE);
 			while (tokenizer.hasMoreTokens()) {
 				String sql = tokenizer.nextToken();
-				logger.info("Sql : " + sql);
+				logger.debug("Sql : " + sql);
 				boolean executed = connection.createStatement().execute(sql);
-				logger.info("Executed : " + executed);
+				logger.debug("Executed : " + executed);
 			}
 		} catch (Exception e) {
 			logger.error("", e);
@@ -76,7 +76,7 @@ public class DataLoader {
 			IDatabaseConnection databaseConnection = new DatabaseConnection(connection);
 			IDataSet dataSet = databaseConnection.createDataSet(tableNames);
 			File file = FileUtilities.getFile(filePath, Boolean.FALSE);
-			logger.info("Writing data to : " + file.getAbsolutePath() + ", " + Arrays.asList(tableNames));
+			logger.debug("Writing data to : " + file.getAbsolutePath() + ", " + Arrays.asList(tableNames));
 			OutputStream outputStream = new FileOutputStream(file);
 			FlatXmlDataSet.write(dataSet, outputStream);
 		} catch (Exception e) {

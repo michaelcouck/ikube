@@ -45,11 +45,15 @@ public class PerformanceTester {
 	 *            the number of executions to perform
 	 * @return the number of executions per second
 	 */
-	public static double execute(IPerform perform, String type, double iterations) throws Exception {
+	public static double execute(IPerform perform, String type, double iterations) {
 		long before = Runtime.getRuntime().totalMemory();
 		double start = System.currentTimeMillis();
-		for (int i = 0; i < iterations; i++) {
-			perform.execute();
+		try {
+			for (int i = 0; i < iterations; i++) {
+				perform.execute();
+			}
+		} catch (Exception e) {
+			LOGGER.error("Exception executing the action : " + perform + ", " + type + ", " + iterations, e);
 		}
 		double end = System.currentTimeMillis();
 		double duration = (end - start) / 1000d;

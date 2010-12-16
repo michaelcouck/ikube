@@ -17,7 +17,7 @@ public abstract class Indexable<E> extends Persistable {
 	private List<Indexable<?>> children;
 
 	private boolean stored = Boolean.FALSE;
-	private boolean analyzed = Boolean.FALSE;
+	private boolean analyzed = Boolean.TRUE;
 	private boolean vectored = Boolean.FALSE;
 
 	public void setName(final String name) {

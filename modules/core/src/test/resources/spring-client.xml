@@ -13,9 +13,9 @@
             http://www.springframework.org/schema/util/spring-util.xsd">
 
 	<bean
-		id="indexContext"
+		id="indexContextOne"
 		class="ikube.model.IndexContext"
-		property:indexName="index"
+		property:indexName="indexOne"
 		property:maxAge="${max.age}"
 		property:compoundFile="${compound.file}"
 		property:bufferedDocs="${buffered.docs}"
@@ -27,12 +27,48 @@
 		property:maxReadLength="${max.read.length}"
 		property:queueTimeout="${max.age}"
 		property:throttle="${throttle}"
-		property:indexDirectoryPath="${index.directory.path}"
+		property:indexDirectoryPath="${index.directory.path.one}"
+		property:indexables-ref="indexables" />
+	<bean
+		id="indexContextTwo"
+		class="ikube.model.IndexContext"
+		property:indexName="indexTwo"
+		property:maxAge="${max.age}"
+		property:compoundFile="${compound.file}"
+		property:bufferedDocs="${buffered.docs}"
+		property:bufferSize="${buffer.size}"
+		property:batchSize="${jdbc.batch.size}"
+		property:internetBatchSize="${internet.batch.size}"
+		property:mergeFactor="${merge.factor}"
+		property:maxFieldLength="${max.field.length}"
+		property:maxReadLength="${max.read.length}"
+		property:queueTimeout="${max.age}"
+		property:throttle="${throttle}"
+		property:indexDirectoryPath="${index.directory.path.two}"
+		property:indexables-ref="indexables" />
+	<bean
+		id="indexContextThree"
+		class="ikube.model.IndexContext"
+		property:indexName="indexThree"
+		property:maxAge="${max.age}"
+		property:compoundFile="${compound.file}"
+		property:bufferedDocs="${buffered.docs}"
+		property:bufferSize="${buffer.size}"
+		property:batchSize="${jdbc.batch.size}"
+		property:internetBatchSize="${internet.batch.size}"
+		property:mergeFactor="${merge.factor}"
+		property:maxFieldLength="${max.field.length}"
+		property:maxReadLength="${max.read.length}"
+		property:queueTimeout="${max.age}"
+		property:throttle="${throttle}"
+		property:indexDirectoryPath="${index.directory.path.three}"
 		property:indexables-ref="indexables" />
 	<util:list id="indexables">
 		<ref local="mail" />
 		<ref local="internet" />
 		<ref local="filesystem" />
+		<ref local="tableOne" />
+		<ref local="tableOne" />
 		<ref local="tableOne" />
 	</util:list>
 

@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 
 import javax.persistence.Entity;
-import javax.persistence.Transient;
 
 /**
  * @author Michael Couck
@@ -30,8 +29,6 @@ public class Event extends Persistable {
 	private boolean consumed;
 	/** And arbitrary object to pass around. */
 	private Serializable object;
-
-	private transient IndexContext indexContext;
 
 	public String getType() {
 		return type;
@@ -63,15 +60,6 @@ public class Event extends Persistable {
 
 	public void setObject(Serializable object) {
 		this.object = object;
-	}
-
-	@Transient
-	public IndexContext getIndexContext() {
-		return indexContext;
-	}
-
-	public void setIndexContext(final IndexContext indexContext) {
-		this.indexContext = indexContext;
 	}
 
 	public String toString() {

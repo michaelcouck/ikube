@@ -100,14 +100,19 @@ public class ClusterManager implements IClusterManager {
 			}
 			long idNumber = 0;
 			List<Server> servers = cache.get(Server.class.getName(), null, null, Integer.MAX_VALUE);
-			// We look for the largest row id from any of the servers
+			// We look for the largest row id from any of the servers, from the first action in each server
 			for (Server server : servers) {
-				for (Action action : server.getActions()) {
+				List<Action> actions = server.getActions();
+				// Iterate from the end to the front
+				for (int i = actions.size() - 1; i >= 0; i--) {
+					Action action = actions.get(i);
 					// logger.info("Action : " + action + ", server : " + server.getAddress());
 					if (action.getIndexableName().equals(indexableName) && action.getIndexName().equals(indexName)) {
 						if (action.getIdNumber() > idNumber) {
 							idNumber = action.getIdNumber();
 						}
+						// We break when we get to the first action in this server
+						break;
 					}
 				}
 			}
@@ -115,13 +120,18 @@ public class ClusterManager implements IClusterManager {
 			Server server = getServer();
 			List<Action> actions = server.getActions();
 			Action currentAction = null;
-			for (Action action : actions) {
+
+			for (int i = actions.size() - 1; i >= 0; i--) {
+				Action action = actions.get(i);
 				if (action.getIndexableName().equals(indexableName) && action.getIndexName().equals(indexName)) {
 					currentAction = action;
 					break;
 				}
 			}
+
+			// This can never happen, can it?
 			if (currentAction == null) {
+				logger.warn("Action null : " + indexName + ", " + indexableName + ", " + batchSize);
 				currentAction = server.new Action();
 				currentAction.setIndexableName(indexableName);
 				currentAction.setIndexName(indexName);
@@ -186,16 +196,19 @@ public class ClusterManager implements IClusterManager {
 				}
 			}
 
+			// Set the server working and the new action in the list
 			Server server = getServer();
+			server.setWorking(isWorking);
+			server.getActions().add(server.new Action(0, indexableName, indexName, lastStartTime));
 
 			// Prune the actions in this server
 			List<Action> actions = server.getActions();
 			if (actions.size() > MAX_ACTION_SIZE) {
 				Iterator<Action> iterator = actions.iterator();
 				double prunedSize = MAX_ACTION_SIZE * ACTION_PRUNE_RATIO;
-				while (true) {
-					/* Action action = */iterator.next();
-					// logger.info("Removing action : " + action);
+				while (iterator.hasNext()) {
+					Action action = iterator.next();
+					logger.debug("Removing action : " + action);
 					iterator.remove();
 					if (actions.size() <= prunedSize) {
 						break;
@@ -203,11 +216,8 @@ public class ClusterManager implements IClusterManager {
 				}
 			}
 
-			server.setWorking(isWorking);
-			server.getActions().add(server.new Action(0, indexableName, indexName, lastStartTime));
-
 			// Publish the fact that this server is starting to work on an action
-			// logger.info("Setting : " + server);
+			logger.info("Publishing server : " + server);
 			cache.set(Server.class.getName(), server.getId(), server);
 			return lastStartTime;
 		} finally {
@@ -245,7 +255,7 @@ public class ClusterManager implements IClusterManager {
 			try {
 				acquired = lock.tryLock(LOCK_TIMEOUT, TimeUnit.MILLISECONDS);
 			} catch (InterruptedException e) {
-				logger.error("", e);
+				logger.error("Interrupted acquiring lock for : " + lockName, e);
 			}
 			if (!acquired) {
 				logger.warn(Logging.getString("Failed to acquire lock : ", lockName, ", ", Thread.currentThread().hashCode()));

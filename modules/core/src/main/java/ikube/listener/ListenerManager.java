@@ -1,8 +1,8 @@
 package ikube.listener;
 
 import ikube.model.Event;
-import ikube.model.IndexContext;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -79,12 +79,12 @@ public class ListenerManager {
 		}
 	}
 
-	public static final void fireEvent(IndexContext indexContext, String type, Timestamp timestamp, boolean consumed) {
+	public static final void fireEvent(String type, Timestamp timestamp, Serializable object, boolean consumed) {
 		Event event = new Event();
-		event.setIndexContext(indexContext);
 		event.setType(type);
 		event.setTimestamp(timestamp);
 		event.setConsumed(consumed);
+		event.setObject(object);
 		ListenerManager.fireEvent(event);
 	}
 
