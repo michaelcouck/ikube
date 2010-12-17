@@ -2,7 +2,6 @@ package ikube.listener;
 
 import ikube.model.Event;
 
-import java.sql.Timestamp;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -31,7 +30,7 @@ public class Scheduler {
 						Event event = new Event();
 						event.setType(schedule.getType());
 						event.setConsumed(Boolean.FALSE);
-						event.setTimestamp(new Timestamp(System.currentTimeMillis()));
+						event.setTimestamp(System.currentTimeMillis());
 						ListenerManager.fireEvent(event);
 					}
 				}, schedule.getDelay(), schedule.getPeriod(), TimeUnit.MILLISECONDS);

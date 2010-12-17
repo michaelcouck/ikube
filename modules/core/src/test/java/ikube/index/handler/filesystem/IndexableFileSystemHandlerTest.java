@@ -15,7 +15,7 @@ public class IndexableFileSystemHandlerTest extends BaseTest {
 
 	@Test
 	public void handle() throws Exception {
-		indexContext.setIndexWriter(indexWriter);
+		indexContext.setIndexWriter(INDEX_WRITER);
 		IndexableFileSystem indexableFileSystem = ApplicationContextManager.getBean(IndexableFileSystem.class);
 		IndexableFilesystemHandler indexableFileSystemHandler = ApplicationContextManager.getBean(IndexableFilesystemHandler.class);
 		indexableFileSystemHandler.handle(indexContext, indexableFileSystem);

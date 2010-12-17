@@ -68,10 +68,10 @@ public abstract class Action implements IAction<IndexContext, Boolean> {
 			logger.debug("Multi searcher null, should try to reopen : ");
 			return Boolean.TRUE;
 		}
-		// No searchables, also try to reopen an index searcher
+		// No SEARCHABLES, also try to reopen an index searcher
 		Searchable[] searchables = multiSearcher.getSearchables();
 		if (searchables == null || searchables.length == 0) {
-			logger.debug("No searchables open, should try to reopen : ");
+			logger.debug("No SEARCHABLES open, should try to reopen : ");
 			return Boolean.TRUE;
 		}
 		if (!isIndexCurrent(indexContext)) {
@@ -163,6 +163,9 @@ public abstract class Action implements IAction<IndexContext, Boolean> {
 	}
 
 	private boolean directoriesEqual(File directoryOne, File directoryTwo) {
+		if (directoryOne == null || directoryTwo == null) {
+			return false;
+		}
 		String nameOne = directoryOne.getName();
 		String nameTwo = directoryTwo.getName();
 		String parentNameOne = directoryOne.getParentFile().getName();

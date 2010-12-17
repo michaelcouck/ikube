@@ -1,7 +1,6 @@
 package ikube.model;
 
 import java.io.Serializable;
-import java.sql.Timestamp;
 
 import javax.persistence.Entity;
 
@@ -25,7 +24,7 @@ public class Event extends Persistable {
 	public static final String LINK = "link";
 
 	private String type;
-	private Timestamp timestamp;
+	private long timestamp;
 	private boolean consumed;
 	/** And arbitrary object to pass around. */
 	private Serializable object;
@@ -34,11 +33,11 @@ public class Event extends Persistable {
 		return type;
 	}
 
-	public Timestamp getTimestamp() {
+	public long getTimestamp() {
 		return timestamp;
 	}
 
-	public void setTimestamp(final Timestamp timestamp) {
+	public void setTimestamp(final long timestamp) {
 		this.timestamp = timestamp;
 	}
 

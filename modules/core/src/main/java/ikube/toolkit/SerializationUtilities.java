@@ -2,6 +2,7 @@ package ikube.toolkit;
 
 import ikube.IConstants;
 
+import java.beans.ExceptionListener;
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
 import java.io.ByteArrayInputStream;
@@ -19,16 +20,24 @@ public class SerializationUtilities {
 
 	private static Logger LOGGER = Logger.getLogger(SerializationUtilities.class);
 
+	private static ExceptionListener exceptionListener = new ExceptionListener() {
+		@Override
+		public void exceptionThrown(Exception e) {
+			LOGGER.error("General exception : ", e);
+		}
+	};
+
 	public static String serialize(Object object) {
-		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-		XMLEncoder xmlEncoder = new XMLEncoder(byteArrayOutputStream);
-		xmlEncoder.writeObject(object);
-		xmlEncoder.flush();
-		xmlEncoder.close();
 		try {
+			ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+			XMLEncoder xmlEncoder = new XMLEncoder(byteArrayOutputStream);
+			xmlEncoder.setExceptionListener(exceptionListener);
+			xmlEncoder.writeObject(object);
+			xmlEncoder.flush();
+			xmlEncoder.close();
 			return byteArrayOutputStream.toString(IConstants.ENCODING);
 		} catch (UnsupportedEncodingException e) {
-			LOGGER.error("Unsupported encoding", e);
+			LOGGER.error("Unsupported encoding : ", e);
 		}
 		return null;
 	}
@@ -37,12 +46,14 @@ public class SerializationUtilities {
 		byte[] bytes = new byte[0];
 		try {
 			bytes = xml.getBytes(IConstants.ENCODING);
+			ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
+			XMLDecoder xmlDecoder = new XMLDecoder(byteArrayInputStream);
+			xmlDecoder.setExceptionListener(exceptionListener);
+			return xmlDecoder.readObject();
 		} catch (UnsupportedEncodingException e) {
-			LOGGER.error("Unsupported encoding", e);
+			LOGGER.error("Unsupported encoding : ", e);
 		}
-		ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
-		XMLDecoder xmlDecoder = new XMLDecoder(byteArrayInputStream);
-		return xmlDecoder.readObject();
+		return null;
 	}
 
 	public static Object clone(Object object) {

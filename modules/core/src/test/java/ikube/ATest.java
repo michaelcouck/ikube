@@ -1,6 +1,9 @@
 package ikube;
 
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import ikube.database.IDataBase;
 import ikube.index.parse.mime.MimeMapper;
 import ikube.index.parse.mime.MimeTypes;
@@ -28,29 +31,52 @@ import org.apache.lucene.store.Lock;
 public abstract class ATest {
 
 	static {
-		Logging.configure();
-		new MimeTypes("/META-INF/mime/mime-types.xml");
-		new MimeMapper("/META-INF/mime/mime-mapping.xml");
+		initialize();
 	}
+
+	protected static MultiSearcher MULTI_SEARCHER;
+	protected static IndexSearcher INDEX_SEARCHER;
+	protected static IndexReader INDEX_READER;
+	protected static FSDirectory FS_DIRECTORY;
+	protected static Searchable[] SEARCHABLES;
+	protected static IndexWriter INDEX_WRITER;
+	protected static Lock LOCK;
+	protected static String IP;
+
+	private static boolean INITIALIZED = Boolean.FALSE;
 
 	protected Logger logger = Logger.getLogger(this.getClass());
 
-	protected MultiSearcher multiSearcher = mock(MultiSearcher.class);
-	protected IndexSearcher indexSearcher = mock(IndexSearcher.class);
-	protected IndexReader indexReader = mock(IndexReader.class);
-	protected FSDirectory fsDirectory = mock(FSDirectory.class);
-	protected Searchable[] searchables = new Searchable[] { indexSearcher };
-	protected IndexWriter indexWriter = mock(IndexWriter.class);
-	protected Lock lock = mock(Lock.class);
-	protected String ip;
-	{
+	private static void initialize() {
+		if (INITIALIZED) {
+			return;
+		}
+		INITIALIZED = Boolean.TRUE;
+
+		Logging.configure();
+		new MimeTypes("/META-INF/mime/mime-types.xml");
+		new MimeMapper("/META-INF/mime/mime-mapping.xml");
+
+		MULTI_SEARCHER = mock(MultiSearcher.class);
+		INDEX_SEARCHER = mock(IndexSearcher.class);
+		INDEX_READER = mock(IndexReader.class);
+		FS_DIRECTORY = mock(FSDirectory.class);
+		SEARCHABLES = new Searchable[] { INDEX_SEARCHER };
+		INDEX_WRITER = mock(IndexWriter.class);
+		LOCK = mock(Lock.class);
+
+		when(MULTI_SEARCHER.getSearchables()).thenReturn(SEARCHABLES);
+		when(INDEX_SEARCHER.getIndexReader()).thenReturn(INDEX_READER);
+		when(INDEX_READER.directory()).thenReturn(FS_DIRECTORY);
+		when(FS_DIRECTORY.makeLock(anyString())).thenReturn(LOCK);
+
 		try {
-			ip = InetAddress.getLocalHost().getHostAddress();
+			IP = InetAddress.getLocalHost().getHostAddress();
 			// Every time the JVM starts a +~JF#######.tmp file is created. Strange as that is
 			// we still need to delete it manually.
 			FileUtilities.deleteFiles(new File(System.getProperty("user.home")), ".tmp");
 		} catch (Exception e) {
-			logger.error("127.0.0.1 is best", e);
+			e.printStackTrace();
 		}
 	}
 

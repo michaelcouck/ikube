@@ -31,8 +31,9 @@ public class ClusterManager implements IClusterManager {
 	protected static double ACTION_PRUNE_RATIO = 0.5;
 
 	protected Logger logger;
-	/** The address of this server. This can be set in the configuration. The default is the ip address. */
+	/** The address of this server. This can be set in the configuration. The default is the IP address. */
 	protected String address;
+	/** The cluster wide cache. */
 	protected ICache cache;
 
 	private ICache.ICriteria<Url> criteria = new ICache.ICriteria<Url>() {
@@ -50,7 +51,14 @@ public class ClusterManager implements IClusterManager {
 	};
 
 	public ClusterManager() throws Exception {
-		this.address = InetAddress.getLocalHost().getHostAddress();
+		synchronized (this) {
+			try {
+				this.logger = Logger.getLogger(this.getClass());
+				this.address = InetAddress.getLocalHost().getHostAddress();
+			} finally {
+				notifyAll();
+			}
+		}
 	}
 
 	@Override
@@ -61,7 +69,7 @@ public class ClusterManager implements IClusterManager {
 			if (lock == null) {
 				return Boolean.TRUE;
 			}
-			List<Server> servers = cache.get(Server.class.getName(), null, null, Integer.MAX_VALUE);
+			List<Server> servers = getServers(); // cache.get(Server.class.getName(), null, null, Integer.MAX_VALUE);
 			for (Server server : servers) {
 				if (server.getAddress().equals(this.address)) {
 					continue;
@@ -95,7 +103,7 @@ public class ClusterManager implements IClusterManager {
 				return 0;
 			}
 			long idNumber = 0;
-			List<Server> servers = cache.get(Server.class.getName(), null, null, Integer.MAX_VALUE);
+			List<Server> servers = getServers(); // cache.get(Server.class.getName(), null, null, Integer.MAX_VALUE);
 			// We look for the largest row id from any of the servers, from the first action in each server
 			for (Server server : servers) {
 				List<Action> actions = server.getActions();
@@ -113,7 +121,7 @@ public class ClusterManager implements IClusterManager {
 				}
 			}
 			// We find the action for this server
-			Server server = getServer();
+			Server server = getServer(); // cache.get(Server.class.getName(), HashUtilities.hash(address));
 			List<Action> actions = server.getActions();
 			Action currentAction = null;
 
@@ -181,7 +189,7 @@ public class ClusterManager implements IClusterManager {
 			}
 
 			long lastStartTime = System.currentTimeMillis();
-			List<Server> servers = cache.get(Server.class.getName(), null, null, Integer.MAX_VALUE);
+			List<Server> servers = getServers(); // cache.get(Server.class.getName(), null, null, Integer.MAX_VALUE);
 			// Find the first start time for the action we want to start in any of the servers
 			for (Server server : servers) {
 				logger.info("Server : " + server);
@@ -193,7 +201,10 @@ public class ClusterManager implements IClusterManager {
 			}
 
 			// Set the server working and the new action in the list
-			Server server = getServer();
+			Server server = getServer(); // cache.get(Server.class.getName(), HashUtilities.hash(address));
+			if (server == null) {
+				server = new Server();
+			}
 			server.setWorking(isWorking);
 			server.getActions().add(server.new Action(0, indexableName, indexName, lastStartTime));
 
@@ -225,7 +236,7 @@ public class ClusterManager implements IClusterManager {
 	@Override
 	public synchronized boolean isHandled(String indexableName, String indexName) {
 		try {
-			Server thisServer = getServer();
+			Server thisServer = getServer(); // cache.get(Server.class.getName(), HashUtilities.hash(address));
 			List<Server> servers = getServers();
 			for (Server server : servers) {
 				if (server.equals(thisServer)) {
@@ -251,13 +262,13 @@ public class ClusterManager implements IClusterManager {
 			try {
 				acquired = lock.tryLock(LOCK_TIMEOUT, TimeUnit.MILLISECONDS);
 			} catch (InterruptedException e) {
-				logger.error("Interrupted acquiring lock for : " + lockName, e);
+				logger.error("Interrupted acquiring LOCK for : " + lockName, e);
 			}
 			if (!acquired) {
-				logger.warn(Logging.getString("Failed to acquire lock : ", lockName, ", ", Thread.currentThread().hashCode()));
+				logger.warn(Logging.getString("Failed to acquire LOCK : ", lockName, ", ", Thread.currentThread().hashCode()));
 				return null;
 			}
-			// logger.info(Logging.getString("Acquired lock : ", lock, ", ", Thread.currentThread().hashCode()));
+			// logger.info(Logging.getString("Acquired LOCK : ", LOCK, ", ", Thread.currentThread().hashCode()));
 			return lock;
 		} finally {
 			notifyAll();
@@ -268,7 +279,7 @@ public class ClusterManager implements IClusterManager {
 		try {
 			if (lock != null) {
 				lock.unlock();
-				// logger.info(Logging.getString("Unlocked : ", lock, ", ", Thread.currentThread().hashCode()));
+				// logger.info(Logging.getString("Unlocked : ", LOCK, ", ", Thread.currentThread().hashCode()));
 			}
 		} finally {
 			notifyAll();
@@ -329,18 +340,22 @@ public class ClusterManager implements IClusterManager {
 		}
 	}
 
-	/** Initialization methods called form Spring. */
+	/** Methods called form Spring. */
 
-	protected void initialise() throws Exception {
-		this.logger = Logger.getLogger(this.getClass());
+	public synchronized void setCache(ICache cache) {
+		try {
+			this.cache = cache;
+		} finally {
+			notifyAll();
+		}
 	}
 
-	protected void setCache(ICache cache) {
-		this.cache = cache;
-	}
-
-	protected void setAddress(String address) {
-		this.address = address;
+	public synchronized void setAddress(String address) {
+		try {
+			this.address = address;
+		} finally {
+			notifyAll();
+		}
 	}
 
 }

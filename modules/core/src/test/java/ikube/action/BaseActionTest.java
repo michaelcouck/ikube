@@ -2,7 +2,6 @@ package ikube.action;
 
 import ikube.BaseTest;
 import ikube.IConstants;
-import ikube.model.IndexContext;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
@@ -67,26 +66,6 @@ public abstract class BaseActionTest extends BaseTest {
 			}
 		}
 		return indexDirectory;
-	}
-
-	/**
-	 * Returns the path to the latest index directory for this server and this context. The result will be something like
-	 * './index/faq/1234567890/127.0.0.1'.
-	 * 
-	 * @param indexContext
-	 *            the index context to get the directory path for
-	 * @return the directory path to the latest index directory for this servers and context
-	 */
-	protected String getServerIndexDirectoryPath(IndexContext indexContext) {
-		StringBuilder builder = new StringBuilder();
-		builder.append(indexContext.getIndexDirectoryPath());
-		builder.append(File.separator);
-		builder.append(indexContext.getIndexName());
-		builder.append(File.separator);
-		builder.append(System.currentTimeMillis());
-		builder.append(File.separator);
-		builder.append(ip);
-		return builder.toString();
 	}
 
 }

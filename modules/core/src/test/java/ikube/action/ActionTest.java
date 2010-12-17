@@ -8,6 +8,7 @@ import ikube.toolkit.FileUtilities;
 
 import java.io.File;
 
+import org.apache.lucene.search.Searchable;
 import org.junit.Test;
 
 /**
@@ -41,7 +42,7 @@ public class ActionTest extends BaseActionTest {
 		builder.append(File.separator);
 		builder.append(System.currentTimeMillis());
 		builder.append(File.separator);
-		builder.append(ip);
+		builder.append(IP);
 		File serverIndexDirectory = FileUtilities.getFile(builder.toString(), Boolean.TRUE);
 
 		indexContext.setMaxAge(maxAge);
@@ -61,33 +62,25 @@ public class ActionTest extends BaseActionTest {
 		// Searcher null in the context
 		assertTrue(shouldReopen /* && !baseIndexDirectory.exists() */);
 
-		indexContext.setMultiSearcher(multiSearcher);
+		indexContext.setMultiSearcher(MULTI_SEARCHER);
 
-		// No searchables in the searcher
+		// No SEARCHABLES in the searcher
+		when(MULTI_SEARCHER.getSearchables()).thenReturn(new Searchable[0]);
 		shouldReopen = action.shouldReopen(indexContext);
 		assertTrue(shouldReopen);
 
-		StringBuilder builder = new StringBuilder();
-		builder.append(indexContext.getIndexDirectoryPath());
-		builder.append(File.separator);
-		builder.append(indexContext.getIndexName());
-		builder.append(File.separator);
-		builder.append(System.currentTimeMillis());
-		builder.append(File.separator);
-		builder.append(ip);
-		File serverIndexDirectory = createIndex(new File(builder.toString()));
+		String serverIndexDirectoryPath = getServerIndexDirectoryPath(indexContext);
+		File serverIndexDirectory = createIndex(new File(serverIndexDirectoryPath));
 
-		when(indexSearcher.getIndexReader()).thenReturn(indexReader);
-		when(indexReader.directory()).thenReturn(fsDirectory);
-		when(fsDirectory.getFile()).thenReturn(new File(serverIndexDirectory.getAbsolutePath()));
-		when(multiSearcher.getSearchables()).thenReturn(searchables);
+		when(FS_DIRECTORY.getFile()).thenReturn(new File(serverIndexDirectory.getAbsolutePath()));
+		when(MULTI_SEARCHER.getSearchables()).thenReturn(SEARCHABLES);
 
 		// All the directories are in the searcher
 		shouldReopen = action.shouldReopen(indexContext);
 		assertFalse(shouldReopen);
 
 		// Create a new server index directory
-		File anotherServerIndexDirectory = createIndex(new File(builder.toString().replace(ip, "127.0.0.2")));
+		File anotherServerIndexDirectory = createIndex(new File(serverIndexDirectoryPath.replace(IP, "127.0.0.2")));
 
 		shouldReopen = action.shouldReopen(indexContext);
 		assertTrue(shouldReopen);

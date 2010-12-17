@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import ikube.BaseTest;
 import ikube.IConstants;
+import ikube.cluster.IClusterManager;
 import ikube.model.Indexable;
 import ikube.model.IndexableColumn;
 import ikube.model.IndexableTable;
@@ -22,6 +23,7 @@ import java.util.List;
 import javax.sql.DataSource;
 
 import org.apache.lucene.document.Document;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -47,11 +49,27 @@ public class IndexableTableHandlerTest extends BaseTest {
 		connection = ApplicationContextManager.getBean(DataSource.class).getConnection();
 	}
 
+	@After
+	public void after() {
+		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
+		clusterManager.setWorking(indexContext.getIndexName(), faqIndexableTable.getName(), Boolean.FALSE);
+	}
+
+	@Test
+	public void handleTable() throws Exception {
+		// IndexContext, IndexableTable, Connection, Document
+		indexContext.setIndexWriter(INDEX_WRITER);
+		List<Thread> threads = indexableTableHandler.handle(indexContext, faqIndexableTable);
+		ThreadUtilities.waitForThreads(threads);
+		// We just need to succeed, the integration tests test the
+		// data that is indexed and validates it
+	}
+
 	@Test
 	public void buildSql() throws Exception {
 		String expectedSql = "select db2admin.faq.faqId, db2admin.faq.creationtimestamp, db2admin.faq.modifiedtimestamp, db2admin.faq.creator, "
 				+ "db2admin.faq.modifier, db2admin.faq.question, db2admin.faq.answer, db2admin.faq.published from db2admin.faq where faq.faqid > 0 and db2admin.faq.faqId > 0 "
-				+ "and db2admin.faq.faqId <= 100";
+				+ "and db2admin.faq.faqId <= 10";
 		// IndexContext, IndexableTable, long
 		long nextIdNumber = 0;
 		String sql = indexableTableHandler.buildSql(faqIndexableTable, indexContext.getBatchSize(), nextIdNumber);
@@ -67,14 +85,15 @@ public class IndexableTableHandlerTest extends BaseTest {
 		assertEquals(1, minId);
 		long maxId = indexableTableHandler.getIdFunction(faqIndexableTable, connection, "max");
 		logger.debug("Max id : " + maxId);
-		assertTrue(maxId < 100);
+		assertTrue(maxId < 1000);
 	}
 
 	@Test
 	public void getIdColumn() throws Exception {
 		// List<Indexable<?>>
-		assertNotNull(faqIdIndexableColumn);
-		assertEquals("faqId", faqIdIndexableColumn.getName());
+		IndexableColumn idColumn = indexableTableHandler.getIdColumn(faqIndexableTable.getChildren());
+		assertNotNull(idColumn);
+		assertEquals("faqId", idColumn.getName());
 	}
 
 	@Test
@@ -99,7 +118,9 @@ public class IndexableTableHandlerTest extends BaseTest {
 		ResultSet resultSet = indexableTableHandler.getResultSet(indexContext, attachmentIndexableTable, connection);
 		assertNotNull(resultSet);
 
+		Statement statement = resultSet.getStatement();
 		DatabaseUtilities.close(resultSet);
+		DatabaseUtilities.close(statement);
 	}
 
 	@Test
@@ -121,7 +142,8 @@ public class IndexableTableHandlerTest extends BaseTest {
 		Statement statement = connection.createStatement();
 		ResultSet resultSet = statement.executeQuery("select * from db2admin.faq");
 		resultSet.next();
-		indexableTableHandler.setIdField(faqIndexableColumns, faqIndexableTable, document, resultSet);
+		indexableTableHandler.setColumnTypesAndData(faqIndexableColumns, resultSet);
+		indexableTableHandler.setIdField(faqIndexableTable, document);
 		logger.debug("Document : " + document);
 		String idFieldValue = document.get(IConstants.ID);
 		logger.debug("Id field : " + idFieldValue);
@@ -138,22 +160,12 @@ public class IndexableTableHandlerTest extends BaseTest {
 		Statement statement = connection.createStatement();
 		ResultSet resultSet = statement.executeQuery("select * from db2admin.faq");
 		resultSet.next();
-		indexableTableHandler.setColumnTypes(faqIndexableColumns, resultSet);
+		indexableTableHandler.setColumnTypesAndData(faqIndexableColumns, resultSet);
 		logger.debug("Faq id column type : " + faqIdIndexableColumn.getColumnType());
 		assertEquals(Types.BIGINT, faqIdIndexableColumn.getColumnType());
 
 		DatabaseUtilities.close(resultSet);
 		DatabaseUtilities.close(statement);
-	}
-
-	@Test
-	public void handleTable() throws Exception {
-		// IndexContext, IndexableTable, Connection, Document
-		indexContext.setIndexWriter(indexWriter);
-		List<Thread> threads = indexableTableHandler.handle(indexContext, faqIndexableTable);
-		ThreadUtilities.waitForThreads(threads);
-		// We just need to succeed, the integration tests test the
-		// data that is indexed and validates it
 	}
 
 }

@@ -1,6 +1,7 @@
 package ikube.service;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import ikube.BaseTest;
@@ -15,10 +16,11 @@ public class SearcherWebServiceTest extends BaseTest {
 	public void before() {
 		this.searcherWebService = ApplicationContextManager.getBean(SearcherWebService.class);
 		this.searcherWebService.setMultiSearcher(indexContext);
-		this.indexContext.setMultiSearcher(multiSearcher);
+		this.indexContext.setMultiSearcher(MULTI_SEARCHER);
 	}
 
 	@Test
+	@Ignore
 	public void searchSingle() {
 		String result = this.searcherWebService.searchSingle(indexContext.getIndexName(), "search string", IConstants.CONTENTS, Boolean.TRUE, 0,
 				10);
@@ -26,6 +28,7 @@ public class SearcherWebServiceTest extends BaseTest {
 	}
 
 	@Test
+	@Ignore
 	public void searchMulti() {
 		String result = this.searcherWebService.searchMulti(indexContext.getIndexName(), new String[] { "search", "strings" }, new String[] {
 				IConstants.CONTENTS, IConstants.ID }, Boolean.TRUE, 0, 10);

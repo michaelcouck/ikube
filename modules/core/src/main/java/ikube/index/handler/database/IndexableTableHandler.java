@@ -19,6 +19,9 @@ import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.DatabaseUtilities;
 import ikube.toolkit.SerializationUtilities;
 
+import java.beans.BeanInfo;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -74,6 +77,21 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	@Override
 	@IndexableHandlerType(type = IndexableTable.class)
 	public List<Thread> handle(final IndexContext indexContext, final IndexableTable indexable) throws Exception {
+
+		// TODO - go through the variables in the each class in the model
+		// and look for the transient modifier and set all the variables that are
+		// transient to transient in the property descriptors
+		BeanInfo info = Introspector.getBeanInfo(IndexableColumn.class);
+		PropertyDescriptor[] propertyDescriptors = info.getPropertyDescriptors();
+		for (int i = 0; i < propertyDescriptors.length; ++i) {
+			PropertyDescriptor pd = propertyDescriptors[i];
+			if (pd.getName().equals("object")) {
+				pd.setValue("transient", Boolean.TRUE);
+			} else if (pd.getName().equals("columnType")) {
+				pd.setValue("transient", Boolean.TRUE);
+			}
+		}
+
 		// We start as many threads to access this table as defined. We return
 		// the threads to the caller that they can then wait for the threads to finish
 		List<Thread> threads = new ArrayList<Thread>();
@@ -118,35 +136,31 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 					break;
 				}
 				List<Indexable<?>> children = indexableTable.getChildren();
-				// Set the column types
-				setColumnTypes(children, resultSet);
+				// Set the column types and the data from the table in the column objects
+				setColumnTypesAndData(children, resultSet);
 				// Set the id field if this is a primary table
-				if (indexableTable.isPrimary() || document == null) {
+				if (indexableTable.isPrimary()/* || document == null */) {
 					document = new Document();
-					setIdField(children, indexableTable, document, resultSet);
+					setIdField(indexableTable, document);
 				}
 				// Handle all the columns that are 'normal', i.e. that don't have references
 				// to the values in other columns, like the attachment that needs the name
 				// from the name column
-				ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
-				for (int i = 1; i <= resultSetMetaData.getColumnCount(); i++) {
-					Indexable<?> indexable = children.get(i - 1);
+				for (Indexable<?> indexable : indexableTable.getChildren()) {
 					if (!IndexableColumn.class.isAssignableFrom(indexable.getClass())) {
-						break;
+						continue;
 					}
 					IndexableColumn indexableColumn = (IndexableColumn) indexable;
-					Object object = resultSet.getObject(indexableColumn.getName());
-					indexableColumn.setObject(object);
 					if (indexableColumn.getNameColumn() != null) {
 						continue;
 					}
 					handleColumn(indexableColumn, document);
 				}
+
 				// Handle all the columns that rely on another column, like the attachment
 				// column that needs the name from the name column to get the content type
 				// for the parser
-				for (int i = 1; i <= resultSetMetaData.getColumnCount(); i++) {
-					Indexable<?> indexable = children.get(i - 1);
+				for (Indexable<?> indexable : indexableTable.getChildren()) {
 					if (!IndexableColumn.class.isAssignableFrom(indexable.getClass())) {
 						break;
 					}
@@ -156,15 +170,17 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 					}
 					handleColumn(indexableColumn, document);
 				}
+
 				// Handle all the sub tables
 				for (Indexable<?> indexable : children) {
-					if (IndexableTable.class.isAssignableFrom(indexable.getClass())) {
-						IndexableTable childIndexableTable = (IndexableTable) indexable;
-						// Here we recursively call this method with the child tables. We pass the document
-						// to the child table for this row in the parent table so they can add their fields to the
-						// index
-						handleTable(indexContext, childIndexableTable, connection, document);
+					if (!IndexableTable.class.isAssignableFrom(indexable.getClass())) {
+						continue;
 					}
+					IndexableTable childIndexableTable = (IndexableTable) indexable;
+					// Here we recursively call this method with the child tables. We pass the document
+					// to the child table for this row in the parent table so they can add their fields to the
+					// index
+					handleTable(indexContext, childIndexableTable, connection, document);
 				}
 				// Add the document to the index if this is the primary table
 				if (indexableTable.isPrimary()) {
@@ -380,22 +396,35 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 		}
 	}
 
+	/**
+	 * This method sets the parameters in the statement. Typically the sub tables need the id from the parent. The sql generated would be
+	 * something like: "...where foreignKey = parentId", so we have to get the parent id column and set the parameter.
+	 * 
+	 * @param indexableTable
+	 *            the table that is being iterated over at the moment, this could be a top level table n which case there will be no foreign
+	 *            key references, but in the case of a sub table the parent id will be accessed
+	 * @param preparedStatement
+	 *            the statement to set the parameters in
+	 */
 	protected synchronized void setParameters(IndexableTable indexableTable, PreparedStatement preparedStatement) {
 		try {
 			List<Indexable<?>> children = indexableTable.getChildren();
+			int index = 1;
 			for (Indexable<?> child : children) {
-				if (IndexableColumn.class.isAssignableFrom(child.getClass())) {
-					IndexableColumn indexableColumn = (IndexableColumn) child;
-					if (indexableColumn.getForeignKey() != null) {
-						IndexableColumn foreignKey = indexableColumn.getForeignKey();
-						try {
-							Object parameter = foreignKey.getObject();
-							// logger.debug("Parameter : " + parameter);
-							preparedStatement.setObject(1, parameter);
-						} catch (SQLException e) {
-							logger.error("Exception setting the parameters : " + indexableTable + ", " + indexableTable.getChildren(), e);
-						}
-					}
+				if (!IndexableColumn.class.isAssignableFrom(child.getClass())) {
+					continue;
+				}
+				IndexableColumn indexableColumn = (IndexableColumn) child;
+				if (indexableColumn.getForeignKey() == null) {
+					continue;
+				}
+				IndexableColumn foreignKey = indexableColumn.getForeignKey();
+				try {
+					Object parameter = foreignKey.getObject();
+					preparedStatement.setObject(index, parameter);
+					index++;
+				} catch (SQLException e) {
+					logger.error("Exception setting the parameters : " + indexableTable + ", " + indexableTable.getChildren(), e);
 				}
 			}
 		} finally {
@@ -403,9 +432,22 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 		}
 	}
 
+	/**
+	 * This method selects from the specified table using a function, typically something like "max" or "min". In some cases we need to know
+	 * if we have reached the end of the table, or what the first id is in the table.
+	 * 
+	 * @param indexableTable
+	 *            the table to execute the function on
+	 * @param connection
+	 *            the database connection
+	 * @param function
+	 *            the function to execute on the table
+	 * @return the id that resulted from the function
+	 * @throws Exception
+	 */
 	protected synchronized long getIdFunction(IndexableTable indexableTable, Connection connection, String function) throws Exception {
 		IndexableColumn idColumn;
-		long maxId = 0;
+		long result = 0;
 		Statement statement = null;
 		ResultSet resultSet = null;
 		try {
@@ -430,9 +472,9 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 			statement = connection.createStatement();
 			resultSet = statement.executeQuery(builder.toString());
 			if (resultSet.next()) {
-				maxId = resultSet.getLong(1);
+				result = resultSet.getLong(1);
 			}
-			return maxId;
+			return result;
 		} finally {
 			DatabaseUtilities.close(resultSet);
 			DatabaseUtilities.close(statement);
@@ -440,6 +482,14 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 		}
 	}
 
+	/**
+	 * Looks through the columns and returns the id column.
+	 * 
+	 * @param indexableColumns
+	 *            the columns to look through
+	 * @return the id column or null if no such column is defined. Generally this will mean a configuration problem, every table must have a
+	 *         unique id column
+	 */
 	protected IndexableColumn getIdColumn(List<Indexable<?>> indexableColumns) {
 		for (Indexable<?> indexable : indexableColumns) {
 			if (!IndexableColumn.class.isAssignableFrom(indexable.getClass())) {
@@ -454,6 +504,15 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 		return null;
 	}
 
+	/**
+	 * This method handles a column. Essentially what this means is that the data from the table is extracted and added to the document, in
+	 * the field specified.
+	 * 
+	 * @param indexable
+	 *            the column to extract the data from and add to the document
+	 * @param document
+	 *            the document to add the data to using the field name specified in the column definition
+	 */
 	protected void handleColumn(IndexableColumn indexable, Document document) {
 		InputStream inputStream = null;
 		OutputStream parsedOutputStream = null;
@@ -520,8 +579,19 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 		}
 	}
 
-	protected void setIdField(List<Indexable<?>> children, IndexableTable indexableTable, Document document, ResultSet resultSet)
-			throws Exception {
+	/**
+	 * Sets the id field for this document. Typically the id for the document in the index is unique in the index but it may not be. It is
+	 * always a good idea to have a unique field, but a table may be indexed twice of course, in which case there will be duplicates in the
+	 * id fields.
+	 * 
+	 * @param indexableTable
+	 *            the table to get the id for
+	 * @param document
+	 *            the document to set the id field in
+	 * @throws Exception
+	 */
+	protected void setIdField(IndexableTable indexableTable, Document document) throws Exception {
+		List<Indexable<?>> children = indexableTable.getChildren();
 		IndexableColumn idColumn = getIdColumn(children);
 		StringBuilder builder = new StringBuilder();
 
@@ -531,24 +601,33 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 		builder.append(".");
 		builder.append(idColumn.getName());
 		builder.append(".");
-		builder.append(resultSet.getObject(idColumn.getName()));
+		builder.append(idColumn.getObject());
 
 		String id = builder.toString();
 		IndexManager.addStringField(IConstants.ID, id, document, Store.YES, Index.ANALYZED, TermVector.YES);
 	}
 
-	protected void setColumnTypes(List<Indexable<?>> children, ResultSet resultSet) throws Exception {
+	/**
+	 * This method sets the data from the table columns in the column objects as well as the type which is gotten from the result set emta
+	 * data.
+	 * 
+	 * @param children the children indexables of the table object
+	 * @param resultSet the result set for the table
+	 * @throws Exception 
+	 */
+	protected void setColumnTypesAndData(List<Indexable<?>> children, ResultSet resultSet) throws Exception {
 		ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
-		for (int i = 1; i <= resultSetMetaData.getColumnCount(); i++) {
-			Indexable<?> indexable = children.get(i - 1);
-			// Tables are at the end of the list so once we
-			// get to the tables then we will exit the loop
+		int index = 1;
+		for (Indexable<?> indexable : children) {
 			if (!IndexableColumn.class.isAssignableFrom(indexable.getClass())) {
 				continue;
 			}
-			int columnType = resultSetMetaData.getColumnType(i);
 			IndexableColumn indexableColumn = (IndexableColumn) indexable;
+			int columnType = resultSetMetaData.getColumnType(index);
+			Object object = resultSet.getObject(indexableColumn.getName());
 			indexableColumn.setColumnType(columnType);
+			indexableColumn.setObject(object);
+			index++;
 		}
 	}
 

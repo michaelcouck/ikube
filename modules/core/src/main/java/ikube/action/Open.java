@@ -8,7 +8,6 @@ import ikube.service.SearcherWebService;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 
 import org.apache.lucene.index.IndexReader;
@@ -25,7 +24,7 @@ import org.apache.lucene.store.FSDirectory;
  * 
  * This action will find the latest index directory based on the folder name which is a long(the time the index was started), find all the
  * server directories in the directory and open a searchable on each of the 'server indexes'. A multi searcher will be opened on the
- * searchables and this will be set in the index context. An even will be fired to alert all interested parties that there is a new searcher
+ * SEARCHABLES and this will be set in the index context. An even will be fired to alert all interested parties that there is a new searcher
  * and they can perform whatever logic the need to, like the {@link SearcherWebService} which will then open the single and multi search
  * objects on the new multi searcher.
  * 
@@ -84,7 +83,7 @@ public class Open extends Action {
 				Searchable[] searchables = searchers.toArray(new IndexSearcher[searchers.size()]);
 				MultiSearcher multiSearcher = new MultiSearcher(searchables);
 				indexContext.setMultiSearcher(multiSearcher);
-				ListenerManager.fireEvent(Event.SEARCHER_OPENED, new Timestamp(System.currentTimeMillis()), indexContext, Boolean.FALSE);
+				ListenerManager.fireEvent(Event.SEARCHER_OPENED, System.currentTimeMillis(), indexContext, Boolean.FALSE);
 				return Boolean.TRUE;
 			}
 		} catch (Exception e) {

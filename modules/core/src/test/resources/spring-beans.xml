@@ -24,19 +24,7 @@
 	<context:annotation-config />
 	<aop:aspectj-autoproxy proxy-target-class="true" />
 	
-	<bean
-		id="ikube.cluster.cache.Cache"
-		class="ikube.cluster.cache.Cache"
-		lazy-init="true"
-		init-method="initialise" />
-	<bean
-		class="ikube.cluster.ClusterManager"
-		lazy-init="true"
-		init-method="initialise"
-		property:cache-ref="ikube.cluster.cache.Cache" />
-	<bean
-		class="ikube.IndexEngine"
-		property:actions-ref="actions" />
+	<!-- Persistence class -->
 	<bean
 		id="ikube.database.odb.DataBaseOdb"
 		class="ikube.database.odb.DataBaseOdb"
@@ -51,6 +39,7 @@
 					property:className="ikube.model.Url">
 					<property name="fieldNames">
 						<list>
+							<!-- Neodatis doesn't like indexes -->
 							<!--<value>id</value>-->
 							<!--<value>url</value>
 							<value>hash</value>-->
@@ -60,7 +49,24 @@
 			</list>
 		</property>
 	</bean>
+	<!-- Cluster wide cache -->
+	<bean
+		id="ikube.cluster.cache.Cache"
+		class="ikube.cluster.cache.Cache"
+		lazy-init="false"
+		init-method="initialise" />
+	<!-- Cluster wide manager -->
+	<!-- init-method="initialise" -->
+	<bean
+		class="ikube.cluster.ClusterManager"
+		lazy-init="false"
+		property:cache-ref="ikube.cluster.cache.Cache" />
+	<!-- Core class for managing indexes and contexts -->
+	<bean
+		class="ikube.IndexEngine"
+		property:actions-ref="actions" />
 
+	<!-- Actions to perform on the contexts -->
 	<bean id="ikube.action.Close" class="ikube.action.Close" />
 	<bean id="ikube.action.Delete" class="ikube.action.Delete" />
 	<bean id="ikube.action.Index" class="ikube.action.Index" />
@@ -74,6 +80,7 @@
 		<ref local="ikube.action.Delete" />
 	</util:list>
 	
+	<!-- Indexable handlers -->
 	<bean
 		class="ikube.index.handler.internet.IndexableInternetHandler"
 		property:threads="${internet.handler.threads}" />
@@ -87,13 +94,15 @@
 		class="ikube.index.handler.database.IndexableTableHandler"
 		property:threads="${table.handler.threads}" />
 
+	<!-- Mime type classes/mapping -->
 	<bean id="ikube.index.parse.mime.MimeMapper" class="ikube.index.parse.mime.MimeMapper">
 		<constructor-arg value="/META-INF/mime/mime-mapping.xml" />
 	</bean>
 	<bean id="ikube.index.parse.mime.MimeTypes" class="ikube.index.parse.mime.MimeTypes">
 		<constructor-arg value="/META-INF/mime/mime-types.xml" />
 	</bean>
-
+	
+	<!-- External access to the results -->
 	<bean
 		id="ikube.service.SearcherWebService"
 		class="ikube.service.SearcherWebService" />
@@ -109,6 +118,8 @@
 	<util:list id="implementors">
 		<ref local="ikube.service.SearcherWebService" />
 	</util:list>
+	
+	<!-- Continuous testing in production class  -->
 	<bean
 		id="ikube.service.SearcherWebServiceExecuter"
 		class="ikube.service.SearcherWebServiceExecuter"
@@ -121,7 +132,8 @@
 		property:searchString="clinch crackerjack books gall thoroughgoing
 			tall pissed committee greathearted cyborg devotional tremor"
 		property:start="0" />
-
+	
+	<!-- The schedules for events firing -->
 	<bean
 		id="ikube.listener.Schedule"
 		class="ikube.listener.Schedule"
@@ -140,8 +152,21 @@
 		<ref local="ikube.listener.Schedule.WebService" />
 	</util:list>
 
+	<!-- The scheduling class -->
 	<bean
 		class="ikube.listener.Scheduler"
 		init-method="initialize"
 		property:schedules-ref="scheduled.tasks" />
+	
+		<!-- Utility classes -->
+	<bean
+		class="ikube.toolkit.Mailer"
+		property:auth="true"
+		property:mailHost="smtp.gmail.com"
+		property:password="caherline"
+		property:port="465"
+		property:protocol="pop3"
+		property:recipients="ikube.ikube@gmail.com"
+		property:sender="ikube.ikube@gmail.com"
+		property:user="ikube.ikube" />
 </beans>

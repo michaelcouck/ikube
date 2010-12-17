@@ -29,7 +29,7 @@
 		property:throttle="${throttle}"
 		property:indexDirectoryPath="${index.directory.path.one}"
 		property:indexables-ref="indexables" />
-	<bean
+	<!--<bean
 		id="indexContextTwo"
 		class="ikube.model.IndexContext"
 		property:indexName="indexTwo"
@@ -62,14 +62,14 @@
 		property:queueTimeout="${max.age}"
 		property:throttle="${throttle}"
 		property:indexDirectoryPath="${index.directory.path.three}"
-		property:indexables-ref="indexables" />
+		property:indexables-ref="indexables" />-->
 	<util:list id="indexables">
 		<ref local="mail" />
 		<ref local="internet" />
 		<ref local="filesystem" />
 		<ref local="tableOne" />
-		<ref local="tableOne" />
-		<ref local="tableOne" />
+		<!--<ref local="tableOne" />
+		<ref local="tableOne" />-->
 	</util:list>
 
 	<bean
@@ -355,17 +355,5 @@
 		property:nameFieldName="name"
 		property:path="${files.path}"
 		property:pathFieldName="path" />
-
-	<!-- Utility classes -->
-	<bean
-		class="ikube.toolkit.Mailer"
-		property:auth="true"
-		property:mailHost="smtp.gmail.com"
-		property:password="caherline"
-		property:port="465"
-		property:protocol="pop3"
-		property:recipients="ikube.ikube@gmail.com"
-		property:sender="ikube.ikube@gmail.com"
-		property:user="ikube.ikube" />
 
 </beans>

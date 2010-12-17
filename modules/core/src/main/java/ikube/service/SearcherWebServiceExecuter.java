@@ -6,7 +6,6 @@ import ikube.model.Event;
 import ikube.toolkit.SerializationUtilities;
 
 import java.net.URL;
-import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 
@@ -59,10 +58,10 @@ public class SearcherWebServiceExecuter implements ISearcherWebServiceExecuter {
 		List<Map<String, String>> results = (List<Map<String, String>>) SerializationUtilities.deserialize(xml);
 		if (results.size() < resultsSizeMinimum) {
 			logger.warn("Results not expected : " + results);
-			ListenerManager.fireEvent(Event.RESULTS, new Timestamp(System.currentTimeMillis()), null, Boolean.TRUE);
+			ListenerManager.fireEvent(Event.RESULTS, System.currentTimeMillis(), null, Boolean.TRUE);
 		} else {
 			logger.info("Results expected : " + (results != null ? results.size() : 0));
-			ListenerManager.fireEvent(Event.NO_RESULTS, new Timestamp(System.currentTimeMillis()), null, Boolean.TRUE);
+			ListenerManager.fireEvent(Event.NO_RESULTS, System.currentTimeMillis(), null, Boolean.TRUE);
 		}
 		return results;
 	}

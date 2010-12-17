@@ -146,6 +146,7 @@ public class DataGeneratorTwo {
 			ids = preparedStatement.getGeneratedKeys();
 			while (ids.next()) {
 				long id = ids.getInt(1);
+				// logger.info("Id : " + id + ", " + indexableTable.getName());
 				// Set the id in the parent table
 				IndexableColumn idColumn = getIdColumn(indexableTable.getChildren());
 				idColumn.setObject(id);

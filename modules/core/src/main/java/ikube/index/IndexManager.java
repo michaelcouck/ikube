@@ -67,7 +67,7 @@ public class IndexManager {
 				closeIndexWriter(indexContext);
 				FileUtilities.deleteFile(indexDirectory, 3);
 			} catch (LockObtainFailedException e) {
-				LOGGER.error("Failed to obtain the lock on the directory. Check the file system permissions.", e);
+				LOGGER.error("Failed to obtain the LOCK on the directory. Check the file system permissions.", e);
 			} catch (IOException e) {
 				LOGGER.error("IO exception detected opening the writer", e);
 			} catch (Exception e) {
@@ -156,7 +156,7 @@ public class IndexManager {
 		try {
 			IndexWriter.unlock(directory);
 		} catch (Exception e) {
-			LOGGER.error("Exception releasing the lock on the index writer : ", e);
+			LOGGER.error("Exception releasing the LOCK on the index writer : ", e);
 		}
 	}
 

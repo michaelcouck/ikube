@@ -1,10 +1,13 @@
 package ikube.action;
 
 import static org.junit.Assert.assertTrue;
+import ikube.cluster.IClusterManager;
+import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
 
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -15,6 +18,12 @@ import org.junit.Test;
 public class IndexTest extends BaseActionTest {
 
 	private Index index = new Index();
+
+	@Before
+	public void before() {
+		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
+		clusterManager.setWorking(indexContext.getIndexName(), "", Boolean.FALSE);
+	}
 
 	@Test
 	public void execute() throws Exception {

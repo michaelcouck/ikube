@@ -2,7 +2,6 @@ package ikube.action;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 import ikube.toolkit.FileUtilities;
 
@@ -21,27 +20,27 @@ public class CloseTest extends BaseActionTest {
 
 	@Test
 	public void execute() throws Exception {
-		indexContext.setMultiSearcher(multiSearcher);
+		indexContext.setMultiSearcher(MULTI_SEARCHER);
 
 		String serverIndexDirectoryPath = getServerIndexDirectoryPath(indexContext);
 		File serverIndexDirectory = createIndex(new File(serverIndexDirectoryPath));
 		boolean closed = close.execute(indexContext);
 		assertTrue(closed);
 
-		File anotherServerIndexDirectory = createIndex(new File(serverIndexDirectoryPath.replace(ip, "127.0.0.2")));
-		indexContext.setMultiSearcher(multiSearcher);
-		when(indexSearcher.getIndexReader()).thenReturn(indexReader);
-		when(indexReader.directory()).thenReturn(fsDirectory);
-		when(lock.isLocked()).thenReturn(Boolean.FALSE);
-		when(fsDirectory.getFile()).thenReturn(new File(serverIndexDirectoryPath));
-		when(fsDirectory.makeLock(anyString())).thenReturn(lock);
-		when(multiSearcher.getSearchables()).thenReturn(searchables);
+		File anotherServerIndexDirectory = createIndex(new File(serverIndexDirectoryPath.replace(IP, "127.0.0.2")));
+		indexContext.setMultiSearcher(MULTI_SEARCHER);
+		// when(INDEX_SEARCHER.getIndexReader()).thenReturn(INDEX_READER);
+		// when(INDEX_READER.directory()).thenReturn(FS_DIRECTORY);
+		when(LOCK.isLocked()).thenReturn(Boolean.FALSE);
+		when(FS_DIRECTORY.getFile()).thenReturn(new File(serverIndexDirectoryPath));
+		// when(FS_DIRECTORY.makeLock(anyString())).thenReturn(LOCK);
+		// when(MULTI_SEARCHER.getSearchables()).thenReturn(SEARCHABLES);
 
 		closed = close.execute(indexContext);
 		assertTrue(closed);
 
-		indexContext.setMultiSearcher(multiSearcher);
-		when(lock.isLocked()).thenReturn(Boolean.TRUE);
+		indexContext.setMultiSearcher(MULTI_SEARCHER);
+		when(LOCK.isLocked()).thenReturn(Boolean.TRUE);
 
 		closed = close.execute(indexContext);
 		assertTrue(closed);

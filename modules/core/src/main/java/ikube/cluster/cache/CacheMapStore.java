@@ -24,6 +24,7 @@ public class CacheMapStore implements MapStore<Long, Object> {
 
 	private Logger logger = Logger.getLogger(this.getClass());
 	/** The database object where the data will be persisted. */
+	/** TODO - annotation injection here? Bean post processor. */
 	private IDataBase dataBase;
 
 	/**

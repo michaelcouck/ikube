@@ -32,7 +32,7 @@ public class Close extends Action {
 			logger.debug("Shouldn't re-open : " + shouldReopen);
 			return Boolean.FALSE;
 		}
-		// Get all the searchables from the searcher and close them one by one
+		// Get all the SEARCHABLES from the searcher and close them one by one
 		Searchable[] searchables = multiSearcher.getSearchables();
 		if (searchables != null && searchables.length > 0) {
 			for (Searchable searchable : searchables) {
