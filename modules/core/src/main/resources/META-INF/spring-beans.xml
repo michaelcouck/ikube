@@ -67,8 +67,7 @@
 	<!-- property:address="serverOne" -->
 	<bean
 		class="ikube.cluster.ClusterManager"
-		lazy-init="true"
-		init-method="initialise">
+		lazy-init="true">
 		<property name="cache">
 			<bean
 				id="ikube.cluster.cache.Cache"
@@ -105,12 +104,12 @@
 		property:implementors-ref="implementors"
 		init-method="publish" />
 	<util:list id="addresses">
-		<!--<value>http://localhost:8081/service/ISearcherWebService</value>-->
+		<value>http://localhost:8081/service/ISearcherWebService</value>
 	</util:list>
 	<util:list id="implementors">
-		<!--<bean
+		<bean
 			id="ikube.service.SearcherWebService"
-			class="ikube.service.SearcherWebService" />-->
+			class="ikube.service.SearcherWebService" />
 	</util:list>
 	<bean
 		id="ikube.service.SearcherWebServiceExecuter"
@@ -131,7 +130,7 @@
 		property:schedules-ref="scheduled.tasks" />
 	<util:list id="scheduled.tasks">
 		<ref local="ikube.listener.Schedule" />
-		<!--<ref local="ikube.listener.Schedule.WebService" />-->
+		<ref local="ikube.listener.Schedule.WebService" />
 	</util:list>
 	
 	<bean
