@@ -1,6 +1,6 @@
 package ikube;
 
-import ikube.cluster.ClusterTest;
+import ikube.cluster.ClusterIntegration;
 import ikube.model.IndexContext;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.DataGeneratorTwo;
@@ -21,7 +21,7 @@ public abstract class BaseTest extends ATest {
 	private static String SPRING_CONFIGURATION_FILE = "/spring.xml";
 
 	static {
-		ClusterTest.SLEEP = 1000;
+		ClusterIntegration.SLEEP = 1000;
 
 		// Delete the database file
 		FileUtilities.deleteFiles(new File("."), IConstants.DATABASE_FILE, ".transaction", ".odb");

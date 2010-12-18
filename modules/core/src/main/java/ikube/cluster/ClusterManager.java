@@ -54,7 +54,7 @@ public class ClusterManager implements IClusterManager {
 		synchronized (this) {
 			try {
 				this.logger = Logger.getLogger(this.getClass());
-				this.address = InetAddress.getLocalHost().getHostAddress();
+				this.address = InetAddress.getLocalHost().getHostAddress() + "." + System.nanoTime();
 			} finally {
 				notifyAll();
 			}
@@ -76,6 +76,34 @@ public class ClusterManager implements IClusterManager {
 				}
 				if (server.isWorking()) {
 					return Boolean.TRUE;
+				}
+			}
+		} finally {
+			unlock(lock);
+			notifyAll();
+		}
+		return Boolean.FALSE;
+	}
+
+	@Override
+	public synchronized boolean anyWorking(String indexName) {
+		ILock lock = null;
+		try {
+			lock = lock(SERVER_LOCK);
+			if (lock == null) {
+				return Boolean.TRUE;
+			}
+			List<Server> servers = getServers(); // cache.get(Server.class.getName(), null, null, Integer.MAX_VALUE);
+			for (Server server : servers) {
+				if (server.getAddress().equals(this.address)) {
+					continue;
+				}
+				if (server.isWorking()) {
+					for (Action action : server.getActions()) {
+						if (action.getIndexName().equals(indexName)) {
+							return Boolean.TRUE;
+						}
+					}
 				}
 			}
 		} finally {
@@ -167,10 +195,13 @@ public class ClusterManager implements IClusterManager {
 		try {
 			Server server = cache.get(Server.class.getName(), HashUtilities.hash(address));
 			if (server == null) {
+				// This can never happen because the init method sets the server. Can
+				// be removed perhaps?
 				server = new Server();
 				server.setAddress(address);
-				server.setId(HashUtilities.hash(server.getAddress()));
+				server.setId(HashUtilities.hash(address));
 				cache.set(Server.class.getName(), server.getId(), server);
+				logger.info("Published server : " + server);
 			}
 			return server;
 		} finally {

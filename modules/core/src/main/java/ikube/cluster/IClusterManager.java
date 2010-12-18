@@ -38,6 +38,11 @@ public interface IClusterManager {
 	public boolean anyWorking();
 
 	/**
+	 * @return whether there are any servers in the cluster that are working on this index
+	 */
+	public boolean anyWorking(String indexName);
+
+	/**
 	 * Returns the next id from one of the servers. The id would be the id in the table for this index.
 	 * 
 	 * @param indexableName

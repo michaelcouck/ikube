@@ -2,8 +2,10 @@
 
 * Cluster testing - 1
 * Wiki/documentation/JavaDoc - 3
+* Data generator two with files - 1/2
+* Servlet/Ejb - 1
 
-Total - 4
+Total - 5 1/2
 
 Done:
 * Cluster - 3 *
@@ -32,6 +34,7 @@ Other things:
 * Result clustering
 * Reporting (e.g. Google Analytics)
 * Add a maximum documents per server parameter
+* Performance benchmarking
 
 Done:
 * Delete the database file on startup locally *
