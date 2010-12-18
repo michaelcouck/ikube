@@ -104,7 +104,7 @@
 		property:implementors-ref="implementors"
 		init-method="publish" />
 	<util:list id="addresses">
-		<value>http://localhost:8081/service/ISearcherWebService</value>
+		<value>${web.service.url}</value>
 	</util:list>
 	<util:list id="implementors">
 		<bean
@@ -116,7 +116,7 @@
 		class="ikube.service.SearcherWebServiceExecuter"
 		property:configurationName="indexOne"
 		property:end="101"
-		property:endpointUri="http://localhost:8081/service/ISearcherWebService?wsdl"
+		property:endpointUri="${web.service.url}?wsdl"
 		property:fieldName="contents"
 		property:fragment="true"
 		property:resultsSizeMinimum="1"
