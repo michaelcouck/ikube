@@ -13,6 +13,7 @@ import javax.persistence.Transient;
 @Entity()
 public class IndexableFileSystem extends Indexable<IndexableFileSystem> {
 
+	@Transient
 	private transient File currentFile;
 
 	private String path;

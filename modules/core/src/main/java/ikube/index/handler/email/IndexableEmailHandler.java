@@ -28,18 +28,20 @@ import javax.mail.Multipart;
 import javax.mail.NoSuchProviderException;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
+import javax.mail.Store;
 import javax.mail.URLName;
 import javax.mail.internet.MimeMultipart;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field.Index;
-import org.apache.lucene.document.Field.Store;
-import org.apache.lucene.document.Field.TermVector;
+import org.apache.lucene.document.Field;
 
 import com.sun.mail.pop3.POP3SSLStore;
 
 /**
+ * This class reads and indexes a mail account. At the time of writing it was not multi-threaded but could be made multi, however this would
+ * only be needed with very large accounts indeed.
+ * 
  * @author Bruno Barin
  * @since 29.11.10
  * @version 01.00
@@ -49,6 +51,9 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 	static final String SSL_FACTORY = "javax.net.ssl.SSLSocketFactory";
 	static final String MAIL_PROTOCOL = "pop3";
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	@IndexableHandlerType(type = IndexableEmail.class)
 	public List<Thread> handle(final IndexContext indexContext, final IndexableEmail indexable) throws Exception {
@@ -62,8 +67,16 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 		return null;
 	}
 
+	/**
+	 * This method actually goes to the account and indexes the data.
+	 * 
+	 * @param indexContext
+	 *            the context for the index
+	 * @param indexableMail
+	 *            the indexable to index
+	 */
 	protected void handleEmail(final IndexContext indexContext, IndexableEmail indexableMail) {
-		javax.mail.Store store = null;
+		Store store;
 		try {
 			store = getStore(indexableMail);
 			store.connect();
@@ -71,77 +84,90 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 			String message = Logging.getString("Could not connect to the mail server : ", indexableMail.getMailHost(), " port : ",
 					indexableMail.getPort());
 			logger.error(message, e);
-			if (logger.isDebugEnabled()) {
-				logger.debug(e.getStackTrace());
-			}
 			return;
 		}
 
 		try {
-			Folder folder = store.getFolder("inbox");
-			folder.open(Folder.READ_ONLY);
-
-			// For each message found in the server, index it.
-			logger.error("Message count : " + folder.getMessageCount());
-			for (Message message : folder.getMessages()) {
-				// Builds the identifier
-				Date recievedDate = message.getReceivedDate();
-				Date sentDate = message.getSentDate();
-				int messageNumber = message.getMessageNumber();
-				long timestamp = recievedDate != null ? recievedDate.getTime() : sentDate != null ? sentDate.getTime() : 0;
-
-				if (logger.isDebugEnabled()) {
-					logger.debug("Recieved : " + recievedDate);
-					logger.debug("Sent : " + sentDate);
-					logger.debug("Message number : " + messageNumber);
-					logger.debug("Timestamp : " + timestamp);
-				}
-
-				StringBuilder builder = new StringBuilder();
-				builder.append(indexableMail.getMailHost());
-				builder.append(".");
-				builder.append(indexableMail.getUsername());
-				builder.append(".");
-				builder.append(messageNumber);
-				builder.append(".");
-				builder.append(timestamp);
-
-				Store mustStore = indexableMail.isStored() ? Store.YES : Store.NO;
-				Index analyzed = indexableMail.isAnalyzed() ? Index.ANALYZED : Index.NOT_ANALYZED;
-				TermVector termVector = indexableMail.isVectored() ? TermVector.YES : TermVector.NO;
-
-				Document document = new Document();
-				// Add the id field to the document
-				IndexManager.addStringField(indexableMail.getIdField(), builder.toString(), document, mustStore, analyzed, termVector);
-				// Add the title field to the document
-				IndexManager.addStringField(indexableMail.getTitleField(), message.getSubject(), document, mustStore, analyzed, termVector);
-				String messageContent = getMessageContent(message);
-				if (StringUtils.isNotEmpty(messageContent)) {
-					byte[] bytes = messageContent.getBytes();
-					IParser parser = ParserProvider.getParser(message.getContentType(), bytes);
-					OutputStream outputStream = parser.parse(new ByteArrayInputStream(bytes), new ByteArrayOutputStream());
-					String fieldContent = outputStream.toString();
-					// Add the content field to the document
-					IndexManager.addStringField(indexableMail.getContentField(), fieldContent, document, mustStore, analyzed, termVector);
-				}
-				indexContext.getIndexWriter().addDocument(document);
-			}
-			folder.close(true);
+			Folder inbox = store.getFolder("inbox");
+			handleFolder(indexContext, indexableMail, inbox);
 		} catch (MessagingException e) {
-			logger.error("The inbox folder does not exist or is not available");
-			if (logger.isDebugEnabled()) {
-				logger.debug(e.getStackTrace());
-			}
+			logger.error("The inbox folder does not exist or is not available : ", e);
 		} catch (IOException e) {
-			logger.error("Could not retrieve the message content");
-			if (logger.isDebugEnabled()) {
-				logger.debug(e.getStackTrace());
-			}
+			logger.error("Could not retrieve the message content : ", e);
 		} catch (Exception e) {
-			logger.error("General exception parsing the message", e);
+			logger.error("General exception parsing the message : ", e);
+		}
+
+		// TODO - We would like to access all the folders, but how?
+		Folder[] folders;
+		try {
+			folders = store.getPersonalNamespaces();
+		} catch (MessagingException e) {
+			logger.error("Exception accessing the mail folders : " + indexableMail, e);
+			return;
+		}
+
+		for (@SuppressWarnings("unused")
+		Folder folder : folders) {
+			try {
+				// handleFolder(indexContext, indexableMail, folder);
+			} catch (Exception e) {
+				logger.error("General exception parsing the message", e);
+			}
 		}
 
 		closeMailServerConnection(store);
+	}
+
+	protected void handleFolder(IndexContext indexContext, IndexableEmail indexableMail, Folder folder) throws Exception {
+		folder.open(Folder.READ_ONLY);
+
+		// For each message found in the server, index it.
+		logger.info("Message count : " + folder.getMessageCount() + ", " + folder.getFullName());
+		for (Message message : folder.getMessages()) {
+			// Builds the identifier
+			Date recievedDate = message.getReceivedDate();
+			Date sentDate = message.getSentDate();
+			int messageNumber = message.getMessageNumber();
+			long timestamp = recievedDate != null ? recievedDate.getTime() : sentDate != null ? sentDate.getTime() : 0;
+
+			if (logger.isDebugEnabled()) {
+				logger.debug("Recieved : " + recievedDate);
+				logger.debug("Sent : " + sentDate);
+				logger.debug("Message number : " + messageNumber);
+				logger.debug("Timestamp : " + timestamp);
+			}
+
+			StringBuilder builder = new StringBuilder();
+			builder.append(indexableMail.getMailHost());
+			builder.append(".");
+			builder.append(indexableMail.getUsername());
+			builder.append(".");
+			builder.append(messageNumber);
+			builder.append(".");
+			builder.append(timestamp);
+
+			Field.Store mustStore = indexableMail.isStored() ? Field.Store.YES : Field.Store.NO;
+			Field.Index analyzed = indexableMail.isAnalyzed() ? Field.Index.ANALYZED : Field.Index.NOT_ANALYZED;
+			Field.TermVector termVector = indexableMail.isVectored() ? Field.TermVector.YES : Field.TermVector.NO;
+
+			Document document = new Document();
+			// Add the id field to the document
+			IndexManager.addStringField(indexableMail.getIdField(), builder.toString(), document, mustStore, analyzed, termVector);
+			// Add the title field to the document
+			IndexManager.addStringField(indexableMail.getTitleField(), message.getSubject(), document, mustStore, analyzed, termVector);
+			String messageContent = getMessageContent(message);
+			if (StringUtils.isNotEmpty(messageContent)) {
+				byte[] bytes = messageContent.getBytes();
+				IParser parser = ParserProvider.getParser(message.getContentType(), bytes);
+				OutputStream outputStream = parser.parse(new ByteArrayInputStream(bytes), new ByteArrayOutputStream());
+				String fieldContent = outputStream.toString();
+				// Add the content field to the document
+				IndexManager.addStringField(indexableMail.getContentField(), fieldContent, document, mustStore, analyzed, termVector);
+			}
+			indexContext.getIndexWriter().addDocument(document);
+		}
+		folder.close(true);
 	}
 
 	/**
@@ -154,10 +180,7 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 		try {
 			store.close();
 		} catch (MessagingException e) {
-			logger.error("Could not close the connetion to the mail server in a graceful mode");
-			if (logger.isDebugEnabled()) {
-				logger.debug(e.getStackTrace());
-			}
+			logger.error("Could not close the connetion to the mail server in a graceful mode : ", e);
 		}
 	}
 
@@ -212,7 +235,7 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 	 * @throws NoSuchProviderException
 	 *             If the mail provider wasn't correct specified.
 	 */
-	private javax.mail.Store getStore(final IndexableEmail indexableMail) throws NoSuchProviderException {
+	private Store getStore(final IndexableEmail indexableMail) throws NoSuchProviderException {
 		String host = indexableMail.getMailHost();
 		final String username = indexableMail.getUsername();
 		final String password = indexableMail.getPassword();

@@ -15,14 +15,16 @@ import javax.persistence.Transient;
 @Entity()
 public class IndexableInternet extends Indexable<IndexableInternet> {
 
+	@Transient
 	private transient String currentUrl;
+	@Transient
 	private transient InputStream currentInputStream;
 
 	private URI uri;
 	private String url;
 
 	public URI getUri() {
-		if (uri == null) {
+		if (uri == null && getUrl() != null) {
 			try {
 				uri = new URI(getUrl());
 			} catch (URISyntaxException e) {

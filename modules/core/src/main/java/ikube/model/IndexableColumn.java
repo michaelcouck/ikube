@@ -11,7 +11,9 @@ import javax.persistence.Transient;
 @Entity()
 public class IndexableColumn extends Indexable<IndexableColumn> {
 
+	@Transient
 	private transient Object object;
+	@Transient
 	private transient int columnType;
 
 	private String fieldName;

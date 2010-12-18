@@ -18,16 +18,24 @@ import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.ILock;
 
 /**
+ * All the methods are synchronized in this class because not only is Ikube clusterable but also multi-threaded in each server.
+ * 
+ * @see IClusterManager
  * @author Michael Couck
  * @since 21.11.10
  * @version 01.00
  */
 public class ClusterManager implements IClusterManager {
 
+	/** Lock objects for cluster wide locking while we update the cache. */
 	protected static String URL_LOCK = "urlLock";
 	protected static String SERVER_LOCK = "serverLock";
+
+	/** The timeout to wait for the lock. */
 	protected static long LOCK_TIMEOUT = 3000;
+	/** We only keep a few actions in the server. */
 	protected static double MAX_ACTION_SIZE = 10;
+	/** The ratio to delete the actions when the maximum is reached. */
 	protected static double ACTION_PRUNE_RATIO = 0.5;
 
 	protected Logger logger;
@@ -36,12 +44,18 @@ public class ClusterManager implements IClusterManager {
 	/** The cluster wide cache. */
 	protected ICache cache;
 
+	/**
+	 * This criteria is to check that the {@link Url} has already been indexed or not.
+	 */
 	private ICache.ICriteria<Url> criteria = new ICache.ICriteria<Url>() {
 		@Override
 		public boolean evaluate(Url t) {
 			return !t.isIndexed();
 		}
 	};
+	/**
+	 * This action is to publish the {@link Url} while getting the next batch.
+	 */
 	private ICache.IAction<Url> action = new ICache.IAction<Url>() {
 		@Override
 		public void execute(Url url) {
@@ -50,10 +64,21 @@ public class ClusterManager implements IClusterManager {
 		}
 	};
 
+	/**
+	 * In the constructor we initialize the logger but most importantly the address of this server. Please see the comments.
+	 * 
+	 * @throws Exception
+	 *             this can only be the InetAddress exception, which can never happen because we are looking for the localhost
+	 */
 	public ClusterManager() throws Exception {
 		synchronized (this) {
 			try {
 				this.logger = Logger.getLogger(this.getClass());
+				// We give each server a unique name because there can be several servers
+				// started on the same machine. For example several Tomcats each with a war. In
+				// this case the ip addresses will overlap. Ikube can also be started as stand alone
+				// just in a Jvm(which is the same as a Tomcat essentially) also they will have the
+				// same ip address
 				this.address = InetAddress.getLocalHost().getHostAddress() + "." + System.nanoTime();
 			} finally {
 				notifyAll();
@@ -61,6 +86,9 @@ public class ClusterManager implements IClusterManager {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public synchronized boolean anyWorking() {
 		ILock lock = null;
@@ -85,6 +113,9 @@ public class ClusterManager implements IClusterManager {
 		return Boolean.FALSE;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public synchronized boolean anyWorking(String indexName) {
 		ILock lock = null;
@@ -181,6 +212,9 @@ public class ClusterManager implements IClusterManager {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public synchronized List<Server> getServers() {
 		try {
@@ -190,6 +224,9 @@ public class ClusterManager implements IClusterManager {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public synchronized Server getServer() {
 		try {
@@ -209,6 +246,9 @@ public class ClusterManager implements IClusterManager {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public synchronized long setWorking(String indexName, String indexableName, boolean isWorking) {
 		// logger.info("Set working : ");
@@ -264,6 +304,9 @@ public class ClusterManager implements IClusterManager {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public synchronized boolean isHandled(String indexableName, String indexName) {
 		try {
@@ -286,6 +329,13 @@ public class ClusterManager implements IClusterManager {
 		}
 	}
 
+	/**
+	 * This method locks the object map. This is required to maintain data integrity in the cluster.
+	 * 
+	 * @param lockName
+	 *            the name of the lock we want
+	 * @return the lock for the object map or null if this lock is un-available
+	 */
 	private synchronized ILock lock(String lockName) {
 		try {
 			ILock lock = Hazelcast.getLock(lockName);
@@ -293,10 +343,10 @@ public class ClusterManager implements IClusterManager {
 			try {
 				acquired = lock.tryLock(LOCK_TIMEOUT, TimeUnit.MILLISECONDS);
 			} catch (InterruptedException e) {
-				logger.error("Interrupted acquiring LOCK for : " + lockName, e);
+				logger.error("Interrupted acquiring lock for : " + lockName, e);
 			}
 			if (!acquired) {
-				logger.warn(Logging.getString("Failed to acquire LOCK : ", lockName, ", ", Thread.currentThread().hashCode()));
+				logger.warn(Logging.getString("Failed to acquire lock : ", lockName, ", ", Thread.currentThread().hashCode()));
 				return null;
 			}
 			// logger.info(Logging.getString("Acquired LOCK : ", LOCK, ", ", Thread.currentThread().hashCode()));
@@ -306,6 +356,12 @@ public class ClusterManager implements IClusterManager {
 		}
 	}
 
+	/**
+	 * This method unlocks the object map in the cluster.
+	 * 
+	 * @param lock
+	 *            the lock to release
+	 */
 	private synchronized void unlock(ILock lock) {
 		try {
 			if (lock != null) {
@@ -317,6 +373,9 @@ public class ClusterManager implements IClusterManager {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public synchronized List<Url> getBatch(int size) {
 		ILock lock = null;
@@ -332,6 +391,9 @@ public class ClusterManager implements IClusterManager {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public synchronized <T> T get(Class<T> klass, String sql) {
 		try {
@@ -341,6 +403,9 @@ public class ClusterManager implements IClusterManager {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public synchronized <T> void set(Class<T> klass, Long id, T t) {
 		try {
@@ -353,6 +418,9 @@ public class ClusterManager implements IClusterManager {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public synchronized <T> void clear(Class<T> klass) {
 		try {
@@ -362,6 +430,9 @@ public class ClusterManager implements IClusterManager {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public synchronized <T> int size(Class<T> klass) {
 		try {
@@ -371,8 +442,7 @@ public class ClusterManager implements IClusterManager {
 		}
 	}
 
-	/** Methods called form Spring. */
-
+	/** Methods called form Spring below here. */
 	public synchronized void setCache(ICache cache) {
 		try {
 			this.cache = cache;

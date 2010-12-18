@@ -24,6 +24,7 @@ import org.neodatis.odb.core.query.nq.NativeQuery;
 import org.neodatis.odb.impl.core.query.criteria.CriteriaQuery;
 
 /**
+ * @see IDataBase
  * @author Michael Couck
  * @since 21.11.10
  * @version 01.00
@@ -32,14 +33,12 @@ public class DataBaseOdb implements IDataBase {
 
 	private Logger logger;
 
+	/** The Neodatis persistence object. */
 	private ODB odb;
+	/** The list of indexes to create on the objects. */
 	private List<Index> indexes;
-
+	/** The initialization flag. */
 	private boolean initialised = Boolean.FALSE;
-
-	public DataBaseOdb() {
-		this.logger = Logger.getLogger(this.getClass());
-	}
 
 	protected void initialise() {
 		initialise(System.nanoTime() + "." + IConstants.DATABASE_FILE);
@@ -49,6 +48,7 @@ public class DataBaseOdb implements IDataBase {
 		if (initialised && odb != null) {
 			return;
 		}
+		this.logger = Logger.getLogger(this.getClass());
 		initialised = Boolean.TRUE;
 		configureDataBase();
 		openDataBase(dataBaseFile);
@@ -102,6 +102,9 @@ public class DataBaseOdb implements IDataBase {
 		this.odb = ODBFactory.open(dataBaseFile);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public synchronized <T> T persist(T object) {
 		try {
@@ -126,6 +129,9 @@ public class DataBaseOdb implements IDataBase {
 		return object;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public synchronized <T> T remove(T t) {
 		try {
@@ -141,6 +147,9 @@ public class DataBaseOdb implements IDataBase {
 		return t;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public synchronized <T> T remove(Class<T> klass, Long id) {
 		try {
@@ -152,6 +161,9 @@ public class DataBaseOdb implements IDataBase {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public synchronized <T> T merge(T t) {
 		try {
@@ -209,6 +221,9 @@ public class DataBaseOdb implements IDataBase {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public synchronized <T> T find(Class<T> klass, Long id) {
 		try {
@@ -227,6 +242,9 @@ public class DataBaseOdb implements IDataBase {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public synchronized <T> T find(Class<T> klass, Map<String, Object> parameters, boolean unique) {
 		try {
@@ -254,6 +272,9 @@ public class DataBaseOdb implements IDataBase {
 		return null;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public synchronized <T> List<T> find(Class<T> klass, int startIndex, int endIndex) {
 		List<T> list = new ArrayList<T>();
@@ -272,6 +293,9 @@ public class DataBaseOdb implements IDataBase {
 		return list;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public synchronized <T> List<T> find(Class<T> klass, Map<String, Object> parameters, int startIndex, int endIndex) {
 		List<T> list = new ArrayList<T>();
@@ -306,6 +330,12 @@ public class DataBaseOdb implements IDataBase {
 		}
 	}
 
+	/**
+	 * Called from Spring to create indexes if necessary.
+	 * 
+	 * @param indexes
+	 *            the indexes to create on the objects that will be persisted in the database
+	 */
 	public void setIndexes(List<Index> indexes) {
 		this.indexes = indexes;
 	}

@@ -25,6 +25,10 @@ import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
 
 /**
+ * This class indexes a file share on the network. It is not multi threaded as file access is generally faster than parsing anyway so
+ * performance would degrade if this class is multi-threaded due to the cluster synchronization overhead.
+ * 
+ * @author Cristi Bozga
  * @author Michael Couck
  * @since 29.11.10
  * @version 01.00
@@ -34,60 +38,73 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 	@Override
 	@IndexableHandlerType(type = IndexableFileSystem.class)
 	public List<Thread> handle(final IndexContext indexContext, final IndexableFileSystem indexable) throws Exception {
-		handleFilesystem(indexContext, indexable);
-		return null;
-	}
-
-	protected void handleFilesystem(final IndexContext indexContext, IndexableFileSystem indexableFileSystem) {
 		try {
 			// We need to check the cluster to see if this indexable is already handled by
 			// one of the other servers. The file system is very fast and there is no need to
 			// cluster the indexing
-			IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
-			boolean isHandled = clusterManager.isHandled(indexableFileSystem.getName(), indexContext.getIndexName());
+			boolean isHandled = isHandled(indexContext, indexable);
 			if (isHandled) {
-				return;
+				return null;
 			}
-
-			File baseFile = new File(indexableFileSystem.getPath());
-			Pattern pattern = getPattern(indexableFileSystem.getExcludedPattern());
+			File baseFile = new File(indexable.getPath());
+			Pattern pattern = getPattern(indexable.getExcludedPattern());
+			if (isExcluded(baseFile, pattern)) {
+				logger.warn("Base directory excluded : " + baseFile);
+				return null;
+			}
 			if (baseFile.isDirectory()) {
-				visitFolder(indexContext, indexableFileSystem, baseFile, pattern);
+				handleFolder(indexContext, indexable, baseFile, pattern);
 			} else {
-				visitFile(indexContext, indexableFileSystem, baseFile);
+				handleFile(indexContext, indexable, baseFile);
 			}
 		} catch (Exception e) {
-			logger.error("", e);
+			logger.error("Exception indexing the file share : " + indexable, e);
 		}
+		return null;
 	}
 
-	protected void visitFolder(final IndexContext indexContext, IndexableFileSystem indexableFileSystem, File folder,
+	/**
+	 * As the name suggests this method handles a folder. Iterates over the files and folders in the folder recursively indexing the files
+	 * as they are encountered.
+	 * 
+	 * @param indexContext
+	 *            the index context for the index
+	 * @param indexableFileSystem
+	 *            the file system object for storing data during the indexing
+	 * @param folder
+	 *            the folder that we are iterating over
+	 * @param excludedPattern
+	 *            the excluded patterns
+	 */
+	protected void handleFolder(final IndexContext indexContext, IndexableFileSystem indexableFileSystem, File folder,
 			Pattern excludedPattern) {
-		if (folder == null || !folder.exists()) {
-			logger.error("The folder could not be found : " + folder);
-			return;
-		}
 		File[] files = folder.listFiles();
 		if (files != null) {
-			for (java.io.File file : files) {
-				logger.debug("Visiting file : " + file);
+			for (File file : files) {
 				if (isExcluded(file, excludedPattern)) {
 					continue;
 				}
+				logger.debug("Visiting file : " + file);
 				if (file.isDirectory()) {
-					visitFolder(indexContext, indexableFileSystem, file, excludedPattern);
+					handleFolder(indexContext, indexableFileSystem, file, excludedPattern);
 				} else {
-					if (!file.exists() || !file.canRead()) {
-						logger.info("Skipping file : " + file.getAbsolutePath());
-						continue;
-					}
-					visitFile(indexContext, indexableFileSystem, file);
+					handleFile(indexContext, indexableFileSystem, file);
 				}
 			}
 		}
 	}
 
-	public void visitFile(final IndexContext indexContext, IndexableFileSystem indexableFileSystem, File file) {
+	/**
+	 * As the name suggests this method accesses a file, and hopefully indexes the data adding it to the index.
+	 * 
+	 * @param indexContext
+	 *            the context for this index
+	 * @param indexableFileSystem
+	 *            the file system object for storing data during the indexing
+	 * @param file
+	 *            the file to parse and index
+	 */
+	protected void handleFile(final IndexContext indexContext, IndexableFileSystem indexableFileSystem, File file) {
 		try {
 			Document document = new Document();
 			indexableFileSystem.setCurrentFile(file);
@@ -135,12 +152,14 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 	}
 
 	protected boolean isExcluded(File file, Pattern pattern) {
-		return !file.canRead() || isHandled(file) || pattern.matcher(file.getName()).matches();
+		// If it does not exist, we can't read it or directory excluded with the pattern
+		return file == null || !file.exists() || !file.canRead() || pattern.matcher(file.getName()).matches();
 	}
 
-	protected boolean isHandled(File file) {
-		// TODO - check if visited in the cluster
-		return false;
+	protected boolean isHandled(IndexContext indexContext, IndexableFileSystem indexableFileSystem) {
+		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
+		boolean isHandled = clusterManager.isHandled(indexableFileSystem.getName(), indexContext.getIndexName());
+		return isHandled;
 	}
 
 }

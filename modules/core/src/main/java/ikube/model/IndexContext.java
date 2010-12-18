@@ -40,8 +40,10 @@ public class IndexContext extends Persistable implements Comparable<IndexContext
 	private List<Indexable<?>> indexables;
 
 	/** Can be null if there are no indexes running. */
+	@Transient
 	private transient IndexWriter indexWriter;
 	/** Can be null if there is no index created. */
+	@Transient
 	private transient MultiSearcher multiSearcher;
 
 	public String getIndexName() {

@@ -19,9 +19,6 @@ import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.DatabaseUtilities;
 import ikube.toolkit.SerializationUtilities;
 
-import java.beans.BeanInfo;
-import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -77,21 +74,6 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	@Override
 	@IndexableHandlerType(type = IndexableTable.class)
 	public List<Thread> handle(final IndexContext indexContext, final IndexableTable indexable) throws Exception {
-
-		// TODO - go through the variables in the each class in the model
-		// and look for the transient modifier and set all the variables that are
-		// transient to transient in the property descriptors
-		BeanInfo info = Introspector.getBeanInfo(IndexableColumn.class);
-		PropertyDescriptor[] propertyDescriptors = info.getPropertyDescriptors();
-		for (int i = 0; i < propertyDescriptors.length; ++i) {
-			PropertyDescriptor pd = propertyDescriptors[i];
-			if (pd.getName().equals("object")) {
-				pd.setValue("transient", Boolean.TRUE);
-			} else if (pd.getName().equals("columnType")) {
-				pd.setValue("transient", Boolean.TRUE);
-			}
-		}
-
 		// We start as many threads to access this table as defined. We return
 		// the threads to the caller that they can then wait for the threads to finish
 		List<Thread> threads = new ArrayList<Thread>();
@@ -611,9 +593,11 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	 * This method sets the data from the table columns in the column objects as well as the type which is gotten from the result set emta
 	 * data.
 	 * 
-	 * @param children the children indexables of the table object
-	 * @param resultSet the result set for the table
-	 * @throws Exception 
+	 * @param children
+	 *            the children indexables of the table object
+	 * @param resultSet
+	 *            the result set for the table
+	 * @throws Exception
 	 */
 	protected void setColumnTypesAndData(List<Indexable<?>> children, ResultSet resultSet) throws Exception {
 		ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
