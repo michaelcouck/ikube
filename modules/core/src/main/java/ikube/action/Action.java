@@ -20,7 +20,7 @@ import org.apache.lucene.store.FSDirectory;
 /**
  * This is the base class for actions. Actions execute handlers on indexables. Actions may include opening the searcher on a new index,
  * indexing or deleting the old indexes. This class is intended to be sub-classed. Common methods in this base class is checking that the
- * index is current, i.e. has not expired and whether the searcher should be re-opened on the nex index.
+ * index is current, i.e. has not expired and whether the searcher should be re-opened on the new index.
  * 
  * @author Michael Couck
  * @since 21.11.10
@@ -68,10 +68,10 @@ public abstract class Action implements IAction<IndexContext, Boolean> {
 			logger.debug("Multi searcher null, should try to reopen : ");
 			return Boolean.TRUE;
 		}
-		// No SEARCHABLES, also try to reopen an index searcher
+		// No searchables, also try to reopen an index searcher
 		Searchable[] searchables = multiSearcher.getSearchables();
 		if (searchables == null || searchables.length == 0) {
-			logger.debug("No SEARCHABLES open, should try to reopen : ");
+			logger.debug("No searchables open, should try to reopen : ");
 			return Boolean.TRUE;
 		}
 		if (!isIndexCurrent(indexContext)) {

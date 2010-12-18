@@ -29,7 +29,7 @@ public class Close extends Action {
 		// new indexes then we shouldn't close the searcher
 		boolean shouldReopen = shouldReopen(indexContext);
 		if (!shouldReopen) {
-			logger.debug("Shouldn't re-open : " + shouldReopen);
+			logger.debug("Should close : " + shouldReopen);
 			return Boolean.FALSE;
 		}
 		// Get all the SEARCHABLES from the searcher and close them one by one
