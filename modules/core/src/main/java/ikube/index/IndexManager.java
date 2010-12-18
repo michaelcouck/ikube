@@ -50,7 +50,7 @@ public class IndexManager {
 
 			File indexDirectory = FileUtilities.getFile(builder.toString(), Boolean.TRUE);
 			LOGGER.info(Logging.getString("Index directory time : ", time, ", date : ", new Date(time), ", writing index to directory ",
-					indexDirectory));
+					indexDirectory.getAbsolutePath()));
 			IndexWriter indexWriter = null;
 			try {
 				Directory directory = FSDirectory.open(indexDirectory);

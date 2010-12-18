@@ -104,12 +104,12 @@
 		property:implementors-ref="implementors"
 		init-method="publish" />
 	<util:list id="addresses">
-		<!--<value>${web.service.url}</value>-->
+		<value>${web.service.url}</value>
 	</util:list>
 	<util:list id="implementors">
-		<!--<bean
+		<bean
 			id="ikube.service.SearcherWebService"
-			class="ikube.service.SearcherWebService" />-->
+			class="ikube.service.SearcherWebService" />
 	</util:list>
 	<bean
 		id="ikube.service.SearcherWebServiceExecuter"
@@ -130,7 +130,7 @@
 		property:schedules-ref="scheduled.tasks" />
 	<util:list id="scheduled.tasks">
 		<ref local="ikube.listener.Schedule" />
-		<!--<ref local="ikube.listener.Schedule.WebService" />-->
+		<!--<ref local="ikube.listener.Schedule.SearcherWebServiceExecuter" />-->
 	</util:list>
 	
 	<bean
@@ -140,7 +140,7 @@
 		property:delay="${delay}"
 		property:period="${period}" />
 	<bean
-		id="ikube.listener.Schedule.WebService"
+		id="ikube.listener.Schedule.SearcherWebServiceExecuter"
 		class="ikube.listener.Schedule"
 		property:type="service"
 		property:delay="${web.service.delay}"
