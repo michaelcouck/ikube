@@ -67,9 +67,9 @@ public class IndexableTableHandlerTest extends BaseTest {
 
 	@Test
 	public void buildSql() throws Exception {
-		String expectedSql = "select db2admin.faq.faqId, db2admin.faq.creationtimestamp, db2admin.faq.modifiedtimestamp, db2admin.faq.creator, "
-				+ "db2admin.faq.modifier, db2admin.faq.question, db2admin.faq.answer, db2admin.faq.published from db2admin.faq where faq.faqid > 0 and db2admin.faq.faqId > 0 "
-				+ "and db2admin.faq.faqId <= 10";
+		String expectedSql = "select db2admin.faq.faqId, db2admin.faq.creationtimestamp, db2admin.faq.modifiedtimestamp, "
+				+ "db2admin.faq.creator, db2admin.faq.modifier, db2admin.faq.question, db2admin.faq.answer, db2admin.faq.published "
+				+ "from db2admin.faq where faq.faqid > 0 and db2admin.faq.faqId >= 0 and db2admin.faq.faqId < 10";
 		// IndexContext, IndexableTable, long
 		long nextIdNumber = 0;
 		String sql = indexableTableHandler.buildSql(faqIndexableTable, indexContext.getBatchSize(), nextIdNumber);

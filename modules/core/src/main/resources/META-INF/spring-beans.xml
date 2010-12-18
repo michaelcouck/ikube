@@ -114,14 +114,14 @@
 	<bean
 		id="ikube.service.SearcherWebServiceExecuter"
 		class="ikube.service.SearcherWebServiceExecuter"
-		property:configurationName="faq"
+		property:configurationName="indexOne"
 		property:end="101"
 		property:endpointUri="http://localhost:8081/service/ISearcherWebService?wsdl"
 		property:fieldName="contents"
 		property:fragment="true"
 		property:resultsSizeMinimum="1"
 		property:searchString="clinch crackerjack books gall thoroughgoing
-			tall pissed committee greathearted cyborg devotional tremor"
+			tall pissed committee greathearted cyborg devotional tremor tuba"
 		property:start="0" />
 
 	<bean

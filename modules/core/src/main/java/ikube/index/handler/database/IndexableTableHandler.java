@@ -352,7 +352,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 				builder.append(".");
 				builder.append(idColumnName);
 
-				builder.append(" > ");
+				builder.append(" >= ");
 				builder.append(nextIdNumber);
 				builder.append(" and ");
 
@@ -362,7 +362,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 				builder.append(".");
 				builder.append(idColumnName);
 
-				builder.append(" <= ");
+				builder.append(" < ");
 				builder.append(nextIdNumber + batchSize);
 				logger.info(Logging.getString("Sql : ", builder.toString(), ", thread : ", Thread.currentThread().hashCode()));
 			} else {

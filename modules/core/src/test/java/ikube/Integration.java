@@ -1,18 +1,16 @@
 package ikube;
 
-import java.io.File;
-import java.util.Map;
-
 import ikube.model.IndexContext;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
 
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import java.io.File;
+import java.util.Map;
 
-public class IntegrationTest extends ATest {
-	
+import org.junit.Before;
+
+public class Integration extends ATest {
+
 	@Before
 	public void before() {
 		// Delete all the old index directories
@@ -23,12 +21,16 @@ public class IntegrationTest extends ATest {
 		}
 	}
 
-	@Test
-	@Ignore
-	public void index() throws Exception {
+	public void start() throws Exception {
 		ApplicationContextManager.getApplicationContext(IConstants.SPRING_CONFIGURATION_FILE);
 		// And we sleep until the index is created
 		Thread.sleep(1000 * 60 * 60 * 100);
+	}
+
+	public static void main(String[] args) throws Exception {
+		Integration integration = new Integration();
+		integration.before();
+		integration.start();
 	}
 
 }
