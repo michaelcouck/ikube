@@ -5,10 +5,12 @@
 	<property name="ikube.war" value="ikube-war-${project.version}.war" />
 
 	<target name="deploy.war">
+		<delete dir="${indexes.directory}" failonerror="false" />
+		
 		<delete dir="${tomcat.1.webapps}/${ikube.dir}" failonerror="true" />
 		<delete dir="${tomcat.2.webapps}/${ikube.dir}" failonerror="true" />
 		<delete dir="${tomcat.3.webapps}/${ikube.dir}" failonerror="true" />
-		<delete dir="${tomcat.vm.one.webapps}/${ikube.dir}" failonerror="true" />
+		<delete dir="${tomcat.vm.one.webapps}/${ikube.dir}" failonerror="false" />
 		<!-- delete dir="${tomcat.ikube.webapps}/${ikube.dir}" failonerror="true" / -->
 
 		<delete dir="${cluster.directory}/index" failonerror="true" />
@@ -23,13 +25,13 @@
 		<delete file="${tomcat.1.webapps}/${ikube.war}" failonerror="true" />
 		<delete file="${tomcat.2.webapps}/${ikube.war}" failonerror="true" />
 		<delete file="${tomcat.3.webapps}/${ikube.war}" failonerror="true" />
-		<delete file="${tomcat.vm.one.webapps}/${ikube.war}" failonerror="true" />
+		<delete file="${tomcat.vm.one.webapps}/${ikube.war}" failonerror="false" />
 		<!-- delete file="${tomcat.ikube.webapps}/${ikube.war}" failonerror="true" / -->
 
 		<copy file="${target.directory}/${ikube.war}" todir="${tomcat.1.webapps}" overwrite="true" failonerror="true" />
 		<copy file="${target.directory}/${ikube.war}" todir="${tomcat.2.webapps}" overwrite="true" failonerror="true" />
 		<copy file="${target.directory}/${ikube.war}" todir="${tomcat.3.webapps}" overwrite="true" failonerror="true" />
-		<copy file="${target.directory}/${ikube.war}" todir="${tomcat.vm.one.webapps}" overwrite="true" failonerror="true" />
+		<copy file="${target.directory}/${ikube.war}" todir="${tomcat.vm.one.webapps}" overwrite="true" failonerror="false" />
 		<!-- copy file="${target.directory}/${ikube.war}" todir="${tomcat.ikube.webapps}" overwrite="true" failonerror="true" / -->
 		
 	</target>

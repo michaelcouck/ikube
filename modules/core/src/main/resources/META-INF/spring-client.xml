@@ -15,7 +15,7 @@
 	<bean
 		id="indexContextOne"
 		class="ikube.model.IndexContext"
-		property:indexName="indexOne"
+		property:indexName="contextOne"
 		property:maxAge="${max.age}"
 		property:compoundFile="${compound.file}"
 		property:bufferedDocs="${buffered.docs}"
@@ -32,7 +32,7 @@
 	<!--<bean
 		id="indexContextTwo"
 		class="ikube.model.IndexContext"
-		property:indexName="indexTwo"
+		property:indexName="contextTwo"
 		property:maxAge="${max.age}"
 		property:compoundFile="${compound.file}"
 		property:bufferedDocs="${buffered.docs}"
@@ -68,7 +68,6 @@
 		<ref local="internet" />
 		<ref local="filesystem" />
 		<ref local="tableOne" />
-		<!--<ref local="tableOne" />
 		<ref local="tableOne" />
 		<ref local="tableOne" />
 		<ref local="tableOne" />
@@ -76,7 +75,8 @@
 		<ref local="tableOne" />
 		<ref local="tableOne" />
 		<ref local="tableOne" />
-		<ref local="tableOne" />-->
+		<ref local="tableOne" />
+		<ref local="tableOne" />
 	</util:list>
 
 	<bean

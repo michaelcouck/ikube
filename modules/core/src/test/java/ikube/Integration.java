@@ -24,12 +24,12 @@ public class Integration extends ATest {
 	public void start() throws Exception {
 		ApplicationContextManager.getApplicationContext(IConstants.SPRING_CONFIGURATION_FILE);
 		// And we sleep until the index is created
-		Thread.sleep(1000 * 60 * 60 * 100);
+		Thread.sleep(1000 * 60 * 60 * 3);
 	}
 
 	public static void main(String[] args) throws Exception {
 		Integration integration = new Integration();
-		// integration.before();
+		integration.before();
 		integration.start();
 	}
 
