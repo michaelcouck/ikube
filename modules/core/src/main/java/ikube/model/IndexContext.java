@@ -34,7 +34,6 @@ public class IndexContext extends Persistable implements Comparable<IndexContext
 	private int internetBatchSize;
 
 	private long maxReadLength;
-	/** Not mandatory, default implementation determined. */
 	private String indexDirectoryPath;
 
 	private List<Indexable<?>> indexables;

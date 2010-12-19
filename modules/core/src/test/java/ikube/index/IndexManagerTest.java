@@ -6,8 +6,10 @@ import static org.junit.Assert.assertNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import ikube.ATest;
+import ikube.BaseTest;
+import ikube.toolkit.FileUtilities;
 
+import java.io.File;
 import java.io.Reader;
 
 import org.apache.lucene.document.Document;
@@ -15,9 +17,10 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
+import org.apache.lucene.index.IndexWriter;
 import org.junit.Test;
 
-public class IndexManagerTest extends ATest {
+public class IndexManagerTest extends BaseTest {
 
 	private String fieldName = "fieldName";
 	private Document document = new Document();
@@ -28,7 +31,10 @@ public class IndexManagerTest extends ATest {
 	@Test
 	public void openIndexWriter() throws Exception {
 		// String, IndexContext, long
-		// TODO - implement me
+		IndexWriter indexWriter = IndexManager.openIndexWriter(IP, indexContext, System.currentTimeMillis());
+		assertNotNull(indexWriter);
+		IndexManager.closeIndexWriter(indexContext);
+		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
 	}
 
 	@Test
@@ -82,7 +88,18 @@ public class IndexManagerTest extends ATest {
 	@Test
 	public void closeIndexWriter() throws Exception {
 		// IndexContext
-		// TODO - implement me
+		IndexWriter indexWriter = IndexManager.openIndexWriter(IP, indexContext, System.currentTimeMillis());
+		assertNotNull(indexWriter);
+		IndexManager.closeIndexWriter(indexContext);
+		assertNull(indexContext.getIndexWriter());
+		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
+	}
+
+	@Test
+	public void getIndexDirectory() {
+		String indexDirectoryPath = IndexManager.getIndexDirectory(IP, indexContext, System.currentTimeMillis());
+		logger.info("Index directory : " + new File(indexDirectoryPath).getAbsolutePath());
+		assertNotNull(indexDirectoryPath);
 	}
 
 	private <T extends Reader> T getReader(Class<T> t) throws Exception {

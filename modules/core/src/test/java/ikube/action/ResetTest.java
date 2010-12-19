@@ -2,6 +2,7 @@ package ikube.action;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import ikube.BaseTest;
 import ikube.cluster.IClusterManager;
 import ikube.model.Url;
 import ikube.toolkit.ApplicationContextManager;
@@ -14,7 +15,7 @@ import org.junit.Test;
  * @since 21.11.10
  * @version 01.00
  */
-public class ResetTest extends BaseActionTest {
+public class ResetTest extends BaseTest {
 
 	private Reset reset = new Reset();
 

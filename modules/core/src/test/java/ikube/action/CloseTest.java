@@ -3,6 +3,7 @@ package ikube.action;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
+import ikube.BaseTest;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
@@ -14,7 +15,7 @@ import org.junit.Test;
  * @since 21.11.10
  * @version 01.00
  */
-public class CloseTest extends BaseActionTest {
+public class CloseTest extends BaseTest {
 
 	private Close close = new Close();
 

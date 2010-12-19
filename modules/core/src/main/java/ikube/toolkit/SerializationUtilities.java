@@ -36,7 +36,7 @@ public class SerializationUtilities {
 
 	public static String serialize(Object object) {
 		try {
-			SerializationUtilities.setTransientFields(object);
+			SerializationUtilities.setTransientFields(object.getClass());
 			ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 			XMLEncoder xmlEncoder = new XMLEncoder(byteArrayOutputStream);
 			xmlEncoder.setExceptionListener(exceptionListener);
@@ -50,13 +50,10 @@ public class SerializationUtilities {
 		return null;
 	}
 
-	protected static void setTransientFields(Object object) {
-		if (object == null) {
-			return;
-		}
+	public static void setTransientFields(Class<?> klass) {
 		BeanInfo info;
 		try {
-			info = Introspector.getBeanInfo(object.getClass());
+			info = Introspector.getBeanInfo(klass);
 		} catch (IntrospectionException e) {
 			LOGGER.error("", e);
 			return;
@@ -65,7 +62,7 @@ public class SerializationUtilities {
 		for (PropertyDescriptor pd : propertyDescriptors) {
 			String fieldName = pd.getName();
 			try {
-				Field field = SerializationUtilities.getField(object.getClass(), fieldName);
+				Field field = SerializationUtilities.getField(klass, fieldName);
 				if (field == null) {
 					continue;
 				}

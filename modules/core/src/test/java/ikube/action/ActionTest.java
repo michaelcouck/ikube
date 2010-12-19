@@ -3,6 +3,7 @@ package ikube.action;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
+import ikube.BaseTest;
 import ikube.model.IndexContext;
 import ikube.toolkit.FileUtilities;
 
@@ -16,7 +17,7 @@ import org.junit.Test;
  * @since 21.11.10
  * @version 01.00
  */
-public class ActionTest extends BaseActionTest {
+public class ActionTest extends BaseTest {
 
 	private Action action = new Action() {
 		@Override

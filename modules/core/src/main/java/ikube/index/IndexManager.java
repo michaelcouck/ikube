@@ -38,17 +38,8 @@ public class IndexManager {
 
 	public static synchronized IndexWriter openIndexWriter(String ip, IndexContext indexContext, long time) {
 		try {
-			StringBuilder builder = new StringBuilder();
-
-			builder.append(indexContext.getIndexDirectoryPath()); // Path
-			builder.append(File.separator);
-			builder.append(indexContext.getIndexName()); // Index name
-			builder.append(File.separator);
-			builder.append(time); // Time
-			builder.append(File.separator);
-			builder.append(ip); // Ip
-
-			File indexDirectory = FileUtilities.getFile(builder.toString(), Boolean.TRUE);
+			String indexDirectoryPath = getIndexDirectory(ip, indexContext, time);
+			File indexDirectory = FileUtilities.getFile(indexDirectoryPath, Boolean.TRUE);
 			LOGGER.info(Logging.getString("Index directory time : ", time, ", date : ", new Date(time), ", writing index to directory ",
 					indexDirectory.getAbsolutePath()));
 			IndexWriter indexWriter = null;
@@ -77,6 +68,18 @@ public class IndexManager {
 		} finally {
 			IndexManager.class.notifyAll();
 		}
+	}
+
+	public static String getIndexDirectory(String ip, IndexContext indexContext, long time) {
+		StringBuilder builder = new StringBuilder();
+		builder.append(indexContext.getIndexDirectoryPath()); // Path
+		builder.append(File.separator);
+		builder.append(indexContext.getIndexName()); // Index name
+		builder.append(File.separator);
+		builder.append(time); // Time
+		builder.append(File.separator);
+		builder.append(ip); // Ip
+		return builder.toString();
 	}
 
 	public static void addStringField(String fieldName, String fieldContent, Document document, Store store, Index analyzed,

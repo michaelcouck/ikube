@@ -69,6 +69,10 @@ public class IndexEngine implements IIndexEngine {
 				logger.debug(Logging.getString("Executing action : ", action, ", ", thread));
 				boolean success = Boolean.FALSE;
 				try {
+					// Sleep for a random period to avoid one server always being first
+					long sleep = ((long) (Math.random() * 10d)) * 1000;
+					logger.info("Sleeping for : " + sleep + " milliseconds");
+					Thread.sleep(sleep);
 					success = action.execute(indexContext);
 				} catch (Exception e) {
 					logger.error("Exception executing action : " + action, e);

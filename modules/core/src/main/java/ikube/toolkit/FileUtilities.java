@@ -1,7 +1,5 @@
 package ikube.toolkit;
 
-import ikube.IConstants;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileFilter;
@@ -28,6 +26,16 @@ public class FileUtilities {
 
 	private static Logger LOGGER = Logger.getLogger(FileUtilities.class);
 
+	/**
+	 * Deletes all files recursively, that have the specified pattern in the path. Note that this is dangerous and you really need to know
+	 * what files are in the directory that you feed this method. There is no turning back, these files will be completely deelted, n
+	 * re-cycle bin and all that.
+	 * 
+	 * @param file
+	 *            the top level directory or file to start looking into
+	 * @param stringPatterns
+	 *            the patterns to look for in the file paths
+	 */
 	public static void deleteFiles(File file, String... stringPatterns) {
 		if (file.isDirectory()) {
 			File[] childFiles = file.listFiles();
@@ -39,25 +47,44 @@ public class FileUtilities {
 		}
 		Pattern pattern = getPattern(stringPatterns);
 		if (pattern.matcher(file.getName()).matches()) {
+			// This deletes the file recursively
 			FileUtilities.deleteFile(file, 1);
 		}
 	}
 
-	protected static Pattern getPattern(String... stringPatterns) {
+	/**
+	 * Creates the pattern object from the regular expression patterns.
+	 * 
+	 * @param stringPatterns
+	 *            the regular expression patterns
+	 * @return the pattern generated from the strings
+	 */
+	public static Pattern getPattern(String... stringPatterns) {
 		boolean first = Boolean.TRUE;
 		StringBuilder builder = new StringBuilder();
 		for (String stringPattern : stringPatterns) {
 			if (!first) {
+				// Or
 				builder.append("|");
 			} else {
 				first = Boolean.FALSE;
 			}
+			// Concatenate the 'any character' regular expression to the string pattern
 			builder.append(".*(").append(stringPattern).append(").*");
 		}
 		Pattern pattern = Pattern.compile(builder.toString());
 		return pattern;
 	}
 
+	/**
+	 * Finds files with the specified pattern only in the folder specified in the parameter list, i.e. not recursively.
+	 * 
+	 * @param folder
+	 *            the folder to look for files in
+	 * @param stringPatterns
+	 *            the pattern to look for in the file path
+	 * @return an array of files with the specified pattern in the path
+	 */
 	public static File[] findFiles(File folder, String[] stringPatterns) {
 		final Pattern pattern = getPattern(stringPatterns);
 		File[] files = folder.listFiles(new FileFilter() {
@@ -73,11 +100,33 @@ public class FileUtilities {
 		return files;
 	}
 
+	/**
+	 * This method looks through all the files defined in the folder in the parameter list, recursively, and gets the first one that matches
+	 * the pattern.
+	 * 
+	 * @param folder
+	 *            the folder to start looking through
+	 * @param stringPatterns
+	 *            the patterns to look for in the file paths
+	 * @return the first file that was encountered that has the specified pattern(s) in it
+	 */
 	public static File findFile(File folder, String... stringPatterns) {
 		List<File> files = FileUtilities.findFilesRecursively(folder, stringPatterns, new ArrayList<File>());
 		return files.size() > 0 ? files.get(0) : null;
 	}
 
+	/**
+	 * This method will look through all the files in the top level folder, and all the sub folders, adding files to the list when they
+	 * match the patterns that are provided.
+	 * 
+	 * @param folder
+	 *            the folder to start looking through
+	 * @param stringPatterns
+	 *            the patterns to match the file paths with
+	 * @param files
+	 *            the files list to add all the files to
+	 * @return the list of files that match the patterns
+	 */
 	public static List<File> findFilesRecursively(File folder, String[] stringPatterns, List<File> files) {
 		if (folder.isDirectory()) {
 			File[] folderFiles = FileUtilities.findFiles(folder, stringPatterns);
@@ -103,6 +152,15 @@ public class FileUtilities {
 		FileUtilities.deleteFile(file, maxRetryCount, 0);
 	}
 
+	/**
+	 * Gets a single file. First looking to find it, if it can not be found then it is created.
+	 * 
+	 * @param filePath
+	 *            the path to the file that is requested
+	 * @param directory
+	 *            whether the file is a directory of a file
+	 * @return
+	 */
 	public static synchronized File getFile(String filePath, boolean directory) {
 		try {
 			File file = new File(filePath);
@@ -135,12 +193,6 @@ public class FileUtilities {
 		} finally {
 			FileUtilities.class.notifyAll();
 		}
-	}
-
-	protected void deleteTempFiles() {
-		// Delete all the temp reader files on the file system
-		File tempFolder = new File(System.getProperty("java.io.tmpdir"));
-		FileUtilities.deleteFiles(tempFolder, new String[] { IConstants.READER_FILE_SUFFIX });
 	}
 
 	protected static void deleteFile(File file, int maxRetryCount, int retryCount) {
@@ -182,26 +234,25 @@ public class FileUtilities {
 
 	protected static synchronized File getLatestIndexDirectory(File file, File latestSoFar) {
 		if (file.isDirectory()) {
-			if (FileUtilities.isDigits(file.getName())) {
-				if (latestSoFar == null) {
-					latestSoFar = file;
-				} else {
-					latestSoFar = getOldestIndexDirectory(file, latestSoFar);
-				}
-			}
-			// Do this children
 			File[] children = file.listFiles();
 			for (File child : children) {
-				latestSoFar = getLatestIndexDirectory(child, latestSoFar);
+				if (FileUtilities.isDigits(child.getName())) {
+					if (latestSoFar == null) {
+						latestSoFar = child;
+					}
+					latestSoFar = getNewestIndexDirectory(child, latestSoFar);
+				} else {
+					latestSoFar = getLatestIndexDirectory(child, latestSoFar);
+				}
 			}
 		}
 		return latestSoFar;
 	}
 
-	protected static synchronized File getOldestIndexDirectory(File one, File two) {
+	protected static synchronized File getNewestIndexDirectory(File one, File two) {
 		long oneTime = Long.parseLong(one.getName());
 		long twoTime = Long.parseLong(two.getName());
-		return oneTime < twoTime ? one : two;
+		return oneTime > twoTime ? one : two;
 	}
 
 	/**
@@ -362,16 +413,6 @@ public class FileUtilities {
 				LOGGER.error("Exception closing input stream " + reader, e);
 			}
 		}
-	}
-
-	public static void main(String[] args) {
-		File file = new File("I:/index/example.txt");
-		String content = FileUtilities.getContents(file).toString();
-		System.out.println("Content : " + content);
-
-		file = new File("//ikube/d/index/example.txt");
-		content = FileUtilities.getContents(file).toString();
-		System.out.println("Content : " + content);
 	}
 
 }

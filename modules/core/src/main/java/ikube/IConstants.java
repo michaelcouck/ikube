@@ -64,5 +64,8 @@ public interface IConstants {
 	public String IN = "in";
 	public String OUT = "out";
 	public String ALL = "all";
+	
+	public int SYNCHRONIZATION_PORT = 8010;
+	public String SYNCHRONIZATION_TOPIC = "synchronizationTopic";
 
 }

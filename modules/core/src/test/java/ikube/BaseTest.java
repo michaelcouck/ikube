@@ -1,6 +1,7 @@
 package ikube;
 
 import ikube.cluster.ClusterIntegration;
+import ikube.index.IndexManager;
 import ikube.model.IndexContext;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.DataGeneratorTwo;
@@ -10,6 +11,15 @@ import ikube.toolkit.PerformanceTester;
 
 import java.io.File;
 import java.util.Map;
+
+import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field;
+import org.apache.lucene.document.Field.Index;
+import org.apache.lucene.document.Field.Store;
+import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriter.MaxFieldLength;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.FSDirectory;
 
 /**
  * @author Michael Couck
@@ -57,15 +67,33 @@ public abstract class BaseTest extends ATest {
 	 * @return the directory path to the latest index directory for this servers and context
 	 */
 	protected String getServerIndexDirectoryPath(IndexContext indexContext) {
-		StringBuilder builder = new StringBuilder();
-		builder.append(indexContext.getIndexDirectoryPath());
-		builder.append(File.separator);
-		builder.append(indexContext.getIndexName());
-		builder.append(File.separator);
-		builder.append(System.currentTimeMillis());
-		builder.append(File.separator);
-		builder.append(IP);
-		return builder.toString();
+		return IndexManager.getIndexDirectory(IP, indexContext, System.currentTimeMillis());
+	}
+
+	protected File createIndex(File indexDirectory) throws Exception {
+		logger.info("Creating Lucene index in : " + indexDirectory);
+		Directory directory = null;
+		IndexWriter indexWriter = null;
+		try {
+			directory = FSDirectory.open(indexDirectory);
+			indexWriter = new IndexWriter(directory, IConstants.ANALYZER, MaxFieldLength.UNLIMITED);
+			Document document = new Document();
+			document.add(new Field(IConstants.CONTENTS, "Michael Couck", Store.YES, Index.ANALYZED));
+			indexWriter.addDocument(document);
+			indexWriter.commit();
+			indexWriter.optimize(Boolean.TRUE);
+		} finally {
+			try {
+				directory.close();
+			} finally {
+				try {
+					indexWriter.close();
+				} catch (Exception e) {
+					logger.error("", e);
+				}
+			}
+		}
+		return indexDirectory;
 	}
 
 }

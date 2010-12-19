@@ -1,6 +1,7 @@
 package ikube.action;
 
 import static org.junit.Assert.assertTrue;
+import ikube.BaseTest;
 import ikube.cluster.IClusterManager;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
@@ -15,7 +16,7 @@ import org.junit.Test;
  * @since 21.11.10
  * @version 01.00
  */
-public class IndexTest extends BaseActionTest {
+public class IndexTest extends BaseTest {
 
 	private Index index = new Index();
 

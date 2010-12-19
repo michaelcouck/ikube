@@ -178,7 +178,7 @@ public class ClusterManagerTest extends BaseTest {
 		for (int i = 0; i < threadSize; i++) {
 			Thread thread = new Thread(new Runnable() {
 				public void run() {
-					for (int i = 0; i < 100; i++) {
+					for (int i = 0; i < 10; i++) {
 						long lastWorkingTime = clusterManager.setWorking(indexName, indexableName, Boolean.TRUE);
 						logger.info("Last working time : " + lastWorkingTime + ", " + startWorkingTime);
 						assertEquals(startWorkingTime, lastWorkingTime);
