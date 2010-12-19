@@ -98,25 +98,35 @@
 	</bean>
 
 	<bean
+		id="ikube.service.SearcherWebService"
+		class="ikube.service.SearcherWebService" />
+	<bean
 		id="ikube.service.WebServicePublisher"
 		class="ikube.service.WebServicePublisher"
-		property:addresses-ref="addresses"
-		property:implementors-ref="implementors"
-		init-method="publish" />
-	<util:list id="addresses">
-		<value>${web.service.url}</value>
-	</util:list>
-	<util:list id="implementors">
-		<bean
-			id="ikube.service.SearcherWebService"
-			class="ikube.service.SearcherWebService" />
-	</util:list>
+		init-method="publish" >
+		<property name="protocols">
+			<list><value>${web.service.protocol}</value></list>
+		</property>
+		<property name="hosts">
+			<list><value>${web.service.host}</value></list>
+		</property>
+		<property name="ports">
+			<list><value>${web.service.port}</value></list>
+		</property>
+		<property name="paths">
+			<list><value>${web.service.path}</value></list>
+		</property>
+		<property name="implementors">
+			<list><ref local="ikube.service.SearcherWebService" /></list>
+		</property>
+	</bean>
+	
 	<bean
 		id="ikube.service.SearcherWebServiceExecuter"
 		class="ikube.service.SearcherWebServiceExecuter"
-		property:configurationName="indexOne"
+		property:configurationName="contextOne"
 		property:end="101"
-		property:endpointUri="${web.service.url}?wsdl"
+		property:endpointUri="${web.service.protocol}://${web.service.host}:${web.service.port}${web.service.path}?wsdl"
 		property:fieldName="contents"
 		property:fragment="true"
 		property:resultsSizeMinimum="1"
@@ -130,7 +140,7 @@
 		property:schedules-ref="scheduled.tasks" />
 	<util:list id="scheduled.tasks">
 		<ref local="ikube.listener.Schedule" />
-		<!--<ref local="ikube.listener.Schedule.SearcherWebServiceExecuter" />-->
+		<ref local="ikube.listener.Schedule.SearcherWebServiceExecuter" />
 	</util:list>
 	
 	<bean
