@@ -89,7 +89,7 @@ public class SynchronizationManager implements MessageListener<Message>, IListen
 
 	@Override
 	public void handleNotification(Event event) {
-		if (!event.getType().equals(Event.TIMER)) {
+		if (!event.getType().equals(Event.SYNCHRONISE)) {
 			return;
 		}
 		// Check to see if there are any new indexes that are finished,

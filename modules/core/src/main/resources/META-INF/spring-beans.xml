@@ -147,6 +147,7 @@
 		property:schedules-ref="scheduled.tasks" />
 	<util:list id="scheduled.tasks">
 		<ref local="ikube.listener.Schedule" />
+		<ref local="ikube.listener.Schedule.Synchroinse" />
 		<ref local="ikube.listener.Schedule.SearcherWebServiceExecuter" />
 	</util:list>
 	
@@ -162,4 +163,10 @@
 		property:type="service"
 		property:delay="${web.service.delay}"
 		property:period="${web.service.period}" />
+	<bean
+		id="ikube.listener.Schedule.Synchroinse"
+		class="ikube.listener.Schedule"
+		property:type="synchronise"
+		property:delay="${synchronisation.delay}"
+		property:period="${synchronisation.period}" />
 </beans>

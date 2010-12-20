@@ -65,7 +65,7 @@ public class SynchronizationManagerTest extends BaseTest {
 		topic.addMessageListener(messageListener);
 
 		Event event = new Event();
-		event.setType(Event.TIMER);
+		event.setType(Event.SYNCHRONISE);
 
 		SYNCHRONIZATION_MANAGER.handleNotification(event);
 

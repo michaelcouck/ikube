@@ -157,6 +157,17 @@
 			tall pissed committee greathearted cyborg devotional tremor"
 		property:start="0" />
 	
+	<!-- The scheduling class -->
+	<bean
+		class="ikube.listener.Scheduler"
+		init-method="initialize"
+		property:schedules-ref="scheduled.tasks" />
+	<util:list id="scheduled.tasks">
+		<ref local="ikube.listener.Schedule" />
+		<ref local="ikube.listener.Schedule.Synchroinse" />
+		<ref local="ikube.listener.Schedule.WebService" />
+	</util:list>
+
 	<!-- The schedules for events firing -->
 	<bean
 		id="ikube.listener.Schedule"
@@ -169,18 +180,13 @@
 		class="ikube.listener.Schedule"
 		property:type="service"
 		property:delay="${web.service.delay}"
-		property:period="${web.service.period}" />
-
-	<util:list id="scheduled.tasks">
-		<ref local="ikube.listener.Schedule" />
-		<ref local="ikube.listener.Schedule.WebService" />
-	</util:list>
-
-	<!-- The scheduling class -->
+		property:period="${web.service.period}" />	
 	<bean
-		class="ikube.listener.Scheduler"
-		init-method="initialize"
-		property:schedules-ref="scheduled.tasks" />
+		id="ikube.listener.Schedule.Synchroinse"
+		class="ikube.listener.Schedule"
+		property:type="synchronise"
+		property:delay="${synchronisation.delay}"
+		property:period="${synchronisation.period}" />
 	
 		<!-- Utility classes -->
 	<bean
