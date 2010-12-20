@@ -4,6 +4,7 @@ import static org.junit.Assert.assertTrue;
 import ikube.BaseTest;
 import ikube.action.Reset;
 import ikube.cluster.IClusterManager;
+import ikube.database.IDataBase;
 import ikube.model.IndexableInternet;
 import ikube.model.Url;
 import ikube.toolkit.ApplicationContextManager;
@@ -34,6 +35,13 @@ public class IndexableInternetHandlerTest extends BaseTest {
 		int totalUrlsCrawled = clusterManager.size(Url.class);
 		logger.info("Urls crawled : " + totalUrlsCrawled);
 		assertTrue(totalUrlsCrawled > 40);
+
+		// Print everything in the database
+		IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
+		List<Url> urls = dataBase.find(Url.class, 0, Integer.MAX_VALUE);
+		for (Url url : urls) {
+			logger.info("Url : " + url);
+		}
 	}
 
 }

@@ -4,6 +4,7 @@
 * Wiki/documentation/JavaDoc - 3
 * Data generator two with files - 1/2
 * Servlet/Ejb - 1
+* New data structure, perhaps patients in a hospital
 
 Total - 5 1/2
 

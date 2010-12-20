@@ -1,5 +1,7 @@
 package ikube.cluster.cache;
 
+import ikube.database.IDataBase;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -21,6 +23,8 @@ import com.hazelcast.query.SqlPredicate;
 public class Cache implements ICache {
 
 	protected Logger logger;
+	/** The underlying database. */
+	private IDataBase dataBase;
 	/**
 	 * This is a map of maps for objects. These maps are propagated throughout the cluster. Typically the name of the map is the name of the
 	 * class that it contains, however in some cases this is not convenient.
@@ -46,7 +50,18 @@ public class Cache implements ICache {
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T> T get(String name, Long id) {
-		return (T) getMap(name).get(id);
+		T t = (T) getMap(name).get(id);
+		if (t == null) {
+			// Try the underlying database
+			if (dataBase != null) {
+				try {
+					t = (T) dataBase.find(Class.forName(name), id);
+				} catch (ClassNotFoundException e) {
+					logger.error("", e);
+				}
+			}
+		}
+		return t;
 	}
 
 	/**
@@ -131,6 +146,10 @@ public class Cache implements ICache {
 			maps.put(name, map);
 		}
 		return map;
+	}
+
+	public void setDataBase(IDataBase dataBase) {
+		this.dataBase = dataBase;
 	}
 
 }

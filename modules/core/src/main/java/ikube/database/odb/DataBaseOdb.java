@@ -4,24 +4,33 @@ import ikube.IConstants;
 import ikube.database.IDataBase;
 import ikube.model.Persistable;
 import ikube.toolkit.DatabaseUtilities;
+import ikube.toolkit.FileUtilities;
 
+import java.io.File;
 import java.lang.reflect.Array;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.neodatis.odb.ClassRepresentation;
 import org.neodatis.odb.ODB;
 import org.neodatis.odb.ODBFactory;
 import org.neodatis.odb.OID;
 import org.neodatis.odb.Objects;
 import org.neodatis.odb.OdbConfiguration;
+import org.neodatis.odb.core.layers.layer2.meta.ClassInfo;
+import org.neodatis.odb.core.layers.layer2.meta.MetaModel;
 import org.neodatis.odb.core.query.IQuery;
 import org.neodatis.odb.core.query.criteria.And;
 import org.neodatis.odb.core.query.criteria.Where;
 import org.neodatis.odb.core.query.nq.NativeQuery;
+import org.neodatis.odb.core.transaction.ISession;
 import org.neodatis.odb.impl.core.query.criteria.CriteriaQuery;
+import org.neodatis.odb.impl.main.ODBAdapter;
 
 /**
  * @see IDataBase
@@ -39,67 +48,152 @@ public class DataBaseOdb implements IDataBase {
 	private List<Index> indexes;
 	/** The initialization flag. */
 	private boolean initialised = Boolean.FALSE;
+	private Runnable dataBaseOdbDefragmenter;
 
 	protected void initialise() {
 		initialise(System.nanoTime() + "." + IConstants.DATABASE_FILE);
 	}
 
-	protected void initialise(String dataBaseFile) {
-		if (initialised && odb != null) {
-			return;
+	protected synchronized void initialise(final String dataBaseFile) {
+		try {
+			if (initialised && odb != null) {
+				return;
+			}
+			initialised = Boolean.TRUE;
+			logger = Logger.getLogger(getClass());
+			configureDataBase();
+			openDataBase(dataBaseFile);
+			createIndexes();
+
+			if (dataBaseOdbDefragmenter == null) {
+				dataBaseOdbDefragmenter = new DataBaseOdbDefragmenter(dataBaseFile, this);
+				new Thread(dataBaseOdbDefragmenter).start();
+			}
+		} finally {
+			notifyAll();
 		}
-		this.logger = Logger.getLogger(this.getClass());
-		initialised = Boolean.TRUE;
-		configureDataBase();
-		openDataBase(dataBaseFile);
-		createIndexes();
 	}
 
-	protected void createIndexes() {
-		if (this.indexes != null && this.odb != null) {
-			for (Index index : indexes) {
-				try {
-					Class<?> klass = Class.forName(index.getClassName());
-					if (!this.odb.getClassRepresentation(klass).existIndex(klass.getSimpleName())) {
-						String[] fieldNames = index.getFieldNames().toArray(new String[index.getFieldNames().size()]);
-						this.odb.getClassRepresentation(klass).addIndexOn(klass.getSimpleName(), fieldNames, Boolean.TRUE);
+	protected synchronized long getTotalObjects() {
+		try {
+			odb.commit();
+			ISession session = ((ODBAdapter) odb).getSession();
+			MetaModel metaModel = session.getMetaModel();
+			Collection<ClassInfo> classInfos = metaModel.getUserClasses();
+			long totalObjects = 0;
+			for (ClassInfo classInfo : classInfos) {
+				// logger.info("Class info : " + classInfo);
+				String className = classInfo.getFullClassName();
+				if (className.startsWith(IConstants.IKUBE)) {
+					CriteriaQuery query = null;
+					try {
+						query = new CriteriaQuery(Class.forName(className));
+					} catch (ClassNotFoundException e) {
+						logger.error("", e);
+						continue;
 					}
-				} catch (Exception e) {
-					logger.error("Exception creating index for class : " + index.getClassName(), e);
-					continue;
+					BigInteger bigInteger = odb.count(query);
+					// logger.info("Total objects : " + totalObjects + ", " + bigInteger.longValue() + ", " + className);
+					totalObjects += bigInteger.longValue();
 				}
 			}
+			return totalObjects;
+		} finally {
+			notifyAll();
 		}
 	}
 
-	protected void updateIndex(Class<?> klass) {
-		this.odb.getClassRepresentation(klass).rebuildIndex(klass.getSimpleName(), Boolean.TRUE);
+	protected synchronized String defragment(final String oldDataBaseFile) {
+		try {
+			logger.info("Defragmenting database : ");
+			odb.commit();
+			String dataBaseFile = System.nanoTime() + "." + IConstants.DATABASE_FILE;
+			odb.defragmentTo(dataBaseFile);
+			close();
+			initialise(dataBaseFile);
+			// Delete the old database
+			boolean deleted = FileUtilities.deleteFile(new File(oldDataBaseFile), 1);
+			if (!deleted) {
+				logger.info("Didn't delete old database file : " + deleted + ", " + oldDataBaseFile);
+			}
+			return dataBaseFile;
+		} finally {
+			notifyAll();
+		}
 	}
 
-	protected void deleteIndex(Class<?> klass) {
-		this.odb.getClassRepresentation(klass).deleteIndex(klass.getSimpleName(), Boolean.TRUE);
+	protected synchronized void createIndexes() {
+		try {
+			if (this.indexes != null && this.odb != null) {
+				logger.info("Creating indexes : " + indexes);
+				for (Index index : indexes) {
+					try {
+						Class<?> klass = Class.forName(index.getClassName());
+						if (!this.odb.getClassRepresentation(klass).existIndex(klass.getSimpleName())) {
+							String[] fieldNames = index.getFieldNames().toArray(new String[index.getFieldNames().size()]);
+							this.odb.getClassRepresentation(klass).addIndexOn(klass.getSimpleName(), fieldNames, Boolean.TRUE);
+						}
+					} catch (Exception e) {
+						logger.error("Exception creating index for class : " + index.getClassName(), e);
+						continue;
+					}
+				}
+			}
+		} finally {
+			notifyAll();
+		}
+	}
+
+	protected synchronized void updateIndex(Class<?> klass) {
+		try {
+			this.odb.getClassRepresentation(klass).rebuildIndex(klass.getSimpleName(), Boolean.TRUE);
+		} finally {
+			notifyAll();
+		}
+	}
+
+	protected synchronized void deleteIndex(Class<?> klass) {
+		try {
+			String indexName = klass.getSimpleName();
+			ClassRepresentation classRepresentation = this.odb.getClassRepresentation(klass);
+			if (classRepresentation.existIndex(indexName)) {
+				classRepresentation.deleteIndex(indexName, Boolean.TRUE);
+			}
+		} finally {
+			notifyAll();
+		}
 	}
 
 	protected void configureDataBase() {
-		// DLogger.register(new ikube.database.odb.Logger());
-		OdbConfiguration.setDebugEnabled(Boolean.FALSE);
-		OdbConfiguration.setDebugEnabled(5, Boolean.FALSE);
-		OdbConfiguration.setLogAll(Boolean.FALSE);
-		// OdbConfiguration.lockObjectsOnSelect(Boolean.TRUE);
-		OdbConfiguration.useMultiThread(Boolean.FALSE, 1);
-		// OdbConfiguration.setAutomaticallyIncreaseCacheSize(Boolean.TRUE);
-		// OdbConfiguration.setAutomaticCloseFileOnExit(Boolean.TRUE);
-		OdbConfiguration.setDisplayWarnings(Boolean.TRUE);
-		OdbConfiguration.setMultiThreadExclusive(Boolean.TRUE);
-		// OdbConfiguration.setReconnectObjectsToSession(Boolean.TRUE);
-		OdbConfiguration.setUseCache(Boolean.TRUE);
-		OdbConfiguration.setUseIndex(Boolean.TRUE);
-		OdbConfiguration.setUseMultiBuffer(Boolean.FALSE);
-		// OdbConfiguration.setShareSameVmConnectionMultiThread(Boolean.FALSE);
+		try {
+			logger.info("Configuring database : ");
+			// DLogger.register(new ikube.database.odb.Logger());
+			OdbConfiguration.setDebugEnabled(Boolean.FALSE);
+			OdbConfiguration.setDebugEnabled(5, Boolean.FALSE);
+			OdbConfiguration.setLogAll(Boolean.FALSE);
+			// OdbConfiguration.lockObjectsOnSelect(Boolean.TRUE);
+			OdbConfiguration.useMultiThread(Boolean.FALSE, 1);
+			// OdbConfiguration.setAutomaticallyIncreaseCacheSize(Boolean.TRUE);
+			// OdbConfiguration.setAutomaticCloseFileOnExit(Boolean.TRUE);
+			OdbConfiguration.setDisplayWarnings(Boolean.TRUE);
+			OdbConfiguration.setMultiThreadExclusive(Boolean.TRUE);
+			OdbConfiguration.setReconnectObjectsToSession(Boolean.TRUE);
+			OdbConfiguration.setUseCache(Boolean.TRUE);
+			OdbConfiguration.setUseIndex(Boolean.TRUE);
+			OdbConfiguration.setUseMultiBuffer(Boolean.TRUE);
+			// OdbConfiguration.setShareSameVmConnectionMultiThread(Boolean.FALSE);
+		} finally {
+			notifyAll();
+		}
 	}
 
-	protected void openDataBase(String dataBaseFile) {
-		this.odb = ODBFactory.open(dataBaseFile);
+	protected synchronized void openDataBase(String dataBaseFile) {
+		try {
+			logger.info("Opening database : " + dataBaseFile);
+			this.odb = ODBFactory.open(dataBaseFile);
+		} finally {
+			notifyAll();
+		}
 	}
 
 	/**
@@ -109,12 +203,12 @@ public class DataBaseOdb implements IDataBase {
 	public synchronized <T> T persist(T object) {
 		try {
 			if (object != null) {
-				Object idFieldValue = DatabaseUtilities.getIdFieldValue(object);
+				Long idFieldValue = (Long) DatabaseUtilities.getIdFieldValue(object);
 				if (idFieldValue == null) {
 					DatabaseUtilities.setIdField(object, System.nanoTime());
 				}
 				// Check for duplicate keys
-				Object duplicate = find(object.getClass(), (Long) idFieldValue);
+				Object duplicate = find(object.getClass(), idFieldValue);
 				if (duplicate != null) {
 					throw new RuntimeException("Duplicate key for object : " + idFieldValue + ", " + object + ", " + object.getClass());
 				}
@@ -136,7 +230,11 @@ public class DataBaseOdb implements IDataBase {
 	public synchronized <T> T remove(T t) {
 		try {
 			if (t != null) {
-				this.odb.deleteCascade(t);
+				Long idFieldValue = (Long) DatabaseUtilities.getIdFieldValue(t);
+				Object dbT = find(t.getClass(), idFieldValue);
+				if (dbT != null) {
+					this.odb.deleteCascade(dbT);
+				}
 			}
 		} catch (Exception e) {
 			logger.error("Exception removing object : " + t, e);
@@ -168,9 +266,13 @@ public class DataBaseOdb implements IDataBase {
 	public synchronized <T> T merge(T t) {
 		try {
 			if (t != null) {
-				OID oid = this.odb.getObjectId(t);
-				if (oid != null) {
-					this.odb.ext().replace(oid, t);
+				Long idFieldValue = (Long) DatabaseUtilities.getIdFieldValue(t);
+				Object dbT = find(t.getClass(), idFieldValue);
+				if (dbT != null) {
+					OID oid = this.odb.getObjectId(dbT);
+					if (oid != null) {
+						this.odb.ext().replace(oid, t);
+					}
 				}
 			}
 		} catch (Exception e) {
@@ -321,10 +423,13 @@ public class DataBaseOdb implements IDataBase {
 
 	protected synchronized void close() {
 		try {
+			logger.info("Closing database : ");
 			if (this.odb != null && !this.odb.isClosed()) {
 				this.odb.commit();
 				this.odb.close();
 			}
+			this.odb = null;
+			this.initialised = Boolean.FALSE;
 		} finally {
 			notifyAll();
 		}

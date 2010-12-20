@@ -70,6 +70,12 @@ public class IndexableInternetCrawler implements Runnable {
 		this.httpClient = new HttpClient();
 	}
 
+	/**
+	 * This method iterates over a batch if urls. Urls are stored in the distributed map in the cluster. As they are accessed by this class
+	 * the indexed flag is set to true. When there are no threads running and there are no urls in the map that are still not indexed then
+	 * this thread will return and die.
+	 */
+	@Override
 	public void run() {
 		while (true) {
 			List<Url> urls = getBatch(threads);
@@ -93,11 +99,20 @@ public class IndexableInternetCrawler implements Runnable {
 				try {
 					Thread.sleep(indexContext.getThrottle());
 				} catch (Exception e) {
+					logger.error("Sleep interrupted : ", e);
 				}
 			}
 		}
 	}
 
+	/**
+	 * This method gets a batch of urls to index. This thread has access to all the threads that are crawling the site. If there are no more
+	 * urls in the map that are not indexed then this thread will wait for any one of the running threads to add urls to the map.
+	 * 
+	 * @param threads
+	 *            the threads that are indexing the site
+	 * @return a list of urls to crawl which could be empty, in which case the site is completely crawled
+	 */
 	protected synchronized List<Url> getBatch(List<Thread> threads) {
 		try {
 			IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
@@ -126,22 +141,28 @@ public class IndexableInternetCrawler implements Runnable {
 		}
 	}
 
+	/**
+	 * Gets the raw data from the url.
+	 * 
+	 * @param indexable
+	 *            the indexable to set the transient data in
+	 * @param url
+	 *            the url to get the data from
+	 * @return the raw data from the url
+	 */
 	protected ByteOutputStream getContentFromUrl(IndexableInternet indexable, Url url) {
 		GetMethod get = null;
 		ByteOutputStream byteOutputStream = null;
 		try {
-			byteOutputStream = new ByteOutputStream();
-
 			get = new GetMethod(url.getUrl());
 			httpClient.executeMethod(get);
 			InputStream responseInputStream = get.getResponseBodyAsStream();
 
 			indexable.setCurrentInputStream(responseInputStream);
 
+			byteOutputStream = new ByteOutputStream();
 			contentProvider.getContent(indexable, byteOutputStream);
-
 			url.setRawContent(byteOutputStream.getBytes());
-
 			return byteOutputStream;
 		} catch (Exception e) {
 			logger.error("", e);

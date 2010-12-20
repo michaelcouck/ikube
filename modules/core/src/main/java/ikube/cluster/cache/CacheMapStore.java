@@ -22,7 +22,7 @@ import com.hazelcast.core.MapStore;
  */
 public class CacheMapStore implements MapStore<Long, Object> {
 
-	private Logger logger = Logger.getLogger(this.getClass());
+	protected Logger logger = Logger.getLogger(this.getClass());
 	/** The database object where the data will be persisted. */
 	private IDataBase dataBase;
 
@@ -66,6 +66,8 @@ public class CacheMapStore implements MapStore<Long, Object> {
 			Object object = getDataBase().find(value.getClass(), id);
 			if (object == null) {
 				getDataBase().persist(value);
+			} else {
+				getDataBase().merge(value);
 			}
 		} finally {
 			notifyAll();
@@ -83,6 +85,8 @@ public class CacheMapStore implements MapStore<Long, Object> {
 				Object persistable = getDataBase().find(object.getClass(), key);
 				if (persistable == null) {
 					getDataBase().persist(map.get(key));
+				} else {
+					getDataBase().merge(map.get(key));
 				}
 			}
 		} finally {
@@ -112,9 +116,7 @@ public class CacheMapStore implements MapStore<Long, Object> {
 	public synchronized void deleteAll(Collection<Long> keys) {
 		try {
 			for (Long key : keys) {
-				logger.debug("Key : " + key);
 				Object object = getDataBase().find(key);
-				logger.debug("Object : " + object);
 				if (object != null) {
 					getDataBase().remove(object);
 				}

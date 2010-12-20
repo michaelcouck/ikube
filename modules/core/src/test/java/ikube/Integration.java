@@ -9,6 +9,13 @@ import java.util.Map;
 
 import org.junit.Before;
 
+/**
+ * This is a test for the 'production' configuration, suitable for a single instance, i.e. no cluster functionality is tested.
+ * 
+ * @author Michael Couck
+ * @since 20.12.10
+ * @version 01.00
+ */
 public class Integration extends ATest {
 
 	@Before

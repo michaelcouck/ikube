@@ -40,8 +40,8 @@
 					<property name="fieldNames">
 						<list>
 							<!-- Neodatis doesn't like indexes -->
-							<!--<value>id</value>-->
-							<!--<value>url</value>
+							<!--<value>id</value>
+							<value>url</value>
 							<value>hash</value>-->
 						</list>
 					</property>
@@ -54,7 +54,8 @@
 		id="ikube.cluster.cache.Cache"
 		class="ikube.cluster.cache.Cache"
 		lazy-init="false"
-		init-method="initialise" />
+		init-method="initialise"
+		property:dataBase-ref="ikube.database.odb.DataBaseOdb" />
 	<!-- Cluster wide manager -->
 	<!-- init-method="initialise" -->
 	<bean

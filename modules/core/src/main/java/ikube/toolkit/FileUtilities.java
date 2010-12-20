@@ -148,8 +148,8 @@ public class FileUtilities {
 	 * @param maxRetryCount
 	 *            the number of times to re-try the delete operation
 	 */
-	public static void deleteFile(File file, int maxRetryCount) {
-		FileUtilities.deleteFile(file, maxRetryCount, 0);
+	public static boolean deleteFile(File file, int maxRetryCount) {
+		return FileUtilities.deleteFile(file, maxRetryCount, 0);
 	}
 
 	/**
@@ -195,9 +195,9 @@ public class FileUtilities {
 		}
 	}
 
-	protected static void deleteFile(File file, int maxRetryCount, int retryCount) {
+	protected static boolean deleteFile(File file, int maxRetryCount, int retryCount) {
 		if (file == null || !file.exists()) {
-			return;
+			return Boolean.FALSE;
 		}
 		if (file.isDirectory()) {
 			File children[] = file.listFiles();
@@ -207,18 +207,18 @@ public class FileUtilities {
 			}
 		}
 		if (file.delete()) {
-			// LOGGER.debug("Deleted file : " + file);
-		} else {
-			if (retryCount >= maxRetryCount) {
-				if (file.exists()) {
-					LOGGER.debug("Couldn't delete file : " + file);
-					LOGGER.debug("Will try to delete on exit : ");
-					file.deleteOnExit();
-				}
-			} else {
-				LOGGER.debug("Retrying count : " + retryCount + ", file : " + file);
-				deleteFile(file, maxRetryCount, ++retryCount);
+			return Boolean.TRUE;
+		}
+		if (retryCount >= maxRetryCount) {
+			if (file.exists()) {
+				LOGGER.debug("Couldn't delete file : " + file);
+				LOGGER.debug("Will try to delete on exit : ");
+				file.deleteOnExit();
 			}
+			return Boolean.FALSE;
+		} else {
+			LOGGER.debug("Retrying count : " + retryCount + ", file : " + file);
+			return deleteFile(file, maxRetryCount, ++retryCount);
 		}
 	}
 

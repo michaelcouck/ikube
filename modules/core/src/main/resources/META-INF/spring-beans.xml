@@ -73,9 +73,16 @@
 				id="ikube.cluster.cache.Cache"
 				class="ikube.cluster.cache.Cache"
 				lazy-init="false"
-				init-method="initialise" />
+				init-method="initialise"
+				property:dataBase-ref="ikube.database.odb.DataBaseOdb" />
 		</property>
 	</bean>
+	
+	<bean 
+		id="ikube.index.SynchronizationManager"
+		class="ikube.index.SynchronizationManager"
+		lazy-init="false"
+		init-method="initialize" />
 	
 	<bean
 		class="ikube.index.handler.internet.IndexableInternetHandler"

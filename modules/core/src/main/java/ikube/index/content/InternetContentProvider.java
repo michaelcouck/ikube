@@ -19,6 +19,9 @@ public class InternetContentProvider implements IContentProvider<IndexableIntern
 
 	private Logger logger = Logger.getLogger(this.getClass());
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void getContent(IndexableInternet indexable, OutputStream outputStream) {
 		try {

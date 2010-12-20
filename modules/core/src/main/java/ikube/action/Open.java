@@ -53,6 +53,9 @@ public class Open extends Action {
 		}
 		File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
 		logger.info("Latest index directory : " + latestIndexDirectory);
+		if (latestIndexDirectory == null) {
+			return Boolean.FALSE;
+		}
 		File[] serverIndexDirectories = latestIndexDirectory.listFiles();
 		for (File serverIndexDirectory : serverIndexDirectories) {
 			try {

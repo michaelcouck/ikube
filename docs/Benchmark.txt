@@ -7,9 +7,11 @@ Size: 2,546 gig
 Attachment:
 Columns: 19, 64, 10, 19
 Total: 112
-Records: 52 000 000
+Records: 50 882 388
 Size: 5,824 gig
 
 Ten tables: 
 Faq: 25,46 gig
 Attachment: 58,24 gig
+
+Total: 83.7 gig

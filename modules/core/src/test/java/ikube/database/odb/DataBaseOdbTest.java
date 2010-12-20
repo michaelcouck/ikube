@@ -36,21 +36,27 @@ import org.junit.Test;
  */
 public class DataBaseOdbTest extends ATest {
 
-	private static DataBaseOdb dataBase;
-	private static String dataBaseFile = "ikube.test.odb";
+	private static DataBaseOdb DATA_BASE;
+	private static String DATA_BASE_FILE = "ikube.test.odb";
 
 	@BeforeClass
 	public static void beforeClass() {
-		FileUtilities.deleteFiles(new File("."), dataBaseFile);
-		dataBase = new DataBaseOdb();
-		dataBase.setIndexes(Arrays.asList(new Index(Url.class.getName(), Arrays.asList(IConstants.ID))));
-		dataBase.initialise(dataBaseFile);
+		FileUtilities.deleteFiles(new File("."), DATA_BASE_FILE);
+		DATA_BASE = new DataBaseOdb();
+		@SuppressWarnings("unused")
+		List<Index> indexes = Arrays.asList(
+				//
+				new Index(Url.class.getName(), Arrays.asList(IConstants.ID)),
+				// new Index(Url.class.getName(), Arrays.asList(IConstants.URL)),
+				new Index(Url.class.getName(), Arrays.asList(IConstants.HASH)));
+		// DATA_BASE.setIndexes(indexes);
+		DATA_BASE.initialise(DATA_BASE_FILE);
 	}
 
 	@AfterClass
 	public static void afterClass() {
-		dataBase.close();
-		FileUtilities.deleteFiles(new File("."), dataBaseFile);
+		DATA_BASE.close();
+		FileUtilities.deleteFiles(new File("."), DATA_BASE_FILE);
 	}
 
 	@Test
@@ -92,15 +98,15 @@ public class DataBaseOdbTest extends ATest {
 	public void persist() {
 		Indexable<?> indexable = new IndexableColumn();
 		indexable.setId(System.currentTimeMillis());
-		dataBase.persist(indexable);
+		DATA_BASE.persist(indexable);
 
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		parameters.put(IConstants.ID, indexable.getId());
-		Indexable<?> found = dataBase.find(indexable.getClass(), parameters, Boolean.TRUE);
+		Indexable<?> found = DATA_BASE.find(indexable.getClass(), parameters, Boolean.TRUE);
 		assertNotNull(found);
 
-		dataBase.remove(indexable);
-		found = dataBase.find(indexable.getClass(), parameters, Boolean.TRUE);
+		DATA_BASE.remove(indexable);
+		found = DATA_BASE.find(indexable.getClass(), parameters, Boolean.TRUE);
 		assertNull(found);
 	}
 
@@ -108,9 +114,9 @@ public class DataBaseOdbTest extends ATest {
 	public void findLong() {
 		Url url = new Url();
 		url.setId(System.nanoTime());
-		dataBase.persist(url);
+		DATA_BASE.persist(url);
 
-		Object dataBaseObject = dataBase.find(url.getId());
+		Object dataBaseObject = DATA_BASE.find(url.getId());
 		assertNotNull(dataBaseObject);
 	}
 
@@ -119,12 +125,12 @@ public class DataBaseOdbTest extends ATest {
 		// Class<T>, Long
 		Url url = new Url();
 		url.setId(System.nanoTime());
-		dataBase.persist(url);
+		DATA_BASE.persist(url);
 
-		Url dataBaseUrl = dataBase.find(Url.class, url.getId());
+		Url dataBaseUrl = DATA_BASE.find(Url.class, url.getId());
 		assertNotNull(dataBaseUrl);
 
-		dataBase.remove(url);
+		DATA_BASE.remove(url);
 	}
 
 	@Test
@@ -132,13 +138,13 @@ public class DataBaseOdbTest extends ATest {
 		// Class<T>, Long
 		Url url = new Url();
 		url.setId(System.nanoTime());
-		dataBase.persist(url);
-		Url dataBaseUrl = dataBase.find(Url.class, url.getId());
+		DATA_BASE.persist(url);
+		Url dataBaseUrl = DATA_BASE.find(Url.class, url.getId());
 		assertNotNull(dataBaseUrl);
 
-		dataBase.remove(Url.class, url.getId());
+		DATA_BASE.remove(Url.class, url.getId());
 
-		dataBaseUrl = dataBase.find(Url.class, url.getId());
+		dataBaseUrl = DATA_BASE.find(Url.class, url.getId());
 		assertNull(dataBaseUrl);
 	}
 
@@ -146,18 +152,18 @@ public class DataBaseOdbTest extends ATest {
 	public void merge() {
 		String name = "name";
 		Indexable<?> indexable = new IndexableColumn();
-		dataBase.persist(indexable);
+		DATA_BASE.persist(indexable);
 
 		indexable.setName(name);
-		dataBase.merge(indexable);
+		DATA_BASE.merge(indexable);
 
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		parameters.put(IConstants.NAME, name);
-		Indexable<?> merged = dataBase.find(indexable.getClass(), parameters, Boolean.TRUE);
+		Indexable<?> merged = DATA_BASE.find(indexable.getClass(), parameters, Boolean.TRUE);
 		assertEquals(indexable.getName(), merged.getName());
 
-		dataBase.remove(indexable);
-		Indexable<?> found = dataBase.find(indexable.getClass(), parameters, Boolean.TRUE);
+		DATA_BASE.remove(indexable);
+		Indexable<?> found = DATA_BASE.find(indexable.getClass(), parameters, Boolean.TRUE);
 		assertNull(found);
 	}
 
@@ -166,12 +172,12 @@ public class DataBaseOdbTest extends ATest {
 		String name = "name";
 		Indexable<?> indexable = new IndexableColumn();
 		indexable.setName(name);
-		dataBase.persist(indexable);
-		dataBase.remove(indexable);
+		DATA_BASE.persist(indexable);
+		DATA_BASE.remove(indexable);
 
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		parameters.put(IConstants.NAME, name);
-		Indexable<?> removed = dataBase.find(indexable.getClass(), parameters, Boolean.TRUE);
+		Indexable<?> removed = DATA_BASE.find(indexable.getClass(), parameters, Boolean.TRUE);
 		assertNull(removed);
 	}
 
@@ -181,15 +187,15 @@ public class DataBaseOdbTest extends ATest {
 		Indexable<?> indexable = new IndexableColumn();
 		indexable.setName(name);
 
-		dataBase.persist(indexable);
+		DATA_BASE.persist(indexable);
 
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		parameters.put(IConstants.NAME, name);
-		Indexable<?> persisted = dataBase.find(indexable.getClass(), parameters, Boolean.TRUE);
+		Indexable<?> persisted = DATA_BASE.find(indexable.getClass(), parameters, Boolean.TRUE);
 		assertNotNull(persisted);
 
-		dataBase.remove(persisted);
-		persisted = dataBase.find(indexable.getClass(), parameters, Boolean.TRUE);
+		DATA_BASE.remove(persisted);
+		persisted = DATA_BASE.find(indexable.getClass(), parameters, Boolean.TRUE);
 		assertNull(persisted);
 	}
 
@@ -198,22 +204,22 @@ public class DataBaseOdbTest extends ATest {
 		for (int i = 0; i < 100; i++) {
 			Url token = new Url();
 			token.setId(i);
-			dataBase.persist(token);
+			DATA_BASE.persist(token);
 		}
 
 		int first = 0;
 		int max = 10;
-		List<Url> firstResults = dataBase.find(Url.class, first, max);
+		List<Url> firstResults = DATA_BASE.find(Url.class, first, max);
 		assertEquals(max, firstResults.size());
 
 		first = 10;
 		max = 50;
-		List<Url> secondResults = dataBase.find(Url.class, first, max);
+		List<Url> secondResults = DATA_BASE.find(Url.class, first, max);
 		assertEquals(max - first, secondResults.size());
 
 		first = 90;
 		max = 100;
-		List<Url> thirdResults = dataBase.find(Url.class, first, max);
+		List<Url> thirdResults = DATA_BASE.find(Url.class, first, max);
 		assertEquals(max - first, thirdResults.size());
 
 		assertFalse(firstResults.removeAll(secondResults));
@@ -227,24 +233,24 @@ public class DataBaseOdbTest extends ATest {
 			Url url = new Url();
 			url.setId(System.nanoTime());
 			url.setUrl(urlString);
-			dataBase.persist(url);
+			DATA_BASE.persist(url);
 		}
 
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		parameters.put(IConstants.URL, urlString);
 		int first = 0;
 		int max = 10;
-		List<Url> firstResults = dataBase.find(Url.class, parameters, first, max);
+		List<Url> firstResults = DATA_BASE.find(Url.class, parameters, first, max);
 		assertEquals(max, firstResults.size());
 
 		first = 10;
 		max = 50;
-		List<Url> secondResults = dataBase.find(Url.class, parameters, first, max);
+		List<Url> secondResults = DATA_BASE.find(Url.class, parameters, first, max);
 		assertEquals(max - first, secondResults.size());
 
 		first = 90;
 		max = 100;
-		List<Url> thirdResults = dataBase.find(Url.class, parameters, first, max);
+		List<Url> thirdResults = DATA_BASE.find(Url.class, parameters, first, max);
 		assertEquals(max - first, thirdResults.size());
 
 		assertFalse(firstResults.removeAll(secondResults));
@@ -270,7 +276,7 @@ public class DataBaseOdbTest extends ATest {
 
 			@Override
 			public void execute() throws Exception {
-				dataBase.persist(iterator.next());
+				DATA_BASE.persist(iterator.next());
 			}
 		}, "Database persist performance : ", iterations);
 		// assertTrue(executionsPerSecond > 1000);
@@ -285,7 +291,7 @@ public class DataBaseOdbTest extends ATest {
 			public void execute() throws Exception {
 				Url token = iterator.next();
 				parameters.put(IConstants.ID, token.getId());
-				dataBase.find(token.getClass(), parameters, Boolean.TRUE);
+				DATA_BASE.find(token.getClass(), parameters, Boolean.TRUE);
 			}
 		}, "Database find performance : ", iterations);
 		// assertTrue(executionsPerSecond > 1000);
@@ -297,20 +303,20 @@ public class DataBaseOdbTest extends ATest {
 			@Override
 			public void execute() throws Exception {
 				Url token = iterator.next();
-				dataBase.merge(token);
+				DATA_BASE.merge(token);
 			}
 		}, "Database merge performance : ", iterations);
 		// assertTrue(executionsPerSecond > 10);
 
 		// Remove
-		dataBase.deleteIndex(Url.class);
+		DATA_BASE.deleteIndex(Url.class);
 		executionsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
 			Iterator<Url> iterator = tokens.iterator();
 
 			@Override
 			public void execute() throws Exception {
 				try {
-					dataBase.remove(iterator.next());
+					DATA_BASE.remove(iterator.next());
 				} catch (Exception e) {
 					throw e;
 				}
@@ -321,7 +327,7 @@ public class DataBaseOdbTest extends ATest {
 
 	@Test
 	public void threading() throws Exception {
-		final int iterations = 1000;
+		final int iterations = 100;
 		int threadCount = 3;
 		List<Thread> threads = new ArrayList<Thread>();
 		for (int i = 0; i < threadCount; i++) {
@@ -339,30 +345,30 @@ public class DataBaseOdbTest extends ATest {
 							id = System.nanoTime();
 							token.setId(id);
 							log("Persisting : ", i, token);
-							dataBase.persist(token);
+							DATA_BASE.persist(token);
 						} else if (random >= 0.25 && random < 0.5) {
 							// Find
 							Map<String, Object> parameters = new HashMap<String, Object>();
 							parameters.put(IConstants.ID, id);
 							log("Finding : ", i, null);
-							dataBase.find(Url.class, parameters, Boolean.FALSE);
+							DATA_BASE.find(Url.class, parameters, Boolean.FALSE);
 						} else if (random >= 5 && random < 0.75) {
 							// Merge
 							Map<String, Object> parameters = new HashMap<String, Object>();
 							parameters.put(IConstants.URL, localhost);
-							Url token = dataBase.find(Url.class, parameters, Boolean.FALSE);
+							Url token = DATA_BASE.find(Url.class, parameters, Boolean.FALSE);
 							if (token != null) {
 								token.setUrl(localhost + ".duplicate");
 							}
-							dataBase.merge(token);
+							DATA_BASE.merge(token);
 						} else {
 							// Remove
 							Map<String, Object> parameters = new HashMap<String, Object>();
 							parameters.put(IConstants.URL, localhost);
-							Url token = dataBase.find(Url.class, parameters, Boolean.FALSE);
+							Url token = DATA_BASE.find(Url.class, parameters, Boolean.FALSE);
 							if (token != null) {
 								log("Removing : ", i, token);
-								dataBase.remove(token);
+								DATA_BASE.remove(token);
 							}
 						}
 					}
@@ -379,6 +385,39 @@ public class DataBaseOdbTest extends ATest {
 		}
 		ThreadUtilities.waitForThreads(threads);
 		assertTrue(Boolean.TRUE);
+	}
+
+	@Test
+	public void defragment() {
+		// Just add a few thousand objects and wait for the defragment
+		int iterations = 11000;
+		PerformanceTester.execute(new PerformanceTester.APerform() {
+			@Override
+			public void execute() throws Exception {
+				Url url = new Url();
+				url.setId(System.nanoTime());
+				url.setUrl(Long.toHexString(System.nanoTime()));
+				DATA_BASE.persist(url);
+				// Thread.sleep(1);
+			}
+		}, "Database defragment : ", iterations);
+		// TODO - check the database size
+	}
+
+	public static void main(String[] args) {
+		String dataBaseFile = "./88034101776063.ikube.odb";
+
+		DataBaseOdb dataBase = new DataBaseOdb();
+		dataBase.initialise(dataBaseFile);
+		List<Object> objects = dataBase.find(Object.class, 0, Integer.MAX_VALUE);
+		for (Object object : objects) {
+			System.out.println("Url : " + object);
+		}
+		dataBase.close();
+
+		// ODB odb = ODBFactory.open(DATA_BASE_FILE);
+		// odb.defragmentTo(DATA_BASE_FILE + ".defragmented");
+		// odb.close();
 	}
 
 }
