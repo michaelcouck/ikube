@@ -103,7 +103,7 @@ public class SynchronizationManager implements MessageListener<Message>, IListen
 		}
 		try {
 			// This is the file we will publish
-			if (index > files.size()) {
+			if (index >= files.size()) {
 				index = 0;
 			}
 			file = files.get(index);

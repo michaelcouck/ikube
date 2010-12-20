@@ -3,7 +3,8 @@
 	<property file="build.properties" />
 	<property name="ikube.dir" value="ikube-war-${project.version}" />
 	<property name="ikube.war" value="ikube-war-${project.version}.war" />
-
+	<property name="indexes" value="indexes" />
+	
 	<target name="deploy.war">
 		<delete dir="${indexes.directory}" failonerror="false" />
 		
@@ -13,14 +14,14 @@
 		<delete dir="${tomcat.vm.one.webapps}/${ikube.dir}" failonerror="false" />
 		<!-- delete dir="${tomcat.ikube.webapps}/${ikube.dir}" failonerror="true" / -->
 
-		<delete dir="${cluster.directory}/index" failonerror="true" />
+		<delete dir="${cluster.directory}/indexes" failonerror="true" />
 		<delete file="${cluster.directory}/ikube.log" failonerror="true" />
 		<delete file="${cluster.directory}/ikube.odb" failonerror="true" />
 		
-		<delete dir="${tomcat.1.bin}/index" failonerror="true" />
-		<delete dir="${tomcat.2.bin}/index" failonerror="true" />
-		<delete dir="${tomcat.3.bin}/index" failonerror="true" />
-		<!-- delete dir="${tomcat.ikube.bin}/index" failonerror="true" / -->
+		<delete dir="${tomcat.1.bin}/${indexes}" failonerror="true" />
+		<delete dir="${tomcat.2.bin}/${indexes}" failonerror="true" />
+		<delete dir="${tomcat.3.bin}/${indexes}" failonerror="true" />
+		<delete file="${tomcat.vm.one.bin}/${indexes}" failonerror="false" />
 
 		<delete file="${tomcat.1.webapps}/${ikube.war}" failonerror="true" />
 		<delete file="${tomcat.2.webapps}/${ikube.war}" failonerror="true" />
