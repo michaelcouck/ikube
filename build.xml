@@ -38,22 +38,27 @@
 	</target>
 	
 	<target name="cluster">
-		<exec spawn="false" executable="${cluster.directory}/startup.bat" />
+		<exec spawn="true" executable="${cluster.directory}/startup.bat" />
+	</target>
+	
+	<target name="startCluster">
+		<antcall target="startOne" />
+		<antcall target="startTwo" />
+		<antcall target="startThree" />
 	</target>
 
 	<target name="startOne">
-		<!-- exec spawn="false" executable="${tomcat.1.bin}/startup.bat" / -->
-		<java jar="${tomcat.1.bin}/bootstrap.jar" fork="yes">
+		<java jar="${tomcat.1.bin}/bootstrap.jar" fork="yes" spawn="true">
 			<jvmarg value="-Dcatalina.home=${tomcat.1}" />
 		</java>
 	</target>
 	<target name="startTwo">
-		<java jar="${tomcat.2.bin}/bootstrap.jar" fork="yes">
+		<java jar="${tomcat.2.bin}/bootstrap.jar" fork="yes" spawn="true">
 			<jvmarg value="-Dcatalina.home=${tomcat.2}" />
 		</java>
 	</target>
 	<target name="startThree">
-		<java jar="${tomcat.3.bin}/bootstrap.jar" fork="yes">
+		<java jar="${tomcat.3.bin}/bootstrap.jar" fork="yes" spawn="true">
 			<jvmarg value="-Dcatalina.home=${tomcat.3}" />
 		</java>
 	</target>
