@@ -66,6 +66,7 @@
 	
 	<!-- property:address="serverOne" -->
 	<bean
+		id="ikube.cluster.IClusterManager"
 		class="ikube.cluster.ClusterManager"
 		lazy-init="true">
 		<property name="cache">
@@ -82,7 +83,8 @@
 		id="ikube.index.SynchronizationManager"
 		class="ikube.index.SynchronizationManager"
 		lazy-init="false"
-		init-method="initialize" />
+		init-method="initialize"
+		property:clusterManager-ref="ikube.cluster.IClusterManager" />
 	
 	<bean
 		class="ikube.index.handler.internet.IndexableInternetHandler"

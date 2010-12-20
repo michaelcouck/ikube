@@ -336,7 +336,7 @@ public class ClusterManager implements IClusterManager {
 	 *            the name of the lock we want
 	 * @return the lock for the object map or null if this lock is un-available
 	 */
-	private synchronized ILock lock(String lockName) {
+	public synchronized ILock lock(String lockName) {
 		try {
 			ILock lock = Hazelcast.getLock(lockName);
 			boolean acquired = Boolean.FALSE;
@@ -362,7 +362,7 @@ public class ClusterManager implements IClusterManager {
 	 * @param lock
 	 *            the lock to release
 	 */
-	private synchronized void unlock(ILock lock) {
+	public synchronized void unlock(ILock lock) {
 		try {
 			if (lock != null) {
 				lock.unlock();

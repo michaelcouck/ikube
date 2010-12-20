@@ -1,6 +1,7 @@
 package ikube.index;
 
 import ikube.IConstants;
+import ikube.cluster.IClusterManager;
 import ikube.listener.IListener;
 import ikube.listener.ListenerManager;
 import ikube.model.Event;
@@ -30,6 +31,7 @@ import org.apache.lucene.store.FSDirectory;
 import org.springframework.util.StringUtils;
 
 import com.hazelcast.core.Hazelcast;
+import com.hazelcast.core.ILock;
 import com.hazelcast.core.ITopic;
 import com.hazelcast.core.MessageListener;
 
@@ -40,11 +42,16 @@ import com.hazelcast.core.MessageListener;
  */
 public class SynchronizationManager implements MessageListener<Message>, IListener {
 
+	private static String READ_LOCK = "readLock";
+
 	private Logger logger;
+	/** The cluster manager to get the read lock from. */
+	private IClusterManager clusterManager;
+	/** The size of the chunks of data. */
 	private int chunk = 1024 * 1000;
-	/** The file currently being sent. */
-	private File file;
-	/** The index of the file in the set. */
+	/** The currentFile currently being sent. */
+	private File currentFile;
+	/** The index of the currentFile in the set. */
 	private int index = 0;
 
 	public void initialize() {
@@ -69,13 +76,13 @@ public class SynchronizationManager implements MessageListener<Message>, IListen
 				}
 				while (true) {
 					try {
-						// Wait for takers to access the current file
+						// Wait for takers to access the current currentFile
 						logger.info("Waiting for clients : ");
 						final Socket socket = serverSocket.accept();
 						logger.info("Got client : " + socket + ", " + socket.getRemoteSocketAddress());
 						new Thread(new Runnable() {
 							public void run() {
-								// Write the index file to the output stream
+								// Write the index currentFile to the output stream
 								writeFile(socket);
 							}
 						}).start();
@@ -96,20 +103,20 @@ public class SynchronizationManager implements MessageListener<Message>, IListen
 		// i.e. not locked
 		List<File> files = getIndexFiles();
 		// Publish a message to the cluster with the name
-		// of the file that we want to send to each
+		// of the currentFile that we want to send to each
 		if (files.size() == 0) {
 			logger.info("No files to distribute yet : " + files);
 			return;
 		}
 		try {
-			// This is the file we will publish
+			// This is the currentFile we will publish
 			if (index >= files.size()) {
 				index = 0;
 			}
-			file = files.get(index);
-			logger.info("Publishing file : " + file);
+			currentFile = files.get(index);
+			logger.info("Publishing currentFile : " + currentFile);
 			Message message = new Message();
-			message.setFilePath(file.getAbsolutePath());
+			message.setFilePath(currentFile.getAbsolutePath());
 			message.setIp(InetAddress.getLocalHost().getHostAddress());
 			logger.info("Publishing message : " + message);
 			Hazelcast.getTopic(IConstants.SYNCHRONIZATION_TOPIC).publish(message);
@@ -123,10 +130,10 @@ public class SynchronizationManager implements MessageListener<Message>, IListen
 		FileInputStream fileInputStream = null;
 		OutputStream outputStream = null;
 		try {
-			boolean fileExists = file != null && file.exists();
-			logger.info("File exists : " + fileExists + ", " + file);
+			boolean fileExists = currentFile != null && currentFile.exists();
+			logger.info("File exists : " + fileExists + ", " + currentFile);
 			if (fileExists) {
-				fileInputStream = new FileInputStream(file);
+				fileInputStream = new FileInputStream(currentFile);
 				outputStream = socket.getOutputStream();
 				byte[] bytes = new byte[chunk];
 				int read = -1;
@@ -135,7 +142,7 @@ public class SynchronizationManager implements MessageListener<Message>, IListen
 				}
 			}
 		} catch (Exception e) {
-			logger.error("Exception writing index file to client : ", e);
+			logger.error("Exception writing index currentFile to client : ", e);
 		} finally {
 			close(outputStream);
 			close(socket);
@@ -145,12 +152,15 @@ public class SynchronizationManager implements MessageListener<Message>, IListen
 
 	@Override
 	public void onMessage(Message message) {
+		ILock lock = null;
+		Socket socket = null;
+		InputStream inputStream = null;
+		FileOutputStream fileOutputStream = null;
+		File file = null;
 		try {
-			// Check if we have this file
+			// Check if we have this currentFile
 			String filePath = message.getFilePath();
-			logger.info("Path : " + filePath);
 			String[] parts = StringUtils.tokenizeToStringArray(filePath, "\\/", Boolean.TRUE, Boolean.TRUE);
-			logger.info("Parts : " + Arrays.asList(parts));
 
 			int index = parts.length;
 			String fileName = parts[--index];
@@ -176,7 +186,6 @@ public class SynchronizationManager implements MessageListener<Message>, IListen
 
 			boolean exists = Boolean.FALSE;
 			File baseIndexDirectory = new File(indexContext.getIndexDirectoryPath());
-			logger.info("Looking at directory : " + baseIndexDirectory);
 			String[] patterns = new String[] { fileName };
 			List<File> foundFiles = FileUtilities.findFilesRecursively(baseIndexDirectory, patterns, new ArrayList<File>());
 			logger.info("Found files : " + foundFiles);
@@ -187,18 +196,26 @@ public class SynchronizationManager implements MessageListener<Message>, IListen
 				String foundFilePath = foundFile.getAbsolutePath();
 				if (foundFilePath.contains(ipFolderName) && foundFilePath.contains(timeFolderName)
 						&& foundFilePath.contains(contextFolderName)) {
-					// Got this file then
+					// Got this currentFile then
 					exists = Boolean.TRUE;
 					break;
 				}
 			}
 
 			if (exists) {
-				// Either this is our own message or we have got this file previously
-				logger.info("Got this file : " + filePath);
+				// Either this is our own message or we have got this currentFile previously
+				logger.info("Got this currentFile : " + filePath);
 				return;
 			}
-			// Build the file from the path on this machine
+
+			// Get the lock for a read from the cluster
+			lock = getClusterManager().lock(READ_LOCK);
+			if (lock == null) {
+				logger.info("Couldn't get the read lock : " + lock);
+				return;
+			}
+
+			// Build the currentFile from the path on this machine
 			String indexDirectoryPath = IndexManager.getIndexDirectory(ipFolderName, indexContext, Long.parseLong(timeFolderName));
 
 			StringBuilder builder = new StringBuilder();
@@ -206,34 +223,35 @@ public class SynchronizationManager implements MessageListener<Message>, IListen
 			builder.append(File.separator);
 			builder.append(fileName);
 
-			File file = FileUtilities.getFile(builder.toString(), Boolean.FALSE);
+			file = FileUtilities.getFile(builder.toString(), Boolean.FALSE);
 
-			logger.info("Writing file to : " + file);
-			Socket socket = null;
-			InputStream inputStream = null;
-			FileOutputStream fileOutputStream = null;
-			try {
-				String ip = message.getIp();
-				// Open a socket to the publishing server
-				socket = new Socket(ip, IConstants.SYNCHRONIZATION_PORT);
-				// Get the file output stream to write the data to
-				fileOutputStream = new FileOutputStream(file);
-				inputStream = socket.getInputStream();
-				byte[] bytes = new byte[chunk];
-				int read = -1;
-				// Write the file contents from the publisher to the file system
-				while ((read = inputStream.read(bytes)) > -1) {
-					fileOutputStream.write(bytes, 0, read);
-				}
-			} catch (Exception e) {
-				logger.error("Exception writing index file : " + message, e);
-			} finally {
-				close(inputStream);
-				close(socket);
-				close(fileOutputStream);
+			logger.info("Writing remote currentFile to : " + file);
+
+			String ip = message.getIp();
+			// Open a socket to the publishing server
+			socket = new Socket(ip, IConstants.SYNCHRONIZATION_PORT);
+			// Get the currentFile output stream to write the data to
+			fileOutputStream = new FileOutputStream(file);
+			inputStream = socket.getInputStream();
+			byte[] bytes = new byte[chunk];
+			int read = -1;
+			// Write the currentFile contents from the publisher to the currentFile system
+			while ((read = inputStream.read(bytes)) > -1) {
+				fileOutputStream.write(bytes, 0, read);
 			}
 		} catch (Exception e) {
-			logger.error("", e);
+			// Delete the files as something went wrong
+			if (file != null && file.exists()) {
+				FileUtilities.deleteFile(file, 1);
+			}
+			logger.error("Exception writing index currentFile : " + message, e);
+		} finally {
+			if (lock != null) {
+				getClusterManager().unlock(lock);
+			}
+			close(inputStream);
+			close(socket);
+			close(fileOutputStream);
 		}
 	}
 
@@ -265,7 +283,7 @@ public class SynchronizationManager implements MessageListener<Message>, IListen
 					files.addAll(Arrays.asList(indexFiles));
 				}
 			} catch (Exception e) {
-				logger.error("Exception accessing the file for context : " + indexContext, e);
+				logger.error("Exception accessing the currentFile for context : " + indexContext, e);
 			}
 		}
 		return files;
@@ -309,6 +327,14 @@ public class SynchronizationManager implements MessageListener<Message>, IListen
 				logger.error("", e);
 			}
 		}
+	}
+
+	public IClusterManager getClusterManager() {
+		return clusterManager;
+	}
+
+	public void setClusterManager(IClusterManager clusterManager) {
+		this.clusterManager = clusterManager;
 	}
 
 }

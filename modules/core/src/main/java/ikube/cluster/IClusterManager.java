@@ -8,6 +8,8 @@ import ikube.model.Url;
 
 import java.util.List;
 
+import com.hazelcast.core.ILock;
+
 /**
  * This is the interface that will synchronize and coordinate the servers in the cluster. The implementors are critical to the functioning
  * of Ikube.
@@ -104,5 +106,9 @@ public interface IClusterManager {
 	 * @see ICache#size(String)
 	 */
 	public <T> int size(Class<T> klass);
+
+	public ILock lock(String lockName);
+
+	public void unlock(ILock lock);
 
 }
