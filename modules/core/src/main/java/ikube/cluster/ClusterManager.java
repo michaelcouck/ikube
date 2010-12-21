@@ -97,7 +97,7 @@ public class ClusterManager implements IClusterManager {
 			if (lock == null) {
 				return Boolean.TRUE;
 			}
-			List<Server> servers = getServers(); // cache.get(Server.class.getName(), null, null, Integer.MAX_VALUE);
+			List<Server> servers = getServers();
 			for (Server server : servers) {
 				if (server.getAddress().equals(this.address)) {
 					continue;
@@ -124,7 +124,7 @@ public class ClusterManager implements IClusterManager {
 			if (lock == null) {
 				return Boolean.TRUE;
 			}
-			List<Server> servers = getServers(); // cache.get(Server.class.getName(), null, null, Integer.MAX_VALUE);
+			List<Server> servers = getServers();
 			for (Server server : servers) {
 				if (server.getAddress().equals(this.address)) {
 					continue;
@@ -162,7 +162,7 @@ public class ClusterManager implements IClusterManager {
 				return 0;
 			}
 			long idNumber = 0;
-			List<Server> servers = getServers(); // cache.get(Server.class.getName(), null, null, Integer.MAX_VALUE);
+			List<Server> servers = getServers();
 			// We look for the largest row id from any of the servers, from the first action in each server
 			for (Server server : servers) {
 				List<Action> actions = server.getActions();
@@ -232,8 +232,8 @@ public class ClusterManager implements IClusterManager {
 		try {
 			Server server = cache.get(Server.class.getName(), HashUtilities.hash(address));
 			if (server == null) {
-				// This can never happen because the init method sets the server. Can
-				// be removed perhaps?
+				// This can never happen because the initialize method sets the
+				// server. Can be removed perhaps?
 				server = new Server();
 				server.setAddress(address);
 				server.setId(HashUtilities.hash(address));
@@ -259,25 +259,25 @@ public class ClusterManager implements IClusterManager {
 				return 0;
 			}
 
-			long lastStartTime = System.currentTimeMillis();
-			List<Server> servers = getServers(); // cache.get(Server.class.getName(), null, null, Integer.MAX_VALUE);
+			long firstStartTime = System.currentTimeMillis();
+			List<Server> servers = getServers();
 			// Find the first start time for the action we want to start in any of the servers
 			for (Server server : servers) {
 				logger.info("Server : " + server);
 				for (Action action : server.getActions()) {
 					if (indexName.equals(action.getIndexName()) && indexableName.equals(action.getIndexableName()) && server.isWorking()) {
-						lastStartTime = Math.min(lastStartTime, action.getStartTime());
+						firstStartTime = Math.min(firstStartTime, action.getStartTime());
 					}
 				}
 			}
 
 			// Set the server working and the new action in the list
-			Server server = getServer(); // cache.get(Server.class.getName(), HashUtilities.hash(address));
+			Server server = getServer();
 			if (server == null) {
 				server = new Server();
 			}
 			server.setWorking(isWorking);
-			server.getActions().add(server.new Action(0, indexableName, indexName, lastStartTime));
+			server.getActions().add(server.new Action(0, indexableName, indexName, firstStartTime));
 
 			// Prune the actions in this server
 			List<Action> actions = server.getActions();
@@ -286,7 +286,7 @@ public class ClusterManager implements IClusterManager {
 				double prunedSize = MAX_ACTION_SIZE * ACTION_PRUNE_RATIO;
 				while (iterator.hasNext()) {
 					Action action = iterator.next();
-					logger.debug("Removing action : " + action);
+					logger.info("Removing action : " + action);
 					iterator.remove();
 					if (actions.size() <= prunedSize) {
 						break;
@@ -297,7 +297,7 @@ public class ClusterManager implements IClusterManager {
 			// Publish the fact that this server is starting to work on an action
 			logger.info("Publishing server : " + server);
 			cache.set(Server.class.getName(), server.getId(), server);
-			return lastStartTime;
+			return firstStartTime;
 		} finally {
 			unlock(lock);
 			notifyAll();
@@ -310,7 +310,7 @@ public class ClusterManager implements IClusterManager {
 	@Override
 	public synchronized boolean isHandled(String indexableName, String indexName) {
 		try {
-			Server thisServer = getServer(); // cache.get(Server.class.getName(), HashUtilities.hash(address));
+			Server thisServer = getServer();
 			List<Server> servers = getServers();
 			for (Server server : servers) {
 				if (server.equals(thisServer)) {
@@ -402,6 +402,18 @@ public class ClusterManager implements IClusterManager {
 			notifyAll();
 		}
 	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public synchronized <T> T get(Class<T> klass, Long id) {
+		try {
+			return cache.get(klass.getName(), id);
+		} finally {
+			notifyAll();
+		}
+	}
 
 	/**
 	 * {@inheritDoc}
@@ -409,10 +421,7 @@ public class ClusterManager implements IClusterManager {
 	@Override
 	public synchronized <T> void set(Class<T> klass, Long id, T t) {
 		try {
-			T exists = cache.get(klass.getName(), id);
-			if (exists == null) {
-				cache.set(klass.getName(), id, t);
-			}
+			cache.set(klass.getName(), id, t);
 		} finally {
 			notifyAll();
 		}

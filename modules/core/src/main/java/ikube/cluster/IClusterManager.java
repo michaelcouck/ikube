@@ -91,6 +91,11 @@ public interface IClusterManager {
 	 * @see ICache#get(String, String)
 	 */
 	public <T> T get(Class<T> klass, String sql);
+	
+	/**
+	 * @see ICache#get(String, Long)
+	 */
+	public <T> T get(Class<T> klass, Long id);
 
 	/**
 	 * @see ICache#set(String, Long, Object)

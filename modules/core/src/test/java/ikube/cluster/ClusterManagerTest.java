@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import ikube.BaseTest;
+import ikube.model.IndexableTable;
 import ikube.model.Server;
 import ikube.model.Url;
 import ikube.toolkit.ApplicationContextManager;
@@ -20,8 +21,7 @@ import org.junit.Test;
 
 public class ClusterManagerTest extends BaseTest {
 
-	private Server serverLocal;
-	private Server serverRemote;
+	private Server remoteServer;
 
 	private String indexName;
 	private String indexableName;
@@ -34,19 +34,16 @@ public class ClusterManagerTest extends BaseTest {
 	@Before
 	public void before() throws Exception {
 		indexName = indexContext.getIndexName();
-		indexableName = "faq";
+		indexableName = ApplicationContextManager.getBeans(IndexableTable.class).values().iterator().next().getName();
 
-		serverLocal = new Server();
-		serverLocal.setAddress(InetAddress.getLocalHost().getHostName());
-		serverLocal.setId(HashUtilities.hash(serverLocal.getAddress()));
-		serverLocal.setWorking(Boolean.FALSE);
-
-		serverRemote = new Server();
-		serverRemote.setAddress(InetAddress.getLocalHost().getHostName() + "serverRemote");
-		serverRemote.setId(HashUtilities.hash(serverRemote.getAddress()));
-		serverRemote.setWorking(Boolean.FALSE);
+		remoteServer = new Server();
+		remoteServer.setAddress(InetAddress.getLocalHost().getHostAddress() + ".remote");
+		remoteServer.setId(HashUtilities.hash(remoteServer.getAddress()));
+		remoteServer.setWorking(Boolean.FALSE);
 
 		clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
+		clusterManager.clear(Url.class);
+		clusterManager.clear(Server.class);
 	}
 
 	@After
@@ -62,7 +59,7 @@ public class ClusterManagerTest extends BaseTest {
 		// we add a server
 		List<Server> servers = clusterManager.getServers();
 		assertEquals(0, servers.size());
-		clusterManager.set(Server.class, serverLocal.getId(), serverLocal);
+		clusterManager.set(Server.class, remoteServer.getId(), remoteServer);
 
 		// Verify that the server is present in the cache
 		servers = clusterManager.getServers();
@@ -81,12 +78,12 @@ public class ClusterManagerTest extends BaseTest {
 		// What we want to achieve here is to set an object
 		// in the cache then do a sql like query on the cache and
 		// we should get the server back again
-		String sql = "id = " + this.serverLocal.getId();
+		String sql = "id = " + this.remoteServer.getId();
 		Server server = clusterManager.get(Server.class, sql);
 		assertNull(server);
 
 		// Set the server in the cache
-		clusterManager.set(Server.class, this.serverLocal.getId(), this.serverLocal);
+		clusterManager.set(Server.class, this.remoteServer.getId(), this.remoteServer);
 
 		// Perform the query and verify that we get the server as a result
 		server = clusterManager.get(Server.class, sql);
@@ -115,12 +112,18 @@ public class ClusterManagerTest extends BaseTest {
 		for (int i = 0; i < iterations; i++) {
 			url = new Url();
 			url.setId(System.nanoTime());
-			Thread.sleep(1);
+			Thread.sleep(0, 1);
 			clusterManager.set(Url.class, url.getId(), url);
 		}
 
 		batch = clusterManager.getBatch(batchSize);
 		assertEquals(batchSize, batch.size());
+		
+		batch = clusterManager.getBatch(iterations - batchSize);
+		assertEquals(iterations - batchSize, batch.size());
+		
+		batch = clusterManager.getBatch(batchSize);
+		assertEquals(0, batch.size());
 	}
 
 	@Test
@@ -137,12 +140,12 @@ public class ClusterManagerTest extends BaseTest {
 		List<Server> servers = clusterManager.getServers();
 		assertEquals(0, servers.size());
 
-		clusterManager.set(Server.class, serverLocal.getId(), serverLocal);
+		clusterManager.set(Server.class, remoteServer.getId(), remoteServer);
 
 		servers = clusterManager.getServers();
 		assertEquals(1, servers.size());
 
-		clusterManager.set(Server.class, serverRemote.getId(), serverRemote);
+		clusterManager.getServer();
 
 		servers = clusterManager.getServers();
 		assertEquals(2, servers.size());
@@ -166,22 +169,41 @@ public class ClusterManagerTest extends BaseTest {
 
 	@Test
 	public void setWorking() {
-		// String, String, String, boolean
-		List<Thread> threads = new ArrayList<Thread>();
-		// Set a remote server working
-		final long startWorkingTime = System.currentTimeMillis();
-		serverRemote.setWorking(Boolean.TRUE);
-		serverRemote.getActions().add(serverRemote.new Action(0, indexableName, indexName, startWorkingTime));
-		clusterManager.set(Server.class, serverRemote.getId(), serverRemote);
+		// First clear the map of servers
+		Server localServer = clusterManager.getServer();
+		localServer.getActions().clear();
+		clusterManager.set(Server.class, localServer.getId(), localServer);
+		remoteServer.getActions().clear();
+		clusterManager.set(Server.class, remoteServer.getId(), remoteServer);
 
-		int threadSize = 3;
+		// Verify that there are no actions in any server in the map
+		List<Server> servers = clusterManager.getServers();
+		for (Server server : servers) {
+			assertEquals(0, server.getActions().size());
+		}
+
+		// The local server gets set every time we call the set working
+		// method and the time gets set at that time too
+		final long expectedStartTime = System.currentTimeMillis();
+		// Set a remote server working
+		remoteServer.setWorking(Boolean.TRUE);
+		remoteServer.getActions().add(remoteServer.new Action(0, indexableName, indexName, expectedStartTime));
+		clusterManager.set(Server.class, remoteServer.getId(), remoteServer);
+		// Verify that the remote server has the action and the time we want
+		Server server = clusterManager.get(Server.class, "id = " + remoteServer.getId());
+		assertNotNull(server);
+		assertEquals(1, server.getActions().size());
+		assertEquals(expectedStartTime, server.getActions().get(0).getStartTime());
+
+		List<Thread> threads = new ArrayList<Thread>();
+		int threadSize = 1;
 		for (int i = 0; i < threadSize; i++) {
 			Thread thread = new Thread(new Runnable() {
 				public void run() {
 					for (int i = 0; i < 10; i++) {
-						long lastWorkingTime = clusterManager.setWorking(indexName, indexableName, Boolean.TRUE);
-						logger.info("Last working time : " + lastWorkingTime + ", " + startWorkingTime);
-						assertEquals(startWorkingTime, lastWorkingTime);
+						long actualStartTime = clusterManager.setWorking(indexName, indexableName, Boolean.TRUE);
+						logger.info("Actual start time : " + actualStartTime + ", expected start time : " + expectedStartTime);
+						assertEquals(expectedStartTime, actualStartTime);
 					}
 				}
 			}, "ClusterManagerTestThread : " + i);

@@ -37,9 +37,10 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 		for (int i = 0; i < getThreads(); i++) {
 			IndexableInternet indexableClone = (IndexableInternet) SerializationUtilities.clone(indexable);
 			IndexableInternetCrawler indexableInternetCrawler = new IndexableInternetCrawler(indexContext, indexableClone, threads);
-			Thread thread = new Thread(indexableInternetCrawler, name + "." + i);
+			threads.add(new Thread(indexableInternetCrawler, name + "." + i));
+		}
+		for (Thread thread : threads) {
 			thread.start();
-			threads.add(thread);
 		}
 		return threads;
 	}

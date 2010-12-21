@@ -27,6 +27,7 @@ import java.util.Map;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -388,6 +389,7 @@ public class DataBaseOdbTest extends ATest {
 	}
 
 	@Test
+	@Ignore
 	public void defragment() {
 		// Just add a few thousand objects and wait for the defragment
 		int iterations = 11000;

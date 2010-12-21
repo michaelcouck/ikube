@@ -72,6 +72,10 @@ public class Open extends Action {
 					// get deleted(at the next full index of course).
 					continue;
 				}
+				// TODO - Verify that all the files are there. Could be
+				// that this server is still getting the files for this index 
+				// from one of the other servers, and all the files are
+				// not copied over yet
 				IndexReader reader = IndexReader.open(directory, Boolean.TRUE);
 				Searchable searcher = new IndexSearcher(reader);
 				searchers.add(searcher);

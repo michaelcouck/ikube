@@ -118,7 +118,10 @@ public class Server extends Persistable implements Comparable<Server> {
 
 	public String toString() {
 		final StringBuilder builder = new StringBuilder("[");
-		builder.append(getId()).append(", ").append(getAddress()).append(", ").append(isWorking());
+		builder.append(getId()).append(", ");
+		builder.append(getAddress()).append(", ");
+		builder.append(isWorking()).append(", ");
+		builder.append(getActions());
 		builder.append("]");
 		return builder.toString();
 	}

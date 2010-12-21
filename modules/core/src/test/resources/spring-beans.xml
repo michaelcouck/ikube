@@ -51,7 +51,7 @@
 	</bean>
 	<!-- Cluster wide cache -->
 	<bean
-		id="ikube.cluster.cache.Cache"
+		id="ikube.cluster.cache.ICache"
 		class="ikube.cluster.cache.Cache"
 		lazy-init="false"
 		init-method="initialise"
@@ -59,9 +59,18 @@
 	<!-- Cluster wide manager -->
 	<!-- init-method="initialise" -->
 	<bean
+		id="ikube.cluster.IClusterManager"
 		class="ikube.cluster.ClusterManager"
 		lazy-init="false"
-		property:cache-ref="ikube.cluster.cache.Cache" />
+		property:cache-ref="ikube.cluster.cache.ICache" />
+	
+	<bean 
+		id="ikube.index.SynchronizationManager"
+		class="ikube.index.SynchronizationManager"
+		lazy-init="true"
+		init-method="initialize"
+		property:clusterManager-ref="ikube.cluster.IClusterManager" />
+	
 	<!-- Core class for managing indexes and contexts -->
 	<bean
 		class="ikube.IndexEngine"

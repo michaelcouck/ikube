@@ -299,13 +299,16 @@ public class IndexableInternetCrawler implements Runnable {
 								String replacement = resolvedLink.contains("?") ? "?" : "";
 								String strippedSessionLink = UriUtilities.stripJSessionId(resolvedLink, replacement);
 								String strippedAnchorLink = UriUtilities.stripAnchor(strippedSessionLink, "");
-								Url newUrl = new Url();
-								newUrl.setUrl(strippedAnchorLink);
-								newUrl.setId(HashUtilities.hash(newUrl.getUrl()));
-								newUrl.setIndexed(Boolean.FALSE);
+								Long id = HashUtilities.hash(strippedAnchorLink);
 
 								IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
-								clusterManager.set(Url.class, newUrl.getId(), newUrl);
+								if (clusterManager.get(Url.class, id) == null) {
+									Url newUrl = new Url();
+									newUrl.setId(id);
+									newUrl.setUrl(strippedAnchorLink);
+									newUrl.setIndexed(Boolean.FALSE);
+									clusterManager.set(Url.class, id, newUrl);
+								}
 							} catch (Exception e) {
 								logger.error("Exception extracting link : " + tag, e);
 							}

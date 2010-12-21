@@ -5,8 +5,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import ikube.BaseTest;
 import ikube.IConstants;
+import ikube.listener.ListenerManager;
 import ikube.model.Event;
+import ikube.model.IndexContext;
 import ikube.model.Message;
+import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
 
 import java.io.ByteArrayOutputStream;
@@ -16,7 +19,9 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -26,16 +31,26 @@ import com.hazelcast.core.MessageListener;
 
 public class SynchronizationManagerTest extends BaseTest {
 
-	private static SynchronizationManager SYNCHRONIZATION_MANAGER = new SynchronizationManager();
+	private SynchronizationManager synchronizationManager = ApplicationContextManager.getBean(SynchronizationManager.class);
 
 	@BeforeClass
 	public static void beforeClass() {
-		SYNCHRONIZATION_MANAGER.initialize();
+		Map<String, IndexContext> contexts = ApplicationContextManager.getBeans(IndexContext.class);
+		for (IndexContext indexContext : contexts.values()) {
+			File baseIndexDirectory = FileUtilities.getFile(indexContext.getIndexDirectoryPath(), Boolean.TRUE);
+			FileUtilities.deleteFile(baseIndexDirectory, 1);
+		}
+	}
+
+	@AfterClass
+	public static void afterClass() {
+		SynchronizationManager synchronizationManager = ApplicationContextManager.getBean(SynchronizationManager.class);
+		ListenerManager.removeListener(synchronizationManager);
 	}
 
 	@Test
 	public void getIndexFiles() throws Exception {
-		List<File> indexFiles = SYNCHRONIZATION_MANAGER.getIndexFiles();
+		List<File> indexFiles = synchronizationManager.getIndexFiles();
 		logger.info("Files : " + indexFiles);
 		assertEquals(0, indexFiles.size());
 
@@ -43,7 +58,7 @@ public class SynchronizationManagerTest extends BaseTest {
 		File indexDirectory = new File(serverIndexDirectoryPath);
 		createIndex(indexDirectory);
 
-		indexFiles = SYNCHRONIZATION_MANAGER.getIndexFiles();
+		indexFiles = synchronizationManager.getIndexFiles();
 		logger.info("Files : " + indexFiles);
 		assertEquals(3, indexFiles.size());
 
@@ -67,7 +82,7 @@ public class SynchronizationManagerTest extends BaseTest {
 		Event event = new Event();
 		event.setType(Event.SYNCHRONISE);
 
-		SYNCHRONIZATION_MANAGER.handleNotification(event);
+		synchronizationManager.handleNotification(event);
 
 		long sleep = 1000;
 		Thread.sleep(sleep);
@@ -77,7 +92,7 @@ public class SynchronizationManagerTest extends BaseTest {
 		File indexDirectory = new File(serverIndexDirectoryPath);
 		createIndex(indexDirectory);
 
-		SYNCHRONIZATION_MANAGER.handleNotification(event);
+		synchronizationManager.handleNotification(event);
 
 		Thread.sleep(sleep);
 		assertEquals(1, messages.size());
@@ -98,7 +113,7 @@ public class SynchronizationManagerTest extends BaseTest {
 		Message message = new Message();
 		message.setFilePath(segmentsFile.getAbsolutePath());
 		message.setIp(InetAddress.getLocalHost().getHostAddress());
-		SYNCHRONIZATION_MANAGER.onMessage(message);
+		synchronizationManager.onMessage(message);
 
 		FileUtilities.deleteFile(indexDirectory, 1);
 	}
@@ -113,7 +128,7 @@ public class SynchronizationManagerTest extends BaseTest {
 		Socket socket = mock(Socket.class);
 		OutputStream outputStream = new ByteArrayOutputStream();
 		when(socket.getOutputStream()).thenReturn(outputStream);
-		SYNCHRONIZATION_MANAGER.writeFile(socket);
+		synchronizationManager.writeFile(socket);
 
 		FileUtilities.deleteFile(indexDirectory, 1);
 	}
