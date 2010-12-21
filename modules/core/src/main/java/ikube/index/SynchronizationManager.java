@@ -13,7 +13,6 @@ import ikube.toolkit.FileUtilities;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
@@ -53,6 +52,8 @@ public class SynchronizationManager implements MessageListener<Message>, IListen
 	private File currentFile;
 	/** The index of the currentFile in the set. */
 	private int index = 0;
+	/** The port that the server socket was opened on. */
+	private int startPort;
 
 	public void initialize() {
 		logger = Logger.getLogger(SynchronizationManager.class);
@@ -64,15 +65,25 @@ public class SynchronizationManager implements MessageListener<Message>, IListen
 		ListenerManager.addListener(this);
 		new Thread(new Runnable() {
 			public void run() {
-				// Open a socket on the synchronization port
+				// Open a socket on the a synchronization port. We start with
+				// the default port and iterate through the ports until we find one that
+				// is available
 				ServerSocket serverSocket = null;
-				try {
-					logger.info("Opening synchronization socket : ");
-					serverSocket = new ServerSocket(IConstants.SYNCHRONIZATION_PORT);
-					logger.info("Opened synchronization socket : " + serverSocket);
-				} catch (IOException e) {
-					logger.error("Exception opening a server socket : " + IConstants.SYNCHRONIZATION_PORT, e);
-					return;
+				startPort = IConstants.SYNCHRONIZATION_PORT;
+				while (true) {
+					try {
+						logger.info("Opening synchronization socket : " + startPort);
+						serverSocket = new ServerSocket(startPort);
+						logger.info("Opened synchronization socket : " + serverSocket);
+						break;
+					} catch (Exception e) {
+						logger.error("Exception opening a server socket : " + IConstants.SYNCHRONIZATION_PORT, e);
+						startPort++;
+						if (startPort >= Short.MAX_VALUE) {
+							logger.warn("Couldn't find a port available for synchronization : " + startPort);
+							return;
+						}
+					}
 				}
 				while (true) {
 					try {
@@ -116,8 +127,9 @@ public class SynchronizationManager implements MessageListener<Message>, IListen
 			currentFile = files.get(index);
 			logger.info("Publishing currentFile : " + currentFile);
 			Message message = new Message();
-			message.setFilePath(currentFile.getAbsolutePath());
 			message.setIp(InetAddress.getLocalHost().getHostAddress());
+			message.setPort(startPort);
+			message.setFilePath(currentFile.getAbsolutePath());
 			logger.info("Publishing message : " + message);
 			Hazelcast.getTopic(IConstants.SYNCHRONIZATION_TOPIC).publish(message);
 			index++;
@@ -228,8 +240,9 @@ public class SynchronizationManager implements MessageListener<Message>, IListen
 			logger.info("Writing remote currentFile to : " + file);
 
 			String ip = message.getIp();
+			Integer port = message.getPort();
 			// Open a socket to the publishing server
-			socket = new Socket(ip, IConstants.SYNCHRONIZATION_PORT);
+			socket = new Socket(ip, port);
 			// Get the currentFile output stream to write the data to
 			fileOutputStream = new FileOutputStream(file);
 			inputStream = socket.getInputStream();

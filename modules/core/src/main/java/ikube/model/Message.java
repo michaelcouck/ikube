@@ -11,6 +11,7 @@ import javax.persistence.Entity;
 public class Message extends Persistable {
 
 	private String ip;
+	private Integer port;
 	private String filePath;
 
 	public String getIp() {
@@ -19,6 +20,14 @@ public class Message extends Persistable {
 
 	public void setIp(String ip) {
 		this.ip = ip;
+	}
+
+	public Integer getPort() {
+		return port;
+	}
+
+	public void setPort(Integer port) {
+		this.port = port;
 	}
 
 	public String getFilePath() {
