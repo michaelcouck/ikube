@@ -65,7 +65,7 @@ public class Delete extends Action {
 			}
 			for (int i = 0; i < indexesToDelete; i++) {
 				File indexToDelete = timeIndexDirectories[i];
-				logger.info("Deleting index directory : " + indexToDelete);
+				logger.info("Deleting index directory : " + indexToDelete.getAbsolutePath());
 				FileUtilities.deleteFile(indexToDelete, 1);
 			}
 		}
