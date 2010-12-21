@@ -32,7 +32,7 @@ public class SearchTest extends ATest {
 	@BeforeClass
 	public static void beforeClass() throws Exception {
 		// Create the index with multiple fields
-		String indexDirectoryPath = "./index";
+		String indexDirectoryPath = "./indexes";
 		File indexDirectory = new File(indexDirectoryPath);
 		FileUtilities.deleteFile(indexDirectory, 1);
 		FileUtilities.getFile(indexDirectoryPath, Boolean.TRUE);

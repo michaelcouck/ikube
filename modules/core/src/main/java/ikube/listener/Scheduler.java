@@ -10,6 +10,8 @@ import java.util.concurrent.TimeUnit;
 import org.apache.log4j.Logger;
 
 /**
+ * This class just schedules events to be fired a a particular rate. Listeners can then respond to the events.
+ * 
  * @author Michael Couck
  * @since 21.11.10
  * @version 01.00
@@ -17,9 +19,14 @@ import org.apache.log4j.Logger;
 public class Scheduler {
 
 	private Logger logger;
+	/** The scheduler. */
 	private ScheduledExecutorService scheduler;
+	/** The list of schedules. */
 	private List<Schedule> schedules;
 
+	/**
+	 * Iterates over the schedules scheduling them for execution.
+	 */
 	protected void initialize() {
 		this.logger = Logger.getLogger(this.getClass());
 		scheduler = Executors.newScheduledThreadPool(10);
@@ -35,7 +42,7 @@ public class Scheduler {
 					}
 				}, schedule.getDelay(), schedule.getPeriod(), TimeUnit.MILLISECONDS);
 			} catch (Exception e) {
-				logger.error("", e);
+				logger.error("Exception scheduling the events : ", e);
 			}
 		}
 	}

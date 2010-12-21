@@ -2,7 +2,9 @@ package ikube.search;
 
 import ikube.IConstants;
 
+import java.io.IOException;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,9 +13,11 @@ import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Fieldable;
+import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Searcher;
+import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.highlight.Highlighter;
 import org.apache.lucene.search.highlight.QueryScorer;
 import org.apache.lucene.search.highlight.Scorer;
@@ -150,7 +154,48 @@ public abstract class Search {
 	 * @return the results which are a list of maps. Each map has the fields in it if they are strings, not readers, and the map entries for
 	 *         index, score, fragment, total and duration
 	 */
-	public abstract List<Map<String, String>> execute();
+	public List<Map<String, String>> execute() {
+		if (searcher == null) {
+			logger.warn("No searcher on any index, is an index created?");
+		}
+		long duration = 0;
+		long totalHits = 0;
+		List<Map<String, String>> results = null;
+		try {
+			Query query = getQuery();
+			long start = System.currentTimeMillis();
+			TopDocs topDocs = search(query);
+			duration = System.currentTimeMillis() - start;
+			totalHits = topDocs.totalHits;
+			results = getResults(topDocs, query);
+		} catch (Exception e) {
+			logger.error("Exception searching for string " + searchStrings[0] + " in searcher " + searcher, e);
+			if (results == null) {
+				results = new ArrayList<Map<String, String>>();
+			}
+		}
+		// Add the search results size as a last result
+		addStatistics(results, totalHits, duration);
+		return results;
+	}
+
+	/**
+	 * Access to the query. This can be any number of query types, defined by the sub classes.
+	 * 
+	 * @return the Lucene query based on the parameters passed to the sub classes, like a span query etc.
+	 * @throws ParseException
+	 */
+	protected abstract Query getQuery() throws ParseException;
+
+	/**
+	 * Does the actual search on the Lucene index.
+	 * 
+	 * @param query
+	 *            the query to execute against the index
+	 * @return the top documents from the search
+	 * @throws IOException
+	 */
+	protected abstract TopDocs search(Query query) throws IOException;
 
 	/**
 	 * Sets whether the fragment made of the best part of the document should be included in the search results.
@@ -196,6 +241,67 @@ public abstract class Search {
 			queryParsers.put(searchField, queryParser);
 		}
 		return queryParser;
+	}
+
+	/**
+	 * Builds the list of results(a list of maps) from the top documents returned from Lucene.
+	 * 
+	 * @param topDocs
+	 *            the top documents from the Lucene search
+	 * @param query
+	 *            the query that was used for the query
+	 * @return the list of results from the search
+	 */
+	protected List<Map<String, String>> getResults(TopDocs topDocs, Query query) {
+		List<Map<String, String>> results = new ArrayList<Map<String, String>>();
+		long totalHits = topDocs.totalHits;
+		long scoreHits = topDocs.scoreDocs.length;
+		for (int i = 0; i < totalHits && i < scoreHits; i++) {
+			if (i < firstResult) {
+				continue;
+			}
+			try {
+				Map<String, String> result = new HashMap<String, String>();
+				Document document = searcher.doc(topDocs.scoreDocs[i].doc);
+				float score = topDocs.scoreDocs[i].score;
+				String index = Integer.toString(topDocs.scoreDocs[i].doc);
+				result.put(IConstants.INDEX, index);
+				result.put(IConstants.SCORE, Float.toString(score));
+				addFieldsToResults(document, result);
+				if (fragment) {
+					StringBuilder builder = new StringBuilder();
+					for (String searchField : searchFields) {
+						String fragment = getFragments(document, searchField, query);
+						if (fragment != null) {
+							builder.append(fragment);
+						}
+					}
+					result.put(IConstants.FRAGMENT, builder.toString());
+				}
+				results.add(result);
+			} catch (Exception e) {
+				logger.error("Exception building the results from the Lucene search : ", e);
+			}
+		}
+		return results;
+	}
+
+	/**
+	 * Adds the time it took for the search etc.
+	 * 
+	 * @param results
+	 *            the total number of results
+	 * @param totalHits
+	 *            the total hits
+	 * @param duration
+	 *            how long the search took in milliseconds
+	 */
+	protected void addStatistics(List<Map<String, String>> results, long totalHits, long duration) {
+		// Add the search results size as a last result
+		Map<String, String> statistics = new HashMap<String, String>();
+		statistics.put(IConstants.TOTAL, Long.toString(totalHits));
+		statistics.put(IConstants.DURATION, Long.toString(duration));
+		results.add(statistics);
 	}
 
 }

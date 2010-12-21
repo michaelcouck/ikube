@@ -119,6 +119,15 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 		closeMailServerConnection(store);
 	}
 
+	/**
+	 * Handles one folder in the mail account, reading the messages and indexing the content.
+	 * 
+	 * @param indexContext
+	 *            the index context
+	 * @param indexableMail
+	 * @param folder
+	 * @throws Exception
+	 */
 	protected void handleFolder(IndexContext indexContext, IndexableEmail indexableMail, Folder folder) throws Exception {
 		folder.open(Folder.READ_ONLY);
 
@@ -130,22 +139,14 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 			Date sentDate = message.getSentDate();
 			int messageNumber = message.getMessageNumber();
 			long timestamp = recievedDate != null ? recievedDate.getTime() : sentDate != null ? sentDate.getTime() : 0;
+			String messageId = getMessageId(indexableMail, messageNumber, timestamp);
 
 			if (logger.isDebugEnabled()) {
-				logger.debug("Recieved : " + recievedDate);
 				logger.debug("Sent : " + sentDate);
-				logger.debug("Message number : " + messageNumber);
+				logger.debug("Recieved : " + recievedDate);
 				logger.debug("Timestamp : " + timestamp);
+				logger.debug("Message number : " + messageNumber);
 			}
-
-			StringBuilder builder = new StringBuilder();
-			builder.append(indexableMail.getMailHost());
-			builder.append(".");
-			builder.append(indexableMail.getUsername());
-			builder.append(".");
-			builder.append(messageNumber);
-			builder.append(".");
-			builder.append(timestamp);
 
 			Field.Store mustStore = indexableMail.isStored() ? Field.Store.YES : Field.Store.NO;
 			Field.Index analyzed = indexableMail.isAnalyzed() ? Field.Index.ANALYZED : Field.Index.NOT_ANALYZED;
@@ -153,7 +154,7 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 
 			Document document = new Document();
 			// Add the id field to the document
-			IndexManager.addStringField(indexableMail.getIdField(), builder.toString(), document, mustStore, analyzed, termVector);
+			IndexManager.addStringField(indexableMail.getIdField(), messageId, document, mustStore, analyzed, termVector);
 			// Add the title field to the document
 			IndexManager.addStringField(indexableMail.getTitleField(), message.getSubject(), document, mustStore, analyzed, termVector);
 			String messageContent = getMessageContent(message);
@@ -168,6 +169,18 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 			indexContext.getIndexWriter().addDocument(document);
 		}
 		folder.close(true);
+	}
+
+	protected String getMessageId(IndexableEmail indexableMail, int messageNumber, long timestamp) {
+		StringBuilder builder = new StringBuilder();
+		builder.append(indexableMail.getMailHost());
+		builder.append(".");
+		builder.append(indexableMail.getUsername());
+		builder.append(".");
+		builder.append(messageNumber);
+		builder.append(".");
+		builder.append(timestamp);
+		return builder.toString();
 	}
 
 	/**

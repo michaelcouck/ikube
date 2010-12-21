@@ -176,6 +176,15 @@ public class IndexableInternetCrawler implements Runnable {
 		return byteOutputStream;
 	}
 
+	/**
+	 * Parses the content from the input stream into a string. The content can be anything, rich text, xml, etc.
+	 * 
+	 * @param url
+	 *            the url where the data is
+	 * @param byteOutputStream
+	 *            the output stream of data from the url
+	 * @return the parsed content
+	 */
 	protected String getParsedContent(Url url, ByteOutputStream byteOutputStream) {
 		try {
 			String contentType = URI.create(url.getUrl()).toURL().getFile();
@@ -215,6 +224,13 @@ public class IndexableInternetCrawler implements Runnable {
 		return null;
 	}
 
+	/**
+	 * Adds the document to the index with all the defined fields.
+	 * 
+	 * @param indexable
+	 * @param url
+	 * @param parsedContent
+	 */
 	protected void addDocumentToIndex(IndexableInternet indexable, Url url, String parsedContent) {
 		try {
 			Long hash = HashUtilities.hash(parsedContent);
@@ -226,6 +242,8 @@ public class IndexableInternetCrawler implements Runnable {
 				logger.debug(Logging.getString("Found duplicate data : ", duplicate, ", url : ", url));
 				return;
 			}
+
+			String id = getUrlId();
 
 			Document document = new Document();
 			Store store = indexable.isStored() ? Store.YES : Store.NO;
@@ -247,18 +265,10 @@ public class IndexableInternetCrawler implements Runnable {
 				// Add the url as the title
 				IndexManager.addStringField(IConstants.TITLE, url.getUrl(), document, store, analyzed, termVector);
 			}
-
 			// Add the id field
-			StringBuilder builder = new StringBuilder();
-			builder.append(indexableInternet.getName());
-			builder.append(".");
-			builder.append(indexableInternet.getCurrentUrl());
-			String id = builder.toString();
 			IndexManager.addStringField(IConstants.ID, id, document, Store.YES, Index.ANALYZED, TermVector.YES);
-
 			// Add the contents field
 			IndexManager.addStringField(indexable.getName(), parsedContent, document, store, analyzed, termVector);
-
 			indexContext.getIndexWriter().addDocument(document);
 		} catch (Exception e) {
 			logger.error("Exception accessing url : " + url, e);
@@ -269,6 +279,25 @@ public class IndexableInternetCrawler implements Runnable {
 		}
 	}
 
+	protected String getUrlId() {
+		StringBuilder builder = new StringBuilder();
+		builder.append(indexableInternet.getName());
+		builder.append(".");
+		builder.append(indexableInternet.getCurrentUrl());
+		return builder.toString();
+	}
+
+	/**
+	 * Extracts all the links from the content and sets them in the cluster wide cache. The cache is persistence backed so any overflow then
+	 * goes to a local object oriented database on each server.
+	 * 
+	 * @param indexableInternet
+	 *            the indexable that is being crawled
+	 * @param baseUrl
+	 *            the base url that the link was found in
+	 * @param inputStream
+	 *            the input stream of the data from the base url, i.e. the html
+	 */
 	protected void extractLinksFromContent(IndexableInternet indexableInternet, Url baseUrl, InputStream inputStream) {
 		try {
 			Reader reader = new InputStreamReader(inputStream, IConstants.ENCODING);

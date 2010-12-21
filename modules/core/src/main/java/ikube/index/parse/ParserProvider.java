@@ -11,6 +11,8 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 /**
+ * Provides parsers based on the content(magic offsets) and content type like 'text/html' for example.
+ * 
  * @author Michael Couck
  * @since 21.11.10
  * @version 01.00
@@ -19,8 +21,22 @@ public class ParserProvider {
 
 	private static Logger LOGGER = Logger.getLogger(ParserProvider.class);
 
+	/** The map of content type to parsers. */
 	private static Map<String, IParser> PARSERS = new HashMap<String, IParser>();
 
+	/**
+	 * This method will try to find the best parser for the content type based on the data and the content type. The content type can be
+	 * something like 'index.html' and the html parser will be returned. If the mimeType is null or not known then the bytes passed will be
+	 * used to get the parser. For example in the case or a Word doc, if the extension missing then we expect a byte of '31be0000' at offset
+	 * 0.
+	 * 
+	 * @param mimeTypeString
+	 *            the mime type or the document extension
+	 * @param bytes
+	 *            the first few bytes of the document, typically 1024
+	 * @return the parser that most closely matches the mime type and the data or the text parser if there is no matching parser, like for
+	 *         exe files for example
+	 */
 	public static IParser getParser(String mimeTypeString, byte[] bytes) {
 		MimeType mimeType = null;
 		String parserClass = null;

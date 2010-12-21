@@ -76,6 +76,9 @@ public class DataBaseOdb implements IDataBase {
 
 	protected synchronized long getTotalObjects() {
 		try {
+			if (odb == null) {
+				return 0;
+			}
 			odb.commit();
 			ISession session = ((ODBAdapter) odb).getSession();
 			MetaModel metaModel = session.getMetaModel();

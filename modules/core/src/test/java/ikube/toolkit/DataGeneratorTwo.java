@@ -118,6 +118,7 @@ public class DataGeneratorTwo {
 		ResultSet ids = null;
 		try {
 			// Get the prepared statement
+			// logger.info("Sql : " + builder.toString());
 			preparedStatement = connection.prepareStatement(builder.toString(), Statement.RETURN_GENERATED_KEYS);
 			// Set the parameters based on the index column's column class
 			int parameterIndex = 1;
@@ -137,6 +138,7 @@ public class DataGeneratorTwo {
 					} else {
 						parameter = indexableColumn.getForeignKey().getObject();
 					}
+					// logger.info("Parameter : " + parameter);
 					preparedStatement.setObject(parameterIndex, parameter);
 					parameterIndex++;
 				}

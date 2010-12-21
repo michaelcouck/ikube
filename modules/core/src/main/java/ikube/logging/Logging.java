@@ -6,6 +6,8 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
 /**
+ * This class just initializes the logging(Log4j).
+ * 
  * @author Michael Couck
  * @since 15.09.10
  * @version 01.00
@@ -18,6 +20,9 @@ public class Logging {
 	private static Logger LOGGER;
 	private static boolean INITIALISED = false;
 
+	/**
+	 * Configures the logging.
+	 */
 	public static synchronized void configure() {
 		if (INITIALISED) {
 			LOGGER.info("Logging already initialised : ");
@@ -38,6 +43,13 @@ public class Logging {
 		LOGGER = Logger.getLogger(Logging.class);
 	}
 
+	/**
+	 * Takes a bunch of objects and concatenates them as a string.
+	 * 
+	 * @param objects
+	 *            the objects to concatenate
+	 * @return the string concatenation of the objects
+	 */
 	public static String getString(Object... objects) {
 		if (objects == null || objects.length == 0) {
 			return "";
