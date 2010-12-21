@@ -48,17 +48,17 @@
 	</target>
 
 	<target name="startOne">
-		<java jar="${tomcat.1.bin}/bootstrap.jar" fork="yes" spawn="true">
+		<java jar="${tomcat.1.bin}/bootstrap.jar" dir="${tomcat.1.bin}" fork="yes" spawn="true">
 			<jvmarg value="-Dcatalina.home=${tomcat.1}" />
 		</java>
 	</target>
 	<target name="startTwo">
-		<java jar="${tomcat.2.bin}/bootstrap.jar" fork="yes" spawn="true">
+		<java jar="${tomcat.2.bin}/bootstrap.jar" dir="${tomcat.2.bin}" fork="yes" spawn="true">
 			<jvmarg value="-Dcatalina.home=${tomcat.2}" />
 		</java>
 	</target>
 	<target name="startThree">
-		<java jar="${tomcat.3.bin}/bootstrap.jar" fork="yes" spawn="true">
+		<java jar="${tomcat.3.bin}/bootstrap.jar" dir="${tomcat.3.bin}" fork="yes" spawn="true">
 			<jvmarg value="-Dcatalina.home=${tomcat.3}" />
 		</java>
 	</target>
