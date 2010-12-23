@@ -11,6 +11,9 @@ import org.apache.lucene.search.SortField;
 import org.apache.lucene.search.TopDocs;
 
 /**
+ * Searches for multiple fields in an index, and sorts the results.
+ * 
+ * @see Search
  * @author Michael Couck
  * @since 02.09.08
  * @version 01.00

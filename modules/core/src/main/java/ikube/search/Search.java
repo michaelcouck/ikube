@@ -23,6 +23,8 @@ import org.apache.lucene.search.highlight.QueryScorer;
 import org.apache.lucene.search.highlight.Scorer;
 
 /**
+ * TODO - synchronize this class.
+ * 
  * This action does the actual search on the index. The searcher that is current in the Instance is passed to this action. The search is
  * done on the index. The results are then processed for use in the front end. A list of maps is generated from the results. There are three
  * standard fields in each map. Each map then represents one record or result from the search. The three standard items in the map are the

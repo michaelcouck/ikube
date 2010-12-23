@@ -18,7 +18,7 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
 /**
- * This is the base class for actions. Actions execute handlers on indexables. Actions may include opening the searcher on a new index,
+ * This is the base class for actions. Actions execute logic on index contexts. Actions may include opening the searcher on a new index,
  * indexing or deleting the old indexes. This class is intended to be sub-classed. Common methods in this base class is checking that the
  * index is current, i.e. has not expired and whether the searcher should be re-opened on the new index.
  * 
@@ -29,6 +29,7 @@ import org.apache.lucene.store.FSDirectory;
 public abstract class Action implements IAction<IndexContext, Boolean> {
 
 	protected Logger logger = Logger.getLogger(this.getClass());
+	/** The cluster synchronization class. */
 	private IClusterManager clusterManager;
 
 	protected IClusterManager getClusterManager() {
@@ -38,6 +39,14 @@ public abstract class Action implements IAction<IndexContext, Boolean> {
 		return clusterManager;
 	}
 
+	/**
+	 * Checks to see if the current index is not passed it's expiration period. Each index had a parent directory that is a long of the
+	 * system time that the index was started. This time signifies the age of the index.
+	 * 
+	 * @param indexContext
+	 *            the index context to check if the index is expired
+	 * @return whether the index for this index context is passed it's expiration date
+	 */
 	protected boolean isIndexCurrent(IndexContext indexContext) {
 		File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
 		if (latestIndexDirectory == null) {
@@ -114,6 +123,13 @@ public abstract class Action implements IAction<IndexContext, Boolean> {
 		return Boolean.FALSE;
 	}
 
+	/**
+	 * Checks to see if the directory exists on the file system and is not locked by Lucene, i.e. that a searcher can be opened on it.
+	 * 
+	 * @param indexDirectory
+	 *            the directory to check for existence and availability
+	 * @return whether the directory exists as a Lucene index and is not locked by Lucene
+	 */
 	protected boolean directoryExistsAndNotLocked(File indexDirectory) {
 		Directory directory = null;
 		try {
@@ -138,6 +154,13 @@ public abstract class Action implements IAction<IndexContext, Boolean> {
 		return Boolean.FALSE;
 	}
 
+	/**
+	 * Checks to see if the directory exists on the file system and is locked by Lucene, i.e. that this directory is an index being created.
+	 * 
+	 * @param indexDirectory
+	 *            the directory to check for existence and being locked
+	 * @return whether the directory exists as a Lucene index and is locked
+	 */
 	protected boolean directoryExistsAndIsLocked(File indexDirectory) {
 		Directory directory = null;
 		try {

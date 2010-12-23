@@ -17,6 +17,14 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 /**
+ * This class is the central class for creating indexes.
+ * 
+ * This class then only looks up the index contexts and executes actions on them. The index engine registers a listener with the scheduler
+ * and responds to the {@link Event#TIMER} type of event. This event schedule can be configured in the configuration, as can most schedules
+ * and executors.
+ * 
+ * Index contexts contain parameters and indexables. Indexables are objects that can be indexed, like files and databases.
+ * 
  * @author Michael Couck
  * @since 21.11.10
  * @version 01.00
@@ -70,7 +78,7 @@ public class IndexEngine implements IIndexEngine {
 				boolean success = Boolean.FALSE;
 				try {
 					// Sleep for a random period to avoid one server always being first
-					long sleep = ((long) (Math.random() * 10d)) * 1000;
+					long sleep = (long) (((Math.random() * 10d)) * 1000d);
 					logger.info("Sleeping for : " + sleep + " milliseconds");
 					Thread.sleep(sleep);
 					success = action.execute(indexContext);

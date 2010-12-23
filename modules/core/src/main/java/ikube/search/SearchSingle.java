@@ -8,6 +8,9 @@ import org.apache.lucene.search.Searcher;
 import org.apache.lucene.search.TopDocs;
 
 /**
+ * Searches a single field in an index.
+ * 
+ * @see Search
  * @author Michael Couck
  * @since 22.08.08
  * @version 01.00
