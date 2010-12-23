@@ -4,14 +4,25 @@
 		<password>ikube</password>
 	</group>
 	<network>
-		<port auto-increment="true">8000</port>
+		<port auto-increment="true">8001</port>
 		<join>
 			<multicast enabled="true">
-				<multicast-group>224.2.2.3</multicast-group>
-				<multicast-port>50001</multicast-port>
+				<multicast-group>224.1.2.3</multicast-group>
+				<multicast-port>8000</multicast-port>
 			</multicast>
 			<tcp-ip enabled="false">
 				<interface>127.0.0.1</interface>
+				<interface>192.168.0.100</interface>
+				<interface>192.168.0.101</interface>
+				<interface>192.168.0.102</interface>
+				<interface>192.168.0.103</interface>
+				<interface>192.168.0.104</interface>
+				<interface>192.168.0.105</interface>
+				<interface>192.168.0.106</interface>
+				<interface>192.168.0.107</interface>
+				<interface>192.168.0.108</interface>
+				<interface>192.168.0.109</interface>
+				<interface>192.168.0.110</interface>
 			</tcp-ip>
 		</join>
 		<interfaces enabled="false">

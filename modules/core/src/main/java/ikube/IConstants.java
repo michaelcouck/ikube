@@ -56,7 +56,7 @@ public interface IConstants {
 	public String ENCODING = "UTF-8";
 
 	/** This is the starting port for the synchronization sockets. */
-	public int SYNCHRONIZATION_PORT = 8010;
+	public int SYNCHRONIZATION_PORT = 9000;
 	public String SYNCHRONIZATION_TOPIC = "synchronizationTopic";
 
 }

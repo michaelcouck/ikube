@@ -13,6 +13,13 @@ import javax.persistence.Id;
 
 import org.apache.log4j.Logger;
 
+/**
+ * General database operations like closing result sets etc.
+ * 
+ * @author Michael Couck
+ * @since 23.12.10
+ * @version 01.00
+ */
 public class DatabaseUtilities {
 
 	private static Logger LOGGER = Logger.getLogger(DatabaseUtilities.class);

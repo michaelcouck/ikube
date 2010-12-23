@@ -5,46 +5,63 @@
 	<property name="ikube.war" value="ikube-war-${project.version}.war" />
 	<property name="indexes" value="indexes" />
 	
+	<echo message="${tomcat.ikube.cluster.one.webapps}" />
+	<echo message="${tomcat.ikube.cluster.two.webapps}" />
+	<echo message="${tomcat.ikube.cluster.three.webapps}" />
+
 	<target name="deploy.war">
-		<delete dir="${indexes.directory}" failonerror="false" />
-		
 		<delete dir="${tomcat.webapps}/${ikube.dir}" failonerror="true" />
 		<delete dir="${tomcat.1.webapps}/${ikube.dir}" failonerror="true" />
 		<delete dir="${tomcat.2.webapps}/${ikube.dir}" failonerror="true" />
 		<delete dir="${tomcat.3.webapps}/${ikube.dir}" failonerror="true" />
-		<delete dir="${tomcat.vm.one.webapps}/${ikube.dir}" failonerror="false" />
-		<!-- delete dir="${tomcat.ikube.webapps}/${ikube.dir}" failonerror="true" / -->
+		<!-- delete dir="${tomcat.vm.one.webapps}/${ikube.dir}" failonerror="false" / -->
+		<delete dir="${tomcat.ikube.webapps}/${ikube.dir}" failonerror="false" />
+		<delete dir="${tomcat.ikube.cluster.one.webapps}/${ikube.dir}" failonerror="false" />
+		<delete dir="${tomcat.ikube.cluster.two.webapps}/${ikube.dir}" failonerror="false" />
+		<delete dir="${tomcat.ikube.cluster.three.webapps}/${ikube.dir}" failonerror="false" />
 
-		<delete dir="${cluster.directory}/indexes" failonerror="true" />
-		<delete file="${cluster.directory}/ikube.log" failonerror="true" />
-		<delete file="${cluster.directory}/ikube.odb" failonerror="true" />
+		<delete dir="${tomcat.ikube.webapps}/${ikube.dir}" failonerror="true" />
+		<delete dir="${tomcat.ikube.cluster.one.webapps}/${ikube.dir}" failonerror="false" />
+		<delete dir="${tomcat.ikube.cluster.two.webapps}/${ikube.dir}" failonerror="false" />
+		<delete dir="${tomcat.ikube.cluster.three.webapps}/${ikube.dir}" failonerror="false" />
 		
 		<delete dir="${tomcat.bin}/${indexes}" failonerror="true" />
 		<delete dir="${tomcat.1.bin}/${indexes}" failonerror="true" />
 		<delete dir="${tomcat.2.bin}/${indexes}" failonerror="true" />
 		<delete dir="${tomcat.3.bin}/${indexes}" failonerror="true" />
-		<delete file="${tomcat.vm.one.bin}/${indexes}" failonerror="false" />
+		<delete dir="${cluster.directory}/indexes" failonerror="true" />
+		<!--delete file="${tomcat.vm.one.bin}/${indexes}" failonerror="false" / -->
+		<delete file="${tomcat.ikube.bin}/${indexes}" failonerror="false" />
+		<delete file="${tomcat.ikube.cluster.one.bin}/${indexes}" failonerror="false" />
+		<delete file="${tomcat.ikube.cluster.two.bin}/${indexes}" failonerror="false" />
+		<delete file="${tomcat.ikube.cluster.three.bin}/${indexes}" failonerror="false" />
 
 		<delete file="${tomcat.webapps}/${ikube.war}" failonerror="true" />
 		<delete file="${tomcat.1.webapps}/${ikube.war}" failonerror="true" />
 		<delete file="${tomcat.2.webapps}/${ikube.war}" failonerror="true" />
 		<delete file="${tomcat.3.webapps}/${ikube.war}" failonerror="true" />
-		<delete file="${tomcat.vm.one.webapps}/${ikube.war}" failonerror="false" />
-		<!-- delete file="${tomcat.ikube.webapps}/${ikube.war}" failonerror="true" / -->
+		<!--delete file="${tomcat.vm.one.webapps}/${ikube.war}" failonerror="false" / -->
+		<delete file="${tomcat.ikube.webapps}/${ikube.war}" failonerror="false" />
+		<delete file="${tomcat.ikube.cluster.one.webapps}/${ikube.war}" failonerror="false" />
+		<delete file="${tomcat.ikube.cluster.two.webapps}/${ikube.war}" failonerror="false" />
+		<delete file="${tomcat.ikube.cluster.three.webapps}/${ikube.war}" failonerror="false" />
 
 		<copy file="${target.directory}/${ikube.war}" todir="${tomcat.webapps}" overwrite="true" failonerror="true" />
 		<copy file="${target.directory}/${ikube.war}" todir="${tomcat.1.webapps}" overwrite="true" failonerror="true" />
 		<copy file="${target.directory}/${ikube.war}" todir="${tomcat.2.webapps}" overwrite="true" failonerror="true" />
 		<copy file="${target.directory}/${ikube.war}" todir="${tomcat.3.webapps}" overwrite="true" failonerror="true" />
-		<copy file="${target.directory}/${ikube.war}" todir="${tomcat.vm.one.webapps}" overwrite="true" failonerror="false" />
-		<!-- copy file="${target.directory}/${ikube.war}" todir="${tomcat.ikube.webapps}" overwrite="true" failonerror="true" / -->
-		
+		<!--copy file="${target.directory}/${ikube.war}" todir="${tomcat.vm.one.webapps}" overwrite="true" failonerror="false" /-->
+		<copy file="${target.directory}/${ikube.war}" todir="${tomcat.ikube.webapps}" overwrite="true" failonerror="false" />
+		<copy file="${target.directory}/${ikube.war}" todir="${tomcat.ikube.cluster.one.webapps}" overwrite="true" failonerror="false" />
+		<copy file="${target.directory}/${ikube.war}" todir="${tomcat.ikube.cluster.two.webapps}" overwrite="true" failonerror="false" />
+		<copy file="${target.directory}/${ikube.war}" todir="${tomcat.ikube.cluster.three.webapps}" overwrite="true" failonerror="false" />
+
 	</target>
-	
+
 	<target name="cluster">
 		<exec spawn="true" executable="${cluster.directory}/startup.bat" />
 	</target>
-	
+
 	<target name="startCluster">
 		<antcall target="startOne" />
 		<antcall target="startTwo" />

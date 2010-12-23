@@ -15,6 +15,7 @@ import javax.xml.ws.Service;
 import org.apache.log4j.Logger;
 
 /**
+ * @see ISearcherWebServiceExecuter
  * @author Michael Couck
  * @since 21.11.10
  * @version 01.00
@@ -48,6 +49,9 @@ public class SearcherWebServiceExecuter implements ISearcherWebServiceExecuter {
 		});
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public List<Map<String, String>> execute() throws Exception {
 		QName serviceName = new QName(ISearcherWebService.TARGET_NAMESPACE, ISearcherWebService.SERVICE_NAME);
@@ -66,34 +70,66 @@ public class SearcherWebServiceExecuter implements ISearcherWebServiceExecuter {
 		return results;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public void setEndpointUri(String endpointUri) {
 		this.endpointUri = endpointUri;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public void setConfigurationName(String configurationName) {
 		this.configurationName = configurationName;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public void setSearchString(String searchString) {
 		this.searchString = searchString;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public void setFieldName(String fieldName) {
 		this.fieldName = fieldName;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public void setFragment(boolean fragment) {
 		this.fragment = fragment;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public void setStart(int start) {
 		this.start = start;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public void setEnd(int end) {
 		this.end = end;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public void setResultsSizeMinimum(int resultsSizeMinimum) {
 		this.resultsSizeMinimum = resultsSizeMinimum;
 	}
