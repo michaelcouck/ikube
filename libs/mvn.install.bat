@@ -11,4 +11,5 @@ rem mvn install:install-file -Dfile=db2jcc_license_cu-9.5.jar -DgroupId=com.ibm.
 rem mvn install:install-file -Dfile=ojdbc6-11.jar -DgroupId=oracle.ojdbc6 -DartifactId=ojdbc6 -Dversion=11 -Dpackaging=jar -DgeneratePom=true
 
 rem mvn install:install-file -Dfile=aspose-pdf-jdk16-2.7.0.jar -DgroupId=aspose -DartifactId=aspose-pdf-jdk16 -Dversion=2.7.0 -Dpackaging=jar -DgeneratePom=true
-mvn install:install-file -Dfile=aspose-pdf-kit-3.5.0.jar -DgroupId=aspose -DartifactId=aspose-pdf-kit -Dversion=3.5.0 -Dpackaging=jar -DgeneratePom=true
+rem mvn install:install-file -Dfile=aspose-pdf-kit-3.5.0.jar -DgroupId=aspose -DartifactId=aspose-pdf-kit -Dversion=3.5.0 -Dpackaging=jar -DgeneratePom=true
+mvn install:install-file -Dfile=swt-64-3.6.1.jar -DgroupId=swt -DartifactId=swt-64 -Dversion=3.6.1 -Dpackaging=jar -DgeneratePom=true

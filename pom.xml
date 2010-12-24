@@ -1,6 +1,4 @@
-<project 
-	xmlns="http://maven.apache.org/POM/4.0.0" 
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="
 		http://maven.apache.org/POM/4.0.0
 		http://maven.apache.org/maven-v4_0_0.xsd">
@@ -62,6 +60,7 @@
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>jdepend-maven-plugin</artifactId>
 			</plugin>
+
 		</plugins>
 	</build>
 
@@ -415,10 +414,8 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
-		<!--
-			<dependency> <groupId>oracle.ojdbc6</groupId> <artifactId>ojdbc6</artifactId> <version>11</version> <type>jar</type> <scope>compile</scope>
-			</dependency>
-		-->
+		<!-- <dependency> <groupId>oracle.ojdbc6</groupId> <artifactId>ojdbc6</artifactId> <version>11</version> <type>jar</type> <scope>compile</scope> 
+			</dependency> -->
 		<dependency>
 			<groupId>org.apache.jcs</groupId>
 			<artifactId>jcs</artifactId>
