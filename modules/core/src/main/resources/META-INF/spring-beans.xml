@@ -133,7 +133,7 @@
 	<bean
 		id="ikube.service.SearcherWebServiceExecuter"
 		class="ikube.service.SearcherWebServiceExecuter"
-		property:configurationName="contextOne"
+		property:indexName="contextOne"
 		property:end="101"
 		property:endpointUri="${web.service.protocol}://${web.service.host}:${web.service.port}${web.service.path}?wsdl"
 		property:fieldName="contents"

@@ -131,10 +131,12 @@ public class CacheMapStore implements MapStore<Long, Object> {
 			if (dataBase == null) {
 				dataBase = ApplicationContextManager.getBean(IDataBase.class);
 			}
-			return dataBase;
+		} catch (Exception e) {
+			logger.error("Exception accesing the database from the context : ", e);
 		} finally {
 			notifyAll();
 		}
+		return dataBase;
 	}
 
 }

@@ -15,7 +15,7 @@
 	<bean
 		id="indexContextOne"
 		class="ikube.model.IndexContext"
-		property:indexName="contextOne"
+		property:indexName="indexOne"
 		property:maxAge="${max.age}"
 		property:compoundFile="${compound.file}"
 		property:bufferedDocs="${buffered.docs}"
@@ -32,7 +32,7 @@
 	<!--<bean
 		id="indexContextTwo"
 		class="ikube.model.IndexContext"
-		property:indexName="contextTwo"
+		property:indexName="indexTwo"
 		property:maxAge="${max.age}"
 		property:compoundFile="${compound.file}"
 		property:bufferedDocs="${buffered.docs}"

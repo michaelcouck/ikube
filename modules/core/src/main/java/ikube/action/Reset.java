@@ -25,7 +25,7 @@ public class Reset extends Action {
 		}
 		getClusterManager().clear(Url.class);
 		for (Server server : getClusterManager().getServers()) {
-			server.getActions().clear();
+			// server.getActions().clear();
 			getClusterManager().set(Server.class, server.getId(), server);
 		}
 		return Boolean.TRUE;

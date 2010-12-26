@@ -26,7 +26,7 @@ public interface ISearcherWebServiceExecuter {
 
 	public void setEndpointUri(String endpointUri);
 
-	public void setConfigurationName(String configurationName);
+	public void setIndexName(String indexName);
 
 	public void setSearchString(String searchString);
 

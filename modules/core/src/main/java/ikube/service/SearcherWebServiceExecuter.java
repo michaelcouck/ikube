@@ -25,7 +25,7 @@ public class SearcherWebServiceExecuter implements ISearcherWebServiceExecuter {
 
 	private Logger logger;
 	private String endpointUri;
-	private String configurationName;
+	private String indexName;
 	private String searchString;
 	private String fieldName;
 	private boolean fragment;
@@ -58,7 +58,7 @@ public class SearcherWebServiceExecuter implements ISearcherWebServiceExecuter {
 		URL wsdlURL = new URL(endpointUri);
 		Service service = Service.create(wsdlURL, serviceName);
 		ISearcherWebService searchRemote = service.getPort(ISearcherWebService.class);
-		String xml = searchRemote.searchSingle(configurationName, searchString, fieldName, fragment, start, end);
+		String xml = searchRemote.searchSingle(indexName, searchString, fieldName, fragment, start, end);
 		List<Map<String, String>> results = (List<Map<String, String>>) SerializationUtilities.deserialize(xml);
 		if (results.size() < resultsSizeMinimum) {
 			logger.warn("Results not expected : " + results);
@@ -82,8 +82,8 @@ public class SearcherWebServiceExecuter implements ISearcherWebServiceExecuter {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void setConfigurationName(String configurationName) {
-		this.configurationName = configurationName;
+	public void setIndexName(String indexName) {
+		this.indexName = indexName;
 	}
 
 	/**

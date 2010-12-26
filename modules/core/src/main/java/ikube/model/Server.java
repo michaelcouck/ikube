@@ -7,6 +7,9 @@ import java.util.List;
 import javax.persistence.Entity;
 
 /**
+ * This object is passed around in the cluster. It contains transient data that must only be modified by the server from which it
+ * originates.
+ * 
  * @author Michael Couck
  * @since 21.11.10
  * @version 01.00
@@ -80,6 +83,8 @@ public class Server extends Persistable implements Comparable<Server> {
 
 	}
 
+	/** The ip of the server. */
+	private String ip;
 	/** The address of this machine. */
 	private String address;
 	/** Whether this server is working. */
@@ -89,6 +94,14 @@ public class Server extends Persistable implements Comparable<Server> {
 
 	public Server() {
 		this.actions = new ArrayList<Server.Action>();
+	}
+
+	public String getIp() {
+		return ip;
+	}
+
+	public void setIp(String ip) {
+		this.ip = ip;
 	}
 
 	public String getAddress() {
@@ -119,6 +132,7 @@ public class Server extends Persistable implements Comparable<Server> {
 	public String toString() {
 		final StringBuilder builder = new StringBuilder("[");
 		builder.append(getId()).append(", ");
+		builder.append(getIp()).append(", ");
 		builder.append(getAddress()).append(", ");
 		builder.append(isWorking()).append(", ");
 		builder.append(getActions());
