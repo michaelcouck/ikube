@@ -4,6 +4,7 @@ import ikube.logging.Logging;
 import ikube.toolkit.FileUtilities;
 
 import java.io.InputStream;
+import java.net.InetAddress;
 import java.net.URL;
 import java.util.List;
 
@@ -21,7 +22,6 @@ public class WebServicePublisher implements IWebServicePublisher {
 
 	private Logger logger;
 	private List<String> protocols;
-	private List<String> hosts;
 	private List<Integer> ports;
 	private List<String> paths;
 	private List<Object> implementors;
@@ -31,24 +31,20 @@ public class WebServicePublisher implements IWebServicePublisher {
 	}
 
 	public void publish() {
-		if (hosts == null || implementors == null || hosts.size() != implementors.size()) {
-			logger.warn("Addresses and implementors for web service not the same, please check the configuration : ");
-			return;
-		}
-		for (int i = 0; i < hosts.size(); i++) {
+		assert protocols.size() == ports.size() && ports.size() == paths.size() && paths.size() == implementors.size();
+		for (int i = 0; i < implementors.size(); i++) {
 			String protocol = protocols.get(i);
-			String host = hosts.get(i);
 			Integer port = ports.get(i);
 			String path = paths.get(i);
+			String host = null;
 			Object implementor = implementors.get(i);
 			try {
+				host = InetAddress.getLocalHost().getHostAddress();
 				URL url = new URL(protocol, host, port, path);
-
 				while (urlInUse(url)) {
 					port = new Integer(++port);
 					url = new URL(protocol, host, port, path);
 				}
-
 				logger.info("Publishing web service to : " + url);
 				Endpoint endpoint = Endpoint.publish(url.toString(), implementor);
 				Binding binding = endpoint.getBinding();
@@ -76,10 +72,6 @@ public class WebServicePublisher implements IWebServicePublisher {
 
 	public void setProtocols(List<String> protocols) {
 		this.protocols = protocols;
-	}
-
-	public void setHosts(List<String> hosts) {
-		this.hosts = hosts;
 	}
 
 	public void setPorts(List<Integer> ports) {

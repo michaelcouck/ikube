@@ -110,23 +110,35 @@
 		id="ikube.service.SearcherWebService"
 		class="ikube.service.SearcherWebService" />
 	<bean
+		id="ikube.service.MonitoringService"
+		class="ikube.service.MonitoringService" />
+	<bean
 		id="ikube.service.WebServicePublisher"
 		class="ikube.service.WebServicePublisher"
 		init-method="publish" >
 		<property name="protocols">
-			<list><value>${web.service.protocol}</value></list>
-		</property>
-		<property name="hosts">
-			<list><value>${web.service.host}</value></list>
+			<list>
+				<value>${service.protocol}</value>
+				<value>${service.protocol}</value>
+			</list>
 		</property>
 		<property name="ports">
-			<list><value>${web.service.port}</value></list>
+			<list>
+				<value>${service.port}</value>
+				<value>${monitoring.service.port}</value>
+			</list>
 		</property>
 		<property name="paths">
-			<list><value>${web.service.path}</value></list>
+			<list>
+				<value>${web.service.path}</value>
+				<value>${monitoring.service.path}</value>
+			</list>
 		</property>
 		<property name="implementors">
-			<list><ref local="ikube.service.SearcherWebService" /></list>
+			<list>
+				<ref local="ikube.service.SearcherWebService" />
+				<ref local="ikube.service.MonitoringService" />
+			</list>
 		</property>
 	</bean>
 	
@@ -135,7 +147,7 @@
 		class="ikube.service.SearcherWebServiceExecuter"
 		property:indexName="contextOne"
 		property:end="101"
-		property:endpointUri="${web.service.protocol}://${web.service.host}:${web.service.port}${web.service.path}?wsdl"
+		property:endpointUri="${service.protocol}://localhost:${service.port}${web.service.path}?wsdl"
 		property:fieldName="contents"
 		property:fragment="true"
 		property:resultsSizeMinimum="1"

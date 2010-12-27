@@ -126,12 +126,6 @@
 				<value>${web.service.protocol}</value>
 			</list>
 		</property>
-		<property name="hosts">
-			<list>
-				<value>${web.service.host}</value>
-				<value>${web.service.host}</value>
-			</list>
-		</property>
 		<property name="ports">
 			<list>
 				<value>${web.service.port}</value>
@@ -158,7 +152,7 @@
 		class="ikube.service.SearcherWebServiceExecuter"
 		property:indexName="indexOne"
 		property:end="101"
-		property:endpointUri="${web.service.protocol}://${web.service.host}:${web.service.port}${web.service.path}?wsdl"
+		property:endpointUri="${web.service.protocol}://localhost:${web.service.port}${web.service.path}?wsdl"
 		property:fieldName="contents"
 		property:fragment="true"
 		property:resultsSizeMinimum="1"

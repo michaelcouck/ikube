@@ -3,11 +3,16 @@
 	<property file="build.properties" />
 	<property name="ikube.dir" value="ikube-war-${project.version}" />
 	<property name="ikube.war" value="ikube-war-${project.version}.war" />
+	<property name="ikube.jar" value="ikube-core-${project.version}.jar" />
 	<property name="indexes" value="indexes" />
 	
 	<echo message="${tomcat.ikube.cluster.one.webapps}" />
 	<echo message="${tomcat.ikube.cluster.two.webapps}" />
 	<echo message="${tomcat.ikube.cluster.three.webapps}" />
+	
+	<target name="deploy.jar">
+		<copy file="${core.target.directory}/${ikube.jar}" todir="${ikube.client.libs}" overwrite="true" failonerror="true" />
+	</target>
 
 	<target name="deploy.war">
 		<delete dir="${tomcat.webapps}/${ikube.dir}" failonerror="true" />

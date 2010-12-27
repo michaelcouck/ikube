@@ -57,7 +57,7 @@ public interface ISearcherWebService {
 	 * @param maxResults the end document in the index, also for paging
 	 * @return a serialized string of the results from the search
 	 */
-	public String searchMulti(String indexName, String[] searchStrings, String[] searchFields, String[] sortFields, boolean fragment,
+	public String searchMultiSorted(String indexName, String[] searchStrings, String[] searchFields, String[] sortFields, boolean fragment,
 			int firstResult, int maxResults);
 
 }

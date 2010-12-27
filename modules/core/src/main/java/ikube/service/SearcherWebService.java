@@ -41,6 +41,7 @@ public class SearcherWebService implements ISearcherWebService {
 	public SearcherWebService() {
 		this.singleSearchers = new HashMap<String, SearchSingle>();
 		this.multiSearchers = new HashMap<String, SearchMulti>();
+		this.multiSortedSearchers = new HashMap<String, SearchMultiSorted>();
 		ListenerManager.addListener(new IListener() {
 			@Override
 			public void handleNotification(Event event) {
@@ -126,7 +127,7 @@ public class SearcherWebService implements ISearcherWebService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public String searchMulti(String indexName, String[] searchStrings, String[] searchFields, String[] sortFields, boolean fragment,
+	public String searchMultiSorted(String indexName, String[] searchStrings, String[] searchFields, String[] sortFields, boolean fragment,
 			int start, int end) {
 		try {
 			SearchMultiSorted searchMultiSorted = this.multiSortedSearchers.get(indexName);

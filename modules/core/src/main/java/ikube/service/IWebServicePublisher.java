@@ -18,8 +18,6 @@ public interface IWebServicePublisher {
 	 */
 	public void publish();
 
-	public void setHosts(List<String> hosts);
-
 	public void setPorts(List<Integer> ports);
 
 	public void setPaths(List<String> paths);

@@ -5,6 +5,8 @@
 * Data generator two with files - 1/2
 * Servlet/Ejb - 1
 * New data structure, perhaps patients in a hospital
+* Client - 10
+  Logging on a topic for the gui to collect for the whole cluster
 
 Total - 5 1/2
 
