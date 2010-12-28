@@ -1,9 +1,10 @@
 package ikube;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
 import ikube.database.IDataBase;
 import ikube.index.parse.mime.MimeMapper;
 import ikube.index.parse.mime.MimeTypes;
@@ -17,9 +18,15 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.MultiSearcher;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.Searchable;
+import org.apache.lucene.search.Sort;
+import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.search.TopFieldDocs;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.Lock;
 
@@ -40,6 +47,9 @@ public abstract class ATest {
 	protected static FSDirectory FS_DIRECTORY;
 	protected static Searchable[] SEARCHABLES;
 	protected static IndexWriter INDEX_WRITER;
+	protected static TopDocs TOP_DOCS;
+	protected static TopFieldDocs TOP_FIELD_DOCS;
+	protected static ScoreDoc[] SCORE_DOCS;
 	protected static Lock LOCK;
 	protected static String IP;
 
@@ -63,15 +73,26 @@ public abstract class ATest {
 		FS_DIRECTORY = mock(FSDirectory.class);
 		SEARCHABLES = new Searchable[] { INDEX_SEARCHER };
 		INDEX_WRITER = mock(IndexWriter.class);
+		TOP_DOCS = mock(TopDocs.class);
+		TOP_FIELD_DOCS = mock(TopFieldDocs.class);
+		SCORE_DOCS = new ScoreDoc[0];
 		LOCK = mock(Lock.class);
-
-		when(MULTI_SEARCHER.getSearchables()).thenReturn(SEARCHABLES);
-		when(INDEX_SEARCHER.getIndexReader()).thenReturn(INDEX_READER);
-		when(INDEX_READER.directory()).thenReturn(FS_DIRECTORY);
-		when(FS_DIRECTORY.makeLock(anyString())).thenReturn(LOCK);
 
 		try {
 			IP = InetAddress.getLocalHost().getHostAddress();
+
+			when(MULTI_SEARCHER.getSearchables()).thenReturn(SEARCHABLES);
+			when(MULTI_SEARCHER.search(any(Query.class), anyInt())).thenReturn(TOP_DOCS);
+			when(MULTI_SEARCHER.search(any(Query.class), any(Filter.class), anyInt(), any(Sort.class))).thenReturn(TOP_FIELD_DOCS);
+			when(INDEX_SEARCHER.getIndexReader()).thenReturn(INDEX_READER);
+			when(INDEX_SEARCHER.search(any(Query.class), anyInt())).thenReturn(TOP_DOCS);
+			TOP_DOCS.totalHits = 0;
+			TOP_DOCS.scoreDocs = SCORE_DOCS;
+			TOP_FIELD_DOCS.totalHits = 0;
+			TOP_FIELD_DOCS.scoreDocs = SCORE_DOCS;
+			when(INDEX_READER.directory()).thenReturn(FS_DIRECTORY);
+			when(FS_DIRECTORY.makeLock(anyString())).thenReturn(LOCK);
+
 			// Every time the JVM starts a +~JF#######.tmp file is created. Strange as that is
 			// we still need to delete it manually.
 			FileUtilities.deleteFiles(new File(System.getProperty("user.home")), ".tmp");

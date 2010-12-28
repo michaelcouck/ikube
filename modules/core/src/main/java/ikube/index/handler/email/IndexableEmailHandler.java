@@ -132,7 +132,7 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 		folder.open(Folder.READ_ONLY);
 
 		// For each message found in the server, index it.
-		logger.info("Message count : " + folder.getMessageCount() + ", " + folder.getFullName());
+		logger.info("SynchronizationMessage count : " + folder.getMessageCount() + ", " + folder.getFullName());
 		for (Message message : folder.getMessages()) {
 			// Builds the identifier
 			Date recievedDate = message.getReceivedDate();
@@ -145,7 +145,7 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 				logger.debug("Sent : " + sentDate);
 				logger.debug("Recieved : " + recievedDate);
 				logger.debug("Timestamp : " + timestamp);
-				logger.debug("Message number : " + messageNumber);
+				logger.debug("SynchronizationMessage number : " + messageNumber);
 			}
 
 			Field.Store mustStore = indexableMail.isStored() ? Field.Store.YES : Field.Store.NO;
@@ -166,7 +166,7 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 				// Add the content field to the document
 				IndexManager.addStringField(indexableMail.getContentField(), fieldContent, document, mustStore, analyzed, termVector);
 			}
-			indexContext.getIndexWriter().addDocument(document);
+			indexContext.getIndex().getIndexWriter().addDocument(document);
 		}
 		folder.close(true);
 	}
@@ -198,10 +198,10 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 	}
 
 	/**
-	 * Returns a message content given a Message object
+	 * Returns a message content given a SynchronizationMessage object
 	 * 
 	 * @param message
-	 *            The Message object representing a message in the mail server
+	 *            The SynchronizationMessage object representing a message in the mail server
 	 * @return The message content.
 	 * @throws IOException
 	 *             If some problem occurs when trying to access the message content.

@@ -5,9 +5,6 @@ import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
 
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.search.MultiSearcher;
-
 /**
  * @author Michael Couck
  * @since 21.11.10
@@ -38,12 +35,12 @@ public class IndexContext extends Persistable implements Comparable<IndexContext
 
 	private List<Indexable<?>> indexables;
 
-	/** Can be null if there are no indexes running. */
 	@Transient
-	private transient IndexWriter indexWriter;
-	/** Can be null if there is no index created. */
-	@Transient
-	private transient MultiSearcher multiSearcher;
+	private Index index;
+
+	public IndexContext() {
+		index = new Index();
+	}
 
 	public String getIndexName() {
 		return indexName;
@@ -157,27 +154,17 @@ public class IndexContext extends Persistable implements Comparable<IndexContext
 		this.indexables = indexables;
 	}
 
+	public Index getIndex() {
+		return index;
+	}
+
+	public void setIndex(Index index) {
+		this.index = index;
+	}
+
 	@Override
 	public int compareTo(IndexContext o) {
 		return getIndexName().compareTo(o.getIndexName());
-	}
-
-	@Transient
-	public IndexWriter getIndexWriter() {
-		return indexWriter;
-	}
-
-	public void setIndexWriter(final IndexWriter indexWriter) {
-		this.indexWriter = indexWriter;
-	}
-
-	@Transient
-	public MultiSearcher getMultiSearcher() {
-		return multiSearcher;
-	}
-
-	public void setMultiSearcher(final MultiSearcher multiSearcher) {
-		this.multiSearcher = multiSearcher;
 	}
 
 }

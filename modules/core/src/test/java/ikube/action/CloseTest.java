@@ -21,7 +21,7 @@ public class CloseTest extends BaseTest {
 
 	@Test
 	public void execute() throws Exception {
-		indexContext.setMultiSearcher(MULTI_SEARCHER);
+		indexContext.getIndex().setMultiSearcher(MULTI_SEARCHER);
 
 		String serverIndexDirectoryPath = getServerIndexDirectoryPath(indexContext);
 		File serverIndexDirectory = createIndex(new File(serverIndexDirectoryPath));
@@ -29,7 +29,7 @@ public class CloseTest extends BaseTest {
 		assertTrue(closed);
 
 		File anotherServerIndexDirectory = createIndex(new File(serverIndexDirectoryPath.replace(IP, "127.0.0.2")));
-		indexContext.setMultiSearcher(MULTI_SEARCHER);
+		indexContext.getIndex().setMultiSearcher(MULTI_SEARCHER);
 		// when(INDEX_SEARCHER.getIndexReader()).thenReturn(INDEX_READER);
 		// when(INDEX_READER.directory()).thenReturn(FS_DIRECTORY);
 		when(LOCK.isLocked()).thenReturn(Boolean.FALSE);
@@ -40,7 +40,7 @@ public class CloseTest extends BaseTest {
 		closed = close.execute(indexContext);
 		assertTrue(closed);
 
-		indexContext.setMultiSearcher(MULTI_SEARCHER);
+		indexContext.getIndex().setMultiSearcher(MULTI_SEARCHER);
 		when(LOCK.isLocked()).thenReturn(Boolean.TRUE);
 
 		closed = close.execute(indexContext);

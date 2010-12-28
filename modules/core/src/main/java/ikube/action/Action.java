@@ -72,7 +72,7 @@ public abstract class Action implements IAction<IndexContext, Boolean> {
 	 */
 	protected boolean shouldReopen(IndexContext indexContext) {
 		// If there is no searcher open then try to open one
-		MultiSearcher multiSearcher = indexContext.getMultiSearcher();
+		MultiSearcher multiSearcher = indexContext.getIndex().getMultiSearcher();
 		if (multiSearcher == null) {
 			logger.debug("Multi searcher null, should try to reopen : ");
 			return Boolean.TRUE;

@@ -2,11 +2,11 @@ package ikube.index;
 
 import ikube.IConstants;
 import ikube.cluster.IClusterManager;
+import ikube.listener.Event;
 import ikube.listener.IListener;
 import ikube.listener.ListenerManager;
-import ikube.model.Event;
 import ikube.model.IndexContext;
-import ikube.model.Message;
+import ikube.model.SynchronizationMessage;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
 
@@ -39,7 +39,7 @@ import com.hazelcast.core.MessageListener;
  * @since 19.12.10
  * @version 01.00
  */
-public class SynchronizationManager implements MessageListener<Message>, IListener {
+public class SynchronizationManager implements MessageListener<SynchronizationMessage>, IListener {
 
 	private static String READ_LOCK = "readLock";
 
@@ -59,7 +59,7 @@ public class SynchronizationManager implements MessageListener<Message>, IListen
 		logger = Logger.getLogger(SynchronizationManager.class);
 		// We need to listen to the topic for messages that other servers
 		// have published some index files
-		ITopic<Message> topic = Hazelcast.getTopic(IConstants.SYNCHRONIZATION_TOPIC);
+		ITopic<SynchronizationMessage> topic = Hazelcast.getTopic(IConstants.SYNCHRONIZATION_TOPIC);
 		topic.addMessageListener(this);
 		// We also have to listen to the scheduler so we can publish our own files to the cluster
 		ListenerManager.addListener(this);
@@ -126,12 +126,12 @@ public class SynchronizationManager implements MessageListener<Message>, IListen
 			}
 			currentFile = files.get(index);
 			logger.info("Publishing file : " + currentFile);
-			Message message = new Message();
-			message.setIp(InetAddress.getLocalHost().getHostAddress());
-			message.setPort(port);
-			message.setFilePath(currentFile.getAbsolutePath());
-			logger.info("Publishing message : " + message);
-			Hazelcast.getTopic(IConstants.SYNCHRONIZATION_TOPIC).publish(message);
+			SynchronizationMessage synchronizationMessage = new SynchronizationMessage();
+			synchronizationMessage.setIp(InetAddress.getLocalHost().getHostAddress());
+			synchronizationMessage.setPort(port);
+			synchronizationMessage.setFilePath(currentFile.getAbsolutePath());
+			logger.info("Publishing message : " + synchronizationMessage);
+			Hazelcast.getTopic(IConstants.SYNCHRONIZATION_TOPIC).publish(synchronizationMessage);
 			index++;
 		} catch (Exception e) {
 			logger.error("", e);
@@ -163,7 +163,7 @@ public class SynchronizationManager implements MessageListener<Message>, IListen
 	}
 
 	@Override
-	public void onMessage(Message message) {
+	public void onMessage(SynchronizationMessage synchronizationMessage) {
 		ILock lock = null;
 		Socket socket = null;
 		InputStream inputStream = null;
@@ -171,7 +171,7 @@ public class SynchronizationManager implements MessageListener<Message>, IListen
 		File file = null;
 		try {
 			// Check if we have this file
-			String filePath = message.getFilePath();
+			String filePath = synchronizationMessage.getFilePath();
 			String[] parts = StringUtils.tokenizeToStringArray(filePath, "\\/", Boolean.TRUE, Boolean.TRUE);
 
 			int index = parts.length;
@@ -239,8 +239,8 @@ public class SynchronizationManager implements MessageListener<Message>, IListen
 
 			logger.info("Writing remote file to : " + file);
 
-			String ip = message.getIp();
-			Integer port = message.getPort();
+			String ip = synchronizationMessage.getIp();
+			Integer port = synchronizationMessage.getPort();
 			// Open a socket to the publishing server
 			socket = new Socket(ip, port);
 			// Get the file output stream to write the data to
@@ -257,7 +257,7 @@ public class SynchronizationManager implements MessageListener<Message>, IListen
 			if (file != null && file.exists()) {
 				FileUtilities.deleteFile(file, 1);
 			}
-			logger.error("Exception writing index file : " + file + ", " + message, e);
+			logger.error("Exception writing index file : " + file + ", " + synchronizationMessage, e);
 		} finally {
 			if (lock != null) {
 				getClusterManager().unlock(lock);

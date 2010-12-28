@@ -1,8 +1,8 @@
 package ikube.toolkit;
 
 import ikube.cluster.IClusterManager;
+import ikube.listener.Event;
 import ikube.listener.IListener;
-import ikube.model.Event;
 import ikube.model.IndexContext;
 import ikube.model.Server;
 

@@ -1,6 +1,5 @@
 package ikube.listener;
 
-import ikube.model.Event;
 
 import java.io.Serializable;
 import java.util.ArrayList;

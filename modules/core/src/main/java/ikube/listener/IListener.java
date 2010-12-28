@@ -1,6 +1,5 @@
 package ikube.listener;
 
-import ikube.model.Event;
 
 /**
  * Listener interface for system events related to the actions. Actions generate events during their life cycle, listeners may register to

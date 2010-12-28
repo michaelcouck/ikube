@@ -1,10 +1,10 @@
 package ikube.service;
 
 import ikube.IConstants;
+import ikube.listener.Event;
 import ikube.listener.IListener;
 import ikube.listener.ListenerManager;
 import ikube.logging.Logging;
-import ikube.model.Event;
 import ikube.model.IndexContext;
 import ikube.search.SearchMulti;
 import ikube.search.SearchMultiSorted;
@@ -22,6 +22,7 @@ import javax.jws.WebService;
 import javax.jws.soap.SOAPBinding;
 
 import org.apache.log4j.Logger;
+import org.apache.lucene.search.MultiSearcher;
 
 /**
  * @author Michael Couck
@@ -57,9 +58,10 @@ public class SearcherWebService implements ISearcherWebService {
 	}
 
 	protected void setMultiSearcher(IndexContext indexContext) {
-		SearchSingle searchSingle = new SearchSingle(indexContext.getMultiSearcher());
-		SearchMulti searchMulti = new SearchMulti(indexContext.getMultiSearcher());
-		SearchMultiSorted searchMultiSorted = new SearchMultiSorted(indexContext.getMultiSearcher());
+		MultiSearcher multiSearcher = indexContext.getIndex().getMultiSearcher();
+		SearchSingle searchSingle = new SearchSingle(multiSearcher);
+		SearchMulti searchMulti = new SearchMulti(multiSearcher);
+		SearchMultiSorted searchMultiSorted = new SearchMultiSorted(multiSearcher);
 		singleSearchers.put(indexContext.getIndexName(), searchSingle);
 		multiSearchers.put(indexContext.getIndexName(), searchMulti);
 		multiSortedSearchers.put(indexContext.getIndexName(), searchMultiSorted);

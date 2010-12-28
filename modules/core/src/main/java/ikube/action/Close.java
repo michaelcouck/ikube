@@ -20,7 +20,7 @@ public class Close extends Action {
 
 	@Override
 	public Boolean execute(IndexContext indexContext) {
-		MultiSearcher multiSearcher = indexContext.getMultiSearcher();
+		MultiSearcher multiSearcher = indexContext.getIndex().getMultiSearcher();
 		if (multiSearcher == null) {
 			logger.debug("No index searcher yet in context, please build the index : ");
 			return Boolean.FALSE;
@@ -53,7 +53,7 @@ public class Close extends Action {
 		// See the searcher to null so the open action
 		// will then be invoked to re-open the searcher
 		// during the next iteration over the actions
-		indexContext.setMultiSearcher(null);
+		indexContext.getIndex().setMultiSearcher(null);
 		return Boolean.TRUE;
 	}
 

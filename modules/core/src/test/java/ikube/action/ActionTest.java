@@ -63,7 +63,7 @@ public class ActionTest extends BaseTest {
 		// Searcher null in the context
 		assertTrue(shouldReopen /* && !baseIndexDirectory.exists() */);
 
-		indexContext.setMultiSearcher(MULTI_SEARCHER);
+		indexContext.getIndex().setMultiSearcher(MULTI_SEARCHER);
 
 		// No SEARCHABLES in the searcher
 		when(MULTI_SEARCHER.getSearchables()).thenReturn(new Searchable[0]);
@@ -86,7 +86,7 @@ public class ActionTest extends BaseTest {
 		shouldReopen = action.shouldReopen(indexContext);
 		assertTrue(shouldReopen);
 
-		indexContext.setMultiSearcher(null);
+		indexContext.getIndex().setMultiSearcher(null);
 		FileUtilities.deleteFile(serverIndexDirectory, 1);
 		FileUtilities.deleteFile(anotherServerIndexDirectory, 1);
 

@@ -1,10 +1,12 @@
 package ikube.service;
 
+import ikube.listener.Event;
 import ikube.listener.IListener;
 import ikube.listener.ListenerManager;
-import ikube.model.Event;
 import ikube.toolkit.SerializationUtilities;
+import ikube.toolkit.UriUtilities;
 
+import java.net.InetAddress;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +26,9 @@ import org.apache.log4j.Logger;
 public class SearcherWebServiceExecuter implements ISearcherWebServiceExecuter {
 
 	private Logger logger;
-	private String endpointUri;
+	private String protocol;
+	private Integer port;
+	private String path;
 	private String indexName;
 	private String searchString;
 	private String fieldName;
@@ -55,7 +59,9 @@ public class SearcherWebServiceExecuter implements ISearcherWebServiceExecuter {
 	@Override
 	public List<Map<String, String>> execute() throws Exception {
 		QName serviceName = new QName(ISearcherWebService.TARGET_NAMESPACE, ISearcherWebService.SERVICE_NAME);
-		URL wsdlURL = new URL(endpointUri);
+		String host = InetAddress.getLocalHost().getHostAddress();
+		String url = UriUtilities.buildUri(protocol, host, port, path);
+		URL wsdlURL = new URL(url);
 		Service service = Service.create(wsdlURL, serviceName);
 		ISearcherWebService searchRemote = service.getPort(ISearcherWebService.class);
 		String xml = searchRemote.searchSingle(indexName, searchString, fieldName, fragment, start, end);
@@ -74,8 +80,24 @@ public class SearcherWebServiceExecuter implements ISearcherWebServiceExecuter {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void setEndpointUri(String endpointUri) {
-		this.endpointUri = endpointUri;
+	public void setProtocol(String protocol) {
+		this.protocol = protocol;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void setPort(Integer port) {
+		this.port = port;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void setPath(String path) {
+		this.path = path;
 	}
 
 	/**

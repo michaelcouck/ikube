@@ -8,7 +8,7 @@ import javax.persistence.Entity;
  * @version 01.00
  */
 @Entity()
-public class Message extends Persistable {
+public class SynchronizationMessage extends Persistable {
 
 	private String ip;
 	private Integer port;

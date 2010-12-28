@@ -117,43 +117,53 @@
 		id="ikube.service.SearcherWebService"
 		class="ikube.service.SearcherWebService" />
 	<bean
+		id="ikube.service.MonitoringService"
+		class="ikube.service.MonitoringService" />
+	<bean
 		id="ikube.service.WebServicePublisher"
 		class="ikube.service.WebServicePublisher"
 		init-method="publish" >
 		<property name="protocols">
 			<list>
-				<value>${web.service.protocol}</value>
-				<value>${web.service.protocol}</value>
+				<value>${service.protocol}</value>
+				<value>${service.protocol}</value>
+				<value>${service.protocol}</value>
 			</list>
 		</property>
 		<property name="ports">
 			<list>
-				<value>${web.service.port}</value>
-				<value>${web.service.port}</value>
+				<value>${service.port}</value>
+				<value>${service.port}</value>
+				<value>${service.port}</value>
 			</list>
 		</property>
 		<property name="paths">
 			<list>
 				<value>${web.service.path}</value>
 				<value>${web.service.path}</value>
+				<value>${monitoring.service.path}</value>
 			</list>
 		</property>
 		<property name="implementors">
 			<list>
 				<ref local="ikube.service.SearcherWebService" />
 				<ref local="ikube.service.SearcherWebService" />
+				<ref local="ikube.service.MonitoringService" />
 			</list>
 		</property>
 	</bean>
 	
 	<!-- Continuous testing in production class  -->
+	<!-- property:endpointUri="${web.service.protocol}://localhost:${web.service.port}${web.service.path}?wsdl" -->
 	<bean
 		id="ikube.service.SearcherWebServiceExecuter"
 		class="ikube.service.SearcherWebServiceExecuter"
 		property:indexName="indexOne"
 		property:end="101"
-		property:endpointUri="${web.service.protocol}://localhost:${web.service.port}${web.service.path}?wsdl"
-		property:fieldName="contents"
+		property:protocol="${service.protocol}"
+		property:port="${service.port}"
+		property:path="${web.service.path}"
+		property:fieldName="question"
 		property:fragment="true"
 		property:resultsSizeMinimum="1"
 		property:searchString="clinch crackerjack books gall thoroughgoing

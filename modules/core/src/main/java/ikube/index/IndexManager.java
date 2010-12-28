@@ -51,7 +51,7 @@ public class IndexManager {
 				indexWriter.setMaxFieldLength(indexContext.getMaxFieldLength());
 				indexWriter.setMergeFactor(indexContext.getMergeFactor());
 				indexWriter.setRAMBufferSizeMB(indexContext.getBufferSize());
-				indexContext.setIndexWriter(indexWriter);
+				indexContext.getIndex().setIndexWriter(indexWriter);
 			} catch (CorruptIndexException e) {
 				LOGGER.error("We expected a new index and got a corrupt one.", e);
 				LOGGER.warn("Didn't initialise the index writer. Will try to delete the index directory.");
@@ -64,7 +64,7 @@ public class IndexManager {
 			} catch (Exception e) {
 				LOGGER.error("Unexpected exception detected while initializing the IndexWriter", e);
 			}
-			return indexContext.getIndexWriter();
+			return indexContext.getIndex().getIndexWriter();
 		} finally {
 			IndexManager.class.notifyAll();
 		}
@@ -131,10 +131,10 @@ public class IndexManager {
 
 	public static synchronized void closeIndexWriter(IndexContext indexContext) {
 		try {
-			if (indexContext != null && indexContext.getIndexWriter() != null) {
-				IndexWriter indexWriter = indexContext.getIndexWriter();
+			if (indexContext != null && indexContext.getIndex().getIndexWriter() != null) {
+				IndexWriter indexWriter = indexContext.getIndex().getIndexWriter();
 				closeIndexWriter(indexWriter);
-				indexContext.setIndexWriter(null);
+				indexContext.getIndex().setIndexWriter(null);
 			}
 		} finally {
 			IndexManager.class.notifyAll();

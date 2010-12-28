@@ -23,7 +23,7 @@ public class IndexableInternetHandlerTest extends BaseTest {
 
 	@Test
 	public void handle() throws Exception {
-		indexContext.setIndexWriter(INDEX_WRITER);
+		indexContext.getIndex().setIndexWriter(INDEX_WRITER);
 		IndexableInternet indexableInternet = ApplicationContextManager.getBean(IndexableInternet.class);
 		IndexableInternetHandler indexableInternetHandler = ApplicationContextManager.getBean(IndexableInternetHandler.class);
 		ApplicationContextManager.getBean(Reset.class).execute(indexContext);

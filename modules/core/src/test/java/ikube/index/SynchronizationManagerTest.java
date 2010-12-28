@@ -5,10 +5,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import ikube.BaseTest;
 import ikube.IConstants;
+import ikube.listener.Event;
 import ikube.listener.ListenerManager;
-import ikube.model.Event;
 import ikube.model.IndexContext;
-import ikube.model.Message;
+import ikube.model.SynchronizationMessage;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
 
@@ -68,13 +68,13 @@ public class SynchronizationManagerTest extends BaseTest {
 	@Test
 	public void handleNotification() throws Exception {
 		// Event
-		final List<Message> messages = new ArrayList<Message>();
-		ITopic<Message> topic = Hazelcast.getTopic(IConstants.SYNCHRONIZATION_TOPIC);
-		MessageListener<Message> messageListener = new MessageListener<Message>() {
+		final List<SynchronizationMessage> synchronizationMessages = new ArrayList<SynchronizationMessage>();
+		ITopic<SynchronizationMessage> topic = Hazelcast.getTopic(IConstants.SYNCHRONIZATION_TOPIC);
+		MessageListener<SynchronizationMessage> messageListener = new MessageListener<SynchronizationMessage>() {
 			@Override
-			public void onMessage(Message message) {
-				logger.info("Message : " + message);
-				messages.add(message);
+			public void onMessage(SynchronizationMessage synchronizationMessage) {
+				logger.info("SynchronizationMessage : " + synchronizationMessage);
+				synchronizationMessages.add(synchronizationMessage);
 			}
 		};
 		topic.addMessageListener(messageListener);
@@ -86,7 +86,7 @@ public class SynchronizationManagerTest extends BaseTest {
 
 		long sleep = 1000;
 		Thread.sleep(sleep);
-		assertEquals(0, messages.size());
+		assertEquals(0, synchronizationMessages.size());
 
 		String serverIndexDirectoryPath = getServerIndexDirectoryPath(indexContext);
 		File indexDirectory = new File(serverIndexDirectoryPath);
@@ -95,7 +95,7 @@ public class SynchronizationManagerTest extends BaseTest {
 		synchronizationManager.handleNotification(event);
 
 		Thread.sleep(sleep);
-		assertEquals(1, messages.size());
+		assertEquals(1, synchronizationMessages.size());
 
 		FileUtilities.deleteFile(indexDirectory, 1);
 		topic.removeMessageListener(messageListener);
@@ -103,17 +103,17 @@ public class SynchronizationManagerTest extends BaseTest {
 
 	@Test
 	public void onMessage() throws Exception {
-		// Message
+		// SynchronizationMessage
 		String serverIndexDirectoryPath = getServerIndexDirectoryPath(indexContext);
 		File indexDirectory = new File(serverIndexDirectoryPath);
 		createIndex(indexDirectory);
 
 		File segmentsFile = FileUtilities.findFile(indexDirectory, "segments.gen");
 
-		Message message = new Message();
-		message.setFilePath(segmentsFile.getAbsolutePath());
-		message.setIp(InetAddress.getLocalHost().getHostAddress());
-		synchronizationManager.onMessage(message);
+		SynchronizationMessage synchronizationMessage = new SynchronizationMessage();
+		synchronizationMessage.setFilePath(segmentsFile.getAbsolutePath());
+		synchronizationMessage.setIp(InetAddress.getLocalHost().getHostAddress());
+		synchronizationManager.onMessage(synchronizationMessage);
 
 		FileUtilities.deleteFile(indexDirectory, 1);
 	}

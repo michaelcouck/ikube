@@ -2,6 +2,7 @@ package ikube.toolkit;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Stack;
 import java.util.regex.Pattern;
 
@@ -19,7 +20,7 @@ public class UriUtilities {
 	protected static final Pattern JSESSIONID_PATTERN;
 	/** The anchor pattern. */
 	protected static final Pattern ANCHOR_PATTERN;
-	/**  The carriage return/line feed pattern. */
+	/** The carriage return/line feed pattern. */
 	protected static final Pattern CARRIAGE_LINE_FEED_PATTERN;
 
 	static {
@@ -198,9 +199,19 @@ public class UriUtilities {
 		}
 		return builder.toString();
 	}
-	
+
 	public static String stripCarriageReturn(String string) {
 		return CARRIAGE_LINE_FEED_PATTERN.matcher(string).replaceAll("");
+	}
+
+	public static String buildUri(String protocol, String host, int port, String path) {
+		try {
+			URL url = new URL(protocol, host, port, path);
+			return url.toString();
+		} catch (Exception e) {
+			LOGGER.error("Exception building the url : " + protocol + ", " + host + ", " + port + ", " + path, e);
+		}
+		return null;
 	}
 
 }

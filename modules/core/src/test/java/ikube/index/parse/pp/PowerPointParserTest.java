@@ -12,7 +12,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.OutputStream;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -23,16 +22,15 @@ import org.junit.Test;
 public class PowerPointParserTest extends ATest {
 
 	@Test
-	@Ignore
 	public void parse() throws Exception {
-		File file = FileUtilities.findFile(new File("."), new String[] { "pot.pot" });
+		File file = FileUtilities.findFile(new File("."), new String[] { "99.ppt" });
 		byte[] bytes = FileUtilities.getContents(file).toByteArray();
 		IParser parser = ParserProvider.getParser("application/vnd.ms-powerpoint", bytes);
 		OutputStream parsed = parser.parse(new ByteArrayInputStream(bytes), new ByteArrayOutputStream());
 		logger.info(parsed);
 		assertNotNull(parsed);
 		assertTrue(parsed.toString().length() > 0);
-		assertTrue(parsed.toString().contains("hello"));
+		assertTrue(parsed.toString().contains("Lorem"));
 	}
 
 }

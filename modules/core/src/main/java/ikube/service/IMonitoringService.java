@@ -1,5 +1,9 @@
 package ikube.service;
 
+import ikube.model.IndexContext;
+
+import java.util.HashMap;
+
 import javax.jws.WebService;
 import javax.jws.soap.SOAPBinding;
 
@@ -11,6 +15,6 @@ public interface IMonitoringService {
 	public String SERVICE_NAME = "monitor";
 	public String TARGET_NAMESPACE = "http://ikube.monitor/";
 
-	public String getIndexContexts();
+	public HashMap<String, IndexContext> getIndexContexts();
 
 }

@@ -1,8 +1,8 @@
 package ikube.action;
 
+import ikube.listener.Event;
 import ikube.listener.ListenerManager;
 import ikube.logging.Logging;
-import ikube.model.Event;
 import ikube.model.IndexContext;
 import ikube.service.SearcherWebService;
 import ikube.toolkit.FileUtilities;
@@ -40,7 +40,7 @@ public class Open extends Action {
 		// close operation is very fast and the open operation is also, so any clients will
 		// have to be VERY fast to catch the application without a searcher open. This
 		// way we don't have to manage open searchers and keep track of them
-		if (indexContext.getMultiSearcher() != null) {
+		if (indexContext.getIndex().getMultiSearcher() != null) {
 			logger.debug("Index searcher still active, will not open : ");
 			return Boolean.FALSE;
 		}
@@ -89,7 +89,7 @@ public class Open extends Action {
 			if (searchers.size() > 0) {
 				Searchable[] searchables = searchers.toArray(new IndexSearcher[searchers.size()]);
 				MultiSearcher multiSearcher = new MultiSearcher(searchables);
-				indexContext.setMultiSearcher(multiSearcher);
+				indexContext.getIndex().setMultiSearcher(multiSearcher);
 				ListenerManager.fireEvent(Event.SEARCHER_OPENED, System.currentTimeMillis(), indexContext, Boolean.FALSE);
 				return Boolean.TRUE;
 			}

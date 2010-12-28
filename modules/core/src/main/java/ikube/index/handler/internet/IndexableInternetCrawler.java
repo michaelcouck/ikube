@@ -269,7 +269,7 @@ public class IndexableInternetCrawler implements Runnable {
 			IndexManager.addStringField(IConstants.ID, id, document, Store.YES, Index.ANALYZED, TermVector.YES);
 			// Add the contents field
 			IndexManager.addStringField(indexable.getName(), parsedContent, document, store, analyzed, termVector);
-			indexContext.getIndexWriter().addDocument(document);
+			indexContext.getIndex().getIndexWriter().addDocument(document);
 		} catch (Exception e) {
 			logger.error("Exception accessing url : " + url, e);
 		} finally {

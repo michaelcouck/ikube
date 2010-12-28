@@ -91,7 +91,7 @@ public class IndexManagerTest extends BaseTest {
 		IndexWriter indexWriter = IndexManager.openIndexWriter(IP, indexContext, System.currentTimeMillis());
 		assertNotNull(indexWriter);
 		IndexManager.closeIndexWriter(indexContext);
-		assertNull(indexContext.getIndexWriter());
+		assertNull(indexContext.getIndex().getIndexWriter());
 		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
 	}
 

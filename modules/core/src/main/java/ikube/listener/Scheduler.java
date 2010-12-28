@@ -1,6 +1,5 @@
 package ikube.listener;
 
-import ikube.model.Event;
 
 import java.util.List;
 import java.util.concurrent.Executors;

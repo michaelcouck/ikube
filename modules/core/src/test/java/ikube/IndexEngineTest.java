@@ -1,15 +1,13 @@
 package ikube;
 
-import ikube.model.Event;
+import ikube.listener.Event;
 import ikube.toolkit.ApplicationContextManager;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class IndexEngineTest extends BaseTest {
 
 	@Test
-	@Ignore
 	public void handleNotification() {
 		IndexEngine indexEngine = ApplicationContextManager.getBean(IndexEngine.class);
 		Event event = new Event();

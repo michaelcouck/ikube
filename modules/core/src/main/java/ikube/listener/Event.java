@@ -1,16 +1,13 @@
-package ikube.model;
+package ikube.listener;
 
 import java.io.Serializable;
-
-import javax.persistence.Entity;
 
 /**
  * @author Michael Couck
  * @since 21.11.10
  * @version 01.00
  */
-@Entity()
-public class Event extends Persistable {
+public class Event {
 
 	public static final String TIMER = "timer";
 	public static final String PROFILE = "profile";
@@ -63,8 +60,11 @@ public class Event extends Persistable {
 	}
 
 	public String toString() {
-		final StringBuilder builder = new StringBuilder("[");
-		builder.append(getId()).append(",").append(getType()).append(".").append(getTimestamp());
+		final StringBuilder builder = new StringBuilder();
+		builder.append("[");
+		builder.append(getType()).append(", ");
+		builder.append(getTimestamp()).append(", ");
+		builder.append(isConsumed());
 		builder.append("]");
 		return builder.toString();
 	}

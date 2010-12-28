@@ -24,8 +24,12 @@ public interface ISearcherWebServiceExecuter {
 
 	/** Setters for the properties for accessing the web service. Defined in the Spring configuration. */
 
-	public void setEndpointUri(String endpointUri);
+	public void setProtocol(String protocol);
 
+	public void setPort(Integer port);
+
+	public void setPath(String path);
+	
 	public void setIndexName(String indexName);
 
 	public void setSearchString(String searchString);

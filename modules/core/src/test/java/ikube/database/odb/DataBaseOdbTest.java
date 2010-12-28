@@ -46,7 +46,7 @@ public class DataBaseOdbTest extends ATest {
 		DATA_BASE = new DataBaseOdb();
 		@SuppressWarnings("unused")
 		List<Index> indexes = Arrays.asList(
-				//
+		//
 				new Index(Url.class.getName(), Arrays.asList(IConstants.ID)),
 				// new Index(Url.class.getName(), Arrays.asList(IConstants.URL)),
 				new Index(Url.class.getName(), Arrays.asList(IConstants.HASH)));

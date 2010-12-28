@@ -147,8 +147,10 @@
 		class="ikube.service.SearcherWebServiceExecuter"
 		property:indexName="contextOne"
 		property:end="101"
-		property:endpointUri="${service.protocol}://localhost:${service.port}${web.service.path}?wsdl"
-		property:fieldName="contents"
+		property:protocol="${service.protocol}"
+		property:port="${service.port}"
+		property:path="${web.service.path}"
+		property:fieldName="question"
 		property:fragment="true"
 		property:resultsSizeMinimum="1"
 		property:searchString="clinch crackerjack books gall thoroughgoing

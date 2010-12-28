@@ -2,9 +2,8 @@ package ikube.service;
 
 import ikube.model.IndexContext;
 import ikube.toolkit.ApplicationContextManager;
-import ikube.toolkit.SerializationUtilities;
 
-import java.util.Map;
+import java.util.HashMap;
 
 import javax.ejb.Remote;
 import javax.jws.WebService;
@@ -16,9 +15,8 @@ import javax.jws.soap.SOAPBinding;
 public class MonitoringService implements IMonitoringService {
 
 	@Override
-	public String getIndexContexts() {
-		Map<String, IndexContext> indexContexts = ApplicationContextManager.getBeans(IndexContext.class);
-		return SerializationUtilities.serialize(indexContexts);
+	public HashMap<String, IndexContext> getIndexContexts() {
+		return (HashMap<String, IndexContext>) ApplicationContextManager.getBeans(IndexContext.class);
 	}
 
 }

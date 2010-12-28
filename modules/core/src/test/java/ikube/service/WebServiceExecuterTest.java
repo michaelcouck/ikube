@@ -8,7 +8,6 @@ import ikube.toolkit.ApplicationContextManager;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -16,8 +15,7 @@ import org.junit.Test;
  * @since 21.11.10
  * @version 01.00
  */
-@Ignore
-public class WebServicePublisherTest extends BaseTest {
+public class WebServiceExecuterTest extends BaseTest {
 
 	@Test
 	public void execute() throws Exception {
