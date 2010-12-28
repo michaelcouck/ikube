@@ -4,15 +4,10 @@ import ikube.listener.Event;
 import ikube.listener.IListener;
 import ikube.listener.ListenerManager;
 import ikube.toolkit.SerializationUtilities;
-import ikube.toolkit.UriUtilities;
 
 import java.net.InetAddress;
-import java.net.URL;
 import java.util.List;
 import java.util.Map;
-
-import javax.xml.namespace.QName;
-import javax.xml.ws.Service;
 
 import org.apache.log4j.Logger;
 
@@ -58,12 +53,9 @@ public class SearcherWebServiceExecuter implements ISearcherWebServiceExecuter {
 	 */
 	@Override
 	public List<Map<String, String>> execute() throws Exception {
-		QName serviceName = new QName(ISearcherWebService.TARGET_NAMESPACE, ISearcherWebService.SERVICE_NAME);
 		String host = InetAddress.getLocalHost().getHostAddress();
-		String url = UriUtilities.buildUri(protocol, host, port, path);
-		URL wsdlURL = new URL(url);
-		Service service = Service.create(wsdlURL, serviceName);
-		ISearcherWebService searchRemote = service.getPort(ISearcherWebService.class);
+		ISearcherWebService searchRemote = ServiceLocator.getService(ISearcherWebService.class, protocol, host, port, path,
+				ISearcherWebService.NAMESPACE, ISearcherWebService.SERVICE);
 		String xml = searchRemote.searchSingle(indexName, searchString, fieldName, fragment, start, end);
 		List<Map<String, String>> results = (List<Map<String, String>>) SerializationUtilities.deserialize(xml);
 		if (results.size() < resultsSizeMinimum) {

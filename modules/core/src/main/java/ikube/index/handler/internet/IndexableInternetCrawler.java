@@ -259,16 +259,16 @@ public class IndexableInternetCrawler implements Runnable {
 				Element titleElement = source.getNextElement(0, HTMLElementName.TITLE);
 				if (titleElement != null) {
 					String title = titleElement.getContent().toString();
-					IndexManager.addStringField(IConstants.TITLE, title, document, store, analyzed, termVector);
+					IndexManager.addStringField(indexable.getTitleFieldName(), title, document, store, analyzed, termVector);
 				}
 			} else {
 				// Add the url as the title
-				IndexManager.addStringField(IConstants.TITLE, url.getUrl(), document, store, analyzed, termVector);
+				IndexManager.addStringField(indexable.getTitleFieldName(), url.getUrl(), document, store, analyzed, termVector);
 			}
 			// Add the id field
-			IndexManager.addStringField(IConstants.ID, id, document, Store.YES, Index.ANALYZED, TermVector.YES);
+			IndexManager.addStringField(indexable.getIdFieldName(), id, document, Store.YES, Index.ANALYZED, TermVector.YES);
 			// Add the contents field
-			IndexManager.addStringField(indexable.getName(), parsedContent, document, store, analyzed, termVector);
+			IndexManager.addStringField(indexable.getContentFieldName(), parsedContent, document, store, analyzed, termVector);
 			indexContext.getIndex().getIndexWriter().addDocument(document);
 		} catch (Exception e) {
 			logger.error("Exception accessing url : " + url, e);

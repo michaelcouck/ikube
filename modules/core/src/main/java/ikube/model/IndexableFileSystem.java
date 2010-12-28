@@ -17,13 +17,19 @@ public class IndexableFileSystem extends Indexable<IndexableFileSystem> {
 	private transient File currentFile;
 
 	private String path;
-	private String nameFieldName;
-	private String pathFieldName;
-	private String lastModifiedFieldName;
-	private String lengthFieldName;
-	private String contentFieldName;
 	private String excludedPattern;
 	private String includedPattern;
+
+	@Field(field = true)
+	private String nameFieldName;
+	@Field(field = true)
+	private String pathFieldName;
+	@Field(field = true)
+	private String lastModifiedFieldName;
+	@Field(field = true)
+	private String contentFieldName;
+	@Field(field = true)
+	private String lengthFieldName;
 
 	public String getPath() {
 		return path;

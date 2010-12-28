@@ -23,6 +23,13 @@ public class IndexableInternet extends Indexable<IndexableInternet> {
 	private URI uri;
 	private String url;
 
+	@Field(field = true)
+	private String titleFieldName;
+	@Field(field = true)
+	private String idFieldName;
+	@Field(field = true)
+	private String contentFieldName;
+
 	public URI getUri() {
 		if (uri == null && getUrl() != null) {
 			try {
@@ -44,6 +51,30 @@ public class IndexableInternet extends Indexable<IndexableInternet> {
 
 	public void setUrl(String url) {
 		this.url = url;
+	}
+
+	public String getTitleFieldName() {
+		return titleFieldName;
+	}
+
+	public void setTitleFieldName(String titleFieldName) {
+		this.titleFieldName = titleFieldName;
+	}
+
+	public String getIdFieldName() {
+		return idFieldName;
+	}
+
+	public void setIdFieldName(String idFieldName) {
+		this.idFieldName = idFieldName;
+	}
+
+	public String getContentFieldName() {
+		return contentFieldName;
+	}
+
+	public void setContentFieldName(String contentFieldName) {
+		this.contentFieldName = contentFieldName;
 	}
 
 	@Transient

@@ -106,53 +106,77 @@
 		class="ikube.model.IndexableColumn"
 		property:name="faqId"
 		property:idColumn="true"
-		property:columnClass="java.lang.Long" />
+		property:columnClass="java.lang.Long"
+		property:analyzed="true"
+		property:stored="true"
+		property:vectored="true" />
 	<bean
 		id="creationtimestamp"
 		class="ikube.model.IndexableColumn"
 		property:name="creationtimestamp"
 		property:fieldName="creationtimestamp"
-		property:columnClass="java.sql.Timestamp" />
+		property:columnClass="java.sql.Timestamp" 
+		property:analyzed="true"
+		property:stored="true"
+		property:vectored="true" />
 	<bean
 		id="modifiedtimestamp"
 		class="ikube.model.IndexableColumn"
 		property:name="modifiedtimestamp"
 		property:fieldName="modifiedtimestamp"
-		property:columnClass="java.sql.Timestamp" />
+		property:columnClass="java.sql.Timestamp" 
+		property:analyzed="true"
+		property:stored="true"
+		property:vectored="true" />
 	<bean
 		id="creator"
 		class="ikube.model.IndexableColumn"
 		property:name="creator"
 		property:fieldName="creator"
 		property:columnClass="java.lang.String"
-		property:columnLength="32" />
+		property:columnLength="32" 
+		property:analyzed="true"
+		property:stored="true"
+		property:vectored="true" />
 	<bean
 		id="modifier"
 		class="ikube.model.IndexableColumn"
 		property:name="modifier"
 		property:fieldName="modifier"
 		property:columnClass="java.lang.String"
-		property:columnLength="32" />
+		property:columnLength="32" 
+		property:analyzed="true"
+		property:stored="true"
+		property:vectored="true" />
 	<bean
 		id="question"
 		class="ikube.model.IndexableColumn"
 		property:name="question"
 		property:fieldName="question"
 		property:columnClass="java.lang.String"
-		property:columnLength="128" />
+		property:columnLength="128" 
+		property:analyzed="true"
+		property:stored="true"
+		property:vectored="true" />
 	<bean
 		id="answer"
 		class="ikube.model.IndexableColumn"
 		property:name="answer"
 		property:fieldName="answer"
 		property:columnClass="java.lang.String"
-		property:columnLength="128" />
+		property:columnLength="128" 
+		property:analyzed="true"
+		property:stored="true"
+		property:vectored="true" />
 	<bean
 		id="published"
 		class="ikube.model.IndexableColumn"
 		property:name="published"
 		property:fieldName="published"
-		property:columnClass="java.lang.Boolean" />
+		property:columnClass="java.lang.Boolean" 
+		property:analyzed="true"
+		property:stored="true"
+		property:vectored="true" />
 
 	<bean
 		id="tableTwo"
@@ -176,21 +200,30 @@
 		property:name="faqId"
 		property:fieldName="attachmentFaqId"
 		property:foreignKey-ref="faqId"
-		property:columnClass="java.lang.Long" />
+		property:columnClass="java.lang.Long" 
+		property:analyzed="true"
+		property:stored="true"
+		property:vectored="true" />
 	<bean
 		id="attachmentId"
 		class="ikube.model.IndexableColumn"
 		property:name="attachmentId"
 		property:fieldName="attachmentId"
 		property:idColumn="true"
-		property:columnClass="java.lang.Long" />
+		property:columnClass="java.lang.Long" 
+		property:analyzed="true"
+		property:stored="true"
+		property:vectored="true" />
 	<bean
 		id="name"
 		class="ikube.model.IndexableColumn"
 		property:name="name"
 		property:fieldName="name"
 		property:columnClass="java.lang.String"
-		property:columnLength="64" />
+		property:columnLength="64" 
+		property:analyzed="true"
+		property:stored="true"
+		property:vectored="true" />
 	<bean
 		id="attachment"
 		class="ikube.model.IndexableColumn"
@@ -198,13 +231,19 @@
 		property:fieldName="attachment"
 		property:nameColumn-ref="name"
 		property:columnClass="java.sql.Blob"
-		property:columnLength="128" />
+		property:columnLength="128" 
+		property:analyzed="true"
+		property:stored="true"
+		property:vectored="true" />
 	<bean
 		id="length"
 		class="ikube.model.IndexableColumn"
 		property:name="length"
 		property:fieldName="length"
-		property:columnClass="java.lang.Integer" />
+		property:columnClass="java.lang.Integer" 
+		property:analyzed="true"
+		property:stored="true"
+		property:vectored="true" />
 	
 	<bean
 		id="tableThree"
@@ -233,55 +272,82 @@
 		property:name="faqId"
 		property:fieldName="versionfaqId"
 		property:foreignKey-ref="faqId"
-		property:columnClass="java.lang.Long" />
+		property:columnClass="java.lang.Long" 
+		property:analyzed="true"
+		property:stored="true"
+		property:vectored="true" />
 	<bean
 		id="versionId"
 		class="ikube.model.IndexableColumn"
 		property:name="versionId"
 		property:idColumn="true"
-		property:columnClass="java.lang.Long" />
+		property:columnClass="java.lang.Long" 
+		property:analyzed="true"
+		property:stored="true"
+		property:vectored="true" />
 	<bean
 		id="versionCreationtimestamp"
 		class="ikube.model.IndexableColumn"
 		property:name="creationtimestamp"
-		property:columnClass="java.sql.Timestamp" />
+		property:columnClass="java.sql.Timestamp" 
+		property:analyzed="true"
+		property:stored="true"
+		property:vectored="true" />
 	<bean
 		id="versionModifiedtimestamp"
 		class="ikube.model.IndexableColumn"
 		property:name="modifiedtimestamp"
-		property:columnClass="java.sql.Timestamp" />
+		property:columnClass="java.sql.Timestamp" 
+		property:analyzed="true"
+		property:stored="true"
+		property:vectored="true" />
 	<bean
 		id="versionCreator"
 		class="ikube.model.IndexableColumn"
 		property:name="creator"
 		property:columnClass="java.lang.String"
-		property:columnLength="32" />
+		property:columnLength="32" 
+		property:analyzed="true"
+		property:stored="true"
+		property:vectored="true" />
 	<bean
 		id="versionModifier"
 		class="ikube.model.IndexableColumn"
 		property:name="modifier"
 		property:columnClass="java.lang.String"
-		property:columnLength="32" />
+		property:columnLength="32" 
+		property:analyzed="true"
+		property:stored="true"
+		property:vectored="true" />
 	<bean
 		id="versionQuestion"
 		class="ikube.model.IndexableColumn"
 		property:name="question"
 		property:fieldName="versionContents"
 		property:columnClass="java.lang.String"
-		property:columnLength="128" />
+		property:columnLength="128" 
+		property:analyzed="true"
+		property:stored="true"
+		property:vectored="true" />
 	<bean
 		id="versionAnswer"
 		class="ikube.model.IndexableColumn"
 		property:name="answer"
 		property:fieldName="versionContents"
 		property:columnClass="java.lang.String"
-		property:columnLength="128" />
+		property:columnLength="128" 
+		property:analyzed="true"
+		property:stored="true"
+		property:vectored="true" />
 	<bean
 		id="versionPublished"
 		class="ikube.model.IndexableColumn"
 		property:name="published"
 		property:fieldName="versionPublished"
-		property:columnClass="java.lang.Boolean" />
+		property:columnClass="java.lang.Boolean" 
+		property:analyzed="true"
+		property:stored="true"
+		property:vectored="true" />
 		
 	<bean
 		id="tableFour"
@@ -305,21 +371,30 @@
 		property:name="versionId"
 		property:fieldName="attachmentVersionId"
 		property:foreignKey-ref="versionId"
-		property:columnClass="java.lang.Long" />
+		property:columnClass="java.lang.Long" 
+		property:analyzed="true"
+		property:stored="true"
+		property:vectored="true" />
 	<bean
 		id="versionAttachmentId"
 		class="ikube.model.IndexableColumn"
 		property:name="attachmentId"
 		property:fieldName="versionAttachmentId"
 		property:idColumn="true"
-		property:columnClass="java.lang.Long" />
+		property:columnClass="java.lang.Long" 
+		property:analyzed="true"
+		property:stored="true"
+		property:vectored="true" />
 	<bean
 		id="versionName"
 		class="ikube.model.IndexableColumn"
 		property:name="name"
 		property:fieldName="versionName"
 		property:columnClass="java.lang.String"
-		property:columnLength="64" />
+		property:columnLength="64" 
+		property:analyzed="true"
+		property:stored="true"
+		property:vectored="true" />
 	<bean
 		id="versionAttachment"
 		class="ikube.model.IndexableColumn"
@@ -327,45 +402,54 @@
 		property:fieldName="versionAttachment"
 		property:nameColumn-ref="versionName"
 		property:columnClass="java.sql.Blob"
-		property:columnLength="128" />
+		property:columnLength="128" 
+		property:analyzed="true"
+		property:stored="true"
+		property:vectored="true" />
 	<bean
 		id="versionLength"
 		class="ikube.model.IndexableColumn"
 		property:name="length"
 		property:fieldName="versionLength"
-		property:columnClass="java.lang.Integer" />
+		property:columnClass="java.lang.Integer" 
+		property:analyzed="true"
+		property:stored="true"
+		property:vectored="true" />
 		
 	<bean
 		id="mail"
 		class="ikube.model.IndexableEmail"
-		property:idField="identifier"
-		property:contentField="email"
 		property:mailHost="pop.gmail.com"
 		property:name="ikube.email"
-		property:password="caherline"
 		property:port="995"
 		property:protocol="pop3"
 		property:secureSocketLayer="true"
-		property:titleField="title"
-		property:username="ikube.ikube@gmail.com" />
+		property:password="caherline"
+		property:username="ikube.ikube@gmail.com" 
+		property:idField="identifier"
+		property:contentField="email"
+		property:titleField="title" />
 
 	<bean
 		id="internet"
 		class="ikube.model.IndexableInternet"
 		property:name="internet"
-		property:url="${url}" />
+		property:url="${url}" 
+		property:idFieldName="id"
+		property:titleFieldName="title"
+		property:contentFieldName="content" />
 	
 	<bean
 		id="filesystem"
 		class="ikube.model.IndexableFileSystem"
+		property:name="files"
+		property:path="${files.path}"
+		property:pathFieldName="path"
+		property:nameFieldName="name"
+		property:lengthFieldName="length"
 		property:contentFieldName="contents"
 		property:excludedPattern=".*(.svn).*|.*(database).*"
-		property:lastModifiedFieldName="lastmodified"
-		property:lengthFieldName="length"
-		property:name="files"
-		property:nameFieldName="name"
-		property:path="${files.path}"
-		property:pathFieldName="path" />
+		property:lastModifiedFieldName="lastmodified" />
 
 	<!-- Utility classes -->
 	<bean

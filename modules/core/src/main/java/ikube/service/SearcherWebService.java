@@ -31,7 +31,7 @@ import org.apache.lucene.search.MultiSearcher;
  */
 @Remote(ISearcherWebService.class)
 @SOAPBinding(style = SOAPBinding.Style.RPC)
-@WebService(name = ISearcherWebService.NAME, targetNamespace = ISearcherWebService.TARGET_NAMESPACE, serviceName = ISearcherWebService.SERVICE_NAME)
+@WebService(name = ISearcherWebService.NAME, targetNamespace = ISearcherWebService.NAMESPACE, serviceName = ISearcherWebService.SERVICE)
 public class SearcherWebService implements ISearcherWebService {
 
 	private Logger logger = Logger.getLogger(this.getClass());

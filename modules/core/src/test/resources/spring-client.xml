@@ -342,7 +342,10 @@
 		id="internet"
 		class="ikube.model.IndexableInternet"
 		property:name="internet"
-		property:url="${url}" />
+		property:url="${url}"
+		property:idFieldName="id"
+		property:titleFieldName="title"
+		property:contentFieldName="content" />
 	
 	<bean
 		id="filesystem"

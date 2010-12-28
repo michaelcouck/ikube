@@ -16,6 +16,7 @@ public class IndexableColumn extends Indexable<IndexableColumn> {
 	@Transient
 	private transient int columnType;
 
+	@Field(field = true)
 	private String fieldName;
 	private boolean idColumn;
 	private IndexableColumn foreignKey;

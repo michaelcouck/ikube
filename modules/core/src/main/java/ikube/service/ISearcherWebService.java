@@ -11,12 +11,12 @@ import javax.jws.soap.SOAPBinding;
  * @version 01.00
  */
 @SOAPBinding(style = SOAPBinding.Style.RPC)
-@WebService(name = ISearcherWebService.NAME, targetNamespace = ISearcherWebService.TARGET_NAMESPACE, serviceName = ISearcherWebService.SERVICE_NAME)
+@WebService(name = ISearcherWebService.NAME, targetNamespace = ISearcherWebService.NAMESPACE, serviceName = ISearcherWebService.SERVICE)
 public interface ISearcherWebService {
 
 	public String NAME = "searcher";
-	public String SERVICE_NAME = "searcher";
-	public String TARGET_NAMESPACE = "http://ikube.search/";
+	public String SERVICE = "searcher";
+	public String NAMESPACE = "http://ikube.search/";
 
 	/**
 	 * Does a search on a single field on the index defined in the parameter list. 
