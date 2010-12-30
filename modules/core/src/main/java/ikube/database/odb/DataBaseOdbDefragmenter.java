@@ -17,7 +17,7 @@ public class DataBaseOdbDefragmenter implements Runnable {
 	private DataBaseOdb dataBase;
 	private long dataBaseSize = 0;
 	private long dataBaseSizeIncrement = 10000;
-	private long sleep = 10000;
+	private long sleep = 10000000;
 
 	public DataBaseOdbDefragmenter(String dataBaseFile, DataBaseOdb dataBase) {
 		this.logger = Logger.getLogger(this.getClass());
@@ -37,9 +37,9 @@ public class DataBaseOdbDefragmenter implements Runnable {
 			synchronized (this) {
 				long totalObjects = dataBase.getTotalObjects();
 				// If the size of the database is bigger than the database size + the
-				// increment then defragment the database
+				// increment then de-fragment the database
 				boolean shouldDefragment = (totalObjects > dataBaseSize + dataBaseSizeIncrement);
-				logger.info("Database size : " + dataBaseSize + ", " + shouldDefragment + ", " + Thread.currentThread().hashCode());
+				// logger.info("Database size : " + dataBaseSize + ", " + shouldDefragment + ", " + Thread.currentThread().hashCode());
 				if (shouldDefragment) {
 					dataBaseSize += dataBaseSizeIncrement;
 					currentDataBaseFile = dataBase.defragment(currentDataBaseFile);
