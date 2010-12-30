@@ -37,8 +37,8 @@ public class ClusterIntegration extends ATest {
 	}
 
 	public static void main(String[] arguments) throws Exception {
-		// ClusterIntegration.start();
-		String[] servers = new String[] { "ServerOne", "ServerTwo", "ServerThree" };
+		ClusterIntegration.start();
+		String[] servers = new String[] { "ServerOne", "ServerTwo"/*, "ServerThree"*/ };
 		String configurationFile = "/META-INF/spring.xml";
 		String clusterDirectoryPath = "./cluster";
 		String classpath = System.getProperty("java.class.path");

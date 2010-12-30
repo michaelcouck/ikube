@@ -13,6 +13,7 @@ public class SynchronizationMessage extends Persistable {
 	private String ip;
 	private Integer port;
 	private String filePath;
+	private Long fileLength;
 
 	public String getIp() {
 		return ip;
@@ -36,6 +37,14 @@ public class SynchronizationMessage extends Persistable {
 
 	public void setFilePath(String filePath) {
 		this.filePath = filePath;
+	}
+
+	public Long getFileLength() {
+		return fileLength;
+	}
+
+	public void setFileLength(Long fileLength) {
+		this.fileLength = fileLength;
 	}
 
 	public String toString() {

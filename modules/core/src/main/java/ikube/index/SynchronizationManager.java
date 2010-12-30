@@ -27,6 +27,8 @@ import org.apache.log4j.Logger;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.store.Lock;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 import com.hazelcast.core.Hazelcast;
@@ -130,6 +132,7 @@ public class SynchronizationManager implements MessageListener<SynchronizationMe
 			synchronizationMessage.setIp(InetAddress.getLocalHost().getHostAddress());
 			synchronizationMessage.setPort(port);
 			synchronizationMessage.setFilePath(currentFile.getAbsolutePath());
+			synchronizationMessage.setFileLength(currentFile.length());
 			logger.info("Publishing message : " + synchronizationMessage);
 			Hazelcast.getTopic(IConstants.SYNCHRONIZATION_TOPIC).publish(synchronizationMessage);
 			index++;
@@ -165,6 +168,8 @@ public class SynchronizationManager implements MessageListener<SynchronizationMe
 	@Override
 	public void onMessage(SynchronizationMessage synchronizationMessage) {
 		ILock lock = null;
+		Directory directory = null;
+		Lock directoryLock = null;
 		Socket socket = null;
 		InputStream inputStream = null;
 		FileOutputStream fileOutputStream = null;
@@ -238,6 +243,14 @@ public class SynchronizationManager implements MessageListener<SynchronizationMe
 			file = FileUtilities.getFile(builder.toString(), Boolean.FALSE);
 
 			logger.info("Writing remote file to : " + file);
+			// Lock the index directory
+			directory = FSDirectory.open(file.getParentFile());
+			directoryLock = directory.makeLock(IndexWriter.WRITE_LOCK_NAME);
+			boolean gotLock = directoryLock.obtain(IndexWriter.WRITE_LOCK_TIMEOUT);
+			if (!gotLock) {
+				logger.warn("Couldn't get lock to write index file : " + file);
+				return;
+			}
 
 			String ip = synchronizationMessage.getIp();
 			Integer port = synchronizationMessage.getPort();
@@ -252,15 +265,32 @@ public class SynchronizationManager implements MessageListener<SynchronizationMe
 			while ((read = inputStream.read(bytes)) > -1) {
 				fileOutputStream.write(bytes, 0, read);
 			}
+			// Verify that the file is the same length as the one sent
+			long fileLength = file.length();
+			logger.info("Remote file length : " + synchronizationMessage.getFileLength() + ", local file length : " + fileLength);
+			Assert.isTrue(synchronizationMessage.getFileLength() == fileLength, "File from : " + ip
+					+ " not the same, somthing went wrong in the transfer : ");
 		} catch (Exception e) {
+			logger.error("Exception writing index file : " + file + ", " + synchronizationMessage, e);
 			// Delete the files as something went wrong
 			if (file != null && file.exists()) {
 				FileUtilities.deleteFile(file, 1);
 			}
-			logger.error("Exception writing index file : " + file + ", " + synchronizationMessage, e);
 		} finally {
 			if (lock != null) {
 				getClusterManager().unlock(lock);
+			}
+			try {
+				if (directoryLock != null) {
+					if (directoryLock.isLocked()) {
+						directoryLock.release();
+					}
+				}
+				if (directory != null) {
+					directory.close();
+				}
+			} catch (Exception e) {
+				logger.error("Exception releasing the lock on directory : " + (file != null ? file.getParentFile() : file), e);
 			}
 			close(inputStream);
 			close(socket);
