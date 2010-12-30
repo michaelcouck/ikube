@@ -70,7 +70,9 @@ public class IndexableInternetCrawler implements Runnable {
 		this.indexableInternet = indexableInternet;
 		this.contentProvider = new InternetContentProvider();
 		this.httpClient = new HttpClient();
-		this.pattern = Pattern.compile(indexableInternet.getExcludedPattern());
+		if (indexableInternet.getExcludedPattern() != null) {
+			this.pattern = Pattern.compile(indexableInternet.getExcludedPattern());
+		}
 	}
 
 	/**

@@ -57,6 +57,7 @@ public interface IConstants {
 
 	/** This is the starting port for the synchronization sockets. */
 	public int SYNCHRONIZATION_PORT = 9000;
+	public int MAX_SYNCHRONIZATION_PORT = 10000;
 	public String SYNCHRONIZATION_TOPIC = "synchronizationTopic";
 
 }

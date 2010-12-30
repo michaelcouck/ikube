@@ -136,7 +136,7 @@ public abstract class Action implements IAction<IndexContext, Boolean> {
 			directory = FSDirectory.open(indexDirectory);
 			boolean exists = IndexReader.indexExists(directory);
 			boolean locked = IndexWriter.isLocked(directory);
-			logger.info(Logging.getString("Server index directory : ", indexDirectory, ", exists : ", exists, ", locked : ", locked));
+			// logger.info(Logging.getString("Server index directory : ", indexDirectory, ", exists : ", exists, ", locked : ", locked));
 			if (exists && !locked) {
 				return Boolean.TRUE;
 			} else {

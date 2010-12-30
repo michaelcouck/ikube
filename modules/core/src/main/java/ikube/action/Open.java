@@ -15,6 +15,7 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.MultiSearcher;
 import org.apache.lucene.search.Searchable;
+import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
 /**
@@ -57,9 +58,12 @@ public class Open extends Action {
 			return Boolean.FALSE;
 		}
 		File[] serverIndexDirectories = latestIndexDirectory.listFiles();
+		IndexReader reader = null;
+		Directory directory = null;
+		boolean opened = Boolean.TRUE;
 		for (File serverIndexDirectory : serverIndexDirectories) {
 			try {
-				FSDirectory directory = FSDirectory.open(serverIndexDirectory);
+				directory = FSDirectory.open(serverIndexDirectory);
 				boolean exists = IndexReader.indexExists(directory);
 				boolean locked = IndexWriter.isLocked(directory);
 				if (!exists || locked) {
@@ -73,15 +77,25 @@ public class Open extends Action {
 					continue;
 				}
 				// TODO - Verify that all the files are there. Could be
-				// that this server is still getting the files for this index 
+				// that this server is still getting the files for this index
 				// from one of the other servers, and all the files are
 				// not copied over yet
-				IndexReader reader = IndexReader.open(directory, Boolean.TRUE);
+				reader = IndexReader.open(directory, Boolean.TRUE);
 				Searchable searcher = new IndexSearcher(reader);
 				searchers.add(searcher);
 				logger.info(Logging.getString("Opened searcher on : ", serverIndexDirectory, ", exists : ", exists, ", locked : ", locked));
 			} catch (Exception e) {
 				logger.error("Exception opening directory : " + serverIndexDirectory, e);
+				opened = Boolean.FALSE;
+			} finally {
+				if (!opened) {
+					try {
+						directory.close();
+						reader.close();
+					} catch (Exception e) {
+						logger.error("", e);
+					}
+				}
 			}
 		}
 

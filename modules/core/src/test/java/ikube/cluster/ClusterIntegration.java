@@ -37,7 +37,7 @@ public class ClusterIntegration extends ATest {
 	}
 
 	public static void main(String[] arguments) throws Exception {
-		ClusterIntegration.start();
+		// ClusterIntegration.start();
 		String[] servers = new String[] { "ServerOne", "ServerTwo"/*, "ServerThree"*/ };
 		String configurationFile = "/META-INF/spring.xml";
 		String clusterDirectoryPath = "./cluster";
@@ -76,13 +76,15 @@ public class ClusterIntegration extends ATest {
 							builder.append(serverName);
 							builder.append(" : ");
 							builder.append(chars, 0, read);
-							System.out.println(UriUtilities.stripCarriageReturn(builder.toString()));
+							// UriUtilities.stripCarriageReturn(builder.toString())
+							System.out.println(builder.toString());
 						}
 					} catch (Exception e) {
 						LOGGER.error("", e);
 					}
 				}
 			}).start();
+			Thread.sleep(15000);
 		}
 
 		LOGGER.info("Going to sleep : " + Thread.currentThread().hashCode());

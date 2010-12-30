@@ -23,7 +23,7 @@ public class MonitoringServiceTest extends BaseTest {
 		String[] indexContextNames = monitoringService.getIndexContextNames();
 		for (String indexContextName : indexContextNames) {
 			logger.debug("Index context name : " + indexContextName);
-			String[] fieldNames = monitoringService.getFieldNames(indexContextName);
+			String[] fieldNames = monitoringService.getFieldNames("indexContextOne");
 			assertTrue(fieldNames.length > 0);
 			for (String fieldName : fieldNames) {
 				logger.debug("        : field name : " + fieldName);

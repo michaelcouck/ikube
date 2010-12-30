@@ -70,41 +70,50 @@ public class SynchronizationManager implements MessageListener<SynchronizationMe
 				// Open a socket on the a synchronization port. We start with
 				// the default port and iterate through the ports until we find one that
 				// is available
-				ServerSocket serverSocket = null;
-				port = IConstants.SYNCHRONIZATION_PORT;
-				while (true) {
-					try {
-						logger.info("Trying port : " + port);
-						serverSocket = new ServerSocket(port);
-						logger.info("Opened synchronization socket : " + serverSocket);
-						break;
-					} catch (Exception e) {
-						logger.error("Exception opening a server socket : " + IConstants.SYNCHRONIZATION_PORT, e);
-						port++;
-						if (port >= Short.MAX_VALUE) {
-							logger.warn("Couldn't find a port available for synchronization : " + port);
-							return;
-						}
-					}
-				}
-				while (true) {
+				ServerSocket serverSocket = getServerSocket();
+				Socket socket = null;
+				while (serverSocket != null) {
 					try {
 						// Wait for takers to access the current file
 						logger.info("Waiting for clients : ");
-						final Socket socket = serverSocket.accept();
+						socket = serverSocket.accept();
 						logger.info("Got client : " + socket + ", " + socket.getRemoteSocketAddress());
-						new Thread(new Runnable() {
-							public void run() {
-								// Write the index file to the output stream
-								writeFile(socket);
-							}
-						}).start();
+						// Write the index file to the output stream
+						writeFile(socket);
 					} catch (Exception e) {
-						logger.error("", e);
+						logger.error("Exception writing file to client : ", e);
+					} finally {
+						try {
+							if (socket != null) {
+								socket.close();
+							}
+						} catch (Exception e) {
+							logger.error("Exception closing the client socket : ", e);
+						}
 					}
 				}
 			}
 		}).start();
+	}
+
+	protected ServerSocket getServerSocket() {
+		ServerSocket serverSocket = null;
+		port = IConstants.SYNCHRONIZATION_PORT;
+		while (true) {
+			try {
+				logger.info("Trying port : " + port);
+				serverSocket = new ServerSocket(port);
+				logger.info("Opened synchronization socket : " + serverSocket);
+				return serverSocket;
+			} catch (Exception e) {
+				logger.error("Exception opening a server socket : " + IConstants.SYNCHRONIZATION_PORT, e);
+				port++;
+				if (port >= IConstants.MAX_SYNCHRONIZATION_PORT) {
+					logger.warn("Couldn't find a port available for synchronization : " + port);
+					return null;
+				}
+			}
+		}
 	}
 
 	@Override
@@ -126,18 +135,17 @@ public class SynchronizationManager implements MessageListener<SynchronizationMe
 			if (index >= files.size()) {
 				index = 0;
 			}
-			currentFile = files.get(index);
-			logger.info("Publishing file : " + currentFile);
+			currentFile = files.get(index++);
+			// logger.info("Publishing file : " + currentFile);
 			SynchronizationMessage synchronizationMessage = new SynchronizationMessage();
 			synchronizationMessage.setIp(InetAddress.getLocalHost().getHostAddress());
 			synchronizationMessage.setPort(port);
 			synchronizationMessage.setFilePath(currentFile.getAbsolutePath());
 			synchronizationMessage.setFileLength(currentFile.length());
-			logger.info("Publishing message : " + synchronizationMessage);
+			// logger.info("Publishing message : " + synchronizationMessage);
 			Hazelcast.getTopic(IConstants.SYNCHRONIZATION_TOPIC).publish(synchronizationMessage);
-			index++;
 		} catch (Exception e) {
-			logger.error("", e);
+			logger.error("Exception publishing files to clients : " + currentFile, e);
 		}
 	}
 
@@ -146,8 +154,8 @@ public class SynchronizationManager implements MessageListener<SynchronizationMe
 		OutputStream outputStream = null;
 		try {
 			boolean fileExists = currentFile != null && currentFile.exists();
-			logger.info("File exists : " + fileExists + ", " + currentFile);
 			if (fileExists) {
+				logger.info("File exists : " + fileExists + ", " + currentFile);
 				fileInputStream = new FileInputStream(currentFile);
 				outputStream = socket.getOutputStream();
 				byte[] bytes = new byte[chunk];
@@ -174,7 +182,9 @@ public class SynchronizationManager implements MessageListener<SynchronizationMe
 		InputStream inputStream = null;
 		FileOutputStream fileOutputStream = null;
 		File file = null;
+		boolean written = Boolean.TRUE;
 		try {
+			// TODO - lock the cluster, i.e. set the server working
 			// Check if we have this file
 			String filePath = synchronizationMessage.getFilePath();
 			String[] parts = StringUtils.tokenizeToStringArray(filePath, "\\/", Boolean.TRUE, Boolean.TRUE);
@@ -205,7 +215,7 @@ public class SynchronizationManager implements MessageListener<SynchronizationMe
 			File baseIndexDirectory = new File(indexContext.getIndexDirectoryPath());
 			String[] patterns = new String[] { fileName };
 			List<File> foundFiles = FileUtilities.findFilesRecursively(baseIndexDirectory, patterns, new ArrayList<File>());
-			logger.info("Found files : " + foundFiles);
+			// logger.info("Found files : " + foundFiles);
 			// Iterate through the files with this name and see if they are
 			// from the same time index, and the same context and the same
 			// ip address folder
@@ -221,7 +231,7 @@ public class SynchronizationManager implements MessageListener<SynchronizationMe
 
 			if (exists) {
 				// Either this is our own message or we have got this file previously
-				logger.info("Got this file : " + filePath);
+				// logger.info("Got this file : " + filePath);
 				return;
 			}
 
@@ -264,6 +274,7 @@ public class SynchronizationManager implements MessageListener<SynchronizationMe
 			// Write the file contents from the publisher to the file system
 			while ((read = inputStream.read(bytes)) > -1) {
 				fileOutputStream.write(bytes, 0, read);
+				// logger.debug("Written : " + read);
 			}
 			// Verify that the file is the same length as the one sent
 			long fileLength = file.length();
@@ -272,10 +283,7 @@ public class SynchronizationManager implements MessageListener<SynchronizationMe
 					+ " not the same, somthing went wrong in the transfer : ");
 		} catch (Exception e) {
 			logger.error("Exception writing index file : " + file + ", " + synchronizationMessage, e);
-			// Delete the files as something went wrong
-			if (file != null && file.exists()) {
-				FileUtilities.deleteFile(file, 1);
-			}
+			written = Boolean.FALSE;
 		} finally {
 			if (lock != null) {
 				getClusterManager().unlock(lock);
@@ -295,6 +303,12 @@ public class SynchronizationManager implements MessageListener<SynchronizationMe
 			close(inputStream);
 			close(socket);
 			close(fileOutputStream);
+			if (!written) {
+				// Delete the files as something went wrong
+				if (file != null && file.exists()) {
+					FileUtilities.deleteFile(file.getParentFile(), 1);
+				}
+			}
 		}
 	}
 
