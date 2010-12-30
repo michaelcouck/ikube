@@ -1,1 +1,3 @@
 select db2admin.faq.faqId, db2admin.faq.creationtimestamp, db2admin.faq.modifiedtimestamp, db2admin.faq.creator, db2admin.faq.modifier, db2admin.faq.question, db2admin.faq.answer from db2admin.faq where faq.faqid > 0 and db2admin.faq.faqId > 0 and db2admin.faq.faqId <= 10
+
+http://www.google.be/search?hl=nl&ie=UTF-8&tbs=bks:1&q=inauthor:"Eddy+Brouckaert"&sa=X&ei=rTwbTbH3HIuVOpKr2KkJ&ved=0CCwQ9Ag

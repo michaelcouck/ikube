@@ -28,6 +28,7 @@ import java.io.Reader;
 import java.lang.Thread.State;
 import java.net.URI;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import javax.swing.text.html.HTML;
 
@@ -60,6 +61,7 @@ public class IndexableInternetCrawler implements Runnable {
 	private IndexableInternet indexableInternet;
 	private IContentProvider<IndexableInternet> contentProvider;
 	private HttpClient httpClient;
+	private Pattern pattern;
 
 	public IndexableInternetCrawler(IndexContext indexContext, IndexableInternet indexableInternet, List<Thread> threads) {
 		this.logger = Logger.getLogger(this.getClass());
@@ -68,6 +70,7 @@ public class IndexableInternetCrawler implements Runnable {
 		this.indexableInternet = indexableInternet;
 		this.contentProvider = new InternetContentProvider();
 		this.httpClient = new HttpClient();
+		this.pattern = Pattern.compile(indexableInternet.getExcludedPattern());
 	}
 
 	/**
@@ -89,6 +92,10 @@ public class IndexableInternetCrawler implements Runnable {
 				logger.debug("Doing url : " + url.getUrl() + ", " + Thread.currentThread().hashCode());
 				// Get the content from the url
 				ByteOutputStream byteOutputStream = getContentFromUrl(indexableInternet, url);
+				if (byteOutputStream == null || byteOutputStream.size() == 0) {
+					logger.warn("No content from url, perhaps exception : " + url);
+					continue;
+				}
 				// Parse the content from the url
 				String parsedContent = getParsedContent(url, byteOutputStream);
 				// Add the document to the index
@@ -168,7 +175,9 @@ public class IndexableInternetCrawler implements Runnable {
 			logger.error("", e);
 		} finally {
 			try {
-				get.releaseConnection();
+				if (get != null) {
+					get.releaseConnection();
+				}
 			} catch (Exception e) {
 				logger.error("", e);
 			}
@@ -323,6 +332,9 @@ public class IndexableInternetCrawler implements Runnable {
 									continue;
 								}
 								if (!resolvedLink.contains(baseHost)) {
+									continue;
+								}
+								if (pattern.matcher(resolvedLink).matches()) {
 									continue;
 								}
 								String replacement = resolvedLink.contains("?") ? "?" : "";

@@ -30,6 +30,8 @@ public class IndexableInternet extends Indexable<IndexableInternet> {
 	@Field(field = true)
 	private String contentFieldName;
 
+	private String excludedPattern;
+
 	public URI getUri() {
 		if (uri == null && getUrl() != null) {
 			try {
@@ -75,6 +77,14 @@ public class IndexableInternet extends Indexable<IndexableInternet> {
 
 	public void setContentFieldName(String contentFieldName) {
 		this.contentFieldName = contentFieldName;
+	}
+
+	public String getExcludedPattern() {
+		return excludedPattern;
+	}
+
+	public void setExcludedPattern(String excludedPatterns) {
+		this.excludedPattern = excludedPatterns;
 	}
 
 	@Transient

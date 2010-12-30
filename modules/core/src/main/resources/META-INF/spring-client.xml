@@ -97,8 +97,8 @@
 		<ref local="question" />
 		<ref local="answer" />
 		<!--<ref local="published" />-->
-		<!--<ref local="tableTwo" />-->
-		<!--<ref local="tableThree" />-->
+		<ref local="tableTwo" />
+		<ref local="tableThree" />
 	</util:list>
 
 	<bean
@@ -429,7 +429,8 @@
 		property:idField="identifier"
 		property:contentField="email"
 		property:titleField="title" />
-
+	
+	<!-- |.*(.pdf).* -->
 	<bean
 		id="internet"
 		class="ikube.model.IndexableInternet"
@@ -437,7 +438,11 @@
 		property:url="${url}" 
 		property:idFieldName="id"
 		property:titleFieldName="title"
-		property:contentFieldName="content" />
+		property:contentFieldName="content"
+		property:excludedPattern=".*(/search).*|.*(/images).*"
+		property:analyzed="true"
+		property:stored="true"
+		property:vectored="true" />
 	
 	<bean
 		id="filesystem"

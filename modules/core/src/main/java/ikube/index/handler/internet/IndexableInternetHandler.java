@@ -14,9 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This class handles an internet resource, i.e. an URL. It acts as a starting point for the 'crawlers' which are essentially threads that
- * iterate over a site, either inter or intranet. A list of the threads are returned to the caller who is then obliged to wait for them to
- * finish.
+ * TODO - implement me again. From scratch!
  * 
  * @author Michael Couck
  * @since 29.11.10

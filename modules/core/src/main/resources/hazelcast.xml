@@ -60,7 +60,7 @@
 	<executor-service>
 		<core-pool-size>1000</core-pool-size>
 		<max-pool-size>1000000</max-pool-size>
-		<keep-alive-seconds>600</keep-alive-seconds>
+		<keep-alive-seconds>60000</keep-alive-seconds>
 	</executor-service>
 	<queue name="default">
 		<!-- 
@@ -69,7 +69,7 @@
 			JVM goes down below the maximum. Any integer between 0 and Integer.MAX_VALUE. 
 			0 means Integer.MAX_VALUE. Default is 0. 
 		-->
-		<max-size-per-jvm>1000000</max-size-per-jvm>
+		<max-size-per-jvm>10000000</max-size-per-jvm>
 		<!-- 
 			Maximum number of seconds for each item to stay in the queue. Items 
 			that are not consumed in <time-to-live-seconds> will automatically get evicted 
@@ -114,7 +114,7 @@
 			hz.HIGHER_HITS ; entry with the higher hits wins. hz.LATEST_UPDATE ; 
 			entry with the latest update wins. -->
 		<merge-policy>hz.ADD_NEW_ENTRY</merge-policy>
-		<map-store enabled="true">
+		<map-store enabled="false">
 			<!-- 
 				Name of the class implementing MapLoader and/or MapStore. The class 
 				should implement at least of these interfaces and contain no-argument 
