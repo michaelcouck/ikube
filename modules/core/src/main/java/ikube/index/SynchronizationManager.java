@@ -83,13 +83,7 @@ public class SynchronizationManager implements MessageListener<SynchronizationMe
 					} catch (Exception e) {
 						logger.error("Exception writing file to client : ", e);
 					} finally {
-						try {
-							if (socket != null) {
-								socket.close();
-							}
-						} catch (Exception e) {
-							logger.error("Exception closing the client socket : ", e);
-						}
+						close(socket);
 					}
 				}
 			}
@@ -119,6 +113,9 @@ public class SynchronizationManager implements MessageListener<SynchronizationMe
 	@Override
 	public void handleNotification(Event event) {
 		if (!event.getType().equals(Event.SYNCHRONISE)) {
+			return;
+		}
+		if (clusterManager.anyWorking() || clusterManager.getServer().isWorking()) {
 			return;
 		}
 		// Check to see if there are any new indexes that are finished,
@@ -152,7 +149,11 @@ public class SynchronizationManager implements MessageListener<SynchronizationMe
 	protected void writeFile(Socket socket) {
 		FileInputStream fileInputStream = null;
 		OutputStream outputStream = null;
+		if (clusterManager.getServer().isWorking()) {
+			return;
+		}
 		try {
+			clusterManager.setWorking(IConstants.SYNCHRONIZATION, IConstants.SYNCHRONIZATION, Boolean.TRUE);
 			boolean fileExists = currentFile != null && currentFile.exists();
 			if (fileExists) {
 				logger.info("File exists : " + fileExists + ", " + currentFile);
@@ -168,14 +169,19 @@ public class SynchronizationManager implements MessageListener<SynchronizationMe
 			logger.error("Exception writing index file to client : ", e);
 		} finally {
 			close(outputStream);
-			close(socket);
 			close(fileInputStream);
+			clusterManager.setWorking(IConstants.SYNCHRONIZATION, IConstants.SYNCHRONIZATION, Boolean.FALSE);
 		}
 	}
 
 	@Override
 	public void onMessage(SynchronizationMessage synchronizationMessage) {
-		ILock lock = null;
+		// Check that there are no servers working
+		if (clusterManager.anyWorking() || clusterManager.getServer().isWorking()) {
+			logger.info("Servers working : " + clusterManager.getServers());
+			return;
+		}
+		// ILock lock = null;
 		Directory directory = null;
 		Lock directoryLock = null;
 		Socket socket = null;
@@ -237,11 +243,11 @@ public class SynchronizationManager implements MessageListener<SynchronizationMe
 			}
 
 			// Get the lock for a read from the cluster
-			lock = getClusterManager().lock(READ_LOCK);
-			if (lock == null) {
-				logger.info("Couldn't get the read lock : " + lock);
-				return;
-			}
+//			lock = clusterManager.lock(READ_LOCK);
+//			if (lock == null) {
+//				logger.info("Couldn't get the read lock : " + lock);
+//				return;
+//			}
 
 			// Build the file from the path on this machine
 			String indexDirectoryPath = IndexManager.getIndexDirectory(ipFolderName, indexContext, Long.parseLong(timeFolderName));
@@ -291,9 +297,9 @@ public class SynchronizationManager implements MessageListener<SynchronizationMe
 			} catch (Exception e) {
 				logger.error("Cluster synchroinzation exception?", e);
 			}
-			if (lock != null) {
-				getClusterManager().unlock(lock);
-			}
+//			if (lock != null) {
+//				clusterManager.unlock(lock);
+//			}
 			try {
 				if (directoryLock != null) {
 					if (directoryLock.isLocked()) {
@@ -307,12 +313,12 @@ public class SynchronizationManager implements MessageListener<SynchronizationMe
 				logger.error("Exception releasing the lock on directory : " + (file != null ? file.getParentFile() : file), e);
 			}
 			close(inputStream);
-			close(socket);
 			close(fileOutputStream);
+			close(socket);
 			if (!written) {
-				// Delete the files as something went wrong
+				// Delete the file as something went wrong
 				if (file != null && file.exists()) {
-					FileUtilities.deleteFile(file.getParentFile(), 1);
+					FileUtilities.deleteFile(file, 1);
 				}
 			}
 		}
@@ -355,6 +361,7 @@ public class SynchronizationManager implements MessageListener<SynchronizationMe
 	protected void close(OutputStream outputStream) {
 		if (outputStream != null) {
 			try {
+				outputStream.flush();
 				outputStream.close();
 			} catch (Exception e) {
 				logger.error("", e);
@@ -390,10 +397,6 @@ public class SynchronizationManager implements MessageListener<SynchronizationMe
 				logger.error("", e);
 			}
 		}
-	}
-
-	public IClusterManager getClusterManager() {
-		return clusterManager;
 	}
 
 	public void setClusterManager(IClusterManager clusterManager) {

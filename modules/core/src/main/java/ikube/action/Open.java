@@ -90,8 +90,12 @@ public class Open extends Action {
 			} finally {
 				if (!opened) {
 					try {
-						directory.close();
-						reader.close();
+						if (directory != null) {
+							directory.close();
+						}
+						if (reader != null) {
+							reader.close();
+						}
 					} catch (Exception e) {
 						logger.error("", e);
 					}

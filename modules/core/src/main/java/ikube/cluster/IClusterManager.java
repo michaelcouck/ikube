@@ -35,7 +35,8 @@ public interface IClusterManager {
 	public long setWorking(String indexName, String indexableName, boolean isWorking);
 
 	/**
-	 * @return whether there are any servers in the cluster that are working
+	 * @return whether there are any servers in the cluster that are working excluding this one. If this server is working then the server
+	 *         must be retrieved with the {@link IClusterManager#getServer()} and check the {@link Server#isWorking()} method
 	 */
 	public boolean anyWorking();
 
@@ -91,7 +92,7 @@ public interface IClusterManager {
 	 * @see ICache#get(String, String)
 	 */
 	public <T> T get(Class<T> klass, String sql);
-	
+
 	/**
 	 * @see ICache#get(String, Long)
 	 */

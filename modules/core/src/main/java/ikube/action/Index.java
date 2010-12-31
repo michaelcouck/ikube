@@ -37,6 +37,10 @@ public class Index extends Action {
 				return Boolean.FALSE;
 			}
 		}
+		Server server = getClusterManager().getServer();
+		if (server.isWorking()) {
+			return Boolean.FALSE;
+		}
 		List<Indexable<?>> indexables = indexContext.getIndexables();
 		String indexName = indexContext.getIndexName();
 		try {
@@ -45,7 +49,6 @@ public class Index extends Action {
 			// 2) The index is current and there are other servers working on the index, so we join them
 			long lastWorkingStartTime = getClusterManager().setWorking(indexName, "", Boolean.TRUE);
 			logger.info(Logging.getString("Index : Last working time : ", lastWorkingStartTime));
-			Server server = getClusterManager().getServer();
 			// Start the indexing for this server
 			IndexManager.openIndexWriter(server.getAddress(), indexContext, lastWorkingStartTime);
 			@SuppressWarnings("rawtypes")

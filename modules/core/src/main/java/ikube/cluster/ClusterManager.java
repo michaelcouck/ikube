@@ -34,7 +34,7 @@ public class ClusterManager implements IClusterManager {
 	/** The timeout to wait for the lock. */
 	protected static long LOCK_TIMEOUT = 3000;
 	/** We only keep a few actions in the server. */
-	protected static double MAX_ACTION_SIZE = 100;
+	protected static double MAX_ACTION_SIZE = 25;
 	/** The ratio to delete the actions when the maximum is reached. */
 	protected static double ACTION_PRUNE_RATIO = 0.5;
 
