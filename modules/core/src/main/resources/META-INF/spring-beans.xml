@@ -28,17 +28,19 @@
 		class="ikube.IndexEngine"
 		property:actions-ref="actions" />
 	<util:list id="actions">
+		<ref local="ikube.action.Synchronize" />
 		<ref local="ikube.action.Reset" />
 		<ref local="ikube.action.Close" />
 		<ref local="ikube.action.Open" />
 		<ref local="ikube.action.Index" />
 		<ref local="ikube.action.Delete" />
 	</util:list>
-	<bean id="ikube.action.Close" class="ikube.action.Close" />
-	<bean id="ikube.action.Delete" class="ikube.action.Delete" />
-	<bean id="ikube.action.Index" class="ikube.action.Index" />
-	<bean id="ikube.action.Open" class="ikube.action.Open" />
+	<bean id="ikube.action.Synchronize" class="ikube.action.Synchronize" />
 	<bean id="ikube.action.Reset" class="ikube.action.Reset" />
+	<bean id="ikube.action.Close" class="ikube.action.Close" />
+	<bean id="ikube.action.Open" class="ikube.action.Open" />
+	<bean id="ikube.action.Index" class="ikube.action.Index" />
+	<bean id="ikube.action.Delete" class="ikube.action.Delete" />
 	
 	<bean
 		id="ikube.database.odb.DataBaseOdb"
@@ -79,12 +81,12 @@
 		</property>
 	</bean>
 	
-	<bean 
+	<!--<bean 
 		id="ikube.index.SynchronizationManager"
 		class="ikube.index.SynchronizationManager"
 		lazy-init="false"
 		init-method="initialize"
-		property:clusterManager-ref="ikube.cluster.IClusterManager" />
+		property:clusterManager-ref="ikube.cluster.IClusterManager" />-->
 	
 	<bean
 		class="ikube.index.handler.internet.IndexableInternetHandler"
@@ -163,7 +165,7 @@
 		property:schedules-ref="scheduled.tasks" />
 	<util:list id="scheduled.tasks">
 		<ref local="ikube.listener.Schedule" />
-		<ref local="ikube.listener.Schedule.Synchroinse" />
+		<!--<ref local="ikube.listener.Schedule.Synchroinse" />-->
 		<ref local="ikube.listener.Schedule.SearcherWebServiceExecuter" />
 	</util:list>
 	
@@ -179,10 +181,10 @@
 		property:type="service"
 		property:delay="${web.service.delay}"
 		property:period="${web.service.period}" />
-	<bean
+	<!--<bean
 		id="ikube.listener.Schedule.Synchroinse"
 		class="ikube.listener.Schedule"
 		property:type="synchronise"
 		property:delay="${synchronisation.delay}"
-		property:period="${synchronisation.period}" />
+		property:period="${synchronisation.period}" />-->
 </beans>

@@ -1,7 +1,6 @@
 package ikube.action;
 
 import ikube.model.IndexContext;
-import ikube.model.Server;
 import ikube.model.Url;
 
 /**
@@ -24,10 +23,6 @@ public class Reset extends Action {
 			return Boolean.FALSE;
 		}
 		getClusterManager().clear(Url.class);
-		for (Server server : getClusterManager().getServers()) {
-			// server.getActions().clear();
-			getClusterManager().set(Server.class, server.getId(), server);
-		}
 		return Boolean.TRUE;
 	}
 
