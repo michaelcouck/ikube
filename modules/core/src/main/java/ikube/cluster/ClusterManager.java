@@ -235,8 +235,6 @@ public class ClusterManager implements IClusterManager {
 		try {
 			Server server = cache.get(Server.class.getName(), HashUtilities.hash(address));
 			if (server == null) {
-				// This can never happen because the initialize method sets the
-				// server. Can be removed perhaps?
 				server = new Server();
 				server.setIp(ip);
 				server.setAddress(address);

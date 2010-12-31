@@ -59,5 +59,7 @@ public interface IConstants {
 	public int SYNCHRONIZATION_PORT = 9000;
 	public int MAX_SYNCHRONIZATION_PORT = 10000;
 	public String SYNCHRONIZATION_TOPIC = "synchronizationTopic";
+	
+	public String SYNCHRONIZATION = "synchronization";
 
 }

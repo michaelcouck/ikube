@@ -184,7 +184,8 @@ public class SynchronizationManager implements MessageListener<SynchronizationMe
 		File file = null;
 		boolean written = Boolean.TRUE;
 		try {
-			// TODO - lock the cluster, i.e. set the server working
+			// Lock the cluster, i.e. set the server working
+			clusterManager.setWorking(IConstants.SYNCHRONIZATION, IConstants.SYNCHRONIZATION, Boolean.TRUE);
 			// Check if we have this file
 			String filePath = synchronizationMessage.getFilePath();
 			String[] parts = StringUtils.tokenizeToStringArray(filePath, "\\/", Boolean.TRUE, Boolean.TRUE);
@@ -285,6 +286,11 @@ public class SynchronizationManager implements MessageListener<SynchronizationMe
 			logger.error("Exception writing index file : " + file + ", " + synchronizationMessage, e);
 			written = Boolean.FALSE;
 		} finally {
+			try {
+				clusterManager.setWorking(IConstants.SYNCHRONIZATION, IConstants.SYNCHRONIZATION, Boolean.FALSE);
+			} catch (Exception e) {
+				logger.error("Cluster synchroinzation exception?", e);
+			}
 			if (lock != null) {
 				getClusterManager().unlock(lock);
 			}
