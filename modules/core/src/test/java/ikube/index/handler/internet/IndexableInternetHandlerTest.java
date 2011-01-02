@@ -3,8 +3,8 @@ package ikube.index.handler.internet;
 import static org.junit.Assert.assertTrue;
 import ikube.BaseTest;
 import ikube.action.Reset;
-import ikube.cluster.IClusterManager;
 import ikube.database.IDataBase;
+import ikube.database.mem.DataBaseMem;
 import ikube.model.IndexableInternet;
 import ikube.model.Url;
 import ikube.toolkit.ApplicationContextManager;
@@ -12,6 +12,8 @@ import ikube.toolkit.ThreadUtilities;
 
 import java.util.List;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -20,6 +22,18 @@ import org.junit.Test;
  * @version 01.00
  */
 public class IndexableInternetHandlerTest extends BaseTest {
+
+	@Before
+	public void before() {
+		IDataBase dataBase = ApplicationContextManager.getBean(DataBaseMem.class);
+		delete(dataBase, Url.class);
+	}
+
+	@After
+	public void after() {
+		IDataBase dataBase = ApplicationContextManager.getBean(DataBaseMem.class);
+		delete(dataBase, Url.class);
+	}
 
 	@Test
 	public void handle() throws Exception {
@@ -31,14 +45,13 @@ public class IndexableInternetHandlerTest extends BaseTest {
 
 		ThreadUtilities.waitForThreads(threads);
 
-		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
-		int totalUrlsCrawled = clusterManager.size(Url.class);
+		IDataBase dataBase = ApplicationContextManager.getBean(DataBaseMem.class);
+		List<Url> urls = dataBase.find(Url.class, 0, Integer.MAX_VALUE);
+		int totalUrlsCrawled = urls.size();
 		logger.info("Urls crawled : " + totalUrlsCrawled);
 		assertTrue(totalUrlsCrawled > 40);
 
 		// Print everything in the database
-		IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
-		List<Url> urls = dataBase.find(Url.class, 0, Integer.MAX_VALUE);
 		for (Url url : urls) {
 			logger.info("Url : " + url);
 		}

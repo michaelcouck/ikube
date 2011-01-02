@@ -61,5 +61,26 @@ public interface IConstants {
 	public String SYNCHRONIZATION_TOPIC = "synchronizationTopic";
 	
 	public String SYNCHRONIZATION = "synchronization";
+	
+	/** Url response codes */
+	public Integer HTTP_200 = new Integer(200); // OK
+	public Integer HTTP_301 = new Integer(301); // Move permanently
+	public Integer HTTP_400 = new Integer(400); // Bad request
+	public Integer HTTP_401 = new Integer(401); // Unauthorised
+	public Integer HTTP_403 = new Integer(403); // Forbidden
+	public Integer HTTP_404 = new Integer(404); // Not found
+	public Integer HTTP_418 = new Integer(418); // I"m a tea pot
+	public Integer HTTP_500 = new Integer(500); // Internal server error
+	public Integer HTTP_503 = new Integer(503); // Service unavailable
+
+	/** These can be extracted into the messages.properties file */
+	public String RESPONSE_CODE_NOT_200 = "Response code not 200/OK";
+	public String EXCEPTION_VISITING_PAGE = "Exception visiting page";
+	public String EXCEPTION_VISITING_PAGE_UNKNOWN_ERROR_POSSIBLY_TIMEOUT = "Exception visiting page, error un-known, possibly a timeout";
+	public String PAGE_RESPONSE_NULL = "Page returned from request null";
+	public String URL_NOT_WELL_FORMED = "Url not well formed";
+	public String EXCEPTION_CLICKING_LINK = "Exception clicking on the link";
+	public String NO_END_TAG = "Not end tag in HTML";
+	public String EXCEPTION_VALIDATING_HTML = "General exception validating the HTML";
 
 }

@@ -12,6 +12,7 @@ import javax.xml.ws.Binding;
 import javax.xml.ws.Endpoint;
 
 import org.apache.log4j.Logger;
+import org.springframework.util.StringUtils;
 
 /**
  * @author Michael Couck
@@ -63,7 +64,7 @@ public class WebServicePublisher implements IWebServicePublisher {
 			logger.info("Checking url : " + url);
 			InputStream inputStream = url.openStream();
 			String content = FileUtilities.getContents(inputStream, Integer.MAX_VALUE).toString();
-			logger.info("Url data : " + content);
+			logger.info("Url data : " + StringUtils.trimAllWhitespace(content));
 			return Boolean.TRUE;
 		} catch (Exception e) {
 			return Boolean.FALSE;

@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import ikube.BaseTest;
 import ikube.database.IDataBase;
+import ikube.database.mem.DataBaseMem;
 import ikube.model.Url;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.HashUtilities;
@@ -24,7 +25,7 @@ public class DataBaseOdbMapStoreTest extends BaseTest {
 
 	@Before
 	public void before() {
-		dataBase = ApplicationContextManager.getBean(IDataBase.class);
+		dataBase = ApplicationContextManager.getBean(DataBaseMem.class);
 		delete(dataBase, Url.class);
 		cacheMapStore = new CacheMapStore();
 	}

@@ -56,9 +56,8 @@
 					property:className="ikube.model.Url">
 					<property name="fieldNames">
 						<list>
-							<!--<value>id</value>
-							<value>url</value>
-							<value>hash</value>-->
+							<value>id</value>
+							<value>hash</value>
 						</list>
 					</property>
 				</bean>

@@ -55,19 +55,19 @@ public class UriUtilitiesTest extends ATest {
 
 		Pattern pattern = Pattern.compile(";jsessionid=(.*)");
 		String replaced = pattern.matcher(reference).replaceAll("replacement");
-		logger.info("Replaced : " + replaced);
+		logger.info("Replaced 1 : " + replaced);
 
 		pattern = Pattern.compile("(.*);jsessionid=(.*)$");
 		replaced = pattern.matcher(reference).replaceAll("replacement");
-		logger.info("Replaced : " + replaced);
+		logger.info("Replaced 2 : " + replaced);
 
 		pattern = Pattern.compile("(.*);jsessionid=(.*)(\\&amp;|\\&amp;amp;)");
 		replaced = pattern.matcher(reference).replaceAll("replacement");
-		logger.info("Replaced : " + replaced);
+		logger.info("Replaced 3 : " + replaced);
 
 		pattern = Pattern.compile("([;_]?((?i)l|j|bv_)?((?i)sid|phpsessid|sessionid)=.*?)(\\?|&amp;|#|$)");
 		replaced = pattern.matcher(reference).replaceAll("?");
-		logger.info("Replaced : " + replaced);
+		logger.info("Replaced 4 : " + replaced);
 	}
 
 	@Test

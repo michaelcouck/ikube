@@ -3,6 +3,7 @@ package ikube.model;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.regex.Pattern;
 
 import javax.persistence.Entity;
 import javax.persistence.Transient;
@@ -19,6 +20,8 @@ public class IndexableInternet extends Indexable<IndexableInternet> {
 	private transient String currentUrl;
 	@Transient
 	private transient InputStream currentInputStream;
+	@Transient
+	private Pattern pattern;
 
 	private URI uri;
 	private String url;
@@ -31,6 +34,7 @@ public class IndexableInternet extends Indexable<IndexableInternet> {
 	private String contentFieldName;
 
 	private String excludedPattern;
+	private int timeout;
 
 	public URI getUri() {
 		if (uri == null && getUrl() != null) {
@@ -85,6 +89,21 @@ public class IndexableInternet extends Indexable<IndexableInternet> {
 
 	public void setExcludedPattern(String excludedPatterns) {
 		this.excludedPattern = excludedPatterns;
+	}
+
+	public int getTimeout() {
+		return timeout;
+	}
+
+	public void setTimeout(int timeout) {
+		this.timeout = timeout;
+	}
+
+	public boolean isExcluded(String link) {
+		if (pattern == null) {
+			pattern = Pattern.compile(getExcludedPattern());
+		}
+		return pattern.matcher(link).matches();
 	}
 
 	@Transient

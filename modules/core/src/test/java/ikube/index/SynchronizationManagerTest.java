@@ -23,12 +23,14 @@ import java.util.Map;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.ITopic;
 import com.hazelcast.core.MessageListener;
 
+@Ignore
 public class SynchronizationManagerTest extends BaseTest {
 
 	private SynchronizationManager synchronizationManager = ApplicationContextManager.getBean(SynchronizationManager.class);

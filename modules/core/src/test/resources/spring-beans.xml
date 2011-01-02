@@ -24,7 +24,11 @@
 	<context:annotation-config />
 	<aop:aspectj-autoproxy proxy-target-class="true" />
 	
-	<!-- Persistence class -->
+	<!-- Persistence classes -->
+	<bean
+		id="ikube.database.mem.DataBaseMem"
+		class="ikube.database.mem.DataBaseMem"
+		property:dataBase-ref="ikube.database.odb.DataBaseOdb" />
 	<bean
 		id="ikube.database.odb.DataBaseOdb"
 		class="ikube.database.odb.DataBaseOdb"
@@ -40,9 +44,8 @@
 					<property name="fieldNames">
 						<list>
 							<!-- Neodatis doesn't like indexes -->
-							<!--<value>id</value>
-							<value>url</value>
-							<value>hash</value>-->
+							<value>id</value>
+							<value>hash</value>
 						</list>
 					</property>
 				</bean>
@@ -55,21 +58,13 @@
 		class="ikube.cluster.cache.Cache"
 		lazy-init="false"
 		init-method="initialise"
-		property:dataBase-ref="ikube.database.odb.DataBaseOdb" />
+		property:dataBase-ref="ikube.database.mem.DataBaseMem" />
 	<!-- Cluster wide manager -->
-	<!-- init-method="initialise" -->
 	<bean
 		id="ikube.cluster.IClusterManager"
 		class="ikube.cluster.ClusterManager"
 		lazy-init="false"
 		property:cache-ref="ikube.cluster.cache.ICache" />
-	
-	<bean 
-		id="ikube.index.SynchronizationManager"
-		class="ikube.index.SynchronizationManager"
-		lazy-init="true"
-		init-method="initialize"
-		property:clusterManager-ref="ikube.cluster.IClusterManager" />
 	
 	<!-- Core class for managing indexes and contexts -->
 	<bean
@@ -77,18 +72,20 @@
 		property:actions-ref="actions" />
 
 	<!-- Actions to perform on the contexts -->
-	<bean id="ikube.action.Close" class="ikube.action.Close" />
-	<bean id="ikube.action.Delete" class="ikube.action.Delete" />
-	<bean id="ikube.action.Index" class="ikube.action.Index" />
-	<bean id="ikube.action.Open" class="ikube.action.Open" />
-	<bean id="ikube.action.Reset" class="ikube.action.Reset" />
 	<util:list id="actions">
+		<ref local="ikube.action.Synchronize" />
 		<ref local="ikube.action.Reset" />
 		<ref local="ikube.action.Close" />
 		<ref local="ikube.action.Open" />
 		<ref local="ikube.action.Index" />
 		<ref local="ikube.action.Delete" />
 	</util:list>
+	<bean id="ikube.action.Synchronize" class="ikube.action.Synchronize" />
+	<bean id="ikube.action.Reset" class="ikube.action.Reset" />
+	<bean id="ikube.action.Close" class="ikube.action.Close" />
+	<bean id="ikube.action.Open" class="ikube.action.Open" />
+	<bean id="ikube.action.Index" class="ikube.action.Index" />
+	<bean id="ikube.action.Delete" class="ikube.action.Delete" />
 	
 	<!-- Indexable handlers -->
 	<bean
@@ -154,7 +151,6 @@
 	</bean>
 	
 	<!-- Continuous testing in production class  -->
-	<!-- property:endpointUri="${web.service.protocol}://localhost:${web.service.port}${web.service.path}?wsdl" -->
 	<bean
 		id="ikube.service.SearcherWebServiceExecuter"
 		class="ikube.service.SearcherWebServiceExecuter"
@@ -177,7 +173,7 @@
 		property:schedules-ref="scheduled.tasks" />
 	<util:list id="scheduled.tasks">
 		<ref local="ikube.listener.Schedule" />
-		<ref local="ikube.listener.Schedule.Synchroinse" />
+		<!--<ref local="ikube.listener.Schedule.Synchroinse" />-->
 		<ref local="ikube.listener.Schedule.WebService" />
 	</util:list>
 
@@ -194,14 +190,8 @@
 		property:type="service"
 		property:delay="${web.service.delay}"
 		property:period="${web.service.period}" />	
-	<bean
-		id="ikube.listener.Schedule.Synchroinse"
-		class="ikube.listener.Schedule"
-		property:type="synchronise"
-		property:delay="${synchronisation.delay}"
-		property:period="${synchronisation.period}" />
 	
-		<!-- Utility classes -->
+	<!-- Utility classes -->
 	<bean
 		class="ikube.toolkit.Mailer"
 		property:auth="true"
