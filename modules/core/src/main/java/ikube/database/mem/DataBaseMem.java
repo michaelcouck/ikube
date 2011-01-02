@@ -39,12 +39,13 @@ public class DataBaseMem implements IDataBase {
 				DatabaseUtilities.setIdField(object, System.nanoTime());
 			}
 			// Check for duplicate keys
-			Object duplicate = find(object.getClass(), idFieldValue);
+			Map<Long, Object> map = getMap(object.getClass());
+			Object duplicate = map.get(idFieldValue);
 			if (duplicate != null) {
-				throw new RuntimeException("Duplicate key for object : " + idFieldValue + ", " + object + ", " + object.getClass());
+				logger.info("Duplicate key : " + duplicate);
+				return object;
 			}
 			// Save the object in the maps
-			Map<Long, Object> map = getMap(object.getClass());
 			map.put(idFieldValue, object);
 			return dataBase.persist(object);
 		} catch (Exception e) {
@@ -134,10 +135,7 @@ public class DataBaseMem implements IDataBase {
 		try {
 			Map<Long, Object> map = getMap(klass);
 			T t = (T) map.get(id);
-			if (t != null) {
-				return t;
-			}
-			return dataBase.find(klass, id);
+			return t;
 		} finally {
 			notifyAll();
 		}

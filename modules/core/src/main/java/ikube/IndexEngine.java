@@ -74,13 +74,13 @@ public class IndexEngine implements IIndexEngine {
 			logger.info("Starting working : " + indexContext);
 			int thread = Thread.currentThread().hashCode();
 			for (IAction<IndexContext, Boolean> action : actions) {
-				logger.debug(Logging.getString("Executing action : ", action, ", ", thread));
 				boolean success = Boolean.FALSE;
 				try {
 					// Sleep for a random period to avoid one server always being first
-					long sleep = (long) (((Math.random() * 10d)) * 1000d);
+					long sleep = (long) (((Math.random() * 3d)) * 1000d);
 					logger.info("Sleeping for : " + sleep + " milliseconds");
 					Thread.sleep(sleep);
+					logger.debug(Logging.getString("Executing action : ", action, ", ", thread));
 					success = action.execute(indexContext);
 				} catch (Exception e) {
 					logger.error("Exception executing action : " + action, e);

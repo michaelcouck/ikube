@@ -1,19 +1,32 @@
 package ikube.database.mem;
 
-import static org.junit.Assert.*;
-
-import java.util.List;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import ikube.BaseTest;
 import ikube.database.IDataBase;
 import ikube.model.Url;
 import ikube.toolkit.ApplicationContextManager;
 
+import java.util.List;
+
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 public class DataBaseMemTest extends BaseTest {
 
 	private IDataBase dataBase = ApplicationContextManager.getBean(DataBaseMem.class);
+
+	@Before
+	public void before() {
+		delete(dataBase, Url.class);
+	}
+
+	@After
+	public void after() {
+		delete(dataBase, Url.class);
+	}
 
 	@Test
 	public void persist() throws Exception {
@@ -56,16 +69,37 @@ public class DataBaseMemTest extends BaseTest {
 	@Test
 	public void findClassLong() throws Exception {
 		// Class<T>, Long
+		Url url = new Url();
+		url.setId(1);
+		dataBase.persist(url);
+		url = dataBase.find(Url.class, url.getId());
+		assertNotNull(url);
 	}
 
 	@Test
 	public void removeClassLong() throws Exception {
 		// Class<T>, Long
+		Url url = new Url();
+		url.setId(1);
+		dataBase.persist(url);
+		url = dataBase.find(Url.class, url.getId());
+		assertNotNull(url);
+		dataBase.remove(Url.class, url.getId());
+		url = dataBase.find(Url.class, url.getId());
+		assertNull(url);
 	}
 
 	@Test
 	public void remove() throws Exception {
 		// T
+		Url url = new Url();
+		url.setId(1);
+		dataBase.persist(url);
+		url = dataBase.find(Url.class, url.getId());
+		assertNotNull(url);
+		dataBase.remove(url);
+		url = dataBase.find(Url.class, url.getId());
+		assertNull(url);
 	}
 
 }

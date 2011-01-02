@@ -130,7 +130,7 @@ public class ParserPerformanceTest extends ATest {
 	}
 
 	@Test
-	public void pattern() throws Exception {
+	public void patternPerformance() throws Exception {
 		File file = FileUtilities.findFile(new File("."), new String[] { "html.html" });
 		byte[] bytes = FileUtilities.getContents(file).toByteArray();
 		InputStream inputStream = new ByteArrayInputStream(bytes);

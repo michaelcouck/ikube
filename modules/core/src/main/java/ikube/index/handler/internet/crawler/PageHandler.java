@@ -26,6 +26,7 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.lang.Thread.State;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -83,7 +84,7 @@ public class PageHandler extends Handler<Url> implements Runnable {
 				if (threadsRunnable >= 2) {
 					synchronized (this) {
 						try {
-							wait(10000);
+							wait(1000);
 						} catch (Exception e) {
 							logger.error("", e);
 						}
@@ -92,11 +93,16 @@ public class PageHandler extends Handler<Url> implements Runnable {
 					break;
 				}
 			}
+			List<Url> list = new ArrayList<Url>();
 			for (Url url : urls) {
+				if (url.isIndexed()) {
+					continue;
+				}
+				list.add(url);
 				url.setIndexed(Boolean.TRUE);
 				dataBase.merge(url);
 			}
-			for (Url url : urls) {
+			for (Url url : list) {
 				try {
 					logger.info("Doing url : " + url);
 					handle(url);

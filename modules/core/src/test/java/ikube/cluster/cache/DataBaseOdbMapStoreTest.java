@@ -54,12 +54,12 @@ public class DataBaseOdbMapStoreTest extends BaseTest {
 		// Collection<Long>
 		Map<Long, Object> urls = getUrls(Boolean.TRUE);
 
-		int urlSize = dataBase.find(Url.class, 0, Integer.MAX_VALUE).size();
+		int urlSize = dataBase.find(Url.class, 0, Byte.MAX_VALUE).size();
 		assertEquals(urls.size(), urlSize);
 
 		cacheMapStore.deleteAll(urls.keySet());
 
-		urlSize = dataBase.find(Url.class, 0, Integer.MAX_VALUE).size();
+		urlSize = dataBase.find(Url.class, 0, Byte.MAX_VALUE).size();
 		assertEquals(0, urlSize);
 	}
 
@@ -112,8 +112,9 @@ public class DataBaseOdbMapStoreTest extends BaseTest {
 				dataBase.persist(url);
 			}
 			map.put(url.getId(), url);
-			Thread.sleep(10);
+			Thread.sleep(1);
 		}
+		logger.info("Url size : " + map.size());
 		return map;
 	}
 

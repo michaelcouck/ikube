@@ -44,8 +44,8 @@
 					<property name="fieldNames">
 						<list>
 							<!-- Neodatis doesn't like indexes -->
-							<value>id</value>
-							<value>hash</value>
+							<!--<value>id</value>
+							<value>hash</value>-->
 						</list>
 					</property>
 				</bean>
@@ -173,7 +173,6 @@
 		property:schedules-ref="scheduled.tasks" />
 	<util:list id="scheduled.tasks">
 		<ref local="ikube.listener.Schedule" />
-		<!--<ref local="ikube.listener.Schedule.Synchroinse" />-->
 		<ref local="ikube.listener.Schedule.WebService" />
 	</util:list>
 
