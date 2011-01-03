@@ -3,12 +3,16 @@ package ikube.toolkit;
 import ikube.IConstants;
 import ikube.logging.Logging;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 /**
  * Class for accessing the Spring context.
@@ -35,7 +39,14 @@ public class ApplicationContextManager {
 	public static synchronized ApplicationContext getApplicationContext() {
 		try {
 			if (APPLICATION_CONTEXT == null) {
-				APPLICATION_CONTEXT = getApplicationContext(IConstants.SPRING_CONFIGURATION_FILE);
+				// First see if there is a configuration file at the base of where the Jvm was started
+				File configFile = new File("." + IConstants.SEP + IConstants.IKUBE + IConstants.SEP + IConstants.SPRING_XML);
+				LOGGER.info("External configuration file : " + configFile + ", " + configFile.getAbsolutePath() + ", " + configFile.exists());
+				if (configFile.exists()) {
+					APPLICATION_CONTEXT = getApplicationContext(configFile);
+				} else {
+					APPLICATION_CONTEXT = getApplicationContext(IConstants.SPRING_CONFIGURATION_FILE);
+				}
 			}
 			return APPLICATION_CONTEXT;
 		} finally {
@@ -89,6 +100,30 @@ public class ApplicationContextManager {
 	public static synchronized <T> Map<String, T> getBeans(Class<T> klass) {
 		try {
 			return getApplicationContext().getBeansOfType(klass);
+		} finally {
+			ApplicationContextManager.class.notifyAll();
+		}
+	}
+
+	/**
+	 * Instantiates the application context using all the configuration files in the parameter list.
+	 * 
+	 * @param configFiles
+	 *            the locations of the configuration files
+	 * @return the merged application context for all the configuration files
+	 */
+	public static synchronized ApplicationContext getApplicationContext(File... configFiles) {
+		try {
+			if (APPLICATION_CONTEXT == null) {
+				LOGGER.info("Loading the application context with configurations : " + Arrays.asList(configFiles));
+				List<String> configLocations = new ArrayList<String>();
+				for (File configurationFile : configFiles) {
+					configLocations.add(configurationFile.getAbsolutePath());
+				}
+				APPLICATION_CONTEXT = new FileSystemXmlApplicationContext(configLocations.toArray(new String[configLocations.size()]));
+				LOGGER.info("Loaded the application context with configurations : " + Arrays.asList(configFiles));
+			}
+			return APPLICATION_CONTEXT;
 		} finally {
 			ApplicationContextManager.class.notifyAll();
 		}

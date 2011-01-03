@@ -294,7 +294,7 @@ public class ClusterManager implements IClusterManager {
 			}
 
 			// Publish the fact that this server is starting to work on an action
-			logger.info("Publishing server : " + server);
+			logger.info("Publishing server : " + server.getAddress());
 			cache.set(Server.class.getName(), server.getId(), server);
 			return firstStartTime;
 		} finally {

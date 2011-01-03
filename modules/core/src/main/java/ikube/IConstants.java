@@ -1,5 +1,7 @@
 package ikube;
 
+import java.io.File;
+
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.util.Version;
@@ -13,17 +15,21 @@ public interface IConstants {
 
 	/** Application name. */
 	public String IKUBE = "ikube";
+	/** The file separator for the system. */
+	public String SEP = File.separator;
 
 	/** We expect the configuration file to be in the META-INF as seems to be the fashion at the moment. */
-	public String META_INF = "/META-INF";
+	public String META_INF = SEP + "META-INF";
 
+	/** The name of the spring file. */
+	public String SPRING_XML = "spring.xml";
 	/** Where the whole application is wired together. */
-	public String SPRING_CONFIGURATION_FILE = META_INF + "/spring.xml";
+	public String SPRING_CONFIGURATION_FILE = META_INF + SEP + SPRING_XML;
 
 	/** Maps mime types to file extensions.. */
-	public String MIME_TYPES = META_INF + "/mime/mime-types.xml";
+	public String MIME_TYPES = META_INF + SEP + "mime" + SEP + "mime-types.xml";
 	/** Maps parsers to mime types. */
-	public String MIME_MAPPING = META_INF + "/mime/mime-mapping.xml";
+	public String MIME_MAPPING = META_INF + SEP + "mime" + SEP + "mime-mapping.xml";
 
 	/** The database file name. */
 	public String DATABASE_FILE = "ikube.odb";
@@ -59,9 +65,9 @@ public interface IConstants {
 	public int SYNCHRONIZATION_PORT = 9000;
 	public int MAX_SYNCHRONIZATION_PORT = 10000;
 	public String SYNCHRONIZATION_TOPIC = "synchronizationTopic";
-	
+
 	public String SYNCHRONIZATION = "synchronization";
-	
+
 	/** Url response codes */
 	public Integer HTTP_200 = new Integer(200); // OK
 	public Integer HTTP_301 = new Integer(301); // Move permanently
