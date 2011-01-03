@@ -57,7 +57,7 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 		url.setUrl(urlString);
 		url.setIndexed(Boolean.FALSE);
 
-		PageHandler.IN.put(url.getId(), url);
+		PageHandler.IN_SET.add(url);
 
 		// IDataBase dataBase = ApplicationContextManager.getBean(DataBaseMem.class);
 		// dataBase.persist(url);

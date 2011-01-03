@@ -41,7 +41,7 @@ public class PageHandlerTest extends BaseTest {
 		PageHandler pageHandler = new PageHandler(new ArrayList<Thread>());
 		pageHandler.setIndexContext(indexContext);
 		pageHandler.setIndexableInternet(indexableInternet);
-		PageHandler.IN.put(url.getId(), url);
+		PageHandler.IN_SET.add(url);
 		Thread thread = new Thread(pageHandler);
 		thread.start();
 		thread.join();

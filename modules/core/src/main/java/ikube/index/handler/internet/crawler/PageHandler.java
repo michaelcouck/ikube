@@ -27,6 +27,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.regex.Pattern;
 
 import javax.swing.text.html.HTML;
@@ -52,9 +54,13 @@ import org.apache.lucene.document.Field.TermVector;
  */
 public class PageHandler extends Handler<Url> implements Runnable {
 
-	public static Map<Long, Url> IN = new HashMap<Long, Url>();
-	protected static Map<Long, Url> OUT = new HashMap<Long, Url>();
-	protected static Map<Long, Url> CONTENT_HASH = new HashMap<Long, Url>();
+	// public static Map<Long, Url> IN = new HashMap<Long, Url>();
+	// protected static Map<Long, Url> OUT = new HashMap<Long, Url>();
+	// protected static Map<Long, Url> CONTENT_HASH = new HashMap<Long, Url>();
+
+	public static Set<Url> IN_SET = new TreeSet<Url>();
+	protected static Set<Url> OUT_SET = new TreeSet<Url>();
+	protected static Set<Url> HASH_SET = new TreeSet<Url>();
 
 	private HttpClient httpClient;
 	private IContentProvider<IndexableInternet> contentProvider;
@@ -64,9 +70,9 @@ public class PageHandler extends Handler<Url> implements Runnable {
 		this.httpClient = new HttpClient();
 		this.contentProvider = new InternetContentProvider();
 		this.threads = threads;
-		IN.clear();
-		OUT.clear();
-		CONTENT_HASH.clear();
+		// IN.clear();
+		// OUT.clear();
+		// CONTENT_HASH.clear();
 	}
 
 	public void run() {
@@ -116,15 +122,15 @@ public class PageHandler extends Handler<Url> implements Runnable {
 	protected static synchronized List<Url> getBatch(int batchSize) {
 		try {
 			List<Url> batch = new ArrayList<Url>();
-			for (Url url : IN.values()) {
+			for (Url url : IN_SET) {
 				batch.add(url);
 				if (batch.size() >= batchSize) {
 					break;
 				}
 			}
 			for (Url url : batch) {
-				IN.remove(url.getId());
-				OUT.put(url.getId(), url);
+				IN_SET.remove(url);
+				OUT_SET.add(url);
 			}
 			return batch;
 		} finally {
@@ -154,13 +160,12 @@ public class PageHandler extends Handler<Url> implements Runnable {
 				return;
 			}
 			long hash = HashUtilities.hash(parsedContent);
-			Url dbUrl = CONTENT_HASH.get(hash);
-			if (dbUrl != null) {
-				logger.info("Duplicate data : " + dbUrl.getUrl());
+			url.setHash(hash);
+			if (HASH_SET.contains(url)) {
+				logger.info("Duplicate data : " + url.getUrl());
 				return;
 			}
-			url.setHash(hash);
-			CONTENT_HASH.put(hash, dbUrl);
+			HASH_SET.add(url);
 			// Add the document to the index
 			addDocumentToIndex(indexableInternet, url, parsedContent);
 		} catch (Exception e) {
@@ -345,19 +350,15 @@ public class PageHandler extends Handler<Url> implements Runnable {
 								String strippedSessionLink = UriUtilities.stripJSessionId(resolvedLink, replacement);
 								String strippedAnchorLink = UriUtilities.stripAnchor(strippedSessionLink, "");
 								Long id = HashUtilities.hash(strippedAnchorLink);
-
-								Url dbUrl = IN.get(id);
-								if (dbUrl == null) {
-									dbUrl = OUT.get(id);
-								}
-								if (dbUrl != null) {
+								Url dbUrl = new Url();
+								dbUrl.setId(id);
+								if (exists(dbUrl)) {
 									continue;
 								}
 								// Add the link to the database here
-								dbUrl = new Url();
-								dbUrl.setId(id);
+
 								dbUrl.setUrl(strippedAnchorLink);
-								IN.put(dbUrl.getId(), dbUrl);
+								setUrl(dbUrl);
 							} catch (Exception e) {
 								logger.error("Exception extracting link : " + tag, e);
 							}
@@ -367,6 +368,24 @@ public class PageHandler extends Handler<Url> implements Runnable {
 			}
 		} catch (Exception e) {
 			logger.error("", e);
+		}
+	}
+
+	protected static synchronized boolean exists(Url url) {
+		try {
+			// return OUT.get(id) != null || IN.get(id) != null;
+			return IN_SET.contains(url) || OUT_SET.contains(url);
+		} finally {
+			PageHandler.class.notifyAll();
+		}
+	}
+
+	protected static synchronized void setUrl(Url url) {
+		try {
+			IN_SET.add(url);
+			// IN.put(url.getId(), url);
+		} finally {
+			PageHandler.class.notifyAll();
 		}
 	}
 

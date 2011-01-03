@@ -4,8 +4,6 @@ import ikube.model.Url;
 
 import java.util.Collection;
 
-import com.gargoylesoftware.htmlunit.Page;
-
 /**
  * This is the base interface for handlers and meant to be implemented to add functionality and custom handlers for specific projects. The
  * handle method takes a {@link Page} and the logic that processes that page should be included in the implementing class. Because typical
