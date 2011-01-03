@@ -1,7 +1,6 @@
 package ikube.index.handler.internet;
 
-import ikube.database.IDataBase;
-import ikube.database.mem.DataBaseMem;
+import ikube.cluster.IClusterManager;
 import ikube.index.handler.IndexableHandler;
 import ikube.index.handler.IndexableHandlerType;
 import ikube.index.handler.internet.crawler.PageHandler;
@@ -29,8 +28,10 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	@IndexableHandlerType(type = IndexableInternet.class)
 	public List<Thread> handle(final IndexContext indexContext, IndexableInternet indexable) throws Exception {
 		List<Thread> threads = new ArrayList<Thread>();
-		// The start url
-		seedUrl(indexContext, indexable);
+		if (isHandled(indexContext, indexable)) {
+			return threads;
+		}
+
 		String name = this.getClass().getSimpleName();
 		for (int i = 0; i < getThreads(); i++) {
 			IndexableInternet indexableInternet = (IndexableInternet) SerializationUtilities.clone(indexable);
@@ -39,13 +40,15 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 			pageHandler.setIndexableInternet(indexableInternet);
 			threads.add(new Thread(pageHandler, name + "." + i));
 		}
+		// The start url
+		seedUrl(indexable);
 		for (Thread thread : threads) {
 			thread.start();
 		}
 		return threads;
 	}
 
-	protected void seedUrl(final IndexContext indexContext, final IndexableInternet indexableInternet) {
+	protected void seedUrl(IndexableInternet indexableInternet) {
 		String urlString = indexableInternet.getUrl();
 		indexableInternet.setCurrentUrl(urlString);
 
@@ -54,8 +57,16 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 		url.setUrl(urlString);
 		url.setIndexed(Boolean.FALSE);
 
-		IDataBase dataBase = ApplicationContextManager.getBean(DataBaseMem.class);
-		dataBase.persist(url);
+		PageHandler.IN.put(url.getId(), url);
+
+		// IDataBase dataBase = ApplicationContextManager.getBean(DataBaseMem.class);
+		// dataBase.persist(url);
+	}
+
+	protected boolean isHandled(IndexContext indexContext, IndexableInternet indexableInternet) {
+		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
+		boolean isHandled = clusterManager.isHandled(indexableInternet.getName(), indexContext.getIndexName());
+		return isHandled;
 	}
 
 }

@@ -34,7 +34,7 @@ public class ClusterManager implements IClusterManager {
 	/** The timeout to wait for the lock. */
 	protected static long LOCK_TIMEOUT = 3000;
 	/** We only keep a few actions in the server. */
-	protected static double MAX_ACTION_SIZE = 25;
+	protected static double MAX_ACTION_SIZE = 100;
 	/** The ratio to delete the actions when the maximum is reached. */
 	protected static double ACTION_PRUNE_RATIO = 0.5;
 
@@ -312,19 +312,19 @@ public class ClusterManager implements IClusterManager {
 			Server thisServer = getServer();
 			List<Server> servers = getServers();
 			for (Server server : servers) {
-				if (server.equals(thisServer)) {
+				if (server.getAddress().equals(thisServer.getAddress())) {
 					continue;
 				}
 				for (Action action : server.getActions()) {
 					if (action.getIndexName().equals(indexName) && action.getIndexableName().equals(indexableName)) {
-						logger.info("File share already indexed by : " + server);
+						logger.info("Already indexed by : " + server);
 						return Boolean.TRUE;
 					}
 				}
 			}
 			return Boolean.FALSE;
 		} finally {
-
+			notifyAll();
 		}
 	}
 

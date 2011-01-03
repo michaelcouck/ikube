@@ -1,8 +1,6 @@
 package ikube.index.handler.internet.crawler;
 
 import ikube.IConstants;
-import ikube.database.IDataBase;
-import ikube.database.mem.DataBaseMem;
 import ikube.index.IndexManager;
 import ikube.index.content.ByteOutputStream;
 import ikube.index.content.IContentProvider;
@@ -14,7 +12,6 @@ import ikube.index.parse.mime.MimeTypes;
 import ikube.index.parse.xml.XMLParser;
 import ikube.model.IndexableInternet;
 import ikube.model.Url;
-import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.HashUtilities;
 import ikube.toolkit.UriUtilities;
 
@@ -55,23 +52,28 @@ import org.apache.lucene.document.Field.TermVector;
  */
 public class PageHandler extends Handler<Url> implements Runnable {
 
-	private IDataBase dataBase;
+	public static Map<Long, Url> IN = new HashMap<Long, Url>();
+	protected static Map<Long, Url> OUT = new HashMap<Long, Url>();
+	protected static Map<Long, Url> CONTENT_HASH = new HashMap<Long, Url>();
+
 	private HttpClient httpClient;
 	private IContentProvider<IndexableInternet> contentProvider;
 	private List<Thread> threads;
 
 	public PageHandler(List<Thread> threads) {
-		this.dataBase = ApplicationContextManager.getBean(DataBaseMem.class);
 		this.httpClient = new HttpClient();
 		this.contentProvider = new InternetContentProvider();
 		this.threads = threads;
+		IN.clear();
+		OUT.clear();
+		CONTENT_HASH.clear();
 	}
 
 	public void run() {
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		parameters.put(IConstants.INDEXED, Boolean.FALSE);
 		while (true) {
-			List<Url> urls = dataBase.find(Url.class, parameters, 0, getIndexContext().getInternetBatchSize());
+			List<Url> urls = getBatch(getIndexContext().getInternetBatchSize());
 			if (urls.size() == 0) {
 				// Check if there are any other threads still working
 				// other than this thread of course
@@ -93,24 +95,40 @@ public class PageHandler extends Handler<Url> implements Runnable {
 					break;
 				}
 			}
-			List<Url> list = new ArrayList<Url>();
 			for (Url url : urls) {
-				if (url.isIndexed()) {
-					continue;
-				}
-				list.add(url);
-				url.setIndexed(Boolean.TRUE);
-				dataBase.merge(url);
-			}
-			for (Url url : list) {
 				try {
 					logger.info("Doing url : " + url);
 					handle(url);
 					handleChildren(url);
+					url.setParsedContent(null);
+					url.setRawContent(null);
+					url.setTitle(null);
+					url.setUrl(null);
+					url.setContentType(null);
+					url.setIndexed(Boolean.TRUE);
 				} catch (Exception e) {
 					logger.error("", e);
 				}
 			}
+		}
+	}
+
+	protected static synchronized List<Url> getBatch(int batchSize) {
+		try {
+			List<Url> batch = new ArrayList<Url>();
+			for (Url url : IN.values()) {
+				batch.add(url);
+				if (batch.size() >= batchSize) {
+					break;
+				}
+			}
+			for (Url url : batch) {
+				IN.remove(url.getId());
+				OUT.put(url.getId(), url);
+			}
+			return batch;
+		} finally {
+			PageHandler.class.notifyAll();
 		}
 	}
 
@@ -136,15 +154,13 @@ public class PageHandler extends Handler<Url> implements Runnable {
 				return;
 			}
 			long hash = HashUtilities.hash(parsedContent);
-			Map<String, Object> parameters = new HashMap<String, Object>();
-			parameters.put(IConstants.HASH, hash);
-			Url dbUrl = dataBase.find(Url.class, parameters, Boolean.TRUE);
+			Url dbUrl = CONTENT_HASH.get(hash);
 			if (dbUrl != null) {
 				logger.info("Duplicate data : " + dbUrl.getUrl());
 				return;
 			}
 			url.setHash(hash);
-			dataBase.merge(url);
+			CONTENT_HASH.put(hash, dbUrl);
 			// Add the document to the index
 			addDocumentToIndex(indexableInternet, url, parsedContent);
 		} catch (Exception e) {
@@ -330,7 +346,10 @@ public class PageHandler extends Handler<Url> implements Runnable {
 								String strippedAnchorLink = UriUtilities.stripAnchor(strippedSessionLink, "");
 								Long id = HashUtilities.hash(strippedAnchorLink);
 
-								Url dbUrl = dataBase.find(Url.class, id);
+								Url dbUrl = IN.get(id);
+								if (dbUrl == null) {
+									dbUrl = OUT.get(id);
+								}
 								if (dbUrl != null) {
 									continue;
 								}
@@ -338,8 +357,7 @@ public class PageHandler extends Handler<Url> implements Runnable {
 								dbUrl = new Url();
 								dbUrl.setId(id);
 								dbUrl.setUrl(strippedAnchorLink);
-								dataBase.persist(dbUrl);
-								// TODO - post this url on the url topic
+								IN.put(dbUrl.getId(), dbUrl);
 							} catch (Exception e) {
 								logger.error("Exception extracting link : " + tag, e);
 							}

@@ -69,8 +69,6 @@ public class Index extends Action {
 						logger.info("Waiting for threads : " + threads);
 						ThreadUtilities.waitForThreads(threads);
 					}
-					// TODO - Wait for all the other servers to finish this indexable
-					// TODO - reset the urls in the cache
 				} catch (Exception e) {
 					logger.error("Exception indexing data : " + indexContext.getIndexName(), e);
 				}
