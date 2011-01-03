@@ -100,7 +100,7 @@ public class ClusterManager implements IClusterManager {
 			if (lock == null) {
 				return Boolean.TRUE;
 			}
-			List<Server> servers = getServers();
+			List<Server> servers = cache.get(Server.class.getName(), null, null, Integer.MAX_VALUE);
 			for (Server server : servers) {
 				if (server.getAddress().equals(this.address)) {
 					continue;
@@ -127,7 +127,7 @@ public class ClusterManager implements IClusterManager {
 			if (lock == null) {
 				return Boolean.TRUE;
 			}
-			List<Server> servers = getServers();
+			List<Server> servers = cache.get(Server.class.getName(), null, null, Integer.MAX_VALUE);
 			for (Server server : servers) {
 				if (server.getAddress().equals(this.address)) {
 					continue;
@@ -165,7 +165,7 @@ public class ClusterManager implements IClusterManager {
 				return 0;
 			}
 			long idNumber = 0;
-			List<Server> servers = getServers();
+			List<Server> servers = cache.get(Server.class.getName(), null, null, Integer.MAX_VALUE);
 			// We look for the largest row id from any of the servers, from the first action in each server
 			for (Server server : servers) {
 				List<Action> actions = server.getActions();
@@ -183,7 +183,7 @@ public class ClusterManager implements IClusterManager {
 				}
 			}
 			// We find the action for this server
-			Server server = getServer(); // cache.get(Server.class.getName(), HashUtilities.hash(address));
+			Server server = cache.get(Server.class.getName(), HashUtilities.hash(address));
 			List<Action> actions = server.getActions();
 			Action currentAction = null;
 
@@ -262,7 +262,7 @@ public class ClusterManager implements IClusterManager {
 			}
 
 			long firstStartTime = System.currentTimeMillis();
-			List<Server> servers = getServers();
+			List<Server> servers = cache.get(Server.class.getName(), null, null, Integer.MAX_VALUE);
 			// Find the first start time for the action we want to start in any of the servers
 			for (Server server : servers) {
 				logger.info("Server : " + server);
@@ -274,7 +274,7 @@ public class ClusterManager implements IClusterManager {
 			}
 
 			// Set the server working and the new action in the list
-			Server server = getServer();
+			Server server = cache.get(Server.class.getName(), HashUtilities.hash(address));
 			server.setWorking(isWorking);
 			server.getActions().add(server.new Action(0, indexableName, indexName, firstStartTime));
 
@@ -309,8 +309,8 @@ public class ClusterManager implements IClusterManager {
 	@Override
 	public synchronized boolean isHandled(String indexableName, String indexName) {
 		try {
-			Server thisServer = getServer();
-			List<Server> servers = getServers();
+			Server thisServer = cache.get(Server.class.getName(), HashUtilities.hash(address));
+			List<Server> servers = cache.get(Server.class.getName(), null, null, Integer.MAX_VALUE);
 			for (Server server : servers) {
 				if (server.getAddress().equals(thisServer.getAddress())) {
 					continue;
