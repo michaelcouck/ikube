@@ -24,6 +24,7 @@ import java.io.Reader;
 import java.lang.Thread.State;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,9 +59,30 @@ public class PageHandler extends Handler<Url> implements Runnable {
 	// protected static Map<Long, Url> OUT = new HashMap<Long, Url>();
 	// protected static Map<Long, Url> CONTENT_HASH = new HashMap<Long, Url>();
 
-	public static Set<Url> IN_SET = new TreeSet<Url>();
-	protected static Set<Url> OUT_SET = new TreeSet<Url>();
-	protected static Set<Url> HASH_SET = new TreeSet<Url>();
+	public static Set<Url> IN_SET = new TreeSet<Url>(new Comparator<Url>() {
+		@Override
+		public int compare(Url o1, Url o2) {
+			long id1 = o1.getId();
+			long id2 = o2.getId();
+			return id1 < id2 ? -1 : id1 == id2 ? 0 : 1;
+		}
+	});
+	public static Set<Url> OUT_SET = new TreeSet<Url>(new Comparator<Url>() {
+		@Override
+		public int compare(Url o1, Url o2) {
+			long id1 = o1.getId();
+			long id2 = o2.getId();
+			return id1 < id2 ? -1 : id1 == id2 ? 0 : 1;
+		}
+	});
+	public static Set<Url> HASH_SET = new TreeSet<Url>(new Comparator<Url>() {
+		@Override
+		public int compare(Url o1, Url o2) {
+			long hash1 = o1.getHash();
+			long hash2 = o2.getHash();
+			return hash1 < hash2 ? -1 : hash1 == hash2 ? 0 : 1;
+		}
+	});
 
 	private HttpClient httpClient;
 	private IContentProvider<IndexableInternet> contentProvider;
@@ -73,6 +95,9 @@ public class PageHandler extends Handler<Url> implements Runnable {
 		// IN.clear();
 		// OUT.clear();
 		// CONTENT_HASH.clear();
+		IN_SET.clear();
+		OUT_SET.clear();
+		HASH_SET.clear();
 	}
 
 	public void run() {
