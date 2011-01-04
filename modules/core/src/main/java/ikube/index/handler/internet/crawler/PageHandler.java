@@ -55,10 +55,6 @@ import org.apache.lucene.document.Field.TermVector;
  */
 public class PageHandler extends Handler<Url> implements Runnable {
 
-	// public static Map<Long, Url> IN = new HashMap<Long, Url>();
-	// protected static Map<Long, Url> OUT = new HashMap<Long, Url>();
-	// protected static Map<Long, Url> CONTENT_HASH = new HashMap<Long, Url>();
-
 	public static Set<Url> IN_SET = new TreeSet<Url>(new Comparator<Url>() {
 		@Override
 		public int compare(Url o1, Url o2) {
@@ -92,9 +88,6 @@ public class PageHandler extends Handler<Url> implements Runnable {
 		this.httpClient = new HttpClient();
 		this.contentProvider = new InternetContentProvider();
 		this.threads = threads;
-		// IN.clear();
-		// OUT.clear();
-		// CONTENT_HASH.clear();
 		IN_SET.clear();
 		OUT_SET.clear();
 		HASH_SET.clear();
@@ -119,7 +112,7 @@ public class PageHandler extends Handler<Url> implements Runnable {
 						try {
 							wait(1000);
 						} catch (Exception e) {
-							logger.error("", e);
+							LOGGER.error("", e);
 						}
 					}
 				} else {
@@ -128,7 +121,7 @@ public class PageHandler extends Handler<Url> implements Runnable {
 			}
 			for (Url url : urls) {
 				try {
-					logger.info("Doing url : " + url);
+					// LOGGER.info("Doing url : " + url);
 					handle(url);
 					handleChildren(url);
 					url.setParsedContent(null);
@@ -136,9 +129,8 @@ public class PageHandler extends Handler<Url> implements Runnable {
 					url.setTitle(null);
 					url.setUrl(null);
 					url.setContentType(null);
-					url.setIndexed(Boolean.TRUE);
 				} catch (Exception e) {
-					logger.error("", e);
+					LOGGER.error("", e);
 				}
 			}
 		}
@@ -172,7 +164,7 @@ public class PageHandler extends Handler<Url> implements Runnable {
 			// Get the content from the url
 			ByteOutputStream byteOutputStream = getContentFromUrl(httpClient, indexableInternet, url);
 			if (byteOutputStream == null || byteOutputStream.size() == 0) {
-				logger.warn("No content from url, perhaps exception : " + url);
+				LOGGER.warn("No content from url, perhaps exception : " + url);
 				return;
 			}
 			InputStream inputStream = new ByteArrayInputStream(byteOutputStream.getBytes());
@@ -187,14 +179,14 @@ public class PageHandler extends Handler<Url> implements Runnable {
 			long hash = HashUtilities.hash(parsedContent);
 			url.setHash(hash);
 			if (HASH_SET.contains(url)) {
-				logger.info("Duplicate data : " + url.getUrl());
+				LOGGER.info("Duplicate data : " + url.getUrl());
 				return;
 			}
 			HASH_SET.add(url);
 			// Add the document to the index
 			addDocumentToIndex(indexableInternet, url, parsedContent);
 		} catch (Exception e) {
-			logger.error("Exception visiting page : " + url, e);
+			LOGGER.error("Exception visiting page : " + url, e);
 		}
 	}
 
@@ -220,14 +212,14 @@ public class PageHandler extends Handler<Url> implements Runnable {
 			url.setRawContent(byteOutputStream.getBytes());
 			return byteOutputStream;
 		} catch (Exception e) {
-			logger.error("", e);
+			LOGGER.error("", e);
 		} finally {
 			try {
 				if (get != null) {
 					get.releaseConnection();
 				}
 			} catch (Exception e) {
-				logger.error("", e);
+				LOGGER.error("", e);
 			}
 		}
 		return byteOutputStream;
@@ -268,7 +260,7 @@ public class PageHandler extends Handler<Url> implements Runnable {
 			url.setContentType(contentType);
 			return outputStream.toString();
 		} catch (Exception e) {
-			logger.error("", e);
+			LOGGER.error("", e);
 		}
 		return null;
 	}
@@ -310,7 +302,7 @@ public class PageHandler extends Handler<Url> implements Runnable {
 			IndexManager.addStringField(indexable.getContentFieldName(), parsedContent, document, store, analyzed, termVector);
 			getIndexContext().getIndex().getIndexWriter().addDocument(document);
 		} catch (Exception e) {
-			logger.error("Exception accessing url : " + url, e);
+			LOGGER.error("Exception accessing url : " + url, e);
 		} finally {
 			url.setParsedContent(null);
 			url.setRawContent(null);
@@ -385,20 +377,19 @@ public class PageHandler extends Handler<Url> implements Runnable {
 								dbUrl.setUrl(strippedAnchorLink);
 								setUrl(dbUrl);
 							} catch (Exception e) {
-								logger.error("Exception extracting link : " + tag, e);
+								LOGGER.error("Exception extracting link : " + tag, e);
 							}
 						}
 					}
 				}
 			}
 		} catch (Exception e) {
-			logger.error("", e);
+			LOGGER.error("", e);
 		}
 	}
 
 	protected static synchronized boolean exists(Url url) {
 		try {
-			// return OUT.get(id) != null || IN.get(id) != null;
 			return IN_SET.contains(url) || OUT_SET.contains(url);
 		} finally {
 			PageHandler.class.notifyAll();
@@ -408,7 +399,6 @@ public class PageHandler extends Handler<Url> implements Runnable {
 	protected static synchronized void setUrl(Url url) {
 		try {
 			IN_SET.add(url);
-			// IN.put(url.getId(), url);
 		} finally {
 			PageHandler.class.notifyAll();
 		}

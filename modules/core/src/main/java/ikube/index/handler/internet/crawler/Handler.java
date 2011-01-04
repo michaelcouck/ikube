@@ -17,7 +17,7 @@ import org.apache.log4j.Logger;
  */
 public abstract class Handler<E extends Url> implements IHandler<Url> {
 
-	protected Logger logger = Logger.getLogger(this.getClass());
+	protected static Logger LOGGER = Logger.getLogger(Handler.class);
 
 	private IndexContext indexContext;
 	private IndexableInternet indexableInternet;
@@ -34,7 +34,7 @@ public abstract class Handler<E extends Url> implements IHandler<Url> {
 			try {
 				child.handle(url);
 			} catch (Exception e) {
-				logger.error("Exception executing the child handler : " + child, e);
+				LOGGER.error("Exception executing the child handler : " + child, e);
 			}
 		}
 	}

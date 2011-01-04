@@ -452,7 +452,7 @@
 		property:nameFieldName="name"
 		property:lengthFieldName="length"
 		property:contentFieldName="contents"
-		property:excludedPattern=".*(.svn).*|.*(database).*"
+		property:excludedPattern=".*(.svn).*|.*(database).*|.*(.gif).*|.*(.svg).*|.*(.jpg).*|.*(.zip).*|.*(.jar).*|.*(.exe).*|.*(.dll).*"
 		property:lastModifiedFieldName="lastmodified" />
 
 	<!-- Utility classes -->
