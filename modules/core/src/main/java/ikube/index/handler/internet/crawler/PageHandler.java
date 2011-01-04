@@ -93,6 +93,7 @@ public class PageHandler extends Handler<Url> implements Runnable {
 		HASH_SET.clear();
 	}
 
+	@Override
 	public void run() {
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		parameters.put(IConstants.INDEXED, Boolean.FALSE);
@@ -158,6 +159,7 @@ public class PageHandler extends Handler<Url> implements Runnable {
 	/**
 	 * @See {@link IHandler#handle(Url)}
 	 */
+	@Override
 	public void handle(Url url) {
 		try {
 			IndexableInternet indexableInternet = getIndexableInternet();

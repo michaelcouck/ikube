@@ -81,7 +81,7 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 			store = getStore(indexableMail);
 			store.connect();
 		} catch (MessagingException e) {
-			String message = Logging.getString("Could not connect to the mail server : ", indexableMail.getMailHost(), " port : ",
+			String message = Logging.getString("Could not connect to the mail server : ", indexableMail.getMailHost(), "port : ",
 					indexableMail.getPort());
 			logger.error(message, e);
 			return;

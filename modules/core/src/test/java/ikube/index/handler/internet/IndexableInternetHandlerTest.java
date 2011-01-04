@@ -3,8 +3,7 @@ package ikube.index.handler.internet;
 import static org.junit.Assert.assertTrue;
 import ikube.BaseTest;
 import ikube.action.Reset;
-import ikube.database.IDataBase;
-import ikube.database.mem.DataBaseMem;
+import ikube.index.handler.internet.crawler.PageHandler;
 import ikube.model.IndexableInternet;
 import ikube.model.Url;
 import ikube.toolkit.ApplicationContextManager;
@@ -25,14 +24,12 @@ public class IndexableInternetHandlerTest extends BaseTest {
 
 	@Before
 	public void before() {
-		IDataBase dataBase = ApplicationContextManager.getBean(DataBaseMem.class);
-		delete(dataBase, Url.class);
+		PageHandler.OUT_SET.clear();
 	}
 
 	@After
 	public void after() {
-		IDataBase dataBase = ApplicationContextManager.getBean(DataBaseMem.class);
-		delete(dataBase, Url.class);
+		PageHandler.OUT_SET.clear();
 	}
 
 	@Test
@@ -45,14 +42,12 @@ public class IndexableInternetHandlerTest extends BaseTest {
 
 		ThreadUtilities.waitForThreads(threads);
 
-		IDataBase dataBase = ApplicationContextManager.getBean(DataBaseMem.class);
-		List<Url> urls = dataBase.find(Url.class, 0, Integer.MAX_VALUE);
-		int totalUrlsCrawled = urls.size();
+		int totalUrlsCrawled = PageHandler.OUT_SET.size();
 		logger.info("Urls crawled : " + totalUrlsCrawled);
 		assertTrue(totalUrlsCrawled > 40);
 
 		// Print everything in the database
-		for (Url url : urls) {
+		for (Url url : PageHandler.OUT_SET) {
 			logger.info("Url : " + url);
 		}
 	}

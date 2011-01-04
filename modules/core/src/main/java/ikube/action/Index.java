@@ -62,7 +62,7 @@ public class Index extends Action {
 						continue;
 					}
 					// Execute the handler and wait for the threads to finish
-					logger.info("Executing handler : " + handler);
+					logger.info("Executing handler : " + handler + ", " + indexable);
 					getClusterManager().setWorking(indexName, indexable.getName(), Boolean.TRUE);
 					List<Thread> threads = handler.handle(indexContext, indexable);
 					if (threads != null && threads.size() > 0) {
@@ -78,7 +78,7 @@ public class Index extends Action {
 			getClusterManager().setWorking(indexName, "", Boolean.FALSE);
 		}
 		String contextName = indexContext.getIndexName();
-		logger.debug(Logging.getString("Index : Finished indexing : ", indexName, ", ", contextName));
+		logger.debug(Logging.getString("Index : Finished indexing : ", indexName, contextName));
 		return Boolean.TRUE;
 	}
 

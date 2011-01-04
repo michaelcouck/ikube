@@ -49,8 +49,8 @@ public class WebServicePublisher implements IWebServicePublisher {
 				logger.info("Publishing web service to : " + url);
 				Endpoint endpoint = Endpoint.publish(url.toString(), implementor);
 				Binding binding = endpoint.getBinding();
-				String message = Logging.getString("Endpoint : ", endpoint, ", binding : ", binding, ", implementor : ", implementor,
-						", on address : ", url.toString());
+				String message = Logging.getString("Endpoint : ", endpoint, "binding : ", binding, "implementor : ", implementor,
+						"on address : ", url.toString());
 				logger.info(message);
 			} catch (Exception e) {
 				logger.error("Exception publishing web service : " + protocol + ", " + host + ", " + port + ", " + path + ", "

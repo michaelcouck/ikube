@@ -40,7 +40,7 @@ public class IndexManager {
 		try {
 			String indexDirectoryPath = getIndexDirectory(ip, indexContext, time);
 			File indexDirectory = FileUtilities.getFile(indexDirectoryPath, Boolean.TRUE);
-			LOGGER.info(Logging.getString("Index directory time : ", time, ", date : ", new Date(time), ", writing index to directory ",
+			LOGGER.info(Logging.getString("Index directory time : ", time, "date : ", new Date(time), "writing index to directory ",
 					indexDirectory.getAbsolutePath()));
 			IndexWriter indexWriter = null;
 			try {

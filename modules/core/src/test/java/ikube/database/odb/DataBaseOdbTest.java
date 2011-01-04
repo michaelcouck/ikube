@@ -377,7 +377,7 @@ public class DataBaseOdbTest extends ATest {
 
 				protected void log(String action, int iteration, Url token) {
 					if (iteration % 100 == 0) {
-						logger.debug(Logging.getString("Action : ", action, ", ", iteration, ", ", token));
+						logger.debug(Logging.getString("Action : ", action, iteration, token));
 					}
 				}
 			}, this.getClass().getSimpleName() + "." + i);

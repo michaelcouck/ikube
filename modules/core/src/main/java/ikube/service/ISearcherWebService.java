@@ -17,6 +17,8 @@ public interface ISearcherWebService {
 	public String NAME = "searcher";
 	public String SERVICE = "searcher";
 	public String NAMESPACE = "http://ikube.search/";
+	
+	public String PUBLISHED_PATH = "/" + ISearcherWebService.class.getName().replace(".", "/") + "?wsdl";
 
 	/**
 	 * Does a search on a single field on the index defined in the parameter list. 

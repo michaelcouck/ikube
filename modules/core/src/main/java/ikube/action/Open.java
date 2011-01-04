@@ -83,7 +83,7 @@ public class Open extends Action {
 				reader = IndexReader.open(directory, Boolean.TRUE);
 				Searchable searcher = new IndexSearcher(reader);
 				searchers.add(searcher);
-				logger.info(Logging.getString("Opened searcher on : ", serverIndexDirectory, ", exists : ", exists, ", locked : ", locked));
+				logger.info(Logging.getString("Opened searcher on : ", serverIndexDirectory, "exists : ", exists, "locked : ", locked));
 			} catch (Exception e) {
 				logger.error("Exception opening directory : " + serverIndexDirectory, e);
 				opened = Boolean.FALSE;

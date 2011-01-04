@@ -348,7 +348,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 
 				builder.append(" < ");
 				builder.append(nextIdNumber + batchSize);
-				logger.info(Logging.getString("Sql : ", builder.toString(), ", thread : ", Thread.currentThread().hashCode()));
+				logger.info(Logging.getString("Sql : ", builder.toString(), " thread : ", Thread.currentThread().hashCode()));
 			} else {
 				// If this is a sub table then we need to add the condition of the foreign key
 				// from the parent table id to the predicate

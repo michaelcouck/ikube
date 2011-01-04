@@ -62,7 +62,7 @@ public class SearcherWebServiceExecuter implements ISearcherWebServiceExecuter {
 			logger.warn("Results not expected : " + results);
 			ListenerManager.fireEvent(Event.NO_RESULTS, System.currentTimeMillis(), null, Boolean.TRUE);
 		} else {
-			logger.info("Results expected : " + (results != null ? results.size() : 0));
+			// logger.info("Results expected : " + (results != null ? results.size() : 0));
 			ListenerManager.fireEvent(Event.RESULTS, System.currentTimeMillis(), null, Boolean.TRUE);
 		}
 		return results;

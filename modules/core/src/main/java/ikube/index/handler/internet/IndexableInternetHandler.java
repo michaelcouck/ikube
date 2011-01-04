@@ -31,7 +31,6 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 		if (isHandled(indexContext, indexable)) {
 			return threads;
 		}
-
 		String name = this.getClass().getSimpleName();
 		for (int i = 0; i < getThreads(); i++) {
 			IndexableInternet indexableInternet = (IndexableInternet) SerializationUtilities.clone(indexable);

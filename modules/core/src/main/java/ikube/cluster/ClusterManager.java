@@ -184,6 +184,9 @@ public class ClusterManager implements IClusterManager {
 			}
 			// We find the action for this server
 			Server server = cache.get(Server.class.getName(), HashUtilities.hash(address));
+			if (server == null) {
+				server = getServer();
+			}
 			List<Action> actions = server.getActions();
 			Action currentAction = null;
 
@@ -275,6 +278,9 @@ public class ClusterManager implements IClusterManager {
 
 			// Set the server working and the new action in the list
 			Server server = cache.get(Server.class.getName(), HashUtilities.hash(address));
+			if (server == null) {
+				server = getServer();
+			}
 			server.setWorking(isWorking);
 			server.getActions().add(server.new Action(0, indexableName, indexName, firstStartTime));
 
@@ -345,10 +351,9 @@ public class ClusterManager implements IClusterManager {
 				logger.error("Interrupted acquiring lock for : " + lockName, e);
 			}
 			if (!acquired) {
-				logger.warn(Logging.getString("Failed to acquire lock : ", lockName, ", ", Thread.currentThread().hashCode()));
+				logger.warn(Logging.getString("Failed to acquire lock : ", lockName, Thread.currentThread().hashCode()));
 				return null;
 			}
-			// logger.info(Logging.getString("Acquired LOCK : ", LOCK, ", ", Thread.currentThread().hashCode()));
 			return lock;
 		} finally {
 			notifyAll();

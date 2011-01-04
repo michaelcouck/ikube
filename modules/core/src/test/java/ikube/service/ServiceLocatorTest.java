@@ -14,7 +14,7 @@ public class ServiceLocatorTest extends BaseTest {
 		String protocol = "http";
 		String host = InetAddress.getLocalHost().getHostAddress();
 		int port = 8081;
-		String path = "/service/ISearcherWebService?wsdl";
+		String path = ISearcherWebService.PUBLISHED_PATH;
 		String nameSpace = ISearcherWebService.NAMESPACE;
 		String serviceName = ISearcherWebService.SERVICE;
 		ISearcherWebService service = ServiceLocator.getService(ISearcherWebService.class, protocol, host, port, path, nameSpace,

@@ -78,7 +78,7 @@ public class DataGenerator extends ATest {
 		}
 		int faqs = (iterations * batch);
 		int attachments = (iterations * batch * fileContents.size());
-		logger.info(Logging.getString("Inserted faqs : ", faqs, ", attachments : ", attachments));
+		logger.info(Logging.getString("Inserted faqs : ", faqs, "attachments : ", attachments));
 	}
 
 	protected void insertFaqs() throws Exception {

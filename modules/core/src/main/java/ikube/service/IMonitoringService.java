@@ -11,10 +11,12 @@ public interface IMonitoringService {
 	public String SERVICE = "monitor";
 	public String NAMESPACE = "http://ikube.monitor/";
 
+	public String PUBLISHED_PATH = "/" + IMonitoringService.class.getName().replace(".", "/") + "?wsdl";
+
 	public String[] getIndexNames();
-	
+
 	public String[] getIndexContextNames();
-	
+
 	public String[] getFieldNames(String indexName);
 
 }

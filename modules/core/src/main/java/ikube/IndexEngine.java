@@ -80,14 +80,14 @@ public class IndexEngine implements IIndexEngine {
 					long sleep = (long) (((Math.random() * 3d)) * 1000d);
 					logger.info("Sleeping for : " + sleep + " milliseconds");
 					Thread.sleep(sleep);
-					logger.debug(Logging.getString("Executing action : ", action, ", ", thread));
+					logger.debug(Logging.getString("Executing action : ", action, thread));
 					success = action.execute(indexContext);
 				} catch (Exception e) {
 					logger.error("Exception executing action : " + action, e);
 				}
-				logger.debug(Logging.getString("Action succeeded : ", success, ", ", action, ", ", thread));
+				logger.debug(Logging.getString("Action succeeded : ", success, action, thread));
 			}
-			logger.info(Logging.getString("Finished working : ", this, ", ", ApplicationContextManager.getBean(IClusterManager.class)
+			logger.info(Logging.getString("Finished working : ", this, ApplicationContextManager.getBean(IClusterManager.class)
 					.getServer()));
 		}
 	}

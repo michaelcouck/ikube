@@ -46,7 +46,7 @@ public class PerformanceTester {
 	 * @return the number of executions per second
 	 */
 	public static double execute(IPerform perform, String type, double iterations) {
-		long before = Runtime.getRuntime().totalMemory();
+		// long before = Runtime.getRuntime().totalMemory();
 		double start = System.currentTimeMillis();
 		try {
 			for (int i = 0; i < iterations; i++) {
@@ -59,11 +59,10 @@ public class PerformanceTester {
 		double duration = (end - start) / 1000d;
 		double executionsPerSecond = (iterations / duration);
 		if (perform.log()) {
-			long meg = 1000000;
-			long after = Runtime.getRuntime().totalMemory();
-			LOGGER.error(Logging.getString("Duration : ", duration, ", ", type, " per second : ", executionsPerSecond));
-			LOGGER.error(Logging.getString("Before : ", (before / meg), ", after : ", (after / meg), ", increase : ",
-					((after - before) / meg)));
+			// long meg = 1000000;
+			// long after = Runtime.getRuntime().totalMemory();
+			LOGGER.error(Logging.getString("Duration : ", duration, type, " per second : ", executionsPerSecond));
+			// LOGGER.error(Logging.getString("Before : ", (before / meg), "after : ", (after / meg), "increase : ", ((after - before) / meg)));
 		}
 		return executionsPerSecond;
 	}

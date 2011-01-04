@@ -89,8 +89,8 @@ public class SearcherWebService implements ISearcherWebService {
 			List<Map<String, String>> results = searchSingle.execute();
 			return SerializationUtilities.serialize(results);
 		} catch (Exception e) {
-			String message = Logging.getString("Exception doing search on index : ", indexName, ", ", searchString, ", ", searchField,
-					", ", fragment, ", ", start, ", ", end);
+			String message = Logging.getString("Exception doing search on index : ", indexName, searchString, searchField, fragment, start,
+					end);
 			logger.error(message, e);
 		}
 		return "Exception thrown during search.";
@@ -118,8 +118,8 @@ public class SearcherWebService implements ISearcherWebService {
 			List<Map<String, String>> results = searchMulti.execute();
 			return SerializationUtilities.serialize(results);
 		} catch (Exception e) {
-			String message = Logging.getString("Exception doing search on index : ", indexName, ", ", Arrays.asList(searchStrings), ", ",
-					Arrays.asList(searchFields), ", ", fragment, ", ", start, ", ", end);
+			String message = Logging.getString("Exception doing search on index : ", indexName, Arrays.asList(searchStrings),
+					Arrays.asList(searchFields), fragment, start, end);
 			logger.error(message, e);
 		}
 		return "Exception thrown during search.";
@@ -149,8 +149,8 @@ public class SearcherWebService implements ISearcherWebService {
 			List<Map<String, String>> results = searchMultiSorted.execute();
 			return SerializationUtilities.serialize(results);
 		} catch (Exception e) {
-			String message = Logging.getString("Exception doing search on index : ", indexName, ", " + Arrays.asList(searchStrings), ", ",
-					Arrays.asList(searchFields), ", ", Arrays.asList(sortFields), ", ", fragment, ", ", start, ", ", end);
+			String message = Logging.getString("Exception doing search on index : ", indexName, Arrays.asList(searchStrings),
+					Arrays.asList(searchFields), Arrays.asList(sortFields), fragment, start, end);
 			logger.error(message, e);
 		}
 		return "Exception thrown during search.";

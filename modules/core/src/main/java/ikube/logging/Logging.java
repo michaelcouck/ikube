@@ -55,7 +55,12 @@ public class Logging {
 			return "";
 		}
 		StringBuilder builder = new StringBuilder();
+		boolean first = Boolean.TRUE;
 		for (Object object : objects) {
+			if (!first) {
+				first = Boolean.FALSE;
+				builder.append(", ");
+			}
 			builder.append(object);
 		}
 		return builder.toString();
