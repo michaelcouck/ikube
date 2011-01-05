@@ -1,6 +1,8 @@
 package ikube.service;
 
+import ikube.cluster.IClusterManager;
 import ikube.logging.Logging;
+import ikube.model.Server;
 import ikube.toolkit.FileUtilities;
 
 import java.io.InputStream;
@@ -26,13 +28,16 @@ public class WebServicePublisher implements IWebServicePublisher {
 	private List<Integer> ports;
 	private List<String> paths;
 	private List<Object> implementors;
+	private IClusterManager clusterManager;
 
-	public WebServicePublisher() {
+	public WebServicePublisher(IClusterManager clusterManager) {
 		logger = Logger.getLogger(this.getClass());
+		this.clusterManager = clusterManager;
 	}
 
 	public void publish() {
 		assert protocols.size() == ports.size() && ports.size() == paths.size() && paths.size() == implementors.size();
+		Server server = clusterManager.getServer();
 		for (int i = 0; i < implementors.size(); i++) {
 			String protocol = protocols.get(i);
 			Integer port = ports.get(i);
@@ -49,6 +54,7 @@ public class WebServicePublisher implements IWebServicePublisher {
 				logger.info("Publishing web service to : " + url);
 				Endpoint endpoint = Endpoint.publish(url.toString(), implementor);
 				Binding binding = endpoint.getBinding();
+				server.getWebServiceUrls().add(url.toString());
 				String message = Logging.getString("Endpoint : ", endpoint, "binding : ", binding, "implementor : ", implementor,
 						"on address : ", url.toString());
 				logger.info(message);
@@ -57,6 +63,7 @@ public class WebServicePublisher implements IWebServicePublisher {
 						+ implementor, e);
 			}
 		}
+		clusterManager.set(Server.class, server.getId(), server);
 	}
 
 	protected boolean urlInUse(URL url) {

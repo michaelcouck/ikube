@@ -111,6 +111,7 @@
 		id="ikube.service.WebServicePublisher"
 		class="ikube.service.WebServicePublisher"
 		init-method="publish" >
+		<constructor-arg ref="ikube.cluster.IClusterManager" />
 		<property name="protocols">
 			<list>
 				<value>${service.protocol}</value>

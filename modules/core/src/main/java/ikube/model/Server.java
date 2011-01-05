@@ -91,9 +91,12 @@ public class Server extends Persistable implements Comparable<Server> {
 	private boolean working;
 	/** The details about the action that this server is executing. */
 	private List<Action> actions;
+	/** The list of web service urls. */
+	private List<String> webServiceUrls;
 
 	public Server() {
 		this.actions = new ArrayList<Server.Action>();
+		this.webServiceUrls = new ArrayList<String>();
 	}
 
 	public String getIp() {
@@ -122,6 +125,10 @@ public class Server extends Persistable implements Comparable<Server> {
 
 	public List<Action> getActions() {
 		return actions;
+	}
+	
+	public List<String> getWebServiceUrls() {
+		return webServiceUrls;
 	}
 
 	@Override

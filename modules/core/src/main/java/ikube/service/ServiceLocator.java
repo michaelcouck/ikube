@@ -16,11 +16,19 @@ public class ServiceLocator {
 	public static <T> T getService(Class<T> klass, String protocol, String host, int port, String path, String nameSpace, String serviceName) {
 		try {
 			String url = UriUtilities.buildUri(protocol, host, port, path);
+			return getService(klass, url, nameSpace, serviceName);
+		} catch (Exception e) {
+			LOGGER.error("", e);
+		}
+		return null;
+	}
+
+	public static <T> T getService(Class<T> klass, String url, String nameSpace, String serviceName) {
+		try {
 			URL wsdlURL = new URL(url);
 			QName qName = new QName(nameSpace, serviceName);
 			Service service = Service.create(wsdlURL, qName);
-			T t = service.getPort(klass);
-			return t;
+			return service.getPort(klass);
 		} catch (Exception e) {
 			LOGGER.error("", e);
 		}
