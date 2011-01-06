@@ -53,36 +53,47 @@ public class MonitoringService implements IMonitoringService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public String[] getFieldNames(String indexName) {
+	public String[] getIndexFieldNames(String indexName) {
 		Map<String, IndexContext> indexContexts = ApplicationContextManager.getBeans(IndexContext.class);
 		for (IndexContext indexContext : indexContexts.values()) {
 			if (indexContext.getIndexName().equals(indexName)) {
-				Set<String> fieldNames = new TreeSet<String>();
-				getFields(indexContext.getIndexables(), fieldNames);
+				Set<String> fieldNames = getFields(indexContext.getIndexables(), new TreeSet<String>());
 				return fieldNames.toArray(new String[fieldNames.size()]);
 			}
 		}
 		return null;
 	}
 
+	@Override
+	public String[] getIndexableFieldNames(String indexableName) {
+		Indexable<?> indexable = ApplicationContextManager.getBean(indexableName);
+		Set<String> fieldNames = getFields(indexable, new TreeSet<String>());
+		return fieldNames.toArray(new String[fieldNames.size()]);
+	}
+
 	protected Set<String> getFields(List<Indexable<?>> indexables, Set<String> fieldNames) {
 		if (indexables != null) {
 			for (Indexable<?> child : indexables) {
-				Field[] fields = child.getClass().getDeclaredFields();
-				for (Field field : fields) {
-					ikube.model.Field annotation = field.getAnnotation(ikube.model.Field.class);
-					if (annotation != null) {
-						try {
-							Object fieldName = FieldUtils.readDeclaredField(child, field.getName(), Boolean.TRUE);
-							if (fieldName != null) {
-								fieldNames.add(fieldName.toString());
-							}
-						} catch (IllegalAccessException e) {
-							logger.error("Illegal access with forced access?", e);
-						}
-					}
-				}
+				getFields(child, fieldNames);
 				getFields(child.getChildren(), fieldNames);
+			}
+		}
+		return fieldNames;
+	}
+
+	protected Set<String> getFields(Indexable<?> indexable, Set<String> fieldNames) {
+		Field[] fields = indexable.getClass().getDeclaredFields();
+		for (Field field : fields) {
+			ikube.model.Field annotation = field.getAnnotation(ikube.model.Field.class);
+			if (annotation != null) {
+				try {
+					Object fieldName = FieldUtils.readDeclaredField(indexable, field.getName(), Boolean.TRUE);
+					if (fieldName != null) {
+						fieldNames.add(fieldName.toString());
+					}
+				} catch (IllegalAccessException e) {
+					logger.error("Illegal access with forced access?", e);
+				}
 			}
 		}
 		return fieldNames;

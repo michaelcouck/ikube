@@ -17,6 +17,8 @@ public interface IMonitoringService {
 
 	public String[] getIndexContextNames();
 
-	public String[] getFieldNames(String indexName);
+	public String[] getIndexFieldNames(String indexName);
+	
+	public String[] getIndexableFieldNames(String indexableName);
 
 }

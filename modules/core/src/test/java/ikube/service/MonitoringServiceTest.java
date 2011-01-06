@@ -25,7 +25,7 @@ public class MonitoringServiceTest extends BaseTest {
 		for (String indexContextName : indexContextNames) {
 			IndexContext indexContext = ApplicationContextManager.getBean(indexContextName);
 			logger.debug("Index context name : " + indexContextName);
-			String[] fieldNames = monitoringService.getFieldNames(indexContext.getIndexName());
+			String[] fieldNames = monitoringService.getIndexFieldNames(indexContext.getIndexName());
 			assertTrue(fieldNames.length > 0);
 			for (String fieldName : fieldNames) {
 				logger.debug("        : field name : " + fieldName);
