@@ -27,9 +27,9 @@
 		property:maxReadLength="${max.read.length}"
 		property:queueTimeout="${max.age}"
 		property:throttle="${throttle}"
-		property:indexDirectoryPath="${index.directory.path.one}"
+		property:indexDirectoryPath="${index.directory.path}"
 		property:indexables-ref="indexables" />
-	<!--<bean
+	<bean
 		id="indexContextTwo"
 		class="ikube.model.IndexContext"
 		property:indexName="indexTwo"
@@ -44,7 +44,7 @@
 		property:maxReadLength="${max.read.length}"
 		property:queueTimeout="${max.age}"
 		property:throttle="${throttle}"
-		property:indexDirectoryPath="${index.directory.path.two}"
+		property:indexDirectoryPath="${index.directory.path}"
 		property:indexables-ref="indexables" />
 	<bean
 		id="indexContextThree"
@@ -61,22 +61,15 @@
 		property:maxReadLength="${max.read.length}"
 		property:queueTimeout="${max.age}"
 		property:throttle="${throttle}"
-		property:indexDirectoryPath="${index.directory.path.three}"
-		property:indexables-ref="indexables" />-->
+		property:indexDirectoryPath="${index.directory.path}"
+		property:indexables-ref="indexables" />
 	<util:list id="indexables">
 		<ref local="mail" />
 		<ref local="internet" />
-		<ref local="filesystem" />
+		<ref local="filesystemOne" />
+		<ref local="filesystemTwo" />
+		<ref local="filesystemThree" />
 		<ref local="tableOne" />
-		<!--<ref local="tableOne" />
-		<ref local="tableOne" />
-		<ref local="tableOne" />
-		<ref local="tableOne" />
-		<ref local="tableOne" />
-		<ref local="tableOne" />
-		<ref local="tableOne" />
-		<ref local="tableOne" />
-		<ref local="tableOne" />-->
 	</util:list>
 
 	<bean
@@ -444,9 +437,31 @@
 		property:vectored="${vectored}" />
 	
 	<bean
-		id="filesystem"
+		id="filesystemOne"
 		class="ikube.model.IndexableFileSystem"
-		property:name="files"
+		property:name="filesOne"
+		property:path="${files.path}"
+		property:pathFieldName="path"
+		property:nameFieldName="name"
+		property:lengthFieldName="length"
+		property:contentFieldName="contents"
+		property:excludedPattern=".*(.svn).*|.*(database).*|.*(.gif).*|.*(.svg).*|.*(.jpg).*|.*(.zip).*|.*(.jar).*|.*(.exe).*|.*(.dll).*|.*(.war).*"
+		property:lastModifiedFieldName="lastmodified" />
+	<bean
+		id="filesystemTwo"
+		class="ikube.model.IndexableFileSystem"
+		property:name="filesTwo"
+		property:path="${files.path}"
+		property:pathFieldName="path"
+		property:nameFieldName="name"
+		property:lengthFieldName="length"
+		property:contentFieldName="contents"
+		property:excludedPattern=".*(.svn).*|.*(database).*|.*(.gif).*|.*(.svg).*|.*(.jpg).*|.*(.zip).*|.*(.jar).*|.*(.exe).*|.*(.dll).*|.*(.war).*"
+		property:lastModifiedFieldName="lastmodified" />
+	<bean
+		id="filesystemThree"
+		class="ikube.model.IndexableFileSystem"
+		property:name="filesThree"
 		property:path="${files.path}"
 		property:pathFieldName="path"
 		property:nameFieldName="name"

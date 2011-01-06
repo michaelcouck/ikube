@@ -2,9 +2,11 @@ package ikube.cluster;
 
 import ikube.ATest;
 import ikube.IConstants;
+import ikube.logging.Logging;
 import ikube.model.IndexContext;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
+import ikube.toolkit.UriUtilities;
 
 import java.io.File;
 import java.io.InputStream;
@@ -23,7 +25,11 @@ import org.apache.log4j.Logger;
  */
 public class ClusterIntegration extends ATest {
 
-	public static long SLEEP = 1000 * 60 * 60 * 5;
+	static {
+		Logging.configure();
+	}
+
+	public static long SLEEP = 1000 * 60 * 60 * 72;
 	private static Logger LOGGER = Logger.getLogger(ClusterIntegration.class);
 
 	public static void start() throws Exception {
@@ -75,8 +81,7 @@ public class ClusterIntegration extends ATest {
 							builder.append(serverName);
 							builder.append(" : ");
 							builder.append(chars, 0, read);
-							// UriUtilities.stripCarriageReturn(builder.toString())
-							System.out.println(builder.toString());
+							System.out.println(UriUtilities.stripCarriageReturn(builder.toString()));
 						}
 					} catch (Exception e) {
 						LOGGER.error("", e);
@@ -94,9 +99,6 @@ public class ClusterIntegration extends ATest {
 			LOGGER.info("Destroying process : " + process);
 			process.destroy();
 		}
-
-		FileUtilities.deleteFiles(new File("."), IConstants.DATABASE_FILE, IConstants.TRANSACTION_FILES);
-		System.exit(0);
 	}
 
 }

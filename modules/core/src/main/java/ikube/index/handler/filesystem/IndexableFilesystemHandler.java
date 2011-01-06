@@ -84,7 +84,7 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 				if (isExcluded(file, excludedPattern)) {
 					continue;
 				}
-				logger.debug("Visiting file : " + file);
+				// logger.debug("Visiting file : " + file);
 				if (file.isDirectory()) {
 					handleFolder(indexContext, indexableFileSystem, file, excludedPattern);
 				} else {
@@ -114,7 +114,7 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 
 			byte[] bytes = new byte[1024];
 			if (inputStream.markSupported()) {
-				inputStream.mark(Integer.MAX_VALUE);
+				inputStream.mark(Short.MAX_VALUE);
 				inputStream.read(bytes);
 				inputStream.reset();
 			}
