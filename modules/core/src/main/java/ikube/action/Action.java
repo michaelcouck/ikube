@@ -48,7 +48,8 @@ public abstract class Action implements IAction<IndexContext, Boolean> {
 	 * @return whether the index for this index context is passed it's expiration date
 	 */
 	protected boolean isIndexCurrent(IndexContext indexContext) {
-		File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
+		String indexDirectoryPath = indexContext.getIndexDirectoryPath() + File.separator + indexContext.getIndexName();
+		File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexDirectoryPath);
 		if (latestIndexDirectory == null) {
 			return Boolean.FALSE;
 		}
