@@ -161,6 +161,18 @@ public class IndexContext extends Persistable implements Comparable<IndexContext
 	public void setIndex(Index index) {
 		this.index = index;
 	}
+	
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("[");
+		builder.append(getId()).append(",");
+		builder.append(getIndexName()).append(",");
+		builder.append(getIndexDirectoryPath()).append(",");
+		builder.append(getMaxAge()).append(",");
+		builder.append("]");
+		return builder.toString();
+	}
 
 	@Override
 	public int compareTo(IndexContext o) {

@@ -28,7 +28,7 @@
 		class="ikube.IndexEngine"
 		property:actions-ref="actions" />
 	<util:list id="actions">
-		<ref local="ikube.action.Synchronize" />
+		<!--<ref local="ikube.action.Synchronize" />-->
 		<ref local="ikube.action.Reset" />
 		<ref local="ikube.action.Close" />
 		<ref local="ikube.action.Open" />
@@ -143,17 +143,16 @@
 	<bean
 		id="ikube.service.SearcherWebServiceExecuter"
 		class="ikube.service.SearcherWebServiceExecuter"
-		property:indexName="contextOne"
-		property:end="101"
+		property:indexName="${searcher.index.name}"
 		property:protocol="${service.protocol}"
 		property:port="${service.port}"
 		property:path="${web.service.path}"
-		property:fieldName="question"
-		property:fragment="true"
-		property:resultsSizeMinimum="1"
-		property:searchString="clinch crackerjack books gall thoroughgoing
-			tall pissed committee greathearted cyborg devotional tremor tuba"
-		property:start="0" />
+		property:fieldName="${searcher.field.name}"
+		property:fragment="${searcher.fragment}"
+		property:resultsSizeMinimum="${searcher.minimum.results.size}"
+		property:searchString="${searcher.search.string}"
+		property:start="${searcher.start.index}"
+		property:end="${searcher.end.index}" />
 
 	<bean
 		class="ikube.listener.Scheduler"

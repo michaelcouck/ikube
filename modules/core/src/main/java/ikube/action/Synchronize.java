@@ -84,8 +84,7 @@ public class Synchronize extends Action implements MessageListener<Synchronizati
 			return Boolean.FALSE;
 		}
 
-		// Check to see if there are any new indexes that are finished,
-		// i.e. not locked
+		// Check to see if there are any new indexes that are finished, i.e. not locked
 		List<File> files = getIndexFiles();
 		// Publish a message to the cluster with the name
 		// of the file that we want to send to each
@@ -325,6 +324,7 @@ public class Synchronize extends Action implements MessageListener<Synchronizati
 			close(socket);
 			if (!written) {
 				// Delete the file as something went wrong
+				logger.warn("Exception getting file : " + file + ", from host.");
 				if (file != null && file.exists()) {
 					FileUtilities.deleteFile(file, 1);
 				}

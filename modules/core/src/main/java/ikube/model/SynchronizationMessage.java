@@ -48,10 +48,11 @@ public class SynchronizationMessage extends Persistable {
 	}
 
 	public String toString() {
-		final StringBuilder builder = new StringBuilder("[");
-		builder.append(getId());
-		builder.append(", ").append(getIp());
-		builder.append(", ").append(getFilePath());
+		final StringBuilder builder = new StringBuilder();
+		builder.append("[");
+		builder.append(getId()).append(", ");
+		builder.append(getIp()).append(", ");
+		builder.append(getFilePath());
 		builder.append("]");
 		return builder.toString();
 	}
