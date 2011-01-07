@@ -12,7 +12,7 @@ import org.junit.Test;
 public class AsposePdfParserTest extends ATest {
 
 	@Test
-	public void test() throws Exception {
+	public void parse() throws Exception {
 		// AsposePdfParser pdfParser = new AsposePdfParser();
 		// File file = FileUtilities.findFile(new File("."), new String[] { "pdf.pdf" });
 		// byte[] bytes = FileUtilities.getContents(file).toByteArray();
