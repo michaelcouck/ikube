@@ -147,7 +147,7 @@ public class Synchronize extends Action implements MessageListener<Synchronizati
 		for (String indexContextName : indexContexts.keySet()) {
 			IndexContext indexContext = indexContexts.get(indexContextName);
 			try {
-				String indexDirectoryPath = indexContext.getIndexDirectoryPath();
+				String indexDirectoryPath = indexContext.getIndexDirectoryPath() + File.separator + indexContext.getIndexName();
 				File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexDirectoryPath);
 				logger.info("Latest index directory : " + latestIndexDirectory);
 				if (latestIndexDirectory == null) {
@@ -239,7 +239,7 @@ public class Synchronize extends Action implements MessageListener<Synchronizati
 			}
 
 			boolean exists = Boolean.FALSE;
-			File baseIndexDirectory = new File(indexContext.getIndexDirectoryPath());
+			File baseIndexDirectory = new File(indexContext.getIndexDirectoryPath() + File.separator + indexContext.getIndexName());
 			String[] patterns = new String[] { fileName };
 			List<File> foundFiles = FileUtilities.findFilesRecursively(baseIndexDirectory, patterns, new ArrayList<File>());
 			// Iterate through the files with this name and see if they are

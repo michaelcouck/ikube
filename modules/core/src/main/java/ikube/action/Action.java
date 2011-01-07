@@ -87,37 +87,31 @@ public abstract class Action implements IAction<IndexContext, Boolean> {
 		if (!isIndexCurrent(indexContext)) {
 			return Boolean.FALSE;
 		}
-		File baseIndexDirectory = new File(indexContext.getIndexDirectoryPath());
-		File[] contextIndexDirectories = baseIndexDirectory.listFiles();
-		if (contextIndexDirectories == null) {
+		File baseIndexDirectory = new File(indexContext.getIndexDirectoryPath() + File.separator + indexContext.getIndexName());
+		File[] timeIndexDirectories = baseIndexDirectory.listFiles();
+		if (timeIndexDirectories == null) {
 			return Boolean.FALSE;
 		}
-		for (File contextIndexDirectory : contextIndexDirectories) {
-			File[] timeIndexDirectories = contextIndexDirectory.listFiles();
-			if (timeIndexDirectories == null) {
+		for (File timeIndexDirectory : timeIndexDirectories) {
+			File[] serverIndexDirectories = timeIndexDirectory.listFiles();
+			if (serverIndexDirectories == null) {
 				continue;
 			}
-			for (File timeIndexDirectory : timeIndexDirectories) {
-				File[] serverIndexDirectories = timeIndexDirectory.listFiles();
-				if (serverIndexDirectories == null) {
-					continue;
+			for (File serverIndexDirectory : serverIndexDirectories) {
+				boolean indexAlreadyOpen = Boolean.FALSE;
+				for (Searchable searchable : searchables) {
+					IndexSearcher indexSearcher = (IndexSearcher) searchable;
+					IndexReader indexReader = indexSearcher.getIndexReader();
+					FSDirectory fsDirectory = (FSDirectory) indexReader.directory();
+					File indexDirectory = fsDirectory.getFile();
+					if (directoriesEqual(serverIndexDirectory, indexDirectory)) {
+						indexAlreadyOpen = directoryExistsAndNotLocked(serverIndexDirectory);
+						break;
+					}
 				}
-				for (File serverIndexDirectory : serverIndexDirectories) {
-					boolean indexAlreadyOpen = Boolean.FALSE;
-					for (Searchable searchable : searchables) {
-						IndexSearcher indexSearcher = (IndexSearcher) searchable;
-						IndexReader indexReader = indexSearcher.getIndexReader();
-						FSDirectory fsDirectory = (FSDirectory) indexReader.directory();
-						File indexDirectory = fsDirectory.getFile();
-						if (directoriesEqual(serverIndexDirectory, indexDirectory)) {
-							indexAlreadyOpen = directoryExistsAndNotLocked(serverIndexDirectory);
-							break;
-						}
-					}
-					if (!indexAlreadyOpen) {
-						logger.debug(Logging.getString("Found new index directory : ", serverIndexDirectory, " will try to re-open : "));
-						return Boolean.TRUE;
-					}
+				if (!indexAlreadyOpen) {
+					logger.debug(Logging.getString("Found new index directory : ", serverIndexDirectory, " will try to re-open : "));
+					return Boolean.TRUE;
 				}
 			}
 		}

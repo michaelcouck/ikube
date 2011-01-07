@@ -42,19 +42,23 @@ public class Open extends Action {
 		// have to be VERY fast to catch the application without a searcher open. This
 		// way we don't have to manage open searchers and keep track of them
 		if (indexContext.getIndex().getMultiSearcher() != null) {
-			logger.debug("Index searcher still active, will not open : ");
+			logger.info("Index searcher still active, will not open : ");
 			return Boolean.FALSE;
 		}
 		ArrayList<Searchable> searchers = new ArrayList<Searchable>();
 
-		File baseIndexDirectory = new File(indexContext.getIndexDirectoryPath());
-		File[] contextIndexDirectories = baseIndexDirectory.listFiles();
-		if (contextIndexDirectories == null) {
+		String indexDirectoryPath = indexContext.getIndexDirectoryPath() + File.separator + indexContext.getIndexName();
+		File baseIndexDirectory = new File(indexDirectoryPath);
+		if (baseIndexDirectory.listFiles() == null) {
 			return Boolean.FALSE;
 		}
-		File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
+		File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexDirectoryPath);
 		logger.info("Latest index directory : " + latestIndexDirectory);
 		if (latestIndexDirectory == null) {
+			return Boolean.FALSE;
+		}
+		boolean shouldReopen = shouldReopen(indexContext);
+		if (!shouldReopen) {
 			return Boolean.FALSE;
 		}
 		File[] serverIndexDirectories = latestIndexDirectory.listFiles();
