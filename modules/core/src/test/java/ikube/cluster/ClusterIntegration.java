@@ -88,7 +88,7 @@ public class ClusterIntegration extends ATest {
 					}
 				}
 			}).start();
-			Thread.sleep(15000);
+			Thread.sleep(5000);
 		}
 
 		LOGGER.info("Going to sleep : " + Thread.currentThread().hashCode());

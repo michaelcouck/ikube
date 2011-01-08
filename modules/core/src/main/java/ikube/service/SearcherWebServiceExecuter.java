@@ -3,6 +3,7 @@ package ikube.service;
 import ikube.listener.Event;
 import ikube.listener.IListener;
 import ikube.listener.ListenerManager;
+import ikube.logging.Logging;
 import ikube.toolkit.SerializationUtilities;
 
 import java.net.InetAddress;
@@ -59,7 +60,7 @@ public class SearcherWebServiceExecuter implements ISearcherWebServiceExecuter {
 		String xml = searchRemote.searchSingle(indexName, searchString, fieldName, fragment, start, end);
 		List<Map<String, String>> results = (List<Map<String, String>>) SerializationUtilities.deserialize(xml);
 		if (results.size() < resultsSizeMinimum) {
-			logger.warn("Results not expected : " + results);
+			logger.warn(Logging.getString("Results not expected : " + results, indexName, searchString, fieldName, fragment, start, end, resultsSizeMinimum));
 			ListenerManager.fireEvent(Event.NO_RESULTS, System.currentTimeMillis(), null, Boolean.TRUE);
 		} else {
 			// logger.info("Results expected : " + (results != null ? results.size() : 0));

@@ -65,6 +65,9 @@ public class SearcherWebService implements ISearcherWebService {
 		singleSearchers.put(indexContext.getIndexName(), searchSingle);
 		multiSearchers.put(indexContext.getIndexName(), searchMulti);
 		multiSortedSearchers.put(indexContext.getIndexName(), searchMultiSorted);
+		logger.info("Single searchers : " + singleSearchers);
+		logger.info("Multi searchers : " + multiSearchers);
+		logger.info("Multi sorted searchers : " + multiSortedSearchers);
 	}
 
 	/**
