@@ -370,7 +370,6 @@ public class ClusterManager implements IClusterManager {
 		try {
 			if (lock != null) {
 				lock.unlock();
-				// logger.info(Logging.getString("Unlocked : ", LOCK, ", ", Thread.currentThread().hashCode()));
 			}
 		} finally {
 			notifyAll();

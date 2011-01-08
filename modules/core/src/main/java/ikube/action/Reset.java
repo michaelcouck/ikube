@@ -1,6 +1,9 @@
 package ikube.action;
 
+import java.util.List;
+
 import ikube.model.IndexContext;
+import ikube.model.Server;
 import ikube.model.Url;
 
 /**
@@ -21,6 +24,13 @@ public class Reset extends Action {
 		if (getClusterManager().anyWorking()) {
 			logger.info("Servers working : ");
 			return Boolean.FALSE;
+		}
+		List<Server> servers = getClusterManager().getServers();
+		for (Server server : servers) {
+			server.getActions().clear();
+		}
+		for (Server server : servers) {
+			getClusterManager().set(Server.class, server.getId(), server);
 		}
 		getClusterManager().clear(Url.class);
 		return Boolean.TRUE;
