@@ -38,9 +38,6 @@ public class Index extends Action {
 			}
 		}
 		Server server = getClusterManager().getServer();
-		if (server.isWorking()) {
-			return Boolean.FALSE;
-		}
 		List<Indexable<?>> indexables = indexContext.getIndexables();
 		String indexName = indexContext.getIndexName();
 		try {
@@ -58,12 +55,12 @@ public class Index extends Action {
 					// Get the right handler for this indexable
 					IHandler<Indexable<?>> handler = getHandler(indexableHandlers, indexable);
 					if (handler == null) {
-						logger.warn("Not handling indexable : " + indexable);
+						logger.warn(Logging.getString("Not handling indexable : ", indexable, " no handler defined.")); 
 						continue;
 					}
 					// Execute the handler and wait for the threads to finish
-					logger.info("Executing handler : " + handler + ", " + indexable);
 					getClusterManager().setWorking(indexName, indexable.getName(), Boolean.TRUE);
+					logger.info("Executing handler : " + handler + ", " + indexable);
 					List<Thread> threads = handler.handle(indexContext, indexable);
 					if (threads != null && threads.size() > 0) {
 						logger.info("Waiting for threads : " + threads);

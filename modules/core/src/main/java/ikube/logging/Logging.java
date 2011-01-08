@@ -57,8 +57,9 @@ public class Logging {
 		StringBuilder builder = new StringBuilder();
 		boolean first = Boolean.TRUE;
 		for (Object object : objects) {
-			if (!first) {
+			if (first) {
 				first = Boolean.FALSE;
+			} else {
 				builder.append(", ");
 			}
 			builder.append(object);

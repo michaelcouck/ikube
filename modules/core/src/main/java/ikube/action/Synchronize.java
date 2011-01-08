@@ -32,6 +32,8 @@ import com.hazelcast.core.ITopic;
 import com.hazelcast.core.MessageListener;
 
 /**
+ * TODO - re-test this class, it doesn't work in a cluster.
+ * 
  * @author Michael Couck
  * @since 31.12.10
  * @version 01.00

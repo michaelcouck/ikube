@@ -37,18 +37,13 @@ public class Open extends Action {
 
 	@Override
 	public Boolean execute(IndexContext indexContext) {
-		// We wait for the searcher to be closed before we open another one. The
-		// close operation is very fast and the open operation is also, so any clients will
-		// have to be VERY fast to catch the application without a searcher open. This
-		// way we don't have to manage open searchers and keep track of them
-		if (indexContext.getIndex().getMultiSearcher() != null) {
-			logger.info("Index searcher still active, will not open : ");
+		boolean shouldReopen = shouldReopen(indexContext);
+		if (!shouldReopen) {
 			return Boolean.FALSE;
 		}
 		ArrayList<Searchable> searchers = new ArrayList<Searchable>();
-
 		String indexDirectoryPath = indexContext.getIndexDirectoryPath() + File.separator + indexContext.getIndexName();
-		File baseIndexDirectory = new File(indexDirectoryPath);
+		File baseIndexDirectory = FileUtilities.getFile(indexDirectoryPath, Boolean.TRUE);
 		if (baseIndexDirectory.listFiles() == null) {
 			return Boolean.FALSE;
 		}
@@ -57,10 +52,7 @@ public class Open extends Action {
 		if (latestIndexDirectory == null) {
 			return Boolean.FALSE;
 		}
-		boolean shouldReopen = shouldReopen(indexContext);
-		if (!shouldReopen) {
-			return Boolean.FALSE;
-		}
+		
 		File[] serverIndexDirectories = latestIndexDirectory.listFiles();
 		IndexReader reader = null;
 		Directory directory = null;

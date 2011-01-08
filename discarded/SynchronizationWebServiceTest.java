@@ -22,7 +22,7 @@ import org.junit.Test;
 public class SynchronizationWebServiceTest extends BaseTest {
 
 	private SynchronizationWebService synchronizationWebService;
-	private String baseDirectory = "./index";
+	private String baseDirectory = "./indexes";
 	private String latestDirectory = Long.toString(System.currentTimeMillis());
 	private String serverDirectory;
 	private String contextDirectory = indexContext.getName();

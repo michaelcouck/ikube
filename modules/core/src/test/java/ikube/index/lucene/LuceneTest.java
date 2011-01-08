@@ -42,7 +42,7 @@ public class LuceneTest extends ATest {
 	private String string = "Qu'est ce qui détermine la productivité, et comment est-il mesuré? " //
 			+ "Was bestimmt die Produktivität, und wie wird sie gemessen? " //
 			+ "Что определяет производительность труда, и как ее измерить? ";
-	private File indexDirectory = FileUtilities.getFile("./index", Boolean.TRUE);
+	private File indexDirectory = FileUtilities.getFile("./indexes", Boolean.TRUE);
 
 	@Before
 	public void before() throws Exception {

@@ -20,17 +20,16 @@ public class Close extends Action {
 
 	@Override
 	public Boolean execute(IndexContext indexContext) {
-		MultiSearcher multiSearcher = indexContext.getIndex().getMultiSearcher();
-		if (multiSearcher == null) {
-			logger.debug("No index searcher yet in context, please build the index : ");
-			return Boolean.FALSE;
-		}
 		// First check to see if there are any new indexes, if there are no
 		// new indexes then we shouldn't close the searcher
-		boolean shouldReopen = shouldReopen(indexContext);
-		if (!shouldReopen) {
-			logger.info("Should close : " + shouldReopen);
+		boolean shouldClose = shouldReopen(indexContext);
+		if (!shouldClose) {
+			logger.info("Should close : " + shouldClose);
 			return Boolean.FALSE;
+		}
+		MultiSearcher multiSearcher = indexContext.getIndex().getMultiSearcher();
+		if (multiSearcher == null) {
+			return Boolean.TRUE;
 		}
 		// Get all the SEARCHABLES from the searcher and close them one by one
 		Searchable[] searchables = multiSearcher.getSearchables();

@@ -7,6 +7,7 @@ import ikube.listener.IListener;
 import ikube.listener.ListenerManager;
 import ikube.logging.Logging;
 import ikube.model.IndexContext;
+import ikube.model.Server;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
 
@@ -60,8 +61,9 @@ public class IndexEngine implements IIndexEngine {
 		}
 
 		// If this server is working on anything then return
-		if (ApplicationContextManager.getBean(IClusterManager.class).getServer().isWorking()) {
-			logger.debug("This server working : " + ApplicationContextManager.getBean(IClusterManager.class).getServer());
+		Server server = ApplicationContextManager.getBean(IClusterManager.class).getServer();
+		if (server.isWorking()) {
+			logger.debug("This server working : " + server);
 			return;
 		}
 
@@ -71,14 +73,14 @@ public class IndexEngine implements IIndexEngine {
 				logger.warn("No actions configured for index engine : " + indexContext.getIndexName());
 				continue;
 			}
-			logger.info("Starting working : " + indexContext);
+			logger.info("Start working : " + indexContext);
 			int thread = Thread.currentThread().hashCode();
 			for (IAction<IndexContext, Boolean> action : actions) {
 				boolean success = Boolean.FALSE;
 				try {
 					// Sleep for a random period to avoid one server always being first
 					long sleep = (long) (((Math.random() * 3d)) * 1000d);
-					logger.info("Sleeping for : " + sleep + " milliseconds");
+					logger.debug(Logging.getString("Sleeping for : ", sleep, " milliseconds"));
 					Thread.sleep(sleep);
 					logger.debug(Logging.getString("Executing action : ", action, thread));
 					success = action.execute(indexContext);
@@ -87,8 +89,7 @@ public class IndexEngine implements IIndexEngine {
 				}
 				logger.debug(Logging.getString("Action succeeded : ", success, action, thread));
 			}
-			logger.info(Logging.getString("Finished working : ", this, ApplicationContextManager.getBean(IClusterManager.class)
-					.getServer()));
+			logger.info(Logging.getString("Finish working : ", this, server));
 		}
 	}
 
