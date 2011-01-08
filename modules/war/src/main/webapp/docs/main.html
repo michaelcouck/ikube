@@ -2,6 +2,7 @@
 	<head>
 		<title>Ikube</title>
 		<link href="../style/style-white.css" rel="stylesheet" type="text/css" media="screen" />
+		<script src="../js/ikube.js" type="text/javascript"></script>
 		<meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
 	</head>
 	<body>
@@ -14,12 +15,7 @@
 								<span class="top-content-header">about</span>
 							</td>
 							<td class="top-content" style="padding-left: 150px"> 
-								<script type="text/javascript">
-									var d = new Date();
-									document.write(d.toLocaleTimeString());
-									document.write(' ');
-									document.write(d.toLocaleDateString());
-								</script>
+								<script type="text/javascript">writeDate();</script>
 							</td>
 						</tr>
 					</table>
@@ -28,18 +24,23 @@
 			<tr>
 				<td class="td-content">
 					<strong>ikube</strong>
-						Ikube is an enterprise search application. It is geared to high volumes of data, and database oriented. Generally 
-						for data sets that have less than 1 million records/documents other solutions are probably more effective due to the 
-						overhead of configuration and the learning curve.
+						Having arrived here you have probably read the <a href="http://code.google.com/p/ikube/">Ikube Wiki</a> introduction 
+						on Google Code, so no real introduction is necessary here, so to brass tacks as it were.
 						<br><br>
 						If you click on the language of your choice and it is still in English, this means that the translation has not been done. 
 						However on the grounds that you understand this, and presumably your favorite language too, this places you in the 
 						favorable position to contribute this translation, which would be much appreciated.
-				</td>
-			</tr>
-			<tr>
-				<td class="bottom-content">
-					Bla bla bla...
+						<br><br>
+						Just a little extra general information then. Ikube is Lucene based, so ultimately it is just a container for Lucene indexes. Having 
+						said that it is also a clusterable application designed for very large volumes. There is not database setup and there are no complicated 
+						transaction handling mechanisms, performance is a primary concern and with volumes of data exceeding the billion mark and likely to 
+						increase by a factor every year transaction handling would consume too much processing power.
+						<br><br>
+						Please try the quick start page and move on to more complex index configurations when that is all up and running. Feel free to mail 
+						me if you have any difficulty with the configuration, or if my writing style is not clear or with any suggestions at 
+						michael dot couck at gmail dot com.
+						<br><br>
+						Have a fantastic day!
 				</td>
 			</tr>
 		</table>
