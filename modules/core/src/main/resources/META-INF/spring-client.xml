@@ -64,11 +64,11 @@
 		property:indexDirectoryPath="${index.directory.path}"
 		property:indexables-ref="indexables" />
 	<util:list id="indexables">
-		<ref local="mail" />
+		<!--<ref local="mail" />
 		<ref local="internet" />
 		<ref local="filesystemOne" />
 		<ref local="filesystemTwo" />
-		<ref local="filesystemThree" />
+		<ref local="filesystemThree" />-->
 		<ref local="tableOne" />
 	</util:list>
 

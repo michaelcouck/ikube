@@ -141,9 +141,35 @@
 	</bean>
 	
 	<bean
-		id="ikube.service.SearcherWebServiceExecuter"
+		id="ikube.service.SearcherWebServiceExecuter.One"
 		class="ikube.service.SearcherWebServiceExecuter"
-		property:indexName="${searcher.index.name}"
+		property:indexName="${searcher.index.name.one}"
+		property:protocol="${service.protocol}"
+		property:port="${service.port}"
+		property:path="${web.service.path}"
+		property:fieldName="${searcher.field.name}"
+		property:fragment="${searcher.fragment}"
+		property:resultsSizeMinimum="${searcher.minimum.results.size}"
+		property:searchString="${searcher.search.string}"
+		property:start="${searcher.start.index}"
+		property:end="${searcher.end.index}" />
+	<bean
+		id="ikube.service.SearcherWebServiceExecuter.Two"
+		class="ikube.service.SearcherWebServiceExecuter"
+		property:indexName="${searcher.index.name.two}"
+		property:protocol="${service.protocol}"
+		property:port="${service.port}"
+		property:path="${web.service.path}"
+		property:fieldName="${searcher.field.name}"
+		property:fragment="${searcher.fragment}"
+		property:resultsSizeMinimum="${searcher.minimum.results.size}"
+		property:searchString="${searcher.search.string}"
+		property:start="${searcher.start.index}"
+		property:end="${searcher.end.index}" />
+	<bean
+		id="ikube.service.SearcherWebServiceExecuter.Three"
+		class="ikube.service.SearcherWebServiceExecuter"
+		property:indexName="${searcher.index.name.three}"
 		property:protocol="${service.protocol}"
 		property:port="${service.port}"
 		property:path="${web.service.path}"
