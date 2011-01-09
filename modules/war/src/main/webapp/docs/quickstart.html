@@ -62,8 +62,11 @@
 					
 					In this configuration the configuration files were in the war. The default is first to look a folder 'ikube' in the folder where the server 
 					was started, i.e. in the bin folder(${TOMCAT_INSTALL}/bin/ikube). If there are no files in this folder then the files in the war will be used 
-					for configuration. Generally clients would want to have their configuration out side the war. To try an external configuration follow the 
-					instructions below.<br><br> 
+					for configuration. Generally clients would want to have their configuration out side the war. On the other hand having the configuration in the 
+					war will greatly simplify the deployment in a clustered environment. For example in JBoss just drop the war into the 'farm' folder and JBoss will 
+					propergate the deployment into the cluster. Outside the war, each server will have to be configured separately, updating the configuration 
+					will require that each server is again configured. You get the picture? 
+					To try an external configuration follow the instructions below.<br><br> 
 					
 					There is a minimal configuration set in the project, this can be found in the  
 					<a href="http://code.google.com/p/ikube/source/browse/#svn%2Ftrunk%2Fmodules%2Fcore%2Fsrc%2Fmain%2Fresources%2FMETA-INF%2Fminimal"
@@ -81,9 +84,6 @@
 					distant future.	<br><br>
 					
 					That is it. Wait for a while and the indexing will start. In a few seconds it will finish, and violla. Ready to search...<br><br>
-					
-					I will do a more comprehensive example in the coming days which will include several indexes in a cluster with database 
-					indexing. Stay tuned.<br><br>
 					
 					Have a fantastic day!
 				</td>
