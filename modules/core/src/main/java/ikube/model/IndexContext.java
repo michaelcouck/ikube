@@ -13,8 +13,8 @@ import javax.persistence.Transient;
 @Entity()
 public class IndexContext extends Persistable implements Comparable<IndexContext> {
 
-	private long maxAge;
 	private String indexName;
+	private long maxAge;
 	private long queueTimeout;
 	private long throttle;
 

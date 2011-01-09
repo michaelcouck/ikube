@@ -13,7 +13,14 @@ table {
 	font-family: Tahoma, "Trebuchet MS", Arial, Helvetica, sans-serif;
 	font-size: 12px;
 	color: #2e2e2e;
+	text-align: left;
 }
+
+/*.bordered table {
+	border: 1px solid black;
+	border-collapse: collapse;
+}*/
+
 td {
 	vertical-align: top;
 }
@@ -220,7 +227,7 @@ hr { display: none; }
 /* Content */
 #content {
 	# float: left;
-	width: 590px;
+	width: 750px;
 }
 #content .top-content {
 	height: 50px;
