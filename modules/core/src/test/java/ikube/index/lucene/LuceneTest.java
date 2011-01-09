@@ -6,6 +6,7 @@ import ikube.IConstants;
 import ikube.index.IndexManager;
 import ikube.search.SearchSingle;
 import ikube.toolkit.FileUtilities;
+import ikube.toolkit.SerializationUtilities;
 
 import java.io.File;
 import java.util.List;
@@ -90,6 +91,8 @@ public class LuceneTest extends ATest {
 		results = searchSingle.execute();
 		logger.warn(results);
 		assertEquals(2, results.size());
+		
+		logger.info("Xml : " + SerializationUtilities.serialize(results));
 
 		reader.close();
 		searcher.close();
