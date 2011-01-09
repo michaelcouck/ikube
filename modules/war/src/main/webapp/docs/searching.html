@@ -68,9 +68,12 @@
 					is an example how to do this in the SearcherWebServiceExecuter. Here is the required code:<br><br>
 					
 					ISearcherWebService searchRemote = ServiceLocator.getService(ISearcherWebService.class, protocol, host, port, path,
-						ISearcherWebService.NAMESPACE, ISearcherWebService.SERVICE);
-					String xml = searchRemote.searchSingle(indexName, searchString, fieldName, fragment, start, end);
+						ISearcherWebService.NAMESPACE, ISearcherWebService.SERVICE);<br>
+					String xml = searchRemote.searchSingle(indexName, searchString, fieldName, fragment, start, end);<br>
 					List&lt;Map&lt;String, String&gt;&gt; results = (List&lt;Map&lt;String, String&gt;&gt;) SerializationUtilities.deserialize(xml);<br><br>
+					
+					The final map in the list will have two fields, the total results that were returned by the search and the duration for the search, just 
+					for interests' sake.<br><br>  
 					
 					Happy searching!
 				</td>
