@@ -24,7 +24,7 @@ public class Close extends Action {
 		// new indexes then we shouldn't close the searcher
 		boolean shouldClose = shouldReopen(indexContext);
 		if (!shouldClose) {
-			logger.info("Should close : " + shouldClose);
+			logger.debug("Should close : " + shouldClose);
 			return Boolean.FALSE;
 		}
 		MultiSearcher multiSearcher = indexContext.getIndex().getMultiSearcher();
@@ -49,7 +49,7 @@ public class Close extends Action {
 				}
 			}
 		}
-		// See the searcher to null so the open action
+		// Set the searcher to null so the open action
 		// will then be invoked to re-open the searcher
 		// during the next iteration over the actions
 		indexContext.getIndex().setMultiSearcher(null);

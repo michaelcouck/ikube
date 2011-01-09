@@ -34,7 +34,7 @@
 		<delete dir="${tomcat.1.bin}/${indexes}" failonerror="true" />
 		<delete dir="${tomcat.2.bin}/${indexes}" failonerror="true" />
 		<delete dir="${tomcat.3.bin}/${indexes}" failonerror="true" />
-		<delete dir="${cluster.directory}/indexes" failonerror="true" />
+		<!-- delete dir="${cluster.directory}/indexes" failonerror="true" / -->
 		<!--delete file="${tomcat.vm.one.bin}/${indexes}" failonerror="false" / -->
 		<!-- delete file="${tomcat.ikube.bin}/${indexes}" failonerror="false" />
 		<delete file="${tomcat.ikube.cluster.one.bin}/${indexes}" failonerror="false" />
