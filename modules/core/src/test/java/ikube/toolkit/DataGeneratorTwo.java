@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import javax.sql.DataSource;
+
 import org.apache.log4j.Logger;
 
 public class DataGeneratorTwo {
@@ -145,17 +147,24 @@ public class DataGeneratorTwo {
 			}
 			preparedStatement.executeUpdate();
 
-			ids = preparedStatement.getGeneratedKeys();
-			while (ids.next()) {
-				long id = ids.getInt(1);
-				// logger.info("Id : " + id + ", " + indexableTable.getName());
-				// Set the id in the parent table
-				IndexableColumn idColumn = getIdColumn(indexableTable.getChildren());
-				idColumn.setObject(id);
-				// Do the child tables
-				for (Indexable<?> indexable : indexableTable.getChildren()) {
-					if (IndexableTable.class.isAssignableFrom(indexable.getClass())) {
-						generate((IndexableTable) indexable, connection);
+			List<Indexable<?>> children = indexableTable.getChildren();
+			if (containsSubTables(children)) {
+				ids = preparedStatement.getGeneratedKeys();
+				while (ids.next()) {
+					Object rowid = ids.getObject(1);
+					if (!Number.class.isAssignableFrom(rowid.getClass())) {
+						continue;
+					}
+					long id = ids.getLong(1);
+					// logger.info("Id : " + id + ", " + indexableTable.getName());
+					// Set the id in the parent table
+					IndexableColumn idColumn = getIdColumn(indexableTable.getChildren());
+					idColumn.setObject(id);
+					// Do the child tables
+					for (Indexable<?> indexable : children) {
+						if (IndexableTable.class.isAssignableFrom(indexable.getClass())) {
+							generate((IndexableTable) indexable, connection);
+						}
 					}
 				}
 			}
@@ -166,6 +175,15 @@ public class DataGeneratorTwo {
 			DatabaseUtilities.close(ids);
 			DatabaseUtilities.close(preparedStatement);
 		}
+	}
+
+	protected boolean containsSubTables(List<Indexable<?>> children) {
+		for (Indexable<?> child : children) {
+			if (IndexableTable.class.isAssignableFrom(child.getClass())) {
+				return Boolean.TRUE;
+			}
+		}
+		return Boolean.FALSE;
 	}
 
 	protected IndexableColumn getIdColumn(List<Indexable<?>> indexableColumns) {
@@ -214,8 +232,18 @@ public class DataGeneratorTwo {
 	}
 
 	public static void main(String[] args) throws Exception {
+		// Connection connection = DriverManager.getConnection("jdbc:oracle:thin:@//falcon:1521/XE", "XE", "oracle");
+		// connection.createStatement().execute("");
+		// System.out.println(connection);
+		// connection.close();
+
 		String configLocation = "/data/spring.xml";
-		DataGeneratorTwo dataGeneratorTwo = new DataGeneratorTwo(90000, 10);
+		ApplicationContextManager.getApplicationContext(configLocation);
+		Connection connection = ApplicationContextManager.getBean(DataSource.class).getConnection();
+		System.out.println(connection);
+		connection.close();
+
+		DataGeneratorTwo dataGeneratorTwo = new DataGeneratorTwo(10000000, 3);
 		List<Thread> threads = dataGeneratorTwo.generate(configLocation);
 		ThreadUtilities.waitForThreads(threads);
 		System.out.println("Finished generation : ");

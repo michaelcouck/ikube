@@ -21,5 +21,12 @@
 		property:user="${jdbc.user}"
 		property:checkoutTimeout="${jdbc.checkOutTimeout}"
 		property:numHelperThreads="${jdbc.numHelperThreads}" />
+	
+	<!--<bean id="nonXaDataSource" 
+		class="oracle.jdbc.pool.OracleDataSource" 
+		destroy-method="close"
+		property:password="${jdbc.password}"
+		property:user="${jdbc.user}"
+		property:URL="${jdbc.url}" />-->
 
 </beans>

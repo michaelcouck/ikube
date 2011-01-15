@@ -76,7 +76,7 @@
 		id="tableOne"
 		class="ikube.model.IndexableTable"
 		property:name="faq"
-		property:schema="db2admin"
+		property:schema="${jdbc.schema}"
 		property:predicate="${faq.predicate}"
 		property:primary="true"
 		property:dataSource-ref="nonXaDataSource"
@@ -90,8 +90,8 @@
 		<ref local="question" />
 		<ref local="answer" />
 		<ref local="published" />
-		<ref local="tableTwo" />
-		<ref local="tableThree" />
+		<!--<ref local="tableTwo" />-->
+		<!--<ref local="tableThree" />-->
 	</util:list>
 
 	<bean
@@ -147,7 +147,7 @@
 		id="tableTwo"
 		class="ikube.model.IndexableTable"
 		property:name="attachment"
-		property:schema="db2admin"
+		property:schema="${jdbc.schema}"
 		property:primary="false"
 		property:dataSource-ref="nonXaDataSource"
 		property:children-ref="columnsTwo" />
@@ -199,7 +199,7 @@
 		id="tableThree"
 		class="ikube.model.IndexableTable"
 		property:name="version"
-		property:schema="db2admin"
+		property:schema="${jdbc.schema}"
 		property:primary="false"
 		property:dataSource-ref="nonXaDataSource"
 		property:children-ref="columnsThree" />
@@ -276,7 +276,7 @@
 		id="tableFour"
 		class="ikube.model.IndexableTable"
 		property:name="versionAttachment"
-		property:schema="db2admin"
+		property:schema="${jdbc.schema}"
 		property:primary="false"
 		property:dataSource-ref="nonXaDataSource"
 		property:children-ref="columnsFour" />

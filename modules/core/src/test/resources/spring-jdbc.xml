@@ -30,5 +30,12 @@
 		property:autoCommitOnClose="true"
 		property:debugUnreturnedConnectionStackTraces="true"
 		property:unreturnedConnectionTimeout="6000000" />
+	
+	<!--<bean id="nonXaDataSource" 
+		class="oracle.jdbc.pool.OracleDataSource" 
+		destroy-method="close"
+		property:password="${jdbc.password}"
+		property:user="${jdbc.user}"
+		property:URL="${jdbc.url}" />-->
 
 </beans>

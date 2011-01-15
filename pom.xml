@@ -414,8 +414,13 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
-		<!-- <dependency> <groupId>oracle.ojdbc6</groupId> <artifactId>ojdbc6</artifactId> <version>11</version> <type>jar</type> <scope>compile</scope> 
-			</dependency> -->
+		<dependency>
+			<groupId>oracle.ojdbc6</groupId>
+			<artifactId>ojdbc6</artifactId>
+			<version>11</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.apache.jcs</groupId>
 			<artifactId>jcs</artifactId>
