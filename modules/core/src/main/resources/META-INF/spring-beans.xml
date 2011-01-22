@@ -107,8 +107,8 @@
 		id="ikube.service.SearcherWebService"
 		class="ikube.service.SearcherWebService" />
 	<bean
-		id="ikube.service.MonitoringService"
-		class="ikube.service.MonitoringService" />
+		id="ikube.monitoring.MonitoringService"
+		class="ikube.monitoring.MonitoringService" />
 	<bean
 		id="ikube.service.WebServicePublisher"
 		class="ikube.service.WebServicePublisher"
@@ -135,14 +135,14 @@
 		<property name="implementors">
 			<list>
 				<ref local="ikube.service.SearcherWebService" />
-				<ref local="ikube.service.MonitoringService" />
+				<ref local="ikube.monitoring.MonitoringService" />
 			</list>
 		</property>
 	</bean>
 	
 	<bean
-		id="ikube.service.SearcherWebServiceExecuter.One"
-		class="ikube.service.SearcherWebServiceExecuter"
+		id="ikube.monitoring.SearcherWebServiceExecuter.One"
+		class="ikube.monitoring.SearcherWebServiceExecuter"
 		property:indexName="${searcher.index.name.one}"
 		property:protocol="${service.protocol}"
 		property:port="${service.port}"
@@ -154,8 +154,8 @@
 		property:start="${searcher.start.index}"
 		property:end="${searcher.end.index}" />
 	<bean
-		id="ikube.service.SearcherWebServiceExecuter.Two"
-		class="ikube.service.SearcherWebServiceExecuter"
+		id="ikube.monitoring.SearcherWebServiceExecuter.Two"
+		class="ikube.monitoring.SearcherWebServiceExecuter"
 		property:indexName="${searcher.index.name.two}"
 		property:protocol="${service.protocol}"
 		property:port="${service.port}"
@@ -167,8 +167,8 @@
 		property:start="${searcher.start.index}"
 		property:end="${searcher.end.index}" />
 	<bean
-		id="ikube.service.SearcherWebServiceExecuter.Three"
-		class="ikube.service.SearcherWebServiceExecuter"
+		id="ikube.monitoring.SearcherWebServiceExecuter.Three"
+		class="ikube.monitoring.SearcherWebServiceExecuter"
 		property:indexName="${searcher.index.name.three}"
 		property:protocol="${service.protocol}"
 		property:port="${service.port}"

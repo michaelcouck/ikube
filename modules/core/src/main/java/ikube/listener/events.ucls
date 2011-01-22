@@ -56,8 +56,8 @@
       <operations public="true" package="true" protected="true" private="true"/>    
     </display>  
   </class>  
-  <class corner="BOTTOM_RIGHT" language="java" name="ikube.service.SearcherWebServiceExecuter" project="ikube" 
-    file="/ikube/modules/core/src/main/java/ikube/service/SearcherWebServiceExecuter.java" binary="false">    
+  <class corner="BOTTOM_RIGHT" language="java" name="ikube.monitoring.SearcherWebServiceExecuter" project="ikube" 
+    file="/ikube/modules/core/src/main/java/ikube/monitoring/SearcherWebServiceExecuter.java" binary="false">    
     <position x="40" y="198" width="201" height="100"/>    
     <display autosize="false" package="true" initial-value="true" signature="true" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true"/>      
@@ -83,23 +83,17 @@
     <display labels="true" multiplicity="true"/>  
   </association>  
   <dependency>    
-    <source project="ikube" name="ikube.service.SearcherWebServiceExecuter" 
-      file="/ikube/modules/core/src/main/java/ikube/service/SearcherWebServiceExecuter.java" binary="false"/>    
+    <source project="ikube" name="ikube.service.SearcherWebService" 
+      file="/ikube/modules/core/src/main/java/ikube/service/SearcherWebService.java" binary="false"/>    
     <target project="ikube" name="ikube.listener.IListener" 
       file="/ikube/modules/core/src/main/java/ikube/listener/IListener.java" binary="false"/>  
   </dependency>  
-  <realization>    
-    <source project="ikube" name="ikube.toolkit.Reporter" 
-      file="/ikube/modules/core/src/main/java/ikube/toolkit/Reporter.java" binary="false"/>    
+  <dependency>    
+    <source project="ikube" name="ikube.aspect.Profile" 
+      file="/ikube/modules/core/src/main/java/ikube/aspect/Profile.java" binary="false"/>    
     <target project="ikube" name="ikube.listener.IListener" 
       file="/ikube/modules/core/src/main/java/ikube/listener/IListener.java" binary="false"/>  
-  </realization>  
-  <realization>    
-    <source project="ikube" name="ikube.listener.ParserListener" 
-      file="/ikube/modules/core/src/main/java/ikube/listener/ParserListener.java" binary="false"/>    
-    <target project="ikube" name="ikube.listener.IListener" 
-      file="/ikube/modules/core/src/main/java/ikube/listener/IListener.java" binary="false"/>  
-  </realization>  
+  </dependency>  
   <association>    
     <source project="ikube" name="ikube.listener.ListenerManager" 
       file="/ikube/modules/core/src/main/java/ikube/listener/ListenerManager.java" binary="false" navigable="false">      
@@ -110,12 +104,18 @@
       file="/ikube/modules/core/src/main/java/ikube/listener/IListener.java" binary="false" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <dependency>    
-    <source project="ikube" name="ikube.aspect.Profile" 
-      file="/ikube/modules/core/src/main/java/ikube/aspect/Profile.java" binary="false"/>    
+  <realization>    
+    <source project="ikube" name="ikube.listener.ParserListener" 
+      file="/ikube/modules/core/src/main/java/ikube/listener/ParserListener.java" binary="false"/>    
     <target project="ikube" name="ikube.listener.IListener" 
       file="/ikube/modules/core/src/main/java/ikube/listener/IListener.java" binary="false"/>  
-  </dependency>  
+  </realization>  
+  <realization>    
+    <source project="ikube" name="ikube.toolkit.Reporter" 
+      file="/ikube/modules/core/src/main/java/ikube/toolkit/Reporter.java" binary="false"/>    
+    <target project="ikube" name="ikube.listener.IListener" 
+      file="/ikube/modules/core/src/main/java/ikube/listener/IListener.java" binary="false"/>  
+  </realization>  
   <dependency>    
     <source project="ikube" name="ikube.IndexEngine" file="/ikube/modules/core/src/main/java/ikube/IndexEngine.java" 
       binary="false"/>    
@@ -123,8 +123,8 @@
       file="/ikube/modules/core/src/main/java/ikube/listener/IListener.java" binary="false"/>  
   </dependency>  
   <dependency>    
-    <source project="ikube" name="ikube.service.SearcherWebService" 
-      file="/ikube/modules/core/src/main/java/ikube/service/SearcherWebService.java" binary="false"/>    
+    <source project="ikube" name="ikube.monitoring.SearcherWebServiceExecuter" 
+      file="/ikube/modules/core/src/main/java/ikube/monitoring/SearcherWebServiceExecuter.java" binary="false"/>    
     <target project="ikube" name="ikube.listener.IListener" 
       file="/ikube/modules/core/src/main/java/ikube/listener/IListener.java" binary="false"/>  
   </dependency>  

@@ -20,6 +20,7 @@ public class Event {
 	public static final String CLUSTERING = "clustering";
 	public static final String LINK = "link";
 	public static final String SYNCHRONISE = "synchronise";
+	public static final String VALIDATION = "validation";
 
 	private String type;
 	private long timestamp;

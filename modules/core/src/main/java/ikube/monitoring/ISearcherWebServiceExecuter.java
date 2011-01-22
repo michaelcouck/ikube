@@ -1,4 +1,4 @@
-package ikube.service;
+package ikube.monitoring;
 
 import java.util.List;
 import java.util.Map;

@@ -105,8 +105,8 @@
 		id="ikube.service.SearcherWebService"
 		class="ikube.service.SearcherWebService" />
 	<bean
-		id="ikube.service.MonitoringService"
-		class="ikube.service.MonitoringService" />
+		id="ikube.monitoring.MonitoringService"
+		class="ikube.monitoring.MonitoringService" />
 	<bean
 		id="ikube.service.WebServicePublisher"
 		class="ikube.service.WebServicePublisher"
@@ -133,7 +133,7 @@
 		<property name="implementors">
 			<list>
 				<ref local="ikube.service.SearcherWebService" />
-				<ref local="ikube.service.MonitoringService" />
+				<ref local="ikube.monitoring.MonitoringService" />
 			</list>
 		</property>
 	</bean>

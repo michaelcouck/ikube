@@ -1,9 +1,10 @@
-package ikube.service;
+package ikube.monitoring;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import ikube.BaseTest;
 import ikube.model.IndexContext;
+import ikube.monitoring.IMonitoringService;
 import ikube.toolkit.ApplicationContextManager;
 
 import org.junit.Test;

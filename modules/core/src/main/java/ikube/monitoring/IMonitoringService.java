@@ -1,4 +1,4 @@
-package ikube.service;
+package ikube.monitoring;
 
 import javax.jws.WebService;
 import javax.jws.soap.SOAPBinding;

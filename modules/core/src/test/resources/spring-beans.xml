@@ -114,8 +114,8 @@
 		id="ikube.service.SearcherWebService"
 		class="ikube.service.SearcherWebService" />
 	<bean
-		id="ikube.service.MonitoringService"
-		class="ikube.service.MonitoringService" />
+		id="ikube.monitoring.MonitoringService"
+		class="ikube.monitoring.MonitoringService" />
 	<bean
 		id="ikube.service.WebServicePublisher"
 		class="ikube.service.WebServicePublisher"
@@ -146,15 +146,15 @@
 			<list>
 				<ref local="ikube.service.SearcherWebService" />
 				<ref local="ikube.service.SearcherWebService" />
-				<ref local="ikube.service.MonitoringService" />
+				<ref local="ikube.monitoring.MonitoringService" />
 			</list>
 		</property>
 	</bean>
 	
 	<!-- Continuous testing in production class  -->
 	<bean
-		id="ikube.service.SearcherWebServiceExecuter"
-		class="ikube.service.SearcherWebServiceExecuter"
+		id="ikube.monitoring.SearcherWebServiceExecuter"
+		class="ikube.monitoring.SearcherWebServiceExecuter"
 		property:indexName="indexOne"
 		property:end="101"
 		property:protocol="${service.protocol}"
@@ -166,6 +166,8 @@
 		property:searchString="clinch crackerjack books gall thoroughgoing
 			tall pissed committee greathearted cyborg devotional tremor"
 		property:start="0" />
+	<bean
+		class="ikube.monitoring.IndexValidator" />
 	
 	<!-- The scheduling class -->
 	<bean
@@ -175,6 +177,7 @@
 	<util:list id="scheduled.tasks">
 		<ref local="ikube.listener.Schedule" />
 		<ref local="ikube.listener.Schedule.WebService" />
+		<ref local="ikube.listener.Schedule.Validator" />
 	</util:list>
 
 	<!-- The schedules for events firing -->
@@ -190,6 +193,12 @@
 		property:type="service"
 		property:delay="${web.service.delay}"
 		property:period="${web.service.period}" />	
+	<bean
+		id="ikube.listener.Schedule.Validator"
+		class="ikube.listener.Schedule"
+		property:type="validation"
+		property:delay="${validation.delay}"
+		property:period="${validation.period}" />
 	
 	<!-- Utility classes -->
 	<bean

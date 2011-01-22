@@ -1,8 +1,10 @@
-package ikube.service;
+package ikube.monitoring;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import ikube.BaseTest;
+import ikube.monitoring.ISearcherWebServiceExecuter;
+import ikube.monitoring.SearcherWebServiceExecuter;
 import ikube.toolkit.ApplicationContextManager;
 
 import java.util.List;

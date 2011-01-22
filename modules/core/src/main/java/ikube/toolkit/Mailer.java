@@ -10,10 +10,13 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.log4j.Logger;
+
 /**
  * This class actually does the sending of the mail to the recipients when the license agreement maximum documents is exceeded. The
  * recipients are in an encrypted file in the application, and the {@link License} object holds the decrypted data from the file.
- *
+ * 
  * @author Michael Couck
  * @since 16.08.10
  * @version 01.00
@@ -25,6 +28,7 @@ public class Mailer {
 		Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
 	}
 
+	private Logger logger = Logger.getLogger(this.getClass());
 	/** "smtp.gmail.com" */
 	private String mailHost;
 	private String user;
@@ -67,10 +71,22 @@ public class Mailer {
 		}
 
 		// Transport.send(message);
-		Transport transport = session.getTransport("smtps");
-		transport.connect(mailHost, 465, user, password);
-		transport.sendMessage(message, message.getAllRecipients());
-		transport.close();
+		Transport transport = null;
+		try {
+			transport = session.getTransport("smtps");
+			transport.connect(mailHost, Integer.parseInt(port), user, password);
+			transport.sendMessage(message, message.getAllRecipients());
+		} catch (Exception e) {
+			logger.error("Exception sending mail to : " + ToStringBuilder.reflectionToString(this), e);
+		} finally {
+			if (transport != null) {
+				try {
+					transport.close();
+				} catch (Exception e) {
+					logger.error("Exception closing the mail transport : " + transport, e);
+				}
+			}
+		}
 	}
 
 	public void setMailHost(String mailHost) {
