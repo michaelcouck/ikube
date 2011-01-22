@@ -61,7 +61,7 @@
 				<artifactId>jdepend-maven-plugin</artifactId>
 			</plugin>
 
-			<plugin>
+			<!--<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
 				<executions>
@@ -72,11 +72,10 @@
 							<goal>copy-dependencies</goal>
 						</goals>
 						<configuration>
-							<!-- configure the plugin here -->
 						</configuration>
 					</execution>
 				</executions>
-			</plugin>
+			</plugin>-->
 
 		</plugins>
 	</build>

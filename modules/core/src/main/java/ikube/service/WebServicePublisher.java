@@ -14,9 +14,11 @@ import javax.xml.ws.Binding;
 import javax.xml.ws.Endpoint;
 
 import org.apache.log4j.Logger;
-import org.springframework.util.StringUtils;
 
 /**
+ * This class published the web services using standard Java to publish. First it checks if there is any service on the defined port, if
+ * there is then the port is incremented until there is a free port, and the service is published to that url and port.
+ * 
  * @author Michael Couck
  * @since 21.11.10
  * @version 01.00
@@ -70,8 +72,8 @@ public class WebServicePublisher implements IWebServicePublisher {
 		try {
 			logger.info("Checking url : " + url);
 			InputStream inputStream = url.openStream();
-			String content = FileUtilities.getContents(inputStream, Integer.MAX_VALUE).toString();
-			logger.info("Url data : " + StringUtils.trimAllWhitespace(content));
+			/* String content = */FileUtilities.getContents(inputStream, Integer.MAX_VALUE).toString();
+			// logger.debug("Url data : " + StringUtils.trimAllWhitespace(content));
 			return Boolean.TRUE;
 		} catch (Exception e) {
 			return Boolean.FALSE;
