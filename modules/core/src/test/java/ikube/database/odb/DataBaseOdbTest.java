@@ -38,7 +38,7 @@ import org.junit.Test;
 public class DataBaseOdbTest extends ATest {
 
 	private static DataBaseOdb DATA_BASE;
-	private static String DATA_BASE_FILE = "ikube.test.odb";
+	private static String DATA_BASE_FILE = "test.ikube.odb";
 
 	@BeforeClass
 	public static void beforeClass() {

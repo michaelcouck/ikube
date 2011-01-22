@@ -34,7 +34,7 @@ public abstract class BaseTest extends ATest {
 		ClusterIntegration.SLEEP = 1000;
 
 		// Delete the database file
-		FileUtilities.deleteFiles(new File("."), IConstants.DATABASE_FILE, ".transaction", ".odb");
+		FileUtilities.deleteFiles(new File("."), IConstants.DATABASE_FILE, IConstants.TRANSACTION_FILES);
 		ApplicationContextManager.getApplicationContext(SPRING_CONFIGURATION_FILE);
 		// Delete all the old index directories
 		Map<String, IndexContext> contexts = ApplicationContextManager.getBeans(IndexContext.class);
