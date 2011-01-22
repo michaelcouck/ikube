@@ -46,6 +46,7 @@
 						<index>true</index>
 						<manifest>
 							<addClasspath>true</addClasspath>
+							<classpathPrefix>lib/</classpathPrefix>
 							<mainClass>${main.class}</mainClass>
 						</manifest>
 					</archive>
@@ -56,9 +57,16 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
 					<forkMode>once</forkMode>
-					<!--<argLine>-javaagent:../../serenity/serenity.jar -Xms512m -Xmx1024m ${included.adapters} ${included.packages} ${excluded.packages} ${write.classes} ${clean.classes}</argLine>-->
+					<additionalClasspathElements>
+						<!--<additionalClasspathElement>D:/Eclipse_64/workspace/ikube/modules/core/target/ikube-core-1.0.jar</additionalClasspathElement>-->
+						<!--<additionalClasspathElement>../../target/dependency/ikube-core-1.0.jar</additionalClasspathElement>-->
+					</additionalClasspathElements>
+					<!--<useSystemClassLoader>true</useSystemClassLoader>-->
+					<argLine>-javaagent:../../serenity/serenity.jar -Xms512m -Xmx1024m ${included.adapters} ${included.packages} ${excluded.packages} ${write.classes} ${clean.classes}</argLine>
 					<excludes>
 						<exclude>**/TextParserTest.java</exclude>
+						<exclude>**/DataBaseOdbTest.java</exclude>
+						<exclude>**/DataBaseOdbMapStoreTest.java</exclude>
 					</excludes>
 				</configuration>
 			</plugin>

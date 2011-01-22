@@ -25,11 +25,11 @@
 	<aop:aspectj-autoproxy proxy-target-class="true" />
 	
 	<!-- Persistence classes -->
+	<!-- property:dataBase-ref="ikube.database.odb.DataBaseOdb"  -->
 	<bean
 		id="ikube.database.mem.DataBaseMem"
-		class="ikube.database.mem.DataBaseMem"
-		property:dataBase-ref="ikube.database.odb.DataBaseOdb" />
-	<bean
+		class="ikube.database.mem.DataBaseMem" />
+	<!--<bean
 		id="ikube.database.odb.DataBaseOdb"
 		class="ikube.database.odb.DataBaseOdb"
 		lazy-init="false"
@@ -43,15 +43,15 @@
 					property:className="ikube.model.Url">
 					<property name="fieldNames">
 						<list>
-							<!-- Neodatis doesn't like indexes -->
-							<!--<value>id</value>
-							<value>hash</value>-->
+							 Neodatis doesn't like indexes 
+							<value>id</value>
+							<value>hash</value>
 						</list>
 					</property>
 				</bean>
 			</list>
 		</property>
-	</bean>
+	</bean>-->
 	<!-- Cluster wide cache -->
 	<bean
 		id="ikube.cluster.cache.ICache"
