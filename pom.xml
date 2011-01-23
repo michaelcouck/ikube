@@ -54,10 +54,6 @@
 				<artifactId>jdepend-maven-plugin</artifactId>
 				<version>2.0-beta-2</version>
 			</plugin>
-
-			<!--<plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-dependency-plugin</artifactId> <executions> <execution> <id>copy-dependencies</id> 
-				<phase>package</phase> <goals> <goal>copy-dependencies</goal> </goals> <configuration> </configuration> </execution> </executions> </plugin> -->
-
 		</plugins>
 	</build>
 
@@ -69,11 +65,8 @@
 			<type>jar</type>
 			<scope>provided</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.springbyexample</groupId>
-			<artifactId>org.springbyexample.dynamic.tiles2</artifactId>
-			<version>1.2</version>
-		</dependency>
+		<!--<dependency> <groupId>org.springbyexample</groupId> <artifactId>org.springbyexample.dynamic.tiles2</artifactId> <version>1.2</version> 
+			</dependency> -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-beans</artifactId>
@@ -111,6 +104,13 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-aspects</artifactId>
+			<version>${spring.version}</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-config</artifactId>
 			<version>${spring.version}</version>
 			<type>jar</type>
 			<scope>compile</scope>
@@ -452,11 +452,7 @@
 	</dependencies>
 
 	<repositories>
-		<repository>
-			<id>springbyexample.org</id>
-			<name>Spring by Example</name>
-			<url>http://www.springbyexample.org/maven/repo</url>
-		</repository>
+		<!--<repository> <id>springbyexample.org</id> <name>Spring by Example</name> <url>http://www.springbyexample.org/maven/repo</url> </repository> -->
 		<repository>
 			<id>m.g.o-public</id>
 			<url>http://maven.glassfish.org/content/groups/public/</url>
