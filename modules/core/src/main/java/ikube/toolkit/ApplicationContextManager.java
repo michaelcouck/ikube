@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
@@ -41,10 +40,6 @@ public class ApplicationContextManager {
 		try {
 			if (APPLICATION_CONTEXT == null) {
 				// First see if there is a configuration file at the base of where the Jvm was started
-				Properties properties = System.getProperties();
-				for (Object key : properties.keySet()) {
-					LOGGER.info("Property : " + key + " : " + properties.getProperty(key.toString()));
-				}
 				File configFile = new File("." + IConstants.SEP + IConstants.IKUBE + IConstants.SEP + IConstants.SPRING_XML);
 				LOGGER.info("External configuration file : " + configFile + ", " + configFile.getAbsolutePath() + ", " + configFile.exists());
 				if (configFile.exists()) {
