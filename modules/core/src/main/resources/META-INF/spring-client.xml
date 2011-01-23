@@ -29,7 +29,7 @@
 		property:throttle="${throttle}"
 		property:indexDirectoryPath="${index.directory.path}"
 		property:indexables-ref="indexables" />
-	<bean
+	<!--<bean
 		id="indexContextTwo"
 		class="ikube.model.IndexContext"
 		property:indexName="indexTwo"
@@ -62,14 +62,14 @@
 		property:queueTimeout="${max.age}"
 		property:throttle="${throttle}"
 		property:indexDirectoryPath="${index.directory.path}"
-		property:indexables-ref="indexables" />
+		property:indexables-ref="indexables" />-->
 	<util:list id="indexables">
 		<!--<ref local="mail" />-->
-		<ref local="internet" />
+		<!--<ref local="internet" />-->
 		<!--<ref local="filesystemOne" />
 		<ref local="filesystemTwo" />
-		<ref local="filesystemThree" />
-		<ref local="tableOne" />-->
+		<ref local="filesystemThree" />-->
+		<ref local="tableOne" />
 	</util:list>
 
 	<bean
