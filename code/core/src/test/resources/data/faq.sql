@@ -1,0 +1,20 @@
+INSERT INTO FAQ
+	(
+		ANSWER,
+		CREATIONTIMESTAMP,
+		CREATOR,
+		MODIFIEDTIMESTAMP,
+		MODIFIER,
+		PUBLISHED,
+		QUESTION
+	)
+	VALUES
+	(
+		?,
+		?,
+		?,
+		?,
+		?,
+		?,
+		?
+	)
