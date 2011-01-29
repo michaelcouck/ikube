@@ -5,8 +5,10 @@ import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.PerformanceTester;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -34,8 +36,13 @@ public class DataGeneratorOne extends ADataGenerator {
 	private DataSource dataSource;
 	private Connection connection;
 
-	private int batch = 1000;
-	private int iterations = 100000 - (10285);
+	private int batch;
+	private int iterations;
+
+	public DataGeneratorOne(int batch, int iterations) {
+		this.batch = batch;
+		this.iterations = iterations;
+	}
 
 	@Before
 	public void before() throws Exception {
@@ -65,20 +72,28 @@ public class DataGeneratorOne extends ADataGenerator {
 	}
 
 	protected void insertFaqs() throws Exception {
-		String faqInsert = "INSERT INTO DB2ADMIN.FAQ (ANSWER, CREATIONTIMESTAMP, CREATOR, MODIFIEDTIMESTAMP, MODIFIER, PUBLISHED, QUESTION) VALUES (?,?,?,?,?,?,?)";
-		PreparedStatement preparedStatement = connection.prepareStatement(faqInsert, PreparedStatement.RETURN_GENERATED_KEYS);
+		String faqInsert = "INSERT INTO FAQ (ANSWER, CREATIONTIMESTAMP, CREATOR, MODIFIEDTIMESTAMP, MODIFIER, PUBLISHED, QUESTION) VALUES (?,?,?,?,?,?,?)";
+		// PreparedStatement.RETURN_GENERATED_KEYS
+		PreparedStatement preparedStatement = connection.prepareStatement(faqInsert);
 		for (int i = 0; i < batch; i++) {
-			String string = generateText((int) (Math.random() * 40), 128);
+			String string = generateText((int) (Math.random() * 200), 1024);
 			preparedStatement.setString(1, string); // ANSWER
+
 			preparedStatement.setTimestamp(2, new Timestamp(System.currentTimeMillis())); // CREATIONTIMESTAMP
-			string = generateText(3, 32);
+
+			string = generateText(3, 64);
 			preparedStatement.setString(3, string); // CREATOR
+
 			preparedStatement.setTimestamp(4, new Timestamp(System.currentTimeMillis())); // MODIFIEDTIMESTAMP
-			string = generateText(2, 32);
+
+			string = generateText(2, 64);
 			preparedStatement.setString(5, string); // MODIFIER
+
 			preparedStatement.setInt(6, 1); // PUBLISHED
-			string = generateText((int) (Math.random() * 40), 128);
+
+			string = generateText((int) (Math.random() * 200), 1024);
 			preparedStatement.setString(7, string); // QUESTION
+
 			preparedStatement.addBatch();
 		}
 		preparedStatement.executeBatch();
@@ -87,7 +102,7 @@ public class DataGeneratorOne extends ADataGenerator {
 	}
 
 	protected void insertAttachments() throws Exception {
-		String faqIdSelect = "SELECT FAQID FROM DB2ADMIN.FAQ ORDER BY FAQID DESC";
+		String faqIdSelect = "SELECT FAQID FROM FAQ ORDER BY FAQID DESC";
 
 		List<Long> faqIds = new ArrayList<Long>();
 		Statement statement = connection.createStatement();
@@ -100,7 +115,7 @@ public class DataGeneratorOne extends ADataGenerator {
 		statement.close();
 
 		Iterator<Long> faqIdIterator = faqIds.iterator();
-		String attachmentInsert = "INSERT INTO DB2ADMIN.ATTACHMENT (NAME, LENGTH, FAQID, ATTACHMENT) VALUES(?,?,?,?)";
+		String attachmentInsert = "INSERT INTO ATTACHMENT (NAME, LENGTH, FAQID, ATTACHMENT) VALUES(?,?,?,?)";
 		PreparedStatement attachmentPreparedStatement = connection.prepareStatement(attachmentInsert, PreparedStatement.NO_GENERATED_KEYS);
 		for (int i = 0; i < batch; i++) {
 			for (String fileName : fileContents.keySet()) {
@@ -112,17 +127,18 @@ public class DataGeneratorOne extends ADataGenerator {
 
 				// Insert the attachment
 				byte[] bytes = fileContents.get(fileName);
-				// InputStream inputStream = new ByteArrayInputStream(bytes);
+				InputStream inputStream = new ByteArrayInputStream(bytes);
 
 				attachmentPreparedStatement.setString(1, fileName); // NAME
 				attachmentPreparedStatement.setInt(2, bytes.length); // LENGTH
 				attachmentPreparedStatement.setLong(3, faqId); // FAQID
-				attachmentPreparedStatement.setBinaryStream(4, null, 0); // ATTACHMENT
+				attachmentPreparedStatement.setBinaryStream(4, inputStream, bytes.length); // ATTACHMENT
 				attachmentPreparedStatement.addBatch();
 			}
 		}
 		attachmentPreparedStatement.executeBatch();
 		connection.commit();
+		logger.info("Inserted : " + batch + " attachments : ");
 		attachmentPreparedStatement.close();
 	}
 
@@ -135,21 +151,6 @@ public class DataGeneratorOne extends ADataGenerator {
 	public void after() throws Exception {
 		super.after();
 		this.connection.close();
-	}
-
-	public static void main(String[] args) {
-		try {
-			DataGeneratorOne dataGenerator = new DataGeneratorOne();
-			dataGenerator.before();
-
-			// DataLoader dataLoader = new DataLoader();
-			// dataLoader.createTables("./modules/core/src/test/resources/data/tables.sql");
-
-			dataGenerator.generate();
-			dataGenerator.after();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 	}
 
 }

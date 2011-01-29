@@ -29,7 +29,7 @@
 		property:throttle="${throttle}"
 		property:indexDirectoryPath="${index.directory.path}"
 		property:indexables-ref="indexables" />
-	<bean
+	<!--<bean
 		id="indexContextTwo"
 		class="ikube.model.IndexContext"
 		property:indexName="indexTwo"
@@ -62,21 +62,21 @@
 		property:queueTimeout="${max.age}"
 		property:throttle="${throttle}"
 		property:indexDirectoryPath="${index.directory.path}"
-		property:indexables-ref="indexables" />
+		property:indexables-ref="indexables" />-->
 	<util:list id="indexables">
-		<!--<ref local="mail" />-->
+		<!--<ref local="mail" />
 		<ref local="internet" />
-		<!--<ref local="filesystemOne" />
+		<ref local="filesystemOne" />
 		<ref local="filesystemTwo" />
-		<ref local="filesystemThree" />
-		<ref local="tableOne" />-->
+		<ref local="filesystemThree" />-->
+		<ref local="tableOne" />
 	</util:list>
 
 	<bean
 		id="tableOne"
 		class="ikube.model.IndexableTable"
 		property:name="faq"
-		property:schema="db2admin"
+		property:schema="${jdbc.schema}"
 		property:predicate="${faq.predicate}"
 		property:primary="true"
 		property:dataSource-ref="nonXaDataSource"
@@ -175,7 +175,7 @@
 		id="tableTwo"
 		class="ikube.model.IndexableTable"
 		property:name="attachment"
-		property:schema="db2admin"
+		property:schema="${jdbc.schema}"
 		property:primary="false"
 		property:dataSource-ref="nonXaDataSource"
 		property:children-ref="columnsTwo" />
@@ -242,7 +242,7 @@
 		id="tableThree"
 		class="ikube.model.IndexableTable"
 		property:name="version"
-		property:schema="db2admin"
+		property:schema="${jdbc.schema}"
 		property:primary="false"
 		property:dataSource-ref="nonXaDataSource"
 		property:children-ref="columnsThree" />
@@ -346,7 +346,7 @@
 		id="tableFour"
 		class="ikube.model.IndexableTable"
 		property:name="versionAttachment"
-		property:schema="db2admin"
+		property:schema="${jdbc.schema}"
 		property:primary="false"
 		property:dataSource-ref="nonXaDataSource"
 		property:children-ref="columnsFour" />

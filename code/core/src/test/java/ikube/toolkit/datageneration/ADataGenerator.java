@@ -97,13 +97,10 @@ public abstract class ADataGenerator implements IDataGenerator {
 	}
 
 	public static void main(String[] args) {
-		// Connection connection = DriverManager.getConnection("jdbc:oracle:thin:@//falcon:1521/XE", "XE", "oracle");
-		// connection.createStatement().execute("");
-		// System.out.println(connection);
-		// connection.close();
-
 		try {
-			IDataGenerator dataGenerator = new DataGeneratorThree(3, 1000000);
+			IDataGenerator dataGenerator = new DataGeneratorOne(10, 1000000);
+			// IDataGenerator dataGenerator = new DataGeneratorTwo(1000000, 3);
+			// IDataGenerator dataGenerator = new DataGeneratorThree(3, 1000000);
 			dataGenerator.before();
 			dataGenerator.generate();
 			dataGenerator.after();

@@ -44,7 +44,7 @@ public class DataGeneratorThree extends ADataGenerator {
 						}
 						Faq faq = createFaq();
 						entityManager.persist(faq);
-						if (i % 100 == 0) {
+						if (i % 10 == 0) {
 							logger.info("Comitting : " + i + ", " + this.hashCode());
 							entityManager.getTransaction().commit();
 						}
