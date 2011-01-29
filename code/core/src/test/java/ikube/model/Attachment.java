@@ -13,6 +13,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+
 /**
  * @author Michael Couck
  * @since 22.08.08
@@ -80,13 +82,21 @@ public class Attachment implements Serializable, Comparable<Attachment> {
 	}
 
 	public int compareTo(Attachment o) {
-		return this.getAttachmentId() == null || o.getAttachmentId() == null ? (this.getAttachment() == null || o.getAttachment() == null ? 0
-				: this.getAttachment().length < o.getAttachment().length ? 1 : 0)
-				: this.getAttachmentId() < o.getAttachmentId() ? -1 : this.getAttachmentId() == o.getAttachmentId() ? 0 : 1;
+		if (getAttachmentId() != null && o.getAttachmentId() != null) {
+			return getAttachmentId().compareTo(o.getAttachmentId());
+		}
+		if (getName() != null && o.getName() != null) {
+			return getName().compareTo(o.getName());
+		}
+		return 0;
 	}
 
 	public String toString() {
 		return this.getClass().getSimpleName() + ":" + this.getName();
+	}
+
+	public boolean equals(Object object) {
+		return EqualsBuilder.reflectionEquals(this, object);
 	}
 
 }

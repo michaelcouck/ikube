@@ -43,8 +43,9 @@ public abstract class ADataGenerator implements IDataGenerator {
 		populateWords(wordsFile);
 
 		File dataFolder = configFile.getParentFile();
-		File[] files = dataFolder.listFiles();
-		populateFiles(files);
+		List<File> files = FileUtilities.findFilesRecursively(dataFolder, new String[] { ".doc", ".html", ".pdf", ".pot", ".ppt", ".rtf",
+				".txt", ".xml" }, new ArrayList<File>());
+		populateFiles(files.toArray(new File[files.size()]), "svn");
 	}
 
 	protected void populateWords(File wordsFile) throws Exception {
@@ -56,24 +57,24 @@ public abstract class ADataGenerator implements IDataGenerator {
 		}
 	}
 
-	protected void populateFiles(File[] files) {
-		if (files == null) {
-			return;
-		}
-		for (File file : files) {
-			if (file == null || !file.exists() || !file.canRead()) {
+	protected void populateFiles(File[] files, String... excludedPatterns) {
+		outer: for (File file : files) {
+			if (file == null || !file.exists() || !file.canRead() || !file.isFile()) {
 				continue;
 			}
-			if (file.isFile()) {
-				if (file.length() > MAX_FILE_LENGTH) {
-					continue;
+			if (file.length() > MAX_FILE_LENGTH) {
+				logger.warn("File too big : " + file.length() + ":" + MAX_FILE_LENGTH);
+				continue;
+			}
+			for (String excludedPattern : excludedPatterns) {
+				if (file.getName().contains(excludedPattern)) {
+					continue outer;
 				}
-				byte[] contents = FileUtilities.getContents(file).toByteArray();
-				fileContents.put(file.getName(), contents);
-				continue;
 			}
-			File[] childFiles = file.listFiles();
-			populateFiles(childFiles);
+			logger.info("Loading file : " + file.getAbsolutePath());
+			byte[] contents = FileUtilities.getContents(file).toByteArray();
+			fileContents.put(file.getName(), contents);
+			continue;
 		}
 	}
 

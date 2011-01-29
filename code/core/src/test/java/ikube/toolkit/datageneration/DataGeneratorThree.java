@@ -44,7 +44,7 @@ public class DataGeneratorThree extends ADataGenerator {
 						}
 						Faq faq = createFaq();
 						entityManager.persist(faq);
-						if (i % 100 == 0) {
+						if (i % 10 == 0) {
 							logger.info("Comitting : " + i + ", " + this.hashCode());
 							entityManager.getTransaction().commit();
 						}
@@ -74,12 +74,16 @@ public class DataGeneratorThree extends ADataGenerator {
 	protected Set<Attachment> createAttachments(Faq faq) {
 		Set<Attachment> attachments = new TreeSet<Attachment>();
 		for (String fileName : fileContents.keySet()) {
+			// logger.info("Setting attachment : " + fileName);
 			Attachment attachment = new Attachment();
 			attachment.setAttachment(fileContents.get(fileName));
 			attachment.setFaq(faq);
 			attachment.setLength(attachment.getAttachment().length);
 			attachment.setName(fileName);
-			attachments.add(attachment);
+			boolean added = attachments.add(attachment);
+			if (!added) {
+				logger.info("Didn't add attachment : " + attachment);
+			}
 		}
 		return attachments;
 	}
