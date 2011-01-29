@@ -1,11 +1,15 @@
-package ikube.toolkit;
+package ikube.toolkit.datageneration;
 
 import ikube.model.Indexable;
 import ikube.model.IndexableColumn;
 import ikube.model.IndexableTable;
+import ikube.toolkit.ApplicationContextManager;
+import ikube.toolkit.DatabaseUtilities;
+import ikube.toolkit.PerformanceTester;
+import ikube.toolkit.SerializationUtilities;
+import ikube.toolkit.ThreadUtilities;
 
 import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -16,36 +20,20 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.StringTokenizer;
 
-import javax.sql.DataSource;
+public class DataGeneratorTwo extends ADataGenerator {
 
-import org.apache.log4j.Logger;
-
-public class DataGeneratorTwo {
-
-	private Logger logger = Logger.getLogger(this.getClass());
-	private List<String> words;
-	private String wordsFilePath = "/data/words.txt";
 	private int iterations;
 	private int threads;
 
 	public DataGeneratorTwo(int iterations, int threads) {
 		this.iterations = iterations;
 		this.threads = threads;
-		this.words = new ArrayList<String>();
-		InputStream inputStream = this.getClass().getResourceAsStream(wordsFilePath);
-		String words = FileUtilities.getContents(inputStream, Integer.MAX_VALUE).toString();
-		StringTokenizer tokenizer = new StringTokenizer(words);
-		while (tokenizer.hasMoreTokens()) {
-			this.words.add(tokenizer.nextToken());
-		}
 	}
 
-	public List<Thread> generate(String configLocation) throws Exception {
+	public void generate() throws Exception {
 		List<Thread> threads = new ArrayList<Thread>();
 		// Get all the tables in the configuration
-		ApplicationContextManager.getApplicationContext(configLocation);
 		Map<String, IndexableTable> indexableTables = ApplicationContextManager.getBeans(IndexableTable.class);
 		logger.info("Inserting : " + (this.threads * this.iterations * indexableTables.size()) + " records.");
 		for (final IndexableTable indexableTable : indexableTables.values()) {
@@ -73,7 +61,7 @@ public class DataGeneratorTwo {
 				threads.add(thread);
 			}
 		}
-		return threads;
+		ThreadUtilities.waitForThreads(threads);
 	}
 
 	protected void generate(IndexableTable indexableTable, Connection connection) {
@@ -215,38 +203,6 @@ public class DataGeneratorTwo {
 			return new ByteArrayInputStream(generateText(columnLength * 5, columnLength).getBytes());
 		}
 		return null;
-	}
-
-	protected String generateText(int count, int maxLength) {
-		StringBuilder builder = new StringBuilder();
-		for (int i = 0; i < count; i++) {
-			int index = (int) (Math.random() * (words.size() - 1));
-			String word = this.words.get(index);
-			builder.append(word);
-			builder.append(" ");
-		}
-		if (builder.length() > maxLength) {
-			return builder.substring(0, maxLength);
-		}
-		return builder.toString();
-	}
-
-	public static void main(String[] args) throws Exception {
-		// Connection connection = DriverManager.getConnection("jdbc:oracle:thin:@//falcon:1521/XE", "XE", "oracle");
-		// connection.createStatement().execute("");
-		// System.out.println(connection);
-		// connection.close();
-
-		String configLocation = "/data/spring.xml";
-		ApplicationContextManager.getApplicationContext(configLocation);
-		Connection connection = ApplicationContextManager.getBean(DataSource.class).getConnection();
-		System.out.println(connection);
-		connection.close();
-
-		DataGeneratorTwo dataGeneratorTwo = new DataGeneratorTwo(10000000, 3);
-		List<Thread> threads = dataGeneratorTwo.generate(configLocation);
-		ThreadUtilities.waitForThreads(threads);
-		System.out.println("Finished generation : ");
 	}
 
 }

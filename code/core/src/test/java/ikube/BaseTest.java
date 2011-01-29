@@ -4,10 +4,11 @@ import ikube.cluster.ClusterIntegration;
 import ikube.index.IndexManager;
 import ikube.model.IndexContext;
 import ikube.toolkit.ApplicationContextManager;
-import ikube.toolkit.DataGeneratorTwo;
 import ikube.toolkit.DataLoader;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.PerformanceTester;
+import ikube.toolkit.datageneration.DataGeneratorTwo;
+import ikube.toolkit.datageneration.IDataGenerator;
 
 import java.io.File;
 import java.util.Map;
@@ -50,8 +51,8 @@ public abstract class BaseTest extends ATest {
 		PerformanceTester.execute(new PerformanceTester.APerform() {
 			@Override
 			public void execute() throws Exception {
-				DataGeneratorTwo dataGenerator = new DataGeneratorTwo(100, 1);
-				dataGenerator.generate(SPRING_CONFIGURATION_FILE);
+				IDataGenerator dataGenerator = new DataGeneratorTwo(100, 1);
+				dataGenerator.generate();
 			}
 		}, "Data generator two insertion : ", 1);
 	}

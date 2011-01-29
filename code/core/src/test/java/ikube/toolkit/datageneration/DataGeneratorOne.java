@@ -1,22 +1,20 @@
-package ikube.toolkit;
+package ikube.toolkit.datageneration;
 
-import ikube.ATest;
 import ikube.logging.Logging;
+import ikube.toolkit.ApplicationContextManager;
+import ikube.toolkit.FileUtilities;
+import ikube.toolkit.PerformanceTester;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
 
 import javax.sql.DataSource;
 
@@ -31,34 +29,19 @@ import org.junit.Test;
  * @version 01.00
  */
 @Ignore
-public class DataGenerator extends ATest {
-
-	private String wordsFilePath = "/data/words.txt";
-	private String configurationFilePath = "/data/spring.xml";
+public class DataGeneratorOne extends ADataGenerator {
 
 	private DataSource dataSource;
 	private Connection connection;
-	private List<String> words;
-
-	private Map<String, byte[]> fileContents;
 
 	private int batch = 1000;
 	private int iterations = 100000 - (10285);
 
 	@Before
 	public void before() throws Exception {
-		ApplicationContextManager.getApplicationContext(configurationFilePath);
+		super.before();
 		this.dataSource = ApplicationContextManager.getBean(DataSource.class);
 		this.connection = this.dataSource.getConnection();
-		this.words = new ArrayList<String>();
-		InputStream inputStream = this.getClass().getResourceAsStream(wordsFilePath);
-		String words = FileUtilities.getContents(inputStream, Integer.MAX_VALUE).toString();
-		StringTokenizer tokenizer = new StringTokenizer(words);
-		while (tokenizer.hasMoreTokens()) {
-			this.words.add(tokenizer.nextToken());
-		}
-		this.fileContents = new HashMap<String, byte[]>();
-		getFileContents();
 	}
 
 	@Test
@@ -148,44 +131,15 @@ public class DataGenerator extends ATest {
 		return FileUtilities.getContents(file);
 	}
 
-	protected void getFileContents() {
-		fileContents.put("txt.txt", null);
-		fileContents.put("html.html", null);
-		fileContents.put("xml.xml", null);
-		fileContents.put("pdf.pdf", null);
-		fileContents.put("doc.doc", null);
-		fileContents.put("rtf.rtf", null);
-		fileContents.put("ppt.ppt", null);
-		fileContents.put("xls.xls", null);
-		for (String fileName : fileContents.keySet()) {
-			byte[] bytes = getContents(fileName).toByteArray();
-			// logger.debug("File contents : " + new String(bytes));
-			fileContents.put(fileName, bytes);
-		}
-	}
-
-	protected String generateText(int count, int maxLength) {
-		StringBuilder builder = new StringBuilder();
-		for (int i = 0; i < count; i++) {
-			int index = (int) (Math.random() * (words.size() - 1));
-			String word = this.words.get(index);
-			builder.append(word);
-			builder.append(" ");
-		}
-		if (builder.length() > maxLength) {
-			return builder.substring(0, maxLength);
-		}
-		return builder.toString();
-	}
-
 	@After
 	public void after() throws Exception {
+		super.after();
 		this.connection.close();
 	}
 
 	public static void main(String[] args) {
 		try {
-			DataGenerator dataGenerator = new DataGenerator();
+			DataGeneratorOne dataGenerator = new DataGeneratorOne();
 			dataGenerator.before();
 
 			// DataLoader dataLoader = new DataLoader();
