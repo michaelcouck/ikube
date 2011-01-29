@@ -2,45 +2,62 @@ package ikube.toolkit.datageneration;
 
 import ikube.model.Attachment;
 import ikube.model.Faq;
+import ikube.toolkit.ThreadUtilities;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 
 public class DataGeneratorThree extends ADataGenerator {
 
 	private String persistenceUnitName = "IkubePersistenceUnit";
-	private EntityManager entityManager;
 
 	private int iterations = 0;
+	private int threads;
 
-	public DataGeneratorThree(int iterations) {
+	public DataGeneratorThree(int threads, int iterations) {
+		this.threads = threads;
 		this.iterations = iterations;
 	}
 
 	public void before() throws Exception {
 		super.before();
-		entityManager = Persistence.createEntityManagerFactory(persistenceUnitName).createEntityManager();
 	}
 
 	@Override
 	public void generate() throws Exception {
-		EntityTransaction transaction = entityManager.getTransaction();
-		for (int i = 0; i < iterations; i++) {
-			if (!transaction.isActive()) {
-				transaction.begin();
-			}
-			Faq faq = createFaq();
-			entityManager.persist(faq);
-			if (i % 10 == 0) {
-				transaction.commit();
-				transaction = entityManager.getTransaction();
-			}
+		List<Thread> threads = new ArrayList<Thread>();
+		final EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory(persistenceUnitName);
+		for (int i = 0; i < this.threads; i++) {
+			Thread thread = new Thread(new Runnable() {
+				public void run() {
+					EntityManager entityManager = entityManagerFactory.createEntityManager();
+					EntityTransaction transaction = null;
+					for (int i = 0; i < iterations; i++) {
+						if (transaction == null) {
+							transaction = entityManager.getTransaction();
+							transaction.begin();
+						}
+						Faq faq = createFaq();
+						entityManager.persist(faq);
+						if (i % 10 == 0) {
+							transaction.commit();
+							transaction = null;
+						}
+					}
+				}
+			});
+			threads.add(thread);
+			thread.start();
 		}
+		ThreadUtilities.waitForThreads(threads);
 	}
 
 	protected Faq createFaq() {
@@ -71,7 +88,6 @@ public class DataGeneratorThree extends ADataGenerator {
 
 	public void after() throws Exception {
 		super.after();
-		entityManager.close();
 	}
 
 }
