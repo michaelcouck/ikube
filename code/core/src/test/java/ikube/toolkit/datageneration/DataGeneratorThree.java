@@ -44,7 +44,8 @@ public class DataGeneratorThree extends ADataGenerator {
 						}
 						Faq faq = createFaq();
 						entityManager.persist(faq);
-						if (i % 10 == 0) {
+						if (i % 100 == 0) {
+							logger.info("Comitting : " + i + ", " + this.hashCode());
 							entityManager.getTransaction().commit();
 						}
 					}
@@ -52,6 +53,7 @@ public class DataGeneratorThree extends ADataGenerator {
 			});
 			threads.add(thread);
 			thread.start();
+			Thread.sleep(3000);
 		}
 		ThreadUtilities.waitForThreads(threads);
 	}
