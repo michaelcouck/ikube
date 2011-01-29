@@ -118,9 +118,10 @@ public class DataBaseMem implements IDataBase {
 	 * Note: This method is EXPENSIVE! Use only in emergency.
 	 */
 	@Override
+	@SuppressWarnings("unchecked")
 	public synchronized <T> T find(Long id) {
 		try {
-			return dataBase.find(id);
+			return (T) dataBase.find(id);
 		} finally {
 			notifyAll();
 		}

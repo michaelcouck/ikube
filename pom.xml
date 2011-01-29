@@ -15,13 +15,12 @@
 		<slf4j.version>1.5.10</slf4j.version>
 		<logback.version>0.9.15</logback.version>
 		<junit.version>4.8.2</junit.version>
-		<project.build.outputDirectory>modules/core/target/classes</project.build.outputDirectory>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
 	<modules>
-		<module>core</module>
-		<module>war</module>
+		<module>code/core</module>
+		<module>code/war</module>
 	</modules>
 
 	<build>

@@ -398,9 +398,10 @@ public class ClusterManager implements IClusterManager {
 	 * {@inheritDoc}
 	 */
 	@Override
+	@SuppressWarnings("unchecked")
 	public synchronized <T> T get(Class<T> klass, String sql) {
 		try {
-			return cache.get(klass.getName(), sql);
+			return (T) cache.get(klass.getName(), sql);
 		} finally {
 			notifyAll();
 		}
@@ -410,9 +411,10 @@ public class ClusterManager implements IClusterManager {
 	 * {@inheritDoc}
 	 */
 	@Override
+	@SuppressWarnings("unchecked")
 	public synchronized <T> T get(Class<T> klass, Long id) {
 		try {
-			return cache.get(klass.getName(), id);
+			return (T) cache.get(klass.getName(), id);
 		} finally {
 			notifyAll();
 		}

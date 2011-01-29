@@ -14,7 +14,6 @@
 		<slf4j.version>1.5.10</slf4j.version>
 		<logback.version>0.9.15</logback.version>
 		<junit.version>4.8.2</junit.version>
-		<project.build.outputDirectory>modules/core/target/classes</project.build.outputDirectory>
 	</properties>
 
 	<modules>
@@ -69,7 +68,6 @@
 					<version>true</version>
 					<author>true</author>
 					<keywords>true</keywords>
-					<additionalparam>-sourceclasspath ${project.build.outputDirectory}</additionalparam>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -510,7 +508,6 @@
 		<slf4j.version>1.5.10</slf4j.version>
 		<logback.version>0.9.15</logback.version>
 		<junit.version>4.8.2</junit.version>
-		<project.build.outputDirectory>modules/core/target/classes</project.build.outputDirectory>
 	</properties>
 
 	<modules>
@@ -565,7 +562,6 @@
 					<version>true</version>
 					<author>true</author>
 					<keywords>true</keywords>
-					<additionalparam>-sourceclasspath ${project.build.outputDirectory}</additionalparam>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -1006,7 +1002,6 @@
 		<slf4j.version>1.5.10</slf4j.version>
 		<logback.version>0.9.15</logback.version>
 		<junit.version>4.8.2</junit.version>
-		<project.build.outputDirectory>modules/core/target/classes</project.build.outputDirectory>
 	</properties>
 
 	<modules>
@@ -1061,7 +1056,6 @@
 					<version>true</version>
 					<author>true</author>
 					<keywords>true</keywords>
-					<additionalparam>-sourceclasspath ${project.build.outputDirectory}</additionalparam>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -1502,7 +1496,6 @@
 		<slf4j.version>1.5.10</slf4j.version>
 		<logback.version>0.9.15</logback.version>
 		<junit.version>4.8.2</junit.version>
-		<project.build.outputDirectory>modules/core/target/classes</project.build.outputDirectory>
 	</properties>
 
 	<modules>
@@ -1557,7 +1550,6 @@
 					<version>true</version>
 					<author>true</author>
 					<keywords>true</keywords>
-					<additionalparam>-sourceclasspath ${project.build.outputDirectory}</additionalparam>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -1998,7 +1990,6 @@
 		<slf4j.version>1.5.10</slf4j.version>
 		<logback.version>0.9.15</logback.version>
 		<junit.version>4.8.2</junit.version>
-		<project.build.outputDirectory>modules/core/target/classes</project.build.outputDirectory>
 	</properties>
 
 	<modules>
@@ -2053,7 +2044,6 @@
 					<version>true</version>
 					<author>true</author>
 					<keywords>true</keywords>
-					<additionalparam>-sourceclasspath ${project.build.outputDirectory}</additionalparam>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -2494,7 +2484,6 @@
 		<slf4j.version>1.5.10</slf4j.version>
 		<logback.version>0.9.15</logback.version>
 		<junit.version>4.8.2</junit.version>
-		<project.build.outputDirectory>modules/core/target/classes</project.build.outputDirectory>
 	</properties>
 
 	<modules>
@@ -2549,7 +2538,6 @@
 					<version>true</version>
 					<author>true</author>
 					<keywords>true</keywords>
-					<additionalparam>-sourceclasspath ${project.build.outputDirectory}</additionalparam>
 				</configuration>
 			</plugin>
 		</plugins>
