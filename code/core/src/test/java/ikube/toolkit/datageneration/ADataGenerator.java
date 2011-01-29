@@ -102,7 +102,7 @@ public abstract class ADataGenerator implements IDataGenerator {
 		// connection.close();
 
 		try {
-			IDataGenerator dataGenerator = new DataGeneratorThree(5, 1000000);
+			IDataGenerator dataGenerator = new DataGeneratorThree(3, 1000000);
 			dataGenerator.before();
 			dataGenerator.generate();
 			dataGenerator.after();

@@ -12,7 +12,6 @@ import java.util.TreeSet;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 
 public class DataGeneratorThree extends ADataGenerator {
@@ -39,17 +38,14 @@ public class DataGeneratorThree extends ADataGenerator {
 			Thread thread = new Thread(new Runnable() {
 				public void run() {
 					EntityManager entityManager = entityManagerFactory.createEntityManager();
-					EntityTransaction transaction = null;
 					for (int i = 0; i < iterations; i++) {
-						if (transaction == null) {
-							transaction = entityManager.getTransaction();
-							transaction.begin();
+						if (!entityManager.getTransaction().isActive()) {
+							entityManager.getTransaction().begin();
 						}
 						Faq faq = createFaq();
 						entityManager.persist(faq);
 						if (i % 10 == 0) {
-							transaction.commit();
-							transaction = null;
+							entityManager.getTransaction().commit();
 						}
 					}
 				}
