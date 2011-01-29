@@ -1,14 +1,13 @@
 03.11.10
 
-* Cluster testing - 1
-* Wiki/documentation/JavaDoc - 3
-* Data generator two with files - 1/2
-* Servlet/Ejb - 1
+* Servlet/Ejb - 1 ?
 * New data structure, perhaps patients in a hospital
 * Client - 10
-  Logging on a topic for the gui to collect for the whole cluster
+   Logging on a topic for the gui to collect for the whole cluster
+* Linux testing - 1
+* Implementation of updating the index with deltas from the client - 3
 
-Total - 5 1/2
+Total - ?
 
 Done:
 * Cluster - 3 *
@@ -20,6 +19,9 @@ Done:
 * Add the file and url visitors - 5 *
 * Multiple data sources - 1 *
 * Testing - 7 *
+* Cluster testing - 1 *
+* Wiki/documentation/JavaDoc - 3 *
+* Data generator two with files - 1/2 *
 
 Other things:
 * Add a database tester to re-connect if the database becomes disconnected
@@ -49,7 +51,4 @@ Done:
 * Add sorting to the multi and single searchers *
 
 Won't Do:
-* Front end for configuration, monitoring etc. - 10
 * Boosting
-* Linux testing - 1
-* Implementation of updating the index with deltas from the client - 3
