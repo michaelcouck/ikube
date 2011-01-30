@@ -130,9 +130,15 @@ public class ClusterManagerTest extends BaseTest {
 	public void getIdNumber() {
 		// String, long
 		String indexableName = "faq";
-		long startIdNumber = clusterManager.getIdNumber(indexableName, indexName, batchSize);
-		long idNumber = clusterManager.getIdNumber(indexableName, indexName, batchSize);
+		long startIdNumber = clusterManager.getIdNumber(indexableName, indexName, batchSize, 0);
+		long idNumber = clusterManager.getIdNumber(indexableName, indexName, batchSize, 0);
 		assertEquals(startIdNumber + batchSize, idNumber);
+		
+		long minId = 1234567;
+		startIdNumber = clusterManager.getIdNumber(indexableName, indexName, batchSize, minId);
+		idNumber = clusterManager.getIdNumber(indexableName, indexName, batchSize, minId);
+		assertEquals(minId, startIdNumber);
+		assertEquals(startIdNumber + batchSize, idNumber); 
 	}
 
 	@Test

@@ -20,7 +20,7 @@ public abstract class ADataGenerator implements IDataGenerator {
 
 	private static final long MAX_FILE_LENGTH = 100000;
 
-	protected Logger logger;
+	protected Logger logger = Logger.getLogger(this.getClass());
 
 	private String wordsFilePath = "words.txt";
 	private String configFilePath = "spring-data-generation.xml";
@@ -30,7 +30,6 @@ public abstract class ADataGenerator implements IDataGenerator {
 
 	@Before
 	public void before() throws Exception {
-		logger = Logger.getLogger(this.getClass());
 		File dotFolder = new File(".");
 
 		words = new ArrayList<String>();

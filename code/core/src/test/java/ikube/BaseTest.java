@@ -52,7 +52,9 @@ public abstract class BaseTest extends ATest {
 			@Override
 			public void execute() throws Exception {
 				IDataGenerator dataGenerator = new DataGeneratorTwo(100, 1);
+				dataGenerator.before();
 				dataGenerator.generate();
+				dataGenerator.after();
 			}
 		}, "Data generator two insertion : ", 1);
 	}

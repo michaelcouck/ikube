@@ -233,12 +233,9 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 			// in which case we will have no records, so we need to execute where id > 1 234 567 and < 1 234 567 + batchSize
 			if (indexableTable.isPrimary()) {
 				IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
-				nextIdNumber = clusterManager.getIdNumber(indexContext.getIndexName(), indexableTable.getName(),
-						indexContext.getBatchSize());
 				long minId = getIdFunction(indexableTable, connection, "min");
-				if (nextIdNumber < minId) {
-					nextIdNumber = minId;
-				}
+				nextIdNumber = clusterManager.getIdNumber(indexContext.getIndexName(), indexableTable.getName(),
+						indexContext.getBatchSize(), minId);
 			}
 
 			// Now we build the sql based on the columns defined in the configuration

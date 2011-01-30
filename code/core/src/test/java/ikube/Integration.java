@@ -36,7 +36,7 @@ public class Integration extends ATest {
 
 	public static void main(String[] args) throws Exception {
 		Integration integration = new Integration();
-		// integration.before();
+		integration.before();
 		integration.start();
 	}
 

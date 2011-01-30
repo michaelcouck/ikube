@@ -157,7 +157,7 @@ public class ClusterManager implements IClusterManager {
 	 * </pre>
 	 */
 	@Override
-	public synchronized long getIdNumber(String indexName, String indexableName, long batchSize) {
+	public synchronized long getIdNumber(String indexName, String indexableName, long batchSize, long minId) {
 		ILock lock = null;
 		try {
 			lock = lock(SERVER_LOCK);
@@ -207,8 +207,12 @@ public class ClusterManager implements IClusterManager {
 				currentAction.setStartTime(System.currentTimeMillis());
 				actions.add(currentAction);
 			}
+			if (idNumber < minId) {
+				idNumber = minId;
+			}
+			long nextIdNumber = idNumber + batchSize;
 			// Set the next row number to the current + the batch size
-			currentAction.setIdNumber(idNumber + batchSize);
+			currentAction.setIdNumber(nextIdNumber);
 			// Publish the server to the cluster
 			cache.set(Server.class.getName(), server.getId(), server);
 			return idNumber;

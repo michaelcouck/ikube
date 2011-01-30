@@ -57,7 +57,7 @@ public interface IClusterManager {
 	 *            cluster effectively determining the next if of this table
 	 * @return the id of the next row in the table for this index
 	 */
-	public long getIdNumber(String indexableName, String indexName, long batchSize);
+	public long getIdNumber(String indexableName, String indexName, long batchSize, long minId);
 
 	/**
 	 * Checks whether this indexable has already been handled, could be a file share that is not clusterable and only needs to be indexed by
