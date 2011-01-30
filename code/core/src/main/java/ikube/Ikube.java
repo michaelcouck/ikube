@@ -11,9 +11,11 @@ import ikube.toolkit.ApplicationContextManager;
  * @version 01.00
  */
 public class Ikube {
+	
+	private static String MINIMAL_SPRING_CONFIG = IConstants.META_INF + IConstants.SEP + "minimal" + IConstants.SEP + IConstants.SPRING_XML;
 
 	public static void main(String[] args) {
-		ApplicationContextManager.getApplicationContext();
+		ApplicationContextManager.getApplicationContext(MINIMAL_SPRING_CONFIG);
 	}
 
 }
