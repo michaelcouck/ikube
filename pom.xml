@@ -279,13 +279,13 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
-		<!--<dependency>
+		<dependency>
 			<groupId>org.neodatis.odb</groupId>
 			<artifactId>neodatis-odb</artifactId>
 			<version>1.9.21.679</version>
 			<type>jar</type>
 			<scope>compile</scope>
-		</dependency>-->
+		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
