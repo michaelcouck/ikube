@@ -95,7 +95,7 @@ public abstract class ATest {
 
 			// Every time the JVM starts a +~JF#######.tmp file is created. Strange as that is
 			// we still need to delete it manually.
-			FileUtilities.deleteFiles(new File(System.getProperty("user.home")), ".tmp");
+			//FileUtilities.deleteFiles(new File(System.getProperty("user.home")), ".tmp");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
