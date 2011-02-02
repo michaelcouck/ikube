@@ -16,7 +16,10 @@ import org.junit.Before;
  * @since 20.12.10
  * @version 01.00
  */
-public class Integration extends ATest {
+public class Integration {
+
+	private static String INTEGRATION_SPRING_CONFIG = IConstants.META_INF + IConstants.SEP + "integration" + IConstants.SEP
+			+ IConstants.SPRING_XML;
 
 	@Before
 	public void before() {
@@ -28,16 +31,11 @@ public class Integration extends ATest {
 		}
 	}
 
-	public void start() throws Exception {
-		ApplicationContextManager.getApplicationContext(IConstants.SPRING_CONFIGURATION_FILE);
-		// And we sleep until the index is created
-		Thread.sleep(1000 * 60 * 60 * 3);
-	}
-
 	public static void main(String[] args) throws Exception {
+		ApplicationContextManager.getApplicationContext(INTEGRATION_SPRING_CONFIG);
 		Integration integration = new Integration();
 		integration.before();
-		integration.start();
+		Thread.sleep(1000 * 60 * 60 * 10);
 	}
 
 }

@@ -28,14 +28,12 @@
 		class="ikube.IndexEngine"
 		property:actions-ref="actions" />
 	<util:list id="actions">
-		<!--<ref local="ikube.action.Synchronize" />-->
 		<ref local="ikube.action.Reset" />
 		<ref local="ikube.action.Close" />
 		<ref local="ikube.action.Open" />
 		<ref local="ikube.action.Index" />
 		<ref local="ikube.action.Delete" />
 	</util:list>
-	<bean id="ikube.action.Synchronize" class="ikube.action.Synchronize" />
 	<bean id="ikube.action.Reset" class="ikube.action.Reset" />
 	<bean id="ikube.action.Close" class="ikube.action.Close" />
 	<bean id="ikube.action.Open" class="ikube.action.Open" />
@@ -141,52 +139,11 @@
 	</bean>
 	
 	<bean
-		id="ikube.monitoring.SearcherWebServiceExecuter.One"
-		class="ikube.monitoring.SearcherWebServiceExecuter"
-		property:indexName="${searcher.index.name.one}"
-		property:protocol="${service.protocol}"
-		property:port="${service.port}"
-		property:path="${web.service.path}"
-		property:fieldName="${searcher.field.name}"
-		property:fragment="${searcher.fragment}"
-		property:resultsSizeMinimum="${searcher.minimum.results.size}"
-		property:searchString="${searcher.search.string}"
-		property:start="${searcher.start.index}"
-		property:end="${searcher.end.index}" />
-	<bean
-		id="ikube.monitoring.SearcherWebServiceExecuter.Two"
-		class="ikube.monitoring.SearcherWebServiceExecuter"
-		property:indexName="${searcher.index.name.two}"
-		property:protocol="${service.protocol}"
-		property:port="${service.port}"
-		property:path="${web.service.path}"
-		property:fieldName="${searcher.field.name}"
-		property:fragment="${searcher.fragment}"
-		property:resultsSizeMinimum="${searcher.minimum.results.size}"
-		property:searchString="${searcher.search.string}"
-		property:start="${searcher.start.index}"
-		property:end="${searcher.end.index}" />
-	<bean
-		id="ikube.monitoring.SearcherWebServiceExecuter.Three"
-		class="ikube.monitoring.SearcherWebServiceExecuter"
-		property:indexName="${searcher.index.name.three}"
-		property:protocol="${service.protocol}"
-		property:port="${service.port}"
-		property:path="${web.service.path}"
-		property:fieldName="${searcher.field.name}"
-		property:fragment="${searcher.fragment}"
-		property:resultsSizeMinimum="${searcher.minimum.results.size}"
-		property:searchString="${searcher.search.string}"
-		property:start="${searcher.start.index}"
-		property:end="${searcher.end.index}" />
-
-	<bean
 		class="ikube.listener.Scheduler"
 		init-method="initialize"
 		property:schedules-ref="scheduled.tasks" />
 	<util:list id="scheduled.tasks">
 		<ref local="ikube.listener.Schedule" />
-		<ref local="ikube.listener.Schedule.SearcherWebServiceExecuter" />
 	</util:list>
 	
 	<bean
@@ -195,12 +152,6 @@
 		property:type="timer"
 		property:delay="${delay}"
 		property:period="${period}" />
-	<bean
-		id="ikube.listener.Schedule.SearcherWebServiceExecuter"
-		class="ikube.listener.Schedule"
-		property:type="service"
-		property:delay="${web.service.delay}"
-		property:period="${web.service.period}" />
 	
 	<bean 
 		id="ikube.logging.Monitor" 
