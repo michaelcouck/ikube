@@ -44,21 +44,20 @@ public class ClusterIntegration extends ATest {
 	public static void main(String[] arguments) throws Exception {
 		// ClusterIntegration.start();
 		String[] servers = new String[] { "ServerOne", "ServerTwo", "ServerThree" };
-		String configurationFile = "/META-INF/spring.xml";
 		String clusterDirectoryPath = "./cluster";
 		String classpath = System.getProperty("java.class.path");
 
 		final List<Process> processes = new ArrayList<Process>();
-		FileUtilities.deleteFiles(new File("."), IConstants.DATABASE_FILE, IConstants.TRANSACTION_FILES);
 		Map<String, String> environment = System.getenv();
 
 		// File clusterDirectory = FileUtilities.getFile(clusterDirectoryPath, Boolean.TRUE);
 		// FileUtilities.deleteFile(clusterDirectory, 1);
 
+		String[] command = { "javaw", "-cp", classpath, ServerRunner.class.getCanonicalName(), IConstants.SPRING_CONFIGURATION_FILE };
+
 		for (final String serverName : servers) {
-			String[] command = { "javaw", "-cp", classpath, ServerRunner.class.getCanonicalName(), configurationFile };
 			ProcessBuilder processBuilder = new ProcessBuilder(command);
-			File workingDirectory = FileUtilities.getFile(clusterDirectoryPath + File.separator + serverName, Boolean.TRUE);
+			File workingDirectory = FileUtilities.getFile(clusterDirectoryPath + IConstants.SEP + serverName, Boolean.TRUE);
 			processBuilder.directory(workingDirectory);
 
 			processBuilder.redirectErrorStream(Boolean.TRUE);

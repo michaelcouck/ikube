@@ -15,4 +15,4 @@ rem mvn install:install-file -Dfile=aspose-pdf-kit-3.5.0.jar -DgroupId=aspose -D
 rem mvn install:install-file -Dfile=swt-64-3.6.1.jar -DgroupId=swt -DartifactId=swt-64 -Dversion=3.6.1 -Dpackaging=jar -DgeneratePom=true
 
 rem mvn install:install-file -Dfile=jmxtools-1.2.1.jar -DgroupId=com.sun.jdmk -DartifactId=jmxtools -Dversion=1.2.1 -Dpackaging=jar -DgeneratePom=true
-mvn install:install-file -Dfile=jmxri-1.2.1.jar -DgroupId=com.sun.jmx -DartifactId=jmxri -Dversion=1.2.1 -Dpackaging=jar -DgeneratePom=true
+rem mvn install:install-file -Dfile=jmxri-1.2.1.jar -DgroupId=com.sun.jmx -DartifactId=jmxri -Dversion=1.2.1 -Dpackaging=jar -DgeneratePom=true

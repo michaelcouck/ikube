@@ -29,7 +29,7 @@
 		property:throttle="${throttle}"
 		property:indexDirectoryPath="${index.directory.path}"
 		property:indexables-ref="indexables" />
-	<!--<bean
+	<bean
 		id="indexContextTwo"
 		class="ikube.model.IndexContext"
 		property:indexName="indexTwo"
@@ -62,13 +62,13 @@
 		property:queueTimeout="${max.age}"
 		property:throttle="${throttle}"
 		property:indexDirectoryPath="${index.directory.path}"
-		property:indexables-ref="indexables" />-->
+		property:indexables-ref="indexables" />
 	<util:list id="indexables">
-		<!--<ref local="mail" />
+		<ref local="mail" />
 		<ref local="internet" />
 		<ref local="filesystemOne" />
 		<ref local="filesystemTwo" />
-		<ref local="filesystemThree" />-->
+		<ref local="filesystemThree" />
 		<ref local="tableOne" />
 	</util:list>
 
@@ -89,7 +89,7 @@
 		<ref local="modifier" />
 		<ref local="question" />
 		<ref local="answer" />
-		<!--<ref local="published" />-->
+		<ref local="published" />
 		<ref local="tableTwo" />
 		<!--<ref local="tableThree" />-->
 	</util:list>
@@ -194,9 +194,9 @@
 		property:fieldName="attachmentFaqId"
 		property:foreignKey-ref="faqId"
 		property:columnClass="java.lang.Long" 
-		property:analyzed="${analyzed}"
-		property:stored="${stored}"
-		property:vectored="${vectored}" />
+		property:analyzed="false"
+		property:stored="false"
+		property:vectored="false" />
 	<bean
 		id="attachmentId"
 		class="ikube.model.IndexableColumn"
@@ -204,9 +204,9 @@
 		property:fieldName="attachmentId"
 		property:idColumn="true"
 		property:columnClass="java.lang.Long" 
-		property:analyzed="${analyzed}"
-		property:stored="${stored}"
-		property:vectored="${vectored}" />
+		property:analyzed="false"
+		property:stored="false"
+		property:vectored="false" />
 	<bean
 		id="name"
 		class="ikube.model.IndexableColumn"
@@ -266,18 +266,18 @@
 		property:fieldName="versionfaqId"
 		property:foreignKey-ref="faqId"
 		property:columnClass="java.lang.Long" 
-		property:analyzed="${analyzed}"
-		property:stored="${stored}"
-		property:vectored="${vectored}" />
+		property:analyzed="false"
+		property:stored="false"
+		property:vectored="false" />
 	<bean
 		id="versionId"
 		class="ikube.model.IndexableColumn"
 		property:name="versionId"
 		property:idColumn="true"
 		property:columnClass="java.lang.Long" 
-		property:analyzed="${analyzed}"
-		property:stored="${stored}"
-		property:vectored="${vectored}" />
+		property:analyzed="false"
+		property:stored="false"
+		property:vectored="false" />
 	<bean
 		id="versionCreationtimestamp"
 		class="ikube.model.IndexableColumn"
@@ -365,9 +365,9 @@
 		property:fieldName="attachmentVersionId"
 		property:foreignKey-ref="versionId"
 		property:columnClass="java.lang.Long" 
-		property:analyzed="${analyzed}"
-		property:stored="${stored}"
-		property:vectored="${vectored}" />
+		property:analyzed="false"
+		property:stored="false"
+		property:vectored="false" />
 	<bean
 		id="versionAttachmentId"
 		class="ikube.model.IndexableColumn"
@@ -375,9 +375,9 @@
 		property:fieldName="versionAttachmentId"
 		property:idColumn="true"
 		property:columnClass="java.lang.Long" 
-		property:analyzed="${analyzed}"
-		property:stored="${stored}"
-		property:vectored="${vectored}" />
+		property:analyzed="false"
+		property:stored="false"
+		property:vectored="false" />
 	<bean
 		id="versionName"
 		class="ikube.model.IndexableColumn"
