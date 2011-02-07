@@ -1,7 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="
-		http://maven.apache.org/POM/4.0.0
-		http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="   http://maven.apache.org/POM/4.0.0   http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>ikube</groupId>
@@ -524,9 +521,9 @@
 	</repositories>
 	
 	<scm>
-		<url>https://ikube.googlecode.com/svn</url>
-		<connection>scm:svn:https://ikube.googlecode.com/svn/trunk</connection>
-		<developerConnection>scm:svn:https://ikube.googlecode.com/svn/trunk</developerConnection>
+		<url>https://ikube.googlecode.com/svn/tags/1.0.0/svn</url>
+		<connection>scm:svn:https://ikube.googlecode.com/svn/tags/1.0.0/trunk</connection>
+		<developerConnection>scm:svn:https://ikube.googlecode.com/svn/tags/1.0.0/trunk</developerConnection>
 	</scm>
 
 	<pluginRepositories>
