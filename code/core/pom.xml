@@ -11,7 +11,7 @@
 		<groupId>ikube</groupId>
 		<artifactId>ikube</artifactId>
 		<version>1.0.1-SNAPSHOT</version>
-		<relativePath>../../../ikube</relativePath>
+		<!--<relativePath>../../../ikube</relativePath>-->
 	</parent>
 
 	<properties>
