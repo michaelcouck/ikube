@@ -521,9 +521,9 @@
 	</repositories>
 	
 	<scm>
-		<url>https://ikube.googlecode.com/svn/tags/1.0.0/svn</url>
-		<connection>scm:svn:https://ikube.googlecode.com/svn/tags/1.0.0/trunk</connection>
-		<developerConnection>scm:svn:https://ikube.googlecode.com/svn/tags/1.0.0/trunk</developerConnection>
+		<url>https://ikube.googlecode.com/svn</url>
+		<connection>scm:svn:https://ikube.googlecode.com/svn/trunk</connection>
+		<developerConnection>scm:svn:https://ikube.googlecode.com/svn/trunk</developerConnection>
 	</scm>
 
 	<pluginRepositories>
