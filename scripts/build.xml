@@ -1,112 +1,110 @@
-<project name="iSearch build extras" default="deploy.war">
+<project name="Deploy Ikube to Cluster" default="deploy.war">
 
-	<!-- Generally the deployed application will get propergated accross the servers. -->
 	<property file="build.properties" />
-	<property name="search.war" value="search-war-${project.version}.war" />
-	<property name="search.war.directory" value="search-war-${project.version}" />
-	<property name="search.ear" value="search-ear-${project.version}.ear" />
-	<property name="search.ejb" value="search-ejb-${project.version}.jar" />
-
-	<property name="falcon.bin" value="Y:/bin" />
-	<property name="falcon.webapps" value="Y:/webapps" />
-	<property name="falcon.Ikokoon" value="${falcon.bin}/Ikokoon" />
-
-	<property name="phoenix.bin" value="Z:/bin" />
-	<property name="phoenix.webapps" value="Z:/webapps" />
-	<property name="phoenix.Ikokoon" value="${phoenix.bin}/Ikokoon" />
-
-	<property name="jackal.bin" value="G:/servers/apache-tomcat-6.0.26/bin" />
-	<property name="jackal.webapps" value="G:/servers/apache-tomcat-6.0.26/webapps" />
-	<property name="jackal.Ikokoon" value="${jackal.bin}/Ikokoon" />
+	<property name="ikube.dir" value="ikube-war-${project.version}" />
+	<property name="ikube.war" value="ikube-war-${project.version}.war" />
+	<property name="ikube.jar" value="ikube-core-${project.version}.jar" />
+	<property name="indexes" value="indexes" />
+	
+	<echo message="${tomcat.ikube.cluster.one.webapps}" />
+	<echo message="${tomcat.ikube.cluster.two.webapps}" />
+	<echo message="${tomcat.ikube.cluster.three.webapps}" />
+	
+	<target name="deploy.jar">
+		<copy file="${core.target.directory}/${ikube.jar}" todir="${ikube.client.libs}" overwrite="true" failonerror="true" />
+	</target>
 
 	<target name="deploy.war">
-		<!-- echo>Deploying War to servers' deploy directories</echo>
-		<delete file="${falcon.bin}/btm1.tlog" failonerror="false" />
-		<delete file="${falcon.bin}/btm2.tlog" failonerror="false" />
-		<delete file="${falcon.bin}/openjpa.log" failonerror="false" />
-		<delete file="${falcon.bin}/search.log" failonerror="false" />
-		<delete dir="${falcon.Ikokoon}" failonerror="false" />
-		<delete file="${falcon.webapps}/${search.war}" failonerror="false" />
-		<delete dir="${falcon.webapps}/${search.war.directory}" failonerror="false" />
-		<copy file="${war.build.dir}/${search.war}" todir="${falcon.webapps}" overwrite="true" failonerror="true" / -->
+		<delete dir="${tomcat.webapps}/${ikube.dir}" failonerror="true" />
+		<delete dir="${tomcat.1.webapps}/${ikube.dir}" failonerror="true" />
+		<delete dir="${tomcat.2.webapps}/${ikube.dir}" failonerror="true" />
+		<delete dir="${tomcat.3.webapps}/${ikube.dir}" failonerror="true" />
+		<!-- delete dir="${tomcat.vm.one.webapps}/${ikube.dir}" failonerror="false" / -->
+		<!-- delete dir="${tomcat.ikube.webapps}/${ikube.dir}" failonerror="false" />
+		<delete dir="${tomcat.ikube.cluster.one.webapps}/${ikube.dir}" failonerror="false" />
+		<delete dir="${tomcat.ikube.cluster.two.webapps}/${ikube.dir}" failonerror="false" />
+		<delete dir="${tomcat.ikube.cluster.three.webapps}/${ikube.dir}" failonerror="false" / -->
 
-		<!-- delete file="${phoenix.bin}/btm1.tlog" failonerror="false" />
-		<delete file="${phoenix.bin}/btm2.tlog" failonerror="false" />
-		<delete file="${phoenix.bin}/openjpa.log" failonerror="false" />
-		<delete file="${phoenix.bin}/search.log" failonerror="false" />
-		<delete dir="${phoenix.Ikokoon}" failonerror="false" />
-		<delete file="${phoenix.webapps}/${search.war}" failonerror="false" />
-		<delete dir="${phoenix.webapps}/${search.war.directory}" failonerror="false" />
-		<copy file="${war.build.dir}/${search.war}" todir="${phoenix.webapps}" overwrite="true" failonerror="false" / -->
+		<!-- delete dir="${tomcat.ikube.webapps}/${ikube.dir}" failonerror="true" />
+		<delete dir="${tomcat.ikube.cluster.one.webapps}/${ikube.dir}" failonerror="false" />
+		<delete dir="${tomcat.ikube.cluster.two.webapps}/${ikube.dir}" failonerror="false" />
+		<delete dir="${tomcat.ikube.cluster.three.webapps}/${ikube.dir}" failonerror="false" / -->
+		
+		<delete dir="${tomcat.bin}/${indexes}" failonerror="true" />
+		<delete dir="${tomcat.1.bin}/${indexes}" failonerror="true" />
+		<delete dir="${tomcat.2.bin}/${indexes}" failonerror="true" />
+		<delete dir="${tomcat.3.bin}/${indexes}" failonerror="true" />
+		<!-- delete dir="${cluster.directory}/indexes" failonerror="true" / -->
+		<!--delete file="${tomcat.vm.one.bin}/${indexes}" failonerror="false" / -->
+		<!-- delete file="${tomcat.ikube.bin}/${indexes}" failonerror="false" />
+		<delete file="${tomcat.ikube.cluster.one.bin}/${indexes}" failonerror="false" />
+		<delete file="${tomcat.ikube.cluster.two.bin}/${indexes}" failonerror="false" />
+		<delete file="${tomcat.ikube.cluster.three.bin}/${indexes}" failonerror="false" / -->
 
-		<delete file="${jackal.bin}/btm1.tlog" failonerror="false" />
-		<delete file="${jackal.bin}/btm2.tlog" failonerror="false" />
-		<delete file="${jackal.bin}/openjpa.log" failonerror="false" />
-		<delete file="${jackal.bin}/search.log" failonerror="false" />
-		<delete dir="${jackal.Ikokoon}" failonerror="false" />
-		<delete file="${jackal.webapps}/${search.war}" failonerror="false" />
-		<delete dir="${jackal.webapps}/${search.war.directory}" failonerror="false" />
-		<copy file="${war.build.dir}/${search.war}" todir="${jackal.webapps}" overwrite="true" failonerror="false" />
+		<delete file="${tomcat.webapps}/${ikube.war}" failonerror="true" />
+		<delete file="${tomcat.1.webapps}/${ikube.war}" failonerror="true" />
+		<delete file="${tomcat.2.webapps}/${ikube.war}" failonerror="true" />
+		<delete file="${tomcat.3.webapps}/${ikube.war}" failonerror="true" />
+		<!--delete file="${tomcat.vm.one.webapps}/${ikube.war}" failonerror="false" / -->
+		<!-- delete file="${tomcat.ikube.webapps}/${ikube.war}" failonerror="false" />
+		<delete file="${tomcat.ikube.cluster.one.webapps}/${ikube.war}" failonerror="false" />
+		<delete file="${tomcat.ikube.cluster.two.webapps}/${ikube.war}" failonerror="false" />
+		<delete file="${tomcat.ikube.cluster.three.webapps}/${ikube.war}" failonerror="false" / -->
+
+		<copy file="${target.directory}/${ikube.war}" todir="${tomcat.webapps}" overwrite="true" failonerror="true" />
+		<copy file="${target.directory}/${ikube.war}" todir="${tomcat.1.webapps}" overwrite="true" failonerror="true" />
+		<copy file="${target.directory}/${ikube.war}" todir="${tomcat.2.webapps}" overwrite="true" failonerror="true" />
+		<copy file="${target.directory}/${ikube.war}" todir="${tomcat.3.webapps}" overwrite="true" failonerror="true" />
+		<!--copy file="${target.directory}/${ikube.war}" todir="${tomcat.vm.one.webapps}" overwrite="true" failonerror="false" /-->
+		<!-- copy file="${target.directory}/${ikube.war}" todir="${tomcat.ikube.webapps}" overwrite="true" failonerror="false" />
+		<copy file="${target.directory}/${ikube.war}" todir="${tomcat.ikube.cluster.one.webapps}" overwrite="true" failonerror="false" />
+		<copy file="${target.directory}/${ikube.war}" todir="${tomcat.ikube.cluster.two.webapps}" overwrite="true" failonerror="false" />
+		<copy file="${target.directory}/${ikube.war}" todir="${tomcat.ikube.cluster.three.webapps}" overwrite="true" failonerror="false" / -->
+
 	</target>
 
-	<target name="clean.database">
-		<sql driver="${jdbc.driver}" url="${jdbc.url}" userid="${jdbc.user}" password="${jdbc.password}">
-			delete from server;
-			delete from event;
-			delete from stacktrace;
-			delete from analytics;
-			delete from interval;
-			delete from luceneindex;
-			delete from luceneindexfile;
-			delete from luceneindexfiledata;
-			commit;
-		</sql>
+	<target name="cluster">
+		<exec spawn="true" executable="${cluster.directory}/startup.bat" />
 	</target>
 
-	<target name="jpql.parser">
-		<antlr target="./etc/JPA.g" outputdirectory="libs">
-			<jvmarg value="-Djava.compiler=NONE" />
-		</antlr>
+	<target name="startCluster">
+		<antcall target="startOne" />
+		<sleep milliseconds="10000" />
+		<antcall target="startTwo" />
+		<sleep milliseconds="10000" />
+		<antcall target="startThree" />
 	</target>
 
-	<target name="generate">
-		<java jar="libs/antlr-3.2.jar" fork="true">
-			<arg value="-o" />
-			<arg value="libs/parsers" />
-			<arg value="etc/Jpa.g" />
+	<target name="startOne">
+		<java jar="${tomcat.1.bin}/bootstrap.jar" dir="${tomcat.1.bin}" fork="yes" spawn="true">
+			<jvmarg value="-Dcatalina.home=${tomcat.1}" />
+		</java>
+	</target>
+	<target name="startTwo">
+		<java jar="${tomcat.2.bin}/bootstrap.jar" dir="${tomcat.2.bin}" fork="yes" spawn="true">
+			<jvmarg value="-Dcatalina.home=${tomcat.2}" />
+		</java>
+	</target>
+	<target name="startThree">
+		<java jar="${tomcat.3.bin}/bootstrap.jar" dir="${tomcat.3.bin}" fork="yes" spawn="true">
+			<jvmarg value="-Dcatalina.home=${tomcat.3}" />
 		</java>
 	</target>
 
-	<target name="javacc">
-		<javacc
-			target="etc/JPQL.jj"
-			outputdirectory="modules/Jar/src/main/java/com/ikokoon/search/persistence/jpa/parser"
-			javacchome="libs/javacc-5.0"
-			static="false" />
+	<target name="startTomcat">
+		<exec executable="bash" os="Windows">
+			<arg value="${tomcat.1.bin}/startup.bat" />
+		</exec>
 	</target>
 
-	<target name="jjtree">
-		<jjtree
-			target="etc/JPQL.jj"
-			outputdirectory="modules/Jar/src/main/java/com/ikokoon/search/persistence/jpa/parser"
-			javacchome="libs/javacc-5.0"
-			nodeusesparser="false" />
+	<target name="stopTomcat">
+		<exec executable="bash" os="Windows">
+			<arg value="${tomcat.1.bin}/shutdown.bat" />
+		</exec>
 	</target>
 
-	<target name="deploy.ejb">
-		<echo>Deploying EJB jar to servers' deploy directories</echo>
-		<delete file="${jboss.deploy.directory.1}/${search.ejb}" failonerror="true" />
-		<copy file="${ejb.build.dir}/${search.ejb}" todir="${jboss.deploy.directory.1}" overwrite="true" failonerror="true" />
-		<delete file="${weblogic.deploy.directory.1}/${search.ejb}" failonerror="true" />
-		<copy file="${ejb.build.dir}/${search.ejb}" todir="${weblogic.deploy.directory.1}" overwrite="true" failonerror="true" />
-	</target>
-
-	<target name="deploy.ear">
-		<echo message="">Deploying EAR jar to servers' deploy directories</echo>
-		<delete file="${jboss.deploy.directory.1}/${search.ear}" failonerror="true" />
-		<copy file="${ear.build.dir}/${search.ear}" todir="${jboss.deploy.directory.1}" overwrite="true" failonerror="true" />
-		<delete file="${weblogic.deploy.directory.1}/${search.ear}" failonerror="true" />
-		<copy file="${ear.build.dir}/${search.ear}" todir="${weblogic.deploy.directory.1}" overwrite="true" failonerror="true" />
+	<target name="stop">
+		<exec spawn="true" executable="${tomcat.1.bin}/shutdown.bat" />
 	</target>
 
 </project>
