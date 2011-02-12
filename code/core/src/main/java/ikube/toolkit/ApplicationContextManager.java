@@ -140,7 +140,7 @@ public class ApplicationContextManager {
 		try {
 			if (APPLICATION_CONTEXT == null) {
 				LOGGER.info("Loading the application context with configurations : " + Arrays.asList(configLocations));
-				APPLICATION_CONTEXT = new ClassPathXmlApplicationContext(configLocations, ApplicationContextManager.class);
+				APPLICATION_CONTEXT = new ClassPathXmlApplicationContext(configLocations);
 				LOGGER.info("Loaded the application context with configurations : " + Arrays.asList(configLocations));
 			}
 			return APPLICATION_CONTEXT;

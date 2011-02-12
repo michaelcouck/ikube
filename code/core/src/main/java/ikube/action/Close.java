@@ -31,7 +31,7 @@ public class Close extends Action {
 		if (multiSearcher == null) {
 			return Boolean.TRUE;
 		}
-		// Get all the SEARCHABLES from the searcher and close them one by one
+		// Get all the searchables from the searcher and close them one by one
 		Searchable[] searchables = multiSearcher.getSearchables();
 		if (searchables != null && searchables.length > 0) {
 			for (Searchable searchable : searchables) {

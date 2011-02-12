@@ -32,6 +32,12 @@ import com.hazelcast.core.ITopic;
 import com.hazelcast.core.MessageListener;
 
 /**
+ * TODO - This class can be re-written. Instead of having the port implementation there can be a direct 
+ * read from the remote server file system and a write to the local file system. This requires that the servers
+ * are on machines and users that have access to each others file systems but reduces the complexity of this
+ * process considerably, which doesn't work anyway because the file write process for > 10 gig file can take 
+ * a while and there are synchronization issues.
+ * 
  * TODO - re-test this class, it doesn't work in a cluster.
  * 
  * @author Michael Couck
