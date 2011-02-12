@@ -5,9 +5,13 @@ import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.util.Map;
 
 import org.junit.Before;
+
+import com.ibm.db2.jcc.DB2Driver;
 
 /**
  * This is a test for the 'production' configuration, suitable for a single instance, i.e. no cluster functionality is tested.
@@ -32,6 +36,10 @@ public class Integration {
 	}
 
 	public static void main(String[] args) throws Exception {
+		Class.forName(DB2Driver.class.getName());
+		Connection connection = DriverManager.getConnection("jdbc:db2://localhost:50000/ikube", "db2admin", "db2admin");
+		System.out.println("Connection : " + connection);
+		
 		ApplicationContextManager.getApplicationContext(INTEGRATION_SPRING_CONFIG);
 		Integration integration = new Integration();
 		integration.before();

@@ -55,7 +55,7 @@ public class IndexContext extends Persistable implements Comparable<IndexContext
 	}
 
 	public void setMaxAge(final long maxAge) {
-		this.maxAge = maxAge;
+		this.maxAge = maxAge * 60 * 1000;
 	}
 
 	public long getQueueTimeout() {

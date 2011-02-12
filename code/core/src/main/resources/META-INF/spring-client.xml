@@ -183,7 +183,7 @@
 		<ref local="attachmentFaqId" />
 		<ref local="attachmentId" />
 		<ref local="name" />
-		<ref local="attachment" />
+		<!--<ref local="attachment" />-->
 		<ref local="length" />
 	</util:list>
 

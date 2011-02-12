@@ -36,15 +36,15 @@ public interface IConstants {
 	/** The transaction files from Neodatis. */
 	public String TRANSACTION_FILES = ".transaction";
 
-	public Analyzer ANALYZER = new StandardAnalyzer(Version.LUCENE_29);
+	public Version VERSION = Version.LUCENE_30;
+	public Analyzer ANALYZER = new StandardAnalyzer(VERSION);
 	public long MAX_READ_LENGTH = 1000000;
 	public int MAX_RESULT_FIELD_LENGTH = 1000;
 
 	public String READER_FILE_SUFFIX = ".ikube";
 	public int MAX_FRAGMENTS = 3;
 	public String FRAGMENT_SEPERATOR = "...";
-	public Version VERSION = Version.LUCENE_30;
-
+	
 	public String ID = "id";
 	public String INDEX = "index";
 	public String SCORE = "score";

@@ -1,6 +1,5 @@
 package ikube.cluster;
 
-import ikube.ATest;
 import ikube.IConstants;
 import ikube.logging.Logging;
 import ikube.model.IndexContext;
@@ -23,7 +22,7 @@ import org.apache.log4j.Logger;
  * @since 21.11.10
  * @version 01.00
  */
-public class ClusterIntegration extends ATest {
+public class ClusterIntegration {
 
 	static {
 		Logging.configure();
@@ -50,8 +49,8 @@ public class ClusterIntegration extends ATest {
 		final List<Process> processes = new ArrayList<Process>();
 		Map<String, String> environment = System.getenv();
 
-		// File clusterDirectory = FileUtilities.getFile(clusterDirectoryPath, Boolean.TRUE);
-		// FileUtilities.deleteFile(clusterDirectory, 1);
+		File clusterDirectory = FileUtilities.getFile(clusterDirectoryPath, Boolean.TRUE);
+		FileUtilities.deleteFile(clusterDirectory, 1);
 
 		String[] command = { "javaw", "-cp", classpath, ServerRunner.class.getCanonicalName(), IConstants.SPRING_CONFIGURATION_FILE };
 

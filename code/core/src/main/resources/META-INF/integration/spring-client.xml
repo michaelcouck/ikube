@@ -30,8 +30,8 @@
 		property:indexDirectoryPath="${index.directory.path}"
 		property:indexables-ref="indexables" />
 	<util:list id="indexables">
-		<ref local="mail" />
-		<ref local="internet" />
+		<!--<ref local="mail" />
+		<ref local="internet" />-->
 		<ref local="filesystem" />
 		<ref local="tableOne" />
 	</util:list>
