@@ -1,0 +1,17 @@
+Faq:
+Columns: 19, 128, 26, 32, 26, 32, 5, 128
+Total: 396
+Records: 6 429 388
+Size: 2,546 gig
+
+Attachment:
+Columns: 19, 64, 10, 19
+Total: 112
+Records: 50 882 388
+Size: 5,824 gig
+
+Ten tables: 
+Faq: 25,46 gig
+Attachment: 58,24 gig
+
+Total: 83.7 gig

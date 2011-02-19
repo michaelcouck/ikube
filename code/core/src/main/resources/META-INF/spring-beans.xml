@@ -28,19 +28,19 @@
 		class="ikube.IndexEngine"
 		property:actions-ref="actions" />
 	<util:list id="actions">
-		<!--<ref local="ikube.action.Synchronize" />-->
-		<ref local="ikube.action.Reset" />
-		<ref local="ikube.action.Close" />
-		<ref local="ikube.action.Open" />
-		<ref local="ikube.action.Index" />
+		<ref local="ikube.action.Reset" /> 
+		<ref local="ikube.action.Close"  />
+		<ref local="ikube.action.Open"  />
+		<ref local="ikube.action.Index"  />
 		<ref local="ikube.action.Delete" />
 	</util:list>
-	<bean id="ikube.action.Synchronize" class="ikube.action.Synchronize" />
+	
 	<bean id="ikube.action.Reset" class="ikube.action.Reset" />
 	<bean id="ikube.action.Close" class="ikube.action.Close" />
 	<bean id="ikube.action.Open" class="ikube.action.Open" />
 	<bean id="ikube.action.Index" class="ikube.action.Index" />
 	<bean id="ikube.action.Delete" class="ikube.action.Delete" />
+	<!--<bean id="ikube.action.Synchronize" class="ikube.action.Synchronize" />-->
 	
 	<bean
 		id="ikube.database.mem.DataBaseMem"
@@ -52,21 +52,6 @@
 		lazy-init="true"
 		init-method="initialise"
 		destroy-method="close">
-		<property name="indexes">
-			<list>
-				<bean
-					id="ikube.database.odb.Index.Url"
-					class="ikube.database.odb.Index"
-					property:className="ikube.model.Url">
-					<property name="fieldNames">
-						<list>
-							<!--<value>id</value>
-							<value>hash</value>-->
-						</list>
-					</property>
-				</bean>
-			</list>
-		</property>
 	</bean>
 	
 	<bean
@@ -141,46 +126,6 @@
 	</bean>
 	
 	<bean
-		id="ikube.monitoring.SearcherWebServiceExecuter.One"
-		class="ikube.monitoring.SearcherWebServiceExecuter"
-		property:indexName="${searcher.index.name.one}"
-		property:protocol="${service.protocol}"
-		property:port="${service.port}"
-		property:path="${web.service.path}"
-		property:fieldName="${searcher.field.name}"
-		property:fragment="${searcher.fragment}"
-		property:resultsSizeMinimum="${searcher.minimum.results.size}"
-		property:searchString="${searcher.search.string}"
-		property:start="${searcher.start.index}"
-		property:end="${searcher.end.index}" />
-	<bean
-		id="ikube.monitoring.SearcherWebServiceExecuter.Two"
-		class="ikube.monitoring.SearcherWebServiceExecuter"
-		property:indexName="${searcher.index.name.two}"
-		property:protocol="${service.protocol}"
-		property:port="${service.port}"
-		property:path="${web.service.path}"
-		property:fieldName="${searcher.field.name}"
-		property:fragment="${searcher.fragment}"
-		property:resultsSizeMinimum="${searcher.minimum.results.size}"
-		property:searchString="${searcher.search.string}"
-		property:start="${searcher.start.index}"
-		property:end="${searcher.end.index}" />
-	<bean
-		id="ikube.monitoring.SearcherWebServiceExecuter.Three"
-		class="ikube.monitoring.SearcherWebServiceExecuter"
-		property:indexName="${searcher.index.name.three}"
-		property:protocol="${service.protocol}"
-		property:port="${service.port}"
-		property:path="${web.service.path}"
-		property:fieldName="${searcher.field.name}"
-		property:fragment="${searcher.fragment}"
-		property:resultsSizeMinimum="${searcher.minimum.results.size}"
-		property:searchString="${searcher.search.string}"
-		property:start="${searcher.start.index}"
-		property:end="${searcher.end.index}" />
-
-	<bean
 		class="ikube.listener.Scheduler"
 		init-method="initialize"
 		property:schedules-ref="scheduled.tasks" />
@@ -211,6 +156,45 @@
 		</aop:aspect>
 	</aop:config>
 	
+	<util:map id="rules">
+		<entry key-ref="ikube.action.Reset"  value-ref="ikube.action.Reset.Rules" />
+		<entry key-ref="ikube.action.Close"  value-ref="ikube.action.Close.Rules" />
+		<entry key-ref="ikube.action.Open"  value-ref="ikube.action.Open.Rules" />
+		<entry key-ref="ikube.action.Index"  value-ref="ikube.action.Index.Rules" />
+		<entry key-ref="ikube.action.Delete"  value-ref="ikube.action.Delete.Rules" />
+	</util:map>
+	
+	<util:list id="ikube.action.Reset.Rules">
+		<bean class="ikube.action.rule.AnyServersWorking" property:expected="false" />
+	</util:list>
+	<util:list id="ikube.action.Close.Rules">
+		<bean class="ikube.action.rule.IsMultiSearcherInitialised" property:expected="true" />
+		<bean class="ikube.action.rule.AreSearchablesInitialised" property:expected="true" />
+		<bean class="ikube.action.rule.AreIndexesCreated" property:expected="true" />
+		<bean class="ikube.action.rule.IsIndexCurrent" property:expected="true" />
+		<bean class="ikube.action.rule.AreUnopenedIndexes" property:expected="true" />
+	</util:list>
+	<util:list id="ikube.action.Open.Rules">
+		<bean class="ikube.action.rule.IsMultiSearcherInitialised" property:expected="true" />
+		<bean class="ikube.action.rule.AreSearchablesInitialised" property:expected="true" />
+		<bean class="ikube.action.rule.AreIndexesCreated" property:expected="true" />
+		<bean class="ikube.action.rule.IsIndexCurrent" property:expected="true" />
+		<bean class="ikube.action.rule.AreUnopenedIndexes" property:expected="true" />
+	</util:list>
+	<util:list id="ikube.action.Index.Rules">
+	</util:list>
+	<util:list id="ikube.action.Delete.Rules">
+	</util:list>
+	
+	<!--<bean 
+		id="ikube.action.rule.RuleDecisionInterceptor" 
+		class="ikube.action.rule.RuleDecisionInterceptor" />
+	<aop:config proxy-target-class="true">
+		<aop:aspect ref="ikube.action.rule.RuleDecisionInterceptor">
+			<aop:around method="decide" pointcut="execution(* ikube.action.*.*(..))"  />
+		</aop:aspect>
+	</aop:config>-->
+	
 	<!-- Utility classes -->
 	<bean
 		class="ikube.toolkit.Mailer"
@@ -222,4 +206,19 @@
 		property:recipients="ikube.ikube@gmail.com"
 		property:sender="ikube.ikube@gmail.com"
 		property:user="ikube.ikube" />
+	
+	<bean
+		id="ikube.monitoring.SearcherWebServiceExecuter"
+		class="ikube.monitoring.SearcherWebServiceExecuter"
+		property:indexName="${searcher.index.name}"
+		property:protocol="${service.protocol}"
+		property:port="${service.port}"
+		property:path="${web.service.path}"
+		property:fieldName="${searcher.field.name}"
+		property:fragment="${searcher.fragment}"
+		property:resultsSizeMinimum="${searcher.minimum.results.size}"
+		property:searchString="${searcher.search.string}"
+		property:start="${searcher.start.index}"
+		property:end="${searcher.end.index}" />
+
 </beans>

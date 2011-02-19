@@ -13,9 +13,43 @@
             http://www.springframework.org/schema/util/spring-util.xsd">
 
 	<bean
-		id="indexContext"
+		id="indexContextOne"
 		class="ikube.model.IndexContext"
-		property:indexName="index"
+		property:indexName="indexOne"
+		property:maxAge="${max.age}"
+		property:compoundFile="${compound.file}"
+		property:bufferedDocs="${buffered.docs}"
+		property:bufferSize="${buffer.size}"
+		property:batchSize="${jdbc.batch.size}"
+		property:internetBatchSize="${internet.batch.size}"
+		property:mergeFactor="${merge.factor}"
+		property:maxFieldLength="${max.field.length}"
+		property:maxReadLength="${max.read.length}"
+		property:queueTimeout="${max.age}"
+		property:throttle="${throttle}"
+		property:indexDirectoryPath="${index.directory.path}"
+		property:indexables-ref="indexables" />
+	<bean
+		id="indexContextTwo"
+		class="ikube.model.IndexContext"
+		property:indexName="indexTwo"
+		property:maxAge="${max.age}"
+		property:compoundFile="${compound.file}"
+		property:bufferedDocs="${buffered.docs}"
+		property:bufferSize="${buffer.size}"
+		property:batchSize="${jdbc.batch.size}"
+		property:internetBatchSize="${internet.batch.size}"
+		property:mergeFactor="${merge.factor}"
+		property:maxFieldLength="${max.field.length}"
+		property:maxReadLength="${max.read.length}"
+		property:queueTimeout="${max.age}"
+		property:throttle="${throttle}"
+		property:indexDirectoryPath="${index.directory.path}"
+		property:indexables-ref="indexables" />
+	<bean
+		id="indexContextThree"
+		class="ikube.model.IndexContext"
+		property:indexName="indexThree"
 		property:maxAge="${max.age}"
 		property:compoundFile="${compound.file}"
 		property:bufferedDocs="${buffered.docs}"
@@ -32,7 +66,9 @@
 	<util:list id="indexables">
 		<ref local="mail" />
 		<ref local="internet" />
-		<ref local="filesystem" />
+		<ref local="filesystemOne" />
+		<ref local="filesystemTwo" />
+		<ref local="filesystemThree" />
 		<ref local="tableOne" />
 	</util:list>
 
@@ -147,7 +183,7 @@
 		<ref local="attachmentFaqId" />
 		<ref local="attachmentId" />
 		<ref local="name" />
-		<!--<ref local="attachment" />-->
+		<ref local="attachment" />
 		<ref local="length" />
 	</util:list>
 
@@ -401,9 +437,31 @@
 		property:vectored="${vectored}" />
 	
 	<bean
-		id="filesystem"
+		id="filesystemOne"
 		class="ikube.model.IndexableFileSystem"
 		property:name="filesOne"
+		property:path="${files.path}"
+		property:pathFieldName="path"
+		property:nameFieldName="name"
+		property:lengthFieldName="length"
+		property:contentFieldName="contents"
+		property:excludedPattern=".*(.svn).*|.*(database).*|.*(.gif).*|.*(.svg).*|.*(.jpg).*|.*(.zip).*|.*(.jar).*|.*(.exe).*|.*(.dll).*|.*(.war).*"
+		property:lastModifiedFieldName="lastmodified" />
+	<bean
+		id="filesystemTwo"
+		class="ikube.model.IndexableFileSystem"
+		property:name="filesTwo"
+		property:path="${files.path}"
+		property:pathFieldName="path"
+		property:nameFieldName="name"
+		property:lengthFieldName="length"
+		property:contentFieldName="contents"
+		property:excludedPattern=".*(.svn).*|.*(database).*|.*(.gif).*|.*(.svg).*|.*(.jpg).*|.*(.zip).*|.*(.jar).*|.*(.exe).*|.*(.dll).*|.*(.war).*"
+		property:lastModifiedFieldName="lastmodified" />
+	<bean
+		id="filesystemThree"
+		class="ikube.model.IndexableFileSystem"
+		property:name="filesThree"
 		property:path="${files.path}"
 		property:pathFieldName="path"
 		property:nameFieldName="name"

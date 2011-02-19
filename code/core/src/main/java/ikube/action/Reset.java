@@ -25,14 +25,19 @@ public class Reset extends Action {
 			logger.info("Servers working : ");
 			return Boolean.FALSE;
 		}
-		List<Server> servers = getClusterManager().getServers();
-		for (Server server : servers) {
-			server.getActions().clear();
+		try {
+			getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getName(), Boolean.TRUE);
+			List<Server> servers = getClusterManager().getServers();
+			for (Server server : servers) {
+				server.getActions().clear();
+			}
+			for (Server server : servers) {
+				getClusterManager().set(Server.class, server.getId(), server);
+			}
+			getClusterManager().clear(Url.class);
+		} finally {
+			getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getName(), Boolean.FALSE);
 		}
-		for (Server server : servers) {
-			getClusterManager().set(Server.class, server.getId(), server);
-		}
-		getClusterManager().clear(Url.class);
 		return Boolean.TRUE;
 	}
 

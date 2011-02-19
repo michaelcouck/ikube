@@ -1,0 +1,54 @@
+03.11.10
+
+* Servlet/Ejb - 1 ?
+* New data structure, perhaps patients in a hospital
+* Client - 10
+   Logging on a topic for the gui to collect for the whole cluster
+* Linux testing - 1
+* Implementation of updating the index with deltas from the client - 3
+
+Total - ?
+
+Done:
+* Cluster - 3 *
+* Finish the clustering support - 3 *
+* Implement the synchronization between the servers - 1 *
+* Add the other parsers - 3 *
+* Performance - 1 *
+* Large volumes - 1 *
+* Add the file and url visitors - 5 *
+* Multiple data sources - 1 *
+* Testing - 7 *
+* Cluster testing - 1 *
+* Wiki/documentation/JavaDoc - 3 *
+* Data generator two with files - 1/2 *
+
+Other things:
+* Add a database tester to re-connect if the database becomes disconnected
+* Is there automatically language support, i.e. are languages handled transparently
+* Add changes in the data to results? I.e. save the previous data and in the results
+   offer a series of documents representing how they changed over the
+   indexes/periods
+* Add a shutdown hook for the Spring objects that need to be closed when the context
+  gets refreshed.
+* Security
+* Stemming
+* Taxonomy
+* Spelling checking
+* Phonetic search
+* Result clustering
+* Reporting (e.g. Google Analytics)
+* Add a maximum documents per server parameter
+* Performance benchmarking
+
+Done:
+* Delete the database file on startup locally *
+* Add a reporting module that checks the database connection, the indexes in the different contexts and sends
+   the result to a mail address. Perhaps some profiling information, etc. *
+* Add a configuration for a file system *
+* Add a configuration for a mail account *
+* Test the parsers *
+* Add sorting to the multi and single searchers *
+
+Won't Do:
+* Boosting

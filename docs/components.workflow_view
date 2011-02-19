@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view:Diagram xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:view="org.eclipse.jwt/view">
+  <describesModel href="components.workflow#/"/>
+  <layoutData describesElement="//@references.0" viewid="Technical" x="73" y="112" initialized="true"/>
+  <layoutData describesElement="//@references.1" viewid="Technical" x="252" y="112" initialized="true"/>
+  <layoutData describesElement="//@references.2" viewid="Technical" x="435" y="112" initialized="true"/>
+  <layoutData describesElement="//@references.3" viewid="Technical" x="40" y="182" initialized="true"/>
+  <layoutData describesElement="//@references.4" viewid="Technical" x="218" y="182" initialized="true"/>
+  <layoutData describesElement="//@references.5" viewid="Technical" x="402" y="182" initialized="true"/>
+  <layoutData describesElement="//@references.6" viewid="Technical" x="222" y="14" initialized="true"/>
+  <references>
+    <containedIn href="components.workflow#//@elements.0"/>
+    <reference href="components.workflow#//@elements.1"/>
+  </references>
+  <references>
+    <containedIn href="components.workflow#//@elements.0"/>
+    <reference href="components.workflow#//@elements.2"/>
+  </references>
+  <references>
+    <containedIn href="components.workflow#//@elements.0"/>
+    <reference href="components.workflow#//@elements.3"/>
+  </references>
+  <references>
+    <containedIn href="components.workflow#//@elements.0"/>
+    <reference href="components.workflow#//@elements.4"/>
+  </references>
+  <references>
+    <containedIn href="components.workflow#//@elements.0"/>
+    <reference href="components.workflow#//@elements.5"/>
+  </references>
+  <references>
+    <containedIn href="components.workflow#//@elements.0"/>
+    <reference href="components.workflow#//@elements.6"/>
+  </references>
+  <references>
+    <containedIn href="components.workflow#//@elements.0"/>
+    <reference href="components.workflow#//@elements.7"/>
+  </references>
+</view:Diagram>
