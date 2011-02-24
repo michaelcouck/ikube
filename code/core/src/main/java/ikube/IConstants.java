@@ -31,6 +31,8 @@ public interface IConstants {
 	/** Maps parsers to mime types. */
 	public String MIME_MAPPING = META_INF + SEP + "mime" + SEP + "mime-mapping.xml";
 
+	public static String LOG_4_J_PROPERTIES = META_INF + "log4j.properties";
+
 	/** The database file name. */
 	public String DATABASE_FILE = "ikube.odb";
 	/** The transaction files from Neodatis. */
@@ -44,7 +46,7 @@ public interface IConstants {
 	public String READER_FILE_SUFFIX = ".ikube";
 	public int MAX_FRAGMENTS = 3;
 	public String FRAGMENT_SEPERATOR = "...";
-	
+
 	public String ID = "id";
 	public String INDEX = "index";
 	public String SCORE = "score";

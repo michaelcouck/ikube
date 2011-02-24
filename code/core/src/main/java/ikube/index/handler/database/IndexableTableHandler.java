@@ -301,20 +301,20 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 						first = Boolean.FALSE;
 					}
 					builder.append(indexableTable.getSchema());
-					builder.append(".");
+					builder.append('.');
 					builder.append(indexableTable.getName());
-					builder.append(".");
+					builder.append('.');
 					builder.append(indexableColumn.getName());
 				}
 			}
 			builder.append(" from ");
 			builder.append(indexableTable.getSchema());
-			builder.append(".");
+			builder.append('.');
 			builder.append(indexableTable.getName());
 
 			// Add the predicate if it exists
 			if (indexableTable.getPredicate() != null) {
-				builder.append(" ");
+				builder.append(' ');
 				builder.append(indexableTable.getPredicate());
 			}
 
@@ -331,9 +331,9 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 				String idColumnName = getIdColumn(indexableTable.getChildren()).getName();
 
 				builder.append(indexableTable.getSchema());
-				builder.append(".");
+				builder.append('.');
 				builder.append(indexableTable.getName());
-				builder.append(".");
+				builder.append('.');
 				builder.append(idColumnName);
 
 				builder.append(" >= ");
@@ -341,9 +341,9 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 				builder.append(" and ");
 
 				builder.append(indexableTable.getSchema());
-				builder.append(".");
+				builder.append('.');
 				builder.append(indexableTable.getName());
-				builder.append(".");
+				builder.append('.');
 				builder.append(idColumnName);
 
 				builder.append(" < ");
@@ -364,12 +364,12 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 							builder.append(" and ");
 						}
 						builder.append(indexableTable.getSchema());
-						builder.append(".");
+						builder.append('.');
 						builder.append(indexableTable.getName());
-						builder.append(".");
+						builder.append('.');
 						builder.append(indexableColumn.getName());
 						builder.append(" = ");
-						builder.append("?");
+						builder.append('?');
 						break;
 					}
 				}
@@ -439,18 +439,18 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 
 			StringBuilder builder = new StringBuilder("select ");
 			builder.append(function);
-			builder.append("(");
+			builder.append('(');
 
 			builder.append(indexableTable.getSchema());
-			builder.append(".");
+			builder.append('.');
 			builder.append(indexableTable.getName());
-			builder.append(".");
+			builder.append('.');
 			builder.append(idColumn.getName());
 
 			builder.append(") from ");
 
 			builder.append(indexableTable.getSchema());
-			builder.append(".");
+			builder.append('.');
 			builder.append(indexableTable.getName());
 
 			statement = connection.createStatement();
@@ -580,11 +580,11 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 		StringBuilder builder = new StringBuilder();
 
 		builder.append(indexableTable.getSchema());
-		builder.append(".");
+		builder.append('.');
 		builder.append(indexableTable.getName());
-		builder.append(".");
+		builder.append('.');
 		builder.append(idColumn.getName());
-		builder.append(".");
+		builder.append('.');
 		builder.append(idColumn.getObject());
 
 		String id = builder.toString();

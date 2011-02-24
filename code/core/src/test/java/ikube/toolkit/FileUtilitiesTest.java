@@ -133,11 +133,4 @@ public class FileUtilitiesTest extends ATest {
 		assertEquals(indexFolderTwo.getParentFile().getName(), latestIndexDirectory.getName());
 	}
 
-	@Test
-	public void getOldestIndexDirectoryFilefile() {
-		// File, File
-		File latest = FileUtilities.getNewestIndexDirectory(indexFolderOne.getParentFile(), indexFolderTwo.getParentFile());
-		assertEquals(indexFolderTwo.getParentFile(), latest);
-	}
-
 }

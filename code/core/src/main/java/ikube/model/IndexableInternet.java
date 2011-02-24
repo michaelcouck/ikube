@@ -108,13 +108,13 @@ public class IndexableInternet extends Indexable<IndexableInternet> {
 	
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("[");
+		builder.append('[');
 		builder.append(getId());
 		builder.append(", ");
 		builder.append(getName());
 		builder.append(", ");
 		builder.append(getUrl());
-		builder.append("]");
+		builder.append(']');
 		return builder.toString();
 	}
 

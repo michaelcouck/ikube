@@ -63,7 +63,7 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 		if (isHandled) {
 			return null;
 		}
-		handleEmail(indexContext, (IndexableEmail) indexable);
+		handleEmail(indexContext, indexable);
 		return null;
 	}
 
@@ -174,11 +174,11 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 	protected String getMessageId(IndexableEmail indexableMail, int messageNumber, long timestamp) {
 		StringBuilder builder = new StringBuilder();
 		builder.append(indexableMail.getMailHost());
-		builder.append(".");
+		builder.append('.');
 		builder.append(indexableMail.getUsername());
-		builder.append(".");
+		builder.append('.');
 		builder.append(messageNumber);
-		builder.append(".");
+		builder.append('.');
 		builder.append(timestamp);
 		return builder.toString();
 	}

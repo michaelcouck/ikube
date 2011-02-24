@@ -1,5 +1,7 @@
 package ikube.logging;
 
+import ikube.IConstants;
+
 import java.net.URL;
 
 import org.apache.log4j.Logger;
@@ -14,9 +16,6 @@ import org.apache.log4j.PropertyConfigurator;
  */
 public class Logging {
 
-	public static String META_INF = "/META-INF/";
-	public static String LOG_4_J_PROPERTIES = META_INF + "log4j.properties";
-
 	private static Logger LOGGER;
 	private static boolean INITIALISED = false;
 
@@ -30,12 +29,12 @@ public class Logging {
 		}
 		INITIALISED = true;
 		try {
-			URL url = Logging.class.getResource(LOG_4_J_PROPERTIES);
+			URL url = Logging.class.getResource(IConstants.LOG_4_J_PROPERTIES);
 			System.out.println(Logging.class.getName() + " Log4j url : " + url);
 			if (url != null) {
 				PropertyConfigurator.configure(url);
 			} else {
-				System.err.println("Logging properties file not found : " + LOG_4_J_PROPERTIES);
+				System.err.println("Logging properties file not found : " + IConstants.LOG_4_J_PROPERTIES);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

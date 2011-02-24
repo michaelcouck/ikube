@@ -240,19 +240,15 @@ public class FileUtilities {
 					if (latestSoFar == null) {
 						latestSoFar = child;
 					}
-					latestSoFar = getNewestIndexDirectory(child, latestSoFar);
+					long oneTime = Long.parseLong(child.getName());
+					long twoTime = Long.parseLong(latestSoFar.getName());
+					latestSoFar = oneTime > twoTime ? child : latestSoFar;
 				} else {
 					latestSoFar = getLatestIndexDirectory(child, latestSoFar);
 				}
 			}
 		}
 		return latestSoFar;
-	}
-
-	protected static synchronized File getNewestIndexDirectory(File one, File two) {
-		long oneTime = Long.parseLong(one.getName());
-		long twoTime = Long.parseLong(two.getName());
-		return oneTime > twoTime ? one : two;
 	}
 
 	/**

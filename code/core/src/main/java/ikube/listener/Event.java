@@ -62,11 +62,11 @@ public class Event {
 
 	public String toString() {
 		final StringBuilder builder = new StringBuilder();
-		builder.append("[");
+		builder.append('[');
 		builder.append(getType()).append(", ");
 		builder.append(getTimestamp()).append(", ");
 		builder.append(isConsumed());
-		builder.append("]");
+		builder.append(']');
 		return builder.toString();
 	}
 

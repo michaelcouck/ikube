@@ -40,9 +40,9 @@ public class Index extends Persistable {
 	}
 
 	public String toString() {
-		final StringBuilder builder = new StringBuilder("[");
+		final StringBuilder builder = new StringBuilder('[');
 		builder.append(getId()).append(", ");
-		builder.append("]");
+		builder.append(']');
 		return builder.toString();
 	}
 

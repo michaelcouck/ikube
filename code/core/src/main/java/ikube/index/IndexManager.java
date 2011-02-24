@@ -90,7 +90,7 @@ public class IndexManager {
 			document.add(field);
 		} else {
 			String fieldValue = field.stringValue();
-			StringBuilder builder = new StringBuilder(fieldValue).append(" ").append(fieldContent);
+			StringBuilder builder = new StringBuilder(fieldValue).append(' ').append(fieldContent);
 			field.setValue(builder.toString());
 		}
 	}

@@ -56,7 +56,7 @@ public class XMLParser implements IParser {
 	private final void visit(Element parent, Writer writer) throws IOException {
 		String text = parent.getTextTrim();
 		if (text != null && !text.equals("")) {
-			writer.append(" ").append(text).append(" ");
+			writer.append(' ').append(text).append(' ');
 		}
 		List<Element> children = parent.elements();
 		for (Element child : children) {

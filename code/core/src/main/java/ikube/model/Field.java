@@ -6,7 +6,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * This is an 
+ * This annotation is somehow connected to the monitoring service. This is really not an elegant idea and should be completely removed and
+ * replaced with something equally shit in Spring. 
  * 
  * @author Michael Couck
  * @since 28.12.10

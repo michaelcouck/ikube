@@ -288,22 +288,22 @@ public final class MimeType {
 
 		public String toString() {
 			StringBuffer buf = new StringBuffer();
-			buf.append("[");
+			buf.append('[');
 			buf.append(offset);
-			buf.append("/");
+			buf.append('/');
 			buf.append(magic);
-			buf.append("]");
+			buf.append(']');
 			return buf.toString();
 		}
 	}
 
 	public String toString() {
 		StringBuffer buffer = new StringBuffer();
-		buffer.append("[");
+		buffer.append('[');
 		buffer.append(this.name);
-		buffer.append(",");
+		buffer.append(',');
 		buffer.append(this.description);
-		buffer.append("]");
+		buffer.append(']');
 		return buffer.toString();
 	}
 }

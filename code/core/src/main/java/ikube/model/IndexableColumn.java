@@ -99,11 +99,11 @@ public class IndexableColumn extends Indexable<IndexableColumn> {
 
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("[");
+		builder.append('[');
 		builder.append(isIdColumn());
 		builder.append(", ");
 		builder.append(getName());
-		builder.append("]");
+		builder.append(']');
 		return builder.toString();
 	}
 
