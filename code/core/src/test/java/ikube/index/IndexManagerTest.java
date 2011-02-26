@@ -20,6 +20,11 @@ import org.apache.lucene.document.Field.TermVector;
 import org.apache.lucene.index.IndexWriter;
 import org.junit.Test;
 
+/**
+ * @author Michael Couck
+ * @since 12.10.2010
+ * @version 01.00
+ */
 public class IndexManagerTest extends BaseTest {
 
 	private String fieldName = "fieldName";

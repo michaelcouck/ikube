@@ -15,6 +15,11 @@ import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+/**
+ * @author Michael Couck
+ * @since 12.10.2010
+ * @version 01.00
+ */
 public class DatabaseUtilitiesTest extends ATest {
 
 	private ResultSet resultSet = mock(ResultSet.class);

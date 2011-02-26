@@ -16,6 +16,11 @@ import java.io.OutputStream;
 import org.junit.Before;
 import org.junit.Test;
 
+/**
+ * @author Michael Couck
+ * @since 12.10.2010
+ * @version 01.00
+ */
 public class FileContentProviderTest extends ATest {
 
 	private FileContentProvider contentProvider;

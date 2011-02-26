@@ -14,6 +14,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+/**
+ * @author Michael Couck
+ * @since 12.10.2010
+ * @version 01.00
+ */
 public class PageHandlerTest extends BaseTest {
 
 	private IndexableInternet indexableInternet = ApplicationContextManager.getBean(IndexableInternet.class);

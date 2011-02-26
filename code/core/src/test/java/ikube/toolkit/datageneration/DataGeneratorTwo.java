@@ -21,6 +21,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author Michael Couck
+ * @since 12.10.2010
+ * @version 01.00
+ */
 public class DataGeneratorTwo extends ADataGenerator {
 
 	private int iterations;

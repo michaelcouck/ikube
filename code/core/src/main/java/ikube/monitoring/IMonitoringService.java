@@ -3,6 +3,11 @@ package ikube.monitoring;
 import javax.jws.WebService;
 import javax.jws.soap.SOAPBinding;
 
+/**
+ * @author Michael Couck
+ * @since 12.10.2010
+ * @version 01.00
+ */
 @SOAPBinding(style = SOAPBinding.Style.RPC)
 @WebService(name = IMonitoringService.NAME, targetNamespace = IMonitoringService.NAMESPACE, serviceName = IMonitoringService.SERVICE)
 public interface IMonitoringService {

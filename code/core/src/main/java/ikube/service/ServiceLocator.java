@@ -9,6 +9,11 @@ import javax.xml.ws.Service;
 
 import org.apache.log4j.Logger;
 
+/**
+ * @author Michael Couck
+ * @since 12.10.2010
+ * @version 01.00
+ */
 public class ServiceLocator {
 
 	private static Logger LOGGER = Logger.getLogger(ServiceLocator.class);

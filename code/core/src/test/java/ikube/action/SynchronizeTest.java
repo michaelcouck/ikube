@@ -28,6 +28,11 @@ import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.ITopic;
 import com.hazelcast.core.MessageListener;
 
+/**
+ * @author Michael Couck
+ * @since 12.10.2010
+ * @version 01.00
+ */
 @Ignore
 public class SynchronizeTest extends BaseTest {
 

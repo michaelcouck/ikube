@@ -15,6 +15,11 @@ import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.Before;
 
+/**
+ * @author Michael Couck
+ * @since 12.10.2010
+ * @version 01.00
+ */
 public abstract class ADataGenerator implements IDataGenerator {
 
 	private static final long MAX_FILE_LENGTH = 100000;

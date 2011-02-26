@@ -25,6 +25,11 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+/**
+ * @author Michael Couck
+ * @since 12.10.2010
+ * @version 01.00
+ */
 public class SearchTest extends ATest {
 
 	private static Searcher SEARCHER;

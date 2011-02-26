@@ -8,6 +8,11 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
+/**
+ * @author Michael Couck
+ * @since 12.10.2010
+ * @version 01.00
+ */
 public class UriUtilities {
 
 	protected static Logger LOGGER = Logger.getLogger(UriUtilities.class);
