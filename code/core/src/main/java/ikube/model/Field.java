@@ -18,8 +18,8 @@ import java.lang.annotation.Target;
 public @interface Field {
 
 	/**
-	 * @return
+	 * @return whether the field is a field in the Lucene index
 	 */
-	public boolean field() default false;
+	public boolean field() default true;
 
 }

@@ -22,6 +22,10 @@ import org.apache.lucene.index.IndexWriter;
  * @version 01.00
  */
 public interface IHandler<T extends Indexable<?>> {
+	
+	public Class<? extends Indexable<?>> getIndexableClass();
+
+	public void setIndexableClass(Class<? extends Indexable<?>> indexableClass);
 
 	/**
 	 * This method executes the handler logic. The method returns a list of threads(if it is multi-threaded) that the caller must wait for.

@@ -1,11 +1,19 @@
 03.11.10
 
-* Servlet/Ejb - 1 ?
-* New data structure, perhaps patients in a hospital
-* Client - 10
+* New data structure, perhaps patients in a hospital - 1 (Michael)
+* Client front end for search and monitoring - 10 (Bruno)
    Logging on a topic for the gui to collect for the whole cluster
 * Linux testing - 1
-* Implementation of updating the index with deltas from the client - 3
+* Implementation of updating the index with deltas from the client - 3 (Michael)
+* Reconfigure the field names for the monitoring - 4 hours (Michael)
+* Move the datasource to a central location for the table indexables - 4 hours (Michael)
+* Rules engine for the decision - 3 (Michael)
+* Stress test and load test the web service - 1
+* Create automated integration tests in different environments - 3
+* Add the possibility for persistence in JPA - 1
+* Add strategies for indexing large files like zips - 3
+* Add possibility to have index in memory so as not to write on the file system - 1 (Michael)
+* Test writing the index across the network, and reading, perhaps a stress test too - 1
 
 Total - ?
 
@@ -52,3 +60,4 @@ Done:
 
 Won't Do:
 * Boosting
+* Servlet/Ejb - 1 ?

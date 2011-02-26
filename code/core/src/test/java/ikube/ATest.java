@@ -6,18 +6,23 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import ikube.database.IDataBase;
+import ikube.index.IndexManager;
 import ikube.index.parse.mime.MimeMapper;
 import ikube.index.parse.mime.MimeTypes;
 import ikube.logging.Logging;
-import ikube.toolkit.FileUtilities;
+import ikube.model.IndexContext;
+import ikube.model.Index;
 
 import java.io.File;
 import java.net.InetAddress;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriter.MaxFieldLength;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.MultiSearcher;
@@ -27,6 +32,7 @@ import org.apache.lucene.search.Searchable;
 import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.TopFieldDocs;
+import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.Lock;
 
@@ -37,10 +43,20 @@ import org.apache.lucene.store.Lock;
  */
 public abstract class ATest {
 
+	private static boolean INITIALIZED = Boolean.FALSE;
+	
 	static {
-		initialize();
+		if (!INITIALIZED) {
+			INITIALIZED = Boolean.TRUE;
+			try {
+				new Initialiser().initialise();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 	}
-
+	
+	/** These are all mocked objects that are used in sub classes. */
 	protected static MultiSearcher MULTI_SEARCHER;
 	protected static IndexSearcher INDEX_SEARCHER;
 	protected static IndexReader INDEX_READER;
@@ -51,36 +67,32 @@ public abstract class ATest {
 	protected static TopFieldDocs TOP_FIELD_DOCS;
 	protected static ScoreDoc[] SCORE_DOCS;
 	protected static Lock LOCK;
-	protected static String IP;
+	protected static IndexContext INDEX_CONTEXT;
+	protected static Index INDEX;
 
-	private static boolean INITIALIZED = Boolean.FALSE;
+	protected static String IP;
 
 	protected Logger logger = Logger.getLogger(this.getClass());
 
-	private static void initialize() {
-		if (INITIALIZED) {
-			return;
-		}
-		INITIALIZED = Boolean.TRUE;
+	static class Initialiser {
+		protected void initialise() throws Exception {
+			Logging.configure();
+			new MimeTypes("/META-INF/mime/mime-types.xml");
+			new MimeMapper("/META-INF/mime/mime-mapping.xml");
 
-		Logging.configure();
-		new MimeTypes("/META-INF/mime/mime-types.xml");
-		new MimeMapper("/META-INF/mime/mime-mapping.xml");
-
-		MULTI_SEARCHER = mock(MultiSearcher.class);
-		INDEX_SEARCHER = mock(IndexSearcher.class);
-		INDEX_READER = mock(IndexReader.class);
-		FS_DIRECTORY = mock(FSDirectory.class);
-		SEARCHABLES = new Searchable[] { INDEX_SEARCHER };
-		INDEX_WRITER = mock(IndexWriter.class);
-		TOP_DOCS = mock(TopDocs.class);
-		TOP_FIELD_DOCS = mock(TopFieldDocs.class);
-		SCORE_DOCS = new ScoreDoc[0];
-		LOCK = mock(Lock.class);
-
-		try {
-			IP = InetAddress.getLocalHost().getHostAddress();
-
+			MULTI_SEARCHER = mock(MultiSearcher.class);
+			INDEX_SEARCHER = mock(IndexSearcher.class);
+			INDEX_READER = mock(IndexReader.class);
+			FS_DIRECTORY = mock(FSDirectory.class);
+			SEARCHABLES = new Searchable[] { INDEX_SEARCHER };
+			INDEX_WRITER = mock(IndexWriter.class);
+			TOP_DOCS = mock(TopDocs.class);
+			TOP_FIELD_DOCS = mock(TopFieldDocs.class);
+			SCORE_DOCS = new ScoreDoc[0];
+			LOCK = mock(Lock.class);
+			INDEX_CONTEXT = mock(IndexContext.class);
+			INDEX = mock(Index.class);
+			
 			when(MULTI_SEARCHER.getSearchables()).thenReturn(SEARCHABLES);
 			when(MULTI_SEARCHER.search(any(Query.class), anyInt())).thenReturn(TOP_DOCS);
 			when(MULTI_SEARCHER.search(any(Query.class), any(Filter.class), anyInt(), any(Sort.class))).thenReturn(TOP_FIELD_DOCS);
@@ -92,12 +104,11 @@ public abstract class ATest {
 			TOP_FIELD_DOCS.scoreDocs = SCORE_DOCS;
 			when(INDEX_READER.directory()).thenReturn(FS_DIRECTORY);
 			when(FS_DIRECTORY.makeLock(anyString())).thenReturn(LOCK);
-
+			
+			IP = InetAddress.getLocalHost().getHostAddress();
 			// Every time the JVM starts a +~JF#######.tmp file is created. Strange as that is
 			// we still need to delete it manually.
-			//FileUtilities.deleteFiles(new File(System.getProperty("user.home")), ".tmp");
-		} catch (Exception e) {
-			e.printStackTrace();
+			// FileUtilities.deleteFiles(new File(System.getProperty("user.home")), ".tmp");
 		}
 	}
 
@@ -137,6 +148,44 @@ public abstract class ATest {
 		c[j] = middle;
 		quickSort(c, start, j - 1);
 		quickSort(c, j + 1, end);
+	}
+
+	/**
+	 * Returns the path to the latest index directory for this server and this context. The result will be something like
+	 * './index/faq/1234567890/127.0.0.1'.
+	 * 
+	 * @param indexContext
+	 *            the index context to get the directory path for
+	 * @return the directory path to the latest index directory for this servers and context
+	 */
+	protected String getServerIndexDirectoryPath(IndexContext indexContext) {
+		return IndexManager.getIndexDirectory(IP, indexContext, System.currentTimeMillis());
+	}
+
+	protected File createIndex(File indexDirectory) throws Exception {
+		logger.info("Creating Lucene index in : " + indexDirectory);
+		Directory directory = null;
+		IndexWriter indexWriter = null;
+		try {
+			directory = FSDirectory.open(indexDirectory);
+			indexWriter = new IndexWriter(directory, IConstants.ANALYZER, MaxFieldLength.UNLIMITED);
+			Document document = new Document();
+			document.add(new Field(IConstants.CONTENTS, "Michael Couck", Field.Store.YES, Field.Index.ANALYZED));
+			indexWriter.addDocument(document);
+			indexWriter.commit();
+			indexWriter.optimize(Boolean.TRUE);
+		} finally {
+			try {
+				directory.close();
+			} finally {
+				try {
+					indexWriter.close();
+				} catch (Exception e) {
+					logger.error("", e);
+				}
+			}
+		}
+		return indexDirectory;
 	}
 
 	public static void main(String[] args) throws Exception {

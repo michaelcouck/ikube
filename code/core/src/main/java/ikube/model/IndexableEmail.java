@@ -10,11 +10,11 @@ import javax.persistence.Entity;
 @Entity()
 public class IndexableEmail extends Indexable<IndexableEmail> {
 
-	@Field(field = true)
+	@Field()
 	private String idField;
-	@Field(field = true)
+	@Field()
 	private String titleField;
-	@Field(field = true)
+	@Field()
 	private String contentField;
 
 	private boolean stored = Boolean.FALSE;

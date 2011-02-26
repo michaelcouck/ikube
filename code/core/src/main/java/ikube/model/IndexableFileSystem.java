@@ -20,15 +20,15 @@ public class IndexableFileSystem extends Indexable<IndexableFileSystem> {
 	private String excludedPattern;
 	private String includedPattern;
 
-	@Field(field = true)
+	@Field()
 	private String nameFieldName;
-	@Field(field = true)
+	@Field()
 	private String pathFieldName;
-	@Field(field = true)
+	@Field()
 	private String lastModifiedFieldName;
-	@Field(field = true)
+	@Field()
 	private String contentFieldName;
-	@Field(field = true)
+	@Field()
 	private String lengthFieldName;
 
 	public String getPath() {

@@ -40,7 +40,7 @@
 	<bean id="ikube.action.Open" class="ikube.action.Open" />
 	<bean id="ikube.action.Index" class="ikube.action.Index" />
 	<bean id="ikube.action.Delete" class="ikube.action.Delete" />
-	<!--<bean id="ikube.action.Synchronize" class="ikube.action.Synchronize" />-->
+	<bean id="ikube.action.Synchronize" class="ikube.action.Synchronize" />
 	
 	<bean
 		id="ikube.database.mem.DataBaseMem"
@@ -54,32 +54,38 @@
 		destroy-method="close">
 	</bean>
 	
+	<bean 
+		id="ikube.monitoring.IndexValidator" 
+		class="ikube.monitoring.IndexValidator" />
+	
 	<bean
 		id="ikube.cluster.IClusterManager"
 		class="ikube.cluster.ClusterManager"
-		lazy-init="true">
-		<property name="cache">
-			<bean
-				id="ikube.cluster.cache.Cache"
-				class="ikube.cluster.cache.Cache"
-				lazy-init="false"
-				init-method="initialise"
-				property:dataBase-ref="ikube.database.mem.DataBaseMem" />
-		</property>
-	</bean>
+		lazy-init="true"
+		property:cache-ref="ikube.cluster.cache.Cache" />
+	<bean
+		id="ikube.cluster.cache.Cache"
+		class="ikube.cluster.cache.Cache"
+		lazy-init="false"
+		init-method="initialise"
+		property:dataBase-ref="ikube.database.mem.DataBaseMem" />
 	
 	<bean
 		class="ikube.index.handler.internet.IndexableInternetHandler"
-		property:threads="${internet.handler.threads}" />
+		property:threads="${internet.handler.threads}" 
+		property:indexableClass="ikube.model.IndexableInternet" />
 	<bean
 		class="ikube.index.handler.email.IndexableEmailHandler"
-		property:threads="${email.handler.threads}" />
+		property:threads="${email.handler.threads}"
+		property:indexableClass="ikube.model.IndexableEmail" />
 	<bean
 		class="ikube.index.handler.filesystem.IndexableFilesystemHandler"
-		property:threads="${filesystem.handler.threads}" />
+		property:threads="${filesystem.handler.threads}"
+		property:indexableClass="ikube.model.IndexableFileSystem" />
 	<bean
 		class="ikube.index.handler.database.IndexableTableHandler"
-		property:threads="${table.handler.threads}" />
+		property:threads="${table.handler.threads}"
+		property:indexableClass="ikube.model.IndexableTable" />
 
 	<bean id="ikube.index.parse.mime.MimeMapper" class="ikube.index.parse.mime.MimeMapper">
 		<constructor-arg value="/META-INF/mime/mime-mapping.xml" />

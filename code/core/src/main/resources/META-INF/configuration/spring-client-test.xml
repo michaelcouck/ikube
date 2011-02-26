@@ -11,9 +11,9 @@
             http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
             http://www.springframework.org/schema/util
             http://www.springframework.org/schema/util/spring-util.xsd">
-
+            
 	<bean
-		id="indexContextOne"
+		id="indexContext"
 		class="ikube.model.IndexContext"
 		property:indexName="indexOne"
 		property:maxAge="${max.age}"
@@ -29,47 +29,11 @@
 		property:throttle="${throttle}"
 		property:indexDirectoryPath="${index.directory.path.one}"
 		property:indexables-ref="indexables" />
-	<!--<bean
-		id="indexContextTwo"
-		class="ikube.model.IndexContext"
-		property:indexName="indexTwo"
-		property:maxAge="${max.age}"
-		property:compoundFile="${compound.file}"
-		property:bufferedDocs="${buffered.docs}"
-		property:bufferSize="${buffer.size}"
-		property:batchSize="${jdbc.batch.size}"
-		property:internetBatchSize="${internet.batch.size}"
-		property:mergeFactor="${merge.factor}"
-		property:maxFieldLength="${max.field.length}"
-		property:maxReadLength="${max.read.length}"
-		property:queueTimeout="${max.age}"
-		property:throttle="${throttle}"
-		property:indexDirectoryPath="${index.directory.path.two}"
-		property:indexables-ref="indexables" />
-	<bean
-		id="indexContextThree"
-		class="ikube.model.IndexContext"
-		property:indexName="indexThree"
-		property:maxAge="${max.age}"
-		property:compoundFile="${compound.file}"
-		property:bufferedDocs="${buffered.docs}"
-		property:bufferSize="${buffer.size}"
-		property:batchSize="${jdbc.batch.size}"
-		property:internetBatchSize="${internet.batch.size}"
-		property:mergeFactor="${merge.factor}"
-		property:maxFieldLength="${max.field.length}"
-		property:maxReadLength="${max.read.length}"
-		property:queueTimeout="${max.age}"
-		property:throttle="${throttle}"
-		property:indexDirectoryPath="${index.directory.path.three}"
-		property:indexables-ref="indexables" />-->
 	<util:list id="indexables">
 		<ref local="mail" />
 		<ref local="internet" />
 		<ref local="filesystem" />
 		<ref local="tableOne" />
-		<!--<ref local="tableOne" />
-		<ref local="tableOne" />-->
 	</util:list>
 
 	<bean
@@ -90,8 +54,7 @@
 		<ref local="question" />
 		<ref local="answer" />
 		<ref local="published" />
-		<!--<ref local="tableTwo" />-->
-		<!--<ref local="tableThree" />-->
+		<ref local="tableTwo" />
 	</util:list>
 
 	<bean
@@ -195,135 +158,6 @@
 		property:fieldName="length"
 		property:columnClass="java.lang.Integer" />
 	
-	<bean
-		id="tableThree"
-		class="ikube.model.IndexableTable"
-		property:name="version"
-		property:schema="${jdbc.schema}"
-		property:primary="false"
-		property:dataSource-ref="nonXaDataSource"
-		property:children-ref="columnsThree" />
-	<util:list id="columnsThree">
-		<ref local="versionFaqId" />
-		<ref local="versionId" />
-		<ref local="versionCreationtimestamp" />
-		<ref local="versionModifiedtimestamp" />
-		<ref local="versionCreator" />
-		<ref local="versionModifier" />
-		<ref local="versionQuestion" />
-		<ref local="versionAnswer" />
-		<ref local="versionPublished" />
-		<ref local="tableFour" />
-	</util:list>
-
-	<bean
-		id="versionFaqId"
-		class="ikube.model.IndexableColumn"
-		property:name="faqId"
-		property:fieldName="versionfaqId"
-		property:foreignKey-ref="faqId"
-		property:columnClass="java.lang.Long" />
-	<bean
-		id="versionId"
-		class="ikube.model.IndexableColumn"
-		property:name="versionId"
-		property:idColumn="true"
-		property:columnClass="java.lang.Long" />
-	<bean
-		id="versionCreationtimestamp"
-		class="ikube.model.IndexableColumn"
-		property:name="creationtimestamp"
-		property:columnClass="java.sql.Timestamp" />
-	<bean
-		id="versionModifiedtimestamp"
-		class="ikube.model.IndexableColumn"
-		property:name="modifiedtimestamp"
-		property:columnClass="java.sql.Timestamp" />
-	<bean
-		id="versionCreator"
-		class="ikube.model.IndexableColumn"
-		property:name="creator"
-		property:columnClass="java.lang.String"
-		property:columnLength="32" />
-	<bean
-		id="versionModifier"
-		class="ikube.model.IndexableColumn"
-		property:name="modifier"
-		property:columnClass="java.lang.String"
-		property:columnLength="32" />
-	<bean
-		id="versionQuestion"
-		class="ikube.model.IndexableColumn"
-		property:name="question"
-		property:fieldName="versionContents"
-		property:columnClass="java.lang.String"
-		property:columnLength="128" />
-	<bean
-		id="versionAnswer"
-		class="ikube.model.IndexableColumn"
-		property:name="answer"
-		property:fieldName="versionContents"
-		property:columnClass="java.lang.String"
-		property:columnLength="128" />
-	<bean
-		id="versionPublished"
-		class="ikube.model.IndexableColumn"
-		property:name="published"
-		property:fieldName="versionPublished"
-		property:columnClass="java.lang.Boolean" />
-		
-	<bean
-		id="tableFour"
-		class="ikube.model.IndexableTable"
-		property:name="versionAttachment"
-		property:schema="${jdbc.schema}"
-		property:primary="false"
-		property:dataSource-ref="nonXaDataSource"
-		property:children-ref="columnsFour" />
-	<util:list id="columnsFour">
-		<ref local="attachmentVersionId" />
-		<ref local="versionAttachmentId" />
-		<ref local="versionName" />
-		<ref local="versionAttachment" />
-		<ref local="versionLength" />
-	</util:list>
-
-	<bean
-		id="attachmentVersionId"
-		class="ikube.model.IndexableColumn"
-		property:name="versionId"
-		property:fieldName="attachmentVersionId"
-		property:foreignKey-ref="versionId"
-		property:columnClass="java.lang.Long" />
-	<bean
-		id="versionAttachmentId"
-		class="ikube.model.IndexableColumn"
-		property:name="attachmentId"
-		property:fieldName="versionAttachmentId"
-		property:idColumn="true"
-		property:columnClass="java.lang.Long" />
-	<bean
-		id="versionName"
-		class="ikube.model.IndexableColumn"
-		property:name="name"
-		property:fieldName="versionName"
-		property:columnClass="java.lang.String"
-		property:columnLength="64" />
-	<bean
-		id="versionAttachment"
-		class="ikube.model.IndexableColumn"
-		property:name="attachment"
-		property:fieldName="versionAttachment"
-		property:nameColumn-ref="versionName"
-		property:columnClass="java.sql.Blob"
-		property:columnLength="128" />
-	<bean
-		id="versionLength"
-		class="ikube.model.IndexableColumn"
-		property:name="length"
-		property:fieldName="versionLength"
-		property:columnClass="java.lang.Integer" />
-		
 	<bean
 		id="mail"
 		class="ikube.model.IndexableEmail"

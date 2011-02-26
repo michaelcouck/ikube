@@ -1,7 +1,5 @@
 package ikube;
 
-import java.io.File;
-
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.util.Version;
@@ -16,7 +14,7 @@ public interface IConstants {
 	/** Application name. */
 	public String IKUBE = "ikube";
 	/** The file separator for the system. */
-	public String SEP = File.separator;
+	public String SEP = "/"; // File.separator;
 
 	/** We expect the configuration file to be in the META-INF as seems to be the fashion at the moment. */
 	public String META_INF = SEP + "META-INF";
@@ -31,7 +29,7 @@ public interface IConstants {
 	/** Maps parsers to mime types. */
 	public String MIME_MAPPING = META_INF + SEP + "mime" + SEP + "mime-mapping.xml";
 
-	public static String LOG_4_J_PROPERTIES = META_INF + "log4j.properties";
+	public static String LOG_4_J_PROPERTIES = META_INF + SEP + "log4j.properties";
 
 	/** The database file name. */
 	public String DATABASE_FILE = "ikube.odb";

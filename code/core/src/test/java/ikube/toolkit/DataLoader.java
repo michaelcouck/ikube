@@ -1,5 +1,7 @@
 package ikube.toolkit;
 
+import ikube.IConstants;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -157,7 +159,7 @@ public class DataLoader {
 	}
 
 	public static void main(String[] args) {
-		ApplicationContextManager.getApplicationContext("/data/spring.xml");
+		ApplicationContextManager.getApplicationContext(IConstants.SPRING_CONFIGURATION_FILE);
 		DataLoader dataLoader = new DataLoader();
 		dataLoader.writeDataSet(new String[] { "faq", "attachment" }, "./modules/core/src/test/resources/data/data.xml");
 	}

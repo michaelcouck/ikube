@@ -2,7 +2,6 @@ package ikube.action;
 
 import ikube.index.IndexManager;
 import ikube.index.handler.IHandler;
-import ikube.index.handler.IndexableHandlerType;
 import ikube.logging.Logging;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
@@ -10,7 +9,6 @@ import ikube.model.Server;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.ThreadUtilities;
 
-import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 
@@ -48,14 +46,12 @@ public class Index extends Action {
 			logger.info(Logging.getString("Index : Last working time : ", lastWorkingStartTime));
 			// Start the indexing for this server
 			IndexManager.openIndexWriter(server.getAddress(), indexContext, lastWorkingStartTime);
-			@SuppressWarnings("rawtypes")
-			Map<String, IHandler> indexableHandlers = ApplicationContextManager.getBeans(IHandler.class);
 			for (Indexable<?> indexable : indexables) {
 				try {
 					// Get the right handler for this indexable
-					IHandler<Indexable<?>> handler = getHandler(indexableHandlers, indexable);
+					IHandler<Indexable<?>> handler = getHandler(indexable);
 					if (handler == null) {
-						logger.warn(Logging.getString("Not handling indexable : ", indexable, " no handler defined.")); 
+						logger.warn(Logging.getString("Not handling indexable : ", indexable, " no handler defined."));
 						continue;
 					}
 					// Execute the handler and wait for the threads to finish
@@ -89,18 +85,12 @@ public class Index extends Action {
 	 * @return the handler for the indexable or null if there is no handler for the indexable. This will fail with a warning if there is no
 	 *         handler for the indexable
 	 */
-	protected IHandler<Indexable<?>> getHandler(@SuppressWarnings("rawtypes") Map<String, IHandler> indexableHandlers,
-			Indexable<?> indexable) {
+	protected IHandler<Indexable<?>> getHandler(Indexable<?> indexable) {
+		@SuppressWarnings("rawtypes")
+		Map<String, IHandler> indexableHandlers = ApplicationContextManager.getBeans(IHandler.class);
 		for (IHandler<Indexable<?>> handler : indexableHandlers.values()) {
-			Method[] methods = handler.getClass().getMethods();
-			for (Method method : methods) {
-				IndexableHandlerType indexableHandlerType = method.getAnnotation(IndexableHandlerType.class);
-				if (indexableHandlerType == null) {
-					continue;
-				}
-				if (indexableHandlerType.type().equals(indexable.getClass())) {
-					return handler;
-				}
+			if (handler.getIndexableClass().isAssignableFrom(indexable.getClass())) {
+				return handler;
 			}
 		}
 		logger.warn("No handler for type : " + indexable);

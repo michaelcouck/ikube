@@ -7,7 +7,6 @@ import ikube.index.content.ByteOutputStream;
 import ikube.index.content.ColumnContentProvider;
 import ikube.index.content.IContentProvider;
 import ikube.index.handler.IndexableHandler;
-import ikube.index.handler.IndexableHandlerType;
 import ikube.index.parse.IParser;
 import ikube.index.parse.ParserProvider;
 import ikube.logging.Logging;
@@ -72,7 +71,6 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	 * caller that will have to wait for them to finish indexing all the data.
 	 */
 	@Override
-	@IndexableHandlerType(type = IndexableTable.class)
 	public List<Thread> handle(final IndexContext indexContext, final IndexableTable indexable) throws Exception {
 		SerializationUtilities.setTransientFields(IndexableTable.class);
 		SerializationUtilities.setTransientFields(IndexableColumn.class);

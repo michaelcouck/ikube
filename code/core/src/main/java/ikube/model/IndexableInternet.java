@@ -26,11 +26,11 @@ public class IndexableInternet extends Indexable<IndexableInternet> {
 	private URI uri;
 	private String url;
 
-	@Field(field = true)
+	@Field()
 	private String titleFieldName;
-	@Field(field = true)
+	@Field()
 	private String idFieldName;
-	@Field(field = true)
+	@Field()
 	private String contentFieldName;
 
 	private String excludedPattern;

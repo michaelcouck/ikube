@@ -2,7 +2,6 @@ package ikube.index.handler.internet;
 
 import ikube.cluster.IClusterManager;
 import ikube.index.handler.IndexableHandler;
-import ikube.index.handler.IndexableHandlerType;
 import ikube.index.handler.internet.crawler.PageHandler;
 import ikube.model.IndexContext;
 import ikube.model.IndexableInternet;
@@ -25,7 +24,6 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	 * {@inheritDoc}
 	 */
 	@Override
-	@IndexableHandlerType(type = IndexableInternet.class)
 	public List<Thread> handle(final IndexContext indexContext, IndexableInternet indexable) throws Exception {
 		List<Thread> threads = new ArrayList<Thread>();
 		if (isHandled(indexContext, indexable)) {

@@ -16,6 +16,7 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IHandl
 	protected Logger logger = Logger.getLogger(this.getClass());
 
 	private int threads;
+	private Class<? extends Indexable<?>> indexableClass;
 
 	public int getThreads() {
 		return threads;
@@ -23,6 +24,14 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IHandl
 
 	public void setThreads(int threads) {
 		this.threads = threads;
+	}
+
+	public Class<? extends Indexable<?>> getIndexableClass() {
+		return indexableClass;
+	}
+
+	public void setIndexableClass(Class<? extends Indexable<?>> indexableClass) {
+		this.indexableClass = indexableClass;
 	}
 
 }

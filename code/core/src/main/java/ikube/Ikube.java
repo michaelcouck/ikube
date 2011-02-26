@@ -1,5 +1,6 @@
 package ikube;
 
+import ikube.logging.Logging;
 import ikube.toolkit.ApplicationContextManager;
 
 /**
@@ -12,10 +13,8 @@ import ikube.toolkit.ApplicationContextManager;
  */
 public class Ikube {
 
-	// private static String MINIMAL_SPRING_CONFIG = IConstants.META_INF + IConstants.SEP + "minimal" + IConstants.SEP + IConstants.SPRING_XML;
-
 	public static void main(String[] args) {
-		// ApplicationContextManager.getApplicationContext(MINIMAL_SPRING_CONFIG);
+		Logging.configure();
 		ApplicationContextManager.getApplicationContext();
 	}
 

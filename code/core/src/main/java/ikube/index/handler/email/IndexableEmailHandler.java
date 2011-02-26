@@ -3,7 +3,6 @@ package ikube.index.handler.email;
 import ikube.cluster.IClusterManager;
 import ikube.index.IndexManager;
 import ikube.index.handler.IndexableHandler;
-import ikube.index.handler.IndexableHandlerType;
 import ikube.index.parse.IParser;
 import ikube.index.parse.ParserProvider;
 import ikube.logging.Logging;
@@ -55,7 +54,6 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	@IndexableHandlerType(type = IndexableEmail.class)
 	public List<Thread> handle(final IndexContext indexContext, final IndexableEmail indexable) throws Exception {
 		// First check to see if this indexable is handled by another server
 		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);

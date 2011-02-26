@@ -3,7 +3,6 @@ package ikube.index.handler.filesystem;
 import ikube.cluster.IClusterManager;
 import ikube.index.IndexManager;
 import ikube.index.handler.IndexableHandler;
-import ikube.index.handler.IndexableHandlerType;
 import ikube.index.parse.IParser;
 import ikube.index.parse.ParserProvider;
 import ikube.model.IndexContext;
@@ -36,7 +35,6 @@ import org.apache.lucene.document.Field.TermVector;
 public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSystem> {
 
 	@Override
-	@IndexableHandlerType(type = IndexableFileSystem.class)
 	public List<Thread> handle(final IndexContext indexContext, final IndexableFileSystem indexable) throws Exception {
 		try {
 			// We need to check the cluster to see if this indexable is already handled by
