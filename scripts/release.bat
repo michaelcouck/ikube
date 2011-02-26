@@ -1,3 +1,4 @@
+cd /d ../
 set MAVEN_OPTS=-Xms512m -Xmx1024m -XX:MaxPermSize=256m
 
 rem To have a dry run: -DdryRun=true
