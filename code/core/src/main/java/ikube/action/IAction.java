@@ -1,6 +1,9 @@
 package ikube.action;
 
+import java.util.List;
+
 import ikube.IndexEngine;
+import ikube.action.rule.IRule;
 
 /**
  * This is the interface to be implemented for actions see {@link Action}.
@@ -10,7 +13,11 @@ import ikube.IndexEngine;
  * @version 01.00
  */
 public interface IAction<E, F> {
-
+	
+	public String getPredicate();
+	
+	public List<IRule<?>> getRules();
+	
 	/**
 	 * Executes the action on the index context. The generic parameter E is the index context and the return value is typically a boolean
 	 * indicating that the action executed completely or not.

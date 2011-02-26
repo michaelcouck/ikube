@@ -13,20 +13,14 @@ import org.apache.lucene.search.MultiSearcher;
 public class IsMultiSearcherInitialised implements IRule<IndexContext> {
 
 	private Logger logger = Logger.getLogger(this.getClass());
-	private boolean expected;
 
 	public boolean evaluate(IndexContext indexContext) {
 		MultiSearcher multiSearcher = indexContext.getIndex().getMultiSearcher();
 		if (multiSearcher == null) {
 			logger.debug("Multi searcher null, should try to reopen : ");
-			return Boolean.FALSE == expected;
+			return Boolean.FALSE;
 		}
-		return Boolean.TRUE == expected;
-	}
-
-	@Override
-	public void setExpected(boolean expected) {
-		this.expected = expected;
+		return Boolean.TRUE;
 	}
 
 }

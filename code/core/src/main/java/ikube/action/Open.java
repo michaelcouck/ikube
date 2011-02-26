@@ -37,18 +37,18 @@ public class Open extends Action {
 
 	@Override
 	public Boolean execute(IndexContext indexContext) {
-		boolean shouldReopen = shouldReopen(indexContext);
-		if (!shouldReopen) {
-			return Boolean.FALSE;
-		}
+//		boolean shouldReopen = shouldReopen(indexContext);
+//		if (!shouldReopen) {
+//			return Boolean.FALSE;
+//		}
 		ArrayList<Searchable> searchers = new ArrayList<Searchable>();
 		String indexDirectoryPath = indexContext.getIndexDirectoryPath() + File.separator + indexContext.getIndexName();
-		File baseIndexDirectory = FileUtilities.getFile(indexDirectoryPath, Boolean.TRUE);
-		if (baseIndexDirectory.listFiles() == null) {
-			return Boolean.FALSE;
-		}
+//		File baseIndexDirectory = FileUtilities.getFile(indexDirectoryPath, Boolean.TRUE);
+//		if (baseIndexDirectory.listFiles() == null) {
+//			return Boolean.FALSE;
+//		}
 		File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexDirectoryPath);
-		logger.info("Latest index directory : " + latestIndexDirectory);
+//		logger.info("Latest index directory : " + latestIndexDirectory);
 		if (latestIndexDirectory == null) {
 			return Boolean.FALSE;
 		}
@@ -56,7 +56,7 @@ public class Open extends Action {
 		File[] serverIndexDirectories = latestIndexDirectory.listFiles();
 		IndexReader reader = null;
 		Directory directory = null;
-		boolean opened = Boolean.TRUE;
+		boolean exceptionOpening = Boolean.FALSE;
 		for (File serverIndexDirectory : serverIndexDirectories) {
 			try {
 				directory = FSDirectory.open(serverIndexDirectory);
@@ -82,9 +82,9 @@ public class Open extends Action {
 				logger.info(Logging.getString("Opened searcher on : ", serverIndexDirectory, "exists : ", exists, "locked : ", locked));
 			} catch (Exception e) {
 				logger.error("Exception opening directory : " + serverIndexDirectory, e);
-				opened = Boolean.FALSE;
+				exceptionOpening = Boolean.TRUE;
 			} finally {
-				if (!opened) {
+				if (exceptionOpening) {
 					try {
 						if (directory != null) {
 							directory.close();

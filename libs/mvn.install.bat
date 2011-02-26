@@ -16,3 +16,7 @@ rem mvn install:install-file -Dfile=swt-64-3.6.1.jar -DgroupId=swt -DartifactId=
 
 rem mvn install:install-file -Dfile=jmxtools-1.2.1.jar -DgroupId=com.sun.jdmk -DartifactId=jmxtools -Dversion=1.2.1 -Dpackaging=jar -DgeneratePom=true
 rem mvn install:install-file -Dfile=jmxri-1.2.1.jar -DgroupId=com.sun.jmx -DartifactId=jmxri -Dversion=1.2.1 -Dpackaging=jar -DgeneratePom=true
+
+rem mvn install:install-file -Dfile=jep-2.3.1.jar -DgroupId=org.nfunk -DartifactId=jep -Dversion=2.3.1 -Dpackaging=jar -DgeneratePom=true
+rem mvn install:install-file -Dfile=jep-2.4.1.jar -DgroupId=org.nfunk -DartifactId=jep -Dversion=2.4.1 -Dpackaging=jar -DgeneratePom=true
+mvn install:install-file -Dfile=ext-1.1.1.jar -DgroupId=org.nfunk -DartifactId=ext -Dversion=1.1.1 -Dpackaging=jar -DgeneratePom=true

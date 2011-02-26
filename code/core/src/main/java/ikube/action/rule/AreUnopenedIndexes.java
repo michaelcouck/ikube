@@ -8,6 +8,7 @@ import java.io.File;
 import org.apache.log4j.Logger;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.MultiSearcher;
 import org.apache.lucene.search.Searchable;
 import org.apache.lucene.store.FSDirectory;
 
@@ -19,10 +20,13 @@ import org.apache.lucene.store.FSDirectory;
 public class AreUnopenedIndexes implements IRule<IndexContext> {
 
 	private Logger logger = Logger.getLogger(this.getClass());
-	private boolean expected;
 
 	public boolean evaluate(IndexContext indexContext) {
-		Searchable[] searchables = indexContext.getIndex().getMultiSearcher().getSearchables();
+		MultiSearcher searcher = indexContext.getIndex() != null ? indexContext.getIndex().getMultiSearcher() : null;
+		Searchable[] searchables = searcher != null ? searcher.getSearchables() : null;
+		if (searchables == null) {
+			return new AreIndexesCreated().evaluate(indexContext);
+		}
 		File baseIndexDirectory = new File(indexContext.getIndexDirectoryPath() + File.separator + indexContext.getIndexName());
 		File[] timeIndexDirectories = baseIndexDirectory.listFiles();
 		for (File timeIndexDirectory : timeIndexDirectories) {
@@ -46,16 +50,11 @@ public class AreUnopenedIndexes implements IRule<IndexContext> {
 				}
 				if (!indexAlreadyOpen) {
 					logger.debug(Logging.getString("Found new index directory : ", serverIndexDirectory, " will try to re-open : "));
-					return Boolean.TRUE == expected;
+					return Boolean.TRUE;
 				}
 			}
 		}
-		return Boolean.FALSE == expected;
-	}
-
-	@Override
-	public void setExpected(boolean expected) {
-		this.expected = expected;
+		return Boolean.FALSE;
 	}
 
 }

@@ -27,14 +27,14 @@ public class Index extends Action {
 
 	@Override
 	public Boolean execute(IndexContext indexContext) throws Exception {
-		boolean indexCurrent = isIndexCurrent(indexContext);
-		logger.debug(Logging.getString("Index current : ", indexCurrent, indexContext));
-		if (indexCurrent) {
-			// Check if there are any other servers working on this index
-			if (!getClusterManager().anyWorking(indexContext.getIndexName())) {
-				return Boolean.FALSE;
-			}
-		}
+//		boolean indexCurrent = isIndexCurrent(indexContext);
+//		logger.debug(Logging.getString("Index current : ", indexCurrent, indexContext));
+//		if (indexCurrent) {
+//			// Check if there are any other servers working on this index
+//			if (!getClusterManager().anyWorking(indexContext.getIndexName())) {
+//				return Boolean.FALSE;
+//			}
+//		}
 		Server server = getClusterManager().getServer();
 		List<Indexable<?>> indexables = indexContext.getIndexables();
 		String indexName = indexContext.getIndexName();

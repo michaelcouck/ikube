@@ -11,18 +11,11 @@ import ikube.toolkit.ApplicationContextManager;
  */
 public class AnyServersWorking implements IRule<IndexContext> {
 
-	private boolean expected;
-
 	@Override
 	public boolean evaluate(IndexContext indexContext) {
 		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
 		boolean anyServersWorking = clusterManager.anyWorking();
-		return anyServersWorking == expected;
-	}
-
-	@Override
-	public void setExpected(boolean expected) {
-		this.expected = expected;
+		return anyServersWorking;
 	}
 
 }

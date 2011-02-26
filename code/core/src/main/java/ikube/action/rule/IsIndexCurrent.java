@@ -14,8 +14,6 @@ import java.io.File;
  */
 public class IsIndexCurrent implements IRule<IndexContext> {
 
-	private boolean expected;
-
 	/**
 	 * Checks to see if the current index is not passed it's expiration period. Each index had a parent directory that is a long of the
 	 * system time that the index was started. This time signifies the age of the index.
@@ -28,21 +26,16 @@ public class IsIndexCurrent implements IRule<IndexContext> {
 		String indexDirectoryPath = indexContext.getIndexDirectoryPath() + File.separator + indexContext.getIndexName();
 		File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexDirectoryPath);
 		if (latestIndexDirectory == null) {
-			return Boolean.FALSE == expected;
+			return Boolean.FALSE;
 		}
 		String indexDirectoryName = latestIndexDirectory.getName();
 		long indexDirectoryTime = Long.parseLong(indexDirectoryName);
 		long currentTime = System.currentTimeMillis();
 		long indexAge = currentTime - indexDirectoryTime;
 		if (indexAge > indexContext.getMaxAge()) {
-			return Boolean.FALSE == expected;
+			return Boolean.FALSE;
 		}
-		return Boolean.TRUE == expected;
-	}
-
-	@Override
-	public void setExpected(boolean expected) {
-		this.expected = expected;
+		return Boolean.TRUE;
 	}
 
 }

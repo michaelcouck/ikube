@@ -1,13 +1,14 @@
 package ikube.action.rule;
 
+import ikube.action.IAction;
 import ikube.model.IndexContext;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.aspectj.lang.ProceedingJoinPoint;
+import org.nfunk.jep.JEP;
+import org.nfunk.jep.Node;
 
 /**
  * @author Michael Couck
@@ -16,39 +17,50 @@ import org.aspectj.lang.ProceedingJoinPoint;
  */
 public class RuleDecisionInterceptor implements IRuleDecisionInterceptor {
 
+	private static final String[] VARIABLES = { "a", "b", "c", "d", "e", "f", "g", "h", "i", "j" };
+
 	private Logger logger = Logger.getLogger(this.getClass());
-	private Map<Object, List<IRule<IndexContext>>> rules;
+	private JEP jep = new JEP();
 
 	@Override
 	public Object decide(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
 		Object target = proceedingJoinPoint.getTarget();
-		logger.info("Intercepting : " + target);
-		// Get the rules associated with this action
-		List<IRule<IndexContext>> classRules = this.rules.get(target);
-		if (classRules == null) {
+		if (!IAction.class.isAssignableFrom(target.getClass())) {
+			logger.warn("Can't intercept non action class, proceeding : " + target);
 			return proceedingJoinPoint.proceed();
 		}
-		// Execute the rules, if one returns false then we don't execute the action
+		
+		// Get the rules associated with this action
+		@SuppressWarnings({ "unchecked", "rawtypes" })
+		List<IRule<IndexContext>> classRules = ((IAction) target).getRules();
+		if (classRules == null) {
+			logger.warn("No rules defined for, proceeding : " + target);
+			return proceedingJoinPoint.proceed();
+		}
+
+		logger.info("Intercepting : " + target);
+		int index = 0;
 		for (IRule<IndexContext> rule : classRules) {
 			Object[] args = proceedingJoinPoint.getArgs();
 			for (Object arg : args) {
-				if (IndexContext.class.isAssignableFrom(arg.getClass())) {
+				if (arg != null && IndexContext.class.isAssignableFrom(arg.getClass())) {
 					boolean result = rule.evaluate((IndexContext) arg);
-					if (!result) {
-						return Boolean.FALSE;
+					if (logger.isDebugEnabled()) {
+						logger.debug("Parameter : " + VARIABLES[index] + ", " + result);
 					}
+					jep.addVariable(VARIABLES[index], result);
+					index++;
 				}
 			}
 		}
+		String predicate = ((IAction<?, ?>) target).getPredicate();
+		Node node = jep.parse(predicate);
+		Object result = jep.evaluate(node);
+		logger.info("Result : " + result + ", " + jep + ", " + predicate);
+		if (result == null || result.equals(0.0d) || result.equals(Boolean.FALSE)) {
+			return Boolean.FALSE;
+		}
 		return proceedingJoinPoint.proceed();
-	}
-
-	public Map<Object, List<IRule<IndexContext>>> getRules() {
-		return Collections.unmodifiableMap(rules);
-	}
-
-	public void setRules(Map<Object, List<IRule<IndexContext>>> rules) {
-		this.rules = rules;
 	}
 
 }

@@ -1,19 +1,23 @@
 package ikube.action;
 
+import ikube.action.rule.AreDirectoriesEqual;
+import ikube.action.rule.AreIndexesCreated;
+import ikube.action.rule.AreSearchablesInitialised;
+import ikube.action.rule.AreUnopenedIndexes;
+import ikube.action.rule.DirectoryExistsAndIsLocked;
+import ikube.action.rule.IRule;
+import ikube.action.rule.IsIndexCurrent;
+import ikube.action.rule.IsMultiSearcherInitialised;
 import ikube.cluster.IClusterManager;
-import ikube.logging.Logging;
 import ikube.model.IndexContext;
 import ikube.toolkit.ApplicationContextManager;
-import ikube.toolkit.FileUtilities;
 
 import java.io.File;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.MultiSearcher;
-import org.apache.lucene.search.Searchable;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
@@ -32,6 +36,25 @@ public abstract class Action implements IAction<IndexContext, Boolean> {
 	/** The cluster synchronization class. */
 	private IClusterManager clusterManager;
 
+	private String predicate;
+	private List<IRule<?>> rules;
+
+	public String getPredicate() {
+		return predicate;
+	}
+
+	public void setPredicate(String predicate) {
+		this.predicate = predicate;
+	}
+
+	public List<IRule<?>> getRules() {
+		return rules;
+	}
+
+	public void setRules(List<IRule<?>> rules) {
+		this.rules = rules;
+	}
+
 	protected IClusterManager getClusterManager() {
 		if (clusterManager == null) {
 			clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
@@ -48,19 +71,7 @@ public abstract class Action implements IAction<IndexContext, Boolean> {
 	 * @return whether the index for this index context is passed it's expiration date
 	 */
 	protected boolean isIndexCurrent(IndexContext indexContext) {
-		String indexDirectoryPath = indexContext.getIndexDirectoryPath() + File.separator + indexContext.getIndexName();
-		File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexDirectoryPath);
-		if (latestIndexDirectory == null) {
-			return Boolean.FALSE;
-		}
-		String indexDirectoryName = latestIndexDirectory.getName();
-		long indexDirectoryTime = Long.parseLong(indexDirectoryName);
-		long currentTime = System.currentTimeMillis();
-		long indexAge = currentTime - indexDirectoryTime;
-		if (indexAge < indexContext.getMaxAge()) {
-			return Boolean.TRUE;
-		}
-		return Boolean.FALSE;
+		return new IsIndexCurrent().evaluate(indexContext);
 	}
 
 	/**
@@ -73,48 +84,69 @@ public abstract class Action implements IAction<IndexContext, Boolean> {
 	 */
 	protected boolean shouldReopen(IndexContext indexContext) {
 		// If there is no searcher open then try to open one
-		MultiSearcher multiSearcher = indexContext.getIndex().getMultiSearcher();
-		if (multiSearcher == null) {
+		if (!new IsMultiSearcherInitialised().evaluate(indexContext)) {
 			logger.debug("Multi searcher null, should try to reopen : ");
 			return Boolean.TRUE;
 		}
-		// No searchables, also try to reopen an index searcher
-		Searchable[] searchables = multiSearcher.getSearchables();
-		if (searchables == null || searchables.length == 0) {
+		// MultiSearcher multiSearcher = indexContext.getIndex().getMultiSearcher();
+		// if (multiSearcher == null) {
+		// logger.debug("Multi searcher null, should try to reopen : ");
+		// return Boolean.TRUE;
+		// }
+
+		if (!new AreSearchablesInitialised().evaluate(indexContext)) {
 			logger.debug("No searchables open, should try to reopen : ");
 			return Boolean.TRUE;
 		}
-		if (!isIndexCurrent(indexContext)) {
+
+		// No searchables, also try to reopen an index searcher
+		// Searchable[] searchables = multiSearcher.getSearchables();
+		// if (searchables == null || searchables.length == 0) {
+		// logger.debug("No searchables open, should try to reopen : ");
+		// return Boolean.TRUE;
+		// }
+
+		if (!new IsIndexCurrent().evaluate(indexContext)) {
+			logger.debug("Index not current, no need to reopen : ");
 			return Boolean.FALSE;
 		}
-		File baseIndexDirectory = new File(indexContext.getIndexDirectoryPath() + File.separator + indexContext.getIndexName());
-		File[] timeIndexDirectories = baseIndexDirectory.listFiles();
-		if (timeIndexDirectories == null) {
-			return Boolean.FALSE;
+
+		// if (!isIndexCurrent(indexContext)) {
+		// return Boolean.FALSE;
+		// }
+
+		if (new AreIndexesCreated().evaluate(indexContext) && new AreUnopenedIndexes().evaluate(indexContext)) {
+			return Boolean.TRUE;
 		}
-		for (File timeIndexDirectory : timeIndexDirectories) {
-			File[] serverIndexDirectories = timeIndexDirectory.listFiles();
-			if (serverIndexDirectories == null) {
-				continue;
-			}
-			for (File serverIndexDirectory : serverIndexDirectories) {
-				boolean indexAlreadyOpen = Boolean.FALSE;
-				for (Searchable searchable : searchables) {
-					IndexSearcher indexSearcher = (IndexSearcher) searchable;
-					IndexReader indexReader = indexSearcher.getIndexReader();
-					FSDirectory fsDirectory = (FSDirectory) indexReader.directory();
-					File indexDirectory = fsDirectory.getFile();
-					if (directoriesEqual(serverIndexDirectory, indexDirectory)) {
-						indexAlreadyOpen = directoryExistsAndNotLocked(serverIndexDirectory);
-						break;
-					}
-				}
-				if (!indexAlreadyOpen) {
-					logger.debug(Logging.getString("Found new index directory : ", serverIndexDirectory, " will try to re-open : "));
-					return Boolean.TRUE;
-				}
-			}
-		}
+
+		// File baseIndexDirectory = new File(indexContext.getIndexDirectoryPath() + File.separator + indexContext.getIndexName());
+		// File[] timeIndexDirectories = baseIndexDirectory.listFiles();
+		// if (timeIndexDirectories == null) {
+		// return Boolean.FALSE;
+		// }
+		// for (File timeIndexDirectory : timeIndexDirectories) {
+		// File[] serverIndexDirectories = timeIndexDirectory.listFiles();
+		// if (serverIndexDirectories == null) {
+		// continue;
+		// }
+		// for (File serverIndexDirectory : serverIndexDirectories) {
+		// boolean indexAlreadyOpen = Boolean.FALSE;
+		// for (Searchable searchable : searchables) {
+		// IndexSearcher indexSearcher = (IndexSearcher) searchable;
+		// IndexReader indexReader = indexSearcher.getIndexReader();
+		// FSDirectory fsDirectory = (FSDirectory) indexReader.directory();
+		// File indexDirectory = fsDirectory.getFile();
+		// if (directoriesEqual(serverIndexDirectory, indexDirectory)) {
+		// indexAlreadyOpen = directoryExistsAndNotLocked(serverIndexDirectory);
+		// break;
+		// }
+		// }
+		// if (!indexAlreadyOpen) {
+		// logger.debug(Logging.getString("Found new index directory : ", serverIndexDirectory, " will try to re-open : "));
+		// return Boolean.TRUE;
+		// }
+		// }
+		// }
 		return Boolean.FALSE;
 	}
 
@@ -157,38 +189,41 @@ public abstract class Action implements IAction<IndexContext, Boolean> {
 	 * @return whether the directory exists as a Lucene index and is locked
 	 */
 	protected boolean directoryExistsAndIsLocked(File indexDirectory) {
-		Directory directory = null;
-		try {
-			directory = FSDirectory.open(indexDirectory);
-			boolean exists = IndexReader.indexExists(directory);
-			boolean locked = IndexWriter.isLocked(directory);
-			logger.info(Logging.getString("Server index directory : ", indexDirectory, "exists : ", exists, "locked : ", locked));
-			if (exists && locked) {
-				return Boolean.TRUE;
-			} else {
-				logger.info("Locked directory : " + directory);
-			}
-		} catch (Exception e) {
-			logger.error("Exception checking the directories : ", e);
-		} finally {
-			try {
-				directory.close();
-			} catch (Exception e) {
-				logger.error("Exception closing the directory : " + directory, e);
-			}
-		}
-		return Boolean.FALSE;
+		// Directory directory = null;
+		// try {
+		// directory = FSDirectory.open(indexDirectory);
+		// boolean exists = IndexReader.indexExists(directory);
+		// boolean locked = IndexWriter.isLocked(directory);
+		// logger.info(Logging.getString("Server index directory : ", indexDirectory, "exists : ", exists, "locked : ", locked));
+		// if (exists && locked) {
+		// return Boolean.TRUE;
+		// } else {
+		// logger.info("Locked directory : " + directory);
+		// }
+		// } catch (Exception e) {
+		// logger.error("Exception checking the directories : ", e);
+		// } finally {
+		// try {
+		// directory.close();
+		// } catch (Exception e) {
+		// logger.error("Exception closing the directory : " + directory, e);
+		// }
+		// }
+		// return Boolean.FALSE;
+		return new DirectoryExistsAndIsLocked().evaluate(indexDirectory);
 	}
 
+	@SuppressWarnings("unused")
 	private boolean directoriesEqual(File directoryOne, File directoryTwo) {
-		if (directoryOne == null || directoryTwo == null) {
-			return false;
-		}
-		String nameOne = directoryOne.getName();
-		String nameTwo = directoryTwo.getName();
-		String parentNameOne = directoryOne.getParentFile().getName();
-		String parentNameTwo = directoryTwo.getParentFile().getName();
-		return nameOne.equals(nameTwo) && parentNameOne.equals(parentNameTwo);
+		// if (directoryOne == null || directoryTwo == null) {
+		// return false;
+		// }
+		// String nameOne = directoryOne.getName();
+		// String nameTwo = directoryTwo.getName();
+		// String parentNameOne = directoryOne.getParentFile().getName();
+		// String parentNameTwo = directoryTwo.getParentFile().getName();
+		// return nameOne.equals(nameTwo) && parentNameOne.equals(parentNameTwo);
+		return new AreDirectoriesEqual().evaluate(new File[] { directoryOne, directoryTwo });
 	}
 
 }

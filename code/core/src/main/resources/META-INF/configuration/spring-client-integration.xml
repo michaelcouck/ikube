@@ -13,9 +13,9 @@
             http://www.springframework.org/schema/util/spring-util.xsd">
 
 	<bean
-		id="indexContextOne"
+		id="indexContext"
 		class="ikube.model.IndexContext"
-		property:indexName="indexOne"
+		property:indexName="index"
 		property:maxAge="${max.age}"
 		property:compoundFile="${compound.file}"
 		property:bufferedDocs="${buffered.docs}"
@@ -30,8 +30,8 @@
 		property:indexDirectoryPath="${index.directory.path}"
 		property:indexables-ref="indexables" />
 	<util:list id="indexables">
-		<!--<ref local="mail" />
-		<ref local="internet" />-->
+		<ref local="mail" />
+		<ref local="internet" />
 		<ref local="filesystem" />
 		<ref local="tableOne" />
 	</util:list>
