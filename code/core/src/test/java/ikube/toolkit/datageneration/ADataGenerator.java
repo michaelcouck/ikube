@@ -1,6 +1,5 @@
 package ikube.toolkit.datageneration;
 
-import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
@@ -23,7 +22,6 @@ public abstract class ADataGenerator implements IDataGenerator {
 	protected Logger logger = Logger.getLogger(this.getClass());
 
 	private String wordsFilePath = "words.txt";
-	private String configFilePath = "spring-data-generation.xml";
 
 	protected List<String> words;
 	protected Map<String, byte[]> fileContents;
@@ -35,16 +33,12 @@ public abstract class ADataGenerator implements IDataGenerator {
 		words = new ArrayList<String>();
 		fileContents = new HashMap<String, byte[]>();
 
-		File configFile = FileUtilities.findFile(dotFolder, configFilePath);
-		ApplicationContextManager.getApplicationContext(configFile);
-
 		File wordsFile = FileUtilities.findFile(dotFolder, wordsFilePath);
 		populateWords(wordsFile);
 
-		File dataFolder = configFile.getParentFile();
-		List<File> files = FileUtilities.findFilesRecursively(dataFolder, new String[] { ".doc", ".html", ".pdf", ".pot", ".ppt", ".rtf",
-				".txt", ".xml" }, new ArrayList<File>());
-		populateFiles(files.toArray(new File[files.size()]), "svn");
+		List<File> files = FileUtilities.findFilesRecursively(new File("."), new String[] { ".doc", ".html", ".pdf", ".pot", ".ppt",
+				".rtf", ".txt", ".xml" }, new ArrayList<File>());
+		populateFiles(files.toArray(new File[files.size()]), "spring", "svn");
 	}
 
 	protected void populateWords(File wordsFile) throws Exception {
