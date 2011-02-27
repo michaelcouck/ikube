@@ -88,5 +88,5 @@ public interface IConstants {
 	public String EXCEPTION_CLICKING_LINK = "Exception clicking on the link";
 	public String NO_END_TAG = "Not end tag in HTML";
 	public String EXCEPTION_VALIDATING_HTML = "General exception validating the HTML";
-
+	
 }

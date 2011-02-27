@@ -32,6 +32,7 @@ public class IndexContext extends Persistable implements Comparable<IndexContext
 
 	private long maxReadLength;
 	private String indexDirectoryPath;
+	private boolean inMemory;
 
 	private List<Indexable<?>> indexables;
 
@@ -146,6 +147,14 @@ public class IndexContext extends Persistable implements Comparable<IndexContext
 		this.indexDirectoryPath = indexDirectoryPath;
 	}
 
+	public Boolean getInMemory() {
+		return inMemory;
+	}
+
+	public void setInMemory(Boolean inMemory) {
+		this.inMemory = inMemory;
+	}
+
 	public List<Indexable<?>> getIndexables() {
 		return indexables;
 	}
@@ -161,7 +170,7 @@ public class IndexContext extends Persistable implements Comparable<IndexContext
 	public void setIndex(Index index) {
 		this.index = index;
 	}
-	
+
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();

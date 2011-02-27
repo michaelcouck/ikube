@@ -6,6 +6,7 @@ import ikube.logging.Logging;
 import ikube.model.IndexContext;
 import ikube.service.SearcherWebService;
 import ikube.toolkit.FileUtilities;
+import ikube.model.Index;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -37,22 +38,54 @@ public class Open extends Action {
 
 	@Override
 	public Boolean execute(IndexContext indexContext) {
-//		boolean shouldReopen = shouldReopen(indexContext);
-//		if (!shouldReopen) {
-//			return Boolean.FALSE;
-//		}
+		if (indexContext.getInMemory()) {
+			return openInMemory(indexContext);
+		}
+		return openOnFile(indexContext);
+	}
+
+	private boolean openInMemory(IndexContext indexContext) {
+		Index index = indexContext.getIndex();
+		MultiSearcher multiSearcher = index.getMultiSearcher();
+		Directory directory = index.getDirectory();
+		if (directory == null) {
+			return Boolean.FALSE;
+		}
+		boolean shouldOpen = Boolean.TRUE;
+		if (multiSearcher == null) {
+			shouldOpen = Boolean.TRUE;
+		} else {
+			Searchable[] searchables = multiSearcher.getSearchables();
+			for (Searchable searchable : searchables) {
+				if (directory == ((IndexSearcher) searchable).getIndexReader().directory()) {
+					shouldOpen = Boolean.FALSE;
+					break;
+				}
+			}
+		}
+		if (shouldOpen) {
+			try {
+				IndexReader indexReader = IndexReader.open(directory);
+				Searchable searchable = new IndexSearcher(indexReader);
+				multiSearcher = new MultiSearcher(searchable);
+				index.setMultiSearcher(multiSearcher);
+				logger.info("Opened searcher in memory : ");
+				return Boolean.TRUE;
+			} catch (Exception e) {
+				logger.error("", e);
+			}
+		}
+		return Boolean.FALSE;
+	}
+
+	private boolean openOnFile(IndexContext indexContext) {
 		ArrayList<Searchable> searchers = new ArrayList<Searchable>();
 		String indexDirectoryPath = indexContext.getIndexDirectoryPath() + File.separator + indexContext.getIndexName();
-//		File baseIndexDirectory = FileUtilities.getFile(indexDirectoryPath, Boolean.TRUE);
-//		if (baseIndexDirectory.listFiles() == null) {
-//			return Boolean.FALSE;
-//		}
 		File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexDirectoryPath);
-//		logger.info("Latest index directory : " + latestIndexDirectory);
 		if (latestIndexDirectory == null) {
 			return Boolean.FALSE;
 		}
-		
+
 		File[] serverIndexDirectories = latestIndexDirectory.listFiles();
 		IndexReader reader = null;
 		Directory directory = null;
@@ -98,7 +131,6 @@ public class Open extends Action {
 				}
 			}
 		}
-
 		try {
 			if (searchers.size() > 0) {
 				Searchable[] searchables = searchers.toArray(new IndexSearcher[searchers.size()]);

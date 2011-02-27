@@ -1,6 +1,7 @@
 package ikube.action.rule;
 
 import ikube.action.IAction;
+import ikube.logging.Logging;
 import ikube.model.IndexContext;
 
 import java.util.List;
@@ -17,8 +18,6 @@ import org.nfunk.jep.Node;
  */
 public class RuleDecisionInterceptor implements IRuleDecisionInterceptor {
 
-	private static final String[] VARIABLES = { "a", "b", "c", "d", "e", "f", "g", "h", "i", "j" };
-
 	private Logger logger = Logger.getLogger(this.getClass());
 	private JEP jep = new JEP();
 
@@ -29,7 +28,7 @@ public class RuleDecisionInterceptor implements IRuleDecisionInterceptor {
 			logger.warn("Can't intercept non action class, proceeding : " + target);
 			return proceedingJoinPoint.proceed();
 		}
-		
+
 		// Get the rules associated with this action
 		@SuppressWarnings({ "unchecked", "rawtypes" })
 		List<IRule<IndexContext>> classRules = ((IAction) target).getRules();
@@ -38,17 +37,18 @@ public class RuleDecisionInterceptor implements IRuleDecisionInterceptor {
 			return proceedingJoinPoint.proceed();
 		}
 
-		logger.info("Intercepting : " + target);
+		logger.debug("Intercepting : " + target);
 		int index = 0;
 		for (IRule<IndexContext> rule : classRules) {
 			Object[] args = proceedingJoinPoint.getArgs();
 			for (Object arg : args) {
 				if (arg != null && IndexContext.class.isAssignableFrom(arg.getClass())) {
 					boolean result = rule.evaluate((IndexContext) arg);
+					String parameter = rule.getClass().getSimpleName();
 					if (logger.isDebugEnabled()) {
-						logger.debug("Parameter : " + VARIABLES[index] + ", " + result);
+						logger.info(Logging.getString("Parameter : ", parameter, result));
 					}
-					jep.addVariable(VARIABLES[index], result);
+					jep.addVariable(parameter, result);
 					index++;
 				}
 			}
@@ -56,7 +56,9 @@ public class RuleDecisionInterceptor implements IRuleDecisionInterceptor {
 		String predicate = ((IAction<?, ?>) target).getPredicate();
 		Node node = jep.parse(predicate);
 		Object result = jep.evaluate(node);
-		logger.info("Result : " + result + ", " + jep + ", " + predicate);
+		if (logger.isDebugEnabled()) {
+			logger.debug(Logging.getString("Result : ", result, jep, predicate));
+		}
 		if (result == null || result.equals(0.0d) || result.equals(Boolean.FALSE)) {
 			return Boolean.FALSE;
 		}

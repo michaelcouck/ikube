@@ -10,8 +10,8 @@ import ikube.index.IndexManager;
 import ikube.index.parse.mime.MimeMapper;
 import ikube.index.parse.mime.MimeTypes;
 import ikube.logging.Logging;
-import ikube.model.IndexContext;
 import ikube.model.Index;
+import ikube.model.IndexContext;
 
 import java.io.File;
 import java.net.InetAddress;
@@ -44,7 +44,7 @@ import org.apache.lucene.store.Lock;
 public abstract class ATest {
 
 	private static boolean INITIALIZED = Boolean.FALSE;
-	
+
 	static {
 		if (!INITIALIZED) {
 			INITIALIZED = Boolean.TRUE;
@@ -55,7 +55,7 @@ public abstract class ATest {
 			}
 		}
 	}
-	
+
 	/** These are all mocked objects that are used in sub classes. */
 	protected static MultiSearcher MULTI_SEARCHER;
 	protected static IndexSearcher INDEX_SEARCHER;
@@ -92,7 +92,7 @@ public abstract class ATest {
 			LOCK = mock(Lock.class);
 			INDEX_CONTEXT = mock(IndexContext.class);
 			INDEX = mock(Index.class);
-			
+
 			when(MULTI_SEARCHER.getSearchables()).thenReturn(SEARCHABLES);
 			when(MULTI_SEARCHER.search(any(Query.class), anyInt())).thenReturn(TOP_DOCS);
 			when(MULTI_SEARCHER.search(any(Query.class), any(Filter.class), anyInt(), any(Sort.class))).thenReturn(TOP_FIELD_DOCS);
@@ -104,7 +104,7 @@ public abstract class ATest {
 			TOP_FIELD_DOCS.scoreDocs = SCORE_DOCS;
 			when(INDEX_READER.directory()).thenReturn(FS_DIRECTORY);
 			when(FS_DIRECTORY.makeLock(anyString())).thenReturn(LOCK);
-			
+
 			IP = InetAddress.getLocalHost().getHostAddress();
 			// Every time the JVM starts a +~JF#######.tmp file is created. Strange as that is
 			// we still need to delete it manually.
@@ -112,42 +112,13 @@ public abstract class ATest {
 		}
 	}
 
-	protected static void delete(IDataBase dataBase, Class<?>... klasses) {
+	protected void delete(IDataBase dataBase, Class<?>... klasses) {
 		for (Class<?> klass : klasses) {
 			List<?> objects = dataBase.find(klass, 0, Integer.MAX_VALUE);
 			for (Object object : objects) {
 				dataBase.remove(object);
 			}
 		}
-	}
-
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public static void quickSort(Comparable[] c, int start, int end) {
-		if (end <= start) {
-			return;
-		}
-		Comparable middle = c[start];
-		int i = start;
-		int j = end + 1;
-		for (;;) {
-			do {
-				i++;
-			} while (i < end && c[i].compareTo(middle) < 0);
-			do {
-				j--;
-			} while (j > start && c[j].compareTo(middle) > 0);
-			if (j <= i) {
-				break;
-			}
-			Comparable smaller = c[i];
-			Comparable larger = c[j];
-			c[i] = larger;
-			c[j] = smaller;
-		}
-		c[start] = c[j];
-		c[j] = middle;
-		quickSort(c, start, j - 1);
-		quickSort(c, j + 1, end);
 	}
 
 	/**
@@ -161,7 +132,7 @@ public abstract class ATest {
 	protected String getServerIndexDirectoryPath(IndexContext indexContext) {
 		return IndexManager.getIndexDirectory(IP, indexContext, System.currentTimeMillis());
 	}
-
+	
 	protected File createIndex(File indexDirectory) throws Exception {
 		logger.info("Creating Lucene index in : " + indexDirectory);
 		Directory directory = null;
@@ -186,20 +157,6 @@ public abstract class ATest {
 			}
 		}
 		return indexDirectory;
-	}
-
-	public static void main(String[] args) throws Exception {
-		Integer[] arr = new Integer[5];
-		System.out.println("inserting: ");
-		for (int i = 0; i < arr.length; i++) {
-			arr[i] = new Integer((int) (Math.random() * 99));
-			System.out.print(arr[i] + " ");
-		}
-		quickSort(arr, 0, arr.length - 1);
-		System.out.println("\nsorted: ");
-		for (int i = 0; i < arr.length; i++)
-			System.out.print(arr[i] + " ");
-		System.out.println("\nDone ;-)");
 	}
 
 }

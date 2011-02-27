@@ -3,7 +3,6 @@ package ikube.action.rule;
 import ikube.model.IndexContext;
 
 import org.apache.log4j.Logger;
-import org.apache.lucene.search.MultiSearcher;
 
 /**
  * @author Michael Couck
@@ -15,8 +14,10 @@ public class IsMultiSearcherInitialised implements IRule<IndexContext> {
 	private Logger logger = Logger.getLogger(this.getClass());
 
 	public boolean evaluate(IndexContext indexContext) {
-		MultiSearcher multiSearcher = indexContext.getIndex().getMultiSearcher();
-		if (multiSearcher == null) {
+		if (indexContext.getIndex() == null) {
+			return Boolean.FALSE;
+		}
+		if (indexContext.getIndex().getMultiSearcher() == null) {
 			logger.debug("Multi searcher null, should try to reopen : ");
 			return Boolean.FALSE;
 		}

@@ -11,10 +11,11 @@
             http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
 	<context:property-placeholder
-		location="classpath:/META-INF/configuration/spring-integration.properties" />
+		location="classpath:/META-INF/configuration/spring-test.properties" />
 		
 	<import resource="classpath:/META-INF/common/spring-jdbc.xml" />
 	<import resource="classpath:/META-INF/common/spring-beans.xml" />
-	<import resource="classpath:/META-INF/configuration/spring-client-integration.xml" />
+	<import resource="classpath:/META-INF/common/spring-actions.xml" />
+	<import resource="classpath:/META-INF/configuration/spring-client-test.xml" />
 
 </beans>

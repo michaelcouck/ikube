@@ -5,6 +5,7 @@ import javax.persistence.Transient;
 
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.MultiSearcher;
+import org.apache.lucene.store.Directory;
 
 /**
  * @author Michael Couck
@@ -17,6 +18,9 @@ public class Index extends Persistable {
 	/** Can be null if there are no indexes running. */
 	@Transient
 	private transient IndexWriter indexWriter;
+	/** This is the latest directory from the indexing process. */
+	@Transient
+	private Directory directory;
 	/** Can be null if there is no index created. */
 	@Transient
 	private transient MultiSearcher multiSearcher;
@@ -28,6 +32,15 @@ public class Index extends Persistable {
 
 	public void setIndexWriter(final IndexWriter indexWriter) {
 		this.indexWriter = indexWriter;
+	}
+
+	@Transient
+	public Directory getDirectory() {
+		return directory;
+	}
+
+	public void setDirectory(Directory directory) {
+		this.directory = directory;
 	}
 
 	@Transient

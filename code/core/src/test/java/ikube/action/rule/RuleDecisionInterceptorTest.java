@@ -1,11 +1,9 @@
 package ikube.action.rule;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
-import static org.junit.Assert.*;
-
 import ikube.ATest;
 import ikube.action.Close;
 import ikube.logging.Logging;
@@ -16,8 +14,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import mockit.Mockit;
+import mockit.NonStrict;
+import mockit.NonStrictExpectations;
+
 import org.aspectj.lang.ProceedingJoinPoint;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.nfunk.jep.JEP;
 import org.nfunk.jep.Node;
@@ -34,32 +38,60 @@ public class RuleDecisionInterceptorTest extends ATest {
 	private ProceedingJoinPoint joinPoint;
 	private IRuleDecisionInterceptor ruleDecisionInterceptor;
 
-	private Object[] vector = { Boolean.TRUE, Boolean.FALSE, Boolean.TRUE, Boolean.FALSE, Boolean.TRUE };
-	private List<Object[]> matrix = new ArrayList<Object[]>();
+	private Boolean[] vector = { Boolean.TRUE, Boolean.FALSE, Boolean.TRUE, Boolean.FALSE, Boolean.TRUE };
+	private List<Boolean[]> matrix = new ArrayList<Boolean[]>();
+	private Boolean[] resultVector = { Boolean.TRUE, Boolean.FALSE, Boolean.TRUE, Boolean.FALSE, Boolean.TRUE };
+
+	@NonStrict
+	private IsMultiSearcherInitialised isMultiSearcherInitialised;
+	@NonStrict
+	private AreSearchablesInitialised areSearchablesInitialised;
+	@NonStrict
+	private IsIndexCurrent isIndexCurrent;
+	@NonStrict
+	private AreIndexesCreated areIndexesCreated;
+	@NonStrict
+	private AreUnopenedIndexes areUnopenedIndexes;
+
+	@BeforeClass
+	public static void beforeClass() {
+		Mockit.setUpMocks();
+	}
+
+	@AfterClass
+	public static void afterClass() {
+		Mockit.tearDownMocks();
+	}
 
 	@Before
 	public void before() throws Throwable {
 		new Permutations().getPermutations(vector, matrix, vector.length, 0);
 
+		new NonStrictExpectations() {
+			{
+				isMultiSearcherInitialised.evaluate(INDEX_CONTEXT);
+				result = resultVector[0];
+				areSearchablesInitialised.evaluate(INDEX_CONTEXT);
+				result = resultVector[1];
+				isIndexCurrent.evaluate(INDEX_CONTEXT);
+				result = resultVector[2];
+				areIndexesCreated.evaluate(INDEX_CONTEXT);
+				result = resultVector[3];
+				areUnopenedIndexes.evaluate(INDEX_CONTEXT);
+				result = resultVector[4];
+			}
+		};
+
 		rules = new ArrayList<IRule<?>>();
-
-		IsMultiSearcherInitialised isMultiSearcherInitialised = mock(IsMultiSearcherInitialised.class);
 		rules.add(isMultiSearcherInitialised);
-
-		AreSearchablesInitialised areSearchablesInitialised = mock(AreSearchablesInitialised.class);
 		rules.add(areSearchablesInitialised);
-
-		IsIndexCurrent isIndexCurrent = mock(IsIndexCurrent.class);
 		rules.add(isIndexCurrent);
-
-		AreIndexesCreated areIndexesCreated = mock(AreIndexesCreated.class);
 		rules.add(areIndexesCreated);
-
-		AreUnopenedIndexes areUnopenedIndexes = mock(AreUnopenedIndexes.class);
 		rules.add(areUnopenedIndexes);
 
 		close = mock(Close.class);
-		when(close.getPredicate()).thenReturn("a && b && c && d && e");
+		String predicate = "IsMultiSearcherInitialised && AreSearchablesInitialised && !IsIndexCurrent && AreIndexesCreated && AreUnopenedIndexes";
+		when(close.getPredicate()).thenReturn(predicate);
 		when(close.getRules()).thenReturn(rules);
 		when(close.execute(any(IndexContext.class))).thenReturn(Boolean.TRUE);
 
@@ -72,23 +104,12 @@ public class RuleDecisionInterceptorTest extends ATest {
 
 	@Test
 	public void decide() throws Throwable {
-		for (Object[] vector : matrix) {
-			setMatrix(rules, vector);
-			Boolean[] booleans = new Boolean[vector.length];
-			System.arraycopy(vector, 0, booleans, 0, booleans.length);
-			
+		for (Boolean[] vector : matrix) {
+			resultVector = vector;
 			Object result = ruleDecisionInterceptor.decide(joinPoint);
-			Object expected = booleans[0] && booleans[1] && !booleans[2] && booleans[3] && booleans[4];
-			String message = Logging.getString("Expected : ", expected, ", result : ", result, " booleans : ", Arrays.asList(booleans));
+			Object expected = resultVector[0] && resultVector[1] && !resultVector[2] && resultVector[3] && resultVector[4];
+			String message = Logging.getString("Expected : ", expected, ", result : ", result, " booleans : ", Arrays.asList(resultVector));
 			assertEquals(message, expected, result);
-		}
-	}
-
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private void setMatrix(List<IRule<?>> rules, Object[] vector) {
-		for (int i = 0; i < rules.size(); i++) {
-			IRule rule = rules.get(i);
-			when(rule.evaluate(any())).thenReturn((Boolean) vector[i]);
 		}
 	}
 

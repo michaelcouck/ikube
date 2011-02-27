@@ -27,7 +27,7 @@ public class Permutations {
 		getPermutations(newObjects, permutations, N, 0);
 	}
 
-	public void getPermutations(Object[] objects, List<Object[]> permutations, int n, int counter) {
+	public <T> void getPermutations(T[] objects, List<T[]> permutations, int n, int counter) {
 		if (n == 1) {
 			permutations.add(Arrays.copyOf(objects, objects.length));
 			return;
