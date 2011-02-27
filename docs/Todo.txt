@@ -2,20 +2,21 @@
 
 * New data structure, perhaps patients in a hospital - 1 (Michael)
 * Client front end for search and monitoring - 10 (Bruno)
-   Logging on a topic for the gui to collect for the whole cluster
-* Linux testing - 1
+   Logging on a topic for the gui to collect for the whole cluster is an idea
 * Implementation of updating the index with deltas from the client - 3 (Michael)
-* Reconfigure the field names for the monitoring - 4 hours (Michael)
 * Move the datasource to a central location for the table indexables - 4 hours (Michael)
-* Rules engine for the decision - 3 (Michael)
-* Stress test and load test the web service - 1
+* Stress and load test the web service - 1
 * Create automated integration tests in different environments - 3
 * Add the possibility for persistence in JPA - 1
 * Add strategies for indexing large files like zips - 3
-* Add possibility to have index in memory so as not to write on the file system - 1 (Michael)
+* Add possibility to have index in memory so as not to write on the file system - 3 (Michael)
 * Test writing the index across the network, and reading, perhaps a stress test too - 1
+* Linux testing - 1
+* Implement distance sorting, i.e. given the co-ordinates of the originator and the co-ordinates
+   of the results sort them from the closest to the furthest from the orginator - 2
+* Add facets to the search possibilities - 5
 
-Total - ?
+Total - +-31
 
 Done:
 * Cluster - 3 *
@@ -30,24 +31,25 @@ Done:
 * Cluster testing - 1 *
 * Wiki/documentation/JavaDoc - 3 *
 * Data generator two with files - 1/2 *
+* Reconfigure the field names for the monitoring - 4 hours (Michael) *
+* Rules engine for the decision - 3 (Michael) *
 
 Other things:
-* Add a database tester to re-connect if the database becomes disconnected
-* Is there automatically language support, i.e. are languages handled transparently
-* Add changes in the data to results? I.e. save the previous data and in the results
-   offer a series of documents representing how they changed over the
-   indexes/periods
-* Add a shutdown hook for the Spring objects that need to be closed when the context
-  gets refreshed.
-* Security
-* Stemming
-* Taxonomy
-* Spelling checking
-* Phonetic search
-* Result clustering
-* Reporting (e.g. Google Analytics)
-* Add a maximum documents per server parameter
-* Performance benchmarking
+* Add a database tester to re-connect if the database becomes disconnected - 4 hours
+* Add changes in the data to results? i.e. save the previous data and in the results - 3
+   offer a series of documents representing how they changed over the 
+   indexes/periods, i.e. shallow deltas.
+* Add a shutdown hook for the Spring objects that need to be closed when the context - 3
+  gets refreshed. This can aid in the dynamic configuration.
+* Security - 3
+* Stemming - 2
+* Taxonomy - 3
+* Spelling checking, done just need to migrate the code from the old project. - 1
+* Phonetic search - 3
+* Result clustering - 3
+* Reporting (e.g. Google Analytics) - 1
+* Add a maximum documents per server parameter - 1
+* Performance benchmarking - 3
 
 Done:
 * Delete the database file on startup locally *
@@ -57,7 +59,10 @@ Done:
 * Add a configuration for a mail account *
 * Test the parsers *
 * Add sorting to the multi and single searchers *
+* Is there automatically language support, i.e. are languages handled transparently? Chinese,
+   Russian, other scripting languages? It seems that way in fact. Certainly Russsian and Arabic 
+   are handled by Lucene automatically. (Michael)
 
 Won't Do:
 * Boosting
-* Servlet/Ejb - 1 ?
+* Servlet/Ejb - 1?
