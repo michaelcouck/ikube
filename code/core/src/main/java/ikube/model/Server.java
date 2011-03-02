@@ -7,8 +7,7 @@ import java.util.List;
 import javax.persistence.Entity;
 
 /**
- * This object is passed around in the cluster. It contains transient data that must only be modified by the server from which it
- * originates.
+ * This object is passed around in the cluster.
  * 
  * @author Michael Couck
  * @since 21.11.10

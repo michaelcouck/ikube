@@ -181,6 +181,8 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 				}
 			} while (true);
 		} catch (Exception e) {
+			// Should we catch this exception and check how many are thrown, if the
+			// exception threshold is exceeded then exit the database crawl?
 			logger.error("Exception indexing table : " + indexableTable, e);
 		} finally {
 			// Close the result set and the statement for this

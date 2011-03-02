@@ -29,6 +29,8 @@ import org.apache.lucene.store.LockObtainFailedException;
 import org.apache.lucene.store.RAMDirectory;
 
 /**
+ * This class opens and closes the Lucene index writer.
+ * 
  * @author Michael Couck
  * @since 21.11.10
  * @version 01.00
@@ -37,6 +39,22 @@ public class IndexManager {
 
 	private static Logger LOGGER = Logger.getLogger(IndexManager.class);
 
+	/**
+	 * This method opens a Lucene index writer, and if successful sets it in the index context where the handlers can access it and add
+	 * documents to it during the index. The index writer is opened on a directory that will be the index path on the file system, the name
+	 * of the index, then the
+	 * 
+	 * @param ip
+	 *            the ip address of this machine
+	 * @param indexContext
+	 *            the index context to open the writer for
+	 * @param time
+	 *            the time stamp for the index directory. This can come from the system time but it can also come from another server. When
+	 *            an index is started the server will publish the time it started the index. In this way we can check the timestamp for the
+	 *            index, and if it is set then we use the cluster timestamp. As a result we write the index in the same 'timestamp'
+	 *            directory
+	 * @return the index writer opened for this index context or null if there was any exception opening the index
+	 */
 	public static synchronized IndexWriter openIndexWriter(String ip, IndexContext indexContext, long time) {
 		boolean delete = Boolean.FALSE;
 		boolean exception = Boolean.FALSE;

@@ -5,6 +5,8 @@ import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.util.Version;
 
 /**
+ * Constants for Ikube.
+ * 
  * @author Michael Couck
  * @since 21.11.10
  * @version 01.00
@@ -82,7 +84,7 @@ public interface IConstants {
 	/** These can be extracted into the messages.properties file */
 	public String RESPONSE_CODE_NOT_200 = "Response code not 200/OK";
 	public String EXCEPTION_VISITING_PAGE = "Exception visiting page";
-	public String EXCEPTION_VISITING_PAGE_UNKNOWN_ERROR_POSSIBLY_TIMEOUT = "Exception visiting page, error un-known, possibly a timeout";
+	public String EXCEPTION_VISITING_PAGE_POSSIBLY_TIMEOUT = "Exception visiting page, error un-known, possibly a timeout";
 	public String PAGE_RESPONSE_NULL = "Page returned from request null";
 	public String URL_NOT_WELL_FORMED = "Url not well formed";
 	public String EXCEPTION_CLICKING_LINK = "Exception clicking on the link";
