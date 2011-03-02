@@ -1,7 +1,5 @@
-<project 
-	xmlns="http://maven.apache.org/POM/4.0.0" 
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-	
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
 	xsi:schemaLocation=" http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
@@ -17,6 +15,7 @@
 		<logback.version>0.9.15</logback.version>
 		<junit.version>4.8.2</junit.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<targetJdk>1.6</targetJdk>
 	</properties>
 
 	<modules>
@@ -48,11 +47,31 @@
 					</compilerArguments>
 				</configuration>
 			</plugin>
-
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-pmd-plugin</artifactId>
+				<version>2.5</version>
+				<configuration>
+					<linkXref>true</linkXref>
+					<source>${targetJdk}</source>
+					<execution>
+						<goals>
+							<goal>package</goal>
+							<goal>install</goal>
+							<goal>site</goal>
+						</goals>
+					</execution>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>jdepend-maven-plugin</artifactId>
 				<version>2.0-beta-2</version>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>jxr-maven-plugin</artifactId>
+				<version>2.0-beta-1</version>
 			</plugin>
 		</plugins>
 	</build>
@@ -259,20 +278,9 @@
 			<type>jar</type>
 			<scope>runtime</scope>
 		</dependency>
-		<!--<dependency>
-			<groupId>com.ibm.db2.jcc</groupId>
-			<artifactId>db2jcc</artifactId>
-			<version>9.5</version>
-			<type>jar</type>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.ibm.db2.jcc_license_cu</groupId>
-			<artifactId>db2jcc_license_cu</artifactId>
-			<version>9.5</version>
-			<type>jar</type>
-			<scope>runtime</scope>
-		</dependency>-->
+		<!--<dependency> <groupId>com.ibm.db2.jcc</groupId> <artifactId>db2jcc</artifactId> <version>9.5</version> <type>jar</type> <scope>runtime</scope> 
+			</dependency> <dependency> <groupId>com.ibm.db2.jcc_license_cu</groupId> <artifactId>db2jcc_license_cu</artifactId> <version>9.5</version> <type>jar</type> 
+			<scope>runtime</scope> </dependency> -->
 		<dependency>
 			<groupId>commons-lang</groupId>
 			<artifactId>commons-lang</artifactId>
@@ -424,13 +432,8 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
-		<!--<dependency>
-			<groupId>oracle.ojdbc6</groupId>
-			<artifactId>ojdbc6</artifactId>
-			<version>11</version>
-			<type>jar</type>
-			<scope>runtime</scope>
-		</dependency>-->
+		<!--<dependency> <groupId>oracle.ojdbc6</groupId> <artifactId>ojdbc6</artifactId> <version>11</version> <type>jar</type> <scope>runtime</scope> 
+			</dependency> -->
 		<dependency>
 			<groupId>org.apache.jcs</groupId>
 			<artifactId>jcs</artifactId>
@@ -483,13 +486,8 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
-		<!--<dependency>
-			<groupId>org.nfunk</groupId>
-			<artifactId>jep</artifactId>
-			<version>2.4.1</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>-->
+		<!--<dependency> <groupId>org.nfunk</groupId> <artifactId>jep</artifactId> <version>2.4.1</version> <type>jar</type> <scope>compile</scope> 
+			</dependency> -->
 		<dependency>
 			<groupId>jep</groupId>
 			<artifactId>jep</artifactId>
@@ -537,7 +535,7 @@
 			</snapshots>
 		</repository>
 	</repositories>
-	
+
 	<scm>
 		<url>https://ikube.googlecode.com/svn</url>
 		<connection>scm:svn:https://ikube.googlecode.com/svn/trunk</connection>
@@ -566,5 +564,31 @@
 			<url>dav:https://ikube.googlecode.com/svn/maven2-snapshots/</url>
 		</snapshotRepository>
 	</distributionManagement>
+
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>jxr-maven-plugin</artifactId>
+				<version>2.0-beta-1</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-pmd-plugin</artifactId>
+				<version>2.5</version>
+				<configuration>
+					<linkXref>true</linkXref>
+					<targetJdk>${targetJdk}</targetJdk>
+					<rulesets>
+						<!-- Two rule sets that come bundled with PMD -->
+						<ruleset>rulesets/braces.xml</ruleset>
+						<ruleset>rulesets/naming.xml</ruleset>
+						<!-- Custom local file system rule set -->
+						<ruleset>rulesets/basic.xml</ruleset>
+					</rulesets>
+				</configuration>
+			</plugin>
+		</plugins>
+	</reporting>
 
 </project>
