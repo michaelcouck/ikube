@@ -483,10 +483,17 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
-		<dependency>
+		<!--<dependency>
 			<groupId>org.nfunk</groupId>
 			<artifactId>jep</artifactId>
 			<version>2.4.1</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>-->
+		<dependency>
+			<groupId>jep</groupId>
+			<artifactId>jep</artifactId>
+			<version>2.24</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>

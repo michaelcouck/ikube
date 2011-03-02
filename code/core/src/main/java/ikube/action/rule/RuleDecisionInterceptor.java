@@ -9,7 +9,6 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.nfunk.jep.JEP;
-import org.nfunk.jep.Node;
 
 /**
  * @author Michael Couck
@@ -48,14 +47,14 @@ public class RuleDecisionInterceptor implements IRuleDecisionInterceptor {
 					if (logger.isDebugEnabled()) {
 						logger.info(Logging.getString("Parameter : ", parameter, result));
 					}
-					jep.addVariable(parameter, result);
+					jep.addVariableAsObject(parameter, result);
 					index++;
 				}
 			}
 		}
 		String predicate = ((IAction<?, ?>) target).getPredicate();
-		Node node = jep.parse(predicate);
-		Object result = jep.evaluate(node);
+		jep.parseExpression(predicate);
+		Object result = jep.getValueAsObject();
 		if (logger.isDebugEnabled()) {
 			logger.debug(Logging.getString("Result : ", result, jep, predicate));
 		}
