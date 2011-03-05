@@ -16,9 +16,9 @@ import javax.persistence.Id;
 public abstract class Persistable implements Serializable {
 
 	@Id
+	@GeneratedValue(strategy = GenerationType.TABLE)
 	private long id;
 
-	@GeneratedValue(strategy = GenerationType.TABLE)
 	public long getId() {
 		return id;
 	}

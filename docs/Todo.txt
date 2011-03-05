@@ -1,22 +1,23 @@
 03.11.10
 
-* New data structure, perhaps patients in a hospital - 1 (Michael)
+* New data structure, perhaps patients in a hospital - 1
 * Client front end for search and monitoring - 10 (Bruno)
    Logging on a topic for the gui to collect for the whole cluster is an idea
-* Implementation of updating the index with deltas from the client - 3 (Michael)
-* Move the datasource to a central location for the table indexables - 4 hours (Michael)
+* Implementation of updating the index with deltas from the client - 3
+* Move the datasource to a central location for the table indexables - 4 hours
 * Stress and load test the web service - 1
 * Create automated integration tests in different environments - 3
 * Add the possibility for persistence in JPA - 1
 * Add strategies for indexing large files like zips - 3
-* Add possibility to have index in memory so as not to write on the file system - 3 (Michael)
+* Add possibility to have index in memory so as not to write on the file system - 3
 * Test writing the index across the network, and reading, perhaps a stress test too - 1
-* Linux testing - 1
-* Implement distance sorting, i.e. given the co-ordinates of the originator and the co-ordinates
-   of the results sort them from the closest to the furthest from the orginator - 2
 * Add facets to the search possibilities - 5
 * Add slave to run on the client machine and transfer data to the master running 
    on our servers as a hosting service.
+   
+In progress:
+* Implement distance sorting, i.e. given the co-ordinates of the originator and the co-ordinates
+   of the results sort them from the closest to the furthest from the orginator - 3 (Michael)
 
 Total - +-31
 

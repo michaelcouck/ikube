@@ -9,14 +9,11 @@ import ikube.toolkit.PerformanceTester;
 import ikube.toolkit.SerializationUtilities;
 import ikube.toolkit.ThreadUtilities;
 
-import java.io.ByteArrayInputStream;
-import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -129,7 +126,11 @@ public class DataGeneratorTwo extends ADataGenerator {
 					if (indexableColumn.getForeignKey() == null) {
 						String columnClass = indexableColumn.getColumnClass();
 						int columnLength = indexableColumn.getColumnLength();
-						parameter = getParameter(columnClass, columnLength);
+						try {
+							parameter = instanciateObject(Class.forName(columnClass), columnLength);
+						} catch (ClassNotFoundException e) {
+							logger.error("", e);
+						}
 					} else {
 						parameter = indexableColumn.getForeignKey().getObject();
 					}
@@ -190,23 +191,6 @@ public class DataGeneratorTwo extends ADataGenerator {
 			}
 		}
 		logger.warn("No id column defined for table : " + indexableColumns);
-		return null;
-	}
-
-	protected Object getParameter(String columnClass, int columnLength) {
-		if (Boolean.class.getName().equals(columnClass)) {
-			return Boolean.TRUE;
-		} else if (Integer.class.getName().equals(columnClass)) {
-			return new Integer((int) System.nanoTime());
-		} else if (Long.class.getName().equals(columnClass)) {
-			return new Long(System.nanoTime());
-		} else if (Timestamp.class.getName().equals(columnClass)) {
-			return new Timestamp(System.currentTimeMillis());
-		} else if (String.class.getName().equals(columnClass)) {
-			return generateText(columnLength * 5, columnLength);
-		} else if (Blob.class.getName().equals(columnClass)) {
-			return new ByteArrayInputStream(generateText(columnLength * 5, columnLength).getBytes());
-		}
 		return null;
 	}
 

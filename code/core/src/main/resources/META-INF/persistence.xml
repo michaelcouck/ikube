@@ -7,32 +7,46 @@
 
 	<persistence-unit name="IkubePersistenceUnit" transaction-type="RESOURCE_LOCAL">
 		<provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
+		<non-jta-data-source>nonXaDataSource</non-jta-data-source>
 
 		<!-- The test data model entities for the database indexing functionality. -->
 		<class>ikube.model.Faq</class>
 		<class>ikube.model.Attachment</class>
 
+		<class>ikube.model.Persistable</class>
+		<class>ikube.model.medical.Address</class>
+		<class>ikube.model.medical.Administration</class>
+		<class>ikube.model.medical.Condition</class>
+		<class>ikube.model.medical.Doctor</class>
+		<class>ikube.model.medical.Hospital</class>
+		<class>ikube.model.medical.Inpatient</class>
+		<class>ikube.model.medical.Medication</class>
+		<class>ikube.model.medical.Patient</class>
+		<class>ikube.model.medical.Person</class>
+		<class>ikube.model.medical.Record</class>
+		<class>ikube.model.medical.Treatment</class>
+
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 
 		<!-- Oracle/OpenJpa -->
 		<properties>
-			<property name="openjpa.ConnectionUserName" value="XE" />
+			<!--<property name="openjpa.ConnectionUserName" value="XE" />
 			<property name="openjpa.ConnectionPassword" value="admin" />
 			<property name="openjpa.ConnectionDriverName" value="oracle.jdbc.driver.OracleDriver" />
-			<property name="openjpa.ConnectionURL" value="jdbc:oracle:thin:@//ikube:1521/XE" />
+			<property name="openjpa.ConnectionURL" value="jdbc:oracle:thin:@//ikube:1521/XE" />-->
 			<property name="openjpa.ConnectionFactoryProperties" value="PrettyPrint=true,PrettyPrintLineLength=150" />
 			<property name="openjpa.Log" value="DefaultLevel=INFO,SQL=INFO,File=./openjpa.log" />
 			<property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
-			<property name="openjpa.classLoadEnhancement" value="false" />
-			<property name="openjpa.DynamicEnhancementAgent" value="false" />
+			<property name="openjpa.classLoadEnhancement" value="true" />
+			<property name="openjpa.DynamicEnhancementAgent" value="true" />
 			<property name="openjpa.RuntimeUnenhancedClasses" value="supported" />
 			<property name="openjpa.Multithreaded" value="true" />
-
-			<!--<property name="openjpa.jdbc.Schema" value="MICHAELCOUCK" /> -->
+		</properties>
+		
+		<!--<property name="openjpa.jdbc.Schema" value="MICHAELCOUCK" /> -->
 			<!--<property name="openjpa.RemoteCommitProvider" value="sjvm" /> -->
 			<!--<property name="openjpa.DataCache" value="true(CacheSize=500000, SoftReferenceSize=0)" /> -->
 			<!--<property name="openjpa.QueryCache" value="CacheSize=500000, SoftReferenceSize=0" /> -->
 			<!--<property name="openjpa.RefreshFromDataCache" value="true" /> -->
-		</properties>
 	</persistence-unit>
 </persistence>

@@ -486,8 +486,6 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
-		<!--<dependency> <groupId>org.nfunk</groupId> <artifactId>jep</artifactId> <version>2.4.1</version> <type>jar</type> <scope>compile</scope> 
-			</dependency> -->
 		<dependency>
 			<groupId>jep</groupId>
 			<artifactId>jep</artifactId>
@@ -495,10 +493,14 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.beoui</groupId>
+			<artifactId>geocell</artifactId>
+			<version>0.0.5</version>
+		</dependency>
 	</dependencies>
 
 	<repositories>
-		<!--<repository> <id>springbyexample.org</id> <name>Spring by Example</name> <url>http://www.springbyexample.org/maven/repo</url> </repository> -->
 		<repository>
 			<id>m.g.o-public</id>
 			<url>http://maven.glassfish.org/content/groups/public/</url>
@@ -533,6 +535,11 @@
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
+		</repository>
+		<repository>
+			<id>javageomodel-repo</id>
+			<name>GeocellJava Repository</name>
+			<url>http://javageomodel.googlecode.com/svn/repository</url>
 		</repository>
 	</repositories>
 

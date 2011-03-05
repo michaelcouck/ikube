@@ -2,8 +2,7 @@ package ikube.model;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.Collection;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -27,18 +26,24 @@ import javax.persistence.OneToMany;
 @Inheritance(strategy = InheritanceType.JOINED)
 public class Faq implements Serializable, Comparable<Faq> {
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long faqId;
+	@Column(length = 1024)
 	private String question;
+	@Column(length = 1024)
 	private String answer;
+	@Column(length = 64)
 	private String creator;
+	@Column(length = 64)
 	private String modifier;
+	@Column(nullable = false)
 	private Boolean published;
 	private Timestamp creationTimestamp;
 	private Timestamp modifiedTimestamp;
-	private Set<Attachment> attachments = new TreeSet<Attachment>();
+	@OneToMany(cascade = { CascadeType.ALL }, mappedBy = "faq", fetch = FetchType.LAZY)
+	private Collection<Attachment> attachments;
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
 	public Long getFaqId() {
 		return faqId;
 	}
@@ -47,16 +52,14 @@ public class Faq implements Serializable, Comparable<Faq> {
 		this.faqId = faqId;
 	}
 
-	@OneToMany(cascade = { CascadeType.ALL }, mappedBy = "faq", fetch = FetchType.LAZY)
-	public Set<Attachment> getAttachments() {
+	public Collection<Attachment> getAttachments() {
 		return attachments;
 	}
 
-	public void setAttachments(Set<Attachment> attachments) {
+	public void setAttachments(Collection<Attachment> attachments) {
 		this.attachments = attachments;
 	}
 
-	@Column(length = 1024)
 	public String getQuestion() {
 		return question;
 	}
@@ -66,7 +69,6 @@ public class Faq implements Serializable, Comparable<Faq> {
 		this.question = name;
 	}
 
-	@Column(length = 64)
 	public String getCreator() {
 		return creator;
 	}
@@ -76,7 +78,6 @@ public class Faq implements Serializable, Comparable<Faq> {
 		this.creator = creator;
 	}
 
-	@Column(length = 64)
 	public String getModifier() {
 		return modifier;
 	}
@@ -104,7 +105,6 @@ public class Faq implements Serializable, Comparable<Faq> {
 		this.modifiedTimestamp = modifiedTimestamp;
 	}
 
-	@Column(length = 1024)
 	public String getAnswer() {
 		return answer;
 	}
@@ -114,7 +114,6 @@ public class Faq implements Serializable, Comparable<Faq> {
 		this.answer = text;
 	}
 
-	@Column(nullable = false)
 	public Boolean getPublished() {
 		return published;
 	}

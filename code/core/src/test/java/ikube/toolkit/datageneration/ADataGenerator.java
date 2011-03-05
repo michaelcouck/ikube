@@ -1,10 +1,15 @@
 package ikube.toolkit.datageneration;
 
+import ikube.logging.Logging;
 import ikube.toolkit.FileUtilities;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.sql.Blob;
+import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -22,27 +27,26 @@ import org.junit.Before;
  */
 public abstract class ADataGenerator implements IDataGenerator {
 
+	static {
+		Logging.configure();
+	}
+
 	private static final long MAX_FILE_LENGTH = 100000;
 
 	protected Logger logger = Logger.getLogger(this.getClass());
-
 	private String wordsFilePath = "words.txt";
-
 	protected List<String> words;
 	protected Map<String, byte[]> fileContents;
 
 	@Before
 	public void before() throws Exception {
 		File dotFolder = new File(".");
-
 		words = new ArrayList<String>();
 		fileContents = new HashMap<String, byte[]>();
-
 		File wordsFile = FileUtilities.findFile(dotFolder, wordsFilePath);
 		populateWords(wordsFile);
-
-		List<File> files = FileUtilities.findFilesRecursively(new File("."), new String[] { ".doc", ".html", ".pdf", ".pot", ".ppt",
-				".rtf", ".txt", ".xml" }, new ArrayList<File>());
+		String[] fileTypes = new String[] { ".doc", ".html", ".pdf", ".pot", ".ppt", ".rtf", ".txt", ".xml" };
+		List<File> files = FileUtilities.findFilesRecursively(new File("."), fileTypes, new ArrayList<File>());
 		populateFiles(files.toArray(new File[files.size()]), "spring", "svn");
 	}
 
@@ -88,6 +92,25 @@ public abstract class ADataGenerator implements IDataGenerator {
 			return builder.substring(0, maxLength);
 		}
 		return builder.toString();
+	}
+
+	protected Object instanciateObject(Class<?> klass, int length) {
+		if (Boolean.class.equals(klass) || boolean.class.equals(klass)) {
+			return Boolean.TRUE;
+		} else if (Integer.class.equals(klass) || int.class.equals(klass)) {
+			return new Integer((int) System.nanoTime());
+		} else if (Long.class.equals(klass) || long.class.equals(klass)) {
+			return new Long(System.nanoTime());
+		} else if (Timestamp.class.equals(klass)) {
+			return new Timestamp(System.currentTimeMillis());
+		} else if (Date.class.equals(klass)) {
+			return new Date(System.currentTimeMillis());
+		} else if (String.class.equals(klass)) {
+			return generateText(length * 5, length);
+		} else if (Blob.class.equals(klass)) {
+			return new ByteArrayInputStream(generateText(length * 5, length).getBytes());
+		}
+		return null;
 	}
 
 	@After

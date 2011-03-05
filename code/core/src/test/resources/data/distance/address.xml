@@ -1,0 +1,76 @@
+<!-- http://maps.googleapis.com/maps/api/geocode/xml?address=9a%20avenue%20road,%20cape%20town,%20south%20africa&sensor=true -->
+<GeocodeResponse>
+	<status>OK</status>
+	<result>
+		<type>street_address</type>
+		<formatted_address>9A Avenue Rd, Southern Suburbs 7700, South Africa</formatted_address>
+		<address_component>
+			<long_name>9A</long_name>
+			<short_name>9A</short_name>
+			<type>street_number</type>
+		</address_component>
+		<address_component>
+			<long_name>Avenue Rd</long_name>
+			<short_name>Avenue Rd</short_name>
+			<type>route</type>
+		</address_component>
+		<address_component>
+			<long_name>Rondebosch</long_name>
+			<short_name>Rondebosch</short_name>
+			<type>sublocality</type>
+			<type>political</type>
+		</address_component>
+		<address_component>
+			<long_name>Southern Suburbs</long_name>
+			<short_name>Southern Suburbs</short_name>
+			<type>locality</type>
+			<type>political</type>
+		</address_component>
+		<address_component>
+			<long_name>Cape Town</long_name>
+			<short_name>Cape Town</short_name>
+			<type>administrative_area_level_3</type>
+			<type>political</type>
+		</address_component>
+		<address_component>
+			<long_name>Cape Town</long_name>
+			<short_name>Cape Town</short_name>
+			<type>administrative_area_level_2</type>
+			<type>political</type>
+		</address_component>
+		<address_component>
+			<long_name>Western Cape</long_name>
+			<short_name>WC</short_name>
+			<type>administrative_area_level_1</type>
+			<type>political</type>
+		</address_component>
+		<address_component>
+			<long_name>South Africa</long_name>
+			<short_name>ZA</short_name>
+			<type>country</type>
+			<type>political</type>
+		</address_component>
+		<address_component>
+			<long_name>7700</long_name>
+			<short_name>7700</short_name>
+			<type>postal_code</type>
+		</address_component>
+		<geometry>
+			<location>
+				<lat>-33.9693580</lat>
+				<lng>18.4622110</lng>
+			</location>
+			<location_type>ROOFTOP</location_type>
+			<viewport>
+				<southwest>
+					<lat>-33.9725056</lat>
+					<lng>18.4590634</lng>
+				</southwest>
+				<northeast>
+					<lat>-33.9662104</lat>
+					<lng>18.4653586</lng>
+				</northeast>
+			</viewport>
+		</geometry>
+	</result>
+</GeocodeResponse>

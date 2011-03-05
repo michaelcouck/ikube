@@ -91,4 +91,6 @@ public interface IConstants {
 	public String NO_END_TAG = "Not end tag in HTML";
 	public String EXCEPTION_VALIDATING_HTML = "General exception validating the HTML";
 	
+	public String PERSISTENCE_UNIT_NAME = "IkubePersistenceUnit";
+	
 }

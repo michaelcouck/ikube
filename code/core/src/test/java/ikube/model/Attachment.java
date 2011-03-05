@@ -23,14 +23,20 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 @Entity
 public class Attachment implements Serializable, Comparable<Attachment> {
 
-	private Long attachmentId;
-	private Faq faq;
-	private String name;
-	private Integer length;
-	private byte[] attachment;
-
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Long attachmentId;
+	@JoinColumn(name = "faqId")
+	@ManyToOne(fetch = FetchType.LAZY)
+	private Faq faq;
+	@Column(length = 256)
+	private String name;
+	private Integer length;
+	@Lob
+	@Column(length = 100000)
+	@Basic(fetch = FetchType.EAGER)
+	private byte[] attachment;
+
 	public Long getAttachmentId() {
 		return attachmentId;
 	}
@@ -39,7 +45,6 @@ public class Attachment implements Serializable, Comparable<Attachment> {
 		this.attachmentId = id;
 	}
 
-	@Column(length = 256)
 	public String getName() {
 		return name;
 	}
@@ -49,9 +54,6 @@ public class Attachment implements Serializable, Comparable<Attachment> {
 		this.name = name;
 	}
 
-	@Lob
-	@Column(length = 100000)
-	@Basic(fetch = FetchType.EAGER)
 	public byte[] getAttachment() {
 		return attachment;
 	}
@@ -61,8 +63,6 @@ public class Attachment implements Serializable, Comparable<Attachment> {
 		this.attachment = attachment;
 	}
 
-	@JoinColumn(name = "faqId")
-	@ManyToOne(fetch = FetchType.LAZY)
 	public Faq getFaq() {
 		return faq;
 	}

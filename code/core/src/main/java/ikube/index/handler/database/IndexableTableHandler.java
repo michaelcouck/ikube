@@ -300,16 +300,16 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 					} else {
 						first = Boolean.FALSE;
 					}
-					builder.append(indexableTable.getSchema());
-					builder.append('.');
+//					builder.append(indexableTable.getSchema());
+//					builder.append('.');
 					builder.append(indexableTable.getName());
 					builder.append('.');
 					builder.append(indexableColumn.getName());
 				}
 			}
 			builder.append(" from ");
-			builder.append(indexableTable.getSchema());
-			builder.append('.');
+//			builder.append(indexableTable.getSchema());
+//			builder.append('.');
 			builder.append(indexableTable.getName());
 
 			// Add the predicate if it exists
@@ -330,8 +330,8 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 				}
 				String idColumnName = getIdColumn(indexableTable.getChildren()).getName();
 
-				builder.append(indexableTable.getSchema());
-				builder.append('.');
+//				builder.append(indexableTable.getSchema());
+//				builder.append('.');
 				builder.append(indexableTable.getName());
 				builder.append('.');
 				builder.append(idColumnName);
@@ -340,8 +340,8 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 				builder.append(nextIdNumber);
 				builder.append(" and ");
 
-				builder.append(indexableTable.getSchema());
-				builder.append('.');
+//				builder.append(indexableTable.getSchema());
+//				builder.append('.');
 				builder.append(indexableTable.getName());
 				builder.append('.');
 				builder.append(idColumnName);
@@ -363,8 +363,8 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 						} else {
 							builder.append(" and ");
 						}
-						builder.append(indexableTable.getSchema());
-						builder.append('.');
+//						builder.append(indexableTable.getSchema());
+//						builder.append('.');
 						builder.append(indexableTable.getName());
 						builder.append('.');
 						builder.append(indexableColumn.getName());
@@ -441,16 +441,16 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 			builder.append(function);
 			builder.append('(');
 
-			builder.append(indexableTable.getSchema());
-			builder.append('.');
+//			builder.append(indexableTable.getSchema());
+//			builder.append('.');
 			builder.append(indexableTable.getName());
 			builder.append('.');
 			builder.append(idColumn.getName());
 
 			builder.append(") from ");
 
-			builder.append(indexableTable.getSchema());
-			builder.append('.');
+//			builder.append(indexableTable.getSchema());
+//			builder.append('.');
 			builder.append(indexableTable.getName());
 
 			statement = connection.createStatement();
@@ -579,8 +579,8 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 		IndexableColumn idColumn = getIdColumn(children);
 		StringBuilder builder = new StringBuilder();
 
-		builder.append(indexableTable.getSchema());
-		builder.append('.');
+//		builder.append(indexableTable.getSchema());
+//		builder.append('.');
 		builder.append(indexableTable.getName());
 		builder.append('.');
 		builder.append(idColumn.getName());

@@ -72,9 +72,9 @@ public class IndexableTableHandlerTest extends BaseTest {
 
 	@Test
 	public void buildSql() throws Exception {
-		String expectedSql = "select db2admin.faq.faqId, db2admin.faq.creationtimestamp, db2admin.faq.modifiedtimestamp, "
-				+ "db2admin.faq.creator, db2admin.faq.modifier, db2admin.faq.question, db2admin.faq.answer, db2admin.faq.published "
-				+ "from db2admin.faq where faq.faqid > 0 and db2admin.faq.faqId >= 0 and db2admin.faq.faqId < 10";
+		String expectedSql = "select faq.faqId, faq.creationtimestamp, faq.modifiedtimestamp, "
+				+ "faq.creator, faq.modifier, faq.question, faq.answer, faq.published "
+				+ "from faq where faq.faqid > 0 and faq.faqId >= 0 and faq.faqId < 10";
 		// IndexContext, IndexableTable, long
 		long nextIdNumber = 0;
 		String sql = indexableTableHandler.buildSql(faqIndexableTable, indexContext.getBatchSize(), nextIdNumber);
@@ -105,7 +105,7 @@ public class IndexableTableHandlerTest extends BaseTest {
 	public void setParameters() throws Exception {
 		// IndexableTable, PreparedStatement
 		faqIdIndexableColumn.setObject(1);
-		String sql = "select * from db2admin.attachment where faqId = ?";
+		String sql = "select * from attachment where faqId = ?";
 		PreparedStatement preparedStatement = connection.prepareStatement(sql);
 		indexableTableHandler.setParameters(attachmentIndexableTable, preparedStatement);
 		// Execute this statement just for shits and giggles
@@ -145,14 +145,14 @@ public class IndexableTableHandlerTest extends BaseTest {
 		// List<Indexable<?>>, IndexableTable, Document, ResultSet
 		Document document = new Document();
 		Statement statement = connection.createStatement();
-		ResultSet resultSet = statement.executeQuery("select * from db2admin.faq");
+		ResultSet resultSet = statement.executeQuery("select * from faq");
 		resultSet.next();
 		indexableTableHandler.setColumnTypesAndData(faqIndexableColumns, resultSet);
 		indexableTableHandler.setIdField(faqIndexableTable, document);
 		logger.debug("Document : " + document);
 		String idFieldValue = document.get(IConstants.ID);
 		logger.debug("Id field : " + idFieldValue);
-		assertEquals("db2admin.faq.faqId.1", idFieldValue);
+		assertEquals("faq.faqId.1", idFieldValue);
 
 		DatabaseUtilities.close(resultSet);
 		DatabaseUtilities.close(statement);
@@ -163,7 +163,7 @@ public class IndexableTableHandlerTest extends BaseTest {
 		// List<Indexable<?>>, ResultSet
 		faqIdIndexableColumn.setColumnType(0);
 		Statement statement = connection.createStatement();
-		ResultSet resultSet = statement.executeQuery("select * from db2admin.faq");
+		ResultSet resultSet = statement.executeQuery("select * from faq");
 		resultSet.next();
 		indexableTableHandler.setColumnTypesAndData(faqIndexableColumns, resultSet);
 		logger.debug("Faq id column type : " + faqIdIndexableColumn.getColumnType());
