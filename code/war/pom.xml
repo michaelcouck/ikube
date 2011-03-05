@@ -15,6 +15,7 @@
 	</parent>
 
 	<build>
+		<finalName>${groupId}</finalName>
 		<resources>
 			<resource>
 				<directory>src/main/java</directory>
@@ -29,7 +30,7 @@
 				<artifactId>tomcat-maven-plugin</artifactId>
 				<configuration>
 					<port>80</port>
-					<path>/ikube-war-1.0</path>
+					<path>/ikube</path>
 				</configuration>
 				<version>1.1</version>
 				<dependencies>

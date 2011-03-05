@@ -15,14 +15,14 @@
 	</context-param>
 
 	<servlet>
-		<servlet-name>StartupServlet</servlet-name>
-		<servlet-class>ikube.web.servlet.StartupServlet</servlet-class>
+		<servlet-name>SearchServlet</servlet-name>
+		<servlet-class>ikube.web.servlet.SearchServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 
 	<servlet-mapping>
-		<servlet-name>StartupServlet</servlet-name>
-		<url-pattern>/StartupServlet</url-pattern>
+		<servlet-name>SearchServlet</servlet-name>
+		<url-pattern>/SearchServlet</url-pattern>
 	</servlet-mapping>
 
 	<welcome-file-list>

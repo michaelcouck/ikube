@@ -87,7 +87,7 @@ public class IndexEngine implements IIndexEngine {
 				} catch (Exception e) {
 					logger.error("Exception executing action : " + action, e);
 				}
-				logger.debug(Logging.getString("Action succeeded : ", success, action, thread));
+				logger.info(Logging.getString("Action succeeded : ", success, action, thread));
 			}
 			logger.info(Logging.getString("Finish working : ", this, server));
 		}

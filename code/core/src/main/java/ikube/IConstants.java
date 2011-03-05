@@ -90,7 +90,14 @@ public interface IConstants {
 	public String EXCEPTION_CLICKING_LINK = "Exception clicking on the link";
 	public String NO_END_TAG = "Not end tag in HTML";
 	public String EXCEPTION_VALIDATING_HTML = "General exception validating the HTML";
-	
+
 	public String PERSISTENCE_UNIT_NAME = "IkubePersistenceUnit";
-	
+
+	public String INDEX_NAME = "indexName";
+	public String MAX_RESULTS = "maxResults";
+	public String SEARCH_FIELDS = "searchFields";
+	public String SEARCH_STRINGS = "searchStrings";
+	public String SORT_FIELDS = "sortFields";
+	public String FIRST_RESULT = "firstResult";
+
 }

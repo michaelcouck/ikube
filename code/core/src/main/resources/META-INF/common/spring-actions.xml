@@ -37,7 +37,7 @@
 	<bean 
 		id="ikube.action.Reset" 
 		class="ikube.action.Reset" 
-		property:predicate="AnyServersWorking">
+		property:predicate="!AnyServersWorking">
 		<property name="rules">
 			<util:list>
 				<ref local="ikube.action.rule.AnyServersWorking" />

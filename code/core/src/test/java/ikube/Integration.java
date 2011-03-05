@@ -5,8 +5,7 @@ import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
-import java.sql.Connection;
-import java.sql.DriverManager;
+import java.net.URL;
 import java.util.Map;
 
 import org.junit.Before;
@@ -20,9 +19,6 @@ import org.junit.Before;
  */
 public class Integration {
 
-	private static String INTEGRATION_SPRING_CONFIG = IConstants.META_INF + IConstants.SEP + "integration" + IConstants.SEP
-			+ IConstants.SPRING_XML;
-
 	@Before
 	public void before() {
 		// Delete all the old index directories
@@ -34,14 +30,21 @@ public class Integration {
 	}
 
 	public static void main(String[] args) throws Exception {
-		// Class.forName(DB2Driver.class.getName());
-		Connection connection = DriverManager.getConnection("jdbc:db2://localhost:50000/ikube", "db2admin", "db2admin");
-		System.out.println("Connection : " + connection);
-
-		ApplicationContextManager.getApplicationContext(INTEGRATION_SPRING_CONFIG);
-		Integration integration = new Integration();
-		integration.before();
-		Thread.sleep(1000 * 60 * 60 * 10);
+		URL url = new URL(//
+				"http://ikube.ikube.cloudbees.net/SearchServlet?" + //
+						"indexName=indexOne&" + //
+						"searchStrings=Michael&" + //
+						"searchFields=content&" + //
+						"sortFields=content&" + //
+						"fragment=true&" + //
+						"firstResult=0&" + //
+						"maxResults=100");
+		String content = FileUtilities.getContents(url.openStream(), Integer.MAX_VALUE).toString();
+		System.out.println(content);
+		// ApplicationContextManager.getApplicationContext();
+		// Integration integration = new Integration();
+		// integration.before();
+		// Thread.sleep(1000 * 60 * 60 * 10);
 	}
 
 }

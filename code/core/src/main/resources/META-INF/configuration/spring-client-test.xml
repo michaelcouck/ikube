@@ -179,7 +179,10 @@
 		property:url="${url}"
 		property:idFieldName="id"
 		property:titleFieldName="title"
-		property:contentFieldName="content" />
+		property:contentFieldName="content"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
 	
 	<bean
 		id="filesystem"

@@ -115,11 +115,11 @@ public class RuleDecisionInterceptorTest extends ATest {
 	@Test
 	public void jep() throws Exception {
 		JEP jep = new JEP();
-		jep.addVariableAsObject("a", Boolean.FALSE);
-		jep.addVariableAsObject("b", Boolean.FALSE);
-		jep.addVariableAsObject("c", Boolean.TRUE);
-		jep.addVariableAsObject("d", Boolean.TRUE);
-		jep.addVariableAsObject("e", Boolean.TRUE);
+		jep.addVariable("a", Boolean.FALSE);
+		jep.addVariable("b", Boolean.FALSE);
+		jep.addVariable("c", Boolean.TRUE);
+		jep.addVariable("d", Boolean.TRUE);
+		jep.addVariable("e", Boolean.TRUE);
 		jep.parseExpression("((a || b) || !c) && (d && e)");
 		Object result = jep.getValueAsObject();
 		logger.info("Jep result : " + result);

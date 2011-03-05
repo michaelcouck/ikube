@@ -44,12 +44,11 @@ public class IndexableInternetHandlerTest extends BaseTest {
 
 		int totalUrlsCrawled = PageHandler.OUT_SET.size();
 		logger.info("Urls crawled : " + totalUrlsCrawled);
-		assertTrue(totalUrlsCrawled > 40);
-
 		// Print everything in the database
 		for (Url url : PageHandler.OUT_SET) {
 			logger.info("Url : " + url);
 		}
+		assertTrue(totalUrlsCrawled > 10);
 	}
 
 }

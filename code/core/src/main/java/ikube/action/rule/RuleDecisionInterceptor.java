@@ -18,7 +18,6 @@ import org.nfunk.jep.JEP;
 public class RuleDecisionInterceptor implements IRuleDecisionInterceptor {
 
 	private Logger logger = Logger.getLogger(this.getClass());
-	private JEP jep = new JEP();
 
 	@Override
 	public Object decide(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
@@ -38,6 +37,7 @@ public class RuleDecisionInterceptor implements IRuleDecisionInterceptor {
 
 		logger.debug("Intercepting : " + target);
 		int index = 0;
+		JEP jep = new JEP();
 		for (IRule<IndexContext> rule : classRules) {
 			Object[] args = proceedingJoinPoint.getArgs();
 			for (Object arg : args) {
@@ -45,22 +45,29 @@ public class RuleDecisionInterceptor implements IRuleDecisionInterceptor {
 					boolean result = rule.evaluate((IndexContext) arg);
 					String parameter = rule.getClass().getSimpleName();
 					if (logger.isDebugEnabled()) {
-						logger.info(Logging.getString("Parameter : ", parameter, result));
+						logger.debug(Logging.getString("Parameter : ", parameter, result));
 					}
-					jep.addVariableAsObject(parameter, result);
+					jep.addVariable(parameter, result);
 					index++;
 				}
 			}
 		}
 		String predicate = ((IAction<?, ?>) target).getPredicate();
 		jep.parseExpression(predicate);
+		if (jep.hasError()) {
+			logger.warn("Exception in Jep expression : " + jep.getErrorInfo());
+			logger.warn("Symbol table : " + jep.getSymbolTable());
+		}
 		Object result = jep.getValueAsObject();
-		if (logger.isDebugEnabled()) {
-			logger.debug(Logging.getString("Result : ", result, jep, predicate));
+		logger.debug(Logging.getString("Result : ", result, jep, predicate));
+		if (result == null) {
+			result = jep.getValue();
 		}
 		if (result == null || result.equals(0.0d) || result.equals(Boolean.FALSE)) {
+			logger.debug(Logging.getString("Not proceeding: "));
 			return Boolean.FALSE;
 		}
+		logger.debug(Logging.getString("Proceeding: "));
 		return proceedingJoinPoint.proceed();
 	}
 
