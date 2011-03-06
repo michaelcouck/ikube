@@ -12,8 +12,6 @@ import javax.persistence.Transient;
 public class IndexableColumn extends Indexable<IndexableColumn> {
 
 	@Transient
-	private transient Object object;
-	@Transient
 	private transient int columnType;
 
 	@Field()
@@ -77,15 +75,6 @@ public class IndexableColumn extends Indexable<IndexableColumn> {
 
 	public void setColumnLength(int columnLength) {
 		this.columnLength = columnLength;
-	}
-
-	@Transient
-	public Object getObject() {
-		return object;
-	}
-
-	public void setObject(final Object object) {
-		this.object = object;
 	}
 
 	@Transient

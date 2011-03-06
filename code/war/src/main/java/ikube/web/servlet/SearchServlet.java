@@ -34,29 +34,24 @@ public class SearchServlet extends HttpServlet {
 		ApplicationContextManager.getApplicationContext();
 	}
 
-	public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// String indexName, String searchString, String searchField, boolean fragment, int firstResult, int maxResults
-		res.setContentType(contentType);
-		PrintWriter out = res.getWriter();
+		response.setContentType(contentType);
+		PrintWriter out = response.getWriter();
 		try {
-			String indexName = req.getParameter(IConstants.INDEX_NAME);
-			String searchStrings = req.getParameter(IConstants.SEARCH_STRINGS);
-			String searchFields = req.getParameter(IConstants.SEARCH_FIELDS);
-			String sortFields = req.getParameter(IConstants.SORT_FIELDS);
-			int firstResult = Integer.parseInt(req.getParameter(IConstants.FIRST_RESULT));
-			int maxResults = Integer.parseInt(req.getParameter(IConstants.MAX_RESULTS));
-			boolean fragment = Boolean.parseBoolean(req.getParameter(IConstants.FRAGMENT));
+			String indexName = request.getParameter(IConstants.INDEX_NAME);
+			String searchStrings = getParameter(request, IConstants.SEARCH_STRINGS, "default");
+			String searchFields = getParameter(request, IConstants.SEARCH_FIELDS, "content");
+			String sortFields = getParameter(request, IConstants.SORT_FIELDS, "content");
+			int firstResult = Integer.parseInt(getParameter(request, IConstants.FIRST_RESULT, "0"));
+			int maxResults = Integer.parseInt(getParameter(request, IConstants.MAX_RESULTS, "10"));
+			boolean fragment = Boolean.parseBoolean(getParameter(request, IConstants.FRAGMENT, "true"));
 			Map<String, IndexContext> indexContexts = ApplicationContextManager.getBeans(IndexContext.class);
 			for (IndexContext indexContext : indexContexts.values()) {
 				if (indexContext.getIndexName().equals(indexName)) {
 					if (indexContext.getIndex().getMultiSearcher() != null) {
-						Search search = new SearchSingle(indexContext.getIndex().getMultiSearcher());
-						search.setFirstResult(firstResult);
-						search.setFragment(fragment);
-						search.setMaxResults(maxResults);
-						search.setSearchField(searchFields);
-						search.setSearchString(searchStrings);
-						search.setSortField(sortFields);
+						Search search = getSearch(indexContext, indexName, searchStrings, searchFields, sortFields, firstResult,
+								maxResults, fragment);
 						List<Map<String, String>> results = search.execute();
 						String xml = SerializationUtilities.serialize(results);
 						logger.info("Results : " + xml);
@@ -66,8 +61,24 @@ public class SearchServlet extends HttpServlet {
 				}
 			}
 		} catch (Exception e) {
-			logger.error("Exception doing search : " + req.getParameterMap(), e);
+			logger.error("Exception doing search : " + request.getParameterMap(), e);
 		}
+	}
+
+	private Search getSearch(IndexContext indexContext, String indexName, String searchStrings, String searchFields, String sortFields,
+			int firstResult, int maxResults, boolean fragment) {
+		Search search = new SearchSingle(indexContext.getIndex().getMultiSearcher());
+		search.setFirstResult(firstResult);
+		search.setFragment(fragment);
+		search.setMaxResults(maxResults);
+		search.setSearchField(searchFields);
+		search.setSearchString(searchStrings);
+		search.setSortField(sortFields);
+		return search;
+	}
+
+	private String getParameter(HttpServletRequest request, String name, String defaultValue) {
+		return request.getParameter(name) == null ? defaultValue : request.getParameter(name);
 	}
 
 }

@@ -126,4 +126,9 @@ public class SearchTest extends ATest {
 		}
 	}
 
+	@Test
+	public void searchSpatial() {
+		// TODO Implement me
+	}
+
 }

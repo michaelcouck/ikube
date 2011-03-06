@@ -31,7 +31,7 @@ public class ColumnContentProvider implements IContentProvider<IndexableColumn> 
 
 	@Override
 	public void getContent(IndexableColumn indexable, OutputStream outputStream) {
-		Object object = indexable.getObject();
+		Object object = indexable.getContent();
 		int columnType = indexable.getColumnType();
 		if (object == null) {
 			return;

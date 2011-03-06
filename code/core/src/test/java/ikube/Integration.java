@@ -5,7 +5,6 @@ import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
-import java.net.URL;
 import java.util.Map;
 
 import org.junit.Before;
@@ -30,21 +29,10 @@ public class Integration {
 	}
 
 	public static void main(String[] args) throws Exception {
-		URL url = new URL(//
-				"http://ikube.ikube.cloudbees.net/SearchServlet?" + //
-						"indexName=indexOne&" + //
-						"searchStrings=Michael&" + //
-						"searchFields=content&" + //
-						"sortFields=content&" + //
-						"fragment=true&" + //
-						"firstResult=0&" + //
-						"maxResults=100");
-		String content = FileUtilities.getContents(url.openStream(), Integer.MAX_VALUE).toString();
-		System.out.println(content);
-		// ApplicationContextManager.getApplicationContext();
-		// Integration integration = new Integration();
-		// integration.before();
-		// Thread.sleep(1000 * 60 * 60 * 10);
+		ApplicationContextManager.getApplicationContext();
+		Integration integration = new Integration();
+		integration.before();
+		Thread.sleep(1000 * 60 * 60 * 10);
 	}
 
 }

@@ -5,9 +5,12 @@ import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.model.IndexableEmail;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 
+import org.apache.lucene.document.Document;
+import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexWriter;
 
 /**
@@ -22,7 +25,7 @@ import org.apache.lucene.index.IndexWriter;
  * @version 01.00
  */
 public interface IHandler<T extends Indexable<?>> {
-	
+
 	public Class<? extends Indexable<?>> getIndexableClass();
 
 	public void setIndexableClass(Class<? extends Indexable<?>> indexableClass);
@@ -39,5 +42,7 @@ public interface IHandler<T extends Indexable<?>> {
 	 * @throws Exception
 	 */
 	public List<Thread> handle(IndexContext indexContext, T indexable) throws Exception;
+
+	public void addDocument(IndexContext indexContext, Indexable<T> indexable, Document document) throws CorruptIndexException, IOException;
 
 }

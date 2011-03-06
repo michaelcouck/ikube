@@ -132,7 +132,7 @@ public class DataGeneratorTwo extends ADataGenerator {
 							logger.error("", e);
 						}
 					} else {
-						parameter = indexableColumn.getForeignKey().getObject();
+						parameter = indexableColumn.getForeignKey().getContent();
 					}
 					// logger.info("Parameter : " + parameter);
 					preparedStatement.setObject(parameterIndex, parameter);
@@ -153,7 +153,7 @@ public class DataGeneratorTwo extends ADataGenerator {
 					// logger.info("Id : " + id + ", " + indexableTable.getName());
 					// Set the id in the parent table
 					IndexableColumn idColumn = getIdColumn(indexableTable.getChildren());
-					idColumn.setObject(id);
+					idColumn.setContent(id);
 					// Do the child tables
 					for (Indexable<?> indexable : children) {
 						if (IndexableTable.class.isAssignableFrom(indexable.getClass())) {

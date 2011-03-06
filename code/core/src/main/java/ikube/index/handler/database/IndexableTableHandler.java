@@ -166,7 +166,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 				}
 				// Add the document to the index if this is the primary table
 				if (indexableTable.isPrimary()) {
-					indexContext.getIndex().getIndexWriter().addDocument(document);
+					addDocument(indexContext, indexableTable, document);
 					Thread.sleep(indexContext.getThrottle());
 				}
 				// Move to the next row in the result set
@@ -300,16 +300,12 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 					} else {
 						first = Boolean.FALSE;
 					}
-//					builder.append(indexableTable.getSchema());
-//					builder.append('.');
 					builder.append(indexableTable.getName());
 					builder.append('.');
 					builder.append(indexableColumn.getName());
 				}
 			}
 			builder.append(" from ");
-//			builder.append(indexableTable.getSchema());
-//			builder.append('.');
 			builder.append(indexableTable.getName());
 
 			// Add the predicate if it exists
@@ -330,8 +326,6 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 				}
 				String idColumnName = getIdColumn(indexableTable.getChildren()).getName();
 
-//				builder.append(indexableTable.getSchema());
-//				builder.append('.');
 				builder.append(indexableTable.getName());
 				builder.append('.');
 				builder.append(idColumnName);
@@ -340,8 +334,6 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 				builder.append(nextIdNumber);
 				builder.append(" and ");
 
-//				builder.append(indexableTable.getSchema());
-//				builder.append('.');
 				builder.append(indexableTable.getName());
 				builder.append('.');
 				builder.append(idColumnName);
@@ -363,8 +355,6 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 						} else {
 							builder.append(" and ");
 						}
-//						builder.append(indexableTable.getSchema());
-//						builder.append('.');
 						builder.append(indexableTable.getName());
 						builder.append('.');
 						builder.append(indexableColumn.getName());
@@ -404,7 +394,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 				}
 				IndexableColumn foreignKey = indexableColumn.getForeignKey();
 				try {
-					Object parameter = foreignKey.getObject();
+					Object parameter = foreignKey.getContent();
 					preparedStatement.setObject(index, parameter);
 					index++;
 				} catch (SQLException e) {
@@ -441,16 +431,12 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 			builder.append(function);
 			builder.append('(');
 
-//			builder.append(indexableTable.getSchema());
-//			builder.append('.');
 			builder.append(indexableTable.getName());
 			builder.append('.');
 			builder.append(idColumn.getName());
 
 			builder.append(") from ");
 
-//			builder.append(indexableTable.getSchema());
-//			builder.append('.');
 			builder.append(indexableTable.getName());
 
 			statement = connection.createStatement();
@@ -504,8 +490,8 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 		try {
 			String mimeType = null;
 			if (indexable.getNameColumn() != null) {
-				if (indexable.getNameColumn().getObject() != null) {
-					mimeType = indexable.getNameColumn().getObject().toString();
+				if (indexable.getNameColumn().getContent() != null) {
+					mimeType = indexable.getNameColumn().getContent().toString();
 				}
 			}
 
@@ -579,13 +565,11 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 		IndexableColumn idColumn = getIdColumn(children);
 		StringBuilder builder = new StringBuilder();
 
-//		builder.append(indexableTable.getSchema());
-//		builder.append('.');
 		builder.append(indexableTable.getName());
 		builder.append('.');
 		builder.append(idColumn.getName());
 		builder.append('.');
-		builder.append(idColumn.getObject());
+		builder.append(idColumn.getContent());
 
 		String id = builder.toString();
 		IndexManager.addStringField(IConstants.ID, id, document, Store.YES, Index.ANALYZED, TermVector.YES);
@@ -612,7 +596,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 			int columnType = resultSetMetaData.getColumnType(index);
 			Object object = resultSet.getObject(indexableColumn.getName());
 			indexableColumn.setColumnType(columnType);
-			indexableColumn.setObject(object);
+			indexableColumn.setContent(object);
 			index++;
 		}
 	}

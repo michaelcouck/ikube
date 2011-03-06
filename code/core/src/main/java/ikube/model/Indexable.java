@@ -3,6 +3,7 @@ package ikube.model;
 import java.util.List;
 
 import javax.persistence.Entity;
+import javax.persistence.Transient;
 
 /**
  * @author Michael Couck
@@ -15,10 +16,14 @@ public abstract class Indexable<E> extends Persistable {
 	private String name;
 	private Indexable<?> parent;
 	private List<Indexable<?>> children;
+	private boolean address;
 
 	private boolean stored = Boolean.FALSE;
 	private boolean analyzed = Boolean.TRUE;
 	private boolean vectored = Boolean.FALSE;
+
+	@Transient
+	private transient Object content;
 
 	public void setName(final String name) {
 		this.name = name;
@@ -49,6 +54,14 @@ public abstract class Indexable<E> extends Persistable {
 		}
 	}
 
+	public boolean isAddress() {
+		return address;
+	}
+
+	public void setAddress(boolean address) {
+		this.address = address;
+	}
+
 	public boolean isStored() {
 		return stored;
 	}
@@ -71,6 +84,15 @@ public abstract class Indexable<E> extends Persistable {
 
 	public void setVectored(final boolean vectored) {
 		this.vectored = vectored;
+	}
+
+	@Transient
+	public Object getContent() {
+		return content;
+	}
+
+	public void setContent(Object content) {
+		this.content = content;
 	}
 
 }

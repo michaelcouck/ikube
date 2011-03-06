@@ -35,20 +35,20 @@ public class ColumnContentProviderTest extends ATest {
 	public void getContent() throws Exception {
 		OutputStream outputStream = new ByteArrayOutputStream();
 		when(indexable.getColumnType()).thenReturn(Types.BOOLEAN);
-		when(indexable.getObject()).thenReturn(Boolean.TRUE);
+		when(indexable.getContent()).thenReturn(Boolean.TRUE);
 		contentProvider.getContent(indexable, outputStream);
 		assertEquals(Boolean.TRUE.toString(), outputStream.toString());
 
 		outputStream = new ByteArrayOutputStream();
 		when(indexable.getColumnType()).thenReturn(Types.INTEGER);
-		when(indexable.getObject()).thenReturn(Integer.MAX_VALUE);
+		when(indexable.getContent()).thenReturn(Integer.MAX_VALUE);
 		contentProvider.getContent(indexable, outputStream);
 		assertEquals(Integer.toString(Integer.MAX_VALUE), outputStream.toString());
 
 		outputStream = new ByteArrayOutputStream();
 		long time = System.currentTimeMillis();
 		when(indexable.getColumnType()).thenReturn(Types.TIMESTAMP);
-		when(indexable.getObject()).thenReturn(new Timestamp(time));
+		when(indexable.getContent()).thenReturn(new Timestamp(time));
 		contentProvider.getContent(indexable, outputStream);
 		assertEquals(Long.toString(time), outputStream.toString());
 
@@ -56,7 +56,7 @@ public class ColumnContentProviderTest extends ATest {
 		String string = "12456";
 		byte[] bytes = string.getBytes();
 		when(indexable.getColumnType()).thenReturn(Types.LONGVARBINARY);
-		when(indexable.getObject()).thenReturn(bytes);
+		when(indexable.getContent()).thenReturn(bytes);
 		contentProvider.getContent(indexable, outputStream);
 		assertEquals(new String(bytes), outputStream.toString());
 
@@ -65,7 +65,7 @@ public class ColumnContentProviderTest extends ATest {
 		InputStream inputStream = new ByteArrayInputStream(bytes);
 		when(blob.getBinaryStream()).thenReturn(inputStream);
 		when(indexable.getColumnType()).thenReturn(Types.BLOB);
-		when(indexable.getObject()).thenReturn(blob);
+		when(indexable.getContent()).thenReturn(blob);
 		contentProvider.getContent(indexable, outputStream);
 		assertEquals(string, outputStream.toString());
 
@@ -75,7 +75,7 @@ public class ColumnContentProviderTest extends ATest {
 		inputStream = new ByteArrayInputStream(bytes);
 		when(blob.getBinaryStream()).thenReturn(inputStream);
 		when(indexable.getColumnType()).thenReturn(Types.BLOB);
-		when(indexable.getObject()).thenReturn(blob);
+		when(indexable.getContent()).thenReturn(blob);
 		contentProvider.getContent(indexable, outputStream);
 
 		assertTrue(outputStream.toString().contains(string));
@@ -85,7 +85,7 @@ public class ColumnContentProviderTest extends ATest {
 		Reader characterStream = new StringReader(new String(bytes));
 		when(clob.getCharacterStream()).thenReturn(characterStream);
 		when(indexable.getColumnType()).thenReturn(Types.CLOB);
-		when(indexable.getObject()).thenReturn(clob);
+		when(indexable.getContent()).thenReturn(clob);
 
 		contentProvider.getContent(indexable, outputStream);
 

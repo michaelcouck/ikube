@@ -139,7 +139,7 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 			IndexManager.addStringField(indexableFileSystem.getContentFieldName(), parsedOutputStream.toString(), document, store,
 					analyzed, termVector);
 			// And to the index
-			indexContext.getIndex().getIndexWriter().addDocument(document);
+			addDocument(indexContext, indexableFileSystem, document);
 		} catch (Exception e) {
 			logger.error("Exception occured while trying to index the file " + file.getAbsolutePath(), e);
 		}

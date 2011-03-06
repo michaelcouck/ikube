@@ -104,7 +104,7 @@ public class IndexableTableHandlerTest extends BaseTest {
 	@Test
 	public void setParameters() throws Exception {
 		// IndexableTable, PreparedStatement
-		faqIdIndexableColumn.setObject(1);
+		faqIdIndexableColumn.setContent(1);
 		String sql = "select * from attachment where faqId = ?";
 		PreparedStatement preparedStatement = connection.prepareStatement(sql);
 		indexableTableHandler.setParameters(attachmentIndexableTable, preparedStatement);
@@ -119,7 +119,7 @@ public class IndexableTableHandlerTest extends BaseTest {
 	@Test
 	public void getResultSet() throws Exception {
 		// IndexContext, IndexableTable, Connection
-		faqIdIndexableColumn.setObject(1);
+		faqIdIndexableColumn.setContent(1);
 		ResultSet resultSet = indexableTableHandler.getResultSet(indexContext, faqIndexableTable, connection);
 		assertNotNull(resultSet);
 
@@ -132,7 +132,7 @@ public class IndexableTableHandlerTest extends BaseTest {
 	public void handleColumn() throws Exception {
 		// IndexableColumn, Document
 		IndexableColumn faqIdIndexableColumn = indexableTableHandler.getIdColumn(faqIndexableColumns);
-		faqIdIndexableColumn.setObject("Hello World!");
+		faqIdIndexableColumn.setContent("Hello World!");
 		faqIdIndexableColumn.setColumnType(Types.VARCHAR);
 		Document document = new Document();
 		indexableTableHandler.handleColumn(faqIdIndexableColumn, document);
