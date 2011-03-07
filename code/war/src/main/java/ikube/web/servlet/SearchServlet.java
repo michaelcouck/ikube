@@ -54,7 +54,6 @@ public class SearchServlet extends HttpServlet {
 								maxResults, fragment);
 						List<Map<String, String>> results = search.execute();
 						String xml = SerializationUtilities.serialize(results);
-						logger.info("Results : " + xml);
 						out.print(xml);
 						break;
 					}
@@ -62,6 +61,11 @@ public class SearchServlet extends HttpServlet {
 			}
 		} catch (Exception e) {
 			logger.error("Exception doing search : " + request.getParameterMap(), e);
+			try {
+				out.print("Exception searching with parameters : " + request.getParameterMap());
+			} catch (Exception ex) {
+				logger.error("Exception writing the exceptino message to the client : " + request.getParameterMap(), ex);
+			}
 		}
 	}
 

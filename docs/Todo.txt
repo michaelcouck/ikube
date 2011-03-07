@@ -14,6 +14,8 @@
 * Add facets to the search possibilities - 5
 * Add slave to run on the client machine and transfer data to the master running 
    on our servers as a hosting service.
+* Add a shutdown that closes everything when the application is being un-deployed 
+   so the new application starts the application context cleanly - 3
    
 In progress:
 * Implement distance sorting, i.e. given the co-ordinates of the originator and the co-ordinates

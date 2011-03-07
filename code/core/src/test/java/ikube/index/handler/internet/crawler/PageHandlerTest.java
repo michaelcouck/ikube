@@ -21,11 +21,12 @@ import org.junit.Test;
  */
 public class PageHandlerTest extends BaseTest {
 
-	private IndexableInternet indexableInternet = ApplicationContextManager.getBean(IndexableInternet.class);
+	private IndexableInternet indexableInternet;
 
 	@Before
 	public void before() {
 		indexContext.getIndex().setIndexWriter(INDEX_WRITER);
+		indexableInternet = ApplicationContextManager.getBean("internet");
 	}
 
 	@After

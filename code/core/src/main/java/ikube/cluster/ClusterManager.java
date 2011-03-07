@@ -272,7 +272,7 @@ public class ClusterManager implements IClusterManager {
 			List<Server> servers = cache.get(Server.class.getName(), null, null, Integer.MAX_VALUE);
 			// Find the first start time for the action we want to start in any of the servers
 			for (Server server : servers) {
-				logger.info("Server : " + server);
+				logger.debug("Server : " + server);
 				for (Action action : server.getActions()) {
 					if (indexName.equals(action.getIndexName()) && indexableName.equals(action.getIndexableName()) && server.isWorking()) {
 						firstStartTime = Math.min(firstStartTime, action.getStartTime());
@@ -295,7 +295,7 @@ public class ClusterManager implements IClusterManager {
 				double prunedSize = MAX_ACTION_SIZE * ACTION_PRUNE_RATIO;
 				while (iterator.hasNext()) {
 					Action action = iterator.next();
-					logger.info("Removing action : " + action);
+					logger.debug("Removing action : " + action);
 					iterator.remove();
 					if (actions.size() <= prunedSize) {
 						break;
@@ -304,7 +304,7 @@ public class ClusterManager implements IClusterManager {
 			}
 
 			// Publish the fact that this server is starting to work on an action
-			logger.info("Publishing server : " + server.getAddress());
+			logger.debug("Publishing server : " + server.getAddress());
 			cache.set(Server.class.getName(), server.getId(), server);
 			return firstStartTime;
 		} finally {
