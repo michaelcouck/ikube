@@ -1,26 +1,31 @@
-package ikube.index.spatial;
+package ikube.index.spatial.geocode;
 
 import static org.junit.Assert.assertNotNull;
 import ikube.ATest;
-import ikube.IConstants;
 import ikube.toolkit.FileUtilities;
 
 import java.net.URL;
 
 import org.junit.Test;
 
-public class GeoCoderTest extends ATest {
+/**
+ * @author Michael Couck
+ * @since 06.03.11
+ * @version 01.00
+ */
+public class GoogleGeocoderTest extends ATest {
 
 	@Test
-	public void geoCode() throws Exception {
+	public void getCoordinate() throws Exception {
+		// TODO Implement me
 		StringBuilder builder = new StringBuilder();
-		builder.append(IConstants.GEO_CODE_API);
+		builder.append("http://maps.googleapis.com/maps/api/geocode/xml");
 		builder.append("?");
-		builder.append(IConstants.ADDRESS);
+		builder.append(GoogleGeocoder.ADDRESS);
 		builder.append("=");
 		builder.append("9a%20avenue%20road,%20cape%20town,%20south%20africa");
 		builder.append("&");
-		builder.append(IConstants.sensor);
+		builder.append(GoogleGeocoder.SENSOR);
 		builder.append("=");
 		builder.append("true");
 		URL url = new URL(builder.toString());

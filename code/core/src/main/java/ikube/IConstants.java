@@ -100,16 +100,11 @@ public interface IConstants {
 	public String SORT_FIELDS = "sortFields";
 	public String FIRST_RESULT = "firstResult";
 
-	/** Geocode API and parameters. */
-	public String GEO_CODE_API = "http://maps.googleapis.com/maps/api/geocode/xml";
-	public String ADDRESS = "address";
-	public String sensor = "sensor";
-
 	/** The tags in the response from the Geo Location API. */
 	public String LAT = "lat";
 	public String LNG = "lng";
 	public String LOCATION = "location";
-	
+
 	public String DISTANCE = "distance";
 
 }

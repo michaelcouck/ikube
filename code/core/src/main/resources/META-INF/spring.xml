@@ -16,6 +16,7 @@
 	<import resource="classpath:/META-INF/common/spring-jdbc.xml" />
 	<import resource="classpath:/META-INF/common/spring-beans.xml" />
 	<import resource="classpath:/META-INF/common/spring-actions.xml" />
+	<import resource="classpath:/META-INF/common/spring-aop.xml" />
 	<import resource="classpath:/META-INF/configuration/spring-client-test.xml" />
 
 </beans>

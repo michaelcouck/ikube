@@ -135,15 +135,6 @@
 		property:delay="${web.service.delay}"
 		property:period="${web.service.period}" />
 	
-	<bean 
-		id="ikube.logging.Monitor" 
-		class="ikube.logging.Monitor" />
-	<aop:config proxy-target-class="true">
-		<aop:aspect ref="ikube.logging.Monitor">
-			<aop:around method="monitor" pointcut="execution(* ikube.index.handler.internet.crawler.PageHandler.*(..))" />
-		</aop:aspect>
-	</aop:config>
-	
 	<!-- Utility classes -->
 	<bean
 		class="ikube.toolkit.Mailer"

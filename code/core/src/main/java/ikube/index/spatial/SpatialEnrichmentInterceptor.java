@@ -1,25 +1,18 @@
 package ikube.index.spatial;
 
 import ikube.IConstants;
+import ikube.index.spatial.geocode.IGeocoder;
 import ikube.model.Indexable;
-import ikube.toolkit.FileUtilities;
-import ikube.toolkit.XmlUtilities;
-
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.net.URL;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.spatial.tier.projections.CartesianTierPlotter;
 import org.apache.lucene.spatial.tier.projections.IProjector;
 import org.apache.lucene.spatial.tier.projections.SinusoidalProjector;
 import org.apache.lucene.util.NumericUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.dom4j.Element;
 
 /**
  * @author Michael Couck
@@ -33,6 +26,7 @@ public class SpatialEnrichmentInterceptor implements ISpatialEnrichmentIntercept
 	private int startTier;
 	private int endTier;
 	private IProjector projector = new SinusoidalProjector();
+	private IGeocoder geocoder;
 
 	@Override
 	public Object enrich(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
@@ -63,29 +57,20 @@ public class SpatialEnrichmentInterceptor implements ISpatialEnrichmentIntercept
 				}
 			}
 		}
+		if (!indexable.isAddress()) {
+			return;
+		}
 		try {
-			String address = buildAddress(indexable, new StringBuilder()).toString();
-			// Call the Google geocoder with the address
-			String uri = getUri(address);
-			URL url = new URL(uri);
-			String xml = FileUtilities.getContents(url.openStream(), Integer.MAX_VALUE).toString();
-			InputStream inputStream = new ByteArrayInputStream(xml.getBytes());
-			Element rootElement = XmlUtilities.getDocument(inputStream, IConstants.ENCODING).getRootElement();
-			Element element = XmlUtilities.getElement(rootElement, IConstants.LOCATION);
-			Element latitudeElement = XmlUtilities.getElement(element, IConstants.LAT);
-			Element longitudeElement = XmlUtilities.getElement(element, IConstants.LNG);
-			double lat = Double.parseDouble(latitudeElement.getText());
-			double lng = Double.parseDouble(longitudeElement.getText());
-			Coordinate coordinate = new Coordinate(lat, lng, address);
-			addLocation(indexWriter, document, address, coordinate);
+			Coordinate coordinate = geocoder.getCoordinate(indexable);
+			addLocation(indexWriter, document, /* address, */coordinate);
 		} catch (Exception e) {
 			logger.error("", e);
 		}
 	}
 
-	protected void addLocation(final IndexWriter writer, final Document document, final String address, final Coordinate coordinate)
+	protected void addLocation(final IndexWriter writer, final Document document, /* final String address, */final Coordinate coordinate)
 			throws Exception {
-		document.add(new Field(IConstants.NAME, address, Field.Store.YES, Index.ANALYZED));
+		// document.add(new Field(IConstants.NAME, address, Field.Store.YES, Index.ANALYZED));
 		addSpatialLocationFields(coordinate, document);
 		writer.addDocument(document);
 	}
@@ -107,32 +92,6 @@ public class SpatialEnrichmentInterceptor implements ISpatialEnrichmentIntercept
 		}
 	}
 
-	protected String getUri(String address) {
-		StringBuilder builder = new StringBuilder();
-		builder.append(IConstants.GEO_CODE_API);
-		builder.append("?");
-		builder.append(IConstants.ADDRESS);
-		builder.append("=");
-		builder.append(address);
-		builder.append("&");
-		builder.append(IConstants.sensor);
-		builder.append("=");
-		builder.append("true");
-		return builder.toString();
-	}
-
-	protected StringBuilder buildAddress(Indexable<?> indexable, StringBuilder builder) {
-		if (indexable.isAddress()) {
-			builder.append(indexable.getContent());
-		}
-		if (indexable.getChildren() != null) {
-			for (Indexable<?> child : indexable.getChildren()) {
-				buildAddress(child, builder);
-			}
-		}
-		return builder;
-	}
-
 	public void setMinKm(double minKm) {
 		CartesianTierPlotter ctp = new CartesianTierPlotter(0, projector, CartesianTierPlotter.DEFALT_FIELD_PREFIX);
 		startTier = ctp.bestFit(minKm);
@@ -141,6 +100,10 @@ public class SpatialEnrichmentInterceptor implements ISpatialEnrichmentIntercept
 	public void setMaxKm(double maxKm) {
 		CartesianTierPlotter ctp = new CartesianTierPlotter(0, projector, CartesianTierPlotter.DEFALT_FIELD_PREFIX);
 		endTier = ctp.bestFit(maxKm);
+	}
+
+	public void setGeocoder(IGeocoder geocoder) {
+		this.geocoder = geocoder;
 	}
 
 }

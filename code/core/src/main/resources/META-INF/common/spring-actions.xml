@@ -16,8 +16,6 @@
             http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
             http://www.springframework.org/schema/util
             http://www.springframework.org/schema/util/spring-util.xsd
-            http://www.springframework.org/schema/tx
-            http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
             http://www.springframework.org/schema/context
             http://www.springframework.org/schema/context/spring-context-3.0.xsd">
             
@@ -125,14 +123,5 @@
 	<bean 
 		id="ikube.action.rule.IsMultiSearcherInitialised"
 		class="ikube.action.rule.IsMultiSearcherInitialised" />
-	
-	<bean 
-		id="ikube.action.rule.RuleDecisionInterceptor" 
-		class="ikube.action.rule.RuleDecisionInterceptor" />
-	<aop:config proxy-target-class="true">
-		<aop:aspect ref="ikube.action.rule.RuleDecisionInterceptor">
-			<aop:around method="decide" pointcut="execution(* ikube.action.*.*(..))"  />
-		</aop:aspect>
-	</aop:config>
 	
 </beans>
