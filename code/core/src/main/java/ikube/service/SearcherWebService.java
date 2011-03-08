@@ -34,10 +34,10 @@ import org.apache.lucene.search.MultiSearcher;
 @WebService(name = ISearcherWebService.NAME, targetNamespace = ISearcherWebService.NAMESPACE, serviceName = ISearcherWebService.SERVICE)
 public class SearcherWebService implements ISearcherWebService {
 
-	private Logger logger = Logger.getLogger(this.getClass());
-	private Map<String, SearchSingle> singleSearchers;
-	private Map<String, SearchMulti> multiSearchers;
-	private Map<String, SearchMultiSorted> multiSortedSearchers;
+	private static final Logger LOGGER = Logger.getLogger(SearcherWebService.class);
+	private transient final Map<String, SearchSingle> singleSearchers;
+	private transient final Map<String, SearchMulti> multiSearchers;
+	private transient final Map<String, SearchMultiSorted> multiSortedSearchers;
 
 	public SearcherWebService() {
 		this.singleSearchers = new HashMap<String, SearchSingle>();
@@ -45,7 +45,7 @@ public class SearcherWebService implements ISearcherWebService {
 		this.multiSortedSearchers = new HashMap<String, SearchMultiSorted>();
 		ListenerManager.addListener(new IListener() {
 			@Override
-			public void handleNotification(Event event) {
+			public void handleNotification(final Event event) {
 				if (event.getType().equals(Event.SEARCHER_OPENED)) {
 					Object object = event.getObject();
 					if (IndexContext.class.isAssignableFrom(object.getClass())) {
@@ -57,7 +57,7 @@ public class SearcherWebService implements ISearcherWebService {
 		});
 	}
 
-	protected void setMultiSearcher(IndexContext indexContext) {
+	protected void setMultiSearcher(final IndexContext indexContext) {
 		MultiSearcher multiSearcher = indexContext.getIndex().getMultiSearcher();
 		SearchSingle searchSingle = new SearchSingle(multiSearcher);
 		SearchMulti searchMulti = new SearchMulti(multiSearcher);
@@ -65,16 +65,17 @@ public class SearcherWebService implements ISearcherWebService {
 		singleSearchers.put(indexContext.getIndexName(), searchSingle);
 		multiSearchers.put(indexContext.getIndexName(), searchMulti);
 		multiSortedSearchers.put(indexContext.getIndexName(), searchMultiSorted);
-		logger.info("Single searchers : " + singleSearchers);
-		logger.info("Multi searchers : " + multiSearchers);
-		logger.info("Multi sorted searchers : " + multiSortedSearchers);
+		LOGGER.info("Single searchers : " + singleSearchers);
+		LOGGER.info("Multi searchers : " + multiSearchers);
+		LOGGER.info("Multi sorted searchers : " + multiSortedSearchers);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public String searchSingle(String indexName, String searchString, String searchField, boolean fragment, int start, int end) {
+	public String searchSingle(final String indexName, final String searchString, final String searchField, final boolean fragment,
+			final int start, final int end) {
 		try {
 			SearchSingle searchSingle = this.singleSearchers.get(indexName);
 			if (searchSingle == null) {
@@ -94,7 +95,7 @@ public class SearcherWebService implements ISearcherWebService {
 		} catch (Exception e) {
 			String message = Logging.getString("Exception doing search on index : ", indexName, searchString, searchField, fragment, start,
 					end);
-			logger.error(message, e);
+			LOGGER.error(message, e);
 		}
 		return "Exception thrown during search.";
 	}
@@ -103,7 +104,8 @@ public class SearcherWebService implements ISearcherWebService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public String searchMulti(String indexName, String[] searchStrings, String[] searchFields, boolean fragment, int start, int end) {
+	public String searchMulti(final String indexName, final String[] searchStrings, final String[] searchFields, final boolean fragment,
+			final int start, final int end) {
 		try {
 			SearchMulti searchMulti = this.multiSearchers.get(indexName);
 			if (searchMulti == null) {
@@ -123,7 +125,7 @@ public class SearcherWebService implements ISearcherWebService {
 		} catch (Exception e) {
 			String message = Logging.getString("Exception doing search on index : ", indexName, Arrays.asList(searchStrings),
 					Arrays.asList(searchFields), fragment, start, end);
-			logger.error(message, e);
+			LOGGER.error(message, e);
 		}
 		return "Exception thrown during search.";
 	}
@@ -132,8 +134,8 @@ public class SearcherWebService implements ISearcherWebService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public String searchMultiSorted(String indexName, String[] searchStrings, String[] searchFields, String[] sortFields, boolean fragment,
-			int start, int end) {
+	public String searchMultiSorted(final String indexName, final String[] searchStrings, final String[] searchFields,
+			final String[] sortFields, final boolean fragment, final int start, final int end) {
 		try {
 			SearchMultiSorted searchMultiSorted = this.multiSortedSearchers.get(indexName);
 			if (searchMultiSorted == null) {
@@ -154,7 +156,7 @@ public class SearcherWebService implements ISearcherWebService {
 		} catch (Exception e) {
 			String message = Logging.getString("Exception doing search on index : ", indexName, Arrays.asList(searchStrings),
 					Arrays.asList(searchFields), Arrays.asList(sortFields), fragment, start, end);
-			logger.error(message, e);
+			LOGGER.error(message, e);
 		}
 		return "Exception thrown during search.";
 	}

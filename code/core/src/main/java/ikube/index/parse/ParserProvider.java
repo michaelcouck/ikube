@@ -19,10 +19,10 @@ import org.apache.log4j.Logger;
  */
 public class ParserProvider {
 
-	private static Logger LOGGER = Logger.getLogger(ParserProvider.class);
+	private static final Logger LOGGER = Logger.getLogger(ParserProvider.class);
 
 	/** The map of content type to parsers. */
-	private static Map<String, IParser> PARSERS = new HashMap<String, IParser>();
+	private static final Map<String, IParser> PARSERS = new HashMap<String, IParser>();
 
 	/**
 	 * This method will try to find the best parser for the content type based on the data and the content type. The content type can be
@@ -37,7 +37,7 @@ public class ParserProvider {
 	 * @return the parser that most closely matches the mime type and the data or the text parser if there is no matching parser, like for
 	 *         exe files for example
 	 */
-	public static IParser getParser(String mimeTypeString, byte[] bytes) {
+	public static IParser getParser(final String mimeTypeString, final byte[] bytes) {
 		MimeType mimeType = null;
 		String parserClass = null;
 		IParser parser = null;
@@ -61,12 +61,11 @@ public class ParserProvider {
 				parser = (IParser) Class.forName(parserClass).newInstance();
 				PARSERS.put(parserClass, parser);
 			}
-			return parser;
 		} catch (Exception t) {
 			LOGGER.error("Exception instanciating parser " + parserClass + " does a parser exist for the mime type " + mimeType
 					+ " and name " + mimeTypeString + "?", t);
 		}
-		return null;
+		return parser;
 	}
 
 }

@@ -47,15 +47,16 @@ import com.hazelcast.core.MessageListener;
 public class Synchronize extends Action implements MessageListener<SynchronizationMessage> {
 
 	/** The port that the server socket was opened on. */
-	private int port;
+	private transient int port;
 	/** The file currently being sent. */
-	private File currentFile;
+	private transient File currentFile;
 	/** The index of the file in the set of index files. */
-	private int index = 0;
+	private transient int index = 0;
 	/** The size of the chunks of data. */
-	private int chunk = 1024 * 1000;
+	private transient final int chunk = 1024 * 1000;
 
 	public Synchronize() {
+		super();
 		// We need to listen to the topic for messages that other servers
 		// have published some index files
 		ITopic<SynchronizationMessage> topic = Hazelcast.getTopic(IConstants.SYNCHRONIZATION_TOPIC);
@@ -86,7 +87,7 @@ public class Synchronize extends Action implements MessageListener<Synchronizati
 	}
 
 	@Override
-	public Boolean execute(IndexContext indexContext) {
+	public Boolean execute(final IndexContext indexContext) {
 		if (getClusterManager().anyWorking()) {
 			logger.info("Servers working : ");
 			return Boolean.FALSE;
@@ -121,7 +122,7 @@ public class Synchronize extends Action implements MessageListener<Synchronizati
 		return Boolean.TRUE;
 	}
 
-	protected void writeFile(Socket socket) {
+	protected void writeFile(final Socket socket) {
 		FileInputStream fileInputStream = null;
 		OutputStream outputStream = null;
 		if (getClusterManager().getServer().isWorking()) {
@@ -204,7 +205,7 @@ public class Synchronize extends Action implements MessageListener<Synchronizati
 	}
 
 	@Override
-	public void onMessage(SynchronizationMessage synchronizationMessage) {
+	public void onMessage(final SynchronizationMessage synchronizationMessage) {
 		// Check that there are no servers working
 		if (getClusterManager().anyWorking() || getClusterManager().getServer().isWorking()) {
 			logger.info("Servers working : " + getClusterManager().getServers());
@@ -340,7 +341,7 @@ public class Synchronize extends Action implements MessageListener<Synchronizati
 		}
 	}
 
-	protected void close(OutputStream outputStream) {
+	protected void close(final OutputStream outputStream) {
 		if (outputStream != null) {
 			try {
 				outputStream.flush();
@@ -351,7 +352,7 @@ public class Synchronize extends Action implements MessageListener<Synchronizati
 		}
 	}
 
-	protected void close(InputStream inputStream) {
+	protected void close(final InputStream inputStream) {
 		if (inputStream != null) {
 			try {
 				inputStream.close();
@@ -361,7 +362,7 @@ public class Synchronize extends Action implements MessageListener<Synchronizati
 		}
 	}
 
-	protected void close(Socket socket) {
+	protected void close(final Socket socket) {
 		if (socket != null) {
 			try {
 				socket.close();
@@ -371,7 +372,7 @@ public class Synchronize extends Action implements MessageListener<Synchronizati
 		}
 	}
 
-	protected void close(ServerSocket socket) {
+	protected void close(final ServerSocket socket) {
 		if (socket != null) {
 			try {
 				socket.close();

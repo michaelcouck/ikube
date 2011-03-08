@@ -16,13 +16,13 @@ public interface IWebServicePublisher {
 	/**
 	 * Publishes the service on a port, and with a particular name/address.
 	 */
-	public void publish();
+	void publish();
 
-	public void setPorts(List<Integer> ports);
+	void setPorts(List<Integer> ports);
 
-	public void setPaths(List<String> paths);
+	void setPaths(List<String> paths);
 
-	public void setProtocols(List<String> protocols);
+	void setProtocols(List<String> protocols);
 
 	/**
 	 * Sets the implementations that would be published.
@@ -30,6 +30,6 @@ public interface IWebServicePublisher {
 	 * @param implementors
 	 *            the implementations that are instantiated already, to be bound to the addresses
 	 */
-	public void setImplementors(List<Object> implementors);
+	void setImplementors(List<Object> implementors);
 
 }

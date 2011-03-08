@@ -28,7 +28,7 @@ public class HtmlParser implements IParser {
 	}
 
 	@Override
-	public final OutputStream parse(InputStream inputStream, OutputStream outputStream) throws Exception {
+	public final OutputStream parse(final InputStream inputStream, final OutputStream outputStream) throws Exception {
 		Reader reader = new InputStreamReader(inputStream, IConstants.ENCODING);
 		Source source = new Source(reader);
 		source.fullSequentialParse();

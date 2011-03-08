@@ -19,10 +19,10 @@ import org.apache.log4j.Logger;
  */
 public class FileContentProvider implements IContentProvider<IndexableFileSystem> {
 
-	private Logger logger = Logger.getLogger(this.getClass());
+	private static final Logger LOGGER = Logger.getLogger(FileContentProvider.class);
 
 	@Override
-	public void getContent(IndexableFileSystem indexable, OutputStream outputStream) {
+	public void getContent(final IndexableFileSystem indexable, final OutputStream outputStream) {
 		try {
 			File file = indexable.getCurrentFile();
 			// TODO - if this is a zip or jar or whatever then we have to
@@ -30,7 +30,7 @@ public class FileContentProvider implements IContentProvider<IndexableFileSystem
 			InputStream inputStream = new FileInputStream(file);
 			FileUtilities.getContents(inputStream, outputStream, Integer.MAX_VALUE);
 		} catch (Exception e) {
-			logger.error("Exception accessing file : " + indexable.getCurrentFile(), e);
+			LOGGER.error("Exception accessing file : " + indexable.getCurrentFile(), e);
 		}
 	}
 

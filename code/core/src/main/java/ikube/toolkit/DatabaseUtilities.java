@@ -22,10 +22,13 @@ import org.apache.log4j.Logger;
  */
 public class DatabaseUtilities {
 
-	private static Logger LOGGER = Logger.getLogger(DatabaseUtilities.class);
-	private static Map<Class<?>, Field> idFields = new HashMap<Class<?>, Field>();
+	private static final Logger LOGGER = Logger.getLogger(DatabaseUtilities.class);
+	private static final Map<Class<?>, Field> idFields = new HashMap<Class<?>, Field>();
+	
+	private DatabaseUtilities() {
+	}
 
-	public static void closeAll(ResultSet resultSet) {
+	public static void closeAll(final ResultSet resultSet) {
 		Statement statement = null;
 		Connection connection = null;
 		try {
@@ -43,7 +46,7 @@ public class DatabaseUtilities {
 		close(connection);
 	}
 
-	public static void close(Statement statement) {
+	public static void close(final Statement statement) {
 		if (statement == null) {
 			return;
 		}
@@ -54,7 +57,7 @@ public class DatabaseUtilities {
 		}
 	}
 
-	public static void close(Connection connection) {
+	public static void close(final Connection connection) {
 		if (connection == null) {
 			return;
 		}
@@ -65,7 +68,7 @@ public class DatabaseUtilities {
 		}
 	}
 
-	public static void close(ResultSet resultSet) {
+	public static void close(final ResultSet resultSet) {
 		if (resultSet == null) {
 			return;
 		}
@@ -77,7 +80,7 @@ public class DatabaseUtilities {
 
 	}
 
-	public static <T> void setIdField(T object, long id) {
+	public static <T> void setIdField(final T object, final long id) {
 		if (object == null) {
 			return;
 		}
@@ -95,7 +98,7 @@ public class DatabaseUtilities {
 		}
 	}
 
-	public static Field getIdField(Class<?> klass, Class<?> superKlass) {
+	public static Field getIdField(final Class<?> klass, final Class<?> superKlass) {
 		Field idField = idFields.get(klass);
 		if (idField != null) {
 			return idField;
@@ -117,7 +120,7 @@ public class DatabaseUtilities {
 		return null;
 	}
 
-	public static <T> Object getIdFieldValue(T object) {
+	public static <T> Object getIdFieldValue(final T object) {
 		if (object == null) {
 			return null;
 		}
@@ -136,7 +139,7 @@ public class DatabaseUtilities {
 		return null;
 	}
 
-	public static String getIdFieldName(Class<?> klass) {
+	public static String getIdFieldName(final Class<?> klass) {
 		Field field = getIdField(klass, null);
 		return field != null ? field.getName() : null;
 	}

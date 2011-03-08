@@ -26,9 +26,9 @@ import org.apache.lucene.index.IndexWriter;
  */
 public interface IHandler<T extends Indexable<?>> {
 
-	public Class<? extends Indexable<?>> getIndexableClass();
+	Class<? extends Indexable<?>> getIndexableClass();
 
-	public void setIndexableClass(Class<? extends Indexable<?>> indexableClass);
+	void setIndexableClass(Class<? extends Indexable<?>> indexableClass);
 
 	/**
 	 * This method executes the handler logic. The method returns a list of threads(if it is multi-threaded) that the caller must wait for.
@@ -41,8 +41,8 @@ public interface IHandler<T extends Indexable<?>> {
 	 * @return the list of threads that the caller must wait for
 	 * @throws Exception
 	 */
-	public List<Thread> handle(IndexContext indexContext, T indexable) throws Exception;
+	List<Thread> handle(IndexContext indexContext, T indexable) throws Exception;
 
-	public void addDocument(IndexContext indexContext, Indexable<T> indexable, Document document) throws CorruptIndexException, IOException;
+	void addDocument(IndexContext indexContext, Indexable<T> indexable, Document document) throws CorruptIndexException, IOException;
 
 }

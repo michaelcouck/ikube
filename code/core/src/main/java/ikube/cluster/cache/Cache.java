@@ -22,7 +22,7 @@ import com.hazelcast.query.SqlPredicate;
  */
 public class Cache implements ICache {
 
-	protected Logger logger;
+	private Logger logger;
 	/** The underlying database. */
 	private IDataBase dataBase;
 	/**
@@ -40,7 +40,7 @@ public class Cache implements ICache {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public int size(String name) {
+	public int size(final String name) {
 		return getMap(name).size();
 	}
 
@@ -49,7 +49,7 @@ public class Cache implements ICache {
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T> T get(String name, Long id) {
+	public <T> T get(final String name, final Long id) {
 		T t = (T) getMap(name).get(id);
 		if (t == null) {
 			// Try the underlying database
@@ -68,7 +68,7 @@ public class Cache implements ICache {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public <T> void set(String name, Long id, T t) {
+	public <T> void set(final String name, final Long id, final T t) {
 		getMap(name).put(id, t);
 	}
 
@@ -76,7 +76,7 @@ public class Cache implements ICache {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void remove(String name, Long id) {
+	public void remove(final String name, final Long id) {
 		getMap(name).remove(id);
 	}
 
@@ -84,7 +84,7 @@ public class Cache implements ICache {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public <T> List<T> get(String name, ICriteria<T> criteria, IAction<T> action, int size) {
+	public <T> List<T> get(final String name, final ICriteria<T> criteria, final IAction<T> action, final int size) {
 		// This method returns a batch of objects determined by the
 		// criteria. In the case of urls it will iterate through ALL the urls in the map. The logic to access
 		// a batch of urls must be changed, when a url is indexed then it should be moved to another map
@@ -117,7 +117,7 @@ public class Cache implements ICache {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void clear(String name) {
+	public void clear(final String name) {
 		getMap(name).clear();
 	}
 
@@ -126,7 +126,7 @@ public class Cache implements ICache {
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T> T get(String name, String sql) {
+	public <T> T get(final String name, final String sql) {
 		Map<Long, T> map = getMap(name);
 		if (IMap.class.isAssignableFrom(map.getClass())) {
 			Collection<Object> collection = ((IMap<Long, T>) map).values(new SqlPredicate(sql));

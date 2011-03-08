@@ -17,11 +17,11 @@ public interface IDataBase {
 	 * 
 	 * @param <T>
 	 *            the type of object that will be removed
-	 * @param t
+	 * @param object
 	 *            the object that must be removed
 	 * @return the removed object, i.e. a refresh
 	 */
-	public <T> T remove(T t);
+	<T> T remove(T object);
 
 	/**
 	 * Removes the object defined by the type and the id.
@@ -30,11 +30,11 @@ public interface IDataBase {
 	 *            the type of object that will be removed
 	 * @param klass
 	 *            the class of object to remove
-	 * @param id
+	 * @param objectId
 	 *            the id of the object to remove
 	 * @return the removed object, or null if no such object is found to remove
 	 */
-	public <T> T remove(Class<T> klass, Long id);
+	<T> T remove(Class<T> klass, Long objectId);
 
 	/**
 	 * Persists an object in the database.
@@ -43,7 +43,7 @@ public interface IDataBase {
 	 *            the object to be persisted
 	 * @return the refreshed object from the database, typically this object will have the unique id filled in by the database
 	 */
-	public <T> T persist(T object);
+	<T> T persist(T object);
 
 	/**
 	 * Merges the object parameter with the object from the database. In the case where a primitive field is changed in the object and this
@@ -53,7 +53,7 @@ public interface IDataBase {
 	 *            the object to be merged or updated in the database
 	 * @return the refreshed object from the database, typically this will be exactly the same as the object to be merged
 	 */
-	public <T> T merge(T object);
+	<T> T merge(T object);
 
 	/**
 	 * Finds an object by the if field only. This method will be very expensive as each object in the database is iterated through and the
@@ -62,11 +62,11 @@ public interface IDataBase {
 	 * 
 	 * @param <T>
 	 *            the type of object to find
-	 * @param id
+	 * @param objectId
 	 *            the id of the object
 	 * @return the first object with the or or null if no such object can be found
 	 */
-	public <T> T find(Long id);
+	<T> T find(Long objectId);
 
 	/**
 	 * Access the object of a particular class with the id.
@@ -75,12 +75,12 @@ public interface IDataBase {
 	 *            the type of object
 	 * @param klass
 	 *            the class of the object
-	 * @param id
+	 * @param objectId
 	 *            the id of the object
 	 * @return the object or null if there is no such object or a runtime exception if there is more than one result, meaning of course that
 	 *         there is a constraint violation, like unique indexes etc.
 	 */
-	public <T> T find(Class<T> klass, Long id);
+	<T> T find(Class<T> klass, Long objectId);
 
 	/**
 	 * Finds a single object in the database restricted by the parameter values. Note that this method will return the first entity that
@@ -97,7 +97,7 @@ public interface IDataBase {
 	 * @return the object resulting from the select. In the case where there is more than one object returned or none the entity manager
 	 *         will throw an exception
 	 */
-	public <T> T find(Class<T> klass, Map<String, Object> parameters, boolean unique);
+	<T> T find(Class<T> klass, Map<String, Object> parameters, boolean unique);
 
 	/**
 	 * Selects all the objects in the database that conform to the class type, limited by the max results parameter.
@@ -110,7 +110,7 @@ public interface IDataBase {
 	 *            the last object in the results, i.e. the index of the last result
 	 * @return the list of objects from the database specified by the class type
 	 */
-	public <T> List<T> find(Class<T> klass, int startIndex, int endIndex);
+	<T> List<T> find(Class<T> klass, int startIndex, int endIndex);
 
 	/**
 	 * Finds a list of objects in the database that conform to the parameters specified in the method signature. The results are also
@@ -132,6 +132,6 @@ public interface IDataBase {
 	 *            the last object in the results, i.e. the index of the last result
 	 * @return <T> the list of objects that conform to the narrowing parameters
 	 */
-	public <T> List<T> find(Class<T> klass, Map<String, Object> parameters, int startIndex, int endIndex);
+	<T> List<T> find(Class<T> klass, Map<String, Object> parameters, int startIndex, int endIndex);
 
 }

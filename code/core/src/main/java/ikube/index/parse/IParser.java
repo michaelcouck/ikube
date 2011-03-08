@@ -20,6 +20,6 @@ public interface IParser {
 	 * @return the output stream that was passed to the method
 	 * @throws Exception
 	 */
-	public OutputStream parse(InputStream inputStream, OutputStream outputStream) throws Exception;
+	OutputStream parse(InputStream inputStream, OutputStream outputStream) throws Exception;
 
 }

@@ -30,17 +30,16 @@ import org.apache.lucene.spatial.tier.projections.CartesianTierPlotter;
  */
 public class SearchSpatial extends Search {
 
-	private Sort sort;
-	private Map<Integer, Double> distances;
-	private DistanceQueryBuilder distanceQueryBuilder;
-	private DistanceFieldComparatorSource distanceFieldComparatorSource;
+	private transient Sort sort;
+	private transient Map<Integer, Double> distances;
+	private transient DistanceQueryBuilder queryBuilder;
 
 	// TODO Set these fields
-	private int maxDocs = 10;
-	private Coordinate coordinate;
-	private int distance = 10;
+	private transient int maxDocs = 10;
+	private transient Coordinate coordinate;
+	private transient int distance = 10;
 
-	public SearchSpatial(Searcher searcher) {
+	public SearchSpatial(final Searcher searcher) {
 		super(searcher);
 	}
 
@@ -48,9 +47,9 @@ public class SearchSpatial extends Search {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected TopDocs search(Query query) throws IOException {
-		TopDocs topDocs = searcher.search(query, distanceQueryBuilder.getFilter(), maxDocs, sort);
-		distances = distanceQueryBuilder.getDistanceFilter().getDistances();
+	protected TopDocs search(final Query query) throws IOException {
+		TopDocs topDocs = searcher.search(query, queryBuilder.getFilter(), maxDocs, sort);
+		distances = queryBuilder.getDistanceFilter().getDistances();
 		return topDocs;
 	}
 
@@ -59,15 +58,14 @@ public class SearchSpatial extends Search {
 	 */
 	@Override
 	protected Query getQuery() throws ParseException {
-		distanceQueryBuilder = new DistanceQueryBuilder(coordinate.getLat(), coordinate.getLon(), distance, IConstants.LAT,
+		queryBuilder = new DistanceQueryBuilder(coordinate.getLat(), coordinate.getLon(), distance, IConstants.LAT,
 				IConstants.LNG, CartesianTierPlotter.DEFALT_FIELD_PREFIX, true);
 		// Create a distance sort
 		// As the radius filter has performed the distance calculations
 		// already, pass in the filter to reuse the results.
-		distanceFieldComparatorSource = new DistanceFieldComparatorSource(distanceQueryBuilder.getDistanceFilter());
-		sort = new Sort(new SortField("geo_distance", distanceFieldComparatorSource));
-		final Query query = new MatchAllDocsQuery();
-		return query;
+		DistanceFieldComparatorSource fieldComparator = new DistanceFieldComparatorSource(queryBuilder.getDistanceFilter());
+		sort = new Sort(new SortField("geo_distance", fieldComparator));
+		return new MatchAllDocsQuery();
 	}
 
 	public List<Map<String, String>> execute() {

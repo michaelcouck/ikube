@@ -60,9 +60,10 @@ import org.apache.lucene.document.Field.TermVector;
 public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 
 	/** The content provider for column data. */
-	private IContentProvider<IndexableColumn> contentProvider;
+	private transient IContentProvider<IndexableColumn> contentProvider;
 
 	public IndexableTableHandler() {
+		super();
 		this.contentProvider = new ColumnContentProvider();
 	}
 
@@ -109,7 +110,8 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	 *            child tables so they can add their data to the document. When this method is called with the top level table the document
 	 *            is null of course
 	 */
-	protected void handleTable(IndexContext indexContext, IndexableTable indexableTable, Connection connection, Document document) {
+	protected void handleTable(final IndexContext indexContext, final IndexableTable indexableTable, final Connection connection,
+			Document document) {
 		ResultSet resultSet = null;
 		try {
 			resultSet = getResultSet(indexContext, indexableTable, connection);

@@ -16,10 +16,7 @@ import org.dom4j.io.SAXReader;
  */
 final class MimeTypesReader {
 
-	MimeTypesReader() {
-	}
-
-	MimeType[] read(InputStream inputStream) {
+	protected MimeType[] read(InputStream inputStream) { 
 		MimeType[] types = null;
 		try {
 			SAXReader reader = new SAXReader();
@@ -32,7 +29,7 @@ final class MimeTypesReader {
 	}
 
 	/** Scan through the document. */
-	private MimeType[] visit(Document document) {
+	private MimeType[] visit(final Document document) {
 		MimeType[] types = null;
 		Element element = document.getRootElement();
 		if ((element != null) && element.getName().equals("mime-types")) {
@@ -42,7 +39,7 @@ final class MimeTypesReader {
 	}
 
 	/** Read Element named mime-types. */
-	private MimeType[] readMimeTypes(Element rootElement) {
+	private MimeType[] readMimeTypes(final Element rootElement) {
 		ArrayList<MimeType> types = new ArrayList<MimeType>();
 		// All the mime-type elements
 		List<?> allElements = rootElement.elements();
@@ -59,7 +56,7 @@ final class MimeTypesReader {
 	}
 
 	/** Read Element named mime-type. */
-	private MimeType readMimeType(Element element) {
+	private MimeType readMimeType(final Element element) {
 		String name = null;
 		String description = null;
 		MimeType type = null;
@@ -98,13 +95,13 @@ final class MimeTypesReader {
 	}
 
 	/** Read Element named ext. */
-	private void readExt(Element element, MimeType type) {
+	private void readExt(final Element element, final MimeType type) {
 		String value = element.getText();
 		type.addExtension(value);
 	}
 
 	/** Read Element named magic. */
-	private void readMagic(Element element, MimeType mimeType) {
+	private void readMagic(final Element element, final MimeType mimeType) {
 		String offset = null;
 		String content = null;
 		String type = null;

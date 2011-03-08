@@ -62,7 +62,7 @@ public abstract class Search {
 	/** The end position in the results to stop returning results from. */
 	protected int maxResults;
 
-	Search(Searcher searcher) {
+	Search(final Searcher searcher) {
 		this.logger = Logger.getLogger(this.getClass());
 		this.searcher = searcher;
 		this.queryParsers = new HashMap<String, QueryParser>();
@@ -84,7 +84,7 @@ public abstract class Search {
 	 *            query that generated the results
 	 * @return the best fragments of text containing the search keywords
 	 */
-	protected String getFragments(Document document, String fieldName, Query query) {
+	protected String getFragments(final Document document, final String fieldName, final Query query) {
 		String fragment = null;
 		try {
 			Scorer scorer = new QueryScorer(query);
@@ -113,7 +113,7 @@ public abstract class Search {
 	 *            the result map to add the field values to
 	 * @throws Exception
 	 */
-	protected void addFieldsToResults(Document document, Map<String, String> result) throws Exception {
+	protected void addFieldsToResults(final Document document, final Map<String, String> result) throws Exception {
 		for (Fieldable field : document.getFields()) {
 			String fieldName = field.name();
 			String stringValue = field.stringValue();
@@ -132,7 +132,7 @@ public abstract class Search {
 	 * @param searchStrings
 	 *            the search strings
 	 */
-	public void setSearchString(String... searchStrings) {
+	public void setSearchString(final String... searchStrings) {
 		this.searchStrings = searchStrings;
 	}
 
@@ -142,11 +142,11 @@ public abstract class Search {
 	 * @param searchFields
 	 *            the fields in the index to search through
 	 */
-	public void setSearchField(String... searchFields) {
+	public void setSearchField(final String... searchFields) {
 		this.searchFields = searchFields;
 	}
 
-	public void setSortField(String... sortFields) {
+	public void setSortField(final String... sortFields) {
 		this.sortFields = sortFields;
 	}
 

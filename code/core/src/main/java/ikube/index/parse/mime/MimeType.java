@@ -38,7 +38,7 @@ public final class MimeType {
 	 * @param name
 	 *            the MIME content type String.
 	 */
-	public MimeType(String name) throws MimeTypeException {
+	public MimeType(final String name) throws MimeTypeException {
 		if (name == null || name.length() <= 0) {
 			throw new MimeTypeException("The type can not be null or empty");
 		}
@@ -59,12 +59,12 @@ public final class MimeType {
 	 * @param sub
 	 *            the content type sub type.
 	 */
-	public MimeType(String primary, String sub) throws MimeTypeException {
+	public MimeType(final String primary, final String sub) throws MimeTypeException {
 		init(primary, sub);
 	}
 
 	/** Init method used by constructors. */
-	private void init(String primary, String sub) throws MimeTypeException {
+	private void init(final String primary, final String sub) throws MimeTypeException {
 		// Preliminary checks...
 		if ((primary == null) || (primary.length() <= 0) || (!isValid(primary))) {
 			throw new MimeTypeException("Invalid Primary Type " + primary);

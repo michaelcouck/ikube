@@ -39,7 +39,7 @@ public class Index extends Persistable {
 		return directory;
 	}
 
-	public void setDirectory(Directory directory) {
+	public void setDirectory(final Directory directory) {
 		this.directory = directory;
 	}
 

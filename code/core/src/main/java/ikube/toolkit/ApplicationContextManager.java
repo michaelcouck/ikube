@@ -21,14 +21,17 @@ import org.springframework.context.support.FileSystemXmlApplicationContext;
  * @since 29.04.09
  * @version 01.00
  */
-public class ApplicationContextManager {
+public final class ApplicationContextManager {
 
-	private static Logger LOGGER;
+	private static final Logger LOGGER;
 	private static ApplicationContext APPLICATION_CONTEXT;
 
 	static {
 		Logging.configure();
 		LOGGER = Logger.getLogger(ApplicationContextManager.class);
+	}
+	
+	private ApplicationContextManager() {
 	}
 
 	/**
@@ -63,7 +66,7 @@ public class ApplicationContextManager {
 	 *            the class of the bean
 	 * @return the bean with the specified class
 	 */
-	public static synchronized <T> T getBean(Class<T> klass) {
+	public static synchronized <T> T getBean(final Class<T> klass) {
 		try {
 			return getApplicationContext().getBean(klass);
 		} finally {
@@ -80,7 +83,7 @@ public class ApplicationContextManager {
 	 * @return the bean with the specified name
 	 */
 	@SuppressWarnings("unchecked")
-	public static synchronized <T> T getBean(String name) {
+	public static synchronized <T> T getBean(final String name) {
 		try {
 			return (T) getApplicationContext().getBean(name);
 		} finally {
@@ -97,7 +100,7 @@ public class ApplicationContextManager {
 	 *            the class of the beans
 	 * @return a map of bean names and beans of type T
 	 */
-	public static synchronized <T> Map<String, T> getBeans(Class<T> klass) {
+	public static synchronized <T> Map<String, T> getBeans(final Class<T> klass) {
 		try {
 			return getApplicationContext().getBeansOfType(klass);
 		} finally {
@@ -112,7 +115,7 @@ public class ApplicationContextManager {
 	 *            the locations of the configuration files
 	 * @return the merged application context for all the configuration files
 	 */
-	public static synchronized ApplicationContext getApplicationContext(File... configFiles) {
+	public static synchronized ApplicationContext getApplicationContext(final File... configFiles) {
 		try {
 			if (APPLICATION_CONTEXT == null) {
 				LOGGER.info("Loading the application context with configurations : " + Arrays.asList(configFiles));
@@ -136,7 +139,7 @@ public class ApplicationContextManager {
 	 *            the locations of the configuration files
 	 * @return the merged application context for all the configuration files
 	 */
-	public static synchronized ApplicationContext getApplicationContext(String... configLocations) {
+	public static synchronized ApplicationContext getApplicationContext(final String... configLocations) {
 		try {
 			if (APPLICATION_CONTEXT == null) {
 				LOGGER.info("Loading the application context with configurations : " + Arrays.asList(configLocations));

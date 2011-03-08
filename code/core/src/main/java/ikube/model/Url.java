@@ -24,7 +24,7 @@ public class Url extends Persistable {
 		return url;
 	}
 
-	public void setUrl(String url) {
+	public void setUrl(final String url) {
 		this.url = url;
 	}
 
@@ -32,7 +32,7 @@ public class Url extends Persistable {
 		return title;
 	}
 
-	public void setTitle(String title) {
+	public void setTitle(final String title) {
 		this.title = title;
 	}
 
@@ -40,7 +40,7 @@ public class Url extends Persistable {
 		return contentType;
 	}
 
-	public void setContentType(String contentType) {
+	public void setContentType(final String contentType) {
 		this.contentType = contentType;
 	}
 
@@ -48,7 +48,7 @@ public class Url extends Persistable {
 		return rawContent;
 	}
 
-	public void setRawContent(byte[] rawContent) {
+	public void setRawContent(final byte[] rawContent) {
 		this.rawContent = rawContent;
 	}
 
@@ -56,7 +56,7 @@ public class Url extends Persistable {
 		return parsedContent;
 	}
 
-	public void setParsedContent(String parsedContent) {
+	public void setParsedContent(final String parsedContent) {
 		this.parsedContent = parsedContent;
 	}
 
@@ -64,7 +64,7 @@ public class Url extends Persistable {
 		return indexed;
 	}
 
-	public void setIndexed(boolean indexed) {
+	public void setIndexed(final boolean indexed) {
 		this.indexed = indexed;
 	}
 
@@ -72,7 +72,7 @@ public class Url extends Persistable {
 		return hash;
 	}
 
-	public void setHash(long hash) {
+	public void setHash(final long hash) {
 		this.hash = hash;
 	}
 

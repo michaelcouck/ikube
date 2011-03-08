@@ -20,7 +20,7 @@ import org.apache.lucene.search.TopDocs;
  */
 public class SearchMulti extends Search {
 
-	public SearchMulti(Searcher searcher) {
+	public SearchMulti(final Searcher searcher) {
 		super(searcher);
 	}
 
@@ -28,7 +28,7 @@ public class SearchMulti extends Search {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected TopDocs search(Query query) throws IOException {
+	protected TopDocs search(final Query query) throws IOException {
 		return searcher.search(query, firstResult + maxResults);
 	}
 

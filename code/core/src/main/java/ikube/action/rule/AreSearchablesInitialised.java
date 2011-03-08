@@ -12,16 +12,16 @@ import org.apache.lucene.search.MultiSearcher;
  */
 public class AreSearchablesInitialised implements IRule<IndexContext> {
 
-	private Logger logger = Logger.getLogger(this.getClass());
+	private static final transient Logger LOGGER = Logger.getLogger(AreSearchablesInitialised.class);
 
-	public boolean evaluate(IndexContext indexContext) {
+	public boolean evaluate(final  IndexContext indexContext) {
 		// No searchables, also try to reopen an index searcher
 		if (indexContext.getIndex() == null) {
 			return Boolean.FALSE;
 		}
 		MultiSearcher searcher = indexContext.getIndex().getMultiSearcher();
 		if (searcher == null || searcher.getSearchables() == null || searcher.getSearchables().length == 0) {
-			logger.debug("No searchables open, should try to reopen : ");
+			LOGGER.debug("No searchables open, should try to reopen : ");
 			return Boolean.FALSE;
 		}
 		return Boolean.TRUE;

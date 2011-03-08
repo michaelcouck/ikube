@@ -1,8 +1,6 @@
 package ikube.cluster;
 
 import ikube.cluster.cache.ICache;
-import ikube.cluster.cache.ICache.IAction;
-import ikube.cluster.cache.ICache.ICriteria;
 import ikube.model.Server;
 import ikube.model.Url;
 
@@ -32,18 +30,18 @@ public interface IClusterManager {
 	 * @return this method returns the first time that was registered for any server that has executed this index and this indexable. This
 	 *         needs to be in one method so that the servers can be locked before this operation
 	 */
-	public long setWorking(String indexName, String indexableName, boolean isWorking);
+	long setWorking(String indexName, String indexableName, boolean isWorking);
 
 	/**
 	 * @return whether there are any servers in the cluster that are working excluding this one. If this server is working then the server
 	 *         must be retrieved with the {@link IClusterManager#getServer()} and check the {@link Server#isWorking()} method
 	 */
-	public boolean anyWorking();
+	boolean anyWorking();
 
 	/**
 	 * @return whether there are any servers in the cluster that are working on this index
 	 */
-	public boolean anyWorking(String indexName);
+	boolean anyWorking(String indexName);
 
 	/**
 	 * Returns the next id from one of the servers. The id would be the id in the table for this index.
@@ -57,7 +55,7 @@ public interface IClusterManager {
 	 *            cluster effectively determining the next if of this table
 	 * @return the id of the next row in the table for this index
 	 */
-	public long getIdNumber(String indexableName, String indexName, long batchSize, long minId);
+	long getIdNumber(String indexableName, String indexName, long batchSize, long minId);
 
 	/**
 	 * Checks whether this indexable has already been handled, could be a file share that is not clusterable and only needs to be indexed by
@@ -69,52 +67,52 @@ public interface IClusterManager {
 	 *            the name of the index
 	 * @return whether this indexable has been handled
 	 */
-	public boolean isHandled(String indexableName, String indexName);
+	boolean isHandled(String indexableName, String indexName);
 
 	/**
 	 * @return the servers in the cluster
 	 */
-	public List<Server> getServers();
+	List<Server> getServers();
 
 	/**
 	 * @return this server object
 	 */
-	public Server getServer();
+	Server getServer();
 
 	/** Cluster wide cache access. */
 
 	/**
 	 * @see ICache#get(String, ICriteria, IAction, int)
 	 */
-	public List<Url> getBatch(int size);
+	List<Url> getBatch(int size);
 
 	/**
 	 * @see ICache#get(String, String)
 	 */
-	public <T> T get(Class<T> klass, String sql);
+	<T> T get(Class<T> klass, String sql);
 
 	/**
 	 * @see ICache#get(String, Long)
 	 */
-	public <T> T get(Class<T> klass, Long id);
+	<T> T get(Class<T> klass, Long objectId);
 
 	/**
 	 * @see ICache#set(String, Long, Object)
 	 */
-	public <T> void set(Class<T> klass, Long id, T t);
+	<T> void set(Class<T> klass, Long objectId, T object);
 
 	/**
 	 * @see ICache#clear(String)
 	 */
-	public <T> void clear(Class<T> klass);
+	<T> void clear(Class<T> klass);
 
 	/**
 	 * @see ICache#size(String)
 	 */
-	public <T> int size(Class<T> klass);
+	<T> int size(Class<T> klass);
 
-	public ILock lock(String lockName);
+	ILock lock(String lockName);
 
-	public void unlock(ILock lock);
+	void unlock(ILock lock);
 
 }

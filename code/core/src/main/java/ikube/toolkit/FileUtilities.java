@@ -24,7 +24,10 @@ import org.apache.log4j.Logger;
  */
 public class FileUtilities {
 
-	private static Logger LOGGER = Logger.getLogger(FileUtilities.class);
+	private static final Logger LOGGER = Logger.getLogger(FileUtilities.class);
+	
+	private FileUtilities() {
+	}
 
 	/**
 	 * Deletes all files recursively, that have the specified pattern in the path. Note that this is dangerous and you really need to know
@@ -36,7 +39,7 @@ public class FileUtilities {
 	 * @param stringPatterns
 	 *            the patterns to look for in the file paths
 	 */
-	public static void deleteFiles(File file, String... stringPatterns) {
+	public static void deleteFiles(final File file, String... stringPatterns) {
 		if (file.isDirectory()) {
 			File[] childFiles = file.listFiles();
 			if (childFiles != null && childFiles.length > 0) {
@@ -59,7 +62,7 @@ public class FileUtilities {
 	 *            the regular expression patterns
 	 * @return the pattern generated from the strings
 	 */
-	public static Pattern getPattern(String... stringPatterns) {
+	public static Pattern getPattern(final String... stringPatterns) {
 		boolean first = Boolean.TRUE;
 		StringBuilder builder = new StringBuilder();
 		for (String stringPattern : stringPatterns) {
@@ -85,7 +88,7 @@ public class FileUtilities {
 	 *            the pattern to look for in the file path
 	 * @return an array of files with the specified pattern in the path
 	 */
-	public static File[] findFiles(File folder, String[] stringPatterns) {
+	public static File[] findFiles(final File folder, final String[] stringPatterns) {
 		final Pattern pattern = getPattern(stringPatterns);
 		File[] files = folder.listFiles(new FileFilter() {
 			@Override
@@ -110,7 +113,7 @@ public class FileUtilities {
 	 *            the patterns to look for in the file paths
 	 * @return the first file that was encountered that has the specified pattern(s) in it
 	 */
-	public static File findFile(File folder, String... stringPatterns) {
+	public static File findFile(final File folder, final String... stringPatterns) {
 		List<File> files = FileUtilities.findFilesRecursively(folder, stringPatterns, new ArrayList<File>());
 		return files.size() > 0 ? files.get(0) : null;
 	}
@@ -127,7 +130,7 @@ public class FileUtilities {
 	 *            the files list to add all the files to
 	 * @return the list of files that match the patterns
 	 */
-	public static List<File> findFilesRecursively(File folder, String[] stringPatterns, List<File> files) {
+	public static List<File> findFilesRecursively(final File folder, final String[] stringPatterns, final List<File> files) {
 		if (folder.isDirectory()) {
 			File[] folderFiles = FileUtilities.findFiles(folder, stringPatterns);
 			files.addAll(Arrays.asList(folderFiles));
@@ -148,7 +151,7 @@ public class FileUtilities {
 	 * @param maxRetryCount
 	 *            the number of times to re-try the delete operation
 	 */
-	public static boolean deleteFile(File file, int maxRetryCount) {
+	public static boolean deleteFile(final File file, final int maxRetryCount) {
 		return FileUtilities.deleteFile(file, maxRetryCount, 0);
 	}
 
@@ -161,7 +164,7 @@ public class FileUtilities {
 	 *            whether the file is a directory of a file
 	 * @return
 	 */
-	public static synchronized File getFile(String filePath, boolean directory) {
+	public static synchronized File getFile(final String filePath, final boolean directory) {
 		try {
 			File file = new File(filePath);
 			if (directory) {
@@ -195,7 +198,7 @@ public class FileUtilities {
 		}
 	}
 
-	protected static boolean deleteFile(File file, int maxRetryCount, int retryCount) {
+	protected static boolean deleteFile(final File file, final int maxRetryCount, final int retryCount) {
 		if (file == null || !file.exists()) {
 			return Boolean.FALSE;
 		}
@@ -218,11 +221,11 @@ public class FileUtilities {
 			return Boolean.FALSE;
 		} else {
 			LOGGER.debug("Retrying count : " + retryCount + ", file : " + file);
-			return deleteFile(file, maxRetryCount, ++retryCount);
+			return deleteFile(file, maxRetryCount, retryCount + 1);
 		}
 	}
 
-	public static synchronized File getLatestIndexDirectory(String baseIndexDirectoryPath) {
+	public static synchronized File getLatestIndexDirectory(final String baseIndexDirectoryPath) {
 		try {
 			File baseIndexDirectory = FileUtilities.getFile(baseIndexDirectoryPath, Boolean.TRUE);
 			LOGGER.debug("Base index directory : " + baseIndexDirectory);
@@ -232,7 +235,7 @@ public class FileUtilities {
 		}
 	}
 
-	protected static synchronized File getLatestIndexDirectory(File file, File latestSoFar) {
+	protected static synchronized File getLatestIndexDirectory(final File file, File latestSoFar) {
 		if (file.isDirectory()) {
 			File[] children = file.listFiles();
 			for (File child : children) {
@@ -258,7 +261,7 @@ public class FileUtilities {
 	 *            the string to verify for digit data
 	 * @return whether every character in a string is a digit
 	 */
-	public static boolean isDigits(String string) {
+	public static boolean isDigits(final String string) {
 		if (string == null || string.trim().equals("")) {
 			return false;
 		}
@@ -279,7 +282,7 @@ public class FileUtilities {
 	 * @param bytes
 	 *            the byte data to write
 	 */
-	public static void setContents(String filePath, byte[] bytes) {
+	public static void setContents(final String filePath, final byte[] bytes) {
 		File file = FileUtilities.getFile(filePath, Boolean.FALSE);
 		FileOutputStream fileOutputStream = null;
 		try {
@@ -307,7 +310,7 @@ public class FileUtilities {
 	 *            the file to read the contents from
 	 * @return the file contents in a byte array output stream
 	 */
-	public static ByteArrayOutputStream getContents(File file) {
+	public static ByteArrayOutputStream getContents(final File file) {
 		InputStream inputStream = null;
 		try {
 			inputStream = new FileInputStream(file);
@@ -328,7 +331,7 @@ public class FileUtilities {
 	 *            the maximum number of bytes to read into the buffer
 	 * @return the file contents in a byte array output stream
 	 */
-	public static ByteArrayOutputStream getContents(InputStream inputStream, long maxLength) {
+	public static ByteArrayOutputStream getContents(final InputStream inputStream, final long maxLength) {
 		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 		if (inputStream == null) {
 			return byteArrayOutputStream;
@@ -361,7 +364,7 @@ public class FileUtilities {
 	 * @param maxLength
 	 *            the maximum number of bytes to read into the buffer
 	 */
-	public static void getContents(InputStream inputStream, OutputStream outputStream, long maxLength) {
+	public static void getContents(final InputStream inputStream, final OutputStream outputStream, final long maxLength) {
 		if (inputStream == null) {
 			return;
 		}
@@ -384,7 +387,7 @@ public class FileUtilities {
 		}
 	}
 
-	public static void getContents(Reader reader, OutputStream outputStream, long maxLength) {
+	public static void getContents(final Reader reader, final OutputStream outputStream, final long maxLength) {
 		if (reader == null) {
 			return;
 		}

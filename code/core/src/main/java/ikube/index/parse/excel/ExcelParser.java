@@ -25,7 +25,7 @@ public class ExcelParser implements IParser {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public OutputStream parse(InputStream inputStream, OutputStream outputStream) throws Exception {
+	public OutputStream parse(final InputStream inputStream, final OutputStream outputStream) throws Exception {
 		POIFSFileSystem fs = new POIFSFileSystem(inputStream);
 		HSSFWorkbook workbook = new HSSFWorkbook(fs);
 		for (int i = 0; i < workbook.getNumberOfSheets(); i++) {

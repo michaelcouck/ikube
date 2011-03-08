@@ -29,7 +29,7 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IHandl
 		return threads;
 	}
 
-	public void setThreads(int threads) {
+	public void setThreads(final int threads) {
 		this.threads = threads;
 	}
 
@@ -37,12 +37,13 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IHandl
 		return indexableClass;
 	}
 
-	public void setIndexableClass(Class<? extends Indexable<?>> indexableClass) {
+	public void setIndexableClass(final Class<? extends Indexable<?>> indexableClass) {
 		this.indexableClass = indexableClass;
 	}
 
 	@Override
-	public void addDocument(IndexContext indexContext, Indexable<T> indexable, Document document) throws CorruptIndexException, IOException {
+	public void addDocument(final IndexContext indexContext, final Indexable<T> indexable, final Document document)
+			throws CorruptIndexException, IOException {
 		indexContext.getIndex().getIndexWriter().addDocument(document);
 	}
 

@@ -20,7 +20,7 @@ import ikube.model.Url;
 public class Reset extends Action {
 
 	@Override
-	public Boolean execute(IndexContext indexContext) {
+	public Boolean execute(final IndexContext indexContext) {
 		try {
 			getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getName(), Boolean.TRUE);
 			List<Server> servers = getClusterManager().getServers();

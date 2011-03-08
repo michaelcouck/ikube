@@ -26,10 +26,10 @@ public interface IHandler<E extends Url> {
 	/**
 	 * Handles the page. This logic is dependent on the implementor.
 	 * 
-	 * @param page
+	 * @param url
 	 *            the page to handle
 	 */
-	public void handle(E e);
+	void handle(E url);
 
 	/**
 	 * This is a convenience method to call the children to handle the page from this handler.
@@ -37,12 +37,12 @@ public interface IHandler<E extends Url> {
 	 * @param page
 	 *            the page for the children to handle one by one
 	 */
-	public void handleChildren(E e);
+	void handleChildren(E url);
 
 	/** Setters and getters for the properties. */
 
-	public void setChildren(Collection<IHandler<E>> children);
+	void setChildren(Collection<IHandler<E>> children);
 
-	public Collection<IHandler<E>> getChildren();
+	Collection<IHandler<E>> getChildren();
 
 }

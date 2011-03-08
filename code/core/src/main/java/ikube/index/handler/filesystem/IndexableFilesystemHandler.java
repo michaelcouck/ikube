@@ -41,19 +41,18 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 			// one of the other servers. The file system is very fast and there is no need to
 			// cluster the indexing
 			boolean isHandled = isHandled(indexContext, indexable);
-			if (isHandled) {
-				return null;
-			}
-			File baseFile = new File(indexable.getPath());
-			Pattern pattern = getPattern(indexable.getExcludedPattern());
-			if (isExcluded(baseFile, pattern)) {
-				logger.warn("Base directory excluded : " + baseFile);
-				return null;
-			}
-			if (baseFile.isDirectory()) {
-				handleFolder(indexContext, indexable, baseFile, pattern);
-			} else {
-				handleFile(indexContext, indexable, baseFile);
+			if (!isHandled) {
+				File baseFile = new File(indexable.getPath());
+				Pattern pattern = getPattern(indexable.getExcludedPattern());
+				if (isExcluded(baseFile, pattern)) {
+					logger.warn("Base directory excluded : " + baseFile);
+					return null;
+				}
+				if (baseFile.isDirectory()) {
+					handleFolder(indexContext, indexable, baseFile, pattern);
+				} else {
+					handleFile(indexContext, indexable, baseFile);
+				}
 			}
 		} catch (Exception e) {
 			logger.error("Exception indexing the file share : " + indexable, e);
@@ -74,8 +73,8 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 	 * @param excludedPattern
 	 *            the excluded patterns
 	 */
-	protected void handleFolder(final IndexContext indexContext, IndexableFileSystem indexableFileSystem, File folder,
-			Pattern excludedPattern) {
+	protected void handleFolder(final IndexContext indexContext, final IndexableFileSystem indexableFileSystem, final File folder,
+			final Pattern excludedPattern) {
 		File[] files = folder.listFiles();
 		if (files != null) {
 			for (File file : files) {

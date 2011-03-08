@@ -11,7 +11,7 @@ import java.io.File;
  */
 public class AreIndexesCreated implements IRule<IndexContext> {
 
-	public boolean evaluate(IndexContext indexContext) {
+	public boolean evaluate(final  IndexContext indexContext) {
 		File baseIndexDirectory = new File(indexContext.getIndexDirectoryPath() + File.separator + indexContext.getIndexName());
 		File[] timeIndexDirectories = baseIndexDirectory.listFiles();
 		if (timeIndexDirectories == null) {

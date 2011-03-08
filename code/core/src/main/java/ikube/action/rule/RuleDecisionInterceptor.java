@@ -17,13 +17,13 @@ import org.nfunk.jep.JEP;
  */
 public class RuleDecisionInterceptor implements IRuleDecisionInterceptor {
 
-	private Logger logger = Logger.getLogger(this.getClass());
+	private static final transient Logger LOGGER = Logger.getLogger(RuleDecisionInterceptor.class);
 
 	@Override
-	public Object decide(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
+	public Object decide(final ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
 		Object target = proceedingJoinPoint.getTarget();
 		if (!IAction.class.isAssignableFrom(target.getClass())) {
-			logger.warn("Can't intercept non action class, proceeding : " + target);
+			LOGGER.warn("Can't intercept non action class, proceeding : " + target);
 			return proceedingJoinPoint.proceed();
 		}
 
@@ -31,11 +31,11 @@ public class RuleDecisionInterceptor implements IRuleDecisionInterceptor {
 		@SuppressWarnings({ "unchecked", "rawtypes" })
 		List<IRule<IndexContext>> classRules = ((IAction) target).getRules();
 		if (classRules == null) {
-			logger.warn("No rules defined for, proceeding : " + target);
+			LOGGER.warn("No rules defined for, proceeding : " + target);
 			return proceedingJoinPoint.proceed();
 		}
 
-		logger.debug("Intercepting : " + target);
+		LOGGER.debug("Intercepting : " + target);
 		int index = 0;
 		JEP jep = new JEP();
 		for (IRule<IndexContext> rule : classRules) {
@@ -44,8 +44,8 @@ public class RuleDecisionInterceptor implements IRuleDecisionInterceptor {
 				if (arg != null && IndexContext.class.isAssignableFrom(arg.getClass())) {
 					boolean result = rule.evaluate((IndexContext) arg);
 					String parameter = rule.getClass().getSimpleName();
-					if (logger.isDebugEnabled()) {
-						logger.debug(Logging.getString("Parameter : ", parameter, result));
+					if (LOGGER.isDebugEnabled()) {
+						LOGGER.debug(Logging.getString("Parameter : ", parameter, result));
 					}
 					jep.addVariable(parameter, result);
 					index++;
@@ -55,19 +55,19 @@ public class RuleDecisionInterceptor implements IRuleDecisionInterceptor {
 		String predicate = ((IAction<?, ?>) target).getPredicate();
 		jep.parseExpression(predicate);
 		if (jep.hasError()) {
-			logger.warn("Exception in Jep expression : " + jep.getErrorInfo());
-			logger.warn("Symbol table : " + jep.getSymbolTable());
+			LOGGER.warn("Exception in Jep expression : " + jep.getErrorInfo());
+			LOGGER.warn("Symbol table : " + jep.getSymbolTable());
 		}
 		Object result = jep.getValueAsObject();
-		logger.debug(Logging.getString("Result : ", result, jep, predicate));
+		LOGGER.debug(Logging.getString("Result : ", result, jep, predicate));
 		if (result == null) {
 			result = jep.getValue();
 		}
 		if (result == null || result.equals(0.0d) || result.equals(Boolean.FALSE)) {
-			logger.debug(Logging.getString("Not proceeding: "));
+			LOGGER.debug(Logging.getString("Not proceeding: "));
 			return Boolean.FALSE;
 		}
-		logger.debug(Logging.getString("Proceeding: "));
+		LOGGER.debug(Logging.getString("Proceeding: "));
 		return proceedingJoinPoint.proceed();
 	}
 

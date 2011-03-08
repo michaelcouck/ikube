@@ -40,22 +40,21 @@ public class IndexEngine implements IIndexEngine {
 		FileUtilities.deleteFiles(dotDirectory, IConstants.TRANSACTION_FILES);
 	}
 
-	private Logger logger;
-	private List<IAction<IndexContext, Boolean>> actions;
+	private static final Logger LOGGER = Logger.getLogger(IndexEngine.class);
+	private transient List<IAction<IndexContext, Boolean>> actions;
 
 	public IndexEngine() {
-		logger = Logger.getLogger(this.getClass());
 		IListener listener = new IListener() {
 			@Override
-			public void handleNotification(Event event) {
+			public void handleNotification(final Event event) {
 				IndexEngine.this.handleNotification(event);
 			}
 		};
 		ListenerManager.addListener(listener);
-		logger.info("Index engine : " + this);
+		LOGGER.info("Index engine : " + this);
 	}
 
-	protected void handleNotification(Event event) {
+	protected void handleNotification(final Event event) {
 		if (!event.getType().equals(Event.TIMER)) {
 			return;
 		}
@@ -63,37 +62,37 @@ public class IndexEngine implements IIndexEngine {
 		// If this server is working on anything then return
 		Server server = ApplicationContextManager.getBean(IClusterManager.class).getServer();
 		if (server.isWorking()) {
-			logger.debug("This server working : " + server);
+			LOGGER.debug("This server working : " + server);
 			return;
 		}
 
 		Map<String, IndexContext> indexContexts = ApplicationContextManager.getBeans(IndexContext.class);
 		for (IndexContext indexContext : indexContexts.values()) {
 			if (actions == null || actions.size() == 0) {
-				logger.warn("No actions configured for index engine : " + indexContext.getIndexName());
+				LOGGER.warn("No actions configured for index engine : " + indexContext.getIndexName());
 				continue;
 			}
-			logger.info("Start working : " + indexContext);
+			LOGGER.info("Start working : " + indexContext);
 			int thread = Thread.currentThread().hashCode();
 			for (IAction<IndexContext, Boolean> action : actions) {
 				boolean success = Boolean.FALSE;
 				try {
 					// Sleep for a random period to avoid one server always being first
 					long sleep = (long) (((Math.random() * 3d)) * 1000d);
-					logger.debug(Logging.getString("Sleeping for : ", sleep, " milliseconds"));
+					LOGGER.debug(Logging.getString("Sleeping for : ", sleep, " milliseconds"));
 					Thread.sleep(sleep);
-					logger.debug(Logging.getString("Executing action : ", action, thread));
+					LOGGER.debug(Logging.getString("Executing action : ", action, thread));
 					success = action.execute(indexContext);
 				} catch (Exception e) {
-					logger.error("Exception executing action : " + action, e);
+					LOGGER.error("Exception executing action : " + action, e);
 				}
-				logger.debug(Logging.getString("Action succeeded : ", success, action, thread));
+				LOGGER.debug(Logging.getString("Action succeeded : ", success, action, thread));
 			}
-			logger.info(Logging.getString("Finish working : ", this, server));
+			LOGGER.info(Logging.getString("Finish working : ", this, server));
 		}
 	}
 
-	public void setActions(List<IAction<IndexContext, Boolean>> actions) {
+	public void setActions(final List<IAction<IndexContext, Boolean>> actions) {
 		this.actions = actions;
 	}
 

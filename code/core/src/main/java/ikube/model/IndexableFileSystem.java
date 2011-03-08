@@ -35,7 +35,7 @@ public class IndexableFileSystem extends Indexable<IndexableFileSystem> {
 		return path;
 	}
 
-	public void setPath(String path) {
+	public void setPath(final String path) {
 		this.path = path;
 	}
 
@@ -43,7 +43,7 @@ public class IndexableFileSystem extends Indexable<IndexableFileSystem> {
 		return nameFieldName;
 	}
 
-	public void setNameFieldName(String nameFieldName) {
+	public void setNameFieldName(final String nameFieldName) {
 		this.nameFieldName = nameFieldName;
 	}
 
@@ -51,7 +51,7 @@ public class IndexableFileSystem extends Indexable<IndexableFileSystem> {
 		return pathFieldName;
 	}
 
-	public void setPathFieldName(String pathFieldName) {
+	public void setPathFieldName(final String pathFieldName) {
 		this.pathFieldName = pathFieldName;
 	}
 
@@ -59,7 +59,7 @@ public class IndexableFileSystem extends Indexable<IndexableFileSystem> {
 		return lastModifiedFieldName;
 	}
 
-	public void setLastModifiedFieldName(String lastModifiedFieldName) {
+	public void setLastModifiedFieldName(final String lastModifiedFieldName) {
 		this.lastModifiedFieldName = lastModifiedFieldName;
 	}
 
@@ -67,7 +67,7 @@ public class IndexableFileSystem extends Indexable<IndexableFileSystem> {
 		return lengthFieldName;
 	}
 
-	public void setLengthFieldName(String lengthFieldName) {
+	public void setLengthFieldName(final String lengthFieldName) {
 		this.lengthFieldName = lengthFieldName;
 	}
 
@@ -75,7 +75,7 @@ public class IndexableFileSystem extends Indexable<IndexableFileSystem> {
 		return contentFieldName;
 	}
 
-	public void setContentFieldName(String contentFieldName) {
+	public void setContentFieldName(final String contentFieldName) {
 		this.contentFieldName = contentFieldName;
 	}
 
@@ -83,7 +83,7 @@ public class IndexableFileSystem extends Indexable<IndexableFileSystem> {
 		return excludedPattern;
 	}
 
-	public void setExcludedPattern(String excludedPattern) {
+	public void setExcludedPattern(final String excludedPattern) {
 		this.excludedPattern = excludedPattern;
 	}
 
@@ -91,7 +91,7 @@ public class IndexableFileSystem extends Indexable<IndexableFileSystem> {
 		return includedPattern;
 	}
 
-	public void setIncludedPattern(String includedPattern) {
+	public void setIncludedPattern(final String includedPattern) {
 		this.includedPattern = includedPattern;
 	}
 
@@ -100,7 +100,7 @@ public class IndexableFileSystem extends Indexable<IndexableFileSystem> {
 		return currentFile;
 	}
 
-	public void setCurrentFile(File currentFile) {
+	public void setCurrentFile(final File currentFile) {
 		this.currentFile = currentFile;
 	}
 

@@ -9,6 +9,6 @@ import org.aspectj.lang.ProceedingJoinPoint;
  */
 public interface IRuleDecisionInterceptor {
 
-	public Object decide(ProceedingJoinPoint call) throws Throwable;
+	Object decide(ProceedingJoinPoint call) throws Throwable;
 
 }

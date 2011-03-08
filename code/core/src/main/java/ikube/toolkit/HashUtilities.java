@@ -6,6 +6,9 @@ package ikube.toolkit;
  * @version 01.00
  */
 public class HashUtilities {
+	
+	private HashUtilities() {
+	}
 
 	/**
 	 * Simple, fast hash function to generate quite unique hashes from strings(i.e. toCharArray()).
@@ -14,7 +17,7 @@ public class HashUtilities {
 	 *            the string to generate the hash from
 	 * @return the integer representation of the hash of the string characters, typically quite unique for strings less than 10 characters
 	 */
-	public static final Long hash(String string) {
+	public static final Long hash(final String string) {
 		// Must be prime of course
 		long seed = 131; // 31 131 1313 13131 131313 etc..
 		long hash = 0;
@@ -32,7 +35,7 @@ public class HashUtilities {
 	 *            the objects to build the hash from
 	 * @return the hash of the objects
 	 */
-	public static final Long hash(Object... objects) {
+	public static final Long hash(final Object... objects) {
 		StringBuilder builder = new StringBuilder();
 		for (Object object : objects) {
 			builder.append(object);

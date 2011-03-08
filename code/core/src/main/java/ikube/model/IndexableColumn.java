@@ -41,7 +41,7 @@ public class IndexableColumn extends Indexable<IndexableColumn> {
 		return idColumn;
 	}
 
-	public void setIdColumn(boolean idColumn) {
+	public void setIdColumn(final boolean idColumn) {
 		this.idColumn = idColumn;
 	}
 
@@ -49,7 +49,7 @@ public class IndexableColumn extends Indexable<IndexableColumn> {
 		return foreignKey;
 	}
 
-	public void setForeignKey(IndexableColumn foreignKey) {
+	public void setForeignKey(final IndexableColumn foreignKey) {
 		this.foreignKey = foreignKey;
 	}
 
@@ -57,7 +57,7 @@ public class IndexableColumn extends Indexable<IndexableColumn> {
 		return nameColumn;
 	}
 
-	public void setNameColumn(IndexableColumn indexableColumn) {
+	public void setNameColumn(final IndexableColumn indexableColumn) {
 		this.nameColumn = indexableColumn;
 	}
 
@@ -65,7 +65,7 @@ public class IndexableColumn extends Indexable<IndexableColumn> {
 		return columnClass;
 	}
 
-	public void setColumnClass(String columnClass) {
+	public void setColumnClass(final String columnClass) {
 		this.columnClass = columnClass;
 	}
 
@@ -73,7 +73,7 @@ public class IndexableColumn extends Indexable<IndexableColumn> {
 		return columnLength;
 	}
 
-	public void setColumnLength(int columnLength) {
+	public void setColumnLength(final int columnLength) {
 		this.columnLength = columnLength;
 	}
 

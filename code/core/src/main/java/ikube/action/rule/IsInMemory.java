@@ -18,7 +18,7 @@ public class IsInMemory implements IRule<IndexContext> {
 	 *            the index context to check if the index is in memory
 	 * @return whether the index should be in memory
 	 */
-	public boolean evaluate(IndexContext indexContext) {
+	public boolean evaluate(final IndexContext indexContext) {
 		return indexContext.getInMemory();
 	}
 

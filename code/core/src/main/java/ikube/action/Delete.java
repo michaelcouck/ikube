@@ -18,7 +18,7 @@ import java.util.Comparator;
 public class Delete extends Action {
 
 	@Override
-	public Boolean execute(IndexContext indexContext) {
+	public Boolean execute(final IndexContext indexContext) {
 		String indexDirectoryPath = indexContext.getIndexDirectoryPath() + File.separator + indexContext.getIndexName();
 		File baseIndexDirectory = FileUtilities.getFile(indexDirectoryPath, Boolean.TRUE);
 		File[] timeIndexDirectories = baseIndexDirectory.listFiles();

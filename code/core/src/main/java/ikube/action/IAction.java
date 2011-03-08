@@ -14,9 +14,9 @@ import ikube.action.rule.IRule;
  */
 public interface IAction<E, F> {
 	
-	public String getPredicate();
+	String getPredicate();
 	
-	public List<IRule<?>> getRules();
+	List<IRule<?>> getRules();
 	
 	/**
 	 * Executes the action on the index context. The generic parameter E is the index context and the return value is typically a boolean
@@ -29,6 +29,6 @@ public interface IAction<E, F> {
 	 *             any exception during the action. This should be propagated up the stack to the caller, which is generally the
 	 *             {@link IndexEngine}
 	 */
-	public F execute(E e) throws Exception;
+	F execute(E e) throws Exception;
 
 }

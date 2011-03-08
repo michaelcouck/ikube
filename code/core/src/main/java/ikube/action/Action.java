@@ -32,9 +32,9 @@ import org.apache.lucene.store.FSDirectory;
  */
 public abstract class Action implements IAction<IndexContext, Boolean> {
 
-	protected Logger logger = Logger.getLogger(this.getClass());
+	protected Logger logger = Logger.getLogger(Action.class);
 	/** The cluster synchronization class. */
-	private IClusterManager clusterManager;
+	private transient IClusterManager clusterManager;
 
 	private String predicate;
 	private List<IRule<?>> rules;
@@ -43,7 +43,7 @@ public abstract class Action implements IAction<IndexContext, Boolean> {
 		return predicate;
 	}
 
-	public void setPredicate(String predicate) {
+	public void setPredicate(final String predicate) {
 		this.predicate = predicate;
 	}
 
@@ -51,7 +51,7 @@ public abstract class Action implements IAction<IndexContext, Boolean> {
 		return rules;
 	}
 
-	public void setRules(List<IRule<?>> rules) {
+	public void setRules(final List<IRule<?>> rules) {
 		this.rules = rules;
 	}
 
@@ -70,7 +70,7 @@ public abstract class Action implements IAction<IndexContext, Boolean> {
 	 *            the index context to check if the index is expired
 	 * @return whether the index for this index context is passed it's expiration date
 	 */
-	protected boolean isIndexCurrent(IndexContext indexContext) {
+	protected boolean isIndexCurrent(final IndexContext indexContext) {
 		return new IsIndexCurrent().evaluate(indexContext);
 	}
 
@@ -82,71 +82,23 @@ public abstract class Action implements IAction<IndexContext, Boolean> {
 	 *            the index context for the index
 	 * @return whether the index should be re-opened
 	 */
-	protected boolean shouldReopen(IndexContext indexContext) {
+	protected boolean shouldReopen(final IndexContext indexContext) {
 		// If there is no searcher open then try to open one
 		if (!new IsMultiSearcherInitialised().evaluate(indexContext)) {
 			logger.debug("Multi searcher null, should try to reopen : ");
 			return Boolean.TRUE;
 		}
-		// MultiSearcher multiSearcher = indexContext.getIndex().getMultiSearcher();
-		// if (multiSearcher == null) {
-		// logger.debug("Multi searcher null, should try to reopen : ");
-		// return Boolean.TRUE;
-		// }
-
 		if (!new AreSearchablesInitialised().evaluate(indexContext)) {
 			logger.debug("No searchables open, should try to reopen : ");
 			return Boolean.TRUE;
 		}
-
-		// No searchables, also try to reopen an index searcher
-		// Searchable[] searchables = multiSearcher.getSearchables();
-		// if (searchables == null || searchables.length == 0) {
-		// logger.debug("No searchables open, should try to reopen : ");
-		// return Boolean.TRUE;
-		// }
-
 		if (!new IsIndexCurrent().evaluate(indexContext)) {
 			logger.debug("Index not current, no need to reopen : ");
 			return Boolean.FALSE;
 		}
-
-		// if (!isIndexCurrent(indexContext)) {
-		// return Boolean.FALSE;
-		// }
-
 		if (new AreIndexesCreated().evaluate(indexContext) && new AreUnopenedIndexes().evaluate(indexContext)) {
 			return Boolean.TRUE;
 		}
-
-		// File baseIndexDirectory = new File(indexContext.getIndexDirectoryPath() + File.separator + indexContext.getIndexName());
-		// File[] timeIndexDirectories = baseIndexDirectory.listFiles();
-		// if (timeIndexDirectories == null) {
-		// return Boolean.FALSE;
-		// }
-		// for (File timeIndexDirectory : timeIndexDirectories) {
-		// File[] serverIndexDirectories = timeIndexDirectory.listFiles();
-		// if (serverIndexDirectories == null) {
-		// continue;
-		// }
-		// for (File serverIndexDirectory : serverIndexDirectories) {
-		// boolean indexAlreadyOpen = Boolean.FALSE;
-		// for (Searchable searchable : searchables) {
-		// IndexSearcher indexSearcher = (IndexSearcher) searchable;
-		// IndexReader indexReader = indexSearcher.getIndexReader();
-		// FSDirectory fsDirectory = (FSDirectory) indexReader.directory();
-		// File indexDirectory = fsDirectory.getFile();
-		// if (directoriesEqual(serverIndexDirectory, indexDirectory)) {
-		// indexAlreadyOpen = directoryExistsAndNotLocked(serverIndexDirectory);
-		// break;
-		// }
-		// }
-		// if (!indexAlreadyOpen) {
-		// logger.debug(Logging.getString("Found new index directory : ", serverIndexDirectory, " will try to re-open : "));
-		// return Boolean.TRUE;
-		// }
-		// }
-		// }
 		return Boolean.FALSE;
 	}
 
@@ -157,7 +109,7 @@ public abstract class Action implements IAction<IndexContext, Boolean> {
 	 *            the directory to check for existence and availability
 	 * @return whether the directory exists as a Lucene index and is not locked by Lucene
 	 */
-	protected boolean directoryExistsAndNotLocked(File indexDirectory) {
+	protected boolean directoryExistsAndNotLocked(final File indexDirectory) {
 		Directory directory = null;
 		try {
 			directory = FSDirectory.open(indexDirectory);
@@ -188,41 +140,12 @@ public abstract class Action implements IAction<IndexContext, Boolean> {
 	 *            the directory to check for existence and being locked
 	 * @return whether the directory exists as a Lucene index and is locked
 	 */
-	protected boolean directoryExistsAndIsLocked(File indexDirectory) {
-		// Directory directory = null;
-		// try {
-		// directory = FSDirectory.open(indexDirectory);
-		// boolean exists = IndexReader.indexExists(directory);
-		// boolean locked = IndexWriter.isLocked(directory);
-		// logger.info(Logging.getString("Server index directory : ", indexDirectory, "exists : ", exists, "locked : ", locked));
-		// if (exists && locked) {
-		// return Boolean.TRUE;
-		// } else {
-		// logger.info("Locked directory : " + directory);
-		// }
-		// } catch (Exception e) {
-		// logger.error("Exception checking the directories : ", e);
-		// } finally {
-		// try {
-		// directory.close();
-		// } catch (Exception e) {
-		// logger.error("Exception closing the directory : " + directory, e);
-		// }
-		// }
-		// return Boolean.FALSE;
+	protected boolean directoryExistsAndIsLocked(final File indexDirectory) {
 		return new DirectoryExistsAndIsLocked().evaluate(indexDirectory);
 	}
 
 	@SuppressWarnings("unused")
-	private boolean directoriesEqual(File directoryOne, File directoryTwo) {
-		// if (directoryOne == null || directoryTwo == null) {
-		// return false;
-		// }
-		// String nameOne = directoryOne.getName();
-		// String nameTwo = directoryTwo.getName();
-		// String parentNameOne = directoryOne.getParentFile().getName();
-		// String parentNameTwo = directoryTwo.getParentFile().getName();
-		// return nameOne.equals(nameTwo) && parentNameOne.equals(parentNameTwo);
+	private boolean directoriesEqual(final File directoryOne, final File directoryTwo) {
 		return new AreDirectoriesEqual().evaluate(new File[] { directoryOne, directoryTwo });
 	}
 

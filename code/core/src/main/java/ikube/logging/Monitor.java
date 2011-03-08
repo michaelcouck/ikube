@@ -20,17 +20,16 @@ public class Monitor implements IMonitor {
 		double stop;
 	}
 
-	private Logger logger;
-	private Map<String, Execution> executions;
-	private double invocations = 10;
+	private static final Logger logger = Logger.getLogger(Monitor.class);
+	private transient Map<String, Execution> executions;
+	private transient double invocations = 10;
 
 	public Monitor() {
-		this.logger = Logger.getLogger(this.getClass());
 		this.executions = new HashMap<String, Monitor.Execution>();
 	}
 
 	@Override
-	public Object monitor(ProceedingJoinPoint call) throws Throwable {
+	public Object monitor(final ProceedingJoinPoint call) throws Throwable {
 		String name = call.getSignature().toString();
 		Execution execution = this.executions.get(name);
 		if (execution == null) {

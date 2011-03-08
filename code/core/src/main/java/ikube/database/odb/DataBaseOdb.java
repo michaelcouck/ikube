@@ -147,7 +147,7 @@ public class DataBaseOdb implements IDataBase {
 		}
 	}
 
-	protected synchronized void updateIndex(Class<?> klass) {
+	protected synchronized void updateIndex(final Class<?> klass) {
 		try {
 			this.odb.getClassRepresentation(klass).rebuildIndex(klass.getSimpleName(), Boolean.TRUE);
 		} finally {
@@ -155,7 +155,7 @@ public class DataBaseOdb implements IDataBase {
 		}
 	}
 
-	protected synchronized void deleteIndex(Class<?> klass) {
+	protected synchronized void deleteIndex(final Class<?> klass) {
 		try {
 			String indexName = klass.getSimpleName();
 			ClassRepresentation classRepresentation = this.odb.getClassRepresentation(klass);
@@ -190,7 +190,7 @@ public class DataBaseOdb implements IDataBase {
 		}
 	}
 
-	protected synchronized void openDataBase(String dataBaseFile) {
+	protected synchronized void openDataBase(final String dataBaseFile) {
 		try {
 			logger.info("Opening database : " + dataBaseFile);
 			this.odb = ODBFactory.open(dataBaseFile);
@@ -203,7 +203,7 @@ public class DataBaseOdb implements IDataBase {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized <T> T persist(T object) {
+	public synchronized <T> T persist(final T object) {
 		try {
 			if (object != null) {
 				Long idFieldValue = (Long) DatabaseUtilities.getIdFieldValue(object);
@@ -230,7 +230,7 @@ public class DataBaseOdb implements IDataBase {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized <T> T remove(T t) {
+	public synchronized <T> T remove(final T t) {
 		try {
 			if (t != null) {
 				Long idFieldValue = (Long) DatabaseUtilities.getIdFieldValue(t);
@@ -252,7 +252,7 @@ public class DataBaseOdb implements IDataBase {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized <T> T remove(Class<T> klass, Long id) {
+	public synchronized <T> T remove(final Class<T> klass, final Long id) {
 		try {
 			T t = find(klass, id);
 			this.odb.delete(t);
@@ -266,7 +266,7 @@ public class DataBaseOdb implements IDataBase {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized <T> T merge(T t) {
+	public synchronized <T> T merge(final T t) {
 		try {
 			if (t != null) {
 				Long idFieldValue = (Long) DatabaseUtilities.getIdFieldValue(t);
@@ -330,7 +330,7 @@ public class DataBaseOdb implements IDataBase {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized <T> T find(Class<T> klass, Long id) {
+	public synchronized <T> T find(final Class<T> klass, final Long id) {
 		try {
 			String idFieldName = DatabaseUtilities.getIdFieldName(klass);
 			IQuery query = new CriteriaQuery(klass, Where.equal(idFieldName, id));
@@ -351,7 +351,7 @@ public class DataBaseOdb implements IDataBase {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized <T> T find(Class<T> klass, Map<String, Object> parameters, boolean unique) {
+	public synchronized <T> T find(final Class<T> klass, final Map<String, Object> parameters, final boolean unique) {
 		try {
 			And and = new And();
 			for (String field : parameters.keySet()) {
@@ -381,7 +381,7 @@ public class DataBaseOdb implements IDataBase {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized <T> List<T> find(Class<T> klass, int startIndex, int endIndex) {
+	public synchronized <T> List<T> find(final Class<T> klass, final int startIndex, final int endIndex) {
 		List<T> list = new ArrayList<T>();
 		try {
 			IQuery query = new CriteriaQuery(klass);
@@ -402,7 +402,7 @@ public class DataBaseOdb implements IDataBase {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized <T> List<T> find(Class<T> klass, Map<String, Object> parameters, int startIndex, int endIndex) {
+	public synchronized <T> List<T> find(final Class<T> klass, final Map<String, Object> parameters, final int startIndex, final int endIndex) {
 		List<T> list = new ArrayList<T>();
 		try {
 			And criterion = new And();

@@ -26,7 +26,7 @@ import java.util.Map;
 public class Index extends Action {
 
 	@Override
-	public Boolean execute(IndexContext indexContext) throws Exception {
+	public Boolean execute(final IndexContext indexContext) throws Exception {
 		Server server = getClusterManager().getServer();
 		List<Indexable<?>> indexables = indexContext.getIndexables();
 		String indexName = indexContext.getIndexName();
@@ -77,7 +77,7 @@ public class Index extends Action {
 	 * @return the handler for the indexable or null if there is no handler for the indexable. This will fail with a warning if there is no
 	 *         handler for the indexable
 	 */
-	protected IHandler<Indexable<?>> getHandler(Indexable<?> indexable) {
+	protected IHandler<Indexable<?>> getHandler(final Indexable<?> indexable) {
 		@SuppressWarnings("rawtypes")
 		Map<String, IHandler> indexableHandlers = ApplicationContextManager.getBeans(IHandler.class);
 		for (IHandler<Indexable<?>> handler : indexableHandlers.values()) {

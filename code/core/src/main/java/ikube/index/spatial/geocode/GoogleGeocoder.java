@@ -28,7 +28,7 @@ public class GoogleGeocoder implements IGeocoder {
 	private String geoCodeApi;
 
 	@Override
-	public Coordinate getCoordinate(Indexable<?> indexable) {
+	public Coordinate getCoordinate(final Indexable<?> indexable) {
 		try {
 			String address = buildAddress(indexable, new StringBuilder()).toString();
 			// Call the geocoder with the address
@@ -50,7 +50,7 @@ public class GoogleGeocoder implements IGeocoder {
 		return null;
 	}
 
-	protected String getUri(String address) {
+	protected String getUri(final String address) {
 		StringBuilder builder = new StringBuilder();
 		builder.append(geoCodeApi);
 		builder.append("?");
@@ -64,7 +64,7 @@ public class GoogleGeocoder implements IGeocoder {
 		return builder.toString();
 	}
 
-	protected StringBuilder buildAddress(Indexable<?> indexable, StringBuilder builder) {
+	protected StringBuilder buildAddress(final Indexable<?> indexable, final StringBuilder builder) {
 		if (indexable.isAddress()) {
 			builder.append(indexable.getContent());
 		}
@@ -76,7 +76,7 @@ public class GoogleGeocoder implements IGeocoder {
 		return builder;
 	}
 
-	public void setGeoCodeApi(String geoCodeApi) {
+	public void setGeoCodeApi(final String geoCodeApi) {
 		this.geoCodeApi = geoCodeApi;
 	}
 

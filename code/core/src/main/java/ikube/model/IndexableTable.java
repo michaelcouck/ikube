@@ -24,7 +24,7 @@ public class IndexableTable extends Indexable<IndexableTable> {
 		return schema;
 	}
 
-	public void setSchema(String schema) {
+	public void setSchema(final String schema) {
 		this.schema = schema;
 	}
 
@@ -32,7 +32,7 @@ public class IndexableTable extends Indexable<IndexableTable> {
 		return primary;
 	}
 
-	public void setPrimary(boolean primary) {
+	public void setPrimary(final boolean primary) {
 		this.primary = primary;
 	}
 
@@ -40,7 +40,7 @@ public class IndexableTable extends Indexable<IndexableTable> {
 		return predicate;
 	}
 
-	public void setPredicate(String predicate) {
+	public void setPredicate(final String predicate) {
 		this.predicate = predicate;
 	}
 

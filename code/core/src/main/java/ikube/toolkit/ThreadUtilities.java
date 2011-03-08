@@ -13,7 +13,10 @@ import org.apache.log4j.Logger;
  */
 public class ThreadUtilities {
 
-	private static Logger LOGGER = Logger.getLogger(ThreadUtilities.class);
+	private static final Logger LOGGER = Logger.getLogger(ThreadUtilities.class);
+	
+	private ThreadUtilities() {
+	}
 
 	/**
 	 * This method iterates through the list of threads looking for one that is still alive and joins it. Once all the threads have finished
@@ -22,7 +25,7 @@ public class ThreadUtilities {
 	 * @param threads
 	 *            the threads to wait for
 	 */
-	public static void waitForThreads(List<Thread> threads) {
+	public static void waitForThreads(final List<Thread> threads) {
 		outer: while (true) {
 			for (Thread thread : threads) {
 				if (thread.isAlive()) {

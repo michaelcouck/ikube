@@ -19,18 +19,10 @@ import org.apache.lucene.store.Directory;
 public class Close extends Action {
 
 	@Override
-	public Boolean execute(IndexContext indexContext) {
+	public Boolean execute(final IndexContext indexContext) {
 		// First check to see if there are any new indexes, if there are no
 		// new indexes then we shouldn't close the searcher
-//		boolean shouldClose = shouldReopen(indexContext);
-//		if (!shouldClose) {
-//			logger.debug("Should close : " + shouldClose);
-//			return Boolean.FALSE;
-//		}
 		MultiSearcher multiSearcher = indexContext.getIndex().getMultiSearcher();
-//		if (multiSearcher == null) {
-//			return Boolean.TRUE;
-//		}
 		// Get all the searchables from the searcher and close them one by one
 		Searchable[] searchables = multiSearcher.getSearchables();
 		if (searchables != null && searchables.length > 0) {

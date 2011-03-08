@@ -13,15 +13,18 @@ import org.apache.log4j.Logger;
  */
 public class PerformanceTester {
 
-	private static Logger LOGGER = Logger.getLogger(PerformanceTester.class);
+	private static final Logger LOGGER = Logger.getLogger(PerformanceTester.class);
+	
+	private PerformanceTester() {
+	}
 
 	/**
 	 * This is the interface to implement by clients that want to test the performance on a method.
 	 */
-	public interface IPerform {
-		public boolean log();
+	interface IPerform {
+		boolean log();
 
-		public void execute() throws Exception;
+		void execute() throws Exception;
 	}
 
 	public static abstract class APerform implements IPerform {
@@ -45,7 +48,7 @@ public class PerformanceTester {
 	 *            the number of executions to perform
 	 * @return the number of executions per second
 	 */
-	public static double execute(IPerform perform, String type, double iterations, boolean... memory) {
+	public static double execute(final IPerform perform, final String type, final double iterations, final boolean... memory) {
 		long before = Runtime.getRuntime().totalMemory();
 		double start = System.currentTimeMillis();
 		try {

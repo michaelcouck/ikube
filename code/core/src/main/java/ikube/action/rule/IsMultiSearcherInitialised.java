@@ -11,14 +11,14 @@ import org.apache.log4j.Logger;
  */
 public class IsMultiSearcherInitialised implements IRule<IndexContext> {
 
-	private Logger logger = Logger.getLogger(this.getClass());
+	private static final transient Logger LOGGER = Logger.getLogger(IsMultiSearcherInitialised.class);
 
-	public boolean evaluate(IndexContext indexContext) {
+	public boolean evaluate(final IndexContext indexContext) {
 		if (indexContext.getIndex() == null) {
 			return Boolean.FALSE;
 		}
 		if (indexContext.getIndex().getMultiSearcher() == null) {
-			logger.debug("Multi searcher null, should try to reopen : ");
+			LOGGER.debug("Multi searcher null, should try to reopen : ");
 			return Boolean.FALSE;
 		}
 		return Boolean.TRUE;

@@ -32,7 +32,7 @@ public class IndexableEmail extends Indexable<IndexableEmail> {
 		return idField;
 	}
 
-	public void setIdField(String idField) {
+	public void setIdField(final String idField) {
 		this.idField = idField;
 	}
 
@@ -40,7 +40,7 @@ public class IndexableEmail extends Indexable<IndexableEmail> {
 		return titleField;
 	}
 
-	public void setTitleField(String titleField) {
+	public void setTitleField(final String titleField) {
 		this.titleField = titleField;
 	}
 
@@ -48,7 +48,7 @@ public class IndexableEmail extends Indexable<IndexableEmail> {
 		return contentField;
 	}
 
-	public void setContentField(String contentField) {
+	public void setContentField(final String contentField) {
 		this.contentField = contentField;
 	}
 
@@ -80,7 +80,7 @@ public class IndexableEmail extends Indexable<IndexableEmail> {
 		return mailHost;
 	}
 
-	public void setMailHost(String mailHost) {
+	public void setMailHost(final String mailHost) {
 		this.mailHost = mailHost;
 	}
 
@@ -88,7 +88,7 @@ public class IndexableEmail extends Indexable<IndexableEmail> {
 		return username;
 	}
 
-	public void setUsername(String username) {
+	public void setUsername(final String username) {
 		this.username = username;
 	}
 
@@ -96,7 +96,7 @@ public class IndexableEmail extends Indexable<IndexableEmail> {
 		return password;
 	}
 
-	public void setPassword(String password) {
+	public void setPassword(final String password) {
 		this.password = password;
 	}
 
@@ -104,7 +104,7 @@ public class IndexableEmail extends Indexable<IndexableEmail> {
 		return port;
 	}
 
-	public void setPort(String port) {
+	public void setPort(final String port) {
 		this.port = port;
 	}
 
@@ -112,7 +112,7 @@ public class IndexableEmail extends Indexable<IndexableEmail> {
 		return protocol;
 	}
 
-	public void setProtocol(String protocol) {
+	public void setProtocol(final String protocol) {
 		this.protocol = protocol;
 	}
 
@@ -120,7 +120,7 @@ public class IndexableEmail extends Indexable<IndexableEmail> {
 		return secureSocketLayer;
 	}
 
-	public void setSecureSocketLayer(boolean secureSocketLayer) {
+	public void setSecureSocketLayer(final boolean secureSocketLayer) {
 		this.secureSocketLayer = secureSocketLayer;
 	}
 

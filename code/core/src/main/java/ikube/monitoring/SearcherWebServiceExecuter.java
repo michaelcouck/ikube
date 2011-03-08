@@ -75,7 +75,7 @@ public class SearcherWebServiceExecuter implements ISearcherWebServiceExecuter {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void setProtocol(String protocol) {
+	public void setProtocol(final String protocol) {
 		this.protocol = protocol;
 	}
 
@@ -83,7 +83,7 @@ public class SearcherWebServiceExecuter implements ISearcherWebServiceExecuter {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void setPort(Integer port) {
+	public void setPort(final Integer port) {
 		this.port = port;
 	}
 
@@ -91,7 +91,7 @@ public class SearcherWebServiceExecuter implements ISearcherWebServiceExecuter {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void setPath(String path) {
+	public void setPath(final String path) {
 		this.path = path;
 	}
 
@@ -99,7 +99,7 @@ public class SearcherWebServiceExecuter implements ISearcherWebServiceExecuter {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void setIndexName(String indexName) {
+	public void setIndexName(final String indexName) {
 		this.indexName = indexName;
 	}
 
@@ -107,7 +107,7 @@ public class SearcherWebServiceExecuter implements ISearcherWebServiceExecuter {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void setSearchString(String searchString) {
+	public void setSearchString(final String searchString) {
 		this.searchString = searchString;
 	}
 
@@ -115,7 +115,7 @@ public class SearcherWebServiceExecuter implements ISearcherWebServiceExecuter {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void setFieldName(String fieldName) {
+	public void setFieldName(final String fieldName) {
 		this.fieldName = fieldName;
 	}
 
@@ -123,7 +123,7 @@ public class SearcherWebServiceExecuter implements ISearcherWebServiceExecuter {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void setFragment(boolean fragment) {
+	public void setFragment(final boolean fragment) {
 		this.fragment = fragment;
 	}
 
@@ -131,7 +131,7 @@ public class SearcherWebServiceExecuter implements ISearcherWebServiceExecuter {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void setStart(int start) {
+	public void setStart(final int start) {
 		this.start = start;
 	}
 
@@ -139,7 +139,7 @@ public class SearcherWebServiceExecuter implements ISearcherWebServiceExecuter {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void setEnd(int end) {
+	public void setEnd(final int end) {
 		this.end = end;
 	}
 
@@ -147,7 +147,7 @@ public class SearcherWebServiceExecuter implements ISearcherWebServiceExecuter {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void setResultsSizeMinimum(int resultsSizeMinimum) {
+	public void setResultsSizeMinimum(final int resultsSizeMinimum) {
 		this.resultsSizeMinimum = resultsSizeMinimum;
 	}
 

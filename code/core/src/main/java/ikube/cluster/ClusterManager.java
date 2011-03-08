@@ -28,39 +28,39 @@ import com.hazelcast.core.ILock;
 public class ClusterManager implements IClusterManager {
 
 	/** Lock objects for cluster wide locking while we update the cache. */
-	protected static String URL_LOCK = "urlLock";
-	protected static String SERVER_LOCK = "serverLock";
+	protected static final String URL_LOCK = "urlLock";
+	protected static final String SERVER_LOCK = "serverLock";
 
 	/** The timeout to wait for the lock. */
-	protected static long LOCK_TIMEOUT = 3000;
+	protected static final long LOCK_TIMEOUT = 3000;
 	/** We only keep a few actions in the server. */
-	protected static double MAX_ACTION_SIZE = 100;
+	protected static final double MAX_ACTION_SIZE = 100;
 	/** The ratio to delete the actions when the maximum is reached. */
-	protected static double ACTION_PRUNE_RATIO = 0.5;
+	protected static final double ACTION_PRUNE_RATIO = 0.5;
 
-	protected Logger logger;
+	protected static final Logger LOGGER = Logger.getLogger(ClusterManager.class);
 	/** The ip of this server. */
-	private String ip;
+	private transient String ip;
 	/** The address of this server. This can be set in the configuration. The default is the IP address. */
-	protected String address;
+	protected transient String address;
 	/** The cluster wide cache. */
-	protected ICache cache;
+	protected transient ICache cache;
 
 	/**
 	 * This criteria is to check that the {@link Url} has already been indexed or not.
 	 */
-	private ICache.ICriteria<Url> criteria = new ICache.ICriteria<Url>() {
+	private transient final ICache.ICriteria<Url> criteria = new ICache.ICriteria<Url>() {
 		@Override
-		public boolean evaluate(Url t) {
-			return !t.isIndexed();
+		public boolean evaluate(final Url url) {
+			return !url.isIndexed();
 		}
 	};
 	/**
 	 * This action is to publish the {@link Url} while getting the next batch.
 	 */
-	private ICache.IAction<Url> action = new ICache.IAction<Url>() {
+	private transient final ICache.IAction<Url> action = new ICache.IAction<Url>() {
 		@Override
-		public void execute(Url url) {
+		public void execute(final Url url) {
 			url.setIndexed(Boolean.TRUE);
 			cache.set(Url.class.getName(), url.getId(), url);
 		}
@@ -75,7 +75,6 @@ public class ClusterManager implements IClusterManager {
 	public ClusterManager() throws Exception {
 		synchronized (this) {
 			try {
-				this.logger = Logger.getLogger(this.getClass());
 				// We give each server a unique name because there can be several servers
 				// started on the same machine. For example several Tomcats each with a war. In
 				// this case the ip addresses will overlap. Ikube can also be started as stand alone
@@ -120,7 +119,7 @@ public class ClusterManager implements IClusterManager {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized boolean anyWorking(String indexName) {
+	public synchronized boolean anyWorking(final String indexName) {
 		ILock lock = null;
 		try {
 			lock = lock(SERVER_LOCK);
@@ -157,7 +156,7 @@ public class ClusterManager implements IClusterManager {
 	 * </pre>
 	 */
 	@Override
-	public synchronized long getIdNumber(String indexName, String indexableName, long batchSize, long minId) {
+	public synchronized long getIdNumber(final String indexName, final String indexableName, final long batchSize, final long minId) {
 		ILock lock = null;
 		try {
 			lock = lock(SERVER_LOCK);
@@ -200,7 +199,7 @@ public class ClusterManager implements IClusterManager {
 
 			// This can never happen, can it?
 			if (currentAction == null) {
-				logger.warn("Action null : " + indexName + ", " + indexableName + ", " + batchSize);
+				LOGGER.warn("Action null : " + indexName + ", " + indexableName + ", " + batchSize);
 				currentAction = server.new Action();
 				currentAction.setIndexableName(indexableName);
 				currentAction.setIndexName(indexName);
@@ -247,7 +246,7 @@ public class ClusterManager implements IClusterManager {
 				server.setAddress(address);
 				server.setId(HashUtilities.hash(address));
 				cache.set(Server.class.getName(), server.getId(), server);
-				logger.info("Published server : " + server);
+				LOGGER.info("Published server : " + server);
 			}
 			return server;
 		} finally {
@@ -259,7 +258,7 @@ public class ClusterManager implements IClusterManager {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized long setWorking(String indexName, String indexableName, boolean isWorking) {
+	public synchronized long setWorking(final String indexName, final String indexableName, final boolean isWorking) {
 		// logger.info("Set working : ");
 		ILock lock = null;
 		try {
@@ -272,7 +271,7 @@ public class ClusterManager implements IClusterManager {
 			List<Server> servers = cache.get(Server.class.getName(), null, null, Integer.MAX_VALUE);
 			// Find the first start time for the action we want to start in any of the servers
 			for (Server server : servers) {
-				logger.debug("Server : " + server);
+				LOGGER.debug("Server : " + server);
 				for (Action action : server.getActions()) {
 					if (indexName.equals(action.getIndexName()) && indexableName.equals(action.getIndexableName()) && server.isWorking()) {
 						firstStartTime = Math.min(firstStartTime, action.getStartTime());
@@ -295,7 +294,7 @@ public class ClusterManager implements IClusterManager {
 				double prunedSize = MAX_ACTION_SIZE * ACTION_PRUNE_RATIO;
 				while (iterator.hasNext()) {
 					Action action = iterator.next();
-					logger.debug("Removing action : " + action);
+					LOGGER.debug("Removing action : " + action);
 					iterator.remove();
 					if (actions.size() <= prunedSize) {
 						break;
@@ -304,7 +303,7 @@ public class ClusterManager implements IClusterManager {
 			}
 
 			// Publish the fact that this server is starting to work on an action
-			logger.debug("Publishing server : " + server.getAddress());
+			LOGGER.debug("Publishing server : " + server.getAddress());
 			cache.set(Server.class.getName(), server.getId(), server);
 			return firstStartTime;
 		} finally {
@@ -327,7 +326,7 @@ public class ClusterManager implements IClusterManager {
 				}
 				for (Action action : server.getActions()) {
 					if (action.getIndexName().equals(indexName) && action.getIndexableName().equals(indexableName)) {
-						logger.info("Already indexed by : " + server);
+						LOGGER.info("Already indexed by : " + server);
 						return Boolean.TRUE;
 					}
 				}
@@ -352,10 +351,10 @@ public class ClusterManager implements IClusterManager {
 			try {
 				acquired = lock.tryLock(LOCK_TIMEOUT, TimeUnit.MILLISECONDS);
 			} catch (InterruptedException e) {
-				logger.error("Interrupted acquiring lock for : " + lockName, e);
+				LOGGER.error("Interrupted acquiring lock for : " + lockName, e);
 			}
 			if (!acquired) {
-				logger.warn(Logging.getString("Failed to acquire lock : ", lockName, Thread.currentThread().hashCode()));
+				LOGGER.warn(Logging.getString("Failed to acquire lock : ", lockName, Thread.currentThread().hashCode()));
 				return null;
 			}
 			return lock;
@@ -416,7 +415,7 @@ public class ClusterManager implements IClusterManager {
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public synchronized <T> T get(Class<T> klass, Long id) {
+	public synchronized <T> T get(final Class<T> klass, final Long id) {
 		try {
 			return (T) cache.get(klass.getName(), id);
 		} finally {
@@ -428,7 +427,7 @@ public class ClusterManager implements IClusterManager {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized <T> void set(Class<T> klass, Long id, T t) {
+	public synchronized <T> void set(final Class<T> klass, final Long id, final T t) {
 		try {
 			cache.set(klass.getName(), id, t);
 		} finally {

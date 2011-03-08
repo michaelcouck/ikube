@@ -17,7 +17,7 @@ public class ScriptHandler extends Handler<Url> {
 	 * 
 	 * @See {@link IHandler#handle(Url)}
 	 */
-	public void handle(Url url) {
+	public void handle(final Url url) {
 		// TODO - implement me. We could use Rhino for executing the JavaScript
 		// or some other library for the execution, perhaps index the result too.
 	}

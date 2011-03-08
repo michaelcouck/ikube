@@ -12,10 +12,8 @@ import ikube.toolkit.ApplicationContextManager;
 public class AnyServersWorking implements IRule<IndexContext> {
 
 	@Override
-	public boolean evaluate(IndexContext indexContext) {
-		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
-		boolean anyServersWorking = clusterManager.anyWorking();
-		return anyServersWorking;
+	public boolean evaluate(final IndexContext indexContext) {
+		return ApplicationContextManager.getBean(IClusterManager.class).anyWorking();
 	}
 
 }

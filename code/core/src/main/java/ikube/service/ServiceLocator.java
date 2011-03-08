@@ -16,9 +16,13 @@ import org.apache.log4j.Logger;
  */
 public class ServiceLocator {
 
-	private static Logger LOGGER = Logger.getLogger(ServiceLocator.class);
+	private static final Logger LOGGER = Logger.getLogger(ServiceLocator.class);
 
-	public static <T> T getService(Class<T> klass, String protocol, String host, int port, String path, String nameSpace, String serviceName) {
+	private ServiceLocator() {
+	}
+
+	public static <T> T getService(final Class<T> klass, final String protocol, final String host, final int port, final String path,
+			final String nameSpace, final String serviceName) {
 		try {
 			String url = UriUtilities.buildUri(protocol, host, port, path);
 			return getService(klass, url, nameSpace, serviceName);
@@ -28,7 +32,7 @@ public class ServiceLocator {
 		return null;
 	}
 
-	public static <T> T getService(Class<T> klass, String url, String nameSpace, String serviceName) {
+	public static <T> T getService(final Class<T> klass, final String url, final String nameSpace, final String serviceName) {
 		try {
 			URL wsdlURL = new URL(url);
 			QName qName = new QName(nameSpace, serviceName);

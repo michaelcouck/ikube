@@ -30,7 +30,7 @@ public class Server extends Persistable implements Comparable<Server> {
 		public Action() {
 		}
 
-		public Action(long idNumber, String indexableName, String indexName, long startTime) {
+		public Action(final long idNumber, final String indexableName, final String indexName, final long startTime) {
 			this.idNumber = idNumber;
 			this.indexableName = indexableName;
 			this.indexName = indexName;
@@ -41,7 +41,7 @@ public class Server extends Persistable implements Comparable<Server> {
 			return idNumber;
 		}
 
-		public void setIdNumber(long idNumber) {
+		public void setIdNumber(final long idNumber) {
 			this.idNumber = idNumber;
 		}
 
@@ -49,7 +49,7 @@ public class Server extends Persistable implements Comparable<Server> {
 			return indexableName;
 		}
 
-		public void setIndexableName(String indexableName) {
+		public void setIndexableName(final String indexableName) {
 			this.indexableName = indexableName;
 		}
 
@@ -57,7 +57,7 @@ public class Server extends Persistable implements Comparable<Server> {
 			return indexName;
 		}
 
-		public void setIndexName(String indexName) {
+		public void setIndexName(final String indexName) {
 			this.indexName = indexName;
 		}
 
@@ -65,7 +65,7 @@ public class Server extends Persistable implements Comparable<Server> {
 			return startTime;
 		}
 
-		public void setStartTime(long startTime) {
+		public void setStartTime(final long startTime) {
 			this.startTime = startTime;
 		}
 
@@ -89,11 +89,12 @@ public class Server extends Persistable implements Comparable<Server> {
 	/** Whether this server is working. */
 	private boolean working;
 	/** The details about the action that this server is executing. */
-	private List<Action> actions;
+	private final List<Action> actions;
 	/** The list of web service urls. */
-	private List<String> webServiceUrls;
+	private final List<String> webServiceUrls;
 
 	public Server() {
+		super();
 		this.actions = new ArrayList<Server.Action>();
 		this.webServiceUrls = new ArrayList<String>();
 	}
@@ -102,7 +103,7 @@ public class Server extends Persistable implements Comparable<Server> {
 		return ip;
 	}
 
-	public void setIp(String ip) {
+	public void setIp(final String ip) {
 		this.ip = ip;
 	}
 
@@ -110,7 +111,7 @@ public class Server extends Persistable implements Comparable<Server> {
 		return address;
 	}
 
-	public void setAddress(String address) {
+	public void setAddress(final String address) {
 		this.address = address;
 	}
 
@@ -118,7 +119,7 @@ public class Server extends Persistable implements Comparable<Server> {
 		return working;
 	}
 
-	public void setWorking(boolean working) {
+	public void setWorking(final boolean working) {
 		this.working = working;
 	}
 
@@ -131,8 +132,8 @@ public class Server extends Persistable implements Comparable<Server> {
 	}
 
 	@Override
-	public int compareTo(Server o) {
-		return this.getAddress().compareTo(o.getAddress());
+	public int compareTo(final Server other) {
+		return this.getAddress().compareTo(other.getAddress());
 	}
 
 	public String toString() {

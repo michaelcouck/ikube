@@ -47,8 +47,8 @@ import com.sun.mail.pop3.POP3SSLStore;
  */
 public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 
-	static final String SSL_FACTORY = "javax.net.ssl.SSLSocketFactory";
-	static final String MAIL_PROTOCOL = "pop3";
+	private static final String SSL_FACTORY = "javax.net.ssl.SSLSocketFactory";
+	private static final String MAIL_PROTOCOL = "pop3";
 
 	/**
 	 * {@inheritDoc}
@@ -58,10 +58,9 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 		// First check to see if this indexable is handled by another server
 		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
 		boolean isHandled = clusterManager.isHandled(indexable.getName(), indexContext.getIndexName());
-		if (isHandled) {
-			return null;
+		if (!isHandled) {
+			handleEmail(indexContext, indexable);
 		}
-		handleEmail(indexContext, indexable);
 		return null;
 	}
 
@@ -73,7 +72,7 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 	 * @param indexableMail
 	 *            the indexable to index
 	 */
-	protected void handleEmail(final IndexContext indexContext, IndexableEmail indexableMail) {
+	protected void handleEmail(final IndexContext indexContext, final IndexableEmail indexableMail) {
 		Store store;
 		try {
 			store = getStore(indexableMail);
@@ -126,7 +125,7 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 	 * @param folder
 	 * @throws Exception
 	 */
-	protected void handleFolder(IndexContext indexContext, IndexableEmail indexableMail, Folder folder) throws Exception {
+	protected void handleFolder(final IndexContext indexContext, final IndexableEmail indexableMail, final Folder folder) throws Exception {
 		folder.open(Folder.READ_ONLY);
 
 		// For each message found in the server, index it.
@@ -169,7 +168,7 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 		folder.close(true);
 	}
 
-	protected String getMessageId(IndexableEmail indexableMail, int messageNumber, long timestamp) {
+	protected String getMessageId(final IndexableEmail indexableMail, final int messageNumber, final long timestamp) {
 		StringBuilder builder = new StringBuilder();
 		builder.append(indexableMail.getMailHost());
 		builder.append('.');

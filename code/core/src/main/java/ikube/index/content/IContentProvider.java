@@ -26,6 +26,6 @@ public interface IContentProvider<I extends Indexable<?>> {
 	 * @param outputStream
 	 *            the output stream to write the data to
 	 */
-	public void getContent(I indexable, OutputStream outputStream);
+	void getContent(I indexable, OutputStream outputStream);
 
 }

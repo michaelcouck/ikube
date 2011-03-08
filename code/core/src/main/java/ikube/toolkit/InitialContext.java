@@ -23,7 +23,7 @@ public class InitialContext extends MemoryContext implements Serializable {
 	/**
 	 * Constructor.
 	 */
-	public InitialContext(Hashtable<?, ?> env) {
+	public InitialContext(final Hashtable<?, ?> env) {
 		super(env);
 	}
 
@@ -31,7 +31,7 @@ public class InitialContext extends MemoryContext implements Serializable {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Object lookup(String key) throws NamingException {
+	public Object lookup(final String key) throws NamingException {
 		Object object = super.lookup(key);
 		// This is where Simple Jndi does not throw an exception
 		// as is specified in the Java API for Context

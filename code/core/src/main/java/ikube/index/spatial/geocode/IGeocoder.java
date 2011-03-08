@@ -10,6 +10,6 @@ import ikube.model.Indexable;
  */
 public interface IGeocoder {
 
-	public Coordinate getCoordinate(Indexable<?> indexable);
+	Coordinate getCoordinate(Indexable<?> indexable);
 
 }

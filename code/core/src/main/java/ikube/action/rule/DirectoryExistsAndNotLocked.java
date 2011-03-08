@@ -15,9 +15,9 @@ import org.apache.lucene.store.FSDirectory;
  */
 public class DirectoryExistsAndNotLocked implements IRule<File> {
 
-	private Logger logger = Logger.getLogger(this.getClass());
+	private static final transient Logger LOGGER = Logger.getLogger(DirectoryExistsAndNotLocked.class);
 
-	public boolean evaluate(File indexDirectory) {
+	public boolean evaluate(final File indexDirectory) {
 		Directory directory = null;
 		try {
 			directory = FSDirectory.open(indexDirectory);
@@ -26,15 +26,15 @@ public class DirectoryExistsAndNotLocked implements IRule<File> {
 			if (exists && !locked) {
 				return Boolean.TRUE;
 			} else {
-				logger.info("Non existant or locked directory found, will not open on this one yet : " + directory);
+				LOGGER.info("Non existant or locked directory found, will not open on this one yet : " + directory);
 			}
 		} catch (Exception e) {
-			logger.error("Exception checking the directories : ", e);
+			LOGGER.error("Exception checking the directories : ", e);
 		} finally {
 			try {
 				directory.close();
 			} catch (Exception e) {
-				logger.error("Exception closing the directory : " + directory, e);
+				LOGGER.error("Exception closing the directory : " + directory, e);
 			}
 		}
 		return Boolean.FALSE;

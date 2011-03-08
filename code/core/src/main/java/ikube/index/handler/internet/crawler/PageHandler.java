@@ -55,36 +55,36 @@ import org.apache.lucene.document.Field.TermVector;
  */
 public class PageHandler extends Handler<Url> implements Runnable {
 
-	public static Set<Url> IN_SET = new TreeSet<Url>(new Comparator<Url>() {
+	public static final Set<Url> IN_SET = new TreeSet<Url>(new Comparator<Url>() {
 		@Override
-		public int compare(Url o1, Url o2) {
-			long id1 = o1.getId();
-			long id2 = o2.getId();
+		public int compare(final Url objectOne, final Url objectTwo) {
+			long id1 = objectOne.getId();
+			long id2 = objectTwo.getId();
 			return id1 < id2 ? -1 : id1 == id2 ? 0 : 1;
 		}
 	});
-	public static Set<Url> OUT_SET = new TreeSet<Url>(new Comparator<Url>() {
+	public static final Set<Url> OUT_SET = new TreeSet<Url>(new Comparator<Url>() {
 		@Override
-		public int compare(Url o1, Url o2) {
-			long id1 = o1.getId();
-			long id2 = o2.getId();
+		public int compare(final Url objectOne, final Url objectTwo) {
+			long id1 = objectOne.getId();
+			long id2 = objectTwo.getId();
 			return id1 < id2 ? -1 : id1 == id2 ? 0 : 1;
 		}
 	});
-	public static Set<Url> HASH_SET = new TreeSet<Url>(new Comparator<Url>() {
+	public static final Set<Url> HASH_SET = new TreeSet<Url>(new Comparator<Url>() {
 		@Override
-		public int compare(Url o1, Url o2) {
-			long hash1 = o1.getHash();
-			long hash2 = o2.getHash();
+		public int compare(final Url objectOne, final Url objectTwo) {
+			long hash1 = objectOne.getHash();
+			long hash2 = objectTwo.getHash();
 			return hash1 < hash2 ? -1 : hash1 == hash2 ? 0 : 1;
 		}
 	});
 
-	private HttpClient httpClient;
-	private IContentProvider<IndexableInternet> contentProvider;
-	private List<Thread> threads;
+	private transient final HttpClient httpClient;
+	private transient final IContentProvider<IndexableInternet> contentProvider;
+	private transient final List<Thread> threads;
 
-	public PageHandler(List<Thread> threads) {
+	public PageHandler(final List<Thread> threads) {
 		this.httpClient = new HttpClient();
 		this.contentProvider = new InternetContentProvider();
 		this.threads = threads;
@@ -137,7 +137,7 @@ public class PageHandler extends Handler<Url> implements Runnable {
 		}
 	}
 
-	protected static synchronized List<Url> getBatch(int batchSize) {
+	protected static synchronized List<Url> getBatch(final int batchSize) {
 		try {
 			List<Url> batch = new ArrayList<Url>();
 			for (Url url : IN_SET) {
@@ -160,7 +160,7 @@ public class PageHandler extends Handler<Url> implements Runnable {
 	 * @See {@link IHandler#handle(Url)}
 	 */
 	@Override
-	public void handle(Url url) {
+	public void handle(final Url url) {
 		try {
 			IndexableInternet indexableInternet = getIndexableInternet();
 			// Get the content from the url
@@ -201,7 +201,7 @@ public class PageHandler extends Handler<Url> implements Runnable {
 	 *            the url to get the data from
 	 * @return the raw data from the url
 	 */
-	protected ByteOutputStream getContentFromUrl(HttpClient httpClient, IndexableInternet indexable, Url url) {
+	protected ByteOutputStream getContentFromUrl(final HttpClient httpClient, final IndexableInternet indexable, final Url url) {
 		GetMethod get = null;
 		ByteOutputStream byteOutputStream = null;
 		try {
@@ -236,7 +236,7 @@ public class PageHandler extends Handler<Url> implements Runnable {
 	 *            the output stream of data from the url
 	 * @return the parsed content
 	 */
-	protected String getParsedContent(Url url, ByteOutputStream byteOutputStream) {
+	protected String getParsedContent(final Url url, final ByteOutputStream byteOutputStream) {
 		try {
 			String contentType = URI.create(url.getUrl()).toURL().getFile();
 			// The actual byte buffer of data
@@ -274,7 +274,7 @@ public class PageHandler extends Handler<Url> implements Runnable {
 	 * @param url
 	 * @param parsedContent
 	 */
-	protected void addDocumentToIndex(IndexableInternet indexable, Url url, String parsedContent) {
+	protected void addDocumentToIndex(final IndexableInternet indexable, final Url url, final String parsedContent) {
 		try {
 			String id = getUrlId(indexable, url);
 
@@ -312,7 +312,7 @@ public class PageHandler extends Handler<Url> implements Runnable {
 		}
 	}
 
-	protected String getUrlId(IndexableInternet indexableInternet, Url url) {
+	protected String getUrlId(final IndexableInternet indexableInternet, final Url url) {
 		StringBuilder builder = new StringBuilder();
 		builder.append(indexableInternet.getName());
 		builder.append('.');
@@ -331,7 +331,7 @@ public class PageHandler extends Handler<Url> implements Runnable {
 	 * @param inputStream
 	 *            the input stream of the data from the base url, i.e. the html
 	 */
-	protected void extractLinksFromContent(IndexableInternet indexableInternet, Url baseUrl, InputStream inputStream) {
+	protected void extractLinksFromContent(final IndexableInternet indexableInternet, final Url baseUrl, final InputStream inputStream) {
 		try {
 			Reader reader = new InputStreamReader(inputStream, IConstants.ENCODING);
 			Source source = new Source(reader);
@@ -390,7 +390,7 @@ public class PageHandler extends Handler<Url> implements Runnable {
 		}
 	}
 
-	protected static synchronized boolean exists(Url url) {
+	protected static synchronized boolean exists(final Url url) {
 		try {
 			return IN_SET.contains(url) || OUT_SET.contains(url);
 		} finally {
@@ -398,7 +398,7 @@ public class PageHandler extends Handler<Url> implements Runnable {
 		}
 	}
 
-	protected static synchronized void setUrl(Url url) {
+	protected static synchronized void setUrl(final Url url) {
 		try {
 			IN_SET.add(url);
 		} finally {

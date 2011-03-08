@@ -17,27 +17,27 @@ import org.apache.lucene.store.FSDirectory;
  */
 public class DirectoryExistsAndIsLocked implements IRule<File> {
 
-	private Logger logger = Logger.getLogger(this.getClass());
+	private static final transient Logger LOGGER = Logger.getLogger(DirectoryExistsAndIsLocked.class);
 
-	public boolean evaluate(File indexDirectory) {
+	public boolean evaluate(final File indexDirectory) {
 		Directory directory = null;
 		try {
 			directory = FSDirectory.open(indexDirectory);
 			boolean exists = IndexReader.indexExists(directory);
 			boolean locked = IndexWriter.isLocked(directory);
-			logger.info(Logging.getString("Server index directory : ", indexDirectory, "exists : ", exists, "locked : ", locked));
+			LOGGER.info(Logging.getString("Server index directory : ", indexDirectory, "exists : ", exists, "locked : ", locked));
 			if (exists && locked) {
 				return Boolean.TRUE;
 			} else {
-				logger.info("Locked directory : " + directory);
+				LOGGER.info("Locked directory : " + directory);
 			}
 		} catch (Exception e) {
-			logger.error("Exception checking the directories : ", e);
+			LOGGER.error("Exception checking the directories : ", e);
 		} finally {
 			try {
 				directory.close();
 			} catch (Exception e) {
-				logger.error("Exception closing the directory : " + directory, e);
+				LOGGER.error("Exception closing the directory : " + directory, e);
 			}
 		}
 		return Boolean.FALSE;

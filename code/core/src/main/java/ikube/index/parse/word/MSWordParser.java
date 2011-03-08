@@ -25,7 +25,7 @@ public class MSWordParser implements IParser {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public final OutputStream parse(InputStream inputStream, OutputStream outputStream) throws Exception {
+	public final OutputStream parse(final InputStream inputStream, final OutputStream outputStream) throws Exception {
 		POIFSFileSystem fileSystem = new POIFSFileSystem(inputStream);
 		WordExtractor extractor = new WordExtractor(fileSystem);
 		outputStream.write(extractor.getText().trim().getBytes());

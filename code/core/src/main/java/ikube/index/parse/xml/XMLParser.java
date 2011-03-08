@@ -25,7 +25,7 @@ import org.xml.sax.InputSource;
 public class XMLParser implements IParser {
 
 	@Override
-	public final OutputStream parse(InputStream inputStream, OutputStream outputStream) throws Exception {
+	public final OutputStream parse(final InputStream inputStream, final OutputStream outputStream) throws Exception {
 		Reader reader = new InputStreamReader(inputStream, IConstants.ENCODING);
 		InputSource inputSource = new InputSource(reader);
 
@@ -53,7 +53,7 @@ public class XMLParser implements IParser {
 	 * @throws IOException
 	 */
 	@SuppressWarnings("unchecked")
-	private final void visit(Element parent, Writer writer) throws IOException {
+	private final void visit(final Element parent, final Writer writer) throws IOException {
 		String text = parent.getTextTrim();
 		if (text != null && !text.equals("")) {
 			writer.append(' ').append(text).append(' ');

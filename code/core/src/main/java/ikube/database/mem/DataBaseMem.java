@@ -32,7 +32,7 @@ public class DataBaseMem implements IDataBase {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized <T> T persist(T object) {
+	public synchronized <T> T persist(final T object) {
 		try {
 			Long idFieldValue = (Long) DatabaseUtilities.getIdFieldValue(object);
 			if (idFieldValue == null || idFieldValue == 0) {
@@ -56,7 +56,7 @@ public class DataBaseMem implements IDataBase {
 		}
 	}
 
-	protected Map<Long, Object> getMap(Class<?> klass) {
+	protected Map<Long, Object> getMap(final Class<?> klass) {
 		Map<Long, Object> map = cache.get(klass);
 		if (map == null) {
 			map = new HashMap<Long, Object>();
@@ -69,7 +69,7 @@ public class DataBaseMem implements IDataBase {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized <T> T remove(T t) {
+	public synchronized <T> T remove(final T t) {
 		try {
 			Long idFieldValue = (Long) DatabaseUtilities.getIdFieldValue(t);
 			// Remove the object from the maps
@@ -88,7 +88,7 @@ public class DataBaseMem implements IDataBase {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized <T> T remove(Class<T> klass, Long id) {
+	public synchronized <T> T remove(final Class<T> klass, final Long id) {
 		try {
 			Map<Long, Object> map = getMap(klass);
 			map.remove(id);
@@ -102,7 +102,7 @@ public class DataBaseMem implements IDataBase {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized <T> T merge(T t) {
+	public synchronized <T> T merge(final T t) {
 		try {
 			// T is a live object so there is no merge required
 			return dataBase.merge(t);
@@ -119,7 +119,7 @@ public class DataBaseMem implements IDataBase {
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public synchronized <T> T find(Long id) {
+	public synchronized <T> T find(final Long id) {
 		try {
 			return (T) dataBase.find(id);
 		} finally {
@@ -132,7 +132,7 @@ public class DataBaseMem implements IDataBase {
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public synchronized <T> T find(Class<T> klass, Long id) {
+	public synchronized <T> T find(final Class<T> klass, final Long id) {
 		try {
 			Map<Long, Object> map = getMap(klass);
 			T t = (T) map.get(id);
@@ -146,7 +146,7 @@ public class DataBaseMem implements IDataBase {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized <T> T find(Class<T> klass, Map<String, Object> parameters, boolean unique) {
+	public synchronized <T> T find(final Class<T> klass, final Map<String, Object> parameters, final boolean unique) {
 		try {
 			return dataBase.find(klass, parameters, unique);
 		} finally {
@@ -159,7 +159,7 @@ public class DataBaseMem implements IDataBase {
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public synchronized <T> List<T> find(Class<T> klass, int startIndex, int endIndex) {
+	public synchronized <T> List<T> find(final Class<T> klass, final int startIndex, final int endIndex) {
 		List<T> list = new ArrayList<T>();
 		try {
 			Map<Long, Object> map = getMap(klass);
@@ -186,7 +186,7 @@ public class DataBaseMem implements IDataBase {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized <T> List<T> find(Class<T> klass, Map<String, Object> parameters, int startIndex, int endIndex) {
+	public synchronized <T> List<T> find(final Class<T> klass, final Map<String, Object> parameters, final int startIndex, final int endIndex) {
 		List<T> list = new ArrayList<T>();
 		try {
 			return dataBase.find(klass, parameters, startIndex, endIndex);
@@ -198,7 +198,7 @@ public class DataBaseMem implements IDataBase {
 		return list;
 	}
 
-	public void setDataBase(IDataBase dataBase) {
+	public void setDataBase(final IDataBase dataBase) {
 		this.dataBase = dataBase;
 	}
 

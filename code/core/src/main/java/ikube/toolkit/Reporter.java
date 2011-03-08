@@ -21,10 +21,10 @@ import org.apache.log4j.Logger;
  */
 public class Reporter implements IListener {
 
-	private Logger logger = Logger.getLogger(this.getClass());
+	private static final Logger LOGGER = Logger.getLogger(Reporter.class);
 
 	@Override
-	public void handleNotification(Event event) {
+	public void handleNotification(final Event event) {
 		if (event.getType().equals(Event.REPORT)) {
 			try {
 				List<Object> list = new ArrayList<Object>();
@@ -73,7 +73,7 @@ public class Reporter implements IListener {
 				String xml = SerializationUtilities.serialize(list);
 				mailer.sendMail("Ikube report", xml);
 			} catch (Exception e) {
-				logger.error("", e);
+				LOGGER.error("", e);
 			}
 		}
 	}

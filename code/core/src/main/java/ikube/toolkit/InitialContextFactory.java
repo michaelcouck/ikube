@@ -20,7 +20,7 @@ public class InitialContextFactory implements javax.naming.spi.InitialContextFac
 	/**
 	 * {@inheritDoc}
 	 */
-	public Context getInitialContext(Hashtable<?, ?> env) {
+	public Context getInitialContext(final Hashtable<?, ?> env) {
 		if (initialContext == null) {
 			initialContext = new InitialContext(env);
 		}

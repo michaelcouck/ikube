@@ -22,7 +22,7 @@ public class IsIndexCurrent implements IRule<IndexContext> {
 	 *            the index context to check if the index is expired
 	 * @return whether the index for this index context is passed it's expiration date
 	 */
-	public boolean evaluate(IndexContext indexContext) {
+	public boolean evaluate(final IndexContext indexContext) {
 		String indexDirectoryPath = indexContext.getIndexDirectoryPath() + File.separator + indexContext.getIndexName();
 		File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexDirectoryPath);
 		if (latestIndexDirectory == null) {

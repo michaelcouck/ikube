@@ -11,7 +11,7 @@ import ikube.model.Indexable;
 public class NavtecGeocoder implements IGeocoder {
 
 	@Override
-	public Coordinate getCoordinate(Indexable<?> indexable) {
+	public Coordinate getCoordinate(final Indexable<?> indexable) {
 		return null;
 	}
 

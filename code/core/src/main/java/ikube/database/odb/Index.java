@@ -17,19 +17,22 @@ public class Index {
 	/** The fields in the class to create indexes on. */
 	private List<String> fieldNames;
 
+	/**
+	 * Constructor for Spring.
+	 */
 	public Index() {
 	}
 
 	public Index(String className, List<String> fieldNames) {
-		setClassName(className);
-		setFieldNames(fieldNames);
+		this.className = className;
+		this.fieldNames = fieldNames;
 	}
 
 	public String getClassName() {
 		return className;
 	}
 
-	public void setClassName(String className) {
+	public void setClassName(final String className) {
 		this.className = className;
 	}
 
@@ -37,7 +40,7 @@ public class Index {
 		return fieldNames;
 	}
 
-	public void setFieldNames(List<String> fieldNames) {
+	public void setFieldNames(final List<String> fieldNames) {
 		this.fieldNames = fieldNames;
 	}
 

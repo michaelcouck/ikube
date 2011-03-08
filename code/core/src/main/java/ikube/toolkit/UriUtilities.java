@@ -15,7 +15,10 @@ import org.apache.log4j.Logger;
  */
 public class UriUtilities {
 
-	protected static Logger LOGGER = Logger.getLogger(UriUtilities.class);
+	protected static final Logger LOGGER = Logger.getLogger(UriUtilities.class);
+	
+	private UriUtilities() {
+	}
 
 	/** Accepted protocols. */
 	protected static final Pattern PROTOCOL_PATTERN;
@@ -112,7 +115,7 @@ public class UriUtilities {
 	 *            the original URI
 	 * @return the URI without dot segments
 	 */
-	private static URI removeDotSegments(URI uri) {
+	private static URI removeDotSegments(final URI uri) {
 		String path = uri.getPath();
 		if ((path == null) || (path.indexOf("/.") == -1)) {
 			// No dot segments to remove
@@ -157,7 +160,7 @@ public class UriUtilities {
 		return URI.create(baseUri + reference.toString());
 	}
 
-	public static boolean isExcluded(String string) {
+	public static boolean isExcluded(final String string) {
 		if (string == null) {
 			return Boolean.TRUE;
 		}
@@ -181,19 +184,19 @@ public class UriUtilities {
 		return EXCLUDED_PATTERN.matcher(lowerCaseString).matches();
 	}
 
-	public static boolean isInternetProtocol(String string) {
+	public static boolean isInternetProtocol(final String string) {
 		return PROTOCOL_PATTERN.matcher(string).matches();
 	}
 
-	public static String stripJSessionId(String string, String replacement) {
+	public static String stripJSessionId(final String string, final String replacement) {
 		return JSESSIONID_PATTERN.matcher(string).replaceAll(replacement);
 	}
 
-	public static String stripAnchor(String string, String replacement) {
+	public static String stripAnchor(final String string, final String replacement) {
 		return ANCHOR_PATTERN.matcher(string).replaceAll(replacement);
 	}
 
-	public static String stripBlanks(String string) {
+	public static String stripBlanks(final String string) {
 		StringBuilder builder = new StringBuilder();
 		char[] chars = string.toCharArray();
 		for (char c : chars) {
@@ -205,11 +208,11 @@ public class UriUtilities {
 		return builder.toString();
 	}
 
-	public static String stripCarriageReturn(String string) {
+	public static String stripCarriageReturn(final String string) {
 		return CARRIAGE_LINE_FEED_PATTERN.matcher(string).replaceAll("");
 	}
 
-	public static String buildUri(String protocol, String host, int port, String path) {
+	public static String buildUri(final String protocol, final String host, final int port, final String path) {
 		try {
 			URL url = new URL(protocol, host, port, path);
 			return url.toString();

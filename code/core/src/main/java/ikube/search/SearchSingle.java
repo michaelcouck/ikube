@@ -17,7 +17,7 @@ import org.apache.lucene.search.TopDocs;
  */
 public class SearchSingle extends Search {
 
-	public SearchSingle(Searcher searcher) {
+	public SearchSingle(final Searcher searcher) {
 		super(searcher);
 	}
 
@@ -25,7 +25,7 @@ public class SearchSingle extends Search {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected TopDocs search(Query query) throws IOException {
+	protected TopDocs search(final Query query) throws IOException {
 		return searcher.search(query, firstResult + maxResults);
 	}
 

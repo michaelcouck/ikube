@@ -21,15 +21,14 @@ import org.aspectj.lang.ProceedingJoinPoint;
  */
 public class SpatialEnrichmentInterceptor implements ISpatialEnrichmentInterceptor {
 
-	private Logger logger = Logger.getLogger(this.getClass());
-
+	private static final Logger LOGGER = Logger.getLogger(SpatialEnrichmentInterceptor.class);
 	private int startTier;
 	private int endTier;
 	private IProjector projector = new SinusoidalProjector();
 	private IGeocoder geocoder;
 
 	@Override
-	public Object enrich(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
+	public Object enrich(final ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
 		// Iterate through all the indexable children of the indexable looking for address
 		// fields. Concatenate them with a ',' in between. Call the Google geo coding API
 		// for the latitude and longitude coordinates. Create the tiers for the location,
@@ -38,7 +37,7 @@ public class SpatialEnrichmentInterceptor implements ISpatialEnrichmentIntercept
 		return proceedingJoinPoint.proceed();
 	}
 
-	protected void enrich(Object[] arguments) {
+	protected void enrich(final Object[] arguments) {
 		IndexWriter indexWriter = null;
 		Document document = null;
 		Indexable<?> indexable = null;
@@ -64,7 +63,7 @@ public class SpatialEnrichmentInterceptor implements ISpatialEnrichmentIntercept
 			Coordinate coordinate = geocoder.getCoordinate(indexable);
 			addLocation(indexWriter, document, /* address, */coordinate);
 		} catch (Exception e) {
-			logger.error("", e);
+			LOGGER.error("", e);
 		}
 	}
 
@@ -92,17 +91,17 @@ public class SpatialEnrichmentInterceptor implements ISpatialEnrichmentIntercept
 		}
 	}
 
-	public void setMinKm(double minKm) {
+	public void setMinKm(final double minKm) {
 		CartesianTierPlotter ctp = new CartesianTierPlotter(0, projector, CartesianTierPlotter.DEFALT_FIELD_PREFIX);
 		startTier = ctp.bestFit(minKm);
 	}
 
-	public void setMaxKm(double maxKm) {
+	public void setMaxKm(final double maxKm) {
 		CartesianTierPlotter ctp = new CartesianTierPlotter(0, projector, CartesianTierPlotter.DEFALT_FIELD_PREFIX);
 		endTier = ctp.bestFit(maxKm);
 	}
 
-	public void setGeocoder(IGeocoder geocoder) {
+	public void setGeocoder(final IGeocoder geocoder) {
 		this.geocoder = geocoder;
 	}
 

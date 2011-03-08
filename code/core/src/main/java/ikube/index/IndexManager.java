@@ -37,7 +37,7 @@ import org.apache.lucene.store.RAMDirectory;
  */
 public class IndexManager {
 
-	private static Logger LOGGER = Logger.getLogger(IndexManager.class);
+	private static final Logger LOGGER = Logger.getLogger(IndexManager.class);
 
 	/**
 	 * This method opens a Lucene index writer, and if successful sets it in the index context where the handlers can access it and add
@@ -55,7 +55,7 @@ public class IndexManager {
 	 *            directory
 	 * @return the index writer opened for this index context or null if there was any exception opening the index
 	 */
-	public static synchronized IndexWriter openIndexWriter(String ip, IndexContext indexContext, long time) {
+	public static synchronized IndexWriter openIndexWriter(final String ip, final IndexContext indexContext, final long time) {
 		boolean delete = Boolean.FALSE;
 		boolean exception = Boolean.FALSE;
 		File indexDirectory = null;
@@ -111,7 +111,7 @@ public class IndexManager {
 		}
 	}
 
-	public static synchronized void closeIndexWriter(IndexContext indexContext) {
+	public static synchronized void closeIndexWriter(final IndexContext indexContext) {
 		try {
 			if (indexContext != null && indexContext.getIndex().getIndexWriter() != null) {
 				IndexWriter indexWriter = indexContext.getIndex().getIndexWriter();
@@ -123,7 +123,7 @@ public class IndexManager {
 		}
 	}
 
-	private static void closeIndexWriter(IndexWriter indexWriter) {
+	private static void closeIndexWriter(final IndexWriter indexWriter) {
 		Directory directory = indexWriter.getDirectory();
 		try {
 			indexWriter.commit();
@@ -145,7 +145,7 @@ public class IndexManager {
 		}
 	}
 
-	public static String getIndexDirectory(String ip, IndexContext indexContext, long time) {
+	public static String getIndexDirectory(final String ip, final IndexContext indexContext, final long time) {
 		StringBuilder builder = new StringBuilder();
 		builder.append(indexContext.getIndexDirectoryPath()); // Path
 		builder.append(File.separator);
@@ -157,8 +157,8 @@ public class IndexManager {
 		return builder.toString();
 	}
 
-	public static void addStringField(String fieldName, String fieldContent, Document document, Store store, Index analyzed,
-			TermVector termVector) {
+	public static void addStringField(final String fieldName, final String fieldContent, final Document document, final Store store,
+			final Index analyzed, final TermVector termVector) {
 		Field field = document.getField(fieldName);
 		if (field == null) {
 			field = new Field(fieldName, fieldContent, store, analyzed, termVector);
@@ -170,8 +170,8 @@ public class IndexManager {
 		}
 	}
 
-	public static void addReaderField(String fieldName, Document document, Store store, TermVector termVector, Reader reader)
-			throws Exception {
+	public static void addReaderField(final String fieldName, final Document document, final Store store, final TermVector termVector,
+			final Reader reader) throws Exception {
 		Field field = document.getField(fieldName);
 		if (field == null) {
 			field = new Field(fieldName, reader, termVector);

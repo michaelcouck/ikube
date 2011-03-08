@@ -14,97 +14,97 @@ import org.apache.lucene.util.Version;
 public interface IConstants {
 
 	/** Application name. */
-	public String IKUBE = "ikube";
+	String IKUBE = "ikube";
 	/** The file separator for the system. */
-	public String SEP = "/"; // File.separator;
+	String SEP = "/"; // File.separator;
 
 	/** We expect the configuration file to be in the META-INF as seems to be the fashion at the moment. */
-	public String META_INF = SEP + "META-INF";
+	String META_INF = SEP + "META-INF";
 
 	/** The name of the spring file. */
-	public String SPRING_XML = "spring.xml";
+	String SPRING_XML = "spring.xml";
 	/** Where the whole application is wired together. */
-	public String SPRING_CONFIGURATION_FILE = META_INF + SEP + SPRING_XML;
+	String SPRING_CONFIGURATION_FILE = META_INF + SEP + SPRING_XML;
 
 	/** Maps mime types to file extensions.. */
-	public String MIME_TYPES = META_INF + SEP + "mime" + SEP + "mime-types.xml";
+	String MIME_TYPES = META_INF + SEP + "mime" + SEP + "mime-types.xml";
 	/** Maps parsers to mime types. */
-	public String MIME_MAPPING = META_INF + SEP + "mime" + SEP + "mime-mapping.xml";
+	String MIME_MAPPING = META_INF + SEP + "mime" + SEP + "mime-mapping.xml";
 
-	public static String LOG_4_J_PROPERTIES = META_INF + SEP + "log4j.properties";
+	String LOG_4_J_PROPERTIES = META_INF + SEP + "log4j.properties";
 
 	/** The database file name. */
-	public String DATABASE_FILE = "ikube.odb";
+	String DATABASE_FILE = "ikube.odb";
 	/** The transaction files from Neodatis. */
-	public String TRANSACTION_FILES = ".transaction";
+	String TRANSACTION_FILES = ".transaction";
 
-	public Version VERSION = Version.LUCENE_30;
-	public Analyzer ANALYZER = new StandardAnalyzer(VERSION);
-	public long MAX_READ_LENGTH = 1000000;
-	public int MAX_RESULT_FIELD_LENGTH = 1000;
+	Version VERSION = Version.LUCENE_30;
+	Analyzer ANALYZER = new StandardAnalyzer(VERSION);
+	long MAX_READ_LENGTH = 1000000;
+	int MAX_RESULT_FIELD_LENGTH = 1000;
 
-	public String READER_FILE_SUFFIX = ".ikube";
-	public int MAX_FRAGMENTS = 3;
-	public String FRAGMENT_SEPERATOR = "...";
+	String READER_FILE_SUFFIX = ".ikube";
+	int MAX_FRAGMENTS = 3;
+	String FRAGMENT_SEPERATOR = "...";
 
-	public String ID = "id";
-	public String INDEX = "index";
-	public String SCORE = "score";
-	public String CONTENTS = "contents";
-	public String FRAGMENT = "fragment";
-	public String TOTAL = "total";
-	public String DURATION = "duration";
-	public String TITLE = "title";
-	public String NAME = "name";
-	public String URL = "url";
-	public String INDEXED = "indexed";
-	public String HASH = "hash";
-	public String START = "start";
+	String ID = "id";
+	String INDEX = "index";
+	String SCORE = "score";
+	String CONTENTS = "contents";
+	String FRAGMENT = "fragment";
+	String TOTAL = "total";
+	String DURATION = "duration";
+	String TITLE = "title";
+	String NAME = "name";
+	String URL = "url";
+	String INDEXED = "indexed";
+	String HASH = "hash";
+	String START = "start";
 
-	public String ENCODING = "UTF-8";
+	String ENCODING = "UTF-8";
 
 	/** This is the starting port for the synchronization sockets. */
-	public int SYNCHRONIZATION_PORT = 9000;
-	public int MAX_SYNCHRONIZATION_PORT = 10000;
-	public String SYNCHRONIZATION_TOPIC = "synchronizationTopic";
+	int SYNCHRONIZATION_PORT = 9000;
+	int MAX_SYNCHRONIZATION_PORT = 10000;
+	String SYNCHRONIZATION_TOPIC = "synchronizationTopic";
 
-	public String SYNCHRONIZATION = "synchronization";
+	String SYNCHRONIZATION = "synchronization";
 
 	/** Url response codes */
-	public Integer HTTP_200 = new Integer(200); // OK
-	public Integer HTTP_301 = new Integer(301); // Move permanently
-	public Integer HTTP_400 = new Integer(400); // Bad request
-	public Integer HTTP_401 = new Integer(401); // Unauthorised
-	public Integer HTTP_403 = new Integer(403); // Forbidden
-	public Integer HTTP_404 = new Integer(404); // Not found
-	public Integer HTTP_418 = new Integer(418); // I"m a tea pot
-	public Integer HTTP_500 = new Integer(500); // Internal server error
-	public Integer HTTP_503 = new Integer(503); // Service unavailable
+	Integer HTTP_200 = Integer.valueOf(200); // OK
+	Integer HTTP_301 = Integer.valueOf(301); // Move permanently
+	Integer HTTP_400 = Integer.valueOf(400); // Bad request
+	Integer HTTP_401 = Integer.valueOf(401); // Unauthorised
+	Integer HTTP_403 = Integer.valueOf(403); // Forbidden
+	Integer HTTP_404 = Integer.valueOf(404); // Not found
+	Integer HTTP_418 = Integer.valueOf(418); // I"m a tea pot
+	Integer HTTP_500 = Integer.valueOf(500); // Internal server error
+	Integer HTTP_503 = Integer.valueOf(503); // Service unavailable
 
 	/** These can be extracted into the messages.properties file */
-	public String RESPONSE_CODE_NOT_200 = "Response code not 200/OK";
-	public String EXCEPTION_VISITING_PAGE = "Exception visiting page";
-	public String EXCEPTION_VISITING_PAGE_POSSIBLY_TIMEOUT = "Exception visiting page, error un-known, possibly a timeout";
-	public String PAGE_RESPONSE_NULL = "Page returned from request null";
-	public String URL_NOT_WELL_FORMED = "Url not well formed";
-	public String EXCEPTION_CLICKING_LINK = "Exception clicking on the link";
-	public String NO_END_TAG = "Not end tag in HTML";
-	public String EXCEPTION_VALIDATING_HTML = "General exception validating the HTML";
+	String RESPONSE_CODE_NOT_200 = "Response code not 200/OK";
+	String EXCEPTION_VISITING_PAGE = "Exception visiting page";
+	String EXCEPTION_VISITING_PAGE_POSSIBLY_TIMEOUT = "Exception visiting page, error un-known, possibly a timeout";
+	String PAGE_RESPONSE_NULL = "Page returned from request null";
+	String URL_NOT_WELL_FORMED = "Url not well formed";
+	String EXCEPTION_CLICKING_LINK = "Exception clicking on the link";
+	String NO_END_TAG = "Not end tag in HTML";
+	String EXCEPTION_VALIDATING_HTML = "General exception validating the HTML";
 
-	public String PERSISTENCE_UNIT_NAME = "IkubePersistenceUnit";
+	String PERSISTENCE_UNIT_NAME = "IkubePersistenceUnit";
 
-	public String INDEX_NAME = "indexName";
-	public String MAX_RESULTS = "maxResults";
-	public String SEARCH_FIELDS = "searchFields";
-	public String SEARCH_STRINGS = "searchStrings";
-	public String SORT_FIELDS = "sortFields";
-	public String FIRST_RESULT = "firstResult";
+	String INDEX_NAME = "indexName";
+	String MAX_RESULTS = "maxResults";
+	String SEARCH_FIELDS = "searchFields";
+	String SEARCH_STRINGS = "searchStrings";
+	String SORT_FIELDS = "sortFields";
+	String FIRST_RESULT = "firstResult";
 
 	/** The tags in the response from the Geo Location API. */
-	public String LAT = "lat";
-	public String LNG = "lng";
-	public String LOCATION = "location";
+	String LAT = "lat";
+	String LNG = "lng";
+	String LOCATION = "location";
 
-	public String DISTANCE = "distance";
+	String DISTANCE = "distance";
 
 }

@@ -37,7 +37,7 @@ public abstract class Indexable<E> extends Persistable {
 		return parent;
 	}
 
-	protected void setParent(Indexable<?> parent) {
+	protected void setParent(final Indexable<?> parent) {
 		this.parent = parent;
 	}
 
@@ -58,7 +58,7 @@ public abstract class Indexable<E> extends Persistable {
 		return address;
 	}
 
-	public void setAddress(boolean address) {
+	public void setAddress(final boolean address) {
 		this.address = address;
 	}
 
@@ -91,7 +91,7 @@ public abstract class Indexable<E> extends Persistable {
 		return content;
 	}
 
-	public void setContent(Object content) {
+	public void setContent(final Object content) {
 		this.content = content;
 	}
 

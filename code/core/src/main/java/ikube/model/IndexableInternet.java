@@ -8,6 +8,8 @@ import java.util.regex.Pattern;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
 
+import org.apache.log4j.Logger;
+
 /**
  * @author Michael Couck
  * @since 21.11.10
@@ -15,13 +17,15 @@ import javax.persistence.Transient;
  */
 @Entity()
 public class IndexableInternet extends Indexable<IndexableInternet> {
+	
+	private static transient final Logger LOGGER = Logger.getLogger(IndexableInternet.class);
 
 	@Transient
 	private transient String currentUrl;
 	@Transient
 	private transient InputStream currentInputStream;
 	@Transient
-	private Pattern pattern;
+	private transient Pattern pattern;
 
 	private URI uri;
 	private String url;
@@ -41,13 +45,13 @@ public class IndexableInternet extends Indexable<IndexableInternet> {
 			try {
 				uri = new URI(getUrl());
 			} catch (URISyntaxException e) {
-				e.printStackTrace();
+				LOGGER.error("Exception initialising the URI : " + getUrl(), e);
 			}
 		}
 		return uri;
 	}
 
-	public void setUri(URI uri) {
+	public void setUri(final URI uri) {
 		this.uri = uri;
 	}
 
@@ -55,7 +59,7 @@ public class IndexableInternet extends Indexable<IndexableInternet> {
 		return url;
 	}
 
-	public void setUrl(String url) {
+	public void setUrl(final String url) {
 		this.url = url;
 	}
 
@@ -63,7 +67,7 @@ public class IndexableInternet extends Indexable<IndexableInternet> {
 		return titleFieldName;
 	}
 
-	public void setTitleFieldName(String titleFieldName) {
+	public void setTitleFieldName(final String titleFieldName) {
 		this.titleFieldName = titleFieldName;
 	}
 
@@ -71,7 +75,7 @@ public class IndexableInternet extends Indexable<IndexableInternet> {
 		return idFieldName;
 	}
 
-	public void setIdFieldName(String idFieldName) {
+	public void setIdFieldName(final String idFieldName) {
 		this.idFieldName = idFieldName;
 	}
 
@@ -79,7 +83,7 @@ public class IndexableInternet extends Indexable<IndexableInternet> {
 		return contentFieldName;
 	}
 
-	public void setContentFieldName(String contentFieldName) {
+	public void setContentFieldName(final String contentFieldName) {
 		this.contentFieldName = contentFieldName;
 	}
 
@@ -87,7 +91,7 @@ public class IndexableInternet extends Indexable<IndexableInternet> {
 		return excludedPattern;
 	}
 
-	public void setExcludedPattern(String excludedPatterns) {
+	public void setExcludedPattern(final String excludedPatterns) {
 		this.excludedPattern = excludedPatterns;
 	}
 
@@ -95,11 +99,11 @@ public class IndexableInternet extends Indexable<IndexableInternet> {
 		return timeout;
 	}
 
-	public void setTimeout(int timeout) {
+	public void setTimeout(final int timeout) {
 		this.timeout = timeout;
 	}
 
-	public boolean isExcluded(String link) {
+	public boolean isExcluded(final String link) {
 		if (pattern == null) {
 			pattern = Pattern.compile(getExcludedPattern());
 		}
@@ -123,7 +127,7 @@ public class IndexableInternet extends Indexable<IndexableInternet> {
 		return currentUrl;
 	}
 
-	public void setCurrentUrl(String currentUrl) {
+	public void setCurrentUrl(final String currentUrl) {
 		this.currentUrl = currentUrl;
 	}
 
@@ -132,7 +136,7 @@ public class IndexableInternet extends Indexable<IndexableInternet> {
 		return currentInputStream;
 	}
 
-	public void setCurrentInputStream(InputStream currentInputStream) {
+	public void setCurrentInputStream(final InputStream currentInputStream) {
 		this.currentInputStream = currentInputStream;
 	}
 

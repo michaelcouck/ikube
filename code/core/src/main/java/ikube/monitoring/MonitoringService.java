@@ -29,7 +29,7 @@ import org.apache.log4j.Logger;
 @WebService(name = IMonitoringService.NAME, targetNamespace = IMonitoringService.NAMESPACE, serviceName = IMonitoringService.SERVICE)
 public class MonitoringService implements IMonitoringService {
 
-	private Logger logger = Logger.getLogger(this.getClass());
+	private static final Logger logger = Logger.getLogger(MonitoringService.class);
 
 	public String[] getIndexNames() {
 		Map<String, IndexContext> indexContexts = ApplicationContextManager.getBeans(IndexContext.class);
@@ -53,7 +53,7 @@ public class MonitoringService implements IMonitoringService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public String[] getIndexFieldNames(String indexName) {
+	public String[] getIndexFieldNames(final String indexName) {
 		Map<String, IndexContext> indexContexts = ApplicationContextManager.getBeans(IndexContext.class);
 		for (IndexContext indexContext : indexContexts.values()) {
 			if (indexContext.getIndexName().equals(indexName)) {
@@ -61,17 +61,17 @@ public class MonitoringService implements IMonitoringService {
 				return fieldNames.toArray(new String[fieldNames.size()]);
 			}
 		}
-		return null;
+		return new String[0];
 	}
 
 	@Override
-	public String[] getIndexableFieldNames(String indexableName) {
+	public String[] getIndexableFieldNames(final String indexableName) {
 		Indexable<?> indexable = ApplicationContextManager.getBean(indexableName);
 		Set<String> fieldNames = getFields(indexable, new TreeSet<String>());
 		return fieldNames.toArray(new String[fieldNames.size()]);
 	}
 
-	protected Set<String> getFields(List<Indexable<?>> indexables, Set<String> fieldNames) {
+	protected Set<String> getFields(final List<Indexable<?>> indexables, final Set<String> fieldNames) {
 		if (indexables != null) {
 			for (Indexable<?> child : indexables) {
 				getFields(child, fieldNames);
@@ -81,7 +81,7 @@ public class MonitoringService implements IMonitoringService {
 		return fieldNames;
 	}
 
-	protected Set<String> getFields(Indexable<?> indexable, Set<String> fieldNames) {
+	protected Set<String> getFields(final Indexable<?> indexable, final Set<String> fieldNames) {
 		Field[] fields = indexable.getClass().getDeclaredFields();
 		for (Field field : fields) {
 			ikube.model.Field annotation = field.getAnnotation(ikube.model.Field.class);

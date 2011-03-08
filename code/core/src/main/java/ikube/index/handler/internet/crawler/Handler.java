@@ -17,7 +17,7 @@ import org.apache.log4j.Logger;
  */
 public abstract class Handler<E extends Url> implements IHandler<Url> {
 
-	protected static Logger LOGGER = Logger.getLogger(Handler.class);
+	protected static final Logger LOGGER = Logger.getLogger(Handler.class);
 
 	private IndexContext indexContext;
 	private IndexableInternet indexableInternet;
@@ -26,7 +26,7 @@ public abstract class Handler<E extends Url> implements IHandler<Url> {
 	/**
 	 * Default implementation that calls all the children with the page.
 	 */
-	public void handleChildren(Url url) {
+	public void handleChildren(final Url url) {
 		if (getChildren() == null) {
 			return;
 		}
@@ -43,7 +43,7 @@ public abstract class Handler<E extends Url> implements IHandler<Url> {
 		return indexContext;
 	}
 
-	public void setIndexContext(IndexContext indexContext) {
+	public void setIndexContext(final IndexContext indexContext) {
 		this.indexContext = indexContext;
 	}
 
@@ -51,7 +51,7 @@ public abstract class Handler<E extends Url> implements IHandler<Url> {
 		return indexableInternet;
 	}
 
-	public void setIndexableInternet(IndexableInternet indexableInternet) {
+	public void setIndexableInternet(final IndexableInternet indexableInternet) {
 		this.indexableInternet = indexableInternet;
 	}
 
@@ -59,7 +59,7 @@ public abstract class Handler<E extends Url> implements IHandler<Url> {
 		return children;
 	}
 
-	public void setChildren(Collection<IHandler<Url>> children) {
+	public void setChildren(final Collection<IHandler<Url>> children) {
 		this.children = children;
 	}
 

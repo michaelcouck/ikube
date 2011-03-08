@@ -25,16 +25,19 @@ import org.apache.log4j.Logger;
  */
 public class SerializationUtilities {
 
-	private static Logger LOGGER = Logger.getLogger(SerializationUtilities.class);
+	private static final Logger LOGGER = Logger.getLogger(SerializationUtilities.class);
+	
+	private SerializationUtilities() {
+	}
 
 	private static ExceptionListener exceptionListener = new ExceptionListener() {
 		@Override
-		public void exceptionThrown(Exception e) {
+		public void exceptionThrown(final Exception e) {
 			LOGGER.error("General exception : ", e);
 		}
 	};
 
-	public static String serialize(Object object) {
+	public static String serialize(final Object object) {
 		try {
 			SerializationUtilities.setTransientFields(object.getClass());
 			ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -50,7 +53,7 @@ public class SerializationUtilities {
 		return null;
 	}
 
-	public static void setTransientFields(Class<?> klass) {
+	public static void setTransientFields(final Class<?> klass) {
 		BeanInfo info;
 		try {
 			info = Introspector.getBeanInfo(klass);
@@ -76,7 +79,7 @@ public class SerializationUtilities {
 		}
 	}
 
-	public static Object deserialize(String xml) {
+	public static Object deserialize(final String xml) {
 		byte[] bytes = new byte[0];
 		try {
 			bytes = xml.getBytes(IConstants.ENCODING);
@@ -90,7 +93,7 @@ public class SerializationUtilities {
 		return null;
 	}
 
-	public static Object clone(Object object) {
+	public static Object clone(final Object object) {
 		return SerializationUtilities.deserialize(SerializationUtilities.serialize(object));
 	}
 
@@ -103,7 +106,7 @@ public class SerializationUtilities {
 	 *            the name of the field
 	 * @return the field in the object or super classes of the object
 	 */
-	public static Field getField(Class<?> klass, String name) {
+	public static Field getField(final Class<?> klass, final String name) {
 		Field field = null;
 		try {
 			field = klass.getDeclaredField(name);

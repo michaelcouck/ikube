@@ -37,14 +37,14 @@ import org.apache.lucene.store.FSDirectory;
 public class Open extends Action {
 
 	@Override
-	public Boolean execute(IndexContext indexContext) {
+	public Boolean execute(final IndexContext indexContext) {
 		if (indexContext.getInMemory()) {
 			return openInMemory(indexContext);
 		}
 		return openOnFile(indexContext);
 	}
 
-	private boolean openInMemory(IndexContext indexContext) {
+	private boolean openInMemory(final IndexContext indexContext) {
 		Index index = indexContext.getIndex();
 		MultiSearcher multiSearcher = index.getMultiSearcher();
 		Directory directory = index.getDirectory();
@@ -78,7 +78,7 @@ public class Open extends Action {
 		return Boolean.FALSE;
 	}
 
-	private boolean openOnFile(IndexContext indexContext) {
+	private boolean openOnFile(final IndexContext indexContext) {
 		ArrayList<Searchable> searchers = new ArrayList<Searchable>();
 		String indexDirectoryPath = indexContext.getIndexDirectoryPath() + File.separator + indexContext.getIndexName();
 		File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexDirectoryPath);

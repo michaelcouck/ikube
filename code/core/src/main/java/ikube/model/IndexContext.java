@@ -40,6 +40,7 @@ public class IndexContext extends Persistable implements Comparable<IndexContext
 	private Index index;
 
 	public IndexContext() {
+		super();
 		index = new Index();
 	}
 
@@ -71,7 +72,7 @@ public class IndexContext extends Persistable implements Comparable<IndexContext
 		return throttle;
 	}
 
-	public void setThrottle(long throttle) {
+	public void setThrottle(final long throttle) {
 		this.throttle = throttle;
 	}
 
@@ -127,7 +128,7 @@ public class IndexContext extends Persistable implements Comparable<IndexContext
 		return internetBatchSize;
 	}
 
-	public void setInternetBatchSize(int internetBatchSize) {
+	public void setInternetBatchSize(final int internetBatchSize) {
 		this.internetBatchSize = internetBatchSize;
 	}
 
@@ -135,8 +136,8 @@ public class IndexContext extends Persistable implements Comparable<IndexContext
 		return maxReadLength;
 	}
 
-	public void setMaxReadLength(final long maxOneShotReadLength) {
-		this.maxReadLength = maxOneShotReadLength;
+	public void setMaxReadLength(final long maxReadLength) {
+		this.maxReadLength = maxReadLength;
 	}
 
 	public String getIndexDirectoryPath() {
@@ -151,7 +152,7 @@ public class IndexContext extends Persistable implements Comparable<IndexContext
 		return inMemory;
 	}
 
-	public void setInMemory(Boolean inMemory) {
+	public void setInMemory(final Boolean inMemory) {
 		this.inMemory = inMemory;
 	}
 
@@ -167,7 +168,7 @@ public class IndexContext extends Persistable implements Comparable<IndexContext
 		return index;
 	}
 
-	public void setIndex(Index index) {
+	public void setIndex(final Index index) {
 		this.index = index;
 	}
 
@@ -184,8 +185,8 @@ public class IndexContext extends Persistable implements Comparable<IndexContext
 	}
 
 	@Override
-	public int compareTo(IndexContext o) {
-		return getIndexName().compareTo(o.getIndexName());
+	public int compareTo(final IndexContext other) {
+		return getIndexName().compareTo(other.getIndexName());
 	}
 
 }

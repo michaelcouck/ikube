@@ -32,8 +32,8 @@ public interface ICache {
 	 * 
 	 * @author Michael Couck
 	 */
-	public interface IAction<T> {
-		public void execute(T t);
+	interface IAction<T> {
+		void execute(T t);
 	}
 
 	/**
@@ -42,8 +42,8 @@ public interface ICache {
 	 * 
 	 * @author Michael Couck
 	 */
-	public interface ICriteria<T> {
-		public boolean evaluate(T t);
+	interface ICriteria<T> {
+		boolean evaluate(T t);
 	}
 
 	/**
@@ -53,7 +53,7 @@ public interface ICache {
 	 *            the name of the map, generally the name of the class, like {@link Server} for example.
 	 * @return
 	 */
-	public int size(String name);
+	int size(String name);
 
 	/**
 	 * Clears this map of objects in the cache. This action is of course cluster wide so it should not be called until there are no servers
@@ -62,7 +62,7 @@ public interface ICache {
 	 * @param name
 	 *            the name of the map to clear
 	 */
-	public void clear(String name);
+	void clear(String name);
 
 	/**
 	 * Access to one object in the specified map based on the unique id of that object.
@@ -75,7 +75,7 @@ public interface ICache {
 	 *            the id of the object in the map
 	 * @return the object with the specified id
 	 */
-	public <T> T get(String name, Long id);
+	<T> T get(String name, Long id);
 
 	/**
 	 * Access to the object in the specified map based on a SQL like query. The SQL could be something like (urlString =
@@ -91,7 +91,7 @@ public interface ICache {
 	 *         and no unique or duplicate checking will be done. In the case that the objects are unique based on the sql then this should
 	 *         be no problem
 	 */
-	public <T> T get(String name, String sql);
+	<T> T get(String name, String sql);
 
 	/**
 	 * Sets the specified object in the map based on the id. This method also propagates the object throughout the cluster.
@@ -105,7 +105,7 @@ public interface ICache {
 	 * @param t
 	 *            the object it's self
 	 */
-	public <T> void set(String name, Long id, T t);
+	<T> void set(String name, Long id, T t);
 
 	/**
 	 * Removes the specified object from the cache/map and throughout the cluster.
@@ -115,7 +115,7 @@ public interface ICache {
 	 * @param id
 	 *            the id of the object to be removed
 	 */
-	public void remove(String name, Long id);
+	void remove(String name, Long id);
 
 	/**
 	 * This method gets a batch of objects. If the criteria is specified then the return value from the criteria is used to determine
@@ -133,6 +133,6 @@ public interface ICache {
 	 *            the maximum size of the batch that should be returned
 	 * @return the batch of objects from the cache
 	 */
-	public <T> List<T> get(String name, ICriteria<T> criteria, IAction<T> action, int size);
+	<T> List<T> get(String name, ICriteria<T> criteria, IAction<T> action, int size);
 
 }

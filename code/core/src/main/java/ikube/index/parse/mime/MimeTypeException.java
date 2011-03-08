@@ -21,7 +21,7 @@ public class MimeTypeException extends Exception {
 	 * @param msg
 	 *            the detail message.
 	 */
-	public MimeTypeException(String msg) {
+	public MimeTypeException(final String msg) {
 		super(msg);
 	}
 

@@ -23,7 +23,7 @@ import org.apache.poi.util.LittleEndian;
 public class PowerPointParser implements IParser, POIFSReaderListener {
 
 	/** Logger for the parser class. */
-	private Logger LOGGER = Logger.getLogger(PowerPointParser.class);
+	private static final Logger LOGGER = Logger.getLogger(PowerPointParser.class);
 	/** The output stream for the parsed data. */
 	private ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
@@ -31,7 +31,7 @@ public class PowerPointParser implements IParser, POIFSReaderListener {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public final OutputStream parse(InputStream inputStream, OutputStream outputStream) throws Exception {
+	public final OutputStream parse(final InputStream inputStream, final OutputStream outputStream) throws Exception {
 		POIFSReader reader = new POIFSReader();
 		reader.registerListener(this);
 		reader.read(inputStream);
@@ -43,7 +43,7 @@ public class PowerPointParser implements IParser, POIFSReaderListener {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public final void processPOIFSReaderEvent(POIFSReaderEvent event) {
+	public final void processPOIFSReaderEvent(final POIFSReaderEvent event) {
 		if (!event.getName().equalsIgnoreCase("PowerPoint Document"))
 			return;
 		try {

@@ -17,7 +17,10 @@ import org.dom4j.io.SAXReader;
  */
 public class XmlUtilities {
 
-	private static Logger LOGGER = Logger.getLogger(XmlUtilities.class);
+	private static final Logger LOGGER = Logger.getLogger(XmlUtilities.class);
+	
+	private XmlUtilities() {
+	}
 
 	/**
 	 * Finds the node in the xml with the specified name recursively iterating through the elements in the document. This method will return
@@ -29,7 +32,7 @@ public class XmlUtilities {
 	 *            the name of the tag or node
 	 * @return the node or tag with the specified name or null if no such tag can be found
 	 */
-	public static Element getElement(Element node, String name) {
+	public static Element getElement(final Element node, final String name) {
 		if (node.getName().equals(name)) {
 			return node;
 		}
@@ -53,7 +56,7 @@ public class XmlUtilities {
 	 * @return a list of all the tags with the name, can be empty
 	 */
 	@SuppressWarnings("unchecked")
-	public static ArrayList<Element> getElements(Element parent, String name) {
+	public static ArrayList<Element> getElements(final Element parent, final String name) {
 		ArrayList<Element> elements = new ArrayList<Element>();
 		if (parent == null) {
 			return elements;
@@ -75,7 +78,7 @@ public class XmlUtilities {
 	 *            the input stream to the xml data
 	 * @return the XML document from the xml string
 	 */
-	public static Document getDocument(InputStream inputStream, String encoding) {
+	public static Document getDocument(final InputStream inputStream, final String encoding) {
 		ByteArrayOutputStream bos = null;
 		Document document = null;
 		try {

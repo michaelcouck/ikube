@@ -14,11 +14,11 @@ import javax.jws.soap.SOAPBinding;
 @WebService(name = ISearcherWebService.NAME, targetNamespace = ISearcherWebService.NAMESPACE, serviceName = ISearcherWebService.SERVICE)
 public interface ISearcherWebService {
 
-	public String NAME = "searcher";
-	public String SERVICE = "searcher";
-	public String NAMESPACE = "http://ikube.search/";
+	String NAME = "searcher";
+	String SERVICE = "searcher";
+	String NAMESPACE = "http://ikube.search/";
 	
-	public String PUBLISHED_PATH = "/" + ISearcherWebService.class.getName().replace(".", "/") + "?wsdl";
+	String PUBLISHED_PATH = "/" + ISearcherWebService.class.getName().replace(".", "/") + "?wsdl";
 
 	/**
 	 * Does a search on a single field on the index defined in the parameter list. 
@@ -31,7 +31,7 @@ public interface ISearcherWebService {
 	 * @param maxResults the end document in the index, also for paging
 	 * @return a serialized string of the results from the search
 	 */
-	public String searchSingle(String indexName, String searchString, String searchField, boolean fragment, int firstResult, int maxResults);
+	String searchSingle(String indexName, String searchString, String searchField, boolean fragment, int firstResult, int maxResults);
 
 	/**
 	 * Does a search on multiple fields and multiple search strings.
@@ -44,7 +44,7 @@ public interface ISearcherWebService {
 	 * @param maxResults the end document in the index, also for paging
 	 * @return a serialized string of the results from the search
 	 */
-	public String searchMulti(String indexName, String[] searchStrings, String[] searchFields, boolean fragment, int firstResult, int maxResults);
+	String searchMulti(String indexName, String[] searchStrings, String[] searchFields, boolean fragment, int firstResult, int maxResults);
 
 	
 	/**
@@ -59,7 +59,7 @@ public interface ISearcherWebService {
 	 * @param maxResults the end document in the index, also for paging
 	 * @return a serialized string of the results from the search
 	 */
-	public String searchMultiSorted(String indexName, String[] searchStrings, String[] searchFields, String[] sortFields, boolean fragment,
+	String searchMultiSorted(String indexName, String[] searchStrings, String[] searchFields, String[] sortFields, boolean fragment,
 			int firstResult, int maxResults);
 
 }

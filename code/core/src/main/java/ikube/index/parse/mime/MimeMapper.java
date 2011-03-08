@@ -18,9 +18,9 @@ import org.dom4j.io.SAXReader;
  */
 public class MimeMapper {
 
-	private static HashMap<String, String> MAPPING = new HashMap<String, String>();
+	private static final HashMap<String, String> MAPPING = new HashMap<String, String>();
 
-	public MimeMapper(String filePath) {
+	public MimeMapper(final String filePath) {
 		try {
 			InputStream inputStream = getClass().getResourceAsStream(filePath);
 			SAXReader reader = new SAXReader();
@@ -47,7 +47,7 @@ public class MimeMapper {
 		}
 	}
 
-	public static String getParserClass(String mimeType) {
+	public static String getParserClass(final String mimeType) {
 		return (String) MAPPING.get(mimeType);
 	}
 

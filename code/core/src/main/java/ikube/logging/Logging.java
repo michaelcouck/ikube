@@ -18,6 +18,8 @@ public class Logging {
 
 	private static Logger LOGGER;
 	private static boolean INITIALISED = false;
+	
+	private Logging() {}
 
 	/**
 	 * Configures the logging.
@@ -49,7 +51,7 @@ public class Logging {
 	 *            the objects to concatenate
 	 * @return the string concatenation of the objects
 	 */
-	public static String getString(Object... objects) {
+	public static String getString(final Object... objects) {
 		if (objects == null || objects.length == 0) {
 			return "";
 		}

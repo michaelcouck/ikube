@@ -20,7 +20,7 @@ import org.apache.lucene.search.TopDocs;
  */
 public class SearchMultiSorted extends SearchMulti {
 
-	public SearchMultiSorted(Searcher searcher) {
+	public SearchMultiSorted(final Searcher searcher) {
 		super(searcher);
 	}
 
@@ -28,7 +28,7 @@ public class SearchMultiSorted extends SearchMulti {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected TopDocs search(Query query) throws IOException {
+	protected TopDocs search(final Query query) throws IOException {
 		Filter filter = new QueryWrapperFilter(query);
 		Sort sort = new Sort();
 		SortField[] fields = new SortField[sortFields.length];

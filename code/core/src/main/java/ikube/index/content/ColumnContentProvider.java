@@ -23,14 +23,10 @@ import org.apache.log4j.Logger;
  */
 public class ColumnContentProvider implements IContentProvider<IndexableColumn> {
 
-	private Logger logger;
-
-	public ColumnContentProvider() {
-		this.logger = Logger.getLogger(this.getClass());
-	}
+	private static final Logger LOGGER = Logger.getLogger(ColumnContentProvider.class);
 
 	@Override
-	public void getContent(IndexableColumn indexable, OutputStream outputStream) {
+	public void getContent(final IndexableColumn indexable, final OutputStream outputStream) {
 		Object object = indexable.getContent();
 		int columnType = indexable.getColumnType();
 		if (object == null) {
@@ -150,16 +146,18 @@ public class ColumnContentProvider implements IContentProvider<IndexableColumn> 
 				// inputStream = new ReaderInputStream(reader);
 				FileUtilities.getContents(reader, outputStream, Integer.MAX_VALUE);
 				break;
+			default: 
+				throw new Exception("Type of column not known : " + columnType + ", " + indexable);
 			}
 		} catch (Exception e) {
-			logger.error("Exception accessing data from column.", e);
+			LOGGER.error("Exception accessing data from column.", e);
 		} finally {
 			try {
 				if (inputStream != null) {
 					inputStream.close();
 				}
 			} catch (Exception e) {
-				logger.error("Exception closing the input stream to the database : ", e);
+				LOGGER.error("Exception closing the input stream to the database : ", e);
 			}
 		}
 	}
@@ -178,7 +176,7 @@ public class ColumnContentProvider implements IContentProvider<IndexableColumn> 
 	 *            the return type of the method that we are looking for
 	 * @return a method on the object that has as return type the class parameter
 	 */
-	protected Method findMethod(Object object, Class<?> klass) {
+	protected Method findMethod(final Object object, final Class<?> klass) {
 		if (object == null) {
 			return null;
 		}

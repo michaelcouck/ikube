@@ -9,7 +9,7 @@ import java.io.File;
  */
 public class AreDirectoriesEqual implements IRule<File[]> {
 
-	public boolean evaluate(File[] directories) {
+	public boolean evaluate(final File[] directories) {
 		if (directories == null || directories.length != 2 || directories[0] == null || directories[1] == null) {
 			return Boolean.FALSE;
 		}

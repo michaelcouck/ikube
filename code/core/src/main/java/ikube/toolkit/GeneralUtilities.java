@@ -1,14 +1,21 @@
 package ikube.toolkit;
 
+import org.apache.log4j.Logger;
+
 /**
  * @author Michael Couck
  * @since 27.02.11
  * @version 01.00
  */
 public class GeneralUtilities {
+	
+	private static final Logger LOGGER = Logger.getLogger(GeneralUtilities.class);
+	
+	private GeneralUtilities() {
+	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public static void quickSort(Comparable[] c, int start, int end) {
+	public static void quickSort(final Comparable[] c, final int start, final int end) {
 		if (end <= start) {
 			return;
 		}
@@ -49,7 +56,7 @@ public class GeneralUtilities {
 	 *            the longitude of the second point
 	 * @return the distance between the two points
 	 */
-	public static float distFrom(float lat1, float lng1, float lat2, float lng2) {
+	public static float distFrom(final float lat1, final float lng1, final float lat2, final float lng2) {
 		double earthRadius = 6378.1;
 		double dLat = Math.toRadians(lat2 - lat1);
 		double dLng = Math.toRadians(lng2 - lng1);
@@ -62,16 +69,17 @@ public class GeneralUtilities {
 
 	public static void main(String[] args) throws Exception {
 		Integer[] arr = new Integer[5];
-		System.out.println("inserting: ");
+		LOGGER.info("inserting: ");
 		for (int i = 0; i < arr.length; i++) {
 			arr[i] = new Integer((int) (Math.random() * 99));
-			System.out.print(arr[i] + " ");
+			LOGGER.info(arr[i] + " ");
 		}
 		quickSort(arr, 0, arr.length - 1);
-		System.out.println("\nsorted: ");
-		for (int i = 0; i < arr.length; i++)
-			System.out.print(arr[i] + " ");
-		System.out.println("\nDone ;-)");
+		LOGGER.info("\nsorted: ");
+		for (int i = 0; i < arr.length; i++) {
+			LOGGER.info(arr[i] + " ");
+		}
+		LOGGER.info("\nDone ;-)");
 	}
 
 }

@@ -9,6 +9,6 @@ import org.aspectj.lang.ProceedingJoinPoint;
  */
 public interface ISpatialEnrichmentInterceptor {
 
-	public Object enrich(ProceedingJoinPoint proceedingJoinPoint) throws Throwable;
+	Object enrich(ProceedingJoinPoint proceedingJoinPoint) throws Throwable;
 
 }

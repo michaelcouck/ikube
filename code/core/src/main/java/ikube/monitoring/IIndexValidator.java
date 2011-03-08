@@ -7,6 +7,6 @@ package ikube.monitoring;
  */
 public interface IIndexValidator {
 
-	public void validate();
+	void validate();
 
 }

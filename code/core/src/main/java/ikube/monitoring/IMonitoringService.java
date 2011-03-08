@@ -12,18 +12,18 @@ import javax.jws.soap.SOAPBinding;
 @WebService(name = IMonitoringService.NAME, targetNamespace = IMonitoringService.NAMESPACE, serviceName = IMonitoringService.SERVICE)
 public interface IMonitoringService {
 
-	public String NAME = "monitor";
-	public String SERVICE = "monitor";
-	public String NAMESPACE = "http://ikube.monitor/";
+	String NAME = "monitor";
+	String SERVICE = "monitor";
+	String NAMESPACE = "http://ikube.monitor/";
 
-	public String PUBLISHED_PATH = "/" + IMonitoringService.class.getName().replace(".", "/") + "?wsdl";
+	String PUBLISHED_PATH = "/" + IMonitoringService.class.getName().replace(".", "/") + "?wsdl";
 
-	public String[] getIndexNames();
+	String[] getIndexNames();
 
-	public String[] getIndexContextNames();
+	String[] getIndexContextNames();
 
-	public String[] getIndexFieldNames(String indexName);
+	String[] getIndexFieldNames(String indexName);
 	
-	public String[] getIndexableFieldNames(String indexableName);
+	String[] getIndexableFieldNames(String indexableName);
 
 }

@@ -24,7 +24,7 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<Thread> handle(final IndexContext indexContext, IndexableInternet indexable) throws Exception {
+	public List<Thread> handle(final IndexContext indexContext, final IndexableInternet indexable) throws Exception {
 		List<Thread> threads = new ArrayList<Thread>();
 		if (isHandled(indexContext, indexable)) {
 			return threads;
@@ -45,7 +45,7 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 		return threads;
 	}
 
-	protected void seedUrl(IndexableInternet indexableInternet) {
+	protected void seedUrl(final IndexableInternet indexableInternet) {
 		String urlString = indexableInternet.getUrl();
 		indexableInternet.setCurrentUrl(urlString);
 
@@ -60,10 +60,8 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 		// dataBase.persist(url);
 	}
 
-	protected boolean isHandled(IndexContext indexContext, IndexableInternet indexableInternet) {
-		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
-		boolean isHandled = clusterManager.isHandled(indexableInternet.getName(), indexContext.getIndexName());
-		return isHandled;
+	protected boolean isHandled(final IndexContext indexContext, final IndexableInternet indexableInternet) {
+		return ApplicationContextManager.getBean(IClusterManager.class).isHandled(indexableInternet.getName(), indexContext.getIndexName());
 	}
 
 }

@@ -15,7 +15,7 @@ import java.io.OutputStream;
 public class TextParser implements IParser {
 
 	@Override
-	public final OutputStream parse(InputStream inputStream, OutputStream outputStream) throws Exception {
+	public final OutputStream parse(final InputStream inputStream, final OutputStream outputStream) throws Exception {
 		StringBuilder builder = new StringBuilder();
 		InputStreamReader inputStreamReader = new InputStreamReader(inputStream, IConstants.ENCODING);
 		int read = -1;

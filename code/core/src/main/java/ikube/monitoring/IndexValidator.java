@@ -26,12 +26,12 @@ import org.apache.lucene.store.FSDirectory;
  */
 public class IndexValidator implements IIndexValidator {
 
-	private Logger logger = Logger.getLogger(IndexValidator.class);
+	private static final Logger LOGGER = Logger.getLogger(IndexValidator.class);
 
 	public IndexValidator() {
 		ListenerManager.addListener(new IListener() {
 			@Override
-			public void handleNotification(Event event) {
+			public void handleNotification(final Event event) {
 				if (event.getType().equals(Event.VALIDATION)) {
 					validate();
 				}
@@ -79,7 +79,7 @@ public class IndexValidator implements IIndexValidator {
 						directory = FSDirectory.open(serverIndexDirectory);
 						boolean exists = IndexReader.indexExists(directory);
 						boolean locked = IndexWriter.isLocked(directory);
-						logger.info("Exists : " + exists + ", locked : " + locked + ", directory : " + serverIndexDirectory);
+						LOGGER.info("Exists : " + exists + ", locked : " + locked + ", directory : " + serverIndexDirectory);
 						if (exists && !locked) {
 							indexCreated = Boolean.TRUE;
 						}
@@ -87,7 +87,7 @@ public class IndexValidator implements IIndexValidator {
 							indexGenerated = Boolean.TRUE;
 						}
 					} catch (Exception e) {
-						logger.error("Exception validating indexes for index context : " + indexContext, e);
+						LOGGER.error("Exception validating indexes for index context : " + indexContext, e);
 						String subject = "3 : Ikube index corrupt : " + server.getAddress();
 						String body = "Index " + serverIndexDirectory + " corrupt, index context : " + indexContext.getIndexName();
 						sendNotification(indexContext, subject, body);
@@ -97,7 +97,7 @@ public class IndexValidator implements IIndexValidator {
 								directory.close();
 							}
 						} catch (Exception e) {
-							logger.error("Exceptin closing the directory : ", e);
+							LOGGER.error("Exceptin closing the directory : ", e);
 						}
 					}
 				}
@@ -111,12 +111,12 @@ public class IndexValidator implements IIndexValidator {
 		}
 	}
 
-	protected void sendNotification(IndexContext indexContext, String subject, String body) {
+	protected void sendNotification(final IndexContext indexContext, final String subject, final String body) {
 		try {
 			Mailer mailer = ApplicationContextManager.getBean(Mailer.class);
 			mailer.sendMail(subject, body);
 		} catch (Exception e) {
-			logger.error("Exception sending mail : ", e);
+			LOGGER.error("Exception sending mail : ", e);
 		}
 	}
 

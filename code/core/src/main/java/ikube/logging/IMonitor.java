@@ -9,6 +9,6 @@ import org.aspectj.lang.ProceedingJoinPoint;
  */
 public interface IMonitor {
 
-	public Object monitor(ProceedingJoinPoint call) throws Throwable;
+	Object monitor(ProceedingJoinPoint call) throws Throwable;
 	
 }

@@ -7,6 +7,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 /**
  * This class is a MimeType repository. It gathers a set of MimeTypes and enables to retrieves a content-type from a specified file
  * extension, or from a magic character sequence (or both).
@@ -16,6 +18,7 @@ import java.util.Map;
  */
 public final class MimeTypes {
 
+	private static final Logger LOGGER = Logger.getLogger(MimeTypes.class);
 	/** The static instance of this class. */
 	private static MimeTypes instance;
 	/** The default <code>application/octet-stream</code> MimeType */
@@ -43,12 +46,12 @@ public final class MimeTypes {
 				instance = (MimeTypes) instances.get(inputStream);
 				if (instance == null) {
 					instance = new MimeTypes(inputStream);
-					Integer hash = new Integer(inputStream.hashCode());
+					Integer hash = Integer.valueOf(inputStream.hashCode());
 					instances.put(hash, instance);
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOGGER.error("Exception instantiating the MimeTypes : " + filePath, e);
 		}
 	}
 
@@ -60,7 +63,7 @@ public final class MimeTypes {
 	 *            the name of the mime type or the name of the file
 	 * @return the mime type associated with the name or null if no such mime type can be found
 	 */
-	public static MimeType getMimeTypeFromName(String type) {
+	public static MimeType getMimeTypeFromName(final String type) {
 		if (type == null) {
 			return null;
 		}
@@ -93,7 +96,7 @@ public final class MimeTypes {
 	 * @return The Mime Content Type found for the specified data, or <code>null</code> if none is found.
 	 * @see #getMinLength()
 	 */
-	public static MimeType getMimeType(byte[] data) {
+	public static MimeType getMimeType(final byte[] data) {
 		// Preliminary checks
 		if ((data == null) || (data.length < 1)) {
 			return null;
@@ -123,7 +126,7 @@ public final class MimeTypes {
 	 * @return the Mime Content Type of the specified document, or <code>null</code> if none is found.
 	 * @see #getMinLength()
 	 */
-	public static MimeType getMimeType(String name, byte[] data) {
+	public static MimeType getMimeType(final String name, final byte[] data) {
 		// First, try to get the mime-type from the name
 		MimeType mimeType = null;
 		MimeType[] mimeTypes = instance.getMimeTypes(name);
@@ -163,7 +166,7 @@ public final class MimeTypes {
 	/**
 	 * Returns an array of matching MimeTypes from the specified name (many MimeTypes can have the same registered extensions).
 	 */
-	private MimeType[] getMimeTypes(String name) {
+	private MimeType[] getMimeTypes(final String name) {
 		List<MimeType> mimeTypes = null;
 		int index = name.lastIndexOf('.');
 		if ((index != -1) && (index != name.length() - 1)) {
@@ -181,7 +184,7 @@ public final class MimeTypes {
 	 * @param types
 	 *            are the mime-types to add.
 	 */
-	void add(MimeType[] types) {
+	void add(final MimeType[] types) {
 		if (types == null) {
 			return;
 		}
@@ -196,7 +199,7 @@ public final class MimeTypes {
 	 * @param type
 	 *            is the mime-type to add.
 	 */
-	void add(MimeType type) {
+	void add(final MimeType type) {
 		types.put(type.getName(), type);
 		// Update minLentgth
 		minLength = Math.max(minLength, type.getMinLength());

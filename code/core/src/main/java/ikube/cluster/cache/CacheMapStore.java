@@ -31,7 +31,7 @@ public class CacheMapStore implements MapStore<Long, Object> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized Object load(Long key) {
+	public synchronized Object load(final Long key) {
 		try {
 			return getDataBase().find(key);
 		} finally {
@@ -43,7 +43,7 @@ public class CacheMapStore implements MapStore<Long, Object> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized Map<Long, Object> loadAll(Collection<Long> keys) {
+	public synchronized Map<Long, Object> loadAll(final Collection<Long> keys) {
 		try {
 			Map<Long, Object> map = new HashMap<Long, Object>();
 			for (Long key : keys) {
@@ -61,7 +61,7 @@ public class CacheMapStore implements MapStore<Long, Object> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized void store(Long key, Object value) {
+	public synchronized void store(final Long key, final Object value) {
 		try {
 			Long id = (Long) DatabaseUtilities.getIdFieldValue(value);
 			Object object = getDataBase().find(value.getClass(), id);
@@ -79,7 +79,7 @@ public class CacheMapStore implements MapStore<Long, Object> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized void storeAll(Map<Long, Object> map) {
+	public synchronized void storeAll(final Map<Long, Object> map) {
 		try {
 			for (Long key : map.keySet()) {
 				Object object = map.get(key);
@@ -99,7 +99,7 @@ public class CacheMapStore implements MapStore<Long, Object> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized void delete(Long key) {
+	public synchronized void delete(final Long key) {
 		try {
 			Object object = getDataBase().find(key);
 			if (object != null) {
@@ -114,7 +114,7 @@ public class CacheMapStore implements MapStore<Long, Object> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized void deleteAll(Collection<Long> keys) {
+	public synchronized void deleteAll(final Collection<Long> keys) {
 		try {
 			for (Long key : keys) {
 				Object object = getDataBase().find(key);

@@ -19,9 +19,9 @@ import org.apache.lucene.store.FSDirectory;
  */
 public class AreUnopenedIndexes implements IRule<IndexContext> {
 
-	private Logger logger = Logger.getLogger(this.getClass());
+	private static final transient Logger LOGGER = Logger.getLogger(AreUnopenedIndexes.class);
 
-	public boolean evaluate(IndexContext indexContext) {
+	public boolean evaluate(final IndexContext indexContext) {
 		MultiSearcher searcher = indexContext.getIndex() != null ? indexContext.getIndex().getMultiSearcher() : null;
 		Searchable[] searchables = searcher != null ? searcher.getSearchables() : null;
 		if (searchables == null) {
@@ -42,14 +42,15 @@ public class AreUnopenedIndexes implements IRule<IndexContext> {
 					FSDirectory fsDirectory = (FSDirectory) indexReader.directory();
 					File indexDirectory = fsDirectory.getFile();
 					IRule<File[]> areDirectoriesEqual = new AreDirectoriesEqual();
-					if (areDirectoriesEqual.evaluate(new File[] { serverIndexDirectory, indexDirectory })) {
+					File[] files = new File[] { serverIndexDirectory, indexDirectory };
+					if (areDirectoriesEqual.evaluate(files)) {
 						IRule<File> directoryExistsAndNotLocked = new DirectoryExistsAndNotLocked();
 						indexAlreadyOpen = directoryExistsAndNotLocked.evaluate(serverIndexDirectory);
 						break;
 					}
 				}
 				if (!indexAlreadyOpen) {
-					logger.debug(Logging.getString("Found new index directory : ", serverIndexDirectory, " will try to re-open : "));
+					LOGGER.debug(Logging.getString("Found new index directory : ", serverIndexDirectory, " will try to re-open : "));
 					return Boolean.TRUE;
 				}
 			}

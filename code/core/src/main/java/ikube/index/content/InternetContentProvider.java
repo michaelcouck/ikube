@@ -17,18 +17,18 @@ import org.apache.log4j.Logger;
  */
 public class InternetContentProvider implements IContentProvider<IndexableInternet> {
 
-	private Logger logger = Logger.getLogger(this.getClass());
+	private static final Logger LOGGER = Logger.getLogger(InternetContentProvider.class);
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void getContent(IndexableInternet indexable, OutputStream outputStream) {
+	public void getContent(final IndexableInternet indexable, final OutputStream outputStream) {
 		try {
 			InputStream inputStream = indexable.getCurrentInputStream();
 			FileUtilities.getContents(inputStream, outputStream, Integer.MAX_VALUE);
 		} catch (Exception e) {
-			logger.error("Exception accessing url : " + indexable, e);
+			LOGGER.error("Exception accessing url : " + indexable, e);
 		}
 	}
 
