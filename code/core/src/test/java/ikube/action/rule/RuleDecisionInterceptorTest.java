@@ -1,6 +1,7 @@
 package ikube.action.rule;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -32,25 +33,23 @@ import org.nfunk.jep.JEP;
  */
 public class RuleDecisionInterceptorTest extends ATest {
 
-	private Close close;
-	private List<IRule<?>> rules;
-	private ProceedingJoinPoint joinPoint;
-	private IRuleDecisionInterceptor ruleDecisionInterceptor;
+	private transient ProceedingJoinPoint joinPoint;
+	private transient IRuleDecisionInterceptor ruleDecisionInterceptor;
 
-	private Boolean[] vector = { Boolean.TRUE, Boolean.FALSE, Boolean.TRUE, Boolean.FALSE, Boolean.TRUE };
-	private List<Boolean[]> matrix = new ArrayList<Boolean[]>();
-	private Boolean[] resultVector = { Boolean.TRUE, Boolean.FALSE, Boolean.TRUE, Boolean.FALSE, Boolean.TRUE };
+	private transient final Boolean[] vector = { Boolean.TRUE, Boolean.FALSE, Boolean.TRUE, Boolean.FALSE, Boolean.TRUE };
+	private transient final List<Boolean[]> matrix = new ArrayList<Boolean[]>();
+	private transient Boolean[] resultVector = { Boolean.TRUE, Boolean.FALSE, Boolean.TRUE, Boolean.FALSE, Boolean.TRUE };
 
 	@NonStrict
-	private IsMultiSearcherInitialised isMultiSearcherInitialised;
+	private transient IsMultiSearcherInitialised isMultiSearcherInitialised;
 	@NonStrict
-	private AreSearchablesInitialised areSearchablesInitialised;
+	private transient AreSearchablesInitialised areSearchablesInitialised;
 	@NonStrict
-	private IsIndexCurrent isIndexCurrent;
+	private transient IsIndexCurrent isIndexCurrent;
 	@NonStrict
-	private AreIndexesCreated areIndexesCreated;
+	private transient AreIndexesCreated areIndexesCreated;
 	@NonStrict
-	private AreUnopenedIndexes areUnopenedIndexes;
+	private transient AreUnopenedIndexes areUnopenedIndexes;
 
 	@BeforeClass
 	public static void beforeClass() {
@@ -81,14 +80,14 @@ public class RuleDecisionInterceptorTest extends ATest {
 			}
 		};
 
-		rules = new ArrayList<IRule<?>>();
+		List<IRule<?>> rules = new ArrayList<IRule<?>>();
 		rules.add(isMultiSearcherInitialised);
 		rules.add(areSearchablesInitialised);
 		rules.add(isIndexCurrent);
 		rules.add(areIndexesCreated);
 		rules.add(areUnopenedIndexes);
 
-		close = mock(Close.class);
+		Close close = mock(Close.class);
 		String predicate = "IsMultiSearcherInitialised && AreSearchablesInitialised && !IsIndexCurrent && AreIndexesCreated && AreUnopenedIndexes";
 		when(close.getPredicate()).thenReturn(predicate);
 		when(close.getRules()).thenReturn(rules);
@@ -113,7 +112,7 @@ public class RuleDecisionInterceptorTest extends ATest {
 	}
 
 	@Test
-	public void jep() throws Exception {
+	public void jep() {
 		JEP jep = new JEP();
 		jep.addVariable("a", Boolean.FALSE);
 		jep.addVariable("b", Boolean.FALSE);
@@ -123,6 +122,7 @@ public class RuleDecisionInterceptorTest extends ATest {
 		jep.parseExpression("((a || b) || !c) && (d && e)");
 		Object result = jep.getValueAsObject();
 		logger.info("Jep result : " + result);
+		assertNotNull(result);
 	}
 
 }

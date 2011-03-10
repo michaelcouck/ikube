@@ -17,9 +17,9 @@ import javax.naming.NamingException;
 public class JndiInjector {
 
 	/** map of objects that will be present in the JNDI */
-	private Map<String, Object> jndiObjects;
+	private final transient Map<String, Object> jndiObjects;
 	/** The JNDI context */
-	private Context context;
+	private transient Context context;
 
 	/**
 	 * Class constructors that receives a map containing the objects that will be present in JNDI

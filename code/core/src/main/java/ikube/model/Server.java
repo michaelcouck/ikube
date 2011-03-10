@@ -27,6 +27,9 @@ public class Server extends Persistable implements Comparable<Server> {
 		/** The time the action was started. */
 		private long startTime;
 
+		/**
+		 * Default constructor.
+		 */
 		public Action() {
 		}
 

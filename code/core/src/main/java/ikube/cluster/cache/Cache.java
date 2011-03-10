@@ -22,14 +22,14 @@ import com.hazelcast.query.SqlPredicate;
  */
 public class Cache implements ICache {
 
-	private Logger logger;
+	private transient Logger logger;
 	/** The underlying database. */
-	private IDataBase dataBase;
+	private transient IDataBase dataBase;
 	/**
 	 * This is a map of maps for objects. These maps are propagated throughout the cluster. Typically the name of the map is the name of the
 	 * class that it contains, however in some cases this is not convenient.
 	 */
-	private Map<String, Map<Long, ?>> maps;
+	private transient Map<String, Map<Long, ?>> maps;
 
 	public void initialise() {
 		logger = Logger.getLogger(this.getClass());
@@ -49,35 +49,33 @@ public class Cache implements ICache {
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T> T get(final String name, final Long id) {
-		T t = (T) getMap(name).get(id);
-		if (t == null) {
+	public <T> T get(final String name, final Long objectId) {
+		T object = (T) getMap(name).get(objectId);
+		if (object == null && dataBase != null) {
 			// Try the underlying database
-			if (dataBase != null) {
-				try {
-					t = (T) dataBase.find(Class.forName(name), id);
-				} catch (ClassNotFoundException e) {
-					logger.error("", e);
-				}
+			try {
+				object = (T) dataBase.find(Class.forName(name), objectId);
+			} catch (ClassNotFoundException e) {
+				logger.error("", e);
 			}
 		}
-		return t;
+		return object;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public <T> void set(final String name, final Long id, final T t) {
-		getMap(name).put(id, t);
+	public <T> void set(final String name, final Long objectId, final T object) {
+		getMap(name).put(objectId, object);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void remove(final String name, final Long id) {
-		getMap(name).remove(id);
+	public void remove(final String name, final Long objectId) {
+		getMap(name).remove(objectId);
 	}
 
 	/**
@@ -93,19 +91,19 @@ public class Cache implements ICache {
 		List<T> list = new ArrayList<T>();
 		Map<Long, T> map = getMap(name);
 		for (Long id : map.keySet()) {
-			T t = map.get(id);
+			T object = map.get(id);
 			if (criteria != null) {
 				// The result from the criteria evaluation determines whether
 				// the object will be included in the result batch returned
-				boolean evaluated = criteria.evaluate(t);
+				boolean evaluated = criteria.evaluate(object);
 				if (!evaluated) {
 					continue;
 				}
 			}
 			if (action != null) {
-				action.execute(t);
+				action.execute(object);
 			}
-			list.add(t);
+			list.add(object);
 			if (list.size() >= size) {
 				break;
 			}
@@ -130,7 +128,7 @@ public class Cache implements ICache {
 		Map<Long, T> map = getMap(name);
 		if (IMap.class.isAssignableFrom(map.getClass())) {
 			Collection<Object> collection = ((IMap<Long, T>) map).values(new SqlPredicate(sql));
-			if (collection.size() == 0) {
+			if (collection.isEmpty()) {
 				return null;
 			}
 			return (T) collection.iterator().next();
@@ -139,7 +137,7 @@ public class Cache implements ICache {
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T> Map<Long, T> getMap(String name) {
+	private <T> Map<Long, T> getMap(final String name) {
 		Map<Long, T> map = (Map<Long, T>) maps.get(name);
 		if (map == null) {
 			map = Hazelcast.getMap(name);
@@ -148,7 +146,7 @@ public class Cache implements ICache {
 		return map;
 	}
 
-	public void setDataBase(IDataBase dataBase) {
+	public void setDataBase(final IDataBase dataBase) {
 		this.dataBase = dataBase;
 	}
 

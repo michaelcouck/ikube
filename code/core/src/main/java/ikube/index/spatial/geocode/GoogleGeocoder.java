@@ -24,8 +24,8 @@ public class GoogleGeocoder implements IGeocoder {
 	protected static final String ADDRESS = "address";
 	protected static final String SENSOR = "sensor";
 
-	private Logger logger = Logger.getLogger(this.getClass());
-	private String geoCodeApi;
+	private static final Logger LOGGER = Logger.getLogger(GoogleGeocoder.class);
+	private transient String geoCodeApi;
 
 	@Override
 	public Coordinate getCoordinate(final Indexable<?> indexable) {
@@ -42,10 +42,9 @@ public class GoogleGeocoder implements IGeocoder {
 			Element longitudeElement = XmlUtilities.getElement(element, IConstants.LNG);
 			double lat = Double.parseDouble(latitudeElement.getText());
 			double lng = Double.parseDouble(longitudeElement.getText());
-			Coordinate coordinate = new Coordinate(lat, lng, address);
-			return coordinate;
+			return new Coordinate(lat, lng, address);
 		} catch (Exception e) {
-			logger.error("Exception accessing the GeoCode url : " + geoCodeApi + ", " + indexable, e);
+			LOGGER.error("Exception accessing the GeoCode url : " + geoCodeApi + ", " + indexable, e);
 		}
 		return null;
 	}

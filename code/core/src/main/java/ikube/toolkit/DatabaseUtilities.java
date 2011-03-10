@@ -20,10 +20,10 @@ import org.apache.log4j.Logger;
  * @since 23.12.10
  * @version 01.00
  */
-public class DatabaseUtilities {
+public final class DatabaseUtilities {
 
 	private static final Logger LOGGER = Logger.getLogger(DatabaseUtilities.class);
-	private static final Map<Class<?>, Field> idFields = new HashMap<Class<?>, Field>();
+	private static final Map<Class<?>, Field> ID_FIELDS = new HashMap<Class<?>, Field>();
 	
 	private DatabaseUtilities() {
 	}
@@ -99,7 +99,7 @@ public class DatabaseUtilities {
 	}
 
 	public static Field getIdField(final Class<?> klass, final Class<?> superKlass) {
-		Field idField = idFields.get(klass);
+		Field idField = ID_FIELDS.get(klass);
 		if (idField != null) {
 			return idField;
 		}
@@ -107,7 +107,7 @@ public class DatabaseUtilities {
 		for (Field field : fields) {
 			Id idAnnotation = field.getAnnotation(Id.class);
 			if (idAnnotation != null) {
-				idFields.put(klass, field);
+				ID_FIELDS.put(klass, field);
 				field.setAccessible(Boolean.TRUE);
 				return field;
 			}

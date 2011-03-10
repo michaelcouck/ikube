@@ -17,10 +17,10 @@ import org.junit.Test;
  */
 public class ResetTest extends BaseTest {
 
-	private Reset reset = new Reset();
+	private transient final Reset reset = new Reset();
 
 	@Test
-	public void execute() throws Exception {
+	public void execute() {
 		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
 		Url url = new Url();
 		url.setUrl("dummy");
@@ -28,12 +28,12 @@ public class ResetTest extends BaseTest {
 		clusterManager.set(Url.class, url.getId(), url);
 
 		int size = clusterManager.size(Url.class);
-		assertTrue(size >= 1);
+		assertTrue("There should be only one : ", size >= 1);
 
 		reset.execute(indexContext);
 
 		size = clusterManager.size(Url.class);
-		assertEquals(0, size);
+		assertEquals("There should be no urls in the cache : ", 0, size);
 	}
 
 }

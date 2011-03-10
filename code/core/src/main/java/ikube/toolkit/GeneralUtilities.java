@@ -7,7 +7,7 @@ import org.apache.log4j.Logger;
  * @since 27.02.11
  * @version 01.00
  */
-public class GeneralUtilities {
+public final class GeneralUtilities {
 	
 	private static final Logger LOGGER = Logger.getLogger(GeneralUtilities.class);
 	
@@ -15,32 +15,32 @@ public class GeneralUtilities {
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public static void quickSort(final Comparable[] c, final int start, final int end) {
+	public static void quickSort(final Comparable[] comparables, final int start, final int end) {
 		if (end <= start) {
 			return;
 		}
-		Comparable middle = c[start];
+		Comparable middle = comparables[start];
 		int i = start;
 		int j = end + 1;
 		for (;;) {
 			do {
 				i++;
-			} while (i < end && c[i].compareTo(middle) < 0);
+			} while (i < end && comparables[i].compareTo(middle) < 0);
 			do {
 				j--;
-			} while (j > start && c[j].compareTo(middle) > 0);
+			} while (j > start && comparables[j].compareTo(middle) > 0);
 			if (j <= i) {
 				break;
 			}
-			Comparable smaller = c[i];
-			Comparable larger = c[j];
-			c[i] = larger;
-			c[j] = smaller;
+			Comparable smaller = comparables[i];
+			Comparable larger = comparables[j];
+			comparables[i] = larger;
+			comparables[j] = smaller;
 		}
-		c[start] = c[j];
-		c[j] = middle;
-		quickSort(c, start, j - 1);
-		quickSort(c, j + 1, end);
+		comparables[start] = comparables[j];
+		comparables[j] = middle;
+		quickSort(comparables, start, j - 1);
+		quickSort(comparables, j + 1, end);
 	}
 
 	/**
@@ -67,11 +67,11 @@ public class GeneralUtilities {
 		return new Float(dist).floatValue();
 	}
 
-	public static void main(String[] args) throws Exception {
+	public static void main(final String[] args) throws Exception {
 		Integer[] arr = new Integer[5];
 		LOGGER.info("inserting: ");
 		for (int i = 0; i < arr.length; i++) {
-			arr[i] = new Integer((int) (Math.random() * 99));
+			arr[i] = Integer.valueOf((int) (Math.random() * 99));
 			LOGGER.info(arr[i] + " ");
 		}
 		quickSort(arr, 0, arr.length - 1);

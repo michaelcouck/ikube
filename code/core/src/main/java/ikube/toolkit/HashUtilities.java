@@ -5,7 +5,7 @@ package ikube.toolkit;
  * @since 21.11.10
  * @version 01.00
  */
-public class HashUtilities {
+public final class HashUtilities {
 	
 	private HashUtilities() {
 	}
@@ -17,7 +17,7 @@ public class HashUtilities {
 	 *            the string to generate the hash from
 	 * @return the integer representation of the hash of the string characters, typically quite unique for strings less than 10 characters
 	 */
-	public static final Long hash(final String string) {
+	public static Long hash(final String string) {
 		// Must be prime of course
 		long seed = 131; // 31 131 1313 13131 131313 etc..
 		long hash = 0;
@@ -40,8 +40,7 @@ public class HashUtilities {
 		for (Object object : objects) {
 			builder.append(object);
 		}
-		Long hash = HashUtilities.hash(builder.toString());
-		return hash;
+		return HashUtilities.hash(builder.toString());
 	}
 
 }

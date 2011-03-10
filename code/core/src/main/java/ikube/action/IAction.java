@@ -22,13 +22,13 @@ public interface IAction<E, F> {
 	 * Executes the action on the index context. The generic parameter E is the index context and the return value is typically a boolean
 	 * indicating that the action executed completely or not.
 	 * 
-	 * @param e
+	 * @param context
 	 *            the index context
 	 * @return whether the action completed the logic successfully
 	 * @throws Exception
 	 *             any exception during the action. This should be propagated up the stack to the caller, which is generally the
 	 *             {@link IndexEngine}
 	 */
-	F execute(E e) throws Exception;
+	F execute(E context) throws Exception;
 
 }

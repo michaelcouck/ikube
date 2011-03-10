@@ -29,7 +29,7 @@ import org.apache.log4j.Logger;
 @WebService(name = IMonitoringService.NAME, targetNamespace = IMonitoringService.NAMESPACE, serviceName = IMonitoringService.SERVICE)
 public class MonitoringService implements IMonitoringService {
 
-	private static final Logger logger = Logger.getLogger(MonitoringService.class);
+	private static final Logger LOGGER = Logger.getLogger(MonitoringService.class);
 
 	public String[] getIndexNames() {
 		Map<String, IndexContext> indexContexts = ApplicationContextManager.getBeans(IndexContext.class);
@@ -92,7 +92,7 @@ public class MonitoringService implements IMonitoringService {
 						fieldNames.add(fieldName.toString());
 					}
 				} catch (IllegalAccessException e) {
-					logger.error("Illegal access with forced access?", e);
+					LOGGER.error("Illegal access with forced access?", e);
 				}
 			}
 		}

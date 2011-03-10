@@ -36,7 +36,6 @@ public class RuleDecisionInterceptor implements IRuleDecisionInterceptor {
 		}
 
 		LOGGER.debug("Intercepting : " + target);
-		int index = 0;
 		JEP jep = new JEP();
 		for (IRule<IndexContext> rule : classRules) {
 			Object[] args = proceedingJoinPoint.getArgs();
@@ -48,7 +47,6 @@ public class RuleDecisionInterceptor implements IRuleDecisionInterceptor {
 						LOGGER.debug(Logging.getString("Parameter : ", parameter, result));
 					}
 					jep.addVariable(parameter, result);
-					index++;
 				}
 			}
 		}

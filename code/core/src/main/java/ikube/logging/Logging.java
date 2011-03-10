@@ -14,7 +14,7 @@ import org.apache.log4j.PropertyConfigurator;
  * @since 15.09.10
  * @version 01.00
  */
-public class Logging {
+public final class Logging {
 
 	private static Logger LOGGER;
 	private static boolean INITIALISED = false;

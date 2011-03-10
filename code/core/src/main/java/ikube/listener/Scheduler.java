@@ -19,9 +19,9 @@ public class Scheduler {
 
 	private Logger logger;
 	/** The scheduler. */
-	private ScheduledExecutorService scheduler;
+	private transient ScheduledExecutorService scheduler;
 	/** The list of schedules. */
-	private List<Schedule> schedules;
+	private transient List<Schedule> schedules;
 
 	/**
 	 * Iterates over the schedules scheduling them for execution.
@@ -46,7 +46,7 @@ public class Scheduler {
 		}
 	}
 
-	public void setSchedules(List<Schedule> schedules) {
+	public void setSchedules(final List<Schedule> schedules) {
 		this.schedules = schedules;
 	}
 

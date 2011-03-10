@@ -97,7 +97,7 @@ public class Synchronize extends Action implements MessageListener<Synchronizati
 		List<File> files = getIndexFiles();
 		// Publish a message to the cluster with the name
 		// of the file that we want to send to each
-		if (files.size() == 0) {
+		if (files.isEmpty()) {
 			logger.info("No files to distribute yet : " + files);
 			return Boolean.FALSE;
 		}
@@ -136,9 +136,10 @@ public class Synchronize extends Action implements MessageListener<Synchronizati
 				fileInputStream = new FileInputStream(currentFile);
 				outputStream = socket.getOutputStream();
 				byte[] bytes = new byte[chunk];
-				int read = -1;
-				while ((read = fileInputStream.read(bytes)) > -1) {
+				int read = fileInputStream.read(bytes);
+				while (read > -1) {
 					outputStream.write(bytes, 0, read);
+					read = fileInputStream.read(bytes);
 				}
 			}
 		} catch (Exception e) {
@@ -297,10 +298,11 @@ public class Synchronize extends Action implements MessageListener<Synchronizati
 			fileOutputStream = new FileOutputStream(file);
 			inputStream = socket.getInputStream();
 			byte[] bytes = new byte[chunk];
-			int read = -1;
+			int read = inputStream.read(bytes);
 			// Write the file contents from the publisher to the file system
-			while ((read = inputStream.read(bytes)) > -1) {
+			while (read > -1) {
 				fileOutputStream.write(bytes, 0, read);
+				read = inputStream.read(bytes);
 			}
 			// Verify that the file is the same length as the one sent
 			long fileLength = file.length();
@@ -317,10 +319,8 @@ public class Synchronize extends Action implements MessageListener<Synchronizati
 				logger.error("Cluster synchroinzation exception?", e);
 			}
 			try {
-				if (directoryLock != null) {
-					if (directoryLock.isLocked()) {
-						directoryLock.release();
-					}
+				if (directoryLock != null && directoryLock.isLocked()) {
+					directoryLock.release();
 				}
 				if (directory != null) {
 					directory.close();

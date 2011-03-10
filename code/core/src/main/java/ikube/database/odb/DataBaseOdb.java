@@ -43,12 +43,12 @@ public class DataBaseOdb implements IDataBase {
 	private Logger logger;
 
 	/** The Neodatis persistence object. */
-	private ODB odb;
+	private transient ODB odb;
 	/** The list of indexes to create on the objects. */
-	private List<Index> indexes;
+	private transient List<Index> indexes;
 	/** The initialization flag. */
-	private boolean initialised = Boolean.FALSE;
-	private Runnable dataBaseOdbDefragmenter;
+	private transient boolean initialised = Boolean.FALSE;
+	private transient Runnable dataBaseOdbDefragmenter;
 
 	protected void initialise() {
 		initialise(System.nanoTime() + "." + IConstants.DATABASE_FILE);
@@ -254,9 +254,9 @@ public class DataBaseOdb implements IDataBase {
 	@Override
 	public synchronized <T> T remove(final Class<T> klass, final Long id) {
 		try {
-			T t = find(klass, id);
-			this.odb.delete(t);
-			return t;
+			T object = find(klass, id);
+			this.odb.delete(object);
+			return object;
 		} finally {
 			notifyAll();
 		}
@@ -266,25 +266,25 @@ public class DataBaseOdb implements IDataBase {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized <T> T merge(final T t) {
+	public synchronized <T> T merge(final T object) {
 		try {
-			if (t != null) {
-				Long idFieldValue = (Long) DatabaseUtilities.getIdFieldValue(t);
-				Object dbT = find(t.getClass(), idFieldValue);
+			if (object != null) {
+				Long idFieldValue = (Long) DatabaseUtilities.getIdFieldValue(object);
+				Object dbT = find(object.getClass(), idFieldValue);
 				if (dbT != null) {
 					OID oid = this.odb.getObjectId(dbT);
 					if (oid != null) {
-						this.odb.ext().replace(oid, t);
+						this.odb.ext().replace(oid, object);
 					}
 				}
 			}
 		} catch (Exception e) {
-			logger.error("Exception merging object : " + t, e);
+			logger.error("Exception merging object : " + object, e);
 		} finally {
 			this.odb.commit();
 			notifyAll();
 		}
-		return t;
+		return object;
 	}
 
 	/**
@@ -431,7 +431,6 @@ public class DataBaseOdb implements IDataBase {
 				this.odb.commit();
 				this.odb.close();
 			}
-			this.odb = null;
 			this.initialised = Boolean.FALSE;
 		} finally {
 			notifyAll();
@@ -444,7 +443,7 @@ public class DataBaseOdb implements IDataBase {
 	 * @param indexes
 	 *            the indexes to create on the objects that will be persisted in the database
 	 */
-	public void setIndexes(List<Index> indexes) {
+	public void setIndexes(final List<Index> indexes) {
 		this.indexes = indexes;
 	}
 

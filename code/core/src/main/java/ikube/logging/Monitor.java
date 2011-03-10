@@ -20,8 +20,8 @@ public class Monitor implements IMonitor {
 		double stop;
 	}
 
-	private static final Logger logger = Logger.getLogger(Monitor.class);
-	private transient Map<String, Execution> executions;
+	private static final Logger LOGGER = Logger.getLogger(Monitor.class);
+	private transient final Map<String, Execution> executions;
 	private transient double invocations = 10;
 
 	public Monitor() {
@@ -43,7 +43,7 @@ public class Monitor implements IMonitor {
 			execution.stop = System.currentTimeMillis();
 			double duration = execution.stop - execution.start;
 			double executionsPerSecond = (execution.invocations / duration) / 1000d;
-			logger.info("Execution : " + execution.invocations + ", duration : " + duration + ", per second : " + executionsPerSecond
+			LOGGER.info("Execution : " + execution.invocations + ", duration : " + duration + ", per second : " + executionsPerSecond
 					+ ", name : " + execution.name);
 		}
 		return call.proceed();

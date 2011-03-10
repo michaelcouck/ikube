@@ -12,6 +12,7 @@ import ikube.toolkit.HashUtilities;
 import ikube.toolkit.ThreadUtilities;
 
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,18 +27,18 @@ import org.junit.Test;
  */
 public class ClusterManagerTest extends BaseTest {
 
-	private Server remoteServer;
+	private transient Server remoteServer;
 
-	private String indexName;
-	private String indexableName;
+	private transient String indexName;
+	private transient String indexableName;
 
-	private int batchSize = 10;
+	private transient int batchSize = 10;
 
 	/** The class under test. */
 	private IClusterManager clusterManager;
 
 	@Before
-	public void before() throws Exception {
+	public void before() throws UnknownHostException {
 		indexName = indexContext.getIndexName();
 		indexableName = ApplicationContextManager.getBeans(IndexableTable.class).values().iterator().next().getName();
 
@@ -101,7 +102,7 @@ public class ClusterManagerTest extends BaseTest {
 	}
 
 	@Test
-	public void getBatch() throws Exception {
+	public void getBatch() throws InterruptedException {
 		// int
 		List<Url> batch = clusterManager.getBatch(batchSize);
 		assertEquals(0, batch.size());
@@ -226,7 +227,7 @@ public class ClusterManagerTest extends BaseTest {
 	}
 
 	@Test
-	public void size() throws Exception {
+	public void size() throws InterruptedException {
 		// Class<T>
 		int size = clusterManager.size(Server.class);
 		assertEquals(0, size);

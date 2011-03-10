@@ -30,19 +30,19 @@ public class Mailer {
 
 	private Logger logger = Logger.getLogger(this.getClass());
 	/** "smtp.gmail.com" */
-	private String mailHost;
-	private String user;
-	private String password;
-	private String sender;
-	private String recipients;
+	private transient String mailHost;
+	private transient String user;
+	private transient String password;
+	private transient String sender;
+	private transient String recipients;
 	/** "smtp" */
-	private String protocol;
+	private transient String protocol;
 	/** "true" */
-	private String auth;
+	private transient String auth;
 	/** "465" */
-	private String port;
+	private transient String port;
 
-	public void sendMail(String subject, String body) throws Exception {
+	public void sendMail(final String subject, final String body) throws Exception {
 		Properties properties = System.getProperties();
 		properties.put("mail.transport.protocol", protocol);
 		properties.put("mail.host", mailHost);
@@ -89,35 +89,35 @@ public class Mailer {
 		}
 	}
 
-	public void setMailHost(String mailHost) {
+	public void setMailHost(final String mailHost) {
 		this.mailHost = mailHost;
 	}
 
-	public void setUser(String user) {
+	public void setUser(final String user) {
 		this.user = user;
 	}
 
-	public void setPassword(String password) {
+	public void setPassword(final String password) {
 		this.password = password;
 	}
 
-	public void setSender(String sender) {
+	public void setSender(final String sender) {
 		this.sender = sender;
 	}
 
-	public void setRecipients(String recipients) {
+	public void setRecipients(final String recipients) {
 		this.recipients = recipients;
 	}
 
-	public void setProtocol(String protocol) {
+	public void setProtocol(final String protocol) {
 		this.protocol = protocol;
 	}
 
-	public void setAuth(String auth) {
+	public void setAuth(final String auth) {
 		this.auth = auth;
 	}
 
-	public void setPort(String port) {
+	public void setPort(final String port) {
 		this.port = port;
 	}
 

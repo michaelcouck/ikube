@@ -22,7 +22,7 @@ import org.apache.log4j.Logger;
  * @since 21.11.10
  * @version 01.00
  */
-public class FileUtilities {
+public final class FileUtilities {
 
 	private static final Logger LOGGER = Logger.getLogger(FileUtilities.class);
 	
@@ -39,7 +39,7 @@ public class FileUtilities {
 	 * @param stringPatterns
 	 *            the patterns to look for in the file paths
 	 */
-	public static void deleteFiles(final File file, String... stringPatterns) {
+	public static void deleteFiles(final File file, final String... stringPatterns) {
 		if (file.isDirectory()) {
 			File[] childFiles = file.listFiles();
 			if (childFiles != null && childFiles.length > 0) {
@@ -75,8 +75,7 @@ public class FileUtilities {
 			// Concatenate the 'any character' regular expression to the string pattern
 			builder.append(".*(").append(stringPattern).append(").*");
 		}
-		Pattern pattern = Pattern.compile(builder.toString());
-		return pattern;
+		return Pattern.compile(builder.toString());
 	}
 
 	/**
@@ -92,7 +91,7 @@ public class FileUtilities {
 		final Pattern pattern = getPattern(stringPatterns);
 		File[] files = folder.listFiles(new FileFilter() {
 			@Override
-			public boolean accept(File file) {
+			public boolean accept(final File file) {
 				String pathName = file.getName();
 				if (pattern.matcher(pathName).matches()) {
 					return Boolean.TRUE;
@@ -115,7 +114,7 @@ public class FileUtilities {
 	 */
 	public static File findFile(final File folder, final String... stringPatterns) {
 		List<File> files = FileUtilities.findFilesRecursively(folder, stringPatterns, new ArrayList<File>());
-		return files.size() > 0 ? files.get(0) : null;
+		return !files.isEmpty() ? files.get(0) : null;
 	}
 
 	/**
@@ -235,23 +234,24 @@ public class FileUtilities {
 		}
 	}
 
-	protected static synchronized File getLatestIndexDirectory(final File file, File latestSoFar) {
+	protected static synchronized File getLatestIndexDirectory(final File file, final File latestSoFa) {
+		File latest = latestSoFa;
 		if (file.isDirectory()) {
 			File[] children = file.listFiles();
 			for (File child : children) {
 				if (FileUtilities.isDigits(child.getName())) {
-					if (latestSoFar == null) {
-						latestSoFar = child;
+					if (latest == null) {
+						latest = child;
 					}
 					long oneTime = Long.parseLong(child.getName());
-					long twoTime = Long.parseLong(latestSoFar.getName());
-					latestSoFar = oneTime > twoTime ? child : latestSoFar;
+					long twoTime = Long.parseLong(latest.getName());
+					latest = oneTime > twoTime ? child : latest;
 				} else {
-					latestSoFar = getLatestIndexDirectory(child, latestSoFar);
+					latest = getLatestIndexDirectory(child, latest);
 				}
 			}
 		}
-		return latestSoFar;
+		return latest;
 	}
 
 	/**
@@ -338,9 +338,10 @@ public class FileUtilities {
 		}
 		try {
 			byte[] bytes = new byte[1024];
-			int read;
-			while ((read = inputStream.read(bytes)) > -1 && byteArrayOutputStream.size() < maxLength) {
+			int read = inputStream.read(bytes);
+			while (read > -1 && byteArrayOutputStream.size() < maxLength) {
 				byteArrayOutputStream.write(bytes, 0, read);
+				read = inputStream.read(bytes);
 			}
 		} catch (Exception e) {
 			LOGGER.error("Exception accessing the file contents.", e);
@@ -369,12 +370,13 @@ public class FileUtilities {
 			return;
 		}
 		try {
-			int read = -1;
 			int total = 0;
 			byte[] bytes = new byte[1024];
-			while ((read = inputStream.read(bytes)) > -1 && total < maxLength) {
+			int read = inputStream.read(bytes);
+			while (read > -1 && total < maxLength) {
 				total += read;
 				outputStream.write(bytes, 0, read);
+				read = inputStream.read(bytes);
 			}
 		} catch (Exception e) {
 			LOGGER.error("Exception accessing the stream contents.", e);
@@ -392,16 +394,17 @@ public class FileUtilities {
 			return;
 		}
 		try {
-			int read = -1;
 			int total = 0;
 			char[] chars = new char[1024];
-			while ((read = reader.read(chars)) > -1 && total < maxLength) {
+			int read = reader.read(chars);
+			while (read > -1 && total < maxLength) {
 				total += read;
 				byte[] bytes = new byte[read];
 				for (int i = 0; i < read; i++) {
 					bytes[i] = (byte) chars[i];
 				}
 				outputStream.write(bytes, 0, bytes.length);
+				read = reader.read(chars);
 			}
 		} catch (Exception e) {
 			LOGGER.error("Exception accessing the file contents.", e);

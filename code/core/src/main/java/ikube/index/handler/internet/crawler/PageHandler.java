@@ -99,7 +99,7 @@ public class PageHandler extends Handler<Url> implements Runnable {
 		parameters.put(IConstants.INDEXED, Boolean.FALSE);
 		while (true) {
 			List<Url> urls = getBatch(getIndexContext().getInternetBatchSize());
-			if (urls.size() == 0) {
+			if (urls.isEmpty()) {
 				// Check if there are any other threads still working
 				// other than this thread of course
 				int threadsRunnable = 0;

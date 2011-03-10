@@ -18,7 +18,7 @@ import org.junit.Test;
  */
 public class IndexTest extends BaseTest {
 
-	private Index index = new Index();
+	private transient final Index index = new Index();
 
 	@Before
 	public void before() {
@@ -33,7 +33,7 @@ public class IndexTest extends BaseTest {
 		indexContext.setMaxAge(0);
 
 		boolean done = index.execute(indexContext);
-		assertTrue(done);
+		assertTrue("The index should have been created : ", done);
 
 		indexContext.setMaxAge(maxAge);
 

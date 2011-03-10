@@ -33,7 +33,7 @@ public interface ICache {
 	 * @author Michael Couck
 	 */
 	interface IAction<T> {
-		void execute(T t);
+		void execute(T object);
 	}
 
 	/**
@@ -43,7 +43,7 @@ public interface ICache {
 	 * @author Michael Couck
 	 */
 	interface ICriteria<T> {
-		boolean evaluate(T t);
+		boolean evaluate(T object);
 	}
 
 	/**
@@ -102,10 +102,10 @@ public interface ICache {
 	 *            the name of the map
 	 * @param id
 	 *            the id of the object
-	 * @param t
+	 * @param object
 	 *            the object it's self
 	 */
-	<T> void set(String name, Long id, T t);
+	<T> void set(String name, Long id, T object);
 
 	/**
 	 * Removes the specified object from the cache/map and throughout the cluster.

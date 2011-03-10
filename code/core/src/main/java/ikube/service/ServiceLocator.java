@@ -14,7 +14,7 @@ import org.apache.log4j.Logger;
  * @since 12.10.2010
  * @version 01.00
  */
-public class ServiceLocator {
+public final class ServiceLocator {
 
 	private static final Logger LOGGER = Logger.getLogger(ServiceLocator.class);
 

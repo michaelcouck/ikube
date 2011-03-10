@@ -205,7 +205,7 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 	 * @throws MessagingException
 	 *             If some problem occurs when trying to access the message content.
 	 */
-	private String getMessageContent(Message message) throws IOException, MessagingException {
+	private String getMessageContent(final Message message) throws IOException, MessagingException {
 		String messageContent = null;
 		Object obj = message.getContent();
 		if (obj.getClass().isAssignableFrom(Multipart.class)) {

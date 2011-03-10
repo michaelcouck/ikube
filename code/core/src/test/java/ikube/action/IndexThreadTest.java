@@ -1,5 +1,7 @@
 package ikube.action;
 
+import static org.junit.Assert.*;
+
 import ikube.ATest;
 import ikube.toolkit.ThreadUtilities;
 
@@ -33,6 +35,7 @@ public class IndexThreadTest extends ATest {
 			threads.add(thread);
 		}
 		ThreadUtilities.waitForThreads(threads);
+		assertTrue("We just want to exis here after the threads die : ", true);
 	}
 
 }

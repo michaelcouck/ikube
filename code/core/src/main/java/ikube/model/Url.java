@@ -15,10 +15,10 @@ public class Url extends Persistable {
 	/** The hash of the content. */
 	private long hash;
 
-	private transient String contentType;
-	private transient String title;
-	private transient byte[] rawContent;
-	private transient String parsedContent;
+	private String contentType;
+	private String title;
+	private byte[] rawContent;
+	private String parsedContent;
 
 	public String getUrl() {
 		return url;

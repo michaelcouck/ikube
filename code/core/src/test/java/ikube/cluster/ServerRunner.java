@@ -9,7 +9,7 @@ import ikube.toolkit.ApplicationContextManager;
  */
 public class ServerRunner {
 
-	public static void main(String[] args) {
+	public static void main(final String[] args) {
 		String configurationFile = args[0];
 		ApplicationContextManager.getApplicationContext(configurationFile);
 	}

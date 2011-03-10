@@ -20,9 +20,9 @@ import org.junit.Test;
  */
 public class ActionTest extends ATest {
 
-	private Action action = new Action() {
+	private transient final Action action = new Action() {
 		@Override
-		public Boolean execute(IndexContext e) {
+		public Boolean execute(final IndexContext e) {
 			return Boolean.FALSE;
 		}
 	};
@@ -35,7 +35,7 @@ public class ActionTest extends ATest {
 	}
 
 	@Test
-	public void indexCurrent() throws Exception {
+	public void indexCurrent() throws InterruptedException {
 		StringBuilder builder = new StringBuilder();
 		builder.append(INDEX_CONTEXT.getIndexDirectoryPath());
 		builder.append(File.separator);
@@ -51,54 +51,64 @@ public class ActionTest extends ATest {
 		Thread.sleep(maxAge * 100);
 
 		boolean indexCurrent = action.isIndexCurrent(INDEX_CONTEXT);
-		assertFalse(indexCurrent);
+		assertFalse("The index should be out of date : ", indexCurrent);
 
 		when(INDEX_CONTEXT.getMaxAge()).thenReturn(maxAge * 1000);
 
 		indexCurrent = action.isIndexCurrent(INDEX_CONTEXT);
-		assertTrue(indexCurrent);
+		assertTrue("Index should be current : " + indexCurrent, indexCurrent);
 
 		FileUtilities.deleteFile(serverIndexDirectory, 1);
-		assertFalse(serverIndexDirectory.exists());
+		assertFalse("Server index directory should exist : ", serverIndexDirectory.exists());
 	}
 
 	@Test
-	public void shoudReopen() throws Exception {
+	public void shoudReopen() {
 		File baseIndexDirectory = FileUtilities.getFile(INDEX_CONTEXT.getIndexDirectoryPath(), Boolean.TRUE);
 		FileUtilities.deleteFile(baseIndexDirectory, 1);
 		boolean shouldReopen = action.shouldReopen(INDEX_CONTEXT);
 		// Searcher null in the context
-		assertTrue(shouldReopen /* && !baseIndexDirectory.exists() */);
+		assertTrue("Should reopen as the searcher is null : ", shouldReopen /* && !baseIndexDirectory.exists() */);
 
 		// No SEARCHABLES in the searcher
 		when(INDEX.getMultiSearcher()).thenReturn(MULTI_SEARCHER);
 		when(MULTI_SEARCHER.getSearchables()).thenReturn(new Searchable[0]);
 		shouldReopen = action.shouldReopen(INDEX_CONTEXT);
-		assertTrue(shouldReopen);
+		assertTrue("Should reopen as there are no searchables in the searcher : ", shouldReopen);
 
 		String serverIndexDirectoryPath = getServerIndexDirectoryPath(INDEX_CONTEXT);
-		File serverIndexDirectory = createIndex(new File(serverIndexDirectoryPath));
+		File serverIndexDirectory = null;
+		try {
+			serverIndexDirectory = createIndex(new File(serverIndexDirectoryPath));
+		} catch (Exception e) {
+			logger.error("Exception creating the index : ", e);
+		}
 
 		when(FS_DIRECTORY.getFile()).thenReturn(new File(serverIndexDirectory.getAbsolutePath()));
 		when(MULTI_SEARCHER.getSearchables()).thenReturn(SEARCHABLES);
 
 		// All the directories are in the searcher
 		shouldReopen = action.shouldReopen(INDEX_CONTEXT);
-		assertFalse(shouldReopen);
+		assertFalse("All the indexes are up to date so we shouldn't reopen : ", shouldReopen);
 
 		// Create a new server index directory
-		File anotherServerIndexDirectory = createIndex(new File(serverIndexDirectoryPath.replace(IP, "127.0.0.2")));
+		File anotherServerIndexDirectory = null;
+		try {
+			anotherServerIndexDirectory = createIndex(new File(serverIndexDirectoryPath.replace(IP, "127.0.0.2")));
+		} catch (Exception e) {
+			logger.error("Exception creating the index : ", e);
+		}
 
 		shouldReopen = action.shouldReopen(INDEX_CONTEXT);
-		assertTrue(shouldReopen);
+		assertTrue("Should reopen as there is a new index : ", shouldReopen);
 
 		when(INDEX.getMultiSearcher()).thenReturn(null);
 
 		FileUtilities.deleteFile(serverIndexDirectory, 1);
 		FileUtilities.deleteFile(anotherServerIndexDirectory, 1);
 
-		assertFalse(serverIndexDirectory.exists());
-		assertFalse(anotherServerIndexDirectory.exists());
+		assertFalse("Index directory should have been deleted : ", serverIndexDirectory.exists());
+		assertFalse("Index directory should have been deleted : ", anotherServerIndexDirectory.exists());
 	}
 
 }

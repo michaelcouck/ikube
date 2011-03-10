@@ -25,8 +25,8 @@ import org.junit.Test;
  */
 public class DataBaseOdbMapStoreTest extends BaseTest {
 
-	private IDataBase dataBase;
-	private CacheMapStore cacheMapStore;
+	private transient IDataBase dataBase;
+	private transient CacheMapStore cacheMapStore;
 
 	@Before
 	public void before() {
@@ -41,7 +41,7 @@ public class DataBaseOdbMapStoreTest extends BaseTest {
 	}
 
 	@Test
-	public void delete() throws Exception {
+	public void delete() {
 		// Long
 		Url url = getUrl("localhost");
 		dataBase.persist(url);
@@ -55,7 +55,7 @@ public class DataBaseOdbMapStoreTest extends BaseTest {
 	}
 
 	@Test
-	public void deleteAll() throws Exception {
+	public void deleteAll() throws InterruptedException {
 		// Collection<Long>
 		Map<Long, Object> urls = getUrls(Boolean.TRUE);
 
@@ -69,7 +69,7 @@ public class DataBaseOdbMapStoreTest extends BaseTest {
 	}
 
 	@Test
-	public void load() throws Exception {
+	public void load() {
 		// Long
 		Url url = getUrl("localhost");
 		url.setId(System.nanoTime());
@@ -79,7 +79,7 @@ public class DataBaseOdbMapStoreTest extends BaseTest {
 	}
 
 	@Test
-	public void loadAll() throws Exception {
+	public void loadAll() throws InterruptedException {
 		// Collection<Long>
 		Map<Long, Object> keys = getUrls(Boolean.TRUE);
 
@@ -88,7 +88,7 @@ public class DataBaseOdbMapStoreTest extends BaseTest {
 	}
 
 	@Test
-	public void store() throws Exception {
+	public void store() {
 		// Long, T
 		Url url = getUrl("localhost");
 		cacheMapStore.store(url.getId(), url);
@@ -98,7 +98,7 @@ public class DataBaseOdbMapStoreTest extends BaseTest {
 	}
 
 	@Test
-	public void storeAll() throws Exception {
+	public void storeAll() throws InterruptedException {
 		// Map<Long, T>
 		Map<Long, Object> keys = getUrls(Boolean.FALSE);
 		cacheMapStore.storeAll(keys);
@@ -107,7 +107,7 @@ public class DataBaseOdbMapStoreTest extends BaseTest {
 		assertEquals(keys.size(), urls.size());
 	}
 
-	private Map<Long, Object> getUrls(boolean persist) throws Exception {
+	private Map<Long, Object> getUrls(final boolean persist) throws InterruptedException {
 		int iterations = 10;
 		Map<Long, Object> map = new HashMap<Long, Object>();
 		for (int i = 0; i < iterations; i++) {
@@ -123,7 +123,7 @@ public class DataBaseOdbMapStoreTest extends BaseTest {
 		return map;
 	}
 
-	private Url getUrl(String urlString) {
+	private Url getUrl(final String urlString) {
 		Url url = new Url();
 		url.setUrl(urlString);
 		url.setId(HashUtilities.hash(url.getUrl()));

@@ -18,19 +18,19 @@ public final class MimeType {
 	/** Special characters not allowed in content types. */
 	private final static String SPECIALS = "()<>@,;:\\\"/[]?=";
 	/** The Mime-Type full name */
-	private String name = null;
+	private transient String name = null;
 	/** The Mime-Type primary type */
-	private String primary = null;
+	private transient String primary = null;
 	/** The Mime-Type sub type */
-	private String sub = null;
+	private transient String sub = null;
 	/** The Mime-Type description */
-	private String description = null;
+	private transient String description = null;
 	/** The Mime-Type associated extensions */
-	private ArrayList<String> extensions = null;
+	private transient ArrayList<String> extensions = null;
 	/** The magic bytes associated to this Mime-Type */
-	private ArrayList<Magic> magics = null;
+	private transient ArrayList<Magic> magics = null;
 	/** The minimum length of data to provides for magic analyzis */
-	private int minLength = 0;
+	private transient int minLength = 0;
 
 	/**
 	 * Creates a MimeType from a String.
@@ -120,7 +120,7 @@ public final class MimeType {
 	 *            the reference object with which to compare.
 	 * @return <code>true</code> if this mime-type is equal to the object argument; <code>false</code> otherwise.
 	 */
-	public boolean equals(Object object) {
+	public boolean equals(final Object object) {
 		try {
 			return ((MimeType) object).getName().equals(this.name);
 		} catch (Exception e) {
@@ -149,7 +149,7 @@ public final class MimeType {
 	 * @param description
 	 *            the description of this mime-type.
 	 */
-	void setDescription(String description) {
+	void setDescription(final String description) {
 		this.description = description;
 	}
 
@@ -159,7 +159,7 @@ public final class MimeType {
 	 * @param the
 	 *            extension to add to the list of extensions associated to this mime-type.
 	 */
-	void addExtension(String ext) {
+	void addExtension(final String ext) {
 		extensions.add(ext);
 	}
 
@@ -172,7 +172,7 @@ public final class MimeType {
 		return (String[]) extensions.toArray(new String[extensions.size()]);
 	}
 
-	void addMagic(int offset, String type, String magic) {
+	void addMagic(final int offset, final String type, final String magic) {
 		// Some preliminary checks...
 		if ((magic == null) || (magic.length() < 1)) {
 			return;
@@ -189,7 +189,7 @@ public final class MimeType {
 	}
 
 	boolean hasMagic() {
-		return (magics.size() > 0);
+		return !magics.isEmpty();
 	}
 
 	boolean matches(byte[] data) {
@@ -207,12 +207,12 @@ public final class MimeType {
 	}
 
 	/** Checks if the specified primary or sub type is valid. */
-	private boolean isValid(String type) {
+	private boolean isValid(final String type) {
 		return (type != null) && (type.trim().length() > 0) && !hasCtrlOrSpecials(type);
 	}
 
 	/** Checks if the specified string contains some special characters. */
-	private boolean hasCtrlOrSpecials(String type) {
+	private boolean hasCtrlOrSpecials(final String type) {
 		int len = type.length();
 		int i = 0;
 		while (i < len) {
@@ -226,8 +226,8 @@ public final class MimeType {
 	}
 
 	private class Magic {
-		private int offset;
-		private byte[] magic = null;
+		private transient int offset;
+		private transient byte[] magic = null;
 
 		Magic(int offset, String type, String magic) {
 			this.offset = offset;

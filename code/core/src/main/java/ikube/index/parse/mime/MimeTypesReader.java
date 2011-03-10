@@ -16,7 +16,7 @@ import org.dom4j.io.SAXReader;
  */
 final class MimeTypesReader {
 
-	protected MimeType[] read(InputStream inputStream) { 
+	protected MimeType[] read(final InputStream inputStream) {
 		MimeType[] types = null;
 		try {
 			SAXReader reader = new SAXReader();
@@ -62,16 +62,16 @@ final class MimeTypesReader {
 		MimeType type = null;
 
 		Attribute nameAttribute = element.attribute("name");
-		if (nameAttribute != null)
+		if (nameAttribute != null) {
 			name = nameAttribute.getValue();
+		}
 		Attribute descriptionAttribute = element.attribute("description");
-		if (descriptionAttribute != null)
+		if (descriptionAttribute != null) {
 			description = descriptionAttribute.getValue();
-
+		}
 		if ((name == null) || (name.trim().equals(""))) {
 			return null;
 		}
-
 		try {
 			type = new MimeType(name);
 		} catch (MimeTypeException mte) {

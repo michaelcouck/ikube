@@ -35,9 +35,9 @@ public class SearchSpatial extends Search {
 	private transient DistanceQueryBuilder queryBuilder;
 
 	// TODO Set these fields
-	private transient int maxDocs = 10;
+	private final transient int maxDocs = 10;
 	private transient Coordinate coordinate;
-	private transient int distance = 10;
+	private final transient int distance = 10;
 
 	public SearchSpatial(final Searcher searcher) {
 		super(searcher);

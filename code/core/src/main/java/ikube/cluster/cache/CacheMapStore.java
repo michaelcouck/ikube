@@ -23,9 +23,9 @@ import com.hazelcast.core.MapStore;
  */
 public class CacheMapStore implements MapStore<Long, Object> {
 
-	protected Logger logger = Logger.getLogger(this.getClass());
+	protected static final Logger LOGGER = Logger.getLogger(CacheMapStore.class);
 	/** The database object where the data will be persisted. */
-	private IDataBase dataBase;
+	private transient IDataBase dataBase;
 
 	/**
 	 * {@inheritDoc}
@@ -133,7 +133,7 @@ public class CacheMapStore implements MapStore<Long, Object> {
 				dataBase = ApplicationContextManager.getBean(DataBaseOdb.class);
 			}
 		} catch (Exception e) {
-			logger.error("Exception accesing the database from the context : ", e);
+			LOGGER.error("Exception accesing the database from the context : ", e);
 		} finally {
 			notifyAll();
 		}

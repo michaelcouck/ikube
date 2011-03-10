@@ -19,7 +19,7 @@ import org.apache.log4j.Logger;
  * @since 21.11.10
  * @version 01.00
  */
-public class Reporter implements IListener {
+public final class Reporter implements IListener {
 
 	private static final Logger LOGGER = Logger.getLogger(Reporter.class);
 

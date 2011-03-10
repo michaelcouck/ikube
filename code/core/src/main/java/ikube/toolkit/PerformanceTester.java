@@ -27,7 +27,7 @@ public class PerformanceTester {
 		void execute() throws Exception;
 	}
 
-	public static abstract class APerform implements IPerform {
+	public static class APerform implements IPerform {
 		public void execute() throws Exception {
 		}
 

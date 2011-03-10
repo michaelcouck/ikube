@@ -8,6 +8,7 @@ import ikube.toolkit.FileUtilities;
 import ikube.toolkit.UriUtilities;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -29,9 +30,9 @@ public class ClusterIntegration {
 	}
 
 	public static long SLEEP = 1000 * 60 * 60 * 72;
-	private static Logger LOGGER = Logger.getLogger(ClusterIntegration.class);
+	private static final Logger LOGGER = Logger.getLogger(ClusterIntegration.class);
 
-	public static void start() throws Exception {
+	public static void start() {
 		// Delete all the old index directories
 		Map<String, IndexContext> contexts = ApplicationContextManager.getBeans(IndexContext.class);
 		for (IndexContext indexContext : contexts.values()) {
@@ -40,7 +41,7 @@ public class ClusterIntegration {
 		}
 	}
 
-	public static void main(String[] arguments) throws Exception {
+	public static void main(String[] arguments) throws IOException, InterruptedException {
 		// ClusterIntegration.start();
 		String[] servers = new String[] { "ServerOne", "ServerTwo", "ServerThree" };
 		String clusterDirectoryPath = "./cluster";

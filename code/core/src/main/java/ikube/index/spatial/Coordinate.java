@@ -2,9 +2,9 @@ package ikube.index.spatial;
 
 public class Coordinate {
 
-	private final double lat;
-	private final double lon;
-	private String name;
+	private transient final double lat;
+	private transient final double lon;
+	private transient String name;
 
 	public Coordinate(final double lat, final double lon) {
 		this.lat = lat;

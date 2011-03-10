@@ -11,7 +11,7 @@ import org.apache.log4j.Logger;
  * @since 12.02.2011
  * @version 01.00
  */
-public class ThreadUtilities {
+public final class ThreadUtilities {
 
 	private static final Logger LOGGER = Logger.getLogger(ThreadUtilities.class);
 	

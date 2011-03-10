@@ -25,7 +25,7 @@ public class PowerPointParser implements IParser, POIFSReaderListener {
 	/** Logger for the parser class. */
 	private static final Logger LOGGER = Logger.getLogger(PowerPointParser.class);
 	/** The output stream for the parsed data. */
-	private ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+	private transient final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
 	/**
 	 * {@inheritDoc}
@@ -44,8 +44,9 @@ public class PowerPointParser implements IParser, POIFSReaderListener {
 	 */
 	@Override
 	public final void processPOIFSReaderEvent(final POIFSReaderEvent event) {
-		if (!event.getName().equalsIgnoreCase("PowerPoint Document"))
+		if (!event.getName().equalsIgnoreCase("PowerPoint Document")) {
 			return;
+		}
 		try {
 			DocumentInputStream input = event.getStream();
 			byte buffer[] = new byte[input.available()];

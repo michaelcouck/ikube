@@ -26,8 +26,8 @@ public class ExcelParser implements IParser {
 	 */
 	@Override
 	public OutputStream parse(final InputStream inputStream, final OutputStream outputStream) throws Exception {
-		POIFSFileSystem fs = new POIFSFileSystem(inputStream);
-		HSSFWorkbook workbook = new HSSFWorkbook(fs);
+		POIFSFileSystem fileSystem = new POIFSFileSystem(inputStream);
+		HSSFWorkbook workbook = new HSSFWorkbook(fileSystem);
 		for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
 			HSSFSheet sheet = workbook.getSheetAt(i);
 			Iterator<?> rowIterator = sheet.rowIterator();
@@ -55,6 +55,8 @@ public class ExcelParser implements IParser {
 						break;
 					case HSSFCell.CELL_TYPE_STRING:
 						text = cell.toString();
+						break;
+					default:
 						break;
 					}
 					outputStream.write(text.getBytes());

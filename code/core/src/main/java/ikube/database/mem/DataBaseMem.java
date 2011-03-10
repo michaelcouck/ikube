@@ -20,8 +20,8 @@ public class DataBaseMem implements IDataBase {
 
 	private Logger logger;
 
-	private IDataBase dataBase;
-	private Map<Class<?>, Map<Long, Object>> cache;
+	private transient IDataBase dataBase;
+	private transient final Map<Class<?>, Map<Long, Object>> cache;
 
 	public DataBaseMem() {
 		this.logger = Logger.getLogger(this.getClass());
@@ -69,16 +69,16 @@ public class DataBaseMem implements IDataBase {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized <T> T remove(final T t) {
+	public synchronized <T> T remove(final T object) {
 		try {
-			Long idFieldValue = (Long) DatabaseUtilities.getIdFieldValue(t);
+			Long idFieldValue = (Long) DatabaseUtilities.getIdFieldValue(object);
 			// Remove the object from the maps
-			Map<Long, Object> map = getMap(t.getClass());
+			Map<Long, Object> map = getMap(object.getClass());
 			map.remove(idFieldValue);
-			return dataBase.remove(t);
+			return dataBase.remove(object);
 		} catch (Exception e) {
-			logger.error("Exception removing object : " + t, e);
-			return t;
+			logger.error("Exception removing object : " + object, e);
+			return object;
 		} finally {
 			notifyAll();
 		}
@@ -102,13 +102,13 @@ public class DataBaseMem implements IDataBase {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized <T> T merge(final T t) {
+	public synchronized <T> T merge(final T object) {
 		try {
 			// T is a live object so there is no merge required
-			return dataBase.merge(t);
+			return dataBase.merge(object);
 		} catch (Exception e) {
-			logger.error("Exception merging object : " + t, e);
-			return t;
+			logger.error("Exception merging object : " + object, e);
+			return object;
 		} finally {
 			notifyAll();
 		}
@@ -135,8 +135,8 @@ public class DataBaseMem implements IDataBase {
 	public synchronized <T> T find(final Class<T> klass, final Long id) {
 		try {
 			Map<Long, Object> map = getMap(klass);
-			T t = (T) map.get(id);
-			return t;
+			T object = (T) map.get(id);
+			return object;
 		} finally {
 			notifyAll();
 		}

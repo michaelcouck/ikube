@@ -15,7 +15,7 @@ public class Schedule {
 		return type;
 	}
 
-	public void setType(String type) {
+	public void setType(final String type) {
 		this.type = type;
 	}
 
@@ -23,7 +23,7 @@ public class Schedule {
 		return delay;
 	}
 
-	public void setDelay(long delay) {
+	public void setDelay(final long delay) {
 		this.delay = delay;
 	}
 
@@ -31,7 +31,7 @@ public class Schedule {
 		return period;
 	}
 
-	public void setPeriod(long period) {
+	public void setPeriod(final long period) {
 		this.period = period;
 	}
 

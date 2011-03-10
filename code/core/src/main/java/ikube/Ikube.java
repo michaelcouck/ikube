@@ -11,9 +11,11 @@ import ikube.toolkit.ApplicationContextManager;
  * @since 23.01.11
  * @version 01.00
  */
-public class Ikube {
+public final class Ikube {
+	
+	private Ikube() {}
 
-	public static void main(String[] args) {
+	public static void main(final String[] args) {
 		Logging.configure();
 		ApplicationContextManager.getApplicationContext();
 	}

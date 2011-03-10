@@ -32,7 +32,7 @@ import org.apache.lucene.store.FSDirectory;
  */
 public abstract class Action implements IAction<IndexContext, Boolean> {
 
-	protected Logger logger = Logger.getLogger(Action.class);
+	protected transient Logger logger = Logger.getLogger(Action.class);
 	/** The cluster synchronization class. */
 	private transient IClusterManager clusterManager;
 

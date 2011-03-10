@@ -226,8 +226,8 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	 * @return the result set for the table
 	 * @throws Exception
 	 */
-	protected synchronized ResultSet getResultSet(IndexContext indexContext, IndexableTable indexableTable, Connection connection)
-			throws Exception {
+	protected synchronized ResultSet getResultSet(final IndexContext indexContext, final IndexableTable indexableTable,
+			final Connection connection) throws Exception {
 		try {
 			long nextIdNumber = 0;
 			// If this is a primary table then we need to find the first id in the table. For example if we are just
@@ -287,7 +287,8 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	 * @return the string sql for the table
 	 * @throws Exception
 	 */
-	protected synchronized String buildSql(IndexableTable indexableTable, long batchSize, long nextIdNumber) throws Exception {
+	protected synchronized String buildSql(final IndexableTable indexableTable, final long batchSize, final long nextIdNumber)
+			throws Exception {
 		try {
 			StringBuilder builder = new StringBuilder();
 			builder.append("select ");
@@ -382,7 +383,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	 * @param preparedStatement
 	 *            the statement to set the parameters in
 	 */
-	protected synchronized void setParameters(IndexableTable indexableTable, PreparedStatement preparedStatement) {
+	protected synchronized void setParameters(final IndexableTable indexableTable, final PreparedStatement preparedStatement) {
 		try {
 			List<Indexable<?>> children = indexableTable.getChildren();
 			int index = 1;
@@ -421,7 +422,8 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	 * @return the id that resulted from the function
 	 * @throws Exception
 	 */
-	protected synchronized long getIdFunction(IndexableTable indexableTable, Connection connection, String function) throws Exception {
+	protected synchronized long getIdFunction(final IndexableTable indexableTable, final Connection connection, final String function)
+			throws Exception {
 		IndexableColumn idColumn;
 		long result = 0;
 		Statement statement = null;
@@ -462,7 +464,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	 * @return the id column or null if no such column is defined. Generally this will mean a configuration problem, every table must have a
 	 *         unique id column
 	 */
-	protected IndexableColumn getIdColumn(List<Indexable<?>> indexableColumns) {
+	protected IndexableColumn getIdColumn(final List<Indexable<?>> indexableColumns) {
 		for (Indexable<?> indexable : indexableColumns) {
 			if (!IndexableColumn.class.isAssignableFrom(indexable.getClass())) {
 				continue;
@@ -485,7 +487,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	 * @param document
 	 *            the document to add the data to using the field name specified in the column definition
 	 */
-	protected void handleColumn(IndexableColumn indexable, Document document) {
+	protected void handleColumn(final IndexableColumn indexable, final Document document) {
 		InputStream inputStream = null;
 		OutputStream parsedOutputStream = null;
 		ByteOutputStream byteOutputStream = null;
@@ -531,7 +533,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 		}
 	}
 
-	protected void close(OutputStream outputStream) {
+	protected void close(final OutputStream outputStream) {
 		try {
 			if (outputStream != null) {
 				outputStream.close();
@@ -541,7 +543,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 		}
 	}
 
-	protected void close(InputStream inputStream) {
+	protected void close(final InputStream inputStream) {
 		try {
 			if (inputStream != null) {
 				inputStream.close();
@@ -562,7 +564,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	 *            the document to set the id field in
 	 * @throws Exception
 	 */
-	protected void setIdField(IndexableTable indexableTable, Document document) throws Exception {
+	protected void setIdField(final IndexableTable indexableTable, final Document document) throws Exception {
 		List<Indexable<?>> children = indexableTable.getChildren();
 		IndexableColumn idColumn = getIdColumn(children);
 		StringBuilder builder = new StringBuilder();
@@ -587,7 +589,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	 *            the result set for the table
 	 * @throws Exception
 	 */
-	protected void setColumnTypesAndData(List<Indexable<?>> children, ResultSet resultSet) throws Exception {
+	protected void setColumnTypesAndData(final List<Indexable<?>> children, final ResultSet resultSet) throws Exception {
 		ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
 		int index = 1;
 		for (Indexable<?> indexable : children) {

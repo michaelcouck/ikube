@@ -23,7 +23,7 @@ public class Index {
 	public Index() {
 	}
 
-	public Index(String className, List<String> fieldNames) {
+	public Index(final String className, final List<String> fieldNames) {
 		this.className = className;
 		this.fieldNames = fieldNames;
 	}

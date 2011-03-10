@@ -3,6 +3,7 @@ package ikube.toolkit;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Locale;
 import java.util.Stack;
 import java.util.regex.Pattern;
 
@@ -13,7 +14,7 @@ import org.apache.log4j.Logger;
  * @since 12.10.2010
  * @version 01.00
  */
-public class UriUtilities {
+public final class UriUtilities {
 
 	protected static final Logger LOGGER = Logger.getLogger(UriUtilities.class);
 	
@@ -96,11 +97,12 @@ public class UriUtilities {
 		if (s.charAt(0) == '?') {
 			return resolveReferenceStartingWithQueryString(baseURI, reference);
 		}
+		URI newReference = reference;
 		boolean emptyReference = s.length() == 0;
 		if (emptyReference) {
-			reference = URI.create("#");
+			newReference = URI.create("#");
 		}
-		URI resolved = baseURI.resolve(reference);
+		URI resolved = baseURI.resolve(newReference);
 		if (emptyReference) {
 			String resolvedString = resolved.toString();
 			resolved = URI.create(resolvedString.substring(0, resolvedString.indexOf('#')));
@@ -165,7 +167,7 @@ public class UriUtilities {
 			return Boolean.TRUE;
 		}
 		// Blank link is useless
-		if (string.equals("")) {
+		if ("".equals(string)) {
 			return Boolean.TRUE;
 		}
 		// Check that there is at least one character in the link
@@ -180,7 +182,7 @@ public class UriUtilities {
 		if (!containsCharacters) {
 			return Boolean.TRUE;
 		}
-		String lowerCaseString = string.toLowerCase();
+		String lowerCaseString = string.toLowerCase(Locale.getDefault());
 		return EXCLUDED_PATTERN.matcher(lowerCaseString).matches();
 	}
 

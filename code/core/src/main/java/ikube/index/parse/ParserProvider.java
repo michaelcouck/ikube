@@ -17,9 +17,11 @@ import org.apache.log4j.Logger;
  * @since 21.11.10
  * @version 01.00
  */
-public class ParserProvider {
+public final class ParserProvider {
 
 	private static final Logger LOGGER = Logger.getLogger(ParserProvider.class);
+	
+	private ParserProvider() {};
 
 	/** The map of content type to parsers. */
 	private static final Map<String, IParser> PARSERS = new HashMap<String, IParser>();

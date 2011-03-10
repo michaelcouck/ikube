@@ -23,7 +23,7 @@ import org.apache.log4j.Logger;
  * @since 21.11.10
  * @version 01.00
  */
-public class SerializationUtilities {
+public final class SerializationUtilities {
 
 	private static final Logger LOGGER = Logger.getLogger(SerializationUtilities.class);
 	
@@ -32,8 +32,8 @@ public class SerializationUtilities {
 
 	private static ExceptionListener exceptionListener = new ExceptionListener() {
 		@Override
-		public void exceptionThrown(final Exception e) {
-			LOGGER.error("General exception : ", e);
+		public void exceptionThrown(final Exception exception) {
+			LOGGER.error("General exception : ", exception);
 		}
 	};
 

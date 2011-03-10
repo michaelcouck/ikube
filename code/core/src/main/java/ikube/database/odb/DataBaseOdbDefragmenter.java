@@ -13,13 +13,13 @@ import org.apache.log4j.Logger;
 public class DataBaseOdbDefragmenter implements Runnable {
 
 	private Logger logger;
-	private String dataBaseFile;
-	private DataBaseOdb dataBase;
-	private long dataBaseSize = 0;
-	private long dataBaseSizeIncrement = 10000;
-	private long sleep = 10000000;
+	private transient final String dataBaseFile;
+	private transient final DataBaseOdb dataBase;
+	private transient long dataBaseSize = 0;
+	private transient final long dataBaseSizeIncrement = 10000;
+	private transient final long sleep = 10000000;
 
-	public DataBaseOdbDefragmenter(String dataBaseFile, DataBaseOdb dataBase) {
+	public DataBaseOdbDefragmenter(final String dataBaseFile, final DataBaseOdb dataBase) {
 		this.logger = Logger.getLogger(this.getClass());
 		this.dataBaseFile = dataBaseFile;
 		this.dataBase = dataBase;

@@ -15,7 +15,7 @@ import org.dom4j.io.SAXReader;
  * @since 06.03.11
  * @version 01.00
  */
-public class XmlUtilities {
+public final class XmlUtilities {
 
 	private static final Logger LOGGER = Logger.getLogger(XmlUtilities.class);
 	
@@ -56,7 +56,7 @@ public class XmlUtilities {
 	 * @return a list of all the tags with the name, can be empty
 	 */
 	@SuppressWarnings("unchecked")
-	public static ArrayList<Element> getElements(final Element parent, final String name) {
+	public static List<Element> getElements(final Element parent, final String name) {
 		ArrayList<Element> elements = new ArrayList<Element>();
 		if (parent == null) {
 			return elements;

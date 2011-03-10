@@ -3,7 +3,9 @@ package ikube.index.parse.mime;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -16,10 +18,11 @@ import org.dom4j.io.SAXReader;
  * @since 12.05.04
  * @version 01.00
  */
-public class MimeMapper {
+public final class MimeMapper {
 
-	private static final HashMap<String, String> MAPPING = new HashMap<String, String>();
-
+	private static final Logger LOGGER = Logger.getLogger(MimeMapper.class);
+	private static final Map<String, String> MAPPING = new HashMap<String, String>();
+	
 	public MimeMapper(final String filePath) {
 		try {
 			InputStream inputStream = getClass().getResourceAsStream(filePath);
@@ -37,13 +40,13 @@ public class MimeMapper {
 							// System.out.println(type.getValue() + ":" + parser.getValue());
 							MAPPING.put(type.getValue(), parser.getValue());
 						} catch (Exception t) {
-							t.printStackTrace();
+							LOGGER.error("Exception adding the mapping : " + element, t);
 						}
 					}
 				}
 			}
 		} catch (Exception t) {
-			t.printStackTrace();
+			LOGGER.error("Exception loading the mapping for parsers : " + filePath, t);
 		}
 	}
 

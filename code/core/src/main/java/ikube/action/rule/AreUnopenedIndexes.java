@@ -29,6 +29,9 @@ public class AreUnopenedIndexes implements IRule<IndexContext> {
 		}
 		File baseIndexDirectory = new File(indexContext.getIndexDirectoryPath() + File.separator + indexContext.getIndexName());
 		File[] timeIndexDirectories = baseIndexDirectory.listFiles();
+		IRule<File[]> areDirectoriesEqual = new AreDirectoriesEqual();
+		IRule<File> directoryExistsAndNotLocked = new DirectoryExistsAndNotLocked();
+		File[] files = new File[2];
 		for (File timeIndexDirectory : timeIndexDirectories) {
 			File[] serverIndexDirectories = timeIndexDirectory.listFiles();
 			if (serverIndexDirectories == null) {
@@ -41,10 +44,9 @@ public class AreUnopenedIndexes implements IRule<IndexContext> {
 					IndexReader indexReader = indexSearcher.getIndexReader();
 					FSDirectory fsDirectory = (FSDirectory) indexReader.directory();
 					File indexDirectory = fsDirectory.getFile();
-					IRule<File[]> areDirectoriesEqual = new AreDirectoriesEqual();
-					File[] files = new File[] { serverIndexDirectory, indexDirectory };
+					files[0] = serverIndexDirectory;
+					files[1] = indexDirectory;
 					if (areDirectoriesEqual.evaluate(files)) {
-						IRule<File> directoryExistsAndNotLocked = new DirectoryExistsAndNotLocked();
 						indexAlreadyOpen = directoryExistsAndNotLocked.evaluate(serverIndexDirectory);
 						break;
 					}

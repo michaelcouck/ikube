@@ -101,7 +101,7 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 	 * @param file
 	 *            the file to parse and index
 	 */
-	protected void handleFile(final IndexContext indexContext, IndexableFileSystem indexableFileSystem, File file) {
+	protected void handleFile(final IndexContext indexContext, final IndexableFileSystem indexableFileSystem, final File file) {
 		try {
 			Document document = new Document();
 			indexableFileSystem.setCurrentFile(file);
@@ -144,19 +144,18 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 		}
 	}
 
-	protected Pattern getPattern(String pattern) {
+	protected Pattern getPattern(final String pattern) {
 		return Pattern.compile(pattern);
 	}
 
-	protected boolean isExcluded(File file, Pattern pattern) {
+	protected boolean isExcluded(final File file, final Pattern pattern) {
 		// If it does not exist, we can't read it or directory excluded with the pattern
 		return file == null || !file.exists() || !file.canRead() || pattern.matcher(file.getName()).matches();
 	}
 
-	protected boolean isHandled(IndexContext indexContext, IndexableFileSystem indexableFileSystem) {
+	protected boolean isHandled(final IndexContext indexContext, final IndexableFileSystem indexableFileSystem) {
 		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
-		boolean isHandled = clusterManager.isHandled(indexableFileSystem.getName(), indexContext.getIndexName());
-		return isHandled;
+		return clusterManager.isHandled(indexableFileSystem.getName(), indexContext.getIndexName());
 	}
 
 }

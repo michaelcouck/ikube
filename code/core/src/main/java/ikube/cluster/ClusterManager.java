@@ -427,9 +427,9 @@ public class ClusterManager implements IClusterManager {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized <T> void set(final Class<T> klass, final Long id, final T t) {
+	public synchronized <T> void set(final Class<T> klass, final Long id, final T object) {
 		try {
-			cache.set(klass.getName(), id, t);
+			cache.set(klass.getName(), id, object);
 		} finally {
 			notifyAll();
 		}

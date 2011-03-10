@@ -22,10 +22,10 @@ import org.aspectj.lang.ProceedingJoinPoint;
 public class SpatialEnrichmentInterceptor implements ISpatialEnrichmentInterceptor {
 
 	private static final Logger LOGGER = Logger.getLogger(SpatialEnrichmentInterceptor.class);
-	private int startTier;
-	private int endTier;
-	private IProjector projector = new SinusoidalProjector();
-	private IGeocoder geocoder;
+	private transient int startTier;
+	private transient int endTier;
+	private transient IProjector projector = new SinusoidalProjector();
+	private transient IGeocoder geocoder;
 
 	@Override
 	public Object enrich(final ProceedingJoinPoint proceedingJoinPoint) throws Throwable {

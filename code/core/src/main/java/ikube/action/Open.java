@@ -132,7 +132,7 @@ public class Open extends Action {
 			}
 		}
 		try {
-			if (searchers.size() > 0) {
+			if (!searchers.isEmpty()) {
 				Searchable[] searchables = searchers.toArray(new IndexSearcher[searchers.size()]);
 				MultiSearcher multiSearcher = new MultiSearcher(searchables);
 				indexContext.getIndex().setMultiSearcher(multiSearcher);

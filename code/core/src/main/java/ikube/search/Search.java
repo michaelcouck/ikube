@@ -44,23 +44,23 @@ public abstract class Search {
 
 	protected Logger logger;
 	/** The searcher that will be used for the search. */
-	protected Searcher searcher;
+	protected transient Searcher searcher;
 	/** The query parsers for various query fields. */
-	private final Map<String, QueryParser> queryParsers;
+	private final transient Map<String, QueryParser> queryParsers;
 
 	/** The search string that we are looking for. */
-	protected String[] searchStrings;
+	protected transient String[] searchStrings;
 	/** The fields in index to add to the search. */
-	protected String[] searchFields;
+	protected transient String[] searchFields;
 	/** The fields to sort the results by. */
-	protected String[] sortFields;
+	protected transient String[] sortFields;
 
 	/** Whether to generate fragments for the search string or not. */
-	protected boolean fragment;
+	protected transient boolean fragment;
 	/** The start position in the search results to return maps from. */
-	protected int firstResult;
+	protected transient int firstResult;
 	/** The end position in the results to stop returning results from. */
-	protected int maxResults;
+	protected transient int maxResults;
 
 	Search(final Searcher searcher) {
 		this.logger = Logger.getLogger(this.getClass());
@@ -205,7 +205,7 @@ public abstract class Search {
 	 * @param fragment
 	 *            the flag for generating the best fragments in the results
 	 */
-	public void setFragment(boolean fragment) {
+	public void setFragment(final boolean fragment) {
 		this.fragment = fragment;
 	}
 
@@ -215,7 +215,7 @@ public abstract class Search {
 	 * @param start
 	 *            the first result to return from the results
 	 */
-	public void setFirstResult(int start) {
+	public void setFirstResult(final int start) {
 		this.firstResult = start;
 	}
 
@@ -225,7 +225,7 @@ public abstract class Search {
 	 * @param maxResults
 	 *            the maximum results to return
 	 */
-	public void setMaxResults(int maxResults) {
+	public void setMaxResults(final int maxResults) {
 		this.maxResults = maxResults;
 	}
 
@@ -236,7 +236,7 @@ public abstract class Search {
 	 *            the name of the field that needs to be searched
 	 * @return the query parser for the particular field
 	 */
-	protected QueryParser getQueryParser(String searchField) {
+	protected QueryParser getQueryParser(final String searchField) {
 		QueryParser queryParser = queryParsers.get(searchField);
 		if (queryParser == null) {
 			queryParser = new QueryParser(IConstants.VERSION, searchField, IConstants.ANALYZER);
@@ -254,7 +254,7 @@ public abstract class Search {
 	 *            the query that was used for the query
 	 * @return the list of results from the search
 	 */
-	protected List<Map<String, String>> getResults(TopDocs topDocs, Query query) {
+	protected List<Map<String, String>> getResults(final TopDocs topDocs, final Query query) {
 		List<Map<String, String>> results = new ArrayList<Map<String, String>>();
 		long totalHits = topDocs.totalHits;
 		long scoreHits = topDocs.scoreDocs.length;
@@ -298,7 +298,7 @@ public abstract class Search {
 	 * @param duration
 	 *            how long the search took in milliseconds
 	 */
-	protected void addStatistics(List<Map<String, String>> results, long totalHits, long duration) {
+	protected void addStatistics(final List<Map<String, String>> results, final long totalHits, final long duration) {
 		// Add the search results size as a last result
 		Map<String, String> statistics = new HashMap<String, String>();
 		statistics.put(IConstants.TOTAL, Long.toString(totalHits));

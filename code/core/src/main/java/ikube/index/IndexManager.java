@@ -35,9 +35,11 @@ import org.apache.lucene.store.RAMDirectory;
  * @since 21.11.10
  * @version 01.00
  */
-public class IndexManager {
+public final class IndexManager {
 
 	private static final Logger LOGGER = Logger.getLogger(IndexManager.class);
+	
+	private IndexManager() {}
 
 	/**
 	 * This method opens a Lucene index writer, and if successful sets it in the index context where the handlers can access it and add
@@ -102,10 +104,8 @@ public class IndexManager {
 			if (exception) {
 				closeIndexWriter(indexWriter);
 			}
-			if (delete) {
-				if (indexDirectory != null && indexDirectory.exists()) {
-					FileUtilities.deleteFile(indexDirectory, 1);
-				}
+			if (delete && indexDirectory != null && indexDirectory.exists()) {
+				FileUtilities.deleteFile(indexDirectory, 1);
 			}
 			IndexManager.class.notifyAll();
 		}
@@ -132,6 +132,8 @@ public class IndexManager {
 			LOGGER.error("Corrput index : ", e);
 		} catch (IOException e) {
 			LOGGER.error("IO optimising the index : ", e);
+		} catch (Exception e) {
+			LOGGER.error("General exception comitting the index : ", e);
 		}
 		try {
 			indexWriter.close(Boolean.TRUE);
@@ -183,13 +185,16 @@ public class IndexManager {
 			}
 			File tempFile = File.createTempFile(Long.toString(System.nanoTime()), IConstants.READER_FILE_SUFFIX);
 			Writer writer = new FileWriter(tempFile, false);
-			int read = -1;
 			char[] chars = new char[1024];
-			while ((read = fieldReader.read(chars)) > -1) {
+			int read = fieldReader.read(chars);
+			while (read > -1) {
 				writer.write(chars, 0, read);
+				read = fieldReader.read(chars);
 			}
-			while ((read = reader.read(chars)) > -1) {
+			read = reader.read(chars);
+			while (read > -1) {
 				writer.write(chars, 0, read);
+				read = reader.read(chars);
 			}
 			Reader finalReader = new FileReader(tempFile);
 			// This is a string field, and could be stored so we check that

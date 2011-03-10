@@ -24,22 +24,22 @@ import org.apache.log4j.Logger;
 public class SearcherWebServiceExecuter implements ISearcherWebServiceExecuter {
 
 	private Logger logger;
-	private String protocol;
-	private Integer port;
-	private String path;
-	private String indexName;
-	private String searchString;
-	private String fieldName;
-	private boolean fragment;
-	private int start;
-	private int end;
-	private int resultsSizeMinimum;
+	private transient String protocol;
+	private transient Integer port;
+	private transient String path;
+	private transient String indexName;
+	private transient String searchString;
+	private transient String fieldName;
+	private transient boolean fragment;
+	private transient int start;
+	private transient int end;
+	private transient int resultsSizeMinimum;
 
 	public SearcherWebServiceExecuter() {
 		this.logger = Logger.getLogger(this.getClass());
 		ListenerManager.addListener(new IListener() {
 			@Override
-			public void handleNotification(Event event) {
+			public void handleNotification(final Event event) {
 				if (event.getType().equals(Event.SERVICE)) {
 					try {
 						execute();

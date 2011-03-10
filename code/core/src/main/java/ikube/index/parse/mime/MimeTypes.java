@@ -20,34 +20,34 @@ public final class MimeTypes {
 
 	private static final Logger LOGGER = Logger.getLogger(MimeTypes.class);
 	/** The static instance of this class. */
-	private static MimeTypes instance;
+	private static MimeTypes INSTANCE;
 	/** The default <code>application/octet-stream</code> MimeType */
 	public final static String DEFAULT = "application/octet-stream";
 	/** All the registered MimeTypes */
-	private static Map<String, MimeType> types = new HashMap<String, MimeType>();
+	private static final Map<String, MimeType> TYPES = new HashMap<String, MimeType>();
 	/**
 	 * My registered instances There is one instance associated for each specified file while calling the {@link #get(String)} method. Key
 	 * is the specified file path in the {@link #get(String)} method. Value is the associated MimeType instance.
 	 */
-	private static Map<Integer, MimeTypes> instances = new HashMap<Integer, MimeTypes>();
+	private static final Map<Integer, MimeTypes> INSTANCES = new HashMap<Integer, MimeTypes>();
 
 	/** MimeTypes indexed on the file extension */
-	private Map<String, List<MimeType>> extIdx = new HashMap<String, List<MimeType>>();
+	private transient final Map<String, List<MimeType>> extIdx = new HashMap<String, List<MimeType>>();
 	/** List of MimeTypes containing a magic char sequence */
-	private List<MimeType> magicsIdx = new ArrayList<MimeType>();
+	private transient final List<MimeType> magicsIdx = new ArrayList<MimeType>();
 	/** The minimum length of data to provide to check all MimeTypes */
-	private int minLength = 0;
+	private transient int minLength = 0;
 
-	public MimeTypes(String filePath) {
+	public MimeTypes(final String filePath) {
 		try {
 			InputStream inputStream = getClass().getResourceAsStream(filePath);
 			MimeTypes instance = null;
-			synchronized (instances) {
-				instance = (MimeTypes) instances.get(inputStream);
+			synchronized (INSTANCES) {
+				instance = (MimeTypes) INSTANCES.get(inputStream);
 				if (instance == null) {
 					instance = new MimeTypes(inputStream);
 					Integer hash = Integer.valueOf(inputStream.hashCode());
-					instances.put(hash, instance);
+					INSTANCES.put(hash, instance);
 				}
 			}
 		} catch (Exception e) {
@@ -67,9 +67,9 @@ public final class MimeTypes {
 		if (type == null) {
 			return null;
 		}
-		MimeType mimeType = types.get(type);
+		MimeType mimeType = TYPES.get(type);
 		if (mimeType == null) {
-			for (MimeType m : types.values()) {
+			for (MimeType m : TYPES.values()) {
 				String[] extensions = m.getExtensions();
 				if (extensions != null) {
 					for (String extension : extensions) {
@@ -101,7 +101,7 @@ public final class MimeTypes {
 		if ((data == null) || (data.length < 1)) {
 			return null;
 		}
-		Iterator<MimeType> iter = instance.magicsIdx.iterator();
+		Iterator<MimeType> iter = INSTANCE.magicsIdx.iterator();
 		MimeType type = null;
 		// Todo: This is a very naive first approach (scanning all the magic
 		// bytes since one is matching. A first improvement could be to use a search path on the magic
@@ -129,7 +129,7 @@ public final class MimeTypes {
 	public static MimeType getMimeType(final String name, final byte[] data) {
 		// First, try to get the mime-type from the name
 		MimeType mimeType = null;
-		MimeType[] mimeTypes = instance.getMimeTypes(name);
+		MimeType[] mimeTypes = INSTANCE.getMimeTypes(name);
 		if (mimeTypes == null) {
 			// No mime-type found, so trying to analyse the content
 			mimeType = getMimeType(data);
@@ -145,8 +145,8 @@ public final class MimeTypes {
 	}
 
 	/** Should never be instantiated from outside */
-	private MimeTypes(InputStream inputStream) {
-		instance = this;
+	private MimeTypes(final InputStream inputStream) {
+		INSTANCE = this;
 		MimeTypesReader reader = new MimeTypesReader();
 		add(reader.read(inputStream));
 	}
@@ -200,7 +200,7 @@ public final class MimeTypes {
 	 *            is the mime-type to add.
 	 */
 	void add(final MimeType type) {
-		types.put(type.getName(), type);
+		TYPES.put(type.getName(), type);
 		// Update minLentgth
 		minLength = Math.max(minLength, type.getMinLength());
 		// Update the extensions index...

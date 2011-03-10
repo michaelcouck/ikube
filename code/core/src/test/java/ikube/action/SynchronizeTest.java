@@ -1,6 +1,7 @@
 package ikube.action;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import ikube.BaseTest;
@@ -13,9 +14,11 @@ import ikube.toolkit.FileUtilities;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +39,7 @@ import com.hazelcast.core.MessageListener;
 @Ignore
 public class SynchronizeTest extends BaseTest {
 
-	private Synchronize synchronize = ApplicationContextManager.getBean(Synchronize.class);
+	private transient final Synchronize synchronize = ApplicationContextManager.getBean(Synchronize.class);
 
 	@BeforeClass
 	public static void beforeClass() {
@@ -48,10 +51,10 @@ public class SynchronizeTest extends BaseTest {
 	}
 
 	@Test
-	public void getIndexFiles() throws Exception {
+	public void getIndexFiles() {
 		List<File> indexFiles = synchronize.getIndexFiles();
 		logger.info("Files : " + indexFiles);
-		assertEquals(0, indexFiles.size());
+		assertEquals("There should be no indexes : ", 0, indexFiles.size());
 
 		String serverIndexDirectoryPath = getServerIndexDirectoryPath(indexContext);
 		File indexDirectory = new File(serverIndexDirectoryPath);
@@ -59,19 +62,19 @@ public class SynchronizeTest extends BaseTest {
 
 		indexFiles = synchronize.getIndexFiles();
 		logger.info("Files : " + indexFiles);
-		assertEquals(3, indexFiles.size());
+		assertEquals("There should be an index now : ", 3, indexFiles.size());
 
 		FileUtilities.deleteFile(indexDirectory, 1);
 	}
 
 	@Test
-	public void execute() throws Exception {
+	public void execute() throws InterruptedException {
 		// Event
 		final List<SynchronizationMessage> synchronizationMessages = new ArrayList<SynchronizationMessage>();
 		ITopic<SynchronizationMessage> topic = Hazelcast.getTopic(IConstants.SYNCHRONIZATION_TOPIC);
 		MessageListener<SynchronizationMessage> messageListener = new MessageListener<SynchronizationMessage>() {
 			@Override
-			public void onMessage(SynchronizationMessage synchronizationMessage) {
+			public void onMessage(final SynchronizationMessage synchronizationMessage) {
 				logger.info("SynchronizationMessage : " + synchronizationMessage);
 				synchronizationMessages.add(synchronizationMessage);
 			}
@@ -85,7 +88,7 @@ public class SynchronizeTest extends BaseTest {
 
 		long sleep = 1000;
 		Thread.sleep(sleep);
-		assertEquals(0, synchronizationMessages.size());
+		assertEquals("There should be no messages yet : ", 0, synchronizationMessages.size());
 
 		String serverIndexDirectoryPath = getServerIndexDirectoryPath(indexContext);
 		File indexDirectory = new File(serverIndexDirectoryPath);
@@ -94,14 +97,14 @@ public class SynchronizeTest extends BaseTest {
 		synchronize.execute(indexContext);
 
 		Thread.sleep(sleep);
-		assertEquals(1, synchronizationMessages.size());
+		assertEquals("There should be one message : ", 1, synchronizationMessages.size());
 
 		FileUtilities.deleteFile(indexDirectory, 1);
 		topic.removeMessageListener(messageListener);
 	}
 
 	@Test
-	public void onMessage() throws Exception {
+	public void onMessage() throws UnknownHostException {
 		// SynchronizationMessage
 		String serverIndexDirectoryPath = getServerIndexDirectoryPath(indexContext);
 		File indexDirectory = new File(serverIndexDirectoryPath);
@@ -118,7 +121,7 @@ public class SynchronizeTest extends BaseTest {
 	}
 
 	@Test
-	public void writeFile() throws Exception {
+	public void writeFile() throws IOException {
 		// TODO - How can we test this without deploying to different Jvm(s)?
 		String serverIndexDirectoryPath = getServerIndexDirectoryPath(indexContext);
 		File indexDirectory = new File(serverIndexDirectoryPath);
@@ -130,6 +133,7 @@ public class SynchronizeTest extends BaseTest {
 		synchronize.writeFile(socket);
 
 		FileUtilities.deleteFile(indexDirectory, 1);
+		assertTrue(true);
 	}
 
 }

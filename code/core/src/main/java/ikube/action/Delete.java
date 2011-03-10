@@ -9,7 +9,7 @@ import java.util.Comparator;
 
 /**
  * This action deletes the old indexes. There should always be one index, and potentially an index that is being generated. Any other index
- * files should be deleted. 
+ * files should be deleted.
  * 
  * @author Michael Couck
  * @since 31.10.10
@@ -30,8 +30,8 @@ public class Delete extends Action {
 		}
 		Arrays.sort(timeIndexDirectories, new Comparator<File>() {
 			@Override
-			public int compare(File o1, File o2) {
-				return o1.getName().compareTo(o2.getName());
+			public int compare(final File fileOne, final File fileTwo) {
+				return fileOne.getName().compareTo(fileTwo.getName());
 			}
 		});
 		// Check if the last index directory is locked

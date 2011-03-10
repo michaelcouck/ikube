@@ -16,17 +16,19 @@ import EDU.oswego.cs.dl.util.concurrent.PooledExecutor;
  * @since 17.04.10
  * @version 01.00
  */
-public class ListenerManager {
+public final class ListenerManager {
 
-	private static Logger LOGGER = Logger.getLogger(ListenerManager.class);
-	private static List<IListener> LISTENERS = new ArrayList<IListener>();
-	private static PooledExecutor POOLED_EXECUTER = new PooledExecutor(5);
+	private static final Logger LOGGER = Logger.getLogger(ListenerManager.class);
+	private static final List<IListener> LISTENERS = new ArrayList<IListener>();
+	private static final PooledExecutor POOLED_EXECUTER = new PooledExecutor(5);
+	
+	private ListenerManager() {}
 
 	/**
 	 * @param listener
 	 *            the listener to add for notifications of end of action events
 	 */
-	public static void addListener(IListener listener) {
+	public static void addListener(final IListener listener) {
 		if (LISTENERS.add(listener)) {
 			LOGGER.info("Added listener : " + listener);
 		} else {
@@ -38,7 +40,7 @@ public class ListenerManager {
 	 * @param listener
 	 *            the listener to remove from the list of listeners
 	 */
-	public static void removeListener(IListener listener) {
+	public static void removeListener(final IListener listener) {
 		if (LISTENERS.remove(listener)) {
 			LOGGER.info("Removed listener : " + listener);
 		} else {
@@ -52,7 +54,7 @@ public class ListenerManager {
 	 * @param event
 	 *            the event for distribution
 	 */
-	private static final void notifyListeners(final Event event) {
+	private static void notifyListeners(final Event event) {
 		for (final IListener listener : LISTENERS) {
 			try {
 				POOLED_EXECUTER.execute(new Runnable() {
@@ -69,7 +71,7 @@ public class ListenerManager {
 		}
 	}
 
-	public static final void fireEvent(Event event) {
+	public static void fireEvent(final Event event) {
 		try {
 			ListenerManager.notifyListeners(event);
 		} catch (Exception e) {
@@ -77,7 +79,7 @@ public class ListenerManager {
 		}
 	}
 
-	public static final void fireEvent(String type, long timestamp, Serializable object, boolean consumed) {
+	public static void fireEvent(final String type, final long timestamp, final Serializable object, final boolean consumed) {
 		Event event = new Event();
 		event.setType(type);
 		event.setTimestamp(timestamp);

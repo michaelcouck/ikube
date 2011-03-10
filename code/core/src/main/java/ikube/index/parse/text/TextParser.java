@@ -18,15 +18,16 @@ public class TextParser implements IParser {
 	public final OutputStream parse(final InputStream inputStream, final OutputStream outputStream) throws Exception {
 		StringBuilder builder = new StringBuilder();
 		InputStreamReader inputStreamReader = new InputStreamReader(inputStream, IConstants.ENCODING);
-		int read = -1;
 		char[] chars = new char[1024];
-		while ((read = inputStreamReader.read(chars)) > -1) {
+		int read = inputStreamReader.read(chars);
+		while (read > -1) {
 			for (int i = 0; i < read; i++) {
 				char c = chars[i];
 				if (Character.isLetterOrDigit(c) || Character.isSpaceChar(c)) {
 					builder.append(c);
 				}
 			}
+			read = inputStreamReader.read(chars);
 		}
 		outputStream.write(builder.toString().getBytes());
 		return outputStream;

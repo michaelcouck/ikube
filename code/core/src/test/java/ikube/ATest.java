@@ -112,7 +112,7 @@ public abstract class ATest {
 		}
 	}
 
-	protected void delete(IDataBase dataBase, Class<?>... klasses) {
+	protected void delete(final IDataBase dataBase, final Class<?>... klasses) {
 		for (Class<?> klass : klasses) {
 			List<?> objects = dataBase.find(klass, 0, Integer.MAX_VALUE);
 			for (Object object : objects) {
@@ -129,11 +129,11 @@ public abstract class ATest {
 	 *            the index context to get the directory path for
 	 * @return the directory path to the latest index directory for this servers and context
 	 */
-	protected String getServerIndexDirectoryPath(IndexContext indexContext) {
+	protected String getServerIndexDirectoryPath(final IndexContext indexContext) {
 		return IndexManager.getIndexDirectory(IP, indexContext, System.currentTimeMillis());
 	}
-	
-	protected File createIndex(File indexDirectory) throws Exception {
+
+	protected File createIndex(final File indexDirectory) {
 		logger.info("Creating Lucene index in : " + indexDirectory);
 		Directory directory = null;
 		IndexWriter indexWriter = null;
@@ -145,9 +145,13 @@ public abstract class ATest {
 			indexWriter.addDocument(document);
 			indexWriter.commit();
 			indexWriter.optimize(Boolean.TRUE);
+		} catch (Exception e) {
+			logger.error("Exceptino creating the index : " + indexDirectory, e);
 		} finally {
 			try {
 				directory.close();
+			} catch (Exception e) {
+				logger.error("Exception closing the directory : " + indexDirectory, e);
 			} finally {
 				try {
 					indexWriter.close();

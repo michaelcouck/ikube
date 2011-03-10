@@ -68,7 +68,7 @@ public class IndexEngine implements IIndexEngine {
 
 		Map<String, IndexContext> indexContexts = ApplicationContextManager.getBeans(IndexContext.class);
 		for (IndexContext indexContext : indexContexts.values()) {
-			if (actions == null || actions.size() == 0) {
+			if (actions == null || actions.isEmpty()) {
 				LOGGER.warn("No actions configured for index engine : " + indexContext.getIndexName());
 				continue;
 			}

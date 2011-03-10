@@ -7,6 +7,7 @@ import ikube.BaseTest;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.Directory;
@@ -21,31 +22,31 @@ import org.junit.Test;
  */
 public class DeleteTest extends BaseTest {
 
-	private Delete delete = new Delete();
+	private transient final Delete delete = new Delete();
 
 	@Test
-	public void execute() throws Exception {
+	public void execute() throws IOException {
 		String indexDirectoryPath = indexContext.getIndexDirectoryPath();
 		indexContext.setIndexDirectoryPath("./deleteTest");
 		File baseIndexDirectory = FileUtilities.getFile(indexContext.getIndexDirectoryPath(), Boolean.TRUE);
 		FileUtilities.deleteFile(baseIndexDirectory, 1);
 		baseIndexDirectory = FileUtilities.getFile(indexContext.getIndexDirectoryPath(), Boolean.TRUE);
-		assertTrue(baseIndexDirectory.exists());
+		assertTrue("We should start with no directories : ", baseIndexDirectory.exists());
 
 		// No indexes so far, nothing to delete
 		boolean deleted = delete.execute(indexContext);
-		assertFalse(deleted);
+		assertFalse("The index should have been deleted : ", deleted);
 		/*******************************************/
 
 		String serverIndexDirectoryPath = getServerIndexDirectoryPath(indexContext);
 		File serverIndexDirectory = FileUtilities.getFile(serverIndexDirectoryPath, Boolean.TRUE);
 		createIndex(serverIndexDirectory);
-		assertTrue(serverIndexDirectory.exists());
+		assertTrue("The index should have been deleted : ", serverIndexDirectory.exists());
 
 		// Only one directory so nothing to delete
 		deleted = delete.execute(indexContext);
-		assertFalse(deleted);
-		assertEquals(1, serverIndexDirectory.getParentFile().listFiles().length);
+		assertFalse("The index should not have been deleted : ", deleted);
+		assertEquals("There should be only one index : ", 1, serverIndexDirectory.getParentFile().listFiles().length);
 		/**************************************************/
 
 		String anotherServerIndexDirectoryPath = getServerIndexDirectoryPath(indexContext);

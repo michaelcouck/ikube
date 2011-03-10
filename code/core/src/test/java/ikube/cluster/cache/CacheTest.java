@@ -21,8 +21,8 @@ import org.junit.Test;
  */
 public class CacheTest extends BaseTest {
 
-	private Url url;
-	private ICache cache;
+	private transient Url url;
+	private transient ICache cache;
 
 	@Before
 	public void before() {
@@ -46,7 +46,7 @@ public class CacheTest extends BaseTest {
 	}
 
 	@Test
-	public void getUrlBatch() throws Exception {
+	public void getUrlBatch() throws InterruptedException {
 		int size = 100;
 		for (int i = 0; i < size; i++) {
 			Url url = new Url();
@@ -61,7 +61,7 @@ public class CacheTest extends BaseTest {
 	}
 
 	@Test
-	public void performance() throws Exception {
+	public void performance() {
 		int iterations = 10;
 		double executionsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
 			public void execute() throws Exception {

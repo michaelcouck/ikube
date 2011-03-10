@@ -7,6 +7,7 @@ import ikube.BaseTest;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.junit.Test;
 
@@ -17,16 +18,16 @@ import org.junit.Test;
  */
 public class CloseTest extends BaseTest {
 
-	private Close close = new Close();
+	private transient final Close close = new Close();
 
 	@Test
-	public void execute() throws Exception {
+	public void execute() throws IOException {
 		indexContext.getIndex().setMultiSearcher(MULTI_SEARCHER);
 
 		String serverIndexDirectoryPath = getServerIndexDirectoryPath(indexContext);
 		File serverIndexDirectory = createIndex(new File(serverIndexDirectoryPath));
 		boolean closed = close.execute(indexContext);
-		assertTrue(closed);
+		assertTrue("The index was open and it should have been closed in the action : ", closed);
 
 		File anotherServerIndexDirectory = createIndex(new File(serverIndexDirectoryPath.replace(IP, "127.0.0.2")));
 		indexContext.getIndex().setMultiSearcher(MULTI_SEARCHER);
@@ -38,18 +39,18 @@ public class CloseTest extends BaseTest {
 		// when(MULTI_SEARCHER.getSearchables()).thenReturn(SEARCHABLES);
 
 		closed = close.execute(indexContext);
-		assertTrue(closed);
+		assertTrue("The index was open and shouldhave been closed in the action : ", closed);
 
 		indexContext.getIndex().setMultiSearcher(MULTI_SEARCHER);
 		when(LOCK.isLocked()).thenReturn(Boolean.TRUE);
 
 		closed = close.execute(indexContext);
-		assertTrue(closed);
+		assertTrue("The index was open and should have been closed in the action : ", closed);
 
 		FileUtilities.deleteFile(serverIndexDirectory, 1);
 		FileUtilities.deleteFile(anotherServerIndexDirectory, 1);
-		assertFalse(serverIndexDirectory.exists());
-		assertFalse(anotherServerIndexDirectory.exists());
+		assertFalse("The index should have been deleted : ", serverIndexDirectory.exists());
+		assertFalse("The index should have been deleted : ", anotherServerIndexDirectory.exists());
 	}
 
 }

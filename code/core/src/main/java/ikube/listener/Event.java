@@ -56,7 +56,7 @@ public class Event {
 		return object;
 	}
 
-	public void setObject(Serializable object) {
+	public void setObject(final Serializable object) {
 		this.object = object;
 	}
 
