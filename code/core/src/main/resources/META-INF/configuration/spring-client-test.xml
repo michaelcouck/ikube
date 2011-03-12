@@ -183,6 +183,7 @@
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
+
 	<bean
 		id="ikokoon"
 		class="ikube.model.IndexableInternet"

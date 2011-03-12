@@ -26,15 +26,7 @@
 	
 	<bean
 		id="ikube.database.mem.DataBaseMem"
-		class="ikube.database.mem.DataBaseMem"
-		property:dataBase-ref="ikube.database.odb.DataBaseOdb" />
-	<bean
-		id="ikube.database.odb.DataBaseOdb"
-		class="ikube.database.odb.DataBaseOdb"
-		lazy-init="true"
-		init-method="initialise"
-		destroy-method="close">
-	</bean>
+		class="ikube.database.mem.DataBaseMem" />
 	
 	<bean 
 		id="ikube.monitoring.IndexValidator" 

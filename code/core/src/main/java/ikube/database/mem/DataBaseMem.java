@@ -47,7 +47,10 @@ public class DataBaseMem implements IDataBase {
 			}
 			// Save the object in the maps
 			map.put(idFieldValue, object);
-			return dataBase.persist(object);
+			if (dataBase != null) {
+				return dataBase.persist(object);
+			}
+			return object;
 		} catch (Exception e) {
 			logger.error("Exception persisting object : " + object, e);
 			return object;
@@ -75,7 +78,10 @@ public class DataBaseMem implements IDataBase {
 			// Remove the object from the maps
 			Map<Long, Object> map = getMap(object.getClass());
 			map.remove(idFieldValue);
-			return dataBase.remove(object);
+			if (dataBase != null) {
+				return dataBase.remove(object);
+			}
+			return object;
 		} catch (Exception e) {
 			logger.error("Exception removing object : " + object, e);
 			return object;
@@ -88,11 +94,15 @@ public class DataBaseMem implements IDataBase {
 	 * {@inheritDoc}
 	 */
 	@Override
+	@SuppressWarnings("unchecked")
 	public synchronized <T> T remove(final Class<T> klass, final Long id) {
 		try {
 			Map<Long, Object> map = getMap(klass);
-			map.remove(id);
-			return dataBase.remove(klass, id);
+			Object object = map.remove(id);
+			if (dataBase != null) {
+				return dataBase.remove(klass, id);
+			}
+			return (T) object;
 		} finally {
 			notifyAll();
 		}
@@ -105,7 +115,10 @@ public class DataBaseMem implements IDataBase {
 	public synchronized <T> T merge(final T object) {
 		try {
 			// T is a live object so there is no merge required
-			return dataBase.merge(object);
+			if (dataBase != null) {
+				return dataBase.merge(object);
+			}
+			return object;
 		} catch (Exception e) {
 			logger.error("Exception merging object : " + object, e);
 			return object;
@@ -121,7 +134,11 @@ public class DataBaseMem implements IDataBase {
 	@SuppressWarnings("unchecked")
 	public synchronized <T> T find(final Long id) {
 		try {
-			return (T) dataBase.find(id);
+			if (dataBase != null) {
+				return (T) dataBase.find(id);
+			}
+			logger.warn("Find only available if there is an underlying database : ");
+			return null;
 		} finally {
 			notifyAll();
 		}
@@ -148,7 +165,11 @@ public class DataBaseMem implements IDataBase {
 	@Override
 	public synchronized <T> T find(final Class<T> klass, final Map<String, Object> parameters, final boolean unique) {
 		try {
-			return dataBase.find(klass, parameters, unique);
+			if (dataBase != null) {
+				return dataBase.find(klass, parameters, unique);
+			}
+			logger.warn("Find only available if there is an underlying database : ");
+			return null;
 		} finally {
 			notifyAll();
 		}
@@ -186,10 +207,14 @@ public class DataBaseMem implements IDataBase {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized <T> List<T> find(final Class<T> klass, final Map<String, Object> parameters, final int startIndex, final int endIndex) {
+	public synchronized <T> List<T> find(final Class<T> klass, final Map<String, Object> parameters, final int startIndex,
+			final int endIndex) {
 		List<T> list = new ArrayList<T>();
 		try {
-			return dataBase.find(klass, parameters, startIndex, endIndex);
+			if (dataBase != null) {
+				return dataBase.find(klass, parameters, startIndex, endIndex);
+			}
+			logger.warn("Find only available if there is an underlying database : ");
 		} catch (Exception e) {
 			logger.error("Exception finding objects : " + klass + ", " + parameters + ", " + startIndex + ", " + endIndex, e);
 		} finally {

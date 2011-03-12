@@ -55,7 +55,7 @@ public class PageHandlerTest extends BaseTest {
 
 	@Test
 	public void performance() {
-		int[] iterations = new int[] { 1000, 10000, 100000, 1000000 };
+		int[] iterations = new int[] { 1000, 10000, 100000 };
 		for (int i = 0; i < iterations.length; i++) {
 			PageHandler.IN_SET.clear();
 			PageHandler.OUT_SET.clear();

@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation=" http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project 
+	xmlns="http://maven.apache.org/POM/4.0.0" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation=" http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>ikube</groupId>
@@ -73,7 +76,7 @@
 				<version>2.7.1</version>
 				<configuration>
 					<forkMode>once</forkMode>
-					<!--<argLine>-javaagent:../../serenity/serenity.jar -Xms512m -Xmx1024m ${included.adapters} ${included.packages} ${excluded.packages} ${write.classes} ${clean.classes}</argLine>-->
+					<argLine>-javaagent:../../serenity/serenity.jar -Xms512m -Xmx1024m ${included.adapters} ${included.packages} ${excluded.packages} ${write.classes} ${clean.classes}</argLine>
 					<excludes>
 						<exclude>**/TextParserTest.java</exclude>
 						<exclude>**/DataBaseOdbTest.java</exclude>
@@ -82,19 +85,6 @@
 					</excludes>
 				</configuration>
 			</plugin>
-			<!--<plugin>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<version>2.2-beta-5</version>
-				<configuration>
-					<descriptorRefs>
-						<descriptorRef>jar-with-dependencies</descriptorRef>
-					</descriptorRefs>
-					<manifest>
-						<addClasspath>true</addClasspath>
-						<mainClass>ikube.Ikube</mainClass>
-					</manifest>
-				</configuration>
-			</plugin>-->
 		</plugins>
 	</build>
 
