@@ -35,7 +35,6 @@ public class ClusterIntegration {
 
 	@Test
 	public void main() throws IOException, InterruptedException {
-		// ClusterIntegration.start();
 		String clusterDirectoryPath = "./cluster";
 		String classpath = System.getProperty("java.class.path");
 		final List<Process> processes = new ArrayList<Process>();
