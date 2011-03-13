@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+	NOTE: This configuration is not used, it is just here for posterity, it is not used because
+	the setup is too much overhead and the persistence is only used for inserting data for the
+	integration tests. 
+ -->
+<beans
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:property="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:transaction="http://www.springframework.org/schema/tx"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	
+	xsi:schemaLocation="
+			http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+            http://www.springframework.org/schema/context
+            http://www.springframework.org/schema/context/spring-context-3.0.xsd
+            http://www.springframework.org/schema/util
+            http://www.springframework.org/schema/util/spring-util.xsd
+            http://www.springframework.org/schema/tx
+            http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+            http://www.springframework.org/schema/aop
+            http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
+
+	<context:annotation-config />
+	<transaction:annotation-driven 
+		transaction-manager="transactionManager" 
+		proxy-target-class="false" />
+	<context:component-scan base-package="ikube.database.jpa" />
+	
+	<bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor" />
+	
+	<!-- The transaction manager services. -->
+	<bean id="bitronix.tm.TransactionManagerServices"
+		class="bitronix.tm.TransactionManagerServices"
+		factory-method="getConfiguration">
+		<property name="serverId" value="spring-btm" />
+	</bean>
+
+	<!-- The transaction manager. -->
+	<bean id="bitronix.tm.BitronixTransactionManager"
+		class="bitronix.tm.TransactionManagerServices"
+		factory-method="getTransactionManager"
+		depends-on="bitronix.tm.TransactionManagerServices">
+	</bean>
+
+	<!-- The Spring transaction manager. -->
+	<bean id="org.springframework.transaction.jta.JtaTransactionManager"
+		class="org.springframework.transaction.jta.JtaTransactionManager"
+		property:userTransaction-ref="bitronix.tm.BitronixTransactionManager"
+		property:transactionManager-ref="bitronix.tm.BitronixTransactionManager"
+		property:defaultTimeout="6000">
+	</bean>
+	
+	<bean id="jpaAdapter"
+		class="org.springframework.orm.jpa.vendor.OpenJpaVendorAdapter" />
+
+	<!-- The Spring JPA transaction manager. -->
+	<bean id="transactionManager"
+		class="org.springframework.orm.jpa.JpaTransactionManager"
+		property:entityManagerFactory-ref="entityManagerFactoryJpaDb2" />
+		
+	<bean id="entityManagerFactoryJpaDb2"
+			class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"
+			property:persistenceXmlLocation="/META-INF/persistence/persistence-db2.xml"
+			property:dataSource-ref="nonXaDataSourceDb2"
+			property:jpaVendorAdapter-ref="jpaAdapter"
+			property:jpaPropertyMap-ref="jpaPropertyMap" />
+	<util:map id="jpaPropertyMap">
+		<entry key="openjpa.TransactionMode" value="managed" />
+		<entry key="openjpa.ConnectionFactoryMode" value="managed" />
+		<entry key="openjpa.ManagedRuntime" value="invocation(TransactionManagerMethod=bitronix.tm.TransactionManagerServices.getTransactionManager)" />
+
+		<entry key="openjpa.ConnectionFactoryProperties" value="PrettyPrint=true,PrettyPrintLineLength=150" />
+		<entry key="openjpa.Log" value="DefaultLevel=INFO,SQL=INFO,File=openjpa.log,Runtime=INFO,Tool=INFO" />
+
+		<entry key="openjpa.LockTimeout" value="60000" />
+		<entry key="openjpa.ReadLockLevel" value="write" />
+		<entry key="openjpa.WriteLockLevel" value="write" />
+		<entry key="openjpa.Optimistic" value="false" />
+		<entry key="openjpa.Multithreaded" value="true" />
+		<entry key="openjpa.NontransactionalRead" value="true" />
+		<entry key="openjpa.AutoDetach" value="commit" />
+		<entry key="openjpa.FlushBeforeQueries" value="true" />
+		<entry key="openjpa.RuntimeUnenhancedClasses" value="supported" />
+
+		<!--
+			For the first run these have to be uncommented to allow OpenJpa to create the
+			tables in the database and commit the connection. Typically the connection
+			is managed Xa so can't be committed by OpenJpa. If the properties are uncommented
+			then OpenJpa will use these to get a connection to the db and can then commit on
+			that connection as it will not be xa.
+		-->
+		<entry key="openjpa.jdbc.SynchronizeMappings" value="buildSchema" />
+		<!--<entry key="openjpa.Connection2UserName" value="${jdbc.user}" />
+		<entry key="openjpa.Connection2Password" value="${jdbc.password}" />
+		<entry key="openjpa.Connection2URL" value="${jdbc.url}" />
+		<entry key="openjpa.Connection2DriverName" value="${jdbc.driver}" />-->
+	</util:map>
+	
+	<bean id="entityManagerFactoryJpaOracle"
+			class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"
+			property:persistenceXmlLocation="/META-INF/persistence/persistence-oracle.xml"
+			property:dataSource-ref="nonXaDataSourceOracle"
+			property:jpaVendorAdapter-ref="jpaAdapter"
+			property:jpaPropertyMap-ref="jpaPropertyMap" />
+	<util:map id="jpaPropertyMapOracle">
+		<!--<entry key="openjpa.TransactionMode" value="managed" />-->
+		<!--<entry key="openjpa.ConnectionFactoryMode" value="managed" />-->
+		<!--<entry key="openjpa.ManagedRuntime" value="invocation(TransactionManagerMethod=bitronix.tm.TransactionManagerServices.getTransactionManager)" />-->
+
+		<entry key="openjpa.ConnectionFactoryProperties" value="PrettyPrint=true,PrettyPrintLineLength=150" />
+		<entry key="openjpa.Log" value="DefaultLevel=INFO,SQL=INFO,File=openjpa.log,Runtime=INFO,Tool=INFO" />
+
+		<entry key="openjpa.LockTimeout" value="6000000" />
+		<entry key="openjpa.ReadLockLevel" value="write" />
+		<entry key="openjpa.WriteLockLevel" value="write" />
+		<entry key="openjpa.Optimistic" value="false" />
+		<entry key="openjpa.Multithreaded" value="true" />
+		<entry key="openjpa.NontransactionalRead" value="false" />
+		<entry key="openjpa.AutoDetach" value="commit" />
+		<entry key="openjpa.FlushBeforeQueries" value="true" />
+		<entry key="openjpa.RuntimeUnenhancedClasses" value="supported" />
+
+		<!--
+			For the first run these have to be uncommented to allow OpenJpa to create the
+			tables in the database and commit the connection. Typically the connection
+			is managed Xa so can't be committed by OpenJpa. If the properties are uncommented
+			then OpenJpa will use these to get a connection to the db and can then commit on
+			that connection as it will not be xa.
+		-->
+		<entry key="openjpa.jdbc.SynchronizeMappings" value="buildSchema" />
+		<!--<entry key="openjpa.Connection2UserName" value="${jdbc.user}" />
+		<entry key="openjpa.Connection2Password" value="${jdbc.password}" />
+		<entry key="openjpa.Connection2URL" value="${jdbc.url}" />
+		<entry key="openjpa.Connection2DriverName" value="${jdbc.driver}" />-->
+	</util:map>
+	
+	<bean 
+		id="dataBaseJpaDb2"
+		class="ikube.database.jpa.DataBaseJpa" />
+		
+	<!-- The transaction advice is necessary for the transaction handler. -->
+	<transaction:advice id="org.springframework.aop.BeforeAdvice"
+		transaction-manager="org.springframework.transaction.jta.JtaTransactionManager">
+		<transaction:attributes>
+			<transaction:method name="*" propagation="REQUIRED" />
+		</transaction:attributes>
+	</transaction:advice>
+	<aop:config proxy-target-class="true">
+		<aop:pointcut id="ikube.database.jpa.DataBaseJpa.persist" expression="execution(* ikube.database.jpa.DataBaseJpa.persist(..))" />
+		<aop:pointcut id="ikube.database.jpa.DataBaseJpa.merge" expression="execution(* ikube.database.jpa.DataBaseJpa.merge(..))" />
+		<aop:pointcut id="ikube.database.jpa.DataBaseJpa.remove" expression="execution(* ikube.database.jpa.DataBaseJpa.remove(..))" />
+		
+		<aop:advisor advice-ref="org.springframework.aop.BeforeAdvice" pointcut-ref="ikube.database.jpa.DataBaseJpa.persist" />
+		<aop:advisor advice-ref="org.springframework.aop.BeforeAdvice" pointcut-ref="ikube.database.jpa.DataBaseJpa.merge" />
+		<aop:advisor advice-ref="org.springframework.aop.BeforeAdvice" pointcut-ref="ikube.database.jpa.DataBaseJpa.remove" />
+	</aop:config>
+
+
+</beans>

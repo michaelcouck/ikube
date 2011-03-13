@@ -1,7 +1,7 @@
 package ikube.toolkit.datageneration;
 
-import ikube.model.Attachment;
-import ikube.model.Faq;
+import ikube.model.faq.Attachment;
+import ikube.model.faq.Faq;
 import ikube.toolkit.ThreadUtilities;
 
 import java.sql.Timestamp;

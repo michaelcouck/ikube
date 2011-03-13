@@ -7,11 +7,10 @@
 
 	<persistence-unit name="IkubePersistenceUnit" transaction-type="RESOURCE_LOCAL">
 		<provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
-		<non-jta-data-source>nonXaDataSource</non-jta-data-source>
+		<non-jta-data-source>nonXaDataSourceH2</non-jta-data-source>
 
-		<!-- The test data model entities for the database indexing functionality. -->
-		<class>ikube.model.Faq</class>
-		<class>ikube.model.Attachment</class>
+		<class>ikube.model.faq.Faq</class>
+		<class>ikube.model.faq.Attachment</class>
 
 		<class>ikube.model.Persistable</class>
 		<class>ikube.model.medical.Address</class>
@@ -27,13 +26,8 @@
 		<class>ikube.model.medical.Treatment</class>
 
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
-
-		<!-- Oracle/OpenJpa -->
+		
 		<properties>
-			<!--<property name="openjpa.ConnectionUserName" value="XE" />
-			<property name="openjpa.ConnectionPassword" value="admin" />
-			<property name="openjpa.ConnectionDriverName" value="oracle.jdbc.driver.OracleDriver" />
-			<property name="openjpa.ConnectionURL" value="jdbc:oracle:thin:@//ikube:1521/XE" />-->
 			<property name="openjpa.ConnectionFactoryProperties" value="PrettyPrint=true,PrettyPrintLineLength=150" />
 			<property name="openjpa.Log" value="DefaultLevel=INFO,SQL=INFO,File=./openjpa.log" />
 			<property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
@@ -42,11 +36,6 @@
 			<property name="openjpa.RuntimeUnenhancedClasses" value="supported" />
 			<property name="openjpa.Multithreaded" value="true" />
 		</properties>
-		
-		<!--<property name="openjpa.jdbc.Schema" value="MICHAELCOUCK" /> -->
-			<!--<property name="openjpa.RemoteCommitProvider" value="sjvm" /> -->
-			<!--<property name="openjpa.DataCache" value="true(CacheSize=500000, SoftReferenceSize=0)" /> -->
-			<!--<property name="openjpa.QueryCache" value="CacheSize=500000, SoftReferenceSize=0" /> -->
-			<!--<property name="openjpa.RefreshFromDataCache" value="true" /> -->
+
 	</persistence-unit>
 </persistence>

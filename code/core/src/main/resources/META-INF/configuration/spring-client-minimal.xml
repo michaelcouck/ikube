@@ -12,6 +12,9 @@
             http://www.springframework.org/schema/util
             http://www.springframework.org/schema/util/spring-util.xsd">
 
+	<context:property-placeholder
+		location="classpath:/META-INF/configuration/spring.properties" />
+	
 	<bean
 		id="minimal"
 		class="ikube.model.IndexContext"

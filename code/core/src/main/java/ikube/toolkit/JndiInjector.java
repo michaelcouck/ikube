@@ -6,6 +6,8 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
+import org.apache.log4j.Logger;
+
 /**
  * This class is responsible to put objects into a simulated jndi server.
  * 
@@ -16,10 +18,11 @@ import javax.naming.NamingException;
  */
 public class JndiInjector {
 
+	private static final Logger LOGGER = Logger.getLogger(JndiInjector.class);
 	/** map of objects that will be present in the JNDI */
 	private final transient Map<String, Object> jndiObjects;
 	/** The JNDI context */
-	private transient Context context;
+	private static transient Context CONTEXT;
 
 	/**
 	 * Class constructors that receives a map containing the objects that will be present in JNDI
@@ -36,9 +39,9 @@ public class JndiInjector {
 	 * @throws Exception
 	 */
 	public void initialize() throws Exception {
-		context = new InitialContext();
+		CONTEXT = new InitialContext();
 		for (Map.Entry<String, Object> entry : jndiObjects.entrySet()) {
-			context.bind(entry.getKey(), entry.getValue());
+			JndiInjector.bind(entry.getKey(), entry.getValue());
 		}
 	}
 
@@ -47,13 +50,17 @@ public class JndiInjector {
 	 * 
 	 * @param jndiName
 	 *            The jndi-name
-	 * @param obj
+	 * @param object
 	 *            The object to be bound into JNDI
 	 * @throws NamingException
 	 *             If the operation is not possible to be executed.
 	 */
-	public void bind(final String jndiName, final Object obj) throws NamingException {
-		context.bind(jndiName, obj);
+	public static void bind(final String jndiName, final Object object) throws NamingException {
+		if (CONTEXT == null) {
+			CONTEXT = new InitialContext();
+		}
+		LOGGER.info("Binding object : " + jndiName + ":" + object);
+		CONTEXT.rebind(jndiName, object);
 	}
 
 }

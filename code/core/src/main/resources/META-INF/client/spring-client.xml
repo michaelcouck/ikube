@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+	This is the configuration for the integration tests. It contains several of each indexable including 
+	most of the popular databases.
+	
+	1) DB2 - Faq
+	2) Oracle - Hospital
+	3) Url - Cloudbees/Ikokoon
+	4) Url - Cloudbees/Ikube
+	5) Url - Google Code/Ikube
+	6) File system local - server
+	7) File system remote - laptop
+	8) Email - Ikube
+	
+	* Index 1 - DB2, one url, one file system
+ -->
+<beans
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:property="http://www.springframework.org/schema/p"
+	xmlns:util="http://www.springframework.org/schema/util"
+
+	xsi:schemaLocation="
+			http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+            http://www.springframework.org/schema/context
+            http://www.springframework.org/schema/context/spring-context-3.0.xsd
+            http://www.springframework.org/schema/util
+            http://www.springframework.org/schema/util/spring-util.xsd">
+
+	<context:property-placeholder
+		location="classpath*:**/spring.properties" />
+	
+	<import resource="classpath:/META-INF/client/datasource/spring-h2-jdbc.xml" />
+	<import resource="classpath:/META-INF/client/datasource/spring-db2-jdbc.xml" />
+	<import resource="classpath:/META-INF/client/datasource/spring-oracle-jdbc.xml" />
+
+	<bean
+		id="indexContext"
+		class="ikube.model.IndexContext"
+		property:indexName="index"
+		property:maxAge="${max.age}"
+		property:compoundFile="${compound.file}"
+		property:bufferedDocs="${buffered.docs}"
+		property:bufferSize="${buffer.size}"
+		property:batchSize="${jdbc.batch.size}"
+		property:internetBatchSize="${internet.batch.size}"
+		property:mergeFactor="${merge.factor}"
+		property:maxFieldLength="${max.field.length}"
+		property:maxReadLength="${max.read.length}"
+		property:queueTimeout="${max.age}"
+		property:throttle="${throttle}"
+		property:indexDirectoryPath="${index.directory.path}"
+		property:indexables-ref="indexables" />
+	<util:list id="indexables">
+		<ref local="mail" />
+		<ref local="internet" />
+		<ref local="filesystem" />
+		<ref bean="faqTableH2" />
+		<ref bean="patientTableOracle" />
+	</util:list>
+
+	<bean
+		id="faqTableH2"
+		class="ikube.model.IndexableTable"
+		property:name="faq"
+		property:schema="${jdbc.schema}"
+		property:predicate="${faq.predicate}"
+		property:primary="true"
+		property:dataSource-ref="nonXaDataSourceH2"
+		property:children-ref="faqColumnsH2" />
+	<util:list id="faqColumnsH2">
+		<ref local="faqIdH2" />
+		<ref local="creationtimestampH2" />
+		<ref local="modifiedtimestampH2" />
+		<ref local="creatorH2" />
+		<ref local="modifierH2" />
+		<ref local="questionH2" />
+		<ref local="answerH2" />
+		<ref local="publishedH2" />
+		<ref local="attachmentTableH2" />
+	</util:list>
+
+	<bean
+		id="faqIdH2"
+		class="ikube.model.IndexableColumn"
+		property:name="faqId"
+		property:idColumn="true"
+		property:columnClass="java.lang.Long"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="creationtimestampH2"
+		class="ikube.model.IndexableColumn"
+		property:name="creationtimestamp"
+		property:fieldName="creationtimestamp"
+		property:columnClass="java.sql.Timestamp" 
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="modifiedtimestampH2"
+		class="ikube.model.IndexableColumn"
+		property:name="modifiedtimestamp"
+		property:fieldName="modifiedtimestamp"
+		property:columnClass="java.sql.Timestamp" 
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="creatorH2"
+		class="ikube.model.IndexableColumn"
+		property:name="creator"
+		property:fieldName="creator"
+		property:columnClass="java.lang.String"
+		property:columnLength="32" 
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="modifierH2"
+		class="ikube.model.IndexableColumn"
+		property:name="modifier"
+		property:fieldName="modifier"
+		property:columnClass="java.lang.String"
+		property:columnLength="32" 
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="questionH2"
+		class="ikube.model.IndexableColumn"
+		property:name="question"
+		property:fieldName="question"
+		property:columnClass="java.lang.String"
+		property:columnLength="128" 
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="answerH2"
+		class="ikube.model.IndexableColumn"
+		property:name="answer"
+		property:fieldName="answer"
+		property:columnClass="java.lang.String"
+		property:columnLength="128" 
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="publishedH2"
+		class="ikube.model.IndexableColumn"
+		property:name="published"
+		property:fieldName="published"
+		property:columnClass="java.lang.Boolean" 
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+
+	<bean
+		id="attachmentTableH2"
+		class="ikube.model.IndexableTable"
+		property:name="attachment"
+		property:schema="${jdbc.schema}"
+		property:primary="false"
+		property:dataSource-ref="nonXaDataSourceH2"
+		property:children-ref="attachmentColumnsTwoH2" />
+	<util:list id="attachmentColumnsTwoH2">
+		<ref local="attachmentFaqIdH2" />
+		<ref local="attachmentIdH2" />
+		<ref local="nameH2" />
+		<ref local="attachmentH2" />
+		<ref local="lengthH2" />
+	</util:list>
+
+	<bean
+		id="attachmentFaqIdH2"
+		class="ikube.model.IndexableColumn"
+		property:name="faqId"
+		property:fieldName="attachmentFaqId"
+		property:foreignKey-ref="faqIdH2"
+		property:columnClass="java.lang.Long" 
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="attachmentIdH2"
+		class="ikube.model.IndexableColumn"
+		property:name="attachmentId"
+		property:fieldName="attachmentId"
+		property:idColumn="true"
+		property:columnClass="java.lang.Long" 
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="nameH2"
+		class="ikube.model.IndexableColumn"
+		property:name="name"
+		property:fieldName="name"
+		property:columnClass="java.lang.String"
+		property:columnLength="64" 
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="attachmentH2"
+		class="ikube.model.IndexableColumn"
+		property:name="attachment"
+		property:fieldName="attachment"
+		property:nameColumn-ref="nameH2"
+		property:columnClass="java.sql.Blob"
+		property:columnLength="128" 
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="lengthH2"
+		class="ikube.model.IndexableColumn"
+		property:name="length"
+		property:fieldName="length"
+		property:columnClass="java.lang.Integer" 
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+		
+	<bean
+		id="patientTableOracle"
+		class="ikube.model.IndexableTable"
+		property:name="patient"
+		property:schema="${jdbc.schema}"
+		property:predicate="${patient.predicate}"
+		property:primary="true"
+		property:dataSource-ref="nonXaDataSourceOracle"
+		property:children-ref="patientColumnsOracle" />
+	<util:list id="patientColumnsOracle">
+		<ref local="patientIdOracle" />
+	</util:list>
+
+	<bean
+		id="patientIdOracle"
+		class="ikube.model.IndexableColumn"
+		property:name="id"
+		property:idColumn="true"
+		property:columnClass="java.lang.Long"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	<!--<bean
+		id="creationtimestamp"
+		class="ikube.model.IndexableColumn"
+		property:name="creationtimestamp"
+		property:fieldName="creationtimestamp"
+		property:columnClass="java.sql.Timestamp" 
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />-->
+
+	<bean
+		id="mail"
+		class="ikube.model.IndexableEmail"
+		property:mailHost="pop.gmail.com"
+		property:name="ikube.email"
+		property:port="995"
+		property:protocol="pop3"
+		property:secureSocketLayer="true"
+		property:password="caherline"
+		property:username="ikube.ikube@gmail.com" 
+		property:idField="identifier"
+		property:contentField="email"
+		property:titleField="title" />
+	
+	<bean
+		id="internet"
+		class="ikube.model.IndexableInternet"
+		property:name="internet"
+		property:url="${url}" 
+		property:idFieldName="id"
+		property:titleFieldName="title"
+		property:contentFieldName="content"
+		property:excludedPattern=".*(/search).*|.*(/images).*"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	
+	<bean
+		id="filesystem"
+		class="ikube.model.IndexableFileSystem"
+		property:name="filesOne"
+		property:path="${files.path}"
+		property:pathFieldName="path"
+		property:nameFieldName="name"
+		property:lengthFieldName="length"
+		property:contentFieldName="contents"
+		property:excludedPattern="${files.excluded.pattern}"
+		property:lastModifiedFieldName="lastmodified" />
+		
+</beans>

@@ -1,9 +1,8 @@
 package ikube;
 
-import ikube.cluster.ClusterIntegration;
-import ikube.model.Attachment;
-import ikube.model.Faq;
 import ikube.model.IndexContext;
+import ikube.model.faq.Attachment;
+import ikube.model.faq.Faq;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.PerformanceTester;
@@ -13,7 +12,6 @@ import java.io.File;
 import java.util.Map;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
 /**
@@ -24,36 +22,34 @@ import javax.persistence.Persistence;
 public abstract class BaseTest extends ATest {
 
 	static {
-		ClassLoader.getSystemClassLoader();
-
-		ClusterIntegration.SLEEP = 1000;
-
-		// Delete the database file
-		FileUtilities.deleteFiles(new File("."), IConstants.DATABASE_FILE, IConstants.TRANSACTION_FILES, IConstants.DATABASE_FILE);
-		ApplicationContextManager.getApplicationContext(IConstants.SPRING_CONFIGURATION_FILE);
-		EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory(IConstants.PERSISTENCE_UNIT_NAME);
-		ENTITY_MANAGER = entityManagerFactory.createEntityManager();
-		// Delete all the old index directories
-		Map<String, IndexContext> contexts = ApplicationContextManager.getBeans(IndexContext.class);
-		for (IndexContext indexContext : contexts.values()) {
-			File baseIndexDirectory = FileUtilities.getFile(indexContext.getIndexDirectoryPath(), Boolean.TRUE);
-			FileUtilities.deleteFile(baseIndexDirectory, 1);
-		}
-
-		PerformanceTester.execute(new PerformanceTester.APerform() {
-			@Override
-			public void execute() throws Exception {
-				Class<?>[] classes = new Class[] { Faq.class, Attachment.class };
-				DataGeneratorFour dataGenerator = new DataGeneratorFour(ENTITY_MANAGER, 10, classes);
-				dataGenerator.before();
-				dataGenerator.delete(ENTITY_MANAGER, classes);
-				dataGenerator.generate();
-				dataGenerator.after();
+		try {
+			ApplicationContextManager.getApplicationContext(IConstants.SPRING_CONFIGURATION_FILE);
+			// Delete all the old index directories
+			Map<String, IndexContext> contexts = ApplicationContextManager.getBeans(IndexContext.class);
+			for (IndexContext indexContext : contexts.values()) {
+				File baseIndexDirectory = FileUtilities.getFile(indexContext.getIndexDirectoryPath(), Boolean.TRUE);
+				FileUtilities.deleteFile(baseIndexDirectory, 1);
 			}
-		}, "Data generator two insertion : ", 1);
+			PerformanceTester.execute(new PerformanceTester.APerform() {
+				@Override
+				public void execute() throws Exception {
+					EntityManager entityManager = null;
+					try {
+						entityManager = Persistence.createEntityManagerFactory(IConstants.PERSISTENCE_UNIT_NAME).createEntityManager();
+						Class<?>[] classes = new Class[] { Faq.class, Attachment.class };
+						DataGeneratorFour dataGenerator = new DataGeneratorFour(entityManager, 10, classes);
+						dataGenerator.before();
+						dataGenerator.generate();
+						dataGenerator.after();
+					} finally {
+						entityManager.close();
+					}
+				}
+			}, "Data generator two insertion : ", 1);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
-
-	protected static EntityManager ENTITY_MANAGER;
 
 	protected IndexContext indexContext = ApplicationContextManager.getBean("indexContext");
 

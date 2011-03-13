@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import ikube.BaseTest;
+import ikube.IConstants;
 import ikube.model.medical.Address;
 import ikube.model.medical.Condition;
 import ikube.model.medical.Medication;
@@ -14,27 +15,42 @@ import ikube.toolkit.ApplicationContextManager;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.persistence.EntityManager;
+import javax.persistence.Persistence;
+
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
+/**
+ * Test for the data generator.
+ * 
+ * @author Michael Couck
+ * @since 14.03.2011
+ * @version 01.00
+ */
+@Ignore
 public class DataGeneratorFourTest extends BaseTest {
 
 	private DataGeneratorFour dataGeneratorFour;
 	private Class<?>[] classes = new Class[] { Patient.class, Address.class, Condition.class, Medication.class };
 	private String selectFromPatients = "select e from Patient as e";
 	private String selectFromAddresses = "select e from Address as e";
+	private EntityManager entityManager;
 
 	@Before
 	public void before() throws Exception {
-		dataGeneratorFour = new DataGeneratorFour(ENTITY_MANAGER, 1, classes);
+		entityManager = Persistence.createEntityManagerFactory(IConstants.PERSISTENCE_UNIT_NAME).createEntityManager();
+		dataGeneratorFour = new DataGeneratorFour(entityManager, 1, classes);
 		dataGeneratorFour.before();
-		dataGeneratorFour.delete(ENTITY_MANAGER, classes);
+		dataGeneratorFour.delete(entityManager, classes);
 	}
 
 	@After
 	public void after() throws Exception {
 		dataGeneratorFour.after();
+		entityManager.close();
 	}
 
 	@Test
@@ -79,20 +95,20 @@ public class DataGeneratorFourTest extends BaseTest {
 
 	@Test
 	public void persistDelete() throws Exception {
-		dataGeneratorFour.persist(ENTITY_MANAGER);
+		dataGeneratorFour.persist(entityManager);
 		// Verify that there are two entities in the database
-		assertEquals(1, ENTITY_MANAGER.createQuery(selectFromPatients).getResultList().size());
-		assertEquals(1, ENTITY_MANAGER.createQuery(selectFromAddresses).getResultList().size());
-		dataGeneratorFour.delete(ENTITY_MANAGER, Patient.class, Address.class);
-		assertEquals(0, ENTITY_MANAGER.createQuery(selectFromPatients).getResultList().size());
-		assertEquals(0, ENTITY_MANAGER.createQuery(selectFromAddresses).getResultList().size());
+		assertEquals(1, entityManager.createQuery(selectFromPatients).getResultList().size());
+		assertEquals(1, entityManager.createQuery(selectFromAddresses).getResultList().size());
+		dataGeneratorFour.delete(entityManager, Patient.class, Address.class);
+		assertEquals(0, entityManager.createQuery(selectFromPatients).getResultList().size());
+		assertEquals(0, entityManager.createQuery(selectFromAddresses).getResultList().size());
 	}
 
 	@Test
 	public void references() throws Exception {
-		dataGeneratorFour.persist(ENTITY_MANAGER);
-		dataGeneratorFour.references(ENTITY_MANAGER);
-		List<Patient> patients = ENTITY_MANAGER.createQuery(selectFromPatients, Patient.class).getResultList();
+		dataGeneratorFour.persist(entityManager);
+		dataGeneratorFour.references(entityManager);
+		List<Patient> patients = entityManager.createQuery(selectFromPatients, Patient.class).getResultList();
 		for (Patient patient : patients) {
 			assertNotNull(patient.getAddress());
 		}

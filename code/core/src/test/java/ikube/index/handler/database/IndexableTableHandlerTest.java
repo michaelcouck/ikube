@@ -45,13 +45,13 @@ public class IndexableTableHandlerTest extends BaseTest {
 	public void before() throws Exception {
 		indexableTableHandler = ApplicationContextManager.getBean(IndexableTableHandler.class);
 
-		faqIndexableTable = ApplicationContextManager.getBean("tableOne");
-		attachmentIndexableTable = ApplicationContextManager.getBean("tableTwo");
+		faqIndexableTable = ApplicationContextManager.getBean("faqTableH2");
+		attachmentIndexableTable = ApplicationContextManager.getBean("attachmentTableH2");
 
 		faqIndexableColumns = faqIndexableTable.getChildren();
 		faqIdIndexableColumn = indexableTableHandler.getIdColumn(faqIndexableColumns);
 
-		connection = ApplicationContextManager.getBean(DataSource.class).getConnection();
+		connection = ((DataSource) ApplicationContextManager.getBean("nonXaDataSourceH2")).getConnection();
 	}
 
 	@After
@@ -72,13 +72,14 @@ public class IndexableTableHandlerTest extends BaseTest {
 
 	@Test
 	public void buildSql() throws Exception {
+		indexContext.setBatchSize(10);
 		String expectedSql = "select faq.faqId, faq.creationtimestamp, faq.modifiedtimestamp, "
-				+ "faq.creator, faq.modifier, faq.question, faq.answer, faq.published "
-				+ "from faq where faq.faqid > 0 and faq.faqId >= 0 and faq.faqId < 10";
+				+ "faq.creator, faq.modifier, faq.question, faq.answer, faq.published from faq where faq.faqid < "
+				+ "100000 and published = 1 and faq.faqId >= 0 and faq.faqId < 10";
 		// IndexContext, IndexableTable, long
 		long nextIdNumber = 0;
 		String sql = indexableTableHandler.buildSql(faqIndexableTable, indexContext.getBatchSize(), nextIdNumber);
-		logger.debug("Sql : " + sql);
+		logger.info("Sql : " + sql);
 		assertEquals(expectedSql, sql);
 	}
 

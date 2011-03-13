@@ -21,8 +21,8 @@
             http://www.springframework.org/schema/context
             http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
-	<context:annotation-config />
-	<aop:aspectj-autoproxy proxy-target-class="true" />
+	<context:property-placeholder
+		location="classpath*:**/spring.properties" />
 	
 	<bean
 		id="ikube.database.mem.DataBaseMem"
@@ -106,6 +106,20 @@
 	</bean>
 	
 	<bean
+		id="ikube.monitoring.SearcherWebServiceExecuter"
+		class="ikube.monitoring.SearcherWebServiceExecuter"
+		property:indexName="${searcher.index.name}"
+		property:protocol="${service.protocol}"
+		property:port="${service.port}"
+		property:path="${web.service.path}"
+		property:fieldName="${searcher.field.name}"
+		property:fragment="${searcher.fragment}"
+		property:resultsSizeMinimum="${searcher.minimum.results.size}"
+		property:searchString="${searcher.search.string}"
+		property:start="${searcher.start.index}"
+		property:end="${searcher.end.index}" />
+	
+	<bean
 		class="ikube.listener.Scheduler"
 		init-method="initialize"
 		property:schedules-ref="scheduled.tasks" />
@@ -139,18 +153,4 @@
 		property:sender="ikube.ikube@gmail.com"
 		property:user="ikube.ikube" />
 	
-	<bean
-		id="ikube.monitoring.SearcherWebServiceExecuter"
-		class="ikube.monitoring.SearcherWebServiceExecuter"
-		property:indexName="${searcher.index.name}"
-		property:protocol="${service.protocol}"
-		property:port="${service.port}"
-		property:path="${web.service.path}"
-		property:fieldName="${searcher.field.name}"
-		property:fragment="${searcher.fragment}"
-		property:resultsSizeMinimum="${searcher.minimum.results.size}"
-		property:searchString="${searcher.search.string}"
-		property:start="${searcher.start.index}"
-		property:end="${searcher.end.index}" />
-
 </beans>
