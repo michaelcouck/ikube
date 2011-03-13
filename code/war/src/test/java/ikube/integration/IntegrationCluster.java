@@ -1,6 +1,5 @@
 package ikube.integration;
 
-import ikube.ATest;
 import ikube.toolkit.UriUtilities;
 import ikube.web.servlet.SearchServlet;
 
@@ -27,7 +26,7 @@ import org.junit.Test;
  * @since 13.03.2011
  * @version 01.00
  */
-public class IntegrationCluster extends ATest {
+public class IntegrationCluster {
 
 	private static final Logger LOGGER = Logger.getLogger(IntegrationCluster.class);
 
@@ -47,7 +46,7 @@ public class IntegrationCluster extends ATest {
 		Thread.sleep(1000 * 60);
 		for (Process process : processes) {
 			try {
-				logger.info("Stopping server : " + process);
+				LOGGER.info("Stopping server : " + process);
 				process.destroy();
 			} catch (Exception e) {
 				LOGGER.error("Exception stopping process : " + process, e);
@@ -77,7 +76,7 @@ public class IntegrationCluster extends ATest {
 			tomcat.start();
 			// tomcat.getServer().await();
 		} catch (Exception e) {
-			logger.error("Exception starting Tomcat embedded : ", e);
+			LOGGER.error("Exception starting Tomcat embedded : ", e);
 		}
 	}
 

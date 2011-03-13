@@ -75,6 +75,12 @@
 			<plugin>
 				<artifactId>maven-failsafe-plugin</artifactId>
 				<version>2.6</version>
+				<configuration>
+					<includes>
+						<include>**/ClusterIntegration.java</include>
+						<include>**/IntegrationCluster.java</include>
+					</includes>
+				</configuration>
 				<executions>
 					<execution>
 						<goals>
@@ -87,13 +93,8 @@
 		</plugins>
 	</build>
 	<dependencies>
-		<!--<dependency>
-			<groupId>org.apache.tomcat</groupId>
-			<artifactId>jsp-api</artifactId>
-			<version>6.0.29</version>
-			<type>jar</type>
-			<scope>provided</scope>
-		</dependency>-->
+		<!--<dependency> <groupId>org.apache.tomcat</groupId> <artifactId>jsp-api</artifactId> <version>6.0.29</version> <type>jar</type> <scope>provided</scope> 
+			</dependency> -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-beans</artifactId>
@@ -514,21 +515,21 @@
 			<artifactId>tomcat-catalina</artifactId>
 			<version>7.0.11</version>
 			<type>jar</type>
-			<scope>test</scope>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.tomcat.embed</groupId>
 			<artifactId>tomcat-embed-core</artifactId>
 			<version>7.0.11</version>
 			<type>jar</type>
-			<scope>test</scope>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.tomcat</groupId>
 			<artifactId>tomcat-jasper</artifactId>
 			<version>7.0.11</version>
 			<type>jar</type>
-			<scope>test</scope>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jdt.core.compiler</groupId>
