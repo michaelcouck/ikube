@@ -1,4 +1,4 @@
-package ikube;
+package ikube.integration;
 
 import ikube.model.IndexContext;
 import ikube.toolkit.ApplicationContextManager;

@@ -13,7 +13,7 @@
             http://www.springframework.org/schema/util/spring-util.xsd">
 
 	<context:property-placeholder
-		location="classpath:/META-INF/configuration/spring.properties" />
+		location="classpath*:**/spring.properties" />
 	
 	<bean
 		id="minimal"

@@ -1,6 +1,7 @@
-package ikube.cluster;
+package ikube.integration;
 
 import ikube.IConstants;
+import ikube.cluster.ServerRunner;
 import ikube.logging.Logging;
 import ikube.model.IndexContext;
 import ikube.toolkit.ApplicationContextManager;

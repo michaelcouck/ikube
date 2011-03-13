@@ -9,6 +9,7 @@ import ikube.toolkit.SerializationUtilities;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -70,6 +71,24 @@ public class SearchServlet extends HttpServlet {
 				logger.error("Exception writing the exceptino message to the client : " + request.getParameterMap(), ex);
 			}
 		}
+		out.print("There was no index found, or the index was not built or an exception was thrown. ");
+		out.print("Are the parameters correct?");
+		out.print("<br>");
+		out.print(getParameters(request));
+	}
+
+	private String getParameters(HttpServletRequest request) {
+		StringBuilder builder = new StringBuilder();
+		Map<String, String[]> parameters = request.getParameterMap();
+		for (String name : parameters.keySet()) {
+			builder.append("[");
+			builder.append(name);
+			builder.append(":");
+			builder.append(Arrays.asList(parameters.get(name)));
+			builder.append("]");
+			builder.append("<br>");
+		}
+		return builder.toString();
 	}
 
 	private Search getSearch(IndexContext indexContext, String indexName, String searchStrings, String searchFields, String sortFields,
