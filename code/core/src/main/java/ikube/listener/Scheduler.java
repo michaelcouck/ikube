@@ -17,7 +17,7 @@ import org.apache.log4j.Logger;
  */
 public class Scheduler {
 
-	private Logger logger;
+	private static Logger LOGGER;
 	/** The scheduler. */
 	private static transient ScheduledExecutorService SCHEDULER;
 	/** The list of schedules. */
@@ -26,8 +26,8 @@ public class Scheduler {
 	/**
 	 * Iterates over the schedules scheduling them for execution.
 	 */
-	protected void initialize() {
-		this.logger = Logger.getLogger(this.getClass());
+	public static void initialize() {
+		LOGGER = Logger.getLogger(Scheduler.class);
 		SCHEDULER = Executors.newScheduledThreadPool(10);
 		for (final Schedule schedule : SCHEDULES) {
 			try {
@@ -41,13 +41,9 @@ public class Scheduler {
 					}
 				}, schedule.getDelay(), schedule.getPeriod(), TimeUnit.MILLISECONDS);
 			} catch (Exception e) {
-				logger.error("Exception scheduling the events : ", e);
+				LOGGER.error("Exception scheduling the events : ", e);
 			}
 		}
-	}
-
-	public void setSCHEDULES(final List<Schedule> schedules) {
-		Scheduler.SCHEDULES.addAll(schedules);
 	}
 
 	public static void addSchedule(Schedule schedule) {

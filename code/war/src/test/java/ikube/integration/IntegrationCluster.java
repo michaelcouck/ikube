@@ -37,7 +37,12 @@ public class IntegrationCluster {
 	private final String baseDir = "/code/war/target";
 
 	@Test
-	public void integrate() throws Exception {
+	public void main() throws Exception {
+		String osName = System.getProperty("os.name");
+		LOGGER.info("Operating system : " + osName);
+		if (!osName.toLowerCase().contains("server")) {
+			return;
+		}
 		List<Process> processes = new ArrayList<Process>();
 		for (Integer port : ports) {
 			// startClusterServer(port, processes);
@@ -80,6 +85,7 @@ public class IntegrationCluster {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	private List<Process> startClusterServer(int port, List<Process> processes) throws Exception {
 		Map<String, String> environment = System.getenv();
 		String classpath = System.getProperty("java.class.path");

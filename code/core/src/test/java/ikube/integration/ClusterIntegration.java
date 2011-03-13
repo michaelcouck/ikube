@@ -2,9 +2,12 @@ package ikube.integration;
 
 import ikube.IConstants;
 import ikube.logging.Logging;
+import ikube.model.faq.Faq;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.UriUtilities;
+import ikube.toolkit.datageneration.DataGeneratorFour;
+import ikube.toolkit.datageneration.IDataGenerator;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,6 +17,9 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import javax.persistence.EntityManager;
+import javax.persistence.Persistence;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
@@ -35,11 +41,16 @@ public class ClusterIntegration {
 
 	@Test
 	public void main() throws IOException, InterruptedException {
+		String osName = System.getProperty("os.name");
+		LOGGER.info("Operating system : " + osName);
+		if (!osName.toLowerCase().contains("server")) {
+			return;
+		}
 		String clusterDirectoryPath = "./cluster";
 		String classpath = System.getProperty("java.class.path");
 		final List<Process> processes = new ArrayList<Process>();
 		Map<String, String> environment = System.getenv();
-		String[] command = { "javaw", "-cp", classpath, ClusterIntegration.class.getCanonicalName(), IConstants.SPRING_CONFIGURATION_FILE };
+		String[] command = { "javaw", "-cp", classpath, ClusterIntegration.class.getCanonicalName() };
 		int servers = 3;
 		for (int i = 0; i < servers; i++) {
 			ProcessBuilder processBuilder = new ProcessBuilder(command);
@@ -51,7 +62,7 @@ public class ClusterIntegration {
 			final Process process = processBuilder.start();
 			processes.add(process);
 			addLogStreamReader(process);
-			Thread.sleep(5000);
+			Thread.sleep(10000);
 		}
 		LOGGER.info("Going to sleep : " + Thread.currentThread().hashCode());
 		Thread.sleep(SLEEP);
@@ -89,8 +100,16 @@ public class ClusterIntegration {
 	}
 
 	public static void main(final String[] args) {
-		String configurationFile = args[0];
-		ApplicationContextManager.getApplicationContext(configurationFile);
+		try {
+			EntityManager entityManager = Persistence.createEntityManagerFactory(IConstants.PERSISTENCE_UNIT_NAME).createEntityManager();
+			IDataGenerator dataGenerator = new DataGeneratorFour(entityManager, 1000, Faq.class);
+			dataGenerator.before();
+			dataGenerator.generate();
+			dataGenerator.after();
+		} catch (Exception e) {
+			LOGGER.error("Exception loading the data : ", e);
+		}
+		ApplicationContextManager.getApplicationContext();
 	}
 
 }

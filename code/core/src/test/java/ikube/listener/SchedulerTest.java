@@ -7,8 +7,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import ikube.ATest;
 
-import java.util.Arrays;
-
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -35,13 +33,12 @@ public class SchedulerTest extends ATest {
 
 		ListenerManager.addListener(listener);
 
-		Scheduler scheduler = new Scheduler();
 		Schedule schedule = mock(Schedule.class);
 		when(schedule.getDelay()).thenReturn(100l);
 		when(schedule.getPeriod()).thenReturn(1000000l);
 		when(schedule.getType()).thenReturn(Event.TIMER);
-		scheduler.setSCHEDULES(Arrays.asList(schedule));
-		scheduler.initialize();
+		Scheduler.addSchedule(schedule);
+		Scheduler.initialize();
 		Thread.sleep(1000);
 
 		assertTrue(notified);
