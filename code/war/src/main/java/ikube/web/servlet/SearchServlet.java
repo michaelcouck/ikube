@@ -12,6 +12,7 @@ import java.io.PrintWriter;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.Persistence;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -32,6 +33,8 @@ public class SearchServlet extends HttpServlet {
 	@Override
 	public void init() throws ServletException {
 		ApplicationContextManager.getApplicationContext();
+		// We need to create this as the in memory database or there wil lbe exceptions
+		Persistence.createEntityManagerFactory(IConstants.PERSISTENCE_UNIT_NAME);
 	}
 
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
