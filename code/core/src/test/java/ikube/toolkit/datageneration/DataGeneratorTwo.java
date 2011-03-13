@@ -70,8 +70,6 @@ public class DataGeneratorTwo extends ADataGenerator {
 		// Build the insert sql
 		StringBuilder builder = new StringBuilder();
 		builder.append("insert into ");
-		builder.append(indexableTable.getSchema());
-		builder.append(".");
 		builder.append(indexableTable.getName());
 		builder.append(" (");
 		boolean first = Boolean.TRUE;

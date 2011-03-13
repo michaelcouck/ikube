@@ -40,7 +40,7 @@ public class SchedulerTest extends ATest {
 		when(schedule.getDelay()).thenReturn(100l);
 		when(schedule.getPeriod()).thenReturn(1000000l);
 		when(schedule.getType()).thenReturn(Event.TIMER);
-		scheduler.setSchedules(Arrays.asList(schedule));
+		scheduler.setSCHEDULES(Arrays.asList(schedule));
 		scheduler.initialize();
 		Thread.sleep(1000);
 

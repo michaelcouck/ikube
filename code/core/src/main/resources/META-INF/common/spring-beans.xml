@@ -23,6 +23,8 @@
 
 	<context:property-placeholder
 		location="classpath*:**/spring.properties" />
+		
+	<import resource="classpath:/META-INF/common/integration/spring-integration.xml" />
 	
 	<bean
 		id="ikube.database.mem.DataBaseMem"
@@ -106,40 +108,20 @@
 	</bean>
 	
 	<bean
-		id="ikube.monitoring.SearcherWebServiceExecuter"
-		class="ikube.monitoring.SearcherWebServiceExecuter"
-		property:indexName="${searcher.index.name}"
-		property:protocol="${service.protocol}"
-		property:port="${service.port}"
-		property:path="${web.service.path}"
-		property:fieldName="${searcher.field.name}"
-		property:fragment="${searcher.fragment}"
-		property:resultsSizeMinimum="${searcher.minimum.results.size}"
-		property:searchString="${searcher.search.string}"
-		property:start="${searcher.start.index}"
-		property:end="${searcher.end.index}" />
-	
-	<bean
-		class="ikube.listener.Scheduler"
-		init-method="initialize"
-		property:schedules-ref="scheduled.tasks" />
-	<util:list id="scheduled.tasks">
-		<ref local="ikube.listener.Schedule" />
-		<ref local="ikube.listener.Schedule.SearcherWebServiceExecuter" />
-	</util:list>
-	
-	<bean
 		id="ikube.listener.Schedule"
 		class="ikube.listener.Schedule"
 		property:type="timer"
 		property:delay="${delay}"
 		property:period="${period}" />
-	<bean
-		id="ikube.listener.Schedule.SearcherWebServiceExecuter"
-		class="ikube.listener.Schedule"
-		property:type="service"
-		property:delay="${web.service.delay}"
-		property:period="${web.service.period}" />
+		
+	<bean id="scheduleBinder" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
+		property:staticMethod="ikube.listener.Scheduler.addSchedule">
+		<property name="arguments">
+			<array>
+				<ref local="ikube.listener.Schedule" />
+			</array>
+		</property>
+	</bean>
 	
 	<!-- Utility classes -->
 	<bean

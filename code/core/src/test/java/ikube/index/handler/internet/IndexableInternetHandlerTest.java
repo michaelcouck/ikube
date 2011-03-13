@@ -48,7 +48,7 @@ public class IndexableInternetHandlerTest extends BaseTest {
 		for (Url url : PageHandler.OUT_SET) {
 			logger.info("Url : " + url);
 		}
-		assertTrue(totalUrlsCrawled > 10);
+		assertTrue("Expected more than 10 and got : " + totalUrlsCrawled, totalUrlsCrawled > 10);
 	}
 
 }

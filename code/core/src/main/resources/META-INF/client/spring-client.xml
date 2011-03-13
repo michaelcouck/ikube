@@ -66,7 +66,6 @@
 		id="faqTableH2"
 		class="ikube.model.IndexableTable"
 		property:name="faq"
-		property:schema="${jdbc.schema}"
 		property:predicate="${faq.predicate}"
 		property:primary="true"
 		property:dataSource-ref="nonXaDataSourceH2"
@@ -164,7 +163,6 @@
 		id="attachmentTableH2"
 		class="ikube.model.IndexableTable"
 		property:name="attachment"
-		property:schema="${jdbc.schema}"
 		property:primary="false"
 		property:dataSource-ref="nonXaDataSourceH2"
 		property:children-ref="attachmentColumnsTwoH2" />
@@ -231,7 +229,6 @@
 		id="patientTableOracle"
 		class="ikube.model.IndexableTable"
 		property:name="patient"
-		property:schema="${jdbc.schema}"
 		property:predicate="${patient.predicate}"
 		property:primary="true"
 		property:dataSource-ref="nonXaDataSourceOracle"

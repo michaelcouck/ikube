@@ -1,6 +1,6 @@
 package ikube.listener;
 
-
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -19,19 +19,19 @@ public class Scheduler {
 
 	private Logger logger;
 	/** The scheduler. */
-	private transient ScheduledExecutorService scheduler;
+	private static transient ScheduledExecutorService SCHEDULER;
 	/** The list of schedules. */
-	private transient List<Schedule> schedules;
+	private static transient List<Schedule> SCHEDULES = new ArrayList<Schedule>();
 
 	/**
 	 * Iterates over the schedules scheduling them for execution.
 	 */
 	protected void initialize() {
 		this.logger = Logger.getLogger(this.getClass());
-		scheduler = Executors.newScheduledThreadPool(10);
-		for (final Schedule schedule : schedules) {
+		SCHEDULER = Executors.newScheduledThreadPool(10);
+		for (final Schedule schedule : SCHEDULES) {
 			try {
-				scheduler.scheduleAtFixedRate(new Runnable() {
+				SCHEDULER.scheduleAtFixedRate(new Runnable() {
 					public void run() {
 						Event event = new Event();
 						event.setType(schedule.getType());
@@ -46,8 +46,12 @@ public class Scheduler {
 		}
 	}
 
-	public void setSchedules(final List<Schedule> schedules) {
-		this.schedules = schedules;
+	public void setSCHEDULES(final List<Schedule> schedules) {
+		Scheduler.SCHEDULES.addAll(schedules);
+	}
+
+	public static void addSchedule(Schedule schedule) {
+		Scheduler.SCHEDULES.add(schedule);
 	}
 
 }

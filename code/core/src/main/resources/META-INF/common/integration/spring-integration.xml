@@ -31,5 +31,21 @@
 		property:searchString="${searcher.search.string}"
 		property:start="${searcher.start.index}"
 		property:end="${searcher.end.index}" />
+		
+	<bean
+		id="ikube.listener.Schedule.SearcherWebServiceExecuter"
+		class="ikube.listener.Schedule"
+		property:type="service"
+		property:delay="${web.service.delay}"
+		property:period="${web.service.period}" />
+		
+	<bean id="searcherWebServiceExecuterBinder" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
+		property:staticMethod="ikube.listener.Scheduler.addSchedule">
+		<property name="arguments">
+			<array>
+				<ref local="ikube.listener.Schedule.SearcherWebServiceExecuter" />
+			</array>
+		</property>
+	</bean>
 
 </beans>

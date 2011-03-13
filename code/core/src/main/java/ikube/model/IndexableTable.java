@@ -16,17 +16,8 @@ public class IndexableTable extends Indexable<IndexableTable> {
 	@Transient
 	private transient DataSource dataSource;
 
-	private String schema;
 	private String predicate;
 	private boolean primary;
-
-	public String getSchema() {
-		return schema;
-	}
-
-	public void setSchema(final String schema) {
-		this.schema = schema;
-	}
 
 	public boolean isPrimary() {
 		return primary;
@@ -57,8 +48,6 @@ public class IndexableTable extends Indexable<IndexableTable> {
 		StringBuilder builder = new StringBuilder();
 		builder.append("[");
 		builder.append(getName());
-		builder.append(", ");
-		builder.append(getSchema());
 		builder.append(", ");
 		builder.append(getPredicate());
 		builder.append("]");
