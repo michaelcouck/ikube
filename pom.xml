@@ -77,8 +77,7 @@
 				<version>2.6</version>
 				<configuration>
 					<includes>
-						<include>**/ClusterIntegration.java</include>
-						<include>**/IntegrationCluster.java</include>
+						<include>**/*Integration*.java</include>
 					</includes>
 				</configuration>
 				<executions>

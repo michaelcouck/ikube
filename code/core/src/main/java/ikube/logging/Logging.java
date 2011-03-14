@@ -26,7 +26,6 @@ public final class Logging {
 	 */
 	public static synchronized void configure() {
 		if (INITIALISED) {
-			LOGGER.info("Logging already initialised : ");
 			return;
 		}
 		INITIALISED = true;

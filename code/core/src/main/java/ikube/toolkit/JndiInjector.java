@@ -59,7 +59,7 @@ public class JndiInjector {
 		if (CONTEXT == null) {
 			CONTEXT = new InitialContext();
 		}
-		LOGGER.info("Binding object : " + jndiName + ":" + object);
+		LOGGER.debug("Binding object : " + jndiName + ":" + object.getClass());
 		CONTEXT.rebind(jndiName, object);
 	}
 

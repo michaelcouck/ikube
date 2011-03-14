@@ -76,12 +76,10 @@
 				<version>2.7.1</version>
 				<configuration>
 					<forkMode>once</forkMode>
+					<!--<skipTests>true</skipTests>-->
 					<argLine>-javaagent:../../serenity/serenity.jar -Xms512m -Xmx1024m ${included.adapters} ${included.packages} ${excluded.packages} ${write.classes} ${clean.classes}</argLine>
 					<excludes>
 						<exclude>**/TextParserTest.java</exclude>
-						<exclude>**/DataBaseOdbTest.java</exclude>
-						<exclude>**/DataBaseOdbMapStoreTest.java</exclude>
-						<exclude>**/SynchronizeTest.java</exclude>
 					</excludes>
 				</configuration>
 			</plugin>

@@ -413,7 +413,7 @@
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
-	<!--<bean
+	<bean
 		id="creationtimestamp"
 		class="ikube.model.IndexableColumn"
 		property:name="creationtimestamp"
@@ -421,7 +421,7 @@
 		property:columnClass="java.sql.Timestamp" 
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
-		property:vectored="${vectored}" />-->
+		property:vectored="${vectored}" />
 
 	<bean
 		id="mail"

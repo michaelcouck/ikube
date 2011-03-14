@@ -34,7 +34,7 @@ public class SearchServlet extends HttpServlet {
 	@Override
 	public void init() throws ServletException {
 		ApplicationContextManager.getApplicationContext();
-		// We need to create this as the in memory database or there wil lbe exceptions
+		// We need to create this as the in memory database or there will be exceptions
 		Persistence.createEntityManagerFactory(IConstants.PERSISTENCE_UNIT_NAME);
 	}
 
