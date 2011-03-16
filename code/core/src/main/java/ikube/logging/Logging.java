@@ -4,7 +4,6 @@ import ikube.IConstants;
 
 import java.net.URL;
 
-import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
 /**
@@ -16,10 +15,10 @@ import org.apache.log4j.PropertyConfigurator;
  */
 public final class Logging {
 
-	private static Logger LOGGER;
 	private static boolean INITIALISED = false;
-	
-	private Logging() {}
+
+	private Logging() {
+	}
 
 	/**
 	 * Configures the logging.
@@ -40,7 +39,6 @@ public final class Logging {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		LOGGER = Logger.getLogger(Logging.class);
 	}
 
 	/**

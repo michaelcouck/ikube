@@ -54,7 +54,6 @@ public class DataGeneratorFour extends ADataGenerator {
 		// Link all the object in the database with all the other objects
 		// in the database where appropriate
 		for (Class<?> resultClass : classes) {
-			logger.debug("Class : " + resultClass);
 			// Address
 			String query = "select e from " + resultClass.getSimpleName() + " e";
 			List<?> resultObjects = entityManager.createQuery(query, resultClass).getResultList();
@@ -63,6 +62,10 @@ public class DataGeneratorFour extends ADataGenerator {
 			}
 			entityManager.getTransaction().begin();
 			for (Class<?> targetClass : classes) {
+				logger.info("Class : " + resultClass + ", " + targetClass);
+				// TODO Get the parameterized type of the collection if it is one
+				// and set it in the target object as a collection. Else get all the fields
+				// in the target and set the first object found from the selection
 				if (targetClass.equals(resultClass)) {
 					continue;
 				}

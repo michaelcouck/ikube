@@ -122,8 +122,8 @@ public class DataGeneratorTwo extends ADataGenerator {
 					// If this column is a foreign key reference from the parent table
 					// then get the primary key from the parent and set it
 					if (indexableColumn.getForeignKey() == null) {
-						String columnClass = indexableColumn.getColumnClass();
-						int columnLength = indexableColumn.getColumnLength();
+						String columnClass = null; // indexableColumn.getColumnClass();
+						int columnLength = 0; // indexableColumn.getColumnLength();
 						try {
 							parameter = instanciateObject(Class.forName(columnClass), columnLength);
 						} catch (ClassNotFoundException e) {

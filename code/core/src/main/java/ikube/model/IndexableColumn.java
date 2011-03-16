@@ -19,10 +19,6 @@ public class IndexableColumn extends Indexable<IndexableColumn> {
 	private boolean idColumn;
 	private IndexableColumn foreignKey;
 
-	/** These values are only used for generating data. */
-	private String columnClass;
-	private int columnLength;
-
 	/**
 	 * This is the column where the name of the column is stored. In the case of a file in the database the name of the file can be used to
 	 * get the correct parser for that type of content. This will typically be a sibling in the same table.
@@ -59,22 +55,6 @@ public class IndexableColumn extends Indexable<IndexableColumn> {
 
 	public void setNameColumn(final IndexableColumn indexableColumn) {
 		this.nameColumn = indexableColumn;
-	}
-
-	public String getColumnClass() {
-		return columnClass;
-	}
-
-	public void setColumnClass(final String columnClass) {
-		this.columnClass = columnClass;
-	}
-
-	public int getColumnLength() {
-		return columnLength;
-	}
-
-	public void setColumnLength(final int columnLength) {
-		this.columnLength = columnLength;
 	}
 
 	@Transient

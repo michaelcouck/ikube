@@ -89,7 +89,6 @@
 		class="ikube.model.IndexableColumn"
 		property:name="faqId"
 		property:idColumn="true"
-		property:columnClass="java.lang.Long"
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
@@ -98,7 +97,6 @@
 		class="ikube.model.IndexableColumn"
 		property:name="creationtimestamp"
 		property:fieldName="creationtimestamp"
-		property:columnClass="java.sql.Timestamp" 
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
@@ -107,7 +105,6 @@
 		class="ikube.model.IndexableColumn"
 		property:name="modifiedtimestamp"
 		property:fieldName="modifiedtimestamp"
-		property:columnClass="java.sql.Timestamp" 
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
@@ -116,8 +113,6 @@
 		class="ikube.model.IndexableColumn"
 		property:name="creator"
 		property:fieldName="creator"
-		property:columnClass="java.lang.String"
-		property:columnLength="32" 
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
@@ -126,8 +121,6 @@
 		class="ikube.model.IndexableColumn"
 		property:name="modifier"
 		property:fieldName="modifier"
-		property:columnClass="java.lang.String"
-		property:columnLength="32" 
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
@@ -136,8 +129,6 @@
 		class="ikube.model.IndexableColumn"
 		property:name="question"
 		property:fieldName="question"
-		property:columnClass="java.lang.String"
-		property:columnLength="128" 
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
@@ -146,8 +137,6 @@
 		class="ikube.model.IndexableColumn"
 		property:name="answer"
 		property:fieldName="answer"
-		property:columnClass="java.lang.String"
-		property:columnLength="128" 
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
@@ -156,7 +145,6 @@
 		class="ikube.model.IndexableColumn"
 		property:name="published"
 		property:fieldName="published"
-		property:columnClass="java.lang.Boolean" 
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
@@ -182,7 +170,6 @@
 		property:name="faqId"
 		property:fieldName="attachmentFaqId"
 		property:foreignKey-ref="faqIdH2"
-		property:columnClass="java.lang.Long" 
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
@@ -192,7 +179,6 @@
 		property:name="attachmentId"
 		property:fieldName="attachmentId"
 		property:idColumn="true"
-		property:columnClass="java.lang.Long" 
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
@@ -201,8 +187,6 @@
 		class="ikube.model.IndexableColumn"
 		property:name="name"
 		property:fieldName="name"
-		property:columnClass="java.lang.String"
-		property:columnLength="64" 
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
@@ -212,8 +196,6 @@
 		property:name="attachment"
 		property:fieldName="attachment"
 		property:nameColumn-ref="nameH2"
-		property:columnClass="java.sql.Blob"
-		property:columnLength="128" 
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
@@ -222,7 +204,6 @@
 		class="ikube.model.IndexableColumn"
 		property:name="length"
 		property:fieldName="length"
-		property:columnClass="java.lang.Integer" 
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
@@ -253,7 +234,6 @@
 		class="ikube.model.IndexableColumn"
 		property:name="faqId"
 		property:idColumn="true"
-		property:columnClass="java.lang.Long"
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
@@ -262,7 +242,6 @@
 		class="ikube.model.IndexableColumn"
 		property:name="creationtimestamp"
 		property:fieldName="creationtimestamp"
-		property:columnClass="java.sql.Timestamp" 
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
@@ -271,7 +250,6 @@
 		class="ikube.model.IndexableColumn"
 		property:name="modifiedtimestamp"
 		property:fieldName="modifiedtimestamp"
-		property:columnClass="java.sql.Timestamp" 
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
@@ -280,8 +258,6 @@
 		class="ikube.model.IndexableColumn"
 		property:name="creator"
 		property:fieldName="creator"
-		property:columnClass="java.lang.String"
-		property:columnLength="32" 
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
@@ -290,8 +266,6 @@
 		class="ikube.model.IndexableColumn"
 		property:name="modifier"
 		property:fieldName="modifier"
-		property:columnClass="java.lang.String"
-		property:columnLength="32" 
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
@@ -300,8 +274,6 @@
 		class="ikube.model.IndexableColumn"
 		property:name="question"
 		property:fieldName="question"
-		property:columnClass="java.lang.String"
-		property:columnLength="128" 
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
@@ -310,8 +282,6 @@
 		class="ikube.model.IndexableColumn"
 		property:name="answer"
 		property:fieldName="answer"
-		property:columnClass="java.lang.String"
-		property:columnLength="128" 
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
@@ -320,7 +290,6 @@
 		class="ikube.model.IndexableColumn"
 		property:name="published"
 		property:fieldName="published"
-		property:columnClass="java.lang.Boolean" 
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
@@ -346,7 +315,6 @@
 		property:name="faqId"
 		property:fieldName="attachmentFaqId"
 		property:foreignKey-ref="faqIdDb2"
-		property:columnClass="java.lang.Long" 
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
@@ -356,7 +324,6 @@
 		property:name="attachmentId"
 		property:fieldName="attachmentId"
 		property:idColumn="true"
-		property:columnClass="java.lang.Long" 
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
@@ -365,8 +332,6 @@
 		class="ikube.model.IndexableColumn"
 		property:name="name"
 		property:fieldName="name"
-		property:columnClass="java.lang.String"
-		property:columnLength="64" 
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
@@ -376,8 +341,6 @@
 		property:name="attachment"
 		property:fieldName="attachment"
 		property:nameColumn-ref="nameDb2"
-		property:columnClass="java.sql.Blob"
-		property:columnLength="128" 
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
@@ -386,7 +349,6 @@
 		class="ikube.model.IndexableColumn"
 		property:name="length"
 		property:fieldName="length"
-		property:columnClass="java.lang.Integer" 
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
@@ -402,6 +364,10 @@
 		property:children-ref="patientColumnsOracle" />
 	<util:list id="patientColumnsOracle">
 		<ref local="patientIdOracle" />
+		<ref local="firstNameOracle" />
+		<ref local="lastNameOracle" />
+		<ref local="birthDateOracle" />
+		<ref local="deathDateOracle" />
 	</util:list>
 
 	<bean
@@ -409,16 +375,99 @@
 		class="ikube.model.IndexableColumn"
 		property:name="id"
 		property:idColumn="true"
-		property:columnClass="java.lang.Long"
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
-		id="creationtimestamp"
+		id="firstNameOracle"
 		class="ikube.model.IndexableColumn"
-		property:name="creationtimestamp"
-		property:fieldName="creationtimestamp"
-		property:columnClass="java.sql.Timestamp" 
+		property:name="firstName"
+		property:fieldName="firstName"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="lastNameOracle"
+		class="ikube.model.IndexableColumn"
+		property:name="lastName"
+		property:fieldName="lastName"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="birthDateOracle"
+		class="ikube.model.IndexableColumn"
+		property:name="birthDate"
+		property:fieldName="birthDate"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="deathDateOracle"
+		class="ikube.model.IndexableColumn"
+		property:name="deathDate"
+		property:fieldName="deathDate"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	
+	<bean
+		id="addressOracle"
+		class="ikube.model.IndexableTable"
+		property:name="address"
+		property:primary="false"
+		property:dataSource-ref="nonXaDataSourceOracle"
+		property:children-ref="addressColumnsOracle" />
+	<util:list id="addressColumnsOracle">
+		<ref local="addressIdOracle" />
+	</util:list>
+
+	<bean
+		id="addressIdOracle"
+		class="ikube.model.IndexableColumn"
+		property:name="id"
+		property:idColumn="true"
+		property:foreignKey-ref="patientIdOracle"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="numberOracle"
+		class="ikube.model.IndexableColumn"
+		property:name="number"
+		property:fieldName="number"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="streetOracle"
+		class="ikube.model.IndexableColumn"
+		property:name="street"
+		property:fieldName="street"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="provinceOracle"
+		class="ikube.model.IndexableColumn"
+		property:name="province"
+		property:fieldName="province"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="countryOracle"
+		class="ikube.model.IndexableColumn"
+		property:name="country"
+		property:fieldName="country"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="postCodeOracle"
+		class="ikube.model.IndexableColumn"
+		property:name="postCode"
+		property:fieldName="postCode"
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}" />

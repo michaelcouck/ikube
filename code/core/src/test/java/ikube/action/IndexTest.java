@@ -15,6 +15,7 @@ import org.junit.Test;
  */
 public class IndexTest extends BaseTest {
 
+	@SuppressWarnings("unused")
 	private transient final Index index = new Index();
 
 	@Before

@@ -7,6 +7,17 @@ import ikube.IConstants;
 import ikube.logging.Logging;
 import ikube.model.faq.Attachment;
 import ikube.model.faq.Faq;
+import ikube.model.medical.Address;
+import ikube.model.medical.Administration;
+import ikube.model.medical.Condition;
+import ikube.model.medical.Doctor;
+import ikube.model.medical.Hospital;
+import ikube.model.medical.Inpatient;
+import ikube.model.medical.Medication;
+import ikube.model.medical.Patient;
+import ikube.model.medical.Person;
+import ikube.model.medical.Record;
+import ikube.model.medical.Treatment;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.datageneration.DataGeneratorFour;
 import ikube.toolkit.datageneration.IDataGenerator;
@@ -43,7 +54,9 @@ public class Integration {
 
 	private void generateData() throws Exception {
 		EntityManager entityManager = Persistence.createEntityManagerFactory(IConstants.PERSISTENCE_UNIT_NAME).createEntityManager();
-		IDataGenerator dataGenerator = new DataGeneratorFour(entityManager, 100, Faq.class, Attachment.class);
+		Class<?>[] classes = { Faq.class, Attachment.class, Hospital.class, Administration.class, Person.class, Doctor.class,
+				Patient.class, Inpatient.class, Condition.class, Medication.class, Treatment.class, Record.class, Address.class };
+		IDataGenerator dataGenerator = new DataGeneratorFour(entityManager, 10, classes);
 		dataGenerator.before();
 		dataGenerator.generate();
 		dataGenerator.after();
