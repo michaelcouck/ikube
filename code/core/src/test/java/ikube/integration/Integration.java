@@ -49,7 +49,7 @@ public class Integration {
 		}
 		ApplicationContextManager.getApplicationContext();
 		generateData();
-		Thread.sleep(1000 * 60 * 60 * 3);
+		Thread.sleep(1000 * 60 * 60 * 15);
 	}
 
 	private void generateData() throws Exception {
