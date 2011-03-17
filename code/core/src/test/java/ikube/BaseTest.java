@@ -14,6 +14,8 @@ import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 
+import org.junit.AfterClass;
+
 /**
  * @author Michael Couck
  * @since 21.11.10
@@ -48,6 +50,16 @@ public abstract class BaseTest extends ATest {
 			}, "Data generator two insertion : ", 1);
 		} catch (Exception e) {
 			e.printStackTrace();
+		}
+	}
+
+	@AfterClass
+	public static void afterClass() {
+		// Try to delete all the old index files
+		Map<String, IndexContext> contexts = ApplicationContextManager.getBeans(IndexContext.class);
+		for (IndexContext indexContext : contexts.values()) {
+			File indexDirectory = FileUtilities.getFile(indexContext.getIndexDirectoryPath(), Boolean.TRUE);
+			FileUtilities.deleteFile(indexDirectory, 1);
 		}
 	}
 

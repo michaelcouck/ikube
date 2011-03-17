@@ -14,7 +14,7 @@
 		<groupId>ikube</groupId>
 		<artifactId>ikube</artifactId>
 		<version>1.0.1-SNAPSHOT</version>
-		<relativePath>../../../ikube</relativePath>
+		<relativePath>../../pom.xml</relativePath>
 	</parent>
 
 	<properties>
