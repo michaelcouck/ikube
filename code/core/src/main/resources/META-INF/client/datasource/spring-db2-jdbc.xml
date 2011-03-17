@@ -25,7 +25,7 @@
 		property:user="db2admin"
 		property:password="db2admin"
 		property:driverClass="com.ibm.db2.jcc.DB2Driver"
-		property:jdbcUrl="jdbc:db2://84.198.242.26:50000/ikube"
+		property:jdbcUrl="jdbc:db2://ikube:50000/ikube"
 		property:initialPoolSize="${jdbc.minPoolSize}"
 		property:maxPoolSize="${jdbc.maxPoolSize}"
 		property:maxStatements="${jdbc.maxStatements}"
