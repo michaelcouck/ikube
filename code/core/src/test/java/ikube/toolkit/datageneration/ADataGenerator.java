@@ -73,7 +73,7 @@ public abstract class ADataGenerator implements IDataGenerator {
 					continue outer;
 				}
 			}
-			logger.info("Loading file : " + file.getAbsolutePath());
+			// logger.info("Loading file : " + file.getAbsolutePath());
 			byte[] contents = FileUtilities.getContents(file).toByteArray();
 			fileContents.put(file.getName(), contents);
 			continue;

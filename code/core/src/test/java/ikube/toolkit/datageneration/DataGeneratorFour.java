@@ -62,7 +62,7 @@ public class DataGeneratorFour extends ADataGenerator {
 			}
 			entityManager.getTransaction().begin();
 			for (Class<?> targetClass : classes) {
-				logger.info("Class : " + resultClass + ", " + targetClass);
+				// logger.info("Class : " + resultClass + ", " + targetClass);
 				// TODO Get the parameterized type of the collection if it is one
 				// and set it in the target object as a collection. Else get all the fields
 				// in the target and set the first object found from the selection

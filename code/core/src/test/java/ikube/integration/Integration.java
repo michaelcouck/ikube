@@ -45,7 +45,7 @@ public class Integration {
 		String osName = System.getProperty("os.name");
 		logger.info("Operating system : " + osName);
 		if (!osName.toLowerCase().contains("server")) {
-			// return;
+			return;
 		}
 		ApplicationContextManager.getApplicationContext();
 		generateData();
