@@ -11,6 +11,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
@@ -124,6 +125,7 @@ public final class ApplicationContextManager {
 					configLocations.add(configurationFile.getAbsolutePath());
 				}
 				APPLICATION_CONTEXT = new FileSystemXmlApplicationContext(configLocations.toArray(new String[configLocations.size()]));
+				((ConfigurableApplicationContext)APPLICATION_CONTEXT).registerShutdownHook();
 				LOGGER.info("Loaded the application context with configurations : " + Arrays.asList(configFiles));
 			}
 			return APPLICATION_CONTEXT;
@@ -144,6 +146,7 @@ public final class ApplicationContextManager {
 			if (APPLICATION_CONTEXT == null) {
 				LOGGER.info("Loading the application context with configurations : " + Arrays.asList(configLocations));
 				APPLICATION_CONTEXT = new ClassPathXmlApplicationContext(configLocations);
+				((ConfigurableApplicationContext)APPLICATION_CONTEXT).registerShutdownHook();
 				LOGGER.info("Loaded the application context with configurations : " + Arrays.asList(configLocations));
 			}
 			return APPLICATION_CONTEXT;
