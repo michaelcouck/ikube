@@ -49,7 +49,9 @@ public class Integration {
 		}
 		ApplicationContextManager.getApplicationContext();
 		generateData();
-		Thread.sleep(1000 * 60 * 60 * 15);
+		Thread.sleep(1000 * 60 * 60 * 3);
+		// TODO When the test ends then verify the data and the index
+		// across the servers
 	}
 
 	private void generateData() throws Exception {
