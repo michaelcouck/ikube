@@ -30,6 +30,7 @@
 		<ref bean="ikube.action.Open"  />
 		<ref bean="ikube.action.Index"  />
 		<ref bean="ikube.action.Delete" />
+		<ref bean="ikube.action.Clean" />
 	</util:list>
 
 	<bean 
