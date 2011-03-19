@@ -45,7 +45,7 @@ public class AreIndexesCreated implements IRule<IndexContext> {
 						return Boolean.FALSE;
 					}
 				} catch (IOException e) {
-					logger.error("Exceptin checking the index directories : ", e);
+					logger.error("Exception checking the index directories : ", e);
 				} finally {
 					if (directory != null) {
 						try {

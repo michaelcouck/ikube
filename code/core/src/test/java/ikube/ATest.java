@@ -146,7 +146,7 @@ public abstract class ATest {
 			indexWriter.commit();
 			indexWriter.optimize(Boolean.TRUE);
 		} catch (Exception e) {
-			logger.error("Exceptino creating the index : " + indexDirectory, e);
+			logger.error("Exception creating the index : " + indexDirectory, e);
 		} finally {
 			try {
 				directory.close();
