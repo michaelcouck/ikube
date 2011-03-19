@@ -78,9 +78,11 @@ public abstract class Action implements IAction<IndexContext, Boolean> {
 	 * This method returns whether the searcher should be re-opened on a new index. If there is a new index, or if there is an index added
 	 * by another server then the searcher should be opened again.
 	 * 
+	 * 
 	 * @param indexContext
 	 *            the index context for the index
 	 * @return whether the index should be re-opened
+	 * @deprecated this method is replaced by the rules
 	 */
 	protected boolean shouldReopen(final IndexContext indexContext) {
 		// If there is no searcher open then try to open one

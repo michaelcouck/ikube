@@ -26,7 +26,7 @@ public class ActionTest extends ATest {
 			return Boolean.FALSE;
 		}
 	};
-	
+
 	@Before
 	public void before() {
 		when(INDEX_CONTEXT.getIndexDirectoryPath()).thenReturn("./indexes");
@@ -63,9 +63,11 @@ public class ActionTest extends ATest {
 	}
 
 	@Test
+	@SuppressWarnings("deprecation")
 	public void shoudReopen() {
 		File baseIndexDirectory = FileUtilities.getFile(INDEX_CONTEXT.getIndexDirectoryPath(), Boolean.TRUE);
 		FileUtilities.deleteFile(baseIndexDirectory, 1);
+
 		boolean shouldReopen = action.shouldReopen(INDEX_CONTEXT);
 		// Searcher null in the context
 		assertTrue("Should reopen as the searcher is null : ", shouldReopen /* && !baseIndexDirectory.exists() */);
