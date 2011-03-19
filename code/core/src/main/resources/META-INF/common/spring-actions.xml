@@ -91,7 +91,16 @@
 			</util:list>
 		</property>
 	</bean>
-	<!--<bean id="ikube.action.Synchronize" class="ikube.action.Synchronize" />-->
+	<bean 
+		id="ikube.action.Clean" 
+		class="ikube.action.Clean" 
+		property:predicate="!AnyServersWorking">
+		<property name="rules">
+			<util:list>
+				<ref local="ikube.action.rule.AreIndexesCreated" />
+			</util:list>
+		</property>
+	</bean>
 	
 	<bean
 		id="ikube.action.rule.IsInMemory" 
