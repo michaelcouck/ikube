@@ -1,5 +1,7 @@
 package ikube.action.rule;
 
+import ikube.ATest;
+
 import org.junit.Test;
 
 /**
@@ -9,7 +11,11 @@ import org.junit.Test;
  * @since 19.03.11
  * @version 01.00
  */
-public class AreIndexesCreatedTest {
+public class AreIndexesCreatedTest extends ATest {
+
+	public AreIndexesCreatedTest() {
+		super(AreIndexesCreatedTest.class);
+	}
 
 	@Test
 	public void evaluate() {

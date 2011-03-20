@@ -1,8 +1,20 @@
 package ikube;
 
+import static org.mockito.Mockito.when;
+import ikube.action.Clean;
+import ikube.action.IAction;
 import ikube.listener.Event;
+import ikube.mock.ApplicationContextManagerMock;
+import ikube.model.IndexContext;
 import ikube.toolkit.ApplicationContextManager;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import mockit.Mockit;
+
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -10,21 +22,35 @@ import org.junit.Test;
  * @since 12.10.2010
  * @version 01.00
  */
-public class IndexEngineTest extends BaseTest {
+public class IndexEngineTest extends ATest {
+
+	public IndexEngineTest() {
+		super(IndexEngineTest.class);
+	}
+
+	@Before
+	public void before() {
+		when(SERVER.isWorking()).thenReturn(Boolean.FALSE);
+		when(CLUSTER_MANAGER.getServer()).thenReturn(SERVER);
+		Mockit.setUpMocks(ApplicationContextManagerMock.class);
+	}
+
+	@After
+	public void after() {
+		Mockit.tearDownMocks(ApplicationContextManager.class);
+	}
 
 	@Test
 	public void handleNotification() {
-		IndexEngine indexEngine = ApplicationContextManager.getBean(IndexEngine.class);
+		IndexEngine indexEngine = new IndexEngine();
+		List<IAction<IndexContext, Boolean>> actions = new ArrayList<IAction<IndexContext, Boolean>>();
+		actions.add(new Clean<IndexContext, Boolean>());
+		indexEngine.setActions(actions);
+
 		Event event = new Event();
 		event.setTimestamp(System.currentTimeMillis());
 		event.setType(Event.TIMER);
 		indexEngine.handleNotification(event);
-
-		// In the configuration there are three contexts, each one using the
-		// same indexables. There is a top level table(tableOne) that has a three
-		// level structure for indexing, this table is used three times, so in total
-		// there should be 3 * 3 iterations over the table data. We need to verify
-		// that this has in fact happened
 	}
 
 	public static void main(String[] args) {

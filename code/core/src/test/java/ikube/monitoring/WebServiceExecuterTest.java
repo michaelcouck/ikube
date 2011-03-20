@@ -19,6 +19,10 @@ import org.junit.Test;
  */
 public class WebServiceExecuterTest extends BaseTest {
 
+	public WebServiceExecuterTest() {
+		super(WebServiceExecuterTest.class);
+	}
+
 	@Test
 	public void execute() throws Exception {
 		ISearcherWebServiceExecuter searcherWebServiceExecuter = ApplicationContextManager.getBean(SearcherWebServiceExecuter.class);

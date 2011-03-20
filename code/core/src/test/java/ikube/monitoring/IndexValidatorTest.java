@@ -24,6 +24,10 @@ import org.junit.Test;
  */
 public class IndexValidatorTest extends BaseTest {
 
+	public IndexValidatorTest() {
+		super(IndexValidatorTest.class);
+	}
+
 	@Before
 	public void before() {
 		File baseIndexDirectory = new File(indexContext.getIndexDirectoryPath());

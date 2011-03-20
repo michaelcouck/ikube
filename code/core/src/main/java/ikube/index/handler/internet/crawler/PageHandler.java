@@ -262,7 +262,7 @@ public class PageHandler extends Handler<Url> implements Runnable {
 			url.setContentType(contentType);
 			return outputStream.toString();
 		} catch (Exception e) {
-			LOGGER.error("", e);
+			LOGGER.error("Exception accessing url : " + url, e);
 		}
 		return null;
 	}

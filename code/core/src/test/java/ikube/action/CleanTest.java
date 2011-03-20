@@ -4,6 +4,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 import ikube.ATest;
+import ikube.model.IndexContext;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
@@ -19,27 +20,33 @@ import org.junit.Test;
 
 public class CleanTest extends ATest {
 
-	private String testFolder = "./test";
-	private File indexDir;
+	private String indexDirPath;
+
+	public CleanTest() {
+		super(CleanTest.class);
+	}
 
 	@Before
 	public void before() {
-		String indexName = "indexName";
-		String indexDirPath = testFolder + "/indexes";
-		when(INDEX_CONTEXT.getIndexName()).thenReturn(indexName);
-		when(INDEX_CONTEXT.getIndexDirectoryPath()).thenReturn(indexDirPath);
-		indexDir = FileUtilities.getFile(getServerIndexDirectoryPath(INDEX_CONTEXT), Boolean.TRUE);
-		createIndex(indexDir);
+		when(INDEX_CONTEXT.getIndexDirectoryPath()).thenReturn("./" + this.getClass().getSimpleName());
+		FileUtilities.deleteFile(new File(INDEX_CONTEXT.getIndexDirectoryPath()), 1);
+		indexDirPath = getServerIndexDirectoryPath(INDEX_CONTEXT);
+		createIndex(FileUtilities.getFile(indexDirPath, Boolean.TRUE));
 	}
 
 	@After
 	public void after() {
-		FileUtilities.deleteFile(new File(testFolder), 1);
+		FileUtilities.deleteFile(new File(INDEX_CONTEXT.getIndexDirectoryPath()), 1);
 	}
 
 	@Test
 	public void execute() throws Exception {
-		Clean clean = new Clean();
+		File indexDir = FileUtilities.getFile(indexDirPath, Boolean.TRUE);
+		for (File file : indexDir.listFiles()) {
+			logger.info("File : " + file);
+		}
+
+		Clean<IndexContext, Boolean> clean = new Clean<IndexContext, Boolean>();
 		clean.execute(INDEX_CONTEXT);
 		Directory directory = FSDirectory.open(indexDir);
 		try {

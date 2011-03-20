@@ -24,6 +24,10 @@ public class SearcherWebServiceTest extends BaseTest {
 
 	private SearcherWebService searcherWebService;
 
+	public SearcherWebServiceTest() {
+		super(SearcherWebServiceTest.class);
+	}
+
 	@Before
 	public void before() {
 		this.searcherWebService = ApplicationContextManager.getBean(SearcherWebService.class);

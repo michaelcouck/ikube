@@ -22,6 +22,10 @@ import org.junit.Test;
  */
 public class IndexableInternetHandlerTest extends BaseTest {
 
+	public IndexableInternetHandlerTest() {
+		super(IndexableInternetHandlerTest.class);
+	}
+
 	@Before
 	public void before() {
 		PageHandler.OUT_SET.clear();

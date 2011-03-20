@@ -13,6 +13,10 @@ import org.junit.Test;
  */
 public class IndexableFileSystemHandlerTest extends BaseTest {
 
+	public IndexableFileSystemHandlerTest() {
+		super(IndexableFileSystemHandlerTest.class);
+	}
+
 	@Test
 	public void handle() throws Exception {
 		indexContext.getIndex().setIndexWriter(INDEX_WRITER);

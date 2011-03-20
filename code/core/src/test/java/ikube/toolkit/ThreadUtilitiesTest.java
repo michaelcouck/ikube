@@ -1,9 +1,8 @@
-package ikube.action;
+package ikube.toolkit;
 
-import static org.junit.Assert.*;
-
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import ikube.ATest;
-import ikube.toolkit.ThreadUtilities;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,11 +10,17 @@ import java.util.List;
 import org.junit.Test;
 
 /**
+ * This test if for the thread utilities, which has methods to wait for threads etc.
+ * 
  * @author Michael Couck
- * @since 21.11.10
+ * @since 20.03.11
  * @version 01.00
  */
-public class IndexThreadTest extends ATest {
+public class ThreadUtilitiesTest extends ATest {
+
+	public ThreadUtilitiesTest() {
+		super(ThreadUtilitiesTest.class);
+	}
 
 	@Test
 	public void waitForThreads() {
@@ -26,7 +31,7 @@ public class IndexThreadTest extends ATest {
 					try {
 						Thread.sleep((long) (Math.random() * 10000));
 					} catch (Exception e) {
-						logger.error("", e);
+						logger.error("Spit or swallow : ", e);
 					}
 					logger.debug("Thread exiting : " + Thread.currentThread());
 				}
@@ -35,7 +40,11 @@ public class IndexThreadTest extends ATest {
 			threads.add(thread);
 		}
 		ThreadUtilities.waitForThreads(threads);
-		assertTrue("We just want to exis here after the threads die : ", true);
+		// Verify that all the threads are dead
+		for (Thread thread : threads) {
+			assertFalse("All the threads should have died : ", thread.isAlive());
+		}
+		assertTrue("We just want to exit here after the threads die : ", true);
 	}
 
 }

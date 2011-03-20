@@ -10,10 +10,13 @@ import ikube.toolkit.FileUtilities;
 import java.io.File;
 
 import org.apache.lucene.search.Searchable;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 /**
+ * This test can be spit up to test the individual rules.
+ * 
  * @author Michael Couck
  * @since 21.11.10
  * @version 01.00
@@ -22,29 +25,30 @@ public class ActionTest extends ATest {
 
 	private transient final Action<IndexContext, Boolean> action = new Action<IndexContext, Boolean>() {
 		@Override
-		public Boolean execute(final IndexContext e) {
+		public Boolean execute(final IndexContext indexContext) {
 			return Boolean.FALSE;
 		}
 	};
 
+	public ActionTest() {
+		super(ActionTest.class);
+	}
+	
 	@Before
 	public void before() {
-		when(INDEX_CONTEXT.getIndexDirectoryPath()).thenReturn("./indexes");
-		when(INDEX_CONTEXT.getIndexName()).thenReturn("actiontestindex");
-		when(INDEX_CONTEXT.getIndex()).thenReturn(INDEX);
+		when(INDEX_CONTEXT.getIndexDirectoryPath()).thenReturn("./" + this.getClass().getSimpleName());
+		FileUtilities.deleteFile(new File(INDEX_CONTEXT.getIndexDirectoryPath()), 1);
+	}
+	
+	@After
+	public void after() throws Exception {
+		FileUtilities.deleteFile(new File(INDEX_CONTEXT.getIndexDirectoryPath()), 1);
 	}
 
 	@Test
 	public void indexCurrent() throws InterruptedException {
-		StringBuilder builder = new StringBuilder();
-		builder.append(INDEX_CONTEXT.getIndexDirectoryPath());
-		builder.append(File.separator);
-		builder.append(INDEX_CONTEXT.getIndexName());
-		builder.append(File.separator);
-		builder.append(System.currentTimeMillis());
-		builder.append(File.separator);
-		builder.append(IP);
-		File serverIndexDirectory = FileUtilities.getFile(builder.toString(), Boolean.TRUE);
+		String serverIndexDirectoryPath = getServerIndexDirectoryPath(INDEX_CONTEXT);
+		File serverIndexDirectory = FileUtilities.getFile(serverIndexDirectoryPath, Boolean.TRUE);
 
 		long maxAge = 10;
 		when(INDEX_CONTEXT.getMaxAge()).thenReturn(maxAge);

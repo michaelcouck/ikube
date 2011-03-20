@@ -185,7 +185,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 		} catch (Exception e) {
 			// Should we catch this exception and check how many are thrown, if the
 			// exception threshold is exceeded then exit the database crawl?
-			logger.error("Exception indexing table : " + indexableTable, e);
+			logger.error("Exception indexing table : " + indexableTable + ", connection : " + connection, e);
 		} finally {
 			// Close the result set and the statement for this
 			// table, could be the sub table of course

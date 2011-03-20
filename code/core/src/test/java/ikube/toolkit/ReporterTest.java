@@ -11,6 +11,10 @@ import org.junit.Test;
  */
 public class ReporterTest extends BaseTest {
 
+	public ReporterTest() {
+		super(ReporterTest.class);
+	}
+
 	@Test
 	public void handleNotification() {
 		// TODO - implement me

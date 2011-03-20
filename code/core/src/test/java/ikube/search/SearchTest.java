@@ -34,6 +34,10 @@ public class SearchTest extends ATest {
 
 	private static Searcher SEARCHER;
 
+	public SearchTest() {
+		super(SearchTest.class);
+	}
+
 	@BeforeClass
 	public static void beforeClass() throws Exception {
 		// Create the index with multiple fields

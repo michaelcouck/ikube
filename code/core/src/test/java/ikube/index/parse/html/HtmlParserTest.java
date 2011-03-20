@@ -18,6 +18,10 @@ import org.junit.Test;
  */
 public class HtmlParserTest extends ATest {
 
+	public HtmlParserTest() {
+		super(HtmlParserTest.class);
+	}
+
 	@Test
 	public void parse() throws Exception {
 		URL url = new URL("http://www.oki.com");

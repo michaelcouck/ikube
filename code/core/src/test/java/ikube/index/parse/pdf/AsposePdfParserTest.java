@@ -11,6 +11,10 @@ import org.junit.Test;
  */
 public class AsposePdfParserTest extends ATest {
 
+	public AsposePdfParserTest() {
+		super(AsposePdfParserTest.class);
+	}
+
 	@Test
 	public void parse() throws Exception {
 		// AsposePdfParser pdfParser = new AsposePdfParser();

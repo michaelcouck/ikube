@@ -21,6 +21,10 @@ import org.junit.Test;
  */
 public class PowerPointParserTest extends ATest {
 
+	public PowerPointParserTest() {
+		super(PowerPointParserTest.class);
+	}
+
 	@Test
 	public void parse() throws Exception {
 		File file = FileUtilities.findFile(new File("."), new String[] { "99.ppt" });

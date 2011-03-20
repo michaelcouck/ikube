@@ -21,6 +21,10 @@ import org.junit.Test;
  */
 public class RtfParserTest extends ATest {
 
+	public RtfParserTest() {
+		super(RtfParserTest.class);
+	}
+
 	@Test
 	public void parse() throws Exception {
 		File file = FileUtilities.findFile(new File("."), new String[] { "rtf.rtf" });

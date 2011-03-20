@@ -1,13 +1,13 @@
 package ikube.action;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import ikube.BaseTest;
-import ikube.cluster.IClusterManager;
-import ikube.model.Url;
-import ikube.toolkit.ApplicationContextManager;
-import ikube.toolkit.HashUtilities;
+import ikube.ATest;
+import ikube.mock.ApplicationContextManagerMock;
+import ikube.mock.IndexManagerMock;
+import mockit.Mockit;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -15,25 +15,31 @@ import org.junit.Test;
  * @since 21.11.10
  * @version 01.00
  */
-public class ResetTest extends BaseTest {
+public class ResetTest extends ATest {
 
 	private transient final Reset reset = new Reset();
 
+	public ResetTest() {
+		super(ResetTest.class);
+	}
+
+	@Before
+	public void before() {
+		// when()
+		ApplicationContextManagerMock.INDEX_CONTEXT = INDEX_CONTEXT;
+		ApplicationContextManagerMock.CLUSTER_MANAGER = CLUSTER_MANAGER;
+		Mockit.setUpMocks(ApplicationContextManagerMock.class, IndexManagerMock.class);
+	}
+
+	@After
+	public void after() {
+		Mockit.tearDownMocks(ApplicationContextManagerMock.class, IndexManagerMock.class);
+	}
+
 	@Test
 	public void execute() {
-		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
-		Url url = new Url();
-		url.setUrl("dummy");
-		url.setId(HashUtilities.hash(url.getUrl()));
-		clusterManager.set(Url.class, url.getId(), url);
-
-		int size = clusterManager.size(Url.class);
-		assertTrue("There should be only one : ", size >= 1);
-
-		reset.execute(indexContext);
-
-		size = clusterManager.size(Url.class);
-		assertEquals("There should be no urls in the cache : ", 0, size);
+		boolean result = reset.execute(INDEX_CONTEXT);
+		assertTrue(result);
 	}
 
 }

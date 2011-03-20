@@ -41,6 +41,10 @@ public class DataBaseOdbTest extends ATest {
 	private static DataBaseOdb DATA_BASE;
 	private static String DATA_BASE_FILE = "ikube.test.odb";
 
+	public DataBaseOdbTest() {
+		super(DataBaseOdbTest.class);
+	}
+
 	@BeforeClass
 	public static void beforeClass() {
 		FileUtilities.deleteFiles(new File("."), DATA_BASE_FILE);

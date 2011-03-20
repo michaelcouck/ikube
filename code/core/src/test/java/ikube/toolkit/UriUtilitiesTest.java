@@ -17,6 +17,10 @@ import org.junit.Test;
  */
 public class UriUtilitiesTest extends ATest {
 
+	public UriUtilitiesTest() {
+		super(UriUtilitiesTest.class);
+	}
+
 	@Test
 	public void url() throws Exception {
 		URI baseUri = new URI("http://www.ikokoon.eu/ikokoon/index.html?language=russian");

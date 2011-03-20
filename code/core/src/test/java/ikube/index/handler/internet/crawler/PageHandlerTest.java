@@ -23,6 +23,10 @@ public class PageHandlerTest extends BaseTest {
 
 	private IndexableInternet indexableInternet;
 
+	public PageHandlerTest() {
+		super(PageHandlerTest.class);
+	}
+
 	@Before
 	public void before() {
 		indexContext.getIndex().setIndexWriter(INDEX_WRITER);

@@ -20,6 +20,10 @@ public class SchedulerTest extends ATest {
 
 	private boolean notified = Boolean.FALSE;
 
+	public SchedulerTest() {
+		super(SchedulerTest.class);
+	}
+
 	@Test
 	public void initialize() throws Exception {
 		IListener listener = mock(IListener.class);

@@ -30,6 +30,10 @@ public class DatabaseUtilitiesTest extends ATest {
 	private boolean statementOpen = Boolean.TRUE;
 	private boolean connectionOpen = Boolean.TRUE;
 
+	public DatabaseUtilitiesTest() {
+		super(DatabaseUtilitiesTest.class);
+	}
+
 	@Before
 	public void before() throws Exception {
 		when(resultSet.getStatement()).thenReturn(statement);

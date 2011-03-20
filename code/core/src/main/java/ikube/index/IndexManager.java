@@ -38,8 +38,9 @@ import org.apache.lucene.store.RAMDirectory;
 public final class IndexManager {
 
 	private static final Logger LOGGER = Logger.getLogger(IndexManager.class);
-	
-	private IndexManager() {}
+
+	private IndexManager() {
+	}
 
 	/**
 	 * This method opens a Lucene index writer, and if successful sets it in the index context where the handlers can access it and add
@@ -141,7 +142,9 @@ public final class IndexManager {
 			LOGGER.error("Exception closing the index writer : ", e);
 		}
 		try {
-			IndexWriter.unlock(directory);
+			if (directory != null) {
+				IndexWriter.unlock(directory);
+			}
 		} catch (Exception e) {
 			LOGGER.error("Exception releasing the LOCK on the index writer : ", e);
 		}

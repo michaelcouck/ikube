@@ -14,6 +14,10 @@ import org.junit.Test;
  */
 public class ServiceLocatorTest extends BaseTest {
 
+	public ServiceLocatorTest() {
+		super(ServiceLocatorTest.class);
+	}
+
 	@Test
 	public void getService() throws Exception {
 		String protocol = "http";

@@ -21,6 +21,10 @@ public class RulesTest extends ATest {
 
 	private Logger logger = Logger.getLogger(this.getClass());
 
+	public RulesTest() {
+		super(RulesTest.class);
+	}
+
 	@Test
 	public void evaluate() {
 		Index index = ApplicationContextManager.getBean(Index.class);

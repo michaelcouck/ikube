@@ -41,6 +41,10 @@ public class IndexableTableHandlerTest extends BaseTest {
 	private IndexableTableHandler indexableTableHandler;
 	private Connection connection;
 
+	public IndexableTableHandlerTest() {
+		super(IndexableTableHandlerTest.class);
+	}
+
 	@Before
 	public void before() throws Exception {
 		indexableTableHandler = ApplicationContextManager.getBean(IndexableTableHandler.class);

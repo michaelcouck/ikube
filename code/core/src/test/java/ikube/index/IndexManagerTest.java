@@ -33,6 +33,10 @@ public class IndexManagerTest extends BaseTest {
 	private TermVector termVector = TermVector.YES;
 	private Index index = Index.ANALYZED;
 
+	public IndexManagerTest() {
+		super(IndexManagerTest.class);
+	}
+
 	@Test
 	public void openIndexWriter() throws Exception {
 		// String, IndexContext, long

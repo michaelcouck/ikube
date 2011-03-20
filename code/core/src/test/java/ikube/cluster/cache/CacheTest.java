@@ -24,6 +24,10 @@ public class CacheTest extends BaseTest {
 	private transient Url url;
 	private transient ICache cache;
 
+	public CacheTest() {
+		super(CacheTest.class);
+	}
+
 	@Before
 	public void before() {
 		cache = ApplicationContextManager.getBean(ICache.class);

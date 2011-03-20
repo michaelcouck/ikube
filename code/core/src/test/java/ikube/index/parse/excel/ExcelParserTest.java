@@ -22,6 +22,10 @@ import org.junit.Test;
  */
 public class ExcelParserTest extends ATest {
 
+	public ExcelParserTest() {
+		super(ExcelParserTest.class);
+	}
+
 	@Test
 	public void parse() throws Exception {
 		File file = FileUtilities.findFile(new File("."), new String[] { "xls.xls" });

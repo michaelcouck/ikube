@@ -21,6 +21,10 @@ import org.junit.Test;
  */
 public class WordParserTest extends ATest {
 
+	public WordParserTest() {
+		super(WordParserTest.class);
+	}
+
 	@Test
 	public void parse() throws Exception {
 		File file = FileUtilities.findFile(new File("."), new String[] { "doc.doc" });

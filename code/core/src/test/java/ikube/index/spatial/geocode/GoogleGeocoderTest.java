@@ -15,6 +15,10 @@ import org.junit.Test;
  */
 public class GoogleGeocoderTest extends ATest {
 
+	public GoogleGeocoderTest() {
+		super(GoogleGeocoderTest.class);
+	}
+
 	@Test
 	public void getCoordinate() throws Exception {
 		// TODO Implement me

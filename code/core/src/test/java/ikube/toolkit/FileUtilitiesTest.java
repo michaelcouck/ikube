@@ -29,6 +29,10 @@ public class FileUtilitiesTest extends ATest {
 	private File indexFolderThree;
 	private String[] stringPatterns;
 
+	public FileUtilitiesTest() {
+		super(FileUtilitiesTest.class);
+	}
+
 	@Before
 	public void before() {
 		dotFolder = new File(".");

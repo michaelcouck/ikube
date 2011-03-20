@@ -37,6 +37,10 @@ public class ClusterManagerTest extends BaseTest {
 	/** The class under test. */
 	private IClusterManager clusterManager;
 
+	public ClusterManagerTest() {
+		super(ClusterManagerTest.class);
+	}
+
 	@Before
 	public void before() throws UnknownHostException {
 		indexName = indexContext.getIndexName();
@@ -124,10 +128,10 @@ public class ClusterManagerTest extends BaseTest {
 
 		batch = clusterManager.getBatch(batchSize);
 		assertEquals(batchSize, batch.size());
-		
+
 		batch = clusterManager.getBatch(iterations - batchSize);
 		assertEquals(iterations - batchSize, batch.size());
-		
+
 		batch = clusterManager.getBatch(batchSize);
 		assertEquals(0, batch.size());
 	}
@@ -139,12 +143,12 @@ public class ClusterManagerTest extends BaseTest {
 		long startIdNumber = clusterManager.getIdNumber(indexableName, indexName, batchSize, 0);
 		long idNumber = clusterManager.getIdNumber(indexableName, indexName, batchSize, 0);
 		assertEquals(startIdNumber + batchSize, idNumber);
-		
+
 		long minId = 1234567;
 		startIdNumber = clusterManager.getIdNumber(indexableName, indexName, batchSize, minId);
 		idNumber = clusterManager.getIdNumber(indexableName, indexName, batchSize, minId);
 		assertEquals(minId, startIdNumber);
-		assertEquals(startIdNumber + batchSize, idNumber); 
+		assertEquals(startIdNumber + batchSize, idNumber);
 	}
 
 	@Test

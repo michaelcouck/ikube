@@ -23,6 +23,10 @@ public class DataBaseMemTest extends BaseTest {
 
 	private IDataBase dataBase = ApplicationContextManager.getBean(DataBaseMem.class);
 
+	public DataBaseMemTest() {
+		super(DataBaseMemTest.class);
+	}
+
 	@Before
 	public void before() {
 		delete(dataBase, Url.class);

@@ -1,10 +1,19 @@
 package ikube.action;
 
 import static org.junit.Assert.assertTrue;
-import ikube.BaseTest;
-import ikube.cluster.IClusterManager;
-import ikube.toolkit.ApplicationContextManager;
+import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.when;
+import ikube.ATest;
+import ikube.mock.ApplicationContextManagerMock;
+import ikube.mock.IndexManagerMock;
+import ikube.toolkit.FileUtilities;
 
+import java.io.File;
+
+import mockit.Mockit;
+
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -13,21 +22,29 @@ import org.junit.Test;
  * @since 21.11.10
  * @version 01.00
  */
-public class IndexTest extends BaseTest {
+public class IndexTest extends ATest {
 
-	@SuppressWarnings("unused")
-	private transient final Index index = new Index();
+	public IndexTest() {
+		super(IndexTest.class);
+	}
 
 	@Before
 	public void before() {
-		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
-		clusterManager.setWorking(indexContext.getIndexName(), "", Boolean.FALSE);
+		Mockit.setUpMocks(IndexManagerMock.class, ApplicationContextManagerMock.class);
+		when(INDEX.getIndexWriter()).thenReturn(INDEX_WRITER);
+		when(CLUSTER_MANAGER.setWorking(anyString(), anyString(), anyBoolean())).thenReturn(System.currentTimeMillis());
+	}
+
+	@After
+	public void after() {
+		FileUtilities.deleteFile(new File(INDEX_CONTEXT.getIndexDirectoryPath()), 1);
+		Mockit.tearDownMocks(IndexManagerMock.class, ApplicationContextManagerMock.class);
 	}
 
 	@Test
 	public void execute() throws Exception {
-		// TODO This test must be re-done with mocking
-		assertTrue(true);
+		boolean result = new Index().execute(INDEX_CONTEXT);
+		assertTrue(result);
 	}
 
 }

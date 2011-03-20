@@ -23,6 +23,10 @@ public class TextParserTest extends ATest {
 	private String japanese = "も楽しめる";
 	private String arabic = "للتضحية";
 
+	public TextParserTest() {
+		super(TextParserTest.class);
+	}
+
 	@Test
 	public void parse() throws Exception {
 		TextParser textParser = new TextParser();

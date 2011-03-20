@@ -39,6 +39,10 @@ public class DataGeneratorFourTest extends BaseTest {
 	private String selectFromAddresses = "select e from Address as e";
 	private EntityManager entityManager;
 
+	public DataGeneratorFourTest() {
+		super(DataGeneratorFourTest.class);
+	}
+
 	@Before
 	public void before() throws Exception {
 		entityManager = Persistence.createEntityManagerFactory(IConstants.PERSISTENCE_UNIT_NAME).createEntityManager();

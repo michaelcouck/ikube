@@ -12,6 +12,10 @@ import org.junit.Test;
  */
 public class MimeTypesTest extends ATest {
 
+	public MimeTypesTest() {
+		super(MimeTypesTest.class);
+	}
+
 	@Test
 	public void getMimeTypesFromName() {
 		MimeType mimeType = MimeTypes.getMimeTypeFromName("text/html");

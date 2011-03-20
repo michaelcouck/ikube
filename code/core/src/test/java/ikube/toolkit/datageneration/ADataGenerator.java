@@ -117,17 +117,4 @@ public abstract class ADataGenerator implements IDataGenerator {
 	public void after() throws Exception {
 	}
 
-	public static void main(String[] args) {
-		try {
-			IDataGenerator dataGenerator = new DataGeneratorOne(10, 1000000);
-			// IDataGenerator dataGenerator = new DataGeneratorTwo(1000000, 3);
-			// IDataGenerator dataGenerator = new DataGeneratorThree(3, 1000000);
-			dataGenerator.before();
-			dataGenerator.generate();
-			dataGenerator.after();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
 }

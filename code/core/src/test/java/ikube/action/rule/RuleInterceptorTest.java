@@ -51,6 +51,10 @@ public class RuleInterceptorTest extends ATest {
 	@NonStrict
 	private transient AreUnopenedIndexes areUnopenedIndexes;
 
+	public RuleInterceptorTest() {
+		super(RuleInterceptorTest.class);
+	}
+
 	@BeforeClass
 	public static void beforeClass() {
 		Mockit.setUpMocks();

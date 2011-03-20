@@ -30,6 +30,10 @@ import org.junit.Test;
  */
 public class ParserPerformanceTest extends ATest {
 
+	public ParserPerformanceTest() {
+		super(ParserPerformanceTest.class);
+	}
+
 	@Test
 	public void pdfPerformance() throws Exception {
 		final File file = FileUtilities.findFile(new File("."), "pdf.pdf");

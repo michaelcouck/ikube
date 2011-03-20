@@ -83,6 +83,7 @@ public class Open extends Action<IndexContext, Boolean> {
 		String indexDirectoryPath = indexContext.getIndexDirectoryPath() + File.separator + indexContext.getIndexName();
 		File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexDirectoryPath);
 		if (latestIndexDirectory == null) {
+			logger.info("No indexes : " + indexDirectoryPath);
 			return Boolean.FALSE;
 		}
 
@@ -95,6 +96,7 @@ public class Open extends Action<IndexContext, Boolean> {
 				directory = FSDirectory.open(serverIndexDirectory);
 				boolean exists = IndexReader.indexExists(directory);
 				boolean locked = IndexWriter.isLocked(directory);
+				logger.info("Exists : " + exists + ", locked : " + locked);
 				if (!exists || locked) {
 					// We don't open locked directories. Could be
 					// that one configuration is still indexing on this

@@ -30,6 +30,10 @@ public class DataBaseOdbMapStoreTest extends BaseTest {
 	private transient IDataBase dataBase;
 	private transient CacheMapStore cacheMapStore;
 
+	public DataBaseOdbMapStoreTest() {
+		super(DataBaseOdbMapStoreTest.class);
+	}
+
 	@Before
 	public void before() {
 		dataBase = ApplicationContextManager.getBean(DataBaseOdb.class);

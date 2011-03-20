@@ -18,6 +18,10 @@ public class MonitoringServiceTest extends BaseTest {
 
 	private IMonitoringService monitoringService = ApplicationContextManager.getBean(IMonitoringService.class);
 
+	public MonitoringServiceTest() {
+		super(MonitoringServiceTest.class);
+	}
+
 	@Test
 	public void getIndexContextNames() {
 		String[] indexContextNames = monitoringService.getIndexContextNames();

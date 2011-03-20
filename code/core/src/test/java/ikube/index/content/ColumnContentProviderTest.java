@@ -31,6 +31,10 @@ public class ColumnContentProviderTest extends ATest {
 	private IndexableColumn indexable = mock(IndexableColumn.class);
 	private IContentProvider<IndexableColumn> contentProvider = new ColumnContentProvider();
 
+	public ColumnContentProviderTest() {
+		super(ColumnContentProviderTest.class);
+	}
+
 	@Test
 	public void getContent() throws Exception {
 		OutputStream outputStream = new ByteArrayOutputStream();

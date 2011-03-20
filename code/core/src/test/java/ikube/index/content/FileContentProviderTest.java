@@ -25,6 +25,10 @@ public class FileContentProviderTest extends ATest {
 
 	private FileContentProvider contentProvider;
 
+	public FileContentProviderTest() {
+		super(FileContentProviderTest.class);
+	}
+
 	@Before
 	public void before() {
 		this.contentProvider = new FileContentProvider();
