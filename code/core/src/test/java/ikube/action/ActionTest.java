@@ -20,7 +20,7 @@ import org.junit.Test;
  */
 public class ActionTest extends ATest {
 
-	private transient final Action action = new Action() {
+	private transient final Action<IndexContext, Boolean> action = new Action<IndexContext, Boolean>() {
 		@Override
 		public Boolean execute(final IndexContext e) {
 			return Boolean.FALSE;

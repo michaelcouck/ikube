@@ -30,14 +30,14 @@ import org.apache.lucene.store.FSDirectory;
  * @since 21.11.10
  * @version 01.00
  */
-public abstract class Action implements IAction<IndexContext, Boolean> {
+public abstract class Action<E, F> implements IAction<E, F> {
 
 	protected transient Logger logger = Logger.getLogger(Action.class);
 	/** The cluster synchronization class. */
 	private transient IClusterManager clusterManager;
 
 	private String predicate;
-	private List<IRule<?>> rules;
+	private List<IRule<E>> rules;
 
 	public String getPredicate() {
 		return predicate;
@@ -47,11 +47,11 @@ public abstract class Action implements IAction<IndexContext, Boolean> {
 		this.predicate = predicate;
 	}
 
-	public List<IRule<?>> getRules() {
+	public List<IRule<E>> getRules() {
 		return rules;
 	}
 
-	public void setRules(final List<IRule<?>> rules) {
+	public void setRules(final List<IRule<E>> rules) {
 		this.rules = rules;
 	}
 

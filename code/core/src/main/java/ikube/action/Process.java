@@ -13,7 +13,7 @@ import ikube.model.Url;
  * @since 05.03.2011
  * @version 01.00
  */
-public class Process extends Action {
+public class Process extends Action<IndexContext, Boolean> {
 
 	@Override
 	public Boolean execute(final IndexContext indexContext) {

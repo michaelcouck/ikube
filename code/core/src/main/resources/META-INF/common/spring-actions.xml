@@ -74,10 +74,11 @@
 	<bean 
 		id="ikube.action.Index" 
 		class="ikube.action.Index" 
-		property:predicate="(!IsIndexCurrent &#38;&#38; !AnyServersWorking) || (IsIndexCurrent &#38;&#38; AnyServersWorking)">
+		property:predicate="(!IsIndexCurrent &#38;&#38; !AnyServersWorking) || (IsIndexCurrent &#38;&#38; AnyServersWorking) || (!AreIndexesCreated)">
 		<property name="rules">
 			<util:list>
 				<ref local="ikube.action.rule.IsIndexCurrent" />
+				<ref local="ikube.action.rule.AreIndexesCreated" />
 				<ref local="ikube.action.rule.AnyServersWorking" />
 			</util:list>
 		</property>

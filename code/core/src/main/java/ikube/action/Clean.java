@@ -18,7 +18,7 @@ import org.apache.lucene.store.FSDirectory;
  * @since 31.10.10
  * @version 01.00
  */
-public class Clean extends Action {
+public class Clean extends Action<IndexContext, Boolean> {
 
 	@Override
 	public Boolean execute(final IndexContext indexContext) {

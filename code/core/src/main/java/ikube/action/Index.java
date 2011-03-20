@@ -23,7 +23,7 @@ import java.util.Map;
  * @since 21.11.10
  * @version 01.00
  */
-public class Index extends Action {
+public class Index extends Action<IndexContext, Boolean> {
 
 	@Override
 	public Boolean execute(final IndexContext indexContext) throws Exception {

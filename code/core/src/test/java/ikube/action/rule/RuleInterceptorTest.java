@@ -31,10 +31,10 @@ import org.nfunk.jep.JEP;
  * @since 26.02.2011
  * @version 01.00
  */
-public class RuleDecisionInterceptorTest extends ATest {
+public class RuleInterceptorTest extends ATest {
 
 	private transient ProceedingJoinPoint joinPoint;
-	private transient IRuleDecisionInterceptor ruleDecisionInterceptor;
+	private transient IRuleInterceptor ruleInterceptor;
 
 	private transient final Boolean[] vector = { Boolean.TRUE, Boolean.FALSE, Boolean.TRUE, Boolean.FALSE, Boolean.TRUE };
 	private transient final List<Boolean[]> matrix = new ArrayList<Boolean[]>();
@@ -80,7 +80,7 @@ public class RuleDecisionInterceptorTest extends ATest {
 			}
 		};
 
-		List<IRule<?>> rules = new ArrayList<IRule<?>>();
+		List<IRule<IndexContext>> rules = new ArrayList<IRule<IndexContext>>();
 		rules.add(isMultiSearcherInitialised);
 		rules.add(areSearchablesInitialised);
 		rules.add(isIndexCurrent);
@@ -97,14 +97,14 @@ public class RuleDecisionInterceptorTest extends ATest {
 		when(joinPoint.getTarget()).thenReturn(close);
 		when(joinPoint.getArgs()).thenReturn(new Object[] { INDEX_CONTEXT });
 		when(joinPoint.proceed()).thenReturn(Boolean.TRUE);
-		ruleDecisionInterceptor = new RuleDecisionInterceptor();
+		ruleInterceptor = new RuleInterceptor();
 	}
 
 	@Test
 	public void decide() throws Throwable {
 		for (Boolean[] vector : matrix) {
 			resultVector = vector;
-			Object result = ruleDecisionInterceptor.decide(joinPoint);
+			Object result = ruleInterceptor.decide(joinPoint);
 			Object expected = resultVector[0] && resultVector[1] && !resultVector[2] && resultVector[3] && resultVector[4];
 			String message = Logging.getString("Expected : ", expected, ", result : ", result, " booleans : ", Arrays.asList(resultVector));
 			assertEquals(message, expected, result);

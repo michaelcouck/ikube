@@ -15,9 +15,9 @@ import org.nfunk.jep.JEP;
  * @since 12.02.2011
  * @version 01.00
  */
-public class RuleDecisionInterceptor implements IRuleDecisionInterceptor {
+public class RuleInterceptor implements IRuleInterceptor {
 
-	private static final transient Logger LOGGER = Logger.getLogger(RuleDecisionInterceptor.class);
+	private static final transient Logger LOGGER = Logger.getLogger(RuleInterceptor.class);
 
 	@Override
 	public Object decide(final ProceedingJoinPoint proceedingJoinPoint) throws Throwable {

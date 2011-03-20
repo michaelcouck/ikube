@@ -39,7 +39,9 @@
 		property:delay="${web.service.delay}"
 		property:period="${web.service.period}" />
 		
-	<bean id="searcherWebServiceExecuterBinder" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
+	<bean 
+		id="searcherWebServiceExecuterBinder" 
+		class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
 		property:staticMethod="ikube.listener.Scheduler.addSchedule">
 		<property name="arguments">
 			<array>

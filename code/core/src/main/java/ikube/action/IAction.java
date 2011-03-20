@@ -16,7 +16,7 @@ public interface IAction<E, F> {
 	
 	String getPredicate();
 	
-	List<IRule<?>> getRules();
+	List<IRule<E>> getRules();
 	
 	/**
 	 * Executes the action on the index context. The generic parameter E is the index context and the return value is typically a boolean

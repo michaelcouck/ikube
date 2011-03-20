@@ -22,10 +22,10 @@
 	<aop:aspectj-autoproxy proxy-target-class="true" />
 	
 	<bean 
-		id="ikube.action.rule.RuleDecisionInterceptor" 
-		class="ikube.action.rule.RuleDecisionInterceptor" />
+		id="ikube.action.rule.RuleInterceptor" 
+		class="ikube.action.rule.RuleInterceptor" />
 	<aop:config proxy-target-class="true">
-		<aop:aspect ref="ikube.action.rule.RuleDecisionInterceptor">
+		<aop:aspect ref="ikube.action.rule.RuleInterceptor">
 			<aop:around method="decide" pointcut="execution(* ikube.action.*.*(..))"  />
 		</aop:aspect>
 	</aop:config>

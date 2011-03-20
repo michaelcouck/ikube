@@ -15,7 +15,7 @@ import java.util.Comparator;
  * @since 31.10.10
  * @version 01.00
  */
-public class Delete extends Action {
+public class Delete extends Action<IndexContext, Boolean> {
 
 	@Override
 	public Boolean execute(final IndexContext indexContext) {
