@@ -98,7 +98,7 @@
 		property:predicate="!AnyServersWorking">
 		<property name="rules">
 			<util:list>
-				<ref local="ikube.action.rule.AreIndexesCreated" />
+				<ref local="ikube.action.rule.AnyServersWorking" />
 			</util:list>
 		</property>
 	</bean>
