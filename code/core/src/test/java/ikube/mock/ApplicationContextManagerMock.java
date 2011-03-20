@@ -1,6 +1,9 @@
 package ikube.mock;
 
+import static org.mockito.Mockito.*;
+
 import ikube.cluster.IClusterManager;
+import ikube.database.IDataBase;
 import ikube.model.IndexContext;
 import ikube.toolkit.ApplicationContextManager;
 
@@ -23,6 +26,7 @@ public class ApplicationContextManagerMock {
 
 	public static IndexContext INDEX_CONTEXT;
 	public static IClusterManager CLUSTER_MANAGER;
+	public static IDataBase DATABASE = mock(IDataBase.class);
 
 	@Mock()
 	@SuppressWarnings("unchecked")
@@ -31,6 +35,8 @@ public class ApplicationContextManagerMock {
 			return (T) CLUSTER_MANAGER;
 		} else if (IndexContext.class.isAssignableFrom(klass)) {
 			return (T) INDEX_CONTEXT;
+		} else if (IDataBase.class.isAssignableFrom(klass)) {
+			return (T) DATABASE;
 		}
 		return null;
 	}

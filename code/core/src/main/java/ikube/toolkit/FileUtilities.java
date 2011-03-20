@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -25,7 +26,7 @@ import org.apache.log4j.Logger;
 public final class FileUtilities {
 
 	private static final Logger LOGGER = Logger.getLogger(FileUtilities.class);
-	
+
 	private FileUtilities() {
 	}
 
@@ -413,6 +414,86 @@ public final class FileUtilities {
 				reader.close();
 			} catch (Exception e) {
 				LOGGER.error("Exception closing input stream " + reader, e);
+			}
+		}
+	}
+
+	/**
+	 * This function will copy files or directories from one location to another. note that the source and the destination must be mutually
+	 * exclusive. This function can not be used to copy a directory to a sub directory of itself. The function will also have problems if
+	 * the destination files already exist.
+	 * 
+	 * @param src
+	 *            A File object that represents the source for the copy
+	 * @param dest
+	 *            A File object that represents the destination for the copy.
+	 */
+	public static void copyFiles(File src, File dest) {
+		// Check to ensure that the source is valid...
+		if (!src.exists()) {
+			LOGGER.warn("Source file/directory does not exist : " + src);
+			return;
+		} else if (!src.canRead()) { // check to ensure we have rights to the source...
+			LOGGER.warn("Source file/directory not readable : " + src);
+			return;
+		}
+		// is this a directory copy?
+		if (src.isDirectory()) {
+			if (!dest.exists()) { // does the destination already exist?
+				// if not we need to make it exist if possible (note this is mkdirs not mkdir)
+				if (!dest.mkdirs()) {
+					LOGGER.warn("Could not create the new destination directory : " + dest);
+				}
+			}
+			// get a listing of files...
+			String children[] = src.list();
+			// copy all the files in the list.
+			for (int i = 0; i < children.length; i++) {
+				File childSrc = new File(src, children[i]);
+				File childDest = new File(dest, children[i]);
+				copyFiles(childSrc, childDest);
+			}
+		} else {
+			// This was not a directory, so lets just copy the file
+			copyFile(src, dest);
+		}
+	}
+
+	public static void copyFile(File in, File out) {
+		if (!out.getParentFile().exists()) {
+			if (!out.getParentFile().mkdirs()) {
+				LOGGER.info("Didn't create parent directories : " + out.getParentFile().getAbsolutePath());
+			}
+		}
+		if (!out.exists()) {
+			try {
+				out.createNewFile();
+			} catch (IOException e) {
+				LOGGER.error("Exception creating new file : " + out.getAbsolutePath(), e);
+			}
+		}
+		FileChannel inChannel = null;
+		FileChannel outChannel = null;
+		try {
+			inChannel = new FileInputStream(in).getChannel();
+			outChannel = new FileOutputStream(out).getChannel();
+			inChannel.transferTo(0, inChannel.size(), outChannel);
+		} catch (Exception e) {
+			LOGGER.error("Exception copying file : " + in + ", to : " + out, e);
+		} finally {
+			if (inChannel != null) {
+				try {
+					inChannel.close();
+				} catch (Exception e) {
+					LOGGER.error("", e);
+				}
+			}
+			if (outChannel != null) {
+				try {
+					outChannel.close();
+				} catch (Exception e) {
+					LOGGER.error("Exception closing channel : ", e);
+				}
 			}
 		}
 	}

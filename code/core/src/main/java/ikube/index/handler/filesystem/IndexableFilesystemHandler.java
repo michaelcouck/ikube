@@ -145,7 +145,7 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 	}
 
 	protected Pattern getPattern(final String pattern) {
-		return Pattern.compile(pattern);
+		return Pattern.compile(pattern != null ? pattern : "");
 	}
 
 	protected boolean isExcluded(final File file, final Pattern pattern) {

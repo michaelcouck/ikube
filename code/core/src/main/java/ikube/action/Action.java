@@ -5,6 +5,7 @@ import ikube.action.rule.AreIndexesCreated;
 import ikube.action.rule.AreSearchablesInitialised;
 import ikube.action.rule.AreUnopenedIndexes;
 import ikube.action.rule.DirectoryExistsAndIsLocked;
+import ikube.action.rule.DirectoryExistsAndNotLocked;
 import ikube.action.rule.IRule;
 import ikube.action.rule.IsIndexCurrent;
 import ikube.action.rule.IsMultiSearcherInitialised;
@@ -16,10 +17,6 @@ import java.io.File;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.FSDirectory;
 
 /**
  * This is the base class for actions. Actions execute logic on index contexts. Actions may include opening the searcher on a new index,
@@ -112,27 +109,7 @@ public abstract class Action<E, F> implements IAction<E, F> {
 	 * @return whether the directory exists as a Lucene index and is not locked by Lucene
 	 */
 	protected boolean directoryExistsAndNotLocked(final File indexDirectory) {
-		Directory directory = null;
-		try {
-			directory = FSDirectory.open(indexDirectory);
-			boolean exists = IndexReader.indexExists(directory);
-			boolean locked = IndexWriter.isLocked(directory);
-			// logger.info(Logging.getString("Server index directory : ", indexDirectory, ", exists : ", exists, ", locked : ", locked));
-			if (exists && !locked) {
-				return Boolean.TRUE;
-			} else {
-				logger.info("Non existant or locked directory found, will not open on this one yet : " + directory);
-			}
-		} catch (Exception e) {
-			logger.error("Exception checking the directories : ", e);
-		} finally {
-			try {
-				directory.close();
-			} catch (Exception e) {
-				logger.error("Exception closing the directory : " + directory, e);
-			}
-		}
-		return Boolean.FALSE;
+		return new DirectoryExistsAndNotLocked().evaluate(indexDirectory);
 	}
 
 	/**

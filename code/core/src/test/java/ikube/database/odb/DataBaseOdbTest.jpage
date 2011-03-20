@@ -7,6 +7,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import ikube.ATest;
 import ikube.IConstants;
+import ikube.database.IDataBase;
 import ikube.logging.Logging;
 import ikube.model.Indexable;
 import ikube.model.IndexableColumn;
@@ -38,7 +39,7 @@ import org.junit.Test;
 @Ignore
 public class DataBaseOdbTest extends ATest {
 
-	private static DataBaseOdb DATA_BASE;
+	private static IDataBase DATA_BASE;
 	private static String DATA_BASE_FILE = "ikube.test.odb";
 
 	public DataBaseOdbTest() {
@@ -409,22 +410,6 @@ public class DataBaseOdbTest extends ATest {
 			}
 		}, "Database defragment : ", iterations);
 		// TODO - check the database size
-	}
-
-	public static void main(String[] args) {
-		String dataBaseFile = "./88034101776063.ikube.odb";
-
-		DataBaseOdb dataBase = new DataBaseOdb();
-		dataBase.initialise(dataBaseFile);
-		List<Object> objects = dataBase.find(Object.class, 0, Integer.MAX_VALUE);
-		for (Object object : objects) {
-			System.out.println("Url : " + object);
-		}
-		dataBase.close();
-
-		// ODB odb = ODBFactory.open(DATA_BASE_FILE);
-		// odb.defragmentTo(DATA_BASE_FILE + ".defragmented");
-		// odb.close();
 	}
 
 }

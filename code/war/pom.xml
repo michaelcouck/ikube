@@ -54,7 +54,6 @@
 						<configuration>
 							<skip>false</skip>
 							<forkMode>once</forkMode>
-							<!--<argLine>-javaagent:../../serenity/serenity.jar -Xms512m -Xmx1024m ${included.adapters} ${included.packages} ${excluded.packages} ${write.classes} ${clean.classes}</argLine>-->
 						</configuration>
 					</execution>
 				</executions>

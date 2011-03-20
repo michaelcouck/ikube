@@ -1,9 +1,20 @@
 package ikube.index.handler.filesystem;
 
-import ikube.BaseTest;
+import static org.mockito.Mockito.when;
+import ikube.ATest;
+import ikube.mock.ApplicationContextManagerMock;
+import ikube.mock.IndexManagerMock;
 import ikube.model.IndexableFileSystem;
-import ikube.toolkit.ApplicationContextManager;
+import ikube.toolkit.FileUtilities;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+import mockit.Mockit;
+
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -11,22 +22,48 @@ import org.junit.Test;
  * @since 21.11.10
  * @version 01.00
  */
-public class IndexableFileSystemHandlerTest extends BaseTest {
+public class IndexableFileSystemHandlerTest extends ATest {
+
+	private String filePath = "./" + this.getClass().getSimpleName();
+	private File filesDir = FileUtilities.getFile(filePath, Boolean.TRUE);
+	private IndexableFileSystem indexableFileSystem = new IndexableFileSystem();
+	private IndexableFilesystemHandler indexableFileSystemHandler = new IndexableFilesystemHandler();
 
 	public IndexableFileSystemHandlerTest() {
 		super(IndexableFileSystemHandlerTest.class);
 	}
 
+	@Before
+	public void before() {
+		Mockit.setUpMocks(ApplicationContextManagerMock.class, IndexManagerMock.class);
+		indexableFileSystem.setPath(filePath);
+		indexableFileSystem.setContentFieldName("contentFieldName");
+		indexableFileSystem.setLastModifiedFieldName("lastModifiedFieldName");
+		indexableFileSystem.setLengthFieldName("lengthFieldName");
+		indexableFileSystem.setNameFieldName("nameFieldName");
+		indexableFileSystem.setPathFieldName("pathFieldName");
+		when(INDEX.getIndexWriter()).thenReturn(INDEX_WRITER);
+		
+		indexableFileSystem.setName(this.getClass().getSimpleName());
+		List<File> files = FileUtilities.findFilesRecursively(new File("."), new String[] { "doc.doc", "pdf.pdf", "xml.xml" },
+				new ArrayList<File>());
+		for (File file : files) {
+			if (file.getName().contains("svn")) {
+				continue;
+			}
+ 			FileUtilities.copyFile(file, new File(filesDir, file.getName()));
+		}
+	}
+
+	@After
+	public void after() {
+		Mockit.tearDownMocks(ApplicationContextManagerMock.class, IndexManagerMock.class);
+		FileUtilities.deleteFile(filesDir, 1);
+	}
+
 	@Test
 	public void handle() throws Exception {
-		indexContext.getIndex().setIndexWriter(INDEX_WRITER);
-		IndexableFileSystem indexableFileSystem = ApplicationContextManager.getBean(IndexableFileSystem.class);
-		IndexableFilesystemHandler indexableFileSystemHandler = ApplicationContextManager.getBean(IndexableFilesystemHandler.class);
-		indexableFileSystemHandler.handle(indexContext, indexableFileSystem);
-
-		// TODO - verify that there are some records indexed. This must wait until
-		// the clustering logic is decided upon for the url handler as this will have an impact on
-		// the way the data is shared in the cluster
+		indexableFileSystemHandler.handle(INDEX_CONTEXT, indexableFileSystem);
 	}
 
 }

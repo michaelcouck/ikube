@@ -1,7 +1,7 @@
 package ikube.cluster.cache;
 
 import ikube.database.IDataBase;
-import ikube.database.odb.DataBaseOdb;
+
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.DatabaseUtilities;
 
@@ -130,7 +130,7 @@ public class CacheMapStore implements MapStore<Long, Object> {
 	private synchronized IDataBase getDataBase() {
 		try {
 			if (dataBase == null) {
-				dataBase = ApplicationContextManager.getBean(DataBaseOdb.class);
+				dataBase = ApplicationContextManager.getBean(IDataBase.class);
 			}
 		} catch (Exception e) {
 			LOGGER.error("Exception accesing the database from the context : ", e);

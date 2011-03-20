@@ -21,8 +21,6 @@ import java.io.File;
 import java.net.InetAddress;
 import java.util.List;
 
-import mockit.Cascading;
-
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -73,14 +71,11 @@ public abstract class ATest {
 	protected FSDirectory FS_DIRECTORY;
 	protected Searchable[] SEARCHABLES;
 	protected IndexReader INDEX_READER;
+	protected IndexContext INDEX_CONTEXT;
 	protected TopFieldDocs TOP_FIELD_DOCS;
-	protected IClusterManager CLUSTER_MANAGER;
 	protected MultiSearcher MULTI_SEARCHER;
 	protected IndexSearcher INDEX_SEARCHER;
-	protected IndexContext INDEX_CONTEXT;
-
-	/** The more powerful JMockit mocks. */
-	@Cascading()
+	protected IClusterManager CLUSTER_MANAGER;
 	protected IndexWriter INDEX_WRITER;
 
 	public ATest(Class<?> subClass) {
@@ -98,6 +93,7 @@ public abstract class ATest {
 		INDEX = mock(Index.class);
 		CLUSTER_MANAGER = mock(IClusterManager.class);
 		SERVER = mock(Server.class);
+		INDEX_WRITER = mock(IndexWriter.class);
 
 		try {
 			IP = InetAddress.getLocalHost().getHostAddress();
