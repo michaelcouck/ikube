@@ -15,10 +15,13 @@ import ikube.mock.ApplicationContextManagerMock;
 import ikube.mock.IndexManagerMock;
 import ikube.model.Index;
 import ikube.model.IndexContext;
+import ikube.model.Indexable;
+import ikube.model.IndexableInternet;
 import ikube.model.Server;
 
 import java.io.File;
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -77,12 +80,15 @@ public abstract class ATest {
 	protected IndexSearcher INDEX_SEARCHER;
 	protected IClusterManager CLUSTER_MANAGER;
 	protected IndexWriter INDEX_WRITER;
+	protected List<Indexable<?>> INDEXABLES;
+	protected IndexableInternet INDEXABLE;
 
 	public ATest(Class<?> subClass) {
 		logger = Logger.getLogger(subClass);
 		MULTI_SEARCHER = mock(MultiSearcher.class);
 		INDEX_SEARCHER = mock(IndexSearcher.class);
 		INDEX_READER = mock(IndexReader.class);
+		INDEX_WRITER = mock(IndexWriter.class);
 		FS_DIRECTORY = mock(FSDirectory.class);
 		SEARCHABLES = new Searchable[] { INDEX_SEARCHER };
 		TOP_DOCS = mock(TopDocs.class);
@@ -93,7 +99,8 @@ public abstract class ATest {
 		INDEX = mock(Index.class);
 		CLUSTER_MANAGER = mock(IClusterManager.class);
 		SERVER = mock(Server.class);
-		INDEX_WRITER = mock(IndexWriter.class);
+		INDEXABLES = new ArrayList<Indexable<?>>();
+		INDEXABLE = mock(IndexableInternet.class);
 
 		try {
 			IP = InetAddress.getLocalHost().getHostAddress();
@@ -116,7 +123,11 @@ public abstract class ATest {
 
 		when(INDEX_CONTEXT.getIndexDirectoryPath()).thenReturn("./test");
 		when(INDEX_CONTEXT.getIndexName()).thenReturn("index");
+		when(INDEX_CONTEXT.getIndexables()).thenReturn(INDEXABLES);
+
 		when(INDEX_CONTEXT.getIndex()).thenReturn(INDEX);
+		when(INDEX.getMultiSearcher()).thenReturn(MULTI_SEARCHER);
+
 		when(INDEX_CONTEXT.getBufferedDocs()).thenReturn(100);
 		when(INDEX_CONTEXT.getBufferSize()).thenReturn(100d);
 		when(INDEX_CONTEXT.getMaxFieldLength()).thenReturn(100);
@@ -128,10 +139,13 @@ public abstract class ATest {
 		when(SERVER.getAddress()).thenReturn(IP);
 		when(SERVER.getIp()).thenReturn(IP);
 		when(INDEX.getIndexWriter()).thenReturn(INDEX_WRITER);
+		INDEXABLES.add(INDEXABLE);
+		when(INDEXABLE.getUrl()).thenReturn("http://ikube.ikube.cloudbees.net/");
 
 		IndexManagerMock.INDEX_WRITER = INDEX_WRITER;
 		ApplicationContextManagerMock.INDEX_CONTEXT = INDEX_CONTEXT;
 		ApplicationContextManagerMock.CLUSTER_MANAGER = CLUSTER_MANAGER;
+		when(ApplicationContextManagerMock.HANDLER.getIndexableClass()).thenReturn(IndexableInternet.class);
 	}
 
 	protected void delete(final IDataBase dataBase, final Class<?>... klasses) {

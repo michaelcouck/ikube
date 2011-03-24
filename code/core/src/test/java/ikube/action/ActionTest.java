@@ -71,10 +71,12 @@ public class ActionTest extends ATest {
 	public void shoudReopen() {
 		File baseIndexDirectory = FileUtilities.getFile(INDEX_CONTEXT.getIndexDirectoryPath(), Boolean.TRUE);
 		FileUtilities.deleteFile(baseIndexDirectory, 1);
+		when(INDEX_CONTEXT.getIndex().getMultiSearcher()).thenReturn(null);
 
 		boolean shouldReopen = action.shouldReopen(INDEX_CONTEXT);
 		// Searcher null in the context
 		assertTrue("Should reopen as the searcher is null : ", shouldReopen /* && !baseIndexDirectory.exists() */);
+		when(INDEX_CONTEXT.getIndex().getMultiSearcher()).thenReturn(MULTI_SEARCHER);
 
 		// No SEARCHABLES in the searcher
 		when(INDEX.getMultiSearcher()).thenReturn(MULTI_SEARCHER);

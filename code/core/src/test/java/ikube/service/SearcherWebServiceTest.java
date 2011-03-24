@@ -2,9 +2,10 @@ package ikube.service;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import ikube.BaseTest;
+import ikube.ATest;
 import ikube.IConstants;
-import ikube.toolkit.ApplicationContextManager;
+import ikube.listener.Event;
+import ikube.listener.ListenerManager;
 import ikube.toolkit.SerializationUtilities;
 
 import java.util.List;
@@ -20,7 +21,7 @@ import org.junit.Test;
  * @since 28.12.10
  * @version 01.00
  */
-public class SearcherWebServiceTest extends BaseTest {
+public class SearcherWebServiceTest extends ATest {
 
 	private SearcherWebService searcherWebService;
 
@@ -30,43 +31,43 @@ public class SearcherWebServiceTest extends BaseTest {
 
 	@Before
 	public void before() {
-		this.searcherWebService = ApplicationContextManager.getBean(SearcherWebService.class);
-		this.searcherWebService.setMultiSearcher(indexContext);
-		this.indexContext.getIndex().setMultiSearcher(MULTI_SEARCHER);
-		this.searcherWebService.setMultiSearcher(indexContext);
+		this.searcherWebService = new SearcherWebService();
+		ListenerManager.fireEvent(Event.SEARCHER_OPENED, System.currentTimeMillis(), INDEX_CONTEXT, Boolean.FALSE);
 	}
 
 	@Test
 	@SuppressWarnings("unchecked")
 	public void searchSingle() {
-		String result = this.searcherWebService.searchSingle(indexContext.getIndexName(), "search string", IConstants.CONTENTS,
+		String result = this.searcherWebService.searchSingle(INDEX_CONTEXT.getIndexName(), "search string", IConstants.CONTENTS,
 				Boolean.TRUE, 0, 10);
 		logger.debug("Single search result : " + result);
 		List<Map<String, String>> resultsList = (List<Map<String, String>>) SerializationUtilities.deserialize(result);
-		assertNotNull(resultsList);
-		assertTrue(resultsList.size() >= 1);
+		verifyResults(resultsList);
 	}
 
 	@Test
 	@SuppressWarnings("unchecked")
 	public void searchMulti() {
-		String result = this.searcherWebService.searchMulti(indexContext.getIndexName(), new String[] { "search", "strings" },
+		String result = this.searcherWebService.searchMulti(INDEX_CONTEXT.getIndexName(), new String[] { "search", "strings" },
 				new String[] { IConstants.CONTENTS, IConstants.ID }, Boolean.TRUE, 0, 10);
 		logger.debug("Multi search result : " + result);
 		List<Map<String, String>> resultsList = (List<Map<String, String>>) SerializationUtilities.deserialize(result);
-		assertNotNull(resultsList);
-		assertTrue(resultsList.size() >= 1);
+		verifyResults(resultsList);
 	}
 
 	@Test
 	@SuppressWarnings("unchecked")
 	public void searchMultiSorted() {
-		String result = this.searcherWebService.searchMultiSorted(indexContext.getIndexName(), new String[] { "search", "strings" },
+		String result = this.searcherWebService.searchMultiSorted(INDEX_CONTEXT.getIndexName(), new String[] { "search", "strings" },
 				new String[] { IConstants.CONTENTS, IConstants.ID }, new String[] { "", "" }, Boolean.TRUE, 0, 10);
 		logger.debug("Multi sorted search result : " + result);
 		List<Map<String, String>> resultsList = (List<Map<String, String>>) SerializationUtilities.deserialize(result);
-		assertNotNull(resultsList);
-		assertTrue(resultsList.size() >= 1);
+		verifyResults(resultsList);
+	}
+
+	private void verifyResults(List<Map<String, String>> resultsList) {
+		assertNotNull("Results should never be null : ", resultsList);
+		assertTrue("There should always be at least one map in the results : ", resultsList.size() >= 1);
 	}
 
 }

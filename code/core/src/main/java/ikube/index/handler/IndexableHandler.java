@@ -23,7 +23,7 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IHandl
 	/** The number of threads that this handler will spawn. */
 	private int threads;
 	/** The class that this handler can handle. */
-	private Class<? extends Indexable<?>> indexableClass;
+	private Class<T> indexableClass;
 
 	public int getThreads() {
 		return threads;
@@ -33,11 +33,11 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IHandl
 		this.threads = threads;
 	}
 
-	public Class<? extends Indexable<?>> getIndexableClass() {
+	public Class<T> getIndexableClass() {
 		return indexableClass;
 	}
 
-	public void setIndexableClass(final Class<? extends Indexable<?>> indexableClass) {
+	public void setIndexableClass(final Class<T> indexableClass) {
 		this.indexableClass = indexableClass;
 	}
 

@@ -4,6 +4,8 @@ import static org.mockito.Mockito.*;
 
 import ikube.cluster.IClusterManager;
 import ikube.database.IDataBase;
+import ikube.index.handler.IHandler;
+import ikube.index.handler.internet.IndexableInternetHandler;
 import ikube.model.IndexContext;
 import ikube.toolkit.ApplicationContextManager;
 
@@ -27,6 +29,7 @@ public class ApplicationContextManagerMock {
 	public static IndexContext INDEX_CONTEXT;
 	public static IClusterManager CLUSTER_MANAGER;
 	public static IDataBase DATABASE = mock(IDataBase.class);
+	public static IndexableInternetHandler HANDLER = mock(IndexableInternetHandler.class);
 
 	@Mock()
 	@SuppressWarnings("unchecked")
@@ -45,7 +48,11 @@ public class ApplicationContextManagerMock {
 	@SuppressWarnings("unchecked")
 	public static synchronized <T> Map<String, T> getBeans(final Class<T> klass) {
 		Map<String, T> beans = new HashMap<String, T>();
-		beans.put(INDEX_CONTEXT.getIndexName(), (T) INDEX_CONTEXT);
+		if (IndexContext.class.isAssignableFrom(klass)) {
+			beans.put(INDEX_CONTEXT.getIndexName(), (T) INDEX_CONTEXT);
+		} else if (IHandler.class.isAssignableFrom(klass)) {
+			beans.put(HANDLER.getClass().toString(), (T) HANDLER);
+		}
 		return beans;
 	}
 }
