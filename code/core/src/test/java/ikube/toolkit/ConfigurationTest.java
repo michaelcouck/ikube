@@ -1,4 +1,4 @@
-package ikube.integration;
+package ikube.toolkit;
 
 import static org.junit.Assert.*;
 

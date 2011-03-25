@@ -7,7 +7,6 @@ import org.apache.catalina.core.AprLifecycleListener;
 import org.apache.catalina.core.StandardServer;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.log4j.Logger;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -17,18 +16,14 @@ import org.junit.Test;
  * @since 13.03.2011
  * @version 01.00
  */
-@Ignore
-public class IntegrationCluster {
+public class IntegrationTomcat {
 
-	private static final Logger LOGGER = Logger.getLogger(IntegrationCluster.class);
+	private static final Logger LOGGER = Logger.getLogger(IntegrationTomcat.class);
 
 	@Test
 	public void main() throws Exception {
 		String osName = System.getProperty("os.name");
 		LOGGER.info("Operating system : " + osName);
-		if (!osName.toLowerCase().contains("server")) {
-			// return;
-		}
 		Tomcat tomcat = new Tomcat();
 		tomcat.setPort(9010);
 		tomcat.setBaseDir(".");
@@ -46,7 +41,9 @@ public class IntegrationCluster {
 		} catch (Exception e) {
 			LOGGER.error("Exception starting Tomcat embedded : ", e);
 		}
-		Thread.sleep(1000 * 60 * 3);
+		if (osName.toLowerCase().contains("server")) {
+			Thread.sleep(1000 * 60 * 60 * 3);
+		}
 	}
 
 }
