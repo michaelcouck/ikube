@@ -1,5 +1,9 @@
 package ikube.toolkit;
 
+import java.io.IOException;
+import java.net.DatagramSocket;
+import java.net.ServerSocket;
+
 import org.apache.log4j.Logger;
 
 /**
@@ -8,9 +12,9 @@ import org.apache.log4j.Logger;
  * @version 01.00
  */
 public final class GeneralUtilities {
-	
+
 	private static final Logger LOGGER = Logger.getLogger(GeneralUtilities.class);
-	
+
 	private GeneralUtilities() {
 	}
 
@@ -80,6 +84,41 @@ public final class GeneralUtilities {
 			LOGGER.info(arr[i] + " ");
 		}
 		LOGGER.info("\nDone ;-)");
+	}
+
+	/**
+	 * Finds an open port.
+	 * 
+	 * @param port
+	 *            the port number to start from
+	 * @return the first available port from the starting port
+	 */
+	public static int findFirstOpenPort(int port) {
+		ServerSocket ss = null;
+		DatagramSocket ds = null;
+		while (true && port < 65000) {
+			try {
+				ss = new ServerSocket(port);
+				ss.setReuseAddress(true);
+				ds = new DatagramSocket(port);
+				ds.setReuseAddress(true);
+				return port;
+			} catch (IOException e) {
+				port++;
+			} finally {
+				if (ds != null) {
+					ds.close();
+				}
+				if (ss != null) {
+					try {
+						ss.close();
+					} catch (Exception e) {
+						// Should not be thrown
+					}
+				}
+			}
+		}
+		throw new RuntimeException("Couldn't find an open port : " + port);
 	}
 
 }

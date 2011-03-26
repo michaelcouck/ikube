@@ -3,9 +3,8 @@ package ikube.service;
 import ikube.cluster.IClusterManager;
 import ikube.logging.Logging;
 import ikube.model.Server;
-import ikube.toolkit.FileUtilities;
+import ikube.toolkit.GeneralUtilities;
 
-import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.URL;
 import java.util.List;
@@ -45,11 +44,8 @@ public class WebServicePublisher implements IWebServicePublisher {
 			Object implementor = implementors.get(i);
 			try {
 				host = InetAddress.getLocalHost().getHostAddress();
+				port = GeneralUtilities.findFirstOpenPort(port);
 				URL url = new URL(protocol, host, port, path);
-				while (urlInUse(url)) {
-					port = Integer.valueOf(++port);
-					url = new URL(protocol, host, port, path);
-				}
 				logger.info("Publishing web service to : " + url);
 				Endpoint endpoint = Endpoint.publish(url.toString(), implementor);
 				Binding binding = endpoint.getBinding();
@@ -63,19 +59,6 @@ public class WebServicePublisher implements IWebServicePublisher {
 			}
 		}
 		clusterManager.set(Server.class, server.getId(), server);
-	}
-
-	protected boolean urlInUse(final URL url) {
-		try {
-			logger.info("Checking url : " + url);
-			InputStream inputStream = url.openStream();
-			String content = FileUtilities.getContents(inputStream, Integer.MAX_VALUE).toString();
-			logger.info("Url occupied : " + (content != null));
-			return Boolean.TRUE;
-		} catch (Exception e) {
-			logger.info("Nothing on url : " + url);
-			return Boolean.FALSE;
-		}
 	}
 
 	public void setProtocols(final List<String> protocols) {

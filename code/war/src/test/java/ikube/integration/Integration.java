@@ -58,17 +58,17 @@ public class Integration {
 	public void main() throws Exception {
 		String osName = System.getProperty("os.name");
 		logger.info("Operating system : " + osName);
+		if (!osName.toLowerCase().contains("server")) {
+			return;
+		}
 		ApplicationContextManager.getApplicationContext();
 		generateData();
-		if (osName.toLowerCase().contains("server")) {
-			Thread.sleep(1000 * 60 * 60 * 3);
-			validateIndexes();
-		}
-		// TODO When the test ends then verify
-		// the data and the index across the servers
+		Thread.sleep(1000 * 60 * 60 * 2);
+		validateIndexes();
+		// TODO Validate the indexes on the file system
 	}
 
-	private void validateIndexes() {
+	protected void validateIndexes() {
 		List<Server> servers = ApplicationContextManager.getBean(IClusterManager.class).getServers();
 		for (Server server : servers) {
 			List<String> webServiceUrls = server.getWebServiceUrls();

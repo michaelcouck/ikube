@@ -1,5 +1,7 @@
 package ikube.integration;
 
+import ikube.toolkit.ApplicationContextManager;
+import ikube.toolkit.GeneralUtilities;
 import ikube.web.servlet.SearchServlet;
 
 import org.apache.catalina.Context;
@@ -16,7 +18,7 @@ import org.junit.Test;
  * @since 13.03.2011
  * @version 01.00
  */
-public class IntegrationTomcat {
+public class IntegrationTomcat extends Integration {
 
 	private static final Logger LOGGER = Logger.getLogger(IntegrationTomcat.class);
 
@@ -24,8 +26,12 @@ public class IntegrationTomcat {
 	public void main() throws Exception {
 		String osName = System.getProperty("os.name");
 		LOGGER.info("Operating system : " + osName);
+		if (!osName.toLowerCase().contains("server")) {
+			// return;
+		}
+		ApplicationContextManager.getApplicationContext();
 		Tomcat tomcat = new Tomcat();
-		tomcat.setPort(9010);
+		tomcat.setPort(GeneralUtilities.findFirstOpenPort(9000));
 		tomcat.setBaseDir(".");
 		tomcat.getHost().setAppBase("/");
 		StandardServer server = (StandardServer) tomcat.getServer();
@@ -41,9 +47,8 @@ public class IntegrationTomcat {
 		} catch (Exception e) {
 			LOGGER.error("Exception starting Tomcat embedded : ", e);
 		}
-		if (osName.toLowerCase().contains("server")) {
-			Thread.sleep(1000 * 60 * 60 * 3);
-		}
+		Thread.sleep(1000 * 60 * 60 * 1);
+		validateIndexes();
 	}
 
 }
