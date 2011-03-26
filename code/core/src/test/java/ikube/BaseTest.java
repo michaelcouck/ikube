@@ -1,13 +1,13 @@
 package ikube;
 
+import ikube.datageneration.DataGeneratorFour;
+import ikube.datageneration.model.faq.Attachment;
+import ikube.datageneration.model.faq.Faq;
 import ikube.listener.ListenerManager;
 import ikube.model.IndexContext;
-import ikube.model.faq.Attachment;
-import ikube.model.faq.Faq;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.PerformanceTester;
-import ikube.toolkit.datageneration.DataGeneratorFour;
 
 import java.io.File;
 import java.util.Map;

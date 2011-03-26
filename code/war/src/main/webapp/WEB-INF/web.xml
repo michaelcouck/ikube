@@ -7,18 +7,43 @@
 		http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	version="2.5">
 
-	<display-name>Search</display-name>
-
+	<display-name>Ikube</display-name>
+	
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+	
 	<context-param>
 		<param-name>log4jConfigLocation</param-name>
 		<param-value>/WEB-INF/log4j.xml</param-value>
 	</context-param>
+	
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>
+            /WEB-INF/spring/web-application-context.xml
+        </param-value>
+	</context-param>
 
+	<servlet>
+		<servlet-name>tiles</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value></param-value>
+		</init-param>
+	</servlet>
+	
 	<servlet>
 		<servlet-name>SearchServlet</servlet-name>
 		<servlet-class>ikube.web.servlet.SearchServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
+	
+	<servlet-mapping>
+		<servlet-name>tiles</servlet-name>
+		<url-pattern>*.html</url-pattern>
+	</servlet-mapping>
 
 	<servlet-mapping>
 		<servlet-name>SearchServlet</servlet-name>
@@ -26,7 +51,15 @@
 	</servlet-mapping>
 
 	<welcome-file-list>
+		<welcome-file>index.jsp</welcome-file>
 		<welcome-file>/index.html</welcome-file>
 	</welcome-file-list>
+	
+	<jsp-config>
+		<taglib>
+			<taglib-uri>http://ikube/search</taglib-uri>
+			<taglib-location>/WEB-INF/search.tld</taglib-location>
+		</taglib>
+	</jsp-config>
 
 </web-app>

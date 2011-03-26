@@ -18,6 +18,7 @@
 	</properties>
 
 	<modules>
+		<module>code/tools</module>
 		<module>code/core</module>
 		<module>code/war</module>
 	</modules>
@@ -188,6 +189,26 @@
 			<version>${spring.version}</version>
 			<type>jar</type>
 			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springbyexample</groupId>
+			<artifactId>org.springbyexample.dynamic.tiles2</artifactId>
+			<version>1.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tiles</groupId>
+			<artifactId>com.springsource.org.apache.tiles</artifactId>
+			<version>${tiles.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tiles</groupId>
+			<artifactId>com.springsource.org.apache.tiles.core</artifactId>
+			<version>${tiles.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tiles</groupId>
+			<artifactId>com.springsource.org.apache.tiles.jsp</artifactId>
+			<version>${tiles.version}</version>
 		</dependency>
 
 		<dependency>
@@ -528,7 +549,7 @@
 			<artifactId>lucene-misc</artifactId>
 			<version>3.0.2</version>
 		</dependency>
-		<dependency>
+		<!--<dependency>
 			<groupId>org.apache.tomcat</groupId>
 			<artifactId>tomcat-catalina</artifactId>
 			<version>7.0.11</version>
@@ -548,7 +569,7 @@
 			<version>7.0.11</version>
 			<type>jar</type>
 			<scope>compile</scope>
-		</dependency>
+		</dependency>-->
 		<dependency>
 			<groupId>org.eclipse.jdt.core.compiler</groupId>
 			<artifactId>ecj</artifactId>
@@ -556,12 +577,45 @@
 			<type>jar</type>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
+		<!--<dependency>
 			<groupId>org.apache.tomcat</groupId>
 			<artifactId>jsp-api</artifactId>
 			<version>6.0.29</version>
 			<type>jar</type>
 			<scope>provided</scope>
+		</dependency>-->
+		<dependency>
+			<groupId>org.apache.el</groupId>
+			<artifactId>com.springsource.org.apache.el</artifactId>
+			<version>6.0.20</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>jstl</artifactId>
+			<version>1.2</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.el</groupId>
+			<artifactId>el-api</artifactId>
+			<version>1.0</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>jetty</groupId>
+			<artifactId>jsp</artifactId>
+			<version>2.1-6.0.2</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>jetty</groupId>
+			<artifactId>jetty-util</artifactId>
+			<version>6.0.2</version>
+			<type>jar</type>
+			<scope>compile</scope>
 		</dependency>
 	</dependencies>
 
@@ -610,6 +664,11 @@
 			<id>FreeHep</id>
 			<name>Free Hep Repository</name>
 			<url>http://java.freehep.org/maven2/</url>
+		</repository>
+		<repository>
+			<id>springbyexample.org</id>
+			<name>Spring by Example</name>
+			<url>http://www.springbyexample.org/maven/repo</url>
 		</repository>
 	</repositories>
 
