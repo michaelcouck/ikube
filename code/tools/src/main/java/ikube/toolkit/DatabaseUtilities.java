@@ -1,7 +1,5 @@
 package ikube.toolkit;
 
-import ikube.logging.Logging;
-
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -24,7 +22,7 @@ public final class DatabaseUtilities {
 
 	private static final Logger LOGGER = Logger.getLogger(DatabaseUtilities.class);
 	private static final Map<Class<?>, Field> ID_FIELDS = new HashMap<Class<?>, Field>();
-	
+
 	private DatabaseUtilities() {
 	}
 

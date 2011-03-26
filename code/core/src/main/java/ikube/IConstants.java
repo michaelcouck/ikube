@@ -13,25 +13,10 @@ import org.apache.lucene.util.Version;
  */
 public interface IConstants {
 
-	/** Application name. */
-	String IKUBE = "ikube";
-	/** The file separator for the system. */
-	String SEP = "/"; // File.separator;
-
-	/** We expect the configuration file to be in the META-INF as seems to be the fashion at the moment. */
-	String META_INF = SEP + "META-INF";
-
-	/** The name of the spring file. */
-	String SPRING_XML = "spring.xml";
-	/** Where the whole application is wired together. */
-	String SPRING_CONFIGURATION_FILE = META_INF + SEP + SPRING_XML;
-
 	/** Maps mime types to file extensions.. */
-	String MIME_TYPES = META_INF + SEP + "mime" + SEP + "mime-types.xml";
+	String MIME_TYPES = ITools.META_INF + ITools.SEP + "mime" + ITools.SEP + "mime-types.xml";
 	/** Maps parsers to mime types. */
-	String MIME_MAPPING = META_INF + SEP + "mime" + SEP + "mime-mapping.xml";
-
-	String LOG_4_J_PROPERTIES = META_INF + SEP + "log4j.properties";
+	String MIME_MAPPING = ITools.META_INF + ITools.SEP + "mime" + ITools.SEP + "mime-mapping.xml";
 
 	/** The database file name. */
 	String DATABASE_FILE = "ikube.odb";
@@ -90,8 +75,6 @@ public interface IConstants {
 	String EXCEPTION_CLICKING_LINK = "Exception clicking on the link";
 	String NO_END_TAG = "Not end tag in HTML";
 	String EXCEPTION_VALIDATING_HTML = "General exception validating the HTML";
-
-	String PERSISTENCE_UNIT_NAME = "IkubePersistenceUnit";
 
 	String INDEX_NAME = "indexName";
 	String MAX_RESULTS = "maxResults";

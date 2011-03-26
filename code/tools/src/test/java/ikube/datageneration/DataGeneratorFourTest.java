@@ -4,10 +4,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import ikube.ITools;
 import ikube.datageneration.model.medical.Address;
 import ikube.datageneration.model.medical.Condition;
 import ikube.datageneration.model.medical.Medication;
 import ikube.datageneration.model.medical.Patient;
+import ikube.toolkit.ApplicationContextManager;
+import ikube.toolkit.Logging;
 
 import java.util.Arrays;
 import java.util.List;
@@ -15,9 +18,8 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
@@ -27,25 +29,31 @@ import org.junit.Test;
  * @since 14.03.2011
  * @version 01.00
  */
-@Ignore
+// @Ignore
 public class DataGeneratorFourTest {
+	
+	static {
+		Logging.configure();
+	}
 
-	private DataGeneratorFour dataGeneratorFour;
-	private Class<?>[] classes = new Class[] { Patient.class, Address.class, Condition.class, Medication.class };
+	private static DataGeneratorFour dataGeneratorFour;
+	private static EntityManager entityManager;
+
+	private static Class<?>[] classes = new Class[] { Patient.class, Address.class, Condition.class, Medication.class };
 	private String selectFromPatients = "select e from Patient as e";
 	private String selectFromAddresses = "select e from Address as e";
-	private EntityManager entityManager;
 
-	@Before
-	public void before() throws Exception {
-		entityManager = Persistence.createEntityManagerFactory("").createEntityManager();
+	@BeforeClass
+	public static void beforeClass() throws Exception {
+		ApplicationContextManager.getApplicationContext("/META-INF/spring-h2-jdbc.xml");
+		entityManager = Persistence.createEntityManagerFactory(ITools.PERSISTENCE_UNIT_NAME).createEntityManager();
 		dataGeneratorFour = new DataGeneratorFour(entityManager, 1, classes);
 		dataGeneratorFour.before();
 		dataGeneratorFour.delete(entityManager, classes);
 	}
 
-	@After
-	public void after() throws Exception {
+	@AfterClass
+	public static void afterClass() throws Exception {
 		dataGeneratorFour.after();
 		entityManager.close();
 	}

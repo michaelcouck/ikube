@@ -4,7 +4,7 @@
        "http://tiles.apache.org/dtds/tiles-config_2_0.dtd">
 <tiles-definitions>
 	<definition name=".mainTemplate" template="/WEB-INF/templates/main.jsp">
-		<put-attribute name="title" value="Ikokoon" type="string" />
+		<put-attribute name="title" value="Ikube" type="string" />
 		<put-attribute name="header" value="/WEB-INF/templates/header.jsp" />
 		<put-attribute name="content" value="/WEB-INF/templates/blank.jsp" />
 		<put-attribute name="menu" value="/WEB-INF/templates/menu.jsp" />

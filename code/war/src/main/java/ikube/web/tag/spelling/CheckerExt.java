@@ -4,9 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.StringTokenizer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
+import org.apache.log4j.Logger;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.spell.PlainTextDictionary;
 import org.apache.lucene.search.spell.SpellChecker;
@@ -24,13 +23,13 @@ public class CheckerExt {
 	private static final String WORD_INDEX_DIRECTORY = "./spellingIndex";
 	private static SpellChecker spell;
 
-	private Logger logger = Logger.getLogger(CheckerExt.class.getName());
+	private Logger logger = Logger.getLogger(CheckerExt.class);
 
 	public CheckerExt() {
 		try {
 			openDictionary();
 		} catch (Exception e) {
-			logger.log(Level.SEVERE, "Exception opening the spelling index", e);
+			logger.error("Exception opening the spelling index", e);
 		}
 	}
 
@@ -41,7 +40,7 @@ public class CheckerExt {
 		File spellingIndexDirectory = new File(WORD_INDEX_DIRECTORY);
 		if (!spellingIndexDirectory.exists()) {
 			spellingIndexDirectory.mkdirs();
-			logger.log(Level.WARNING, "Created spelling index at : " + spellingIndexDirectory.getAbsolutePath());
+			logger.info("Created spelling index at : " + spellingIndexDirectory.getAbsolutePath());
 		}
 		Directory directory = FSDirectory.open(spellingIndexDirectory);
 		boolean mustIndex = true;
@@ -81,7 +80,7 @@ public class CheckerExt {
 				hasCorrections = true;
 				strings = spell.suggestSimilar(token, 1);
 			} catch (IOException e) {
-				logger.log(Level.SEVERE, "Exception checking spelling for : " + token, e);
+				logger.error("Exception checking spelling for : " + token, e);
 				continue;
 			}
 			if (strings != null && strings.length > 0) {

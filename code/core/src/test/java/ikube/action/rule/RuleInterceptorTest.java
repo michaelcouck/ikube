@@ -7,8 +7,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import ikube.ATest;
 import ikube.action.Close;
-import ikube.logging.Logging;
 import ikube.model.IndexContext;
+import ikube.toolkit.Logging;
 import ikube.toolkit.Permutations;
 
 import java.util.ArrayList;

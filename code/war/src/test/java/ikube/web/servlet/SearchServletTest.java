@@ -1,9 +1,9 @@
 package ikube.web.servlet;
 
 import static org.junit.Assert.assertTrue;
-import ikube.logging.Logging;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
+import ikube.toolkit.Logging;
 import ikube.toolkit.PerformanceTester;
 
 import java.net.URL;

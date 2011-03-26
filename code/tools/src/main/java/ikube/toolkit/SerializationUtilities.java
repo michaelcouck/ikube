@@ -1,6 +1,6 @@
 package ikube.toolkit;
 
-import ikube.IConstants;
+import ikube.ITools;
 
 import java.beans.BeanInfo;
 import java.beans.ExceptionListener;
@@ -26,7 +26,7 @@ import org.apache.log4j.Logger;
 public final class SerializationUtilities {
 
 	private static final Logger LOGGER = Logger.getLogger(SerializationUtilities.class);
-	
+
 	private SerializationUtilities() {
 	}
 
@@ -46,7 +46,7 @@ public final class SerializationUtilities {
 			xmlEncoder.writeObject(object);
 			xmlEncoder.flush();
 			xmlEncoder.close();
-			return byteArrayOutputStream.toString(IConstants.ENCODING);
+			return byteArrayOutputStream.toString(ITools.ENCODING);
 		} catch (UnsupportedEncodingException e) {
 			LOGGER.error("Unsupported encoding : ", e);
 		}
@@ -82,7 +82,7 @@ public final class SerializationUtilities {
 	public static Object deserialize(final String xml) {
 		byte[] bytes = new byte[0];
 		try {
-			bytes = xml.getBytes(IConstants.ENCODING);
+			bytes = xml.getBytes(ITools.ENCODING);
 			ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
 			XMLDecoder xmlDecoder = new XMLDecoder(byteArrayInputStream);
 			xmlDecoder.setExceptionListener(exceptionListener);

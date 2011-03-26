@@ -2,11 +2,11 @@ package ikube.toolkit;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import ikube.ATest;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.junit.Test;
 
 /**
@@ -16,11 +16,9 @@ import org.junit.Test;
  * @since 20.03.11
  * @version 01.00
  */
-public class ThreadUtilitiesTest extends ATest {
-
-	public ThreadUtilitiesTest() {
-		super(ThreadUtilitiesTest.class);
-	}
+public class ThreadUtilitiesTest {
+	
+	private Logger logger = Logger.getLogger(this.getClass());
 
 	@Test
 	public void waitForThreads() {

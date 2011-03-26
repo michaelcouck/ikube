@@ -34,7 +34,7 @@ public abstract class BaseTest extends ATest {
 			return;
 		}
 		INIT = Boolean.TRUE;
-		ApplicationContextManager.getApplicationContext(IConstants.SPRING_CONFIGURATION_FILE);
+		ApplicationContextManager.getApplicationContext(ITools.SPRING_CONFIGURATION_FILE);
 		// Delete all the old index directories
 		Map<String, IndexContext> contexts = ApplicationContextManager.getBeans(IndexContext.class);
 		for (IndexContext indexContext : contexts.values()) {
@@ -46,7 +46,7 @@ public abstract class BaseTest extends ATest {
 			public void execute() throws Exception {
 				EntityManager entityManager = null;
 				try {
-					entityManager = Persistence.createEntityManagerFactory(IConstants.PERSISTENCE_UNIT_NAME).createEntityManager();
+					entityManager = Persistence.createEntityManagerFactory(ITools.PERSISTENCE_UNIT_NAME).createEntityManager();
 					Class<?>[] classes = new Class[] { Faq.class, Attachment.class };
 					DataGeneratorFour dataGenerator = new DataGeneratorFour(entityManager, 10, classes);
 					dataGenerator.before();

@@ -1,14 +1,5 @@
 package ikube.integration;
 
-import ikube.toolkit.ApplicationContextManager;
-import ikube.toolkit.GeneralUtilities;
-import ikube.web.servlet.SearchServlet;
-
-//import org.apache.catalina.Context;
-//import org.apache.catalina.core.AprLifecycleListener;
-//import org.apache.catalina.core.StandardServer;
-//import org.apache.catalina.startup.Tomcat;
-import org.apache.log4j.Logger;
 import org.junit.Test;
 
 /**
@@ -20,16 +11,12 @@ import org.junit.Test;
  */
 public class IntegrationTomcat extends Integration {
 
-	private static final Logger LOGGER = Logger.getLogger(IntegrationTomcat.class);
-
 	@Test
 	public void main() throws Exception {
-		String osName = System.getProperty("os.name");
-		LOGGER.info("Operating system : " + osName);
-		if (!osName.toLowerCase().contains("server")) {
+		if (!isServer()) {
 			return;
 		}
-		ApplicationContextManager.getApplicationContext();
+		// ApplicationContextManager.getApplicationContext();
 		// Tomcat tomcat = new Tomcat();
 		// tomcat.setPort(GeneralUtilities.findFirstOpenPort(9000));
 		// tomcat.setBaseDir(".");
@@ -47,8 +34,8 @@ public class IntegrationTomcat extends Integration {
 		// } catch (Exception e) {
 		// LOGGER.error("Exception starting Tomcat embedded : ", e);
 		// }
-		Thread.sleep(1000 * 60 * 60 * 1);
-		validateIndexes();
+		// Thread.sleep(1000 * 60 * 60 * 1);
+		// validateIndexes();
 	}
 
 }

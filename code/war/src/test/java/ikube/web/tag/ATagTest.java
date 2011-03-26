@@ -2,6 +2,7 @@ package ikube.web.tag;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import ikube.toolkit.Logging;
 
 import java.beans.XMLEncoder;
 import java.io.ByteArrayOutputStream;
@@ -23,10 +24,10 @@ import mockit.Mockit;
 import org.apache.log4j.Logger;
 import org.junit.Before;
 
-// @RunWith(JMockit.class)
 public abstract class ATagTest {
 
 	static {
+		Logging.configure();
 		Mockit.setUpMocks();
 	}
 
@@ -35,9 +36,9 @@ public abstract class ATagTest {
 	protected Logger logger = Logger.getLogger(this.getClass());
 
 	@Cascading()
-	protected PagerTag pagerTag; // = mock(PagerTag.class);
-	// @Cascading()
+	protected PagerTag pagerTag;
 	protected PageContext pageContext = mock(PageContext.class);
+	protected JspWriter jspWriter = mock(JspWriter.class);
 	protected JspWriter writer = mock(JspWriter.class);
 	protected BodyContent bodyContent = mock(BodyContent.class);
 	protected HttpServletRequest request = mock(HttpServletRequest.class);
@@ -53,11 +54,7 @@ public abstract class ATagTest {
 	protected String anotherParameterValue = "anotherParameterValue";
 
 	@Before
-	public void before() {
-		// pagerTag = new PagerTag();
-		// pagerTag.setSearchUrl(baseUrl);
-
-		// request = new HttpServletRequestMock();
+	public void before() throws Exception {
 		Map<String, String[]> parameterMap = new HashMap<String, String[]>();
 		parameterMap.put(aParameter, new String[] { aParameterValue });
 		parameterMap.put(anotherParameter, new String[] { anotherParameterValue });
@@ -69,18 +66,7 @@ public abstract class ATagTest {
 		when(httpSession.getAttribute(ATag.MAX_RESULTS)).thenReturn(maxResults);
 
 		when(pageContext.getRequest()).thenReturn(request);
-
-		// request.getParameterMap().put(aParameter, new String[] { aParameterValue });
-		// request.getParameterMap().put(anotherParameter, new String[] { anotherParameterValue });
-		// request.getSession().setAttribute(ATag.TOTAL, totalResults);
-		// request.getSession().setAttribute(ATag.MAX_RESULTS, maxResults);
-
-		// writer = new JspWriterMock(100, true);
-		// pageContext = new PageContextMock(writer, request);
-		// bodyContent = new BodyContentMock(writer);
-
-		// pagerTag.setPageContext(pageContext);
-		// pagerTag.setBodyContent(bodyContent);
+		when(pageContext.getOut()).thenReturn(jspWriter);
 	}
 
 	protected String getResultsXml() {

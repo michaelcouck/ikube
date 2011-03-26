@@ -1,7 +1,7 @@
 package ikube.index.spatial.discovery;
 
 import ikube.index.spatial.Coordinate;
-import ikube.logging.Logging;
+import ikube.toolkit.Logging;
 import ikube.toolkit.PerformanceTester;
 
 import java.util.ArrayList;

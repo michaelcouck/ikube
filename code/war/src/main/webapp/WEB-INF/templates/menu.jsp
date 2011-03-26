@@ -1,5 +1,5 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="search" uri="http://ikube/search" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <script type="text/javascript">
 	window.onload = function() {
@@ -33,12 +33,11 @@
 		<li>
 			<h2>Navigation</h2>
 			<ul>
-				<li><a href="<c:url value="/index.html"/>">Link</a></li>
-				<li><a href="<c:url value="/index.html"/>">Link</a></li>
-				<li><a href="<c:url value="/index.html"/>">Link</a></li>
-				<li><a href="<c:url value="/index.html"/>">Link</a></li>
-				<li><a href="<c:url value="/index.html"/>">Link</a></li>
-				<li><a href="<c:url value="/index.html"/>">Link</a></li>
+				<li><a href="<c:url value="/index.html"/>">Search</a></li>
+				<li><a href="<c:url value="/index.html"/>">Administer</a></li>
+				<li><a href="<c:url value="/index.html"/>">Servers</a></li>
+				<li><a href="<c:url value="/index.html"/>">Monitoring</a></li>
+				<li><a href="<c:url value="/index.html"/>">Documentation</a></li>
 			</ul>
 		</li>
 		<li>

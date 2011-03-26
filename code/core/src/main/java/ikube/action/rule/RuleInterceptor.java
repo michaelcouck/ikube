@@ -1,8 +1,8 @@
 package ikube.action.rule;
 
 import ikube.action.IAction;
-import ikube.logging.Logging;
 import ikube.model.IndexContext;
+import ikube.toolkit.Logging;
 
 import java.util.List;
 

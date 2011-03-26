@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
 
-<taglib xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd"
+<taglib 
+	xmlns="http://java.sun.com/xml/ns/j2ee" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd"
 	version="2.0">
 
 	<tlib-version>1.0</tlib-version>
@@ -11,17 +14,17 @@
 
 	<tag>
 		<name>linkTag</name>
-		<tag-class>ikube.web.tag.tag.LinkTag</tag-class>
+		<tag-class>ikube.web.tag.LinkTag</tag-class>
 		<body-content>JSP</body-content>
 	</tag>
 	<tag>
 		<name>pageTag</name>
-		<tag-class>ikube.web.tag.tag.PageTag</tag-class>
+		<tag-class>ikube.web.tag.PageTag</tag-class>
 		<body-content>JSP</body-content>
 	</tag>
 	<tag>
 		<name>pagerTag</name>
-		<tag-class>ikube.web.tag.tag.PagerTag</tag-class>
+		<tag-class>ikube.web.tag.PagerTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>searchUrl</name>
@@ -31,7 +34,7 @@
 	</tag>
 	<tag>
 		<name>searchTag</name>
-		<tag-class>ikube.web.tag.tag.SearchTag</tag-class>
+		<tag-class>ikube.web.tag.SearchTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>searchUrl</name>
@@ -41,12 +44,12 @@
 	</tag>
 	<tag>
 		<name>spellingTag</name>
-		<tag-class>ikube.web.tag.tag.SpellingTag</tag-class>
+		<tag-class>ikube.web.tag.spelling.SpellingTag</tag-class>
 		<body-content>JSP</body-content>
 	</tag>
 	<tag>
 		<name>spellingWriterTag</name>
-		<tag-class>ikube.web.tag.tag.SpellingWriterTag</tag-class>
+		<tag-class>ikube.web.tag.spelling.SpellingWriterTag</tag-class>
 		<body-content>JSP</body-content>
 	</tag>
 </taglib>

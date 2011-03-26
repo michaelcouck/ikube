@@ -2,6 +2,7 @@ package ikube.web.tag;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.PageContext;
 
 import org.apache.log4j.Logger;
 
@@ -25,6 +26,10 @@ public class ContextTag extends ATag {
 			logger.error("Exception writing the content out", e);
 		}
 		return EVAL_PAGE;
+	}
+	
+	public void setPageContext(PageContext pageContext) {
+		this.pageContext = pageContext;
 	}
 
 }

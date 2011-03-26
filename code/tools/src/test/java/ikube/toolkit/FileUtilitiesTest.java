@@ -4,8 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import ikube.ATest;
-import ikube.IConstants;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -20,7 +18,7 @@ import org.junit.Test;
  * @since 21.11.10
  * @version 01.00
  */
-public class FileUtilitiesTest extends ATest {
+public class FileUtilitiesTest {
 
 	private File file;
 	private File dotFolder;
@@ -29,19 +27,16 @@ public class FileUtilitiesTest extends ATest {
 	private File indexFolderThree;
 	private String[] stringPatterns;
 
-	public FileUtilitiesTest() {
-		super(FileUtilitiesTest.class);
-	}
-
 	@Before
 	public void before() {
+		String fileName = "file.file";
 		dotFolder = new File(".");
-		file = new File(dotFolder, IConstants.READER_FILE_SUFFIX);
+		file = new File(dotFolder, fileName);
 		String fileUtilitiesTestIndexdirectory = "fileUtilitiesTestIndexdirectory";
 		indexFolderOne = FileUtilities.getFile("./" + fileUtilitiesTestIndexdirectory + "/1234567889/127.0.0.1", Boolean.TRUE);
 		indexFolderTwo = FileUtilities.getFile("./" + fileUtilitiesTestIndexdirectory + "/1234567891/127.0.0.2", Boolean.TRUE);
 		indexFolderThree = FileUtilities.getFile("./" + fileUtilitiesTestIndexdirectory + "/1234567890/127.0.0.3", Boolean.TRUE);
-		stringPatterns = new String[] { IConstants.READER_FILE_SUFFIX };
+		stringPatterns = new String[] { fileName };
 	}
 
 	@After
@@ -105,7 +100,7 @@ public class FileUtilitiesTest extends ATest {
 
 	@Test
 	public void findFile() {
-		File file = FileUtilities.findFile(new File("."), new String[] { "mime-types.xml" });
+		File file = FileUtilities.findFile(new File("."), new String[] { "jndi.properties" });
 		assertNotNull(file);
 	}
 
@@ -133,7 +128,6 @@ public class FileUtilitiesTest extends ATest {
 	public void getLatestIndexDirectoryString() {
 		// String
 		File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexFolderOne.getParentFile().getParentFile().getAbsolutePath());
-		logger.info("Latest : " + latestIndexDirectory);
 		assertEquals(indexFolderTwo.getParentFile().getName(), latestIndexDirectory.getName());
 	}
 

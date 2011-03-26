@@ -5,10 +5,10 @@ import ikube.index.IndexManager;
 import ikube.index.handler.IndexableHandler;
 import ikube.index.parse.IParser;
 import ikube.index.parse.ParserProvider;
-import ikube.logging.Logging;
 import ikube.model.IndexContext;
 import ikube.model.IndexableEmail;
 import ikube.toolkit.ApplicationContextManager;
+import ikube.toolkit.Logging;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

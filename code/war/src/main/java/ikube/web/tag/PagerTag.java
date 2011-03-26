@@ -133,6 +133,7 @@ public class PagerTag extends ATag {
 	 * @return the base url that will be used to generate the paging urls
 	 * @throws MalformedURLException
 	 */
+	@SuppressWarnings("unchecked")
 	protected String buildUrl(HttpServletRequest request) throws MalformedURLException {
 		StringBuilder builder = new StringBuilder();
 		// Add the action to the path

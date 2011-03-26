@@ -1,11 +1,11 @@
 package ikube.cluster;
 
 import ikube.cluster.cache.ICache;
-import ikube.logging.Logging;
 import ikube.model.Server;
 import ikube.model.Server.Action;
 import ikube.model.Url;
 import ikube.toolkit.HashUtilities;
+import ikube.toolkit.Logging;
 
 import java.net.InetAddress;
 import java.util.Iterator;

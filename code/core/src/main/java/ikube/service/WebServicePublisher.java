@@ -1,9 +1,9 @@
 package ikube.service;
 
 import ikube.cluster.IClusterManager;
-import ikube.logging.Logging;
 import ikube.model.Server;
 import ikube.toolkit.GeneralUtilities;
+import ikube.toolkit.Logging;
 
 import java.net.InetAddress;
 import java.net.URL;

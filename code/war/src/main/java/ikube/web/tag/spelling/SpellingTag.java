@@ -4,6 +4,7 @@ import ikube.web.tag.ATag;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.PageContext;
 
 import org.apache.log4j.Logger;
 
@@ -39,6 +40,10 @@ public class SpellingTag extends ATag {
 			logger.error("Exception writing the content out", e);
 		}
 		return SKIP_BODY;
+	}
+	
+	public void setPageContext(PageContext pageContext) {
+		this.pageContext = pageContext;
 	}
 
 	public int doEndTag() throws JspException {

@@ -1,6 +1,6 @@
 package ikube.integration;
 
-import ikube.IConstants;
+import ikube.ITools;
 import ikube.cluster.IClusterManager;
 import ikube.datageneration.DataGeneratorFour;
 import ikube.datageneration.IDataGenerator;
@@ -17,7 +17,6 @@ import ikube.datageneration.model.medical.Patient;
 import ikube.datageneration.model.medical.Person;
 import ikube.datageneration.model.medical.Record;
 import ikube.datageneration.model.medical.Treatment;
-import ikube.logging.Logging;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.model.IndexableColumn;
@@ -27,6 +26,7 @@ import ikube.model.Server;
 import ikube.service.ISearcherWebService;
 import ikube.service.ServiceLocator;
 import ikube.toolkit.ApplicationContextManager;
+import ikube.toolkit.Logging;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,13 +52,11 @@ public class Integration {
 		Logging.configure();
 	}
 
-	private Logger logger = Logger.getLogger(this.getClass());
+	protected Logger logger = Logger.getLogger(this.getClass());
 
 	@Test
 	public void main() throws Exception {
-		String osName = System.getProperty("os.name");
-		logger.info("Operating system : " + osName);
-		if (!osName.toLowerCase().contains("server")) {
+		if (!isServer()) {
 			return;
 		}
 		ApplicationContextManager.getApplicationContext();
@@ -127,13 +125,22 @@ public class Integration {
 	}
 
 	private void generateData() throws Exception {
-		EntityManager entityManager = Persistence.createEntityManagerFactory(IConstants.PERSISTENCE_UNIT_NAME).createEntityManager();
+		EntityManager entityManager = Persistence.createEntityManagerFactory(ITools.PERSISTENCE_UNIT_NAME).createEntityManager();
 		Class<?>[] classes = { Faq.class, Attachment.class, Hospital.class, Administration.class, Person.class, Doctor.class,
 				Patient.class, Inpatient.class, Condition.class, Medication.class, Treatment.class, Record.class, Address.class };
 		IDataGenerator dataGenerator = new DataGeneratorFour(entityManager, 10, classes);
 		dataGenerator.before();
 		dataGenerator.generate();
 		dataGenerator.after();
+	}
+	
+	protected boolean isServer() {
+		String osName = System.getProperty("os.name");
+		logger.info("Operating system : " + osName);
+		if (osName.toLowerCase().contains("server")) {
+			return Boolean.TRUE;
+		}
+		return Boolean.FALSE;
 	}
 
 }

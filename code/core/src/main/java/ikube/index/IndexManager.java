@@ -1,9 +1,9 @@
 package ikube.index;
 
 import ikube.IConstants;
-import ikube.logging.Logging;
 import ikube.model.IndexContext;
 import ikube.toolkit.FileUtilities;
+import ikube.toolkit.Logging;
 
 import java.io.File;
 import java.io.FileReader;

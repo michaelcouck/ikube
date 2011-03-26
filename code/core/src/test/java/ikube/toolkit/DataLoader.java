@@ -1,6 +1,6 @@
 package ikube.toolkit;
 
-import ikube.IConstants;
+import ikube.ITools;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -39,7 +39,7 @@ public class DataLoader {
 
 	/**
 	 * Creates the tables for the unit tests.
-	 *
+	 * 
 	 * @param filePath
 	 *            the path to the sql to create the tables
 	 */
@@ -65,7 +65,7 @@ public class DataLoader {
 
 	/**
 	 * Gets the data from the database and writes a DBUnit file to the fiel system with the data set in it.
-	 *
+	 * 
 	 * @param tableNames
 	 *            the names of the tables to select from
 	 * @param filePath
@@ -159,7 +159,7 @@ public class DataLoader {
 	}
 
 	public static void main(String[] args) {
-		ApplicationContextManager.getApplicationContext(IConstants.SPRING_CONFIGURATION_FILE);
+		ApplicationContextManager.getApplicationContext(ITools.SPRING_CONFIGURATION_FILE);
 		DataLoader dataLoader = new DataLoader();
 		dataLoader.writeDataSet(new String[] { "faq", "attachment" }, "./modules/core/src/test/resources/data/data.xml");
 	}

@@ -4,7 +4,6 @@ import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import ikube.ATest;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -20,7 +19,7 @@ import org.mockito.stubbing.Answer;
  * @since 12.10.2010
  * @version 01.00
  */
-public class DatabaseUtilitiesTest extends ATest {
+public class DatabaseUtilitiesTest {
 
 	private ResultSet resultSet = mock(ResultSet.class);
 	private Statement statement = mock(Statement.class);
@@ -29,10 +28,6 @@ public class DatabaseUtilitiesTest extends ATest {
 	private boolean resultSetOpen = Boolean.TRUE;
 	private boolean statementOpen = Boolean.TRUE;
 	private boolean connectionOpen = Boolean.TRUE;
-
-	public DatabaseUtilitiesTest() {
-		super(DatabaseUtilitiesTest.class);
-	}
 
 	@Before
 	public void before() throws Exception {

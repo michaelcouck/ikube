@@ -10,7 +10,6 @@ import ikube.database.IDataBase;
 import ikube.index.IndexManager;
 import ikube.index.parse.mime.MimeMapper;
 import ikube.index.parse.mime.MimeTypes;
-import ikube.logging.Logging;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.mock.IndexManagerMock;
 import ikube.model.Index;
@@ -18,6 +17,7 @@ import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.model.IndexableInternet;
 import ikube.model.Server;
+import ikube.toolkit.Logging;
 
 import java.io.File;
 import java.net.InetAddress;

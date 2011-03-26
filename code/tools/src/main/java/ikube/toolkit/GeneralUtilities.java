@@ -93,32 +93,36 @@ public final class GeneralUtilities {
 	 *            the port number to start from
 	 * @return the first available port from the starting port
 	 */
-	public static int findFirstOpenPort(int port) {
-		ServerSocket ss = null;
-		DatagramSocket ds = null;
-		while (true && port < 65000) {
-			try {
-				ss = new ServerSocket(port);
-				ss.setReuseAddress(true);
-				ds = new DatagramSocket(port);
-				ds.setReuseAddress(true);
-				return port;
-			} catch (IOException e) {
-				port++;
-			} finally {
-				if (ds != null) {
-					ds.close();
-				}
-				if (ss != null) {
-					try {
-						ss.close();
-					} catch (Exception e) {
-						// Should not be thrown
+	public static synchronized int findFirstOpenPort(int port) {
+		try {
+			ServerSocket ss = null;
+			DatagramSocket ds = null;
+			while (true && port < Short.MAX_VALUE) {
+				try {
+					ss = new ServerSocket(port);
+					ss.setReuseAddress(true);
+					ds = new DatagramSocket(port);
+					ds.setReuseAddress(true);
+					return port;
+				} catch (IOException e) {
+					port++;
+				} finally {
+					if (ds != null) {
+						ds.close();
+					}
+					if (ss != null) {
+						try {
+							ss.close();
+						} catch (Exception e) {
+							// Should not be thrown
+						}
 					}
 				}
 			}
+			throw new RuntimeException("Couldn't find an open port : " + port);
+		} finally {
+			GeneralUtilities.class.notifyAll();
 		}
-		throw new RuntimeException("Couldn't find an open port : " + port);
 	}
 
 }

@@ -1,6 +1,5 @@
 package ikube.toolkit;
 
-import ikube.logging.Logging;
 
 import org.apache.log4j.Logger;
 

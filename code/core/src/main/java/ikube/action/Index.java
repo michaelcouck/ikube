@@ -2,11 +2,11 @@ package ikube.action;
 
 import ikube.index.IndexManager;
 import ikube.index.handler.IHandler;
-import ikube.logging.Logging;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.model.Server;
 import ikube.toolkit.ApplicationContextManager;
+import ikube.toolkit.Logging;
 import ikube.toolkit.ThreadUtilities;
 
 import java.util.List;

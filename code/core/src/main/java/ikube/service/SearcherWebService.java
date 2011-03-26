@@ -4,11 +4,11 @@ import ikube.IConstants;
 import ikube.listener.Event;
 import ikube.listener.IListener;
 import ikube.listener.ListenerManager;
-import ikube.logging.Logging;
 import ikube.model.IndexContext;
 import ikube.search.SearchMulti;
 import ikube.search.SearchMultiSorted;
 import ikube.search.SearchSingle;
+import ikube.toolkit.Logging;
 import ikube.toolkit.SerializationUtilities;
 
 import java.util.ArrayList;

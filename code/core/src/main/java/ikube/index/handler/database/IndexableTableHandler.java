@@ -9,13 +9,13 @@ import ikube.index.content.IContentProvider;
 import ikube.index.handler.IndexableHandler;
 import ikube.index.parse.IParser;
 import ikube.index.parse.ParserProvider;
-import ikube.logging.Logging;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.model.IndexableColumn;
 import ikube.model.IndexableTable;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.DatabaseUtilities;
+import ikube.toolkit.Logging;
 import ikube.toolkit.SerializationUtilities;
 
 import java.io.ByteArrayInputStream;

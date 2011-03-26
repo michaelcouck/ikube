@@ -1,7 +1,7 @@
 package ikube;
 
-import ikube.logging.Logging;
 import ikube.toolkit.ApplicationContextManager;
+import ikube.toolkit.Logging;
 
 /**
  * This is the bootstrap class for stand alone. The libraries that are required are defined in the manifest of the core jar, and the

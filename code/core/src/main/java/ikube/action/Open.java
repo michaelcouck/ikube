@@ -2,10 +2,10 @@ package ikube.action;
 
 import ikube.listener.Event;
 import ikube.listener.ListenerManager;
-import ikube.logging.Logging;
 import ikube.model.IndexContext;
 import ikube.service.SearcherWebService;
 import ikube.toolkit.FileUtilities;
+import ikube.toolkit.Logging;
 import ikube.model.Index;
 
 import java.io.File;

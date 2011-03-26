@@ -1,7 +1,6 @@
 package ikube.toolkit;
 
-import ikube.IConstants;
-import ikube.logging.Logging;
+import ikube.ITools;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -31,7 +30,7 @@ public final class ApplicationContextManager {
 		Logging.configure();
 		LOGGER = Logger.getLogger(ApplicationContextManager.class);
 	}
-	
+
 	private ApplicationContextManager() {
 	}
 
@@ -44,12 +43,13 @@ public final class ApplicationContextManager {
 		try {
 			if (APPLICATION_CONTEXT == null) {
 				// First see if there is a configuration file at the base of where the Jvm was started
-				File configFile = new File("." + IConstants.SEP + IConstants.IKUBE + IConstants.SEP + IConstants.SPRING_XML);
-				LOGGER.info("External configuration file : " + configFile + ", " + configFile.getAbsolutePath() + ", " + configFile.exists());
+				File configFile = new File("." + ITools.SEP + ITools.IKUBE + ITools.SEP + ITools.SPRING_XML);
+				LOGGER.info("External configuration file : " + configFile + ", " + configFile.getAbsolutePath() + ", "
+						+ configFile.exists());
 				if (configFile.exists()) {
 					APPLICATION_CONTEXT = getApplicationContext(configFile);
 				} else {
-					APPLICATION_CONTEXT = getApplicationContext(IConstants.SPRING_CONFIGURATION_FILE);
+					APPLICATION_CONTEXT = getApplicationContext(ITools.SPRING_CONFIGURATION_FILE);
 				}
 			}
 			return APPLICATION_CONTEXT;
@@ -125,7 +125,7 @@ public final class ApplicationContextManager {
 					configLocations.add(configurationFile.getAbsolutePath());
 				}
 				APPLICATION_CONTEXT = new FileSystemXmlApplicationContext(configLocations.toArray(new String[configLocations.size()]));
-				((ConfigurableApplicationContext)APPLICATION_CONTEXT).registerShutdownHook();
+				((ConfigurableApplicationContext) APPLICATION_CONTEXT).registerShutdownHook();
 				LOGGER.info("Loaded the application context with configurations : " + Arrays.asList(configFiles));
 			}
 			return APPLICATION_CONTEXT;
@@ -146,7 +146,7 @@ public final class ApplicationContextManager {
 			if (APPLICATION_CONTEXT == null) {
 				LOGGER.info("Loading the application context with configurations : " + Arrays.asList(configLocations));
 				APPLICATION_CONTEXT = new ClassPathXmlApplicationContext(configLocations);
-				((ConfigurableApplicationContext)APPLICATION_CONTEXT).registerShutdownHook();
+				((ConfigurableApplicationContext) APPLICATION_CONTEXT).registerShutdownHook();
 				LOGGER.info("Loaded the application context with configurations : " + Arrays.asList(configLocations));
 			}
 			return APPLICATION_CONTEXT;

@@ -23,7 +23,7 @@ public class SearchTagTest extends ATagTest {
 	private SearchTag searchTag;
 
 	@Before
-	public void before() {
+	public void before() throws Exception {
 		super.before();
 		searchTag = new SearchTag();
 		searchTag.setSearchUrl(searchUrl);

@@ -16,8 +16,6 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.apache.log4j.Logger;
-import org.junit.After;
-import org.junit.Before;
 
 /**
  * @author Michael Couck
@@ -33,7 +31,6 @@ public abstract class ADataGenerator implements IDataGenerator {
 	protected List<String> words;
 	protected Map<String, byte[]> fileContents;
 
-	@Before
 	public void before() throws Exception {
 		File dotFolder = new File(".");
 		words = new ArrayList<String>();
@@ -108,7 +105,6 @@ public abstract class ADataGenerator implements IDataGenerator {
 		return null;
 	}
 
-	@After
 	public void after() throws Exception {
 	}
 

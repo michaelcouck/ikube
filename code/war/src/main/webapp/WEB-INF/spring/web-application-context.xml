@@ -5,8 +5,8 @@
                            http://www.springframework.org/schema/mvc
                            http://www.springframework.org/schema/mvc/spring-mvc.xsd">
 
-	<mvc:view-controller path="/ikube/index.html" />
-	<mvc:view-controller path="/ikube/search.html" />
+	<mvc:view-controller path="/index.html" />
+	<mvc:view-controller path="/search.html" />
 
 	<bean id="tilesConfigurer"
 		class="org.springframework.web.servlet.view.tiles2.TilesConfigurer"
