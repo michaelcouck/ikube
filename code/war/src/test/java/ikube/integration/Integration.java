@@ -1,7 +1,7 @@
 package ikube.integration;
 
-import static org.junit.Assert.*;
-
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import ikube.cluster.IClusterManager;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
@@ -21,6 +21,8 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
+
+import com.hazelcast.core.Hazelcast;
 
 /**
  * This test runs in its own Jenkins job. Typically it will be triggered by another job and will run along side other similar jobs
@@ -43,35 +45,54 @@ public class Integration {
 		if (!isServer()) {
 			return;
 		}
+		Thread.sleep((long) (Math.random() * 10));
 		ApplicationContextManager.getApplicationContext();
-		Thread.sleep(1000 * 60 * 60 * 3);
+
+		waitToFinish();
+
 		validateIndexes();
 		// TODO Validate the indexes on the file system
 	}
 
+	protected void waitToFinish() {
+		try {
+			while (true) {
+				Thread.sleep(600000);
+				boolean anyWorking = ApplicationContextManager.getBean(IClusterManager.class).anyWorking();
+				boolean isWorking = ApplicationContextManager.getBean(IClusterManager.class).getServer().isWorking();
+				if (!anyWorking && !isWorking) {
+					break;
+				}
+				if (Hazelcast.getCluster().getMembers().size() == 1) {
+					break;
+				}
+			}
+		} catch (Exception e) {
+			logger.error("Exception waiting for servers to finish : ", e);
+		}
+	}
+
 	@SuppressWarnings("unchecked")
 	protected void validateIndexes() throws Exception {
-		List<Server> servers = ApplicationContextManager.getBean(IClusterManager.class).getServers();
-		for (Server server : servers) {
-			List<String> webServiceUrls = server.getWebServiceUrls();
-			for (String webServiceUrl : webServiceUrls) {
-				if (!webServiceUrl.contains(ISearcherWebService.class.getSimpleName())) {
-					continue;
-				}
-				ISearcherWebService searchRemote = ServiceLocator.getService(ISearcherWebService.class, webServiceUrl,
-						ISearcherWebService.NAMESPACE, ISearcherWebService.SERVICE);
-				Map<String, IndexContext> indexContexts = ApplicationContextManager.getBeans(IndexContext.class);
-				for (String contextName : indexContexts.keySet()) {
-					IndexContext indexContext = indexContexts.get(contextName);
-					String indexName = indexContext.getIndexName();
-					String[] searchStrings = new String[] { "quick", "brown", "fox", "jumped", "over", "the", "lazy", "dog" };
-					String[] searchFields = getSearchFields(indexContext);
-					String results = searchRemote.searchMulti(indexName, searchStrings, searchFields, Boolean.TRUE, 0, 11);
-					logger.info("Results : " + results);
-					assertNotNull(results);
-					List<Map<String, String>> list = (List<Map<String, String>>) SerializationUtilities.deserialize(results);
-					assertTrue(list.size() >= 1);
-				}
+		Server server = ApplicationContextManager.getBean(IClusterManager.class).getServer();
+		List<String> webServiceUrls = server.getWebServiceUrls();
+		for (String webServiceUrl : webServiceUrls) {
+			if (!webServiceUrl.contains(ISearcherWebService.class.getSimpleName())) {
+				continue;
+			}
+			ISearcherWebService searchRemote = ServiceLocator.getService(ISearcherWebService.class, webServiceUrl,
+					ISearcherWebService.NAMESPACE, ISearcherWebService.SERVICE);
+			Map<String, IndexContext> indexContexts = ApplicationContextManager.getBeans(IndexContext.class);
+			for (String contextName : indexContexts.keySet()) {
+				IndexContext indexContext = indexContexts.get(contextName);
+				String indexName = indexContext.getIndexName();
+				String[] searchStrings = new String[] { "quick", "brown", "fox", "jumped", "over", "the", "lazy", "dog" };
+				String[] searchFields = getSearchFields(indexContext);
+				String results = searchRemote.searchMulti(indexName, searchStrings, searchFields, Boolean.TRUE, 0, 11);
+				logger.info("Results : " + results);
+				assertNotNull(results);
+				List<Map<String, String>> list = (List<Map<String, String>>) SerializationUtilities.deserialize(results);
+				assertTrue(list.size() >= 1);
 			}
 		}
 	}

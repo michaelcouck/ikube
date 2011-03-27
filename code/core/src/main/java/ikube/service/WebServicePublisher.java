@@ -56,9 +56,8 @@ public class WebServicePublisher implements IWebServicePublisher {
 					logger.info(message);
 					break;
 				} catch (Exception e) {
+					logger.info("Port busy : " + protocol + ", " + host + ", " + port + ", " + path + ", " + implementor);
 					port++;
-					logger.error("Exception publishing web service : " + protocol + ", " + host + ", " + port + ", " + path + ", "
-							+ implementor, e);
 				}
 			}
 		}

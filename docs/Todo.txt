@@ -1,22 +1,33 @@
 03.11.10
 
-* Client front end for search and monitoring - 10 (Michael)
+* UI - client front end for search and monitoring - 3 1/2 (Michael)
    Logging on a topic for the gui to collect for the whole cluster is an idea
+   1) Search page for the documentation *
+   2) Administration to start an in index - 4 hours
+   3) Monitoring page to see what the servers are doing - 1
+   4) Search page to search the individual indexes - 1
+* Re-factor common code to tools module - 1
+* Documentation - 1
+  1) On the Google code site - 2 hours
+  2) Migrate the documentation from docs to the application - 4 hours 
+  3) On Wiki Pedia - 1 hour
+  4) On various Java sites - 4 hours 
+
+Sub Total: 5
+
 * Implementation of updating the index with deltas from the client - 3
 * Move the datasource to a central location for the table indexables - 4 hours
-* Stress and load test the web service - 1
 * Add strategies for indexing large files like zips - 3
-* Add possibility to have index in memory so as not to write on the file system - 3
 * Test writing the index across the network, and reading, perhaps a stress test too - 1
-* Add facets to the search possibilities - 5
 * Add a shutdown that closes everything when the application is being un-deployed 
    so the new application starts the application context cleanly - 3
 
 In progress:
+* UI
 * Implement distance sorting, i.e. given the co-ordinates of the originator and the co-ordinates
    of the results sort them from the closest to the furthest from the orginator - 3 (Michael)
 
-Total - +-31
+Total: +-18
 
 Done:
 * Cluster - 3 *
@@ -36,6 +47,7 @@ Done:
 * New data structure, perhaps patients in a hospital - 1 *
 * Create automated integration tests in different environments - 3 *
 * Add the possibility for persistence in JPA - 1 *
+* Stress and load test the web service - 1 *
 
 Other things:
 * Add a database tester to re-connect if the database becomes disconnected - 4 hours
@@ -71,3 +83,5 @@ Won't Do:
 * Servlet/Ejb - 1?
 * Add slave to run on the client machine and transfer data to the master running 
    on our servers as a hosting service.
+* Add possibility to have index in memory so as not to write on the file system - 3
+* Add facets to the search possibilities - 5

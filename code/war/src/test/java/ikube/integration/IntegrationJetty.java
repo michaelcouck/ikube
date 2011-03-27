@@ -41,16 +41,26 @@ public class IntegrationJetty extends Integration {
 		if (!isServer()) {
 			return;
 		}
+		Thread.sleep((long) (Math.random() * 10));
 		String webAppContextFilePath = getWebAppContextFilePath();
 		int port = GeneralUtilities.findFirstOpenPort(this.port);
-		logger.info("Starting server on port : " + port + ",  in directory : " + webAppContextFilePath);
-		Server server = new Server(port);
-		Context root = new Context(server, contextPath, Context.SESSIONS);
-		server.setHandler(new WebAppContext(webAppContextFilePath, contextPath));
-		root.addServlet(new ServletHolder(new SearchServlet()), IConstants.SEP + SearchServlet.class.getSimpleName());
 
-		server.start();
-		Thread.sleep(1000 * 60 * 60);
+		while (true && port < Short.MAX_VALUE) {
+			try {
+				logger.info("Starting server on port : " + port + ",  in directory : " + webAppContextFilePath);
+				Server server = new Server(port);
+				Context root = new Context(server, contextPath, Context.SESSIONS);
+				server.setHandler(new WebAppContext(webAppContextFilePath, contextPath));
+				root.addServlet(new ServletHolder(new SearchServlet()), IConstants.SEP + SearchServlet.class.getSimpleName());
+				server.start();
+			} catch (Exception e) {
+				logger.info("Port occupied? We'll try another one : " + port);
+				port++;
+			}
+		}
+
+		waitToFinish();
+
 		validateIndexes();
 
 		// Test all the jsps
