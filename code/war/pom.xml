@@ -61,9 +61,14 @@
 				<version>2.6</version>
 				<configuration>
 					<argLine></argLine>
+					<forkMode>pertest</forkMode>
 					<includes>
-						<include>**/*.java</include>
+						<include>**/*Integration*.java</include>
 					</includes>
+					<excludes>
+						<exclude>**/*Test*.java</exclude>
+						<exclude>**/*Strategy*.java</exclude>
+					</excludes>
 				</configuration>
 				<executions>
 					<execution>

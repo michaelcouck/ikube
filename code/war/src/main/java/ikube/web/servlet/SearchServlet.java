@@ -13,7 +13,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.Persistence;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -33,9 +32,7 @@ public class SearchServlet extends HttpServlet {
 
 	@Override
 	public void init() throws ServletException {
-		// ApplicationContextManager.getApplicationContext();
-		// We need to create this as the in memory database or there will be exceptions
-		// Persistence.createEntityManagerFactory(IConstants.PERSISTENCE_UNIT_NAME);
+		ApplicationContextManager.getApplicationContext();
 	}
 
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -68,7 +65,7 @@ public class SearchServlet extends HttpServlet {
 			try {
 				out.print("Exception searching with parameters : " + request.getParameterMap());
 			} catch (Exception ex) {
-				logger.error("Exception writing the exceptino message to the client : " + request.getParameterMap(), ex);
+				logger.error("Exception writing the exception message to the client : " + request.getParameterMap(), ex);
 			}
 		}
 		out.print("There was no index found, or the index was not built or an exception was thrown. ");
@@ -77,6 +74,7 @@ public class SearchServlet extends HttpServlet {
 		out.print(getParameters(request));
 	}
 
+	@SuppressWarnings("unchecked")
 	private String getParameters(HttpServletRequest request) {
 		StringBuilder builder = new StringBuilder();
 		Map<String, String[]> parameters = request.getParameterMap();

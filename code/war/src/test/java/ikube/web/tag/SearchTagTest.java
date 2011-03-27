@@ -18,6 +18,12 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+/**
+ * TODO Comment me.
+ * @author Michael Couck
+ * @since 27.03.11
+ * @version 01.00
+ */
 public class SearchTagTest extends ATagTest {
 
 	private SearchTag searchTag;

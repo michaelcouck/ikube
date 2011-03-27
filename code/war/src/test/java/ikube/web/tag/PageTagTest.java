@@ -6,6 +6,12 @@ import javax.servlet.jsp.tagext.Tag;
 
 import org.junit.Test;
 
+/**
+ * TODO Comment me.
+ * @author Michael Couck
+ * @since 27.03.11
+ * @version 01.00
+ */
 public class PageTagTest extends ATagTest {
 
 	private PageTag pageTag = new PageTag();

@@ -4,6 +4,17 @@ import ikube.listener.ListenerManager;
 import ikube.model.IndexContext;
 import ikube.model.faq.Attachment;
 import ikube.model.faq.Faq;
+import ikube.model.medical.Address;
+import ikube.model.medical.Administration;
+import ikube.model.medical.Condition;
+import ikube.model.medical.Doctor;
+import ikube.model.medical.Hospital;
+import ikube.model.medical.Inpatient;
+import ikube.model.medical.Medication;
+import ikube.model.medical.Patient;
+import ikube.model.medical.Person;
+import ikube.model.medical.Record;
+import ikube.model.medical.Treatment;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.PerformanceTester;
@@ -41,19 +52,22 @@ public abstract class BaseTest extends ATest {
 			File baseIndexDirectory = FileUtilities.getFile(indexContext.getIndexDirectoryPath(), Boolean.TRUE);
 			FileUtilities.deleteFile(baseIndexDirectory, 1);
 		}
+		final EntityManager entityManager = Persistence.createEntityManagerFactory(IConstants.PERSISTENCE_UNIT_NAME).createEntityManager();
 		PerformanceTester.execute(new PerformanceTester.APerform() {
 			@Override
 			public void execute() throws Exception {
-				EntityManager entityManager = null;
 				try {
-					entityManager = Persistence.createEntityManagerFactory(IConstants.PERSISTENCE_UNIT_NAME).createEntityManager();
-					Class<?>[] classes = new Class[] { Faq.class, Attachment.class };
+					Class<?>[] classes = new Class[] { Faq.class, Attachment.class, Address.class, Administration.class, Condition.class,
+							Doctor.class, Hospital.class, Inpatient.class, Medication.class, Patient.class, Person.class, Record.class,
+							Treatment.class };
 					DataGeneratorFour dataGenerator = new DataGeneratorFour(entityManager, 10, classes);
 					dataGenerator.before();
 					dataGenerator.generate();
 					dataGenerator.after();
 				} finally {
-					entityManager.close();
+					if (entityManager != null) {
+						entityManager.close();
+					}
 				}
 			}
 		}, "Data generator two insertion : ", 1);

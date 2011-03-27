@@ -1,5 +1,7 @@
 package ikube.integration;
 
+import static org.junit.Assert.*;
+
 import ikube.cluster.IClusterManager;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
@@ -11,6 +13,7 @@ import ikube.service.ISearcherWebService;
 import ikube.service.ServiceLocator;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.Logging;
+import ikube.toolkit.SerializationUtilities;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,43 +41,42 @@ public class Integration {
 	@Test
 	public void main() throws Exception {
 		if (!isServer()) {
-			// return;
+			return;
 		}
 		ApplicationContextManager.getApplicationContext();
-		Thread.sleep(1000 * 60 * 1);
+		Thread.sleep(1000 * 60 * 60 * 3);
 		validateIndexes();
 		// TODO Validate the indexes on the file system
 	}
 
-	protected void validateIndexes() {
+	@SuppressWarnings("unchecked")
+	protected void validateIndexes() throws Exception {
 		List<Server> servers = ApplicationContextManager.getBean(IClusterManager.class).getServers();
 		for (Server server : servers) {
 			List<String> webServiceUrls = server.getWebServiceUrls();
 			for (String webServiceUrl : webServiceUrls) {
-				try {
-					if (!webServiceUrl.contains(ISearcherWebService.class.getSimpleName())) {
-						continue;
-					}
-					ISearcherWebService searchRemote = ServiceLocator.getService(ISearcherWebService.class, webServiceUrl,
-							ISearcherWebService.NAMESPACE, ISearcherWebService.SERVICE);
-					Map<String, IndexContext> indexContexts = ApplicationContextManager.getBeans(IndexContext.class);
-					for (String contextName : indexContexts.keySet()) {
-						IndexContext indexContext = indexContexts.get(contextName);
-						String indexName = indexContext.getIndexName();
-						String[] searchStrings = new String[] { "quick", "brown", "fox", "jumped", "over", "the", "lazy", "dog" };
-						String[] searchFields = getSearchFields(indexContext);
-						String results = searchRemote.searchMulti(indexName, searchStrings, searchFields, Boolean.TRUE, 0, 11);
-						logger.info("Results : " + results);
-					}
-				} catch (Exception e) {
-					// Swallow, gulp! Yummy?
-					logger.warn("Exception accessing the web service : " + webServiceUrl, e);
+				if (!webServiceUrl.contains(ISearcherWebService.class.getSimpleName())) {
+					continue;
+				}
+				ISearcherWebService searchRemote = ServiceLocator.getService(ISearcherWebService.class, webServiceUrl,
+						ISearcherWebService.NAMESPACE, ISearcherWebService.SERVICE);
+				Map<String, IndexContext> indexContexts = ApplicationContextManager.getBeans(IndexContext.class);
+				for (String contextName : indexContexts.keySet()) {
+					IndexContext indexContext = indexContexts.get(contextName);
+					String indexName = indexContext.getIndexName();
+					String[] searchStrings = new String[] { "quick", "brown", "fox", "jumped", "over", "the", "lazy", "dog" };
+					String[] searchFields = getSearchFields(indexContext);
+					String results = searchRemote.searchMulti(indexName, searchStrings, searchFields, Boolean.TRUE, 0, 11);
+					logger.info("Results : " + results);
+					assertNotNull(results);
+					List<Map<String, String>> list = (List<Map<String, String>>) SerializationUtilities.deserialize(results);
+					assertTrue(list.size() >= 1);
 				}
 			}
 		}
 	}
 
-	private String[] getSearchFields(IndexContext indexContext) {
+	protected String[] getSearchFields(IndexContext indexContext) {
 		List<String> searchFieldsList = new ArrayList<String>();
 		List<Indexable<?>> indexables = indexContext.getIndexables();
 		for (Indexable<?> indexable : indexables) {
@@ -83,7 +85,7 @@ public class Integration {
 		return searchFieldsList.toArray(new String[searchFieldsList.size()]);
 	}
 
-	private void getSearchFields(Indexable<?> indexable, List<String> searchFieldsList) {
+	protected void getSearchFields(Indexable<?> indexable, List<String> searchFieldsList) {
 		String fieldName = null;
 		if (IndexableColumn.class.isAssignableFrom(indexable.getClass())) {
 			fieldName = ((IndexableColumn) indexable).getFieldName();

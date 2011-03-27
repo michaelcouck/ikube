@@ -8,6 +8,12 @@ import java.util.logging.Logger;
 
 import org.junit.Test;
 
+/**
+ * TODO Comment me.
+ * @author Michael Couck
+ * @since 27.03.11
+ * @version 01.00
+ */
 public class CheckerExtTest {
 
 	private Logger logger = Logger.getLogger(CheckerExtTest.class.getName());

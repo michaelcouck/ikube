@@ -26,7 +26,7 @@
 		<class>ikube.model.medical.Record</class>
 		<class>ikube.model.medical.Address</class>
 
-		<exclude-unlisted-classes>false</exclude-unlisted-classes>
+		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 
 		<properties>
 			<property name="openjpa.ConnectionFactoryProperties" value="PrettyPrint=true,PrettyPrintLineLength=150" />

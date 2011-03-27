@@ -1,6 +1,5 @@
 package ikube.toolkit;
 
-
 import org.apache.log4j.Logger;
 
 /**
@@ -13,7 +12,7 @@ import org.apache.log4j.Logger;
 public class PerformanceTester {
 
 	private static final Logger LOGGER = Logger.getLogger(PerformanceTester.class);
-	
+
 	private PerformanceTester() {
 	}
 

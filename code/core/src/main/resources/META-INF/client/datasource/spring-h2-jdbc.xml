@@ -22,7 +22,7 @@
 		property:user="sa"
 		property:password=""
 		property:driverClass="org.h2.Driver"
-		property:jdbcUrl="jdbc:h2:mem:search;DB_CLOSE_ON_EXIT=FALSE"
+		property:jdbcUrl="jdbc:h2:mem:search"
 		property:initialPoolSize="${jdbc.minPoolSize}"
 		property:maxPoolSize="${jdbc.maxPoolSize}"
 		property:maxStatements="${jdbc.maxStatements}"

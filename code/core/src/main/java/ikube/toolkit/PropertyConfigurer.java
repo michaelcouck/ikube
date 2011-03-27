@@ -69,7 +69,7 @@ public class PropertyConfigurer extends Properties {
 	 *            the file to check for properties entries
 	 */
 	protected void checkJar(File file) {
-		if (!file.isFile() || !file.canRead()) {
+		if (file == null || !file.isFile() || !file.canRead()) {
 			return;
 		}
 		try {

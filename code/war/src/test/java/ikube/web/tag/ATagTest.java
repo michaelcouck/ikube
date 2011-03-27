@@ -24,6 +24,12 @@ import mockit.Mockit;
 import org.apache.log4j.Logger;
 import org.junit.Before;
 
+/**
+ * TODO Comment me.
+ * @author Michael Couck
+ * @since 27.03.11
+ * @version 01.00
+ */
 public abstract class ATagTest {
 
 	static {
