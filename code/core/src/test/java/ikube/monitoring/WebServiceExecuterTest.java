@@ -10,6 +10,7 @@ import ikube.toolkit.ApplicationContextManager;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -24,6 +25,7 @@ public class WebServiceExecuterTest extends BaseTest {
 	}
 
 	@Test
+	@Ignore
 	public void execute() throws Exception {
 		ISearcherWebServiceExecuter searcherWebServiceExecuter = ApplicationContextManager.getBean(SearcherWebServiceExecuter.class);
 		List<Map<String, String>> results = searcherWebServiceExecuter.execute();

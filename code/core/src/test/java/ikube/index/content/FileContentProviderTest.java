@@ -5,7 +5,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import ikube.ATest;
-import ikube.ITools;
+import ikube.IConstants;
 import ikube.model.IndexableFileSystem;
 import ikube.toolkit.FileUtilities;
 
@@ -43,7 +43,7 @@ public class FileContentProviderTest extends ATest {
 		this.contentProvider.getContent(indexableFileSystem, outputStream);
 		String content = outputStream.toString();
 		assertNotNull(content);
-		assertTrue(content.contains(ITools.IKUBE));
+		assertTrue(content.contains(IConstants.IKUBE));
 	}
 
 }

@@ -1,22 +1,6 @@
 package ikube.integration;
 
-import ikube.ITools;
 import ikube.cluster.IClusterManager;
-import ikube.datageneration.DataGeneratorFour;
-import ikube.datageneration.IDataGenerator;
-import ikube.datageneration.model.faq.Attachment;
-import ikube.datageneration.model.faq.Faq;
-import ikube.datageneration.model.medical.Address;
-import ikube.datageneration.model.medical.Administration;
-import ikube.datageneration.model.medical.Condition;
-import ikube.datageneration.model.medical.Doctor;
-import ikube.datageneration.model.medical.Hospital;
-import ikube.datageneration.model.medical.Inpatient;
-import ikube.datageneration.model.medical.Medication;
-import ikube.datageneration.model.medical.Patient;
-import ikube.datageneration.model.medical.Person;
-import ikube.datageneration.model.medical.Record;
-import ikube.datageneration.model.medical.Treatment;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.model.IndexableColumn;
@@ -31,9 +15,6 @@ import ikube.toolkit.Logging;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import javax.persistence.EntityManager;
-import javax.persistence.Persistence;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
@@ -57,11 +38,10 @@ public class Integration {
 	@Test
 	public void main() throws Exception {
 		if (!isServer()) {
-			return;
+			// return;
 		}
 		ApplicationContextManager.getApplicationContext();
-		generateData();
-		Thread.sleep(1000 * 60 * 60 * 2);
+		Thread.sleep(1000 * 60 * 1);
 		validateIndexes();
 		// TODO Validate the indexes on the file system
 	}
@@ -124,16 +104,6 @@ public class Integration {
 		}
 	}
 
-	private void generateData() throws Exception {
-		EntityManager entityManager = Persistence.createEntityManagerFactory(ITools.PERSISTENCE_UNIT_NAME).createEntityManager();
-		Class<?>[] classes = { Faq.class, Attachment.class, Hospital.class, Administration.class, Person.class, Doctor.class,
-				Patient.class, Inpatient.class, Condition.class, Medication.class, Treatment.class, Record.class, Address.class };
-		IDataGenerator dataGenerator = new DataGeneratorFour(entityManager, 10, classes);
-		dataGenerator.before();
-		dataGenerator.generate();
-		dataGenerator.after();
-	}
-	
 	protected boolean isServer() {
 		String osName = System.getProperty("os.name");
 		logger.info("Operating system : " + osName);

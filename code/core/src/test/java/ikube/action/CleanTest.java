@@ -55,7 +55,7 @@ public class CleanTest extends ATest {
 			directory.close();
 		}
 
-		List<File> files = FileUtilities.findFilesRecursively(indexDir, new String[] { "segments" }, new ArrayList<File>());
+		List<File> files = FileUtilities.findFilesRecursively(indexDir, new ArrayList<File>(), "segments");
 		for (File file : files) {
 			FileUtilities.deleteFile(file, 1);
 		}

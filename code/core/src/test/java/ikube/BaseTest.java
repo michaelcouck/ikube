@@ -1,13 +1,13 @@
 package ikube;
 
-import ikube.datageneration.DataGeneratorFour;
-import ikube.datageneration.model.faq.Attachment;
-import ikube.datageneration.model.faq.Faq;
 import ikube.listener.ListenerManager;
 import ikube.model.IndexContext;
+import ikube.model.faq.Attachment;
+import ikube.model.faq.Faq;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.PerformanceTester;
+import ikube.toolkit.data.DataGeneratorFour;
 
 import java.io.File;
 import java.util.Map;
@@ -34,7 +34,7 @@ public abstract class BaseTest extends ATest {
 			return;
 		}
 		INIT = Boolean.TRUE;
-		ApplicationContextManager.getApplicationContext(ITools.SPRING_CONFIGURATION_FILE);
+		ApplicationContextManager.getApplicationContext(IConstants.SPRING_CONFIGURATION_FILE);
 		// Delete all the old index directories
 		Map<String, IndexContext> contexts = ApplicationContextManager.getBeans(IndexContext.class);
 		for (IndexContext indexContext : contexts.values()) {
@@ -46,7 +46,7 @@ public abstract class BaseTest extends ATest {
 			public void execute() throws Exception {
 				EntityManager entityManager = null;
 				try {
-					entityManager = Persistence.createEntityManagerFactory(ITools.PERSISTENCE_UNIT_NAME).createEntityManager();
+					entityManager = Persistence.createEntityManagerFactory(IConstants.PERSISTENCE_UNIT_NAME).createEntityManager();
 					Class<?>[] classes = new Class[] { Faq.class, Attachment.class };
 					DataGeneratorFour dataGenerator = new DataGeneratorFour(entityManager, 10, classes);
 					dataGenerator.before();

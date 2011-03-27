@@ -31,7 +31,8 @@
             http://www.springframework.org/schema/util/spring-util.xsd">
 
 	<context:property-placeholder
-		location="classpath*:**/spring.properties" />
+		location="classpath*:**/spring.properties" 
+		properties-ref="ikube.toolkit.PropertyConfigurer" />
 	
 	<import resource="classpath:/META-INF/client/datasource/spring-h2-jdbc.xml" />
 	<import resource="classpath:/META-INF/client/datasource/spring-db2-jdbc.xml" />

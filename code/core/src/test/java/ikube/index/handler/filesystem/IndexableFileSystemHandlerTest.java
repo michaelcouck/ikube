@@ -43,15 +43,14 @@ public class IndexableFileSystemHandlerTest extends ATest {
 		indexableFileSystem.setNameFieldName("nameFieldName");
 		indexableFileSystem.setPathFieldName("pathFieldName");
 		when(INDEX.getIndexWriter()).thenReturn(INDEX_WRITER);
-		
+
 		indexableFileSystem.setName(this.getClass().getSimpleName());
-		List<File> files = FileUtilities.findFilesRecursively(new File("."), new String[] { "doc.doc", "pdf.pdf", "xml.xml" },
-				new ArrayList<File>());
+		List<File> files = FileUtilities.findFilesRecursively(new File("."), new ArrayList<File>(), "doc.doc", "pdf.pdf", "xml.xml");
 		for (File file : files) {
 			if (file.getName().contains("svn")) {
 				continue;
 			}
- 			FileUtilities.copyFile(file, new File(filesDir, file.getName()));
+			FileUtilities.copyFile(file, new File(filesDir, file.getName()));
 		}
 	}
 
