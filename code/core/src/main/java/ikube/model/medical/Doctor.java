@@ -20,7 +20,7 @@ import javax.persistence.OneToMany;
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Doctor extends Person {
 
-	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, targetEntity = Patient.class)
+	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, targetEntity = Patient.class)
 	private Collection<Patient> patients;
 
 	public Collection<Patient> getPatients() {

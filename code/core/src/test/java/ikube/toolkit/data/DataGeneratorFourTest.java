@@ -111,10 +111,11 @@ public class DataGeneratorFourTest {
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	public void references() throws Exception {
 		dataGeneratorFour.persist(entityManager);
 		dataGeneratorFour.references(entityManager);
-		List<Patient> patients = entityManager.createQuery(selectFromPatients, Patient.class).getResultList();
+		List<Patient> patients = entityManager.createQuery(selectFromPatients).getResultList();
 		for (Patient patient : patients) {
 			assertNotNull(patient.getAddress());
 		}

@@ -35,7 +35,7 @@ public class Person extends Persistable {
 	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.REFRESH, targetEntity = Address.class)
 	private Address address;
 
-	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, targetEntity = Record.class)
+	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, targetEntity = Record.class)
 	private Collection<Record> records;
 
 	public String getFirstName() {

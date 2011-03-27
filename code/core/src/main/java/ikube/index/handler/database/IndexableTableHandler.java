@@ -61,7 +61,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 
 	/** The content provider for column data. */
 	private transient IContentProvider<IndexableColumn> contentProvider;
-	private static final int MAX_REENTRANT = 25; 
+	private static final int MAX_REENTRANT = 10; 
 
 	public IndexableTableHandler() {
 		super();

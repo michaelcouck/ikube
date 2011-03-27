@@ -56,7 +56,7 @@ public class DataGeneratorFour extends ADataGenerator {
 		for (Class<?> resultClass : classes) {
 			// Address
 			String query = "select e from " + resultClass.getSimpleName() + " e";
-			List<?> resultObjects = entityManager.createQuery(query, resultClass).getResultList();
+			List<?> resultObjects = entityManager.createQuery(query).getResultList();
 			if (resultObjects.isEmpty()) {
 				continue;
 			}
@@ -71,7 +71,7 @@ public class DataGeneratorFour extends ADataGenerator {
 				}
 				// Patient
 				query = "select e from " + targetClass.getSimpleName() + " e";
-				List<?> targetObjects = entityManager.createQuery(query, targetClass).getResultList();
+				List<?> targetObjects = entityManager.createQuery(query).getResultList();
 				setTargets(targetClass, resultClass, targetObjects, resultObjects);
 				for (Object targetObject : targetObjects) {
 					entityManager.merge(targetObject);

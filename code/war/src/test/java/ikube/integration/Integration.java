@@ -2,6 +2,7 @@ package ikube.integration;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import ikube.IConstants;
 import ikube.cluster.IClusterManager;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
@@ -18,6 +19,8 @@ import ikube.toolkit.SerializationUtilities;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import javax.persistence.Persistence;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
@@ -45,6 +48,7 @@ public class Integration {
 		if (!isServer()) {
 			return;
 		}
+		Persistence.createEntityManagerFactory(IConstants.PERSISTENCE_UNIT_NAME).createEntityManager();
 		Thread.sleep((long) (Math.random() * 10));
 		ApplicationContextManager.getApplicationContext();
 

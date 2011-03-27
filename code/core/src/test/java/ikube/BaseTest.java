@@ -40,7 +40,7 @@ public abstract class BaseTest extends ATest {
 	private static boolean INIT = Boolean.FALSE;
 
 	@BeforeClass
-	public static void beforeClass() throws Exception {
+	public static void beforeClass() {
 		if (INIT) {
 			return;
 		}
@@ -52,25 +52,29 @@ public abstract class BaseTest extends ATest {
 			File baseIndexDirectory = FileUtilities.getFile(indexContext.getIndexDirectoryPath(), Boolean.TRUE);
 			FileUtilities.deleteFile(baseIndexDirectory, 1);
 		}
-		final EntityManager entityManager = Persistence.createEntityManagerFactory(IConstants.PERSISTENCE_UNIT_NAME).createEntityManager();
-		PerformanceTester.execute(new PerformanceTester.APerform() {
-			@Override
-			public void execute() throws Exception {
-				try {
-					Class<?>[] classes = new Class[] { Faq.class, Attachment.class, Address.class, Administration.class, Condition.class,
-							Doctor.class, Hospital.class, Inpatient.class, Medication.class, Patient.class, Person.class, Record.class,
-							Treatment.class };
-					DataGeneratorFour dataGenerator = new DataGeneratorFour(entityManager, 10, classes);
-					dataGenerator.before();
-					dataGenerator.generate();
-					dataGenerator.after();
-				} finally {
-					if (entityManager != null) {
-						entityManager.close();
+		try {
+			final EntityManager entityManager = Persistence.createEntityManagerFactory(IConstants.PERSISTENCE_UNIT_NAME).createEntityManager();
+			PerformanceTester.execute(new PerformanceTester.APerform() {
+				@Override
+				public void execute() throws Exception {
+					try {
+						Class<?>[] classes = new Class[] { Faq.class, Attachment.class, Address.class, Administration.class, Condition.class,
+								Doctor.class, Hospital.class, Inpatient.class, Medication.class, Patient.class, Person.class, Record.class,
+								Treatment.class };
+						DataGeneratorFour dataGenerator = new DataGeneratorFour(entityManager, 10, classes);
+						dataGenerator.before();
+						dataGenerator.generate();
+						dataGenerator.after();
+					} finally {
+						if (entityManager != null) {
+							entityManager.close();
+						}
 					}
 				}
-			}
-		}, "Data generator two insertion : ", 1);
+			}, "Data generator two insertion : ", 1);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		// Remove all the listeners as they create havoc
 		ListenerManager.removeListeners();
 	}
