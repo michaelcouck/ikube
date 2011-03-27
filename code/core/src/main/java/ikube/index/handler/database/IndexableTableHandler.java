@@ -269,7 +269,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 					// TODO - We need to check that the method does not throw a stack overflow
 					// somehow. We keep calling the getResultSet recursively until there are no more results,
 					// but this can be called thousands of times!
-					return getResultSet(indexContext, indexableTable, connection, reentrant);
+					return getResultSet(indexContext, indexableTable, connection, ++reentrant);
 				}
 				return null;
 			}
