@@ -9,7 +9,9 @@ import ikube.toolkit.SerializationUtilities;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -39,8 +41,9 @@ public class SearchServlet extends HttpServlet {
 		// String indexName, String searchString, String searchField, boolean fragment, int firstResult, int maxResults
 		response.setContentType(contentType);
 		PrintWriter out = response.getWriter();
+		String indexName = null;
 		try {
-			String indexName = request.getParameter(IConstants.INDEX_NAME);
+			indexName = request.getParameter(IConstants.INDEX_NAME);
 			String searchStrings = getParameter(request, IConstants.SEARCH_STRINGS, "default");
 			String searchFields = getParameter(request, IConstants.SEARCH_FIELDS, "content");
 			String sortFields = getParameter(request, IConstants.SORT_FIELDS, "content");
@@ -56,22 +59,26 @@ public class SearchServlet extends HttpServlet {
 						List<Map<String, String>> results = search.execute();
 						String xml = SerializationUtilities.serialize(results);
 						out.print(xml);
-						break;
+						return;
 					}
 				}
 			}
 		} catch (Exception e) {
-			logger.error("Exception doing search : " + request.getParameterMap(), e);
+			logger.error("Exception doing search : " + getParameters(request), e);
 			try {
-				out.print("Exception searching with parameters : " + request.getParameterMap());
+				out.print("Exception searching with parameters : " + getParameters(request));
 			} catch (Exception ex) {
-				logger.error("Exception writing the exception message to the client : " + request.getParameterMap(), ex);
+				logger.error("Exception writing the exception message to the client : " + getParameters(request), ex);
 			}
 		}
-		out.print("There was no index found, or the index was not built or an exception was thrown. ");
-		out.print("Are the parameters correct?");
-		out.print("<br>");
-		out.print(getParameters(request));
+
+		List<Map<String, String>> results = new ArrayList<Map<String, String>>();
+		Map<String, String> notification = new HashMap<String, String>();
+		notification.put(IConstants.ID, "No index defined for name : " + indexName);
+		notification.put(IConstants.CONTENTS, "There was no index found, or the index was not built or an exception was thrown.");
+		notification.put(IConstants.SCORE, "Are the parameters correct?" + getParameters(request));
+		results.add(notification);
+		out.print(SerializationUtilities.serialize(results));
 	}
 
 	@SuppressWarnings("unchecked")

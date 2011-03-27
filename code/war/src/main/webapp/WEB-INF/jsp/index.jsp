@@ -1,7 +1,7 @@
-<table class="table-content">
+<table class="table-content" width="100%">
 	<tr>
 		<td class="top-content"><span class="top-content-header">
-		Some content </span> <span class="date" style="float: right;">
+		Introduction </span> <span class="date" style="float: right;">
 			<script type="text/javascript">writeDate();</script>
 		</span></td>
 	</tr>

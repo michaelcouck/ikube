@@ -61,6 +61,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 
 	/** The content provider for column data. */
 	private transient IContentProvider<IndexableColumn> contentProvider;
+	private static final int MAX_REENTRANT = 25; 
 
 	public IndexableTableHandler() {
 		super();
@@ -114,7 +115,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 			Document document) {
 		ResultSet resultSet = null;
 		try {
-			resultSet = getResultSet(indexContext, indexableTable, connection);
+			resultSet = getResultSet(indexContext, indexableTable, connection, 1);
 			do {
 				if (resultSet == null) {
 					break;
@@ -175,7 +176,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 				if (!resultSet.next()) {
 					if (indexableTable.isPrimary()) {
 						// We need to see if there are any more results
-						resultSet = getResultSet(indexContext, indexableTable, connection);
+						resultSet = getResultSet(indexContext, indexableTable, connection, 1);
 					} else {
 						// If the table is not primary then we have exhausted the results
 						break;
@@ -227,8 +228,11 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	 * @throws Exception
 	 */
 	protected synchronized ResultSet getResultSet(final IndexContext indexContext, final IndexableTable indexableTable,
-			final Connection connection) throws Exception {
+			final Connection connection, int reentrant) throws Exception {
 		try {
+			if (reentrant >= MAX_REENTRANT) {
+				return null;
+			}
 			long nextIdNumber = 0;
 			// If this is a primary table then we need to find the first id in the table. For example if we are just
 			// starting to access this table then the id number will be 0, but the first id in the table could be 1 234 567,
@@ -265,7 +269,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 					// TODO - We need to check that the method does not throw a stack overflow
 					// somehow. We keep calling the getResultSet recursively until there are no more results,
 					// but this can be called thousands of times!
-					return getResultSet(indexContext, indexableTable, connection);
+					return getResultSet(indexContext, indexableTable, connection, reentrant);
 				}
 				return null;
 			}

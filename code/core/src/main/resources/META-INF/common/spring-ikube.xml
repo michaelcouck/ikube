@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!--
+	This is the standard configuration for indexing the Ikube documentation wherever 
+	it is deployed. We assume the port to be the default, i.e. 9000, although this may not be 
+	the case. The online documentation should mention this and the search results 
+	should also.
+ -->
 <beans
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://www.springframework.org/schema/beans"
@@ -20,36 +26,36 @@
 		properties-ref="ikube.toolkit.PropertyConfigurer" />
 	
 	<bean
-		id="minimal"
+		id="ikube"
 		class="ikube.model.IndexContext"
-		property:indexName="minimal"
-		property:maxAge="${max.age}"
+		property:indexName="ikube"
+		property:maxAge="6000"
 		property:compoundFile="${compound.file}"
 		property:bufferedDocs="${buffered.docs}"
-		property:bufferSize="${buffer.size}"
-		property:internetBatchSize="${internet.batch.size}"
-		property:mergeFactor="${merge.factor}"
-		property:maxFieldLength="${max.field.length}"
-		property:maxReadLength="${max.read.length}"
-		property:queueTimeout="${max.age}"
-		property:throttle="${throttle}"
-		property:indexDirectoryPath="./ikube/minimal"
-		property:indexables-ref="minimalIndexables" />
-	<util:list id="minimalIndexables">
-		<ref local="minimalInternet" />
+		property:bufferSize="32"
+		property:internetBatchSize="1"
+		property:mergeFactor="10"
+		property:maxFieldLength="10000"
+		property:maxReadLength="10000000"
+		property:queueTimeout="84600000"
+		property:throttle="0"
+		property:indexDirectoryPath="./ikube/documentation"
+		property:indexables-ref="indexables" />
+	<util:list id="indexables">
+		<ref local="internet" />
 	</util:list>
 	
 	<bean
-		id="minimalInternet"
+		id="internet"
 		class="ikube.model.IndexableInternet"
-		property:name="minimalInternet"
-		property:url="${url}" 
+		property:name="internet"
+		property:url="http://localhost:9000/ikube/index.html" 
 		property:idFieldName="id"
 		property:titleFieldName="title"
 		property:contentFieldName="content"
 		property:excludedPattern=".*(/search).*|.*(/images).*"
-		property:analyzed="${analyzed}"
-		property:stored="${stored}"
-		property:vectored="${vectored}" />
+		property:analyzed="true"
+		property:stored="true"
+		property:vectored="true" />
 	
 </beans>

@@ -125,7 +125,7 @@ public class IndexableTableHandlerTest extends BaseTest {
 	public void getResultSet() throws Exception {
 		// IndexContext, IndexableTable, Connection
 		faqIdIndexableColumn.setContent(1);
-		ResultSet resultSet = indexableTableHandler.getResultSet(indexContext, faqIndexableTable, connection);
+		ResultSet resultSet = indexableTableHandler.getResultSet(indexContext, faqIndexableTable, connection, 1);
 		assertNotNull(resultSet);
 
 		Statement statement = resultSet.getStatement();

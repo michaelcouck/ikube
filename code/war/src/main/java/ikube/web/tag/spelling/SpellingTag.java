@@ -21,7 +21,7 @@ public class SpellingTag extends ATag {
 	public int doStartTag() {
 		try {
 			HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
-			String searchString = request.getParameter(SEARCH_STRING);
+			String searchString = request.getParameter(SEARCH_STRINGS);
 			if (searchString == null) {
 				return SKIP_BODY;
 			}

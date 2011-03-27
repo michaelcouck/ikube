@@ -3,27 +3,27 @@
 
 <script type="text/javascript">
 	window.onload = function() {
-		document.searchForm.searchString.focus();
+		document.searchForm.searchStrings.focus();
 	}
 </script>
 
 <div id="sidebar">
 	<ul>
 		<li id="search">
-			<form name="searchForm" id="searchForm" action="<c:url value="/search/search.html"/>">
+			<form name="searchForm" id="searchForm" action="<c:url value="/results.html"/>">
 				<fieldset>
-					<input type="hidden" name="name" value="Ikokoon">
+					<input type="hidden" name="indexName" value="ikube">
 					<input type="hidden" name="fragment" value="true">
-					<input type="hidden" name="searchField" value="contents">
-					<input type="text" id="search-text" name="searchString"
-						value="<%=	request.getParameter("searchString") != null ? request.getParameter("searchString") : "" %>" />
+					<input type="hidden" name="searchFields" value="content">
+					<input type="text" name="searchStrings" id="search-text"
+						value="<c:out value='${param.searchStrings}' />" />
 					<input type="submit" id="search-submit" value="Go" />
 				</fieldset>
 			</form>
 			<search:spellingTag>
 				<script type="text/javascript">
-					function submitSearchForm(searchString) {
-						document.searchForm.searchString.value = searchString;
+					function submitSearchForm(searchStrings) {
+						document.searchForm.searchStrings.value = searchStrings;
 						document.searchForm.submit();
 					}
 				</script>
@@ -33,17 +33,17 @@
 		<li>
 			<h2>Navigation</h2>
 			<ul>
-				<li><a href="<c:url value="/index.html"/>">Search</a></li>
-				<li><a href="<c:url value="/index.html"/>">Administer</a></li>
-				<li><a href="<c:url value="/index.html"/>">Servers</a></li>
-				<li><a href="<c:url value="/index.html"/>">Monitoring</a></li>
-				<li><a href="<c:url value="/index.html"/>">Documentation</a></li>
+				<li><a href="<c:url value="/index.html"/>">Home</a></li>
+				<li><a href="<c:url value="/search.html"/>">Search</a></li>
+				<li><a href="<c:url value="/monitoring.html"/>">Monitoring</a></li>
+				<li><a href="<c:url value="/administration.html"/>">Administration</a></li>
+				<li><a href="<c:url value="/documentation.html"/>">Documentation</a></li>
 			</ul>
 		</li>
 		<li>
 			<h2>Interesting Java Links</h2>
 			<ul>
-				<li><a href="http://hudson-ci.org/">Hudson CI</a></li>
+				<li><a href="http://jenkins-ci.org/">Jenkins CI</a></li>
 				<li><a href="http://www.springbyexample.org">Spring by Example</a></li>
 				<li><a href="http://en.wikipedia.org/wiki/Software_package_metrics">Code Metrics</a></li>
 				<li><a href="http://en.wikipedia.org/wiki/PageRank">Page Rank</a></li>

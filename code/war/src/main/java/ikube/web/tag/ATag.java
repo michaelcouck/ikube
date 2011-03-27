@@ -26,7 +26,6 @@ public abstract class ATag extends BodyTagSupport {
 
 	public static final String RESULTS = "results";
 	public static final String DURATION = "duration";
-	public static final String SEARCH_STRING = "searchString";
 	public static final String CHECKED_SEARCH_STRING = "checkedSearchString";
 
 	/** The items below are the attribute names in the session for the required variables. */
@@ -37,5 +36,6 @@ public abstract class ATag extends BodyTagSupport {
 	protected static final int MAX_PAGED_RESULTS = 10;
 	/** The default encoding is UTF-8 of course. */
 	protected static final String ENCODING = "UTF-8";
+	public static final String SEARCH_STRINGS = "searchStrings";
 
 }

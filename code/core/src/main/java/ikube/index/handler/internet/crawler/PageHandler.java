@@ -314,8 +314,6 @@ public class PageHandler extends Handler<Url> implements Runnable {
 
 	protected String getUrlId(final IndexableInternet indexableInternet, final Url url) {
 		StringBuilder builder = new StringBuilder();
-		builder.append(indexableInternet.getName());
-		builder.append('.');
 		builder.append(url.getUrl());
 		return builder.toString();
 	}

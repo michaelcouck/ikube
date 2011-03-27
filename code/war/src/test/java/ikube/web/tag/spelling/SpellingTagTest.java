@@ -30,7 +30,7 @@ public class SpellingTagTest extends ATagTest {
 		spellingTag.setPageContext(pageContext);
 		spellingTag.setBodyContent(bodyContent);
 
-		when(request.getParameter(ATag.SEARCH_STRING)).thenReturn(searchString);
+		when(request.getParameter(ATag.SEARCH_STRINGS)).thenReturn(searchString);
 	}
 
 	@Test

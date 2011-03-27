@@ -1,15 +1,13 @@
 package ikube.web.tag;
 
-import java.beans.XMLDecoder;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
+import ikube.toolkit.FileUtilities;
+import ikube.toolkit.SerializationUtilities;
+
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -66,14 +64,20 @@ public class SearchTag extends ATag {
 		try {
 			URL url = new URL(searchUrl + builder.toString());
 			logger.debug("Search URL : " + url);
-			// Access the search servlet and get the results in xml serialised form
+			// Access the search servlet and get the results in xml serialized form
 			InputStream inputStream = url.openStream();
-			String xml = getContents(inputStream).toString();
+			String xml = FileUtilities.getContents(inputStream, Integer.MAX_VALUE).toString();
 			logger.debug("Results xml : " + xml);
 
 			if (xml != null && !xml.trim().equals("")) {
+				// logger.info("Xml results : " + xml);
 				// Decode the xml into a list of maps
-				ArrayList<HashMap<String, String>> results = (ArrayList<HashMap<String, String>>) deserialize(xml);
+				List<Map<String, String>> results = null;
+				try {
+					results = (List<Map<String, String>>) SerializationUtilities.deserialize(xml);
+				} catch (Exception e) {
+					logger.warn("No results?", e);
+				}
 				if (results != null) {
 					// Add the list to the page context/parameters/session
 					session.setAttribute(RESULTS, results);
@@ -101,18 +105,6 @@ public class SearchTag extends ATag {
 		return EVAL_BODY_BUFFERED;
 	}
 
-	protected Object deserialize(String xml) {
-		byte[] bytes = new byte[0];
-		try {
-			bytes = xml.getBytes(ENCODING);
-		} catch (UnsupportedEncodingException e) {
-			logger.error("Unsupported encoding", e);
-		}
-		ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
-		XMLDecoder xmlDecoder = new XMLDecoder(byteArrayInputStream);
-		return xmlDecoder.readObject();
-	}
-
 	/**
 	 * {@inheritDoc}
 	 */
@@ -134,37 +126,6 @@ public class SearchTag extends ATag {
 			logger.error("Exception writing the content out", e);
 		}
 		return EVAL_PAGE;
-	}
-
-	/**
-	 * Reads the contents of the file and returns the contents in a byte array form.
-	 * 
-	 * @param inputStream
-	 *            the file to read the contents from
-	 * @return the stream contents in a byte array output stream
-	 * @throws Exception
-	 */
-	protected ByteArrayOutputStream getContents(InputStream inputStream) {
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		if (inputStream == null) {
-			return bos;
-		}
-		try {
-			byte[] bytes = new byte[1024];
-			int read;
-			while ((read = inputStream.read(bytes)) > -1) {
-				bos.write(bytes, 0, read);
-			}
-		} catch (Exception e) {
-			logger.error("Exception accessing the stream contents", e);
-		} finally {
-			try {
-				inputStream.close();
-			} catch (Exception e) {
-				logger.error("Exception closing input stream " + inputStream, e);
-			}
-		}
-		return bos;
 	}
 
 	public void setPageContext(PageContext pageContext) {

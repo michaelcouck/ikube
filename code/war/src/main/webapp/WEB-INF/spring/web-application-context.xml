@@ -11,7 +11,11 @@
 
 	<mvc:view-controller path="/index.html" />
 	<mvc:view-controller path="/search.html" />
-
+	<mvc:view-controller path="/monitoring.html" />
+	<mvc:view-controller path="/administration.html" />
+	<mvc:view-controller path="/documentation.html" />
+	<mvc:view-controller path="/results.html" />
+	
 	<bean id="tilesConfigurer"
 		class="org.springframework.web.servlet.view.tiles2.TilesConfigurer"
 		p:definitions="/WEB-INF/tiles-defs/templates.xml" />

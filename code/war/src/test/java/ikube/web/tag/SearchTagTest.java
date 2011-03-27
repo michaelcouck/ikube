@@ -4,6 +4,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import ikube.toolkit.FileUtilities;
+import ikube.toolkit.SerializationUtilities;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.List;
@@ -50,7 +53,7 @@ public class SearchTagTest extends ATagTest {
 		// InputStream
 		String resultsXml = getResultsXml();
 		ByteArrayInputStream inputStream = new ByteArrayInputStream(resultsXml.getBytes());
-		ByteArrayOutputStream outputStream = searchTag.getContents(inputStream);
+		ByteArrayOutputStream outputStream = FileUtilities.getContents(inputStream, Integer.MAX_VALUE);
 		assertNotNull(outputStream);
 		assertEquals(resultsXml, outputStream.toString());
 	}
@@ -59,7 +62,7 @@ public class SearchTagTest extends ATagTest {
 	@SuppressWarnings("unchecked")
 	public void deserialize() {
 		String resultsXml = getResultsXml();
-		List<Map<String, String>> results = (List<Map<String, String>>) searchTag.deserialize(resultsXml);
+		List<Map<String, String>> results = (List<Map<String, String>>) SerializationUtilities.deserialize(resultsXml);
 		assertNotNull(results);
 		assertTrue(results.size() > 0);
 	}

@@ -42,20 +42,23 @@ public class WebServicePublisher implements IWebServicePublisher {
 			String path = paths.get(i);
 			String host = null;
 			Object implementor = implementors.get(i);
-			try {
-				host = InetAddress.getLocalHost().getHostAddress();
-				port = GeneralUtilities.findFirstOpenPort(port);
-				URL url = new URL(protocol, host, port, path);
-				logger.info("Publishing web service to : " + url);
-				Endpoint endpoint = Endpoint.publish(url.toString(), implementor);
-				Binding binding = endpoint.getBinding();
-				server.getWebServiceUrls().add(url.toString());
-				String message = Logging.getString("Endpoint : ", endpoint, "binding : ", binding, "implementor : ", implementor,
-						"on address : ", url.toString());
-				logger.info(message);
-			} catch (Exception e) {
-				logger.error("Exception publishing web service : " + protocol + ", " + host + ", " + port + ", " + path + ", "
-						+ implementor, e);
+			while (true && port < Short.MAX_VALUE) {
+				try {
+					host = InetAddress.getLocalHost().getHostAddress();
+					port = GeneralUtilities.findFirstOpenPort(port);
+					URL url = new URL(protocol, host, port, path);
+					logger.info("Publishing web service to : " + url);
+					Endpoint endpoint = Endpoint.publish(url.toString(), implementor);
+					Binding binding = endpoint.getBinding();
+					server.getWebServiceUrls().add(url.toString());
+					String message = Logging.getString("Endpoint : ", endpoint, "binding : ", binding, "implementor : ", implementor,
+							"on address : ", url.toString());
+					logger.info(message);
+					break;
+				} catch (Exception e) {
+					logger.error("Exception publishing web service : " + protocol + ", " + host + ", " + port + ", " + path + ", "
+							+ implementor, e);
+				}
 			}
 		}
 		clusterManager.set(Server.class, server.getId(), server);
