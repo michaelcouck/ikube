@@ -14,6 +14,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.servlet.Context;
@@ -27,6 +28,7 @@ import org.mortbay.jetty.webapp.WebAppContext;
  * @since 26.03.11
  * @version 01.00
  */
+@Ignore
 public class IntegrationJetty extends Integration {
 
 	/** The port to start from. */

@@ -61,7 +61,7 @@
 				<version>2.6</version>
 				<configuration>
 					<argLine></argLine>
-					<forkMode>pertest</forkMode>
+					<forkMode>once</forkMode>
 					<includes>
 						<include>**/*Integration*.java</include>
 					</includes>
