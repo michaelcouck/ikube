@@ -48,9 +48,9 @@ public class Integration {
 		if (!isServer()) {
 			return;
 		}
-		Persistence.createEntityManagerFactory(IConstants.PERSISTENCE_UNIT_NAME).createEntityManager();
 		Thread.sleep((long) (Math.random() * 10));
 		ApplicationContextManager.getApplicationContext();
+		Persistence.createEntityManagerFactory(IConstants.PERSISTENCE_UNIT_NAME).createEntityManager();
 
 		waitToFinish();
 
