@@ -52,7 +52,8 @@ public class Integration {
 		ApplicationContextManager.getApplicationContext();
 		Persistence.createEntityManagerFactory(IConstants.PERSISTENCE_UNIT_NAME).createEntityManager();
 
-		waitToFinish();
+		// waitToFinish();
+		Thread.sleep((long) (1000 * 60 * 60));
 
 		validateIndexes();
 		// TODO Validate the indexes on the file system

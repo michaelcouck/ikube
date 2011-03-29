@@ -35,7 +35,7 @@ public class RuleInterceptor implements IRuleInterceptor {
 			return proceedingJoinPoint.proceed();
 		}
 
-		LOGGER.debug("Intercepting : " + target);
+		LOGGER.info("Intercepting : " + target);
 		JEP jep = new JEP();
 		for (IRule<IndexContext> rule : classRules) {
 			Object[] args = proceedingJoinPoint.getArgs();
@@ -57,7 +57,7 @@ public class RuleInterceptor implements IRuleInterceptor {
 			LOGGER.warn("Symbol table : " + jep.getSymbolTable());
 		}
 		Object result = jep.getValueAsObject();
-		LOGGER.debug(Logging.getString("Result : ", result, jep, predicate));
+		LOGGER.info(Logging.getString("Result : ", result, jep, predicate));
 		if (result == null) {
 			result = jep.getValue();
 		}
