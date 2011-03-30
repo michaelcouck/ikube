@@ -74,12 +74,13 @@
 	<bean 
 		id="ikube.action.Index" 
 		class="ikube.action.Index" 
-		property:predicate="(!IsIndexCurrent &#38;&#38; !AnyServersWorking) || (IsIndexCurrent &#38;&#38; AnyServersWorking) || (!AreIndexesCreated)">
+		property:predicate="(!IsIndexCurrent &#38;&#38; !AnyServersWorking) || (IsIndexCurrent &#38;&#38; AnyServersWorking &#38;&#38; !IsThisIndexCreated) || (!AreIndexesCreated)">
 		<property name="rules">
 			<util:list>
 				<ref local="ikube.action.rule.IsIndexCurrent" />
-				<ref local="ikube.action.rule.AreIndexesCreated" />
 				<ref local="ikube.action.rule.AnyServersWorking" />
+				<ref local="ikube.action.rule.AreIndexesCreated" />
+				<ref local="ikube.action.rule.IsThisIndexCreated" />
 			</util:list>
 		</property>
 	</bean>
@@ -134,5 +135,8 @@
 	<bean 
 		id="ikube.action.rule.IsMultiSearcherInitialised"
 		class="ikube.action.rule.IsMultiSearcherInitialised" />
+	<bean 
+		id="ikube.action.rule.IsThisIndexCreated"
+		class="ikube.action.rule.IsThisIndexCreated" />
 	
 </beans>
