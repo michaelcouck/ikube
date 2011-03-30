@@ -46,7 +46,7 @@ public class SearchServlet extends HttpServlet {
 			indexName = request.getParameter(IConstants.INDEX_NAME);
 			String searchStrings = getParameter(request, IConstants.SEARCH_STRINGS, "default");
 			String searchFields = getParameter(request, IConstants.SEARCH_FIELDS, "content");
-			String sortFields = getParameter(request, IConstants.SORT_FIELDS, "content");
+			String sortFields = getParameter(request, IConstants.SORT_FIELDS, "sortFields");
 			int firstResult = Integer.parseInt(getParameter(request, IConstants.FIRST_RESULT, "0"));
 			int maxResults = Integer.parseInt(getParameter(request, IConstants.MAX_RESULTS, "10"));
 			boolean fragment = Boolean.parseBoolean(getParameter(request, IConstants.FRAGMENT, "true"));

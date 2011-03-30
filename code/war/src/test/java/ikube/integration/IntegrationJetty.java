@@ -72,7 +72,6 @@ public class IntegrationJetty extends Integration {
 		Map<String, IndexContext> indexContexts = ApplicationContextManager.getBeans(IndexContext.class);
 		String[] indexNames = indexContexts.keySet().toArray(new String[indexContexts.keySet().size()]);
 		new ServletStrategy(contextPath, port, iterations, indexNames).perform();
-
 	}
 
 	private String getWebAppContextFilePath() throws MalformedURLException {
