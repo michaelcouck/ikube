@@ -4,6 +4,7 @@ import ikube.action.IAction;
 import ikube.model.IndexContext;
 import ikube.toolkit.Logging;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -35,7 +36,7 @@ public class RuleInterceptor implements IRuleInterceptor {
 			return proceedingJoinPoint.proceed();
 		}
 
-		LOGGER.info("Intercepting : " + target);
+		LOGGER.info("Intercepting : " + target + ", parameters : " + Arrays.deepToString(proceedingJoinPoint.getArgs()));
 		JEP jep = new JEP();
 		for (IRule<IndexContext> rule : classRules) {
 			Object[] args = proceedingJoinPoint.getArgs();

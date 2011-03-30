@@ -5,6 +5,9 @@ import java.io.File;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
+
 /**
  * @author Michael Couck
  * @since 21.11.10
@@ -102,6 +105,10 @@ public class IndexableFileSystem extends Indexable<IndexableFileSystem> {
 
 	public void setCurrentFile(final File currentFile) {
 		this.currentFile = currentFile;
+	}
+	
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
 	}
 
 }

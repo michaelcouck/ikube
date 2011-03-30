@@ -8,6 +8,8 @@ import java.util.regex.Pattern;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
 import org.apache.log4j.Logger;
 
 /**
@@ -111,15 +113,7 @@ public class IndexableInternet extends Indexable<IndexableInternet> {
 	}
 	
 	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		builder.append('[');
-		builder.append(getId());
-		builder.append(", ");
-		builder.append(getName());
-		builder.append(", ");
-		builder.append(getUrl());
-		builder.append(']');
-		return builder.toString();
+		return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
 	}
 
 	@Transient
@@ -139,5 +133,5 @@ public class IndexableInternet extends Indexable<IndexableInternet> {
 	public void setCurrentInputStream(final InputStream currentInputStream) {
 		this.currentInputStream = currentInputStream;
 	}
-
+	
 }

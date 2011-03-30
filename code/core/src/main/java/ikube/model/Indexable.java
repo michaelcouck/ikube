@@ -5,6 +5,9 @@ import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
+
 /**
  * @author Michael Couck
  * @since 21.11.10
@@ -93,6 +96,10 @@ public abstract class Indexable<E> extends Persistable {
 
 	public void setContent(final Object content) {
 		this.content = content;
+	}
+	
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
 	}
 
 }

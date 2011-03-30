@@ -6,6 +6,9 @@ import java.util.List;
 
 import javax.persistence.Entity;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
+
 /**
  * This object is passed around in the cluster.
  * 
@@ -140,14 +143,7 @@ public class Server extends Persistable implements Comparable<Server> {
 	}
 
 	public String toString() {
-		final StringBuilder builder = new StringBuilder("[");
-		builder.append(getId()).append(", ");
-		builder.append(getIp()).append(", ");
-		builder.append(getAddress()).append(", ");
-		builder.append(isWorking()).append(", ");
-		builder.append(getActions());
-		builder.append("]");
-		return builder.toString();
+		return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
 	}
 
 }

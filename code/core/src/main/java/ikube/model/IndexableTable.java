@@ -4,6 +4,9 @@ import javax.persistence.Entity;
 import javax.persistence.Transient;
 import javax.sql.DataSource;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
+
 /**
  * @author Michael Couck
  * @since 21.11.10
@@ -45,13 +48,7 @@ public class IndexableTable extends Indexable<IndexableTable> {
 	}
 
 	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		builder.append("[");
-		builder.append(getName());
-		builder.append(", ");
-		builder.append(getPredicate());
-		builder.append("]");
-		return builder.toString();
+		return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
 	}
 
 }

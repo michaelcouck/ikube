@@ -3,6 +3,8 @@ package ikube.model;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.MultiSearcher;
 import org.apache.lucene.store.Directory;
@@ -53,10 +55,7 @@ public class Index extends Persistable {
 	}
 
 	public String toString() {
-		final StringBuilder builder = new StringBuilder('[');
-		builder.append(getId()).append(", ");
-		builder.append(']');
-		return builder.toString();
+		return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
 	}
 
 }

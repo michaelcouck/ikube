@@ -2,6 +2,9 @@ package ikube.model;
 
 import javax.persistence.Entity;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
+
 /**
  * @author Michael Couck
  * @since 23.11.10
@@ -77,23 +80,7 @@ public class Url extends Persistable {
 	}
 
 	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		builder.append("[");
-		builder.append(getId());
-		builder.append(", ");
-		builder.append(isIndexed());
-		builder.append(", ");
-		builder.append(getUrl());
-		builder.append(", ");
-		builder.append(getHash());
-		builder.append(", ");
-		builder.append(getTitle());
-		builder.append(", ");
-		builder.append(getRawContent());
-		builder.append(", ");
-		builder.append(getParsedContent());
-		builder.append("]");
-		return builder.toString();
+		return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
 	}
 
 }

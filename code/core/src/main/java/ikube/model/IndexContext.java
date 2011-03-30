@@ -5,6 +5,9 @@ import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
+
 /**
  * @author Michael Couck
  * @since 21.11.10
@@ -174,14 +177,7 @@ public class IndexContext extends Persistable implements Comparable<IndexContext
 
 	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		builder.append("[");
-		builder.append(getId()).append(",");
-		builder.append(getIndexName()).append(",");
-		builder.append(getIndexDirectoryPath()).append(",");
-		builder.append(getMaxAge()).append(",");
-		builder.append("]");
-		return builder.toString();
+		return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
 	}
 
 	@Override

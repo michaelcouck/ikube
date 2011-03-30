@@ -60,8 +60,8 @@
 				<artifactId>maven-failsafe-plugin</artifactId>
 				<version>2.6</version>
 				<configuration>
-					<argLine></argLine>
-					<forkMode>once</forkMode>
+					<argLine>-Xms512m -Xmx1500m</argLine>
+					<forkMode>always</forkMode>
 					<includes>
 						<include>**/*Integration*.java</include>
 					</includes>

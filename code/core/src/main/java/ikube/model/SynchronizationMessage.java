@@ -2,6 +2,9 @@ package ikube.model;
 
 import javax.persistence.Entity;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
+
 /**
  * @author Michael Couck
  * @since 18.12.10
@@ -48,13 +51,7 @@ public class SynchronizationMessage extends Persistable {
 	}
 
 	public String toString() {
-		final StringBuilder builder = new StringBuilder();
-		builder.append("[");
-		builder.append(getId()).append(", ");
-		builder.append(getIp()).append(", ");
-		builder.append(getFilePath());
-		builder.append("]");
-		return builder.toString();
+		return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
 	}
 
 }

@@ -3,6 +3,9 @@ package ikube.model;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
+
 /**
  * @author Michael Couck
  * @since 21.11.10
@@ -67,13 +70,7 @@ public class IndexableColumn extends Indexable<IndexableColumn> {
 	}
 
 	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		builder.append('[');
-		builder.append(isIdColumn());
-		builder.append(", ");
-		builder.append(getName());
-		builder.append(']');
-		return builder.toString();
+		return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
 	}
 
 }
