@@ -59,7 +59,7 @@ public class IntegrationJetty extends Integration {
 			}
 		}
 
-		Thread.sleep((long) (1000 * 60 * 60));
+		Thread.sleep((long) (1000 * 60 * 10));
 		// waitToFinish();
 
 		validateIndexes();
