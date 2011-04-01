@@ -55,7 +55,7 @@ public class Integration {
 		// waitToFinish();
 		Thread.sleep((long) (1000 * 60 * 60));
 
-		validateIndexes();
+		// validateIndexes();
 		// TODO Validate the indexes on the file system
 	}
 
