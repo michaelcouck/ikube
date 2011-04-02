@@ -30,7 +30,7 @@ public class IndexEngineTest extends ATest {
 
 	@Before
 	public void before() {
-		when(SERVER.isWorking()).thenReturn(Boolean.FALSE);
+		when(SERVER.getWorking()).thenReturn(Boolean.FALSE);
 		when(CLUSTER_MANAGER.getServer()).thenReturn(SERVER);
 		Mockit.setUpMocks(ApplicationContextManagerMock.class);
 	}

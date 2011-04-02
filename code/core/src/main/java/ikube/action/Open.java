@@ -1,5 +1,6 @@
 package ikube.action;
 
+import ikube.index.IndexManager;
 import ikube.listener.Event;
 import ikube.listener.ListenerManager;
 import ikube.model.IndexContext;
@@ -80,7 +81,7 @@ public class Open extends Action<IndexContext, Boolean> {
 
 	private boolean openOnFile(final IndexContext indexContext) {
 		ArrayList<Searchable> searchers = new ArrayList<Searchable>();
-		String indexDirectoryPath = indexContext.getIndexDirectoryPath() + File.separator + indexContext.getIndexName();
+		String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
 		File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexDirectoryPath);
 		if (latestIndexDirectory == null) {
 			logger.info("No indexes : " + indexDirectoryPath);

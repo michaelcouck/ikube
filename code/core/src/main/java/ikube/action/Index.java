@@ -48,7 +48,7 @@ public class Index extends Action<IndexContext, Boolean> {
 					}
 					// Execute the handler and wait for the threads to finish
 					getClusterManager().setWorking(indexName, indexable.getName(), Boolean.TRUE);
-					logger.info("Executing handler : " + handler + ", " + indexable);
+					logger.info("Executing handler : " + handler + ", " + indexable.getName());
 					List<Thread> threads = handler.handle(indexContext, indexable);
 					if (threads != null && !threads.isEmpty()) {
 						logger.info("Waiting for threads : " + threads);

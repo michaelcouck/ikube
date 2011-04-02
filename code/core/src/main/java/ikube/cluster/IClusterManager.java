@@ -34,7 +34,7 @@ public interface IClusterManager {
 
 	/**
 	 * @return whether there are any servers in the cluster that are working excluding this one. If this server is working then the server
-	 *         must be retrieved with the {@link IClusterManager#getServer()} and check the {@link Server#isWorking()} method
+	 *         must be retrieved with the {@link IClusterManager#getServer()} and check the {@link Server#getWorking()} method
 	 */
 	boolean anyWorking();
 

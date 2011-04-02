@@ -16,13 +16,9 @@ table {
 	text-align: left;
 }
 
-/*.bordered table {
-	border: 1px solid black;
-	border-collapse: collapse;
-}*/
-
 td {
 	vertical-align: top;
+	border: 0px solid black;
 }
 
 h1, h2, h3 {
@@ -190,7 +186,7 @@ hr { display: none; }
 	margin: 0;
 	padding: 0;
 	border: none;
-	padding-top : 42px;
+	/* padding-top : 42px; */
 }
 #search input {
 	# float: left;
@@ -207,12 +203,33 @@ hr { display: none; }
 	vertical-align : top;
 	border : solid black 1px;
 }
+#search-text-plain {
+	width: 80px;
+	padding: 0px 0px 0px 0px;
+	background: #eeeeee;
+	border: none;
+	font-family: Tahoma,""Trebuchet MS", Arial, Helvetica, sans-serif;
+	color: #636363;
+	height : 20px;
+	line-height : 20px;
+	vertical-align : top;
+	border : solid black 1px;
+}
 #search-submit {
 	# float: left;
 	width: 34px;
 	border: none;
 	color: #636363;
 	height : 29px;
+	vertical-align : top;
+	border : solid black 1px;
+}
+#search-submit-plain {
+	# float: right;
+	width: 25px;
+	border: none;
+	color: #636363;
+	height : 20px;
 	vertical-align : top;
 	border : solid black 1px;
 }

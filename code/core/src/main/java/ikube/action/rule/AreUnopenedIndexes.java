@@ -1,5 +1,6 @@
 package ikube.action.rule;
 
+import ikube.index.IndexManager;
 import ikube.model.IndexContext;
 import ikube.toolkit.Logging;
 
@@ -27,7 +28,7 @@ public class AreUnopenedIndexes implements IRule<IndexContext> {
 		if (searchables == null) {
 			return new AreIndexesCreated().evaluate(indexContext);
 		}
-		File baseIndexDirectory = new File(indexContext.getIndexDirectoryPath() + File.separator + indexContext.getIndexName());
+		File baseIndexDirectory = new File(IndexManager.getIndexDirectoryPath(indexContext));
 		File[] timeIndexDirectories = baseIndexDirectory.listFiles();
 		IRule<File[]> areDirectoriesEqual = new AreDirectoriesEqual();
 		IRule<File> directoryExistsAndNotLocked = new DirectoryExistsAndNotLocked();

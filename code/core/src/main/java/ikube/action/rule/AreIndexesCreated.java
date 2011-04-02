@@ -1,5 +1,6 @@
 package ikube.action.rule;
 
+import ikube.index.IndexManager;
 import ikube.model.IndexContext;
 
 import java.io.File;
@@ -23,7 +24,8 @@ public class AreIndexesCreated implements IRule<IndexContext> {
 	private Logger logger = Logger.getLogger(this.getClass());
 
 	public boolean evaluate(final IndexContext indexContext) {
-		File baseIndexDirectory = new File(indexContext.getIndexDirectoryPath() + File.separator + indexContext.getIndexName());
+		String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
+		File baseIndexDirectory = new File(indexDirectoryPath);
 		File[] timeIndexDirectories = baseIndexDirectory.listFiles();
 		if (timeIndexDirectories == null || timeIndexDirectories.length == 0) {
 			return Boolean.FALSE;

@@ -1,6 +1,7 @@
 package ikube.action.rule;
 
 import ikube.cluster.IClusterManager;
+import ikube.index.IndexManager;
 import ikube.model.IndexContext;
 import ikube.model.Server;
 import ikube.toolkit.ApplicationContextManager;
@@ -23,7 +24,7 @@ public class IsThisIndexCreated implements IRule<IndexContext> {
 	public boolean evaluate(final IndexContext indexContext) {
 		// Check that the timestamp in the servers that are still working is
 		// different from the timestamp of the latest index directory for this server
-		String indexDirectoryPath = indexContext.getIndexDirectoryPath() + File.separator + indexContext.getIndexName();
+		String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
 		File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexDirectoryPath);
 		Server server = ApplicationContextManager.getBean(IClusterManager.class).getServer();
 		String address = server.getAddress();

@@ -135,7 +135,7 @@ public abstract class ATest {
 		when(INDEX_CONTEXT.getMergeFactor()).thenReturn(100);
 		when(INDEX_CONTEXT.getMaxAge()).thenReturn((long) (1000 * 60 * 60));
 		when(CLUSTER_MANAGER.getServer()).thenReturn(SERVER);
-		when(SERVER.isWorking()).thenReturn(Boolean.FALSE);
+		when(SERVER.getWorking()).thenReturn(Boolean.FALSE);
 		when(SERVER.getAddress()).thenReturn(IP);
 		when(SERVER.getIp()).thenReturn(IP);
 		when(INDEX.getIndexWriter()).thenReturn(INDEX_WRITER);

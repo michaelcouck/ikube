@@ -18,6 +18,8 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriter.MaxFieldLength;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.MultiSearcher;
+import org.apache.lucene.search.Searchable;
 import org.apache.lucene.search.Searcher;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
@@ -33,10 +35,6 @@ import org.junit.Test;
 public class SearchTest extends ATest {
 
 	private static Searcher SEARCHER;
-
-	public SearchTest() {
-		super(SearchTest.class);
-	}
 
 	@BeforeClass
 	public static void beforeClass() throws Exception {
@@ -59,6 +57,7 @@ public class SearchTest extends ATest {
 				Document document = new Document();
 				IndexManager.addStringField(IConstants.ID, id, document, Store.YES, Index.ANALYZED, TermVector.YES);
 				IndexManager.addStringField(IConstants.CONTENTS, contents, document, Store.YES, Index.ANALYZED, TermVector.YES);
+				IndexManager.addStringField(IConstants.NAME, "Michael Couck", document, Store.YES, Index.ANALYZED, TermVector.YES);
 				indexWriter.addDocument(document);
 			}
 
@@ -67,7 +66,8 @@ public class SearchTest extends ATest {
 			indexWriter.close();
 		}
 
-		SEARCHER = new IndexSearcher(directory);
+		Searchable[] searchables = new Searchable[] { new IndexSearcher(directory) };
+		SEARCHER = new MultiSearcher(searchables);
 	}
 
 	@AfterClass
@@ -76,6 +76,10 @@ public class SearchTest extends ATest {
 	}
 
 	private int maxResults = 10;
+
+	public SearchTest() {
+		super(SearchTest.class);
+	}
 
 	@Test
 	public void searchSingle() {
@@ -135,4 +139,16 @@ public class SearchTest extends ATest {
 		// TODO Implement me
 	}
 
+	@Test
+	public void searchMultiAll() {
+		SearchMultiAll searchMultiAll = new SearchMultiAll(SEARCHER);
+		searchMultiAll.setFirstResult(0);
+		searchMultiAll.setFragment(Boolean.TRUE);
+		searchMultiAll.setMaxResults(maxResults);
+		searchMultiAll.setSearchField("content");
+		searchMultiAll.setSearchString("Michael");
+		searchMultiAll.setSortField("content");
+		List<Map<String, String>> results = searchMultiAll.execute();
+		assertTrue(results.size() > 1);
+	}
 }

@@ -61,7 +61,7 @@ public class IndexEngine implements IIndexEngine {
 
 		// If this server is working on anything then return
 		Server server = ApplicationContextManager.getBean(IClusterManager.class).getServer();
-		if (server.isWorking()) {
+		if (server.getWorking()) {
 			LOGGER.debug("This server working : " + server);
 			return;
 		}
@@ -72,7 +72,7 @@ public class IndexEngine implements IIndexEngine {
 				LOGGER.warn("No actions configured for index engine : " + indexContext.getIndexName());
 				continue;
 			}
-			LOGGER.info("Start working : " + indexContext);
+			LOGGER.info("Start working on index : " + indexContext.getIndexName());
 			int thread = Thread.currentThread().hashCode();
 			for (IAction<IndexContext, Boolean> action : actions) {
 				boolean success = Boolean.FALSE;

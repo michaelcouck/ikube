@@ -9,14 +9,14 @@
 							<td valign="top" align="left">
 								<a class="title" href="<c:url value="/index.html"/>">Ikube</a>
 							</td>
-							<td style="padding-bottom : 30px;" valign="top">
-								<span style="font-size : 14px;">index the planet</span>
-							</td>
 							<td align="right" style="padding-bottom: 30px">
-								<!--<a class="link" href="<c:url value="/search.html"/>">Search</a>
-								<a class="link" href="<c:url value="/admin.html"/>">Administer</a>
-								<a class="link" href="<c:url value="/admin.html"/>">Documentation</a>
-								<a class="link" href="mailto:michaelcouck at hotmail dot com">Contact</a>-->
+								<a class="link" href="<c:url value="http://code.google.com/p/ikube/downloads/list" />">download</a>
+								<a class="link" href="<c:url value="/documentation/quickstart.html" />">quick start</a>
+								<a class="link" href="<c:url value="/documentation/configuration.html" />">configuration</a>
+								<a class="link" href="<c:url value="/documentation/searching.html" />">searching</a>
+								<a class="link" href="<c:url value="/documentation/lucene.html" />">lucene</a>
+								<a class="link" href="<c:url value="/documentation/clustering.html"/>">clustering</a>
+								<a class="link" href="<c:url value="/documentation/indexes.html"/>">indexes</a>
 								&nbsp;&nbsp;
 
 								<a href="<c:url value="/index.html"/>?language=english">

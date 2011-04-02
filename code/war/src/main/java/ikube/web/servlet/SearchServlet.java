@@ -3,7 +3,7 @@ package ikube.web.servlet;
 import ikube.IConstants;
 import ikube.model.IndexContext;
 import ikube.search.Search;
-import ikube.search.SearchSingle;
+import ikube.search.SearchMulti;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.SerializationUtilities;
 
@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.Persistence;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -35,6 +36,7 @@ public class SearchServlet extends HttpServlet {
 	@Override
 	public void init() throws ServletException {
 		ApplicationContextManager.getApplicationContext();
+		Persistence.createEntityManagerFactory(IConstants.PERSISTENCE_UNIT_NAME).createEntityManager();
 	}
 
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -98,7 +100,7 @@ public class SearchServlet extends HttpServlet {
 
 	private Search getSearch(IndexContext indexContext, String indexName, String searchStrings, String searchFields, String sortFields,
 			int firstResult, int maxResults, boolean fragment) {
-		Search search = new SearchSingle(indexContext.getIndex().getMultiSearcher());
+		Search search = new SearchMulti(indexContext.getIndex().getMultiSearcher());
 		search.setFirstResult(firstResult);
 		search.setFragment(fragment);
 		search.setMaxResults(maxResults);

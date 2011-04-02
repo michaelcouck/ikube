@@ -52,8 +52,8 @@ public class Integration {
 		ApplicationContextManager.getApplicationContext();
 		Persistence.createEntityManagerFactory(IConstants.PERSISTENCE_UNIT_NAME).createEntityManager();
 
-		// waitToFinish();
-		Thread.sleep((long) (1000 * 60 * 60));
+		waitToFinish();
+		// Thread.sleep((long) (1000 * 60 * 60));
 
 		// validateIndexes();
 		// TODO Validate the indexes on the file system
@@ -64,10 +64,12 @@ public class Integration {
 			while (true) {
 				Thread.sleep(600000);
 				boolean anyWorking = ApplicationContextManager.getBean(IClusterManager.class).anyWorking();
-				boolean isWorking = ApplicationContextManager.getBean(IClusterManager.class).getServer().isWorking();
+				boolean isWorking = ApplicationContextManager.getBean(IClusterManager.class).getServer().getWorking();
+				logger.info("Still working : " + anyWorking + ", " + isWorking);
 				if (!anyWorking && !isWorking) {
 					break;
 				}
+				logger.info("Members : " + Hazelcast.getCluster().getMembers().size());
 				if (Hazelcast.getCluster().getMembers().size() == 1) {
 					break;
 				}

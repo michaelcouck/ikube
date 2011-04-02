@@ -14,6 +14,7 @@ import java.io.StringReader;
 import java.io.Writer;
 import java.util.Date;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -152,14 +153,22 @@ public final class IndexManager {
 
 	public static String getIndexDirectory(final String ip, final IndexContext indexContext, final long time) {
 		StringBuilder builder = new StringBuilder();
-		builder.append(indexContext.getIndexDirectoryPath()); // Path
-		builder.append(File.separator);
-		builder.append(indexContext.getIndexName()); // Index name
+		builder.append(IndexManager.getIndexDirectoryPath(indexContext));
 		builder.append(File.separator);
 		builder.append(time); // Time
 		builder.append(File.separator);
 		builder.append(ip); // Ip
 		return builder.toString();
+	}
+
+	public static String getIndexDirectoryPath(final IndexContext indexContext) {
+		StringBuilder builder = new StringBuilder();
+		builder.append(indexContext.getIndexDirectoryPath()); // Path
+		builder.append(File.separator);
+		builder.append(indexContext.getIndexName()); // Index name
+		String indexDirectoryPath = StringUtils.replace(builder.toString(), "/./", "/");
+		indexDirectoryPath = StringUtils.replace(indexDirectoryPath, "\\.\\", "/");
+		return indexDirectoryPath;
 	}
 
 	public static void addStringField(final String fieldName, final String fieldContent, final Document document, final Store store,

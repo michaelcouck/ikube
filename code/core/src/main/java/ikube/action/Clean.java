@@ -1,5 +1,6 @@
 package ikube.action;
 
+import ikube.index.IndexManager;
 import ikube.model.IndexContext;
 import ikube.toolkit.FileUtilities;
 
@@ -22,7 +23,7 @@ public class Clean<E, F> extends Action<IndexContext, Boolean> {
 
 	@Override
 	public Boolean execute(final IndexContext indexContext) {
-		String indexDirectoryPath = indexContext.getIndexDirectoryPath() + File.separator + indexContext.getIndexName();
+		String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
 		File baseIndexDirectory = FileUtilities.getFile(indexDirectoryPath, Boolean.TRUE);
 		File[] timeIndexDirectories = baseIndexDirectory.listFiles();
 		if (timeIndexDirectories == null || timeIndexDirectories.length == 0) {

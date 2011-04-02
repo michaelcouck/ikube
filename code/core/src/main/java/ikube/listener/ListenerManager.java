@@ -74,7 +74,7 @@ public final class ListenerManager {
 	 * @param event
 	 *            the event for distribution
 	 */
-	private static synchronized void notifyListeners(final Event event) {
+	private static void notifyListeners(final Event event) {
 		try {
 			for (final IListener listener : Collections.synchronizedList(LISTENERS)) {
 				try {

@@ -1,10 +1,13 @@
 package ikube.toolkit;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.net.DatagramSocket;
 import java.net.ServerSocket;
+import java.util.Collection;
 
 import org.apache.log4j.Logger;
+import org.springframework.util.ReflectionUtils;
 
 /**
  * @author Michael Couck
@@ -123,6 +126,22 @@ public final class GeneralUtilities {
 		} finally {
 			GeneralUtilities.class.notifyAll();
 		}
+	}
+
+	public static <T> T findObject(Class<T> klass, Collection<T> collection, String fieldName, String fieldValue) {
+		for (T t : collection) {
+			Field field = ReflectionUtils.findField(t.getClass(), fieldName);
+			if (field != null) {
+				field.setAccessible(Boolean.TRUE);
+				Object value = ReflectionUtils.getField(field, t);
+				if (fieldValue != null) {
+					if (fieldValue.equals(value)) {
+						return t;
+					}
+				}
+			}
+		}
+		return null;
 	}
 
 }

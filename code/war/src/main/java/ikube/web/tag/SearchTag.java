@@ -39,6 +39,9 @@ public class SearchTag extends ATag {
 	 */
 	@SuppressWarnings("unchecked")
 	public int doStartTag() throws JspException {
+		if (searchUrl == null || "".equals(searchUrl)) {
+			return EVAL_BODY_BUFFERED;
+		}
 		HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
 		HttpSession session = request.getSession();
 		// Set the defaults in the session

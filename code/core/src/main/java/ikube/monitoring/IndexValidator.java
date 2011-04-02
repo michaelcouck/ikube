@@ -1,6 +1,7 @@
 package ikube.monitoring;
 
 import ikube.cluster.IClusterManager;
+import ikube.index.IndexManager;
 import ikube.listener.Event;
 import ikube.listener.IListener;
 import ikube.listener.ListenerManager;
@@ -54,7 +55,7 @@ public class IndexValidator implements IIndexValidator {
 		Map<String, IndexContext> contexts = ApplicationContextManager.getBeans(IndexContext.class);
 		for (String name : contexts.keySet()) {
 			IndexContext indexContext = contexts.get(name);
-			String indexDirectoryPath = indexContext.getIndexDirectoryPath() + File.separator + indexContext.getIndexName();
+			String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
 			File baseIndexDirectory = new File(indexDirectoryPath);
 			File[] timeIndexDirectories = baseIndexDirectory.listFiles();
 			if (timeIndexDirectories == null || timeIndexDirectories.length == 0) {

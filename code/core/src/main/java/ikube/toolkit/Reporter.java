@@ -1,6 +1,7 @@
 package ikube.toolkit;
 
 import ikube.cluster.IClusterManager;
+import ikube.index.IndexManager;
 import ikube.listener.Event;
 import ikube.listener.IListener;
 import ikube.model.IndexContext;
@@ -37,7 +38,7 @@ public final class Reporter implements IListener {
 				list.add(servers);
 				for (IndexContext indexContext : indexContexts.values()) {
 					// Get the index files
-					File baseIndexDirectory = FileUtilities.getFile(indexContext.getIndexDirectoryPath() + File.separator + indexContext.getIndexName(), Boolean.TRUE);
+					File baseIndexDirectory = FileUtilities.getFile(IndexManager.getIndexDirectoryPath(indexContext), Boolean.TRUE);
 					list.add(baseIndexDirectory.getAbsolutePath());
 					File[] contextIndexDirectories = baseIndexDirectory.listFiles();
 					if (contextIndexDirectories == null) {

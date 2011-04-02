@@ -121,7 +121,7 @@ public class Server extends Persistable implements Comparable<Server> {
 		this.address = address;
 	}
 
-	public boolean isWorking() {
+	public boolean getWorking() {
 		return working;
 	}
 

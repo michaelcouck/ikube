@@ -104,7 +104,7 @@ public class ClusterManager implements IClusterManager {
 				if (server.getAddress().equals(this.address)) {
 					continue;
 				}
-				if (server.isWorking()) {
+				if (server.getWorking()) {
 					return Boolean.TRUE;
 				}
 			}
@@ -131,7 +131,7 @@ public class ClusterManager implements IClusterManager {
 				if (server.getAddress().equals(this.address)) {
 					continue;
 				}
-				if (server.isWorking()) {
+				if (server.getWorking()) {
 					for (Action action : server.getActions()) {
 						if (action.getIndexName().equals(indexName)) {
 							return Boolean.TRUE;
@@ -273,7 +273,7 @@ public class ClusterManager implements IClusterManager {
 			for (Server server : servers) {
 				LOGGER.debug("Server : " + server);
 				for (Action action : server.getActions()) {
-					if (indexName.equals(action.getIndexName()) && indexableName.equals(action.getIndexableName()) && server.isWorking()) {
+					if (indexName.equals(action.getIndexName()) && indexableName.equals(action.getIndexableName()) && server.getWorking()) {
 						firstStartTime = Math.min(firstStartTime, action.getStartTime());
 					}
 				}

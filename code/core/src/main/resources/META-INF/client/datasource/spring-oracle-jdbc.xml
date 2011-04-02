@@ -22,7 +22,7 @@
 		property:user="XE"
 		property:password="admin"
 		property:driverClass="oracle.jdbc.driver.OracleDriver"
-		property:jdbcUrl="jdbc:oracle:thin:@//localhost:1521/XE"
+		property:jdbcUrl="jdbc:oracle:thin:@//ikube:1521/XE"
 		property:initialPoolSize="${jdbc.minPoolSize}"
 		property:maxPoolSize="${jdbc.maxPoolSize}"
 		property:maxStatements="${jdbc.maxStatements}"
