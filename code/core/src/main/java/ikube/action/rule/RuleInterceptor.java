@@ -43,7 +43,9 @@ public class RuleInterceptor implements IRuleInterceptor {
 				if (arg != null && IndexContext.class.isAssignableFrom(arg.getClass())) {
 					boolean result = rule.evaluate((IndexContext) arg);
 					String parameter = rule.getClass().getSimpleName();
-					LOGGER.info(Logging.getString("Rule : ", rule, ", parameter : ", parameter, ", result : ", result));
+					if (LOGGER.isDebugEnabled()) {
+						LOGGER.debug(Logging.getString("Rule : ", rule, ", parameter : ", parameter, ", result : ", result));
+					}
 					jep.addVariable(parameter, result);
 				}
 			}

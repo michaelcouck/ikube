@@ -117,6 +117,26 @@
 					</dependency>
 				</dependencies>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>applet.build.task</id>
+						<phase>install</phase>
+						<configuration>
+							<tasks verbose="true">
+								<property name="ikube.war" value="target/ikube-war.war" />
+								<property name="tomcat.deploy.directory" value="D:/cluster/apache-tomcat-6.0.29-1/webapps" />
+								<copy file="${ikube.war}" todir="${tomcat.deploy.directory}" overwrite="true" failonerror="false" />
+							</tasks>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 

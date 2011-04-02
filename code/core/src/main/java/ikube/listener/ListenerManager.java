@@ -91,7 +91,7 @@ public final class ListenerManager {
 				}
 			}
 		} finally {
-			ListenerManager.class.notifyAll();
+			// ListenerManager.class.notifyAll();
 		}
 	}
 

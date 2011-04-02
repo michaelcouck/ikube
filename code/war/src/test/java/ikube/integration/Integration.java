@@ -62,7 +62,7 @@ public class Integration {
 	protected void waitToFinish() {
 		try {
 			while (true) {
-				Thread.sleep(600000);
+				Thread.sleep(60000);
 				boolean anyWorking = ApplicationContextManager.getBean(IClusterManager.class).anyWorking();
 				boolean isWorking = ApplicationContextManager.getBean(IClusterManager.class).getServer().getWorking();
 				logger.info("Still working : " + anyWorking + ", " + isWorking);
