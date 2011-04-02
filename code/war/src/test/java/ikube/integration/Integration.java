@@ -23,7 +23,6 @@ import java.util.Map;
 import javax.persistence.Persistence;
 
 import org.apache.log4j.Logger;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.hazelcast.core.Hazelcast;
@@ -36,7 +35,6 @@ import com.hazelcast.core.Hazelcast;
  * @since 20.12.10
  * @version 01.00
  */
-@Ignore
 public class Integration {
 
 	static {

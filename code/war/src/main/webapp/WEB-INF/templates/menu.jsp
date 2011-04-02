@@ -15,6 +15,7 @@
 					<input type="hidden" name="indexName" value="ikube">
 					<input type="hidden" name="fragment" value="true">
 					<input type="hidden" name="searchFields" value="content">
+					<input type="hidden" name="searchUrl" value="http://localhost:9000/ikube/SearchServlet">
 					<input type="text" name="searchStrings" id="search-text"
 						value="<c:out value='${param.searchStrings}' />" />
 					<input type="submit" id="search-submit" value="Go" />
