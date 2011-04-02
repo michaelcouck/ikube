@@ -60,18 +60,18 @@ public class IntegrationJetty extends Integration {
 		}
 
 		Thread.sleep((long) (1000 * 60 * 10));
-		// waitToFinish();
+		waitToFinish();
 
-		// validateIndexes();
+		validateIndexes();
 
 		// Test all the jsps
-		// new JspStrategy(contextPath, port).perform();
+		new JspStrategy(contextPath, port).perform();
 
 		// Stress test the servlet a little
-//		int iterations = 1000;
-//		Map<String, IndexContext> indexContexts = ApplicationContextManager.getBeans(IndexContext.class);
-//		String[] indexNames = indexContexts.keySet().toArray(new String[indexContexts.keySet().size()]);
-//		new ServletStrategy(contextPath, port, iterations, indexNames).perform();
+		int iterations = 1000;
+		Map<String, IndexContext> indexContexts = ApplicationContextManager.getBeans(IndexContext.class);
+		String[] indexNames = indexContexts.keySet().toArray(new String[indexContexts.keySet().size()]);
+		new ServletStrategy(contextPath, port, iterations, indexNames).perform();
 	}
 
 	private String getWebAppContextFilePath() throws MalformedURLException {
