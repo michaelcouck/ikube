@@ -16,9 +16,13 @@ import org.apache.commons.lang.builder.ToStringStyle;
 @Entity()
 public class IndexContext extends Persistable implements Comparable<IndexContext> {
 
+	/** The name of the index. This muse be unique in the configuration. */
 	private String indexName;
+	/** The maximum age of the index defined in minutes. */
 	private long maxAge;
+	/** Is this used anymore? */
 	private long queueTimeout;
+	/** The delay between documente being indexed, slows the indexing down. */
 	private long throttle;
 
 	/** Lucene properties. */
@@ -33,8 +37,11 @@ public class IndexContext extends Persistable implements Comparable<IndexContext
 	/** Internet properties. */
 	private int internetBatchSize;
 
+	/** The maximum length of a document that can be read. */
 	private long maxReadLength;
+	/** The path to the index directory, either relative or absolute. */
 	private String indexDirectoryPath;
+	/** Whether the index should be in memory. */
 	private boolean inMemory;
 
 	private List<Indexable<?>> indexables;

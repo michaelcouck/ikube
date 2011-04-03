@@ -1,3 +1,5 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
 <table class="table-content" width="100%">
 	<tr>
 		<td class="top-content">
@@ -8,7 +10,8 @@
 	<tr>
 		<td class="td-content">
 			<strong>access</strong>&nbsp;<br>
-			The access to search results is a via a web service. Method signatures for the methods for searching are:<br><br>
+			The access to search results is a via a web service and a servlet. Method signatures for the web service methods for 
+			searching are:<br><br>
 			
 			1) Search in a single field in the index - ISearcherWebService#searchSingle(String indexName, String searchString, 
 				String searchField, boolean fragment, int start, int end)<br>
@@ -38,8 +41,8 @@
 			XMLDecoder, alternatively there is a utility in Ikube to do just that, SerializationUtilities#deserialize(String xml). For other platforms 
 			they would then parse the XML or de-serialize as necessary to render the results.<br><br>
 			
-			<a href="results.xml" target="_top">Here</a> is an example of some results in XML format. There is one result and one field in the 
-			Lucene index for the document called 'content'.<br><br>
+			<a href="<c:url value="/docs/results.xml"/>" target="_top">Here</a> is an example of some results in XML format. There is one result
+			 and one field in the Lucene index for the document called 'content'.<br><br>
 			
 			The web service will automatically be published to http://169.254.107.201:8081/ikube/service/ISearcherWebService?wsdl, replacing 
 			the ip with the ip of the machine, using the standard Java web service publisher, using Endpoint endpoint = Endpoint.publish(url, 
@@ -56,7 +59,15 @@
 			List&lt;Map&lt;String, String&gt;&gt; results = (List&lt;Map&lt;String, String&gt;&gt;) SerializationUtilities.deserialize(xml);<br><br>
 			
 			The final map in the list will have two fields, the total results that were returned by the search and the duration for the search, just 
-			for interests' sake.<br><br>  
+			for interests' sake.<br><br>
+			
+			For convenience there are also tags for iterating over the results. These can be used as is. You just need to extract the jar 
+			from the war and look at the results.jspf for an example of how to use the tags. As well as this there is a spelling checker 
+			tag that can be added. This tag has an example of the usage in the menu.jsp in the war. At the time of writing there 
+			was only spelling checking for Englich but to add more languages all you would need to do is to add the words from other 
+			languages to the words.txt file in the war and Ikube will index the language words.<br><br>
+			
+			If you have any questions please feel free to give me a shout at michael dot couck at gmail dot com.<br><br>
 			
 			Happy searching!
 		</td>

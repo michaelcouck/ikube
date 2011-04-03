@@ -28,5 +28,5 @@
 	<import resource="classpath:/META-INF/common/spring-ikube.xml" />
 	
 	<import resource="classpath:/META-INF/client/spring-client.xml" />
-
+	
 </beans>

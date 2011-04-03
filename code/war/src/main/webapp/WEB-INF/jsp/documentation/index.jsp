@@ -16,20 +16,30 @@
 				If you click on the language of your choice and it is still in English, this means that the translation has not been done. 
 				However on the grounds that you understand this, and presumably your favorite language too, this places you in the 
 				favorable position to contribute this translation, which would be much appreciated.
-				<br><br>
+		</td>
+	</tr>
+	<tr>
+		<td class="td-content">
 				Just a little extra general information then. Ikube is Lucene based, so ultimately it is just a container for Lucene indexes. Having 
 				said that it is also a clusterable application designed for very large volumes. There is no internal database setup and there are no complicated 
 				transaction handling mechanisms, performance is a primary concern and with volumes of data exceeding the billion mark and likely to 
 				increase by a factor every year transaction handling would consume too much processing power.
-				<br><br>
+			</td>
+	</tr>
+	<tr>
+		<td class="td-content">
 				Please try the quick start page and move on to more complex index configurations when that is all up and running. Feel free to mail 
 				me if you have any difficulty with the configuration, or if my writing style is not clear or with any suggestions at 
 				michael dot couck at gmail dot com.
 				<br><br>
-				Have a fantastic day!
+				The individual documents for configuring and using the system are at the top of the page, 'quick start', 'configuration' etc. 
 		</td>
 	</tr>
 	<tr>
-		<td class="bottom-content">More detailed documentation</td>
+		<td class="bottom-content">
+			Have a fantastic day!<br>
+			Documentation brought to you by Ikube<br>
+			You are here =>
+		</td>
 	</tr>
 </table>

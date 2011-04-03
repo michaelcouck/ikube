@@ -33,23 +33,7 @@
 	
 	<tr>
 		<td class="td-content">Server</td>
-		<td class="td-content">${param.address}</td>
-	</tr>
-	
-	<tr>
-		<td class="td-content" colspan="2">
-			<strong>configuration</strong>&nbsp;
-			This is the search page for individual servers. On this page there is one server defined. For this server there 
-			are several indexes defined. You can search the individual indexes on this specific server using the search box. 
-			There may be several fields defined in the indexes which can be searched separately but for convenience all 
-			the fields are added to the fields to search, the result of which is that all the fields in the index will be searched 
-			with the search string in the text field.
-		</td>
-	</tr>
-	
-	<tr>
-		<th class="td-content">Index</th>
-		<th class="td-content">Search</th>
+		<td class="td-content">${pageScope.server.address}</td>
 	</tr>
 	
 	<c:forEach var="indexContext" items="${pageScope.indexContexts}">
@@ -94,6 +78,17 @@
 		</td>
 	</tr>
 	
+	<tr>
+		<td class="td-content" colspan="2">
+			<strong>configuration</strong>&nbsp;
+			This is the search page for individual servers. On this page there is one server defined. For this server there 
+			are several indexes defined. You can search the individual indexes on this specific server using the search box. 
+			There may be several fields defined in the indexes which can be searched separately but for convenience all 
+			the fields are added to the fields to search, the result of which is that all the fields in the index will be searched 
+			with the search string in the text field.
+		</td>
+	</tr>
+		
 	<tr>
 		<td class="bottom-content">Search per server and index</td>
 	</tr>

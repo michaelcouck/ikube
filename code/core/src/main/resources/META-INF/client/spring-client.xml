@@ -1,19 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-	This is the configuration for the integration tests. It contains several of each indexable including 
-	most of the popular databases.
-	
 	1) DB2 - Faq
 	2) Oracle - Hospital
-	3) Url - Cloudbees/Ikokoon
-	4) Url - Cloudbees/Ikube
 	5) Url - Google Code/Ikube
 	6) File system local - server
-	7) File system remote - laptop
 	8) Email - Ikube
-	
-	* Index 1 - DB2, one url, one file system
  -->
 <beans
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"

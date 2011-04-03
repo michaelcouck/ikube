@@ -36,7 +36,11 @@ public class SearchServlet extends HttpServlet {
 	@Override
 	public void init() throws ServletException {
 		ApplicationContextManager.getApplicationContext();
-		Persistence.createEntityManagerFactory(IConstants.PERSISTENCE_UNIT_NAME).createEntityManager();
+		try {
+			Persistence.createEntityManagerFactory(IConstants.PERSISTENCE_UNIT_NAME).createEntityManager();
+		} catch (Exception e) {
+			logger.warn("Exception initialising the entity manager : ");
+		}
 	}
 
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -111,7 +115,8 @@ public class SearchServlet extends HttpServlet {
 	}
 
 	private String getParameter(HttpServletRequest request, String name, String defaultValue) {
-		return request.getParameter(name) == null ? defaultValue : request.getParameter(name);
+		String parameter = request.getParameter(name);
+		return parameter == null ? defaultValue : parameter;
 	}
 
 }
