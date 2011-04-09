@@ -23,8 +23,10 @@ public interface IConstants {
 	String SPRING_XML = "spring.xml";
 	/** Where the whole application is wired together. */
 	String SPRING_CONFIGURATION_FILE = META_INF + SEP + SPRING_XML;
-	/** The default persistence unit name. */
-	String PERSISTENCE_UNIT_NAME = "IkubePersistenceUnit";
+	/** The persistence units' names. */
+	String PERSISTENCE_UNIT_H2 = "IkubePersistenceUnitH2";
+	// String PERSISTENCE_UNIT_DB2 = "IkubePersistenceUnitDb2";
+	// String PERSISTENCE_UNIT_ORACLE = "IkubePersistenceUnitOracle";
 
 	/** The default logging properties. */
 	String LOG_4_J_PROPERTIES = META_INF + SEP + "log4j.properties";

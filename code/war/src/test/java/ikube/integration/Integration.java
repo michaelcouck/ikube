@@ -2,7 +2,6 @@ package ikube.integration;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import ikube.IConstants;
 import ikube.cluster.IClusterManager;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
@@ -15,11 +14,14 @@ import ikube.service.ServiceLocator;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.Logging;
 import ikube.toolkit.SerializationUtilities;
+import ikube.toolkit.data.DataGeneratorFour;
+import ikube.toolkit.data.IDataGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 
 import org.apache.log4j.Logger;
@@ -42,6 +44,7 @@ public class Integration {
 	}
 
 	protected Logger logger = Logger.getLogger(this.getClass());
+	protected int iterations = 10;
 
 	@Test
 	public void main() throws Exception {
@@ -50,7 +53,11 @@ public class Integration {
 		}
 		Thread.sleep((long) (Math.random() * 10));
 		ApplicationContextManager.getApplicationContext();
-		Persistence.createEntityManagerFactory(IConstants.PERSISTENCE_UNIT_NAME).createEntityManager();
+
+		// Insert some data into the medical database
+		// insertData(IConstants.PERSISTENCE_UNIT_H2, iterations, new Class[] { Faq.class });
+		// insertData(IConstants.PERSISTENCE_UNIT_DB2, iterations, new Class[] { Hospital.class, Doctor.class, Patient.class });
+		// insertData(IConstants.PERSISTENCE_UNIT_ORACLE);
 
 		waitToFinish();
 		// Thread.sleep((long) (1000 * 60 * 60));
@@ -59,10 +66,23 @@ public class Integration {
 		// TODO Validate the indexes on the file system
 	}
 
+	protected void insertData(String persistenceUnit, int iterations, Class<?>[] classes) throws Exception {
+		logger.info("Inserting data into : " + persistenceUnit);
+		try {
+			EntityManager entityManager = Persistence.createEntityManagerFactory(persistenceUnit).createEntityManager();
+			IDataGenerator dataGenerator = new DataGeneratorFour(entityManager, iterations, classes);
+			dataGenerator.before();
+			dataGenerator.generate();
+			dataGenerator.after();
+		} catch (Exception e) {
+			logger.error("Exception inserting some data : ", e);
+		}
+	}
+
 	protected void waitToFinish() {
 		try {
 			while (true) {
-				Thread.sleep(60000);
+				Thread.sleep(600000);
 				boolean anyWorking = ApplicationContextManager.getBean(IClusterManager.class).anyWorking();
 				boolean isWorking = ApplicationContextManager.getBean(IClusterManager.class).getServer().getWorking();
 				logger.info("Still working : " + anyWorking + ", " + isWorking);
@@ -137,10 +157,10 @@ public class Integration {
 	protected boolean isServer() {
 		String osName = System.getProperty("os.name");
 		logger.info("Operating system : " + osName);
-		if (osName.toLowerCase().contains("server")) {
-			return Boolean.TRUE;
+		if (!osName.toLowerCase().contains("server")) {
+			return Boolean.FALSE;
 		}
-		return Boolean.FALSE;
+		return Boolean.TRUE;
 	}
 
 }

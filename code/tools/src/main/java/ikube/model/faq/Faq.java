@@ -64,7 +64,6 @@ public class Faq implements Serializable, Comparable<Faq> {
 		return question;
 	}
 
-	@Attribute(length = 1024)
 	public void setQuestion(String name) {
 		this.question = name;
 	}
@@ -73,7 +72,6 @@ public class Faq implements Serializable, Comparable<Faq> {
 		return creator;
 	}
 
-	@Attribute(length = 64)
 	public void setCreator(String creator) {
 		this.creator = creator;
 	}
@@ -82,7 +80,6 @@ public class Faq implements Serializable, Comparable<Faq> {
 		return modifier;
 	}
 
-	@Attribute(length = 64)
 	public void setModifier(String modifier) {
 		this.modifier = modifier;
 	}
@@ -91,7 +88,6 @@ public class Faq implements Serializable, Comparable<Faq> {
 		return creationTimestamp;
 	}
 
-	@Attribute()
 	public void setCreationTimestamp(Timestamp creationTimestamp) {
 		this.creationTimestamp = creationTimestamp;
 	}
@@ -100,7 +96,6 @@ public class Faq implements Serializable, Comparable<Faq> {
 		return modifiedTimestamp;
 	}
 
-	@Attribute()
 	public void setModifiedTimestamp(Timestamp modifiedTimestamp) {
 		this.modifiedTimestamp = modifiedTimestamp;
 	}
@@ -109,7 +104,6 @@ public class Faq implements Serializable, Comparable<Faq> {
 		return answer;
 	}
 
-	@Attribute(length = 1024)
 	public void setAnswer(String text) {
 		this.answer = text;
 	}
@@ -118,7 +112,6 @@ public class Faq implements Serializable, Comparable<Faq> {
 		return published;
 	}
 
-	@Attribute(length = 1024)
 	public void setPublished(Boolean published) {
 		this.published = published;
 	}

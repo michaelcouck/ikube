@@ -37,7 +37,7 @@ public class SearchServlet extends HttpServlet {
 	public void init() throws ServletException {
 		ApplicationContextManager.getApplicationContext();
 		try {
-			Persistence.createEntityManagerFactory(IConstants.PERSISTENCE_UNIT_NAME).createEntityManager();
+			Persistence.createEntityManagerFactory(IConstants.PERSISTENCE_UNIT_H2).createEntityManager();
 		} catch (Exception e) {
 			logger.warn("Exception initialising the entity manager : ");
 		}

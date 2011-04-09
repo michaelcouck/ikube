@@ -30,7 +30,7 @@ public class Person extends Persistable {
 	private Date birthDate;
 	private Date deathDate;
 
-	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.REFRESH, targetEntity = Address.class)
+	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, targetEntity = Address.class)
 	private Address address;
 
 	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, targetEntity = Record.class)

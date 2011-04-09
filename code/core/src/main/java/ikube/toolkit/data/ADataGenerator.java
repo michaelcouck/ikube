@@ -86,7 +86,7 @@ public abstract class ADataGenerator implements IDataGenerator {
 		return builder.toString();
 	}
 
-	protected Object instanciateObject(Class<?> klass, int length) {
+	protected Object createInstance(Class<?> klass, int length) {
 		if (Boolean.class.equals(klass) || boolean.class.equals(klass)) {
 			return Boolean.TRUE;
 		} else if (Integer.class.equals(klass) || int.class.equals(klass)) {
@@ -97,10 +97,19 @@ public abstract class ADataGenerator implements IDataGenerator {
 			return new Timestamp(System.currentTimeMillis());
 		} else if (Date.class.equals(klass)) {
 			return new Date(System.currentTimeMillis());
+		} else if (java.sql.Date.class.equals(klass)) {
+			return new java.sql.Date(System.currentTimeMillis());
+		} else if (Timestamp.class.equals(klass)) {
+			return new Timestamp(System.currentTimeMillis());
 		} else if (String.class.equals(klass)) {
 			return generateText(length * 5, length);
 		} else if (Blob.class.equals(klass)) {
 			return new ByteArrayInputStream(generateText(length * 5, length).getBytes());
+		} else if (klass.isArray()) {
+			if (klass.getName().contains("[B")) {
+				String text = generateText(100, length);
+				return text.getBytes();
+			}
 		}
 		return null;
 	}

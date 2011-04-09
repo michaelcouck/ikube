@@ -49,7 +49,6 @@ public class Attachment implements Serializable, Comparable<Attachment> {
 		return name;
 	}
 
-	@Attribute(length = 256)
 	public void setName(String name) {
 		this.name = name;
 	}
@@ -58,7 +57,6 @@ public class Attachment implements Serializable, Comparable<Attachment> {
 		return attachment;
 	}
 
-	@Attribute(length = 100000)
 	public void setAttachment(byte[] attachment) {
 		this.attachment = attachment;
 	}
@@ -67,7 +65,6 @@ public class Attachment implements Serializable, Comparable<Attachment> {
 		return faq;
 	}
 
-	@Attribute()
 	public void setFaq(Faq attachmentFaq) {
 		this.faq = attachmentFaq;
 	}
@@ -76,7 +73,6 @@ public class Attachment implements Serializable, Comparable<Attachment> {
 		return length;
 	}
 
-	@Attribute()
 	public void setLength(Integer size) {
 		this.length = size;
 	}

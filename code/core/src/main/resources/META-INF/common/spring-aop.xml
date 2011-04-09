@@ -38,7 +38,9 @@
 	<bean 
 		id="ikube.index.spatial.SpatialEnrichmentInterceptor" 
 		class="ikube.index.spatial.SpatialEnrichmentInterceptor"
-		property:geocoder-ref="ikube.index.spatial.geocode.GoogleGeocoder" />
+		property:geocoder-ref="ikube.index.spatial.geocode.GoogleGeocoder"
+		property:minKm="0"
+		property:maxKm="10" />
 	<aop:config proxy-target-class="true">
 		<aop:aspect ref="ikube.index.spatial.SpatialEnrichmentInterceptor">
 			<aop:around method="enrich" pointcut="execution(* ikube.index.handler.*.addDocument(..))"  />

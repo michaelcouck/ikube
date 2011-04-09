@@ -1,11 +1,14 @@
 package ikube.toolkit.data;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.Column;
 import javax.persistence.EntityManager;
@@ -14,6 +17,12 @@ import javax.persistence.Id;
 import org.springframework.util.ReflectionUtils;
 
 /**
+ * This class will generate an object graph based on the entity and the type. Note that the many to many type of reference is not
+ * implemented, it will cause infinite recursion. This can be implemented however it is 17:05 on a Saturday and I just don't feel like it at
+ * the moment, too much heavy lifting.
+ * 
+ * Also bi-directional is not implemented, also infinite recursion.
+ * 
  * @author Michael Couck
  * @since 12.10.2010
  * @version 01.00
@@ -23,17 +32,18 @@ public class DataGeneratorFour extends ADataGenerator {
 	private int iterations;
 	private Class<?>[] classes;
 	private EntityManager entityManager;
+	private Map<Class<?>, Object> entities;
 
 	public DataGeneratorFour(EntityManager entityManager, int iterations, Class<?>... classes) {
 		this.entityManager = entityManager;
 		this.iterations = iterations;
 		this.classes = classes;
+		entities = new HashMap<Class<?>, Object>();
 	}
 
 	@Override
 	public void generate() throws Exception {
 		persist(entityManager);
-		references(entityManager);
 	}
 
 	protected void persist(EntityManager entityManager) throws Exception {
@@ -41,8 +51,7 @@ public class DataGeneratorFour extends ADataGenerator {
 		// Persist all the classes that are specified
 		for (int i = 0; i < iterations; i++) {
 			for (Class<?> klass : classes) {
-				Object entity = klass.newInstance();
-				generateFieldData(klass, entity);
+				Object entity = createInstance(klass);
 				entityManager.persist(entity);
 			}
 		}
@@ -50,89 +59,28 @@ public class DataGeneratorFour extends ADataGenerator {
 		entityManager.getTransaction().commit();
 	}
 
-	protected void references(EntityManager entityManager) {
-		// Link all the object in the database with all the other objects
-		// in the database where appropriate
-		for (Class<?> resultClass : classes) {
-			// Address
-			String query = "select e from " + resultClass.getSimpleName() + " e";
-			List<?> resultObjects = entityManager.createQuery(query).getResultList();
-			if (resultObjects.isEmpty()) {
-				continue;
-			}
-			entityManager.getTransaction().begin();
-			for (Class<?> targetClass : classes) {
-				// logger.info("Class : " + resultClass + ", " + targetClass);
-				// TODO Get the parameterized type of the collection if it is one
-				// and set it in the target object as a collection. Else get all the fields
-				// in the target and set the first object found from the selection
-				if (targetClass.equals(resultClass)) {
-					continue;
-				}
-				// Patient
-				query = "select e from " + targetClass.getSimpleName() + " e";
-				List<?> targetObjects = entityManager.createQuery(query).getResultList();
-				setTargets(targetClass, resultClass, targetObjects, resultObjects);
-				for (Object targetObject : targetObjects) {
-					entityManager.merge(targetObject);
-				}
-			}
-			entityManager.getTransaction().commit();
+	@SuppressWarnings("unchecked")
+	protected <T> T createInstance(Class<T> klass) throws Exception {
+		T entity = (T) entities.remove(klass);
+		if (entity == null) {
+			entity = klass.newInstance();
+			entities.put(klass, entity);
+			// Set the fields
+			createFields(klass, entity);
 		}
+		return entity;
 	}
 
-	protected void setTargets(Class<?> targetClass, Class<?> resultClass, List<?> targetObjects, List<?> resultObjects) {
-		for (Object targetObject : targetObjects) {
-			logger.debug("Target : " + targetObject);
-			Field[] targetFields = targetClass.getDeclaredFields();
-			for (Field targetField : targetFields) {
-				logger.debug("Target field : " + targetField);
-				Type type = targetField.getGenericType();
-				logger.debug("Target field type : " + type);
-				if (targetField.getType().equals(resultClass)) {
-					Object resultValue = resultObjects.iterator().next();
-					logger.debug("Setting target value : " + resultValue);
-					targetField.setAccessible(Boolean.TRUE);
-					ReflectionUtils.setField(targetField, targetObject, resultValue);
-					continue;
-				}
-				if (ParameterizedType.class.isAssignableFrom(type.getClass())) {
-					Type[] typeArguments = ((ParameterizedType) type).getActualTypeArguments();
-					if (Collection.class.isAssignableFrom(targetField.getType())) {
-						if (typeArguments == null || typeArguments.length == 0) {
-							continue;
-						}
-						for (Type typeArgument : typeArguments) {
-							logger.debug("Type argument : " + typeArgument);
-							if (typeArgument.equals(resultClass)) {
-								targetField.setAccessible(Boolean.TRUE);
-								logger.debug("Setting target value : " + resultObjects);
-								try {
-									Collection<Object> resultObjectsCollection = new ArrayList<Object>();
-									for (Object object : resultObjects) {
-										resultObjectsCollection.add(object);
-									}
-									ReflectionUtils.setField(targetField, targetObject, resultObjectsCollection);
-								} catch (Exception e) {
-									logger.error("", e);
-								}
-								continue;
-							}
-						}
-						continue;
-					}
-					continue;
-				}
-			}
-		}
-		// Do the super class
-		Class<?> targetSuperClass = targetClass.getSuperclass();
-		if (!targetSuperClass.equals(Object.class)) {
-			setTargets(targetSuperClass, resultClass, targetObjects, resultObjects);
-		}
+	@SuppressWarnings("unchecked")
+	protected <C extends Collection<T>, T> C createCollection(Class<C> collectionClass, Class<T> klass) throws Exception {
+		Collection<T> collection = collectionClass.newInstance();
+		T t = createInstance(klass);
+		collection.add(t);
+		return (C) collection;
 	}
 
-	protected <T> T generateFieldData(Class<?> klass, T entity) {
+	@SuppressWarnings("unchecked")
+	protected <T> T createFields(Class<?> klass, T entity) throws Exception {
 		Field[] fields = klass.getDeclaredFields();
 		for (Field field : fields) {
 			Id id = field.getAnnotation(Id.class);
@@ -140,13 +88,40 @@ public class DataGeneratorFour extends ADataGenerator {
 				continue;
 			}
 			field.setAccessible(Boolean.TRUE);
-			Column column = field.getAnnotation(Column.class);
-			int length = 0;
-			if (column != null) {
-				length = column.length();
-			}
 			Class<?> fieldClass = field.getType();
-			Object fieldValue = instanciateObject(fieldClass, length);
+			logger.debug("Field class : " + fieldClass);
+			Object fieldValue = null;
+			// If this is a collection then create the collection
+			if (Collection.class.isAssignableFrom(fieldClass)) {
+				Type genericType = field.getGenericType();
+				Type theActualTypeArgument = null;
+				if (ParameterizedType.class.isAssignableFrom(genericType.getClass())) {
+					ParameterizedType parameterizedType = (ParameterizedType) genericType;
+					Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
+					for (Type actualTypeArgument : actualTypeArguments) {
+						logger.debug("Actual type argument : " + actualTypeArgument);
+						theActualTypeArgument = actualTypeArgument;
+					}
+				}
+				fieldValue = createCollection(ArrayList.class, (Class<?>) theActualTypeArgument);
+			} else if (fieldClass.getPackage() == null || fieldClass.getPackage().getName().startsWith("java")) {
+				// Java lang class
+				Column column = null;
+				Annotation[] annotations = field.getAnnotations();
+				if (annotations != null) {
+					for (Annotation annotation : annotations) {
+						if (Column.class.isAssignableFrom(annotation.getClass())) {
+							column = (Column) annotation;
+							break;
+						}
+					}
+				}
+				int length = column != null && column.length() > 0 ? column.length() : 48;
+				fieldValue = createInstance(fieldClass, length);
+			} else {
+				// This is a non Java lang class
+				fieldValue = createInstance(fieldClass);
+			}
 			if (logger.isDebugEnabled()) {
 				logger.debug("Field : " + field + ", " + fieldClass + ", " + fieldValue);
 			}
@@ -154,7 +129,7 @@ public class DataGeneratorFour extends ADataGenerator {
 		}
 		Class<?> superClass = klass.getSuperclass();
 		if (!Object.class.equals(superClass)) {
-			generateFieldData(superClass, entity);
+			createFields(superClass, entity);
 		}
 		return entity;
 	}

@@ -7,7 +7,6 @@ import ikube.model.Indexable;
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.spatial.tier.projections.CartesianTierPlotter;
 import org.apache.lucene.spatial.tier.projections.IProjector;
 import org.apache.lucene.spatial.tier.projections.SinusoidalProjector;
@@ -15,6 +14,10 @@ import org.apache.lucene.util.NumericUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 
 /**
+ * This class will intercept the add document method of the handlers, look through the indexables that they are indexing and accumulate all
+ * the address fields. These fields will be fed into one of the geocoding classes that is defined in the configuration. The location in
+ * latitude and longitude will be added to the document in Lucene before it is written.
+ * 
  * @author Michael Couck
  * @since 06.03.2011
  * @version 01.00
@@ -22,10 +25,10 @@ import org.aspectj.lang.ProceedingJoinPoint;
 public class SpatialEnrichmentInterceptor implements ISpatialEnrichmentInterceptor {
 
 	private static final Logger LOGGER = Logger.getLogger(SpatialEnrichmentInterceptor.class);
-	private transient int startTier;
-	private transient int endTier;
 	private transient IProjector projector = new SinusoidalProjector();
 	private transient IGeocoder geocoder;
+	private transient int startTier;
+	private transient int endTier;
 
 	@Override
 	public Object enrich(final ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
@@ -38,7 +41,6 @@ public class SpatialEnrichmentInterceptor implements ISpatialEnrichmentIntercept
 	}
 
 	protected void enrich(final Object[] arguments) {
-		IndexWriter indexWriter = null;
 		Document document = null;
 		Indexable<?> indexable = null;
 		if (arguments != null) {
@@ -47,9 +49,7 @@ public class SpatialEnrichmentInterceptor implements ISpatialEnrichmentIntercept
 					continue;
 				}
 				Class<?> klass = argument.getClass();
-				if (IndexWriter.class.isAssignableFrom(klass)) {
-					indexWriter = (IndexWriter) argument;
-				} else if (Document.class.isAssignableFrom(klass)) {
+				if (Document.class.isAssignableFrom(klass)) {
 					document = (Document) argument;
 				} else if (Indexable.class.isAssignableFrom(klass)) {
 					indexable = (Indexable<?>) argument;
@@ -61,17 +61,10 @@ public class SpatialEnrichmentInterceptor implements ISpatialEnrichmentIntercept
 		}
 		try {
 			Coordinate coordinate = geocoder.getCoordinate(indexable);
-			addLocation(indexWriter, document, /* address, */coordinate);
+			addSpatialLocationFields(coordinate, document);
 		} catch (Exception e) {
 			LOGGER.error("", e);
 		}
-	}
-
-	protected void addLocation(final IndexWriter writer, final Document document, /* final String address, */final Coordinate coordinate)
-			throws Exception {
-		// document.add(new Field(IConstants.NAME, address, Field.Store.YES, Index.ANALYZED));
-		addSpatialLocationFields(coordinate, document);
-		writer.addDocument(document);
 	}
 
 	protected void addSpatialLocationFields(final Coordinate coordinate, final Document document) {
@@ -79,10 +72,10 @@ public class SpatialEnrichmentInterceptor implements ISpatialEnrichmentIntercept
 				Field.Index.NOT_ANALYZED));
 		document.add(new Field(IConstants.LNG, NumericUtils.doubleToPrefixCoded(coordinate.getLon()), Field.Store.YES,
 				Field.Index.NOT_ANALYZED));
-		addCartesianTiers(coordinate, document);
+		addCartesianTiers(coordinate, document, startTier, endTier);
 	}
 
-	protected void addCartesianTiers(final Coordinate coordinate, final Document document) {
+	protected void addCartesianTiers(final Coordinate coordinate, final Document document, final int startTier, final int endTier) {
 		for (int tier = startTier; tier <= endTier; tier++) {
 			CartesianTierPlotter ctp = new CartesianTierPlotter(tier, projector, CartesianTierPlotter.DEFALT_FIELD_PREFIX);
 			final double boxId = ctp.getTierBoxId(coordinate.getLat(), coordinate.getLon());
@@ -91,14 +84,22 @@ public class SpatialEnrichmentInterceptor implements ISpatialEnrichmentIntercept
 		}
 	}
 
-	public void setMinKm(final double minKm) {
+	protected int getMinKm(final double minKm) {
 		CartesianTierPlotter ctp = new CartesianTierPlotter(0, projector, CartesianTierPlotter.DEFALT_FIELD_PREFIX);
-		startTier = ctp.bestFit(minKm);
+		return ctp.bestFit(minKm);
+	}
+
+	protected int getMaxKm(final double maxKm) {
+		CartesianTierPlotter ctp = new CartesianTierPlotter(0, projector, CartesianTierPlotter.DEFALT_FIELD_PREFIX);
+		return ctp.bestFit(maxKm);
+	}
+
+	public void setMinKm(final double minKm) {
+		this.startTier = getMinKm(minKm);
 	}
 
 	public void setMaxKm(final double maxKm) {
-		CartesianTierPlotter ctp = new CartesianTierPlotter(0, projector, CartesianTierPlotter.DEFALT_FIELD_PREFIX);
-		endTier = ctp.bestFit(maxKm);
+		this.endTier = getMaxKm(maxKm);
 	}
 
 	public void setGeocoder(final IGeocoder geocoder) {

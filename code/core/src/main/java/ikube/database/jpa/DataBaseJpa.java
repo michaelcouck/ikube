@@ -25,7 +25,7 @@ public class DataBaseJpa implements IDataBase {
 	/** The logger for the bean. */
 	protected Logger logger = Logger.getLogger(DataBaseJpa.class);
 	/** Entity manager for the bean will be injected. */
-	@PersistenceContext(type = PersistenceContextType.TRANSACTION, unitName = IConstants.PERSISTENCE_UNIT_NAME)
+	@PersistenceContext(type = PersistenceContextType.TRANSACTION, unitName = IConstants.PERSISTENCE_UNIT_H2)
 	protected EntityManager entityManager;
 
 	/**

@@ -21,7 +21,7 @@ public class Hospital extends Persistable {
 
 	@Column(length = 64)
 	private String name;
-	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.REFRESH, targetEntity = Address.class)
+	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, targetEntity = Address.class)
 	private Address address;
 
 	public String getName() {
