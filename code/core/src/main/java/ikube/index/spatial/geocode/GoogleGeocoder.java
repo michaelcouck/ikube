@@ -1,17 +1,19 @@
 package ikube.index.spatial.geocode;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.net.URL;
-
-import org.apache.log4j.Logger;
-import org.dom4j.Element;
-
 import ikube.IConstants;
 import ikube.index.spatial.Coordinate;
 import ikube.model.Indexable;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.XmlUtilities;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLEncoder;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.dom4j.Element;
 
 /**
  * @author Michael Couck
@@ -31,6 +33,8 @@ public class GoogleGeocoder implements IGeocoder {
 	public Coordinate getCoordinate(final Indexable<?> indexable) {
 		try {
 			String address = buildAddress(indexable, new StringBuilder()).toString();
+			address = StringUtils.trim(address);
+			address = URLEncoder.encode(address, IConstants.ENCODING);
 			// Call the geocoder with the address
 			String uri = getUri(address);
 			URL url = new URL(uri);
@@ -65,8 +69,10 @@ public class GoogleGeocoder implements IGeocoder {
 
 	protected StringBuilder buildAddress(final Indexable<?> indexable, final StringBuilder builder) {
 		if (indexable.isAddress()) {
+			if (builder.length() > 0) {
+				builder.append(" ");
+			}
 			builder.append(indexable.getContent());
-			builder.append(" ");
 		}
 		if (indexable.getChildren() != null) {
 			for (Indexable<?> child : indexable.getChildren()) {

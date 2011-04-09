@@ -1,7 +1,9 @@
 package ikube.index.spatial.geocode;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import ikube.ATest;
+import ikube.index.spatial.Coordinate;
 import ikube.toolkit.FileUtilities;
 
 import java.net.URL;
@@ -21,7 +23,19 @@ public class GoogleGeocoderTest extends ATest {
 
 	@Test
 	public void getCoordinate() throws Exception {
-		// TODO Implement me
+		GoogleGeocoder geocoder = new GoogleGeocoder();
+		geocoder.setGeoCodeApi("http://maps.googleapis.com/maps/api/geocode/xml");
+		Coordinate coordinate = geocoder.getCoordinate(INDEXABLE);
+		assertNotNull(coordinate);
+		double lat = coordinate.getLat();
+		double lon = coordinate.getLon();
+		assertEquals(-33.9693580, lat, 1.0);
+		assertEquals(18.4622110, lon, 1.0);
+	}
+
+	@Test
+	// @Ignore
+	public void api() throws Exception {
 		StringBuilder builder = new StringBuilder();
 		builder.append("http://maps.googleapis.com/maps/api/geocode/xml");
 		builder.append("?");
@@ -33,6 +47,7 @@ public class GoogleGeocoderTest extends ATest {
 		builder.append("=");
 		builder.append("true");
 		URL url = new URL(builder.toString());
+		logger.info("Url : " + builder.toString());
 		String content = FileUtilities.getContents(url.openStream(), Integer.MAX_VALUE).toString();
 		logger.info(content);
 		assertNotNull(content);

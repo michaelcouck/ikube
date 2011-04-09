@@ -79,6 +79,7 @@ public class SpatialEnrichmentInterceptor implements ISpatialEnrichmentIntercept
 		for (int tier = startTier; tier <= endTier; tier++) {
 			CartesianTierPlotter ctp = new CartesianTierPlotter(tier, projector, CartesianTierPlotter.DEFALT_FIELD_PREFIX);
 			final double boxId = ctp.getTierBoxId(coordinate.getLat(), coordinate.getLon());
+			LOGGER.info("Tier : " + tier + ", " + boxId);
 			document.add(new Field(ctp.getTierFieldName(), NumericUtils.doubleToPrefixCoded(boxId), Field.Store.YES,
 					Field.Index.NOT_ANALYZED_NO_NORMS));
 		}
