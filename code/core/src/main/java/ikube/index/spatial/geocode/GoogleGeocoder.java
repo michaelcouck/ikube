@@ -66,6 +66,7 @@ public class GoogleGeocoder implements IGeocoder {
 	protected StringBuilder buildAddress(final Indexable<?> indexable, final StringBuilder builder) {
 		if (indexable.isAddress()) {
 			builder.append(indexable.getContent());
+			builder.append(" ");
 		}
 		if (indexable.getChildren() != null) {
 			for (Indexable<?> child : indexable.getChildren()) {

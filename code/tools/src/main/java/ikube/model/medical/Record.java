@@ -1,7 +1,5 @@
 package ikube.model.medical;
 
-import ikube.model.Persistable;
-
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;

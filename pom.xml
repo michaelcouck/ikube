@@ -21,6 +21,10 @@
 		<included.packages>-Dincluded.packages=ikube</included.packages>
 		<excluded.packages>-Dexcluded.packages=model</excluded.packages>
 		<included.adapters>-Dincluded.adapters=coverage:complexity:dependency</included.adapters>
+		
+		<appengine.sdk.root>libs/appengine-java-sdk-1.4.3</appengine.sdk.root>
+		<war.base.root>code/war/target/ikube</war.base.root>
+		<gae.version>0.8.4</gae.version>
 	</properties>
 
 	<modules>
@@ -97,8 +101,35 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>net.kindleit</groupId>
+				<artifactId>maven-gae-plugin</artifactId>
+				<version>${gae.version}</version>
+				<configuration>
+					<sdkDir>${appengine.sdk.root}</sdkDir>
+					<appDir>${war.base.root}</appDir>
+				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>net.kindleit</groupId>
+						<artifactId>gae-runtime</artifactId>
+						<version>1.3.7</version>
+						<type>pom</type>
+					</dependency>
+				</dependencies>
+			</plugin>
 		</plugins>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>net.kindleit</groupId>
+					<artifactId>maven-gae-plugin</artifactId>
+					<version>${gae.version}</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 	</build>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -657,5 +688,5 @@
 			</plugin>
 		</plugins>
 	</reporting>
-
+	
 </project>

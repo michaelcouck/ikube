@@ -9,11 +9,10 @@
 		<provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
 		<non-jta-data-source>nonXaDataSourceH2</non-jta-data-source>
 
-		<class>ikube.model.Persistable</class>
-
 		<class>ikube.model.faq.Faq</class>
 		<class>ikube.model.faq.Attachment</class>
-
+		
+		<class>ikube.model.medical.Persistable</class>
 		<class>ikube.model.medical.Hospital</class>
 		<class>ikube.model.medical.Administration</class>
 		<class>ikube.model.medical.Person</class>

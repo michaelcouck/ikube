@@ -31,6 +31,8 @@
 		<ref bean="ikube.action.Index"  />
 		<ref bean="ikube.action.Delete" />
 		<ref bean="ikube.action.Clean" />
+		<ref bean="ikube.action.Backup" />
+		<ref bean="ikube.action.Restore" />
 	</util:list>
 
 	<bean 
@@ -104,6 +106,27 @@
 			</util:list>
 		</property>
 	</bean>
+	<bean 
+		id="ikube.action.Backup" 
+		class="ikube.action.Clean" 
+		property:predicate="!AnyServersWorking">
+		<property name="rules">
+			<util:list>
+				<ref local="ikube.action.rule.AnyServersWorking" />
+			</util:list>
+		</property>
+	</bean>
+	<bean 
+		id="ikube.action.Restore" 
+		class="ikube.action.Clean" 
+		property:predicate="!AnyServersWorking &#38;&#38; IndexesAreCorrupt">
+		<property name="rules">
+			<util:list>
+				<ref local="ikube.action.rule.AnyServersWorking" />
+				<ref local="ikube.action.rule.IndexesAreCorrupt" />
+			</util:list>
+		</property>
+	</bean>
 	
 	<bean
 		id="ikube.action.rule.IsInMemory" 
@@ -138,5 +161,8 @@
 	<bean 
 		id="ikube.action.rule.IsThisIndexCreated"
 		class="ikube.action.rule.IsThisIndexCreated" />
+	<bean 
+		id="ikube.action.rule.IndexesAreCorrupt"
+		class="ikube.action.rule.IndexesAreCorrupt" />
 	
 </beans>
