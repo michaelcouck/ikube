@@ -66,6 +66,7 @@ public abstract class Action<E, F> implements IAction<E, F> {
 	 * @param indexContext
 	 *            the index context to check if the index is expired
 	 * @return whether the index for this index context is passed it's expiration date
+	 * @deprecated this will be removed with the next major release
 	 */
 	protected boolean isIndexCurrent(final IndexContext indexContext) {
 		return new IsIndexCurrent().evaluate(indexContext);
@@ -107,6 +108,7 @@ public abstract class Action<E, F> implements IAction<E, F> {
 	 * @param indexDirectory
 	 *            the directory to check for existence and availability
 	 * @return whether the directory exists as a Lucene index and is not locked by Lucene
+	 * @deprecated this will be removed with the next major release
 	 */
 	protected boolean directoryExistsAndNotLocked(final File indexDirectory) {
 		return new DirectoryExistsAndNotLocked().evaluate(indexDirectory);
@@ -118,11 +120,18 @@ public abstract class Action<E, F> implements IAction<E, F> {
 	 * @param indexDirectory
 	 *            the directory to check for existence and being locked
 	 * @return whether the directory exists as a Lucene index and is locked
+	 * @deprecated this will be removed with the next major release
 	 */
 	protected boolean directoryExistsAndIsLocked(final File indexDirectory) {
 		return new DirectoryExistsAndIsLocked().evaluate(indexDirectory);
 	}
 
+	/**
+	 * @param directoryOne
+	 * @param directoryTwo
+	 * @return
+	 * @deprecated this will be removed with the next major release
+	 */
 	@SuppressWarnings("unused")
 	private boolean directoriesEqual(final File directoryOne, final File directoryTwo) {
 		return new AreDirectoriesEqual().evaluate(new File[] { directoryOne, directoryTwo });

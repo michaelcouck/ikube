@@ -117,7 +117,7 @@ public final class GeneralUtilities {
 						try {
 							ss.close();
 						} catch (Exception e) {
-							// Should not be thrown
+							LOGGER.error("Should not be thrown : ", e);
 						}
 					}
 				}

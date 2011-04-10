@@ -130,5 +130,5 @@ public class FileUtilitiesTest {
 		File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexFolderOne.getParentFile().getParentFile().getAbsolutePath());
 		assertEquals(indexFolderTwo.getParentFile().getName(), latestIndexDirectory.getName());
 	}
-
+	
 }

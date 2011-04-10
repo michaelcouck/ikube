@@ -5,8 +5,10 @@ import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 import ikube.ATest;
+import ikube.index.IndexManager;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.mock.IndexManagerMock;
+import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
@@ -38,7 +40,7 @@ public class IndexTest extends ATest {
 	@After
 	public void after() {
 		FileUtilities.deleteFile(new File(INDEX_CONTEXT.getIndexDirectoryPath()), 1);
-		Mockit.tearDownMocks(IndexManagerMock.class, ApplicationContextManagerMock.class);
+		Mockit.tearDownMocks(IndexManager.class, ApplicationContextManager.class);
 	}
 
 	@Test

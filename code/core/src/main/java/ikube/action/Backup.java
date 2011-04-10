@@ -5,6 +5,9 @@ import ikube.model.IndexContext;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
+import java.io.IOException;
+
+import org.apache.commons.io.FileUtils;
 
 /**
  * This class backs up the index to a place on the network in the case where the index becomes corrupted.
@@ -23,8 +26,12 @@ public class Backup extends Action<IndexContext, Boolean> {
 			File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexDirectoryPath);
 			String indexDirectoryPathBackup = IndexManager.getIndexDirectoryPathBackup(indexContext);
 			File latestIndexDirectoryBackup = FileUtilities.getFile(indexDirectoryPathBackup, Boolean.TRUE);
-			// Copy the index to the designated place on the network
-			FileUtilities.copyFiles(latestIndexDirectory, latestIndexDirectoryBackup);
+			try {
+				// Copy the index to the designated place on the network
+				FileUtils.copyDirectoryToDirectory(latestIndexDirectory, latestIndexDirectoryBackup);
+			} catch (IOException e) {
+				logger.error("Exception backing up indexes : ", e);
+			}
 		} finally {
 			getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getName(), Boolean.FALSE);
 		}

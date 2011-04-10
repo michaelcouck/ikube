@@ -37,7 +37,7 @@ public abstract class ATagTest {
 		Mockit.setUpMocks();
 	}
 
-	protected static String searchUrl = "http://ikube.ikube.cloudbees.net/SearchServlet?indexName=indexOne&searchStrings=lucene";
+	protected static String searchUrl = "http://ikokoon.ikube.cloudbees.net/SearchServlet?indexName=indexOne&searchStrings=lucene";
 
 	protected Logger logger = Logger.getLogger(this.getClass());
 

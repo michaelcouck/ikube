@@ -33,7 +33,6 @@ import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.IndexWriter.MaxFieldLength;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.MultiSearcher;
@@ -43,12 +42,13 @@ import org.apache.lucene.search.Searchable;
 import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.TopFieldDocs;
-import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.Lock;
-import org.apache.lucene.store.RAMDirectory;
 
 /**
+ * This is the base test for all mocked tests. There are several useful mocks in this class that can be re-used like the index context and
+ * the index reader etc. There are also helpful methods for creating Lucene indexes.
+ * 
  * @author Michael Couck
  * @since 21.11.10
  * @version 01.00
@@ -116,7 +116,8 @@ public abstract class ATest {
 		when(INDEX_READER.directory()).thenReturn(FS_DIRECTORY);
 		when(FS_DIRECTORY.makeLock(anyString())).thenReturn(LOCK);
 
-		when(INDEX_CONTEXT.getIndexDirectoryPath()).thenReturn("./test");
+		when(INDEX_CONTEXT.getIndexDirectoryPath()).thenReturn("./indexes");
+		when(INDEX_CONTEXT.getIndexDirectoryPathBackup()).thenReturn("./indexes/backup");
 		when(INDEX_CONTEXT.getIndexName()).thenReturn("index");
 		when(INDEX_CONTEXT.getIndexables()).thenReturn(INDEXABLES);
 
@@ -135,7 +136,7 @@ public abstract class ATest {
 		when(SERVER.getIp()).thenReturn(IP);
 		when(INDEX.getIndexWriter()).thenReturn(INDEX_WRITER);
 		INDEXABLES.add(INDEXABLE);
-		when(INDEXABLE.getUrl()).thenReturn("http://ikube.ikube.cloudbees.net/");
+		when(INDEXABLE.getUrl()).thenReturn("http://ikokoon.ikube.cloudbees.net/index.html");
 		when(INDEXABLE.isAddress()).thenReturn(Boolean.TRUE);
 		when(INDEXABLE.getContent()).thenReturn("9 avenue road, cape town, south africa");
 
@@ -166,51 +167,36 @@ public abstract class ATest {
 		return IndexManager.getIndexDirectory(IP, indexContext, System.currentTimeMillis());
 	}
 
-	protected File createIndex(final File indexDirectory, String... strings) {
-		logger.info("Creating Lucene index in : " + indexDirectory);
-		createIndex(indexDirectory, Boolean.FALSE, Boolean.TRUE, strings);
-		return indexDirectory;
-	}
-
-	protected Directory createIndex(File indexDirectory, boolean inMemory, boolean closeDirectory, String... strings) {
-		Directory directory = null;
+	/**
+	 * Creates an index in the directory specified using the string array passed as the data for the documents.
+	 * 
+	 * @param indexDirectory
+	 *            the directory where the index must be created
+	 * @param strings
+	 *            the string data to use in the index documents
+	 * @return the directory that was used to create the index in Lucene
+	 */
+	protected File createIndex(File indexDirectory, String... strings) {
+		logger.info("Creating Lucene index in : " + indexDirectory.getAbsolutePath());
 		IndexWriter indexWriter = null;
 		try {
-			if (inMemory) {
-				directory = new RAMDirectory();
-			} else {
-				directory = FSDirectory.open(indexDirectory);
-			}
-			indexWriter = new IndexWriter(directory, IConstants.ANALYZER, Boolean.TRUE, MaxFieldLength.UNLIMITED);
+			indexWriter = IndexManager.openIndexWriter(INDEX_CONTEXT, indexDirectory);
 			Document document = new Document();
 			IndexManager.addStringField(IConstants.CONTENTS, "Michael Couck", document, Store.YES, Field.Index.ANALYZED, TermVector.YES);
 			indexWriter.addDocument(document);
-
-			for (String string : strings) {
-				document = new Document();
-				IndexManager.addStringField(IConstants.CONTENTS, string, document, Store.YES, Field.Index.ANALYZED, TermVector.YES);
-				indexWriter.addDocument(document);
+			for (int i = 0; i < 10; i++) {
+				for (String string : strings) {
+					document = new Document();
+					IndexManager.addStringField(IConstants.CONTENTS, string, document, Store.YES, Field.Index.ANALYZED, TermVector.YES);
+					indexWriter.addDocument(document);
+				}
 			}
-
-			indexWriter.commit();
-			indexWriter.optimize(Boolean.TRUE);
 		} catch (Exception e) {
 			logger.error("Exception creating the index : " + indexDirectory, e);
 		} finally {
-			if (closeDirectory) {
-				try {
-					indexWriter.close(Boolean.FALSE);
-				} catch (Exception e) {
-					logger.error("Exception closing the writer : " + indexDirectory, e);
-				}
-				try {
-					directory.close();
-				} catch (Exception e) {
-					logger.error("Exception closing the directory : " + indexDirectory, e);
-				}
-			}
+			IndexManager.closeIndexWriter(indexWriter);
 		}
-		return directory;
+		return indexDirectory;
 	}
 
 }

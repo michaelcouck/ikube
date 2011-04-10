@@ -579,6 +579,35 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
+		
+		<!-- 
+			CloudBees does not have thec.tld on the classpath! However 
+			trying to get Maven to include these in the war is just about impossible.
+		-->
+		<!-- standard.jar -->
+		<!--<dependency>
+			<groupId>taglibs</groupId>
+			<artifactId>standard</artifactId>
+			<version>1.1.2</version>
+			<type>jar</type>
+			<scope>import</scope>
+		</dependency>-->
+		<!-- JSTL -->
+		<!--<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>jstl</artifactId>
+			<version>1.1.2</version>
+			<type>jar</type>
+			<scope>import</scope>
+		</dependency>-->
+		
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.0.1</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
 	</dependencies>
 
 	<repositories>

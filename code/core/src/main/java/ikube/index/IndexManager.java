@@ -66,25 +66,11 @@ public final class IndexManager {
 		IndexWriter indexWriter = null;
 		try {
 			try {
-				Directory directory = null;
-				if (indexContext.getInMemory()) {
-					LOGGER.info("Index in memory : ");
-					directory = new RAMDirectory();
-				} else {
-					String indexDirectoryPath = getIndexDirectory(ip, indexContext, time);
-					indexDirectory = FileUtilities.getFile(indexDirectoryPath, Boolean.TRUE);
-					LOGGER.info(Logging.getString("Index directory time : ", time, "date : ", new Date(time),
-							"writing index to directory ", indexDirectory.getAbsolutePath()));
-					directory = FSDirectory.open(indexDirectory);
-				}
-				indexContext.getIndex().setDirectory(directory);
-				indexWriter = new IndexWriter(directory, IConstants.ANALYZER, true, MaxFieldLength.UNLIMITED);
-				indexWriter.setUseCompoundFile(indexContext.isCompoundFile());
-				indexWriter.setMaxBufferedDocs(indexContext.getBufferedDocs());
-				indexWriter.setMaxFieldLength(indexContext.getMaxFieldLength());
-				indexWriter.setMergeFactor(indexContext.getMergeFactor());
-				indexWriter.setRAMBufferSizeMB(indexContext.getBufferSize());
-				indexContext.getIndex().setIndexWriter(indexWriter);
+				String indexDirectoryPath = getIndexDirectory(ip, indexContext, time);
+				indexDirectory = FileUtilities.getFile(indexDirectoryPath, Boolean.TRUE);
+				LOGGER.info(Logging.getString("Index directory time : ", time, "date : ", new Date(time), "writing index to directory ",
+						indexDirectory.getAbsolutePath()));
+				indexWriter = openIndexWriter(indexContext, indexDirectory);
 			} catch (CorruptIndexException e) {
 				LOGGER.error("We expected a new index and got a corrupt one.", e);
 				LOGGER.warn("Didn't initialise the index writer. Will try to delete the index directory.");
@@ -113,6 +99,25 @@ public final class IndexManager {
 		}
 	}
 
+	public static synchronized IndexWriter openIndexWriter(IndexContext indexContext, File indexDirectory) throws Exception {
+		Directory directory = null;
+		if (indexContext.getInMemory()) {
+			LOGGER.info("Index in memory : ");
+			directory = new RAMDirectory();
+		} else {
+			directory = FSDirectory.open(indexDirectory);
+		}
+		indexContext.getIndex().setDirectory(directory);
+		IndexWriter indexWriter = new IndexWriter(directory, IConstants.ANALYZER, true, MaxFieldLength.UNLIMITED);
+		indexWriter.setUseCompoundFile(indexContext.isCompoundFile());
+		indexWriter.setMaxBufferedDocs(indexContext.getBufferedDocs());
+		indexWriter.setMaxFieldLength(indexContext.getMaxFieldLength());
+		indexWriter.setMergeFactor(indexContext.getMergeFactor());
+		indexWriter.setRAMBufferSizeMB(indexContext.getBufferSize());
+		indexContext.getIndex().setIndexWriter(indexWriter);
+		return indexWriter;
+	}
+
 	public static synchronized void closeIndexWriter(final IndexContext indexContext) {
 		try {
 			if (indexContext != null && indexContext.getIndex().getIndexWriter() != null) {
@@ -125,12 +130,17 @@ public final class IndexManager {
 		}
 	}
 
-	private static void closeIndexWriter(final IndexWriter indexWriter) {
+	public static void closeIndexWriter(final IndexWriter indexWriter) {
 		Directory directory = indexWriter.getDirectory();
 		LOGGER.info("Optimizing and closing the index : ");
 		try {
 			indexWriter.commit();
 			indexWriter.optimize();
+		} catch (NullPointerException e) {
+			LOGGER.error("Null pointer, in the index writer : ");
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Stack trace : ", e);
+			}
 		} catch (CorruptIndexException e) {
 			LOGGER.error("Corrput index : ", e);
 		} catch (IOException e) {
@@ -164,22 +174,21 @@ public final class IndexManager {
 	}
 
 	public static String getIndexDirectoryPath(final IndexContext indexContext) {
-		StringBuilder builder = new StringBuilder();
-		builder.append(indexContext.getIndexDirectoryPath()); // Path
-		builder.append(File.separator);
-		builder.append(indexContext.getIndexName()); // Index name
-		String indexDirectoryPath = StringUtils.replace(builder.toString(), "/./", "/");
-		indexDirectoryPath = StringUtils.replace(indexDirectoryPath, "\\.\\", "/");
-		return indexDirectoryPath;
+		return getIndexDirectoryPath(indexContext, indexContext.getIndexDirectoryPath());
 	}
 
 	public static String getIndexDirectoryPathBackup(final IndexContext indexContext) {
+		return getIndexDirectoryPath(indexContext, indexContext.getIndexDirectoryPathBackup());
+	}
+
+	private static String getIndexDirectoryPath(IndexContext indexContext, String indexDirectory) {
 		StringBuilder builder = new StringBuilder();
-		builder.append(indexContext.getIndexDirectoryPathBackup()); // Path
+		builder.append(indexDirectory); // Path
 		builder.append(File.separator);
 		builder.append(indexContext.getIndexName()); // Index name
 		String indexDirectoryPath = StringUtils.replace(builder.toString(), "/./", "/");
 		indexDirectoryPath = StringUtils.replace(indexDirectoryPath, "\\.\\", "/");
+		indexDirectoryPath = StringUtils.replace(indexDirectoryPath, "\\", "/");
 		return indexDirectoryPath;
 	}
 

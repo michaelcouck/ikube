@@ -61,8 +61,8 @@ public class Integration {
 
 		waitToFinish();
 
-		// validateIndexes();
 		// TODO Validate the indexes on the file system
+		// validateIndexes();
 	}
 
 	protected void insertData(String persistenceUnit, int iterations, Class<?>[] classes) throws Exception {

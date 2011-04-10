@@ -30,7 +30,7 @@ import org.mortbay.jetty.webapp.WebAppContext;
 public class IntegrationJetty extends Integration {
 
 	/** The port to start from. */
-	private int port = 9000;
+	private int port = 9090;
 	private String webApp = "webapp";
 	private String ikubeWar = "ikube-war";
 	private String contextPath = IConstants.SEP + IConstants.IKUBE;
@@ -44,18 +44,26 @@ public class IntegrationJetty extends Integration {
 		Thread.sleep((long) (Math.random() * 10));
 		String webAppContextFilePath = getWebAppContextFilePath();
 		int port = GeneralUtilities.findFirstOpenPort(this.port);
+		Server server = null;
 
 		while (true && port < Short.MAX_VALUE) {
 			try {
+				Thread.sleep((long) Math.random() * 10000l);
 				logger.info("Starting server on port : " + port + ",  in directory : " + webAppContextFilePath);
-				Server server = new Server(port);
+				server = new Server(port);
 				Context root = new Context(server, contextPath, Context.SESSIONS);
 				server.setHandler(new WebAppContext(webAppContextFilePath, contextPath));
 				root.addServlet(new ServletHolder(new SearchServlet()), IConstants.SEP + SearchServlet.class.getSimpleName());
 				server.start();
+				break;
 			} catch (Exception e) {
 				logger.info("Port occupied? We'll try another one : " + port);
 				port++;
+				port = GeneralUtilities.findFirstOpenPort(port);
+			} finally {
+				if (server != null && !server.isStarted()) {
+					stopServer(server);
+				}
 			}
 		}
 
@@ -71,6 +79,19 @@ public class IntegrationJetty extends Integration {
 		Map<String, IndexContext> indexContexts = ApplicationContextManager.getBeans(IndexContext.class);
 		String[] indexNames = indexContexts.keySet().toArray(new String[indexContexts.keySet().size()]);
 		new ServletStrategy(contextPath, port, iterations, indexNames).perform();
+	}
+
+	private void stopServer(Server server) {
+		try {
+			server.stop();
+		} catch (Exception e) {
+			logger.error("Exception stopping the server : ", e);
+		}
+		try {
+			server.destroy();
+		} catch (Exception e) {
+			logger.error("Exception stopping the server : ", e);
+		}
 	}
 
 	private String getWebAppContextFilePath() throws MalformedURLException {

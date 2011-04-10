@@ -115,6 +115,20 @@ public class IndexManagerTest extends ATest {
 	public void getIndexDirectoryPathBackup() {
 		String indexDirectoryPathBackup = IndexManager.getIndexDirectoryPathBackup(INDEX_CONTEXT);
 		logger.info("Index directory path backup : " + indexDirectoryPathBackup);
+
+		when(INDEX_CONTEXT.getIndexDirectoryPathBackup()).thenReturn("./indexes/./backup");
+		String newIndexDirectoryPathBackup = IndexManager.getIndexDirectoryPathBackup(INDEX_CONTEXT);
+		String expectedIndexDirectoryPathBackup = "./indexes/backup/index";
+		assertEquals("Expected path to be : " + expectedIndexDirectoryPathBackup, expectedIndexDirectoryPathBackup,
+				newIndexDirectoryPathBackup);
+
+		when(INDEX_CONTEXT.getIndexDirectoryPathBackup()).thenReturn(".\\indexes\\.\\backup");
+		newIndexDirectoryPathBackup = IndexManager.getIndexDirectoryPathBackup(INDEX_CONTEXT);
+		expectedIndexDirectoryPathBackup = "./indexes/backup/index";
+		assertEquals("Expected path to be : " + expectedIndexDirectoryPathBackup, expectedIndexDirectoryPathBackup,
+				newIndexDirectoryPathBackup);
+
+		when(INDEX_CONTEXT.getIndexDirectoryPathBackup()).thenReturn(indexDirectoryPathBackup);
 	}
 
 	private <T extends Reader> T getReader(Class<T> t) throws Exception {

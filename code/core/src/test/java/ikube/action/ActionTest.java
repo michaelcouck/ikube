@@ -46,6 +46,7 @@ public class ActionTest extends ATest {
 	}
 
 	@Test
+	@SuppressWarnings("deprecation")
 	public void indexCurrent() throws InterruptedException {
 		String serverIndexDirectoryPath = getServerIndexDirectoryPath(INDEX_CONTEXT);
 		File serverIndexDirectory = FileUtilities.getFile(serverIndexDirectoryPath, Boolean.TRUE);
