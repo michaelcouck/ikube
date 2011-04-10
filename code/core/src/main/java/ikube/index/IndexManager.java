@@ -127,6 +127,7 @@ public final class IndexManager {
 
 	private static void closeIndexWriter(final IndexWriter indexWriter) {
 		Directory directory = indexWriter.getDirectory();
+		LOGGER.info("Optimizing and closing the index : ");
 		try {
 			indexWriter.commit();
 			indexWriter.optimize();
@@ -149,6 +150,7 @@ public final class IndexManager {
 		} catch (Exception e) {
 			LOGGER.error("Exception releasing the LOCK on the index writer : ", e);
 		}
+		LOGGER.info("Index optomized and closed : ");
 	}
 
 	public static String getIndexDirectory(final String ip, final IndexContext indexContext, final long time) {
@@ -164,6 +166,16 @@ public final class IndexManager {
 	public static String getIndexDirectoryPath(final IndexContext indexContext) {
 		StringBuilder builder = new StringBuilder();
 		builder.append(indexContext.getIndexDirectoryPath()); // Path
+		builder.append(File.separator);
+		builder.append(indexContext.getIndexName()); // Index name
+		String indexDirectoryPath = StringUtils.replace(builder.toString(), "/./", "/");
+		indexDirectoryPath = StringUtils.replace(indexDirectoryPath, "\\.\\", "/");
+		return indexDirectoryPath;
+	}
+
+	public static String getIndexDirectoryPathBackup(final IndexContext indexContext) {
+		StringBuilder builder = new StringBuilder();
+		builder.append(indexContext.getIndexDirectoryPathBackup()); // Path
 		builder.append(File.separator);
 		builder.append(indexContext.getIndexName()); // Index name
 		String indexDirectoryPath = StringUtils.replace(builder.toString(), "/./", "/");

@@ -10,7 +10,7 @@ import java.util.Comparator;
 
 /**
  * This action deletes the old indexes. There should always be one index, and potentially an index that is being generated. Any other index
- * files should be deleted.
+ * files should be deleted. This class will also delete the old indexes that are backups.
  * 
  * @author Michael Couck
  * @since 31.10.10
@@ -21,6 +21,11 @@ public class Delete extends Action<IndexContext, Boolean> {
 	@Override
 	public Boolean execute(final IndexContext indexContext) {
 		String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
+		String indexDirectoryPathBackup = IndexManager.getIndexDirectoryPathBackup(indexContext);
+		return deleteOldIndexes(indexDirectoryPath) || deleteOldIndexes(indexDirectoryPathBackup);
+	}
+
+	private boolean deleteOldIndexes(String indexDirectoryPath) {
 		File baseIndexDirectory = FileUtilities.getFile(indexDirectoryPath, Boolean.TRUE);
 		File[] timeIndexDirectories = baseIndexDirectory.listFiles();
 		if (timeIndexDirectories == null) {

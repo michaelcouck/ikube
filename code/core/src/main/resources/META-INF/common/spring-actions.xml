@@ -109,10 +109,13 @@
 	<bean 
 		id="ikube.action.Backup" 
 		class="ikube.action.Clean" 
-		property:predicate="!AnyServersWorking">
+		property:predicate="!AnyServersWorking &#38;&#38; MustBackUpIndex &#38;&#38; (!IsIndexBackedUp || !IsBackupIndexCurrent)">
 		<property name="rules">
 			<util:list>
 				<ref local="ikube.action.rule.AnyServersWorking" />
+				<ref local="ikube.action.rule.MustBackUpIndex" />
+				<ref local="ikube.action.rule.IsIndexBackedUp" />
+				<ref local="ikube.action.rule.IsBackupIndexCurrent" />
 			</util:list>
 		</property>
 	</bean>
@@ -164,5 +167,14 @@
 	<bean 
 		id="ikube.action.rule.IndexesAreCorrupt"
 		class="ikube.action.rule.IndexesAreCorrupt" />
+	<bean 
+		id="ikube.action.rule.MustBackUpIndex"
+		class="ikube.action.rule.MustBackUpIndex" />
+	<bean 
+		id="ikube.action.rule.IsIndexBackedUp"
+		class="ikube.action.rule.IsIndexBackedUp" />
+	<bean 
+		id="ikube.action.rule.IsBackupIndexCurrent"
+		class="ikube.action.rule.IsBackupIndexCurrent" />
 	
 </beans>

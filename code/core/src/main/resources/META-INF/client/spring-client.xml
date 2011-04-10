@@ -46,6 +46,7 @@
 		property:queueTimeout="${max.age}"
 		property:throttle="${throttle}"
 		property:indexDirectoryPath="${index.directory.path}"
+		property:indexDirectoryPathBackup="${index.directory.path.backup}"
 		property:indexables-ref="indexables" />
 	<util:list id="indexables">
 		<ref local="mail" />

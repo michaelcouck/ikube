@@ -24,6 +24,8 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 
+import mockit.Cascading;
+
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -66,47 +68,40 @@ public abstract class ATest {
 
 	/** These are all mocked objects that are used in sub classes. */
 	protected String IP;
-	protected Lock LOCK;
-	protected Index INDEX;
-	protected Server SERVER;
-	protected TopDocs TOP_DOCS;
 	protected ScoreDoc[] SCORE_DOCS;
-	protected FSDirectory FS_DIRECTORY;
 	protected Searchable[] SEARCHABLES;
-	protected IndexReader INDEX_READER;
-	protected IndexContext INDEX_CONTEXT;
-	protected TopFieldDocs TOP_FIELD_DOCS;
-	protected MultiSearcher MULTI_SEARCHER;
-	protected IndexSearcher INDEX_SEARCHER;
-	protected IClusterManager CLUSTER_MANAGER;
-	protected IndexWriter INDEX_WRITER;
 	protected List<Indexable<?>> INDEXABLES;
-	protected IndexableInternet INDEXABLE;
+
+	protected Lock LOCK = mock(Lock.class);
+	protected Index INDEX = mock(Index.class);
+	protected Server SERVER = mock(Server.class);
+	protected TopDocs TOP_DOCS = mock(TopDocs.class);
+	protected FSDirectory FS_DIRECTORY = mock(FSDirectory.class);
+	@Cascading
+	protected IndexWriter INDEX_WRITER = mock(IndexWriter.class);
+	protected IndexReader INDEX_READER = mock(IndexReader.class);
+	protected IndexContext INDEX_CONTEXT = mock(IndexContext.class);
+	protected TopFieldDocs TOP_FIELD_DOCS = mock(TopFieldDocs.class);
+	protected MultiSearcher MULTI_SEARCHER = mock(MultiSearcher.class);
+	protected IndexSearcher INDEX_SEARCHER = mock(IndexSearcher.class);
+	protected IClusterManager CLUSTER_MANAGER = mock(IClusterManager.class);
+	protected IndexableInternet INDEXABLE = mock(IndexableInternet.class);
 
 	public ATest(Class<?> subClass) {
 		logger = Logger.getLogger(subClass);
-		MULTI_SEARCHER = mock(MultiSearcher.class);
-		INDEX_SEARCHER = mock(IndexSearcher.class);
-		INDEX_READER = mock(IndexReader.class);
-		INDEX_WRITER = mock(IndexWriter.class);
-		FS_DIRECTORY = mock(FSDirectory.class);
 		SEARCHABLES = new Searchable[] { INDEX_SEARCHER };
-		TOP_DOCS = mock(TopDocs.class);
-		TOP_FIELD_DOCS = mock(TopFieldDocs.class);
 		SCORE_DOCS = new ScoreDoc[0];
-		LOCK = mock(Lock.class);
-		INDEX_CONTEXT = mock(IndexContext.class);
-		INDEX = mock(Index.class);
-		CLUSTER_MANAGER = mock(IClusterManager.class);
-		SERVER = mock(Server.class);
 		INDEXABLES = new ArrayList<Indexable<?>>();
-		INDEXABLE = mock(IndexableInternet.class);
 
 		try {
 			IP = InetAddress.getLocalHost().getHostAddress();
 			when(INDEX_SEARCHER.search(any(Query.class), anyInt())).thenReturn(TOP_DOCS);
 			when(MULTI_SEARCHER.search(any(Query.class), anyInt())).thenReturn(TOP_DOCS);
 			when(MULTI_SEARCHER.search(any(Query.class), any(Filter.class), anyInt(), any(Sort.class))).thenReturn(TOP_FIELD_DOCS);
+
+			// java.lang.reflect.Field field = ReflectionUtils.findField(IndexWriter.class, "commitLock");
+			// field.setAccessible(Boolean.TRUE);
+			// ReflectionUtils.setField(field, INDEX_WRITER, new Object());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -41,6 +41,8 @@ public class IndexContext extends Persistable implements Comparable<IndexContext
 	private long maxReadLength;
 	/** The path to the index directory, either relative or absolute. */
 	private String indexDirectoryPath;
+	/** The path to the backup index directory, either relative or absolute. */
+	private String indexDirectoryPathBackup;
 	/** Whether the index should be in memory. */
 	private boolean inMemory;
 
@@ -156,6 +158,14 @@ public class IndexContext extends Persistable implements Comparable<IndexContext
 
 	public void setIndexDirectoryPath(final String indexDirectoryPath) {
 		this.indexDirectoryPath = indexDirectoryPath;
+	}
+	
+	public String getIndexDirectoryPathBackup() {
+		return indexDirectoryPathBackup;
+	}
+
+	public void setIndexDirectoryPathBackup(final String indexDirectoryPathBackup) {
+		this.indexDirectoryPathBackup = indexDirectoryPathBackup;
 	}
 
 	public Boolean getInMemory() {

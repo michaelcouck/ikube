@@ -43,9 +43,7 @@ public class RuleInterceptor implements IRuleInterceptor {
 				if (arg != null && IndexContext.class.isAssignableFrom(arg.getClass())) {
 					boolean result = rule.evaluate((IndexContext) arg);
 					String parameter = rule.getClass().getSimpleName();
-					if (LOGGER.isDebugEnabled()) {
-						LOGGER.debug(Logging.getString("Rule : ", rule, ", parameter : ", parameter, ", result : ", result));
-					}
+					LOGGER.info(Logging.getString("Rule : ", rule, ", parameter : ", parameter, ", result : ", result));
 					jep.addVariable(parameter, result);
 				}
 			}
@@ -57,9 +55,10 @@ public class RuleInterceptor implements IRuleInterceptor {
 			LOGGER.warn("Symbol table : " + jep.getSymbolTable());
 		}
 		Object result = jep.getValueAsObject();
-		LOGGER.info(Logging.getString("Result : ", result, jep, predicate));
+		LOGGER.info(Logging.getString("Result object : ", result, jep, predicate));
 		if (result == null) {
 			result = jep.getValue();
+			LOGGER.info(Logging.getString("Result value : ", result, jep, predicate));
 		}
 		if (result == null || result.equals(0.0d) || result.equals(Boolean.FALSE)) {
 			LOGGER.debug(Logging.getString("Not proceeding: "));

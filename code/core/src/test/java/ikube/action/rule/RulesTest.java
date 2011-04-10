@@ -1,14 +1,15 @@
 package ikube.action.rule;
 
+import ikube.ATest;
+import ikube.action.IAction;
+import ikube.model.IndexContext;
+import ikube.toolkit.ApplicationContextManager;
+
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
-
-import ikube.ATest;
-import ikube.action.Index;
-import ikube.model.IndexContext;
-import ikube.toolkit.ApplicationContextManager;
 
 /**
  * This test can be used ad-hoc to see if the rules are configured property.
@@ -26,12 +27,15 @@ public class RulesTest extends ATest {
 	}
 
 	@Test
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void evaluate() {
-		Index index = ApplicationContextManager.getBean(Index.class);
-		List<IRule<IndexContext>> rules = index.getRules();
-		for (IRule<IndexContext> rule : rules) {
-			boolean result = rule.evaluate(INDEX_CONTEXT);
-			logger.info("Rule : " + rule + ", result : " + result);
+		Map<String, IAction> actions = ApplicationContextManager.getBeans(IAction.class);
+		for (IAction action : actions.values()) {
+			List<IRule<IndexContext>> rules = action.getRules();
+			for (IRule<IndexContext> rule : rules) {
+				boolean result = rule.evaluate(INDEX_CONTEXT);
+				logger.info("Rule : " + rule + ", result : " + result);
+			}
 		}
 	}
 

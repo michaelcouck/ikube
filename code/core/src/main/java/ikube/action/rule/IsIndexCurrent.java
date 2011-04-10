@@ -2,9 +2,6 @@ package ikube.action.rule;
 
 import ikube.index.IndexManager;
 import ikube.model.IndexContext;
-import ikube.toolkit.FileUtilities;
-
-import java.io.File;
 
 /**
  * Checks to see if the index for the index context is current.
@@ -13,7 +10,7 @@ import java.io.File;
  * @since 12.02.2011
  * @version 01.00
  */
-public class IsIndexCurrent implements IRule<IndexContext> {
+public class IsIndexCurrent extends ARule<IndexContext> {
 
 	/**
 	 * Checks to see if the current index is not passed it's expiration period. Each index had a parent directory that is a long of the
@@ -25,18 +22,7 @@ public class IsIndexCurrent implements IRule<IndexContext> {
 	 */
 	public boolean evaluate(final IndexContext indexContext) {
 		String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
-		File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexDirectoryPath);
-		if (latestIndexDirectory == null) {
-			return Boolean.FALSE;
-		}
-		String indexDirectoryName = latestIndexDirectory.getName();
-		long indexDirectoryTime = Long.parseLong(indexDirectoryName);
-		long currentTime = System.currentTimeMillis();
-		long indexAge = currentTime - indexDirectoryTime;
-		if (indexAge > indexContext.getMaxAge()) {
-			return Boolean.FALSE;
-		}
-		return Boolean.TRUE;
+		return isIndexCurrent(indexContext, indexDirectoryPath);
 	}
 
 }

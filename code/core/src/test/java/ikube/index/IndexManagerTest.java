@@ -6,7 +6,7 @@ import static org.junit.Assert.assertNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import ikube.BaseTest;
+import ikube.ATest;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
@@ -25,7 +25,7 @@ import org.junit.Test;
  * @since 12.10.2010
  * @version 01.00
  */
-public class IndexManagerTest extends BaseTest {
+public class IndexManagerTest extends ATest {
 
 	private String fieldName = "fieldName";
 	private Document document = new Document();
@@ -40,10 +40,10 @@ public class IndexManagerTest extends BaseTest {
 	@Test
 	public void openIndexWriter() throws Exception {
 		// String, IndexContext, long
-		IndexWriter indexWriter = IndexManager.openIndexWriter(IP, indexContext, System.currentTimeMillis());
+		IndexWriter indexWriter = IndexManager.openIndexWriter(IP, INDEX_CONTEXT, System.currentTimeMillis());
 		assertNotNull(indexWriter);
-		IndexManager.closeIndexWriter(indexContext);
-		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
+		IndexManager.closeIndexWriter(INDEX_CONTEXT);
+		FileUtilities.deleteFile(new File(INDEX_CONTEXT.getIndexDirectoryPath()), 1);
 	}
 
 	@Test
@@ -97,18 +97,24 @@ public class IndexManagerTest extends BaseTest {
 	@Test
 	public void closeIndexWriter() throws Exception {
 		// IndexContext
-		IndexWriter indexWriter = IndexManager.openIndexWriter(IP, indexContext, System.currentTimeMillis());
+		IndexWriter indexWriter = IndexManager.openIndexWriter(IP, INDEX_CONTEXT, System.currentTimeMillis());
 		assertNotNull(indexWriter);
-		IndexManager.closeIndexWriter(indexContext);
-		assertNull(indexContext.getIndex().getIndexWriter());
-		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
+		IndexManager.closeIndexWriter(INDEX_CONTEXT);
+		// assertNull(INDEX_CONTEXT.getIndex().getIndexWriter());
+		FileUtilities.deleteFile(new File(INDEX_CONTEXT.getIndexDirectoryPath()), 1);
 	}
 
 	@Test
 	public void getIndexDirectory() {
-		String indexDirectoryPath = IndexManager.getIndexDirectory(IP, indexContext, System.currentTimeMillis());
+		String indexDirectoryPath = IndexManager.getIndexDirectory(IP, INDEX_CONTEXT, System.currentTimeMillis());
 		logger.info("Index directory : " + new File(indexDirectoryPath).getAbsolutePath());
 		assertNotNull(indexDirectoryPath);
+	}
+
+	@Test
+	public void getIndexDirectoryPathBackup() {
+		String indexDirectoryPathBackup = IndexManager.getIndexDirectoryPathBackup(INDEX_CONTEXT);
+		logger.info("Index directory path backup : " + indexDirectoryPathBackup);
 	}
 
 	private <T extends Reader> T getReader(Class<T> t) throws Exception {

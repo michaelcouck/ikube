@@ -2,6 +2,7 @@ package ikube.integration;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import ikube.IConstants;
 import ikube.cluster.IClusterManager;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
@@ -9,6 +10,7 @@ import ikube.model.IndexableColumn;
 import ikube.model.IndexableFileSystem;
 import ikube.model.IndexableInternet;
 import ikube.model.Server;
+import ikube.model.faq.Faq;
 import ikube.service.ISearcherWebService;
 import ikube.service.ServiceLocator;
 import ikube.toolkit.ApplicationContextManager;
@@ -55,12 +57,9 @@ public class Integration {
 		ApplicationContextManager.getApplicationContext();
 
 		// Insert some data into the medical database
-		// insertData(IConstants.PERSISTENCE_UNIT_H2, iterations, new Class[] { Faq.class });
-		// insertData(IConstants.PERSISTENCE_UNIT_DB2, iterations, new Class[] { Hospital.class, Doctor.class, Patient.class });
-		// insertData(IConstants.PERSISTENCE_UNIT_ORACLE);
+		insertData(IConstants.PERSISTENCE_UNIT_H2, iterations, new Class[] { Faq.class });
 
 		waitToFinish();
-		// Thread.sleep((long) (1000 * 60 * 60));
 
 		// validateIndexes();
 		// TODO Validate the indexes on the file system
