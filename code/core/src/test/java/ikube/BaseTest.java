@@ -36,17 +36,13 @@ public abstract class BaseTest extends ATest {
 
 	@BeforeClass
 	public static void beforeClass() {
+		ListenerManager.removeListeners();
 		if (INIT) {
 			return;
 		}
 		INIT = Boolean.TRUE;
 		ApplicationContextManager.getApplicationContext(IConstants.SPRING_CONFIGURATION_FILE);
-		// Delete all the old index directories
-		Map<String, IndexContext> contexts = ApplicationContextManager.getBeans(IndexContext.class);
-		for (IndexContext indexContext : contexts.values()) {
-			File baseIndexDirectory = FileUtilities.getFile(indexContext.getIndexDirectoryPath(), Boolean.TRUE);
-			FileUtilities.deleteFile(baseIndexDirectory, 1);
-		}
+		
 		try {
 			final EntityManager entityManager = Persistence.createEntityManagerFactory(IConstants.PERSISTENCE_UNIT_H2)
 					.createEntityManager();
@@ -70,7 +66,13 @@ public abstract class BaseTest extends ATest {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		// Remove all the listeners as they create havoc
+		
+		// Delete all the old index directories
+		Map<String, IndexContext> contexts = ApplicationContextManager.getBeans(IndexContext.class);
+		for (IndexContext indexContext : contexts.values()) {
+			File baseIndexDirectory = FileUtilities.getFile(indexContext.getIndexDirectoryPath(), Boolean.TRUE);
+			FileUtilities.deleteFile(baseIndexDirectory, 1);
+		}
 		ListenerManager.removeListeners();
 	}
 
@@ -84,10 +86,11 @@ public abstract class BaseTest extends ATest {
 		}
 	}
 
+	protected IndexContext indexContext;
+
 	public BaseTest(Class<?> subClass) {
 		super(subClass);
+		indexContext = ApplicationContextManager.getBean("indexContext");
 	}
-
-	protected IndexContext indexContext = ApplicationContextManager.getBean("indexContext");
 
 }

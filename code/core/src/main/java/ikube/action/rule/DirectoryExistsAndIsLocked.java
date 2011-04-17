@@ -4,7 +4,6 @@ import ikube.toolkit.Logging;
 
 import java.io.File;
 
-import org.apache.log4j.Logger;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.Directory;
@@ -15,9 +14,7 @@ import org.apache.lucene.store.FSDirectory;
  * @since 12.02.2011
  * @version 01.00
  */
-public class DirectoryExistsAndIsLocked implements IRule<File> {
-
-	private static final transient Logger LOGGER = Logger.getLogger(DirectoryExistsAndIsLocked.class);
+public class DirectoryExistsAndIsLocked extends ARule<File> {
 
 	public boolean evaluate(final File indexDirectory) {
 		Directory directory = null;
@@ -25,19 +22,21 @@ public class DirectoryExistsAndIsLocked implements IRule<File> {
 			directory = FSDirectory.open(indexDirectory);
 			boolean exists = IndexReader.indexExists(directory);
 			boolean locked = IndexWriter.isLocked(directory);
-			LOGGER.info(Logging.getString("Server index directory : ", indexDirectory, "exists : ", exists, "locked : ", locked));
+			logger.info(Logging.getString("Server index directory : ", indexDirectory, "exists : ", exists, "locked : ", locked));
 			if (exists && locked) {
 				return Boolean.TRUE;
 			} else {
-				LOGGER.info("Locked directory : " + directory);
+				logger.info("Locked directory : " + directory);
 			}
 		} catch (Exception e) {
-			LOGGER.error("Exception checking the directories : ", e);
+			logger.error("Exception checking the directories : ", e);
 		} finally {
 			try {
-				directory.close();
+				if (directory != null) {
+					directory.close();
+				}
 			} catch (Exception e) {
-				LOGGER.error("Exception closing the directory : " + directory, e);
+				logger.error("Exception closing the directory : " + directory, e);
 			}
 		}
 		return Boolean.FALSE;

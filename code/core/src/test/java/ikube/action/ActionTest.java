@@ -12,6 +12,7 @@ import java.io.File;
 import org.apache.lucene.search.Searchable;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -20,7 +21,9 @@ import org.junit.Test;
  * @author Michael Couck
  * @since 21.11.10
  * @version 01.00
+ * @deprecated This test is now split up into the rules that define it
  */
+@Ignore
 public class ActionTest extends ATest {
 
 	private transient final Action<IndexContext, Boolean> action = new Action<IndexContext, Boolean>() {
@@ -29,24 +32,26 @@ public class ActionTest extends ATest {
 			return Boolean.FALSE;
 		}
 	};
+	private String indexDirectoryPath;
 
 	public ActionTest() {
 		super(ActionTest.class);
 	}
-	
+
 	@Before
 	public void before() {
-		when(INDEX_CONTEXT.getIndexDirectoryPath()).thenReturn("./" + this.getClass().getSimpleName());
-		FileUtilities.deleteFile(new File(INDEX_CONTEXT.getIndexDirectoryPath()), 1);
-	}
-	
-	@After
-	public void after() throws Exception {
+		indexDirectoryPath = INDEX_CONTEXT.getIndexDirectoryPath();
+		// when(INDEX_CONTEXT.getIndexDirectoryPath()).thenReturn("./" + this.getClass().getSimpleName());
 		FileUtilities.deleteFile(new File(INDEX_CONTEXT.getIndexDirectoryPath()), 1);
 	}
 
+	@After
+	public void after() throws Exception {
+		FileUtilities.deleteFile(new File(INDEX_CONTEXT.getIndexDirectoryPath()), 1);
+		when(INDEX_CONTEXT.getIndexDirectoryPath()).thenReturn(indexDirectoryPath);
+	}
+
 	@Test
-	@SuppressWarnings("deprecation")
 	public void indexCurrent() throws InterruptedException {
 		String serverIndexDirectoryPath = getServerIndexDirectoryPath(INDEX_CONTEXT);
 		File serverIndexDirectory = FileUtilities.getFile(serverIndexDirectoryPath, Boolean.TRUE);
@@ -68,7 +73,6 @@ public class ActionTest extends ATest {
 	}
 
 	@Test
-	@SuppressWarnings("deprecation")
 	public void shoudReopen() {
 		File baseIndexDirectory = FileUtilities.getFile(INDEX_CONTEXT.getIndexDirectoryPath(), Boolean.TRUE);
 		FileUtilities.deleteFile(baseIndexDirectory, 1);
@@ -85,10 +89,10 @@ public class ActionTest extends ATest {
 		shouldReopen = action.shouldReopen(INDEX_CONTEXT);
 		assertTrue("Should reopen as there are no searchables in the searcher : ", shouldReopen);
 
-		String serverIndexDirectoryPath = getServerIndexDirectoryPath(INDEX_CONTEXT);
+		// String serverIndexDirectoryPath = getServerIndexDirectoryPath(INDEX_CONTEXT);
 		File serverIndexDirectory = null;
 		try {
-			serverIndexDirectory = createIndex(new File(serverIndexDirectoryPath));
+			serverIndexDirectory = createIndex(INDEX_CONTEXT, "and the data");
 		} catch (Exception e) {
 			logger.error("Exception creating the index : ", e);
 		}
@@ -102,11 +106,14 @@ public class ActionTest extends ATest {
 
 		// Create a new server index directory
 		File anotherServerIndexDirectory = null;
+		IP = "127.0.0.2";
 		try {
-			anotherServerIndexDirectory = createIndex(new File(serverIndexDirectoryPath.replace(IP, "127.0.0.2")));
+			// new File(serverIndexDirectoryPath.replace(IP, "127.0.0.2"))
+			anotherServerIndexDirectory = createIndex(INDEX_CONTEXT, "and some different data");
 		} catch (Exception e) {
 			logger.error("Exception creating the index : ", e);
 		}
+		IP = "127.0.0.1";
 
 		shouldReopen = action.shouldReopen(INDEX_CONTEXT);
 		assertTrue("Should reopen as there is a new index : ", shouldReopen);

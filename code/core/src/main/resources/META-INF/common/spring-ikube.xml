@@ -49,7 +49,7 @@
 		id="internet"
 		class="ikube.model.IndexableInternet"
 		property:name="internet"
-		property:url="http://localhost:9000/ikube/index.html" 
+		property:url="${ikube.url}" 
 		property:idFieldName="id"
 		property:titleFieldName="title"
 		property:contentFieldName="content"

@@ -66,13 +66,6 @@ public interface IConstants {
 
 	String ENCODING = "UTF-8";
 
-	/** This is the starting port for the synchronization sockets. */
-	int SYNCHRONIZATION_PORT = 9000;
-	int MAX_SYNCHRONIZATION_PORT = 10000;
-	String SYNCHRONIZATION_TOPIC = "synchronizationTopic";
-
-	String SYNCHRONIZATION = "synchronization";
-
 	/** Url response codes */
 	Integer HTTP_200 = Integer.valueOf(200); // OK
 	Integer HTTP_301 = Integer.valueOf(301); // Move permanently

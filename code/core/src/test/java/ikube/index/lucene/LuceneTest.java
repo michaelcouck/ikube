@@ -1,7 +1,6 @@
 package ikube.index.lucene;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.when;
 import ikube.ATest;
 import ikube.IConstants;
 import ikube.search.SearchSingle;
@@ -18,23 +17,18 @@ import org.apache.lucene.search.Searchable;
 import org.apache.lucene.store.FSDirectory;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
  * Various tests for Lucene indexes, including language indexing and searching. This is just a sanity test for language support etc. Can
  * Lucene search for other character sets and are the results in the correct format, things like that, just to stay ahead of the insane.
  * 
- * TODO This test does not play nicely with the other tests! Why?
- * 
  * @author Michael Couck
  * @since 06.03.10
  * @version 01.00
  */
-@Ignore
 public class LuceneTest extends ATest {
 
-	private File indexDir;
 	private String russian = "определяет";
 	private String german = "Produktivität";
 	private String french = "productivité";
@@ -48,9 +42,7 @@ public class LuceneTest extends ATest {
 
 	@Before
 	public void before() throws Exception {
-		when(INDEX_CONTEXT.getIndexDirectoryPath()).thenReturn("./" + this.getClass().getSimpleName());
 		FileUtilities.deleteFile(new File(INDEX_CONTEXT.getIndexDirectoryPath()), 1);
-		indexDir = FileUtilities.getFile(INDEX_CONTEXT.getIndexDirectoryPath(), Boolean.TRUE);
 	}
 
 	@After
@@ -60,8 +52,9 @@ public class LuceneTest extends ATest {
 
 	@Test
 	public void search() throws Exception {
-		createIndex(indexDir, string);
-		IndexSearcher indexSearcher = new IndexSearcher(FSDirectory.open(indexDir));
+		File latestIndexDirectory = createIndex(INDEX_CONTEXT, string);
+		File serverIndexDirectory = new File(latestIndexDirectory, IP);
+		IndexSearcher indexSearcher = new IndexSearcher(FSDirectory.open(serverIndexDirectory));
 		Searchable[] searchables = new Searchable[] { indexSearcher };
 		MultiSearcher searcher = new MultiSearcher(searchables);
 

@@ -34,7 +34,7 @@
 		</properties>
 	</persistence-unit>
 	
-	<persistence-unit name="IkubePersistenceUnitDb2" transaction-type="RESOURCE_LOCAL">
+	<!--<persistence-unit name="IkubePersistenceUnitDb2" transaction-type="RESOURCE_LOCAL">
 		<provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
 		<non-jta-data-source>nonXaDataSourceDb2</non-jta-data-source>
 		<class>ikube.model.faq.Faq</class>
@@ -76,5 +76,5 @@
 			<property name="openjpa.RuntimeUnenhancedClasses" value="supported" />
 			<property name="openjpa.Multithreaded" value="true" />
 		</properties>
-	</persistence-unit>
+	</persistence-unit>-->
 </persistence>

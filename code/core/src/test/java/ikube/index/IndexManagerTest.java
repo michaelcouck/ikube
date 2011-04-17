@@ -40,7 +40,7 @@ public class IndexManagerTest extends ATest {
 	@Test
 	public void openIndexWriter() throws Exception {
 		// String, IndexContext, long
-		IndexWriter indexWriter = IndexManager.openIndexWriter(IP, INDEX_CONTEXT, System.currentTimeMillis());
+		IndexWriter indexWriter = IndexManager.openIndexWriter(INDEX_CONTEXT, System.currentTimeMillis(), IP);
 		assertNotNull(indexWriter);
 		IndexManager.closeIndexWriter(INDEX_CONTEXT);
 		FileUtilities.deleteFile(new File(INDEX_CONTEXT.getIndexDirectoryPath()), 1);
@@ -97,7 +97,7 @@ public class IndexManagerTest extends ATest {
 	@Test
 	public void closeIndexWriter() throws Exception {
 		// IndexContext
-		IndexWriter indexWriter = IndexManager.openIndexWriter(IP, INDEX_CONTEXT, System.currentTimeMillis());
+		IndexWriter indexWriter = IndexManager.openIndexWriter(INDEX_CONTEXT, System.currentTimeMillis(), IP);
 		assertNotNull(indexWriter);
 		IndexManager.closeIndexWriter(INDEX_CONTEXT);
 		// assertNull(INDEX_CONTEXT.getIndex().getIndexWriter());
@@ -106,7 +106,7 @@ public class IndexManagerTest extends ATest {
 
 	@Test
 	public void getIndexDirectory() {
-		String indexDirectoryPath = IndexManager.getIndexDirectory(IP, INDEX_CONTEXT, System.currentTimeMillis());
+		String indexDirectoryPath = IndexManager.getIndexDirectory(INDEX_CONTEXT, System.currentTimeMillis(), IP);
 		logger.info("Index directory : " + new File(indexDirectoryPath).getAbsolutePath());
 		assertNotNull(indexDirectoryPath);
 	}

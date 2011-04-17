@@ -9,6 +9,10 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
 /**
+ * This is the context for a single index. It has the properties that define the index like what it is going to index, i.e. the databases,
+ * intranets etc., and properties relating to the Lucene index. This object acts a like the command in the 'Command Pattern' as in this
+ * context is passed to handlers that will perform certain logic based on the properties of this context.
+ * 
  * @author Michael Couck
  * @since 21.11.10
  * @version 01.00
@@ -22,7 +26,7 @@ public class IndexContext extends Persistable implements Comparable<IndexContext
 	private long maxAge;
 	/** Is this used anymore? */
 	private long queueTimeout;
-	/** The delay between documente being indexed, slows the indexing down. */
+	/** The delay between documents being indexed, slows the indexing down. */
 	private long throttle;
 
 	/** Lucene properties. */
@@ -46,15 +50,21 @@ public class IndexContext extends Persistable implements Comparable<IndexContext
 	/** Whether the index should be in memory. */
 	private boolean inMemory;
 
+	/** The indexables contained in this index context. */
 	private List<Indexable<?>> indexables;
 
 	@Transient
 	private Index index;
 
+	/**
+	 * The constructor instantiates a new {@link Index} object. In this object the Lucene index will be kept and updated.
+	 */
 	public IndexContext() {
 		super();
 		index = new Index();
 	}
+	
+	/** Getters and setters. */
 
 	public String getIndexName() {
 		return indexName;
@@ -159,7 +169,7 @@ public class IndexContext extends Persistable implements Comparable<IndexContext
 	public void setIndexDirectoryPath(final String indexDirectoryPath) {
 		this.indexDirectoryPath = indexDirectoryPath;
 	}
-	
+
 	public String getIndexDirectoryPathBackup() {
 		return indexDirectoryPathBackup;
 	}

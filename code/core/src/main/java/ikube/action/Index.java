@@ -37,7 +37,7 @@ public class Index extends Action<IndexContext, Boolean> {
 			long lastWorkingStartTime = getClusterManager().setWorking(indexName, "", Boolean.TRUE);
 			logger.info(Logging.getString("Last working time : ", lastWorkingStartTime));
 			// Start the indexing for this server
-			IndexManager.openIndexWriter(server.getAddress(), indexContext, lastWorkingStartTime);
+			IndexManager.openIndexWriter(indexContext, lastWorkingStartTime, server.getAddress());
 			for (Indexable<?> indexable : indexables) {
 				try {
 					// Get the right handler for this indexable

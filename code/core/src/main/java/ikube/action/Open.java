@@ -45,40 +45,6 @@ public class Open extends Action<IndexContext, Boolean> {
 		return openOnFile(indexContext);
 	}
 
-	private boolean openInMemory(final IndexContext indexContext) {
-		Index index = indexContext.getIndex();
-		MultiSearcher multiSearcher = index.getMultiSearcher();
-		Directory directory = index.getDirectory();
-		if (directory == null) {
-			return Boolean.FALSE;
-		}
-		boolean shouldOpen = Boolean.TRUE;
-		if (multiSearcher == null) {
-			shouldOpen = Boolean.TRUE;
-		} else {
-			Searchable[] searchables = multiSearcher.getSearchables();
-			for (Searchable searchable : searchables) {
-				if (directory == ((IndexSearcher) searchable).getIndexReader().directory()) {
-					shouldOpen = Boolean.FALSE;
-					break;
-				}
-			}
-		}
-		if (shouldOpen) {
-			try {
-				IndexReader indexReader = IndexReader.open(directory);
-				Searchable searchable = new IndexSearcher(indexReader);
-				multiSearcher = new MultiSearcher(searchable);
-				index.setMultiSearcher(multiSearcher);
-				logger.info("Opened searcher in memory : ");
-				return Boolean.TRUE;
-			} catch (Exception e) {
-				logger.error("", e);
-			}
-		}
-		return Boolean.FALSE;
-	}
-
 	private boolean openOnFile(final IndexContext indexContext) {
 		ArrayList<Searchable> searchers = new ArrayList<Searchable>();
 		String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
@@ -129,7 +95,7 @@ public class Open extends Action<IndexContext, Boolean> {
 							reader.close();
 						}
 					} catch (Exception e) {
-						logger.error("", e);
+						logger.error("Exception closing the searcher after an exception opening it : ", e);
 					}
 				}
 			}
@@ -144,6 +110,40 @@ public class Open extends Action<IndexContext, Boolean> {
 			}
 		} catch (Exception e) {
 			logger.error("Exception opening the multi searcher", e);
+		}
+		return Boolean.FALSE;
+	}
+
+	private boolean openInMemory(final IndexContext indexContext) {
+		Index index = indexContext.getIndex();
+		MultiSearcher multiSearcher = index.getMultiSearcher();
+		Directory directory = index.getDirectory();
+		if (directory == null) {
+			return Boolean.FALSE;
+		}
+		boolean shouldOpen = Boolean.TRUE;
+		if (multiSearcher == null) {
+			shouldOpen = Boolean.TRUE;
+		} else {
+			Searchable[] searchables = multiSearcher.getSearchables();
+			for (Searchable searchable : searchables) {
+				if (directory == ((IndexSearcher) searchable).getIndexReader().directory()) {
+					shouldOpen = Boolean.FALSE;
+					break;
+				}
+			}
+		}
+		if (shouldOpen) {
+			try {
+				IndexReader indexReader = IndexReader.open(directory);
+				Searchable searchable = new IndexSearcher(indexReader);
+				multiSearcher = new MultiSearcher(searchable);
+				index.setMultiSearcher(multiSearcher);
+				logger.info("Opened searcher in memory : ");
+				return Boolean.TRUE;
+			} catch (Exception e) {
+				logger.error("", e);
+			}
 		}
 		return Boolean.FALSE;
 	}

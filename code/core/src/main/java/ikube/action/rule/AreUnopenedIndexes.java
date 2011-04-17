@@ -33,6 +33,9 @@ public class AreUnopenedIndexes implements IRule<IndexContext> {
 		IRule<File[]> areDirectoriesEqual = new AreDirectoriesEqual();
 		IRule<File> directoryExistsAndNotLocked = new DirectoryExistsAndNotLocked();
 		File[] files = new File[2];
+		if (timeIndexDirectories == null || timeIndexDirectories.length == 0) {
+			return Boolean.FALSE;
+		}
 		for (File timeIndexDirectory : timeIndexDirectories) {
 			File[] serverIndexDirectories = timeIndexDirectory.listFiles();
 			if (serverIndexDirectories == null) {

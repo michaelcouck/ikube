@@ -32,7 +32,9 @@ public class DirectoryExistsAndNotLocked implements IRule<File> {
 			LOGGER.error("Exception checking the directories : ", e);
 		} finally {
 			try {
-				directory.close();
+				if (directory != null) {
+					directory.close();
+				}
 			} catch (Exception e) {
 				LOGGER.error("Exception closing the directory : " + directory, e);
 			}

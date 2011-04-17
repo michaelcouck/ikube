@@ -59,18 +59,19 @@ public final class IndexManager {
 	 *            directory
 	 * @return the index writer opened for this index context or null if there was any exception opening the index
 	 */
-	public static synchronized IndexWriter openIndexWriter(final String ip, final IndexContext indexContext, final long time) {
+	public static synchronized IndexWriter openIndexWriter(final IndexContext indexContext, final long time, final String ip) {
 		boolean delete = Boolean.FALSE;
 		boolean exception = Boolean.FALSE;
 		File indexDirectory = null;
 		IndexWriter indexWriter = null;
 		try {
 			try {
-				String indexDirectoryPath = getIndexDirectory(ip, indexContext, time);
+				String indexDirectoryPath = getIndexDirectory(indexContext, time, ip);
 				indexDirectory = FileUtilities.getFile(indexDirectoryPath, Boolean.TRUE);
 				LOGGER.info(Logging.getString("Index directory time : ", time, "date : ", new Date(time), "writing index to directory ",
 						indexDirectory.getAbsolutePath()));
 				indexWriter = openIndexWriter(indexContext, indexDirectory);
+				indexContext.getIndex().setIndexWriter(indexWriter);
 			} catch (CorruptIndexException e) {
 				LOGGER.error("We expected a new index and got a corrupt one.", e);
 				LOGGER.warn("Didn't initialise the index writer. Will try to delete the index directory.");
@@ -87,7 +88,7 @@ public final class IndexManager {
 				LOGGER.error("Unexpected exception detected while initializing the IndexWriter", e);
 				exception = Boolean.TRUE;
 			}
-			return indexContext.getIndex().getIndexWriter();
+			return indexWriter;
 		} finally {
 			if (exception) {
 				closeIndexWriter(indexWriter);
@@ -114,7 +115,6 @@ public final class IndexManager {
 		indexWriter.setMaxFieldLength(indexContext.getMaxFieldLength());
 		indexWriter.setMergeFactor(indexContext.getMergeFactor());
 		indexWriter.setRAMBufferSizeMB(indexContext.getBufferSize());
-		indexContext.getIndex().setIndexWriter(indexWriter);
 		return indexWriter;
 	}
 
@@ -135,7 +135,7 @@ public final class IndexManager {
 		LOGGER.info("Optimizing and closing the index : ");
 		try {
 			indexWriter.commit();
-			indexWriter.optimize();
+			indexWriter.optimize(Boolean.TRUE);
 		} catch (NullPointerException e) {
 			LOGGER.error("Null pointer, in the index writer : ");
 			if (LOGGER.isDebugEnabled()) {
@@ -155,15 +155,17 @@ public final class IndexManager {
 		}
 		try {
 			if (directory != null) {
-				IndexWriter.unlock(directory);
+				if (IndexWriter.isLocked(directory)) {
+					IndexWriter.unlock(directory);
+				}
 			}
 		} catch (Exception e) {
-			LOGGER.error("Exception releasing the LOCK on the index writer : ", e);
+			LOGGER.error("Exception releasing the lock on the index writer : ", e);
 		}
-		LOGGER.info("Index optomized and closed : ");
+		LOGGER.info("Index optimized and closed : ");
 	}
 
-	public static String getIndexDirectory(final String ip, final IndexContext indexContext, final long time) {
+	public static String getIndexDirectory(final IndexContext indexContext, final long time, final String ip) {
 		StringBuilder builder = new StringBuilder();
 		builder.append(IndexManager.getIndexDirectoryPath(indexContext));
 		builder.append(File.separator);

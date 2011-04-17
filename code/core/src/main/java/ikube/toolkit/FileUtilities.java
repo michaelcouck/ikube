@@ -225,6 +225,22 @@ public final class FileUtilities {
 		}
 	}
 
+	/**
+	 * This method gets the latest index directory. Index directories are defined by:<br>
+	 * 
+	 * 1) The path to the index on the file system<br>
+	 * 2) The name of the index<br>
+	 * 3) The time(as a long) that the index was created 4) The ip address of the server that created the index<br>
+	 * 
+	 * The result of this is something like ./indexes/ikube/123456789/127.0.0.1. This method will return the directory
+	 * ./indexes/ikube/123456789. In other words the timestamp directory, not the individual server index directories.
+	 * 
+	 * @param baseIndexDirectoryPath
+	 *            the base path to the indexes, i.e. the ./indexes part
+	 * @return the latest time stamped directory at this path, in other words the ./indexes/ikube/123456789 directory. Note that there is no
+	 *         Lucene index at this path, the Lucene index is still in the server ip address directory in this time stamp directory, i.e. at
+	 *         ./indexes/ikube/123456789/127.0.0.1
+	 */
 	public static synchronized File getLatestIndexDirectory(final String baseIndexDirectoryPath) {
 		try {
 			File baseIndexDirectory = FileUtilities.getFile(baseIndexDirectoryPath, Boolean.TRUE);

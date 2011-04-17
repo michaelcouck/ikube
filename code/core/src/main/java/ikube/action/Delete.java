@@ -1,5 +1,6 @@
 package ikube.action;
 
+import ikube.action.rule.DirectoryExistsAndIsLocked;
 import ikube.index.IndexManager;
 import ikube.model.IndexContext;
 import ikube.toolkit.FileUtilities;
@@ -28,10 +29,7 @@ public class Delete extends Action<IndexContext, Boolean> {
 	private boolean deleteOldIndexes(String indexDirectoryPath) {
 		File baseIndexDirectory = FileUtilities.getFile(indexDirectoryPath, Boolean.TRUE);
 		File[] timeIndexDirectories = baseIndexDirectory.listFiles();
-		if (timeIndexDirectories == null) {
-			return Boolean.FALSE;
-		}
-		if (timeIndexDirectories.length <= 1) {
+		if (timeIndexDirectories == null || timeIndexDirectories.length <= 1) {
 			return Boolean.FALSE;
 		}
 		Arrays.sort(timeIndexDirectories, new Comparator<File>() {
@@ -42,10 +40,11 @@ public class Delete extends Action<IndexContext, Boolean> {
 		});
 		// Check if the last index directory is locked
 		boolean latestIndexDirectoryIsLocked = Boolean.FALSE;
-		File latestIndexDirectory = timeIndexDirectories[timeIndexDirectories.length - 1];
+		File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexDirectoryPath);
+		// timeIndexDirectories[timeIndexDirectories.length - 1];
 		File[] serverIndexDirectories = latestIndexDirectory.listFiles();
 		for (File serverIndexDirectory : serverIndexDirectories) {
-			if (directoryExistsAndIsLocked(serverIndexDirectory)) {
+			if (new DirectoryExistsAndIsLocked().evaluate(serverIndexDirectory)) {
 				latestIndexDirectoryIsLocked = Boolean.TRUE;
 				break;
 			}

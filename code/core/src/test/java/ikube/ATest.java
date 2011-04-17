@@ -17,14 +17,13 @@ import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.model.IndexableInternet;
 import ikube.model.Server;
+import ikube.toolkit.FileUtilities;
 import ikube.toolkit.Logging;
 
 import java.io.File;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
-
-import mockit.Cascading;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
@@ -59,9 +58,6 @@ public abstract class ATest {
 		Logging.configure();
 		new MimeTypes(IConstants.MIME_TYPES);
 		new MimeMapper(IConstants.MIME_MAPPING);
-		// Every time the JVM starts a +~JF#######.tmp file is created. Strange as that is
-		// we still need to delete it manually.
-		// FileUtilities.deleteFiles(new File(System.getProperty("user.home")), ".tmp");
 	}
 
 	protected Logger logger;
@@ -77,7 +73,6 @@ public abstract class ATest {
 	protected Server SERVER = mock(Server.class);
 	protected TopDocs TOP_DOCS = mock(TopDocs.class);
 	protected FSDirectory FS_DIRECTORY = mock(FSDirectory.class);
-	@Cascading
 	protected IndexWriter INDEX_WRITER = mock(IndexWriter.class);
 	protected IndexReader INDEX_READER = mock(IndexReader.class);
 	protected IndexContext INDEX_CONTEXT = mock(IndexContext.class);
@@ -87,6 +82,9 @@ public abstract class ATest {
 	protected IClusterManager CLUSTER_MANAGER = mock(IClusterManager.class);
 	protected IndexableInternet INDEXABLE = mock(IndexableInternet.class);
 
+	protected String indexDirectoryPath = "./indexes";
+	protected String indexDirectoryPathBackup = "./indexes/backup";
+
 	public ATest(Class<?> subClass) {
 		logger = Logger.getLogger(subClass);
 		SEARCHABLES = new Searchable[] { INDEX_SEARCHER };
@@ -95,19 +93,15 @@ public abstract class ATest {
 
 		try {
 			IP = InetAddress.getLocalHost().getHostAddress();
+			when(INDEX_SEARCHER.getIndexReader()).thenReturn(INDEX_READER);
 			when(INDEX_SEARCHER.search(any(Query.class), anyInt())).thenReturn(TOP_DOCS);
+
+			when(MULTI_SEARCHER.getSearchables()).thenReturn(SEARCHABLES);
 			when(MULTI_SEARCHER.search(any(Query.class), anyInt())).thenReturn(TOP_DOCS);
 			when(MULTI_SEARCHER.search(any(Query.class), any(Filter.class), anyInt(), any(Sort.class))).thenReturn(TOP_FIELD_DOCS);
-
-			// java.lang.reflect.Field field = ReflectionUtils.findField(IndexWriter.class, "commitLock");
-			// field.setAccessible(Boolean.TRUE);
-			// ReflectionUtils.setField(field, INDEX_WRITER, new Object());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
-		when(MULTI_SEARCHER.getSearchables()).thenReturn(SEARCHABLES);
-		when(INDEX_SEARCHER.getIndexReader()).thenReturn(INDEX_READER);
 
 		TOP_DOCS.totalHits = 0;
 		TOP_DOCS.scoreDocs = SCORE_DOCS;
@@ -116,8 +110,8 @@ public abstract class ATest {
 		when(INDEX_READER.directory()).thenReturn(FS_DIRECTORY);
 		when(FS_DIRECTORY.makeLock(anyString())).thenReturn(LOCK);
 
-		when(INDEX_CONTEXT.getIndexDirectoryPath()).thenReturn("./indexes");
-		when(INDEX_CONTEXT.getIndexDirectoryPathBackup()).thenReturn("./indexes/backup");
+		when(INDEX_CONTEXT.getIndexDirectoryPath()).thenReturn(indexDirectoryPath);
+		when(INDEX_CONTEXT.getIndexDirectoryPathBackup()).thenReturn(indexDirectoryPathBackup);
 		when(INDEX_CONTEXT.getIndexName()).thenReturn("index");
 		when(INDEX_CONTEXT.getIndexables()).thenReturn(INDEXABLES);
 
@@ -164,39 +158,47 @@ public abstract class ATest {
 	 * @return the directory path to the latest index directory for this servers and context
 	 */
 	protected String getServerIndexDirectoryPath(final IndexContext indexContext) {
-		return IndexManager.getIndexDirectory(IP, indexContext, System.currentTimeMillis());
+		return IndexManager.getIndexDirectory(indexContext, System.currentTimeMillis(), IP);
 	}
 
-	/**
-	 * Creates an index in the directory specified using the string array passed as the data for the documents.
-	 * 
-	 * @param indexDirectory
-	 *            the directory where the index must be created
-	 * @param strings
-	 *            the string data to use in the index documents
-	 * @return the directory that was used to create the index in Lucene
-	 */
-	protected File createIndex(File indexDirectory, String... strings) {
-		logger.info("Creating Lucene index in : " + indexDirectory.getAbsolutePath());
+	protected File createIndex(IndexContext indexContext, String... strings) {
 		IndexWriter indexWriter = null;
 		try {
-			indexWriter = IndexManager.openIndexWriter(INDEX_CONTEXT, indexDirectory);
+			indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), IP);
 			Document document = new Document();
 			IndexManager.addStringField(IConstants.CONTENTS, "Michael Couck", document, Store.YES, Field.Index.ANALYZED, TermVector.YES);
 			indexWriter.addDocument(document);
-			for (int i = 0; i < 10; i++) {
-				for (String string : strings) {
-					document = new Document();
-					IndexManager.addStringField(IConstants.CONTENTS, string, document, Store.YES, Field.Index.ANALYZED, TermVector.YES);
-					indexWriter.addDocument(document);
-				}
+			for (String string : strings) {
+				document = new Document();
+				IndexManager.addStringField(IConstants.CONTENTS, string, document, Store.YES, Field.Index.ANALYZED, TermVector.YES);
+				indexWriter.addDocument(document);
 			}
 		} catch (Exception e) {
-			logger.error("Exception creating the index : " + indexDirectory, e);
+			logger.error("Exception creating the index : ", e);
 		} finally {
 			IndexManager.closeIndexWriter(indexWriter);
 		}
-		return indexDirectory;
+		// In some cases the index is not created for!!!??? Strange as this may sound
+		// we have to have the index created, or at least look like it is created, we make
+		// sure that the primary files for the Lucene index are there
+		// String segments = "segments_2";
+		// String segmentsGen = "segments.gen";
+		File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
+		File serverIndexDirectory = new File(latestIndexDirectory, IP);
+		// File segmentsGenFile = FileUtilities.findFile(serverIndexDirectory, segmentsGen);
+		// if (segmentsGenFile == null) {
+		// try {
+		// logger.info("Index exists : " + IndexReader.indexExists(FSDirectory.open(serverIndexDirectory)));
+		// } catch (IOException e) {
+		// logger.error("Exception checking index : ", e);
+		// }
+		// logger.info("Didn't create index at : " + serverIndexDirectory.getAbsolutePath());
+		// logger.info("Will try to create the index dummy : ");
+		// FileUtilities.getFile(serverIndexDirectory.getAbsolutePath() + "/" + segments, Boolean.FALSE);
+		// FileUtilities.getFile(serverIndexDirectory.getAbsolutePath() + "/" + segmentsGen, Boolean.FALSE);
+		// }
+		logger.info("Created index in : " + serverIndexDirectory.getAbsolutePath());
+		return latestIndexDirectory;
 	}
 
 }

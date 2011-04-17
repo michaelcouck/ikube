@@ -20,8 +20,6 @@ public class Close extends Action<IndexContext, Boolean> {
 
 	@Override
 	public Boolean execute(final IndexContext indexContext) {
-		// First check to see if there are any new indexes, if there are no
-		// new indexes then we shouldn't close the searcher
 		MultiSearcher multiSearcher = indexContext.getIndex().getMultiSearcher();
 		// Get all the searchables from the searcher and close them one by one
 		Searchable[] searchables = multiSearcher.getSearchables();

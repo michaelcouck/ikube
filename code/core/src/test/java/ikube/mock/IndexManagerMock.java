@@ -20,7 +20,7 @@ public class IndexManagerMock {
 	public static IndexWriter INDEX_WRITER;
 
 	@Mock()
-	public static synchronized IndexWriter openIndexWriter(final String ip, final IndexContext indexContext, final long time) {
+	public static synchronized IndexWriter openIndexWriter(final IndexContext indexContext, final long time, final String ip) {
 		return INDEX_WRITER;
 	}
 

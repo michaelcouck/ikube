@@ -3,14 +3,14 @@
 
 <script type="text/javascript">
 	window.onload = function() {
-		document.searchForm.searchStrings.focus();
+		document.ikubeSearchForm.searchStrings.focus();
 	}
 </script>
 
 <div id="sidebar">
 	<ul>
 		<li id="search">
-			<form name="searchForm" id="searchForm" action="<c:url value="/results.html"/>">
+			<form name="ikubeSearchForm" id="ikubeSearchForm" action="<c:url value="/results.html"/>">
 				<fieldset>
 					<input type="hidden" name="indexName" value="ikube">
 					<input type="hidden" name="fragment" value="true">
@@ -23,12 +23,12 @@
 			</form>
 			<search:spellingTag>
 				<script type="text/javascript">
-					function submitSearchForm(searchStrings) {
-						document.searchForm.searchStrings.value = searchStrings;
-						document.searchForm.submit();
+					function submitIkubeSearchForm(searchStrings) {
+						document.ikubeSearchFormchStrings.value = searchStrings;
+						document.ikubeSearchForm.submit();
 					}
 				</script>
-				Did you mean : <a href="JavaScript:submitSearchForm('<search:spellingWriterTag />')"><search:spellingWriterTag /></a>
+				Did you mean : <a href="JavaScript:submitIkubeSearchForm('<search:spellingWriterTag />')"><search:spellingWriterTag /></a>
 			</search:spellingTag>
 		</li>
 		<li>

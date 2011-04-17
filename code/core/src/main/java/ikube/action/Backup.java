@@ -27,10 +27,12 @@ public class Backup extends Action<IndexContext, Boolean> {
 			String indexDirectoryPathBackup = IndexManager.getIndexDirectoryPathBackup(indexContext);
 			File latestIndexDirectoryBackup = FileUtilities.getFile(indexDirectoryPathBackup, Boolean.TRUE);
 			try {
+				logger.info("Backing up index from : " + latestIndexDirectory + ", to : " + latestIndexDirectoryBackup);
 				// Copy the index to the designated place on the network
 				FileUtils.copyDirectoryToDirectory(latestIndexDirectory, latestIndexDirectoryBackup);
 			} catch (IOException e) {
 				logger.error("Exception backing up indexes : ", e);
+				return Boolean.FALSE;
 			}
 		} finally {
 			getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getName(), Boolean.FALSE);

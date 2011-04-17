@@ -1,10 +1,12 @@
 package ikube.monitoring;
 
-import ikube.BaseTest;
+import ikube.ATest;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.Directory;
@@ -22,7 +24,7 @@ import org.junit.Test;
  * @since 15.01.11
  * @version 01.00
  */
-public class IndexValidatorTest extends BaseTest {
+public class IndexValidatorTest extends ATest {
 
 	public IndexValidatorTest() {
 		super(IndexValidatorTest.class);
@@ -30,14 +32,12 @@ public class IndexValidatorTest extends BaseTest {
 
 	@Before
 	public void before() {
-		File baseIndexDirectory = new File(indexContext.getIndexDirectoryPath());
-		FileUtilities.deleteFile(baseIndexDirectory, 1);
+		FileUtilities.deleteFile(new File(INDEX_CONTEXT.getIndexDirectoryPath()), 1);
 	}
 
 	@After
 	public void after() {
-		File baseIndexDirectory = new File(indexContext.getIndexDirectoryPath());
-		FileUtilities.deleteFile(baseIndexDirectory, 1);
+		FileUtilities.deleteFile(new File(INDEX_CONTEXT.getIndexDirectoryPath()), 1);
 	}
 
 	@Test
@@ -46,12 +46,12 @@ public class IndexValidatorTest extends BaseTest {
 		indexValidator.validate();
 		// There should be one mail sent because there are no indexes created
 
-		String serverIndexDirectoryPath = getServerIndexDirectoryPath(indexContext);
-		File indexDirectory = createIndex(new File(serverIndexDirectoryPath));
+		File latestIndexDirectory = createIndex(INDEX_CONTEXT, "a little sentence");
+		File serverIndexDirectory = new File(latestIndexDirectory, IP);
 		indexValidator.validate();
 		// There should be no mail sent because there is an index generated
 
-		Directory directory = FSDirectory.open(new File(serverIndexDirectoryPath));
+		Directory directory = FSDirectory.open(serverIndexDirectory);
 		Lock lock = directory.makeLock(IndexWriter.WRITE_LOCK_NAME);
 		lock.obtain(1000);
 		indexValidator.validate();
@@ -60,16 +60,14 @@ public class IndexValidatorTest extends BaseTest {
 		directory.clearLock(IndexWriter.WRITE_LOCK_NAME);
 
 		// Delete one file in the index and there should be an exception
-		File[] indexFiles = indexDirectory.listFiles();
-		for (File indexFile : indexFiles) {
-			if (indexFile.getName().contains("segments")) {
-				FileUtilities.deleteFile(indexFile, 1);
-			}
+		List<File> files = FileUtilities.findFilesRecursively(latestIndexDirectory, new ArrayList<File>(), "segments");
+		for (File file : files) {
+			FileUtilities.deleteFile(file, 1);
 		}
 		indexValidator.validate();
 		// There should be a mail sent because the index is corrupt
 
-		FileUtilities.deleteFile(indexDirectory, 1);
+		FileUtilities.deleteFile(latestIndexDirectory, 1);
 	}
 
 }
