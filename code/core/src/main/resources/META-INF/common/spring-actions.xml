@@ -121,7 +121,7 @@
 	</bean>
 	<bean 
 		id="ikube.action.Restore" 
-		class="ikube.action.Clean" 
+		class="ikube.action.Restore" 
 		property:predicate="!AnyServersWorking &#38;&#38; IndexesAreCorrupt">
 		<property name="rules">
 			<util:list>
