@@ -130,5 +130,13 @@ public class FileUtilitiesTest {
 		File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexFolderOne.getParentFile().getParentFile().getAbsolutePath());
 		assertEquals(indexFolderTwo.getParentFile().getName(), latestIndexDirectory.getName());
 	}
-	
+
+	@Test
+	public void copyFiles() {
+		// TODO Implement me!
+		// Create a backup index
+		// Copy it to the index directory
+		// Verify that it is copied
+	}
+
 }

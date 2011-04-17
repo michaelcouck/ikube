@@ -1,5 +1,6 @@
 package ikube;
 
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
@@ -21,6 +22,7 @@ import ikube.toolkit.FileUtilities;
 import ikube.toolkit.Logging;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +43,7 @@ import org.apache.lucene.search.Searchable;
 import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.TopFieldDocs;
+import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.Lock;
 
@@ -178,27 +181,27 @@ public abstract class ATest {
 		} finally {
 			IndexManager.closeIndexWriter(indexWriter);
 		}
-		// In some cases the index is not created for!!!??? Strange as this may sound
-		// we have to have the index created, or at least look like it is created, we make
-		// sure that the primary files for the Lucene index are there
-		// String segments = "segments_2";
-		// String segmentsGen = "segments.gen";
 		File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
 		File serverIndexDirectory = new File(latestIndexDirectory, IP);
-		// File segmentsGenFile = FileUtilities.findFile(serverIndexDirectory, segmentsGen);
-		// if (segmentsGenFile == null) {
-		// try {
-		// logger.info("Index exists : " + IndexReader.indexExists(FSDirectory.open(serverIndexDirectory)));
-		// } catch (IOException e) {
-		// logger.error("Exception checking index : ", e);
-		// }
-		// logger.info("Didn't create index at : " + serverIndexDirectory.getAbsolutePath());
-		// logger.info("Will try to create the index dummy : ");
-		// FileUtilities.getFile(serverIndexDirectory.getAbsolutePath() + "/" + segments, Boolean.FALSE);
-		// FileUtilities.getFile(serverIndexDirectory.getAbsolutePath() + "/" + segmentsGen, Boolean.FALSE);
-		// }
 		logger.info("Created index in : " + serverIndexDirectory.getAbsolutePath());
 		return latestIndexDirectory;
+	}
+
+	protected Lock getLock(Directory directory, File serverIndexDirectory) throws IOException {
+		logger.info("Is locked : " + IndexWriter.isLocked(directory));
+		Lock lock = directory.makeLock(IndexWriter.WRITE_LOCK_NAME);
+		boolean gotLock = lock.obtain(Lock.LOCK_OBTAIN_WAIT_FOREVER);
+		logger.info("Got lock : " + gotLock + ", is locked : " + lock.isLocked());
+		if (!gotLock) {
+			// If the lock is not created then we have to create it. Sometimes
+			// this fails to create a lock for some unknown reason, similar to the index writer
+			// not really creating the index in ATest, strange!!
+			FileUtilities.getFile(new File(serverIndexDirectory, IndexWriter.WRITE_LOCK_NAME).getAbsolutePath(), Boolean.FALSE);
+		} else {
+			assertTrue(IndexWriter.isLocked(directory));
+		}
+		logger.info("Is now locked : " + IndexWriter.isLocked(directory));
+		return lock;
 	}
 
 }

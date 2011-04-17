@@ -1,9 +1,9 @@
 package ikube.action;
 
-import static org.mockito.Mockito.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
 import ikube.ATest;
 import ikube.toolkit.FileUtilities;
 
@@ -50,10 +50,10 @@ public class DeleteTest extends ATest {
 
 	@Test
 	public void execute() throws IOException {
-		 File baseIndexDirectory = FileUtilities.getFile(INDEX_CONTEXT.getIndexDirectoryPath(), Boolean.TRUE);
-		 FileUtilities.deleteFile(baseIndexDirectory, 1);
-		 baseIndexDirectory = FileUtilities.getFile(INDEX_CONTEXT.getIndexDirectoryPath(), Boolean.TRUE);
-		 assertTrue("We should start with no directories : ", baseIndexDirectory.exists());
+		File baseIndexDirectory = FileUtilities.getFile(INDEX_CONTEXT.getIndexDirectoryPath(), Boolean.TRUE);
+		FileUtilities.deleteFile(baseIndexDirectory, 1);
+		baseIndexDirectory = FileUtilities.getFile(INDEX_CONTEXT.getIndexDirectoryPath(), Boolean.TRUE);
+		assertTrue("We should start with no directories : ", baseIndexDirectory.exists());
 
 		// No indexes so far, nothing to delete
 		boolean deleted = delete.execute(INDEX_CONTEXT);
@@ -117,23 +117,6 @@ public class DeleteTest extends ATest {
 		// assertFalse(baseIndexDirectory.exists());
 		assertFalse(serverIndexDirectory.exists());
 		assertFalse(latestIndexDirectory.exists());
-	}
-
-	private Lock getLock(Directory directory, File serverIndexDirectory) throws IOException {
-		logger.info("Is locked : " + IndexWriter.isLocked(directory));
-		Lock lock = directory.makeLock(IndexWriter.WRITE_LOCK_NAME);
-		boolean gotLock = lock.obtain(Lock.LOCK_OBTAIN_WAIT_FOREVER);
-		logger.info("Got lock : " + gotLock + ", is locked : " + lock.isLocked());
-		if (!gotLock) {
-			// If the lock is not created then we have to create it. Sometimes
-			// this fails to create a lock for some unknown reason, similar to the index writer
-			// not really creating the index in ATest, strange!!
-			FileUtilities.getFile(new File(serverIndexDirectory, IndexWriter.WRITE_LOCK_NAME).getAbsolutePath(), Boolean.FALSE);
-		} else {
-			assertTrue(IndexWriter.isLocked(directory));
-		}
-		logger.info("Is now locked : " + IndexWriter.isLocked(directory));
-		return lock;
 	}
 
 }

@@ -122,11 +122,11 @@
 	<bean 
 		id="ikube.action.Restore" 
 		class="ikube.action.Restore" 
-		property:predicate="!AnyServersWorking &#38;&#38; IndexesAreCorrupt">
+		property:predicate="!AnyServersWorking &#38;&#38; IsIndexCorrupt">
 		<property name="rules">
 			<util:list>
 				<ref local="ikube.action.rule.AnyServersWorking" />
-				<ref local="ikube.action.rule.IndexesAreCorrupt" />
+				<ref local="ikube.action.rule.IsIndexCorrupt" />
 			</util:list>
 		</property>
 	</bean>
@@ -165,8 +165,8 @@
 		id="ikube.action.rule.IsThisIndexCreated"
 		class="ikube.action.rule.IsThisIndexCreated" />
 	<bean 
-		id="ikube.action.rule.IndexesAreCorrupt"
-		class="ikube.action.rule.IndexesAreCorrupt" />
+		id="ikube.action.rule.IsIndexCorrupt"
+		class="ikube.action.rule.IsIndexCorrupt" />
 	<bean 
 		id="ikube.action.rule.MustBackUpIndex"
 		class="ikube.action.rule.MustBackUpIndex" />

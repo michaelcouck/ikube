@@ -446,7 +446,7 @@ public final class FileUtilities {
 	 */
 	public static void copyFiles(File src, File dest) {
 		// Check to ensure that the source is valid...
-		if (!src.exists()) {
+		if (src == null || !src.exists()) {
 			LOGGER.warn("Source file/directory does not exist : " + src);
 			return;
 		} else if (!src.canRead()) { // check to ensure we have rights to the source...
