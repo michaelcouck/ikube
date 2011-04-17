@@ -21,7 +21,7 @@
 		<included.packages>-Dincluded.packages=ikube</included.packages>
 		<excluded.packages>-Dexcluded.packages=model</excluded.packages>
 		<included.adapters>-Dincluded.adapters=coverage:complexity:dependency</included.adapters>
-		
+
 		<appengine.sdk.root>libs/appengine-java-sdk-1.4.3</appengine.sdk.root>
 		<war.base.root>code/war/target/ikube</war.base.root>
 		<gae.version>0.8.4</gae.version>
@@ -77,29 +77,6 @@
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>jdepend-maven-plugin</artifactId>
 				<version>2.0-beta-2</version>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>jxr-maven-plugin</artifactId>
-				<version>2.0-beta-1</version>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>copy-dependencies</id>
-						<phase>package</phase>
-						<goals>
-							<goal>copy-dependencies</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>target/lib</outputDirectory>
-							<overWriteReleases>false</overWriteReleases>
-							<overWriteSnapshots>false</overWriteSnapshots>
-						</configuration>
-					</execution>
-				</executions>
 			</plugin>
 			<plugin>
 				<groupId>net.kindleit</groupId>
@@ -474,7 +451,7 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.apache.geronimo.specs</groupId>
 			<artifactId>geronimo-ejb_3.0_spec</artifactId>
@@ -517,20 +494,10 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
-		<!--<dependency>
-			<groupId>org.apache.openjpa</groupId>
-			<artifactId>openjpa</artifactId>
-			<version>2.0.0</version>
-			<type>jar</type>
-			<scope>test</scope>
-		</dependency>-->
-		<!--<dependency>
-			<groupId>org.apache.openjpa</groupId>
-			<artifactId>openjpa-persistence</artifactId>
-			<version>2.0.1</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>-->
+		<!--<dependency> <groupId>org.apache.openjpa</groupId> <artifactId>openjpa</artifactId> <version>2.0.0</version> <type>jar</type> <scope>test</scope> 
+			</dependency> -->
+		<!--<dependency> <groupId>org.apache.openjpa</groupId> <artifactId>openjpa-persistence</artifactId> <version>2.0.1</version> <type>jar</type> 
+			<scope>compile</scope> </dependency> -->
 		<dependency>
 			<groupId>net.sf.ehcache</groupId>
 			<artifactId>ehcache-openjpa</artifactId>
@@ -579,28 +546,15 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
-		
-		<!-- 
-			CloudBees does not have thec.tld on the classpath! However 
-			trying to get Maven to include these in the war is just about impossible.
-		-->
+
+		<!-- CloudBees does not have thec.tld on the classpath! However trying to get Maven to include these in the war is just about impossible. -->
 		<!-- standard.jar -->
-		<!--<dependency>
-			<groupId>taglibs</groupId>
-			<artifactId>standard</artifactId>
-			<version>1.1.2</version>
-			<type>jar</type>
-			<scope>import</scope>
-		</dependency>-->
+		<!--<dependency> <groupId>taglibs</groupId> <artifactId>standard</artifactId> <version>1.1.2</version> <type>jar</type> <scope>import</scope> 
+			</dependency> -->
 		<!-- JSTL -->
-		<!--<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>jstl</artifactId>
-			<version>1.1.2</version>
-			<type>jar</type>
-			<scope>import</scope>
-		</dependency>-->
-		
+		<!--<dependency> <groupId>javax.servlet</groupId> <artifactId>jstl</artifactId> <version>1.1.2</version> <type>jar</type> <scope>import</scope> 
+			</dependency> -->
+
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
@@ -717,5 +671,5 @@
 			</plugin>
 		</plugins>
 	</reporting>
-	
+
 </project>

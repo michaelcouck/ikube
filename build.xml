@@ -1,15 +1,15 @@
 <project name="Deploy Ikube to Cluster" default="deploy.war">
 
-	<property file="build.properties" />
+	<property file="scripts/build.properties" />
 	<property name="ikube.dir" value="ikube-war-${project.version}" />
 	<property name="ikube.war" value="ikube-war-${project.version}.war" />
 	<property name="ikube.jar" value="ikube-core-${project.version}.jar" />
 	<property name="indexes" value="indexes" />
-	
+
 	<echo message="${tomcat.ikube.cluster.one.webapps}" />
 	<echo message="${tomcat.ikube.cluster.two.webapps}" />
 	<echo message="${tomcat.ikube.cluster.three.webapps}" />
-	
+
 	<target name="deploy.jar">
 		<copy file="${core.target.directory}/${ikube.jar}" todir="${ikube.client.libs}" overwrite="true" failonerror="true" />
 	</target>
@@ -29,7 +29,7 @@
 		<delete dir="${tomcat.ikube.cluster.one.webapps}/${ikube.dir}" failonerror="false" />
 		<delete dir="${tomcat.ikube.cluster.two.webapps}/${ikube.dir}" failonerror="false" />
 		<delete dir="${tomcat.ikube.cluster.three.webapps}/${ikube.dir}" failonerror="false" / -->
-		
+
 		<delete dir="${tomcat.bin}/${indexes}" failonerror="true" />
 		<delete dir="${tomcat.1.bin}/${indexes}" failonerror="true" />
 		<delete dir="${tomcat.2.bin}/${indexes}" failonerror="true" />
@@ -60,51 +60,68 @@
 		<copy file="${target.directory}/${ikube.war}" todir="${tomcat.ikube.cluster.one.webapps}" overwrite="true" failonerror="false" />
 		<copy file="${target.directory}/${ikube.war}" todir="${tomcat.ikube.cluster.two.webapps}" overwrite="true" failonerror="false" />
 		<copy file="${target.directory}/${ikube.war}" todir="${tomcat.ikube.cluster.three.webapps}" overwrite="true" failonerror="false" / -->
-
 	</target>
 
-	<target name="cluster">
-		<exec spawn="true" executable="${cluster.directory}/startup.bat" />
-	</target>
-
+	<!-- Works. -->
 	<target name="startCluster">
-		<antcall target="startOne" />
-		<sleep milliseconds="10000" />
-		<antcall target="startTwo" />
-		<sleep milliseconds="10000" />
-		<antcall target="startThree" />
+		<antcall target="executeTomcatAction">
+			<param name="action" value="start" />
+			<param name="tomcat.bin" value="${tomcat.1.bin}" />
+			<param name="tomcat.home" value="${tomcat.1}" />
+		</antcall>
+		<antcall target="executeTomcatAction">
+			<param name="action" value="start" />
+			<param name="tomcat.bin" value="${tomcat.2.bin}" />
+			<param name="tomcat.home" value="${tomcat.2}" />
+		</antcall>
+		<antcall target="executeTomcatAction">
+			<param name="action" value="start" />
+			<param name="tomcat.bin" value="${tomcat.3.bin}" />
+			<param name="tomcat.home" value="${tomcat.3}" />
+		</antcall>
+	</target>
+	<target name="stopCluster">
+		<antcall target="executeTomcatAction">
+			<param name="action" value="stop" />
+			<param name="tomcat.bin" value="${tomcat.1.bin}" />
+			<param name="tomcat.home" value="${tomcat.1}" />
+		</antcall>
+		<antcall target="executeTomcatAction">
+			<param name="action" value="stop" />
+			<param name="tomcat.bin" value="${tomcat.2.bin}" />
+			<param name="tomcat.home" value="${tomcat.2}" />
+		</antcall>
+		<antcall target="executeTomcatAction">
+			<param name="action" value="stop" />
+			<param name="tomcat.bin" value="${tomcat.3.bin}" />
+			<param name="tomcat.home" value="${tomcat.3}" />
+		</antcall>
 	</target>
 
-	<target name="startOne">
-		<java jar="${tomcat.1.bin}/bootstrap.jar" dir="${tomcat.1.bin}" fork="yes" spawn="true">
-			<jvmarg value="-Dcatalina.home=${tomcat.1}" />
-		</java>
-	</target>
-	<target name="startTwo">
-		<java jar="${tomcat.2.bin}/bootstrap.jar" dir="${tomcat.2.bin}" fork="yes" spawn="true">
-			<jvmarg value="-Dcatalina.home=${tomcat.2}" />
-		</java>
-	</target>
-	<target name="startThree">
-		<java jar="${tomcat.3.bin}/bootstrap.jar" dir="${tomcat.3.bin}" fork="yes" spawn="true">
-			<jvmarg value="-Dcatalina.home=${tomcat.3}" />
+	<target name="executeTomcatAction">
+		<java jar="${tomcat.bin}/bootstrap.jar" dir="${tomcat.bin}" fork="yes" spawn="true">
+			<jvmarg value="-Dcatalina.home=${tomcat.home}" />
+			<arg line="${action}" />
 		</java>
 	</target>
 
+	<!-- Doesn't work. -->
 	<target name="startTomcat">
-		<exec executable="bash" os="Windows">
+		<exec executable="bash" os="Windows" spawn="yes">
 			<arg value="${tomcat.1.bin}/startup.bat" />
 		</exec>
 	</target>
-
 	<target name="stopTomcat">
 		<exec executable="bash" os="Windows">
 			<arg value="${tomcat.1.bin}/shutdown.bat" />
 		</exec>
 	</target>
-
 	<target name="stop">
 		<exec spawn="true" executable="${tomcat.1.bin}/shutdown.bat" />
+	</target>
+	<!-- Doesn't work. -->
+	<target name="cluster">
+		<exec spawn="true" executable="${cluster.directory}/startup.bat" />
 	</target>
 
 </project>

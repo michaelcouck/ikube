@@ -1,3 +1,15 @@
+Jenkins build heirarchy:
+StartIkube -> Stops the cluster, starts Ikube unit test build
+    Ikube -> Runs the unit tests, starts IkubeOne, IkubeTwo and IkubeThree integration test builds
+                   Triggers the IkubeStop build when all the down stream builds are finished
+                   Deploys the war to the Tomcat cluster directories
+        IkubeOne -> Runs the integration tests
+        IkubeTwo -> Runs the integration tests
+        IkubeThree -> Runs the integration tests
+        
+        IkubeStop -> Starts the cluster
+/************************************************************/
+
 Ikube is an 'enterprise search' application written in Java.
 
 The advantage of Ikube over other products is multiple:

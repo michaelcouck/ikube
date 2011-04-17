@@ -22,14 +22,14 @@ public class Backup extends Action<IndexContext, Boolean> {
 	public Boolean execute(final IndexContext indexContext) {
 		try {
 			getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getName(), Boolean.TRUE);
-			String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
-			File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexDirectoryPath);
+			File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
 			String indexDirectoryPathBackup = IndexManager.getIndexDirectoryPathBackup(indexContext);
 			File latestIndexDirectoryBackup = FileUtilities.getFile(indexDirectoryPathBackup, Boolean.TRUE);
 			try {
 				logger.info("Backing up index from : " + latestIndexDirectory + ", to : " + latestIndexDirectoryBackup);
 				// Copy the index to the designated place on the network
 				FileUtils.copyDirectoryToDirectory(latestIndexDirectory, latestIndexDirectoryBackup);
+				// FileUtilities.copyFiles(latestIndexDirectory, latestIndexDirectoryBackup);
 			} catch (IOException e) {
 				logger.error("Exception backing up indexes : ", e);
 				return Boolean.FALSE;
