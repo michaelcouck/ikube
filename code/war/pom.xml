@@ -127,7 +127,7 @@
 						<configuration>
 							<tasks verbose="true">
 								<property name="ikube.war" value="target/ikube-war.war" />
-								<property name="tomcat.deploy.directory" value="D:/cluster/apache-tomcat-6.0.29-1/webapps" />
+								<property name="tomcat.deploy.directory" value="D:/apache-tomcat-6.0.26/webapps" />
 								<copy file="${ikube.war}" todir="${tomcat.deploy.directory}" overwrite="true" failonerror="false" />
 							</tasks>
 						</configuration>
