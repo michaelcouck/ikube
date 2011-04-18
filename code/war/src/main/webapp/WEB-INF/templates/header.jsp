@@ -1,6 +1,5 @@
 					<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-					<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-
+					<%@ taglib prefix="tiles" uri="http://tiles.apache.org/tags-tiles" %>
 					<table id="header" border="0">
 						<tr>
 							<td style="padding-left : 35px;" valign="bottom" width="50">

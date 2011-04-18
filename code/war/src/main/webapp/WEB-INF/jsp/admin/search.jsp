@@ -7,7 +7,6 @@
 <%@ page import="ikube.model.Server"%>
 <%@ page import="java.util.List"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="search" uri="http://ikube/search" %>
 
 <table class="table-content" width="100%">
 	<tr>
@@ -73,7 +72,7 @@
 	<tr>
 		<td class="td-content" colspan="2">
 			<table>
-				<jsp:include page="/WEB-INF/jsp/results.jspf" flush="true" />
+				<jsp:include page="/WEB-INF/jsp/include.jsp" flush="true" />
 			</table>
 		</td>
 	</tr>

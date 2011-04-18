@@ -1,5 +1,3 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-
 <table class="table-content" width="100%">
 	<tr>
 		<td class="top-content">
@@ -62,7 +60,7 @@
 			for interests' sake.<br><br>
 			
 			For convenience there are also tags for iterating over the results. These can be used as is. You just need to extract the jar 
-			from the war and look at the results.jspf for an example of how to use the tags. As well as this there is a spelling checker 
+			from the war and look at the include.jsp for an example of how to use the tags. As well as this there is a spelling checker 
 			tag that can be added. This tag has an example of the usage in the menu.jsp in the war. At the time of writing there 
 			was only spelling checking for Englich but to add more languages all you would need to do is to add the words from other 
 			languages to the words.txt file in the war and Ikube will index the language words.<br><br>

@@ -101,9 +101,12 @@
 				</configuration>
 				<dependencies>
 					<dependency>
-						<!-- XXX It is included to force commons-logging to use 2.5 API instead of 2.3. This caused by internal dependencies of Jetty, which use 
-							version 2.5, but have it packaged in a different group ID: org.mortbay.jetty. TODO (Roman): If it gets broken again, try to "exclude" servlet-api 
-							dependencies from commons-logging and commons-fileupload. -->
+						<!-- 
+							XXX It is included to force commons-logging to use 2.5 API instead of 2.3. This caused by 
+							internal dependencies of Jetty, which use version 2.5, but have it packaged in a different group 
+							ID: org.mortbay.jetty. TODO (Roman): If it gets broken again, try to "exclude" servlet-api 
+							dependencies from commons-logging and commons-fileupload. 
+						-->
 						<groupId>javax.servlet</groupId>
 						<artifactId>servlet-api</artifactId>
 						<version>2.5</version>
@@ -121,59 +124,13 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-antrun-plugin</artifactId>
 				<executions>
-					<!--<execution>
-						<id>cluster.stop.delete</id>
-						<phase>clean</phase>
-						<configuration>
-							<tasks verbose="true">
-								<property name="cluster.directory" value="D:/cluster" />
-								<property name="tomcat.1" value="${cluster.directory}/apache-tomcat-6.0.29-1" />
-								<property name="tomcat.2" value="${cluster.directory}/apache-tomcat-6.0.29-2" />
-								<property name="tomcat.3" value="${cluster.directory}/apache-tomcat-6.0.29-3" />
-								
-								<property name="ikube.dir" value="ikube" />
-								<property name="ikube.war" value="ikube.war" />
-							
-								<antcall target="executeTomcatAction">
-									<param name="action" value="stop" />
-									<param name="tomcat.bin" value="${tomcat.1}/bin" />
-									<param name="tomcat.home" value="${tomcat.1}" />
-								</antcall>
-								<antcall target="executeTomcatAction">
-									<param name="action" value="stop" />
-									<param name="tomcat.bin" value="${tomcat.2}/bin" />
-									<param name="tomcat.home" value="${tomcat.2}" />
-								</antcall>
-								<antcall target="executeTomcatAction">
-									<param name="action" value="stop" />
-									<param name="tomcat.bin" value="${tomcat.3}/bin" />
-									<param name="tomcat.home" value="${tomcat.3}" />
-								</antcall>
-								<target name="executeTomcatAction">
-									<java jar="${tomcat.bin}/bootstrap.jar" dir="${tomcat.bin}" fork="yes" spawn="true">
-										<jvmarg value="-Dcatalina.home=${tomcat.home}" />
-										<arg line="${action}" />
-									</java>
-								</target>
-
-								<delete file="${tomcat.1}/${ikube.war}" failonerror="false" />
-								<delete dir="${tomcat.1}/${ikube.dir}" failonerror="false" />
-								<delete file="${tomcat.2}/${ikube.war}" failonerror="false" />
-								<delete dir="${tomcat.2}/${ikube.dir}" failonerror="false" />
-								<delete file="${tomcat.3}/${ikube.war}" failonerror="false" />
-								<delete dir="${tomcat.3}/${ikube.dir}" failonerror="false" />
-							</tasks>
-						</configuration>
-						<goals>
-							<goal>run</goal>
-						</goals>
-					</execution>-->
 					<execution>
 						<id>deploy.war.to.cluster</id>
 						<phase>install</phase>
 						<configuration>
 							<tasks verbose="true">
 								<property name="cluster.directory" value="D:/cluster" />
+
 								<property name="tomcat.1" value="${cluster.directory}/apache-tomcat-6.0.29-1" />
 								<property name="tomcat.2" value="${cluster.directory}/apache-tomcat-6.0.29-2" />
 								<property name="tomcat.3" value="${cluster.directory}/apache-tomcat-6.0.29-3" />
@@ -257,7 +214,7 @@
 			<version>${jetty.version}</version>
 		</dependency>
 
-		<dependency>
+		<!--<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>jstl</artifactId>
 			<version>1.2</version>
@@ -270,7 +227,7 @@
 			<version>1.1.2</version>
 			<type>jar</type>
 			<scope>test</scope>
-		</dependency>
+		</dependency>-->
 		<dependency>
 			<groupId>tomcat</groupId>
 			<artifactId>jasper-compiler</artifactId>
@@ -298,6 +255,20 @@
 			<version>1.6.5</version>
 			<type>jar</type>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>taglibs</groupId>
+			<artifactId>standard</artifactId>
+			<version>1.1.2</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>jstl</artifactId>
+			<version>1.1.2</version>
+			<type>jar</type>
+			<scope>compile</scope>
 		</dependency>
 	</dependencies>
 

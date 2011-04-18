@@ -6,7 +6,7 @@
 		</td>
 	</tr>
 	
-	<jsp:include page="results.jspf" flush="true" />
+	<jsp:include page="include.jsp" flush="true" />
 	
 	<tr>
 		<td class="bottom-content">Results brought to you by Ikube</td>

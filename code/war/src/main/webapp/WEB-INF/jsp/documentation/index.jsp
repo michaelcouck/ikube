@@ -1,5 +1,3 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-
 <table class="table-content" width="100%">
 	<tr>
 		<td class="top-content">
@@ -39,7 +37,7 @@
 		<td class="bottom-content">
 			Have a fantastic day!<br>
 			Documentation brought to you by Ikube<br>
-			You are here =>
+			You are here =&gt;
 		</td>
 	</tr>
 </table>

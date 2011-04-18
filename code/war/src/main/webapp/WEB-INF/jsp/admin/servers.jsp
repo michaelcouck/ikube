@@ -1,8 +1,10 @@
-<%@page import="ikube.model.Server.Action"%>
-<%@page import="ikube.model.Server"%>
-<%@page import="java.util.List"%>
-<%@page import="ikube.cluster.IClusterManager"%>
-<%@page import="ikube.toolkit.ApplicationContextManager"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="tiles" uri="http://tiles.apache.org/tags-tiles" %>
+<%@ page import="ikube.model.Server.Action"%>
+<%@ page import="ikube.model.Server"%>
+<%@ page import="java.util.List"%>
+<%@ page import="ikube.cluster.IClusterManager"%>
+<%@ page import="ikube.toolkit.ApplicationContextManager"%>
 <%@ taglib prefix="search" uri="http://ikube/search" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
