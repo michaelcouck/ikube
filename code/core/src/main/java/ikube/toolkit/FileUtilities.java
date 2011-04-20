@@ -166,6 +166,9 @@ public final class FileUtilities {
 	 */
 	public static synchronized File getFile(final String filePath, final boolean directory) {
 		try {
+			if (filePath == null) {
+				return null;
+			}
 			File file = new File(filePath);
 			if (directory) {
 				if (file.exists() && file.isDirectory()) {
@@ -251,8 +254,11 @@ public final class FileUtilities {
 		}
 	}
 
-	protected static synchronized File getLatestIndexDirectory(final File file, final File latestSoFa) {
-		File latest = latestSoFa;
+	protected static synchronized File getLatestIndexDirectory(final File file, final File latestSoFar) {
+		if (file == null) {
+			return latestSoFar;
+		}
+		File latest = latestSoFar;
 		if (file.isDirectory()) {
 			File[] children = file.listFiles();
 			for (File child : children) {

@@ -164,6 +164,17 @@ public abstract class ATest {
 		return IndexManager.getIndexDirectory(indexContext, System.currentTimeMillis(), IP);
 	}
 
+	/**
+	 * This method creates an index using the index path in the context, the time and the ip and returns the latest index directory, i.e.
+	 * the index that has just been created. Note that if there are still cascading mocks from JMockit, the index writer sill not create the
+	 * index! So you have to tear down all mocks prior to using this method.
+	 * 
+	 * @param indexContext
+	 *            the index context to use for the path to the index
+	 * @param strings
+	 *            the data that must be in the index
+	 * @return the latest index directory, i.e. the one that has just been created
+	 */
 	protected File createIndex(IndexContext indexContext, String... strings) {
 		IndexWriter indexWriter = null;
 		try {

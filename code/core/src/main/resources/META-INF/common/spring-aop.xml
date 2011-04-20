@@ -30,7 +30,6 @@
 		</aop:aspect>
 	</aop:config>
 	
-	
 	<bean
 		id="ikube.index.spatial.geocode.GoogleGeocoder"
 		class="ikube.index.spatial.geocode.GoogleGeocoder"
