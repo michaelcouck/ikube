@@ -1,6 +1,8 @@
-package ikube.data;
+package ikube.toolkit.data;
 
 import ikube.model.medical.Doctor;
+import ikube.toolkit.data.DataGeneratorMedical;
+import ikube.toolkit.data.IDataGenerator;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;

@@ -4,8 +4,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import ikube.IConstants;
 import ikube.cluster.IClusterManager;
-import ikube.data.DataGeneratorFour;
-import ikube.data.IDataGenerator;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.model.IndexableColumn;
@@ -18,6 +16,8 @@ import ikube.service.ServiceLocator;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.Logging;
 import ikube.toolkit.SerializationUtilities;
+import ikube.toolkit.data.DataGeneratorFour;
+import ikube.toolkit.data.IDataGenerator;
 
 import java.util.ArrayList;
 import java.util.List;

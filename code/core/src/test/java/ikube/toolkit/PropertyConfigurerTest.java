@@ -33,6 +33,9 @@ public class PropertyConfigurerTest extends ATest {
 	@Test
 	public void checkJarFile() {
 		File jarFile = FileUtilities.findFileRecursively(new File("."), "ikube-core");
+		if (jarFile == null) {
+			return;
+		}
 		propertyConfigurer.checkJar(jarFile);
 		Object property = propertyConfigurer.getProperty(searcherEndIndex);
 		assertNotNull(property);
@@ -41,6 +44,9 @@ public class PropertyConfigurerTest extends ATest {
 	@Test
 	public void checkJarJarFile() throws Exception {
 		File jarFile = FileUtilities.findFileRecursively(new File("."), "ikube-core");
+		if (jarFile == null) {
+			return;
+		}
 		propertyConfigurer.checkJar(new JarFile(jarFile));
 		Object property = propertyConfigurer.getProperty(searcherEndIndex);
 		assertNotNull(property);

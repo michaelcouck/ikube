@@ -7,7 +7,7 @@
 
 	<persistence-unit name="IkubePersistenceUnitH2" transaction-type="RESOURCE_LOCAL">
 		<provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
-		<!--<non-jta-data-source>nonXaDataSourceOracle</non-jta-data-source>-->
+		<non-jta-data-source>nonXaDataSourceH2</non-jta-data-source>
 		<class>ikube.model.faq.Faq</class>
 		<class>ikube.model.faq.Attachment</class>
 		<class>ikube.model.medical.Persistable</class>
@@ -25,10 +25,10 @@
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		<properties>
 
-			<property name="openjpa.ConnectionUserName" value="sa" />
+			<!--<property name="openjpa.ConnectionUserName" value="sa" />
 			<property name="openjpa.ConnectionPassword" value="" />
 			<property name="openjpa.ConnectionURL" value="jdbc:h2:mem:search" />
-			<property name="openjpa.ConnectionDriverName" value="org.h2.Driver" />
+			<property name="openjpa.ConnectionDriverName" value="org.h2.Driver" />-->
 			
 			<!--<property name="openjpa.ConnectionUserName" value="XE" />
 			<property name="openjpa.ConnectionPassword" value="oracle" />

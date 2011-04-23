@@ -1,4 +1,4 @@
-package ikube.data;
+package ikube.toolkit.data;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -9,6 +9,7 @@ import ikube.model.medical.Address;
 import ikube.model.medical.Doctor;
 import ikube.model.medical.Hospital;
 import ikube.model.medical.Patient;
+import ikube.toolkit.data.DataGeneratorFour;
 
 import java.util.ArrayList;
 import java.util.Collection;

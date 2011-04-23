@@ -1,4 +1,4 @@
-package ikube.data;
+package ikube.toolkit.data;
 
 import ikube.model.medical.Doctor;
 import ikube.toolkit.FileUtilities;
