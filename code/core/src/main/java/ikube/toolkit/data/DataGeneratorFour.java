@@ -29,10 +29,10 @@ import org.springframework.util.ReflectionUtils;
  */
 public class DataGeneratorFour extends ADataGenerator {
 
-	private int iterations;
-	private Class<?>[] classes;
-	private EntityManager entityManager;
-	private Map<Class<?>, Object> entities;
+	protected int iterations;
+	protected Class<?>[] classes;
+	protected EntityManager entityManager;
+	protected Map<Class<?>, Object> entities;
 
 	public DataGeneratorFour(EntityManager entityManager, int iterations, Class<?>... classes) {
 		this.entityManager = entityManager;

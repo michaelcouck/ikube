@@ -61,8 +61,7 @@ public class Integration {
 
 		waitToFinish();
 
-		// TODO Validate the indexes on the file system
-		// validateIndexes();
+		validateIndexes();
 	}
 
 	protected void insertData(String persistenceUnit, int iterations, Class<?>[] classes) throws Exception {
@@ -154,9 +153,10 @@ public class Integration {
 	}
 
 	protected boolean isServer() {
+		// logger.info("Properties : " + System.getProperties());
 		String osName = System.getProperty("os.name");
 		logger.info("Operating system : " + osName);
-		if (!osName.toLowerCase().contains("server")) {
+		if (!osName.toLowerCase().contains("server") || System.getProperties().toString().contains("system32")) {
 			return Boolean.FALSE;
 		}
 		return Boolean.TRUE;
