@@ -54,6 +54,9 @@
 		<ref local="filesystem" />
 		<ref bean="faqTableH2" />
 		<ref bean="faqTableDb2" />
+		<ref bean="faqTableOracle" />
+		<ref bean="patientTableH2" />
+		<ref bean="patientTableDb2" />
 		<ref bean="patientTableOracle" />
 	</util:list>
 
@@ -66,142 +69,32 @@
 		property:primary="true"
 		property:dataSource-ref="nonXaDataSourceH2"
 		property:children-ref="faqColumnsH2" />
-	<util:list id="faqColumnsH2">
-		<ref local="faqIdH2" />
-		<ref local="creationtimestampH2" />
-		<ref local="modifiedtimestampH2" />
-		<ref local="creatorH2" />
-		<ref local="modifierH2" />
-		<ref local="questionH2" />
-		<ref local="answerH2" />
-		<ref local="publishedH2" />
-		<ref local="attachmentTableH2" />
-	</util:list>
-
-	<bean
-		id="faqIdH2"
-		class="ikube.model.IndexableColumn"
-		property:name="faqId"
-		property:idColumn="true"
-		property:analyzed="${analyzed}"
-		property:stored="${stored}"
-		property:vectored="${vectored}" />
-	<bean
-		id="creationtimestampH2"
-		class="ikube.model.IndexableColumn"
-		property:name="creationtimestamp"
-		property:fieldName="creationtimestamp"
-		property:analyzed="${analyzed}"
-		property:stored="${stored}"
-		property:vectored="${vectored}" />
-	<bean
-		id="modifiedtimestampH2"
-		class="ikube.model.IndexableColumn"
-		property:name="modifiedtimestamp"
-		property:fieldName="modifiedtimestamp"
-		property:analyzed="${analyzed}"
-		property:stored="${stored}"
-		property:vectored="${vectored}" />
-	<bean
-		id="creatorH2"
-		class="ikube.model.IndexableColumn"
-		property:name="creator"
-		property:fieldName="creator"
-		property:analyzed="${analyzed}"
-		property:stored="${stored}"
-		property:vectored="${vectored}" />
-	<bean
-		id="modifierH2"
-		class="ikube.model.IndexableColumn"
-		property:name="modifier"
-		property:fieldName="modifier"
-		property:analyzed="${analyzed}"
-		property:stored="${stored}"
-		property:vectored="${vectored}" />
-	<bean
-		id="questionH2"
-		class="ikube.model.IndexableColumn"
-		property:name="question"
-		property:fieldName="question"
-		property:analyzed="${analyzed}"
-		property:stored="${stored}"
-		property:vectored="${vectored}" />
-	<bean
-		id="answerH2"
-		class="ikube.model.IndexableColumn"
-		property:name="answer"
-		property:fieldName="answer"
-		property:analyzed="${analyzed}"
-		property:stored="${stored}"
-		property:vectored="${vectored}" />
-	<bean
-		id="publishedH2"
-		class="ikube.model.IndexableColumn"
-		property:name="published"
-		property:fieldName="published"
-		property:analyzed="${analyzed}"
-		property:stored="${stored}"
-		property:vectored="${vectored}" />
-
 	<bean
 		id="attachmentTableH2"
 		class="ikube.model.IndexableTable"
 		property:name="attachment"
 		property:primary="false"
 		property:dataSource-ref="nonXaDataSourceH2"
-		property:children-ref="attachmentColumnsTwoH2" />
-	<util:list id="attachmentColumnsTwoH2">
-		<ref local="attachmentFaqIdH2" />
-		<ref local="attachmentIdH2" />
-		<ref local="nameH2" />
-		<ref local="attachmentH2" />
-		<ref local="lengthH2" />
+		property:children-ref="attachmentColumnsH2" />
+	<util:list id="faqColumnsH2">
+		<ref local="faqId" />
+		<ref local="creationtimestamp" />
+		<ref local="modifiedtimestamp" />
+		<ref local="creator" />
+		<ref local="modifier" />
+		<ref local="question" />
+		<ref local="answer" />
+		<ref local="published" />
+		<ref local="attachmentTableH2" />
 	</util:list>
-
-	<bean
-		id="attachmentFaqIdH2"
-		class="ikube.model.IndexableColumn"
-		property:name="faqId"
-		property:fieldName="attachmentFaqId"
-		property:foreignKey-ref="faqIdH2"
-		property:analyzed="${analyzed}"
-		property:stored="${stored}"
-		property:vectored="${vectored}" />
-	<bean
-		id="attachmentIdH2"
-		class="ikube.model.IndexableColumn"
-		property:name="attachmentId"
-		property:fieldName="attachmentId"
-		property:idColumn="true"
-		property:analyzed="${analyzed}"
-		property:stored="${stored}"
-		property:vectored="${vectored}" />
-	<bean
-		id="nameH2"
-		class="ikube.model.IndexableColumn"
-		property:name="name"
-		property:fieldName="name"
-		property:analyzed="${analyzed}"
-		property:stored="${stored}"
-		property:vectored="${vectored}" />
-	<bean
-		id="attachmentH2"
-		class="ikube.model.IndexableColumn"
-		property:name="attachment"
-		property:fieldName="attachment"
-		property:nameColumn-ref="nameH2"
-		property:analyzed="${analyzed}"
-		property:stored="${stored}"
-		property:vectored="${vectored}" />
-	<bean
-		id="lengthH2"
-		class="ikube.model.IndexableColumn"
-		property:name="length"
-		property:fieldName="length"
-		property:analyzed="${analyzed}"
-		property:stored="${stored}"
-		property:vectored="${vectored}" />
-		
+	<util:list id="attachmentColumnsH2">
+		<ref local="attachmentFaqId" />
+		<ref local="attachmentId" />
+		<ref local="name" />
+		<ref local="attachment" />
+		<ref local="length" />
+	</util:list>
+	
 	<!-- Db2 Faqs -->
 	<bean
 		id="faqTableDb2"
@@ -211,20 +104,69 @@
 		property:primary="true"
 		property:dataSource-ref="nonXaDataSourceDb2"
 		property:children-ref="faqColumnsDb2" />
+	<bean
+		id="attachmentTableDb2"
+		class="ikube.model.IndexableTable"
+		property:name="attachment"
+		property:primary="false"
+		property:dataSource-ref="nonXaDataSourceDb2"
+		property:children-ref="attachmentColumnsDb2" />
 	<util:list id="faqColumnsDb2">
-		<ref local="faqIdDb2" />
-		<ref local="creationtimestampDb2" />
-		<ref local="modifiedtimestampDb2" />
-		<ref local="creatorDb2" />
-		<ref local="modifierDb2" />
-		<ref local="questionDb2" />
-		<ref local="answerDb2" />
-		<ref local="publishedDb2" />
+		<ref local="faqId" />
+		<ref local="creationtimestamp" />
+		<ref local="modifiedtimestamp" />
+		<ref local="creator" />
+		<ref local="modifier" />
+		<ref local="question" />
+		<ref local="answer" />
+		<ref local="published" />
 		<ref local="attachmentTableDb2" />
+	</util:list>
+	<util:list id="attachmentColumnsDb2">
+		<ref local="attachmentFaqId" />
+		<ref local="attachmentId" />
+		<ref local="name" />
+		<ref local="attachment" />
+		<ref local="length" />
+	</util:list>
+	
+	<!-- Oracle Faqs -->
+	<bean
+		id="faqTableOracle"
+		class="ikube.model.IndexableTable"
+		property:name="faq"
+		property:predicate="${faq.predicate}"
+		property:primary="true"
+		property:dataSource-ref="nonXaDataSourceOracle"
+		property:children-ref="faqColumnsOracle" />
+	<bean
+		id="attachmentTableOracle"
+		class="ikube.model.IndexableTable"
+		property:name="attachment"
+		property:primary="false"
+		property:dataSource-ref="nonXaDataSourceOracle"
+		property:children-ref="attachmentColumnsOracle" />
+	<util:list id="faqColumnsOracle">
+		<ref local="faqId" />
+		<ref local="creationtimestamp" />
+		<ref local="modifiedtimestamp" />
+		<ref local="creator" />
+		<ref local="modifier" />
+		<ref local="question" />
+		<ref local="answer" />
+		<ref local="published" />
+		<ref local="attachmentTableOracle" />
+	</util:list>
+	<util:list id="attachmentColumnsOracle">
+		<ref local="attachmentFaqId" />
+		<ref local="attachmentId" />
+		<ref local="name" />
+		<ref local="attachment" />
+		<ref local="length" />
 	</util:list>
 
 	<bean
-		id="faqIdDb2"
+		id="faqId"
 		class="ikube.model.IndexableColumn"
 		property:name="faqId"
 		property:idColumn="true"
@@ -232,7 +174,7 @@
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
-		id="creationtimestampDb2"
+		id="creationtimestamp"
 		class="ikube.model.IndexableColumn"
 		property:name="creationtimestamp"
 		property:fieldName="creationtimestamp"
@@ -240,7 +182,7 @@
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
-		id="modifiedtimestampDb2"
+		id="modifiedtimestamp"
 		class="ikube.model.IndexableColumn"
 		property:name="modifiedtimestamp"
 		property:fieldName="modifiedtimestamp"
@@ -248,7 +190,7 @@
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
-		id="creatorDb2"
+		id="creator"
 		class="ikube.model.IndexableColumn"
 		property:name="creator"
 		property:fieldName="creator"
@@ -256,7 +198,7 @@
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
-		id="modifierDb2"
+		id="modifier"
 		class="ikube.model.IndexableColumn"
 		property:name="modifier"
 		property:fieldName="modifier"
@@ -264,7 +206,7 @@
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
-		id="questionDb2"
+		id="question"
 		class="ikube.model.IndexableColumn"
 		property:name="question"
 		property:fieldName="question"
@@ -272,7 +214,7 @@
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
-		id="answerDb2"
+		id="answer"
 		class="ikube.model.IndexableColumn"
 		property:name="answer"
 		property:fieldName="answer"
@@ -280,7 +222,7 @@
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
-		id="publishedDb2"
+		id="published"
 		class="ikube.model.IndexableColumn"
 		property:name="published"
 		property:fieldName="published"
@@ -289,31 +231,16 @@
 		property:vectored="${vectored}" />
 
 	<bean
-		id="attachmentTableDb2"
-		class="ikube.model.IndexableTable"
-		property:name="attachment"
-		property:primary="false"
-		property:dataSource-ref="nonXaDataSourceDb2"
-		property:children-ref="attachmentColumnsTwoDb2" />
-	<util:list id="attachmentColumnsTwoDb2">
-		<ref local="attachmentFaqIdDb2" />
-		<ref local="attachmentIdDb2" />
-		<ref local="nameDb2" />
-		<ref local="attachmentDb2" />
-		<ref local="lengthDb2" />
-	</util:list>
-
-	<bean
-		id="attachmentFaqIdDb2"
+		id="attachmentFaqId"
 		class="ikube.model.IndexableColumn"
 		property:name="faqId"
 		property:fieldName="attachmentFaqId"
-		property:foreignKey-ref="faqIdDb2"
+		property:foreignKey-ref="faqId"
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
-		id="attachmentIdDb2"
+		id="attachmentId"
 		class="ikube.model.IndexableColumn"
 		property:name="attachmentId"
 		property:fieldName="attachmentId"
@@ -322,7 +249,7 @@
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
-		id="nameDb2"
+		id="name"
 		class="ikube.model.IndexableColumn"
 		property:name="name"
 		property:fieldName="name"
@@ -330,16 +257,16 @@
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
-		id="attachmentDb2"
+		id="attachment"
 		class="ikube.model.IndexableColumn"
 		property:name="attachment"
 		property:fieldName="attachment"
-		property:nameColumn-ref="nameDb2"
+		property:nameColumn-ref="name"
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
-		id="lengthDb2"
+		id="length"
 		class="ikube.model.IndexableColumn"
 		property:name="length"
 		property:fieldName="length"
@@ -347,6 +274,78 @@
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
 		
+	<!-- H2 patients -->
+	<bean
+		id="patientTableH2"
+		class="ikube.model.IndexableTable"
+		property:name="patient"
+		property:predicate="${patient.predicate}"
+		property:primary="true"
+		property:dataSource-ref="nonXaDataSourceH2"
+		property:children-ref="patientColumnsH2" />
+	<util:list id="patientColumnsH2">
+		<ref local="patientId" />
+		<ref local="firstName" />
+		<ref local="lastName" />
+		<ref local="birthDate" />
+		<ref local="deathDate" />
+		<ref local="addressTableH2" />
+	</util:list>
+	<bean
+		id="addressTableH2"
+		class="ikube.model.IndexableTable"
+		property:name="address"
+		property:primary="false"
+		property:address="true"
+		property:dataSource-ref="nonXaDataSourceH2"
+		property:children-ref="addressColumnsH2" />
+	<util:list id="addressColumnsH2">
+		<ref local="addressId" />
+		<ref local="numb" />
+		<ref local="street" />
+		<ref local="province" />
+		<ref local="country" />
+		<ref local="postCode" />
+		<ref local="latitude" />
+		<ref local="longitude" />
+	</util:list>
+	
+	<!-- Db2 patients -->
+	<bean
+		id="patientTableDb2"
+		class="ikube.model.IndexableTable"
+		property:name="patient"
+		property:predicate="${patient.predicate}"
+		property:primary="true"
+		property:dataSource-ref="nonXaDataSourceDb2"
+		property:children-ref="patientColumnsDb2" />
+	<util:list id="patientColumnsDb2">
+		<ref local="patientId" />
+		<ref local="firstName" />
+		<ref local="lastName" />
+		<ref local="birthDate" />
+		<ref local="deathDate" />
+		<ref local="addressTableDb2" />
+	</util:list>
+	<bean
+		id="addressTableDb2"
+		class="ikube.model.IndexableTable"
+		property:name="address"
+		property:primary="false"
+		property:address="true"
+		property:dataSource-ref="nonXaDataSourceDb2"
+		property:children-ref="addressColumnsDb2" />
+	<util:list id="addressColumnsDb2">
+		<ref local="addressId" />
+		<ref local="numb" />
+		<ref local="street" />
+		<ref local="province" />
+		<ref local="country" />
+		<ref local="postCode" />
+		<ref local="latitude" />
+		<ref local="longitude" />
+	</util:list>
+
 	<!-- Oracle patients -->
 	<bean
 		id="patientTableOracle"
@@ -357,15 +356,34 @@
 		property:dataSource-ref="nonXaDataSourceOracle"
 		property:children-ref="patientColumnsOracle" />
 	<util:list id="patientColumnsOracle">
-		<ref local="patientIdOracle" />
-		<ref local="firstNameOracle" />
-		<ref local="lastNameOracle" />
-		<ref local="birthDateOracle" />
-		<ref local="deathDateOracle" />
+		<ref local="patientId" />
+		<ref local="firstName" />
+		<ref local="lastName" />
+		<ref local="birthDate" />
+		<ref local="deathDate" />
+		<ref local="addressTableOracle" />
 	</util:list>
-
 	<bean
-		id="patientIdOracle"
+		id="addressTableOracle"
+		class="ikube.model.IndexableTable"
+		property:name="address"
+		property:primary="false"
+		property:address="true"
+		property:dataSource-ref="nonXaDataSourceOracle"
+		property:children-ref="addressColumnsOracle" />
+	<util:list id="addressColumnsOracle">
+		<ref local="addressId" />
+		<ref local="numb" />
+		<ref local="street" />
+		<ref local="province" />
+		<ref local="country" />
+		<ref local="postCode" />
+		<ref local="latitude" />
+		<ref local="longitude" />
+	</util:list>
+	
+	<bean
+		id="patientId"
 		class="ikube.model.IndexableColumn"
 		property:name="id"
 		property:idColumn="true"
@@ -373,7 +391,7 @@
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
-		id="firstNameOracle"
+		id="firstName"
 		class="ikube.model.IndexableColumn"
 		property:name="firstName"
 		property:fieldName="firstName"
@@ -381,7 +399,7 @@
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
-		id="lastNameOracle"
+		id="lastName"
 		class="ikube.model.IndexableColumn"
 		property:name="lastName"
 		property:fieldName="lastName"
@@ -389,7 +407,7 @@
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
-		id="birthDateOracle"
+		id="birthDate"
 		class="ikube.model.IndexableColumn"
 		property:name="birthDate"
 		property:fieldName="birthDate"
@@ -397,7 +415,7 @@
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
-		id="deathDateOracle"
+		id="deathDate"
 		class="ikube.model.IndexableColumn"
 		property:name="deathDate"
 		property:fieldName="deathDate"
@@ -406,66 +424,76 @@
 		property:vectored="${vectored}" />
 	
 	<bean
-		id="addressOracle"
-		class="ikube.model.IndexableTable"
-		property:name="address"
-		property:primary="false"
-		property:dataSource-ref="nonXaDataSourceOracle"
-		property:children-ref="addressColumnsOracle" />
-	<util:list id="addressColumnsOracle">
-		<ref local="addressIdOracle" />
-	</util:list>
-
-	<bean
-		id="addressIdOracle"
+		id="addressId"
 		class="ikube.model.IndexableColumn"
 		property:name="id"
 		property:idColumn="true"
-		property:foreignKey-ref="patientIdOracle"
+		property:foreignKey-ref="patientId"
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
-		id="numberOracle"
+		id="numb"
 		class="ikube.model.IndexableColumn"
-		property:name="number"
-		property:fieldName="number"
+		property:name="numb"
+		property:fieldName="numb"
+		property:address="true"
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
-		id="streetOracle"
+		id="street"
 		class="ikube.model.IndexableColumn"
 		property:name="street"
 		property:fieldName="street"
+		property:address="true"
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
-		id="provinceOracle"
+		id="province"
 		class="ikube.model.IndexableColumn"
 		property:name="province"
 		property:fieldName="province"
+		property:address="true"
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
-		id="countryOracle"
+		id="country"
 		class="ikube.model.IndexableColumn"
 		property:name="country"
 		property:fieldName="country"
+		property:address="true"
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
-		id="postCodeOracle"
+		id="postCode"
 		class="ikube.model.IndexableColumn"
 		property:name="postCode"
 		property:fieldName="postCode"
+		property:address="true"
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
-
+	<bean
+		id="latitude"
+		class="ikube.model.IndexableColumn"
+		property:name="latitude"
+		property:fieldName="latitude"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="longitude"
+		class="ikube.model.IndexableColumn"
+		property:name="longitude"
+		property:fieldName="longitude"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+		
 	<bean
 		id="mail"
 		class="ikube.model.IndexableEmail"

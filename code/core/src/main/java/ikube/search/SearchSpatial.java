@@ -58,8 +58,8 @@ public class SearchSpatial extends Search {
 	 */
 	@Override
 	protected Query getQuery() throws ParseException {
-		queryBuilder = new DistanceQueryBuilder(coordinate.getLat(), coordinate.getLon(), distance, IConstants.LAT,
-				IConstants.LNG, CartesianTierPlotter.DEFALT_FIELD_PREFIX, true);
+		queryBuilder = new DistanceQueryBuilder(coordinate.getLat(), coordinate.getLon(), distance, IConstants.LAT, IConstants.LNG,
+				CartesianTierPlotter.DEFALT_FIELD_PREFIX, true);
 		// Create a distance sort
 		// As the radius filter has performed the distance calculations
 		// already, pass in the filter to reuse the results.
@@ -97,6 +97,14 @@ public class SearchSpatial extends Search {
 		// Add the search results size as a last result
 		addStatistics(results, totalHits, duration);
 		return results;
+	}
+
+	public Coordinate getCoordinate() {
+		return coordinate;
+	}
+
+	public void setCoordinate(Coordinate coordinate) {
+		this.coordinate = coordinate;
 	}
 
 }

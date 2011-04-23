@@ -1,7 +1,6 @@
 package ikube.index.spatial.geocode;
 
 import ikube.index.spatial.Coordinate;
-import ikube.model.Indexable;
 import ikube.service.ServiceLocator;
 
 import org.apache.log4j.Logger;
@@ -16,7 +15,7 @@ public class NavtecGeocoder implements IGeocoder {
 	private Logger logger = Logger.getLogger(this.getClass());
 
 	@Override
-	public Coordinate getCoordinate(final Indexable<?> indexable) {
+	public Coordinate getCoordinate(String address) {
 		String url = "http://maptp12.map24.com/map24/webservices1.5?soap=Map24Geocoder51";
 		String nameSpace = "";
 		String serviceName = "";

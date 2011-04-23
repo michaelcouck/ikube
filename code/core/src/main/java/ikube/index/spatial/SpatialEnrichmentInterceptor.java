@@ -33,7 +33,7 @@ public class SpatialEnrichmentInterceptor implements ISpatialEnrichmentIntercept
 	@Override
 	public Object enrich(final ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
 		// Iterate through all the indexable children of the indexable looking for address
-		// fields. Concatenate them with a ',' in between. Call the Google geo coding API
+		// fields. Concatenate them with a ',' in between. Call the Google geocoding API
 		// for the latitude and longitude coordinates. Create the tiers for the location,
 		// and add the resultant data to the document, simple.
 		enrich(proceedingJoinPoint.getArgs());
@@ -59,12 +59,44 @@ public class SpatialEnrichmentInterceptor implements ISpatialEnrichmentIntercept
 		if (!indexable.isAddress()) {
 			return;
 		}
-		try {
-			Coordinate coordinate = geocoder.getCoordinate(indexable);
-			addSpatialLocationFields(coordinate, document);
-		} catch (Exception e) {
-			LOGGER.error("", e);
+		LOGGER.info("Enriching : " + indexable);
+		// We look for the first latitude and longitude from the children
+		Coordinate coordinate = getCoordinate(indexable);
+		// If the coordinate is null then either there were no latitude and longitude
+		// indexable children in the address indexable or there was a data problem, so we will
+		// see if there is a geocoder to get the coordinate
+		if (coordinate == null) {
+			String address = buildAddress(indexable, new StringBuilder()).toString();
+			try {
+				coordinate = geocoder.getCoordinate(address);
+			} catch (Exception e) {
+				LOGGER.error("Exception accessing the geocoder : " + geocoder + ", " + address, e);
+			}
+			if (coordinate == null) {
+				return;
+			}
 		}
+		addSpatialLocationFields(coordinate, document);
+	}
+
+	private Coordinate getCoordinate(Indexable<?> indexable) {
+		double latitude = Integer.MAX_VALUE;
+		double longitude = Integer.MAX_VALUE;
+		for (Indexable<?> child : indexable.getChildren()) {
+			try {
+				if (child.getName().equals("latitude")) {
+					latitude = Double.parseDouble(child.getContent().toString());
+				} else if (child.getName().equals("longitude")) {
+					longitude = Double.parseDouble(child.getContent().toString());
+				}
+			} catch (Exception e) {
+				LOGGER.error("Exception enriching the index with spacial data : " + indexable, e);
+			}
+		}
+		if (latitude == Integer.MAX_VALUE || longitude == Integer.MAX_VALUE) {
+			return null;
+		}
+		return new Coordinate(latitude, longitude);
 	}
 
 	protected void addSpatialLocationFields(final Coordinate coordinate, final Document document) {
@@ -93,6 +125,21 @@ public class SpatialEnrichmentInterceptor implements ISpatialEnrichmentIntercept
 	protected int getMaxKm(final double maxKm) {
 		CartesianTierPlotter ctp = new CartesianTierPlotter(0, projector, CartesianTierPlotter.DEFALT_FIELD_PREFIX);
 		return ctp.bestFit(maxKm);
+	}
+
+	protected StringBuilder buildAddress(final Indexable<?> indexable, final StringBuilder builder) {
+		if (indexable.isAddress()) {
+			if (builder.length() > 0) {
+				builder.append(" ");
+			}
+			builder.append(indexable.getContent());
+		}
+		if (indexable.getChildren() != null) {
+			for (Indexable<?> child : indexable.getChildren()) {
+				buildAddress(child, builder);
+			}
+		}
+		return builder;
 	}
 
 	public void setMinKm(final double minKm) {

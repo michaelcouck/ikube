@@ -36,7 +36,7 @@ public class DataGeneratorMedical extends DataGeneratorFour {
 		List<Element> listingsElements = listingsElement.elements();
 		entityManager.getTransaction().begin();
 		for (Element listingElement : listingsElements) {
-			logger.info("Listing : " + listingElement);
+			logger.debug("Listing : " + listingElement);
 			Element latitudeElement = XmlUtilities.getElement(listingElement, "latitude");
 			Element longitudeElement = XmlUtilities.getElement(listingElement, "longitude");
 			Element streetAddressElement = XmlUtilities.getElement(listingElement, "streetAddress");

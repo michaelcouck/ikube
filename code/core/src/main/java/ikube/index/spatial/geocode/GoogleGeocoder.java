@@ -2,7 +2,6 @@ package ikube.index.spatial.geocode;
 
 import ikube.IConstants;
 import ikube.index.spatial.Coordinate;
-import ikube.model.Indexable;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.XmlUtilities;
 
@@ -30,9 +29,8 @@ public class GoogleGeocoder implements IGeocoder {
 	private transient String geoCodeApi;
 
 	@Override
-	public Coordinate getCoordinate(final Indexable<?> indexable) {
+	public Coordinate getCoordinate(String address) {
 		try {
-			String address = buildAddress(indexable, new StringBuilder()).toString();
 			address = StringUtils.trim(address);
 			address = URLEncoder.encode(address, IConstants.ENCODING);
 			// Call the geocoder with the address
@@ -48,7 +46,7 @@ public class GoogleGeocoder implements IGeocoder {
 			double lng = Double.parseDouble(longitudeElement.getText());
 			return new Coordinate(lat, lng, address);
 		} catch (Exception e) {
-			LOGGER.error("Exception accessing the GeoCode url : " + geoCodeApi + ", " + indexable, e);
+			LOGGER.error("Exception accessing the GeoCode url : " + geoCodeApi + ", " + address, e);
 		}
 		return null;
 	}
@@ -65,21 +63,6 @@ public class GoogleGeocoder implements IGeocoder {
 		builder.append("=");
 		builder.append("true");
 		return builder.toString();
-	}
-
-	protected StringBuilder buildAddress(final Indexable<?> indexable, final StringBuilder builder) {
-		if (indexable.isAddress()) {
-			if (builder.length() > 0) {
-				builder.append(" ");
-			}
-			builder.append(indexable.getContent());
-		}
-		if (indexable.getChildren() != null) {
-			for (Indexable<?> child : indexable.getChildren()) {
-				buildAddress(child, builder);
-			}
-		}
-		return builder;
 	}
 
 	public void setGeoCodeApi(final String geoCodeApi) {

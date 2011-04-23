@@ -1,7 +1,8 @@
 package ikube.index.spatial;
 
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.when;
+
+import static org.mockito.Mockito.*;
 import ikube.ATest;
 import ikube.index.spatial.geocode.GoogleGeocoder;
 import mockit.Cascading;
@@ -21,6 +22,7 @@ public class SpatialEnrichmentInterceptorTest extends ATest {
 
 	@Cascading
 	private Document document;
+	private Coordinate coordinate;
 	private GoogleGeocoder geocoder;
 	private SpatialEnrichmentInterceptor interceptor;
 
@@ -31,6 +33,10 @@ public class SpatialEnrichmentInterceptorTest extends ATest {
 	@Before
 	public void before() {
 		Mockit.setUpMocks();
+		coordinate = mock(Coordinate.class);
+		when(coordinate.getLat()).thenReturn(48.00058d);
+		when(coordinate.getLon()).thenReturn(7.00011d);
+
 		geocoder = new GoogleGeocoder();
 		interceptor = new SpatialEnrichmentInterceptor();
 
@@ -49,25 +55,20 @@ public class SpatialEnrichmentInterceptorTest extends ATest {
 	@Test
 	public void addCartesianTiers() {
 		// Coordinate, Document
-		// TODO implement me
-	}
-
-	@Test
-	public void addLocation() {
-		// IndexWriter, Document, String, Coordinate
-		// TODO Implement me
+		int startTier = 15;
+		int endTier = 15;
+		interceptor.addCartesianTiers(coordinate, document, startTier, endTier);
 	}
 
 	@Test
 	public void addSpatialLocationFields() {
 		// Coordinate, Document
-		// TODO Implement me
+		interceptor.addSpatialLocationFields(coordinate, document);
 	}
 
 	@Test
 	public void enrich() {
 		// Object[]
-		// TODO Implement me
 		Object[] arguments = new Object[] { document, INDEXABLE };
 		interceptor.enrich(arguments);
 		assertTrue(true);

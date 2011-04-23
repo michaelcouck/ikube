@@ -62,7 +62,7 @@ public abstract class ADataGenerator implements IDataGenerator {
 				continue;
 			}
 			if (file.length() > MAX_FILE_LENGTH) {
-				logger.info("File too big : " + file.length() + ":" + MAX_FILE_LENGTH);
+				logger.debug("File too big : " + file.length() + ":" + MAX_FILE_LENGTH);
 				continue;
 			}
 			for (String excludedPattern : excludedPatterns) {

@@ -25,7 +25,7 @@ public class GoogleGeocoderTest extends ATest {
 	public void getCoordinate() throws Exception {
 		GoogleGeocoder geocoder = new GoogleGeocoder();
 		geocoder.setGeoCodeApi("http://maps.googleapis.com/maps/api/geocode/xml");
-		Coordinate coordinate = geocoder.getCoordinate(INDEXABLE);
+		Coordinate coordinate = geocoder.getCoordinate("9 avenue road, cape town, south africa");
 		assertNotNull(coordinate);
 		double lat = coordinate.getLat();
 		double lon = coordinate.getLon();
@@ -34,8 +34,7 @@ public class GoogleGeocoderTest extends ATest {
 	}
 
 	@Test
-	// @Ignore
-	public void api() throws Exception {
+	public void apiVerification() throws Exception {
 		StringBuilder builder = new StringBuilder();
 		builder.append("http://maps.googleapis.com/maps/api/geocode/xml");
 		builder.append("?");

@@ -14,6 +14,7 @@ import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.PerformanceTester;
 import ikube.toolkit.data.DataGeneratorFour;
+import ikube.toolkit.data.DataGeneratorMedical;
 
 import java.io.File;
 import java.util.Map;
@@ -50,9 +51,15 @@ public abstract class BaseTest extends ATest {
 				@Override
 				public void execute() throws Exception {
 					try {
+						int iterations = 10;
 						Class<?>[] classes = new Class[] { Faq.class, Attachment.class, Address.class, Doctor.class, Hospital.class,
 								Inpatient.class, Patient.class, Person.class };
-						DataGeneratorFour dataGenerator = new DataGeneratorFour(entityManager, 10, classes);
+						DataGeneratorFour dataGenerator = new DataGeneratorFour(entityManager, iterations, classes);
+						dataGenerator.before();
+						dataGenerator.generate();
+						dataGenerator.after();
+						
+						dataGenerator = new DataGeneratorMedical(entityManager, iterations, classes);
 						dataGenerator.before();
 						dataGenerator.generate();
 						dataGenerator.after();

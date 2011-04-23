@@ -1,9 +1,10 @@
 package ikube.search;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import ikube.ATest;
 import ikube.IConstants;
 import ikube.index.IndexManager;
+import ikube.index.spatial.Coordinate;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
@@ -135,11 +136,6 @@ public class SearchTest extends ATest {
 	}
 
 	@Test
-	public void searchSpatial() {
-		// TODO Implement me
-	}
-
-	@Test
 	public void searchMultiAll() {
 		SearchMultiAll searchMultiAll = new SearchMultiAll(SEARCHER);
 		searchMultiAll.setFirstResult(0);
@@ -150,5 +146,19 @@ public class SearchTest extends ATest {
 		searchMultiAll.setSortField("content");
 		List<Map<String, String>> results = searchMultiAll.execute();
 		assertTrue(results.size() > 1);
+	}
+
+	@Test
+	public void searchSpatial() {
+		SearchSpatial searchSpatial = new SearchSpatial(SEARCHER);
+		searchSpatial.setFirstResult(0);
+		searchSpatial.setFragment(Boolean.TRUE);
+		searchSpatial.setMaxResults(100);
+		searchSpatial.setSearchField("content");
+		searchSpatial.setSearchString("content");
+		searchSpatial.setSortField("content");
+		searchSpatial.setCoordinate(new Coordinate(51.0589216, 3.7243959));
+		List<Map<String, String>> results = searchSpatial.execute();
+		assertNotNull(results);
 	}
 }

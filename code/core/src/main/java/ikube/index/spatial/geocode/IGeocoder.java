@@ -1,7 +1,6 @@
 package ikube.index.spatial.geocode;
 
 import ikube.index.spatial.Coordinate;
-import ikube.model.Indexable;
 
 /**
  * @author Michael Couck
@@ -10,6 +9,6 @@ import ikube.model.Indexable;
  */
 public interface IGeocoder {
 
-	Coordinate getCoordinate(Indexable<?> indexable);
+	Coordinate getCoordinate(String address);
 
 }

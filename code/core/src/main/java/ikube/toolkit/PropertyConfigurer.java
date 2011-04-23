@@ -48,7 +48,7 @@ public class PropertyConfigurer extends Properties {
 		StringTokenizer tokenizer = new StringTokenizer(classPathString, ";", Boolean.FALSE);
 		while (tokenizer.hasMoreTokens()) {
 			String jarLocation = tokenizer.nextToken();
-			logger.info("        : Checking location : " + jarLocation);
+			logger.debug("        : Checking location : " + jarLocation);
 			checkJar(new File(jarLocation));
 		}
 		// Check the file system for properties files
