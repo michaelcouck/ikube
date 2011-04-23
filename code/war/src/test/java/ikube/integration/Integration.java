@@ -11,15 +11,17 @@ import ikube.model.IndexableFileSystem;
 import ikube.model.IndexableInternet;
 import ikube.model.Server;
 import ikube.model.faq.Faq;
+import ikube.model.medical.Doctor;
 import ikube.service.ISearcherWebService;
 import ikube.service.ServiceLocator;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.Logging;
 import ikube.toolkit.SerializationUtilities;
-import ikube.toolkit.data.DataGeneratorFour;
+import ikube.toolkit.data.DataGeneratorMedical;
 import ikube.toolkit.data.IDataGenerator;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,6 +32,7 @@ import org.apache.log4j.Logger;
 import org.junit.Test;
 
 import com.hazelcast.core.Hazelcast;
+import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 /**
  * This test runs in its own Jenkins job. Typically it will be triggered by another job and will run along side other similar jobs
@@ -57,24 +60,39 @@ public class Integration {
 		ApplicationContextManager.getApplicationContext();
 
 		// Insert some data into the medical database
-		insertData(IConstants.PERSISTENCE_UNIT_H2, iterations, new Class[] { Faq.class });
+		insertData(IConstants.PERSISTENCE_UNIT_H2, "nonXaDataSourceH2", iterations, new Class[] { Doctor.class, Faq.class });
+		insertData(IConstants.PERSISTENCE_UNIT_DB2, "nonXaDataSourceDb2", iterations, new Class[] { Doctor.class, Faq.class });
+		insertData(IConstants.PERSISTENCE_UNIT_ORACLE, "nonXaDataSourceOracle", iterations, new Class[] { Doctor.class, Faq.class });
 
 		waitToFinish();
 
 		validateIndexes();
 	}
 
-	protected void insertData(String persistenceUnit, int iterations, Class<?>[] classes) throws Exception {
+	protected void insertData(String persistenceUnit, String dataSourceName, int iterations, Class<?>[] classes) throws Exception {
 		logger.info("Inserting data into : " + persistenceUnit);
+		ComboPooledDataSource dataSource = ApplicationContextManager.getBean(dataSourceName);
+		Map<String, String> properties = getConnectionProperties(dataSource.getUser(), dataSource.getPassword(), dataSource.getJdbcUrl(),
+				dataSource.getDriverClass());
+		EntityManager entityManager = null;
 		try {
-			EntityManager entityManager = Persistence.createEntityManagerFactory(persistenceUnit).createEntityManager();
-			IDataGenerator dataGenerator = new DataGeneratorFour(entityManager, iterations, classes);
+			entityManager = Persistence.createEntityManagerFactory(persistenceUnit, properties).createEntityManager();
+			IDataGenerator dataGenerator = new DataGeneratorMedical(entityManager, "doctors.xml", 10);
 			dataGenerator.before();
 			dataGenerator.generate();
 			dataGenerator.after();
 		} catch (Exception e) {
 			logger.error("Exception inserting some data : ", e);
 		}
+	}
+
+	private Map<String, String> getConnectionProperties(String user, String password, String url, String driver) {
+		Map<String, String> properties = new HashMap<String, String>();
+		properties.put("openjpa.ConnectionUserName", user);
+		properties.put("openjpa.ConnectionPassword", password);
+		properties.put("openjpa.ConnectionURL", url);
+		properties.put("openjpa.ConnectionDriverName", driver);
+		return properties;
 	}
 
 	protected void waitToFinish() {
@@ -156,7 +174,7 @@ public class Integration {
 		// logger.info("Properties : " + System.getProperties());
 		String osName = System.getProperty("os.name");
 		logger.info("Operating system : " + osName);
-		if (!osName.toLowerCase().contains("server") || System.getProperties().toString().contains("system32")) {
+		if (!osName.toLowerCase().contains("server")/* || System.getProperties().toString().contains("system32") */) {
 			return Boolean.FALSE;
 		}
 		return Boolean.TRUE;

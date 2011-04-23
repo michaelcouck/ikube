@@ -7,16 +7,26 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.sql.Blob;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import javax.persistence.Column;
+import javax.persistence.EntityManager;
+import javax.persistence.Id;
+
 import org.apache.log4j.Logger;
+import org.springframework.util.ReflectionUtils;
 
 /**
  * @author Michael Couck
@@ -24,7 +34,7 @@ import org.apache.log4j.Logger;
  * @version 01.00
  */
 public abstract class ADataGenerator implements IDataGenerator {
-	
+
 	static {
 		Logging.configure();
 	}
@@ -35,8 +45,10 @@ public abstract class ADataGenerator implements IDataGenerator {
 	private String wordsFilePath = "words.txt";
 	protected List<String> words;
 	protected Map<String, byte[]> fileContents;
+	protected Map<Class<?>, Object> entities;
 
 	public void before() throws Exception {
+		entities = new HashMap<Class<?>, Object>();
 		File dotFolder = new File(".");
 		words = new ArrayList<String>();
 		fileContents = new HashMap<String, byte[]>();
@@ -91,6 +103,81 @@ public abstract class ADataGenerator implements IDataGenerator {
 		return builder.toString();
 	}
 
+	@SuppressWarnings("unchecked")
+	protected <T> T createInstance(Class<T> klass) throws Exception {
+		T entity = (T) entities.remove(klass);
+		if (entity == null) {
+			entity = klass.newInstance();
+			entities.put(klass, entity);
+			// Set the fields
+			createFields(klass, entity);
+		}
+		return entity;
+	}
+
+	@SuppressWarnings("unchecked")
+	protected <C extends Collection<T>, T> C createCollection(Class<C> collectionClass, Class<T> klass) throws Exception {
+		Collection<T> collection = collectionClass.newInstance();
+		T t = createInstance(klass);
+		collection.add(t);
+		return (C) collection;
+	}
+
+	@SuppressWarnings("unchecked")
+	protected <T> T createFields(Class<?> klass, T entity) throws Exception {
+		Field[] fields = klass.getDeclaredFields();
+		for (Field field : fields) {
+			Id id = field.getAnnotation(Id.class);
+			if (id != null) {
+				continue;
+			}
+			field.setAccessible(Boolean.TRUE);
+			Class<?> fieldClass = field.getType();
+			logger.debug("Field class : " + fieldClass);
+			Object fieldValue = null;
+			// If this is a collection then create the collection
+			if (Collection.class.isAssignableFrom(fieldClass)) {
+				Type genericType = field.getGenericType();
+				Type theActualTypeArgument = null;
+				if (ParameterizedType.class.isAssignableFrom(genericType.getClass())) {
+					ParameterizedType parameterizedType = (ParameterizedType) genericType;
+					Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
+					for (Type actualTypeArgument : actualTypeArguments) {
+						logger.debug("Actual type argument : " + actualTypeArgument);
+						theActualTypeArgument = actualTypeArgument;
+					}
+				}
+				fieldValue = createCollection(ArrayList.class, (Class<?>) theActualTypeArgument);
+			} else if (fieldClass.getPackage() == null || fieldClass.getPackage().getName().startsWith("java")) {
+				// Java lang class
+				Column column = null;
+				Annotation[] annotations = field.getAnnotations();
+				if (annotations != null) {
+					for (Annotation annotation : annotations) {
+						if (Column.class.isAssignableFrom(annotation.getClass())) {
+							column = (Column) annotation;
+							break;
+						}
+					}
+				}
+				int length = column != null && column.length() > 0 ? column.length() : 48;
+				fieldValue = createInstance(fieldClass, length);
+			} else {
+				// This is a non Java lang class
+				fieldValue = createInstance(fieldClass);
+			}
+			if (logger.isDebugEnabled()) {
+				logger.debug("Field : " + field + ", " + fieldClass + ", " + fieldValue);
+			}
+			ReflectionUtils.setField(field, entity, fieldValue);
+		}
+		Class<?> superClass = klass.getSuperclass();
+		if (!Object.class.equals(superClass)) {
+			createFields(superClass, entity);
+		}
+		return entity;
+	}
+
 	protected Object createInstance(Class<?> klass, int length) {
 		if (Boolean.class.equals(klass) || boolean.class.equals(klass)) {
 			return Boolean.TRUE;
@@ -119,6 +206,39 @@ public abstract class ADataGenerator implements IDataGenerator {
 			}
 		}
 		return null;
+	}
+
+	protected void close(EntityManager entityManager) {
+		if (entityManager == null || !entityManager.isOpen()) {
+			return;
+		}
+		commit(entityManager);
+		try {
+			entityManager.close();
+		} catch (Exception e) {
+			logger.error("Exception closing the entity manager : ", e);
+		}
+	}
+
+	protected void begin(EntityManager entityManager) {
+		if (entityManager.getTransaction().isActive()) {
+			return;
+		}
+		entityManager.getTransaction().begin();
+	}
+
+	protected void commit(EntityManager entityManager) {
+		try {
+			if (entityManager.getTransaction().isActive()) {
+				if (entityManager.getTransaction().getRollbackOnly()) {
+					entityManager.getTransaction().rollback();
+					return;
+				}
+				entityManager.getTransaction().commit();
+			}
+		} catch (Exception e) {
+			logger.error("Exception comitting the transaction : ", e);
+		}
 	}
 
 	public void after() throws Exception {

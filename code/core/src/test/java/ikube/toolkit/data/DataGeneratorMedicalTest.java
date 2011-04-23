@@ -1,8 +1,8 @@
 package ikube.toolkit.data;
 
-import ikube.model.medical.Doctor;
-import ikube.toolkit.data.DataGeneratorMedical;
-import ikube.toolkit.data.IDataGenerator;
+import static org.junit.Assert.assertTrue;
+import ikube.ATest;
+import ikube.IConstants;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
@@ -10,22 +10,32 @@ import javax.persistence.Persistence;
 import org.junit.Ignore;
 import org.junit.Test;
 
-public class DataGeneratorMedicalTest {
+@Ignore
+public class DataGeneratorMedicalTest extends ATest {
 
-	private static final String PERSISTENCE_UNIT_H2 = "IkubePersistenceUnitH2";
-	@SuppressWarnings("unused")
-	private static final String PERSISTENCE_UNIT_ORACLE = "IkubePersistenceUnitOracle";
-	private static final int ITERATIONS = 10;
-	private static final Class<?>[] CLASSES = new Class<?>[] { Doctor.class };
+	public DataGeneratorMedicalTest() {
+		super(DataGeneratorMedicalTest.class);
+	}
 
 	@Test
-	@Ignore
 	public void generate() throws Exception {
-		EntityManager entityManager = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_H2).createEntityManager();
-		IDataGenerator dataGenerator = new DataGeneratorMedical(entityManager, ITERATIONS, CLASSES);
-		dataGenerator.before();
-		dataGenerator.generate();
-		dataGenerator.after();
+		EntityManager entityManager = null;
+		try {
+			entityManager = Persistence.createEntityManagerFactory(IConstants.PERSISTENCE_UNIT_H2).createEntityManager();
+			IDataGenerator dataGenerator = new DataGeneratorMedical(entityManager, "doctors.xml", 1);
+			dataGenerator.before();
+			dataGenerator.generate();
+			dataGenerator.after();
+			assertTrue(entityManager.createQuery("select from Doctor as d").getResultList().size() > 0);
+		} finally {
+			if (entityManager != null) {
+				try {
+					entityManager.close();
+				} catch (Exception e) {
+					logger.error("Exception closing the entity manager : ", e);
+				}
+			}
+		}
 	}
 
 }

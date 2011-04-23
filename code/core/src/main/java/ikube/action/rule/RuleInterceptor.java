@@ -11,6 +11,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.nfunk.jep.JEP;
 
 /**
+ * @see IRuleInterceptor
  * @author Michael Couck
  * @since 12.02.2011
  * @version 01.00
@@ -19,6 +20,9 @@ public class RuleInterceptor implements IRuleInterceptor {
 
 	private static final transient Logger LOGGER = Logger.getLogger(RuleInterceptor.class);
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Object decide(final ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
 		Object target = proceedingJoinPoint.getTarget();
@@ -35,7 +39,7 @@ public class RuleInterceptor implements IRuleInterceptor {
 			return proceedingJoinPoint.proceed();
 		}
 
-		LOGGER.info("Intercepting : " + target);
+		LOGGER.debug("Intercepting : " + target);
 		JEP jep = new JEP();
 		for (IRule<IndexContext> rule : classRules) {
 			Object[] args = proceedingJoinPoint.getArgs();
@@ -43,7 +47,7 @@ public class RuleInterceptor implements IRuleInterceptor {
 				if (arg != null && IndexContext.class.isAssignableFrom(arg.getClass())) {
 					boolean result = rule.evaluate((IndexContext) arg);
 					String parameter = rule.getClass().getSimpleName();
-					LOGGER.info(Logging.getString("Rule : ", rule, ", parameter : ", parameter, ", result : ", result));
+					LOGGER.debug(Logging.getString("Rule : ", rule, ", parameter : ", parameter, ", result : ", result));
 					jep.addVariable(parameter, result);
 				}
 			}
@@ -55,16 +59,14 @@ public class RuleInterceptor implements IRuleInterceptor {
 			LOGGER.warn("Symbol table : " + jep.getSymbolTable());
 		}
 		Object result = jep.getValueAsObject();
-		LOGGER.info(Logging.getString("Result object : ", result, jep, predicate));
 		if (result == null) {
 			result = jep.getValue();
-			LOGGER.info(Logging.getString("Result value : ", result, jep, predicate));
 		}
 		if (result == null || result.equals(0.0d) || result.equals(Boolean.FALSE)) {
-			LOGGER.debug(Logging.getString("Not proceeding: "));
+			LOGGER.debug(Logging.getString("Not proceeding: ", result, jep, predicate));
 			return Boolean.FALSE;
 		}
-		LOGGER.debug(Logging.getString("Proceeding: "));
+		LOGGER.debug(Logging.getString("Proceeding: ", result, jep, predicate));
 		return proceedingJoinPoint.proceed();
 	}
 

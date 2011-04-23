@@ -15,6 +15,7 @@ import ikube.toolkit.FileUtilities;
 import ikube.toolkit.PerformanceTester;
 import ikube.toolkit.data.DataGeneratorFour;
 import ikube.toolkit.data.DataGeneratorMedical;
+import ikube.toolkit.data.IDataGenerator;
 
 import java.io.File;
 import java.util.Map;
@@ -43,7 +44,7 @@ public abstract class BaseTest extends ATest {
 		}
 		INIT = Boolean.TRUE;
 		ApplicationContextManager.getApplicationContext(IConstants.SPRING_CONFIGURATION_FILE);
-		
+
 		try {
 			final EntityManager entityManager = Persistence.createEntityManagerFactory(IConstants.PERSISTENCE_UNIT_H2)
 					.createEntityManager();
@@ -54,12 +55,12 @@ public abstract class BaseTest extends ATest {
 						int iterations = 10;
 						Class<?>[] classes = new Class[] { Faq.class, Attachment.class, Address.class, Doctor.class, Hospital.class,
 								Inpatient.class, Patient.class, Person.class };
-						DataGeneratorFour dataGenerator = new DataGeneratorFour(entityManager, iterations, classes);
+						IDataGenerator dataGenerator = new DataGeneratorFour(entityManager, iterations, classes);
 						dataGenerator.before();
 						dataGenerator.generate();
 						dataGenerator.after();
-						
-						dataGenerator = new DataGeneratorMedical(entityManager, iterations, classes);
+
+						dataGenerator = new DataGeneratorMedical(entityManager,"doctors.xml", 10);
 						dataGenerator.before();
 						dataGenerator.generate();
 						dataGenerator.after();
@@ -73,7 +74,7 @@ public abstract class BaseTest extends ATest {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 		// Delete all the old index directories
 		Map<String, IndexContext> contexts = ApplicationContextManager.getBeans(IndexContext.class);
 		for (IndexContext indexContext : contexts.values()) {
