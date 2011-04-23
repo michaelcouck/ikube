@@ -96,10 +96,10 @@ public class IntegrationJetty extends Integration {
 
 	private String getWebAppContextFilePath() throws MalformedURLException {
 		// First try the target build directory
-		File file = FileUtilities.findFile(new File("."), ikubeWar);
+		File file = FileUtilities.findFileRecursively(new File("."), ikubeWar);
 		if (file == null) {
 			// Then the project webapp directory
-			file = FileUtilities.findFile(new File("."), webApp);
+			file = FileUtilities.findFileRecursively(new File("."), webApp);
 		}
 		URL webAppBaseDirectoryUrl = file.toURI().toURL();
 		return webAppBaseDirectoryUrl.toExternalForm();

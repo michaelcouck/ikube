@@ -1,5 +1,6 @@
 package ikube;
 
+import ikube.data.DataGeneratorFour;
 import ikube.listener.ListenerManager;
 import ikube.model.IndexContext;
 import ikube.model.faq.Attachment;
@@ -13,7 +14,6 @@ import ikube.model.medical.Person;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.PerformanceTester;
-import ikube.toolkit.data.DataGeneratorFour;
 
 import java.io.File;
 import java.util.Map;

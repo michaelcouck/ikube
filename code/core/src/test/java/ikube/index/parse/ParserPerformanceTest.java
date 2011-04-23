@@ -36,7 +36,7 @@ public class ParserPerformanceTest extends ATest {
 
 	@Test
 	public void pdfPerformance() throws Exception {
-		final File file = FileUtilities.findFile(new File("."), "pdf.pdf");
+		final File file = FileUtilities.findFileRecursively(new File("."), "pdf.pdf");
 		final PdfParser pdfParser = new PdfParser();
 		PerformanceTester.execute(new PerformanceTester.APerform() {
 			@Override
@@ -49,7 +49,7 @@ public class ParserPerformanceTest extends ATest {
 
 	@Test
 	public void xmlPerformance() throws Exception {
-		final File file = FileUtilities.findFile(new File("."), "xml.xml");
+		final File file = FileUtilities.findFileRecursively(new File("."), "xml.xml");
 		final XMLParser xmlParser = new XMLParser();
 		PerformanceTester.execute(new PerformanceTester.APerform() {
 			@Override
@@ -62,7 +62,7 @@ public class ParserPerformanceTest extends ATest {
 
 	@Test
 	public void htmlPerformance() throws Exception {
-		final File file = FileUtilities.findFile(new File("."), "html.html");
+		final File file = FileUtilities.findFileRecursively(new File("."), "html.html");
 		final HtmlParser htmlParser = new HtmlParser();
 		PerformanceTester.execute(new PerformanceTester.APerform() {
 			@Override
@@ -75,7 +75,7 @@ public class ParserPerformanceTest extends ATest {
 
 	@Test
 	public void wordPerformance() throws Exception {
-		final File file = FileUtilities.findFile(new File("."), "doc.doc");
+		final File file = FileUtilities.findFileRecursively(new File("."), "doc.doc");
 		final MSWordParser wordParser = new MSWordParser();
 		PerformanceTester.execute(new PerformanceTester.APerform() {
 			@Override
@@ -88,7 +88,7 @@ public class ParserPerformanceTest extends ATest {
 
 	@Test
 	public void textPerformance() throws Exception {
-		final File file = FileUtilities.findFile(new File("."), "txt.txt");
+		final File file = FileUtilities.findFileRecursively(new File("."), "txt.txt");
 		final TextParser textParser = new TextParser();
 		PerformanceTester.execute(new PerformanceTester.APerform() {
 			@Override
@@ -101,7 +101,7 @@ public class ParserPerformanceTest extends ATest {
 
 	@Test
 	public void excelPerformance() throws Exception {
-		final File file = FileUtilities.findFile(new File("."), "xls.xls");
+		final File file = FileUtilities.findFileRecursively(new File("."), "xls.xls");
 		final ExcelParser excelParser = new ExcelParser();
 		PerformanceTester.execute(new PerformanceTester.APerform() {
 			@Override
@@ -114,7 +114,7 @@ public class ParserPerformanceTest extends ATest {
 
 	@Test
 	public void ppPerformance() throws Exception {
-		final File file = FileUtilities.findFile(new File("."), "pot.pot");
+		final File file = FileUtilities.findFileRecursively(new File("."), "pot.pot");
 		final PowerPointParser ppParser = new PowerPointParser();
 		PerformanceTester.execute(new PerformanceTester.APerform() {
 			@Override
@@ -127,7 +127,7 @@ public class ParserPerformanceTest extends ATest {
 
 	@Test
 	public void rtfPerformance() throws Exception {
-		final File file = FileUtilities.findFile(new File("."), "rtf.rtf");
+		final File file = FileUtilities.findFileRecursively(new File("."), "rtf.rtf");
 		final RtfParser rtfParser = new RtfParser();
 		PerformanceTester.execute(new PerformanceTester.APerform() {
 			@Override
@@ -140,7 +140,7 @@ public class ParserPerformanceTest extends ATest {
 
 	@Test
 	public void patternPerformance() throws Exception {
-		File file = FileUtilities.findFile(new File("."), new String[] { "html.html" });
+		File file = FileUtilities.findFileRecursively(new File("."), new String[] { "html.html" });
 		byte[] bytes = FileUtilities.getContents(file).toByteArray();
 		InputStream inputStream = new ByteArrayInputStream(bytes);
 		final String string = FileUtilities.getContents(inputStream, Integer.MAX_VALUE).toString();

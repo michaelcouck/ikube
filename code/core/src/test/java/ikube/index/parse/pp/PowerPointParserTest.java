@@ -27,7 +27,7 @@ public class PowerPointParserTest extends ATest {
 
 	@Test
 	public void parse() throws Exception {
-		File file = FileUtilities.findFile(new File("."), new String[] { "99.ppt" });
+		File file = FileUtilities.findFileRecursively(new File("."), new String[] { "99.ppt" });
 		byte[] bytes = FileUtilities.getContents(file).toByteArray();
 		IParser parser = ParserProvider.getParser("application/vnd.ms-powerpoint", bytes);
 		OutputStream parsed = parser.parse(new ByteArrayInputStream(bytes), new ByteArrayOutputStream());

@@ -38,7 +38,7 @@ public class FileContentProviderTest extends ATest {
 	public void getContent() {
 		OutputStream outputStream = new ByteArrayOutputStream();
 		IndexableFileSystem indexableFileSystem = mock(IndexableFileSystem.class);
-		File file = FileUtilities.findFile(new File("."), "xml.xml");
+		File file = FileUtilities.findFileRecursively(new File("."), "xml.xml");
 		when(indexableFileSystem.getCurrentFile()).thenReturn(file);
 		this.contentProvider.getContent(indexableFileSystem, outputStream);
 		String content = outputStream.toString();

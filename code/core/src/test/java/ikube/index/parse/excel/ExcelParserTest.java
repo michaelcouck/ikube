@@ -28,7 +28,7 @@ public class ExcelParserTest extends ATest {
 
 	@Test
 	public void parse() throws Exception {
-		File file = FileUtilities.findFile(new File("."), new String[] { "xls.xls" });
+		File file = FileUtilities.findFileRecursively(new File("."), new String[] { "xls.xls" });
 		byte[] bytes = FileUtilities.getContents(file).toByteArray();
 		IParser parser = ParserProvider.getParser("application/vnd.ms-excel", bytes);
 		InputStream inputStream = new ByteArrayInputStream(bytes);

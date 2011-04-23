@@ -133,7 +133,7 @@ public abstract class ATest {
 		when(SERVER.getIp()).thenReturn(IP);
 		when(INDEX.getIndexWriter()).thenReturn(INDEX_WRITER);
 		INDEXABLES.add(INDEXABLE);
-		when(INDEXABLE.getUrl()).thenReturn("http://ikokoon.ikube.cloudbees.net/index.html");
+		when(INDEXABLE.getUrl()).thenReturn("http://ikube.ikube.cloudbees.net/index.html");
 		when(INDEXABLE.isAddress()).thenReturn(Boolean.TRUE);
 		when(INDEXABLE.getContent()).thenReturn("9 avenue road, cape town, south africa");
 

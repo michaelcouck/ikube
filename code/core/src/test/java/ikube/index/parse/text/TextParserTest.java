@@ -30,7 +30,7 @@ public class TextParserTest extends ATest {
 	@Test
 	public void parse() throws Exception {
 		TextParser textParser = new TextParser();
-		File file = FileUtilities.findFile(new File("."), new String[] { "txt.txt" });
+		File file = FileUtilities.findFileRecursively(new File("."), new String[] { "txt.txt" });
 		InputStream inputStream = new FileInputStream(file);
 		OutputStream outputStream = textParser.parse(inputStream, new ByteArrayOutputStream());
 		String string = outputStream.toString();

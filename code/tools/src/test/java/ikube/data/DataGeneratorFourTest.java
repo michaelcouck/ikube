@@ -1,9 +1,8 @@
-package ikube.toolkit.data;
+package ikube.data;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import ikube.ATest;
 import ikube.model.faq.Attachment;
 import ikube.model.faq.Faq;
 import ikube.model.medical.Address;
@@ -34,16 +33,12 @@ import org.junit.Test;
  * @version 01.00
  */
 @Ignore
-public class DataGeneratorFourTest extends ATest {
+public class DataGeneratorFourTest {
 
 	@Cascading
 	private EntityManager entityManager;
 	private DataGeneratorFour dataGeneratorFour;
 	private Class<?>[] classes = new Class[] { Patient.class, Address.class, Hospital.class, Doctor.class };
-
-	public DataGeneratorFourTest() {
-		super(DataGeneratorFourTest.class);
-	}
 
 	@BeforeClass
 	public static void beforeClass() throws Exception {
@@ -72,7 +67,7 @@ public class DataGeneratorFourTest extends ATest {
 		Address address = dataGeneratorFour.createInstance(Address.class);
 		assertNotNull(address);
 		assertNotNull(address.getCountry());
-		assertNotNull(address.getNumber());
+		assertNotNull(address.getNumb());
 		assertNotNull(address.getPostCode());
 		assertNotNull(address.getProvince());
 		assertNotNull(address.getStreet());
@@ -87,7 +82,7 @@ public class DataGeneratorFourTest extends ATest {
 		for (Address address : addresses) {
 			assertNotNull(address);
 			assertNotNull(address.getCountry());
-			assertNotNull(address.getNumber());
+			assertNotNull(address.getNumb());
 			assertNotNull(address.getPostCode());
 			assertNotNull(address.getProvince());
 			assertNotNull(address.getStreet());
@@ -106,7 +101,7 @@ public class DataGeneratorFourTest extends ATest {
 		Address address = patient.getAddress();
 		assertNotNull(address);
 		assertNotNull(address.getCountry());
-		assertNotNull(address.getNumber());
+		assertNotNull(address.getNumb());
 		assertNotNull(address.getPostCode());
 		assertNotNull(address.getPostCode());
 		assertNotNull(address.getProvince());

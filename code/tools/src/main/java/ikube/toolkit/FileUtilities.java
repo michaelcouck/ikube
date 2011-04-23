@@ -113,7 +113,7 @@ public final class FileUtilities {
 	 *            the patterns to look for in the file paths
 	 * @return the first file that was encountered that has the specified pattern(s) in it
 	 */
-	public static File findFile(final File folder, final String... stringPatterns) {
+	public static File findFileRecursively(final File folder, final String... stringPatterns) {
 		List<File> files = FileUtilities.findFilesRecursively(folder, new ArrayList<File>(), stringPatterns);
 		return !files.isEmpty() ? files.get(0) : null;
 	}

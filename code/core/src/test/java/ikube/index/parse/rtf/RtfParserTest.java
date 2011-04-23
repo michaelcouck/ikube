@@ -27,7 +27,7 @@ public class RtfParserTest extends ATest {
 
 	@Test
 	public void parse() throws Exception {
-		File file = FileUtilities.findFile(new File("."), new String[] { "rtf.rtf" });
+		File file = FileUtilities.findFileRecursively(new File("."), new String[] { "rtf.rtf" });
 		byte[] bytes = FileUtilities.getContents(file).toByteArray();
 		IParser parser = ParserProvider.getParser("text/rtf", bytes);
 		OutputStream parsed = parser.parse(new ByteArrayInputStream(bytes), new ByteArrayOutputStream());

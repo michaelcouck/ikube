@@ -1,4 +1,4 @@
-package ikube.toolkit.data;
+package ikube.data;
 
 /**
  * @author Michael Couck

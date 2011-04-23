@@ -1,0 +1,859 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<results>
+	<baseURL>http://www.goudengids.be</baseURL>
+	<pagination>
+		<totalNumberOfResults>25</totalNumberOfResults>
+	</pagination>
+	<listings>
+		<listing>
+			<additionalItems />
+			<businessName>Hospital. à Domicile Perilleux SPRL</businessName>
+			<category>Verpleegkundigen - Particulier</category>
+			<city>Luik</city>
+			<comtxt />
+			<customerId>14902244</customerId>
+			<distance>0.0</distance>
+			<emailAddresses>
+				<email>jpperilleux@gmail.com</email>
+			</emailAddresses>
+			<faxNumbers />
+			<folderId />
+			<folderLink />
+			<geoCoded>true</geoCoded>
+			<hasFreeCall>false</hasFreeCall>
+			<headingId>7010</headingId>
+			<websites />
+			<hoopOpen />
+			<includedDueToZoning>false</includedDueToZoning>
+			<info />
+			<itemCode />
+			<latitude>50.6402038390497</latitude>
+			<listingId>nl_BE_YP_FREE_14902244_0000_2491033_7010_00000</listingId>
+			<longitude>5.5440308141788</longitude>
+			<metaDescription />
+			<metaKeywords />
+			<mobileNumbers />
+			<numCompositeLocations>0</numCompositeLocations>
+			<phoneNumbers>
+				<number>04 224 33 08</number>
+			</phoneNumbers>
+			<prettyDetailsUrl>/redirectservices/business/listing/docid/nl_BE_YP_FREE_14902244_0000_2491033_7010_00000?</prettyDetailsUrl>
+			<reportingId>nl_BE_YP_FREE_14902244_0000_2491033_7010_00000</reportingId>
+			<reportingLocation>Luik|Liège</reportingLocation>
+			<reportingName>Hospital. à Domicile Perilleux SPRL</reportingName>
+			<streetAddress>Rue Joseph Joset 27</streetAddress>
+			<zipCode>4000</zipCode>
+			<rank>29</rank>
+		</listing>
+		<listing>
+			<additionalItems />
+			<businessName>SEAWEED-SAILS HOSPITAL</businessName>
+			<category>Windsurfing &amp; toebehoren</category>
+			<city>Knokke-Heist</city>
+			<comtxt />
+			<customerId>3225208</customerId>
+			<distance>0.0</distance>
+			<emailAddresses />
+			<faxNumbers>
+				<number>050517647</number>
+			</faxNumbers>
+			<folderId />
+			<folderLink />
+			<geoCoded>true</geoCoded>
+			<hasFreeCall>false</hasFreeCall>
+			<headingId>7790</headingId>
+			<websites />
+			<hoopOpen />
+			<includedDueToZoning>false</includedDueToZoning>
+			<info />
+			<itemCode />
+			<latitude>51.3150027562925</latitude>
+			<listingId>nl_BE_YP_FREE_3225208_0000_1239943_7790_00000</listingId>
+			<longitude>3.29680672674106</longitude>
+			<metaDescription />
+			<metaKeywords />
+			<mobileNumbers />
+			<numCompositeLocations>0</numCompositeLocations>
+			<phoneNumbers>
+				<number>050 51 76 47</number>
+			</phoneNumbers>
+			<prettyDetailsUrl>/redirectservices/business/listing/docid/nl_BE_YP_FREE_3225208_0000_1239943_7790_00000?</prettyDetailsUrl>
+			<reportingId>nl_BE_YP_FREE_3225208_0000_1239943_7790_00000</reportingId>
+			<reportingLocation>West-Vlaanderen|Westkapelle</reportingLocation>
+			<reportingName>SEAWEED-SAILS HOSPITAL</reportingName>
+			<streetAddress>Westkapellestraat 439A</streetAddress>
+			<zipCode>8300</zipCode>
+			<rank>33</rank>
+		</listing>
+		<listing>
+			<additionalItems />
+			<businessName>Sankt Nikolaus Hospital</businessName>
+			<category>Ziekenhuizen</category>
+			<city>Eupen</city>
+			<comtxt />
+			<customerId>4188551</customerId>
+			<distance>0.0</distance>
+			<emailAddresses>
+				<email>info@hospital-eupen.be</email>
+			</emailAddresses>
+			<faxNumbers>
+				<number>087599298</number>
+			</faxNumbers>
+			<folderId />
+			<folderLink />
+			<geoCoded>true</geoCoded>
+			<hasFreeCall>false</hasFreeCall>
+			<headingId>7030</headingId>
+			<websites />
+			<hoopOpen />
+			<includedDueToZoning>false</includedDueToZoning>
+			<info />
+			<itemCode />
+			<latitude>50.6299175709819</latitude>
+			<listingId>nl_BE_YP_FREE_4188551_0000_654643_7030_00000</listingId>
+			<longitude>6.03076047982419</longitude>
+			<metaDescription />
+			<metaKeywords />
+			<mobileNumbers />
+			<numCompositeLocations>0</numCompositeLocations>
+			<phoneNumbers>
+				<number>087 59 95 99</number>
+			</phoneNumbers>
+			<prettyDetailsUrl>/redirectservices/business/listing/docid/nl_BE_YP_FREE_4188551_0000_654643_7030_00000?</prettyDetailsUrl>
+			<reportingId>nl_BE_YP_FREE_4188551_0000_654643_7030_00000</reportingId>
+			<reportingLocation>Luik|Eupen</reportingLocation>
+			<reportingName>Sankt Nikolaus Hospital</reportingName>
+			<streetAddress>Hufengasse 4-8</streetAddress>
+			<zipCode>4700</zipCode>
+			<rank>33</rank>
+		</listing>
+		<listing>
+			<additionalItems />
+			<businessName>Belgian Hospital Services NV</businessName>
+			<category>Ziekenhuizen - Uitrusting &amp; Toebeh.</category>
+			<city>Schoten</city>
+			<comtxt />
+			<customerId>3951170</customerId>
+			<distance>0.0</distance>
+			<emailAddresses />
+			<faxNumbers>
+				<number>034495789</number>
+			</faxNumbers>
+			<folderId />
+			<folderLink />
+			<geoCoded>true</geoCoded>
+			<hasFreeCall>false</hasFreeCall>
+			<headingId>3630</headingId>
+			<websites />
+			<hoopOpen />
+			<includedDueToZoning>false</includedDueToZoning>
+			<info />
+			<itemCode />
+			<latitude>51.266335635045</latitude>
+			<listingId>nl_BE_YP_FREE_3951170_0000_627548_3630_00000</listingId>
+			<longitude>4.52211848363684</longitude>
+			<metaDescription />
+			<metaKeywords />
+			<mobileNumbers />
+			<numCompositeLocations>0</numCompositeLocations>
+			<phoneNumbers>
+				<number>03 449 86 17</number>
+			</phoneNumbers>
+			<prettyDetailsUrl>/redirectservices/business/listing/docid/nl_BE_YP_FREE_3951170_0000_627548_3630_00000?</prettyDetailsUrl>
+			<reportingId>nl_BE_YP_FREE_3951170_0000_627548_3630_00000</reportingId>
+			<reportingLocation>Antwerpen|Schoten</reportingLocation>
+			<reportingName>Belgian Hospital Services NV</reportingName>
+			<streetAddress>Nerviërslei 6</streetAddress>
+			<zipCode>2900</zipCode>
+			<rank>32</rank>
+		</listing>
+		<listing>
+			<additionalItems />
+			<businessName>Rüsch Hospital H.M.S. Comesa SPRL</businessName>
+			<category>Ziekenhuizen - Uitrusting &amp; Toebeh.</category>
+			<city>Brussel Hoofdstad</city>
+			<comtxt />
+			<customerId>255890</customerId>
+			<distance>0.0</distance>
+			<emailAddresses />
+			<faxNumbers>
+				<number>023322740</number>
+			</faxNumbers>
+			<folderId />
+			<folderLink />
+			<geoCoded>true</geoCoded>
+			<hasFreeCall>false</hasFreeCall>
+			<headingId>3630</headingId>
+			<websites />
+			<hoopOpen />
+			<includedDueToZoning>false</includedDueToZoning>
+			<info />
+			<itemCode />
+			<latitude>50.8235363904839</latitude>
+			<listingId>nl_BE_YP_FREE_255890_0000_80026_3630_00000</listingId>
+			<longitude>4.31346054964841</longitude>
+			<metaDescription />
+			<metaKeywords />
+			<mobileNumbers />
+			<numCompositeLocations>0</numCompositeLocations>
+			<phoneNumbers>
+				<number>02 333 24 60</number>
+			</phoneNumbers>
+			<prettyDetailsUrl>/redirectservices/business/listing/docid/nl_BE_YP_FREE_255890_0000_80026_3630_00000?</prettyDetailsUrl>
+			<reportingId>nl_BE_YP_FREE_255890_0000_80026_3630_00000</reportingId>
+			<reportingLocation>Brussel Hoofdstad|Anderlecht</reportingLocation>
+			<reportingName>Rüsch Hospital H.M.S. Comesa SPRL</reportingName>
+			<streetAddress>Paapsemlaan 11</streetAddress>
+			<zipCode>1070</zipCode>
+			<rank>30</rank>
+		</listing>
+		<listing>
+			<additionalItems />
+			<businessName>Adam Hospital</businessName>
+			<category>Begrafenisondernemingen</category>
+			<city>Beaumont</city>
+			<comtxt />
+			<customerId>8582408</customerId>
+			<distance>0.0</distance>
+			<emailAddresses />
+			<faxNumbers>
+				<number>071533560</number>
+			</faxNumbers>
+			<folderId />
+			<folderLink />
+			<geoCoded>true</geoCoded>
+			<hasFreeCall>false</hasFreeCall>
+			<headingId>6915</headingId>
+			<websites />
+			<hoopOpen />
+			<includedDueToZoning>false</includedDueToZoning>
+			<info />
+			<itemCode />
+			<latitude>50.270442962646484</latitude>
+			<listingId>nl_BE_YP_FREE_8582408_0000_1503181_6915_00000</listingId>
+			<longitude>4.283724308013916</longitude>
+			<metaDescription />
+			<metaKeywords />
+			<mobileNumbers />
+			<numCompositeLocations>0</numCompositeLocations>
+			<phoneNumbers>
+				<number>071 53 50 55</number>
+			</phoneNumbers>
+			<prettyDetailsUrl>/redirectservices/business/listing/docid/nl_BE_YP_FREE_8582408_0000_1503181_6915_00000?</prettyDetailsUrl>
+			<reportingId>nl_BE_YP_FREE_8582408_0000_1503181_6915_00000</reportingId>
+			<reportingLocation>Henegouwen|Strée</reportingLocation>
+			<reportingName>Adam Hospital</reportingName>
+			<streetAddress>Chaussée de Charleroi 107</streetAddress>
+			<zipCode>6511</zipCode>
+			<rank>41</rank>
+		</listing>
+		<listing>
+			<additionalItems />
+			<businessName>Hospital Logistics NV</businessName>
+			<category>Logistieke dienstverlening</category>
+			<city>Aarschot</city>
+			<comtxt />
+			<customerId>1424688</customerId>
+			<distance>0.0</distance>
+			<emailAddresses>
+				<email>info@hospitallogistics.be</email>
+			</emailAddresses>
+			<faxNumbers>
+				<number>016568786</number>
+			</faxNumbers>
+			<folderId />
+			<folderLink />
+			<geoCoded>true</geoCoded>
+			<hasFreeCall>false</hasFreeCall>
+			<headingId>485</headingId>
+			<websites />
+			<hoopOpen />
+			<includedDueToZoning>false</includedDueToZoning>
+			<info />
+			<itemCode />
+			<latitude>50.9776004568219</latitude>
+			<listingId>nl_BE_YP_FREE_1424688_0000_293634_485_00000</listingId>
+			<longitude>4.80902143615631</longitude>
+			<metaDescription />
+			<metaKeywords />
+			<mobileNumbers />
+			<numCompositeLocations>0</numCompositeLocations>
+			<phoneNumbers>
+				<number>016 56 47 44</number>
+			</phoneNumbers>
+			<prettyDetailsUrl>/redirectservices/business/listing/docid/nl_BE_YP_FREE_1424688_0000_293634_485_00000?</prettyDetailsUrl>
+			<reportingId>nl_BE_YP_FREE_1424688_0000_293634_485_00000</reportingId>
+			<reportingLocation>Vlaams-Brabant|Aarschot</reportingLocation>
+			<reportingName>Hospital Logistics NV</reportingName>
+			<streetAddress>Nieuwland 5B</streetAddress>
+			<zipCode>3200</zipCode>
+			<rank>35</rank>
+		</listing>
+		<listing>
+			<additionalItems />
+			<businessName>Hospital &amp; Vet Research SPRL</businessName>
+			<category>Marketing - Adviesbureaus</category>
+			<city>Brussel Hoofdstad</city>
+			<comtxt />
+			<customerId>2513749</customerId>
+			<distance>0.0</distance>
+			<emailAddresses />
+			<faxNumbers>
+				<number>025214872</number>
+			</faxNumbers>
+			<folderId />
+			<folderLink />
+			<geoCoded>true</geoCoded>
+			<hasFreeCall>false</hasFreeCall>
+			<headingId>1105</headingId>
+			<websites />
+			<hoopOpen />
+			<includedDueToZoning>false</includedDueToZoning>
+			<info />
+			<itemCode />
+			<latitude>50.8267229956425</latitude>
+			<listingId>nl_BE_YP_FREE_2513749_0000_460572_1105_00000</listingId>
+			<longitude>4.29028448334857</longitude>
+			<metaDescription />
+			<metaKeywords />
+			<mobileNumbers />
+			<numCompositeLocations>0</numCompositeLocations>
+			<phoneNumbers>
+				<number>02 521 48 72</number>
+			</phoneNumbers>
+			<prettyDetailsUrl>/redirectservices/business/listing/docid/nl_BE_YP_FREE_2513749_0000_460572_1105_00000?</prettyDetailsUrl>
+			<reportingId>nl_BE_YP_FREE_2513749_0000_460572_1105_00000</reportingId>
+			<reportingLocation>Brussel Hoofdstad|Anderlecht</reportingLocation>
+			<reportingName>Hospital &amp; Vet Research SPRL</reportingName>
+			<streetAddress>Frans Halssquare 1</streetAddress>
+			<zipCode>1070</zipCode>
+			<rank>30</rank>
+		</listing>
+		<listing>
+			<additionalItems />
+			<businessName>Dexa Hospital NV</businessName>
+			<category>Medische apparaten, instrumenten &amp; toestellen</category>
+			<city>Anzegem</city>
+			<comtxt />
+			<customerId>9124871</customerId>
+			<distance>0.0</distance>
+			<emailAddresses>
+				<email>hospital@bruco.be</email>
+			</emailAddresses>
+			<faxNumbers />
+			<folderId />
+			<folderLink />
+			<geoCoded>true</geoCoded>
+			<hasFreeCall>false</hasFreeCall>
+			<headingId>3595</headingId>
+			<websites />
+			<hoopOpen />
+			<includedDueToZoning>false</includedDueToZoning>
+			<info />
+			<itemCode />
+			<latitude>50.8416748046875</latitude>
+			<listingId>nl_BE_YP_FREE_9124871_0000_1921177_3595_00000</listingId>
+			<longitude>3.3904662132263184</longitude>
+			<metaDescription />
+			<metaKeywords />
+			<mobileNumbers />
+			<numCompositeLocations>0</numCompositeLocations>
+			<phoneNumbers>
+				<number>058 77 67 65</number>
+			</phoneNumbers>
+			<prettyDetailsUrl>/redirectservices/business/listing/docid/nl_BE_YP_FREE_9124871_0000_1921177_3595_00000?</prettyDetailsUrl>
+			<reportingId>nl_BE_YP_FREE_9124871_0000_1921177_3595_00000</reportingId>
+			<reportingLocation>West-Vlaanderen|Vichte</reportingLocation>
+			<reportingName>Dexa Hospital NV</reportingName>
+			<streetAddress>Dragonderdreef 5</streetAddress>
+			<zipCode>8570</zipCode>
+			<rank>39</rank>
+		</listing>
+		<listing>
+			<additionalItems />
+			<businessName>Arseus medical</businessName>
+			<category>Medische apparaten, instrumenten &amp; toestellen</category>
+			<city>Antwerpen</city>
+			<comtxt />
+			<customerId>8599351</customerId>
+			<distance>0.0</distance>
+			<emailAddresses>
+				<email>info@arseus-medical.be</email>
+			</emailAddresses>
+			<faxNumbers>
+				<number>038252370</number>
+			</faxNumbers>
+			<folderId />
+			<folderLink />
+			<geoCoded>true</geoCoded>
+			<hasFreeCall>false</hasFreeCall>
+			<headingId>3595</headingId>
+			<websites />
+			<hoopOpen />
+			<includedDueToZoning>false</includedDueToZoning>
+			<info />
+			<itemCode />
+			<latitude>51.1643259651869</latitude>
+			<listingId>nl_BE_YP_FREE_8599351_0000_2116234_3595_00000</listingId>
+			<longitude>4.38477004158646</longitude>
+			<metaDescription />
+			<metaKeywords />
+			<mobileNumbers />
+			<numCompositeLocations>0</numCompositeLocations>
+			<phoneNumbers>
+				<number>02 267 21 23</number>
+			</phoneNumbers>
+			<prettyDetailsUrl>/redirectservices/business/listing/docid/nl_BE_YP_FREE_8599351_0000_2116234_3595_00000?</prettyDetailsUrl>
+			<reportingId>nl_BE_YP_FREE_8599351_0000_2116234_3595_00000</reportingId>
+			<reportingLocation>Antwerpen|Wilrijk</reportingLocation>
+			<reportingName>Arseus medical</reportingName>
+			<streetAddress>Boomsesteenweg 524</streetAddress>
+			<zipCode>2610</zipCode>
+			<rank>7</rank>
+		</listing>
+		<listing>
+			<additionalItems />
+			<businessName>Europa Ziekenhuizen-Site St-Michel</businessName>
+			<category>Ziekenhuizen</category>
+			<city>Brussel Hoofdstad</city>
+			<comtxt>De Europa Ziekenhuizen zijn een volwaardige entiteit van 716 bedden door de fusie van de ziekenhuizen Ste-Elisabeth te Ukkel, 2
+				Alice te Ukkel en St-Michel te Etterbeek.</comtxt>
+			<customerId>220078</customerId>
+			<distance>0.0</distance>
+			<emailAddresses />
+			<faxNumbers>
+				<number>023734686</number>
+			</faxNumbers>
+			<folderId>2275828-7030</folderId>
+			<folderLink>http://www.goudengids.be/api/business/folder/2275828-7030/where/belgie/page/1?format=xml&amp;dialect=BELGIUM&amp;pagesize=20&amp;sort=relevance&amp;mobile=true
+			</folderLink>
+			<geoCoded>true</geoCoded>
+			<hasFreeCall>true</hasFreeCall>
+			<headingId>7030</headingId>
+			<websites>
+				<url>http://www.europaziekenhuizen.be/?utm_source=truvo&amp;utm_medium=internet&amp;utm_campaign=goudengidspagesdor#http://www.europaziekenhuizen.be
+				</url>
+			</websites>
+			<hoopOpen />
+			<includedDueToZoning>false</includedDueToZoning>
+			<info />
+			<itemCode>WPOLMS</itemCode>
+			<latitude>50.8434895013419</latitude>
+			<listingId>nl_BE_YP_PAID_220078_220078-2275828-7030_2356370_7030_2011001318772017</listingId>
+			<longitude>4.39990907341906</longitude>
+			<metaDescription />
+			<metaKeywords />
+			<mobileNumbers />
+			<numCompositeLocations>3</numCompositeLocations>
+			<phoneNumbers>
+				<number>02 614 30 00</number>
+			</phoneNumbers>
+			<prettyDetailsUrl>/ms/ms/europa_ziekenhuizen-site_st-michel+ziekenhuizen+brussel_hoofdstad+ms-115960+p-2.html</prettyDetailsUrl>
+			<reportingId>nl_BE_YP_PAID_220078_220078-2275828-7030_2356370_7030_2011001318772017</reportingId>
+			<reportingLocation>Brussel Hoofdstad|Etterbeek</reportingLocation>
+			<reportingName>Europa Ziekenhuizen-Site St-Michel</reportingName>
+			<streetAddress>Linthoutstraat 150</streetAddress>
+			<zipCode>1040</zipCode>
+			<rank>2</rank>
+		</listing>
+		<listing>
+			<additionalItems />
+			<businessName>AZ Sint-Lucas</businessName>
+			<category>Ziekenhuizen</category>
+			<city>Gent</city>
+			<comtxt>Betrouwbare zorg</comtxt>
+			<customerId>600377</customerId>
+			<distance>0.0</distance>
+			<emailAddresses>
+				<email>info@azstlucas.be</email>
+			</emailAddresses>
+			<faxNumbers>
+				<number>092246110</number>
+			</faxNumbers>
+			<folderId />
+			<folderLink />
+			<geoCoded>true</geoCoded>
+			<hasFreeCall>false</hasFreeCall>
+			<headingId>7030</headingId>
+			<websites>
+				<url>http://www.azstlucas.be/?utm_source=truvo&amp;utm_medium=internet&amp;utm_campaign=goudengidspagesdor#http://www.azstlucas.be</url>
+			</websites>
+			<hoopOpen />
+			<includedDueToZoning>false</includedDueToZoning>
+			<info />
+			<itemCode>WPRE</itemCode>
+			<latitude>51.0618643260358</latitude>
+			<listingId>nl_BE_YP_PAID_600377_0000_164446_7030_2011003184145010</listingId>
+			<longitude>3.72170710904134</longitude>
+			<metaDescription />
+			<metaKeywords />
+			<mobileNumbers />
+			<numCompositeLocations>0</numCompositeLocations>
+			<phoneNumbers>
+				<number>09 224 61 11</number>
+			</phoneNumbers>
+			<prettyDetailsUrl>/ms/ms/az_sint-lucas+ziekenhuizen+gent+ms-111852+p-2.html</prettyDetailsUrl>
+			<reportingId>nl_BE_YP_PAID_600377_0000_164446_7030_2011003184145010</reportingId>
+			<reportingLocation>Oost-Vlaanderen|Gent</reportingLocation>
+			<reportingName>AZ Sint-Lucas</reportingName>
+			<streetAddress>Groenebriel 1</streetAddress>
+			<zipCode>9000</zipCode>
+			<rank>6</rank>
+		</listing>
+		<listing>
+			<additionalItems />
+			<businessName>Cleanroom Systems Belgium NV</businessName>
+			<category>Stofvrije kamers - Installaties &amp; Benodigdh.</category>
+			<city>Mortsel</city>
+			<comtxt>De specialist die kwaliteit op tijd garandeert</comtxt>
+			<customerId>9845348</customerId>
+			<distance>0.0</distance>
+			<emailAddresses>
+				<email>info@cleanroom-systems.be</email>
+			</emailAddresses>
+			<faxNumbers>
+				<number>034440779</number>
+			</faxNumbers>
+			<folderId />
+			<folderLink />
+			<geoCoded>true</geoCoded>
+			<hasFreeCall>false</hasFreeCall>
+			<headingId>4595</headingId>
+			<websites>
+				<url>http://www.cleanroom-systems.be/?utm_source=truvo&amp;utm_medium=internet&amp;utm_campaign=goudengidspagesdor#http://www.cleanroom-systems.be
+				</url>
+			</websites>
+			<hoopOpen />
+			<includedDueToZoning>false</includedDueToZoning>
+			<info />
+			<itemCode>WEXC</itemCode>
+			<latitude>51.1719761079236</latitude>
+			<listingId>nl_BE_YP_PAID_9845348_0000_1474255_4595_2010011002716005</listingId>
+			<longitude>4.44922968319554</longitude>
+			<metaDescription />
+			<metaKeywords />
+			<mobileNumbers />
+			<numCompositeLocations>0</numCompositeLocations>
+			<phoneNumbers>
+				<number>03 444 07 70</number>
+			</phoneNumbers>
+			<prettyDetailsUrl>/ms/ms/cleanroom_systems_belgium_nv+stofvrije_kamers_-_installaties_benodigdh+mortsel+ms-129287+p-3.html
+			</prettyDetailsUrl>
+			<reportingId>nl_BE_YP_PAID_9845348_0000_1474255_4595_2010011002716005</reportingId>
+			<reportingLocation>Antwerpen|Mortsel</reportingLocation>
+			<reportingName>Cleanroom Systems Belgium NV</reportingName>
+			<streetAddress>Eggestraat 30</streetAddress>
+			<zipCode>2640</zipCode>
+			<rank>5</rank>
+		</listing>
+		<listing>
+			<additionalItems />
+			<businessName>M POISSON SA</businessName>
+			<category>Kleedkamers - Inrichting</category>
+			<city>Tubize</city>
+			<comtxt>Vestiaires - Vakkenkasten - lockers Opbergkasten voor proper en bevuild linnen Specifieke kasten</comtxt>
+			<customerId>239062</customerId>
+			<distance>0.0</distance>
+			<emailAddresses>
+				<email>info@poisson.be</email>
+			</emailAddresses>
+			<faxNumbers>
+				<number>025394316</number>
+			</faxNumbers>
+			<folderId />
+			<folderLink />
+			<geoCoded>true</geoCoded>
+			<hasFreeCall>false</hasFreeCall>
+			<headingId>4385</headingId>
+			<websites>
+				<url>http://www.poisson.be/?utm_source=truvo&amp;utm_medium=internet&amp;utm_campaign=goudengidspagesdor#http://www.poisson.be</url>
+			</websites>
+			<hoopOpen />
+			<includedDueToZoning>false</includedDueToZoning>
+			<info />
+			<itemCode>WSUP</itemCode>
+			<latitude>50.706729888916016</latitude>
+			<listingId>nl_BE_YP_PAID_239062_0000_62591_4385_2011029101187014</listingId>
+			<longitude>4.1754226684570313</longitude>
+			<metaDescription />
+			<metaKeywords />
+			<mobileNumbers />
+			<numCompositeLocations>0</numCompositeLocations>
+			<phoneNumbers>
+				<number>02 537 71 77</number>
+			</phoneNumbers>
+			<prettyDetailsUrl>/ms/ms/m_poisson_sa+kleedkamers_-_inrichting+tubize+ms-114240+p-5.html</prettyDetailsUrl>
+			<reportingId>nl_BE_YP_PAID_239062_0000_62591_4385_2011029101187014</reportingId>
+			<reportingLocation>Waals-Brabant|Saintes</reportingLocation>
+			<reportingName>M POISSON SA</reportingName>
+			<streetAddress>Avenue Landas 21</streetAddress>
+			<zipCode>1480</zipCode>
+			<rank>1</rank>
+		</listing>
+		<listing>
+			<additionalItems />
+			<businessName>Delgouffe BVBA</businessName>
+			<category>Tegels</category>
+			<city>Asse</city>
+			<comtxt>Bezoek onze showroom </comtxt>
+			<customerId>2471728</customerId>
+			<distance>0.0</distance>
+			<emailAddresses>
+				<email>info@delgouffe.be</email>
+			</emailAddresses>
+			<faxNumbers>
+				<number>024523371</number>
+			</faxNumbers>
+			<folderId />
+			<folderLink />
+			<geoCoded>true</geoCoded>
+			<hasFreeCall>false</hasFreeCall>
+			<headingId>8125</headingId>
+			<websites>
+				<url>http://www.delgouffe.be/?utm_source=truvo&amp;utm_medium=internet&amp;utm_campaign=goudengidspagesdor#http://www.delgouffe.be</url>
+			</websites>
+			<hoopOpen />
+			<includedDueToZoning>false</includedDueToZoning>
+			<info />
+			<itemCode>WSPE</itemCode>
+			<latitude>50.9061780326915</latitude>
+			<listingId>nl_BE_YP_PAID_2471728_0000_455799_8125_2011000106968014</listingId>
+			<longitude>4.20973447265417</longitude>
+			<metaDescription />
+			<metaKeywords />
+			<mobileNumbers />
+			<numCompositeLocations>0</numCompositeLocations>
+			<phoneNumbers>
+				<number>02 452 63 18</number>
+			</phoneNumbers>
+			<prettyDetailsUrl>/ms/ms/delgouffe_bvba+asse+ms-54169+p-3.html</prettyDetailsUrl>
+			<reportingId>nl_BE_YP_PAID_2471728_0000_455799_8125_2011000106968014</reportingId>
+			<reportingLocation>Vlaams-Brabant|Asse</reportingLocation>
+			<reportingName>Delgouffe BVBA</reportingName>
+			<streetAddress>Lindenpark 8</streetAddress>
+			<zipCode>1730</zipCode>
+			<rank>0</rank>
+		</listing>
+		<listing>
+			<additionalItems />
+			<businessName>Medisch Centrum St-Jozef VZW</businessName>
+			<category>Ziekenhuizen</category>
+			<city>Bilzen</city>
+			<comtxt>Algemeen psychiatrisch ziekenhuis.</comtxt>
+			<customerId>1037412</customerId>
+			<distance>0.0</distance>
+			<emailAddresses>
+				<email>st-jozef@mc-st-jozef.be</email>
+			</emailAddresses>
+			<faxNumbers>
+				<number>089509010</number>
+			</faxNumbers>
+			<folderId />
+			<folderLink />
+			<geoCoded>true</geoCoded>
+			<hasFreeCall>false</hasFreeCall>
+			<headingId>7030</headingId>
+			<websites>
+				<url>http://www.mc-st-jozef.be/?utm_source=truvo&amp;utm_medium=internet&amp;utm_campaign=goudengidspagesdor#http://www.mc-st-jozef.be
+				</url>
+			</websites>
+			<hoopOpen />
+			<includedDueToZoning>false</includedDueToZoning>
+			<info />
+			<itemCode>WSPE</itemCode>
+			<latitude>50.8895320772674</latitude>
+			<listingId>nl_BE_YP_PAID_1037412_0000_236296_7030_2010005008981004</listingId>
+			<longitude>5.52421330236711</longitude>
+			<metaDescription />
+			<metaKeywords />
+			<mobileNumbers />
+			<numCompositeLocations>0</numCompositeLocations>
+			<phoneNumbers>
+				<number>089 50 91 11</number>
+			</phoneNumbers>
+			<prettyDetailsUrl>/ms/ms/medisch_centrum_st-jozef_vzw+ziekenhuizen+bilzen+ms-126202+p-2.html</prettyDetailsUrl>
+			<reportingId>nl_BE_YP_PAID_1037412_0000_236296_7030_2010005008981004</reportingId>
+			<reportingLocation>Limburg|Munsterbilzen</reportingLocation>
+			<reportingName>Medisch Centrum St-Jozef VZW</reportingName>
+			<streetAddress>Abdijstraat 2</streetAddress>
+			<zipCode>3740</zipCode>
+			<rank>2</rank>
+		</listing>
+		<listing>
+			<additionalItems />
+			<businessName>Imeldaziekenhuis</businessName>
+			<category>Ziekenhuizen</category>
+			<city>Bonheiden</city>
+			<comtxt>Imelda omringt u met zorg</comtxt>
+			<customerId>1469398</customerId>
+			<distance>0.0</distance>
+			<emailAddresses>
+				<email>imeldaziekenhuis@imelda.be</email>
+				<email>bejaardenzorg@imelda.be</email>
+			</emailAddresses>
+			<faxNumbers>
+				<number>015505010</number>
+				<number>015500359</number>
+			</faxNumbers>
+			<folderId>1943534-7030</folderId>
+			<folderLink>http://www.goudengids.be/api/business/folder/1943534-7030/where/belgie/page/1?format=xml&amp;dialect=BELGIUM&amp;pagesize=20&amp;sort=relevance&amp;mobile=true
+			</folderLink>
+			<geoCoded>true</geoCoded>
+			<hasFreeCall>false</hasFreeCall>
+			<headingId>7030</headingId>
+			<websites>
+				<url>http://www.imelda.be/?utm_source=truvo&amp;utm_medium=internet&amp;utm_campaign=goudengidspagesdor#http://www.imelda.be</url>
+			</websites>
+			<hoopOpen />
+			<includedDueToZoning>false</includedDueToZoning>
+			<info />
+			<itemCode>WSPEMS</itemCode>
+			<latitude>51.0192858486051</latitude>
+			<listingId>nl_BE_YP_PAID_1469398_1469398-1943534-7030_1139369_7030_2010009544887007</listingId>
+			<longitude>4.55741921953636</longitude>
+			<metaDescription />
+			<metaKeywords />
+			<mobileNumbers />
+			<numCompositeLocations>2</numCompositeLocations>
+			<phoneNumbers>
+				<number>015 50 50 11</number>
+			</phoneNumbers>
+			<prettyDetailsUrl>/ms/ms/imeldaziekenhuis+ziekenhuizen+bonheiden+ms-128597+p-2.html</prettyDetailsUrl>
+			<reportingId>nl_BE_YP_PAID_1469398_1469398-1943534-7030_1139369_7030_2010009544887007</reportingId>
+			<reportingLocation>Antwerpen|Bonheiden</reportingLocation>
+			<reportingName>Imeldaziekenhuis</reportingName>
+			<streetAddress>Imeldalaan 9</streetAddress>
+			<zipCode>2820</zipCode>
+			<rank>1</rank>
+		</listing>
+		<listing>
+			<additionalItems />
+			<businessName>Espace Tête et Cou Messidor</businessName>
+			<category>Ziekenhuizen</category>
+			<city>Brussel Hoofdstad</city>
+			<comtxt />
+			<customerId>14189440</customerId>
+			<distance>0.0</distance>
+			<emailAddresses />
+			<faxNumbers />
+			<folderId />
+			<folderLink />
+			<geoCoded>true</geoCoded>
+			<hasFreeCall>false</hasFreeCall>
+			<headingId>7030</headingId>
+			<websites>
+				<url>http://www.clinique-teteetcou-messidor.be/?utm_source=truvo&amp;utm_medium=internet&amp;utm_campaign=goudengidspagesdor#http://www.clinique-teteetcou-messidor.be
+				</url>
+			</websites>
+			<hoopOpen />
+			<includedDueToZoning>false</includedDueToZoning>
+			<info />
+			<itemCode>WSPE</itemCode>
+			<latitude>50.8115352654115</latitude>
+			<listingId>nl_BE_YP_PAID_14189440_0000_2315453_7030_2010015829259002</listingId>
+			<longitude>4.35274757847168</longitude>
+			<metaDescription />
+			<metaKeywords />
+			<mobileNumbers />
+			<numCompositeLocations>0</numCompositeLocations>
+			<phoneNumbers>
+				<number>02 343 98 73</number>
+			</phoneNumbers>
+			<prettyDetailsUrl>/ms/ms/espace_tete_et_cou_messidor+ziekenhuizen+brussel_hoofdstad+ms-126452+p-2.html</prettyDetailsUrl>
+			<reportingId>nl_BE_YP_PAID_14189440_0000_2315453_7030_2010015829259002</reportingId>
+			<reportingLocation>Brussel Hoofdstad|Ukkel</reportingLocation>
+			<reportingName>Espace Tête et Cou Messidor</reportingName>
+			<streetAddress>Messidorlaan 217</streetAddress>
+			<zipCode>1180</zipCode>
+			<rank>2</rank>
+		</listing>
+		<listing>
+			<additionalItems />
+			<businessName>Varodem SA</businessName>
+			<category>Ziekenhuizen - Uitrusting &amp; Toebeh.</category>
+			<city>Saint-Léger</city>
+			<comtxt />
+			<customerId>2037297</customerId>
+			<distance>0.0</distance>
+			<emailAddresses>
+				<email>info@varodem.be</email>
+			</emailAddresses>
+			<faxNumbers>
+				<number>063239653</number>
+			</faxNumbers>
+			<folderId />
+			<folderLink />
+			<geoCoded>true</geoCoded>
+			<hasFreeCall>false</hasFreeCall>
+			<headingId>3630</headingId>
+			<websites>
+				<url>http://www.varodem.be/?utm_source=truvo&amp;utm_medium=internet&amp;utm_campaign=goudengidspagesdor#http://www.varodem.be</url>
+			</websites>
+			<hoopOpen />
+			<includedDueToZoning>false</includedDueToZoning>
+			<info />
+			<itemCode>WSPE</itemCode>
+			<latitude>49.6162572861862</latitude>
+			<listingId>nl_BE_YP_PAID_2037297_0000_396393_3630_2010004485459004</listingId>
+			<longitude>5.66447972208187</longitude>
+			<metaDescription />
+			<metaKeywords />
+			<mobileNumbers />
+			<numCompositeLocations>0</numCompositeLocations>
+			<phoneNumbers>
+				<number>063 23 96 24</number>
+			</phoneNumbers>
+			<prettyDetailsUrl>/ms/ms/varodem_sa+ziekenhuizen_-_uitrusting_toebeh+saint-leger+ms-131402+p-3.html</prettyDetailsUrl>
+			<reportingId>nl_BE_YP_PAID_2037297_0000_396393_3630_2010004485459004</reportingId>
+			<reportingLocation>Luxemburg|Saint-Léger</reportingLocation>
+			<reportingName>Varodem SA</reportingName>
+			<streetAddress>Rue d'Arlon 45</streetAddress>
+			<zipCode>6747</zipCode>
+			<rank>2</rank>
+		</listing>
+		<listing>
+			<additionalItems />
+			<businessName>St-Michel NV</businessName>
+			<category>Koffiebranderijen</category>
+			<city>Antwerpen</city>
+			<comtxt>Professionele koffievoorziening. Traditioneel gebrande koffie, bonen of gemalen.</comtxt>
+			<customerId>22470</customerId>
+			<distance>0.0</distance>
+			<emailAddresses>
+				<email>stmichel@skynet.be</email>
+			</emailAddresses>
+			<faxNumbers>
+				<number>032271080</number>
+			</faxNumbers>
+			<folderId />
+			<folderLink />
+			<geoCoded>true</geoCoded>
+			<hasFreeCall>false</hasFreeCall>
+			<headingId>4845</headingId>
+			<websites>
+				<url>http://www.stmichel.be/?utm_source=truvo&amp;utm_medium=internet&amp;utm_campaign=goudengidspagesdor#http://www.stmichel.be</url>
+			</websites>
+			<hoopOpen />
+			<includedDueToZoning>false</includedDueToZoning>
+			<info />
+			<itemCode>WSPE</itemCode>
+			<latitude>51.2366773177789</latitude>
+			<listingId>nl_BE_YP_PAID_22470_0000_6498_4845_2010001320777004</listingId>
+			<longitude>4.41764606388688</longitude>
+			<metaDescription />
+			<metaKeywords />
+			<mobileNumbers />
+			<numCompositeLocations>0</numCompositeLocations>
+			<phoneNumbers>
+				<number>03 234 34 70</number>
+			</phoneNumbers>
+			<prettyDetailsUrl>/ms/ms/st-michel_nv+koffiebranderijen+antwerpen+ms-122920+p-2.html</prettyDetailsUrl>
+			<reportingId>nl_BE_YP_PAID_22470_0000_6498_4845_2010001320777004</reportingId>
+			<reportingLocation>Antwerpen|Antwerpen</reportingLocation>
+			<reportingName>St-Michel NV</reportingName>
+			<streetAddress>Asiadok 28A</streetAddress>
+			<zipCode>2030</zipCode>
+			<rank>2</rank>
+		</listing>
+	</listings>
+</results>

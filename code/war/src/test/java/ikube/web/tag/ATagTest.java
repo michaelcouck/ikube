@@ -38,7 +38,7 @@ public abstract class ATagTest {
 	}
 
 	/** TODO When the server is running then this can change to the static Ikube instance. */
-	protected static String searchUrl = "http://ikokoon.ikube.cloudbees.net/SearchServlet?indexName=indexOne&searchStrings=lucene";
+	protected static String searchUrl = "http://ikube.ikube.cloudbees.net/SearchServlet?indexName=ikube&searchStrings=lucene";
 
 	protected Logger logger = Logger.getLogger(this.getClass());
 

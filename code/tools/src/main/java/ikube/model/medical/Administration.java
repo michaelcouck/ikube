@@ -20,18 +20,18 @@ import javax.persistence.ManyToOne;
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Administration extends Persistable {
 
-	private Date date;
+	private Date dt;
 	private Integer quantity;
 
 	@ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER, targetEntity = Medication.class)
 	private Medication medication;
 
-	public Date getDate() {
-		return date;
+	public Date getDt() {
+		return dt;
 	}
 
-	public void setDate(Date date) {
-		this.date = date;
+	public void setDt(Date date) {
+		this.dt = date;
 	}
 
 	public Integer getQuantity() {

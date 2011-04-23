@@ -1,4 +1,4 @@
-package ikube.toolkit.data;
+package ikube.data;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;

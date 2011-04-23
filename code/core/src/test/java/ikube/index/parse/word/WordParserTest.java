@@ -27,7 +27,7 @@ public class WordParserTest extends ATest {
 
 	@Test
 	public void parse() throws Exception {
-		File file = FileUtilities.findFile(new File("."), new String[] { "doc.doc" });
+		File file = FileUtilities.findFileRecursively(new File("."), new String[] { "doc.doc" });
 		byte[] bytes = FileUtilities.getContents(file).toByteArray();
 		IParser parser = ParserProvider.getParser("application/msword", bytes);
 		OutputStream parsed = parser.parse(new ByteArrayInputStream(bytes), new ByteArrayOutputStream());

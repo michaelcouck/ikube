@@ -100,7 +100,7 @@ public class FileUtilitiesTest {
 
 	@Test
 	public void findFile() {
-		File file = FileUtilities.findFile(new File("."), new String[] { "jndi.properties" });
+		File file = FileUtilities.findFileRecursively(new File("."), new String[] { "doctors.xml" });
 		assertNotNull(file);
 	}
 

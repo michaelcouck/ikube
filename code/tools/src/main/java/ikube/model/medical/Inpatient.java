@@ -17,14 +17,14 @@ import javax.persistence.InheritanceType;
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Inpatient extends Persistable {
 
-	private Date date;
+	private Date dt;
 
-	public Date getDate() {
-		return date;
+	public Date getDt() {
+		return dt;
 	}
 
-	public void setDate(Date date) {
-		this.date = date;
+	public void setDt(Date date) {
+		this.dt = date;
 	}
 
 }

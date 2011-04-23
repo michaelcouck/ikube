@@ -5,9 +5,9 @@
 		http://java.sun.com/xml/ns/persistence
     	http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd" version="1.0">
 
-	<persistence-unit name="IkubePersistenceUnitOracle" transaction-type="RESOURCE_LOCAL">
+	<persistence-unit name="IkubePersistenceUnitH2" transaction-type="RESOURCE_LOCAL">
 		<provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
-		<non-jta-data-source>nonXaDataSourceH2</non-jta-data-source>
+		<!--<non-jta-data-source>nonXaDataSourceOracle</non-jta-data-source>-->
 		<class>ikube.model.faq.Faq</class>
 		<class>ikube.model.faq.Attachment</class>
 		<class>ikube.model.medical.Persistable</class>
@@ -24,14 +24,26 @@
 		<class>ikube.model.medical.Address</class>
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		<properties>
+
+			<property name="openjpa.ConnectionUserName" value="sa" />
+			<property name="openjpa.ConnectionPassword" value="" />
+			<property name="openjpa.ConnectionURL" value="jdbc:h2:mem:search" />
+			<property name="openjpa.ConnectionDriverName" value="org.h2.Driver" />
+			
+			<!--<property name="openjpa.ConnectionUserName" value="XE" />
+			<property name="openjpa.ConnectionPassword" value="oracle" />
+			<property name="openjpa.ConnectionURL" value="jdbc:oracle:thin:@//localhost:1521/XE" />
+			<property name="openjpa.ConnectionDriverName" value="oracle.jdbc.driver.OracleDriver" />-->
+
 			<property name="openjpa.ConnectionFactoryProperties" value="PrettyPrint=true,PrettyPrintLineLength=150" />
 			<property name="openjpa.Log" value="DefaultLevel=TRACE,SQL=TRACE,File=./openjpa.log" />
-			<property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
+			<!-- SchemaAction='add,deleteTableContents', -->
+			<property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(SchemaAction='add,deleteTableContents', ForeignKeys=true)" />
 			<property name="openjpa.classLoadEnhancement" value="true" />
 			<property name="openjpa.DynamicEnhancementAgent" value="true" />
 			<property name="openjpa.RuntimeUnenhancedClasses" value="supported" />
 			<property name="openjpa.Multithreaded" value="true" />
 		</properties>
 	</persistence-unit>
-	
+
 </persistence>

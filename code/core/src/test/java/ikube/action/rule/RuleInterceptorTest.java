@@ -66,7 +66,7 @@ public class RuleInterceptorTest extends ATest {
 
 	@BeforeClass
 	public static void beforeClass() {
-		File file = FileUtilities.findFile(new File("."), "spring-actions.xml");
+		File file = FileUtilities.findFileRecursively(new File("."), "spring-actions.xml");
 		ApplicationContextManager.getApplicationContext(file);
 		ACTIONS = ApplicationContextManager.getBeans(Action.class);
 		Mockit.setUpMocks();

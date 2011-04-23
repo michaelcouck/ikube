@@ -33,7 +33,7 @@ public class IsThisIndexCreated implements IRule<IndexContext> {
 		if (latestIndexDirectory == null) {
 			return Boolean.FALSE;
 		}
-		File thisIndexDirectory = FileUtilities.findFile(latestIndexDirectory, address);
+		File thisIndexDirectory = FileUtilities.findFileRecursively(latestIndexDirectory, address);
 		return thisIndexDirectory != null;
 	}
 

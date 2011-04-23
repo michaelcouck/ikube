@@ -1,6 +1,7 @@
-package ikube.toolkit.data;
+package ikube.data;
 
 import ikube.toolkit.FileUtilities;
+import ikube.toolkit.Logging;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -23,6 +24,10 @@ import org.apache.log4j.Logger;
  * @version 01.00
  */
 public abstract class ADataGenerator implements IDataGenerator {
+	
+	static {
+		Logging.configure();
+	}
 
 	private static final long MAX_FILE_LENGTH = 100000;
 
@@ -35,7 +40,7 @@ public abstract class ADataGenerator implements IDataGenerator {
 		File dotFolder = new File(".");
 		words = new ArrayList<String>();
 		fileContents = new HashMap<String, byte[]>();
-		File wordsFile = FileUtilities.findFile(dotFolder, wordsFilePath);
+		File wordsFile = FileUtilities.findFileRecursively(dotFolder, wordsFilePath);
 		populateWords(wordsFile);
 		String[] fileTypes = new String[] { ".doc", ".html", ".pdf", ".pot", ".ppt", ".rtf", ".txt", ".xml" };
 		List<File> files = FileUtilities.findFilesRecursively(new File("."), new ArrayList<File>(), fileTypes);
@@ -93,6 +98,8 @@ public abstract class ADataGenerator implements IDataGenerator {
 			return new Integer((int) System.nanoTime());
 		} else if (Long.class.equals(klass) || long.class.equals(klass)) {
 			return new Long(System.nanoTime());
+		} else if (Double.class.equals(klass) || double.class.equals(klass)) {
+			return new Double(System.nanoTime());
 		} else if (Timestamp.class.equals(klass)) {
 			return new Timestamp(System.currentTimeMillis());
 		} else if (Date.class.equals(klass)) {
