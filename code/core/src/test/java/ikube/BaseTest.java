@@ -58,15 +58,18 @@ public abstract class BaseTest extends ATest {
 						IDataGenerator dataGenerator = new DataGeneratorFour(entityManager, iterations, classes);
 						dataGenerator.before();
 						dataGenerator.generate();
-						dataGenerator.after();
 
-						dataGenerator = new DataGeneratorMedical(entityManager,"doctors.xml", 10);
+						dataGenerator = new DataGeneratorMedical(entityManager, "doctors.xml", 10);
 						dataGenerator.before();
 						dataGenerator.generate();
 						dataGenerator.after();
 					} finally {
-						if (entityManager != null) {
-							entityManager.close();
+						if (entityManager != null && entityManager.isOpen()) {
+							try {
+								entityManager.close();
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
 						}
 					}
 				}

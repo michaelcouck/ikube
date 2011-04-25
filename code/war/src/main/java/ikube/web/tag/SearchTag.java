@@ -54,12 +54,15 @@ public class SearchTag extends ATag {
 		session.setAttribute(MAX_RESULTS, maxResults);
 
 		StringBuilder builder = new StringBuilder();
-		if (searchUrl.indexOf('?') == -1) {
-			builder.append('?');
-		} else {
-			builder.append('&');
+		String queryString = request.getQueryString();
+		if (queryString != null) {
+			if (searchUrl.indexOf('?') == -1) {
+				builder.append('?');
+			} else {
+				builder.append('&');
+			}
+			builder.append(queryString);
 		}
-		builder.append(request.getQueryString());
 
 		logger.debug(request.getQueryString());
 		logger.debug("Do start tag : " + builder.toString());
@@ -89,8 +92,8 @@ public class SearchTag extends ATag {
 						Map<String, String> statistics = results.get(results.size() - 1);
 						String stringTotal = statistics.get(TOTAL);
 						String stringDuration = statistics.get(DURATION);
-						session.setAttribute(TOTAL, Integer.parseInt(stringTotal));
-						session.setAttribute(DURATION, Integer.parseInt(stringDuration));
+						session.setAttribute(TOTAL, stringTotal != null ? Integer.parseInt(stringTotal) : 0);
+						session.setAttribute(DURATION, stringDuration != null ? Integer.parseInt(stringDuration) : 0);
 						results.remove(statistics);
 					} else {
 						session.setAttribute(TOTAL, 0);

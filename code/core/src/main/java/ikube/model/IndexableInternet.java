@@ -19,7 +19,7 @@ import org.apache.log4j.Logger;
  */
 @Entity()
 public class IndexableInternet extends Indexable<IndexableInternet> {
-	
+
 	private static transient final Logger LOGGER = Logger.getLogger(IndexableInternet.class);
 
 	@Transient
@@ -111,10 +111,6 @@ public class IndexableInternet extends Indexable<IndexableInternet> {
 		}
 		return pattern.matcher(link).matches();
 	}
-	
-	public String toString() {
-		return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
-	}
 
 	@Transient
 	public String getCurrentUrl() {
@@ -133,5 +129,8 @@ public class IndexableInternet extends Indexable<IndexableInternet> {
 	public void setCurrentInputStream(final InputStream currentInputStream) {
 		this.currentInputStream = currentInputStream;
 	}
-	
+
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+	}
 }

@@ -14,7 +14,7 @@ import ikube.action.rule.IRule;
  */
 public interface IAction<E, F> {
 	
-	String getPredicate();
+	String getRuleExpression();
 	
 	List<IRule<E>> getRules();
 	

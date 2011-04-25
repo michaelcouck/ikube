@@ -31,15 +31,19 @@
 	</aop:config>
 	
 	<bean
-		id="ikube.index.spatial.geocode.GoogleGeocoder"
+		id="ikube.index.spatial.geocode.IGeocoder"
 		class="ikube.index.spatial.geocode.GoogleGeocoder"
 		property:geoCodeApi="http://maps.googleapis.com/maps/api/geocode/xml" />
 	<bean 
+		id="ikube.index.spatial.enrich.IEnrichment"
+		class="ikube.index.spatial.enrich.Enrichment"
+		property:minKm="0"
+		property:maxKm="10"  />
+	<bean 
 		id="ikube.index.spatial.SpatialEnrichmentInterceptor" 
 		class="ikube.index.spatial.SpatialEnrichmentInterceptor"
-		property:geocoder-ref="ikube.index.spatial.geocode.GoogleGeocoder"
-		property:minKm="0"
-		property:maxKm="10" />
+		property:geocoder-ref="ikube.index.spatial.geocode.IGeocoder"
+		property:enrichment-ref="ikube.index.spatial.enrich.IEnrichment" />
 	<aop:config proxy-target-class="true">
 		<aop:aspect ref="ikube.index.spatial.SpatialEnrichmentInterceptor">
 			<aop:around method="enrich" pointcut="execution(* ikube.index.handler.*.addDocument(..))"  />

@@ -52,7 +52,7 @@ public class RuleInterceptor implements IRuleInterceptor {
 				}
 			}
 		}
-		String predicate = ((IAction<?, ?>) target).getPredicate();
+		String predicate = ((IAction<?, ?>) target).getRuleExpression();
 		jep.parseExpression(predicate);
 		if (jep.hasError()) {
 			LOGGER.warn("Exception in Jep expression : " + jep.getErrorInfo());

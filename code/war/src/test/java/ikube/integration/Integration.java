@@ -174,7 +174,7 @@ public class Integration {
 		// logger.info("Properties : " + System.getProperties());
 		String osName = System.getProperty("os.name");
 		logger.info("Operating system : " + osName);
-		if (!osName.toLowerCase().contains("server")/* || System.getProperties().toString().contains("system32") */) {
+		if (!osName.toLowerCase().contains("server") || System.getProperties().toString().contains("system32")) {
 			return Boolean.FALSE;
 		}
 		return Boolean.TRUE;

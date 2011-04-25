@@ -61,7 +61,21 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 
 	/** The content provider for column data. */
 	private transient IContentProvider<IndexableColumn> contentProvider;
-	private static final int MAX_REENTRANT = 10; 
+	/**
+	 * This value is how many times we will try to get a result set without any data before we give up. When looking for a result set the
+	 * predicate could be something like 'where id < 100000', if there are 100 000 000 records in the table then the getResultSet method
+	 * will recursively call it's self until there are records in the result set, incrementing the batch size each time. The first call will
+	 * be:<br>
+	 * where id > 0 and id < 10 and id < 100000<br>
+	 * But once we reach:<br>
+	 * where id > 100000 and id < 100010 and id < 100000<br>
+	 * There will be no records, so the method recursively calls it's self, until there are no more id's in the database, i.e. until the
+	 * predicate is:<br>
+	 * where id > 100 000 000 and id < 100 000 010 and id < 100000<br>
+	 * The problem is of course is that there will be 100 000 recursive calls, which can't happen; So this variable limits the number of
+	 * recursive calls, to 10, which I think is more than enough.
+	 */
+	private static final int MAX_REENTRANT = 10;
 
 	public IndexableTableHandler() {
 		super();
@@ -266,9 +280,6 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 						return null;
 					}
 					// Try the next predicate + batchSize
-					// TODO - We need to check that the method does not throw a stack overflow
-					// somehow. We keep calling the getResultSet recursively until there are no more results,
-					// but this can be called thousands of times!
 					return getResultSet(indexContext, indexableTable, connection, ++reentrant);
 				}
 				return null;

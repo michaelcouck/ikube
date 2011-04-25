@@ -1,18 +1,21 @@
 package ikube.index.spatial;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
+
 public class Coordinate {
 
-	private transient final double lat;
-	private transient final double lon;
-	private transient String name;
+	private final double lat;
+	private final double lon;
+	private final String name;
 
 	public Coordinate(final double lat, final double lon) {
-		this.lat = lat;
-		this.lon = lon;
+		this(lat, lon, null);
 	}
 
 	public Coordinate(final double lat, final double lon, final String name) {
-		this(lat, lon);
+		this.lat = lat;
+		this.lon = lon;
 		this.name = name;
 	}
 
@@ -26,5 +29,9 @@ public class Coordinate {
 
 	public String getName() {
 		return name;
+	}
+
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
 	}
 }

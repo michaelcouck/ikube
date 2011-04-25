@@ -100,5 +100,8 @@ public interface IConstants {
 	String LOCATION = "location";
 
 	String DISTANCE = "distance";
+	
+	String LATITUDE = "latitude";
+	String LONGITUDE = "longitude";
 
 }

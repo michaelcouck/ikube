@@ -108,7 +108,7 @@ public class RuleInterceptorTest extends ATest {
 
 		Close close = mock(Close.class);
 		String predicate = "IsMultiSearcherInitialised && AreSearchablesInitialised && !IsIndexCurrent && AreIndexesCreated && AreUnopenedIndexes";
-		when(close.getPredicate()).thenReturn(predicate);
+		when(close.getRuleExpression()).thenReturn(predicate);
 		when(close.getRules()).thenReturn(rules);
 		when(close.execute(any(IndexContext.class))).thenReturn(Boolean.TRUE);
 
