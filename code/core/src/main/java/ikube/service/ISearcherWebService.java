@@ -17,49 +17,72 @@ public interface ISearcherWebService {
 	String NAME = "searcher";
 	String SERVICE = "searcher";
 	String NAMESPACE = "http://ikube.search/";
-	
+
 	String PUBLISHED_PATH = "/" + ISearcherWebService.class.getName().replace(".", "/") + "?wsdl";
 
 	/**
-	 * Does a search on a single field on the index defined in the parameter list. 
+	 * Does a search on a single field on the index defined in the parameter list.
 	 * 
-	 * @param indexName the name of the index to search
-	 * @param searchString the search string to search for
-	 * @param searchField the search field in the index
-	 * @param fragment whether to add the text fragments to the results
-	 * @param firstResult the start document in the index, for paging
-	 * @param maxResults the end document in the index, also for paging
-	 * @return a serialized string of the results from the search
+	 * @param indexName
+	 *            the name of the index to search
+	 * @param searchString
+	 *            the search string to search for
+	 * @param searchField
+	 *            the search field in the index
+	 * @param fragment
+	 *            whether to add the text fragments to the results
+	 * @param firstResult
+	 *            the start document in the index, for paging
+	 * @param maxResults
+	 *            the end document in the index, also for paging
+	 * @return a serialised string of the results from the search
 	 */
 	String searchSingle(String indexName, String searchString, String searchField, boolean fragment, int firstResult, int maxResults);
 
 	/**
 	 * Does a search on multiple fields and multiple search strings.
 	 * 
-	 * @param indexName the name of the index to search
-	 * @param searchStrings the search strings to search for
-	 * @param searchFields the search fields in the index
-	 * @param fragment whether to add the text fragments to the results
-	 * @param firstResult the start document in the index, for paging
-	 * @param maxResults the end document in the index, also for paging
-	 * @return a serialized string of the results from the search
+	 * @param indexName
+	 *            the name of the index to search
+	 * @param searchStrings
+	 *            the search strings to search for
+	 * @param searchFields
+	 *            the search fields in the index
+	 * @param fragment
+	 *            whether to add the text fragments to the results
+	 * @param firstResult
+	 *            the start document in the index, for paging
+	 * @param maxResults
+	 *            the end document in the index, also for paging
+	 * @return a serialised string of the results from the search
 	 */
 	String searchMulti(String indexName, String[] searchStrings, String[] searchFields, boolean fragment, int firstResult, int maxResults);
 
-	
 	/**
 	 * Does a search on multiple fields and multiple search strings and sorts the results according the sort fields.
 	 * 
-	 * @param indexName the name of the index to search
-	 * @param searchStrings the search strings to search for
-	 * @param searchFields the search fields in the index
-	 * @param sortFields the fields to sort the results on
-	 * @param fragment whether to add the text fragments to the results
-	 * @param firstResult the start document in the index, for paging
-	 * @param maxResults the end document in the index, also for paging
-	 * @return a serialized string of the results from the search
+	 * @param indexName
+	 *            the name of the index to search
+	 * @param searchStrings
+	 *            the search strings to search for
+	 * @param searchFields
+	 *            the search fields in the index
+	 * @param sortFields
+	 *            the fields to sort the results on
+	 * @param fragment
+	 *            whether to add the text fragments to the results
+	 * @param firstResult
+	 *            the start document in the index, for paging
+	 * @param maxResults
+	 *            the end document in the index, also for paging
+	 * @return a serialised string of the results from the search
 	 */
 	String searchMultiSorted(String indexName, String[] searchStrings, String[] searchFields, String[] sortFields, boolean fragment,
 			int firstResult, int maxResults);
+
+	String searchMultiAll(String indexName, String[] searchStrings, boolean fragment, int firstResult, int maxResults);
+
+	String searchSpacialMulti(String indexName, String[] searchStrings, String[] searchFields, boolean fragment, int firstResult,
+			int maxResults, int distance, double latitude, double longitude);
 
 }

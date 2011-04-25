@@ -1,16 +1,18 @@
 package ikube.service;
 
 import ikube.IConstants;
-import ikube.listener.Event;
-import ikube.listener.IListener;
-import ikube.listener.ListenerManager;
+import ikube.index.spatial.Coordinate;
 import ikube.model.IndexContext;
 import ikube.search.SearchMulti;
+import ikube.search.SearchMultiAll;
 import ikube.search.SearchMultiSorted;
 import ikube.search.SearchSingle;
+import ikube.search.SearchSpatial;
+import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.Logging;
 import ikube.toolkit.SerializationUtilities;
 
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -22,7 +24,7 @@ import javax.jws.WebService;
 import javax.jws.soap.SOAPBinding;
 
 import org.apache.log4j.Logger;
-import org.apache.lucene.search.MultiSearcher;
+import org.apache.lucene.search.Searcher;
 
 /**
  * @author Michael Couck
@@ -35,39 +37,8 @@ import org.apache.lucene.search.MultiSearcher;
 public class SearcherWebService implements ISearcherWebService {
 
 	private static final Logger LOGGER = Logger.getLogger(SearcherWebService.class);
-	private transient final Map<String, SearchSingle> singleSearchers;
-	private transient final Map<String, SearchMulti> multiSearchers;
-	private transient final Map<String, SearchMultiSorted> multiSortedSearchers;
 
 	public SearcherWebService() {
-		this.singleSearchers = new HashMap<String, SearchSingle>();
-		this.multiSearchers = new HashMap<String, SearchMulti>();
-		this.multiSortedSearchers = new HashMap<String, SearchMultiSorted>();
-		ListenerManager.addListener(new IListener() {
-			@Override
-			public void handleNotification(final Event event) {
-				if (event.getType().equals(Event.SEARCHER_OPENED)) {
-					Object object = event.getObject();
-					if (IndexContext.class.isAssignableFrom(object.getClass())) {
-						IndexContext indexContext = (IndexContext) object;
-						setMultiSearcher(indexContext);
-					}
-				}
-			}
-		});
-	}
-
-	protected void setMultiSearcher(final IndexContext indexContext) {
-		MultiSearcher multiSearcher = indexContext.getIndex().getMultiSearcher();
-		SearchSingle searchSingle = new SearchSingle(multiSearcher);
-		SearchMulti searchMulti = new SearchMulti(multiSearcher);
-		SearchMultiSorted searchMultiSorted = new SearchMultiSorted(multiSearcher);
-		singleSearchers.put(indexContext.getIndexName(), searchSingle);
-		multiSearchers.put(indexContext.getIndexName(), searchMulti);
-		multiSortedSearchers.put(indexContext.getIndexName(), searchMultiSorted);
-		LOGGER.info("Single searchers : " + singleSearchers);
-		LOGGER.info("Multi searchers : " + multiSearchers);
-		LOGGER.info("Multi sorted searchers : " + multiSortedSearchers);
 	}
 
 	/**
@@ -77,27 +48,22 @@ public class SearcherWebService implements ISearcherWebService {
 	public String searchSingle(final String indexName, final String searchString, final String searchField, final boolean fragment,
 			final int start, final int end) {
 		try {
-			SearchSingle searchSingle = this.singleSearchers.get(indexName);
-			if (searchSingle == null) {
-				List<Map<String, String>> results = new ArrayList<Map<String, String>>();
-				Map<String, String> notification = new HashMap<String, String>();
-				notification.put(IConstants.CONTENTS, "No index defined for name : " + indexName);
-				results.add(notification);
+			SearchSingle searchSingle = getSearch(SearchSingle.class, indexName);
+			if (searchSingle != null) {
+				searchSingle.setFirstResult(start);
+				searchSingle.setFragment(fragment);
+				searchSingle.setMaxResults(end);
+				searchSingle.setSearchField(searchField);
+				searchSingle.setSearchString(searchString);
+				List<Map<String, String>> results = searchSingle.execute();
 				return SerializationUtilities.serialize(results);
 			}
-			searchSingle.setFirstResult(start);
-			searchSingle.setFragment(fragment);
-			searchSingle.setMaxResults(end);
-			searchSingle.setSearchField(searchField);
-			searchSingle.setSearchString(searchString);
-			List<Map<String, String>> results = searchSingle.execute();
-			return SerializationUtilities.serialize(results);
 		} catch (Exception e) {
 			String message = Logging.getString("Exception doing search on index : ", indexName, searchString, searchField, fragment, start,
 					end);
 			LOGGER.error(message, e);
 		}
-		return "Exception thrown during search.";
+		return SerializationUtilities.serialize(getMessageResults(indexName));
 	}
 
 	/**
@@ -107,27 +73,22 @@ public class SearcherWebService implements ISearcherWebService {
 	public String searchMulti(final String indexName, final String[] searchStrings, final String[] searchFields, final boolean fragment,
 			final int start, final int end) {
 		try {
-			SearchMulti searchMulti = this.multiSearchers.get(indexName);
-			if (searchMulti == null) {
-				List<Map<String, String>> results = new ArrayList<Map<String, String>>();
-				Map<String, String> notification = new HashMap<String, String>();
-				notification.put(IConstants.CONTENTS, "No index defined for name : " + indexName);
-				results.add(notification);
+			SearchMulti searchMulti = getSearch(SearchMulti.class, indexName);
+			if (searchMulti != null) {
+				searchMulti.setFirstResult(start);
+				searchMulti.setFragment(fragment);
+				searchMulti.setMaxResults(end);
+				searchMulti.setSearchField(searchFields);
+				searchMulti.setSearchString(searchStrings);
+				List<Map<String, String>> results = searchMulti.execute();
 				return SerializationUtilities.serialize(results);
 			}
-			searchMulti.setFirstResult(start);
-			searchMulti.setFragment(fragment);
-			searchMulti.setMaxResults(end);
-			searchMulti.setSearchField(searchFields);
-			searchMulti.setSearchString(searchStrings);
-			List<Map<String, String>> results = searchMulti.execute();
-			return SerializationUtilities.serialize(results);
 		} catch (Exception e) {
 			String message = Logging.getString("Exception doing search on index : ", indexName, Arrays.asList(searchStrings),
 					Arrays.asList(searchFields), fragment, start, end);
 			LOGGER.error(message, e);
 		}
-		return "Exception thrown during search.";
+		return SerializationUtilities.serialize(getMessageResults(indexName));
 	}
 
 	/**
@@ -137,28 +98,91 @@ public class SearcherWebService implements ISearcherWebService {
 	public String searchMultiSorted(final String indexName, final String[] searchStrings, final String[] searchFields,
 			final String[] sortFields, final boolean fragment, final int start, final int end) {
 		try {
-			SearchMultiSorted searchMultiSorted = this.multiSortedSearchers.get(indexName);
-			if (searchMultiSorted == null) {
-				List<Map<String, String>> results = new ArrayList<Map<String, String>>();
-				Map<String, String> notification = new HashMap<String, String>();
-				notification.put(IConstants.CONTENTS, "No index defined for name : " + indexName);
-				results.add(notification);
+			SearchMultiSorted searchMultiSorted = getSearch(SearchMultiSorted.class, indexName);
+			if (searchMultiSorted != null) {
+				searchMultiSorted.setFirstResult(start);
+				searchMultiSorted.setFragment(fragment);
+				searchMultiSorted.setMaxResults(end);
+				searchMultiSorted.setSearchField(searchFields);
+				searchMultiSorted.setSearchString(searchStrings);
+				searchMultiSorted.setSortField(sortFields);
+				List<Map<String, String>> results = searchMultiSorted.execute();
 				return SerializationUtilities.serialize(results);
 			}
-			searchMultiSorted.setFirstResult(start);
-			searchMultiSorted.setFragment(fragment);
-			searchMultiSorted.setMaxResults(end);
-			searchMultiSorted.setSearchField(searchFields);
-			searchMultiSorted.setSearchString(searchStrings);
-			searchMultiSorted.setSortField(sortFields);
-			List<Map<String, String>> results = searchMultiSorted.execute();
-			return SerializationUtilities.serialize(results);
 		} catch (Exception e) {
 			String message = Logging.getString("Exception doing search on index : ", indexName, Arrays.asList(searchStrings),
 					Arrays.asList(searchFields), Arrays.asList(sortFields), fragment, start, end);
 			LOGGER.error(message, e);
 		}
-		return "Exception thrown during search.";
+		return SerializationUtilities.serialize(getMessageResults(indexName));
 	}
 
+	@Override
+	public String searchMultiAll(String indexName, String[] searchStrings, boolean fragment, int start, int end) {
+		try {
+			SearchMultiAll searchMultiAll = getSearch(SearchMultiAll.class, indexName);
+			if (searchMultiAll != null) {
+				searchMultiAll.setFirstResult(start);
+				searchMultiAll.setFragment(fragment);
+				searchMultiAll.setMaxResults(end);
+				searchMultiAll.setSearchString(searchStrings);
+				// searchMultiSorted.setSearchField(searchFields);
+				// searchMultiSorted.setSortField(sortFields);
+				List<Map<String, String>> results = searchMultiAll.execute();
+				return SerializationUtilities.serialize(results);
+			}
+		} catch (Exception e) {
+			String message = Logging.getString("Exception doing search on index : ", indexName, Arrays.asList(searchStrings), fragment,
+					start, end);
+			LOGGER.error(message, e);
+		}
+		return SerializationUtilities.serialize(getMessageResults(indexName));
+	}
+
+	@Override
+	public String searchSpacialMulti(String indexName, String[] searchStrings, String[] searchFields, boolean fragment, int start, int end,
+			int distance, double latitude, double longitude) {
+		try {
+			SearchSpatial searchSpatial = getSearch(SearchSpatial.class, indexName);
+			if (searchSpatial != null) {
+				searchSpatial.setFirstResult(start);
+				searchSpatial.setFragment(fragment);
+				searchSpatial.setMaxResults(end);
+				searchSpatial.setSearchString(searchStrings);
+				searchSpatial.setSearchField(searchFields);
+				searchSpatial.setCoordinate(new Coordinate(latitude, longitude));
+				searchSpatial.setDistance(distance);
+				// searchMultiSorted.setSortField(sortFields);
+				List<Map<String, String>> results = searchSpatial.execute();
+				return SerializationUtilities.serialize(results);
+			}
+		} catch (Exception e) {
+			String message = Logging.getString("Exception doing search on index : ", indexName, Arrays.asList(searchStrings), fragment,
+					start, end, latitude, longitude, distance);
+			LOGGER.error(message, e);
+		}
+		return SerializationUtilities.serialize(getMessageResults(indexName));
+	}
+
+	@SuppressWarnings("unchecked")
+	protected <T> T getSearch(Class<?> klass, String indexName) throws Exception {
+		IndexContext indexContext = ApplicationContextManager.getBean(indexName);
+		if (indexContext != null) {
+			if (indexContext.getIndex().getMultiSearcher() != null) {
+				Constructor<?> constructor = klass.getConstructor(Searcher.class);
+				Object search = constructor.newInstance(indexContext.getIndex().getMultiSearcher());
+				return (T) search;
+			}
+		}
+		return null;
+	}
+
+	protected List<Map<String, String>> getMessageResults(String indexName) {
+		List<Map<String, String>> results = new ArrayList<Map<String, String>>();
+		Map<String, String> notification = new HashMap<String, String>();
+		notification.put(IConstants.CONTENTS, "No index defined for name : " + indexName);
+		notification.put(IConstants.FRAGMENT, "Or exception thrown during search : " + indexName);
+		results.add(notification);
+		return results;
+	}
 }

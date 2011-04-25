@@ -26,6 +26,7 @@ import mockit.MockClass;
 @MockClass(realClass = ApplicationContextManager.class)
 public class ApplicationContextManagerMock {
 
+	public static Object BEAN;
 	public static IndexContext INDEX_CONTEXT;
 	public static IClusterManager CLUSTER_MANAGER;
 	public static IDataBase DATABASE = mock(IDataBase.class);
@@ -42,6 +43,12 @@ public class ApplicationContextManagerMock {
 			return (T) DATABASE;
 		}
 		return null;
+	}
+
+	@Mock
+	@SuppressWarnings("unchecked")
+	public static synchronized <T> T getBean(final String name) {
+		return (T) BEAN;
 	}
 
 	@Mock()

@@ -8,8 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.search.MatchAllDocsQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Searcher;
 import org.apache.lucene.search.Sort;
@@ -28,17 +26,22 @@ import org.apache.lucene.spatial.tier.projections.CartesianTierPlotter;
  * @since 06.03.11
  * @version 01.00
  */
-public class SearchSpatial extends Search {
+public class SearchSpatial extends SearchMulti {
 
-	private transient Sort sort;
-	private transient Map<Integer, Double> distances;
-	private transient DistanceQueryBuilder queryBuilder;
-
-	// TODO Set these fields
-	private final transient int maxDocs = 10;
+	/** The distance from the origin that we will accept in the results. */
+	private transient int distance;
+	/** The origin, i.e. the starting point for the distance search. */
 	private transient Coordinate coordinate;
-	private final transient int distance = 10;
 
+	/** The distances from the point of origin, i.e. the input coordinate. */
+	private transient Map<Integer, Double> distances;
+
+	/**
+	 * Constructor takes the searcher. This class needs to be instantiated for each search performed, and is certainly not thread safe.
+	 * 
+	 * @param searcher
+	 *            the searcher, with geolocation data in it, that we will perform the distance search on
+	 */
 	public SearchSpatial(final Searcher searcher) {
 		super(searcher);
 	}
@@ -48,26 +51,22 @@ public class SearchSpatial extends Search {
 	 */
 	@Override
 	protected TopDocs search(final Query query) throws IOException {
-		TopDocs topDocs = searcher.search(query, queryBuilder.getFilter(), maxDocs, sort);
+		DistanceQueryBuilder queryBuilder = new DistanceQueryBuilder(coordinate.getLat(), coordinate.getLon(), distance, IConstants.LAT,
+				IConstants.LNG, CartesianTierPlotter.DEFALT_FIELD_PREFIX, true);
+		// As the radius filter has performed the distance calculations
+		// already, pass in the filter to reuse the results
+		DistanceFieldComparatorSource fieldComparator = new DistanceFieldComparatorSource(queryBuilder.getDistanceFilter());
+		// Create a distance sort
+		Sort sort = new Sort(new SortField("geo_distance", fieldComparator));
+		TopDocs topDocs = searcher.search(query, queryBuilder.getFilter(), maxResults, sort);
 		distances = queryBuilder.getDistanceFilter().getDistances();
+		logger.debug("Distances : " + distance);
 		return topDocs;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
-	protected Query getQuery() throws ParseException {
-		queryBuilder = new DistanceQueryBuilder(coordinate.getLat(), coordinate.getLon(), distance, IConstants.LAT, IConstants.LNG,
-				CartesianTierPlotter.DEFALT_FIELD_PREFIX, true);
-		// Create a distance sort
-		// As the radius filter has performed the distance calculations
-		// already, pass in the filter to reuse the results.
-		DistanceFieldComparatorSource fieldComparator = new DistanceFieldComparatorSource(queryBuilder.getDistanceFilter());
-		sort = new Sort(new SortField("geo_distance", fieldComparator));
-		return new MatchAllDocsQuery();
-	}
-
 	public List<Map<String, String>> execute() {
 		if (searcher == null) {
 			logger.warn("No searcher on any index, is an index created?");
@@ -82,7 +81,7 @@ public class SearchSpatial extends Search {
 			duration = System.currentTimeMillis() - start;
 			totalHits = topDocs.totalHits;
 			results = getResults(topDocs, query);
-			for (int i = 0; i < maxDocs && i < topDocs.totalHits && i < topDocs.scoreDocs.length; i++) {
+			for (int i = 0; i < maxResults && i < topDocs.totalHits && i < topDocs.scoreDocs.length; i++) {
 				final int docID = topDocs.scoreDocs[i].doc;
 				double distanceFromOrigin = distances.get(docID);
 				Map<String, String> result = results.get(i);
@@ -99,8 +98,8 @@ public class SearchSpatial extends Search {
 		return results;
 	}
 
-	public Coordinate getCoordinate() {
-		return coordinate;
+	public void setDistance(int distance) {
+		this.distance = distance;
 	}
 
 	public void setCoordinate(Coordinate coordinate) {

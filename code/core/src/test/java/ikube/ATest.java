@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -33,6 +34,7 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.IndexReader.FieldOption;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.IndexSearcher;
@@ -111,6 +113,8 @@ public abstract class ATest {
 		TOP_FIELD_DOCS.totalHits = 0;
 		TOP_FIELD_DOCS.scoreDocs = SCORE_DOCS;
 		when(INDEX_READER.directory()).thenReturn(FS_DIRECTORY);
+		when(INDEX_READER.getFieldNames(any(FieldOption.class))).thenReturn(
+				Arrays.asList(IConstants.ID, IConstants.FRAGMENT, IConstants.CONTENTS));
 		when(FS_DIRECTORY.makeLock(anyString())).thenReturn(LOCK);
 
 		when(INDEX_CONTEXT.getIndexDirectoryPath()).thenReturn(indexDirectoryPath);

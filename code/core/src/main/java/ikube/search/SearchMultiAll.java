@@ -2,7 +2,6 @@ package ikube.search;
 
 import ikube.IConstants;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Set;
@@ -16,7 +15,6 @@ import org.apache.lucene.search.MultiSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Searchable;
 import org.apache.lucene.search.Searcher;
-import org.apache.lucene.search.TopDocs;
 
 /**
  * This class searches all the fields in the index with the specified search string. This is a convenience class that will dynamically get
@@ -29,18 +27,10 @@ import org.apache.lucene.search.TopDocs;
  * @since 02.09.08
  * @version 01.00
  */
-public class SearchMultiAll extends Search {
+public class SearchMultiAll extends SearchMulti {
 
 	public SearchMultiAll(final Searcher searcher) {
 		super(searcher);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected TopDocs search(final Query query) throws IOException {
-		return searcher.search(query, firstResult + maxResults);
 	}
 
 	/**
