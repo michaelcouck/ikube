@@ -37,8 +37,8 @@
 	<bean 
 		id="ikube.index.spatial.enrich.IEnrichment"
 		class="ikube.index.spatial.enrich.Enrichment"
-		property:minKm="0"
-		property:maxKm="10"  />
+		property:minKm="10"
+		property:maxKm="20"  />
 	<bean 
 		id="ikube.index.spatial.SpatialEnrichmentInterceptor" 
 		class="ikube.index.spatial.SpatialEnrichmentInterceptor"
