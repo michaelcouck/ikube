@@ -17,6 +17,9 @@
 	</tr>
 	
 	<tr>
+		<th class="td-content" colspan="4"><a href="javascript:location.reload(true)">Refresh this page</a></th>
+	</tr>
+	<tr>
 		<th class="td-content">Address</th>
 		<th class="td-content">Is working</th>
 		<th class="td-content">Details page</th>

@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
@@ -172,12 +173,17 @@ public class Integration {
 
 	protected boolean isServer() {
 		// logger.info("Properties : " + System.getProperties());
+		Properties properties = System.getProperties();
+		// for (Object key : properties.keySet()) {
+		// logger.info("    Key/value : " + key + " - " + properties.getProperty((String) key));
+		// }
 		String osName = System.getProperty("os.name");
-		logger.info("Operating system : " + osName);
-		if (!osName.toLowerCase().contains("server") || System.getProperties().toString().contains("system32")) {
-			return Boolean.FALSE;
+		logger.info("Operating system : " + osName + ", server : " + osName.toLowerCase().contains("server") + ", 64 bit : "
+				+ properties.getProperty("os.arch").contains("64"));
+		if (osName.toLowerCase().contains("server") && properties.getProperty("os.arch").contains("64")) {
+			return Boolean.TRUE;
 		}
-		return Boolean.TRUE;
+		return Boolean.FALSE;
 	}
 
 }

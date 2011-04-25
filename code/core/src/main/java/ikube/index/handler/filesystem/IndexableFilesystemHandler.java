@@ -13,6 +13,7 @@ import ikube.toolkit.FileUtilities;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
@@ -107,7 +108,8 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 			indexableFileSystem.setCurrentFile(file);
 
 			// TODO - this can be very large so we have to use a reader if necessary
-			InputStream inputStream = new ByteArrayInputStream(FileUtilities.getContents(file).toByteArray());
+			InputStream inputStream = new ByteArrayInputStream(FileUtilities.getContents(new FileInputStream(file),
+					indexContext.getMaxReadLength()).toByteArray());
 
 			byte[] bytes = new byte[1024];
 			if (inputStream.markSupported()) {

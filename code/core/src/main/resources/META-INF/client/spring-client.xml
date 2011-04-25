@@ -522,6 +522,19 @@
 		property:vectored="${vectored}" />
 	
 	<bean
+		id="internetMillion"
+		class="ikube.model.IndexableInternet"
+		property:name="internetMillion"
+		property:url="${url.million}" 
+		property:idFieldName="id"
+		property:titleFieldName="title"
+		property:contentFieldName="content"
+		property:excludedPattern=".*(/search).*|.*(/images).*"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	
+	<bean
 		id="filesystem"
 		class="ikube.model.IndexableFileSystem"
 		property:name="filesOne"
@@ -532,5 +545,16 @@
 		property:contentFieldName="contents"
 		property:excludedPattern="${files.excluded.pattern}"
 		property:lastModifiedFieldName="lastmodified" />
-		
+	
+	<bean
+		id="filesystemMillion"
+		class="ikube.model.IndexableFileSystem"
+		property:name="filesMillion"
+		property:path="${files.path.million}"
+		property:pathFieldName="path"
+		property:nameFieldName="name"
+		property:lengthFieldName="length"
+		property:contentFieldName="contents"
+		property:excludedPattern="${files.excluded.pattern}"
+		property:lastModifiedFieldName="lastmodified" />
 </beans>

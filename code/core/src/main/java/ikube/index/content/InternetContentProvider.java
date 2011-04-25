@@ -26,6 +26,7 @@ public class InternetContentProvider implements IContentProvider<IndexableIntern
 	public void getContent(final IndexableInternet indexable, final OutputStream outputStream) {
 		try {
 			InputStream inputStream = indexable.getCurrentInputStream();
+			// TODO This value for the maximum read length must be configurable
 			FileUtilities.getContents(inputStream, outputStream, Integer.MAX_VALUE);
 		} catch (Exception e) {
 			LOGGER.error("Exception accessing url : " + indexable, e);

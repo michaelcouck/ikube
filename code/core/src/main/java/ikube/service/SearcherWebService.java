@@ -38,7 +38,10 @@ public class SearcherWebService implements ISearcherWebService {
 
 	private static final Logger LOGGER = Logger.getLogger(SearcherWebService.class);
 
+	private Map<String, IndexContext> indexContexts;
+
 	public SearcherWebService() {
+		indexContexts = new HashMap<String, IndexContext>();
 	}
 
 	/**
@@ -166,12 +169,21 @@ public class SearcherWebService implements ISearcherWebService {
 
 	@SuppressWarnings("unchecked")
 	protected <T> T getSearch(Class<?> klass, String indexName) throws Exception {
-		IndexContext indexContext = ApplicationContextManager.getBean(indexName);
+		IndexContext indexContext = this.indexContexts.get(indexName);
+		if (indexContext == null) {
+			Map<String, IndexContext> indexContexts = ApplicationContextManager.getBeans(IndexContext.class);
+			for (IndexContext context : indexContexts.values()) {
+				if (context.getIndexName().equals(indexName)) {
+					this.indexContexts.put(indexName, context);
+					indexContext = context;
+					break;
+				}
+			}
+		}
 		if (indexContext != null) {
 			if (indexContext.getIndex().getMultiSearcher() != null) {
 				Constructor<?> constructor = klass.getConstructor(Searcher.class);
-				Object search = constructor.newInstance(indexContext.getIndex().getMultiSearcher());
-				return (T) search;
+				return (T) constructor.newInstance(indexContext.getIndex().getMultiSearcher());
 			}
 		}
 		return null;

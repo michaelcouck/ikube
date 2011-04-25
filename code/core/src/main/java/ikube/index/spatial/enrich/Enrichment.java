@@ -3,6 +3,7 @@ package ikube.index.spatial.enrich;
 import ikube.IConstants;
 import ikube.index.spatial.Coordinate;
 import ikube.model.Indexable;
+import ikube.toolkit.Logging;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
@@ -52,8 +53,10 @@ public class Enrichment implements IEnrichment {
 		for (int tier = startTier; tier <= endTier; tier++) {
 			CartesianTierPlotter cartesianTierPlotter = new CartesianTierPlotter(tier, projector, CartesianTierPlotter.DEFALT_FIELD_PREFIX);
 			final double boxId = cartesianTierPlotter.getTierBoxId(coordinate.getLat(), coordinate.getLon());
-			LOGGER.info("Tier : " + tier + ", box id : " + boxId + ", cartesian tier : "
-					+ ToStringBuilder.reflectionToString(cartesianTierPlotter, ToStringStyle.SHORT_PREFIX_STYLE));
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug(Logging.getString("Tier : ", tier, ", box id : ", boxId, ", cartesian tier : ",
+						ToStringBuilder.reflectionToString(cartesianTierPlotter, ToStringStyle.SHORT_PREFIX_STYLE)));
+			}
 			document.add(new Field(cartesianTierPlotter.getTierFieldName(), NumericUtils.doubleToPrefixCoded(boxId), Field.Store.YES,
 					Field.Index.NOT_ANALYZED_NO_NORMS));
 		}
