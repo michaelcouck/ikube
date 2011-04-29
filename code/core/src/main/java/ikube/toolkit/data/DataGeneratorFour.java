@@ -19,20 +19,15 @@ public class DataGeneratorFour extends ADataGenerator {
 
 	protected int iterations;
 	protected Class<?>[] classes;
-	protected EntityManager entityManager;
 
 	public DataGeneratorFour(EntityManager entityManager, int iterations, Class<?>... classes) {
-		this.entityManager = entityManager;
+		super(entityManager);
 		this.iterations = iterations;
 		this.classes = classes;
 	}
 
 	@Override
 	public void generate() throws Exception {
-		persist(entityManager);
-	}
-
-	protected void persist(EntityManager entityManager) throws Exception {
 		begin(entityManager);
 		// Persist all the classes that are specified
 		for (int i = 0; i < iterations; i++) {
@@ -60,10 +55,6 @@ public class DataGeneratorFour extends ADataGenerator {
 				commit(entityManager);
 			}
 		}
-	}
-
-	public void after() throws Exception {
-		close(entityManager);
 	}
 
 }

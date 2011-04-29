@@ -1,7 +1,6 @@
 package ikube.model.medical;
 
 import javax.persistence.Entity;
-
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 

@@ -24,10 +24,9 @@ public class DataGeneratorMedical extends ADataGenerator {
 
 	private int iterations;
 	private String fileName;
-	protected EntityManager entityManager;
 
 	public DataGeneratorMedical(EntityManager entityManager, String fileName, int iterations) {
-		this.entityManager = entityManager;
+		super(entityManager);
 		this.fileName = fileName;
 		this.iterations = iterations;
 	}
@@ -70,10 +69,6 @@ public class DataGeneratorMedical extends ADataGenerator {
 				commit(entityManager);
 			}
 		}
-	}
-
-	public void after() throws Exception {
-		close(entityManager);
 	}
 
 }

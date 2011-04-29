@@ -1,0 +1,7 @@
+<mapping>
+	<class name="ikube.model.geospatial.GeoName" type="DELIMITED" delimiter="	">
+		<id name="geonameid" position="0" type="integer" />
+		<property name="name" position="1" type="string" trim="true" />
+		<property name="asciiname" position="2" type="string" trim="true" />
+	</class>
+</mapping>

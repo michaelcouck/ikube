@@ -9,7 +9,6 @@ import ikube.model.medical.Address;
 import ikube.model.medical.Doctor;
 import ikube.model.medical.Hospital;
 import ikube.model.medical.Patient;
-import ikube.toolkit.data.DataGeneratorFour;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -126,13 +125,6 @@ public class DataGeneratorFourTest {
 			assertNotNull(attachment.getName());
 			assertEquals(faq, attachment.getFaq());
 		}
-	}
-
-	@Test
-	public void persist() throws Exception {
-		dataGeneratorFour.persist(entityManager);
-		// Just needs to pass
-		assertTrue(true);
 	}
 
 	@Test

@@ -1,0 +1,10 @@
+<mapping>
+	<class name="co.uk.hjc.canyon.example.Employee" type="FIXED_LENGTH" start_index="1" batch_size="100">
+		<id name="id" start="1" length="10" type="long" />
+		<property name="firstName" start="11" length="10" type="string" trim="true" />
+		<property name="lastName" start="21" length="15" type="string" trim="true" />
+		<property name="dob" start="36" length="10" type="date" date_format="yyyy-MM-dd" />
+		<property name="shopId" start="46" length="10" type="long" />
+		<collection name="benefits" type="co.uk.hjc.canyon.example.Benefit" foreign_key="id" />
+	</class>
+</mapping>

@@ -1,0 +1,99 @@
+
+<canyon-configuration>
+
+	<session-factory name="example 1">
+
+		<!-- no properties are supported as of version 0.8 -->
+		<!-- property name="batch.size" value="10" / -->
+		<!-- property name="canyon.allow_default_values" value="true"/> <property name="canyon.default_integer" value="0"/> <property name="canyon.default_long" 
+			value="976768"/> <property name="canyon.default_boolean" value="true"/> <property name="canyon.default_double" value="0.0"/> <property name="canyon.default_string" 
+			value=""/> <property name="canyon.default_short" value="0"/> <property name="canyon.default_date" value="today"/ -->
+
+		<mapping>
+			<config resource="mappings/shop.mapping.xml" />
+			<input resource="shops.txt" />
+			<output file="/Temp/output/shops_out.txt" createable="true" />
+		</mapping>
+
+		<mapping>
+			<config resource="mappings/product.mapping.xml" />
+			<input resource="products.txt" />
+		</mapping>
+
+		<mapping>
+			<config resource="mappings/manager.mapping.xml" />
+			<input resource="manager.txt" />
+		</mapping>
+
+		<mapping>
+			<config resource="mappings/employee.mapping.xml" />
+			<input resource="employee.txt" />
+		</mapping>
+
+		<mapping>
+			<config resource="mappings/benefits.mapping.xml" />
+			<input resource="benefits.txt" />
+		</mapping>
+
+	</session-factory>
+
+
+	<session-factory name="example 1a">
+
+		<mapping>
+			<config resource="mappings/shop.mapping.xml" />
+			<input resource="shops.txt" />
+			<input resource="shops.txt" />
+		</mapping>
+
+		<mapping>
+			<config resource="mappings/product.mapping.xml" />
+			<input resource="products.txt" />
+			<input resource="products.txt" />
+		</mapping>
+
+		<mapping>
+			<config resource="mappings/manager.mapping.xml" />
+			<input resource="manager.txt" />
+			<input resource="manager.txt" />
+		</mapping>
+
+		<mapping>
+			<config resource="mappings/employee.mapping.xml" />
+			<input resource="employee.txt" />
+			<input resource="employee.txt" />
+		</mapping>
+
+		<mapping>
+			<config resource="mappings/benefits.mapping.xml" />
+			<input resource="benefits.txt" />
+		</mapping>
+
+	</session-factory>
+
+	<session-factory name="example 2">
+
+		<mapping>
+			<config resource="mappings/enhanced_shop.mapping.xml" />
+			<input resource="shops.txt" />
+		</mapping>
+
+		<mapping>
+			<config resource="mappings/product.mapping.xml" />
+			<input resource="products.txt" />
+		</mapping>
+
+		<mapping>
+			<config resource="mappings/enhanced_employee.mapping.xml" />
+			<input resource="enhanced_employee.txt" />
+		</mapping>
+
+		<mapping>
+			<config resource="mappings/benefits.mapping.xml" />
+			<input resource="benefits.txt" />
+		</mapping>
+
+	</session-factory>
+
+
+</canyon-configuration>

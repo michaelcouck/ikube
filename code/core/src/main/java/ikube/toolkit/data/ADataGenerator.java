@@ -46,6 +46,11 @@ public abstract class ADataGenerator implements IDataGenerator {
 	protected List<String> words;
 	protected Map<String, byte[]> fileContents;
 	protected Map<Class<?>, Object> entities;
+	protected EntityManager entityManager;
+
+	public ADataGenerator(EntityManager entityManager) {
+		this.entityManager = entityManager;
+	}
 
 	public void before() throws Exception {
 		entities = new HashMap<Class<?>, Object>();
@@ -242,6 +247,7 @@ public abstract class ADataGenerator implements IDataGenerator {
 	}
 
 	public void after() throws Exception {
+		close(entityManager);
 	}
 
 }

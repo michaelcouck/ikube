@@ -22,6 +22,8 @@
 		<class>ikube.model.medical.Treatment</class>
 		<class>ikube.model.medical.Record</class>
 		<class>ikube.model.medical.Address</class>
+		<class>ikube.model.geospatial.GeoName</class>
+		<class>ikube.model.geospatial.AlternateName</class>
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		<properties>
 
@@ -58,6 +60,8 @@
 		<class>ikube.model.medical.Treatment</class>
 		<class>ikube.model.medical.Record</class>
 		<class>ikube.model.medical.Address</class>
+		<class>ikube.model.geospatial.GeoName</class>
+		<class>ikube.model.geospatial.AlternateName</class>
 		<exclude-unlisted-classes>false</exclude-unlisted-classes>
 		<properties>
 			<property name="openjpa.ConnectionFactoryProperties" value="PrettyPrint=true,PrettyPrintLineLength=150" />
@@ -87,6 +91,8 @@
 		<class>ikube.model.medical.Treatment</class>
 		<class>ikube.model.medical.Record</class>
 		<class>ikube.model.medical.Address</class>
+		<class>ikube.model.geospatial.GeoName</class>
+		<class>ikube.model.geospatial.AlternateName</class>
 		<exclude-unlisted-classes>false</exclude-unlisted-classes>
 		<properties>
 			<property name="openjpa.ConnectionFactoryProperties" value="PrettyPrint=true,PrettyPrintLineLength=150" />

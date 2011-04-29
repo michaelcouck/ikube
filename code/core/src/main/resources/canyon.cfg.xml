@@ -1,0 +1,9 @@
+<canyon-configuration>
+	<session-factory name="geoname">
+		<mapping>
+			<!-- D:/Eclipse/workspace/ikube/code/core/src/main/resources/META-INF/canyon/ -->
+			<config resource="geoname.xml" />
+			<input resource="allCountriesSmall.txt" />
+		</mapping>
+	</session-factory>
+</canyon-configuration>
