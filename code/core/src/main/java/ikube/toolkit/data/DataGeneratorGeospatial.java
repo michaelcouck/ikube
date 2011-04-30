@@ -30,25 +30,32 @@ public class DataGeneratorGeospatial extends ADataGenerator {
 		Session session = SessionFactory.getSession(mappingFile, sessionName);
 		int counter = 0;
 		int total = 0;
-		entityManager.getTransaction().begin();
+		begin(entityManager);
 		while (session.hasNext(GeoName.class)) {
 			try {
-				GeoName geoName = session.next(GeoName.class);
+				GeoName geoName = null;
+				try {
+					geoName = session.next(GeoName.class);
+				} catch (Exception e) {
+					logger.error("", e);
+					continue;
+				}
 				entityManager.persist(geoName);
 				if (++counter >= 1000) {
 					total += counter;
 					counter = 0;
 					logger.info("Total addresses : " + total + ", " + geoName);
-					entityManager.flush();
-					entityManager.clear();
-					entityManager.getTransaction().commit();
-					entityManager.getTransaction().begin();
+					commit(entityManager);
+					begin(entityManager);
 				}
 			} catch (Exception e) {
 				logger.error("Exception persisting geoname : ", e);
+				commit(entityManager);
+				begin(entityManager);
 				// throw new RuntimeException(e);
 			}
 		}
+		commit(entityManager);
 		session.close();
 	}
 

@@ -17,6 +17,7 @@ import java.io.InputStreamReader;
 import java.util.Iterator;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
 import net.sf.flatpack.DataSet;
@@ -31,11 +32,12 @@ import org.springframework.util.StringUtils;
 import co.uk.hjcs.canyon.session.Session;
 import co.uk.hjcs.canyon.session.SessionFactory;
 
-// @Ignore
+@Ignore
 public class DataGeneratorGeospatialTest extends ATest {
 
 	private String fileName = "allCountries.txt";
 	private File mappingFile = FileUtilities.findFileRecursively(new File("."), "geoname.xml");
+
 	private File dataFile = new File(fileName);
 
 	public DataGeneratorGeospatialTest() {
@@ -43,15 +45,91 @@ public class DataGeneratorGeospatialTest extends ATest {
 	}
 
 	@Test
-	public void generate() throws Exception {
+	public void generate1() throws Exception {
 		ApplicationContextManager.getApplicationContext();
-		EntityManager entityManager = Persistence.createEntityManagerFactory(IConstants.PERSISTENCE_UNIT_DB2).createEntityManager();
-		for (int i = 1; i < 8; i++) {
-			DataGeneratorGeospatial dataGeneratorGeospatial = new DataGeneratorGeospatial(entityManager, "canyon.cfg.xml", "geoname" + i);
-			dataGeneratorGeospatial.before();
-			dataGeneratorGeospatial.generate();
-			// dataGeneratorGeospatial.after();
-		}
+		EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory(IConstants.PERSISTENCE_UNIT_DB2);
+		EntityManager entityManager = entityManagerFactory.createEntityManager();
+		DataGeneratorGeospatial dataGeneratorGeospatial = new DataGeneratorGeospatial(entityManager, "canyon.cfg.xml", "geoname1");
+		dataGeneratorGeospatial.before();
+		dataGeneratorGeospatial.generate();
+		dataGeneratorGeospatial.after();
+	}
+
+	@Test
+	public void generate2() throws Exception {
+		ApplicationContextManager.getApplicationContext();
+		EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory(IConstants.PERSISTENCE_UNIT_DB2);
+		EntityManager entityManager = entityManagerFactory.createEntityManager();
+		DataGeneratorGeospatial dataGeneratorGeospatial = new DataGeneratorGeospatial(entityManager, "canyon.cfg.xml", "geoname2");
+		dataGeneratorGeospatial.before();
+		dataGeneratorGeospatial.generate();
+		dataGeneratorGeospatial.after();
+	}
+
+	@Test
+	public void generate3() throws Exception {
+		ApplicationContextManager.getApplicationContext();
+		EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory(IConstants.PERSISTENCE_UNIT_DB2);
+		EntityManager entityManager = entityManagerFactory.createEntityManager();
+		DataGeneratorGeospatial dataGeneratorGeospatial = new DataGeneratorGeospatial(entityManager, "canyon.cfg.xml", "geoname3");
+		dataGeneratorGeospatial.before();
+		dataGeneratorGeospatial.generate();
+		dataGeneratorGeospatial.after();
+	}
+
+	@Test
+	public void generate4() throws Exception {
+		ApplicationContextManager.getApplicationContext();
+		EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory(IConstants.PERSISTENCE_UNIT_DB2);
+		EntityManager entityManager = entityManagerFactory.createEntityManager();
+		DataGeneratorGeospatial dataGeneratorGeospatial = new DataGeneratorGeospatial(entityManager, "canyon.cfg.xml", "geoname4");
+		dataGeneratorGeospatial.before();
+		dataGeneratorGeospatial.generate();
+		dataGeneratorGeospatial.after();
+	}
+
+	@Test
+	public void generate5() throws Exception {
+		ApplicationContextManager.getApplicationContext();
+		EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory(IConstants.PERSISTENCE_UNIT_DB2);
+		EntityManager entityManager = entityManagerFactory.createEntityManager();
+		DataGeneratorGeospatial dataGeneratorGeospatial = new DataGeneratorGeospatial(entityManager, "canyon.cfg.xml", "geoname5");
+		dataGeneratorGeospatial.before();
+		dataGeneratorGeospatial.generate();
+		dataGeneratorGeospatial.after();
+	}
+
+	@Test
+	public void generate6() throws Exception {
+		ApplicationContextManager.getApplicationContext();
+		EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory(IConstants.PERSISTENCE_UNIT_DB2);
+		EntityManager entityManager = entityManagerFactory.createEntityManager();
+		DataGeneratorGeospatial dataGeneratorGeospatial = new DataGeneratorGeospatial(entityManager, "canyon.cfg.xml", "geoname6");
+		dataGeneratorGeospatial.before();
+		dataGeneratorGeospatial.generate();
+		dataGeneratorGeospatial.after();
+	}
+
+	@Test
+	public void generate7() throws Exception {
+		ApplicationContextManager.getApplicationContext();
+		EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory(IConstants.PERSISTENCE_UNIT_DB2);
+		EntityManager entityManager = entityManagerFactory.createEntityManager();
+		DataGeneratorGeospatial dataGeneratorGeospatial = new DataGeneratorGeospatial(entityManager, "canyon.cfg.xml", "geoname7");
+		dataGeneratorGeospatial.before();
+		dataGeneratorGeospatial.generate();
+		dataGeneratorGeospatial.after();
+	}
+
+	@Test
+	public void generate8() throws Exception {
+		ApplicationContextManager.getApplicationContext();
+		EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory(IConstants.PERSISTENCE_UNIT_DB2);
+		EntityManager entityManager = entityManagerFactory.createEntityManager();
+		DataGeneratorGeospatial dataGeneratorGeospatial = new DataGeneratorGeospatial(entityManager, "canyon.cfg.xml", "geoname8");
+		dataGeneratorGeospatial.before();
+		dataGeneratorGeospatial.generate();
+		dataGeneratorGeospatial.after();
 	}
 
 	@Test
@@ -119,7 +197,7 @@ public class DataGeneratorGeospatialTest extends ATest {
 	}
 
 	@Test
-	// @Ignore
+	@Ignore
 	public void convert() throws Exception {
 		File inputFile = FileUtilities.findFileRecursively(new File("."), fileName);
 		File outputFile = FileUtilities.getFile("./code/core/src/main/resources/allCountriesCsv.txt", Boolean.FALSE);
@@ -137,6 +215,7 @@ public class DataGeneratorGeospatialTest extends ATest {
 	}
 
 	@Test
+	@Ignore
 	public void split() throws Exception {
 		String path = "./code/core/src/main/resources/";
 		File inputFile = FileUtilities.findFileRecursively(new File("."), "allCountriesCsv.txt");

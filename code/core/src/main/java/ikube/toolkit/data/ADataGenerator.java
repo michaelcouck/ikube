@@ -239,6 +239,8 @@ public abstract class ADataGenerator implements IDataGenerator {
 					entityManager.getTransaction().rollback();
 					return;
 				}
+				entityManager.flush();
+				entityManager.clear();
 				entityManager.getTransaction().commit();
 			}
 		} catch (Exception e) {
