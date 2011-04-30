@@ -519,5 +519,9 @@ public final class FileUtilities {
 			}
 		}
 	}
+	
+	public static void main(String[] args) {
+		FileUtilities.deleteFiles(new File("."), "Csv.txt");
+	}
 
 }

@@ -46,10 +46,12 @@ public class DataGeneratorGeospatialTest extends ATest {
 	public void generate() throws Exception {
 		ApplicationContextManager.getApplicationContext();
 		EntityManager entityManager = Persistence.createEntityManagerFactory(IConstants.PERSISTENCE_UNIT_DB2).createEntityManager();
-		DataGeneratorGeospatial dataGeneratorGeospatial = new DataGeneratorGeospatial(entityManager, "canyon.cfg.xml", "geoname");
-		dataGeneratorGeospatial.before();
-		dataGeneratorGeospatial.generate();
-		dataGeneratorGeospatial.after();
+		for (int i = 1; i < 8; i++) {
+			DataGeneratorGeospatial dataGeneratorGeospatial = new DataGeneratorGeospatial(entityManager, "canyon.cfg.xml", "geoname" + i);
+			dataGeneratorGeospatial.before();
+			dataGeneratorGeospatial.generate();
+			// dataGeneratorGeospatial.after();
+		}
 	}
 
 	@Test
@@ -117,7 +119,7 @@ public class DataGeneratorGeospatialTest extends ATest {
 	}
 
 	@Test
-	@Ignore
+	// @Ignore
 	public void convert() throws Exception {
 		File inputFile = FileUtilities.findFileRecursively(new File("."), fileName);
 		File outputFile = FileUtilities.getFile("./code/core/src/main/resources/allCountriesCsv.txt", Boolean.FALSE);
@@ -126,6 +128,32 @@ public class DataGeneratorGeospatialTest extends ATest {
 		BufferedReader bufferedReader = new BufferedReader(fileReader);
 		String line = null;
 		while ((line = bufferedReader.readLine()) != null) {
+			line = StringUtils.replace(line, "\t", ";");
+			line = line + "\n";
+			fileWriter.write(line);
+		}
+		fileWriter.close();
+		fileReader.close();
+	}
+
+	@Test
+	public void split() throws Exception {
+		String path = "./code/core/src/main/resources/";
+		File inputFile = FileUtilities.findFileRecursively(new File("."), "allCountriesCsv.txt");
+		int number = 1;
+		File outputFile = FileUtilities.getFile(path + "allCountries" + number + "Csv.txt", Boolean.FALSE);
+		FileReader fileReader = new FileReader(inputFile);
+		FileWriter fileWriter = new FileWriter(outputFile);
+		BufferedReader bufferedReader = new BufferedReader(fileReader);
+		String line = null;
+		int counter = 0;
+		while ((line = bufferedReader.readLine()) != null) {
+			if (++counter >= 1000000) {
+				counter = 0;
+				fileWriter.close();
+				outputFile = FileUtilities.getFile(path + "allCountries" + ++number + "Csv.txt", Boolean.FALSE);
+				fileWriter = new FileWriter(outputFile);
+			}
 			line = StringUtils.replace(line, "\t", ";");
 			line = line + "\n";
 			fileWriter.write(line);

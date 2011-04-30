@@ -49,6 +49,7 @@ public class DataGeneratorGeospatial extends ADataGenerator {
 				// throw new RuntimeException(e);
 			}
 		}
+		session.close();
 	}
 
 }

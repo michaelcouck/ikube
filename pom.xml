@@ -94,6 +94,22 @@
 					</dependency>
 				</dependencies>
 			</plugin>
+			<plugin>
+				<artifactId>maven-install-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>install-canyon</id>
+						<phase>validate</phase>
+						<configuration>
+							<groupId>canyon</groupId>
+							<artifactId>canyon</artifactId>
+							<version>0.9.8</version>
+							<packaging>jar</packaging>
+							<file>libs/canyon-0.9.8.jar</file>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 		<pluginManagement>
 			<plugins>
