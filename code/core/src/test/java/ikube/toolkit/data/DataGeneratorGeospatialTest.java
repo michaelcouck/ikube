@@ -1,7 +1,9 @@
 package ikube.toolkit.data;
 
 import ikube.ATest;
+import ikube.IConstants;
 import ikube.model.geospatial.GeoName;
+import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
 import it.assist.jrecordbind.Unmarshaller;
 
@@ -9,11 +11,13 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.util.Iterator;
+
+import javax.persistence.EntityManager;
+import javax.persistence.Persistence;
 
 import net.sf.flatpack.DataSet;
 import net.sf.flatpack.DefaultParserFactory;
@@ -22,11 +26,10 @@ import net.sf.flatpack.ParserFactory;
 
 import org.junit.Ignore;
 import org.junit.Test;
+import org.springframework.util.StringUtils;
 
 import co.uk.hjcs.canyon.session.Session;
 import co.uk.hjcs.canyon.session.SessionFactory;
-
-import com.ibm.db2.jcc.DB2Driver;
 
 // @Ignore
 public class DataGeneratorGeospatialTest extends ATest {
@@ -40,33 +43,17 @@ public class DataGeneratorGeospatialTest extends ATest {
 	}
 
 	@Test
-	@Ignore
 	public void generate() throws Exception {
-		Connection connection = null;
-		try {
-			String url = "jdbc:db2://localhost:50000/ikube";
-			String user = "db2admin";
-			String password = "db2admin";
-			DriverManager.registerDriver(new DB2Driver());
-			connection = null; // DriverManager.getConnection(url, user, password);
-			// String fileName = "C:/Users/Administrator/Downloads/dump_postgres_openstreetmap_allcountries_v2/dump_localhost_street.sql";
-			// String fileName = "C:/Users/Administrator/Downloads/changesets-110105.osm/changesets-110105.osm";
-			DataGeneratorGeospatial dataGeneratorGeospatial = new DataGeneratorGeospatial(connection, mappingFile, dataFile);
-			dataGeneratorGeospatial.before();
-			dataGeneratorGeospatial.generate();
-			dataGeneratorGeospatial.after();
-		} finally {
-			if (connection != null) {
-				try {
-					connection.close();
-				} catch (Exception e) {
-					logger.error("Exceptino closing the connection : ", e);
-				}
-			}
-		}
+		ApplicationContextManager.getApplicationContext();
+		EntityManager entityManager = Persistence.createEntityManagerFactory(IConstants.PERSISTENCE_UNIT_DB2).createEntityManager();
+		DataGeneratorGeospatial dataGeneratorGeospatial = new DataGeneratorGeospatial(entityManager, "canyon.cfg.xml", "geoname");
+		dataGeneratorGeospatial.before();
+		dataGeneratorGeospatial.generate();
+		dataGeneratorGeospatial.after();
 	}
 
 	@Test
+	@Ignore
 	public void readFile() {
 		File file = FileUtilities.findFileRecursively(new File("."), fileName);
 		FileInputStream fileInputStream = null;
@@ -122,6 +109,7 @@ public class DataGeneratorGeospatialTest extends ATest {
 	}
 
 	@Test
+	@Ignore
 	public void canyon() {
 		Session session = SessionFactory.getSession("canyon.cfg.xml", "geoname");
 		GeoName geoName = session.next(GeoName.class);
@@ -129,9 +117,21 @@ public class DataGeneratorGeospatialTest extends ATest {
 	}
 
 	@Test
-	public void convert() {
+	@Ignore
+	public void convert() throws Exception {
 		File inputFile = FileUtilities.findFileRecursively(new File("."), fileName);
-		File outputFile = FileUtilities.getFile("./allCountriesCsv.txt", Boolean.FALSE);
+		File outputFile = FileUtilities.getFile("./code/core/src/main/resources/allCountriesCsv.txt", Boolean.FALSE);
+		FileReader fileReader = new FileReader(inputFile);
+		FileWriter fileWriter = new FileWriter(outputFile);
+		BufferedReader bufferedReader = new BufferedReader(fileReader);
+		String line = null;
+		while ((line = bufferedReader.readLine()) != null) {
+			line = StringUtils.replace(line, "\t", ";");
+			line = line + "\n";
+			fileWriter.write(line);
+		}
+		fileWriter.close();
+		fileReader.close();
 	}
 
 }

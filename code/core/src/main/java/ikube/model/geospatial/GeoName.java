@@ -1,19 +1,22 @@
 package ikube.model.geospatial;
 
-import ikube.model.Persistable;
+import java.util.Date;
 
-import java.sql.Date;
+import ikube.model.Persistable;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.Lob;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
 @Entity()
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class GeoName extends Persistable {
 
 	private Integer geonameid; // : integer id of record in geonames database
@@ -24,7 +27,7 @@ public class GeoName extends Persistable {
 	@Lob
 	@Column(length = 5000)
 	@Basic(fetch = FetchType.EAGER)
-	private char[] alternatenames; // : alternate names, comma separated varchar(5000)
+	private String alternatenames; // : alternate names, comma separated varchar(5000)
 	private Double latitude; // : latitude in decimal degrees (wgs84)
 	private Double longitude; // : longitude in decimal degrees (wgs84)
 	@Column(length = 1)
@@ -75,11 +78,11 @@ public class GeoName extends Persistable {
 		this.asciiname = asciiname;
 	}
 
-	public char[] getAlternatenames() {
+	public String getAlternatenames() {
 		return alternatenames;
 	}
 
-	public void setAlternatenames(char[] alternatenames) {
+	public void setAlternatenames(String alternatenames) {
 		this.alternatenames = alternatenames;
 	}
 
@@ -191,8 +194,8 @@ public class GeoName extends Persistable {
 		return timezone;
 	}
 
-	public void setTimezone(String timezone) {
-		this.timezone = timezone;
+	public void setTimezone(String zone) {
+		this.timezone = zone;
 	}
 
 	public Date getModification() {
@@ -202,7 +205,7 @@ public class GeoName extends Persistable {
 	public void setModification(Date modification) {
 		this.modification = modification;
 	}
-	
+
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this, ToStringStyle.SIMPLE_STYLE);
 	}

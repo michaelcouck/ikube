@@ -1,12 +1,11 @@
 package ikube.toolkit.data;
 
-import java.io.File;
-import java.io.FileReader;
-import java.sql.Connection;
+import ikube.model.geospatial.GeoName;
 
-import net.sf.flatpack.DataSet;
-import net.sf.flatpack.DefaultParserFactory;
-import net.sf.flatpack.Parser;
+import javax.persistence.EntityManager;
+
+import co.uk.hjcs.canyon.session.Session;
+import co.uk.hjcs.canyon.session.SessionFactory;
 
 /**
  * @author Michael Couck
@@ -15,20 +14,41 @@ import net.sf.flatpack.Parser;
  */
 public class DataGeneratorGeospatial extends ADataGenerator {
 
-	private File mappingFile;
-	private File dataFile;
+	private String mappingFile;
+	private String sessionName;
 
-	public DataGeneratorGeospatial(Connection connection, File mappingFile, File dataFile) {
-		super(null);
+	public DataGeneratorGeospatial(EntityManager entityManager, String mappingFile, String sessionName) {
+		super(entityManager);
 		this.mappingFile = mappingFile;
-		this.dataFile = dataFile;
+		this.sessionName = sessionName;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public void generate() throws Exception {
-		
+		Session session = SessionFactory.getSession(mappingFile, sessionName);
+		int counter = 0;
+		int total = 0;
+		entityManager.getTransaction().begin();
+		while (session.hasNext(GeoName.class)) {
+			try {
+				GeoName geoName = session.next(GeoName.class);
+				entityManager.persist(geoName);
+				if (++counter >= 1000) {
+					total += counter;
+					counter = 0;
+					logger.info("Total addresses : " + total + ", " + geoName);
+					entityManager.flush();
+					entityManager.clear();
+					entityManager.getTransaction().commit();
+					entityManager.getTransaction().begin();
+				}
+			} catch (Exception e) {
+				logger.error("Exception persisting geoname : ", e);
+				// throw new RuntimeException(e);
+			}
+		}
 	}
 
 }
