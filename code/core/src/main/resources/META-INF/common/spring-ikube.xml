@@ -39,8 +39,8 @@
 		property:maxReadLength="10000000"
 		property:queueTimeout="84600000"
 		property:throttle="0"
-		property:indexDirectoryPath="${index.directory.path}"
-		property:indexDirectoryPathBackup="${index.directory.path.backup}"
+		property:indexDirectoryPath="./ikube"
+		property:indexDirectoryPathBackup="./ikube/backup"
 		property:indexables-ref="indexables" />
 	<util:list id="indexables">
 		<ref local="internet" />

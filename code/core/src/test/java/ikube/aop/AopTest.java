@@ -14,8 +14,19 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.index.CorruptIndexException;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
+/**
+ * This test is to see if the interceptor is in fact intercepting the classes that it should. Difficult to automate this test of course so
+ * it is a manual test. We could of course write an interceptor for the interceptor and verify that the interceptor is called by Spring,
+ * personally I think that is a little over kill.
+ * 
+ * @author Michael Couck
+ * @since 30.04.2011
+ * @version 01.00
+ */
+@Ignore
 public class AopTest extends BaseTest {
 
 	@Cascading

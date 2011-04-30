@@ -30,7 +30,7 @@ public final class ThreadUtilities {
 			for (Thread thread : threads) {
 				if (thread.isAlive()) {
 					try {
-						thread.join();
+						thread.join(60000);
 					} catch (InterruptedException e) {
 						LOGGER.error("Interrupted waiting for thread : " + thread + ", this thread : " + Thread.currentThread(), e);
 					}
