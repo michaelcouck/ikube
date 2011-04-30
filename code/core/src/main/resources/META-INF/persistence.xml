@@ -27,7 +27,7 @@
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		<properties>
 			<property name="openjpa.ConnectionFactoryProperties" value="PrettyPrint=true,PrettyPrintLineLength=150" />
-			<property name="openjpa.Log" value="DefaultLevel=TRACE,SQL=TRACE,File=./openjpa.log" />
+			<property name="openjpa.Log" value="DefaultLevel=WARN,Runtime=WARN,Tool=WARN,SQL=WARN,File=./openjpa.log" />
 			<property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(SchemaAction='add,deleteTableContents',ForeignKeys=true)" />
 			<property name="openjpa.classLoadEnhancement" value="true" />
 			<property name="openjpa.DynamicEnhancementAgent" value="true" />
@@ -63,7 +63,7 @@
 		<exclude-unlisted-classes>false</exclude-unlisted-classes>
 		<properties>
 			<property name="openjpa.ConnectionFactoryProperties" value="PrettyPrint=true,PrettyPrintLineLength=150" />
-			<property name="openjpa.Log" value="DefaultLevel=TRACE,SQL=TRACE,File=./openjpa.log" />
+			<property name="openjpa.Log" value="DefaultLevel=WARN,Runtime=WARN,Tool=WARN,SQL=WARN,File=./openjpa.log" />
 			<property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
 			<property name="openjpa.classLoadEnhancement" value="true" />
 			<property name="openjpa.DynamicEnhancementAgent" value="true" />
@@ -94,7 +94,7 @@
 		<exclude-unlisted-classes>false</exclude-unlisted-classes>
 		<properties>
 			<property name="openjpa.ConnectionFactoryProperties" value="PrettyPrint=true,PrettyPrintLineLength=150" />
-			<property name="openjpa.Log" value="DefaultLevel=TRACE,SQL=TRACE,File=./openjpa.log" />
+			<property name="openjpa.Log" value="DefaultLevel=WARN,Runtime=WARN,Tool=WARN,SQL=WARN,File=./openjpa.log" />
 			<property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
 			<property name="openjpa.classLoadEnhancement" value="true" />
 			<property name="openjpa.DynamicEnhancementAgent" value="true" />
