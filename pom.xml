@@ -558,6 +558,13 @@
 			<artifactId>flatpack</artifactId>
 			<version>3.1.1</version>
 		</dependency>
+			<dependency>
+				<groupId>canyon</groupId>
+				<artifactId>canyon</artifactId>
+				<version>0.9.8</version>
+				<type>jar</type>
+				<scope>compile</scope>
+			</dependency>
 	</dependencies>
 
 	<repositories>
