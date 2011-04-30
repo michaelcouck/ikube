@@ -33,7 +33,7 @@ public class ServletStrategy extends AStrategy {
 			urlString.append(IConstants.SEP + SearchServlet.class.getSimpleName());
 
 			// Add the index name and index fields with come words
-			// http://192.168.1.109:9000/ikube/SearchServlet?indexName=index&searchString=ikube
+			// http://192.168.1.109:80/ikube/SearchServlet?indexName=index&searchString=ikube
 			String searchString = "quick brown fox jumped over the lazy dog";
 
 			urlString.append("?");

@@ -51,7 +51,6 @@ public class SpatialEnrichmentInterceptorTest extends ATest {
 		interceptor = new SpatialEnrichmentInterceptor();
 		interceptor.setEnrichment(enrichment);
 		interceptor.setGeocoder(geocoder);
-
 	}
 
 	@After

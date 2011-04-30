@@ -1,6 +1,8 @@
 package ikube.model;
 
 import javax.persistence.Entity;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -15,6 +17,7 @@ import org.apache.lucene.store.Directory;
  * @version 01.00
  */
 @Entity()
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Index extends Persistable {
 
 	/** Can be null if there are no indexes running. */

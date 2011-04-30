@@ -71,7 +71,7 @@ public class PageHandlerTest extends BaseTest {
 	protected void performance(int iterations) {
 		for (int i = 0; i < iterations; i++) {
 			Url url = new Url();
-			url.setId(i);
+			url.setId(new Long(i));
 			PageHandler.setUrl(url);
 		}
 		long id = iterations / 2 - (iterations / 4) - (iterations / 7);

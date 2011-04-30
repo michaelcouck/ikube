@@ -1,4 +1,4 @@
-package ikube.logging;
+package ikube.monitoring;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 

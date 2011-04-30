@@ -2,7 +2,7 @@
 
 <!--
 	This is the standard configuration for indexing the Ikube documentation wherever 
-	it is deployed. We assume the port to be the default, i.e. 9000, although this may not be 
+	it is deployed. We assume the port to be the default, i.e. 80, although this may not be 
 	the case. The online documentation should mention this and the search results 
 	should also.
  -->
@@ -39,7 +39,7 @@
 		property:maxReadLength="10000000"
 		property:queueTimeout="84600000"
 		property:throttle="0"
-		property:indexDirectoryPath="./ikube/documentation"
+		property:indexDirectoryPath="ikube.internal.index.path"
 		property:indexables-ref="indexables" />
 	<util:list id="indexables">
 		<ref local="internet" />

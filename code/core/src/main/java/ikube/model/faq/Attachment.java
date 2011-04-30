@@ -9,6 +9,8 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
@@ -21,6 +23,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
  * @version 01.00
  */
 @Entity
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Attachment implements Serializable, Comparable<Attachment> {
 
 	@Id

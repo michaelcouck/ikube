@@ -80,8 +80,32 @@ public interface ISearcherWebService {
 	String searchMultiSorted(String indexName, String[] searchStrings, String[] searchFields, String[] sortFields, boolean fragment,
 			int firstResult, int maxResults);
 
+	/**
+	 * TODO Comment me!
+	 * 
+	 * @param indexName
+	 * @param searchStrings
+	 * @param fragment
+	 * @param firstResult
+	 * @param maxResults
+	 * @return
+	 */
 	String searchMultiAll(String indexName, String[] searchStrings, boolean fragment, int firstResult, int maxResults);
 
+	/**
+	 * TODO Comment me!
+	 * 
+	 * @param indexName
+	 * @param searchStrings
+	 * @param searchFields
+	 * @param fragment
+	 * @param firstResult
+	 * @param maxResults
+	 * @param distance
+	 * @param latitude
+	 * @param longitude
+	 * @return
+	 */
 	String searchSpacialMulti(String indexName, String[] searchStrings, String[] searchFields, boolean fragment, int firstResult,
 			int maxResults, int distance, double latitude, double longitude);
 

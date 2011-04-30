@@ -33,14 +33,25 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IHandl
 		this.threads = threads;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public Class<T> getIndexableClass() {
 		return indexableClass;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public void setIndexableClass(final Class<T> indexableClass) {
 		this.indexableClass = indexableClass;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void addDocument(final IndexContext indexContext, final Indexable<T> indexable, final Document document)
 			throws CorruptIndexException, IOException {

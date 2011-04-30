@@ -32,29 +32,34 @@
 	
 	<bean
 		id="ikube.index.spatial.geocode.IGeocoder"
-		class="ikube.index.spatial.geocode.GoogleGeocoder"
-		property:geoCodeApi="http://maps.googleapis.com/maps/api/geocode/xml" />
+		class="ikube.index.spatial.geocode.IkubeGeocoder"
+		property:url="http://ikube:8081/ikube/service/ISearcherWebService?wsdl "
+		property:indexName="geospatial"
+		property:searchField="content" />
 	<bean 
 		id="ikube.index.spatial.enrich.IEnrichment"
 		class="ikube.index.spatial.enrich.Enrichment"
 		property:minKm="10"
 		property:maxKm="20"  />
 	<bean 
-		id="ikube.index.spatial.SpatialEnrichmentInterceptor" 
+		id="ikube.index.spatial.ISpatialEnrichmentInterceptor" 
 		class="ikube.index.spatial.SpatialEnrichmentInterceptor"
 		property:geocoder-ref="ikube.index.spatial.geocode.IGeocoder"
 		property:enrichment-ref="ikube.index.spatial.enrich.IEnrichment" />
 	<aop:config proxy-target-class="true">
-		<aop:aspect ref="ikube.index.spatial.SpatialEnrichmentInterceptor">
+		<aop:aspect ref="ikube.index.spatial.ISpatialEnrichmentInterceptor">
 			<aop:around method="enrich" pointcut="execution(* ikube.index.handler.*.addDocument(..))"  />
+		</aop:aspect>
+		<aop:aspect ref="ikube.index.spatial.ISpatialEnrichmentInterceptor">
+			<aop:around method="enrich" pointcut="execution(* ikube.index.handler.*.*.addDocument(..))"  />
 		</aop:aspect>
 	</aop:config>
 	
 	<bean 
-		id="ikube.logging.Monitor" 
-		class="ikube.logging.Monitor" />
+		id="ikube.monitoring.IMonitor" 
+		class="ikube.monitoring.MonitorPerformance" />
 	<aop:config proxy-target-class="true">
-		<aop:aspect ref="ikube.logging.Monitor">
+		<aop:aspect ref="ikube.monitoring.IMonitor">
 			<aop:around method="monitor" pointcut="execution(* ikube.index.handler.internet.crawler.PageHandler.*(..))" />
 		</aop:aspect>
 	</aop:config>

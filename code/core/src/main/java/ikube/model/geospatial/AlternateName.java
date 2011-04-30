@@ -2,10 +2,13 @@ package ikube.model.geospatial;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 
 import ikube.model.Persistable;
 
 @Entity()
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class AlternateName extends Persistable {
 
 	private Integer alternateNameId; // : the id of this alternate name, int

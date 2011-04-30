@@ -19,7 +19,7 @@ public class IntegrationTomcat extends Integration {
 		Thread.sleep((long) (Math.random() * 10));
 		// ApplicationContextManager.getApplicationContext();
 		// Tomcat tomcat = new Tomcat();
-		// tomcat.setPort(GeneralUtilities.findFirstOpenPort(9000));
+		// tomcat.setPort(GeneralUtilities.findFirstOpenPort(80));
 		// tomcat.setBaseDir(".");
 		// tomcat.getHost().setAppBase("/");
 		// StandardServer server = (StandardServer) tomcat.getServer();

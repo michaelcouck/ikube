@@ -1,6 +1,8 @@
 package ikube.model;
 
 import javax.persistence.Entity;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
@@ -11,6 +13,7 @@ import org.apache.commons.lang.builder.ToStringStyle;
  * @version 01.00
  */
 @Entity()
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Url extends Persistable {
 
 	private String url;

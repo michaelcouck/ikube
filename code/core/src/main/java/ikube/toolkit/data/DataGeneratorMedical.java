@@ -64,6 +64,7 @@ public class DataGeneratorMedical extends ADataGenerator {
 					doctor.getAddress().setStreet(streetAddressElement.getText());
 
 					entityManager.persist(doctor);
+					entities.clear();
 				}
 			} finally {
 				commit(entityManager);

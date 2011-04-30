@@ -201,7 +201,7 @@ public final class IndexManager {
 			field = new Field(fieldName, fieldContent, store, analyzed, termVector);
 			document.add(field);
 		} else {
-			String fieldValue = field.stringValue();
+			String fieldValue = field.stringValue() != null ? field.stringValue() : "";
 			StringBuilder builder = new StringBuilder(fieldValue).append(' ').append(fieldContent);
 			field.setValue(builder.toString());
 		}

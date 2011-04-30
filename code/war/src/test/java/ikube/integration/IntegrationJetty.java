@@ -30,7 +30,7 @@ import org.mortbay.jetty.webapp.WebAppContext;
 public class IntegrationJetty extends Integration {
 
 	/** The port to start from. */
-	private int port = 9090;
+	private int port = 80;
 	private String webApp = "webapp";
 	private String ikubeWar = "ikube-war";
 	private String contextPath = IConstants.SEP + IConstants.IKUBE;

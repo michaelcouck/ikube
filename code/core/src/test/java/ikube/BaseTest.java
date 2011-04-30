@@ -4,12 +4,6 @@ import ikube.listener.ListenerManager;
 import ikube.model.IndexContext;
 import ikube.model.faq.Attachment;
 import ikube.model.faq.Faq;
-import ikube.model.medical.Address;
-import ikube.model.medical.Doctor;
-import ikube.model.medical.Hospital;
-import ikube.model.medical.Inpatient;
-import ikube.model.medical.Patient;
-import ikube.model.medical.Person;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.PerformanceTester;
@@ -53,8 +47,7 @@ public abstract class BaseTest extends ATest {
 				public void execute() throws Exception {
 					try {
 						int iterations = 10;
-						Class<?>[] classes = new Class[] { Faq.class, Attachment.class, Address.class, Doctor.class, Hospital.class,
-								Inpatient.class, Patient.class, Person.class };
+						Class<?>[] classes = new Class[] { Faq.class, Attachment.class };
 						IDataGenerator dataGenerator = new DataGeneratorFour(entityManager, iterations, classes);
 						dataGenerator.before();
 						dataGenerator.generate();

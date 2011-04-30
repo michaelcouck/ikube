@@ -3,6 +3,8 @@ package ikube.model;
 import java.util.List;
 
 import javax.persistence.Entity;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -14,6 +16,7 @@ import org.apache.commons.lang.builder.ToStringStyle;
  * @version 01.00
  */
 @Entity()
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public abstract class Indexable<E> extends Persistable {
 
 	private String name;

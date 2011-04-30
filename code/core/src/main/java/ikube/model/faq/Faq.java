@@ -6,7 +6,6 @@ import java.util.Collection;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -22,8 +21,7 @@ import javax.persistence.OneToMany;
  * @version 01.00
  */
 @Entity
-@DiscriminatorValue("Faq")
-@Inheritance(strategy = InheritanceType.JOINED)
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Faq implements Serializable, Comparable<Faq> {
 
 	@Id

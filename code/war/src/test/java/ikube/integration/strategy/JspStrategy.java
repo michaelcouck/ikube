@@ -46,7 +46,7 @@ public class JspStrategy extends AStrategy {
 			List<Element> elements = XmlUtilities.getElements(document.getRootElement(), VIEW_CONTROLLER_TAG_NAME);
 			for (Element element : elements) {
 				String host = "localhost";
-				// http://192.168.1.102:9000/ikube/index.html
+				// http://192.168.1.102:80/ikube/index.html
 				String path = element.attributeValue(PATH);
 				verifyPage(host, path);
 			}

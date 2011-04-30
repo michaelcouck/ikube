@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:property="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
+
+	xsi:schemaLocation="
+			http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+            http://www.springframework.org/schema/context
+            http://www.springframework.org/schema/context/spring-context-3.0.xsd
+            http://www.springframework.org/schema/util
+            http://www.springframework.org/schema/util/spring-util.xsd">
+
+	<context:property-placeholder
+		location="classpath*:**/spring.properties" 
+		properties-ref="ikube.toolkit.PropertyConfigurer" />
+	
+	<bean
+		id="geospatial"
+		class="ikube.model.IndexContext"
+		property:indexName="geospatial"
+		property:maxAge="60000"
+		property:compoundFile="${compound.file}"
+		property:bufferedDocs="${buffered.docs}"
+		property:bufferSize="256"
+		property:mergeFactor="1000"
+		property:maxFieldLength="10000"
+		property:maxReadLength="10000000"
+		property:queueTimeout="84600000"
+		property:throttle="0"
+		property:indexDirectoryPath="${ikube.internal.index.path}"
+		property:indexables-ref="indexables" />
+	<util:list id="indexables">
+		<ref local="geoname" />
+	</util:list>
+	
+	<bean
+		id="geoname"
+		class="ikube.model.IndexableTable"
+		property:name="geoname"
+		property:primary="true"
+		property:dataSource-ref="nonXaDataSourceDb2"
+		property:children-ref="geonameColumnsDb2" />
+	<util:list id="geonameColumnsDb2">
+		<ref local="id" />
+		<ref local="geonameid" />
+		<ref local="name" />
+		<ref local="asciiname" />
+		<ref local="alternatenames" />
+		<ref local="latitude" />
+		<ref local="longitude" />
+		<ref local="featureClass" />
+		<ref local="featureCode" />
+		<ref local="countryCode" />
+		<ref local="cc2" />
+		<ref local="admin1Code" />
+		<ref local="admin2Code" />
+		<ref local="admin3Code" />
+		<ref local="admin4Code" />
+		<ref local="population" />
+		<ref local="elevation" />
+		<ref local="gtopo30" />
+		<ref local="timezone" />
+		<ref local="modification" />
+	</util:list>
+	<bean
+		id="id"
+		class="ikube.model.IndexableColumn"
+		property:name="id"
+		property:idColumn="true"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="geonameid"
+		class="ikube.model.IndexableColumn"
+		property:name="geonameid"
+		property:fieldName="geonameid"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="name"
+		class="ikube.model.IndexableColumn"
+		property:name="name"
+		property:fieldName="content"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="asciiname"
+		class="ikube.model.IndexableColumn"
+		property:name="asciiname"
+		property:fieldName="content"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="alternatenames"
+		class="ikube.model.IndexableColumn"
+		property:name="alternatenames"
+		property:fieldName="content"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="latitude"
+		class="ikube.model.IndexableColumn"
+		property:name="latitude"
+		property:fieldName="latitude"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="longitude"
+		class="ikube.model.IndexableColumn"
+		property:name="longitude"
+		property:fieldName="longitude"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="featureClass"
+		class="ikube.model.IndexableColumn"
+		property:name="featureClass"
+		property:fieldName="content"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="featureCode"
+		class="ikube.model.IndexableColumn"
+		property:name="featureCode"
+		property:fieldName="featureCode"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="countryCode"
+		class="ikube.model.IndexableColumn"
+		property:name="countryCode"
+		property:fieldName="countryCode"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="cc2"
+		class="ikube.model.IndexableColumn"
+		property:name="cc2"
+		property:fieldName="cc2"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="admin1Code"
+		class="ikube.model.IndexableColumn"
+		property:name="admin1Code"
+		property:fieldName="admin1Code"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="admin2Code"
+		class="ikube.model.IndexableColumn"
+		property:name="admin2Code"
+		property:fieldName="admin2Code"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="admin3Code"
+		class="ikube.model.IndexableColumn"
+		property:name="admin3Code"
+		property:fieldName="admin3Code"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="admin4Code"
+		class="ikube.model.IndexableColumn"
+		property:name="admin4Code"
+		property:fieldName="admin4Code"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="population"
+		class="ikube.model.IndexableColumn"
+		property:name="population"
+		property:fieldName="population"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="elevation"
+		class="ikube.model.IndexableColumn"
+		property:name="elevation"
+		property:fieldName="elevation"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="gtopo30"
+		class="ikube.model.IndexableColumn"
+		property:name="gtopo30"
+		property:fieldName="gtopo30"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="timezone"
+		class="ikube.model.IndexableColumn"
+		property:name="timezone"
+		property:fieldName="timezone"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="modification"
+		class="ikube.model.IndexableColumn"
+		property:name="modification"
+		property:fieldName="modification"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	
+</beans>

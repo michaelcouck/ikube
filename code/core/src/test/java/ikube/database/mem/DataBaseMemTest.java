@@ -56,7 +56,7 @@ public class DataBaseMemTest extends BaseTest {
 		int total = 100;
 		for (int i = 0; i < total; i++) {
 			Url url = new Url();
-			url.setId(i);
+			url.setId(new Long(i));
 			dataBase.persist(url);
 		}
 		int start = 0;
@@ -79,7 +79,7 @@ public class DataBaseMemTest extends BaseTest {
 	public void findClassLong() throws Exception {
 		// Class<T>, Long
 		Url url = new Url();
-		url.setId(1);
+		url.setId(new Long(1));
 		dataBase.persist(url);
 		url = dataBase.find(Url.class, url.getId());
 		assertNotNull(url);
@@ -89,7 +89,7 @@ public class DataBaseMemTest extends BaseTest {
 	public void removeClassLong() throws Exception {
 		// Class<T>, Long
 		Url url = new Url();
-		url.setId(1);
+		url.setId(new Long(1));
 		dataBase.persist(url);
 		url = dataBase.find(Url.class, url.getId());
 		assertNotNull(url);
@@ -102,7 +102,7 @@ public class DataBaseMemTest extends BaseTest {
 	public void remove() throws Exception {
 		// T
 		Url url = new Url();
-		url.setId(1);
+		url.setId(new Long(1));
 		dataBase.persist(url);
 		url = dataBase.find(Url.class, url.getId());
 		assertNotNull(url);

@@ -1,4 +1,4 @@
-package ikube.logging;
+package ikube.monitoring;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,7 +11,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
  * @since 22.11.10
  * @version 01.00
  */
-public class Monitor implements IMonitor {
+public class MonitorPerformance implements IMonitor {
 
 	private class Execution {
 		int invocations;
@@ -20,12 +20,12 @@ public class Monitor implements IMonitor {
 		double stop;
 	}
 
-	private static final Logger LOGGER = Logger.getLogger(Monitor.class);
+	private static final Logger LOGGER = Logger.getLogger(MonitorPerformance.class);
 	private transient final Map<String, Execution> executions;
 	private transient double invocations = 10;
 
-	public Monitor() {
-		this.executions = new HashMap<String, Monitor.Execution>();
+	public MonitorPerformance() {
+		this.executions = new HashMap<String, MonitorPerformance.Execution>();
 	}
 
 	@Override

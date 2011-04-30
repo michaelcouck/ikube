@@ -6,6 +6,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 
 /**
  * Base class for entities. All sub classes must declare the inheritance strategy.
@@ -17,17 +19,18 @@ import javax.persistence.Id;
  * @version 01.00
  */
 @Entity()
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public abstract class Persistable implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.TABLE)
-	private long id;
+	private Long id;
 
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(final long id) {
+	public void setId(final Long id) {
 		this.id = id;
 	}
 

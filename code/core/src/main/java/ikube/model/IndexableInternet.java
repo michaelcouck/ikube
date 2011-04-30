@@ -6,6 +6,8 @@ import java.net.URISyntaxException;
 import java.util.regex.Pattern;
 
 import javax.persistence.Entity;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -18,6 +20,7 @@ import org.apache.log4j.Logger;
  * @version 01.00
  */
 @Entity()
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class IndexableInternet extends Indexable<IndexableInternet> {
 
 	private static transient final Logger LOGGER = Logger.getLogger(IndexableInternet.class);

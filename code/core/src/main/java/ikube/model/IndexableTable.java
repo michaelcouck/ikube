@@ -1,6 +1,8 @@
 package ikube.model;
 
 import javax.persistence.Entity;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.Transient;
 import javax.sql.DataSource;
 
@@ -13,6 +15,7 @@ import org.apache.commons.lang.builder.ToStringStyle;
  * @version 01.00
  */
 @Entity()
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class IndexableTable extends Indexable<IndexableTable> {
 
 	/** TODO - the datasource needs to be configured else where. */

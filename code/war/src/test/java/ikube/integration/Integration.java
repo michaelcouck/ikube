@@ -181,7 +181,7 @@ public class Integration {
 		logger.info("Operating system : " + osName + ", server : " + osName.toLowerCase().contains("server") + ", 64 bit : "
 				+ properties.getProperty("os.arch").contains("64"));
 		if (osName.toLowerCase().contains("server") && properties.getProperty("os.arch").contains("64")) {
-			// return Boolean.TRUE;
+			return Boolean.TRUE;
 		}
 		return Boolean.FALSE;
 	}
