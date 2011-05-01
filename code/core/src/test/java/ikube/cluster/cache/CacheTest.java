@@ -3,9 +3,8 @@ package ikube.cluster.cache;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import ikube.BaseTest;
+import ikube.ATest;
 import ikube.model.Url;
-import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.PerformanceTester;
 
 import java.util.List;
@@ -19,10 +18,10 @@ import org.junit.Test;
  * @since 12.10.2010
  * @version 01.00
  */
-public class CacheTest extends BaseTest {
+public class CacheTest extends ATest {
 
 	private transient Url url;
-	private transient ICache cache;
+	private transient Cache cache;
 
 	public CacheTest() {
 		super(CacheTest.class);
@@ -30,7 +29,8 @@ public class CacheTest extends BaseTest {
 
 	@Before
 	public void before() {
-		cache = ApplicationContextManager.getBean(ICache.class);
+		cache = new Cache();
+		cache.initialise();
 		url = new Url();
 		url.setUrl("http://localhost");
 		url.setHash(System.nanoTime());

@@ -49,7 +49,7 @@ public class DataLoader {
 		try {
 			connection = getConnection();
 			File createTableFile = FileUtilities.getFile(filePath, Boolean.FALSE);
-			String contents = FileUtilities.getContents(createTableFile).toString();
+			String contents = FileUtilities.getContents(createTableFile, Integer.MAX_VALUE).toString();
 			StringTokenizer tokenizer = new StringTokenizer(contents, ";", Boolean.FALSE);
 			while (tokenizer.hasMoreTokens()) {
 				String sql = tokenizer.nextToken();
@@ -114,7 +114,7 @@ public class DataLoader {
 	public IDataSet getDataSet(String filePath) {
 		try {
 			File file = FileUtilities.getFile(filePath, Boolean.FALSE);
-			ByteArrayOutputStream byteArrayOutputStream = FileUtilities.getContents(file);
+			ByteArrayOutputStream byteArrayOutputStream = FileUtilities.getContents(file, Integer.MAX_VALUE);
 			ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
 			return getDataSet(byteArrayInputStream);
 		} catch (Exception e) {

@@ -1,9 +1,9 @@
 package ikube;
 
 import static org.mockito.Mockito.when;
-import ikube.action.Clean;
 import ikube.action.IAction;
 import ikube.listener.Event;
+import ikube.action.Process;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.model.IndexContext;
 import ikube.toolkit.ApplicationContextManager;
@@ -44,7 +44,7 @@ public class IndexEngineTest extends ATest {
 	public void handleNotification() {
 		IndexEngine indexEngine = new IndexEngine();
 		List<IAction<IndexContext, Boolean>> actions = new ArrayList<IAction<IndexContext, Boolean>>();
-		actions.add(new Clean<IndexContext, Boolean>());
+		actions.add(new Process());
 		indexEngine.setActions(actions);
 
 		Event event = new Event();

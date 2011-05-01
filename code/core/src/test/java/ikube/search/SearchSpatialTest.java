@@ -54,7 +54,7 @@ public class SearchSpatialTest extends ATest {
 		// Create and index with the spacial data
 		boolean deleted = FileUtilities.deleteFile(indexDirectory, 1);
 		logger.info("Deleted : " + deleted + ", index directory : " + indexDirectory);
-		IndexWriter indexWriter = IndexManager.openIndexWriter(INDEX_CONTEXT, indexDirectory);
+		IndexWriter indexWriter = IndexManager.openIndexWriter(INDEX_CONTEXT, indexDirectory, Boolean.TRUE);
 		IEnrichment enrichment = new Enrichment();
 		enrichment.setMinKm(10);
 		enrichment.setMaxKm(20);

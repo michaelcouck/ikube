@@ -1,24 +1,22 @@
 package ikube;
 
 import ikube.listener.ListenerManager;
+import ikube.listener.Scheduler;
 import ikube.model.IndexContext;
 import ikube.model.faq.Attachment;
 import ikube.model.faq.Faq;
 import ikube.toolkit.ApplicationContextManager;
-import ikube.toolkit.FileUtilities;
 import ikube.toolkit.PerformanceTester;
 import ikube.toolkit.data.DataGeneratorFour;
-import ikube.toolkit.data.DataGeneratorMedical;
 import ikube.toolkit.data.IDataGenerator;
 
-import java.io.File;
-import java.util.Map;
-
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.springframework.context.ApplicationContext;
 
 /**
  * @author Michael Couck
@@ -27,67 +25,42 @@ import org.junit.BeforeClass;
  */
 public abstract class BaseTest extends ATest {
 
-	/** We only want the before class to execute once for the whole test batch. */
-	private static boolean INIT = Boolean.FALSE;
+	protected static ApplicationContext APPLICATION_CONTEXT;
+	protected static EntityManagerFactory ENTITY_MANAGER_FACTORY;
+	protected static boolean initialised = Boolean.FALSE;
 
 	@BeforeClass
 	public static void beforeClass() {
+		APPLICATION_CONTEXT = ApplicationContextManager.getApplicationContext();
 		ListenerManager.removeListeners();
-		if (INIT) {
+		Scheduler.shutdown();
+		if (initialised) {
 			return;
 		}
-		INIT = Boolean.TRUE;
-		ApplicationContextManager.getApplicationContext(IConstants.SPRING_CONFIGURATION_FILE);
-
+		initialised = Boolean.TRUE;
 		try {
-			final EntityManager entityManager = Persistence.createEntityManagerFactory(IConstants.PERSISTENCE_UNIT_H2)
-					.createEntityManager();
+			ENTITY_MANAGER_FACTORY = Persistence.createEntityManagerFactory(IConstants.PERSISTENCE_UNIT_H2);
+			final EntityManager entityManager = ENTITY_MANAGER_FACTORY.createEntityManager();
+			final int iterations = 1;
 			PerformanceTester.execute(new PerformanceTester.APerform() {
 				@Override
 				public void execute() throws Exception {
-					try {
-						int iterations = 10;
-						Class<?>[] classes = new Class[] { Faq.class, Attachment.class };
-						IDataGenerator dataGenerator = new DataGeneratorFour(entityManager, iterations, classes);
-						dataGenerator.before();
-						dataGenerator.generate();
-
-						dataGenerator = new DataGeneratorMedical(entityManager, "doctors.xml", 10);
-						dataGenerator.before();
-						dataGenerator.generate();
-						dataGenerator.after();
-					} finally {
-						if (entityManager != null && entityManager.isOpen()) {
-							try {
-								entityManager.close();
-							} catch (Exception e) {
-								e.printStackTrace();
-							}
-						}
-					}
+					Class<?>[] classes = new Class[] { Faq.class, Attachment.class };
+					IDataGenerator dataGenerator = new DataGeneratorFour(entityManager, iterations, classes);
+					dataGenerator.before();
+					dataGenerator.generate();
 				}
-			}, "Data generator two insertion : ", 1);
+			}, "Data generator insertion : ", iterations);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
-		// Delete all the old index directories
-		Map<String, IndexContext> contexts = ApplicationContextManager.getBeans(IndexContext.class);
-		for (IndexContext indexContext : contexts.values()) {
-			File baseIndexDirectory = FileUtilities.getFile(indexContext.getIndexDirectoryPath(), Boolean.TRUE);
-			FileUtilities.deleteFile(baseIndexDirectory, 1);
-		}
+		Scheduler.shutdown();
 		ListenerManager.removeListeners();
 	}
 
 	@AfterClass
 	public static void afterClass() {
-		// Try to delete all the old index files
-		Map<String, IndexContext> contexts = ApplicationContextManager.getBeans(IndexContext.class);
-		for (IndexContext indexContext : contexts.values()) {
-			File indexDirectory = FileUtilities.getFile(indexContext.getIndexDirectoryPath(), Boolean.TRUE);
-			FileUtilities.deleteFile(indexDirectory, 1);
-		}
+		ListenerManager.removeListeners();
 	}
 
 	protected IndexContext indexContext;

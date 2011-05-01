@@ -37,11 +37,24 @@ public class Clean<E, F> extends Action<IndexContext, Boolean> {
 				return Boolean.FALSE;
 			}
 			for (File serverIndexDirectory : serverIndexDirectories) {
-				boolean shouldDelete = Boolean.FALSE;
 				Directory directory = null;
+				boolean locked = Boolean.FALSE;
+				boolean shouldDelete = Boolean.FALSE;
 				try {
 					directory = FSDirectory.open(serverIndexDirectory);
-					if (IndexWriter.isLocked(directory)) {
+					locked = IndexWriter.isLocked(directory);
+					if (locked) {
+						// We assume that there are no other servers working so this directory
+						// has been locked and the server is dead, we will unlock the index, and perhaps
+						// try to optimise it too
+						IndexWriter.unlock(directory);
+						locked = IndexWriter.isLocked(directory);
+						if (locked) {
+							continue;
+						}
+						IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, serverIndexDirectory, Boolean.FALSE);
+						indexContext.getIndex().setIndexWriter(indexWriter);
+						IndexManager.closeIndexWriter(indexContext);
 						continue;
 					}
 					if (!IndexReader.indexExists(directory)) {
@@ -49,6 +62,9 @@ public class Clean<E, F> extends Action<IndexContext, Boolean> {
 						shouldDelete = Boolean.TRUE;
 					}
 				} catch (IOException e) {
+					logger.error("Directory : " + serverIndexDirectory + " not ok, will try to delete : ", e);
+					shouldDelete = Boolean.TRUE;
+				} catch (Exception e) {
 					logger.error("Directory : " + serverIndexDirectory + " not ok, will try to delete : ", e);
 					shouldDelete = Boolean.TRUE;
 				} finally {
@@ -59,7 +75,7 @@ public class Clean<E, F> extends Action<IndexContext, Boolean> {
 							logger.error("Exception closing the directory : ", e);
 						}
 					}
-					if (shouldDelete) {
+					if (shouldDelete && !locked) {
 						try {
 							logger.warn("Deleting directory : " + serverIndexDirectory + ", as it either corrupt, or partially deleted : ");
 							FileUtilities.deleteFile(serverIndexDirectory, 1);

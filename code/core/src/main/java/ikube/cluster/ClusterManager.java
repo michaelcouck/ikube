@@ -1,6 +1,9 @@
 package ikube.cluster;
 
 import ikube.cluster.cache.ICache;
+import ikube.listener.Event;
+import ikube.listener.IListener;
+import ikube.listener.ListenerManager;
 import ikube.model.Server;
 import ikube.model.Server.Action;
 import ikube.model.Url;
@@ -18,7 +21,7 @@ import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.ILock;
 
 /**
- * All the methods are synchronized in this class because not only is Ikube clusterable but also multi-threaded in each server.
+ * All the methods are synchronised in this class because not only is Ikube clusterable but also multi-threaded in each server.
  * 
  * @see IClusterManager
  * @author Michael Couck
@@ -37,6 +40,8 @@ public class ClusterManager implements IClusterManager {
 	protected static final double MAX_ACTION_SIZE = 100;
 	/** The ratio to delete the actions when the maximum is reached. */
 	protected static final double ACTION_PRUNE_RATIO = 0.5;
+	/** The maximum age that the server can get to before it is deleted from the cluster. */
+	protected static final int MAX_AGE = 10000;
 
 	protected static final Logger LOGGER = Logger.getLogger(ClusterManager.class);
 	/** The ip of this server. */
@@ -67,7 +72,7 @@ public class ClusterManager implements IClusterManager {
 	};
 
 	/**
-	 * In the constructor we initialize the logger but most importantly the address of this server. Please see the comments.
+	 * In the constructor we initialise the logger but most importantly the address of this server. Please see the comments.
 	 * 
 	 * @throws Exception
 	 *             this can only be the InetAddress exception, which can never happen because we are looking for the localhost
@@ -82,6 +87,26 @@ public class ClusterManager implements IClusterManager {
 				// same ip address
 				this.ip = InetAddress.getLocalHost().getHostAddress();
 				this.address = ip + "." + System.nanoTime();
+				ListenerManager.addListener(new IListener() {
+					@Override
+					public void handleNotification(Event event) {
+						if (!event.getType().equals(Event.ALIVE)) {
+							return;
+						}
+						// Set our own server age
+						Server server = getServer();
+						server.setAge(System.currentTimeMillis());
+						set(Server.class, server.getId(), server);
+						// Remove all servers that are past the max age
+						List<Server> servers = getServers();
+						for (Server remoteServer : servers) {
+							if (System.currentTimeMillis() - remoteServer.getAge()  > MAX_AGE) {
+								LOGGER.info("Removing server : " + remoteServer);
+								remove(Server.class, remoteServer.getId());
+							}
+						}
+					}
+				});
 			} finally {
 				notifyAll();
 			}
@@ -245,6 +270,7 @@ public class ClusterManager implements IClusterManager {
 				server.setIp(ip);
 				server.setAddress(address);
 				server.setId(HashUtilities.hash(address));
+				server.setAge(System.currentTimeMillis());
 				cache.set(Server.class.getName(), server.getId(), server);
 				LOGGER.info("Published server : " + server);
 			}
@@ -454,6 +480,18 @@ public class ClusterManager implements IClusterManager {
 	public synchronized <T> int size(Class<T> klass) {
 		try {
 			return this.cache.size(klass.getName());
+		} finally {
+			notifyAll();
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public synchronized <T> void remove(Class<T> klass, Long id) {
+		try {
+			this.cache.remove(klass.getName(), id);
 		} finally {
 			notifyAll();
 		}

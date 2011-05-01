@@ -6,7 +6,6 @@ import static org.junit.Assert.assertTrue;
 import ikube.model.faq.Attachment;
 import ikube.model.faq.Faq;
 import ikube.model.medical.Address;
-import ikube.model.medical.Doctor;
 import ikube.model.medical.Hospital;
 import ikube.model.medical.Patient;
 
@@ -22,7 +21,6 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -32,13 +30,12 @@ import org.junit.Test;
  * @since 14.03.2011
  * @version 01.00
  */
-@Ignore
 public class DataGeneratorFourTest {
 
 	@Cascading
 	private EntityManager entityManager;
 	private DataGeneratorFour dataGeneratorFour;
-	private Class<?>[] classes = new Class[] { Patient.class, Address.class, Hospital.class, Doctor.class };
+	private Class<?>[] classes = new Class[] { Patient.class, Address.class, Hospital.class };
 
 	@BeforeClass
 	public static void beforeClass() throws Exception {
@@ -59,7 +56,6 @@ public class DataGeneratorFourTest {
 	@After
 	public void after() throws Exception {
 		dataGeneratorFour.after();
-		entityManager.close();
 	}
 
 	@Test

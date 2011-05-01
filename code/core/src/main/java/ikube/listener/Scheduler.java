@@ -46,6 +46,11 @@ public class Scheduler {
 		}
 	}
 
+	public static void shutdown() {
+		Scheduler.SCHEDULER.shutdown();
+		Scheduler.SCHEDULES.clear();
+	}
+
 	public static void addSchedule(Schedule schedule) {
 		Scheduler.SCHEDULES.add(schedule);
 	}

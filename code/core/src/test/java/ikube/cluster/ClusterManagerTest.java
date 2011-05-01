@@ -3,16 +3,15 @@ package ikube.cluster;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import ikube.BaseTest;
-import ikube.model.IndexableTable;
+import ikube.ATest;
+import ikube.cluster.cache.Cache;
+import ikube.listener.ListenerManager;
 import ikube.model.Server;
 import ikube.model.Url;
-import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.HashUtilities;
 import ikube.toolkit.ThreadUtilities;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +24,7 @@ import org.junit.Test;
  * @since 12.10.2010
  * @version 01.00
  */
-public class ClusterManagerTest extends BaseTest {
+public class ClusterManagerTest extends ATest {
 
 	private transient Server remoteServer;
 
@@ -35,25 +34,29 @@ public class ClusterManagerTest extends BaseTest {
 	private transient int batchSize = 10;
 
 	/** The class under test. */
-	private IClusterManager clusterManager;
+	private ClusterManager clusterManager;
 
 	public ClusterManagerTest() {
 		super(ClusterManagerTest.class);
 	}
 
 	@Before
-	public void before() throws UnknownHostException {
-		indexName = indexContext.getIndexName();
-		indexableName = ApplicationContextManager.getBeans(IndexableTable.class).values().iterator().next().getName();
+	public void before() throws Exception {
+		indexName = INDEX_CONTEXT.getIndexName();
+		indexableName = INDEXABLE.getName();
 
 		remoteServer = new Server();
 		remoteServer.setAddress(InetAddress.getLocalHost().getHostAddress() + ".remote");
 		remoteServer.setId(HashUtilities.hash(remoteServer.getAddress()));
 		remoteServer.setWorking(Boolean.FALSE);
 
-		clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
+		clusterManager = new ClusterManager();
+		Cache cache = new Cache();
+		cache.initialise();
+		clusterManager.setCache(cache);
 		clusterManager.clear(Url.class);
 		clusterManager.clear(Server.class);
+		ListenerManager.removeListeners();
 	}
 
 	@After

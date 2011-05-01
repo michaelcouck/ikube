@@ -13,7 +13,6 @@ import ikube.toolkit.FileUtilities;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
@@ -26,7 +25,7 @@ import org.apache.lucene.document.Field.TermVector;
 
 /**
  * This class indexes a file share on the network. It is not multi threaded as file access is generally faster than parsing anyway so
- * performance would degrade if this class is multi-threaded due to the cluster synchronization overhead.
+ * performance would degrade if this class is multi-threaded due to the cluster synchronisation overhead.
  * 
  * @author Cristi Bozga
  * @author Michael Couck
@@ -108,9 +107,10 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 			indexableFileSystem.setCurrentFile(file);
 
 			// TODO - this can be very large so we have to use a reader if necessary
-			InputStream inputStream = new ByteArrayInputStream(FileUtilities.getContents(new FileInputStream(file),
-					indexContext.getMaxReadLength()).toByteArray());
+			ByteArrayOutputStream byteArrayOutputStream = FileUtilities.getContents(file, (int) indexContext.getMaxReadLength());
+			InputStream inputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
 
+			// Read the first bit so we can see what type of data this is
 			byte[] bytes = new byte[1024];
 			if (inputStream.markSupported()) {
 				inputStream.mark(Short.MAX_VALUE);
@@ -125,20 +125,22 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 			Index analyzed = indexableFileSystem.isAnalyzed() ? Index.ANALYZED : Index.NOT_ANALYZED;
 			TermVector termVector = indexableFileSystem.isVectored() ? TermVector.YES : TermVector.NO;
 
+			String pathFieldName = indexableFileSystem.getPathFieldName();
+			String nameFieldName = indexableFileSystem.getNameFieldName();
+			String modifiedFieldName = indexableFileSystem.getLastModifiedFieldName();
+			String lengthFieldName = indexableFileSystem.getLengthFieldName();
+			String contentFieldName = indexableFileSystem.getContentFieldName();
+
 			// The path
-			IndexManager.addStringField(indexableFileSystem.getPathFieldName(), file.getAbsolutePath(), document, store, analyzed,
-					termVector);
+			IndexManager.addStringField(pathFieldName, file.getAbsolutePath(), document, store, analyzed, termVector);
 			// The name
-			IndexManager.addStringField(indexableFileSystem.getNameFieldName(), file.getName(), document, store, analyzed, termVector);
+			IndexManager.addStringField(nameFieldName, file.getName(), document, store, analyzed, termVector);
 			// Last modified
-			IndexManager.addStringField(indexableFileSystem.getLastModifiedFieldName(), Long.toString(file.lastModified()), document,
-					store, analyzed, termVector);
+			IndexManager.addStringField(modifiedFieldName, Long.toString(file.lastModified()), document, store, analyzed, termVector);
 			// Length
-			IndexManager.addStringField(indexableFileSystem.getLengthFieldName(), Long.toString(file.length()), document, store, analyzed,
-					termVector);
+			IndexManager.addStringField(lengthFieldName, Long.toString(file.length()), document, store, analyzed, termVector);
 			// Content
-			IndexManager.addStringField(indexableFileSystem.getContentFieldName(), parsedOutputStream.toString(), document, store,
-					analyzed, termVector);
+			IndexManager.addStringField(contentFieldName, parsedOutputStream.toString(), document, store, analyzed, termVector);
 			// And to the index
 			addDocument(indexContext, indexableFileSystem, document);
 		} catch (Exception e) {

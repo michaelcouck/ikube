@@ -28,7 +28,7 @@ public class XmlParserTest extends ATest {
 	@Test
 	public void parse() throws Exception {
 		File file = FileUtilities.findFileRecursively(new File("."), new String[] { "xml.xml" });
-		byte[] bytes = FileUtilities.getContents(file).toByteArray();
+		byte[] bytes = FileUtilities.getContents(file, Integer.MAX_VALUE).toByteArray();
 		IParser parser = ParserProvider.getParser("text/xml", bytes);
 		OutputStream parsed = parser.parse(new ByteArrayInputStream(bytes), new ByteArrayOutputStream());
 		assertNotNull(parsed);

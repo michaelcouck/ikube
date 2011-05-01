@@ -28,7 +28,7 @@ public class Condition extends Persistable {
 	@Column(length = 256)
 	private String description;
 
-	@ManyToMany(cascade = CascadeType.REFRESH, mappedBy = "conditions", fetch = FetchType.LAZY, targetEntity = Medication.class)
+	@ManyToMany(cascade = CascadeType.ALL, mappedBy = "conditions", fetch = FetchType.EAGER, targetEntity = Medication.class)
 	private Collection<Medication> medications;
 
 	public String getName() {

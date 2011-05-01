@@ -21,6 +21,7 @@ public class Event {
 	public static final String LINK = "link";
 	public static final String SYNCHRONISE = "synchronise";
 	public static final String VALIDATION = "validation";
+	public static final String ALIVE = "alive";
 
 	private String type;
 	private long timestamp;

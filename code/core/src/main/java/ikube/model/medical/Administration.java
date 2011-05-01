@@ -25,7 +25,7 @@ public class Administration extends Persistable {
 	private Date dt;
 	private Integer quantity;
 
-	@ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER, targetEntity = Medication.class)
+	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = Medication.class)
 	private Medication medication;
 
 	public Date getDt() {

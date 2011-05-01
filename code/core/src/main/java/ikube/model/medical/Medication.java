@@ -30,7 +30,7 @@ public class Medication extends Persistable {
 	@Column(length = 32)
 	private Integer strength;
 
-	@ManyToMany(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY, targetEntity = Condition.class)
+	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = Condition.class)
 	private Collection<Condition> conditions;
 
 	public String getName() {

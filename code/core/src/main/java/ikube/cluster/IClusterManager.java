@@ -110,6 +110,8 @@ public interface IClusterManager {
 	 * @see ICache#size(String)
 	 */
 	<T> int size(Class<T> klass);
+	
+	<T> void remove(Class<T> klass, Long id);
 
 	ILock lock(String lockName);
 

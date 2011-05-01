@@ -8,8 +8,6 @@ import ikube.model.IndexableFileSystem;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 import mockit.Mockit;
 
@@ -24,8 +22,7 @@ import org.junit.Test;
  */
 public class IndexableFileSystemHandlerTest extends ATest {
 
-	private String filePath = "./" + this.getClass().getSimpleName();
-	private File filesDir = FileUtilities.getFile(filePath, Boolean.TRUE);
+	private File filesDirectory = FileUtilities.findFileRecursively(new File("."), "data");
 	private IndexableFileSystem indexableFileSystem = new IndexableFileSystem();
 	private IndexableFilesystemHandler indexableFileSystemHandler = new IndexableFilesystemHandler();
 
@@ -36,7 +33,7 @@ public class IndexableFileSystemHandlerTest extends ATest {
 	@Before
 	public void before() {
 		Mockit.setUpMocks(ApplicationContextManagerMock.class, IndexManagerMock.class);
-		indexableFileSystem.setPath(filePath);
+		indexableFileSystem.setPath(filesDirectory.getAbsolutePath());
 		indexableFileSystem.setContentFieldName("contentFieldName");
 		indexableFileSystem.setLastModifiedFieldName("lastModifiedFieldName");
 		indexableFileSystem.setLengthFieldName("lengthFieldName");
@@ -45,19 +42,11 @@ public class IndexableFileSystemHandlerTest extends ATest {
 		when(INDEX.getIndexWriter()).thenReturn(INDEX_WRITER);
 
 		indexableFileSystem.setName(this.getClass().getSimpleName());
-		List<File> files = FileUtilities.findFilesRecursively(new File("."), new ArrayList<File>(), "doc.doc", "pdf.pdf", "xml.xml");
-		for (File file : files) {
-			if (file.getName().contains("svn")) {
-				continue;
-			}
-			FileUtilities.copyFile(file, new File(filesDir, file.getName()));
-		}
 	}
 
 	@After
 	public void after() {
 		Mockit.tearDownMocks(ApplicationContextManagerMock.class, IndexManagerMock.class);
-		FileUtilities.deleteFile(filesDir, 1);
 	}
 
 	@Test

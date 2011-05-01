@@ -128,7 +128,7 @@ public abstract class ATest {
 		when(INDEX_CONTEXT.getBufferedDocs()).thenReturn(100);
 		when(INDEX_CONTEXT.getBufferSize()).thenReturn(100d);
 		when(INDEX_CONTEXT.getMaxFieldLength()).thenReturn(100);
-		when(INDEX_CONTEXT.getMaxReadLength()).thenReturn(100l);
+		when(INDEX_CONTEXT.getMaxReadLength()).thenReturn(1000000l);
 		when(INDEX_CONTEXT.getMergeFactor()).thenReturn(100);
 		when(INDEX_CONTEXT.getMaxAge()).thenReturn((long) (1000 * 60 * 60));
 		when(CLUSTER_MANAGER.getServer()).thenReturn(SERVER);
@@ -140,6 +140,7 @@ public abstract class ATest {
 		when(INDEXABLE.getUrl()).thenReturn("http://ikube.ikube.cloudbees.net/index.html");
 		when(INDEXABLE.isAddress()).thenReturn(Boolean.TRUE);
 		when(INDEXABLE.getContent()).thenReturn("9 avenue road, cape town, south africa");
+		when(INDEXABLE.getName()).thenReturn("indexableName");
 
 		IndexManagerMock.INDEX_WRITER = INDEX_WRITER;
 		ApplicationContextManagerMock.INDEX_CONTEXT = INDEX_CONTEXT;

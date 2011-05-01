@@ -5,17 +5,15 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import ikube.ATest;
+import ikube.BaseTest;
 import ikube.action.Action;
 import ikube.action.Close;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.model.IndexContext;
 import ikube.toolkit.ApplicationContextManager;
-import ikube.toolkit.FileUtilities;
 import ikube.toolkit.Logging;
 import ikube.toolkit.Permutations;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -37,7 +35,7 @@ import org.nfunk.jep.JEP;
  * @since 26.02.2011
  * @version 01.00
  */
-public class RuleInterceptorTest extends ATest {
+public class RuleInterceptorTest extends BaseTest {
 
 	@SuppressWarnings("rawtypes")
 	private static Map<String, Action> ACTIONS;
@@ -66,8 +64,6 @@ public class RuleInterceptorTest extends ATest {
 
 	@BeforeClass
 	public static void beforeClass() {
-		File file = FileUtilities.findFileRecursively(new File("."), "spring-actions.xml");
-		ApplicationContextManager.getApplicationContext(file);
 		ACTIONS = ApplicationContextManager.getBeans(Action.class);
 		Mockit.setUpMocks();
 		Mockit.setUpMocks(ApplicationContextManagerMock.class);
@@ -76,8 +72,6 @@ public class RuleInterceptorTest extends ATest {
 	@AfterClass
 	public static void afterClass() {
 		Mockit.tearDownMocks();
-		Mockit.tearDownMocks(ApplicationContextManagerMock.class);
-		ApplicationContextManager.closeApplicationContext();
 	}
 
 	@Before

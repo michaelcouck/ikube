@@ -39,7 +39,7 @@ public class Faq implements Serializable, Comparable<Faq> {
 	private Boolean published;
 	private Timestamp creationTimestamp;
 	private Timestamp modifiedTimestamp;
-	@OneToMany(cascade = { CascadeType.ALL }, mappedBy = "faq", fetch = FetchType.LAZY)
+	@OneToMany(cascade = { CascadeType.ALL }, mappedBy = "faq", fetch = FetchType.EAGER)
 	private Collection<Attachment> attachments;
 
 	public Long getFaqId() {

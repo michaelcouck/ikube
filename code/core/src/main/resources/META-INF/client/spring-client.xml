@@ -51,9 +51,9 @@
 	<util:list id="indexables">
 		<ref local="mail" />
 		<ref local="internet" />
-		<ref local="internetMillion" />
+		<!--<ref local="internetMillion" />-->
 		<ref local="filesystem" />
-		<ref local="filesystemMillion" />
+		<!--<ref local="filesystemMillion" />-->
 		<ref bean="faqTableH2" />
 		<ref bean="faqTableDb2" />
 		<ref bean="faqTableOracle" />

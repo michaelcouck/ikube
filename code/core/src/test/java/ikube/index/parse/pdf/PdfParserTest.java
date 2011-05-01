@@ -26,7 +26,7 @@ public class PdfParserTest extends ATest {
 	public void parse() throws Exception {
 		PdfParser pdfParser = new PdfParser();
 		File file = FileUtilities.findFileRecursively(new File("."), new String[] { "pdf.pdf" });
-		byte[] bytes = FileUtilities.getContents(file).toByteArray();
+		byte[] bytes = FileUtilities.getContents(file, Integer.MAX_VALUE).toByteArray();
 		OutputStream parsed = pdfParser.parse(new ByteArrayInputStream(bytes), new ByteArrayOutputStream());
 		assertTrue(parsed.toString().contains("Application form for affiliation"));
 	}

@@ -70,7 +70,7 @@ public final class IndexManager {
 				indexDirectory = FileUtilities.getFile(indexDirectoryPath, Boolean.TRUE);
 				LOGGER.info(Logging.getString("Index directory time : ", time, "date : ", new Date(time), "writing index to directory ",
 						indexDirectory.getAbsolutePath()));
-				indexWriter = openIndexWriter(indexContext, indexDirectory);
+				indexWriter = openIndexWriter(indexContext, indexDirectory, Boolean.TRUE);
 				indexContext.getIndex().setIndexWriter(indexWriter);
 			} catch (CorruptIndexException e) {
 				LOGGER.error("We expected a new index and got a corrupt one.", e);
@@ -100,7 +100,7 @@ public final class IndexManager {
 		}
 	}
 
-	public static synchronized IndexWriter openIndexWriter(IndexContext indexContext, File indexDirectory) throws Exception {
+	public static synchronized IndexWriter openIndexWriter(IndexContext indexContext, File indexDirectory, boolean create) throws Exception {
 		Directory directory = null;
 		if (indexContext.getInMemory()) {
 			LOGGER.info("Index in memory : ");
@@ -109,7 +109,7 @@ public final class IndexManager {
 			directory = FSDirectory.open(indexDirectory);
 		}
 		indexContext.getIndex().setDirectory(directory);
-		IndexWriter indexWriter = new IndexWriter(directory, IConstants.ANALYZER, true, MaxFieldLength.UNLIMITED);
+		IndexWriter indexWriter = new IndexWriter(directory, IConstants.ANALYZER, create, MaxFieldLength.UNLIMITED);
 		indexWriter.setUseCompoundFile(indexContext.isCompoundFile());
 		indexWriter.setMaxBufferedDocs(indexContext.getBufferedDocs());
 		indexWriter.setMaxFieldLength(indexContext.getMaxFieldLength());

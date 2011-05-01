@@ -34,6 +34,7 @@ public class DataGeneratorFour extends ADataGenerator {
 			for (Class<?> klass : classes) {
 				Object entity = createInstance(klass);
 				entityManager.persist(entity);
+				// entities.clear();
 			}
 		}
 		logger.info("Comitting : ");

@@ -8,9 +8,11 @@
 	<persistence-unit name="IkubePersistenceUnitH2" transaction-type="RESOURCE_LOCAL">
 		<provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
 		<non-jta-data-source>nonXaDataSourceH2</non-jta-data-source>
+		<class>ikube.model.Persistable</class>
+		
 		<class>ikube.model.faq.Faq</class>
 		<class>ikube.model.faq.Attachment</class>
-		<class>ikube.model.Persistable</class>
+		
 		<class>ikube.model.medical.Hospital</class>
 		<class>ikube.model.medical.Administration</class>
 		<class>ikube.model.medical.Person</class>
@@ -22,13 +24,15 @@
 		<class>ikube.model.medical.Treatment</class>
 		<class>ikube.model.medical.Record</class>
 		<class>ikube.model.medical.Address</class>
+		
 		<class>ikube.model.geospatial.GeoName</class>
 		<class>ikube.model.geospatial.AlternateName</class>
-		<exclude-unlisted-classes>true</exclude-unlisted-classes>
+		<exclude-unlisted-classes>false</exclude-unlisted-classes>
 		<properties>
 			<property name="openjpa.ConnectionFactoryProperties" value="PrettyPrint=true,PrettyPrintLineLength=150" />
 			<property name="openjpa.Log" value="DefaultLevel=WARN,Runtime=WARN,Tool=WARN,SQL=WARN,File=./openjpa.log" />
-			<property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(SchemaAction='add,deleteTableContents',ForeignKeys=true)" />
+			<!-- buildSchema(SchemaAction='add,deleteTableContents',ForeignKeys=true) -->
+			<property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
 			<property name="openjpa.classLoadEnhancement" value="true" />
 			<property name="openjpa.DynamicEnhancementAgent" value="true" />
 			<property name="openjpa.RuntimeUnenhancedClasses" value="supported" />
@@ -44,9 +48,11 @@
 	<persistence-unit name="IkubePersistenceUnitDb2" transaction-type="RESOURCE_LOCAL">
 		<provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
 		<non-jta-data-source>nonXaDataSourceDb2</non-jta-data-source>
+		<class>ikube.model.Persistable</class>
+		
 		<class>ikube.model.faq.Faq</class>
 		<class>ikube.model.faq.Attachment</class>
-		<class>ikube.model.Persistable</class>
+		
 		<class>ikube.model.medical.Hospital</class>
 		<class>ikube.model.medical.Administration</class>
 		<class>ikube.model.medical.Person</class>
@@ -58,6 +64,7 @@
 		<class>ikube.model.medical.Treatment</class>
 		<class>ikube.model.medical.Record</class>
 		<class>ikube.model.medical.Address</class>
+		
 		<class>ikube.model.geospatial.GeoName</class>
 		<class>ikube.model.geospatial.AlternateName</class>
 		<exclude-unlisted-classes>false</exclude-unlisted-classes>
@@ -75,9 +82,11 @@
 	<persistence-unit name="IkubePersistenceUnitOracle" transaction-type="RESOURCE_LOCAL">
 		<provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
 		<non-jta-data-source>nonXaDataSourceOracle</non-jta-data-source>
+		<class>ikube.model.Persistable</class>
+		
 		<class>ikube.model.faq.Faq</class>
 		<class>ikube.model.faq.Attachment</class>
-		<class>ikube.model.Persistable</class>
+		
 		<class>ikube.model.medical.Hospital</class>
 		<class>ikube.model.medical.Administration</class>
 		<class>ikube.model.medical.Person</class>
@@ -89,6 +98,7 @@
 		<class>ikube.model.medical.Treatment</class>
 		<class>ikube.model.medical.Record</class>
 		<class>ikube.model.medical.Address</class>
+		
 		<class>ikube.model.geospatial.GeoName</class>
 		<class>ikube.model.geospatial.AlternateName</class>
 		<exclude-unlisted-classes>false</exclude-unlisted-classes>

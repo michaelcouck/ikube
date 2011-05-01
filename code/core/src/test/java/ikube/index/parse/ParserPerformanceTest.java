@@ -96,7 +96,7 @@ public class ParserPerformanceTest extends ATest {
 				InputStream inputStream = new FileInputStream(file);
 				textParser.parse(inputStream, new ByteArrayOutputStream());
 			}
-		}, "Text parser", 100);
+		}, "Text parser", 10);
 	}
 
 	@Test
@@ -141,7 +141,7 @@ public class ParserPerformanceTest extends ATest {
 	@Test
 	public void patternPerformance() throws Exception {
 		File file = FileUtilities.findFileRecursively(new File("."), new String[] { "html.html" });
-		byte[] bytes = FileUtilities.getContents(file).toByteArray();
+		byte[] bytes = FileUtilities.getContents(file, Integer.MAX_VALUE).toByteArray();
 		InputStream inputStream = new ByteArrayInputStream(bytes);
 		final String string = FileUtilities.getContents(inputStream, Integer.MAX_VALUE).toString();
 		// (@)?(href=')?(HREF=')?(HREF=\")?(href=\")?

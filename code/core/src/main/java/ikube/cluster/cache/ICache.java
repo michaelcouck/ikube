@@ -10,7 +10,7 @@ import java.util.Map;
 import com.hazelcast.core.IMap;
 
 /**
- * This is the cache interface that will be used across the cluster servers. The implementation needs to be clusterable and synchronized,
+ * This is the cache interface that will be used across the cluster servers. The implementation needs to be clusterable and synchronised,
  * i.e. there must be locking available on the cache in the cluster before modification.
  * 
  * Implementors must have a {@link Map} of {@link IMap} maps that are keyed by name. For example {@link Url} objects need to be published in

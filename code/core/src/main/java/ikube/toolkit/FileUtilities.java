@@ -333,16 +333,16 @@ public final class FileUtilities {
 	 *            the file to read the contents from
 	 * @return the file contents in a byte array output stream
 	 */
-	public static ByteArrayOutputStream getContents(final File file) {
+	public static ByteArrayOutputStream getContents(final File file, final int maxReadLength) {
 		InputStream inputStream = null;
 		try {
 			inputStream = new FileInputStream(file);
 		} catch (FileNotFoundException e) {
-			LOGGER.error("No file by that name.", e);
+			LOGGER.error("No file by that name : " + file, e);
 		} catch (Exception e) {
-			LOGGER.error("General error accessing the file " + file, e);
+			LOGGER.error("General error accessing the file : " + file, e);
 		}
-		return getContents(inputStream, Integer.MAX_VALUE);
+		return getContents(inputStream, maxReadLength);
 	}
 
 	/**
@@ -367,12 +367,12 @@ public final class FileUtilities {
 				read = inputStream.read(bytes);
 			}
 		} catch (Exception e) {
-			LOGGER.error("Exception accessing the file contents.", e);
+			LOGGER.error("Exception accessing the file contents : " + inputStream, e);
 		} finally {
 			try {
 				inputStream.close();
 			} catch (Exception e) {
-				LOGGER.error("Exception closing input stream " + inputStream, e);
+				LOGGER.error("Exception closing input stream : " + inputStream, e);
 			}
 		}
 		return byteArrayOutputStream;

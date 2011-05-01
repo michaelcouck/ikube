@@ -3,10 +3,9 @@ package ikube.database.mem;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import ikube.BaseTest;
+import ikube.ATest;
 import ikube.database.IDataBase;
 import ikube.model.Url;
-import ikube.toolkit.ApplicationContextManager;
 
 import java.util.List;
 
@@ -19,9 +18,9 @@ import org.junit.Test;
  * @since 12.10.2010
  * @version 01.00
  */
-public class DataBaseMemTest extends BaseTest {
+public class DataBaseMemTest extends ATest {
 
-	private IDataBase dataBase = ApplicationContextManager.getBean(DataBaseMem.class);
+	private IDataBase dataBase;
 
 	public DataBaseMemTest() {
 		super(DataBaseMemTest.class);
@@ -29,6 +28,7 @@ public class DataBaseMemTest extends BaseTest {
 
 	@Before
 	public void before() {
+		dataBase = new DataBaseMem();
 		delete(dataBase, Url.class);
 	}
 
@@ -97,7 +97,7 @@ public class DataBaseMemTest extends BaseTest {
 		url = dataBase.find(Url.class, url.getId());
 		assertNull(url);
 	}
-	
+
 	@Test
 	public void remove() throws Exception {
 		// T

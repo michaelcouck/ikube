@@ -3,6 +3,7 @@ package ikube.model.faq;
 import java.io.Serializable;
 
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -30,7 +31,7 @@ public class Attachment implements Serializable, Comparable<Attachment> {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long attachmentId;
 	@JoinColumn(name = "faqId")
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(cascade = { CascadeType.ALL }, fetch = FetchType.EAGER)
 	private Faq faq;
 	@Column(length = 256)
 	private String name;

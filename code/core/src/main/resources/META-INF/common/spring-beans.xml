@@ -114,11 +114,23 @@
 		property:type="timer"
 		property:delay="${delay}"
 		property:period="${period}" />
-		
-	<bean id="schedulerBinder" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
+	<bean
+		id="ikube.listener.ScheduleBroadCaster"
+		class="ikube.listener.Schedule"
+		property:type="alive"
+		property:delay="1000"
+		property:period="1000" />
+	
+	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
 		property:staticMethod="ikube.listener.Scheduler.addSchedule">
 		<property name="arguments">
 			<ref local="ikube.listener.Schedule" />
+		</property>
+	</bean>
+	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
+		property:staticMethod="ikube.listener.Scheduler.addSchedule">
+		<property name="arguments">
+			<ref local="ikube.listener.ScheduleBroadCaster" />
 		</property>
 	</bean>
 	<bean id="schedulerInitialize" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"

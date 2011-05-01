@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 
 /**
@@ -18,7 +19,10 @@ import javax.persistence.OneToMany;
  */
 @Entity()
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@NamedQuery(name = Doctor.FIND_DOCTORS, query = Doctor.FIND_DOCTORS)
 public class Doctor extends Person {
+	
+	public static final String FIND_DOCTORS = "select d from Doctor d";
 
 	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, targetEntity = Patient.class)
 	private Collection<Patient> patients;

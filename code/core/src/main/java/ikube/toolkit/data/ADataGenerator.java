@@ -9,6 +9,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.sql.Blob;
@@ -88,7 +89,7 @@ public abstract class ADataGenerator implements IDataGenerator {
 				}
 			}
 			// logger.info("Loading file : " + file.getAbsolutePath());
-			byte[] contents = FileUtilities.getContents(file).toByteArray();
+			byte[] contents = FileUtilities.getContents(file, Integer.MAX_VALUE).toByteArray();
 			fileContents.put(file.getName(), contents);
 			continue;
 		}
@@ -132,6 +133,9 @@ public abstract class ADataGenerator implements IDataGenerator {
 	protected <T> T createFields(Class<?> klass, T entity) throws Exception {
 		Field[] fields = klass.getDeclaredFields();
 		for (Field field : fields) {
+			if (Modifier.isFinal(field.getModifiers()) || Modifier.isStatic(field.getModifiers())) {
+				continue;
+			}
 			Id id = field.getAnnotation(Id.class);
 			if (id != null) {
 				continue;
@@ -239,8 +243,8 @@ public abstract class ADataGenerator implements IDataGenerator {
 					entityManager.getTransaction().rollback();
 					return;
 				}
-				entityManager.flush();
-				entityManager.clear();
+				// entityManager.flush();
+				// entityManager.clear();
 				entityManager.getTransaction().commit();
 			}
 		} catch (Exception e) {

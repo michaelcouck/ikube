@@ -156,14 +156,18 @@ public final class ApplicationContextManager {
 			ApplicationContextManager.class.notifyAll();
 		}
 	}
-	
+
 	/**
 	 * Closes the application context.
 	 */
-	public static void closeApplicationContext() {
-		if (APPLICATION_CONTEXT != null) {
-			((AbstractApplicationContext) APPLICATION_CONTEXT).close();
-			APPLICATION_CONTEXT = null;
+	public static synchronized void closeApplicationContext() {
+		try {
+			if (APPLICATION_CONTEXT != null) {
+				((AbstractApplicationContext) APPLICATION_CONTEXT).close();
+				APPLICATION_CONTEXT = null;
+			}
+		} finally {
+			ApplicationContextManager.class.notifyAll();
 		}
 	}
 

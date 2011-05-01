@@ -101,6 +101,8 @@ public class Server extends Persistable implements Comparable<Server> {
 	private final List<Action> actions;
 	/** The list of web service urls. */
 	private final List<String> webServiceUrls;
+	/** The age of this server. */
+	private long age;
 
 	public Server() {
 		super();
@@ -135,9 +137,17 @@ public class Server extends Persistable implements Comparable<Server> {
 	public List<Action> getActions() {
 		return actions;
 	}
-	
+
 	public List<String> getWebServiceUrls() {
 		return webServiceUrls;
+	}
+
+	public long getAge() {
+		return age;
+	}
+
+	public void setAge(long age) {
+		this.age = age;
 	}
 
 	@Override
