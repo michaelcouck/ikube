@@ -11,13 +11,13 @@ import ikube.model.IndexableFileSystem;
 import ikube.model.IndexableInternet;
 import ikube.model.Server;
 import ikube.model.faq.Faq;
-import ikube.model.medical.Doctor;
+import ikube.model.medical.Patient;
 import ikube.service.ISearcherWebService;
 import ikube.service.ServiceLocator;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.Logging;
 import ikube.toolkit.SerializationUtilities;
-import ikube.toolkit.data.DataGeneratorMedical;
+import ikube.toolkit.data.DataGeneratorFour;
 import ikube.toolkit.data.IDataGenerator;
 
 import java.util.ArrayList;
@@ -61,9 +61,9 @@ public class Integration {
 		ApplicationContextManager.getApplicationContext();
 
 		// Insert some data into the medical database
-		insertData(IConstants.PERSISTENCE_UNIT_H2, "nonXaDataSourceH2", iterations, new Class[] { Doctor.class, Faq.class });
-		insertData(IConstants.PERSISTENCE_UNIT_DB2, "nonXaDataSourceDb2", iterations, new Class[] { Doctor.class, Faq.class });
-		insertData(IConstants.PERSISTENCE_UNIT_ORACLE, "nonXaDataSourceOracle", iterations, new Class[] { Doctor.class, Faq.class });
+		insertData(IConstants.PERSISTENCE_UNIT_H2, "nonXaDataSourceH2", iterations, new Class[] { Patient.class, Faq.class });
+		insertData(IConstants.PERSISTENCE_UNIT_DB2, "nonXaDataSourceDb2", iterations, new Class[] { Patient.class, Faq.class });
+		insertData(IConstants.PERSISTENCE_UNIT_ORACLE, "nonXaDataSourceOracle", iterations, new Class[] { Patient.class, Faq.class });
 
 		waitToFinish();
 
@@ -78,10 +78,9 @@ public class Integration {
 		EntityManager entityManager = null;
 		try {
 			entityManager = Persistence.createEntityManagerFactory(persistenceUnit, properties).createEntityManager();
-			IDataGenerator dataGenerator = new DataGeneratorMedical(entityManager, "doctors.xml", 10);
+			IDataGenerator dataGenerator = new DataGeneratorFour(entityManager, iterations, classes);
 			dataGenerator.before();
 			dataGenerator.generate();
-			dataGenerator.after();
 		} catch (Exception e) {
 			logger.error("Exception inserting some data : ", e);
 		}

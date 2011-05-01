@@ -23,19 +23,21 @@
 		id="geospatial"
 		class="ikube.model.IndexContext"
 		property:indexName="geospatial"
-		property:maxAge="60000"
+		property:maxAge="${max.age}"
 		property:compoundFile="${compound.file}"
 		property:bufferedDocs="${buffered.docs}"
-		property:bufferSize="256"
-		property:mergeFactor="1000"
-		property:maxFieldLength="10000"
-		property:maxReadLength="10000000"
-		property:queueTimeout="84600000"
-		property:throttle="0"
+		property:bufferSize="${buffer.size}"
+		property:batchSize="${jdbc.batch.size}"
+		property:internetBatchSize="${internet.batch.size}"
+		property:mergeFactor="${merge.factor}"
+		property:maxFieldLength="${max.field.length}"
+		property:maxReadLength="${max.read.length}"
+		property:queueTimeout="${max.age}"
+		property:throttle="${throttle}"
 		property:indexDirectoryPath="${index.directory.path}"
 		property:indexDirectoryPathBackup="${index.directory.path.backup}"
-		property:indexables-ref="indexables" />
-	<util:list id="indexables">
+		property:indexables-ref="geospatialIndexables" />
+	<util:list id="geospatialIndexables">
 		<ref local="geoname" />
 	</util:list>
 	
@@ -47,29 +49,29 @@
 		property:dataSource-ref="nonXaDataSourceDb2"
 		property:children-ref="geonameColumnsDb2" />
 	<util:list id="geonameColumnsDb2">
-		<ref local="id" />
-		<ref local="geonameid" />
-		<ref local="name" />
-		<ref local="asciiname" />
-		<ref local="alternatenames" />
-		<ref local="latitude" />
-		<ref local="longitude" />
-		<ref local="featureClass" />
-		<ref local="featureCode" />
-		<ref local="countryCode" />
-		<ref local="cc2" />
-		<ref local="admin1Code" />
-		<ref local="admin2Code" />
-		<ref local="admin3Code" />
-		<ref local="admin4Code" />
-		<ref local="population" />
-		<ref local="elevation" />
-		<ref local="gtopo30" />
-		<ref local="timezone" />
-		<ref local="modification" />
+		<ref local="geospatialId" />
+		<ref local="geospatialGeonameid" />
+		<ref local="geospatialName" />
+		<ref local="geospatialAsciiname" />
+		<ref local="geospatialAlternatenames" />
+		<ref local="geospatialLatitude" />
+		<ref local="geospatialLongitude" />
+		<ref local="geospatialFeatureClass" />
+		<ref local="geospatialFeatureCode" />
+		<ref local="geospatialCountryCode" />
+		<ref local="geospatialCc2" />
+		<ref local="geospatialAdmin1Code" />
+		<ref local="geospatialAdmin2Code" />
+		<ref local="geospatialAdmin3Code" />
+		<ref local="geospatialAdmin4Code" />
+		<ref local="geospatialPopulation" />
+		<ref local="geospatialElevation" />
+		<ref local="geospatialGtopo30" />
+		<ref local="geospatialTimezone" />
+		<ref local="geospatialModification" />
 	</util:list>
 	<bean
-		id="id"
+		id="geospatialId"
 		class="ikube.model.IndexableColumn"
 		property:name="id"
 		property:idColumn="true"
@@ -77,7 +79,7 @@
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
-		id="geonameid"
+		id="geospatialGeonameid"
 		class="ikube.model.IndexableColumn"
 		property:name="geonameid"
 		property:fieldName="geonameid"
@@ -85,7 +87,7 @@
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
-		id="name"
+		id="geospatialName"
 		class="ikube.model.IndexableColumn"
 		property:name="name"
 		property:fieldName="content"
@@ -93,7 +95,7 @@
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
-		id="asciiname"
+		id="geospatialAsciiname"
 		class="ikube.model.IndexableColumn"
 		property:name="asciiname"
 		property:fieldName="content"
@@ -101,7 +103,7 @@
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
-		id="alternatenames"
+		id="geospatialAlternatenames"
 		class="ikube.model.IndexableColumn"
 		property:name="alternatenames"
 		property:fieldName="content"
@@ -109,7 +111,7 @@
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
-		id="latitude"
+		id="geospatialLatitude"
 		class="ikube.model.IndexableColumn"
 		property:name="latitude"
 		property:fieldName="latitude"
@@ -117,7 +119,7 @@
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
-		id="longitude"
+		id="geospatialLongitude"
 		class="ikube.model.IndexableColumn"
 		property:name="longitude"
 		property:fieldName="longitude"
@@ -125,7 +127,7 @@
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
-		id="featureClass"
+		id="geospatialFeatureClass"
 		class="ikube.model.IndexableColumn"
 		property:name="featureClass"
 		property:fieldName="content"
@@ -133,7 +135,7 @@
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
-		id="featureCode"
+		id="geospatialFeatureCode"
 		class="ikube.model.IndexableColumn"
 		property:name="featureCode"
 		property:fieldName="featureCode"
@@ -141,7 +143,7 @@
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
-		id="countryCode"
+		id="geospatialCountryCode"
 		class="ikube.model.IndexableColumn"
 		property:name="countryCode"
 		property:fieldName="countryCode"
@@ -149,7 +151,7 @@
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
-		id="cc2"
+		id="geospatialCc2"
 		class="ikube.model.IndexableColumn"
 		property:name="cc2"
 		property:fieldName="cc2"
@@ -157,7 +159,7 @@
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
-		id="admin1Code"
+		id="geospatialAdmin1Code"
 		class="ikube.model.IndexableColumn"
 		property:name="admin1Code"
 		property:fieldName="admin1Code"
@@ -165,7 +167,7 @@
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
-		id="admin2Code"
+		id="geospatialAdmin2Code"
 		class="ikube.model.IndexableColumn"
 		property:name="admin2Code"
 		property:fieldName="admin2Code"
@@ -173,7 +175,7 @@
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
-		id="admin3Code"
+		id="geospatialAdmin3Code"
 		class="ikube.model.IndexableColumn"
 		property:name="admin3Code"
 		property:fieldName="admin3Code"
@@ -181,7 +183,7 @@
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
-		id="admin4Code"
+		id="geospatialAdmin4Code"
 		class="ikube.model.IndexableColumn"
 		property:name="admin4Code"
 		property:fieldName="admin4Code"
@@ -189,7 +191,7 @@
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
-		id="population"
+		id="geospatialPopulation"
 		class="ikube.model.IndexableColumn"
 		property:name="population"
 		property:fieldName="population"
@@ -197,7 +199,7 @@
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
-		id="elevation"
+		id="geospatialElevation"
 		class="ikube.model.IndexableColumn"
 		property:name="elevation"
 		property:fieldName="elevation"
@@ -205,7 +207,7 @@
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
-		id="gtopo30"
+		id="geospatialGtopo30"
 		class="ikube.model.IndexableColumn"
 		property:name="gtopo30"
 		property:fieldName="gtopo30"
@@ -213,7 +215,7 @@
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
-		id="timezone"
+		id="geospatialTimezone"
 		class="ikube.model.IndexableColumn"
 		property:name="timezone"
 		property:fieldName="timezone"
@@ -221,7 +223,7 @@
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
-		id="modification"
+		id="geospatialModification"
 		class="ikube.model.IndexableColumn"
 		property:name="modification"
 		property:fieldName="modification"

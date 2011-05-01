@@ -38,7 +38,7 @@ import org.apache.lucene.document.Field.TermVector;
 /**
  * This class performs the indexing of tables. It is the primary focus of Ikube. This class is essentially a database crawler, and is multi
  * threaded. Because Ikube is clusterable it means that there are two levels of threading, within this Jvm and within the cluster. The
- * cluster synchronization is done using the {@link IClusterManager}.
+ * cluster synchronisation is done using the {@link IClusterManager}.
  * 
  * This is just a simple explanation of the table structure and the way the hierarchy is accessed, more information can be found on the
  * Wiki.
