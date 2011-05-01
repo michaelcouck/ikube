@@ -1,21 +1,9 @@
-<project name="Deploy Ikube to Cluster" default="deploy.war">
+<project name="Deploy Ikube Cluster" default="start">
 
 	<property file="build.properties" />
-	<property name="ikube.dir" value="ikube-war-${project.version}" />
-	<property name="ikube.war" value="ikube-war-${project.version}.war" />
-	<property name="ikube.jar" value="ikube-core-${project.version}.jar" />
-	<property name="indexes" value="indexes" />
+	<property name="ikube.war" value="ikube.war" />
 
-	<echo message="${tomcat.ikube.cluster.one.webapps}" />
-	<echo message="${tomcat.ikube.cluster.two.webapps}" />
-	<echo message="${tomcat.ikube.cluster.three.webapps}" />
-
-	<target name="deploy.jar">
-		<copy file="${core.target.directory}/${ikube.jar}" todir="${ikube.client.libs}" overwrite="true" failonerror="true" />
-	</target>
-
-	<!-- Works. -->
-	<target name="startCluster">
+	<target name="start">
 		<antcall target="executeTomcatAction">
 			<param name="action" value="start" />
 			<param name="tomcat.bin" value="${tomcat.1.bin}" />
@@ -32,7 +20,7 @@
 			<param name="tomcat.home" value="${tomcat.3}" />
 		</antcall>
 	</target>
-	<target name="stopCluster">
+	<target name="stop">
 		<antcall target="executeTomcatAction">
 			<param name="action" value="stop" />
 			<param name="tomcat.bin" value="${tomcat.1.bin}" />
@@ -51,78 +39,19 @@
 	</target>
 
 	<target name="executeTomcatAction">
+		<echo message="Bin: ${tomcat.bin}, Home: ${tomcat.home}" />
 		<java jar="${tomcat.bin}/bootstrap.jar" dir="${tomcat.bin}" fork="yes" spawn="true">
 			<jvmarg value="-Dcatalina.home=${tomcat.home}" />
 			<arg line="${action}" />
 		</java>
 	</target>
 
-	<!-- Deployment targets. -->
-	<target name="deploy.war">
-		<delete dir="${tomcat.webapps}/${ikube.dir}" failonerror="true" />
-		<delete dir="${tomcat.1.webapps}/${ikube.dir}" failonerror="true" />
-		<delete dir="${tomcat.2.webapps}/${ikube.dir}" failonerror="true" />
-		<delete dir="${tomcat.3.webapps}/${ikube.dir}" failonerror="true" />
-		<!-- delete dir="${tomcat.vm.one.webapps}/${ikube.dir}" failonerror="false" / -->
-		<!-- delete dir="${tomcat.ikube.webapps}/${ikube.dir}" failonerror="false" />
-					<delete dir="${tomcat.ikube.cluster.one.webapps}/${ikube.dir}" failonerror="false" />
-					<delete dir="${tomcat.ikube.cluster.two.webapps}/${ikube.dir}" failonerror="false" />
-					<delete dir="${tomcat.ikube.cluster.three.webapps}/${ikube.dir}" failonerror="false" / -->
-
-		<!-- delete dir="${tomcat.ikube.webapps}/${ikube.dir}" failonerror="true" />
-					<delete dir="${tomcat.ikube.cluster.one.webapps}/${ikube.dir}" failonerror="false" />
-					<delete dir="${tomcat.ikube.cluster.two.webapps}/${ikube.dir}" failonerror="false" />
-					<delete dir="${tomcat.ikube.cluster.three.webapps}/${ikube.dir}" failonerror="false" / -->
-
-		<delete dir="${tomcat.bin}/${indexes}" failonerror="true" />
-		<delete dir="${tomcat.1.bin}/${indexes}" failonerror="true" />
-		<delete dir="${tomcat.2.bin}/${indexes}" failonerror="true" />
-		<delete dir="${tomcat.3.bin}/${indexes}" failonerror="true" />
-		<!-- delete dir="${cluster.directory}/indexes" failonerror="true" / -->
-		<!--delete file="${tomcat.vm.one.bin}/${indexes}" failonerror="false" / -->
-		<!-- delete file="${tomcat.ikube.bin}/${indexes}" failonerror="false" />
-					<delete file="${tomcat.ikube.cluster.one.bin}/${indexes}" failonerror="false" />
-					<delete file="${tomcat.ikube.cluster.two.bin}/${indexes}" failonerror="false" />
-					<delete file="${tomcat.ikube.cluster.three.bin}/${indexes}" failonerror="false" / -->
-
-		<delete file="${tomcat.webapps}/${ikube.war}" failonerror="true" />
-		<delete file="${tomcat.1.webapps}/${ikube.war}" failonerror="true" />
-		<delete file="${tomcat.2.webapps}/${ikube.war}" failonerror="true" />
-		<delete file="${tomcat.3.webapps}/${ikube.war}" failonerror="true" />
-		<!--delete file="${tomcat.vm.one.webapps}/${ikube.war}" failonerror="false" / -->
-		<!-- delete file="${tomcat.ikube.webapps}/${ikube.war}" failonerror="false" />
-					<delete file="${tomcat.ikube.cluster.one.webapps}/${ikube.war}" failonerror="false" />
-					<delete file="${tomcat.ikube.cluster.two.webapps}/${ikube.war}" failonerror="false" />
-					<delete file="${tomcat.ikube.cluster.three.webapps}/${ikube.war}" failonerror="false" / -->
-
-		<copy file="${target.directory}/${ikube.war}" todir="${tomcat.webapps}" overwrite="true" failonerror="true" />
-		<copy file="${target.directory}/${ikube.war}" todir="${tomcat.1.webapps}" overwrite="true" failonerror="true" />
-		<copy file="${target.directory}/${ikube.war}" todir="${tomcat.2.webapps}" overwrite="true" failonerror="true" />
-		<copy file="${target.directory}/${ikube.war}" todir="${tomcat.3.webapps}" overwrite="true" failonerror="true" />
-		<!--copy file="${target.directory}/${ikube.war}" todir="${tomcat.vm.one.webapps}" overwrite="true" failonerror="false" /-->
-		<!-- copy file="${target.directory}/${ikube.war}" todir="${tomcat.ikube.webapps}" overwrite="true" failonerror="false" />
-					<copy file="${target.directory}/${ikube.war}" todir="${tomcat.ikube.cluster.one.webapps}" overwrite="true" failonerror="false" />
-					<copy file="${target.directory}/${ikube.war}" todir="${tomcat.ikube.cluster.two.webapps}" overwrite="true" failonerror="false" />
-					<copy file="${target.directory}/${ikube.war}" todir="${tomcat.ikube.cluster.three.webapps}" overwrite="true" failonerror="false" / -->
+	<target name="deploy.ikube">
+		<delete dir="${tomcat.1}/webapps/ikube" failonerror="false" />
+		<delete dir="${tomcat.2}/webapps/ikube" failonerror="false" />
+		<delete dir="${tomcat.3}/webapps/ikube" failonerror="false" />
+		<copy file="${target.directory}/${ikube.war}" todir="${tomcat.1}/webapps" overwrite="true" failonerror="false" />
+		<copy file="${target.directory}/${ikube.war}" todir="${tomcat.2}/webapps" overwrite="true" failonerror="false" />
+		<copy file="${target.directory}/${ikube.war}" todir="${tomcat.3}/webapps" overwrite="true" failonerror="false" />
 	</target>
-
-	<!-- Doesn't work. -->
-	<target name="startTomcat">
-		<exec executable="bash" os="Windows" spawn="yes">
-			<arg value="${tomcat.1.bin}/startup.bat" />
-		</exec>
-	</target>
-	<target name="stopTomcat">
-		<exec executable="bash" os="Windows">
-			<arg value="${tomcat.1.bin}/shutdown.bat" />
-		</exec>
-	</target>
-	<target name="stop">
-		<exec spawn="true" executable="${tomcat.1.bin}/shutdown.bat" />
-	</target>
-	<!-- Doesn't work. -->
-	<target name="cluster">
-		<exec spawn="true" executable="${cluster.directory}/startup.bat" />
-	</target>
-
 </project>
