@@ -62,7 +62,7 @@ public class SearcherWebServiceExecuter implements ISearcherWebServiceExecuter {
 		String xml = searchRemote.searchSingle(indexName, searchString, fieldName, fragment, start, end);
 		List<Map<String, String>> results = (List<Map<String, String>>) SerializationUtilities.deserialize(xml);
 		if (results.size() < resultsSizeMinimum) {
-			logger.warn(Logging.getString("Results not expected : " + results, indexName, searchString, fieldName, fragment, start, end, resultsSizeMinimum));
+			logger.warn(Logging.getString("Results not expected : " + results.size(), indexName, searchString, fieldName, fragment, start, end, resultsSizeMinimum));
 			ListenerManager.fireEvent(Event.NO_RESULTS, System.currentTimeMillis(), null, Boolean.TRUE);
 		} else {
 			// logger.info("Results expected : " + (results != null ? results.size() : 0));

@@ -51,12 +51,12 @@ public abstract class ADataGenerator implements IDataGenerator {
 
 	public ADataGenerator(EntityManager entityManager) {
 		this.entityManager = entityManager;
+		entities = new HashMap<Class<?>, Object>();
+		words = new ArrayList<String>();
 	}
 
 	public void before() throws Exception {
-		entities = new HashMap<Class<?>, Object>();
 		File dotFolder = new File(".");
-		words = new ArrayList<String>();
 		fileContents = new HashMap<String, byte[]>();
 		File wordsFile = FileUtilities.findFileRecursively(dotFolder, wordsFilePath);
 		populateWords(wordsFile);
@@ -237,14 +237,13 @@ public abstract class ADataGenerator implements IDataGenerator {
 	}
 
 	protected void commit(EntityManager entityManager) {
+		logger.info("Comitting : " + entityManager);
 		try {
 			if (entityManager.getTransaction().isActive()) {
 				if (entityManager.getTransaction().getRollbackOnly()) {
 					entityManager.getTransaction().rollback();
 					return;
 				}
-				// entityManager.flush();
-				// entityManager.clear();
 				entityManager.getTransaction().commit();
 			}
 		} catch (Exception e) {

@@ -15,14 +15,23 @@ import org.apache.lucene.spatial.tier.projections.IProjector;
 import org.apache.lucene.spatial.tier.projections.SinusoidalProjector;
 import org.apache.lucene.util.NumericUtils;
 
+/**
+ * This class will add spatial fields to the index based on either the latitude and longitude defined in one of the columns that are
+ * indexables or it will go to the spatial web service with the address in the table and search for the location, i.e. the latitude and
+ * longitude for the address and use the first result that comes back.
+ * 
+ * @author Michael Couck
+ * @since 12.04.11
+ * @version 01.00
+ */
 public class Enrichment implements IEnrichment {
 
 	private static final Logger LOGGER = Logger.getLogger(Enrichment.class);
 
+	private transient int endTier;
+	private transient int startTier;
 	private transient IProjector projector;
 	private transient CartesianTierPlotter cartesianTierPlotter;
-	private transient int startTier;
-	private transient int endTier;
 
 	public Enrichment() {
 		projector = new SinusoidalProjector();
@@ -64,10 +73,13 @@ public class Enrichment implements IEnrichment {
 
 	@Override
 	public Coordinate getCoordinate(Indexable<?> indexable) {
-		double latitude = -1;
-		double longitude = -1;
+		double latitude = Double.MAX_VALUE;
+		double longitude = Double.MAX_VALUE;
 		for (Indexable<?> child : indexable.getChildren()) {
 			try {
+				if (child.getContent() == null) {
+					continue;
+				}
 				if (child.getName().equals(IConstants.LATITUDE)) {
 					latitude = Double.parseDouble(child.getContent().toString());
 				} else if (child.getName().equals(IConstants.LONGITUDE)) {
@@ -77,7 +89,7 @@ public class Enrichment implements IEnrichment {
 				LOGGER.error("Exception getting the lat/long co-ordinates : " + indexable, e);
 			}
 		}
-		if (latitude > -1 && longitude > -1) {
+		if (latitude != Double.MAX_VALUE && longitude != Double.MAX_VALUE) {
 			return new Coordinate(latitude, longitude);
 		}
 		return null;

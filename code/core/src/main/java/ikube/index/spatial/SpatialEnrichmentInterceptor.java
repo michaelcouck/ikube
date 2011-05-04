@@ -51,10 +51,14 @@ public class SpatialEnrichmentInterceptor implements ISpatialEnrichmentIntercept
 			}
 		}
 		if (!indexable.isAddress()) {
-			LOGGER.info("Not address : " + indexable);
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Not address : " + indexable);
+			}
 			return;
 		}
-		LOGGER.info("Enriching : " + indexable);
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Enriching : " + indexable);
+		}
 		// We look for the first latitude and longitude from the children
 		Coordinate coordinate = enrichment.getCoordinate(indexable);
 		// If the coordinate is null then either there were no latitude and longitude

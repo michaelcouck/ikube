@@ -29,15 +29,12 @@ public class DataGeneratorFour extends ADataGenerator {
 	@Override
 	public void generate() throws Exception {
 		begin(entityManager);
-		// Persist all the classes that are specified
 		for (int i = 0; i < iterations; i++) {
 			for (Class<?> klass : classes) {
 				Object entity = createInstance(klass);
 				entityManager.persist(entity);
-				// entities.clear();
 			}
 		}
-		logger.info("Comitting : ");
 		commit(entityManager);
 	}
 

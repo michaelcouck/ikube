@@ -1,13 +1,18 @@
 package ikube;
 
+import java.io.File;
+import java.io.InputStream;
+
 import ikube.listener.ListenerManager;
 import ikube.listener.Scheduler;
 import ikube.model.IndexContext;
 import ikube.model.faq.Attachment;
 import ikube.model.faq.Faq;
 import ikube.toolkit.ApplicationContextManager;
+import ikube.toolkit.FileUtilities;
 import ikube.toolkit.PerformanceTester;
 import ikube.toolkit.data.DataGeneratorFour;
+import ikube.toolkit.data.DataGeneratorMedical;
 import ikube.toolkit.data.IDataGenerator;
 
 import javax.persistence.EntityManager;
@@ -47,6 +52,12 @@ public abstract class BaseTest extends ATest {
 				public void execute() throws Exception {
 					Class<?>[] classes = new Class[] { Faq.class, Attachment.class };
 					IDataGenerator dataGenerator = new DataGeneratorFour(entityManager, iterations, classes);
+					dataGenerator.before();
+					dataGenerator.generate();
+
+					File file = FileUtilities.findFileRecursively(new File("."), "doctors.xml");
+					InputStream inputStream = file.toURI().toURL().openStream();
+					dataGenerator = new DataGeneratorMedical(entityManager, inputStream);
 					dataGenerator.before();
 					dataGenerator.generate();
 				}

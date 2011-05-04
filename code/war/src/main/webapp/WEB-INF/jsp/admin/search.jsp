@@ -49,7 +49,7 @@
 								192.168.1.137 which is directed somewhere else, perhaps by the router? For now 
 								we stick with the localhost 
 							-->
-							<input type="hidden" name="searchUrl" value="http://localhost:9000/ikube/SearchServlet">
+							<input type="hidden" name="searchUrl" value="http://localhost/ikube/SearchServlet">
 							<input type="text" name="searchStrings" id="search-text-plain" value="${param.searchStrings}" />
 							<input type="submit" id="search-submit-plain" value="Go" />
 						</fieldset>

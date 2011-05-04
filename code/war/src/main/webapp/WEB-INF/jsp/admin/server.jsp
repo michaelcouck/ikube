@@ -48,10 +48,9 @@
 		<td class="td-content">Web service urls</td>
 		<td class="td-content">
 			<c:forEach var="webServiceUrl" items="${pageScope.webServiceUrls}">
-				<a href="<c:out value="${webServiceUrl}" /><br>">
+				<a href="<c:out value="${webServiceUrl}" />">
 					<c:out value="${webServiceUrl}" />
-				</a>
-				<br>
+				</a><br>
 			</c:forEach>
 		</td>
 	</tr>
@@ -59,26 +58,34 @@
 		<td class="td-content">Actions</td>
 		<td class="td-content">
 			<c:forEach var="action" items="${pageScope.actions}">
-				<c:out value="${action.indexName}" /><br>
-				<c:out value="${action.indexableName}" /><br>
-				<c:out value="${action.idNumber}" /><br>
-				<c:out value="${action.startTime}" />
+				indexable: <c:out value="${action.indexName}" />, 
+				name: <c:out value="${action.indexableName}" />, 
+				id number: <c:out value="${action.idNumber}" />, 
+				start time: <c:out value="${action.startTime}" /><br>
 			</c:forEach>
 		</td>
 	</tr>
 	
 	<tr>
-		<td class="td-content">Index context</td>
+		<th class="td-content">Context</th>
+		<th class="td-content">Attributes</th>
+	</tr>
+	
+	<c:forEach var="indexContext" items="${pageScope.indexContexts}">
+	<tr>
+		<td class="td-content"><c:out value="${indexContext.indexName}" /></td>
 		<td class="td-content">
-			<c:forEach var="indexContext" items="${pageScope.indexContexts}">
-				Name: <c:out value="${indexContext.indexName}" /><br>
-				Max age: <c:out value="${indexContext.maxAge}" /><br>
-				Batch size: <c:out value="${indexContext.batchSize}" /><br>
-			</c:forEach>
+			max age: <c:out value="${indexContext.maxAge}" />,  
+			batch size: <c:out value="${indexContext.batchSize}" />, 
+			internet batch size: <c:out value="${indexContext.internetBatchSize}" />, 
+			max read length: <c:out value="${indexContext.maxReadLength}" />, 
+			index directory path: <c:out value="${indexContext.indexDirectoryPath}" />, 
+			index directory path backup: <c:out value="${indexContext.indexDirectoryPathBackup}" />
 		</td>
 	</tr>
+	</c:forEach>
 	
 	<tr>
-		<td class="bottom-content">Single server details brought to you by Ikube : </td>
+		<td class="bottom-content" colspan="2">Single server details brought to you by Ikube : </td>
 	</tr>
 </table>
