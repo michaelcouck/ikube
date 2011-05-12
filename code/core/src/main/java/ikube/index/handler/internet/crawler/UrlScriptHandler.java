@@ -10,16 +10,20 @@ import ikube.model.Url;
  * @since 25.09.10
  * @version 01.00
  */
-public class ScriptHandler extends Handler<Url> {
+public class UrlScriptHandler extends UrlHandler<Url> {
 
 	/**
 	 * This method will execute the JavaScript in the page.
 	 * 
-	 * @See {@link IHandler#handle(Url)}
+	 * @See {@link IUrlHandler#handle(Url)}
 	 */
 	public void handle(final Url url) {
 		// TODO - implement me. We could use Rhino for executing the JavaScript
 		// or some other library for the execution, perhaps index the result too.
+	}
+
+	@Override
+	public void run() {
 	}
 
 }

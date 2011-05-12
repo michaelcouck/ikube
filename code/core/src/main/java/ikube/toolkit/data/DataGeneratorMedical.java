@@ -55,7 +55,7 @@ public class DataGeneratorMedical extends ADataGenerator {
 				doctor.getAddress().setProvince(reportingLocationElement.getText());
 				doctor.getAddress().setStreet(streetAddressElement.getText());
 				
-				logger.info("Inserting : " + doctor);
+				logger.debug("Inserting : " + doctor);
 				entityManager.persist(doctor);
 				entities.clear();
 			}

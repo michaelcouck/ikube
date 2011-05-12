@@ -4,7 +4,6 @@ import ikube.database.IDataBase;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -25,15 +24,9 @@ public class Cache implements ICache {
 	private transient Logger logger;
 	/** The underlying database. */
 	private transient IDataBase dataBase;
-	/**
-	 * This is a map of maps for objects. These maps are propagated throughout the cluster. Typically the name of the map is the name of the
-	 * class that it contains, however in some cases this is not convenient.
-	 */
-	private transient Map<String, Map<Long, ?>> maps;
 
 	public void initialise() {
 		logger = Logger.getLogger(this.getClass());
-		maps = new HashMap<String, Map<Long, ?>>();
 	}
 
 	/**
@@ -49,12 +42,12 @@ public class Cache implements ICache {
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T> T get(final String name, final Long objectId) {
-		T object = (T) getMap(name).get(objectId);
+	public <T extends Object> T get(final String name, final Long id) {
+		T object = (T) getMap(name).get(id);
 		if (object == null && dataBase != null) {
-			// Try the underlying database
 			try {
-				object = (T) dataBase.find(Class.forName(name), objectId);
+				// Try the underlying database
+				object = (T) dataBase.find(Class.forName(name), id);
 			} catch (ClassNotFoundException e) {
 				logger.error("", e);
 			}
@@ -66,23 +59,23 @@ public class Cache implements ICache {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public <T> void set(final String name, final Long objectId, final T object) {
-		getMap(name).put(objectId, object);
+	public <T extends Object> void set(final String name, final Long id, final T object) {
+		getMap(name).put(id, object);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void remove(final String name, final Long objectId) {
-		getMap(name).remove(objectId);
+	public void remove(final String name, final Long id) {
+		getMap(name).remove(id);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public <T> List<T> get(final String name, final ICriteria<T> criteria, final IAction<T> action, final int size) {
+	public <T extends Object> List<T> get(final String name, final ICriteria<T> criteria, final IAction<T> action, final int size) {
 		// This method returns a batch of objects determined by the
 		// criteria. In the case of urls it will iterate through ALL the urls in the map. The logic to access
 		// a batch of urls must be changed, when a url is indexed then it should be moved to another map
@@ -91,6 +84,9 @@ public class Cache implements ICache {
 		List<T> list = new ArrayList<T>();
 		Map<Long, T> map = getMap(name);
 		for (Long id : map.keySet()) {
+			if (list.size() >= size) {
+				break;
+			}
 			T object = map.get(id);
 			if (criteria != null) {
 				// The result from the criteria evaluation determines whether
@@ -104,9 +100,6 @@ public class Cache implements ICache {
 				action.execute(object);
 			}
 			list.add(object);
-			if (list.size() >= size) {
-				break;
-			}
 		}
 		return list;
 	}
@@ -123,27 +116,20 @@ public class Cache implements ICache {
 	 * {@inheritDoc}
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
-	public <T> T get(final String name, final String sql) {
+	public <T extends Object> T get(final String name, final String sql) {
 		Map<Long, T> map = getMap(name);
 		if (IMap.class.isAssignableFrom(map.getClass())) {
-			Collection<Object> collection = ((IMap<Long, T>) map).values(new SqlPredicate(sql));
+			Collection<T> collection = ((IMap<Long, T>) map).values(new SqlPredicate(sql));
 			if (collection.isEmpty()) {
 				return null;
 			}
-			return (T) collection.iterator().next();
+			return collection.iterator().next();
 		}
 		return null;
 	}
 
-	@SuppressWarnings("unchecked")
-	private <T> Map<Long, T> getMap(final String name) {
-		Map<Long, T> map = (Map<Long, T>) maps.get(name);
-		if (map == null) {
-			map = Hazelcast.getMap(name);
-			maps.put(name, map);
-		}
-		return map;
+	private <T extends Object> Map<Long, T> getMap(final String name) {
+		return Hazelcast.getMap(name);
 	}
 
 	public void setDataBase(final IDataBase dataBase) {

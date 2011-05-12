@@ -26,8 +26,19 @@ import org.apache.lucene.index.IndexWriter;
  */
 public interface IHandler<T extends Indexable<?>> {
 
+	/**
+	 * This method is access to the type of class that this handler can handle.
+	 * 
+	 * @return the type of indexable that this handler can handle
+	 */
 	Class<T> getIndexableClass();
 
+	/**
+	 * Sets the type of indexable that this handler can handle.
+	 * 
+	 * @param indexableClass
+	 *            the class that this handler can handle
+	 */
 	void setIndexableClass(Class<T> indexableClass);
 
 	/**
@@ -43,6 +54,19 @@ public interface IHandler<T extends Indexable<?>> {
 	 */
 	List<Thread> handle(IndexContext indexContext, T indexable) throws Exception;
 
+	/**
+	 * This method is to add the document to the index during the processing. Typically this method will be intercepted and other logic
+	 * performed like spatial enrichment and monitoring the performance.
+	 * 
+	 * @param indexContext
+	 *            the index context to add the document to
+	 * @param indexable
+	 *            the indexable that holds the data to add to the index
+	 * @param document
+	 *            the document that will be added to the index
+	 * @throws CorruptIndexException
+	 * @throws IOException
+	 */
 	void addDocument(IndexContext indexContext, Indexable<T> indexable, Document document) throws CorruptIndexException, IOException;
 
 }

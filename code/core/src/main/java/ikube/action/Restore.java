@@ -21,14 +21,15 @@ public class Restore extends Action<IndexContext, Boolean> {
 		try {
 			getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getName(), Boolean.TRUE);
 			// Get the latest backup index
-			// Copy the backup to the index directory
-			// Change the name to the max age + 1 hour
-			File latestIndexDirectoryBackup = FileUtilities.getLatestIndexDirectory(indexContext.getIndexDirectoryPathBackup());
-			String indexDirectoryPath = IndexManager.getIndexDirectoryPathBackup(indexContext);
-			long time = System.currentTimeMillis() + (1000 * 60 * 60);
+			File latestIndexDirectoryBackup = FileUtilities.getLatestIndexDirectory(indexContext.getIndexDirectoryPathBackup()
+					+ IConstants.SEP + indexContext.getIndexName());
+			String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
+			// Change the name to the max age + 24 hours which will give enough time to run another index
+			long time = System.currentTimeMillis() + (1000 * 60 * 60 * 24);
 			String restoredIndexDirectoryPath = indexDirectoryPath + IConstants.SEP + time;
 			File restoredIndexDirectory = FileUtilities.getFile(restoredIndexDirectoryPath, Boolean.TRUE);
 			logger.info("Restoring index from : " + latestIndexDirectoryBackup + ", to : " + restoredIndexDirectory);
+			// Copy the backup to the index directory
 			FileUtilities.copyFiles(latestIndexDirectoryBackup, restoredIndexDirectory);
 		} finally {
 			getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getName(), Boolean.FALSE);

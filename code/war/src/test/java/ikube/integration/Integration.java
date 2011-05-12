@@ -171,16 +171,12 @@ public class Integration {
 	}
 
 	protected boolean isServer() {
-		// logger.info("Properties : " + System.getProperties());
 		Properties properties = System.getProperties();
-		// for (Object key : properties.keySet()) {
-		// logger.info("    Key/value : " + key + " - " + properties.getProperty((String) key));
-		// }
 		String osName = System.getProperty("os.name");
 		logger.info("Operating system : " + osName + ", server : " + osName.toLowerCase().contains("server") + ", 64 bit : "
 				+ properties.getProperty("os.arch").contains("64"));
 		if (osName.toLowerCase().contains("server") && properties.getProperty("os.arch").contains("64")) {
-			return Boolean.TRUE;
+			return Boolean.FALSE;
 		}
 		return Boolean.FALSE;
 	}

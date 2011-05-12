@@ -1,4 +1,4 @@
-package ikube.monitoring;
+package ikube.service;
 
 import ikube.model.IndexContext;
 import ikube.model.Indexable;

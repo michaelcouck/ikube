@@ -21,8 +21,8 @@ import java.util.Collection;
  * @since 25.09.10
  * @version 01.00
  */
-public interface IHandler<E extends Url> {
-	
+public interface IUrlHandler<E extends Url> extends Runnable {
+
 	/**
 	 * Handles the page. This logic is dependent on the implementor.
 	 * 
@@ -41,8 +41,8 @@ public interface IHandler<E extends Url> {
 
 	/** Setters and getters for the properties. */
 
-	void setChildren(Collection<IHandler<E>> children);
+	void setChildren(Collection<IUrlHandler<E>> children);
 
-	Collection<IHandler<E>> getChildren();
+	Collection<IUrlHandler<E>> getChildren();
 
 }

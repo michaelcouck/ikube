@@ -1,10 +1,13 @@
 package ikube.index.handler.internet.crawler;
 
 import ikube.IConstants;
+import ikube.cluster.IClusterManager;
+import ikube.cluster.cache.ICache;
 import ikube.index.IndexManager;
 import ikube.index.content.ByteOutputStream;
 import ikube.index.content.IContentProvider;
 import ikube.index.content.InternetContentProvider;
+import ikube.index.handler.internet.IndexableInternetHandler;
 import ikube.index.parse.IParser;
 import ikube.index.parse.ParserProvider;
 import ikube.index.parse.mime.MimeType;
@@ -13,6 +16,7 @@ import ikube.index.parse.xml.XMLParser;
 import ikube.model.IndexableInternet;
 import ikube.model.Url;
 import ikube.toolkit.HashUtilities;
+import ikube.toolkit.SerializationUtilities;
 import ikube.toolkit.UriUtilities;
 
 import java.io.ByteArrayInputStream;
@@ -21,15 +25,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
-import java.lang.Thread.State;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 import java.util.regex.Pattern;
 
 import javax.swing.text.html.HTML;
@@ -53,62 +50,38 @@ import org.apache.lucene.document.Field.TermVector;
  * @since 25.09.10
  * @version 01.00
  */
-public class PageHandler extends Handler<Url> implements Runnable {
+public class UrlPageHandler extends UrlHandler<Url> implements Runnable {
 
-	public static final Set<Url> IN_SET = new TreeSet<Url>(new Comparator<Url>() {
-		@Override
-		public int compare(final Url objectOne, final Url objectTwo) {
-			long id1 = objectOne.getId();
-			long id2 = objectTwo.getId();
-			return id1 < id2 ? -1 : id1 == id2 ? 0 : 1;
-		}
-	});
-	public static final Set<Url> OUT_SET = new TreeSet<Url>(new Comparator<Url>() {
-		@Override
-		public int compare(final Url objectOne, final Url objectTwo) {
-			long id1 = objectOne.getId();
-			long id2 = objectTwo.getId();
-			return id1 < id2 ? -1 : id1 == id2 ? 0 : 1;
-		}
-	});
-	public static final Set<Url> HASH_SET = new TreeSet<Url>(new Comparator<Url>() {
-		@Override
-		public int compare(final Url objectOne, final Url objectTwo) {
-			long hash1 = objectOne.getHash();
-			long hash2 = objectTwo.getHash();
-			return hash1 < hash2 ? -1 : hash1 == hash2 ? 0 : 1;
-		}
-	});
-
+	private IClusterManager clusterManager;
+	private IndexableInternetHandler handler;
+	private IndexableInternet indexable;
 	private transient final HttpClient httpClient;
 	private transient final IContentProvider<IndexableInternet> contentProvider;
-	private transient final List<Thread> threads;
 
-	public PageHandler(final List<Thread> threads) {
+	public UrlPageHandler(IClusterManager clusterManager, IndexableInternetHandler handler, IndexableInternet indexable) {
+		this.clusterManager = clusterManager;
+		this.handler = handler;
+		this.indexable = (IndexableInternet) SerializationUtilities.clone(indexable);
 		this.httpClient = new HttpClient();
 		this.contentProvider = new InternetContentProvider();
-		this.threads = threads;
-		IN_SET.clear();
-		OUT_SET.clear();
-		HASH_SET.clear();
 	}
+
+	private ICache.IAction<Url> action = new ICache.IAction<Url>() {
+		@Override
+		public void execute(Url url) {
+			clusterManager.getCache().remove(IConstants.URL, url.getId());
+			clusterManager.getCache().set(IConstants.URL_DONE, url.getId(), url);
+		}
+	};
 
 	@Override
 	public void run() {
-		Map<String, Object> parameters = new HashMap<String, Object>();
-		parameters.put(IConstants.INDEXED, Boolean.FALSE);
 		while (true) {
-			List<Url> urls = getBatch(getIndexContext().getInternetBatchSize());
+			List<Url> urls = clusterManager.get(Url.class, IConstants.URL, null, action, 10);
 			if (urls.isEmpty()) {
 				// Check if there are any other threads still working
 				// other than this thread of course
-				int threadsRunnable = 0;
-				for (Thread thread : threads) {
-					if (thread.getState().equals(State.RUNNABLE)) {
-						threadsRunnable++;
-					}
-				}
-				if (threadsRunnable >= 2) {
+				if (handler.isCrawling()) {
 					synchronized (this) {
 						try {
 							wait(1000);
@@ -122,7 +95,7 @@ public class PageHandler extends Handler<Url> implements Runnable {
 			}
 			for (Url url : urls) {
 				try {
-					// LOGGER.info("Doing url : " + url);
+					LOGGER.info("Doing url : " + url);
 					handle(url);
 					handleChildren(url);
 					url.setParsedContent(null);
@@ -137,41 +110,21 @@ public class PageHandler extends Handler<Url> implements Runnable {
 		}
 	}
 
-	protected static synchronized List<Url> getBatch(final int batchSize) {
-		try {
-			List<Url> batch = new ArrayList<Url>();
-			for (Url url : IN_SET) {
-				batch.add(url);
-				if (batch.size() >= batchSize) {
-					break;
-				}
-			}
-			for (Url url : batch) {
-				IN_SET.remove(url);
-				OUT_SET.add(url);
-			}
-			return batch;
-		} finally {
-			PageHandler.class.notifyAll();
-		}
-	}
-
 	/**
-	 * @See {@link IHandler#handle(Url)}
+	 * @See {@link IUrlHandler#handle(Url)}
 	 */
 	@Override
 	public void handle(final Url url) {
 		try {
-			IndexableInternet indexableInternet = getIndexableInternet();
 			// Get the content from the url
-			ByteOutputStream byteOutputStream = getContentFromUrl(httpClient, indexableInternet, url);
+			ByteOutputStream byteOutputStream = getContentFromUrl(httpClient, indexable, url);
 			if (byteOutputStream == null || byteOutputStream.size() == 0) {
 				LOGGER.warn("No content from url, perhaps exception : " + url);
 				return;
 			}
 			InputStream inputStream = new ByteArrayInputStream(byteOutputStream.getBytes());
 			// Extract the links from the url if any
-			extractLinksFromContent(indexableInternet, url, inputStream);
+			extractLinksFromContent(indexable, url, inputStream);
 
 			// Parse the content from the url
 			String parsedContent = getParsedContent(url, byteOutputStream);
@@ -180,13 +133,13 @@ public class PageHandler extends Handler<Url> implements Runnable {
 			}
 			long hash = HashUtilities.hash(parsedContent);
 			url.setHash(hash);
-			if (HASH_SET.contains(url)) {
+			if (clusterManager.get(IConstants.URL_HASH, url.getHash()) != null) {
 				LOGGER.info("Duplicate data : " + url.getUrl());
 				return;
 			}
-			HASH_SET.add(url);
+			clusterManager.set(IConstants.URL_HASH, url.getHash(), url);
 			// Add the document to the index
-			addDocumentToIndex(indexableInternet, url, parsedContent);
+			addDocumentToIndex(indexable, url, parsedContent);
 		} catch (Exception e) {
 			LOGGER.error("Exception visiting page : " + url, e);
 		}
@@ -302,7 +255,8 @@ public class PageHandler extends Handler<Url> implements Runnable {
 			IndexManager.addStringField(indexable.getIdFieldName(), id, document, Store.YES, Index.ANALYZED, TermVector.YES);
 			// Add the contents field
 			IndexManager.addStringField(indexable.getContentFieldName(), parsedContent, document, store, analyzed, termVector);
-			getIndexContext().getIndex().getIndexWriter().addDocument(document);
+			handler.addDocument(null, indexable, document);
+			// getIndexContext().getIndex().getIndexWriter().addDocument(document);
 		} catch (Exception e) {
 			LOGGER.error("Exception accessing url : " + url, e);
 		} finally {
@@ -367,15 +321,18 @@ public class PageHandler extends Handler<Url> implements Runnable {
 								String strippedSessionLink = UriUtilities.stripJSessionId(resolvedLink, replacement);
 								String strippedAnchorLink = UriUtilities.stripAnchor(strippedSessionLink, "");
 								Long id = HashUtilities.hash(strippedAnchorLink);
-								Url dbUrl = new Url();
-								dbUrl.setId(id);
-								if (exists(dbUrl)) {
+								Url url = new Url();
+								url.setId(id);
+
+								if (clusterManager.get(IConstants.URL, url.getId()) != null
+										|| clusterManager.get(IConstants.URL_DONE, url.getId()) != null) {
 									continue;
 								}
 								// Add the link to the database here
-
-								dbUrl.setUrl(strippedAnchorLink);
-								setUrl(dbUrl);
+								url.setUrl(strippedAnchorLink);
+								LOGGER.info("Setting url : " + url);
+								clusterManager.set(IConstants.URL, url.getId(), url);
+								// setUrl(dbUrl);
 							} catch (Exception e) {
 								LOGGER.error("Exception extracting link : " + tag, e);
 							}
@@ -385,22 +342,6 @@ public class PageHandler extends Handler<Url> implements Runnable {
 			}
 		} catch (Exception e) {
 			LOGGER.error("", e);
-		}
-	}
-
-	protected static synchronized boolean exists(final Url url) {
-		try {
-			return IN_SET.contains(url) || OUT_SET.contains(url);
-		} finally {
-			PageHandler.class.notifyAll();
-		}
-	}
-
-	protected static synchronized void setUrl(final Url url) {
-		try {
-			IN_SET.add(url);
-		} finally {
-			PageHandler.class.notifyAll();
 		}
 	}
 

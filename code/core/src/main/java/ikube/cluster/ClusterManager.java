@@ -1,16 +1,20 @@
 package ikube.cluster;
 
+import ikube.IConstants;
 import ikube.cluster.cache.ICache;
+import ikube.cluster.cache.ICache.IAction;
+import ikube.cluster.cache.ICache.ICriteria;
 import ikube.listener.Event;
 import ikube.listener.IListener;
 import ikube.listener.ListenerManager;
 import ikube.model.Server;
 import ikube.model.Server.Action;
-import ikube.model.Url;
+import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.HashUtilities;
 import ikube.toolkit.Logging;
 
 import java.net.InetAddress;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -19,6 +23,7 @@ import org.apache.log4j.Logger;
 
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.ILock;
+import com.hazelcast.core.MessageListener;
 
 /**
  * All the methods are synchronised in this class because not only is Ikube clusterable but also multi-threaded in each server.
@@ -31,7 +36,6 @@ import com.hazelcast.core.ILock;
 public class ClusterManager implements IClusterManager {
 
 	/** Lock objects for cluster wide locking while we update the cache. */
-	protected static final String URL_LOCK = "urlLock";
 	protected static final String SERVER_LOCK = "serverLock";
 
 	/** The timeout to wait for the lock. */
@@ -50,26 +54,6 @@ public class ClusterManager implements IClusterManager {
 	protected transient String address;
 	/** The cluster wide cache. */
 	protected transient ICache cache;
-
-	/**
-	 * This criteria is to check that the {@link Url} has already been indexed or not.
-	 */
-	private transient final ICache.ICriteria<Url> criteria = new ICache.ICriteria<Url>() {
-		@Override
-		public boolean evaluate(final Url url) {
-			return !url.isIndexed();
-		}
-	};
-	/**
-	 * This action is to publish the {@link Url} while getting the next batch.
-	 */
-	private transient final ICache.IAction<Url> action = new ICache.IAction<Url>() {
-		@Override
-		public void execute(final Url url) {
-			url.setIndexed(Boolean.TRUE);
-			cache.set(Url.class.getName(), url.getId(), url);
-		}
-	};
 
 	/**
 	 * In the constructor we initialise the logger but most importantly the address of this server. Please see the comments.
@@ -96,13 +80,13 @@ public class ClusterManager implements IClusterManager {
 						// Set our own server age
 						Server server = getServer();
 						server.setAge(System.currentTimeMillis());
-						set(Server.class, server.getId(), server);
+						set(Server.class.getName(), server.getId(), server);
 						// Remove all servers that are past the max age
 						List<Server> servers = getServers();
 						for (Server remoteServer : servers) {
-							if (System.currentTimeMillis() - remoteServer.getAge()  > MAX_AGE) {
+							if (System.currentTimeMillis() - remoteServer.getAge() > MAX_AGE) {
 								LOGGER.info("Removing server : " + remoteServer);
-								remove(Server.class, remoteServer.getId());
+								remove(Server.class.getName(), remoteServer.getId());
 							}
 						}
 					}
@@ -405,96 +389,83 @@ public class ClusterManager implements IClusterManager {
 		}
 	}
 
+	@Override
+	public synchronized <T> void set(String name, Long id, T object) {
+		try {
+			cache.set(name, id, object);
+		} finally {
+			notifyAll();
+		}
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized List<Url> getBatch(int size) {
+	public synchronized <T> int size(String name) {
+		try {
+			return this.cache.size(name);
+		} finally {
+			notifyAll();
+		}
+	}
+
+	@Override
+	public synchronized <T> void clear(String name) {
+		try {
+			this.cache.clear(name);
+		} finally {
+			notifyAll();
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public synchronized <T> void remove(String name, Long id) {
+		try {
+			this.cache.remove(name, id);
+		} finally {
+			notifyAll();
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public synchronized <T> T get(String name, Long id) {
+		try {
+			return (T) this.cache.get(name, id);
+		} finally {
+			notifyAll();
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public synchronized <T> T get(String name, String sql) {
+		return (T) cache.get(name, sql);
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public synchronized <T> List<T> get(Class<T> klass, String name, ICriteria<T> criteria, IAction<T> action, int size) {
 		ILock lock = null;
 		try {
-			lock = lock(URL_LOCK);
+			lock = lock(name);
 			if (lock == null) {
-				return null;
+				return Arrays.asList();
 			}
-			return cache.get(Url.class.getName(), criteria, action, size);
+			return cache.get(name, criteria, action, size);
 		} finally {
 			unlock(lock);
 			notifyAll();
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
-	@SuppressWarnings("unchecked")
-	public synchronized <T> T get(Class<T> klass, String sql) {
-		try {
-			return (T) cache.get(klass.getName(), sql);
-		} finally {
-			notifyAll();
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	@SuppressWarnings("unchecked")
-	public synchronized <T> T get(final Class<T> klass, final Long id) {
-		try {
-			return (T) cache.get(klass.getName(), id);
-		} finally {
-			notifyAll();
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public synchronized <T> void set(final Class<T> klass, final Long id, final T object) {
-		try {
-			cache.set(klass.getName(), id, object);
-		} finally {
-			notifyAll();
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public synchronized <T> void clear(Class<T> klass) {
-		try {
-			this.cache.clear(klass.getName());
-		} finally {
-			notifyAll();
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public synchronized <T> int size(Class<T> klass) {
-		try {
-			return this.cache.size(klass.getName());
-		} finally {
-			notifyAll();
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public synchronized <T> void remove(Class<T> klass, Long id) {
-		try {
-			this.cache.remove(klass.getName(), id);
-		} finally {
-			notifyAll();
-		}
+	public ICache getCache() {
+		return cache;
 	}
 
 	/** Methods called form Spring below here. */
@@ -512,6 +483,27 @@ public class ClusterManager implements IClusterManager {
 		} finally {
 			notifyAll();
 		}
+	}
+
+	public static void addShutdownHook() {
+		LOGGER.info("Adding shutdown listener : ");
+		Hazelcast.getTopic(IConstants.SHUTDOWN_TOPIC).addMessageListener(new MessageListener<Object>() {
+			@Override
+			public void onMessage(Object other) {
+				if (other == null) {
+					return;
+				}
+				LOGGER.info("Got shutdown message : " + other);
+				Server server = ApplicationContextManager.getBean(IClusterManager.class).getServer();
+				if (other.equals(server)) {
+					// We don't shutdown our selves of course
+					return;
+				}
+				LOGGER.warn("Shutting down Ikube server : " + other);
+				Hazelcast.shutdownAll();
+				System.exit(0);
+			}
+		});
 	}
 
 }

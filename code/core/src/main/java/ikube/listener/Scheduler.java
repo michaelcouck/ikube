@@ -17,7 +17,7 @@ import org.apache.log4j.Logger;
  */
 public class Scheduler {
 
-	private static Logger LOGGER;
+	private static Logger LOGGER = Logger.getLogger(Scheduler.class);
 	/** The scheduler. */
 	private static transient ScheduledExecutorService SCHEDULER;
 	/** The list of schedules. */
@@ -27,7 +27,6 @@ public class Scheduler {
 	 * Iterates over the schedules scheduling them for execution.
 	 */
 	public static void initialize() {
-		LOGGER = Logger.getLogger(Scheduler.class);
 		SCHEDULER = Executors.newScheduledThreadPool(10);
 		for (final Schedule schedule : SCHEDULES) {
 			try {
@@ -47,8 +46,12 @@ public class Scheduler {
 	}
 
 	public static void shutdown() {
-		Scheduler.SCHEDULER.shutdown();
 		Scheduler.SCHEDULES.clear();
+		if (Scheduler.SCHEDULER == null) {
+			LOGGER.warn("Tried to shutdown the scheduler but it is null : ");
+			return;
+		}
+		Scheduler.SCHEDULER.shutdown();
 	}
 
 	public static void addSchedule(Schedule schedule) {

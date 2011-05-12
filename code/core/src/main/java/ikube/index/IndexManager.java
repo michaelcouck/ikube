@@ -131,6 +131,10 @@ public final class IndexManager {
 	}
 
 	public static void closeIndexWriter(final IndexWriter indexWriter) {
+		if (indexWriter == null) {
+			LOGGER.warn("Tried to close a null writer : ");
+			return;
+		}
 		Directory directory = indexWriter.getDirectory();
 		LOGGER.info("Optimizing and closing the index : ");
 		try {

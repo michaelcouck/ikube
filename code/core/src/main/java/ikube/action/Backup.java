@@ -1,5 +1,6 @@
 package ikube.action;
 
+import ikube.IConstants;
 import ikube.index.IndexManager;
 import ikube.model.IndexContext;
 import ikube.toolkit.FileUtilities;
@@ -22,7 +23,8 @@ public class Backup extends Action<IndexContext, Boolean> {
 	public Boolean execute(final IndexContext indexContext) {
 		try {
 			getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getName(), Boolean.TRUE);
-			File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
+			File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexContext.getIndexDirectoryPath() + IConstants.SEP
+					+ indexContext.getIndexName());
 			String indexDirectoryPathBackup = IndexManager.getIndexDirectoryPathBackup(indexContext);
 			File latestIndexDirectoryBackup = FileUtilities.getFile(indexDirectoryPathBackup, Boolean.TRUE);
 			try {

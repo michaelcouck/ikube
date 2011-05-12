@@ -54,15 +54,15 @@ public class ClusterManagerTest extends ATest {
 		Cache cache = new Cache();
 		cache.initialise();
 		clusterManager.setCache(cache);
-		clusterManager.clear(Url.class);
-		clusterManager.clear(Server.class);
+		clusterManager.clear(Url.class.getName());
+		clusterManager.clear(Server.class.getName());
 		ListenerManager.removeListeners();
 	}
 
 	@After
 	public void after() {
-		clusterManager.clear(Url.class);
-		clusterManager.clear(Server.class);
+		clusterManager.clear(Url.class.getName());
+		clusterManager.clear(Server.class.getName());
 	}
 
 	@Test
@@ -72,14 +72,14 @@ public class ClusterManagerTest extends ATest {
 		// we add a server
 		List<Server> servers = clusterManager.getServers();
 		assertEquals(0, servers.size());
-		clusterManager.set(Server.class, remoteServer.getId(), remoteServer);
+		clusterManager.set(Server.class.getName(), remoteServer.getId(), remoteServer);
 
 		// Verify that the server is present in the cache
 		servers = clusterManager.getServers();
 		assertEquals(1, servers.size());
 
 		// Clear the cache
-		clusterManager.clear(Server.class);
+		clusterManager.clear(Server.class.getName());
 
 		// Verify that the server is no longer in the cache
 		servers = clusterManager.getServers();
@@ -92,33 +92,33 @@ public class ClusterManagerTest extends ATest {
 		// in the cache then do a sql like query on the cache and
 		// we should get the server back again
 		String sql = "id = " + this.remoteServer.getId();
-		Server server = clusterManager.get(Server.class, sql);
+		Server server = clusterManager.get(Server.class.getName(), sql);
 		assertNull(server);
 
 		// Set the server in the cache
-		clusterManager.set(Server.class, this.remoteServer.getId(), this.remoteServer);
+		clusterManager.set(Server.class.getName(), this.remoteServer.getId(), this.remoteServer);
 
 		// Perform the query and verify that we get the server as a result
-		server = clusterManager.get(Server.class, sql);
+		server = clusterManager.get(Server.class.getName(), sql);
 		assertNotNull(server);
 
 		// Remove the server and verify that there are no results from the query
-		clusterManager.clear(Server.class);
-		server = clusterManager.get(Server.class, sql);
+		clusterManager.clear(Server.class.getName());
+		server = clusterManager.get(Server.class.getName(), sql);
 		assertNull(server);
 	}
 
 	@Test
 	public void getBatch() throws InterruptedException {
 		// int
-		List<Url> batch = clusterManager.getBatch(batchSize);
+		List<Url> batch = clusterManager.get(Url.class, Url.class.getName(), null, null, batchSize);
 		assertEquals(0, batch.size());
 
 		Url url = new Url();
 		url.setId(System.currentTimeMillis());
-		clusterManager.set(Url.class, url.getId(), url);
+		clusterManager.set(Url.class.getName(), url.getId(), url);
 
-		batch = clusterManager.getBatch(batchSize);
+		batch = clusterManager.get(Url.class, Url.class.getName(), null, null, batchSize);
 		assertEquals(1, batch.size());
 
 		int iterations = 100;
@@ -126,16 +126,16 @@ public class ClusterManagerTest extends ATest {
 			url = new Url();
 			url.setId(System.nanoTime());
 			Thread.sleep(0, 1);
-			clusterManager.set(Url.class, url.getId(), url);
+			clusterManager.set(Url.class.getName(), url.getId(), url);
 		}
 
-		batch = clusterManager.getBatch(batchSize);
+		batch = clusterManager.get(Url.class, Url.class.getName(), null, null, batchSize);
 		assertEquals(batchSize, batch.size());
 
-		batch = clusterManager.getBatch(iterations - batchSize);
+		batch = clusterManager.get(Url.class, Url.class.getName(), null, null, iterations - batchSize);
 		assertEquals(iterations - batchSize, batch.size());
 
-		batch = clusterManager.getBatch(batchSize);
+		batch = clusterManager.get(Url.class, Url.class.getName(), null, null, 0);
 		assertEquals(0, batch.size());
 	}
 
@@ -159,7 +159,7 @@ public class ClusterManagerTest extends ATest {
 		List<Server> servers = clusterManager.getServers();
 		assertEquals(0, servers.size());
 
-		clusterManager.set(Server.class, remoteServer.getId(), remoteServer);
+		clusterManager.set(Server.class.getName(), remoteServer.getId(), remoteServer);
 
 		servers = clusterManager.getServers();
 		assertEquals(1, servers.size());
@@ -177,12 +177,12 @@ public class ClusterManagerTest extends ATest {
 		url.setId(System.currentTimeMillis());
 
 		String sql = "id = " + url.getId();
-		Url cacheUrl = clusterManager.get(Url.class, sql);
+		Url cacheUrl = clusterManager.get(Url.class.getName(), sql);
 		assertNull(cacheUrl);
 
-		clusterManager.set(Url.class, url.getId(), url);
+		clusterManager.set(Url.class.getName(), url.getId(), url);
 
-		cacheUrl = clusterManager.get(Url.class, sql);
+		cacheUrl = clusterManager.get(Url.class.getName(), sql);
 		assertNotNull(cacheUrl);
 	}
 
@@ -191,9 +191,9 @@ public class ClusterManagerTest extends ATest {
 		// First clear the map of servers
 		Server localServer = clusterManager.getServer();
 		localServer.getActions().clear();
-		clusterManager.set(Server.class, localServer.getId(), localServer);
+		clusterManager.set(Server.class.getName(), localServer.getId(), localServer);
 		remoteServer.getActions().clear();
-		clusterManager.set(Server.class, remoteServer.getId(), remoteServer);
+		clusterManager.set(Server.class.getName(), remoteServer.getId(), remoteServer);
 
 		// Verify that there are no actions in any server in the map
 		List<Server> servers = clusterManager.getServers();
@@ -207,9 +207,9 @@ public class ClusterManagerTest extends ATest {
 		// Set a remote server working
 		remoteServer.setWorking(Boolean.TRUE);
 		remoteServer.getActions().add(remoteServer.new Action(0, indexableName, indexName, expectedStartTime));
-		clusterManager.set(Server.class, remoteServer.getId(), remoteServer);
+		clusterManager.set(Server.class.getName(), remoteServer.getId(), remoteServer);
 		// Verify that the remote server has the action and the time we want
-		Server server = clusterManager.get(Server.class, "id = " + remoteServer.getId());
+		Server server = clusterManager.get(Server.class.getName(), "id = " + remoteServer.getId());
 		assertNotNull(server);
 		assertEquals(1, server.getActions().size());
 		assertEquals(expectedStartTime, server.getActions().get(0).getStartTime());
@@ -236,7 +236,7 @@ public class ClusterManagerTest extends ATest {
 	@Test
 	public void size() throws InterruptedException {
 		// Class<T>
-		int size = clusterManager.size(Server.class);
+		int size = clusterManager.size(Server.class.getName());
 		assertEquals(0, size);
 
 		int iterations = 100;
@@ -244,10 +244,10 @@ public class ClusterManagerTest extends ATest {
 			Url url = new Url();
 			url.setId(System.nanoTime());
 			Thread.sleep(1);
-			clusterManager.set(Url.class, url.getId(), url);
+			clusterManager.set(Url.class.getName(), url.getId(), url);
 		}
 
-		size = clusterManager.size(Url.class);
+		size = clusterManager.size(Url.class.getName());
 		assertEquals(iterations, size);
 	}
 

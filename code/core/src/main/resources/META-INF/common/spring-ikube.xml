@@ -44,6 +44,7 @@
 		property:indexables-ref="indexables" />
 	<util:list id="indexables">
 		<ref local="internet" />
+		<ref local="internet9000" />
 	</util:list>
 	
 	<bean
@@ -58,5 +59,17 @@
 		property:analyzed="true"
 		property:stored="true"
 		property:vectored="true" />
-	
+	<bean
+		id="internet9000"
+		class="ikube.model.IndexableInternet"
+		property:name="internet9000"
+		property:url="${ikube.url.9000}" 
+		property:idFieldName="id"
+		property:titleFieldName="title"
+		property:contentFieldName="content"
+		property:excludedPattern=".*(/search).*|.*(/images).*"
+		property:analyzed="true"
+		property:stored="true"
+		property:vectored="true" />
+		
 </beans>

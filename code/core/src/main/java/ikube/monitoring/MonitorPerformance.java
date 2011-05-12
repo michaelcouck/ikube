@@ -2,6 +2,7 @@ package ikube.monitoring;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -16,13 +17,12 @@ public class MonitorPerformance implements IMonitor {
 	private class Execution {
 		int invocations;
 		String name;
-		double start;
-		double stop;
+		long duration;
 	}
 
 	private static final Logger LOGGER = Logger.getLogger(MonitorPerformance.class);
 	private transient final Map<String, Execution> executions;
-	private transient double invocations = 10;
+	private transient double invocations = 10000;
 
 	public MonitorPerformance() {
 		this.executions = new HashMap<String, MonitorPerformance.Execution>();
@@ -35,18 +35,23 @@ public class MonitorPerformance implements IMonitor {
 		if (execution == null) {
 			execution = new Execution();
 			execution.name = name;
-			execution.start = System.currentTimeMillis();
 			this.executions.put(execution.name, execution);
 		}
 		execution.invocations++;
 		if (execution.invocations % invocations == 0) {
-			execution.stop = System.currentTimeMillis();
-			double duration = execution.stop - execution.start;
-			double executionsPerSecond = (execution.invocations / duration) / 1000d;
-			LOGGER.info("Execution : " + execution.invocations + ", duration : " + duration + ", per second : " + executionsPerSecond
+			long seconds = TimeUnit.NANOSECONDS.toSeconds(execution.duration);
+			double executionsPerSecond = execution.invocations / seconds;
+			LOGGER.info("Execution : " + execution.invocations + ", duration : " + seconds + ", per second : " + executionsPerSecond
 					+ ", name : " + execution.name);
 		}
-		return call.proceed();
+		long start = System.nanoTime();
+		try {
+			return call.proceed();
+		} finally {
+			long stop = System.nanoTime();
+			long duration = stop - start;
+			execution.duration += duration;
+		}
 	}
 
 }

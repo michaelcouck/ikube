@@ -46,6 +46,9 @@
 		lazy-init="false"
 		init-method="initialise"
 		property:dataBase-ref="ikube.database.mem.DataBaseMem" />
+	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
+		property:staticMethod="ikube.cluster.ClusterManager.addShutdownHook"
+		lazy-init="false" />
 	
 	<bean
 		class="ikube.index.handler.internet.IndexableInternetHandler"
@@ -75,8 +78,8 @@
 		id="ikube.service.SearcherWebService"
 		class="ikube.service.SearcherWebService" />
 	<bean
-		id="ikube.monitoring.MonitoringService"
-		class="ikube.monitoring.MonitoringService" />
+		id="ikube.service.MonitoringService"
+		class="ikube.service.MonitoringService" />
 	<bean
 		id="ikube.service.WebServicePublisher"
 		class="ikube.service.WebServicePublisher"
@@ -103,7 +106,7 @@
 		<property name="implementors">
 			<list>
 				<ref local="ikube.service.SearcherWebService" />
-				<ref local="ikube.monitoring.MonitoringService" />
+				<ref local="ikube.service.MonitoringService" />
 			</list>
 		</property>
 	</bean>

@@ -12,7 +12,7 @@ import org.apache.lucene.util.Version;
  * @version 01.00
  */
 public interface IConstants {
-	
+
 	/** Application name. */
 	String IKUBE = "ikube";
 	/** The file separator for the system. */
@@ -60,6 +60,8 @@ public interface IConstants {
 	String TITLE = "title";
 	String NAME = "name";
 	String URL = "url";
+	String URL_DONE = "urlDone";
+	String URL_HASH = "urlHash";
 	String INDEXED = "indexed";
 	String HASH = "hash";
 	String START = "start";
@@ -100,8 +102,11 @@ public interface IConstants {
 	String LOCATION = "location";
 
 	String DISTANCE = "distance";
-	
+
 	String LATITUDE = "latitude";
 	String LONGITUDE = "longitude";
+
+	String SHUTDOWN = "shutdown";
+	String SHUTDOWN_TOPIC = "shutdownTopic";
 
 }

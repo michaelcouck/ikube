@@ -2,14 +2,13 @@ package ikube.cluster;
 
 import ikube.cluster.cache.ICache;
 import ikube.model.Server;
-import ikube.model.Url;
 
 import java.util.List;
 
 import com.hazelcast.core.ILock;
 
 /**
- * This is the interface that will synchronize and coordinate the servers in the cluster. The implementors are critical to the functioning
+ * This is the interface that will synchronise and coordinate the servers in the cluster. The implementors are critical to the functioning
  * of Ikube.
  * 
  * @author Michael Couck
@@ -82,39 +81,50 @@ public interface IClusterManager {
 	/** Cluster wide cache access. */
 
 	/**
-	 * @see ICache#get(String, ICriteria, IAction, int)
-	 */
-	List<Url> getBatch(int size);
-
-	/**
 	 * @see ICache#get(String, String)
 	 */
-	<T> T get(Class<T> klass, String sql);
+	<T> T get(String name, String sql);
 
 	/**
 	 * @see ICache#get(String, Long)
 	 */
-	<T> T get(Class<T> klass, Long objectId);
+	<T> T get(String name, Long id);
+
+	/**
+	 * @see ICache#get(Class<T>, ICache.ICriteria, ICache.IAction)
+	 */
+	<T> List<T> get(Class<T> klass, String name, ICache.ICriteria<T> criteria, ICache.IAction<T> action, int size);
 
 	/**
 	 * @see ICache#set(String, Long, Object)
 	 */
-	<T> void set(Class<T> klass, Long objectId, T object);
+	<T> void set(String name, Long id, T object);
 
 	/**
 	 * @see ICache#clear(String)
 	 */
-	<T> void clear(Class<T> klass);
+	<T> void clear(String name);
 
 	/**
 	 * @see ICache#size(String)
 	 */
-	<T> int size(Class<T> klass);
-	
-	<T> void remove(Class<T> klass, Long id);
+	<T> int size(String klass);
 
+	/**
+	 * @see ICache#remove(String, Long)
+	 */
+	<T> void remove(String name, Long id);
+
+	/**
+	 * @see ICache#lock(String)
+	 */
 	ILock lock(String lockName);
 
+	/**
+	 * @see ICache#unlock(ILock)
+	 */
 	void unlock(ILock lock);
+	
+	ICache getCache();
 
 }

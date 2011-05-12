@@ -31,6 +31,10 @@ public class ApplicationContextManagerMock {
 	public static IClusterManager CLUSTER_MANAGER;
 	public static IDataBase DATABASE = mock(IDataBase.class);
 	public static IndexableInternetHandler HANDLER = mock(IndexableInternetHandler.class);
+	
+	static {
+		// when(HANDLER.getThreads()).thenReturn(0);
+	}
 
 	@Mock()
 	@SuppressWarnings("unchecked")

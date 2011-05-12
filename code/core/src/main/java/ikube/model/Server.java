@@ -150,6 +150,20 @@ public class Server extends Persistable implements Comparable<Server> {
 		this.age = age;
 	}
 
+	public boolean equals(Object object) {
+		if (object == null) {
+			return Boolean.FALSE;
+		}
+		if (!this.getClass().isAssignableFrom(object.getClass())) {
+			return Boolean.FALSE;
+		}
+		return this.getAddress().equals(((Server) object).getAddress());
+	}
+
+	public int hashCode() {
+		return this.getId().intValue();
+	}
+
 	@Override
 	public int compareTo(final Server other) {
 		return this.getAddress().compareTo(other.getAddress());

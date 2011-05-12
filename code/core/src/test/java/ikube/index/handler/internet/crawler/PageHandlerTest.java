@@ -2,13 +2,14 @@ package ikube.index.handler.internet.crawler;
 
 import static org.junit.Assert.assertTrue;
 import ikube.BaseTest;
+import ikube.IConstants;
+import ikube.cluster.IClusterManager;
+import ikube.index.handler.internet.IndexableInternetHandler;
 import ikube.model.IndexableInternet;
 import ikube.model.Url;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.HashUtilities;
 import ikube.toolkit.PerformanceTester;
-
-import java.util.ArrayList;
 
 import org.junit.After;
 import org.junit.Before;
@@ -22,6 +23,8 @@ import org.junit.Test;
 public class PageHandlerTest extends BaseTest {
 
 	private IndexableInternet indexableInternet;
+	private IndexableInternetHandler handler = ApplicationContextManager.getBean(IndexableInternetHandler.class);
+	private IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
 
 	public PageHandlerTest() {
 		super(PageHandlerTest.class);
@@ -31,11 +34,19 @@ public class PageHandlerTest extends BaseTest {
 	public void before() {
 		indexContext.getIndex().setIndexWriter(INDEX_WRITER);
 		indexableInternet = ApplicationContextManager.getBean("internet");
+		handler = ApplicationContextManager.getBean(IndexableInternetHandler.class);
+		clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
+		clusterManager.clear(IConstants.URL);
+		clusterManager.clear(IConstants.URL_DONE);
+		clusterManager.clear(IConstants.URL_HASH);
 	}
 
 	@After
 	public void after() {
 		indexContext.getIndex().setIndexWriter(null);
+		clusterManager.clear(IConstants.URL);
+		clusterManager.clear(IConstants.URL_DONE);
+		clusterManager.clear(IConstants.URL_HASH);
 	}
 
 	@Test
@@ -44,26 +55,25 @@ public class PageHandlerTest extends BaseTest {
 		url.setId(HashUtilities.hash(indexableInternet.getUrl()));
 		url.setUrl(indexableInternet.getUrl());
 
-		PageHandler pageHandler = new PageHandler(new ArrayList<Thread>());
-		pageHandler.setIndexContext(indexContext);
-		pageHandler.setIndexableInternet(indexableInternet);
-		PageHandler.IN_SET.add(url);
-		Thread thread = new Thread(pageHandler);
+		UrlPageHandler urlPageHandler = new UrlPageHandler(clusterManager, handler, indexableInternet);
+		clusterManager.set(IConstants.URL, url.getId(), url);
+		Thread thread = new Thread(urlPageHandler);
 		thread.start();
 		thread.join();
 		// Verify that there are urls in the database, that they are all indexed and there are no duplicates
-		assertTrue(PageHandler.IN_SET.size() == 0);
-		assertTrue(PageHandler.OUT_SET.size() > 0);
-		assertTrue(PageHandler.OUT_SET.size() >= PageHandler.HASH_SET.size());
+		assertTrue(clusterManager.get(Url.class, IConstants.URL, null, null, Integer.MAX_VALUE).size() == 0);
+		assertTrue(clusterManager.get(Url.class, IConstants.URL_DONE, null, null, Integer.MAX_VALUE).size() > 0);
+		assertTrue(clusterManager.get(Url.class, IConstants.URL_DONE, null, null, Integer.MAX_VALUE).size() >= clusterManager.get(
+				Url.class, IConstants.URL_HASH, null, null, Integer.MAX_VALUE).size());
 	}
 
 	@Test
 	public void performance() {
 		int[] iterations = new int[] { 1000, 10000 };
 		for (int i = 0; i < iterations.length; i++) {
-			PageHandler.IN_SET.clear();
-			PageHandler.OUT_SET.clear();
-			PageHandler.HASH_SET.clear();
+			clusterManager.clear(IConstants.URL);
+			clusterManager.clear(IConstants.URL_DONE);
+			clusterManager.clear(IConstants.URL_HASH);
 			performance(iterations[i]);
 		}
 	}
@@ -72,7 +82,7 @@ public class PageHandlerTest extends BaseTest {
 		for (int i = 0; i < iterations; i++) {
 			Url url = new Url();
 			url.setId(new Long(i));
-			PageHandler.setUrl(url);
+			clusterManager.set(IConstants.URL, url.getId(), url);
 		}
 		long id = iterations / 2 - (iterations / 4) - (iterations / 7);
 		final Url url = new Url();
@@ -80,7 +90,7 @@ public class PageHandlerTest extends BaseTest {
 		double iterationsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
 			@Override
 			public void execute() throws Exception {
-				PageHandler.exists(url);
+				clusterManager.get(IConstants.URL, url.getId());
 			}
 		}, "Page handler set performance : " + iterations + " : ", iterations);
 		assertTrue(iterationsPerSecond > 1000);

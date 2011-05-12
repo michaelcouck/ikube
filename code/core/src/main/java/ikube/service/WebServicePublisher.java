@@ -61,7 +61,7 @@ public class WebServicePublisher implements IWebServicePublisher {
 				}
 			}
 		}
-		clusterManager.set(Server.class, server.getId(), server);
+		clusterManager.set(Server.class.getName(), server.getId(), server);
 	}
 
 	public void setProtocols(final List<String> protocols) {

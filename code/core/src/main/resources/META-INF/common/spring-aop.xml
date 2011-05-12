@@ -60,7 +60,7 @@
 		class="ikube.monitoring.MonitorPerformance" />
 	<aop:config proxy-target-class="true">
 		<aop:aspect ref="ikube.monitoring.IMonitor">
-			<aop:around method="monitor" pointcut="execution(* ikube.index.handler.internet.crawler.PageHandler.*(..))" />
+			<aop:around method="monitor" pointcut="execution(* ikube.index.handler.internet.crawler.UrlPageHandler.*(..))" />
 		</aop:aspect>
 	</aop:config>
 	

@@ -4,7 +4,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import ikube.BaseTest;
 import ikube.model.IndexContext;
-import ikube.monitoring.IMonitoringService;
+import ikube.service.IMonitoringService;
 import ikube.toolkit.ApplicationContextManager;
 
 import org.junit.Test;

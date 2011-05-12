@@ -38,8 +38,9 @@ public class RuleInterceptor implements IRuleInterceptor {
 			LOGGER.warn("No rules defined for, proceeding : " + target);
 			return proceedingJoinPoint.proceed();
 		}
-
-		LOGGER.debug("Intercepting : " + target);
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Intercepting : " + target);
+		}
 		JEP jep = new JEP();
 		for (IRule<IndexContext> rule : classRules) {
 			Object[] args = proceedingJoinPoint.getArgs();
@@ -47,7 +48,9 @@ public class RuleInterceptor implements IRuleInterceptor {
 				if (arg != null && IndexContext.class.isAssignableFrom(arg.getClass())) {
 					boolean result = rule.evaluate((IndexContext) arg);
 					String parameter = rule.getClass().getSimpleName();
-					LOGGER.debug(Logging.getString("Rule : ", rule, ", parameter : ", parameter, ", result : ", result));
+					if (LOGGER.isDebugEnabled()) {
+						LOGGER.debug(Logging.getString("Rule : ", rule, ", parameter : ", parameter, ", result : ", result));
+					}
 					jep.addVariable(parameter, result);
 				}
 			}

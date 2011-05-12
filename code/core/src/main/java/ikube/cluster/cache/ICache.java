@@ -32,7 +32,7 @@ public interface ICache {
 	 * 
 	 * @author Michael Couck
 	 */
-	interface IAction<T> {
+	interface IAction<T extends Object> {
 		void execute(T object);
 	}
 
@@ -42,7 +42,7 @@ public interface ICache {
 	 * 
 	 * @author Michael Couck
 	 */
-	interface ICriteria<T> {
+	interface ICriteria<T extends Object> {
 		boolean evaluate(T object);
 	}
 
@@ -75,7 +75,7 @@ public interface ICache {
 	 *            the id of the object in the map
 	 * @return the object with the specified id
 	 */
-	<T> T get(String name, Long id);
+	<T extends Object> T get(String name, Long id);
 
 	/**
 	 * Access to the object in the specified map based on a SQL like query. The SQL could be something like (urlString =
@@ -91,7 +91,7 @@ public interface ICache {
 	 *         and no unique or duplicate checking will be done. In the case that the objects are unique based on the sql then this should
 	 *         be no problem
 	 */
-	<T> T get(String name, String sql);
+	<T extends Object> T get(String name, String sql);
 
 	/**
 	 * Sets the specified object in the map based on the id. This method also propagates the object throughout the cluster.
@@ -105,7 +105,7 @@ public interface ICache {
 	 * @param object
 	 *            the object it's self
 	 */
-	<T> void set(String name, Long id, T object);
+	<T extends Object> void set(String name, Long id, T object);
 
 	/**
 	 * Removes the specified object from the cache/map and throughout the cluster.
@@ -133,6 +133,6 @@ public interface ICache {
 	 *            the maximum size of the batch that should be returned
 	 * @return the batch of objects from the cache
 	 */
-	<T> List<T> get(String name, ICriteria<T> criteria, IAction<T> action, int size);
+	<T extends Object> List<T> get(String name, ICriteria<T> criteria, IAction<T> action, int size);
 
 }

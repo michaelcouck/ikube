@@ -1,10 +1,10 @@
 package ikube.action;
 
-import java.util.List;
-
+import ikube.IConstants;
 import ikube.model.IndexContext;
 import ikube.model.Server;
-import ikube.model.Url;
+
+import java.util.List;
 
 /**
  * This class resets the data in the cluster. It is imperative that nothing gets reset if there are any servers working of course. The urls
@@ -28,9 +28,11 @@ public class Reset extends Action<IndexContext, Boolean> {
 				server.getActions().clear();
 			}
 			for (Server server : servers) {
-				getClusterManager().set(Server.class, server.getId(), server);
+				getClusterManager().set(Server.class.getName(), server.getId(), server);
 			}
-			getClusterManager().clear(Url.class);
+			getClusterManager().clear(IConstants.URL);
+			getClusterManager().clear(IConstants.URL_DONE);
+			getClusterManager().clear(IConstants.URL_HASH);
 		} finally {
 			getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getName(), Boolean.FALSE);
 		}

@@ -20,7 +20,6 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
 /**
- * 
  * @author Michael Couck
  * @since 16.01.11
  * @version 01.00
@@ -98,7 +97,7 @@ public class IndexValidator implements IIndexValidator {
 								directory.close();
 							}
 						} catch (Exception e) {
-							LOGGER.error("Exceptin closing the directory : ", e);
+							LOGGER.error("Exception closing the directory : ", e);
 						}
 					}
 				}
