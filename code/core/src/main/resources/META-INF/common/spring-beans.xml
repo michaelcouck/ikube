@@ -40,15 +40,15 @@
 		class="ikube.cluster.ClusterManager"
 		lazy-init="true"
 		property:cache-ref="ikube.cluster.cache.Cache" />
+	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
+		property:staticMethod="ikube.cluster.ClusterManager.addShutdownHook"
+		lazy-init="false" />
+	<!-- property:dataBase-ref="ikube.database.mem.DataBaseMem"  -->
 	<bean
 		id="ikube.cluster.cache.Cache"
 		class="ikube.cluster.cache.Cache"
 		lazy-init="false"
-		init-method="initialise"
-		property:dataBase-ref="ikube.database.mem.DataBaseMem" />
-	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
-		property:staticMethod="ikube.cluster.ClusterManager.addShutdownHook"
-		lazy-init="false" />
+		init-method="initialise" />
 	
 	<bean
 		class="ikube.index.handler.internet.IndexableInternetHandler"

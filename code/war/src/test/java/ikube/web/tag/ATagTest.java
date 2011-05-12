@@ -3,6 +3,7 @@ package ikube.web.tag;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import ikube.toolkit.Logging;
+import ikube.toolkit.SerializationUtilities;
 
 import java.beans.XMLEncoder;
 import java.io.ByteArrayOutputStream;
@@ -90,7 +91,7 @@ public abstract class ATagTest {
 		statistics.put(ATag.TOTAL, Long.toString(10001));
 		statistics.put(ATag.DURATION, Long.toString(10001));
 		results.add(statistics);
-		return serialize(results);
+		return SerializationUtilities.serialize(results);
 	}
 
 	public String serialize(Object object) {

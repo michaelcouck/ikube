@@ -30,8 +30,6 @@ public class SearchServletTest {
 		Logging.configure();
 	}
 
-	protected String searchApi = "http://ikube.ikube.cloudbees.net/SearchServlet?indexName=indexOne&searchStrings=lucene";
-
 	private SearchServlet searchServlet;
 	@Cascading
 	private HttpServletRequest request;

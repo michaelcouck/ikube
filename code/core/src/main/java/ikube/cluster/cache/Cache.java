@@ -47,6 +47,8 @@ public class Cache implements ICache {
 		if (object == null && dataBase != null) {
 			try {
 				// Try the underlying database
+				// TODO This needs to be changed! The name is the name
+				// of the map, not the class name, API change in fact!
 				object = (T) dataBase.find(Class.forName(name), id);
 			} catch (ClassNotFoundException e) {
 				logger.error("", e);
