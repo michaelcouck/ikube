@@ -71,6 +71,7 @@ public class ClusterManager implements IClusterManager {
 				// same ip address
 				this.ip = InetAddress.getLocalHost().getHostAddress();
 				this.address = ip + "." + System.nanoTime();
+				// This listener will iterate over the servers and remove any that have expired
 				ListenerManager.addListener(new IListener() {
 					@Override
 					public void handleNotification(Event event) {
@@ -431,8 +432,8 @@ public class ClusterManager implements IClusterManager {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
+	@SuppressWarnings("unchecked")
 	public synchronized <T> T get(String name, Long id) {
 		try {
 			return (T) this.cache.get(name, id);
@@ -441,8 +442,8 @@ public class ClusterManager implements IClusterManager {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
+	@SuppressWarnings("unchecked")
 	public synchronized <T> T get(String name, String sql) {
 		return (T) cache.get(name, sql);
 	}

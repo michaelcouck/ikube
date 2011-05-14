@@ -574,13 +574,18 @@
 			<artifactId>flatpack</artifactId>
 			<version>3.1.1</version>
 		</dependency>
-			<dependency>
-				<groupId>canyon</groupId>
-				<artifactId>canyon</artifactId>
-				<version>0.9.8</version>
-				<type>jar</type>
-				<scope>compile</scope>
-			</dependency>
+		<dependency>
+			<groupId>canyon</groupId>
+			<artifactId>canyon</artifactId>
+			<version>0.9.8</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+            <groupId>com.objectdb</groupId>
+            <artifactId>objectdb</artifactId>
+            <version>2.0.4</version>
+        </dependency>
 	</dependencies>
 
 	<repositories>
@@ -634,6 +639,11 @@
 			<name>Spring by Example</name>
 			<url>http://www.springbyexample.org/maven/repo</url>
 		</repository>
+		<repository>
+            <id>objectdb</id>
+            <name>ObjectDB Repository</name>
+            <url>http://m2.objectdb.com</url>
+        </repository>
 	</repositories>
 
 	<scm>
