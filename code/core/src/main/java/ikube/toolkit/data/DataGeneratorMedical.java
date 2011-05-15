@@ -22,9 +22,8 @@ public class DataGeneratorMedical extends ADataGenerator {
 
 	private InputStream inputStream;
 
-	public DataGeneratorMedical(EntityManager entityManager, InputStream inputStream) {
+	public DataGeneratorMedical(EntityManager entityManager) {
 		super(entityManager);
-		this.inputStream = inputStream;
 	}
 
 	@SuppressWarnings({ "unused", "unchecked" })
@@ -32,6 +31,7 @@ public class DataGeneratorMedical extends ADataGenerator {
 		Document document = XmlUtilities.getDocument(inputStream, "UTF8");
 		Element listingsElement = XmlUtilities.getElement(document.getRootElement(), "listings");
 		List<Element> listingsElements = listingsElement.elements();
+		logger.info("Results size : " + listingsElements.size());
 		try {
 			begin(entityManager);
 			for (Element listingElement : listingsElements) {
@@ -54,7 +54,7 @@ public class DataGeneratorMedical extends ADataGenerator {
 				doctor.getAddress().setPostCode(postCodeElement.getText());
 				doctor.getAddress().setProvince(reportingLocationElement.getText());
 				doctor.getAddress().setStreet(streetAddressElement.getText());
-				
+
 				logger.debug("Inserting : " + doctor);
 				entityManager.persist(doctor);
 				entities.clear();
@@ -62,6 +62,10 @@ public class DataGeneratorMedical extends ADataGenerator {
 		} finally {
 			commit(entityManager);
 		}
+	}
+
+	public void setInputStream(InputStream inputStream) {
+		this.inputStream = inputStream;
 	}
 
 }

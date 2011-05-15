@@ -66,6 +66,10 @@ public interface IConstants {
 	String INDEXED = "indexed";
 	String HASH = "hash";
 	String START = "start";
+	String RESULTS = "results";
+	String ADDRESS = "address";
+	String SERVER = "server";
+	
 
 	String ENCODING = "UTF-8";
 

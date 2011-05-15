@@ -7,7 +7,7 @@
 	}
 </script>
 
-<div id="sidebar">
+<div id="sidebar" class="menu">
 	<ul>
 		<li id="search">
 			<form name="ikubeSearchForm" id="ikubeSearchForm" action="<c:url value="/results.html"/>">
@@ -15,6 +15,7 @@
 					<input type="hidden" name="indexName" value="ikube">
 					<input type="hidden" name="fragment" value="true">
 					<input type="hidden" name="searchFields" value="content">
+					<!-- TODO change this to a Spring controller that goes to the web service -->
 					<input type="hidden" name="searchUrl" value="http://localhost:9000/ikube/SearchServlet">
 					<input type="text" name="searchStrings" id="search-text"
 						value="<c:out value='${param.searchStrings}' />" />

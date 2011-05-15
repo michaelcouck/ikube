@@ -1,11 +1,3 @@
-<%@ page import="java.util.Map"%>
-<%@ page import="ikube.model.IndexContext"%>
-<%@ page import="ikube.toolkit.GeneralUtilities"%>
-<%@ page import="ikube.cluster.IClusterManager"%>
-<%@ page import="ikube.toolkit.ApplicationContextManager"%>
-<%@ page import="ikube.monitoring.IMonitoringService"%>
-<%@ page import="ikube.model.Server"%>
-<%@ page import="java.util.List"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <table class="table-content" width="100%">
@@ -16,49 +8,35 @@
 		</td>
 	</tr>
 	
-	<%
-		// TODO This can all get set in the front controller
-		String address = request.getParameter("address");
-		List<Server> servers = ApplicationContextManager.getBean(IClusterManager.class).getServers();
-		Server server = GeneralUtilities.findObject(Server.class, servers, "address", address);
-		pageContext.setAttribute("server", server);
-		String[] indexNames = ApplicationContextManager.getBean(IMonitoringService.class).getIndexNames();
-		pageContext.setAttribute("indexNames", indexNames);
-	%>
-	
 	<tr>
 		<td class="td-content">Server</td>
 		<td class="td-content">${param.address}</td>
 	</tr>
 	
-	<c:forEach var="indexName" items="${pageScope.indexNames}">
 	<tr>
-		<td class="td-content">${indexName}</td>
-		<td class="td-content" style="text-align: right; float: right;">
-			<ul>
-				<li id="search">
-					<form name="searchForm" id="${indexName}" action="<c:url value="/admin/search.html"/>">
-						<fieldset>
-							<input type="hidden" name="address" value="${param.address}">
-							<input type="hidden" name="indexName" value="${indexName}">
-							<input type="hidden" name="fragment" value="true">
-							<!-- TODO Need to add all the fields in the index in the parameter list as searchFields -->
-							<input type="hidden" name="searchFields" value="content">
-							<!-- 
-								TODO This must be the specific server, i.e. ${server.ip}. Somehow this goes to 
-								192.168.1.137 which is directed somewhere else, perhaps by the router? For now 
-								we stick with the localhost 
-							-->
-							<input type="hidden" name="searchUrl" value="http://localhost/ikube/SearchServlet">
-							<input type="text" name="searchStrings" id="search-text-plain" value="${param.searchStrings}" />
+		<td class="td-content">${param.indexName}</td>
+		<td class="td-content">
+			<form name="searchForm" id="${param.indexName}" action="<c:url value="/admin/search.html"/>">
+				<!-- <input type="hidden" name="searchUrl" value="http://localhost/ikube/SearchServlet"> -->
+				<input type="hidden" name="address" value="${param.address}">
+				<input type="hidden" name="indexName" value="${param.indexName}">
+				<input type="hidden" name="fragment" value="true">
+				<table>
+					<c:forEach var="searchField" items="${requestScope.searchFields}">
+						<tr>
+							<td>${searchField}</td>
+							<td><input type="text" name="${searchField}" id="search-text" value="${requestScope.searchField}" /></td>
+						</tr>
+					</c:forEach>
+					<tr>
+						<td colspan="2">
 							<input type="submit" id="search-submit-plain" value="Go" />
-						</fieldset>
-					</form>
-				</li>
-			</ul>
+						</td>
+					</tr>
+				</table>
+			</form>
 		</td>
 	</tr>
-	</c:forEach>
 	
 	<tr>
 		<td class="td-content" colspan="2">

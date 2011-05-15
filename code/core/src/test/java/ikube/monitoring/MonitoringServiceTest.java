@@ -1,8 +1,9 @@
 package ikube.monitoring;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
+
 import ikube.BaseTest;
+import ikube.IConstants;
 import ikube.model.IndexContext;
 import ikube.service.IMonitoringService;
 import ikube.toolkit.ApplicationContextManager;
@@ -41,6 +42,13 @@ public class MonitoringServiceTest extends BaseTest {
 				logger.debug("        : field name : " + fieldName);
 			}
 		}
+		String[] indexFieldNames = monitoringService.getIndexFieldNames(IConstants.IKUBE);
+		for (String indexfieldName : indexFieldNames) {
+			logger.info("Field name : " + indexfieldName);
+		}
+		assertEquals("The first field name should be the content : ", "content", indexFieldNames[0]);
+		assertEquals("The second field name should be the id : ", "id", indexFieldNames[1]);
+		assertEquals("The third field name should be the title : ", "title", indexFieldNames[2]);
 	}
 
 }

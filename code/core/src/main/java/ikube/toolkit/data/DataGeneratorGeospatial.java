@@ -8,6 +8,11 @@ import co.uk.hjcs.canyon.session.Session;
 import co.uk.hjcs.canyon.session.SessionFactory;
 
 /**
+ * This class takes the OpenGis data that is in the comma separated file, converts the lines to GeoName objects using the great flat file
+ * mapping library from mCanyon and inserts the entities into the database. The result of the insert can then be indexed and searches for
+ * addresses can happen against the index and the result will contain the latitude and longitude values for the address, basically the
+ * geolocation data is inserted by this class.
+ * 
  * @author Michael Couck
  * @since 26.04.2011
  * @version 01.00

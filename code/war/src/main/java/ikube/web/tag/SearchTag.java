@@ -5,7 +5,6 @@ import ikube.toolkit.SerializationUtilities;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
@@ -39,72 +38,30 @@ public class SearchTag extends ATag {
 	 */
 	@SuppressWarnings("unchecked")
 	public int doStartTag() throws JspException {
-		if (searchUrl == null || "".equals(searchUrl)) {
-			return EVAL_BODY_BUFFERED;
-		}
 		HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
 		HttpSession session = request.getSession();
-		// Set the defaults in the session
-		Number firstResult = request.getParameter(FIRST_RESULT) != null ? Integer.parseInt(request.getParameter(FIRST_RESULT)) : 0;
-		Number maxResults = request.getParameter(MAX_RESULTS) != null ? Integer.parseInt(request.getParameter(MAX_RESULTS)) : 10;
-
-		session.setAttribute(RESULTS, null);
-		session.setAttribute(TOTAL, 0);
-		session.setAttribute(FIRST_RESULT, firstResult);
-		session.setAttribute(MAX_RESULTS, maxResults);
-
-		StringBuilder builder = new StringBuilder();
-		String queryString = request.getQueryString();
-		if (queryString != null) {
-			if (searchUrl.indexOf('?') == -1) {
-				builder.append('?');
-			} else {
-				builder.append('&');
-			}
-			builder.append(queryString);
-		}
-
-		logger.debug(request.getQueryString());
-		logger.debug("Do start tag : " + builder.toString());
-		// Build the url to the search servlet
+		// Check to see if there are already results in the session
+		List<Map<String, String>> results = (List<Map<String, String>>) session.getAttribute(RESULTS);
 		try {
-			URL url = new URL(searchUrl + builder.toString());
-			logger.debug("Search URL : " + url);
-			// Access the search servlet and get the results in xml serialized form
-			InputStream inputStream = url.openStream();
-			String xml = FileUtilities.getContents(inputStream, Integer.MAX_VALUE).toString();
-			logger.debug("Results xml : " + xml);
-
-			if (xml != null && !xml.trim().equals("")) {
-				// logger.info("Xml results : " + xml);
-				// Decode the xml into a list of maps
-				List<Map<String, String>> results = null;
-				try {
-					results = (List<Map<String, String>>) SerializationUtilities.deserialize(xml);
-				} catch (Exception e) {
-					logger.warn("No results?", e);
-				}
-				if (results != null) {
-					// Add the list to the page context/parameters/session
-					session.setAttribute(RESULTS, results);
-					if (results.size() > 0) {
-						logger.debug("Results in tag : " + results.toString());
-						Map<String, String> statistics = results.get(results.size() - 1);
-						String stringTotal = statistics.get(TOTAL);
-						String stringDuration = statistics.get(DURATION);
-						session.setAttribute(TOTAL, stringTotal != null ? Integer.parseInt(stringTotal) : 0);
-						session.setAttribute(DURATION, stringDuration != null ? Integer.parseInt(stringDuration) : 0);
-						results.remove(statistics);
-					} else {
-						session.setAttribute(TOTAL, 0);
-						session.setAttribute(DURATION, 0);
-					}
+			if (results == null) {
+				results = doSearch(request);
+			}
+			if (results != null) {
+				// Add the list to the page context/parameters/session
+				session.setAttribute(RESULTS, results);
+				if (results.size() > 0) {
+					logger.debug("Results in tag : " + results.toString());
+					Map<String, String> statistics = results.get(results.size() - 1);
+					String stringTotal = statistics.get(TOTAL);
+					String stringDuration = statistics.get(DURATION);
+					session.setAttribute(TOTAL, stringTotal != null ? Integer.parseInt(stringTotal) : 0);
+					session.setAttribute(DURATION, stringDuration != null ? Integer.parseInt(stringDuration) : 0);
+					results.remove(statistics);
+				} else {
+					session.setAttribute(TOTAL, 0);
+					session.setAttribute(DURATION, 0);
 				}
 			}
-		} catch (MalformedURLException e) {
-			logger.error("Exception accessing the search servlet with the query string : " + builder, e);
-		} catch (IOException e) {
-			logger.error("Exception accessing the search servlet. Is the server running, configuration?", e);
 		} catch (Exception e) {
 			logger.error("Exception accessing the search servlet.", e);
 		}
@@ -134,6 +91,47 @@ public class SearchTag extends ATag {
 		return EVAL_PAGE;
 	}
 
+	/**
+	 * This method should be called if the search servlet is being used and there are no results in the request or the session.
+	 * 
+	 * @throws IOException
+	 */
+	@SuppressWarnings("unchecked")
+	protected List<Map<String, String>> doSearch(HttpServletRequest request) throws IOException {
+		HttpSession session = request.getSession();
+		// Set the defaults in the session
+		Number firstResult = request.getParameter(FIRST_RESULT) != null ? Integer.parseInt(request.getParameter(FIRST_RESULT)) : 0;
+		Number maxResults = request.getParameter(MAX_RESULTS) != null ? Integer.parseInt(request.getParameter(MAX_RESULTS)) : 10;
+		session.setAttribute(RESULTS, null);
+		session.setAttribute(TOTAL, 0);
+		session.setAttribute(FIRST_RESULT, firstResult);
+		session.setAttribute(MAX_RESULTS, maxResults);
+		// Build the url to the search servlet
+		StringBuilder builder = new StringBuilder();
+		String queryString = request.getQueryString();
+		if (queryString != null) {
+			if (searchUrl.indexOf('?') == -1) {
+				builder.append('?');
+			} else {
+				builder.append('&');
+			}
+			builder.append(queryString);
+		}
+		URL url = new URL(searchUrl + builder.toString());
+		// Access the search servlet and get the results in xml serialized form
+		InputStream inputStream = url.openStream();
+		String xml = FileUtilities.getContents(inputStream, Integer.MAX_VALUE).toString();
+		logger.debug("Results xml : " + xml);
+		List<Map<String, String>> results = null;
+		if (xml != null && !xml.trim().equals("")) {
+			results = (List<Map<String, String>>) SerializationUtilities.deserialize(xml);
+		}
+		return results;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public void setPageContext(PageContext pageContext) {
 		this.pageContext = pageContext;
 	}

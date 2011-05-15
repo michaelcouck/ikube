@@ -1,12 +1,4 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="tiles" uri="http://tiles.apache.org/tags-tiles" %>
-<%@ page import="ikube.model.Server.Action"%>
-<%@ page import="ikube.model.Server"%>
-<%@ page import="java.util.List"%>
-<%@ page import="ikube.cluster.IClusterManager"%>
-<%@ page import="ikube.toolkit.ApplicationContextManager"%>
-<%@ taglib prefix="search" uri="http://ikube/search" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <table class="table-content" width="100%">
 	<tr>
@@ -23,21 +15,13 @@
 		<th class="td-content">Address</th>
 		<th class="td-content">Is working</th>
 		<th class="td-content">Details page</th>
-		<th class="td-content">Search page</th>
 	</tr>
-	<%
-		List<Server> servers = ApplicationContextManager.getBean(IClusterManager.class).getServers();
-		pageContext.setAttribute("servers", servers);
-	%>
-	<c:forEach var="server" items="${pageScope.servers}">
+	<c:forEach var="server" items="${requestScope.servers}">
 	<tr>
 		<td class="td-content"><c:out value="${server.address}" /></td>
 		<td class="td-content"><c:out value="${server.working}" /></td>
 		<td class="td-content">
 			<a href="<c:url value="/admin/server.html"/>?address=${server.address}">Details</a>
-		</td>
-		<td class="td-content">
-			<a href="<c:url value="/admin/search.html"/>?address=${server.address}">Search</a>
 		</td>
 	</tr>
 	</c:forEach>

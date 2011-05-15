@@ -1,13 +1,4 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ page import="ikube.model.IndexContext"%>
-<%@ page import="java.util.Map"%>
-<%@ page import="ikube.toolkit.GeneralUtilities"%>
-<%@ page import="java.util.Collections"%>
-<%@ page import="ikube.model.Server.Action"%>
-<%@ page import="ikube.model.Server"%>
-<%@ page import="java.util.List"%>
-<%@ page import="ikube.cluster.IClusterManager"%>
-<%@ page import="ikube.toolkit.ApplicationContextManager"%>
 
 <table class="table-content" width="100%">
 	<tr>
@@ -17,20 +8,22 @@
 		</td>
 	</tr>
 
-	<%
-		// TODO This can all go in one tag that puts all the data in the page
-		String address = request.getParameter("address");
-		List<Server> servers = ApplicationContextManager.getBean(IClusterManager.class).getServers();
-		Server server = GeneralUtilities.findObject(Server.class, servers, "address", address);
-		if (server != null) {
-			pageContext.setAttribute("server", server);
-			pageContext.setAttribute("actions", server.getActions());
-			pageContext.setAttribute("webServiceUrls", server.getWebServiceUrls());
-		}
-		Map<String, IndexContext> indexContexts = ApplicationContextManager.getBeans(IndexContext.class);
-		pageContext.setAttribute("indexContexts", indexContexts.values());
-	%>
-	
+	<tr>
+		<th class="td-content">Index</th>
+		<th class="td-content">Attributes</th>
+	</tr>
+
+	<c:forEach var="indexName" items="${requestScope.indexNames}">
+	<tr>
+		<td class="td-content">
+			<a href="<c:url value="/admin/search.html"/>?address=${requestScope.server.address}&indexName=${indexName}">${indexName}</a>
+		</td>
+		<td class="td-content">
+			documents: xxx, size: xxx 
+		</td>
+	</tr>
+	</c:forEach>
+
 	<tr>
 		<th class="td-content">Attribute</th>
 		<th class="td-content">Attribute Value</th>
@@ -38,16 +31,17 @@
 	
 	<tr>
 		<td class="td-content">Address</td>
-		<td class="td-content"><c:out value="${server.address}" /></td>
+		<td class="td-content"><c:out value="${requestScope.server.address}" /></td>
 	</tr>
+	
 	<tr>
 		<td class="td-content">Working</td>
-		<td class="td-content"><c:out value="${server.working}" /></td>
+		<td class="td-content"><c:out value="${requestScope.server.working}" /></td>
 	</tr>
 	<tr>
 		<td class="td-content">Web service urls</td>
 		<td class="td-content">
-			<c:forEach var="webServiceUrl" items="${pageScope.webServiceUrls}">
+			<c:forEach var="webServiceUrl" items="${requestScope.webServiceUrls}">
 				<a href="<c:out value="${webServiceUrl}" />">
 					<c:out value="${webServiceUrl}" />
 				</a><br>
@@ -57,7 +51,7 @@
 	<tr>
 		<td class="td-content">Actions</td>
 		<td class="td-content">
-			<c:forEach var="action" items="${pageScope.actions}">
+			<c:forEach var="action" items="${requestScope.actions}">
 				indexable: <c:out value="${action.indexName}" />, 
 				name: <c:out value="${action.indexableName}" />, 
 				id number: <c:out value="${action.idNumber}" />, 
@@ -71,7 +65,7 @@
 		<th class="td-content">Attributes</th>
 	</tr>
 	
-	<c:forEach var="indexContext" items="${pageScope.indexContexts}">
+	<c:forEach var="indexContext" items="${requestScope.indexContexts}">
 	<tr>
 		<td class="td-content"><c:out value="${indexContext.indexName}" /></td>
 		<td class="td-content">

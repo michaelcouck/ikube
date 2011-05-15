@@ -41,14 +41,14 @@
 		property:throttle="0"
 		property:indexDirectoryPath="${index.directory.path}"
 		property:indexDirectoryPathBackup="${index.directory.path.backup}"
-		property:indexables-ref="indexables" />
-	<util:list id="indexables">
-		<ref local="internet" />
-		<ref local="internet9000" />
+		property:indexables-ref="ikubeIndexables" />
+	<util:list id="ikubeIndexables">
+		<ref local="ikubeInternet" />
+		<ref local="ikubeInternet9000" />
 	</util:list>
 	
 	<bean
-		id="internet"
+		id="ikubeInternet"
 		class="ikube.model.IndexableInternet"
 		property:name="internet"
 		property:url="${ikube.url}" 
@@ -60,7 +60,7 @@
 		property:stored="true"
 		property:vectored="true" />
 	<bean
-		id="internet9000"
+		id="ikubeInternet9000"
 		class="ikube.model.IndexableInternet"
 		property:name="internet9000"
 		property:url="${ikube.url.9000}" 

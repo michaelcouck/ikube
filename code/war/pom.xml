@@ -86,7 +86,7 @@
 				<artifactId>maven-jetty-plugin</artifactId>
 				<version>${jetty.version}</version>
 				<configuration>
-					<scanIntervalSeconds>600</scanIntervalSeconds>
+					<scanIntervalSeconds>10</scanIntervalSeconds>
 					<contextPath>/ikube</contextPath>
 					<scanTargets>
 						<scanTarget>src/main/resources</scanTarget>

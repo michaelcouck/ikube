@@ -4,14 +4,14 @@ body {
 	background: #ffffff;
 	line-height: 13px;
 	font-family: Tahoma, "Trebuchet MS", Arial, Helvetica, sans-serif;
-	font-size: 12px;
+	font-size: 11px;
 	color: #2e2e2e;
 }
 
 table {
 	line-height: 13px;
 	font-family: Tahoma, "Trebuchet MS", Arial, Helvetica, sans-serif;
-	font-size: 12px;
+	font-size: 11px;
 	color: #2e2e2e;
 	text-align: left;
 }
@@ -29,7 +29,11 @@ h1, h2, h3 {
 
 h1 { font-size: 44px; }
 
-h2 { font-size: 20px; }
+h2 { 
+	font-size: 20px;
+	margin-top: 15px;
+	padding-top: 15px; 
+}
 
 h3 { }
 
@@ -44,7 +48,12 @@ ul, ol {
 	list-style: none;
 }
 
-a { color: #111111; }
+a { 
+	color: #111111;
+	font-size: 12px;
+	padding-bottom: 5px;
+	line-height: 15px; 
+}
 
 a:hover { text-decoration: none; }
 
@@ -99,7 +108,7 @@ hr { display: none; }
 }
 #header td {
 	vertical-align : bottom;
-	padding-bottom : 17px;
+	padding-bottom : 12px;
 }
 #header a {
 	text-decoration : none;
@@ -153,11 +162,12 @@ hr { display: none; }
 }
 #menu ul {
 	margin: 0px;
-	padding: 50px 40px 0px 0px;
+	padding: 50px 40px 0px 15px;
 	list-style: none;
 }
 #menu li {
 	# float: left;
+	padding-bottom: 15px;
 }
 #menu a {
 	padding: 0px 20px 0px 22px;
@@ -198,8 +208,8 @@ hr { display: none; }
 	border: none;
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	color: #636363;
-	height : 29px;
-	line-height : 29px;
+	height : 25px;
+	line-height : 25px;
 	vertical-align : top;
 	border : solid black 1px;
 }
@@ -210,17 +220,17 @@ hr { display: none; }
 	border: none;
 	font-family: Tahoma,""Trebuchet MS", Arial, Helvetica, sans-serif;
 	color: #636363;
-	height : 20px;
-	line-height : 20px;
+	height : 12px;
+	line-height : 12px;
 	vertical-align : top;
 	border : solid black 1px;
 }
 #search-submit {
 	# float: left;
-	width: 34px;
+	width: 25px;
 	border: none;
 	color: #636363;
-	height : 29px;
+	height : 25px;
 	vertical-align : top;
 	border : solid black 1px;
 }
@@ -248,7 +258,7 @@ hr { display: none; }
 }
 #content .top-content {
 	height: 50px;
-	padding-top : 10px;
+	padding-top : 0px;
 }
 #content .top-content-header {
 	text-transform: lowercase;
@@ -263,10 +273,10 @@ hr { display: none; }
 	padding : 5px;
 }
 #content .table-content {
-	padding : 30px;
+	padding : 0px;
 }
 #content .td-content {
-	padding: 15px;
+	padding: 0px;
 }
 #content .date {
 	float : right;
@@ -314,16 +324,16 @@ hr { display: none; }
 }
 .post .meta {
 	height: 38px;
-	padding-top: 10px;
+	padding-top: 0px;
 }
 .post .meta a { color: #8F8F8F; }
 .post .entry {
 }
 .post .entry-btm {
-	padding: 20px 30px;
+	padding: 0px 0px;
 }
 .post .links {
-	padding: 0px 30px 0px 0px;
+	padding: 0px 0px 0px 0px;
 	text-align: right;
 }
 .post .links .comments {
@@ -346,11 +356,11 @@ hr { display: none; }
 	border: none;
 }
 #sidebar li {
-	margin-bottom: 15px;
+	margin-bottom: 0px;
 }
 #sidebar li ul {
-	line-height: 200%;
-	padding: 0px 30px;
+	line-height: 100%;
+	padding: 0px 0px;
 }
 #sidebar li li {
 	margin: 0;
@@ -364,7 +374,7 @@ hr { display: none; }
 #sidebar h2 {
 	width: 190px;
 	height: 26px;
-	padding: 20px 30px 0px 0px;
+	padding: 0px 0px 0px 0px;
 	text-align: right;
 	text-transform: lowercase;
 	font-size: 14px;
@@ -373,7 +383,7 @@ hr { display: none; }
 }
 #sidebar p {
 	line-height: 200%;
-	padding-bottom: 20px;
+	padding-bottom: 0px;
 }
 
 #sidebar a {
@@ -399,13 +409,13 @@ hr { display: none; }
 	background: #F5F2EF;
 }
 #calendar tbody td {
-	padding: 5px 0;
+	padding: 0px 0;
 	text-align: center;
 	border-top: 1px solid #F5F2EF;
 	border-left: 1px solid #F5F2EF;
 }
 #calendar tfoot td {
-	padding: 5px;
+	padding: 0px;
 }
 #calendar tfoot #next {
 	text-align: right;
@@ -423,7 +433,7 @@ hr { display: none; }
 }
 #footer p {
 	margin: 0;
-	padding: 50px 0;
+	padding: 0px 0;
 	text-align: center;
 	text-transform: lowercase;
 	line-height: normal;
@@ -435,7 +445,7 @@ hr { display: none; }
 }
 
 select.imagebacked {
-	padding: 2px 0 2px 20px;
+	padding: 2px 0 2px 0px;
 	background-repeat: no-repeat;
 	background-position: 1px 2px;
 	vertical-align: middle;

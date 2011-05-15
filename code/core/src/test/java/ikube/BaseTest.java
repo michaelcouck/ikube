@@ -76,7 +76,8 @@ public abstract class BaseTest extends ATest {
 
 					File file = FileUtilities.findFileRecursively(new File("."), "doctors.xml");
 					InputStream inputStream = file.toURI().toURL().openStream();
-					dataGenerator = new DataGeneratorMedical(entityManager, inputStream);
+					DataGeneratorMedical dataGeneratorMedical = new DataGeneratorMedical(entityManager);
+					dataGeneratorMedical.setInputStream(inputStream);
 					dataGenerator.before();
 					dataGenerator.generate();
 				}

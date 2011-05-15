@@ -51,7 +51,7 @@ public class SearchSpatialTest extends ATest {
 
 	@Before
 	public void before() throws Exception {
-		// Create and index with the spacial data
+		// Create and index with the spatial data
 		boolean deleted = FileUtilities.deleteFile(indexDirectory, 1);
 		logger.info("Deleted : " + deleted + ", index directory : " + indexDirectory);
 		IndexWriter indexWriter = IndexManager.openIndexWriter(INDEX_CONTEXT, indexDirectory, Boolean.TRUE);

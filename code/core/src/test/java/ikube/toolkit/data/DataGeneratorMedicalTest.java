@@ -4,14 +4,20 @@ import ikube.ATest;
 import ikube.IConstants;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
+import ikube.toolkit.XmlUtilities;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 
+import org.dom4j.Element;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -27,17 +33,43 @@ public class DataGeneratorMedicalTest extends ATest {
 	@Test
 	public void generate() throws Exception {
 		ApplicationContextManager.getApplicationContext();
-		EntityManager entityManager = Persistence.createEntityManagerFactory(IConstants.PERSISTENCE_UNIT_ORACLE).createEntityManager();
+		EntityManager entityManager = Persistence.createEntityManagerFactory(IConstants.PERSISTENCE_UNIT_DB2).createEntityManager();
 		File wordsFile = FileUtilities.findFileRecursively(new File("."), "words.txt");
 		String wordsData = FileUtilities.getContents(wordsFile.toURI().toURL().openStream(), Short.MAX_VALUE).toString();
 		StringTokenizer stringTokenizer = new StringTokenizer(wordsData);
-		for (int i = 0; i < 1000; i++) {
-			String newSearchUrl = searchUrl + stringTokenizer.nextToken();
+		List<String> words = new ArrayList<String>();
+		while (stringTokenizer.hasMoreTokens()) {
+			words.add(stringTokenizer.nextToken());
+		}
+		Collections.shuffle(words);
+		int index = 0;
+		for (String word : words) {
+			String newSearchUrl = searchUrl + word;
 			logger.info("Search url : " + newSearchUrl);
 			URL url = new URL(newSearchUrl);
-			IDataGenerator dataGenerator = new DataGeneratorMedical(entityManager, url.openStream());
+			String contents = FileUtilities.getContents(url.openStream(), Integer.MAX_VALUE).toString();
+			Element totalNumberOfResultsElement = XmlUtilities.getElement(
+					XmlUtilities.getDocument(new ByteArrayInputStream(contents.getBytes()), IConstants.ENCODING).getRootElement(),
+					"totalNumberOfResults");
+			int totalResults = Integer.parseInt(totalNumberOfResultsElement.getText());
+			DataGeneratorMedical dataGenerator = new DataGeneratorMedical(entityManager);
 			dataGenerator.before();
+			dataGenerator.setInputStream(new ByteArrayInputStream(contents.getBytes()));
 			dataGenerator.generate();
+			if (totalResults > 20) {
+				int offset = 0;
+				while (offset < totalResults) {
+					String pagingSearchUrl = newSearchUrl + "&offset=" + offset;
+					logger.info("Paging search url : " + pagingSearchUrl);
+					offset += 20;
+					url = new URL(pagingSearchUrl);
+					dataGenerator.setInputStream(url.openStream());
+					dataGenerator.generate();
+				}
+			}
+			if (index >= 100) {
+				break;
+			}
 		}
 	}
 }

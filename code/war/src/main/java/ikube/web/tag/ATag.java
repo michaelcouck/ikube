@@ -14,9 +14,9 @@ public abstract class ATag extends BodyTagSupport {
 	 * 
 	 * @author Michael Couck
 	 */
-	class Url {
-		protected String url;
-		protected Integer page;
+	public class Url {
+		public String url;
+		public Integer page;
 
 		public Url(String url, Integer page) {
 			this.url = url;
