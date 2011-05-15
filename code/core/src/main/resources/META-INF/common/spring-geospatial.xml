@@ -90,7 +90,7 @@
 		id="geospatialName"
 		class="ikube.model.IndexableColumn"
 		property:name="name"
-		property:fieldName="content"
+		property:fieldName="name"
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
@@ -98,7 +98,7 @@
 		id="geospatialAsciiname"
 		class="ikube.model.IndexableColumn"
 		property:name="asciiname"
-		property:fieldName="content"
+		property:fieldName="asciiname"
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
@@ -106,7 +106,7 @@
 		id="geospatialAlternatenames"
 		class="ikube.model.IndexableColumn"
 		property:name="alternatenames"
-		property:fieldName="content"
+		property:fieldName="alternatenames"
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
@@ -129,24 +129,24 @@
 	<bean
 		id="geospatialFeatureClass"
 		class="ikube.model.IndexableColumn"
-		property:name="featureClass"
-		property:fieldName="content"
+		property:name="featureclass"
+		property:fieldName="featureclass"
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
 		id="geospatialFeatureCode"
 		class="ikube.model.IndexableColumn"
-		property:name="featureCode"
-		property:fieldName="featureCode"
+		property:name="featurecode"
+		property:fieldName="featurecode"
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
 		id="geospatialCountryCode"
 		class="ikube.model.IndexableColumn"
-		property:name="countryCode"
-		property:fieldName="countryCode"
+		property:name="countrycode"
+		property:fieldName="countrycode"
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
@@ -161,32 +161,32 @@
 	<bean
 		id="geospatialAdmin1Code"
 		class="ikube.model.IndexableColumn"
-		property:name="admin1Code"
-		property:fieldName="admin1Code"
+		property:name="admin1code"
+		property:fieldName="admin1code"
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
 		id="geospatialAdmin2Code"
 		class="ikube.model.IndexableColumn"
-		property:name="admin2Code"
-		property:fieldName="admin2Code"
+		property:name="admin2code"
+		property:fieldName="admin2code"
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
 		id="geospatialAdmin3Code"
 		class="ikube.model.IndexableColumn"
-		property:name="admin3Code"
-		property:fieldName="admin3Code"
+		property:name="admin3code"
+		property:fieldName="admin3code"
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
 		id="geospatialAdmin4Code"
 		class="ikube.model.IndexableColumn"
-		property:name="admin4Code"
-		property:fieldName="admin4Code"
+		property:name="admin4code"
+		property:fieldName="admin4code"
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
@@ -218,7 +218,7 @@
 		id="geospatialTimezone"
 		class="ikube.model.IndexableColumn"
 		property:name="timezone"
-		property:fieldName="timezone"
+		property:fieldName="content"
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}" />

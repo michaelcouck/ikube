@@ -19,8 +19,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.ModelAndView;
 
+/**
+ * @author Michael Couck
+ * @since 15.05.2011
+ * @version 01.00
+ */
 public class SearchController extends BaseController {
 
 	private static final Logger LOGGER = Logger.getLogger(SearchController.class);
@@ -45,7 +51,7 @@ public class SearchController extends BaseController {
 		Enumeration<String> parameterNames = request.getParameterNames();
 		while (parameterNames.hasMoreElements()) {
 			String parameterName = parameterNames.nextElement();
-			LOGGER.error("Parameter : " + parameterName + ", " + request.getParameter(parameterName));
+			LOGGER.debug("Parameter : " + parameterName + ", " + request.getParameter(parameterName));
 		}
 
 		List<String> searchFields = new ArrayList<String>();
@@ -54,7 +60,9 @@ public class SearchController extends BaseController {
 		for (String fieldName : fieldNames) {
 			if (parameterMap.containsKey(fieldName)) {
 				String[] fieldValues = parameterMap.get(fieldName);
-				if (fieldValues == null || fieldValues.length == 0) {
+				// Check that there is a value in the fields from the request
+				if (fieldValues == null || fieldValues.length == 0 || !StringUtils.hasLength(fieldValues[0].trim())) {
+					// Don't want to search for empty strings, not useful
 					continue;
 				}
 				searchFields.add(fieldName);
@@ -68,12 +76,12 @@ public class SearchController extends BaseController {
 				if (webServiceUrl.contains(ISearcherWebService.class.getSimpleName())) {
 					ISearcherWebService searcherWebService = ServiceLocator.getService(ISearcherWebService.class, webServiceUrl,
 							ISearcherWebService.NAMESPACE, ISearcherWebService.SERVICE);
-					LOGGER.error("Searcher web service : " + searcherWebService);
+					// LOGGER.error("Searcher web service : " + searcherWebService);
 					String xml = searcherWebService.searchMulti(indexName, searchStrings.toArray(new String[searchStrings.size()]),
 							searchFields.toArray(new String[searchFields.size()]), Boolean.TRUE, 0, 100);
 
 					List<Map<String, String>> results = (List<Map<String, String>>) SerializationUtilities.deserialize(xml);
-					LOGGER.error("Results : " + results);
+					// LOGGER.error("Results : " + results);
 
 					Map<String, String> statistics = results.get(results.size() - 1);
 					String stringTotal = statistics.get(IConstants.TOTAL);

@@ -35,19 +35,18 @@
 		id="vewResolver" 
 		class="org.springframework.web.servlet.view.UrlBasedViewResolver" 
 		p:order="2"
-		p:viewClass="org.springbyexample.web.servlet.view.tiles2.DynamicTilesView"
+		p:suffix=".jsp"
 		p:prefix="/WEB-INF/jsp/" 
-		p:suffix=".jsp" />
+		p:viewClass="org.springbyexample.web.servlet.view.tiles2.DynamicTilesView" />
 
+	<!-- The controllers for the various pages that do the access logic if necessary. -->
 	<bean name="ikube.web.admin.SearchController" class="ikube.web.admin.SearchController" />
 	<bean name="ikube.web.admin.ServerController" class="ikube.web.admin.ServerController" />
 	<bean name="ikube.web.admin.ServersController" class="ikube.web.admin.ServersController" />
 
+	<!-- These are static resources basically. -->
 	<mvc:view-controller path="/index.html" />
 	<mvc:view-controller path="/results.html" />
-	<!-- <mvc:view-controller path="/admin/search.html" /> -->
-	<!-- <mvc:view-controller path="/admin/server.html" /> -->
-	<!-- <mvc:view-controller path="/admin/servers.html" /> -->
 	<mvc:view-controller path="/admin/admin.html" />
 	<mvc:view-controller path="/documentation/index.html" />
 	<mvc:view-controller path="/documentation/quickstart.html" />

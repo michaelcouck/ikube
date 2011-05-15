@@ -16,7 +16,7 @@ public interface IConstants {
 	/** Application name. */
 	String IKUBE = "ikube";
 	/** The file separator for the system. */
-	String SEP = "/"; // File.separator;
+	String SEP = "/";
 	/** We expect the configuration file to be in the META-INF as seems to be the fashion at the moment. */
 	String META_INF = SEP + "META-INF";
 	/** The name of the spring file. */
@@ -69,7 +69,11 @@ public interface IConstants {
 	String RESULTS = "results";
 	String ADDRESS = "address";
 	String SERVER = "server";
-	
+	String SERVERS = "servers";
+	String ACTIONS = "actions";
+	String WEB_SERVICE_URLS = "webServiceUrls";
+	String INDEX_CONTEXTS = "indexContexts";
+	String INDEX_NAMES = "indexNames";
 
 	String ENCODING = "UTF-8";
 
@@ -77,7 +81,7 @@ public interface IConstants {
 	Integer HTTP_200 = Integer.valueOf(200); // OK
 	Integer HTTP_301 = Integer.valueOf(301); // Move permanently
 	Integer HTTP_400 = Integer.valueOf(400); // Bad request
-	Integer HTTP_401 = Integer.valueOf(401); // Unauthorised
+	Integer HTTP_401 = Integer.valueOf(401); // Unauthorized
 	Integer HTTP_403 = Integer.valueOf(403); // Forbidden
 	Integer HTTP_404 = Integer.valueOf(404); // Not found
 	Integer HTTP_418 = Integer.valueOf(418); // I"m a tea pot
@@ -85,14 +89,14 @@ public interface IConstants {
 	Integer HTTP_503 = Integer.valueOf(503); // Service unavailable
 
 	/** These can be extracted into the messages.properties file */
-	String RESPONSE_CODE_NOT_200 = "Response code not 200/OK";
-	String EXCEPTION_VISITING_PAGE = "Exception visiting page";
-	String EXCEPTION_VISITING_PAGE_POSSIBLY_TIMEOUT = "Exception visiting page, error un-known, possibly a timeout";
-	String PAGE_RESPONSE_NULL = "Page returned from request null";
-	String URL_NOT_WELL_FORMED = "Url not well formed";
-	String EXCEPTION_CLICKING_LINK = "Exception clicking on the link";
 	String NO_END_TAG = "Not end tag in HTML";
+	String URL_NOT_WELL_FORMED = "Url not well formed";
+	String EXCEPTION_VISITING_PAGE = "Exception visiting page";
+	String PAGE_RESPONSE_NULL = "Page returned from request null";
+	String RESPONSE_CODE_NOT_200 = "Response code not 200/OK";
+	String EXCEPTION_CLICKING_LINK = "Exception clicking on the link";
 	String EXCEPTION_VALIDATING_HTML = "General exception validating the HTML";
+	String EXCEPTION_VISITING_PAGE_POSSIBLY_TIMEOUT = "Exception visiting page, error un-known, possibly a timeout";
 
 	String INDEX_NAME = "indexName";
 	String MAX_RESULTS = "maxResults";

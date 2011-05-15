@@ -17,7 +17,6 @@
 		<td class="td-content">${param.indexName}</td>
 		<td class="td-content">
 			<form name="searchForm" id="${param.indexName}" action="<c:url value="/admin/search.html"/>">
-				<!-- <input type="hidden" name="searchUrl" value="http://localhost/ikube/SearchServlet"> -->
 				<input type="hidden" name="address" value="${param.address}">
 				<input type="hidden" name="indexName" value="${param.indexName}">
 				<input type="hidden" name="fragment" value="true">
@@ -25,7 +24,7 @@
 					<c:forEach var="searchField" items="${requestScope.searchFields}">
 						<tr>
 							<td>${searchField}</td>
-							<td><input type="text" name="${searchField}" id="search-text" value="${requestScope.searchField}" /></td>
+							<td><input type="text" name="${searchField}" value="${param[searchField]}" id="search-text"  /></td>
 						</tr>
 					</c:forEach>
 					<tr>
@@ -60,9 +59,7 @@
 			<strong>configuration</strong>&nbsp;
 			This is the search page for individual servers. On this page there is one server defined. For this server there 
 			are several indexes defined. You can search the individual indexes on this specific server using the search box. 
-			There may be several fields defined in the indexes which can be searched separately but for convenience all 
-			the fields are added to the fields to search, the result of which is that all the fields in the index will be searched 
-			with the search string in the text field.
+			There may be several fields defined in the indexes which can be searched separately.
 		</td>
 	</tr>
 		
