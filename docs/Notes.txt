@@ -9,7 +9,15 @@ StartIkube -> Stops the cluster, starts Ikube unit test build
         
         IkubeStop -> Starts the cluster
 /************************************************************/
+Indexes for GeoSpatial:
+* Names of places
+* Cities
+* Countries
 
+Search the names of places and find the closest city, then country and add the 
+data to the index for the names of places, then verify them against Google API.
+
+/************************************************************/
 Ikube is an 'enterprise search' application written in Java.
 
 The advantage of Ikube over other products is multiple:

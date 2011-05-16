@@ -50,7 +50,6 @@
 		property:children-ref="geonameColumnsDb2" />
 	<util:list id="geonameColumnsDb2">
 		<ref local="geospatialId" />
-		<ref local="geospatialGeonameid" />
 		<ref local="geospatialName" />
 		<ref local="geospatialAsciiname" />
 		<ref local="geospatialAlternatenames" />
@@ -59,17 +58,19 @@
 		<ref local="geospatialFeatureClass" />
 		<ref local="geospatialFeatureCode" />
 		<ref local="geospatialCountryCode" />
-		<ref local="geospatialCc2" />
-		<ref local="geospatialAdmin1Code" />
-		<ref local="geospatialAdmin2Code" />
-		<ref local="geospatialAdmin3Code" />
-		<ref local="geospatialAdmin4Code" />
-		<ref local="geospatialPopulation" />
-		<ref local="geospatialElevation" />
-		<ref local="geospatialGtopo30" />
 		<ref local="geospatialTimezone" />
-		<ref local="geospatialModification" />
+		<!-- <ref local="geospatialCc2" /> -->
+		<!-- <ref local="geospatialGeonameid" /> -->
+		<!-- <ref local="geospatialAdmin1Code" /> -->
+		<!-- <ref local="geospatialAdmin2Code" /> -->
+		<!-- <ref local="geospatialAdmin3Code" /> -->
+		<!-- <ref local="geospatialAdmin4Code" /> -->
+		<!-- <ref local="geospatialModification" /> -->
+		<!-- <ref local="geospatialPopulation" /> -->
+		<!-- <ref local="geospatialElevation" /> -->
+		<!-- <ref local="geospatialGtopo30" /> -->
 	</util:list>
+	
 	<bean
 		id="geospatialId"
 		class="ikube.model.IndexableColumn"

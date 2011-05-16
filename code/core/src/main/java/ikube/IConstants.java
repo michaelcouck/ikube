@@ -66,6 +66,7 @@ public interface IConstants {
 	String INDEXED = "indexed";
 	String HASH = "hash";
 	String START = "start";
+	String END = "end";
 	String RESULTS = "results";
 	String ADDRESS = "address";
 	String SERVER = "server";
@@ -74,6 +75,10 @@ public interface IConstants {
 	String WEB_SERVICE_URLS = "webServiceUrls";
 	String INDEX_CONTEXTS = "indexContexts";
 	String INDEX_NAMES = "indexNames";
+	String GEOSPATIAL = "geospatial";
+	String FEATURECLASS = "featureclass";
+	String FEATURECODE = "featurecode";
+	String COUNTRYCODE = "countrycode";
 
 	String ENCODING = "UTF-8";
 

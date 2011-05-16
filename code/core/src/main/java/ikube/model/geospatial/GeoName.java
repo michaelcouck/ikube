@@ -1,8 +1,8 @@
 package ikube.model.geospatial;
 
-import java.util.Date;
-
 import ikube.model.Persistable;
+
+import java.util.Date;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -11,17 +11,42 @@ import javax.persistence.FetchType;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.Lob;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.apache.openjpa.persistence.jdbc.Index;
 
 @Entity()
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@NamedQueries(value = {
+		@NamedQuery(name = GeoName.SELECT_FROM_GEONAME_BY_ID_GREATER_AND_SMALLER, 
+				query = GeoName.SELECT_FROM_GEONAME_BY_ID_GREATER_AND_SMALLER),
+		@NamedQuery(name = GeoName.SELECT_FROM_GEONAME_BY_FEATURECLASS_FEATURECODE_COUNTRYCODE, 
+				query = GeoName.SELECT_FROM_GEONAME_BY_FEATURECLASS_FEATURECODE_COUNTRYCODE) })
 public class GeoName extends Persistable {
 
+	public static final String SELECT_FROM_GEONAME_BY_ID_GREATER_AND_SMALLER = "select g from GeoName as g " + //
+			"where g.id >= :start and " + //
+			"g.id < :end " + //
+			"order by g.id";
+	public static final String SELECT_FROM_GEONAME_BY_FEATURECLASS_FEATURECODE_COUNTRYCODE = "select g from GeoName as g " + //
+			"where " + //
+			"g.featureClass = :featureclass and " + //
+			"g.featureCode = :featurecode and " + //
+			"g.countryCode = :countrycode";
+
 	private Integer geonameid; // : integer id of record in geonames database
+	@Index
 	@Column(length = 200)
 	private String name; // : name of geographical point (utf8) varchar(200)
+	@Index
+	@Column(length = 200)
+	private String city;
+	@Index
+	@Column(length = 200)
+	private String country;
 	@Column(length = 200)
 	private String asciiname; // : name of geographical point in plain ascii characters, varchar(200)
 	@Lob
@@ -30,8 +55,10 @@ public class GeoName extends Persistable {
 	private String alternatenames; // : alternate names, comma separated varchar(5000)
 	private Double latitude; // : latitude in decimal degrees (wgs84)
 	private Double longitude; // : longitude in decimal degrees (wgs84)
+	@Index
 	@Column(length = 1)
 	private String featureClass; // : see http://www.geonames.org/export/codes.html, char(1)
+	@Index
 	@Column(length = 10)
 	private String featureCode; // : see http://www.geonames.org/export/codes.html, varchar(10)
 	@Column(length = 2)
@@ -68,6 +95,22 @@ public class GeoName extends Persistable {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public String getCountry() {
+		return country;
+	}
+
+	public void setCountry(String country) {
+		this.country = country;
 	}
 
 	public String getAsciiname() {
