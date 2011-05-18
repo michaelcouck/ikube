@@ -46,11 +46,14 @@
 		class="ikube.model.IndexableTable"
 		property:name="geoname"
 		property:primary="true"
+		property:address="true"
 		property:dataSource-ref="nonXaDataSourceDb2"
 		property:children-ref="geonameColumnsDb2" />
 	<util:list id="geonameColumnsDb2">
 		<ref local="geospatialId" />
 		<ref local="geospatialName" />
+		<ref local="geospatialCity" />
+		<ref local="geospatialCountry" />
 		<ref local="geospatialAsciiname" />
 		<ref local="geospatialAlternatenames" />
 		<ref local="geospatialLatitude" />
@@ -92,6 +95,25 @@
 		class="ikube.model.IndexableColumn"
 		property:name="name"
 		property:fieldName="name"
+		property:address="true"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="geospatialCity"
+		class="ikube.model.IndexableColumn"
+		property:name="city"
+		property:fieldName="city"
+		property:address="true"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="geospatialCountry"
+		class="ikube.model.IndexableColumn"
+		property:name="country"
+		property:fieldName="country"
+		property:address="true"
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
@@ -100,6 +122,7 @@
 		class="ikube.model.IndexableColumn"
 		property:name="asciiname"
 		property:fieldName="asciiname"
+		property:address="true"
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
@@ -108,6 +131,7 @@
 		class="ikube.model.IndexableColumn"
 		property:name="alternatenames"
 		property:fieldName="alternatenames"
+		property:address="true"
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
@@ -219,7 +243,7 @@
 		id="geospatialTimezone"
 		class="ikube.model.IndexableColumn"
 		property:name="timezone"
-		property:fieldName="content"
+		property:fieldName="timezone"
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}" />

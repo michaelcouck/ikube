@@ -30,6 +30,7 @@ public class SpatialEnrichmentInterceptor implements ISpatialEnrichmentIntercept
 		// fields. Concatenate them with a ',' in between. Call the Google geocoding API
 		// for the latitude and longitude coordinates. Create the tiers for the location,
 		// and add the resultant data to the document, simple.
+		// LOGGER.info("Intercepting : " + proceedingJoinPoint);
 		enrich(proceedingJoinPoint.getArgs());
 		return proceedingJoinPoint.proceed();
 	}
@@ -50,10 +51,12 @@ public class SpatialEnrichmentInterceptor implements ISpatialEnrichmentIntercept
 				}
 			}
 		}
+		if (indexable == null || document == null) {
+			LOGGER.warn("Indexable or document are null : " + indexable + ", " + document);
+			return;
+		}
 		if (!indexable.isAddress()) {
-			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug("Not address : " + indexable);
-			}
+			LOGGER.warn("Not address : " + indexable);
 			return;
 		}
 		if (LOGGER.isDebugEnabled()) {
@@ -61,6 +64,7 @@ public class SpatialEnrichmentInterceptor implements ISpatialEnrichmentIntercept
 		}
 		// We look for the first latitude and longitude from the children
 		Coordinate coordinate = enrichment.getCoordinate(indexable);
+		// LOGGER.info("Co-ordinate : " + coordinate);
 		// If the coordinate is null then either there were no latitude and longitude
 		// indexable children in the address indexable or there was a data problem, so we will
 		// see if there is a geocoder to get the coordinate

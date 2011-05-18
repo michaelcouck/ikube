@@ -35,6 +35,22 @@ public class PropertyConfigurer extends Properties {
 	 * application will also be checked for the properties file name pattern to load into the property map.
 	 */
 	public void initialize() {
+		// Attempt here to load the weaver dynamically 
+		// try {
+		// // First load the load time weaving
+		// String jarFilePath = ClassPreProcessorAgentAdapter.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
+		// logger.info("Dynamically loading javaagent : " + jarFilePath);
+		// String nameOfRunningVM = ManagementFactory.getRuntimeMXBean().getName();
+		// int p = nameOfRunningVM.indexOf('@');
+		// String pid = nameOfRunningVM.substring(0, p);
+		// VirtualMachine vm = VirtualMachine.attach(pid);
+		// // String path = "C:/Users/db2admin/.m2/repository/org/aspectj/aspectjrt/1.6.8/aspectjrt-1.6.8.jar";
+		// jarFilePath = jarFilePath.replaceFirst("/", "");
+		// vm.loadAgent(jarFilePath, "");
+		// vm.detach();
+		// } catch (Exception e1) {
+		// throw e1;
+		// }
 		try {
 			// First we check our own jar
 			File thisJar = new File(getClass().getProtectionDomain().getCodeSource().getLocation().toURI().getPath());

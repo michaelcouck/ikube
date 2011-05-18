@@ -22,12 +22,12 @@
 		lazy-init="false"
 		init-method="initialize" />
 	
+	<import resource="classpath:/META-INF/common/spring-aop.xml" />
 	<import resource="classpath:/META-INF/common/spring-beans.xml" />
 	<import resource="classpath:/META-INF/common/spring-actions.xml" />
-	<import resource="classpath:/META-INF/common/spring-aop.xml" />
-	<import resource="classpath:/META-INF/common/spring-ikube.xml" />
-	<import resource="classpath:/META-INF/common/spring-geospatial.xml" />
 	
 	<import resource="classpath:/META-INF/client/spring-client.xml" />
+	<import resource="classpath:/META-INF/common/spring-ikube.xml" />
+	<import resource="classpath:/META-INF/common/spring-geospatial.xml" />
 	
 </beans>

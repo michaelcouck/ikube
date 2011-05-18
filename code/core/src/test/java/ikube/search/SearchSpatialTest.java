@@ -1,6 +1,8 @@
 package ikube.search;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import ikube.ATest;
 import ikube.IConstants;
 import ikube.index.IndexManager;
@@ -17,6 +19,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.Directory;
@@ -73,7 +76,14 @@ public class SearchSpatialTest extends ATest {
 		IndexSearcher indexSearcher = null;
 		try {
 			directory = FSDirectory.open(indexDirectory);
-			indexSearcher = new IndexSearcher(directory);
+
+			IndexReader indexReader = IndexReader.open(directory);
+			for (int i = 0; i < 3; i++) {
+				Document document = indexReader.document(i);
+				logger.info("Document : " + document);
+			}
+			
+			indexSearcher = new IndexSearcher(indexReader);
 			SearchSpatial searchSpatial = new SearchSpatial(indexSearcher);
 			searchSpatial.setFirstResult(0);
 			searchSpatial.setFragment(Boolean.TRUE);
@@ -93,6 +103,50 @@ public class SearchSpatialTest extends ATest {
 			assertTrue(results.get(1).get(IConstants.CONTENTS).equals(SCHWAMMEDINGEN_COORDINATE.toString()));
 			assertTrue(results.get(2).get(IConstants.CONTENTS).equals(SEEBACH_COORDINATE.toString()));
 			assertTrue(results.get(3).get(IConstants.CONTENTS).equals(ADLISWIL_COORDINATE.toString()));
+		} finally {
+			if (indexSearcher != null) {
+				try {
+					indexSearcher.close();
+				} catch (Exception e) {
+					logger.error("Exception closing the index : ", e);
+				}
+			}
+		}
+	}
+
+	@Test
+	// @Ignore
+	public void searchGeoSpatial() throws Exception {
+		Directory directory = null;
+		IndexSearcher indexSearcher = null;
+		try {
+			String indexPath = "D:/cluster/indexes/geospatial/1305662411676/192.168.56.1.10837512398503";
+
+			directory = FSDirectory.open(new File(indexPath));
+
+			IndexReader indexReader = IndexReader.open(directory);
+			for (int i = 0; i < 10; i++) {
+				Document document = indexReader.document(i);
+				logger.info("Document : " + document);
+			}
+
+			indexSearcher = new IndexSearcher(indexReader);
+			SearchSpatial searchSpatial = new SearchSpatial(indexSearcher);
+			searchSpatial.setFirstResult(0);
+			searchSpatial.setFragment(Boolean.TRUE);
+			searchSpatial.setMaxResults(10);
+			searchSpatial.setSearchField(IConstants.FEATURECLASS, IConstants.FEATURECODE, IConstants.COUNTRYCODE);
+			searchSpatial.setSearchString("A", "PCLI", "ZA");
+
+			searchSpatial.setSortField(IConstants.CONTENTS);
+			searchSpatial.setCoordinate(new Coordinate(-30.0, 26.0));
+
+			searchSpatial.setDistance(10000);
+
+			List<Map<String, String>> results = searchSpatial.execute();
+			logger.info("Results : " + results);
+			assertNotNull(results);
+			assertEquals(2, results.size());
 		} finally {
 			if (indexSearcher != null) {
 				try {

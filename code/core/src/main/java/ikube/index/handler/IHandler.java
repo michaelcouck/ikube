@@ -68,5 +68,7 @@ public interface IHandler<T extends Indexable<?>> {
 	 * @throws IOException
 	 */
 	void addDocument(IndexContext indexContext, Indexable<T> indexable, Document document) throws CorruptIndexException, IOException;
+	
+	void setDocumentInjector(IDocumentInjector documentInjector);
 
 }

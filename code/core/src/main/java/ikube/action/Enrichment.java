@@ -15,8 +15,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.NonUniqueResultException;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
 
@@ -51,17 +49,19 @@ public class Enrichment extends Action<IndexContext, Boolean> {
 					ISearcherWebService.NAMESPACE, ISearcherWebService.SERVICE);
 			// List all the entities in the geoname table
 			int index = 0;
-			int batch = 100;
+			int batch = 1000;
 			long id = 8563751;
-			List<GeoName> geoNames = new ArrayList<GeoName>();
-			int maxExceptions = 100;
 			int exceptions = 0;
+			int maxExceptions = 1000;
+			List<GeoName> geoNames = new ArrayList<GeoName>();
 			GeoName geoName = null;
 			do {
-				if (geoNames.size() >= index) {
+				if (index >= geoNames.size()) {
 					index = 0;
 					if (entityManager.getTransaction().isActive()) {
+						entityManager.flush();
 						entityManager.getTransaction().commit();
+						entityManager.clear();
 					}
 					entityManager.getTransaction().begin();
 					Query query = entityManager.createNamedQuery(GeoName.SELECT_FROM_GEONAME_BY_ID_GREATER_AND_SMALLER);
@@ -93,24 +93,18 @@ public class Enrichment extends Action<IndexContext, Boolean> {
 						}
 					}
 					if (geoName.getCountry() == null) {
-						GeoName country = null;
-						try {
-							Query query = entityManager
-									.createNamedQuery(GeoName.SELECT_FROM_GEONAME_BY_FEATURECLASS_FEATURECODE_COUNTRYCODE);
-							query.setParameter(IConstants.FEATURECLASS, "A");
-							query.setParameter(IConstants.FEATURECODE, "PCLI");
-							query.setParameter(IConstants.COUNTRYCODE, geoName.getCountryCode());
-							country = (GeoName) query.getSingleResult();
-						} catch (NonUniqueResultException e) {
-							logger.info("More than one country for : " + geoName, e);
-							exceptions++;
-						} catch (NoResultException e) {
-							logger.info("No country found for : " + geoName, e);
-							exceptions++;
-						}
-						if (country != null) {
-							// Add the country name to the entity
-							geoName.setCountry(country.getName());
+						String[] searchFields = { "featureclass", "featurecode", "countrycode" };
+						String[] searchStrings = { "A", "PCLI", geoName.getCountryCode() };
+						double latitude = geoName.getLatitude();
+						double longitude = geoName.getLongitude();
+						String xml = searcherWebService.searchSpacialMulti(IConstants.GEOSPATIAL, searchStrings, searchFields,
+								Boolean.FALSE, 0, 10, 10, latitude, longitude);
+						List<Map<String, String>> results = (List<Map<String, String>>) SerializationUtilities.deserialize(xml);
+						if (results.size() > 1) {
+							// Add the top hit from the list
+							Map<String, String> result = results.get(0);
+							String country = result.get(IConstants.NAME);
+							geoName.setCountry(country);
 						}
 					}
 					// Merge the entity

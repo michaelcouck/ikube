@@ -5,6 +5,7 @@ import ikube.IConstants;
 import ikube.model.IndexContext;
 import ikube.toolkit.ApplicationContextManager;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -12,6 +13,7 @@ import org.junit.Test;
  * @since 15.05.2011
  * @version 01.00
  */
+@Ignore
 public class EnrichmentTest extends ATest {
 
 	public EnrichmentTest() {
@@ -23,6 +25,11 @@ public class EnrichmentTest extends ATest {
 		// final IndexContext indexContext
 		IndexContext indexContext = ApplicationContextManager.getBean(IConstants.GEOSPATIAL);
 		Enrichment enrichment = new Enrichment();
+		try {
+			Thread.sleep(1000 * 15);
+		} catch (InterruptedException e) {
+			logger.error("Interrupted : ", e);
+		}
 		enrichment.execute(indexContext);
 	}
 

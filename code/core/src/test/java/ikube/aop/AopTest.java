@@ -5,14 +5,15 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import ikube.BaseTest;
 import ikube.action.Index;
+import ikube.index.handler.database.IndexableTableHandler;
 import ikube.index.handler.internet.IndexableInternetHandler;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
+import ikube.model.IndexableTable;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -20,7 +21,6 @@ import mockit.Cascading;
 import mockit.Mockit;
 
 import org.apache.lucene.document.Document;
-import org.apache.lucene.index.CorruptIndexException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -80,12 +80,20 @@ public class AopTest extends BaseTest {
 	}
 
 	@Test
-	public void enrichment() throws CorruptIndexException, IOException {
+	public void enrichment() throws Exception {
 		IndexableInternetHandler indexableHandler = ApplicationContextManager.getBean(IndexableInternetHandler.class);
 		when(INDEXABLE.isAddress()).thenReturn(Boolean.FALSE);
 		indexableHandler.addDocument(INDEX_CONTEXT, INDEXABLE, document);
 		verify(INDEXABLE, Mockito.atLeastOnce()).isAddress();
 		when(INDEXABLE.isAddress()).thenReturn(Boolean.TRUE);
+	}
+
+	@Test
+	public void tableEnrichment() throws Exception {
+		IndexableTableHandler indexableTableHandler = ApplicationContextManager.getBean(IndexableTableHandler.class);
+		IndexableTable indexableTable = ApplicationContextManager.getBean("addressTableDb2");
+		indexableTableHandler.handle(INDEX_CONTEXT, indexableTable);
+		indexableTableHandler.addDocument(INDEX_CONTEXT, indexableTable, new Document());
 	}
 
 	@Test

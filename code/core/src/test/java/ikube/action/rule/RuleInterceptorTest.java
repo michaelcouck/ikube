@@ -110,7 +110,7 @@ public class RuleInterceptorTest extends BaseTest {
 		when(joinPoint.getTarget()).thenReturn(close);
 		when(joinPoint.getArgs()).thenReturn(new Object[] { INDEX_CONTEXT });
 		when(joinPoint.proceed()).thenReturn(Boolean.TRUE);
-		ruleInterceptor = new RuleInterceptor();
+		ruleInterceptor = new RuleInterceptor() {};
 	}
 
 	@Test

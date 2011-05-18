@@ -50,22 +50,29 @@
 		lazy-init="false"
 		init-method="initialise" />
 	
+	<bean 
+		id="ikube.index.handler.IDocumentInjector"
+		class="ikube.index.handler.DocumentInjector" />
 	<bean
 		class="ikube.index.handler.internet.IndexableInternetHandler"
 		property:threads="${internet.handler.threads}" 
-		property:indexableClass="ikube.model.IndexableInternet" />
+		property:indexableClass="ikube.model.IndexableInternet"
+		property:documentInjector-ref="ikube.index.handler.IDocumentInjector" />
 	<bean
 		class="ikube.index.handler.email.IndexableEmailHandler"
 		property:threads="${email.handler.threads}"
-		property:indexableClass="ikube.model.IndexableEmail" />
+		property:indexableClass="ikube.model.IndexableEmail" 
+		property:documentInjector-ref="ikube.index.handler.IDocumentInjector" />
 	<bean
 		class="ikube.index.handler.filesystem.IndexableFilesystemHandler"
 		property:threads="${filesystem.handler.threads}"
-		property:indexableClass="ikube.model.IndexableFileSystem" />
+		property:indexableClass="ikube.model.IndexableFileSystem" 
+		property:documentInjector-ref="ikube.index.handler.IDocumentInjector" />
 	<bean
 		class="ikube.index.handler.database.IndexableTableHandler"
 		property:threads="${table.handler.threads}"
-		property:indexableClass="ikube.model.IndexableTable" />
+		property:indexableClass="ikube.model.IndexableTable" 
+		property:documentInjector-ref="ikube.index.handler.IDocumentInjector" />
 
 	<bean id="ikube.index.parse.mime.MimeMapper" class="ikube.index.parse.mime.MimeMapper">
 		<constructor-arg value="/META-INF/mime/mime-mapping.xml" />

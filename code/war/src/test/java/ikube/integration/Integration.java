@@ -62,8 +62,8 @@ public class Integration {
 
 		// Insert some data into the medical database
 		insertData(IConstants.PERSISTENCE_UNIT_H2, "nonXaDataSourceH2", iterations, new Class[] { Patient.class, Faq.class });
-		insertData(IConstants.PERSISTENCE_UNIT_DB2, "nonXaDataSourceDb2", iterations, new Class[] { Patient.class, Faq.class });
-		insertData(IConstants.PERSISTENCE_UNIT_ORACLE, "nonXaDataSourceOracle", iterations, new Class[] { Patient.class, Faq.class });
+		// insertData(IConstants.PERSISTENCE_UNIT_DB2, "nonXaDataSourceDb2", iterations, new Class[] { Patient.class, Faq.class });
+		// insertData(IConstants.PERSISTENCE_UNIT_ORACLE, "nonXaDataSourceOracle", iterations, new Class[] { Patient.class, Faq.class });
 
 		waitToFinish();
 
