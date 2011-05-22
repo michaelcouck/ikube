@@ -30,7 +30,7 @@ import org.apache.lucene.index.CorruptIndexException;
 public class IndexableInternetHandler extends IndexableHandler<IndexableInternet> {
 
 	private List<Thread> threads;
-	private transient IndexContext indexContext;
+	private IndexContext indexContext;
 
 	public IndexableInternetHandler() {
 		threads = new ArrayList<Thread>();
@@ -44,8 +44,8 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 		if (isHandled(indexContext, indexable)) {
 			return Arrays.asList();
 		}
-		threads.clear();
 		this.indexContext = indexContext;
+		threads.clear();
 		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
 		String name = this.getClass().getSimpleName();
 		for (int i = 0; i < getThreads(); i++) {
@@ -92,8 +92,11 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	@Override
 	public void addDocument(IndexContext indexContext, Indexable<IndexableInternet> indexable, Document document)
 			throws CorruptIndexException, IOException {
+		// We check the index context because the UrlPageHandlers do not have access to the 
+		// context and pass a null value to this metho, I would rather they don't have access to the 
+		// context
 		if (this.indexContext == null) {
-			logger.warn("Index context null, no handle was called then?");
+			logger.warn("Index context null?");
 			return;
 		}
 		super.addDocument(this.indexContext, indexable, document);

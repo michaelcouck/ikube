@@ -42,6 +42,9 @@
 			</ul>
 		</li>
 		<li>
+			<ul>&nbsp;</ul>
+		</li>
+		<li>
 			<h2>libraries used</h2>
 			<ul>
 				<li><a href="http://lucene.apache.org/">Lucene</a></li>
@@ -53,6 +56,9 @@
 				<li><a href="http://hudson-ci.org/">Hudson CI</a></li>
 				<li><a href="http://www.h2database.com/html/main.html">H2 database</a></li>
 			</ul>
+		</li>
+		<li>
+			<ul>&nbsp;</ul>
 		</li>
 		<li>
 			<h2>Similar products</h2>

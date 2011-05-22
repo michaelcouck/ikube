@@ -30,7 +30,7 @@ import org.apache.log4j.Logger;
 public abstract class Action<E, F> implements IAction<E, F> {
 
 	protected transient Logger logger = Logger.getLogger(Action.class);
-	/** The cluster synchronisation class. */
+	/** The cluster synchronization class. */
 	private transient IClusterManager clusterManager;
 
 	private String predicate;

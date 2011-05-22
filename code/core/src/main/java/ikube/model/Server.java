@@ -2,7 +2,9 @@ package ikube.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
@@ -103,11 +105,18 @@ public class Server extends Persistable implements Comparable<Server> {
 	private final List<String> webServiceUrls;
 	/** The age of this server. */
 	private long age;
+	/** The performance monitoring data. */
+	private Map<String, Execution> indexingExecutions;
+	private Map<String, Execution> searchingExecutions;
+	/** The last 5 kilobytes of the log file for this server. */
+	private String logTail;
 
 	public Server() {
 		super();
 		this.actions = new ArrayList<Server.Action>();
 		this.webServiceUrls = new ArrayList<String>();
+		this.searchingExecutions = new HashMap<String, Execution>();
+		this.indexingExecutions = new HashMap<String, Execution>();
 	}
 
 	public String getIp() {
@@ -148,6 +157,30 @@ public class Server extends Persistable implements Comparable<Server> {
 
 	public void setAge(long age) {
 		this.age = age;
+	}
+
+	public Map<String, Execution> getSearchingExecutions() {
+		return searchingExecutions;
+	}
+
+	public void setSearchingExecutions(Map<String, Execution> searchingExecutions) {
+		this.searchingExecutions = searchingExecutions;
+	}
+
+	public Map<String, Execution> getIndexingExecutions() {
+		return indexingExecutions;
+	}
+
+	public void setIndexingExecutions(Map<String, Execution> indexingExecutions) {
+		this.indexingExecutions = indexingExecutions;
+	}
+
+	public String getLogTail() {
+		return logTail;
+	}
+
+	public void setLogTail(String logTail) {
+		this.logTail = logTail;
 	}
 
 	public boolean equals(Object object) {

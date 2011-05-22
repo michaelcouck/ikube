@@ -13,9 +13,9 @@ import org.apache.log4j.Logger;
  * @since 06.10.09
  * @version 01.00
  */
-public class Permutations {
+public class PermutationUtilities {
 
-	protected Logger logger = Logger.getLogger(Permutations.class);
+	protected Logger logger = Logger.getLogger(PermutationUtilities.class);
 
 	public void getPermutations(Object[] objects) {
 		int N = objects.length;

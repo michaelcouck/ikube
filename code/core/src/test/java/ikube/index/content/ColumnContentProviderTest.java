@@ -11,9 +11,9 @@ import ikube.model.IndexableColumn;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Timestamp;
@@ -37,7 +37,7 @@ public class ColumnContentProviderTest extends ATest {
 
 	@Test
 	public void getContent() throws Exception {
-		OutputStream outputStream = new ByteArrayOutputStream();
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		when(indexable.getColumnType()).thenReturn(Types.BOOLEAN);
 		when(indexable.getContent()).thenReturn(Boolean.TRUE);
 		contentProvider.getContent(indexable, outputStream);
@@ -94,6 +94,22 @@ public class ColumnContentProviderTest extends ATest {
 		contentProvider.getContent(indexable, outputStream);
 
 		assertTrue(outputStream.toString().contains(string));
+
+		// TODO Find out why the Maven compile doesn't like this character sncoding
+		// note that the encoding has been set in all the places I could find on the net
+		// string = "Saint-Herménégilde";
+		// outputStream = new ByteArrayOutputStream();
+		// when(indexable.getColumnType()).thenReturn(Types.LONGVARCHAR);
+		// when(indexable.getContent()).thenReturn(string);
+		// contentProvider.getContent(indexable, outputStream);
+		// assertEquals(string, outputStream.toString(IConstants.ENCODING));
+		//
+		// string = "Soleymān Khāţer";
+		// outputStream = new ByteArrayOutputStream();
+		// when(indexable.getColumnType()).thenReturn(Types.LONGVARCHAR);
+		// when(indexable.getContent()).thenReturn(string);
+		// contentProvider.getContent(indexable, outputStream);
+		// assertEquals(string, outputStream.toString(IConstants.ENCODING));
 	}
 
 	/**
@@ -103,11 +119,12 @@ public class ColumnContentProviderTest extends ATest {
 	 * @param string
 	 *            the string to copy to the byte array until the max read length is exceeded
 	 * @return the byte array of the string copied several times more than the max read length
+	 * @throws UnsupportedEncodingException
 	 */
-	protected byte[] getBytes(String string) {
+	protected byte[] getBytes(String string) throws UnsupportedEncodingException {
 		byte[] bytes = new byte[(int) (IConstants.MAX_READ_LENGTH + IConstants.MAX_READ_LENGTH + 1000)];
 		for (int offset = 0; offset < bytes.length;) {
-			byte[] segment = string.getBytes();
+			byte[] segment = string.getBytes(IConstants.ENCODING);
 			if (offset + segment.length >= bytes.length) {
 				break;
 			}

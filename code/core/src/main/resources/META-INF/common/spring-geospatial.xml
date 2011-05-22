@@ -80,7 +80,7 @@
 		property:name="id"
 		property:idColumn="true"
 		property:analyzed="${analyzed}"
-		property:stored="${stored}"
+		property:stored="${not.stored}"
 		property:vectored="${vectored}" />
 	<bean
 		id="geospatialGeonameid"
@@ -88,7 +88,7 @@
 		property:name="geonameid"
 		property:fieldName="geonameid"
 		property:analyzed="${analyzed}"
-		property:stored="${stored}"
+		property:stored="${not.stored}"
 		property:vectored="${vectored}" />
 	<bean
 		id="geospatialName"
@@ -133,7 +133,7 @@
 		property:fieldName="alternatenames"
 		property:address="true"
 		property:analyzed="${analyzed}"
-		property:stored="${stored}"
+		property:stored="${not.stored}"
 		property:vectored="${vectored}" />
 	<bean
 		id="geospatialLatitude"
@@ -181,7 +181,7 @@
 		property:name="cc2"
 		property:fieldName="cc2"
 		property:analyzed="${analyzed}"
-		property:stored="${stored}"
+		property:stored="${not.stored}"
 		property:vectored="${vectored}" />
 	<bean
 		id="geospatialAdmin1Code"
@@ -189,7 +189,7 @@
 		property:name="admin1code"
 		property:fieldName="admin1code"
 		property:analyzed="${analyzed}"
-		property:stored="${stored}"
+		property:stored="${not.stored}"
 		property:vectored="${vectored}" />
 	<bean
 		id="geospatialAdmin2Code"
@@ -197,7 +197,7 @@
 		property:name="admin2code"
 		property:fieldName="admin2code"
 		property:analyzed="${analyzed}"
-		property:stored="${stored}"
+		property:stored="${not.stored}"
 		property:vectored="${vectored}" />
 	<bean
 		id="geospatialAdmin3Code"
@@ -205,7 +205,7 @@
 		property:name="admin3code"
 		property:fieldName="admin3code"
 		property:analyzed="${analyzed}"
-		property:stored="${stored}"
+		property:stored="${not.stored}"
 		property:vectored="${vectored}" />
 	<bean
 		id="geospatialAdmin4Code"
@@ -213,7 +213,7 @@
 		property:name="admin4code"
 		property:fieldName="admin4code"
 		property:analyzed="${analyzed}"
-		property:stored="${stored}"
+		property:stored="${not.stored}"
 		property:vectored="${vectored}" />
 	<bean
 		id="geospatialPopulation"
@@ -237,7 +237,7 @@
 		property:name="gtopo30"
 		property:fieldName="gtopo30"
 		property:analyzed="${analyzed}"
-		property:stored="${stored}"
+		property:stored="${not.stored}"
 		property:vectored="${vectored}" />
 	<bean
 		id="geospatialTimezone"
@@ -253,7 +253,7 @@
 		property:name="modification"
 		property:fieldName="modification"
 		property:analyzed="${analyzed}"
-		property:stored="${stored}"
+		property:stored="${not.stored}"
 		property:vectored="${vectored}" />
 	
 </beans>

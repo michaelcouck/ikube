@@ -34,15 +34,15 @@ import org.junit.Test;
  */
 public class SearchTest extends ATest {
 
+	private static String INDEX_DIRECTORY_PATH = "./searchTestIndexDirectory";
 	private static Searcher SEARCHER;
 
 	@BeforeClass
 	public static void beforeClass() throws Exception {
 		// Create the index with multiple fields
-		String indexDirectoryPath = "./indexes";
-		File indexDirectory = new File(indexDirectoryPath);
+		File indexDirectory = new File(INDEX_DIRECTORY_PATH);
 		FileUtilities.deleteFile(indexDirectory, 1);
-		FileUtilities.getFile(indexDirectoryPath, Boolean.TRUE);
+		FileUtilities.getFile(INDEX_DIRECTORY_PATH, Boolean.TRUE);
 
 		Directory directory = FSDirectory.open(indexDirectory);
 
@@ -72,7 +72,10 @@ public class SearchTest extends ATest {
 
 	@AfterClass
 	public static void afterClass() throws Exception {
-		SEARCHER.close();
+		if (SEARCHER != null) {
+			SEARCHER.close();
+		}
+		FileUtilities.deleteFile(new File(INDEX_DIRECTORY_PATH), 1);
 	}
 
 	private int maxResults = 10;

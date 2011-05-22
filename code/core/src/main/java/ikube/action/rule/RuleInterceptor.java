@@ -16,7 +16,6 @@ import org.nfunk.jep.JEP;
  * @since 12.02.2011
  * @version 01.00
  */
-// @Aspect
 public class RuleInterceptor implements IRuleInterceptor {
 
 	private static final transient Logger LOGGER = Logger.getLogger(RuleInterceptor.class);
@@ -25,7 +24,6 @@ public class RuleInterceptor implements IRuleInterceptor {
 	 * {@inheritDoc}
 	 */
 	@Override
-	// @Around("decide()")
 	public Object decide(final ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
 		Object target = proceedingJoinPoint.getTarget();
 		if (!IAction.class.isAssignableFrom(target.getClass())) {

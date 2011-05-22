@@ -1,13 +1,19 @@
 package ikube.monitoring;
 
-import static org.junit.Assert.*;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import ikube.BaseTest;
 import ikube.IConstants;
 import ikube.model.IndexContext;
 import ikube.service.IMonitoringService;
 import ikube.toolkit.ApplicationContextManager;
+import ikube.toolkit.FileUtilities;
 
+import java.io.File;
+
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -23,6 +29,16 @@ public class MonitoringServiceTest extends BaseTest {
 		super(MonitoringServiceTest.class);
 	}
 
+	@Before
+	public void before() {
+		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
+	}
+
+	@After
+	public void after() {
+		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
+	}
+
 	@Test
 	public void getIndexContextNames() {
 		String[] indexContextNames = monitoringService.getIndexContextNames();
@@ -35,7 +51,7 @@ public class MonitoringServiceTest extends BaseTest {
 		String[] indexContextNames = monitoringService.getIndexContextNames();
 		for (String indexContextName : indexContextNames) {
 			IndexContext indexContext = ApplicationContextManager.getBean(indexContextName);
-			logger.debug("Index context name : " + indexContextName);
+			logger.info("Index context name : " + indexContextName);
 			String[] fieldNames = monitoringService.getIndexFieldNames(indexContext.getIndexName());
 			assertTrue(fieldNames.length > 0);
 			for (String fieldName : fieldNames) {
@@ -49,6 +65,22 @@ public class MonitoringServiceTest extends BaseTest {
 		assertEquals("The first field name should be the content : ", "content", indexFieldNames[0]);
 		assertEquals("The second field name should be the id : ", "id", indexFieldNames[1]);
 		assertEquals("The third field name should be the title : ", "title", indexFieldNames[2]);
+	}
+
+	@Test
+	public void getIndexSize() throws Exception {
+		createIndex(indexContext, "The strings to index");
+		long indexSize = monitoringService.getIndexSize(indexContext.getIndexName());
+		logger.info("Index size : " + indexSize);
+		assertTrue("There should be some data in the index : ", indexSize > 0);
+	}
+
+	@Test
+	public void getIndexDocuments() throws Exception {
+		createIndex(indexContext, "The strings to index");
+		long indexDocuments = monitoringService.getIndexDocuments(indexContext.getIndexName());
+		logger.info("Index documents : " + indexDocuments);
+		assertEquals("There should be at least one document in the index : ", 2, indexDocuments, 1);
 	}
 
 }

@@ -108,6 +108,7 @@ public final class GeneralUtilities {
 					ds.setReuseAddress(true);
 					return port;
 				} catch (IOException e) {
+					LOGGER.info("Exception opening port : " + port, e);
 					port++;
 				} finally {
 					if (ds != null) {

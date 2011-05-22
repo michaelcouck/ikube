@@ -15,6 +15,7 @@
 		<th class="td-content">Address</th>
 		<th class="td-content">Is working</th>
 		<th class="td-content">Details page</th>
+		<th class="td-content">Log tail</th>
 	</tr>
 	<c:forEach var="server" items="${requestScope.servers}">
 	<tr>
@@ -22,6 +23,9 @@
 		<td class="td-content"><c:out value="${server.working}" /></td>
 		<td class="td-content">
 			<a href="<c:url value="/admin/server.html"/>?address=${server.address}">Details</a>
+		</td>
+		<td>
+			<a href="<c:url value="/admin/logging.html"/>?address=${server.address}">Logging</a>
 		</td>
 	</tr>
 	</c:forEach>

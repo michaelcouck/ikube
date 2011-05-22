@@ -56,7 +56,6 @@ public class SpatialEnrichmentInterceptor implements ISpatialEnrichmentIntercept
 			return;
 		}
 		if (!indexable.isAddress()) {
-			LOGGER.warn("Not address : " + indexable);
 			return;
 		}
 		if (LOGGER.isDebugEnabled()) {

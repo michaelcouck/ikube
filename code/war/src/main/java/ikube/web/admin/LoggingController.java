@@ -4,6 +4,7 @@ import ikube.IConstants;
 import ikube.cluster.IClusterManager;
 import ikube.model.Server;
 import ikube.toolkit.ApplicationContextManager;
+import ikube.toolkit.GeneralUtilities;
 
 import java.util.List;
 
@@ -14,18 +15,22 @@ import org.springframework.web.servlet.ModelAndView;
 
 /**
  * @author Michael Couck
- * @since 15.05.2011
+ * @since 22.05.2011
  * @version 01.00
  */
-public class ServersController extends BaseController {
+public class LoggingController extends BaseController {
 
 	@Override
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		String viewUrl = getViewUri(request);
-		// JOptionPane.showInputDialog("Hello controller : " + request.getRequestURI() + ", " + viewUrl);
 		ModelAndView modelAndView = new ModelAndView(viewUrl);
+
+		String address = request.getParameter(IConstants.ADDRESS);
 		List<Server> servers = ApplicationContextManager.getBean(IClusterManager.class).getServers();
-		modelAndView.addObject(IConstants.SERVERS, servers);
+		Server server = GeneralUtilities.findObject(Server.class, servers, IConstants.ADDRESS, address);
+
+		modelAndView.addObject(IConstants.SERVER, server);
+
 		return modelAndView;
 	}
 

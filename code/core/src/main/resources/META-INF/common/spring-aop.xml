@@ -19,7 +19,6 @@
             http://www.springframework.org/schema/context
             http://www.springframework.org/schema/context/spring-context-3.0.xsd">
             
-	<!-- <context:load-time-weaver /> -->
 	<aop:aspectj-autoproxy proxy-target-class="true" />
 	
 	<bean 
@@ -31,12 +30,21 @@
 		</aop:aspect>
 	</aop:config>
 	
+	<!-- 
+		This bean is the geocoder, it will enrich the data with spatial co-ordinates if
+		the indexables contain address fields. The Url for this service  
+	-->
 	<bean
 		id="ikube.index.spatial.geocode.IGeocoder"
 		class="ikube.index.spatial.geocode.IkubeGeocoder"
-		property:url="http://ikube:8081/ikube/service/ISearcherWebService?wsdl "
-		property:indexName="geospatial"
-		property:searchField="content" />
+		property:searchFields-ref="geospatialFields" 
+		property:searchUrl="http://ikube:8081/ikube/service/ISearcherWebService?wsdl " />
+	<util:list id="geospatialFields">
+		<value>name</value>
+		<value>asciiname</value>
+		<value>city</value>
+		<value>country</value>
+	</util:list>
 	<bean 
 		id="ikube.index.spatial.enrich.IEnrichment"
 		class="ikube.index.spatial.enrich.Enrichment"
@@ -49,10 +57,7 @@
 		property:enrichment-ref="ikube.index.spatial.enrich.IEnrichment" />
 	<aop:config proxy-target-class="true">
 		<aop:aspect ref="ikube.index.spatial.ISpatialEnrichmentInterceptor">
-			<aop:around method="enrich" pointcut="execution(* ikube.index.handler.*.addDocument(..))"  />
-		</aop:aspect>
-		<aop:aspect ref="ikube.index.spatial.ISpatialEnrichmentInterceptor">
-			<aop:around method="enrich" pointcut="execution(* ikube.index.handler.*.*.addDocument(..))"  />
+			<aop:around method="enrich" pointcut="execution(* ikube.index.handler.DocumentDelegate.addDocument(..))" />
 		</aop:aspect>
 	</aop:config>
 	
@@ -61,10 +66,10 @@
 		class="ikube.monitoring.MonitoringInterceptor" />
 	<aop:config proxy-target-class="true">
 		<aop:aspect ref="ikube.monitoring.IMonitoringInterceptor">
-			<aop:around method="indexingPerformance" pointcut="execution(* ikube.index.handler.internet.crawler.UrlPageHandler.*(..))" />
+			<aop:around method="searchingPerformance" pointcut="execution(* ikube.service.SearchDelegate.execute(..))" />
 		</aop:aspect>
 		<aop:aspect ref="ikube.monitoring.IMonitoringInterceptor">
-			<aop:around method="searchingPerformance" pointcut="execution(* ikube.search.*.search(..))" />
+			<aop:around method="indexingPerformance" pointcut="execution(* ikube.index.handler.DocumentDelegate.addDocument(..))" />
 		</aop:aspect>
 	</aop:config>
 	

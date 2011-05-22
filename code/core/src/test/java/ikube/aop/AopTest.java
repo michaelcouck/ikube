@@ -5,11 +5,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import ikube.BaseTest;
 import ikube.action.Index;
-import ikube.index.handler.database.IndexableTableHandler;
 import ikube.index.handler.internet.IndexableInternetHandler;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
-import ikube.model.IndexableTable;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
 
@@ -37,7 +35,6 @@ import org.mockito.stubbing.Answer;
  * @since 30.04.2011
  * @version 01.00
  */
-// @Ignore
 public class AopTest extends BaseTest {
 
 	@Cascading
@@ -86,14 +83,6 @@ public class AopTest extends BaseTest {
 		indexableHandler.addDocument(INDEX_CONTEXT, INDEXABLE, document);
 		verify(INDEXABLE, Mockito.atLeastOnce()).isAddress();
 		when(INDEXABLE.isAddress()).thenReturn(Boolean.TRUE);
-	}
-
-	@Test
-	public void tableEnrichment() throws Exception {
-		IndexableTableHandler indexableTableHandler = ApplicationContextManager.getBean(IndexableTableHandler.class);
-		IndexableTable indexableTable = ApplicationContextManager.getBean("addressTableDb2");
-		indexableTableHandler.handle(INDEX_CONTEXT, indexableTable);
-		indexableTableHandler.addDocument(INDEX_CONTEXT, indexableTable, new Document());
 	}
 
 	@Test

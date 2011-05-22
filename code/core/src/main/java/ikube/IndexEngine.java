@@ -72,7 +72,7 @@ public class IndexEngine implements IIndexEngine {
 				LOGGER.warn("No actions configured for index engine : " + indexContext.getIndexName());
 				continue;
 			}
-			LOGGER.info("Start working on index : " + indexContext.getIndexName());
+			LOGGER.info("Start working on index : " + indexContext.getIndexName() + ", server : " + server);
 			int thread = Thread.currentThread().hashCode();
 			for (IAction<IndexContext, Boolean> action : actions) {
 				boolean success = Boolean.FALSE;

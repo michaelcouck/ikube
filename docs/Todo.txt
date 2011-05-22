@@ -10,6 +10,8 @@
 * Enrich the geospatial data with cities and countries - ?
    1) First with the country data within the data - 1
    2) With Google or NavTec data - 2
+* Test the serialization of Cyrillic and other character sets during the search
+   and the de-serialization of the results - 1 hour
 
 Sub Total: 17
 

@@ -52,7 +52,7 @@ public class SearchSpatial extends SearchMulti {
 	@Override
 	protected TopDocs search(final Query query) throws IOException {
 		DistanceQueryBuilder queryBuilder = new DistanceQueryBuilder(coordinate.getLat(), coordinate.getLon(), distance, IConstants.LAT,
-				IConstants.LNG, CartesianTierPlotter.DEFALT_FIELD_PREFIX, true);
+				IConstants.LNG, CartesianTierPlotter.DEFALT_FIELD_PREFIX, Boolean.TRUE);
 		// As the radius filter has performed the distance calculations
 		// already, pass in the filter to reuse the results
 		DistanceFieldComparatorSource fieldComparator = new DistanceFieldComparatorSource(queryBuilder.getDistanceFilter());
@@ -60,7 +60,9 @@ public class SearchSpatial extends SearchMulti {
 		Sort sort = new Sort(new SortField("geo_distance", fieldComparator));
 		TopDocs topDocs = searcher.search(query, queryBuilder.getFilter(), maxResults, sort);
 		distances = queryBuilder.getDistanceFilter().getDistances();
-		logger.debug("Distances : " + distance);
+		if (logger.isDebugEnabled()) {
+			logger.debug("Distances : " + distance);
+		}
 		return topDocs;
 	}
 

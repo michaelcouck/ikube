@@ -25,5 +25,9 @@ public interface IMonitoringService {
 	String[] getIndexFieldNames(String indexName);
 	
 	String[] getIndexableFieldNames(String indexableName);
+	
+	long getIndexSize(String indexName);
+	
+	int getIndexDocuments(String indexName);
 
 }

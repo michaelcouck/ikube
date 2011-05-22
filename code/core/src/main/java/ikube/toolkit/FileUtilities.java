@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
+import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -379,6 +380,42 @@ public final class FileUtilities {
 	}
 
 	/**
+	 * This method will read the contents of a file from the end, reading the number of bytes specified in the parameter list.
+	 * 
+	 * @param file
+	 *            the file to read from the end
+	 * @param bytesToRead
+	 *            the number of bytes to read
+	 * @return the byte array with the bytes read, could be empty if there is no data in the file or if there is an exception
+	 */
+	public static ByteArrayOutputStream getContentsFromEnd(final File file, final long bytesToRead) {
+		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+		FileInputStream fileInputStream = null;
+		try {
+			long length = file.length();
+			fileInputStream = new FileInputStream(file);
+			ByteBuffer byteBuffer = ByteBuffer.allocate((int) bytesToRead);
+			long position = length - bytesToRead;
+			if (position < 0) {
+				position = 0;
+			}
+			fileInputStream.getChannel().read(byteBuffer, position);
+			byteArrayOutputStream.write(byteBuffer.array());
+		} catch (Exception e) {
+			LOGGER.error("Exception reading from the end of the file : ", e);
+		} finally {
+			try {
+				if (fileInputStream != null) {
+					fileInputStream.close();
+				}
+			} catch (Exception e) {
+				LOGGER.error("Exception closing the file stream on file : " + file, e);
+			}
+		}
+		return byteArrayOutputStream;
+	}
+
+	/**
 	 * Reads the contents of the file and returns the contents in a byte array form.
 	 * 
 	 * @param inputStream
@@ -519,7 +556,7 @@ public final class FileUtilities {
 			}
 		}
 	}
-	
+
 	public static void main(String[] args) {
 		FileUtilities.deleteFiles(new File("."), "Csv.txt");
 	}

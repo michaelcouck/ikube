@@ -8,13 +8,13 @@ import ikube.service.IMonitoringService;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.GeneralUtilities;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
@@ -23,9 +23,6 @@ import org.springframework.web.servlet.ModelAndView;
  * @version 01.00
  */
 public class ServerController extends BaseController {
-
-	@SuppressWarnings("unused")
-	private static final Logger LOGGER = Logger.getLogger(ServerController.class);
 
 	@Override
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -43,8 +40,21 @@ public class ServerController extends BaseController {
 		Map<String, IndexContext> indexContexts = ApplicationContextManager.getBeans(IndexContext.class);
 		modelAndView.addObject(IConstants.INDEX_CONTEXTS, indexContexts.values());
 
-		String[] indexNames = ApplicationContextManager.getBean(IMonitoringService.class).getIndexNames();
+		IMonitoringService monitoringService = ApplicationContextManager.getBean(IMonitoringService.class);
+		String[] indexNames = monitoringService.getIndexNames();
 		modelAndView.addObject(IConstants.INDEX_NAMES, indexNames);
+
+		for (String indexName : indexNames) {
+			Map<String, Object> indexProperties = new HashMap<String, Object>();
+			long indexSize = monitoringService.getIndexSize(indexName);
+			int numDocs = monitoringService.getIndexDocuments(indexName);
+			indexProperties.put(IConstants.INDEX_SIZE, indexSize);
+			indexProperties.put(IConstants.INDEX_DOCUMENTS, numDocs);
+			modelAndView.addObject(indexName, indexProperties);
+		}
+
+		modelAndView.addObject(IConstants.INDEXING_EXECUTIONS, server.getIndexingExecutions());
+		modelAndView.addObject(IConstants.SEARCHING_EXECUTIONS, server.getSearchingExecutions());
 
 		return modelAndView;
 	}

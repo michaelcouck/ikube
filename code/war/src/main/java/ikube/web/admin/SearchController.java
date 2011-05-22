@@ -30,6 +30,7 @@ import org.springframework.web.servlet.ModelAndView;
 public class SearchController extends BaseController {
 
 	private static final Logger LOGGER = Logger.getLogger(SearchController.class);
+	private static final int MAX_RESULTS = 10;
 
 	@Override
 	@SuppressWarnings("unchecked")
@@ -78,7 +79,7 @@ public class SearchController extends BaseController {
 							ISearcherWebService.NAMESPACE, ISearcherWebService.SERVICE);
 					// LOGGER.error("Searcher web service : " + searcherWebService);
 					String xml = searcherWebService.searchMulti(indexName, searchStrings.toArray(new String[searchStrings.size()]),
-							searchFields.toArray(new String[searchFields.size()]), Boolean.TRUE, 0, 100);
+							searchFields.toArray(new String[searchFields.size()]), Boolean.TRUE, 0, MAX_RESULTS);
 
 					List<Map<String, String>> results = (List<Map<String, String>>) SerializationUtilities.deserialize(xml);
 					// LOGGER.error("Results : " + results);

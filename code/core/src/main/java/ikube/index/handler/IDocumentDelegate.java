@@ -8,7 +8,7 @@ import java.io.IOException;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.CorruptIndexException;
 
-public interface IDocumentInjector {
+public interface IDocumentDelegate {
 
 	<T> void addDocument(final IndexContext indexContext, final Indexable<T> indexable, final Document document)
 			throws CorruptIndexException, IOException;

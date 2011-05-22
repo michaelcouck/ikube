@@ -23,6 +23,7 @@
 				<prop key="/admin/search.html">ikube.web.admin.SearchController</prop>
 				<prop key="/admin/server.html">ikube.web.admin.ServerController</prop>
 				<prop key="/admin/servers.html">ikube.web.admin.ServersController</prop>
+				<prop key="/admin/logging.html">ikube.web.admin.LoggingController</prop>
 			</props>
 		</property>
 	</bean>
@@ -43,6 +44,7 @@
 	<bean name="ikube.web.admin.SearchController" class="ikube.web.admin.SearchController" />
 	<bean name="ikube.web.admin.ServerController" class="ikube.web.admin.ServerController" />
 	<bean name="ikube.web.admin.ServersController" class="ikube.web.admin.ServersController" />
+	<bean name="ikube.web.admin.LoggingController" class="ikube.web.admin.LoggingController" />
 
 	<!-- These are static resources basically. -->
 	<mvc:view-controller path="/index.html" />

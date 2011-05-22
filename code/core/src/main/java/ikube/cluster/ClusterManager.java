@@ -10,9 +10,11 @@ import ikube.listener.ListenerManager;
 import ikube.model.Server;
 import ikube.model.Server.Action;
 import ikube.toolkit.ApplicationContextManager;
+import ikube.toolkit.FileUtilities;
 import ikube.toolkit.HashUtilities;
 import ikube.toolkit.Logging;
 
+import java.io.File;
 import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -33,30 +35,94 @@ import com.hazelcast.core.MessageListener;
  * @since 21.11.10
  * @version 01.00
  */
-public class ClusterManager implements IClusterManager {
+public class ClusterManager implements IClusterManager, IConstants {
 
-	/** Lock objects for cluster wide locking while we update the cache. */
-	protected static final String SERVER_LOCK = "serverLock";
-
-	/** The timeout to wait for the lock. */
-	protected static final long LOCK_TIMEOUT = 3000;
-	/** We only keep a few actions in the server. */
-	protected static final double MAX_ACTION_SIZE = 100;
-	/** The ratio to delete the actions when the maximum is reached. */
-	protected static final double ACTION_PRUNE_RATIO = 0.5;
-	/** The maximum age that the server can get to before it is deleted from the cluster. */
-	protected static final int MAX_AGE = 10000;
-
+	/** The logger, doh. */
 	protected static final Logger LOGGER = Logger.getLogger(ClusterManager.class);
+
+	/**
+	 * This method adds a shutdown hook that can be executed remotely causing the the cluster to close down, but not ourselves. This is
+	 * useful when a unit test needs to run without the cluster running as the synchronization will affect the tests.
+	 */
+	public static void addShutdownHook() {
+		LOGGER.info("Adding shutdown listener : ");
+		Hazelcast.getTopic(IConstants.SHUTDOWN_TOPIC).addMessageListener(new MessageListener<Object>() {
+			@Override
+			public void onMessage(Object other) {
+				if (other == null) {
+					return;
+				}
+				LOGGER.info("Got shutdown message : " + other);
+				Server server = ApplicationContextManager.getBean(IClusterManager.class).getServer();
+				if (other.equals(server)) {
+					// We don't shutdown our selves of course
+					return;
+				}
+				LOGGER.warn("Shutting down Ikube server : " + other);
+				Hazelcast.shutdownAll();
+				System.exit(0);
+			}
+		});
+	}
+
+	/**
+	 * This method adds a listener to the cluster topic to make exception when evaluating the rules.
+	 */
+	public static void addClusterExceptionListener() {
+		// Add the listener for general cluster directives like forcing an index to start
+		LOGGER.info("Adding shutdown listener : ");
+		Hazelcast.getTopic(IConstants.EXCEPTION_TOPIC).addMessageListener(new MessageListener<Object>() {
+			@Override
+			public void onMessage(Object command) {
+				LOGGER.info("Got exception message : " + command);
+				if (Boolean.class.isAssignableFrom(command.getClass())) {
+					LOGGER.info("Exception command not boolean : " + command);
+					return;
+				}
+				ApplicationContextManager.getBean(IClusterManager.class).setException((Boolean) command);
+			}
+		});
+	}
+
+	private IListener cleanerListener = new IListener() {
+		@Override
+		public void handleNotification(Event event) {
+			if (!event.getType().equals(Event.ALIVE)) {
+				return;
+			}
+			// Set our own server age
+			Server server = getServer();
+			// Add the tail end of the log to the server
+			File logFile = Logging.getLogFile();
+			String logTail = FileUtilities.getContentsFromEnd(logFile, 5000).toString();
+			server.setLogTail(logTail);
+			server.setAge(System.currentTimeMillis());
+			set(Server.class.getName(), server.getId(), server);
+			// Remove all servers that are past the max age
+			List<Server> servers = getServers();
+			for (Server remoteServer : servers) {
+				if (System.currentTimeMillis() - remoteServer.getAge() > MAX_AGE) {
+					LOGGER.info("Removing server : " + remoteServer);
+					remove(Server.class.getName(), remoteServer.getId());
+				}
+			}
+		}
+	};
+
 	/** The ip of this server. */
 	private transient String ip;
-	/** The address of this server. This can be set in the configuration. The default is the IP address. */
+	/**
+	 * The address of this server, this must be unique in the cluster. Typically this is the ip address added to the system time. The chance
+	 * of a hash clash with any other server is in the billions, we will disregard this possibility on prudent grounds.
+	 */
 	protected transient String address;
 	/** The cluster wide cache. */
 	protected transient ICache cache;
+	/** This flag is set cluster wide to make exception for the rules. */
+	private transient boolean exception;
 
 	/**
-	 * In the constructor we initialise the logger but most importantly the address of this server. Please see the comments.
+	 * In the constructor we initialize the logger but most importantly the address of this server. Please see the comments.
 	 * 
 	 * @throws Exception
 	 *             this can only be the InetAddress exception, which can never happen because we are looking for the localhost
@@ -72,26 +138,7 @@ public class ClusterManager implements IClusterManager {
 				this.ip = InetAddress.getLocalHost().getHostAddress();
 				this.address = ip + "." + System.nanoTime();
 				// This listener will iterate over the servers and remove any that have expired
-				ListenerManager.addListener(new IListener() {
-					@Override
-					public void handleNotification(Event event) {
-						if (!event.getType().equals(Event.ALIVE)) {
-							return;
-						}
-						// Set our own server age
-						Server server = getServer();
-						server.setAge(System.currentTimeMillis());
-						set(Server.class.getName(), server.getId(), server);
-						// Remove all servers that are past the max age
-						List<Server> servers = getServers();
-						for (Server remoteServer : servers) {
-							if (System.currentTimeMillis() - remoteServer.getAge() > MAX_AGE) {
-								LOGGER.info("Removing server : " + remoteServer);
-								remove(Server.class.getName(), remoteServer.getId());
-							}
-						}
-					}
-				});
+				ListenerManager.addListener(cleanerListener);
 			} finally {
 				notifyAll();
 			}
@@ -175,7 +222,8 @@ public class ClusterManager implements IClusterManager {
 			}
 			long idNumber = 0;
 			List<Server> servers = cache.get(Server.class.getName(), null, null, Integer.MAX_VALUE);
-			// We look for the largest row id from any of the servers, from the first action in each server
+			// We look for the largest row id from any of the servers, from the last action in each server
+			// that has the name of the action that we are looking for
 			for (Server server : servers) {
 				List<Action> actions = server.getActions();
 				// Iterate from the end to the front
@@ -469,7 +517,20 @@ public class ClusterManager implements IClusterManager {
 		return cache;
 	}
 
-	/** Methods called form Spring below here. */
+	@Override
+	public boolean isException() {
+		try {
+			return exception;
+		} finally {
+			exception = Boolean.FALSE;
+		}
+	}
+
+	@Override
+	public void setException(boolean exception) {
+		this.exception = exception;
+	}
+
 	public synchronized void setCache(ICache cache) {
 		try {
 			this.cache = cache;
@@ -484,27 +545,6 @@ public class ClusterManager implements IClusterManager {
 		} finally {
 			notifyAll();
 		}
-	}
-
-	public static void addShutdownHook() {
-		LOGGER.info("Adding shutdown listener : ");
-		Hazelcast.getTopic(IConstants.SHUTDOWN_TOPIC).addMessageListener(new MessageListener<Object>() {
-			@Override
-			public void onMessage(Object other) {
-				if (other == null) {
-					return;
-				}
-				LOGGER.info("Got shutdown message : " + other);
-				Server server = ApplicationContextManager.getBean(IClusterManager.class).getServer();
-				if (other.equals(server)) {
-					// We don't shutdown our selves of course
-					return;
-				}
-				LOGGER.warn("Shutting down Ikube server : " + other);
-				Hazelcast.shutdownAll();
-				System.exit(0);
-			}
-		});
 	}
 
 }

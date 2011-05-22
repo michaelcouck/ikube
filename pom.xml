@@ -8,13 +8,15 @@
 	<version>1.0.1-SNAPSHOT</version>
 
 	<properties>
+		<targetJdk>1.6</targetJdk>
+		
 		<spring.version>3.0.3.RELEASE</spring.version>
 		<tiles.version>2.1.3</tiles.version>
 		<slf4j.version>1.5.10</slf4j.version>
 		<logback.version>0.9.15</logback.version>
 		<junit.version>4.8.2</junit.version>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<targetJdk>1.6</targetJdk>
+		<encoding>UTF-8</encoding>
+		<project.build.sourceEncoding>${encoding}</project.build.sourceEncoding>
 
 		<write.classes>-Dwrite.classes=false</write.classes>
 		<clean.classes>-Dclean.classes=false</clean.classes>
@@ -22,9 +24,7 @@
 		<excluded.packages>-Dexcluded.packages=model:Mock:Test</excluded.packages>
 		<included.adapters>-Dincluded.adapters=coverage:complexity:dependency</included.adapters>
 
-		<appengine.sdk.root>libs/appengine-java-sdk-1.4.3</appengine.sdk.root>
 		<war.base.root>code/war/target/ikube</war.base.root>
-		<gae.version>0.8.4</gae.version>
 	</properties>
 
 	<modules>
@@ -39,7 +39,7 @@
 				<artifactId>maven-resources-plugin</artifactId>
 				<version>2.4.3</version>
 				<configuration>
-					<encoding>UTF-8</encoding>
+					<encoding>${encoding}</encoding>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -47,9 +47,9 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>2.3.2</version>
 				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
-					<encoding>UTF-8</encoding>
+					<source>${targetJdk}</source>
+					<target>${targetJdk}</target>
+					<encoding>${encoding}</encoding>
 					<failOnError>true</failOnError>
 					<compilerArguments>
 						<verbose />
@@ -78,23 +78,6 @@
 				<version>2.0-beta-2</version>
 			</plugin>
 			<plugin>
-				<groupId>net.kindleit</groupId>
-				<artifactId>maven-gae-plugin</artifactId>
-				<version>${gae.version}</version>
-				<configuration>
-					<sdkDir>${appengine.sdk.root}</sdkDir>
-					<appDir>${war.base.root}</appDir>
-				</configuration>
-				<dependencies>
-					<dependency>
-						<groupId>net.kindleit</groupId>
-						<artifactId>gae-runtime</artifactId>
-						<version>1.3.7</version>
-						<type>pom</type>
-					</dependency>
-				</dependencies>
-			</plugin>
-			<plugin>
 				<artifactId>maven-install-plugin</artifactId>
 				<executions>
 					<execution>
@@ -111,15 +94,6 @@
 				</executions>
 			</plugin>
 		</plugins>
-		<pluginManagement>
-			<plugins>
-				<plugin>
-					<groupId>net.kindleit</groupId>
-					<artifactId>maven-gae-plugin</artifactId>
-					<version>${gae.version}</version>
-				</plugin>
-			</plugins>
-		</pluginManagement>
 	</build>
 
 	<dependencies>

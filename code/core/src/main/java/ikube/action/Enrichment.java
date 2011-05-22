@@ -1,14 +1,12 @@
 package ikube.action;
 
 import ikube.IConstants;
-import ikube.cluster.IClusterManager;
+import ikube.index.spatial.Coordinate;
 import ikube.model.IndexContext;
-import ikube.model.Server;
 import ikube.model.geospatial.GeoName;
-import ikube.service.ISearcherWebService;
-import ikube.service.ServiceLocator;
-import ikube.toolkit.ApplicationContextManager;
-import ikube.toolkit.SerializationUtilities;
+import ikube.search.SearchMulti;
+import ikube.search.SearchSpatial;
+import ikube.toolkit.Logging;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,89 +24,60 @@ import javax.persistence.Query;
  * @since 15.05.2011
  * @version 01.00
  */
-public class Enrichment extends Action<IndexContext, Boolean> {
+public class Enrichment extends Action<IndexContext, Boolean> implements IConstants {
+
+	public static final String CITY_FEATURE_CLASS = "P S T";
+	public static final String CITY_FEATURE_CODE = "PPL PPL PPLA PPLA2 PPLA3 PPLA4 PPLC PPLF PPLG PPLL PPLQ PPLR PPLS PPLW PPLX STLMT";
+	public static final String COUNTRY_FEATURE_CLASS = "A";
+	public static final String COUNTRY_FEATURE_CODE = "PCLI ADM1 ADM2 ADM3 ADM4 ADMD LTER PCL PCLD PCLF PCLI PCLIX PCLS PRSH TERR ZN ZNB";
+	public static final String[] searchFields = { FEATURECLASS, FEATURECODE, COUNTRYCODE };
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public Boolean execute(final IndexContext indexContext) {
+		if (!indexContext.getIndexName().equals(GEOSPATIAL)) {
+			return Boolean.FALSE;
+		}
 		logger.info("Running the enrichment : ");
 		getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getName(), Boolean.TRUE);
-		EntityManager entityManager = Persistence.createEntityManagerFactory(IConstants.PERSISTENCE_UNIT_DB2).createEntityManager();
-		logger.info("Finished indexing the database : ");
+		EntityManager entityManager = null;
 		try {
-			Server server = ApplicationContextManager.getBean(IClusterManager.class).getServer();
-			List<String> webServiceUrls = server.getWebServiceUrls();
-			String webServiceUrl = null;
-			for (String serviceUrl : webServiceUrls) {
-				if (serviceUrl.contains(ISearcherWebService.class.getSimpleName())) {
-					webServiceUrl = serviceUrl;
-					break;
-				}
-			}
-			ISearcherWebService searcherWebService = ServiceLocator.getService(ISearcherWebService.class, webServiceUrl,
-					ISearcherWebService.NAMESPACE, ISearcherWebService.SERVICE);
 			// List all the entities in the geoname table
-			int index = 0;
-			int batch = 1000;
-			long id = 8563751;
+			long id = 0;
 			int exceptions = 0;
+			int batch = 100;
 			int maxExceptions = 1000;
 			List<GeoName> geoNames = new ArrayList<GeoName>();
-			GeoName geoName = null;
+			entityManager = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_DB2).createEntityManager();
+			SearchSpatial searchSpatial = getSearchSpatial(indexContext);
+			SearchMulti searchMulti = getSearchMulti(indexContext);
+			String[] searchStrings = new String[3];
+			searchSpatial.setSearchString(searchStrings);
+			searchMulti.setSearchString(searchStrings);
 			do {
-				if (index >= geoNames.size()) {
-					index = 0;
-					if (entityManager.getTransaction().isActive()) {
-						entityManager.flush();
-						entityManager.getTransaction().commit();
-						entityManager.clear();
+				try {
+					for (GeoName geoName : geoNames) {
+						id = geoName.getId();
+						if (geoName.getCity() == null) {
+							setCity(geoName, searchSpatial, searchStrings);
+						}
+						if (geoName.getCountry() == null) {
+							setCountry(geoName, searchMulti, searchStrings);
+						}
+						// Merge the entity
+						entityManager.merge(geoName);
 					}
+					commitTransaction(entityManager);
 					entityManager.getTransaction().begin();
 					Query query = entityManager.createNamedQuery(GeoName.SELECT_FROM_GEONAME_BY_ID_GREATER_AND_SMALLER);
-					query.setParameter(IConstants.START, id);
-					query.setParameter(IConstants.END, id += batch);
+					query.setParameter(ID, id);
+					query.setMaxResults(batch);
 					geoNames = query.getResultList();
 					logger.info("Geoname size : " + geoNames.size() + ", " + id);
 					if (geoNames.size() == 0) {
+						commitTransaction(entityManager);
 						break;
 					}
-					logger.info("Geoname : " + geoName);
-				}
-				try {
-					geoName = geoNames.get(index++);
-					if (geoName.getCity() == null) {
-						// Search the geoname index for the closest city
-						String[] searchFields = { "featureclass", "featurecode", "countrycode" };
-						String[] searchStrings = { "P", "PPL", geoName.getCountryCode() };
-						double latitude = geoName.getLatitude();
-						double longitude = geoName.getLongitude();
-						String xml = searcherWebService.searchSpacialMulti(IConstants.GEOSPATIAL, searchStrings, searchFields,
-								Boolean.FALSE, 0, 10, 10, latitude, longitude);
-						List<Map<String, String>> results = (List<Map<String, String>>) SerializationUtilities.deserialize(xml);
-						if (results.size() > 1) {
-							// Add the top hit from the list
-							Map<String, String> result = results.get(0);
-							String city = result.get(IConstants.NAME);
-							geoName.setCity(city);
-						}
-					}
-					if (geoName.getCountry() == null) {
-						String[] searchFields = { "featureclass", "featurecode", "countrycode" };
-						String[] searchStrings = { "A", "PCLI", geoName.getCountryCode() };
-						double latitude = geoName.getLatitude();
-						double longitude = geoName.getLongitude();
-						String xml = searcherWebService.searchSpacialMulti(IConstants.GEOSPATIAL, searchStrings, searchFields,
-								Boolean.FALSE, 0, 10, 10, latitude, longitude);
-						List<Map<String, String>> results = (List<Map<String, String>>) SerializationUtilities.deserialize(xml);
-						if (results.size() > 1) {
-							// Add the top hit from the list
-							Map<String, String> result = results.get(0);
-							String country = result.get(IConstants.NAME);
-							geoName.setCountry(country);
-						}
-					}
-					// Merge the entity
-					entityManager.merge(geoName);
 				} catch (Exception e) {
 					logger.error("Exception enriching the GeoName data : ", e);
 					exceptions++;
@@ -118,22 +87,109 @@ public class Enrichment extends Action<IndexContext, Boolean> {
 				}
 			} while (true);
 		} finally {
-			try {
-				if (entityManager != null) {
-					if (entityManager.getTransaction().isActive()) {
-						if (entityManager.getTransaction().getRollbackOnly()) {
-							entityManager.getTransaction().rollback();
-						} else {
-							entityManager.getTransaction().commit();
-						}
-					}
-				}
-			} catch (Exception e) {
-				logger.error("Exception comitting or rolling back the transaction : ", e);
-			}
+			commitTransaction(entityManager);
 			getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getName(), Boolean.FALSE);
 		}
 		return Boolean.TRUE;
 	}
 
+	private void commitTransaction(EntityManager entityManager) {
+		try {
+			if (entityManager != null) {
+				if (entityManager.getTransaction().isActive()) {
+					if (entityManager.getTransaction().getRollbackOnly()) {
+						entityManager.getTransaction().rollback();
+					} else {
+						entityManager.flush();
+						entityManager.getTransaction().commit();
+						entityManager.clear();
+					}
+				}
+			}
+		} catch (Exception e) {
+			logger.error("Exception comitting or rolling back the transaction : ", e);
+		}
+	}
+
+	protected void setCity(GeoName geoName, SearchSpatial searchSpatial, String[] searchStrings) {
+		// Search the geoname index for the closest city
+		searchStrings[0] = CITY_FEATURE_CLASS;
+		searchStrings[1] = CITY_FEATURE_CODE;
+		searchStrings[2] = geoName.getCountryCode();
+		double latitude = geoName.getLatitude();
+		double longitude = geoName.getLongitude();
+		Coordinate coordinate = new Coordinate(latitude, longitude);
+		searchSpatial.setCoordinate(coordinate);
+		List<Map<String, String>> results = searchSpatial.execute();
+		if (results.size() > 1) {
+			// Find the result that is a country, i.e. the feature class with 'T'
+			String city = null;
+			for (Map<String, String> result : results) {
+				String featureclass = result.get(FEATURECLASS);
+				String featurecode = result.get(FEATURECODE);
+				if (featureclass == null || featurecode == null) {
+					continue;
+				}
+				if (CITY_FEATURE_CLASS.contains(featureclass) && CITY_FEATURE_CODE.contains(featurecode)) {
+					city = result.get(ASCIINAME);
+					break;
+				}
+			}
+			if (city == null) {
+				city = results.get(0).get(ASCIINAME);
+			}
+			if (logger.isDebugEnabled()) {
+				logger.debug(Logging.getString("City : ", city, geoName));
+			}
+			geoName.setCity(city);
+		}
+	}
+
+	protected void setCountry(GeoName geoName, SearchMulti searchMulti, String[] searchStrings) {
+		searchStrings[0] = COUNTRY_FEATURE_CLASS;
+		searchStrings[1] = COUNTRY_FEATURE_CODE;
+		searchStrings[2] = geoName.getCountryCode();
+		List<Map<String, String>> results = searchMulti.execute();
+		if (results.size() > 1) {
+			// Find the result that is a country, i.e. the feature class with 'T'
+			String country = null;
+			for (Map<String, String> result : results) {
+				String featureclass = result.get(FEATURECLASS);
+				String featurecode = result.get(FEATURECODE);
+				if (featureclass == null || featurecode == null) {
+					continue;
+				}
+				if (COUNTRY_FEATURE_CLASS.contains(featureclass) && COUNTRY_FEATURE_CODE.contains(featurecode)) {
+					country = result.get(ASCIINAME);
+					break;
+				}
+			}
+			if (country == null) {
+				country = results.get(0).get(ASCIINAME);
+			}
+			if (logger.isDebugEnabled()) {
+				logger.debug(Logging.getString("Country : ", country, geoName));
+			}
+			geoName.setCountry(country);
+		}
+	}
+
+	private SearchSpatial getSearchSpatial(IndexContext indexContext) {
+		SearchSpatial searchSpatial = new SearchSpatial(indexContext.getIndex().getMultiSearcher());
+		searchSpatial.setDistance(10);
+		searchSpatial.setFirstResult(0);
+		searchSpatial.setFragment(Boolean.TRUE);
+		searchSpatial.setMaxResults(10);
+		searchSpatial.setSearchField(searchFields);
+		return searchSpatial;
+	}
+
+	private SearchMulti getSearchMulti(IndexContext indexContext) {
+		SearchMulti searchMulti = new SearchMulti(indexContext.getIndex().getMultiSearcher());
+		searchMulti.setFirstResult(0);
+		searchMulti.setFragment(Boolean.TRUE);
+		searchMulti.setMaxResults(10);
+		searchMulti.setSearchField(searchFields);
+		return searchMulti;
+	}
 }

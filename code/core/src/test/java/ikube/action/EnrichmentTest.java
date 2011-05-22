@@ -13,7 +13,7 @@ import org.junit.Test;
  * @since 15.05.2011
  * @version 01.00
  */
-@Ignore
+// @Ignore
 public class EnrichmentTest extends ATest {
 
 	public EnrichmentTest() {
@@ -21,16 +21,18 @@ public class EnrichmentTest extends ATest {
 	}
 
 	@Test
-	public void execute() {
+	public void execute() throws Exception {
 		// final IndexContext indexContext
 		IndexContext indexContext = ApplicationContextManager.getBean(IConstants.GEOSPATIAL);
-		Enrichment enrichment = new Enrichment();
-		try {
-			Thread.sleep(1000 * 15);
-		} catch (InterruptedException e) {
-			logger.error("Interrupted : ", e);
+//		Enrichment enrichment = new Enrichment();
+//		while (indexContext.getIndex().getMultiSearcher() == null) {
+//			Thread.sleep(1000);
+//		}
+//		Thread.sleep(1000);
+//		enrichment.execute(indexContext);
+		while (true) {
+			Thread.sleep(1000);
 		}
-		enrichment.execute(indexContext);
 	}
 
 }

@@ -30,11 +30,11 @@ import org.xml.sax.InputSource;
  * @since 21.11.10
  * @version 01.00
  */
-public class DataLoader {
+public class DatabaseUtilities {
 
 	private Logger logger;
 
-	public DataLoader() {
+	public DatabaseUtilities() {
 		this.logger = Logger.getLogger(this.getClass());
 	}
 
@@ -65,7 +65,7 @@ public class DataLoader {
 	}
 
 	/**
-	 * Gets the data from the database and writes a DBUnit file to the fiel system with the data set in it.
+	 * Gets the data from the database and writes a DBUnit file to the file system with the data set in it.
 	 * 
 	 * @param tableNames
 	 *            the names of the tables to select from
@@ -161,8 +161,8 @@ public class DataLoader {
 
 	public static void main(String[] args) {
 		ApplicationContextManager.getApplicationContext(IConstants.SPRING_CONFIGURATION_FILE);
-		DataLoader dataLoader = new DataLoader();
-		dataLoader.writeDataSet(new String[] { "faq", "attachment" }, "./modules/core/src/test/resources/data/data.xml");
+		DatabaseUtilities databaseUtilities = new DatabaseUtilities();
+		databaseUtilities.writeDataSet(new String[] { "faq", "attachment" }, "./modules/core/src/test/resources/data/data.xml");
 	}
 
 }

@@ -1,7 +1,13 @@
 package ikube.toolkit;
 
-import java.net.URL;
+import ikube.IConstants;
 
+import java.io.File;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.Properties;
+
+import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
 /**
@@ -13,10 +19,10 @@ import org.apache.log4j.PropertyConfigurator;
  */
 public final class Logging {
 
+	private static Logger LOGGER;
 	private static boolean INITIALISED = false;
-	private static final String SEP = "/"; // File.separator;
-	private static final String META_INF = SEP + "META-INF";
-	private static final String LOG_4_J_PROPERTIES = META_INF + SEP + "log4j.properties";
+	private static final String LOG_4_J_PROPERTIES = IConstants.META_INF + "log4j.properties";
+	private static File LOG_FILE;
 
 	private Logging() {
 	}
@@ -25,20 +31,47 @@ public final class Logging {
 	 * Configures the logging.
 	 */
 	public static synchronized void configure() {
-		if (INITIALISED) {
-			return;
-		}
-		INITIALISED = true;
 		try {
-			URL url = Logging.class.getResource(LOG_4_J_PROPERTIES);
-			System.out.println(Logging.class.getName() + " Log4j url : " + url);
-			if (url != null) {
-				PropertyConfigurator.configure(url);
-			} else {
-				System.err.println("Logging properties file not found : " + LOG_4_J_PROPERTIES);
+			if (INITIALISED) {
+				return;
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
+			INITIALISED = true;
+			try {
+				URL url = Logging.class.getResource(LOG_4_J_PROPERTIES);
+				System.out.println(Logging.class.getName() + " Log4j url : " + url);
+				if (url != null) {
+					PropertyConfigurator.configure(url);
+				} else {
+					InputStream inputStream = Logging.class.getResourceAsStream(LOG_4_J_PROPERTIES);
+					System.err.println("Input stream to logging configuration : " + inputStream);
+					if (inputStream != null) {
+						Properties properties = new Properties();
+						properties.load(inputStream);
+						PropertyConfigurator.configure(properties);
+					} else {
+						inputStream = ClassLoader.getSystemClassLoader().getResourceAsStream(LOG_4_J_PROPERTIES);
+						System.err.println("Input stream to logging configuration : " + inputStream);
+						if (inputStream != null) {
+							Properties properties = new Properties();
+							properties.load(inputStream);
+							PropertyConfigurator.configure(properties);
+						} else {
+							System.err.println("Searching for log configuration file : " + LOG_4_J_PROPERTIES);
+							File logFile = FileUtilities.findFileRecursively(new File("."), LOG_4_J_PROPERTIES);
+							if (logFile != null) {
+								PropertyConfigurator.configure(logFile.toURI().toURL());
+							} else {
+								System.err.println("Logging properties file not found : " + LOG_4_J_PROPERTIES);
+							}
+						}
+					}
+				}
+				LOGGER = Logger.getLogger(Logging.class);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		} finally {
+			Logging.class.notifyAll();
 		}
 	}
 
@@ -64,6 +97,21 @@ public final class Logging {
 			builder.append(object);
 		}
 		return builder.toString();
+	}
+
+	public static synchronized File getLogFile() {
+		try {
+			if (LOG_FILE == null) {
+				LOGGER.info("Searching for log file : " + IConstants.IKUBE_LOG);
+				LOG_FILE = FileUtilities.findFileRecursively(new File("."), IConstants.IKUBE_LOG);
+				if (LOG_FILE != null) {
+					LOGGER.info("Found log file : " + LOG_FILE.getAbsolutePath());
+				}
+			}
+			return LOG_FILE;
+		} finally {
+			Logging.class.notifyAll();
+		}
 	}
 
 }

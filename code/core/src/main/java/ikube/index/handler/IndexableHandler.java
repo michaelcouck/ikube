@@ -25,7 +25,7 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IHandl
 	/** The class that this handler can handle. */
 	private Class<T> indexableClass;
 	/** The class that we will need to intercept the document adding to the index. */
-	private IDocumentInjector documentInjector;
+	private IDocumentDelegate documentDelegate;
 
 	public int getThreads() {
 		return threads;
@@ -58,12 +58,12 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IHandl
 	public void addDocument(final IndexContext indexContext, final Indexable<T> indexable, final Document document)
 			throws CorruptIndexException, IOException {
 		// indexContext.getIndex().getIndexWriter().addDocument(document);
-		documentInjector.addDocument(indexContext, indexable, document);
+		documentDelegate.addDocument(indexContext, indexable, document);
 	}
 
 	@Override
-	public void setDocumentInjector(IDocumentInjector documentInjector) {
-		this.documentInjector = documentInjector;
+	public void setDocumentDelegate(IDocumentDelegate documentDelegate) {
+		this.documentDelegate = documentDelegate;
 	}
 
 }

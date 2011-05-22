@@ -9,21 +9,8 @@
 	</tr>
 
 	<tr>
-		<th class="td-content">Index</th>
-		<th class="td-content">Attributes</th>
+		<th class="td-content" colspan="2"><a href="javascript:location.reload(true)">Refresh this page</a></th>
 	</tr>
-
-	<c:forEach var="indexName" items="${requestScope.indexNames}">
-	<tr>
-		<td class="td-content">
-			<a href="<c:url value="/admin/search.html"/>?address=${requestScope.server.address}&indexName=${indexName}">${indexName}</a>
-		</td>
-		<td class="td-content">
-			documents: xxx, size: xxx 
-		</td>
-	</tr>
-	</c:forEach>
-
 	<tr>
 		<th class="td-content">Attribute</th>
 		<th class="td-content">Attribute Value</th>
@@ -61,24 +48,40 @@
 	</tr>
 	
 	<tr>
-		<th class="td-content">Context</th>
+		<td colspan="2">&nbsp;</td>
+	</tr>
+	<tr>
+		<th class="td-content">Index</th>
 		<th class="td-content">Attributes</th>
 	</tr>
 	
 	<c:forEach var="indexContext" items="${requestScope.indexContexts}">
 	<tr>
-		<td class="td-content"><c:out value="${indexContext.indexName}" /></td>
 		<td class="td-content">
-			max age: <c:out value="${indexContext.maxAge}" />,  
-			batch size: <c:out value="${indexContext.batchSize}" />, 
-			internet batch size: <c:out value="${indexContext.internetBatchSize}" />, 
-			max read length: <c:out value="${indexContext.maxReadLength}" />, 
-			index directory path: <c:out value="${indexContext.indexDirectoryPath}" />, 
-			index directory path backup: <c:out value="${indexContext.indexDirectoryPathBackup}" />
+			<a href="<c:url value="/admin/search.html"/>?address=${requestScope.server.address}&indexName=${indexContext.indexName}">${indexContext.indexName}</a>
+		</td>
+		<td class="td-content">
+			documents: ${requestScope[indexContext.indexName]['indexDocuments']},<br>
+			size: ${requestScope[indexContext.indexName]['indexSize']},<br>
+			max age: ${indexContext.maxAge},<br>
+			batch size: ${indexContext.batchSize},<br>
+			internet batch size: ${indexContext.internetBatchSize},<br> 
+			max read length: ${indexContext.maxReadLength},<br>
+			index directory path: ${indexContext.indexDirectoryPath},<br> 
+			index directory path backup: ${indexContext.indexDirectoryPathBackup},<br>
+			
+			<b>Search performance:</b><br>
+			${requestScope.searchingExecutions[indexContext.indexName]}<br>
+			
+			<b>Indexing performance:</b><br>
+			${requestScope.indexingExecutions[indexContext.indexName]}
 		</td>
 	</tr>
 	</c:forEach>
 	
+	<tr>
+		<td colspan="2">&nbsp;</td>
+	</tr>
 	<tr>
 		<td class="bottom-content" colspan="2">Single server details brought to you by Ikube : </td>
 	</tr>

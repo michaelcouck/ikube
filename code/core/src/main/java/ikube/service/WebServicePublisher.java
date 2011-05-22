@@ -33,45 +33,46 @@ public class WebServicePublisher implements IWebServicePublisher {
 		this.clusterManager = clusterManager;
 	}
 
+	@Override
 	public void publish() {
 		assert protocols.size() == ports.size() && ports.size() == paths.size() && paths.size() == implementors.size();
 		Server server = clusterManager.getServer();
 		for (int i = 0; i < implementors.size(); i++) {
-			String protocol = protocols.get(i);
-			Integer port = ports.get(i);
-			String path = paths.get(i);
 			String host = null;
+			String path = paths.get(i);
+			Integer port = ports.get(i);
+			String protocol = protocols.get(i);
 			Object implementor = implementors.get(i);
-			while (true && port < Short.MAX_VALUE) {
-				try {
-					host = InetAddress.getLocalHost().getHostAddress();
-					port = GeneralUtilities.findFirstOpenPort(port);
-					URL url = new URL(protocol, host, port, path);
-					logger.info("Publishing web service to : " + url);
-					Endpoint endpoint = Endpoint.publish(url.toString(), implementor);
-					Binding binding = endpoint.getBinding();
-					server.getWebServiceUrls().add(url.toString());
-					String message = Logging.getString("Endpoint : ", endpoint, "binding : ", binding, "implementor : ", implementor,
-							"on address : ", url.toString());
-					logger.info(message);
-					break;
-				} catch (Exception e) {
-					logger.info("Port busy : " + protocol + ", " + host + ", " + port + ", " + path + ", " + implementor);
-					port++;
-				}
+			try {
+				host = InetAddress.getLocalHost().getHostAddress();
+				port = GeneralUtilities.findFirstOpenPort(port);
+				URL url = new URL(protocol, host, port, path);
+				logger.info("Publishing web service to : " + url);
+				Endpoint endpoint = Endpoint.publish(url.toString(), implementor);
+				Binding binding = endpoint.getBinding();
+				server.getWebServiceUrls().add(url.toString());
+				String message = Logging.getString("Endpoint : ", endpoint, "binding : ", binding, "implementor : ", implementor,
+						"on address : ", url.toString());
+				logger.info(message);
+			} catch (Exception e) {
+				logger.info("Port busy : " + protocol + ", " + host + ", " + port + ", " + path + ", " + implementor, e);
 			}
 		}
+		// Publish the server to the cluster with the new urls
 		clusterManager.set(Server.class.getName(), server.getId(), server);
 	}
 
+	@Override
 	public void setProtocols(final List<String> protocols) {
 		this.protocols = protocols;
 	}
 
+	@Override
 	public void setPorts(final List<Integer> ports) {
 		this.ports = ports;
 	}
 
+	@Override
 	public void setPaths(final List<String> paths) {
 		this.paths = paths;
 	}

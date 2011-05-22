@@ -2,6 +2,7 @@ package ikube.index.handler.filesystem;
 
 import static org.mockito.Mockito.when;
 import ikube.ATest;
+import ikube.index.handler.DocumentDelegate;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.mock.IndexManagerMock;
 import ikube.model.IndexableFileSystem;
@@ -32,6 +33,7 @@ public class IndexableFileSystemHandlerTest extends ATest {
 
 	@Before
 	public void before() {
+		Mockit.setUpMocks();
 		Mockit.setUpMocks(ApplicationContextManagerMock.class, IndexManagerMock.class);
 		indexableFileSystem.setPath(filesDirectory.getAbsolutePath());
 		indexableFileSystem.setContentFieldName("contentFieldName");
@@ -39,6 +41,7 @@ public class IndexableFileSystemHandlerTest extends ATest {
 		indexableFileSystem.setLengthFieldName("lengthFieldName");
 		indexableFileSystem.setNameFieldName("nameFieldName");
 		indexableFileSystem.setPathFieldName("pathFieldName");
+		indexableFileSystemHandler.setDocumentDelegate(new DocumentDelegate());
 		when(INDEX.getIndexWriter()).thenReturn(INDEX_WRITER);
 
 		indexableFileSystem.setName(this.getClass().getSimpleName());

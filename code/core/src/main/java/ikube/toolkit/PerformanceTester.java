@@ -22,11 +22,12 @@ public class PerformanceTester {
 	interface IPerform {
 		boolean log();
 
-		void execute() throws Exception;
+		void execute() throws Throwable;
 	}
 
 	public static class APerform implements IPerform {
-		public void execute() throws Exception {
+		
+		public void execute() throws Throwable {
 		}
 
 		public boolean log() {
@@ -53,7 +54,7 @@ public class PerformanceTester {
 			for (int i = 0; i < iterations; i++) {
 				perform.execute();
 			}
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			LOGGER.error("Exception executing the action : " + perform + ", " + type + ", " + iterations, e);
 		}
 		double end = System.currentTimeMillis();

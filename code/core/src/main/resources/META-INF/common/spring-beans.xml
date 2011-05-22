@@ -27,14 +27,17 @@
 		
 	<import resource="classpath:/META-INF/common/integration/spring-integration.xml" />
 	
+	<!-- The in memory database. -->
 	<bean
 		id="ikube.database.mem.DataBaseMem"
 		class="ikube.database.mem.DataBaseMem" />
 	
+	<!-- This bean validates the indexes periodically. -->
 	<bean 
 		id="ikube.monitoring.IndexValidator" 
 		class="ikube.monitoring.IndexValidator" />
 	
+	<!-- The cluster manager that is responsible for all cluster synchronization stuff. -->
 	<bean
 		id="ikube.cluster.IClusterManager"
 		class="ikube.cluster.ClusterManager"
@@ -43,6 +46,9 @@
 	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
 		property:staticMethod="ikube.cluster.ClusterManager.addShutdownHook"
 		lazy-init="false" />
+	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
+		property:staticMethod="ikube.cluster.ClusterManager.addClusterExceptionListener"
+		lazy-init="false" />
 	<!-- property:dataBase-ref="ikube.database.mem.DataBaseMem"  -->
 	<bean
 		id="ikube.cluster.cache.Cache"
@@ -50,29 +56,37 @@
 		lazy-init="false"
 		init-method="initialise" />
 	
+	<!-- 
+		These are just pojos that delegate to the real class that can be intercepted by Spring. 
+	-->
 	<bean 
-		id="ikube.index.handler.IDocumentInjector"
-		class="ikube.index.handler.DocumentInjector" />
+		id="ikube.service.ISearchDelegate"
+		class="ikube.service.SearchDelegate" />
+	<bean 
+		id="ikube.index.handler.IDocumentDelegate"
+		class="ikube.index.handler.DocumentDelegate" />
+	
+	<!-- The handlers that do the indexing logic. -->
 	<bean
 		class="ikube.index.handler.internet.IndexableInternetHandler"
 		property:threads="${internet.handler.threads}" 
 		property:indexableClass="ikube.model.IndexableInternet"
-		property:documentInjector-ref="ikube.index.handler.IDocumentInjector" />
+		property:documentDelegate-ref="ikube.index.handler.IDocumentDelegate" />
 	<bean
 		class="ikube.index.handler.email.IndexableEmailHandler"
 		property:threads="${email.handler.threads}"
 		property:indexableClass="ikube.model.IndexableEmail" 
-		property:documentInjector-ref="ikube.index.handler.IDocumentInjector" />
+		property:documentDelegate-ref="ikube.index.handler.IDocumentDelegate" />
 	<bean
 		class="ikube.index.handler.filesystem.IndexableFilesystemHandler"
 		property:threads="${filesystem.handler.threads}"
 		property:indexableClass="ikube.model.IndexableFileSystem" 
-		property:documentInjector-ref="ikube.index.handler.IDocumentInjector" />
+		property:documentDelegate-ref="ikube.index.handler.IDocumentDelegate" />
 	<bean
 		class="ikube.index.handler.database.IndexableTableHandler"
 		property:threads="${table.handler.threads}"
 		property:indexableClass="ikube.model.IndexableTable" 
-		property:documentInjector-ref="ikube.index.handler.IDocumentInjector" />
+		property:documentDelegate-ref="ikube.index.handler.IDocumentDelegate" />
 
 	<bean id="ikube.index.parse.mime.MimeMapper" class="ikube.index.parse.mime.MimeMapper">
 		<constructor-arg value="/META-INF/mime/mime-mapping.xml" />
@@ -80,10 +94,12 @@
 	<bean id="ikube.index.parse.mime.MimeTypes" class="ikube.index.parse.mime.MimeTypes">
 		<constructor-arg value="/META-INF/mime/mime-types.xml" />
 	</bean>
-
+	
+	<!-- The web services. -->
 	<bean
 		id="ikube.service.SearcherWebService"
-		class="ikube.service.SearcherWebService" />
+		class="ikube.service.SearcherWebService"
+		property:searchDelegate-ref="ikube.service.ISearchDelegate" />
 	<bean
 		id="ikube.service.MonitoringService"
 		class="ikube.service.MonitoringService" />
@@ -118,6 +134,7 @@
 		</property>
 	</bean>
 	
+	<!-- The schedules that fire events to start actions. -->
 	<bean
 		id="ikube.listener.Schedule"
 		class="ikube.listener.Schedule"
@@ -147,7 +164,7 @@
 		property:staticMethod="ikube.listener.Scheduler.initialize">
 	</bean>
 	
-	<!-- Utility classes -->
+	<!-- This is the mailer that will send mail to targets when things go right, and wrond in fact. -->
 	<bean
 		class="ikube.toolkit.Mailer"
 		property:auth="true"

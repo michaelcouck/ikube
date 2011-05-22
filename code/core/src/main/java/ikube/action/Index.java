@@ -16,8 +16,8 @@ import java.util.Map;
  * This class executes the handlers on the indexables, effectively creating the index. Each indexable has a handler that is implemented to
  * handle it. Each handler is configured with an annotation that specifies the type of indexable that it can handle. This class then
  * iterates over all the indexables in the context for the index, finds the correct handler and calls the
- * {@link IUrlHandler#handle(IndexContext, Indexable)} method with the indexable. The return value from this method from the handlers is a list
- * of threads. The caller must then wait for all the threads to finish and die before continuing.
+ * {@link IUrlHandler#handle(IndexContext, Indexable)} method with the indexable. The return value from this method from the handlers is a
+ * list of threads. The caller must then wait for all the threads to finish and die before continuing.
  * 
  * @author Michael Couck
  * @since 21.11.10
@@ -27,14 +27,14 @@ public class Index extends Action<IndexContext, Boolean> {
 
 	@Override
 	public Boolean execute(final IndexContext indexContext) throws Exception {
+		String indexName = indexContext.getIndexName();
+		long lastWorkingStartTime = getClusterManager().setWorking(indexName, this.getClass().getName(), Boolean.TRUE);
 		Server server = getClusterManager().getServer();
 		List<Indexable<?>> indexables = indexContext.getIndexables();
-		String indexName = indexContext.getIndexName();
 		try {
 			// If we get here then there are two possibilities:
 			// 1) The index is not current and we will start the index
 			// 2) The index is current and there are other servers working on the index, so we join them
-			long lastWorkingStartTime = getClusterManager().setWorking(indexName, this.getClass().getName(), Boolean.TRUE);
 			logger.info(Logging.getString("Last working time : ", lastWorkingStartTime));
 			// Start the indexing for this server
 			IndexManager.openIndexWriter(indexContext, lastWorkingStartTime, server.getAddress());

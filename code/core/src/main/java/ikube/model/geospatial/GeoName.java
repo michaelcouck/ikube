@@ -21,15 +21,14 @@ import org.apache.openjpa.persistence.jdbc.Index;
 @Entity()
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @NamedQueries(value = {
-		@NamedQuery(name = GeoName.SELECT_FROM_GEONAME_BY_ID_GREATER_AND_SMALLER, 
-				query = GeoName.SELECT_FROM_GEONAME_BY_ID_GREATER_AND_SMALLER),
-		@NamedQuery(name = GeoName.SELECT_FROM_GEONAME_BY_FEATURECLASS_FEATURECODE_COUNTRYCODE, 
-				query = GeoName.SELECT_FROM_GEONAME_BY_FEATURECLASS_FEATURECODE_COUNTRYCODE) })
+		@NamedQuery(name = GeoName.SELECT_FROM_GEONAME_BY_ID_GREATER_AND_SMALLER, query = GeoName.SELECT_FROM_GEONAME_BY_ID_GREATER_AND_SMALLER),
+		@NamedQuery(name = GeoName.SELECT_FROM_GEONAME_BY_FEATURECLASS_FEATURECODE_COUNTRYCODE, query = GeoName.SELECT_FROM_GEONAME_BY_FEATURECLASS_FEATURECODE_COUNTRYCODE) })
 public class GeoName extends Persistable {
 
 	public static final String SELECT_FROM_GEONAME_BY_ID_GREATER_AND_SMALLER = "select g from GeoName as g " + //
-			"where g.id >= :start and " + //
-			"g.id < :end " + //
+			"where " + //
+			"(g.city is null and " + //
+			" g.country is null) and " + "g.id > :id " + //
 			"order by g.id";
 	public static final String SELECT_FROM_GEONAME_BY_FEATURECLASS_FEATURECODE_COUNTRYCODE = "select g from GeoName as g " + //
 			"where " + //
@@ -37,17 +36,30 @@ public class GeoName extends Persistable {
 			"g.featureCode = :featurecode and " + //
 			"g.countryCode = :countrycode";
 
+	public static final String GEONAME_NAME = "geoname_name";
+	public static final String GEONAME_ASCIINAME = "geoname_asciiname";
+	public static final String GEONAME_CITY = "geoname_city";
+	public static final String GEONAME_COUNTRY = "geoname_country";
+
+	public static final String[] CREATE_INDEX = { //
+	"create index geoname_name on geoname (name)", //
+			"create index geoname_asciiname on geoname (asciiname)", //
+			"create index geoname_city Oon geoname (city)",//
+			"create index geoname_country on geoname (country)"//
+	};
+
 	private Integer geonameid; // : integer id of record in geonames database
-	@Index
 	@Column(length = 200)
+	@Index(name = GeoName.GEONAME_NAME)
 	private String name; // : name of geographical point (utf8) varchar(200)
-	@Index
 	@Column(length = 200)
+	@Index(name = GeoName.GEONAME_CITY)
 	private String city;
-	@Index
 	@Column(length = 200)
+	@Index(name = GeoName.GEONAME_COUNTRY)
 	private String country;
 	@Column(length = 200)
+	@Index(name = GeoName.GEONAME_ASCIINAME)
 	private String asciiname; // : name of geographical point in plain ascii characters, varchar(200)
 	@Lob
 	@Column(length = 5000)

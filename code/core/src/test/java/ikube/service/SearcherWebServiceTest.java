@@ -26,7 +26,7 @@ import org.junit.Test;
  */
 public class SearcherWebServiceTest extends ATest {
 
-	private SearcherWebService searcherWebService;
+	private ISearcherWebService searcherWebService;
 
 	public SearcherWebServiceTest() {
 		super(SearcherWebServiceTest.class);
@@ -37,6 +37,7 @@ public class SearcherWebServiceTest extends ATest {
 		Mockit.setUpMock(ApplicationContextManager.class, ApplicationContextManagerMock.class);
 		ApplicationContextManagerMock.BEAN = INDEX_CONTEXT;
 		this.searcherWebService = new SearcherWebService();
+		this.searcherWebService.setSearchDelegate(new SearchDelegate());
 	}
 
 	@After

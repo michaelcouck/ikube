@@ -12,7 +12,7 @@ import ikube.mock.ApplicationContextManagerMock;
 import ikube.model.IndexContext;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.Logging;
-import ikube.toolkit.Permutations;
+import ikube.toolkit.PermutationUtilities;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -76,7 +76,7 @@ public class RuleInterceptorTest extends BaseTest {
 
 	@Before
 	public void before() throws Throwable {
-		new Permutations().getPermutations(vector, matrix, vector.length, 0);
+		new PermutationUtilities().getPermutations(vector, matrix, vector.length, 0);
 
 		new NonStrictExpectations() {
 			{

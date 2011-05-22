@@ -26,6 +26,7 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class SearchSpatialTest extends ATest {
@@ -71,6 +72,7 @@ public class SearchSpatialTest extends ATest {
 	}
 
 	@Test
+	// @Ignore
 	public void searchSpatial() throws Exception {
 		Directory directory = null;
 		IndexSearcher indexSearcher = null;
@@ -82,18 +84,17 @@ public class SearchSpatialTest extends ATest {
 				Document document = indexReader.document(i);
 				logger.info("Document : " + document);
 			}
-			
+
 			indexSearcher = new IndexSearcher(indexReader);
 			SearchSpatial searchSpatial = new SearchSpatial(indexSearcher);
+			searchSpatial.setDistance(10);
 			searchSpatial.setFirstResult(0);
+			searchSpatial.setMaxResults(10);
 			searchSpatial.setFragment(Boolean.TRUE);
-			searchSpatial.setMaxResults(100);
 			searchSpatial.setSearchField(IConstants.CONTENTS);
 			searchSpatial.setSearchString(ZURICH_COORDINATE.getName());
 			searchSpatial.setSortField(IConstants.CONTENTS);
 			searchSpatial.setCoordinate(ZURICH_COORDINATE);
-			searchSpatial.setDistance(10);
-			searchSpatial.setMaxResults(100);
 			List<Map<String, String>> results = searchSpatial.execute();
 			logger.info("Results : " + results);
 			assertNotNull(results);
@@ -115,12 +116,12 @@ public class SearchSpatialTest extends ATest {
 	}
 
 	@Test
-	// @Ignore
+	@Ignore
 	public void searchGeoSpatial() throws Exception {
 		Directory directory = null;
 		IndexSearcher indexSearcher = null;
 		try {
-			String indexPath = "D:/cluster/indexes/geospatial/1305662411676/192.168.56.1.10837512398503";
+			String indexPath = "D:/cluster/indexes/geospatial/1305974693945/192.168.56.1.15502285419655";
 
 			directory = FSDirectory.open(new File(indexPath));
 
@@ -132,21 +133,28 @@ public class SearchSpatialTest extends ATest {
 
 			indexSearcher = new IndexSearcher(indexReader);
 			SearchSpatial searchSpatial = new SearchSpatial(indexSearcher);
+			searchSpatial.setDistance(10);
 			searchSpatial.setFirstResult(0);
-			searchSpatial.setFragment(Boolean.TRUE);
 			searchSpatial.setMaxResults(10);
+			searchSpatial.setFragment(Boolean.TRUE);
 			searchSpatial.setSearchField(IConstants.FEATURECLASS, IConstants.FEATURECODE, IConstants.COUNTRYCODE);
-			searchSpatial.setSearchString("A", "PCLI", "ZA");
+			searchSpatial.setSearchString(ikube.action.Enrichment.COUNTRY_FEATURE_CLASS, ikube.action.Enrichment.COUNTRY_FEATURE_CODE, "ZA");
 
-			searchSpatial.setSortField(IConstants.CONTENTS);
-			searchSpatial.setCoordinate(new Coordinate(-30.0, 26.0));
+			Coordinate pretoria = new Coordinate(-30.0, 26.0);
+			// searchSpatial.setSortField(IConstants.NAME);
+			// new Coordinate(75.0, -175.0), "AQ"
+			searchSpatial.setCoordinate(pretoria);
 
-			searchSpatial.setDistance(10000);
 
 			List<Map<String, String>> results = searchSpatial.execute();
-			logger.info("Results : " + results);
+			for (Map<String, String> result : results) {
+				for (String key : result.keySet()) {
+					logger.info("Key : " + key + ", " + result.get(key));
+				}
+				logger.info("");
+			}
 			assertNotNull(results);
-			assertEquals(2, results.size());
+			assertTrue("There must be at least one city around this point within 10 kilometers : ", results.size() > 2);
 		} finally {
 			if (indexSearcher != null) {
 				try {

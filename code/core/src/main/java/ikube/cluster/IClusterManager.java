@@ -126,5 +126,9 @@ public interface IClusterManager {
 	void unlock(ILock lock);
 	
 	ICache getCache();
+	
+	boolean isException();
+	
+	void setException(boolean exception);
 
 }

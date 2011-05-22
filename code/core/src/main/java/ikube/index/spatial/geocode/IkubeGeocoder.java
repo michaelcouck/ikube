@@ -6,6 +6,7 @@ import ikube.service.ISearcherWebService;
 import ikube.service.ServiceLocator;
 import ikube.toolkit.SerializationUtilities;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -23,22 +24,27 @@ public class IkubeGeocoder implements IGeocoder {
 
 	private static final Logger LOGGER = Logger.getLogger(IkubeGeocoder.class);
 
-	private String url;
-	private String indexName;
-	private String searchField;
+	private String searchUrl;
+	private String[] searchStrings;
+	private String[] searchFields;
+	private ISearcherWebService searchRemote;
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public Coordinate getCoordinate(String address) {
 		try {
-			address = StringUtils.trim(address);
-			ISearcherWebService searchRemote = ServiceLocator.getService(ISearcherWebService.class, url, ISearcherWebService.NAMESPACE,
-					ISearcherWebService.SERVICE);
 			if (searchRemote == null) {
-				LOGGER.warn("Searcher web service not available : " + ToStringBuilder.reflectionToString(this, ToStringStyle.SIMPLE_STYLE));
-				return null;
+				searchRemote = ServiceLocator.getService(ISearcherWebService.class, searchUrl, ISearcherWebService.NAMESPACE,
+						ISearcherWebService.SERVICE);
+				if (searchRemote == null) {
+					LOGGER.warn("Searcher web service not available : "
+							+ ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE));
+					return null;
+				}
 			}
-			String results = searchRemote.searchSingle(indexName, address, searchField, Boolean.TRUE, 0, 10);
+			String trimmedAddress = StringUtils.trim(address);
+			Arrays.fill(searchStrings, trimmedAddress);
+			String results = searchRemote.searchMulti(IConstants.GEOSPATIAL, searchStrings, searchFields, Boolean.TRUE, 0, 10);
 			List<Map<String, String>> list = (List<Map<String, String>>) SerializationUtilities.deserialize(results);
 			Map<String, String> firstResult = list.size() >= 2 ? list.get(0) : null;
 			if (firstResult != null) {
@@ -46,26 +52,23 @@ public class IkubeGeocoder implements IGeocoder {
 				String longitude = firstResult.get(IConstants.LONGITUDE);
 				double lat = Double.parseDouble(latitude);
 				double lng = Double.parseDouble(longitude);
-				return new Coordinate(lat, lng, address);
+				return new Coordinate(lat, lng, trimmedAddress);
 			}
 		} catch (Exception e) {
 			String message = "Exception accessing the spatial search service : " + address
-					+ ToStringBuilder.reflectionToString(this, ToStringStyle.SIMPLE_STYLE);
+					+ ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
 			LOGGER.error(message, e);
 		}
 		return null;
 	}
 
-	public void setUrl(String url) {
-		this.url = url;
+	public void setSearchUrl(String searchUrl) {
+		this.searchUrl = searchUrl;
 	}
 
-	public void setIndexName(String indexName) {
-		this.indexName = indexName;
-	}
-
-	public void setSearchField(String searchField) {
-		this.searchField = searchField;
+	public void setSearchFields(List<String> searchFields) {
+		this.searchFields = searchFields.toArray(new String[searchFields.size()]);
+		this.searchStrings = new String[searchFields.size()];
 	}
 
 }

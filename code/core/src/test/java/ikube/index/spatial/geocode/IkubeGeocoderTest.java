@@ -1,11 +1,6 @@
 package ikube.index.spatial.geocode;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import ikube.ATest;
-import ikube.BaseTest;
-import ikube.index.spatial.Coordinate;
-import ikube.toolkit.ApplicationContextManager;
 
 import org.junit.Test;
 

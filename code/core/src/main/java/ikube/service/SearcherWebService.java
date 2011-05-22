@@ -38,6 +38,7 @@ public class SearcherWebService implements ISearcherWebService {
 
 	private static final Logger LOGGER = Logger.getLogger(SearcherWebService.class);
 
+	private SearchDelegate searchDelegate;
 	private Map<String, IndexContext> indexContexts;
 
 	public SearcherWebService() {
@@ -58,7 +59,7 @@ public class SearcherWebService implements ISearcherWebService {
 				searchSingle.setMaxResults(end);
 				searchSingle.setSearchField(searchField);
 				searchSingle.setSearchString(searchString);
-				List<Map<String, String>> results = searchSingle.execute();
+				List<Map<String, String>> results = searchDelegate.execute(indexName, searchSingle);
 				return SerializationUtilities.serialize(results);
 			}
 		} catch (Exception e) {
@@ -83,7 +84,7 @@ public class SearcherWebService implements ISearcherWebService {
 				searchMulti.setMaxResults(end);
 				searchMulti.setSearchField(searchFields);
 				searchMulti.setSearchString(searchStrings);
-				List<Map<String, String>> results = searchMulti.execute();
+				List<Map<String, String>> results = searchDelegate.execute(indexName, searchMulti);
 				return SerializationUtilities.serialize(results);
 			}
 		} catch (Exception e) {
@@ -109,7 +110,7 @@ public class SearcherWebService implements ISearcherWebService {
 				searchMultiSorted.setSearchField(searchFields);
 				searchMultiSorted.setSearchString(searchStrings);
 				searchMultiSorted.setSortField(sortFields);
-				List<Map<String, String>> results = searchMultiSorted.execute();
+				List<Map<String, String>> results = searchDelegate.execute(indexName, searchMultiSorted);
 				return SerializationUtilities.serialize(results);
 			}
 		} catch (Exception e) {
@@ -131,7 +132,7 @@ public class SearcherWebService implements ISearcherWebService {
 				searchMultiAll.setSearchString(searchStrings);
 				// searchMultiSorted.setSearchField(searchFields);
 				// searchMultiSorted.setSortField(sortFields);
-				List<Map<String, String>> results = searchMultiAll.execute();
+				List<Map<String, String>> results = searchDelegate.execute(indexName, searchMultiAll);
 				return SerializationUtilities.serialize(results);
 			}
 		} catch (Exception e) {
@@ -156,7 +157,7 @@ public class SearcherWebService implements ISearcherWebService {
 				searchSpatial.setCoordinate(new Coordinate(latitude, longitude));
 				searchSpatial.setDistance(distance);
 				// searchMultiSorted.setSortField(sortFields);
-				List<Map<String, String>> results = searchSpatial.execute();
+				List<Map<String, String>> results = searchDelegate.execute(indexName, searchSpatial);
 				return SerializationUtilities.serialize(results);
 			}
 		} catch (Exception e) {
@@ -165,6 +166,11 @@ public class SearcherWebService implements ISearcherWebService {
 			LOGGER.error(message, e);
 		}
 		return SerializationUtilities.serialize(getMessageResults(indexName));
+	}
+
+	@Override
+	public void setSearchDelegate(SearchDelegate searchDelegate) {
+		this.searchDelegate = searchDelegate;
 	}
 
 	@SuppressWarnings("unchecked")

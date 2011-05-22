@@ -15,6 +15,8 @@ public interface IConstants {
 
 	/** Application name. */
 	String IKUBE = "ikube";
+	/** The name of the log file. */
+	String IKUBE_LOG = IKUBE + ".log";
 	/** The file separator for the system. */
 	String SEP = "/";
 	/** We expect the configuration file to be in the META-INF as seems to be the fashion at the moment. */
@@ -79,6 +81,8 @@ public interface IConstants {
 	String FEATURECLASS = "featureclass";
 	String FEATURECODE = "featurecode";
 	String COUNTRYCODE = "countrycode";
+	String TIMEZONE = "timezone";
+	String ASCIINAME = "asciiname";
 
 	String ENCODING = "UTF-8";
 
@@ -120,6 +124,24 @@ public interface IConstants {
 	String LATITUDE = "latitude";
 	String LONGITUDE = "longitude";
 
+	String EXCEPTION_TOPIC = "exceptionTopic";
 	String SHUTDOWN_TOPIC = "shutdownTopic";
+
+	/** Lock objects for cluster wide locking while we update the cache. */
+	String SERVER_LOCK = "serverLock";
+	/** The timeout to wait for the lock. */
+	long LOCK_TIMEOUT = 3000;
+	/** We only keep a few actions in the server. */
+	double MAX_ACTION_SIZE = 100;
+	/** The ratio to delete the actions when the maximum is reached. */
+	double ACTION_PRUNE_RATIO = 0.5;
+	/** The maximum age that the server can get to before it is deleted from the cluster. */
+	int MAX_AGE = 10000;
+
+	String INDEX_SIZE = "indexSize";
+	String INDEX_DOCUMENTS = "indexDocuments";
+
+	String SEARCHING_EXECUTIONS = "searchingExecutions";
+	String INDEXING_EXECUTIONS = "indexingExecutions";
 
 }

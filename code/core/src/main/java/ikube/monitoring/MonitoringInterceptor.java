@@ -1,5 +1,15 @@
 package ikube.monitoring;
 
+import ikube.cluster.IClusterManager;
+import ikube.listener.Event;
+import ikube.listener.IListener;
+import ikube.listener.ListenerManager;
+import ikube.model.Execution;
+import ikube.model.IndexContext;
+import ikube.model.Server;
+import ikube.toolkit.ApplicationContextManager;
+import ikube.toolkit.SerializationUtilities;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -13,23 +23,17 @@ import org.aspectj.lang.ProceedingJoinPoint;
  * @since 08.05.2011
  * @version 01.00
  */
-public class MonitoringInterceptor implements IMonitoringInterceptor {
+public class MonitoringInterceptor implements IMonitoringInterceptor, IListener {
 
-	private class Execution {
-		int invocations;
-		String name;
-		long duration;
-	}
+	private static final Logger LOGGER = Logger.getLogger(MonitoringInterceptor.class);
 
-	private static final transient Logger LOGGER = Logger.getLogger(MonitoringInterceptor.class);
-
-	private transient final Map<String, Execution> executions;
-	private transient double invocations = 10000;
-	private transient long searches;
-	private transient long duration;
+	protected transient final Map<String, Execution> indexingExecutions;
+	protected transient final Map<String, Execution> searchingExecutions;
 
 	public MonitoringInterceptor() {
-		this.executions = new HashMap<String, Execution>();
+		ListenerManager.addListener(this);
+		this.indexingExecutions = new HashMap<String, Execution>();
+		this.searchingExecutions = new HashMap<String, Execution>();
 	}
 
 	/**
@@ -37,20 +41,9 @@ public class MonitoringInterceptor implements IMonitoringInterceptor {
 	 */
 	@Override
 	public Object indexingPerformance(final ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
-		String name = proceedingJoinPoint.getSignature().toString();
-		Execution execution = this.executions.get(name);
-		if (execution == null) {
-			execution = new Execution();
-			execution.name = name;
-			this.executions.put(execution.name, execution);
-		}
-		execution.invocations++;
-		if (execution.invocations % invocations == 0) {
-			long seconds = TimeUnit.NANOSECONDS.toSeconds(execution.duration);
-			double executionsPerSecond = execution.invocations / seconds;
-			LOGGER.info("Execution : " + execution.invocations + ", duration : " + seconds + ", per second : " + executionsPerSecond
-					+ ", name : " + execution.name);
-		}
+		Object[] args = proceedingJoinPoint.getArgs();
+		String indexName = ((IndexContext) args[0]).getIndexName();
+		Execution execution = getExecution(indexName, indexingExecutions);
 		long start = System.nanoTime();
 		try {
 			return proceedingJoinPoint.proceed();
@@ -64,18 +57,61 @@ public class MonitoringInterceptor implements IMonitoringInterceptor {
 	 */
 	@Override
 	public Object searchingPerformance(final ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
-		// TODO This is very simplistic, what we would like to do is
-		// get the index that is being searched and log all the statistics
-		// for each index
-		searches++;
+		// We expect to have the SearcherWebService, and nothing else for the time being
+		Object[] args = proceedingJoinPoint.getArgs();
+		String indexName = (String) args[0];
+		Execution execution = getExecution(indexName, searchingExecutions);
 		long start = System.nanoTime();
 		try {
 			return proceedingJoinPoint.proceed();
 		} finally {
-			this.duration += System.nanoTime() - start;
-			if (searches % 1000 == 0) {
-				LOGGER.error("Search statistics : " + searches + ", duration : " + duration + ", per second : " + searches
-						/ TimeUnit.NANOSECONDS.toSeconds(duration));
+			execution.duration += System.nanoTime() - start;
+		}
+	}
+
+	protected Execution getExecution(String name, Map<String, Execution> executions) {
+		Execution execution = executions.get(name);
+		if (execution == null) {
+			execution = new Execution();
+			execution.name = name;
+			executions.put(execution.name, execution);
+		}
+		execution.invocations++;
+		return execution;
+	}
+
+	@Override
+	public Map<String, Execution> getIndexingExecutions() {
+		return indexingExecutions;
+	}
+
+	@Override
+	public Map<String, Execution> getSearchingExecutions() {
+		return searchingExecutions;
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public void handleNotification(Event event) {
+		if (event.getType().equals(Event.TIMER)) {
+			// Get the server
+			IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
+			Server server = clusterManager.getServer();
+			calculateStatistics(searchingExecutions);
+			calculateStatistics(indexingExecutions);
+			server.setSearchingExecutions((Map<String, Execution>) SerializationUtilities.clone(searchingExecutions));
+			server.setIndexingExecutions((Map<String, Execution>) SerializationUtilities.clone(indexingExecutions));
+			LOGGER.info("Publishing server : " + server);
+			// Publish the server with the new data
+			clusterManager.set(Server.class.getName(), server.getId(), server);
+		}
+	}
+
+	private void calculateStatistics(Map<String, Execution> executions) {
+		for (Execution execution : executions.values()) {
+			long duration = TimeUnit.NANOSECONDS.toSeconds(execution.duration);
+			if (duration > 0) {
+				execution.executionsPerSecond = execution.invocations / duration;
 			}
 		}
 	}

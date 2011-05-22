@@ -18,7 +18,7 @@ public interface IRuleInterceptor {
 	 * i.e. the join point proceeds, if not then the return value is just a boolean.
 	 * 
 	 * @param call
-	 *            the join point where the interceptor will intercept the call to the actions
+	 *            the join point where the intercepter will intercept the call to the actions
 	 * @return the object resulting from the call to the target action or a boolean
 	 * @throws Throwable
 	 */

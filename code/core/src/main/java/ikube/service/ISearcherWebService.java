@@ -109,4 +109,12 @@ public interface ISearcherWebService {
 	String searchSpacialMulti(String indexName, String[] searchStrings, String[] searchFields, boolean fragment, int firstResult,
 			int maxResults, int distance, double latitude, double longitude);
 
+	/**
+	 * This method exists only to get a reference to the search delegate that will be intercepted by Spring.
+	 * 
+	 * @param searchDelegate
+	 *            the search delegate that will be execute the search on the index and typically get intercepted by Spring
+	 */
+	void setSearchDelegate(SearchDelegate searchDelegate);
+
 }

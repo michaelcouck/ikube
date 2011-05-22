@@ -58,7 +58,7 @@ public final class SerializationUtilities {
 		try {
 			info = Introspector.getBeanInfo(klass);
 		} catch (IntrospectionException e) {
-			LOGGER.error("", e);
+			LOGGER.error("Exception setting the transient fields in the serializer : ", e);
 			return;
 		}
 		PropertyDescriptor[] propertyDescriptors = info.getPropertyDescriptors();
@@ -74,7 +74,7 @@ public final class SerializationUtilities {
 					pd.setValue("transient", Boolean.TRUE);
 				}
 			} catch (SecurityException e) {
-				LOGGER.error("", e);
+				LOGGER.error("Exception setting the transient fields in the serializer : ", e);
 			}
 		}
 	}

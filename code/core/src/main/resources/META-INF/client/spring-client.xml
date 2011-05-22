@@ -26,10 +26,6 @@
 		location="classpath*:**/spring.properties" 
 		properties-ref="ikube.toolkit.PropertyConfigurer" />
 	
-	<import resource="classpath:/META-INF/client/datasource/spring-h2-jdbc.xml" />
-	<import resource="classpath:/META-INF/client/datasource/spring-db2-jdbc.xml" />
-	<import resource="classpath:/META-INF/client/datasource/spring-oracle-jdbc.xml" />
-
 	<bean
 		id="indexContext"
 		class="ikube.model.IndexContext"
@@ -49,18 +45,18 @@
 		property:indexDirectoryPathBackup="${index.directory.path.backup}"
 		property:indexables-ref="indexables" />
 	<util:list id="indexables">
-		<!-- <ref local="mail" /> -->
+		<ref local="mail" />
 		<!-- <ref local="internet" /> -->
-		<!--<ref local="internetMillion" />-->
+		<!-- <ref local="internetMillion" />-->
 		<!-- <ref local="filesystem" /> -->
-		<!--<ref local="filesystemMillion" />-->
+		<!-- <ref local="filesystemMillion" /> -->
 		<!-- <ref bean="faqTableH2" /> -->
-		<!-- <ref bean="faqTableDb2" /> -->
-		<!-- <ref bean="faqTableOracle" /> -->
-		<!-- <ref bean="patientTableH2" /> -->
-		<!-- <ref bean="patientTableDb2" /> -->
-		<!-- <ref bean="patientTableOracle" /> -->
-		<ref bean="addressTableDb2" />
+		<!-- <ref bean="faqTableDb2" />
+		<ref bean="faqTableOracle" />
+		<ref bean="patientTableH2" />
+		<ref bean="patientTableDb2" />
+		<ref bean="patientTableOracle" /> -->
+		<!-- <ref bean="addressTableDb2" /> -->
 	</util:list>
 
 	<!-- H2 Faqs -->
@@ -334,7 +330,7 @@
 		id="addressTableDb2"
 		class="ikube.model.IndexableTable"
 		property:name="address"
-		property:primary="true"
+		property:primary="false"
 		property:address="true"
 		property:dataSource-ref="nonXaDataSourceDb2"
 		property:children-ref="addressColumnsDb2" />

@@ -129,7 +129,7 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 		folder.open(Folder.READ_ONLY);
 
 		// For each message found in the server, index it.
-		logger.info("SynchronizationMessage count : " + folder.getMessageCount() + ", " + folder.getFullName());
+		logger.info("Message count : " + folder.getMessageCount() + ", " + folder.getFullName());
 		for (Message message : folder.getMessages()) {
 			// Builds the identifier
 			Date recievedDate = message.getReceivedDate();
@@ -142,7 +142,7 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 				logger.debug("Sent : " + sentDate);
 				logger.debug("Recieved : " + recievedDate);
 				logger.debug("Timestamp : " + timestamp);
-				logger.debug("SynchronizationMessage number : " + messageNumber);
+				logger.debug("Message number : " + messageNumber);
 			}
 
 			Field.Store mustStore = indexableMail.isStored() ? Field.Store.YES : Field.Store.NO;

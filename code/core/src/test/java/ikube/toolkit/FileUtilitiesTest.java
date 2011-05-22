@@ -5,6 +5,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import ikube.ATest;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +20,7 @@ import org.junit.Test;
  * @since 21.11.10
  * @version 01.00
  */
-public class FileUtilitiesTest {
+public class FileUtilitiesTest extends ATest {
 
 	private File file;
 	private File dotFolder;
@@ -26,6 +28,10 @@ public class FileUtilitiesTest {
 	private File indexFolderTwo;
 	private File indexFolderThree;
 	private String[] stringPatterns;
+	
+	public FileUtilitiesTest() {
+		super(FileUtilitiesTest.class);
+	}
 
 	@Before
 	public void before() {
@@ -129,6 +135,34 @@ public class FileUtilitiesTest {
 		// String
 		File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexFolderOne.getParentFile().getParentFile().getAbsolutePath());
 		assertEquals(indexFolderTwo.getParentFile().getName(), latestIndexDirectory.getName());
+	}
+	
+	@Test
+	public void getContentsFromEnd() {
+		// Create a file with 1024 bytes and try to read 512 bytes
+		byte[] bytes = new byte[1024];
+		for (int i = 0; i < bytes.length; i++) {
+			bytes[i] = (byte) i;
+		}
+		logger.info("Bytes : " + new String(bytes));
+		file = FileUtilities.getFile(file.getAbsolutePath(), Boolean.FALSE);
+		FileUtilities.setContents(file.getAbsolutePath(), bytes);
+		
+		byte[] readBytes = FileUtilities.getContentsFromEnd(file, 512).toByteArray();
+		logger.info("Read bytes : " + new String(readBytes));
+		assertTrue("There must be some bytes in the array : ", readBytes.length > 0);
+		for (int i = readBytes.length - 1; i >= 0; i--) {
+			assertEquals("The bytes must be the same in the ", bytes[i], readBytes[i]);
+		}
+		// Now read 2048 bytes from the same file
+		readBytes = FileUtilities.getContentsFromEnd(file, 2048).toByteArray();
+		assertTrue("There must be some bytes in the array : ", readBytes.length > 0);
+		for (int i = bytes.length - 1; i >= 0; i--) {
+			assertEquals("The bytes must be the same in the ", bytes[i], readBytes[i]);
+		}
+		// TODO Create a file with 50 meg and read 1 meg from the end
+		// Now read 1000 bytes from the end
+		// We won't try to read more than the file will we?
 	}
 
 	@Test
