@@ -93,7 +93,7 @@ public class MonitoringInterceptor implements IMonitoringInterceptor, IListener 
 	@Override
 	@SuppressWarnings("unchecked")
 	public void handleNotification(Event event) {
-		if (event.getType().equals(Event.TIMER)) {
+		if (event.getType().equals(Event.ALIVE)) {
 			// Get the server
 			IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
 			Server server = clusterManager.getServer();
@@ -101,7 +101,7 @@ public class MonitoringInterceptor implements IMonitoringInterceptor, IListener 
 			calculateStatistics(indexingExecutions);
 			server.setSearchingExecutions((Map<String, Execution>) SerializationUtilities.clone(searchingExecutions));
 			server.setIndexingExecutions((Map<String, Execution>) SerializationUtilities.clone(indexingExecutions));
-			LOGGER.info("Publishing server : " + server);
+			LOGGER.debug("Publishing server : " + server);
 			// Publish the server with the new data
 			clusterManager.set(Server.class.getName(), server.getId(), server);
 		}

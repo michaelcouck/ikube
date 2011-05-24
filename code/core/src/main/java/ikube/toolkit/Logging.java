@@ -21,7 +21,7 @@ public final class Logging {
 
 	private static Logger LOGGER;
 	private static boolean INITIALISED = false;
-	private static final String LOG_4_J_PROPERTIES = IConstants.META_INF + "log4j.properties";
+	private static final String LOG_4_J_PROPERTIES = IConstants.META_INF + IConstants.SEP + "log4j.properties";
 	private static File LOG_FILE;
 
 	private Logging() {
@@ -70,6 +70,17 @@ public final class Logging {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+			try {
+				if (LOG_FILE == null) {
+					LOGGER.info("Searching for log file : " + IConstants.IKUBE_LOG);
+					LOG_FILE = FileUtilities.findFileRecursively(new File("."), IConstants.IKUBE_LOG);
+					if (LOG_FILE != null) {
+						LOGGER.info("Found log file : " + LOG_FILE.getAbsolutePath());
+					}
+				}
+			} catch (Exception e) {
+
+			}
 		} finally {
 			Logging.class.notifyAll();
 		}
@@ -101,13 +112,6 @@ public final class Logging {
 
 	public static synchronized File getLogFile() {
 		try {
-			if (LOG_FILE == null) {
-				LOGGER.info("Searching for log file : " + IConstants.IKUBE_LOG);
-				LOG_FILE = FileUtilities.findFileRecursively(new File("."), IConstants.IKUBE_LOG);
-				if (LOG_FILE != null) {
-					LOGGER.info("Found log file : " + LOG_FILE.getAbsolutePath());
-				}
-			}
 			return LOG_FILE;
 		} finally {
 			Logging.class.notifyAll();

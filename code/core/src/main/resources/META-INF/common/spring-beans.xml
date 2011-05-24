@@ -145,8 +145,8 @@
 		id="ikube.listener.ScheduleBroadCaster"
 		class="ikube.listener.Schedule"
 		property:type="alive"
-		property:delay="1000"
-		property:period="1000" />
+		property:delay="10000"
+		property:period="10000" />
 	
 	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
 		property:staticMethod="ikube.listener.Scheduler.addSchedule">

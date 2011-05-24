@@ -25,6 +25,11 @@ public class RuleInterceptor implements IRuleInterceptor {
 	 */
 	@Override
 	public Object decide(final ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
+		// TODO During the execution of the rules the cluster needs to be locked
+		// completely for the duration of the evaluation of the rules because there  
+		// exists a race condition where the rules evaluate to true for server one, and evaluate 
+		// to true for server two before server one can set the values that would make server 
+		// two evaluate to false, so they both start the action they shouldn't start
 		Object target = proceedingJoinPoint.getTarget();
 		if (!IAction.class.isAssignableFrom(target.getClass())) {
 			LOGGER.warn("Can't intercept non action class, proceeding : " + target);
@@ -66,10 +71,10 @@ public class RuleInterceptor implements IRuleInterceptor {
 			result = jep.getValue();
 		}
 		if (result == null || result.equals(0.0d) || result.equals(Boolean.FALSE)) {
-			LOGGER.debug(Logging.getString("Not proceeding: ", result, jep, predicate));
+			LOGGER.info(Logging.getString("Not proceeding: ", result, jep, predicate));
 			return Boolean.FALSE;
 		}
-		LOGGER.debug(Logging.getString("Proceeding: ", result, jep, predicate));
+		LOGGER.info(Logging.getString("Proceeding: ", result, jep, predicate));
 		return proceedingJoinPoint.proceed();
 	}
 

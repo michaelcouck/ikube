@@ -16,7 +16,7 @@
 	</tr>
 	<tr>
 		<td class="td-content">
-			<textarea rows="50" cols="80">${server.logTail}</textarea>
+			<textarea rows="40" cols="65" class="td-content">${server.logTail}</textarea>
 		</td>
 	</tr>
 	

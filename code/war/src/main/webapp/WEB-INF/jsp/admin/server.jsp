@@ -62,11 +62,11 @@
 		</td>
 		<td class="td-content">
 			documents: ${requestScope[indexContext.indexName]['indexDocuments']},<br>
-			size: ${requestScope[indexContext.indexName]['indexSize']},<br>
-			max age: ${indexContext.maxAge},<br>
+			size: ${requestScope[indexContext.indexName]['indexSize'] / 1000000} megabytes,<br>
+			max age: ${indexContext.maxAge / 1000 / 60 / 60} hours,<br>
 			batch size: ${indexContext.batchSize},<br>
 			internet batch size: ${indexContext.internetBatchSize},<br> 
-			max read length: ${indexContext.maxReadLength},<br>
+			max read length: ${indexContext.maxReadLength / 1000000} megabytes,<br>
 			index directory path: ${indexContext.indexDirectoryPath},<br> 
 			index directory path backup: ${indexContext.indexDirectoryPathBackup},<br>
 			

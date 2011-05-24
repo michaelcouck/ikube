@@ -21,7 +21,8 @@ import org.mortbay.jetty.servlet.ServletHolder;
 import org.mortbay.jetty.webapp.WebAppContext;
 
 /**
- * This test is for integration testing in a cluster in a server.
+ * This test is for integration testing in a cluster in a server. This test will start a Jetty server on a port, then wait for a while, then
+ * run the JspStrategy to test all the Jsps, then the ServletStrategy to stress test the servlet for searches.
  * 
  * @author Michael Couck
  * @since 26.03.11
@@ -46,24 +47,19 @@ public class IntegrationJetty extends Integration {
 		int port = GeneralUtilities.findFirstOpenPort(this.port);
 		Server server = null;
 
-		while (true && port < Short.MAX_VALUE) {
-			try {
-				Thread.sleep((long) Math.random() * 10000l);
-				logger.info("Starting server on port : " + port + ",  in directory : " + webAppContextFilePath);
-				server = new Server(port);
-				Context root = new Context(server, contextPath, Context.SESSIONS);
-				server.setHandler(new WebAppContext(webAppContextFilePath, contextPath));
-				root.addServlet(new ServletHolder(new SearchServlet()), IConstants.SEP + SearchServlet.class.getSimpleName());
-				server.start();
-				break;
-			} catch (Exception e) {
-				logger.info("Port occupied? We'll try another one : " + port);
-				port++;
-				port = GeneralUtilities.findFirstOpenPort(port);
-			} finally {
-				if (server != null && !server.isStarted()) {
-					stopServer(server);
-				}
+		try {
+			Thread.sleep((long) Math.random() * 10000l);
+			logger.info("Starting server on port : " + port + ",  in directory : " + webAppContextFilePath);
+			server = new Server(port);
+			Context root = new Context(server, contextPath, Context.SESSIONS);
+			server.setHandler(new WebAppContext(webAppContextFilePath, contextPath));
+			root.addServlet(new ServletHolder(new SearchServlet()), IConstants.SEP + SearchServlet.class.getSimpleName());
+			server.start();
+		} catch (Exception e) {
+			logger.info("Port occupied? We'll try another one : " + port);
+		} finally {
+			if (server != null && !server.isStarted()) {
+				stopServer(server);
 			}
 		}
 

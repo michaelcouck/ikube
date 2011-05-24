@@ -31,6 +31,8 @@ public class Enrichment extends Action<IndexContext, Boolean> implements IConsta
 	public static final String COUNTRY_FEATURE_CLASS = "A";
 	public static final String COUNTRY_FEATURE_CODE = "PCLI ADM1 ADM2 ADM3 ADM4 ADMD LTER PCL PCLD PCLF PCLI PCLIX PCLS PRSH TERR ZN ZNB";
 	public static final String[] searchFields = { FEATURECLASS, FEATURECODE, COUNTRYCODE };
+	
+	private EntityManager entityManager;
 
 	@Override
 	@SuppressWarnings("unchecked")
@@ -40,15 +42,16 @@ public class Enrichment extends Action<IndexContext, Boolean> implements IConsta
 		}
 		logger.info("Running the enrichment : ");
 		getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getName(), Boolean.TRUE);
-		EntityManager entityManager = null;
 		try {
 			// List all the entities in the geoname table
-			long id = 0;
-			int exceptions = 0;
 			int batch = 100;
+			long id = getClusterManager().getIdNumber(IConstants.GEOSPATIAL, indexContext.getIndexName(), batch, 0);
+			int exceptions = 0;
 			int maxExceptions = 1000;
 			List<GeoName> geoNames = new ArrayList<GeoName>();
-			entityManager = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_DB2).createEntityManager();
+			if (entityManager == null) {
+				entityManager = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_DB2).createEntityManager();
+			}
 			SearchSpatial searchSpatial = getSearchSpatial(indexContext);
 			SearchMulti searchMulti = getSearchMulti(indexContext);
 			String[] searchStrings = new String[3];
@@ -70,6 +73,7 @@ public class Enrichment extends Action<IndexContext, Boolean> implements IConsta
 					commitTransaction(entityManager);
 					entityManager.getTransaction().begin();
 					Query query = entityManager.createNamedQuery(GeoName.SELECT_FROM_GEONAME_BY_ID_GREATER_AND_SMALLER);
+					id = getClusterManager().getIdNumber(IConstants.GEOSPATIAL, indexContext.getIndexName(), batch, id);
 					query.setParameter(ID, id);
 					query.setMaxResults(batch);
 					geoNames = query.getResultList();

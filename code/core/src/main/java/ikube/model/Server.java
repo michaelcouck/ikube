@@ -203,7 +203,16 @@ public class Server extends Persistable implements Comparable<Server> {
 	}
 
 	public String toString() {
-		return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+		String logTailBackup = logTail;
+		try {
+			// Remove the log tail as it can be very long
+			if (logTail != null) {
+				logTail = null;
+			}
+			return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+		} finally {
+			logTail = logTailBackup;
+		}
 	}
 
 }

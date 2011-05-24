@@ -100,7 +100,7 @@ public class MonitoringInterceptorTest extends ATest {
 		}, "Indexing interceptor : ", 10000, Boolean.FALSE);
 
 		Event event = mock(Event.class);
-		when(event.getType()).thenReturn(Event.TIMER);
+		when(event.getType()).thenReturn(Event.ALIVE);
 		monitoringInterceptor.handleNotification(event);
 		// Verify that the server in the cluster manager has the new data
 		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);

@@ -19,6 +19,7 @@ import mockit.Mockit;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -27,6 +28,7 @@ import org.junit.Test;
  * @since 27.03.11
  * @version 01.00
  */
+@Ignore
 public class SearchTagTest extends ATagTest {
 
 	private SearchTag searchTag;

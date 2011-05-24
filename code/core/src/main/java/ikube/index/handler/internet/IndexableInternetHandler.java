@@ -93,11 +93,15 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	public void addDocument(IndexContext indexContext, Indexable<IndexableInternet> indexable, Document document)
 			throws CorruptIndexException, IOException {
 		// We check the index context because the UrlPageHandlers do not have access to the 
-		// context and pass a null value to this metho, I would rather they don't have access to the 
+		// context and pass a null value to this method, I would rather they don't have access to the 
 		// context
 		if (this.indexContext == null) {
-			logger.warn("Index context null?");
-			return;
+			if (indexContext != null) {
+				this.indexContext = indexContext;
+			} else {
+				logger.warn("Index context null?");
+				return;
+			}
 		}
 		super.addDocument(this.indexContext, indexable, document);
 	}

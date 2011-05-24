@@ -22,7 +22,48 @@ public final class ListenerManager {
 	private static final List<IListener> LISTENERS = new ArrayList<IListener>();
 	private static final PooledExecutor POOLED_EXECUTER = new PooledExecutor(5);
 
-	private ListenerManager() {
+	/**
+	 * Notifies all the listeners for a particular instance of an event.
+	 * 
+	 * @param event
+	 *            the event for distribution
+	 */
+	private static void notifyListeners(final Event event) {
+		try {
+			for (final IListener listener : Collections.synchronizedList(LISTENERS)) {
+				try {
+					POOLED_EXECUTER.execute(new Runnable() {
+						public void run() {
+							listener.handleNotification(event);
+						}
+					});
+					if (event.isConsumed()) {
+						break;
+					}
+				} catch (Exception e) {
+					LOGGER.error("Exception notifying listener : " + listener, e);
+				}
+			}
+		} finally {
+			// ListenerManager.class.notifyAll();
+		}
+	}
+
+	public static void fireEvent(final Event event) {
+		try {
+			ListenerManager.notifyListeners(event);
+		} catch (Exception e) {
+			LOGGER.error("Exception firing event : " + event, e);
+		}
+	}
+
+	public static void fireEvent(final String type, final long timestamp, final Serializable object, final boolean consumed) {
+		Event event = new Event();
+		event.setType(type);
+		event.setTimestamp(timestamp);
+		event.setConsumed(consumed);
+		event.setObject(object);
+		ListenerManager.fireEvent(event);
 	}
 
 	/**
@@ -68,48 +109,7 @@ public final class ListenerManager {
 		}
 	}
 
-	/**
-	 * Notifies all the listeners for a particular instance of an event.
-	 * 
-	 * @param event
-	 *            the event for distribution
-	 */
-	private static void notifyListeners(final Event event) {
-		try {
-			for (final IListener listener : Collections.synchronizedList(LISTENERS)) {
-				try {
-					POOLED_EXECUTER.execute(new Runnable() {
-						public void run() {
-							listener.handleNotification(event);
-						}
-					});
-					if (event.isConsumed()) {
-						break;
-					}
-				} catch (Exception e) {
-					LOGGER.error("Exception notifying listener : " + listener, e);
-				}
-			}
-		} finally {
-			// ListenerManager.class.notifyAll();
-		}
-	}
-
-	public static void fireEvent(final Event event) {
-		try {
-			ListenerManager.notifyListeners(event);
-		} catch (Exception e) {
-			LOGGER.error("Exception firing event : " + event, e);
-		}
-	}
-
-	public static void fireEvent(final String type, final long timestamp, final Serializable object, final boolean consumed) {
-		Event event = new Event();
-		event.setType(type);
-		event.setTimestamp(timestamp);
-		event.setConsumed(consumed);
-		event.setObject(object);
-		ListenerManager.fireEvent(event);
+	private ListenerManager() {
 	}
 
 }

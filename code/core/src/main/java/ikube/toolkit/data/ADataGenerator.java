@@ -248,6 +248,12 @@ public abstract class ADataGenerator implements IDataGenerator {
 			}
 		} catch (Exception e) {
 			logger.error("Exception comitting the transaction : ", e);
+		} finally {
+			try {
+				entityManager.clear();
+			} catch (Exception e) {
+				logger.error("Exception clearing the entity manager : ", e);
+			}
 		}
 	}
 

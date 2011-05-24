@@ -1,11 +1,4 @@
 <canyon-configuration>
-	<session-factory name="geoname">
-		<mapping>
-			<config resource="geoname.xml" />
-			<input resource="allCountriesCsv.txt" />
-		</mapping>
-	</session-factory>
-	
 	<session-factory name="geoname1">
 		<mapping>
 			<config resource="geoname.xml" />

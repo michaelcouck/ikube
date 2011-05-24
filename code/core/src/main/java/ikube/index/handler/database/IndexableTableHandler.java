@@ -38,7 +38,7 @@ import org.apache.lucene.document.Field.TermVector;
 /**
  * This class performs the indexing of tables. It is the primary focus of Ikube. This class is essentially a database crawler, and is multi
  * threaded. Because Ikube is clusterable it means that there are two levels of threading, within this Jvm and within the cluster. The
- * cluster synchronisation is done using the {@link IClusterManager}.
+ * cluster synchronization is done using the {@link IClusterManager}.
  * 
  * This is just a simple explanation of the table structure and the way the hierarchy is accessed, more information can be found on the
  * Wiki.
@@ -76,6 +76,11 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	 * recursive calls, to 10, which I think is more than enough.
 	 */
 	private static final int MAX_REENTRANT = 10;
+
+	/**
+	 * This is the maximum exceptions that we will tolerate before we give up on this result set and possibly the table.
+	 */
+	private static final int maxExceptions = 100;
 
 	public IndexableTableHandler() {
 		super();
@@ -130,69 +135,76 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 		ResultSet resultSet = null;
 		try {
 			resultSet = getResultSet(indexContext, indexableTable, connection, 1);
+			int exceptions = 0;
 			do {
-				if (resultSet == null) {
-					break;
-				}
-				List<Indexable<?>> children = indexableTable.getChildren();
-				// Set the column types and the data from the table in the column objects
-				setColumnTypesAndData(children, resultSet);
-				// Set the id field if this is a primary table
-				if (indexableTable.isPrimary()/* || document == null */) {
-					document = new Document();
-					setIdField(indexableTable, document);
-				}
-				// Handle all the columns that are 'normal', i.e. that don't have references
-				// to the values in other columns, like the attachment that needs the name
-				// from the name column
-				for (Indexable<?> indexable : indexableTable.getChildren()) {
-					if (!IndexableColumn.class.isAssignableFrom(indexable.getClass())) {
-						continue;
-					}
-					IndexableColumn indexableColumn = (IndexableColumn) indexable;
-					if (indexableColumn.getNameColumn() != null) {
-						continue;
-					}
-					handleColumn(indexableColumn, document);
-				}
-
-				// Handle all the columns that rely on another column, like the attachment
-				// column that needs the name from the name column to get the content type
-				// for the parser
-				for (Indexable<?> indexable : indexableTable.getChildren()) {
-					if (!IndexableColumn.class.isAssignableFrom(indexable.getClass())) {
+				try {
+					if (resultSet == null) {
 						break;
 					}
-					IndexableColumn indexableColumn = (IndexableColumn) indexable;
-					if (indexableColumn.getNameColumn() == null) {
-						continue;
-					}
-					handleColumn(indexableColumn, document);
-				}
-
-				// Handle all the sub tables
-				for (Indexable<?> indexable : children) {
-					if (!IndexableTable.class.isAssignableFrom(indexable.getClass())) {
-						continue;
-					}
-					IndexableTable childIndexableTable = (IndexableTable) indexable;
-					// Here we recursively call this method with the child tables. We pass the document
-					// to the child table for this row in the parent table so they can add their fields to the
-					// index
-					handleTable(indexContext, childIndexableTable, connection, document);
-				}
-				// Add the document to the index if this is the primary table
-				if (indexableTable.isPrimary()) {
-					addDocument(indexContext, indexableTable, document);
-					Thread.sleep(indexContext.getThrottle());
-				}
-				// Move to the next row in the result set
-				if (!resultSet.next()) {
+					List<Indexable<?>> children = indexableTable.getChildren();
+					// Set the column types and the data from the table in the column objects
+					setColumnTypesAndData(children, resultSet);
+					// Set the id field if this is a primary table
 					if (indexableTable.isPrimary()) {
-						// We need to see if there are any more results
-						resultSet = getResultSet(indexContext, indexableTable, connection, 1);
-					} else {
-						// If the table is not primary then we have exhausted the results
+						document = new Document();
+						setIdField(indexableTable, document);
+					}
+					// Handle all the columns that are 'normal', i.e. that don't have references
+					// to the values in other columns, like the attachment that needs the name
+					// from the name column
+					for (Indexable<?> indexable : indexableTable.getChildren()) {
+						if (!IndexableColumn.class.isAssignableFrom(indexable.getClass())) {
+							continue;
+						}
+						IndexableColumn indexableColumn = (IndexableColumn) indexable;
+						if (indexableColumn.getNameColumn() != null) {
+							continue;
+						}
+						handleColumn(indexableColumn, document);
+					}
+					// Handle all the columns that rely on another column, like the attachment
+					// column that needs the name from the name column to get the content type
+					// for the parser
+					for (Indexable<?> indexable : indexableTable.getChildren()) {
+						if (!IndexableColumn.class.isAssignableFrom(indexable.getClass())) {
+							break;
+						}
+						IndexableColumn indexableColumn = (IndexableColumn) indexable;
+						if (indexableColumn.getNameColumn() == null) {
+							continue;
+						}
+						handleColumn(indexableColumn, document);
+					}
+					// Handle all the sub tables
+					for (Indexable<?> indexable : children) {
+						if (!IndexableTable.class.isAssignableFrom(indexable.getClass())) {
+							continue;
+						}
+						IndexableTable childIndexableTable = (IndexableTable) indexable;
+						// Here we recursively call this method with the child tables. We pass the document
+						// to the child table for this row in the parent table so they can add their fields to the
+						// index
+						handleTable(indexContext, childIndexableTable, connection, document);
+					}
+					// Add the document to the index if this is the primary table
+					if (indexableTable.isPrimary()) {
+						addDocument(indexContext, indexableTable, document);
+						Thread.sleep(indexContext.getThrottle());
+					}
+					// Move to the next row in the result set
+					if (!resultSet.next()) {
+						if (indexableTable.isPrimary()) {
+							// We need to see if there are any more results
+							resultSet = getResultSet(indexContext, indexableTable, connection, 1);
+						} else {
+							// If the table is not primary then we have exhausted the results
+							// for this sub selection, we go up one level to the parent table
+							break;
+						}
+					}
+				} catch (Exception e) {
+					logger.error("Exception indexing table : " + indexableTable + ", connection : " + connection, e);
+					if (exceptions++ > maxExceptions) {
 						break;
 					}
 				}

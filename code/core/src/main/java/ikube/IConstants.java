@@ -130,18 +130,21 @@ public interface IConstants {
 	/** Lock objects for cluster wide locking while we update the cache. */
 	String SERVER_LOCK = "serverLock";
 	/** The timeout to wait for the lock. */
-	long LOCK_TIMEOUT = 3000;
+	long LOCK_TIMEOUT = 10000;
 	/** We only keep a few actions in the server. */
 	double MAX_ACTION_SIZE = 100;
 	/** The ratio to delete the actions when the maximum is reached. */
 	double ACTION_PRUNE_RATIO = 0.5;
 	/** The maximum age that the server can get to before it is deleted from the cluster. */
-	int MAX_AGE = 10000;
+	int MAX_AGE = 120000;
 
 	String INDEX_SIZE = "indexSize";
 	String INDEX_DOCUMENTS = "indexDocuments";
 
 	String SEARCHING_EXECUTIONS = "searchingExecutions";
 	String INDEXING_EXECUTIONS = "indexingExecutions";
+
+	/** The length of the log that should be passed around. */
+	long TAIL_LOG = 10000;
 
 }

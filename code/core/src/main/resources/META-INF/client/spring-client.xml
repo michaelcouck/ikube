@@ -1,12 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!--
-	1) DB2 - Faq
-	2) Oracle - Hospital
-	5) Url - Google Code/Ikube
-	6) File system local - server
-	8) Email - Ikube
- -->
 <beans
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://www.springframework.org/schema/beans"
@@ -46,17 +39,17 @@
 		property:indexables-ref="indexables" />
 	<util:list id="indexables">
 		<ref local="mail" />
-		<!-- <ref local="internet" /> -->
-		<!-- <ref local="internetMillion" />-->
-		<!-- <ref local="filesystem" /> -->
-		<!-- <ref local="filesystemMillion" /> -->
-		<!-- <ref bean="faqTableH2" /> -->
-		<!-- <ref bean="faqTableDb2" />
+		<ref local="internet" />
+		<ref local="internetMillion" />
+		<ref local="filesystem" />
+		<ref local="filesystemMillion" />
+		<ref bean="faqTableH2" />
+		<ref bean="faqTableDb2" />
 		<ref bean="faqTableOracle" />
 		<ref bean="patientTableH2" />
 		<ref bean="patientTableDb2" />
-		<ref bean="patientTableOracle" /> -->
-		<!-- <ref bean="addressTableDb2" /> -->
+		<ref bean="patientTableOracle" />
+		<ref bean="addressTableDb2" />
 	</util:list>
 
 	<!-- H2 Faqs -->
@@ -422,12 +415,12 @@
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	
-	<!-- property:foreignKey-ref="patientId" -->
+	<!-- property:idColumn="true" -->
 	<bean
 		id="addressId"
 		class="ikube.model.IndexableColumn"
 		property:name="id"
-		property:idColumn="true"
+		property:foreignKey-ref="patientId"
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}" />

@@ -26,6 +26,13 @@ public final class DatabaseUtilities {
 	private DatabaseUtilities() {
 	}
 
+	/**
+	 * This method will close all related resources to the result set object in the parameter list. First getting the statement from the
+	 * result set, then the connection from the statement and closing them, result set, statement then connection.
+	 * 
+	 * @param resultSet
+	 *            the result set and related database resources to close
+	 */
 	public static void closeAll(final ResultSet resultSet) {
 		Statement statement = null;
 		Connection connection = null;
@@ -44,40 +51,75 @@ public final class DatabaseUtilities {
 		close(connection);
 	}
 
+	/**
+	 * This method just closes the statement.
+	 * 
+	 * @param statement
+	 *            the statement to close
+	 */
 	public static void close(final Statement statement) {
 		if (statement == null) {
 			return;
 		}
 		try {
-			statement.close();
+			if (!statement.isClosed()) {
+				statement.close();
+			}
 		} catch (Exception e) {
 			LOGGER.error("Exception closing the statement : ", e);
 		}
 	}
 
+	/**
+	 * This method just closes the connection.
+	 * 
+	 * @param connection
+	 *            the connection to close
+	 */
 	public static void close(final Connection connection) {
 		if (connection == null) {
 			return;
 		}
 		try {
-			connection.close();
+			if (!connection.isClosed()) {
+				connection.close();
+			}
 		} catch (Exception e) {
 			LOGGER.error("Exception closing the connection : ", e);
 		}
 	}
 
+	/**
+	 * This method closes the result set.
+	 * 
+	 * @param resultSet
+	 *            the result set to close
+	 */
 	public static void close(final ResultSet resultSet) {
 		if (resultSet == null) {
 			return;
 		}
 		try {
-			resultSet.close();
+			if (!resultSet.isClosed()) {
+				resultSet.close();
+			}
 		} catch (Exception e) {
 			LOGGER.error("Exception closing the result set : ", e);
 		}
 
 	}
 
+	/**
+	 * This method will look into an object and try to find the field that is the id field in the object, then set it with the id specified
+	 * in the parameter list.
+	 * 
+	 * @param <T>
+	 *            the type of object to set the id field for
+	 * @param object
+	 *            the object to set the id field for
+	 * @param id
+	 *            the id to set in the object
+	 */
 	public static <T> void setIdField(final T object, final long id) {
 		if (object == null) {
 			return;

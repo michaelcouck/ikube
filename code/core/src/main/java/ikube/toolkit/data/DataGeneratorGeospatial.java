@@ -21,11 +21,13 @@ public class DataGeneratorGeospatial extends ADataGenerator {
 
 	private String mappingFile;
 	private String sessionName;
+	private int offset;
 
-	public DataGeneratorGeospatial(EntityManager entityManager, String mappingFile, String sessionName) {
+	public DataGeneratorGeospatial(EntityManager entityManager, String mappingFile, String sessionName, int offset) {
 		super(entityManager);
 		this.mappingFile = mappingFile;
 		this.sessionName = sessionName;
+		this.offset = offset;
 	}
 
 	/**
@@ -36,13 +38,17 @@ public class DataGeneratorGeospatial extends ADataGenerator {
 		int counter = 0;
 		int total = 0;
 		begin(entityManager);
+		int currentOffset = 0;
 		while (session.hasNext(GeoName.class)) {
 			try {
 				GeoName geoName = null;
 				try {
 					geoName = session.next(GeoName.class);
 				} catch (Exception e) {
-					logger.error("", e);
+					logger.error("Exception accessing the next bean : ", e);
+					continue;
+				}
+				if (currentOffset < offset) {
 					continue;
 				}
 				entityManager.persist(geoName);

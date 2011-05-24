@@ -16,7 +16,6 @@ import javax.persistence.NamedQuery;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
-import org.apache.openjpa.persistence.jdbc.Index;
 
 @Entity()
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
@@ -50,16 +49,16 @@ public class GeoName extends Persistable {
 
 	private Integer geonameid; // : integer id of record in geonames database
 	@Column(length = 200)
-	@Index(name = GeoName.GEONAME_NAME)
+	// @Index(name = GeoName.GEONAME_NAME)
 	private String name; // : name of geographical point (utf8) varchar(200)
 	@Column(length = 200)
-	@Index(name = GeoName.GEONAME_CITY)
+	// @Index(name = GeoName.GEONAME_CITY)
 	private String city;
 	@Column(length = 200)
-	@Index(name = GeoName.GEONAME_COUNTRY)
+	// @Index(name = GeoName.GEONAME_COUNTRY)
 	private String country;
 	@Column(length = 200)
-	@Index(name = GeoName.GEONAME_ASCIINAME)
+	// @Index(name = GeoName.GEONAME_ASCIINAME)
 	private String asciiname; // : name of geographical point in plain ascii characters, varchar(200)
 	@Lob
 	@Column(length = 5000)
@@ -67,10 +66,10 @@ public class GeoName extends Persistable {
 	private String alternatenames; // : alternate names, comma separated varchar(5000)
 	private Double latitude; // : latitude in decimal degrees (wgs84)
 	private Double longitude; // : longitude in decimal degrees (wgs84)
-	@Index
+	// @Index
 	@Column(length = 1)
 	private String featureClass; // : see http://www.geonames.org/export/codes.html, char(1)
-	@Index
+	// @Index
 	@Column(length = 10)
 	private String featureCode; // : see http://www.geonames.org/export/codes.html, varchar(10)
 	@Column(length = 2)
