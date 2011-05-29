@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -18,6 +19,7 @@ import org.junit.Test;
  * @since 20.03.11
  * @version 01.00
  */
+@Ignore
 public class RulesTest extends ATest {
 
 	private Logger logger = Logger.getLogger(this.getClass());

@@ -23,7 +23,7 @@ public abstract class AtomicAction implements IAtomicAction, IConstants {
 		}
 	}
 
-	public static synchronized ILock lock(String lockName) {
+	public static ILock lock(String lockName) {
 		try {
 			ILock lock = Hazelcast.getLock(lockName);
 			boolean acquired = Boolean.FALSE;
@@ -33,13 +33,16 @@ public abstract class AtomicAction implements IAtomicAction, IConstants {
 				LOGGER.error("Interrupted acquiring lock for : " + lockName, e);
 			}
 			if (!acquired) {
-				LOGGER.warn(Logging.getString("Failed to acquire lock : ", lockName));
+				LOGGER.warn(Logging.getString("Failed to acquire lock : ", lockName, lock));
 				Thread.dumpStack();
+				// AtomicAction.unlock(lock);
 				return null;
 			}
+			LOGGER.warn(Logging.getString("Acquired lock : ", lockName, lock));
+			Thread.dumpStack();
 			return lock;
 		} finally {
-			AtomicAction.class.notifyAll();
+			// AtomicAction.class.notifyAll();
 		}
 	}
 
@@ -49,13 +52,16 @@ public abstract class AtomicAction implements IAtomicAction, IConstants {
 	 * @param lock
 	 *            the lock to release
 	 */
-	public static synchronized void unlock(ILock lock) {
+	public static void unlock(ILock lock) {
 		try {
 			if (lock != null) {
 				lock.unlock();
+				lock.destroy();
 			}
+		} catch (Exception e) {
+			LOGGER.error("Exception unlocking : " + lock, e);
 		} finally {
-			AtomicAction.class.notifyAll();
+			// AtomicAction.class.notifyAll();
 		}
 	}
 

@@ -19,7 +19,6 @@ import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
@@ -84,27 +83,60 @@ public class ClusterManager implements IClusterManager, IConstants {
 		});
 	}
 
+	/**
+	 * This listener will respond to clean events and it will remove servers that have not checked in, i.e. their sell by date is expired.
+	 */
 	private IListener cleanerListener = new IListener() {
+		@Override
+		public void handleNotification(Event event) {
+			if (!event.getType().equals(Event.CLEAN)) {
+				return;
+			}
+			ILock lock = null;
+			try {
+				lock = AtomicAction.lock(SERVER_LOCK);
+				// Remove all servers that are past the max age
+				List<Server> servers = getServers();
+				for (Server remoteServer : servers) {
+					if (System.currentTimeMillis() - remoteServer.getAge() > MAX_AGE) {
+						LOGGER.info("Removing server : " + remoteServer + ", "
+								+ (System.currentTimeMillis() - remoteServer.getAge() > MAX_AGE));
+						remove(Server.class.getName(), remoteServer.getId());
+					}
+				}
+			} finally {
+				if (lock != null) {
+					AtomicAction.unlock(lock);
+				}
+			}
+		}
+	};
+
+	/**
+	 * This listener will reset this server, with the latest timestamp so we can stay in the server club.
+	 */
+	private IListener aliveListener = new IListener() {
 		@Override
 		public void handleNotification(Event event) {
 			if (!event.getType().equals(Event.ALIVE)) {
 				return;
 			}
-			// Set our own server age
-			Server server = getServer();
-			// Add the tail end of the log to the server
-			File logFile = Logging.getLogFile();
-			String logTail = FileUtilities.getContentsFromEnd(logFile, 5000).toString();
-			server.setLogTail(logTail);
-			server.setAge(System.currentTimeMillis());
-			set(Server.class.getName(), server.getId(), server);
-			// Remove all servers that are past the max age
-			List<Server> servers = getServers();
-			for (Server remoteServer : servers) {
-				if (System.currentTimeMillis() - remoteServer.getAge() > MAX_AGE) {
-					LOGGER.info("Removing server : " + remoteServer);
-					remove(Server.class.getName(), remoteServer.getId());
+			ILock lock = null;
+			try {
+				lock = AtomicAction.lock(SERVER_LOCK);
+				// Set our own server age
+				Server server = getServer();
+				// Add the tail end of the log to the server
+				File logFile = Logging.getLogFile();
+				if (logFile != null && logFile.exists() && logFile.canRead()) {
+					String logTail = FileUtilities.getContentsFromEnd(logFile, 20000).toString();
+					server.setLogTail(logTail);
 				}
+				server.setAge(System.currentTimeMillis());
+				LOGGER.info("Publishing server : " + server);
+				set(Server.class.getName(), server.getId(), server);
+			} finally {
+				AtomicAction.unlock(lock);
 			}
 		}
 	};
@@ -138,6 +170,8 @@ public class ClusterManager implements IClusterManager, IConstants {
 				this.ip = InetAddress.getLocalHost().getHostAddress();
 				this.address = ip + "." + System.nanoTime();
 				// This listener will iterate over the servers and remove any that have expired
+				// and will also register this server as still alive in the cluster
+				ListenerManager.addListener(aliveListener);
 				ListenerManager.addListener(cleanerListener);
 			} finally {
 				notifyAll();
@@ -152,7 +186,7 @@ public class ClusterManager implements IClusterManager, IConstants {
 	public synchronized boolean anyWorking() {
 		ILock lock = null;
 		try {
-			lock = lock(SERVER_LOCK);
+			lock = AtomicAction.lock(SERVER_LOCK);
 			if (lock == null) {
 				return Boolean.TRUE;
 			}
@@ -166,7 +200,7 @@ public class ClusterManager implements IClusterManager, IConstants {
 				}
 			}
 		} finally {
-			unlock(lock);
+			AtomicAction.unlock(lock);
 			notifyAll();
 		}
 		return Boolean.FALSE;
@@ -179,7 +213,7 @@ public class ClusterManager implements IClusterManager, IConstants {
 	public synchronized boolean anyWorking(final String indexName) {
 		ILock lock = null;
 		try {
-			lock = lock(SERVER_LOCK);
+			lock = AtomicAction.lock(SERVER_LOCK);
 			if (lock == null) {
 				return Boolean.TRUE;
 			}
@@ -197,7 +231,7 @@ public class ClusterManager implements IClusterManager, IConstants {
 				}
 			}
 		} finally {
-			unlock(lock);
+			AtomicAction.unlock(lock);
 			notifyAll();
 		}
 		return Boolean.FALSE;
@@ -216,10 +250,11 @@ public class ClusterManager implements IClusterManager, IConstants {
 	public synchronized long getIdNumber(final String indexName, final String indexableName, final long batchSize, final long minId) {
 		ILock lock = null;
 		try {
-			lock = lock(SERVER_LOCK);
+			lock = AtomicAction.lock(SERVER_LOCK);
 			if (lock == null) {
 				return 0;
 			}
+			// TODO Have another look at this, surely this can be simplified, but be careful
 			long idNumber = 0;
 			List<Server> servers = cache.get(Server.class.getName(), null, null, Integer.MAX_VALUE);
 			// We look for the largest row id from any of the servers, from the last action in each server
@@ -234,7 +269,9 @@ public class ClusterManager implements IClusterManager, IConstants {
 						if (action.getIdNumber() > idNumber) {
 							idNumber = action.getIdNumber();
 						}
-						// We break when we get to the first action in this server
+						// We break when we get to the first action in this server that
+						// corresponds to the index that we are going to create and the
+						// action that we want to execute
 						break;
 					}
 				}
@@ -274,7 +311,7 @@ public class ClusterManager implements IClusterManager, IConstants {
 			cache.set(Server.class.getName(), server.getId(), server);
 			return idNumber;
 		} finally {
-			unlock(lock);
+			AtomicAction.unlock(lock);
 			notifyAll();
 		}
 	}
@@ -321,7 +358,7 @@ public class ClusterManager implements IClusterManager, IConstants {
 		// logger.info("Set working : ");
 		ILock lock = null;
 		try {
-			lock = lock(SERVER_LOCK);
+			lock = AtomicAction.lock(SERVER_LOCK);
 			if (lock == null) {
 				return 0;
 			}
@@ -366,7 +403,7 @@ public class ClusterManager implements IClusterManager, IConstants {
 			cache.set(Server.class.getName(), server.getId(), server);
 			return firstStartTime;
 		} finally {
-			unlock(lock);
+			AtomicAction.unlock(lock);
 			notifyAll();
 		}
 	}
@@ -397,47 +434,51 @@ public class ClusterManager implements IClusterManager, IConstants {
 	}
 
 	/**
+	 * TODO This method has been moved to the {@link AtomicAction} class, so once this is tested it can be removed.
+	 * 
 	 * This method locks the object map. This is required to maintain data integrity in the cluster.
 	 * 
 	 * @param lockName
 	 *            the name of the lock we want
 	 * @return the lock for the object map or null if this lock is un-available
 	 */
-	public synchronized ILock lock(String lockName) {
-		try {
-			ILock lock = Hazelcast.getLock(lockName);
-			boolean acquired = Boolean.FALSE;
-			try {
-				acquired = lock.tryLock(LOCK_TIMEOUT, TimeUnit.MILLISECONDS);
-			} catch (InterruptedException e) {
-				LOGGER.error("Interrupted acquiring lock for : " + lockName, e);
-			}
-			if (!acquired) {
-				LOGGER.warn(Logging.getString("Failed to acquire lock : ", lockName, Thread.currentThread().hashCode()));
-				return null;
-			}
-			return lock;
-		} finally {
-			notifyAll();
-		}
-	}
-
+	@Deprecated
+	// public synchronized ILock lock(String lockName) {
+	// try {
+	// ILock lock = Hazelcast.getLock(lockName);
+	// boolean acquired = Boolean.FALSE;
+	// try {
+	// acquired = lock.tryLock(LOCK_TIMEOUT, TimeUnit.MILLISECONDS);
+	// } catch (InterruptedException e) {
+	// LOGGER.error("Interrupted acquiring lock for : " + lockName, e);
+	// }
+	// if (!acquired) {
+	// LOGGER.warn(Logging.getString("Failed to acquire lock : ", lockName, Thread.currentThread().hashCode()));
+	// return null;
+	// }
+	// return lock;
+	// } finally {
+	// notifyAll();
+	// }
+	// }
 	/**
+	 * TODO This method has been moved to the {@link AtomicAction} class, so once this is tested it can be removed.
+	 * 
 	 * This method unlocks the object map in the cluster.
 	 * 
 	 * @param lock
 	 *            the lock to release
 	 */
-	public synchronized void unlock(ILock lock) {
-		try {
-			if (lock != null) {
-				lock.unlock();
-			}
-		} finally {
-			notifyAll();
-		}
-	}
-
+	// @Deprecated
+	// public synchronized void unlock(ILock lock) {
+	// try {
+	// if (lock != null) {
+	// lock.unlock();
+	// }
+	// } finally {
+	// notifyAll();
+	// }
+	// }
 	@Override
 	public synchronized <T> void set(String name, Long id, T object) {
 		try {
@@ -501,13 +542,13 @@ public class ClusterManager implements IClusterManager, IConstants {
 	public synchronized <T> List<T> get(Class<T> klass, String name, ICriteria<T> criteria, IAction<T> action, int size) {
 		ILock lock = null;
 		try {
-			lock = lock(name);
+			lock = AtomicAction.lock(name);
 			if (lock == null) {
 				return Arrays.asList();
 			}
 			return cache.get(name, criteria, action, size);
 		} finally {
-			unlock(lock);
+			AtomicAction.unlock(lock);
 			notifyAll();
 		}
 	}

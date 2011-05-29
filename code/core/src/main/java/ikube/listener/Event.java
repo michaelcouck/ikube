@@ -22,6 +22,7 @@ public class Event {
 	public static final String SYNCHRONISE = "synchronise";
 	public static final String VALIDATION = "validation";
 	public static final String ALIVE = "alive";
+	public static final String CLEAN = "clean";
 
 	private String type;
 	private long timestamp;

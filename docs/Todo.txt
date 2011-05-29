@@ -12,6 +12,7 @@
    2) With Google or NavTec data - 2
 * Test the serialization of Cyrillic and other character sets during the search
    and the de-serialization of the results - 1 hour
+* Add a disk full check, in the ui and in the handlers - 1
 
 Sub Total: 17
 

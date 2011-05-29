@@ -14,7 +14,6 @@ import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -49,7 +48,6 @@ public class IndexableInternetHandlerTest extends BaseTest {
 	 * TODO Ignored while the internet is still not connected
 	 */
 	@Test
-	@Ignore
 	public void handle() throws Exception {
 		indexContext.getIndex().setIndexWriter(INDEX_WRITER);
 		IndexableInternet indexableInternet = ApplicationContextManager.getBean("internet");

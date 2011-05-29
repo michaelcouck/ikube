@@ -145,8 +145,14 @@
 		id="ikube.listener.ScheduleBroadCaster"
 		class="ikube.listener.Schedule"
 		property:type="alive"
-		property:delay="10000"
-		property:period="10000" />
+		property:delay="5000"
+		property:period="5000" />
+	<bean
+		id="ikube.listener.ScheduleBroadClean"
+		class="ikube.listener.Schedule"
+		property:type="clean"
+		property:delay="60000"
+		property:period="60000" />
 	
 	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
 		property:staticMethod="ikube.listener.Scheduler.addSchedule">
@@ -160,11 +166,17 @@
 			<ref local="ikube.listener.ScheduleBroadCaster" />
 		</property>
 	</bean>
+	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
+		property:staticMethod="ikube.listener.Scheduler.addSchedule">
+		<property name="arguments">
+			<ref local="ikube.listener.ScheduleBroadClean" />
+		</property>
+	</bean>
 	<bean id="schedulerInitialize" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
 		property:staticMethod="ikube.listener.Scheduler.initialize">
 	</bean>
 	
-	<!-- This is the mailer that will send mail to targets when things go right, and wrond in fact. -->
+	<!-- This is the mailer that will send mail to targets when things go right, and wrong in fact. -->
 	<bean
 		class="ikube.toolkit.Mailer"
 		property:auth="true"

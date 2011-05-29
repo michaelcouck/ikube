@@ -5,17 +5,17 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import ikube.BaseTest;
-import ikube.action.Action;
+import ikube.ATest;
 import ikube.action.Close;
+import ikube.action.IAction;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.model.IndexContext;
-import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.Logging;
 import ikube.toolkit.PermutationUtilities;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -35,10 +35,10 @@ import org.nfunk.jep.JEP;
  * @since 26.02.2011
  * @version 01.00
  */
-public class RuleInterceptorTest extends BaseTest {
+public class RuleInterceptorTest extends ATest {
 
 	@SuppressWarnings("rawtypes")
-	private static Map<String, Action> ACTIONS;
+	private static Map<String, IAction> ACTIONS;
 
 	private transient ProceedingJoinPoint joinPoint;
 	private transient IRuleInterceptor ruleInterceptor;
@@ -47,6 +47,8 @@ public class RuleInterceptorTest extends BaseTest {
 	private transient final List<Boolean[]> matrix = new ArrayList<Boolean[]>();
 	private transient Boolean[] resultVector = { Boolean.TRUE, Boolean.FALSE, Boolean.TRUE, Boolean.FALSE, Boolean.TRUE };
 
+	@NonStrict
+	private IAction<?, ?> action;
 	@NonStrict
 	private transient IsMultiSearcherInitialised isMultiSearcherInitialised;
 	@NonStrict
@@ -63,8 +65,9 @@ public class RuleInterceptorTest extends BaseTest {
 	}
 
 	@BeforeClass
+	@SuppressWarnings("rawtypes")
 	public static void beforeClass() {
-		ACTIONS = ApplicationContextManager.getBeans(Action.class);
+		ACTIONS = new HashMap<String, IAction>();
 		Mockit.setUpMocks();
 		Mockit.setUpMocks(ApplicationContextManagerMock.class);
 	}
@@ -93,7 +96,7 @@ public class RuleInterceptorTest extends BaseTest {
 			}
 		};
 
-		List<IRule<IndexContext>> rules = new ArrayList<IRule<IndexContext>>();
+		final List<IRule<IndexContext>> rules = new ArrayList<IRule<IndexContext>>();
 		rules.add(isMultiSearcherInitialised);
 		rules.add(areSearchablesInitialised);
 		rules.add(isIndexCurrent);
@@ -101,7 +104,7 @@ public class RuleInterceptorTest extends BaseTest {
 		rules.add(areUnopenedIndexes);
 
 		Close close = mock(Close.class);
-		String predicate = "IsMultiSearcherInitialised && AreSearchablesInitialised && !IsIndexCurrent && AreIndexesCreated && AreUnopenedIndexes";
+		final String predicate = "IsMultiSearcherInitialised && AreSearchablesInitialised && !IsIndexCurrent && AreIndexesCreated && AreUnopenedIndexes";
 		when(close.getRuleExpression()).thenReturn(predicate);
 		when(close.getRules()).thenReturn(rules);
 		when(close.execute(any(IndexContext.class))).thenReturn(Boolean.TRUE);
@@ -110,7 +113,18 @@ public class RuleInterceptorTest extends BaseTest {
 		when(joinPoint.getTarget()).thenReturn(close);
 		when(joinPoint.getArgs()).thenReturn(new Object[] { INDEX_CONTEXT });
 		when(joinPoint.proceed()).thenReturn(Boolean.TRUE);
-		ruleInterceptor = new RuleInterceptor() {};
+		ruleInterceptor = new RuleInterceptor() {
+		};
+
+		new NonStrictExpectations() {
+			{
+				action.getRules();
+				result = rules;
+				action.getRuleExpression();
+				result = predicate;
+			}
+		};
+		ACTIONS.put(action.toString(), action);
 	}
 
 	@Test
@@ -161,8 +175,10 @@ public class RuleInterceptorTest extends BaseTest {
 		 * 		Actions: index, delete, clean
 		 * </pre>
 		 */
-		for (Action action : ACTIONS.values()) {
+		for (IAction action : ACTIONS.values()) {
+			logger.info("1) " + action);
 			when(joinPoint.getTarget()).thenReturn(action);
+			logger.info("2) " + action);
 			Object result = ruleInterceptor.decide(joinPoint);
 			logger.info("Result : " + result);
 		}

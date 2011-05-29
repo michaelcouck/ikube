@@ -29,6 +29,11 @@ public class Index extends Action<IndexContext, Boolean> {
 	public Boolean execute(final IndexContext indexContext) throws Exception {
 		String indexName = indexContext.getIndexName();
 		long lastWorkingStartTime = getClusterManager().setWorking(indexName, this.getClass().getName(), Boolean.TRUE);
+		if (lastWorkingStartTime <= 0) {
+			logger.warn("Failed to join the cluster indexing : " + indexContext);
+			getClusterManager().setWorking(indexName, "", Boolean.FALSE);
+			return Boolean.FALSE;
+		}
 		Server server = getClusterManager().getServer();
 		List<Indexable<?>> indexables = indexContext.getIndexables();
 		try {

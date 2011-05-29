@@ -62,9 +62,7 @@ public final class DatabaseUtilities {
 			return;
 		}
 		try {
-			if (!statement.isClosed()) {
-				statement.close();
-			}
+			statement.close();
 		} catch (Exception e) {
 			LOGGER.error("Exception closing the statement : ", e);
 		}
@@ -81,9 +79,7 @@ public final class DatabaseUtilities {
 			return;
 		}
 		try {
-			if (!connection.isClosed()) {
-				connection.close();
-			}
+			connection.close();
 		} catch (Exception e) {
 			LOGGER.error("Exception closing the connection : ", e);
 		}
@@ -100,9 +96,7 @@ public final class DatabaseUtilities {
 			return;
 		}
 		try {
-			if (!resultSet.isClosed()) {
-				resultSet.close();
-			}
+			resultSet.close();
 		} catch (Exception e) {
 			LOGGER.error("Exception closing the result set : ", e);
 		}

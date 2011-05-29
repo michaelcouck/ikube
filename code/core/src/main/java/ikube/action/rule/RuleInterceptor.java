@@ -9,6 +9,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.nfunk.jep.JEP;
+import org.nfunk.jep.Node;
 
 /**
  * @see IRuleInterceptor
@@ -26,9 +27,9 @@ public class RuleInterceptor implements IRuleInterceptor {
 	@Override
 	public Object decide(final ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
 		// TODO During the execution of the rules the cluster needs to be locked
-		// completely for the duration of the evaluation of the rules because there  
-		// exists a race condition where the rules evaluate to true for server one, and evaluate 
-		// to true for server two before server one can set the values that would make server 
+		// completely for the duration of the evaluation of the rules because there
+		// exists a race condition where the rules evaluate to true for server one, and evaluate
+		// to true for server two before server one can set the values that would make server
 		// two evaluate to false, so they both start the action they shouldn't start
 		Object target = proceedingJoinPoint.getTarget();
 		if (!IAction.class.isAssignableFrom(target.getClass())) {
@@ -74,8 +75,31 @@ public class RuleInterceptor implements IRuleInterceptor {
 			LOGGER.info(Logging.getString("Not proceeding: ", result, jep, predicate));
 			return Boolean.FALSE;
 		}
-		LOGGER.info(Logging.getString("Proceeding: ", result, jep, predicate));
-		return proceedingJoinPoint.proceed();
+		if (LOGGER.isInfoEnabled()) {
+			// Node node = jep.getTopNode();
+			// printNodesAndEvaluations(jep, node);
+		}
+		if (result.equals(1.0d) || result.equals(Boolean.TRUE)) {
+			LOGGER.info(Logging.getString("Proceeding: ", result, jep, predicate));
+			return proceedingJoinPoint.proceed();
+		}
+		LOGGER.info(Logging.getString("Not proceeding: ", result, jep, predicate));
+		return Boolean.FALSE;
+	}
+
+	@SuppressWarnings("unused")
+	private void printNodesAndEvaluations(JEP jep, Node node) {
+		try {
+			LOGGER.info("Child node : " + node);
+			Object childResult = jep.evaluate(node);
+			LOGGER.info("           : " + childResult);
+			for (int i = 0; i < node.jjtGetNumChildren(); i++) {
+				Node childNode = node.jjtGetChild(i);
+				printNodesAndEvaluations(jep, childNode);
+			}
+		} catch (Exception e) {
+			LOGGER.error("Exception printing the nodes : ", e);
+		}
 	}
 
 }

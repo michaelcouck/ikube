@@ -2,11 +2,13 @@ package ikube.cluster;
 
 import static org.junit.Assert.*;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import ikube.ATest;
 import ikube.IConstants;
 
+@Ignore
 public class AtomicActionTest extends ATest {
 
 	public AtomicActionTest() {
