@@ -17,6 +17,8 @@ import org.springframework.util.ReflectionUtils;
 public final class GeneralUtilities {
 
 	private static final Logger LOGGER = Logger.getLogger(GeneralUtilities.class);
+	
+	private static final long MAX_PORT_SIZE = Short.MAX_VALUE;
 
 	private GeneralUtilities() {
 	}
@@ -100,7 +102,7 @@ public final class GeneralUtilities {
 		try {
 			ServerSocket ss = null;
 			DatagramSocket ds = null;
-			while (true && port < Short.MAX_VALUE) {
+			while (true && port < MAX_PORT_SIZE) {
 				try {
 					ss = new ServerSocket(port);
 					ss.setReuseAddress(true);
@@ -123,7 +125,7 @@ public final class GeneralUtilities {
 					}
 				}
 			}
-			throw new RuntimeException("Couldn't find an open port : " + port);
+			throw new RuntimeException("Couldn't find an open port : " + port + ", maximum port size : " + MAX_PORT_SIZE);
 		} finally {
 			GeneralUtilities.class.notifyAll();
 		}

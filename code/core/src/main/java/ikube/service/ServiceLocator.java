@@ -21,6 +21,19 @@ public final class ServiceLocator {
 	private ServiceLocator() {
 	}
 
+	/**
+	 * TODO Document me.
+	 * 
+	 * @param <T>
+	 * @param klass
+	 * @param protocol
+	 * @param host
+	 * @param port
+	 * @param path
+	 * @param nameSpace
+	 * @param serviceName
+	 * @return
+	 */
 	public static <T> T getService(final Class<T> klass, final String protocol, final String host, final int port, final String path,
 			final String nameSpace, final String serviceName) {
 		try {
@@ -32,6 +45,16 @@ public final class ServiceLocator {
 		return null;
 	}
 
+	/**
+	 * TODO Document me.
+	 * 
+	 * @param <T>
+	 * @param klass
+	 * @param url
+	 * @param nameSpace
+	 * @param serviceName
+	 * @return
+	 */
 	public static <T> T getService(final Class<T> klass, final String url, final String nameSpace, final String serviceName) {
 		try {
 			URL wsdlURL = new URL(url);

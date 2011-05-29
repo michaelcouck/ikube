@@ -7,6 +7,7 @@ import ikube.toolkit.Logging;
 
 import java.net.InetAddress;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.ws.Binding;
@@ -35,8 +36,7 @@ public class WebServicePublisher implements IWebServicePublisher {
 
 	@Override
 	public void publish() {
-		assert protocols.size() == ports.size() && ports.size() == paths.size() && paths.size() == implementors.size();
-		Server server = clusterManager.getServer();
+		List<String> webServiceUrls = new ArrayList<String>();
 		for (int i = 0; i < implementors.size(); i++) {
 			String host = null;
 			String path = paths.get(i);
@@ -50,14 +50,17 @@ public class WebServicePublisher implements IWebServicePublisher {
 				logger.info("Publishing web service to : " + url);
 				Endpoint endpoint = Endpoint.publish(url.toString(), implementor);
 				Binding binding = endpoint.getBinding();
-				server.getWebServiceUrls().add(url.toString());
+				webServiceUrls.add(url.toString());
 				String message = Logging.getString("Endpoint : ", endpoint, "binding : ", binding, "implementor : ", implementor,
 						"on address : ", url.toString());
 				logger.info(message);
 			} catch (Exception e) {
-				logger.info("Port busy : " + protocol + ", " + host + ", " + port + ", " + path + ", " + implementor, e);
+				logger.info(
+						"Exception publishing web service : " + protocol + ", " + host + ", " + port + ", " + path + ", " + implementor, e);
 			}
 		}
+		Server server = clusterManager.getServer();
+		server.getWebServiceUrls().addAll(webServiceUrls);
 		// Publish the server to the cluster with the new urls
 		clusterManager.set(Server.class.getName(), server.getId(), server);
 	}
