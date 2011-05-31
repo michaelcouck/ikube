@@ -34,8 +34,12 @@ public class ServerController extends BaseController {
 		Server server = GeneralUtilities.findObject(Server.class, servers, IConstants.ADDRESS, address);
 
 		modelAndView.addObject(IConstants.SERVER, server);
-		modelAndView.addObject(IConstants.ACTIONS, server.getActions());
-		modelAndView.addObject(IConstants.WEB_SERVICE_URLS, server.getWebServiceUrls());
+		if (server != null) {
+			modelAndView.addObject(IConstants.ACTIONS, server.getActions());
+			modelAndView.addObject(IConstants.WEB_SERVICE_URLS, server.getWebServiceUrls());
+			modelAndView.addObject(IConstants.INDEXING_EXECUTIONS, server.getIndexingExecutions());
+			modelAndView.addObject(IConstants.SEARCHING_EXECUTIONS, server.getSearchingExecutions());
+		}
 
 		Map<String, IndexContext> indexContexts = ApplicationContextManager.getBeans(IndexContext.class);
 		modelAndView.addObject(IConstants.INDEX_CONTEXTS, indexContexts.values());
@@ -52,9 +56,6 @@ public class ServerController extends BaseController {
 			indexProperties.put(IConstants.INDEX_DOCUMENTS, numDocs);
 			modelAndView.addObject(indexName, indexProperties);
 		}
-
-		modelAndView.addObject(IConstants.INDEXING_EXECUTIONS, server.getIndexingExecutions());
-		modelAndView.addObject(IConstants.SEARCHING_EXECUTIONS, server.getSearchingExecutions());
 
 		return modelAndView;
 	}

@@ -27,7 +27,7 @@ import com.hazelcast.core.ILock;
 import com.hazelcast.core.MessageListener;
 
 /**
- * All the methods are synchronised in this class because not only is Ikube clusterable but also multi-threaded in each server.
+ * Most of the methods are synchronized in this class because not only is Ikube clusterable but also multi-threaded in each server.
  * 
  * @see IClusterManager
  * @author Michael Couck
@@ -95,6 +95,9 @@ public class ClusterManager implements IClusterManager, IConstants {
 			ILock lock = null;
 			try {
 				lock = AtomicAction.lock(SERVER_LOCK);
+				if (lock == null) {
+					return;
+				}
 				// Remove all servers that are past the max age
 				List<Server> servers = getServers();
 				for (Server remoteServer : servers) {
@@ -105,9 +108,7 @@ public class ClusterManager implements IClusterManager, IConstants {
 					}
 				}
 			} finally {
-				if (lock != null) {
-					AtomicAction.unlock(lock);
-				}
+				AtomicAction.unlock(lock);
 			}
 		}
 	};
@@ -124,6 +125,9 @@ public class ClusterManager implements IClusterManager, IConstants {
 			ILock lock = null;
 			try {
 				lock = AtomicAction.lock(SERVER_LOCK);
+				if (lock == null) {
+					return;
+				}
 				// Set our own server age
 				Server server = getServer();
 				// Add the tail end of the log to the server
@@ -433,52 +437,6 @@ public class ClusterManager implements IClusterManager, IConstants {
 		}
 	}
 
-	/**
-	 * TODO This method has been moved to the {@link AtomicAction} class, so once this is tested it can be removed.
-	 * 
-	 * This method locks the object map. This is required to maintain data integrity in the cluster.
-	 * 
-	 * @param lockName
-	 *            the name of the lock we want
-	 * @return the lock for the object map or null if this lock is un-available
-	 */
-	@Deprecated
-	// public synchronized ILock lock(String lockName) {
-	// try {
-	// ILock lock = Hazelcast.getLock(lockName);
-	// boolean acquired = Boolean.FALSE;
-	// try {
-	// acquired = lock.tryLock(LOCK_TIMEOUT, TimeUnit.MILLISECONDS);
-	// } catch (InterruptedException e) {
-	// LOGGER.error("Interrupted acquiring lock for : " + lockName, e);
-	// }
-	// if (!acquired) {
-	// LOGGER.warn(Logging.getString("Failed to acquire lock : ", lockName, Thread.currentThread().hashCode()));
-	// return null;
-	// }
-	// return lock;
-	// } finally {
-	// notifyAll();
-	// }
-	// }
-	/**
-	 * TODO This method has been moved to the {@link AtomicAction} class, so once this is tested it can be removed.
-	 * 
-	 * This method unlocks the object map in the cluster.
-	 * 
-	 * @param lock
-	 *            the lock to release
-	 */
-	// @Deprecated
-	// public synchronized void unlock(ILock lock) {
-	// try {
-	// if (lock != null) {
-	// lock.unlock();
-	// }
-	// } finally {
-	// notifyAll();
-	// }
-	// }
 	@Override
 	public synchronized <T> void set(String name, Long id, T object) {
 		try {

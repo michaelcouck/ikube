@@ -37,6 +37,9 @@ public abstract class AtomicAction implements IAtomicAction, IConstants {
 	public static boolean executeAction(String lockName, IAtomicAction atomicAction) {
 		ILock lock = lock(lockName);
 		try {
+			if (lock == null) {
+				return Boolean.FALSE;
+			}
 			return atomicAction.execute();
 		} finally {
 			unlock(lock);
@@ -60,9 +63,10 @@ public abstract class AtomicAction implements IAtomicAction, IConstants {
 			}
 			if (!acquired) {
 				LOGGER.warn(Logging.getString("Failed to acquire lock : ", lockName, lock, STACK_TRACES.getLast()));
+				Thread.dumpStack();
 				return null;
 			}
-			LOGGER.info(Logging.getString("Acquired lock : ", lockName, lock));
+			LOGGER.debug(Logging.getString("Acquired lock : ", lockName, lock));
 			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 			new Throwable().printStackTrace(new PrintStream(outputStream));
 			STACK_TRACES.addLast(outputStream.toString());
