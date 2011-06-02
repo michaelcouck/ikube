@@ -113,6 +113,7 @@ public interface IConstants {
 	String SEARCH_STRINGS = "searchStrings";
 	String SORT_FIELDS = "sortFields";
 	String FIRST_RESULT = "firstResult";
+	String INDEXABLES = "indexables";
 
 	/** The tags in the response from the Geo Location API. */
 	String LAT = "lat";

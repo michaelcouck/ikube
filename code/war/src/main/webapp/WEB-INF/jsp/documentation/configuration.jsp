@@ -18,20 +18,7 @@
 	</tr>
 	<tr>
 		<td class="td-content" colspan="2">
-			Ikube will look for configuration files in the directory where the Jvm was started first. If no configuration files 
-			are found in this directory then Ikube will use the files in the META-INF directory packaged in the jar. The files 
-			can be extracted from the jar, modified to suit and placed outside the war where Ikube will find them. If Ikube 
-			is to run in a cluster then either the files in the war WEB-INF need to be modified to suit the client so that the 
-			war can be dropped into the cluster as is or farmed out as in the case of JBoss, or each server needs to have 
-			configuration files placed at it's base.  
-		</td>
-	</tr>
-	<tr>
-		<td class="td-content" colspan="2">
-			In the case of Tomcat for example, the startup directory is typically in the ${TOMCAT_INSTALL_DIRECTORY}/bin. 
-			So the configuration files will need to go here for Ikube to find them. Once the configuration is done and working 
-			as it should then the files can be put back in the war where it is more convenient and the files in the bin directory 
-			can be removed.
+			Ikube will use the files in the META-INF directory packaged in the ikube-core-version.jar.
 		</td>
 	</tr>
 	<tr>
@@ -46,7 +33,7 @@
 	</tr>
 	<tr>
 		<td class="td-content" colspan="2">
-			
+			&nbsp;
 		</td>
 	</tr>
 	<tr>
@@ -64,7 +51,7 @@
 		<th class="td-content">Description</th>
 	</tr>
 	<tr>
-		<td class="td-content"> indexName</td>
+		<td class="td-content">indexName</td>
 		<td class="td-content"> 
 			This is the name of the index. The name appended to the index directory path will be the location of this particular 
 			index. Also 	the index will be accessed via this name when using the web service. This name must be unique within the 
@@ -181,7 +168,10 @@
 			for an example. We'll start at the top with a database definition of an indexable. Tables are defined as beans with the following parameters:
 		</td>
 	</tr>
+	
 	<tr>
+		<td colspan="2">&nbsp;</td>
+	</tr>
 	<tr>
 		<th colspan="2">IndexableTable definition parameters</th>
 	</tr>
@@ -274,12 +264,15 @@
 			to create two indexes, one for the versions and one for the faqs.
 		</td>
 	</tr>
+	
+	<tr>
+		<td colspan="2">&nbsp;</td>
+	</tr>
 	<tr>
 		<td class="td-content" colspan="2">
 			Columns are defined and added to the tables as children. Below is a table of parameters that can be defined for columns.
 		</td>
 	</tr>
-	<tr>
 	<tr>
 		<th colspan="2">IndexableColumn definition parameters</th>
 	</tr>
@@ -350,6 +343,9 @@
 		</td>
 	</tr>
 	
+	<tr>
+		<td colspan="2">&nbsp;</td>
+	</tr>
 	<tr>
 		<th colspan="2">IndexableInternet definition parameters</th>
 	</tr>
@@ -422,6 +418,9 @@
 		</td>
 	</tr>
 	
+	<tr>
+		<td colspan="2">&nbsp;</td>
+	</tr>
 	<tr>
 		<th colspan="2">IndexableEmail definition parameters</th>
 	</tr>
@@ -500,6 +499,9 @@
 	</tr>
 	
 	<tr>
+		<td colspan="2">&nbsp;</td>
+	</tr>
+	<tr>
 		<th colspan="2">IndexableFileSystem definition parameters</th>
 	</tr>
 	<tr>
@@ -557,5 +559,8 @@
 		<td class="td-content">
 			The name of the field in the Lucene index for the last modified timestamp of the file being indexed.
 		</td>
+	</tr>
+	<tr>
+		<td colspan="2">&nbsp;</td>
 	</tr>
 </table>

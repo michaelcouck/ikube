@@ -11,12 +11,15 @@ import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
+import java.util.Arrays;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 /**
+ * TODO Mock this test.
+ * 
  * @author Michael Couck
  * @since 12.10.2010
  * @version 01.00
@@ -81,6 +84,19 @@ public class MonitoringServiceTest extends BaseTest {
 		long indexDocuments = monitoringService.getIndexDocuments(indexContext.getIndexName());
 		logger.info("Index documents : " + indexDocuments);
 		assertEquals("There should be at least one document in the index : ", 2, indexDocuments, 1);
+	}
+
+	@Test
+	public void getIndexableFieldNames() {
+		String[] indexableFieldNames = monitoringService.getIndexableFieldNames("ikube.email");
+		logger.info("Indexable field names : " + Arrays.asList(indexableFieldNames));
+		assertEquals("The email is the first field : ", "email", indexableFieldNames[0]);
+		assertEquals("The identifier is the second field : ", "identifier", indexableFieldNames[1]);
+		assertEquals("The title is the third field : ", "title", indexableFieldNames[2]);
+
+		indexableFieldNames = monitoringService.getIndexableFieldNames("geoname");
+		logger.info("Indexable field names : " + Arrays.asList(indexableFieldNames));
+		assertEquals("The alternatenames is the first field : ", "alternatenames", indexableFieldNames[0]);
 	}
 
 }

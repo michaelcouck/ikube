@@ -7,18 +7,16 @@ import ikube.service.IMonitoringService;
 import ikube.service.ISearcherWebService;
 import ikube.service.ServiceLocator;
 import ikube.toolkit.ApplicationContextManager;
-import ikube.toolkit.GeneralUtilities;
 import ikube.toolkit.SerializationUtilities;
 
 import java.util.ArrayList;
-import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -29,7 +27,6 @@ import org.springframework.web.servlet.ModelAndView;
  */
 public class SearchController extends BaseController {
 
-	private static final Logger LOGGER = Logger.getLogger(SearchController.class);
 	private static final int MAX_RESULTS = 10;
 
 	@Override
@@ -37,40 +34,33 @@ public class SearchController extends BaseController {
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		String viewUrl = getViewUri(request);
 		ModelAndView modelAndView = new ModelAndView(viewUrl);
-
-		String address = request.getParameter(IConstants.ADDRESS);
 		String indexName = request.getParameter(IConstants.INDEX_NAME);
+		Server server = ApplicationContextManager.getBean(IClusterManager.class).getServer();
 
-		List<Server> servers = ApplicationContextManager.getBean(IClusterManager.class).getServers();
-		Server server = GeneralUtilities.findObject(Server.class, servers, IConstants.ADDRESS, address);
-
-		modelAndView.addObject(IConstants.SERVER, server);
-
-		String[] fieldNames = ApplicationContextManager.getBean(IMonitoringService.class).getIndexFieldNames(indexName);
-		modelAndView.addObject(IConstants.SEARCH_FIELDS, fieldNames);
-
-		Enumeration<String> parameterNames = request.getParameterNames();
-		while (parameterNames.hasMoreElements()) {
-			String parameterName = parameterNames.nextElement();
-			LOGGER.debug("Parameter : " + parameterName + ", " + request.getParameter(parameterName));
-		}
-
+		IMonitoringService monitoringService = ApplicationContextManager.getBean(IMonitoringService.class);
+		String[] indexableNames = monitoringService.getIndexableNames(indexName);
+		Map<String, String[]> indexables = new HashMap<String, String[]>();
 		List<String> searchFields = new ArrayList<String>();
 		List<String> searchStrings = new ArrayList<String>();
 		Map<String, String[]> parameterMap = request.getParameterMap();
-		for (String fieldName : fieldNames) {
-			if (parameterMap.containsKey(fieldName)) {
-				String[] fieldValues = parameterMap.get(fieldName);
-				// Check that there is a value in the fields from the request
-				if (fieldValues == null || fieldValues.length == 0 || !StringUtils.hasLength(fieldValues[0].trim())) {
-					// Don't want to search for empty strings, not useful
-					continue;
+		for (String indexableName : indexableNames) {
+			String[] fieldNames = monitoringService.getIndexableFieldNames(indexableName);
+			indexables.put(indexableName, fieldNames);
+			for (String fieldName : fieldNames) {
+				if (parameterMap.containsKey(fieldName)) {
+					String[] fieldValues = parameterMap.get(fieldName);
+					// Check that there is a value in the fields from the request
+					if (fieldValues == null || fieldValues.length == 0 || !StringUtils.hasLength(fieldValues[0].trim())) {
+						// Don't want to search for empty strings, not useful
+						continue;
+					}
+					searchFields.add(fieldName);
+					searchStrings.add(fieldValues[0]);
+					modelAndView.addObject(fieldName, fieldValues[0]);
 				}
-				searchFields.add(fieldName);
-				searchStrings.add(fieldValues[0]);
-				modelAndView.addObject(fieldName, fieldValues[0]);
 			}
 		}
+
 		if (searchFields.size() > 0) {
 			List<String> webServiceUrls = server.getWebServiceUrls();
 			for (String webServiceUrl : webServiceUrls) {
@@ -104,6 +94,8 @@ public class SearchController extends BaseController {
 			}
 		}
 
+		modelAndView.addObject(IConstants.SERVER, server);
+		modelAndView.addObject(IConstants.INDEXABLES, indexables);
 		return modelAndView;
 	}
 

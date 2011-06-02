@@ -33,6 +33,7 @@
 		<ref bean="ikube.action.Clean" />
 		<ref bean="ikube.action.Backup" />
 		<ref bean="ikube.action.Restore" />
+		<ref bean="ikube.action.DiskFull" />
 		<ref bean="ikube.action.Enrichment" />
 	</util:list>
 
@@ -107,7 +108,7 @@
 		id="ikube.action.Index" 
 		class="ikube.action.Index" 
 		property:ruleExpression="
-			!AnyServersWorking &#38;&#38; 
+			!AnyServersWorkingThisIndex &#38;&#38; 
 			((!IsIndexCurrent &#38;&#38; 
 			 !AnyServersWorking) || 
 			(IsIndexCurrent &#38;&#38; 
@@ -123,6 +124,7 @@
 				<ref local="ikube.action.rule.IsThisIndexCreated" />
 				<ref local="ikube.action.rule.SingleRuleException" />
 				<ref local="ikube.action.rule.IsThisServerWorking" />
+				<ref local="ikube.action.rule.AnyServersWorkingThisIndex" />
 			</util:list>
 		</property>
 	</bean>
@@ -163,12 +165,20 @@
 			</util:list>
 		</property>
 	</bean>
-	<!-- !AnyServersWorking &#38;&#38; -->
+	<bean 
+		id="ikube.action.DiskFull" 
+		class="ikube.action.DiskFull" 
+		property:ruleExpression="AnyServersWorking">
+		<property name="rules">
+			<util:list>
+				<ref local="ikube.action.rule.AnyServersWorking" />
+			</util:list>
+		</property>
+	</bean>
 	<bean 
 		id="ikube.action.Enrichment" 
 		class="ikube.action.Enrichment" 
 		property:ruleExpression="
-			!AnyServersWorking &#38;&#38; 
 			AreIndexesCreated &#38;&#38; 
 			AreSearchablesInitialised &#38;&#38;
 			!IsThisServerWorking">
@@ -199,5 +209,6 @@
 	<bean id="ikube.action.rule.IsBackupIndexCurrent" class="ikube.action.rule.IsBackupIndexCurrent" />
 	<bean id="ikube.action.rule.SingleRuleException" class="ikube.action.rule.SingleRuleException" />
 	<bean id="ikube.action.rule.IsThisServerWorking" class="ikube.action.rule.IsThisServerWorking" />
+	<bean id="ikube.action.rule.AnyServersWorkingThisIndex" class="ikube.action.rule.AnyServersWorkingThisIndex" />
 	
 </beans>

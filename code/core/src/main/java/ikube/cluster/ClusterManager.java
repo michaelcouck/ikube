@@ -466,7 +466,7 @@ public class ClusterManager implements IClusterManager, IConstants {
 
 	/**
 	 * This method adds a shutdown hook that can be executed remotely causing the the cluster to close down, but not ourselves. This is
-	 * useful when a unit test needs to run without the cluster running as the synchronisation will affect the tests.
+	 * useful when a unit test needs to run without the cluster running as the synchronization will affect the tests.
 	 */
 	public static void addShutdownHook() {
 		LOGGER.info("Adding shutdown listener : ");

@@ -23,17 +23,17 @@
 		id="minimal"
 		class="ikube.model.IndexContext"
 		property:indexName="minimal"
-		property:maxAge="${max.age}"
-		property:compoundFile="${compound.file}"
-		property:bufferedDocs="${buffered.docs}"
-		property:bufferSize="${buffer.size}"
-		property:internetBatchSize="${internet.batch.size}"
-		property:mergeFactor="${merge.factor}"
-		property:maxFieldLength="${max.field.length}"
-		property:maxReadLength="${max.read.length}"
-		property:queueTimeout="${max.age}"
-		property:throttle="${throttle}"
-		property:indexDirectoryPath="./ikube/minimal"
+		property:maxAge="6000000"
+		property:compoundFile="true"
+		property:bufferedDocs="100"
+		property:bufferSize="128"
+		property:internetBatchSize="10"
+		property:mergeFactor="100"
+		property:maxFieldLength="10000"
+		property:maxReadLength="1000000"
+		property:queueTimeout="600000"
+		property:throttle="0"
+		property:indexDirectoryPath="./indexes/minimal"
 		property:indexables-ref="minimalIndexables" />
 	<util:list id="minimalIndexables">
 		<ref local="minimalInternet" />
@@ -43,13 +43,13 @@
 		id="minimalInternet"
 		class="ikube.model.IndexableInternet"
 		property:name="minimalInternet"
-		property:url="${url}" 
+		property:url="http://localhost:9000/ikube" 
 		property:idFieldName="id"
 		property:titleFieldName="title"
 		property:contentFieldName="content"
 		property:excludedPattern=".*(/search).*|.*(/images).*"
-		property:analyzed="${analyzed}"
-		property:stored="${stored}"
-		property:vectored="${vectored}" />
+		property:analyzed="true"
+		property:stored="true"
+		property:vectored="true" />
 	
 </beans>

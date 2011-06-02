@@ -24,12 +24,12 @@ public class EnrichmentTest extends ATest {
 	public void execute() throws Exception {
 		// final IndexContext indexContext
 		IndexContext indexContext = ApplicationContextManager.getBean(IConstants.GEOSPATIAL);
-//		Enrichment enrichment = new Enrichment();
-//		while (indexContext.getIndex().getMultiSearcher() == null) {
-//			Thread.sleep(1000);
-//		}
-//		Thread.sleep(1000);
-//		enrichment.execute(indexContext);
+		Enrichment enrichment = new Enrichment();
+		while (indexContext.getIndex().getMultiSearcher() == null) {
+			Thread.sleep(1000);
+		}
+		Thread.sleep(1000);
+		enrichment.execute(indexContext);
 		while (true) {
 			Thread.sleep(1000);
 		}

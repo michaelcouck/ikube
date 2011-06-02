@@ -55,7 +55,7 @@
 	</target>
 
 	<target name="deploy">
-		<delete dir="${indexes.directory}" failonerror="false" />
+		<!-- delete dir="${indexes.directory}" failonerror="false" / -->
 		<delete dir="${tomcat.1}/webapps/ikube" failonerror="false" />
 		<delete dir="${tomcat.2}/webapps/ikube" failonerror="false" />
 		<delete dir="${tomcat.3}/webapps/ikube" failonerror="false" />

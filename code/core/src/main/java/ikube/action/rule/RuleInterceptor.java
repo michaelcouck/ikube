@@ -72,7 +72,7 @@ public class RuleInterceptor implements IRuleInterceptor {
 			result = jep.getValue();
 		}
 		if (result == null || result.equals(0.0d) || result.equals(Boolean.FALSE)) {
-			LOGGER.info(Logging.getString("Not proceeding: ", result, jep, predicate));
+			LOGGER.debug(Logging.getString("Not proceeding: ", result, jep, predicate));
 			return Boolean.FALSE;
 		}
 		if (LOGGER.isInfoEnabled()) {

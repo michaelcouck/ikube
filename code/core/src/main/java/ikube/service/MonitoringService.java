@@ -55,6 +55,21 @@ public class MonitoringService implements IMonitoringService {
 	 * {@inheritDoc}
 	 */
 	@Override
+	public String[] getIndexableNames(String indexName) {
+		IndexContext indexContext = getIndexContext(indexName);
+		List<Indexable<?>> indexables = indexContext.getIndexables();
+		String[] indexableNames = new String[indexables.size()];
+		int index = 0;
+		for (Indexable<?> indexable : indexables) {
+			indexableNames[index++] = indexable.getName();
+		}
+		return indexableNames;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public String[] getIndexContextNames() {
 		Map<String, IndexContext> indexContexts = ApplicationContextManager.getBeans(IndexContext.class);
 		return indexContexts.keySet().toArray(new String[indexContexts.keySet().size()]);
@@ -77,8 +92,17 @@ public class MonitoringService implements IMonitoringService {
 	 * {@inheritDoc}
 	 */
 	@Override
+	@SuppressWarnings("rawtypes")
 	public String[] getIndexableFieldNames(final String indexableName) {
-		Indexable<?> indexable = ApplicationContextManager.getBean(indexableName);
+		Map<String, Indexable> indexables = ApplicationContextManager.getBeans(Indexable.class);
+		Indexable<?> indexable = null;
+		for (String in : indexables.keySet()) {
+			Indexable ind = indexables.get(in);
+			if (ind.getName().equals(indexableName)) {
+				indexable = ind;
+				break;
+			}
+		}
 		Set<String> fieldNames = getFields(indexable, new TreeSet<String>());
 		return fieldNames.toArray(new String[fieldNames.size()]);
 	}
@@ -193,7 +217,6 @@ public class MonitoringService implements IMonitoringService {
 		if (indexables != null) {
 			for (Indexable<?> child : indexables) {
 				getFields(child, fieldNames);
-				getFields(child.getChildren(), fieldNames);
 			}
 		}
 		return fieldNames;
@@ -214,6 +237,7 @@ public class MonitoringService implements IMonitoringService {
 				}
 			}
 		}
+		getFields(indexable.getChildren(), fieldNames);
 		return fieldNames;
 	}
 

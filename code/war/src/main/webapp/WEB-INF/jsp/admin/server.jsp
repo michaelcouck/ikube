@@ -1,5 +1,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
+<!--
+	TODO This page can be deleted. 
+ -->
 <table class="table-content" width="100%">
 	<tr>
 		<td class="top-content" colspan="2">
