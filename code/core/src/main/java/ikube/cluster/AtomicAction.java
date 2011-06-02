@@ -34,15 +34,17 @@ public abstract class AtomicAction implements IAtomicAction, IConstants {
 	 * @param atomicAction
 	 * @return
 	 */
-	public static boolean executeAction(String lockName, IAtomicAction atomicAction) {
-		ILock lock = lock(lockName);
+	@SuppressWarnings("unchecked")
+	public static synchronized <T> T executeAction(String lockName, IAtomicAction atomicAction) {
+		ILock lock = AtomicAction.lock(lockName);
 		try {
 			if (lock == null) {
-				return Boolean.FALSE;
+				return null;
 			}
-			return atomicAction.execute();
+			return (T) atomicAction.execute();
 		} finally {
-			unlock(lock);
+			AtomicAction.unlock(lock);
+			AtomicAction.class.notifyAll();
 		}
 	}
 
@@ -52,7 +54,7 @@ public abstract class AtomicAction implements IAtomicAction, IConstants {
 	 * @param lockName
 	 * @return
 	 */
-	public static ILock lock(String lockName) {
+	private static ILock lock(String lockName) {
 		try {
 			ILock lock = Hazelcast.getLock(lockName);
 			boolean acquired = Boolean.FALSE;
@@ -85,7 +87,7 @@ public abstract class AtomicAction implements IAtomicAction, IConstants {
 	 * @param lock
 	 *            the lock to release
 	 */
-	public static void unlock(ILock lock) {
+	private static void unlock(ILock lock) {
 		try {
 			if (lock != null) {
 				lock.unlock();

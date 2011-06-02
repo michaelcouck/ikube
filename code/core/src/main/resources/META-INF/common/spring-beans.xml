@@ -145,8 +145,8 @@
 		id="ikube.listener.ScheduleBroadCaster"
 		class="ikube.listener.Schedule"
 		property:type="alive"
-		property:delay="10000"
-		property:period="10000" />
+		property:delay="60000"
+		property:period="60000" />
 	<bean
 		id="ikube.listener.ScheduleBroadClean"
 		class="ikube.listener.Schedule"

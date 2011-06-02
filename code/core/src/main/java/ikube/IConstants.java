@@ -136,7 +136,7 @@ public interface IConstants {
 	/** The ratio to delete the actions when the maximum is reached. */
 	double ACTION_PRUNE_RATIO = 0.5;
 	/** The maximum age that the server can get to before it is deleted from the cluster. */
-	int MAX_AGE = 120000;
+	int MAX_AGE = 600000;
 
 	String INDEX_SIZE = "indexSize";
 	String INDEX_DOCUMENTS = "indexDocuments";

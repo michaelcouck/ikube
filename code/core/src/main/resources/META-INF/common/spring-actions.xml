@@ -107,6 +107,7 @@
 		id="ikube.action.Index" 
 		class="ikube.action.Index" 
 		property:ruleExpression="
+			!AnyServersWorking &#38;&#38; 
 			((!IsIndexCurrent &#38;&#38; 
 			 !AnyServersWorking) || 
 			(IsIndexCurrent &#38;&#38; 

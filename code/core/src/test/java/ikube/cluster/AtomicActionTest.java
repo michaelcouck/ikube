@@ -1,37 +1,50 @@
 package ikube.cluster;
 
-import static org.junit.Assert.*;
-
-import org.junit.Ignore;
-import org.junit.Test;
-
+import static org.junit.Assert.assertTrue;
 import ikube.ATest;
 import ikube.IConstants;
+import ikube.toolkit.ThreadUtilities;
 
-@Ignore
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.Test;
+
 public class AtomicActionTest extends ATest {
 
 	public AtomicActionTest() {
 		super(AtomicActionTest.class);
 	}
 
+	private IAtomicAction atomicAction = new IAtomicAction() {
+		@Override
+		public Object execute() {
+			return Boolean.TRUE;
+		}
+	};
+
 	@Test
 	public void executeAction() {
-		boolean result = AtomicAction.executeAction(IConstants.SERVER_LOCK, new AtomicAction() {
-			@Override
-			public boolean execute() {
-				return Boolean.TRUE;
-			}
-		});
-		assertTrue("Should be executed : ", result);
-		AtomicAction.lock(IConstants.SERVER_LOCK);
-		result = AtomicAction.executeAction(IConstants.SERVER_LOCK, new AtomicAction() {
-			@Override
-			public boolean execute() {
-				return Boolean.TRUE;
-			}
-		});
-		assertTrue("Should be executed : ", result);
+		// This test needs to run in three threads at least
+		int threadCount = 10;
+		List<Thread> threads = new ArrayList<Thread>();
+		for (int i = 0; i < threadCount; i++) {
+			Thread thread = new Thread(new Runnable() {
+				public void run() {
+					while (true) {
+						if (Math.random() < 0.1) {
+							break;
+						}
+						boolean result = (Boolean) AtomicAction.executeAction(IConstants.SERVER_LOCK, atomicAction);
+						logger.info("Result : " + result + ", " + this.hashCode());
+						assertTrue("We should always get a result : ", result);
+					}
+				}
+			});
+			thread.start();
+			threads.add(thread);
+		}
+		ThreadUtilities.waitForThreads(threads);
 	}
 
 }
