@@ -1,3 +1,5 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
 <table class="table-content" width="100%">
 	<tr>
 		<td class="top-content" colspan="2">
@@ -6,166 +8,186 @@
 		</td>
 	</tr>
 	<tr>
-		<td class="td-content" colspan="2">
+		<td colspan="2">
 			<strong>Basics</strong><br>
-			Ikube can index four types of data sources, database, internet, file system and email. Each one of these 
-			needs to be configured with client specific properties, for example if you want to index your web site then 
-			the url for your web site needs to be place in the client spring.properties file. If you would like to index your 
-			database the the datasource spring.xml file needs to be configured to point to your database and the tables 
-			and columns need to be defined as well. All configuration is done via Spring configuration files. There are 
-			examples of these files that can be modified to suit client specific needs. 
+			Configuration is not trivial and generally would need a developer to administer. Over and above that he/she would 
+			need to have an in depth knowledge of Spring. Now that I have scared off 99% of people we'll get down to it.
 		</td>
 	</tr>
 	<tr>
-		<td class="td-content" colspan="2">
-			Ikube will use the files in the META-INF directory packaged in the ikube-core-version.jar.
+		<td colspan="2">
+			All configuration is done via Spring configuration files. All the beans that are defined in the configuration files are 
+			entities as well so theoretically it could be possible to have the configuration in the database. In this case the Spring 
+			context would have to be instantiated manually, which I don't recommend, certainly not with the AOP involved, but possible.
+			Ikube will use the files in the META-INF directory packaged in the ikube-core.jar, and nowhere else as Spring 
+			looks for configuration files on the classpath. Generally Ikube will be used in war format, i.e. it will be deployed in a server like 
+			Tomcat. The advantage of deploying Ikube in a server is firstly the UI will be available which is invaluable and also allows server 
+			clustering which in turn facilitates fail over and horizontal scaling. We will assume for the rest of this document that Ikube will 
+			be used as a war and the configuration will be found in the war/WEB-INF/lib/ikube-core.jar/META-INF. Please refer 
+			to the mandatory and optional system and client configuration files in the quick start page. It is not necessary to know what is 
+			in the mandatory system configuration files, however it will be necessary to add the client specific configuration to the Spring 
+			configuration, generally this will be added in the spring.xml file, i.e. the top level Spring configuration file.
 		</td>
 	</tr>
 	<tr>
-		<td class="td-content" colspan="2">
-			Data sources are contained in an index context. Essentially an index context is a container for an index. It also 
-			is the container for the data sources. In a simple index there would be one index context and one internet data 
-			source. In the default configuration, spring-client.xml, there is an example of an internet data source configuration. 
-			There is also an example in the spring-minimal.xml configuration. For each table, column, internet site and email 
-			account you need to create an indexable in the Spring configuration. It is recommended that the default 
-			configuration that is already present is used for this and just modified.  
-		</td>
+		<td colspan="2">
+			Ikube can index data bases, internet/intranet, file systems and email. For each source of data you need to define an 'indexable' 
+			in a Spring configuration file and add it to the spring.xml file as  in the following screen shot:<br><br>
+			
+			<img src="<c:url value="/images/spring.xml.small.jpg" />" alt="The Spring configuration file" /><br><br>
+			
+			As you can see from the above screen shot, the spring-client.xml is added to the configuration. In this file are 
+			the definitions of the sources of data, from data base or file system etc. To begin with it is advisable to use the 
+			spring-client.xml and modify it as needed. The data base configuration files can also be used by adapting them 
+			to suit your environment.
+ 		</td>
 	</tr>
 	<tr>
-		<td class="td-content" colspan="2">
+		<td colspan="2">
 			&nbsp;
-		</td>
-	</tr>
-	<tr>
-		<td class="td-content" colspan="2">
-			Please refer to the table below for a full account of the available parameters and their definitions:
 		</td>
 	</tr>
 	
 	<tr>
 		<th colspan="2">IndexContext definition parameters</th>
 	</tr>
+	<tr>
+		<td colspan="2">
+			The IndexContext is the top level object in the configuration. It will contain the 'indexables'. Indexables are 
+			specific object that have the information to index a database or an intranet. An IndexContext can be seen as 
+			a wrapper for one Lucene index, please note the screen shot below:<br><br>
+			
+			<img src="<c:url value="/images/index.context.xml.jpg" />" alt="The default index context" /><br><br>
+			
+			
+		</td>
+	</tr>
 	
 	<tr>
-		<th class="td-content">Parameter</th>
-		<th class="td-content">Description</th>
+		<th>Parameter</th>
+		<th>Description</th>
 	</tr>
 	<tr>
-		<td class="td-content">indexName</td>
-		<td class="td-content"> 
-			This is the name of the index. The name appended to the index directory path will be the location of this particular 
-			index. Also 	the index will be accessed via this name when using the web service. This name must be unique within the 
-			configuration.
+		<td>indexName</td>
+		<td> 
+			This is the name of the index. This must be unique in the configuration, i.e. there can't be two indexes with 
+			the name of 'MyIndex'. This will be used for accessing the correct index during the search and all other system 
+			related functions.
 		</td>
 	</tr>
 	<tr>
-		<td class="td-content"> maxAge</td>
-		<td class="td-content"> 
+		<td> maxAge</td>
+		<td> 
 			The maximum age the index can become before a new one is generated. An index is triggered by an index 
 			passing the maximum age. This is defined in milli seconds. 
 		</td>
 	</tr>
 	<tr>
-		<td class="td-content"> throttle</td>
-		<td class="td-content"> 
+		<td>compoundFile</td>
+		<td> 
+			Whether Lucene should use a compound file or not. During the indexing there will be several files generated by Lucene. At the 
+			end the index will be optimized and potentially all the files will be merged into one file. With large indexes this is quite a long process, 
+			spanning hours. For more information on why and when to use a compound file please refer to the 
+			<a href="http://lucene.apache.org/java/docs/index.html" target="_top">Lucene</a> documentation.
+		</td>
+	</tr>
+	<tr>
+		<td> bufferedDocs</td>
+		<td> 
+			Refer to the <a href="http://lucene.apache.org/java/docs/index.html" target="_top">Lucene</a> documentation for information 
+			on the buffered documents. This is the number of documents that will be stored in memory before being committed to the 
+			index during indexing. Generally though you don't need to change this, the default is 1000, which is fine for most users.
+		</td>
+	</tr>
+	<tr>
+		<td> bufferSize</td>
+		<td> 
+			Refer to the <a href="http://lucene.apache.org/java/docs/index.html" target="_top">Lucene</a> documentation for information 
+			on the buffer size. This is the maximum size of the memory that Lucene can use before it commits the documents. A 
+			fail safe for out of memory errors. Once again the default is probably fine for most users at 128 meg.
+		</td>
+	</tr>
+	<tr>
+		<td>batchSize</td>
+		<td> 
+			The number of records to retrieve from the database in each batch. For each batch there is a select on the database, increasing 
+			the batch size means less selects and larger result sets. This does not have a very large performance influence unless the batch size 
+			is 1 for example as selects are generally fast. However please note that if you have a database that has blobs in it, and you have a batch 
+			size of 10 000, the database will materialize the blob in some cases, like Db2, and if the blobs are 5 000 bytes then the database will 
+			need 50 000 000 bytes available. In Db2 this will throw a -4477 error if I remember correctly. As well as this the table handler is multi 
+			threaded which will compound the effect. The recommended batch size is 1000.
+		</td>
+	</tr>
+	<tr>
+		<td>internetBatchSize</td>
+		<td> 
+			The batch size for the crawler. Each thread will get a batch of urls to read and index. Once again there is no real performance gain 
+			between 100 and 1000 in the batch size. The default is 100, this should e fine for most users.
+		</td>
+	</tr>
+	<tr>
+		<td> mergeFactor</td>
+		<td> 
+			Refer to the <a href="http://lucene.apache.org/java/docs/index.html" target="_top">Lucene</a> documentation for information 
+			on the merge factor. Essentially it is the number of segments that are kept in memory during the merge, which could be 
+			when the index is optimized or committed.
+		</td>
+	</tr>
+	<tr>
+		<td> maxFieldLength</td>
+		<td> 
+			Refer to the <a href="http://lucene.apache.org/java/docs/index.html" target="_top">Lucene</a> documentation for information 
+			on the maximum field length.
+		</td>
+	</tr>
+	<tr>
+		<td>maxReadLength</td>
+		<td> 
+			The maximum size to read from any resource, could be a blob in the database or a file on the file system. Indexing requires that 
+			the data be stored in memory, certainly for PDF files for example. As such this parameter is quite important. In cases where there 
+			is a PDF document of several hundred megabytes and 20 threads crawling the database, this would result in an out of  memory error. 
+			Unfortunately this also means that there will be some data lost if the files are very big. Lucene can handle readers as input, which 
+			can be on the file system but the performance loss is too great, certainly with large volumes is was found not to be practical. This 
+			parameter should be set with due care. The recommended size is 10 meg, keeping in mind that this will result in a least 1 gig of 
+			memory required for Ikube. In a high volume environment the recommended memory for Ikube would be dependant on the volumes 
+			but at least 3 gig.
+		</td>
+	</tr>
+	<tr>
+		<td> throttle</td>
+		<td> 
 			This parameter defines the time each thread will sleep between index items. In the case of the web crawler, 
 			 to avoid stressing the server, each thread will sleep between reading urls. In the case of a database index each 
 			 thread will sleep between records for this period of time, defined in milli seconds. 
 		</td>
 	</tr>
 	<tr>
-		<td class="td-content"> mergeFactor</td>
-		<td class="td-content"> 
-			Refer to the <a href="http://lucene.apache.org/java/docs/index.html" target="_top">Lucene</a> documentation for information 
-			on the merge factor. Essentially it is the number of segments that are kept in memory during the merge, which could be 
-			when the index is optimized or committed.      
-		</td>
-	</tr>
-	<tr>
-		<td class="td-content"> bufferedDocs</td>
-		<td class="td-content"> 
-			Refer to the <a href="http://lucene.apache.org/java/docs/index.html" target="_top">Lucene</a> documentation for information 
-			on the buffered documents. This is the number of documents that will be stored in memory before being committed to the 
-			index during indexing.
-		</td>
-	</tr>
-	<tr>
-		<td class="td-content"> bufferSize</td>
-		<td class="td-content"> 
-			Refer to the <a href="http://lucene.apache.org/java/docs/index.html" target="_top">Lucene</a> documentation for information 
-			on the buffer size. This is the maximum size of the memory that Lucene can use before it commits the documents. A 
-			fail safe for out of memory errors.
-		</td>
-	</tr>
-	<tr>
-		<td class="td-content"> maxFieldLength</td>
-		<td class="td-content"> 
-			Refer to the <a href="http://lucene.apache.org/java/docs/index.html" target="_top">Lucene</a> documentation for information 
-			on the maximum field length.
-		</td>
-	</tr>
-	<tr>
-		<td class="td-content">compoundFile</td>
-		<td class="td-content"> 
-			Whether Lucene should use a compound file or not. During the indexing there will be several files generated by Lucene. At the 
-			end the index will be optimized and potentially all the files will be merged into one file. With large indexes this is quite a long process, 
-			spanning hours. For more information on why and when to use a compound file please refer to the 
-			<a href="http://lucene.apache.org/java/docs/index.html" target="_top">Lucene</a> 	documentation.
-		</td>
-	</tr>
-	<tr>
-		<td class="td-content">batchSize</td>
-		<td class="td-content"> 
-			The number of records to retrieve from the database in each batch. For each batch there is a select on the database, increasing 
-			the batch size means less selects and larger result sets. This does not have a very large performance influence unless the batch size 
-			is 1 for example as selects are generally fast.
-		</td>
-	</tr>
-	<tr>
-		<td class="td-content">internetBatchSize</td>
-		<td class="td-content"> 
-			The batch size for the crawler. Each thread will get a batch of urls to read and index. Once again there is no real performance gain 
-			between 100 and 1000 in the batch size.
-		</td>
-	</tr>
-	<tr>
-		<td class="td-content">maxReadLength</td>
-		<td class="td-content"> 
-			The maximum size to read from any resource, could be a blob in the database or a file on the file system. Indexing requires that 
-			the data be stored in memory, certainly for PDF files for example. As such this parameter is quite important. In cases where there 
-			is a PDF document of several hundred megabytes and 20 threads crawling the database, this would result in an out of  memory error. 
-			Unfortunately this also means that there will be some data lost if the files are very big. Lucene can handle readers as input, which 
-			can be on the file system but the performance loss is too great, certainly with large volumes is was found not to be practical. This 
-			parameter should be set with due care. 
-		</td>
-	</tr>
-	<tr>
-		<td class="td-content">indexDirectoryPath</td>
-		<td class="td-content"> 
+		<td>indexDirectoryPath</td>
+		<td> 
 			The path to the indexes. This path combined with the index name will determine the exact location on the file system where  
-			the index is written. In the case where the directory path is for example ./indexes (as in the default configuration), Ikube will 
-			create the folder in the working folder for the Jvm. This path can be on the network somewhere, provided the file share where 
-			it is is accessible to the application. In the case of a cluster it is desirable to have all the servers write their part of the index to 
-			a file share as this means that there will be only one copy of the index. If the index path is defined as ./indexes, then each server 
-			will synchronize with the other servers, duplicating the index on each machine. Of course this facilitated complete failover in the 
-			case where one server goes down, but if the indexes are 1 terabyte each then each server must have at least 2 terabytes of disk 
-			space, one for the current index and one for the index being generated. 
+			the index is written. This path can be relative, for example ./indexes. In this case Ikube will create the directory that it needs in 
+			the dot folder, i.e. where the Jvm was started. In the case of a Tomcat install this folder will be TOMCAT_INSTALL/bin/indexes. 
+			In the case of a cluster the path needs to be defined for all the servers, and in the same place as in the default configuration, it is 
+			D:/cluster/indexes. All the servers will then write their portion of the index to this position, and consequently they will also all read 
+			and search the index at this location. To reiterate, for a single server the relative path ./indexes is fine but for a cluster the path 
+			needs to be on the network something like Z:/path/to/indexes. 
 		</td>
 	</tr>
 	<tr>
-		<td class="td-content">indexables</td>
-		<td class="td-content"> 
+		<td>indexDirectoryPathBackup</td>
+		<td> 
+			The path to the backup indexes. As in the above this needs to be defined differently for a single server and a cluster. This is as the 
+			name suggests the backup indexes. Generally an index will take several hours if not days and weeks to generate, in the case that the 
+			index becomes corrupt or the disk fails for some obscure reason, the backup index will be copied into the index path. This is an important 
+			fail over and recovery parameter. Note of course that there would need to be space for two indexes at least, the current one, the backup 
+			index and any indexes that are being generated.
+		</td>
+	</tr>
+	<tr>
+		<td>indexables</td>
+		<td> 
 			These are the sources of data that will be indexed, like a web site and a database for example. They are defined as children 
 			in the index context. Indexables and their definitions are described below.
-		</td>
-	</tr>
-	<tr>
-		<td class="td-content" colspan="2">
-			Sources of data to index are defined as indexables. An indexable can be a url or a table structure in a database. Each indexable needs 
-			to be defined separately. Indexables are added to the index context in the configuration, please refer to the 
-			<a href="http://code.google.com/p/ikube/source/browse/#svn%2Ftrunk%2Fmodules%2Fcore%2Fsrc%2Fmain%2Fresources%2FMETA-INF" 
-				target="_top">default configuration</a> 
-			for an example. We'll start at the top with a database definition of an indexable. Tables are defined as beans with the following parameters:
 		</td>
 	</tr>
 	
@@ -176,44 +198,51 @@
 		<th colspan="2">IndexableTable definition parameters</th>
 	</tr>
 	<tr>
+		<td colspan="2"> 
+			The table and database definition is the primary focus of Ikube. Ikube is designed to index databases in arbitrary complex structures. 
+			TODO Continue... Time for a break and a little TV.
+		</td>
+	</tr>
+	
+	<tr>
 		<th>Parameter</th>
 		<th>Description</th>
 	</tr>
 	<tr>
-		<td class="td-content">name</td>
-		<td class="td-content"> 
+		<td>name</td>
+		<td> 
 			The name of the table. This will be used to generate the sql to access the table.
 		</td>
 	</tr>
 	<tr>
-		<td class="td-content">predicate</td>
-		<td class="td-content"> 
+		<td>predicate</td>
+		<td> 
 			 This is an optional parameter where a predicate can be defined to limit the results. A typical example is 
 			 where faq.faqid &lt; 10000. 
 		</td>
 	</tr>
 		<tr>
-		<td class="td-content">primary</td>
-		<td class="td-content"> 
+		<td>primary</td>
+		<td> 
 			Whether this table is a top level table. This will determine when the data collected while accessing the table 
 			hierarchy will be written to the database.
 		</td>
 	</tr>
 	<tr>
-		<td class="td-content">dataSource</td>
-		<td class="td-content"> 
+		<td>dataSource</td>
+		<td> 
 			The reference to the datasource where the table is. The datasource must be defined in the Spring configuration, using 
 			perhaps C3p0 as the pooled datasource provider.
 		</td>
 	</tr>
 	<tr>
-		<td class="td-content">children</td>
-		<td class="td-content"> 
+		<td>children</td>
+		<td> 
 			The children of the table. Typically this is a list of columns and child tables.
 		</td>
 	</tr>
 	<tr>
-		<td class="td-content" colspan="2">
+		<td colspan="2">
 			As mentioned previously the sql to access the data is generated from the configuration. Tables can be nested within each 
 			other as is normally the case with tables in a relational database. If a table is defined as a primary table and a child table is added 
 			to the child indexables of the table then the logic to index the tables will be as follows:<br><br>
@@ -269,7 +298,7 @@
 		<td colspan="2">&nbsp;</td>
 	</tr>
 	<tr>
-		<td class="td-content" colspan="2">
+		<td colspan="2">
 			Columns are defined and added to the tables as children. Below is a table of parameters that can be defined for columns.
 		</td>
 	</tr>
@@ -281,61 +310,61 @@
 		<th>Description</th>
 	</tr>
 	<tr>
-		<td class="td-content">name</td>
-		<td class="td-content"> 
+		<td>name</td>
+		<td> 
 			The name of the column.
 		</td>
 	</tr>
 	<tr>
-		<td class="td-content">idColumn</td>
-		<td class="td-content"> 
+		<td>idColumn</td>
+		<td> 
 			Whether this is the id column in the table.
 		</td>
 	</tr>
 	<tr>
-		<td class="td-content">nameColumn</td>
-		<td class="td-content"> 
+		<td>nameColumn</td>
+		<td> 
 			This is used during indexing. For example in the case where there is a blob in the attachments table, and the name of the document 
 			is in the 'name' column, this parameter is used to determine the mime type. If the name is document.doc, and there is a blob of the document 
 			data then during indexing the .doc suffix will be used to get the correct parser to extract the text from the document, i.e. the Word parser.
 		</td>
 	</tr>
 	<tr>
-		<td class="td-content">fieldName</td>
-		<td class="td-content"> 
+		<td>fieldName</td>
+		<td> 
 			 The name of the field in the Lucene index. This allows columns to have separate field names, increasing the flexibility when searching. For 
 			 example if there are timestamps for creation and they are defined as separate Lucene fields then searches like timestamp &gt; 12/12/2010 
 			 AND timestamp &lt; 12/12/2011 are possible.
 		</td>
 	</tr>
 	<tr>
-		<td class="td-content">foreignKey</td>
-		<td class="td-content"> 
+		<td>foreignKey</td>
+		<td> 
 			  The reference to the foreign key in the 'parent' table. This is used to select the records from the 'child' table referring to the parent id.
 		</td>
 	</tr>
 	<tr>
-		<td class="td-content">analyzed</td>
-		<td class="td-content"> 
+		<td>analyzed</td>
+		<td> 
 			A Lucene parameter, whether the data should be analyzed. Generally this is true.
 		</td>
 	</tr>
 	<tr>
-		<td class="td-content">stored</td>
-		<td class="td-content"> 
+		<td>stored</td>
+		<td> 
 			A Lucene parameter, whether the data should be stored in the index. Generally this is true. Of course if there is very large volumes of data 
 			then storing the data could be prohibitively expensive, in terms of disk space and time. The write time of the index is a large proportion of the 
 			indexing time.   
 		</td>
 	</tr>
 	<tr>
-		<td class="td-content">vectored</td>
-		<td class="td-content"> 
+		<td>vectored</td>
+		<td> 
 			A Lucene parameter, whether the data should vectored. Generally this is true.
 		</td>
 	</tr>
 	<tr>
-		<td class="td-content" colspan="2"> 
+		<td colspan="2"> 
 			Please refer to the 
 			<a href="http://code.google.com/p/ikube/source/browse/#svn%2Ftrunk%2Fcode%2Fcore%2Fsrc%2Fmain%2Fresources%2FMETA-INF"
 				target="_top">default configuration</a> 
@@ -354,65 +383,65 @@
 		<th>Description</th>
 	</tr>
 	<tr>
-		<td class="td-content">name</td>
-		<td class="td-content"> 
+		<td>name</td>
+		<td> 
 			This is the name of the indexable, it should be unique within the configuration. It can be an arbitrary string.
 		</td>
 	</tr>
 	<tr>
-		<td class="td-content">url</td>
-		<td class="td-content">
+		<td>url</td>
+		<td>
 			The url of the site to index. Note that the host fragment of the url will be used as the base url 
 			and the point to start the index. All pages and documents that are linked to this host or have the host as the 
 			fragment in their url will be indexed.
 		</td>
 	</tr>
 	<tr>
-		<td class="td-content">idFieldName</td>
-		<td class="td-content">
+		<td>idFieldName</td>
+		<td>
 			The name of the field in the Lucene index for the identifier of this url. This is the field that will 
 			be searched against when the index is created.
 		</td>
 	</tr>
 	<tr>
-		<td class="td-content">titleFieldName</td>
-		<td class="td-content"> 
+		<td>titleFieldName</td>
+		<td> 
 			As above with the id field name this is the field in the Lucene index that will be searched against 
 			for the title of the document. In the case of an HTML page the title tag. In the case of a word document 
 			the parser will attempt to extract the title from the document for this field and so on.
 		</td>
 	</tr>
 	<tr>
-		<td class="td-content">contentFieldName</td>
-		<td class="td-content"> 
+		<td>contentFieldName</td>
+		<td> 
 			The name of the lucene content field for the documents.
 		</td>
 	</tr>
 	<tr>
-		<td class="td-content">excludedPattern</td>
-		<td class="td-content"> 
+		<td>excludedPattern</td>
+		<td> 
 			Patterns that will be excluded from the indexing process. If there are files that should not be 
 			indexed like images for example this can be used to exclude them from the indexing process.
 		</td>
 	</tr>
 	<tr>
-		<td class="td-content">analyzed</td>
-		<td class="td-content"> 
+		<td>analyzed</td>
+		<td> 
 			Whether the data will be analyzed by Lucene before being written to the index. Typically this 
 			will be true. For more information on the Lucene parameters please refer to the Lucene documentation.
 		</td>
 	</tr>
 	<tr>
-		<td class="td-content">stored</td>
-		<td class="td-content"> 
+		<td>stored</td>
+		<td> 
 			Whether to store the data in the index. This will also typically be true as the fragment of text 
 			returned by the search results will need the stored data to generate the fragment. However in the 
 			case of very large document sets this will increase the index size considerably and my not be necessary.
 		</td>
 	</tr>
 	<tr>
-		<td class="td-content">vectored</td>
-		<td class="td-content"> 
+		<td>vectored</td>
+		<td> 
 			Whether the data from the documents will be vectored by Lucene. Please refer to the Lucene 
 			documentation for more details on this parameter.
 		</td>
@@ -429,72 +458,72 @@
 		<th>Description</th>
 	</tr>
 	<tr>
-		<td class="td-content">mailHost</td>
-		<td class="td-content">
+		<td>mailHost</td>
+		<td>
 			The mail host url to access the mail account.
 		</td>
 	</tr>
 	<tr>
-		<td class="td-content">name</td>
-		<td class="td-content">
+		<td>name</td>
+		<td>
 			The unique name of the indexable, this can be an arbitrary value.
 		</td>
 	</tr>
 	<tr>
-		<td class="td-content">port</td>
-		<td class="td-content">
+		<td>port</td>
+		<td>
 			The port to use for accessing the mail account. In the case of Gogole mail for example this is 995. This 
 			has to be gotten from the mail provider.
 		</td>
 	</tr>
 	<tr>
-		<td class="td-content">protocol</td>
-		<td class="td-content">
+		<td>protocol</td>
+		<td>
 			The protocol to use. Also with Gmail the protocol is pop3 but is different for Hotmail and others, could be 
 			imap for example.
 		</td>
 	</tr>
 	<tr>
-		<td class="td-content">secureSocketLayer</td>
-		<td class="td-content">
+		<td>secureSocketLayer</td>
+		<td>
 			Whether to use secure sockets. Generally this will be true but need not be.
 		</td>
 	</tr>
 	<tr>
-		<td class="td-content">password</td>
-		<td class="td-content">
+		<td>password</td>
+		<td>
 			The password for the account.
 		</td>
 	</tr>
 	<tr>
-		<td class="td-content">username</td>
-		<td class="td-content">
+		<td>username</td>
+		<td>
 			The user account. In the case of the default mail account in the configuration this is ikube.ikube@gmail.com.
 		</td>
 	</tr>
 	<tr>
-		<td class="td-content">idField</td>
-		<td class="td-content">
+		<td>idField</td>
+		<td>
 			The id field name in the Lucene index for the identifier of the message. The id is a concatenation of the 
 			mail account, the message number and the user name.
 		</td>
 	</tr>
 	<tr>
-		<td class="td-content">contentField</td>
-		<td class="td-content">
+		<td>contentField</td>
+		<td>
 			The field name of the content field in the Lucene index. This is where the message data like the content and 
 			the header will be added to the index. 
 		</td>
 	</tr>
 	<tr>
-		<td class="td-content">titleField</td>
-		<td class="td-content">
+		<td>titleField</td>
+		<td>
 			The name of the title field in the Lucene index.
 		</td>
 	</tr>
 	<tr>
-		<td class="td-content"></td>
-		<td class="td-content"> 
+		<td></td>
+		<td> 
 		</td>
 	</tr>
 	
@@ -509,54 +538,54 @@
 		<th>Description</th>
 	</tr>
 	<tr>
-		<td class="td-content">name</td>
-		<td class="td-content">
+		<td>name</td>
+		<td>
 			The uniqiue name of this indexable in the configuration.
 		</td>
 	</tr>
 	<tr>
-		<td class="td-content">path</td>
-		<td class="td-content">
+		<td>path</td>
+		<td>
 			The absolute or relative path to the file or folder to index. This can be accross the network 
 			provided the drive is mapped to the machine where Ikube is running.
 		</td>
 	</tr>
 	<tr>
-		<td class="td-content">pathFieldName</td>
-		<td class="td-content">
+		<td>pathFieldName</td>
+		<td>
 			The name in the Lucene index of the path to the file that is being indexed.
 		</td>
 	</tr>
 	<tr>
-		<td class="td-content">nameFieldName</td>
-		<td class="td-content">
+		<td>nameFieldName</td>
+		<td>
 			The name in the Lucene index of the name of the file.
 		</td>
 	</tr>
 	<tr>
-		<td class="td-content">lengthFieldname</td>
-		<td class="td-content">
+		<td>lengthFieldname</td>
+		<td>
 			The name of the field in the Lucene index of the length of the file, ie. the size of it. 
 		</td>
 	</tr>
 	<tr>
-		<td class="td-content">contentFieldName</td>
-		<td class="td-content">
+		<td>contentFieldName</td>
+		<td>
 			The name of the field in the Lucene index for the fiel content. This is typically the important field 
 			that will be searched once the index is created.
 		</td>
 	</tr>
 	<tr>
-		<td class="td-content">excludedPattern</td>
-		<td class="td-content">
-			Any excluded patterns that whould be excldued from the indexing process, like for example 
+		<td>excludedPattern</td>
+		<td>
+			Any excluded patterns that would be excluded from the indexing process, like for example 
 			exe files and video as Ikube can't index video just yet, although there is some investigation into 
 			this at the moment.
 		</td>
 	</tr>
 	<tr>
-		<td class="td-content">lastModifiedFieldName</td>
-		<td class="td-content">
+		<td>lastModifiedFieldName</td>
+		<td>
 			The name of the field in the Lucene index for the last modified timestamp of the file being indexed.
 		</td>
 	</tr>

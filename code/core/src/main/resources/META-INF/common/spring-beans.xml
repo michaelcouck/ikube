@@ -39,10 +39,18 @@
 	
 	<!-- The cluster manager that is responsible for all cluster synchronization stuff. -->
 	<bean
+		id="ikube.cluster.cache.Cache"
+		class="ikube.cluster.cache.Cache"
+		lazy-init="false"
+		init-method="initialise" />
+	<bean
 		id="ikube.cluster.IClusterManager"
 		class="ikube.cluster.ClusterManager"
-		lazy-init="true"
-		property:cache-ref="ikube.cluster.cache.Cache" />
+		lazy-init="true" >
+		<constructor-arg>
+			<ref local="ikube.cluster.cache.Cache" />
+		</constructor-arg>
+	</bean>
 	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
 		property:staticMethod="ikube.cluster.ClusterManager.addShutdownHook"
 		lazy-init="false" />
@@ -50,11 +58,6 @@
 		property:staticMethod="ikube.cluster.ClusterManager.addClusterExceptionListener"
 		lazy-init="false" />
 	<!-- property:dataBase-ref="ikube.database.mem.DataBaseMem"  -->
-	<bean
-		id="ikube.cluster.cache.Cache"
-		class="ikube.cluster.cache.Cache"
-		lazy-init="false"
-		init-method="initialise" />
 	
 	<!-- 
 		These are just pojos that delegate to the real class that can be intercepted by Spring. 
@@ -153,6 +156,12 @@
 		property:type="clean"
 		property:delay="60000"
 		property:period="60000" />
+	<bean
+		id="ikube.listener.SchedulePerformance"
+		class="ikube.listener.Schedule"
+		property:type="performance"
+		property:delay="10000"
+		property:period="10000" />
 	
 	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
 		property:staticMethod="ikube.listener.Scheduler.addSchedule">
@@ -170,6 +179,12 @@
 		property:staticMethod="ikube.listener.Scheduler.addSchedule">
 		<property name="arguments">
 			<ref local="ikube.listener.ScheduleBroadClean" />
+		</property>
+	</bean>
+	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
+		property:staticMethod="ikube.listener.Scheduler.addSchedule">
+		<property name="arguments">
+			<ref local="ikube.listener.SchedulePerformance" />
 		</property>
 	</bean>
 	<bean id="schedulerInitialize" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"

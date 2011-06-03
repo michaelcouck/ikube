@@ -25,6 +25,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
  */
 public class MonitoringInterceptor implements IMonitoringInterceptor, IListener {
 
+	@SuppressWarnings("unused")
 	private static final Logger LOGGER = Logger.getLogger(MonitoringInterceptor.class);
 
 	protected transient final Map<String, Execution> indexingExecutions;
@@ -93,15 +94,16 @@ public class MonitoringInterceptor implements IMonitoringInterceptor, IListener 
 	@Override
 	@SuppressWarnings("unchecked")
 	public void handleNotification(Event event) {
-		if (event.getType().equals(Event.ALIVE)) {
+		// LOGGER.info("Monitoring interceptor : " + event);
+		if (event.getType().equals(Event.PERFORMANCE)) {
 			// Get the server
 			IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
 			Server server = clusterManager.getServer();
-			calculateStatistics(searchingExecutions);
 			calculateStatistics(indexingExecutions);
-			server.setSearchingExecutions((Map<String, Execution>) SerializationUtilities.clone(searchingExecutions));
+			calculateStatistics(searchingExecutions);
 			server.setIndexingExecutions((Map<String, Execution>) SerializationUtilities.clone(indexingExecutions));
-			LOGGER.debug("Publishing server : " + server);
+			server.setSearchingExecutions((Map<String, Execution>) SerializationUtilities.clone(searchingExecutions));
+			// LOGGER.info("Publishing server : " + server);
 			// Publish the server with the new data
 			clusterManager.set(Server.class.getName(), server.getId(), server);
 		}

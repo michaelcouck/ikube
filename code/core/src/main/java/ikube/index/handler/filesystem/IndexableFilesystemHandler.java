@@ -9,12 +9,15 @@ import ikube.model.IndexContext;
 import ikube.model.IndexableFileSystem;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
+import ikube.toolkit.HashUtilities;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -24,8 +27,9 @@ import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
 
 /**
- * This class indexes a file share on the network. It is not multi threaded as file access is generally faster than parsing anyway so
- * performance would degrade if this class is multi-threaded due to the cluster synchronisation overhead.
+ * This class indexes a file share on the network. It is multi threaded but not cluster load balanced. Each thread will iterate over each
+ * file, this seems faster than trying to divide the files up among the threads logically, and acts as a natural load balancing between the
+ * threads.
  * 
  * @author Cristi Bozga
  * @author Michael Couck
@@ -36,28 +40,38 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 
 	@Override
 	public List<Thread> handle(final IndexContext indexContext, final IndexableFileSystem indexable) throws Exception {
+		List<Thread> threads = new ArrayList<Thread>();
 		try {
 			// We need to check the cluster to see if this indexable is already handled by
 			// one of the other servers. The file system is very fast and there is no need to
 			// cluster the indexing
 			boolean isHandled = isHandled(indexContext, indexable);
 			if (!isHandled) {
-				File baseFile = new File(indexable.getPath());
-				Pattern pattern = getPattern(indexable.getExcludedPattern());
+				final File baseFile = new File(indexable.getPath());
+				final Pattern pattern = getPattern(indexable.getExcludedPattern());
 				if (isExcluded(baseFile, pattern)) {
 					logger.warn("Base directory excluded : " + baseFile);
 					return null;
 				}
-				if (baseFile.isDirectory()) {
-					handleFolder(indexContext, indexable, baseFile, pattern);
-				} else {
-					handleFile(indexContext, indexable, baseFile);
+				final List<Long> filesDone = new ArrayList<Long>();
+				for (int i = 0; i < getThreads(); i++) {
+					Thread thread = new Thread(new Runnable() {
+						public void run() {
+							if (baseFile.isDirectory()) {
+								handleFolder(indexContext, indexable, baseFile, pattern, filesDone);
+							} else {
+								handleFile(indexContext, indexable, baseFile);
+							}
+						}
+					});
+					thread.start();
+					threads.add(thread);
 				}
 			}
 		} catch (Exception e) {
 			logger.error("Exception indexing the file share : " + indexable, e);
 		}
-		return null;
+		return threads;
 	}
 
 	/**
@@ -74,20 +88,40 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 	 *            the excluded patterns
 	 */
 	protected void handleFolder(final IndexContext indexContext, final IndexableFileSystem indexableFileSystem, final File folder,
-			final Pattern excludedPattern) {
+			final Pattern excludedPattern, final List<Long> filesDone) {
 		File[] files = folder.listFiles();
 		if (files != null) {
 			for (File file : files) {
 				if (isExcluded(file, excludedPattern)) {
 					continue;
 				}
-				// logger.debug("Visiting file : " + file);
 				if (file.isDirectory()) {
-					handleFolder(indexContext, indexableFileSystem, file, excludedPattern);
+					handleFolder(indexContext, indexableFileSystem, file, excludedPattern, filesDone);
 				} else {
+					if (isDone(file, filesDone)) {
+						continue;
+					}
+					if (logger.isDebugEnabled()) {
+						logger.debug("Visiting file : " + file + ", " + Thread.currentThread().hashCode());
+					}
 					handleFile(indexContext, indexableFileSystem, file);
 				}
 			}
+		}
+	}
+
+	protected synchronized boolean isDone(File file, final List<Long> filesDone) {
+		try {
+			long hash = HashUtilities.hash(file.getAbsolutePath());
+			int insertionPoint = Collections.binarySearch(filesDone, hash);
+			if (insertionPoint >= 0) {
+				return Boolean.TRUE;
+			}
+			filesDone.add(Math.abs(insertionPoint) + 1, hash);
+			// logger.info("File : " + hash + ", " + contains + ", " + filesDone.hashCode() + ", " + filesDone);
+			return Boolean.FALSE;
+		} finally {
+			notifyAll();
 		}
 	}
 

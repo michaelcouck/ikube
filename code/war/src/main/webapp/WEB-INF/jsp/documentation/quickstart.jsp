@@ -13,19 +13,25 @@
 			now we are not interested in the database setup because we are just going to do one web site. For completeness 
 			the files of interest in the default configurations are as follows: 
 			<br><br>
+			
+			Mandatory system configuration:<br>
 			1) spring.xml - contains includes of the other configuration files<br>
-			2) spring-db2-jdbc.xml - the Db2 configuration<br>
-			3) spring-h2-jdbc.xml - the H2 datasource configuration<br>
-			4) spring-oracle-jdbc.xml - the Oracle datasource configuration<br>
-			5) spring-client.xml - this is the interesting one at the moment, for clients<br>
-			6) spring-integration.xml - the integration testing beans<br>
-			7) spring-actions.xml - the indexing actions defined for Ikube<br>
-			8) spring-aop.xml - the AOP file for the rules engine and monitoring<br>
-			9) spring-beans.xml - application beans, i.e. not really for clients to modify<br>
-			10) spring-ikube.xml - and the configuration to index the documentation in the WAR<br>
-			11) spring-geospatial.xml - the index for the geospatial index. This index is for clients 
-			that have address data and need to order the results wy distance from a 
-			point(latitude and longitude)<br><br>
+			2) spring-beans.xml - application beans, i.e. not really for clients to modify<br>
+			3) spring-actions.xml - the indexing actions defined for Ikube<br>
+			4) spring-aop.xml - the AOP file for the rules engine and monitoring<br><br>
+			
+			Optional system configuration:<br>
+			5) spring-integration.xml - the integration testing beans<br>
+			6) spring-ikube.xml - and the configuration to index the documentation in the WAR<br>
+			7) spring-geospatial.xml - the index for the geospatial index. This index is for clients 
+				that have address data and need to order the results wy distance from a 
+				point(latitude and longitude)<br><br>
+			
+			Optional client configuration:<br>
+			8) spring-client.xml - this is the interesting one at the moment, for clients<br>
+			9) spring-db2-jdbc.xml - the Db2 configuration<br>
+			10) spring-h2-jdbc.xml - the H2 datasource configuration<br>
+			11) spring-oracle-jdbc.xml - the Oracle datasource configuration<br><br>
 			
 			For the first install we will use the default configuration in the war. For the install you need to down-load your favorite version 
 			of Tomcat and pop the <a href="http://code.google.com/p/ikube/downloads/list" target="_top">war</a> in the webapps directory. 

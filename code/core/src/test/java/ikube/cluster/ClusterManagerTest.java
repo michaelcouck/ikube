@@ -1,8 +1,10 @@
 package ikube.cluster;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import ikube.ATest;
 import ikube.cluster.cache.Cache;
 import ikube.listener.ListenerManager;
@@ -50,10 +52,9 @@ public class ClusterManagerTest extends ATest {
 		remoteServer.setId(HashUtilities.hash(remoteServer.getAddress()));
 		remoteServer.setWorking(Boolean.FALSE);
 
-		clusterManager = new ClusterManager();
 		Cache cache = new Cache();
+		clusterManager = new ClusterManager(cache);
 		cache.initialise();
-		clusterManager.setCache(cache);
 		clusterManager.clear(Url.class.getName());
 		clusterManager.clear(Server.class.getName());
 		ListenerManager.removeListeners();
@@ -87,7 +88,7 @@ public class ClusterManagerTest extends ATest {
 	}
 
 	@Test
-	public void get() {
+	public void getNameSql() {
 		// What we want to achieve here is to set an object
 		// in the cache then do a sql like query on the cache and
 		// we should get the server back again
@@ -106,11 +107,22 @@ public class ClusterManagerTest extends ATest {
 		clusterManager.clear(Server.class.getName());
 		server = clusterManager.get(Server.class.getName(), sql);
 		assertNull(server);
+
+		Url url = new Url();
+		url.setId(System.currentTimeMillis());
+
+		sql = "id = " + url.getId();
+		Url cacheUrl = clusterManager.get(Url.class.getName(), sql);
+		assertNull(cacheUrl);
+
+		clusterManager.set(Url.class.getName(), url.getId(), url);
+
+		cacheUrl = clusterManager.get(Url.class.getName(), sql);
+		assertNotNull(cacheUrl);
 	}
 
 	@Test
-	public void getBatch() throws InterruptedException {
-		// int
+	public void getClassNameCriteriaActionSize() throws InterruptedException {
 		List<Url> batch = clusterManager.get(Url.class, Url.class.getName(), null, null, batchSize);
 		assertEquals(0, batch.size());
 
@@ -164,26 +176,25 @@ public class ClusterManagerTest extends ATest {
 		servers = clusterManager.getServers();
 		assertEquals(1, servers.size());
 
-		clusterManager.getServer();
-
+		Server server = clusterManager.getServer();
+		clusterManager.set(Server.class.getName(), server.getId(), server);
 		servers = clusterManager.getServers();
 		assertEquals(2, servers.size());
 	}
 
 	@Test
-	public void set() {
-		// Class<T>, Long, T
+	public void setNameIdObjectGetNameIdRemove() {
+		long id = System.currentTimeMillis();
 		Url url = new Url();
-		url.setId(System.currentTimeMillis());
-
-		String sql = "id = " + url.getId();
-		Url cacheUrl = clusterManager.get(Url.class.getName(), sql);
-		assertNull(cacheUrl);
-
+		url.setId(id);
 		clusterManager.set(Url.class.getName(), url.getId(), url);
+		url = clusterManager.get(Url.class.getName(), url.getId());
+		assertNotNull("We should get the url from the cache : ", url);
+		assertEquals("The id should be the url's id : ", (long) id, (long) url.getId());
 
-		cacheUrl = clusterManager.get(Url.class.getName(), sql);
-		assertNotNull(cacheUrl);
+		clusterManager.remove(Url.class.getName(), url.getId());
+		url = clusterManager.get(Url.class.getName(), url.getId());
+		assertNull("There should be no url in the cache : ", url);
 	}
 
 	@Test
@@ -215,7 +226,7 @@ public class ClusterManagerTest extends ATest {
 		assertEquals(expectedStartTime, server.getActions().get(0).getStartTime());
 
 		List<Thread> threads = new ArrayList<Thread>();
-		int threadSize = 1;
+		int threadSize = 3;
 		for (int i = 0; i < threadSize; i++) {
 			Thread thread = new Thread(new Runnable() {
 				public void run() {
@@ -229,7 +240,6 @@ public class ClusterManagerTest extends ATest {
 			threads.add(thread);
 			thread.start();
 		}
-
 		ThreadUtilities.waitForThreads(threads);
 	}
 
@@ -251,11 +261,37 @@ public class ClusterManagerTest extends ATest {
 		assertEquals(iterations, size);
 	}
 
-	public static void main(String[] args) throws Exception {
-		ClusterManagerTest clusterManagerTest = new ClusterManagerTest();
-		clusterManagerTest.before();
-		clusterManagerTest.setWorking();
-		clusterManagerTest.after();
+	@Test
+	public void anyWorking() {
+		boolean anyWorking = clusterManager.anyWorking();
+		assertFalse("We haven't set any server working : ", anyWorking);
+		clusterManager.setWorking(indexName, indexableName, Boolean.TRUE);
+		anyWorking = clusterManager.anyWorking();
+		assertTrue("This server should be registered as working : ", anyWorking);
+	}
+
+	@Test
+	public void anyWorkingIndexName() {
+		boolean anyWorking = clusterManager.anyWorking(indexName);
+		assertFalse("There should be no servers working : ", anyWorking);
+		clusterManager.setWorking(indexName, indexableName, Boolean.TRUE);
+		anyWorking = clusterManager.anyWorking(indexName);
+		assertTrue("This server should be working on the index now : ", anyWorking);
+	}
+
+	@Test
+	public void getServer() {
+		Server server = clusterManager.getServer();
+		assertNotNull("The server can never be null : ", server);
+	}
+
+	@Test
+	public void isHandled() {
+		boolean isHandled = clusterManager.isHandled(indexableName, indexName);
+		assertFalse("We haven't handled this indexable : ", isHandled);
+		clusterManager.setWorking(indexName, indexableName, Boolean.TRUE);
+		isHandled = clusterManager.isHandled(indexableName, indexName);
+		assertTrue("This indexable is set to handled by the set working : ", isHandled);
 	}
 
 }

@@ -62,46 +62,35 @@ public class SearchController extends BaseController {
 		}
 
 		if (searchFields.size() > 0) {
-			List<String> webServiceUrls = server.getWebServiceUrls();
-			for (String webServiceUrl : webServiceUrls) {
-				if (webServiceUrl.contains(ISearcherWebService.class.getSimpleName())) {
-					ISearcherWebService searcherWebService = ServiceLocator.getService(ISearcherWebService.class, webServiceUrl,
-							ISearcherWebService.NAMESPACE, ISearcherWebService.SERVICE);
-					// LOGGER.error("Searcher web service : " + searcherWebService);
-					String xml = searcherWebService.searchMulti(indexName, searchStrings.toArray(new String[searchStrings.size()]),
-							searchFields.toArray(new String[searchFields.size()]), Boolean.TRUE, 0, MAX_RESULTS);
+			ISearcherWebService searcherWebService = ServiceLocator.getService(ISearcherWebService.class, server.getSearchWebServiceUrl(),
+					ISearcherWebService.NAMESPACE, ISearcherWebService.SERVICE);
+			// LOGGER.error("Searcher web service : " + searcherWebService);
+			String xml = searcherWebService.searchMulti(indexName, searchStrings.toArray(new String[searchStrings.size()]),
+					searchFields.toArray(new String[searchFields.size()]), Boolean.TRUE, 0, MAX_RESULTS);
 
-					List<Map<String, String>> results = (List<Map<String, String>>) SerializationUtilities.deserialize(xml);
-					// LOGGER.error("Results : " + results);
+			List<Map<String, String>> results = (List<Map<String, String>>) SerializationUtilities.deserialize(xml);
+			// LOGGER.error("Results : " + results);
 
-					Map<String, String> statistics = results.get(results.size() - 1);
-					String stringTotal = statistics.get(IConstants.TOTAL);
-					String stringDuration = statistics.get(IConstants.DURATION);
+			Map<String, String> statistics = results.get(results.size() - 1);
+			String stringTotal = statistics.get(IConstants.TOTAL);
+			String stringDuration = statistics.get(IConstants.DURATION);
 
-					modelAndView.addObject(IConstants.TOTAL, stringTotal != null ? Integer.parseInt(stringTotal) : 0);
-					modelAndView.addObject(IConstants.DURATION, stringDuration != null ? Integer.parseInt(stringDuration) : 0);
+			modelAndView.addObject(IConstants.TOTAL, stringTotal != null ? Integer.parseInt(stringTotal) : 0);
+			modelAndView.addObject(IConstants.DURATION, stringDuration != null ? Integer.parseInt(stringDuration) : 0);
 
-					results.remove(statistics);
+			results.remove(statistics);
 
-					modelAndView.addObject(IConstants.RESULTS, results);
-					modelAndView.addObject(IConstants.SEARCH_STRINGS, searchStrings.toString());
-					// TODO For now we can still put this in the session but this will
-					// only be used in the search tag so it can be removed when everything
-					// is working just with the model
-					request.getSession().setAttribute(IConstants.RESULTS, results);
-					break;
-				}
-			}
+			modelAndView.addObject(IConstants.RESULTS, results);
+			modelAndView.addObject(IConstants.SEARCH_STRINGS, searchStrings.toString());
+			// TODO For now we can still put this in the session but this will
+			// only be used in the search tag so it can be removed when everything
+			// is working just with the model
+			request.getSession().setAttribute(IConstants.RESULTS, results);
 		}
 
 		modelAndView.addObject(IConstants.SERVER, server);
 		modelAndView.addObject(IConstants.INDEXABLES, indexables);
 		return modelAndView;
-	}
-
-	@Override
-	protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		return handleRequest(request, response);
 	}
 
 }

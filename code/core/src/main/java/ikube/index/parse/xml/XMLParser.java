@@ -12,6 +12,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.List;
 
+import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
@@ -57,6 +58,20 @@ public class XMLParser implements IParser {
 		String text = parent.getTextTrim();
 		if (text != null && !text.equals("")) {
 			writer.append(' ').append(text).append(' ');
+		}
+		// Get all the attributes as well
+		List<Attribute> attributes = parent.attributes();
+		if (attributes != null) {
+			for (Attribute attribute : attributes) {
+				String name = attribute.getName();
+				String value = attribute.getValue();
+				if (name != null && !name.trim().equals("")) {
+					writer.append(' ').append(name);
+				}
+				if (value != null && !value.trim().equals("")) {
+					writer.append(' ').append(value);
+				}
+			}
 		}
 		List<Element> children = parent.elements();
 		for (Element child : children) {

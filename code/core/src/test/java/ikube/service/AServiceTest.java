@@ -2,6 +2,8 @@ package ikube.service;
 
 import ikube.ATest;
 import ikube.cluster.ClusterManager;
+import ikube.cluster.cache.Cache;
+import ikube.cluster.cache.ICache;
 import ikube.mock.ClusterManagerMock;
 
 import java.util.Arrays;
@@ -42,7 +44,8 @@ public abstract class AServiceTest extends ATest {
 	@Before
 	@SuppressWarnings("unchecked")
 	public void before() throws Exception {
-		webServicePublisher = new WebServicePublisher(new ClusterManager());
+		ICache cache = new Cache();
+		webServicePublisher = new WebServicePublisher(new ClusterManager(cache));
 		List<?> implementors = Arrays.asList(new SearcherWebService());
 		webServicePublisher.setImplementors((List<Object>) implementors);
 		webServicePublisher.setPaths(Arrays.asList(ISearcherWebService.PUBLISHED_PATH));

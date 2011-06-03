@@ -12,6 +12,7 @@ import ikube.toolkit.FileUtilities;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
@@ -50,7 +51,7 @@ public class MonitoringServiceTest extends BaseTest {
 	}
 
 	@Test
-	public void getFieldNames() {
+	public void getIndexFieldNames() {
 		String[] indexContextNames = monitoringService.getIndexContextNames();
 		for (String indexContextName : indexContextNames) {
 			IndexContext indexContext = ApplicationContextManager.getBean(indexContextName);
@@ -65,9 +66,10 @@ public class MonitoringServiceTest extends BaseTest {
 		for (String indexfieldName : indexFieldNames) {
 			logger.info("Field name : " + indexfieldName);
 		}
-		assertEquals("The first field name should be the content : ", "content", indexFieldNames[0]);
-		assertEquals("The second field name should be the id : ", "id", indexFieldNames[1]);
-		assertEquals("The third field name should be the title : ", "title", indexFieldNames[2]);
+		List<String> indexFieldNamesList = Arrays.asList(indexFieldNames);
+		assertTrue("The id field should be in the Ikube index : ", indexFieldNamesList.contains(IConstants.ID));
+		assertTrue("The title field should be in the Ikube index : ", indexFieldNamesList.contains(IConstants.TITLE));
+		assertTrue("The content field should be in the Ikube index : ", indexFieldNamesList.contains(IConstants.CONTENT));
 	}
 
 	@Test

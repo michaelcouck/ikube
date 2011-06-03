@@ -2,7 +2,6 @@ package ikube.listener;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -28,9 +27,9 @@ public final class ListenerManager {
 	 * @param event
 	 *            the event for distribution
 	 */
-	private static synchronized void notifyListeners(final Event event) {
+	private static void notifyListeners(final Event event) {
 		try {
-			for (final IListener listener : Collections.synchronizedList(LISTENERS)) {
+			for (final IListener listener : LISTENERS) {
 				try {
 					POOLED_EXECUTER.execute(new Runnable() {
 						public void run() {
@@ -45,7 +44,7 @@ public final class ListenerManager {
 				}
 			}
 		} finally {
-			ListenerManager.class.notifyAll();
+			// ListenerManager.class.notifyAll();
 		}
 	}
 

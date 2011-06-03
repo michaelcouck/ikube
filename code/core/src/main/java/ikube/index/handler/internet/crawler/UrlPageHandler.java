@@ -69,8 +69,8 @@ public class UrlPageHandler extends UrlHandler<Url> implements Runnable {
 	private ICache.IAction<Url> action = new ICache.IAction<Url>() {
 		@Override
 		public void execute(Url url) {
-			clusterManager.getCache().remove(IConstants.URL, url.getId());
-			clusterManager.getCache().set(IConstants.URL_DONE, url.getId(), url);
+			clusterManager.remove(IConstants.URL, url.getId());
+			clusterManager.set(IConstants.URL_DONE, url.getId(), url);
 		}
 	};
 

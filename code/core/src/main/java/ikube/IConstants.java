@@ -1,5 +1,7 @@
 package ikube;
 
+import java.text.SimpleDateFormat;
+
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.util.Version;
@@ -56,6 +58,7 @@ public interface IConstants {
 	String ID = "id";
 	String INDEX = "index";
 	String SCORE = "score";
+	String CONTENT = "content";
 	String CONTENTS = "contents";
 	String FRAGMENT = "fragment";
 	String TOTAL = "total";
@@ -133,9 +136,9 @@ public interface IConstants {
 	/** The timeout to wait for the lock. */
 	long LOCK_TIMEOUT = 10000;
 	/** We only keep a few actions in the server. */
-	double MAX_ACTION_SIZE = 100;
+	double MAX_ACTION_SIZE = 7;
 	/** The ratio to delete the actions when the maximum is reached. */
-	double ACTION_PRUNE_RATIO = 0.5;
+	double ACTION_PRUNE_RATIO = 0.3;
 	/** The maximum age that the server can get to before it is deleted from the cluster. */
 	int MAX_AGE = 600000;
 
@@ -147,5 +150,7 @@ public interface IConstants {
 
 	/** The length of the log that should be passed around. */
 	long TAIL_LOG = 10000;
+	
+	SimpleDateFormat HHMMSS_DDMMYYYY = new SimpleDateFormat("hh:mm:ss ddMMyyyy");
 
 }

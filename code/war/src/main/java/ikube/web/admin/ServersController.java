@@ -6,8 +6,9 @@ import ikube.model.IndexContext;
 import ikube.model.Server;
 import ikube.service.IMonitoringService;
 import ikube.toolkit.ApplicationContextManager;
-import ikube.toolkit.GeneralUtilities;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
+ * This controller will get all the servers and put them in the response to be made available to the front end.
+ * 
  * @author Michael Couck
  * @since 15.05.2011
  * @version 01.00
@@ -27,21 +30,25 @@ public class ServersController extends BaseController {
 	@Override
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		String viewUrl = getViewUri(request);
-		// JOptionPane.showInputDialog("Hello controller : " + request.getRequestURI() + ", " + viewUrl);
 		ModelAndView modelAndView = new ModelAndView(viewUrl);
-		List<Server> servers = ApplicationContextManager.getBean(IClusterManager.class).getServers();
+		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
+		// Get the servers and sort them
+		List<Server> servers = clusterManager.getServers();
+		Collections.sort(servers, new Comparator<Server>() {
+			@Override
+			public int compare(Server o1, Server o2) {
+				return o1.getAddress().compareTo(o2.getAddress());
+			}
+		});
 		modelAndView.addObject(IConstants.SERVERS, servers);
-		
-		String address = request.getParameter(IConstants.ADDRESS);
-		Server server = GeneralUtilities.findObject(Server.class, servers, IConstants.ADDRESS, address);
 
+		// Put the server and other related stuff in the response
+		Server server = clusterManager.getServer();
 		modelAndView.addObject(IConstants.SERVER, server);
-		if (server != null) {
-			modelAndView.addObject(IConstants.ACTIONS, server.getActions());
-			modelAndView.addObject(IConstants.WEB_SERVICE_URLS, server.getWebServiceUrls());
-			modelAndView.addObject(IConstants.INDEXING_EXECUTIONS, server.getIndexingExecutions());
-			modelAndView.addObject(IConstants.SEARCHING_EXECUTIONS, server.getSearchingExecutions());
-		}
+		modelAndView.addObject(IConstants.ACTIONS, server.getActions());
+		modelAndView.addObject(IConstants.WEB_SERVICE_URLS, server.getWebServiceUrls());
+		modelAndView.addObject(IConstants.INDEXING_EXECUTIONS, server.getIndexingExecutions());
+		modelAndView.addObject(IConstants.SEARCHING_EXECUTIONS, server.getSearchingExecutions());
 
 		Map<String, IndexContext> indexContexts = ApplicationContextManager.getBeans(IndexContext.class);
 		modelAndView.addObject(IConstants.INDEX_CONTEXTS, indexContexts.values());
@@ -58,13 +65,8 @@ public class ServersController extends BaseController {
 			indexProperties.put(IConstants.INDEX_DOCUMENTS, numDocs);
 			modelAndView.addObject(indexName, indexProperties);
 		}
-		
-		return modelAndView;
-	}
 
-	@Override
-	protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		return handleRequest(request, response);
+		return modelAndView;
 	}
 
 }

@@ -50,8 +50,11 @@ public class Cache implements ICache {
 				// TODO This needs to be changed! The name is the name
 				// of the map, not the class name, API change in fact!
 				object = (T) dataBase.find(Class.forName(name), id);
+				if (object != null) {
+					getMap(name).put(id, object);
+				}
 			} catch (ClassNotFoundException e) {
-				logger.error("", e);
+				logger.error("Exception looking for object : " + name + ", " + id, e);
 			}
 		}
 		return object;
@@ -120,14 +123,11 @@ public class Cache implements ICache {
 	@Override
 	public <T extends Object> T get(final String name, final String sql) {
 		Map<Long, T> map = getMap(name);
-		if (IMap.class.isAssignableFrom(map.getClass())) {
-			Collection<T> collection = ((IMap<Long, T>) map).values(new SqlPredicate(sql));
-			if (collection.isEmpty()) {
-				return null;
-			}
-			return collection.iterator().next();
+		Collection<T> collection = ((IMap<Long, T>) map).values(new SqlPredicate(sql));
+		if (collection.isEmpty()) {
+			return null;
 		}
-		return null;
+		return collection.iterator().next();
 	}
 
 	private <T extends Object> Map<Long, T> getMap(final String name) {

@@ -9,6 +9,8 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 /**
+ * This test is just for running the enrichment from within Eclipse, so not really a test just a stand alone enrichment runner essentially.
+ * 
  * @author Michael Couck
  * @since 15.05.2011
  * @version 01.00

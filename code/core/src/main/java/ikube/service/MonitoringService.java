@@ -215,8 +215,8 @@ public class MonitoringService implements IMonitoringService {
 
 	protected Set<String> getFields(final List<Indexable<?>> indexables, final Set<String> fieldNames) {
 		if (indexables != null) {
-			for (Indexable<?> child : indexables) {
-				getFields(child, fieldNames);
+			for (Indexable<?> indexable : indexables) {
+				getFields(indexable, fieldNames);
 			}
 		}
 		return fieldNames;

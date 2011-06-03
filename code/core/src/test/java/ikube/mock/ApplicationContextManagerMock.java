@@ -28,14 +28,10 @@ public class ApplicationContextManagerMock {
 
 	public static Object BEAN;
 	public static IndexContext INDEX_CONTEXT;
-	public static IClusterManager CLUSTER_MANAGER;
+	public static IClusterManager CLUSTER_MANAGER = mock(IClusterManager.class);
 	public static IDataBase DATABASE = mock(IDataBase.class);
 	public static IndexableInternetHandler HANDLER = mock(IndexableInternetHandler.class);
 	
-	static {
-		// when(HANDLER.getThreads()).thenReturn(0);
-	}
-
 	@Mock()
 	@SuppressWarnings("unchecked")
 	public static synchronized <T> T getBean(final Class<T> klass) {

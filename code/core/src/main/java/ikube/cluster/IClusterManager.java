@@ -113,8 +113,6 @@ public interface IClusterManager {
 	 */
 	<T> void remove(String name, Long id);
 
-	ICache getCache();
-
 	boolean isException();
 
 	void setException(boolean exception);

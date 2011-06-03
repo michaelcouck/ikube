@@ -7,8 +7,10 @@ import ikube.mock.ApplicationContextManagerMock;
 import ikube.mock.IndexManagerMock;
 import ikube.model.IndexableFileSystem;
 import ikube.toolkit.FileUtilities;
+import ikube.toolkit.ThreadUtilities;
 
 import java.io.File;
+import java.util.List;
 
 import mockit.Mockit;
 
@@ -23,7 +25,7 @@ import org.junit.Test;
  */
 public class IndexableFileSystemHandlerTest extends ATest {
 
-	private File filesDirectory = FileUtilities.findFileRecursively(new File("."), "data");
+	private File filesDirectory;
 	private IndexableFileSystem indexableFileSystem = new IndexableFileSystem();
 	private IndexableFilesystemHandler indexableFileSystemHandler = new IndexableFilesystemHandler();
 
@@ -35,16 +37,22 @@ public class IndexableFileSystemHandlerTest extends ATest {
 	public void before() {
 		Mockit.setUpMocks();
 		Mockit.setUpMocks(ApplicationContextManagerMock.class, IndexManagerMock.class);
+		when(INDEX.getIndexWriter()).thenReturn(INDEX_WRITER);
+		
+		File file = FileUtilities.findFileRecursively(new File("."), "99.ppt");
+		filesDirectory = file.getParentFile();
+		
 		indexableFileSystem.setPath(filesDirectory.getAbsolutePath());
 		indexableFileSystem.setContentFieldName("contentFieldName");
 		indexableFileSystem.setLastModifiedFieldName("lastModifiedFieldName");
 		indexableFileSystem.setLengthFieldName("lengthFieldName");
 		indexableFileSystem.setNameFieldName("nameFieldName");
 		indexableFileSystem.setPathFieldName("pathFieldName");
-		indexableFileSystemHandler.setDocumentDelegate(new DocumentDelegate());
-		when(INDEX.getIndexWriter()).thenReturn(INDEX_WRITER);
-
 		indexableFileSystem.setName(this.getClass().getSimpleName());
+		indexableFileSystem.setExcludedPattern(".svn");
+		
+		indexableFileSystemHandler.setDocumentDelegate(new DocumentDelegate());
+		indexableFileSystemHandler.setThreads(3);
 	}
 
 	@After
@@ -54,7 +62,9 @@ public class IndexableFileSystemHandlerTest extends ATest {
 
 	@Test
 	public void handle() throws Exception {
-		indexableFileSystemHandler.handle(INDEX_CONTEXT, indexableFileSystem);
+		List<Thread> threads = indexableFileSystemHandler.handle(INDEX_CONTEXT, indexableFileSystem);
+		ThreadUtilities.waitForThreads(threads);
+		// Verify that there are some files indexed
 	}
 
 }

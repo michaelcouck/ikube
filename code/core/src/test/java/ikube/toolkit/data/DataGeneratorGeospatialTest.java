@@ -32,6 +32,13 @@ import org.springframework.util.StringUtils;
 import co.uk.hjcs.canyon.session.Session;
 import co.uk.hjcs.canyon.session.SessionFactory;
 
+/**
+ * This isn't a test, it is just for loading the database with the data fro mthe GeoNames data files.
+ * 
+ * @author Michael Couck
+ * @since 02.06.11
+ * @version 01.00
+ */
 @Ignore
 public class DataGeneratorGeospatialTest extends ATest {
 

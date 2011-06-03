@@ -1,7 +1,12 @@
 package ikube.model;
 
+import ikube.IConstants;
+import ikube.service.IMonitoringService;
+import ikube.service.ISearcherWebService;
+
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -80,6 +85,10 @@ public class Server extends Persistable implements Comparable<Server> {
 			this.startTime = startTime;
 		}
 
+		public String getStartDate() {
+			return IConstants.HHMMSS_DDMMYYYY.format(new Date(this.startTime));
+		}
+
 		public String toString() {
 			final StringBuilder builder = new StringBuilder("[");
 			builder.append(getIndexableName());
@@ -101,6 +110,10 @@ public class Server extends Persistable implements Comparable<Server> {
 	private boolean working;
 	/** The details about the action that this server is executing. */
 	private final List<Action> actions;
+	/** The search web service url for this server. */
+	private String searchWebServiceUrl;
+	/** The monitoring service for this server. */
+	private String monitoringWebServiceUrl;
 	/** The list of web service urls. */
 	private final List<String> webServiceUrls;
 	/** The age of this server. */
@@ -151,6 +164,30 @@ public class Server extends Persistable implements Comparable<Server> {
 		return webServiceUrls;
 	}
 
+	public String getSearchWebServiceUrl() {
+		if (this.searchWebServiceUrl == null) {
+			for (String webServiceUrl : webServiceUrls) {
+				if (webServiceUrl.contains(ISearcherWebService.class.getSimpleName())) {
+					this.searchWebServiceUrl = webServiceUrl;
+					break;
+				}
+			}
+		}
+		return this.searchWebServiceUrl;
+	}
+
+	public String getMonitoringWebServiceUrl() {
+		if (this.monitoringWebServiceUrl == null) {
+			for (String webServiceUrl : webServiceUrls) {
+				if (webServiceUrl.contains(IMonitoringService.class.getSimpleName())) {
+					this.monitoringWebServiceUrl = webServiceUrl;
+					break;
+				}
+			}
+		}
+		return this.monitoringWebServiceUrl;
+	}
+
 	public long getAge() {
 		return age;
 	}
@@ -194,6 +231,9 @@ public class Server extends Persistable implements Comparable<Server> {
 	}
 
 	public int hashCode() {
+		if (this.getId() == null) {
+			return super.hashCode();
+		}
 		return this.getId().intValue();
 	}
 

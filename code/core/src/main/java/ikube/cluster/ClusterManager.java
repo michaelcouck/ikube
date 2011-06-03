@@ -18,6 +18,9 @@ import java.io.File;
 import java.net.InetAddress;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
@@ -25,7 +28,7 @@ import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.MessageListener;
 
 /**
- * Most of the methods are synchronised in this class because not only is Ikube clusterable but also multi-threaded in each server.
+ * This class is responsible for the cluster synchronization functionality.
  * 
  * @see IClusterManager
  * @author Michael Couck
@@ -49,9 +52,13 @@ public class ClusterManager implements IClusterManager, IConstants {
 			AtomicAction.executeAction(SERVER_LOCK, new IAtomicAction() {
 				@Override
 				public Object execute() {
+					Server server = getServer();
 					// Remove all servers that are past the max age
 					List<Server> servers = getServers();
 					for (Server remoteServer : servers) {
+						if (remoteServer.getAddress().equals(server.getAddress())) {
+							continue;
+						}
 						if (System.currentTimeMillis() - remoteServer.getAge() > MAX_AGE) {
 							LOGGER.info("Removing server : " + remoteServer + ", "
 									+ (System.currentTimeMillis() - remoteServer.getAge() > MAX_AGE));
@@ -99,7 +106,9 @@ public class ClusterManager implements IClusterManager, IConstants {
 	 * The address of this server, this must be unique in the cluster. Typically this is the ip address added to the system time. The chance
 	 * of a hash clash with any other server is in the billions, we will disregard this possibility on prudent grounds.
 	 */
-	protected transient String address;
+	private transient String address;
+	/** The server object for this server. */
+	private transient Server server;
 	/** The cluster wide cache. */
 	protected transient ICache cache;
 	/** This flag is set cluster wide to make exception for the rules. */
@@ -111,24 +120,20 @@ public class ClusterManager implements IClusterManager, IConstants {
 	 * @throws Exception
 	 *             this can only be the InetAddress exception, which can never happen because we are looking for the localhost
 	 */
-	public ClusterManager() throws Exception {
-		synchronized (this) {
-			try {
-				// We give each server a unique name because there can be several servers
-				// started on the same machine. For example several Tomcats each with a war. In
-				// this case the ip addresses will overlap. Ikube can also be started as stand alone
-				// just in a Jvm(which is the same as a Tomcat essentially) also they will have the
-				// same ip address
-				this.ip = InetAddress.getLocalHost().getHostAddress();
-				this.address = ip + "." + System.nanoTime();
-				// This listener will iterate over the servers and remove any that have expired
-				// and will also register this server as still alive in the cluster
-				ListenerManager.addListener(aliveListener);
-				ListenerManager.addListener(cleanerListener);
-			} finally {
-				notifyAll();
-			}
-		}
+	public ClusterManager(ICache cache) throws Exception {
+		this.cache = cache;
+		// We give each server a unique name because there can be several servers
+		// started on the same machine. For example several Tomcats each with a war. In
+		// this case the ip addresses will overlap. Ikube can also be started as stand alone
+		// just in a Jvm(which is the same as a Tomcat essentially) also they will have the
+		// same ip address
+		this.ip = InetAddress.getLocalHost().getHostAddress();
+		this.address = ip + "." + System.nanoTime();
+		this.server = getServer();
+		// This listener will iterate over the servers and remove any that have expired
+		// and will also register this server as still alive in the cluster
+		ListenerManager.addListener(aliveListener);
+		ListenerManager.addListener(cleanerListener);
 	}
 
 	/**
@@ -139,16 +144,16 @@ public class ClusterManager implements IClusterManager, IConstants {
 		return (Boolean) AtomicAction.executeAction(SERVER_LOCK, new IAtomicAction() {
 			@Override
 			public Object execute() {
-				List<Server> servers = cache.get(Server.class.getName(), null, null, Integer.MAX_VALUE);
+				// cache.get(Server.class.getName(), null, null, Integer.MAX_VALUE);
+				boolean anyWorking = Boolean.FALSE;
+				List<Server> servers = getServers();
 				for (Server server : servers) {
-					if (server.getAddress().equals(ClusterManager.this.address)) {
-						continue;
-					}
 					if (server.getWorking()) {
-						return Boolean.TRUE;
+						anyWorking = Boolean.TRUE;
+						break;
 					}
 				}
-				return Boolean.FALSE;
+				return anyWorking;
 			}
 		});
 	}
@@ -161,20 +166,19 @@ public class ClusterManager implements IClusterManager, IConstants {
 		return (Boolean) AtomicAction.executeAction(SERVER_LOCK, new IAtomicAction() {
 			@Override
 			public Object execute() {
-				List<Server> servers = cache.get(Server.class.getName(), null, null, Integer.MAX_VALUE);
-				for (Server server : servers) {
-					if (server.getAddress().equals(ClusterManager.this.address)) {
-						continue;
-					}
+				boolean anyWorking = Boolean.FALSE;
+				List<Server> servers = getServers();
+				outer: for (Server server : servers) {
 					if (server.getWorking()) {
 						for (Action action : server.getActions()) {
 							if (action.getIndexName().equals(indexName)) {
-								return Boolean.TRUE;
+								anyWorking = Boolean.TRUE;
+								break outer;
 							}
 						}
 					}
 				}
-				return Boolean.FALSE;
+				return anyWorking;
 			}
 		});
 	}
@@ -195,7 +199,8 @@ public class ClusterManager implements IClusterManager, IConstants {
 			public Object execute() {
 				// TODO Have another look at this, surely this can be simplified, but be careful
 				long idNumber = 0;
-				List<Server> servers = cache.get(Server.class.getName(), null, null, Integer.MAX_VALUE);
+				// cache.get(Server.class.getName(), null, null, Integer.MAX_VALUE);
+				List<Server> servers = getServers();
 				// We look for the largest row id from any of the servers, from the last action in each server
 				// that has the name of the action that we are looking for
 				for (Server server : servers) {
@@ -216,10 +221,7 @@ public class ClusterManager implements IClusterManager, IConstants {
 					}
 				}
 				// We find the action for this server
-				Server server = cache.get(Server.class.getName(), HashUtilities.hash(address));
-				if (server == null) {
-					server = getServer();
-				}
+				Server server = getServer();
 				List<Action> actions = server.getActions();
 				Action currentAction = null;
 
@@ -231,7 +233,7 @@ public class ClusterManager implements IClusterManager, IConstants {
 					}
 				}
 
-				// This can never happen, can it?
+				// // This can never happen, can it?
 				if (currentAction == null) {
 					LOGGER.warn("Action null : " + indexName + ", " + indexableName + ", " + batchSize);
 					currentAction = server.new Action();
@@ -240,6 +242,7 @@ public class ClusterManager implements IClusterManager, IConstants {
 					currentAction.setStartTime(System.currentTimeMillis());
 					actions.add(currentAction);
 				}
+
 				if (idNumber < minId) {
 					idNumber = minId;
 				}
@@ -247,7 +250,7 @@ public class ClusterManager implements IClusterManager, IConstants {
 				// Set the next row number to the current + the batch size
 				currentAction.setIdNumber(nextIdNumber);
 				// Publish the server to the cluster
-				cache.set(Server.class.getName(), server.getId(), server);
+				set(Server.class.getName(), server.getId(), server);
 				return idNumber;
 			}
 		});
@@ -257,21 +260,17 @@ public class ClusterManager implements IClusterManager, IConstants {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized List<Server> getServers() {
-		try {
-			return cache.get(Server.class.getName(), null, null, Integer.MAX_VALUE);
-		} finally {
-			notifyAll();
-		}
+	public List<Server> getServers() {
+		return cache.get(Server.class.getName(), null, null, Integer.MAX_VALUE);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized Server getServer() {
-		try {
-			Server server = cache.get(Server.class.getName(), HashUtilities.hash(address));
+	public Server getServer() {
+		if (this.server == null) {
+			server = cache.get(Server.class.getName(), HashUtilities.hash(address));
 			if (server == null) {
 				server = new Server();
 				server.setIp(ip);
@@ -280,11 +279,10 @@ public class ClusterManager implements IClusterManager, IConstants {
 				server.setAge(System.currentTimeMillis());
 				cache.set(Server.class.getName(), server.getId(), server);
 				LOGGER.info("Published server : " + server);
+				LOGGER.info("Server from cache : " + cache.get(Server.class.getName(), server.getId()));
 			}
-			return server;
-		} finally {
-			notifyAll();
 		}
+		return server;
 	}
 
 	/**
@@ -296,7 +294,7 @@ public class ClusterManager implements IClusterManager, IConstants {
 			@Override
 			public Object execute() {
 				long firstStartTime = System.currentTimeMillis();
-				List<Server> servers = cache.get(Server.class.getName(), null, null, Integer.MAX_VALUE);
+				List<Server> servers = getServers();
 				// Find the first start time for the action we want to start in any of the servers
 				for (Server server : servers) {
 					LOGGER.debug("Server : " + server);
@@ -308,10 +306,7 @@ public class ClusterManager implements IClusterManager, IConstants {
 					}
 				}
 				// Set the server working and the new action in the list
-				Server server = cache.get(Server.class.getName(), HashUtilities.hash(address));
-				if (server == null) {
-					server = getServer();
-				}
+				Server server = getServer();
 				server.setWorking(isWorking);
 				server.getActions().add(server.new Action(0, indexableName, indexName, firstStartTime));
 				// Prune the actions in this server
@@ -329,8 +324,8 @@ public class ClusterManager implements IClusterManager, IConstants {
 					}
 				}
 				// Publish the fact that this server is starting to work on an action
-				LOGGER.debug("Publishing server : " + server.getAddress());
-				cache.set(Server.class.getName(), server.getId(), server);
+				LOGGER.debug("Publishing server working : " + server);
+				set(Server.class.getName(), server.getId(), server);
 				return firstStartTime;
 			}
 		});
@@ -340,98 +335,67 @@ public class ClusterManager implements IClusterManager, IConstants {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized boolean isHandled(String indexableName, String indexName) {
-		try {
-			Server thisServer = cache.get(Server.class.getName(), HashUtilities.hash(address));
-			List<Server> servers = cache.get(Server.class.getName(), null, null, Integer.MAX_VALUE);
-			for (Server server : servers) {
-				if (server.getAddress().equals(thisServer.getAddress())) {
-					continue;
-				}
-				for (Action action : server.getActions()) {
-					if (action.getIndexName().equals(indexName) && action.getIndexableName().equals(indexableName)) {
-						LOGGER.info("Already indexed by : " + server);
-						return Boolean.TRUE;
-					}
-				}
-			}
-			return Boolean.FALSE;
-		} finally {
-			notifyAll();
-		}
-	}
-
-	@Override
-	public synchronized <T> void set(String name, Long id, T object) {
-		try {
-			cache.set(name, id, object);
-		} finally {
-			notifyAll();
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public synchronized <T> int size(String name) {
-		try {
-			return this.cache.size(name);
-		} finally {
-			notifyAll();
-		}
-	}
-
-	@Override
-	public synchronized <T> void clear(String name) {
-		try {
-			this.cache.clear(name);
-		} finally {
-			notifyAll();
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public synchronized <T> void remove(String name, Long id) {
-		try {
-			this.cache.remove(name, id);
-		} finally {
-			notifyAll();
-		}
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	public synchronized <T> T get(String name, Long id) {
-		try {
-			return (T) this.cache.get(name, id);
-		} finally {
-			notifyAll();
-		}
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	public synchronized <T> T get(String name, String sql) {
-		return (T) cache.get(name, sql);
-	}
-
-	@Override
-	public <T> List<T> get(final Class<T> klass, final String name, final ICriteria<T> criteria, final IAction<T> action, final int size) {
-		return AtomicAction.executeAction(name, new IAtomicAction() {
+	public boolean isHandled(final String indexableName, final String indexName) {
+		return (Boolean) AtomicAction.executeAction(SERVER_LOCK, new IAtomicAction() {
 			@Override
 			public Object execute() {
-				return cache.get(name, criteria, action, size);
+				boolean isHandled = Boolean.FALSE;
+				List<Server> servers = getServers();
+				for (Server server : servers) {
+					for (Action action : server.getActions()) {
+						if (action.getIndexName().equals(indexName) && action.getIndexableName().equals(indexableName)) {
+							LOGGER.info("Already indexed by : " + server);
+							isHandled = Boolean.TRUE;
+							break;
+						}
+					}
+				}
+				return isHandled;
 			}
 		});
 	}
 
 	@Override
-	public ICache getCache() {
-		return cache;
+	public <T> void set(String name, Long id, T object) {
+		cache.set(name, id, object);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public <T> int size(String name) {
+		return this.cache.size(name);
+	}
+
+	@Override
+	public <T> void clear(String name) {
+		this.cache.clear(name);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public <T> void remove(String name, Long id) {
+		this.cache.remove(name, id);
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public <T> T get(String name, Long id) {
+		return (T) this.cache.get(name, id);
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public <T> T get(String name, String sql) {
+		return (T) cache.get(name, sql);
+	}
+
+	@Override
+	public <T> List<T> get(final Class<T> klass, final String name, final ICriteria<T> criteria, final IAction<T> action, final int size) {
+		return cache.get(name, criteria, action, size);
 	}
 
 	@Override
@@ -448,20 +412,8 @@ public class ClusterManager implements IClusterManager, IConstants {
 		this.exception = exception;
 	}
 
-	public synchronized void setCache(ICache cache) {
-		try {
-			this.cache = cache;
-		} finally {
-			notifyAll();
-		}
-	}
-
-	public synchronized void setAddress(String address) {
-		try {
-			this.address = address;
-		} finally {
-			notifyAll();
-		}
+	public void setAddress(String address) {
+		this.address = address;
 	}
 
 	/**
@@ -472,19 +424,29 @@ public class ClusterManager implements IClusterManager, IConstants {
 		LOGGER.info("Adding shutdown listener : ");
 		Hazelcast.getTopic(IConstants.SHUTDOWN_TOPIC).addMessageListener(new MessageListener<Object>() {
 			@Override
-			public void onMessage(Object other) {
+			public void onMessage(final Object other) {
 				if (other == null) {
 					return;
 				}
 				LOGGER.info("Got shutdown message : " + other);
 				Server server = ApplicationContextManager.getBean(IClusterManager.class).getServer();
-				if (other.equals(server)) {
-					// We don't shutdown our selves of course
-					return;
+				if (Server.class.isAssignableFrom(other.getClass())) {
+					if (((Server) other).getAddress().equals(server.getAddress())) {
+						// We don't shutdown our selves of course
+						return;
+					}
+					long delay = 10000;
+					ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
+					executorService.scheduleAtFixedRate(new Runnable() {
+						public void run() {
+							LOGGER.warn("Shutting down Ikube server : " + other);
+							ListenerManager.removeListeners();
+							ApplicationContextManager.closeApplicationContext();
+							Hazelcast.shutdownAll();
+							System.exit(0);
+						}
+					}, delay, delay, TimeUnit.MILLISECONDS);
 				}
-				LOGGER.warn("Shutting down Ikube server : " + other);
-				Hazelcast.shutdownAll();
-				System.exit(0);
 			}
 		});
 	}
