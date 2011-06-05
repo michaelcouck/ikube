@@ -13,25 +13,25 @@
 								<a class="link" href="<c:url value="/documentation/quickstart.html" />">quick start</a>
 								<a class="link" href="<c:url value="/documentation/configuration.html" />">configuration</a>
 								<a class="link" href="<c:url value="/documentation/searching.html" />">searching</a>
-								<a class="link" href="<c:url value="/documentation/lucene.html" />">lucene</a>
+								<a class="link" href="<c:url value="/documentation/extra.html" />">extra</a>
 								<a class="link" href="<c:url value="/documentation/clustering.html"/>">clustering</a>
 								<a class="link" href="<c:url value="/documentation/indexes.html"/>">indexes</a>
 								&nbsp;&nbsp;
 
 								<a href="<c:url value="/index.html"/>?language=english">
-									<img alt="English" src="<c:url value="/images/flags/gb.gif"/>" title="English">
+									<img alt="english" src="<c:url value="/images/flags/gb.gif"/>" title="english">
 								</a>
-								<a href="<c:url value="/index.html"/>?language=french" title="Français">
-									<img alt="Français" src="<c:url value="/images/flags/fr.gif"/>">
+								<a href="<c:url value="/index.html"/>?language=french" title="français">
+									<img alt="français" src="<c:url value="/images/flags/fr.gif"/>">
 								</a>
-								<a href="<c:url value="/index.html"/>?language=german" title="Deutsch">
-									<img alt="Deutsch" src="<c:url value="/images/flags/de.gif"/>">
+								<a href="<c:url value="/index.html"/>?language=german" title="deutsch">
+									<img alt="deutsch" src="<c:url value="/images/flags/de.gif"/>">
 								</a>
-								<a href="<c:url value="/index.html"/>?language=dutch" title="Nederlands">
-									<img alt="Nederlands" src="<c:url value="/images/flags/be.gif"/>">
+								<a href="<c:url value="/index.html"/>?language=dutch" title="nederlands">
+									<img alt="nederlands" src="<c:url value="/images/flags/be.gif"/>">
 								</a>
-								<a href="<c:url value="/index.html"/>?language=russian" title="Русский">
-									<img alt="Русский" src="<c:url value="/images/flags/ru.gif"/>">
+								<a href="<c:url value="/index.html"/>?language=russian" title="русский">
+									<img alt="русский" src="<c:url value="/images/flags/ru.gif"/>">
 								</a>
 
 								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;

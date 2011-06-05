@@ -85,6 +85,22 @@ public final class DatabaseUtilities {
 		}
 	}
 
+	public static void commit(Connection connection) {
+		if (connection == null) {
+			LOGGER.warn("Connection null : ");
+			return;
+		}
+		try {
+			if (connection.getAutoCommit()) {
+				LOGGER.warn("Can't commit the connection as it is not user comitted : " + connection);
+				return;
+			}
+			connection.commit();
+		} catch (Exception e) {
+			LOGGER.error("Exception comitting the connection : " + connection, e);
+		}
+	}
+
 	/**
 	 * This method closes the result set.
 	 * 

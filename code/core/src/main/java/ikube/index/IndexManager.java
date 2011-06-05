@@ -136,26 +136,26 @@ public final class IndexManager {
 			return;
 		}
 		Directory directory = indexWriter.getDirectory();
-		LOGGER.info("Optimizing and closing the index : ");
+		LOGGER.info("Optimizing and closing the index : " + indexWriter);
 		try {
 			indexWriter.commit();
 			indexWriter.optimize(Boolean.TRUE);
 		} catch (NullPointerException e) {
-			LOGGER.error("Null pointer, in the index writer : ");
+			LOGGER.error("Null pointer, in the index writer : " + indexWriter);
 			if (LOGGER.isDebugEnabled()) {
 				LOGGER.debug("Stack trace : ", e);
 			}
 		} catch (CorruptIndexException e) {
-			LOGGER.error("Corrput index : ", e);
+			LOGGER.error("Corrput index : " + indexWriter, e);
 		} catch (IOException e) {
-			LOGGER.error("IO optimising the index : ", e);
+			LOGGER.error("IO optimising the index : " + indexWriter, e);
 		} catch (Exception e) {
-			LOGGER.error("General exception comitting the index : ", e);
+			LOGGER.error("General exception comitting the index : " + indexWriter, e);
 		}
 		try {
 			indexWriter.close(Boolean.TRUE);
 		} catch (Exception e) {
-			LOGGER.error("Exception closing the index writer : ", e);
+			LOGGER.error("Exception closing the index writer : " + indexWriter, e);
 		}
 		try {
 			if (directory != null) {
@@ -164,9 +164,9 @@ public final class IndexManager {
 				}
 			}
 		} catch (Exception e) {
-			LOGGER.error("Exception releasing the lock on the index writer : ", e);
+			LOGGER.error("Exception releasing the lock on the index writer : " + indexWriter, e);
 		}
-		LOGGER.info("Index optimized and closed : ");
+		LOGGER.info("Index optimized and closed : " + indexWriter);
 	}
 
 	public static String getIndexDirectory(final IndexContext indexContext, final long time, final String ip) {

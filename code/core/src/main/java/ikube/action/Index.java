@@ -51,6 +51,10 @@ public class Index extends Action<IndexContext, Boolean> {
 						logger.warn(Logging.getString("Not handling indexable : ", indexable, " no handler defined."));
 						continue;
 					}
+//					if (getClusterManager().isHandled(indexable.getName(), indexName)) {
+//						logger.info(Logging.getString(indexable.getName(), " already indexed : "));
+//						continue;
+//					}
 					// Execute the handler and wait for the threads to finish
 					getClusterManager().setWorking(indexName, indexable.getName(), Boolean.TRUE);
 					logger.info("Executing handler : " + handler + ", " + indexable.getName());

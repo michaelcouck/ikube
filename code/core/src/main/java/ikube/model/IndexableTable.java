@@ -18,6 +18,10 @@ import org.apache.commons.lang.builder.ToStringStyle;
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class IndexableTable extends Indexable<IndexableTable> {
 
+	@Transient
+	private transient long minimumId = -1;
+	@Transient
+	private transient long maximumId = -1;
 	/** TODO - the datasource needs to be configured else where. */
 	@Transient
 	private transient DataSource dataSource;
@@ -39,6 +43,22 @@ public class IndexableTable extends Indexable<IndexableTable> {
 
 	public void setPredicate(final String predicate) {
 		this.predicate = predicate;
+	}
+
+	public long getMinimumId() {
+		return minimumId;
+	}
+
+	public void setMinimumId(long minimumId) {
+		this.minimumId = minimumId;
+	}
+
+	public long getMaximumId() {
+		return maximumId;
+	}
+
+	public void setMaximumId(long maximumId) {
+		this.maximumId = maximumId;
 	}
 
 	@Transient

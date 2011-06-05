@@ -1,14 +1,19 @@
 package ikube.monitoring;
 
+import ikube.cluster.IClusterManager;
 import ikube.listener.Event;
 import ikube.listener.IListener;
 import ikube.listener.ListenerManager;
+import ikube.model.Server;
+import ikube.service.IMonitorWebService;
 import ikube.service.ISearcherWebService;
 import ikube.service.ServiceLocator;
+import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.Logging;
+import ikube.toolkit.Mailer;
 import ikube.toolkit.SerializationUtilities;
 
-import java.net.InetAddress;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -23,28 +28,27 @@ import org.apache.log4j.Logger;
 @SuppressWarnings("unchecked")
 public class SearcherWebServiceExecuter implements ISearcherWebServiceExecuter {
 
-	private Logger logger;
-	private transient String protocol;
-	private transient Integer port;
-	private transient String path;
+	private static final Logger LOGGER = Logger.getLogger(SearcherWebServiceExecuter.class);
+
+	private transient int end;
+	private transient int start;
+	private transient int iterations = 1;
 	private transient String indexName;
 	private transient String searchString;
-	private transient String fieldName;
 	private transient boolean fragment;
-	private transient int start;
-	private transient int end;
 	private transient int resultsSizeMinimum;
 
 	public SearcherWebServiceExecuter() {
-		this.logger = Logger.getLogger(this.getClass());
+		LOGGER.info("SearcherWebServiceExecuter()");
 		ListenerManager.addListener(new IListener() {
 			@Override
 			public void handleNotification(final Event event) {
-				if (event.getType().equals(Event.SERVICE)) {
+				LOGGER.info("Event : " + event);
+				if (event.getType().equals(Event.PERFORMANCE)) {
 					try {
 						execute();
 					} catch (Exception e) {
-						logger.error("Exception accessing the results", e);
+						LOGGER.error("Exception accessing the results", e);
 					}
 				}
 			}
@@ -56,43 +60,46 @@ public class SearcherWebServiceExecuter implements ISearcherWebServiceExecuter {
 	 */
 	@Override
 	public List<Map<String, String>> execute() throws Exception {
-		String host = InetAddress.getLocalHost().getHostAddress();
-		ISearcherWebService searchRemote = ServiceLocator.getService(ISearcherWebService.class, protocol, host, port, path,
-				ISearcherWebService.NAMESPACE, ISearcherWebService.SERVICE);
-		String xml = searchRemote.searchSingle(indexName, searchString, fieldName, fragment, start, end);
+		List<Server> servers = ApplicationContextManager.getBean(IClusterManager.class).getServers();
+		String xml = null;
+		for (Server server : servers) {
+			String webServiceUrl = server.getSearchWebServiceUrl();
+			ISearcherWebService searchRemote = ServiceLocator.getService(ISearcherWebService.class, webServiceUrl,
+					ISearcherWebService.NAMESPACE, ISearcherWebService.SERVICE);
+			String monitoringWebServiceUrl = server.getMonitoringWebServiceUrl();
+			IMonitorWebService monitorWebService = ServiceLocator.getService(IMonitorWebService.class, monitoringWebServiceUrl,
+					IMonitorWebService.NAMESPACE, IMonitorWebService.SERVICE);
+			String[] indexNames = monitorWebService.getIndexNames();
+			for (String indexName : indexNames) {
+				String[] searchFields = monitorWebService.getIndexFieldNames(indexName);
+				String[] searchStrings = new String[searchFields.length];
+				String[] sortFields = new String[searchFields.length];
+				Arrays.fill(searchStrings, 0, searchStrings.length, searchString);
+				System.arraycopy(searchFields, 0, sortFields, 0, sortFields.length);
+				double latitude = new Double(50.7930727874172);
+				double longitude = new Double(4.36242219751376);
+				for (int i = 0; i < iterations; i++) {
+					xml = searchRemote.searchSingle(indexName, searchString, searchFields[0], fragment, start, end);
+					xml = searchRemote.searchMulti(indexName, searchStrings, searchFields, fragment, start, end);
+					// xml = searchRemote.searchMultiSorted(indexName, searchStrings, searchFields, sortFields, fragment, start, end);
+					xml = searchRemote.searchSpacialMulti(indexName, searchStrings, searchFields, fragment, start, end, 10, latitude,
+							longitude);
+					xml = searchRemote.searchMultiAll(indexName, searchStrings, fragment, start, end);
+				}
+			}
+		}
 		List<Map<String, String>> results = (List<Map<String, String>>) SerializationUtilities.deserialize(xml);
 		if (results.size() < resultsSizeMinimum) {
-			logger.warn(Logging.getString("Results not expected : " + results.size(), indexName, searchString, fieldName, fragment, start, end, resultsSizeMinimum));
+			String message = Logging.getString("Results not expected : ", results.size(), indexName, searchString, start, end,
+					resultsSizeMinimum);
+			LOGGER.info(message);
 			ListenerManager.fireEvent(Event.NO_RESULTS, System.currentTimeMillis(), null, Boolean.TRUE);
+			Mailer mailer = ApplicationContextManager.getBean(Mailer.class);
+			mailer.sendMail("Integration results : " + indexName, results.toString());
 		} else {
-			// logger.info("Results expected : " + (results != null ? results.size() : 0));
 			ListenerManager.fireEvent(Event.RESULTS, System.currentTimeMillis(), null, Boolean.TRUE);
 		}
 		return results;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void setProtocol(final String protocol) {
-		this.protocol = protocol;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void setPort(final Integer port) {
-		this.port = port;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void setPath(final String path) {
-		this.path = path;
 	}
 
 	/**
@@ -109,14 +116,6 @@ public class SearcherWebServiceExecuter implements ISearcherWebServiceExecuter {
 	@Override
 	public void setSearchString(final String searchString) {
 		this.searchString = searchString;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void setFieldName(final String fieldName) {
-		this.fieldName = fieldName;
 	}
 
 	/**
@@ -141,6 +140,14 @@ public class SearcherWebServiceExecuter implements ISearcherWebServiceExecuter {
 	@Override
 	public void setEnd(final int end) {
 		this.end = end;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void setIterations(int iterations) {
+		this.iterations = iterations;
 	}
 
 	/**

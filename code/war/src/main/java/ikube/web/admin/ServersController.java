@@ -4,7 +4,7 @@ import ikube.IConstants;
 import ikube.cluster.IClusterManager;
 import ikube.model.IndexContext;
 import ikube.model.Server;
-import ikube.service.IMonitoringService;
+import ikube.service.IMonitorWebService;
 import ikube.toolkit.ApplicationContextManager;
 
 import java.util.Collections;
@@ -53,14 +53,14 @@ public class ServersController extends BaseController {
 		Map<String, IndexContext> indexContexts = ApplicationContextManager.getBeans(IndexContext.class);
 		modelAndView.addObject(IConstants.INDEX_CONTEXTS, indexContexts.values());
 
-		IMonitoringService monitoringService = ApplicationContextManager.getBean(IMonitoringService.class);
-		String[] indexNames = monitoringService.getIndexNames();
+		IMonitorWebService monitorWebService = ApplicationContextManager.getBean(IMonitorWebService.class);
+		String[] indexNames = monitorWebService.getIndexNames();
 		modelAndView.addObject(IConstants.INDEX_NAMES, indexNames);
 
 		for (String indexName : indexNames) {
 			Map<String, Object> indexProperties = new HashMap<String, Object>();
-			long indexSize = monitoringService.getIndexSize(indexName);
-			int numDocs = monitoringService.getIndexDocuments(indexName);
+			long indexSize = monitorWebService.getIndexSize(indexName);
+			int numDocs = monitorWebService.getIndexDocuments(indexName);
 			indexProperties.put(IConstants.INDEX_SIZE, indexSize);
 			indexProperties.put(IConstants.INDEX_DOCUMENTS, numDocs);
 			modelAndView.addObject(indexName, indexProperties);

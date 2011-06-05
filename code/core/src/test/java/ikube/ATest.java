@@ -130,7 +130,7 @@ public abstract class ATest {
 		when(INDEX_CONTEXT.getMaxFieldLength()).thenReturn(100);
 		when(INDEX_CONTEXT.getMaxReadLength()).thenReturn(1000000l);
 		when(INDEX_CONTEXT.getMergeFactor()).thenReturn(100);
-		when(INDEX_CONTEXT.getMaxAge()).thenReturn((long) (1000 * 60 * 60));
+		when(INDEX_CONTEXT.getMaxAge()).thenReturn((long) (60));
 		when(CLUSTER_MANAGER.getServer()).thenReturn(SERVER);
 		when(SERVER.getWorking()).thenReturn(Boolean.FALSE);
 		when(SERVER.getAddress()).thenReturn(IP);

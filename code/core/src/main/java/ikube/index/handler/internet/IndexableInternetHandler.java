@@ -41,9 +41,6 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	 */
 	@Override
 	public List<Thread> handle(final IndexContext indexContext, final IndexableInternet indexable) throws Exception {
-		if (isHandled(indexContext, indexable)) {
-			return Arrays.asList();
-		}
 		this.indexContext = indexContext;
 		threads.clear();
 		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
@@ -92,8 +89,8 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	@Override
 	public void addDocument(IndexContext indexContext, Indexable<IndexableInternet> indexable, Document document)
 			throws CorruptIndexException, IOException {
-		// We check the index context because the UrlPageHandlers do not have access to the 
-		// context and pass a null value to this method, I would rather they don't have access to the 
+		// We check the index context because the UrlPageHandlers do not have access to the
+		// context and pass a null value to this method, I would rather they don't have access to the
 		// context
 		if (this.indexContext == null) {
 			if (indexContext != null) {
@@ -104,10 +101,6 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 			}
 		}
 		super.addDocument(this.indexContext, indexable, document);
-	}
-
-	protected boolean isHandled(final IndexContext indexContext, final IndexableInternet indexableInternet) {
-		return ApplicationContextManager.getBean(IClusterManager.class).isHandled(indexableInternet.getName(), indexContext.getIndexName());
 	}
 
 }

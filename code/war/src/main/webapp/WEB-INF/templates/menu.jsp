@@ -3,7 +3,7 @@
 
 <script type="text/javascript">
 	window.onload = function() {
-		document.ikubeSearchForm.searchStrings.focus();
+		document.ikubeSearchForm.content.focus();
 	}
 </script>
 
@@ -14,21 +14,12 @@
 				<fieldset>
 					<input type="hidden" name="indexName" value="ikube">
 					<input type="hidden" name="fragment" value="true">
-					<input type="hidden" name="searchFields" value="content">
-					<!-- TODO change this to a Spring controller that goes to the web service -->
-					<input type="hidden" name="searchUrl" value="http://localhost:9000/ikube/SearchServlet">
-					<input type="text" name="searchStrings" id="search-text"
-						value="<c:out value='${param.searchStrings}' />" />
+					<input type="text" name="content" id="search-text"
+						value="<c:out value='${param.content}' />" />
 					<input type="submit" id="search-submit" value="Go" />
 				</fieldset>
 			</form>
 			<search:spellingTag>
-				<script type="text/javascript">
-					function submitIkubeSearchForm(searchStrings) {
-						document.ikubeSearchFormchStrings.value = searchStrings;
-						document.ikubeSearchForm.submit();
-					}
-				</script>
 				Did you mean : <a href="JavaScript:submitIkubeSearchForm('<search:spellingWriterTag />')"><search:spellingWriterTag /></a>
 			</search:spellingTag>
 		</li>

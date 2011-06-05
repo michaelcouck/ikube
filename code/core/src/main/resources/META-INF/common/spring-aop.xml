@@ -38,7 +38,7 @@
 		id="ikube.index.spatial.geocode.IGeocoder"
 		class="ikube.index.spatial.geocode.IkubeGeocoder"
 		property:searchFields-ref="geospatialFields" 
-		property:searchUrl="http://ikube:8081/ikube/service/ISearcherWebService?wsdl " />
+		property:searchUrl="http://ikube.dyndns.org:8081/ikube/service/ISearcherWebService?swdl" />
 	<util:list id="geospatialFields">
 		<value>name</value>
 		<value>asciiname</value>

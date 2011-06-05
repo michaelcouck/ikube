@@ -1,3 +1,5 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
 <table class="table-content" width="100%">
 	<tr>
 		<td class="top-content">
@@ -7,7 +9,7 @@
 	</tr>
 	<tr>
 		<td class="td-content">
-			<strong>access</strong>&nbsp;<br>
+			<strong>access</strong>&nbsp;
 			The access to search results is a via a web service and a servlet. Method signatures for the web service methods for 
 			searching are:<br><br>
 			

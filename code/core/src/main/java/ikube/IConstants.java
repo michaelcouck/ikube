@@ -136,7 +136,7 @@ public interface IConstants {
 	/** The timeout to wait for the lock. */
 	long LOCK_TIMEOUT = 10000;
 	/** We only keep a few actions in the server. */
-	double MAX_ACTION_SIZE = 7;
+	double MAX_ACTION_SIZE = 50;
 	/** The ratio to delete the actions when the maximum is reached. */
 	double ACTION_PRUNE_RATIO = 0.3;
 	/** The maximum age that the server can get to before it is deleted from the cluster. */

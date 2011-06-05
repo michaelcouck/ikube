@@ -2,6 +2,9 @@ package ikube.listener;
 
 import java.io.Serializable;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
+
 /**
  * @author Michael Couck
  * @since 21.11.10
@@ -63,13 +66,7 @@ public class Event {
 	}
 
 	public String toString() {
-		final StringBuilder builder = new StringBuilder();
-		builder.append('[');
-		builder.append(getType()).append(", ");
-		builder.append(getTimestamp()).append(", ");
-		builder.append(isConsumed());
-		builder.append(']');
-		return builder.toString();
+		return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
 	}
 
 }

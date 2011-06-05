@@ -20,6 +20,7 @@
 		p:order="1">
 		<property name="mappings">
 			<props>
+				<prop key="/results.html">ikube.web.admin.SearchController</prop>
 				<prop key="/admin/search.html">ikube.web.admin.SearchController</prop>
 				<prop key="/admin/server.html">ikube.web.admin.ServerController</prop>
 				<prop key="/admin/servers.html">ikube.web.admin.ServersController</prop>
@@ -48,13 +49,13 @@
 
 	<!-- These are static resources basically. -->
 	<mvc:view-controller path="/index.html" />
-	<mvc:view-controller path="/results.html" />
+	<!-- <mvc:view-controller path="/results.html" /> -->
 	<mvc:view-controller path="/admin/admin.html" />
 	<mvc:view-controller path="/documentation/index.html" />
 	<mvc:view-controller path="/documentation/quickstart.html" />
 	<mvc:view-controller path="/documentation/configuration.html" />
 	<mvc:view-controller path="/documentation/searching.html" />
-	<mvc:view-controller path="/documentation/lucene.html" />
+	<mvc:view-controller path="/documentation/extra.html" />
 	<mvc:view-controller path="/documentation/clustering.html" />
 	<mvc:view-controller path="/documentation/indexes.html" />
 

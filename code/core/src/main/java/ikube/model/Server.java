@@ -1,7 +1,7 @@
 package ikube.model;
 
 import ikube.IConstants;
-import ikube.service.IMonitoringService;
+import ikube.service.IMonitorWebService;
 import ikube.service.ISearcherWebService;
 
 import java.io.Serializable;
@@ -179,7 +179,7 @@ public class Server extends Persistable implements Comparable<Server> {
 	public String getMonitoringWebServiceUrl() {
 		if (this.monitoringWebServiceUrl == null) {
 			for (String webServiceUrl : webServiceUrls) {
-				if (webServiceUrl.contains(IMonitoringService.class.getSimpleName())) {
+				if (webServiceUrl.contains(IMonitorWebService.class.getSimpleName())) {
 					this.monitoringWebServiceUrl = webServiceUrl;
 					break;
 				}

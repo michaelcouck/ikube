@@ -31,12 +31,12 @@ import org.apache.lucene.store.FSDirectory;
  * @since 28.12.10
  * @version 01.00
  */
-@Remote(IMonitoringService.class)
+@Remote(IMonitorWebService.class)
 @SOAPBinding(style = SOAPBinding.Style.RPC)
-@WebService(name = IMonitoringService.NAME, targetNamespace = IMonitoringService.NAMESPACE, serviceName = IMonitoringService.SERVICE)
-public class MonitoringService implements IMonitoringService {
+@WebService(name = IMonitorWebService.NAME, targetNamespace = IMonitorWebService.NAMESPACE, serviceName = IMonitorWebService.SERVICE)
+public class MonitorWebService implements IMonitorWebService {
 
-	private static final Logger LOGGER = Logger.getLogger(MonitoringService.class);
+	private static final Logger LOGGER = Logger.getLogger(MonitorWebService.class);
 
 	/**
 	 * {@inheritDoc}

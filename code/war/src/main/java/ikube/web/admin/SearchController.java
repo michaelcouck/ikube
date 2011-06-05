@@ -3,7 +3,7 @@ package ikube.web.admin;
 import ikube.IConstants;
 import ikube.cluster.IClusterManager;
 import ikube.model.Server;
-import ikube.service.IMonitoringService;
+import ikube.service.IMonitorWebService;
 import ikube.service.ISearcherWebService;
 import ikube.service.ServiceLocator;
 import ikube.toolkit.ApplicationContextManager;
@@ -37,14 +37,14 @@ public class SearchController extends BaseController {
 		String indexName = request.getParameter(IConstants.INDEX_NAME);
 		Server server = ApplicationContextManager.getBean(IClusterManager.class).getServer();
 
-		IMonitoringService monitoringService = ApplicationContextManager.getBean(IMonitoringService.class);
-		String[] indexableNames = monitoringService.getIndexableNames(indexName);
+		IMonitorWebService monitorWebService = ApplicationContextManager.getBean(IMonitorWebService.class);
+		String[] indexableNames = monitorWebService.getIndexableNames(indexName);
 		Map<String, String[]> indexables = new HashMap<String, String[]>();
 		List<String> searchFields = new ArrayList<String>();
 		List<String> searchStrings = new ArrayList<String>();
 		Map<String, String[]> parameterMap = request.getParameterMap();
 		for (String indexableName : indexableNames) {
-			String[] fieldNames = monitoringService.getIndexableFieldNames(indexableName);
+			String[] fieldNames = monitorWebService.getIndexableFieldNames(indexableName);
 			indexables.put(indexableName, fieldNames);
 			for (String fieldName : fieldNames) {
 				if (parameterMap.containsKey(fieldName)) {

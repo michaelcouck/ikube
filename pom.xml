@@ -82,13 +82,36 @@
 				<executions>
 					<execution>
 						<id>install-canyon</id>
-						<phase>validate</phase>
+						<phase>compile</phase>
 						<configuration>
 							<groupId>canyon</groupId>
 							<artifactId>canyon</artifactId>
 							<version>0.9.8</version>
 							<packaging>jar</packaging>
 							<file>libs/canyon-0.9.8.jar</file>
+						</configuration>
+					</execution>
+					
+					<execution>
+						<id>install-db2-driver</id>
+						<phase>compile</phase>
+						<configuration>
+							<groupId>com.ibm.db2.jcc</groupId>
+							<artifactId>db2jcc4</artifactId>
+							<version>9.7.2</version>
+							<packaging>jar</packaging>
+							<file>libs/db2jcc4-9.7.2.jar</file>
+						</configuration>
+					</execution>
+					<execution>
+						<id>install-db2-driver-license</id>
+						<phase>compile</phase>
+						<configuration>
+							<groupId>com.ibm.db2.jcc</groupId>
+							<artifactId>db2jcc_license_cu</artifactId>
+							<version>9.7.2</version>
+							<packaging>jar</packaging>
+							<file>libs/db2jcc_license_cu-9.7.2.jar</file>
 						</configuration>
 					</execution>
 				</executions>
@@ -326,15 +349,15 @@
 		</dependency>
 		<dependency>
 			<groupId>com.ibm.db2.jcc</groupId>
-			<artifactId>db2jcc</artifactId>
-			<version>9.5</version>
+			<artifactId>db2jcc4</artifactId>
+			<version>9.7.2</version>
 			<type>jar</type>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.ibm.db2.jcc_license_cu</groupId>
 			<artifactId>db2jcc_license_cu</artifactId>
-			<version>9.5</version>
+			<version>9.7.2</version>
 			<type>jar</type>
 			<scope>runtime</scope>
 		</dependency>

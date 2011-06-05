@@ -13,6 +13,7 @@
 * Change the search url from the servlet to the web service ?
 * Implement paging in the search results - 1
 * Add the web service urls to the servers page - 1
+* Write a script to automate the deploy to the local repository for drivers etc. - 1
 
 Sub Total: 7
 

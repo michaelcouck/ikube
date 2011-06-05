@@ -56,7 +56,7 @@ public class ActionTest extends ATest {
 		String serverIndexDirectoryPath = getServerIndexDirectoryPath(INDEX_CONTEXT);
 		File serverIndexDirectory = FileUtilities.getFile(serverIndexDirectoryPath, Boolean.TRUE);
 
-		long maxAge = 10;
+		long maxAge = 0;
 		when(INDEX_CONTEXT.getMaxAge()).thenReturn(maxAge);
 		Thread.sleep(maxAge * 100);
 

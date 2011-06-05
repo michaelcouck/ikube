@@ -55,7 +55,7 @@
 		<ref local="geospatialCity" />
 		<ref local="geospatialCountry" />
 		<ref local="geospatialAsciiname" />
-		<ref local="geospatialAlternatenames" />
+		<!-- <ref local="geospatialAlternatenames" /> -->
 		<ref local="geospatialLatitude" />
 		<ref local="geospatialLongitude" />
 		<ref local="geospatialFeatureClass" />
@@ -83,14 +83,6 @@
 		property:stored="${not.stored}"
 		property:vectored="${vectored}" />
 	<bean
-		id="geospatialGeonameid"
-		class="ikube.model.IndexableColumn"
-		property:name="geonameid"
-		property:fieldName="geonameid"
-		property:analyzed="${analyzed}"
-		property:stored="${not.stored}"
-		property:vectored="${vectored}" />
-	<bean
 		id="geospatialName"
 		class="ikube.model.IndexableColumn"
 		property:name="name"
@@ -98,6 +90,14 @@
 		property:address="true"
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="geospatialGeonameid"
+		class="ikube.model.IndexableColumn"
+		property:name="geonameid"
+		property:fieldName="geonameid"
+		property:analyzed="${analyzed}"
+		property:stored="${not.stored}"
 		property:vectored="${vectored}" />
 	<bean
 		id="geospatialCity"

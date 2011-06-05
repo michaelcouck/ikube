@@ -34,7 +34,8 @@
 		</td>
 	</tr>
 	<tr>
-		<td class="bottom-content">
+		<td class="td-content">
+			Index the planet!<br>
 			Have a fantastic day!<br>
 			Documentation brought to you by Ikube<br>
 			You are here =&gt;

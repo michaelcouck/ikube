@@ -75,19 +75,21 @@ public class RuleInterceptor implements IRuleInterceptor {
 			LOGGER.debug(Logging.getString("Not proceeding: ", result, jep, predicate));
 			return Boolean.FALSE;
 		}
-		if (LOGGER.isInfoEnabled()) {
-			// Node node = jep.getTopNode();
-			// printNodesAndEvaluations(jep, node);
+		if (LOGGER.isDebugEnabled()) {
+			Node node = jep.getTopNode();
+			printNodesAndEvaluations(jep, node);
 		}
 		if (result.equals(1.0d) || result.equals(Boolean.TRUE)) {
-			LOGGER.info(Logging.getString("Proceeding: ", result, jep, predicate));
+			// TODO Take a snapshot of the cluster at the time of the rule becoming
+			// true and an index started, including the state of the indexes on the file 
+			// system and the other servers
+			LOGGER.debug(Logging.getString("Proceeding: ", result, jep, predicate));
 			return proceedingJoinPoint.proceed();
 		}
-		LOGGER.info(Logging.getString("Not proceeding: ", result, jep, predicate));
+		LOGGER.debug(Logging.getString("Not proceeding: ", result, jep, predicate));
 		return Boolean.FALSE;
 	}
 
-	@SuppressWarnings("unused")
 	private void printNodesAndEvaluations(JEP jep, Node node) {
 		try {
 			LOGGER.info("Child node : " + node);

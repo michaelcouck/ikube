@@ -1,13 +1,11 @@
 package ikube.index.handler.filesystem;
 
-import ikube.cluster.IClusterManager;
 import ikube.index.IndexManager;
 import ikube.index.handler.IndexableHandler;
 import ikube.index.parse.IParser;
 import ikube.index.parse.ParserProvider;
 import ikube.model.IndexContext;
 import ikube.model.IndexableFileSystem;
-import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.HashUtilities;
 
@@ -45,28 +43,25 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 			// We need to check the cluster to see if this indexable is already handled by
 			// one of the other servers. The file system is very fast and there is no need to
 			// cluster the indexing
-			boolean isHandled = isHandled(indexContext, indexable);
-			if (!isHandled) {
-				final File baseFile = new File(indexable.getPath());
-				final Pattern pattern = getPattern(indexable.getExcludedPattern());
-				if (isExcluded(baseFile, pattern)) {
-					logger.warn("Base directory excluded : " + baseFile);
-					return null;
-				}
-				final List<Long> filesDone = new ArrayList<Long>();
-				for (int i = 0; i < getThreads(); i++) {
-					Thread thread = new Thread(new Runnable() {
-						public void run() {
-							if (baseFile.isDirectory()) {
-								handleFolder(indexContext, indexable, baseFile, pattern, filesDone);
-							} else {
-								handleFile(indexContext, indexable, baseFile);
-							}
+			final File baseFile = new File(indexable.getPath());
+			final Pattern pattern = getPattern(indexable.getExcludedPattern());
+			if (isExcluded(baseFile, pattern)) {
+				logger.warn("Base directory excluded : " + baseFile);
+				return null;
+			}
+			final List<Long> filesDone = new ArrayList<Long>();
+			for (int i = 0; i < getThreads(); i++) {
+				Thread thread = new Thread(new Runnable() {
+					public void run() {
+						if (baseFile.isDirectory()) {
+							handleFolder(indexContext, indexable, baseFile, pattern, filesDone);
+						} else {
+							handleFile(indexContext, indexable, baseFile);
 						}
-					});
-					thread.start();
-					threads.add(thread);
-				}
+					}
+				});
+				thread.start();
+				threads.add(thread);
 			}
 		} catch (Exception e) {
 			logger.error("Exception indexing the file share : " + indexable, e);
@@ -117,7 +112,12 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 			if (insertionPoint >= 0) {
 				return Boolean.TRUE;
 			}
-			filesDone.add(Math.abs(insertionPoint) + 1, hash);
+			insertionPoint = Math.abs(insertionPoint) + 1;
+			if (insertionPoint > filesDone.size()) {
+				insertionPoint = filesDone.size();
+				Collections.sort(filesDone);
+			}
+			filesDone.add(insertionPoint, hash);
 			// logger.info("File : " + hash + ", " + contains + ", " + filesDone.hashCode() + ", " + filesDone);
 			return Boolean.FALSE;
 		} finally {
@@ -189,11 +189,6 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 	protected boolean isExcluded(final File file, final Pattern pattern) {
 		// If it does not exist, we can't read it or directory excluded with the pattern
 		return file == null || !file.exists() || !file.canRead() || pattern.matcher(file.getName()).matches();
-	}
-
-	protected boolean isHandled(final IndexContext indexContext, final IndexableFileSystem indexableFileSystem) {
-		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
-		return clusterManager.isHandled(indexableFileSystem.getName(), indexContext.getIndexName());
 	}
 
 }

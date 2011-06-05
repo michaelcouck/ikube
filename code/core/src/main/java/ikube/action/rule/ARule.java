@@ -5,6 +5,7 @@ import ikube.toolkit.FileUtilities;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.index.IndexReader;
@@ -82,9 +83,11 @@ public abstract class ARule<T> implements IRule<T> {
 			return Boolean.FALSE;
 		}
 		String indexDirectoryName = latestIndexDirectory.getName();
-		long indexDirectoryTime = Long.parseLong(indexDirectoryName);
-		long currentTime = System.currentTimeMillis();
+
+		long currentTime = TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis());
+		long indexDirectoryTime = TimeUnit.MILLISECONDS.toMinutes(Long.parseLong(indexDirectoryName));
 		long indexAge = currentTime - indexDirectoryTime;
+
 		if (indexAge > indexContext.getMaxAge()) {
 			return Boolean.FALSE;
 		}

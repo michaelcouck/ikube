@@ -9,7 +9,7 @@
 	</tr>
 	<tr>
 		<td colspan="2">
-			<strong>Basics</strong><br>
+			<strong>basics</strong>&nbsp;
 			Configuration is not trivial and generally would need a developer to administer. Over and above that he/she would 
 			need to have an in depth knowledge of Spring. Now that I have scared off 99% of people we'll get down to it.
 		</td>
@@ -200,7 +200,11 @@
 	<tr>
 		<td colspan="2"> 
 			The table and database definition is the primary focus of Ikube. Ikube is designed to index databases in arbitrary complex structures. 
-			TODO Continue... Time for a break and a little TV.
+			First a table must be defined in the Spring configuration, including the data source as in the following:<br><br>
+			
+			<img src="<c:url value="/images/geoname.xml.jpg" />" alt="The geospatial table" /><br><br>
+			
+			The id and the class are for Spring, the rest of the properties of the bean are user defined, described below.
 		</td>
 	</tr>
 	
@@ -218,27 +222,49 @@
 		<td>predicate</td>
 		<td> 
 			 This is an optional parameter where a predicate can be defined to limit the results. A typical example is 
-			 where faq.faqid &lt; 10000. 
+			 where faq.faqid &lt; 10000. Please see the spring-client.xml file for an example. 
 		</td>
 	</tr>
-		<tr>
+	<tr>
 		<td>primary</td>
 		<td> 
 			Whether this table is a top level table. This will determine when the data collected while accessing the table 
-			hierarchy will be written to the database.
+			hierarchy will be written to the index. Sub tables are iterated over, the data is collected, and when the logic reaches 
+			the top level table the data will be passed to Lucene in the form of a document.
+		</td>
+	</tr>
+	<tr>
+		<td>address</td>
+		<td> 
+			This flag indicates that the table and possibly columns and even sub tables form part of a physical address. Addresses 
+			are used for GeoSpatial functionality. Address tables and the data contained in the columns are concatenated, a search 
+			is done against the Ikube GeoSpatial index to find the closest match for the address and the latitude and longitude 
+			properties for the address are added to the Lucene index. This facilitates searching for results around a point and ordering 
+			them according to distance from that point. More information on how to configure the index with geospatial functionality 
+			is available on the GeoSpatial page of the documentation(todo when the static ip is configured and the geospatial data 
+			is enhanced).
 		</td>
 	</tr>
 	<tr>
 		<td>dataSource</td>
 		<td> 
 			The reference to the datasource where the table is. The datasource must be defined in the Spring configuration, using 
-			perhaps C3p0 as the pooled datasource provider.
+			perhaps C3p0 as the pooled datasource provider. Please see below the shot of the data source definition in the Spring 
+			configuration:<br><br>
+			
+			<img src="<c:url value="/images/geoname.datasource.xml.jpg" />" alt="The geospatial data source" /><br><br>
+			
+			As you can see the properties for the database are quite self explanatory and common for databases per se.
 		</td>
 	</tr>
 	<tr>
 		<td>children</td>
 		<td> 
-			The children of the table. Typically this is a list of columns and child tables.
+			The children of the table. This is a list of mainly columns but also the sub tables will be defined in the child list 
+			for the table. Please note the screen shot below which is of some column definitions for the GeoName table, the 
+			id column and the name column:<br><br>
+			
+			<img src="<c:url value="/images/geoname.columns.xml.jpg" />" alt="The geospatial columns" /><br><br>
 		</td>
 	</tr>
 	<tr>
@@ -338,6 +364,14 @@
 		</td>
 	</tr>
 	<tr>
+		<td>address</td>
+		<td> 
+			 As described above in the address field definition for the table, this flag is used to add the column data to the accumulated data for the 
+			 address. The eventual data collected for the address will be used to search the geospatial index to find the co-ordinates. Typically an address 
+			 column will be the name and number of a street, the city and the country. 
+		</td>
+	</tr>
+	<tr>
 		<td>foreignKey</td>
 		<td> 
 			  The reference to the foreign key in the 'parent' table. This is used to select the records from the 'child' table referring to the parent id.
@@ -379,6 +413,13 @@
 		<th colspan="2">IndexableInternet definition parameters</th>
 	</tr>
 	<tr>
+		<td colspan="2">
+			This indexable is an internet site or an intranet site. Note that the crawler is multi-threaded but not clusterable. To facilitate 
+			good performance in the crawler the urls are hashed and stored in memory, this could become problematic if the number of pages 
+			exceeds 10 million. This problem will be addressed in the near future by including a fast database like ObjectDb.
+		</td>
+	</tr>
+	<tr>
 		<th>Parameter</th>
 		<th>Description</th>
 	</tr>
@@ -399,7 +440,7 @@
 	<tr>
 		<td>idFieldName</td>
 		<td>
-			The name of the field in the Lucene index for the identifier of this url. This is the field that will 
+			The name of the field in the Lucene index for the identifier of this url. This is a field that will 
 			be searched against when the index is created.
 		</td>
 	</tr>
@@ -414,7 +455,8 @@
 	<tr>
 		<td>contentFieldName</td>
 		<td> 
-			The name of the lucene content field for the documents.
+			The name of the lucene content field for the documents. When searching this index the field 
+			and search string will be logically something like 'where {contentFieldName} = {searchString}'. 
 		</td>
 	</tr>
 	<tr>
@@ -591,5 +633,10 @@
 	</tr>
 	<tr>
 		<td colspan="2">&nbsp;</td>
+	</tr>
+	
+	<tr>
+		<td colspan="2">Please note the other configuration possibilities for mail notification etc. on the 
+		extra page in the links at the top.</td>
 	</tr>
 </table>

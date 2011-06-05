@@ -276,6 +276,7 @@ public abstract class Search {
 						String fragment = getFragments(document, searchField, query);
 						if (fragment != null) {
 							builder.append(fragment);
+							builder.append(' ');
 						}
 					}
 					result.put(IConstants.FRAGMENT, builder.toString());

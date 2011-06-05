@@ -92,7 +92,7 @@ public class ClusterManager implements IClusterManager, IConstants {
 						server.setLogTail(logTail);
 					}
 					server.setAge(System.currentTimeMillis());
-					LOGGER.info("Publishing server : " + server);
+					LOGGER.info("Publishing server : " + server.getAddress());
 					set(Server.class.getName(), server.getId(), server);
 					return Boolean.TRUE;
 				}

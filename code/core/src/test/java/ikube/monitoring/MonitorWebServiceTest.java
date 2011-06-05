@@ -6,7 +6,7 @@ import static org.junit.Assert.assertTrue;
 import ikube.BaseTest;
 import ikube.IConstants;
 import ikube.model.IndexContext;
-import ikube.service.IMonitoringService;
+import ikube.service.IMonitorWebService;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
 
@@ -25,12 +25,12 @@ import org.junit.Test;
  * @since 12.10.2010
  * @version 01.00
  */
-public class MonitoringServiceTest extends BaseTest {
+public class MonitorWebServiceTest extends BaseTest {
 
-	private IMonitoringService monitoringService = ApplicationContextManager.getBean(IMonitoringService.class);
+	private IMonitorWebService monitorWebService = ApplicationContextManager.getBean(IMonitorWebService.class);
 
-	public MonitoringServiceTest() {
-		super(MonitoringServiceTest.class);
+	public MonitorWebServiceTest() {
+		super(MonitorWebServiceTest.class);
 	}
 
 	@Before
@@ -45,24 +45,24 @@ public class MonitoringServiceTest extends BaseTest {
 
 	@Test
 	public void getIndexContextNames() {
-		String[] indexContextNames = monitoringService.getIndexContextNames();
+		String[] indexContextNames = monitorWebService.getIndexContextNames();
 		assertNotNull(indexContextNames);
 		assertTrue(indexContextNames.length > 0);
 	}
 
 	@Test
 	public void getIndexFieldNames() {
-		String[] indexContextNames = monitoringService.getIndexContextNames();
+		String[] indexContextNames = monitorWebService.getIndexContextNames();
 		for (String indexContextName : indexContextNames) {
 			IndexContext indexContext = ApplicationContextManager.getBean(indexContextName);
 			logger.info("Index context name : " + indexContextName);
-			String[] fieldNames = monitoringService.getIndexFieldNames(indexContext.getIndexName());
+			String[] fieldNames = monitorWebService.getIndexFieldNames(indexContext.getIndexName());
 			assertTrue(fieldNames.length > 0);
 			for (String fieldName : fieldNames) {
 				logger.debug("        : field name : " + fieldName);
 			}
 		}
-		String[] indexFieldNames = monitoringService.getIndexFieldNames(IConstants.IKUBE);
+		String[] indexFieldNames = monitorWebService.getIndexFieldNames(IConstants.IKUBE);
 		for (String indexfieldName : indexFieldNames) {
 			logger.info("Field name : " + indexfieldName);
 		}
@@ -75,7 +75,7 @@ public class MonitoringServiceTest extends BaseTest {
 	@Test
 	public void getIndexSize() throws Exception {
 		createIndex(indexContext, "The strings to index");
-		long indexSize = monitoringService.getIndexSize(indexContext.getIndexName());
+		long indexSize = monitorWebService.getIndexSize(indexContext.getIndexName());
 		logger.info("Index size : " + indexSize);
 		assertTrue("There should be some data in the index : ", indexSize > 0);
 	}
@@ -83,22 +83,22 @@ public class MonitoringServiceTest extends BaseTest {
 	@Test
 	public void getIndexDocuments() throws Exception {
 		createIndex(indexContext, "The strings to index");
-		long indexDocuments = monitoringService.getIndexDocuments(indexContext.getIndexName());
+		long indexDocuments = monitorWebService.getIndexDocuments(indexContext.getIndexName());
 		logger.info("Index documents : " + indexDocuments);
 		assertEquals("There should be at least one document in the index : ", 2, indexDocuments, 1);
 	}
 
 	@Test
 	public void getIndexableFieldNames() {
-		String[] indexableFieldNames = monitoringService.getIndexableFieldNames("ikube.email");
+		String[] indexableFieldNames = monitorWebService.getIndexableFieldNames("ikube.email");
 		logger.info("Indexable field names : " + Arrays.asList(indexableFieldNames));
 		assertEquals("The email is the first field : ", "email", indexableFieldNames[0]);
 		assertEquals("The identifier is the second field : ", "identifier", indexableFieldNames[1]);
 		assertEquals("The title is the third field : ", "title", indexableFieldNames[2]);
 
-		indexableFieldNames = monitoringService.getIndexableFieldNames("geoname");
+		indexableFieldNames = monitorWebService.getIndexableFieldNames("geoname");
 		logger.info("Indexable field names : " + Arrays.asList(indexableFieldNames));
-		assertEquals("The alternatenames is the first field : ", "alternatenames", indexableFieldNames[0]);
+		assertEquals("The asciiname is the first field : ", "asciiname", indexableFieldNames[0]);
 	}
 
 }

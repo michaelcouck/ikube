@@ -30,8 +30,8 @@
 		class="ikube.model.IndexContext"
 		property:indexName="ikube"
 		property:maxAge="600"
-		property:compoundFile="${compound.file}"
-		property:bufferedDocs="${buffered.docs}"
+		property:compoundFile="true"
+		property:bufferedDocs="100"
 		property:bufferSize="32"
 		property:internetBatchSize="1"
 		property:mergeFactor="10"
@@ -39,12 +39,14 @@
 		property:maxReadLength="10000000"
 		property:queueTimeout="84600000"
 		property:throttle="0"
-		property:indexDirectoryPath="${index.directory.path}"
-		property:indexDirectoryPathBackup="${index.directory.path.backup}"
+		property:indexDirectoryPath="./indexes"
+		property:indexDirectoryPathBackup="./indexes/backup"
 		property:indexables-ref="ikubeIndexables" />
 	<util:list id="ikubeIndexables">
 		<ref local="ikubeInternet" />
+		<ref local="ikubeInternet8080" />
 		<ref local="ikubeInternet9000" />
+		<ref local="ikubeInternetDynDns" />
 	</util:list>
 	
 	<bean
@@ -60,16 +62,39 @@
 		property:stored="true"
 		property:vectored="true" />
 	<bean
-		id="ikubeInternet9000"
+		id="ikubeInternet8080"
 		class="ikube.model.IndexableInternet"
-		property:name="internet9000"
-		property:url="${ikube.url.9000}" 
-		property:idFieldName="id9000"
-		property:titleFieldName="title9000"
-		property:contentFieldName="content9000"
+		property:name="internet8080"
+		property:url="${ikube.url.8080}" 
+		property:idFieldName="id"
+		property:titleFieldName="title"
+		property:contentFieldName="content"
 		property:excludedPattern=".*(/search).*|.*(/images).*"
 		property:analyzed="true"
 		property:stored="true"
 		property:vectored="true" />
-		
+	<bean
+		id="ikubeInternet9000"
+		class="ikube.model.IndexableInternet"
+		property:name="internet9000"
+		property:url="${ikube.url.9000}" 
+		property:idFieldName="id"
+		property:titleFieldName="title"
+		property:contentFieldName="content"
+		property:excludedPattern=".*(/search).*|.*(/images).*"
+		property:analyzed="true"
+		property:stored="true"
+		property:vectored="true" />
+	<bean
+		id="ikubeInternetDynDns"
+		class="ikube.model.IndexableInternet"
+		property:name="internetDynDns"
+		property:url="${ikube.url.dyndns}" 
+		property:idFieldName="id"
+		property:titleFieldName="title"
+		property:contentFieldName="content"
+		property:excludedPattern=".*(/search).*|.*(/images).*"
+		property:analyzed="true"
+		property:stored="true"
+		property:vectored="true" />
 </beans>

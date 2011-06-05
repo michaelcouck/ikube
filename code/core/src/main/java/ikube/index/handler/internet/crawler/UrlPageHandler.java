@@ -167,14 +167,14 @@ public class UrlPageHandler extends UrlHandler<Url> implements Runnable {
 			url.setRawContent(byteOutputStream.getBytes());
 			return byteOutputStream;
 		} catch (Exception e) {
-			LOGGER.error("", e);
+			LOGGER.error("Exception getting the content from the url : " + url, e);
 		} finally {
 			try {
 				if (get != null) {
 					get.releaseConnection();
 				}
 			} catch (Exception e) {
-				LOGGER.error("", e);
+				LOGGER.error("Exceptino releasing the connection to the url : " + url, e);
 			}
 		}
 		return byteOutputStream;
@@ -295,53 +295,51 @@ public class UrlPageHandler extends UrlHandler<Url> implements Runnable {
 				pattern = Pattern.compile(indexableInternet.getExcludedPattern());
 			}
 			for (Tag tag : tags) {
-				if (tag.getName().equals(HTMLElementName.A)) {
-					if (StartTag.class.isAssignableFrom(tag.getClass())) {
-						Attribute attribute = ((StartTag) tag).getAttributes().get(HTML.Attribute.HREF.toString());
-						if (attribute != null) {
-							try {
-								String link = attribute.getValue();
-								if (link == null) {
-									continue;
-								}
-								if (UriUtilities.isExcluded(link.trim().toLowerCase())) {
-									continue;
-								}
-								String resolvedLink = UriUtilities.resolve(baseUri, link);
-								if (!UriUtilities.isInternetProtocol(resolvedLink)) {
-									continue;
-								}
-								if (!resolvedLink.contains(baseHost)) {
-									continue;
-								}
-								if (pattern != null && pattern.matcher(resolvedLink).matches()) {
-									continue;
-								}
-								String replacement = resolvedLink.contains("?") ? "?" : "";
-								String strippedSessionLink = UriUtilities.stripJSessionId(resolvedLink, replacement);
-								String strippedAnchorLink = UriUtilities.stripAnchor(strippedSessionLink, "");
-								Long id = HashUtilities.hash(strippedAnchorLink);
-								Url url = new Url();
-								url.setId(id);
-
-								if (clusterManager.get(IConstants.URL, url.getId()) != null
-										|| clusterManager.get(IConstants.URL_DONE, url.getId()) != null) {
-									continue;
-								}
-								// Add the link to the database here
-								url.setUrl(strippedAnchorLink);
-								LOGGER.info("Setting url : " + url);
-								clusterManager.set(IConstants.URL, url.getId(), url);
-								// setUrl(dbUrl);
-							} catch (Exception e) {
-								LOGGER.error("Exception extracting link : " + tag, e);
+				if (tag.getName().equals(HTMLElementName.A) && StartTag.class.isAssignableFrom(tag.getClass())) {
+					Attribute attribute = ((StartTag) tag).getAttributes().get(HTML.Attribute.HREF.toString());
+					if (attribute != null) {
+						try {
+							String link = attribute.getValue();
+							if (link == null) {
+								continue;
 							}
+							if (UriUtilities.isExcluded(link.trim().toLowerCase())) {
+								continue;
+							}
+							String resolvedLink = UriUtilities.resolve(baseUri, link);
+							if (!UriUtilities.isInternetProtocol(resolvedLink)) {
+								continue;
+							}
+							if (!resolvedLink.contains(baseHost)) {
+								continue;
+							}
+							if (pattern != null && pattern.matcher(resolvedLink).matches()) {
+								continue;
+							}
+							String replacement = resolvedLink.contains("?") ? "?" : "";
+							String strippedSessionLink = UriUtilities.stripJSessionId(resolvedLink, replacement);
+							String strippedAnchorLink = UriUtilities.stripAnchor(strippedSessionLink, "");
+							Long id = HashUtilities.hash(strippedAnchorLink);
+							Url url = new Url();
+							url.setId(id);
+
+							if (clusterManager.get(IConstants.URL, url.getId()) != null
+									|| clusterManager.get(IConstants.URL_DONE, url.getId()) != null) {
+								continue;
+							}
+							// Add the link to the database here
+							url.setUrl(strippedAnchorLink);
+							LOGGER.info("Setting url : " + url);
+							clusterManager.set(IConstants.URL, url.getId(), url);
+							// setUrl(dbUrl);
+						} catch (Exception e) {
+							LOGGER.error("Exception extracting link : " + tag, e);
 						}
 					}
 				}
 			}
 		} catch (Exception e) {
-			LOGGER.error("", e);
+			LOGGER.error("General exception extracting the links from : ", e);
 		}
 	}
 

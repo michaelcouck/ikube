@@ -25,8 +25,6 @@
 		location="classpath*:**/spring.properties" 
 		properties-ref="ikube.toolkit.PropertyConfigurer" />
 		
-	<import resource="classpath:/META-INF/common/integration/spring-integration.xml" />
-	
 	<!-- The in memory database. -->
 	<bean
 		id="ikube.database.mem.DataBaseMem"
@@ -104,8 +102,8 @@
 		class="ikube.service.SearcherWebService"
 		property:searchDelegate-ref="ikube.service.ISearchDelegate" />
 	<bean
-		id="ikube.service.MonitoringService"
-		class="ikube.service.MonitoringService" />
+		id="ikube.service.MonitorWebService"
+		class="ikube.service.MonitorWebService" />
 	<bean
 		id="ikube.service.WebServicePublisher"
 		class="ikube.service.WebServicePublisher"
@@ -132,7 +130,7 @@
 		<property name="implementors">
 			<list>
 				<ref local="ikube.service.SearcherWebService" />
-				<ref local="ikube.service.MonitoringService" />
+				<ref local="ikube.service.MonitorWebService" />
 			</list>
 		</property>
 	</bean>
@@ -160,8 +158,8 @@
 		id="ikube.listener.SchedulePerformance"
 		class="ikube.listener.Schedule"
 		property:type="performance"
-		property:delay="10000"
-		property:period="10000" />
+		property:delay="60000"
+		property:period="60000" />
 	
 	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
 		property:staticMethod="ikube.listener.Scheduler.addSchedule">

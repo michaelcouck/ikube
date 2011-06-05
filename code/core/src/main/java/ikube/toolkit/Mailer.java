@@ -73,6 +73,7 @@ public class Mailer {
 		// Transport.send(message);
 		Transport transport = null;
 		try {
+			logger.info("Sending mail to : " + user + ", " + mailHost);
 			transport = session.getTransport("smtps");
 			transport.connect(mailHost, Integer.parseInt(port), user, password);
 			transport.sendMessage(message, message.getAllRecipients());

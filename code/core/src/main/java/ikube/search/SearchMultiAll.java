@@ -46,8 +46,9 @@ public class SearchMultiAll extends SearchMulti {
 		}
 		searchFields = searchFieldNames.toArray(new String[searchFieldNames.size()]);
 		String[] newSearchStrings = new String[searchFields.length];
-		System.arraycopy(searchStrings, 0, newSearchStrings, 0, searchStrings.length);
-		Arrays.fill(newSearchStrings, searchStrings.length, newSearchStrings.length, searchStrings[0]);
+		int minLength = Math.min(searchStrings.length, newSearchStrings.length);
+		System.arraycopy(searchStrings, 0, newSearchStrings, 0, minLength);
+		Arrays.fill(newSearchStrings, minLength, newSearchStrings.length, searchStrings[0]);
 		searchStrings = newSearchStrings;
 		return MultiFieldQueryParser.parse(IConstants.VERSION, searchStrings, searchFields, IConstants.ANALYZER);
 	}

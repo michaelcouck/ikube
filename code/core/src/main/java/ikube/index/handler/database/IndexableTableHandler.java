@@ -25,7 +25,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
@@ -80,7 +79,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	/**
 	 * This is the maximum exceptions that we will tolerate before we give up on this result set and possibly the table.
 	 */
-	private static final int maxExceptions = 100;
+	private static final int MAX_EXCEPTIONS = 100;
 
 	public IndexableTableHandler() {
 		super();
@@ -104,13 +103,14 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 			final IndexableTable cloneIndexableTable = (IndexableTable) SerializationUtilities.clone(indexable);
 			// One connection per thread, the connection will be closed by the thread when finished
 			final Connection connection = indexable.getDataSource().getConnection();
+			connection.setAutoCommit(Boolean.FALSE);
 			Thread thread = new Thread(new Runnable() {
 				public void run() {
-					handleTable(indexContext, cloneIndexableTable, connection, null);
+					handleTable(indexContext, cloneIndexableTable, connection, null, 0);
 				}
 			}, IndexableTableHandler.class.getSimpleName() + "." + i);
-			thread.start();
 			threads.add(thread);
+			thread.start();
 		}
 		return threads;
 	}
@@ -131,11 +131,10 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	 *            is null of course
 	 */
 	protected void handleTable(final IndexContext indexContext, final IndexableTable indexableTable, final Connection connection,
-			Document document) {
+			Document document, int exceptions) {
 		ResultSet resultSet = null;
 		try {
 			resultSet = getResultSet(indexContext, indexableTable, connection, 1);
-			int exceptions = 0;
 			do {
 				try {
 					if (resultSet == null) {
@@ -184,7 +183,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 						// Here we recursively call this method with the child tables. We pass the document
 						// to the child table for this row in the parent table so they can add their fields to the
 						// index
-						handleTable(indexContext, childIndexableTable, connection, document);
+						handleTable(indexContext, childIndexableTable, connection, document, exceptions);
 					}
 					// Add the document to the index if this is the primary table
 					if (indexableTable.isPrimary()) {
@@ -203,8 +202,9 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 						}
 					}
 				} catch (Exception e) {
-					logger.error("Exception indexing table : " + indexableTable + ", connection : " + connection, e);
-					if (exceptions++ > maxExceptions) {
+					logger.error("Exception indexing table : " + indexableTable + ", connection : " + connection + ", exceptions : "
+							+ exceptions, e);
+					if (exceptions++ > MAX_EXCEPTIONS) {
 						break;
 					}
 				}
@@ -212,7 +212,9 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 		} catch (Exception e) {
 			// Should we catch this exception and check how many are thrown, if the
 			// exception threshold is exceeded then exit the database crawl?
-			logger.error("Exception indexing table : " + indexableTable + ", connection : " + connection, e);
+			exceptions++;
+			logger.error("Exception indexing table : " + indexableTable + ", connection : " + connection + ", exceptions : " + exceptions,
+					e);
 		} finally {
 			// Close the result set and the statement for this
 			// table, could be the sub table of course
@@ -231,6 +233,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 		// then we can close the connection too. Each thread gets
 		// it's own connection so we don't overlap threads/connections
 		if (indexableTable.isPrimary()) {
+			DatabaseUtilities.commit(connection);
 			DatabaseUtilities.close(connection);
 		}
 	}
@@ -264,15 +267,22 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 			// starting to access this table then the id number will be 0, but the first id in the table could be 1 234 567,
 			// in which case we will have no records, so we need to execute where id > 1 234 567 and < 1 234 567 + batchSize
 			if (indexableTable.isPrimary()) {
+				// Commit the connection to release the cursors
+				DatabaseUtilities.commit(connection);
+				long minimumId = indexableTable.getMinimumId();
+				if (minimumId < 0) {
+					minimumId = getIdFunction(indexableTable, connection, "min");
+					indexableTable.setMinimumId(minimumId);
+				}
 				IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
-				long minId = getIdFunction(indexableTable, connection, "min");
 				nextIdNumber = clusterManager.getIdNumber(indexContext.getIndexName(), indexableTable.getName(),
-						indexContext.getBatchSize(), minId);
+						indexContext.getBatchSize(), minimumId);
 			}
 
 			// Now we build the sql based on the columns defined in the configuration
 			String sql = buildSql(indexableTable, indexContext.getBatchSize(), nextIdNumber);
-			PreparedStatement preparedStatement = connection.prepareStatement(sql);
+			PreparedStatement preparedStatement = connection.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY,
+					ResultSet.CLOSE_CURSORS_AT_COMMIT);
 			// Set the parameters if this is a sub table, this typically means that the
 			// id from the primary table is set in the prepared statement for the sub table
 			setParameters(indexableTable, preparedStatement);
@@ -286,9 +296,13 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 				// between these values, so the next predicate would be
 				// id > 1 234 567 + batchSize and < 1 234 567 + (batchSize * 2)
 				if (indexableTable.isPrimary()) {
-					long maxId = getIdFunction(indexableTable, connection, "max");
+					long maximumId = indexableTable.getMaximumId();
+					if (maximumId < 0) {
+						maximumId = getIdFunction(indexableTable, connection, "max");
+						indexableTable.setMaximumId(maximumId);
+					}
 					// If we have exhausted the results then we return null and the thread dies
-					if (nextIdNumber > maxId) {
+					if (nextIdNumber > maximumId) {
 						return null;
 					}
 					// Try the next predicate + batchSize
@@ -410,7 +424,8 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	 * @param preparedStatement
 	 *            the statement to set the parameters in
 	 */
-	protected synchronized void setParameters(final IndexableTable indexableTable, final PreparedStatement preparedStatement) {
+	protected synchronized void setParameters(final IndexableTable indexableTable, final PreparedStatement preparedStatement)
+			throws Exception {
 		try {
 			List<Indexable<?>> children = indexableTable.getChildren();
 			int index = 1;
@@ -423,13 +438,9 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 					continue;
 				}
 				IndexableColumn foreignKey = indexableColumn.getForeignKey();
-				try {
-					Object parameter = foreignKey.getContent();
-					preparedStatement.setObject(index, parameter);
-					index++;
-				} catch (SQLException e) {
-					logger.error("Exception setting the parameters : " + indexableTable + ", " + indexableTable.getChildren(), e);
-				}
+				Object parameter = foreignKey.getContent();
+				preparedStatement.setObject(index, parameter);
+				index++;
 			}
 		} finally {
 			notifyAll();
@@ -479,6 +490,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 		} finally {
 			DatabaseUtilities.close(resultSet);
 			DatabaseUtilities.close(statement);
+			DatabaseUtilities.commit(connection);
 			notifyAll();
 		}
 	}
@@ -549,7 +561,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 			String fieldContent = parsedOutputStream.toString();
 			IndexManager.addStringField(fieldName, fieldContent, document, store, analyzed, termVector);
 		} catch (Exception e) {
-			logger.error("Exception accessing the column content : " + byteOutputStream.toString(), e);
+			logger.error("Exception accessing the column content : " + byteOutputStream, e);
 		} finally {
 			close(inputStream);
 			inputStream = null;
@@ -566,7 +578,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 				outputStream.close();
 			}
 		} catch (Exception e) {
-			logger.error("", e);
+			logger.error("Exception closing the otuput stream with the data : " + outputStream, e);
 		}
 	}
 
@@ -576,7 +588,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 				inputStream.close();
 			}
 		} catch (Exception e) {
-			logger.error("", e);
+			logger.error("Exception closing the input stream from the table : " + inputStream, e);
 		}
 	}
 

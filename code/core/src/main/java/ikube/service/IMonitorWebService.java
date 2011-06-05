@@ -9,14 +9,14 @@ import javax.jws.soap.SOAPBinding;
  * @version 01.00
  */
 @SOAPBinding(style = SOAPBinding.Style.RPC)
-@WebService(name = IMonitoringService.NAME, targetNamespace = IMonitoringService.NAMESPACE, serviceName = IMonitoringService.SERVICE)
-public interface IMonitoringService {
+@WebService(name = IMonitorWebService.NAME, targetNamespace = IMonitorWebService.NAMESPACE, serviceName = IMonitorWebService.SERVICE)
+public interface IMonitorWebService {
 
 	String NAME = "monitor";
 	String SERVICE = "monitor";
 	String NAMESPACE = "http://ikube.monitor/";
 
-	String PUBLISHED_PATH = "/" + IMonitoringService.class.getName().replace(".", "/") + "?wsdl";
+	String PUBLISHED_PATH = "/" + IMonitorWebService.class.getName().replace(".", "/") + "?wsdl";
 
 	/**
 	 * Accesses the index names defined in the configuration. The index names are the names given to the indexes by the user. For example in

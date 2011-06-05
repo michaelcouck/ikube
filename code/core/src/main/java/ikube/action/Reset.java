@@ -26,8 +26,6 @@ public class Reset extends Action<IndexContext, Boolean> {
 			List<Server> servers = getClusterManager().getServers();
 			for (Server server : servers) {
 				server.getActions().clear();
-			}
-			for (Server server : servers) {
 				getClusterManager().set(Server.class.getName(), server.getId(), server);
 			}
 			getClusterManager().clear(IConstants.URL);
