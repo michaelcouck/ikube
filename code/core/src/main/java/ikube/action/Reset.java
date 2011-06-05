@@ -28,6 +28,10 @@ public class Reset extends Action<IndexContext, Boolean> {
 				server.getActions().clear();
 				getClusterManager().set(Server.class.getName(), server.getId(), server);
 			}
+			Server server = getClusterManager().getServer();
+			server.getActions().clear();
+			getClusterManager().set(Server.class.getName(), server.getId(), server);
+
 			getClusterManager().clear(IConstants.URL);
 			getClusterManager().clear(IConstants.URL_DONE);
 			getClusterManager().clear(IConstants.URL_HASH);

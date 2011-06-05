@@ -57,5 +57,9 @@ public class Scheduler {
 	public static void addSchedule(Schedule schedule) {
 		Scheduler.SCHEDULES.add(schedule);
 	}
+	
+	public static void addSchedules(List<Schedule> schedules) {
+		Scheduler.SCHEDULES.addAll(schedules);
+	}
 
 }

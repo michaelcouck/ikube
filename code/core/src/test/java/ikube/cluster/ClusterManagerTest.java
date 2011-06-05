@@ -291,7 +291,7 @@ public class ClusterManagerTest extends ATest {
 		assertFalse("We haven't handled this indexable : ", isHandled);
 		clusterManager.setWorking(indexName, indexableName, Boolean.TRUE);
 		isHandled = clusterManager.isHandled(indexableName, indexName);
-		assertFalse("This indexable is not handled : ", isHandled);
+		assertTrue("This indexable is not handled : ", isHandled);
 	}
 
 }

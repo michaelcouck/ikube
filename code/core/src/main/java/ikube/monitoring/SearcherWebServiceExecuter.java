@@ -43,8 +43,8 @@ public class SearcherWebServiceExecuter implements ISearcherWebServiceExecuter {
 		ListenerManager.addListener(new IListener() {
 			@Override
 			public void handleNotification(final Event event) {
-				LOGGER.info("Event : " + event);
 				if (event.getType().equals(Event.PERFORMANCE)) {
+					LOGGER.info("Event : " + event);
 					try {
 						execute();
 					} catch (Exception e) {

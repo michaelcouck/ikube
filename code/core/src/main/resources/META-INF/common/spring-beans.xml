@@ -160,29 +160,17 @@
 		property:type="performance"
 		property:delay="60000"
 		property:period="60000" />
+	<util:list id="ikube.listener.Schedules">
+		<ref bean="ikube.listener.Schedule" />
+		<ref bean="ikube.listener.ScheduleBroadCaster" />
+		<ref bean="ikube.listener.ScheduleBroadClean" />
+		<ref bean="ikube.listener.SchedulePerformance" />
+	</util:list>
 	
 	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
-		property:staticMethod="ikube.listener.Scheduler.addSchedule">
+		property:staticMethod="ikube.listener.Scheduler.addSchedules">
 		<property name="arguments">
-			<ref local="ikube.listener.Schedule" />
-		</property>
-	</bean>
-	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
-		property:staticMethod="ikube.listener.Scheduler.addSchedule">
-		<property name="arguments">
-			<ref local="ikube.listener.ScheduleBroadCaster" />
-		</property>
-	</bean>
-	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
-		property:staticMethod="ikube.listener.Scheduler.addSchedule">
-		<property name="arguments">
-			<ref local="ikube.listener.ScheduleBroadClean" />
-		</property>
-	</bean>
-	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
-		property:staticMethod="ikube.listener.Scheduler.addSchedule">
-		<property name="arguments">
-			<ref local="ikube.listener.SchedulePerformance" />
+			<ref local="ikube.listener.Schedules" />
 		</property>
 	</bean>
 	<bean id="schedulerInitialize" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
