@@ -103,6 +103,7 @@
 		<th class="td-content">Index</th>
 		<th class="td-content">Docs</th>
 		<th class="td-content">Size</th>
+		<th class="td-content">Open</th>
 		<th class="td-content">Max age</th>
 		<th class="td-content">Batch size</th>
 		<th class="td-content">Inet batch size</th>
@@ -124,6 +125,7 @@
 		<td class="td-content"><fmt:formatNumber 
 			value="${requestScope[indexContext.indexName]['indexSize'] / 1000000}" 
 			maxFractionDigits="0" /></td>
+		<td class="td-content">${indexContext.index.multiSearcher != null}</td>
 		<td class="td-content">${indexContext.maxAge / 60}</td>
 		<td class="td-content">${indexContext.batchSize}</td>
 		<td class="td-content">${indexContext.internetBatchSize}</td>

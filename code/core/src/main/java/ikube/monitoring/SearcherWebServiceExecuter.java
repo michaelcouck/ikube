@@ -25,6 +25,7 @@ import org.apache.log4j.Logger;
  * @since 21.11.10
  * @version 01.00
  */
+@Deprecated
 @SuppressWarnings("unchecked")
 public class SearcherWebServiceExecuter implements ISearcherWebServiceExecuter {
 

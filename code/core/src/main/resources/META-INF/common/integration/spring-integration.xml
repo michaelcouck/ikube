@@ -19,7 +19,11 @@
 		location="classpath*:**/spring.properties" 
 		properties-ref="ikube.toolkit.PropertyConfigurer" />
 	
-	<bean
+	<!--
+		This bean has become an action. Nice. So deprecated...
+		Scheduled for deletion. 
+	 -->
+	<!-- <bean
 		id="ikube.monitoring.SearcherWebServiceExecuter"
 		class="ikube.monitoring.SearcherWebServiceExecuter"
 		property:indexName="${searcher.index.name}"
@@ -28,6 +32,6 @@
 		property:searchString="${searcher.search.string}"
 		property:start="${searcher.start.index}"
 		property:end="${searcher.end.index}"
-		property:iterations="${searcher.iterations}" />
+		property:iterations="${searcher.iterations}" /> -->
 		
 </beans>

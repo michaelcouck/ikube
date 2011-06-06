@@ -10,6 +10,7 @@ import ikube.toolkit.ApplicationContextManager;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -17,6 +18,8 @@ import org.junit.Test;
  * @since 21.11.10
  * @version 01.00
  */
+@Ignore
+@Deprecated
 public class SearcherWebServiceExecuterTest extends BaseTest {
 
 	public SearcherWebServiceExecuterTest() {

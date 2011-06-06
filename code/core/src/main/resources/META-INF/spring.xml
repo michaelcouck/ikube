@@ -46,5 +46,5 @@
 	<import resource="classpath:/META-INF/client/datasource/spring-db2-jdbc.xml" />
 	<import resource="classpath:/META-INF/client/datasource/spring-oracle-jdbc.xml" />
 	
-	<import resource="classpath:/META-INF/common/integration/spring-integration.xml" />
+	<!-- <import resource="classpath:/META-INF/common/integration/spring-integration.xml" /> -->
 </beans>

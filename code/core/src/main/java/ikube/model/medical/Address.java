@@ -22,6 +22,8 @@ public class Address extends Persistable {
 	@Column(length = 64)
 	private String street;
 	@Column(length = 64)
+	private String city;
+	@Column(length = 64)
 	private String province;
 	@Column(length = 64)
 	private String country;
@@ -44,6 +46,14 @@ public class Address extends Persistable {
 
 	public void setStreet(String street) {
 		this.street = street;
+	}
+
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
 	}
 
 	public String getProvince() {

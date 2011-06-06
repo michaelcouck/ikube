@@ -30,10 +30,12 @@
 		id="ikube.database.mem.DataBaseMem"
 		class="ikube.database.mem.DataBaseMem" />
 	
-	<!-- This bean validates the indexes periodically. -->
-	<bean 
+	<!--
+		Deprecated: This has now become an action. 
+		This bean validates the indexes periodically. -->
+	<!-- <bean 
 		id="ikube.monitoring.IndexValidator" 
-		class="ikube.monitoring.IndexValidator" />
+		class="ikube.monitoring.IndexValidator" /> -->
 	
 	<!-- The cluster manager that is responsible for all cluster synchronization stuff. -->
 	<bean
@@ -177,7 +179,10 @@
 		property:staticMethod="ikube.listener.Scheduler.initialize">
 	</bean>
 	
-	<!-- This is the mailer that will send mail to targets when things go right, and wrong in fact. -->
+	<!-- 
+		This is the mailer that will send mail to targets when things go right, and wrong in fact. This 
+		you would want to modify, otherwise I will be getting many, many mails from your system. 
+	-->
 	<bean
 		class="ikube.toolkit.Mailer"
 		property:auth="true"

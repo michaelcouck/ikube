@@ -18,3 +18,7 @@ function popup(mylink, windowname) {
 	window.open(href, windowname, 'width=400,height=200,scrollbars=yes');
 	return false;
 }
+
+function timedRefresh(timeoutPeriod) {
+	setTimeout("location.reload(true);", timeoutPeriod);
+}

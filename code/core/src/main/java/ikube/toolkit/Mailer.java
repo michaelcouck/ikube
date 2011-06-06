@@ -1,5 +1,6 @@
 package ikube.toolkit;
 
+import java.net.InetAddress;
 import java.security.Security;
 import java.util.Properties;
 
@@ -62,7 +63,7 @@ public class Mailer {
 
 		MimeMessage message = new MimeMessage(session);
 		message.setSender(new InternetAddress(sender));
-		message.setSubject(subject);
+		message.setSubject(subject + " from : " + InetAddress.getLocalHost().getHostAddress());
 		message.setContent(body, "text/plain");
 		if (recipients.indexOf(',') > 0) {
 			message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipients));
