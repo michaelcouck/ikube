@@ -8,12 +8,12 @@
 	<groupId>ikube</groupId>
 	<artifactId>ikube-core</artifactId>
 	<packaging>jar</packaging>
-	<version>1.0.1-SNAPSHOT</version>
+	<version>1.5.0</version>
 
 	<parent>
 		<groupId>ikube</groupId>
 		<artifactId>ikube</artifactId>
-		<version>1.0.1-SNAPSHOT</version>
+		<version>1.5.0</version>
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
 
@@ -99,13 +99,13 @@
 		</plugins>
 	</build>
 	
-	<dependencies>
+	<!-- <dependencies>
 		<dependency>
 			<groupId>ikube</groupId>
 			<artifactId>ikube-tools</artifactId>
 			<version>${project.version}</version>
 			<scope>compile</scope>
 		</dependency>
-	</dependencies>
+	</dependencies> -->
 
 </project>

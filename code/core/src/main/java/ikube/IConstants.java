@@ -151,6 +151,6 @@ public interface IConstants {
 	/** The length of the log that should be passed around. */
 	long TAIL_LOG = 10000;
 	
-	SimpleDateFormat HHMMSS_DDMMYYYY = new SimpleDateFormat("hh:mm:ss ddMMyyyy");
+	SimpleDateFormat HHMMSS_DDMMYYYY = new SimpleDateFormat("hh:mm:ss dd/MM/yyyy");
 
 }

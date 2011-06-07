@@ -238,7 +238,7 @@
 		property:start="0"
 		property:end="10"
 		property:searchString="cape town"
-		property:resultsSizeMinimum="10"
+		property:resultsSizeMinimum="2"
 		property:iterations="10">
 		<property name="rules">
 			<util:list>

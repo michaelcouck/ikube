@@ -105,11 +105,12 @@
 		<th class="td-content">Size</th>
 		<th class="td-content">Open</th>
 		<th class="td-content">Max age</th>
-		<th class="td-content">Batch size</th>
+		<th class="td-content">Timestamp</th>
+		<!-- <th class="td-content">Batch size</th>
 		<th class="td-content">Inet batch size</th>
-		<th class="td-content">Read length</th>
+		<th class="td-content">Read length</th> -->
 		<th class="td-content">Index path</th>
-		<th class="td-content">Backup path</th>
+		<!-- <th class="td-content">Backup path</th> -->
 	</tr>
 	
 	<c:forEach var="indexContext" items="${requestScope.indexContexts}">
@@ -127,11 +128,12 @@
 			maxFractionDigits="0" /></td>
 		<td class="td-content">${indexContext.index.multiSearcher != null}</td>
 		<td class="td-content">${indexContext.maxAge / 60}</td>
-		<td class="td-content">${indexContext.batchSize}</td>
+		<td class="td-content">${indexContext.latestIndexTimestamp}</td>
+		<%-- <td class="td-content">${indexContext.batchSize}</td>
 		<td class="td-content">${indexContext.internetBatchSize}</td>
-		<td class="td-content">${indexContext.maxReadLength / 1000000}</td>
-		<td class="td-content">${indexContext.indexDirectoryPath}</td>
-		<td class="td-content">${indexContext.indexDirectoryPathBackup}</td>
+		<td class="td-content">${indexContext.maxReadLength / 1000000}</td> --%>
+		<td class="td-content">${indexContext.indexDirectoryPath}/${indexContext.indexName}</td>
+		<%-- <td class="td-content">${indexContext.indexDirectoryPathBackup}</td> --%>
 	</tr>
 	</c:forEach>
 	

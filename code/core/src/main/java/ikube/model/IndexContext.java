@@ -1,5 +1,10 @@
 package ikube.model;
 
+import ikube.IConstants;
+import ikube.toolkit.FileUtilities;
+
+import java.io.File;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Entity;
@@ -7,6 +12,7 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.Transient;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
@@ -57,7 +63,10 @@ public class IndexContext extends Persistable implements Comparable<IndexContext
 	private List<Indexable<?>> indexables;
 
 	@Transient
-	private Index index;
+	private transient Index index;
+
+	@Transient
+	private transient String latestIndexTimestamp;
 
 	/**
 	 * The constructor instantiates a new {@link Index} object. In this object the Lucene index will be kept and updated.
@@ -66,7 +75,7 @@ public class IndexContext extends Persistable implements Comparable<IndexContext
 		super();
 		index = new Index();
 	}
-	
+
 	/** Getters and setters. */
 
 	public String getIndexName() {
@@ -203,6 +212,19 @@ public class IndexContext extends Persistable implements Comparable<IndexContext
 
 	public void setIndex(final Index index) {
 		this.index = index;
+	}
+
+	public String getLatestIndexTimestamp() {
+		long timestamp = 0;
+		File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexDirectoryPath);
+		if (latestIndexDirectory != null) {
+			String name = latestIndexDirectory.getName();
+			if (StringUtils.isNumeric(name)) {
+				timestamp = Long.parseLong(name);
+			}
+		}
+		this.latestIndexTimestamp = IConstants.HHMMSS_DDMMYYYY.format(new Date(timestamp));
+		return this.latestIndexTimestamp;
 	}
 
 	@Override

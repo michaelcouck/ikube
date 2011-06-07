@@ -3,6 +3,7 @@ package ikube.toolkit;
 import ikube.IConstants;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -14,6 +15,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
+import org.springframework.core.io.Resource;
 
 /**
  * Class for accessing the Spring context.
@@ -146,7 +148,7 @@ public final class ApplicationContextManager {
 		try {
 			if (APPLICATION_CONTEXT == null) {
 				LOGGER.info("Loading the application context with configurations : " + Arrays.asList(configLocations));
-				APPLICATION_CONTEXT = new ClassPathXmlApplicationContext(configLocations);
+				APPLICATION_CONTEXT = new RelativeXmlApplicationContext(configLocations);
 				((ConfigurableApplicationContext) APPLICATION_CONTEXT).registerShutdownHook();
 				((AbstractApplicationContext) APPLICATION_CONTEXT).registerShutdownHook();
 				LOGGER.info("Loaded the application context with configurations : " + Arrays.asList(configLocations));
@@ -169,6 +171,39 @@ public final class ApplicationContextManager {
 		} finally {
 			ApplicationContextManager.class.notifyAll();
 		}
+	}
+
+	/**
+	 * This class is to be able to mix and match the configuration from the file system and the classpath.
+	 * 
+	 * @author Michael Couck
+	 * @since 07.06.11
+	 * @version 01.00
+	 */
+	public static class RelativeXmlApplicationContext extends ClassPathXmlApplicationContext {
+
+		public RelativeXmlApplicationContext(String... configLocations) {
+			super(configLocations);
+		}
+
+		@Override
+		public Resource[] getResources(String locationPattern) throws IOException {
+			LOGGER.info("Location pattern : " + locationPattern);
+			return super.getResources(locationPattern);
+		}
+
+		@Override
+		public Resource getResource(String location) {
+			LOGGER.info("Location : " + location);
+			return super.getResource(location);
+		}
+
+		@Override
+		protected Resource getResourceByPath(String path) {
+			LOGGER.info("Path : " + path);
+			return super.getResourceByPath(path);
+		}
+
 	}
 
 }

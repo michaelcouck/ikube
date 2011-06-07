@@ -123,6 +123,7 @@ public class FileUtilitiesTest extends ATest {
 	public void getLatestIndexDirectoryFileFile() {
 		// File, File
 		File latest = FileUtilities.getLatestIndexDirectory(indexFolderOne.getParentFile().getParentFile(), null);
+		logger.info("Latest index directory : " + latest);
 		assertEquals(indexFolderTwo.getParentFile(), latest);
 		latest = FileUtilities.getLatestIndexDirectory(indexFolderTwo.getParentFile().getParentFile(), null);
 		assertEquals(indexFolderTwo.getParentFile(), latest);
