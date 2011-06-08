@@ -272,11 +272,16 @@ public abstract class Search {
 				addFieldsToResults(document, result);
 				if (fragment) {
 					StringBuilder builder = new StringBuilder();
+					int fragments = 0;
 					for (String searchField : searchFields) {
 						String fragment = getFragments(document, searchField, query);
 						if (fragment != null) {
 							builder.append(fragment);
 							builder.append(' ');
+						}
+						fragments++;
+						if (fragments >= IConstants.MAX_FRAGMENTS) {
+							break;
 						}
 					}
 					result.put(IConstants.FRAGMENT, builder.toString());

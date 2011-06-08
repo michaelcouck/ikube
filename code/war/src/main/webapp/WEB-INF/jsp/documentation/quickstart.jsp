@@ -1,3 +1,5 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
 <table class="table-content" width="100%">
 	<tr>
 		<td class="top-content">
@@ -67,7 +69,7 @@
 			will be there, along with the port and ip.<br><br>
 			
 			You could write a client or use a tool like SoapUI to 
-			access the results or you can use the <a href="http://localhost/ikube/admin/servers.html" target="_top">Ikube Client</a>. We'll 
+			access the results or you can use the <a href="<c:url value="/admin/servers.html" />" target="_top">Ikube Client</a>. We'll 
 			assume that you will use the client. On this page is the servers that are connected to Ikube cluster. Below the servers' details are 
 			the indexes' details. Clicking on an index, like the Ikube index, will take you to the search page. What will pop up are the fields in 
 			the index and text fields on the page where you can input text, either individually per field or combinations of input strings. Searching 
