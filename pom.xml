@@ -557,13 +557,13 @@
 			<type>jar</type>
 			<scope>runtime</scope>
 		</dependency>
-		<dependency>
+		<!-- <dependency>
 			<groupId>com.hazelcast</groupId>
 			<artifactId>hazelcast</artifactId>
 			<version>1.9</version>
 			<type>jar</type>
 			<scope>compile</scope>
-		</dependency>
+		</dependency> -->
 		<!-- <dependency> <groupId>net.sf.ehcache</groupId> <artifactId>ehcache-openjpa</artifactId> <version>0.2.0</version> <type>jar</type> <scope>compile</scope> 
 			</dependency> -->
 		<!-- <dependency> <groupId>org.neodatis</groupId> <artifactId>neodatis-odb</artifactId> <version>1.9-beta-1</version> <type>jar</type> <scope>compile</scope> 
@@ -627,6 +627,13 @@
 			<groupId>com.objectdb</groupId>
 			<artifactId>objectdb</artifactId>
 			<version>2.0.4</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.hazelcast</groupId>
+			<artifactId>hazelcast</artifactId>
+			<version>1.9.3.1</version>
+			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>
