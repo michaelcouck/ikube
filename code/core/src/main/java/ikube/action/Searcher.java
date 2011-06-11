@@ -13,6 +13,7 @@ import ikube.toolkit.Logging;
 import ikube.toolkit.Mailer;
 import ikube.toolkit.SerializationUtilities;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -66,7 +67,10 @@ public class Searcher extends Action<IndexContext, Boolean> {
 					}
 				}
 			}
-			List<Map<String, String>> results = (List<Map<String, String>>) SerializationUtilities.deserialize(xml);
+			List<Map<String, String>> results = new ArrayList<Map<String, String>>();
+			if (xml != null) {
+				results = (List<Map<String, String>>) SerializationUtilities.deserialize(xml);
+			}
 			if (results.size() < resultsSizeMinimum) {
 				String message = Logging.getString("Results not expected : ", results.size(), indexContext.getIndexName(), searchString,
 						start, end, resultsSizeMinimum);

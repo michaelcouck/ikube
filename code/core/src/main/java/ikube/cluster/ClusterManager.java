@@ -435,7 +435,7 @@ public class ClusterManager implements IClusterManager, IConstants {
 						// We don't shutdown our selves of course
 						return;
 					}
-					long delay = 10000;
+					long delay = 1000;
 					ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
 					executorService.scheduleAtFixedRate(new Runnable() {
 						public void run() {
