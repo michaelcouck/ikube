@@ -14,9 +14,9 @@ public class GeneralUtilitiesTest extends ATest {
 	
 	@Test
 	public void findFirstOpenPort() {
-		int port = 9000;
+		int port = 3654;
 		int firstOpenPort = GeneralUtilities.findFirstOpenPort(port);
-		assertEquals("The first port should be 9000, there should be nothing on this port : ", port, firstOpenPort);
+		assertEquals("The first port should be " + port + ", there should be nothing on this port : ", port, firstOpenPort);
 	}
 	
 }
