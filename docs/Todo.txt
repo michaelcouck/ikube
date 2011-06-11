@@ -10,7 +10,6 @@
    1) First with the country data within the data - 1
    2) With Google or NavTec data - 2
 * Verify why the cluster is not acting as expected ?
-* Change the search url from the servlet to the web service ?
 * Implement paging in the search results - 1
 * Write a script to automate the deploy to the local repository for drivers etc. - 1
 * Log all the actions and the rules that set them in motion and do a page to view them. This 
@@ -24,6 +23,9 @@
   3) Ram usage
   4) Up time
   5) Open files
+* Do a configuration page that lets the user see the configuration per index and indexable
+* Do an action log page with all the actions that were performed and the results from the rules
+* Verify why the two indexes have the same timestamp
 
 Sub Total: 7
 
@@ -70,6 +72,7 @@ Done:
 * Test the serialization of Cyrillic and other character sets during the search
    and the de-serialization of the results - 1 hour *
 * Add the web service urls to the servers page - 1 *
+* Change the search url from the servlet to the web service ? *
 
 Nice to have:
 * Add a database tester to re-connect if the database becomes disconnected - 4 hours

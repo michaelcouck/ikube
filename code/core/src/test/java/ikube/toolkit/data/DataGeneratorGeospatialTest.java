@@ -5,7 +5,6 @@ import ikube.IConstants;
 import ikube.model.geospatial.GeoName;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
-import it.assist.jrecordbind.Unmarshaller;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -14,16 +13,10 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Iterator;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
-
-import net.sf.flatpack.DataSet;
-import net.sf.flatpack.DefaultParserFactory;
-import net.sf.flatpack.Parser;
-import net.sf.flatpack.ParserFactory;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -33,7 +26,7 @@ import co.uk.hjcs.canyon.session.Session;
 import co.uk.hjcs.canyon.session.SessionFactory;
 
 /**
- * This isn't a test, it is just for loading the database with the data fro mthe GeoNames data files.
+ * This isn't a test, it is just for loading the database with the data from the GeoNames data files.
  * 
  * @author Michael Couck
  * @since 02.06.11
@@ -43,9 +36,9 @@ import co.uk.hjcs.canyon.session.SessionFactory;
 public class DataGeneratorGeospatialTest extends ATest {
 
 	private String fileName = "allCountries.txt";
-	private File mappingFile = FileUtilities.findFileRecursively(new File("."), "geoname.xml");
+	// private File mappingFile = FileUtilities.findFileRecursively(new File("."), "geoname.xml");
 
-	private File dataFile = new File(fileName);
+	// private File dataFile = new File(fileName);
 
 	public DataGeneratorGeospatialTest() {
 		super(DataGeneratorGeospatialTest.class);
@@ -166,34 +159,33 @@ public class DataGeneratorGeospatialTest extends ATest {
 		}
 	}
 
-	@Test
-	@Ignore
-	public void jRecordBind() throws Exception {
-		File file = FileUtilities.findFileRecursively(new File("."), "geoname.xsd");
-		FileReader fileReader = new FileReader(file);
-		// Marshaller< GeoName> marshaller = new Marshaller<GeoName>(fileReader);
-		Unmarshaller<GeoName> unmarshaller = new Unmarshaller<GeoName>(fileReader);
-		File dataFile = new File(fileName);
-		FileReader dataFileReader = new FileReader(dataFile);
-		Iterator<GeoName> geoNameIterator = unmarshaller.unmarshall(dataFileReader);
-		for (int i = 0; i < 100; i++) {
-			logger.info("Geo name : " + geoNameIterator.next());
-		}
-	}
+	// @Test
+	// @Ignore
+	// public void jRecordBind() throws Exception {
+	// File file = FileUtilities.findFileRecursively(new File("."), "geoname.xsd");
+	// FileReader fileReader = new FileReader(file);
+	// // Marshaller< GeoName> marshaller = new Marshaller<GeoName>(fileReader);
+	// Unmarshaller<GeoName> unmarshaller = new Unmarshaller<GeoName>(fileReader);
+	// File dataFile = new File(fileName);
+	// FileReader dataFileReader = new FileReader(dataFile);
+	// Iterator<GeoName> geoNameIterator = unmarshaller.unmarshall(dataFileReader);
+	// for (int i = 0; i < 100; i++) {
+	// logger.info("Geo name : " + geoNameIterator.next());
+	// }
+	// }
 
-	@Test
-	@Ignore
-	public void flatPack() throws Exception {
-		ParserFactory parserFactory = DefaultParserFactory.getInstance();
-		Parser parser = parserFactory.newDelimitedParser(new FileReader(mappingFile), new FileReader(dataFile), '\t', '"', true);
-		DataSet ds = parser.parse();
-		for (int i = 0; i < 100; i++) {
-			if (ds.next()) {
-				logger.info(ds.getString("geonameid"));
-			}
-
-		}
-	}
+	// @Test
+	// @Ignore
+	// public void flatPack() throws Exception {
+	// ParserFactory parserFactory = DefaultParserFactory.getInstance();
+	// Parser parser = parserFactory.newDelimitedParser(new FileReader(mappingFile), new FileReader(dataFile), '\t', '"', true);
+	// DataSet ds = parser.parse();
+	// for (int i = 0; i < 100; i++) {
+	// if (ds.next()) {
+	// logger.info(ds.getString("geonameid"));
+	// }
+	// }
+	// }
 
 	@Test
 	@Ignore

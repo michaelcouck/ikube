@@ -57,6 +57,32 @@
 				</executions>
 			</plugin>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.6</version>
+				<executions>
+					<execution>
+						<id>install</id>
+						<phase>install</phase>
+						<configuration>
+							<target>
+								<property file="../../build.properties" />
+
+								<delete dir="${tomcat.1}/webapps/ikube" failonerror="false" />
+								<delete dir="${tomcat.2}/webapps/ikube" failonerror="false" />
+								<delete dir="${tomcat.3}/webapps/ikube" failonerror="false" />
+								<copy file="target/${ikube.war}" todir="${tomcat.1}/webapps" overwrite="true" failonerror="false" />
+								<copy file="target/${ikube.war}" todir="${tomcat.2}/webapps" overwrite="true" failonerror="false" />
+								<copy file="target/${ikube.war}" todir="${tomcat.3}/webapps" overwrite="true" failonerror="false" />
+							</target>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
 				<artifactId>maven-failsafe-plugin</artifactId>
 				<version>2.6</version>
 				<configuration>
@@ -161,7 +187,7 @@
 			<artifactId>jsp-api</artifactId>
 			<version>2.0</version>
 			<type>jar</type>
-			<scope>test</scope>
+			<scope>provided</scope>
 		</dependency>
 		<!-- <dependency>
 			<groupId>jspapi</groupId>
@@ -175,21 +201,25 @@
 			<groupId>org.mortbay.jetty</groupId>
 			<artifactId>jetty-embedded</artifactId>
 			<version>${jetty.version}</version>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.mortbay.jetty</groupId>
 			<artifactId>jetty</artifactId>
 			<version>${jetty.version}</version>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.mortbay.jetty</groupId>
 			<artifactId>start</artifactId>
 			<version>${jetty.version}</version>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.mortbay.jetty</groupId>
 			<artifactId>jetty-util</artifactId>
 			<version>${jetty.version}</version>
+			<scope>test</scope>
 		</dependency>
 
 		<!--<dependency>
