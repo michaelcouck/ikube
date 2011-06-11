@@ -5,9 +5,11 @@
 	<groupId>ikube</groupId>
 	<artifactId>ikube</artifactId>
 	<packaging>pom</packaging>
-	<version>1.5.0</version>
+	<version>${ikube.version}</version>
 
 	<properties>
+		<ikube.version>1.8.0</ikube.version>
+		
 		<targetJdk>1.6</targetJdk>
 
 		<spring.version>3.0.3.RELEASE</spring.version>

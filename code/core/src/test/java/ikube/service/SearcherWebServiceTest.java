@@ -8,6 +8,7 @@ import ikube.mock.ApplicationContextManagerMock;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.SerializationUtilities;
 
+import java.net.InetAddress;
 import java.util.List;
 import java.util.Map;
 
@@ -94,6 +95,17 @@ public class SearcherWebServiceTest extends ATest {
 		logger.debug("Multi sorted search result : " + result);
 		List<Map<String, String>> resultsList = (List<Map<String, String>>) SerializationUtilities.deserialize(result);
 		verifyResults(resultsList);
+	}
+
+	@Test
+	public void ipAddress() throws Exception {
+		InetAddress[] addresses = InetAddress.getAllByName(InetAddress.getLocalHost().getHostName());
+		if (addresses != null) {
+			for (InetAddress inetAddress : addresses) {
+				logger.info("Address : " + inetAddress);
+			}
+		}
+		logger.info("Ip address : " + InetAddress.getLocalHost().getHostAddress());
 	}
 
 	private void verifyResults(List<Map<String, String>> resultsList) {

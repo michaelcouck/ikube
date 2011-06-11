@@ -8,12 +8,12 @@
 	<groupId>ikube</groupId>
 	<artifactId>ikube-core</artifactId>
 	<packaging>jar</packaging>
-	<version>1.5.0</version>
+	<version>${ikube.version}</version>
 
 	<parent>
 		<groupId>ikube</groupId>
 		<artifactId>ikube</artifactId>
-		<version>1.5.0</version>
+		<version>${ikube.version}</version>
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
 
