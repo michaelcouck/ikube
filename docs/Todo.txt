@@ -12,8 +12,18 @@
 * Verify why the cluster is not acting as expected ?
 * Change the search url from the servlet to the web service ?
 * Implement paging in the search results - 1
-* Add the web service urls to the servers page - 1
 * Write a script to automate the deploy to the local repository for drivers etc. - 1
+* Log all the actions and the rules that set them in motion and do a page to view them. This 
+   means using ObjectDb as well of course, i.e. some kind of persistence.
+* Add more logging data and create a page with a report of the details, perhaps 
+   with some graphical data, including the Cpu and Io and all the rest from the 
+   sampling.
+* Add a page with Cpu and system sampling data using Sigar API or JavaSysMon.
+  1) Cou tree
+  2) Disk usage
+  3) Ram usage
+  4) Up time
+  5) Open files
 
 Sub Total: 7
 
@@ -59,6 +69,7 @@ Done:
 * Expanded monitoring - 3 *
 * Test the serialization of Cyrillic and other character sets during the search
    and the de-serialization of the results - 1 hour *
+* Add the web service urls to the servers page - 1 *
 
 Nice to have:
 * Add a database tester to re-connect if the database becomes disconnected - 4 hours

@@ -25,23 +25,24 @@
 	<c:forEach var="indexContext" items="${requestScope.indexContexts}">
 	<tr>
 		<td class="td-content">
+			<img alt="Search index ${indexContext.indexName}" 
+					src="<c:url value="/images/icons/search.gif"/>" 
+					title="Search index ${indexContext.indexName}">
 			<a href="<c:url value="/admin/search.html"/>?indexName=${indexContext.indexName}" 
 				style="font-style: italic;" 
 				title="Search index ${indexContext.indexName}">
-				<img alt="Search index ${indexContext.indexName}" 
-					src="<c:url value="/images/icons/search.gif"/>" 
-					title="Search index ${indexContext.indexName}">&nbsp;
 				${indexContext.indexName}
 			</a>
 		</td>
-		<td class="td-content">${requestScope[indexContext.indexName]['indexDocuments']}</td>
+		<!-- requestScope[indexContext.indexName]['indexDocuments'] -->
+		<!-- requestScope[indexContext.indexName]['indexSize'] -->
+		<td class="td-content">${indexContext.numDocs}</td>
 		<td class="td-content"><fmt:formatNumber 
-			value="${requestScope[indexContext.indexName]['indexSize'] / 1000000}" 
+			value="${indexContext.indexSize / 1000000}" 
 			maxFractionDigits="0" /></td>
 		<td class="td-content">
 			<c:set var="open" scope="page" value="${indexContext.index.multiSearcher != null ? 'open' : 'closed'}"/>
 			<img alt="Server" src="<c:url value="/images/icons/${open}.gif"/>" title="Server">
-					&nbsp;
 			${indexContext.index.multiSearcher != null}
 		</td>
 		<td class="td-content">${indexContext.maxAge / 60}</td>
@@ -68,18 +69,16 @@
 	<c:forEach var="server" items="${requestScope.servers}">
 		<tr>
 			<td class="td-content">
+				<img alt="Server" src="<c:url value="/images/icons/server.gif"/>" title="Server">
 				<a href="<c:url value="${server.searchWebServiceUrl}" />"
 					style="font-style: italic;" 
 					title="${server.searchWebServiceUrl}">
-					<img alt="Server" src="<c:url value="/images/icons/server.gif"/>" title="Server">
-					&nbsp;
 					<c:out value="${server.address}" />
 				</a>
 			</td>
 			<td class="td-content">
 				<c:set var="running" scope="page" value="${server.working ? 'running' : 'stopped'}"/>
 				<img alt="Working" src="<c:url value="/images/icons/${running}.gif"/>" title="Working">
-				&nbsp;
 				<c:out value="${server.working}" />
 			</td>
 			<td colspan="4"></td>
@@ -106,7 +105,7 @@
 			<td colspan="2" style="padding-left: 20px;">
 				<img alt="Index performance" 
 					src="<c:url value="/images/icons/index_performance.gif"/>" 
-					title="Index performance">&nbsp;
+					title="Index performance">
 				<span style="font-style: italic;">
 					Indexing performance:
 				</span>
@@ -131,7 +130,7 @@
 			<td colspan="2" style="padding-left: 20px;">
 				<img alt="Search performance" 
 					src="<c:url value="/images/icons/search_performance.gif"/>" 
-					title="Search performance">&nbsp;
+					title="Search performance">
 				<span style="font-style: italic;">
 					Searching performance:
 				</span>

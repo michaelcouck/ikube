@@ -25,10 +25,11 @@
 		class="ikube.IndexEngine"
 		property:actions-ref="actions" />
 	<util:list id="actions">
-		<ref bean="ikube.action.Reset" /> 
-		<ref bean="ikube.action.Close"  />
+		<ref bean="ikube.action.Reset" />
 		<ref bean="ikube.action.Open"  />
 		<ref bean="ikube.action.Index"  />
+		<ref bean="ikube.action.Close"  />
+		<ref bean="ikube.action.Open"  />
 		<ref bean="ikube.action.Delete" />
 		<ref bean="ikube.action.Clean" />
 		<ref bean="ikube.action.Backup" />

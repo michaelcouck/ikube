@@ -23,7 +23,9 @@ public class Delete extends Action<IndexContext, Boolean> {
 	public Boolean execute(final IndexContext indexContext) {
 		String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
 		String indexDirectoryPathBackup = IndexManager.getIndexDirectoryPathBackup(indexContext);
-		return deleteOldIndexes(indexDirectoryPath) || deleteOldIndexes(indexDirectoryPathBackup);
+		boolean deletedBoth = deleteOldIndexes(indexDirectoryPath);
+		deletedBoth |= deleteOldIndexes(indexDirectoryPathBackup);
+		return  deletedBoth; 
 	}
 
 	private boolean deleteOldIndexes(String indexDirectoryPath) {

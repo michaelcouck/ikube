@@ -64,9 +64,12 @@ public class IndexContext extends Persistable implements Comparable<IndexContext
 
 	@Transient
 	private transient Index index;
-
 	@Transient
 	private transient String latestIndexTimestamp;
+	@Transient
+	private transient long indexSize;
+	@Transient
+	private transient long numDocs;
 
 	/**
 	 * The constructor instantiates a new {@link Index} object. In this object the Lucene index will be kept and updated.
@@ -225,6 +228,22 @@ public class IndexContext extends Persistable implements Comparable<IndexContext
 		}
 		this.latestIndexTimestamp = IConstants.HHMMSS_DDMMYYYY.format(new Date(timestamp));
 		return this.latestIndexTimestamp;
+	}
+
+	public long getIndexSize() {
+		return indexSize;
+	}
+
+	public void setIndexSize(long indexSize) {
+		this.indexSize = indexSize;
+	}
+
+	public long getNumDocs() {
+		return numDocs;
+	}
+
+	public void setNumDocs(long numDocs) {
+		this.numDocs = numDocs;
 	}
 
 	@Override

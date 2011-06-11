@@ -1,6 +1,7 @@
 package ikube.service;
 
 import ikube.IConstants;
+import ikube.index.IndexManager;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.toolkit.ApplicationContextManager;
@@ -119,7 +120,8 @@ public class MonitorWebService implements IMonitorWebService {
 				LOGGER.warn("No index context with name : " + indexName);
 				return length;
 			}
-			String indexDirectoryPath = indexContext.getIndexDirectoryPath() + IConstants.SEP + indexContext.getIndexName();
+			// indexContext.getIndexDirectoryPath() + IConstants.SEP + indexContext.getIndexName()
+			String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
 			File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexDirectoryPath);
 			if (latestIndexDirectory != null) {
 				File[] serverIndexDirectories = latestIndexDirectory.listFiles();

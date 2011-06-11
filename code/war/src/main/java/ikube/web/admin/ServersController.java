@@ -54,6 +54,15 @@ public class ServersController extends BaseController {
 		modelAndView.addObject(IConstants.INDEX_CONTEXTS, indexContexts.values());
 
 		IMonitorWebService monitorWebService = ApplicationContextManager.getBean(IMonitorWebService.class);
+		for (IndexContext indexContext : indexContexts.values()) {
+			String indexName = indexContext.getIndexName();
+			long indexSize = monitorWebService.getIndexSize(indexName);
+			long numDocs = monitorWebService.getIndexDocuments(indexName);
+			indexContext.setIndexSize(indexSize);
+			indexContext.setNumDocs(numDocs);
+		}
+
+		// TODO This can be removed
 		String[] indexNames = monitorWebService.getIndexNames();
 		modelAndView.addObject(IConstants.INDEX_NAMES, indexNames);
 
