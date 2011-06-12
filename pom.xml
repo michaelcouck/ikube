@@ -5,7 +5,7 @@
 	<groupId>ikube</groupId>
 	<artifactId>ikube</artifactId>
 	<packaging>pom</packaging>
-	<version>${ikube.version}</version>
+	<version>1.8.0</version>
 
 	<properties>
 		<ikube.version>1.8.0</ikube.version>

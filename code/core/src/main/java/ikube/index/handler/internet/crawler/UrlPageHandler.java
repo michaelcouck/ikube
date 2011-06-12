@@ -69,15 +69,19 @@ public class UrlPageHandler extends UrlHandler<Url> implements Runnable {
 	private ICache.IAction<Url> action = new ICache.IAction<Url>() {
 		@Override
 		public void execute(Url url) {
-			clusterManager.remove(IConstants.URL, url.getId());
-			clusterManager.set(IConstants.URL_DONE, url.getId(), url);
+			try {
+				getClusterManager().remove(IConstants.URL, url.getId());
+				getClusterManager().set(IConstants.URL_DONE, url.getId(), url);
+			} catch (Exception e) {
+				LOGGER.error("Exception adding the url to the cache : " + url, e);
+			}
 		}
 	};
 
 	@Override
 	public void run() {
 		while (true) {
-			List<Url> urls = clusterManager.get(Url.class, IConstants.URL, null, action, 10);
+			List<Url> urls = clusterManager.get(Url.class, IConstants.URL, null, action, IConstants.BATCH_SIZE);
 			if (urls.isEmpty()) {
 				// Check if there are any other threads still working
 				// other than this thread of course
@@ -86,7 +90,7 @@ public class UrlPageHandler extends UrlHandler<Url> implements Runnable {
 						try {
 							wait(1000);
 						} catch (Exception e) {
-							LOGGER.error("", e);
+							LOGGER.error("Exception waiting for more resources to crawl : ", e);
 						}
 					}
 				} else {
@@ -104,7 +108,7 @@ public class UrlPageHandler extends UrlHandler<Url> implements Runnable {
 					url.setUrl(null);
 					url.setContentType(null);
 				} catch (Exception e) {
-					LOGGER.error("", e);
+					LOGGER.error("Exception doing url : " + url, e);
 				}
 			}
 		}
@@ -174,7 +178,7 @@ public class UrlPageHandler extends UrlHandler<Url> implements Runnable {
 					get.releaseConnection();
 				}
 			} catch (Exception e) {
-				LOGGER.error("Exceptino releasing the connection to the url : " + url, e);
+				LOGGER.error("Exception releasing the connection to the url : " + url, e);
 			}
 		}
 		return byteOutputStream;
@@ -341,6 +345,10 @@ public class UrlPageHandler extends UrlHandler<Url> implements Runnable {
 		} catch (Exception e) {
 			LOGGER.error("General exception extracting the links from : ", e);
 		}
+	}
+
+	protected IClusterManager getClusterManager() {
+		return this.clusterManager;
 	}
 
 }

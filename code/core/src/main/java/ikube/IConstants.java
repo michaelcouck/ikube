@@ -54,6 +54,7 @@ public interface IConstants {
 	String READER_FILE_SUFFIX = ".ikube";
 	int MAX_FRAGMENTS = 3;
 	String FRAGMENT_SEPERATOR = "...";
+	int BATCH_SIZE = 10;
 
 	String ID = "id";
 	String INDEX = "index";

@@ -11,12 +11,12 @@
 	<groupId>ikube</groupId>
 	<artifactId>ikube-war</artifactId>
 	<packaging>war</packaging>
-	<version>${ikube.version}</version>
+	<version>1.8.0</version>
 
 	<parent>
 		<groupId>ikube</groupId>
 		<artifactId>ikube</artifactId>
-		<version>${ikube.version}</version>
+		<version>1.8.0</version>
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
 
@@ -151,37 +151,18 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
-			<version>2.5</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
 			<groupId>ikube</groupId>
 			<artifactId>ikube-core</artifactId>
 			<version>${project.version}</version>
 			<scope>compile</scope>
 		</dependency>
-		<!-- <dependency>
-			<groupId>ikube</groupId>
-			<artifactId>ikube-tools</artifactId>
-			<version>${project.version}</version>
-			<scope>compile</scope>
-		</dependency> -->
-		<!-- <dependency>
+		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
 			<version>2.5</version>
 			<type>jar</type>
-			<scope>test</scope>
-		</dependency> -->
-		<!-- <dependency>
-			<groupId>javax.servlet.jsp</groupId>
-			<artifactId>jsp-api</artifactId>
-			<version>2.1</version>
-			<type>jar</type>
 			<scope>provided</scope>
-		</dependency> -->
+		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>jsp-api</artifactId>
@@ -189,13 +170,6 @@
 			<type>jar</type>
 			<scope>provided</scope>
 		</dependency>
-		<!-- <dependency>
-			<groupId>jspapi</groupId>
-			<artifactId>jsp-api</artifactId>
-			<version>2.0</version>
-			<type>jar</type>
-			<scope>test</scope>
-		</dependency> -->
 
 		<dependency>
 			<groupId>org.mortbay.jetty</groupId>
@@ -222,6 +196,20 @@
 			<scope>test</scope>
 		</dependency>
 
+		<!-- <dependency>
+			<groupId>javax.servlet.jsp</groupId>
+			<artifactId>jsp-api</artifactId>
+			<version>2.1</version>
+			<type>jar</type>
+			<scope>provided</scope>
+		</dependency> -->
+		<!-- <dependency>
+			<groupId>jspapi</groupId>
+			<artifactId>jsp-api</artifactId>
+			<version>2.0</version>
+			<type>jar</type>
+			<scope>test</scope>
+		</dependency> -->
 		<!--<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>jstl</artifactId>
