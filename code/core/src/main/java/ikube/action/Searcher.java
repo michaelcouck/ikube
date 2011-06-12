@@ -1,6 +1,5 @@
 package ikube.action;
 
-import ikube.cluster.IClusterManager;
 import ikube.listener.Event;
 import ikube.listener.ListenerManager;
 import ikube.model.IndexContext;
@@ -39,7 +38,7 @@ public class Searcher extends Action<IndexContext, Boolean> {
 	public Boolean execute(final IndexContext indexContext) {
 		try {
 			getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getName(), Boolean.TRUE);
-			List<Server> servers = ApplicationContextManager.getBean(IClusterManager.class).getServers();
+			List<Server> servers = getClusterManager().getServers();
 			String xml = null;
 			for (Server server : servers) {
 				String webServiceUrl = server.getSearchWebServiceUrl();
@@ -81,7 +80,7 @@ public class Searcher extends Action<IndexContext, Boolean> {
 				ListenerManager.fireEvent(Event.RESULTS, System.currentTimeMillis(), null, Boolean.TRUE);
 			}
 		} finally {
-			getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getName(), Boolean.FALSE);
+			getClusterManager().setWorking(indexContext.getIndexName(), "", Boolean.FALSE);
 		}
 		return Boolean.TRUE;
 	}

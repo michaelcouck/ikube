@@ -20,14 +20,14 @@ import org.junit.Test;
  * @since 12.10.2010
  * @version 01.00
  */
-public class PageHandlerTest extends BaseTest {
+public class UrlPageHandlerTest extends BaseTest {
 
 	private IndexableInternet indexableInternet;
 	private IndexableInternetHandler handler = ApplicationContextManager.getBean(IndexableInternetHandler.class);
 	private IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
 
-	public PageHandlerTest() {
-		super(PageHandlerTest.class);
+	public UrlPageHandlerTest() {
+		super(UrlPageHandlerTest.class);
 	}
 
 	@Before
@@ -76,6 +76,36 @@ public class PageHandlerTest extends BaseTest {
 			clusterManager.clear(IConstants.URL_HASH);
 			performance(iterations[i]);
 		}
+	}
+
+	@Test
+	public void getContentFromUrl() {
+		// HttpClient, IndexableInternet, Url
+		// TODO Implement me!
+	}
+
+	@Test
+	public void getParsedContent() {
+		// Url, ByteOutputStream
+		// TODO Implement me!
+	}
+
+	@Test
+	public void addDocumentToIndex() {
+		// IndexableInternet, Url, String
+		// TODO Implement me!
+	}
+
+	@Test
+	public void getUrlId() {
+		// IndexableInternet, Url
+		// TODO Implement me!
+	}
+
+	@Test
+	public void extractLinksFromContent() {
+		// IndexableInternet, Url, InputStream
+		// TODO Implement me!
 	}
 
 	protected void performance(int iterations) {

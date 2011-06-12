@@ -64,6 +64,7 @@ public interface IClusterManager {
 	 *            the name of the index
 	 * @return whether this indexable has been handled
 	 */
+	@Deprecated
 	boolean isHandled(String indexableName, String indexName);
 
 	/**

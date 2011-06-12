@@ -19,6 +19,15 @@ function popup(mylink, windowname) {
 	return false;
 }
 
-function timedRefresh(timeoutPeriod) {
-	setTimeout("location.reload(true);", timeoutPeriod);
+var refreshUrls = ['servers', 'discovery'];
+function timedRefresh(timeout) {
+	alert('Document location : ' + document.location);
+	for (var i = 0; i < refreshUrls.length; i++) {
+		var refreshUrl = refreshUrls[i];
+		var contains = location.toString().indexOf(refreshUrl) > -1;
+		alert('Refresh url : ' + refreshUrl + ', location contains : ' + contains);
+		if (contains > -1) {
+			setTimeout('document.location.reload(true);', timeout);
+		}
+	}
 }

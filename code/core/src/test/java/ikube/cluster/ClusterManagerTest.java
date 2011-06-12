@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import ikube.ATest;
+import ikube.IConstants;
 import ikube.cluster.cache.Cache;
 import ikube.listener.ListenerManager;
 import ikube.model.Server;
@@ -19,6 +20,7 @@ import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -231,9 +233,15 @@ public class ClusterManagerTest extends ATest {
 			Thread thread = new Thread(new Runnable() {
 				public void run() {
 					for (int i = 0; i < 10; i++) {
-						long actualStartTime = clusterManager.setWorking(indexName, indexableName, Boolean.TRUE);
-						logger.info("Actual start time : " + actualStartTime + ", expected start time : " + expectedStartTime);
-						assertEquals(expectedStartTime, actualStartTime);
+						AtomicAction.executeAction(IConstants.SERVER_LOCK, new IAtomicAction() {
+							@Override
+							public Object execute() {
+								long actualStartTime = clusterManager.setWorking(indexName, indexableName, Boolean.TRUE);
+								logger.info("Actual start time : " + actualStartTime + ", expected start time : " + expectedStartTime);
+								assertEquals(expectedStartTime, actualStartTime);
+								return Boolean.TRUE;
+							}
+						});
 					}
 				}
 			}, "ClusterManagerTestThread : " + i);
@@ -267,7 +275,7 @@ public class ClusterManagerTest extends ATest {
 		assertFalse("We haven't set any server working : ", anyWorking);
 		clusterManager.setWorking(indexName, indexableName, Boolean.TRUE);
 		anyWorking = clusterManager.anyWorking();
-		assertTrue("This server should be registered as working : ", anyWorking);
+		assertFalse("This server should not be registered as working : ", anyWorking);
 	}
 
 	@Test
@@ -286,6 +294,8 @@ public class ClusterManagerTest extends ATest {
 	}
 
 	@Test
+	@Ignore
+	@Deprecated
 	public void isHandled() {
 		boolean isHandled = clusterManager.isHandled(indexableName, indexName);
 		assertFalse("We haven't handled this indexable : ", isHandled);

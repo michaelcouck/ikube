@@ -92,7 +92,7 @@ public class Validator extends Action<IndexContext, Boolean> {
 			String body = "No indexes generated or in the process of being generated for index context : " + indexContext.getIndexName();
 			sendNotification(indexContext, subject, body);
 		} finally {
-			getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getName(), Boolean.FALSE);
+			getClusterManager().setWorking(indexContext.getIndexName(), "", Boolean.FALSE);
 		}
 		return Boolean.TRUE;
 	}

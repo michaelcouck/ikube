@@ -10,11 +10,8 @@ import ikube.listener.ListenerManager;
 import ikube.model.Server;
 import ikube.model.Server.Action;
 import ikube.toolkit.ApplicationContextManager;
-import ikube.toolkit.FileUtilities;
 import ikube.toolkit.HashUtilities;
-import ikube.toolkit.Logging;
 
-import java.io.File;
 import java.net.InetAddress;
 import java.util.Iterator;
 import java.util.List;
@@ -25,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.log4j.Logger;
 
 import com.hazelcast.core.Hazelcast;
+import com.hazelcast.core.ITopic;
 import com.hazelcast.core.MessageListener;
 
 /**
@@ -86,11 +84,11 @@ public class ClusterManager implements IClusterManager, IConstants {
 					// Set our own server age
 					Server server = getServer();
 					// Add the tail end of the log to the server
-					File logFile = Logging.getLogFile();
-					if (logFile != null && logFile.exists() && logFile.canRead()) {
-						String logTail = FileUtilities.getContentsFromEnd(logFile, 20000).toString();
-						server.setLogTail(logTail);
-					}
+					// File logFile = Logging.getLogFile();
+					// if (logFile != null && logFile.exists() && logFile.canRead()) {
+					// String logTail = FileUtilities.getContentsFromEnd(logFile, 20000).toString();
+					// server.setLogTail(logTail);
+					// }
 					server.setAge(System.currentTimeMillis());
 					LOGGER.info("Publishing server : " + server.getAddress());
 					set(Server.class.getName(), server.getId(), server);
@@ -141,21 +139,20 @@ public class ClusterManager implements IClusterManager, IConstants {
 	 */
 	@Override
 	public boolean anyWorking() {
-		return (Boolean) AtomicAction.executeAction(SERVER_LOCK, new IAtomicAction() {
-			@Override
-			public Object execute() {
-				// cache.get(Server.class.getName(), null, null, Integer.MAX_VALUE);
-				boolean anyWorking = Boolean.FALSE;
-				List<Server> servers = getServers();
-				for (Server server : servers) {
-					if (server.getWorking()) {
-						anyWorking = Boolean.TRUE;
-						break;
-					}
-				}
-				return anyWorking;
+		// cache.get(Server.class.getName(), null, null, Integer.MAX_VALUE);
+		boolean anyWorking = Boolean.FALSE;
+		Server server = getServer();
+		List<Server> servers = getServers();
+		for (Server other : servers) {
+			if (other.getAddress().equals(server.getAddress())) {
+				continue;
 			}
-		});
+			if (other.getWorking()) {
+				anyWorking = Boolean.TRUE;
+				break;
+			}
+		}
+		return anyWorking;
 	}
 
 	/**
@@ -163,24 +160,19 @@ public class ClusterManager implements IClusterManager, IConstants {
 	 */
 	@Override
 	public boolean anyWorking(final String indexName) {
-		return (Boolean) AtomicAction.executeAction(SERVER_LOCK, new IAtomicAction() {
-			@Override
-			public Object execute() {
-				boolean anyWorking = Boolean.FALSE;
-				List<Server> servers = getServers();
-				outer: for (Server server : servers) {
-					if (server.getWorking()) {
-						for (Action action : server.getActions()) {
-							if (action.getIndexName().equals(indexName)) {
-								anyWorking = Boolean.TRUE;
-								break outer;
-							}
-						}
+		boolean anyWorking = Boolean.FALSE;
+		List<Server> servers = getServers();
+		outer: for (Server server : servers) {
+			if (server.getWorking()) {
+				for (Action action : server.getActions()) {
+					if (action.getIndexName().equals(indexName)) {
+						anyWorking = Boolean.TRUE;
+						break outer;
 					}
 				}
-				return anyWorking;
 			}
-		});
+		}
+		return anyWorking;
 	}
 
 	/**
@@ -194,66 +186,61 @@ public class ClusterManager implements IClusterManager, IConstants {
 	 */
 	@Override
 	public long getIdNumber(final String indexName, final String indexableName, final long batchSize, final long minId) {
-		return (Long) AtomicAction.executeAction(SERVER_LOCK, new IAtomicAction() {
-			@Override
-			public Object execute() {
-				// TODO Have another look at this, surely this can be simplified, but be careful
-				long idNumber = 0;
-				// cache.get(Server.class.getName(), null, null, Integer.MAX_VALUE);
-				List<Server> servers = getServers();
-				// We look for the largest row id from any of the servers, from the last action in each server
-				// that has the name of the action that we are looking for
-				for (Server server : servers) {
-					List<Action> actions = server.getActions();
-					// Iterate from the end to the front
-					for (int i = actions.size() - 1; i >= 0; i--) {
-						Action action = actions.get(i);
-						// logger.info("Action : " + action + ", server : " + server.getAddress());
-						if (action.getIndexableName().equals(indexableName) && action.getIndexName().equals(indexName)) {
-							if (action.getIdNumber() > idNumber) {
-								idNumber = action.getIdNumber();
-							}
-							// We break when we get to the first action in this server that
-							// corresponds to the index that we are going to create and the
-							// action that we want to execute
-							break;
-						}
+		// TODO Have another look at this, surely this can be simplified, but be careful
+		long idNumber = 0;
+		// cache.get(Server.class.getName(), null, null, Integer.MAX_VALUE);
+		List<Server> servers = getServers();
+		// We look for the largest row id from any of the servers, from the last action in each server
+		// that has the name of the action that we are looking for
+		for (Server server : servers) {
+			List<Action> actions = server.getActions();
+			// Iterate from the end to the front
+			for (int i = actions.size() - 1; i >= 0; i--) {
+				Action action = actions.get(i);
+				// logger.info("Action : " + action + ", server : " + server.getAddress());
+				if (action.getIndexableName().equals(indexableName) && action.getIndexName().equals(indexName)) {
+					if (action.getIdNumber() > idNumber) {
+						idNumber = action.getIdNumber();
 					}
+					// We break when we get to the first action in this server that
+					// corresponds to the index that we are going to create and the
+					// action that we want to execute
+					break;
 				}
-				// We find the action for this server
-				Server server = getServer();
-				List<Action> actions = server.getActions();
-				Action currentAction = null;
-
-				for (int i = actions.size() - 1; i >= 0; i--) {
-					Action action = actions.get(i);
-					if (action.getIndexableName().equals(indexableName) && action.getIndexName().equals(indexName)) {
-						currentAction = action;
-						break;
-					}
-				}
-
-				// // This can never happen, can it?
-				if (currentAction == null) {
-					LOGGER.warn("Action null : " + indexName + ", " + indexableName + ", " + batchSize);
-					currentAction = server.new Action();
-					currentAction.setIndexableName(indexableName);
-					currentAction.setIndexName(indexName);
-					currentAction.setStartTime(System.currentTimeMillis());
-					actions.add(currentAction);
-				}
-
-				if (idNumber < minId) {
-					idNumber = minId;
-				}
-				long nextIdNumber = idNumber + batchSize;
-				// Set the next row number to the current + the batch size
-				currentAction.setIdNumber(nextIdNumber);
-				// Publish the server to the cluster
-				set(Server.class.getName(), server.getId(), server);
-				return idNumber;
 			}
-		});
+		}
+		// We find the action for this server
+		Server server = getServer();
+		List<Action> actions = server.getActions();
+		Action currentAction = null;
+
+		for (int i = actions.size() - 1; i >= 0; i--) {
+			Action action = actions.get(i);
+			if (action.getIndexableName().equals(indexableName) && action.getIndexName().equals(indexName)) {
+				currentAction = action;
+				break;
+			}
+		}
+
+		// This can never happen, can it?
+		if (currentAction == null) {
+			LOGGER.warn("Action null : " + indexName + ", " + indexableName + ", " + batchSize);
+			currentAction = server.new Action();
+			currentAction.setIndexableName(indexableName);
+			currentAction.setIndexName(indexName);
+			currentAction.setStartTime(System.currentTimeMillis());
+			actions.add(currentAction);
+		}
+
+		if (idNumber < minId) {
+			idNumber = minId;
+		}
+		long nextIdNumber = idNumber + batchSize;
+		// Set the next row number to the current + the batch size
+		currentAction.setIdNumber(nextIdNumber);
+		// Publish the server to the cluster
+		set(Server.class.getName(), server.getId(), server);
+		return idNumber;
 	}
 
 	/**
@@ -290,69 +277,63 @@ public class ClusterManager implements IClusterManager, IConstants {
 	 */
 	@Override
 	public long setWorking(final String indexName, final String indexableName, final boolean isWorking) {
-		return (Long) AtomicAction.executeAction(SERVER_LOCK, new IAtomicAction() {
-			@Override
-			public Object execute() {
-				long firstStartTime = System.currentTimeMillis();
-				List<Server> servers = getServers();
-				// Find the first start time for the action we want to start in any of the servers
-				for (Server server : servers) {
-					LOGGER.debug("Server : " + server);
-					for (Action action : server.getActions()) {
-						if (indexName.equals(action.getIndexName()) && indexableName.equals(action.getIndexableName())
-								&& server.getWorking()) {
-							firstStartTime = Math.min(firstStartTime, action.getStartTime());
-						}
-					}
+		// Set the server working and the new action in the list
+		Server server = getServer();
+		server.setWorking(isWorking);
+		set(Server.class.getName(), server.getId(), server);
+		long firstStartTime = System.currentTimeMillis();
+		List<Server> servers = getServers();
+		// Find the first start time for the action we want to start in any of the servers
+		for (Server other : servers) {
+			LOGGER.debug("Server : " + other);
+			for (Action action : other.getActions()) {
+				if (indexName.equals(action.getIndexName()) && indexableName.equals(action.getIndexableName()) && other.getWorking()) {
+					firstStartTime = Math.min(firstStartTime, action.getStartTime());
 				}
-				// Set the server working and the new action in the list
-				Server server = getServer();
-				server.setWorking(isWorking);
-				server.getActions().add(server.new Action(0, indexableName, indexName, firstStartTime));
-				// Prune the actions in this server
-				List<Action> actions = server.getActions();
-				if (actions.size() > MAX_ACTION_SIZE) {
-					Iterator<Action> iterator = actions.iterator();
-					double prunedSize = MAX_ACTION_SIZE * ACTION_PRUNE_RATIO;
-					while (iterator.hasNext()) {
-						Action action = iterator.next();
-						LOGGER.debug("Removing action : " + action);
-						iterator.remove();
-						if (actions.size() <= prunedSize) {
-							break;
-						}
-					}
-				}
-				// Publish the fact that this server is starting to work on an action
-				LOGGER.debug("Publishing server working : " + server);
-				set(Server.class.getName(), server.getId(), server);
-				return firstStartTime;
 			}
-		});
+		}
+		if (!"".equals(indexableName)) {
+			server.getActions().add(server.new Action(0, indexableName, indexName, firstStartTime));
+		}
+		// Publish the fact that this server is starting to work on an action
+		LOGGER.debug("Publishing server working : " + server.getAddress());
+		set(Server.class.getName(), server.getId(), server);
+		// Prune the actions in this server
+		List<Action> actions = server.getActions();
+		if (actions.size() > MAX_ACTION_SIZE) {
+			Iterator<Action> iterator = actions.iterator();
+			double prunedSize = MAX_ACTION_SIZE * ACTION_PRUNE_RATIO;
+			while (iterator.hasNext()) {
+				Action action = iterator.next();
+				LOGGER.debug("Removing action : " + action);
+				iterator.remove();
+				if (actions.size() <= prunedSize) {
+					break;
+				}
+			}
+			set(Server.class.getName(), server.getId(), server);
+		}
+		return firstStartTime;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
+	@Deprecated
 	public boolean isHandled(final String indexableName, final String indexName) {
-		return (Boolean) AtomicAction.executeAction(SERVER_LOCK, new IAtomicAction() {
-			@Override
-			public Object execute() {
-				boolean isHandled = Boolean.FALSE;
-				List<Server> servers = getServers();
-				for (Server server : servers) {
-					for (Action action : server.getActions()) {
-						if (action.getIndexName().equals(indexName) && action.getIndexableName().equals(indexableName)) {
-							LOGGER.info("Already indexed by : " + server);
-							isHandled = Boolean.TRUE;
-							break;
-						}
-					}
+		boolean isHandled = Boolean.FALSE;
+		List<Server> servers = getServers();
+		for (Server server : servers) {
+			for (Action action : server.getActions()) {
+				if (action.getIndexName().equals(indexName) && action.getIndexableName().equals(indexableName)) {
+					LOGGER.info("Already indexed by : " + server);
+					isHandled = Boolean.TRUE;
+					break;
 				}
-				return isHandled;
 			}
-		});
+		}
+		return isHandled;
 	}
 
 	@Override
@@ -422,31 +403,31 @@ public class ClusterManager implements IClusterManager, IConstants {
 	 */
 	public static void addShutdownHook() {
 		LOGGER.info("Adding shutdown listener : ");
-		Hazelcast.getTopic(IConstants.SHUTDOWN_TOPIC).addMessageListener(new MessageListener<Object>() {
+		ITopic<Server> topic = Hazelcast.getTopic(IConstants.SHUTDOWN_TOPIC);
+		topic.addMessageListener(new MessageListener<Server>() {
 			@Override
-			public void onMessage(final Object other) {
+			public void onMessage(final Server other) {
 				if (other == null) {
 					return;
 				}
 				LOGGER.info("Got shutdown message : " + other);
 				Server server = ApplicationContextManager.getBean(IClusterManager.class).getServer();
-				if (Server.class.isAssignableFrom(other.getClass())) {
-					if (((Server) other).getAddress().equals(server.getAddress())) {
-						// We don't shutdown our selves of course
-						return;
-					}
-					long delay = 1000;
-					ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
-					executorService.scheduleAtFixedRate(new Runnable() {
-						public void run() {
-							LOGGER.warn("Shutting down Ikube server : " + other);
-							ListenerManager.removeListeners();
-							ApplicationContextManager.closeApplicationContext();
-							Hazelcast.shutdownAll();
-							System.exit(0);
-						}
-					}, delay, delay, TimeUnit.MILLISECONDS);
+				if (other.getAddress().equals(server.getAddress())) {
+					// We don't shutdown our selves of course
+					return;
 				}
+				long delay = 1000;
+				ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
+				executorService.schedule(new Runnable() {
+					public void run() {
+						LOGGER.warn("Shutting down Ikube server : " + other);
+						ListenerManager.removeListeners();
+						ApplicationContextManager.closeApplicationContext();
+						Hazelcast.shutdownAll();
+						System.exit(0);
+					}
+				}, delay, TimeUnit.MILLISECONDS);
+				executorService.shutdown();
 			}
 		});
 	}
@@ -457,15 +438,12 @@ public class ClusterManager implements IClusterManager, IConstants {
 	public static void addClusterExceptionListener() {
 		// Add the listener for general cluster directives like forcing an index to start
 		LOGGER.info("Adding shutdown listener : ");
-		Hazelcast.getTopic(IConstants.EXCEPTION_TOPIC).addMessageListener(new MessageListener<Object>() {
+		ITopic<Boolean> topic = Hazelcast.getTopic(IConstants.EXCEPTION_TOPIC);
+		topic.addMessageListener(new MessageListener<Boolean>() {
 			@Override
-			public void onMessage(Object command) {
+			public void onMessage(Boolean command) {
 				LOGGER.info("Got exception message : " + command);
-				if (Boolean.class.isAssignableFrom(command.getClass())) {
-					LOGGER.info("Exception command not boolean : " + command);
-					return;
-				}
-				ApplicationContextManager.getBean(IClusterManager.class).setException((Boolean) command);
+				ApplicationContextManager.getBean(IClusterManager.class).setException(command);
 			}
 		});
 	}

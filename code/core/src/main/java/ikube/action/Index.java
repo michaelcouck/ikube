@@ -2,6 +2,7 @@ package ikube.action;
 
 import ikube.index.IndexManager;
 import ikube.index.handler.IHandler;
+import ikube.index.handler.internet.crawler.IUrlHandler;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.model.Server;
@@ -37,34 +38,36 @@ public class Index extends Action<IndexContext, Boolean> {
 		Server server = getClusterManager().getServer();
 		List<Indexable<?>> indexables = indexContext.getIndexables();
 		try {
-			// If we get here then there are two possibilities:
-			// 1) The index is not current and we will start the index
-			// 2) The index is current and there are other servers working on the index, so we join them
-			logger.info(Logging.getString("Last working time : ", lastWorkingStartTime));
-			// Start the indexing for this server
-			IndexManager.openIndexWriter(indexContext, lastWorkingStartTime, server.getAddress());
-			for (Indexable<?> indexable : indexables) {
-				try {
-					// Get the right handler for this indexable
-					IHandler<Indexable<?>> handler = getHandler(indexable);
-					if (handler == null) {
-						logger.warn(Logging.getString("Not handling indexable : ", indexable, " no handler defined."));
-						continue;
+			if (indexables != null && indexables.size() > 0) {
+				// If we get here then there are two possibilities:
+				// 1) The index is not current and we will start the index
+				// 2) The index is current and there are other servers working on the index, so we join them
+				logger.info(Logging.getString("Last working time : ", lastWorkingStartTime));
+				// Start the indexing for this server
+				IndexManager.openIndexWriter(indexContext, lastWorkingStartTime, server.getAddress());
+				for (Indexable<?> indexable : indexables) {
+					try {
+						// Get the right handler for this indexable
+						IHandler<Indexable<?>> handler = getHandler(indexable);
+						if (handler == null) {
+							logger.warn(Logging.getString("Not handling indexable : ", indexable, " no handler defined."));
+							continue;
+						}
+						// if (getClusterManager().isHandled(indexable.getName(), indexName)) {
+						// logger.info(Logging.getString(indexable.getName(), " already indexed : "));
+						// continue;
+						// }
+						// Execute the handler and wait for the threads to finish
+						getClusterManager().setWorking(indexName, indexable.getName(), Boolean.TRUE);
+						logger.info("Executing handler : " + handler + ", " + indexable.getName());
+						List<Thread> threads = handler.handle(indexContext, indexable);
+						if (threads != null && !threads.isEmpty()) {
+							logger.info("Waiting for threads : " + threads);
+							ThreadUtilities.waitForThreads(threads);
+						}
+					} catch (Exception e) {
+						logger.error("Exception indexing data : " + indexContext.getIndexName(), e);
 					}
-//					if (getClusterManager().isHandled(indexable.getName(), indexName)) {
-//						logger.info(Logging.getString(indexable.getName(), " already indexed : "));
-//						continue;
-//					}
-					// Execute the handler and wait for the threads to finish
-					getClusterManager().setWorking(indexName, indexable.getName(), Boolean.TRUE);
-					logger.info("Executing handler : " + handler + ", " + indexable.getName());
-					List<Thread> threads = handler.handle(indexContext, indexable);
-					if (threads != null && !threads.isEmpty()) {
-						logger.info("Waiting for threads : " + threads);
-						ThreadUtilities.waitForThreads(threads);
-					}
-				} catch (Exception e) {
-					logger.error("Exception indexing data : " + indexContext.getIndexName(), e);
 				}
 			}
 		} finally {

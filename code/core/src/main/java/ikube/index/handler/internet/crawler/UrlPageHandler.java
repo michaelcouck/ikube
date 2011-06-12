@@ -70,8 +70,10 @@ public class UrlPageHandler extends UrlHandler<Url> implements Runnable {
 		@Override
 		public void execute(Url url) {
 			try {
-				getClusterManager().remove(IConstants.URL, url.getId());
-				getClusterManager().set(IConstants.URL_DONE, url.getId(), url);
+				if (url != null) {
+					getClusterManager().remove(IConstants.URL, url.getId());
+					getClusterManager().set(IConstants.URL_DONE, url.getId(), url);
+				}
 			} catch (Exception e) {
 				LOGGER.error("Exception adding the url to the cache : " + url, e);
 			}
@@ -100,6 +102,9 @@ public class UrlPageHandler extends UrlHandler<Url> implements Runnable {
 			for (Url url : urls) {
 				try {
 					LOGGER.info("Doing url : " + url);
+					if (url == null || url.getUrl() == null) {
+						continue;
+					}
 					handle(url);
 					handleChildren(url);
 					url.setParsedContent(null);

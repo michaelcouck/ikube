@@ -50,6 +50,16 @@ public final class ApplicationContextManager {
 				LOGGER.info("External configuration file : " + configFile + ", " + configFile.getAbsolutePath() + ", "
 						+ configFile.exists());
 				if (configFile.exists()) {
+					// Add the ./ikube directory to the classpath so we can use the Spring classpath
+					// loader for the context rather than re-implementing the resource loader and finding
+					// all the files etc.
+					String classpath = System.getProperty(IConstants.CLASSPATH_PROPERTY);
+					StringBuilder builder = new StringBuilder(classpath);
+					builder.append(";");
+					builder.append(configFile.getParentFile().getAbsolutePath());
+					String apendedClasspath = builder.toString();
+					LOGGER.info("Adding Ikube folder to the classpath : " + apendedClasspath);
+					System.setProperty(IConstants.CLASSPATH_PROPERTY, apendedClasspath);
 					APPLICATION_CONTEXT = getApplicationContext(configFile);
 				} else {
 					APPLICATION_CONTEXT = getApplicationContext(IConstants.SPRING_CONFIGURATION_FILE);
@@ -188,19 +198,19 @@ public final class ApplicationContextManager {
 
 		@Override
 		public Resource[] getResources(String locationPattern) throws IOException {
-			LOGGER.info("Location pattern : " + locationPattern);
+			// LOGGER.info("Location pattern : " + locationPattern);
 			return super.getResources(locationPattern);
 		}
 
 		@Override
 		public Resource getResource(String location) {
-			LOGGER.info("Location : " + location);
+			// LOGGER.info("Location : " + location);
 			return super.getResource(location);
 		}
 
 		@Override
 		protected Resource getResourceByPath(String path) {
-			LOGGER.info("Path : " + path);
+			// LOGGER.info("Path : " + path);
 			return super.getResourceByPath(path);
 		}
 

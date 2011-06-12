@@ -1,11 +1,11 @@
 package ikube.integration;
 
 import ikube.IConstants;
+import ikube.action.Validator;
 import ikube.cluster.IClusterManager;
+import ikube.model.IndexContext;
 import ikube.model.faq.Faq;
 import ikube.model.medical.Patient;
-import ikube.monitoring.IIndexValidator;
-import ikube.monitoring.IndexValidator;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.Logging;
 import ikube.toolkit.data.DataGeneratorFour;
@@ -87,7 +87,7 @@ public class Integration {
 	protected void waitToFinish() {
 		try {
 			while (true) {
-				Thread.sleep(6000000);
+				Thread.sleep(600000);
 				boolean anyWorking = ApplicationContextManager.getBean(IClusterManager.class).anyWorking();
 				boolean isWorking = ApplicationContextManager.getBean(IClusterManager.class).getServer().getWorking();
 				logger.info("Any servers working : " + anyWorking + ", this server working : " + isWorking);
@@ -96,7 +96,7 @@ public class Integration {
 				}
 				logger.info("Members : " + Hazelcast.getCluster().getMembers().size());
 				if (Hazelcast.getCluster().getMembers().size() == 1) {
-					// break;
+					break;
 				}
 			}
 		} catch (Exception e) {
@@ -105,8 +105,10 @@ public class Integration {
 	}
 
 	protected void validateIndexes() throws Exception {
-		IIndexValidator indexValidator = new IndexValidator();
-		indexValidator.validate();
+		Map<String, IndexContext> indexContexts = ApplicationContextManager.getBeans(IndexContext.class);
+		for (IndexContext indexContext : indexContexts.values()) {
+			new Validator().execute(indexContext);
+		}
 	}
 
 	protected boolean isServer() {
@@ -115,7 +117,7 @@ public class Integration {
 		logger.info("Operating system : " + osName + ", server : " + osName.toLowerCase().contains("server") + ", 64 bit : "
 				+ properties.getProperty("os.arch").contains("64"));
 		if (!osName.toLowerCase().contains("server") && properties.getProperty("os.arch").contains("64")) {
-			// return Boolean.FALSE;
+			return Boolean.FALSE;
 		}
 		return Boolean.FALSE;
 	}

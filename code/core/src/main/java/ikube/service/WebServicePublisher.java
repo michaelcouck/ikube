@@ -1,5 +1,6 @@
 package ikube.service;
 
+import ikube.IConstants;
 import ikube.cluster.IClusterManager;
 import ikube.model.Server;
 import ikube.toolkit.GeneralUtilities;
@@ -43,21 +44,27 @@ public class WebServicePublisher implements IWebServicePublisher {
 			Integer port = ports.get(i);
 			String protocol = protocols.get(i);
 			Object implementor = implementors.get(i);
-			try {
-				host = InetAddress.getLocalHost().getHostAddress();
-				port = GeneralUtilities.findFirstOpenPort(port);
-				URL url = new URL(protocol, host, port, path);
-				logger.info("Publishing web service to : " + url);
-				Endpoint endpoint = Endpoint.publish(url.toString(), implementor);
-				Binding binding = endpoint.getBinding();
-				webServiceUrls.add(url.toString());
-				String message = Logging.getString("Endpoint : ", endpoint, "binding : ", binding, "implementor : ", implementor,
-						"on address : ", url.toString());
-				logger.info(message);
-			} catch (Exception e) {
-				logger.info(
-						"Exception publishing web service : " + protocol + ", " + host + ", " + port + ", " + path + ", " + implementor, e);
-			}
+			int retryCount = 0;
+			do {
+				try {
+					host = InetAddress.getLocalHost().getHostAddress();
+					port = GeneralUtilities.findFirstOpenPort(port);
+					URL url = new URL(protocol, host, port, path);
+					logger.info("Publishing web service to : " + url);
+					Endpoint endpoint = Endpoint.publish(url.toString(), implementor);
+					Binding binding = endpoint.getBinding();
+					webServiceUrls.add(url.toString());
+					String message = Logging.getString("Endpoint : ", endpoint, "binding : ", binding, "implementor : ", implementor,
+							"on address : ", url.toString());
+					logger.info(message);
+					Thread.sleep(1000);
+					break;
+				} catch (Exception e) {
+					String message = Logging.getString("Exception publishing web service : ", protocol, host, port, path, implementor);
+					logger.info(message, e);
+					port++;
+				}
+			} while (++retryCount < IConstants.MAX_RETRY_WEB_SERVICE_PUBLISHER);
 		}
 		Server server = clusterManager.getServer();
 		server.getWebServiceUrls().addAll(webServiceUrls);

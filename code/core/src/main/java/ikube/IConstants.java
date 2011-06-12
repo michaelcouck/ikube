@@ -133,15 +133,18 @@ public interface IConstants {
 	String SHUTDOWN_TOPIC = "shutdownTopic";
 
 	/** Lock objects for cluster wide locking while we update the cache. */
+	String ID_LOCK = "idLock";
 	String SERVER_LOCK = "serverLock";
 	/** The timeout to wait for the lock. */
 	long LOCK_TIMEOUT = 10000;
 	/** We only keep a few actions in the server. */
-	double MAX_ACTION_SIZE = 50;
+	double MAX_ACTION_SIZE = 10;
 	/** The ratio to delete the actions when the maximum is reached. */
 	double ACTION_PRUNE_RATIO = 0.3;
 	/** The maximum age that the server can get to before it is deleted from the cluster. */
 	int MAX_AGE = 600000;
+	/** The retry count for publishing the web services. */
+	int MAX_RETRY_WEB_SERVICE_PUBLISHER = 10;
 
 	String INDEX_SIZE = "indexSize";
 	String INDEX_DOCUMENTS = "indexDocuments";
@@ -151,7 +154,9 @@ public interface IConstants {
 
 	/** The length of the log that should be passed around. */
 	long TAIL_LOG = 10000;
-	
+
 	SimpleDateFormat HHMMSS_DDMMYYYY = new SimpleDateFormat("hh:mm:ss dd/MM/yyyy");
+
+	String CLASSPATH_PROPERTY = "java.class.path";
 
 }

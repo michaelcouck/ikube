@@ -120,14 +120,10 @@
 		id="ikube.action.Index" 
 		class="ikube.action.Index" 
 		property:ruleExpression="
-			!AnyServersWorkingThisIndex &#38;&#38; 
-			((!IsIndexCurrent &#38;&#38; 
-			 !AnyServersWorking) || 
-			(IsIndexCurrent &#38;&#38; 
-			 AnyServersWorking &#38;&#38; 
-			 !IsThisIndexCreated) || 
-			(!AreIndexesCreated)) || 
-			SingleRuleException">
+			SingleRuleException || 
+			(!IsThisServerWorking &#38;&#38; 
+			 !AnyServersWorkingThisIndex &#38;&#38;
+			 !IsIndexCurrent)">
 		<property name="rules">
 			<util:list>
 				<ref local="ikube.action.rule.IsIndexCurrent" />

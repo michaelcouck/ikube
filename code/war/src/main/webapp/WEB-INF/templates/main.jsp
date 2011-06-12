@@ -14,7 +14,7 @@
 		<script src="http://www.google-analytics.com/ga.js" type="text/javascript"></script>
 	</head>
 
-	<body>
+	<body onload="JavaScript:timedRefresh(10000);">
 		<script type="text/javascript">
 			try {
 				var pageTracker = _gat._getTracker("UA-13044914-4");
