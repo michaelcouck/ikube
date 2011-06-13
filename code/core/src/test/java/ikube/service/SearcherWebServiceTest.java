@@ -38,7 +38,7 @@ public class SearcherWebServiceTest extends ATest {
 		Mockit.setUpMock(ApplicationContextManager.class, ApplicationContextManagerMock.class);
 		ApplicationContextManagerMock.BEAN = INDEX_CONTEXT;
 		this.searcherWebService = new SearcherWebService();
-		this.searcherWebService.setSearchDelegate(new SearchDelegate());
+		((SearcherWebService) this.searcherWebService).setSearchDelegate(new SearchDelegate());
 	}
 
 	@After

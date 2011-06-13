@@ -34,6 +34,7 @@ public class HtmlParser implements IParser {
 		source.fullSequentialParse();
 		TextExtractor textExtractor = new TextExtractor(source);
 		textExtractor.setIncludeAttributes(true);
+		textExtractor.setConvertNonBreakingSpaces(Boolean.TRUE);
 		outputStream.write(textExtractor.toString().getBytes(IConstants.ENCODING));
 		return outputStream;
 	}

@@ -18,6 +18,7 @@ public class SpellingWriterTag extends ATag {
 	public int doEndTag() throws JspException {
 		try {
 			String checkedSearchString = (String) pageContext.getAttribute(CHECKED_SEARCH_STRING);
+			// logger.info("Checked search string : " + checkedSearchString);
 			if (checkedSearchString != null) {
 				pageContext.getOut().print(checkedSearchString);
 			}

@@ -158,5 +158,7 @@ public interface IConstants {
 	SimpleDateFormat HHMMSS_DDMMYYYY = new SimpleDateFormat("hh:mm:ss dd/MM/yyyy");
 
 	String CLASSPATH_PROPERTY = "java.class.path";
+	
+	String STRIP_CHARACTERS = "[]{},";
 
 }

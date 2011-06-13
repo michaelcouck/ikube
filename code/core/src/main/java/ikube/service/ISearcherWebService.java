@@ -1,5 +1,8 @@
 package ikube.service;
 
+import javax.jws.WebMethod;
+import javax.jws.WebParam;
+import javax.jws.WebResult;
 import javax.jws.WebService;
 import javax.jws.soap.SOAPBinding;
 
@@ -10,7 +13,7 @@ import javax.jws.soap.SOAPBinding;
  * @since 21.11.10
  * @version 01.00
  */
-@SOAPBinding(style = SOAPBinding.Style.RPC)
+@SOAPBinding(style = SOAPBinding.Style.DOCUMENT)
 @WebService(name = ISearcherWebService.NAME, targetNamespace = ISearcherWebService.NAMESPACE, serviceName = ISearcherWebService.SERVICE)
 public interface ISearcherWebService {
 
@@ -35,9 +38,13 @@ public interface ISearcherWebService {
 	 *            the start document in the index, for paging
 	 * @param maxResults
 	 *            the end document in the index, also for paging
-	 * @return a serialised string of the results from the search
+	 * @return a serialized string of the results from the search
 	 */
-	String searchSingle(String indexName, String searchString, String searchField, boolean fragment, int firstResult, int maxResults);
+	@WebMethod
+	@WebResult(name = "result")
+	String searchSingle(@WebParam(name = "indexName") final String indexName, @WebParam(name = "searchString") final String searchString,
+			@WebParam(name = "searchField") final String searchField, @WebParam(name = "fragment") final boolean fragment,
+			@WebParam(name = "firstResult") final int firstResult, @WebParam(name = "maxResults") final int maxResults);
 
 	/**
 	 * Does a search on multiple fields and multiple search strings.
@@ -54,9 +61,14 @@ public interface ISearcherWebService {
 	 *            the start document in the index, for paging
 	 * @param maxResults
 	 *            the end document in the index, also for paging
-	 * @return a serialised string of the results from the search
+	 * @return a serialized string of the results from the search
 	 */
-	String searchMulti(String indexName, String[] searchStrings, String[] searchFields, boolean fragment, int firstResult, int maxResults);
+	@WebMethod
+	@WebResult(name = "result")
+	String searchMulti(@WebParam(name = "indexName") final String indexName,
+			@WebParam(name = "searchStrings") final String[] searchStrings, @WebParam(name = "searchFields") final String[] searchFields,
+			@WebParam(name = "fragment") final boolean fragment, @WebParam(name = "firstResult") final int firstResult,
+			@WebParam(name = "maxResults") final int maxResults);
 
 	/**
 	 * Does a search on multiple fields and multiple search strings and sorts the results according the sort fields.
@@ -75,10 +87,14 @@ public interface ISearcherWebService {
 	 *            the start document in the index, for paging
 	 * @param maxResults
 	 *            the end document in the index, also for paging
-	 * @return a serialised string of the results from the search
+	 * @return a serialized string of the results from the search
 	 */
-	String searchMultiSorted(String indexName, String[] searchStrings, String[] searchFields, String[] sortFields, boolean fragment,
-			int firstResult, int maxResults);
+	@WebMethod
+	@WebResult(name = "result")
+	String searchMultiSorted(@WebParam(name = "indexName") final String indexName,
+			@WebParam(name = "searchStrings") final String[] searchStrings, @WebParam(name = "searchFields") final String[] searchFields,
+			@WebParam(name = "sortFields") final String[] sortFields, @WebParam(name = "fragment") final boolean fragment,
+			@WebParam(name = "firstResult") final int firstResult, @WebParam(name = "maxResults") final int maxResults);
 
 	/**
 	 * TODO Comment me!
@@ -90,7 +106,11 @@ public interface ISearcherWebService {
 	 * @param maxResults
 	 * @return
 	 */
-	String searchMultiAll(String indexName, String[] searchStrings, boolean fragment, int firstResult, int maxResults);
+	@WebMethod
+	@WebResult(name = "result")
+	String searchMultiAll(@WebParam(name = "indexName") final String indexName,
+			@WebParam(name = "searchStrings") final String[] searchStrings, @WebParam(name = "fragment") final boolean fragment,
+			@WebParam(name = "firstResult") final int firstResult, @WebParam(name = "maxResults") final int maxResults);
 
 	/**
 	 * TODO Comment me!
@@ -106,15 +126,12 @@ public interface ISearcherWebService {
 	 * @param longitude
 	 * @return
 	 */
-	String searchSpacialMulti(String indexName, String[] searchStrings, String[] searchFields, boolean fragment, int firstResult,
-			int maxResults, int distance, double latitude, double longitude);
-
-	/**
-	 * This method exists only to get a reference to the search delegate that will be intercepted by Spring.
-	 * 
-	 * @param searchDelegate
-	 *            the search delegate that will be execute the search on the index and typically get intercepted by Spring
-	 */
-	void setSearchDelegate(SearchDelegate searchDelegate);
+	@WebMethod
+	@WebResult(name = "result")
+	String searchSpacialMulti(@WebParam(name = "indexName") final String indexName,
+			@WebParam(name = "searchStrings") final String[] searchStrings, @WebParam(name = "searchFields") final String[] searchFields,
+			@WebParam(name = "fragment") final boolean fragment, @WebParam(name = "firstResult") final int firstResult,
+			@WebParam(name = "maxResults") final int maxResults, @WebParam(name = "distance") final int distance,
+			@WebParam(name = "latitude") final double latitude, @WebParam(name = "longitude") final double longitude);
 
 }

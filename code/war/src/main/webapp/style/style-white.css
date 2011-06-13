@@ -198,7 +198,7 @@ hr { display: none; }
 	/* padding-top : 42px; */
 }
 #search input {
-	float: left;
+	/* float: left; */
 }
 #search-text {
 	width: 150px;
@@ -225,7 +225,7 @@ hr { display: none; }
 	border : solid black 1px;
 }
 #search-submit {
-	float: left;
+	/* float: left; */
 	width: 25px;
 	border: none;
 	color: #636363;

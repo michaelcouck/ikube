@@ -36,6 +36,8 @@ public abstract class ATag extends BodyTagSupport {
 	protected static final int MAX_PAGED_RESULTS = 10;
 	/** The default encoding is UTF-8 of course. */
 	protected static final String ENCODING = "UTF-8";
+	
+	protected static final String CONTENT = "content";
 	public static final String SEARCH_STRINGS = "searchStrings";
 
 }

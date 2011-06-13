@@ -46,6 +46,11 @@
 		<name>spellingTag</name>
 		<tag-class>ikube.web.tag.spelling.SpellingTag</tag-class>
 		<body-content>JSP</body-content>
+		<attribute>
+			<name>fieldParameterNames</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
 	</tag>
 	<tag>
 		<name>spellingWriterTag</name>

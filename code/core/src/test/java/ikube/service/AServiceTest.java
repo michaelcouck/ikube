@@ -3,7 +3,6 @@ package ikube.service;
 import ikube.ATest;
 import ikube.cluster.ClusterManager;
 import ikube.cluster.cache.Cache;
-import ikube.cluster.cache.ICache;
 import ikube.mock.ClusterManagerMock;
 
 import java.util.Arrays;
@@ -34,7 +33,7 @@ public abstract class AServiceTest extends ATest {
 		Mockit.tearDownMocks();
 	}
 
-	protected Integer port = new Integer(8090);
+	protected int port = 9010;
 	protected WebServicePublisher webServicePublisher;
 
 	public AServiceTest(Class<?> klass) {
@@ -44,8 +43,7 @@ public abstract class AServiceTest extends ATest {
 	@Before
 	@SuppressWarnings("unchecked")
 	public void before() throws Exception {
-		ICache cache = new Cache();
-		webServicePublisher = new WebServicePublisher(new ClusterManager(cache));
+		webServicePublisher = new WebServicePublisher(new ClusterManager(new Cache()));
 		List<?> implementors = Arrays.asList(new SearcherWebService());
 		webServicePublisher.setImplementors((List<Object>) implementors);
 		webServicePublisher.setPaths(Arrays.asList(ISearcherWebService.PUBLISHED_PATH));

@@ -99,7 +99,6 @@
 		id="ikube.action.Open" 
 		class="ikube.action.Open" 
 		property:ruleExpression="
-			!IsThisServerWorking &#38;&#38;
 			(!IsMultiSearcherInitialised || 
 			 !AreSearchablesInitialised) &#38;&#38; 
 			IsIndexCurrent &#38;&#38; 

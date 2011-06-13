@@ -16,6 +16,9 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import javax.ejb.Remote;
+import javax.jws.WebMethod;
+import javax.jws.WebParam;
+import javax.jws.WebResult;
 import javax.jws.WebService;
 import javax.jws.soap.SOAPBinding;
 
@@ -27,13 +30,13 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
 /**
- * 
+ * @see IMonitorWebService
  * @author Michael Couck
  * @since 28.12.10
  * @version 01.00
  */
 @Remote(IMonitorWebService.class)
-@SOAPBinding(style = SOAPBinding.Style.RPC)
+@SOAPBinding(style = SOAPBinding.Style.DOCUMENT)
 @WebService(name = IMonitorWebService.NAME, targetNamespace = IMonitorWebService.NAMESPACE, serviceName = IMonitorWebService.SERVICE)
 public class MonitorWebService implements IMonitorWebService {
 
@@ -43,6 +46,8 @@ public class MonitorWebService implements IMonitorWebService {
 	 * {@inheritDoc}
 	 */
 	@Override
+	@WebMethod
+	@WebResult(name = "indexNames")
 	public String[] getIndexNames() {
 		Map<String, IndexContext> indexContexts = ApplicationContextManager.getBeans(IndexContext.class);
 		List<String> indexNames = new ArrayList<String>();
@@ -56,7 +61,9 @@ public class MonitorWebService implements IMonitorWebService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public String[] getIndexableNames(String indexName) {
+	@WebMethod
+	@WebResult(name = "indexableNames")
+	public String[] getIndexableNames(@WebParam(name = "indexName") final String indexName) {
 		IndexContext indexContext = getIndexContext(indexName);
 		List<Indexable<?>> indexables = indexContext.getIndexables();
 		String[] indexableNames = new String[indexables.size()];
@@ -71,6 +78,8 @@ public class MonitorWebService implements IMonitorWebService {
 	 * {@inheritDoc}
 	 */
 	@Override
+	@WebMethod
+	@WebResult(name = "indexContextNames")
 	public String[] getIndexContextNames() {
 		Map<String, IndexContext> indexContexts = ApplicationContextManager.getBeans(IndexContext.class);
 		return indexContexts.keySet().toArray(new String[indexContexts.keySet().size()]);
@@ -80,7 +89,9 @@ public class MonitorWebService implements IMonitorWebService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public String[] getIndexFieldNames(final String indexName) {
+	@WebMethod
+	@WebResult(name = "indexFieldNames")
+	public String[] getIndexFieldNames(@WebParam(name = "indexName") final String indexName) {
 		IndexContext indexContext = getIndexContext(indexName);
 		if (indexContext != null) {
 			Set<String> fieldNames = getFields(indexContext.getIndexables(), new TreeSet<String>());
@@ -93,8 +104,10 @@ public class MonitorWebService implements IMonitorWebService {
 	 * {@inheritDoc}
 	 */
 	@Override
+	@WebMethod
+	@WebResult(name = "indexableFieldNames")
 	@SuppressWarnings("rawtypes")
-	public String[] getIndexableFieldNames(final String indexableName) {
+	public String[] getIndexableFieldNames(@WebParam(name = "indexableName") final String indexableName) {
 		Map<String, Indexable> indexables = ApplicationContextManager.getBeans(Indexable.class);
 		Indexable<?> indexable = null;
 		for (String in : indexables.keySet()) {
@@ -112,7 +125,9 @@ public class MonitorWebService implements IMonitorWebService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public long getIndexSize(String indexName) {
+	@WebMethod
+	@WebResult(name = "indexSize")
+	public long getIndexSize(@WebParam(name = "indexName") final String indexName) {
 		long length = 0;
 		try {
 			IndexContext indexContext = getIndexContext(indexName);
@@ -147,7 +162,9 @@ public class MonitorWebService implements IMonitorWebService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public int getIndexDocuments(String indexName) {
+	@WebMethod
+	@WebResult(name = "indexDocuments")
+	public int getIndexDocuments(@WebParam(name = "indexName") final String indexName) {
 		int numDocs = 0;
 		Directory directory = null;
 		IndexReader indexReader = null;
@@ -183,6 +200,12 @@ public class MonitorWebService implements IMonitorWebService {
 		return numDocs;
 	}
 
+	/**
+	 * TODO Comment me!
+	 * 
+	 * @param indexName
+	 * @return
+	 */
 	protected IndexContext getIndexContext(String indexName) {
 		String[] indexContextNames = getIndexContextNames();
 		IndexContext indexContext = null;
@@ -196,6 +219,11 @@ public class MonitorWebService implements IMonitorWebService {
 		return indexContext;
 	}
 
+	/**
+	 * TODO Comment me!
+	 * 
+	 * @param indexReader
+	 */
 	protected void closeIndexReader(IndexReader indexReader) {
 		if (indexReader == null) {
 			return;
@@ -215,6 +243,13 @@ public class MonitorWebService implements IMonitorWebService {
 		}
 	}
 
+	/**
+	 * TODO Comment me!
+	 * 
+	 * @param indexables
+	 * @param fieldNames
+	 * @return
+	 */
 	protected Set<String> getFields(final List<Indexable<?>> indexables, final Set<String> fieldNames) {
 		if (indexables != null) {
 			for (Indexable<?> indexable : indexables) {
@@ -224,6 +259,13 @@ public class MonitorWebService implements IMonitorWebService {
 		return fieldNames;
 	}
 
+	/**
+	 * TODO Comment me!
+	 * 
+	 * @param indexable
+	 * @param fieldNames
+	 * @return
+	 */
 	protected Set<String> getFields(final Indexable<?> indexable, final Set<String> fieldNames) {
 		Field[] fields = indexable.getClass().getDeclaredFields();
 		for (Field field : fields) {

@@ -19,8 +19,11 @@
 					<input type="submit" id="search-submit" value="Go" />
 				</fieldset>
 			</form>
-			<search:spellingTag>
-				Did you mean : <a href="JavaScript:submitIkubeSearchForm('<search:spellingWriterTag />')"><search:spellingWriterTag /></a>
+			<search:spellingTag fieldParameterNames="content">
+				Did you mean : 
+				<a href="<c:url value="/results.html"/>?indexName=ikube&fragment=true&content=<search:spellingWriterTag />">
+					<search:spellingWriterTag />
+				</a>
 			</search:spellingTag>
 		</li>
 		<li>
@@ -33,7 +36,7 @@
 			</ul>
 		</li>
 		<li>
-			<ul>&nbsp;</ul>
+			<ul></ul>
 		</li>
 		<li>
 			<h2>libraries used</h2>

@@ -20,7 +20,6 @@ public class WebServicePublisherTest extends AServiceTest {
 				+ "/ikube/service/ISearcherWebService?wsdl";
 		ISearcherWebService webService = ServiceLocator.getService(ISearcherWebService.class, searcherWebServiceUrl,
 				ISearcherWebService.NAMESPACE, ISearcherWebService.SERVICE);
-		webService.setSearchDelegate(new SearchDelegate());
 		assertNotNull("The service must be published : ", webService);
 	}
 

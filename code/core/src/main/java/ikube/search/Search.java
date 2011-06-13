@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.document.Document;
@@ -133,6 +134,12 @@ public abstract class Search {
 	 *            the search strings
 	 */
 	public void setSearchString(final String... searchStrings) {
+		if (searchStrings != null) {
+			// Strip all the characters that Lucene doesn't like
+			for (int i = 0; i < searchStrings.length; i++) {
+				searchStrings[i] = StringUtils.strip(searchStrings[i], IConstants.STRIP_CHARACTERS);
+			}
+		}
 		this.searchStrings = searchStrings;
 	}
 

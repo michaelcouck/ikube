@@ -20,6 +20,9 @@ import java.util.List;
 import java.util.Map;
 
 import javax.ejb.Remote;
+import javax.jws.WebMethod;
+import javax.jws.WebParam;
+import javax.jws.WebResult;
 import javax.jws.WebService;
 import javax.jws.soap.SOAPBinding;
 
@@ -32,7 +35,7 @@ import org.apache.lucene.search.Searcher;
  * @version 01.00
  */
 @Remote(ISearcherWebService.class)
-@SOAPBinding(style = SOAPBinding.Style.RPC)
+@SOAPBinding(style = SOAPBinding.Style.DOCUMENT)
 @WebService(name = ISearcherWebService.NAME, targetNamespace = ISearcherWebService.NAMESPACE, serviceName = ISearcherWebService.SERVICE)
 public class SearcherWebService implements ISearcherWebService {
 
@@ -49,22 +52,26 @@ public class SearcherWebService implements ISearcherWebService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public String searchSingle(final String indexName, final String searchString, final String searchField, final boolean fragment,
-			final int start, final int end) {
+	@WebMethod
+	@WebResult(name = "result")
+	public String searchSingle(@WebParam(name = "indexName") final String indexName,
+			@WebParam(name = "searchString") final String searchString, @WebParam(name = "searchField") final String searchField,
+			@WebParam(name = "fragment") final boolean fragment, @WebParam(name = "firstResult") final int firstResult,
+			@WebParam(name = "maxResults") final int maxResults) {
 		try {
 			SearchSingle searchSingle = getSearch(SearchSingle.class, indexName);
 			if (searchSingle != null) {
-				searchSingle.setFirstResult(start);
+				searchSingle.setFirstResult(firstResult);
 				searchSingle.setFragment(fragment);
-				searchSingle.setMaxResults(end);
+				searchSingle.setMaxResults(maxResults);
 				searchSingle.setSearchField(searchField);
 				searchSingle.setSearchString(searchString);
 				List<Map<String, String>> results = searchDelegate.execute(indexName, searchSingle);
 				return SerializationUtilities.serialize(results);
 			}
 		} catch (Exception e) {
-			String message = Logging.getString("Exception doing search on index : ", indexName, searchString, searchField, fragment, start,
-					end);
+			String message = Logging.getString("Exception doing search on index : ", indexName, searchString, searchField, fragment,
+					firstResult, maxResults);
 			LOGGER.error(message, e);
 		}
 		return SerializationUtilities.serialize(getMessageResults(indexName));
@@ -74,14 +81,18 @@ public class SearcherWebService implements ISearcherWebService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public String searchMulti(final String indexName, final String[] searchStrings, final String[] searchFields, final boolean fragment,
-			final int start, final int end) {
+	@WebMethod
+	@WebResult(name = "result")
+	public String searchMulti(@WebParam(name = "indexName") final String indexName,
+			@WebParam(name = "searchStrings") final String[] searchStrings, @WebParam(name = "searchFields") final String[] searchFields,
+			@WebParam(name = "fragment") final boolean fragment, @WebParam(name = "firstResult") final int firstResult,
+			@WebParam(name = "maxResults") final int maxResults) {
 		try {
 			SearchMulti searchMulti = getSearch(SearchMulti.class, indexName);
 			if (searchMulti != null) {
-				searchMulti.setFirstResult(start);
+				searchMulti.setFirstResult(firstResult);
 				searchMulti.setFragment(fragment);
-				searchMulti.setMaxResults(end);
+				searchMulti.setMaxResults(maxResults);
 				searchMulti.setSearchField(searchFields);
 				searchMulti.setSearchString(searchStrings);
 				List<Map<String, String>> results = searchDelegate.execute(indexName, searchMulti);
@@ -89,7 +100,7 @@ public class SearcherWebService implements ISearcherWebService {
 			}
 		} catch (Exception e) {
 			String message = Logging.getString("Exception doing search on index : ", indexName, Arrays.asList(searchStrings),
-					Arrays.asList(searchFields), fragment, start, end);
+					Arrays.asList(searchFields), fragment, firstResult, maxResults);
 			LOGGER.error(message, e);
 		}
 		return SerializationUtilities.serialize(getMessageResults(indexName));
@@ -99,14 +110,18 @@ public class SearcherWebService implements ISearcherWebService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public String searchMultiSorted(final String indexName, final String[] searchStrings, final String[] searchFields,
-			final String[] sortFields, final boolean fragment, final int start, final int end) {
+	@WebMethod
+	@WebResult(name = "result")
+	public String searchMultiSorted(@WebParam(name = "indexName") final String indexName,
+			@WebParam(name = "searchStrings") final String[] searchStrings, @WebParam(name = "searchFields") final String[] searchFields,
+			@WebParam(name = "sortFields") final String[] sortFields, @WebParam(name = "fragment") final boolean fragment,
+			@WebParam(name = "firstResult") final int firstResult, @WebParam(name = "maxResults") final int maxResults) {
 		try {
 			SearchMultiSorted searchMultiSorted = getSearch(SearchMultiSorted.class, indexName);
 			if (searchMultiSorted != null) {
-				searchMultiSorted.setFirstResult(start);
+				searchMultiSorted.setFirstResult(firstResult);
 				searchMultiSorted.setFragment(fragment);
-				searchMultiSorted.setMaxResults(end);
+				searchMultiSorted.setMaxResults(maxResults);
 				searchMultiSorted.setSearchField(searchFields);
 				searchMultiSorted.setSearchString(searchStrings);
 				searchMultiSorted.setSortField(sortFields);
@@ -115,20 +130,27 @@ public class SearcherWebService implements ISearcherWebService {
 			}
 		} catch (Exception e) {
 			String message = Logging.getString("Exception doing search on index : ", indexName, Arrays.asList(searchStrings),
-					Arrays.asList(searchFields), Arrays.asList(sortFields), fragment, start, end);
+					Arrays.asList(searchFields), Arrays.asList(sortFields), fragment, firstResult, maxResults);
 			LOGGER.error(message, e);
 		}
 		return SerializationUtilities.serialize(getMessageResults(indexName));
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public String searchMultiAll(String indexName, String[] searchStrings, boolean fragment, int start, int end) {
+	@WebMethod
+	@WebResult(name = "result")
+	public String searchMultiAll(@WebParam(name = "indexName") final String indexName,
+			@WebParam(name = "searchStrings") final String[] searchStrings, @WebParam(name = "fragment") final boolean fragment,
+			@WebParam(name = "firstResult") final int firstResult, @WebParam(name = "maxResults") final int maxResults) {
 		try {
 			SearchMultiAll searchMultiAll = getSearch(SearchMultiAll.class, indexName);
 			if (searchMultiAll != null) {
-				searchMultiAll.setFirstResult(start);
+				searchMultiAll.setFirstResult(firstResult);
 				searchMultiAll.setFragment(fragment);
-				searchMultiAll.setMaxResults(end);
+				searchMultiAll.setMaxResults(maxResults);
 				searchMultiAll.setSearchString(searchStrings);
 				// searchMultiSorted.setSearchField(searchFields);
 				// searchMultiSorted.setSortField(sortFields);
@@ -137,21 +159,29 @@ public class SearcherWebService implements ISearcherWebService {
 			}
 		} catch (Exception e) {
 			String message = Logging.getString("Exception doing search on index : ", indexName, Arrays.asList(searchStrings), fragment,
-					start, end);
+					firstResult, maxResults);
 			LOGGER.error(message, e);
 		}
 		return SerializationUtilities.serialize(getMessageResults(indexName));
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public String searchSpacialMulti(String indexName, String[] searchStrings, String[] searchFields, boolean fragment, int start, int end,
-			int distance, double latitude, double longitude) {
+	@WebMethod
+	@WebResult(name = "result")
+	public String searchSpacialMulti(@WebParam(name = "indexName") final String indexName,
+			@WebParam(name = "searchStrings") final String[] searchStrings, @WebParam(name = "searchFields") final String[] searchFields,
+			@WebParam(name = "fragment") final boolean fragment, @WebParam(name = "firstResult") final int firstResult,
+			@WebParam(name = "maxResults") final int maxResults, @WebParam(name = "distance") final int distance,
+			@WebParam(name = "latitude") final double latitude, @WebParam(name = "longitude") final double longitude) {
 		try {
 			SearchSpatial searchSpatial = getSearch(SearchSpatial.class, indexName);
 			if (searchSpatial != null) {
-				searchSpatial.setFirstResult(start);
+				searchSpatial.setFirstResult(firstResult);
 				searchSpatial.setFragment(fragment);
-				searchSpatial.setMaxResults(end);
+				searchSpatial.setMaxResults(maxResults);
 				searchSpatial.setSearchString(searchStrings);
 				searchSpatial.setSearchField(searchFields);
 				searchSpatial.setCoordinate(new Coordinate(latitude, longitude));
@@ -162,17 +192,21 @@ public class SearcherWebService implements ISearcherWebService {
 			}
 		} catch (Exception e) {
 			String message = Logging.getString("Exception doing search on index : ", indexName, Arrays.asList(searchStrings), fragment,
-					start, end, latitude, longitude, distance);
+					firstResult, maxResults, latitude, longitude, distance);
 			LOGGER.error(message, e);
 		}
 		return SerializationUtilities.serialize(getMessageResults(indexName));
 	}
 
-	@Override
-	public void setSearchDelegate(SearchDelegate searchDelegate) {
-		this.searchDelegate = searchDelegate;
-	}
-
+	/**
+	 * TODO Comment me!
+	 * 
+	 * @param <T>
+	 * @param klass
+	 * @param indexName
+	 * @return
+	 * @throws Exception
+	 */
 	@SuppressWarnings("unchecked")
 	protected <T> T getSearch(Class<?> klass, String indexName) throws Exception {
 		IndexContext indexContext = this.indexContexts.get(indexName);
@@ -195,6 +229,12 @@ public class SearcherWebService implements ISearcherWebService {
 		return null;
 	}
 
+	/**
+	 * TODO Comment me!
+	 * 
+	 * @param indexName
+	 * @return
+	 */
 	protected List<Map<String, String>> getMessageResults(String indexName) {
 		List<Map<String, String>> results = new ArrayList<Map<String, String>>();
 		Map<String, String> notification = new HashMap<String, String>();
@@ -202,5 +242,14 @@ public class SearcherWebService implements ISearcherWebService {
 		notification.put(IConstants.FRAGMENT, "Or exception thrown during search : " + indexName);
 		results.add(notification);
 		return results;
+	}
+
+	/**
+	 * TODO Comment me!
+	 * 
+	 * @param searchDelegate
+	 */
+	public void setSearchDelegate(SearchDelegate searchDelegate) {
+		this.searchDelegate = searchDelegate;
 	}
 }

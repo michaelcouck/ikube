@@ -24,9 +24,9 @@ function timedRefresh(timeout) {
 	alert('Document location : ' + document.location);
 	for (var i = 0; i < refreshUrls.length; i++) {
 		var refreshUrl = refreshUrls[i];
-		var contains = location.toString().indexOf(refreshUrl) > -1;
+		var contains = document.location.toString().indexOf(refreshUrl) > -1;
 		alert('Refresh url : ' + refreshUrl + ', location contains : ' + contains);
-		if (contains > -1) {
+		if (contains) {
 			setTimeout('document.location.reload(true);', timeout);
 		}
 	}

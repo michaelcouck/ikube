@@ -18,7 +18,7 @@
    with some graphical data, including the Cpu and Io and all the rest from the 
    sampling.
 * Add a page with Cpu and system sampling data using Sigar API or JavaSysMon.
-  1) Cou tree
+  1) Cpu tree
   2) Disk usage
   3) Ram usage
   4) Up time
