@@ -2,6 +2,8 @@ package ikube.service;
 
 import static org.junit.Assert.assertNotNull;
 
+import ikube.IConstants;
+
 import java.net.InetAddress;
 
 import org.junit.Ignore;
@@ -33,6 +35,18 @@ public class ServiceLocatorTest extends AServiceTest {
 		ISearcherWebService service = ServiceLocator.getService(ISearcherWebService.class, protocol, host, port, path, nameSpace,
 				serviceName);
 		assertNotNull(service);
+	}
+
+	public static void main(String[] args) {
+		// http://ikube.dyndns.org:8081/ikube/service/ISearcherWebService?swdl
+		String url = "http://192.168.1.17:8081/ikube/service/ISearcherWebService?wsdl";
+		ISearcherWebService webService = ServiceLocator.getService(ISearcherWebService.class, url, ISearcherWebService.NAMESPACE,
+				ISearcherWebService.SERVICE);
+		String[] searchStrings = { "cape town", "cape town" };
+		String[] searchFields = { "name", "asciiname" };
+		String results = webService.searchSpacialMulti(IConstants.GEOSPATIAL, searchStrings, searchFields, Boolean.TRUE, 0, 10, 15,
+				-33.9693580, 18.4622110);
+		System.out.println(results);
 	}
 
 }
