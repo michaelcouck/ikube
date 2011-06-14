@@ -36,7 +36,7 @@
 		<ref bean="ikube.action.Restore" />
 		<ref bean="ikube.action.DiskFull" />
 		<ref bean="ikube.action.Validator" />
-		<ref bean="ikube.action.Searcher" />
+		<!-- ref bean="ikube.action.Searcher" / -->
 		<!-- <ref bean="ikube.action.Enrichment" /> -->
 	</util:list>
 
