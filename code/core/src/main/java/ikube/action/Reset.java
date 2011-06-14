@@ -25,6 +25,10 @@ public class Reset extends Action<IndexContext, Boolean> {
 			getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getName(), Boolean.TRUE);
 			List<Server> servers = getClusterManager().getServers();
 			for (Server server : servers) {
+				// This is a double check on the xorking flag
+				if (server.getWorking()) {
+					continue;
+				}
 				server.getActions().clear();
 				getClusterManager().set(Server.class.getName(), server.getId(), server);
 			}

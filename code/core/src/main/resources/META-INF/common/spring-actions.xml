@@ -36,7 +36,7 @@
 		<ref bean="ikube.action.Restore" />
 		<ref bean="ikube.action.DiskFull" />
 		<ref bean="ikube.action.Validator" />
-		<!-- ref bean="ikube.action.Searcher" / -->
+		<ref bean="ikube.action.Searcher" />
 		<!-- <ref bean="ikube.action.Enrichment" /> -->
 	</util:list>
 
@@ -119,10 +119,10 @@
 		id="ikube.action.Index" 
 		class="ikube.action.Index" 
 		property:ruleExpression="
-			SingleRuleException || 
-			(!IsThisServerWorking &#38;&#38; 
+			!AnyServersWorking &#38;&#38; 
+			!IsThisServerWorking &#38;&#38; 
 			 !AnyServersWorkingThisIndex &#38;&#38;
-			 !IsIndexCurrent)">
+			 !IsIndexCurrent">
 		<property name="rules">
 			<util:list>
 				<ref local="ikube.action.rule.IsIndexCurrent" />
@@ -228,6 +228,7 @@
 		id="ikube.action.Searcher" 
 		class="ikube.action.Searcher" 
 		property:ruleExpression="
+			!AnyServersWorking &#38;&#38; 
 			!IsThisServerWorking &#38;&#38; 
 			AreIndexesCreated &#38;&#38; 
 			IsMultiSearcherInitialised"

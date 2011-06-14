@@ -106,7 +106,7 @@ public class ClusterManager implements IClusterManager, IConstants {
 	 */
 	private transient String address;
 	/** The server object for this server. */
-	private transient Server server;
+	// private transient Server server;
 	/** The cluster wide cache. */
 	protected transient ICache cache;
 	/** This flag is set cluster wide to make exception for the rules. */
@@ -127,7 +127,8 @@ public class ClusterManager implements IClusterManager, IConstants {
 		// same ip address
 		this.ip = InetAddress.getLocalHost().getHostAddress();
 		this.address = ip + "." + System.nanoTime();
-		this.server = getServer();
+		Server server = getServer();
+		LOGGER.info("This server started : " + server);
 		// This listener will iterate over the servers and remove any that have expired
 		// and will also register this server as still alive in the cluster
 		ListenerManager.addListener(aliveListener);
@@ -256,8 +257,8 @@ public class ClusterManager implements IClusterManager, IConstants {
 	 */
 	@Override
 	public Server getServer() {
-		if (this.server == null) {
-			server = cache.get(Server.class.getName(), HashUtilities.hash(address));
+		// if (this.server == null) {
+			Server server = cache.get(Server.class.getName(), HashUtilities.hash(address));
 			if (server == null) {
 				server = new Server();
 				server.setIp(ip);
@@ -268,7 +269,7 @@ public class ClusterManager implements IClusterManager, IConstants {
 				LOGGER.info("Published server : " + server);
 				LOGGER.info("Server from cache : " + cache.get(Server.class.getName(), server.getId()));
 			}
-		}
+		// }
 		return server;
 	}
 

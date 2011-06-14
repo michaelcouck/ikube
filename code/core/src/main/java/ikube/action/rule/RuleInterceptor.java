@@ -44,8 +44,8 @@ public class RuleInterceptor implements IRuleInterceptor {
 		String predicate = null;
 		boolean proceed = Boolean.FALSE;
 		IndexContext indexContext = null;
+		Object target = proceedingJoinPoint.getTarget();
 		try {
-			Object target = proceedingJoinPoint.getTarget();
 			if (LOGGER.isDebugEnabled()) {
 				LOGGER.debug("Intercepting : " + target);
 			}
@@ -110,7 +110,7 @@ public class RuleInterceptor implements IRuleInterceptor {
 		} finally {
 			AtomicAction.unlock(lock);
 		}
-		LOGGER.info(Logging.getString("Rule intercepter proceeding : ", proceed, result, jep, predicate));
+		LOGGER.info(Logging.getString("Rule intercepter proceeding : ", proceed, target, result, jep, predicate));
 		return proceed;
 	}
 

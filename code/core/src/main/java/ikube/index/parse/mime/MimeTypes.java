@@ -167,6 +167,9 @@ public final class MimeTypes {
 	 * Returns an array of matching MimeTypes from the specified name (many MimeTypes can have the same registered extensions).
 	 */
 	private MimeType[] getMimeTypes(final String name) {
+		if (name == null) {
+			return null;
+		}
 		List<MimeType> mimeTypes = null;
 		int index = name.lastIndexOf('.');
 		if ((index != -1) && (index != name.length() - 1)) {
