@@ -32,14 +32,22 @@ public class Enrichment extends Action<IndexContext, Boolean> implements IConsta
 	public static final String COUNTRY_FEATURE_CODE = "PCLI ADM1 ADM2 ADM3 ADM4 ADMD LTER PCL PCLD PCLF PCLI PCLIX PCLS PRSH TERR ZN ZNB";
 	public static final String[] searchFields = { FEATURECLASS, FEATURECODE, COUNTRYCODE };
 	
+	/** Once the enrichment has been handled on this machine then don't do it again. */
+	private static boolean DONE = Boolean.FALSE;
+	
 	private EntityManager entityManager;
+	
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public Boolean execute(final IndexContext indexContext) {
+		if (DONE) {
+			return Boolean.FALSE;
+		}
 		if (!indexContext.getIndexName().equals(GEOSPATIAL)) {
 			return Boolean.FALSE;
 		}
+		DONE = Boolean.TRUE;
 		logger.info("Running the enrichment : ");
 		getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getName(), Boolean.TRUE);
 		try {

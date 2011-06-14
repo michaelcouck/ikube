@@ -37,7 +37,7 @@
 		<ref bean="ikube.action.DiskFull" />
 		<ref bean="ikube.action.Validator" />
 		<ref bean="ikube.action.Searcher" />
-		<ref bean="ikube.action.Enrichment" />
+		<!-- <ref bean="ikube.action.Enrichment" /> -->
 	</util:list>
 
 	<bean 
@@ -228,18 +228,22 @@
 		id="ikube.action.Searcher" 
 		class="ikube.action.Searcher" 
 		property:ruleExpression="
-			!AnyServersWorking &#38;&#38;
-			!IsThisServerWorking"
+			!IsThisServerWorking &#38;&#38; 
+			AreIndexesCreated &#38;&#38; 
+			IsMultiSearcherInitialised"
 		property:fragment="true"
 		property:start="0"
 		property:end="10"
 		property:searchString="cape town"
 		property:resultsSizeMinimum="2"
-		property:iterations="10">
+		property:iterations="100">
 		<property name="rules">
 			<util:list>
 				<ref local="ikube.action.rule.AnyServersWorking" />
 				<ref local="ikube.action.rule.IsThisServerWorking" />
+				<ref local="ikube.action.rule.IsThisIndexCreated" />
+				<ref local="ikube.action.rule.AreIndexesCreated" />
+				<ref local="ikube.action.rule.IsMultiSearcherInitialised" />
 			</util:list>
 		</property>
 	</bean>

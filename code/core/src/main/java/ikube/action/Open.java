@@ -42,7 +42,12 @@ public class Open extends Action<IndexContext, Boolean> {
 		if (indexContext.getInMemory()) {
 			return openInMemory(indexContext);
 		}
-		return openOnFile(indexContext);
+		try {
+			getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getName(), Boolean.TRUE);
+			return openOnFile(indexContext);
+		} finally {
+			getClusterManager().setWorking(indexContext.getIndexName(), "", Boolean.FALSE);
+		}
 	}
 
 	private boolean openOnFile(final IndexContext indexContext) {

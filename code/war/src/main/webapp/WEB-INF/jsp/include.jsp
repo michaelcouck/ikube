@@ -5,21 +5,22 @@
 
 	<tr>
 		<td>
-			From : <c:out value='${requestScope.firstResult + 1}' />,
+			From : <c:out value='${firstResult + 1}' />,
 			<c:set var="toResults" value="0" />			
 			<c:choose>
 				<c:when 
-					test="${requestScope.firstResult + requestScope.maxResults > requestScope.total}">
-					<c:set var="toResults" value="${requestScope.firstResult + ((requestScope.total - requestScope.maxResults) % requestScope.maxResults)}" />
+					test="${firstResult + maxResults > total}">
+					<c:set var="toResults" 
+						value="${firstResult + ((total - maxResults) % maxResults)}" />
 				</c:when>
 				<c:otherwise>
-					<c:set var="toResults" value="${requestScope.firstResult + requestScope.maxResults}" />
+					<c:set var="toResults" value="${firstResult + maxResults}" />
 				</c:otherwise>
 			</c:choose>
 			to : <c:out value='${toResults}' />,
-			total : <c:out value='${requestScope.total}' />,
-			for '<c:out value='${requestScope.searchStrings}' />',
-			took <c:out value='${requestScope.duration}' /> ms<br /><br />
+			total : <c:out value='${total}' />,
+			for '<c:out value='${searchStrings}' />',
+			took <c:out value='${duration}' /> ms<br /><br />
 		</td>
 	</tr>
 	<tr>
@@ -27,7 +28,7 @@
 			<!--
 				
 			-->
-			<c:forEach var="map" items="${requestScope.results}">
+			<c:forEach var="map" items="${results}">
 				Title : <a style="color : #8F8F8F;" href="<c:out value="${map['id']}" />"><c:out value="${map['title']}" /></a><br />
 				Fragment : <c:out value="${map['fragment']}" escapeXml="false" /><br />
 				Url : <c:out value="${map['id']}" /><br />
@@ -44,9 +45,10 @@
 	</tr>
 	<tr>
 		<td>
-			<c:forEach var="i" begin="0" end="${requestScope.total}" varStatus="counter">  
+			<c:forEach var="i" begin="0" end="${total}" varStatus="counter">  
   				<c:if test="${i % 10 == 0}">
-  					<a href="<c:url value="/results.html"  />?indexName=${requestScope.indexName}&content=${requestScope.searchStrings}&fragment=true&firstResult=${i}">${i}</a>
+  					<a href="<c:url 
+  						value="/results.html"  />?indexName=${indexName}&content=${searchStrings}&fragment=true&firstResult=${i}">${i}</a>
   				</c:if>
 			</c:forEach> 
 		</td>

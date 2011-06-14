@@ -21,17 +21,17 @@
 	
 	<tr>
 		<td class="td-content">Address</td>
-		<td class="td-content"><c:out value="${requestScope.server.address}" /></td>
+		<td class="td-content"><c:out value="${server.address}" /></td>
 	</tr>
 	
 	<tr>
 		<td class="td-content">Working</td>
-		<td class="td-content"><c:out value="${requestScope.server.working}" /></td>
+		<td class="td-content"><c:out value="${server.working}" /></td>
 	</tr>
 	<tr>
 		<td class="td-content">Web service urls</td>
 		<td class="td-content">
-			<c:forEach var="webServiceUrl" items="${requestScope.webServiceUrls}">
+			<c:forEach var="webServiceUrl" items="${webServiceUrls}">
 				<a href="<c:out value="${webServiceUrl}" />">
 					<c:out value="${webServiceUrl}" />
 				</a><br>
@@ -41,7 +41,7 @@
 	<tr>
 		<td class="td-content">Actions</td>
 		<td class="td-content">
-			<c:forEach var="action" items="${requestScope.actions}">
+			<c:forEach var="action" items="${actions}">
 				indexable: <c:out value="${action.indexName}" />, 
 				name: <c:out value="${action.indexableName}" />, 
 				id number: <c:out value="${action.idNumber}" />, 
@@ -58,10 +58,10 @@
 		<th class="td-content">Attributes</th>
 	</tr>
 	
-	<c:forEach var="indexContext" items="${requestScope.indexContexts}">
+	<c:forEach var="indexContext" items="${indexContexts}">
 	<tr>
 		<td class="td-content">
-			<a href="<c:url value="/admin/search.html"/>?address=${requestScope.server.address}&indexName=${indexContext.indexName}">${indexContext.indexName}</a>
+			<a href="<c:url value="/admin/search.html"/>?address=${server.address}&indexName=${indexContext.indexName}">${indexContext.indexName}</a>
 		</td>
 		<td class="td-content">
 			documents: ${requestScope[indexContext.indexName]['indexDocuments']},<br>

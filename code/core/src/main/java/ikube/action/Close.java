@@ -20,30 +20,36 @@ public class Close extends Action<IndexContext, Boolean> {
 
 	@Override
 	public Boolean execute(final IndexContext indexContext) {
-		MultiSearcher multiSearcher = indexContext.getIndex().getMultiSearcher();
-		// Get all the searchables from the searcher and close them one by one
-		Searchable[] searchables = multiSearcher.getSearchables();
-		if (searchables != null && searchables.length > 0) {
-			for (Searchable searchable : searchables) {
-				try {
-					IndexSearcher indexSearcher = (IndexSearcher) searchable;
-					IndexReader reader = indexSearcher.getIndexReader();
-					Directory directory = reader.directory();
-					if (IndexWriter.isLocked(directory)) {
-						IndexWriter.unlock(directory);
+
+		try {
+			getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getName(), Boolean.TRUE);
+			MultiSearcher multiSearcher = indexContext.getIndex().getMultiSearcher();
+			// Get all the searchables from the searcher and close them one by one
+			Searchable[] searchables = multiSearcher.getSearchables();
+			if (searchables != null && searchables.length > 0) {
+				for (Searchable searchable : searchables) {
+					try {
+						IndexSearcher indexSearcher = (IndexSearcher) searchable;
+						IndexReader reader = indexSearcher.getIndexReader();
+						Directory directory = reader.directory();
+						if (IndexWriter.isLocked(directory)) {
+							IndexWriter.unlock(directory);
+						}
+						reader.close();
+						searchable.close();
+					} catch (Exception e) {
+						logger.error("Exception trying to close the searcher", e);
 					}
-					reader.close();
-					searchable.close();
-				} catch (Exception e) {
-					logger.error("Exception trying to close the searcher", e);
 				}
 			}
+			// Set the searcher to null so the open action
+			// will then be invoked to re-open the searcher
+			// during the next iteration over the actions
+			indexContext.getIndex().setMultiSearcher(null);
+			return Boolean.TRUE;
+		} finally {
+			getClusterManager().setWorking(indexContext.getIndexName(), "", Boolean.FALSE);
 		}
-		// Set the searcher to null so the open action
-		// will then be invoked to re-open the searcher
-		// during the next iteration over the actions
-		indexContext.getIndex().setMultiSearcher(null);
-		return Boolean.TRUE;
 	}
 
 }
