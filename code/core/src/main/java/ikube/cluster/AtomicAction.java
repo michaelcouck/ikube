@@ -3,9 +3,6 @@ package ikube.cluster;
 import ikube.IConstants;
 import ikube.toolkit.Logging;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-import java.util.LinkedList;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
@@ -24,8 +21,8 @@ public abstract class AtomicAction implements IAtomicAction, IConstants {
 
 	private static final Logger LOGGER = Logger.getLogger(AtomicAction.class);
 
-	private static final int MAX_STACK_TRACES_SIZE = 25;
-	private static final LinkedList<String> STACK_TRACES = new LinkedList<String>();
+	// private static final int MAX_STACK_TRACES_SIZE = 25;
+	// private static final LinkedList<String> STACK_TRACES = new LinkedList<String>();
 
 	/**
 	 * TODO Document me.
@@ -34,14 +31,13 @@ public abstract class AtomicAction implements IAtomicAction, IConstants {
 	 * @param atomicAction
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
-	public static synchronized <T> T executeAction(String lockName, IAtomicAction atomicAction) {
+	public static synchronized Object executeAction(String lockName, IAtomicAction atomicAction) {
 		ILock lock = AtomicAction.lock(lockName);
 		try {
 			if (lock == null) {
 				return null;
 			}
-			return (T) atomicAction.execute();
+			return atomicAction.execute();
 		} finally {
 			AtomicAction.unlock(lock);
 			AtomicAction.class.notifyAll();
@@ -64,17 +60,18 @@ public abstract class AtomicAction implements IAtomicAction, IConstants {
 				LOGGER.error("Interrupted acquiring lock for : " + lockName, e);
 			}
 			if (!acquired) {
-				LOGGER.warn(Logging.getString("Failed to acquire lock : ", lockName, lock, STACK_TRACES.getLast()));
+				// STACK_TRACES.getLast()
+				LOGGER.warn(Logging.getString("Failed to acquire lock : ", lockName, lock));
 				Thread.dumpStack();
 				return null;
 			}
 			LOGGER.debug(Logging.getString("Acquired lock : ", lockName, lock));
-			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-			new Throwable().printStackTrace(new PrintStream(outputStream));
-			STACK_TRACES.addLast(outputStream.toString());
-			while (STACK_TRACES.size() > MAX_STACK_TRACES_SIZE) {
-				STACK_TRACES.remove();
-			}
+			// ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+			// new Throwable().printStackTrace(new PrintStream(outputStream));
+			// STACK_TRACES.addLast(outputStream.toString());
+			// while (STACK_TRACES.size() > MAX_STACK_TRACES_SIZE) {
+			// STACK_TRACES.remove();
+			// }
 			return lock;
 		} finally {
 			// What can we do here if there is an exception?

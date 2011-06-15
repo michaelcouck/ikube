@@ -24,7 +24,7 @@ public class Clean<E, F> extends Action<IndexContext, Boolean> {
 	@Override
 	public Boolean execute(final IndexContext indexContext) {
 		try {
-			getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getName(), Boolean.TRUE);
+			// getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getName(), Boolean.TRUE);
 			String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
 			File baseIndexDirectory = FileUtilities.getFile(indexDirectoryPath, Boolean.TRUE);
 			File[] timeIndexDirectories = baseIndexDirectory.listFiles();
@@ -91,7 +91,7 @@ public class Clean<E, F> extends Action<IndexContext, Boolean> {
 			}
 			return Boolean.TRUE;
 		} finally {
-			getClusterManager().setWorking(indexContext.getIndexName(), "", Boolean.FALSE);
+			getClusterManager().setWorking(this.getClass().getName(), indexContext.getIndexName(), "", Boolean.FALSE);
 		}
 	}
 

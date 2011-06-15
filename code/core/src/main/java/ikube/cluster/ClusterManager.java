@@ -47,25 +47,18 @@ public class ClusterManager implements IClusterManager, IConstants {
 			if (!event.getType().equals(Event.CLEAN)) {
 				return;
 			}
-			AtomicAction.executeAction(SERVER_LOCK, new IAtomicAction() {
-				@Override
-				public Object execute() {
-					Server server = getServer();
-					// Remove all servers that are past the max age
-					List<Server> servers = getServers();
-					for (Server remoteServer : servers) {
-						if (remoteServer.getAddress().equals(server.getAddress())) {
-							continue;
-						}
-						if (System.currentTimeMillis() - remoteServer.getAge() > MAX_AGE) {
-							LOGGER.info("Removing server : " + remoteServer + ", "
-									+ (System.currentTimeMillis() - remoteServer.getAge() > MAX_AGE));
-							remove(Server.class.getName(), remoteServer.getId());
-						}
-					}
-					return Boolean.TRUE;
+			Server server = getServer();
+			// Remove all servers that are past the max age
+			List<Server> servers = getServers();
+			for (Server remoteServer : servers) {
+				if (remoteServer.getAddress().equals(server.getAddress())) {
+					continue;
 				}
-			});
+				if (System.currentTimeMillis() - remoteServer.getAge() > MAX_AGE) {
+					LOGGER.info("Removing server : " + remoteServer + ", " + (System.currentTimeMillis() - remoteServer.getAge() > MAX_AGE));
+					remove(Server.class.getName(), remoteServer.getId());
+				}
+			}
 		}
 	};
 
@@ -78,23 +71,17 @@ public class ClusterManager implements IClusterManager, IConstants {
 			if (!event.getType().equals(Event.ALIVE)) {
 				return;
 			}
-			AtomicAction.executeAction(SERVER_LOCK, new IAtomicAction() {
-				@Override
-				public Object execute() {
-					// Set our own server age
-					Server server = getServer();
-					// Add the tail end of the log to the server
-					// File logFile = Logging.getLogFile();
-					// if (logFile != null && logFile.exists() && logFile.canRead()) {
-					// String logTail = FileUtilities.getContentsFromEnd(logFile, 20000).toString();
-					// server.setLogTail(logTail);
-					// }
-					server.setAge(System.currentTimeMillis());
-					LOGGER.info("Publishing server : " + server.getAddress());
-					set(Server.class.getName(), server.getId(), server);
-					return Boolean.TRUE;
-				}
-			});
+			// Set our own server age
+			Server server = getServer();
+			// Add the tail end of the log to the server
+			// File logFile = Logging.getLogFile();
+			// if (logFile != null && logFile.exists() && logFile.canRead()) {
+			// String logTail = FileUtilities.getContentsFromEnd(logFile, 20000).toString();
+			// server.setLogTail(logTail);
+			// }
+			server.setAge(System.currentTimeMillis());
+			LOGGER.info("Publishing server : " + server.getAddress());
+			set(Server.class.getName(), server.getId(), server);
 		}
 	};
 
@@ -105,8 +92,6 @@ public class ClusterManager implements IClusterManager, IConstants {
 	 * of a hash clash with any other server is in the billions, we will disregard this possibility on prudent grounds.
 	 */
 	private transient String address;
-	/** The server object for this server. */
-	// private transient Server server;
 	/** The cluster wide cache. */
 	protected transient ICache cache;
 	/** This flag is set cluster wide to make exception for the rules. */
@@ -140,8 +125,7 @@ public class ClusterManager implements IClusterManager, IConstants {
 	 */
 	@Override
 	public boolean anyWorking() {
-		// cache.get(Server.class.getName(), null, null, Integer.MAX_VALUE);
-		boolean anyWorking = Boolean.FALSE;
+		Boolean anyWorking = Boolean.FALSE;
 		Server server = getServer();
 		List<Server> servers = getServers();
 		for (Server other : servers) {
@@ -161,7 +145,7 @@ public class ClusterManager implements IClusterManager, IConstants {
 	 */
 	@Override
 	public boolean anyWorking(final String indexName) {
-		boolean anyWorking = Boolean.FALSE;
+		Boolean anyWorking = Boolean.FALSE;
 		List<Server> servers = getServers();
 		outer: for (Server server : servers) {
 			if (server.getWorking()) {
@@ -190,26 +174,6 @@ public class ClusterManager implements IClusterManager, IConstants {
 		// TODO Have another look at this, surely this can be simplified, but be careful
 		long idNumber = 0;
 		// cache.get(Server.class.getName(), null, null, Integer.MAX_VALUE);
-		List<Server> servers = getServers();
-		// We look for the largest row id from any of the servers, from the last action in each server
-		// that has the name of the action that we are looking for
-		for (Server server : servers) {
-			List<Action> actions = server.getActions();
-			// Iterate from the end to the front
-			for (int i = actions.size() - 1; i >= 0; i--) {
-				Action action = actions.get(i);
-				// logger.info("Action : " + action + ", server : " + server.getAddress());
-				if (action.getIndexableName().equals(indexableName) && action.getIndexName().equals(indexName)) {
-					if (action.getIdNumber() > idNumber) {
-						idNumber = action.getIdNumber();
-					}
-					// We break when we get to the first action in this server that
-					// corresponds to the index that we are going to create and the
-					// action that we want to execute
-					break;
-				}
-			}
-		}
 		// We find the action for this server
 		Server server = getServer();
 		List<Action> actions = server.getActions();
@@ -219,6 +183,7 @@ public class ClusterManager implements IClusterManager, IConstants {
 			Action action = actions.get(i);
 			if (action.getIndexableName().equals(indexableName) && action.getIndexName().equals(indexName)) {
 				currentAction = action;
+				idNumber = currentAction.getIdNumber();
 				break;
 			}
 		}
@@ -258,17 +223,17 @@ public class ClusterManager implements IClusterManager, IConstants {
 	@Override
 	public Server getServer() {
 		// if (this.server == null) {
-			Server server = cache.get(Server.class.getName(), HashUtilities.hash(address));
-			if (server == null) {
-				server = new Server();
-				server.setIp(ip);
-				server.setAddress(address);
-				server.setId(HashUtilities.hash(address));
-				server.setAge(System.currentTimeMillis());
-				cache.set(Server.class.getName(), server.getId(), server);
-				LOGGER.info("Published server : " + server);
-				LOGGER.info("Server from cache : " + cache.get(Server.class.getName(), server.getId()));
-			}
+		Server server = cache.get(Server.class.getName(), HashUtilities.hash(address));
+		if (server == null) {
+			server = new Server();
+			server.setIp(ip);
+			server.setAddress(address);
+			server.setId(HashUtilities.hash(address));
+			server.setAge(System.currentTimeMillis());
+			cache.set(Server.class.getName(), server.getId(), server);
+			LOGGER.info("Published server : " + server);
+			LOGGER.info("Server from cache : " + cache.get(Server.class.getName(), server.getId()));
+		}
 		// }
 		return server;
 	}
@@ -277,24 +242,27 @@ public class ClusterManager implements IClusterManager, IConstants {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public long setWorking(final String indexName, final String indexableName, final boolean isWorking) {
+	public long setWorking(final String actionName, final String indexName, final String indexableName, final boolean isWorking) {
 		// Set the server working and the new action in the list
 		Server server = getServer();
-		server.setWorking(isWorking);
 		set(Server.class.getName(), server.getId(), server);
-		long firstStartTime = System.currentTimeMillis();
-		List<Server> servers = getServers();
-		// Find the first start time for the action we want to start in any of the servers
-		for (Server other : servers) {
-			LOGGER.debug("Server : " + other);
-			for (Action action : other.getActions()) {
-				if (indexName.equals(action.getIndexName()) && indexableName.equals(action.getIndexableName()) && other.getWorking()) {
+		Long firstStartTime = System.currentTimeMillis();
+		if (!"".equals(indexableName)) {
+			boolean set = Boolean.FALSE;
+			// Find the action that we are setting
+			for (Action action : server.getActions()) {
+				if (action.getActionName().equals(actionName) && action.getIndexName().equals(indexName)
+						&& action.getIndexableName().equals(indexableName)) {
 					firstStartTime = Math.min(firstStartTime, action.getStartTime());
+					set = Boolean.TRUE;
+					action.setWorking(isWorking);
+					break;
 				}
 			}
-		}
-		if (!"".equals(indexableName)) {
-			server.getActions().add(server.new Action(0, indexableName, indexName, firstStartTime));
+			if (!set) {
+				// Couldn't find the action, create a new one
+				server.getActions().add(server.new Action(0, actionName, indexableName, indexName, firstStartTime, isWorking));
+			}
 		}
 		// Publish the fact that this server is starting to work on an action
 		LOGGER.debug("Publishing server working : " + server.getAddress());

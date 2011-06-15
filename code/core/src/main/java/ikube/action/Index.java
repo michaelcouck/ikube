@@ -29,10 +29,11 @@ public class Index extends Action<IndexContext, Boolean> {
 	@Override
 	public Boolean execute(final IndexContext indexContext) throws Exception {
 		String indexName = indexContext.getIndexName();
-		long lastWorkingStartTime = getClusterManager().setWorking(indexName, this.getClass().getName(), Boolean.TRUE);
+		long lastWorkingStartTime = getClusterManager()
+				.setWorking(this.getClass().getName(), indexContext.getIndexName(), "", Boolean.TRUE);
 		if (lastWorkingStartTime <= 0) {
 			logger.warn("Failed to join the cluster indexing : " + indexContext);
-			getClusterManager().setWorking(indexName, "", Boolean.FALSE);
+			getClusterManager().setWorking(this.getClass().getName(), indexContext.getIndexName(), "", Boolean.FALSE);
 			return Boolean.FALSE;
 		}
 		Server server = getClusterManager().getServer();
@@ -58,7 +59,7 @@ public class Index extends Action<IndexContext, Boolean> {
 						// continue;
 						// }
 						// Execute the handler and wait for the threads to finish
-						getClusterManager().setWorking(indexName, indexable.getName(), Boolean.TRUE);
+						// getClusterManager().setWorking(indexName, indexable.getName(), Boolean.TRUE);
 						logger.info("Executing handler : " + handler + ", " + indexable.getName());
 						List<Thread> threads = handler.handle(indexContext, indexable);
 						if (threads != null && !threads.isEmpty()) {
@@ -72,7 +73,7 @@ public class Index extends Action<IndexContext, Boolean> {
 			}
 		} finally {
 			IndexManager.closeIndexWriter(indexContext);
-			getClusterManager().setWorking(indexName, "", Boolean.FALSE);
+			getClusterManager().setWorking(this.getClass().getName(), indexContext.getIndexName(), "", Boolean.FALSE);
 		}
 		String contextName = indexContext.getIndexName();
 		logger.debug(Logging.getString("Finished indexing : ", indexName, contextName));

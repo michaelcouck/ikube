@@ -22,25 +22,25 @@ public class Reset extends Action<IndexContext, Boolean> {
 	@Override
 	public Boolean execute(final IndexContext indexContext) {
 		try {
-			getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getName(), Boolean.TRUE);
+			// getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getName(), Boolean.TRUE);
 			List<Server> servers = getClusterManager().getServers();
+			boolean anyWorking = Boolean.FALSE;
 			for (Server server : servers) {
-				// This is a double check on the xorking flag
+				// This is a double check on the working flag
 				if (server.getWorking()) {
+					anyWorking = Boolean.TRUE;
 					continue;
 				}
 				server.getActions().clear();
 				getClusterManager().set(Server.class.getName(), server.getId(), server);
 			}
-			Server server = getClusterManager().getServer();
-			server.getActions().clear();
-			getClusterManager().set(Server.class.getName(), server.getId(), server);
-
-			getClusterManager().clear(IConstants.URL);
-			getClusterManager().clear(IConstants.URL_DONE);
-			getClusterManager().clear(IConstants.URL_HASH);
+			if (!anyWorking) {
+				getClusterManager().clear(IConstants.URL);
+				getClusterManager().clear(IConstants.URL_DONE);
+				getClusterManager().clear(IConstants.URL_HASH);
+			}
 		} finally {
-			getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getName(), Boolean.FALSE);
+			getClusterManager().setWorking(this.getClass().getName(), indexContext.getIndexName(), "", Boolean.FALSE);
 		}
 		return Boolean.TRUE;
 	}

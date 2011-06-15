@@ -3,7 +3,10 @@ package ikube.action.rule;
 import ikube.IConstants;
 import ikube.action.IAction;
 import ikube.cluster.AtomicAction;
+import ikube.cluster.IClusterManager;
 import ikube.model.IndexContext;
+import ikube.model.Indexable;
+import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.Logging;
 
 import java.util.List;
@@ -42,14 +45,16 @@ public class RuleInterceptor implements IRuleInterceptor {
 		JEP jep = new JEP();
 		Object result = null;
 		String predicate = null;
-		boolean proceed = Boolean.FALSE;
+		Indexable<?> indexable = null;
 		IndexContext indexContext = null;
 		Object target = proceedingJoinPoint.getTarget();
+		boolean proceed = Boolean.FALSE;
 		try {
 			if (LOGGER.isDebugEnabled()) {
 				LOGGER.debug("Intercepting : " + target);
 			}
 			if (lock == null) {
+				LOGGER.info("Couldn't aquire lock : ");
 				proceed = Boolean.FALSE;
 			} else if (!IAction.class.isAssignableFrom(target.getClass())) {
 				LOGGER.warn("Can't intercept non action class, proceeding : " + target);
@@ -64,11 +69,16 @@ public class RuleInterceptor implements IRuleInterceptor {
 				} else {
 					Object[] args = proceedingJoinPoint.getArgs();
 					for (Object arg : args) {
-						if (arg != null && IndexContext.class.isAssignableFrom(arg.getClass())) {
-							indexContext = (IndexContext) arg;
+						if (arg != null) {
+							if (IndexContext.class.isAssignableFrom(arg.getClass())) {
+								indexContext = (IndexContext) arg;
+								if (indexContext.getIndexables().size() > 0) {
+									indexable = indexContext.getIndexables().get(0);
+								}
+							}
 						}
 					}
-					if (indexContext != null) {
+					if (indexContext != null || indexable == null) {
 						for (IRule<IndexContext> rule : classRules) {
 							boolean evaluation = rule.evaluate(indexContext);
 							String parameter = rule.getClass().getSimpleName();
@@ -98,12 +108,12 @@ public class RuleInterceptor implements IRuleInterceptor {
 							proceed = Boolean.TRUE;
 						}
 					} else {
-						LOGGER.warn("Couldn't find the index context : " + proceedingJoinPoint);
+						LOGGER.warn("Couldn't find the index context or indexable : " + proceedingJoinPoint);
 					}
 				}
 			}
 			if (proceed) {
-				proceed(proceedingJoinPoint, indexContext.getIndexName(), "");
+				proceed(proceedingJoinPoint, target.getClass().getName(), indexContext.getIndexName(), indexable.getName());
 			}
 		} catch (Throwable t) {
 			LOGGER.error("Exception evaluating the rules : ", t);
@@ -114,19 +124,20 @@ public class RuleInterceptor implements IRuleInterceptor {
 		return proceed;
 	}
 
-	protected void proceed(final ProceedingJoinPoint proceedingJoinPoint, final String indexName, final String indexableName) {
+	protected void proceed(final ProceedingJoinPoint proceedingJoinPoint, final String actionName, final String indexName,
+			final String indexableName) {
 		long delay = 1;
+		final IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
+		clusterManager.setWorking(actionName, indexName, indexableName, Boolean.TRUE);
 		final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
 		executorService.schedule(new Runnable() {
 			public void run() {
-				// IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
 				try {
-					// clusterManager.setWorking(indexName, indexableName, Boolean.TRUE);
 					proceedingJoinPoint.proceed();
 				} catch (Throwable e) {
 					LOGGER.error("Exception proceeding on join point : " + proceedingJoinPoint, e);
 				} finally {
-					// clusterManager.setWorking(indexName, indexableName, Boolean.FALSE);
+					clusterManager.setWorking(actionName, indexName, indexableName, Boolean.FALSE);
 				}
 			}
 		}, delay, TimeUnit.MILLISECONDS);

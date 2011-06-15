@@ -18,8 +18,9 @@ public class AtomicActionTest extends ATest {
 
 	private IAtomicAction atomicAction = new IAtomicAction() {
 		@Override
-		public Object execute() {
-			return Boolean.TRUE;
+		@SuppressWarnings("unchecked")
+		public <T> T execute() {
+			return (T) Boolean.TRUE;
 		}
 	};
 

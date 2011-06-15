@@ -5,10 +5,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import ikube.BaseTest;
 import ikube.IConstants;
+import ikube.action.Index;
 import ikube.cluster.IClusterManager;
 import ikube.model.Indexable;
 import ikube.model.IndexableColumn;
 import ikube.model.IndexableTable;
+import ikube.model.Server;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.DatabaseUtilities;
 import ikube.toolkit.ThreadUtilities;
@@ -56,12 +58,18 @@ public class IndexableTableHandlerTest extends BaseTest {
 		faqIdIndexableColumn = indexableTableHandler.getIdColumn(faqIndexableColumns);
 
 		connection = ((DataSource) ApplicationContextManager.getBean("nonXaDataSourceH2")).getConnection();
+
+		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
+		clusterManager.setWorking(Index.class.getName(), indexContext.getIndexName(), faqIndexableTable.getName(), Boolean.FALSE);
 	}
 
 	@After
 	public void after() {
 		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
-		clusterManager.setWorking(indexContext.getIndexName(), faqIndexableTable.getName(), Boolean.FALSE);
+		clusterManager.setWorking(Index.class.getName(), indexContext.getIndexName(), faqIndexableTable.getName(), Boolean.FALSE);
+		Server server = clusterManager.getServer();
+		server.getActions().clear();
+		clusterManager.set(Server.class.getName(), server.getId(), server);
 	}
 
 	@Test
@@ -79,7 +87,7 @@ public class IndexableTableHandlerTest extends BaseTest {
 		indexContext.setBatchSize(10);
 		String expectedSql = "select faq.faqId, faq.creationtimestamp, faq.modifiedtimestamp, "
 				+ "faq.creator, faq.modifier, faq.question, faq.answer, faq.published from faq";
-		//  where faq.faqid > 0 and published = 1 and faq.faqId >= 0 and faq.faqId < 10
+		// where faq.faqid > 0 and published = 1 and faq.faqId >= 0 and faq.faqId < 10
 		// IndexContext, IndexableTable, long
 		long nextIdNumber = 0;
 		String sql = indexableTableHandler.buildSql(faqIndexableTable, indexContext.getBatchSize(), nextIdNumber);

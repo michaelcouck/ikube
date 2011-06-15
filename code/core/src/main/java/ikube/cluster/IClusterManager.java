@@ -16,20 +16,6 @@ import java.util.List;
 public interface IClusterManager {
 
 	/**
-	 * Sets the server working on this index and this indexable.
-	 * 
-	 * @param indexName
-	 *            the name of the index that this server will work on
-	 * @param indexableName
-	 *            the name of the currently executing indexable
-	 * @param isWorking
-	 *            whether the server is working or not
-	 * @return this method returns the first time that was registered for any server that has executed this index and this indexable. This
-	 *         needs to be in one method so that the servers can be locked before this operation
-	 */
-	long setWorking(String indexName, String indexableName, boolean isWorking);
-
-	/**
 	 * @return whether there are any servers in the cluster that are working excluding this one. If this server is working then the server
 	 *         must be retrieved with the {@link IClusterManager#getServer()} and check the {@link Server#getWorking()} method
 	 */
@@ -39,6 +25,22 @@ public interface IClusterManager {
 	 * @return whether there are any servers in the cluster that are working on this index
 	 */
 	boolean anyWorking(String indexName);
+
+	/**
+	 * Sets the server working on this index and this indexable.
+	 * 
+	 * @param actionName
+	 *            the name of the action currently executing
+	 * @param indexName
+	 *            the name of the index that this server will work on
+	 * @param indexableName
+	 *            the name of the currently executing indexable
+	 * @param isWorking
+	 *            whether the server is working or not
+	 * @return this method returns the first time that was registered for any server that has executed this index and this indexable. This
+	 *         needs to be in one method so that the servers can be locked before this operation
+	 */
+	long setWorking(String actionName, String indexName, String indexableName, boolean isWorking);
 
 	/**
 	 * Returns the next id from one of the servers. The id would be the id in the table for this index.
@@ -53,19 +55,6 @@ public interface IClusterManager {
 	 * @return the id of the next row in the table for this index
 	 */
 	long getIdNumber(String indexableName, String indexName, long batchSize, long minId);
-
-	/**
-	 * Checks whether this indexable has already been handled, could be a file share that is not clusterable and only needs to be indexed by
-	 * one thread.
-	 * 
-	 * @param indexableName
-	 *            the name of the indexable
-	 * @param indexName
-	 *            the name of the index
-	 * @return whether this indexable has been handled
-	 */
-	@Deprecated
-	boolean isHandled(String indexableName, String indexName);
 
 	/**
 	 * @return the servers in the cluster
@@ -114,8 +103,31 @@ public interface IClusterManager {
 	 */
 	<T> void remove(String name, Long id);
 
+	/**
+	 * TODO Document me!
+	 * 
+	 * @return
+	 */
 	boolean isException();
 
+	/**
+	 * TODO Document me!
+	 * 
+	 * @param exception
+	 */
 	void setException(boolean exception);
+
+	/**
+	 * Checks whether this indexable has already been handled, could be a file share that is not clusterable and only needs to be indexed by
+	 * one thread.
+	 * 
+	 * @param indexableName
+	 *            the name of the indexable
+	 * @param indexName
+	 *            the name of the index
+	 * @return whether this indexable has been handled
+	 */
+	@Deprecated
+	boolean isHandled(String indexableName, String indexName);
 
 }

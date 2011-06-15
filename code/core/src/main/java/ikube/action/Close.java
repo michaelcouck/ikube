@@ -22,7 +22,7 @@ public class Close extends Action<IndexContext, Boolean> {
 	public Boolean execute(final IndexContext indexContext) {
 
 		try {
-			getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getName(), Boolean.TRUE);
+			// getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getName(), Boolean.TRUE);
 			MultiSearcher multiSearcher = indexContext.getIndex().getMultiSearcher();
 			// Get all the searchables from the searcher and close them one by one
 			Searchable[] searchables = multiSearcher.getSearchables();
@@ -48,7 +48,7 @@ public class Close extends Action<IndexContext, Boolean> {
 			indexContext.getIndex().setMultiSearcher(null);
 			return Boolean.TRUE;
 		} finally {
-			getClusterManager().setWorking(indexContext.getIndexName(), "", Boolean.FALSE);
+			getClusterManager().setWorking(this.getClass().getName(), indexContext.getIndexName(), "", Boolean.FALSE);
 		}
 	}
 

@@ -26,7 +26,7 @@ public class Validator extends Action<IndexContext, Boolean> {
 	@Override
 	public Boolean execute(final IndexContext indexContext) {
 		try {
-			getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getName(), Boolean.TRUE);
+			// getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getName(), Boolean.TRUE);
 			// Conditions:
 			// 1) There is an index but it is locked, i.e. an index is running
 			// 2) There are two indexes and one is locked
@@ -92,7 +92,7 @@ public class Validator extends Action<IndexContext, Boolean> {
 			String body = "No indexes generated or in the process of being generated for index context : " + indexContext.getIndexName();
 			sendNotification(indexContext, subject, body);
 		} finally {
-			getClusterManager().setWorking(indexContext.getIndexName(), "", Boolean.FALSE);
+			getClusterManager().setWorking(this.getClass().getName(), indexContext.getIndexName(), "", Boolean.FALSE);
 		}
 		return Boolean.TRUE;
 	}

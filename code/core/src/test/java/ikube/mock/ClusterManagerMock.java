@@ -1,7 +1,6 @@
 package ikube.mock;
 
-import static org.mockito.Mockito.*;
-
+import static org.mockito.Mockito.mock;
 import ikube.cluster.ClusterManager;
 import ikube.model.Server;
 import mockit.Mock;
@@ -23,7 +22,7 @@ public class ClusterManagerMock {
 	}
 
 	@Mock()
-	public synchronized long setWorking(final String indexName, final String indexableName, final boolean isWorking) {
+	public synchronized long setWorking(final String actionName, final String indexName, final String indexableName, final boolean isWorking) {
 		return System.currentTimeMillis();
 	}
 

@@ -19,7 +19,7 @@ public class Restore extends Action<IndexContext, Boolean> {
 	@Override
 	public Boolean execute(final IndexContext indexContext) {
 		try {
-			getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getName(), Boolean.TRUE);
+			// getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getName(), Boolean.TRUE);
 			// Get the latest backup index
 			File latestIndexDirectoryBackup = FileUtilities.getLatestIndexDirectory(indexContext.getIndexDirectoryPathBackup()
 					+ IConstants.SEP + indexContext.getIndexName());
@@ -32,7 +32,7 @@ public class Restore extends Action<IndexContext, Boolean> {
 			// Copy the backup to the index directory
 			FileUtilities.copyFiles(latestIndexDirectoryBackup, restoredIndexDirectory);
 		} finally {
-			getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getName(), Boolean.FALSE);
+			getClusterManager().setWorking(this.getClass().getName(), indexContext.getIndexName(), "", Boolean.FALSE);
 		}
 		return Boolean.TRUE;
 	}

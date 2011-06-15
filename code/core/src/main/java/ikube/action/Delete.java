@@ -22,14 +22,14 @@ public class Delete extends Action<IndexContext, Boolean> {
 	@Override
 	public Boolean execute(final IndexContext indexContext) {
 		try {
-			getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getName(), Boolean.TRUE);
+			// getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getName(), Boolean.TRUE);
 			String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
 			String indexDirectoryPathBackup = IndexManager.getIndexDirectoryPathBackup(indexContext);
 			boolean deletedBoth = deleteOldIndexes(indexDirectoryPath);
 			deletedBoth |= deleteOldIndexes(indexDirectoryPathBackup);
 			return deletedBoth;
 		} finally {
-			getClusterManager().setWorking(indexContext.getIndexName(), "", Boolean.FALSE);
+			getClusterManager().setWorking(this.getClass().getName(), indexContext.getIndexName(), "", Boolean.FALSE);
 		}
 	}
 

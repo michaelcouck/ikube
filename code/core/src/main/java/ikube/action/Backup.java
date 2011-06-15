@@ -22,22 +22,25 @@ public class Backup extends Action<IndexContext, Boolean> {
 	@Override
 	public Boolean execute(final IndexContext indexContext) {
 		try {
-			getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getName(), Boolean.TRUE);
+			// getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getName(), Boolean.TRUE);
 			File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexContext.getIndexDirectoryPath() + IConstants.SEP
 					+ indexContext.getIndexName());
 			String indexDirectoryPathBackup = IndexManager.getIndexDirectoryPathBackup(indexContext);
 			File latestIndexDirectoryBackup = FileUtilities.getFile(indexDirectoryPathBackup, Boolean.TRUE);
-			try {
-				logger.info("Backing up index from : " + latestIndexDirectory + ", to : " + latestIndexDirectoryBackup);
-				// Copy the index to the designated place on the network
-				FileUtils.copyDirectoryToDirectory(latestIndexDirectory, latestIndexDirectoryBackup);
-				// FileUtilities.copyFiles(latestIndexDirectory, latestIndexDirectoryBackup);
-			} catch (IOException e) {
-				logger.error("Exception backing up indexes : ", e);
-				return Boolean.FALSE;
+			if (latestIndexDirectory != null && latestIndexDirectory.exists() && latestIndexDirectoryBackup != null
+					&& latestIndexDirectoryBackup.exists()) {
+				try {
+					logger.info("Backing up index from : " + latestIndexDirectory + ", to : " + latestIndexDirectoryBackup);
+					// Copy the index to the designated place on the network
+					FileUtils.copyDirectoryToDirectory(latestIndexDirectory, latestIndexDirectoryBackup);
+					// FileUtilities.copyFiles(latestIndexDirectory, latestIndexDirectoryBackup);
+				} catch (IOException e) {
+					logger.error("Exception backing up indexes : ", e);
+					return Boolean.FALSE;
+				}
 			}
 		} finally {
-			getClusterManager().setWorking(indexContext.getIndexName(), "", Boolean.FALSE);
+			getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getName(), "", Boolean.FALSE);
 		}
 		return Boolean.TRUE;
 	}

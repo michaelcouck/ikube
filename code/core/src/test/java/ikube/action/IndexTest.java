@@ -34,7 +34,7 @@ public class IndexTest extends ATest {
 	public void before() {
 		Mockit.setUpMocks(IndexManagerMock.class, ApplicationContextManagerMock.class);
 		when(INDEX.getIndexWriter()).thenReturn(INDEX_WRITER);
-		when(CLUSTER_MANAGER.setWorking(anyString(), anyString(), anyBoolean())).thenReturn(System.currentTimeMillis());
+		when(CLUSTER_MANAGER.setWorking(anyString(), anyString(), anyString(), anyBoolean())).thenReturn(System.currentTimeMillis());
 	}
 
 	@After

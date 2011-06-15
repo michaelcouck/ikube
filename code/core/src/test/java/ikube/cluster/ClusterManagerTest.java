@@ -7,6 +7,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import ikube.ATest;
 import ikube.IConstants;
+import ikube.action.Index;
 import ikube.cluster.cache.Cache;
 import ikube.listener.ListenerManager;
 import ikube.model.Server;
@@ -34,6 +35,7 @@ public class ClusterManagerTest extends ATest {
 
 	private transient String indexName;
 	private transient String indexableName;
+	private transient String actionName = Index.class.getName();
 
 	private transient int batchSize = 10;
 
@@ -52,7 +54,7 @@ public class ClusterManagerTest extends ATest {
 		remoteServer = new Server();
 		remoteServer.setAddress(InetAddress.getLocalHost().getHostAddress() + ".remote");
 		remoteServer.setId(HashUtilities.hash(remoteServer.getAddress()));
-		remoteServer.setWorking(Boolean.FALSE);
+		// remoteServer.setWorking(Boolean.FALSE);
 
 		Cache cache = new Cache();
 		clusterManager = new ClusterManager(cache);
@@ -218,8 +220,8 @@ public class ClusterManagerTest extends ATest {
 		// method and the time gets set at that time too
 		final long expectedStartTime = System.currentTimeMillis();
 		// Set a remote server working
-		remoteServer.setWorking(Boolean.TRUE);
-		remoteServer.getActions().add(remoteServer.new Action(0, indexableName, indexName, expectedStartTime));
+		// remoteServer.setWorking(Boolean.TRUE);
+		remoteServer.getActions().add(remoteServer.new Action(0, actionName, indexableName, indexName, expectedStartTime, Boolean.TRUE));
 		clusterManager.set(Server.class.getName(), remoteServer.getId(), remoteServer);
 		// Verify that the remote server has the action and the time we want
 		Server server = clusterManager.get(Server.class.getName(), "id = " + remoteServer.getId());
@@ -235,11 +237,12 @@ public class ClusterManagerTest extends ATest {
 					for (int i = 0; i < 10; i++) {
 						AtomicAction.executeAction(IConstants.SERVER_LOCK, new IAtomicAction() {
 							@Override
-							public Object execute() {
-								long actualStartTime = clusterManager.setWorking(indexName, indexableName, Boolean.TRUE);
+							@SuppressWarnings("unchecked")
+							public <T> T execute() {
+								long actualStartTime = clusterManager.setWorking(actionName, indexName, indexableName, Boolean.TRUE);
 								logger.info("Actual start time : " + actualStartTime + ", expected start time : " + expectedStartTime);
 								assertEquals(expectedStartTime, actualStartTime);
-								return Boolean.TRUE;
+								return (T) Boolean.TRUE;
 							}
 						});
 					}
@@ -273,7 +276,7 @@ public class ClusterManagerTest extends ATest {
 	public void anyWorking() {
 		boolean anyWorking = clusterManager.anyWorking();
 		assertFalse("We haven't set any server working : ", anyWorking);
-		clusterManager.setWorking(indexName, indexableName, Boolean.TRUE);
+		clusterManager.setWorking(actionName, indexName, indexableName, Boolean.TRUE);
 		anyWorking = clusterManager.anyWorking();
 		assertFalse("This server should not be registered as working : ", anyWorking);
 	}
@@ -282,7 +285,7 @@ public class ClusterManagerTest extends ATest {
 	public void anyWorkingIndexName() {
 		boolean anyWorking = clusterManager.anyWorking(indexName);
 		assertFalse("There should be no servers working : ", anyWorking);
-		clusterManager.setWorking(indexName, indexableName, Boolean.TRUE);
+		clusterManager.setWorking(actionName, indexName, indexableName, Boolean.TRUE);
 		anyWorking = clusterManager.anyWorking(indexName);
 		assertTrue("This server should be working on the index now : ", anyWorking);
 	}
@@ -299,7 +302,7 @@ public class ClusterManagerTest extends ATest {
 	public void isHandled() {
 		boolean isHandled = clusterManager.isHandled(indexableName, indexName);
 		assertFalse("We haven't handled this indexable : ", isHandled);
-		clusterManager.setWorking(indexName, indexableName, Boolean.TRUE);
+		clusterManager.setWorking(actionName, indexName, indexableName, Boolean.TRUE);
 		isHandled = clusterManager.isHandled(indexableName, indexName);
 		assertTrue("This indexable is not handled : ", isHandled);
 	}
