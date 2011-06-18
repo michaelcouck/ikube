@@ -5,11 +5,13 @@ import ikube.database.IDataBase;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceContextType;
 import javax.persistence.Query;
+import javax.persistence.metamodel.EntityType;
 
 import org.apache.log4j.Logger;
 
@@ -24,7 +26,6 @@ public class DataBaseJpa implements IDataBase {
 
 	/** The logger for the bean. */
 	protected Logger logger = Logger.getLogger(DataBaseJpa.class);
-	/** Entity manager for the bean will be injected. */
 	@PersistenceContext(type = PersistenceContextType.TRANSACTION, unitName = IConstants.PERSISTENCE_UNIT_H2)
 	protected EntityManager entityManager;
 
@@ -42,6 +43,7 @@ public class DataBaseJpa implements IDataBase {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public <T> T persist(T object) {
 		if (object != null) {
 			entityManager.persist(object);
@@ -86,26 +88,40 @@ public class DataBaseJpa implements IDataBase {
 
 	@Override
 	public <T> T remove(T object) {
+		object = entityManager.merge(object);
 		entityManager.remove(object);
 		return object;
 	}
 
 	@Override
+	public int remove(String sql) {
+		return entityManager.createNamedQuery(sql).executeUpdate();
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
 	public <T> T find(Long objectId) {
-		// TODO Auto-generated method stub
+		Set<EntityType<?>> entityTypes = entityManager.getMetamodel().getEntities();
+		for (EntityType<?> entityType : entityTypes) {
+			Object object = entityManager.find(entityType.getJavaType(), objectId);
+			if (object != null) {
+				return (T) object;
+			}
+		}
 		return null;
 	}
 
+	// @Override
 	@Override
-	public <T> T find(Class<T> klass, Map<String, Object> parameters, boolean unique) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <T> List<T> find(Class<T> klass, Map<String, Object> parameters, int startIndex, int endIndex) {
-		// TODO Auto-generated method stub
-		return null;
+	@SuppressWarnings("unchecked")
+	public <T> List<T> find(Class<T> klass, String sql, Map<String, Object> parameters, int startPosition, int maxResults) {
+		Query query = entityManager.createNamedQuery(sql, klass);
+		query.setFirstResult(startPosition);
+		query.setMaxResults(maxResults);
+		for (String parameter : parameters.keySet()) {
+			query.setParameter(parameter, parameters.get(parameter));
+		}
+		return query.getResultList();
 	}
 
 }

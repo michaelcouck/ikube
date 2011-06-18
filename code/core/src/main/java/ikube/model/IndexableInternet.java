@@ -115,7 +115,6 @@ public class IndexableInternet extends Indexable<IndexableInternet> {
 		return pattern.matcher(link).matches();
 	}
 
-	@Transient
 	public String getCurrentUrl() {
 		return currentUrl;
 	}
@@ -124,7 +123,6 @@ public class IndexableInternet extends Indexable<IndexableInternet> {
 		this.currentUrl = currentUrl;
 	}
 
-	@Transient
 	public InputStream getCurrentInputStream() {
 		return currentInputStream;
 	}

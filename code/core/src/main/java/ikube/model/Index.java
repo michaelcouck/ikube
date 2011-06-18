@@ -30,7 +30,6 @@ public class Index extends Persistable {
 	@Transient
 	private transient MultiSearcher multiSearcher;
 
-	@Transient
 	public IndexWriter getIndexWriter() {
 		return indexWriter;
 	}
@@ -39,7 +38,6 @@ public class Index extends Persistable {
 		this.indexWriter = indexWriter;
 	}
 
-	@Transient
 	public Directory getDirectory() {
 		return directory;
 	}
@@ -48,7 +46,6 @@ public class Index extends Persistable {
 		this.directory = directory;
 	}
 
-	@Transient
 	public MultiSearcher getMultiSearcher() {
 		return multiSearcher;
 	}

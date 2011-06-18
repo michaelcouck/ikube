@@ -101,7 +101,6 @@ public class IndexableFileSystem extends Indexable<IndexableFileSystem> {
 		this.includedPattern = includedPattern;
 	}
 
-	@Transient
 	public File getCurrentFile() {
 		return currentFile;
 	}

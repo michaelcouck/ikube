@@ -37,7 +37,7 @@
 		<ref bean="ikube.action.DiskFull" />
 		<ref bean="ikube.action.Validator" />
 		<ref bean="ikube.action.Searcher" />
-		<ref bean="ikube.action.Enrichment" />
+		<!-- <ref bean="ikube.action.Enrichment" /> -->
 	</util:list>
 
 	<bean 
@@ -78,7 +78,7 @@
 		id="ikube.action.Close" 
 		class="ikube.action.Close" 
 		property:ruleExpression="
-			!IsThisServerWorking &#38;&#38;
+			!IsThisServerWorking &#38;&#38; 
 			IsMultiSearcherInitialised &#38;&#38; 
 			AreSearchablesInitialised &#38;&#38; 
 			!IsIndexCurrent &#38;&#38; 
@@ -86,6 +86,7 @@
 			AreUnopenedIndexes">
 		<property name="rules">
 			<util:list>
+				<ref local="ikube.action.rule.AnyServersWorking" />
 				<ref local="ikube.action.rule.IsMultiSearcherInitialised" />
 				<ref local="ikube.action.rule.AreSearchablesInitialised" />
 				<ref local="ikube.action.rule.IsIndexCurrent" />
@@ -100,12 +101,11 @@
 		class="ikube.action.Open" 
 		property:ruleExpression="
 			!IsThisServerWorking &#38;&#38; 
-			!AnyServersWorking &#38;&#38; 
-			(!IsMultiSearcherInitialised || 
-			 !AreSearchablesInitialised) &#38;&#38; 
 			IsIndexCurrent &#38;&#38; 
 			AreIndexesCreated &#38;&#38; 
-			AreUnopenedIndexes">
+			AreUnopenedIndexes &#38;&#38; 
+			(!IsMultiSearcherInitialised || 
+			 !AreSearchablesInitialised)">
 		<property name="rules">
 			<util:list>
 				<ref local="ikube.action.rule.AnyServersWorking" />

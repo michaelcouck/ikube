@@ -3,6 +3,8 @@ package ikube.model;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
@@ -14,8 +16,17 @@ import org.apache.commons.lang.builder.ToStringStyle;
  */
 @Entity()
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@NamedQueries(value = {
+		@NamedQuery(name = Url.DELETE_ALL_URLS, query = Url.DELETE_ALL_URLS),
+		@NamedQuery(name = Url.SELECT_FROM_URL_BY_HASH, query = Url.SELECT_FROM_URL_BY_HASH),
+		@NamedQuery(name = Url.SELECT_FROM_URL_WHERE_ID_GREATER_AND_NOT_INDEXED, query = Url.SELECT_FROM_URL_WHERE_ID_GREATER_AND_NOT_INDEXED) })
 public class Url extends Persistable {
 
+	public static final String DELETE_ALL_URLS = "delete from Url u";
+	public static final String SELECT_FROM_URL_BY_HASH = "select u from Url as u where u.hash = :hash";
+	public static final String SELECT_FROM_URL_WHERE_ID_GREATER_AND_NOT_INDEXED = "select u from Url as u where u.id >= :id and u.indexed = :indexed";
+
+	private long urlId;
 	private String url;
 	private boolean indexed;
 	/** The hash of the content. */
@@ -25,6 +36,14 @@ public class Url extends Persistable {
 	private String title;
 	private byte[] rawContent;
 	private String parsedContent;
+
+	public long getUrlId() {
+		return urlId;
+	}
+
+	public void setUrlId(long urlId) {
+		this.urlId = urlId;
+	}
 
 	public String getUrl() {
 		return url;

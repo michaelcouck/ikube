@@ -2,9 +2,8 @@ package ikube.index.handler.internet;
 
 import static org.junit.Assert.assertTrue;
 import ikube.BaseTest;
-import ikube.IConstants;
 import ikube.action.Reset;
-import ikube.cluster.IClusterManager;
+import ikube.database.IDataBase;
 import ikube.model.IndexableInternet;
 import ikube.model.Url;
 import ikube.toolkit.ApplicationContextManager;
@@ -23,7 +22,8 @@ import org.junit.Test;
  */
 public class IndexableInternetHandlerTest extends BaseTest {
 
-	private IClusterManager clusterManager;
+	private IndexableInternet indexableInternet;
+	private IDataBase dataBase;
 
 	public IndexableInternetHandlerTest() {
 		super(IndexableInternetHandlerTest.class);
@@ -31,36 +31,31 @@ public class IndexableInternetHandlerTest extends BaseTest {
 
 	@Before
 	public void before() {
-		clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
-		clusterManager.clear(IConstants.URL);
-		clusterManager.clear(IConstants.URL_DONE);
-		clusterManager.clear(IConstants.URL_HASH);
+		indexableInternet = ApplicationContextManager.getBean("internet");
+		dataBase = ApplicationContextManager.getBean(IDataBase.class);
+		dataBase.remove(Url.DELETE_ALL_URLS);
 	}
 
 	@After
 	public void after() {
-		clusterManager.clear(IConstants.URL);
-		clusterManager.clear(IConstants.URL_DONE);
-		clusterManager.clear(IConstants.URL_HASH);
+		dataBase.remove(Url.DELETE_ALL_URLS);
 	}
 
-	/**
-	 * TODO Ignored while the internet is still not connected
-	 */
 	@Test
 	public void handle() throws Exception {
 		indexContext.getIndex().setIndexWriter(INDEX_WRITER);
-		IndexableInternet indexableInternet = ApplicationContextManager.getBean("internet");
+
 		IndexableInternetHandler indexableInternetHandler = ApplicationContextManager.getBean(IndexableInternetHandler.class);
 		ApplicationContextManager.getBean(Reset.class).execute(indexContext);
 		List<Thread> threads = indexableInternetHandler.handle(indexContext, indexableInternet);
 
 		ThreadUtilities.waitForThreads(threads);
 
-		int totalUrlsCrawled = clusterManager.size(IConstants.URL_DONE);
+		List<Url> urls = dataBase.find(Url.class, 0, Integer.MAX_VALUE);
+		int totalUrlsCrawled = urls.size();
 		logger.info("Urls crawled : " + totalUrlsCrawled);
 		// Print everything in the database
-		for (Url url : clusterManager.get(Url.class, IConstants.URL_DONE, null, null, Integer.MAX_VALUE)) {
+		for (Url url : urls) {
 			logger.info("Url : " + url);
 		}
 		assertTrue("Expected more than 10 and got : " + totalUrlsCrawled, totalUrlsCrawled > 10);

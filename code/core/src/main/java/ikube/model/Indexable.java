@@ -2,9 +2,13 @@ package ikube.model;
 
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -17,10 +21,12 @@ import org.apache.commons.lang.builder.ToStringStyle;
  */
 @Entity()
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-public abstract class Indexable<E> extends Persistable {
+public class Indexable<E> extends Persistable {
 
 	private String name;
+	@ManyToOne(cascade = { CascadeType.ALL }, fetch = FetchType.EAGER)
 	private Indexable<?> parent;
+	@OneToMany(cascade = { CascadeType.ALL }, mappedBy = "parent", fetch = FetchType.EAGER)
 	private List<Indexable<?>> children;
 	private boolean address;
 
@@ -92,7 +98,6 @@ public abstract class Indexable<E> extends Persistable {
 		this.vectored = vectored;
 	}
 
-	@Transient
 	public Object getContent() {
 		return content;
 	}
@@ -100,7 +105,7 @@ public abstract class Indexable<E> extends Persistable {
 	public void setContent(final Object content) {
 		this.content = content;
 	}
-	
+
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
 	}

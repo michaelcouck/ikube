@@ -23,12 +23,6 @@
   3) Ram usage
   4) Up time
   5) Open files
-* Do a configuration page that lets the user see the configuration per index and indexable
-* Do an action log page with all the actions that were performed and the results from the rules
-* Verify why the two indexes have the same timestamp
-* Add the actions to the database and a page to see them with the 
-  time stamps for all the servers.
-
 
 Sub Total: 7
 
@@ -38,9 +32,16 @@ Sub Total: 7
 * Test writing the index across the network, and reading, perhaps a stress test too - 1
 * Add a shutdown that closes everything when the application is being un-deployed 
    so the new application starts the application context cleanly - 3
+* Do a configuration page that lets the user see the configuration per index and indexable
+* Do an action log page with all the actions that were performed and the results from the rules
+* Add the actions to the database and a page to see them with the 
+  time stamps for all the servers.
 Sub total: 11 1/2
 
 Total: +-35
+
+Bugs:
+* Verify why the two indexes have the same timestamp
 
 Done:
 * Cluster - 3 *

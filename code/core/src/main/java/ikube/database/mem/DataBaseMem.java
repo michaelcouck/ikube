@@ -162,18 +162,18 @@ public class DataBaseMem implements IDataBase {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
-	public synchronized <T> T find(final Class<T> klass, final Map<String, Object> parameters, final boolean unique) {
-		try {
-			if (dataBase != null) {
-				return dataBase.find(klass, parameters, unique);
-			}
-			logger.warn("Find only available if there is an underlying database : ");
-			return null;
-		} finally {
-			notifyAll();
-		}
-	}
+	// @Override
+	// public synchronized <T> T find(final Class<T> klass, final Map<String, Object> parameters, final boolean unique) {
+	// try {
+	// if (dataBase != null) {
+	// return dataBase.find(klass, parameters, unique);
+	// }
+	// logger.warn("Find only available if there is an underlying database : ");
+	// return null;
+	// } finally {
+	// notifyAll();
+	// }
+	// }
 
 	/**
 	 * {@inheritDoc}
@@ -203,28 +203,20 @@ public class DataBaseMem implements IDataBase {
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public synchronized <T> List<T> find(final Class<T> klass, final Map<String, Object> parameters, final int startIndex,
-			final int endIndex) {
-		List<T> list = new ArrayList<T>();
-		try {
-			if (dataBase != null) {
-				return dataBase.find(klass, parameters, startIndex, endIndex);
-			}
-			logger.warn("Find only available if there is an underlying database : ");
-		} catch (Exception e) {
-			logger.error("Exception finding objects : " + klass + ", " + parameters + ", " + startIndex + ", " + endIndex, e);
-		} finally {
-			notifyAll();
-		}
-		return list;
-	}
-
 	public void setDataBase(final IDataBase dataBase) {
 		this.dataBase = dataBase;
+	}
+
+	@Override
+	public int remove(String sql) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public <T> List<T> find(Class<T> klass, String sql, Map<String, Object> parameters, int startPosition, int maxResults) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

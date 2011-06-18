@@ -27,14 +27,14 @@ public class IndexableTable extends Indexable<IndexableTable> {
 	private transient DataSource dataSource;
 
 	private String predicate;
-	private boolean primary;
+	private boolean primaryTable;
 
-	public boolean isPrimary() {
-		return primary;
+	public boolean isPrimaryTable() {
+		return primaryTable;
 	}
 
-	public void setPrimary(final boolean primary) {
-		this.primary = primary;
+	public void setPrimaryTable(final boolean primary) {
+		this.primaryTable = primary;
 	}
 
 	public String getPredicate() {
@@ -61,7 +61,6 @@ public class IndexableTable extends Indexable<IndexableTable> {
 		this.maximumId = maximumId;
 	}
 
-	@Transient
 	public DataSource getDataSource() {
 		return dataSource;
 	}

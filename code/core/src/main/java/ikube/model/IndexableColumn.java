@@ -63,7 +63,6 @@ public class IndexableColumn extends Indexable<IndexableColumn> {
 		this.nameColumn = indexableColumn;
 	}
 
-	@Transient
 	public int getColumnType() {
 		return columnType;
 	}

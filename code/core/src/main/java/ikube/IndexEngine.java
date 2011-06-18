@@ -8,10 +8,8 @@ import ikube.listener.ListenerManager;
 import ikube.model.IndexContext;
 import ikube.model.Server;
 import ikube.toolkit.ApplicationContextManager;
-import ikube.toolkit.FileUtilities;
 import ikube.toolkit.Logging;
 
-import java.io.File;
 import java.util.List;
 import java.util.Map;
 
@@ -35,9 +33,9 @@ public class IndexEngine implements IIndexEngine {
 	static {
 		// Try to clean the database files
 		// TODO - could be dangerous, perhaps to remove please?
-		File dotDirectory = new File(".");
-		FileUtilities.deleteFiles(dotDirectory, IConstants.DATABASE_FILE);
-		FileUtilities.deleteFiles(dotDirectory, IConstants.TRANSACTION_FILES);
+		// File dotDirectory = new File(".");
+		// FileUtilities.deleteFiles(dotDirectory, IConstants.DATABASE_FILE);
+		// FileUtilities.deleteFiles(dotDirectory, IConstants.TRANSACTION_FILES);
 	}
 
 	private static final Logger LOGGER = Logger.getLogger(IndexEngine.class);

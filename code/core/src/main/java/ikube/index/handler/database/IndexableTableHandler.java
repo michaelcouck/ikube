@@ -144,7 +144,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 					// Set the column types and the data from the table in the column objects
 					setColumnTypesAndData(children, resultSet);
 					// Set the id field if this is a primary table
-					if (indexableTable.isPrimary()) {
+					if (indexableTable.isPrimaryTable()) {
 						document = new Document();
 						setIdField(indexableTable, document);
 					}
@@ -186,13 +186,13 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 						handleTable(indexContext, childIndexableTable, connection, document, exceptions);
 					}
 					// Add the document to the index if this is the primary table
-					if (indexableTable.isPrimary()) {
+					if (indexableTable.isPrimaryTable()) {
 						addDocument(indexContext, indexableTable, document);
 						Thread.sleep(indexContext.getThrottle());
 					}
 					// Move to the next row in the result set
 					if (!resultSet.next()) {
-						if (indexableTable.isPrimary()) {
+						if (indexableTable.isPrimaryTable()) {
 							// We need to see if there are any more results
 							resultSet = getResultSet(indexContext, indexableTable, connection, 1);
 						} else {
@@ -232,7 +232,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 		// Once we finish all the results in the primary table
 		// then we can close the connection too. Each thread gets
 		// it's own connection so we don't overlap threads/connections
-		if (indexableTable.isPrimary()) {
+		if (indexableTable.isPrimaryTable()) {
 			DatabaseUtilities.commit(connection);
 			DatabaseUtilities.close(connection);
 		}
@@ -266,7 +266,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 			// If this is a primary table then we need to find the first id in the table. For example if we are just
 			// starting to access this table then the id number will be 0, but the first id in the table could be 1 234 567,
 			// in which case we will have no records, so we need to execute where id > 1 234 567 and < 1 234 567 + batchSize
-			if (indexableTable.isPrimary()) {
+			if (indexableTable.isPrimaryTable()) {
 				// Commit the connection to release the cursors
 				DatabaseUtilities.commit(connection);
 				long minimumId = indexableTable.getMinimumId();
@@ -295,7 +295,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 				// id > 1 234 567 and < 1 234 567 + batchSize but there are no results
 				// between these values, so the next predicate would be
 				// id > 1 234 567 + batchSize and < 1 234 567 + (batchSize * 2)
-				if (indexableTable.isPrimary()) {
+				if (indexableTable.isPrimaryTable()) {
 					long maximumId = indexableTable.getMaximumId();
 					if (maximumId < 0) {
 						maximumId = getIdFunction(indexableTable, connection, "max");
@@ -358,7 +358,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 				builder.append(indexableTable.getPredicate());
 			}
 
-			if (indexableTable.isPrimary()) {
+			if (indexableTable.isPrimaryTable()) {
 				// If the table is primary then we have to add the predicate that
 				// will limit the results to between the next row and the batch size. There
 				// could already be a predicate defined also, so add this condition to the

@@ -23,6 +23,8 @@ public interface IDataBase {
 	 */
 	<T> T remove(T object);
 
+	int remove(String sql);
+
 	/**
 	 * Removes the object defined by the type and the id.
 	 * 
@@ -97,7 +99,7 @@ public interface IDataBase {
 	 * @return the object resulting from the select. In the case where there is more than one object returned or none the entity manager
 	 *         will throw an exception
 	 */
-	<T> T find(Class<T> klass, Map<String, Object> parameters, boolean unique);
+	// <T> T find(Class<T> klass, Map<String, Object> parameters, boolean unique);
 
 	/**
 	 * Selects all the objects in the database that conform to the class type, limited by the max results parameter.
@@ -111,6 +113,8 @@ public interface IDataBase {
 	 * @return the list of objects from the database specified by the class type
 	 */
 	<T> List<T> find(Class<T> klass, int startIndex, int endIndex);
+
+	public <T> List<T> find(Class<T> klass, String sql, Map<String, Object> parameters, int startPosition, int maxResults);
 
 	/**
 	 * Finds a list of objects in the database that conform to the parameters specified in the method signature. The results are also
@@ -132,6 +136,6 @@ public interface IDataBase {
 	 *            the last object in the results, i.e. the index of the last result
 	 * @return <T> the list of objects that conform to the narrowing parameters
 	 */
-	<T> List<T> find(Class<T> klass, Map<String, Object> parameters, int startIndex, int endIndex);
+	// <T> List<T> find(Class<T> klass, Map<String, Object> parameters, int startIndex, int endIndex);
 
 }

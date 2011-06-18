@@ -24,18 +24,95 @@
 	<context:property-placeholder
 		location="classpath*:**/spring.properties" 
 		properties-ref="ikube.toolkit.PropertyConfigurer" />
+	<context:annotation-config />
+	<context:component-scan base-package="ikube" />
+	<transaction:annotation-driven transaction-manager="transactionManager"/>
+
+	<bean 
+		class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor" />
+
+	<bean 
+		id="transactionManager" 
+		class="org.springframework.orm.jpa.JpaTransactionManager" 
+		property:entityManagerFactory-ref="entityManagerFactory" />
+
+	<bean 
+		id="entityManagerFactory" 
+		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean" 
+		property:dataSource-ref="nonXaDataSourceH2"
+		property:jpaVendorAdapter-ref="jpaAdapter"
+		property:jpaPropertyMap-ref="jpaPropertyMap">
+		<property name="loadTimeWeaver">
+			<bean class="org.springframework.instrument.classloading.InstrumentationLoadTimeWeaver" />
+		</property>
+		<property name="persistenceUnitName" value="IkubePersistenceUnitH2"></property>
+	</bean>
+
+	<bean 
+		id="jpaAdapter" 
+		class="org.springframework.orm.jpa.vendor.OpenJpaVendorAdapter" 
+		property:database="H2" 
+		property:showSql="true" />
 		
-	<!-- The in memory database. -->
-	<bean
-		id="ikube.database.mem.DataBaseMem"
-		class="ikube.database.mem.DataBaseMem" />
+	<util:map id="jpaPropertyMap">
+		<entry key="openjpa.ConnectionFactoryProperties" value="PrettyPrint=true,PrettyPrintLineLength=150" />
+		<entry key="openjpa.Log" value="DefaultLevel=ERROR,SQL=ERROR,File=openjpa.log,Runtime=ERROR,Tool=ERROR" />
+
+		<!-- This is used if you want to user OpenJpa's own cache, but we use Ehcache. -->
+		<!--<entry key="openjpa.RemoteCommitProvider" value="sjvm" />-->
+		<!--<entry key="openjpa.DataCache" value="true(CacheSize=1000000,SoftReferenceSize=1000000)" />-->
+		<!--<entry key="openjpa.QueryCache" value="true(CacheSize=1000000,SoftReferenceSize=1000000)" />-->
+		<!--<entry key="openjpa.DataCache" value="true"/>-->
+
+		<!-- The Ehcache properties along with the ehcache.xml at the base of the jar. -->
+		<!-- <entry key="openjpa.QueryCache" value="${jpa.cache}" />
+		<entry key="openjpa.DataCacheManager" value="${jpa.cache}" /> -->
+
+		<entry key="openjpa.LockTimeout" value="6000000" />
+		<entry key="openjpa.ReadLockLevel" value="write" />
+		<entry key="openjpa.WriteLockLevel" value="write" />
+		<entry key="openjpa.Optimistic" value="false" />
+		<entry key="openjpa.Multithreaded" value="true" />
+		<entry key="openjpa.NontransactionalRead" value="true" />
+		<entry key="openjpa.AutoDetach" value="close" />
+		<entry key="openjpa.FlushBeforeQueries" value="true" />
+		<entry key="openjpa.RuntimeUnenhancedClasses" value="supported" />
+		<!--<entry key="openjpa.ConnectionRetainMode" value="always" />-->
+
+		<!--
+			For the first run these have to be uncommented to allow OpenJpa to create the
+			tables in the database and commit the connection. Typically the connection
+			is managed Xa so can't be committed by OpenJpa. If the properties are uncommented
+			then OpenJpa will use these to get a connection to the db and can then commit on
+			that connection as it will not be xa.
+		-->
+		<!-- <entry key="openjpa.jdbc.SynchronizeMappings" value="buildSchema" />
+		<entry key="openjpa.Connection2UserName" value="${jdbc.user}" />
+		<entry key="openjpa.Connection2Password" value="${jdbc.password}" />
+		<entry key="openjpa.Connection2URL" value="${jdbc.url}" />
+		<entry key="openjpa.Connection2DriverName" value="${jdbc.driver}" /> -->
+	</util:map>
+
+	<transaction:advice id="transactionAdvice" transaction-manager="transactionManager">
+		<transaction:attributes>
+			<transaction:method name="*" />
+			<transaction:method name="get*" read-only="true" />
+		</transaction:attributes>
+	</transaction:advice>
+
+	<aop:config>
+		<aop:pointcut id="dataBaseOperation" expression="execution(* ikube.database.jpa.DataBaseJpa.*(..))" />
+		<aop:advisor advice-ref="transactionAdvice" pointcut-ref="dataBaseOperation" />
+	</aop:config>
 	
-	<!--
-		Deprecated: This has now become an action. 
-		This bean validates the indexes periodically. -->
-	<!-- <bean 
-		id="ikube.monitoring.IndexValidator" 
-		class="ikube.monitoring.IndexValidator" /> -->
+	<!-- The in memory database. -->
+	<!-- <bean
+		id="ikube.database.mem.DataBaseMem"
+		class="ikube.database.mem.DataBaseMem" /> -->
+	<!-- The Jpa database for large sets of data. -->
+	<bean
+		id="ikube.database.jpa.DataBaseJpa"
+		class="ikube.database.jpa.DataBaseJpa" />
 	
 	<!-- The cluster manager that is responsible for all cluster synchronization stuff. -->
 	<bean
@@ -57,7 +134,6 @@
 	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
 		property:staticMethod="ikube.cluster.ClusterManager.addClusterExceptionListener"
 		lazy-init="false" />
-	<!-- property:dataBase-ref="ikube.database.mem.DataBaseMem"  -->
 	
 	<!-- 
 		These are just pojos that delegate to the real class that can be intercepted by Spring. 

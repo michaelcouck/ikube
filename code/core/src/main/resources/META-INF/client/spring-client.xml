@@ -22,7 +22,7 @@
 	<bean
 		id="indexContext"
 		class="ikube.model.IndexContext"
-		property:indexName="index"
+		property:indexName="default"
 		property:maxAge="${max.age}"
 		property:compoundFile="${compound.file}"
 		property:bufferedDocs="${buffered.docs}"
@@ -40,9 +40,10 @@
 	<util:list id="indexables">
 		<ref local="mail" />
 		<ref local="internet" />
+		<ref local="hazelcast" />
 		<!-- <ref local="internetMillion" /> -->
 		<ref local="filesystem" />
-		<!-- <ref local="filesystemMillion" /> -->
+		<ref local="filesystemMillion" />
 		<ref bean="faqTableH2" />
 		<ref bean="faqTableDb2" />
 		<ref bean="faqTableOracle" />
@@ -58,14 +59,14 @@
 		class="ikube.model.IndexableTable"
 		property:name="faq"
 		property:predicate="${faq.predicate}"
-		property:primary="true"
+		property:primaryTable="true"
 		property:dataSource-ref="nonXaDataSourceH2"
 		property:children-ref="faqColumnsH2" />
 	<bean
 		id="attachmentTableH2"
 		class="ikube.model.IndexableTable"
 		property:name="attachment"
-		property:primary="false"
+		property:primaryTable="false"
 		property:dataSource-ref="nonXaDataSourceH2"
 		property:children-ref="attachmentColumnsH2" />
 	<util:list id="faqColumnsH2">
@@ -93,14 +94,14 @@
 		class="ikube.model.IndexableTable"
 		property:name="faq"
 		property:predicate="${faq.predicate}"
-		property:primary="true"
+		property:primaryTable="true"
 		property:dataSource-ref="nonXaDataSourceDb2"
 		property:children-ref="faqColumnsDb2" />
 	<bean
 		id="attachmentTableDb2"
 		class="ikube.model.IndexableTable"
 		property:name="attachment"
-		property:primary="false"
+		property:primaryTable="false"
 		property:dataSource-ref="nonXaDataSourceDb2"
 		property:children-ref="attachmentColumnsDb2" />
 	<util:list id="faqColumnsDb2">
@@ -128,14 +129,14 @@
 		class="ikube.model.IndexableTable"
 		property:name="faq"
 		property:predicate="${faq.predicate}"
-		property:primary="true"
+		property:primaryTable="true"
 		property:dataSource-ref="nonXaDataSourceOracle"
 		property:children-ref="faqColumnsOracle" />
 	<bean
 		id="attachmentTableOracle"
 		class="ikube.model.IndexableTable"
 		property:name="attachment"
-		property:primary="false"
+		property:primaryTable="false"
 		property:dataSource-ref="nonXaDataSourceOracle"
 		property:children-ref="attachmentColumnsOracle" />
 	<util:list id="faqColumnsOracle">
@@ -272,7 +273,7 @@
 		class="ikube.model.IndexableTable"
 		property:name="patient"
 		property:predicate="${patient.predicate}"
-		property:primary="true"
+		property:primaryTable="true"
 		property:dataSource-ref="nonXaDataSourceH2"
 		property:children-ref="patientColumnsH2" />
 	<util:list id="patientColumnsH2">
@@ -287,7 +288,7 @@
 		id="addressTableH2"
 		class="ikube.model.IndexableTable"
 		property:name="address"
-		property:primary="false"
+		property:primaryTable="false"
 		property:address="true"
 		property:dataSource-ref="nonXaDataSourceH2"
 		property:children-ref="addressColumnsH2" />
@@ -308,7 +309,7 @@
 		class="ikube.model.IndexableTable"
 		property:name="patient"
 		property:predicate="${patient.predicate}"
-		property:primary="true"
+		property:primaryTable="true"
 		property:dataSource-ref="nonXaDataSourceDb2"
 		property:children-ref="patientColumnsDb2" />
 	<util:list id="patientColumnsDb2">
@@ -323,7 +324,7 @@
 		id="addressTableDb2"
 		class="ikube.model.IndexableTable"
 		property:name="address"
-		property:primary="false"
+		property:primaryTable="false"
 		property:address="true"
 		property:dataSource-ref="nonXaDataSourceDb2"
 		property:children-ref="addressColumnsDb2" />
@@ -344,7 +345,7 @@
 		class="ikube.model.IndexableTable"
 		property:name="patient"
 		property:predicate="${patient.predicate}"
-		property:primary="true"
+		property:primaryTable="true"
 		property:dataSource-ref="nonXaDataSourceOracle"
 		property:children-ref="patientColumnsOracle" />
 	<util:list id="patientColumnsOracle">
@@ -359,7 +360,7 @@
 		id="addressTableOracle"
 		class="ikube.model.IndexableTable"
 		property:name="address"
-		property:primary="false"
+		property:primaryTable="false"
 		property:address="true"
 		property:dataSource-ref="nonXaDataSourceOracle"
 		property:children-ref="addressColumnsOracle" />
@@ -505,6 +506,19 @@
 		class="ikube.model.IndexableInternet"
 		property:name="internet"
 		property:url="${url}" 
+		property:idFieldName="id"
+		property:titleFieldName="title"
+		property:contentFieldName="content"
+		property:excludedPattern=".*(/search).*|.*(/images).*"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	
+	<bean
+		id="hazelcast"
+		class="ikube.model.IndexableInternet"
+		property:name="internet"
+		property:url="http://hazelcast.com/" 
 		property:idFieldName="id"
 		property:titleFieldName="title"
 		property:contentFieldName="content"

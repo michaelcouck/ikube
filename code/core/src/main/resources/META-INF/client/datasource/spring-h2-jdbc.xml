@@ -16,13 +16,14 @@
 		location="classpath*:**/spring.properties" 
 		properties-ref="ikube.toolkit.PropertyConfigurer" />
 	
+	<!-- jdbc:h2:mem:search -->
 	<bean id="nonXaDataSourceH2"
 		class="com.mchange.v2.c3p0.ComboPooledDataSource"
 		destroy-method="close"
 		property:user="sa"
 		property:password=""
 		property:driverClass="org.h2.Driver"
-		property:jdbcUrl="jdbc:h2:mem:search"
+		property:jdbcUrl="jdbc:h2:mem:ikube"
 		property:initialPoolSize="${jdbc.minPoolSize}"
 		property:maxPoolSize="${jdbc.maxPoolSize}"
 		property:maxStatements="${jdbc.maxStatements}"

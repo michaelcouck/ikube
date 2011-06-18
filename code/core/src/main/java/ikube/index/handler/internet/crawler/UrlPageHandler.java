@@ -50,6 +50,7 @@ import org.apache.lucene.document.Field.TermVector;
  * @since 25.09.10
  * @version 01.00
  */
+@Deprecated
 public class UrlPageHandler extends UrlHandler<Url> implements Runnable {
 
 	private IClusterManager clusterManager;
@@ -58,12 +59,22 @@ public class UrlPageHandler extends UrlHandler<Url> implements Runnable {
 	private transient final HttpClient httpClient;
 	private transient final IContentProvider<IndexableInternet> contentProvider;
 
-	public UrlPageHandler(IClusterManager clusterManager, IndexableInternetHandler handler, IndexableInternet indexable) {
+	private transient String urlToDo;
+	private transient String urlDone;
+	private transient String urlHash;
+	private transient int batchSize;
+
+	public UrlPageHandler(IClusterManager clusterManager, IndexableInternetHandler handler, IndexableInternet indexable, int batchSize,
+			String id) {
 		this.clusterManager = clusterManager;
 		this.handler = handler;
 		this.indexable = (IndexableInternet) SerializationUtilities.clone(indexable);
 		this.httpClient = new HttpClient();
 		this.contentProvider = new InternetContentProvider();
+		this.urlToDo = IConstants.URL + id;
+		this.urlDone = IConstants.URL_DONE + id;
+		this.urlHash = IConstants.URL_HASH + id;
+		this.batchSize = batchSize;
 	}
 
 	private ICache.IAction<Url> action = new ICache.IAction<Url>() {
@@ -71,8 +82,8 @@ public class UrlPageHandler extends UrlHandler<Url> implements Runnable {
 		public void execute(Url url) {
 			try {
 				if (url != null) {
-					getClusterManager().remove(IConstants.URL, url.getId());
-					getClusterManager().set(IConstants.URL_DONE, url.getId(), url);
+					getClusterManager().remove(urlToDo, url.getId());
+					getClusterManager().set(urlDone, url.getId(), url);
 				}
 			} catch (Exception e) {
 				LOGGER.error("Exception adding the url to the cache : " + url, e);
@@ -83,11 +94,11 @@ public class UrlPageHandler extends UrlHandler<Url> implements Runnable {
 	@Override
 	public void run() {
 		while (true) {
-			List<Url> urls = clusterManager.get(Url.class, IConstants.URL, null, action, IConstants.BATCH_SIZE);
+			List<Url> urls = clusterManager.get(Url.class, urlToDo, null, action, batchSize);
 			if (urls.isEmpty()) {
 				// Check if there are any other threads still working
 				// other than this thread of course
-				if (handler.isCrawling()) {
+				if (handler.isCrawling(null)) {
 					synchronized (this) {
 						try {
 							wait(1000);
@@ -99,12 +110,15 @@ public class UrlPageHandler extends UrlHandler<Url> implements Runnable {
 					break;
 				}
 			}
+			LOGGER.info("Doing urls : " + urls.size());
+			if (urls.size() > 0) {
+				LOGGER.info("Last url : " + urls.get(urls.size()));
+			}
 			for (Url url : urls) {
 				try {
 					if (url == null || url.getUrl() == null) {
 						continue;
 					}
-					LOGGER.info("Doing url : " + url);
 					handle(url);
 					handleChildren(url);
 					url.setParsedContent(null);
@@ -112,7 +126,7 @@ public class UrlPageHandler extends UrlHandler<Url> implements Runnable {
 					url.setTitle(null);
 					url.setUrl(null);
 					url.setContentType(null);
-					getClusterManager().set(IConstants.URL_DONE, url.getId(), url);
+					getClusterManager().set(urlDone, url.getId(), url);
 				} catch (Exception e) {
 					LOGGER.error("Exception doing url : " + url, e);
 				}
@@ -143,11 +157,11 @@ public class UrlPageHandler extends UrlHandler<Url> implements Runnable {
 			}
 			long hash = HashUtilities.hash(parsedContent);
 			url.setHash(hash);
-			if (clusterManager.get(IConstants.URL_HASH, url.getHash()) != null) {
+			if (clusterManager.get(urlHash, url.getHash()) != null) {
 				LOGGER.info("Duplicate data : " + url.getUrl());
 				return;
 			}
-			clusterManager.set(IConstants.URL_HASH, url.getHash(), url);
+			clusterManager.set(urlHash, url.getHash(), url);
 			// Add the document to the index
 			addDocumentToIndex(indexable, url, parsedContent);
 		} catch (Exception e) {
@@ -331,15 +345,14 @@ public class UrlPageHandler extends UrlHandler<Url> implements Runnable {
 							String strippedAnchorLink = UriUtilities.stripAnchor(strippedSessionLink, "");
 							Long id = HashUtilities.hash(strippedAnchorLink);
 
-							if (clusterManager.get(IConstants.URL, id) != null || clusterManager.get(IConstants.URL_DONE, id) != null) {
+							if (clusterManager.get(urlToDo, id) != null || clusterManager.get(urlDone, id) != null) {
 								continue;
 							}
 							Url url = new Url();
 							url.setId(id);
 							// Add the link to the database here
 							url.setUrl(strippedAnchorLink);
-							LOGGER.info("Setting url : " + url);
-							clusterManager.set(IConstants.URL, url.getId(), url);
+							clusterManager.set(urlToDo, url.getId(), url);
 							// setUrl(dbUrl);
 						} catch (Exception e) {
 							LOGGER.error("Exception extracting link : " + tag, e);
