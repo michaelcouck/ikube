@@ -38,6 +38,69 @@ public class ClusterManager implements IClusterManager, IConstants {
 	protected static final Logger LOGGER = Logger.getLogger(ClusterManager.class);
 
 	/**
+	 * This method adds a shutdown hook that can be executed remotely causing the the cluster to close down, but not ourselves. This is
+	 * useful when a unit test needs to run without the cluster running as the synchronization will affect the tests.
+	 */
+	public static void addShutdownHook() {
+		LOGGER.info("Adding shutdown listener : ");
+		ITopic<Server> topic = Hazelcast.getTopic(IConstants.SHUTDOWN_TOPIC);
+		topic.addMessageListener(new MessageListener<Server>() {
+			@Override
+			public void onMessage(final Server other) {
+				if (other == null) {
+					return;
+				}
+				LOGGER.info("Got shutdown message : " + other);
+				Server server = ApplicationContextManager.getBean(IClusterManager.class).getServer();
+				if (other.getAddress().equals(server.getAddress())) {
+					// We don't shutdown our selves of course
+					return;
+				}
+				long delay = 1000;
+				ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
+				executorService.schedule(new Runnable() {
+					public void run() {
+						LOGGER.warn("Shutting down Ikube server : " + other);
+						ListenerManager.removeListeners();
+						ApplicationContextManager.closeApplicationContext();
+						Hazelcast.shutdownAll();
+						System.exit(0);
+					}
+				}, delay, TimeUnit.MILLISECONDS);
+				executorService.shutdown();
+			}
+		});
+	}
+
+	/**
+	 * This method adds a listener to the cluster topic to make exception when evaluating the rules.
+	 */
+	public static void addClusterExceptionListener() {
+		// Add the listener for general cluster directives like forcing an index to start
+		LOGGER.info("Adding shutdown listener : ");
+		ITopic<Boolean> topic = Hazelcast.getTopic(IConstants.EXCEPTION_TOPIC);
+		topic.addMessageListener(new MessageListener<Boolean>() {
+			@Override
+			public void onMessage(Boolean command) {
+				LOGGER.info("Got exception message : " + command);
+				ApplicationContextManager.getBean(IClusterManager.class).setException(command);
+			}
+		});
+	}
+
+	/** The ip of this server. */
+	private transient String ip;
+	/**
+	 * The address of this server, this must be unique in the cluster. Typically this is the ip address added to the system time. The chance
+	 * of a hash clash with any other server is in the billions, we will disregard this possibility on prudent grounds.
+	 */
+	private transient String address;
+	/** The cluster wide cache. */
+	protected transient ICache cache;
+	/** This flag is set cluster wide to make exception for the rules. */
+	private transient boolean exception;
+
+	/**
 	 * This listener will respond to clean events and it will remove servers that have not checked in, i.e. their sell by date is expired.
 	 */
 	private IListener cleanerListener = new IListener() {
@@ -72,29 +135,10 @@ public class ClusterManager implements IClusterManager, IConstants {
 			}
 			// Set our own server age
 			Server server = getServer();
-			// Add the tail end of the log to the server
-			// File logFile = Logging.getLogFile();
-			// if (logFile != null && logFile.exists() && logFile.canRead()) {
-			// String logTail = FileUtilities.getContentsFromEnd(logFile, 20000).toString();
-			// server.setLogTail(logTail);
-			// }
 			server.setAge(System.currentTimeMillis());
-			// LOGGER.debug("Publishing server : " + server.getAddress());
 			set(Server.class.getName(), server.getId(), server);
 		}
 	};
-
-	/** The ip of this server. */
-	private transient String ip;
-	/**
-	 * The address of this server, this must be unique in the cluster. Typically this is the ip address added to the system time. The chance
-	 * of a hash clash with any other server is in the billions, we will disregard this possibility on prudent grounds.
-	 */
-	private transient String address;
-	/** The cluster wide cache. */
-	protected transient ICache cache;
-	/** This flag is set cluster wide to make exception for the rules. */
-	private transient boolean exception;
 
 	/**
 	 * In the constructor we initialize the logger but most importantly the address of this server. Please see the comments.
@@ -325,57 +369,6 @@ public class ClusterManager implements IClusterManager, IConstants {
 
 	public void setAddress(String address) {
 		this.address = address;
-	}
-
-	/**
-	 * This method adds a shutdown hook that can be executed remotely causing the the cluster to close down, but not ourselves. This is
-	 * useful when a unit test needs to run without the cluster running as the synchronization will affect the tests.
-	 */
-	public static void addShutdownHook() {
-		LOGGER.info("Adding shutdown listener : ");
-		ITopic<Server> topic = Hazelcast.getTopic(IConstants.SHUTDOWN_TOPIC);
-		topic.addMessageListener(new MessageListener<Server>() {
-			@Override
-			public void onMessage(final Server other) {
-				if (other == null) {
-					return;
-				}
-				LOGGER.info("Got shutdown message : " + other);
-				Server server = ApplicationContextManager.getBean(IClusterManager.class).getServer();
-				if (other.getAddress().equals(server.getAddress())) {
-					// We don't shutdown our selves of course
-					return;
-				}
-				long delay = 1000;
-				ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
-				executorService.schedule(new Runnable() {
-					public void run() {
-						LOGGER.warn("Shutting down Ikube server : " + other);
-						ListenerManager.removeListeners();
-						ApplicationContextManager.closeApplicationContext();
-						Hazelcast.shutdownAll();
-						System.exit(0);
-					}
-				}, delay, TimeUnit.MILLISECONDS);
-				executorService.shutdown();
-			}
-		});
-	}
-
-	/**
-	 * This method adds a listener to the cluster topic to make exception when evaluating the rules.
-	 */
-	public static void addClusterExceptionListener() {
-		// Add the listener for general cluster directives like forcing an index to start
-		LOGGER.info("Adding shutdown listener : ");
-		ITopic<Boolean> topic = Hazelcast.getTopic(IConstants.EXCEPTION_TOPIC);
-		topic.addMessageListener(new MessageListener<Boolean>() {
-			@Override
-			public void onMessage(Boolean command) {
-				LOGGER.info("Got exception message : " + command);
-				ApplicationContextManager.getBean(IClusterManager.class).setException(command);
-			}
-		});
 	}
 
 }

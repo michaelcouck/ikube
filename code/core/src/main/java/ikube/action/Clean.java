@@ -21,10 +21,12 @@ import org.apache.lucene.store.FSDirectory;
  */
 public class Clean<E, F> extends Action<IndexContext, Boolean> {
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Boolean execute(final IndexContext indexContext) {
 		try {
-			// getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getName(), Boolean.TRUE);
 			String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
 			File baseIndexDirectory = FileUtilities.getFile(indexDirectoryPath, Boolean.TRUE);
 			File[] timeIndexDirectories = baseIndexDirectory.listFiles();
@@ -48,7 +50,7 @@ public class Clean<E, F> extends Action<IndexContext, Boolean> {
 						if (locked) {
 							// We assume that there are no other servers working so this directory
 							// has been locked and the server is dead, we will unlock the index, and perhaps
-							// try to optimise it too
+							// try to optimize it too
 							IndexWriter.unlock(directory);
 							locked = IndexWriter.isLocked(directory);
 							if (locked) {

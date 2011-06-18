@@ -37,6 +37,9 @@ public class Enrichment extends Action<IndexContext, Boolean> implements IConsta
 
 	private EntityManager entityManager;
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	@SuppressWarnings("unchecked")
 	public Boolean execute(final IndexContext indexContext) {
@@ -48,7 +51,6 @@ public class Enrichment extends Action<IndexContext, Boolean> implements IConsta
 		}
 		DONE = Boolean.TRUE;
 		logger.info("Running the enrichment : ");
-		// getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getName(), Boolean.TRUE);
 		try {
 			// List all the entities in the geoname table
 			int batch = 100;

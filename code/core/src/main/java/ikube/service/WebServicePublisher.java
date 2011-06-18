@@ -17,15 +17,15 @@ import javax.xml.ws.Endpoint;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.util.ReflectionUtils;
 
 /**
+ * @see IWebServicePublisher
  * @author Michael Couck
  * @since 21.11.10
  * @version 01.00
  */
-public class WebServicePublisher implements IWebServicePublisher, BeanPostProcessor {
+public class WebServicePublisher implements IWebServicePublisher {
 
 	private Logger logger;
 	private transient final IClusterManager clusterManager;
@@ -60,13 +60,12 @@ public class WebServicePublisher implements IWebServicePublisher, BeanPostProces
 							port = GeneralUtilities.findFirstOpenPort(port);
 
 							url = new URL("http", host, port, path);
-							logger.info("Publishing web service to : " + url);
 
 							Endpoint endpoint = Endpoint.publish(url.toString(), bean);
 							Binding binding = endpoint.getBinding();
 
+							logger.info("Published web service to : " + url);
 							String message = Logging.getString("Endpoint : ", endpoint, "binding : ", binding, "implementor : ", bean);
-							message = Logging.getString(message, "on address : ", url.toString());
 							logger.info(message);
 
 							Server server = clusterManager.getServer();
@@ -76,8 +75,11 @@ public class WebServicePublisher implements IWebServicePublisher, BeanPostProces
 							Thread.sleep(1000);
 							break;
 						} catch (Exception e) {
-							String message = Logging.getString("Exception publishing web service : ", url, bean);
-							logger.info(message, e);
+							String message = Logging.getString("Exception publishing web service : ", url, bean, e.getMessage());
+							logger.info(message);
+							if (logger.isDebugEnabled()) {
+								logger.error("", e);
+							}
 							port++;
 						}
 					} while (++retryCount < IConstants.MAX_RETRY_WEB_SERVICE_PUBLISHER);

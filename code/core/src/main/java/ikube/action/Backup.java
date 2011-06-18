@@ -19,10 +19,12 @@ import org.apache.commons.io.FileUtils;
  */
 public class Backup extends Action<IndexContext, Boolean> {
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Boolean execute(final IndexContext indexContext) {
 		try {
-			// getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getName(), Boolean.TRUE);
 			File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexContext.getIndexDirectoryPath() + IConstants.SEP
 					+ indexContext.getIndexName());
 			String indexDirectoryPathBackup = IndexManager.getIndexDirectoryPathBackup(indexContext);

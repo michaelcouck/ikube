@@ -20,10 +20,12 @@ public class DiskFull extends Action<IndexContext, Boolean> {
 	/** The minimum space that we will accept to carry on, 10 gig. */
 	private static final long MINIMUM_FREE_SPACE = 10000;
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Boolean execute(final IndexContext indexContext) {
 		try {
-			// getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getName(), Boolean.TRUE);
 			File indexesDirectory = new File(indexContext.getIndexDirectoryPath());
 			if (!indexesDirectory.exists() || !indexesDirectory.isDirectory()) {
 				return Boolean.TRUE;

@@ -18,7 +18,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * TODO Comment me!
+ * This class will do a search on the indexes on all the servers defined in this cluster. If there are not as many results as expected then
+ * a mail will be sent to the administrator.
  * 
  * @author Michael Couck
  * @since 31.10.10
@@ -33,11 +34,13 @@ public class Searcher extends Action<IndexContext, Boolean> {
 	private int resultsSizeMinimum;
 	private int iterations;
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	@SuppressWarnings("unchecked")
 	public Boolean execute(final IndexContext indexContext) {
 		try {
-			// getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getName(), Boolean.TRUE);
 			List<Server> servers = getClusterManager().getServers();
 			String xml = null;
 			for (Server server : servers) {

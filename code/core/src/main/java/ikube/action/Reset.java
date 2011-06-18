@@ -19,10 +19,12 @@ import java.util.List;
  */
 public class Reset extends Action<IndexContext, Boolean> {
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Boolean execute(final IndexContext indexContext) {
 		try {
-			// getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getName(), Boolean.TRUE);
 			List<Server> servers = getClusterManager().getServers();
 			boolean anyWorking = Boolean.FALSE;
 			for (Server server : servers) {

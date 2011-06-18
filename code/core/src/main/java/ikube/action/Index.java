@@ -26,6 +26,9 @@ import java.util.Map;
  */
 public class Index extends Action<IndexContext, Boolean> {
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Boolean execute(final IndexContext indexContext) throws Exception {
 		String indexName = indexContext.getIndexName();

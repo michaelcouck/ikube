@@ -38,7 +38,7 @@ public class RuleInterceptor implements IRuleInterceptor {
 	 */
 	@Override
 	public Object decide(final ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
-		// TODO During the execution of the rules the cluster needs to be locked
+		// During the execution of the rules the cluster needs to be locked
 		// completely for the duration of the evaluation of the rules because there
 		// exists a race condition where the rules evaluate to true for server one, and evaluate
 		// to true for server two before server one can set the values that would make server
@@ -114,6 +114,7 @@ public class RuleInterceptor implements IRuleInterceptor {
 				}
 			}
 			if (proceed) {
+				LOGGER.info(Logging.getString("Rule intercepter proceeding : ", proceed, target.getClass().getSimpleName()));
 				proceed(proceedingJoinPoint, target.getClass().getSimpleName(), indexContext.getIndexName(), indexable.getName());
 			}
 		} catch (Throwable t) {
@@ -121,7 +122,6 @@ public class RuleInterceptor implements IRuleInterceptor {
 		} finally {
 			AtomicAction.unlock(lock);
 		}
-		LOGGER.info(Logging.getString("Rule intercepter proceeding : ", proceed, target.getClass().getSimpleName()));
 		return proceed;
 	}
 
@@ -140,7 +140,6 @@ public class RuleInterceptor implements IRuleInterceptor {
 				}
 			}
 		}, delay, TimeUnit.MILLISECONDS);
-		// executorService.shutdown();
 	}
 
 	protected void printNodesAndEvaluations(JEP jep, Node node) {

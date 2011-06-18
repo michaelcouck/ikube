@@ -26,6 +26,9 @@
 * Do a configuration page that lets the user see the configuration per index and indexable
 * Do an action log page with all the actions that were performed and the results from the rules
 * Verify why the two indexes have the same timestamp
+* Add the actions to the database and a page to see them with the 
+  time stamps for all the servers.
+
 
 Sub Total: 7
 

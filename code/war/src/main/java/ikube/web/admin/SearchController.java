@@ -74,7 +74,7 @@ public class SearchController extends BaseController {
 			} catch (Exception e) {
 				logger.warn("The first results parameter : " + parameter);
 			}
-			
+
 			parameter = request.getParameter(IConstants.MAX_RESULTS);
 			try {
 				if (parameter != null && !"".equals(parameter) && org.apache.commons.lang.StringUtils.isNumeric(parameter)) {
@@ -83,31 +83,30 @@ public class SearchController extends BaseController {
 			} catch (Exception e) {
 				logger.warn("The max results parameter : " + parameter);
 			}
-			
-			
+
 			ISearcherWebService searcherWebService = ServiceLocator.getService(ISearcherWebService.class, server.getSearchWebServiceUrl(),
 					ISearcherWebService.NAMESPACE, ISearcherWebService.SERVICE);
 			// LOGGER.error("Searcher web service : " + searcherWebService);
-			String xml = searcherWebService.searchMulti(indexName, searchStrings.toArray(new String[searchStrings.size()]),
-					searchFields.toArray(new String[searchFields.size()]), Boolean.TRUE, firstResult, maxResults);
+			String xml = null;
+			if (searcherWebService != null) {
+				xml = searcherWebService.searchMulti(indexName, searchStrings.toArray(new String[searchStrings.size()]),
+						searchFields.toArray(new String[searchFields.size()]), Boolean.TRUE, firstResult, maxResults);
+				List<Map<String, String>> results = (List<Map<String, String>>) SerializationUtilities.deserialize(xml);
+				Map<String, String> statistics = results.get(results.size() - 1);
+				String stringTotal = statistics.get(IConstants.TOTAL);
+				String stringDuration = statistics.get(IConstants.DURATION);
 
-			List<Map<String, String>> results = (List<Map<String, String>>) SerializationUtilities.deserialize(xml);
-			// LOGGER.error("Results : " + results);
+				results.remove(statistics);
 
-			Map<String, String> statistics = results.get(results.size() - 1);
-			String stringTotal = statistics.get(IConstants.TOTAL);
-			String stringDuration = statistics.get(IConstants.DURATION);
+				modelAndView.addObject(IConstants.TOTAL, stringTotal != null ? Integer.parseInt(stringTotal) : 0);
+				modelAndView.addObject(IConstants.DURATION, stringDuration != null ? Integer.parseInt(stringDuration) : 0);
+				modelAndView.addObject(IConstants.RESULTS, results);
 
-			modelAndView.addObject(IConstants.TOTAL, stringTotal != null ? Integer.parseInt(stringTotal) : 0);
-			modelAndView.addObject(IConstants.DURATION, stringDuration != null ? Integer.parseInt(stringDuration) : 0);
-
-			results.remove(statistics);
-
-			modelAndView.addObject(IConstants.RESULTS, results);
-			// TODO For now we can still put this in the session but this will
-			// only be used in the search tag so it can be removed when everything
-			// is working just with the model
-			request.getSession().setAttribute(IConstants.RESULTS, results);
+				// TODO For now we can still put this in the session but this will
+				// only be used in the search tag so it can be removed when everything
+				// is working just with the model
+				request.getSession().setAttribute(IConstants.RESULTS, results);
+			}
 		}
 
 		String searchString = searchStrings.toString();
@@ -116,7 +115,7 @@ public class SearchController extends BaseController {
 
 		modelAndView.addObject(IConstants.FIRST_RESULT, firstResult);
 		modelAndView.addObject(IConstants.MAX_RESULTS, maxResults);
-		
+
 		modelAndView.addObject(IConstants.SEARCH_STRINGS, searchString);
 		modelAndView.addObject(IConstants.INDEX_NAME, indexName);
 		modelAndView.addObject(IConstants.SERVER, server);

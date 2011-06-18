@@ -3,11 +3,11 @@ package ikube.action;
 import ikube.index.IndexManager;
 import ikube.listener.Event;
 import ikube.listener.ListenerManager;
+import ikube.model.Index;
 import ikube.model.IndexContext;
 import ikube.service.SearcherWebService;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.Logging;
-import ikube.model.Index;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -37,13 +37,15 @@ import org.apache.lucene.store.FSDirectory;
  */
 public class Open extends Action<IndexContext, Boolean> {
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Boolean execute(final IndexContext indexContext) {
 		if (indexContext.getInMemory()) {
 			return openInMemory(indexContext);
 		}
 		try {
-			// getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getName(), Boolean.TRUE);
 			return openOnFile(indexContext);
 		} finally {
 			getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getSimpleName(), "", Boolean.FALSE);

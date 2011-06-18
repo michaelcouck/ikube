@@ -18,11 +18,12 @@ import org.apache.lucene.store.Directory;
  */
 public class Close extends Action<IndexContext, Boolean> {
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Boolean execute(final IndexContext indexContext) {
-
 		try {
-			// getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getName(), Boolean.TRUE);
 			MultiSearcher multiSearcher = indexContext.getIndex().getMultiSearcher();
 			// Get all the searchables from the searcher and close them one by one
 			Searchable[] searchables = multiSearcher.getSearchables();

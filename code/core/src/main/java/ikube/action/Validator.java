@@ -15,7 +15,7 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
 /**
- * TODO Comment me!
+ * This class will just validate that there are indexes in a searchable condition and if not send a mail to the administrator.
  * 
  * @author Michael Couck
  * @since 31.10.10
@@ -23,10 +23,12 @@ import org.apache.lucene.store.FSDirectory;
  */
 public class Validator extends Action<IndexContext, Boolean> {
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Boolean execute(final IndexContext indexContext) {
 		try {
-			// getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getName(), Boolean.TRUE);
 			// Conditions:
 			// 1) There is an index but it is locked, i.e. an index is running
 			// 2) There are two indexes and one is locked
