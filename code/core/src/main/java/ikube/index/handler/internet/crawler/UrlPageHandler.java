@@ -101,10 +101,10 @@ public class UrlPageHandler extends UrlHandler<Url> implements Runnable {
 			}
 			for (Url url : urls) {
 				try {
-					LOGGER.info("Doing url : " + url);
 					if (url == null || url.getUrl() == null) {
 						continue;
 					}
+					LOGGER.info("Doing url : " + url);
 					handle(url);
 					handleChildren(url);
 					url.setParsedContent(null);
@@ -112,6 +112,7 @@ public class UrlPageHandler extends UrlHandler<Url> implements Runnable {
 					url.setTitle(null);
 					url.setUrl(null);
 					url.setContentType(null);
+					getClusterManager().set(IConstants.URL_DONE, url.getId(), url);
 				} catch (Exception e) {
 					LOGGER.error("Exception doing url : " + url, e);
 				}
@@ -329,13 +330,12 @@ public class UrlPageHandler extends UrlHandler<Url> implements Runnable {
 							String strippedSessionLink = UriUtilities.stripJSessionId(resolvedLink, replacement);
 							String strippedAnchorLink = UriUtilities.stripAnchor(strippedSessionLink, "");
 							Long id = HashUtilities.hash(strippedAnchorLink);
-							Url url = new Url();
-							url.setId(id);
 
-							if (clusterManager.get(IConstants.URL, url.getId()) != null
-									|| clusterManager.get(IConstants.URL_DONE, url.getId()) != null) {
+							if (clusterManager.get(IConstants.URL, id) != null || clusterManager.get(IConstants.URL_DONE, id) != null) {
 								continue;
 							}
+							Url url = new Url();
+							url.setId(id);
 							// Add the link to the database here
 							url.setUrl(strippedAnchorLink);
 							LOGGER.info("Setting url : " + url);

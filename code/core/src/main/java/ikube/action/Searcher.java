@@ -80,7 +80,7 @@ public class Searcher extends Action<IndexContext, Boolean> {
 				ListenerManager.fireEvent(Event.RESULTS, System.currentTimeMillis(), null, Boolean.TRUE);
 			}
 		} finally {
-			getClusterManager().setWorking(this.getClass().getName(), indexContext.getIndexName(), "", Boolean.FALSE);
+			getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getSimpleName(), "", Boolean.FALSE);
 		}
 		return Boolean.TRUE;
 	}

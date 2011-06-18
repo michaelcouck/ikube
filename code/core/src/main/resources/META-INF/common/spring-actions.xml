@@ -36,7 +36,7 @@
 		<ref bean="ikube.action.Restore" />
 		<ref bean="ikube.action.DiskFull" />
 		<ref bean="ikube.action.Validator" />
-		<!-- <ref bean="ikube.action.Searcher" /> -->
+		<ref bean="ikube.action.Searcher" />
 		<!-- <ref bean="ikube.action.Enrichment" /> -->
 	</util:list>
 
@@ -44,8 +44,8 @@
 		id="ikube.action.Reset" 
 		class="ikube.action.Reset" 
 		property:ruleExpression="
-			!AnyServersWorking &#38;&#38; 
-			!IsThisServerWorking">
+			!IsThisServerWorking &#38;&#38; 
+			!AnyServersWorking">
 		<property name="rules">
 			<util:list>
 				<ref local="ikube.action.rule.AnyServersWorking" />
@@ -57,8 +57,8 @@
 		id="ikube.action.Restore" 
 		class="ikube.action.Restore" 
 		property:ruleExpression="
-			!AnyServersWorking &#38;&#38; 
 			!IsThisServerWorking &#38;&#38; 
+			!AnyServersWorking &#38;&#38; 
 			(IsIndexCorrupt || 
 			 !AreIndexesCreated) &#38;&#38; 
 			IsIndexBackedUp &#38;&#38; 
@@ -99,6 +99,7 @@
 		id="ikube.action.Open" 
 		class="ikube.action.Open" 
 		property:ruleExpression="
+			!IsThisServerWorking &#38;&#38; 
 			!AnyServersWorking &#38;&#38; 
 			(!IsMultiSearcherInitialised || 
 			 !AreSearchablesInitialised) &#38;&#38; 
@@ -132,9 +133,9 @@
 				<ref local="ikube.action.rule.AreIndexesCreated" />
 				<ref local="ikube.action.rule.IsThisIndexCreated" />
 				<ref local="ikube.action.rule.SingleRuleException" />
-				<ref local="ikube.action.rule.IsThisServerWorking" />
 				<ref local="ikube.action.rule.AnyServersWorkingThisIndex" />
 				<ref local="ikube.action.rule.IsIndexCorrupt" />
+				<ref local="ikube.action.rule.IsThisServerWorking" />
 			</util:list>
 		</property>
 	</bean>
@@ -142,14 +143,14 @@
 		id="ikube.action.Delete" 
 		class="ikube.action.Delete" 
 		property:ruleExpression="
+			!IsThisServerWorking &#38;&#38; 
 			AreIndexesCreated &#38;&#38; 
-			!IsThisServerWorking &#38;&#38;
 			!AnyServersWorking">
 		<property name="rules">
 			<util:list>
 				<ref local="ikube.action.rule.AreIndexesCreated" />
-				<ref local="ikube.action.rule.IsThisServerWorking" />
 				<ref local="ikube.action.rule.AnyServersWorking" />
+				<ref local="ikube.action.rule.IsThisServerWorking" />
 			</util:list>
 		</property>
 	</bean>
@@ -157,8 +158,8 @@
 		id="ikube.action.Clean" 
 		class="ikube.action.Clean" 
 		property:ruleExpression="
-			!AnyServersWorking &#38;&#38;
-			!IsThisServerWorking">
+			!IsThisServerWorking &#38;&#38; 
+			!AnyServersWorking">
 		<property name="rules">
 			<util:list>
 				<ref local="ikube.action.rule.AnyServersWorking" />
@@ -170,8 +171,8 @@
 		id="ikube.action.Backup" 
 		class="ikube.action.Backup" 
 		property:ruleExpression="
-			!AnyServersWorking &#38;&#38; 
-			!IsThisServerWorking  &#38;&#38; 
+			!IsThisServerWorking &#38;&#38; 
+			!AnyServersWorking &#38;&#38;  
 			MustBackUpIndex &#38;&#38; 
 			(!IsIndexBackedUp || 
 			 !IsBackupIndexCurrent)">
@@ -189,8 +190,8 @@
 		id="ikube.action.DiskFull" 
 		class="ikube.action.DiskFull" 
 		property:ruleExpression="
-			!AnyServersWorking &#38;&#38; 
-			!IsThisServerWorking">
+			!IsThisServerWorking &#38;&#38; 
+			!AnyServersWorking">
 		<property name="rules">
 			<util:list>
 				<ref local="ikube.action.rule.AnyServersWorking" />
@@ -202,9 +203,9 @@
 		id="ikube.action.Enrichment" 
 		class="ikube.action.Enrichment" 
 		property:ruleExpression="
+			!IsThisServerWorking &#38;&#38; 
 			AreIndexesCreated &#38;&#38; 
-			AreSearchablesInitialised &#38;&#38;
-			!IsThisServerWorking">
+			AreSearchablesInitialised">
 		<property name="rules">
 			<util:list>
 				<ref local="ikube.action.rule.AnyServersWorking" />
@@ -218,8 +219,8 @@
 		id="ikube.action.Validator" 
 		class="ikube.action.Validator" 
 		property:ruleExpression="
-			!AnyServersWorking &#38;&#38;
-			!IsThisServerWorking">
+			!IsThisServerWorking &#38;&#38; 
+			!AnyServersWorking">
 		<property name="rules">
 			<util:list>
 				<ref local="ikube.action.rule.AnyServersWorking" />
@@ -231,8 +232,8 @@
 		id="ikube.action.Searcher" 
 		class="ikube.action.Searcher" 
 		property:ruleExpression="
-			!AnyServersWorking &#38;&#38; 
 			!IsThisServerWorking &#38;&#38; 
+			!AnyServersWorking &#38;&#38; 
 			AreIndexesCreated &#38;&#38; 
 			IsMultiSearcherInitialised"
 		property:fragment="true"
@@ -244,10 +245,10 @@
 		<property name="rules">
 			<util:list>
 				<ref local="ikube.action.rule.AnyServersWorking" />
-				<ref local="ikube.action.rule.IsThisServerWorking" />
 				<ref local="ikube.action.rule.IsThisIndexCreated" />
 				<ref local="ikube.action.rule.AreIndexesCreated" />
 				<ref local="ikube.action.rule.IsMultiSearcherInitialised" />
+				<ref local="ikube.action.rule.IsThisServerWorking" />
 			</util:list>
 		</property>
 	</bean>
@@ -268,7 +269,7 @@
 	<bean id="ikube.action.rule.IsIndexBackedUp" class="ikube.action.rule.IsIndexBackedUp" />
 	<bean id="ikube.action.rule.IsBackupIndexCurrent" class="ikube.action.rule.IsBackupIndexCurrent" />
 	<bean id="ikube.action.rule.SingleRuleException" class="ikube.action.rule.SingleRuleException" />
-	<bean id="ikube.action.rule.IsThisServerWorking" class="ikube.action.rule.IsThisServerWorking" />
 	<bean id="ikube.action.rule.AnyServersWorkingThisIndex" class="ikube.action.rule.AnyServersWorkingThisIndex" />
+	<bean id="ikube.action.rule.IsThisServerWorking" class="ikube.action.rule.IsThisServerWorking" />
 	
 </beans>

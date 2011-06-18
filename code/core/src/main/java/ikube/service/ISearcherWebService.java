@@ -21,6 +21,7 @@ public interface ISearcherWebService {
 	String SERVICE = "searcher";
 	String NAMESPACE = "http://ikube.search/";
 
+	int PUBLISHED_PORT = 8081;
 	String PUBLISHED_PATH = "/" + ISearcherWebService.class.getName().replace(".", "/") + "?wsdl";
 
 	/**

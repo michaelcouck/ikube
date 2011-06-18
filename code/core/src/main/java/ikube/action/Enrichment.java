@@ -99,7 +99,7 @@ public class Enrichment extends Action<IndexContext, Boolean> implements IConsta
 			} while (true);
 		} finally {
 			commitTransaction(entityManager);
-			getClusterManager().setWorking(this.getClass().getName(), indexContext.getIndexName(), "", Boolean.FALSE);
+			getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getSimpleName(), "", Boolean.FALSE);
 		}
 		return Boolean.TRUE;
 	}

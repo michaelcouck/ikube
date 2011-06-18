@@ -29,17 +29,18 @@ public class Index extends Action<IndexContext, Boolean> {
 	@Override
 	public Boolean execute(final IndexContext indexContext) throws Exception {
 		String indexName = indexContext.getIndexName();
-		long lastWorkingStartTime = getClusterManager()
-				.setWorking(this.getClass().getName(), indexContext.getIndexName(), "", Boolean.TRUE);
-		if (lastWorkingStartTime <= 0) {
-			logger.warn("Failed to join the cluster indexing : " + indexContext);
-			getClusterManager().setWorking(this.getClass().getName(), indexContext.getIndexName(), "", Boolean.FALSE);
-			return Boolean.FALSE;
-		}
 		Server server = getClusterManager().getServer();
 		List<Indexable<?>> indexables = indexContext.getIndexables();
+		String actionName = this.getClass().getSimpleName();
 		try {
 			if (indexables != null && indexables.size() > 0) {
+				long lastWorkingStartTime = getClusterManager().setWorking(actionName, indexContext.getIndexName(),
+						indexables.get(0).getName(), Boolean.TRUE);
+				if (lastWorkingStartTime <= 0) {
+					logger.warn("Failed to join the cluster indexing : " + indexContext);
+					getClusterManager().setWorking(actionName, indexContext.getIndexName(), indexables.get(0).getName(), Boolean.FALSE);
+					return Boolean.FALSE;
+				}
 				// If we get here then there are two possibilities:
 				// 1) The index is not current and we will start the index
 				// 2) The index is current and there are other servers working on the index, so we join them
@@ -47,20 +48,22 @@ public class Index extends Action<IndexContext, Boolean> {
 				// Start the indexing for this server
 				IndexManager.openIndexWriter(indexContext, lastWorkingStartTime, server.getAddress());
 				for (Indexable<?> indexable : indexables) {
+					// Get the right handler for this indexable
+					IHandler<Indexable<?>> handler = getHandler(indexable);
+					if (handler == null) {
+						logger.warn(Logging.getString("Not handling indexable : ", indexable, " no handler defined."));
+						continue;
+					}
 					try {
-						// Get the right handler for this indexable
-						IHandler<Indexable<?>> handler = getHandler(indexable);
-						if (handler == null) {
-							logger.warn(Logging.getString("Not handling indexable : ", indexable, " no handler defined."));
-							continue;
+						server = getClusterManager().getServer();
+						if (server.getAction() != null) {
+							// We need to reset the id of the next row
+							// after each indexable has been indexed of course
+							server.getAction().setIdNumber(0);
 						}
-						// if (getClusterManager().isHandled(indexable.getName(), indexName)) {
-						// logger.info(Logging.getString(indexable.getName(), " already indexed : "));
-						// continue;
-						// }
-						// Execute the handler and wait for the threads to finish
-						// getClusterManager().setWorking(indexName, indexable.getName(), Boolean.TRUE);
+						getClusterManager().setWorking(actionName, indexContext.getIndexName(), indexable.getName(), Boolean.TRUE);
 						logger.info("Executing handler : " + handler + ", " + indexable.getName());
+						// Execute the handler and wait for the threads to finish
 						List<Thread> threads = handler.handle(indexContext, indexable);
 						if (threads != null && !threads.isEmpty()) {
 							logger.info("Waiting for threads : " + threads);
@@ -68,12 +71,14 @@ public class Index extends Action<IndexContext, Boolean> {
 						}
 					} catch (Exception e) {
 						logger.error("Exception indexing data : " + indexContext.getIndexName(), e);
+					} finally {
+						// getClusterManager().setWorking(actionName, indexContext.getIndexName(), indexable.getName(), Boolean.FALSE);
 					}
 				}
 			}
 		} finally {
 			IndexManager.closeIndexWriter(indexContext);
-			getClusterManager().setWorking(this.getClass().getName(), indexContext.getIndexName(), "", Boolean.FALSE);
+			getClusterManager().setWorking(indexContext.getIndexName(), actionName, "", Boolean.FALSE);
 		}
 		String contextName = indexContext.getIndexName();
 		logger.debug(Logging.getString("Finished indexing : ", indexName, contextName));

@@ -45,7 +45,7 @@ public class ServersController extends BaseController {
 		// Put the server and other related stuff in the response
 		Server server = clusterManager.getServer();
 		modelAndView.addObject(IConstants.SERVER, server);
-		modelAndView.addObject(IConstants.ACTIONS, server.getActions());
+		modelAndView.addObject(IConstants.ACTION, server.getAction());
 		modelAndView.addObject(IConstants.WEB_SERVICE_URLS, server.getWebServiceUrls());
 		modelAndView.addObject(IConstants.INDEXING_EXECUTIONS, server.getIndexingExecutions());
 		modelAndView.addObject(IConstants.SEARCHING_EXECUTIONS, server.getSearchingExecutions());

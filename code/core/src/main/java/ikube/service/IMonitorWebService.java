@@ -21,6 +21,7 @@ public interface IMonitorWebService {
 	String SERVICE = "monitor";
 	String NAMESPACE = "http://ikube.monitor/";
 
+	int PUBLISHED_PORT = 8082;
 	String PUBLISHED_PATH = "/" + IMonitorWebService.class.getName().replace(".", "/") + "?wsdl";
 
 	/**

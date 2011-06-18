@@ -60,15 +60,15 @@ public class IndexableTableHandlerTest extends BaseTest {
 		connection = ((DataSource) ApplicationContextManager.getBean("nonXaDataSourceH2")).getConnection();
 
 		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
-		clusterManager.setWorking(Index.class.getName(), indexContext.getIndexName(), faqIndexableTable.getName(), Boolean.FALSE);
+		clusterManager.setWorking(Index.class.getSimpleName(), indexContext.getIndexName(), faqIndexableTable.getName(), Boolean.FALSE);
 	}
 
 	@After
 	public void after() {
 		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
-		clusterManager.setWorking(Index.class.getName(), indexContext.getIndexName(), faqIndexableTable.getName(), Boolean.FALSE);
+		clusterManager.setWorking(Index.class.getSimpleName(), indexContext.getIndexName(), faqIndexableTable.getName(), Boolean.FALSE);
 		Server server = clusterManager.getServer();
-		server.getActions().clear();
+		server.setAction(null);
 		clusterManager.set(Server.class.getName(), server.getId(), server);
 	}
 

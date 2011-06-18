@@ -46,7 +46,7 @@ public class Open extends Action<IndexContext, Boolean> {
 			// getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getName(), Boolean.TRUE);
 			return openOnFile(indexContext);
 		} finally {
-			getClusterManager().setWorking(this.getClass().getName(), indexContext.getIndexName(), "", Boolean.FALSE);
+			getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getSimpleName(), "", Boolean.FALSE);
 		}
 	}
 

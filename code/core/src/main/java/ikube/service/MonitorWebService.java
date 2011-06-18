@@ -42,6 +42,9 @@ public class MonitorWebService implements IMonitorWebService {
 
 	private static final Logger LOGGER = Logger.getLogger(MonitorWebService.class);
 
+	protected int publishedPort = IMonitorWebService.PUBLISHED_PORT;
+	protected String publishedPath = IMonitorWebService.PUBLISHED_PATH;
+
 	/**
 	 * {@inheritDoc}
 	 */

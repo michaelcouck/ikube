@@ -15,11 +15,7 @@
 		<th class="td-content">Open</th>
 		<th class="td-content">Max age</th>
 		<th class="td-content">Timestamp</th>
-		<!-- <th class="td-content">Batch size</th>
-		<th class="td-content">Inet batch size</th>
-		<th class="td-content">Read length</th> -->
 		<th class="td-content">Index path</th>
-		<!-- <th class="td-content">Backup path</th> -->
 	</tr>
 	
 	<c:forEach var="indexContext" items="${requestScope.indexContexts}">
@@ -34,8 +30,6 @@
 				${indexContext.indexName}
 			</a>
 		</td>
-		<!-- requestScope[indexContext.indexName]['indexDocuments'] -->
-		<!-- requestScope[indexContext.indexName]['indexSize'] -->
 		<td class="td-content">${indexContext.numDocs}</td>
 		<td class="td-content"><fmt:formatNumber 
 			value="${indexContext.indexSize / 1000000}" 
@@ -47,11 +41,7 @@
 		</td>
 		<td class="td-content">${indexContext.maxAge / 60}</td>
 		<td class="td-content">${indexContext.latestIndexTimestamp}</td>
-		<%-- <td class="td-content">${indexContext.batchSize}</td>
-		<td class="td-content">${indexContext.internetBatchSize}</td>
-		<td class="td-content">${indexContext.maxReadLength / 1000000}</td> --%>
 		<td class="td-content">${indexContext.indexDirectoryPath}/${indexContext.indexName}</td>
-		<%-- <td class="td-content">${indexContext.indexDirectoryPathBackup}</td> --%>
 	</tr>
 	</c:forEach>
 </table>
@@ -61,9 +51,10 @@
 	<tr>
 		<th class="td-content">Server</th>
 		<th class="td-content">Working</th>
+		<th class="td-content">Action</th>
+		<th class="td-content">Index</th>
 		<th class="td-content">Indexable</th>
-		<th class="td-content">Name</th>
-		<th class="td-content">Id number</th>
+		<th class="td-content">Id</th>
 		<th class="td-content">Start time</th>
 	</tr>
 	<c:forEach var="server" items="${requestScope.servers}">
@@ -81,28 +72,22 @@
 				<img alt="Working" src="<c:url value="/images/icons/${running}.gif"/>" title="Working">
 				<c:out value="${server.working}" />
 			</td>
-			<td colspan="4"></td>
+			<td colspan="5"></td>
 		</tr>
 		
-		<!-- 
-			We'll use a counter to limit the number of actions that are displayed on the
-			page as there can be several servers and many actions making the page very long. 
-		-->
-		<%-- <c:set var="counter" scope="page" value="server.actions"/> --%>
-		<c:forEach var="action" items="${server.actions}">
-			<%-- <c:set var="counter" scope="page" value="${counter - 1}"/> --%>
-			<%-- <c:if test="${counter < 10}"></c:if> --%>
+		<c:if test="${server.action != null}">
 			<tr>
 				<td colspan="2"></td>
-				<td class="td-content"><c:out value="${action.indexName}" /></td>
-				<td class="td-content"><c:out value="${action.indexableName}" /></td>
-				<td class="td-content"><c:out value="${action.idNumber}" /></td>
-				<td class="td-content"><c:out value="${action.startDate}" /></td>
+				<td class="td-content"><c:out value="${server.action.actionName}" /></td>
+				<td class="td-content"><c:out value="${server.action.indexName}" /></td>
+				<td class="td-content"><c:out value="${server.action.indexableName}" /></td>
+				<td class="td-content"><c:out value="${server.action.idNumber}" /></td>
+				<td class="td-content"><c:out value="${server.action.startDate}" /></td>
 			</tr>
-		</c:forEach>
+		</c:if>
 	
 		<tr>
-			<td colspan="2" style="padding-left: 20px;">
+			<td colspan="3" style="padding-left: 20px;">
 				<img alt="Index performance" 
 					src="<c:url value="/images/icons/index_performance.gif"/>" 
 					title="Index performance">
@@ -110,7 +95,7 @@
 					Indexing performance:
 				</span>
 			</td>
-			<th>Name</th>
+			<th>Index</th>
 			<th>Duration</th>
 			<th>Executions</th>
 			<th>Per second</th>
@@ -118,7 +103,7 @@
 	
 		<c:forEach var="execution" items="${server.indexingExecutions}">
 			<tr>
-				<td colspan="2"></td>
+				<td colspan="3"></td>
 				<td class="td-content"><c:out value="${execution.key}" /></td>
 				<td class="td-content"><fmt:formatNumber value="${execution.value.duration / 1000000000 / 60}" maxFractionDigits="2" /></td>
 				<td class="td-content"><c:out value="${execution.value.invocations}" /></td>
@@ -127,7 +112,7 @@
 		</c:forEach>
 	
 		<tr>
-			<td colspan="2" style="padding-left: 20px;">
+			<td colspan="3" style="padding-left: 20px;">
 				<img alt="Search performance" 
 					src="<c:url value="/images/icons/search_performance.gif"/>" 
 					title="Search performance">
@@ -135,7 +120,7 @@
 					Searching performance:
 				</span>
 			</td>
-			<th>Name</th>
+			<th>Index</th>
 			<th>Duration</th>
 			<th>Executions</th>
 			<th>Per second</th>
@@ -143,7 +128,7 @@
 	
 		<c:forEach var="execution" items="${server.searchingExecutions}">
 			<tr>
-				<td colspan="2"></td>
+				<td colspan="3"></td>
 				<td class="td-content"><c:out value="${execution.key}" /></td>
 				<td class="td-content"><fmt:formatNumber value="${execution.value.duration / 1000000000 / 60}" maxFractionDigits="2" /></td>
 				<td class="td-content"><c:out value="${execution.value.invocations}" /></td>
@@ -152,7 +137,7 @@
 		</c:forEach>
 		
 		<tr>	
-			<td colspan="6">&nbsp;</td>
+			<td colspan="7">&nbsp;</td>
 		</tr>
 	</c:forEach>
 </table>

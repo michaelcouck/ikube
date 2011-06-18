@@ -31,7 +31,7 @@ public class Reset extends Action<IndexContext, Boolean> {
 					anyWorking = Boolean.TRUE;
 					continue;
 				}
-				server.getActions().clear();
+				server.setAction(null);
 				getClusterManager().set(Server.class.getName(), server.getId(), server);
 			}
 			if (!anyWorking) {
@@ -40,7 +40,7 @@ public class Reset extends Action<IndexContext, Boolean> {
 				getClusterManager().clear(IConstants.URL_HASH);
 			}
 		} finally {
-			getClusterManager().setWorking(this.getClass().getName(), indexContext.getIndexName(), "", Boolean.FALSE);
+			getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getSimpleName(), "", Boolean.FALSE);
 		}
 		return Boolean.TRUE;
 	}

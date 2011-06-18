@@ -17,7 +17,7 @@ public class Process extends Action<IndexContext, Boolean> {
 			// getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getName(), Boolean.TRUE);
 			// TODO Process all the data collected during the indexing
 		} finally {
-			getClusterManager().setWorking(this.getClass().getName(), indexContext.getIndexName(), "", Boolean.FALSE);
+			getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getSimpleName(), "", Boolean.FALSE);
 		}
 		return Boolean.TRUE;
 	}

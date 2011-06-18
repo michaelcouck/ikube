@@ -77,6 +77,7 @@ public interface IConstants {
 	String ADDRESS = "address";
 	String SERVER = "server";
 	String SERVERS = "servers";
+	String ACTION = "action";
 	String ACTIONS = "actions";
 	String WEB_SERVICE_URLS = "webServiceUrls";
 	String INDEX_CONTEXTS = "indexContexts";
@@ -138,7 +139,7 @@ public interface IConstants {
 	/** The timeout to wait for the lock. */
 	long LOCK_TIMEOUT = 10000;
 	/** We only keep a few actions in the server. */
-	double MAX_ACTION_SIZE = 10;
+	double MAX_ACTION_SIZE = 25;
 	/** The ratio to delete the actions when the maximum is reached. */
 	double ACTION_PRUNE_RATIO = 0.3;
 	/** The maximum age that the server can get to before it is deleted from the cluster. */
@@ -158,7 +159,7 @@ public interface IConstants {
 	SimpleDateFormat HHMMSS_DDMMYYYY = new SimpleDateFormat("hh:mm:ss dd/MM/yyyy");
 
 	String CLASSPATH_PROPERTY = "java.class.path";
-	
+
 	String STRIP_CHARACTERS = "[]{},";
 
 }

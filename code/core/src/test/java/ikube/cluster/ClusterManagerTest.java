@@ -6,10 +6,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import ikube.ATest;
-import ikube.IConstants;
 import ikube.action.Index;
+import ikube.action.Open;
 import ikube.cluster.cache.Cache;
 import ikube.listener.ListenerManager;
+import ikube.model.Action;
 import ikube.model.Server;
 import ikube.model.Url;
 import ikube.toolkit.HashUtilities;
@@ -35,7 +36,7 @@ public class ClusterManagerTest extends ATest {
 
 	private transient String indexName;
 	private transient String indexableName;
-	private transient String actionName = Index.class.getName();
+	private transient String actionName = Index.class.getSimpleName();
 
 	private transient int batchSize = 10;
 
@@ -52,7 +53,7 @@ public class ClusterManagerTest extends ATest {
 		indexableName = INDEXABLE.getName();
 
 		remoteServer = new Server();
-		remoteServer.setAddress(InetAddress.getLocalHost().getHostAddress() + ".remote");
+		remoteServer.setAddress(InetAddress.getLocalHost().getHostAddress() + "." + System.nanoTime());
 		remoteServer.setId(HashUtilities.hash(remoteServer.getAddress()));
 		// remoteServer.setWorking(Boolean.FALSE);
 
@@ -76,12 +77,12 @@ public class ClusterManagerTest extends ATest {
 		// cache then clear the cache and it should be removed form the map. So
 		// we add a server
 		List<Server> servers = clusterManager.getServers();
-		assertEquals(0, servers.size());
+		int size = servers.size();
 		clusterManager.set(Server.class.getName(), remoteServer.getId(), remoteServer);
 
 		// Verify that the server is present in the cache
 		servers = clusterManager.getServers();
-		assertEquals(1, servers.size());
+		assertEquals(size + 1, servers.size());
 
 		// Clear the cache
 		clusterManager.clear(Server.class.getName());
@@ -205,46 +206,49 @@ public class ClusterManagerTest extends ATest {
 	public void setWorking() {
 		// First clear the map of servers
 		Server localServer = clusterManager.getServer();
-		localServer.getActions().clear();
+		localServer.setAction(null);
 		clusterManager.set(Server.class.getName(), localServer.getId(), localServer);
-		remoteServer.getActions().clear();
+		remoteServer.setAction(null);
 		clusterManager.set(Server.class.getName(), remoteServer.getId(), remoteServer);
 
 		// Verify that there are no actions in any server in the map
 		List<Server> servers = clusterManager.getServers();
 		for (Server server : servers) {
-			assertEquals(0, server.getActions().size());
+			assertNull("All the actions should be null : ", server.getAction());
 		}
 
 		// The local server gets set every time we call the set working
 		// method and the time gets set at that time too
 		final long expectedStartTime = System.currentTimeMillis();
-		// Set a remote server working
-		// remoteServer.setWorking(Boolean.TRUE);
-		remoteServer.getActions().add(remoteServer.new Action(0, actionName, indexableName, indexName, expectedStartTime, Boolean.TRUE));
-		clusterManager.set(Server.class.getName(), remoteServer.getId(), remoteServer);
+		localServer.setAction(new Action(0, Index.class.getSimpleName(), indexableName, indexName, expectedStartTime, Boolean.TRUE));
+		clusterManager.set(Server.class.getName(), localServer.getId(), localServer);
 		// Verify that the remote server has the action and the time we want
-		Server server = clusterManager.get(Server.class.getName(), "id = " + remoteServer.getId());
+		Server server = clusterManager.get(Server.class.getName(), "id = " + localServer.getId());
 		assertNotNull(server);
-		assertEquals(1, server.getActions().size());
-		assertEquals(expectedStartTime, server.getActions().get(0).getStartTime());
+		assertNotNull("The local server has the action set : ", server.getAction());
+		assertEquals(expectedStartTime, server.getAction().getStartTime());
 
 		List<Thread> threads = new ArrayList<Thread>();
 		int threadSize = 3;
+		final int iterations = 100;
 		for (int i = 0; i < threadSize; i++) {
 			Thread thread = new Thread(new Runnable() {
 				public void run() {
-					for (int i = 0; i < 10; i++) {
-						AtomicAction.executeAction(IConstants.SERVER_LOCK, new IAtomicAction() {
-							@Override
-							@SuppressWarnings("unchecked")
-							public <T> T execute() {
-								long actualStartTime = clusterManager.setWorking(actionName, indexName, indexableName, Boolean.TRUE);
-								logger.info("Actual start time : " + actualStartTime + ", expected start time : " + expectedStartTime);
-								assertEquals(expectedStartTime, actualStartTime);
-								return (T) Boolean.TRUE;
-							}
-						});
+					for (int i = 0; i < iterations; i++) {
+						long actualStartTime = clusterManager.setWorking(Index.class.getSimpleName(), indexName, indexableName,
+								Boolean.TRUE);
+						// logger.info("Actual start time : " + actualStartTime + ", expected start time : " + expectedStartTime);
+						assertEquals(expectedStartTime, actualStartTime);
+
+						actualStartTime = clusterManager.setWorking(Open.class.getSimpleName(), indexName, indexableName, Boolean.TRUE);
+						// logger.info("Actual start time : " + actualStartTime + ", expected start time : " + expectedStartTime);
+
+						actualStartTime = clusterManager.setWorking(Index.class.getSimpleName(), indexName, indexableName, Boolean.FALSE);
+						// logger.info("Actual start time : " + actualStartTime + ", expected start time : " + expectedStartTime);
+						assertEquals(expectedStartTime, actualStartTime);
+
+						actualStartTime = clusterManager.setWorking(Open.class.getSimpleName(), indexName, indexableName, Boolean.FALSE);
+						// logger.info("Actual start time : " + actualStartTime + ", expected start time : " + expectedStartTime);
 					}
 				}
 			}, "ClusterManagerTestThread : " + i);

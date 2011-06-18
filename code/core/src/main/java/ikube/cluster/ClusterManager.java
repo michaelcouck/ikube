@@ -7,13 +7,12 @@ import ikube.cluster.cache.ICache.ICriteria;
 import ikube.listener.Event;
 import ikube.listener.IListener;
 import ikube.listener.ListenerManager;
+import ikube.model.Action;
 import ikube.model.Server;
-import ikube.model.Server.Action;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.HashUtilities;
 
 import java.net.InetAddress;
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -80,7 +79,7 @@ public class ClusterManager implements IClusterManager, IConstants {
 			// server.setLogTail(logTail);
 			// }
 			server.setAge(System.currentTimeMillis());
-			LOGGER.info("Publishing server : " + server.getAddress());
+			// LOGGER.debug("Publishing server : " + server.getAddress());
 			set(Server.class.getName(), server.getId(), server);
 		}
 	};
@@ -149,11 +148,9 @@ public class ClusterManager implements IClusterManager, IConstants {
 		List<Server> servers = getServers();
 		outer: for (Server server : servers) {
 			if (server.getWorking()) {
-				for (Action action : server.getActions()) {
-					if (action.getIndexName().equals(indexName)) {
-						anyWorking = Boolean.TRUE;
-						break outer;
-					}
+				if (server.getAction() != null && server.getAction().getIndexName().equals(indexName)) {
+					anyWorking = Boolean.TRUE;
+					break outer;
 				}
 			}
 		}
@@ -171,39 +168,23 @@ public class ClusterManager implements IClusterManager, IConstants {
 	 */
 	@Override
 	public long getIdNumber(final String indexName, final String indexableName, final long batchSize, final long minId) {
-		// TODO Have another look at this, surely this can be simplified, but be careful
 		long idNumber = 0;
-		// cache.get(Server.class.getName(), null, null, Integer.MAX_VALUE);
 		// We find the action for this server
 		Server server = getServer();
-		List<Action> actions = server.getActions();
-		Action currentAction = null;
-
-		for (int i = actions.size() - 1; i >= 0; i--) {
-			Action action = actions.get(i);
-			if (action.getIndexableName().equals(indexableName) && action.getIndexName().equals(indexName)) {
-				currentAction = action;
-				idNumber = currentAction.getIdNumber();
-				break;
-			}
+		Action action = server.getAction();
+		if (action == null) {
+			LOGGER.warn("Setting action : " + indexName + ", " + indexableName + ", " + batchSize);
+			action = new Action(0, null, indexableName, indexName, System.currentTimeMillis(), Boolean.TRUE);
+			server.setAction(action);
 		}
-
-		// This can never happen, can it?
-		if (currentAction == null) {
-			LOGGER.warn("Action null : " + indexName + ", " + indexableName + ", " + batchSize);
-			currentAction = server.new Action();
-			currentAction.setIndexableName(indexableName);
-			currentAction.setIndexName(indexName);
-			currentAction.setStartTime(System.currentTimeMillis());
-			actions.add(currentAction);
-		}
-
+		// && action.getIndexableName().equals(indexableName) && action.getIndexName().equals(indexName)
+		idNumber = action.getIdNumber();
 		if (idNumber < minId) {
 			idNumber = minId;
 		}
 		long nextIdNumber = idNumber + batchSize;
 		// Set the next row number to the current + the batch size
-		currentAction.setIdNumber(nextIdNumber);
+		action.setIdNumber(nextIdNumber);
 		// Publish the server to the cluster
 		set(Server.class.getName(), server.getId(), server);
 		return idNumber;
@@ -242,47 +223,28 @@ public class ClusterManager implements IClusterManager, IConstants {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public long setWorking(final String actionName, final String indexName, final String indexableName, final boolean isWorking) {
-		// Set the server working and the new action in the list
-		Server server = getServer();
-		set(Server.class.getName(), server.getId(), server);
-		Long firstStartTime = System.currentTimeMillis();
-		if (!"".equals(indexableName)) {
-			boolean set = Boolean.FALSE;
-			// Find the action that we are setting
-			for (Action action : server.getActions()) {
-				if (action.getActionName().equals(actionName) && action.getIndexName().equals(indexName)
-						&& action.getIndexableName().equals(indexableName)) {
-					firstStartTime = Math.min(firstStartTime, action.getStartTime());
-					set = Boolean.TRUE;
-					action.setWorking(isWorking);
-					break;
-				}
+	public synchronized long setWorking(final String actionName, final String indexName, final String indexableName, final boolean isWorking) {
+		try {
+			Server server = getServer();
+			if (server.getAction() == null) {
+				server.setAction(new Action());
 			}
-			if (!set) {
-				// Couldn't find the action, create a new one
-				server.getActions().add(server.new Action(0, actionName, indexableName, indexName, firstStartTime, isWorking));
-			}
-		}
-		// Publish the fact that this server is starting to work on an action
-		LOGGER.debug("Publishing server working : " + server.getAddress());
-		set(Server.class.getName(), server.getId(), server);
-		// Prune the actions in this server
-		List<Action> actions = server.getActions();
-		if (actions.size() > MAX_ACTION_SIZE) {
-			Iterator<Action> iterator = actions.iterator();
-			double prunedSize = MAX_ACTION_SIZE * ACTION_PRUNE_RATIO;
-			while (iterator.hasNext()) {
-				Action action = iterator.next();
-				LOGGER.debug("Removing action : " + action);
-				iterator.remove();
-				if (actions.size() <= prunedSize) {
-					break;
-				}
-			}
+			// Reset the id of this action
+			server.getAction().setIdNumber(0);
+			server.getAction().setActionName(actionName);
+			server.getAction().setIndexableName(indexableName);
+			server.getAction().setIndexName(indexName);
+			// Reset the time in the action for each action
+			server.getAction().setStartTime(System.currentTimeMillis());
+			server.getAction().setWorking(isWorking);
+
+			// Publish the fact that this server is starting to work on an action
+			// LOGGER.info("Publishing server working : " + server.getAddress());
 			set(Server.class.getName(), server.getId(), server);
+			return server.getAction().getStartTime();
+		} finally {
+			notifyAll();
 		}
-		return firstStartTime;
 	}
 
 	/**
@@ -294,12 +256,11 @@ public class ClusterManager implements IClusterManager, IConstants {
 		boolean isHandled = Boolean.FALSE;
 		List<Server> servers = getServers();
 		for (Server server : servers) {
-			for (Action action : server.getActions()) {
-				if (action.getIndexName().equals(indexName) && action.getIndexableName().equals(indexableName)) {
-					LOGGER.info("Already indexed by : " + server);
-					isHandled = Boolean.TRUE;
-					break;
-				}
+			Action action = server.getAction();
+			if (action != null && action.getIndexName().equals(indexName) && action.getIndexableName().equals(indexableName)) {
+				LOGGER.info("Already indexed by : " + server);
+				isHandled = Boolean.TRUE;
+				break;
 			}
 		}
 		return isHandled;

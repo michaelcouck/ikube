@@ -1,7 +1,6 @@
 package ikube.service;
 
 import static org.junit.Assert.assertNotNull;
-
 import ikube.IConstants;
 
 import java.net.InetAddress;
@@ -26,9 +25,9 @@ public class ServiceLocatorTest extends AServiceTest {
 
 	@Test
 	public void getService() throws Exception {
-		webServicePublisher.publish();
 		String protocol = "http";
 		String host = InetAddress.getLocalHost().getHostAddress();
+		int port = ISearcherWebService.PUBLISHED_PORT;
 		String path = ISearcherWebService.PUBLISHED_PATH;
 		String nameSpace = ISearcherWebService.NAMESPACE;
 		String serviceName = ISearcherWebService.SERVICE;

@@ -1,12 +1,9 @@
 package ikube.model;
 
-import ikube.IConstants;
 import ikube.service.IMonitorWebService;
 import ikube.service.ISearcherWebService;
 
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,8 +12,6 @@ import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
@@ -31,117 +26,12 @@ import org.apache.commons.lang.builder.ToStringStyle;
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Server extends Persistable implements Comparable<Server> {
 
-	public class Action implements Serializable {
-
-		/** The row id of the next row. */
-		private long idNumber;
-		/** The name of the action that is executing. */
-		private String actionName;
-		/** The currently executing indexable. */
-		private String indexableName;
-		/** The actionName of the currently executing index. */
-		private String indexName;
-		/** The time the action was started. */
-		private long startTime;
-		/** Whether this server is working. */
-		private boolean working;
-
-		/**
-		 * Default constructor.
-		 */
-		public Action() {
-		}
-
-		public Action(final long idNumber, final String actionName, final String indexableName, final String indexName, final long startTime, final boolean working) {
-			this.idNumber = idNumber;
-			this.actionName = actionName;
-			this.indexableName = indexableName;
-			this.indexName = indexName;
-			this.startTime = startTime;
-			this.working = working;
-		}
-
-		public long getIdNumber() {
-			return idNumber;
-		}
-
-		public void setIdNumber(final long idNumber) {
-			this.idNumber = idNumber;
-		}
-
-		public String getActionName() {
-			return actionName;
-		}
-
-		public void setActionName(String actionName) {
-			this.actionName = actionName;
-		}
-
-		public String getIndexableName() {
-			return indexableName;
-		}
-
-		public void setIndexableName(final String indexableName) {
-			this.indexableName = indexableName;
-		}
-
-		public String getIndexName() {
-			return indexName;
-		}
-
-		public void setIndexName(final String indexName) {
-			this.indexName = indexName;
-		}
-
-		public long getStartTime() {
-			return startTime;
-		}
-
-		public void setStartTime(final long startTime) {
-			this.startTime = startTime;
-		}
-
-		public boolean getWorking() {
-			return working;
-		}
-
-		public void setWorking(final boolean working) {
-			this.working = working;
-		}
-
-		public String getStartDate() {
-			return IConstants.HHMMSS_DDMMYYYY.format(new Date(this.startTime));
-		}
-
-		@Override
-		public int hashCode() {
-			return HashCodeBuilder.reflectionHashCode(this, Boolean.FALSE);
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			return EqualsBuilder.reflectionEquals(this, obj, Boolean.FALSE);
-		}
-
-		public String toString() {
-			final StringBuilder builder = new StringBuilder("[");
-			builder.append(getIndexableName());
-			builder.append(", ");
-			builder.append(getIndexName());
-			builder.append(", ");
-			builder.append(getStartTime());
-			builder.append("]");
-			return builder.toString();
-		}
-
-	}
-
 	/** The ip of the server. */
 	private String ip;
 	/** The address of this machine. */
 	private String address;
 	/** The details about the action that this server is executing. */
-	private final List<Action> actions;
+	private Action action;
 	/** The search web service url for this server. */
 	private String searchWebServiceUrl;
 	/** The monitoring service for this server. */
@@ -153,12 +43,9 @@ public class Server extends Persistable implements Comparable<Server> {
 	/** The performance monitoring data. */
 	private Map<String, Execution> indexingExecutions;
 	private Map<String, Execution> searchingExecutions;
-	/** The last 5 kilobytes of the log file for this server. */
-	private String logTail;
 
 	public Server() {
 		super();
-		this.actions = new ArrayList<Server.Action>();
 		this.webServiceUrls = new ArrayList<String>();
 		this.searchingExecutions = new HashMap<String, Execution>();
 		this.indexingExecutions = new HashMap<String, Execution>();
@@ -177,21 +64,19 @@ public class Server extends Persistable implements Comparable<Server> {
 	}
 
 	public boolean getWorking() {
-		List<Action> actions = getActions();
-		for (Action action : actions) {
-			if (action.getWorking()) {
-				return Boolean.TRUE;
-			}
-		}
-		return Boolean.FALSE;
+		return this.action != null ? this.action.getWorking() : Boolean.FALSE;
 	}
 
 	public void setAddress(final String address) {
 		this.address = address;
 	}
 
-	public List<Action> getActions() {
-		return actions;
+	public Action getAction() {
+		return action;
+	}
+
+	public void setAction(Action action) {
+		this.action = action;
 	}
 
 	public List<String> getWebServiceUrls() {
@@ -246,14 +131,6 @@ public class Server extends Persistable implements Comparable<Server> {
 		this.indexingExecutions = indexingExecutions;
 	}
 
-	public String getLogTail() {
-		return logTail;
-	}
-
-	public void setLogTail(String logTail) {
-		this.logTail = logTail;
-	}
-
 	public boolean equals(Object object) {
 		if (object == null) {
 			return Boolean.FALSE;
@@ -277,16 +154,7 @@ public class Server extends Persistable implements Comparable<Server> {
 	}
 
 	public String toString() {
-		String logTailBackup = logTail;
-		try {
-			// Remove the log tail as it can be very long
-			if (logTail != null) {
-				logTail = null;
-			}
-			return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
-		} finally {
-			logTail = logTailBackup;
-		}
+		return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
 	}
 
 }

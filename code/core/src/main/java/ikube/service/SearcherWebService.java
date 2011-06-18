@@ -41,6 +41,9 @@ public class SearcherWebService implements ISearcherWebService {
 
 	private static final Logger LOGGER = Logger.getLogger(SearcherWebService.class);
 
+	protected int publishedPort = ISearcherWebService.PUBLISHED_PORT;
+	protected String publishedPath = ISearcherWebService.PUBLISHED_PATH;
+
 	private SearchDelegate searchDelegate;
 	private Map<String, IndexContext> indexContexts;
 

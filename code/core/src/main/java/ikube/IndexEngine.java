@@ -60,7 +60,8 @@ public class IndexEngine implements IIndexEngine {
 		}
 
 		// If this server is working on anything then return
-		Server server = ApplicationContextManager.getBean(IClusterManager.class).getServer();
+		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
+		Server server = clusterManager.getServer();
 		if (server.getWorking()) {
 			LOGGER.debug("This server working : " + server);
 			return;

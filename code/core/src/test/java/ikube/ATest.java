@@ -11,6 +11,7 @@ import ikube.database.IDataBase;
 import ikube.index.IndexManager;
 import ikube.index.parse.mime.MimeMapper;
 import ikube.index.parse.mime.MimeTypes;
+import ikube.listener.ListenerManager;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.mock.IndexManagerMock;
 import ikube.model.Index;
@@ -146,6 +147,8 @@ public abstract class ATest {
 		ApplicationContextManagerMock.INDEX_CONTEXT = INDEX_CONTEXT;
 		ApplicationContextManagerMock.CLUSTER_MANAGER = CLUSTER_MANAGER;
 		when(ApplicationContextManagerMock.HANDLER.getIndexableClass()).thenReturn(IndexableInternet.class);
+		
+		ListenerManager.removeListeners();
 	}
 
 	protected void delete(final IDataBase dataBase, final Class<?>... klasses) {

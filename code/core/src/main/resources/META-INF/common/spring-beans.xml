@@ -108,33 +108,8 @@
 		class="ikube.service.MonitorWebService" />
 	<bean
 		id="ikube.service.WebServicePublisher"
-		class="ikube.service.WebServicePublisher"
-		init-method="publish" >
+		class="ikube.service.WebServicePublisher">
 		<constructor-arg ref="ikube.cluster.IClusterManager" />
-		<property name="protocols">
-			<list>
-				<value>${service.protocol}</value>
-				<value>${service.protocol}</value>
-			</list>
-		</property>
-		<property name="ports">
-			<list>
-				<value>${service.port}</value>
-				<value>${monitoring.service.port}</value>
-			</list>
-		</property>
-		<property name="paths">
-			<list>
-				<value>${web.service.path}</value>
-				<value>${monitoring.service.path}</value>
-			</list>
-		</property>
-		<property name="implementors">
-			<list>
-				<ref local="ikube.service.SearcherWebService" />
-				<ref local="ikube.service.MonitorWebService" />
-			</list>
-		</property>
 	</bean>
 	
 	<!-- The schedules that fire events to start actions. -->
@@ -154,8 +129,8 @@
 		id="ikube.listener.ScheduleBroadClean"
 		class="ikube.listener.Schedule"
 		property:type="clean"
-		property:delay="60000"
-		property:period="60000" />
+		property:delay="600000"
+		property:period="600000" />
 	<bean
 		id="ikube.listener.SchedulePerformance"
 		class="ikube.listener.Schedule"

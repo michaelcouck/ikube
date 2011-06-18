@@ -16,6 +16,8 @@ import ikube.toolkit.ApplicationContextManager;
 import java.io.File;
 import java.util.List;
 
+import javax.persistence.Transient;
+
 import org.apache.log4j.Logger;
 
 /**
@@ -30,11 +32,13 @@ import org.apache.log4j.Logger;
 public abstract class Action<E, F> implements IAction<E, F> {
 
 	protected transient Logger logger = Logger.getLogger(Action.class);
-	/** The cluster synchronization class. */
-	private transient IClusterManager clusterManager;
 
-	private String predicate;
-	private List<IRule<E>> rules;
+	@Transient
+	private transient IClusterManager clusterManager;
+	@Transient
+	private transient String predicate;
+	@Transient
+	private transient List<IRule<E>> rules;
 
 	public String getRuleExpression() {
 		return predicate;

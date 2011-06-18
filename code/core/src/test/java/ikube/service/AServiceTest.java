@@ -4,10 +4,6 @@ import ikube.ATest;
 import ikube.cluster.ClusterManager;
 import ikube.cluster.cache.Cache;
 import ikube.mock.ClusterManagerMock;
-
-import java.util.Arrays;
-import java.util.List;
-
 import mockit.Mockit;
 
 import org.junit.AfterClass;
@@ -33,7 +29,6 @@ public abstract class AServiceTest extends ATest {
 		Mockit.tearDownMocks();
 	}
 
-	protected int port = 9010;
 	protected WebServicePublisher webServicePublisher;
 
 	public AServiceTest(Class<?> klass) {
@@ -41,14 +36,10 @@ public abstract class AServiceTest extends ATest {
 	}
 
 	@Before
-	@SuppressWarnings("unchecked")
 	public void before() throws Exception {
 		webServicePublisher = new WebServicePublisher(new ClusterManager(new Cache()));
-		List<?> implementors = Arrays.asList(new SearcherWebService());
-		webServicePublisher.setImplementors((List<Object>) implementors);
-		webServicePublisher.setPaths(Arrays.asList(ISearcherWebService.PUBLISHED_PATH));
-		webServicePublisher.setPorts(Arrays.asList(port));
-		webServicePublisher.setProtocols(Arrays.asList("http"));
+		webServicePublisher.postProcessAfterInitialization(new MonitorWebService(), MonitorWebService.class.getSimpleName());
+		webServicePublisher.postProcessAfterInitialization(new SearcherWebService(), SearcherWebService.class.getSimpleName());
 	}
 
 }

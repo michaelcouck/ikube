@@ -31,6 +31,8 @@ public class RuleInterceptor implements IRuleInterceptor {
 
 	private static final transient Logger LOGGER = Logger.getLogger(RuleInterceptor.class);
 
+	private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(10);
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -42,14 +44,11 @@ public class RuleInterceptor implements IRuleInterceptor {
 		// to true for server two before server one can set the values that would make server
 		// two evaluate to false, so they both start the action they shouldn't start
 		ILock lock = AtomicAction.lock(IConstants.SERVER_LOCK);
-		JEP jep = new JEP();
-		Object result = null;
-		String predicate = null;
-		Indexable<?> indexable = null;
-		IndexContext indexContext = null;
 		Object target = proceedingJoinPoint.getTarget();
 		boolean proceed = Boolean.FALSE;
 		try {
+			Indexable<?> indexable = null;
+			IndexContext indexContext = null;
 			if (LOGGER.isDebugEnabled()) {
 				LOGGER.debug("Intercepting : " + target);
 			}
@@ -79,6 +78,8 @@ public class RuleInterceptor implements IRuleInterceptor {
 						}
 					}
 					if (indexContext != null || indexable == null) {
+						JEP jep = new JEP();
+						Object result = null;
 						for (IRule<IndexContext> rule : classRules) {
 							boolean evaluation = rule.evaluate(indexContext);
 							String parameter = rule.getClass().getSimpleName();
@@ -87,7 +88,7 @@ public class RuleInterceptor implements IRuleInterceptor {
 							}
 							jep.addVariable(parameter, evaluation);
 						}
-						predicate = ((IAction<?, ?>) target).getRuleExpression();
+						String predicate = ((IAction<?, ?>) target).getRuleExpression();
 						jep.parseExpression(predicate);
 						if (jep.hasError()) {
 							LOGGER.warn("Exception in Jep expression : " + jep.getErrorInfo());
@@ -113,14 +114,14 @@ public class RuleInterceptor implements IRuleInterceptor {
 				}
 			}
 			if (proceed) {
-				proceed(proceedingJoinPoint, target.getClass().getName(), indexContext.getIndexName(), indexable.getName());
+				proceed(proceedingJoinPoint, target.getClass().getSimpleName(), indexContext.getIndexName(), indexable.getName());
 			}
 		} catch (Throwable t) {
 			LOGGER.error("Exception evaluating the rules : ", t);
 		} finally {
 			AtomicAction.unlock(lock);
 		}
-		LOGGER.info(Logging.getString("Rule intercepter proceeding : ", proceed, target, result, jep, predicate));
+		LOGGER.info(Logging.getString("Rule intercepter proceeding : ", proceed, target.getClass().getSimpleName()));
 		return proceed;
 	}
 
@@ -128,20 +129,18 @@ public class RuleInterceptor implements IRuleInterceptor {
 			final String indexableName) {
 		long delay = 1;
 		final IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
+		// We set the working flag in the action within the cluster lock when setting to true
 		clusterManager.setWorking(actionName, indexName, indexableName, Boolean.TRUE);
-		final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
 		executorService.schedule(new Runnable() {
 			public void run() {
 				try {
 					proceedingJoinPoint.proceed();
 				} catch (Throwable e) {
 					LOGGER.error("Exception proceeding on join point : " + proceedingJoinPoint, e);
-				} finally {
-					clusterManager.setWorking(actionName, indexName, indexableName, Boolean.FALSE);
 				}
 			}
 		}, delay, TimeUnit.MILLISECONDS);
-		executorService.shutdown();
+		// executorService.shutdown();
 	}
 
 	protected void printNodesAndEvaluations(JEP jep, Node node) {

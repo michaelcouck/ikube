@@ -1,6 +1,9 @@
 package ikube.index.handler.internet.crawler;
 
 import static org.junit.Assert.assertTrue;
+
+import java.util.Arrays;
+
 import ikube.BaseTest;
 import ikube.IConstants;
 import ikube.cluster.IClusterManager;
@@ -10,6 +13,7 @@ import ikube.model.Url;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.HashUtilities;
 import ikube.toolkit.PerformanceTester;
+import ikube.toolkit.ThreadUtilities;
 
 import org.junit.After;
 import org.junit.Before;
@@ -59,7 +63,7 @@ public class UrlPageHandlerTest extends BaseTest {
 		clusterManager.set(IConstants.URL, url.getId(), url);
 		Thread thread = new Thread(urlPageHandler);
 		thread.start();
-		thread.join();
+		ThreadUtilities.waitForThreads(Arrays.asList(thread));
 		// Verify that there are urls in the database, that they are all indexed and there are no duplicates
 		assertTrue(clusterManager.get(Url.class, IConstants.URL, null, null, Integer.MAX_VALUE).size() == 0);
 		assertTrue(clusterManager.get(Url.class, IConstants.URL_DONE, null, null, Integer.MAX_VALUE).size() > 0);

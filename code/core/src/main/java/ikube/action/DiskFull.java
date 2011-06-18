@@ -50,7 +50,7 @@ public class DiskFull extends Action<IndexContext, Boolean> {
 				logger.error("Exception looking for the free space : " + indexesDirectory, e);
 			}
 		} finally {
-			getClusterManager().setWorking(this.getClass().getName(), indexContext.getIndexName(), "", Boolean.FALSE);
+			getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getSimpleName(), "", Boolean.FALSE);
 		}
 		return Boolean.TRUE;
 	}

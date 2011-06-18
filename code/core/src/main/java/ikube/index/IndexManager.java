@@ -100,6 +100,15 @@ public final class IndexManager {
 		}
 	}
 
+	/**
+	 * TODO Document me!
+	 * 
+	 * @param indexContext
+	 * @param indexDirectory
+	 * @param create
+	 * @return
+	 * @throws Exception
+	 */
 	public static synchronized IndexWriter openIndexWriter(IndexContext indexContext, File indexDirectory, boolean create) throws Exception {
 		Directory directory = null;
 		if (indexContext.getInMemory()) {
@@ -118,6 +127,11 @@ public final class IndexManager {
 		return indexWriter;
 	}
 
+	/**
+	 * TODO Document me!
+	 * 
+	 * @param indexContext
+	 */
 	public static synchronized void closeIndexWriter(final IndexContext indexContext) {
 		try {
 			if (indexContext != null && indexContext.getIndex().getIndexWriter() != null) {
@@ -130,6 +144,11 @@ public final class IndexManager {
 		}
 	}
 
+	/**
+	 * TODO Document me!
+	 * 
+	 * @param indexWriter
+	 */
 	public static void closeIndexWriter(final IndexWriter indexWriter) {
 		if (indexWriter == null) {
 			LOGGER.warn("Tried to close a null writer : ");
@@ -169,6 +188,14 @@ public final class IndexManager {
 		LOGGER.info("Index optimized and closed : " + indexWriter);
 	}
 
+	/**
+	 * TODO Document me!
+	 * 
+	 * @param indexContext
+	 * @param time
+	 * @param ip
+	 * @return
+	 */
 	public static String getIndexDirectory(final IndexContext indexContext, final long time, final String ip) {
 		StringBuilder builder = new StringBuilder();
 		builder.append(IndexManager.getIndexDirectoryPath(indexContext));
@@ -179,14 +206,33 @@ public final class IndexManager {
 		return builder.toString();
 	}
 
+	/**
+	 * TODO Document me!
+	 * 
+	 * @param indexContext
+	 * @return
+	 */
 	public static String getIndexDirectoryPath(final IndexContext indexContext) {
 		return getIndexDirectoryPath(indexContext, indexContext.getIndexDirectoryPath());
 	}
 
+	/**
+	 * TODO Document me!
+	 * 
+	 * @param indexContext
+	 * @return
+	 */
 	public static String getIndexDirectoryPathBackup(final IndexContext indexContext) {
 		return getIndexDirectoryPath(indexContext, indexContext.getIndexDirectoryPathBackup());
 	}
 
+	/**
+	 * TODO Document me!
+	 * 
+	 * @param indexContext
+	 * @param indexDirectory
+	 * @return
+	 */
 	private static String getIndexDirectoryPath(IndexContext indexContext, String indexDirectory) {
 		StringBuilder builder = new StringBuilder();
 		builder.append(indexDirectory); // Path
@@ -198,9 +244,23 @@ public final class IndexManager {
 		return indexDirectoryPath;
 	}
 
+	/**
+	 * TODO Document me!
+	 * 
+	 * @param fieldName
+	 * @param fieldContent
+	 * @param document
+	 * @param store
+	 * @param analyzed
+	 * @param termVector
+	 */
 	public static void addStringField(final String fieldName, final String fieldContent, final Document document, final Store store,
 			final Index analyzed, final TermVector termVector) {
 		Field field = document.getField(fieldName);
+		if (fieldName == null || fieldContent == null) {
+			LOGGER.warn("Field and content can't be null : " + fieldName + ", " + fieldContent);
+			return;
+		}
 		if (field == null) {
 			field = new Field(fieldName, fieldContent, store, analyzed, termVector);
 			document.add(field);
@@ -211,8 +271,22 @@ public final class IndexManager {
 		}
 	}
 
+	/**
+	 * TODO Document me!
+	 * 
+	 * @param fieldName
+	 * @param document
+	 * @param store
+	 * @param termVector
+	 * @param reader
+	 * @throws Exception
+	 */
 	public static void addReaderField(final String fieldName, final Document document, final Store store, final TermVector termVector,
 			final Reader reader) throws Exception {
+		if (fieldName == null || reader == null) {
+			LOGGER.warn("Field and reader can't be null : " + fieldName + ", " + reader);
+			return;
+		}
 		Field field = document.getField(fieldName);
 		if (field == null) {
 			field = new Field(fieldName, reader, termVector);
