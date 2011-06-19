@@ -62,8 +62,9 @@ public class Open extends Action<IndexContext, Boolean> {
 		}
 
 		File[] serverIndexDirectories = latestIndexDirectory.listFiles();
-		IndexReader reader = null;
 		Directory directory = null;
+		IndexReader reader = null;
+		Searchable searcher = null;
 		boolean exceptionOpening = Boolean.FALSE;
 		for (File serverIndexDirectory : serverIndexDirectories) {
 			try {
@@ -79,6 +80,7 @@ public class Open extends Action<IndexContext, Boolean> {
 					// doesn't exist in the directory for some odd reason
 					// then we just ignore it, and the problem will eventually
 					// get deleted(at the next full index of course).
+					directory.close();
 					continue;
 				}
 				// TODO - Verify that all the files are there. Could be
@@ -86,7 +88,7 @@ public class Open extends Action<IndexContext, Boolean> {
 				// from one of the other servers, and all the files are
 				// not copied over yet
 				reader = IndexReader.open(directory, Boolean.TRUE);
-				Searchable searcher = new IndexSearcher(reader);
+				searcher = new IndexSearcher(reader);
 				searchers.add(searcher);
 				logger.info(Logging.getString("Opened searcher on : ", serverIndexDirectory, "exists : ", exists, "locked : ", locked));
 			} catch (Exception e) {
@@ -101,6 +103,11 @@ public class Open extends Action<IndexContext, Boolean> {
 						if (reader != null) {
 							reader.close();
 						}
+						if (searcher != null) {
+							searcher.close();
+						}
+						boolean removed = searchers.remove(searcher);
+						logger.info("Removed searcher : " + removed + ", " + searcher);
 					} catch (Exception e) {
 						logger.error("Exception closing the searcher after an exception opening it : ", e);
 					}

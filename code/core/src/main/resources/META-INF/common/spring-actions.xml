@@ -240,9 +240,9 @@
 		property:fragment="true"
 		property:start="0"
 		property:end="10"
-		property:searchString="cape town"
+		property:searchString="cape OR town"
 		property:resultsSizeMinimum="2"
-		property:iterations="100">
+		property:iterations="25">
 		<property name="rules">
 			<util:list>
 				<ref local="ikube.action.rule.AnyServersWorking" />

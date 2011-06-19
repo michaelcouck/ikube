@@ -17,18 +17,18 @@ import org.apache.commons.lang.builder.ToStringStyle;
 @Entity()
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @NamedQueries(value = {
-		@NamedQuery(name = Url.DELETE_ALL_URLS, query = Url.DELETE_ALL_URLS),
-		@NamedQuery(name = Url.SELECT_FROM_URL_BY_HASH, query = Url.SELECT_FROM_URL_BY_HASH),
-		@NamedQuery(name = Url.SELECT_FROM_URL_BY_URL_ID, query = Url.SELECT_FROM_URL_BY_URL_ID),
-		@NamedQuery(name = Url.SELECT_FROM_URL_NOT_INDEXED, query = Url.SELECT_FROM_URL_NOT_INDEXED),
-		@NamedQuery(name = Url.SELECT_FROM_URL_WHERE_ID_GREATER_AND_NOT_INDEXED, query = Url.SELECT_FROM_URL_WHERE_ID_GREATER_AND_NOT_INDEXED) })
-public class Url extends Persistable {
+		@NamedQuery(name = File.DELETE_ALL_FILES, query = File.DELETE_ALL_FILES),
+		@NamedQuery(name = File.SELECT_FROM_FILE_BY_HASH, query = File.SELECT_FROM_FILE_BY_HASH),
+		@NamedQuery(name = File.SELECT_FROM_FILE_BY_FILE_ID, query = File.SELECT_FROM_FILE_BY_FILE_ID),
+		@NamedQuery(name = File.SELECT_FROM_FILE_NOT_INDEXED, query = File.SELECT_FROM_FILE_NOT_INDEXED),
+		@NamedQuery(name = File.SELECT_FROM_FILE_WHERE_ID_GREATER_AND_NOT_INDEXED, query = File.SELECT_FROM_FILE_WHERE_ID_GREATER_AND_NOT_INDEXED) })
+public class File extends Persistable {
 
-	public static final String DELETE_ALL_URLS = "delete from Url u";
-	public static final String SELECT_FROM_URL_BY_HASH = "select u from Url as u where u.hash = :hash";
-	public static final String SELECT_FROM_URL_BY_URL_ID = "select u from Url as u where u.urlId = :urlId";
-	public static final String SELECT_FROM_URL_NOT_INDEXED = "select u from Url as u where u.indexed = :indexed";
-	public static final String SELECT_FROM_URL_WHERE_ID_GREATER_AND_NOT_INDEXED = "select u from Url as u where u.id >= :id and u.indexed = :indexed";
+	public static final String DELETE_ALL_FILES = "delete from File f";
+	public static final String SELECT_FROM_FILE_BY_HASH = "select f from File as f where f.hash = :hash";
+	public static final String SELECT_FROM_FILE_BY_FILE_ID = "select f from File as f where f.urlId = :urlId";
+	public static final String SELECT_FROM_FILE_NOT_INDEXED = "select f from File as f where f.indexed = :indexed";
+	public static final String SELECT_FROM_FILE_WHERE_ID_GREATER_AND_NOT_INDEXED = "select f from File as f where f.id >= :id and f.indexed = :indexed";
 
 	private long urlId;
 	private String url;
@@ -36,8 +36,8 @@ public class Url extends Persistable {
 	/** The hash of the content. */
 	private long hash;
 
-	private String contentType;
 	private String title;
+	private String contentType;
 	private byte[] rawContent;
 	private String parsedContent;
 

@@ -17,11 +17,10 @@ import org.apache.log4j.PropertyConfigurator;
  * @since 15.09.10
  * @version 01.00
  */
-public final class Logging {
+public final class Logging implements IConstants {
 
 	private static Logger LOGGER;
 	private static boolean INITIALISED = false;
-	private static final String LOG_4_J_PROPERTIES = IConstants.META_INF + IConstants.SEP + "log4j.properties";
 	private static File LOG_FILE;
 
 	private Logging() {

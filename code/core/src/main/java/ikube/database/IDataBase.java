@@ -114,7 +114,9 @@ public interface IDataBase {
 	 */
 	<T> List<T> find(Class<T> klass, int startIndex, int endIndex);
 
-	public <T> List<T> find(Class<T> klass, String sql, Map<String, Object> parameters, int startPosition, int maxResults);
+	<T> T find(Class<T> klass, String sql, Map<String, Object> parameters);
+	
+	<T> List<T> find(Class<T> klass, String sql, Map<String, Object> parameters, int startPosition, int maxResults);
 
 	/**
 	 * Finds a list of objects in the database that conform to the parameters specified in the method signature. The results are also

@@ -219,4 +219,10 @@ public class DataBaseMem implements IDataBase {
 		return null;
 	}
 
+	@Override
+	public <T> T find(Class<T> klass, String sql, Map<String, Object> parameters) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

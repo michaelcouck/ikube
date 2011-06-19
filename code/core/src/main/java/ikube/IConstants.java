@@ -68,7 +68,7 @@ public interface IConstants {
 	String NAME = "name";
 	String URL = "url";
 	String URL_DONE = "urlDone";
-	String URL_HASH = "urlHash";
+	String URL_ID = "urlId";
 	String INDEXED = "indexed";
 	String HASH = "hash";
 	String START = "start";
@@ -103,13 +103,13 @@ public interface IConstants {
 	Integer HTTP_503 = Integer.valueOf(503); // Service unavailable
 
 	/** These can be extracted into the messages.properties file */
-	String NO_END_TAG = "Not end tag in HTML";
+	String NO_END_TAG = "Not end tag in Html";
 	String URL_NOT_WELL_FORMED = "Url not well formed";
 	String EXCEPTION_VISITING_PAGE = "Exception visiting page";
 	String PAGE_RESPONSE_NULL = "Page returned from request null";
-	String RESPONSE_CODE_NOT_200 = "Response code not 200/OK";
+	String RESPONSE_CODE_NOT_200 = "Response code not 200/Ok";
 	String EXCEPTION_CLICKING_LINK = "Exception clicking on the link";
-	String EXCEPTION_VALIDATING_HTML = "General exception validating the HTML";
+	String EXCEPTION_VALIDATING_HTML = "General exception validating the Html";
 	String EXCEPTION_VISITING_PAGE_POSSIBLY_TIMEOUT = "Exception visiting page, error un-known, possibly a timeout";
 
 	String INDEX_NAME = "indexName";
@@ -138,10 +138,6 @@ public interface IConstants {
 	String SERVER_LOCK = "serverLock";
 	/** The timeout to wait for the lock. */
 	long LOCK_TIMEOUT = 10000;
-	/** We only keep a few actions in the server. */
-	double MAX_ACTION_SIZE = 25;
-	/** The ratio to delete the actions when the maximum is reached. */
-	double ACTION_PRUNE_RATIO = 0.3;
 	/** The maximum age that the server can get to before it is deleted from the cluster. */
 	int MAX_AGE = 600000;
 	/** The retry count for publishing the web services. */
@@ -152,9 +148,6 @@ public interface IConstants {
 
 	String SEARCHING_EXECUTIONS = "searchingExecutions";
 	String INDEXING_EXECUTIONS = "indexingExecutions";
-
-	/** The length of the log that should be passed around. */
-	long TAIL_LOG = 10000;
 
 	SimpleDateFormat HHMMSS_DDMMYYYY = new SimpleDateFormat("hh:mm:ss dd/MM/yyyy");
 

@@ -25,8 +25,9 @@ import org.apache.log4j.Logger;
 public class DataBaseJpa implements IDataBase {
 
 	/** The logger for the bean. */
-	protected Logger logger = Logger.getLogger(DataBaseJpa.class);
-	@PersistenceContext(type = PersistenceContextType.TRANSACTION, unitName = IConstants.PERSISTENCE_UNIT_H2)
+	protected static final Logger LOGGER = Logger.getLogger(DataBaseJpa.class);
+
+	@PersistenceContext(type = PersistenceContextType.TRANSACTION, unitName = IConstants.PERSISTENCE_UNIT_DB2)
 	protected EntityManager entityManager;
 
 	/**
@@ -101,26 +102,41 @@ public class DataBaseJpa implements IDataBase {
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T> T find(Long objectId) {
-		Set<EntityType<?>> entityTypes = entityManager.getMetamodel().getEntities();
-		for (EntityType<?> entityType : entityTypes) {
-			Object object = entityManager.find(entityType.getJavaType(), objectId);
-			if (object != null) {
-				return (T) object;
+		try {
+			Set<EntityType<?>> entityTypes = entityManager.getMetamodel().getEntities();
+			for (EntityType<?> entityType : entityTypes) {
+				Object object = entityManager.find(entityType.getJavaType(), objectId);
+				if (object != null) {
+					return (T) object;
+				}
 			}
+		} catch (Exception e) {
+			LOGGER.error("Exception looking up the entity : " + objectId, e);
 		}
 		return null;
 	}
 
-	// @Override
+	@Override
+	@SuppressWarnings("unchecked")
+	public <T> T find(Class<T> klass, String sql, Map<String, Object> parameters) {
+		Query query = entityManager.createNamedQuery(sql);
+		setParameters(query, parameters);
+		return (T) query.getSingleResult();
+	}
+
+	private void setParameters(Query query, Map<String, Object> parameters) {
+		for (String parameter : parameters.keySet()) {
+			query.setParameter(parameter, parameters.get(parameter));
+		}
+	}
+
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T> List<T> find(Class<T> klass, String sql, Map<String, Object> parameters, int startPosition, int maxResults) {
 		Query query = entityManager.createNamedQuery(sql, klass);
 		query.setFirstResult(startPosition);
 		query.setMaxResults(maxResults);
-		for (String parameter : parameters.keySet()) {
-			query.setParameter(parameter, parameters.get(parameter));
-		}
+		setParameters(query, parameters);
 		return query.getResultList();
 	}
 

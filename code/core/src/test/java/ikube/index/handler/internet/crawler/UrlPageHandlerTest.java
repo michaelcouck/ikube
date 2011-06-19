@@ -46,7 +46,7 @@ public class UrlPageHandlerTest extends BaseTest {
 		clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
 		clusterManager.clear(IConstants.URL + id);
 		clusterManager.clear(IConstants.URL_DONE + id);
-		clusterManager.clear(IConstants.URL_HASH + id);
+		clusterManager.clear(IConstants.URL_ID + id);
 	}
 
 	@After
@@ -54,7 +54,7 @@ public class UrlPageHandlerTest extends BaseTest {
 		indexContext.getIndex().setIndexWriter(null);
 		clusterManager.clear(IConstants.URL + id);
 		clusterManager.clear(IConstants.URL_DONE + id);
-		clusterManager.clear(IConstants.URL_HASH + id);
+		clusterManager.clear(IConstants.URL_ID + id);
 	}
 
 	@Test
@@ -73,7 +73,7 @@ public class UrlPageHandlerTest extends BaseTest {
 		assertTrue(clusterManager.get(Url.class, IConstants.URL + id, null, null, Integer.MAX_VALUE).size() == 0);
 		assertTrue(clusterManager.get(Url.class, IConstants.URL_DONE + id, null, null, Integer.MAX_VALUE).size() > 0);
 		assertTrue(clusterManager.get(Url.class, IConstants.URL_DONE + id, null, null, Integer.MAX_VALUE).size() >= clusterManager.get(
-				Url.class, IConstants.URL_HASH + id, null, null, Integer.MAX_VALUE).size());
+				Url.class, IConstants.URL_ID + id, null, null, Integer.MAX_VALUE).size());
 	}
 
 	@Test
@@ -82,7 +82,7 @@ public class UrlPageHandlerTest extends BaseTest {
 		for (int i = 0; i < iterations.length; i++) {
 			clusterManager.clear(IConstants.URL + id);
 			clusterManager.clear(IConstants.URL_DONE + id);
-			clusterManager.clear(IConstants.URL_HASH + id);
+			clusterManager.clear(IConstants.URL_ID + id);
 			performance(iterations[i]);
 		}
 	}

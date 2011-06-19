@@ -26,7 +26,7 @@ import org.apache.commons.lang.builder.ToStringStyle;
 public abstract class Persistable implements Serializable {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.TABLE)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 
 	public Long getId() {

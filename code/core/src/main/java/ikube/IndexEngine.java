@@ -30,14 +30,6 @@ import org.apache.log4j.Logger;
  */
 public class IndexEngine implements IIndexEngine {
 
-	static {
-		// Try to clean the database files
-		// TODO - could be dangerous, perhaps to remove please?
-		// File dotDirectory = new File(".");
-		// FileUtilities.deleteFiles(dotDirectory, IConstants.DATABASE_FILE);
-		// FileUtilities.deleteFiles(dotDirectory, IConstants.TRANSACTION_FILES);
-	}
-
 	private static final Logger LOGGER = Logger.getLogger(IndexEngine.class);
 	private transient List<IAction<IndexContext, Boolean>> actions;
 
@@ -61,7 +53,6 @@ public class IndexEngine implements IIndexEngine {
 		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
 		Server server = clusterManager.getServer();
 		if (server.getWorking()) {
-			LOGGER.debug("This server working : " + server);
 			return;
 		}
 
@@ -72,22 +63,16 @@ public class IndexEngine implements IIndexEngine {
 				continue;
 			}
 			LOGGER.info("Start working on index : " + indexContext.getIndexName() + ", server : " + server.getAddress());
-			int thread = Thread.currentThread().hashCode();
 			for (IAction<IndexContext, Boolean> action : actions) {
-				boolean success = Boolean.FALSE;
 				try {
-					// Sleep for a random period to avoid one server always being first
-					long sleep = (long) (((Math.random() * 3d)) * 1000d);
-					LOGGER.debug(Logging.getString("Sleeping for : ", sleep, " milliseconds"));
-					Thread.sleep(sleep);
-					LOGGER.debug(Logging.getString("Executing action : ", action, thread));
-					success = action.execute(indexContext);
+					// Sleep for a random time, < 30 seconds
+					Thread.sleep((long) (((Math.random() * 30d)) * 1000d));
+					action.execute(indexContext);
 				} catch (Exception e) {
 					LOGGER.error("Exception executing action : " + action, e);
 				}
-				LOGGER.debug(Logging.getString("Action succeeded : ", success, action, thread));
 			}
-			LOGGER.info(Logging.getString("Finish working : ", this, server.getAddress()));
+			LOGGER.info(Logging.getString("Finished working on index : ", indexContext.getIndexName(), this, server.getAddress()));
 		}
 	}
 

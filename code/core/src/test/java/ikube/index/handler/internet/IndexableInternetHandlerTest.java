@@ -38,7 +38,7 @@ public class IndexableInternetHandlerTest extends BaseTest {
 
 	@After
 	public void after() {
-		dataBase.remove(Url.DELETE_ALL_URLS);
+		// dataBase.remove(Url.DELETE_ALL_URLS);
 	}
 
 	@Test
@@ -51,6 +51,7 @@ public class IndexableInternetHandlerTest extends BaseTest {
 
 		ThreadUtilities.waitForThreads(threads);
 
+		int expected = 5;
 		List<Url> urls = dataBase.find(Url.class, 0, Integer.MAX_VALUE);
 		int totalUrlsCrawled = urls.size();
 		logger.info("Urls crawled : " + totalUrlsCrawled);
@@ -58,7 +59,7 @@ public class IndexableInternetHandlerTest extends BaseTest {
 		for (Url url : urls) {
 			logger.info("Url : " + url);
 		}
-		assertTrue("Expected more than 10 and got : " + totalUrlsCrawled, totalUrlsCrawled > 10);
+		assertTrue("Expected more than " + expected + " and got : " + totalUrlsCrawled, totalUrlsCrawled > expected);
 	}
 
 }

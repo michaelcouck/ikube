@@ -204,6 +204,7 @@ public class ClusterManagerTest extends ATest {
 
 	@Test
 	public void setWorking() {
+		ListenerManager.removeListeners();
 		// First clear the map of servers
 		Server localServer = clusterManager.getServer();
 		localServer.setAction(null);
@@ -237,18 +238,11 @@ public class ClusterManagerTest extends ATest {
 					for (int i = 0; i < iterations; i++) {
 						long actualStartTime = clusterManager.setWorking(Index.class.getSimpleName(), indexName, indexableName,
 								Boolean.TRUE);
-						// logger.info("Actual start time : " + actualStartTime + ", expected start time : " + expectedStartTime);
-						assertEquals(expectedStartTime, actualStartTime);
-
+						assertTrue("The start time should be incremented each iteration : ", expectedStartTime < actualStartTime);
 						actualStartTime = clusterManager.setWorking(Open.class.getSimpleName(), indexName, indexableName, Boolean.TRUE);
-						// logger.info("Actual start time : " + actualStartTime + ", expected start time : " + expectedStartTime);
-
 						actualStartTime = clusterManager.setWorking(Index.class.getSimpleName(), indexName, indexableName, Boolean.FALSE);
-						// logger.info("Actual start time : " + actualStartTime + ", expected start time : " + expectedStartTime);
-						assertEquals(expectedStartTime, actualStartTime);
-
+						assertTrue("The start time should be incremented each iteration : ", expectedStartTime < actualStartTime);
 						actualStartTime = clusterManager.setWorking(Open.class.getSimpleName(), indexName, indexableName, Boolean.FALSE);
-						// logger.info("Actual start time : " + actualStartTime + ", expected start time : " + expectedStartTime);
 					}
 				}
 			}, "ClusterManagerTestThread : " + i);

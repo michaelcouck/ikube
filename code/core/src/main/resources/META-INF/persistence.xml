@@ -26,6 +26,7 @@
 		<class>ikube.model.medical.Address</class>
 		
 		<class>ikube.model.Url</class>
+		<class>ikube.model.File</class>
 		<class>ikube.model.Server</class>
 		<class>ikube.model.IndexContext</class>
 		<class>ikube.model.IndexableTable</class>
@@ -69,6 +70,7 @@
 		<class>ikube.model.medical.Address</class>
 		
 		<class>ikube.model.Url</class>
+		<class>ikube.model.File</class>
 		<class>ikube.model.Server</class>
 		<class>ikube.model.IndexContext</class>
 		<class>ikube.model.IndexableTable</class>
@@ -122,6 +124,7 @@
 		<class>ikube.model.medical.Address</class>
 		
 		<class>ikube.model.Url</class>
+		<class>ikube.model.File</class>
 		<class>ikube.model.Server</class>
 		<class>ikube.model.IndexContext</class>
 		<class>ikube.model.IndexableTable</class>
@@ -169,6 +172,7 @@
 		<class>ikube.model.medical.Address</class>
 		
 		<class>ikube.model.Url</class>
+		<class>ikube.model.File</class>
 		<class>ikube.model.Server</class>
 		<class>ikube.model.IndexContext</class>
 		<class>ikube.model.IndexableTable</class>

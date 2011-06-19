@@ -2,6 +2,7 @@ package ikube.action;
 
 import ikube.IConstants;
 import ikube.database.IDataBase;
+import ikube.model.File;
 import ikube.model.IndexContext;
 import ikube.model.Server;
 import ikube.model.Url;
@@ -42,11 +43,13 @@ public class Reset extends Action<IndexContext, Boolean> {
 			if (!anyWorking) {
 				getClusterManager().clear(IConstants.URL);
 				getClusterManager().clear(IConstants.URL_DONE);
-				getClusterManager().clear(IConstants.URL_HASH);
+				getClusterManager().clear(IConstants.URL_ID);
 			}
 			IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
 			int deleted = dataBase.remove(Url.DELETE_ALL_URLS);
 			logger.info("Deleted urls : " + deleted);
+			deleted = dataBase.remove(File.DELETE_ALL_FILES);
+			logger.info("Deleted files : " + deleted);
 		} finally {
 			getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getSimpleName(), "", Boolean.FALSE);
 		}

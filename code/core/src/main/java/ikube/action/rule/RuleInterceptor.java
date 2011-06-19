@@ -45,6 +45,7 @@ public class RuleInterceptor implements IRuleInterceptor {
 		// two evaluate to false, so they both start the action they shouldn't start
 		ILock lock = AtomicAction.lock(IConstants.SERVER_LOCK);
 		Object target = proceedingJoinPoint.getTarget();
+		String actionName = target.getClass().getSimpleName();
 		boolean proceed = Boolean.FALSE;
 		try {
 			Indexable<?> indexable = null;
@@ -113,9 +114,11 @@ public class RuleInterceptor implements IRuleInterceptor {
 					}
 				}
 			}
+			String indexName = indexContext != null ? indexContext.getIndexName() : null;
+			String indexableName = indexable != null ? indexable.getName() : null;
+			LOGGER.info(Logging.getString("Rule intercepter proceeding : ", proceed, actionName, indexName, indexableName));
 			if (proceed) {
-				LOGGER.info(Logging.getString("Rule intercepter proceeding : ", proceed, target.getClass().getSimpleName()));
-				proceed(proceedingJoinPoint, target.getClass().getSimpleName(), indexContext.getIndexName(), indexable.getName());
+				proceed(proceedingJoinPoint, actionName, indexName, indexableName);
 			}
 		} catch (Throwable t) {
 			LOGGER.error("Exception evaluating the rules : ", t);
@@ -125,21 +128,25 @@ public class RuleInterceptor implements IRuleInterceptor {
 		return proceed;
 	}
 
-	protected void proceed(final ProceedingJoinPoint proceedingJoinPoint, final String actionName, final String indexName,
+	protected synchronized void proceed(final ProceedingJoinPoint proceedingJoinPoint, final String actionName, final String indexName,
 			final String indexableName) {
-		long delay = 1;
-		final IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
-		// We set the working flag in the action within the cluster lock when setting to true
-		clusterManager.setWorking(actionName, indexName, indexableName, Boolean.TRUE);
-		executorService.schedule(new Runnable() {
-			public void run() {
-				try {
-					proceedingJoinPoint.proceed();
-				} catch (Throwable e) {
-					LOGGER.error("Exception proceeding on join point : " + proceedingJoinPoint, e);
+		try {
+			long delay = 1;
+			final IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
+			// We set the working flag in the action within the cluster lock when setting to true
+			clusterManager.setWorking(actionName, indexName, indexableName, Boolean.TRUE);
+			executorService.schedule(new Runnable() {
+				public void run() {
+					try {
+						proceedingJoinPoint.proceed();
+					} catch (Throwable e) {
+						LOGGER.error("Exception proceeding on join point : " + proceedingJoinPoint, e);
+					}
 				}
-			}
-		}, delay, TimeUnit.MILLISECONDS);
+			}, delay, TimeUnit.MILLISECONDS);
+		} finally {
+			notifyAll();
+		}
 	}
 
 	protected void printNodesAndEvaluations(JEP jep, Node node) {

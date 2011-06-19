@@ -1,11 +1,14 @@
 package ikube.index.handler.filesystem;
 
+import ikube.IConstants;
+import ikube.database.IDataBase;
 import ikube.index.IndexManager;
 import ikube.index.handler.IndexableHandler;
 import ikube.index.parse.IParser;
 import ikube.index.parse.ParserProvider;
 import ikube.model.IndexContext;
 import ikube.model.IndexableFileSystem;
+import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.HashUtilities;
 
@@ -15,9 +18,15 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.regex.Pattern;
+
+import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Index;
@@ -36,35 +45,41 @@ import org.apache.lucene.document.Field.TermVector;
  */
 public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSystem> {
 
+	private IDataBase dataBase;
+	private Map<String, Object> fileIdParameters;
+
 	@Override
 	public List<Thread> handle(final IndexContext indexContext, final IndexableFileSystem indexable) throws Exception {
+		fileIdParameters = new HashMap<String, Object>();
+		if (dataBase == null) {
+			dataBase = ApplicationContextManager.getBean(IDataBase.class);
+		}
+		int removed = dataBase.remove(ikube.model.File.DELETE_ALL_FILES);
+		logger.info("Removed files :" + removed);
 		List<Thread> threads = new ArrayList<Thread>();
-		try {
-			// We need to check the cluster to see if this indexable is already handled by
-			// one of the other servers. The file system is very fast and there is no need to
-			// cluster the indexing
-			final File baseFile = new File(indexable.getPath());
-			final Pattern pattern = getPattern(indexable.getExcludedPattern());
-			if (isExcluded(baseFile, pattern)) {
-				logger.warn("Base directory excluded : " + baseFile);
-				return null;
-			}
-			final List<Long> filesDone = new ArrayList<Long>();
-			for (int i = 0; i < getThreads(); i++) {
-				Thread thread = new Thread(new Runnable() {
-					public void run() {
-						if (baseFile.isDirectory()) {
-							handleFolder(indexContext, indexable, baseFile, pattern, filesDone);
-						} else {
-							handleFile(indexContext, indexable, baseFile);
-						}
+		// We need to check the cluster to see if this indexable is already handled by
+		// one of the other servers. The file system is very fast and there is no need to
+		// cluster the indexing
+		String name = this.getClass().getSimpleName();
+		final File baseFile = new File(indexable.getPath());
+		final Pattern pattern = getPattern(indexable.getExcludedPattern());
+		if (isExcluded(baseFile, pattern)) {
+			logger.warn("Base directory excluded : " + baseFile);
+			return null;
+		}
+		final Set<Long> filesDone = new TreeSet<Long>();
+		for (int i = 0; i < getThreads(); i++) {
+			Thread thread = new Thread(new Runnable() {
+				public void run() {
+					if (baseFile.isDirectory()) {
+						handleFolder(indexContext, indexable, baseFile, pattern, filesDone);
+					} else {
+						handleFile(indexContext, indexable, baseFile);
 					}
-				});
-				thread.start();
-				threads.add(thread);
-			}
-		} catch (Exception e) {
-			logger.error("Exception indexing the file share : " + indexable, e);
+				}
+			}, name + "." + i);
+			thread.start();
+			threads.add(thread);
 		}
 		return threads;
 	}
@@ -83,7 +98,7 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 	 *            the excluded patterns
 	 */
 	protected void handleFolder(final IndexContext indexContext, final IndexableFileSystem indexableFileSystem, final File folder,
-			final Pattern excludedPattern, final List<Long> filesDone) {
+			final Pattern excludedPattern, final Set<Long> filesDone) {
 		File[] files = folder.listFiles();
 		if (files != null) {
 			for (File file : files) {
@@ -105,19 +120,33 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 		}
 	}
 
-	protected synchronized boolean isDone(File file, final List<Long> filesDone) {
+	protected synchronized boolean isDone(File file, final Set<Long> filesDone) {
 		try {
-			long hash = HashUtilities.hash(file.getAbsolutePath());
-			int insertionPoint = Collections.binarySearch(filesDone, hash);
-			if (insertionPoint >= 0) {
+			long urlId = HashUtilities.hash(file.getAbsolutePath());
+			if (!filesDone.add(urlId)) {
 				return Boolean.TRUE;
 			}
-			insertionPoint = Math.abs(insertionPoint) + 1;
-			if (insertionPoint > filesDone.size()) {
-				insertionPoint = filesDone.size();
-				Collections.sort(filesDone);
+			fileIdParameters.put(IConstants.URL_ID, urlId);
+			ikube.model.File dbFile = null;
+
+			try {
+				// dbFile = dataBase.find(ikube.model.File.class, ikube.model.File.SELECT_FROM_FILE_BY_FILE_ID, fileIdParameters);
+			} catch (NonUniqueResultException e) {
+				logger.warn("Non unique file id : " + dbFile);
+				return Boolean.TRUE;
+			} catch (NoResultException e) {
+				// Swallow
 			}
-			filesDone.add(insertionPoint, hash);
+
+			// if (dbFile != null) {
+			// return Boolean.TRUE;
+			// }
+
+			dbFile = new ikube.model.File();
+			dbFile.setIndexed(Boolean.TRUE);
+			dbFile.setUrl(file.getAbsolutePath());
+			dbFile.setUrlId(urlId);
+			// dataBase.persist(dbFile);
 			// logger.info("File : " + hash + ", " + contains + ", " + filesDone.hashCode() + ", " + filesDone);
 			return Boolean.FALSE;
 		} finally {

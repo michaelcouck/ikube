@@ -79,7 +79,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	/**
 	 * This is the maximum exceptions that we will tolerate before we give up on this result set and possibly the table.
 	 */
-	private static final int MAX_EXCEPTIONS = 100;
+	private static final int MAX_EXCEPTIONS = 10;
 
 	public IndexableTableHandler() {
 		super();
@@ -94,6 +94,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	public List<Thread> handle(final IndexContext indexContext, final IndexableTable indexable) throws Exception {
 		SerializationUtilities.setTransientFields(IndexableTable.class);
 		SerializationUtilities.setTransientFields(IndexableColumn.class);
+		String name = this.getClass().getSimpleName();
 		// We start as many threads to access this table as defined. We return
 		// the threads to the caller that they can then wait for the threads to finish
 		List<Thread> threads = new ArrayList<Thread>();
@@ -108,7 +109,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 				public void run() {
 					handleTable(indexContext, cloneIndexableTable, connection, null, 0);
 				}
-			}, IndexableTableHandler.class.getSimpleName() + "." + i);
+			}, name + "." + i);
 			threads.add(thread);
 			thread.start();
 		}
@@ -213,8 +214,9 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 			// Should we catch this exception and check how many are thrown, if the
 			// exception threshold is exceeded then exit the database crawl?
 			exceptions++;
-			logger.error("Exception indexing table : " + indexableTable + ", connection : " + connection + ", exceptions : " + exceptions,
-					e);
+			String message = Logging.getString("Exception indexing table : " + indexableTable, ", connection : ", connection,
+					", exceptions : ", exceptions);
+			logger.error(message, e);
 		} finally {
 			// Close the result set and the statement for this
 			// table, could be the sub table of course
@@ -311,6 +313,8 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 				return null;
 			}
 			return resultSet;
+		} catch (Exception e) {
+			throw e;
 		} finally {
 			notifyAll();
 		}

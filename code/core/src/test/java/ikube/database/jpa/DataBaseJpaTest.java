@@ -43,14 +43,14 @@ public class DataBaseJpaTest extends BaseTest {
 		// Persist
 		Url url = dataBase.persist(new Url());
 		// Find long
-		url = dataBase.find(url.getId());
-		assertNotNull("The url should have been persisted : ", url);
+		Object object = dataBase.find(url.getId());
+		assertNotNull("The url should have been persisted : ", object);
 
 		// Merge
 		long hash = System.nanoTime();
 		url.setHash(hash);
 		dataBase.merge(url);
-		url = dataBase.find(url.getId());
+		url = dataBase.find(Url.class, url.getId());
 		assertEquals("The hash should have been updated : ", hash, url.getHash());
 
 		// Find class long
@@ -63,7 +63,7 @@ public class DataBaseJpaTest extends BaseTest {
 
 		// Remove
 		dataBase.remove(Url.class, url.getId());
-		url = dataBase.find(url.getId());
+		url = dataBase.find(Url.class, url.getId());
 		assertNull("The url should have been removed : ", url);
 
 		// Remove T

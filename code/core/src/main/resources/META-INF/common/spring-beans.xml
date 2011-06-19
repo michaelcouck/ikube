@@ -39,20 +39,24 @@
 	<bean 
 		id="entityManagerFactory" 
 		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean" 
-		property:dataSource-ref="nonXaDataSourceH2"
+		property:dataSource-ref="nonXaDataSourceDb2"
 		property:jpaVendorAdapter-ref="jpaAdapter"
 		property:jpaPropertyMap-ref="jpaPropertyMap">
 		<property name="loadTimeWeaver">
 			<bean class="org.springframework.instrument.classloading.InstrumentationLoadTimeWeaver" />
 		</property>
-		<property name="persistenceUnitName" value="IkubePersistenceUnitH2"></property>
+		<property name="persistenceUnitName" value="IkubePersistenceUnitDb2"></property>
 	</bean>
 
+	<!-- 
+		org.springframework.orm.jpa.vendor.OpenJpaVendorAdapter,
+		ikube.database.jpa.adapter.ObjectDbJpaVendorAdapter
+	 -->
 	<bean 
 		id="jpaAdapter" 
-		class="org.springframework.orm.jpa.vendor.OpenJpaVendorAdapter" 
-		property:database="H2" 
-		property:showSql="true" />
+		class="org.springframework.orm.jpa.vendor.OpenJpaVendorAdapter"
+		property:database="DB2" 
+		property:showSql="false" />
 		
 	<util:map id="jpaPropertyMap">
 		<entry key="openjpa.ConnectionFactoryProperties" value="PrettyPrint=true,PrettyPrintLineLength=150" />
@@ -74,7 +78,7 @@
 		<entry key="openjpa.Optimistic" value="false" />
 		<entry key="openjpa.Multithreaded" value="true" />
 		<entry key="openjpa.NontransactionalRead" value="true" />
-		<entry key="openjpa.AutoDetach" value="close" />
+		<entry key="openjpa.AutoDetach" value="commit" />
 		<entry key="openjpa.FlushBeforeQueries" value="true" />
 		<entry key="openjpa.RuntimeUnenhancedClasses" value="supported" />
 		<!--<entry key="openjpa.ConnectionRetainMode" value="always" />-->
@@ -128,10 +132,12 @@
 			<ref local="ikube.cluster.cache.Cache" />
 		</constructor-arg>
 	</bean>
-	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
+	<bean 
+		class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
 		property:staticMethod="ikube.cluster.ClusterManager.addShutdownHook"
 		lazy-init="false" />
-	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
+	<bean 
+		class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
 		property:staticMethod="ikube.cluster.ClusterManager.addClusterExceptionListener"
 		lazy-init="false" />
 	
@@ -220,13 +226,16 @@
 		<ref bean="ikube.listener.SchedulePerformance" />
 	</util:list>
 	
-	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
+	<bean 
+		class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
 		property:staticMethod="ikube.listener.Scheduler.addSchedules">
 		<property name="arguments">
 			<ref local="ikube.listener.Schedules" />
 		</property>
 	</bean>
-	<bean id="schedulerInitialize" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
+	<bean 
+		id="schedulerInitialize" 
+		class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
 		property:staticMethod="ikube.listener.Scheduler.initialize">
 	</bean>
 	

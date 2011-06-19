@@ -73,7 +73,7 @@ public class UrlPageHandler extends UrlHandler<Url> implements Runnable {
 		this.contentProvider = new InternetContentProvider();
 		this.urlToDo = IConstants.URL + id;
 		this.urlDone = IConstants.URL_DONE + id;
-		this.urlHash = IConstants.URL_HASH + id;
+		this.urlHash = IConstants.URL_ID + id;
 		this.batchSize = batchSize;
 	}
 
