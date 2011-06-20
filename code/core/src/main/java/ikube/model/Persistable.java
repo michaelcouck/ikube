@@ -6,6 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 
@@ -27,6 +28,7 @@ public abstract class Persistable implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
+  @SequenceGenerator(name="persistable", allocationSize=500)
 	private Long id;
 
 	public Long getId() {
