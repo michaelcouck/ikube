@@ -5,6 +5,7 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
@@ -31,14 +32,18 @@ public class File extends Persistable {
 	public static final String SELECT_FROM_FILE_WHERE_ID_GREATER_AND_NOT_INDEXED = "select f from File as f where f.id >= :id and f.indexed = :indexed";
 
 	private long urlId;
-	private String url;
-	private boolean indexed;
-	/** The hash of the content. */
+  private boolean indexed;
 	private long hash;
 
+  @Transient
+	private String url;
+  @Transient
 	private String title;
+  @Transient
 	private String contentType;
+  @Transient
 	private byte[] rawContent;
+  @Transient
 	private String parsedContent;
 
 	public long getUrlId() {
