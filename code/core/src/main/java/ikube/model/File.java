@@ -1,5 +1,6 @@
 package ikube.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
@@ -32,18 +33,18 @@ public class File extends Persistable {
 	public static final String SELECT_FROM_FILE_WHERE_ID_GREATER_AND_NOT_INDEXED = "select f from File as f where f.id >= :id and f.indexed = :indexed";
 
 	private long urlId;
-  private boolean indexed;
+	private boolean indexed;
 	private long hash;
 
-  @Transient
+	@Column(length = 255)
 	private String url;
-  @Transient
+	@Transient
 	private String title;
-  @Transient
+	@Transient
 	private String contentType;
-  @Transient
+	@Transient
 	private byte[] rawContent;
-  @Transient
+	@Transient
 	private String parsedContent;
 
 	public long getUrlId() {

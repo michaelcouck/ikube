@@ -6,9 +6,9 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.SequenceGenerator;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
@@ -27,8 +27,8 @@ import org.apache.commons.lang.builder.ToStringStyle;
 public abstract class Persistable implements Serializable {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-  @SequenceGenerator(name="persistable", allocationSize=500)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "persistable")
+	@SequenceGenerator(name = "persistable", sequenceName = "system", allocationSize = 100)
 	private Long id;
 
 	public Long getId() {

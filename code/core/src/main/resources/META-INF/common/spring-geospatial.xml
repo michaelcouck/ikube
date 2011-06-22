@@ -157,7 +157,7 @@
 		property:name="featureclass"
 		property:fieldName="featureclass"
 		property:analyzed="${analyzed}"
-		property:stored="${stored}"
+		property:stored="${not.stored}"
 		property:vectored="${vectored}" />
 	<bean
 		id="geospatialFeatureCode"
@@ -165,7 +165,7 @@
 		property:name="featurecode"
 		property:fieldName="featurecode"
 		property:analyzed="${analyzed}"
-		property:stored="${stored}"
+		property:stored="${not.stored}"
 		property:vectored="${vectored}" />
 	<bean
 		id="geospatialCountryCode"
@@ -173,7 +173,7 @@
 		property:name="countrycode"
 		property:fieldName="countrycode"
 		property:analyzed="${analyzed}"
-		property:stored="${stored}"
+		property:stored="${not.stored}"
 		property:vectored="${vectored}" />
 	<bean
 		id="geospatialCc2"
@@ -229,7 +229,7 @@
 		property:name="elevation"
 		property:fieldName="elevation"
 		property:analyzed="${analyzed}"
-		property:stored="${stored}"
+		property:stored="${not.stored}"
 		property:vectored="${vectored}" />
 	<bean
 		id="geospatialGtopo30"

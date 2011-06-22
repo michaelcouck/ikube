@@ -1,28 +1,16 @@
 package ikube.integration;
 
-import ikube.IConstants;
 import ikube.action.Validator;
 import ikube.cluster.IClusterManager;
 import ikube.model.IndexContext;
-import ikube.model.faq.Faq;
-import ikube.model.medical.Patient;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.Logging;
-import ikube.toolkit.data.DataGeneratorFour;
-import ikube.toolkit.data.IDataGenerator;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Persistence;
-
 import org.apache.log4j.Logger;
 import org.junit.Test;
-
-import com.hazelcast.core.Hazelcast;
-import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 /**
  * This test runs in its own Jenkins job. Typically it will be triggered by another job and will run along side other similar jobs
@@ -48,66 +36,31 @@ public class Integration {
 		}
 		Thread.sleep((long) (Math.random() * 10));
 		ApplicationContextManager.getApplicationContext();
-
-		// Insert some data into the medical database
-		insertData(IConstants.PERSISTENCE_UNIT_H2, "nonXaDataSourceH2", iterations, new Class[] { Patient.class, Faq.class });
-		// insertData(IConstants.PERSISTENCE_UNIT_DB2, "nonXaDataSourceDb2", iterations, new Class[] { Patient.class, Faq.class });
-		// insertData(IConstants.PERSISTENCE_UNIT_ORACLE, "nonXaDataSourceOracle", iterations, new Class[] { Patient.class, Faq.class });
-
 		waitToFinish();
-
 		validateIndexes();
 	}
 
-	protected void insertData(String persistenceUnit, String dataSourceName, int iterations, Class<?>[] classes) throws Exception {
-		logger.info("Inserting data into : " + persistenceUnit);
-		ComboPooledDataSource dataSource = ApplicationContextManager.getBean(dataSourceName);
-		Map<String, String> properties = getConnectionProperties(dataSource.getUser(), dataSource.getPassword(), dataSource.getJdbcUrl(),
-				dataSource.getDriverClass());
-		EntityManager entityManager = null;
-		try {
-			entityManager = Persistence.createEntityManagerFactory(persistenceUnit, properties).createEntityManager();
-			IDataGenerator dataGenerator = new DataGeneratorFour(entityManager, iterations, classes);
-			dataGenerator.before();
-			dataGenerator.generate();
-		} catch (Exception e) {
-			logger.error("Exception inserting some data : ", e);
+	protected void validateIndexes() {
+		Map<String, IndexContext> indexContexts = ApplicationContextManager.getBeans(IndexContext.class);
+		for (IndexContext indexContext : indexContexts.values()) {
+			new Validator().execute(indexContext);
 		}
-	}
-
-	private Map<String, String> getConnectionProperties(String user, String password, String url, String driver) {
-		Map<String, String> properties = new HashMap<String, String>();
-		properties.put("openjpa.ConnectionUserName", user);
-		properties.put("openjpa.ConnectionPassword", password);
-		properties.put("openjpa.ConnectionURL", url);
-		properties.put("openjpa.ConnectionDriverName", driver);
-		return properties;
 	}
 
 	protected void waitToFinish() {
 		try {
 			while (true) {
 				Thread.sleep(600000);
-				boolean anyWorking = ApplicationContextManager.getBean(IClusterManager.class).anyWorking();
-				boolean isWorking = ApplicationContextManager.getBean(IClusterManager.class).getServer().getWorking();
+				IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
+				boolean anyWorking = clusterManager.anyWorking();
+				boolean isWorking = clusterManager.getServer().getWorking();
 				logger.info("Any servers working : " + anyWorking + ", this server working : " + isWorking);
 				if (!anyWorking && !isWorking) {
-					break;
-				}
-				logger.info("Members : " + Hazelcast.getCluster().getMembers().size());
-				if (Hazelcast.getCluster().getMembers().size() == 1) {
 					break;
 				}
 			}
 		} catch (Exception e) {
 			logger.error("Exception waiting for servers to finish : ", e);
-		}
-	}
-
-	protected void validateIndexes() throws Exception {
-		Map<String, IndexContext> indexContexts = ApplicationContextManager.getBeans(IndexContext.class);
-		for (IndexContext indexContext : indexContexts.values()) {
-			new Validator().execute(indexContext);
 		}
 	}
 
@@ -119,7 +72,7 @@ public class Integration {
 		if (!osName.toLowerCase().contains("server") && properties.getProperty("os.arch").contains("64")) {
 			return Boolean.FALSE;
 		}
-		return Boolean.FALSE;
+		return Boolean.TRUE;
 	}
 
 }

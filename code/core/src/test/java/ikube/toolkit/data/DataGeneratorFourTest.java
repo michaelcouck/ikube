@@ -3,6 +3,7 @@ package ikube.toolkit.data;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import ikube.database.IDataBase;
 import ikube.model.faq.Attachment;
 import ikube.model.faq.Faq;
 import ikube.model.medical.Address;
@@ -11,8 +12,6 @@ import ikube.model.medical.Patient;
 
 import java.util.ArrayList;
 import java.util.Collection;
-
-import javax.persistence.EntityManager;
 
 import mockit.Cascading;
 import mockit.Mockit;
@@ -33,7 +32,7 @@ import org.junit.Test;
 public class DataGeneratorFourTest {
 
 	@Cascading
-	private EntityManager entityManager;
+	private IDataBase dataBase;
 	private DataGeneratorFour dataGeneratorFour;
 	private Class<?>[] classes = new Class[] { Patient.class, Address.class, Hospital.class };
 
@@ -49,7 +48,7 @@ public class DataGeneratorFourTest {
 
 	@Before
 	public void before() throws Exception {
-		dataGeneratorFour = new DataGeneratorFour(entityManager, 1, classes);
+		dataGeneratorFour = new DataGeneratorFour(dataBase, 1, classes);
 		dataGeneratorFour.before();
 	}
 

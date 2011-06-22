@@ -41,9 +41,18 @@
 		<ref local="mail" />
 		<ref local="internet" />
 		<ref local="hazelcast" />
-		<!-- <ref local="internetMillion" /> -->
+		<ref local="internetMillion" />
 		<ref local="filesystem" />
-		<ref local="filesystemMillion" />
+		<ref local="filesystemMillionOne" />
+		<ref local="filesystemMillionTwo" />
+		<ref local="filesystemMillionThree" />
+		<ref local="filesystemMillionFour" />
+		<ref local="filesystemMillionFive" />
+		<ref local="filesystemMillionSix" />
+		<ref local="filesystemMillionSeven" />
+		<ref local="filesystemMillionEight" />
+		<ref local="filesystemMillionNine" />
+		<ref local="filesystemMillionTen" />
 		<ref bean="faqTableH2" />
 		<ref bean="faqTableDb2" />
 		<ref bean="faqTableOracle" />
@@ -164,7 +173,7 @@
 		property:name="faqId"
 		property:idColumn="true"
 		property:analyzed="${analyzed}"
-		property:stored="${stored}"
+		property:stored="${not.stored}"
 		property:vectored="${vectored}" />
 	<bean
 		id="creationtimestamp"
@@ -172,7 +181,7 @@
 		property:name="creationtimestamp"
 		property:fieldName="creationtimestamp"
 		property:analyzed="${analyzed}"
-		property:stored="${stored}"
+		property:stored="${not.stored}"
 		property:vectored="${vectored}" />
 	<bean
 		id="modifiedtimestamp"
@@ -180,7 +189,7 @@
 		property:name="modifiedtimestamp"
 		property:fieldName="modifiedtimestamp"
 		property:analyzed="${analyzed}"
-		property:stored="${stored}"
+		property:stored="${not.stored}"
 		property:vectored="${vectored}" />
 	<bean
 		id="creator"
@@ -188,7 +197,7 @@
 		property:name="creator"
 		property:fieldName="creator"
 		property:analyzed="${analyzed}"
-		property:stored="${stored}"
+		property:stored="${not.stored}"
 		property:vectored="${vectored}" />
 	<bean
 		id="modifier"
@@ -196,7 +205,7 @@
 		property:name="modifier"
 		property:fieldName="modifier"
 		property:analyzed="${analyzed}"
-		property:stored="${stored}"
+		property:stored="${not.stored}"
 		property:vectored="${vectored}" />
 	<bean
 		id="question"
@@ -204,7 +213,7 @@
 		property:name="question"
 		property:fieldName="question"
 		property:analyzed="${analyzed}"
-		property:stored="${stored}"
+		property:stored="${not.stored}"
 		property:vectored="${vectored}" />
 	<bean
 		id="answer"
@@ -212,7 +221,7 @@
 		property:name="answer"
 		property:fieldName="answer"
 		property:analyzed="${analyzed}"
-		property:stored="${stored}"
+		property:stored="${not.stored}"
 		property:vectored="${vectored}" />
 	<bean
 		id="published"
@@ -220,7 +229,7 @@
 		property:name="published"
 		property:fieldName="published"
 		property:analyzed="${analyzed}"
-		property:stored="${stored}"
+		property:stored="${not.stored}"
 		property:vectored="${vectored}" />
 
 	<bean
@@ -230,7 +239,7 @@
 		property:fieldName="attachmentFaqId"
 		property:foreignKey-ref="faqId"
 		property:analyzed="${analyzed}"
-		property:stored="${stored}"
+		property:stored="${not.stored}"
 		property:vectored="${vectored}" />
 	<bean
 		id="attachmentId"
@@ -239,7 +248,7 @@
 		property:fieldName="attachmentId"
 		property:idColumn="true"
 		property:analyzed="${analyzed}"
-		property:stored="${stored}"
+		property:stored="${not.stored}"
 		property:vectored="${vectored}" />
 	<bean
 		id="name"
@@ -247,7 +256,7 @@
 		property:name="name"
 		property:fieldName="name"
 		property:analyzed="${analyzed}"
-		property:stored="${stored}"
+		property:stored="${not.stored}"
 		property:vectored="${vectored}" />
 	<bean
 		id="attachment"
@@ -256,7 +265,7 @@
 		property:fieldName="attachment"
 		property:nameColumn-ref="name"
 		property:analyzed="${analyzed}"
-		property:stored="${stored}"
+		property:stored="${not.stored}"
 		property:vectored="${vectored}" />
 	<bean
 		id="length"
@@ -264,7 +273,7 @@
 		property:name="length"
 		property:fieldName="length"
 		property:analyzed="${analyzed}"
-		property:stored="${stored}"
+		property:stored="${not.stored}"
 		property:vectored="${vectored}" />
 		
 	<!-- H2 patients -->
@@ -381,7 +390,7 @@
 		property:name="id"
 		property:idColumn="true"
 		property:analyzed="${analyzed}"
-		property:stored="${stored}"
+		property:stored="${not.stored}"
 		property:vectored="${vectored}" />
 	<bean
 		id="firstName"
@@ -389,7 +398,7 @@
 		property:name="firstName"
 		property:fieldName="firstName"
 		property:analyzed="${analyzed}"
-		property:stored="${stored}"
+		property:stored="${not.stored}"
 		property:vectored="${vectored}" />
 	<bean
 		id="lastName"
@@ -397,7 +406,7 @@
 		property:name="lastName"
 		property:fieldName="lastName"
 		property:analyzed="${analyzed}"
-		property:stored="${stored}"
+		property:stored="${not.stored}"
 		property:vectored="${vectored}" />
 	<bean
 		id="birthDate"
@@ -405,7 +414,7 @@
 		property:name="birthDate"
 		property:fieldName="birthDate"
 		property:analyzed="${analyzed}"
-		property:stored="${stored}"
+		property:stored="${not.stored}"
 		property:vectored="${vectored}" />
 	<bean
 		id="deathDate"
@@ -413,7 +422,7 @@
 		property:name="deathDate"
 		property:fieldName="deathDate"
 		property:analyzed="${analyzed}"
-		property:stored="${stored}"
+		property:stored="${not.stored}"
 		property:vectored="${vectored}" />
 	
 	<!-- property:idColumn="true" -->
@@ -423,7 +432,7 @@
 		property:name="id"
 		property:foreignKey-ref="patientId"
 		property:analyzed="${analyzed}"
-		property:stored="${stored}"
+		property:stored="${not.stored}"
 		property:vectored="${vectored}" />
 	<bean
 		id="numb"
@@ -432,7 +441,7 @@
 		property:fieldName="numb"
 		property:address="true"
 		property:analyzed="${analyzed}"
-		property:stored="${stored}"
+		property:stored="${not.stored}"
 		property:vectored="${vectored}" />
 	<bean
 		id="street"
@@ -441,7 +450,7 @@
 		property:fieldName="street"
 		property:address="true"
 		property:analyzed="${analyzed}"
-		property:stored="${stored}"
+		property:stored="${not.stored}"
 		property:vectored="${vectored}" />
 	<bean
 		id="province"
@@ -450,7 +459,7 @@
 		property:fieldName="province"
 		property:address="true"
 		property:analyzed="${analyzed}"
-		property:stored="${stored}"
+		property:stored="${not.stored}"
 		property:vectored="${vectored}" />
 	<bean
 		id="country"
@@ -459,7 +468,7 @@
 		property:fieldName="country"
 		property:address="true"
 		property:analyzed="${analyzed}"
-		property:stored="${stored}"
+		property:stored="${not.stored}"
 		property:vectored="${vectored}" />
 	<bean
 		id="postCode"
@@ -468,7 +477,7 @@
 		property:fieldName="postCode"
 		property:address="true"
 		property:analyzed="${analyzed}"
-		property:stored="${stored}"
+		property:stored="${not.stored}"
 		property:vectored="${vectored}" />
 	<bean
 		id="latitude"
@@ -476,7 +485,7 @@
 		property:name="latitude"
 		property:fieldName="latitude"
 		property:analyzed="${analyzed}"
-		property:stored="${stored}"
+		property:stored="${not.stored}"
 		property:vectored="${vectored}" />
 	<bean
 		id="longitude"
@@ -484,7 +493,7 @@
 		property:name="longitude"
 		property:fieldName="longitude"
 		property:analyzed="${analyzed}"
-		property:stored="${stored}"
+		property:stored="${not.stored}"
 		property:vectored="${vectored}" />
 		
 	<bean
@@ -537,7 +546,7 @@
 		property:contentFieldName="content"
 		property:excludedPattern="${files.excluded.pattern}"
 		property:analyzed="${analyzed}"
-		property:stored="${stored}"
+		property:stored="${not.stored}"
 		property:vectored="${vectored}" />
 	
 	<bean
@@ -550,17 +559,127 @@
 		property:lengthFieldName="length"
 		property:contentFieldName="contents"
 		property:excludedPattern="${files.excluded.pattern}"
-		property:lastModifiedFieldName="lastmodified" />
+		property:lastModifiedFieldName="lastmodified"
+		property:batchSize="${file.batch.size}" />
 	
 	<bean
-		id="filesystemMillion"
+		id="filesystemMillionOne"
 		class="ikube.model.IndexableFileSystem"
-		property:name="filesMillion"
+		property:name="filesMillionOne"
 		property:path="${files.path.million}"
 		property:pathFieldName="path"
 		property:nameFieldName="name"
 		property:lengthFieldName="length"
 		property:contentFieldName="contents"
 		property:excludedPattern="${files.excluded.pattern}"
-		property:lastModifiedFieldName="lastmodified" />
+		property:lastModifiedFieldName="lastmodified" 
+		property:batchSize="${file.batch.size}" />
+	<bean
+		id="filesystemMillionTwo"
+		class="ikube.model.IndexableFileSystem"
+		property:name="filesMillionTwo"
+		property:path="${files.path.million}"
+		property:pathFieldName="path"
+		property:nameFieldName="name"
+		property:lengthFieldName="length"
+		property:contentFieldName="contents"
+		property:excludedPattern="${files.excluded.pattern}"
+		property:lastModifiedFieldName="lastmodified" 
+		property:batchSize="${file.batch.size}" />
+	<bean
+		id="filesystemMillionThree"
+		class="ikube.model.IndexableFileSystem"
+		property:name="filesMillionThree"
+		property:path="${files.path.million}"
+		property:pathFieldName="path"
+		property:nameFieldName="name"
+		property:lengthFieldName="length"
+		property:contentFieldName="contents"
+		property:excludedPattern="${files.excluded.pattern}"
+		property:lastModifiedFieldName="lastmodified" 
+		property:batchSize="${file.batch.size}" />
+	<bean
+		id="filesystemMillionFour"
+		class="ikube.model.IndexableFileSystem"
+		property:name="filesMillionFour"
+		property:path="${files.path.million}"
+		property:pathFieldName="path"
+		property:nameFieldName="name"
+		property:lengthFieldName="length"
+		property:contentFieldName="contents"
+		property:excludedPattern="${files.excluded.pattern}"
+		property:lastModifiedFieldName="lastmodified" 
+		property:batchSize="${file.batch.size}" />
+	<bean
+		id="filesystemMillionFive"
+		class="ikube.model.IndexableFileSystem"
+		property:name="filesMillionFive"
+		property:path="${files.path.million}"
+		property:pathFieldName="path"
+		property:nameFieldName="name"
+		property:lengthFieldName="length"
+		property:contentFieldName="contents"
+		property:excludedPattern="${files.excluded.pattern}"
+		property:lastModifiedFieldName="lastmodified" 
+		property:batchSize="${file.batch.size}" />
+	<bean
+		id="filesystemMillionSix"
+		class="ikube.model.IndexableFileSystem"
+		property:name="filesMillionSix"
+		property:path="${files.path.million}"
+		property:pathFieldName="path"
+		property:nameFieldName="name"
+		property:lengthFieldName="length"
+		property:contentFieldName="contents"
+		property:excludedPattern="${files.excluded.pattern}"
+		property:lastModifiedFieldName="lastmodified" 
+		property:batchSize="${file.batch.size}" />
+	<bean
+		id="filesystemMillionSeven"
+		class="ikube.model.IndexableFileSystem"
+		property:name="filesMillionSeven"
+		property:path="${files.path.million}"
+		property:pathFieldName="path"
+		property:nameFieldName="name"
+		property:lengthFieldName="length"
+		property:contentFieldName="contents"
+		property:excludedPattern="${files.excluded.pattern}"
+		property:lastModifiedFieldName="lastmodified" 
+		property:batchSize="${file.batch.size}" />
+	<bean
+		id="filesystemMillionEight"
+		class="ikube.model.IndexableFileSystem"
+		property:name="filesMillionEight"
+		property:path="${files.path.million}"
+		property:pathFieldName="path"
+		property:nameFieldName="name"
+		property:lengthFieldName="length"
+		property:contentFieldName="contents"
+		property:excludedPattern="${files.excluded.pattern}"
+		property:lastModifiedFieldName="lastmodified" 
+		property:batchSize="${file.batch.size}" />
+	<bean
+		id="filesystemMillionNine"
+		class="ikube.model.IndexableFileSystem"
+		property:name="filesMillionNine"
+		property:path="${files.path.million}"
+		property:pathFieldName="path"
+		property:nameFieldName="name"
+		property:lengthFieldName="length"
+		property:contentFieldName="contents"
+		property:excludedPattern="${files.excluded.pattern}"
+		property:lastModifiedFieldName="lastmodified" 
+		property:batchSize="${file.batch.size}" />
+	<bean
+		id="filesystemMillionTen"
+		class="ikube.model.IndexableFileSystem"
+		property:name="filesMillionTen"
+		property:path="${files.path.million}"
+		property:pathFieldName="path"
+		property:nameFieldName="name"
+		property:lengthFieldName="length"
+		property:contentFieldName="contents"
+		property:excludedPattern="${files.excluded.pattern}"
+		property:lastModifiedFieldName="lastmodified" 
+		property:batchSize="${file.batch.size}" />
 </beans>

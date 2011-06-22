@@ -1,14 +1,12 @@
 package ikube.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Transient;
-
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
 
 /**
  * @author Michael Couck
@@ -35,15 +33,15 @@ public class Url extends Persistable {
 	private boolean indexed;
 	private long hash;
 
+	@Column(length = 255)
+	private String url;
 	@Transient
-  private String url;
-  @Transient
-  private String contentType;
-  @Transient
+	private String contentType;
+	@Transient
 	private String title;
-  @Transient
+	@Transient
 	private byte[] rawContent;
-  @Transient
+	@Transient
 	private String parsedContent;
 
 	public long getUrlId() {
@@ -108,10 +106,6 @@ public class Url extends Persistable {
 
 	public void setHash(final long hash) {
 		this.hash = hash;
-	}
-
-	public String toString() {
-		return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
 	}
 
 }

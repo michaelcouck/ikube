@@ -38,7 +38,7 @@ public class IndexableInternetHandlerTest extends BaseTest {
 
 	@After
 	public void after() {
-		// dataBase.remove(Url.DELETE_ALL_URLS);
+		dataBase.remove(Url.DELETE_ALL_URLS);
 	}
 
 	@Test

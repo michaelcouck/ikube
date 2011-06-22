@@ -5,8 +5,7 @@
 		http://java.sun.com/xml/ns/persistence
     	http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd" version="1.0">
 
-	
-	<persistence-unit name="IkubePersistenceUnitObjectDb" transaction-type="RESOURCE_LOCAL">
+	<!-- <persistence-unit name="IkubePersistenceUnitObjectDb" transaction-type="RESOURCE_LOCAL">
 		<provider>com.objectdb.jpa.Provider</provider>
 		<class>ikube.model.Persistable</class>
 		
@@ -47,9 +46,9 @@
 			<property name="javax.persistence.jdbc.user" value="sa" />
 			<property name="javax.persistence.jdbc.password" value="" />
 		</properties>
-	</persistence-unit>
+	</persistence-unit> -->
 	
-	<persistence-unit name="IkubePersistenceUnitH2" transaction-type="RESOURCE_LOCAL">
+	<!-- <persistence-unit name="IkubePersistenceUnitH2" transaction-type="RESOURCE_LOCAL">
 		<provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
 		<non-jta-data-source>nonXaDataSourceH2</non-jta-data-source>
 		<class>ikube.model.Persistable</class>
@@ -89,20 +88,23 @@
 		<properties>
 			<property name="openjpa.ConnectionFactoryProperties" value="PrettyPrint=true,PrettyPrintLineLength=150" />
 			<property name="openjpa.Log" value="DefaultLevel=WARN,Runtime=WARN,Tool=WARN,SQL=WARN,File=./openjpa.log" />
-			<!-- buildSchema(SchemaAction='add,deleteTableContents',ForeignKeys=true) -->
 			<property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
 			<property name="openjpa.classLoadEnhancement" value="true" />
 			<property name="openjpa.DynamicEnhancementAgent" value="true" />
 			<property name="openjpa.RuntimeUnenhancedClasses" value="supported" />
 			<property name="openjpa.Multithreaded" value="true" />
 		</properties>
-	</persistence-unit>
+	</persistence-unit> -->
 	
 	<!--<property name="openjpa.ConnectionUserName" value="sa" />
 			<property name="openjpa.ConnectionPassword" value="" />
 			<property name="openjpa.ConnectionURL" value="jdbc:h2:mem:search" />
 			<property name="openjpa.ConnectionDriverName" value="org.h2.Driver" />-->
 	
+	<!-- 
+		org.apache.openjpa.persistence.PersistenceProviderImpl,
+		org.eclipse.persistence.jpa.PersistenceProvider
+	 -->
 	<persistence-unit name="IkubePersistenceUnitDb2" transaction-type="RESOURCE_LOCAL">
 		<provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
 		<non-jta-data-source>nonXaDataSourceDb2</non-jta-data-source>
@@ -140,18 +142,9 @@
 		<class>ikube.model.geospatial.GeoName</class>
 		<class>ikube.model.geospatial.AlternateName</class>
 		<exclude-unlisted-classes>false</exclude-unlisted-classes>
-		<properties>
-			<property name="openjpa.ConnectionFactoryProperties" value="PrettyPrint=true,PrettyPrintLineLength=150" />
-			<property name="openjpa.Log" value="DefaultLevel=WARN,Runtime=WARN,Tool=WARN,SQL=WARN,File=./openjpa.log" />
-			<property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
-			<property name="openjpa.classLoadEnhancement" value="true" />
-			<property name="openjpa.DynamicEnhancementAgent" value="true" />
-			<property name="openjpa.RuntimeUnenhancedClasses" value="supported" />
-			<property name="openjpa.Multithreaded" value="true" />
-		</properties>
 	</persistence-unit>
-
-	<persistence-unit name="IkubePersistenceUnitOracle" transaction-type="RESOURCE_LOCAL">
+	
+	<!-- <persistence-unit name="IkubePersistenceUnitOracle" transaction-type="RESOURCE_LOCAL">
 		<provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
 		<non-jta-data-source>nonXaDataSourceOracle</non-jta-data-source>
 		<class>ikube.model.Persistable</class>
@@ -197,6 +190,6 @@
 			<property name="openjpa.RuntimeUnenhancedClasses" value="supported" />
 			<property name="openjpa.Multithreaded" value="true" />
 		</properties>
-	</persistence-unit>
+	</persistence-unit> -->
 	
 </persistence>

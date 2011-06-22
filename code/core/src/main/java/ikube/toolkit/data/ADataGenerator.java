@@ -1,5 +1,6 @@
 package ikube.toolkit.data;
 
+import ikube.database.IDataBase;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.Logging;
 
@@ -23,7 +24,6 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 import javax.persistence.Column;
-import javax.persistence.EntityManager;
 import javax.persistence.Id;
 
 import org.apache.log4j.Logger;
@@ -47,10 +47,10 @@ public abstract class ADataGenerator implements IDataGenerator {
 	protected List<String> words;
 	protected Map<String, byte[]> fileContents;
 	protected Map<Class<?>, Object> entities;
-	protected EntityManager entityManager;
+	protected IDataBase dataBase;
 
-	public ADataGenerator(EntityManager entityManager) {
-		this.entityManager = entityManager;
+	public ADataGenerator(IDataBase dataBase) {
+		this.dataBase = dataBase;
 		entities = new HashMap<Class<?>, Object>();
 		words = new ArrayList<String>();
 	}
@@ -217,48 +217,7 @@ public abstract class ADataGenerator implements IDataGenerator {
 		return null;
 	}
 
-	protected void close(EntityManager entityManager) {
-		if (entityManager == null || !entityManager.isOpen()) {
-			return;
-		}
-		commit(entityManager);
-		try {
-			entityManager.close();
-		} catch (Exception e) {
-			logger.error("Exception closing the entity manager : ", e);
-		}
-	}
-
-	protected void begin(EntityManager entityManager) {
-		if (entityManager.getTransaction().isActive()) {
-			return;
-		}
-		entityManager.getTransaction().begin();
-	}
-
-	protected void commit(EntityManager entityManager) {
-		logger.info("Comitting : " + entityManager);
-		try {
-			if (entityManager.getTransaction().isActive()) {
-				if (entityManager.getTransaction().getRollbackOnly()) {
-					entityManager.getTransaction().rollback();
-					return;
-				}
-				entityManager.getTransaction().commit();
-			}
-		} catch (Exception e) {
-			logger.error("Exception comitting the transaction : ", e);
-		} finally {
-			try {
-				entityManager.clear();
-			} catch (Exception e) {
-				logger.error("Exception clearing the entity manager : ", e);
-			}
-		}
-	}
-
-	public void after() throws Exception {
-		close(entityManager);
+	public void after() {
 	}
 
 }

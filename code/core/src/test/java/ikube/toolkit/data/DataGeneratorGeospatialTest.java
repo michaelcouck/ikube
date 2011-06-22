@@ -1,7 +1,7 @@
 package ikube.toolkit.data;
 
 import ikube.ATest;
-import ikube.IConstants;
+import ikube.database.IDataBase;
 import ikube.model.geospatial.GeoName;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
@@ -13,10 +13,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -36,9 +32,6 @@ import co.uk.hjcs.canyon.session.SessionFactory;
 public class DataGeneratorGeospatialTest extends ATest {
 
 	private String fileName = "allCountries.txt";
-	// private File mappingFile = FileUtilities.findFileRecursively(new File("."), "geoname.xml");
-
-	// private File dataFile = new File(fileName);
 
 	public DataGeneratorGeospatialTest() {
 		super(DataGeneratorGeospatialTest.class);
@@ -46,10 +39,8 @@ public class DataGeneratorGeospatialTest extends ATest {
 
 	@Test
 	public void generate1() throws Exception {
-		ApplicationContextManager.getApplicationContext();
-		EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory(IConstants.PERSISTENCE_UNIT_DB2);
-		EntityManager entityManager = entityManagerFactory.createEntityManager();
-		DataGeneratorGeospatial dataGeneratorGeospatial = new DataGeneratorGeospatial(entityManager, "canyon.cfg.xml", "geoname1", 0);
+		IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
+		DataGeneratorGeospatial dataGeneratorGeospatial = new DataGeneratorGeospatial(dataBase, "canyon.cfg.xml", "geoname1", 0);
 		dataGeneratorGeospatial.before();
 		dataGeneratorGeospatial.generate();
 		dataGeneratorGeospatial.after();
@@ -57,10 +48,8 @@ public class DataGeneratorGeospatialTest extends ATest {
 
 	@Test
 	public void generate2() throws Exception {
-		ApplicationContextManager.getApplicationContext();
-		EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory(IConstants.PERSISTENCE_UNIT_DB2);
-		EntityManager entityManager = entityManagerFactory.createEntityManager();
-		DataGeneratorGeospatial dataGeneratorGeospatial = new DataGeneratorGeospatial(entityManager, "canyon.cfg.xml", "geoname2", 0);
+		IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
+		DataGeneratorGeospatial dataGeneratorGeospatial = new DataGeneratorGeospatial(dataBase, "canyon.cfg.xml", "geoname2", 0);
 		dataGeneratorGeospatial.before();
 		dataGeneratorGeospatial.generate();
 		dataGeneratorGeospatial.after();
@@ -68,10 +57,8 @@ public class DataGeneratorGeospatialTest extends ATest {
 
 	@Test
 	public void generate3() throws Exception {
-		ApplicationContextManager.getApplicationContext();
-		EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory(IConstants.PERSISTENCE_UNIT_DB2);
-		EntityManager entityManager = entityManagerFactory.createEntityManager();
-		DataGeneratorGeospatial dataGeneratorGeospatial = new DataGeneratorGeospatial(entityManager, "canyon.cfg.xml", "geoname3", 0);
+		IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
+		DataGeneratorGeospatial dataGeneratorGeospatial = new DataGeneratorGeospatial(dataBase, "canyon.cfg.xml", "geoname3", 0);
 		dataGeneratorGeospatial.before();
 		dataGeneratorGeospatial.generate();
 		dataGeneratorGeospatial.after();
@@ -79,10 +66,8 @@ public class DataGeneratorGeospatialTest extends ATest {
 
 	@Test
 	public void generate4() throws Exception {
-		ApplicationContextManager.getApplicationContext();
-		EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory(IConstants.PERSISTENCE_UNIT_DB2);
-		EntityManager entityManager = entityManagerFactory.createEntityManager();
-		DataGeneratorGeospatial dataGeneratorGeospatial = new DataGeneratorGeospatial(entityManager, "canyon.cfg.xml", "geoname4", 0);
+		IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
+		DataGeneratorGeospatial dataGeneratorGeospatial = new DataGeneratorGeospatial(dataBase, "canyon.cfg.xml", "geoname4", 0);
 		dataGeneratorGeospatial.before();
 		dataGeneratorGeospatial.generate();
 		dataGeneratorGeospatial.after();
@@ -90,10 +75,8 @@ public class DataGeneratorGeospatialTest extends ATest {
 
 	@Test
 	public void generate5() throws Exception {
-		ApplicationContextManager.getApplicationContext();
-		EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory(IConstants.PERSISTENCE_UNIT_DB2);
-		EntityManager entityManager = entityManagerFactory.createEntityManager();
-		DataGeneratorGeospatial dataGeneratorGeospatial = new DataGeneratorGeospatial(entityManager, "canyon.cfg.xml", "geoname5", 0);
+		IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
+		DataGeneratorGeospatial dataGeneratorGeospatial = new DataGeneratorGeospatial(dataBase, "canyon.cfg.xml", "geoname5", 0);
 		dataGeneratorGeospatial.before();
 		dataGeneratorGeospatial.generate();
 		dataGeneratorGeospatial.after();
@@ -101,10 +84,8 @@ public class DataGeneratorGeospatialTest extends ATest {
 
 	@Test
 	public void generate6() throws Exception {
-		ApplicationContextManager.getApplicationContext();
-		EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory(IConstants.PERSISTENCE_UNIT_DB2);
-		EntityManager entityManager = entityManagerFactory.createEntityManager();
-		DataGeneratorGeospatial dataGeneratorGeospatial = new DataGeneratorGeospatial(entityManager, "canyon.cfg.xml", "geoname6", 0);
+		IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
+		DataGeneratorGeospatial dataGeneratorGeospatial = new DataGeneratorGeospatial(dataBase, "canyon.cfg.xml", "geoname6", 0);
 		dataGeneratorGeospatial.before();
 		dataGeneratorGeospatial.generate();
 		dataGeneratorGeospatial.after();
@@ -112,10 +93,8 @@ public class DataGeneratorGeospatialTest extends ATest {
 
 	@Test
 	public void generate7() throws Exception {
-		ApplicationContextManager.getApplicationContext();
-		EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory(IConstants.PERSISTENCE_UNIT_DB2);
-		EntityManager entityManager = entityManagerFactory.createEntityManager();
-		DataGeneratorGeospatial dataGeneratorGeospatial = new DataGeneratorGeospatial(entityManager, "canyon.cfg.xml", "geoname7", 0);
+		IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
+		DataGeneratorGeospatial dataGeneratorGeospatial = new DataGeneratorGeospatial(dataBase, "canyon.cfg.xml", "geoname7", 0);
 		dataGeneratorGeospatial.before();
 		dataGeneratorGeospatial.generate();
 		dataGeneratorGeospatial.after();
@@ -123,10 +102,8 @@ public class DataGeneratorGeospatialTest extends ATest {
 
 	@Test
 	public void generate8() throws Exception {
-		ApplicationContextManager.getApplicationContext();
-		EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory(IConstants.PERSISTENCE_UNIT_DB2);
-		EntityManager entityManager = entityManagerFactory.createEntityManager();
-		DataGeneratorGeospatial dataGeneratorGeospatial = new DataGeneratorGeospatial(entityManager, "canyon.cfg.xml", "geoname8", 0);
+		IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
+		DataGeneratorGeospatial dataGeneratorGeospatial = new DataGeneratorGeospatial(dataBase, "canyon.cfg.xml", "geoname8", 0);
 		dataGeneratorGeospatial.before();
 		dataGeneratorGeospatial.generate();
 		dataGeneratorGeospatial.after();

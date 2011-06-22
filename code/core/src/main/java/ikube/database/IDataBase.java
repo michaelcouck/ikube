@@ -38,6 +38,8 @@ public interface IDataBase {
 	 */
 	<T> T remove(Class<T> klass, Long objectId);
 
+	<T> void removeBatch(List<T> batch);
+
 	/**
 	 * Persists an object in the database.
 	 * 
@@ -46,6 +48,8 @@ public interface IDataBase {
 	 * @return the refreshed object from the database, typically this object will have the unique id filled in by the database
 	 */
 	<T> T persist(T object);
+
+	<T> void persistBatch(List<T> list);
 
 	/**
 	 * Merges the object parameter with the object from the database. In the case where a primitive field is changed in the object and this
@@ -56,6 +60,8 @@ public interface IDataBase {
 	 * @return the refreshed object from the database, typically this will be exactly the same as the object to be merged
 	 */
 	<T> T merge(T object);
+
+	<T> void mergeBatch(List<T> batch);
 
 	/**
 	 * Finds an object by the if field only. This method will be very expensive as each object in the database is iterated through and the
@@ -115,7 +121,7 @@ public interface IDataBase {
 	<T> List<T> find(Class<T> klass, int startIndex, int endIndex);
 
 	<T> T find(Class<T> klass, String sql, Map<String, Object> parameters);
-	
+
 	<T> List<T> find(Class<T> klass, String sql, Map<String, Object> parameters, int startPosition, int maxResults);
 
 	/**

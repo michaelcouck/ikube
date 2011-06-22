@@ -13,6 +13,8 @@ import javax.persistence.InheritanceType;
 import javax.persistence.Lob;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
@@ -90,6 +92,7 @@ public class GeoName extends Persistable {
 	private Integer gtopo30; // : average elevation of 30'x30' (ca 900mx900m) area in meters, integer
 	@Column(length = 48)
 	private String timezone; // : the timezone id (see file timeZone.txt)
+	@Temporal(value = TemporalType.DATE)
 	private Date modification; // date : date of last modification in yyyy-MM-dd format
 
 	public Integer getGeonameid() {

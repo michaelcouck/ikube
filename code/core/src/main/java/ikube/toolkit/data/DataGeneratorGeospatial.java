@@ -1,9 +1,7 @@
 package ikube.toolkit.data;
 
+import ikube.database.IDataBase;
 import ikube.model.geospatial.GeoName;
-
-import javax.persistence.EntityManager;
-
 import co.uk.hjcs.canyon.session.Session;
 import co.uk.hjcs.canyon.session.SessionFactory;
 
@@ -23,8 +21,8 @@ public class DataGeneratorGeospatial extends ADataGenerator {
 	private String sessionName;
 	private int offset;
 
-	public DataGeneratorGeospatial(EntityManager entityManager, String mappingFile, String sessionName, int offset) {
-		super(entityManager);
+	public DataGeneratorGeospatial(IDataBase dataBase, String mappingFile, String sessionName, int offset) {
+		super(dataBase);
 		this.mappingFile = mappingFile;
 		this.sessionName = sessionName;
 		this.offset = offset;
@@ -37,7 +35,6 @@ public class DataGeneratorGeospatial extends ADataGenerator {
 		Session session = SessionFactory.getSession(mappingFile, sessionName);
 		int counter = 0;
 		int total = 0;
-		begin(entityManager);
 		int currentOffset = 0;
 		while (session.hasNext(GeoName.class)) {
 			try {
@@ -51,22 +48,16 @@ public class DataGeneratorGeospatial extends ADataGenerator {
 				if (currentOffset < offset) {
 					continue;
 				}
-				entityManager.persist(geoName);
+				dataBase.persist(geoName);
 				if (++counter >= 1000) {
 					total += counter;
 					counter = 0;
 					logger.info("Total addresses : " + total + ", " + geoName);
-					commit(entityManager);
-					begin(entityManager);
 				}
 			} catch (Exception e) {
 				logger.error("Exception persisting geoname : ", e);
-				commit(entityManager);
-				begin(entityManager);
-				// throw new RuntimeException(e);
 			}
 		}
-		commit(entityManager);
 		session.close();
 	}
 

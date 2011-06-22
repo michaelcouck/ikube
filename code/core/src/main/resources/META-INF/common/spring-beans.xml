@@ -39,6 +39,7 @@
 	<bean 
 		id="entityManagerFactory" 
 		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean" 
+		lazy-init="false"
 		property:dataSource-ref="nonXaDataSourceDb2"
 		property:jpaVendorAdapter-ref="jpaAdapter"
 		property:jpaPropertyMap-ref="jpaPropertyMap">
@@ -48,40 +49,29 @@
 		<property name="persistenceUnitName" value="IkubePersistenceUnitDb2"></property>
 	</bean>
 
-	<!-- 
-		org.springframework.orm.jpa.vendor.OpenJpaVendorAdapter,
-		ikube.database.jpa.adapter.ObjectDbJpaVendorAdapter
-	 -->
 	<bean 
 		id="jpaAdapter" 
 		class="org.springframework.orm.jpa.vendor.OpenJpaVendorAdapter"
 		property:database="DB2" 
-		property:showSql="false" />
+		property:showSql="true" />
 		
 	<util:map id="jpaPropertyMap">
 		<entry key="openjpa.ConnectionFactoryProperties" value="PrettyPrint=true,PrettyPrintLineLength=150" />
-		<entry key="openjpa.Log" value="DefaultLevel=ERROR,SQL=ERROR,File=openjpa.log,Runtime=ERROR,Tool=ERROR" />
+		<entry key="openjpa.Log" value="DefaultLevel=ERROR,JDBC=ERROR,SQL=ERROR,File=openjpa.log,Runtime=ERROR,Tool=ERROR" />
 
-		<!-- This is used if you want to user OpenJpa's own cache, but we use Ehcache. -->
-		<!--<entry key="openjpa.RemoteCommitProvider" value="sjvm" />-->
-		<!--<entry key="openjpa.DataCache" value="true(CacheSize=1000000,SoftReferenceSize=1000000)" />-->
-		<!--<entry key="openjpa.QueryCache" value="true(CacheSize=1000000,SoftReferenceSize=1000000)" />-->
-		<!--<entry key="openjpa.DataCache" value="true"/>-->
-
-		<!-- The Ehcache properties along with the ehcache.xml at the base of the jar. -->
-		<!-- <entry key="openjpa.QueryCache" value="${jpa.cache}" />
-		<entry key="openjpa.DataCacheManager" value="${jpa.cache}" /> -->
+		<entry key="openjpa.DataCache" value="true(CacheSize=1000000,SoftReferenceSize=1000)" />
+		<entry key="openjpa.QueryCache" value="true(CacheSize=1000000,SoftReferenceSize=1000)" />
 
 		<entry key="openjpa.LockTimeout" value="6000000" />
 		<entry key="openjpa.ReadLockLevel" value="write" />
 		<entry key="openjpa.WriteLockLevel" value="write" />
-		<entry key="openjpa.Optimistic" value="false" />
+		<entry key="openjpa.Optimistic" value="true" />
 		<entry key="openjpa.Multithreaded" value="true" />
 		<entry key="openjpa.NontransactionalRead" value="true" />
 		<entry key="openjpa.AutoDetach" value="commit" />
 		<entry key="openjpa.FlushBeforeQueries" value="true" />
 		<entry key="openjpa.RuntimeUnenhancedClasses" value="supported" />
-		<!--<entry key="openjpa.ConnectionRetainMode" value="always" />-->
+		<entry key="openjpa.jdbc.DBDictionary" value="db2(batchLimit=1000)" />
 
 		<!--
 			For the first run these have to be uncommented to allow OpenJpa to create the
@@ -91,16 +81,17 @@
 			that connection as it will not be xa.
 		-->
 		<!-- <entry key="openjpa.jdbc.SynchronizeMappings" value="buildSchema" />
-		<entry key="openjpa.Connection2UserName" value="${jdbc.user}" />
-		<entry key="openjpa.Connection2Password" value="${jdbc.password}" />
-		<entry key="openjpa.Connection2URL" value="${jdbc.url}" />
-		<entry key="openjpa.Connection2DriverName" value="${jdbc.driver}" /> -->
+		<entry key="openjpa.Connection2UserName" value="db2admin" />
+		<entry key="openjpa.Connection2Password" value="db2admin" />
+		<entry key="openjpa.Connection2URL" value="jdbc:db2://ikube:50000/ikube" />
+		<entry key="openjpa.Connection2DriverName" value="com.ibm.db2.jcc.DB2Driver" /> -->
 	</util:map>
 
 	<transaction:advice id="transactionAdvice" transaction-manager="transactionManager">
 		<transaction:attributes>
-			<transaction:method name="*" />
-			<transaction:method name="get*" read-only="true" />
+			<transaction:method name="merge*" />
+			<transaction:method name="persist*" />
+			<transaction:method name="remove*" />
 		</transaction:attributes>
 	</transaction:advice>
 
@@ -109,14 +100,11 @@
 		<aop:advisor advice-ref="transactionAdvice" pointcut-ref="dataBaseOperation" />
 	</aop:config>
 	
-	<!-- The in memory database. -->
-	<!-- <bean
-		id="ikube.database.mem.DataBaseMem"
-		class="ikube.database.mem.DataBaseMem" /> -->
 	<!-- The Jpa database for large sets of data. -->
 	<bean
 		id="ikube.database.jpa.DataBaseJpa"
-		class="ikube.database.jpa.DataBaseJpa" />
+		class="ikube.database.jpa.DataBaseJpa"
+		lazy-init="false" />
 	
 	<!-- The cluster manager that is responsible for all cluster synchronization stuff. -->
 	<bean

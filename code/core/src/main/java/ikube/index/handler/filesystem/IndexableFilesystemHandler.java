@@ -25,9 +25,6 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
 
-import javax.persistence.NoResultException;
-import javax.persistence.NonUniqueResultException;
-
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
@@ -41,47 +38,76 @@ import org.apache.lucene.document.Field.TermVector;
  * @author Cristi Bozga
  * @author Michael Couck
  * @since 29.11.10
- * @version 01.00
+ * @version 02.00<br>
+ *          Updated this class to persist the files and to be multi threaded to improve the performance.
  */
 public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSystem> {
 
 	private IDataBase dataBase;
-	private Map<String, Object> fileIdParameters;
 
 	@Override
 	public List<Thread> handle(final IndexContext indexContext, final IndexableFileSystem indexable) throws Exception {
-		fileIdParameters = new HashMap<String, Object>();
 		if (dataBase == null) {
 			dataBase = ApplicationContextManager.getBean(IDataBase.class);
 		}
-		int removed = dataBase.remove(ikube.model.File.DELETE_ALL_FILES);
-		logger.info("Removed files :" + removed);
-		List<Thread> threads = new ArrayList<Thread>();
-		// We need to check the cluster to see if this indexable is already handled by
-		// one of the other servers. The file system is very fast and there is no need to
-		// cluster the indexing
-		String name = this.getClass().getSimpleName();
+		// We shouldn't have to do this but we want to use the same files
+		// again and again in the tests, I know, really bad, but I don't have 100
+		// terabytes to spare for the data
+		List<ikube.model.File> list = dataBase.find(ikube.model.File.class, 0, 1000);
+		do {
+			dataBase.removeBatch(list);
+			list = dataBase.find(ikube.model.File.class, 0, 1000);
+		} while (list.size() > 0);
+
 		final File baseFile = new File(indexable.getPath());
 		final Pattern pattern = getPattern(indexable.getExcludedPattern());
 		if (isExcluded(baseFile, pattern)) {
 			logger.warn("Base directory excluded : " + baseFile);
 			return null;
 		}
-		final Set<Long> filesDone = new TreeSet<Long>();
+		// Add all the files to the database
+		final Set<File> filesDone = new TreeSet<File>();
+		handleFolder(indexContext, indexable, baseFile, getPattern(indexable.getExcludedPattern()), filesDone);
+		// Now start the threads indexing the files from the database
+		List<Thread> threads = new ArrayList<Thread>();
+		String name = this.getClass().getSimpleName();
 		for (int i = 0; i < getThreads(); i++) {
 			Thread thread = new Thread(new Runnable() {
 				public void run() {
-					if (baseFile.isDirectory()) {
-						handleFolder(indexContext, indexable, baseFile, pattern, filesDone);
-					} else {
-						handleFile(indexContext, indexable, baseFile);
-					}
+					List<ikube.model.File> dbFiles = getBatch(indexable);
+					do {
+						for (ikube.model.File dbFile : dbFiles) {
+							if (dbFile.getUrl() == null) {
+								logger.warn("DB file url null : ");
+								continue;
+							}
+							handleFile(indexContext, indexable, dbFile);
+						}
+						dbFiles = getBatch(indexable);
+					} while (!dbFiles.isEmpty());
 				}
 			}, name + "." + i);
 			thread.start();
 			threads.add(thread);
 		}
 		return threads;
+	}
+
+	protected synchronized List<ikube.model.File> getBatch(final IndexableFileSystem indexable) {
+		try {
+			Map<String, Object> parameters = new HashMap<String, Object>();
+			parameters.put(IConstants.INDEXED, Boolean.FALSE);
+			List<ikube.model.File> dbFiles = dataBase.find(ikube.model.File.class, ikube.model.File.SELECT_FROM_FILE_NOT_INDEXED,
+					parameters, 0, indexable.getBatchSize());
+			for (ikube.model.File dbFile : dbFiles) {
+				dbFile.setIndexed(Boolean.TRUE);
+			}
+			dataBase.mergeBatch(dbFiles);
+			logger.info("Doing files : " + dbFiles.size());
+			return dbFiles;
+		} finally {
+			notifyAll();
+		}
 	}
 
 	/**
@@ -98,7 +124,7 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 	 *            the excluded patterns
 	 */
 	protected void handleFolder(final IndexContext indexContext, final IndexableFileSystem indexableFileSystem, final File folder,
-			final Pattern excludedPattern, final Set<Long> filesDone) {
+			final Pattern excludedPattern, final Set<File> filesDone) {
 		File[] files = folder.listFiles();
 		if (files != null) {
 			for (File file : files) {
@@ -108,50 +134,29 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 				if (file.isDirectory()) {
 					handleFolder(indexContext, indexableFileSystem, file, excludedPattern, filesDone);
 				} else {
-					if (isDone(file, filesDone)) {
-						continue;
-					}
-					if (logger.isDebugEnabled()) {
-						logger.debug("Visiting file : " + file + ", " + Thread.currentThread().hashCode());
-					}
-					handleFile(indexContext, indexableFileSystem, file);
+					addFile(indexableFileSystem, file, filesDone);
 				}
 			}
 		}
 	}
 
-	protected synchronized boolean isDone(File file, final Set<Long> filesDone) {
-		try {
-			long urlId = HashUtilities.hash(file.getAbsolutePath());
-			if (!filesDone.add(urlId)) {
-				return Boolean.TRUE;
+	protected boolean addFile(final IndexableFileSystem indexable, File file, final Set<File> filesDone) {
+		filesDone.add(file);
+		if (filesDone.size() >= indexable.getBatchSize()) {
+			logger.info("Persisting files : " + filesDone.size());
+			List<ikube.model.File> filesToPersist = new ArrayList<ikube.model.File>();
+			for (File toPersistFile : filesDone) {
+				long urlId = HashUtilities.hash(toPersistFile.getAbsolutePath());
+				ikube.model.File dbFile = new ikube.model.File();
+				dbFile.setIndexed(Boolean.FALSE);
+				dbFile.setUrl(toPersistFile.getAbsolutePath());
+				dbFile.setUrlId(urlId);
+				filesToPersist.add(dbFile);
 			}
-			fileIdParameters.put(IConstants.URL_ID, urlId);
-			ikube.model.File dbFile = null;
-
-			try {
-				// dbFile = dataBase.find(ikube.model.File.class, ikube.model.File.SELECT_FROM_FILE_BY_FILE_ID, fileIdParameters);
-			} catch (NonUniqueResultException e) {
-				logger.warn("Non unique file id : " + dbFile);
-				return Boolean.TRUE;
-			} catch (NoResultException e) {
-				// Swallow
-			}
-
-			// if (dbFile != null) {
-			// return Boolean.TRUE;
-			// }
-
-			dbFile = new ikube.model.File();
-			dbFile.setIndexed(Boolean.TRUE);
-			dbFile.setUrl(file.getAbsolutePath());
-			dbFile.setUrlId(urlId);
-			// dataBase.persist(dbFile);
-			// logger.info("File : " + hash + ", " + contains + ", " + filesDone.hashCode() + ", " + filesDone);
-			return Boolean.FALSE;
-		} finally {
-			notifyAll();
+			dataBase.persistBatch(filesToPersist);
+			filesDone.clear();
 		}
+		return Boolean.FALSE;
 	}
 
 	/**
@@ -164,7 +169,8 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 	 * @param file
 	 *            the file to parse and index
 	 */
-	protected void handleFile(final IndexContext indexContext, final IndexableFileSystem indexableFileSystem, final File file) {
+	protected void handleFile(final IndexContext indexContext, final IndexableFileSystem indexableFileSystem, final ikube.model.File dbFile) {
+		File file = new File(dbFile.getUrl());
 		try {
 			Document document = new Document();
 			indexableFileSystem.setCurrentFile(file);
@@ -183,6 +189,7 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 
 			IParser parser = ParserProvider.getParser(file.getName(), bytes);
 			OutputStream parsedOutputStream = parser.parse(inputStream, new ByteArrayOutputStream());
+			String parsedContent = parsedOutputStream.toString();
 
 			Store store = indexableFileSystem.isStored() ? Store.YES : Store.NO;
 			Index analyzed = indexableFileSystem.isAnalyzed() ? Index.ANALYZED : Index.NOT_ANALYZED;
@@ -194,17 +201,11 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 			String lengthFieldName = indexableFileSystem.getLengthFieldName();
 			String contentFieldName = indexableFileSystem.getContentFieldName();
 
-			// The path
 			IndexManager.addStringField(pathFieldName, file.getAbsolutePath(), document, store, analyzed, termVector);
-			// The name
 			IndexManager.addStringField(nameFieldName, file.getName(), document, store, analyzed, termVector);
-			// Last modified
 			IndexManager.addStringField(modifiedFieldName, Long.toString(file.lastModified()), document, store, analyzed, termVector);
-			// Length
 			IndexManager.addStringField(lengthFieldName, Long.toString(file.length()), document, store, analyzed, termVector);
-			// Content
-			IndexManager.addStringField(contentFieldName, parsedOutputStream.toString(), document, store, analyzed, termVector);
-			// And to the index
+			IndexManager.addStringField(contentFieldName, parsedContent, document, store, analyzed, termVector);
 			addDocument(indexContext, indexableFileSystem, document);
 		} catch (Exception e) {
 			logger.error("Exception occured while trying to index the file " + file.getAbsolutePath(), e);

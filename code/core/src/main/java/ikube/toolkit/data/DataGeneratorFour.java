@@ -1,8 +1,8 @@
 package ikube.toolkit.data;
 
-import java.util.List;
+import ikube.database.IDataBase;
 
-import javax.persistence.EntityManager;
+import java.util.List;
 
 /**
  * This class will generate an object graph based on the entity and the type. Note that the many to many type of reference is not
@@ -20,7 +20,7 @@ public class DataGeneratorFour extends ADataGenerator {
 	protected int iterations;
 	protected Class<?>[] classes;
 
-	public DataGeneratorFour(EntityManager entityManager, int iterations, Class<?>... classes) {
+	public DataGeneratorFour(IDataBase entityManager, int iterations, Class<?>... classes) {
 		super(entityManager);
 		this.iterations = iterations;
 		this.classes = classes;
@@ -28,29 +28,24 @@ public class DataGeneratorFour extends ADataGenerator {
 
 	@Override
 	public void generate() throws Exception {
-		begin(entityManager);
 		for (int i = 0; i < iterations; i++) {
 			for (Class<?> klass : classes) {
 				Object entity = createInstance(klass);
-				entityManager.persist(entity);
+				dataBase.persist(entity);
 			}
 		}
-		commit(entityManager);
 	}
 
-	public void delete(EntityManager entityManager, Class<?>... classes) {
+	public void delete(IDataBase dataBase, Class<?>... classes) {
 		for (Class<?> klass : classes) {
 			try {
-				begin(entityManager);
 				logger.info("Deleting : " + klass.getSimpleName());
-				List<?> results = entityManager.createQuery("select e from " + klass.getSimpleName() + " as e").getResultList();
+				List<?> results = dataBase.find(klass, 0, Integer.MAX_VALUE);
 				for (Object object : results) {
-					entityManager.remove(object);
+					dataBase.remove(object);
 				}
 			} catch (Exception e) {
 				logger.error("Exception deleting entities : ", e);
-			} finally {
-				commit(entityManager);
 			}
 		}
 	}

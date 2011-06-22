@@ -46,14 +46,25 @@ public class Reset extends Action<IndexContext, Boolean> {
 				getClusterManager().clear(IConstants.URL_ID);
 			}
 			IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
-			int deleted = dataBase.remove(Url.DELETE_ALL_URLS);
-			logger.info("Deleted urls : " + deleted);
-			deleted = dataBase.remove(File.DELETE_ALL_FILES);
-			logger.info("Deleted files : " + deleted);
+			delete(dataBase, Url.class, File.class);
 		} finally {
 			getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getSimpleName(), "", Boolean.FALSE);
 		}
 		return Boolean.TRUE;
+	}
+
+	protected void delete(final IDataBase dataBase, final Class<?>... klasses) {
+		for (Class<?> klass : klasses) {
+			try {
+				List<?> list = dataBase.find(klass, 0, 1000);
+				do {
+					dataBase.removeBatch(list);
+					list = dataBase.find(klass, 0, 1000);
+				} while (list.size() > 0);
+			} catch (Exception e) {
+				logger.error(e.getMessage());
+			}
+		}
 	}
 
 }

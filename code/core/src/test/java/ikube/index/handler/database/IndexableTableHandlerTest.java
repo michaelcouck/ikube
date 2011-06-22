@@ -51,13 +51,13 @@ public class IndexableTableHandlerTest extends BaseTest {
 	public void before() throws Exception {
 		indexableTableHandler = ApplicationContextManager.getBean(IndexableTableHandler.class);
 
-		faqIndexableTable = ApplicationContextManager.getBean("faqTableH2");
-		attachmentIndexableTable = ApplicationContextManager.getBean("attachmentTableH2");
+		faqIndexableTable = ApplicationContextManager.getBean("faqTableDb2");
+		attachmentIndexableTable = ApplicationContextManager.getBean("attachmentTableDb2");
 
 		faqIndexableColumns = faqIndexableTable.getChildren();
 		faqIdIndexableColumn = indexableTableHandler.getIdColumn(faqIndexableColumns);
 
-		connection = ((DataSource) ApplicationContextManager.getBean("nonXaDataSourceH2")).getConnection();
+		connection = ((DataSource) ApplicationContextManager.getBean("nonXaDataSourceDb2")).getConnection();
 
 		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
 		clusterManager.setWorking(Index.class.getSimpleName(), indexContext.getIndexName(), faqIndexableTable.getName(), Boolean.FALSE);
@@ -103,7 +103,7 @@ public class IndexableTableHandlerTest extends BaseTest {
 		assertEquals(1, minId);
 		long maxId = indexableTableHandler.getIdFunction(faqIndexableTable, connection, "max");
 		logger.debug("Max id : " + maxId);
-		assertTrue(maxId < 1000);
+		assertTrue(maxId < 1000000000);
 	}
 
 	@Test
@@ -165,7 +165,8 @@ public class IndexableTableHandlerTest extends BaseTest {
 		logger.debug("Document : " + document);
 		String idFieldValue = document.get(IConstants.ID);
 		logger.debug("Id field : " + idFieldValue);
-		assertEquals("faq.faqId.1", idFieldValue);
+		assertTrue("The id field for the table is the name of the table and the column name, then the value : ",
+				idFieldValue.contains("faq.faqId"));
 
 		DatabaseUtilities.close(resultSet);
 		DatabaseUtilities.close(statement);

@@ -66,7 +66,7 @@ public class IndexEngine implements IIndexEngine {
 			for (IAction<IndexContext, Boolean> action : actions) {
 				try {
 					// Sleep for a random time, < 30 seconds
-					Thread.sleep((long) (((Math.random() * 30d)) * 1000d));
+					Thread.sleep((long) (((Math.random() * 10d)) * 1000d));
 					action.execute(indexContext);
 				} catch (Exception e) {
 					LOGGER.error("Exception executing action : " + action, e);

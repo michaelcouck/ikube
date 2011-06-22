@@ -225,4 +225,19 @@ public class DataBaseMem implements IDataBase {
 		return null;
 	}
 
+	@Override
+	public <T> void persistBatch(List<T> list) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public <T> void removeBatch(List<T> batch) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public <T> void mergeBatch(List<T> batch) {
+		// TODO Auto-generated method stub
+	}
+
 }

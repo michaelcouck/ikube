@@ -26,7 +26,7 @@ public class PerformanceTester {
 	}
 
 	public static class APerform implements IPerform {
-		
+
 		public void execute() throws Throwable {
 		}
 

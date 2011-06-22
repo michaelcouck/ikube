@@ -2,6 +2,7 @@ package ikube.toolkit.data;
 
 import ikube.ATest;
 import ikube.IConstants;
+import ikube.database.IDataBase;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.XmlUtilities;
@@ -13,9 +14,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.StringTokenizer;
-
-import javax.persistence.EntityManager;
-import javax.persistence.Persistence;
 
 import org.dom4j.Element;
 import org.junit.Ignore;
@@ -33,7 +31,7 @@ public class DataGeneratorMedicalTest extends ATest {
 	@Test
 	public void generate() throws Exception {
 		ApplicationContextManager.getApplicationContext();
-		EntityManager entityManager = Persistence.createEntityManagerFactory(IConstants.PERSISTENCE_UNIT_DB2).createEntityManager();
+		IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
 		File wordsFile = FileUtilities.findFileRecursively(new File("."), "words.txt");
 		String wordsData = FileUtilities.getContents(wordsFile.toURI().toURL().openStream(), Short.MAX_VALUE).toString();
 		StringTokenizer stringTokenizer = new StringTokenizer(wordsData);
@@ -52,7 +50,7 @@ public class DataGeneratorMedicalTest extends ATest {
 					XmlUtilities.getDocument(new ByteArrayInputStream(contents.getBytes()), IConstants.ENCODING).getRootElement(),
 					"totalNumberOfResults");
 			int totalResults = Integer.parseInt(totalNumberOfResultsElement.getText());
-			DataGeneratorMedical dataGenerator = new DataGeneratorMedical(entityManager);
+			DataGeneratorMedical dataGenerator = new DataGeneratorMedical(dataBase);
 			dataGenerator.before();
 			dataGenerator.setInputStream(new ByteArrayInputStream(contents.getBytes()));
 			dataGenerator.generate();

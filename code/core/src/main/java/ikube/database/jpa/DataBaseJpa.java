@@ -45,6 +45,17 @@ public class DataBaseJpa implements IDataBase {
 	 * {@inheritDoc}
 	 */
 	@Override
+	public <T> void removeBatch(List<T> batch) {
+		for (T t : batch) {
+			t = entityManager.merge(t);
+			entityManager.remove(t);
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public <T> T persist(T object) {
 		if (object != null) {
 			entityManager.persist(object);
@@ -55,11 +66,31 @@ public class DataBaseJpa implements IDataBase {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
+	public <T> void persistBatch(List<T> list) {
+		for (T t : list) {
+			entityManager.persist(t);
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public <T> T merge(T object) {
 		if (object != null) {
 			object = entityManager.merge(object);
 		}
 		return object;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public <T> void mergeBatch(List<T> batch) {
+		for (T t : batch) {
+			t = entityManager.merge(t);
+		}
 	}
 
 	/**
@@ -87,6 +118,9 @@ public class DataBaseJpa implements IDataBase {
 		return query.getResultList();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public <T> T remove(T object) {
 		object = entityManager.merge(object);
@@ -94,11 +128,17 @@ public class DataBaseJpa implements IDataBase {
 		return object;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public int remove(String sql) {
 		return entityManager.createNamedQuery(sql).executeUpdate();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T> T find(Long objectId) {
@@ -116,6 +156,9 @@ public class DataBaseJpa implements IDataBase {
 		return null;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T> T find(Class<T> klass, String sql, Map<String, Object> parameters) {
@@ -124,12 +167,9 @@ public class DataBaseJpa implements IDataBase {
 		return (T) query.getSingleResult();
 	}
 
-	private void setParameters(Query query, Map<String, Object> parameters) {
-		for (String parameter : parameters.keySet()) {
-			query.setParameter(parameter, parameters.get(parameter));
-		}
-	}
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T> List<T> find(Class<T> klass, String sql, Map<String, Object> parameters, int startPosition, int maxResults) {
@@ -138,6 +178,12 @@ public class DataBaseJpa implements IDataBase {
 		query.setMaxResults(maxResults);
 		setParameters(query, parameters);
 		return query.getResultList();
+	}
+
+	private void setParameters(Query query, Map<String, Object> parameters) {
+		for (String parameter : parameters.keySet()) {
+			query.setParameter(parameter, parameters.get(parameter));
+		}
 	}
 
 }

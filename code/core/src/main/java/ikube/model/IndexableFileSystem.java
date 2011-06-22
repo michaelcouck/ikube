@@ -36,6 +36,8 @@ public class IndexableFileSystem extends Indexable<IndexableFileSystem> {
 	private String contentFieldName;
 	@Field()
 	private String lengthFieldName;
+	@Field()
+	private int batchSize;
 
 	public String getPath() {
 		return path;
@@ -108,7 +110,15 @@ public class IndexableFileSystem extends Indexable<IndexableFileSystem> {
 	public void setCurrentFile(final File currentFile) {
 		this.currentFile = currentFile;
 	}
-	
+
+	public int getBatchSize() {
+		return batchSize;
+	}
+
+	public void setBatchSize(int batchSize) {
+		this.batchSize = batchSize;
+	}
+
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
 	}

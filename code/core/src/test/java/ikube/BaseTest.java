@@ -1,6 +1,7 @@
 package ikube;
 
 import ikube.cluster.IClusterManager;
+import ikube.database.IDataBase;
 import ikube.listener.ListenerManager;
 import ikube.listener.Scheduler;
 import ikube.model.IndexContext;
@@ -17,9 +18,7 @@ import ikube.toolkit.data.IDataGenerator;
 import java.io.File;
 import java.io.InputStream;
 
-import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 
 import org.apache.log4j.Logger;
 import org.junit.AfterClass;
@@ -61,22 +60,22 @@ public abstract class BaseTest extends ATest {
 		// does not always work
 		APPLICATION_CONTEXT = ApplicationContextManager.getApplicationContext();
 		Server server = ApplicationContextManager.getBean(IClusterManager.class).getServer();
+		// Close the cluster if it is running
 		Hazelcast.getTopic(IConstants.SHUTDOWN_TOPIC).publish(server);
 		try {
-			ENTITY_MANAGER_FACTORY = Persistence.createEntityManagerFactory(IConstants.PERSISTENCE_UNIT_H2);
-			final EntityManager entityManager = ENTITY_MANAGER_FACTORY.createEntityManager();
-			final int iterations = 1;
+			final int iterations = 0;
+			final IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
 			PerformanceTester.execute(new PerformanceTester.APerform() {
 				@Override
 				public void execute() throws Exception {
 					Class<?>[] classes = new Class[] { Faq.class, Attachment.class };
-					IDataGenerator dataGenerator = new DataGeneratorFour(entityManager, iterations, classes);
+					IDataGenerator dataGenerator = new DataGeneratorFour(dataBase, iterations, classes);
 					dataGenerator.before();
 					dataGenerator.generate();
 
 					File file = FileUtilities.findFileRecursively(new File("."), "doctors.xml");
 					InputStream inputStream = file.toURI().toURL().openStream();
-					DataGeneratorMedical dataGeneratorMedical = new DataGeneratorMedical(entityManager);
+					DataGeneratorMedical dataGeneratorMedical = new DataGeneratorMedical(dataBase);
 					dataGeneratorMedical.setInputStream(inputStream);
 					dataGenerator.before();
 					dataGenerator.generate();
@@ -93,7 +92,7 @@ public abstract class BaseTest extends ATest {
 		shutdownSchedules();
 	}
 
-	private static final void shutdownSchedules() {
+	protected static final void shutdownSchedules() {
 		Scheduler.shutdown();
 		ListenerManager.removeListeners();
 	}

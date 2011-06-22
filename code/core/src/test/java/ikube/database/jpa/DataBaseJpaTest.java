@@ -6,9 +6,13 @@ import static org.junit.Assert.assertNull;
 import ikube.BaseTest;
 import ikube.IConstants;
 import ikube.database.IDataBase;
+import ikube.model.File;
 import ikube.model.Url;
 import ikube.toolkit.ApplicationContextManager;
+import ikube.toolkit.PerformanceTester;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,14 +32,12 @@ public class DataBaseJpaTest extends BaseTest {
 	@Before
 	public void before() {
 		dataBase = ApplicationContextManager.getBean(IDataBase.class);
-		int removed = dataBase.remove(Url.DELETE_ALL_URLS);
-		logger.info("Removed : " + removed);
+		delete(dataBase, Url.class, File.class);
 	}
 
 	@After
 	public void after() {
-		int removed = dataBase.remove(Url.DELETE_ALL_URLS);
-		logger.info("Removed : " + removed);
+		delete(dataBase, Url.class, File.class);
 	}
 
 	@Test
@@ -43,7 +45,7 @@ public class DataBaseJpaTest extends BaseTest {
 		// Persist
 		Url url = dataBase.persist(new Url());
 		// Find long
-		Object object = dataBase.find(url.getId());
+		Object object = dataBase.find(Url.class, url.getId());
 		assertNotNull("The url should have been persisted : ", object);
 
 		// Merge
@@ -93,6 +95,46 @@ public class DataBaseJpaTest extends BaseTest {
 		parameters.put(IConstants.HASH, hash);
 		List<Url> urls = dataBase.find(Url.class, Url.SELECT_FROM_URL_BY_HASH, parameters, 0, 100);
 		assertEquals("There should be one url in the database : ", 1, urls.size());
+	}
+
+	@Test
+	public void persistRemoveBatch() {
+		List<Url> urls = Arrays.asList(new Url(), new Url(), new Url());
+		dataBase.persistBatch(urls);
+		List<Url> dbUrls = dataBase.find(Url.class, 0, Integer.MAX_VALUE);
+		assertEquals("There should be a list of urls in the database : ", urls.size(), dbUrls.size());
+
+		dataBase.removeBatch(urls);
+		dbUrls = dataBase.find(Url.class, 0, Integer.MAX_VALUE);
+		assertEquals("There should be no urls in the database : ", 0, dbUrls.size());
+	}
+
+	@Test
+	public void performance() {
+		final int iterations = 10;
+		final int batchSize = 1000;
+		for (int i = 0; i < iterations; i++) {
+			PerformanceTester.execute(new PerformanceTester.APerform() {
+				@Override
+				public void execute() throws Throwable {
+					List<Url> urls = getUrls(batchSize);
+					dataBase.persistBatch(urls);
+				}
+			}, "Insert : ", iterations);
+		}
+	}
+
+	private List<Url> getUrls(int batchSize) {
+		List<Url> urls = new ArrayList<Url>();
+		for (int i = 0; i < batchSize; i++) {
+			long hash = System.nanoTime();
+			Url url = new Url();
+			url.setHash(hash);
+			url.setIndexed(Boolean.FALSE);
+			// url.setUrl(Long.toString(hash));
+			urls.add(url);
+		}
+		return urls;
 	}
 
 }

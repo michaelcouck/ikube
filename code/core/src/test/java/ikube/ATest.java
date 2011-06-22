@@ -147,15 +147,20 @@ public abstract class ATest {
 		ApplicationContextManagerMock.INDEX_CONTEXT = INDEX_CONTEXT;
 		ApplicationContextManagerMock.CLUSTER_MANAGER = CLUSTER_MANAGER;
 		when(ApplicationContextManagerMock.HANDLER.getIndexableClass()).thenReturn(IndexableInternet.class);
-		
+
 		ListenerManager.removeListeners();
 	}
 
 	protected void delete(final IDataBase dataBase, final Class<?>... klasses) {
 		for (Class<?> klass : klasses) {
-			List<?> objects = dataBase.find(klass, 0, Integer.MAX_VALUE);
-			for (Object object : objects) {
-				dataBase.remove(object);
+			try {
+				List<?> list = dataBase.find(klass, 0, 1000);
+				do {
+					dataBase.removeBatch(list);
+					list = dataBase.find(klass, 0, 1000);
+				} while (list.size() > 0);
+			} catch (Exception e) {
+				logger.error(e.getMessage());
 			}
 		}
 	}
