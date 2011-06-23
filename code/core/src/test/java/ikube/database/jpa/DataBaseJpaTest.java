@@ -3,6 +3,7 @@ package ikube.database.jpa;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import ikube.BaseTest;
 import ikube.IConstants;
 import ikube.database.IDataBase;
@@ -113,14 +114,18 @@ public class DataBaseJpaTest extends BaseTest {
 	public void performance() {
 		final int iterations = 10;
 		final int batchSize = 1000;
+		double minimumInsertsPerSecond = 1000d;
 		for (int i = 0; i < iterations; i++) {
-			PerformanceTester.execute(new PerformanceTester.APerform() {
+			double perSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
 				@Override
 				public void execute() throws Throwable {
 					List<Url> urls = getUrls(batchSize);
 					dataBase.persistBatch(urls);
 				}
-			}, "Insert : ", iterations);
+			}, "Iterations per second : ", iterations);
+			double insertsPerSecond = (perSecond * batchSize);
+			logger.info("Inserts per second : " + insertsPerSecond);
+			assertTrue("", insertsPerSecond > minimumInsertsPerSecond);
 		}
 	}
 

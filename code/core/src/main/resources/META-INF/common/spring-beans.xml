@@ -67,7 +67,7 @@
 		<entry key="openjpa.WriteLockLevel" value="write" />
 		<entry key="openjpa.Optimistic" value="true" />
 		<entry key="openjpa.Multithreaded" value="true" />
-		<entry key="openjpa.NontransactionalRead" value="true" />
+		<entry key="openjpa.NontransactionalRead" value="false" />
 		<entry key="openjpa.AutoDetach" value="commit" />
 		<entry key="openjpa.FlushBeforeQueries" value="true" />
 		<entry key="openjpa.RuntimeUnenhancedClasses" value="supported" />
@@ -89,6 +89,7 @@
 
 	<transaction:advice id="transactionAdvice" transaction-manager="transactionManager">
 		<transaction:attributes>
+			<transaction:method name="find*" />
 			<transaction:method name="merge*" />
 			<transaction:method name="persist*" />
 			<transaction:method name="remove*" />
