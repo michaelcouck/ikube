@@ -162,7 +162,7 @@ public class DataBaseJpa implements IDataBase {
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T> T find(Class<T> klass, String sql, Map<String, Object> parameters) {
-		Query query = entityManager.createNamedQuery(sql);
+		Query query = entityManager.createNamedQuery(sql, klass);
 		setParameters(query, parameters);
 		return (T) query.getSingleResult();
 	}

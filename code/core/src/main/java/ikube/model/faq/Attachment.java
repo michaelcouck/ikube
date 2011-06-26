@@ -15,6 +15,8 @@ import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 
@@ -25,7 +27,13 @@ import org.apache.commons.lang.builder.EqualsBuilder;
  */
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@NamedQueries(value = { 
+		@NamedQuery(name = Attachment.UPDATE_ATTACHMENT_BY_ID_GREATER_AND_SMALLER, 
+				query = Attachment.UPDATE_ATTACHMENT_BY_ID_GREATER_AND_SMALLER) })
 public class Attachment implements Serializable, Comparable<Attachment> {
+
+	public static final String UPDATE_ATTACHMENT_BY_ID_GREATER_AND_SMALLER = 
+		"update Attachment as a set a.name = :name where a.attachmentId >= :startId and a.attachmentId < :endId";
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)

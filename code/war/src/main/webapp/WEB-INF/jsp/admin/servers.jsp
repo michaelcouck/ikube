@@ -79,7 +79,7 @@
 			<tr>
 				<td colspan="2"></td>
 				<td class="td-content"><c:out value="${server.action.actionName}" /></td>
-				<td class="td-content"><c:out value="${server.action.name}" /></td>
+				<td class="td-content"><c:out value="${server.action.indexName}" /></td>
 				<td class="td-content"><c:out value="${server.action.indexableName}" /></td>
 				<td class="td-content"><c:out value="${server.action.idNumber}" /></td>
 				<td class="td-content"><c:out value="${server.action.startDate}" /></td>

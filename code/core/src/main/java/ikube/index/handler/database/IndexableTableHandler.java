@@ -92,9 +92,6 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	 */
 	@Override
 	public List<Thread> handle(final IndexContext<?> indexContext, final IndexableTable indexable) throws Exception {
-		SerializationUtilities.setTransientFields(IndexContext.class);
-		SerializationUtilities.setTransientFields(IndexableTable.class);
-		SerializationUtilities.setTransientFields(IndexableColumn.class);
 		String name = this.getClass().getSimpleName();
 		// We start as many threads to access this table as defined. We return
 		// the threads to the caller that they can then wait for the threads to finish

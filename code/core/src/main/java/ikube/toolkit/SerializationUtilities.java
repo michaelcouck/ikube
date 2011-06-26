@@ -13,6 +13,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.Transient;
 
@@ -39,7 +41,7 @@ public final class SerializationUtilities {
 
 	public static String serialize(final Object object) {
 		try {
-			SerializationUtilities.setTransientFields(object.getClass());
+			SerializationUtilities.setTransientFields(object.getClass(), new ArrayList<Class<?>>());
 			ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 			XMLEncoder xmlEncoder = new XMLEncoder(byteArrayOutputStream);
 			xmlEncoder.setExceptionListener(exceptionListener);
@@ -53,7 +55,11 @@ public final class SerializationUtilities {
 		return null;
 	}
 
-	public static void setTransientFields(final Class<?> klass) {
+	public static void setTransientFields(final Class<?> klass, List<Class<?>> doneClasses) {
+		if (doneClasses.contains(klass)) {
+			return;
+		}
+		doneClasses.add(klass);
 		BeanInfo info;
 		try {
 			info = Introspector.getBeanInfo(klass);
@@ -76,6 +82,15 @@ public final class SerializationUtilities {
 			} catch (SecurityException e) {
 				LOGGER.error("Exception setting the transient fields in the serializer : ", e);
 			}
+		}
+		Field[] fields = klass.getDeclaredFields();
+		for (Field field : fields) {
+			Class<?> fieldClass = field.getType();
+			setTransientFields(fieldClass, doneClasses);
+		}
+		Class<?> superKlass = klass.getSuperclass();
+		if (superKlass != null && !Object.class.getName().equals(superKlass.getName())) {
+			setTransientFields(superKlass, doneClasses);
 		}
 	}
 

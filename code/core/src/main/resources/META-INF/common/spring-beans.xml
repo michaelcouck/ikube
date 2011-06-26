@@ -42,20 +42,20 @@
 		id="entityManagerFactory" 
 		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean" 
 		lazy-init="false"
-		property:dataSource-ref="nonXaDataSourceH2"
+		property:dataSource-ref="${ikube.dataSource}"
 		property:jpaVendorAdapter-ref="jpaAdapter"
 		property:jpaPropertyMap-ref="jpaPropertyMap">
 		<property name="loadTimeWeaver">
 			<bean class="org.springframework.instrument.classloading.InstrumentationLoadTimeWeaver" />
 		</property>
-		<property name="persistenceUnitName" value="IkubePersistenceUnitH2"></property>
+		<property name="persistenceUnitName" value="${ikube.persistenceUnit}"></property>
 	</bean>
 
 	<bean 
 		id="jpaAdapter" 
 		class="org.springframework.orm.jpa.vendor.OpenJpaVendorAdapter"
-		property:database="H2" 
-		property:showSql="true" />
+		property:database="${ikube.dataSourceType}" 
+		property:showSql="false" />
 		
 	<util:map id="jpaPropertyMap">
 		<entry key="openjpa.ConnectionFactoryProperties" value="PrettyPrint=true,PrettyPrintLineLength=150" />
@@ -91,8 +91,8 @@
 		<entry key="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
 		<entry key="openjpa.Connection2UserName" value="sa" />
 		<entry key="openjpa.Connection2Password" value="" />
-		<entry key="openjpa.Connection2URL" value="${h2.jdbc.url}" />
-		<entry key="openjpa.Connection2DriverName" value="${h2.jdbc.driver}" />
+		<entry key="openjpa.Connection2URL" value="${ikube.jdbc.url}" />
+		<entry key="openjpa.Connection2DriverName" value="${ikube.jdbc.driver}" />
 	</util:map>
 
 	<transaction:advice id="transactionAdvice" transaction-manager="transactionManager">

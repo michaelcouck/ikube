@@ -25,7 +25,8 @@ public final class ParserProvider {
 	};
 
 	/** The map of content type to parsers. */
-	private static final Map<String, IParser> PARSERS = new HashMap<String, IParser>();
+	private static final Map<String, IParser> PARSERS_MIME_TYPE = new HashMap<String, IParser>();
+	private static final Map<String, IParser> PARSERS_CLASS_NAME_PARSER = new HashMap<String, IParser>();
 
 	/**
 	 * This method will try to find the best parser for the content type based on the data and the content type. The content type can be
@@ -42,7 +43,7 @@ public final class ParserProvider {
 	 */
 	public static IParser getParser(final String mimeTypeString, final byte[] bytes) {
 		MimeType mimeType = null;
-		String parserClass = null;
+		String parserClassName = null;
 		IParser parser = null;
 		try {
 			mimeType = MimeTypes.getMimeTypeFromName(mimeTypeString);
@@ -54,19 +55,23 @@ public final class ParserProvider {
 				mimeType = new MimeType("text/html");
 			}
 			// Initialize the parser
-			parserClass = MimeMapper.getParserClass(mimeType.getName());
-			parser = PARSERS.get(parserClass);
+			parser = PARSERS_MIME_TYPE.get(mimeType.getName());
 			if (parser == null) {
-				if (parserClass == null) {
-					LOGGER.info("Locating the text parser for : " + mimeType.getName() + ", " + mimeTypeString + ", " + parserClass);
-					// The fall-back parser is the text parser
-					parserClass = TextParser.class.getName();
+				parserClassName = MimeMapper.getParserClass(mimeType.getName());
+				parser = PARSERS_CLASS_NAME_PARSER.get(parserClassName);
+				if (parser == null) {
+					if (parserClassName == null) {
+						LOGGER.info("Locating the text parser for : " + mimeType.getName() + ", " + mimeTypeString + ", " + parserClassName);
+						// The fall-back parser is the text parser
+						parserClassName = TextParser.class.getName();
+					}
+					parser = (IParser) Class.forName(parserClassName).newInstance();
+					PARSERS_CLASS_NAME_PARSER.put(parserClassName, parser);
 				}
-				parser = (IParser) Class.forName(parserClass).newInstance();
-				PARSERS.put(parserClass, parser);
+				PARSERS_MIME_TYPE.put(mimeType.getName(), parser);
 			}
 		} catch (Exception t) {
-			LOGGER.error("Exception instanciating parser " + parserClass + " does a parser exist for the mime type " + mimeType
+			LOGGER.error("Exception instanciating parser " + parserClassName + " does a parser exist for the mime type " + mimeType
 					+ " and name " + mimeTypeString + "?", t);
 		}
 		return parser;

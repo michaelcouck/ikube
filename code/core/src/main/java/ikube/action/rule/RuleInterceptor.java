@@ -116,8 +116,8 @@ public class RuleInterceptor implements IRuleInterceptor {
 			}
 			String indexName = indexContext != null ? indexContext.getIndexName() : null;
 			String indexableName = indexable != null ? indexable.getName() : null;
-			LOGGER.info(Logging.getString("Rule intercepter proceeding : ", proceed, actionName, indexName, indexableName));
 			if (proceed) {
+				LOGGER.info(Logging.getString("Rule intercepter proceeding : ", proceed, actionName, indexName, indexableName));
 				proceed(proceedingJoinPoint, actionName, indexName, indexableName);
 			}
 		} catch (Throwable t) {
