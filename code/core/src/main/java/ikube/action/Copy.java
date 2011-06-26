@@ -12,13 +12,13 @@ import ikube.model.IndexContext;
  * @since 18.06.11
  * @version 01.00
  */
-public class Copy<E, F> extends Action<IndexContext, Boolean> {
+public class Copy<E, F> extends Action<IndexContext<?>, Boolean> {
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Boolean execute(final IndexContext indexContext) {
+	public Boolean execute(final IndexContext<?> indexContext) {
 		try {
 			return Boolean.TRUE;
 		} finally {

@@ -4,6 +4,7 @@ import static org.junit.Assert.assertTrue;
 import ikube.BaseTest;
 import ikube.action.Reset;
 import ikube.database.IDataBase;
+import ikube.listener.ListenerManager;
 import ikube.model.IndexableInternet;
 import ikube.model.Url;
 import ikube.toolkit.ApplicationContextManager;
@@ -33,11 +34,13 @@ public class IndexableInternetHandlerTest extends BaseTest {
 	public void before() {
 		indexableInternet = ApplicationContextManager.getBean("internet");
 		dataBase = ApplicationContextManager.getBean(IDataBase.class);
+		ListenerManager.removeListeners();
 		dataBase.remove(Url.DELETE_ALL_URLS);
 	}
 
 	@After
 	public void after() {
+		ListenerManager.removeListeners();
 		dataBase.remove(Url.DELETE_ALL_URLS);
 	}
 

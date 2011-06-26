@@ -24,7 +24,7 @@ import javax.persistence.Query;
  * @since 15.05.2011
  * @version 01.00
  */
-public class Enrichment extends Action<IndexContext, Boolean> implements IConstants {
+public class Enrichment extends Action<IndexContext<?>, Boolean> implements IConstants {
 
 	public static final String CITY_FEATURE_CLASS = "P S T";
 	public static final String CITY_FEATURE_CODE = "PPL PPL PPLA PPLA2 PPLA3 PPLA4 PPLC PPLF PPLG PPLL PPLQ PPLR PPLS PPLW PPLX STLMT";
@@ -42,7 +42,7 @@ public class Enrichment extends Action<IndexContext, Boolean> implements IConsta
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public Boolean execute(final IndexContext indexContext) {
+	public Boolean execute(final IndexContext<?> indexContext) {
 		if (DONE) {
 			return Boolean.FALSE;
 		}
@@ -187,7 +187,7 @@ public class Enrichment extends Action<IndexContext, Boolean> implements IConsta
 		}
 	}
 
-	private SearchSpatial getSearchSpatial(IndexContext indexContext) {
+	private SearchSpatial getSearchSpatial(IndexContext<?> indexContext) {
 		SearchSpatial searchSpatial = new SearchSpatial(indexContext.getIndex().getMultiSearcher());
 		searchSpatial.setDistance(10);
 		searchSpatial.setFirstResult(0);
@@ -197,7 +197,7 @@ public class Enrichment extends Action<IndexContext, Boolean> implements IConsta
 		return searchSpatial;
 	}
 
-	private SearchMulti getSearchMulti(IndexContext indexContext) {
+	private SearchMulti getSearchMulti(IndexContext<?> indexContext) {
 		SearchMulti searchMulti = new SearchMulti(indexContext.getIndex().getMultiSearcher());
 		searchMulti.setFirstResult(0);
 		searchMulti.setFragment(Boolean.TRUE);

@@ -49,7 +49,7 @@ public class Indexable<E> extends Persistable {
 		return parent;
 	}
 
-	protected void setParent(final Indexable<?> parent) {
+	public void setParent(final Indexable<?> parent) {
 		this.parent = parent;
 	}
 

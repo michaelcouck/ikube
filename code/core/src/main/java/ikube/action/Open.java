@@ -35,13 +35,13 @@ import org.apache.lucene.store.FSDirectory;
  * @since 31.10.10
  * @version 01.00
  */
-public class Open extends Action<IndexContext, Boolean> {
+public class Open extends Action<IndexContext<?>, Boolean> {
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Boolean execute(final IndexContext indexContext) {
+	public Boolean execute(final IndexContext<?> indexContext) {
 		if (indexContext.getInMemory()) {
 			return openInMemory(indexContext);
 		}
@@ -52,7 +52,7 @@ public class Open extends Action<IndexContext, Boolean> {
 		}
 	}
 
-	private boolean openOnFile(final IndexContext indexContext) {
+	private boolean openOnFile(final IndexContext<?> indexContext) {
 		ArrayList<Searchable> searchers = new ArrayList<Searchable>();
 		String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
 		File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexDirectoryPath);
@@ -128,7 +128,7 @@ public class Open extends Action<IndexContext, Boolean> {
 		return Boolean.FALSE;
 	}
 
-	private boolean openInMemory(final IndexContext indexContext) {
+	private boolean openInMemory(final IndexContext<?> indexContext) {
 		Index index = indexContext.getIndex();
 		MultiSearcher multiSearcher = index.getMultiSearcher();
 		Directory directory = index.getDirectory();

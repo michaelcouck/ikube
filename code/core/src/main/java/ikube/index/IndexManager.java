@@ -59,7 +59,7 @@ public final class IndexManager {
 	 *            directory
 	 * @return the index writer opened for this index context or null if there was any exception opening the index
 	 */
-	public static synchronized IndexWriter openIndexWriter(final IndexContext indexContext, final long time, final String ip) {
+	public static synchronized IndexWriter openIndexWriter(final IndexContext<?> indexContext, final long time, final String ip) {
 		boolean delete = Boolean.FALSE;
 		boolean exception = Boolean.FALSE;
 		File indexDirectory = null;
@@ -109,7 +109,7 @@ public final class IndexManager {
 	 * @return
 	 * @throws Exception
 	 */
-	public static synchronized IndexWriter openIndexWriter(IndexContext indexContext, File indexDirectory, boolean create) throws Exception {
+	public static synchronized IndexWriter openIndexWriter(IndexContext<?> indexContext, File indexDirectory, boolean create) throws Exception {
 		Directory directory = null;
 		if (indexContext.getInMemory()) {
 			LOGGER.info("Index in memory : ");
@@ -132,7 +132,7 @@ public final class IndexManager {
 	 * 
 	 * @param indexContext
 	 */
-	public static synchronized void closeIndexWriter(final IndexContext indexContext) {
+	public static synchronized void closeIndexWriter(final IndexContext<?> indexContext) {
 		try {
 			if (indexContext != null && indexContext.getIndex().getIndexWriter() != null) {
 				IndexWriter indexWriter = indexContext.getIndex().getIndexWriter();
@@ -196,7 +196,7 @@ public final class IndexManager {
 	 * @param ip
 	 * @return
 	 */
-	public static String getIndexDirectory(final IndexContext indexContext, final long time, final String ip) {
+	public static String getIndexDirectory(final IndexContext<?> indexContext, final long time, final String ip) {
 		StringBuilder builder = new StringBuilder();
 		builder.append(IndexManager.getIndexDirectoryPath(indexContext));
 		builder.append(File.separator);
@@ -212,7 +212,7 @@ public final class IndexManager {
 	 * @param indexContext
 	 * @return
 	 */
-	public static String getIndexDirectoryPath(final IndexContext indexContext) {
+	public static String getIndexDirectoryPath(final IndexContext<?> indexContext) {
 		return getIndexDirectoryPath(indexContext, indexContext.getIndexDirectoryPath());
 	}
 
@@ -222,7 +222,7 @@ public final class IndexManager {
 	 * @param indexContext
 	 * @return
 	 */
-	public static String getIndexDirectoryPathBackup(final IndexContext indexContext) {
+	public static String getIndexDirectoryPathBackup(final IndexContext<?> indexContext) {
 		return getIndexDirectoryPath(indexContext, indexContext.getIndexDirectoryPathBackup());
 	}
 
@@ -233,7 +233,7 @@ public final class IndexManager {
 	 * @param indexDirectory
 	 * @return
 	 */
-	private static String getIndexDirectoryPath(IndexContext indexContext, String indexDirectory) {
+	private static String getIndexDirectoryPath(IndexContext<?> indexContext, String indexDirectory) {
 		StringBuilder builder = new StringBuilder();
 		builder.append(indexDirectory); // Path
 		builder.append(File.separator);

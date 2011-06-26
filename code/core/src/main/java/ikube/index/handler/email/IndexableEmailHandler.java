@@ -52,7 +52,7 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<Thread> handle(final IndexContext indexContext, final IndexableEmail indexable) throws Exception {
+	public List<Thread> handle(final IndexContext<?> indexContext, final IndexableEmail indexable) throws Exception {
 		// First check to see if this indexable is handled by another server
 		handleEmail(indexContext, indexable);
 		return null;
@@ -66,7 +66,7 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 	 * @param indexableMail
 	 *            the indexable to index
 	 */
-	protected void handleEmail(final IndexContext indexContext, final IndexableEmail indexableMail) {
+	protected void handleEmail(final IndexContext<?> indexContext, final IndexableEmail indexableMail) {
 		Store store;
 		try {
 			store = getStore(indexableMail);
@@ -119,7 +119,7 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 	 * @param folder
 	 * @throws Exception
 	 */
-	protected void handleFolder(final IndexContext indexContext, final IndexableEmail indexableMail, final Folder folder) throws Exception {
+	protected void handleFolder(final IndexContext<?> indexContext, final IndexableEmail indexableMail, final Folder folder) throws Exception {
 		folder.open(Folder.READ_ONLY);
 
 		// For each message found in the server, index it.

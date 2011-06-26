@@ -21,13 +21,13 @@
 	<c:forEach var="indexContext" items="${requestScope.indexContexts}">
 	<tr>
 		<td class="td-content">
-			<img alt="Search index ${indexContext.indexName}" 
+			<img alt="Search index ${indexContext.name}" 
 					src="<c:url value="/images/icons/search.gif"/>" 
-					title="Search index ${indexContext.indexName}">
-			<a href="<c:url value="/admin/search.html"/>?indexName=${indexContext.indexName}" 
+					title="Search index ${indexContext.name}">
+			<a href="<c:url value="/admin/search.html"/>?indexName=${indexContext.name}" 
 				style="font-style: italic;" 
-				title="Search index ${indexContext.indexName}">
-				${indexContext.indexName}
+				title="Search index ${indexContext.name}">
+				${indexContext.name}
 			</a>
 		</td>
 		<td class="td-content">${indexContext.numDocs}</td>
@@ -41,7 +41,7 @@
 		</td>
 		<td class="td-content">${indexContext.maxAge / 60}</td>
 		<td class="td-content">${indexContext.latestIndexTimestamp}</td>
-		<td class="td-content">${indexContext.indexDirectoryPath}/${indexContext.indexName}</td>
+		<td class="td-content">${indexContext.indexDirectoryPath}/${indexContext.name}</td>
 	</tr>
 	</c:forEach>
 </table>
@@ -79,7 +79,7 @@
 			<tr>
 				<td colspan="2"></td>
 				<td class="td-content"><c:out value="${server.action.actionName}" /></td>
-				<td class="td-content"><c:out value="${server.action.indexName}" /></td>
+				<td class="td-content"><c:out value="${server.action.name}" /></td>
 				<td class="td-content"><c:out value="${server.action.indexableName}" /></td>
 				<td class="td-content"><c:out value="${server.action.idNumber}" /></td>
 				<td class="td-content"><c:out value="${server.action.startDate}" /></td>

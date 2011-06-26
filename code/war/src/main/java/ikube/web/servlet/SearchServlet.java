@@ -56,8 +56,9 @@ public class SearchServlet extends HttpServlet {
 			int firstResult = Integer.parseInt(getParameter(request, IConstants.FIRST_RESULT, "0"));
 			int maxResults = Integer.parseInt(getParameter(request, IConstants.MAX_RESULTS, "10"));
 			boolean fragment = Boolean.parseBoolean(getParameter(request, IConstants.FRAGMENT, "true"));
+			@SuppressWarnings("rawtypes")
 			Map<String, IndexContext> indexContexts = ApplicationContextManager.getBeans(IndexContext.class);
-			for (IndexContext indexContext : indexContexts.values()) {
+			for (IndexContext<?> indexContext : indexContexts.values()) {
 				if (indexContext.getIndexName().equals(indexName)) {
 					if (indexContext.getIndex().getMultiSearcher() != null) {
 						Search search = getSearch(indexContext, indexName, searchStrings, searchFields, sortFields, firstResult,
@@ -102,7 +103,7 @@ public class SearchServlet extends HttpServlet {
 		return builder.toString();
 	}
 
-	private Search getSearch(IndexContext indexContext, String indexName, String searchStrings, String searchFields, String sortFields,
+	private Search getSearch(IndexContext<?> indexContext, String indexName, String searchStrings, String searchFields, String sortFields,
 			int firstResult, int maxResults, boolean fragment) {
 		Search search = new SearchMulti(indexContext.getIndex().getMultiSearcher());
 		search.setFirstResult(firstResult);

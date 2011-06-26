@@ -17,7 +17,7 @@ import org.junit.Test;
  */
 public class PropertyConfigurerTest extends ATest {
 
-	private String searcherEndIndex = "searcher.end.index";
+	private String fileBatchSize = "file.batch.size";
 	private PropertyConfigurer propertyConfigurer;
 
 	public PropertyConfigurerTest() {
@@ -37,7 +37,7 @@ public class PropertyConfigurerTest extends ATest {
 			return;
 		}
 		propertyConfigurer.checkJar(jarFile);
-		Object property = propertyConfigurer.getProperty(searcherEndIndex);
+		Object property = propertyConfigurer.getProperty(fileBatchSize);
 		assertNotNull(property);
 	}
 
@@ -48,14 +48,14 @@ public class PropertyConfigurerTest extends ATest {
 			return;
 		}
 		propertyConfigurer.checkJar(new JarFile(jarFile));
-		Object property = propertyConfigurer.getProperty(searcherEndIndex);
+		Object property = propertyConfigurer.getProperty(fileBatchSize);
 		assertNotNull(property);
 	}
 
 	@Test
 	public void initialize() {
 		propertyConfigurer.initialize();
-		Object property = propertyConfigurer.get(searcherEndIndex);
+		Object property = propertyConfigurer.get(fileBatchSize);
 		assertNotNull(property);
 	}
 

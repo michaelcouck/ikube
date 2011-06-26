@@ -13,11 +13,11 @@ import org.apache.lucene.search.MultiSearcher;
  * @since 12.02.2011
  * @version 01.00
  */
-public class AreSearchablesInitialised implements IRule<IndexContext> {
+public class AreSearchablesInitialised implements IRule<IndexContext<?>> {
 
 	private static final transient Logger LOGGER = Logger.getLogger(AreSearchablesInitialised.class);
 
-	public boolean evaluate(final IndexContext indexContext) {
+	public boolean evaluate(final IndexContext<?> indexContext) {
 		// No searchables, also try to reopen an index searcher
 		if (indexContext.getIndex() == null) {
 			return Boolean.FALSE;

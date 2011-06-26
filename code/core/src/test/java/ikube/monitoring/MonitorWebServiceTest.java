@@ -54,7 +54,7 @@ public class MonitorWebServiceTest extends BaseTest {
 	public void getIndexFieldNames() {
 		String[] indexContextNames = monitorWebService.getIndexContextNames();
 		for (String indexContextName : indexContextNames) {
-			IndexContext indexContext = ApplicationContextManager.getBean(indexContextName);
+			IndexContext<?> indexContext = ApplicationContextManager.getBean(indexContextName);
 			logger.info("Index context name : " + indexContextName);
 			String[] fieldNames = monitorWebService.getIndexFieldNames(indexContext.getIndexName());
 			assertTrue(fieldNames.length > 0);

@@ -25,7 +25,7 @@ public class EnrichmentTest extends ATest {
 	@Test
 	public void execute() throws Exception {
 		// final IndexContext indexContext
-		IndexContext indexContext = ApplicationContextManager.getBean(IConstants.GEOSPATIAL);
+		IndexContext<?> indexContext = ApplicationContextManager.getBean(IConstants.GEOSPATIAL);
 		Enrichment enrichment = new Enrichment();
 		while (indexContext.getIndex().getMultiSearcher() == null) {
 			Thread.sleep(1000);

@@ -50,6 +50,7 @@ public class IndexableFileSystemHandlerTest extends ATest {
 		indexableFileSystem.setPathFieldName("pathFieldName");
 		indexableFileSystem.setName(this.getClass().getSimpleName());
 		indexableFileSystem.setExcludedPattern(".svn");
+		indexableFileSystem.setParent(INDEX_CONTEXT);
 		
 		indexableFileSystemHandler.setDocumentDelegate(new DocumentDelegate());
 		indexableFileSystemHandler.setThreads(3);

@@ -9,9 +9,9 @@ import ikube.model.IndexContext;
  * @since 12.02.2011
  * @version 01.00
  */
-public class MustBackUpIndex extends ARule<IndexContext> {
+public class MustBackUpIndex extends ARule<IndexContext<?>> {
 
-	public boolean evaluate(final IndexContext indexContext) {
+	public boolean evaluate(final IndexContext<?> indexContext) {
 		return indexContext.getIndexDirectoryPathBackup() != null;
 	}
 }

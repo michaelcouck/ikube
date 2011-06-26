@@ -52,9 +52,10 @@ public class MonitorWebService implements IMonitorWebService {
 	@WebMethod
 	@WebResult(name = "indexNames")
 	public String[] getIndexNames() {
+		@SuppressWarnings("rawtypes")
 		Map<String, IndexContext> indexContexts = ApplicationContextManager.getBeans(IndexContext.class);
 		List<String> indexNames = new ArrayList<String>();
-		for (IndexContext indexContext : indexContexts.values()) {
+		for (IndexContext<?> indexContext : indexContexts.values()) {
 			indexNames.add(indexContext.getIndexName());
 		}
 		return indexNames.toArray(new String[indexNames.size()]);
@@ -67,7 +68,7 @@ public class MonitorWebService implements IMonitorWebService {
 	@WebMethod
 	@WebResult(name = "indexableNames")
 	public String[] getIndexableNames(@WebParam(name = "indexName") final String indexName) {
-		IndexContext indexContext = getIndexContext(indexName);
+		IndexContext<?> indexContext = getIndexContext(indexName);
 		List<Indexable<?>> indexables = indexContext.getIndexables();
 		String[] indexableNames = new String[indexables.size()];
 		int index = 0;
@@ -84,6 +85,7 @@ public class MonitorWebService implements IMonitorWebService {
 	@WebMethod
 	@WebResult(name = "indexContextNames")
 	public String[] getIndexContextNames() {
+		@SuppressWarnings("rawtypes")
 		Map<String, IndexContext> indexContexts = ApplicationContextManager.getBeans(IndexContext.class);
 		return indexContexts.keySet().toArray(new String[indexContexts.keySet().size()]);
 	}
@@ -95,7 +97,7 @@ public class MonitorWebService implements IMonitorWebService {
 	@WebMethod
 	@WebResult(name = "indexFieldNames")
 	public String[] getIndexFieldNames(@WebParam(name = "indexName") final String indexName) {
-		IndexContext indexContext = getIndexContext(indexName);
+		IndexContext<?> indexContext = getIndexContext(indexName);
 		if (indexContext != null) {
 			Set<String> fieldNames = getFields(indexContext.getIndexables(), new TreeSet<String>());
 			return fieldNames.toArray(new String[fieldNames.size()]);
@@ -133,7 +135,7 @@ public class MonitorWebService implements IMonitorWebService {
 	public long getIndexSize(@WebParam(name = "indexName") final String indexName) {
 		long length = 0;
 		try {
-			IndexContext indexContext = getIndexContext(indexName);
+			IndexContext<?> indexContext = getIndexContext(indexName);
 			if (indexContext == null) {
 				LOGGER.warn("No index context with name : " + indexName);
 				return length;
@@ -172,7 +174,7 @@ public class MonitorWebService implements IMonitorWebService {
 		Directory directory = null;
 		IndexReader indexReader = null;
 		try {
-			IndexContext indexContext = getIndexContext(indexName);
+			IndexContext<?> indexContext = getIndexContext(indexName);
 			if (indexContext == null) {
 				LOGGER.warn("No index context with name : " + indexName);
 				return numDocs;
@@ -209,11 +211,11 @@ public class MonitorWebService implements IMonitorWebService {
 	 * @param indexName
 	 * @return
 	 */
-	protected IndexContext getIndexContext(String indexName) {
+	protected IndexContext<?> getIndexContext(String indexName) {
 		String[] indexContextNames = getIndexContextNames();
-		IndexContext indexContext = null;
+		IndexContext<?> indexContext = null;
 		for (String indexContextName : indexContextNames) {
-			IndexContext context = ApplicationContextManager.getBean(indexContextName);
+			IndexContext<?> context = ApplicationContextManager.getBean(indexContextName);
 			if (context.getIndexName().equals(indexName)) {
 				indexContext = context;
 				break;

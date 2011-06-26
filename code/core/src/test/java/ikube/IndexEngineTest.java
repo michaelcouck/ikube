@@ -43,7 +43,7 @@ public class IndexEngineTest extends ATest {
 	@Test
 	public void handleNotification() {
 		IndexEngine indexEngine = new IndexEngine();
-		List<IAction<IndexContext, Boolean>> actions = new ArrayList<IAction<IndexContext, Boolean>>();
+		List<IAction<IndexContext<?>, Boolean>> actions = new ArrayList<IAction<IndexContext<?>, Boolean>>();
 		actions.add(new Process());
 		indexEngine.setActions(actions);
 

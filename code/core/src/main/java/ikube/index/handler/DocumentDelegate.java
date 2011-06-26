@@ -22,7 +22,7 @@ import org.apache.lucene.index.CorruptIndexException;
 public class DocumentDelegate implements IDocumentDelegate {
 
 	@Override
-	public <T> void addDocument(final IndexContext indexContext, final Indexable<T> indexable, final Document document)
+	public <T> void addDocument(final IndexContext<?> indexContext, final Indexable<T> indexable, final Document document)
 			throws CorruptIndexException, IOException {
 		indexContext.getIndex().getIndexWriter().addDocument(document);
 	}

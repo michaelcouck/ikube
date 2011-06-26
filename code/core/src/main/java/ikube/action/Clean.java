@@ -19,13 +19,13 @@ import org.apache.lucene.store.FSDirectory;
  * @since 31.10.10
  * @version 01.00
  */
-public class Clean<E, F> extends Action<IndexContext, Boolean> {
+public class Clean<E, F> extends Action<IndexContext<?>, Boolean> {
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Boolean execute(final IndexContext indexContext) {
+	public Boolean execute(final IndexContext<?> indexContext) {
 		try {
 			String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
 			File baseIndexDirectory = FileUtilities.getFile(indexDirectoryPath, Boolean.TRUE);

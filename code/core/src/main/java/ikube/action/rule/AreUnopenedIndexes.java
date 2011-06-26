@@ -18,11 +18,11 @@ import org.apache.lucene.store.FSDirectory;
  * @since 12.02.2011
  * @version 01.00
  */
-public class AreUnopenedIndexes implements IRule<IndexContext> {
+public class AreUnopenedIndexes implements IRule<IndexContext<?>> {
 
 	private static final transient Logger LOGGER = Logger.getLogger(AreUnopenedIndexes.class);
 
-	public boolean evaluate(final IndexContext indexContext) {
+	public boolean evaluate(final IndexContext<?> indexContext) {
 		MultiSearcher searcher = indexContext.getIndex() != null ? indexContext.getIndex().getMultiSearcher() : null;
 		Searchable[] searchables = searcher != null ? searcher.getSearchables() : null;
 		if (searchables == null) {

@@ -44,7 +44,7 @@ public class CleanTest extends ATest {
 	public void execute() throws Exception {
 		File latestIndexDirectory = createIndex(INDEX_CONTEXT, "some words to index");
 
-		Clean<IndexContext, Boolean> clean = new Clean<IndexContext, Boolean>();
+		Clean<IndexContext<?>, Boolean> clean = new Clean<IndexContext<?>, Boolean>();
 		clean.execute(INDEX_CONTEXT);
 		File serverIndexDirectory = new File(latestIndexDirectory, IP);
 

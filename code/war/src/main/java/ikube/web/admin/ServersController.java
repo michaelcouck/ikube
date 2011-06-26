@@ -50,11 +50,12 @@ public class ServersController extends BaseController {
 		modelAndView.addObject(IConstants.INDEXING_EXECUTIONS, server.getIndexingExecutions());
 		modelAndView.addObject(IConstants.SEARCHING_EXECUTIONS, server.getSearchingExecutions());
 
+		@SuppressWarnings("rawtypes")
 		Map<String, IndexContext> indexContexts = ApplicationContextManager.getBeans(IndexContext.class);
 		modelAndView.addObject(IConstants.INDEX_CONTEXTS, indexContexts.values());
 
 		IMonitorWebService monitorWebService = ApplicationContextManager.getBean(IMonitorWebService.class);
-		for (IndexContext indexContext : indexContexts.values()) {
+		for (IndexContext<?> indexContext : indexContexts.values()) {
 			String indexName = indexContext.getIndexName();
 			long indexSize = monitorWebService.getIndexSize(indexName);
 			long numDocs = monitorWebService.getIndexDocuments(indexName);

@@ -52,9 +52,10 @@ public class IndexValidator implements IIndexValidator {
 		// There must be at least one index being generated, or one index created
 		// and one being generated for each index context
 		Server server = ApplicationContextManager.getBean(IClusterManager.class).getServer();
+		@SuppressWarnings("rawtypes")
 		Map<String, IndexContext> contexts = ApplicationContextManager.getBeans(IndexContext.class);
 		for (String name : contexts.keySet()) {
-			IndexContext indexContext = contexts.get(name);
+			IndexContext<?> indexContext = contexts.get(name);
 			String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
 			File baseIndexDirectory = new File(indexDirectoryPath);
 			File[] timeIndexDirectories = baseIndexDirectory.listFiles();
@@ -112,7 +113,7 @@ public class IndexValidator implements IIndexValidator {
 		}
 	}
 
-	protected void sendNotification(final IndexContext indexContext, final String subject, final String body) {
+	protected void sendNotification(final IndexContext<?> indexContext, final String subject, final String body) {
 		try {
 			Mailer mailer = ApplicationContextManager.getBean(Mailer.class);
 			mailer.sendMail(subject, body);

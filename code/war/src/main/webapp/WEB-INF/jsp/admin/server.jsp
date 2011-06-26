@@ -61,11 +61,11 @@
 	<c:forEach var="indexContext" items="${indexContexts}">
 	<tr>
 		<td class="td-content">
-			<a href="<c:url value="/admin/search.html"/>?address=${server.address}&indexName=${indexContext.indexName}">${indexContext.indexName}</a>
+			<a href="<c:url value="/admin/search.html"/>?address=${server.address}&indexName=${indexContext.name}">${indexContext.name}</a>
 		</td>
 		<td class="td-content">
-			documents: ${requestScope[indexContext.indexName]['indexDocuments']},<br>
-			size: ${requestScope[indexContext.indexName]['indexSize'] / 1000000} megabytes,<br>
+			documents: ${requestScope[indexContext.name]['indexDocuments']},<br>
+			size: ${requestScope[indexContext.name]['indexSize'] / 1000000} megabytes,<br>
 			max age: ${indexContext.maxAge / 1000 / 60 / 60} hours,<br>
 			batch size: ${indexContext.batchSize},<br>
 			internet batch size: ${indexContext.internetBatchSize},<br> 
@@ -74,10 +74,10 @@
 			index directory path backup: ${indexContext.indexDirectoryPathBackup},<br>
 			
 			<b>Search performance:</b><br>
-			${requestScope.searchingExecutions[indexContext.indexName]}<br>
+			${requestScope.searchingExecutions[indexContext.name]}<br>
 			
 			<b>Indexing performance:</b><br>
-			${requestScope.indexingExecutions[indexContext.indexName]}
+			${requestScope.indexingExecutions[indexContext.name]}
 		</td>
 	</tr>
 	</c:forEach>

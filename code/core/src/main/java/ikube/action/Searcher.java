@@ -25,7 +25,7 @@ import java.util.Map;
  * @since 31.10.10
  * @version 01.00
  */
-public class Searcher extends Action<IndexContext, Boolean> {
+public class Searcher extends Action<IndexContext<?>, Boolean> {
 
 	private boolean fragment = Boolean.TRUE;
 	private int start = 0;
@@ -39,7 +39,7 @@ public class Searcher extends Action<IndexContext, Boolean> {
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public Boolean execute(final IndexContext indexContext) {
+	public Boolean execute(final IndexContext<?> indexContext) {
 		try {
 			List<Server> servers = getClusterManager().getServers();
 			String xml = null;
@@ -88,7 +88,7 @@ public class Searcher extends Action<IndexContext, Boolean> {
 		return Boolean.TRUE;
 	}
 
-	protected void sendNotification(final IndexContext indexContext, final String subject, final String body) {
+	protected void sendNotification(final IndexContext<?> indexContext, final String subject, final String body) {
 		try {
 			Mailer mailer = ApplicationContextManager.getBean(Mailer.class);
 			mailer.sendMail(subject, body);

@@ -81,7 +81,7 @@ public abstract class ATest {
 	protected FSDirectory FS_DIRECTORY = mock(FSDirectory.class);
 	protected IndexWriter INDEX_WRITER = mock(IndexWriter.class);
 	protected IndexReader INDEX_READER = mock(IndexReader.class);
-	protected IndexContext INDEX_CONTEXT = mock(IndexContext.class);
+	protected IndexContext<?> INDEX_CONTEXT = mock(IndexContext.class);
 	protected TopFieldDocs TOP_FIELD_DOCS = mock(TopFieldDocs.class);
 	protected MultiSearcher MULTI_SEARCHER = mock(MultiSearcher.class);
 	protected IndexSearcher INDEX_SEARCHER = mock(IndexSearcher.class);
@@ -173,7 +173,7 @@ public abstract class ATest {
 	 *            the index context to get the directory path for
 	 * @return the directory path to the latest index directory for this servers and context
 	 */
-	protected String getServerIndexDirectoryPath(final IndexContext indexContext) {
+	protected String getServerIndexDirectoryPath(final IndexContext<?> indexContext) {
 		return IndexManager.getIndexDirectory(indexContext, System.currentTimeMillis(), IP);
 	}
 
@@ -188,7 +188,7 @@ public abstract class ATest {
 	 *            the data that must be in the index
 	 * @return the latest index directory, i.e. the one that has just been created
 	 */
-	protected File createIndex(IndexContext indexContext, String... strings) {
+	protected File createIndex(IndexContext<?> indexContext, String... strings) {
 		IndexWriter indexWriter = null;
 		try {
 			indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), IP);

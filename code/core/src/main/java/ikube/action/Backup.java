@@ -17,13 +17,13 @@ import org.apache.commons.io.FileUtils;
  * @since 08.04.11
  * @version 01.00
  */
-public class Backup extends Action<IndexContext, Boolean> {
+public class Backup extends Action<IndexContext<?>, Boolean> {
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Boolean execute(final IndexContext indexContext) {
+	public Boolean execute(final IndexContext<?> indexContext) {
 		try {
 			File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexContext.getIndexDirectoryPath() + IConstants.SEP
 					+ indexContext.getIndexName());

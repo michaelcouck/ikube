@@ -52,7 +52,7 @@ public interface IHandler<T extends Indexable<?>> {
 	 * @return the list of threads that the caller must wait for
 	 * @throws Exception
 	 */
-	List<Thread> handle(IndexContext indexContext, T indexable) throws Exception;
+	List<Thread> handle(IndexContext<?> indexContext, T indexable) throws Exception;
 
 	/**
 	 * This method is to add the document to the index during the processing. Typically this method will be intercepted and other logic
@@ -67,7 +67,7 @@ public interface IHandler<T extends Indexable<?>> {
 	 * @throws CorruptIndexException
 	 * @throws IOException
 	 */
-	void addDocument(IndexContext indexContext, Indexable<T> indexable, Document document) throws CorruptIndexException, IOException;
+	void addDocument(IndexContext<?> indexContext, Indexable<T> indexable, Document document) throws CorruptIndexException, IOException;
 	
 	void setDocumentDelegate(IDocumentDelegate documentDelegate);
 

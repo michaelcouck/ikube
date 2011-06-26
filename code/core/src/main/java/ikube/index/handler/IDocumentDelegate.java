@@ -10,7 +10,7 @@ import org.apache.lucene.index.CorruptIndexException;
 
 public interface IDocumentDelegate {
 
-	<T> void addDocument(final IndexContext indexContext, final Indexable<T> indexable, final Document document)
+	<T> void addDocument(final IndexContext<?> indexContext, final Indexable<T> indexable, final Document document)
 			throws CorruptIndexException, IOException;
 
 }

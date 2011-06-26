@@ -45,10 +45,10 @@ public class SearcherWebService implements ISearcherWebService {
 	protected String publishedPath = ISearcherWebService.PUBLISHED_PATH;
 
 	private SearchDelegate searchDelegate;
-	private Map<String, IndexContext> indexContexts;
+	private Map<String, IndexContext<?>> indexContexts;
 
 	public SearcherWebService() {
-		indexContexts = new HashMap<String, IndexContext>();
+		indexContexts = new HashMap<String, IndexContext<?>>();
 	}
 
 	/**
@@ -212,10 +212,11 @@ public class SearcherWebService implements ISearcherWebService {
 	 */
 	@SuppressWarnings("unchecked")
 	protected <T> T getSearch(Class<?> klass, String indexName) throws Exception {
-		IndexContext indexContext = this.indexContexts.get(indexName);
+		IndexContext<?> indexContext = this.indexContexts.get(indexName);
 		if (indexContext == null) {
+			@SuppressWarnings("rawtypes")
 			Map<String, IndexContext> indexContexts = ApplicationContextManager.getBeans(IndexContext.class);
-			for (IndexContext context : indexContexts.values()) {
+			for (IndexContext<?> context : indexContexts.values()) {
 				if (context.getIndexName().equals(indexName)) {
 					this.indexContexts.put(indexName, context);
 					indexContext = context;

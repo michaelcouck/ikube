@@ -91,7 +91,8 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	 * caller that will have to wait for them to finish indexing all the data.
 	 */
 	@Override
-	public List<Thread> handle(final IndexContext indexContext, final IndexableTable indexable) throws Exception {
+	public List<Thread> handle(final IndexContext<?> indexContext, final IndexableTable indexable) throws Exception {
+		SerializationUtilities.setTransientFields(IndexContext.class);
 		SerializationUtilities.setTransientFields(IndexableTable.class);
 		SerializationUtilities.setTransientFields(IndexableColumn.class);
 		String name = this.getClass().getSimpleName();
@@ -131,7 +132,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	 *            child tables so they can add their data to the document. When this method is called with the top level table the document
 	 *            is null of course
 	 */
-	protected void handleTable(final IndexContext indexContext, final IndexableTable indexableTable, final Connection connection,
+	protected void handleTable(final IndexContext<?> indexContext, final IndexableTable indexableTable, final Connection connection,
 			Document document, int exceptions) {
 		ResultSet resultSet = null;
 		try {
@@ -258,7 +259,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	 * @return the result set for the table
 	 * @throws Exception
 	 */
-	protected synchronized ResultSet getResultSet(final IndexContext indexContext, final IndexableTable indexableTable,
+	protected synchronized ResultSet getResultSet(final IndexContext<?> indexContext, final IndexableTable indexableTable,
 			final Connection connection, int reentrant) throws Exception {
 		try {
 			if (reentrant >= MAX_REENTRANT) {

@@ -14,13 +14,13 @@ import java.io.File;
  * @since 08.04.11
  * @version 01.00
  */
-public class Restore extends Action<IndexContext, Boolean> {
+public class Restore extends Action<IndexContext<?>, Boolean> {
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Boolean execute(final IndexContext indexContext) {
+	public Boolean execute(final IndexContext<?> indexContext) {
 		try {
 			// Get the latest backup index
 			File latestIndexDirectoryBackup = FileUtilities.getLatestIndexDirectory(indexContext.getIndexDirectoryPathBackup()

@@ -22,20 +22,22 @@ import org.apache.commons.lang.builder.ToStringStyle;
 		@NamedQuery(name = File.DELETE_ALL_FILES, query = File.DELETE_ALL_FILES),
 		@NamedQuery(name = File.SELECT_FROM_FILE_BY_HASH, query = File.SELECT_FROM_FILE_BY_HASH),
 		@NamedQuery(name = File.SELECT_FROM_FILE_BY_FILE_ID, query = File.SELECT_FROM_FILE_BY_FILE_ID),
-		@NamedQuery(name = File.SELECT_FROM_FILE_NOT_INDEXED, query = File.SELECT_FROM_FILE_NOT_INDEXED),
+		@NamedQuery(name = File.SELECT_FROM_FILE_BY_NAME_AND_INDEXED, query = File.SELECT_FROM_FILE_BY_NAME_AND_INDEXED),
 		@NamedQuery(name = File.SELECT_FROM_FILE_WHERE_ID_GREATER_AND_NOT_INDEXED, query = File.SELECT_FROM_FILE_WHERE_ID_GREATER_AND_NOT_INDEXED) })
 public class File extends Persistable {
 
 	public static final String DELETE_ALL_FILES = "delete from File f";
 	public static final String SELECT_FROM_FILE_BY_HASH = "select f from File as f where f.hash = :hash";
 	public static final String SELECT_FROM_FILE_BY_FILE_ID = "select f from File as f where f.urlId = :urlId";
-	public static final String SELECT_FROM_FILE_NOT_INDEXED = "select f from File as f where f.indexed = :indexed";
+	public static final String SELECT_FROM_FILE_BY_NAME_AND_INDEXED = "select f from File as f where f.name = :name and f.indexed = :indexed";
 	public static final String SELECT_FROM_FILE_WHERE_ID_GREATER_AND_NOT_INDEXED = "select f from File as f where f.id >= :id and f.indexed = :indexed";
 
 	private long urlId;
 	private boolean indexed;
 	private long hash;
 
+	@Column(length = 64)
+	private String name;
 	@Column(length = 255)
 	private String url;
 	@Transient
@@ -53,6 +55,14 @@ public class File extends Persistable {
 
 	public void setUrlId(long urlId) {
 		this.urlId = urlId;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public String getUrl() {

@@ -55,7 +55,7 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IHandl
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void addDocument(final IndexContext indexContext, final Indexable<T> indexable, final Document document)
+	public void addDocument(final IndexContext<?> indexContext, final Indexable<T> indexable, final Document document)
 			throws CorruptIndexException, IOException {
 		// indexContext.getIndex().getIndexWriter().addDocument(document);
 		documentDelegate.addDocument(indexContext, indexable, document);

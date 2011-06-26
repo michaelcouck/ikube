@@ -15,7 +15,7 @@ import org.apache.commons.io.FileSystemUtils;
  * @since 02.06.11
  * @version 01.00
  */
-public class DiskFull extends Action<IndexContext, Boolean> {
+public class DiskFull extends Action<IndexContext<?>, Boolean> {
 
 	/** The minimum space that we will accept to carry on, 10 gig. */
 	private static final long MINIMUM_FREE_SPACE = 10000;
@@ -24,7 +24,7 @@ public class DiskFull extends Action<IndexContext, Boolean> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Boolean execute(final IndexContext indexContext) {
+	public Boolean execute(final IndexContext<?> indexContext) {
 		try {
 			File indexesDirectory = new File(indexContext.getIndexDirectoryPath());
 			if (!indexesDirectory.exists() || !indexesDirectory.isDirectory()) {

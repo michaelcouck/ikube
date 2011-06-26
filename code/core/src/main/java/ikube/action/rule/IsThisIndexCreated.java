@@ -14,14 +14,14 @@ import java.io.File;
  * @since 30.03.2011
  * @version 01.00
  */
-public class IsThisIndexCreated implements IRule<IndexContext> {
+public class IsThisIndexCreated implements IRule<IndexContext<?>> {
 
 	/**
 	 * @param indexContext
 	 *            the index context
 	 * @return something
 	 */
-	public boolean evaluate(final IndexContext indexContext) {
+	public boolean evaluate(final IndexContext<?> indexContext) {
 		// Check that the timestamp in the servers that are still working is
 		// different from the timestamp of the latest index directory for this server
 		String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);

@@ -9,13 +9,13 @@ import ikube.model.IndexContext;
  * @since 05.03.2011
  * @version 01.00
  */
-public class Process extends Action<IndexContext, Boolean> {
+public class Process extends Action<IndexContext<?>, Boolean> {
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Boolean execute(final IndexContext indexContext) {
+	public Boolean execute(final IndexContext<?> indexContext) {
 		try {
 			// TODO Process all the data collected during the indexing
 		} finally {

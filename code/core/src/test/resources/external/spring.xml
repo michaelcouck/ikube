@@ -15,8 +15,8 @@
             http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
 	<context:property-placeholder
-		location="classpath*:/ikube/common/spring.properties" />
+		location="/common/spring.properties" />
 		
-	<import resource="classpath*:/ikube/common/spring-beans.xml" />
+	<import resource="/common/spring-beans.xml" />
 
 </beans>

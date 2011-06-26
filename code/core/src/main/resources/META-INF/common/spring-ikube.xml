@@ -28,7 +28,7 @@
 	<bean
 		id="ikube"
 		class="ikube.model.IndexContext"
-		property:indexName="ikube"
+		property:name="ikube"
 		property:maxAge="600"
 		property:compoundFile="true"
 		property:bufferedDocs="100"
@@ -41,7 +41,7 @@
 		property:throttle="0"
 		property:indexDirectoryPath="./indexes"
 		property:indexDirectoryPathBackup="./indexes/backup"
-		property:indexables-ref="ikubeIndexables" />
+		property:children-ref="ikubeIndexables" />
 	<util:list id="ikubeIndexables">
 		<ref local="ikubeInternet" />
 		<ref local="ikubeInternet8080" />

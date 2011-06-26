@@ -22,7 +22,7 @@
 	<bean
 		id="indexContext"
 		class="ikube.model.IndexContext"
-		property:indexName="default"
+		property:name="default"
 		property:maxAge="${max.age}"
 		property:compoundFile="${compound.file}"
 		property:bufferedDocs="${buffered.docs}"
@@ -36,15 +36,15 @@
 		property:throttle="${throttle}"
 		property:indexDirectoryPath="${index.directory.path}"
 		property:indexDirectoryPathBackup="${index.directory.path.backup}"
-		property:indexables-ref="indexables" />
+		property:children-ref="indexables" />
 	<util:list id="indexables">
-		<!-- <ref local="mail" />
+		<ref local="mail" />
 		<ref local="internet" />
 		<ref local="hazelcast" />
 		<ref local="internetMillion" />
-		<ref local="filesystem" /> -->
+		<ref local="filesystem" />
 		<ref local="filesystemMillionOne" />
-		<ref local="filesystemMillionTwo" />
+		<!-- <ref local="filesystemMillionTwo" />
 		<ref local="filesystemMillionThree" />
 		<ref local="filesystemMillionFour" />
 		<ref local="filesystemMillionFive" />
@@ -52,15 +52,15 @@
 		<ref local="filesystemMillionSeven" />
 		<ref local="filesystemMillionEight" />
 		<ref local="filesystemMillionNine" />
-		<ref local="filesystemMillionTen" />
-		<!-- <ref bean="faqTableH2" />
+		<ref local="filesystemMillionTen" /> -->
+		<ref bean="faqTableH2" />
 		<ref bean="faqTableDb2" />
 		<ref bean="faqTableOracle" />
 		<ref bean="patientTableH2" />
 		<ref bean="patientTableDb2" />
 		<ref bean="patientTableOracle" />
 		<ref bean="addressTableDb2" />
-		<ref bean="attachmentTableDb2Direct" /> -->
+		<ref bean="attachmentTableDb2Direct" />
 	</util:list>
 
 	<!-- H2 Faqs -->

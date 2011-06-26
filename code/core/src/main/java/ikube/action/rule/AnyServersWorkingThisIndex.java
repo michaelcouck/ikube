@@ -12,10 +12,10 @@ import ikube.toolkit.ApplicationContextManager;
  * @since 12.02.2011
  * @version 01.00
  */
-public class AnyServersWorkingThisIndex implements IRule<IndexContext> {
+public class AnyServersWorkingThisIndex implements IRule<IndexContext<?>> {
 
 	@Override
-	public boolean evaluate(final IndexContext indexContext) {
+	public boolean evaluate(final IndexContext<?> indexContext) {
 		return ApplicationContextManager.getBean(IClusterManager.class).anyWorking(indexContext.getIndexName());
 	}
 

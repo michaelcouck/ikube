@@ -22,7 +22,7 @@
 	<bean
 		id="geospatial"
 		class="ikube.model.IndexContext"
-		property:indexName="geospatial"
+		property:name="geospatial"
 		property:maxAge="${max.age}"
 		property:compoundFile="${compound.file}"
 		property:bufferedDocs="${buffered.docs}"
@@ -36,7 +36,7 @@
 		property:throttle="${throttle}"
 		property:indexDirectoryPath="${index.directory.path}"
 		property:indexDirectoryPathBackup="${index.directory.path.backup}"
-		property:indexables-ref="geospatialIndexables" />
+		property:children-ref="geospatialIndexables" />
 	<util:list id="geospatialIndexables">
 		<ref local="geoname" />
 	</util:list>

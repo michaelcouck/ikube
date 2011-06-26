@@ -128,20 +128,20 @@
 		<class>ikube.model.Url</class>
 		<class>ikube.model.File</class>
 		<class>ikube.model.Server</class>
+		<class>ikube.model.Indexable</class>
 		<class>ikube.model.IndexContext</class>
 		<class>ikube.model.IndexableTable</class>
 		<class>ikube.model.IndexableInternet</class>
 		<class>ikube.model.IndexableFileSystem</class>
 		<class>ikube.model.IndexableEmail</class>
 		<class>ikube.model.IndexableColumn</class>
-		<class>ikube.model.Indexable</class>
 		<class>ikube.model.Index</class>
 		<class>ikube.model.Execution</class>
 		<class>ikube.model.Action</class>
 		
 		<class>ikube.model.geospatial.GeoName</class>
 		<class>ikube.model.geospatial.AlternateName</class>
-		<exclude-unlisted-classes>false</exclude-unlisted-classes>
+		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 	</persistence-unit>
 	
 	<!-- <persistence-unit name="IkubePersistenceUnitOracle" transaction-type="RESOURCE_LOCAL">

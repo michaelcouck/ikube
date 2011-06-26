@@ -21,13 +21,13 @@ import org.apache.lucene.store.FSDirectory;
  * @since 31.10.10
  * @version 01.00
  */
-public class Validator extends Action<IndexContext, Boolean> {
+public class Validator extends Action<IndexContext<?>, Boolean> {
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Boolean execute(final IndexContext indexContext) {
+	public Boolean execute(final IndexContext<?> indexContext) {
 		try {
 			// Conditions:
 			// 1) There is an index but it is locked, i.e. an index is running
@@ -99,7 +99,7 @@ public class Validator extends Action<IndexContext, Boolean> {
 		return Boolean.TRUE;
 	}
 
-	protected void sendNotification(final IndexContext indexContext, final String subject, final String body) {
+	protected void sendNotification(final IndexContext<?> indexContext, final String subject, final String body) {
 		try {
 			Mailer mailer = ApplicationContextManager.getBean(Mailer.class);
 			mailer.sendMail(subject, body);

@@ -59,8 +59,8 @@
 		<entry key="openjpa.ConnectionFactoryProperties" value="PrettyPrint=true,PrettyPrintLineLength=150" />
 		<entry key="openjpa.Log" value="DefaultLevel=ERROR,JDBC=ERROR,SQL=ERROR,File=openjpa.log,Runtime=ERROR,Tool=ERROR" />
 
-		<entry key="openjpa.DataCache" value="true(CacheSize=1000000,SoftReferenceSize=1000)" />
-		<entry key="openjpa.QueryCache" value="true(CacheSize=1000000,SoftReferenceSize=1000)" />
+		<entry key="openjpa.DataCache" value="true(CacheSize=1000,SoftReferenceSize=1000)" />
+		<entry key="openjpa.QueryCache" value="true(CacheSize=1000,SoftReferenceSize=1000)" />
 
 		<entry key="openjpa.LockTimeout" value="6000000" />
 		<entry key="openjpa.ReadLockLevel" value="write" />

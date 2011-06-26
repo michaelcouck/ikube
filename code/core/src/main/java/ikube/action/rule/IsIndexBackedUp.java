@@ -13,9 +13,9 @@ import java.io.File;
  * @since 12.02.2011
  * @version 01.00
  */
-public class IsIndexBackedUp extends ARule<IndexContext> {
+public class IsIndexBackedUp extends ARule<IndexContext<?>> {
 
-	public boolean evaluate(final IndexContext indexContext) {
+	public boolean evaluate(final IndexContext<?> indexContext) {
 		// See if there is a latest index directory that is finished and not corrupt
 		File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
 		if (latestIndexDirectory == null) {

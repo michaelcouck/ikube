@@ -31,7 +31,7 @@ import org.apache.log4j.Logger;
 public class IndexEngine implements IIndexEngine {
 
 	private static final Logger LOGGER = Logger.getLogger(IndexEngine.class);
-	private transient List<IAction<IndexContext, Boolean>> actions;
+	private transient List<IAction<IndexContext<?>, Boolean>> actions;
 
 	public IndexEngine() {
 		IListener listener = new IListener() {
@@ -56,14 +56,15 @@ public class IndexEngine implements IIndexEngine {
 			return;
 		}
 
+		@SuppressWarnings("rawtypes")
 		Map<String, IndexContext> indexContexts = ApplicationContextManager.getBeans(IndexContext.class);
-		for (IndexContext indexContext : indexContexts.values()) {
+		for (IndexContext<?> indexContext : indexContexts.values()) {
 			if (actions == null || actions.isEmpty()) {
 				LOGGER.warn("No actions configured for index engine : " + indexContext.getIndexName());
 				continue;
 			}
 			LOGGER.info("Start working on index : " + indexContext.getIndexName() + ", server : " + server.getAddress());
-			for (IAction<IndexContext, Boolean> action : actions) {
+			for (IAction<IndexContext<?>, Boolean> action : actions) {
 				try {
 					// Sleep for a random time, < 30 seconds
 					Thread.sleep((long) (((Math.random() * 10d)) * 1000d));
@@ -76,7 +77,7 @@ public class IndexEngine implements IIndexEngine {
 		}
 	}
 
-	public void setActions(final List<IAction<IndexContext, Boolean>> actions) {
+	public void setActions(final List<IAction<IndexContext<?>, Boolean>> actions) {
 		this.actions = actions;
 	}
 

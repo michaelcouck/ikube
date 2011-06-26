@@ -22,7 +22,7 @@
 	<bean
 		id="minimal"
 		class="ikube.model.IndexContext"
-		property:indexName="minimal"
+		property:name="minimal"
 		property:maxAge="6000000"
 		property:compoundFile="true"
 		property:bufferedDocs="100"
@@ -34,7 +34,7 @@
 		property:queueTimeout="600000"
 		property:throttle="0"
 		property:indexDirectoryPath="./indexes/minimal"
-		property:indexables-ref="minimalIndexables" />
+		property:children-ref="minimalIndexables" />
 	<util:list id="minimalIndexables">
 		<ref local="minimalInternet" />
 	</util:list>

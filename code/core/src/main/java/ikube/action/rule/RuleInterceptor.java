@@ -49,7 +49,7 @@ public class RuleInterceptor implements IRuleInterceptor {
 		boolean proceed = Boolean.FALSE;
 		try {
 			Indexable<?> indexable = null;
-			IndexContext indexContext = null;
+			IndexContext<?> indexContext = null;
 			if (LOGGER.isDebugEnabled()) {
 				LOGGER.debug("Intercepting : " + target);
 			}
@@ -62,7 +62,7 @@ public class RuleInterceptor implements IRuleInterceptor {
 			} else {
 				// Get the rules associated with this action
 				@SuppressWarnings({ "unchecked", "rawtypes" })
-				List<IRule<IndexContext>> classRules = ((IAction) target).getRules();
+				List<IRule<IndexContext<?>>> classRules = ((IAction) target).getRules();
 				if (classRules == null) {
 					LOGGER.warn("No rules defined for, proceeding : " + target);
 					proceed = Boolean.TRUE;
@@ -71,7 +71,7 @@ public class RuleInterceptor implements IRuleInterceptor {
 					for (Object arg : args) {
 						if (arg != null) {
 							if (IndexContext.class.isAssignableFrom(arg.getClass())) {
-								indexContext = (IndexContext) arg;
+								indexContext = (IndexContext<?>) arg;
 								if (indexContext.getIndexables().size() > 0) {
 									indexable = indexContext.getIndexables().get(0);
 								}
@@ -81,7 +81,7 @@ public class RuleInterceptor implements IRuleInterceptor {
 					if (indexContext != null || indexable == null) {
 						JEP jep = new JEP();
 						Object result = null;
-						for (IRule<IndexContext> rule : classRules) {
+						for (IRule<IndexContext<?>> rule : classRules) {
 							boolean evaluation = rule.evaluate(indexContext);
 							String parameter = rule.getClass().getSimpleName();
 							if (LOGGER.isDebugEnabled()) {

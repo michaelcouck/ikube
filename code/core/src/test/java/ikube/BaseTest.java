@@ -97,7 +97,7 @@ public abstract class BaseTest extends ATest {
 		ListenerManager.removeListeners();
 	}
 
-	protected IndexContext indexContext;
+	protected IndexContext<?> indexContext;
 
 	public BaseTest(Class<?> subClass) {
 		super(subClass);

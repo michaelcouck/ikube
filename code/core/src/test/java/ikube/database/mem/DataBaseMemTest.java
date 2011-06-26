@@ -11,6 +11,7 @@ import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -18,6 +19,7 @@ import org.junit.Test;
  * @since 12.10.2010
  * @version 01.00
  */
+@Ignore
 public class DataBaseMemTest extends ATest {
 
 	private IDataBase dataBase;

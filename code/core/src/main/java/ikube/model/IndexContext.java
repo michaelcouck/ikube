@@ -27,10 +27,10 @@ import org.apache.commons.lang.builder.ToStringStyle;
  */
 @Entity()
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-public class IndexContext extends Persistable implements Comparable<IndexContext> {
+public class IndexContext<T> extends Indexable<T> implements Comparable<IndexContext<?>> {
 
 	/** The name of the index. This muse be unique in the configuration. */
-	private String indexName;
+	// private String indexName;
 	/** The maximum age of the index defined in minutes. */
 	private long maxAge;
 	/** Is this used anymore? */
@@ -60,7 +60,7 @@ public class IndexContext extends Persistable implements Comparable<IndexContext
 	private boolean inMemory;
 
 	/** The indexables contained in this index context. */
-	private List<Indexable<?>> indexables;
+	// private List<Indexable<?>> indexables;
 
 	@Transient
 	private transient Index index;
@@ -82,11 +82,12 @@ public class IndexContext extends Persistable implements Comparable<IndexContext
 	/** Getters and setters. */
 
 	public String getIndexName() {
-		return indexName;
+		return super.getName();
 	}
 
 	public void setIndexName(final String indexName) {
-		this.indexName = indexName;
+		super.setName(indexName);
+		// this.indexName = indexName;
 	}
 
 	public long getMaxAge() {
@@ -202,11 +203,13 @@ public class IndexContext extends Persistable implements Comparable<IndexContext
 	}
 
 	public List<Indexable<?>> getIndexables() {
-		return indexables;
+		return super.getChildren();
+		// return indexables;
 	}
 
 	public void setIndexables(final List<Indexable<?>> indexables) {
-		this.indexables = indexables;
+		super.setChildren(indexables);
+		// this.indexables = indexables;
 	}
 
 	public Index getIndex() {
@@ -252,7 +255,7 @@ public class IndexContext extends Persistable implements Comparable<IndexContext
 	}
 
 	@Override
-	public int compareTo(final IndexContext other) {
+	public int compareTo(final IndexContext<?> other) {
 		return getIndexName().compareTo(other.getIndexName());
 	}
 

@@ -519,6 +519,10 @@ public final class FileUtilities {
 	}
 
 	public static void copyFile(File in, File out) {
+		if (!in.exists() || !in.canRead()) {
+			LOGGER.warn("Can't copy file : " + in);
+			return;
+		}
 		if (!out.getParentFile().exists()) {
 			if (!out.getParentFile().mkdirs()) {
 				LOGGER.info("Didn't create parent directories : " + out.getParentFile().getAbsolutePath());

@@ -72,6 +72,7 @@ public class IntegrationJetty extends Integration {
 
 		// Stress test the servlet a little
 		int iterations = 1000;
+		@SuppressWarnings("rawtypes")
 		Map<String, IndexContext> indexContexts = ApplicationContextManager.getBeans(IndexContext.class);
 		String[] indexNames = indexContexts.keySet().toArray(new String[indexContexts.keySet().size()]);
 		new ServletStrategy(contextPath, port, iterations, indexNames).perform();

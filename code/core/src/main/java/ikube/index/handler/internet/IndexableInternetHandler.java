@@ -74,7 +74,7 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<Thread> handle(final IndexContext indexContext, final IndexableInternet indexable) throws Exception {
+	public List<Thread> handle(final IndexContext<?> indexContext, final IndexableInternet indexable) throws Exception {
 		if (indexable.getExcludedPattern() != null) {
 			excludedPattern = Pattern.compile(indexable.getExcludedPattern());
 		}
@@ -84,6 +84,7 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 		hashParameters = new HashMap<String, Object>();
 		urlIdParameters = new HashMap<String, Object>();
 		notIndexedParameters = new HashMap<String, Object>();
+		notIndexedParameters.put(IConstants.NAME, indexable.getParent().getName());
 		notIndexedParameters.put(IConstants.INDEXED, Boolean.FALSE);
 
 		// The start url
@@ -125,7 +126,7 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 		return threads;
 	}
 
-	protected void doUrls(final IndexContext indexContext, final IndexableInternet indexable, final List<Url> urls,
+	protected void doUrls(final IndexContext<?> indexContext, final IndexableInternet indexable, final List<Url> urls,
 			final IContentProvider<IndexableInternet> contentProvider, final HttpClient httpClient) {
 		for (Url url : urls) {
 			try {
@@ -138,7 +139,7 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 				url.setParsedContent(null);
 				url.setRawContent(null);
 				url.setTitle(null);
-				url.setUrl(null);
+				// url.setUrl(null);
 				url.setContentType(null);
 				// getDataBase().merge(url);
 			} catch (Exception e) {
@@ -149,18 +150,18 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 
 	protected synchronized List<Url> getUrlBatch(int batchSize) {
 		try {
-			List<Url> urls = getDataBase().find(Url.class, Url.SELECT_FROM_URL_NOT_INDEXED, notIndexedParameters, 0, batchSize);
+			List<Url> urls = getDataBase().find(Url.class, Url.SELECT_FROM_URL_BY_NAME_AND_INDEXED, notIndexedParameters, 0, batchSize);
 			for (Url url : urls) {
 				url.setIndexed(Boolean.TRUE);
-				getDataBase().merge(url);
 			}
+			getDataBase().mergeBatch(urls);
 			return urls;
 		} finally {
 			notifyAll();
 		}
 	}
 
-	protected void handle(final IndexContext indexContext, final IndexableInternet indexable, final Url url,
+	protected void handle(final IndexContext<?> indexContext, final IndexableInternet indexable, final Url url,
 			final IContentProvider<IndexableInternet> contentProvider, final HttpClient httpClient) {
 		try {
 			// Get the content from the url
@@ -276,7 +277,7 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	 * @param url
 	 * @param parsedContent
 	 */
-	protected void addDocumentToIndex(final IndexContext indexContext, final IndexableInternet indexable, final Url url,
+	protected void addDocumentToIndex(final IndexContext<?> indexContext, final IndexableInternet indexable, final Url url,
 			final String parsedContent) {
 		try {
 			String id = getUrlId(indexable, url);
@@ -381,6 +382,7 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 							}
 							Url url = new Url();
 							url.setUrlId(urlId);
+							url.setName(indexableInternet.getParent().getName());
 							url.setIndexed(Boolean.FALSE);
 							// Add the link to the database here
 							url.setUrl(strippedAnchorLink);
@@ -419,6 +421,7 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 		indexableInternet.setCurrentUrl(urlString);
 
 		Url url = new Url();
+		url.setName(indexableInternet.getParent().getName());
 		url.setUrlId(HashUtilities.hash(urlString));
 		url.setUrl(urlString);
 		url.setIndexed(Boolean.FALSE);
@@ -427,7 +430,7 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	}
 
 	@Override
-	public void addDocument(IndexContext indexContext, Indexable<IndexableInternet> indexable, Document document)
+	public void addDocument(IndexContext<?> indexContext, Indexable<IndexableInternet> indexable, Document document)
 			throws CorruptIndexException, IOException {
 		super.addDocument(indexContext, indexable, document);
 	}

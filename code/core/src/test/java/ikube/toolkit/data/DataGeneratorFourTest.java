@@ -20,6 +20,7 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -29,6 +30,7 @@ import org.junit.Test;
  * @since 14.03.2011
  * @version 01.00
  */
+@Ignore
 public class DataGeneratorFourTest {
 
 	@Cascading

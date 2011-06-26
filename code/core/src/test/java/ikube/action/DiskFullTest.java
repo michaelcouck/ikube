@@ -14,6 +14,7 @@ import org.junit.Test;
  */
 public class DiskFullTest extends ATest {
 
+	@SuppressWarnings("unused")
 	private DiskFull diskFull;
 
 	public DiskFullTest() {

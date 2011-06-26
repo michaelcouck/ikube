@@ -17,13 +17,13 @@ import java.util.Comparator;
  * @since 31.10.10
  * @version 01.00
  */
-public class Delete extends Action<IndexContext, Boolean> {
+public class Delete extends Action<IndexContext<?>, Boolean> {
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Boolean execute(final IndexContext indexContext) {
+	public Boolean execute(final IndexContext<?> indexContext) {
 		try {
 			String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
 			String indexDirectoryPathBackup = IndexManager.getIndexDirectoryPathBackup(indexContext);

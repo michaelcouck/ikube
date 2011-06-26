@@ -27,7 +27,7 @@ import mockit.MockClass;
 public class ApplicationContextManagerMock {
 
 	public static Object BEAN;
-	public static IndexContext INDEX_CONTEXT;
+	public static IndexContext<?> INDEX_CONTEXT;
 	public static IClusterManager CLUSTER_MANAGER = mock(IClusterManager.class);
 	public static IDataBase DATABASE = mock(IDataBase.class);
 	public static IndexableInternetHandler HANDLER = mock(IndexableInternetHandler.class);

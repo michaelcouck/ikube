@@ -43,7 +43,7 @@ public class MonitoringInterceptor implements IMonitoringInterceptor, IListener 
 	@Override
 	public Object indexingPerformance(final ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
 		Object[] args = proceedingJoinPoint.getArgs();
-		String indexName = ((IndexContext) args[0]).getIndexName();
+		String indexName = ((IndexContext<?>) args[0]).getIndexName();
 		Execution execution = getExecution(indexName, indexingExecutions);
 		long start = System.nanoTime();
 		try {

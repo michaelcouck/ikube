@@ -19,20 +19,22 @@ import javax.persistence.Transient;
 		@NamedQuery(name = Url.DELETE_ALL_URLS, query = Url.DELETE_ALL_URLS),
 		@NamedQuery(name = Url.SELECT_FROM_URL_BY_HASH, query = Url.SELECT_FROM_URL_BY_HASH),
 		@NamedQuery(name = Url.SELECT_FROM_URL_BY_URL_ID, query = Url.SELECT_FROM_URL_BY_URL_ID),
-		@NamedQuery(name = Url.SELECT_FROM_URL_NOT_INDEXED, query = Url.SELECT_FROM_URL_NOT_INDEXED),
+		@NamedQuery(name = Url.SELECT_FROM_URL_BY_NAME_AND_INDEXED, query = Url.SELECT_FROM_URL_BY_NAME_AND_INDEXED),
 		@NamedQuery(name = Url.SELECT_FROM_URL_WHERE_ID_GREATER_AND_NOT_INDEXED, query = Url.SELECT_FROM_URL_WHERE_ID_GREATER_AND_NOT_INDEXED) })
 public class Url extends Persistable {
 
 	public static final String DELETE_ALL_URLS = "delete from Url u";
 	public static final String SELECT_FROM_URL_BY_HASH = "select u from Url as u where u.hash = :hash";
 	public static final String SELECT_FROM_URL_BY_URL_ID = "select u from Url as u where u.urlId = :urlId";
-	public static final String SELECT_FROM_URL_NOT_INDEXED = "select u from Url as u where u.indexed = :indexed";
+	public static final String SELECT_FROM_URL_BY_NAME_AND_INDEXED = "select u from Url as u where u.name = :name and u.indexed = :indexed";
 	public static final String SELECT_FROM_URL_WHERE_ID_GREATER_AND_NOT_INDEXED = "select u from Url as u where u.id >= :id and u.indexed = :indexed";
 
 	private long urlId;
 	private boolean indexed;
 	private long hash;
 
+	@Column(length = 64)
+	private String name;
 	@Column(length = 255)
 	private String url;
 	@Transient
@@ -50,6 +52,14 @@ public class Url extends Persistable {
 
 	public void setUrlId(long urlId) {
 		this.urlId = urlId;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public String getUrl() {

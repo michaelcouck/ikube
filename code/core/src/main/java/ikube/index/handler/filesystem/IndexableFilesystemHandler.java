@@ -46,7 +46,7 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 	private IDataBase dataBase;
 
 	@Override
-	public List<Thread> handle(final IndexContext indexContext, final IndexableFileSystem indexable) throws Exception {
+	public List<Thread> handle(final IndexContext<?> indexContext, final IndexableFileSystem indexable) throws Exception {
 		if (dataBase == null) {
 			dataBase = ApplicationContextManager.getBean(IDataBase.class);
 		}
@@ -96,8 +96,9 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 	protected synchronized List<ikube.model.File> getBatch(final IndexableFileSystem indexable) {
 		try {
 			Map<String, Object> parameters = new HashMap<String, Object>();
+			parameters.put(IConstants.NAME, indexable.getParent().getName());
 			parameters.put(IConstants.INDEXED, Boolean.FALSE);
-			List<ikube.model.File> dbFiles = dataBase.find(ikube.model.File.class, ikube.model.File.SELECT_FROM_FILE_NOT_INDEXED,
+			List<ikube.model.File> dbFiles = dataBase.find(ikube.model.File.class, ikube.model.File.SELECT_FROM_FILE_BY_NAME_AND_INDEXED,
 					parameters, 0, indexable.getBatchSize());
 			for (ikube.model.File dbFile : dbFiles) {
 				dbFile.setIndexed(Boolean.TRUE);
@@ -123,7 +124,7 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 	 * @param excludedPattern
 	 *            the excluded patterns
 	 */
-	protected void handleFolder(final IndexContext indexContext, final IndexableFileSystem indexableFileSystem, final File folder,
+	protected void handleFolder(final IndexContext<?> indexContext, final IndexableFileSystem indexableFileSystem, final File folder,
 			final Pattern excludedPattern, final Set<File> filesDone) {
 		File[] files = folder.listFiles();
 		if (files != null) {
@@ -148,6 +149,7 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 			for (File toPersistFile : filesDone) {
 				long urlId = HashUtilities.hash(toPersistFile.getAbsolutePath());
 				ikube.model.File dbFile = new ikube.model.File();
+				dbFile.setName(indexable.getParent().getName());
 				dbFile.setIndexed(Boolean.FALSE);
 				dbFile.setUrl(toPersistFile.getAbsolutePath());
 				dbFile.setUrlId(urlId);
@@ -169,7 +171,7 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 	 * @param file
 	 *            the file to parse and index
 	 */
-	protected void handleFile(final IndexContext indexContext, final IndexableFileSystem indexableFileSystem, final ikube.model.File dbFile) {
+	protected void handleFile(final IndexContext<?> indexContext, final IndexableFileSystem indexableFileSystem, final ikube.model.File dbFile) {
 		File file = new File(dbFile.getUrl());
 		try {
 			Document document = new Document();

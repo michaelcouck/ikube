@@ -96,7 +96,7 @@ public class RuleInterceptorTest extends ATest {
 			}
 		};
 
-		final List<IRule<IndexContext>> rules = new ArrayList<IRule<IndexContext>>();
+		final List<IRule<IndexContext<?>>> rules = new ArrayList<IRule<IndexContext<?>>>();
 		rules.add(isMultiSearcherInitialised);
 		rules.add(areSearchablesInitialised);
 		rules.add(isIndexCurrent);

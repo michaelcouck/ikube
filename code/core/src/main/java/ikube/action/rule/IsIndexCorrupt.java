@@ -17,10 +17,10 @@ import org.apache.lucene.store.FSDirectory;
  * @since 12.02.2011
  * @version 01.00
  */
-public class IsIndexCorrupt extends ARule<IndexContext> {
+public class IsIndexCorrupt extends ARule<IndexContext<?>> {
 
 	@Override
-	public boolean evaluate(final IndexContext indexContext) {
+	public boolean evaluate(final IndexContext<?> indexContext) {
 		File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
 		if (latestIndexDirectory == null) {
 			return Boolean.FALSE;

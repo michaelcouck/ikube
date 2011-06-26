@@ -41,8 +41,9 @@ public class Integration {
 	}
 
 	protected void validateIndexes() {
+		@SuppressWarnings("rawtypes")
 		Map<String, IndexContext> indexContexts = ApplicationContextManager.getBeans(IndexContext.class);
-		for (IndexContext indexContext : indexContexts.values()) {
+		for (IndexContext<?> indexContext : indexContexts.values()) {
 			new Validator().execute(indexContext);
 		}
 	}
@@ -72,7 +73,7 @@ public class Integration {
 		if (!osName.toLowerCase().contains("server") && properties.getProperty("os.arch").contains("64")) {
 			return Boolean.FALSE;
 		}
-		return Boolean.TRUE;
+		return Boolean.FALSE;
 	}
 
 }

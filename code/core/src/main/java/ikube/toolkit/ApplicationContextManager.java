@@ -46,20 +46,10 @@ public final class ApplicationContextManager {
 		try {
 			if (APPLICATION_CONTEXT == null) {
 				// First see if there is a configuration file at the base of where the Jvm was started
-				File configFile = new File("." + IConstants.SEP + IConstants.IKUBE + IConstants.SEP + IConstants.SPRING_XML);
-				LOGGER.info("External configuration file : " + configFile + ", " + configFile.getAbsolutePath() + ", "
-						+ configFile.exists());
+				File configFile = new File("." + IConstants.SEP + IConstants.SPRING_XML);
 				if (configFile.exists()) {
-					// Add the ./ikube directory to the classpath so we can use the Spring classpath
-					// loader for the context rather than re-implementing the resource loader and finding
-					// all the files etc.
-					String classpath = System.getProperty(IConstants.CLASSPATH_PROPERTY);
-					StringBuilder builder = new StringBuilder(classpath);
-					builder.append(";");
-					builder.append(configFile.getParentFile().getAbsolutePath());
-					String apendedClasspath = builder.toString();
-					LOGGER.info("Adding Ikube folder to the classpath : " + apendedClasspath);
-					System.setProperty(IConstants.CLASSPATH_PROPERTY, apendedClasspath);
+					LOGGER.info("External configuration file : " + configFile + ", " + configFile.getAbsolutePath() + ", "
+							+ configFile.exists());
 					APPLICATION_CONTEXT = getApplicationContext(configFile);
 				} else {
 					APPLICATION_CONTEXT = getApplicationContext(IConstants.SPRING_CONFIGURATION_FILE);
