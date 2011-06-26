@@ -16,14 +16,13 @@
 		location="classpath*:**/spring.properties" 
 		properties-ref="ikube.toolkit.PropertyConfigurer" />
 
-	<!-- ikube.dyndns.org -->
 	<bean id="nonXaDataSourceOracle"
 		class="com.mchange.v2.c3p0.ComboPooledDataSource"
 		destroy-method="close"
-		property:user="XE"
-		property:password="admin"
-		property:driverClass="oracle.jdbc.driver.OracleDriver"
-		property:jdbcUrl="jdbc:oracle:thin:@//ikube:1521/XE"
+		property:user="${oracle.jdbc.userid}"
+		property:password="${oracle.jdbc.password}"
+		property:driverClass="${oracle.jdbc.driver}"
+		property:jdbcUrl="${oracle.jdbc.url}"
 		property:initialPoolSize="${jdbc.minPoolSize}"
 		property:maxPoolSize="${jdbc.maxPoolSize}"
 		property:maxStatements="${jdbc.maxStatements}"

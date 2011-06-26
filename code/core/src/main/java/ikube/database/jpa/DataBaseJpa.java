@@ -16,7 +16,7 @@ import javax.persistence.metamodel.EntityType;
 import org.apache.log4j.Logger;
 
 /**
- * Note: This class is not completely implemented.
+ * TODO Comment me!
  * 
  * @author Michael Couck
  * @since 28.04.10
@@ -27,7 +27,7 @@ public class DataBaseJpa implements IDataBase {
 	/** The logger for the bean. */
 	protected static final Logger LOGGER = Logger.getLogger(DataBaseJpa.class);
 
-	@PersistenceContext(type = PersistenceContextType.TRANSACTION, unitName = IConstants.PERSISTENCE_UNIT_DB2)
+	@PersistenceContext(type = PersistenceContextType.TRANSACTION, unitName = IConstants.PERSISTENCE_UNIT_H2)
 	protected EntityManager entityManager;
 
 	/**
@@ -50,6 +50,24 @@ public class DataBaseJpa implements IDataBase {
 			t = entityManager.merge(t);
 			entityManager.remove(t);
 		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public <T> T remove(T object) {
+		object = entityManager.merge(object);
+		entityManager.remove(object);
+		return object;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public int remove(String sql) {
+		return entityManager.createNamedQuery(sql).executeUpdate();
 	}
 
 	/**
@@ -116,24 +134,6 @@ public class DataBaseJpa implements IDataBase {
 		query.setFirstResult(firstResult);
 		query.setMaxResults(maxResults);
 		return query.getResultList();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public <T> T remove(T object) {
-		object = entityManager.merge(object);
-		entityManager.remove(object);
-		return object;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public int remove(String sql) {
-		return entityManager.createNamedQuery(sql).executeUpdate();
 	}
 
 	/**

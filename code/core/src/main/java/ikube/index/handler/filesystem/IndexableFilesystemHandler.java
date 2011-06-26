@@ -104,7 +104,9 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 				dbFile.setIndexed(Boolean.TRUE);
 			}
 			dataBase.mergeBatch(dbFiles);
-			logger.info("Doing files : " + dbFiles.size());
+			if (dbFiles != null && dbFiles.size() > 0) {
+				logger.info("Doing files : " + dbFiles.size());
+			}
 			return dbFiles;
 		} finally {
 			notifyAll();
@@ -171,7 +173,8 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 	 * @param file
 	 *            the file to parse and index
 	 */
-	protected void handleFile(final IndexContext<?> indexContext, final IndexableFileSystem indexableFileSystem, final ikube.model.File dbFile) {
+	protected void handleFile(final IndexContext<?> indexContext, final IndexableFileSystem indexableFileSystem,
+			final ikube.model.File dbFile) {
 		File file = new File(dbFile.getUrl());
 		try {
 			Document document = new Document();

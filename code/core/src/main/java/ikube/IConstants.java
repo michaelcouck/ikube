@@ -32,6 +32,8 @@ public interface IConstants {
 	String PERSISTENCE_UNIT_DB2 = "IkubePersistenceUnitDb2";
 	String PERSISTENCE_UNIT_ORACLE = "IkubePersistenceUnitOracle";
 	String PERSISTENCE_UNIT_OBJECT_DB = "IkubePersistenceUnitObjectDb";
+	
+	String DATA_SOURCE_H2 = "nonXaDataSourceH2";
 
 	/** The default logging properties. */
 	String LOG_4_J_PROPERTIES = META_INF + SEP + "log4j.properties";

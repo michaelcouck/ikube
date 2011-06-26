@@ -35,7 +35,7 @@ public class SearcherWebServiceTest extends ATest {
 
 	@Before
 	public void before() {
-		Mockit.setUpMock(ApplicationContextManager.class, ApplicationContextManagerMock.class);
+		Mockit.setUpMocks(ApplicationContextManagerMock.class);
 		ApplicationContextManagerMock.BEAN = INDEX_CONTEXT;
 		this.searcherWebService = new SearcherWebService();
 		((SearcherWebService) this.searcherWebService).setSearchDelegate(new SearchDelegate());
@@ -43,7 +43,7 @@ public class SearcherWebServiceTest extends ATest {
 
 	@After
 	public void after() {
-		Mockit.tearDownMocks();
+		Mockit.tearDownMocks(ApplicationContextManager.class);
 		ApplicationContextManagerMock.BEAN = null;
 	}
 

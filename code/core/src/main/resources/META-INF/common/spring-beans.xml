@@ -28,6 +28,8 @@
 	<context:component-scan base-package="ikube" />
 	<transaction:annotation-driven transaction-manager="transactionManager"/>
 
+	<!-- <bean
+		class="ikube.toolkit.ApplicationContextManagerPostProcessor" /> -->
 	<bean 
 		class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor" />
 
@@ -40,19 +42,19 @@
 		id="entityManagerFactory" 
 		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean" 
 		lazy-init="false"
-		property:dataSource-ref="nonXaDataSourceDb2"
+		property:dataSource-ref="nonXaDataSourceH2"
 		property:jpaVendorAdapter-ref="jpaAdapter"
 		property:jpaPropertyMap-ref="jpaPropertyMap">
 		<property name="loadTimeWeaver">
 			<bean class="org.springframework.instrument.classloading.InstrumentationLoadTimeWeaver" />
 		</property>
-		<property name="persistenceUnitName" value="IkubePersistenceUnitDb2"></property>
+		<property name="persistenceUnitName" value="IkubePersistenceUnitH2"></property>
 	</bean>
 
 	<bean 
 		id="jpaAdapter" 
 		class="org.springframework.orm.jpa.vendor.OpenJpaVendorAdapter"
-		property:database="DB2" 
+		property:database="H2" 
 		property:showSql="true" />
 		
 	<util:map id="jpaPropertyMap">
@@ -71,7 +73,7 @@
 		<entry key="openjpa.AutoDetach" value="commit" />
 		<entry key="openjpa.FlushBeforeQueries" value="true" />
 		<entry key="openjpa.RuntimeUnenhancedClasses" value="supported" />
-		<entry key="openjpa.jdbc.DBDictionary" value="db2(batchLimit=1000)" />
+		<entry key="openjpa.jdbc.DBDictionary" value="h2(batchLimit=1000)" />
 
 		<!--
 			For the first run these have to be uncommented to allow OpenJpa to create the
@@ -80,11 +82,17 @@
 			then OpenJpa will use these to get a connection to the db and can then commit on
 			that connection as it will not be xa.
 		-->
-		<!-- <entry key="openjpa.jdbc.SynchronizeMappings" value="buildSchema" />
+		<!-- <entry key="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
 		<entry key="openjpa.Connection2UserName" value="db2admin" />
 		<entry key="openjpa.Connection2Password" value="db2admin" />
 		<entry key="openjpa.Connection2URL" value="jdbc:db2://ikube:50000/ikube" />
 		<entry key="openjpa.Connection2DriverName" value="com.ibm.db2.jcc.DB2Driver" /> -->
+		
+		<entry key="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
+		<entry key="openjpa.Connection2UserName" value="sa" />
+		<entry key="openjpa.Connection2Password" value="" />
+		<entry key="openjpa.Connection2URL" value="${h2.jdbc.url}" />
+		<entry key="openjpa.Connection2DriverName" value="${h2.jdbc.driver}" />
 	</util:map>
 
 	<transaction:advice id="transactionAdvice" transaction-manager="transactionManager">

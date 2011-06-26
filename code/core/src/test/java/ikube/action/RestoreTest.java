@@ -4,6 +4,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 import ikube.ATest;
 import ikube.mock.ApplicationContextManagerMock;
+import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
@@ -63,7 +64,7 @@ public class RestoreTest extends ATest {
 		// Run the restore
 		Mockit.setUpMocks(ApplicationContextManagerMock.class);
 		restore.execute(INDEX_CONTEXT);
-		Mockit.tearDownMocks();
+		Mockit.tearDownMocks(ApplicationContextManager.class);
 
 		// Check that the index is restored
 		latestIndexDirectory = FileUtilities.getLatestIndexDirectory(INDEX_CONTEXT.getIndexDirectoryPath());

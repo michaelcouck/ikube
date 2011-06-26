@@ -10,6 +10,7 @@ import ikube.action.Close;
 import ikube.action.IAction;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.model.IndexContext;
+import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.Logging;
 import ikube.toolkit.PermutationUtilities;
 
@@ -74,7 +75,7 @@ public class RuleInterceptorTest extends ATest {
 
 	@AfterClass
 	public static void afterClass() {
-		Mockit.tearDownMocks();
+		Mockit.tearDownMocks(ApplicationContextManager.class);
 	}
 
 	@Before

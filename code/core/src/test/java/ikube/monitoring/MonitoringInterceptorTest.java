@@ -40,7 +40,7 @@ public class MonitoringInterceptorTest extends ATest {
 	
 	@AfterClass
 	public static void afterClass() {
-		Mockit.tearDownMocks();
+		Mockit.tearDownMocks(ApplicationContextManager.class);
 	}
 
 	public MonitoringInterceptorTest() {

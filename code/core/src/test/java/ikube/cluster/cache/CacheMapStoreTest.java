@@ -2,6 +2,7 @@ package ikube.cluster.cache;
 
 import ikube.ATest;
 import ikube.mock.ApplicationContextManagerMock;
+import ikube.toolkit.ApplicationContextManager;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -38,7 +39,7 @@ public class CacheMapStoreTest extends ATest {
 	
 	@After
 	public void after() {
-		Mockit.tearDownMocks(ApplicationContextManagerMock.class);
+		Mockit.tearDownMocks(ApplicationContextManager.class);
 	}
 
 	@Test

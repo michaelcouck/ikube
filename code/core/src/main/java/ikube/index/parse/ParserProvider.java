@@ -20,8 +20,9 @@ import org.apache.log4j.Logger;
 public final class ParserProvider {
 
 	private static final Logger LOGGER = Logger.getLogger(ParserProvider.class);
-	
-	private ParserProvider() {};
+
+	private ParserProvider() {
+	};
 
 	/** The map of content type to parsers. */
 	private static final Map<String, IParser> PARSERS = new HashMap<String, IParser>();
@@ -57,6 +58,7 @@ public final class ParserProvider {
 			parser = PARSERS.get(parserClass);
 			if (parser == null) {
 				if (parserClass == null) {
+					LOGGER.info("Locating the text parser for : " + mimeType.getName() + ", " + mimeTypeString + ", " + parserClass);
 					// The fall-back parser is the text parser
 					parserClass = TextParser.class.getName();
 				}

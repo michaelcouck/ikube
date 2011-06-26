@@ -16,8 +16,6 @@ import org.apache.commons.lang.builder.ToStringStyle;
 /**
  * Base class for entities. All sub classes must declare the inheritance strategy.
  * 
- * @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
- * 
  * @author Michael Couck
  * @since 21.11.10
  * @version 01.00
@@ -28,7 +26,7 @@ public abstract class Persistable implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "persistable")
-	@SequenceGenerator(name = "persistable", sequenceName = "system", allocationSize = 100)
+	@SequenceGenerator(name = "persistable", sequenceName = "persistable", allocationSize = 1000)
 	private Long id;
 
 	public Long getId() {

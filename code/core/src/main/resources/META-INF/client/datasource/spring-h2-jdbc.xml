@@ -16,14 +16,13 @@
 		location="classpath*:**/spring.properties" 
 		properties-ref="ikube.toolkit.PropertyConfigurer" />
 	
-	<!-- jdbc:h2:mem:search -->
 	<bean id="nonXaDataSourceH2"
 		class="com.mchange.v2.c3p0.ComboPooledDataSource"
 		destroy-method="close"
-		property:user="sa"
-		property:password=""
-		property:driverClass="org.h2.Driver"
-		property:jdbcUrl="jdbc:h2:mem:ikube"
+		property:user="${h2.jdbc.userid}"
+		property:password="${h2.jdbc.password}"
+		property:driverClass="${h2.jdbc.driver}"
+		property:jdbcUrl="${h2.jdbc.url}"
 		property:initialPoolSize="${jdbc.minPoolSize}"
 		property:maxPoolSize="${jdbc.maxPoolSize}"
 		property:maxStatements="${jdbc.maxStatements}"
@@ -37,6 +36,13 @@
 				<value>nonXaDataSourceH2</value>
 				<ref local="nonXaDataSourceH2" />
 			</array>
+		</property>
+	</bean>
+	
+	<bean id="h2SequenceCreator" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
+		property:staticMethod="ikube.toolkit.DatabaseUtilities.executeStatement">
+		<property name="arguments">
+			<ref bean="nonXaDataSourceH2"></ref>
 		</property>
 	</bean>
 

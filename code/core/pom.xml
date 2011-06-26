@@ -68,6 +68,7 @@
 							<argLine>-javaagent:../../serenity/serenity.jar -Xms512m -Xmx1024m ${included.adapters} ${included.packages} ${excluded.packages} ${write.classes} ${clean.classes}</argLine>
 							<excludes>
 								<exclude>**/TextParserTest.java</exclude>
+								<exclude>**/DataBaseJpaTest.java</exclude>
 							</excludes>
 						</configuration>
 					</execution>
@@ -99,13 +100,4 @@
 		</plugins>
 	</build>
 	
-	<!-- <dependencies>
-		<dependency>
-			<groupId>ikube</groupId>
-			<artifactId>ikube-tools</artifactId>
-			<version>${project.version}</version>
-			<scope>compile</scope>
-		</dependency>
-	</dependencies> -->
-
 </project>

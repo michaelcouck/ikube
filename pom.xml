@@ -23,7 +23,7 @@
 		<write.classes>-Dwrite.classes=false</write.classes>
 		<clean.classes>-Dclean.classes=false</clean.classes>
 		<included.packages>-Dincluded.packages=ikube</included.packages>
-		<excluded.packages>-Dexcluded.packages=model:Mock:Test</excluded.packages>
+		<excluded.packages>-Dexcluded.packages=model:Mock:Test:database</excluded.packages>
 		<included.adapters>-Dincluded.adapters=coverage:complexity:dependency</included.adapters>
 
 		<war.base.root>code/war/target/ikube</war.base.root>

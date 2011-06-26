@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.persistence.Id;
+import javax.sql.DataSource;
 
 import org.apache.log4j.Logger;
 
@@ -24,6 +25,15 @@ public final class DatabaseUtilities {
 	private static final Map<Class<?>, Field> ID_FIELDS = new HashMap<Class<?>, Field>();
 
 	private DatabaseUtilities() {
+	}
+
+	public static void executeStatement(DataSource dataSource) {
+		String sql = "create sequence if not exists persistable";
+		try {
+			dataSource.getConnection().createStatement().executeUpdate(sql);
+		} catch (Exception e) {
+			LOGGER.error("Exception executing statement : " + sql + ", on data source : " + dataSource, e);
+		}
 	}
 
 	/**

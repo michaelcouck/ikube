@@ -2,8 +2,10 @@ package ikube.action;
 
 import static org.junit.Assert.assertTrue;
 import ikube.ATest;
+import ikube.index.IndexManager;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.mock.IndexManagerMock;
+import ikube.toolkit.ApplicationContextManager;
 import mockit.Mockit;
 
 import org.junit.After;
@@ -33,7 +35,7 @@ public class ResetTest extends ATest {
 
 	@After
 	public void after() {
-		Mockit.tearDownMocks(ApplicationContextManagerMock.class, IndexManagerMock.class);
+		Mockit.tearDownMocks(ApplicationContextManager.class, IndexManager.class);
 	}
 
 	@Test

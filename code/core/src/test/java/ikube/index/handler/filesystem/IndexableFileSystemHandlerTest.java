@@ -2,10 +2,12 @@ package ikube.index.handler.filesystem;
 
 import static org.mockito.Mockito.when;
 import ikube.ATest;
+import ikube.index.IndexManager;
 import ikube.index.handler.DocumentDelegate;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.mock.IndexManagerMock;
 import ikube.model.IndexableFileSystem;
+import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.ThreadUtilities;
 
@@ -58,7 +60,7 @@ public class IndexableFileSystemHandlerTest extends ATest {
 
 	@After
 	public void after() {
-		Mockit.tearDownMocks(ApplicationContextManagerMock.class, IndexManagerMock.class);
+		Mockit.tearDownMocks(ApplicationContextManager.class, IndexManager.class);
 	}
 
 	@Test
