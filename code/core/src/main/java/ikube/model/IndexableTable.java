@@ -6,9 +6,6 @@ import javax.persistence.InheritanceType;
 import javax.persistence.Transient;
 import javax.sql.DataSource;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
-
 /**
  * @author Michael Couck
  * @since 21.11.10
@@ -67,10 +64,6 @@ public class IndexableTable extends Indexable<IndexableTable> {
 
 	public void setDataSource(final DataSource dataSource) {
 		this.dataSource = dataSource;
-	}
-
-	public String toString() {
-		return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
 	}
 
 }

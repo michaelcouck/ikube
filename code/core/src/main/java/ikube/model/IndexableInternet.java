@@ -10,8 +10,6 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.Transient;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
 import org.apache.log4j.Logger;
 
 /**
@@ -131,7 +129,4 @@ public class IndexableInternet extends Indexable<IndexableInternet> {
 		this.currentInputStream = currentInputStream;
 	}
 
-	public String toString() {
-		return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
-	}
 }

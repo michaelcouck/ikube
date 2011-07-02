@@ -5,8 +5,6 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.Transient;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.MultiSearcher;
 import org.apache.lucene.store.Directory;
@@ -52,10 +50,6 @@ public class Index extends Persistable {
 
 	public void setMultiSearcher(final MultiSearcher multiSearcher) {
 		this.multiSearcher = multiSearcher;
-	}
-
-	public String toString() {
-		return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
 	}
 
 }

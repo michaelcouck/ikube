@@ -7,9 +7,6 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.Transient;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
-
 /**
  * @author Michael Couck
  * @since 21.11.10
@@ -117,10 +114,6 @@ public class IndexableFileSystem extends Indexable<IndexableFileSystem> {
 
 	public void setBatchSize(int batchSize) {
 		this.batchSize = batchSize;
-	}
-
-	public String toString() {
-		return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
 	}
 
 }

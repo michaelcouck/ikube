@@ -8,9 +8,6 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Transient;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
-
 /**
  * @author Michael Couck
  * @since 23.11.10
@@ -119,10 +116,6 @@ public class File extends Persistable {
 
 	public void setHash(final long hash) {
 		this.hash = hash;
-	}
-
-	public String toString() {
-		return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
 	}
 
 }

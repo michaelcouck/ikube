@@ -5,9 +5,6 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.Transient;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
-
 /**
  * @author Michael Couck
  * @since 21.11.10
@@ -69,10 +66,6 @@ public class IndexableColumn extends Indexable<IndexableColumn> {
 
 	public void setColumnType(final int columnType) {
 		this.columnType = columnType;
-	}
-
-	public String toString() {
-		return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
 	}
 
 }

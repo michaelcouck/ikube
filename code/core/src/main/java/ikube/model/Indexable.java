@@ -11,9 +11,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
-
 /**
  * @author Michael Couck
  * @since 21.11.10
@@ -104,10 +101,6 @@ public class Indexable<E> extends Persistable {
 
 	public void setContent(final Object content) {
 		this.content = content;
-	}
-
-	public String toString() {
-		return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
 	}
 
 }

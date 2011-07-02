@@ -12,9 +12,6 @@ import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
-
 /**
  * This object is passed around in the cluster.
  * 
@@ -151,10 +148,6 @@ public class Server extends Persistable implements Comparable<Server> {
 	@Override
 	public int compareTo(final Server other) {
 		return this.getAddress().compareTo(other.getAddress());
-	}
-
-	public String toString() {
-		return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
 	}
 
 }

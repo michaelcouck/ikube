@@ -13,8 +13,6 @@ import javax.persistence.InheritanceType;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
 
 /**
  * This is the context for a single index. It has the properties that define the index like what it is going to index, i.e. the databases,
@@ -247,11 +245,6 @@ public class IndexContext<T> extends Indexable<T> implements Comparable<IndexCon
 
 	public void setNumDocs(long numDocs) {
 		this.numDocs = numDocs;
-	}
-
-	@Override
-	public String toString() {
-		return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
 	}
 
 	@Override

@@ -272,6 +272,9 @@ public class MonitorWebService implements IMonitorWebService {
 	 * @return
 	 */
 	protected Set<String> getFields(final Indexable<?> indexable, final Set<String> fieldNames) {
+		if (indexable == null) {
+			return fieldNames;
+		}
 		Field[] fields = indexable.getClass().getDeclaredFields();
 		for (Field field : fields) {
 			ikube.model.Field annotation = field.getAnnotation(ikube.model.Field.class);
