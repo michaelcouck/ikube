@@ -35,8 +35,8 @@
 	<import resource="classpath:/META-INF/common/spring-actions.xml" />
 	
 	<!-- Optional system configuration files. -->
-	<import resource="classpath:/META-INF/common/spring-ikube.xml" />
-	<import resource="classpath:/META-INF/common/spring-geospatial.xml" />
+	<!-- <import resource="classpath:/META-INF/common/spring-ikube.xml" />
+	<import resource="classpath:/META-INF/common/spring-geospatial.xml" /> -->
 
 	<!-- Optional client configuration files for indexables. -->
 	<import resource="classpath:/META-INF/client/spring-client.xml" />

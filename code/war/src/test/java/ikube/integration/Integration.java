@@ -27,7 +27,6 @@ public class Integration {
 	}
 
 	protected Logger logger = Logger.getLogger(this.getClass());
-	protected int iterations = 10;
 
 	@Test
 	public void main() throws Exception {
@@ -50,8 +49,8 @@ public class Integration {
 
 	protected void waitToFinish() {
 		try {
-			while (true) {
-				Thread.sleep(600000);
+			do {
+				Thread.sleep(120000);
 				IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
 				boolean anyWorking = clusterManager.anyWorking();
 				boolean isWorking = clusterManager.getServer().getWorking();
@@ -59,7 +58,7 @@ public class Integration {
 				if (!anyWorking && !isWorking) {
 					break;
 				}
-			}
+			} while (true);
 		} catch (Exception e) {
 			logger.error("Exception waiting for servers to finish : ", e);
 		}
@@ -73,7 +72,7 @@ public class Integration {
 		if (!osName.toLowerCase().contains("server") && properties.getProperty("os.arch").contains("64")) {
 			return Boolean.FALSE;
 		}
-		return Boolean.TRUE;
+		return Boolean.FALSE;
 	}
 
 }

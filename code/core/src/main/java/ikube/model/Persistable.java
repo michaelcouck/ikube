@@ -10,6 +10,9 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.SequenceGenerator;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
+
 /**
  * Base class for entities. All sub classes must declare the inheritance strategy.
  * 
@@ -32,6 +35,10 @@ public abstract class Persistable implements Serializable {
 
 	public void setId(final Long id) {
 		this.id = id;
+	}
+	
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
 	}
 
 }

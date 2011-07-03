@@ -29,19 +29,19 @@ public class IndexableInternet extends Indexable<IndexableInternet> {
 	private transient InputStream currentInputStream;
 	@Transient
 	private transient Pattern pattern;
+	@Transient
+	private transient URI uri;
 
-	private URI uri;
 	private String url;
-
+	private int internetBatchSize;
+	private String excludedPattern;
+	private int timeout;
 	@Field()
 	private String titleFieldName;
 	@Field()
 	private String idFieldName;
 	@Field()
 	private String contentFieldName;
-
-	private String excludedPattern;
-	private int timeout;
 
 	public URI getUri() {
 		if (uri == null && getUrl() != null) {
@@ -88,6 +88,14 @@ public class IndexableInternet extends Indexable<IndexableInternet> {
 
 	public void setContentFieldName(final String contentFieldName) {
 		this.contentFieldName = contentFieldName;
+	}
+
+	public int getInternetBatchSize() {
+		return internetBatchSize;
+	}
+
+	public void setInternetBatchSize(int interrnetBatchSize) {
+		this.internetBatchSize = interrnetBatchSize;
 	}
 
 	public String getExcludedPattern() {

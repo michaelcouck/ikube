@@ -67,7 +67,7 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 		}
 		// Add all the files to the database
 		final Set<File> filesDone = new TreeSet<File>();
-		handleFolder(indexContext, indexable, baseFile, getPattern(indexable.getExcludedPattern()), filesDone);
+		persistFiles(indexContext, indexable, baseFile, getPattern(indexable.getExcludedPattern()), filesDone);
 		// Now start the threads indexing the files from the database
 		List<Thread> threads = new ArrayList<Thread>();
 		String name = this.getClass().getSimpleName();
@@ -126,7 +126,7 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 	 * @param excludedPattern
 	 *            the excluded patterns
 	 */
-	protected void handleFolder(final IndexContext<?> indexContext, final IndexableFileSystem indexableFileSystem, final File folder,
+	protected void persistFiles(final IndexContext<?> indexContext, final IndexableFileSystem indexableFileSystem, final File folder,
 			final Pattern excludedPattern, final Set<File> filesDone) {
 		File[] files = folder.listFiles();
 		if (files != null) {
@@ -135,15 +135,15 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 					continue;
 				}
 				if (file.isDirectory()) {
-					handleFolder(indexContext, indexableFileSystem, file, excludedPattern, filesDone);
+					persistFiles(indexContext, indexableFileSystem, file, excludedPattern, filesDone);
 				} else {
-					addFile(indexableFileSystem, file, filesDone);
+					persistFile(indexableFileSystem, file, filesDone);
 				}
 			}
 		}
 	}
 
-	protected boolean addFile(final IndexableFileSystem indexable, File file, final Set<File> filesDone) {
+	protected boolean persistFile(final IndexableFileSystem indexable, File file, final Set<File> filesDone) {
 		filesDone.add(file);
 		if (filesDone.size() >= indexable.getBatchSize()) {
 			logger.info("Persisting files : " + filesDone.size());

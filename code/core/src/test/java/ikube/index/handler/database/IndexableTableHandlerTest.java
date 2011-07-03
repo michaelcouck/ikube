@@ -51,13 +51,13 @@ public class IndexableTableHandlerTest extends BaseTest {
 	public void before() throws Exception {
 		indexableTableHandler = ApplicationContextManager.getBean(IndexableTableHandler.class);
 
-		faqIndexableTable = ApplicationContextManager.getBean("faqTableDb2");
-		attachmentIndexableTable = ApplicationContextManager.getBean("attachmentTableDb2");
+		faqIndexableTable = ApplicationContextManager.getBean("faqTableOracle");
+		attachmentIndexableTable = ApplicationContextManager.getBean("attachmentTableOracle");
 
 		faqIndexableColumns = faqIndexableTable.getChildren();
 		faqIdIndexableColumn = indexableTableHandler.getIdColumn(faqIndexableColumns);
 
-		connection = ((DataSource) ApplicationContextManager.getBean("nonXaDataSourceDb2")).getConnection();
+		connection = ((DataSource) ApplicationContextManager.getBean("nonXaDataSourceOracle")).getConnection();
 
 		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
 		clusterManager.setWorking(Index.class.getSimpleName(), indexContext.getIndexName(), faqIndexableTable.getName(), Boolean.FALSE);

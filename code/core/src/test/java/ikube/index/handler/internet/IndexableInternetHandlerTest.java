@@ -35,13 +35,13 @@ public class IndexableInternetHandlerTest extends BaseTest {
 		indexableInternet = ApplicationContextManager.getBean("internet");
 		dataBase = ApplicationContextManager.getBean(IDataBase.class);
 		ListenerManager.removeListeners();
-		dataBase.remove(Url.DELETE_ALL_URLS);
+		delete(dataBase, Url.class);
 	}
 
 	@After
 	public void after() {
 		ListenerManager.removeListeners();
-		dataBase.remove(Url.DELETE_ALL_URLS);
+		delete(dataBase, Url.class);
 	}
 
 	@Test
@@ -54,7 +54,7 @@ public class IndexableInternetHandlerTest extends BaseTest {
 
 		ThreadUtilities.waitForThreads(threads);
 
-		int expected = 5;
+		int expected = 10;
 		List<Url> urls = dataBase.find(Url.class, 0, Integer.MAX_VALUE);
 		int totalUrlsCrawled = urls.size();
 		logger.info("Urls crawled : " + totalUrlsCrawled);

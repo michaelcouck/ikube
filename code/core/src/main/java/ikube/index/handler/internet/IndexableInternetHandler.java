@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 
 import javax.persistence.NoResultException;
@@ -45,10 +46,11 @@ import net.htmlparser.jericho.HTMLElementName;
 import net.htmlparser.jericho.Source;
 import net.htmlparser.jericho.StartTag;
 import net.htmlparser.jericho.Tag;
+import net.sf.ehcache.Cache;
+import net.sf.ehcache.CacheManager;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
@@ -62,30 +64,29 @@ import org.apache.lucene.index.CorruptIndexException;
  */
 public class IndexableInternetHandler extends IndexableHandler<IndexableInternet> {
 
-	private static final Logger LOGGER = Logger.getLogger(IndexableInternetHandler.class);
-
 	private IDataBase dataBase;
 	private Pattern excludedPattern;
-	private Map<String, Object> hashParameters;
-	private Map<String, Object> urlIdParameters;
 	private Map<String, Object> notIndexedParameters;
+	private Cache cache = CacheManager.create().getCache("UrlCache");
+	private AtomicInteger cacheBatchSize = new AtomicInteger();
+	private ThreadLocal<Map<String, Object>> localUrlIdParameters = new ThreadLocal<Map<String, Object>>();
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public List<Thread> handle(final IndexContext<?> indexContext, final IndexableInternet indexable) throws Exception {
+		cache.removeAll();
 		if (indexable.getExcludedPattern() != null) {
 			excludedPattern = Pattern.compile(indexable.getExcludedPattern());
 		}
 		if (this.dataBase == null) {
 			this.dataBase = ApplicationContextManager.getBean(IDataBase.class);
 		}
-		hashParameters = new HashMap<String, Object>();
-		urlIdParameters = new HashMap<String, Object>();
+		indexable.setParent(indexContext);
 		notIndexedParameters = new HashMap<String, Object>();
-		notIndexedParameters.put(IConstants.NAME, indexable.getParent().getName());
 		notIndexedParameters.put(IConstants.INDEXED, Boolean.FALSE);
+		notIndexedParameters.put(IConstants.NAME, indexContext.getName());
 
 		// The start url
 		seedUrl(indexable);
@@ -93,13 +94,13 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 		final List<Thread> threads = new ArrayList<Thread>();
 		String name = this.getClass().getSimpleName();
 		for (int i = 0; i < getThreads(); i++) {
-			final int batchSize = indexContext.getInternetBatchSize();
 			Thread thread = new Thread(new Runnable() {
 				public void run() {
 					HttpClient httpClient = new HttpClient();
 					IContentProvider<IndexableInternet> contentProvider = new InternetContentProvider();
+					localUrlIdParameters.set(new HashMap<String, Object>());
 					while (true) {
-						List<Url> urls = getUrlBatch(batchSize);
+						List<Url> urls = getUrlBatch(indexable);
 						if (urls.isEmpty()) {
 							// Check if there are any other threads still working
 							// other than this thread of course
@@ -108,16 +109,19 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 									try {
 										wait(1000);
 									} catch (Exception e) {
-										LOGGER.error("Exception waiting for more resources to crawl : ", e);
+										logger.error("Exception waiting for more resources to crawl : ", e);
 									}
 								}
 							} else {
 								break;
 							}
 						}
-						LOGGER.info("Doing urls : " + urls.size());
+						if (urls.size() > 0) {
+							logger.info("Doing urls : " + urls.size());
+						}
 						doUrls(indexContext, indexable, urls, contentProvider, httpClient);
 					}
+					localUrlIdParameters.remove();
 				}
 			}, name + "." + i);
 			thread.start();
@@ -128,29 +132,39 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 
 	protected void doUrls(final IndexContext<?> indexContext, final IndexableInternet indexable, final List<Url> urls,
 			final IContentProvider<IndexableInternet> contentProvider, final HttpClient httpClient) {
+		if (urls.size() > 0) {
+			logger.info("First url : " + urls.get(0));
+		}
 		for (Url url : urls) {
 			try {
 				if (url == null || url.getUrl() == null) {
 					continue;
 				}
-				LOGGER.info("Doing url : " + url.getUrl());
 				handle(indexContext, indexable, url, contentProvider, httpClient);
-				// Null everything and persist it
 				url.setParsedContent(null);
 				url.setRawContent(null);
 				url.setTitle(null);
-				// url.setUrl(null);
 				url.setContentType(null);
-				// getDataBase().merge(url);
 			} catch (Exception e) {
-				LOGGER.error("Exception doing url : " + url, e);
+				logger.error("Exception doing url : " + url, e);
 			}
+		}
+		try {
+			getDataBase().mergeBatch(urls);
+		} catch (Exception e) {
+			logger.error("Exception merging batch : ", e);
 		}
 	}
 
-	protected synchronized List<Url> getUrlBatch(int batchSize) {
+	protected synchronized List<Url> getUrlBatch(IndexableInternet indexableInternet) {
 		try {
-			List<Url> urls = getDataBase().find(Url.class, Url.SELECT_FROM_URL_BY_NAME_AND_INDEXED, notIndexedParameters, 0, batchSize);
+			List<Url> urls = getDataBase().find(Url.class, Url.SELECT_FROM_URL_BY_NAME_AND_INDEXED, notIndexedParameters, 0,
+					indexableInternet.getInternetBatchSize());
+			if (urls.size() == 0) {
+				persistBatch();
+				urls = getDataBase().find(Url.class, Url.SELECT_FROM_URL_BY_NAME_AND_INDEXED, notIndexedParameters, 0,
+						indexableInternet.getInternetBatchSize());
+			}
 			for (Url url : urls) {
 				url.setIndexed(Boolean.TRUE);
 			}
@@ -167,7 +181,7 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 			// Get the content from the url
 			ByteOutputStream byteOutputStream = getContentFromUrl(contentProvider, httpClient, indexable, url);
 			if (byteOutputStream == null || byteOutputStream.size() == 0) {
-				LOGGER.warn("No content from url, perhaps exception : " + url);
+				logger.warn("No content from url, perhaps exception : " + url);
 				return;
 			}
 			InputStream inputStream = new ByteArrayInputStream(byteOutputStream.getBytes());
@@ -181,16 +195,10 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 			}
 			long hash = HashUtilities.hash(parsedContent);
 			url.setHash(hash);
-			hashParameters.put(IConstants.HASH, hash);
-			if (getDataBase().find(Url.class, Url.SELECT_FROM_URL_BY_HASH, hashParameters, 0, 1).size() > 0) {
-				LOGGER.info("Duplicate data : " + url.getUrl());
-				return;
-			}
-			getDataBase().merge(url);
 			// Add the document to the index
 			addDocumentToIndex(indexContext, indexable, url, parsedContent);
 		} catch (Exception e) {
-			LOGGER.error("Exception visiting page : " + (url != null ? url.getUrl() : null), e);
+			logger.error("Exception visiting page : " + (url != null ? url.getUrl() : null), e);
 		}
 	}
 
@@ -217,14 +225,14 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 			url.setRawContent(byteOutputStream.getBytes());
 			return byteOutputStream;
 		} catch (Exception e) {
-			LOGGER.error("Exception getting the content from the url : " + url, e);
+			logger.error("Exception getting the content from the url : " + url, e);
 		} finally {
 			try {
 				if (get != null) {
 					get.releaseConnection();
 				}
 			} catch (Exception e) {
-				LOGGER.error("Exception releasing the connection to the url : " + url, e);
+				logger.error("Exception releasing the connection to the url : " + url, e);
 			}
 		}
 		return byteOutputStream;
@@ -265,7 +273,7 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 			url.setContentType(contentType);
 			return outputStream.toString();
 		} catch (Exception e) {
-			LOGGER.error("Exception accessing url : " + url, e);
+			logger.error("Exception accessing url : " + url, e);
 		}
 		return null;
 	}
@@ -308,7 +316,7 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 			IndexManager.addStringField(indexable.getContentFieldName(), parsedContent, document, store, analyzed, termVector);
 			this.addDocument(indexContext, indexable, document);
 		} catch (Exception e) {
-			LOGGER.error("Exception accessing url : " + url, e);
+			logger.error("Exception accessing url : " + url, e);
 		} finally {
 			url.setParsedContent(null);
 			url.setRawContent(null);
@@ -353,31 +361,35 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 								continue;
 							}
 							String resolvedLink = UriUtilities.resolve(baseUri, link);
-							if (!UriUtilities.isInternetProtocol(resolvedLink)) {
-								continue;
-							}
-							if (!resolvedLink.contains(baseHost)) {
-								continue;
-							}
-							if (excludedPattern != null && excludedPattern.matcher(resolvedLink).matches()) {
-								continue;
-							}
 							String replacement = resolvedLink.contains("?") ? "?" : "";
 							String strippedSessionLink = UriUtilities.stripJSessionId(resolvedLink, replacement);
 							String strippedAnchorLink = UriUtilities.stripAnchor(strippedSessionLink, "");
+							if (!UriUtilities.isInternetProtocol(strippedAnchorLink)) {
+								continue;
+							}
+							if (!strippedAnchorLink.contains(baseHost)) {
+								continue;
+							}
+							if (excludedPattern != null && excludedPattern.matcher(strippedAnchorLink).matches()) {
+								continue;
+							}
 							Long urlId = HashUtilities.hash(strippedAnchorLink);
 
-							// TODO This will be overwritten by the threads, it needs to be thread by thread
-							urlIdParameters.put(IConstants.URL_ID, urlId);
+							// Try the cache first
+							if (cache.get(urlId) != null) {
+								continue;
+							}
+							localUrlIdParameters.get().put(IConstants.URL_ID, urlId);
 							Url dbUrl = null;
 							try {
-								dbUrl = getDataBase().find(Url.class, Url.SELECT_FROM_URL_BY_URL_ID, urlIdParameters);
+								dbUrl = getDataBase().find(Url.class, Url.SELECT_FROM_URL_BY_URL_ID, localUrlIdParameters.get());
 							} catch (NonUniqueResultException e) {
 								continue;
 							} catch (NoResultException e) {
 								// Swallow
 							}
 							if (dbUrl != null) {
+								cache.put(new net.sf.ehcache.Element(urlId, dbUrl));
 								continue;
 							}
 							Url url = new Url();
@@ -386,16 +398,52 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 							url.setIndexed(Boolean.FALSE);
 							// Add the link to the database here
 							url.setUrl(strippedAnchorLink);
-							getDataBase().persist(url);
-							// setUrl(dbUrl);
+							cache.put(new net.sf.ehcache.Element(urlId, url));
+							cacheBatchSize.incrementAndGet();
 						} catch (Exception e) {
-							LOGGER.error("Exception extracting link : " + tag, e);
+							logger.error("Exception extracting link : " + tag, e);
 						}
 					}
 				}
 			}
 		} catch (Exception e) {
-			LOGGER.error("General exception extracting the links from : ", e);
+			logger.error("General exception extracting the links from : ", e);
+		}
+		try {
+			if (cacheBatchSize.intValue() > indexableInternet.getInternetBatchSize()) {
+				persistBatch();
+			}
+		} catch (Exception e) {
+			logger.error("Exception persisting url batch : ", e);
+		}
+	}
+
+	protected synchronized void persistBatch() {
+		try {
+			// Persist all the urls in the cache that are not persisted
+			List<Url> newUrls = new ArrayList<Url>();
+			List<?> keys = cache.getKeys();
+			for (Object key : keys) {
+				try {
+					net.sf.ehcache.Element element = cache.get(key);
+					if (element == null) {
+						continue;
+					}
+					Url url = (Url) element.getObjectValue();
+					if (url.getId() != null) {
+						continue;
+					}
+					newUrls.add(url);
+					cache.remove(key);
+					cache.remove(url.getUrlId());
+				} catch (Exception e) {
+					logger.error("Exception persisting the url batch : ", e);
+				}
+			}
+			getDataBase().persistBatch(newUrls);
+			cacheBatchSize.set(0);
+		} finally {
+			notifyAll();
 		}
 	}
 

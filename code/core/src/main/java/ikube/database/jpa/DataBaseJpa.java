@@ -27,7 +27,7 @@ public class DataBaseJpa implements IDataBase {
 	/** The logger for the bean. */
 	protected static final Logger LOGGER = Logger.getLogger(DataBaseJpa.class);
 
-	@PersistenceContext(type = PersistenceContextType.TRANSACTION, unitName = IConstants.PERSISTENCE_UNIT_H2)
+	@PersistenceContext(type = PersistenceContextType.TRANSACTION, unitName = IConstants.PERSISTENCE_UNIT_DB2)
 	protected EntityManager entityManager;
 
 	/**
@@ -50,6 +50,8 @@ public class DataBaseJpa implements IDataBase {
 			t = entityManager.merge(t);
 			entityManager.remove(t);
 		}
+		entityManager.flush();
+		entityManager.clear();
 	}
 
 	/**

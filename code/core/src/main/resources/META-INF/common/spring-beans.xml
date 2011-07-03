@@ -61,8 +61,8 @@
 		<entry key="openjpa.ConnectionFactoryProperties" value="PrettyPrint=true,PrettyPrintLineLength=150" />
 		<entry key="openjpa.Log" value="DefaultLevel=ERROR,JDBC=ERROR,SQL=ERROR,File=openjpa.log,Runtime=ERROR,Tool=ERROR" />
 
-		<entry key="openjpa.DataCache" value="true(CacheSize=1000,SoftReferenceSize=1000)" />
-		<entry key="openjpa.QueryCache" value="true(CacheSize=1000,SoftReferenceSize=1000)" />
+		<entry key="openjpa.DataCache" value="true(CacheSize=10000,SoftReferenceSize=10000)" />
+		<entry key="openjpa.QueryCache" value="true(CacheSize=10000,SoftReferenceSize=10000)" />
 
 		<entry key="openjpa.LockTimeout" value="6000000" />
 		<entry key="openjpa.ReadLockLevel" value="write" />
@@ -73,8 +73,8 @@
 		<entry key="openjpa.AutoDetach" value="commit" />
 		<entry key="openjpa.FlushBeforeQueries" value="true" />
 		<entry key="openjpa.RuntimeUnenhancedClasses" value="supported" />
-		<entry key="openjpa.jdbc.DBDictionary" value="h2(batchLimit=1000)" />
-
+		<entry key="openjpa.jdbc.DBDictionary" value="db2(batchLimit=1000)" />
+		
 		<!--
 			For the first run these have to be uncommented to allow OpenJpa to create the
 			tables in the database and commit the connection. Typically the connection
@@ -82,17 +82,16 @@
 			then OpenJpa will use these to get a connection to the db and can then commit on
 			that connection as it will not be xa.
 		-->
-		<!-- <entry key="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
-		<entry key="openjpa.Connection2UserName" value="db2admin" />
+		<!-- <entry key="openjpa.Connection2UserName" value="db2admin" />
 		<entry key="openjpa.Connection2Password" value="db2admin" />
 		<entry key="openjpa.Connection2URL" value="jdbc:db2://ikube:50000/ikube" />
 		<entry key="openjpa.Connection2DriverName" value="com.ibm.db2.jcc.DB2Driver" /> -->
 		
-		<entry key="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
-		<entry key="openjpa.Connection2UserName" value="sa" />
-		<entry key="openjpa.Connection2Password" value="" />
+		<entry key="openjpa.Connection2UserName" value="${ikube.jdbc.userid}" />
+		<entry key="openjpa.Connection2Password" value="${ikube.jdbc.password}" />
 		<entry key="openjpa.Connection2URL" value="${ikube.jdbc.url}" />
 		<entry key="openjpa.Connection2DriverName" value="${ikube.jdbc.driver}" />
+		<entry key="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
 	</util:map>
 
 	<transaction:advice id="transactionAdvice" transaction-manager="transactionManager">
