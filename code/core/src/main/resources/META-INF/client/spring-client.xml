@@ -585,6 +585,7 @@
 		property:nameFieldName="name"
 		property:lengthFieldName="length"
 		property:contentFieldName="contents"
+		property:stored="${not.stored}"
 		property:excludedPattern="${files.excluded.pattern}"
 		property:lastModifiedFieldName="lastmodified" 
 		property:batchSize="${file.batch.size}" />
@@ -597,6 +598,7 @@
 		property:nameFieldName="name"
 		property:lengthFieldName="length"
 		property:contentFieldName="contents"
+		property:stored="${not.stored}"
 		property:excludedPattern="${files.excluded.pattern}"
 		property:lastModifiedFieldName="lastmodified" 
 		property:batchSize="${file.batch.size}" />
@@ -609,6 +611,7 @@
 		property:nameFieldName="name"
 		property:lengthFieldName="length"
 		property:contentFieldName="contents"
+		property:stored="${not.stored}"
 		property:excludedPattern="${files.excluded.pattern}"
 		property:lastModifiedFieldName="lastmodified" 
 		property:batchSize="${file.batch.size}" />
@@ -621,6 +624,7 @@
 		property:nameFieldName="name"
 		property:lengthFieldName="length"
 		property:contentFieldName="contents"
+		property:stored="${not.stored}"
 		property:excludedPattern="${files.excluded.pattern}"
 		property:lastModifiedFieldName="lastmodified" 
 		property:batchSize="${file.batch.size}" />
@@ -633,6 +637,7 @@
 		property:nameFieldName="name"
 		property:lengthFieldName="length"
 		property:contentFieldName="contents"
+		property:stored="${not.stored}"
 		property:excludedPattern="${files.excluded.pattern}"
 		property:lastModifiedFieldName="lastmodified" 
 		property:batchSize="${file.batch.size}" />
@@ -645,6 +650,7 @@
 		property:nameFieldName="name"
 		property:lengthFieldName="length"
 		property:contentFieldName="contents"
+		property:stored="${not.stored}"
 		property:excludedPattern="${files.excluded.pattern}"
 		property:lastModifiedFieldName="lastmodified" 
 		property:batchSize="${file.batch.size}" />
@@ -657,6 +663,7 @@
 		property:nameFieldName="name"
 		property:lengthFieldName="length"
 		property:contentFieldName="contents"
+		property:stored="${not.stored}"
 		property:excludedPattern="${files.excluded.pattern}"
 		property:lastModifiedFieldName="lastmodified" 
 		property:batchSize="${file.batch.size}" />
@@ -669,6 +676,7 @@
 		property:nameFieldName="name"
 		property:lengthFieldName="length"
 		property:contentFieldName="contents"
+		property:stored="${not.stored}"
 		property:excludedPattern="${files.excluded.pattern}"
 		property:lastModifiedFieldName="lastmodified" 
 		property:batchSize="${file.batch.size}" />
@@ -681,6 +689,7 @@
 		property:nameFieldName="name"
 		property:lengthFieldName="length"
 		property:contentFieldName="contents"
+		property:stored="${not.stored}"
 		property:excludedPattern="${files.excluded.pattern}"
 		property:lastModifiedFieldName="lastmodified" 
 		property:batchSize="${file.batch.size}" />
@@ -693,6 +702,7 @@
 		property:nameFieldName="name"
 		property:lengthFieldName="length"
 		property:contentFieldName="contents"
+		property:stored="${not.stored}"
 		property:excludedPattern="${files.excluded.pattern}"
 		property:lastModifiedFieldName="lastmodified" 
 		property:batchSize="${file.batch.size}" />

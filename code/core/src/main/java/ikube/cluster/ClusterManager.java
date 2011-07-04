@@ -221,7 +221,6 @@ public class ClusterManager implements IClusterManager, IConstants {
 			action = new Action(0, null, indexableName, indexName, System.currentTimeMillis(), Boolean.TRUE);
 			server.setAction(action);
 		}
-		// && action.getIndexableName().equals(indexableName) && action.getIndexName().equals(indexName)
 		idNumber = action.getIdNumber();
 		if (idNumber < minId) {
 			idNumber = minId;
@@ -247,7 +246,6 @@ public class ClusterManager implements IClusterManager, IConstants {
 	 */
 	@Override
 	public Server getServer() {
-		// if (this.server == null) {
 		Server server = cache.get(Server.class.getName(), HashUtilities.hash(address));
 		if (server == null) {
 			server = new Server();
@@ -259,7 +257,6 @@ public class ClusterManager implements IClusterManager, IConstants {
 			LOGGER.info("Published server : " + server);
 			LOGGER.info("Server from cache : " + cache.get(Server.class.getName(), server.getId()));
 		}
-		// }
 		return server;
 	}
 
@@ -283,7 +280,6 @@ public class ClusterManager implements IClusterManager, IConstants {
 			server.getAction().setWorking(isWorking);
 
 			// Publish the fact that this server is starting to work on an action
-			// LOGGER.info("Publishing server working : " + server.getAddress());
 			set(Server.class.getName(), server.getId(), server);
 			return server.getAction().getStartTime();
 		} finally {

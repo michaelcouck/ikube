@@ -1,4 +1,5 @@
-cd /d ../code/war
-set MAVEN_OPTS=-Xms256m -Xmx1024m -XX:MaxPermSize=128m
+cd /d ../
+set MAVEN_OPTS=-Xms1024m -Xmx2048m -XX:MaxPermSize=256m
 rem -DskipTests=true javadoc:javadoc
-mvn clean install -DskipTests=true -DskipITs=true
+rem  -DskipTests=true -DskipITs=true
+mvn clean install

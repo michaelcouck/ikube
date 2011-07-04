@@ -51,13 +51,13 @@ public class IndexableTableHandlerTest extends BaseTest {
 	public void before() throws Exception {
 		indexableTableHandler = ApplicationContextManager.getBean(IndexableTableHandler.class);
 
-		faqIndexableTable = ApplicationContextManager.getBean("faqTableOracle");
-		attachmentIndexableTable = ApplicationContextManager.getBean("attachmentTableOracle");
+		faqIndexableTable = ApplicationContextManager.getBean("faqTableDb2");
+		attachmentIndexableTable = ApplicationContextManager.getBean("attachmentTableDb2");
 
 		faqIndexableColumns = faqIndexableTable.getChildren();
 		faqIdIndexableColumn = indexableTableHandler.getIdColumn(faqIndexableColumns);
 
-		connection = ((DataSource) ApplicationContextManager.getBean("nonXaDataSourceOracle")).getConnection();
+		connection = ((DataSource) ApplicationContextManager.getBean("nonXaDataSourceDb2")).getConnection();
 
 		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
 		clusterManager.setWorking(Index.class.getSimpleName(), indexContext.getIndexName(), faqIndexableTable.getName(), Boolean.FALSE);
@@ -74,7 +74,6 @@ public class IndexableTableHandlerTest extends BaseTest {
 
 	@Test
 	public void handleTable() throws Exception {
-		// IndexContext, IndexableTable, Connection, Document
 		indexContext.getIndex().setIndexWriter(INDEX_WRITER);
 		List<Thread> threads = indexableTableHandler.handle(indexContext, faqIndexableTable);
 		ThreadUtilities.waitForThreads(threads);
@@ -87,8 +86,6 @@ public class IndexableTableHandlerTest extends BaseTest {
 		indexContext.setBatchSize(10);
 		String expectedSql = "select faq.faqId, faq.creationtimestamp, faq.modifiedtimestamp, "
 				+ "faq.creator, faq.modifier, faq.question, faq.answer, faq.published from faq";
-		// where faq.faqid > 0 and published = 1 and faq.faqId >= 0 and faq.faqId < 10
-		// IndexContext, IndexableTable, long
 		long nextIdNumber = 0;
 		String sql = indexableTableHandler.buildSql(faqIndexableTable, indexContext.getBatchSize(), nextIdNumber);
 		logger.info("Sql : " + sql);
@@ -97,10 +94,9 @@ public class IndexableTableHandlerTest extends BaseTest {
 
 	@Test
 	public void getIdFunction() throws Exception {
-		// IndexableTable, Connection, String
 		long minId = indexableTableHandler.getIdFunction(faqIndexableTable, connection, "min");
 		logger.debug("Min id : " + minId);
-		assertEquals(1, minId);
+		assertTrue("This is dependant on the database being used : ", minId > 0);
 		long maxId = indexableTableHandler.getIdFunction(faqIndexableTable, connection, "max");
 		logger.debug("Max id : " + maxId);
 		assertTrue(maxId < 1000000000);
@@ -108,7 +104,6 @@ public class IndexableTableHandlerTest extends BaseTest {
 
 	@Test
 	public void getIdColumn() throws Exception {
-		// List<Indexable<?>>
 		IndexableColumn idColumn = indexableTableHandler.getIdColumn(faqIndexableTable.getChildren());
 		assertNotNull(idColumn);
 		assertEquals("faqId", idColumn.getName());
@@ -116,7 +111,6 @@ public class IndexableTableHandlerTest extends BaseTest {
 
 	@Test
 	public void setParameters() throws Exception {
-		// IndexableTable, PreparedStatement
 		faqIdIndexableColumn.setContent(1);
 		String sql = "select * from attachment where faqId = ?";
 		PreparedStatement preparedStatement = connection.prepareStatement(sql);
@@ -131,7 +125,6 @@ public class IndexableTableHandlerTest extends BaseTest {
 
 	@Test
 	public void getResultSet() throws Exception {
-		// IndexContext, IndexableTable, Connection
 		faqIdIndexableColumn.setContent(1);
 		ResultSet resultSet = indexableTableHandler.getResultSet(indexContext, faqIndexableTable, connection, 1);
 		assertNotNull(resultSet);
@@ -143,7 +136,6 @@ public class IndexableTableHandlerTest extends BaseTest {
 
 	@Test
 	public void handleColumn() throws Exception {
-		// IndexableColumn, Document
 		IndexableColumn faqIdIndexableColumn = indexableTableHandler.getIdColumn(faqIndexableColumns);
 		faqIdIndexableColumn.setContent("Hello World!");
 		faqIdIndexableColumn.setColumnType(Types.VARCHAR);
@@ -155,7 +147,6 @@ public class IndexableTableHandlerTest extends BaseTest {
 
 	@Test
 	public void setIdField() throws Exception {
-		// List<Indexable<?>>, IndexableTable, Document, ResultSet
 		Document document = new Document();
 		Statement statement = connection.createStatement();
 		ResultSet resultSet = statement.executeQuery("select * from faq");
@@ -174,7 +165,6 @@ public class IndexableTableHandlerTest extends BaseTest {
 
 	@Test
 	public void setColumnTypes() throws Exception {
-		// List<Indexable<?>>, ResultSet
 		faqIdIndexableColumn.setColumnType(0);
 		Statement statement = connection.createStatement();
 		ResultSet resultSet = statement.executeQuery("select * from faq");
