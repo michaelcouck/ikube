@@ -15,6 +15,9 @@ import ikube.toolkit.ApplicationContextManager;
  */
 public class SingleRuleException extends ARule<IndexContext<?>> {
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean evaluate(final IndexContext<?> indexContext) {
 		return ApplicationContextManager.getBean(IClusterManager.class).isException();

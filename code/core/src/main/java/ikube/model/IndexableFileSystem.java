@@ -22,6 +22,7 @@ public class IndexableFileSystem extends Indexable<IndexableFileSystem> {
 	private String path;
 	private String excludedPattern;
 	private String includedPattern;
+	private long maxReadLength = 10000000;
 
 	@Field()
 	private String nameFieldName;
@@ -98,6 +99,14 @@ public class IndexableFileSystem extends Indexable<IndexableFileSystem> {
 
 	public void setIncludedPattern(final String includedPattern) {
 		this.includedPattern = includedPattern;
+	}
+
+	public long getMaxReadLength() {
+		return maxReadLength;
+	}
+
+	public void setMaxReadLength(long maxReadLength) {
+		this.maxReadLength = maxReadLength;
 	}
 
 	public File getCurrentFile() {

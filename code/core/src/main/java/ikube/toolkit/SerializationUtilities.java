@@ -1,6 +1,14 @@
 package ikube.toolkit;
 
 import ikube.IConstants;
+import ikube.model.File;
+import ikube.model.IndexContext;
+import ikube.model.IndexableColumn;
+import ikube.model.IndexableEmail;
+import ikube.model.IndexableFileSystem;
+import ikube.model.IndexableInternet;
+import ikube.model.IndexableTable;
+import ikube.model.Url;
 
 import java.beans.BeanInfo;
 import java.beans.ExceptionListener;
@@ -13,7 +21,10 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.persistence.Transient;
@@ -28,23 +39,28 @@ import org.apache.log4j.Logger;
 public final class SerializationUtilities {
 
 	private static final Logger LOGGER = Logger.getLogger(SerializationUtilities.class);
-
-	private SerializationUtilities() {
-	}
-
-	private static ExceptionListener exceptionListener = new ExceptionListener() {
+	private static ExceptionListener EXCEPTION_LISTENER = new ExceptionListener() {
 		@Override
 		public void exceptionThrown(final Exception exception) {
-			LOGGER.error("General exception : ", exception);
+			LOGGER.error("General exception : " + exception);
 		}
 	};
+
+	static {
+		try {
+			SerializationUtilities.setTransientFields(File.class, Url.class, IndexableInternet.class, IndexableEmail.class,
+					IndexableFileSystem.class, IndexableColumn.class, IndexableTable.class, IndexContext.class);
+		} catch (Exception e) {
+			LOGGER.error("Exception setting the transient fields : ", e);
+		}
+	}
 
 	public static String serialize(final Object object) {
 		try {
 			SerializationUtilities.setTransientFields(object.getClass(), new ArrayList<Class<?>>());
 			ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 			XMLEncoder xmlEncoder = new XMLEncoder(byteArrayOutputStream);
-			xmlEncoder.setExceptionListener(exceptionListener);
+			xmlEncoder.setExceptionListener(EXCEPTION_LISTENER);
 			xmlEncoder.writeObject(object);
 			xmlEncoder.flush();
 			xmlEncoder.close();
@@ -55,7 +71,14 @@ public final class SerializationUtilities {
 		return null;
 	}
 
-	public static void setTransientFields(final Class<?> klass, List<Class<?>> doneClasses) {
+	public static void setTransientFields(Class<?>... classes) {
+		List<Class<?>> doneClasses = new ArrayList<Class<?>>();
+		for (Class<?> klass : classes) {
+			setTransientFields(klass, doneClasses);
+		}
+	}
+
+	public static void setTransientFields(final Class<?> klass, final List<Class<?>> doneClasses) {
 		if (doneClasses.contains(klass)) {
 			return;
 		}
@@ -77,7 +100,24 @@ public final class SerializationUtilities {
 				}
 				Transient transientAnnotation = field.getAnnotation(Transient.class);
 				if (transientAnnotation != null) {
+					field.setAccessible(Boolean.TRUE);
 					pd.setValue("transient", Boolean.TRUE);
+				}
+				if (Collection.class.isAssignableFrom(field.getType())) {
+					Type parameterizedType = field.getGenericType();
+					if (parameterizedType != null) {
+						if (ParameterizedType.class.isAssignableFrom(parameterizedType.getClass())) {
+							Type[] typeArguments = ((ParameterizedType) parameterizedType).getActualTypeArguments();
+							for (Type typeArgument : typeArguments) {
+								if (ParameterizedType.class.isAssignableFrom(typeArgument.getClass())) {
+									Type rawType = ((ParameterizedType) typeArgument).getRawType();
+									if (Class.class.isAssignableFrom(rawType.getClass())) {
+										setTransientFields((Class<?>) rawType, doneClasses);
+									}
+								}
+							}
+						}
+					}
 				}
 			} catch (SecurityException e) {
 				LOGGER.error("Exception setting the transient fields in the serializer : ", e);
@@ -100,7 +140,7 @@ public final class SerializationUtilities {
 			bytes = xml.getBytes(IConstants.ENCODING);
 			ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
 			XMLDecoder xmlDecoder = new XMLDecoder(byteArrayInputStream);
-			xmlDecoder.setExceptionListener(exceptionListener);
+			xmlDecoder.setExceptionListener(EXCEPTION_LISTENER);
 			return xmlDecoder.readObject();
 		} catch (UnsupportedEncodingException e) {
 			LOGGER.error("Unsupported encoding : ", e);
@@ -135,6 +175,9 @@ public final class SerializationUtilities {
 			}
 		}
 		return field;
+	}
+
+	private SerializationUtilities() {
 	}
 
 }

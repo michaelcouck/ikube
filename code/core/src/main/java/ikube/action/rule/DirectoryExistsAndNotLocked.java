@@ -9,6 +9,9 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
 /**
+ * This rule checks whether the index has been created and is not locked by the index writer. Generally this rule will be used to see if the
+ * index searcher can be opened on the index.
+ * 
  * @author Michael Couck
  * @since 12.02.2011
  * @version 01.00
@@ -17,6 +20,10 @@ public class DirectoryExistsAndNotLocked implements IRule<File> {
 
 	private static final transient Logger LOGGER = Logger.getLogger(DirectoryExistsAndNotLocked.class);
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public boolean evaluate(final File indexDirectory) {
 		Directory directory = null;
 		try {

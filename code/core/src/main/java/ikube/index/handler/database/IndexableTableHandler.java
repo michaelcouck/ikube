@@ -58,8 +58,6 @@ import org.apache.lucene.document.Field.TermVector;
  */
 public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 
-	/** The content provider for column data. */
-	private transient IContentProvider<IndexableColumn> contentProvider;
 	/**
 	 * This value is how many times we will try to get a result set without any data before we give up. When looking for a result set the
 	 * predicate could be something like 'where id < 100000', if there are 100 000 000 records in the table then the getResultSet method
@@ -75,16 +73,6 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	 * recursive calls, to 10, which I think is more than enough.
 	 */
 	private static final int MAX_REENTRANT = 10;
-
-	/**
-	 * This is the maximum exceptions that we will tolerate before we give up on this result set and possibly the table.
-	 */
-	private static final int MAX_EXCEPTIONS = 10;
-
-	public IndexableTableHandler() {
-		super();
-		this.contentProvider = new ColumnContentProvider();
-	}
 
 	/**
 	 * This method starts threads and passes the indexable to them. The threads are added to the list of threads that are returned to the
@@ -105,7 +93,8 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 			connection.setAutoCommit(Boolean.FALSE);
 			Thread thread = new Thread(new Runnable() {
 				public void run() {
-					handleTable(indexContext, cloneIndexableTable, connection, null, 0);
+					IContentProvider<IndexableColumn> contentProvider = new ColumnContentProvider();
+					handleTable(contentProvider, indexContext, cloneIndexableTable, connection, null, 0);
 				}
 			}, name + "." + i);
 			threads.add(thread);
@@ -129,8 +118,8 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	 *            child tables so they can add their data to the document. When this method is called with the top level table the document
 	 *            is null of course
 	 */
-	protected void handleTable(final IndexContext<?> indexContext, final IndexableTable indexableTable, final Connection connection,
-			Document document, int exceptions) {
+	protected void handleTable(final IContentProvider<IndexableColumn> contentProvider, final IndexContext<?> indexContext,
+			final IndexableTable indexableTable, final Connection connection, Document document, int exceptions) {
 		ResultSet resultSet = null;
 		try {
 			resultSet = getResultSet(indexContext, indexableTable, connection, 1);
@@ -158,7 +147,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 						if (indexableColumn.getNameColumn() != null) {
 							continue;
 						}
-						handleColumn(indexableColumn, document);
+						handleColumn(contentProvider, indexableColumn, document);
 					}
 					// Handle all the columns that rely on another column, like the attachment
 					// column that needs the name from the name column to get the content type
@@ -171,7 +160,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 						if (indexableColumn.getNameColumn() == null) {
 							continue;
 						}
-						handleColumn(indexableColumn, document);
+						handleColumn(contentProvider, indexableColumn, document);
 					}
 					// Handle all the sub tables
 					for (Indexable<?> indexable : children) {
@@ -182,7 +171,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 						// Here we recursively call this method with the child tables. We pass the document
 						// to the child table for this row in the parent table so they can add their fields to the
 						// index
-						handleTable(indexContext, childIndexableTable, connection, document, exceptions);
+						handleTable(contentProvider, indexContext, childIndexableTable, connection, document, exceptions);
 					}
 					// Add the document to the index if this is the primary table
 					if (indexableTable.isPrimaryTable()) {
@@ -203,7 +192,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 				} catch (Exception e) {
 					logger.error("Exception indexing table : " + indexableTable + ", connection : " + connection + ", exceptions : "
 							+ exceptions, e);
-					if (exceptions++ > MAX_EXCEPTIONS) {
+					if (exceptions++ > indexableTable.getMaxExceptions()) {
 						break;
 					}
 				}
@@ -528,7 +517,8 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	 * @param document
 	 *            the document to add the data to using the field name specified in the column definition
 	 */
-	protected void handleColumn(final IndexableColumn indexable, final Document document) {
+	protected void handleColumn(final IContentProvider<IndexableColumn> contentProvider, final IndexableColumn indexable,
+			final Document document) {
 		InputStream inputStream = null;
 		OutputStream parsedOutputStream = null;
 		ByteOutputStream byteOutputStream = null;

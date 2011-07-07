@@ -63,10 +63,11 @@ public class RuleInterceptor implements IRuleInterceptor {
 				// Get the rules associated with this action
 				@SuppressWarnings({ "unchecked", "rawtypes" })
 				List<IRule<IndexContext<?>>> classRules = ((IAction) target).getRules();
-				if (classRules == null) {
+				if (classRules == null || classRules.size() == 0) {
 					LOGGER.warn("No rules defined for, proceeding : " + target);
 					proceed = Boolean.TRUE;
 				} else {
+					// Find the index context and the first indexable
 					Object[] args = proceedingJoinPoint.getArgs();
 					for (Object arg : args) {
 						if (arg != null) {
@@ -114,9 +115,9 @@ public class RuleInterceptor implements IRuleInterceptor {
 					}
 				}
 			}
-			String indexName = indexContext != null ? indexContext.getIndexName() : null;
-			String indexableName = indexable != null ? indexable.getName() : null;
 			if (proceed) {
+				String indexName = indexContext != null ? indexContext.getIndexName() : null;
+				String indexableName = indexable != null ? indexable.getName() : null;
 				LOGGER.info(Logging.getString("Rule intercepter proceeding : ", proceed, actionName, indexName, indexableName));
 				proceed(proceedingJoinPoint, actionName, indexName, indexableName);
 			}
@@ -149,7 +150,7 @@ public class RuleInterceptor implements IRuleInterceptor {
 		}
 	}
 
-	protected void printNodesAndEvaluations(JEP jep, Node node) {
+	protected void printNodesAndEvaluations(final JEP jep, final Node node) {
 		try {
 			LOGGER.info("Child node : " + node);
 			Object childResult = jep.evaluate(node);

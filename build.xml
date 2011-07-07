@@ -61,4 +61,12 @@
 		<copy file="${target.directory}/${ikube.war}" todir="${tomcat.2}/webapps" overwrite="true" failonerror="false" />
 		<copy file="${target.directory}/${ikube.war}" todir="${tomcat.3}/webapps" overwrite="true" failonerror="false" />
 	</target>
+
+	<target name="startUbuntu">
+		<exec executable="cmd">
+			<arg value="VBoxManage" />
+			<arg value="startvm" />
+			<arg value="Ubuntu 11.4" />
+		</exec>
+	</target>
 </project>

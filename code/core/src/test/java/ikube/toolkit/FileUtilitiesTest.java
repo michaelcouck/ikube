@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-
 import ikube.ATest;
 
 import java.io.File;
@@ -28,7 +27,7 @@ public class FileUtilitiesTest extends ATest {
 	private File indexFolderTwo;
 	private File indexFolderThree;
 	private String[] stringPatterns;
-	
+
 	public FileUtilitiesTest() {
 		super(FileUtilitiesTest.class);
 	}
@@ -43,6 +42,9 @@ public class FileUtilitiesTest extends ATest {
 		indexFolderTwo = FileUtilities.getFile("./" + fileUtilitiesTestIndexdirectory + "/1234567891/127.0.0.2", Boolean.TRUE);
 		indexFolderThree = FileUtilities.getFile("./" + fileUtilitiesTestIndexdirectory + "/1234567890/127.0.0.3", Boolean.TRUE);
 		stringPatterns = new String[] { fileName };
+
+		FileUtilities.deleteFile(new File("./common"), 1);
+		FileUtilities.deleteFile(new File("./spring.xml"), 1);
 	}
 
 	@After
@@ -51,6 +53,8 @@ public class FileUtilitiesTest extends ATest {
 		if (indexFolderOne != null && indexFolderOne.getParentFile().getParentFile().exists()) {
 			FileUtilities.deleteFile(indexFolderOne.getParentFile().getParentFile(), 1);
 		}
+		FileUtilities.deleteFile(new File("./common"), 1);
+		FileUtilities.deleteFile(new File("./spring.xml"), 1);
 	}
 
 	@Test
@@ -137,7 +141,7 @@ public class FileUtilitiesTest extends ATest {
 		File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexFolderOne.getParentFile().getParentFile().getAbsolutePath());
 		assertEquals(indexFolderTwo.getParentFile().getName(), latestIndexDirectory.getName());
 	}
-	
+
 	@Test
 	public void getContentsFromEnd() {
 		// Create a file with 1024 bytes and try to read 512 bytes
@@ -148,7 +152,7 @@ public class FileUtilitiesTest extends ATest {
 		logger.info("Bytes : " + new String(bytes));
 		file = FileUtilities.getFile(file.getAbsolutePath(), Boolean.FALSE);
 		FileUtilities.setContents(file.getAbsolutePath(), bytes);
-		
+
 		byte[] readBytes = FileUtilities.getContentsFromEnd(file, 512).toByteArray();
 		logger.info("Read bytes : " + new String(readBytes));
 		assertTrue("There must be some bytes in the array : ", readBytes.length > 0);
@@ -168,10 +172,12 @@ public class FileUtilitiesTest extends ATest {
 
 	@Test
 	public void copyFiles() {
-		// TODO Implement me!
-		// Create a backup index
-		// Copy it to the index directory
-		// Verify that it is copied
+		File externalFolder = FileUtilities.findFileRecursively(new File("."), "external");
+		File newExternalFolder = new File(".");
+		FileUtilities.copyFiles(externalFolder, newExternalFolder, "svn");
+		File springBeansFile = FileUtilities.findFileRecursively(newExternalFolder, "spring-beans.xml");
+		assertNotNull("The configuration should be copied to the external folder : ", springBeansFile);
+		assertTrue("This file should be persisted, and available : ", springBeansFile.exists());
 	}
 
 }

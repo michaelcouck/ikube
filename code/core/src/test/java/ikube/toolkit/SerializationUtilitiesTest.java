@@ -1,16 +1,19 @@
 package ikube.toolkit;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
+import ikube.ATest;
+import ikube.IConstants;
+import ikube.model.IndexContext;
 
+import java.beans.BeanInfo;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
-
-import ikube.ATest;
-import ikube.IConstants;
 
 /**
  * This test is just to see that the serializer is correctly encoding the languages.
@@ -40,6 +43,21 @@ public class SerializationUtilitiesTest extends ATest {
 		results = (List<Map<String, String>>) SerializationUtilities.deserialize(xml);
 		String fragment = results.get(0).get(IConstants.FRAGMENT);
 		assertTrue("The de-serialized fragment should contain the Russian characters : ", fragment.contains(russian));
+	}
+
+	@Test
+	public void setTransientFields() throws Exception {
+		SerializationUtilities.setTransientFields(IndexContext.class, new ArrayList<Class<?>>());
+		BeanInfo info = Introspector.getBeanInfo(IndexContext.class);
+		PropertyDescriptor[] propertyDescriptors = info.getPropertyDescriptors();
+		boolean containsIndex = Boolean.FALSE;
+		for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
+			String name = propertyDescriptor.getName();
+			if (name != null && name.equals("index")) {
+				containsIndex = Boolean.TRUE;
+			}
+		}
+		assertTrue("The index field should be set to transient : ", containsIndex);
 	}
 
 }

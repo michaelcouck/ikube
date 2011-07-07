@@ -11,6 +11,7 @@ import ikube.model.IndexableFileSystem;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.HashUtilities;
+import ikube.toolkit.SerializationUtilities;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -43,47 +44,36 @@ import org.apache.lucene.document.Field.TermVector;
  */
 public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSystem> {
 
-	private IDataBase dataBase;
-
 	@Override
 	public List<Thread> handle(final IndexContext<?> indexContext, final IndexableFileSystem indexable) throws Exception {
-		if (dataBase == null) {
-			dataBase = ApplicationContextManager.getBean(IDataBase.class);
-		}
-		// We shouldn't have to do this but we want to use the same files
-		// again and again in the tests, I know, really bad, but I don't have 100
-		// terabytes to spare for the data
-		List<ikube.model.File> list = dataBase.find(ikube.model.File.class, 0, 1000);
-		do {
-			dataBase.removeBatch(list);
-			list = dataBase.find(ikube.model.File.class, 0, 1000);
-		} while (list.size() > 0);
-
+		final IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
 		final File baseFile = new File(indexable.getPath());
 		final Pattern pattern = getPattern(indexable.getExcludedPattern());
 		if (isExcluded(baseFile, pattern)) {
-			logger.warn("Base directory excluded : " + baseFile);
+			logger.warn("Base directory excluded : " + baseFile + ", " + indexable.getExcludedPattern());
 			return null;
 		}
 		// Add all the files to the database
 		final Set<File> filesDone = new TreeSet<File>();
-		persistFiles(indexContext, indexable, baseFile, getPattern(indexable.getExcludedPattern()), filesDone);
+		persistFiles(dataBase, indexContext, indexable, baseFile, getPattern(indexable.getExcludedPattern()), filesDone);
+		persistFiles(dataBase, indexable, filesDone);
 		// Now start the threads indexing the files from the database
 		List<Thread> threads = new ArrayList<Thread>();
 		String name = this.getClass().getSimpleName();
 		for (int i = 0; i < getThreads(); i++) {
 			Thread thread = new Thread(new Runnable() {
 				public void run() {
-					List<ikube.model.File> dbFiles = getBatch(indexable);
+					IndexableFileSystem indexableFileSystem = (IndexableFileSystem) SerializationUtilities.clone(indexable);
+					List<ikube.model.File> dbFiles = getBatch(dataBase, indexableFileSystem);
 					do {
 						for (ikube.model.File dbFile : dbFiles) {
 							if (dbFile.getUrl() == null) {
 								logger.warn("DB file url null : ");
 								continue;
 							}
-							handleFile(indexContext, indexable, dbFile);
+							handleFile(indexContext, indexableFileSystem, dbFile);
 						}
-						dbFiles = getBatch(indexable);
+						dbFiles = getBatch(dataBase, indexableFileSystem);
 					} while (!dbFiles.isEmpty());
 				}
 			}, name + "." + i);
@@ -93,7 +83,7 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 		return threads;
 	}
 
-	protected synchronized List<ikube.model.File> getBatch(final IndexableFileSystem indexable) {
+	protected synchronized List<ikube.model.File> getBatch(final IDataBase dataBase, final IndexableFileSystem indexable) {
 		try {
 			Map<String, Object> parameters = new HashMap<String, Object>();
 			parameters.put(IConstants.NAME, indexable.getParent().getName());
@@ -126,8 +116,8 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 	 * @param excludedPattern
 	 *            the excluded patterns
 	 */
-	protected void persistFiles(final IndexContext<?> indexContext, final IndexableFileSystem indexableFileSystem, final File folder,
-			final Pattern excludedPattern, final Set<File> filesDone) {
+	protected void persistFiles(final IDataBase dataBase, final IndexContext<?> indexContext, final IndexableFileSystem indexable,
+			final File folder, final Pattern excludedPattern, final Set<File> filesDone) {
 		File[] files = folder.listFiles();
 		if (files != null) {
 			for (File file : files) {
@@ -135,32 +125,31 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 					continue;
 				}
 				if (file.isDirectory()) {
-					persistFiles(indexContext, indexableFileSystem, file, excludedPattern, filesDone);
+					persistFiles(dataBase, indexContext, indexable, file, excludedPattern, filesDone);
 				} else {
-					persistFile(indexableFileSystem, file, filesDone);
+					filesDone.add(file);
+					if (filesDone.size() >= indexable.getBatchSize()) {
+						persistFiles(dataBase, indexable, filesDone);
+					}
 				}
 			}
 		}
 	}
 
-	protected boolean persistFile(final IndexableFileSystem indexable, File file, final Set<File> filesDone) {
-		filesDone.add(file);
-		if (filesDone.size() >= indexable.getBatchSize()) {
-			logger.info("Persisting files : " + filesDone.size());
-			List<ikube.model.File> filesToPersist = new ArrayList<ikube.model.File>();
-			for (File toPersistFile : filesDone) {
-				long urlId = HashUtilities.hash(toPersistFile.getAbsolutePath());
-				ikube.model.File dbFile = new ikube.model.File();
-				dbFile.setName(indexable.getParent().getName());
-				dbFile.setIndexed(Boolean.FALSE);
-				dbFile.setUrl(toPersistFile.getAbsolutePath());
-				dbFile.setUrlId(urlId);
-				filesToPersist.add(dbFile);
-			}
-			dataBase.persistBatch(filesToPersist);
-			filesDone.clear();
+	protected void persistFiles(final IDataBase dataBase, final IndexableFileSystem indexable, final Set<File> filesDone) {
+		logger.info("Persisting files : " + filesDone.size());
+		List<ikube.model.File> filesToPersist = new ArrayList<ikube.model.File>();
+		for (File toPersistFile : filesDone) {
+			long urlId = HashUtilities.hash(toPersistFile.getAbsolutePath());
+			ikube.model.File dbFile = new ikube.model.File();
+			dbFile.setName(indexable.getParent().getName());
+			dbFile.setIndexed(Boolean.FALSE);
+			dbFile.setUrl(toPersistFile.getAbsolutePath());
+			dbFile.setUrlId(urlId);
+			filesToPersist.add(dbFile);
 		}
-		return Boolean.FALSE;
+		dataBase.persistBatch(filesToPersist);
+		filesDone.clear();
 	}
 
 	/**
@@ -180,7 +169,6 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 			Document document = new Document();
 			indexableFileSystem.setCurrentFile(file);
 
-			// TODO - this can be very large so we have to use a reader if necessary
 			ByteArrayOutputStream byteArrayOutputStream = FileUtilities.getContents(file, (int) indexContext.getMaxReadLength());
 			InputStream inputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
 

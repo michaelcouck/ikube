@@ -14,6 +14,10 @@ import org.apache.lucene.search.Searchable;
 import org.apache.lucene.store.FSDirectory;
 
 /**
+ * This rule checks whether there are indexes that are created but are not yet opened. This typically needs to be checked if an index is
+ * still in the process of being generated. In this case when the index is finished being created the searcher should be opened on all the
+ * index directories.
+ * 
  * @author Michael Couck
  * @since 12.02.2011
  * @version 01.00
@@ -22,6 +26,10 @@ public class AreUnopenedIndexes implements IRule<IndexContext<?>> {
 
 	private static final transient Logger LOGGER = Logger.getLogger(AreUnopenedIndexes.class);
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public boolean evaluate(final IndexContext<?> indexContext) {
 		MultiSearcher searcher = indexContext.getIndex() != null ? indexContext.getIndex().getMultiSearcher() : null;
 		Searchable[] searchables = searcher != null ? searcher.getSearchables() : null;
@@ -32,7 +40,6 @@ public class AreUnopenedIndexes implements IRule<IndexContext<?>> {
 		File[] timeIndexDirectories = baseIndexDirectory.listFiles();
 		IRule<File[]> areDirectoriesEqual = new AreDirectoriesEqual();
 		IRule<File> directoryExistsAndNotLocked = new DirectoryExistsAndNotLocked();
-		File[] files = new File[2];
 		if (timeIndexDirectories == null || timeIndexDirectories.length == 0) {
 			return Boolean.FALSE;
 		}
@@ -48,9 +55,7 @@ public class AreUnopenedIndexes implements IRule<IndexContext<?>> {
 					IndexReader indexReader = indexSearcher.getIndexReader();
 					FSDirectory fsDirectory = (FSDirectory) indexReader.directory();
 					File indexDirectory = fsDirectory.getFile();
-					files[0] = serverIndexDirectory;
-					files[1] = indexDirectory;
-					if (areDirectoriesEqual.evaluate(files)) {
+					if (areDirectoriesEqual.evaluate(new File[] { serverIndexDirectory, indexDirectory })) {
 						indexAlreadyOpen = directoryExistsAndNotLocked.evaluate(serverIndexDirectory);
 						break;
 					}

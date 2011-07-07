@@ -14,6 +14,9 @@ import ikube.toolkit.ApplicationContextManager;
  */
 public class AnyServersWorkingThisIndex implements IRule<IndexContext<?>> {
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean evaluate(final IndexContext<?> indexContext) {
 		return ApplicationContextManager.getBean(IClusterManager.class).anyWorking(indexContext.getIndexName());

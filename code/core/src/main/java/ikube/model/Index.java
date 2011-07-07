@@ -23,7 +23,7 @@ public class Index extends Persistable {
 	private transient IndexWriter indexWriter;
 	/** This is the latest directory from the indexing process. */
 	@Transient
-	private Directory directory;
+	private transient Directory directory;
 	/** Can be null if there is no index created. */
 	@Transient
 	private transient MultiSearcher multiSearcher;

@@ -11,6 +11,10 @@ import ikube.model.IndexContext;
  */
 public class MustBackUpIndex extends ARule<IndexContext<?>> {
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public boolean evaluate(final IndexContext<?> indexContext) {
 		return indexContext.getIndexDirectoryPathBackup() != null;
 	}

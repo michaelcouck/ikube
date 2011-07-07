@@ -24,11 +24,11 @@ public abstract class Action<E, F> implements IAction<E, F> {
 	protected transient Logger logger = Logger.getLogger(Action.class);
 
 	@Transient
-	private transient IClusterManager clusterManager;
-	@Transient
-	private transient String predicate;
-	@Transient
 	private transient List<IRule<E>> rules;
+	@Transient
+	private transient IClusterManager clusterManager;
+
+	private String predicate;
 
 	/**
 	 * {@inheritDoc}

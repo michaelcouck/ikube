@@ -17,7 +17,9 @@ import ikube.mock.IndexManagerMock;
 import ikube.model.Index;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
+import ikube.model.IndexableColumn;
 import ikube.model.IndexableInternet;
+import ikube.model.IndexableTable;
 import ikube.model.Server;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.Logging;
@@ -86,7 +88,8 @@ public abstract class ATest {
 	protected MultiSearcher MULTI_SEARCHER = mock(MultiSearcher.class);
 	protected IndexSearcher INDEX_SEARCHER = mock(IndexSearcher.class);
 	protected IClusterManager CLUSTER_MANAGER = mock(IClusterManager.class);
-	protected IndexableInternet INDEXABLE = mock(IndexableInternet.class);
+	protected IndexableColumn INDEXABLE = mock(IndexableColumn.class);
+	protected IndexableTable INDEXABLE_TABLE = mock(IndexableTable.class);
 
 	protected String indexDirectoryPath = "./indexes";
 	protected String indexDirectoryPathBackup = "./indexes/backup";
@@ -138,9 +141,8 @@ public abstract class ATest {
 		when(SERVER.getIp()).thenReturn(IP);
 		when(INDEX.getIndexWriter()).thenReturn(INDEX_WRITER);
 		INDEXABLES.add(INDEXABLE);
-		when(INDEXABLE.getUrl()).thenReturn("http://ikube.ikube.cloudbees.net/index.html");
+		when(INDEXABLE.getContent()).thenReturn("9a avenue road, cape town, south africa");
 		when(INDEXABLE.isAddress()).thenReturn(Boolean.TRUE);
-		when(INDEXABLE.getContent()).thenReturn("9 avenue road, cape town, south africa");
 		when(INDEXABLE.getName()).thenReturn("indexableName");
 
 		IndexManagerMock.INDEX_WRITER = INDEX_WRITER;

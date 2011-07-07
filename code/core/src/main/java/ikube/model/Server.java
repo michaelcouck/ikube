@@ -135,7 +135,7 @@ public class Server extends Persistable implements Comparable<Server> {
 		if (!this.getClass().isAssignableFrom(object.getClass())) {
 			return Boolean.FALSE;
 		}
-		return this.getAddress().equals(((Server) object).getAddress());
+		return compareTo((Server) object) == 0;
 	}
 
 	public int hashCode() {

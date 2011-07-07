@@ -1,22 +1,12 @@
 package ikube.index.handler.filesystem;
 
-import static org.mockito.Mockito.when;
-import ikube.ATest;
-import ikube.index.IndexManager;
-import ikube.index.handler.DocumentDelegate;
-import ikube.mock.ApplicationContextManagerMock;
-import ikube.mock.IndexManagerMock;
+import ikube.BaseTest;
 import ikube.model.IndexableFileSystem;
 import ikube.toolkit.ApplicationContextManager;
-import ikube.toolkit.FileUtilities;
 import ikube.toolkit.ThreadUtilities;
 
-import java.io.File;
 import java.util.List;
 
-import mockit.Mockit;
-
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -25,11 +15,9 @@ import org.junit.Test;
  * @since 21.11.10
  * @version 01.00
  */
-public class IndexableFileSystemHandlerTest extends ATest {
+public class IndexableFileSystemHandlerTest extends BaseTest {
 
-	private File filesDirectory;
-	private IndexableFileSystem indexableFileSystem = new IndexableFileSystem();
-	private IndexableFilesystemHandler indexableFileSystemHandler = new IndexableFilesystemHandler();
+	private IndexableFilesystemHandler indexableFileSystemHandler;
 
 	public IndexableFileSystemHandlerTest() {
 		super(IndexableFileSystemHandlerTest.class);
@@ -37,37 +25,50 @@ public class IndexableFileSystemHandlerTest extends ATest {
 
 	@Before
 	public void before() {
-		Mockit.setUpMocks();
-		Mockit.setUpMocks(ApplicationContextManagerMock.class, IndexManagerMock.class);
-		when(INDEX.getIndexWriter()).thenReturn(INDEX_WRITER);
-		
-		File file = FileUtilities.findFileRecursively(new File("."), "99.ppt");
-		filesDirectory = file.getParentFile();
-		
-		indexableFileSystem.setPath(filesDirectory.getAbsolutePath());
-		indexableFileSystem.setContentFieldName("contentFieldName");
-		indexableFileSystem.setLastModifiedFieldName("lastModifiedFieldName");
-		indexableFileSystem.setLengthFieldName("lengthFieldName");
-		indexableFileSystem.setNameFieldName("nameFieldName");
-		indexableFileSystem.setPathFieldName("pathFieldName");
-		indexableFileSystem.setName(this.getClass().getSimpleName());
-		indexableFileSystem.setExcludedPattern(".svn");
-		indexableFileSystem.setParent(INDEX_CONTEXT);
-		
-		indexableFileSystemHandler.setDocumentDelegate(new DocumentDelegate());
-		indexableFileSystemHandler.setThreads(3);
-	}
-
-	@After
-	public void after() {
-		Mockit.tearDownMocks(ApplicationContextManager.class, IndexManager.class);
+		indexableFileSystemHandler = ApplicationContextManager.getBean(IndexableFilesystemHandler.class);
 	}
 
 	@Test
 	public void handle() throws Exception {
+		IndexableFileSystem indexableFileSystem = ApplicationContextManager.getBean("filesystem");
 		List<Thread> threads = indexableFileSystemHandler.handle(INDEX_CONTEXT, indexableFileSystem);
 		ThreadUtilities.waitForThreads(threads);
-		// Verify that there are some files indexed
+		// TODO Verify that there are some files indexed
+	}
+
+	@Test
+	public void getBatch() {
+		// IDataBase, IndexableFileSystem
+		// TODO Implement me
+	}
+
+	@Test
+	public void persistFilesRecurse() {
+		// IDataBase, IndexContext<?>, IndexableFileSystem, File, Pattern, Set<File>
+		// TODO Implement me
+	}
+
+	@Test
+	public void persistFilesBatch() {
+		// IDataBase, IndexableFileSystem, Set<File>
+		// TODO Implement me
+	}
+
+	@Test
+	public void handleFile() {
+		// IndexContext<?>, IndexableFileSystem, File
+		// TODO Implement me
+	}
+
+	@Test
+	public void getPattern() {
+		// String
+		// TODO Implement me
+	}
+
+	@Test
+	public void isExcluded() {
+		// File, Pattern
 	}
 
 }

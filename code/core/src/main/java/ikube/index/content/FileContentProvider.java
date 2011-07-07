@@ -28,7 +28,7 @@ public class FileContentProvider implements IContentProvider<IndexableFileSystem
 			// TODO - if this is a zip or jar or whatever then we have to
 			// unpack the file and recursively index the contents one by one
 			InputStream inputStream = new FileInputStream(file);
-			FileUtilities.getContents(inputStream, outputStream, Integer.MAX_VALUE);
+			FileUtilities.getContents(inputStream, outputStream, indexable.getMaxReadLength());
 		} catch (Exception e) {
 			LOGGER.error("Exception accessing file : " + indexable.getCurrentFile(), e);
 		}

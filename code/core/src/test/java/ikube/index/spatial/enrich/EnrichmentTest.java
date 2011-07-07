@@ -7,6 +7,7 @@ import ikube.ATest;
 import ikube.IConstants;
 import ikube.index.spatial.Coordinate;
 import ikube.model.Indexable;
+import ikube.model.IndexableColumn;
 
 import java.util.Arrays;
 
@@ -58,13 +59,13 @@ public class EnrichmentTest extends ATest {
 		double latitude = new Double(50.7930727874172);
 		double longitude = new Double(4.36242219751376);
 		Indexable<?> tableIndexable = mock(Indexable.class);
-		Indexable<?> columnIndexableLatitude = mock(Indexable.class);
-		Indexable<?> columnIndexableLongitude = mock(Indexable.class);
+		Indexable<?> columnIndexableLatitude = mock(IndexableColumn.class);
+		Indexable<?> columnIndexableLongitude = mock(IndexableColumn.class);
 		when(tableIndexable.getName()).thenReturn(IConstants.IKUBE);
 		when(columnIndexableLatitude.getName()).thenReturn(IConstants.LATITUDE);
 		when(columnIndexableLongitude.getName()).thenReturn(IConstants.LONGITUDE);
-		when(columnIndexableLatitude.getContent()).thenReturn(latitude);
-		when(columnIndexableLongitude.getContent()).thenReturn(longitude);
+		when(((IndexableColumn) columnIndexableLatitude).getContent()).thenReturn(latitude);
+		when(((IndexableColumn) columnIndexableLongitude).getContent()).thenReturn(longitude);
 
 		when(tableIndexable.getChildren()).thenReturn(Arrays.asList(columnIndexableLatitude, columnIndexableLongitude));
 

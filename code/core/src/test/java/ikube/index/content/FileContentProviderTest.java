@@ -40,6 +40,7 @@ public class FileContentProviderTest extends ATest {
 		IndexableFileSystem indexableFileSystem = mock(IndexableFileSystem.class);
 		File file = FileUtilities.findFileRecursively(new File("."), "xml.xml");
 		when(indexableFileSystem.getCurrentFile()).thenReturn(file);
+		when(indexableFileSystem.getMaxReadLength()).thenReturn(Long.MAX_VALUE);
 		this.contentProvider.getContent(indexableFileSystem, outputStream);
 		String content = outputStream.toString();
 		assertNotNull(content);

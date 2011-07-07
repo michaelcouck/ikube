@@ -141,7 +141,7 @@ public interface IConstants {
 	/** The timeout to wait for the lock. */
 	long LOCK_TIMEOUT = 10000;
 	/** The maximum age that the server can get to before it is deleted from the cluster. */
-	int MAX_AGE = 600000;
+	int MAX_AGE = 1800000;
 	/** The retry count for publishing the web services. */
 	int MAX_RETRY_WEB_SERVICE_PUBLISHER = 10;
 

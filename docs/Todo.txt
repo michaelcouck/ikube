@@ -30,15 +30,13 @@ Sub Total: 7
 * Move the datasource to a central location for the table indexables - 4 hours
 * Add strategies for indexing large files like zips - 3
 * Test writing the index across the network, and reading, perhaps a stress test too - 1
-* Add a shutdown that closes everything when the application is being un-deployed 
-   so the new application starts the application context cleanly - 3
 * Do a configuration page that lets the user see the configuration per index and indexable
 * Do an action log page with all the actions that were performed and the results from the rules
-* Add the actions to the database and a page to see them with the 
-  time stamps for all the servers.
-Sub total: 11 1/2
+* Add the actions to the database and a page to see them with the time stamps for all the servers.
+* System test with report - 5
+Sub total: 16 1/2
 
-Total: +-35
+Total: +-41
 
 Bugs:
 * Verify why the two indexes have the same timestamp
@@ -77,6 +75,8 @@ Done:
    and the de-serialization of the results - 1 hour *
 * Add the web service urls to the servers page - 1 *
 * Change the search url from the servlet to the web service ? *
+* Add a shutdown that closes everything when the application is being un-deployed 
+   so the new application starts the application context cleanly - 3
 
 Nice to have:
 * Add a database tester to re-connect if the database becomes disconnected - 4 hours

@@ -10,12 +10,18 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
 /**
+ * This rule checks whether the index exists but is still locked, i.e. still being indexed.
+ * 
  * @author Michael Couck
  * @since 12.02.2011
  * @version 01.00
  */
 public class DirectoryExistsAndIsLocked extends ARule<File> {
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public boolean evaluate(final File indexDirectory) {
 		Directory directory = null;
 		try {

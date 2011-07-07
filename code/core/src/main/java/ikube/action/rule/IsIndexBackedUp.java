@@ -15,6 +15,10 @@ import java.io.File;
  */
 public class IsIndexBackedUp extends ARule<IndexContext<?>> {
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public boolean evaluate(final IndexContext<?> indexContext) {
 		// See if there is a latest index directory that is finished and not corrupt
 		File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());

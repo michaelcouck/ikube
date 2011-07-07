@@ -32,7 +32,7 @@ public class ApplicationContextManagerTest extends ATest {
 	@Test
 	public void getApplicationContextExternal() {
 		File externalFolder = FileUtilities.findFileRecursively(new File("."), "external");
-		FileUtilities.copyFiles(externalFolder, new File("."));
+		FileUtilities.copyFiles(externalFolder, new File("."), "svn");
 		ApplicationContext applicationContext = ApplicationContextManager.getApplicationContext();
 		assertNotNull("External context should be available : ", applicationContext);
 		Mailer mailer = applicationContext.getBean(Mailer.class);

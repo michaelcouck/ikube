@@ -20,6 +20,7 @@ public class IsIndexCurrent extends ARule<IndexContext<?>> {
 	 *            the index context to check if the index is expired
 	 * @return whether the index for this index context is passed it's expiration date
 	 */
+	@Override
 	public boolean evaluate(final IndexContext<?> indexContext) {
 		String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
 		return isIndexCurrent(indexContext, indexDirectoryPath);

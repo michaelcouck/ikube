@@ -12,6 +12,10 @@ import ikube.model.IndexContext;
  */
 public class AreIndexesCreated extends ARule<IndexContext<?>> {
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public boolean evaluate(final IndexContext<?> indexContext) {
 		String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
 		return indexesExist(indexDirectoryPath);

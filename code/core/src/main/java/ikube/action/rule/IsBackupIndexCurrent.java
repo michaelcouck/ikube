@@ -19,6 +19,7 @@ public class IsBackupIndexCurrent extends ARule<IndexContext<?>> {
 	 *            the index context to check if the index is expired
 	 * @return whether the backup index for this index context is passed it's expiration date
 	 */
+	@Override
 	public boolean evaluate(final IndexContext<?> indexContext) {
 		String indexDirectoryPath = IndexManager.getIndexDirectoryPathBackup(indexContext);
 		return isIndexCurrent(indexContext, indexDirectoryPath);

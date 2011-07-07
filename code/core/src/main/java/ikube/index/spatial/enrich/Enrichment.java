@@ -3,6 +3,7 @@ package ikube.index.spatial.enrich;
 import ikube.IConstants;
 import ikube.index.spatial.Coordinate;
 import ikube.model.Indexable;
+import ikube.model.IndexableColumn;
 import ikube.toolkit.Logging;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -77,13 +78,17 @@ public class Enrichment implements IEnrichment {
 		double longitude = Double.MAX_VALUE;
 		for (Indexable<?> child : indexable.getChildren()) {
 			try {
-				if (child.getContent() == null) {
+				if (!IndexableColumn.class.isAssignableFrom(child.getClass())) {
+					continue;
+				}
+				Object content = ((IndexableColumn) child).getContent();
+				if (content == null) {
 					continue;
 				}
 				if (child.getName().equals(IConstants.LATITUDE)) {
-					latitude = Double.parseDouble(child.getContent().toString());
+					latitude = Double.parseDouble(content.toString());
 				} else if (child.getName().equals(IConstants.LONGITUDE)) {
-					longitude = Double.parseDouble(child.getContent().toString());
+					longitude = Double.parseDouble(content.toString());
 				}
 			} catch (Exception e) {
 				LOGGER.error("Exception getting the lat/long co-ordinates : " + indexable, e);
@@ -97,11 +102,11 @@ public class Enrichment implements IEnrichment {
 
 	@Override
 	public StringBuilder buildAddress(Indexable<?> indexable, StringBuilder builder) {
-		if (indexable.isAddress()) {
+		if (IndexableColumn.class.isAssignableFrom(indexable.getClass()) && indexable.isAddress()) {
 			if (builder.length() > 0) {
 				builder.append(" ");
 			}
-			builder.append(indexable.getContent());
+			builder.append(((IndexableColumn) indexable).getContent());
 		}
 		if (indexable.getChildren() != null) {
 			for (Indexable<?> child : indexable.getChildren()) {

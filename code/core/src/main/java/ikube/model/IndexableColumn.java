@@ -16,6 +16,8 @@ public class IndexableColumn extends Indexable<IndexableColumn> {
 
 	@Transient
 	private transient int columnType;
+	@Transient
+	private transient Object content;
 
 	@Field()
 	private String fieldName;
@@ -66,6 +68,14 @@ public class IndexableColumn extends Indexable<IndexableColumn> {
 
 	public void setColumnType(final int columnType) {
 		this.columnType = columnType;
+	}
+
+	public Object getContent() {
+		return content;
+	}
+
+	public void setContent(final Object content) {
+		this.content = content;
 	}
 
 }

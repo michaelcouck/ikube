@@ -26,6 +26,10 @@ public final class ThreadUtilities {
 	 *            the threads to wait for
 	 */
 	public static void waitForThreads(final List<Thread> threads) {
+		if (threads == null) {
+			LOGGER.warn("Threads null : ");
+			return;
+		}
 		outer: while (true) {
 			for (Thread thread : threads) {
 				if (thread.isAlive()) {

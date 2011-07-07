@@ -25,6 +25,15 @@ public class IndexableTable extends Indexable<IndexableTable> {
 
 	private String predicate;
 	private boolean primaryTable;
+	private int maxExceptions = 100;
+
+	public int getMaxExceptions() {
+		return maxExceptions;
+	}
+
+	public void setMaxExceptions(int maxExceptions) {
+		this.maxExceptions = maxExceptions;
+	}
 
 	public boolean isPrimaryTable() {
 		return primaryTable;

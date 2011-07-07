@@ -10,8 +10,6 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.Transient;
 
-import org.apache.log4j.Logger;
-
 /**
  * @author Michael Couck
  * @since 21.11.10
@@ -21,8 +19,6 @@ import org.apache.log4j.Logger;
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class IndexableInternet extends Indexable<IndexableInternet> {
 
-	private static transient final Logger LOGGER = Logger.getLogger(IndexableInternet.class);
-
 	@Transient
 	private transient String currentUrl;
 	@Transient
@@ -31,6 +27,8 @@ public class IndexableInternet extends Indexable<IndexableInternet> {
 	private transient Pattern pattern;
 	@Transient
 	private transient URI uri;
+	@Transient
+	private transient String baseUrl;
 
 	private String url;
 	private int internetBatchSize;
@@ -48,7 +46,7 @@ public class IndexableInternet extends Indexable<IndexableInternet> {
 			try {
 				uri = new URI(getUrl());
 			} catch (URISyntaxException e) {
-				LOGGER.error("Exception initialising the URI : " + getUrl(), e);
+				e.printStackTrace();
 			}
 		}
 		return uri;
@@ -60,6 +58,23 @@ public class IndexableInternet extends Indexable<IndexableInternet> {
 
 	public String getUrl() {
 		return url;
+	}
+
+	public String getBaseUrl() {
+		if (baseUrl == null) {
+			int lastDotIndex = getUri().getPath().lastIndexOf('.');
+			if (lastDotIndex < 0) {
+				baseUrl = getUrl();
+			} else {
+				lastDotIndex = getUri().toString().lastIndexOf('/');
+				baseUrl = getUri().toString().substring(0, lastDotIndex);
+			}
+		}
+		return baseUrl;
+	}
+	
+	public void setBaseUrl(String baseUrl) {
+		this.baseUrl = baseUrl;
 	}
 
 	public void setUrl(final String url) {

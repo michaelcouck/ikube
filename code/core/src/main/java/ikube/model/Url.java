@@ -33,16 +33,6 @@ public class Url extends Persistable {
 	public static final String SELECT_FROM_URL_BY_NAME_AND_INDEXED = "select u from Url as u where u.name = :name and u.indexed = :indexed";
 	public static final String SELECT_FROM_URL_WHERE_ID_GREATER_AND_NOT_INDEXED = "select u from Url as u where u.id >= :id and u.indexed = :indexed";
 
-	@Index(name = "urlId_index", enabled = true)
-	private long urlId;
-	private boolean indexed;
-	@Index(name = "hash_index", enabled = true)
-	private long hash;
-	@Column(length = 64)
-	private String name;
-	@Column(length = 255)
-	private String url;
-
 	@Transient
 	private String contentType;
 	@Transient
@@ -51,6 +41,16 @@ public class Url extends Persistable {
 	private byte[] rawContent;
 	@Transient
 	private String parsedContent;
+
+	@Index(name = "urlId_index", enabled = true)
+	private long urlId;
+	private boolean indexed;
+	@Index(name = "hash_index", enabled = true)
+	private long hash;
+	@Column(length = 64)
+	private String name;
+	@Column(length = 512)
+	private String url;
 
 	public long getUrlId() {
 		return urlId;

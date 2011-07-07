@@ -47,6 +47,7 @@
 		<ref local="ikubeInternet8080" />
 		<ref local="ikubeInternet9000" />
 		<ref local="ikubeInternetDynDns" />
+		<ref local="ikubeGoogleCode" />
 	</util:list>
 	
 	<bean
@@ -57,7 +58,7 @@
 		property:idFieldName="id"
 		property:titleFieldName="title"
 		property:contentFieldName="content"
-		property:excludedPattern=".*(/search).*|.*(/images).*"
+		property:excludedPattern="${internet.excluded.pattern}"
 		property:analyzed="true"
 		property:stored="true"
 		property:vectored="true"
@@ -70,7 +71,7 @@
 		property:idFieldName="id"
 		property:titleFieldName="title"
 		property:contentFieldName="content"
-		property:excludedPattern=".*(/search).*|.*(/images).*"
+		property:excludedPattern="${internet.excluded.pattern}"
 		property:analyzed="true"
 		property:stored="true"
 		property:vectored="true"
@@ -83,7 +84,7 @@
 		property:idFieldName="id"
 		property:titleFieldName="title"
 		property:contentFieldName="content"
-		property:excludedPattern=".*(/search).*|.*(/images).*"
+		property:excludedPattern="${internet.excluded.pattern}"
 		property:analyzed="true"
 		property:stored="true"
 		property:vectored="true"
@@ -96,7 +97,20 @@
 		property:idFieldName="id"
 		property:titleFieldName="title"
 		property:contentFieldName="content"
-		property:excludedPattern=".*(/search).*|.*(/images).*"
+		property:excludedPattern="${internet.excluded.pattern}"
+		property:analyzed="true"
+		property:stored="true"
+		property:vectored="true" 
+		property:internetBatchSize="${internet.batch.size}" />
+	<bean
+		id="ikubeGoogleCode"
+		class="ikube.model.IndexableInternet"
+		property:name="ikubeGoogleCode"
+		property:url="${ikube.google.code}" 
+		property:idFieldName="id"
+		property:titleFieldName="title"
+		property:contentFieldName="content"
+		property:excludedPattern="${internet.excluded.pattern}"
 		property:analyzed="true"
 		property:stored="true"
 		property:vectored="true" 

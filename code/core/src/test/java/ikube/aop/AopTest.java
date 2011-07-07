@@ -5,7 +5,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import ikube.ATest;
 import ikube.action.Index;
-import ikube.index.handler.internet.IndexableInternetHandler;
+import ikube.index.handler.database.IndexableTableHandler;
 import ikube.mock.AtomicActionMock;
 import ikube.model.Indexable;
 import ikube.toolkit.ApplicationContextManager;
@@ -88,11 +88,11 @@ public class AopTest extends ATest {
 
 	@Test
 	public void enrichment() throws Exception {
-		IndexableInternetHandler indexableHandler = ApplicationContextManager.getBean(IndexableInternetHandler.class);
-		when(INDEXABLE.isAddress()).thenReturn(Boolean.FALSE);
-		indexableHandler.addDocument(INDEX_CONTEXT, INDEXABLE, document);
-		when(INDEXABLE.isAddress()).thenReturn(Boolean.TRUE);
-		verify(INDEXABLE, Mockito.atLeastOnce()).isAddress();
+		IndexableTableHandler indexableHandler = ApplicationContextManager.getBean(IndexableTableHandler.class);
+		when(INDEXABLE_TABLE.isAddress()).thenReturn(Boolean.FALSE);
+		indexableHandler.addDocument(INDEX_CONTEXT, INDEXABLE_TABLE, document);
+		when(INDEXABLE_TABLE.isAddress()).thenReturn(Boolean.TRUE);
+		verify(INDEXABLE_TABLE, Mockito.atLeastOnce()).isAddress();
 	}
 
 	@Test

@@ -2,7 +2,6 @@ package ikube.action;
 
 import ikube.index.IndexManager;
 import ikube.index.handler.IHandler;
-import ikube.index.handler.internet.crawler.IUrlHandler;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.model.Server;

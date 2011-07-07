@@ -9,7 +9,6 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.Transient;
 
 /**
  * @author Michael Couck
@@ -30,9 +29,6 @@ public class Indexable<E> extends Persistable {
 	private boolean stored = Boolean.FALSE;
 	private boolean analyzed = Boolean.TRUE;
 	private boolean vectored = Boolean.FALSE;
-
-	@Transient
-	private transient Object content;
 
 	public void setName(final String name) {
 		this.name = name;
@@ -93,14 +89,6 @@ public class Indexable<E> extends Persistable {
 
 	public void setVectored(final boolean vectored) {
 		this.vectored = vectored;
-	}
-
-	public Object getContent() {
-		return content;
-	}
-
-	public void setContent(final Object content) {
-		this.content = content;
 	}
 
 }

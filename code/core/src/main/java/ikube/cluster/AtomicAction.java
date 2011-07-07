@@ -21,9 +21,6 @@ public abstract class AtomicAction implements IAtomicAction, IConstants {
 
 	private static final Logger LOGGER = Logger.getLogger(AtomicAction.class);
 
-	// private static final int MAX_STACK_TRACES_SIZE = 25;
-	// private static final LinkedList<String> STACK_TRACES = new LinkedList<String>();
-
 	/**
 	 * TODO Document me.
 	 * 
@@ -51,8 +48,9 @@ public abstract class AtomicAction implements IAtomicAction, IConstants {
 	 * @return
 	 */
 	public static ILock lock(String lockName) {
+		ILock lock = null;
 		try {
-			ILock lock = Hazelcast.getLock(lockName);
+			lock = Hazelcast.getLock(lockName);
 			boolean acquired = Boolean.FALSE;
 			try {
 				acquired = lock.tryLock(LOCK_TIMEOUT, TimeUnit.MILLISECONDS);
@@ -60,22 +58,16 @@ public abstract class AtomicAction implements IAtomicAction, IConstants {
 				LOGGER.error("Interrupted acquiring lock for : " + lockName, e);
 			}
 			if (!acquired) {
-				// STACK_TRACES.getLast()
 				LOGGER.warn(Logging.getString("Failed to acquire lock : ", lockName, lock));
-				Thread.dumpStack();
+				unlock(lock);
 				return null;
 			}
 			LOGGER.debug(Logging.getString("Acquired lock : ", lockName, lock));
-			// ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-			// new Throwable().printStackTrace(new PrintStream(outputStream));
-			// STACK_TRACES.addLast(outputStream.toString());
-			// while (STACK_TRACES.size() > MAX_STACK_TRACES_SIZE) {
-			// STACK_TRACES.remove();
-			// }
-			return lock;
-		} finally {
-			// What can we do here if there is an exception?
+		} catch (Exception e) {
+			LOGGER.error("Exception trying to lock : " + lockName + ", will unlock if possible : ", e);
+			unlock(lock);
 		}
+		return lock;
 	}
 
 	/**

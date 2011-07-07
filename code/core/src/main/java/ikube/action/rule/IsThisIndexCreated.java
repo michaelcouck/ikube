@@ -10,6 +10,8 @@ import ikube.toolkit.FileUtilities;
 import java.io.File;
 
 /**
+ * This rule checks to see if this server has created an index for this index context.
+ * 
  * @author Michael Couck
  * @since 30.03.2011
  * @version 01.00
@@ -19,8 +21,9 @@ public class IsThisIndexCreated implements IRule<IndexContext<?>> {
 	/**
 	 * @param indexContext
 	 *            the index context
-	 * @return something
+	 * @return something whether this server created this index
 	 */
+	@Override
 	public boolean evaluate(final IndexContext<?> indexContext) {
 		// Check that the timestamp in the servers that are still working is
 		// different from the timestamp of the latest index directory for this server

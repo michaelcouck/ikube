@@ -487,7 +487,7 @@ public final class FileUtilities {
 	 * @param dest
 	 *            A File object that represents the destination for the copy.
 	 */
-	public static void copyFiles(File src, File dest) {
+	public static void copyFiles(File src, File dest, String... patterns) {
 		// Check to ensure that the source is valid...
 		if (src == null || !src.exists()) {
 			LOGGER.warn("Source file/directory does not exist : " + src);
@@ -495,6 +495,17 @@ public final class FileUtilities {
 		} else if (!src.canRead()) { // check to ensure we have rights to the source...
 			LOGGER.warn("Source file/directory not readable : " + src);
 			return;
+		}
+		for (String pattern : patterns) {
+			StringBuilder builder = new StringBuilder();
+			builder.append(".*");
+			builder.append(pattern);
+			builder.append(".*");
+			boolean matches = Pattern.matches(builder.toString(), src.getAbsolutePath());
+			if (matches) {
+				LOGGER.info("Not copying file : " + src);
+				return;
+			}
 		}
 		// is this a directory copy?
 		if (src.isDirectory()) {
@@ -510,7 +521,7 @@ public final class FileUtilities {
 			for (int i = 0; i < children.length; i++) {
 				File childSrc = new File(src, children[i]);
 				File childDest = new File(dest, children[i]);
-				copyFiles(childSrc, childDest);
+				copyFiles(childSrc, childDest, patterns);
 			}
 		} else {
 			// This was not a directory, so lets just copy the file

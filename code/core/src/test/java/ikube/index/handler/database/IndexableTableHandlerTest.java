@@ -7,6 +7,8 @@ import ikube.BaseTest;
 import ikube.IConstants;
 import ikube.action.Index;
 import ikube.cluster.IClusterManager;
+import ikube.index.content.ColumnContentProvider;
+import ikube.index.content.IContentProvider;
 import ikube.model.Indexable;
 import ikube.model.IndexableColumn;
 import ikube.model.IndexableTable;
@@ -51,13 +53,14 @@ public class IndexableTableHandlerTest extends BaseTest {
 	public void before() throws Exception {
 		indexableTableHandler = ApplicationContextManager.getBean(IndexableTableHandler.class);
 
-		faqIndexableTable = ApplicationContextManager.getBean("faqTableDb2");
-		attachmentIndexableTable = ApplicationContextManager.getBean("attachmentTableDb2");
+		faqIndexableTable = ApplicationContextManager.getBean("faqTableOracle");
+		faqIndexableTable.setPredicate("where faqid < 176386");
+		attachmentIndexableTable = ApplicationContextManager.getBean("attachmentTableOracle");
 
 		faqIndexableColumns = faqIndexableTable.getChildren();
 		faqIdIndexableColumn = indexableTableHandler.getIdColumn(faqIndexableColumns);
 
-		connection = ((DataSource) ApplicationContextManager.getBean("nonXaDataSourceDb2")).getConnection();
+		connection = ((DataSource) ApplicationContextManager.getBean("nonXaDataSourceOracle")).getConnection();
 
 		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
 		clusterManager.setWorking(Index.class.getSimpleName(), indexContext.getIndexName(), faqIndexableTable.getName(), Boolean.FALSE);
@@ -140,7 +143,8 @@ public class IndexableTableHandlerTest extends BaseTest {
 		faqIdIndexableColumn.setContent("Hello World!");
 		faqIdIndexableColumn.setColumnType(Types.VARCHAR);
 		Document document = new Document();
-		indexableTableHandler.handleColumn(faqIdIndexableColumn, document);
+		IContentProvider<IndexableColumn> contentProvider = new ColumnContentProvider();
+		indexableTableHandler.handleColumn(contentProvider, faqIdIndexableColumn, document);
 		// This must just succeed as the sub components are tested separately
 		assertTrue(Boolean.TRUE);
 	}
@@ -171,7 +175,7 @@ public class IndexableTableHandlerTest extends BaseTest {
 		resultSet.next();
 		indexableTableHandler.setColumnTypesAndData(faqIndexableColumns, resultSet);
 		logger.debug("Faq id column type : " + faqIdIndexableColumn.getColumnType());
-		assertEquals(Types.BIGINT, faqIdIndexableColumn.getColumnType());
+		assertEquals(Types.NUMERIC, faqIdIndexableColumn.getColumnType());
 
 		DatabaseUtilities.close(resultSet);
 		DatabaseUtilities.close(statement);

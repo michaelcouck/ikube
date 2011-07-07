@@ -18,6 +18,7 @@ import ikube.model.IndexableInternet;
 import ikube.model.Url;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.HashUtilities;
+import ikube.toolkit.SerializationUtilities;
 import ikube.toolkit.UriUtilities;
 
 import java.io.ByteArrayInputStream;
@@ -33,7 +34,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 
 import javax.persistence.NoResultException;
@@ -64,11 +64,11 @@ import org.apache.lucene.index.CorruptIndexException;
  */
 public class IndexableInternetHandler extends IndexableHandler<IndexableInternet> {
 
-	private IDataBase dataBase;
+	/** TODO Remove these fields and put them in the IndexableInternet. */
 	private Pattern excludedPattern;
 	private Map<String, Object> notIndexedParameters;
 	private Cache cache = CacheManager.create().getCache("UrlCache");
-	private AtomicInteger cacheBatchSize = new AtomicInteger();
+	private Cache newCache = CacheManager.create().getCache("NewUrlCache");
 	private ThreadLocal<Map<String, Object>> localUrlIdParameters = new ThreadLocal<Map<String, Object>>();
 
 	/**
@@ -77,19 +77,17 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	@Override
 	public List<Thread> handle(final IndexContext<?> indexContext, final IndexableInternet indexable) throws Exception {
 		cache.removeAll();
+		newCache.removeAll();
 		if (indexable.getExcludedPattern() != null) {
 			excludedPattern = Pattern.compile(indexable.getExcludedPattern());
 		}
-		if (this.dataBase == null) {
-			this.dataBase = ApplicationContextManager.getBean(IDataBase.class);
-		}
-		indexable.setParent(indexContext);
+		final IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
 		notIndexedParameters = new HashMap<String, Object>();
 		notIndexedParameters.put(IConstants.INDEXED, Boolean.FALSE);
 		notIndexedParameters.put(IConstants.NAME, indexContext.getName());
 
 		// The start url
-		seedUrl(indexable);
+		seedUrl(dataBase, indexable);
 
 		final List<Thread> threads = new ArrayList<Thread>();
 		String name = this.getClass().getSimpleName();
@@ -99,8 +97,10 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 					HttpClient httpClient = new HttpClient();
 					IContentProvider<IndexableInternet> contentProvider = new InternetContentProvider();
 					localUrlIdParameters.set(new HashMap<String, Object>());
+					IndexableInternet indexableInternet = (IndexableInternet) SerializationUtilities.clone(indexable);
+					indexableInternet.setParent(indexContext);
 					while (true) {
-						List<Url> urls = getUrlBatch(indexable);
+						List<Url> urls = getUrlBatch(dataBase, indexableInternet);
 						if (urls.isEmpty()) {
 							// Check if there are any other threads still working
 							// other than this thread of course
@@ -116,12 +116,8 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 								break;
 							}
 						}
-						if (urls.size() > 0) {
-							logger.info("Doing urls : " + urls.size());
-						}
-						doUrls(indexContext, indexable, urls, contentProvider, httpClient);
+						doUrls(dataBase, indexContext, indexable, urls, contentProvider, httpClient);
 					}
-					localUrlIdParameters.remove();
 				}
 			}, name + "." + i);
 			thread.start();
@@ -130,17 +126,17 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 		return threads;
 	}
 
-	protected void doUrls(final IndexContext<?> indexContext, final IndexableInternet indexable, final List<Url> urls,
-			final IContentProvider<IndexableInternet> contentProvider, final HttpClient httpClient) {
+	protected void doUrls(final IDataBase dataBase, final IndexContext<?> indexContext, final IndexableInternet indexable,
+			final List<Url> urls, final IContentProvider<IndexableInternet> contentProvider, final HttpClient httpClient) {
 		if (urls.size() > 0) {
-			logger.info("First url : " + urls.get(0));
+			logger.info("Batch : " + urls.size() + ", first url : " + urls.get(0));
 		}
 		for (Url url : urls) {
 			try {
 				if (url == null || url.getUrl() == null) {
 					continue;
 				}
-				handle(indexContext, indexable, url, contentProvider, httpClient);
+				handle(dataBase, indexContext, indexable, url, contentProvider, httpClient);
 				url.setParsedContent(null);
 				url.setRawContent(null);
 				url.setTitle(null);
@@ -149,33 +145,28 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 				logger.error("Exception doing url : " + url, e);
 			}
 		}
-		try {
-			getDataBase().mergeBatch(urls);
-		} catch (Exception e) {
-			logger.error("Exception merging batch : ", e);
-		}
 	}
 
-	protected synchronized List<Url> getUrlBatch(IndexableInternet indexableInternet) {
+	protected synchronized List<Url> getUrlBatch(final IDataBase dataBase, final IndexableInternet indexableInternet) {
 		try {
-			List<Url> urls = getDataBase().find(Url.class, Url.SELECT_FROM_URL_BY_NAME_AND_INDEXED, notIndexedParameters, 0,
+			List<Url> urls = dataBase.find(Url.class, Url.SELECT_FROM_URL_BY_NAME_AND_INDEXED, notIndexedParameters, 0,
 					indexableInternet.getInternetBatchSize());
-			if (urls.size() == 0) {
-				persistBatch();
-				urls = getDataBase().find(Url.class, Url.SELECT_FROM_URL_BY_NAME_AND_INDEXED, notIndexedParameters, 0,
+			if (urls.isEmpty()) {
+				persistBatch(dataBase);
+				urls = dataBase.find(Url.class, Url.SELECT_FROM_URL_BY_NAME_AND_INDEXED, notIndexedParameters, 0,
 						indexableInternet.getInternetBatchSize());
 			}
 			for (Url url : urls) {
 				url.setIndexed(Boolean.TRUE);
 			}
-			getDataBase().mergeBatch(urls);
+			dataBase.mergeBatch(urls);
 			return urls;
 		} finally {
 			notifyAll();
 		}
 	}
 
-	protected void handle(final IndexContext<?> indexContext, final IndexableInternet indexable, final Url url,
+	protected void handle(final IDataBase dataBase, final IndexContext<?> indexContext, final IndexableInternet indexable, final Url url,
 			final IContentProvider<IndexableInternet> contentProvider, final HttpClient httpClient) {
 		try {
 			// Get the content from the url
@@ -186,7 +177,7 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 			}
 			InputStream inputStream = new ByteArrayInputStream(byteOutputStream.getBytes());
 			// Extract the links from the url if any
-			extractLinksFromContent(indexable, url, inputStream);
+			extractLinksFromContent(dataBase, indexable, url, inputStream);
 
 			// Parse the content from the url
 			String parsedContent = getParsedContent(url, byteOutputStream);
@@ -195,6 +186,14 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 			}
 			long hash = HashUtilities.hash(parsedContent);
 			url.setHash(hash);
+			// Check for duplicates
+			if (cache.get(hash) != null) {
+				url.setRawContent(null);
+				url.setParsedContent(null);
+				logger.info("Duplicate data : " + url);
+				dataBase.merge(url);
+			}
+			cache.put(new net.sf.ehcache.Element(hash, url));
 			// Add the document to the index
 			addDocumentToIndex(indexContext, indexable, url, parsedContent);
 		} catch (Exception e) {
@@ -211,7 +210,7 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	 *            the url to get the data from
 	 * @return the raw data from the url
 	 */
-	protected ByteOutputStream getContentFromUrl(IContentProvider<IndexableInternet> contentProvider, final HttpClient httpClient,
+	protected ByteOutputStream getContentFromUrl(final IContentProvider<IndexableInternet> contentProvider, final HttpClient httpClient,
 			final IndexableInternet indexable, final Url url) {
 		GetMethod get = null;
 		ByteOutputStream byteOutputStream = null;
@@ -341,13 +340,16 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	 * @param inputStream
 	 *            the input stream of the data from the base url, i.e. the html
 	 */
-	protected void extractLinksFromContent(final IndexableInternet indexableInternet, final Url baseUrl, final InputStream inputStream) {
+	protected void extractLinksFromContent(final IDataBase dataBase, final IndexableInternet indexableInternet, final Url baseUrl,
+			final InputStream inputStream) {
 		try {
+			if (localUrlIdParameters.get() == null) {
+				localUrlIdParameters.set(new HashMap<String, Object>());
+			}
 			Reader reader = new InputStreamReader(inputStream, IConstants.ENCODING);
 			Source source = new Source(reader);
 			List<Tag> tags = source.getAllTags();
-			URI baseUri = new URI(baseUrl.getUrl());
-			String baseHost = indexableInternet.getUri().getHost();
+			String baseUrlStripped = indexableInternet.getBaseUrl();
 			for (Tag tag : tags) {
 				if (tag.getName().equals(HTMLElementName.A) && StartTag.class.isAssignableFrom(tag.getClass())) {
 					Attribute attribute = ((StartTag) tag).getAttributes().get(HTML.Attribute.HREF.toString());
@@ -360,14 +362,14 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 							if (UriUtilities.isExcluded(link.trim().toLowerCase())) {
 								continue;
 							}
-							String resolvedLink = UriUtilities.resolve(baseUri, link);
+							String resolvedLink = UriUtilities.resolve(indexableInternet.getUri(), link);
 							String replacement = resolvedLink.contains("?") ? "?" : "";
 							String strippedSessionLink = UriUtilities.stripJSessionId(resolvedLink, replacement);
 							String strippedAnchorLink = UriUtilities.stripAnchor(strippedSessionLink, "");
 							if (!UriUtilities.isInternetProtocol(strippedAnchorLink)) {
 								continue;
 							}
-							if (!strippedAnchorLink.contains(baseHost)) {
+							if (!strippedAnchorLink.startsWith(baseUrlStripped)) {
 								continue;
 							}
 							if (excludedPattern != null && excludedPattern.matcher(strippedAnchorLink).matches()) {
@@ -376,13 +378,13 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 							Long urlId = HashUtilities.hash(strippedAnchorLink);
 
 							// Try the cache first
-							if (cache.get(urlId) != null) {
+							if (cache.get(urlId) != null || newCache.get(urlId) != null) {
 								continue;
 							}
 							localUrlIdParameters.get().put(IConstants.URL_ID, urlId);
 							Url dbUrl = null;
 							try {
-								dbUrl = getDataBase().find(Url.class, Url.SELECT_FROM_URL_BY_URL_ID, localUrlIdParameters.get());
+								dbUrl = dataBase.find(Url.class, Url.SELECT_FROM_URL_BY_URL_ID, localUrlIdParameters.get());
 							} catch (NonUniqueResultException e) {
 								continue;
 							} catch (NoResultException e) {
@@ -398,8 +400,7 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 							url.setIndexed(Boolean.FALSE);
 							// Add the link to the database here
 							url.setUrl(strippedAnchorLink);
-							cache.put(new net.sf.ehcache.Element(urlId, url));
-							cacheBatchSize.incrementAndGet();
+							newCache.put(new net.sf.ehcache.Element(urlId, url));
 						} catch (Exception e) {
 							logger.error("Exception extracting link : " + tag, e);
 						}
@@ -410,48 +411,45 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 			logger.error("General exception extracting the links from : ", e);
 		}
 		try {
-			if (cacheBatchSize.intValue() > indexableInternet.getInternetBatchSize()) {
-				persistBatch();
+			if (newCache.getSize() > indexableInternet.getInternetBatchSize()) {
+				persistBatch(dataBase);
 			}
 		} catch (Exception e) {
 			logger.error("Exception persisting url batch : ", e);
 		}
 	}
 
-	protected synchronized void persistBatch() {
+	protected synchronized void persistBatch(final IDataBase dataBase) {
 		try {
 			// Persist all the urls in the cache that are not persisted
 			List<Url> newUrls = new ArrayList<Url>();
-			List<?> keys = cache.getKeys();
+			List<?> keys = newCache.getKeys();
 			for (Object key : keys) {
 				try {
-					net.sf.ehcache.Element element = cache.get(key);
+					net.sf.ehcache.Element element = newCache.get(key);
+					// logger.info("Cache element : " + element);
 					if (element == null) {
 						continue;
 					}
-					Url url = (Url) element.getObjectValue();
-					if (url.getId() != null) {
+					Object objectValue = element.getObjectValue();
+					if (objectValue == null || !Url.class.isAssignableFrom(objectValue.getClass())) {
+						logger.warn("Cache object value null or not a url : " + objectValue);
 						continue;
 					}
+					Url url = (Url) objectValue;
 					newUrls.add(url);
-					cache.remove(key);
-					cache.remove(url.getUrlId());
 				} catch (Exception e) {
 					logger.error("Exception persisting the url batch : ", e);
 				}
 			}
-			getDataBase().persistBatch(newUrls);
-			cacheBatchSize.set(0);
+			newCache.removeAll();
+			dataBase.persistBatch(newUrls);
 		} finally {
 			notifyAll();
 		}
 	}
 
-	protected IDataBase getDataBase() {
-		return this.dataBase;
-	}
-
-	public boolean isCrawling(List<Thread> threads) {
+	protected boolean isCrawling(final List<Thread> threads) {
 		int threadsRunnable = 0;
 		for (Thread thread : threads) {
 			if (thread.getState().equals(State.RUNNABLE)) {
@@ -464,7 +462,7 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 		return Boolean.FALSE;
 	}
 
-	protected void seedUrl(final IndexableInternet indexableInternet) {
+	protected void seedUrl(final IDataBase dataBase, final IndexableInternet indexableInternet) {
 		String urlString = indexableInternet.getUrl();
 		indexableInternet.setCurrentUrl(urlString);
 
@@ -474,11 +472,11 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 		url.setUrl(urlString);
 		url.setIndexed(Boolean.FALSE);
 
-		getDataBase().persist(url);
+		dataBase.persist(url);
 	}
 
 	@Override
-	public void addDocument(IndexContext<?> indexContext, Indexable<IndexableInternet> indexable, Document document)
+	public void addDocument(final IndexContext<?> indexContext, final Indexable<IndexableInternet> indexable, final Document document)
 			throws CorruptIndexException, IOException {
 		super.addDocument(indexContext, indexable, document);
 	}

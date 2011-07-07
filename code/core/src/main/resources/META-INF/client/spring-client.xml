@@ -42,6 +42,7 @@
 		<ref local="internet" />
 		<ref local="hazelcast" />
 		<ref local="internetMillion" />
+		<!-- <ref local="internetFalconMillion" /> -->
 		<ref local="filesystem" />
 		<ref local="filesystemMillionOne" />
 		<!-- <ref local="filesystemMillionTwo" />
@@ -71,14 +72,16 @@
 		property:predicate="${faq.predicate}"
 		property:primaryTable="true"
 		property:dataSource-ref="nonXaDataSourceH2"
-		property:children-ref="faqColumnsH2" />
+		property:children-ref="faqColumnsH2" 
+		property:maxExceptions="100" />
 	<bean
 		id="attachmentTableH2"
 		class="ikube.model.IndexableTable"
 		property:name="attachment"
 		property:primaryTable="false"
 		property:dataSource-ref="nonXaDataSourceH2"
-		property:children-ref="attachmentColumnsH2" />
+		property:children-ref="attachmentColumnsH2" 
+		property:maxExceptions="100" />
 	<util:list id="faqColumnsH2">
 		<ref local="faqId" />
 		<ref local="creationtimestamp" />
@@ -106,14 +109,16 @@
 		property:predicate="${faq.predicate}"
 		property:primaryTable="true"
 		property:dataSource-ref="nonXaDataSourceDb2"
-		property:children-ref="faqColumnsDb2" />
+		property:children-ref="faqColumnsDb2" 
+		property:maxExceptions="100" />
 	<bean
 		id="attachmentTableDb2"
 		class="ikube.model.IndexableTable"
 		property:name="attachment"
 		property:primaryTable="false"
 		property:dataSource-ref="nonXaDataSourceDb2"
-		property:children-ref="attachmentColumnsDb2" />
+		property:children-ref="attachmentColumnsDb2" 
+		property:maxExceptions="100" />
 	
 	<!-- This table is the attachment table direct, no dependencies. -->
 	<bean
@@ -122,7 +127,8 @@
 		property:name="attachmentDirect"
 		property:primaryTable="true"
 		property:dataSource-ref="nonXaDataSourceDb2"
-		property:children-ref="attachmentColumnsDb2" />
+		property:children-ref="attachmentColumnsDb2" 
+		property:maxExceptions="100" />
 	
 	<util:list id="faqColumnsDb2">
 		<ref local="faqId" />
@@ -151,14 +157,16 @@
 		property:predicate="${faq.predicate}"
 		property:primaryTable="true"
 		property:dataSource-ref="nonXaDataSourceOracle"
-		property:children-ref="faqColumnsOracle" />
+		property:children-ref="faqColumnsOracle" 
+		property:maxExceptions="100" />
 	<bean
 		id="attachmentTableOracle"
 		class="ikube.model.IndexableTable"
 		property:name="attachment"
 		property:primaryTable="false"
 		property:dataSource-ref="nonXaDataSourceOracle"
-		property:children-ref="attachmentColumnsOracle" />
+		property:children-ref="attachmentColumnsOracle" 
+		property:maxExceptions="100" />
 	<util:list id="faqColumnsOracle">
 		<ref local="faqId" />
 		<ref local="creationtimestamp" />
@@ -295,7 +303,8 @@
 		property:predicate="${patient.predicate}"
 		property:primaryTable="true"
 		property:dataSource-ref="nonXaDataSourceH2"
-		property:children-ref="patientColumnsH2" />
+		property:children-ref="patientColumnsH2" 
+		property:maxExceptions="100" />
 	<util:list id="patientColumnsH2">
 		<ref local="patientId" />
 		<ref local="firstName" />
@@ -311,7 +320,8 @@
 		property:primaryTable="false"
 		property:address="true"
 		property:dataSource-ref="nonXaDataSourceH2"
-		property:children-ref="addressColumnsH2" />
+		property:children-ref="addressColumnsH2" 
+		property:maxExceptions="100" />
 	<util:list id="addressColumnsH2">
 		<ref local="addressId" />
 		<ref local="numb" />
@@ -331,7 +341,8 @@
 		property:predicate="${patient.predicate}"
 		property:primaryTable="true"
 		property:dataSource-ref="nonXaDataSourceDb2"
-		property:children-ref="patientColumnsDb2" />
+		property:children-ref="patientColumnsDb2" 
+		property:maxExceptions="100" />
 	<util:list id="patientColumnsDb2">
 		<ref local="patientId" />
 		<ref local="firstName" />
@@ -347,7 +358,8 @@
 		property:primaryTable="false"
 		property:address="true"
 		property:dataSource-ref="nonXaDataSourceDb2"
-		property:children-ref="addressColumnsDb2" />
+		property:children-ref="addressColumnsDb2" 
+		property:maxExceptions="100" />
 	<util:list id="addressColumnsDb2">
 		<ref local="addressId" />
 		<ref local="numb" />
@@ -367,7 +379,8 @@
 		property:predicate="${patient.predicate}"
 		property:primaryTable="true"
 		property:dataSource-ref="nonXaDataSourceOracle"
-		property:children-ref="patientColumnsOracle" />
+		property:children-ref="patientColumnsOracle" 
+		property:maxExceptions="100" />
 	<util:list id="patientColumnsOracle">
 		<ref local="patientId" />
 		<ref local="firstName" />
@@ -383,7 +396,8 @@
 		property:primaryTable="false"
 		property:address="true"
 		property:dataSource-ref="nonXaDataSourceOracle"
-		property:children-ref="addressColumnsOracle" />
+		property:children-ref="addressColumnsOracle" 
+		property:maxExceptions="100" />
 	<util:list id="addressColumnsOracle">
 		<ref local="addressId" />
 		<ref local="numb" />
@@ -562,6 +576,19 @@
 		property:vectored="${vectored}"
 		property:internetBatchSize="${internet.batch.size}"
 		property:excludedPattern="${internet.excluded.pattern}" />
+	<bean
+		id="internetFalconMillion"
+		class="ikube.model.IndexableInternet"
+		property:name="internetFalconMillion"
+		property:url="${url.falcon.million}" 
+		property:idFieldName="id"
+		property:titleFieldName="title"
+		property:contentFieldName="content"
+		property:analyzed="${analyzed}"
+		property:stored="${not.stored}"
+		property:vectored="${vectored}"
+		property:internetBatchSize="${internet.batch.size}"
+		property:excludedPattern="${internet.excluded.pattern}" />
 	
 	<bean
 		id="filesystem"
@@ -574,7 +601,8 @@
 		property:contentFieldName="contents"
 		property:excludedPattern="${files.excluded.pattern}"
 		property:lastModifiedFieldName="lastmodified"
-		property:batchSize="${file.batch.size}" />
+		property:batchSize="${file.batch.size}"
+		property:maxReadLength="${file.max.read.length}" />
 	
 	<bean
 		id="filesystemMillionOne"
@@ -588,7 +616,8 @@
 		property:stored="${not.stored}"
 		property:excludedPattern="${files.excluded.pattern}"
 		property:lastModifiedFieldName="lastmodified" 
-		property:batchSize="${file.batch.size}" />
+		property:batchSize="${file.batch.size}" 
+		property:maxReadLength="${file.max.read.length}" />
 	<bean
 		id="filesystemMillionTwo"
 		class="ikube.model.IndexableFileSystem"
@@ -601,7 +630,8 @@
 		property:stored="${not.stored}"
 		property:excludedPattern="${files.excluded.pattern}"
 		property:lastModifiedFieldName="lastmodified" 
-		property:batchSize="${file.batch.size}" />
+		property:batchSize="${file.batch.size}" 
+		property:maxReadLength="${file.max.read.length}" />
 	<bean
 		id="filesystemMillionThree"
 		class="ikube.model.IndexableFileSystem"
@@ -614,7 +644,8 @@
 		property:stored="${not.stored}"
 		property:excludedPattern="${files.excluded.pattern}"
 		property:lastModifiedFieldName="lastmodified" 
-		property:batchSize="${file.batch.size}" />
+		property:batchSize="${file.batch.size}" 
+		property:maxReadLength="${file.max.read.length}" />
 	<bean
 		id="filesystemMillionFour"
 		class="ikube.model.IndexableFileSystem"
@@ -627,7 +658,8 @@
 		property:stored="${not.stored}"
 		property:excludedPattern="${files.excluded.pattern}"
 		property:lastModifiedFieldName="lastmodified" 
-		property:batchSize="${file.batch.size}" />
+		property:batchSize="${file.batch.size}" 
+		property:maxReadLength="${file.max.read.length}" />
 	<bean
 		id="filesystemMillionFive"
 		class="ikube.model.IndexableFileSystem"
@@ -640,7 +672,8 @@
 		property:stored="${not.stored}"
 		property:excludedPattern="${files.excluded.pattern}"
 		property:lastModifiedFieldName="lastmodified" 
-		property:batchSize="${file.batch.size}" />
+		property:batchSize="${file.batch.size}" 
+		property:maxReadLength="${file.max.read.length}" />
 	<bean
 		id="filesystemMillionSix"
 		class="ikube.model.IndexableFileSystem"
@@ -653,7 +686,8 @@
 		property:stored="${not.stored}"
 		property:excludedPattern="${files.excluded.pattern}"
 		property:lastModifiedFieldName="lastmodified" 
-		property:batchSize="${file.batch.size}" />
+		property:batchSize="${file.batch.size}" 
+		property:maxReadLength="${file.max.read.length}" />
 	<bean
 		id="filesystemMillionSeven"
 		class="ikube.model.IndexableFileSystem"
@@ -666,7 +700,8 @@
 		property:stored="${not.stored}"
 		property:excludedPattern="${files.excluded.pattern}"
 		property:lastModifiedFieldName="lastmodified" 
-		property:batchSize="${file.batch.size}" />
+		property:batchSize="${file.batch.size}" 
+		property:maxReadLength="${file.max.read.length}" />
 	<bean
 		id="filesystemMillionEight"
 		class="ikube.model.IndexableFileSystem"
@@ -679,7 +714,8 @@
 		property:stored="${not.stored}"
 		property:excludedPattern="${files.excluded.pattern}"
 		property:lastModifiedFieldName="lastmodified" 
-		property:batchSize="${file.batch.size}" />
+		property:batchSize="${file.batch.size}" 
+		property:maxReadLength="${file.max.read.length}" />
 	<bean
 		id="filesystemMillionNine"
 		class="ikube.model.IndexableFileSystem"
@@ -692,7 +728,8 @@
 		property:stored="${not.stored}"
 		property:excludedPattern="${files.excluded.pattern}"
 		property:lastModifiedFieldName="lastmodified" 
-		property:batchSize="${file.batch.size}" />
+		property:batchSize="${file.batch.size}" 
+		property:maxReadLength="${file.max.read.length}" />
 	<bean
 		id="filesystemMillionTen"
 		class="ikube.model.IndexableFileSystem"
@@ -705,5 +742,6 @@
 		property:stored="${not.stored}"
 		property:excludedPattern="${files.excluded.pattern}"
 		property:lastModifiedFieldName="lastmodified" 
-		property:batchSize="${file.batch.size}" />
+		property:batchSize="${file.batch.size}" 
+		property:maxReadLength="${file.max.read.length}" />
 </beans>

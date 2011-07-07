@@ -16,6 +16,15 @@
 		diskExpiryThreadIntervalSeconds="600"
 		memoryStoreEvictionPolicy="LRU">
 	</cache>
+	<cache 
+		name="NewUrlCache"
+		eternal="true" 
+		timeToLiveSeconds="6000"
+		timeToIdleSeconds="6000"
+		maxElementsInMemory="1000000"
+		overflowToDisk="true"
+		diskPersistent="false">
+	</cache>
 	<defaultCache 
 		maxElementsInMemory="10000" 
 		eternal="false" 

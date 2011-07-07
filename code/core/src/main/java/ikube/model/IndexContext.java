@@ -27,8 +27,15 @@ import org.apache.commons.lang.StringUtils;
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class IndexContext<T> extends Indexable<T> implements Comparable<IndexContext<?>> {
 
-	/** The name of the index. This muse be unique in the configuration. */
-	// private String indexName;
+	@Transient
+	private transient Index index;
+	@Transient
+	private transient String latestIndexTimestamp;
+	@Transient
+	private transient long indexSize;
+	@Transient
+	private transient long numDocs;
+
 	/** The maximum age of the index defined in minutes. */
 	private long maxAge;
 	/** Is this used anymore? */
@@ -57,18 +64,6 @@ public class IndexContext<T> extends Indexable<T> implements Comparable<IndexCon
 	/** Whether the index should be in memory. */
 	private boolean inMemory;
 
-	/** The indexables contained in this index context. */
-	// private List<Indexable<?>> indexables;
-
-	@Transient
-	private transient Index index;
-	@Transient
-	private transient String latestIndexTimestamp;
-	@Transient
-	private transient long indexSize;
-	@Transient
-	private transient long numDocs;
-
 	/**
 	 * The constructor instantiates a new {@link Index} object. In this object the Lucene index will be kept and updated.
 	 */
@@ -85,7 +80,6 @@ public class IndexContext<T> extends Indexable<T> implements Comparable<IndexCon
 
 	public void setIndexName(final String indexName) {
 		super.setName(indexName);
-		// this.indexName = indexName;
 	}
 
 	public long getMaxAge() {
@@ -202,12 +196,10 @@ public class IndexContext<T> extends Indexable<T> implements Comparable<IndexCon
 
 	public List<Indexable<?>> getIndexables() {
 		return super.getChildren();
-		// return indexables;
 	}
 
 	public void setIndexables(final List<Indexable<?>> indexables) {
 		super.setChildren(indexables);
-		// this.indexables = indexables;
 	}
 
 	public Index getIndex() {
