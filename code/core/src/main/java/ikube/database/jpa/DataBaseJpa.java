@@ -16,7 +16,8 @@ import javax.persistence.metamodel.EntityType;
 import org.apache.log4j.Logger;
 
 /**
- * TODO Comment me!
+ * This class is the API to the database, specifically the JPA implementation. This class will typically be wired for transactions either
+ * using a transaction handling library like Spring or in the server.
  * 
  * @author Michael Couck
  * @since 28.04.10
@@ -27,7 +28,7 @@ public class DataBaseJpa implements IDataBase {
 	/** The logger for the bean. */
 	protected static final Logger LOGGER = Logger.getLogger(DataBaseJpa.class);
 
-	@PersistenceContext(type = PersistenceContextType.TRANSACTION, unitName = IConstants.PERSISTENCE_UNIT_H2)
+	@PersistenceContext(type = PersistenceContextType.TRANSACTION, unitName = IConstants.PERSISTENCE_UNIT_DB2)
 	protected EntityManager entityManager;
 
 	/**

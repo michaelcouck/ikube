@@ -67,13 +67,13 @@
 		<entry key="openjpa.LockTimeout" value="6000000" />
 		<entry key="openjpa.ReadLockLevel" value="write" />
 		<entry key="openjpa.WriteLockLevel" value="write" />
-		<entry key="openjpa.Optimistic" value="false" />
+		<entry key="openjpa.Optimistic" value="true" />
 		<entry key="openjpa.Multithreaded" value="true" />
 		<entry key="openjpa.NontransactionalRead" value="false" />
 		<entry key="openjpa.AutoDetach" value="commit" />
 		<entry key="openjpa.FlushBeforeQueries" value="true" />
 		<entry key="openjpa.RuntimeUnenhancedClasses" value="supported" />
-		<entry key="openjpa.jdbc.DBDictionary" value="h2(batchLimit=1000)" />
+		<entry key="openjpa.jdbc.DBDictionary" value="db2(batchLimit=1000)" />
 		
 		<!--
 			For the first run these have to be uncommented to allow OpenJpa to create the
