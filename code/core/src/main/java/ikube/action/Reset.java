@@ -4,6 +4,7 @@ import ikube.IConstants;
 import ikube.database.IDataBase;
 import ikube.model.File;
 import ikube.model.IndexContext;
+import ikube.model.Indexable;
 import ikube.model.Url;
 import ikube.toolkit.ApplicationContextManager;
 
@@ -35,6 +36,11 @@ public class Reset extends Action<IndexContext<?>, Boolean> {
 			parameters.put(IConstants.NAME, indexContext.getName());
 			delete(dataBase, Url.class, Url.SELECT_FROM_URL_BY_NAME, parameters);
 			delete(dataBase, File.class, File.SELECT_FROM_FILE_BY_NAME, parameters);
+			for (Indexable<?> indexable : indexContext.getIndexables()) {
+				parameters.put(IConstants.NAME, indexable.getName());
+				delete(dataBase, Url.class, Url.SELECT_FROM_URL_BY_NAME, parameters);
+				delete(dataBase, File.class, File.SELECT_FROM_FILE_BY_NAME, parameters);
+			}
 		} finally {
 			getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getSimpleName(), "", Boolean.FALSE);
 		}
@@ -43,10 +49,10 @@ public class Reset extends Action<IndexContext<?>, Boolean> {
 
 	protected void delete(final IDataBase dataBase, final Class<?> klass, final String sql, final Map<String, Object> parameters) {
 		try {
-			List<?> list = dataBase.find(klass, sql, parameters, 0, 1000);
+			List<?> list = dataBase.find(klass, sql, parameters, 0, IConstants.RESET_DELETE_BATCH_SIZE);
 			do {
 				dataBase.removeBatch(list);
-				list = dataBase.find(klass, sql, parameters, 0, 1000);
+				list = dataBase.find(klass, sql, parameters, 0, IConstants.RESET_DELETE_BATCH_SIZE);
 			} while (list.size() > 0);
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);

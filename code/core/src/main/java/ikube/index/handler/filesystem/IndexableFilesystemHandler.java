@@ -32,9 +32,12 @@ import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
 
 /**
- * This class indexes a file share on the network. It is multi threaded but not cluster load balanced. Each thread will iterate over each
- * file, this seems faster than trying to divide the files up among the threads logically, and acts as a natural load balancing between the
- * threads.
+ * This class indexes a file share on the network. It is multi threaded but not cluster load balanced. First the files are iterated over and
+ * added to the database. Then the crawler threads are started and they will get batches of files, process them, then set the indexed flag
+ * for the files and merge them back to the database. This prevents too many threads iterating over the file system which seems to be the
+ * bottleneck in the process.
+ * 
+ * This class is optimised for performance, as such it is not very elegant.
  * 
  * @author Cristi Bozga
  * @author Michael Couck
@@ -44,6 +47,9 @@ import org.apache.lucene.document.Field.TermVector;
  */
 public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSystem> {
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public List<Thread> handle(final IndexContext<?> indexContext, final IndexableFileSystem indexable) throws Exception {
 		final IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
@@ -51,12 +57,13 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 		final Pattern pattern = getPattern(indexable.getExcludedPattern());
 		if (isExcluded(baseFile, pattern)) {
 			logger.warn("Base directory excluded : " + baseFile + ", " + indexable.getExcludedPattern());
-			return null;
+			return new ArrayList<Thread>();
 		}
 		// Add all the files to the database
 		final Set<File> filesDone = new TreeSet<File>();
-		persistFiles(dataBase, indexContext, indexable, baseFile, getPattern(indexable.getExcludedPattern()), filesDone);
-		persistFiles(dataBase, indexable, filesDone);
+		iterateFileSystem(dataBase, indexContext, indexable, baseFile, getPattern(indexable.getExcludedPattern()), filesDone);
+		// Persist the last of the files in the list
+		persistFilesBatch(dataBase, indexable, filesDone);
 		// Now start the threads indexing the files from the database
 		List<Thread> threads = new ArrayList<Thread>();
 		String name = this.getClass().getSimpleName();
@@ -83,10 +90,19 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 		return threads;
 	}
 
+	/**
+	 * This method will get the next batch of files from the database that are not yet processed.
+	 * 
+	 * @param dataBase
+	 *            the database for the persistence
+	 * @param indexable
+	 *            the file system configuration object
+	 * @return the list of files still to be indexed, could be empty if there are not more files
+	 */
 	protected synchronized List<ikube.model.File> getBatch(final IDataBase dataBase, final IndexableFileSystem indexable) {
 		try {
 			Map<String, Object> parameters = new HashMap<String, Object>();
-			parameters.put(IConstants.NAME, indexable.getParent().getName());
+			parameters.put(IConstants.NAME, indexable.getName());
 			parameters.put(IConstants.INDEXED, Boolean.FALSE);
 			List<ikube.model.File> dbFiles = dataBase.find(ikube.model.File.class, ikube.model.File.SELECT_FROM_FILE_BY_NAME_AND_INDEXED,
 					parameters, 0, indexable.getBatchSize());
@@ -116,7 +132,7 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 	 * @param excludedPattern
 	 *            the excluded patterns
 	 */
-	protected void persistFiles(final IDataBase dataBase, final IndexContext<?> indexContext, final IndexableFileSystem indexable,
+	protected void iterateFileSystem(final IDataBase dataBase, final IndexContext<?> indexContext, final IndexableFileSystem indexable,
 			final File folder, final Pattern excludedPattern, final Set<File> filesDone) {
 		File[] files = folder.listFiles();
 		if (files != null) {
@@ -125,31 +141,41 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 					continue;
 				}
 				if (file.isDirectory()) {
-					persistFiles(dataBase, indexContext, indexable, file, excludedPattern, filesDone);
+					iterateFileSystem(dataBase, indexContext, indexable, file, excludedPattern, filesDone);
 				} else {
 					filesDone.add(file);
 					if (filesDone.size() >= indexable.getBatchSize()) {
-						persistFiles(dataBase, indexable, filesDone);
+						persistFilesBatch(dataBase, indexable, filesDone);
 					}
 				}
 			}
 		}
 	}
 
-	protected void persistFiles(final IDataBase dataBase, final IndexableFileSystem indexable, final Set<File> filesDone) {
-		logger.info("Persisting files : " + filesDone.size());
+	/**
+	 * This method will persist the batch of files that have been accumulated by iterating over the file system.
+	 * 
+	 * @param dataBase
+	 *            the database for the persistence
+	 * @param indexable
+	 *            the file system base configuration object
+	 * @param batchedFiles
+	 *            the batch of files that have been collected by iterating over the file system
+	 */
+	protected void persistFilesBatch(final IDataBase dataBase, final IndexableFileSystem indexable, final Set<File> batchedFiles) {
+		logger.info("Persisting files : " + batchedFiles.size());
 		List<ikube.model.File> filesToPersist = new ArrayList<ikube.model.File>();
-		for (File toPersistFile : filesDone) {
+		for (File toPersistFile : batchedFiles) {
 			long urlId = HashUtilities.hash(toPersistFile.getAbsolutePath());
 			ikube.model.File dbFile = new ikube.model.File();
-			dbFile.setName(indexable.getParent().getName());
+			dbFile.setName(indexable.getName());
 			dbFile.setIndexed(Boolean.FALSE);
 			dbFile.setUrl(toPersistFile.getAbsolutePath());
 			dbFile.setUrlId(urlId);
 			filesToPersist.add(dbFile);
 		}
 		dataBase.persistBatch(filesToPersist);
-		filesDone.clear();
+		batchedFiles.clear();
 	}
 
 	/**
@@ -209,6 +235,16 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 		return Pattern.compile(pattern != null ? pattern : "");
 	}
 
+	/**
+	 * This method checks to see if the file can be read, that it exists and that it is not in the excluded pattern defined in the
+	 * configuration.
+	 * 
+	 * @param file
+	 *            the file to check for inclusion in the processing
+	 * @param pattern
+	 *            the pattern that excludes explicitly files and folders
+	 * @return whether this file is included and can be processed
+	 */
 	protected boolean isExcluded(final File file, final Pattern pattern) {
 		// If it does not exist, we can't read it or directory excluded with the pattern
 		return file == null || !file.exists() || !file.canRead() || pattern.matcher(file.getName()).matches();

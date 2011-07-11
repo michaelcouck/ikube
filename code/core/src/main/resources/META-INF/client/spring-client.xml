@@ -41,7 +41,7 @@
 		<ref local="mail" />
 		<ref local="internet" />
 		<ref local="hazelcast" />
-		<ref local="internetMillion" />
+		<!-- <ref local="internetMillion" /> -->
 		<!-- <ref local="internetFalconMillion" /> -->
 		<ref local="filesystem" />
 		<ref local="filesystemMillionOne" />
@@ -55,13 +55,13 @@
 		<ref local="filesystemMillionNine" />
 		<ref local="filesystemMillionTen" /> -->
 		<!-- <ref bean="faqTableH2" /> -->
-		<ref bean="faqTableDb2" />
+		<!-- <ref bean="faqTableDb2" /> -->
 		<ref bean="faqTableOracle" />
 		<!-- <ref bean="patientTableH2" /> -->
 		<ref bean="patientTableDb2" />
 		<ref bean="patientTableOracle" />
 		<ref bean="addressTableDb2" />
-		<ref bean="attachmentTableDb2Direct" />
+		<!-- <ref bean="attachmentTableDb2Direct" /> -->
 	</util:list>
 
 	<!-- H2 Faqs -->
@@ -124,7 +124,7 @@
 	<bean
 		id="attachmentTableDb2Direct"
 		class="ikube.model.IndexableTable"
-		property:name="attachmentDirect"
+		property:name="attachment"
 		property:primaryTable="true"
 		property:dataSource-ref="nonXaDataSourceDb2"
 		property:children-ref="attachmentColumnsDb2" 
@@ -142,7 +142,6 @@
 		<ref local="attachmentTableDb2" />
 	</util:list>
 	<util:list id="attachmentColumnsDb2">
-		<ref local="attachmentFaqId" />
 		<ref local="attachmentId" />
 		<ref local="name" />
 		<ref local="attachment" />

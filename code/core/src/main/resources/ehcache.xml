@@ -8,22 +8,20 @@
 	<cache 
 		name="UrlCache"
 		eternal="false" 
+		diskPersistent="false"
+		overflowToDisk="true"
 		timeToLiveSeconds="6000"
 		timeToIdleSeconds="6000"
-		maxElementsInMemory="1000000"
-		overflowToDisk="true"
-		diskPersistent="false"
+		maxElementsInMemory="100000"
 		diskExpiryThreadIntervalSeconds="600"
 		memoryStoreEvictionPolicy="LRU">
 	</cache>
 	<cache 
 		name="NewUrlCache"
 		eternal="true" 
-		timeToLiveSeconds="6000"
-		timeToIdleSeconds="6000"
-		maxElementsInMemory="1000000"
+		maxElementsInMemory="10000"
 		overflowToDisk="true"
-		diskPersistent="false">
+		diskPersistent="true">
 	</cache>
 	<defaultCache 
 		maxElementsInMemory="10000" 
@@ -31,7 +29,7 @@
 		timeToIdleSeconds="120" 
 		timeToLiveSeconds="120" 
 		overflowToDisk="true"
-		maxElementsOnDisk="10000000" 
+		maxElementsOnDisk="100000" 
 		diskPersistent="false" 
 		diskExpiryThreadIntervalSeconds="120" 
 		memoryStoreEvictionPolicy="LRU" />

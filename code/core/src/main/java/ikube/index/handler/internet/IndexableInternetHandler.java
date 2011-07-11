@@ -34,7 +34,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
@@ -58,14 +57,20 @@ import org.apache.lucene.document.Field.TermVector;
 import org.apache.lucene.index.CorruptIndexException;
 
 /**
+ * This is the crawler for internet and intranets sites. There are several levels of caches to improve performance in this class. Firstly
+ * the JPA cache provided by the implementation. Then the query cache also from the JPA implementation. There is a new cache that is used to
+ * cache new urls to batch them for insert, and then there is the url cache that is added to manually.
+ * 
+ * This class is optimised for performance, as such the elegance has taken a back seat. To facilitate several hundred million pages
+ * performance was by far the most important aspect of this logic. Memory concerns and trips to the database are critical, and we would like
+ * to keep both to an absolute minimum, ergo the caches.
+ * 
  * @author Michael Couck
  * @since 29.11.10
  * @version 01.00
  */
 public class IndexableInternetHandler extends IndexableHandler<IndexableInternet> {
 
-	/** TODO Remove these fields and put them in the IndexableInternet. */
-	private Pattern excludedPattern;
 	private Map<String, Object> notIndexedParameters;
 	private Cache cache = CacheManager.create().getCache("UrlCache");
 	private Cache newCache = CacheManager.create().getCache("NewUrlCache");
@@ -78,13 +83,10 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	public List<Thread> handle(final IndexContext<?> indexContext, final IndexableInternet indexable) throws Exception {
 		cache.removeAll();
 		newCache.removeAll();
-		if (indexable.getExcludedPattern() != null) {
-			excludedPattern = Pattern.compile(indexable.getExcludedPattern());
-		}
-		final IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
 		notIndexedParameters = new HashMap<String, Object>();
 		notIndexedParameters.put(IConstants.INDEXED, Boolean.FALSE);
-		notIndexedParameters.put(IConstants.NAME, indexContext.getName());
+		notIndexedParameters.put(IConstants.NAME, indexable.getName());
+		final IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
 
 		// The start url
 		seedUrl(dataBase, indexable);
@@ -113,6 +115,7 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 									}
 								}
 							} else {
+								cache.removeAll();
 								break;
 							}
 						}
@@ -126,36 +129,78 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 		return threads;
 	}
 
+	/**
+	 * This method iterates over the batch of urls and indexes the content, also extracting other links from the pages.
+	 * 
+	 * @param dataBase
+	 *            the database to use for persistence
+	 * @param indexContext
+	 *            the index context for this internet url
+	 * @param indexable
+	 *            the indexable, which is the url configuration
+	 * @param urlBatch
+	 *            the batch of urls to index
+	 * @param contentProvider
+	 *            the content provider for http pages
+	 * @param httpClient
+	 *            the client to use for accessing the pages over http
+	 */
 	protected void doUrls(final IDataBase dataBase, final IndexContext<?> indexContext, final IndexableInternet indexable,
-			final List<Url> urls, final IContentProvider<IndexableInternet> contentProvider, final HttpClient httpClient) {
-		if (urls.size() > 0) {
-			logger.info("Batch : " + urls.size() + ", first url : " + urls.get(0));
+			final List<Url> urlBatch, final IContentProvider<IndexableInternet> contentProvider, final HttpClient httpClient) {
+		if (urlBatch.size() > 0) {
+			logger.info("Batch : " + urlBatch.size() + ", first url : " + urlBatch.get(0));
 		}
-		for (Url url : urls) {
+		for (Url url : urlBatch) {
 			try {
 				if (url == null || url.getUrl() == null) {
 					continue;
 				}
 				handle(dataBase, indexContext, indexable, url, contentProvider, httpClient);
-				url.setParsedContent(null);
-				url.setRawContent(null);
-				url.setTitle(null);
-				url.setContentType(null);
 			} catch (Exception e) {
 				logger.error("Exception doing url : " + url, e);
+			} finally {
+				try {
+					if (url != null) {
+						url.setParsedContent(null);
+						url.setRawContent(null);
+						url.setTitle(null);
+						url.setContentType(null);
+					}
+				} catch (Exception e) {
+					logger.error("Exception nulling the fields in the url : " + url, e);
+				}
 			}
+		}
+		try {
+			dataBase.mergeBatch(urlBatch);
+		} catch (Exception e) {
+			logger.error("Exception merging urls : ", e);
 		}
 	}
 
+	/**
+	 * This method gets the next batch of urls from the database that have not been visited yet in this iteration. The urls that are
+	 * returned will have had the indexed flag set to true and merged back into the database.
+	 * 
+	 * @param dataBase
+	 *            the database to persistence
+	 * @param indexableInternet
+	 *            the base indexable for the url
+	 * @return the list of urls that have not been visited, this list could be empty if there are no urls that have not been visited
+	 */
 	protected synchronized List<Url> getUrlBatch(final IDataBase dataBase, final IndexableInternet indexableInternet) {
 		try {
+			// Get the next batch
 			List<Url> urls = dataBase.find(Url.class, Url.SELECT_FROM_URL_BY_NAME_AND_INDEXED, notIndexedParameters, 0,
 					indexableInternet.getInternetBatchSize());
 			if (urls.isEmpty()) {
+				// If there are no urls that need to be indexed than empty the new url cache
+				// into the database and try again
 				persistBatch(dataBase);
 				urls = dataBase.find(Url.class, Url.SELECT_FROM_URL_BY_NAME_AND_INDEXED, notIndexedParameters, 0,
 						indexableInternet.getInternetBatchSize());
 			}
+			// Set all the indexed flags to true
 			for (Url url : urls) {
 				url.setIndexed(Boolean.TRUE);
 			}
@@ -166,6 +211,22 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 		}
 	}
 
+	/**
+	 * This method will do the actions that visit the url, parse the data and add it to the index.
+	 * 
+	 * @param dataBase
+	 *            the database for the persistence
+	 * @param indexContext
+	 *            the index context for this index
+	 * @param indexable
+	 *            the internet base url configuration object
+	 * @param url
+	 *            the url that will be indexed in this call
+	 * @param contentProvider
+	 *            the content provider for internet http pages
+	 * @param httpClient
+	 *            the client for accessing the pages
+	 */
 	protected void handle(final IDataBase dataBase, final IndexContext<?> indexContext, final IndexableInternet indexable, final Url url,
 			final IContentProvider<IndexableInternet> contentProvider, final HttpClient httpClient) {
 		try {
@@ -187,13 +248,27 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 			long hash = HashUtilities.hash(parsedContent);
 			url.setHash(hash);
 			// Check for duplicates
-			if (cache.get(hash) != null) {
-				url.setRawContent(null);
-				url.setParsedContent(null);
-				logger.info("Duplicate data : " + url);
-				dataBase.merge(url);
+			net.sf.ehcache.Element cacheElement = cache.get(hash);
+			if (cacheElement != null) {
+				return;
+			} else {
+				Map<String, Object> parameters = new HashMap<String, Object>();
+				parameters.put(IConstants.HASH, hash);
+				try {
+					Url dbUrl = dataBase.find(Url.class, Url.SELECT_FROM_URL_BY_HASH, parameters);
+					if (dbUrl != null) {
+						cache.put(new net.sf.ehcache.Element(hash, dbUrl));
+						return;
+					}
+				} catch (NoResultException e) {
+					// Nothing in the db with the hash
+				} catch (NonUniqueResultException e) {
+					// More than one? Shouldn't be
+					logger.warn("Duplicate url or data : " + url, e);
+					return;
+				}
+				cache.put(new net.sf.ehcache.Element(hash, url));
 			}
-			cache.put(new net.sf.ehcache.Element(hash, url));
 			// Add the document to the index
 			addDocumentToIndex(indexContext, indexable, url, parsedContent);
 		} catch (Exception e) {
@@ -222,6 +297,11 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 			byteOutputStream = new ByteOutputStream();
 			contentProvider.getContent(indexable, byteOutputStream);
 			url.setRawContent(byteOutputStream.getBytes());
+			if (url.getUrl() != null) {
+				// Add the url to the content
+				byteOutputStream.write(" ".getBytes());
+				byteOutputStream.write(url.getUrl().getBytes());
+			}
 			return byteOutputStream;
 		} catch (Exception e) {
 			logger.error("Exception getting the content from the url : " + url, e);
@@ -278,22 +358,26 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	}
 
 	/**
-	 * Adds the document to the index with all the defined fields.
+	 * Adds the document to the index with all the defined fields. Typically the fields are the title, the field names that are defined in
+	 * the configuration and the content field name.
 	 * 
 	 * @param indexable
+	 *            the indexable or base host for this crawl
 	 * @param url
+	 *            the url being added to the index, i.e. just been visited and the data has been extracted
 	 * @param parsedContent
+	 *            the content that was extracted from the url
 	 */
 	protected void addDocumentToIndex(final IndexContext<?> indexContext, final IndexableInternet indexable, final Url url,
 			final String parsedContent) {
 		try {
-			String id = getUrlId(indexable, url);
-
 			Document document = new Document();
 			Store store = indexable.isStored() ? Store.YES : Store.NO;
 			Index analyzed = indexable.isAnalyzed() ? Index.ANALYZED : Index.NOT_ANALYZED;
 			TermVector termVector = indexable.isVectored() ? TermVector.YES : TermVector.NO;
 
+			// Add the id field, which is the url in this case
+			IndexManager.addStringField(indexable.getIdFieldName(), url.getUrl(), document, Store.YES, Index.ANALYZED, TermVector.YES);
 			// Add the title field
 			MimeType mimeType = MimeTypes.getMimeType(url.getContentType(), url.getRawContent());
 			if (mimeType != null && mimeType.getPrimaryType().contains(HTMLElementName.HTML)) {
@@ -309,24 +393,12 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 				// Add the url as the title
 				IndexManager.addStringField(indexable.getTitleFieldName(), url.getUrl(), document, store, analyzed, termVector);
 			}
-			// Add the id field
-			IndexManager.addStringField(indexable.getIdFieldName(), id, document, Store.YES, Index.ANALYZED, TermVector.YES);
 			// Add the contents field
 			IndexManager.addStringField(indexable.getContentFieldName(), parsedContent, document, store, analyzed, termVector);
 			this.addDocument(indexContext, indexable, document);
 		} catch (Exception e) {
 			logger.error("Exception accessing url : " + url, e);
-		} finally {
-			url.setParsedContent(null);
-			url.setRawContent(null);
-			url.setTitle(null);
 		}
-	}
-
-	protected String getUrlId(final IndexableInternet indexableInternet, final Url url) {
-		StringBuilder builder = new StringBuilder();
-		builder.append(url.getUrl());
-		return builder.toString();
 	}
 
 	/**
@@ -372,7 +444,7 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 							if (!strippedAnchorLink.startsWith(baseUrlStripped)) {
 								continue;
 							}
-							if (excludedPattern != null && excludedPattern.matcher(strippedAnchorLink).matches()) {
+							if (indexableInternet.isExcluded(strippedAnchorLink)) {
 								continue;
 							}
 							Long urlId = HashUtilities.hash(strippedAnchorLink);
@@ -381,6 +453,7 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 							if (cache.get(urlId) != null || newCache.get(urlId) != null) {
 								continue;
 							}
+							// Check the database for this url
 							localUrlIdParameters.get().put(IConstants.URL_ID, urlId);
 							Url dbUrl = null;
 							try {
@@ -396,10 +469,10 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 							}
 							Url url = new Url();
 							url.setUrlId(urlId);
-							url.setName(indexableInternet.getParent().getName());
+							url.setName(indexableInternet.getName());
 							url.setIndexed(Boolean.FALSE);
-							// Add the link to the database here
 							url.setUrl(strippedAnchorLink);
+							// Add the new url to the cache, we'll batch them in an insert later
 							newCache.put(new net.sf.ehcache.Element(urlId, url));
 						} catch (Exception e) {
 							logger.error("Exception extracting link : " + tag, e);
@@ -419,6 +492,13 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 		}
 	}
 
+	/**
+	 * This method will take all the new urls that were added to the new url cache and persist them in a batch, then clear the cache for the
+	 * next batch.
+	 * 
+	 * @param dataBase
+	 *            the database to persist the batch of new urls to
+	 */
 	protected synchronized void persistBatch(final IDataBase dataBase) {
 		try {
 			// Persist all the urls in the cache that are not persisted
@@ -449,6 +529,15 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 		}
 	}
 
+	/**
+	 * This method checks to see that there is at least one other thread that is still in the runnable state. If there are no other threads
+	 * in the runnable state then all the urls have been visited on this base url. There will also be no more urls added so we can exit this
+	 * thread.
+	 * 
+	 * @param threads
+	 *            the threads to check for the runnable state
+	 * @return true if there is at least one other thread that is in the runnable state
+	 */
 	protected boolean isCrawling(final List<Thread> threads) {
 		int threadsRunnable = 0;
 		for (Thread thread : threads) {
@@ -462,12 +551,20 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 		return Boolean.FALSE;
 	}
 
+	/**
+	 * This method will add the first or base url to the database. Typically this method gets called before starting the crawl.
+	 * 
+	 * @param dataBase
+	 *            the database for the persistence
+	 * @param indexableInternet
+	 *            the base url object from the configuration for the site/intranet
+	 */
 	protected void seedUrl(final IDataBase dataBase, final IndexableInternet indexableInternet) {
 		String urlString = indexableInternet.getUrl();
 		indexableInternet.setCurrentUrl(urlString);
 
 		Url url = new Url();
-		url.setName(indexableInternet.getParent().getName());
+		url.setName(indexableInternet.getName());
 		url.setUrlId(HashUtilities.hash(urlString));
 		url.setUrl(urlString);
 		url.setIndexed(Boolean.FALSE);
@@ -475,6 +572,9 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 		dataBase.persist(url);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void addDocument(final IndexContext<?> indexContext, final Indexable<IndexableInternet> indexable, final Document document)
 			throws CorruptIndexException, IOException {

@@ -72,7 +72,7 @@ public class IndexableInternet extends Indexable<IndexableInternet> {
 		}
 		return baseUrl;
 	}
-	
+
 	public void setBaseUrl(String baseUrl) {
 		this.baseUrl = baseUrl;
 	}
@@ -129,11 +129,15 @@ public class IndexableInternet extends Indexable<IndexableInternet> {
 		this.timeout = timeout;
 	}
 
-	public boolean isExcluded(final String link) {
+	public boolean isExcluded(final String string) {
 		if (pattern == null) {
-			pattern = Pattern.compile(getExcludedPattern());
+			if (getExcludedPattern() != null) {
+				pattern = Pattern.compile(getExcludedPattern());
+			} else {
+				return Boolean.FALSE;
+			}
 		}
-		return pattern.matcher(link).matches();
+		return pattern.matcher(string).matches();
 	}
 
 	public String getCurrentUrl() {

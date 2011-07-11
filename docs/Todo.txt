@@ -23,6 +23,9 @@
   3) Ram usage
   4) Up time
   5) Open files
+* Add search results tracking
+  Analysis of the search results with resulting reports, top queries, results from queries etc.
+* Taxonomy and synonyms
 
 Sub Total: 7
 
