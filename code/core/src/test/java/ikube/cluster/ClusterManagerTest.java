@@ -50,7 +50,7 @@ public class ClusterManagerTest extends ATest {
 	@Before
 	public void before() throws Exception {
 		indexName = INDEX_CONTEXT.getIndexName();
-		indexableName = INDEXABLE.getName();
+		indexableName = INDEXABLE_COLUMN.getName();
 
 		remoteServer = new Server();
 		remoteServer.setAddress(InetAddress.getLocalHost().getHostAddress() + "." + System.nanoTime());

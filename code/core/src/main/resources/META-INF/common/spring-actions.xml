@@ -97,6 +97,7 @@
 				<ref local="ikube.action.rule.AreUnopenedIndexes" />
 				<ref local="ikube.action.rule.IsThisServerWorking" />
 				<ref local="ikube.action.rule.IsNewIndexCreated" />
+				<ref local="ikube.action.rule.IsIndexCorrupt" />
 			</util:list>
 		</property>
 	</bean>

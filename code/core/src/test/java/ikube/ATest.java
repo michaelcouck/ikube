@@ -18,7 +18,6 @@ import ikube.model.Index;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.model.IndexableColumn;
-import ikube.model.IndexableInternet;
 import ikube.model.IndexableTable;
 import ikube.model.Server;
 import ikube.toolkit.FileUtilities;
@@ -83,13 +82,13 @@ public abstract class ATest {
 	protected FSDirectory FS_DIRECTORY = mock(FSDirectory.class);
 	protected IndexWriter INDEX_WRITER = mock(IndexWriter.class);
 	protected IndexReader INDEX_READER = mock(IndexReader.class);
-	protected IndexContext<?> INDEX_CONTEXT = mock(IndexContext.class);
 	protected TopFieldDocs TOP_FIELD_DOCS = mock(TopFieldDocs.class);
 	protected MultiSearcher MULTI_SEARCHER = mock(MultiSearcher.class);
 	protected IndexSearcher INDEX_SEARCHER = mock(IndexSearcher.class);
+	protected IndexContext<?> INDEX_CONTEXT = mock(IndexContext.class);
 	protected IClusterManager CLUSTER_MANAGER = mock(IClusterManager.class);
-	protected IndexableColumn INDEXABLE = mock(IndexableColumn.class);
 	protected IndexableTable INDEXABLE_TABLE = mock(IndexableTable.class);
+	protected IndexableColumn INDEXABLE_COLUMN = mock(IndexableColumn.class);
 
 	protected String indexDirectoryPath = "./indexes";
 	protected String indexDirectoryPathBackup = "./indexes/backup";
@@ -140,15 +139,16 @@ public abstract class ATest {
 		when(SERVER.getAddress()).thenReturn(IP);
 		when(SERVER.getIp()).thenReturn(IP);
 		when(INDEX.getIndexWriter()).thenReturn(INDEX_WRITER);
-		INDEXABLES.add(INDEXABLE);
-		when(INDEXABLE.getContent()).thenReturn("9a avenue road, cape town, south africa");
-		when(INDEXABLE.isAddress()).thenReturn(Boolean.TRUE);
-		when(INDEXABLE.getName()).thenReturn("indexableName");
+		INDEXABLES.add(INDEXABLE_TABLE);
+		INDEXABLES.add(INDEXABLE_COLUMN);
+		when(INDEXABLE_COLUMN.getContent()).thenReturn("9a avenue road, cape town, south africa");
+		when(INDEXABLE_COLUMN.isAddress()).thenReturn(Boolean.TRUE);
+		when(INDEXABLE_COLUMN.getName()).thenReturn("indexableName");
 
 		IndexManagerMock.INDEX_WRITER = INDEX_WRITER;
 		ApplicationContextManagerMock.INDEX_CONTEXT = INDEX_CONTEXT;
 		ApplicationContextManagerMock.CLUSTER_MANAGER = CLUSTER_MANAGER;
-		when(ApplicationContextManagerMock.HANDLER.getIndexableClass()).thenReturn(IndexableInternet.class);
+		when(ApplicationContextManagerMock.HANDLER.getIndexableClass()).thenReturn(IndexableTable.class);
 
 		ListenerManager.removeListeners();
 	}

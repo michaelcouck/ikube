@@ -1,12 +1,13 @@
 package ikube.mock;
 
-import static org.mockito.Mockito.*;
-
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import ikube.cluster.IClusterManager;
 import ikube.database.IDataBase;
 import ikube.index.handler.IHandler;
-import ikube.index.handler.internet.IndexableInternetHandler;
+import ikube.index.handler.database.IndexableTableHandler;
 import ikube.model.IndexContext;
+import ikube.model.IndexableTable;
 import ikube.toolkit.ApplicationContextManager;
 
 import java.util.HashMap;
@@ -30,8 +31,12 @@ public class ApplicationContextManagerMock {
 	public static IndexContext<?> INDEX_CONTEXT;
 	public static IClusterManager CLUSTER_MANAGER = mock(IClusterManager.class);
 	public static IDataBase DATABASE = mock(IDataBase.class);
-	public static IndexableInternetHandler HANDLER = mock(IndexableInternetHandler.class);
-	
+	public static IndexableTableHandler HANDLER = mock(IndexableTableHandler.class);
+
+	static {
+		when(HANDLER.getIndexableClass()).thenReturn(IndexableTable.class);
+	}
+
 	@Mock()
 	@SuppressWarnings("unchecked")
 	public static synchronized <T> T getBean(final Class<T> klass) {

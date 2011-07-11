@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.log4j.Logger;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.nfunk.jep.JEP;
-import org.nfunk.jep.Node;
+import org.nfunk.jep.SymbolTable;
 
 import com.hazelcast.core.ILock;
 
@@ -100,10 +100,6 @@ public class RuleInterceptor implements IRuleInterceptor {
 						if (result == null) {
 							result = jep.getValue();
 						}
-						if (LOGGER.isInfoEnabled()) {
-							// Node node = jep.getTopNode();
-							// printNodesAndEvaluations(jep, node);
-						}
 						if (result != null && (result.equals(1.0d) || result.equals(Boolean.TRUE))) {
 							// TODO Take a snapshot of the cluster at the time of the rule becoming
 							// true and an index started, including the state of the indexes on the file
@@ -150,15 +146,10 @@ public class RuleInterceptor implements IRuleInterceptor {
 		}
 	}
 
-	protected void printNodesAndEvaluations(final JEP jep, final Node node) {
+	protected void printSymbolTable(final JEP jep) {
 		try {
-			LOGGER.info("Child node : " + node);
-			Object childResult = jep.evaluate(node);
-			LOGGER.info("           : " + childResult);
-			for (int i = 0; i < node.jjtGetNumChildren(); i++) {
-				Node childNode = node.jjtGetChild(i);
-				printNodesAndEvaluations(jep, childNode);
-			}
+			SymbolTable symbolTable = jep.getSymbolTable();
+			LOGGER.info("Symbol table : " + symbolTable);
 		} catch (Exception e) {
 			LOGGER.error("Exception printing the nodes : ", e);
 		}

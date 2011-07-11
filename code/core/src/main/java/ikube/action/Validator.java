@@ -10,7 +10,6 @@ import ikube.model.IndexContext;
 import ikube.model.Server;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
-import ikube.toolkit.Mailer;
 
 import java.io.File;
 
@@ -87,15 +86,6 @@ public class Validator extends Action<IndexContext<?>, Boolean> {
 			return Boolean.TRUE;
 		} finally {
 			getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getSimpleName(), "", Boolean.FALSE);
-		}
-	}
-
-	protected void sendNotification(final IndexContext<?> indexContext, final String subject, final String body) {
-		try {
-			Mailer mailer = ApplicationContextManager.getBean(Mailer.class);
-			mailer.sendMail(subject, body);
-		} catch (Exception e) {
-			logger.error("Exception sending mail : ", e);
 		}
 	}
 

@@ -61,16 +61,16 @@ public class SpatialEnrichmentInterceptorTest extends ATest {
 	@Test
 	public void enrich() {
 		// Object[]
-		Object[] arguments = new Object[] { document, INDEXABLE };
+		Object[] arguments = new Object[] { document, INDEXABLE_COLUMN };
 		interceptor.enrich(arguments);
 		assertTrue(true);
 
-		Object address = INDEXABLE.getContent();
-		when(INDEXABLE.getContent()).thenReturn("8a Drongenhof, Ghent, België");
+		Object address = INDEXABLE_COLUMN.getContent();
+		when(INDEXABLE_COLUMN.getContent()).thenReturn("8a Drongenhof, Ghent, België");
 		interceptor.enrich(arguments);
 		assertTrue(true);
 
-		when(INDEXABLE.getContent()).thenReturn(address);
+		when(INDEXABLE_COLUMN.getContent()).thenReturn(address);
 	}
 
 }

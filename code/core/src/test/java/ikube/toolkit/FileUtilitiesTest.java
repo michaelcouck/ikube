@@ -117,7 +117,7 @@ public class FileUtilitiesTest extends ATest {
 	@Test
 	public void setContents() throws Exception {
 		String data = "Michael Couck";
-		File tempFile = File.createTempFile("temp", ".file");
+		File tempFile = FileUtilities.getFile("./indexes/data.dat", Boolean.FALSE);
 		FileUtilities.setContents(tempFile.getAbsolutePath(), data.getBytes());
 		assertTrue(tempFile.exists());
 		assertTrue(tempFile.length() > 5);

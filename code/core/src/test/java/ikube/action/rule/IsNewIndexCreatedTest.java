@@ -22,18 +22,23 @@ import org.junit.Test;
  */
 public class IsNewIndexCreatedTest extends ATest {
 
+	private String originalDirectoryPath;
+
 	public IsNewIndexCreatedTest() {
 		super(IsNewIndexCreatedTest.class);
 	}
 
 	@Before
 	public void before() {
+		originalDirectoryPath = INDEX_CONTEXT.getIndexDirectoryPath();
+		when(INDEX_CONTEXT.getIndexDirectoryPath()).thenReturn("./" + getClass().getSimpleName());
 		FileUtilities.deleteFile(new File(INDEX_CONTEXT.getIndexDirectoryPath()), 1);
 	}
 
 	@After
 	public void after() {
 		FileUtilities.deleteFile(new File(INDEX_CONTEXT.getIndexDirectoryPath()), 1);
+		when(INDEX_CONTEXT.getIndexDirectoryPath()).thenReturn(originalDirectoryPath);
 	}
 
 	@Test

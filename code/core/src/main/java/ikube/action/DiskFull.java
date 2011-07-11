@@ -44,9 +44,14 @@ public class DiskFull extends Action<IndexContext<?>, Boolean> {
 				long freeSpaceMegabytes = freeSpaceKilobytes / 1000;
 				if (freeSpaceMegabytes < MINIMUM_FREE_SPACE) {
 					// We need to exit this server as the disk will crash
-					logger.fatal("We have run out of disk space on this driver : " + indexesDirectory);
-					logger.fatal("This server will exit to save the machine : " + freeSpaceMegabytes);
+					String subject = "No more disk space on server!";
+					String body = "We have run out of disk space on this driver : " + indexesDirectory;
+					body += "This server will exit to save the machine : " + freeSpaceMegabytes;
+					logger.fatal(subject);
+					logger.fatal(body);
+					sendNotification(indexContext, subject, body);
 					System.exit(0);
+					return Boolean.FALSE;
 				}
 			} catch (IOException e) {
 				logger.error("Exception looking for the free space : " + indexesDirectory, e);

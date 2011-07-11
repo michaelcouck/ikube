@@ -47,9 +47,9 @@ public class EnrichmentTest extends ATest {
 	@Test
 	public void buildAddress() {
 		// Indexable<?>, StringBuilder
-		String address = enrichment.buildAddress(INDEXABLE, new StringBuilder()).toString();
+		String address = enrichment.buildAddress(INDEXABLE_COLUMN, new StringBuilder()).toString();
 		logger.info("Address : " + address);
-		assertEquals(INDEXABLE.getContent(), address);
+		assertEquals(INDEXABLE_COLUMN.getContent(), address);
 	}
 
 	@SuppressWarnings("unchecked")
