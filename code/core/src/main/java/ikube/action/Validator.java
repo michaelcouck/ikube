@@ -1,18 +1,18 @@
 package ikube.action;
 
+import ikube.action.rule.AreIndexesCreated;
+import ikube.action.rule.DirectoryExistsAndIsLocked;
+import ikube.action.rule.IsIndexCorrupt;
+import ikube.action.rule.IsIndexCurrent;
 import ikube.cluster.IClusterManager;
 import ikube.index.IndexManager;
 import ikube.model.IndexContext;
 import ikube.model.Server;
 import ikube.toolkit.ApplicationContextManager;
+import ikube.toolkit.FileUtilities;
 import ikube.toolkit.Mailer;
 
 import java.io.File;
-
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.FSDirectory;
 
 /**
  * This class will just validate that there are indexes in a searchable condition and if not send a mail to the administrator.
@@ -38,65 +38,56 @@ public class Validator extends Action<IndexContext<?>, Boolean> {
 
 			// There must be at least one index being generated, or one index created
 			// and one being generated for each index context
+
 			Server server = ApplicationContextManager.getBean(IClusterManager.class).getServer();
+			AreIndexesCreated areIndexesCreated = new AreIndexesCreated();
 			String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
-			File baseIndexDirectory = new File(indexDirectoryPath);
-			File[] timeIndexDirectories = baseIndexDirectory.listFiles();
-			if (timeIndexDirectories == null || timeIndexDirectories.length == 0) {
-				String subject = "1 : Ikube no indexes generated for server : " + server.getAddress();
-				String body = "No indexes for " + indexContext.getIndexName() + " generated.";
-				sendNotification(indexContext, subject, body);
-				return Boolean.TRUE;
-			}
-			boolean indexCreated = Boolean.FALSE;
-			boolean indexGenerated = Boolean.FALSE;
-			for (File timeIndexDirectory : timeIndexDirectories) {
-				File[] serverIndexDirectories = timeIndexDirectory.listFiles();
-				if (serverIndexDirectories == null || serverIndexDirectories.length == 0) {
-					String subject = "2 : Ikube no indexes generated for server : " + server.getAddress();
+			File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexDirectoryPath);
+			if (!areIndexesCreated.evaluate(indexContext)) {
+				if (latestIndexDirectory == null || !latestIndexDirectory.exists()) {
+					String subject = "1 : No indexes generated for server : " + server.getAddress();
 					String body = "No indexes for " + indexContext.getIndexName() + " generated.";
 					sendNotification(indexContext, subject, body);
-					continue;
-				}
-				for (File serverIndexDirectory : serverIndexDirectories) {
-					Directory directory = null;
-					try {
-						directory = FSDirectory.open(serverIndexDirectory);
-						boolean exists = IndexReader.indexExists(directory);
-						boolean locked = IndexWriter.isLocked(directory);
-						logger.debug("Exists : " + exists + ", locked : " + locked + ", directory : " + serverIndexDirectory);
-						if (exists && !locked) {
-							indexCreated = Boolean.TRUE;
-						}
-						if (exists && locked) {
-							indexGenerated = Boolean.TRUE;
-						}
-					} catch (Exception e) {
-						logger.error("Exception validating indexes for index context : " + indexContext, e);
-						String subject = "3 : Ikube index corrupt : " + server.getAddress();
-						String body = "Index " + serverIndexDirectory + " corrupt, index context : " + indexContext.getIndexName();
-						sendNotification(indexContext, subject, body);
-					} finally {
-						try {
-							if (directory != null) {
-								directory.close();
-							}
-						} catch (Exception e) {
-							logger.error("Exception closing the directory : ", e);
-						}
-					}
+					return Boolean.FALSE;
 				}
 			}
-			if (indexCreated || indexGenerated) {
-				return Boolean.TRUE;
+
+			IsIndexCorrupt isIndexCorrupt = new IsIndexCorrupt();
+			if (isIndexCorrupt.evaluate(indexContext)) {
+				String subject = "2 : Index corrupt for server : " + server.getAddress();
+				String body = "There is an index but it is corrupt. Generally another index will be generated immediately, but "
+						+ "if there is a backup for the index the restore will be invoked first, depending on the position of the action "
+						+ "in the action set.";
+				sendNotification(indexContext, subject, body);
+				return Boolean.FALSE;
 			}
-			String subject = "4 : Ikube indexes not generated or being generated : " + server.getAddress();
-			String body = "No indexes generated or in the process of being generated for index context : " + indexContext.getIndexName();
-			sendNotification(indexContext, subject, body);
+
+			IsIndexCurrent isIndexCurrent = new IsIndexCurrent();
+			if (!isIndexCurrent.evaluate(indexContext)) {
+				String subject = "3 : Index not current for server : " + server.getAddress();
+				String body = "The index for " + indexContext.getName() + " is not current. Generally another index "
+						+ "wil be generated immediately, this message is just for information.";
+				sendNotification(indexContext, subject, body);
+				return Boolean.FALSE;
+			}
+
+			// Check to see if there is an index being generated
+			DirectoryExistsAndIsLocked directoryExistsAndIsLocked = new DirectoryExistsAndIsLocked();
+			File[] serverIndexDirectories = latestIndexDirectory.listFiles();
+
+			for (File serverIndexDirectory : serverIndexDirectories) {
+				if (directoryExistsAndIsLocked.evaluate(serverIndexDirectory)) {
+					String subject = "4 : Index being generated : " + indexContext.getName();
+					String body = "The index is being generated for index context " + indexContext.getName() + ".";
+					sendNotification(indexContext, subject, body);
+					return Boolean.FALSE;
+				}
+			}
+
+			return Boolean.TRUE;
 		} finally {
 			getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getSimpleName(), "", Boolean.FALSE);
 		}
-		return Boolean.TRUE;
 	}
 
 	protected void sendNotification(final IndexContext<?> indexContext, final String subject, final String body) {
