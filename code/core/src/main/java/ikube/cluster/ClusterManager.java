@@ -267,9 +267,7 @@ public class ClusterManager implements IClusterManager, IConstants {
 	public synchronized long setWorking(final String actionName, final String indexName, final String indexableName, final boolean isWorking) {
 		try {
 			Server server = getServer();
-			if (server.getAction() == null) {
-				server.setAction(new Action());
-			}
+			server.setAction(new Action());
 			// Reset the id of this action
 			server.getAction().setIdNumber(0);
 			server.getAction().setActionName(actionName);
@@ -278,7 +276,6 @@ public class ClusterManager implements IClusterManager, IConstants {
 			// Reset the time in the action for each action
 			server.getAction().setStartTime(System.currentTimeMillis());
 			server.getAction().setWorking(isWorking);
-
 			// Publish the fact that this server is starting to work on an action
 			set(Server.class.getName(), server.getId(), server);
 			return server.getAction().getStartTime();

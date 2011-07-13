@@ -46,7 +46,7 @@ public class Validator extends Action<IndexContext<?>, Boolean> {
 				if (latestIndexDirectory == null || !latestIndexDirectory.exists()) {
 					String subject = "1 : No indexes generated for server : " + server.getAddress();
 					String body = "No indexes for " + indexContext.getIndexName() + " generated.";
-					sendNotification(indexContext, subject, body);
+					sendNotification(subject, body);
 					return Boolean.FALSE;
 				}
 			}
@@ -57,7 +57,7 @@ public class Validator extends Action<IndexContext<?>, Boolean> {
 				String body = "There is an index but it is corrupt. Generally another index will be generated immediately, but "
 						+ "if there is a backup for the index the restore will be invoked first, depending on the position of the action "
 						+ "in the action set.";
-				sendNotification(indexContext, subject, body);
+				sendNotification(subject, body);
 				return Boolean.FALSE;
 			}
 
@@ -66,7 +66,7 @@ public class Validator extends Action<IndexContext<?>, Boolean> {
 				String subject = "3 : Index not current for server : " + server.getAddress();
 				String body = "The index for " + indexContext.getName() + " is not current. Generally another index "
 						+ "wil be generated immediately, this message is just for information.";
-				sendNotification(indexContext, subject, body);
+				sendNotification(subject, body);
 				return Boolean.FALSE;
 			}
 
@@ -78,7 +78,7 @@ public class Validator extends Action<IndexContext<?>, Boolean> {
 				if (directoryExistsAndIsLocked.evaluate(serverIndexDirectory)) {
 					String subject = "4 : Index being generated : " + indexContext.getName();
 					String body = "The index is being generated for index context " + indexContext.getName() + ".";
-					sendNotification(indexContext, subject, body);
+					sendNotification(subject, body);
 					return Boolean.FALSE;
 				}
 			}

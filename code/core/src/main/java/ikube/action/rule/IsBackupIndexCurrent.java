@@ -21,8 +21,8 @@ public class IsBackupIndexCurrent extends ARule<IndexContext<?>> {
 	 */
 	@Override
 	public boolean evaluate(final IndexContext<?> indexContext) {
-		String indexDirectoryPath = IndexManager.getIndexDirectoryPathBackup(indexContext);
-		return isIndexCurrent(indexContext, indexDirectoryPath);
+		String indexDirectoryPathBackup = IndexManager.getIndexDirectoryPathBackup(indexContext);
+		return isIndexCurrent(indexContext, indexDirectoryPathBackup);
 	}
 
 }

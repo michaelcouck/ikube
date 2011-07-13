@@ -25,21 +25,23 @@ public class Close extends Action<IndexContext<?>, Boolean> {
 	public Boolean execute(final IndexContext<?> indexContext) {
 		try {
 			MultiSearcher multiSearcher = indexContext.getIndex().getMultiSearcher();
-			// Get all the searchables from the searcher and close them one by one
-			Searchable[] searchables = multiSearcher.getSearchables();
-			if (searchables != null && searchables.length > 0) {
-				for (Searchable searchable : searchables) {
-					try {
-						IndexSearcher indexSearcher = (IndexSearcher) searchable;
-						IndexReader reader = indexSearcher.getIndexReader();
-						Directory directory = reader.directory();
-						if (IndexWriter.isLocked(directory)) {
-							IndexWriter.unlock(directory);
+			if (multiSearcher != null) {
+				// Get all the searchables from the searcher and close them one by one
+				Searchable[] searchables = multiSearcher.getSearchables();
+				if (searchables != null && searchables.length > 0) {
+					for (Searchable searchable : searchables) {
+						try {
+							IndexSearcher indexSearcher = (IndexSearcher) searchable;
+							IndexReader reader = indexSearcher.getIndexReader();
+							Directory directory = reader.directory();
+							if (IndexWriter.isLocked(directory)) {
+								IndexWriter.unlock(directory);
+							}
+							reader.close();
+							searchable.close();
+						} catch (Exception e) {
+							logger.error("Exception trying to close the searcher", e);
 						}
-						reader.close();
-						searchable.close();
-					} catch (Exception e) {
-						logger.error("Exception trying to close the searcher", e);
 					}
 				}
 			}

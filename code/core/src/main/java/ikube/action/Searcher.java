@@ -7,9 +7,7 @@ import ikube.model.Server;
 import ikube.service.IMonitorWebService;
 import ikube.service.ISearcherWebService;
 import ikube.service.ServiceLocator;
-import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.Logging;
-import ikube.toolkit.Mailer;
 import ikube.toolkit.SerializationUtilities;
 
 import java.util.ArrayList;
@@ -50,23 +48,23 @@ public class Searcher extends Action<IndexContext<?>, Boolean> {
 				String monitoringWebServiceUrl = server.getMonitoringWebServiceUrl();
 				IMonitorWebService monitorWebService = ServiceLocator.getService(IMonitorWebService.class, monitoringWebServiceUrl,
 						IMonitorWebService.NAMESPACE, IMonitorWebService.SERVICE);
-				String[] indexNames = monitorWebService.getIndexNames();
-				for (String indexName : indexNames) {
-					String[] searchFields = monitorWebService.getIndexFieldNames(indexName);
-					String[] searchStrings = new String[searchFields.length];
-					String[] sortFields = new String[searchFields.length];
-					Arrays.fill(searchStrings, 0, searchStrings.length, searchString);
-					System.arraycopy(searchFields, 0, sortFields, 0, sortFields.length);
-					double latitude = new Double(50.7930727874172);
-					double longitude = new Double(4.36242219751376);
-					for (int i = 0; i < iterations; i++) {
-						xml = searchRemote.searchSingle(indexName, searchString, searchFields[0], Boolean.TRUE, 0, 10);
-						xml = searchRemote.searchMulti(indexName, searchStrings, searchFields, fragment, start, end);
-						// xml = searchRemote.searchMultiSorted(indexName, searchStrings, searchFields, sortFields, fragment, start, end);
-						xml = searchRemote.searchSpacialMulti(indexName, searchStrings, searchFields, fragment, start, end, 10, latitude,
-								longitude);
-						xml = searchRemote.searchMultiAll(indexName, searchStrings, fragment, start, end);
-					}
+
+				String indexName = indexContext.getIndexName();
+
+				String[] searchFields = monitorWebService.getIndexFieldNames(indexName);
+				String[] searchStrings = new String[searchFields.length];
+				String[] sortFields = new String[searchFields.length];
+				Arrays.fill(searchStrings, 0, searchStrings.length, searchString);
+				System.arraycopy(searchFields, 0, sortFields, 0, sortFields.length);
+				double latitude = new Double(50.7930727874172);
+				double longitude = new Double(4.36242219751376);
+				for (int i = 0; i < iterations; i++) {
+					xml = searchRemote.searchSingle(indexName, searchString, searchFields[0], Boolean.TRUE, 0, 10);
+					xml = searchRemote.searchMulti(indexName, searchStrings, searchFields, fragment, start, end);
+					// xml = searchRemote.searchMultiSorted(indexName, searchStrings, searchFields, sortFields, fragment, start, end);
+					xml = searchRemote.searchSpacialMulti(indexName, searchStrings, searchFields, fragment, start, end, 10, latitude,
+							longitude);
+					xml = searchRemote.searchMultiAll(indexName, searchStrings, fragment, start, end);
 				}
 			}
 			List<Map<String, String>> results = new ArrayList<Map<String, String>>();
@@ -78,7 +76,7 @@ public class Searcher extends Action<IndexContext<?>, Boolean> {
 						start, end, resultsSizeMinimum);
 				logger.info(message);
 				ListenerManager.fireEvent(Event.NO_RESULTS, System.currentTimeMillis(), null, Boolean.TRUE);
-				sendNotification(indexContext, "Integration results : " + indexContext.getIndexName(), results.toString());
+				sendNotification("Integration results : " + indexContext.getIndexName(), results.toString());
 			} else {
 				ListenerManager.fireEvent(Event.RESULTS, System.currentTimeMillis(), null, Boolean.TRUE);
 			}
@@ -86,15 +84,6 @@ public class Searcher extends Action<IndexContext<?>, Boolean> {
 			getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getSimpleName(), "", Boolean.FALSE);
 		}
 		return Boolean.TRUE;
-	}
-
-	protected void sendNotification(final IndexContext<?> indexContext, final String subject, final String body) {
-		try {
-			Mailer mailer = ApplicationContextManager.getBean(Mailer.class);
-			mailer.sendMail(subject, body);
-		} catch (Exception e) {
-			logger.error("Exception sending mail : ", e);
-		}
 	}
 
 	public void setFragment(boolean fragment) {

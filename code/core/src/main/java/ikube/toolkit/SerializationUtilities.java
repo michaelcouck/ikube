@@ -21,6 +21,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -99,7 +100,8 @@ public final class SerializationUtilities {
 					continue;
 				}
 				Transient transientAnnotation = field.getAnnotation(Transient.class);
-				if (transientAnnotation != null) {
+				boolean isTransient = Modifier.isTransient(field.getModifiers());
+				if (transientAnnotation != null || isTransient) {
 					field.setAccessible(Boolean.TRUE);
 					pd.setValue("transient", Boolean.TRUE);
 				}

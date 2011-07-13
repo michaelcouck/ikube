@@ -19,15 +19,13 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * TODO Mock this test.
- * 
  * @author Michael Couck
  * @since 12.10.2010
  * @version 01.00
  */
 public class MonitorWebServiceTest extends BaseTest {
 
-	private IMonitorWebService monitorWebService = ApplicationContextManager.getBean(IMonitorWebService.class);
+	private IMonitorWebService monitorWebService;
 
 	public MonitorWebServiceTest() {
 		super(MonitorWebServiceTest.class);
@@ -36,6 +34,7 @@ public class MonitorWebServiceTest extends BaseTest {
 	@Before
 	public void before() {
 		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
+		monitorWebService = ApplicationContextManager.getBean(IMonitorWebService.class);
 	}
 
 	@After

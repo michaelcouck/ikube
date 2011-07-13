@@ -1,5 +1,6 @@
 package ikube.action;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 import ikube.ATest;
@@ -66,8 +67,19 @@ public class RestoreTest extends ATest {
 		restore.execute(INDEX_CONTEXT);
 		Mockit.tearDownMocks(ApplicationContextManager.class);
 
+		indexExists();
+
+		// Delete the index and restore it from the backup
+		FileUtilities.deleteFile(latestIndexDirectory, 1);
+		assertFalse("The index directory should be deleted : ", latestIndexDirectory.exists());
+
+		restore.execute(INDEX_CONTEXT);
+		indexExists();
+	}
+
+	private void indexExists() throws Exception {
 		// Check that the index is restored
-		latestIndexDirectory = FileUtilities.getLatestIndexDirectory(INDEX_CONTEXT.getIndexDirectoryPath());
+		File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(INDEX_CONTEXT.getIndexDirectoryPath());
 		File latestServerIndexDirectory = new File(latestIndexDirectory, IP);
 		Directory directory = null;
 		try {

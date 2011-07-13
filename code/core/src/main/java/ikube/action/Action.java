@@ -2,7 +2,6 @@ package ikube.action;
 
 import ikube.action.rule.IRule;
 import ikube.cluster.IClusterManager;
-import ikube.model.IndexContext;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.Mailer;
 
@@ -55,8 +54,8 @@ public abstract class Action<E, F> implements IAction<E, F> {
 	public void setRules(final List<IRule<E>> rules) {
 		this.rules = rules;
 	}
-	
-	protected void sendNotification(final IndexContext<?> indexContext, final String subject, final String body) {
+
+	protected void sendNotification(final String subject, final String body) {
 		try {
 			Mailer mailer = ApplicationContextManager.getBean(Mailer.class);
 			mailer.sendMail(subject, body);

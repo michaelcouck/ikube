@@ -1,6 +1,7 @@
 package ikube.model;
 
 import ikube.IConstants;
+import ikube.index.IndexManager;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
@@ -212,6 +213,7 @@ public class IndexContext<T> extends Indexable<T> implements Comparable<IndexCon
 
 	public String getLatestIndexTimestamp() {
 		long timestamp = 0;
+		String indexDirectoryPath = IndexManager.getIndexDirectoryPath(this);
 		File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexDirectoryPath);
 		if (latestIndexDirectory != null) {
 			String name = latestIndexDirectory.getName();

@@ -40,7 +40,7 @@ import org.apache.lucene.search.Searcher;
 public class SearcherWebService implements ISearcherWebService {
 
 	private static final Logger LOGGER = Logger.getLogger(SearcherWebService.class);
-
+	
 	protected int publishedPort = ISearcherWebService.PUBLISHED_PORT;
 	protected String publishedPath = ISearcherWebService.PUBLISHED_PATH;
 
@@ -202,12 +202,17 @@ public class SearcherWebService implements ISearcherWebService {
 	}
 
 	/**
-	 * TODO Comment me!
+	 * This method will return an instance of the search class, based on the class in the parameter list and the index context name. For
+	 * each search there is an instance created for the searcher classes to avoid thread overlap. The instance is created using reflection
+	 * :( but is there a more elegant way?
 	 * 
 	 * @param <T>
+	 *            the type of class that is expected as a result
 	 * @param klass
+	 *            the class of the searcher
 	 * @param indexName
-	 * @return
+	 *            the name of the index
+	 * @return the searcher with the searchable injected
 	 * @throws Exception
 	 */
 	@SuppressWarnings("unchecked")
@@ -234,10 +239,12 @@ public class SearcherWebService implements ISearcherWebService {
 	}
 
 	/**
-	 * TODO Comment me!
+	 * This method returns the default message if there is no searcher defined for the index context, or the index is not generated or
+	 * opened.
 	 * 
 	 * @param indexName
-	 * @return
+	 *            the name of the index
+	 * @return the message/map that will be sent to the client
 	 */
 	protected List<Map<String, String>> getMessageResults(String indexName) {
 		List<Map<String, String>> results = new ArrayList<Map<String, String>>();
@@ -249,9 +256,10 @@ public class SearcherWebService implements ISearcherWebService {
 	}
 
 	/**
-	 * TODO Comment me!
+	 * This method sets the search delegate that will be intercepted to accumulate the search statistics.
 	 * 
 	 * @param searchDelegate
+	 *            the search delegate to be used for the delegation and finally the interception
 	 */
 	public void setSearchDelegate(SearchDelegate searchDelegate) {
 		this.searchDelegate = searchDelegate;

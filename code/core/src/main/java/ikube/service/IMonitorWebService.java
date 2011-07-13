@@ -7,7 +7,8 @@ import javax.jws.WebService;
 import javax.jws.soap.SOAPBinding;
 
 /**
- * TODO Comment me!
+ * This class provides access to the index contexts, the names of the fields in the index and so on. Also names of the indexes that are
+ * defined in the configuration.
  * 
  * @author Michael Couck
  * @since 12.10.2010

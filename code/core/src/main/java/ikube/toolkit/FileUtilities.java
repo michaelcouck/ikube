@@ -559,14 +559,14 @@ public final class FileUtilities {
 				try {
 					inChannel.close();
 				} catch (Exception e) {
-					LOGGER.error("", e);
+					LOGGER.error("Exception closing input channel : ", e);
 				}
 			}
 			if (outChannel != null) {
 				try {
 					outChannel.close();
 				} catch (Exception e) {
-					LOGGER.error("Exception closing channel : ", e);
+					LOGGER.error("Exception closing output channel : ", e);
 				}
 			}
 		}

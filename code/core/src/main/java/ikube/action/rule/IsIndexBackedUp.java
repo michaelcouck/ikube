@@ -30,8 +30,10 @@ public class IsIndexBackedUp extends ARule<IndexContext<?>> {
 			return Boolean.FALSE;
 		}
 		// There is a new index, lets see if it has been backed up
-		File latestIndexDirectoryBackup = FileUtilities.getLatestIndexDirectory(indexContext.getIndexDirectoryPathBackup());
-		if (latestIndexDirectoryBackup == null) {
+		String indexDirectoryPathBackup = IndexManager.getIndexDirectoryPathBackup(indexContext);
+		File latestIndexDirectoryBackup = FileUtilities.getLatestIndexDirectory(indexDirectoryPathBackup);
+		if (latestIndexDirectoryBackup == null || !latestIndexDirectoryBackup.exists()
+				|| latestIndexDirectoryBackup.listFiles().length == 0) {
 			return Boolean.FALSE;
 		}
 		// Lets see if the backup index is the same timestamp as the latest index directory

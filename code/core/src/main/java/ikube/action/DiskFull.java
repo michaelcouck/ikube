@@ -49,7 +49,7 @@ public class DiskFull extends Action<IndexContext<?>, Boolean> {
 					body += "This server will exit to save the machine : " + freeSpaceMegabytes;
 					logger.fatal(subject);
 					logger.fatal(body);
-					sendNotification(indexContext, subject, body);
+					sendNotification(subject, body);
 					System.exit(0);
 					return Boolean.FALSE;
 				}

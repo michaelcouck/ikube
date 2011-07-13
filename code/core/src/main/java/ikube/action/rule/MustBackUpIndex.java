@@ -3,6 +3,8 @@ package ikube.action.rule;
 import ikube.model.IndexContext;
 
 /**
+ * TODO This class can be deleted.
+ * 
  * This class checks to see if the current index is backed up.
  * 
  * @author Michael Couck
@@ -16,6 +18,9 @@ public class MustBackUpIndex extends ARule<IndexContext<?>> {
 	 */
 	@Override
 	public boolean evaluate(final IndexContext<?> indexContext) {
-		return indexContext.getIndexDirectoryPathBackup() != null;
+		// Check 
+		logger.warn("This class needs to be re-implemented!");
+		return Boolean.FALSE;
+		// return indexContext.getIndexDirectoryPathBackup() != null;
 	}
 }

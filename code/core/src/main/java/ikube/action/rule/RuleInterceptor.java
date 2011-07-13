@@ -5,7 +5,6 @@ import ikube.action.IAction;
 import ikube.cluster.AtomicAction;
 import ikube.cluster.IClusterManager;
 import ikube.model.IndexContext;
-import ikube.model.Indexable;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.Logging;
 
@@ -38,49 +37,46 @@ public class RuleInterceptor implements IRuleInterceptor {
 	 */
 	@Override
 	public Object decide(final ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
+		Object target = proceedingJoinPoint.getTarget();
+		String actionName = target.getClass().getSimpleName();
+		IndexContext<?> indexContext = null;
+		boolean proceed = Boolean.FALSE;
+		JEP jep = new JEP();
 		// During the execution of the rules the cluster needs to be locked
 		// completely for the duration of the evaluation of the rules because there
 		// exists a race condition where the rules evaluate to true for server one, and evaluate
 		// to true for server two before server one can set the values that would make server
-		// two evaluate to false, so they both start the action they shouldn't start
+		// two evaluate to false, so they both start the action they shouldn't start. Generally this
+		// will never happen because the timers will be different, but in a very small percentage
+		// of cases they overlap
 		ILock lock = AtomicAction.lock(IConstants.SERVER_LOCK);
-		Object target = proceedingJoinPoint.getTarget();
-		String actionName = target.getClass().getSimpleName();
-		boolean proceed = Boolean.FALSE;
 		try {
-			Indexable<?> indexable = null;
-			IndexContext<?> indexContext = null;
-			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug("Intercepting : " + target);
-			}
-			if (lock == null) {
+			if (!IAction.class.isAssignableFrom(target.getClass())) {
+				LOGGER.warn("Can't intercept non action class, proceeding : " + target);
+				return proceedingJoinPoint.proceed();
+			} else if (lock == null) {
 				LOGGER.info("Couldn't aquire lock : ");
 				proceed = Boolean.FALSE;
-			} else if (!IAction.class.isAssignableFrom(target.getClass())) {
-				LOGGER.warn("Can't intercept non action class, proceeding : " + target);
-				proceed = Boolean.TRUE;
 			} else {
 				// Get the rules associated with this action
 				@SuppressWarnings({ "unchecked", "rawtypes" })
 				List<IRule<IndexContext<?>>> classRules = ((IAction) target).getRules();
 				if (classRules == null || classRules.size() == 0) {
-					LOGGER.warn("No rules defined for, proceeding : " + target);
+					LOGGER.info("No rules defined, proceeding : " + target);
 					proceed = Boolean.TRUE;
 				} else {
-					// Find the index context and the first indexable
+					// Find the index context
 					Object[] args = proceedingJoinPoint.getArgs();
 					for (Object arg : args) {
 						if (arg != null) {
 							if (IndexContext.class.isAssignableFrom(arg.getClass())) {
 								indexContext = (IndexContext<?>) arg;
-								if (indexContext.getIndexables().size() > 0) {
-									indexable = indexContext.getIndexables().get(0);
-								}
 							}
 						}
 					}
-					if (indexContext != null || indexable == null) {
-						JEP jep = new JEP();
+					if (indexContext == null) {
+						LOGGER.warn("Couldn't find the index context or indexable : " + proceedingJoinPoint);
+					} else {
 						Object result = null;
 						for (IRule<IndexContext<?>> rule : classRules) {
 							boolean evaluation = rule.evaluate(indexContext);
@@ -106,16 +102,16 @@ public class RuleInterceptor implements IRuleInterceptor {
 							// system and the other servers
 							proceed = Boolean.TRUE;
 						}
-					} else {
-						LOGGER.warn("Couldn't find the index context or indexable : " + proceedingJoinPoint);
 					}
 				}
 			}
+			String indexName = indexContext != null ? indexContext.getIndexName() : null;
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.info(Logging.getString("Rule intercepter proceeding : ", proceed, target, actionName, indexName));
+				printSymbolTable(jep, indexName);
+			}
 			if (proceed) {
-				String indexName = indexContext != null ? indexContext.getIndexName() : null;
-				String indexableName = indexable != null ? indexable.getName() : null;
-				LOGGER.info(Logging.getString("Rule intercepter proceeding : ", proceed, actionName, indexName, indexableName));
-				proceed(proceedingJoinPoint, actionName, indexName, indexableName);
+				proceed(proceedingJoinPoint, actionName, indexName);
 			}
 		} catch (Throwable t) {
 			LOGGER.error("Exception evaluating the rules : ", t);
@@ -125,13 +121,12 @@ public class RuleInterceptor implements IRuleInterceptor {
 		return proceed;
 	}
 
-	protected synchronized void proceed(final ProceedingJoinPoint proceedingJoinPoint, final String actionName, final String indexName,
-			final String indexableName) {
+	protected synchronized void proceed(final ProceedingJoinPoint proceedingJoinPoint, final String actionName, final String indexName) {
 		try {
 			long delay = 1;
 			final IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
 			// We set the working flag in the action within the cluster lock when setting to true
-			clusterManager.setWorking(actionName, indexName, indexableName, Boolean.TRUE);
+			clusterManager.setWorking(actionName, indexName, "", Boolean.TRUE);
 			executorService.schedule(new Runnable() {
 				public void run() {
 					try {
@@ -146,9 +141,10 @@ public class RuleInterceptor implements IRuleInterceptor {
 		}
 	}
 
-	protected void printSymbolTable(final JEP jep) {
+	protected void printSymbolTable(final JEP jep, final String indexName) {
 		try {
 			SymbolTable symbolTable = jep.getSymbolTable();
+			LOGGER.info("Index : " + indexName);
 			LOGGER.info("Symbol table : " + symbolTable);
 		} catch (Exception e) {
 			LOGGER.error("Exception printing the nodes : ", e);
