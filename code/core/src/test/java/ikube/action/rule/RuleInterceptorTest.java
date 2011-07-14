@@ -8,9 +8,10 @@ import static org.mockito.Mockito.when;
 import ikube.ATest;
 import ikube.action.Close;
 import ikube.action.IAction;
+import ikube.cluster.AtomicAction;
 import ikube.mock.ApplicationContextManagerMock;
+import ikube.mock.ClusterManagerMock;
 import ikube.model.IndexContext;
-import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.Logging;
 import ikube.toolkit.PermutationUtilities;
 
@@ -20,6 +21,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import mockit.Mock;
+import mockit.MockClass;
 import mockit.Mockit;
 import mockit.NonStrict;
 import mockit.NonStrictExpectations;
@@ -31,6 +34,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.nfunk.jep.JEP;
 
+import com.hazelcast.core.ILock;
+
 /**
  * @author Michael Couck
  * @since 26.02.2011
@@ -38,27 +43,41 @@ import org.nfunk.jep.JEP;
  */
 public class RuleInterceptorTest extends ATest {
 
+	@MockClass(realClass = JEP.class)
+	public static class JEPMock {
+
+		@Mock()
+		public Object getValueAsObject() {
+			return new Double("1.0");
+		}
+
+	}
+
+	@MockClass(realClass = AtomicAction.class)
+	public static class AtomicActionMock {
+
+		@Mock()
+		public ILock lock(String lockName) {
+			return mock(ILock.class);
+		}
+
+	}
+
 	@SuppressWarnings("rawtypes")
 	private static Map<String, IAction> ACTIONS;
 
 	private transient ProceedingJoinPoint joinPoint;
 	private transient IRuleInterceptor ruleInterceptor;
 
-	private transient final Boolean[] vector = { Boolean.TRUE, Boolean.FALSE, Boolean.TRUE, Boolean.FALSE, Boolean.TRUE };
 	private transient final List<Boolean[]> matrix = new ArrayList<Boolean[]>();
-	private transient Boolean[] resultVector = { Boolean.TRUE, Boolean.FALSE, Boolean.TRUE, Boolean.FALSE, Boolean.TRUE };
+	private transient final Boolean[] vector = { Boolean.TRUE, Boolean.FALSE, Boolean.TRUE, Boolean.FALSE, Boolean.TRUE };
 
 	@NonStrict
 	private IAction<?, ?> action;
-	@NonStrict
 	private transient IsMultiSearcherInitialised isMultiSearcherInitialised;
-	@NonStrict
 	private transient AreSearchablesInitialised areSearchablesInitialised;
-	@NonStrict
 	private transient IsIndexCurrent isIndexCurrent;
-	@NonStrict
 	private transient AreIndexesCreated areIndexesCreated;
-	@NonStrict
 	private transient AreUnopenedIndexes areUnopenedIndexes;
 
 	public RuleInterceptorTest() {
@@ -69,35 +88,25 @@ public class RuleInterceptorTest extends ATest {
 	@SuppressWarnings("rawtypes")
 	public static void beforeClass() {
 		ACTIONS = new HashMap<String, IAction>();
-		Mockit.setUpMocks();
-		Mockit.setUpMocks(ApplicationContextManagerMock.class);
+		Mockit.setUpMocks(ApplicationContextManagerMock.class, ClusterManagerMock.class, AtomicActionMock.class);
 	}
 
 	@AfterClass
 	public static void afterClass() {
-		Mockit.tearDownMocks(ApplicationContextManager.class);
+		Mockit.tearDownMocks();
 	}
 
 	@Before
 	public void before() throws Throwable {
 		new PermutationUtilities().getPermutations(vector, matrix, vector.length, 0);
-
-		new NonStrictExpectations() {
-			{
-				isMultiSearcherInitialised.evaluate(INDEX_CONTEXT);
-				result = resultVector[0];
-				areSearchablesInitialised.evaluate(INDEX_CONTEXT);
-				result = resultVector[1];
-				isIndexCurrent.evaluate(INDEX_CONTEXT);
-				result = resultVector[2];
-				areIndexesCreated.evaluate(INDEX_CONTEXT);
-				result = resultVector[3];
-				areUnopenedIndexes.evaluate(INDEX_CONTEXT);
-				result = resultVector[4];
-			}
-		};
-
 		final List<IRule<IndexContext<?>>> rules = new ArrayList<IRule<IndexContext<?>>>();
+
+		isMultiSearcherInitialised = mock(IsMultiSearcherInitialised.class);
+		areSearchablesInitialised = mock(AreSearchablesInitialised.class);
+		isIndexCurrent = mock(IsIndexCurrent.class);
+		areIndexesCreated = mock(AreIndexesCreated.class);
+		areUnopenedIndexes = mock(AreUnopenedIndexes.class);
+
 		rules.add(isMultiSearcherInitialised);
 		rules.add(areSearchablesInitialised);
 		rules.add(isIndexCurrent);
@@ -130,59 +139,32 @@ public class RuleInterceptorTest extends ATest {
 
 	@Test
 	public void decide() throws Throwable {
-		for (Boolean[] vector : matrix) {
-			resultVector = vector;
+		for (final Boolean[] vector : matrix) {
+
+			when(isMultiSearcherInitialised.evaluate(INDEX_CONTEXT)).thenReturn(vector[0]);
+			when(areSearchablesInitialised.evaluate(INDEX_CONTEXT)).thenReturn(vector[1]);
+			when(isIndexCurrent.evaluate(INDEX_CONTEXT)).thenReturn(vector[2]);
+			when(areIndexesCreated.evaluate(INDEX_CONTEXT)).thenReturn(vector[3]);
+			when(areUnopenedIndexes.evaluate(INDEX_CONTEXT)).thenReturn(vector[4]);
+
 			Object result = ruleInterceptor.decide(joinPoint);
-			Object expected = resultVector[0] && resultVector[1] && !resultVector[2] && resultVector[3] && resultVector[4];
-			String message = Logging.getString("Expected : ", expected, ", result : ", result, " booleans : ", Arrays.asList(resultVector));
+			Object expected = vector[0] && vector[1] && !vector[2] && vector[3] && vector[4];
+			String message = Logging.getString("Expected : ", expected, ", result : ", result, " booleans : ", Arrays.asList(vector));
+			logger.debug("Result : " + Arrays.asList(vector));
 			assertEquals(message, expected, result);
 		}
 	}
 
 	@Test
 	@SuppressWarnings("rawtypes")
-	public void decideMulti() throws Throwable {
-		/**
-		 * TODO Complete this test!
-		 * 
-		 * <pre>
-		 * 		<ref bean="ikube.action.Reset" /> 
-		 * 		<ref bean="ikube.action.Close"  />
-		 * 		<ref bean="ikube.action.Open"  />
-		 * 		<ref bean="ikube.action.Index"  />
-		 * 		<ref bean="ikube.action.Delete" />
-		 * 		<ref bean="ikube.action.Clean" />
-		 * </pre>
-		 * 
-		 * First check if he executed the actions in various combinations, cases:
-		 * 
-		 * <pre>
-		 * 1) Index doesn't exist - should execute all actions: 
-		 *     Actions: reset, index, delete, clean
-		 * 2) Index exists and is current - should execute the delete and the reset
-		 *     Actions: reset, open, delete, clean 
-		 * 3) Index exists but is not current - should execute all actions
-		 *     Actions: reset, index, delete, clean
-		 * 4) Index exists but is not current and other servers working - should execute the index
-		 *     Actions: reset, index, delete, clean
-		 * </pre>
-		 * 
-		 * Cluster cases:
-		 * 
-		 * <pre>
-		 * 1) No servers working:
-		 * 		Actions: reset, index, delete, clean
-		 * 2) Servers working and index not current:
-		 * 		Actions: index, delete, clean
-		 * </pre>
-		 */
+	public void decideActions() throws Throwable {
+		Mockit.setUpMocks(JEPMock.class);
 		for (IAction action : ACTIONS.values()) {
-			logger.info("1) " + action);
 			when(joinPoint.getTarget()).thenReturn(action);
-			logger.info("2) " + action);
 			Object result = ruleInterceptor.decide(joinPoint);
-			logger.info("Result : " + result);
+			logger.debug("Result : " + result);
 		}
+		Mockit.tearDownMocks(JEPMock.class);
 	}
 
 	@Test

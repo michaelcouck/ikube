@@ -7,7 +7,6 @@ import java.io.File;
  * excluding the new one. In this case there will be a check on the directories that are opened and the directories that are available. If
  * there are directories that are not opened then the searcher should be closed and opened on all the directories.
  * 
- * 
  * @author Michael Couck
  * @since 12.02.2011
  * @version 01.00

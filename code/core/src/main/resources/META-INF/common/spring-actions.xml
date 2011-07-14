@@ -221,7 +221,6 @@
 		class="ikube.action.Searcher" 
 		property:ruleExpression="
 			!IsThisServerWorking &#38;&#38; 
-			!AnyServersWorking &#38;&#38; 
 			AreIndexesCreated &#38;&#38; 
 			IsMultiSearcherInitialised &#38;&#38;
 			AreSearchablesInitialised"
@@ -234,7 +233,6 @@
 		<property name="rules">
 			<util:list>
 				<ref local="ikube.action.rule.IsThisServerWorking" />
-				<ref local="ikube.action.rule.AnyServersWorking" />
 				<ref local="ikube.action.rule.AreIndexesCreated" />
 				<ref local="ikube.action.rule.IsMultiSearcherInitialised" />
 				<ref local="ikube.action.rule.AreSearchablesInitialised" />

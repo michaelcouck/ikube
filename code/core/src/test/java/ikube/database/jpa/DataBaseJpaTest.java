@@ -25,6 +25,13 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+/**
+ * This test is just to see that the database is persisting and removing entities correctly.
+ * 
+ * @author Michael Couck
+ * @since long time
+ * @version 01.00
+ */
 public class DataBaseJpaTest extends BaseTest {
 
 	@BeforeClass

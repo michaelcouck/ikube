@@ -1,5 +1,6 @@
 package ikube.action;
 
+import ikube.cluster.IClusterManager;
 import ikube.listener.Event;
 import ikube.listener.ListenerManager;
 import ikube.model.IndexContext;
@@ -7,6 +8,7 @@ import ikube.model.Server;
 import ikube.service.IMonitorWebService;
 import ikube.service.ISearcherWebService;
 import ikube.service.ServiceLocator;
+import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.Logging;
 import ikube.toolkit.SerializationUtilities;
 
@@ -16,8 +18,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This class will do a search on the indexes on all the servers defined in this cluster. If there are not as many results as expected then
- * a mail will be sent to the administrator.
+ * This class will do a search on the indexes on the index defined in this server. If there are not as many results as expected then a mail
+ * will be sent to the administrator.
  * 
  * @author Michael Couck
  * @since 31.10.10
@@ -25,12 +27,12 @@ import java.util.Map;
  */
 public class Searcher extends Action<IndexContext<?>, Boolean> {
 
-	private boolean fragment = Boolean.TRUE;
 	private int start = 0;
 	private int end = 10;
-	private String searchString;
-	private int resultsSizeMinimum;
-	private int iterations;
+	private int iterations = 1;
+	private String searchString = "Hello";
+	private int resultsSizeMinimum = 0;
+	private boolean fragment = Boolean.TRUE;
 
 	/**
 	 * {@inheritDoc}
@@ -39,34 +41,34 @@ public class Searcher extends Action<IndexContext<?>, Boolean> {
 	@SuppressWarnings("unchecked")
 	public Boolean execute(final IndexContext<?> indexContext) {
 		try {
-			List<Server> servers = getClusterManager().getServers();
 			String xml = null;
-			for (Server server : servers) {
-				String webServiceUrl = server.getSearchWebServiceUrl();
-				ISearcherWebService searchRemote = ServiceLocator.getService(ISearcherWebService.class, webServiceUrl,
-						ISearcherWebService.NAMESPACE, ISearcherWebService.SERVICE);
-				String monitoringWebServiceUrl = server.getMonitoringWebServiceUrl();
-				IMonitorWebService monitorWebService = ServiceLocator.getService(IMonitorWebService.class, monitoringWebServiceUrl,
-						IMonitorWebService.NAMESPACE, IMonitorWebService.SERVICE);
 
-				String indexName = indexContext.getIndexName();
+			Server server = ApplicationContextManager.getBean(IClusterManager.class).getServer();
+			String webServiceUrl = server.getSearchWebServiceUrl();
+			ISearcherWebService searchRemote = ServiceLocator.getService(ISearcherWebService.class, webServiceUrl,
+					ISearcherWebService.NAMESPACE, ISearcherWebService.SERVICE);
+			String monitoringWebServiceUrl = server.getMonitoringWebServiceUrl();
+			IMonitorWebService monitorWebService = ServiceLocator.getService(IMonitorWebService.class, monitoringWebServiceUrl,
+					IMonitorWebService.NAMESPACE, IMonitorWebService.SERVICE);
 
-				String[] searchFields = monitorWebService.getIndexFieldNames(indexName);
-				String[] searchStrings = new String[searchFields.length];
-				String[] sortFields = new String[searchFields.length];
-				Arrays.fill(searchStrings, 0, searchStrings.length, searchString);
-				System.arraycopy(searchFields, 0, sortFields, 0, sortFields.length);
-				double latitude = new Double(50.7930727874172);
-				double longitude = new Double(4.36242219751376);
-				for (int i = 0; i < iterations; i++) {
-					xml = searchRemote.searchSingle(indexName, searchString, searchFields[0], Boolean.TRUE, 0, 10);
-					xml = searchRemote.searchMulti(indexName, searchStrings, searchFields, fragment, start, end);
-					// xml = searchRemote.searchMultiSorted(indexName, searchStrings, searchFields, sortFields, fragment, start, end);
-					xml = searchRemote.searchSpacialMulti(indexName, searchStrings, searchFields, fragment, start, end, 10, latitude,
-							longitude);
-					xml = searchRemote.searchMultiAll(indexName, searchStrings, fragment, start, end);
-				}
+			String indexName = indexContext.getIndexName();
+
+			String[] searchFields = monitorWebService.getIndexFieldNames(indexName);
+			String[] searchStrings = new String[searchFields.length];
+			String[] sortFields = new String[searchFields.length];
+			Arrays.fill(searchStrings, 0, searchStrings.length, searchString);
+			System.arraycopy(searchFields, 0, sortFields, 0, sortFields.length);
+			double latitude = new Double(50.7930727874172);
+			double longitude = new Double(4.36242219751376);
+			for (int i = 0; i < iterations; i++) {
+				xml = searchRemote.searchSingle(indexName, searchString, searchFields[0], Boolean.TRUE, 0, 10);
+				xml = searchRemote.searchMulti(indexName, searchStrings, searchFields, fragment, start, end);
+				// xml = searchRemote.searchMultiSorted(indexName, searchStrings, searchFields, sortFields, fragment, start, end);
+				xml = searchRemote
+						.searchSpacialMulti(indexName, searchStrings, searchFields, fragment, start, end, 10, latitude, longitude);
+				xml = searchRemote.searchMultiAll(indexName, searchStrings, fragment, start, end);
 			}
+
 			List<Map<String, String>> results = new ArrayList<Map<String, String>>();
 			if (xml != null) {
 				results = (List<Map<String, String>>) SerializationUtilities.deserialize(xml);

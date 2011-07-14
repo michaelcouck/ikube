@@ -1,6 +1,9 @@
 package ikube.action;
 
+import static org.junit.Assert.assertFalse;
 import ikube.ATest;
+import ikube.mock.ApplicationContextManagerMock;
+import ikube.mock.ClusterManagerMock;
 import mockit.Mockit;
 
 import org.junit.After;
@@ -14,7 +17,6 @@ import org.junit.Test;
  */
 public class DiskFullTest extends ATest {
 
-	@SuppressWarnings("unused")
 	private DiskFull diskFull;
 
 	public DiskFullTest() {
@@ -24,7 +26,7 @@ public class DiskFullTest extends ATest {
 	@Before
 	public void before() throws Exception {
 		diskFull = new DiskFull();
-		Mockit.setUpMocks();
+		Mockit.setUpMocks(ApplicationContextManagerMock.class, ClusterManagerMock.class);
 	}
 
 	@After
@@ -34,10 +36,8 @@ public class DiskFullTest extends ATest {
 
 	@Test
 	public void execute() throws Exception {
-		// TODO The following:
-		// We need to mock the FileSystemUtils#freeSpaceKb(drive) method
-		// and return first a true, then a false. But we have to mock out the System#exit(int)
-		// as well as this will close down the Jvm
+		boolean diskFull = this.diskFull.execute(INDEX_CONTEXT);
+		assertFalse("The disk should never be too full : ", diskFull);
 	}
 
 }

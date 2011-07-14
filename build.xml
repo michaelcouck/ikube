@@ -55,6 +55,18 @@
 			<arg line="${action}" />
 		</java>
 	</target>
+	
+	<target name="startJenkins">
+		<echo message="Bin: ${jenkins.bin}, Home: ${jenkins.home}" />
+		<java jar="${jenkins.bin}/bootstrap.jar" dir="${jenkins.bin}" fork="yes" spawn="true">
+			<jvmarg value="-Dcatalina.home=${jenkins.home}" />
+			<jvmarg value="-XX:PermSize=32m" />
+			<jvmarg value="-XX:MaxPermSize=128m" />
+			<jvmarg value="-Xms512m" />
+			<jvmarg value="-Xmx2048m" />
+			<arg line="start" />
+		</java>
+	</target>
 
 	<target name="deploy">
 		<!-- delete dir="${indexes.directory}" failonerror="false" / -->

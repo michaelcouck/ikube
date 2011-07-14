@@ -2,6 +2,7 @@ package ikube.action;
 
 import ikube.IConstants;
 import ikube.model.IndexContext;
+import ikube.toolkit.FileUtilities;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,9 +27,9 @@ public class DiskFull extends Action<IndexContext<?>, Boolean> {
 	@Override
 	public Boolean execute(final IndexContext<?> indexContext) {
 		try {
-			File indexesDirectory = new File(indexContext.getIndexDirectoryPath());
+			File indexesDirectory = FileUtilities.getFile(indexContext.getIndexDirectoryPath(), Boolean.TRUE);
 			if (!indexesDirectory.exists() || !indexesDirectory.isDirectory()) {
-				return Boolean.TRUE;
+				return Boolean.FALSE;
 			}
 			String drive = null;
 			if (indexesDirectory.getAbsolutePath().startsWith(IConstants.SEP)) {
@@ -42,6 +43,7 @@ public class DiskFull extends Action<IndexContext<?>, Boolean> {
 			try {
 				long freeSpaceKilobytes = FileSystemUtils.freeSpaceKb(drive);
 				long freeSpaceMegabytes = freeSpaceKilobytes / 1000;
+				logger.debug("Free space : " + freeSpaceMegabytes + ", " + MINIMUM_FREE_SPACE);
 				if (freeSpaceMegabytes < MINIMUM_FREE_SPACE) {
 					// We need to exit this server as the disk will crash
 					String subject = "No more disk space on server!";
@@ -51,7 +53,7 @@ public class DiskFull extends Action<IndexContext<?>, Boolean> {
 					logger.fatal(body);
 					sendNotification(subject, body);
 					System.exit(0);
-					return Boolean.FALSE;
+					return Boolean.TRUE;
 				}
 			} catch (IOException e) {
 				logger.error("Exception looking for the free space : " + indexesDirectory, e);
@@ -59,7 +61,7 @@ public class DiskFull extends Action<IndexContext<?>, Boolean> {
 		} finally {
 			getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getSimpleName(), "", Boolean.FALSE);
 		}
-		return Boolean.TRUE;
+		return Boolean.FALSE;
 	}
 
 }
