@@ -1,5 +1,6 @@
 package ikube.service;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import ikube.ATest;
@@ -27,7 +28,7 @@ import org.junit.Test;
  */
 public class SearcherWebServiceTest extends ATest {
 
-	private ISearcherWebService searcherWebService;
+	private SearcherWebService searcherWebService;
 
 	public SearcherWebServiceTest() {
 		super(SearcherWebServiceTest.class);
@@ -106,6 +107,13 @@ public class SearcherWebServiceTest extends ATest {
 			}
 		}
 		logger.info("Ip address : " + InetAddress.getLocalHost().getHostAddress());
+	}
+
+	@Test
+	public void getMessageResults() {
+		List<Map<String, String>> messageResults = this.searcherWebService.getMessageResults("indexName");
+		assertNotNull("The message can't be null : ", messageResults);
+		assertEquals("There should be one entry in the list : ", 1, messageResults.size());
 	}
 
 	private void verifyResults(List<Map<String, String>> resultsList) {
