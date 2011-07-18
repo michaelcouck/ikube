@@ -1,9 +1,11 @@
 package ikube.toolkit;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import ikube.model.Url;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -21,9 +23,9 @@ import org.mockito.stubbing.Answer;
  */
 public class DatabaseUtilitiesTest {
 
-	private ResultSet resultSet = mock(ResultSet.class);
-	private Statement statement = mock(Statement.class);
-	private Connection connection = mock(Connection.class);
+	private ResultSet resultSet;
+	private Statement statement;
+	private Connection connection;
 
 	private boolean resultSetOpen = Boolean.TRUE;
 	private boolean statementOpen = Boolean.TRUE;
@@ -31,6 +33,10 @@ public class DatabaseUtilitiesTest {
 
 	@Before
 	public void before() throws Exception {
+		resultSet = mock(ResultSet.class);
+		statement = mock(Statement.class);
+		connection = mock(Connection.class);
+
 		when(resultSet.getStatement()).thenReturn(statement);
 		when(statement.getConnection()).thenReturn(connection);
 		doAnswer(new Answer<Object>() {
@@ -65,6 +71,20 @@ public class DatabaseUtilitiesTest {
 		assertFalse(resultSetOpen);
 		assertFalse(statementOpen);
 		assertFalse(connectionOpen);
+	}
+
+	@Test
+	public void setIdFieldGetIdFieldValueGetIdFieldName() {
+		Long id = System.nanoTime();
+		Url url = new Url();
+		DatabaseUtilities.setIdField(url, id);
+		assertEquals("The id should have been set : ", url.getId(), id);
+
+		Object idField = DatabaseUtilities.getIdFieldValue(url);
+		assertEquals("The id field should be found : ", idField, id);
+
+		String idFieldName = DatabaseUtilities.getIdFieldName(Url.class);
+		assertEquals("The id field is 'id' : ", "id", idFieldName);
 	}
 
 }

@@ -3,6 +3,13 @@ package ikube.index.spatial;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
+/**
+ * This object represents an address and the latitude and longitude co-ordinates for that address.
+ * 
+ * @author Michael Couck
+ * @since 25.02.11
+ * @version 01.00
+ */
 public class Coordinate {
 
 	private final double lat;

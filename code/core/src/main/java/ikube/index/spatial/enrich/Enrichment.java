@@ -17,10 +17,7 @@ import org.apache.lucene.spatial.tier.projections.SinusoidalProjector;
 import org.apache.lucene.util.NumericUtils;
 
 /**
- * This class will add spatial fields to the index based on either the latitude and longitude defined in one of the columns that are
- * indexables or it will go to the spatial web service with the address in the table and search for the location, i.e. the latitude and
- * longitude for the address and use the first result that comes back.
- * 
+ * @see IEnrichment
  * @author Michael Couck
  * @since 12.04.11
  * @version 01.00
@@ -39,16 +36,9 @@ public class Enrichment implements IEnrichment {
 		cartesianTierPlotter = new CartesianTierPlotter(0, projector, CartesianTierPlotter.DEFALT_FIELD_PREFIX);
 	}
 
-	@Override
-	public int getMinKm(double minKm) {
-		return cartesianTierPlotter.bestFit(minKm);
-	}
-
-	@Override
-	public int getMaxKm(double maxKm) {
-		return cartesianTierPlotter.bestFit(maxKm);
-	}
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void addSpatialLocationFields(Coordinate coordinate, Document document) {
 		document.add(new Field(IConstants.LAT, NumericUtils.doubleToPrefixCoded(coordinate.getLat()), Field.Store.YES,
@@ -58,6 +48,9 @@ public class Enrichment implements IEnrichment {
 		addCartesianTiers(coordinate, document, startTier, endTier);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void addCartesianTiers(Coordinate coordinate, Document document, int startTier, int endTier) {
 		for (int tier = startTier; tier <= endTier; tier++) {
@@ -72,6 +65,9 @@ public class Enrichment implements IEnrichment {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Coordinate getCoordinate(Indexable<?> indexable) {
 		double latitude = Double.MAX_VALUE;
@@ -100,6 +96,9 @@ public class Enrichment implements IEnrichment {
 		return null;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public StringBuilder buildAddress(Indexable<?> indexable, StringBuilder builder) {
 		if (IndexableColumn.class.isAssignableFrom(indexable.getClass()) && indexable.isAddress()) {
@@ -116,12 +115,36 @@ public class Enrichment implements IEnrichment {
 		return builder;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public void setMinKm(final double minKm) {
 		this.startTier = getMinKm(minKm);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public void setMaxKm(final double maxKm) {
 		this.endTier = getMaxKm(maxKm);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public int getMinKm(double minKm) {
+		return cartesianTierPlotter.bestFit(minKm);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public int getMaxKm(double maxKm) {
+		return cartesianTierPlotter.bestFit(maxKm);
 	}
 
 }

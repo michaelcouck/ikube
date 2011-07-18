@@ -133,4 +133,19 @@ public class UriUtilitiesTest extends ATest {
 		logger.debug("Stripped : " + stripped);
 		assertEquals("And the string. ", stripped);
 	}
+
+	@Test
+	public void removeDotSegments() throws Exception {
+		String string = "http://www.google.com/ikube/./ikube/./svn/./java";
+		URI uri = new URI(string);
+		URI strippedUri = UriUtilities.removeDotSegments(uri);
+		logger.info("Stripped uri : " + strippedUri);
+		assertEquals("http://www.google.com/ikube/ikube/svn/java", strippedUri.toString());
+
+		string = "http://www.google.com/ikube/../ikube/./svn/../java";
+		uri = new URI(string);
+		strippedUri = UriUtilities.removeDotSegments(uri);
+		logger.info("Stripped uri : " + strippedUri);
+		assertEquals("http://www.google.com/ikube/java", strippedUri.toString());
+	}
 }

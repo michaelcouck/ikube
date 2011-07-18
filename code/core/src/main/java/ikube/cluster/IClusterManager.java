@@ -117,17 +117,4 @@ public interface IClusterManager {
 	 */
 	void setException(boolean exception);
 
-	/**
-	 * Checks whether this indexable has already been handled, could be a file share that is not clusterable and only needs to be indexed by
-	 * one thread.
-	 * 
-	 * @param indexableName
-	 *            the name of the indexable
-	 * @param indexName
-	 *            the name of the index
-	 * @return whether this indexable has been handled
-	 */
-	@Deprecated
-	boolean isHandled(String indexableName, String indexName);
-
 }

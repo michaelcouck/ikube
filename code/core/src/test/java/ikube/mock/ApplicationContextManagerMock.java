@@ -8,6 +8,8 @@ import ikube.index.handler.IHandler;
 import ikube.index.handler.database.IndexableTableHandler;
 import ikube.model.IndexContext;
 import ikube.model.IndexableTable;
+import ikube.notify.IMailer;
+import ikube.notify.Mailer;
 import ikube.toolkit.ApplicationContextManager;
 
 import java.util.HashMap;
@@ -46,6 +48,8 @@ public class ApplicationContextManagerMock {
 			return (T) INDEX_CONTEXT;
 		} else if (IDataBase.class.isAssignableFrom(klass)) {
 			return (T) DATABASE;
+		} else if (Mailer.class.isAssignableFrom(klass)) {
+			return (T) mock(IMailer.class);
 		}
 		return null;
 	}

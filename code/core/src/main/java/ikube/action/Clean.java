@@ -54,14 +54,14 @@ public class Clean<E, F> extends Action<IndexContext<?>, Boolean> {
 							IndexWriter.unlock(directory);
 							locked = IndexWriter.isLocked(directory);
 							if (locked) {
-								continue;
+								logger.warn("Directory still locked : " + serverIndexDirectory);
+							} else {
+								IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, serverIndexDirectory, Boolean.FALSE);
+								indexContext.getIndex().setIndexWriter(indexWriter);
+								IndexManager.closeIndexWriter(indexContext);
 							}
-							IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, serverIndexDirectory, Boolean.FALSE);
-							indexContext.getIndex().setIndexWriter(indexWriter);
-							IndexManager.closeIndexWriter(indexContext);
-							continue;
 						}
-						if (!IndexReader.indexExists(directory)) {
+						if (!IndexReader.indexExists(directory) || locked) {
 							// Try to delete the directory
 							shouldDelete = Boolean.TRUE;
 						}

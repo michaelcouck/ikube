@@ -241,7 +241,7 @@
 		you would want to modify, otherwise I will be getting many, many mails from your system. 
 	-->
 	<bean
-		class="ikube.toolkit.Mailer"
+		class="ikube.notify.Mailer"
 		property:auth="true"
 		property:mailHost="smtp.gmail.com"
 		property:password="caherline"

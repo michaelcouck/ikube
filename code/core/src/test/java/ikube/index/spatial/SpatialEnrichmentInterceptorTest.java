@@ -46,7 +46,7 @@ public class SpatialEnrichmentInterceptorTest extends ATest {
 		enrichment.setMaxKm(10);
 
 		geocoder = new GoogleGeocoder();
-		geocoder.setGeoCodeApi("http://maps.googleapis.com/maps/api/geocode/xml");
+		geocoder.setSearchUrl("http://maps.googleapis.com/maps/api/geocode/xml");
 
 		interceptor = new SpatialEnrichmentInterceptor();
 		interceptor.setEnrichment(enrichment);

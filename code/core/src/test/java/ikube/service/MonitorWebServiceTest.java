@@ -1,4 +1,4 @@
-package ikube.monitoring;
+package ikube.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -97,7 +97,7 @@ public class MonitorWebServiceTest extends BaseTest {
 
 		indexableFieldNames = monitorWebService.getIndexableFieldNames("geoname");
 		logger.info("Indexable field names : " + Arrays.asList(indexableFieldNames));
-		assertEquals("The asciiname is the first field : ", "asciiname", indexableFieldNames[0]);
+		assertEquals("The countrycode is the first field : ", "countrycode", indexableFieldNames[0]);
 	}
 
 }

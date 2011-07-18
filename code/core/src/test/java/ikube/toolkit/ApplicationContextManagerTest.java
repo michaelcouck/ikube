@@ -3,6 +3,8 @@ package ikube.toolkit;
 import static org.junit.Assert.assertNotNull;
 import ikube.ATest;
 import ikube.IConstants;
+import ikube.notify.IMailer;
+import ikube.notify.Mailer;
 
 import java.io.File;
 
@@ -35,7 +37,7 @@ public class ApplicationContextManagerTest extends ATest {
 		FileUtilities.copyFiles(externalFolder, new File("."), "svn");
 		ApplicationContext applicationContext = ApplicationContextManager.getApplicationContext();
 		assertNotNull("External context should be available : ", applicationContext);
-		Mailer mailer = applicationContext.getBean(Mailer.class);
+		IMailer mailer = applicationContext.getBean(Mailer.class);
 		assertNotNull("The mailer is defined in the beans file : ", mailer);
 	}
 

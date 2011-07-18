@@ -2,8 +2,9 @@ package ikube.index.handler.email;
 
 import ikube.BaseTest;
 import ikube.model.IndexableEmail;
+import ikube.notify.IMailer;
+import ikube.notify.Mailer;
 import ikube.toolkit.ApplicationContextManager;
-import ikube.toolkit.Mailer;
 
 import org.junit.Test;
 
@@ -23,7 +24,7 @@ public class IndexableEmailHandlerTest extends BaseTest {
 
 	@Test
 	public void handle() throws Exception {
-		Mailer mailer = ApplicationContextManager.getBean(Mailer.class);
+		IMailer mailer = ApplicationContextManager.getBean(Mailer.class);
 		mailer.sendMail("MailhandlerTest Subject", "Mail handler test mail body");
 
 		indexContext.getIndex().setIndexWriter(INDEX_WRITER);

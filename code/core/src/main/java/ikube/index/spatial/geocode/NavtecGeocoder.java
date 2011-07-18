@@ -6,6 +6,9 @@ import ikube.service.ServiceLocator;
 import org.apache.log4j.Logger;
 
 /**
+ * This class is the implementation for the NavTec geocoder, but it is not completely implemented. Before you can hit the web service (which
+ * is completely painful) you have to jump through rings on fire, and walk on broken glass...
+ * 
  * @author Michael Couck
  * @since 06.03.11
  * @version 01.00
@@ -14,14 +17,27 @@ public class NavtecGeocoder implements IGeocoder {
 
 	private Logger logger = Logger.getLogger(this.getClass());
 
+	private String nameSpace = "need the name space for the service";
+	private String serviceName = "need the service name too... :)";
+	private String searchUrl = "http://maptp12.map24.com/map24/webservices1.5?soap=Map24Geocoder51";
+
 	@Override
 	public Coordinate getCoordinate(String address) {
-		String url = "http://maptp12.map24.com/map24/webservices1.5?soap=Map24Geocoder51";
-		String nameSpace = "";
-		String serviceName = "";
-		Object service = ServiceLocator.getService(Object.class, url, nameSpace, serviceName);
+		Object service = ServiceLocator.getService(Object.class, searchUrl, nameSpace, serviceName);
 		logger.info("Service : " + service);
 		return null;
+	}
+
+	public void setSearchUrl(String searchUrl) {
+		this.searchUrl = searchUrl;
+	}
+
+	public void setNameSpace(String nameSpace) {
+		this.nameSpace = nameSpace;
+	}
+
+	public void setServiceName(String serviceName) {
+		this.serviceName = serviceName;
 	}
 
 }

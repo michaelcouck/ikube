@@ -35,15 +35,12 @@
 		the indexables contain address fields. The Url for this service  
 	-->
 	<bean
-		id="ikube.index.spatial.geocode.IkubeGeocoder"
-		class="ikube.index.spatial.geocode.IkubeGeocoder"
+		id="ikube.index.spatial.geocode.Geocoder"
+		class="ikube.index.spatial.geocode.Geocoder"
 		property:searchFields-ref="geospatialFields" 
 		property:searchUrl="http://ikube.dyndns.org:8081/ikube/service/ISearcherWebService?swdl" />
 	<util:list id="geospatialFields">
 		<value>name</value>
-		<value>asciiname</value>
-		<value>city</value>
-		<value>country</value>
 	</util:list>
 	<bean 
 		id="ikube.index.spatial.enrich.IEnrichment"
@@ -53,7 +50,7 @@
 	<bean 
 		id="ikube.index.spatial.ISpatialEnrichmentInterceptor" 
 		class="ikube.index.spatial.SpatialEnrichmentInterceptor"
-		property:geocoder-ref="ikube.index.spatial.geocode.IkubeGeocoder"
+		property:geocoder-ref="ikube.index.spatial.geocode.Geocoder"
 		property:enrichment-ref="ikube.index.spatial.enrich.IEnrichment" />
 	<aop:config proxy-target-class="true">
 		<aop:aspect ref="ikube.index.spatial.ISpatialEnrichmentInterceptor">

@@ -8,7 +8,6 @@ import ikube.toolkit.FileUtilities;
 
 import java.net.URL;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -22,14 +21,10 @@ public class GoogleGeocoderTest extends ATest {
 		super(GoogleGeocoderTest.class);
 	}
 
-	/**
-	 * TODO Ignored while the internet is still not connected
-	 */
 	@Test
-	@Ignore
 	public void getCoordinate() throws Exception {
 		GoogleGeocoder geocoder = new GoogleGeocoder();
-		geocoder.setGeoCodeApi("http://maps.googleapis.com/maps/api/geocode/xml");
+		geocoder.setSearchUrl("http://maps.googleapis.com/maps/api/geocode/xml");
 		Coordinate coordinate = geocoder.getCoordinate("9 avenue road, cape town, south africa");
 		assertNotNull("The coordinate can not be null as this is a real address from Gogole : ", coordinate);
 		double lat = coordinate.getLat();
@@ -38,11 +33,7 @@ public class GoogleGeocoderTest extends ATest {
 		assertEquals("We know that this address exists and where it is : ", 18.4622110, lon, 1.0);
 	}
 
-	/**
-	 * TODO Ignored while the internet is still not connected
-	 */
 	@Test
-	@Ignore
 	public void apiVerification() throws Exception {
 		StringBuilder builder = new StringBuilder();
 		builder.append("http://maps.googleapis.com/maps/api/geocode/xml");

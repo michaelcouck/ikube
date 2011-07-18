@@ -22,7 +22,6 @@ import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -292,17 +291,6 @@ public class ClusterManagerTest extends ATest {
 	public void getServer() {
 		Server server = clusterManager.getServer();
 		assertNotNull("The server can never be null : ", server);
-	}
-
-	@Test
-	@Ignore
-	@Deprecated
-	public void isHandled() {
-		boolean isHandled = clusterManager.isHandled(indexableName, indexName);
-		assertFalse("We haven't handled this indexable : ", isHandled);
-		clusterManager.setWorking(actionName, indexName, indexableName, Boolean.TRUE);
-		isHandled = clusterManager.isHandled(indexableName, indexName);
-		assertTrue("This indexable is not handled : ", isHandled);
 	}
 
 }

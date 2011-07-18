@@ -284,25 +284,6 @@ public class ClusterManager implements IClusterManager, IConstants {
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	@Deprecated
-	public boolean isHandled(final String indexableName, final String indexName) {
-		boolean isHandled = Boolean.FALSE;
-		List<Server> servers = getServers();
-		for (Server server : servers) {
-			Action action = server.getAction();
-			if (action != null && action.getIndexName().equals(indexName) && action.getIndexableName().equals(indexableName)) {
-				LOGGER.info("Already indexed by : " + server);
-				isHandled = Boolean.TRUE;
-				break;
-			}
-		}
-		return isHandled;
-	}
-
 	@Override
 	public <T> void set(String name, Long id, T object) {
 		cache.set(name, id, object);

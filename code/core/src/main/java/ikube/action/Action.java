@@ -2,13 +2,15 @@ package ikube.action;
 
 import ikube.action.rule.IRule;
 import ikube.cluster.IClusterManager;
+import ikube.notify.IMailer;
+import ikube.notify.Mailer;
 import ikube.toolkit.ApplicationContextManager;
-import ikube.toolkit.Mailer;
 
 import java.util.List;
 
 import javax.persistence.Transient;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.log4j.Logger;
 
 /**
@@ -39,6 +41,7 @@ public abstract class Action<E, F> implements IAction<E, F> {
 		return predicate;
 	}
 
+	@Override
 	public void setRuleExpression(final String predicate) {
 		this.predicate = predicate;
 	}
@@ -51,16 +54,19 @@ public abstract class Action<E, F> implements IAction<E, F> {
 		return rules;
 	}
 
+	@Override
 	public void setRules(final List<IRule<E>> rules) {
 		this.rules = rules;
 	}
 
 	protected void sendNotification(final String subject, final String body) {
+		IMailer mailer = null;
 		try {
-			Mailer mailer = ApplicationContextManager.getBean(Mailer.class);
+			mailer = ApplicationContextManager.getBean(Mailer.class);
 			mailer.sendMail(subject, body);
 		} catch (Exception e) {
-			logger.error("Exception sending mail : ", e);
+			logger.error("Exception sending mail : " + subject, e);
+			logger.error("Mailer details : " + ToStringBuilder.reflectionToString(mailer), e);
 		}
 	}
 

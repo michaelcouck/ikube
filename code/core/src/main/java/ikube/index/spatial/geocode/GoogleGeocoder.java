@@ -15,6 +15,10 @@ import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
 /**
+ * This is the implementation for the Google GeoCoder API. There can only be 2500 searches using this API, and the results have to be used
+ * to populate a GoogleMap in fact, unless you have a premium account, which is what this class is for finally, which will be expensive in
+ * fact, and it could be interesting to implement a batch GeoCoder in this case.
+ * 
  * @author Michael Couck
  * @since 06.03.11
  * @version 01.00
@@ -26,7 +30,8 @@ public class GoogleGeocoder implements IGeocoder {
 	protected static final String SENSOR = "sensor";
 
 	private static final Logger LOGGER = Logger.getLogger(GoogleGeocoder.class);
-	private transient String geoCodeApi;
+
+	private transient String searchUrl;
 
 	@Override
 	public Coordinate getCoordinate(String address) {
@@ -46,14 +51,14 @@ public class GoogleGeocoder implements IGeocoder {
 			double lng = Double.parseDouble(longitudeElement.getText());
 			return new Coordinate(lat, lng, address);
 		} catch (Exception e) {
-			LOGGER.error("Exception accessing the GeoCode url : " + geoCodeApi + ", " + address, e);
+			LOGGER.error("Exception accessing the GeoCode url : " + searchUrl + ", " + address, e);
 		}
 		return null;
 	}
 
 	protected String getUri(final String address) {
 		StringBuilder builder = new StringBuilder();
-		builder.append(geoCodeApi);
+		builder.append(searchUrl);
 		builder.append("?");
 		builder.append(ADDRESS);
 		builder.append("=");
@@ -65,8 +70,8 @@ public class GoogleGeocoder implements IGeocoder {
 		return builder.toString();
 	}
 
-	public void setGeoCodeApi(final String geoCodeApi) {
-		this.geoCodeApi = geoCodeApi;
+	public void setSearchUrl(String searchUrl) {
+		this.searchUrl = searchUrl;
 	}
 
 }

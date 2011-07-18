@@ -1,4 +1,4 @@
-package ikube.toolkit;
+package ikube.notify;
 
 import java.net.InetAddress;
 import java.security.Security;
@@ -23,27 +23,36 @@ import org.apache.log4j.Logger;
  * @version 01.00
  */
 @SuppressWarnings("restriction")
-public class Mailer {
+public class Mailer implements IMailer {
 
 	static {
 		Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
 	}
 
 	private Logger logger = Logger.getLogger(this.getClass());
-	/** "smtp.gmail.com" */
-	private transient String mailHost;
-	private transient String user;
-	private transient String password;
-	private transient String sender;
-	private transient String recipients;
+
 	/** "smtp" */
 	private transient String protocol;
 	/** "true" */
 	private transient String auth;
 	/** "465" */
 	private transient String port;
+	/** "smtp.gmail.com" */
+	private transient String mailHost;
+	/** ikybe.ikube */
+	private transient String user;
+	/** '*********' */
+	private transient String password;
+	/** ikube.ikube@gmail.com */
+	private transient String sender;
+	/** ikube.ikube@gmail.com */
+	private transient String recipients;
 
-	public void sendMail(final String subject, final String body) throws Exception {
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean sendMail(final String subject, final String body) throws Exception {
 		Properties properties = System.getProperties();
 		properties.put("mail.transport.protocol", protocol);
 		properties.put("mail.host", mailHost);
@@ -80,6 +89,7 @@ public class Mailer {
 			transport.sendMessage(message, message.getAllRecipients());
 		} catch (Exception e) {
 			logger.error("Exception sending mail to : " + ToStringBuilder.reflectionToString(this), e);
+			return Boolean.FALSE;
 		} finally {
 			if (transport != null) {
 				try {
@@ -89,36 +99,69 @@ public class Mailer {
 				}
 			}
 		}
+		return Boolean.TRUE;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public void setMailHost(final String mailHost) {
 		this.mailHost = mailHost;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public void setUser(final String user) {
 		this.user = user;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public void setPassword(final String password) {
 		this.password = password;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public void setSender(final String sender) {
 		this.sender = sender;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public void setRecipients(final String recipients) {
 		this.recipients = recipients;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public void setProtocol(final String protocol) {
 		this.protocol = protocol;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public void setAuth(final String auth) {
 		this.auth = auth;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public void setPort(final String port) {
 		this.port = port;
 	}

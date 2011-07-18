@@ -117,7 +117,7 @@ public final class UriUtilities {
 	 *            the original URI
 	 * @return the URI without dot segments
 	 */
-	private static URI removeDotSegments(final URI uri) {
+	protected static URI removeDotSegments(final URI uri) {
 		String path = uri.getPath();
 		if ((path == null) || (path.indexOf("/.") == -1)) {
 			// No dot segments to remove

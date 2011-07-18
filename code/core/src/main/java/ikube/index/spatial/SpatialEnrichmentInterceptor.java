@@ -70,6 +70,7 @@ public class SpatialEnrichmentInterceptor implements ISpatialEnrichmentIntercept
 		if (coordinate == null) {
 			String address = enrichment.buildAddress(indexable, new StringBuilder()).toString();
 			try {
+				// The GeoCoder is a last resort in fact
 				coordinate = geocoder.getCoordinate(address);
 			} catch (Exception e) {
 				LOGGER.error("Exception accessing the geocoder : " + geocoder + ", " + address, e);

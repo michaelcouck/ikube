@@ -16,6 +16,8 @@ import org.nfunk.jep.JEP;
  */
 public interface IAction<E, F> {
 
+	void setRuleExpression(final String predicate);
+
 	/**
 	 * Accesses the predicate or rule expression. This is a boolean expression that can be interpreted by {@link JEP}. Typically this
 	 * expression will be something like '!ServerIsWorking && !IndexesAreCreated'. At runtime the variables will be substituted with the
@@ -24,6 +26,8 @@ public interface IAction<E, F> {
 	 * @return the string representation of the rules expression for JEP
 	 */
 	String getRuleExpression();
+
+	void setRules(final List<IRule<E>> rules);
 
 	/**
 	 * Access to the rules for this action. Actions will get executed if the rules evaluate to true for the action. The rules are

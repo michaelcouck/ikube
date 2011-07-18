@@ -3,6 +3,8 @@ package ikube.action;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import ikube.ATest;
+import ikube.mock.ApplicationContextManagerMock;
+import ikube.mock.ClusterManagerMock;
 import ikube.model.IndexContext;
 import ikube.toolkit.FileUtilities;
 
@@ -10,9 +12,12 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import mockit.Mockit;
+
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.store.Lock;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,11 +31,13 @@ public class CleanTest extends ATest {
 	@Before
 	public void before() {
 		FileUtilities.deleteFile(new File(INDEX_CONTEXT.getIndexDirectoryPath()), 1);
+		Mockit.setUpMocks(ApplicationContextManagerMock.class, ClusterManagerMock.class);
 	}
 
 	@After
 	public void after() {
 		FileUtilities.deleteFile(new File(INDEX_CONTEXT.getIndexDirectoryPath()), 1);
+		Mockit.tearDownMocks();
 	}
 
 	/**
@@ -43,10 +50,11 @@ public class CleanTest extends ATest {
 	@Test
 	public void execute() throws Exception {
 		File latestIndexDirectory = createIndex(INDEX_CONTEXT, "some words to index");
+		File serverIndexDirectory = new File(latestIndexDirectory, IP);
 
+		// Running the clean the locked index directory should be un-locked
 		Clean<IndexContext<?>, Boolean> clean = new Clean<IndexContext<?>, Boolean>();
 		clean.execute(INDEX_CONTEXT);
-		File serverIndexDirectory = new File(latestIndexDirectory, IP);
 
 		Directory directory = FSDirectory.open(serverIndexDirectory);
 		try {
@@ -61,7 +69,25 @@ public class CleanTest extends ATest {
 		}
 
 		clean.execute(INDEX_CONTEXT);
-		assertFalse(serverIndexDirectory.exists());
+		assertFalse("The index directory should have been deleted because it is corrupt : ", serverIndexDirectory.exists());
+
+		latestIndexDirectory = createIndex(INDEX_CONTEXT, "some words to index");
+		serverIndexDirectory = new File(latestIndexDirectory, IP);
+		Lock lock = getLock(FSDirectory.open(serverIndexDirectory), serverIndexDirectory);
+		boolean isLocked = lock.isLocked();
+		assertTrue("We should be able to get the lock from the index directory : ", isLocked);
+
+		clean.execute(INDEX_CONTEXT);
+
+		directory = FSDirectory.open(serverIndexDirectory);
+		try {
+			assertTrue("This index exists, but is locked : ", IndexReader.indexExists(directory));
+		} finally {
+			directory.close();
+		}
+		lock.release();
+
+		clean.execute(INDEX_CONTEXT);
 	}
 
 }
