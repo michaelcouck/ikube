@@ -45,7 +45,6 @@
 	</target>
 
 	<target name="executeTomcatAction">
-		<echo message="Bin: ${tomcat.bin}, Home: ${tomcat.home}" />
 		<java jar="${tomcat.bin}/bootstrap.jar" dir="${tomcat.bin}" fork="yes" spawn="true">
 			<jvmarg value="-Dcatalina.home=${tomcat.home}" />
 			<jvmarg value="-XX:PermSize=128m" />
@@ -55,9 +54,8 @@
 			<arg line="${action}" />
 		</java>
 	</target>
-	
+
 	<target name="startJenkins">
-		<echo message="Bin: ${jenkins.bin}, Home: ${jenkins.home}" />
 		<java jar="${jenkins.bin}/bootstrap.jar" dir="${jenkins.bin}" fork="yes" spawn="true">
 			<jvmarg value="-Dcatalina.home=${jenkins.home}" />
 			<jvmarg value="-XX:PermSize=32m" />
@@ -69,7 +67,6 @@
 	</target>
 
 	<target name="deploy">
-		<!-- delete dir="${indexes.directory}" failonerror="false" / -->
 		<delete dir="${tomcat.1}/webapps/ikube" failonerror="false" />
 		<delete dir="${tomcat.2}/webapps/ikube" failonerror="false" />
 		<delete dir="${tomcat.3}/webapps/ikube" failonerror="false" />

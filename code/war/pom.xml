@@ -65,21 +65,9 @@
 						<id>install</id>
 						<phase>install</phase>
 						<configuration>
-							<target>
-								<property file="../../build.properties" />
-									
-								<delete dir="${tomcat.1}/work" failonerror="false" />
-								<delete dir="${tomcat.2}/work" failonerror="false" />
-								<delete dir="${tomcat.3}/work" failonerror="false" />
-								
-								<delete dir="${tomcat.1}/webapps/ikube" failonerror="false" />
-								<delete dir="${tomcat.2}/webapps/ikube" failonerror="false" />
-								<delete dir="${tomcat.3}/webapps/ikube" failonerror="false" />
-								
-								<copy file="target/${ikube.war}" todir="${tomcat.1}/webapps" overwrite="true" failonerror="false" />
-								<copy file="target/${ikube.war}" todir="${tomcat.2}/webapps" overwrite="true" failonerror="false" />
-								<copy file="target/${ikube.war}" todir="${tomcat.3}/webapps" overwrite="true" failonerror="false" />
-							</target>
+							<tasks>
+								<ant antfile="build.xml" target="all" inheritrefs="true"/> 
+							</tasks>
 						</configuration>
 						<goals>
 							<goal>run</goal>
