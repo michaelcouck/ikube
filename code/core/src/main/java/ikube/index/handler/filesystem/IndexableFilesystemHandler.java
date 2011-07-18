@@ -99,7 +99,7 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 	 *            the file system configuration object
 	 * @return the list of files still to be indexed, could be empty if there are not more files
 	 */
-	protected synchronized List<ikube.model.File> getBatch(final IDataBase dataBase, final IndexableFileSystem indexable) {
+	private synchronized List<ikube.model.File> getBatch(final IDataBase dataBase, final IndexableFileSystem indexable) {
 		try {
 			Map<String, Object> parameters = new HashMap<String, Object>();
 			parameters.put(IConstants.NAME, indexable.getName());
@@ -110,9 +110,7 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 				dbFile.setIndexed(Boolean.TRUE);
 			}
 			dataBase.mergeBatch(dbFiles);
-			if (dbFiles != null && dbFiles.size() > 0) {
-				logger.info("Doing files : " + dbFiles.size());
-			}
+			logger.info("Doing files : " + dbFiles.size());
 			return dbFiles;
 		} finally {
 			notifyAll();
@@ -202,8 +200,10 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 			byte[] bytes = new byte[1024];
 			if (inputStream.markSupported()) {
 				inputStream.mark(Short.MAX_VALUE);
-				inputStream.read(bytes);
-				inputStream.reset();
+				int read = inputStream.read(bytes);
+				if (read > 0) {
+					inputStream.reset();
+				}
 			}
 
 			IParser parser = ParserProvider.getParser(file.getName(), bytes);

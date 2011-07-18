@@ -191,9 +191,9 @@ public abstract class ADataGenerator implements IDataGenerator {
 		if (Boolean.class.equals(klass) || boolean.class.equals(klass)) {
 			return Boolean.TRUE;
 		} else if (Integer.class.equals(klass) || int.class.equals(klass)) {
-			return new Integer((int) System.nanoTime());
+			return Integer.valueOf((int) System.nanoTime());
 		} else if (Long.class.equals(klass) || long.class.equals(klass)) {
-			return new Long(System.nanoTime());
+			return Long.valueOf(System.nanoTime());
 		} else if (Double.class.equals(klass) || double.class.equals(klass)) {
 			return new Double(System.nanoTime());
 		} else if (Timestamp.class.equals(klass)) {

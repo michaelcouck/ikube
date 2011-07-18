@@ -76,10 +76,7 @@ public class WebServicePublisher implements IWebServicePublisher {
 							break;
 						} catch (Exception e) {
 							String message = Logging.getString("Exception publishing web service : ", url, bean, e.getMessage());
-							logger.info(message);
-							if (logger.isDebugEnabled()) {
-								logger.error("", e);
-							}
+							logger.warn(message, e);
 							port++;
 						}
 					} while (++retryCount < IConstants.MAX_RETRY_WEB_SERVICE_PUBLISHER);

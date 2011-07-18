@@ -121,8 +121,18 @@ public final class MimeType {
 	 * @return <code>true</code> if this mime-type is equal to the object argument; <code>false</code> otherwise.
 	 */
 	public boolean equals(final Object object) {
+		if (object == null) {
+			return Boolean.FALSE;
+		}
+		if (!MimeType.class.isAssignableFrom(object.getClass())) {
+			return Boolean.FALSE;
+		}
+		MimeType other = (MimeType) object;
+		if (other.getName() == null) {
+			return Boolean.FALSE;
+		}
 		try {
-			return ((MimeType) object).getName().equals(this.name);
+			return other.getName().equals(this.getName());
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
@@ -225,7 +235,8 @@ public final class MimeType {
 		return false;
 	}
 
-	private class Magic {
+	private static class Magic {
+
 		private transient int offset;
 		private transient byte[] magic = null;
 
@@ -291,7 +302,7 @@ public final class MimeType {
 			buf.append('[');
 			buf.append(offset);
 			buf.append('/');
-			buf.append(magic);
+			buf.append(new String(magic));
 			buf.append(']');
 			return buf.toString();
 		}

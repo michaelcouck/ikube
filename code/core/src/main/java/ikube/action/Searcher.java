@@ -58,12 +58,12 @@ public class Searcher extends Action<IndexContext<?>, Boolean> {
 			String[] sortFields = new String[searchFields.length];
 			Arrays.fill(searchStrings, 0, searchStrings.length, searchString);
 			System.arraycopy(searchFields, 0, sortFields, 0, sortFields.length);
-			double latitude = new Double(50.7930727874172);
-			double longitude = new Double(4.36242219751376);
 			for (int i = 0; i < iterations; i++) {
 				xml = searchRemote.searchSingle(indexName, searchString, searchFields[0], Boolean.TRUE, 0, 10);
 				xml = searchRemote.searchMulti(indexName, searchStrings, searchFields, fragment, start, end);
-				// xml = searchRemote.searchMultiSorted(indexName, searchStrings, searchFields, sortFields, fragment, start, end);
+				// xml = searchRemote.searchMultiSorted(indexName, searchStrings, SEARCH_FIELDS, sortFields, fragment, start, end);
+				double latitude = 50.7930727874172;
+				double longitude = 4.36242219751376;
 				xml = searchRemote
 						.searchSpacialMulti(indexName, searchStrings, searchFields, fragment, start, end, 10, latitude, longitude);
 				xml = searchRemote.searchMultiAll(indexName, searchStrings, fragment, start, end);

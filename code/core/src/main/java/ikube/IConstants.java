@@ -117,7 +117,7 @@ public interface IConstants {
 
 	String INDEX_NAME = "indexName";
 	String MAX_RESULTS = "maxResults";
-	String SEARCH_FIELDS = "searchFields";
+	String SEARCH_FIELDS = "SEARCH_FIELDS";
 	String SEARCH_STRINGS = "searchStrings";
 	String SORT_FIELDS = "sortFields";
 	String FIRST_RESULT = "firstResult";

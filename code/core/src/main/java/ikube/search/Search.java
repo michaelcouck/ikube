@@ -146,7 +146,7 @@ public abstract class Search {
 	/**
 	 * Sets the fields in the index that will be searched for.
 	 * 
-	 * @param searchFields
+	 * @param SEARCH_FIELDS
 	 *            the fields in the index to search through
 	 */
 	public void setSearchField(final String... searchFields) {

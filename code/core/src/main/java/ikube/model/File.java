@@ -1,5 +1,7 @@
 package ikube.model;
 
+import java.util.Arrays;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
@@ -89,11 +91,18 @@ public class File extends Persistable {
 	}
 
 	public byte[] getRawContent() {
-		return rawContent;
+		if (rawContent == null) {
+			return null;
+		}
+		return Arrays.copyOf(rawContent, rawContent.length);
 	}
 
 	public void setRawContent(final byte[] rawContent) {
-		this.rawContent = rawContent;
+		if (rawContent == null) {
+			this.rawContent = null;
+			return;
+		}
+		this.rawContent = Arrays.copyOf(rawContent, rawContent.length);
 	}
 
 	public String getParsedContent() {

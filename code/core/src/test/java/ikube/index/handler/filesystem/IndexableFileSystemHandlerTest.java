@@ -18,6 +18,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
 
+import mockit.Deencapsulation;
 import mockit.Mockit;
 
 import org.junit.After;
@@ -83,7 +84,9 @@ public class IndexableFileSystemHandlerTest extends ATest {
 	public void getBatch() {
 		// IDataBase, IndexableFileSystem
 		// TODO Implement me
-		indexableFileSystemHandler.getBatch(dataBase, indexableFileSystem);
+		// indexableFileSystemHandler.getBatch(dataBase, indexableFileSystem);
+		Object result = Deencapsulation.invoke(indexableFileSystemHandler, "getBatch", dataBase, indexableFileSystem);
+		logger.warn("Result : " + result);
 	}
 
 	@Test

@@ -137,7 +137,7 @@ public final class SerializationUtilities {
 	}
 
 	public static Object deserialize(final String xml) {
-		byte[] bytes = new byte[0];
+		byte[] bytes = null;
 		try {
 			bytes = xml.getBytes(IConstants.ENCODING);
 			ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
@@ -146,6 +146,8 @@ public final class SerializationUtilities {
 			return xmlDecoder.readObject();
 		} catch (UnsupportedEncodingException e) {
 			LOGGER.error("Unsupported encoding : ", e);
+		} catch (Exception e) {
+			LOGGER.error("Exception de-serialising object : " + xml, e);
 		}
 		return null;
 	}

@@ -88,11 +88,10 @@ public class Cache implements ICache {
 		// 1 000 000 000 could be a small problem.
 		List<T> list = new ArrayList<T>();
 		Map<Long, T> map = getMap(name);
-		for (Long id : map.keySet()) {
+		for (T object : map.values()) {
 			if (list.size() >= size) {
 				break;
 			}
-			T object = map.get(id);
 			if (criteria != null) {
 				// The result from the criteria evaluation determines whether
 				// the object will be included in the result batch returned

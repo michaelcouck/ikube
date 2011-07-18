@@ -78,7 +78,7 @@ public final class Logging implements IConstants {
 					}
 				}
 			} catch (Exception e) {
-
+				e.printStackTrace();
 			}
 		} finally {
 			Logging.class.notifyAll();

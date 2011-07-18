@@ -43,10 +43,10 @@ public final class MimeTypes {
 			InputStream inputStream = getClass().getResourceAsStream(filePath);
 			MimeTypes instance = null;
 			synchronized (INSTANCES) {
-				instance = (MimeTypes) INSTANCES.get(inputStream);
+				Integer hash = Integer.valueOf(inputStream.hashCode());
+				instance = INSTANCES.get(hash);
 				if (instance == null) {
 					instance = new MimeTypes(inputStream);
-					Integer hash = Integer.valueOf(inputStream.hashCode());
 					INSTANCES.put(hash, instance);
 				}
 			}
@@ -133,12 +133,10 @@ public final class MimeTypes {
 		if (mimeTypes == null) {
 			// No mime-type found, so trying to analyse the content
 			mimeType = getMimeType(data);
-		} else if (mimeTypes.length > 1) {
+		} else if (mimeTypes.length >= 1) {
 			// Todo: More than one mime-type found, so trying magic resolution
 			// on these mime types mimeType = getMimeType(data, mimeTypes);
 			// For now, just get the first one
-			mimeType = mimeTypes[0];
-		} else {
 			mimeType = mimeTypes[0];
 		}
 		return mimeType;

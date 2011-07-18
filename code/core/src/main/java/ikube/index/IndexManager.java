@@ -30,7 +30,8 @@ import org.apache.lucene.store.LockObtainFailedException;
 import org.apache.lucene.store.RAMDirectory;
 
 /**
- * This class opens and closes the Lucene index writer.
+ * This class opens and closes the Lucene index writer. There are also methods that get the path to the index directory based on the path in
+ * the index context. This class also has methods that add fields to a document, either directly of via a file reader and writer.
  * 
  * @author Michael Couck
  * @since 21.11.10
@@ -109,7 +110,8 @@ public final class IndexManager {
 	 * @return
 	 * @throws Exception
 	 */
-	public static synchronized IndexWriter openIndexWriter(IndexContext<?> indexContext, File indexDirectory, boolean create) throws Exception {
+	public static synchronized IndexWriter openIndexWriter(IndexContext<?> indexContext, File indexDirectory, boolean create)
+			throws Exception {
 		Directory directory = null;
 		if (indexContext.getInMemory()) {
 			LOGGER.info("Index in memory : ");
@@ -296,28 +298,42 @@ public final class IndexManager {
 			if (fieldReader == null) {
 				fieldReader = new StringReader(field.stringValue());
 			}
-			File tempFile = File.createTempFile(Long.toString(System.nanoTime()), IConstants.READER_FILE_SUFFIX);
-			Writer writer = new FileWriter(tempFile, false);
-			char[] chars = new char[1024];
-			int read = fieldReader.read(chars);
-			while (read > -1) {
-				writer.write(chars, 0, read);
-				read = fieldReader.read(chars);
-			}
-			read = reader.read(chars);
-			while (read > -1) {
-				writer.write(chars, 0, read);
+
+			Writer writer = null;
+			try {
+				File tempFile = File.createTempFile(Long.toString(System.nanoTime()), IConstants.READER_FILE_SUFFIX);
+				writer = new FileWriter(tempFile, false);
+				char[] chars = new char[1024];
+				int read = fieldReader.read(chars);
+				while (read > -1) {
+					writer.write(chars, 0, read);
+					read = fieldReader.read(chars);
+				}
 				read = reader.read(chars);
-			}
-			Reader finalReader = new FileReader(tempFile);
-			// This is a string field, and could be stored so we check that
-			if (store.isStored()) {
-				// Remove the field and add it again
-				document.removeField(fieldName);
-				field = new Field(fieldName, finalReader, termVector);
-				document.add(field);
-			} else {
-				field.setValue(finalReader);
+				while (read > -1) {
+					writer.write(chars, 0, read);
+					read = reader.read(chars);
+				}
+				Reader finalReader = new FileReader(tempFile);
+				// This is a string field, and could be stored so we check that
+				if (store.isStored()) {
+					// Remove the field and add it again
+					document.removeField(fieldName);
+					field = new Field(fieldName, finalReader, termVector);
+					document.add(field);
+				} else {
+					field.setValue(finalReader);
+				}
+			} catch (Exception e) {
+				LOGGER.error("Exception writing the field value with the file writer : ", e);
+			} finally {
+				try {
+					if (writer != null) {
+						writer.close();
+					}
+				} catch (Exception e) {
+					LOGGER.error("Exception closing the writer : ", e);
+				}
 			}
 		}
 	}

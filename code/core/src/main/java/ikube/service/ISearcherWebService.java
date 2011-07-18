@@ -98,14 +98,19 @@ public interface ISearcherWebService {
 			@WebParam(name = "firstResult") final int firstResult, @WebParam(name = "maxResults") final int maxResults);
 
 	/**
-	 * TODO Comment me!
+	 * This is a convenient method to search for the specified strings in all the fields.
 	 * 
 	 * @param indexName
+	 *            the name of the index to search
 	 * @param searchStrings
+	 *            the search strings to search for
 	 * @param fragment
+	 *            whether to generate a fragment from the stored data for the matches
 	 * @param firstResult
+	 *            the first result for paging
 	 * @param maxResults
-	 * @return
+	 *            the maximum results for paging
+	 * @return the results from the search serialized to an xml string
 	 */
 	@WebMethod
 	@WebResult(name = "result")
@@ -114,18 +119,29 @@ public interface ISearcherWebService {
 			@WebParam(name = "firstResult") final int firstResult, @WebParam(name = "maxResults") final int maxResults);
 
 	/**
-	 * TODO Comment me!
+	 * This method will search for the specified strings in the specified fields, with the usual parameters like whether to generate a
+	 * fragment and so on, but will sort the results according to the distance from the co-ordinate that was specified in the parameters
+	 * list.
 	 * 
 	 * @param indexName
+	 *            the name of the index to search
 	 * @param searchStrings
+	 *            the search strings to search for
 	 * @param searchFields
+	 *            the fields to search through
 	 * @param fragment
+	 *            whether to generate a fragment from the stored data for the matches
 	 * @param firstResult
+	 *            the first result for paging
 	 * @param maxResults
+	 *            the maximum results for paging
 	 * @param distance
+	 *            the maximum distance that should be allowed for the results
 	 * @param latitude
+	 *            the longitude of the co-ordinate to sort on
 	 * @param longitude
-	 * @return
+	 *            the latitude of the co-ordinate to sort on
+	 * @return the results from the search serialized to an xml string
 	 */
 	@WebMethod
 	@WebResult(name = "result")

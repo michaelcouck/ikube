@@ -115,8 +115,7 @@ public class MonitorWebService implements IMonitorWebService {
 	public String[] getIndexableFieldNames(@WebParam(name = "indexableName") final String indexableName) {
 		Map<String, Indexable> indexables = ApplicationContextManager.getBeans(Indexable.class);
 		Indexable<?> indexable = null;
-		for (String in : indexables.keySet()) {
-			Indexable ind = indexables.get(in);
+		for (Indexable ind : indexables.values()) {
 			if (ind.getName().equals(indexableName)) {
 				indexable = ind;
 				break;

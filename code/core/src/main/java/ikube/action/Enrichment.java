@@ -30,7 +30,7 @@ public class Enrichment extends Action<IndexContext<?>, Boolean> implements ICon
 	public static final String CITY_FEATURE_CODE = "PPL PPL PPLA PPLA2 PPLA3 PPLA4 PPLC PPLF PPLG PPLL PPLQ PPLR PPLS PPLW PPLX STLMT";
 	public static final String COUNTRY_FEATURE_CLASS = "A";
 	public static final String COUNTRY_FEATURE_CODE = "PCLI ADM1 ADM2 ADM3 ADM4 ADMD LTER PCL PCLD PCLF PCLI PCLIX PCLS PRSH TERR ZN ZNB";
-	public static final String[] searchFields = { FEATURECLASS, FEATURECODE, COUNTRYCODE };
+	public static final String[] SEARCH_FIELDS = { FEATURECLASS, FEATURECODE, COUNTRYCODE };
 
 	/** Once the enrichment has been handled on this machine then don't do it again. */
 	private static boolean DONE = Boolean.FALSE;
@@ -193,7 +193,7 @@ public class Enrichment extends Action<IndexContext<?>, Boolean> implements ICon
 		searchSpatial.setFirstResult(0);
 		searchSpatial.setFragment(Boolean.TRUE);
 		searchSpatial.setMaxResults(10);
-		searchSpatial.setSearchField(searchFields);
+		searchSpatial.setSearchField(SEARCH_FIELDS);
 		return searchSpatial;
 	}
 
@@ -202,7 +202,7 @@ public class Enrichment extends Action<IndexContext<?>, Boolean> implements ICon
 		searchMulti.setFirstResult(0);
 		searchMulti.setFragment(Boolean.TRUE);
 		searchMulti.setMaxResults(10);
-		searchMulti.setSearchField(searchFields);
+		searchMulti.setSearchField(SEARCH_FIELDS);
 		return searchMulti;
 	}
 }

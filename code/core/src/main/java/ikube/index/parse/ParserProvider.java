@@ -61,10 +61,10 @@ public final class ParserProvider {
 				parser = PARSERS_CLASS_NAME_PARSER.get(parserClassName);
 				if (parser == null) {
 					if (parserClassName == null) {
-						LOGGER.info("Locating the text parser for : " + mimeType.getName() + ", " + mimeTypeString + ", " + parserClassName);
 						// The fall-back parser is the text parser
 						parserClassName = TextParser.class.getName();
 					}
+					LOGGER.info("Locating the text parser for : " + mimeType.getName() + ", " + mimeTypeString + ", " + parserClassName);
 					parser = (IParser) Class.forName(parserClassName).newInstance();
 					PARSERS_CLASS_NAME_PARSER.put(parserClassName, parser);
 				}

@@ -5,6 +5,7 @@ import java.lang.reflect.Field;
 import java.net.DatagramSocket;
 import java.net.ServerSocket;
 import java.util.Collection;
+import java.util.Random;
 
 import org.apache.log4j.Logger;
 import org.springframework.util.ReflectionUtils;
@@ -16,8 +17,12 @@ import org.springframework.util.ReflectionUtils;
  */
 public final class GeneralUtilities {
 
+	static {
+		Logging.configure();
+	}
+
 	private static final Logger LOGGER = Logger.getLogger(GeneralUtilities.class);
-	
+
 	private static final long MAX_PORT_SIZE = Short.MAX_VALUE;
 
 	private GeneralUtilities() {
@@ -65,22 +70,22 @@ public final class GeneralUtilities {
 	 *            the longitude of the second point
 	 * @return the distance between the two points
 	 */
-	public static float distFrom(final float lat1, final float lng1, final float lat2, final float lng2) {
+	public static double distFrom(final double lat1, final double lng1, final double lat2, final double lng2) {
 		double earthRadius = 6378.1;
 		double dLat = Math.toRadians(lat2 - lat1);
 		double dLng = Math.toRadians(lng2 - lng1);
 		double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
 				* Math.sin(dLng / 2) * Math.sin(dLng / 2);
 		double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-		double dist = earthRadius * c;
-		return new Float(dist).floatValue();
+		return earthRadius * c;
 	}
 
 	public static void main(final String[] args) throws Exception {
+		Random random = new Random(System.nanoTime());
 		Integer[] arr = new Integer[5];
 		LOGGER.info("inserting: ");
 		for (int i = 0; i < arr.length; i++) {
-			arr[i] = Integer.valueOf((int) (Math.random() * 99));
+			arr[i] = Integer.valueOf(random.nextInt());
 			LOGGER.info(arr[i] + " ");
 		}
 		quickSort(arr, 0, arr.length - 1);

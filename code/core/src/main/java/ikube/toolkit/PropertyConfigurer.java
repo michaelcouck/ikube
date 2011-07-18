@@ -25,7 +25,7 @@ import org.apache.log4j.Logger;
  */
 public class PropertyConfigurer extends Properties {
 
-	private Logger logger = Logger.getLogger(this.getClass());
+	private static final transient Logger LOGGER = Logger.getLogger(PropertyConfigurer.class);
 
 	private Pattern fileNamePattern;
 
@@ -35,46 +35,30 @@ public class PropertyConfigurer extends Properties {
 	 * application will also be checked for the properties file name pattern to load into the property map.
 	 */
 	public void initialize() {
-		// Attempt here to load the weaver dynamically 
-		// try {
-		// // First load the load time weaving
-		// String jarFilePath = ClassPreProcessorAgentAdapter.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
-		// logger.info("Dynamically loading javaagent : " + jarFilePath);
-		// String nameOfRunningVM = ManagementFactory.getRuntimeMXBean().getName();
-		// int p = nameOfRunningVM.indexOf('@');
-		// String pid = nameOfRunningVM.substring(0, p);
-		// VirtualMachine vm = VirtualMachine.attach(pid);
-		// // String path = "C:/Users/db2admin/.m2/repository/org/aspectj/aspectjrt/1.6.8/aspectjrt-1.6.8.jar";
-		// jarFilePath = jarFilePath.replaceFirst("/", "");
-		// vm.loadAgent(jarFilePath, "");
-		// vm.detach();
-		// } catch (Exception e1) {
-		// throw e1;
-		// }
 		try {
 			// First we check our own jar
 			File thisJar = new File(getClass().getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
-			logger.info("Checking our own jar : " + thisJar);
+			LOGGER.info("Checking our own jar : " + thisJar);
 			checkJar(thisJar);
 		} catch (URISyntaxException e) {
-			logger.error("Aaai karumbi! Where am I?", e);
+			LOGGER.error("Aaai karumbi! Where am I?", e);
 		}
 		// First check the classpath, this could take a while of course
 		String classPathString = System.getProperty("java.class.path");
 		StringTokenizer tokenizer = new StringTokenizer(classPathString, ";", Boolean.FALSE);
 		while (tokenizer.hasMoreTokens()) {
 			String jarLocation = tokenizer.nextToken();
-			logger.debug("        : Checking location : " + jarLocation);
+			LOGGER.debug("        : Checking location : " + jarLocation);
 			checkJar(new File(jarLocation));
 		}
 		// Check the file system for properties files
 		List<File> propertyFiles = FileUtilities.findFilesRecursively(new File("."), new ArrayList<File>(), fileNamePattern.toString());
 		for (File propertyFile : propertyFiles) {
 			try {
-				logger.info("        : Loading properties from : " + propertyFile);
+				LOGGER.debug("        : Loading properties from : " + propertyFile);
 				this.load(new FileInputStream(propertyFile));
 			} catch (Exception e) {
-				logger.error("Exception reading property file : " + propertyFile, e);
+				LOGGER.error("Exception reading property file : " + propertyFile, e);
 			}
 		}
 		// Check the file system for jars that have the properties files
@@ -83,7 +67,7 @@ public class PropertyConfigurer extends Properties {
 			try {
 				checkJar(jarFile);
 			} catch (Exception e) {
-				logger.error("Exception reading jar file : " + jarFile, e);
+				LOGGER.error("Exception reading jar file : " + jarFile, e);
 			}
 		}
 	}
@@ -99,10 +83,10 @@ public class PropertyConfigurer extends Properties {
 			return;
 		}
 		try {
-			logger.debug("Checking jar : " + file);
+			LOGGER.debug("Checking jar : " + file);
 			checkJar(new JarFile(file));
 		} catch (Exception e) {
-			logger.error("Exception accessing the properties in jar file : " + file, e);
+			LOGGER.error("Exception accessing the properties in jar file : " + file, e);
 		}
 	}
 
@@ -119,11 +103,11 @@ public class PropertyConfigurer extends Properties {
 			String entryName = jarEntry.getName();
 			if (fileNamePattern.matcher(entryName).matches()) {
 				try {
-					logger.info("        : Loading properties from : " + jarEntry);
+					LOGGER.debug("        : Loading properties from : " + jarEntry);
 					InputStream inputStream = jarFile.getInputStream(jarEntry);
 					this.load(inputStream);
 				} catch (Exception e) {
-					logger.error("Exception loading properties file from jar : " + jarFile, e);
+					LOGGER.error("Exception loading properties file from jar : " + jarFile, e);
 				}
 			}
 		}
