@@ -91,6 +91,7 @@ public interface IConstants {
 	String COUNTRYCODE = "countrycode";
 	String TIMEZONE = "timezone";
 	String ASCIINAME = "asciiname";
+	String CORRECTIONS = "corrections";
 
 	String ENCODING = "UTF-8";
 
@@ -117,7 +118,7 @@ public interface IConstants {
 
 	String INDEX_NAME = "indexName";
 	String MAX_RESULTS = "maxResults";
-	String SEARCH_FIELDS = "SEARCH_FIELDS";
+	String SEARCH_FIELDS = "searchFields";
 	String SEARCH_STRINGS = "searchStrings";
 	String SORT_FIELDS = "sortFields";
 	String FIRST_RESULT = "firstResult";

@@ -42,9 +42,8 @@
 		<ref local="internet" />
 		<ref local="hazelcast" />
 		<!-- <ref local="internetMillion" /> -->
-		<!-- <ref local="internetFalconMillion" /> -->
 		<ref local="filesystem" />
-		<ref local="filesystemMillionOne" />
+		<!-- <ref local="filesystemMillionOne" /> -->
 		<!-- <ref local="filesystemMillionTwo" />
 		<ref local="filesystemMillionThree" />
 		<ref local="filesystemMillionFour" />
@@ -56,8 +55,8 @@
 		<ref local="filesystemMillionTen" /> -->
 		<!-- <ref bean="faqTableH2" /> -->
 		<!-- <ref bean="faqTableDb2" /> -->
-		<!-- <ref bean="faqTableOracle" /> -->
-		<!-- <ref bean="patientTableH2" /> -->
+		<ref bean="faqTableOracle" />
+		<ref bean="patientTableH2" />
 		<ref bean="patientTableDb2" />
 		<ref bean="patientTableOracle" />
 		<ref bean="addressTableDb2" />
@@ -567,19 +566,6 @@
 		class="ikube.model.IndexableInternet"
 		property:name="internetMillion"
 		property:url="${url.million}" 
-		property:idFieldName="id"
-		property:titleFieldName="title"
-		property:contentFieldName="content"
-		property:analyzed="${analyzed}"
-		property:stored="${not.stored}"
-		property:vectored="${vectored}"
-		property:internetBatchSize="${internet.batch.size}"
-		property:excludedPattern="${internet.excluded.pattern}" />
-	<bean
-		id="internetFalconMillion"
-		class="ikube.model.IndexableInternet"
-		property:name="internetFalconMillion"
-		property:url="${url.falcon.million}" 
 		property:idFieldName="id"
 		property:titleFieldName="title"
 		property:contentFieldName="content"

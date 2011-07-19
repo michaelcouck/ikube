@@ -1,6 +1,7 @@
 package ikube.search;
 
 import ikube.IConstants;
+import ikube.search.spelling.CheckerExt;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -43,11 +44,12 @@ import org.apache.lucene.search.highlight.Scorer;
  */
 public abstract class Search {
 
+	private static transient Map<String, QueryParser> QUERY_PARSERS = new HashMap<String, QueryParser>();
+
 	protected Logger logger;
 	/** The searcher that will be used for the search. */
 	protected transient Searcher searcher;
 	/** The query parsers for various query fields. */
-	private final transient Map<String, QueryParser> queryParsers;
 
 	/** The search string that we are looking for. */
 	protected transient String[] searchStrings;
@@ -66,7 +68,6 @@ public abstract class Search {
 	Search(final Searcher searcher) {
 		this.logger = Logger.getLogger(this.getClass());
 		this.searcher = searcher;
-		this.queryParsers = new HashMap<String, QueryParser>();
 	}
 
 	/**
@@ -146,7 +147,7 @@ public abstract class Search {
 	/**
 	 * Sets the fields in the index that will be searched for.
 	 * 
-	 * @param SEARCH_FIELDS
+	 * @param searchFields
 	 *            the fields in the index to search through
 	 */
 	public void setSearchField(final String... searchFields) {
@@ -176,6 +177,8 @@ public abstract class Search {
 			TopDocs topDocs = search(query);
 			duration = System.currentTimeMillis() - start;
 			totalHits = topDocs.totalHits;
+			// TODO If there are no results here then do a search for the
+			// corrected spelling to see if there are any results from that
 			results = getResults(topDocs, query);
 		} catch (Exception e) {
 			logger.error("Exception searching for string " + searchStrings[0] + " in searcher " + searcher, e);
@@ -244,10 +247,10 @@ public abstract class Search {
 	 * @return the query parser for the particular field
 	 */
 	protected QueryParser getQueryParser(final String searchField) {
-		QueryParser queryParser = queryParsers.get(searchField);
+		QueryParser queryParser = QUERY_PARSERS.get(searchField);
 		if (queryParser == null) {
 			queryParser = new QueryParser(IConstants.VERSION, searchField, IConstants.ANALYZER);
-			queryParsers.put(searchField, queryParser);
+			QUERY_PARSERS.put(searchField, queryParser);
 		}
 		return queryParser;
 	}
@@ -302,7 +305,7 @@ public abstract class Search {
 	}
 
 	/**
-	 * Adds the time it took for the search etc.
+	 * Adds the time it took for the search and adds the spelling corrected strings.
 	 * 
 	 * @param results
 	 *            the total number of results
@@ -316,6 +319,22 @@ public abstract class Search {
 		Map<String, String> statistics = new HashMap<String, String>();
 		statistics.put(IConstants.TOTAL, Long.toString(totalHits));
 		statistics.put(IConstants.DURATION, Long.toString(duration));
+		StringBuilder correctedSearchStrings = new StringBuilder();
+		boolean first = Boolean.TRUE;
+		for (String searchString : searchStrings) {
+			if (first) {
+				first = Boolean.FALSE;
+			} else {
+				correctedSearchStrings.append(";");
+			}
+			String correctedSearchString = CheckerExt.getCheckerExt().checkWords(searchString);
+			if (correctedSearchString != null) {
+				correctedSearchStrings.append(correctedSearchString);
+			} else {
+				correctedSearchStrings.append(searchString);
+			}
+		}
+		statistics.put(IConstants.CORRECTIONS, correctedSearchStrings.toString());
 		results.add(statistics);
 	}
 

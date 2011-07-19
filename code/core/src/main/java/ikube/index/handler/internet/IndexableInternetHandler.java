@@ -37,6 +37,7 @@ import java.util.Map;
 
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
+import javax.persistence.OptimisticLockException;
 import javax.swing.text.html.HTML;
 
 import net.htmlparser.jericho.Attribute;
@@ -265,6 +266,10 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 				} catch (NonUniqueResultException e) {
 					// More than one? Shouldn't be
 					logger.warn("Duplicate url or data : " + url, e);
+					return;
+				} catch (OptimisticLockException e) {
+					// TODO We should re-try this url a certain number of times
+					logger.warn("Optimistic lock : " + url, e);
 					return;
 				}
 				cache.put(new net.sf.ehcache.Element(hash, url));

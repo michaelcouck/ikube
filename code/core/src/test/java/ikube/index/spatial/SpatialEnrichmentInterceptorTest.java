@@ -68,6 +68,8 @@ public class SpatialEnrichmentInterceptorTest extends ATest {
 		Object address = INDEXABLE_COLUMN.getContent();
 		when(INDEXABLE_COLUMN.getContent()).thenReturn("8a Drongenhof, Ghent, België");
 		interceptor.enrich(arguments);
+		// TODO Verify that the spatial fields and the tiers are in the document
+		// for this address, and the co-ordinate
 		assertTrue(true);
 
 		when(INDEXABLE_COLUMN.getContent()).thenReturn(address);

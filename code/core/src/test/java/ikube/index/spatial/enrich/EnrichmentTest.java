@@ -52,12 +52,12 @@ public class EnrichmentTest extends ATest {
 		assertEquals(INDEXABLE_COLUMN.getContent(), address);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
+	@SuppressWarnings("unchecked")
 	public void getCoordinate() {
 		// Indexable<?>
-		double latitude = new Double(50.7930727874172);
-		double longitude = new Double(4.36242219751376);
+		double latitude = 50.7930727874172;
+		double longitude = 4.36242219751376;
 		Indexable<?> tableIndexable = mock(Indexable.class);
 		Indexable<?> columnIndexableLatitude = mock(IndexableColumn.class);
 		Indexable<?> columnIndexableLongitude = mock(IndexableColumn.class);
@@ -107,12 +107,14 @@ public class EnrichmentTest extends ATest {
 		int startTier = 15;
 		int endTier = 15;
 		enrichment.addCartesianTiers(coordinate, document, startTier, endTier);
+		// TODO Mock the document, spy on it and verify that there are tiers in the document
 	}
 
 	@Test
 	public void addSpatialLocationFields() {
 		// Coordinate, Document
 		enrichment.addSpatialLocationFields(coordinate, document);
+		// TODO Mock the document, spy on it and verify that there are location fields in the document
 	}
 
 }

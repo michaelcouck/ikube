@@ -83,9 +83,9 @@ public class Geocoder implements IGeocoder {
 	 * 'country'. The city and country fields are in fact the enriched data. Essentially all three of these fields will be searched, in
 	 * order and the best match for them aggregated will be used for the results.
 	 * 
-	 * @param SEARCH_FIELDS
+	 * @param searchFields
 	 *            the search fields to search in the GeoSpatial index, typically this will be the name field because this is an aggregation
-	 *            of the name of the feature in the GeoNames data and the enriched foelds for the city and the country
+	 *            of the name of the feature in the GeoNames data and the enriched fields for the city and the country
 	 */
 	public void setSearchFields(List<String> searchFields) {
 		this.searchFields = searchFields.toArray(new String[searchFields.size()]);

@@ -1,5 +1,6 @@
 package ikube.web.tag.spelling;
 
+import ikube.search.spelling.CheckerExt;
 import ikube.web.tag.ATag;
 
 import java.util.Set;
@@ -21,8 +22,9 @@ import org.apache.log4j.Logger;
  */
 public class SpellingTag extends ATag {
 
-	protected Logger logger = Logger.getLogger(this.getClass());
-	private static CheckerExt checker = new CheckerExt();
+	protected static final Logger LOGGER = Logger.getLogger(SpellingTag.class);
+	private static final CheckerExt CHECKER = CheckerExt.getCheckerExt();
+
 	/** The field parameter names are the fields in the index being searched. */
 	private String[] fieldParameterNames;
 
@@ -44,7 +46,7 @@ public class SpellingTag extends ATag {
 					if (fieldParameterValue != null && !"".equals(fieldParameterValue)) {
 						boolean added = fieldParameterValues.add(fieldParameterValue);
 						if (!added) {
-							logger.debug("Duplicate string : " + fieldParameterValue);
+							LOGGER.debug("Duplicate string : " + fieldParameterValue);
 						}
 					}
 				}
@@ -63,7 +65,7 @@ public class SpellingTag extends ATag {
 			}
 			String checkedSearchString = (String) pageContext.getAttribute(CHECKED_SEARCH_STRING);
 			if (checkedSearchString == null) {
-				checkedSearchString = checker.checkWords(searchString);
+				checkedSearchString = CHECKER.checkWords(searchString);
 				if (checkedSearchString == null) {
 					return SKIP_BODY;
 				}
@@ -71,7 +73,7 @@ public class SpellingTag extends ATag {
 			}
 			return EVAL_BODY_INCLUDE;
 		} catch (Exception e) {
-			logger.error("Exception writing the content out", e);
+			LOGGER.error("Exception writing the content out", e);
 		}
 		return SKIP_BODY;
 	}
@@ -93,7 +95,7 @@ public class SpellingTag extends ATag {
 			try {
 				this.bodyContent.writeOut(getPreviousOut());
 			} catch (Exception e) {
-				logger.error("Exception writing to the page", e);
+				LOGGER.error("Exception writing to the page", e);
 			}
 		}
 		return EVAL_PAGE;

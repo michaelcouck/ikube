@@ -2,6 +2,7 @@ package ikube.action.rule;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
 import ikube.ATest;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.mock.ClusterManagerMock;
@@ -31,6 +32,7 @@ public class IsThisIndexCreatedTest extends ATest {
 	@Before
 	public void before() {
 		isThisIndexCreated = new IsThisIndexCreated();
+		when(INDEX_CONTEXT.getIndexDirectoryPath()).thenReturn("./" + this.getClass().getSimpleName());
 		FileUtilities.deleteFile(new File(INDEX_CONTEXT.getIndexDirectoryPath()), 1);
 		Mockit.setUpMocks(ApplicationContextManagerMock.class, ClusterManagerMock.class);
 	}
