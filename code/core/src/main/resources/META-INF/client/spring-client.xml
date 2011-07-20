@@ -55,7 +55,7 @@
 		<ref local="filesystemMillionTen" /> -->
 		<!-- <ref bean="faqTableH2" /> -->
 		<!-- <ref bean="faqTableDb2" /> -->
-		<ref bean="faqTableOracle" />
+		<!-- <ref bean="faqTableOracle" /> -->
 		<ref bean="patientTableH2" />
 		<ref bean="patientTableDb2" />
 		<ref bean="patientTableOracle" />
