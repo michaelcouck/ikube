@@ -77,12 +77,12 @@
 		id="ikube.action.Close" 
 		class="ikube.action.Close" 
 		property:ruleExpression="
-			!IsThisServerWorking &#38;&#38; 
-			(IsIndexCorrupt || 
-			IsNewIndexCreated || 
+			(!IsThisServerWorking &#38;&#38; 
+			IsNewIndexCreated) || 
+			IsIndexCorrupt || 
 			(!IsIndexCurrent &#38;&#38; 
 			AreIndexesCreated &#38;&#38; 
-			AreUnopenedIndexes))">
+			AreUnopenedIndexes)">
 		<property name="rules">
 			<util:list>
 				<ref local="ikube.action.rule.IsThisServerWorking" />
@@ -99,11 +99,11 @@
 		class="ikube.action.Open" 
 		property:ruleExpression="
 			!IsThisServerWorking &#38;&#38; 
-			(IsNewIndexCreated ||  
-			(AreIndexesCreated &#38;&#38; 
+			IsNewIndexCreated || 
+			(AreIndexesCreated  &#38;&#38; 
 			AreUnopenedIndexes &#38;&#38; 
-			(!IsMultiSearcherInitialised || 
-			 !AreSearchablesInitialised)))">
+			!IsMultiSearcherInitialised &#38;&#38; 
+			!AreSearchablesInitialised)">
 		<property name="rules">
 			<util:list>
 				<ref local="ikube.action.rule.IsThisServerWorking" />
