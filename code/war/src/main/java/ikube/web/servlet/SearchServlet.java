@@ -30,19 +30,27 @@ import org.apache.log4j.Logger;
  */
 public class SearchServlet extends HttpServlet {
 
-	private Logger logger = Logger.getLogger(this.getClass());
+	private static final transient Logger LOGGER = Logger.getLogger(SearchServlet.class);
+
 	private String contentType = "text/html";
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void init() throws ServletException {
 		ApplicationContextManager.getApplicationContext();
 		try {
 			Persistence.createEntityManagerFactory(IConstants.PERSISTENCE_UNIT_H2).createEntityManager();
 		} catch (Exception e) {
-			logger.warn("Exception initialising the entity manager : ");
+			LOGGER.warn("Exception initialising the entity manager : ");
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// String indexName, String searchString, String searchField, boolean fragment, int firstResult, int maxResults
 		response.setContentType(contentType);
@@ -71,11 +79,11 @@ public class SearchServlet extends HttpServlet {
 				}
 			}
 		} catch (Exception e) {
-			logger.error("Exception doing search : " + getParameters(request), e);
+			LOGGER.error("Exception doing search : " + getParameters(request), e);
 			try {
 				out.print("Exception searching with parameters : " + getParameters(request));
 			} catch (Exception ex) {
-				logger.error("Exception writing the exception message to the client : " + getParameters(request), ex);
+				LOGGER.error("Exception writing the exception message to the client : " + getParameters(request), ex);
 			}
 		}
 
@@ -88,6 +96,12 @@ public class SearchServlet extends HttpServlet {
 		out.print(SerializationUtilities.serialize(results));
 	}
 
+	/**
+	 * TODO Document me!
+	 * 
+	 * @param request
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	private String getParameters(HttpServletRequest request) {
 		StringBuilder builder = new StringBuilder();
@@ -103,6 +117,19 @@ public class SearchServlet extends HttpServlet {
 		return builder.toString();
 	}
 
+	/**
+	 * TODO Document me!
+	 * 
+	 * @param indexContext
+	 * @param indexName
+	 * @param searchStrings
+	 * @param searchFields
+	 * @param sortFields
+	 * @param firstResult
+	 * @param maxResults
+	 * @param fragment
+	 * @return
+	 */
 	private Search getSearch(IndexContext<?> indexContext, String indexName, String searchStrings, String searchFields, String sortFields,
 			int firstResult, int maxResults, boolean fragment) {
 		Search search = new SearchMulti(indexContext.getIndex().getMultiSearcher());
@@ -115,6 +142,14 @@ public class SearchServlet extends HttpServlet {
 		return search;
 	}
 
+	/**
+	 * TODO Document me!
+	 * 
+	 * @param request
+	 * @param name
+	 * @param defaultValue
+	 * @return
+	 */
 	private String getParameter(HttpServletRequest request, String name, String defaultValue) {
 		String parameter = request.getParameter(name);
 		return parameter == null ? defaultValue : parameter;

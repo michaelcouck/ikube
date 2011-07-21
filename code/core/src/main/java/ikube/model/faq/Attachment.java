@@ -18,8 +18,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-
 /**
  * @author Michael Couck
  * @since 22.08.08
@@ -27,13 +25,10 @@ import org.apache.commons.lang.builder.EqualsBuilder;
  */
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-@NamedQueries(value = { 
-		@NamedQuery(name = Attachment.UPDATE_ATTACHMENT_BY_ID_GREATER_AND_SMALLER, 
-				query = Attachment.UPDATE_ATTACHMENT_BY_ID_GREATER_AND_SMALLER) })
-public class Attachment implements Serializable, Comparable<Attachment> {
+@NamedQueries(value = { @NamedQuery(name = Attachment.UPDATE_ATTACHMENT_BY_ID_GREATER_AND_SMALLER, query = Attachment.UPDATE_ATTACHMENT_BY_ID_GREATER_AND_SMALLER) })
+public class Attachment implements Serializable {
 
-	public static final String UPDATE_ATTACHMENT_BY_ID_GREATER_AND_SMALLER = 
-		"update Attachment as a set a.name = :name where a.attachmentId >= :startId and a.attachmentId < :endId";
+	public static final String UPDATE_ATTACHMENT_BY_ID_GREATER_AND_SMALLER = "update Attachment as a set a.name = :name where a.attachmentId >= :startId and a.attachmentId < :endId";
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -89,22 +84,8 @@ public class Attachment implements Serializable, Comparable<Attachment> {
 		this.length = size;
 	}
 
-	public int compareTo(Attachment o) {
-		if (getAttachmentId() != null && o.getAttachmentId() != null) {
-			return getAttachmentId().compareTo(o.getAttachmentId());
-		}
-		if (getName() != null && o.getName() != null) {
-			return getName().compareTo(o.getName());
-		}
-		return 0;
-	}
-
 	public String toString() {
 		return this.getClass().getSimpleName() + ":" + this.getName();
-	}
-
-	public boolean equals(Object object) {
-		return EqualsBuilder.reflectionEquals(this, object);
 	}
 
 }

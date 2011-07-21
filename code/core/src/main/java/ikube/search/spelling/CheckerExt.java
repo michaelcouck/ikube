@@ -48,8 +48,8 @@ public class CheckerExt {
 		}
 		File spellingIndexDirectory = new File(WORD_INDEX_DIRECTORY);
 		if (!spellingIndexDirectory.exists()) {
-			spellingIndexDirectory.mkdirs();
-			LOGGER.info("Created spelling index at : " + spellingIndexDirectory.getAbsolutePath());
+			boolean created = spellingIndexDirectory.mkdirs();
+			LOGGER.info("Created spelling " + created + ", index at : " + spellingIndexDirectory.getAbsolutePath());
 		}
 		Directory directory = FSDirectory.open(spellingIndexDirectory);
 		boolean mustIndex = true;

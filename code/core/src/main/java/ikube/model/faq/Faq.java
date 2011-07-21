@@ -15,6 +15,9 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.OneToMany;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
+
 /**
  * @author Michael Couck
  * @since 22.08.08
@@ -22,11 +25,11 @@ import javax.persistence.OneToMany;
  */
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-public class Faq implements Serializable, Comparable<Faq> {
+public class Faq implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Long faqId;
+	private long faqId;
 	@Column(length = 1024)
 	private String question;
 	@Column(length = 1024)
@@ -36,17 +39,17 @@ public class Faq implements Serializable, Comparable<Faq> {
 	@Column(length = 64)
 	private String modifier;
 	@Column(nullable = false)
-	private Boolean published;
+	private boolean published;
 	private Timestamp creationTimestamp;
 	private Timestamp modifiedTimestamp;
 	@OneToMany(cascade = { CascadeType.ALL }, mappedBy = "faq", fetch = FetchType.EAGER)
 	private Collection<Attachment> attachments;
 
-	public Long getFaqId() {
+	public long getFaqId() {
 		return faqId;
 	}
 
-	public void setFaqId(Long faqId) {
+	public void setFaqId(long faqId) {
 		this.faqId = faqId;
 	}
 
@@ -106,24 +109,16 @@ public class Faq implements Serializable, Comparable<Faq> {
 		this.answer = text;
 	}
 
-	public Boolean getPublished() {
+	public boolean getPublished() {
 		return published;
 	}
 
-	public void setPublished(Boolean published) {
+	public void setPublished(boolean published) {
 		this.published = published;
 	}
 
 	public String toString() {
-		return this.getClass().getSimpleName() + ":" + this.getFaqId();
-	}
-
-	@Override
-	public int compareTo(Faq o) {
-		if (this.getFaqId() == null || o.getFaqId() == null) {
-			return 0;
-		}
-		return this.getFaqId() < o.getFaqId() ? -1 : this.getFaqId() == o.getFaqId() ? 0 : 1;
+		return ToStringBuilder.reflectionToString(this, ToStringStyle.SIMPLE_STYLE);
 	}
 
 }

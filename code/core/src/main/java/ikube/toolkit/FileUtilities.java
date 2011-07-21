@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
+import java.io.Writer;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
@@ -317,13 +318,7 @@ public final class FileUtilities {
 		} catch (IOException e) {
 			LOGGER.error("IO exception writing file contents", e);
 		} finally {
-			if (fileOutputStream != null) {
-				try {
-					fileOutputStream.close();
-				} catch (IOException e) {
-					LOGGER.error("Exception closing the output stream", e);
-				}
-			}
+			close(fileOutputStream);
 		}
 	}
 
@@ -370,11 +365,7 @@ public final class FileUtilities {
 		} catch (Exception e) {
 			LOGGER.error("Exception accessing the file contents : " + inputStream, e);
 		} finally {
-			try {
-				inputStream.close();
-			} catch (Exception e) {
-				LOGGER.error("Exception closing input stream : " + inputStream, e);
-			}
+			close(inputStream);
 		}
 		return byteArrayOutputStream;
 	}
@@ -404,13 +395,7 @@ public final class FileUtilities {
 		} catch (Exception e) {
 			LOGGER.error("Exception reading from the end of the file : ", e);
 		} finally {
-			try {
-				if (fileInputStream != null) {
-					fileInputStream.close();
-				}
-			} catch (Exception e) {
-				LOGGER.error("Exception closing the file stream on file : " + file, e);
-			}
+			close(fileInputStream);
 		}
 		return byteArrayOutputStream;
 	}
@@ -441,11 +426,7 @@ public final class FileUtilities {
 		} catch (Exception e) {
 			LOGGER.error("Exception accessing the stream contents.", e);
 		} finally {
-			try {
-				inputStream.close();
-			} catch (Exception e) {
-				LOGGER.error("Exception closing input stream " + inputStream, e);
-			}
+			close(inputStream);
 		}
 	}
 
@@ -548,13 +529,19 @@ public final class FileUtilities {
 		}
 		FileChannel inChannel = null;
 		FileChannel outChannel = null;
+		FileInputStream fileInputStream = null;
+		FileOutputStream fileOutputStream = null;
 		try {
-			inChannel = new FileInputStream(in).getChannel();
-			outChannel = new FileOutputStream(out).getChannel();
+			fileInputStream = new FileInputStream(in);
+			inChannel = fileInputStream.getChannel();
+			fileOutputStream = new FileOutputStream(out);
+			outChannel = fileOutputStream.getChannel();
 			inChannel.transferTo(0, inChannel.size(), outChannel);
 		} catch (Exception e) {
 			LOGGER.error("Exception copying file : " + in + ", to : " + out, e);
 		} finally {
+			close(fileInputStream);
+			close(fileOutputStream);
 			if (inChannel != null) {
 				try {
 					inChannel.close();
@@ -572,8 +559,44 @@ public final class FileUtilities {
 		}
 	}
 
-	public static void main(String[] args) {
-		FileUtilities.deleteFiles(new File("."), "Csv.txt");
+	public static void close(Reader reader) {
+		if (reader != null) {
+			try {
+				reader.close();
+			} catch (Exception e) {
+				LOGGER.error("Exception closing the reader : " + reader, e);
+			}
+		}
+	}
+
+	public static void close(Writer writer) {
+		if (writer != null) {
+			try {
+				writer.close();
+			} catch (Exception e) {
+				LOGGER.error("Exception closing the writer : " + writer, e);
+			}
+		}
+	}
+
+	public static void close(InputStream inputStream) {
+		try {
+			if (inputStream != null) {
+				inputStream.close();
+			}
+		} catch (Exception e) {
+			LOGGER.error("Exception closing stream : " + inputStream, e);
+		}
+	}
+
+	public static void close(OutputStream outputStream) {
+		try {
+			if (outputStream != null) {
+				outputStream.close();
+			}
+		} catch (Exception e) {
+			LOGGER.error("Exception closing stream : " + outputStream, e);
+		}
 	}
 
 }

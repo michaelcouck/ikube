@@ -295,10 +295,12 @@ public final class IndexManager {
 			document.add(field);
 		} else {
 			Reader fieldReader = field.readerValue();
+
 			if (fieldReader == null) {
 				fieldReader = new StringReader(field.stringValue());
 			}
 
+			Reader finalReader = null;
 			Writer writer = null;
 			try {
 				File tempFile = File.createTempFile(Long.toString(System.nanoTime()), IConstants.READER_FILE_SUFFIX);
@@ -314,7 +316,7 @@ public final class IndexManager {
 					writer.write(chars, 0, read);
 					read = reader.read(chars);
 				}
-				Reader finalReader = new FileReader(tempFile);
+				finalReader = new FileReader(tempFile);
 				// This is a string field, and could be stored so we check that
 				if (store.isStored()) {
 					// Remove the field and add it again
@@ -327,13 +329,9 @@ public final class IndexManager {
 			} catch (Exception e) {
 				LOGGER.error("Exception writing the field value with the file writer : ", e);
 			} finally {
-				try {
-					if (writer != null) {
-						writer.close();
-					}
-				} catch (Exception e) {
-					LOGGER.error("Exception closing the writer : ", e);
-				}
+				FileUtilities.close(writer);
+				FileUtilities.close(finalReader);
+				FileUtilities.close(fieldReader);
 			}
 		}
 	}

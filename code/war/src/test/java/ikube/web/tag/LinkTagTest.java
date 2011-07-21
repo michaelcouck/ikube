@@ -21,7 +21,7 @@ public class LinkTagTest extends ATagTest {
 		LinkTag linkTag = new LinkTag();
 		PagerTag pagerTag = new PagerTag();
 		pagerTag.setBodyContent(bodyContent);
-		setField(pagerTag, "url", pagerTag.new Url("http://www.ikokoon.eu/ikokoon", 1));
+		setField(pagerTag, "url", new PagerTag.Url("http://www.ikokoon.eu/ikokoon", 1));
 		linkTag.setParent(pagerTag);
 		int result = linkTag.doEndTag();
 		assertEquals(Tag.EVAL_PAGE, result);

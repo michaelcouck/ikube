@@ -13,7 +13,7 @@ import javax.naming.Context;
  * @since 06.05.10
  * @version 01.00
  */
-public class InitialContextFactory implements javax.naming.spi.InitialContextFactory {
+public class InitialContextFactoryImpl implements javax.naming.spi.InitialContextFactory {
 
 	private transient InitialContext initialContext;
 

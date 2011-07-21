@@ -102,10 +102,11 @@ public class Enrichment implements IEnrichment {
 	@Override
 	public StringBuilder buildAddress(Indexable<?> indexable, StringBuilder builder) {
 		if (IndexableColumn.class.isAssignableFrom(indexable.getClass()) && indexable.isAddress()) {
+			IndexableColumn indexableColumn = (IndexableColumn) indexable;
 			if (builder.length() > 0) {
 				builder.append(" ");
 			}
-			builder.append(((IndexableColumn) indexable).getContent());
+			builder.append(indexableColumn.getContent());
 		}
 		if (indexable.getChildren() != null) {
 			for (Indexable<?> child : indexable.getChildren()) {

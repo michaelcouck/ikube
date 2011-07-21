@@ -117,4 +117,20 @@ public class PropertyConfigurer extends Properties {
 		this.fileNamePattern = Pattern.compile(".*" + fileNamePattern + ".*");
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public synchronized boolean equals(Object o) {
+		return super.equals(o);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public synchronized int hashCode() {
+		return super.hashCode();
+	}
+
 }

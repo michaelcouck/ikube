@@ -23,6 +23,12 @@ import org.springframework.web.servlet.mvc.AbstractController;
  */
 public abstract class BaseController extends AbstractController {
 
+	/**
+	 * TODO Document me.
+	 * 
+	 * @param request
+	 * @return
+	 */
 	protected String getViewUri(HttpServletRequest request) {
 		// Get the request url
 		String uri = request.getRequestURI();
@@ -34,6 +40,9 @@ public abstract class BaseController extends AbstractController {
 		return uriSansContext;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		return handleRequest(request, response);

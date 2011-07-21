@@ -12,6 +12,9 @@ import org.springframework.web.servlet.ModelAndView;
  */
 public class ServerController extends ServersController {
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		return super.handleRequest(request, response);

@@ -24,6 +24,14 @@ public class JndiInjector {
 	/** The JNDI context */
 	private static transient Context CONTEXT;
 
+	static {
+		try {
+			CONTEXT = new InitialContext();
+		} catch (Exception e) {
+			LOGGER.error("Exception accessing the initial context, nothing will work now : ", e);
+		}
+	}
+
 	/**
 	 * Class constructors that receives a map containing the objects that will be present in JNDI
 	 * 
@@ -39,7 +47,6 @@ public class JndiInjector {
 	 * @throws Exception
 	 */
 	public void initialize() throws Exception {
-		CONTEXT = new InitialContext();
 		for (Map.Entry<String, Object> entry : jndiObjects.entrySet()) {
 			JndiInjector.bind(entry.getKey(), entry.getValue());
 		}
@@ -56,9 +63,6 @@ public class JndiInjector {
 	 *             If the operation is not possible to be executed.
 	 */
 	public static void bind(final String jndiName, final Object object) throws NamingException {
-		if (CONTEXT == null) {
-			CONTEXT = new InitialContext();
-		}
 		LOGGER.debug("Binding object : " + jndiName + ":" + object.getClass());
 		CONTEXT.rebind(jndiName, object);
 	}

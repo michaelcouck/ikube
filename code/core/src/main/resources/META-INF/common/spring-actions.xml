@@ -77,11 +77,11 @@
 		id="ikube.action.Close" 
 		class="ikube.action.Close" 
 		property:ruleExpression="
-			!IsThisServerWorking &#38;&#38; 
-			(!IsIndexCurrent || 
+			!IsThisServerWorking &#38;&#38;
+			IsNewIndexCreated &#38;&#38; 
+			(!IsIndexCurrent  || 
 			(IsIndexCorrupt &#38;&#38; 
-			((IsNewIndexCreated &#38;&#38;  
-			AreIndexesCreated) ||  
+			(AreIndexesCreated || 
 			AreUnopenedIndexes)))">
 		<property name="rules">
 			<util:list>

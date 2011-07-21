@@ -16,16 +16,14 @@ import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.BodyContent;
 
-import org.apache.log4j.Logger;
-
 /**
+ * TODO Document me!
+ * 
  * @author Michael Couck
  * @since 04.02.10
  * @version 01.00
  */
 public class SearchTag extends ATag {
-
-	protected Logger logger = Logger.getLogger(this.getClass());
 
 	private String searchUrl;
 

@@ -11,8 +11,6 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.BodyContent;
 
-import org.apache.log4j.Logger;
-
 /**
  * This is the pager tag for any application. It could be reused for other applications. What is required for this tag to function are three
  * parameters that should be set in the session, the names of the attributes in the session are in this class:<br>
@@ -42,14 +40,12 @@ import org.apache.log4j.Logger;
  */
 public class PagerTag extends ATag {
 
-	protected Logger logger = Logger.getLogger(this.getClass());
-
 	/** The url to the search page. */
-	private String searchUrl;
+	private transient String searchUrl;
 	/** The next url in the list. */
-	private Url url;
+	private transient Url url;
 	/** The list of generated urls. */
-	private LinkedList<Url> urls;
+	private transient LinkedList<Url> urls;
 
 	public void setSearchUrl(String searchUrl) {
 		this.searchUrl = searchUrl;
@@ -59,6 +55,7 @@ public class PagerTag extends ATag {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public int doStartTag() throws JspException {
 		urls = new LinkedList<Url>();
 		try {
@@ -79,6 +76,7 @@ public class PagerTag extends ATag {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public int doAfterBody() {
 		if (url != null) {
 			int index = urls.lastIndexOf(url);
@@ -93,6 +91,7 @@ public class PagerTag extends ATag {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public int doEndTag() throws JspException {
 		try {
 			BodyContent body = getBodyContent();

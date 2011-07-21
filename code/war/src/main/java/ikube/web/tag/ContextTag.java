@@ -4,8 +4,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
 
-import org.apache.log4j.Logger;
-
 /**
  * Just prints the context to the page for images and such.
  * 
@@ -15,8 +13,10 @@ import org.apache.log4j.Logger;
  */
 public class ContextTag extends ATag {
 
-	protected Logger logger = Logger.getLogger(this.getClass());
-
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public int doEndTag() throws JspException {
 		try {
 			HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
@@ -27,7 +27,11 @@ public class ContextTag extends ATag {
 		}
 		return EVAL_PAGE;
 	}
-	
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public void setPageContext(PageContext pageContext) {
 		this.pageContext = pageContext;
 	}

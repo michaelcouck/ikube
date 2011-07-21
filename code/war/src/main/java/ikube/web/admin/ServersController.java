@@ -27,6 +27,9 @@ import org.springframework.web.servlet.ModelAndView;
  */
 public class ServersController extends BaseController {
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		String viewUrl = getViewUri(request);

@@ -16,6 +16,7 @@ import ikube.toolkit.SerializationUtilities;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -226,6 +227,8 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 			IndexManager.addStringField(lengthFieldName, Long.toString(file.length()), document, store, analyzed, termVector);
 			IndexManager.addStringField(contentFieldName, parsedContent, document, store, analyzed, termVector);
 			addDocument(indexContext, indexableFileSystem, document);
+		} catch (IOException e) {
+			logger.error("Exception indexing file : " + file, e);
 		} catch (Exception e) {
 			logger.error("Exception occured while trying to index the file " + file.getAbsolutePath(), e);
 		}

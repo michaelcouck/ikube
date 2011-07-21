@@ -31,6 +31,9 @@ public class SearchController extends BaseController {
 	private static final int MAX_RESULTS = 10;
 	private static final int FIRST_RESULT = 0;
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	@SuppressWarnings("unchecked")
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
