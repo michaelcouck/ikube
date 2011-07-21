@@ -4,6 +4,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
 
+import org.apache.log4j.Logger;
+
 /**
  * Just prints the context to the page for images and such.
  * 
@@ -12,6 +14,8 @@ import javax.servlet.jsp.PageContext;
  * @version 01.00
  */
 public class ContextTag extends ATag {
+
+	protected transient Logger logger = Logger.getLogger(this.getClass());
 
 	/**
 	 * {@inheritDoc}

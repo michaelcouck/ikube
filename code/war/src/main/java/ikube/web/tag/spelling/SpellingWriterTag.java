@@ -4,6 +4,8 @@ import ikube.web.tag.ATag;
 
 import javax.servlet.jsp.JspException;
 
+import org.apache.log4j.Logger;
+
 /**
  * TODO Document me!
  * 
@@ -12,6 +14,8 @@ import javax.servlet.jsp.JspException;
  * @version 01.00
  */
 public class SpellingWriterTag extends ATag {
+
+	protected transient Logger logger = Logger.getLogger(this.getClass());
 
 	/**
 	 * {@inheritDoc}

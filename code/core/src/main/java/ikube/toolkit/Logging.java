@@ -53,13 +53,13 @@ public final class Logging implements IConstants {
 							inputStream = logFile.toURI().toURL().openStream();
 						}
 					}
-					if (inputStream != null) {
-						Properties properties = new Properties();
-						properties.load(inputStream);
-						PropertyConfigurator.configure(properties);
-					} else {
-						System.err.println("Logging properties file not found : " + LOG_4_J_PROPERTIES);
-					}
+				}
+				if (inputStream != null) {
+					Properties properties = new Properties();
+					properties.load(inputStream);
+					PropertyConfigurator.configure(properties);
+				} else {
+					System.err.println("Logging properties file not found : " + LOG_4_J_PROPERTIES);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();

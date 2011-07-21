@@ -16,6 +16,8 @@ import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.BodyContent;
 
+import org.apache.log4j.Logger;
+
 /**
  * TODO Document me!
  * 
@@ -25,6 +27,7 @@ import javax.servlet.jsp.tagext.BodyContent;
  */
 public class SearchTag extends ATag {
 
+	protected transient Logger logger = Logger.getLogger(this.getClass());
 	private String searchUrl;
 
 	public void setSearchUrl(String searchUrl) {
@@ -48,7 +51,6 @@ public class SearchTag extends ATag {
 				// Add the list to the page context/parameters/session
 				session.setAttribute(RESULTS, results);
 				if (results.size() > 0) {
-					logger.debug("Results in tag : " + results.toString());
 					Map<String, String> statistics = results.get(results.size() - 1);
 					String stringTotal = statistics.get(TOTAL);
 					String stringDuration = statistics.get(DURATION);
@@ -119,7 +121,6 @@ public class SearchTag extends ATag {
 		// Access the search servlet and get the results in xml serialized form
 		InputStream inputStream = url.openStream();
 		String xml = FileUtilities.getContents(inputStream, Integer.MAX_VALUE).toString();
-		logger.debug("Results xml : " + xml);
 		List<Map<String, String>> results = null;
 		if (xml != null && !xml.trim().equals("")) {
 			results = (List<Map<String, String>>) SerializationUtilities.deserialize(xml);

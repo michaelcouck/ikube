@@ -2,8 +2,6 @@ package ikube.web.tag;
 
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
-import org.apache.log4j.Logger;
-
 /**
  * TODO Comment me!
  * 
@@ -43,12 +41,5 @@ public abstract class ATag extends BodyTagSupport {
 
 	protected static final String CONTENT = "content";
 	public static final String SEARCH_STRINGS = "searchStrings";
-	
-	protected transient Logger logger;
-	
-	public ATag() {
-		super();
-		this.logger = Logger.getLogger(this.getClass());
-	}
 
 }

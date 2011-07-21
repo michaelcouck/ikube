@@ -27,6 +27,10 @@ public class SpellingTag extends ATag {
 
 	/** The field parameter names are the fields in the index being searched. */
 	private String[] fieldParameterNames;
+	
+	public SpellingTag() {
+		super();
+	}
 
 	/**
 	 * {@inheritDoc}

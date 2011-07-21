@@ -11,6 +11,8 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.BodyContent;
 
+import org.apache.log4j.Logger;
+
 /**
  * This is the pager tag for any application. It could be reused for other applications. What is required for this tag to function are three
  * parameters that should be set in the session, the names of the attributes in the session are in this class:<br>
@@ -46,6 +48,8 @@ public class PagerTag extends ATag {
 	private transient Url url;
 	/** The list of generated urls. */
 	private transient LinkedList<Url> urls;
+
+	protected transient Logger logger = Logger.getLogger(this.getClass());
 
 	public void setSearchUrl(String searchUrl) {
 		this.searchUrl = searchUrl;
