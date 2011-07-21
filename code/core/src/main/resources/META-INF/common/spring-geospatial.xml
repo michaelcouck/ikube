@@ -23,7 +23,7 @@
 		id="geospatial"
 		class="ikube.model.IndexContext"
 		property:name="geospatial"
-		property:maxAge="${max.age}"
+		property:maxAge="${max.age.geospatial}"
 		property:compoundFile="${compound.file}"
 		property:bufferedDocs="${buffered.docs}"
 		property:bufferSize="${buffer.size}"

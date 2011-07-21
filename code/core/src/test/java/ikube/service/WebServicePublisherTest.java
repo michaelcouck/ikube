@@ -8,6 +8,7 @@ import ikube.cluster.cache.Cache;
 import ikube.mock.ClusterManagerMock;
 
 import java.net.InetAddress;
+import java.net.URL;
 
 import mockit.Mockit;
 
@@ -39,9 +40,11 @@ public class WebServicePublisherTest extends ATest {
 	@Test
 	public void publish() throws Exception {
 		// Verify that the services are published
+		String host = InetAddress.getLocalHost().getHostAddress();
 		int port = ISearcherWebService.PUBLISHED_PORT;
-		String searcherWebServiceUrl = "http://" + InetAddress.getLocalHost().getHostAddress() + ":" + port
-				+ ISearcherWebService.PUBLISHED_PATH;
+		String path = ISearcherWebService.PUBLISHED_PATH;
+		URL url = new URL("http", host, port, path);
+		String searcherWebServiceUrl = url.toString();
 		ISearcherWebService webService = ServiceLocator.getService(ISearcherWebService.class, searcherWebServiceUrl,
 				ISearcherWebService.NAMESPACE, ISearcherWebService.SERVICE);
 		assertNotNull("The service must be published : ", webService);

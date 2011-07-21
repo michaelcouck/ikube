@@ -2,6 +2,7 @@ package ikube.action;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
 import ikube.ATest;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.mock.ClusterManagerMock;
@@ -46,6 +47,7 @@ public class ValidatorTest extends ATest {
 		// return null;
 		// }
 		// }).when(validator).sendNotification(any(IndexContext.class), anyString(), anyString());
+		when(INDEX_CONTEXT.getIndexDirectoryPath()).thenReturn("./" + this.getClass().getSimpleName());
 		FileUtilities.deleteFile(new File(INDEX_CONTEXT.getIndexDirectoryPath()), 1);
 		Mockit.setUpMocks(ApplicationContextManagerMock.class, ClusterManagerMock.class);
 	}
@@ -60,7 +62,8 @@ public class ValidatorTest extends ATest {
 	public void validate() throws Exception {
 		boolean result = validator.execute(INDEX_CONTEXT);
 		assertFalse("There are no indexes created : ", result);
-		// There should be one mail sent because there are no indexes created
+		// There should be a mail sent because there are no indexes created
+		// There should also be a mail sent because the searchable is not opened
 
 		File latestIndexDirectory = createIndex(INDEX_CONTEXT, "a little sentence");
 		File serverIndexDirectory = new File(latestIndexDirectory, IP);
@@ -88,4 +91,5 @@ public class ValidatorTest extends ATest {
 
 		FileUtilities.deleteFile(latestIndexDirectory, 1);
 	}
+
 }

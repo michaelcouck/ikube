@@ -74,7 +74,7 @@
 		<entry key="openjpa.AutoDetach" value="commit" />
 		<entry key="openjpa.FlushBeforeQueries" value="true" />
 		<entry key="openjpa.RuntimeUnenhancedClasses" value="supported" />
-		<entry key="openjpa.jdbc.DBDictionary" value="h2(batchLimit=1000)" />
+		<entry key="openjpa.jdbc.DBDictionary" value="db2(batchLimit=1000)" />
 		
 		<!--
 			For the first run these have to be uncommented to allow OpenJpa to create the
@@ -101,6 +101,7 @@
 			<transaction:method name="merge*" />
 			<transaction:method name="persist*" />
 			<transaction:method name="remove*" />
+			<transaction:method name="execute*" />
 		</transaction:attributes>
 	</transaction:advice>
 

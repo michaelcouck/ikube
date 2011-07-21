@@ -158,5 +158,7 @@ public interface IConstants {
 	String CLASSPATH_PROPERTY = "java.class.path";
 
 	String STRIP_CHARACTERS = "[]{},";
+	
+	long MAX_ACTIONS = 100000;
 
 }

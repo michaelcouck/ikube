@@ -4,10 +4,14 @@ import ikube.IConstants;
 import ikube.action.IAction;
 import ikube.cluster.AtomicAction;
 import ikube.cluster.IClusterManager;
+import ikube.database.IDataBase;
+import ikube.model.Action;
 import ikube.model.IndexContext;
+import ikube.model.Rule;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.Logging;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -51,6 +55,8 @@ public class RuleInterceptor implements IRuleInterceptor {
 		// of cases they overlap
 		ILock lock = AtomicAction.lock(IConstants.SERVER_LOCK);
 		try {
+			Action modelAction = new Action();
+			modelAction.setRules(new ArrayList<Rule>());
 			if (!IAction.class.isAssignableFrom(target.getClass())) {
 				LOGGER.warn("Can't intercept non action class, proceeding : " + target);
 				return proceedingJoinPoint.proceed();
@@ -59,8 +65,10 @@ public class RuleInterceptor implements IRuleInterceptor {
 				proceed = Boolean.FALSE;
 			} else {
 				// Get the rules associated with this action
-				@SuppressWarnings({ "unchecked", "rawtypes" })
-				List<IRule<IndexContext<?>>> classRules = ((IAction) target).getRules();
+				@SuppressWarnings("rawtypes")
+				IAction action = (IAction) target;
+				@SuppressWarnings({ "unchecked" })
+				List<IRule<IndexContext<?>>> classRules = action.getRules();
 				if (classRules == null || classRules.size() == 0) {
 					LOGGER.info("No rules defined, proceeding : " + target);
 					proceed = Boolean.TRUE;
@@ -75,18 +83,24 @@ public class RuleInterceptor implements IRuleInterceptor {
 						}
 					}
 					if (indexContext == null) {
-						LOGGER.warn("Couldn't find the index context or indexable : " + proceedingJoinPoint);
+						LOGGER.warn("Couldn't find the index context : " + proceedingJoinPoint);
 					} else {
 						Object result = null;
 						for (IRule<IndexContext<?>> rule : classRules) {
 							boolean evaluation = rule.evaluate(indexContext);
-							String parameter = rule.getClass().getSimpleName();
+							String ruleName = rule.getClass().getSimpleName();
+							Rule modelRule = new Rule();
+							modelRule.setAction(modelAction);
+							modelRule.setName(ruleName);
+							modelRule.setResult(evaluation);
+							modelAction.getRules().add(modelRule);
+							jep.addVariable(ruleName, evaluation);
 							if (LOGGER.isDebugEnabled()) {
-								LOGGER.debug(Logging.getString("Rule : ", rule, ", parameter : ", parameter, ", evaluation : ", evaluation));
+								LOGGER.debug(Logging.getString("Rule : ", rule, ", parameter : ", ruleName, ", evaluation : ", evaluation));
 							}
-							jep.addVariable(parameter, evaluation);
 						}
-						String predicate = ((IAction<?, ?>) target).getRuleExpression();
+						String predicate = action.getRuleExpression();
+						modelAction.setRuleExpression(predicate);
 						jep.parseExpression(predicate);
 						if (jep.hasError()) {
 							LOGGER.warn("Exception in Jep expression : " + jep.getErrorInfo());
@@ -96,7 +110,9 @@ public class RuleInterceptor implements IRuleInterceptor {
 						if (result == null) {
 							result = jep.getValue();
 						}
-						if (result != null && (result.equals(1.0d) || result.equals(Boolean.TRUE))) {
+						boolean finalResult = result != null && (result.equals(1.0d) || result.equals(Boolean.TRUE));
+						modelAction.setResult(finalResult);
+						if (finalResult) {
 							// TODO Take a snapshot of the cluster at the time of the rule becoming
 							// true and an index started, including the state of the indexes on the file
 							// system and the other servers
@@ -110,8 +126,13 @@ public class RuleInterceptor implements IRuleInterceptor {
 				LOGGER.info(Logging.getString("Rule intercepter proceeding : ", proceed, target, actionName, indexName));
 				printSymbolTable(jep, indexName);
 			}
+			modelAction.setActionName(actionName);
+			modelAction.setIndexName(indexName);
+			modelAction.setStartTime(System.currentTimeMillis());
+			IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
+			dataBase.persist(modelAction);
 			if (proceed) {
-				proceed(proceedingJoinPoint, actionName, indexName);
+				proceed(proceedingJoinPoint, actionName, indexName, modelAction);
 			}
 		} catch (Throwable t) {
 			LOGGER.error("Exception evaluating the rules : ", t);
@@ -121,7 +142,8 @@ public class RuleInterceptor implements IRuleInterceptor {
 		return proceed;
 	}
 
-	protected synchronized void proceed(final ProceedingJoinPoint proceedingJoinPoint, final String actionName, final String indexName) {
+	protected synchronized void proceed(final ProceedingJoinPoint proceedingJoinPoint, final String actionName, final String indexName,
+			final Action modelAction) {
 		try {
 			long delay = 1;
 			final IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
@@ -129,10 +151,18 @@ public class RuleInterceptor implements IRuleInterceptor {
 			clusterManager.setWorking(actionName, indexName, "", Boolean.TRUE);
 			executorService.schedule(new Runnable() {
 				public void run() {
+					IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
 					try {
+						modelAction.setWorking(Boolean.TRUE);
+						dataBase.merge(modelAction);
 						proceedingJoinPoint.proceed();
 					} catch (Throwable e) {
 						LOGGER.error("Exception proceeding on join point : " + proceedingJoinPoint, e);
+					} finally {
+						modelAction.setEndTime(System.currentTimeMillis());
+						modelAction.setDuration(modelAction.getEndTime() - modelAction.getStartTime());
+						modelAction.setWorking(Boolean.FALSE);
+						dataBase.merge(modelAction);
 					}
 				}
 			}, delay, TimeUnit.MILLISECONDS);

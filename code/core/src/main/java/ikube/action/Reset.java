@@ -41,6 +41,11 @@ public class Reset extends Action<IndexContext<?>, Boolean> {
 				delete(dataBase, Url.class, Url.SELECT_FROM_URL_BY_NAME, parameters);
 				delete(dataBase, File.class, File.SELECT_FROM_FILE_BY_NAME, parameters);
 			}
+			Long count = dataBase.execute(Long.class, ikube.model.Action.SELECT_FROM_ACTIONS_COUNT);
+			if (count > IConstants.MAX_ACTIONS) {
+				parameters.clear();
+				delete(dataBase, ikube.model.Action.class, ikube.model.Action.SELECT_FROM_ACTIONS, parameters);
+			}
 		} finally {
 			getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getSimpleName(), "", Boolean.FALSE);
 		}

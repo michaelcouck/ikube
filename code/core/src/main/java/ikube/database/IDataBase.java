@@ -23,6 +23,12 @@ public interface IDataBase {
 	 */
 	<T> T remove(T object);
 
+	/**
+	 * TODO Document me!
+	 * 
+	 * @param sql
+	 * @return
+	 */
 	int remove(String sql);
 
 	/**
@@ -38,6 +44,12 @@ public interface IDataBase {
 	 */
 	<T> T remove(Class<T> klass, Long objectId);
 
+	/**
+	 * TODO Document me!
+	 * 
+	 * @param <T>
+	 * @param batch
+	 */
 	<T> void removeBatch(List<T> batch);
 
 	/**
@@ -49,6 +61,12 @@ public interface IDataBase {
 	 */
 	<T> T persist(T object);
 
+	/**
+	 * TODO Document me!
+	 * 
+	 * @param <T>
+	 * @param list
+	 */
 	<T> void persistBatch(List<T> list);
 
 	/**
@@ -61,6 +79,12 @@ public interface IDataBase {
 	 */
 	<T> T merge(T object);
 
+	/**
+	 * TODO Document me!
+	 * 
+	 * @param <T>
+	 * @param batch
+	 */
 	<T> void mergeBatch(List<T> batch);
 
 	/**
@@ -120,8 +144,28 @@ public interface IDataBase {
 	 */
 	<T> List<T> find(Class<T> klass, int startIndex, int endIndex);
 
+	/**
+	 * TODO Document me!
+	 * 
+	 * @param <T>
+	 * @param klass
+	 * @param sql
+	 * @param parameters
+	 * @return
+	 */
 	<T> T find(Class<T> klass, String sql, Map<String, Object> parameters);
 
+	/**
+	 * TODO Document me!
+	 * 
+	 * @param <T>
+	 * @param klass
+	 * @param sql
+	 * @param parameters
+	 * @param startPosition
+	 * @param maxResults
+	 * @return
+	 */
 	<T> List<T> find(Class<T> klass, String sql, Map<String, Object> parameters, int startPosition, int maxResults);
 
 	/**
@@ -145,5 +189,10 @@ public interface IDataBase {
 	 * @return <T> the list of objects that conform to the narrowing parameters
 	 */
 	// <T> List<T> find(Class<T> klass, Map<String, Object> parameters, int startIndex, int endIndex);
+
+	/**
+	 * TODO Document me!
+	 */
+	<T> T execute(Class<T> klass, String sql);
 
 }

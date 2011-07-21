@@ -3,17 +3,29 @@ package ikube.model;
 import ikube.IConstants;
 
 import java.util.Date;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 @Entity()
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@NamedQueries(value = { 
+		@NamedQuery(name = Action.SELECT_FROM_ACTIONS, query = Action.SELECT_FROM_ACTIONS),
+		@NamedQuery(name = Action.SELECT_FROM_ACTIONS_COUNT, query = Action.SELECT_FROM_ACTIONS_COUNT) })
 public class Action extends Persistable {
+
+	public static final String SELECT_FROM_ACTIONS = "select a from Action as a";
+	public static final String SELECT_FROM_ACTIONS_COUNT = "select count(a) from Action as a";
 
 	/** The row id of the next row. */
 	private long idNumber;
@@ -25,8 +37,19 @@ public class Action extends Persistable {
 	private String indexName;
 	/** The time the action was started. */
 	private long startTime;
+	/** The time the action ended. */
+	private long endTime;
+	/** The time it took for this action to finish. */
+	private long duration;
 	/** Whether this server is working. */
 	private boolean working;
+	/** The predicate for the rules. */
+	private String ruleExpression;
+	/** The rules that were evaluated for this action. */
+	@OneToMany(cascade = { CascadeType.ALL }, mappedBy = "action", fetch = FetchType.EAGER)
+	private List<Rule> rules;
+	/** The result from the rules and the predicate. */
+	private boolean result;
 
 	/**
 	 * Default constructor.
@@ -84,6 +107,22 @@ public class Action extends Persistable {
 		this.startTime = startTime;
 	}
 
+	public long getEndTime() {
+		return endTime;
+	}
+
+	public void setEndTime(long endTime) {
+		this.endTime = endTime;
+	}
+
+	public long getDuration() {
+		return duration;
+	}
+
+	public void setDuration(long duration) {
+		this.duration = duration;
+	}
+
 	public boolean getWorking() {
 		return working;
 	}
@@ -94,6 +133,30 @@ public class Action extends Persistable {
 
 	public String getStartDate() {
 		return IConstants.HHMMSS_DDMMYYYY.format(new Date(this.startTime));
+	}
+
+	public String getRuleExpression() {
+		return ruleExpression;
+	}
+
+	public void setRuleExpression(String ruleExpression) {
+		this.ruleExpression = ruleExpression;
+	}
+
+	public List<Rule> getRules() {
+		return rules;
+	}
+
+	public void setRules(List<Rule> rules) {
+		this.rules = rules;
+	}
+
+	public boolean isResult() {
+		return result;
+	}
+
+	public void setResult(boolean result) {
+		this.result = result;
 	}
 
 	@Override

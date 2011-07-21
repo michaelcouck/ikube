@@ -27,6 +27,7 @@ public class Validator extends Action<IndexContext<?>, Boolean> {
 	 */
 	@Override
 	public Boolean execute(final IndexContext<?> indexContext) {
+		boolean everythingInitialized = Boolean.TRUE;
 		try {
 			// Conditions:
 			// 1) There is an index but it is locked, i.e. an index is running
@@ -34,6 +35,7 @@ public class Validator extends Action<IndexContext<?>, Boolean> {
 			// 3) There is one index, i.e. the current one
 			// 4) There are no indexes
 			// 5) There are indexes but they are corrupt
+			// 6) Any of the above and the searcher is not opened for some reason
 
 			// There must be at least one index being generated, or one index created
 			// and one being generated for each index context
@@ -44,49 +46,64 @@ public class Validator extends Action<IndexContext<?>, Boolean> {
 			File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexDirectoryPath);
 			if (!areIndexesCreated.evaluate(indexContext)) {
 				if (latestIndexDirectory == null || !latestIndexDirectory.exists()) {
-					String subject = "1 : No indexes generated for server : " + server.getAddress();
-					String body = "No indexes for " + indexContext.getIndexName() + " generated.";
+					String subject = "No index : " + indexContext.getIndexName() + ", server : " + server.getAddress();
+					String body = "No index : " + indexContext.toString();
 					sendNotification(subject, body);
-					return Boolean.FALSE;
+					everythingInitialized &= Boolean.FALSE;
+					// return Boolean.FALSE;
 				}
 			}
 
 			IsIndexCorrupt isIndexCorrupt = new IsIndexCorrupt();
 			if (isIndexCorrupt.evaluate(indexContext)) {
-				String subject = "2 : Index corrupt for server : " + server.getAddress();
+				String subject = "Index corrupt : " + indexContext.getIndexName() + ", server : " + server.getAddress();
 				String body = "There is an index but it is corrupt. Generally another index will be generated immediately, but "
 						+ "if there is a backup for the index the restore will be invoked first, depending on the position of the action "
 						+ "in the action set.";
 				sendNotification(subject, body);
-				return Boolean.FALSE;
+				everythingInitialized &= Boolean.FALSE;
+				// return Boolean.FALSE;
 			}
 
 			IsIndexCurrent isIndexCurrent = new IsIndexCurrent();
 			if (!isIndexCurrent.evaluate(indexContext)) {
-				String subject = "3 : Index not current for server : " + server.getAddress();
+				String subject = "Index not current : " + indexContext.getIndexName() + ", server : " + server.getAddress();
 				String body = "The index for " + indexContext.getName() + " is not current. Generally another index "
 						+ "wil be generated immediately, this message is just for information.";
 				sendNotification(subject, body);
-				return Boolean.FALSE;
+				everythingInitialized &= Boolean.FALSE;
+				// return Boolean.FALSE;
 			}
 
 			// Check to see if there is an index being generated
-			DirectoryExistsAndIsLocked directoryExistsAndIsLocked = new DirectoryExistsAndIsLocked();
-			File[] serverIndexDirectories = latestIndexDirectory.listFiles();
-
-			for (File serverIndexDirectory : serverIndexDirectories) {
-				if (directoryExistsAndIsLocked.evaluate(serverIndexDirectory)) {
-					String subject = "4 : Index being generated : " + indexContext.getName();
-					String body = "The index is being generated for index context " + indexContext.getName() + ".";
-					sendNotification(subject, body);
-					return Boolean.FALSE;
+			if (latestIndexDirectory != null) {
+				DirectoryExistsAndIsLocked directoryExistsAndIsLocked = new DirectoryExistsAndIsLocked();
+				File[] serverIndexDirectories = latestIndexDirectory.listFiles();
+				for (File serverIndexDirectory : serverIndexDirectories) {
+					if (directoryExistsAndIsLocked.evaluate(serverIndexDirectory)) {
+						String subject = "Index being generated : " + indexContext.getIndexName() + ", server : " + server.getAddress();
+						String body = "The index is being generated for index context " + indexContext.getName()
+								+ ". This message is just for informational purposes, no action is required.";
+						sendNotification(subject, body);
+						everythingInitialized &= Boolean.FALSE;
+						// return Boolean.FALSE;
+					}
 				}
 			}
 
-			return Boolean.TRUE;
+			if (indexContext.getIndex().getMultiSearcher() == null) {
+				String subject = "Index not open : " + indexContext.getIndexName() + ", server : " + server.getAddress();
+				String body = "Searcher not opened for index " + indexContext.getIndexName()
+						+ ". This could require some investigation from the administrator.";
+				sendNotification(subject, body);
+				everythingInitialized &= Boolean.FALSE;
+			}
+
+			// return Boolean.TRUE;
 		} finally {
 			getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getSimpleName(), "", Boolean.FALSE);
 		}
+		return everythingInitialized;
 	}
 
 }

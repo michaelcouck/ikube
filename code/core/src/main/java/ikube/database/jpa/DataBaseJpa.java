@@ -28,7 +28,7 @@ public class DataBaseJpa implements IDataBase {
 	/** The logger for the bean. */
 	protected static final Logger LOGGER = Logger.getLogger(DataBaseJpa.class);
 
-	@PersistenceContext(type = PersistenceContextType.TRANSACTION, unitName = IConstants.PERSISTENCE_UNIT_H2)
+	@PersistenceContext(type = PersistenceContextType.TRANSACTION, unitName = IConstants.PERSISTENCE_UNIT_DB2)
 	protected EntityManager entityManager;
 
 	/**
@@ -183,6 +183,21 @@ public class DataBaseJpa implements IDataBase {
 		return query.getResultList();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	@SuppressWarnings("unchecked")
+	public <T> T execute(Class<T> klass, String sql) {
+		return (T) entityManager.createNamedQuery(sql).getSingleResult();
+	}
+
+	/**
+	 * TODO Document me!
+	 * 
+	 * @param query
+	 * @param parameters
+	 */
 	private void setParameters(Query query, Map<String, Object> parameters) {
 		for (String parameter : parameters.keySet()) {
 			query.setParameter(parameter, parameters.get(parameter));

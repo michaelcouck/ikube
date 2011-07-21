@@ -1,6 +1,8 @@
 package ikube.action.rule;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
 import ikube.ATest;
 import ikube.toolkit.FileUtilities;
 
@@ -28,6 +30,7 @@ public class AreIndexesCreatedTest extends ATest {
 	@Before
 	public void before() {
 		indexesCreated = new AreIndexesCreated();
+		when(INDEX_CONTEXT.getIndexDirectoryPath()).thenReturn("./" + this.getClass().getSimpleName());
 		FileUtilities.deleteFile(new File(INDEX_CONTEXT.getIndexDirectoryPath()), 1);
 	}
 
@@ -39,9 +42,9 @@ public class AreIndexesCreatedTest extends ATest {
 	@Test
 	public void evaluate() {
 		boolean result = indexesCreated.evaluate(INDEX_CONTEXT);
-		// TODO This seems to fail in Maven, probably because of
+		// This seems to fail in Maven, probably because of
 		// conflicts in the creation of the indexes
-		// assertFalse(result);
+		assertFalse(result);
 		createIndex(INDEX_CONTEXT, "soem data, wif wong smelling");
 		result = indexesCreated.evaluate(INDEX_CONTEXT);
 		assertTrue(result);

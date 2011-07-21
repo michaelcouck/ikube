@@ -56,7 +56,9 @@ public class IndexEngine implements IIndexEngine {
 		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
 		Server server = clusterManager.getServer();
 		if (server.getWorking()) {
-			return;
+			// TODO Verify that this is not required as the rules will check
+			// for this server working on every iteration and sleep is necessary in fact
+			// return;
 		}
 
 		@SuppressWarnings("rawtypes")
@@ -73,6 +75,7 @@ public class IndexEngine implements IIndexEngine {
 						// Sleep for a random time, 10 < a < 20 seconds if the server is working
 						// to give the previous action a little time before we execute the rules
 						long sleep = Math.max(10, (long) (((Math.random() * 10d)) * 2000d));
+						LOGGER.info("Sleeping : " + sleep);
 						Thread.sleep(sleep);
 					}
 					action.execute(indexContext);

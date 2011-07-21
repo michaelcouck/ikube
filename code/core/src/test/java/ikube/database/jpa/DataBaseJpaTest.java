@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 import ikube.BaseTest;
 import ikube.IConstants;
 import ikube.database.IDataBase;
+import ikube.model.Action;
 import ikube.model.File;
 import ikube.model.Url;
 import ikube.toolkit.ApplicationContextManager;
@@ -50,12 +51,12 @@ public class DataBaseJpaTest extends BaseTest {
 	@Before
 	public void before() {
 		dataBase = ApplicationContextManager.getBean(IDataBase.class);
-		delete(dataBase, Url.class, File.class);
+		delete(dataBase, Url.class, File.class, Action.class);
 	}
 
 	@After
 	public void after() {
-		delete(dataBase, Url.class, File.class);
+		delete(dataBase, Url.class, File.class, Action.class);
 	}
 
 	@Test
@@ -145,6 +146,20 @@ public class DataBaseJpaTest extends BaseTest {
 			assertTrue("We must have at least " + minimumInsertsPerSecond + " inserts per second : ",
 					insertsPerSecond > minimumInsertsPerSecond);
 		}
+	}
+
+	@Test
+	public void executeQuery() {
+		
+		Long count = dataBase.execute(Long.class, Action.SELECT_FROM_ACTIONS_COUNT);
+		assertNotNull("The count should never be null : ", count);
+
+		List<Action> actions = Arrays.asList(new Action(), new Action(), new Action());
+		dataBase.persistBatch(actions);
+
+		count = dataBase.execute(Long.class, Action.SELECT_FROM_ACTIONS_COUNT);
+		assertNotNull("The count should never be null : ", count);
+		assertEquals("The count should be the size of the url list : ", new Long(actions.size()), count);
 	}
 
 	private List<Url> getUrls(int batchSize) {
