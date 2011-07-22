@@ -11,6 +11,7 @@ import ikube.model.Rule;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.Logging;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -128,7 +129,7 @@ public class RuleInterceptor implements IRuleInterceptor {
 			}
 			modelAction.setActionName(actionName);
 			modelAction.setIndexName(indexName);
-			modelAction.setStartTime(System.currentTimeMillis());
+			modelAction.setStartTime(new Timestamp(System.currentTimeMillis()));
 			IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
 			dataBase.persist(modelAction);
 			if (proceed) {
@@ -159,8 +160,8 @@ public class RuleInterceptor implements IRuleInterceptor {
 					} catch (Throwable e) {
 						LOGGER.error("Exception proceeding on join point : " + proceedingJoinPoint, e);
 					} finally {
-						modelAction.setEndTime(System.currentTimeMillis());
-						modelAction.setDuration(modelAction.getEndTime() - modelAction.getStartTime());
+						modelAction.setEndTime(new Timestamp(System.currentTimeMillis()));
+						modelAction.setDuration(modelAction.getEndTime().getTime() - modelAction.getStartTime().getTime());
 						modelAction.setWorking(Boolean.FALSE);
 						dataBase.merge(modelAction);
 					}

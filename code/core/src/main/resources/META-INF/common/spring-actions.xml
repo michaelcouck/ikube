@@ -26,9 +26,9 @@
 		property:actions-ref="actions" />
 	<util:list id="actions">
 		<ref bean="ikube.action.Reset" />
-		<ref bean="ikube.action.Open"  />
-		<ref bean="ikube.action.Close"  />
 		<ref bean="ikube.action.Restore" />
+		<ref bean="ikube.action.Close"  />
+		<ref bean="ikube.action.Open"  />
 		<ref bean="ikube.action.Index"  />
 		<ref bean="ikube.action.Close"  />
 		<ref bean="ikube.action.Open"  />
@@ -80,9 +80,9 @@
 			!IsThisServerWorking &#38;&#38;
 			IsNewIndexCreated &#38;&#38; 
 			(!IsIndexCurrent  || 
-			(IsIndexCorrupt &#38;&#38; 
+			IsIndexCorrupt || 
 			(AreIndexesCreated || 
-			AreUnopenedIndexes)))">
+			AreUnopenedIndexes))">
 		<property name="rules">
 			<util:list>
 				<ref local="ikube.action.rule.IsThisServerWorking" />
@@ -99,11 +99,11 @@
 		class="ikube.action.Open" 
 		property:ruleExpression="
 			!IsThisServerWorking &#38;&#38;
-			(IsNewIndexCreated || 
-			(AreIndexesCreated &#38;&#38; 
-			(AreUnopenedIndexes || 
-			!IsMultiSearcherInitialised ||  
-			!AreSearchablesInitialised)))">
+			IsNewIndexCreated &#38;&#38; 
+			(!IsMultiSearcherInitialised ||  
+			!AreSearchablesInitialised) &#38;&#38;
+			(AreIndexesCreated || 
+			AreUnopenedIndexes)">
 		<property name="rules">
 			<util:list>
 				<ref local="ikube.action.rule.IsThisServerWorking" />

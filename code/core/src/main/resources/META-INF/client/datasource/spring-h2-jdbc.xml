@@ -42,7 +42,20 @@
 	<bean id="h2SequenceCreator" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
 		property:staticMethod="ikube.toolkit.DatabaseUtilities.executeStatement">
 		<property name="arguments">
-			<ref bean="nonXaDataSourceH2"></ref>
+			<array>
+				<ref bean="nonXaDataSourceH2" />
+				<value type="java.lang.String">create sequence if not exists persistable</value>
+			</array>
+		</property>
+	</bean>
+	
+	<bean id="h2Compactor" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
+		property:staticMethod="ikube.toolkit.DatabaseUtilities.executeStatement">
+		<property name="arguments">
+			<array>
+				<ref bean="nonXaDataSourceH2" />
+				<value type="java.lang.String">shutdown compact</value>
+			</array>
 		</property>
 	</bean>
 

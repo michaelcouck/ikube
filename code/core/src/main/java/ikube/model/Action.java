@@ -2,6 +2,7 @@ package ikube.model;
 
 import ikube.IConstants;
 
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
@@ -13,14 +14,15 @@ import javax.persistence.InheritanceType;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 @Entity()
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-@NamedQueries(value = { 
-		@NamedQuery(name = Action.SELECT_FROM_ACTIONS, query = Action.SELECT_FROM_ACTIONS),
+@NamedQueries(value = { @NamedQuery(name = Action.SELECT_FROM_ACTIONS, query = Action.SELECT_FROM_ACTIONS),
 		@NamedQuery(name = Action.SELECT_FROM_ACTIONS_COUNT, query = Action.SELECT_FROM_ACTIONS_COUNT) })
 public class Action extends Persistable {
 
@@ -36,9 +38,11 @@ public class Action extends Persistable {
 	/** The actionName of the currently executing index. */
 	private String indexName;
 	/** The time the action was started. */
-	private long startTime;
+	@Temporal(value = TemporalType.TIMESTAMP)
+	private Timestamp startTime;
 	/** The time the action ended. */
-	private long endTime;
+	@Temporal(value = TemporalType.TIMESTAMP)
+	private Timestamp endTime;
 	/** The time it took for this action to finish. */
 	private long duration;
 	/** Whether this server is working. */
@@ -57,8 +61,8 @@ public class Action extends Persistable {
 	public Action() {
 	}
 
-	public Action(final long idNumber, final String actionName, final String indexableName, final String indexName, final long startTime,
-			final boolean working) {
+	public Action(final long idNumber, final String actionName, final String indexableName, final String indexName,
+			final Timestamp startTime, final boolean working) {
 		this.idNumber = idNumber;
 		this.actionName = actionName;
 		this.indexableName = indexableName;
@@ -99,19 +103,19 @@ public class Action extends Persistable {
 		this.indexName = indexName;
 	}
 
-	public long getStartTime() {
+	public Timestamp getStartTime() {
 		return startTime;
 	}
 
-	public void setStartTime(final long startTime) {
+	public void setStartTime(final Timestamp startTime) {
 		this.startTime = startTime;
 	}
 
-	public long getEndTime() {
+	public Timestamp getEndTime() {
 		return endTime;
 	}
 
-	public void setEndTime(long endTime) {
+	public void setEndTime(final Timestamp endTime) {
 		this.endTime = endTime;
 	}
 
@@ -132,7 +136,7 @@ public class Action extends Persistable {
 	}
 
 	public String getStartDate() {
-		return IConstants.HHMMSS_DDMMYYYY.format(new Date(this.startTime));
+		return IConstants.HHMMSS_DDMMYYYY.format(new Date(this.startTime.getTime()));
 	}
 
 	public String getRuleExpression() {

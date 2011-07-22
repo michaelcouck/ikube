@@ -402,6 +402,10 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 			IndexManager.addStringField(indexable.getContentFieldName(), parsedContent, document, store, analyzed, termVector);
 			this.addDocument(indexContext, indexable, document);
 		} catch (Exception e) {
+			if (url != null) {
+				url.setParsedContent(null);
+				url.setRawContent(null);
+			}
 			logger.error("Exception accessing url : " + url, e);
 		}
 	}

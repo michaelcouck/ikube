@@ -17,6 +17,7 @@ import ikube.toolkit.HashUtilities;
 import ikube.toolkit.ThreadUtilities;
 
 import java.net.InetAddress;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -220,13 +221,14 @@ public class ClusterManagerTest extends ATest {
 		// The local server gets set every time we call the set working
 		// method and the time gets set at that time too
 		final long expectedStartTime = System.currentTimeMillis();
-		localServer.setAction(new Action(0, Index.class.getSimpleName(), indexableName, indexName, expectedStartTime, Boolean.TRUE));
+		localServer.setAction(new Action(0, Index.class.getSimpleName(), indexableName, indexName, new Timestamp(expectedStartTime),
+				Boolean.TRUE));
 		clusterManager.set(Server.class.getName(), localServer.getId(), localServer);
 		// Verify that the remote server has the action and the time we want
 		Server server = clusterManager.get(Server.class.getName(), "id = " + localServer.getId());
 		assertNotNull(server);
 		assertNotNull("The local server has the action set : ", server.getAction());
-		assertEquals(expectedStartTime, server.getAction().getStartTime());
+		assertEquals(expectedStartTime, server.getAction().getStartTime().getTime());
 
 		List<Thread> threads = new ArrayList<Thread>();
 		int threadSize = 3;

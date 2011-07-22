@@ -69,11 +69,11 @@ public class IndexEngine implements IIndexEngine {
 			LOGGER.info("Start working on index : " + indexContext.getIndexName() + ", server : " + server.getAddress());
 			for (IAction<IndexContext<?>, Boolean> action : actions) {
 				try {
-					if (clusterManager.getServer().getWorking()) {
+					if ((server = clusterManager.getServer()).getWorking()) {
 						// Sleep for a random time, 10 < a < 20 seconds if the server is working
 						// to give the previous action a little time before we execute the rules
-						long sleep = Math.max(10, (long) (((Math.random() * 10d)) * 2000d));
-						LOGGER.info("Sleeping : " + sleep);
+						long sleep = 1000; // Math.max(1000, (long) (Math.random() * 3000d));
+						LOGGER.info("Sleeping : " + sleep + ", action : " + action + ", server working : " + server.getWorking());
 						Thread.sleep(sleep);
 					}
 					action.execute(indexContext);

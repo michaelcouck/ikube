@@ -27,14 +27,16 @@ public final class DatabaseUtilities {
 	private DatabaseUtilities() {
 	}
 
-	public static void executeStatement(DataSource dataSource) {
-		String sql = "create sequence if not exists persistable";
+	public static void executeStatement(DataSource dataSource, String sql) {
+		// String sql = "create sequence if not exists persistable";
+		LOGGER.info("Executing statement : " + sql + ", on data source : " + dataSource);
 		Connection connection = null;
 		Statement statement = null;
 		try {
 			connection = dataSource.getConnection();
 			statement = connection.createStatement();
-			statement.executeUpdate(sql);
+			int result = statement.executeUpdate(sql);
+			LOGGER.info("Result from statement : " + result);
 		} catch (Exception e) {
 			LOGGER.error("Exception executing statement : " + sql + ", on data source : " + dataSource, e);
 		} finally {

@@ -50,7 +50,7 @@ public class Integration {
 	protected void waitToFinish() {
 		try {
 			do {
-				Thread.sleep(120000);
+				Thread.sleep(Long.MAX_VALUE);
 				IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
 				boolean anyWorking = clusterManager.anyWorking();
 				boolean isWorking = clusterManager.getServer().getWorking();

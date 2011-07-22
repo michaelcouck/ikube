@@ -13,6 +13,7 @@ import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.HashUtilities;
 
 import java.net.InetAddress;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -77,7 +78,7 @@ public class ClusterManager implements IClusterManager, IConstants {
 	 */
 	public static void addClusterExceptionListener() {
 		// Add the listener for general cluster directives like forcing an index to start
-		LOGGER.info("Adding shutdown listener : ");
+		LOGGER.info("Adding exception listener : ");
 		ITopic<Boolean> topic = Hazelcast.getTopic(IConstants.EXCEPTION_TOPIC);
 		topic.addMessageListener(new MessageListener<Boolean>() {
 			@Override
@@ -218,7 +219,7 @@ public class ClusterManager implements IClusterManager, IConstants {
 		Action action = server.getAction();
 		if (action == null) {
 			LOGGER.warn("Setting action : " + indexName + ", " + indexableName + ", " + batchSize);
-			action = new Action(0, null, indexableName, indexName, System.currentTimeMillis(), Boolean.TRUE);
+			action = new Action(0, null, indexableName, indexName, new Timestamp(System.currentTimeMillis()), Boolean.TRUE);
 			server.setAction(action);
 		}
 		idNumber = action.getIdNumber();
@@ -274,11 +275,11 @@ public class ClusterManager implements IClusterManager, IConstants {
 			server.getAction().setIndexableName(indexableName);
 			server.getAction().setIndexName(indexName);
 			// Reset the time in the action for each action
-			server.getAction().setStartTime(System.currentTimeMillis());
+			server.getAction().setStartTime(new Timestamp(System.currentTimeMillis()));
 			server.getAction().setWorking(isWorking);
 			// Publish the fact that this server is starting to work on an action
 			set(Server.class.getName(), server.getId(), server);
-			return server.getAction().getStartTime();
+			return server.getAction().getStartTime().getTime();
 		} finally {
 			notifyAll();
 		}
