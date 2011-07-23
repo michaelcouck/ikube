@@ -23,7 +23,15 @@ import java.io.File;
 public class Validator extends Action<IndexContext<?>, Boolean> {
 
 	/**
-	 * {@inheritDoc}
+	 * Conditions:<br>
+	 * 1) There is an index but it is locked, i.e. an index is running<br>
+	 * 2) There are two indexes and one is locked<br>
+	 * 3) There is one index, i.e. the current one<br>
+	 * 4) There are no indexes<br>
+	 * 5) There are indexes but they are corrupt<br>
+	 * 6) Any of the above and the searcher is not opened for some reason<br>
+	 * <br>
+	 * There must be at least one index being generated, or one index created // and one being generated for each index context
 	 */
 	@Override
 	public Boolean execute(final IndexContext<?> indexContext) {
@@ -31,23 +39,13 @@ public class Validator extends Action<IndexContext<?>, Boolean> {
 		String body = null;
 		boolean everythingInitialized = Boolean.TRUE;
 		try {
-			// Conditions:
-			// 1) There is an index but it is locked, i.e. an index is running
-			// 2) There are two indexes and one is locked
-			// 3) There is one index, i.e. the current one
-			// 4) There are no indexes
-			// 5) There are indexes but they are corrupt
-			// 6) Any of the above and the searcher is not opened for some reason
-
-			// There must be at least one index being generated, or one index created
-			// and one being generated for each index context
-
 			Server server = ApplicationContextManager.getBean(IClusterManager.class).getServer();
 			IsIndexCurrent isIndexCurrent = new IsIndexCurrent();
 			IsIndexCorrupt isIndexCorrupt = new IsIndexCorrupt();
 			AreIndexesCreated areIndexesCreated = new AreIndexesCreated();
 			String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
 			File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexDirectoryPath);
+			// Are there any indexes at all
 			if (!areIndexesCreated.evaluate(indexContext)) {
 				if (latestIndexDirectory == null || !latestIndexDirectory.exists()) {
 					subject = "No index : " + indexContext.getIndexName() + ", server : " + server.getAddress();
@@ -56,6 +54,7 @@ public class Validator extends Action<IndexContext<?>, Boolean> {
 					sendNotification(subject, body);
 				}
 			}
+			// Is the index corrupt for some reason
 			if (isIndexCorrupt.evaluate(indexContext)) {
 				subject = "Index corrupt : " + indexContext.getIndexName() + ", server : " + server.getAddress();
 				body = "There is an index but it is corrupt. Generally another index will be generated immediately, but "
@@ -64,6 +63,7 @@ public class Validator extends Action<IndexContext<?>, Boolean> {
 				everythingInitialized &= Boolean.FALSE;
 				sendNotification(subject, body);
 			}
+			// Is the index current
 			if (!isIndexCurrent.evaluate(indexContext)) {
 				subject = "Index not current : " + indexContext.getIndexName() + ", server : " + server.getAddress();
 				body = "The index for " + indexContext.getName() + " is not current. Generally another index "
@@ -71,8 +71,8 @@ public class Validator extends Action<IndexContext<?>, Boolean> {
 				everythingInitialized &= Boolean.FALSE;
 				sendNotification(subject, body);
 			}
+			// Is there an index being generated
 			if (latestIndexDirectory != null) {
-				// Check to see if there is an index being generated
 				DirectoryExistsAndIsLocked directoryExistsAndIsLocked = new DirectoryExistsAndIsLocked();
 				File[] serverIndexDirectories = latestIndexDirectory.listFiles();
 				for (File serverIndexDirectory : serverIndexDirectories) {
@@ -86,6 +86,7 @@ public class Validator extends Action<IndexContext<?>, Boolean> {
 					}
 				}
 			}
+			// Is the index open, and if not why not
 			if (indexContext.getIndex().getMultiSearcher() == null) {
 				subject = "Index not open : " + indexContext.getIndexName() + ", server : " + server.getAddress();
 				body = "Searcher not opened for index " + indexContext.getIndexName()

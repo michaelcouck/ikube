@@ -95,7 +95,7 @@ public class ColumnContentProviderTest extends ATest {
 
 		assertTrue(outputStream.toString().contains(string));
 
-		// TODO Find out why the Maven compile doesn't like this character sncoding
+		// TODO Find out why the Maven compile doesn't like this character encoding
 		// note that the encoding has been set in all the places I could find on the net
 		// string = "Saint-Herménégilde";
 		// outputStream = new ByteArrayOutputStream();

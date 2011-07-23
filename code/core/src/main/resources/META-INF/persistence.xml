@@ -7,7 +7,7 @@
 
 	<persistence-unit name="IkubePersistenceUnitH2" transaction-type="RESOURCE_LOCAL">
 		<provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
-		<non-jta-data-source>nonXaDataSourceH2</non-jta-data-source>
+		<!-- <non-jta-data-source>nonXaDataSourceH2</non-jta-data-source> -->
 		<class>ikube.model.Persistable</class>
 		
 		<class>ikube.model.faq.Faq</class>
@@ -45,11 +45,26 @@
 		<class>ikube.model.Index</class>
 		
 		<exclude-unlisted-classes>false</exclude-unlisted-classes>
+		
+		<!--
+			For the first run these have to be uncommented to allow OpenJpa to create the
+			tables in the database and commit the connection. Typically the connection
+			is managed Xa so can't be committed by OpenJpa. If the properties are uncommented
+			then OpenJpa will use these to get a connection to the db and can then commit on
+			that connection as it will not be xa.
+		-->
+		<properties>
+			<property name="openjpa.Connection2UserName" value="sa" />
+			<property name="openjpa.Connection2Password" value="" />
+			<property name="openjpa.Connection2URL" value="jdbc:h2:file:ikube" />
+			<property name="openjpa.Connection2DriverName" value="org.h2.Driver" />
+			<property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
+		</properties>
 	</persistence-unit>
 	
 	<persistence-unit name="IkubePersistenceUnitDb2" transaction-type="RESOURCE_LOCAL">
 		<provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
-		<non-jta-data-source>nonXaDataSourceDb2</non-jta-data-source>
+		<!-- <non-jta-data-source>nonXaDataSourceDb2</non-jta-data-source> -->
 		<class>ikube.model.Persistable</class>
 		
 		<class>ikube.model.faq.Faq</class>
@@ -88,18 +103,18 @@
 		
 		<exclude-unlisted-classes>false</exclude-unlisted-classes>
 		
-		<!-- <properties>
+		<properties>
 			<property name="openjpa.Connection2UserName" value="db2admin" />
 			<property name="openjpa.Connection2Password" value="db2admin" />
 			<property name="openjpa.Connection2URL" value="jdbc:db2://ikube:50000/ikube" />
 			<property name="openjpa.Connection2DriverName" value="com.ibm.db2.jcc.DB2Driver" />
 			<property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
-		</properties> -->
+		</properties>
 	</persistence-unit>
 	
 	<persistence-unit name="IkubePersistenceUnitOracle" transaction-type="RESOURCE_LOCAL">
 		<provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
-		<non-jta-data-source>nonXaDataSourceOracle</non-jta-data-source>
+		<!-- <non-jta-data-source>nonXaDataSourceOracle</non-jta-data-source> -->
 		<class>ikube.model.Persistable</class>
 		
 		<class>ikube.model.faq.Faq</class>
@@ -137,6 +152,14 @@
 		<class>ikube.model.Index</class>
 		
 		<exclude-unlisted-classes>false</exclude-unlisted-classes>
+		
+		<properties>
+			<property name="openjpa.Connection2UserName" value="userid" />
+			<property name="openjpa.Connection2Password" value="password" />
+			<property name="openjpa.Connection2URL" value="the/oracle/url" />
+			<property name="openjpa.Connection2DriverName" value="ora.driver" />
+			<property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
+		</properties>
 	</persistence-unit>
 	
 	<persistence-unit name="IkubePersistenceUnitObjectDb" transaction-type="RESOURCE_LOCAL">
@@ -180,9 +203,9 @@
 		<exclude-unlisted-classes>false</exclude-unlisted-classes>
 		
 		<properties>
-			<property name="javax.persistence.jdbc.url" value="ikube.objectdb.odb" />
 			<property name="javax.persistence.jdbc.user" value="sa" />
 			<property name="javax.persistence.jdbc.password" value="" />
+			<property name="javax.persistence.jdbc.url" value="ikube.objectdb.odb" />
 		</properties>
 	</persistence-unit>
 	

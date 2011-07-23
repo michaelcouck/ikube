@@ -28,7 +28,7 @@ public class DataBaseJpa implements IDataBase {
 	/** The logger for the bean. */
 	protected static final Logger LOGGER = Logger.getLogger(DataBaseJpa.class);
 
-	@PersistenceContext(type = PersistenceContextType.TRANSACTION, unitName = IConstants.PERSISTENCE_UNIT_DB2)
+	@PersistenceContext(type = PersistenceContextType.TRANSACTION, unitName = IConstants.PERSISTENCE_UNIT_H2)
 	protected EntityManager entityManager;
 
 	/**
@@ -193,10 +193,12 @@ public class DataBaseJpa implements IDataBase {
 	}
 
 	/**
-	 * TODO Document me!
+	 * This method sets the parameters in the query.
 	 * 
 	 * @param query
+	 *            the query to set the parameters for
 	 * @param parameters
+	 *            and the parameter map, key value pairs
 	 */
 	private void setParameters(Query query, Map<String, Object> parameters) {
 		for (String parameter : parameters.keySet()) {

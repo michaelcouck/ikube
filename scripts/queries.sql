@@ -1,10 +1,10 @@
 select * from action as a join rule as r on a.id = r.action_id where a.result = 1 order by a.id desc ;
 
-select a.actionName, a.indexName, a.working, a.duration, a.result, r.name, r.result from action as a, rule as r 
+select a.actionName, a.starttime, a.indexName, a.working, a.duration, a.result, r.name, r.result from action as a, rule as r 
     where a.id = r.action_id 
     and a.result = 1 
-    and a.actionname = 'Validator' 
-    and a.indexname = 'default'
+    and a.actionname = 'Close' 
+    -- and a.indexname = 'default'
     order by a.id desc;
 
 
