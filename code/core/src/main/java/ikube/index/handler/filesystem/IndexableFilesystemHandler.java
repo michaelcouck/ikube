@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,29 +67,35 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 		// Persist the last of the files in the list
 		persistFilesBatch(dataBase, indexable, filesDone);
 		// Now start the threads indexing the files from the database
-		List<Thread> threads = new ArrayList<Thread>();
-		String name = this.getClass().getSimpleName();
-		for (int i = 0; i < getThreads(); i++) {
-			Thread thread = new Thread(new Runnable() {
-				public void run() {
-					IndexableFileSystem indexableFileSystem = (IndexableFileSystem) SerializationUtilities.clone(indexable);
-					List<ikube.model.File> dbFiles = getBatch(dataBase, indexableFileSystem);
-					do {
-						for (ikube.model.File dbFile : dbFiles) {
-							if (dbFile.getUrl() == null) {
-								logger.warn("DB file url null : ");
-								continue;
+		try {
+			List<Thread> threads = new ArrayList<Thread>();
+			for (int i = 0; i < getThreads(); i++) {
+				Thread thread = new Thread(new Runnable() {
+					public void run() {
+						IndexableFileSystem indexableFileSystem = (IndexableFileSystem) SerializationUtilities.clone(indexable);
+						List<ikube.model.File> dbFiles = getBatch(dataBase, indexableFileSystem);
+						do {
+							for (ikube.model.File dbFile : dbFiles) {
+								if (dbFile.getUrl() == null) {
+									logger.warn("DB file url null : ");
+									continue;
+								}
+								handleFile(indexContext, indexableFileSystem, dbFile);
 							}
-							handleFile(indexContext, indexableFileSystem, dbFile);
-						}
-						dbFiles = getBatch(dataBase, indexableFileSystem);
-					} while (!dbFiles.isEmpty());
-				}
-			}, name + "." + i);
-			thread.start();
-			threads.add(thread);
+							dbFiles = getBatch(dataBase, indexableFileSystem);
+						} while (!dbFiles.isEmpty());
+					}
+				}, this.getClass().getSimpleName() + "." + i);
+				threads.add(thread);
+			}
+			for (Thread thread : threads) {
+				thread.start();
+			}
+			return threads;
+		} catch (Exception e) {
+			logger.error("Exception starting the file system indexer threads : ", e);
 		}
-		return threads;
+		return Arrays.asList();
 	}
 
 	/**

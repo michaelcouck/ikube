@@ -8,6 +8,7 @@ import ikube.database.IDataBase;
 import ikube.model.Action;
 import ikube.model.IndexContext;
 import ikube.model.Rule;
+import ikube.model.Server;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.Logging;
 
@@ -148,6 +149,8 @@ public class RuleInterceptor implements IRuleInterceptor {
 		try {
 			long delay = 1;
 			final IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
+			Server server = clusterManager.getServer();
+			modelAction.setServerName(server.getAddress());
 			// We set the working flag in the action within the cluster lock when setting to true
 			clusterManager.setWorking(actionName, indexName, "", Boolean.TRUE);
 			executorService.schedule(new Runnable() {

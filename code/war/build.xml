@@ -47,10 +47,10 @@
 	<target name="executeTomcatAction">
 		<java jar="${tomcat.bin}/bootstrap.jar" dir="${tomcat.bin}" fork="yes" spawn="true">
 			<jvmarg value="-Dcatalina.home=${tomcat.home}" />
-			<jvmarg value="-XX:PermSize=128m" />
-			<jvmarg value="-XX:MaxPermSize=512m" />
-			<jvmarg value="-Xms2048m" />
-			<jvmarg value="-Xmx4096m" />
+			<jvmarg value="-Xms512m" />
+			<jvmarg value="-Xmx2048m" />
+			<jvmarg value="-XX:PermSize=64m" />
+			<jvmarg value="-XX:MaxPermSize=256m" />
 			<arg line="${action}" />
 		</java>
 	</target>
@@ -58,10 +58,10 @@
 	<target name="startJenkins">
 		<java jar="${jenkins.bin}/bootstrap.jar" dir="${jenkins.bin}" fork="yes" spawn="true">
 			<jvmarg value="-Dcatalina.home=${jenkins.home}" />
-			<jvmarg value="-XX:PermSize=32m" />
-			<jvmarg value="-XX:MaxPermSize=128m" />
 			<jvmarg value="-Xms512m" />
 			<jvmarg value="-Xmx2048m" />
+			<jvmarg value="-XX:PermSize=64m" />
+			<jvmarg value="-XX:MaxPermSize=128m" />
 			<arg line="start" />
 		</java>
 	</target>

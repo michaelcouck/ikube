@@ -1,5 +1,7 @@
 package ikube.toolkit;
 
+import ikube.IConstants;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -27,7 +29,18 @@ public class PropertyConfigurer extends Properties {
 
 	private static final transient Logger LOGGER = Logger.getLogger(PropertyConfigurer.class);
 
+	private static Properties INSTANCE;
+
 	private Pattern fileNamePattern;
+
+	public static Object getStaticProperty(String key) {
+		if (INSTANCE == null) {
+			PropertyConfigurer propertyConfigurer = new PropertyConfigurer();
+			propertyConfigurer.setFileNamePattern(IConstants.SPRING_PROPERTIES);
+			propertyConfigurer.initialize();
+		}
+		return INSTANCE.get(key);
+	}
 
 	/**
 	 * This method will look through the classpath for properties file with the name specified in the file name property. As well as this it
@@ -35,6 +48,7 @@ public class PropertyConfigurer extends Properties {
 	 * application will also be checked for the properties file name pattern to load into the property map.
 	 */
 	public void initialize() {
+		INSTANCE = this;
 		try {
 			// First we check our own jar
 			File thisJar = new File(getClass().getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
@@ -101,7 +115,7 @@ public class PropertyConfigurer extends Properties {
 		while (jarEntries.hasMoreElements()) {
 			JarEntry jarEntry = jarEntries.nextElement();
 			String entryName = jarEntry.getName();
-			if (fileNamePattern.matcher(entryName).matches()) {
+			if (fileNamePattern != null && fileNamePattern.matcher(entryName).matches()) {
 				try {
 					LOGGER.debug("        : Loading properties from : " + jarEntry);
 					InputStream inputStream = jarFile.getInputStream(jarEntry);

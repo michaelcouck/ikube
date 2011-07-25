@@ -27,7 +27,12 @@
 		property:maxPoolSize="${jdbc.maxPoolSize}"
 		property:maxStatements="${jdbc.maxStatements}"
 		property:checkoutTimeout="${jdbc.checkOutTimeout}"
-		property:numHelperThreads="${jdbc.numHelperThreads}" />
+		property:numHelperThreads="${jdbc.numHelperThreads}" 
+		property:breakAfterAcquireFailure="${jdbc.breakAfterAcquireFailure}"
+		property:debugUnreturnedConnectionStackTraces="${jdbc.debugUnreturnedConnectionStackTraces}"
+		property:testConnectionOnCheckin="${jdbc.testConnectionOnCheckin}"
+		property:testConnectionOnCheckout="${jdbc.testConnectionOnCheckout}"
+		property:unreturnedConnectionTimeout="${jdbc.unreturnedConnectionTimeout}" />
 		
 	<bean id="orcaleDataSourceBinder" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
 		property:staticMethod="ikube.toolkit.JndiInjector.bind">

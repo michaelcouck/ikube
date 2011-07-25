@@ -74,7 +74,7 @@
 		<entry key="openjpa.AutoDetach" value="commit" />
 		<entry key="openjpa.FlushBeforeQueries" value="true" />
 		<entry key="openjpa.RuntimeUnenhancedClasses" value="supported" />
-		<entry key="openjpa.jdbc.DBDictionary" value="h2(batchLimit=1000)" />
+		<entry key="openjpa.jdbc.DBDictionary" value="db2(batchLimit=1000)" />
 		
 		<!-- <entry key="openjpa.Connection2UserName" value="${ikube.jdbc.userid}" />
 		<entry key="openjpa.Connection2Password" value="${ikube.jdbc.password}" />

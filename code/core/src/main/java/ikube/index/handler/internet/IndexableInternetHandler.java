@@ -31,6 +31,7 @@ import java.io.Reader;
 import java.lang.Thread.State;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -92,42 +93,48 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 		// The start url
 		seedUrl(dataBase, indexable);
 
-		final List<Thread> threads = new ArrayList<Thread>();
-		String name = this.getClass().getSimpleName();
-		for (int i = 0; i < getThreads(); i++) {
-			Thread thread = new Thread(new Runnable() {
-				public void run() {
-					HttpClient httpClient = new HttpClient();
-					IContentProvider<IndexableInternet> contentProvider = new InternetContentProvider();
-					localUrlIdParameters.set(new HashMap<String, Object>());
-					IndexableInternet indexableInternet = (IndexableInternet) SerializationUtilities.clone(indexable);
-					indexableInternet.setParent(indexContext);
-					while (true) {
-						List<Url> urls = getUrlBatch(dataBase, indexableInternet);
-						if (urls.isEmpty()) {
-							// Check if there are any other threads still working
-							// other than this thread of course
-							if (isCrawling(threads)) {
-								synchronized (this) {
-									try {
-										wait(1000);
-									} catch (Exception e) {
-										logger.error("Exception waiting for more resources to crawl : ", e);
+		try {
+			final List<Thread> threads = new ArrayList<Thread>();
+			for (int i = 0; i < getThreads(); i++) {
+				Thread thread = new Thread(new Runnable() {
+					public void run() {
+						HttpClient httpClient = new HttpClient();
+						IContentProvider<IndexableInternet> contentProvider = new InternetContentProvider();
+						localUrlIdParameters.set(new HashMap<String, Object>());
+						IndexableInternet indexableInternet = (IndexableInternet) SerializationUtilities.clone(indexable);
+						indexableInternet.setParent(indexContext);
+						while (true) {
+							List<Url> urls = getUrlBatch(dataBase, indexableInternet);
+							if (urls.isEmpty()) {
+								// Check if there are any other threads still working
+								// other than this thread of course
+								if (isCrawling(threads)) {
+									synchronized (this) {
+										try {
+											wait(1000);
+										} catch (Exception e) {
+											logger.error("Exception waiting for more resources to crawl : ", e);
+										}
 									}
+								} else {
+									cache.removeAll();
+									break;
 								}
-							} else {
-								cache.removeAll();
-								break;
 							}
+							doUrls(dataBase, indexContext, indexable, urls, contentProvider, httpClient);
 						}
-						doUrls(dataBase, indexContext, indexable, urls, contentProvider, httpClient);
 					}
-				}
-			}, name + "." + i);
-			thread.start();
-			threads.add(thread);
+				}, this.getClass().getSimpleName() + "." + i);
+				threads.add(thread);
+			}
+			for (Thread thread : threads) {
+				thread.start();
+			}
+			return threads;
+		} catch (Exception e) {
+			logger.error("Exception starting the internet handler threads : ", e);
 		}
-		return threads;
+		return Arrays.asList();
 	}
 
 	/**

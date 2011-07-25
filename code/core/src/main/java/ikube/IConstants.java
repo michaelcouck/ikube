@@ -32,7 +32,7 @@ public interface IConstants {
 	String PERSISTENCE_UNIT_DB2 = "IkubePersistenceUnitDb2";
 	String PERSISTENCE_UNIT_ORACLE = "IkubePersistenceUnitOracle";
 	String PERSISTENCE_UNIT_OBJECT_DB = "IkubePersistenceUnitObjectDb";
-	
+
 	String DATA_SOURCE_H2 = "nonXaDataSourceH2";
 
 	/** The default logging properties. */
@@ -57,7 +57,7 @@ public interface IConstants {
 	int MAX_FRAGMENTS = 3;
 	String FRAGMENT_SEPERATOR = "...";
 	int BATCH_SIZE = 10;
-	int RESET_DELETE_BATCH_SIZE = 100; 
+	int RESET_DELETE_BATCH_SIZE = 100;
 
 	String ID = "id";
 	String INDEX = "index";
@@ -158,7 +158,9 @@ public interface IConstants {
 	String CLASSPATH_PROPERTY = "java.class.path";
 
 	String STRIP_CHARACTERS = "[]{},";
-	
+
 	long MAX_ACTIONS = 100000;
+	String DELAY = "delay";
+	String SPRING_PROPERTIES = "spring.properties";
 
 }

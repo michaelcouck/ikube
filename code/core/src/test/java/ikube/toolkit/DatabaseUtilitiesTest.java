@@ -1,76 +1,66 @@
 package ikube.toolkit;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import ikube.ATest;
 import ikube.model.Url;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
+import javax.sql.DataSource;
+
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 /**
  * @author Michael Couck
  * @since 12.10.2010
  * @version 01.00
  */
-public class DatabaseUtilitiesTest {
+public class DatabaseUtilitiesTest extends ATest {
 
 	private ResultSet resultSet;
 	private Statement statement;
 	private Connection connection;
+	private DataSource dataSource;
 
-	private boolean resultSetOpen = Boolean.TRUE;
-	private boolean statementOpen = Boolean.TRUE;
-	private boolean connectionOpen = Boolean.TRUE;
+	public DatabaseUtilitiesTest() {
+		super(DatabaseUtilitiesTest.class);
+	}
 
 	@Before
 	public void before() throws Exception {
 		resultSet = mock(ResultSet.class);
 		statement = mock(Statement.class);
 		connection = mock(Connection.class);
+		dataSource = mock(DataSource.class);
 
 		when(resultSet.getStatement()).thenReturn(statement);
 		when(statement.getConnection()).thenReturn(connection);
-		doAnswer(new Answer<Object>() {
-			@Override
-			public Object answer(InvocationOnMock invocation) throws Throwable {
-				resultSetOpen = Boolean.FALSE;
-				return null;
-			}
-
-		}).when(resultSet).close();
-		doAnswer(new Answer<Object>() {
-			@Override
-			public Object answer(InvocationOnMock invocation) throws Throwable {
-				statementOpen = Boolean.FALSE;
-				return null;
-			}
-
-		}).when(statement).close();
-		doAnswer(new Answer<Object>() {
-			@Override
-			public Object answer(InvocationOnMock invocation) throws Throwable {
-				connectionOpen = Boolean.FALSE;
-				return null;
-			}
-
-		}).when(connection).close();
+		when(connection.createStatement()).thenReturn(statement);
+		when(dataSource.getConnection()).thenReturn(connection);
 	}
 
 	@Test
-	public void closeAll() {
+	public void executeStatement() throws Exception {
+		DatabaseUtilities.executeStatement(dataSource, "select * from action");
+		verify(statement, atLeastOnce()).execute(anyString());
+		verify(statement, atLeastOnce()).close();
+		verify(connection, atLeastOnce()).close();
+	}
+
+	@Test
+	public void closeAll() throws Exception {
 		DatabaseUtilities.closeAll(resultSet);
-		assertFalse(resultSetOpen);
-		assertFalse(statementOpen);
-		assertFalse(connectionOpen);
+		verify(resultSet, atLeastOnce()).close();
+		verify(statement, atLeastOnce()).close();
+		verify(connection, atLeastOnce()).close();
 	}
 
 	@Test

@@ -15,6 +15,7 @@ import ikube.model.IndexableColumn;
 import ikube.model.IndexableTable;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.DatabaseUtilities;
+import ikube.toolkit.FileUtilities;
 import ikube.toolkit.Logging;
 import ikube.toolkit.SerializationUtilities;
 
@@ -27,7 +28,10 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+
+import javax.sql.DataSource;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Index;
@@ -80,27 +84,59 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	 */
 	@Override
 	public List<Thread> handle(final IndexContext<?> indexContext, final IndexableTable indexable) throws Exception {
-		String name = this.getClass().getSimpleName();
 		// We start as many threads to access this table as defined. We return
 		// the threads to the caller that they can then wait for the threads to finish
-		List<Thread> threads = new ArrayList<Thread>();
-		for (int i = 0; i < getThreads(); i++) {
-			// Because the transient state data is stored in the indexable during indexing we have
-			// to clone the indexable for each thread
-			final IndexableTable cloneIndexableTable = (IndexableTable) SerializationUtilities.clone(indexable);
-			// One connection per thread, the connection will be closed by the thread when finished
-			final Connection connection = indexable.getDataSource().getConnection();
-			connection.setAutoCommit(Boolean.FALSE);
-			Thread thread = new Thread(new Runnable() {
-				public void run() {
-					IContentProvider<IndexableColumn> contentProvider = new ColumnContentProvider();
-					handleTable(contentProvider, indexContext, cloneIndexableTable, connection, null, 0);
-				}
-			}, name + "." + i);
-			threads.add(thread);
-			thread.start();
+		DataSource dataSource = indexable.getDataSource();
+		logger.debug("Data source : " + dataSource);
+		List<Connection> connections = new ArrayList<Connection>();
+		try {
+			List<Thread> threads = new ArrayList<Thread>();
+			for (int i = 0; i < getThreads(); i++) {
+				logger.debug("Looking for connection : ");
+				// One connection per thread, the connection will be closed by the thread when finished
+				final Connection connection = dataSource.getConnection();
+				connections.add(connection);
+				logger.debug("Got for connection : " + connection);
+				// Because the transient state data is stored in the indexable during indexing we have
+				// to clone the indexable for each thread
+				final IndexableTable cloneIndexableTable = (IndexableTable) SerializationUtilities.clone(indexable);
+				Thread thread = new Thread(new Runnable() {
+					public void run() {
+						boolean autoCommit = Boolean.TRUE;
+						try {
+							autoCommit = connection.getAutoCommit();
+							connection.setAutoCommit(Boolean.FALSE);
+						} catch (Exception e) {
+							logger.error("Exception setting the auto commit : ", e);
+						}
+						IContentProvider<IndexableColumn> contentProvider = new ColumnContentProvider();
+						handleTable(contentProvider, indexContext, cloneIndexableTable, connection, null, 0);
+						logger.debug("Closing connection : " + connection);
+						DatabaseUtilities.commit(connection);
+						try {
+							connection.setAutoCommit(autoCommit);
+						} catch (Exception e) {
+							logger.error("Exception setting the auto commit : ", e);
+						}
+						DatabaseUtilities.close(connection);
+					}
+				}, this.getClass().getSimpleName() + "." + i);
+				threads.add(thread);
+			}
+			for (Thread thread : threads) {
+				logger.debug("Starting thread : " + thread);
+				thread.start();
+			}
+			return threads;
+		} catch (Exception e) {
+			logger.error("Exception starting the table handler threads : ", e);
+			// Try to close the connection
+			for (Connection connection : connections) {
+				logger.debug("Closing connection : " + connection);
+				DatabaseUtilities.close(connection);
+			}
 		}
-		return threads;
+		return Arrays.asList();
 	}
 
 	/**
@@ -222,8 +258,9 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 		// then we can close the connection too. Each thread gets
 		// it's own connection so we don't overlap threads/connections
 		if (indexableTable.isPrimaryTable()) {
-			DatabaseUtilities.commit(connection);
-			DatabaseUtilities.close(connection);
+			// DatabaseUtilities.commit(connection);
+			// logger.info("Closing connection : " + connection);
+			// DatabaseUtilities.close(connection);
 		}
 	}
 
@@ -257,7 +294,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 			// in which case we will have no records, so we need to execute where id > 1 234 567 and < 1 234 567 + batchSize
 			if (indexableTable.isPrimaryTable()) {
 				// Commit the connection to release the cursors
-				DatabaseUtilities.commit(connection);
+				// DatabaseUtilities.commit(connection);
 				long minimumId = indexableTable.getMinimumId();
 				if (minimumId < 0) {
 					minimumId = getIdFunction(indexableTable, connection, "min");
@@ -481,7 +518,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 		} finally {
 			DatabaseUtilities.close(resultSet);
 			DatabaseUtilities.close(statement);
-			DatabaseUtilities.commit(connection);
+			// DatabaseUtilities.commit(connection);
 			notifyAll();
 		}
 	}
@@ -555,32 +592,12 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 		} catch (Exception e) {
 			logger.error("Exception accessing the column content : " + byteOutputStream, e);
 		} finally {
-			close(inputStream);
+			FileUtilities.close(inputStream);
 			inputStream = null;
-			close(parsedOutputStream);
+			FileUtilities.close(parsedOutputStream);
 			parsedOutputStream = null;
-			close(byteOutputStream);
+			FileUtilities.close(byteOutputStream);
 			byteOutputStream = null;
-		}
-	}
-
-	protected void close(final OutputStream outputStream) {
-		try {
-			if (outputStream != null) {
-				outputStream.close();
-			}
-		} catch (Exception e) {
-			logger.error("Exception closing the otuput stream with the data : " + outputStream, e);
-		}
-	}
-
-	protected void close(final InputStream inputStream) {
-		try {
-			if (inputStream != null) {
-				inputStream.close();
-			}
-		} catch (Exception e) {
-			logger.error("Exception closing the input stream from the table : " + inputStream, e);
 		}
 	}
 

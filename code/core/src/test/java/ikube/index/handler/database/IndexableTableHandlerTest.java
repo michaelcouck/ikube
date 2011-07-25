@@ -73,6 +73,7 @@ public class IndexableTableHandlerTest extends BaseTest {
 		Server server = clusterManager.getServer();
 		server.setAction(null);
 		clusterManager.set(Server.class.getName(), server.getId(), server);
+		DatabaseUtilities.close(connection);
 	}
 
 	@Test

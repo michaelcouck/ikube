@@ -33,6 +33,8 @@ public class Action extends Persistable {
 	private long idNumber;
 	/** The name of the action that is executing. */
 	private String actionName;
+	/** The name of the server that executes this action. */
+	private String serverName;
 	/** The currently executing indexable. */
 	private String indexableName;
 	/** The actionName of the currently executing index. */
@@ -85,6 +87,14 @@ public class Action extends Persistable {
 
 	public void setActionName(String actionName) {
 		this.actionName = actionName;
+	}
+
+	public String getServerName() {
+		return serverName;
+	}
+
+	public void setServerName(String serverName) {
+		this.serverName = serverName;
 	}
 
 	public String getIndexableName() {

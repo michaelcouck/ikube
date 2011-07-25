@@ -21,6 +21,7 @@
 	</parent>
 
 	<properties>
+		<!-- 6.1.11, 7.4.4.v20110707 -->
 		<jetty.version>6.1.11</jetty.version>
 	</properties>
 
@@ -39,10 +40,10 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.7.1</version>
-				<configuration>
+				<!-- <configuration>
 					<skip>true</skip>
-				</configuration>
-				<executions>
+				</configuration> -->
+				<!-- <executions>
 					<execution>
 						<id>surefire</id>
 						<phase>install</phase>
@@ -54,48 +55,29 @@
 							<forkMode>once</forkMode>
 						</configuration>
 					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-antrun-plugin</artifactId>
-				<version>1.6</version>
-				<executions>
-					<execution>
-						<id>install</id>
-						<phase>install</phase>
-						<configuration>
-							<tasks>
-								<ant antfile="build.xml" target="all" inheritrefs="true"/> 
-							</tasks>
-						</configuration>
-						<goals>
-							<goal>run</goal>
-						</goals>
-					</execution>
-				</executions>
+				</executions> -->
 			</plugin>
 			<plugin>
 				<artifactId>maven-failsafe-plugin</artifactId>
 				<version>2.6</version>
 				<configuration>
-					<argLine>-Xms512m -Xmx1500m</argLine>
+					<argLine>-Xms512m -Xmx2048m</argLine>
 					<forkMode>once</forkMode>
 					<includes>
 						<include>**/*Integration*.java</include>
 					</includes>
-					<excludes>
+					<!-- <excludes>
 						<exclude>**/*Test*.java</exclude>
 						<exclude>**/*Strategy*.java</exclude>
-					</excludes>
+					</excludes> -->
 				</configuration>
 				<executions>
 					<execution>
 						<id>failsafe</id>
-						<phase>compile</phase>
+						<!-- <phase>test</phase> -->
 						<goals>
 							<goal>integration-test</goal>
-							<goal>verify</goal>
+							<!-- <goal>verify</goal> -->
 						</goals>
 					</execution>
 				</executions>
@@ -103,8 +85,10 @@
 			<plugin>
 				<groupId>org.mortbay.jetty</groupId>
 				<artifactId>maven-jetty-plugin</artifactId>
-				<version>${jetty.version}</version>
+				<!-- <version>7.4.4.v20110707</version> -->
 				<configuration>
+					<stopKey>stop</stopKey>
+					<stopPort>9090</stopPort>
 					<scanIntervalSeconds>10000</scanIntervalSeconds>
 					<contextPath>/ikube</contextPath>
 					<scanTargets>
@@ -118,6 +102,25 @@
 						</connector>
 					</connectors>
 				</configuration>
+				<executions>
+					<execution>
+						<id>start-jetty</id>
+						<phase>pre-integration-test</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<daemon>true</daemon>
+						</configuration>
+					</execution>
+					<execution>
+						<id>stop-jetty</id>
+						<phase>post-integration-test</phase>
+						<goals>
+							<goal>stop</goal>
+						</goals>
+					</execution>
+				</executions>
 				<dependencies>
 					<dependency>
 						<!-- 
@@ -138,6 +141,25 @@
 						<type>jar</type>
 					</dependency>
 				</dependencies>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.6</version>
+				<executions>
+					<execution>
+						<id>install</id>
+						<phase>install</phase>
+						<configuration>
+							<tasks>
+								<ant antfile="build.xml" target="all" inheritrefs="true" /> 
+							</tasks>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
@@ -220,6 +242,13 @@
 
 		<dependency>
 			<groupId>tomcat</groupId>
+			<artifactId>jasper-runtime</artifactId>
+			<version>5.5.23</version>
+			<type>jar</type>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>tomcat</groupId>
 			<artifactId>jasper-compiler</artifactId>
 			<version>5.5.23</version>
 			<type>jar</type>
@@ -231,13 +260,6 @@
 			<version>1.6.0_20</version>
 			<scope>system</scope>
 			<systemPath>${java.home}/../lib/tools.jar</systemPath>
-		</dependency>
-		<dependency>
-			<groupId>tomcat</groupId>
-			<artifactId>jasper-runtime</artifactId>
-			<version>5.5.23</version>
-			<type>jar</type>
-			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>ant</groupId>

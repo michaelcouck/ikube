@@ -14,10 +14,8 @@ import java.util.Map;
 
 /**
  * This class executes the handlers on the indexables, effectively creating the index. Each indexable has a handler that is implemented to
- * handle it. Each handler is configured with an annotation that specifies the type of indexable that it can handle. This class then
- * iterates over all the indexables in the context for the index, finds the correct handler and calls the
- * {@link IUrlHandler#handle(IndexContext, Indexable)} method with the indexable. The return value from this method from the handlers is a
- * list of threads. The caller must then wait for all the threads to finish and die before continuing.
+ * handle it. Each handler will return a list of threads that will do the indexing. The caller(in this case, this class) must then wait for
+ * the threads to finish.
  * 
  * @author Michael Couck
  * @since 21.11.10
@@ -36,11 +34,9 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 		String actionName = this.getClass().getSimpleName();
 		try {
 			if (indexables != null && indexables.size() > 0) {
-				long lastWorkingStartTime = getClusterManager().setWorking(actionName, indexContext.getIndexName(),
-						indexables.get(0).getName(), Boolean.TRUE);
+				long lastWorkingStartTime = getClusterManager().setWorking(actionName, indexName, "", Boolean.TRUE);
 				if (lastWorkingStartTime <= 0) {
 					logger.warn("Failed to join the cluster indexing : " + indexContext);
-					getClusterManager().setWorking(actionName, indexContext.getIndexName(), indexables.get(0).getName(), Boolean.FALSE);
 					return Boolean.FALSE;
 				}
 				// If we get here then there are two possibilities:
@@ -63,7 +59,7 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 							// after each indexable has been indexed of course
 							server.getAction().setIdNumber(0);
 						}
-						getClusterManager().setWorking(actionName, indexContext.getIndexName(), indexable.getName(), Boolean.TRUE);
+						getClusterManager().setWorking(actionName, indexName, indexable.getName(), Boolean.TRUE);
 						logger.info("Executing handler : " + handler + ", " + indexable.getName());
 						// Execute the handler and wait for the threads to finish
 						List<Thread> threads = handler.handle(indexContext, indexable);
@@ -72,19 +68,17 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 							ThreadUtilities.waitForThreads(threads);
 						}
 					} catch (Exception e) {
-						logger.error("Exception indexing data : " + indexContext.getIndexName(), e);
-					} finally {
-						// getClusterManager().setWorking(actionName, indexContext.getIndexName(), indexable.getName(), Boolean.FALSE);
+						logger.error("Exception indexing data : " + indexName, e);
 					}
 				}
+				return Boolean.TRUE;
 			}
 		} finally {
+			logger.debug(Logging.getString("Finished indexing : ", indexName));
 			IndexManager.closeIndexWriter(indexContext);
-			getClusterManager().setWorking(indexContext.getIndexName(), actionName, "", Boolean.FALSE);
+			getClusterManager().setWorking(indexName, actionName, "", Boolean.FALSE);
 		}
-		String contextName = indexContext.getIndexName();
-		logger.debug(Logging.getString("Finished indexing : ", indexName, contextName));
-		return Boolean.TRUE;
+		return Boolean.FALSE;
 	}
 
 	/**

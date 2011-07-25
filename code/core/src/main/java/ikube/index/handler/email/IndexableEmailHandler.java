@@ -12,6 +12,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
@@ -55,7 +56,7 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 	public List<Thread> handle(final IndexContext<?> indexContext, final IndexableEmail indexable) throws Exception {
 		// First check to see if this indexable is handled by another server
 		handleEmail(indexContext, indexable);
-		return null;
+		return Arrays.asList();
 	}
 
 	/**

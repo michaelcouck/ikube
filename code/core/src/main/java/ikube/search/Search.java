@@ -166,24 +166,24 @@ public abstract class Search {
 		if (searcher == null) {
 			logger.warn("No searcher on any index, is an index created?");
 		}
-		long duration = 0;
 		long totalHits = 0;
+		long start = System.currentTimeMillis();
 		List<Map<String, String>> results = null;
 		try {
 			Query query = getQuery();
-			long start = System.currentTimeMillis();
 			TopDocs topDocs = search(query);
-			duration = System.currentTimeMillis() - start;
 			totalHits = topDocs.totalHits;
 			// TODO If there are no results here then do a search for the
 			// corrected spelling to see if there are any results from that
 			results = getResults(topDocs, query);
 		} catch (Exception e) {
-			logger.error("Exception searching for string " + searchStrings[0] + " in searcher " + searcher, e);
+			String searchString = searchStrings != null && searchStrings.length > 0 ? searchStrings[0] : "null";
+			logger.error("Exception searching for string " + searchString + " in searcher " + searcher, e);
 			if (results == null) {
 				results = new ArrayList<Map<String, String>>();
 			}
 		}
+		long duration = System.currentTimeMillis() - start;
 		// Add the search results size as a last result
 		addStatistics(results, totalHits, duration);
 		return results;

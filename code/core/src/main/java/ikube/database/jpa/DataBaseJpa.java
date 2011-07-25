@@ -28,13 +28,13 @@ public class DataBaseJpa implements IDataBase {
 	/** The logger for the bean. */
 	protected static final Logger LOGGER = Logger.getLogger(DataBaseJpa.class);
 
-	@PersistenceContext(type = PersistenceContextType.TRANSACTION, unitName = IConstants.PERSISTENCE_UNIT_H2)
+	@PersistenceContext(type = PersistenceContextType.TRANSACTION, unitName = IConstants.PERSISTENCE_UNIT_DB2)
 	protected EntityManager entityManager;
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public <T> T remove(Class<T> klass, Long id) {
+	public <T> T remove(final Class<T> klass, Long id) {
 		T toBeRemoved = find(klass, id);
 		if (toBeRemoved != null) {
 			entityManager.remove(toBeRemoved);
@@ -46,7 +46,7 @@ public class DataBaseJpa implements IDataBase {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public <T> void removeBatch(List<T> batch) {
+	public <T> void removeBatch(final List<T> batch) {
 		for (T t : batch) {
 			t = entityManager.merge(t);
 			entityManager.remove(t);
@@ -59,17 +59,18 @@ public class DataBaseJpa implements IDataBase {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public <T> T remove(T object) {
-		object = entityManager.merge(object);
-		entityManager.remove(object);
-		return object;
+	@SuppressWarnings("unchecked")
+	public <T> T remove(final T object) {
+		Object result = entityManager.merge(object);
+		entityManager.remove(result);
+		return (T) result;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public int remove(String sql) {
+	public int remove(final String sql) {
 		return entityManager.createNamedQuery(sql).executeUpdate();
 	}
 
@@ -77,7 +78,7 @@ public class DataBaseJpa implements IDataBase {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public <T> T persist(T object) {
+	public <T> T persist(final T object) {
 		if (object != null) {
 			entityManager.persist(object);
 		}
@@ -88,7 +89,7 @@ public class DataBaseJpa implements IDataBase {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public <T> void persistBatch(List<T> list) {
+	public <T> void persistBatch(final List<T> list) {
 		for (T t : list) {
 			entityManager.persist(t);
 		}
@@ -97,18 +98,21 @@ public class DataBaseJpa implements IDataBase {
 	/**
 	 * {@inheritDoc}
 	 */
-	public <T> T merge(T object) {
+	@Override
+	@SuppressWarnings("unchecked")
+	public <T> T merge(final T object) {
+		Object result = null;
 		if (object != null) {
-			object = entityManager.merge(object);
+			result = entityManager.merge(object);
 		}
-		return object;
+		return (T) result;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public <T> void mergeBatch(List<T> batch) {
+	public <T> void mergeBatch(final List<T> batch) {
 		for (T t : batch) {
 			t = entityManager.merge(t);
 		}
@@ -117,7 +121,7 @@ public class DataBaseJpa implements IDataBase {
 	/**
 	 * {@inheritDoc}
 	 */
-	public <T> T find(Class<T> klass, Long id) {
+	public <T> T find(final Class<T> klass, final Long id) {
 		return entityManager.find(klass, id);
 	}
 
@@ -125,7 +129,7 @@ public class DataBaseJpa implements IDataBase {
 	 * {@inheritDoc}
 	 */
 	@SuppressWarnings("unchecked")
-	public <T> List<T> find(Class<T> klass, int firstResult, int maxResults) {
+	public <T> List<T> find(final Class<T> klass, final int firstResult, final int maxResults) {
 		String name = klass.getSimpleName();
 		StringBuilder builder = new StringBuilder("select ");
 		builder.append(name);
@@ -144,7 +148,7 @@ public class DataBaseJpa implements IDataBase {
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T> T find(Long objectId) {
+	public <T> T find(final Long objectId) {
 		try {
 			Set<EntityType<?>> entityTypes = entityManager.getMetamodel().getEntities();
 			for (EntityType<?> entityType : entityTypes) {
@@ -164,7 +168,7 @@ public class DataBaseJpa implements IDataBase {
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T> T find(Class<T> klass, String sql, Map<String, Object> parameters) {
+	public <T> T find(final Class<T> klass, final String sql, final Map<String, Object> parameters) {
 		Query query = entityManager.createNamedQuery(sql, klass);
 		setParameters(query, parameters);
 		return (T) query.getSingleResult();
@@ -175,7 +179,8 @@ public class DataBaseJpa implements IDataBase {
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T> List<T> find(Class<T> klass, String sql, Map<String, Object> parameters, int startPosition, int maxResults) {
+	public <T> List<T> find(final Class<T> klass, final String sql, final Map<String, Object> parameters, final int startPosition,
+			final int maxResults) {
 		Query query = entityManager.createNamedQuery(sql, klass);
 		query.setFirstResult(startPosition);
 		query.setMaxResults(maxResults);
@@ -188,7 +193,7 @@ public class DataBaseJpa implements IDataBase {
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T> T execute(Class<T> klass, String sql) {
+	public <T> T execute(final Class<T> klass, final String sql) {
 		return (T) entityManager.createNamedQuery(sql).getSingleResult();
 	}
 
@@ -200,7 +205,7 @@ public class DataBaseJpa implements IDataBase {
 	 * @param parameters
 	 *            and the parameter map, key value pairs
 	 */
-	private void setParameters(Query query, Map<String, Object> parameters) {
+	private void setParameters(final Query query, final Map<String, Object> parameters) {
 		for (String parameter : parameters.keySet()) {
 			query.setParameter(parameter, parameters.get(parameter));
 		}

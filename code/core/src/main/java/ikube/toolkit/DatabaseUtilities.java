@@ -27,16 +27,26 @@ public final class DatabaseUtilities {
 	private DatabaseUtilities() {
 	}
 
+	/**
+	 * Executes an arbitrary sql statement against the database.
+	 * 
+	 * @param dataSource
+	 *            the data source to get the connection from
+	 * @param sql
+	 *            the sql to execute
+	 */
 	public static void executeStatement(DataSource dataSource, String sql) {
-		// String sql = "create sequence if not exists persistable";
 		LOGGER.info("Executing statement : " + sql + ", on data source : " + dataSource);
 		Connection connection = null;
 		Statement statement = null;
 		try {
 			connection = dataSource.getConnection();
 			statement = connection.createStatement();
-			int result = statement.executeUpdate(sql);
+			boolean result = statement.execute(sql);
 			LOGGER.info("Result from statement : " + result);
+			if (result) {
+				LOGGER.info("Result is a result set : " + statement.getResultSet());
+			}
 		} catch (Exception e) {
 			LOGGER.error("Exception executing statement : " + sql + ", on data source : " + dataSource, e);
 		} finally {
@@ -82,6 +92,7 @@ public final class DatabaseUtilities {
 		}
 		try {
 			statement.close();
+			// LOGGER.info("Statement already closed : " + statement);
 		} catch (Exception e) {
 			LOGGER.error("Exception closing the statement : ", e);
 		}
@@ -99,24 +110,12 @@ public final class DatabaseUtilities {
 		}
 		try {
 			connection.close();
+			// if (!connection.isClosed()) {
+			// } else {
+			// LOGGER.info("Connection already closed : " + connection);
+			// }
 		} catch (Exception e) {
 			LOGGER.error("Exception closing the connection : ", e);
-		}
-	}
-
-	public static void commit(Connection connection) {
-		if (connection == null) {
-			LOGGER.warn("Connection null : ");
-			return;
-		}
-		try {
-			if (connection.getAutoCommit()) {
-				LOGGER.warn("Can't commit the connection as it is not user comitted : " + connection);
-				return;
-			}
-			connection.commit();
-		} catch (Exception e) {
-			LOGGER.error("Exception comitting the connection : " + connection, e);
 		}
 	}
 
@@ -132,10 +131,39 @@ public final class DatabaseUtilities {
 		}
 		try {
 			resultSet.close();
+			// if (!resultSet.isClosed()) {
+			// } else {
+			// LOGGER.info("Result set already closed : " + resultSet);
+			// }
 		} catch (Exception e) {
 			LOGGER.error("Exception closing the result set : ", e);
 		}
+	}
 
+	/**
+	 * Commits the connection, only if the auto commit has been set to false, i.e. the user will manually commit the connection.
+	 * 
+	 * @param connection
+	 *            the connection to commit
+	 */
+	public static void commit(Connection connection) {
+		if (connection == null) {
+			LOGGER.warn("Connection null : ");
+			return;
+		}
+		try {
+			if (!connection.getAutoCommit()) {
+				if (!connection.isClosed()) {
+					connection.commit();
+				} else {
+					LOGGER.info("Connection already closed : " + connection);
+				}
+			} else {
+				LOGGER.warn("Can't commit the connection as it is not user comitted : " + connection);
+			}
+		} catch (Exception e) {
+			LOGGER.error("Exception comitting the connection : " + connection, e);
+		}
 	}
 
 	/**
@@ -167,6 +195,15 @@ public final class DatabaseUtilities {
 		}
 	}
 
+	/**
+	 * Gets the id field in an object. The id field is defined by the {@link Id} annotation.
+	 * 
+	 * @param klass
+	 *            the class of the object
+	 * @param superKlass
+	 *            the super class of the object
+	 * @return the id field for the object or null if there is no field designated as the id
+	 */
 	public static Field getIdField(final Class<?> klass, final Class<?> superKlass) {
 		Field idField = ID_FIELDS.get(klass);
 		if (idField != null) {
@@ -189,6 +226,15 @@ public final class DatabaseUtilities {
 		return null;
 	}
 
+	/**
+	 * Gets the value of the id foeld of an object.
+	 * 
+	 * @param <T>
+	 *            the type of object
+	 * @param object
+	 *            the object to find the id field value in
+	 * @return the id field value for the object or null if there is no id field or if the id field is null
+	 */
 	public static <T> Object getIdFieldValue(final T object) {
 		if (object == null) {
 			return null;
@@ -208,6 +254,13 @@ public final class DatabaseUtilities {
 		return null;
 	}
 
+	/**
+	 * Gets the name of the id field in the object.
+	 * 
+	 * @param klass
+	 *            the class of the object
+	 * @return the name of the id field or null if there is no id field defined
+	 */
 	public static String getIdFieldName(final Class<?> klass) {
 		Field field = getIdField(klass, null);
 		return field != null ? field.getName() : null;
