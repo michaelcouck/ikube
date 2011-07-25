@@ -38,7 +38,8 @@ public class Clean<E, F> extends Action<IndexContext<?>, Boolean> {
 			for (File timeIndexDirectory : timeIndexDirectories) {
 				File[] serverIndexDirectories = timeIndexDirectory.listFiles();
 				if (serverIndexDirectories == null || serverIndexDirectories.length == 0) {
-					return Boolean.FALSE;
+					// return Boolean.FALSE;
+					continue;
 				}
 				for (File serverIndexDirectory : serverIndexDirectories) {
 					Directory directory = null;

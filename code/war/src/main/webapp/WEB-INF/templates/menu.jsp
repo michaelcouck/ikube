@@ -19,6 +19,7 @@
 					<input type="submit" id="search-submit" value="Go" />
 				</fieldset>
 			</form>
+			<!-- TODO This can be removed and replaced with the spelling corrections in the results if there are any. -->
 			<search:spellingTag fieldParameterNames="content">
 				Did you mean : 
 				<a href="<c:url value="/results.html"/>?indexName=ikube&fragment=true&content=<search:spellingWriterTag />">

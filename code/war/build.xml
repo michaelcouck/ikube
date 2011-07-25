@@ -60,8 +60,8 @@
 			<jvmarg value="-Dcatalina.home=${jenkins.home}" />
 			<jvmarg value="-Xms512m" />
 			<jvmarg value="-Xmx2048m" />
-			<jvmarg value="-XX:PermSize=64m" />
-			<jvmarg value="-XX:MaxPermSize=128m" />
+			<jvmarg value="-XX:PermSize=128m" />
+			<jvmarg value="-XX:MaxPermSize=256m" />
 			<arg line="start" />
 		</java>
 	</target>

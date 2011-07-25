@@ -1,13 +1,22 @@
 package ikube.index.handler.filesystem;
 
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyList;
+import static org.mockito.Matchers.anyMap;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import ikube.ATest;
 import ikube.database.IDataBase;
+import ikube.index.IndexManager;
 import ikube.index.handler.IDocumentDelegate;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.mock.ClusterManagerMock;
+import ikube.model.IndexContext;
+import ikube.model.Indexable;
 import ikube.model.IndexableFileSystem;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.ThreadUtilities;
@@ -21,12 +30,15 @@ import java.util.regex.Pattern;
 import mockit.Deencapsulation;
 import mockit.Mockit;
 
+import org.apache.lucene.document.Document;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 /**
- * TODO verify all the test methods!
+ * Tests the general functionality of the file system handler. There are no specific checks on the data that is indexed as the sub
+ * components are tested seperately and the integration tests verify that the data is collected.
  * 
  * @author Michael Couck
  * @since 21.11.10
@@ -54,6 +66,7 @@ public class IndexableFileSystemHandlerTest extends ATest {
 
 		indexableFileSystemHandler = new IndexableFilesystemHandler();
 		indexableFileSystemHandler.setDocumentDelegate(documentDelegate);
+		indexableFileSystemHandler.setThreads(1);
 
 		powerPointFile = FileUtilities.findFileRecursively(new File("."), "pot.pot");
 		when(indexableFileSystem.getPath()).thenReturn(powerPointFile.getParentFile().getAbsolutePath());
@@ -66,6 +79,7 @@ public class IndexableFileSystemHandlerTest extends ATest {
 		when(indexableFileSystem.getMaxReadLength()).thenReturn(Long.MAX_VALUE);
 		when(indexableFileSystem.getNameFieldName()).thenReturn("nameFieldName");
 		when(indexableFileSystem.getPathFieldName()).thenReturn("pathFieldName");
+		ApplicationContextManagerMock.DATABASE = dataBase;
 	}
 
 	@After
@@ -74,57 +88,63 @@ public class IndexableFileSystemHandlerTest extends ATest {
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	public void handle() throws Exception {
 		List<Thread> threads = indexableFileSystemHandler.handle(INDEX_CONTEXT, indexableFileSystem);
 		ThreadUtilities.waitForThreads(threads);
-		// TODO Verify that there are some files indexed
+		// Verify that the database is called to find
+		verify(dataBase, Mockito.atLeastOnce()).find(any(Class.class), anyString(), anyMap(), anyInt(), anyInt());
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	public void getBatch() {
-		// IDataBase, IndexableFileSystem
-		// TODO Implement me
-		// indexableFileSystemHandler.getBatch(dataBase, indexableFileSystem);
 		Object result = Deencapsulation.invoke(indexableFileSystemHandler, "getBatch", dataBase, indexableFileSystem);
 		logger.warn("Result : " + result);
+		// Verify that the database is called to merge
+		verify(dataBase, Mockito.atLeastOnce()).mergeBatch(anyList());
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	public void iterateFileSystem() {
-		// IDataBase, IndexContext<?>, IndexableFileSystem, File, Pattern, Set<File>
-		// TODO Implement me
 		indexableFileSystemHandler.iterateFileSystem(dataBase, INDEX_CONTEXT, indexableFileSystem, new File("."), Pattern.compile(""),
 				new TreeSet<File>());
+		// Verify that the database was called to persist
+		verify(dataBase, Mockito.atLeastOnce()).persistBatch(anyList());
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	public void persistFilesBatch() {
-		// IDataBase, IndexableFileSystem, Set<File>
-		// TODO Implement me
 		Set<File> batchedFiles = new TreeSet<File>();
 		batchedFiles.add(new File("."));
 		indexableFileSystemHandler.persistFilesBatch(dataBase, indexableFileSystem, batchedFiles);
+		// Verify that the database was called to persist
+		verify(dataBase, Mockito.atLeastOnce()).persistBatch(anyList());
 	}
 
 	@Test
-	public void handleFile() {
-		// IndexContext<?>, IndexableFileSystem, File
-		// TODO Implement me
+	@SuppressWarnings("unchecked")
+	public void handleFile() throws Exception {
 		ikube.model.File file = new ikube.model.File();
 		file.setUrl(powerPointFile.getAbsolutePath());
 		indexableFileSystemHandler.handleFile(INDEX_CONTEXT, indexableFileSystem, file);
+		IndexManager.closeIndexWriter(INDEX_CONTEXT);
+		// Verify that the file is in the index
+		verify(documentDelegate, Mockito.atLeastOnce()).addDocument(any(IndexContext.class), any(Indexable.class), any(Document.class));
 	}
 
 	@Test
 	public void getPattern() {
-		// String
-		// TODO Implement me
-		indexableFileSystemHandler.getPattern("");
+		String excluded = "excluded";
+		Pattern pattern = indexableFileSystemHandler.getPattern(excluded);
+		boolean isExcluded = pattern.matcher(excluded).matches();
+		assertTrue("This pattern is excluded : ", isExcluded);
 	}
 
 	@Test
 	public void isExcluded() {
-		// File, Pattern
 		Pattern pattern = Pattern.compile("excluded");
 		File file = new File("./excluded");
 		boolean isExcluded = indexableFileSystemHandler.isExcluded(file, pattern);

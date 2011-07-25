@@ -114,7 +114,20 @@ public class RuleInterceptorTest extends ATest {
 		rules.add(areUnopenedIndexes);
 
 		Close close = mock(Close.class);
-		final String predicate = "IsMultiSearcherInitialised && AreSearchablesInitialised && !IsIndexCurrent && AreIndexesCreated && AreUnopenedIndexes";
+		StringBuilder builder = new StringBuilder();
+
+		boolean first = Boolean.TRUE;
+		for (@SuppressWarnings("rawtypes")
+		IRule rule : rules) {
+			if (!first) {
+				builder.append(" && ");
+			}
+			first = Boolean.FALSE;
+			builder.append(rule.getClass().getSimpleName());
+		}
+
+		// IsMultiSearcherInitialised && AreSearchablesInitialised && !IsIndexCurrent && AreIndexesCreated && AreUnopenedIndexes
+		final String predicate = builder.toString();
 		when(close.getRuleExpression()).thenReturn(predicate);
 		when(close.getRules()).thenReturn(rules);
 		when(close.execute(any(IndexContext.class))).thenReturn(Boolean.TRUE);
@@ -148,9 +161,9 @@ public class RuleInterceptorTest extends ATest {
 			when(areUnopenedIndexes.evaluate(INDEX_CONTEXT)).thenReturn(vector[4]);
 
 			Object result = ruleInterceptor.decide(joinPoint);
-			Object expected = vector[0] && vector[1] && !vector[2] && vector[3] && vector[4];
+			Object expected = vector[0] && vector[1] && vector[2] && vector[3] && vector[4];
 			String message = Logging.getString("Expected : ", expected, ", result : ", result, " booleans : ", Arrays.asList(vector));
-			logger.debug("Result : " + Arrays.asList(vector));
+			logger.debug("Result : " + message);
 			assertEquals(message, expected, result);
 		}
 	}

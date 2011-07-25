@@ -6,10 +6,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import ikube.ATest;
+import ikube.IConstants;
 import ikube.action.Index;
 import ikube.action.Open;
 import ikube.cluster.cache.Cache;
 import ikube.listener.ListenerManager;
+import ikube.mock.ApplicationContextManagerMock;
 import ikube.model.Action;
 import ikube.model.Server;
 import ikube.model.Url;
@@ -21,9 +23,15 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
+import mockit.Mock;
+import mockit.MockClass;
+import mockit.Mockit;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import com.hazelcast.core.Hazelcast;
 
 /**
  * @author Michael Couck
@@ -31,6 +39,17 @@ import org.junit.Test;
  * @version 01.00
  */
 public class ClusterManagerTest extends ATest {
+
+	@MockClass(realClass = System.class)
+	public static class SystemMock {
+		public static int status = -1;
+
+		@Mock()
+		public static void exit(int status) {
+			// We over ride the system exit!
+			SystemMock.status = status;
+		}
+	}
 
 	private transient Server remoteServer;
 
@@ -49,6 +68,8 @@ public class ClusterManagerTest extends ATest {
 
 	@Before
 	public void before() throws Exception {
+		Mockit.setUpMocks(SystemMock.class, ApplicationContextManagerMock.class);
+
 		indexName = INDEX_CONTEXT.getIndexName();
 		indexableName = INDEXABLE_COLUMN.getName();
 
@@ -69,6 +90,7 @@ public class ClusterManagerTest extends ATest {
 	public void after() {
 		clusterManager.clear(Url.class.getName());
 		clusterManager.clear(Server.class.getName());
+		Mockit.tearDownMocks();
 	}
 
 	@Test
@@ -293,6 +315,23 @@ public class ClusterManagerTest extends ATest {
 	public void getServer() {
 		Server server = clusterManager.getServer();
 		assertNotNull("The server can never be null : ", server);
+	}
+
+	@Test
+	public void shutDown() throws Exception {
+		ClusterManager.addShutdownHook();
+		Server server = new Server();
+		server.setAddress("address");
+		Hazelcast.getTopic(IConstants.SHUTDOWN_TOPIC).publish(server);
+		Thread.sleep(15000);
+		assertEquals("We expect the listener for shotdown to be invoked : ", 0, SystemMock.status);
+	}
+
+	@Test
+	public void exceptionListener() {
+		ClusterManager.addClusterExceptionListener();
+		Hazelcast.getTopic(IConstants.EXCEPTION_TOPIC).publish(Boolean.TRUE);
+		// We'll just execute this, we don't care what happens
 	}
 
 }

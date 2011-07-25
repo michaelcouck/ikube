@@ -1,7 +1,11 @@
 package ikube.action;
 
 import static org.junit.Assert.assertFalse;
+
 import static org.junit.Assert.assertTrue;
+
+import static org.mockito.Mockito.*;
+
 import ikube.ATest;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.mock.ClusterManagerMock;
@@ -15,6 +19,7 @@ import java.util.List;
 import mockit.Mockit;
 
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.Lock;
@@ -30,6 +35,7 @@ public class CleanTest extends ATest {
 
 	@Before
 	public void before() {
+		when(INDEX_CONTEXT.getIndexDirectoryPath()).thenReturn("./" + this.getClass().getSimpleName());
 		FileUtilities.deleteFile(new File(INDEX_CONTEXT.getIndexDirectoryPath()), 1);
 		Mockit.setUpMocks(ApplicationContextManagerMock.class, ClusterManagerMock.class);
 	}
@@ -81,13 +87,13 @@ public class CleanTest extends ATest {
 
 		directory = FSDirectory.open(serverIndexDirectory);
 		try {
+			assertTrue("This index exists, but is locked : ", IndexWriter.isLocked(directory));
 			assertTrue("This index exists, but is locked : ", IndexReader.indexExists(directory));
 		} finally {
 			directory.close();
 		}
-		lock.release();
-
 		clean.execute(INDEX_CONTEXT);
+		lock.release();
 	}
 
 }

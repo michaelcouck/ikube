@@ -392,7 +392,7 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 			IndexManager.addStringField(indexable.getIdFieldName(), url.getUrl(), document, Store.YES, Index.ANALYZED, TermVector.YES);
 			// Add the title field
 			MimeType mimeType = MimeTypes.getMimeType(url.getContentType(), url.getRawContent());
-			if (mimeType != null && mimeType.getPrimaryType().contains(HTMLElementName.HTML)) {
+			if (mimeType != null && mimeType.getPrimaryType().toLowerCase().contains(HTMLElementName.HTML.toLowerCase())) {
 				InputStream inputStream = new ByteArrayInputStream(url.getRawContent());
 				Reader reader = new InputStreamReader(inputStream, IConstants.ENCODING);
 				Source source = new Source(reader);

@@ -3,7 +3,6 @@ package ikube.action;
 import ikube.index.IndexManager;
 import ikube.listener.Event;
 import ikube.listener.ListenerManager;
-import ikube.model.Index;
 import ikube.model.IndexContext;
 import ikube.service.SearcherWebService;
 import ikube.toolkit.FileUtilities;
@@ -43,7 +42,7 @@ public class Open extends Action<IndexContext<?>, Boolean> {
 	@Override
 	public Boolean execute(final IndexContext<?> indexContext) {
 		if (indexContext.getInMemory()) {
-			return openInMemory(indexContext);
+			// return openInMemory(indexContext);
 		}
 		try {
 			return openOnFile(indexContext);
@@ -128,38 +127,38 @@ public class Open extends Action<IndexContext<?>, Boolean> {
 		return Boolean.FALSE;
 	}
 
-	private boolean openInMemory(final IndexContext<?> indexContext) {
-		Index index = indexContext.getIndex();
-		MultiSearcher multiSearcher = index.getMultiSearcher();
-		Directory directory = index.getDirectory();
-		if (directory == null) {
-			return Boolean.FALSE;
-		}
-		boolean shouldOpen = Boolean.TRUE;
-		if (multiSearcher == null) {
-			shouldOpen = Boolean.TRUE;
-		} else {
-			Searchable[] searchables = multiSearcher.getSearchables();
-			for (Searchable searchable : searchables) {
-				if (directory == ((IndexSearcher) searchable).getIndexReader().directory()) {
-					shouldOpen = Boolean.FALSE;
-					break;
-				}
-			}
-		}
-		if (shouldOpen) {
-			try {
-				IndexReader indexReader = IndexReader.open(directory);
-				Searchable searchable = new IndexSearcher(indexReader);
-				multiSearcher = new MultiSearcher(searchable);
-				index.setMultiSearcher(multiSearcher);
-				logger.info("Opened searcher in memory : ");
-				return Boolean.TRUE;
-			} catch (Exception e) {
-				logger.error("", e);
-			}
-		}
-		return Boolean.FALSE;
-	}
+	// private boolean openInMemory(final IndexContext<?> indexContext) {
+	// Index index = indexContext.getIndex();
+	// MultiSearcher multiSearcher = index.getMultiSearcher();
+	// Directory directory = index.getDirectory();
+	// if (directory == null) {
+	// return Boolean.FALSE;
+	// }
+	// boolean shouldOpen = Boolean.TRUE;
+	// if (multiSearcher == null) {
+	// shouldOpen = Boolean.TRUE;
+	// } else {
+	// Searchable[] searchables = multiSearcher.getSearchables();
+	// for (Searchable searchable : searchables) {
+	// if (directory == ((IndexSearcher) searchable).getIndexReader().directory()) {
+	// shouldOpen = Boolean.FALSE;
+	// break;
+	// }
+	// }
+	// }
+	// if (shouldOpen) {
+	// try {
+	// IndexReader indexReader = IndexReader.open(directory);
+	// Searchable searchable = new IndexSearcher(indexReader);
+	// multiSearcher = new MultiSearcher(searchable);
+	// index.setMultiSearcher(multiSearcher);
+	// logger.info("Opened searcher in memory : ");
+	// return Boolean.TRUE;
+	// } catch (Exception e) {
+	// logger.error("", e);
+	// }
+	// }
+	// return Boolean.FALSE;
+	// }
 
 }
