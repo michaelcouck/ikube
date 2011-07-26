@@ -58,7 +58,6 @@ public class SpatialEnrichmentInterceptor implements ISpatialEnrichmentIntercept
 		if (!indexable.isAddress()) {
 			return;
 		}
-		LOGGER.info("Enriching : " + indexable);
 		// We look for the first latitude and longitude from the children
 		Coordinate coordinate = enrichment.getCoordinate(indexable);
 		// LOGGER.info("Co-ordinate : " + coordinate);

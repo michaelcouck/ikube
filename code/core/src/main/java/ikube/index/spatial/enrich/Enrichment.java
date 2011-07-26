@@ -56,11 +56,12 @@ public class Enrichment implements IEnrichment {
 		for (int tier = startTier; tier <= endTier; tier++) {
 			CartesianTierPlotter cartesianTierPlotter = new CartesianTierPlotter(tier, projector, CartesianTierPlotter.DEFALT_FIELD_PREFIX);
 			final double boxId = cartesianTierPlotter.getTierBoxId(coordinate.getLat(), coordinate.getLon());
-			LOGGER.info(Logging.getString("Tier : ", tier, ", box id : ", boxId, ", cartesian tier : ",
-					ToStringBuilder.reflectionToString(cartesianTierPlotter, ToStringStyle.SHORT_PREFIX_STYLE)));
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug(Logging.getString("Tier : ", tier, ", box id : ", boxId, ", cartesian tier : ",
+						ToStringBuilder.reflectionToString(cartesianTierPlotter, ToStringStyle.SHORT_PREFIX_STYLE)));
+			}
 			document.add(new Field(cartesianTierPlotter.getTierFieldName(), NumericUtils.doubleToPrefixCoded(boxId), Field.Store.YES,
 					Field.Index.NOT_ANALYZED_NO_NORMS));
-			// LOGGER.info("Document : " + document);
 		}
 	}
 
@@ -114,7 +115,9 @@ public class Enrichment implements IEnrichment {
 				buildAddress(child, builder);
 			}
 		}
-		LOGGER.info("Address : " + builder);
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Address : " + builder);
+		}
 		return builder;
 	}
 
