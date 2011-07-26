@@ -10,6 +10,7 @@ import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.SerializationUtilities;
 
 import java.net.InetAddress;
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
@@ -119,6 +120,28 @@ public class SearcherWebServiceTest extends ATest {
 	private void verifyResults(List<Map<String, String>> resultsList) {
 		assertNotNull("Results should never be null : ", resultsList);
 		assertTrue("There should always be at least one map in the results : ", resultsList.size() >= 1);
+	}
+
+	public static void main(String[] args) throws Exception {
+		String host = "ikube.dyndns.org"; // "81.82.213.177" ; // InetAddress.getLocalHost().getHostAddress();
+		int port = ISearcherWebService.PUBLISHED_PORT;
+		String path = ISearcherWebService.PUBLISHED_PATH;
+		URL url = new URL("http", host, port, path);
+		String searcherWebServiceUrl = url.toString();
+		System.err.println(searcherWebServiceUrl);
+		final ISearcherWebService searcherWebService = ServiceLocator.getService(ISearcherWebService.class, searcherWebServiceUrl,
+				ISearcherWebService.NAMESPACE, ISearcherWebService.SERVICE);
+		final String[] searchStrings = { "cape AND town" };
+		final String[] searchFields = { "name" };
+		final boolean fragment = Boolean.TRUE;
+		final int firstResult = 0;
+		final int maxResults = 10;
+		final int distance = 10;
+		final double latitude = -33.9693580;
+		final double longitude = 18.4622110;
+		String results = searcherWebService.searchSpacialMulti(IConstants.GEOSPATIAL, searchStrings, searchFields, fragment, firstResult,
+				maxResults, distance, latitude, longitude);
+		System.out.println(results);
 	}
 
 }

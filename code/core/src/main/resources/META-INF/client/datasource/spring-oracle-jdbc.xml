@@ -12,10 +12,6 @@
             http://www.springframework.org/schema/context
             http://www.springframework.org/schema/context/spring-context-3.0.xsd">
             
-	<context:property-placeholder
-		location="classpath*:**/spring.properties" 
-		properties-ref="ikube.toolkit.PropertyConfigurer" />
-
 	<bean id="nonXaDataSourceOracle"
 		class="com.mchange.v2.c3p0.ComboPooledDataSource"
 		destroy-method="close"

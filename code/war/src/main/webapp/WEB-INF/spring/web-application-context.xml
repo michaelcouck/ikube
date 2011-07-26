@@ -58,5 +58,6 @@
 	<mvc:view-controller path="/documentation/extra.html" />
 	<mvc:view-controller path="/documentation/clustering.html" />
 	<mvc:view-controller path="/documentation/indexes.html" />
+	<mvc:view-controller path="/documentation/tutorial.html" />
 
 </beans>

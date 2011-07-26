@@ -15,10 +15,6 @@
             http://www.springframework.org/schema/util
             http://www.springframework.org/schema/util/spring-util.xsd">
 
-	<context:property-placeholder
-		location="classpath*:**/spring.properties" 
-		properties-ref="ikube.toolkit.PropertyConfigurer" />
-	
 	<bean
 		id="geospatial"
 		class="ikube.model.IndexContext"

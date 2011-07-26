@@ -70,15 +70,22 @@ public class ValidatorTest extends ATest {
 		assertFalse("There are no indexes created : ", result);
 		// There should be a mail sent because there are no indexes created
 		// There should also be a mail sent because the searchable is not opened
-		int invocations = 2;
+		// There should be a mail sent because there is no backup for this index
+		int invocations = 3;
 		verify(validator, Mockito.times(invocations)).sendNotification(anyString(), anyString());
 
 		File latestIndexDirectory = createIndex(INDEX_CONTEXT, "a little sentence");
 		File serverIndexDirectory = new File(latestIndexDirectory, IP);
 		result = validator.execute(INDEX_CONTEXT);
-		assertTrue("There is an index created : ", result);
+		assertFalse("There is an index created but no backup : ", result);
 		// There should be no mail sent because there is an index generated
+		// There should be a mail sent because there is no backup for this index
+		invocations++;
 		verify(validator, Mockito.times(invocations)).sendNotification(anyString(), anyString());
+		
+		new Backup().execute(INDEX_CONTEXT);
+		result = validator.execute(INDEX_CONTEXT);
+		assertTrue("There is an index created : ", result);
 
 		Directory directory = FSDirectory.open(serverIndexDirectory);
 		Lock lock = directory.makeLock(IndexWriter.WRITE_LOCK_NAME);
@@ -101,10 +108,12 @@ public class ValidatorTest extends ATest {
 		assertFalse("The index is corrupt : ", result);
 		// There should be a mail sent because the index is corrupt
 		invocations++;
+		invocations++;
 		verify(validator, Mockito.times(invocations)).sendNotification(anyString(), anyString());
 
 		result = validator.execute(INDEX_CONTEXT);
 		// There should be another mail sent
+		invocations++;
 		invocations++;
 		verify(validator, Mockito.times(invocations)).sendNotification(anyString(), anyString());
 	}

@@ -23,23 +23,22 @@
 			4) spring-aop.xml - the AOP file for the rules engine and monitoring<br><br>
 			
 			Optional system configuration:<br>
-			5) spring-integration.xml - the integration testing beans<br>
-			6) spring-ikube.xml - and the configuration to index the documentation in the WAR<br>
-			7) spring-geospatial.xml - the index for the geospatial index. This index is for clients 
-				that have address data and need to order the results wy distance from a 
+			5) spring-ikube.xml - and the configuration to index the documentation in the WAR<br>
+			6) spring-geospatial.xml - the index for the geospatial index. This index is for clients 
+				that have address data and need to order the results by distance from a 
 				point(latitude and longitude)<br><br>
 			
 			Optional client configuration:<br>
-			8) spring-client.xml - this is the interesting one at the moment, for clients<br>
-			9) spring-db2-jdbc.xml - the Db2 configuration<br>
-			10) spring-h2-jdbc.xml - the H2 datasource configuration<br>
-			11) spring-oracle-jdbc.xml - the Oracle datasource configuration<br><br>
+			7) spring-client.xml - this is the interesting one at the moment, for clients<br>
+			8) spring-db2-jdbc.xml - the Db2 configuration<br>
+			9) spring-h2-jdbc.xml - the H2 datasource configuration<br>
+			10) spring-oracle-jdbc.xml - the Oracle datasource configuration<br><br>
 			
 			For the first install we will use the default configuration in the war. For the install you need to down-load your favorite version 
 			of Tomcat and pop the <a href="http://code.google.com/p/ikube/downloads/list" target="_top">war</a> in the webapps directory. 
 			Then press start. Alternatively there could be a fully functional cluster with everything in a zip in the Google Code download page 
 			that you can just unpack and start one by one, if you want to check the cluster functionality. Remember that each instance of Ikube 
-			needs around 1 gig.<br><br>
+			needs around 1 - 3 gig depending on the indexes that will be created.<br><br>
 			 
 			Wait...<br><br>
 			Wait...<br><br>
@@ -57,7 +56,7 @@
 			share, a mail account and a database to index. The database index will fail because the url in the configuration is for my 
 			machine, no worries. The file share likewise but the url(which is the ikube site on CloudBees) will succeed as will the mail account.<br><br>
 			
-			You will see in D:/cluster that there is a folder 'indexes' and in here are the indexes, the default indexes are 'index', 'ikube' and 
+			You will see in D:/cluster that there is a folder 'indexes' and in here are the indexes, the default indexes are 'default', 'ikube' and 
 			'geospatial'. Generally though these indexes will have thrown exceptions and there will be no data in them. But the ikube index 
 			should have some data in it, provided the port Tomcat is running on is either 80 or 9000. 
 			You want to search this index then. Well there is a web service that will be deployed to 
@@ -65,8 +64,8 @@
 			InetAddress.getLocalHost().getHostAddress(). Typically this is the auto-configuration IPV4 address. The service will not bind to 
 			'localhost' generally, and it is not the network address like 192.168.1.101 either. Just to make things more interesting of course. The 
 			reason for this is that you could run several Tomcats in a cluster on the same machine and the ip addresses must not clash nor on 
-			the network in a cluster. If you can't find the web service then go to the ikube.log file and look for 'Publishing web service' and the url 
-			will be there, along with the port and ip.<br><br>
+			the network in a cluster. To find the web service and where it was published go to http://localhost:8080/ikube and in under the servers 
+			section there will be a link, this link is the web service url.<br><br>
 			
 			You could write a client or use a tool like SoapUI to 
 			access the results or you can use the <a href="<c:url value="/admin/servers.html" />" target="_top">Ikube Client</a>. We'll 
@@ -81,8 +80,10 @@
 		<td>
 			The configuration for this instance is in the ikube-{version}.war, inside the ikube.jar in the META-INF directory. Generally this is convenient 
 			because you just need to drop the war in the server and off it goes, and in a cluster you only need one file, i.e. the war. The down side 
-			is that you need to change the configuration in the war/WEB-INF/lib/ikube-core.jar/META-INF/common/spring.properties file. Ikube is based 
-			on Spring, and the configuration relies on the configuration files being on the classpath, so this is un-avoidable.<br><br>
+			is that you need to change the configuration in the war/WEB-INF/lib/ikube-core.jar/META-INF/common/spring.properties file. Ikube will first 
+			look for a 'spring.xml' fril in the dot directory, i.e. the directory where the server/Jvm was started. If found then this file will be used for the 
+			configuration. Note that there is a <a href="<c:url value="/docs/configuration.jar" />" >configuration.jar</a> with all the necessary files in 
+			the war in the docs folder.<br><br>
 			
 			There is a Tomcat with everything set up, all you need to do is download it and unpack it, then you can change the configuration details 
 			as you wish, from <a href="http://code.google.com/p/ikube/downloads/list">here</a>, there should be a file complete.zip, or 

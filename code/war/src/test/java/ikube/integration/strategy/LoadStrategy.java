@@ -1,6 +1,7 @@
 package ikube.integration.strategy;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import ikube.IConstants;
 import ikube.service.ISearcherWebService;
 import ikube.service.ServiceLocator;
@@ -41,6 +42,9 @@ public class LoadStrategy implements IStrategy {
 		final double latitude = -33.9693580;
 		final double longitude = 18.4622110;
 		LOGGER.info("Executing load test : " + searcherWebServiceUrl);
+		if (searcherWebService == null) {
+			fail("The searcher web service is not available : ");
+		}
 		double executionsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
 			@Override
 			public void execute() throws Throwable {

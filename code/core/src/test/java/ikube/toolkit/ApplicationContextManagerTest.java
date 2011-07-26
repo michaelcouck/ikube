@@ -9,6 +9,7 @@ import ikube.notify.Mailer;
 import java.io.File;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 
@@ -18,11 +19,20 @@ public class ApplicationContextManagerTest extends ATest {
 		super(ApplicationContextManagerTest.class);
 	}
 
+	@Before
+	public void before() {
+		ApplicationContextManager.closeApplicationContext();
+		FileUtilities.deleteFile(new File("./common"), 1);
+		FileUtilities.deleteFile(new File("./" + IConstants.SPRING_XML), 1);
+		FileUtilities.deleteFile(new File("./" + IConstants.SPRING_PROPERTIES), 1);
+	}
+
 	@After
 	public void after() {
 		ApplicationContextManager.closeApplicationContext();
 		FileUtilities.deleteFile(new File("./common"), 1);
-		FileUtilities.deleteFile(new File("./spring.xml"), 1);
+		FileUtilities.deleteFile(new File("./" + IConstants.SPRING_XML), 1);
+		FileUtilities.deleteFile(new File("./" + IConstants.SPRING_PROPERTIES), 1);
 	}
 
 	@Test

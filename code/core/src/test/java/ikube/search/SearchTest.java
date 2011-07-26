@@ -34,8 +34,8 @@ import org.junit.Test;
  */
 public class SearchTest extends ATest {
 
-	private static String INDEX_DIRECTORY_PATH = "./searchTestIndexDirectory";
 	private static Searcher SEARCHER;
+	private static String INDEX_DIRECTORY_PATH = "./" + SearchTest.class.getSimpleName();
 
 	@BeforeClass
 	public static void beforeClass() throws Exception {

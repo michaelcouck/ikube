@@ -7,7 +7,7 @@
 
 	<persistence-unit name="IkubePersistenceUnitH2" transaction-type="RESOURCE_LOCAL">
 		<provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
-		<non-jta-data-source>nonXaDataSourceH2</non-jta-data-source>
+		<!-- <non-jta-data-source>nonXaDataSourceH2</non-jta-data-source> -->
 		<class>ikube.model.Persistable</class>
 		
 		<class>ikube.model.faq.Faq</class>
@@ -64,7 +64,7 @@
 	
 	<persistence-unit name="IkubePersistenceUnitDb2" transaction-type="RESOURCE_LOCAL">
 		<provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
-		<non-jta-data-source>nonXaDataSourceDb2</non-jta-data-source>
+		<!-- <non-jta-data-source>nonXaDataSourceDb2</non-jta-data-source> -->
 		<class>ikube.model.Persistable</class>
 		
 		<class>ikube.model.faq.Faq</class>
@@ -103,18 +103,18 @@
 		
 		<exclude-unlisted-classes>false</exclude-unlisted-classes>
 		
-		<!-- <properties>
+		<properties>
 			<property name="openjpa.Connection2UserName" value="db2admin" />
 			<property name="openjpa.Connection2Password" value="db2admin" />
 			<property name="openjpa.Connection2URL" value="jdbc:db2://ikube:50000/ikube" />
 			<property name="openjpa.Connection2DriverName" value="com.ibm.db2.jcc.DB2Driver" />
 			<property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
-		</properties> -->
+		</properties>
 	</persistence-unit>
 	
 	<persistence-unit name="IkubePersistenceUnitOracle" transaction-type="RESOURCE_LOCAL">
 		<provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
-		<non-jta-data-source>nonXaDataSourceOracle</non-jta-data-source>
+		<!-- <non-jta-data-source>nonXaDataSourceOracle</non-jta-data-source> -->
 		<class>ikube.model.Persistable</class>
 		
 		<class>ikube.model.faq.Faq</class>
@@ -153,13 +153,13 @@
 		
 		<exclude-unlisted-classes>false</exclude-unlisted-classes>
 		
-		<!-- <properties>
-			<property name="openjpa.Connection2UserName" value="userid" />
-			<property name="openjpa.Connection2Password" value="password" />
-			<property name="openjpa.Connection2URL" value="the/oracle/url" />
-			<property name="openjpa.Connection2DriverName" value="ora.driver" />
+		<properties>
+			<property name="openjpa.Connection2UserName" value="XE" />
+			<property name="openjpa.Connection2Password" value="admin" />
+			<property name="openjpa.Connection2URL" value="jdbc:oracle:thin:@//ikube:1521/XE" />
+			<property name="openjpa.Connection2DriverName" value="oracle.jdbc.driver.OracleDriver" />
 			<property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
-		</properties> -->
+		</properties>
 	</persistence-unit>
 	
 	<persistence-unit name="IkubePersistenceUnitObjectDb" transaction-type="RESOURCE_LOCAL">

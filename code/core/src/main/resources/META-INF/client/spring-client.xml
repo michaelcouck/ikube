@@ -15,9 +15,8 @@
             http://www.springframework.org/schema/util
             http://www.springframework.org/schema/util/spring-util.xsd">
 
-	<context:property-placeholder
-		location="classpath*:**/spring.properties" 
-		properties-ref="ikube.toolkit.PropertyConfigurer" />
+	<!-- Optional client configuration files for data sources. -->
+	<import resource="classpath:/META-INF/client/datasource/spring-oracle-jdbc.xml" />
 	
 	<bean
 		id="indexContext"

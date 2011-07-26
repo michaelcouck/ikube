@@ -12,22 +12,16 @@
             http://www.springframework.org/schema/context
             http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
-	<context:property-placeholder
-		location="classpath*:**/spring.properties" 
-		properties-ref="ikube.toolkit.PropertyConfigurer" />
-
-	<bean 
-		id="nonXaDataSourceDb2"
+	<bean id="nonXaDataSourceH2"
 		class="com.mchange.v2.c3p0.ComboPooledDataSource"
 		destroy-method="close"
-		property:user="${db2.jdbc.userid}"
-		property:password="${db2.jdbc.password}"
-		property:driverClass="${db2.jdbc.driver}"
-		property:jdbcUrl="${db2.jdbc.url}"
+		property:user="${h2.jdbc.userid}"
+		property:password="${h2.jdbc.password}"
+		property:driverClass="${h2.jdbc.driver}"
+		property:jdbcUrl="${h2.jdbc.url}"
 		property:initialPoolSize="${jdbc.minPoolSize}"
 		property:maxPoolSize="${jdbc.maxPoolSize}"
 		property:maxStatements="${jdbc.maxStatements}"
-		property:maxStatementsPerConnection="${jdbc.maxStatements}"
 		property:checkoutTimeout="${jdbc.checkOutTimeout}"
 		property:numHelperThreads="${jdbc.numHelperThreads}"
 		property:breakAfterAcquireFailure="${jdbc.breakAfterAcquireFailure}"
@@ -36,14 +30,34 @@
 		property:testConnectionOnCheckout="${jdbc.testConnectionOnCheckout}"
 		property:unreturnedConnectionTimeout="${jdbc.unreturnedConnectionTimeout}" />
 	
-	<bean id="db2DataSourceBinder" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
+	<bean id="h2DataSourceBinder" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
 		property:staticMethod="ikube.toolkit.JndiInjector.bind">
 		<property name="arguments">
 			<array>
-				<value>nonXaDataSourceDb2</value>
-				<ref local="nonXaDataSourceDb2" />
+				<value>nonXaDataSourceH2</value>
+				<ref local="nonXaDataSourceH2" />
 			</array>
 		</property>
 	</bean>
+	
+	<bean id="h2SequenceCreator" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
+		property:staticMethod="ikube.toolkit.DatabaseUtilities.executeStatement">
+		<property name="arguments">
+			<array>
+				<ref bean="nonXaDataSourceH2" />
+				<value type="java.lang.String">create sequence if not exists persistable</value>
+			</array>
+		</property>
+	</bean>
+	
+	<!-- <bean id="h2Compactor" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
+		property:staticMethod="ikube.toolkit.DatabaseUtilities.executeStatement">
+		<property name="arguments">
+			<array>
+				<ref bean="nonXaDataSourceH2" />
+				<value type="java.lang.String">shutdown compact</value>
+			</array>
+		</property>
+	</bean> -->
 
 </beans>

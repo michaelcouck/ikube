@@ -19,14 +19,21 @@
 			All configuration is done via Spring configuration files. All the beans that are defined in the configuration files are 
 			entities as well so theoretically it could be possible to have the configuration in the database. In this case the Spring 
 			context would have to be instantiated manually, which I don't recommend, certainly not with the AOP involved, but possible.
-			Ikube will use the files in the META-INF directory packaged in the ikube-core.jar, and nowhere else as Spring 
-			looks for configuration files on the classpath. Generally Ikube will be used in war format, i.e. it will be deployed in a server like 
-			Tomcat. The advantage of deploying Ikube in a server is firstly the UI will be available which is invaluable and also allows server 
-			clustering which in turn facilitates fail over and horizontal scaling. We will assume for the rest of this document that Ikube will 
-			be used as a war and the configuration will be found in the war/WEB-INF/lib/ikube-core.jar/META-INF. Please refer 
-			to the mandatory and optional system and client configuration files in the quick start page. It is not necessary to know what is 
-			in the mandatory system configuration files, however it will be necessary to add the client specific configuration to the Spring 
-			configuration, generally this will be added in the spring.xml file, i.e. the top level Spring configuration file.
+			
+			Ikube will first check the startup directory or dot directory for a 'spring.xml' file. If this file is found then it will be used for the 
+			configuration. This allows the configuration to be external to the war/jar. Note that the external configuration uses the file system 
+			application context and the paths to imported files needs to be relative to the importing file. There is a 
+			<a href="<c:url value="/docs/configuration.jar" />" >configuration.jar</a> in the docs folder in the war with all the necessary 
+			configuration files. This jar can be unpacked to the bin directory of Tomcat for example as is and then modified to suit the client.
+			<br><br>
+			If this file is not found then the files in the META-INF directory packaged in the ikube-core.jar will be used for the configuration. 
+			Generally Ikube will be used in war format, i.e. it will be deployed in a server like Tomcat. The advantage of deploying Ikube in 
+			a server is firstly the UI will be available which is invaluable and also allows server clustering which in turn facilitates fail over and 
+			horizontal scaling. We will assume for the rest of this document that Ikube will be used as a war and the configuration will be 
+			found in the war/WEB-INF/lib/ikube-core.jar/META-INF. Please refer to the mandatory and optional system and client configuration 
+			files in the quick start page. It is not necessary to know what is in the mandatory system configuration files, however it will be 
+			necessary to add the client specific configuration to the Spring configuration, generally this will be added in the spring.xml file, i.e. 
+			the top level Spring configuration file.
 		</td>
 	</tr>
 	<tr>

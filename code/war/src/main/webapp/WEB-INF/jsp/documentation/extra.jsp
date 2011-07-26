@@ -23,8 +23,8 @@
 			data that was used to generate the index. The data has been enriched, and addresses include city and 
 			country which should help to refine the search. When Telenet get around to giving me the subnet mask 
 			and the default gateway(which could be never of course, this is Belgium) the url for the GeoSpatial web service 
-			will be http://81.82.213.177:8081/ikube/service/ISearcherWebService?swdl. Note that the web service is RPC 
-			and not SOAP. Ultimately this doesn't make any difference to you, but simplifies things in development.<br><br>
+			will be http://81.82.213.177:8081/ikube/service/ISearcherWebService?swdl, until then the url defined in the configuration for the 
+			GeoSpatial web service is http://ikube.dyndns.org:8081/ikube/service/ISearcherWebService?wsdl.<br><br>
 		</td>
 	</tr>
 	<tr>
@@ -60,7 +60,7 @@
 		<td class="td-content">
 			<strong>rules</strong>&nbsp;
 			The rules for the actions to be executed are defined in the Spring configuration. The actions will be intercepted 
-			by the rule intercepter, the rule for those actions will be evaluated, and based on the result of the evaluation the 
+			by the rule intercepter, the rule(s) for those actions will be evaluated, and based on the result of the evaluation the 
 			action will be allowed to continue. These rules can be removed to suit, but I really don't suggest it!
 			<br><br>
 		</td>

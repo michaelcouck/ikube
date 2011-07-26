@@ -22,6 +22,15 @@ import net.htmlparser.jericho.TextExtractor;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
+/**
+ * TODO This test just executes the Jsps. What we really want to do is crawl the UI and verify that there are no exceptions. Also we want to
+ * fill in all the forms and then execute the buttons and verify that there are no exceptions. We also want to verify that there are no
+ * broken links in the pages.
+ * 
+ * @author Michael Couck
+ * @since 26.07.11
+ * @version 01.00
+ */
 public class JspStrategy extends AStrategy {
 
 	private static final String PATH = "path";

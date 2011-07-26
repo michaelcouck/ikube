@@ -27,6 +27,7 @@ import org.springframework.core.io.Resource;
 public final class ApplicationContextManager {
 
 	private static final Logger LOGGER;
+	private static final String EXTERNAL_SPRING_CONFIGURATION_FILE = "." + IConstants.SEP + IConstants.SPRING_XML;
 	private static ApplicationContext APPLICATION_CONTEXT;
 
 	static {
@@ -46,7 +47,7 @@ public final class ApplicationContextManager {
 		try {
 			if (APPLICATION_CONTEXT == null) {
 				// First see if there is a configuration file at the base of where the Jvm was started
-				File configFile = new File("." + IConstants.SEP + IConstants.SPRING_XML);
+				File configFile = new File(EXTERNAL_SPRING_CONFIGURATION_FILE);
 				if (configFile.exists()) {
 					LOGGER.info("External configuration file : " + configFile + ", " + configFile.getAbsolutePath() + ", "
 							+ configFile.exists());

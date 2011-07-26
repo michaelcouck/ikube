@@ -3,6 +3,7 @@
 	<property file="build.properties" />
 
 	<target name="all">
+		<antcall target="configuration" />
 		<antcall target="deploy" />
 		<antcall target="start" />
 	</target>
@@ -73,6 +74,49 @@
 		<copy file="${target.directory}/${ikube.war}" todir="${tomcat.1}/webapps" overwrite="true" failonerror="false" />
 		<copy file="${target.directory}/${ikube.war}" todir="${tomcat.2}/webapps" overwrite="true" failonerror="false" />
 		<copy file="${target.directory}/${ikube.war}" todir="${tomcat.3}/webapps" overwrite="true" failonerror="false" />
+	</target>
+
+	<!-- 
+		This target will copy all the Spring configuration files to a location. Then remove all the classpath 
+		parts of the configuration files as they will be used in an external configuration, and the Spring application 
+		context will use the file system application context which is relative to ehe individual files. The configuration 
+		files will then be jared and added to the war as a convenience. Also for the testing the configuration jar
+		will be unjared into one of the servers to continuously test the external configuration.  
+	-->
+	<target name="configuration">
+		<delete dir="${configuration.directory}" />
+		<copy todir="${configuration.directory}">
+			<fileset dir="../core/src/main/resources/META-INF">
+				<exclude name="**/aop.xml" />
+				<exclude name="**/log4j.properties" />
+				<exclude name="**/persistence.xml" />
+				<exclude name="**/spring.handlers" />
+				<exclude name="**/spring.schemas" />
+				<exclude name="**/spring.tooling" />
+				<exclude name="**/spelling/**" />
+				<exclude name="**/persistence/**" />
+				<exclude name="**/mime/**" />
+				<exclude name="**/flatfile/**" />
+			</fileset>
+		</copy>
+		<replace dir="${configuration.directory}" value="" summary="true">
+			<include name="*.xml" />
+			<include name="**/*.xml" />
+			<replacetoken><![CDATA[classpath:/META-INF]]></replacetoken>
+		</replace>
+		<replace dir="${configuration.directory}" value="" summary="true">
+			<include name="*.xml" />
+			<include name="**/*.xml" />
+			<replacetoken><![CDATA[classpath:/META-INF]]></replacetoken>
+		</replace>
+		<replace dir="${configuration.directory}/client" value="" summary="true">
+			<include name="*.xml" />
+			<include name="**/*.xml" />
+			<replacetoken><![CDATA[/client]]></replacetoken>
+		</replace>
+		<jar destfile="${configuration.directory}/configuration.jar" basedir="${configuration.directory}" />
+		<copy file="${configuration.directory}/configuration.jar" todir="./src/main/webapp/docs" failonerror="true" />
+		<unjar src="${configuration.directory}/configuration.jar" dest="${tomcat.1.bin}" overwrite="true" />
 	</target>
 
 	<target name="startUbuntu">

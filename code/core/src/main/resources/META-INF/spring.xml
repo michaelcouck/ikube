@@ -18,9 +18,9 @@
             http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 	
 	<context:property-placeholder
-		location="classpath*:**/spring.properties" 
+		location="classpath:/META-INF/common/spring.properties" 
 		properties-ref="ikube.toolkit.PropertyConfigurer" />
-		
+	
 	<!-- This bean will look through the classpath and load every Spring properties file it finds. -->
 	<bean
 		id="ikube.toolkit.PropertyConfigurer"
@@ -33,6 +33,8 @@
 	<import resource="classpath:/META-INF/common/spring-aop.xml" />
 	<import resource="classpath:/META-INF/common/spring-beans.xml" />
 	<import resource="classpath:/META-INF/common/spring-actions.xml" />
+	<import resource="classpath:/META-INF/common/spring-h2-jdbc.xml" />
+	<import resource="classpath:/META-INF/common/spring-db2-jdbc.xml" />
 	
 	<!-- Optional system configuration files. -->
 	<import resource="classpath:/META-INF/common/spring-ikube.xml" />
@@ -40,9 +42,5 @@
 
 	<!-- Optional client configuration files for indexables. -->
 	<import resource="classpath:/META-INF/client/spring-client.xml" />
-
-	<!-- Optional client configuration files for data sources. -->
-	<import resource="classpath:/META-INF/client/datasource/spring-h2-jdbc.xml" />
-	<import resource="classpath:/META-INF/client/datasource/spring-db2-jdbc.xml" />
-	<import resource="classpath:/META-INF/client/datasource/spring-oracle-jdbc.xml" />
+	
 </beans>

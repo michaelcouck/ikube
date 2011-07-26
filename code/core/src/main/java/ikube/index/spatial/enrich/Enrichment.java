@@ -56,12 +56,11 @@ public class Enrichment implements IEnrichment {
 		for (int tier = startTier; tier <= endTier; tier++) {
 			CartesianTierPlotter cartesianTierPlotter = new CartesianTierPlotter(tier, projector, CartesianTierPlotter.DEFALT_FIELD_PREFIX);
 			final double boxId = cartesianTierPlotter.getTierBoxId(coordinate.getLat(), coordinate.getLon());
-			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug(Logging.getString("Tier : ", tier, ", box id : ", boxId, ", cartesian tier : ",
-						ToStringBuilder.reflectionToString(cartesianTierPlotter, ToStringStyle.SHORT_PREFIX_STYLE)));
-			}
+			LOGGER.info(Logging.getString("Tier : ", tier, ", box id : ", boxId, ", cartesian tier : ",
+					ToStringBuilder.reflectionToString(cartesianTierPlotter, ToStringStyle.SHORT_PREFIX_STYLE)));
 			document.add(new Field(cartesianTierPlotter.getTierFieldName(), NumericUtils.doubleToPrefixCoded(boxId), Field.Store.YES,
 					Field.Index.NOT_ANALYZED_NO_NORMS));
+			// LOGGER.info("Document : " + document);
 		}
 	}
 
@@ -72,6 +71,7 @@ public class Enrichment implements IEnrichment {
 	public Coordinate getCoordinate(Indexable<?> indexable) {
 		double latitude = Double.MAX_VALUE;
 		double longitude = Double.MAX_VALUE;
+		Coordinate coordinate = null;
 		for (Indexable<?> child : indexable.getChildren()) {
 			try {
 				if (!IndexableColumn.class.isAssignableFrom(child.getClass())) {
@@ -91,9 +91,10 @@ public class Enrichment implements IEnrichment {
 			}
 		}
 		if (latitude != Double.MAX_VALUE && longitude != Double.MAX_VALUE) {
-			return new Coordinate(latitude, longitude);
+			coordinate = new Coordinate(latitude, longitude);
 		}
-		return null;
+		LOGGER.info("Co-ordinate : " + coordinate);
+		return coordinate;
 	}
 
 	/**
@@ -113,6 +114,7 @@ public class Enrichment implements IEnrichment {
 				buildAddress(child, builder);
 			}
 		}
+		LOGGER.info("Address : " + builder);
 		return builder;
 	}
 
@@ -121,7 +123,7 @@ public class Enrichment implements IEnrichment {
 	 */
 	@Override
 	public void setMinKm(final double minKm) {
-		this.startTier = getMinKm(minKm);
+		this.startTier = cartesianTierPlotter.bestFit(minKm);
 	}
 
 	/**
@@ -129,23 +131,7 @@ public class Enrichment implements IEnrichment {
 	 */
 	@Override
 	public void setMaxKm(final double maxKm) {
-		this.endTier = getMaxKm(maxKm);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public int getMinKm(double minKm) {
-		return cartesianTierPlotter.bestFit(minKm);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public int getMaxKm(double maxKm) {
-		return cartesianTierPlotter.bestFit(maxKm);
+		this.endTier = cartesianTierPlotter.bestFit(maxKm);
 	}
 
 }

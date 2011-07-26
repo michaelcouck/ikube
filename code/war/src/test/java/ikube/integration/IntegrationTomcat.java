@@ -1,5 +1,6 @@
 package ikube.integration;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -9,6 +10,7 @@ import org.junit.Test;
  * @since 13.03.2011
  * @version 01.00
  */
+@Ignore
 public class IntegrationTomcat extends Integration {
 
 	@Test

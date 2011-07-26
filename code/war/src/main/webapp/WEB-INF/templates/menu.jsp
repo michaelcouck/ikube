@@ -34,6 +34,7 @@
 				<li><a href="<c:url value="/admin/servers.html"/>">Monitoring</a></li>
 				<li><a href="<c:url value="/admin/admin.html"/>">Administration</a></li>
 				<li><a href="<c:url value="/documentation/index.html"/>">Documentation</a></li>
+				<li><a href="<c:url value="/documentation/tutorial.html"/>">Setup Tutorial</a></li>
 			</ul>
 		</li>
 		<li>

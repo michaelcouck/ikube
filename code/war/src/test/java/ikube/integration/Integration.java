@@ -1,21 +1,20 @@
 package ikube.integration;
 
 import ikube.IConstants;
-import ikube.action.Validator;
-import ikube.cluster.IClusterManager;
 import ikube.integration.strategy.JspStrategy;
 import ikube.integration.strategy.LoadStrategy;
 import ikube.listener.ListenerManager;
-import ikube.model.IndexContext;
-import ikube.toolkit.ApplicationContextManager;
+import ikube.model.Server;
 import ikube.toolkit.Logging;
 import ikube.toolkit.PropertyConfigurer;
 
-import java.util.Map;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
+
+import com.hazelcast.core.Hazelcast;
+import com.hazelcast.core.IMap;
 
 /**
  * TODO Document me when I am running properly.
@@ -38,7 +37,6 @@ public class Integration {
 			return;
 		}
 		waitToFinish();
-		validateIndexes();
 		validateJsps();
 		loadWebService();
 	}
@@ -46,13 +44,20 @@ public class Integration {
 	protected void waitToFinish() {
 		try {
 			Object delay = PropertyConfigurer.getStaticProperty(IConstants.DELAY);
-			Thread.sleep(Long.valueOf(delay.toString()) * 2);
+			long sleep = Long.valueOf(delay.toString()) * 2;
+			logger.info("Initial sleep period : " + sleep);
+			Thread.sleep(sleep);
 			do {
-				IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
-				boolean anyWorking = clusterManager.anyWorking();
-				boolean isWorking = clusterManager.getServer().getWorking();
-				logger.info("Any servers working : " + anyWorking + ", this server working : " + isWorking);
-				if (!anyWorking && !isWorking) {
+				boolean anyWorking = Boolean.FALSE;
+				IMap<String, Server> serversMap = Hazelcast.getMap(Server.class.getName());
+				for (Server server : serversMap.values()) {
+					if (server.getWorking()) {
+						anyWorking = Boolean.TRUE;
+						break;
+					}
+				}
+				logger.info("Any servers working : " + anyWorking);
+				if (!anyWorking) {
 					break;
 				}
 				ListenerManager.removeListeners();
@@ -63,17 +68,9 @@ public class Integration {
 		}
 	}
 
-	protected void validateIndexes() {
-		@SuppressWarnings("rawtypes")
-		Map<String, IndexContext> indexContexts = ApplicationContextManager.getBeans(IndexContext.class);
-		for (IndexContext<?> indexContext : indexContexts.values()) {
-			new Validator().execute(indexContext);
-		}
-	}
-
 	protected void validateJsps() throws Exception {
 		// Test all the jsps
-		new JspStrategy(IConstants.SEP + IConstants.IKUBE, 8080).perform();
+		new JspStrategy(IConstants.SEP + IConstants.IKUBE, 9080).perform();
 	}
 
 	protected void loadWebService() throws Exception {

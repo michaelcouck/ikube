@@ -494,6 +494,8 @@ public final class FileUtilities {
 				// if not we need to make it exist if possible (note this is mkdirs not mkdir)
 				if (!dest.mkdirs()) {
 					LOGGER.warn("Could not create the new destination directory : " + dest);
+				} else {
+					LOGGER.info("Created directory : " + dest);
 				}
 			}
 			// get a listing of files...
@@ -527,6 +529,7 @@ public final class FileUtilities {
 				LOGGER.error("Exception creating new file : " + out.getAbsolutePath(), e);
 			}
 		}
+		LOGGER.debug("Copying file : " + in + ", to : " + out);
 		FileChannel inChannel = null;
 		FileChannel outChannel = null;
 		FileInputStream fileInputStream = null;

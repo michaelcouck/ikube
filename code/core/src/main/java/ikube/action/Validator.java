@@ -2,6 +2,7 @@ package ikube.action;
 
 import ikube.action.rule.AreIndexesCreated;
 import ikube.action.rule.DirectoryExistsAndIsLocked;
+import ikube.action.rule.IsIndexBackedUp;
 import ikube.action.rule.IsIndexCorrupt;
 import ikube.action.rule.IsIndexCurrent;
 import ikube.cluster.IClusterManager;
@@ -43,6 +44,7 @@ public class Validator extends Action<IndexContext<?>, Boolean> {
 			IsIndexCurrent isIndexCurrent = new IsIndexCurrent();
 			IsIndexCorrupt isIndexCorrupt = new IsIndexCorrupt();
 			AreIndexesCreated areIndexesCreated = new AreIndexesCreated();
+			IsIndexBackedUp isIndexBackedUp = new IsIndexBackedUp();
 			String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
 			File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexDirectoryPath);
 			// Are there any indexes at all
@@ -94,6 +96,17 @@ public class Validator extends Action<IndexContext<?>, Boolean> {
 				everythingInitialized &= Boolean.FALSE;
 				sendNotification(subject, body);
 			}
+			// Check that the index is backed up
+			if (!isIndexBackedUp.evaluate(indexContext)) {
+				subject = "Index not backed up : " + indexContext.getIndexName() + ", server : " + server.getAddress();
+				body = "The index is not backed up. Generally this is temporary and the next iteration over the actions "
+						+ "will cause the index to be backed up. This can be regarded as an informational message.";
+				everythingInitialized &= Boolean.FALSE;
+				sendNotification(subject, body);
+			}
+		} catch (Exception e) {
+			logger.error("Exception validating the system : " + indexContext, e);
+			everythingInitialized &= Boolean.FALSE;
 		} finally {
 			getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getSimpleName(), "", Boolean.FALSE);
 		}

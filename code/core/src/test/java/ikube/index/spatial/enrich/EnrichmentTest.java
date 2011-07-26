@@ -9,6 +9,7 @@ import ikube.index.spatial.Coordinate;
 import ikube.model.Indexable;
 import ikube.model.IndexableColumn;
 
+import java.lang.reflect.Field;
 import java.util.Arrays;
 
 import mockit.Cascading;
@@ -18,6 +19,7 @@ import org.apache.lucene.document.Document;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.util.ReflectionUtils;
 
 public class EnrichmentTest extends ATest {
 
@@ -82,23 +84,19 @@ public class EnrichmentTest extends ATest {
 	}
 
 	@Test
-	public void setMaxKm() {
+	public void setMaxKm() throws Exception {
 		// double
 		enrichment.setMaxKm(maxKm);
-	}
+		Field startTierField = ReflectionUtils.findField(enrichment.getClass(), "startTier");
+		startTierField.setAccessible(Boolean.TRUE);
+		Object startTier = ReflectionUtils.getField(startTierField, enrichment);
 
-	@Test
-	public void getMinKm() {
-		int minKm = enrichment.getMinKm(1);
-		logger.info("Min km : " + minKm);
-		assertEquals(15, minKm, 1);
-	}
+		Field endTierField = ReflectionUtils.findField(enrichment.getClass(), "endTier");
+		endTierField.setAccessible(Boolean.TRUE);
+		Object endTier = ReflectionUtils.getField(endTierField, enrichment);
 
-	@Test
-	public void getMaxKm() {
-		int maxKm = enrichment.getMaxKm(10);
-		logger.info("Max km : " + maxKm);
-		assertEquals(15, maxKm, 1);
+		assertEquals("", new Integer(0), (Integer) startTier, 1);
+		assertEquals("", new Integer(15), (Integer) endTier, 1);
 	}
 
 	@Test

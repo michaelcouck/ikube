@@ -61,7 +61,7 @@ public class SearchSpatial extends SearchMulti {
 		TopDocs topDocs = searcher.search(query, queryBuilder.getFilter(), maxResults, sort);
 		distances = queryBuilder.getDistanceFilter().getDistances();
 		if (logger.isDebugEnabled()) {
-			logger.debug("Distances : " + distance);
+			logger.debug("Distances : " + distances);
 		}
 		return topDocs;
 	}
@@ -73,14 +73,12 @@ public class SearchSpatial extends SearchMulti {
 		if (searcher == null) {
 			logger.warn("No searcher on any index, is an index created?");
 		}
-		long duration = 0;
 		long totalHits = 0;
 		List<Map<String, String>> results = null;
+		long start = System.currentTimeMillis();
 		try {
 			Query query = getQuery();
-			long start = System.currentTimeMillis();
 			TopDocs topDocs = search(query);
-			duration = System.currentTimeMillis() - start;
 			totalHits = topDocs.totalHits;
 			results = getResults(topDocs, query);
 			for (int i = 0; i < maxResults && i < topDocs.totalHits && i < topDocs.scoreDocs.length; i++) {
@@ -95,6 +93,7 @@ public class SearchSpatial extends SearchMulti {
 				results = new ArrayList<Map<String, String>>();
 			}
 		}
+		long duration = System.currentTimeMillis() - start;
 		// Add the search results size as a last result
 		addStatistics(results, totalHits, duration);
 		return results;

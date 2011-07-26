@@ -1,5 +1,5 @@
 cd /d ../
-set MAVEN_OPTS=-Xms512m -Xmx1024m -XX:PermSize=64m -XX:MaxPermSize=128m
+set MAVEN_OPTS=-XX:PermSize=128m -XX:MaxPermSize=256m -Xms512m -Xmx3072m
 rem -DskipTests=true javadoc:javadoc
 rem -DskipTests=true -DskipITs=true
-mvn clean install -DskipITs=true
+mvn clean install

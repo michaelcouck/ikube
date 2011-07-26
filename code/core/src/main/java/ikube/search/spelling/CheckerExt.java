@@ -1,8 +1,13 @@
 package ikube.search.spelling;
 
+import ikube.toolkit.FileUtilities;
+
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import org.apache.log4j.Logger;
@@ -67,6 +72,19 @@ public class CheckerExt {
 			InputStream inputStream = CheckerExt.class.getResourceAsStream(WORD_FILE);
 			LOGGER.info("Word file : " + WORD_FILE + ", input stream : " + inputStream);
 			SPELL_CHECKER.indexDictionary(new PlainTextDictionary(inputStream));
+			FileUtilities.close(inputStream);
+			// Iterate over the spelling index directory and collect up all the files there too
+			List<File> wordFiles = FileUtilities.findFilesRecursively(spellingIndexDirectory, new ArrayList<File>(), "txt");
+			for (File wordFile : wordFiles) {
+				try {
+					inputStream = new FileInputStream(wordFile);
+					SPELL_CHECKER.indexDictionary(new PlainTextDictionary(inputStream));
+				} catch (Exception e) {
+					LOGGER.error("Exception indexing the word file : " + wordFile, e);
+				} finally {
+					FileUtilities.close(inputStream);
+				}
+			}
 		}
 		LOGGER.info("Opened spelling index on : " + spellingIndexDirectory.getAbsolutePath());
 	}

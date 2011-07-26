@@ -67,10 +67,6 @@ public interface IEnrichment {
 
 	/** Getters and setters. */
 
-	public int getMinKm(final double minKm);
-
-	public int getMaxKm(final double maxKm);
-
 	public void setMinKm(final double minKm);
 
 	public void setMaxKm(final double maxKm);
