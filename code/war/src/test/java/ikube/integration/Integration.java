@@ -86,7 +86,7 @@ public class Integration {
 		if (!osName.toLowerCase().contains("server") && properties.getProperty("os.arch").contains("64")) {
 			return Boolean.FALSE;
 		}
-		return Boolean.FALSE;
+		return Boolean.TRUE;
 	}
 
 }
