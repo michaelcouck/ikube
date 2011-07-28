@@ -7,8 +7,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
-
 /**
  * This class is a MimeType repository. It gathers a set of MimeTypes and enables to retrieves a content-type from a specified file
  * extension, or from a magic character sequence (or both).
@@ -18,7 +16,6 @@ import org.apache.log4j.Logger;
  */
 public final class MimeTypes {
 
-	private static final Logger LOGGER = Logger.getLogger(MimeTypes.class);
 	/** The static instance of this class. */
 	private static MimeTypes INSTANCE;
 	/** The default <code>application/octet-stream</code> MimeType */
@@ -39,19 +36,15 @@ public final class MimeTypes {
 	private transient int minLength = 0;
 
 	public MimeTypes(final String filePath) {
-		try {
-			InputStream inputStream = getClass().getResourceAsStream(filePath);
-			MimeTypes instance = null;
-			synchronized (INSTANCES) {
-				Integer hash = Integer.valueOf(inputStream.hashCode());
-				instance = INSTANCES.get(hash);
-				if (instance == null) {
-					instance = new MimeTypes(inputStream);
-					INSTANCES.put(hash, instance);
-				}
+		InputStream inputStream = getClass().getResourceAsStream(filePath);
+		MimeTypes instance = null;
+		synchronized (INSTANCES) {
+			Integer hash = Integer.valueOf(inputStream.hashCode());
+			instance = INSTANCES.get(hash);
+			if (instance == null) {
+				instance = new MimeTypes(inputStream);
+				INSTANCES.put(hash, instance);
 			}
-		} catch (Exception e) {
-			LOGGER.error("Exception instantiating the MimeTypes : " + filePath, e);
 		}
 	}
 

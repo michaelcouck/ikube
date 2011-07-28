@@ -65,7 +65,7 @@ public class DatabaseUtilitiesTest extends ATest {
 
 	@Test
 	public void setIdFieldGetIdFieldValueGetIdFieldName() {
-		Long id = System.nanoTime();
+		long id = System.nanoTime();
 		Url url = new Url();
 		DatabaseUtilities.setIdField(url, id);
 		assertEquals("The id should have been set : ", url.getId(), id);

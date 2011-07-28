@@ -228,15 +228,14 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 				} catch (Exception e) {
 					logger.error("Exception indexing table : " + indexableTable + ", connection : " + connection + ", exceptions : "
 							+ exceptions, e);
-					if (exceptions++ > indexableTable.getMaxExceptions()) {
+					exceptions++;
+					if (exceptions > indexableTable.getMaxExceptions()) {
+						logger.error("Maximum exception exceeded, exiting indexing table : " + indexableTable);
 						break;
 					}
 				}
 			} while (true);
 		} catch (Exception e) {
-			// Should we catch this exception and check how many are thrown, if the
-			// exception threshold is exceeded then exit the database crawl?
-			exceptions++;
 			String message = Logging.getString("Exception indexing table : " + indexableTable.getName(), ", connection : ", connection,
 					", exceptions : ", exceptions);
 			logger.error(message, e);

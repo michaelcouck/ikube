@@ -23,7 +23,7 @@ import javax.persistence.ManyToOne;
 public class Administration extends Persistable {
 
 	private Date dt;
-	private Integer quantity;
+	private int quantity;
 
 	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = Medication.class)
 	private Medication medication;
@@ -36,11 +36,11 @@ public class Administration extends Persistable {
 		this.dt = date;
 	}
 
-	public Integer getQuantity() {
+	public int getQuantity() {
 		return quantity;
 	}
 
-	public void setQuantity(Integer quantity) {
+	public void setQuantity(int quantity) {
 		this.quantity = quantity;
 	}
 

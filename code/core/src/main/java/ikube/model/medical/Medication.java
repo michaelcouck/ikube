@@ -28,7 +28,7 @@ public class Medication extends Persistable {
 	@Column(length = 64)
 	private String brand;
 	@Column(length = 32)
-	private Integer strength;
+	private int strength;
 
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = Condition.class)
 	private Collection<Condition> conditions;
@@ -49,11 +49,11 @@ public class Medication extends Persistable {
 		this.brand = brand;
 	}
 
-	public Integer getStrength() {
+	public int getStrength() {
 		return strength;
 	}
 
-	public void setStrength(Integer strength) {
+	public void setStrength(int strength) {
 		this.strength = strength;
 	}
 

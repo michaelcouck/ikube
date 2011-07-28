@@ -32,23 +32,23 @@ public class Attachment implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Long attachmentId;
+	private long attachmentId;
 	@JoinColumn(name = "faqId")
 	@ManyToOne(cascade = { CascadeType.ALL }, fetch = FetchType.EAGER)
 	private Faq faq;
 	@Column(length = 256)
 	private String name;
-	private Integer length;
+	private int length;
 	@Lob
 	@Column(length = 100000)
 	@Basic(fetch = FetchType.EAGER)
 	private byte[] attachment;
 
-	public Long getAttachmentId() {
+	public long getAttachmentId() {
 		return attachmentId;
 	}
 
-	public void setAttachmentId(Long id) {
+	public void setAttachmentId(long id) {
 		this.attachmentId = id;
 	}
 
@@ -76,11 +76,11 @@ public class Attachment implements Serializable {
 		this.faq = attachmentFaq;
 	}
 
-	public Integer getLength() {
+	public int getLength() {
 		return length;
 	}
 
-	public void setLength(Integer size) {
+	public void setLength(int size) {
 		this.length = size;
 	}
 

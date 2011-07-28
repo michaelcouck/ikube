@@ -35,7 +35,7 @@ public final class DatabaseUtilities {
 	 * @param sql
 	 *            the sql to execute
 	 */
-	public static void executeStatement(DataSource dataSource, String sql) {
+	public static void executeStatement(final DataSource dataSource, final String sql) {
 		LOGGER.info("Executing statement : " + sql + ", on data source : " + dataSource);
 		Connection connection = null;
 		Statement statement = null;
@@ -92,7 +92,6 @@ public final class DatabaseUtilities {
 		}
 		try {
 			statement.close();
-			// LOGGER.info("Statement already closed : " + statement);
 		} catch (Exception e) {
 			LOGGER.error("Exception closing the statement : ", e);
 		}
@@ -110,10 +109,6 @@ public final class DatabaseUtilities {
 		}
 		try {
 			connection.close();
-			// if (!connection.isClosed()) {
-			// } else {
-			// LOGGER.info("Connection already closed : " + connection);
-			// }
 		} catch (Exception e) {
 			LOGGER.error("Exception closing the connection : ", e);
 		}
@@ -131,10 +126,6 @@ public final class DatabaseUtilities {
 		}
 		try {
 			resultSet.close();
-			// if (!resultSet.isClosed()) {
-			// } else {
-			// LOGGER.info("Result set already closed : " + resultSet);
-			// }
 		} catch (Exception e) {
 			LOGGER.error("Exception closing the result set : ", e);
 		}

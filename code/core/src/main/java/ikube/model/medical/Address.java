@@ -18,7 +18,7 @@ import javax.persistence.InheritanceType;
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Address extends Persistable {
 
-	private Integer numb;
+	private int numb;
 	@Column(length = 64)
 	private String street;
 	@Column(length = 64)
@@ -29,14 +29,14 @@ public class Address extends Persistable {
 	private String country;
 	@Column(length = 8)
 	private String postCode;
-	private Double latitude;
-	private Double longitude;
+	private double latitude;
+	private double longitude;
 
-	public Integer getNumb() {
+	public int getNumb() {
 		return numb;
 	}
 
-	public void setNumb(Integer number) {
+	public void setNumb(int number) {
 		this.numb = number;
 	}
 
@@ -80,19 +80,19 @@ public class Address extends Persistable {
 		this.postCode = postCode;
 	}
 
-	public Double getLatitude() {
+	public double getLatitude() {
 		return latitude;
 	}
 
-	public void setLatitude(Double latitude) {
+	public void setLatitude(double latitude) {
 		this.latitude = latitude;
 	}
 
-	public Double getLongitude() {
+	public double getLongitude() {
 		return longitude;
 	}
 
-	public void setLongitude(Double longitude) {
+	public void setLongitude(double longitude) {
 		this.longitude = longitude;
 	}
 

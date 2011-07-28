@@ -37,54 +37,50 @@ public class WebServicePublisher implements IWebServicePublisher {
 
 	@Override
 	public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-		try {
-			Annotation[] annotations = bean.getClass().getAnnotations();
-			for (Annotation annotation : annotations) {
-				if (WebService.class.isAssignableFrom(annotation.getClass())) {
-					// Publish the web service
-					int retryCount = 0;
+		Annotation[] annotations = bean.getClass().getAnnotations();
+		for (Annotation annotation : annotations) {
+			if (WebService.class.isAssignableFrom(annotation.getClass())) {
+				// Publish the web service
+				int retryCount = 0;
 
-					Field publishedPortField = ReflectionUtils.findField(bean.getClass(), "publishedPort");
-					publishedPortField.setAccessible(Boolean.TRUE);
-					int port = (Integer) ReflectionUtils.getField(publishedPortField, bean);
+				Field publishedPortField = ReflectionUtils.findField(bean.getClass(), "publishedPort");
+				publishedPortField.setAccessible(Boolean.TRUE);
+				int port = (Integer) ReflectionUtils.getField(publishedPortField, bean);
 
-					Field publishedPathField = ReflectionUtils.findField(bean.getClass(), "publishedPath");
-					publishedPathField.setAccessible(Boolean.TRUE);
-					String path = ReflectionUtils.getField(publishedPathField, bean).toString();
+				Field publishedPathField = ReflectionUtils.findField(bean.getClass(), "publishedPath");
+				publishedPathField.setAccessible(Boolean.TRUE);
+				String path = ReflectionUtils.getField(publishedPathField, bean).toString();
 
-					do {
-						URL url = null;
-						try {
-							String host = InetAddress.getLocalHost().getHostAddress();
+				do {
+					URL url = null;
+					try {
+						String host = InetAddress.getLocalHost().getHostAddress();
 
-							port = GeneralUtilities.findFirstOpenPort(port);
+						port = GeneralUtilities.findFirstOpenPort(port);
 
-							url = new URL("http", host, port, path);
+						url = new URL("http", host, port, path);
 
-							Endpoint endpoint = Endpoint.publish(url.toString(), bean);
-							Binding binding = endpoint.getBinding();
+						Endpoint endpoint = Endpoint.publish(url.toString(), bean);
+						Binding binding = endpoint.getBinding();
 
-							logger.info("Published web service to : " + url);
-							String message = Logging.getString("Endpoint : ", endpoint, "binding : ", binding, "implementor : ", bean);
-							logger.info(message);
+						logger.info("Published web service to : " + url);
+						String message = Logging.getString("Endpoint : ", endpoint, "binding : ", binding, "implementor : ", bean);
+						logger.info(message);
 
-							Server server = clusterManager.getServer();
-							server.getWebServiceUrls().add(url.toString());
-							// Publish the server to the cluster with the new urls
-							clusterManager.set(Server.class.getName(), server.getId(), server);
-							Thread.sleep(1000);
-							break;
-						} catch (Exception e) {
-							String message = Logging.getString("Exception publishing web service : ", url, bean, e.getMessage());
-							logger.warn(message, e);
-							port++;
-						}
-					} while (++retryCount < IConstants.MAX_RETRY_WEB_SERVICE_PUBLISHER);
-					break;
-				}
+						Server server = clusterManager.getServer();
+						server.getWebServiceUrls().add(url.toString());
+						// Publish the server to the cluster with the new urls
+						clusterManager.set(Server.class.getName(), server.getId(), server);
+						Thread.sleep(1000);
+						break;
+					} catch (Exception e) {
+						String message = Logging.getString("Exception publishing web service : ", url, bean, e.getMessage());
+						logger.warn(message, e);
+						port++;
+					}
+				} while (++retryCount < IConstants.MAX_RETRY_WEB_SERVICE_PUBLISHER);
+				break;
 			}
-		} catch (Exception e) {
-			logger.error("Exception publishing web service : " + bean, e);
 		}
 		return bean;
 	}

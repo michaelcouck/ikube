@@ -1,0 +1,36 @@
+table {
+	width: 100%;
+	font-family: san-serif, arial, tahoma;
+	background-color: #ffffff;
+	/* border: 1px solid #92c7de; */
+	border-collapse: collapse;
+	padding: 0px;
+}
+
+table th {
+	font-size: 13px;
+	border: 1px solid #92c7de;
+	background-color: #AFD0DE;
+}
+
+table th a {
+	font-size: 12px;
+	font-family: monospace;
+	color: #000000;
+}
+
+table td {
+	font-size: 10px;
+	font-family: Arial;
+	color: #687073;
+	background-color: #EDF6FA;
+}
+
+a {
+	font-size: 11px;
+	font-family: tahoma;
+}
+
+a:hover {
+	text-decoration: none;
+}

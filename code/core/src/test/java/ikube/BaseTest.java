@@ -1,6 +1,5 @@
 package ikube;
 
-import ikube.cluster.IClusterManager;
 import ikube.database.IDataBase;
 import ikube.listener.ListenerManager;
 import ikube.listener.Scheduler;
@@ -58,11 +57,13 @@ public abstract class BaseTest extends ATest {
 		// Close down all the instances in the environment because we will be conflicting
 		// with each other. Generally there will be none, but the Tomcat shutdown command
 		// does not always work
-		APPLICATION_CONTEXT = ApplicationContextManager.getApplicationContext();
-		Server server = ApplicationContextManager.getBean(IClusterManager.class).getServer();
-		// Close the cluster if it is running
+		Server server = new Server();
+		server.setAddress("shutdown.address");
 		Hazelcast.getTopic(IConstants.SHUTDOWN_TOPIC).publish(server);
 		try {
+			// We'll sleep for a while to give the other servers a time to shut down
+			Thread.sleep(10000);
+			APPLICATION_CONTEXT = ApplicationContextManager.getApplicationContext();
 			final int iterations = 0;
 			final IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
 			PerformanceTester.execute(new PerformanceTester.APerform() {

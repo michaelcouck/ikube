@@ -29,15 +29,19 @@ public class PropertyConfigurer extends Properties {
 
 	private static final transient Logger LOGGER = Logger.getLogger(PropertyConfigurer.class);
 
-	private static Properties INSTANCE;
+	private static PropertyConfigurer INSTANCE;
 
 	private Pattern fileNamePattern;
+	
+	static {
+		getStaticProperty("any.key");
+	}
 
 	public static Object getStaticProperty(String key) {
 		if (INSTANCE == null) {
-			PropertyConfigurer propertyConfigurer = new PropertyConfigurer();
-			propertyConfigurer.setFileNamePattern(IConstants.SPRING_PROPERTIES);
-			propertyConfigurer.initialize();
+			INSTANCE = new PropertyConfigurer();
+			INSTANCE.setFileNamePattern(IConstants.SPRING_PROPERTIES);
+			INSTANCE.initialize();
 		}
 		return INSTANCE.get(key);
 	}
@@ -48,7 +52,6 @@ public class PropertyConfigurer extends Properties {
 	 * application will also be checked for the properties file name pattern to load into the property map.
 	 */
 	public void initialize() {
-		INSTANCE = this;
 		try {
 			// First we check our own jar
 			File thisJar = new File(getClass().getProtectionDomain().getCodeSource().getLocation().toURI().getPath());

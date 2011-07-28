@@ -28,6 +28,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 import java.lang.Thread.State;
 import java.net.URI;
 import java.util.ArrayList;
@@ -496,8 +497,10 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 					}
 				}
 			}
-		} catch (Exception e) {
-			logger.error("General exception extracting the links from : ", e);
+		} catch (UnsupportedEncodingException e) {
+			logger.error("Un-supported encoding : ", e);
+		} catch (IOException e) {
+			logger.error("IOException getting links : ", e);
 		}
 		try {
 			if (newCache.getSize() > indexableInternet.getInternetBatchSize()) {

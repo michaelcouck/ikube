@@ -20,10 +20,6 @@ public class IndexableEmail extends Indexable<IndexableEmail> {
 	@Field()
 	private String contentField;
 
-	private boolean stored = Boolean.FALSE;
-	private boolean analyzed = Boolean.TRUE;
-	private boolean vectored = Boolean.TRUE;
-
 	private String mailHost;
 	private String username;
 	private String password;
@@ -53,30 +49,6 @@ public class IndexableEmail extends Indexable<IndexableEmail> {
 
 	public void setContentField(final String contentField) {
 		this.contentField = contentField;
-	}
-
-	public boolean isStored() {
-		return stored;
-	}
-
-	public void setStored(final boolean stored) {
-		this.stored = stored;
-	}
-
-	public boolean isAnalyzed() {
-		return analyzed;
-	}
-
-	public void setAnalyzed(final boolean analyzed) {
-		this.analyzed = analyzed;
-	}
-
-	public boolean isVectored() {
-		return vectored;
-	}
-
-	public void setVectored(final boolean vectored) {
-		this.vectored = vectored;
 	}
 
 	public String getMailHost() {

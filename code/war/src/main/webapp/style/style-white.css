@@ -9,6 +9,7 @@ body {
 }
 
 table {
+	/* border: 1px solid black; */
 	line-height: 13px;
 	font-family: Tahoma, "Trebuchet MS", Arial, Helvetica, sans-serif;
 	font-size: 11px;
@@ -343,7 +344,7 @@ hr { display: none; }
 
 /* Sidebar */
 #sidebar {
-	float: right;
+	float: left;
 	width: 220px;
 }
 #sidebar ul {

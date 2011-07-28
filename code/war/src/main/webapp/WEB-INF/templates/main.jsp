@@ -31,11 +31,11 @@
 					</td>
 				</tr>
 				<tr id="content">
-					<td width="670">
-						<tiles:insertAttribute name="content" />
-					</td>
 					<td width="250">
 						<tiles:insertAttribute name="menu" />
+					</td>
+					<td width="670">
+						<tiles:insertAttribute name="content" />
 					</td>
 				</tr>
 				<tr>

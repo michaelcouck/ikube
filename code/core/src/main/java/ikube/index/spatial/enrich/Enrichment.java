@@ -94,7 +94,7 @@ public class Enrichment implements IEnrichment {
 		if (latitude != Double.MAX_VALUE && longitude != Double.MAX_VALUE) {
 			coordinate = new Coordinate(latitude, longitude);
 		}
-		LOGGER.info("Co-ordinate : " + coordinate);
+		// LOGGER.info("Co-ordinate : " + coordinate);
 		return coordinate;
 	}
 

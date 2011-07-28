@@ -15,7 +15,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.Persistence;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -41,9 +40,9 @@ public class SearchServlet extends HttpServlet {
 	public void init() throws ServletException {
 		ApplicationContextManager.getApplicationContext();
 		try {
-			Persistence.createEntityManagerFactory(IConstants.PERSISTENCE_UNIT_H2).createEntityManager();
+			// Persistence.createEntityManagerFactory(IConstants.PERSISTENCE_UNIT_H2).createEntityManager();
 		} catch (Exception e) {
-			LOGGER.warn("Exception initialising the entity manager : ");
+			LOGGER.warn("Exception initialising the search servlet : ");
 		}
 	}
 

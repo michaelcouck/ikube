@@ -8,6 +8,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
+import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
@@ -22,7 +23,7 @@ public final class MimeMapper {
 
 	private static final Logger LOGGER = Logger.getLogger(MimeMapper.class);
 	private static final Map<String, String> MAPPING = new HashMap<String, String>();
-	
+
 	public MimeMapper(final String filePath) {
 		try {
 			InputStream inputStream = getClass().getResourceAsStream(filePath);
@@ -36,16 +37,12 @@ public final class MimeMapper {
 					Attribute type = element.attribute("type");
 					Attribute parser = element.attribute("parser");
 					if (type != null && parser != null) {
-						try {
-							// System.out.println(type.getValue() + ":" + parser.getValue());
-							MAPPING.put(type.getValue(), parser.getValue());
-						} catch (Exception t) {
-							LOGGER.error("Exception adding the mapping : " + element, t);
-						}
+						// System.out.println(type.getValue() + ":" + parser.getValue());
+						MAPPING.put(type.getValue(), parser.getValue());
 					}
 				}
 			}
-		} catch (Exception t) {
+		} catch (DocumentException t) {
 			LOGGER.error("Exception loading the mapping for parsers : " + filePath, t);
 		}
 	}

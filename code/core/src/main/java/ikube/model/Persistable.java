@@ -20,20 +20,20 @@ import org.apache.commons.lang.builder.ToStringStyle;
  * @since 21.11.10
  * @version 01.00
  */
-@Entity()
+@Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public abstract class Persistable implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "persistable")
 	@SequenceGenerator(name = "persistable", sequenceName = "persistable", allocationSize = 1000)
-	private Long id;
+	private long id;
 
-	public Long getId() {
+	public long getId() {
 		return id;
 	}
 
-	public void setId(final Long id) {
+	public void setId(final long id) {
 		this.id = id;
 	}
 	
