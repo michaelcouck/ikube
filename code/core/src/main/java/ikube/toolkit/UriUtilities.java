@@ -117,12 +117,21 @@ public final class UriUtilities {
 	 *            the original URI
 	 * @return the URI without dot segments
 	 */
-	protected static URI removeDotSegments(final URI uri) {
+	public static URI removeDotSegments(final URI uri) {
 		String path = uri.getPath();
 		if ((path == null) || (path.indexOf("/.") == -1)) {
 			// No dot segments to remove
 			return uri;
 		}
+		StringBuilder outputBuffer = removeDotSegments(path);
+		try {
+			return new URI(uri.getScheme(), uri.getAuthority(), outputBuffer.toString(), uri.getQuery(), uri.getFragment());
+		} catch (URISyntaxException e) {
+			throw new IllegalArgumentException(e);
+		}
+	}
+	
+	public static StringBuilder removeDotSegments(String path) {
 		String[] inputSegments = path.split("/");
 		Stack<String> outputSegments = new Stack<String>();
 		for (int i = 0; i < inputSegments.length; i++) {
@@ -140,11 +149,7 @@ public final class UriUtilities {
 		for (String outputSegment : outputSegments) {
 			outputBuffer.append('/').append(outputSegment);
 		}
-		try {
-			return new URI(uri.getScheme(), uri.getAuthority(), outputBuffer.toString(), uri.getQuery(), uri.getFragment());
-		} catch (URISyntaxException e) {
-			throw new IllegalArgumentException(e);
-		}
+		return outputBuffer;
 	}
 
 	/**

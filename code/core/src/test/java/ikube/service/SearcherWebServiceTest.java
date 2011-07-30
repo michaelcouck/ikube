@@ -122,26 +122,44 @@ public class SearcherWebServiceTest extends ATest {
 		assertTrue("There should always be at least one map in the results : ", resultsList.size() >= 1);
 	}
 
+	@SuppressWarnings("unchecked")
 	public static void main(String[] args) throws Exception {
-		String host = "ikube.dyndns.org"; // "81.82.213.177" ; // InetAddress.getLocalHost().getHostAddress();
-		int port = ISearcherWebService.PUBLISHED_PORT;
+		// http://192.168.1.39:8084/ikube/service/ISearcherWebService?wsdl
+		String host = "192.168.1.39"; // "81.82.213.177" ; // InetAddress.getLocalHost().getHostAddress();
+		// int port = ISearcherWebService.PUBLISHED_PORT;
 		String path = ISearcherWebService.PUBLISHED_PATH;
-		URL url = new URL("http", host, port, path);
-		String searcherWebServiceUrl = url.toString();
-		System.err.println(searcherWebServiceUrl);
-		final ISearcherWebService searcherWebService = ServiceLocator.getService(ISearcherWebService.class, searcherWebServiceUrl,
-				ISearcherWebService.NAMESPACE, ISearcherWebService.SERVICE);
-		final String[] searchStrings = { "cape AND town" };
-		final String[] searchFields = { "name" };
-		final boolean fragment = Boolean.TRUE;
-		final int firstResult = 0;
-		final int maxResults = 10;
-		final int distance = 10;
-		final double latitude = -33.9693580;
-		final double longitude = 18.4622110;
-		String results = searcherWebService.searchSpacialMulti(IConstants.GEOSPATIAL, searchStrings, searchFields, fragment, firstResult,
-				maxResults, distance, latitude, longitude);
-		System.out.println(results);
+
+		int[] ports = { 8081, 8083, 8084 };
+		String[] indexNames = { IConstants.GEOSPATIAL, IConstants.IKUBE, IConstants.DEFAULT };
+
+		int counter = 0;
+		while (true) {
+			for (int port : ports) {
+				URL url = new URL("http", host, port, path);
+				String searcherWebServiceUrl = url.toString();
+				ISearcherWebService searcherWebService = ServiceLocator.getService(ISearcherWebService.class, searcherWebServiceUrl,
+						ISearcherWebService.NAMESPACE, ISearcherWebService.SERVICE);
+				String[] searchStrings = { "cape town microgrammes characterism chalco ikube" };
+				boolean fragment = Boolean.TRUE;
+				int firstResult = 0;
+				int maxResults = 10;
+
+				for (String indexName : indexNames) {
+					String xml = searcherWebService.searchMultiAll(indexName, searchStrings, fragment, firstResult, maxResults);
+					List<Map<String, String>> results = (List<Map<String, String>>) SerializationUtilities.deserialize(xml);
+					if (results.size() == 1) {
+						System.err.println("Index : " + indexName + ", results : " + results.size() + ", url : " + url);
+						System.err.println(results.get(results.size() - 1));
+					}
+				}
+			}
+			Thread.sleep(10000);
+			counter += ports.length * indexNames.length;
+			if (counter % 1000 == 0) {
+				System.out.println("Counter : " + counter);
+			}
+		}
+
 	}
 
 }

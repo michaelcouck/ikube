@@ -6,6 +6,7 @@ body {
 	font-family: Tahoma, "Trebuchet MS", Arial, Helvetica, sans-serif;
 	font-size: 11px;
 	color: #2e2e2e;
+	background-color: #ffffff;
 }
 
 table {
@@ -365,6 +366,10 @@ hr { display: none; }
 	margin: 0;
 	padding: 0px 0px;
 	background: url(/ikokoon/images/img13.jpg) repeat-x left bottom;
+	/* background-color: #eeeeee; 
+	border: 1px solid black; 
+	padding: 2px; */
+	
 }
 #sidebar p {
 	margin: 0;

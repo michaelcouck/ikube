@@ -86,6 +86,7 @@ public interface IConstants {
 	String INDEX_CONTEXTS = "indexContexts";
 	String INDEX_NAMES = "indexNames";
 	String GEOSPATIAL = "geospatial";
+	String DEFAULT = "default";
 	String FEATURECLASS = "featureclass";
 	String FEATURECODE = "featurecode";
 	String COUNTRYCODE = "countrycode";

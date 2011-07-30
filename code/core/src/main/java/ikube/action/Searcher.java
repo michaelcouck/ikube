@@ -78,7 +78,9 @@ public class Searcher extends Action<IndexContext<?>, Boolean> {
 						start, end, resultsSizeMinimum);
 				logger.info(message);
 				ListenerManager.fireEvent(Event.NO_RESULTS, System.currentTimeMillis(), null, Boolean.TRUE);
-				sendNotification("Integration results : " + indexContext.getIndexName(), results.toString());
+				String subject = "Search results for index : " + indexContext.getIndexName() + ", server : " + server.getAddress();
+				String body = xml;
+				sendNotification(subject, body);
 			} else {
 				ListenerManager.fireEvent(Event.RESULTS, System.currentTimeMillis(), null, Boolean.TRUE);
 			}

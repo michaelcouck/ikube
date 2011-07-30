@@ -29,6 +29,7 @@ import mockit.Mockit;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.hazelcast.core.Hazelcast;
@@ -318,13 +319,14 @@ public class ClusterManagerTest extends ATest {
 	}
 
 	@Test
+	@Ignore
 	public void shutDown() throws Exception {
 		ClusterManager.addShutdownHook();
 		Server server = new Server();
 		server.setAddress("address");
 		Hazelcast.getTopic(IConstants.SHUTDOWN_TOPIC).publish(server);
 		Thread.sleep(15000);
-		assertEquals("We expect the listener for shotdown to be invoked : ", 0, SystemMock.status);
+		assertEquals("We expect the listener for shutdown to be invoked : ", 0, SystemMock.status);
 	}
 
 	@Test
@@ -332,6 +334,11 @@ public class ClusterManagerTest extends ATest {
 		ClusterManager.addClusterExceptionListener();
 		Hazelcast.getTopic(IConstants.EXCEPTION_TOPIC).publish(Boolean.TRUE);
 		// We'll just execute this, we don't care what happens
+	}
+	
+	@Test
+	public void removeDeadServer() {
+		// TODO implement me
 	}
 
 }
