@@ -65,7 +65,7 @@
 						<configuration>
 							<skip>false</skip>
 							<forkMode>once</forkMode>
-							<argLine>-javaagent:../../serenity/serenity.jar -Xms1024m -Xmx4096m -XX:PermSize=256m -XX:MaxPermSize=512m ${included.adapters} ${included.packages} ${excluded.packages} ${write.classes} ${clean.classes}</argLine>
+							<argLine>-javaagent:../../serenity/serenity.jar -Xms1024m -Xmx1536m -XX:PermSize=64m -XX:MaxPermSize=128m ${included.adapters} ${included.packages} ${excluded.packages} ${write.classes} ${clean.classes}</argLine>
 							<excludes>
 								<exclude>**/TextParserTest.java</exclude>
 								<!-- <exclude>**/DataBaseJpaTest.java</exclude> -->

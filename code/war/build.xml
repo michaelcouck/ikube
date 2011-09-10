@@ -2,6 +2,18 @@
 
 	<property file="build.properties" />
 
+	<condition property="isWindows" value="true">
+		<os family="windows" />
+	</condition>
+	<condition property="isLinux" value="true">
+		<os family="unix" />
+	</condition>
+
+	<condition property="isWindows">
+		<istrue>
+		</istrue>
+	</condition>
+
 	<target name="all">
 		<antcall target="configuration" />
 		<antcall target="deploy" />
@@ -105,17 +117,23 @@
 		<replace dir="${configuration.directory}" value="" summary="true">
 			<include name="*.xml" />
 			<include name="**/*.xml" />
-			<replacetoken><![CDATA[classpath:/META-INF]]></replacetoken>
+			<replacetoken>
+				<![CDATA[classpath:/META-INF]]>
+			</replacetoken>
 		</replace>
 		<replace dir="${configuration.directory}" value="" summary="true">
 			<include name="*.xml" />
 			<include name="**/*.xml" />
-			<replacetoken><![CDATA[classpath:/META-INF]]></replacetoken>
+			<replacetoken>
+				<![CDATA[classpath:/META-INF]]>
+			</replacetoken>
 		</replace>
 		<replace dir="${configuration.directory}/client" value="" summary="true">
 			<include name="*.xml" />
 			<include name="**/*.xml" />
-			<replacetoken><![CDATA[/client]]></replacetoken>
+			<replacetoken>
+				<![CDATA[/client]]>
+			</replacetoken>
 		</replace>
 		<jar destfile="${configuration.directory}/configuration.jar" basedir="${configuration.directory}" />
 		<copy file="${configuration.directory}/configuration.jar" todir="./src/main/webapp/docs" failonerror="true" />
@@ -128,5 +146,12 @@
 			<arg value="startvm" />
 			<arg value="Ubuntu 11.4" />
 		</exec>
+	</target>
+
+	<target name="hsqldb">
+		<java classname="org.hsqldb.Server" fork="yes" failonerror="true" classpathref="hsqldb">
+			<arg value="-database.0" />
+			<arg value="file:${database.dir}/${database.name}" />
+		</java>
 	</target>
 </project>
