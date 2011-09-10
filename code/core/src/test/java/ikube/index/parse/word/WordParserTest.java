@@ -35,5 +35,10 @@ public class WordParserTest extends ATest {
 		assertTrue(parsed.toString().length() > 0);
 		assertTrue(parsed.toString().contains("Michael"));
 	}
+	
+	@Test
+	public void parseDocx() {
+		
+	}
 
 }
