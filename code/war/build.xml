@@ -2,18 +2,6 @@
 
 	<property file="build.properties" />
 
-	<condition property="isWindows" value="true">
-		<os family="windows" />
-	</condition>
-	<condition property="isLinux" value="true">
-		<os family="unix" />
-	</condition>
-
-	<condition property="isWindows">
-		<istrue>
-		</istrue>
-	</condition>
-
 	<target name="all">
 		<antcall target="configuration" />
 		<antcall target="deploy" />
