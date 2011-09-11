@@ -7,8 +7,10 @@ import ikube.ATest;
 import ikube.IConstants;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.toolkit.ApplicationContextManager;
+import ikube.toolkit.FileUtilities;
 import ikube.toolkit.SerializationUtilities;
 
+import java.io.File;
 import java.net.InetAddress;
 import java.net.URL;
 import java.util.List;
@@ -29,7 +31,7 @@ import org.junit.Test;
  */
 public class SearcherWebServiceTest extends ATest {
 
-	private SearcherWebService searcherWebService;
+	private SearcherWebService	searcherWebService;
 
 	public SearcherWebServiceTest() {
 		super(SearcherWebServiceTest.class);
@@ -52,8 +54,7 @@ public class SearcherWebServiceTest extends ATest {
 	@Test
 	@SuppressWarnings("unchecked")
 	public void searchSingle() {
-		String result = this.searcherWebService.searchSingle(INDEX_CONTEXT.getIndexName(), "search string", IConstants.CONTENTS,
-				Boolean.TRUE, 0, 10);
+		String result = this.searcherWebService.searchSingle(INDEX_CONTEXT.getIndexName(), "search string", IConstants.CONTENTS, Boolean.TRUE, 0, 10);
 		logger.debug("Single search result : " + result);
 		List<Map<String, String>> resultsList = (List<Map<String, String>>) SerializationUtilities.deserialize(result);
 		verifyResults(resultsList);
@@ -62,8 +63,8 @@ public class SearcherWebServiceTest extends ATest {
 	@Test
 	@SuppressWarnings("unchecked")
 	public void searchMulti() {
-		String result = this.searcherWebService.searchMulti(INDEX_CONTEXT.getIndexName(), new String[] { "search", "strings" },
-				new String[] { IConstants.CONTENTS, IConstants.ID }, Boolean.TRUE, 0, 10);
+		String result = this.searcherWebService.searchMulti(INDEX_CONTEXT.getIndexName(), new String[] { "search", "strings" }, new String[] {
+				IConstants.CONTENTS, IConstants.ID }, Boolean.TRUE, 0, 10);
 		logger.debug("Multi search result : " + result);
 		List<Map<String, String>> resultsList = (List<Map<String, String>>) SerializationUtilities.deserialize(result);
 		verifyResults(resultsList);
@@ -72,8 +73,8 @@ public class SearcherWebServiceTest extends ATest {
 	@Test
 	@SuppressWarnings("unchecked")
 	public void searchMultiSorted() {
-		String result = this.searcherWebService.searchMultiSorted(INDEX_CONTEXT.getIndexName(), new String[] { "search", "strings" },
-				new String[] { IConstants.CONTENTS, IConstants.ID }, new String[] { "", "" }, Boolean.TRUE, 0, 10);
+		String result = this.searcherWebService.searchMultiSorted(INDEX_CONTEXT.getIndexName(), new String[] { "search", "strings" }, new String[] {
+				IConstants.CONTENTS, IConstants.ID }, new String[] { "", "" }, Boolean.TRUE, 0, 10);
 		logger.debug("Multi sorted search result : " + result);
 		List<Map<String, String>> resultsList = (List<Map<String, String>>) SerializationUtilities.deserialize(result);
 		verifyResults(resultsList);
@@ -82,8 +83,8 @@ public class SearcherWebServiceTest extends ATest {
 	@Test
 	@SuppressWarnings("unchecked")
 	public void searchMultiAll() {
-		String result = this.searcherWebService.searchMultiAll(INDEX_CONTEXT.getIndexName(), new String[] { "search", "strings" },
-				Boolean.TRUE, 0, 10);
+		String result = this.searcherWebService.searchMultiAll(INDEX_CONTEXT.getIndexName(), new String[] { "search", "strings" }, Boolean.TRUE, 0,
+				10);
 		logger.debug("Multi sorted search result : " + result);
 		List<Map<String, String>> resultsList = (List<Map<String, String>>) SerializationUtilities.deserialize(result);
 		verifyResults(resultsList);
@@ -92,8 +93,8 @@ public class SearcherWebServiceTest extends ATest {
 	@Test
 	@SuppressWarnings("unchecked")
 	public void searchSpatial() {
-		String result = this.searcherWebService.searchSpacialMulti(INDEX_CONTEXT.getIndexName(), new String[] { "search", "strings" },
-				new String[] { IConstants.CONTENTS, IConstants.ID }, Boolean.TRUE, 0, 10, 10, 47.0008, 53.0001);
+		String result = this.searcherWebService.searchSpacialMulti(INDEX_CONTEXT.getIndexName(), new String[] { "search", "strings" }, new String[] {
+				IConstants.CONTENTS, IConstants.ID }, Boolean.TRUE, 0, 10, 10, 47.0008, 53.0001);
 		logger.debug("Multi sorted search result : " + result);
 		List<Map<String, String>> resultsList = (List<Map<String, String>>) SerializationUtilities.deserialize(result);
 		verifyResults(resultsList);
@@ -122,44 +123,29 @@ public class SearcherWebServiceTest extends ATest {
 		assertTrue("There should always be at least one map in the results : ", resultsList.size() >= 1);
 	}
 
-	@SuppressWarnings("unchecked")
 	public static void main(String[] args) throws Exception {
 		// http://192.168.1.39:8084/ikube/service/ISearcherWebService?wsdl
 		String host = "192.168.1.39"; // "81.82.213.177" ; // InetAddress.getLocalHost().getHostAddress();
 		// int port = ISearcherWebService.PUBLISHED_PORT;
 		String path = ISearcherWebService.PUBLISHED_PATH;
-
-		int[] ports = { 8081, 8083, 8084 };
+		int[] ports = { 8081 };
 		String[] indexNames = { IConstants.GEOSPATIAL, IConstants.IKUBE, IConstants.DEFAULT };
-
-		int counter = 0;
-		while (true) {
-			for (int port : ports) {
-				URL url = new URL("http", host, port, path);
-				String searcherWebServiceUrl = url.toString();
-				ISearcherWebService searcherWebService = ServiceLocator.getService(ISearcherWebService.class, searcherWebServiceUrl,
-						ISearcherWebService.NAMESPACE, ISearcherWebService.SERVICE);
-				String[] searchStrings = { "cape town microgrammes characterism chalco ikube" };
-				boolean fragment = Boolean.TRUE;
-				int firstResult = 0;
-				int maxResults = 10;
-
-				for (String indexName : indexNames) {
-					String xml = searcherWebService.searchMultiAll(indexName, searchStrings, fragment, firstResult, maxResults);
-					List<Map<String, String>> results = (List<Map<String, String>>) SerializationUtilities.deserialize(xml);
-					if (results.size() == 1) {
-						System.err.println("Index : " + indexName + ", results : " + results.size() + ", url : " + url);
-						System.err.println(results.get(results.size() - 1));
-					}
-				}
-			}
-			Thread.sleep(10000);
-			counter += ports.length * indexNames.length;
-			if (counter % 1000 == 0) {
-				System.out.println("Counter : " + counter);
+		for (int port : ports) {
+			URL url = new URL("http", host, port, path);
+			String searcherWebServiceUrl = url.toString();
+			ISearcherWebService searcherWebService = ServiceLocator.getService(ISearcherWebService.class, searcherWebServiceUrl,
+					ISearcherWebService.NAMESPACE, ISearcherWebService.SERVICE);
+			String[] searchStrings = { "cape town microgrammes characterism chalco ikube" };
+			boolean fragment = Boolean.TRUE;
+			int firstResult = 0;
+			int maxResults = 10;
+			for (String indexName : indexNames) {
+				String xml = searcherWebService.searchMultiAll(indexName, searchStrings, fragment, firstResult, maxResults);
+				System.out.println(xml);
+				File file = FileUtilities.getFile("./results.xml", Boolean.FALSE);
+				FileUtilities.setContents(file.getAbsolutePath(), xml.getBytes(IConstants.ENCODING));
 			}
 		}
-
 	}
 
 }

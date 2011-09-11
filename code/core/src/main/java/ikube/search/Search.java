@@ -10,6 +10,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.StringTokenizer;
+import java.util.TreeSet;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -26,16 +29,17 @@ import org.apache.lucene.search.highlight.QueryScorer;
 import org.apache.lucene.search.highlight.Scorer;
 
 /**
- * This action does the actual search on the index. The searcher that is current in the Instance is passed to this action. The search is
- * done on the index. The results are then processed for use in the front end. A list of maps is generated from the results. There are three
- * standard fields in each map. Each map then represents one record or result from the search. The three standard items in the map are the
- * index in the lucene result set, id of the record and the score that the result got. Optionally the fragment generated from the result if
- * this is specified.
+ * This action does the actual search on the index. The searcher that is current in the Instance is passed to this
+ * action. The search is done on the index. The results are then processed for use in the front end. A list of maps is
+ * generated from the results. There are three standard fields in each map. Each map then represents one record or
+ * result from the search. The three standard items in the map are the index in the lucene result set, id of the record
+ * and the score that the result got. Optionally the fragment generated from the result if this is specified.
  * 
  * The id of the record generated using the name of the object indexed and the primary field in the database.
  * 
- * For paging functionality the search method can be called specifying the start and end parameters which will give logical paging. Although
- * the search will be done for each page forward the search is so fast that this is not relevant.
+ * For paging functionality the search method can be called specifying the start and end parameters which will give
+ * logical paging. Although the search will be done for each page forward the search is so fast that this is not
+ * relevant.
  * 
  * @author Michael Couck
  * @since 22.08.08
@@ -43,26 +47,26 @@ import org.apache.lucene.search.highlight.Scorer;
  */
 public abstract class Search {
 
-	private static transient Map<String, QueryParser> QUERY_PARSERS = new HashMap<String, QueryParser>();
+	private static transient Map<String, QueryParser>	QUERY_PARSERS	= new HashMap<String, QueryParser>();
 
-	protected Logger logger;
+	protected Logger									logger;
 	/** The searcher that will be used for the search. */
-	protected transient Searcher searcher;
+	protected transient Searcher						searcher;
 	/** The query parsers for various query fields. */
 
 	/** The search string that we are looking for. */
-	protected transient String[] searchStrings;
+	protected transient String[]						searchStrings;
 	/** The fields in index to add to the search. */
-	protected transient String[] searchFields;
+	protected transient String[]						searchFields;
 	/** The fields to sort the results by. */
-	protected transient String[] sortFields;
+	protected transient String[]						sortFields;
 
 	/** Whether to generate fragments for the search string or not. */
-	protected transient boolean fragment;
+	protected transient boolean							fragment;
 	/** The start position in the search results to return maps from. */
-	protected transient int firstResult;
+	protected transient int								firstResult;
 	/** The end position in the results to stop returning results from. */
-	protected transient int maxResults;
+	protected transient int								maxResults;
 
 	Search(final Searcher searcher) {
 		this.logger = Logger.getLogger(this.getClass());
@@ -70,12 +74,13 @@ public abstract class Search {
 	}
 
 	/**
-	 * Takes a result from the Lucene search query and selects the fragments that have the search word(s) in it, taking only the first few
-	 * instances of the data where the term appears and returns the fragments. For example in the document the data is the following "The
-	 * quick brown fox jumps over the lazy dog" and we search for 'quick', 'fox' and 'lazy'. The result will be '...The quick brown fox
-	 * jumps...the lazy dog...'.<br>
+	 * Takes a result from the Lucene search query and selects the fragments that have the search word(s) in it, taking
+	 * only the first few instances of the data where the term appears and returns the fragments. For example in the
+	 * document the data is the following "The quick brown fox jumps over the lazy dog" and we search for 'quick', 'fox'
+	 * and 'lazy'. The result will be '...The quick brown fox jumps...the lazy dog...'.<br>
 	 * <br>
-	 * The fragments are from the current document, so calling get next document will move the document to the next on in the Hits object.
+	 * The fragments are from the current document, so calling get next document will move the document to the next on
+	 * in the Hits object.
 	 * 
 	 * @param the
 	 *            document to get the fragments from
@@ -117,6 +122,10 @@ public abstract class Search {
 	protected void addFieldsToResults(final Document document, final Map<String, String> result) throws Exception {
 		for (Fieldable field : document.getFields()) {
 			String fieldName = field.name();
+			// Don't add the latitude and longitude tier field, very ugly data, and not useful
+			if (fieldName != null && (fieldName.equals(IConstants.LAT) || fieldName.equals(IConstants.LNG))) {
+				continue;
+			}
 			String stringValue = field.stringValue();
 			if (stringValue != null) {
 				if (stringValue.length() > IConstants.MAX_RESULT_FIELD_LENGTH) {
@@ -160,8 +169,8 @@ public abstract class Search {
 	/**
 	 * This executed the search with the parameters set for the search fields and the search strings.
 	 * 
-	 * @return the results which are a list of maps. Each map has the fields in it if they are strings, not readers, and the map entries for
-	 *         index, score, fragment, total and duration
+	 * @return the results which are a list of maps. Each map has the fields in it if they are strings, not readers, and
+	 *         the map entries for index, score, fragment, total and duration
 	 */
 	public List<Map<String, String>> execute() {
 		if (searcher == null) {
@@ -318,23 +327,29 @@ public abstract class Search {
 		Map<String, String> statistics = new HashMap<String, String>();
 		statistics.put(IConstants.TOTAL, Long.toString(totalHits));
 		statistics.put(IConstants.DURATION, Long.toString(duration));
-		StringBuilder correctedSearchStrings = new StringBuilder();
-		boolean first = Boolean.TRUE;
+		Set<String> searchStringSet = new TreeSet<String>();
+		boolean corrections = Boolean.FALSE;
 		for (String searchString : searchStrings) {
-			if (first) {
-				first = Boolean.FALSE;
-			} else {
-				correctedSearchStrings.append(";");
-			}
-			String correctedSearchString = CheckerExt.getCheckerExt().checkWords(searchString);
-			if (correctedSearchString != null) {
-				correctedSearchStrings.append(correctedSearchString);
-			} else {
-				correctedSearchStrings.append(searchString);
+			StringTokenizer stringTokenizer = new StringTokenizer(searchString);
+			while (stringTokenizer.hasMoreTokens()) {
+				String token = stringTokenizer.nextToken();
+				String correctedSearchString = CheckerExt.getCheckerExt().checkWords(token);
+				if (correctedSearchString != null) {
+					corrections = Boolean.TRUE;
+					searchStringSet.add(correctedSearchString);
+				} else {
+					searchStringSet.add(searchString);
+				}
 			}
 		}
-		statistics.put(IConstants.SEARCH_STRINGS, Arrays.asList(searchStrings).toString());
-		statistics.put(IConstants.CORRECTIONS, correctedSearchStrings.toString());
+		if (corrections) {
+			String correctedString = searchStringSet.toString();
+			correctedString = StringUtils.strip(correctedString, IConstants.STRIP_CHARACTERS);
+			statistics.put(IConstants.CORRECTIONS, correctedString);
+		}
+		String searchString = Arrays.asList(this.searchStrings).toString();
+		searchString = StringUtils.strip(searchString, IConstants.STRIP_CHARACTERS);
+		statistics.put(IConstants.SEARCH_STRINGS, searchString);
 		results.add(statistics);
 	}
 

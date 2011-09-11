@@ -1,8 +1,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<form name="searchForm" id="${param.indexName}" action="<c:url value="/admin/search.html"/>">
-<input type="hidden" name="indexName" value="${param.indexName}">
-<input type="hidden" name="fragment" value="true">
+<c:set var="targetSearchUrl" value="/admin/search.html"></c:set>
+<form name="searchForm" id="${param.indexName}" action="<c:url value="${targetSearchUrl}"/>">
+<input name="targetSearchUrl" type="hidden" value="${targetSearchUrl}">
 <table class="table-content" width="100%">
 	<tr>
 		<td class="top-content" colspan="2">
@@ -31,12 +31,8 @@
 			<table>
 				<c:forEach var="searchField" items="${indexable.value}">
 				<tr>
-					<td width="150">
-						${searchField}
-					</td>
-					<td>
-						<input type="text" name="${searchField}" value="${param[searchField]}" id="search-text"  />
-					</td>
+					<td width="150">${searchField}</td>
+					<td><input type="text" name="${searchField}" value="${param[searchField]}" id="search-text"  /></td>
 				</tr>
 				</c:forEach>
 			</table>

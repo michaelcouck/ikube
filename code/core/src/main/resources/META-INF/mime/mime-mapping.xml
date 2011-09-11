@@ -8,18 +8,21 @@
 <parsers>
 
 	<!-- mime-type type="text/plain" parser="com.ikokoon.search.action.index.text.TextParser" / -->
-	<mime-type type="text/plain" parser="ikube.index.parse.text.TextParser" />
-	<mime-type type="text/html" parser="ikube.index.parse.html.HtmlParser" />
-	<mime-type type="text/xml" parser="ikube.index.parse.xml.XMLParser" />
 	<mime-type type="text/rtf" parser="ikube.index.parse.rtf.RtfParser" />
-
-	<!-- The Aspose parsers can replace the Word, Excel, PowerPoint and PDF parsers -->
-	<!-- mime-type type="application/pdf" parser="com.ikokoon.search.action.index.pdf.AsposePdfParser" />
-		<mime-type type="application/msword" parser="com.ikokoon.search.action.index.msword.AsposeWordParser" / -->
+	<mime-type type="text/xml" parser="ikube.index.parse.xml.XMLParser" />
+	<mime-type type="text/html" parser="ikube.index.parse.html.HtmlParser" />
+	<mime-type type="text/plain" parser="ikube.index.parse.text.TextParser" />
 
 	<mime-type type="application/pdf" parser="ikube.index.parse.pdf.PdfParser" />
-	<mime-type type="application/msword" parser="ikube.index.parse.word.MSWordParser" />
+	<mime-type type="application/msword" parser="ikube.index.parse.word.WordParser" />
+	<mime-type type="application/vnd.openxmlformats-officedocument.wordprocessingml.document" 
+		parser="ikube.index.parse.word.AsposeWordParser" />
+	
 	<mime-type type="application/vnd.ms-excel" parser="ikube.index.parse.excel.ExcelParser" />
+	<mime-type type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" 
+		parser="ikube.index.parse.excel.AsposeExcelParser" />
 	<mime-type type="application/vnd.ms-powerpoint" parser="ikube.index.parse.pp.PowerPointParser" />
+	<mime-type type="application/vnd.openxmlformats-officedocument.presentationml.presentation" 
+		parser="ikube.index.parse.pp.AsposePowerPointParser" />
 
 </parsers>

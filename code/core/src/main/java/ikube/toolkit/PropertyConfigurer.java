@@ -18,8 +18,8 @@ import java.util.regex.Pattern;
 import org.apache.log4j.Logger;
 
 /**
- * This class will scan the classpath and the file system below where the process was started looking for properties files to load matching
- * the file name set in the file name pattern variable.
+ * This class will scan the classpath and the file system below where the process was started looking for properties
+ * files to load matching the file name set in the file name pattern variable.
  * 
  * @author Michael Couck
  * @since 27.03.11
@@ -27,18 +27,20 @@ import org.apache.log4j.Logger;
  */
 public class PropertyConfigurer extends Properties {
 
-	private static final transient Logger LOGGER = Logger.getLogger(PropertyConfigurer.class);
+	private static final transient Logger	LOGGER		= Logger.getLogger(PropertyConfigurer.class);
 
-	private static PropertyConfigurer INSTANCE;
+	private static PropertyConfigurer		INSTANCE;
+	private static boolean					INITIALIZED	= Boolean.FALSE;
 
-	private Pattern fileNamePattern;
-	
+	private Pattern							fileNamePattern;
+
 	static {
 		getStaticProperty("any.key");
 	}
 
 	public static Object getStaticProperty(String key) {
-		if (INSTANCE == null) {
+		if (INSTANCE == null || !INITIALIZED) {
+			INITIALIZED = Boolean.TRUE;
 			INSTANCE = new PropertyConfigurer();
 			INSTANCE.setFileNamePattern(IConstants.SPRING_PROPERTIES);
 			INSTANCE.initialize();
@@ -47,11 +49,13 @@ public class PropertyConfigurer extends Properties {
 	}
 
 	/**
-	 * This method will look through the classpath for properties file with the name specified in the file name property. As well as this it
-	 * sill look through the file system checking for properties files on the file system and any jars that are on the file system below the
-	 * application will also be checked for the properties file name pattern to load into the property map.
+	 * This method will look through the class path for properties file with the name specified in the file name
+	 * property. As well as this it sill look through the file system checking for properties files on the file system
+	 * and any jars that are on the file system below the application will also be checked for the properties file name
+	 * pattern to load into the property map.
 	 */
-	public void initialize() {
+	public synchronized void initialize() {
+		INITIALIZED = Boolean.TRUE;
 		try {
 			// First we check our own jar
 			File thisJar = new File(getClass().getProtectionDomain().getCodeSource().getLocation().toURI().getPath());

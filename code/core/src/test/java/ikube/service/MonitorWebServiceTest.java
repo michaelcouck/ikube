@@ -6,7 +6,6 @@ import static org.junit.Assert.assertTrue;
 import ikube.BaseTest;
 import ikube.IConstants;
 import ikube.model.IndexContext;
-import ikube.service.IMonitorWebService;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
 
@@ -25,7 +24,7 @@ import org.junit.Test;
  */
 public class MonitorWebServiceTest extends BaseTest {
 
-	private IMonitorWebService monitorWebService;
+	private IMonitorWebService	monitorWebService;
 
 	public MonitorWebServiceTest() {
 		super(MonitorWebServiceTest.class);
@@ -94,10 +93,6 @@ public class MonitorWebServiceTest extends BaseTest {
 		assertEquals("The email is the first field : ", "email", indexableFieldNames[0]);
 		assertEquals("The identifier is the second field : ", "identifier", indexableFieldNames[1]);
 		assertEquals("The title is the third field : ", "title", indexableFieldNames[2]);
-
-		indexableFieldNames = monitorWebService.getIndexableFieldNames("geoname");
-		logger.info("Indexable field names : " + Arrays.asList(indexableFieldNames));
-		assertEquals("The countrycode is the first field : ", "countrycode", indexableFieldNames[0]);
 	}
 
 }

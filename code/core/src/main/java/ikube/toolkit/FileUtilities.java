@@ -8,6 +8,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
@@ -20,22 +21,16 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
-/**
- * @author Michael Couck
- * @since 21.11.10
- * @version 01.00
- */
 public final class FileUtilities {
 
-	private static final Logger LOGGER = Logger.getLogger(FileUtilities.class);
+	private static final Logger	LOGGER	= Logger.getLogger(FileUtilities.class);
 
-	private FileUtilities() {
-	}
+	private FileUtilities() {}
 
 	/**
-	 * Deletes all files recursively, that have the specified pattern in the path. Note that this is dangerous and you really need to know
-	 * what files are in the directory that you feed this method. There is no turning back, these files will be completely deelted, n
-	 * re-cycle bin and all that.
+	 * Deletes all files recursively, that have the specified pattern in the path. Note that this is dangerous and you
+	 * really need to know what files are in the directory that you feed this method. There is no turning back, these
+	 * files will be completely deelted, n re-cycle bin and all that.
 	 * 
 	 * @param file
 	 *            the top level directory or file to start looking into
@@ -106,8 +101,8 @@ public final class FileUtilities {
 	}
 
 	/**
-	 * This method looks through all the files defined in the folder in the parameter list, recursively, and gets the first one that matches
-	 * the pattern.
+	 * This method looks through all the files defined in the folder in the parameter list, recursively, and gets the
+	 * first one that matches the pattern.
 	 * 
 	 * @param folder
 	 *            the folder to start looking through
@@ -121,8 +116,8 @@ public final class FileUtilities {
 	}
 
 	/**
-	 * This method will look through all the files in the top level folder, and all the sub folders, adding files to the list when they
-	 * match the patterns that are provided.
+	 * This method will look through all the files in the top level folder, and all the sub folders, adding files to the
+	 * list when they match the patterns that are provided.
 	 * 
 	 * @param folder
 	 *            the folder to start looking through
@@ -145,8 +140,8 @@ public final class FileUtilities {
 	}
 
 	/**
-	 * Deletes the file/folder recursively. If the file cannot be deleted then the file is set to delete on exit of the JVM, which doesn't
-	 * generally work of course, but we try anyway.
+	 * Deletes the file/folder recursively. If the file cannot be deleted then the file is set to delete on exit of the
+	 * JVM, which doesn't generally work of course, but we try anyway.
 	 * 
 	 * @param file
 	 *            the file/folder to delete
@@ -242,9 +237,9 @@ public final class FileUtilities {
 	 * 
 	 * @param baseIndexDirectoryPath
 	 *            the base path to the indexes, i.e. the ./indexes part
-	 * @return the latest time stamped directory at this path, in other words the ./indexes/ikube/123456789 directory. Note that there is no
-	 *         Lucene index at this path, the Lucene index is still in the server ip address directory in this time stamp directory, i.e. at
-	 *         ./indexes/ikube/123456789/127.0.0.1
+	 * @return the latest time stamped directory at this path, in other words the ./indexes/ikube/123456789 directory.
+	 *         Note that there is no Lucene index at this path, the Lucene index is still in the server ip address
+	 *         directory in this time stamp directory, i.e. at ./indexes/ikube/123456789/127.0.0.1
 	 */
 	public static synchronized File getLatestIndexDirectory(final String baseIndexDirectoryPath) {
 		try {
@@ -341,6 +336,24 @@ public final class FileUtilities {
 		return getContents(inputStream, maxReadLength);
 	}
 
+	public static String getContents(final File file, final int maxReadLength, String encoding) {
+		StringBuilder builder = new StringBuilder();
+		Reader reader = null;
+		try {
+			reader = new InputStreamReader(new FileInputStream(file), encoding);
+			int read = -1;
+			char[] chars = new char[1024];
+			while ((read = reader.read(chars)) > -1) {
+				builder.append(new String(chars, 0, read));
+			}
+		} catch (Exception e) {
+			LOGGER.error("Exception reading stream : " + reader, e);
+		} finally {
+			close(reader);
+		}
+		return builder.toString();
+	}
+
 	/**
 	 * Reads the contents of the file and returns the contents in a byte array form.
 	 * 
@@ -371,13 +384,15 @@ public final class FileUtilities {
 	}
 
 	/**
-	 * This method will read the contents of a file from the end, reading the number of bytes specified in the parameter list.
+	 * This method will read the contents of a file from the end, reading the number of bytes specified in the parameter
+	 * list.
 	 * 
 	 * @param file
 	 *            the file to read from the end
 	 * @param bytesToRead
 	 *            the number of bytes to read
-	 * @return the byte array with the bytes read, could be empty if there is no data in the file or if there is an exception
+	 * @return the byte array with the bytes read, could be empty if there is no data in the file or if there is an
+	 *         exception
 	 */
 	public static ByteArrayOutputStream getContentsFromEnd(final File file, final long bytesToRead) {
 		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -459,9 +474,9 @@ public final class FileUtilities {
 	}
 
 	/**
-	 * This function will copy files or directories from one location to another. note that the source and the destination must be mutually
-	 * exclusive. This function can not be used to copy a directory to a sub directory of itself. The function will also have problems if
-	 * the destination files already exist.
+	 * This function will copy files or directories from one location to another. note that the source and the
+	 * destination must be mutually exclusive. This function can not be used to copy a directory to a sub directory of
+	 * itself. The function will also have problems if the destination files already exist.
 	 * 
 	 * @param src
 	 *            A File object that represents the source for the copy

@@ -40,6 +40,9 @@
 		<ext>doc</ext>
 		<magic offset="0" type="byte" value="31be0000" />
 	</mime-type>
+	<mime-type name="application/vnd.openxmlformats-officedocument.wordprocessingml.document">
+		<ext>docx</ext>
+	</mime-type>
 	<mime-type name="application/oda">
 		<ext>oda</ext>
 	</mime-type>
@@ -65,8 +68,14 @@
 	<mime-type name="application/vnd.ms-excel">
 		<ext>xls</ext>
 	</mime-type>
+	<mime-type name="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
+		<ext>xlsx</ext>
+	</mime-type>
 	<mime-type name="application/vnd.ms-powerpoint">
 		<ext>ppt</ext>
+	</mime-type>
+	<mime-type name="application/vnd.openxmlformats-officedocument.presentationml.presentation">
+		<ext>pptx</ext>
 	</mime-type>
 	<mime-type name="application/vnd.sun.xml.writer" description="OpenOffice.org Text Document">
 		<ext>sxw</ext>

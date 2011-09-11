@@ -28,18 +28,6 @@
 					<string>NaN</string>
 				</void>
 				<void method="put">
-					<string>lng</string>
-					<string>
-						<char code="#1" />
-						@
-						<char code="#19" />
-						<char code="#1c" />
-						f3
-						<char code="#19" />
-						Lf3
-					</string>
-				</void>
-				<void method="put">
 					<string>longitude</string>
 					<string>18.45</string>
 				</void>
@@ -50,29 +38,6 @@
 				<void method="put">
 					<string>fragment</string>
 					<string>University of &lt;B&gt;Cape&lt;/B&gt; &lt;B&gt;Town&lt;/B&gt; University of &lt;B&gt;Cape&lt;/B&gt; &lt;B&gt;Town&lt;/B&gt;
-					</string>
-				</void>
-				<void method="put">
-					<string>lat</string>
-					<string>
-						<char code="#0" />
-						?_ALf3
-						<char code="#19" />
-						Le
-					</string>
-				</void>
-				<void method="put">
-					<string>_tier_15</string>
-					<string>
-						<char code="#1" />
-						@$
-						<char code="#0" />
-						<char code="#2" />
-						0
-						<char code="#b" />
-						<char code="#12" />
-						<char code="#8" />
-						<char code="#e" />
 					</string>
 				</void>
 			</object>
@@ -104,18 +69,6 @@
 					<string>NaN</string>
 				</void>
 				<void method="put">
-					<string>lng</string>
-					<string>
-						<char code="#1" />
-						@
-						<char code="#19" />
-						<char code="#1d" />
-						U33h
-						<char code="#1f" />
-						<char code="#11" />
-					</string>
-				</void>
-				<void method="put">
 					<string>longitude</string>
 					<string>18.46355</string>
 				</void>
@@ -126,29 +79,6 @@
 				<void method="put">
 					<string>fragment</string>
 					<string>Heart of &lt;B&gt;Cape&lt;/B&gt; &lt;B&gt;Town&lt;/B&gt; Museum Heart of &lt;B&gt;Cape&lt;/B&gt; &lt;B&gt;Town&lt;/B&gt; Museum
-					</string>
-				</void>
-				<void method="put">
-					<string>lat</string>
-					<string>
-						<char code="#0" />
-						?_Aqt9A
-						<char code="#0" />
-						9
-					</string>
-				</void>
-				<void method="put">
-					<string>_tier_15</string>
-					<string>
-						<char code="#1" />
-						@$
-						<char code="#0" />
-						<char code="#2" />
-						0
-						<char code="#b" />
-						<char code="#12" />
-						<char code="#8" />
-						<char code="#e" />
 					</string>
 				</void>
 			</object>
@@ -180,20 +110,6 @@
 					<string>NaN</string>
 				</void>
 				<void method="put">
-					<string>lng</string>
-					<string>
-						<char code="#1" />
-						@
-						<char code="#19" />
-						<char code="#1a" />
-						X
-						<char code="#8" />
-						<char code="#18" />
-						I]
-						<char code="#18" />
-					</string>
-				</void>
-				<void method="put">
 					<string>longitude</string>
 					<string>18.417</string>
 				</void>
@@ -204,27 +120,6 @@
 				<void method="put">
 					<string>fragment</string>
 					<string>&lt;B&gt;Cape&lt;/B&gt; &lt;B&gt;Town&lt;/B&gt; Hollow &lt;B&gt;Cape&lt;/B&gt; &lt;B&gt;Town&lt;/B&gt; Hollow </string>
-				</void>
-				<void method="put">
-					<string>lat</string>
-					<string>
-						<char code="#0" />
-						?_B/&#13;&apos;wg5
-					</string>
-				</void>
-				<void method="put">
-					<string>_tier_15</string>
-					<string>
-						<char code="#1" />
-						@$
-						<char code="#0" />
-						<char code="#2" />
-						0
-						<char code="#b" />
-						<char code="#12" />
-						<char code="#8" />
-						<char code="#e" />
-					</string>
 				</void>
 			</object>
 		</void>
@@ -255,18 +150,6 @@
 					<string>NaN</string>
 				</void>
 				<void method="put">
-					<string>lng</string>
-					<string>
-						<char code="#1" />
-						@
-						<char code="#19" />
-						<char code="#1a" />
-						v
-						<char code="#5" />
-						}:xA
-					</string>
-				</void>
-				<void method="put">
 					<string>longitude</string>
 					<string>18.42066</string>
 				</void>
@@ -278,27 +161,6 @@
 					<string>fragment</string>
 					<string>Holiday Inn &lt;B&gt;Cape&lt;/B&gt; &lt;B&gt;Town&lt;/B&gt; Waterfront Holiday Inn &lt;B&gt;Cape&lt;/B&gt;
 						&lt;B&gt;Town&lt;/B&gt; Waterfront </string>
-				</void>
-				<void method="put">
-					<string>lat</string>
-					<string>
-						<char code="#0" />
-						?_BGv?S7_
-					</string>
-				</void>
-				<void method="put">
-					<string>_tier_15</string>
-					<string>
-						<char code="#1" />
-						@$
-						<char code="#0" />
-						<char code="#2" />
-						0
-						<char code="#b" />
-						<char code="#12" />
-						<char code="#8" />
-						<char code="#e" />
-					</string>
 				</void>
 			</object>
 		</void>
@@ -329,16 +191,6 @@
 					<string>NaN</string>
 				</void>
 				<void method="put">
-					<string>lng</string>
-					<string>
-						<char code="#1" />
-						@
-						<char code="#19" />
-						<char code="#1b" />
-						)}ymHZ
-					</string>
-				</void>
-				<void method="put">
 					<string>longitude</string>
 					<string>18.427</string>
 				</void>
@@ -350,31 +202,6 @@
 					<string>fragment</string>
 					<string>&lt;B&gt;Cape&lt;/B&gt; &lt;B&gt;Town&lt;/B&gt; International Convention Centre &lt;B&gt;Cape&lt;/B&gt; &lt;B&gt;Town&lt;/B&gt;
 						International Convention Centre </string>
-				</void>
-				<void method="put">
-					<string>lat</string>
-					<string>
-						<char code="#0" />
-						?_BX
-						<char code="#8" />
-						<char code="#18" />
-						I]
-						<char code="#17" />
-					</string>
-				</void>
-				<void method="put">
-					<string>_tier_15</string>
-					<string>
-						<char code="#1" />
-						@$
-						<char code="#0" />
-						<char code="#2" />
-						0
-						<char code="#b" />
-						<char code="#12" />
-						<char code="#8" />
-						<char code="#e" />
-					</string>
 				</void>
 			</object>
 		</void>
@@ -405,19 +232,6 @@
 					<string>NaN</string>
 				</void>
 				<void method="put">
-					<string>lng</string>
-					<string>
-						<char code="#1" />
-						@
-						<char code="#19" />
-						<char code="#1a" />
-						h9,
-						<char code="#4" />
-						<char code="#c" />
-						%
-					</string>
-				</void>
-				<void method="put">
 					<string>longitude</string>
 					<string>18.419</string>
 				</void>
@@ -428,29 +242,6 @@
 				<void method="put">
 					<string>fragment</string>
 					<string>Extreme Hotel &lt;B&gt;Cape&lt;/B&gt; &lt;B&gt;Town&lt;/B&gt; Extreme Hotel &lt;B&gt;Cape&lt;/B&gt; &lt;B&gt;Town&lt;/B&gt;
-					</string>
-				</void>
-				<void method="put">
-					<string>lat</string>
-					<string>
-						<char code="#0" />
-						?_BFn
-						<char code="#17" />
-						,8B
-					</string>
-				</void>
-				<void method="put">
-					<string>_tier_15</string>
-					<string>
-						<char code="#1" />
-						@$
-						<char code="#0" />
-						<char code="#2" />
-						0
-						<char code="#b" />
-						<char code="#12" />
-						<char code="#8" />
-						<char code="#e" />
 					</string>
 				</void>
 			</object>
@@ -482,18 +273,6 @@
 					<string>NaN</string>
 				</void>
 				<void method="put">
-					<string>lng</string>
-					<string>
-						<char code="#1" />
-						@
-						<char code="#19" />
-						<char code="#1a" />
-						I(`U
-						<char code="#19" />
-						<char code="#18" />
-					</string>
-				</void>
-				<void method="put">
 					<string>longitude</string>
 					<string>18.4152</string>
 				</void>
@@ -504,27 +283,6 @@
 				<void method="put">
 					<string>fragment</string>
 					<string>&lt;B&gt;Cape&lt;/B&gt; &lt;B&gt;Town&lt;/B&gt; Lodge Hotel &lt;B&gt;Cape&lt;/B&gt; &lt;B&gt;Town&lt;/B&gt; Lodge Hotel
-					</string>
-				</void>
-				<void method="put">
-					<string>lat</string>
-					<string>
-						<char code="#0" />?_B&gt;UMO
-						|
-					</string>
-				</void>
-				<void method="put">
-					<string>_tier_15</string>
-					<string>
-						<char code="#1" />
-						@$
-						<char code="#0" />
-						<char code="#2" />
-						0
-						<char code="#b" />
-						<char code="#12" />
-						<char code="#8" />
-						<char code="#e" />
 					</string>
 				</void>
 			</object>
@@ -556,18 +314,6 @@
 					<string>NaN</string>
 				</void>
 				<void method="put">
-					<string>lng</string>
-					<string>
-						<char code="#1" />
-						@
-						<char code="#19" />
-						<char code="#1a" />
-						U.
-						<char code="#14" />
-						\rm
-					</string>
-				</void>
-				<void method="put">
 					<string>longitude</string>
 					<string>18.41667</string>
 				</void>
@@ -578,27 +324,6 @@
 				<void method="put">
 					<string>fragment</string>
 					<string>&lt;B&gt;Cape&lt;/B&gt; &lt;B&gt;Town&lt;/B&gt; &lt;B&gt;Cape&lt;/B&gt; &lt;B&gt;Town&lt;/B&gt; </string>
-				</void>
-				<void method="put">
-					<string>lat</string>
-					<string>
-						<char code="#0" />
-						?_BU(uQFH
-					</string>
-				</void>
-				<void method="put">
-					<string>_tier_15</string>
-					<string>
-						<char code="#1" />
-						@$
-						<char code="#0" />
-						<char code="#2" />
-						0
-						<char code="#b" />
-						<char code="#12" />
-						<char code="#8" />
-						<char code="#e" />
-					</string>
 				</void>
 			</object>
 		</void>
@@ -629,15 +354,6 @@
 					<string>NaN</string>
 				</void>
 				<void method="put">
-					<string>lng</string>
-					<string>
-						<char code="#1" />
-						@
-						<char code="#19" />
-						<char code="#1b" />x&amp;+*{d
-					</string>
-				</void>
-				<void method="put">
 					<string>longitude</string>
 					<string>18.43656</string>
 				</void>
@@ -648,29 +364,6 @@
 				<void method="put">
 					<string>fragment</string>
 					<string>&lt;B&gt;Cape&lt;/B&gt; &lt;B&gt;Town&lt;/B&gt; harbour &lt;B&gt;Cape&lt;/B&gt; &lt;B&gt;Town&lt;/B&gt; harbour </string>
-				</void>
-				<void method="put">
-					<string>lat</string>
-					<string>
-						<char code="#0" />
-						?_C
-						<char code="#16" />3m&gt;
-						<char code="#1b" />
-					</string>
-				</void>
-				<void method="put">
-					<string>_tier_15</string>
-					<string>
-						<char code="#1" />
-						@$
-						<char code="#0" />
-						<char code="#2" />
-						0
-						<char code="#b" />
-						<char code="#12" />
-						<char code="#8" />
-						<char code="#e" />
-					</string>
 				</void>
 			</object>
 		</void>
@@ -701,16 +394,6 @@
 					<string>NaN</string>
 				</void>
 				<void method="put">
-					<string>lng</string>
-					<string>
-						<char code="#1" />
-						@
-						<char code="#19" />
-						<char code="#1b" />
-						]k8 @-
-					</string>
-				</void>
-				<void method="put">
 					<string>longitude</string>
 					<string>18.43333</string>
 				</void>
@@ -721,31 +404,6 @@
 				<void method="put">
 					<string>fragment</string>
 					<string>&lt;B&gt;Cape&lt;/B&gt; &lt;B&gt;Town&lt;/B&gt; &lt;B&gt;Cape&lt;/B&gt; &lt;B&gt;Town&lt;/B&gt; </string>
-				</void>
-				<void method="put">
-					<string>lat</string>
-					<string>
-						<char code="#0" />
-						?_C
-						<char code="#19" />
-						Lf3
-						<char code="#19" />
-						L
-					</string>
-				</void>
-				<void method="put">
-					<string>_tier_15</string>
-					<string>
-						<char code="#1" />
-						@$
-						<char code="#0" />
-						<char code="#2" />
-						0
-						<char code="#b" />
-						<char code="#12" />
-						<char code="#8" />
-						<char code="#e" />
-					</string>
 				</void>
 			</object>
 		</void>

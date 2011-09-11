@@ -9,7 +9,10 @@ import ikube.service.ServiceLocator;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.SerializationUtilities;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -28,8 +31,9 @@ import org.springframework.web.servlet.ModelAndView;
  */
 public class SearchController extends BaseController {
 
-	private static final int MAX_RESULTS = 10;
-	private static final int FIRST_RESULT = 0;
+	/** These are the default values for first and max results. */
+	private static final int	FIRST_RESULT	= 0;
+	private static final int	MAX_RESULTS		= 10;
 
 	/**
 	 * {@inheritDoc}
@@ -39,91 +43,102 @@ public class SearchController extends BaseController {
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		String viewUrl = getViewUri(request);
 		ModelAndView modelAndView = new ModelAndView(viewUrl);
-		String indexName = request.getParameter(IConstants.INDEX_NAME);
 		Server server = ApplicationContextManager.getBean(IClusterManager.class).getServer();
 
-		IMonitorWebService monitorWebService = ApplicationContextManager.getBean(IMonitorWebService.class);
-		String[] indexableNames = monitorWebService.getIndexableNames(indexName);
-		Map<String, String[]> indexables = new HashMap<String, String[]>();
-		Set<String> searchFields = new TreeSet<String>();
+		// Get all the search strings from the request, we'll search all the indexes, all the fields, all strings
 		Set<String> searchStrings = new TreeSet<String>();
 		Map<String, String[]> parameterMap = request.getParameterMap();
-		for (String indexableName : indexableNames) {
-			String[] fieldNames = monitorWebService.getIndexableFieldNames(indexableName);
-			indexables.put(indexableName, fieldNames);
-			for (String fieldName : fieldNames) {
-				if (parameterMap.containsKey(fieldName)) {
-					String[] fieldValues = parameterMap.get(fieldName);
-					// Check that there is a value in the fields from the request
-					if (fieldValues == null || fieldValues.length == 0 || !StringUtils.hasLength(fieldValues[0].trim())) {
-						// Don't want to search for empty strings, not useful
-						continue;
-					}
-					searchFields.add(fieldName);
-					searchStrings.add(fieldValues[0]);
-					modelAndView.addObject(fieldName, fieldValues[0]);
+		for (Map.Entry<String, String[]> entry : parameterMap.entrySet()) {
+			// Check that the field is a search string field
+			if (!entry.getKey().startsWith("search")) {
+				continue;
+			}
+			String[] fieldValues = entry.getValue();
+			// Check that there is a value in the fields from the request
+			if (fieldValues == null || fieldValues.length == 0) {
+				// Don't want to search for empty strings, not useful
+				continue;
+			}
+			for (String fieldValue : fieldValues) {
+				if (!StringUtils.hasLength(fieldValue)) {
+					continue;
 				}
+				searchStrings.add(fieldValue);
 			}
 		}
 
-		int firstResult = FIRST_RESULT;
-		int maxResults = MAX_RESULTS;
-		if (searchFields.size() > 0) {
-			String parameter = request.getParameter(IConstants.FIRST_RESULT);
-			try {
-				if (parameter != null && !"".equals(parameter) && org.apache.commons.lang.StringUtils.isNumeric(parameter)) {
-					firstResult = Integer.parseInt(parameter);
-				}
-			} catch (Exception e) {
-				logger.warn("The first results parameter : " + parameter);
-			}
+		IMonitorWebService monitorWebService = ApplicationContextManager.getBean(IMonitorWebService.class);
+		ISearcherWebService searcherWebService = ServiceLocator.getService(ISearcherWebService.class, server.getSearchWebServiceUrl(),
+				ISearcherWebService.NAMESPACE, ISearcherWebService.SERVICE);
 
-			parameter = request.getParameter(IConstants.MAX_RESULTS);
-			try {
-				if (parameter != null && !"".equals(parameter) && org.apache.commons.lang.StringUtils.isNumeric(parameter)) {
-					maxResults = Integer.parseInt(parameter);
-				}
-			} catch (Exception e) {
-				logger.warn("The max results parameter : " + parameter);
-			}
+		int firstResult = getParameter(IConstants.FIRST_RESULT, FIRST_RESULT, request);
+		int maxResults = getParameter(IConstants.MAX_RESULTS, MAX_RESULTS, request);
 
-			ISearcherWebService searcherWebService = ServiceLocator.getService(ISearcherWebService.class, server.getSearchWebServiceUrl(),
-					ISearcherWebService.NAMESPACE, ISearcherWebService.SERVICE);
-			// LOGGER.error("Searcher web service : " + searcherWebService);
-			String xml = null;
-			if (searcherWebService != null) {
-				xml = searcherWebService.searchMulti(indexName, searchStrings.toArray(new String[searchStrings.size()]),
-						searchFields.toArray(new String[searchFields.size()]), Boolean.TRUE, firstResult, maxResults);
-				List<Map<String, String>> results = (List<Map<String, String>>) SerializationUtilities.deserialize(xml);
-				Map<String, String> statistics = results.get(results.size() - 1);
-				String stringTotal = statistics.get(IConstants.TOTAL);
-				String stringDuration = statistics.get(IConstants.DURATION);
+		String[] indexNames = monitorWebService.getIndexNames();
 
-				results.remove(statistics);
-
-				modelAndView.addObject(IConstants.TOTAL, stringTotal != null ? Integer.parseInt(stringTotal) : 0);
-				modelAndView.addObject(IConstants.DURATION, stringDuration != null ? Integer.parseInt(stringDuration) : 0);
-				modelAndView.addObject(IConstants.RESULTS, results);
-
-				// TODO For now we can still put this in the session but this will
-				// only be used in the search tag so it can be removed when everything
-				// is working just with the model
-				request.getSession().setAttribute(IConstants.RESULTS, results);
-			}
+		// Search all the indexes and merge the results
+		String[] searchStringsArray = searchStrings.toArray(new String[searchStrings.size()]);
+		int total = 0;
+		long duration = 0;
+		String corrections = null;
+		List<Map<String, String>> results = new ArrayList<Map<String, String>>();
+		logger.error("Index names : " + Arrays.asList(indexNames));
+		for (String indexName : indexNames) {
+			String xml = searcherWebService.searchMultiAll(indexName, searchStringsArray, Boolean.TRUE, firstResult, maxResults);
+			List<Map<String, String>> indexResults = (List<Map<String, String>>) SerializationUtilities.deserialize(xml);
+			Map<String, String> statistics = indexResults.get(indexResults.size() - 1);
+			total += Integer.parseInt(statistics.get(IConstants.TOTAL));
+			duration += Long.parseLong(statistics.get(IConstants.DURATION));
+			corrections = statistics.get(IConstants.CORRECTIONS);
+			indexResults.remove(statistics);
+			results.addAll(indexResults);
 		}
+
+		// Sort the results according to the score. This will essentially merge the results and
+		// the front end will then display the top maximum results regardless of the score. This
+		// does mean that some indexes will never have any results of course
+		Collections.sort(results, new Comparator<Map<String, String>>() {
+			@Override
+			public int compare(Map<String, String> o1, Map<String, String> o2) {
+				Double s1 = Double.parseDouble(o1.get(IConstants.SCORE));
+				Double s2 = Double.parseDouble(o2.get(IConstants.SCORE));
+				return s1.compareTo(s2);
+			}
+		});
+
+		modelAndView.addObject(IConstants.TOTAL, total);
+		modelAndView.addObject(IConstants.DURATION, duration);
+		modelAndView.addObject(IConstants.RESULTS, results);
+		modelAndView.addObject(IConstants.CORRECTIONS, corrections);
 
 		String searchString = searchStrings.toString();
 		// Strictly speaking this is not necessary because the searchers will clean the strings
-		searchString = org.apache.commons.lang.StringUtils.strip(searchString, "[]{},");
+		searchString = org.apache.commons.lang.StringUtils.strip(searchString, IConstants.STRIP_CHARACTERS);
+		modelAndView.addObject(IConstants.SEARCH_STRINGS, searchString);
+		String targetSearchUrl = getParameter(IConstants.TARGET_SEARCH_URL, "/results.html", request);
+		modelAndView.addObject(IConstants.TARGET_SEARCH_URL, targetSearchUrl);
 
 		modelAndView.addObject(IConstants.FIRST_RESULT, firstResult);
 		modelAndView.addObject(IConstants.MAX_RESULTS, maxResults);
 
-		modelAndView.addObject(IConstants.SEARCH_STRINGS, searchString);
-		modelAndView.addObject(IConstants.INDEX_NAME, indexName);
 		modelAndView.addObject(IConstants.SERVER, server);
-		modelAndView.addObject(IConstants.INDEXABLES, indexables);
 		return modelAndView;
+	}
+
+	private String getParameter(String name, String defaultValue, HttpServletRequest request) {
+		String parameter = request.getParameter(name);
+		if (parameter != null && !"".equals(parameter)) {
+			return parameter;
+		}
+		return defaultValue;
+	}
+
+	private int getParameter(String name, int defaultValue, HttpServletRequest request) {
+		String parameter = request.getParameter(name);
+		if (parameter != null && !"".equals(parameter) && org.apache.commons.lang.StringUtils.isNumeric(parameter)) {
+			return Integer.parseInt(parameter);
+		}
+		return defaultValue;
 	}
 
 }

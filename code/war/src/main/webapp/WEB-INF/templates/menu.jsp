@@ -10,22 +10,18 @@
 <div id="sidebar" class="menu">
 	<ul>
 		<li id="search">
-			<form name="ikubeSearchForm" id="ikubeSearchForm" action="<c:url value="/results.html"/>">
+			<c:set var="targetSearchUrl" value="/results.html"></c:set>
+			<form name="ikubeSearchForm" id="ikubeSearchForm" action="<c:url value="${targetSearchUrl}"/>">
+				<input name="targetSearchUrl" type="hidden" value="${targetSearchUrl}">
 				<fieldset>
-					<input type="hidden" name="indexName" value="ikube">
-					<input type="hidden" name="fragment" value="true">
-					<input type="text" name="content" id="search-text"
-						value="<c:out value='${param.content}' />" />
+					<input type="text" name="searchStrings" id="search-text" 	value="<c:out value='${param.searchStrings}' />" />
 					<input type="submit" id="search-submit" value="Go" />
 				</fieldset>
 			</form>
-			<!-- TODO This can be removed and replaced with the spelling corrections in the results if there are any. -->
-			<search:spellingTag fieldParameterNames="content">
+			<c:if test="${corrections != null}">
 				Did you mean : 
-				<a href="<c:url value="/results.html"/>?indexName=ikube&fragment=true&content=<search:spellingWriterTag />">
-					<search:spellingWriterTag />
-				</a>
-			</search:spellingTag>
+				<a href="<c:url value="${targetSearchUrl}" />?targetSearchUrl=${targetSearchUrl}&searchStrings=${corrections}">${corrections}</a><br>
+			</c:if>
 		</li>
 		<li>
 			<h2>Navigation</h2>

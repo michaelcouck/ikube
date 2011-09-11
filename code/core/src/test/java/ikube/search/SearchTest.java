@@ -14,6 +14,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
+import org.apache.lucene.document.Fieldable;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriter.MaxFieldLength;
@@ -25,6 +26,7 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -34,8 +36,8 @@ import org.junit.Test;
  */
 public class SearchTest extends ATest {
 
-	private static Searcher SEARCHER;
-	private static String INDEX_DIRECTORY_PATH = "./" + SearchTest.class.getSimpleName();
+	private static Searcher	SEARCHER;
+	private static String	INDEX_DIRECTORY_PATH	= "./" + SearchTest.class.getSimpleName();
 
 	@BeforeClass
 	public static void beforeClass() throws Exception {
@@ -78,7 +80,7 @@ public class SearchTest extends ATest {
 		FileUtilities.deleteFile(new File(INDEX_DIRECTORY_PATH), 1);
 	}
 
-	private int maxResults = 10;
+	private int	maxResults	= 10;
 
 	public SearchTest() {
 		super(SearchTest.class);
@@ -148,6 +150,24 @@ public class SearchTest extends ATest {
 		searchMultiAll.setSortField("content");
 		List<Map<String, String>> results = searchMultiAll.execute();
 		assertTrue(results.size() > 1);
+	}
+
+	@Test
+	@Ignore
+	public void adHoc() throws Exception {
+		String path = "D:/Eclipse/workspace/ikube/indexes/default/1315686200535/192.168.1.4.33621727527171";
+		Directory directory = FSDirectory.open(new File(path));
+		IndexReader indexReader = IndexReader.open(directory);
+		for (int i = 0; i < indexReader.numDocs(); i++) {
+			Document document = indexReader.document(i);
+			logger.error(document);
+			List<Fieldable> fields = document.getFields();
+			for (Fieldable fieldable : fields) {
+				logger.error(fieldable);
+			}
+		}
+		// Searchable[] searchables = new Searchable[] { new IndexSearcher(directory) };
+		// SEARCHER = new MultiSearcher(searchables);
 	}
 
 }

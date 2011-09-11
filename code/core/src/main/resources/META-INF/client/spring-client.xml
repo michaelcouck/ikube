@@ -43,6 +43,7 @@
 		<!-- <ref local="internetMillion" /> -->
 		<ref local="filesystem" />
 		<ref local="dropbox" />
+		<ref local="dropboxIkube" />
 		<!-- <ref local="filesystemMillionOne" /> -->
 		<!-- <ref local="filesystemMillionTwo" />
 		<ref local="filesystemMillionThree" />
@@ -53,13 +54,13 @@
 		<ref local="filesystemMillionEight" />
 		<ref local="filesystemMillionNine" />
 		<ref local="filesystemMillionTen" /> -->
-		<!-- <ref bean="faqTableH2" /> -->
-		<!-- <ref bean="faqTableDb2" /> -->
-		<!-- <ref bean="faqTableOracle" /> -->
+		<!-- <ref bean="faqTableH2" />
+		<ref bean="faqTableDb2" />
+		<ref bean="faqTableOracle" />
 		<ref bean="patientTableH2" />
 		<ref bean="patientTableDb2" />
 		<ref bean="patientTableOracle" />
-		<ref bean="addressTableDb2" />
+		<ref bean="addressTableDb2" /> -->
 		<!-- <ref bean="attachmentTableDb2Direct" /> -->
 	</util:list>
 
@@ -594,14 +595,34 @@
 		class="ikube.model.IndexableFileSystem"
 		property:name="dropbox"
 		property:path="C:/Users/Administrator/Dropbox"
-		property:pathFieldName="path"
+		property:pathFieldName="title"
 		property:nameFieldName="name"
 		property:lengthFieldName="length"
 		property:contentFieldName="contents"
 		property:excludedPattern="${files.excluded.pattern}"
 		property:lastModifiedFieldName="lastmodified"
 		property:batchSize="${file.batch.size}"
-		property:maxReadLength="${file.max.read.length}" />
+		property:maxReadLength="${file.max.read.length}"
+		property:stored="true"
+		property:vectored="true"
+		property:analyzed="true" />
+	
+	<bean
+		id="dropboxIkube"
+		class="ikube.model.IndexableFileSystem"
+		property:name="dropbox"
+		property:path="C:/Users/db2admin/Dropbox"
+		property:pathFieldName="title"
+		property:nameFieldName="name"
+		property:lengthFieldName="length"
+		property:contentFieldName="contents"
+		property:excludedPattern="${files.excluded.pattern}"
+		property:lastModifiedFieldName="lastmodified"
+		property:batchSize="${file.batch.size}"
+		property:maxReadLength="${file.max.read.length}"
+		property:stored="true"
+		property:vectored="true"
+		property:analyzed="true" />
 	
 	<bean
 		id="filesystemMillionOne"

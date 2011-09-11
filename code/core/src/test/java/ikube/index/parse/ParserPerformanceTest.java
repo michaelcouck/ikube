@@ -8,7 +8,7 @@ import ikube.index.parse.pdf.PdfParser;
 import ikube.index.parse.pp.PowerPointParser;
 import ikube.index.parse.rtf.RtfParser;
 import ikube.index.parse.text.TextParser;
-import ikube.index.parse.word.MSWordParser;
+import ikube.index.parse.word.WordParser;
 import ikube.index.parse.xml.XMLParser;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.PerformanceTester;
@@ -76,7 +76,7 @@ public class ParserPerformanceTest extends ATest {
 	@Test
 	public void wordPerformance() throws Exception {
 		final File file = FileUtilities.findFileRecursively(new File("."), "doc.doc");
-		final MSWordParser wordParser = new MSWordParser();
+		final WordParser wordParser = new WordParser();
 		PerformanceTester.execute(new PerformanceTester.APerform() {
 			@Override
 			public void execute() throws Exception {

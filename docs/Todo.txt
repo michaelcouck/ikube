@@ -9,9 +9,6 @@
 * Enrich the geospatial data with cities and countries - ?
    1) First with the country data within the data - 1
    2) With Google or NavTec data - 2
-* Verify why the cluster is not acting as expected ?
-* Implement paging in the search results - 1
-* Write a script to automate the deploy to the local repository for drivers etc. - 1
 * Log all the actions and the rules that set them in motion and do a page to view them. This 
    means using ObjectDb as well of course, i.e. some kind of persistence.
 * Add more logging data and create a page with a report of the details, perhaps 
@@ -25,14 +22,14 @@
    5) Open files
 * Add search results tracking
    Analysis of the search results with resulting reports, top queries, results from queries etc.
-* Taxonomy and synonyms
+* Taxonomy, stemming and synonyms, perhaps other language results too
 * Persist the results of the rules along with the action
 * Get the start time for each action and the end time and persist it
 
 Sub Total: 7
 
 * Implementation of updating the index with deltas from the client - 3
-* Move the datasource to a central location for the table indexables - 4 hours
+* Move the data source to a central location for the table indexables - 4 hours
 * Add strategies for indexing large files like zips - 3
 * Test writing the index across the network, and reading, perhaps a stress test too - 1
 * Do a configuration page that lets the user see the configuration per index and indexable
@@ -44,7 +41,6 @@ Sub total: 16 1/2
 Total: +-41
 
 Bugs:
-* Verify why the two indexes have the same timestamp
 
 Done:
 * Cluster - 3 *
@@ -81,7 +77,11 @@ Done:
 * Add the web service urls to the servers page - 1 *
 * Change the search url from the servlet to the web service ? *
 * Add a shutdown that closes everything when the application is being un-deployed 
-   so the new application starts the application context cleanly - 3
+   so the new application starts the application context cleanly - 3 *
+* Verify why the cluster is not acting as expected ? *
+* Implement paging in the search results - 1 *
+* Write a script to automate the deploy to the local repository for drivers etc. - 1 *
+* Verify why the two indexes have the same timestamp *
 
 Nice to have:
 * Add a database tester to re-connect if the database becomes disconnected - 4 hours
@@ -91,8 +91,6 @@ Nice to have:
 * Add a shutdown hook for the Spring objects that need to be closed when the context - 3
   gets refreshed. This can aid in the dynamic configuration.
 * Security - 3
-* Stemming - 2
-* Taxonomy - 3
 * Spelling checking, done just need to migrate the code from the old project. - 1
 * Phonetic search - 3
 * Result clustering - 3
@@ -124,4 +122,3 @@ Won't Do:
 * Add facets to the search possibilities - 5
 * Re-factor common code to tools module - 1 *
 * Secure web service and servlet - 3 *
-* Security - 3 *
