@@ -6,7 +6,9 @@ import static org.mockito.Mockito.when;
 import ikube.IConstants;
 import ikube.mock.ApplicationContextManagerWebMock;
 import ikube.mock.ServiceLocatorWebMock;
+import ikube.toolkit.FileUtilities;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,9 +73,30 @@ public class SearchControllerTest {
 		LOGGER.info(results.size());
 
 		assertEquals("Start result is 0 : ", 0, firstResult);
-		assertEquals("Start result is 10 : ", 10, maxResults);
+		assertEquals("End result is 10 : ", 10, maxResults);
 		assertEquals("There are 11 * 3 results : ", 33, total);
-		assertEquals("There are 10 * 3 results : ", 30, results.size());
+		assertEquals("There are 10 * 3 results : ", 10, results.size());
+
+		File file = FileUtilities.findFileRecursively(new File("."), "default.results.small.xml");
+		String xml = FileUtilities.getContents(file, Integer.MAX_VALUE, IConstants.ENCODING);
+		when(ServiceLocatorWebMock.SEARCHER_WEB_SERVICE.searchMultiAll(IConstants.IKUBE, new String[] { IConstants.IKUBE }, true, 0, 10)).thenReturn(
+				xml);
+
+		modelAndView = searchController.handleRequest(request, response);
+
+		total = modelAndView.getModel().get(IConstants.TOTAL);
+		duration = modelAndView.getModel().get(IConstants.DURATION);
+		results = (List<Map<String, String>>) modelAndView.getModel().get(IConstants.RESULTS);
+		corrections = modelAndView.getModel().get(IConstants.CORRECTIONS);
+		searchStrings = modelAndView.getModel().get(IConstants.SEARCH_STRINGS);
+		firstResult = modelAndView.getModel().get(IConstants.FIRST_RESULT);
+		maxResults = modelAndView.getModel().get(IConstants.MAX_RESULTS);
+		server = modelAndView.getModel().get(IConstants.SERVER);
+
+		assertEquals("Start result is 0 : ", 0, firstResult);
+		assertEquals("End result is 10 : ", 10, maxResults);
+		assertEquals("There are 3 * 3 results : ", 9, total);
+		assertEquals("There are 2 * 3 results : ", 6, results.size());
 	}
 
 }

@@ -107,7 +107,8 @@ public class SearchController extends BaseController {
 		});
 
 		// Now just take the top results, i.e. the max results that are defined by the user
-		results = results.subList(0, results.size() > maxResults ? results.size() : maxResults);
+		logger.error("Results : " + results.size());
+		results = results.subList(0, results.size() < maxResults ? results.size() : maxResults);
 
 		modelAndView.addObject(IConstants.TOTAL, total);
 		modelAndView.addObject(IConstants.DURATION, duration);
