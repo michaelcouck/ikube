@@ -8,19 +8,19 @@
 	<groupId>ikube</groupId>
 	<artifactId>ikube-core</artifactId>
 	<packaging>jar</packaging>
-	<version>2.0.0</version>
-
-	<parent>
-		<groupId>ikube</groupId>
-		<artifactId>ikube</artifactId>
-		<version>2.0.0</version>
-		<relativePath>../../pom.xml</relativePath>
-	</parent>
+	<version>${parent.version}</version>
 
 	<properties>
 		<main.class>ikube.Ikube</main.class>
 		<project.build.sourceEncoding>${encoding}</project.build.sourceEncoding>
 	</properties>
+	
+	<parent>
+		<groupId>ikube</groupId>
+		<artifactId>ikube</artifactId>
+		<version>2.1.0</version>
+		<relativePath>../../pom.xml</relativePath>
+	</parent>
 
 	<build>
 		<resources>
