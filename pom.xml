@@ -675,7 +675,7 @@
 	</repositories>
 
 	<scm>
-		<url>http://ikube.googlecode.com/svn/trunk</url>
+		<url>http://ikube.googlecode.com/svn</url>
 		<connection>scm:svn:http://ikube.googlecode.com/svn/trunk</connection>
 		<developerConnection>scm:svn:http://ikube.googlecode.com/svn/trunk</developerConnection>
 	</scm>
