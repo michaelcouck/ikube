@@ -10,7 +10,6 @@ import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.SerializationUtilities;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -77,12 +76,11 @@ public class SearchController extends BaseController {
 		String[] indexNames = monitorWebService.getIndexNames();
 
 		// Search all the indexes and merge the results
-		String[] searchStringsArray = searchStrings.toArray(new String[searchStrings.size()]);
 		int total = 0;
 		long duration = 0;
 		String corrections = null;
 		List<Map<String, String>> results = new ArrayList<Map<String, String>>();
-		logger.error("Index names : " + Arrays.asList(indexNames));
+		String[] searchStringsArray = searchStrings.toArray(new String[searchStrings.size()]);
 		for (String indexName : indexNames) {
 			String xml = searcherWebService.searchMultiAll(indexName, searchStringsArray, Boolean.TRUE, firstResult, maxResults);
 			List<Map<String, String>> indexResults = (List<Map<String, String>>) SerializationUtilities.deserialize(xml);
@@ -107,7 +105,6 @@ public class SearchController extends BaseController {
 		});
 
 		// Now just take the top results, i.e. the max results that are defined by the user
-		logger.error("Results : " + results.size());
 		results = results.subList(0, results.size() < maxResults ? results.size() : maxResults);
 
 		modelAndView.addObject(IConstants.TOTAL, total);
