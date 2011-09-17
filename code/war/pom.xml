@@ -25,7 +25,6 @@
 	</parent>
 
 	<build>
-		<finalName>${project.artifactId}-${project.version}</finalName>
 		<resources>
 			<resource>
 				<directory>src/main/java</directory>
@@ -68,7 +67,7 @@
 					<stopKey>stop</stopKey>
 					<stopPort>9090</stopPort>
 					<scanIntervalSeconds>10000</scanIntervalSeconds>
-					<contextPath>/ikube</contextPath>
+					<contextPath>/${project.artifactId}-${project.version}.${project.packaging}-SNAPSHOT</contextPath>
 					<scanTargets>
 						<scanTarget>src/main/resources</scanTarget>
 						<scanTarget>src/main/webapp</scanTarget>
