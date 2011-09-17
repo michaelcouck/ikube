@@ -6,13 +6,12 @@ import ikube.search.spelling.CheckerExt;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.TreeSet;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -327,29 +326,31 @@ public abstract class Search {
 		Map<String, String> statistics = new HashMap<String, String>();
 		statistics.put(IConstants.TOTAL, Long.toString(totalHits));
 		statistics.put(IConstants.DURATION, Long.toString(duration));
-		Set<String> searchStringSet = new TreeSet<String>();
+		Set<String> searchStringSet = new LinkedHashSet<String>();
+		Set<String> correctedSearchStringSet = new LinkedHashSet<String>();
 		boolean corrections = Boolean.FALSE;
 		for (String searchString : searchStrings) {
 			StringTokenizer stringTokenizer = new StringTokenizer(searchString);
 			while (stringTokenizer.hasMoreTokens()) {
 				String token = stringTokenizer.nextToken();
-				String correctedSearchString = CheckerExt.getCheckerExt().checkWords(token);
-				if (correctedSearchString != null) {
-					corrections = Boolean.TRUE;
-					searchStringSet.add(correctedSearchString);
+				searchStringSet.add(token);
+				String correctedSearchString = CheckerExt.getCheckerExt().checkWords(token.toLowerCase());
+				if (correctedSearchString == null) {
+					correctedSearchStringSet.add(token);
 				} else {
-					searchStringSet.add(searchString);
+					corrections = Boolean.TRUE;
+					correctedSearchStringSet.add(correctedSearchString);
 				}
 			}
 		}
-		if (corrections) {
-			String correctedString = searchStringSet.toString();
-			correctedString = StringUtils.strip(correctedString, IConstants.STRIP_CHARACTERS);
-			statistics.put(IConstants.CORRECTIONS, correctedString);
-		}
-		String searchString = Arrays.asList(this.searchStrings).toString();
+		String searchString = searchStringSet.toString();
 		searchString = StringUtils.strip(searchString, IConstants.STRIP_CHARACTERS);
 		statistics.put(IConstants.SEARCH_STRINGS, searchString);
+		if (corrections) {
+			String correctedSearchString = correctedSearchStringSet.toString();
+			correctedSearchString = StringUtils.strip(correctedSearchString, IConstants.STRIP_CHARACTERS);
+			statistics.put(IConstants.CORRECTIONS, correctedSearchString);
+		}
 		results.add(statistics);
 	}
 

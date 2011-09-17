@@ -153,6 +153,23 @@ public class SearchTest extends ATest {
 	}
 
 	@Test
+	public void addStatistics() {
+		Search search = new SearchMultiAll(SEARCHER);
+		search.setFirstResult(0);
+		search.setFragment(Boolean.TRUE);
+		search.setMaxResults(10);
+		search.setSearchField("content");
+		search.setSearchString("michael AND couck");
+		search.setSortField("content");
+
+		List<Map<String, String>> results = search.execute();
+		search.addStatistics(results, 79, 23);
+		Map<String, String> statistics = results.get(results.size() - 1);
+		assertTrue(statistics.get(IConstants.SEARCH_STRINGS).equals("michael, AND, couck"));
+		assertTrue(statistics.get(IConstants.CORRECTIONS).equals("michael, AND, houck"));
+	}
+
+	@Test
 	@Ignore
 	public void adHoc() throws Exception {
 		String path = "D:/Eclipse/workspace/ikube/indexes/default/1315686200535/192.168.1.4.33621727527171";
