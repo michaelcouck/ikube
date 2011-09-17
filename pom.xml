@@ -691,12 +691,12 @@
 	<distributionManagement>
 		<site>
 			<id>google-code</id>
-			<url>svn:http://ikube.googlecode.com/svn/trunk/</url>
+			<url>svn:http://ikube.googlecode.com/svn/site/</url>
 		</site>
 		<repository>
 			<id>google-code</id>
 			<uniqueVersion>false</uniqueVersion>
-			<url>svn:http://ikube.googlecode.com/svn/trunk/</url>
+			<url>svn:http://ikube.googlecode.com/svn/repo/</url>
 		</repository>
 		<!-- use the following if you're not using a snapshot version. -->
 		<!-- <repository>
