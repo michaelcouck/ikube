@@ -5,7 +5,7 @@
 	<groupId>ikube</groupId>
 	<artifactId>ikube</artifactId>
 	<packaging>pom</packaging>
-	<version>2.1.0</version>
+	<version>2.1.1-SNAPSHOT</version>
 
 	<properties>
 		<targetJdk>1.6</targetJdk>
@@ -33,6 +33,13 @@
 	</modules>
 
 	<build>
+		<extensions>
+            <extension>
+                <groupId>org.jvnet.wagon-svn</groupId>
+                <artifactId>wagon-svn</artifactId>
+                <version>1.8</version>
+            </extension>
+        </extensions>
 		<pluginManagement>
 			<plugins>
 				<plugin>
@@ -64,32 +71,6 @@
 						<verbose />
 					</compilerArguments>
 				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>openjpa-maven-plugin</artifactId>
-				<version>1.2</version>
-				<configuration>
-					<includes>ikube/model/*.class,ikube/model/**/*.class</includes>
-					<addDefaultConstructor>true</addDefaultConstructor>
-					<enforcePropertyRestrictions>true</enforcePropertyRestrictions>
-				</configuration>
-				<executions>
-					<execution>
-						<id>enhancer</id>
-						<phase>process-classes</phase>
-						<goals>
-							<goal>enhance</goal>
-						</goals>
-					</execution>
-				</executions>
-				<dependencies>
-					<dependency>
-						<groupId>org.apache.openjpa</groupId>
-						<artifactId>openjpa</artifactId>
-						<version>2.1.0</version>
-					</dependency>
-				</dependencies>
 			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
@@ -631,6 +612,13 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
+		<dependency>
+			<groupId>net.sourceforge.htmlunit</groupId>
+			<artifactId>htmlunit</artifactId>
+			<version>2.9</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
 	</dependencies>
 
 	<repositories>
@@ -701,18 +689,27 @@
 	</pluginRepositories>
 
 	<distributionManagement>
-		<!-- use the following if you're not using a snapshot version. -->
+		<site>
+			<id>google-code</id>
+			<url>svn:http://ikube.googlecode.com/svn/releases/</url>
+		</site>
 		<repository>
+			<id>google-code</id>
+			<uniqueVersion>false</uniqueVersion>
+			<url>svn:http://ikube.googlecode.com/svn/releases/</url>
+		</repository>
+		<!-- use the following if you're not using a snapshot version. -->
+		<!-- <repository>
 			<id>ikube.googlecode.releases</id>
 			<name>ikube.googlecode.releases</name>
 			<url>dav:https://ikube.googlecode.com/svn/maven2/</url>
-		</repository>
+		</repository> -->
 		<!-- use the following if you ARE using a snapshot version. -->
-		<snapshotRepository>
+		<!-- <snapshotRepository>
 			<id>ikube.googlecode.snapshots</id>
 			<name>ikube.googlecode.snapshots</name>
 			<url>dav:https://ikube.googlecode.com/svn/maven2-snapshots/</url>
-		</snapshotRepository>
+		</snapshotRepository> -->
 	</distributionManagement>
 
 	<reporting>

@@ -142,4 +142,36 @@
 			<arg value="file:${database.dir}/${database.name}" />
 		</java>
 	</target>
+
+	<property name="ant-googlecode.jar" value="libs/ant-googlecode-0.0.3.jar" />
+	<property name="project.name" value="ikube" />
+	<!-- /downloads/entry -->
+	<property name="project.url" value="http://code.google.com/p/ikube/downloads/entry" />
+	<property name="ikube.version" value="2.1.1" />
+	<property name="file.name" value="target/ikube.war" />
+	<property name="target.file.name" value="ikube-${ikube.version}.war" />
+	<property name="release.labels" value="Ikube release ${ikube.version}" />
+
+	<taskdef 
+		classname="net.bluecow.googlecode.ant.GoogleCodeUploadTask" 
+		classpath="${ant-googlecode.jar}" 
+		name="gcupload" />
+
+	<property file="build.credentials.properties" />
+	<fail unless="gc.username" message="Missing property 'gc.username' from file 'build.credentials.properties'." />
+	<fail unless="gc.password" message="Missing property 'gc.password' from file 'build.credentials.properties'." />
+	
+	<target name="upload.google.code">
+		<gcupload 
+			username="${gc.username}" 
+			password="${gc.password}" 
+			projectname="${project.name}" 
+			uploadUrl="${project.url}" 
+			ignoreSslCertificateHostname="true" 
+			filename="${file.name}" 
+			targetfilename="${target.file.name}" 
+			summary="Version ${project.version} of ${project.name}" 
+			labels="${release.labels}" />
+	</target>
+
 </project>

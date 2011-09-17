@@ -8,7 +8,7 @@
 	<groupId>ikube</groupId>
 	<artifactId>ikube-core</artifactId>
 	<packaging>jar</packaging>
-	<version>2.1.0</version>
+	<version>2.1.1-SNAPSHOT</version>
 
 	<properties>
 		<main.class>ikube.Ikube</main.class>
@@ -18,7 +18,7 @@
 	<parent>
 		<groupId>ikube</groupId>
 		<artifactId>ikube</artifactId>
-		<version>2.1.0</version>
+		<version>2.1.1</version>
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
 
@@ -98,6 +98,32 @@
 				</executions>
 			</plugin>
 			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>openjpa-maven-plugin</artifactId>
+				<version>1.2</version>
+				<configuration>
+					<includes>ikube/model/*.class,ikube/model/**/*.class</includes>
+					<addDefaultConstructor>false</addDefaultConstructor>
+					<enforcePropertyRestrictions>true</enforcePropertyRestrictions>
+				</configuration>
+				<executions>
+					<execution>
+						<id>enhancer</id>
+						<phase>process-classes</phase>
+						<goals>
+							<goal>enhance</goal>
+						</goals>
+					</execution>
+				</executions>
+				<dependencies>
+					<dependency>
+						<groupId>org.apache.openjpa</groupId>
+						<artifactId>openjpa</artifactId>
+						<version>2.1.0</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-install-plugin</artifactId>
 				<version>2.3</version>
@@ -107,7 +133,7 @@
 						<goals>
 							<goal>install-file</goal>
 						</goals>
-						<phase>verify</phase>
+						<phase>validate</phase>
 						<configuration>
 							<groupId>com.ibm.db2.jcc</groupId>
 							<artifactId>db2jcc4</artifactId>
@@ -122,7 +148,7 @@
 						<goals>
 							<goal>install-file</goal>
 						</goals>
-						<phase>verify</phase>
+						<phase>validate</phase>
 						<configuration>
 							<groupId>com.ibm.db2.jcc_license_cu</groupId>
 							<artifactId>db2jcc_license_cu</artifactId>
@@ -137,7 +163,7 @@
 						<goals>
 							<goal>install-file</goal>
 						</goals>
-						<phase>verify</phase>
+						<phase>validate</phase>
 						<configuration>
 							<groupId>oracle.ojdbc6</groupId>
 							<artifactId>ojdbc6</artifactId>
@@ -152,7 +178,7 @@
 						<goals>
 							<goal>install-file</goal>
 						</goals>
-						<phase>verify</phase>
+						<phase>validate</phase>
 						<configuration>
 							<groupId>org.nfunk</groupId>
 							<artifactId>jep</artifactId>
@@ -167,7 +193,7 @@
 						<goals>
 							<goal>install-file</goal>
 						</goals>
-						<phase>verify</phase>
+						<phase>validate</phase>
 						<configuration>
 							<groupId>aspose</groupId>
 							<artifactId>aspose.cells</artifactId>
@@ -182,7 +208,7 @@
 						<goals>
 							<goal>install-file</goal>
 						</goals>
-						<phase>verify</phase>
+						<phase>validate</phase>
 						<configuration>
 							<groupId>aspose</groupId>
 							<artifactId>aspose.pdf</artifactId>
@@ -197,7 +223,7 @@
 						<goals>
 							<goal>install-file</goal>
 						</goals>
-						<phase>verify</phase>
+						<phase>validate</phase>
 						<configuration>
 							<groupId>aspose</groupId>
 							<artifactId>aspose.slides</artifactId>
@@ -212,7 +238,7 @@
 						<goals>
 							<goal>install-file</goal>
 						</goals>
-						<phase>verify</phase>
+						<phase>validate</phase>
 						<configuration>
 							<groupId>aspose</groupId>
 							<artifactId>aspose.words</artifactId>
@@ -227,7 +253,7 @@
 						<goals>
 							<goal>install-file</goal>
 						</goals>
-						<phase>verify</phase>
+						<phase>validate</phase>
 						<configuration>
 							<groupId>canyon</groupId>
 							<artifactId>canyon</artifactId>
@@ -242,7 +268,7 @@
 						<goals>
 							<goal>install-file</goal>
 						</goals>
-						<phase>verify</phase>
+						<phase>validate</phase>
 						<configuration>
 							<groupId>jai</groupId>
 							<artifactId>jai.codec</artifactId>
