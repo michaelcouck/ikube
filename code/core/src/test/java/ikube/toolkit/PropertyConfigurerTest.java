@@ -1,11 +1,10 @@
 package ikube.toolkit;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import ikube.ATest;
 
 import java.io.File;
 import java.util.jar.JarFile;
-
-import ikube.ATest;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -17,8 +16,8 @@ import org.junit.Test;
  */
 public class PropertyConfigurerTest extends ATest {
 
-	private String fileBatchSize = "file.batch.size";
-	private PropertyConfigurer propertyConfigurer;
+	private String				fileBatchSize	= "file.batch.size";
+	private PropertyConfigurer	propertyConfigurer;
 
 	public PropertyConfigurerTest() {
 		super(PropertyConfigurer.class);
@@ -32,22 +31,28 @@ public class PropertyConfigurerTest extends ATest {
 
 	@Test
 	public void checkJarFile() {
-		File jarFile = FileUtilities.findFileRecursively(new File("."), "ikube-core");
-		if (jarFile == null) {
+		File[] jarFiles = FileUtilities.findFiles(new File("."), new String[] { "ikube-core" });
+		if (jarFiles == null || jarFiles.length == 0) {
 			return;
 		}
-		propertyConfigurer.checkJar(jarFile);
+		for (File jarFile : jarFiles) {
+			logger.error("Jar file : " + jarFile);
+			propertyConfigurer.checkJar(jarFile);
+		}
 		Object property = propertyConfigurer.getProperty(fileBatchSize);
 		assertNotNull(property);
 	}
 
 	@Test
 	public void checkJarJarFile() throws Exception {
-		File jarFile = FileUtilities.findFileRecursively(new File("."), "ikube-core");
-		if (jarFile == null) {
+		File[] jarFiles = FileUtilities.findFiles(new File("."), new String[] { "ikube-core" });
+		if (jarFiles == null || jarFiles.length == 0) {
 			return;
 		}
-		propertyConfigurer.checkJar(new JarFile(jarFile));
+		for (File jarFile : jarFiles) {
+			logger.error("Jar file : " + jarFile);
+			propertyConfigurer.checkJar(new JarFile(jarFile));
+		}
 		Object property = propertyConfigurer.getProperty(fileBatchSize);
 		assertNotNull(property);
 	}
