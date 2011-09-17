@@ -699,12 +699,14 @@
 	<distributionManagement>
 		<site>
 			<id>google-code</id>
-			<url>svn:https://ikube.googlecode.com/svn/site/</url>
+			<!-- svn:https://ikube.googlecode.com/svn/site/ -->
+			<url>file:C:/Users/Administrator/.m2/repository</url>
 		</site>
 		<repository>
 			<id>google-code</id>
 			<uniqueVersion>false</uniqueVersion>
-			<url>svn:https://ikube.googlecode.com/svn/repo/</url>
+			<!-- svn:https://ikube.googlecode.com/svn/repo/ -->
+			<url>file:C:/Users/Administrator/.m2/repository</url>
 		</repository>
 		<!-- use the following if you're not using a snapshot version. -->
 		<!-- <repository>
