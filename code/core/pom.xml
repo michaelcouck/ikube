@@ -107,7 +107,7 @@
 						<goals>
 							<goal>install-file</goal>
 						</goals>
-						<phase>validate</phase>
+						<phase>verify</phase>
 						<configuration>
 							<groupId>com.ibm.db2.jcc</groupId>
 							<artifactId>db2jcc4</artifactId>
@@ -122,7 +122,7 @@
 						<goals>
 							<goal>install-file</goal>
 						</goals>
-						<phase>validate</phase>
+						<phase>verify</phase>
 						<configuration>
 							<groupId>com.ibm.db2.jcc_license_cu</groupId>
 							<artifactId>db2jcc_license_cu</artifactId>
@@ -137,7 +137,7 @@
 						<goals>
 							<goal>install-file</goal>
 						</goals>
-						<phase>validate</phase>
+						<phase>verify</phase>
 						<configuration>
 							<groupId>oracle.ojdbc6</groupId>
 							<artifactId>ojdbc6</artifactId>
@@ -152,7 +152,7 @@
 						<goals>
 							<goal>install-file</goal>
 						</goals>
-						<phase>validate</phase>
+						<phase>verify</phase>
 						<configuration>
 							<groupId>org.nfunk</groupId>
 							<artifactId>jep</artifactId>
@@ -167,7 +167,7 @@
 						<goals>
 							<goal>install-file</goal>
 						</goals>
-						<phase>validate</phase>
+						<phase>verify</phase>
 						<configuration>
 							<groupId>aspose</groupId>
 							<artifactId>aspose.cells</artifactId>
@@ -182,7 +182,7 @@
 						<goals>
 							<goal>install-file</goal>
 						</goals>
-						<phase>validate</phase>
+						<phase>verify</phase>
 						<configuration>
 							<groupId>aspose</groupId>
 							<artifactId>aspose.pdf</artifactId>
@@ -197,7 +197,7 @@
 						<goals>
 							<goal>install-file</goal>
 						</goals>
-						<phase>validate</phase>
+						<phase>verify</phase>
 						<configuration>
 							<groupId>aspose</groupId>
 							<artifactId>aspose.slides</artifactId>
@@ -212,7 +212,7 @@
 						<goals>
 							<goal>install-file</goal>
 						</goals>
-						<phase>validate</phase>
+						<phase>verify</phase>
 						<configuration>
 							<groupId>aspose</groupId>
 							<artifactId>aspose.words</artifactId>
@@ -227,7 +227,7 @@
 						<goals>
 							<goal>install-file</goal>
 						</goals>
-						<phase>validate</phase>
+						<phase>verify</phase>
 						<configuration>
 							<groupId>canyon</groupId>
 							<artifactId>canyon</artifactId>
@@ -242,7 +242,7 @@
 						<goals>
 							<goal>install-file</goal>
 						</goals>
-						<phase>validate</phase>
+						<phase>verify</phase>
 						<configuration>
 							<groupId>jai</groupId>
 							<artifactId>jai.codec</artifactId>

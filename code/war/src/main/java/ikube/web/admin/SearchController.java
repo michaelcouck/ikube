@@ -85,8 +85,12 @@ public class SearchController extends BaseController {
 			String xml = searcherWebService.searchMultiAll(indexName, searchStringsArray, Boolean.TRUE, firstResult, maxResults);
 			List<Map<String, String>> indexResults = (List<Map<String, String>>) SerializationUtilities.deserialize(xml);
 			Map<String, String> statistics = indexResults.get(indexResults.size() - 1);
-			total += Integer.parseInt(statistics.get(IConstants.TOTAL));
-			duration += Long.parseLong(statistics.get(IConstants.DURATION));
+			if (isNumeric(statistics.get(IConstants.TOTAL))) {
+				total += Integer.parseInt(statistics.get(IConstants.TOTAL));
+			}
+			if (isNumeric(statistics.get(IConstants.DURATION))) {
+				duration += Long.parseLong(statistics.get(IConstants.DURATION));
+			}
 			corrections = statistics.get(IConstants.CORRECTIONS);
 			indexResults.remove(statistics);
 			results.addAll(indexResults);
@@ -124,6 +128,20 @@ public class SearchController extends BaseController {
 
 		modelAndView.addObject(IConstants.SERVER, server);
 		return modelAndView;
+	}
+
+	private boolean isNumeric(String string) {
+		char[] chars = string.toCharArray();
+		for (char c : chars) {
+			if (c == '.') {
+				continue;
+			}
+			if (Character.isDigit(c)) {
+				continue;
+			}
+			return Boolean.FALSE;
+		}
+		return Boolean.TRUE;
 	}
 
 	private String getParameter(String name, String defaultValue, HttpServletRequest request) {

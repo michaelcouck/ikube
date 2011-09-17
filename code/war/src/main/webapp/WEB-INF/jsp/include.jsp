@@ -1,19 +1,25 @@
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Map" %>
-<%@ taglib prefix="search" uri="http://ikube/search" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
+<!--
+	This page is for the results. To enable this page please have a look at the SearchController to know
+	what must be included in the model for the page. Typically it is things like the first and maximum results, 
+	also the total results for the search and of course the results them selves which are a list of maps. 
+ -->
 	<tr>
 		<td>
 			From : <c:out value='${firstResult + 1}' />,
-			<c:set var="toResults" value="${firstResult + maxResults}" />			
-			<c:if test="${total < maxResults}">
-				<c:set var="toResults" value="${firstResult + total}" />
-			</c:if>
+			<c:set var="toResults" value="${total < firstResult + maxResults ? firstResult + (total % 10) : firstResult + maxResults}" />
 			to : <c:out value='${toResults}' />,
 			total : <c:out value='${total}' />,
 			for '<c:out value='${searchStrings}' />',
 			took <c:out value='${duration}' /> ms<br /><br>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<jsp:include page="/WEB-INF/jsp/pagination.jsp" flush="true" /> 
 		</td>
 	</tr>
 	<tr>
@@ -27,19 +33,12 @@
 				<c:forEach var="entry" items="${result}">
 					<!-- ${entry} -->
 				</c:forEach>
-				<br><br>
+				<br>
 			</c:forEach>
 		</td>
 	</tr>
 	<tr>
 		<td>
-			<c:set var="maxResults" value="10" />
-			<c:set var="total" value="${total > 150 ? 150 : total}"></c:set>
-			<c:forEach var="index" begin="0" end="${total}" varStatus="counter"> 
-  				<c:if test="${index % maxResults == 0}">
-  					<c:set var="searchUrl" value="${targetSearchUrl != null ? targetSearchUrl : '/results.html'}" />
-  					<a href="<c:url value="${searchUrl}"  />?targetSearchUrl=${searchUrl}&searchStrings=${searchStrings}&firstResult=${index}&maxResults=${maxResults}">${index}</a>
-  				</c:if>
-			</c:forEach> 
+			<jsp:include page="/WEB-INF/jsp/pagination.jsp" flush="true" /> 
 		</td>
 	</tr>

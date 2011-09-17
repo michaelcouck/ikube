@@ -66,7 +66,6 @@ public class ServersController extends BaseController {
 			indexContext.setNumDocs(numDocs);
 		}
 
-		// TODO This can be removed
 		String[] indexNames = monitorWebService.getIndexNames();
 		modelAndView.addObject(IConstants.INDEX_NAMES, indexNames);
 

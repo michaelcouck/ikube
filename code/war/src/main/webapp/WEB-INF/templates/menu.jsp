@@ -1,4 +1,3 @@
-<%@ taglib prefix="search" uri="http://ikube/search" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <script type="text/javascript">

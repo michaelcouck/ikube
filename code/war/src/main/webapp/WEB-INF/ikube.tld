@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<taglib 
+	xmlns="http://java.sun.com/xml/ns/javaee" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="
+		http://java.sun.com/xml/ns/javaee 
+		http://java.sun.com/xml/ns/javaee/web-jsptaglibrary_2_1.xsd"
+	version="2.1">
+
+	<tlib-version>1.0</tlib-version>
+	<!-- <jsp-version>1.2</jsp-version> -->
+	<short-name>ikube</short-name>
+	<uri>http://ikube</uri>
+	<!-- <description>Ikube Taglib</description> -->
+
+	<tag>
+		<name>linkTag</name>
+		<tag-class>ikube.web.tag.LinkTag</tag-class>
+		<body-content>JSP</body-content>
+	</tag>
+	<tag>
+		<name>pageTag</name>
+		<tag-class>ikube.web.tag.PageTag</tag-class>
+		<body-content>JSP</body-content>
+	</tag>
+	<tag>
+		<name>pagerTag</name>
+		<tag-class>ikube.web.tag.PagerTag</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>searchUrl</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+	<tag>
+		<name>searchTag</name>
+		<tag-class>ikube.web.tag.SearchTag</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>searchUrl</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+	<tag>
+		<name>spellingTag</name>
+		<tag-class>ikube.web.tag.spelling.SpellingTag</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>fieldParameterNames</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+	<tag>
+		<name>spellingWriterTag</name>
+		<tag-class>ikube.web.tag.spelling.SpellingWriterTag</tag-class>
+		<body-content>JSP</body-content>
+	</tag>
+
+	<function>
+		<name>className</name>
+		<function-class>ikube.web.tag.Toolkit</function-class>
+		<function-signature>String className(java.lang.Object)</function-signature>
+	</function>
+	
+	<function>
+		<name>contains</name>
+		<function-class>ikube.web.tag.Toolkit</function-class>
+		<function-signature>boolean contains(java.util.Collection, java.lang.Object)</function-signature>
+	</function>
+	
+	<function>
+		<name>remove</name>
+		<function-class>ikube.web.tag.Toolkit</function-class>
+		<function-signature>java.util.Collection remove(java.util.Collection, java.util.Collection)</function-signature>
+	</function>
+
+	<function>
+		<name>add</name>
+		<function-class>ikube.web.tag.Toolkit</function-class>
+		<function-signature>java.util.Collection add(java.util.Collection, java.util.Collection)</function-signature>
+	</function>
+	
+	<function>
+		<name>clone</name>
+		<function-class>ikube.web.tag.Toolkit</function-class>
+		<function-signature>java.util.Collection clone(java.util.Collection)</function-signature>
+	</function>
+	
+	<function>
+		<name>size</name>
+		<function-class>ikube.web.tag.Toolkit</function-class>
+		<function-signature>int size(java.util.Collection)</function-signature>
+	</function>
+</taglib>

@@ -83,6 +83,7 @@ public interface IConstants {
 	String				ACTION										= "action";
 	String				ACTIONS										= "actions";
 	String				WEB_SERVICE_URLS							= "webServiceUrls";
+	String				INDEX_CONTEXT								= "indexContext";
 	String				INDEX_CONTEXTS								= "indexContexts";
 	String				INDEX_NAMES									= "indexNames";
 	String				GEOSPATIAL									= "geospatial";

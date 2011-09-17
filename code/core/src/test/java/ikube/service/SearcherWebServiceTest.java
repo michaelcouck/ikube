@@ -7,12 +7,9 @@ import ikube.ATest;
 import ikube.IConstants;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.toolkit.ApplicationContextManager;
-import ikube.toolkit.FileUtilities;
 import ikube.toolkit.SerializationUtilities;
 
-import java.io.File;
 import java.net.InetAddress;
-import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
@@ -121,31 +118,6 @@ public class SearcherWebServiceTest extends ATest {
 	private void verifyResults(List<Map<String, String>> resultsList) {
 		assertNotNull("Results should never be null : ", resultsList);
 		assertTrue("There should always be at least one map in the results : ", resultsList.size() >= 1);
-	}
-
-	public static void main(String[] args) throws Exception {
-		// http://192.168.1.39:8084/ikube/service/ISearcherWebService?wsdl
-		String host = "192.168.1.39"; // "81.82.213.177" ; // InetAddress.getLocalHost().getHostAddress();
-		// int port = ISearcherWebService.PUBLISHED_PORT;
-		String path = ISearcherWebService.PUBLISHED_PATH;
-		int[] ports = { 8081 };
-		String[] indexNames = { IConstants.GEOSPATIAL, IConstants.IKUBE, IConstants.DEFAULT };
-		for (int port : ports) {
-			URL url = new URL("http", host, port, path);
-			String searcherWebServiceUrl = url.toString();
-			ISearcherWebService searcherWebService = ServiceLocator.getService(ISearcherWebService.class, searcherWebServiceUrl,
-					ISearcherWebService.NAMESPACE, ISearcherWebService.SERVICE);
-			String[] searchStrings = { "cape town microgrammes characterism chalco ikube" };
-			boolean fragment = Boolean.TRUE;
-			int firstResult = 0;
-			int maxResults = 10;
-			for (String indexName : indexNames) {
-				String xml = searcherWebService.searchMultiAll(indexName, searchStrings, fragment, firstResult, maxResults);
-				System.out.println(xml);
-				File file = FileUtilities.getFile("./results.xml", Boolean.FALSE);
-				FileUtilities.setContents(file.getAbsolutePath(), xml.getBytes(IConstants.ENCODING));
-			}
-		}
 	}
 
 }

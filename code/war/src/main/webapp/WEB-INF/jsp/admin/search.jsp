@@ -1,5 +1,11 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
+<!--
+	This page is for searching the indexes using specific fields and will render 
+	the indexables and search fields in the form dynamically for the indexes and indexables. At 
+	the time of writing this page was not being used but should still be made available in the
+	future. 
+ -->
 <c:set var="targetSearchUrl" value="/admin/search.html"></c:set>
 <form name="searchForm" id="${param.indexName}" action="<c:url value="${targetSearchUrl}"/>">
 <input name="targetSearchUrl" type="hidden" value="${targetSearchUrl}">
@@ -11,11 +17,6 @@
 		</td>
 	</tr>
 	
-	<c:set var="counter" scope="page" value="0"/>
-	<c:if test="${counter % 2 == 0}" >
-		<c:set var="counter" scope="page" value="${counter + 1}"/>
-	</c:if>
-
 	<tr>
 		<th colspan="2">${param.indexName}</th>
 	</tr>

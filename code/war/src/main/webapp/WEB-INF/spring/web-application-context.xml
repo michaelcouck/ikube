@@ -25,6 +25,7 @@
 				<prop key="/admin/server.html">ikube.web.admin.ServerController</prop>
 				<prop key="/admin/servers.html">ikube.web.admin.ServersController</prop>
 				<prop key="/admin/logging.html">ikube.web.admin.LoggingController</prop>
+				<prop key="/admin/index.html">ikube.web.admin.IndexController</prop>
 			</props>
 		</property>
 	</bean>
@@ -46,6 +47,7 @@
 	<bean name="ikube.web.admin.ServerController" class="ikube.web.admin.ServerController" />
 	<bean name="ikube.web.admin.ServersController" class="ikube.web.admin.ServersController" />
 	<bean name="ikube.web.admin.LoggingController" class="ikube.web.admin.LoggingController" />
+	<bean name="ikube.web.admin.IndexController" class="ikube.web.admin.IndexController" />
 
 	<!-- These are static resources basically. -->
 	<mvc:view-controller path="/index.html" />

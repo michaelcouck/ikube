@@ -9,22 +9,24 @@
 		</td>
 	</tr>	
 	<tr>
-		<th class="td-content">Index</th>
+		<th class="td-content" colspan="2">Index</th>
 		<th class="td-content">Docs</th>
 		<th class="td-content">Size</th>
-		<th class="td-content">Open</th>
-		<th class="td-content">Max age</th>
+		<th class="td-content" colspan="2">Open</th>
+		<th class="td-content" nowrap="nowrap">Max age</th>
 		<th class="td-content">Timestamp</th>
-		<th class="td-content">Index path</th>
+		<th class="td-content" nowrap="nowrap">Index path</th>
 	</tr>
 	
 	<c:forEach var="indexContext" items="${requestScope.indexContexts}">
 	<tr>
-		<td class="td-content">
+		<td width="1">
 			<img alt="Search index ${indexContext.name}" 
-					src="<c:url value="/images/icons/search.gif"/>" 
-					title="Search index ${indexContext.name}">
-			<a href="<c:url value="/admin/search.html"/>?indexName=${indexContext.name}" 
+				src="<c:url value="/images/icons/search.gif"/>" 
+				title="Search index ${indexContext.name}">
+		</td>
+		<td class="td-content">
+			<a href="<c:url value="/admin/index.html"/>?indexName=${indexContext.name}" 
 				style="font-style: italic;" 
 				title="Search index ${indexContext.name}">
 				${indexContext.name}
@@ -34,9 +36,11 @@
 		<td class="td-content"><fmt:formatNumber 
 			value="${indexContext.indexSize / 1000000}" 
 			maxFractionDigits="0" /></td>
-		<td class="td-content">
+		<td width="1%">
 			<c:set var="open" scope="page" value="${indexContext.index.multiSearcher != null ? 'open' : 'closed'}"/>
 			<img alt="Server" src="<c:url value="/images/icons/${open}.gif"/>" title="Server">
+		</td>
+		<td class="td-content">
 			${indexContext.index.multiSearcher != null}
 		</td>
 		<td class="td-content">${indexContext.maxAge / 60}</td>
@@ -49,8 +53,8 @@
 
 <table class="table-content" width="100%">
 	<tr>
-		<th class="td-content">Server</th>
-		<th class="td-content">Working</th>
+		<th class="td-content" colspan="2">Server</th>
+		<th class="td-content" colspan="2">Working</th>
 		<th class="td-content">Action</th>
 		<th class="td-content">Index</th>
 		<th class="td-content">Indexable</th>
@@ -59,8 +63,10 @@
 	</tr>
 	<c:forEach var="server" items="${requestScope.servers}">
 		<tr>
-			<td class="td-content" nowrap="nowrap">
+			<td width="1%">
 				<img alt="Server" src="<c:url value="/images/icons/server.gif"/>" title="Server">
+			</td>
+			<td class="td-content" nowrap="nowrap">
 				<a href="<c:url value="${server.searchWebServiceUrl}" />"
 					style="font-style: italic;" 
 					title="${server.searchWebServiceUrl}">
@@ -68,7 +74,7 @@
 				</a>
 			</td>
 			<c:set var="running" scope="page" value="${server.working ? 'running' : 'stopped'}"/>
-			<td class="td-content">
+			<td class="td-content" width="1%">
 				<img alt="Working" src="<c:url value="/images/icons/${running}.gif"/>" title="Working"><c:out value="${server.working}" />
 			</td>
 			<c:choose>
@@ -91,13 +97,16 @@
 	
 		<tr>
 			<td>&nbsp;</td>
-			<td colspan="6">
-				<table width="100%">
+			<td>&nbsp;</td>
+			<td colspan="7">
+				<table class="table-content" width="100%">
 					<tr>
-						<th>
+						<th width="1%">
 							<img alt="Indexing performance" 
 								src="<c:url value="/images/icons/index_performance.gif"/>" 
 								title="Indexing performance">
+						</th>
+						<th>
 							Indexing
 						</th>
 						<th>Duration</th>
@@ -118,29 +127,30 @@
 	
 		<tr>
 			<td>&nbsp;</td>
-			<td colspan="6">
-				<table width="100%">
+			<td>&nbsp;</td>
+			<td colspan="7">
+				<table class="table-content" width="100%">
 					<tr>
-					<th>
-						<img alt="Searching performance" 
-							src="<c:url value="/images/icons/search_performance.gif"/>" 
-							title="Searching performance">
-						Searching
-					</th>
-					<th>Duration</th>
-					<th>Executions</th>
-					<th>Per second</th>
-				</tr>
-	
-				<c:forEach var="execution" items="${server.searchingExecutions}">
+						<th width="1%">
+							<img alt="Searching performance" 
+								src="<c:url value="/images/icons/search_performance.gif"/>" 
+								title="Searching performance">
+						</th>
+						<th>
+							Searching
+						</th>
+						<th>Duration</th>
+						<th>Executions</th>
+						<th>Per second</th>
+					</tr>
+					<c:forEach var="execution" items="${server.searchingExecutions}">
 					<tr>
 						<td class="td-content"><c:out value="${execution.key}" /></td>
 						<td class="td-content"><fmt:formatNumber value="${execution.value.duration / 1000000000 / 60}" maxFractionDigits="2" /></td>
 						<td class="td-content"><c:out value="${execution.value.invocations}" /></td>
 						<td colspan="2"><c:out value="${execution.value.executionsPerSecond}" /></td>
 					</tr>
-				</c:forEach>
-					
+					</c:forEach>
 				</table>
 			</td>
 		</tr>

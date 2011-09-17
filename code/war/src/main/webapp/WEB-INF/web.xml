@@ -59,8 +59,8 @@
 
 	<jsp-config>
 		<taglib>
-			<taglib-uri>http://ikube/search</taglib-uri>
-			<taglib-location>/WEB-INF/search.tld</taglib-location>
+			<taglib-uri>http://ikube</taglib-uri>
+			<taglib-location>/WEB-INF/ikube.tld</taglib-location>
 		</taglib>
 	</jsp-config>
 

@@ -30,6 +30,7 @@ import org.apache.log4j.Logger;
 import org.apache.lucene.search.Searcher;
 
 /**
+ * @see ISearcherWebService
  * @author Michael Couck
  * @since 21.11.10
  * @version 01.00
