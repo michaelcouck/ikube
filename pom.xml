@@ -675,9 +675,9 @@
 	</repositories>
 
 	<scm>
-		<url>https://ikube.googlecode.com/svn</url>
-		<connection>scm:svn:https://ikube.googlecode.com/svn/trunk</connection>
-		<developerConnection>scm:svn:https://ikube.googlecode.com/svn/trunk</developerConnection>
+		<url>http://ikube.googlecode.com/svn/trunk</url>
+		<connection>scm:svn:http://ikube.googlecode.com/svn/trunk</connection>
+		<developerConnection>scm:svn:http://ikube.googlecode.com/svn/trunk</developerConnection>
 	</scm>
 
 	<pluginRepositories>
@@ -691,12 +691,12 @@
 	<distributionManagement>
 		<site>
 			<id>google-code</id>
-			<url>svn:http://ikube.googlecode.com/svn/releases/</url>
+			<url>svn:http://ikube.googlecode.com/svn/trunk/</url>
 		</site>
 		<repository>
 			<id>google-code</id>
 			<uniqueVersion>false</uniqueVersion>
-			<url>svn:http://ikube.googlecode.com/svn/releases/</url>
+			<url>svn:http://ikube.googlecode.com/svn/trunk/</url>
 		</repository>
 		<!-- use the following if you're not using a snapshot version. -->
 		<!-- <repository>
