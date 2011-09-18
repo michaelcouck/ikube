@@ -34,7 +34,7 @@
 					<td width="250">
 						<tiles:insertAttribute name="menu" />
 					</td>
-					<td width="670">
+					<td width="700">
 						<tiles:insertAttribute name="content" />
 					</td>
 				</tr>

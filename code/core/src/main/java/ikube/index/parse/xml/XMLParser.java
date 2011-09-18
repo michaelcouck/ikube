@@ -31,10 +31,11 @@ public class XMLParser implements IParser {
 		InputSource inputSource = new InputSource(reader);
 
 		SAXReader saxReader = new SAXReader();
-		saxReader.setValidation(false);
-		saxReader.setIgnoreComments(false);
-		saxReader.setIncludeExternalDTDDeclarations(false);
-		saxReader.setIncludeInternalDTDDeclarations(false);
+		saxReader.setValidation(Boolean.FALSE);
+		saxReader.setIgnoreComments(Boolean.FALSE);
+		saxReader.setIncludeExternalDTDDeclarations(Boolean.FALSE);
+		saxReader.setIncludeInternalDTDDeclarations(Boolean.FALSE);
+		saxReader.setStripWhitespaceText(Boolean.FALSE);
 
 		Document doc = saxReader.read(inputSource);
 		Element root = doc.getRootElement();

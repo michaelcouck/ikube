@@ -617,4 +617,38 @@ public final class FileUtilities {
 		}
 	}
 
+	private static final String	PAGE_START	= "<page>";
+	private static final String	PAGE_FINISH	= "</page>";
+
+	public static void main(String[] args) {
+		Logging.configure();
+		File file = new File("");
+		FileInputStream fileInputStream = null;
+		try {
+			fileInputStream = new FileInputStream(file);
+			int read = -1;
+			byte[] bytes = new byte[1024];
+			StringBuilder builder = new StringBuilder();
+			while ((read = fileInputStream.read(bytes)) > -1) {
+				String string = new String(bytes, 0, read);
+				LOGGER.error("String : " + string);
+				builder.append(string);
+				int startOffset = builder.indexOf(PAGE_START);
+				if (startOffset > -1) {
+					int endOffset = builder.indexOf(PAGE_FINISH);
+					if (endOffset > -1) {
+						String segment = builder.substring(startOffset, endOffset + PAGE_FINISH.length());
+						LOGGER.error("Segment : " + segment);
+						builder.delete(startOffset, endOffset + PAGE_FINISH.length());
+						// TODO Here we can write the Xml document
+					}
+				}
+			}
+		} catch (Exception e) {
+			LOGGER.error("", e);
+		} finally {
+			close(fileInputStream);
+		}
+	}
+
 }

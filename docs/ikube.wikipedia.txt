@@ -1,0 +1,59 @@
+{{Proposed deletion/dated
+  |concern = Unsourced, no evidence of notability.
+  |timestamp = 20110918144056
+}}
+{{Infobox software
+| name                   = Ikube
+| logo                   = [[Image:3d_diffusion_ikube_smaller.jpg‎|224px|Ikube logo]]
+| screenshot             =
+| caption                =
+| developer              = [[http://code.google.com/u/michael.couck/ | Michael Couck]]
+| status                 = Active
+| latest release version = [[http://code.google.com/p/ikube/downloads/detail?name=ikube-2.1.2.war&can=2&q=#makechanges | 2.1.2]]
+| latest release date    = {{release date|2011|09|17}}
+| operating system       = [[Cross-platform]]
+| programming language   = [[Java (programming language)|Java]]
+| genre                  = [[Search algorithm|Search]] and [[Index (information technology)|index]] [[Application programming interface|API]]
+| license                = [[GNU Lesser General Public License | GNU Lesser GPL]] 
+| website                = http://code.google.com/p/ikube/
+}}
+
+'''Ikube Enterprise Search''' 
+
+Ikube is an open source enterprise search application written in [[Java (programming language)|Java]]. Ikube is geared for high volumes of data, and is focused on database indexing and searching. Ikube has handlers for internet/intranet, file system and email. Various data formats are supported like Word, Pdf, and other popular formats. Ikube clusters automatically via UDP broardcasting. Ikube runs in a server(as a war) or as a stand alone application(as a jar). [[Lucene|Lucene]] is the core indexing library used, which is a full text search and indexing library. Results from searching are Xml and the functionality is accessible via a web service. Results are a serialized list of maps, which can then be rendered by clients or applications in any number of ways.
+
+Ikube is configurable and does not typically need Java coding, however being based on [[Spring Framework|Spring]] is customizable and extendable, and designed to be customized and extended for difficult environments.
+
+Ikube follows a pull model for indexing, i.e. handlers for data sources like internet sites and databases are essentially crawlers that will periodically crawl data sources and index the data.
+
+==History==
+Ikube started as an implementation for indexing transaction data for banks([[KBC | KBC]] in Belgium is one such bank) in 2005/6 as part of a fraud detection addon for the [[Norkom | Norkom]] fraud detection application. It then was re-implemented for indexing data for the [[FPS Finance Belgium | Ministry of Finance in Belgium]] in 2009. After which it went through a productization(2009 - 2011) and generalizing process making it more generally usable by applications.
+
+==Features==
+* Clusterable
+* Geospatial indexing and search
+* Flexible continuous crawl schedules
+* Cluster indexing and search monitoring and performance
+* Operating system independant
+* High data volume indexing
+
+==External Links==
+* [http://code.google.com/p/ikube/ Ikube Google Code]
+* [[Google Search Appliance | Google Search Appliance]]
+* [[Apache Solr | Apache Solr]]
+* [[Autonomy Corporation | Autonomy Corporation]]
+* [[ISYS Search Software | ISYS Search Software]]
+* [[List of enterprise search vendors | List of enterprise search vendors]]
+
+== References ==
+<!--- See http://en.wikipedia.org/wiki/Wikipedia:Footnotes on how to create references using <ref></ref> tags which will then appear here automatically -->
+{{Reflist}}
+
+* [http://ikube.dyndns.org:8080/ikube-2.1.2/admin/servers.html Moinitor(live instance)]
+* [http://ikube.dyndns.org:8080/ikube-2.1.2/documentation/quickstart.html Ikube Quick Start]
+* [http://ikube.dyndns.org:8080/ikube-2.1.2/documentation/configuration.html Ikube Configuration]
+* [http://ikube.dyndns.org:8080/ikube-2.1.2/documentation/searching.html Ikube Searching]
+* [http://ikube.dyndns.org:8080/ikube-2.1.2/documentation/extra.html Extra]
+
+<!--- Categories --->
+[[Category:Articles created via the Article Wizard]]

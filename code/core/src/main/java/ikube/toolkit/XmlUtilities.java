@@ -1,14 +1,20 @@
 package ikube.toolkit;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
+import org.xml.sax.Attributes;
+import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * @author Michael Couck
@@ -17,14 +23,13 @@ import org.dom4j.io.SAXReader;
  */
 public final class XmlUtilities {
 
-	private static final Logger LOGGER = Logger.getLogger(XmlUtilities.class);
-	
-	private XmlUtilities() {
-	}
+	private static final Logger	LOGGER	= Logger.getLogger(XmlUtilities.class);
+
+	private XmlUtilities() {}
 
 	/**
-	 * Finds the node in the xml with the specified name recursively iterating through the elements in the document. This method will return
-	 * the first tag with the name specified.
+	 * Finds the node in the xml with the specified name recursively iterating through the elements in the document.
+	 * This method will return the first tag with the name specified.
 	 * 
 	 * @param node
 	 *            the top level or root tag to start looking from
@@ -105,6 +110,29 @@ public final class XmlUtilities {
 			}
 		}
 		return document;
+	}
+
+	public static void parse(File file) throws Exception {
+		SAXParserFactory parserFactory = SAXParserFactory.newInstance();
+		SAXParser parser = parserFactory.newSAXParser();
+		parser.parse(file, new DefaultHandler() {
+			public void startElement(String uri, String localName, String qName, Attributes attributes) {
+				LOGGER.error("Uri : " + uri);
+				LOGGER.error("Local name : " + localName);
+				LOGGER.error("QName : " + qName);
+				LOGGER.error("Attributes : " + attributes);
+			}
+		});
+	}
+
+	public static void main(String[] args) {
+		Logging.configure();
+		File file = FileUtilities.findFileRecursively(new File("."), "doctors.xml");
+		try {
+			XmlUtilities.parse(file);
+		} catch (Exception e) {
+			LOGGER.error("", e);
+		}
 	}
 
 }

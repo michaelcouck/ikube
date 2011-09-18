@@ -30,8 +30,8 @@
 								<a href="<c:url value="/index.html"/>?language=dutch" title="nederlands">
 									<img alt="nederlands" src="<c:url value="/images/flags/be.gif"/>">
 								</a>
-								<a href="<c:url value="/index.html"/>?language=russian" title="русский">
-									<img alt="русский" src="<c:url value="/images/flags/ru.gif"/>">
+								<a href="<c:url value="/index.html"/>?language=russian" title="Русский">
+									<img alt="Русский" src="<c:url value="/images/flags/ru.gif"/>">
 								</a>
 
 								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
