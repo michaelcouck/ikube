@@ -5,20 +5,22 @@
 	<groupId>ikube</groupId>
 	<artifactId>ikube-war</artifactId>
 	<packaging>war</packaging>
-	<version>2.1.2-SNAPSHOT</version>
+	<version>2.1.2</version>
 
 	<properties>
 		<jetty.version>6.1.11</jetty.version>
+		<final.name>${project.groupId}-${project.version}</final.name>
 	</properties>
 	
 	<parent>
 		<groupId>ikube</groupId>
 		<artifactId>ikube</artifactId>
-		<version>2.1.2-SNAPSHOT</version>
+		<version>2.1.2</version>
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
 
 	<build>
+		<finalName>${final.name}</finalName>
 		<resources>
 			<resource>
 				<directory>src/main/java</directory>
@@ -61,7 +63,7 @@
 					<stopKey>stop</stopKey>
 					<stopPort>9090</stopPort>
 					<scanIntervalSeconds>10000</scanIntervalSeconds>
-					<contextPath>/${project.artifactId}-${project.version}.${project.packaging}-SNAPSHOT</contextPath>
+					<contextPath>/${final.name}</contextPath>
 					<scanTargets>
 						<scanTarget>src/main/resources</scanTarget>
 						<scanTarget>src/main/webapp</scanTarget>
@@ -139,7 +141,7 @@
 				<executions>
 					<execution>
 						<id>gcode-upload</id>
-						<phase>release</phase>
+						<phase>deploy</phase>
 						<goals>
 							<goal>upload</goal>
 						</goals>
@@ -148,11 +150,11 @@
 				<configuration>
 					<serverId>googlecode</serverId>
 					<failsOnError>true</failsOnError>
-					<projectName>ikube</projectName>
+					<projectName>${project.groupId}</projectName>
 					<uploads>
 						<upload>
-							<file>${project.build.directory}/${project.artifactId}-${project.version}.${project.packaging}</file>
-							<summary>${project.name} release ${project.version}</summary>
+							<file>${project.build.directory}/${final.name}.${project.packaging}</file>
+							<summary>${project.groupId} release ${project.version}</summary>
 							<labels>
 								<label>Featured</label>
 								<label>Type-Archive</label>
