@@ -703,11 +703,18 @@
 			<url>file:C:/Users/Administrator/.m2/repository</url>
 		</site>
 		<repository>
+			<id>ikube</id>
+			<name>ikube</name>
+			<layout>default</layout>
+			<uniqueVersion>true</uniqueVersion>
+			<url>http://ikube.dyndns.org:9000/content/repositories/ikube</url>
+		</repository>
+		<!-- <repository>
 			<id>google-code</id>
 			<uniqueVersion>false</uniqueVersion>
-			<!-- svn:https://ikube.googlecode.com/svn/repo/ -->
+			svn:https://ikube.googlecode.com/svn/repo/
 			<url>file:C:/Users/Administrator/.m2/repository</url>
-		</repository>
+		</repository> -->
 		<!-- use the following if you're not using a snapshot version. -->
 		<!-- <repository>
 			<id>ikube.googlecode.releases</id>
