@@ -707,7 +707,7 @@
 			<name>ikube</name>
 			<layout>default</layout>
 			<uniqueVersion>true</uniqueVersion>
-			<url>dav:http://ikube.dyndns.org:9000/content/repositories/ikube</url>
+			<url>dav:http://ikube.dyndns.org:9000/content/repositories/internal</url>
 		</repository>
 		<!-- <repository>
 			<id>google-code</id>
