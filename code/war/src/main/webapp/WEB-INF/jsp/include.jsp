@@ -25,13 +25,8 @@
 	<tr>
 		<td>
 			<c:forEach var="result" items="${results}">
-				Title : <a style="color : #8F8F8F;" href="<c:out value="${result['title']}" />"><c:out value="${result['title']}" /></a><br />
-				Fragment : <c:out value="${result['fragment']}" escapeXml="false" /><br />
-				Url : <c:out value="${result['title']}" /><br />
-				Score : <c:out value="${result['score']}" />
-				<!-- Put all the data in comments. -->
 				<c:forEach var="entry" items="${result}">
-					<!-- ${entry} -->
+					<c:out value="${entry.key}" /> : <c:out value="${entry.value}" escapeXml="false" /><br>
 				</c:forEach>
 				<br>
 			</c:forEach>

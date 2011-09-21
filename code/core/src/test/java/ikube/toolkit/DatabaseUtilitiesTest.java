@@ -10,12 +10,15 @@ import ikube.ATest;
 import ikube.model.Url;
 
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.List;
 
 import javax.sql.DataSource;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -75,6 +78,22 @@ public class DatabaseUtilitiesTest extends ATest {
 
 		String idFieldName = DatabaseUtilities.getIdFieldName(Url.class);
 		assertEquals("The id field is 'id' : ", "id", idFieldName);
+	}
+
+	@Test
+	@Ignore
+	public void getAllColumns() throws Exception {
+		Connection connection = DriverManager.getConnection("jdbc:db2://ikube:50000/ikube", "db2admin", "db2admin");
+		List<String> allColumns = DatabaseUtilities.getAllColumns(connection, "doctor");
+		logger.error("All columns : " + allColumns);
+	}
+
+	@Test
+	@Ignore
+	public void getForeignKeys() throws Exception {
+		Connection connection = DriverManager.getConnection("jdbc:db2://ikube:50000/ikube", "db2admin", "db2admin");
+		List<String[]> foreignKeys = DatabaseUtilities.getForeignKeys(connection, "attachment");
+		logger.error("Foreign keys : " + foreignKeys);
 	}
 
 }

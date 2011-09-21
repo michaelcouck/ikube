@@ -16,16 +16,25 @@ import javax.sql.DataSource;
 public class IndexableTable extends Indexable<IndexableTable> {
 
 	@Transient
-	private transient long minimumId = -1;
+	private transient long			minimumId		= -1;
 	@Transient
-	private transient long maximumId = -1;
+	private transient long			maximumId		= -1;
 	/** TODO - the datasource needs to be configured else where. */
 	@Transient
-	private transient DataSource dataSource;
+	private transient DataSource	dataSource;
 
-	private String predicate;
-	private boolean primaryTable;
-	private int maxExceptions = 100;
+	private String					predicate;
+	private boolean					primaryTable;
+	private int						maxExceptions	= 100;
+	private boolean					allColumns		= Boolean.FALSE;
+
+	public boolean isAllColumns() {
+		return allColumns;
+	}
+
+	public void setAllColumns(boolean allColumns) {
+		this.allColumns = allColumns;
+	}
 
 	public int getMaxExceptions() {
 		return maxExceptions;

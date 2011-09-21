@@ -2,9 +2,14 @@ package ikube.toolkit;
 
 import java.lang.reflect.Field;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.persistence.Id;
@@ -243,6 +248,71 @@ public final class DatabaseUtilities {
 			LOGGER.info(Logging.getString("Id field not found for object : ", object.getClass().getName()));
 		}
 		return null;
+	}
+
+	/**
+	 * This method just returns all the column names for a particular table.
+	 * 
+	 * @param connection
+	 *            the connection to the database
+	 * @param table
+	 *            the name of the table to get the columns for
+	 * @return the list of all columns for the table
+	 */
+	public static List<String> getAllColumns(Connection connection, String table) {
+		String sql = "select * from " + table;
+		Statement statement = null;
+		ResultSet resultSet = null;
+		List<String> columnNames = new ArrayList<String>();
+		try {
+			statement = connection.createStatement();
+			resultSet = statement.executeQuery(sql);
+			ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
+			for (int i = 1; i <= resultSetMetaData.getColumnCount(); i++) {
+				String columnName = resultSetMetaData.getColumnName(i);
+				columnNames.add(columnName);
+			}
+		} catch (SQLException e) {
+			LOGGER.error("Exception getting the column names for table : " + table, e);
+		} finally {
+			close(resultSet);
+			close(statement);
+		}
+		return columnNames;
+	}
+
+	public static List<String[]> getForeignKeys(Connection connection, String table) {
+		List<String[]> foreignKeys = new ArrayList<String[]>();
+		String[] types = { "TABLE" };
+		DatabaseMetaData databaseMetaData = null;
+		ResultSet resultSet = null;
+		ResultSet importedKeys = null;
+		try {
+			databaseMetaData = connection.getMetaData();
+			resultSet = databaseMetaData.getTables(null, null, "%", types);
+			// Get the table names
+			while (resultSet.next()) {
+				String tableCatalog = resultSet.getString(1);
+				String tableSchema = resultSet.getString(2);
+				String tableName = resultSet.getString(3);
+				// LOGGER.error("Catalog : " + tableCatalog + ", " + tableSchema + ", " + tableName);
+				if (tableName.equalsIgnoreCase(table)) {
+					importedKeys = databaseMetaData.getImportedKeys(tableCatalog, tableSchema, tableName);
+					while (importedKeys.next()) {
+						String fkTableName = importedKeys.getString("FKTABLE_NAME");
+						String fkColumnName = importedKeys.getString("FKCOLUMN_NAME");
+						String[] key = { fkTableName, fkColumnName };
+						foreignKeys.add(key);
+					}
+				}
+			}
+		} catch (SQLException e) {
+			LOGGER.error("Exception getting the foreign keys : " + table, e);
+		} finally {
+			close(importedKeys);
+			close(resultSet);
+		}
+		return foreignKeys;
 	}
 
 	/**

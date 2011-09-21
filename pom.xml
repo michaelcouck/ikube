@@ -24,6 +24,7 @@
 		<included.adapters>-Dincluded.adapters=coverage:complexity:dependency</included.adapters>
 
 		<war.base.root>code/war/target/ikube</war.base.root>
+		<postgresql.driver.version>8.4-701.jdbc4</postgresql.driver.version>
 	</properties>
 
 	<modules>
@@ -368,6 +369,18 @@
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
+			<groupId>postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>${postgresql.driver.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>oracle.ojdbc6</groupId>
+			<artifactId>ojdbc6</artifactId>
+			<version>11</version>
+			<type>jar</type>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
 			<groupId>commons-lang</groupId>
 			<artifactId>commons-lang</artifactId>
 			<version>2.5</version>
@@ -492,13 +505,6 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>oracle.ojdbc6</groupId>
-			<artifactId>ojdbc6</artifactId>
-			<version>11</version>
-			<type>jar</type>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
 			<groupId>com.beoui</groupId>
 			<artifactId>geocell</artifactId>
 			<version>0.0.5</version>
@@ -527,13 +533,6 @@
 			<groupId>org.apache.el</groupId>
 			<artifactId>com.springsource.org.apache.el</artifactId>
 			<version>6.0.20</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.openjpa</groupId>
-			<artifactId>openjpa-all</artifactId>
-			<version>2.1.0</version>
-			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -630,6 +629,12 @@
 
 	<repositories>
 		<repository>
+			<id>springbyexample.org</id>
+			<name>Spring by Example</name>
+			<url>http://www.springbyexample.org/maven/repo</url>
+		</repository>
+		
+		<repository>
 			<id>m.g.o-public</id>
 			<url>http://maven.glassfish.org/content/groups/public/</url>
 		</repository>
@@ -664,20 +669,16 @@
 			<url>http://java.freehep.org/maven2/</url>
 		</repository>
 		<repository>
-			<id>springbyexample.org</id>
-			<name>Spring by Example</name>
-			<url>http://www.springbyexample.org/maven/repo</url>
-		</repository>
-		<repository>
 			<id>objectdb</id>
 			<name>ObjectDB Repository</name>
 			<url>http://m2.objectdb.com</url>
 		</repository>
 		<repository>
 			<id>EclipseLink Repo</id>
-			<!-- note that ampersands in this URL are escaped because this is in an xml file - un-escape them to use in browser -->
 			<url>http://www.eclipse.org/downloads/download.php?r=1&amp;nf=1&amp;file=/rt/eclipselink/maven.repo</url>
-			<!-- use this for javax.persistence <snapshots> <enabled>true</enabled> </snapshots> -->
+			<snapshots> 
+				<enabled>true</enabled> 
+			</snapshots>
 		</repository>
 	</repositories>
 

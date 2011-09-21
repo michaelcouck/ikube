@@ -122,6 +122,16 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 					}
 				}, this.getClass().getSimpleName() + "." + i);
 				threads.add(thread);
+				if (cloneIndexableTable.isAllColumns()) {
+					List<String> columnNames = DatabaseUtilities.getAllColumns(connection, cloneIndexableTable.getName());
+					for (String columnName : columnNames) {
+						IndexableColumn indexableColumn = new IndexableColumn();
+						indexableColumn.setAnalyzed(Boolean.TRUE);
+						indexableColumn.setFieldName(IConstants.CONTENTS);
+						IndexableColumn foreignKeyColumn = getForeignKeyColumn(cloneIndexableTable);
+						// TODO Build the foreign keys and construct the hierarchy
+					}
+				}
 			}
 			for (Thread thread : threads) {
 				logger.debug("Starting thread : " + thread);
@@ -137,6 +147,18 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 			}
 		}
 		return Arrays.asList();
+	}
+
+	private IndexableColumn getForeignKeyColumn(IndexableTable indexableTable) {
+		Indexable<?> parent = indexableTable.getParent();
+		if (parent != null && IndexableTable.class.isAssignableFrom(parent.getClass())) {
+			for (Indexable<?> indexable : parent.getChildren()) {
+				if (IndexableTable.class.isAssignableFrom(indexable.getClass())) {
+
+				}
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -289,8 +311,10 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 			}
 			long nextIdNumber = 0;
 			// If this is a primary table then we need to find the first id in the table. For example if we are just
-			// starting to access this table then the id number will be 0, but the first id in the table could be 1 234 567,
-			// in which case we will have no records, so we need to execute where id > 1 234 567 and < 1 234 567 + batchSize
+			// starting to access this table then the id number will be 0, but the first id in the table could be 1 234
+			// 567,
+			// in which case we will have no records, so we need to execute where id > 1 234 567 and < 1 234 567 +
+			// batchSize
 			if (indexableTable.isPrimaryTable()) {
 				// Commit the connection to release the cursors
 				// DatabaseUtilities.commit(connection);
@@ -327,11 +351,10 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 						indexableTable.setMaximumId(maximumId);
 					}
 					// If we have exhausted the results then we return null and the thread dies
-					if (nextIdNumber > maximumId) {
-						return null;
+					if (nextIdNumber < maximumId) {
+						// Try the next predicate + batchSize
+						return getResultSet(indexContext, indexableTable, connection, ++reentrant);
 					}
-					// Try the next predicate + batchSize
-					return getResultSet(indexContext, indexableTable, connection, ++reentrant);
 				}
 				return null;
 			}
