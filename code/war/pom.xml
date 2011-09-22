@@ -134,7 +134,7 @@
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
+			<!-- <plugin>
 				<groupId>com.googlecode.maven-gcu-plugin</groupId>
 				<artifactId>maven-gcu-plugin</artifactId>
 				<version>1.1</version>
@@ -162,7 +162,7 @@
 						</upload>
 					</uploads>
 				</configuration>
-			</plugin>
+			</plugin> -->
 		</plugins>
 	</build>
 
