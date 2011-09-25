@@ -138,35 +138,6 @@
 					</execution>
 				</executions>
 			</plugin>
-			<!-- <plugin>
-				<groupId>com.googlecode.maven-gcu-plugin</groupId>
-				<artifactId>maven-gcu-plugin</artifactId>
-				<version>1.1</version>
-				<executions>
-					<execution>
-						<id>gcode-upload</id>
-						<phase>deploy</phase>
-						<goals>
-							<goal>upload</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<serverId>googlecode</serverId>
-					<failsOnError>true</failsOnError>
-					<projectName>${project.groupId}</projectName>
-					<uploads>
-						<upload>
-							<file>${project.build.directory}/${final.name}.${project.packaging}</file>
-							<summary>${project.groupId} release ${project.version}</summary>
-							<labels>
-								<label>Featured</label>
-								<label>Type-Archive</label>
-							</labels>
-						</upload>
-					</uploads>
-				</configuration>
-			</plugin> -->
 		</plugins>
 	</build>
 
