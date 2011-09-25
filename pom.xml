@@ -1,10 +1,13 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation=" http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project 
+	xmlns="http://maven.apache.org/POM/4.0.0" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation=" http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>ikube</groupId>
 	<artifactId>ikube</artifactId>
 	<packaging>pom</packaging>
-	<version>2.1.2-SNAPSHOT</version>
+	<version>2.1.3-SNAPSHOT</version>
 
 	<properties>
 		<targetJdk>1.6</targetJdk>
@@ -30,6 +33,7 @@
 	<modules>
 		<module>code/core</module>
 		<module>code/war</module>
+		<module>code/libs</module>
 	</modules>
 
 	<build>
@@ -372,6 +376,8 @@
 			<groupId>postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 			<version>${postgresql.driver.version}</version>
+			<type>jar</type>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>oracle.ojdbc6</groupId>
@@ -505,12 +511,6 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.beoui</groupId>
-			<artifactId>geocell</artifactId>
-			<version>0.0.5</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.nfunk</groupId>
 			<artifactId>jep</artifactId>
 			<version>2.4.1</version>
@@ -547,12 +547,6 @@
 			<artifactId>canyon</artifactId>
 			<version>0.9.8</version>
 			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.objectdb</groupId>
-			<artifactId>objectdb</artifactId>
-			<version>2.0.4</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -633,52 +627,14 @@
 			<name>Spring by Example</name>
 			<url>http://www.springbyexample.org/maven/repo</url>
 		</repository>
-		
 		<repository>
 			<id>m.g.o-public</id>
 			<url>http://maven.glassfish.org/content/groups/public/</url>
 		</repository>
 		<repository>
-			<id>repo1.maven.org</id>
-			<name>repo1 Mirror of http://repo1.maven.org/maven2</name>
-			<url>http://repo1.maven.org/maven2</url>
-		</repository>
-		<repository>
-			<id>repo2.maven.org</id>
-			<name>repo2 Mirror of http://repo2.maven.org/maven2</name>
-			<url>http://repo2.maven.org/maven2</url>
-		</repository>
-		<repository>
-			<id>ibiblio.org</id>
-			<name>ibiblio Mirror of http://repo1.maven.org/maven2/</name>
-			<url>http://mirrors.ibiblio.org/pub/mirrors/maven2</url>
-		</repository>
-		<repository>
 			<id>maven.java.net</id>
 			<name>Java.net Maven2 Repository</name>
 			<url>http://download.java.net/maven/2</url>
-		</repository>
-		<repository>
-			<id>javageomodel-repo</id>
-			<name>GeocellJava Repository</name>
-			<url>http://javageomodel.googlecode.com/svn/repository</url>
-		</repository>
-		<repository>
-			<id>FreeHep</id>
-			<name>Free Hep Repository</name>
-			<url>http://java.freehep.org/maven2/</url>
-		</repository>
-		<repository>
-			<id>objectdb</id>
-			<name>ObjectDB Repository</name>
-			<url>http://m2.objectdb.com</url>
-		</repository>
-		<repository>
-			<id>EclipseLink Repo</id>
-			<url>http://www.eclipse.org/downloads/download.php?r=1&amp;nf=1&amp;file=/rt/eclipselink/maven.repo</url>
-			<snapshots> 
-				<enabled>true</enabled> 
-			</snapshots>
 		</repository>
 	</repositories>
 
@@ -698,42 +654,15 @@
 
 	<distributionManagement>
 		<site>
-			<id>google-code</id>
-			<!-- svn:https://ikube.googlecode.com/svn/site/ -->
-			<url>file:C:/Users/Administrator/.m2/repository</url>
+			<id>ikube</id>
+			<name>ikube-releases</name>
+			<url>http://ikube.dyndns.org:9000/artifactory/libs-release-local</url>
 		</site>
-
 		<repository>
 			<id>ikube</id>
 			<name>ikube-releases</name>
 			<url>http://ikube.dyndns.org:9000/artifactory/libs-release-local</url>
 		</repository>
-		
-		<!-- <repository>
-			<id>ikube</id>
-			<name>ikube</name>
-			<layout>default</layout>
-			<uniqueVersion>true</uniqueVersion>
-			<url>http://ikube.dyndns.org:9000/content/repositories/internal</url>
-		</repository> -->
-		<!-- <repository>
-			<id>google-code</id>
-			<uniqueVersion>false</uniqueVersion>
-			svn:https://ikube.googlecode.com/svn/repo/
-			<url>file:C:/Users/Administrator/.m2/repository</url>
-		</repository> -->
-		<!-- use the following if you're not using a snapshot version. -->
-		<!-- <repository>
-			<id>ikube.googlecode.releases</id>
-			<name>ikube.googlecode.releases</name>
-			<url>dav:https://ikube.googlecode.com/svn/maven2/</url>
-		</repository> -->
-		<!-- use the following if you ARE using a snapshot version. -->
-		<!-- <snapshotRepository>
-			<id>ikube.googlecode.snapshots</id>
-			<name>ikube.googlecode.snapshots</name>
-			<url>dav:https://ikube.googlecode.com/svn/maven2-snapshots/</url>
-		</snapshotRepository> -->
 	</distributionManagement>
 
 	<reporting>
