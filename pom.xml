@@ -656,7 +656,7 @@
 		<site>
 			<id>ikube</id>
 			<name>ikube-releases</name>
-			<url>http://ikube.dyndns.org:9000/artifactory/libs-release-local</url>
+			<url>file:C:/Users/Administrator/.m2/repository</url>
 		</site>
 		<repository>
 			<id>ikube</id>
