@@ -45,14 +45,14 @@
 		<ref local="dropbox" />
 		<ref local="dropboxIkube" />
 		<ref local="filesystemMillion" />
-		<ref bean="faqTableH2" />
+		<!-- <ref bean="faqTableH2" />
 		<ref bean="faqTableDb2" />
 		<ref bean="faqTableOracle" />
 		<ref bean="patientTableH2" />
 		<ref bean="patientTableDb2" />
 		<ref bean="patientTableOracle" />
 		<ref bean="addressTableDb2" />
-		<ref bean="attachmentTableDb2Direct" />
+		<ref bean="attachmentTableDb2Direct" /> -->
 	</util:list>
 
 	<!-- H2 Faqs -->
