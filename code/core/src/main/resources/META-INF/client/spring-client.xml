@@ -42,6 +42,7 @@
 		<ref local="hazelcast" />
 		<ref local="internetMillion" />
 		<ref local="filesystem" />
+		<ref local="wikidata" />
 		<ref local="dropbox" />
 		<ref local="dropboxIkube" />
 		<ref local="filesystemMillion" />
@@ -572,6 +573,20 @@
 		class="ikube.model.IndexableFileSystem"
 		property:name="filesOne"
 		property:path="${files.path}"
+		property:pathFieldName="path"
+		property:nameFieldName="name"
+		property:lengthFieldName="length"
+		property:contentFieldName="contents"
+		property:excludedPattern="${files.excluded.pattern}"
+		property:lastModifiedFieldName="lastmodified"
+		property:batchSize="${file.batch.size}"
+		property:maxReadLength="${file.max.read.length}" />
+	
+	<bean
+		id="wikidata"
+		class="ikube.model.IndexableFileSystem"
+		property:name="wikidata"
+		property:path="C:/wiki.data"
 		property:pathFieldName="path"
 		property:nameFieldName="name"
 		property:lengthFieldName="length"
