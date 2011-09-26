@@ -1,14 +1,8 @@
-<project name="Deploy Ikube Cluster" default="start">
+<project name="Deploy Ikube Cluster" default="start.tomcat.cluster">
 
 	<property file="build.properties" />
 
-	<target name="all">
-		<antcall target="configuration" />
-		<antcall target="deploy" />
-		<antcall target="start" />
-	</target>
-
-	<target name="start">
+	<target name="start.tomcat.cluster">
 		<antcall target="executeTomcatAction">
 			<param name="action" value="start" />
 			<param name="tomcat.bin" value="${tomcat.1.bin}" />
@@ -27,7 +21,7 @@
 			<param name="tomcat.home" value="${tomcat.3}" />
 		</antcall -->
 	</target>
-	<target name="stop">
+	<target name="stop.tomcat.cluster">
 		<antcall target="executeTomcatAction">
 			<param name="action" value="stop" />
 			<param name="tomcat.bin" value="${tomcat.1.bin}" />
@@ -68,12 +62,15 @@
 	</target>
 
 	<target name="deploy">
-		<delete dir="${tomcat.1.bin}/indexes" failonerror="false" />
-		<delete dir="${tomcat.2.bin}/indexes" failonerror="false" />
-		<delete dir="${tomcat.3.bin}/indexes" failonerror="false" />
-		<delete dir="${tomcat.1}/webapps/ikube" failonerror="false" />
-		<delete dir="${tomcat.2}/webapps/ikube" failonerror="false" />
-		<delete dir="${tomcat.3}/webapps/ikube" failonerror="false" />
+		<!-- Delete the index directories in the cluster. -->
+		<delete includeemptydirs="true" failonerror="false">
+			<fileset dir="${cluster.directory}/**/indexes/**" />
+		</delete>
+		<!-- Delete the ikube deployed directories in the cluster. -->
+		<delete includeemptydirs="true" failonerror="false">
+			<fileset dir="${cluster.directory}/**/ikube*/**" />
+		</delete>
+		<!-- Deploy the ikube war into the cluster. -->
 		<copy file="${target.directory}/${ikube.war}" todir="${tomcat.1}/webapps" overwrite="true" failonerror="false" />
 		<copy file="${target.directory}/${ikube.war}" todir="${tomcat.2}/webapps" overwrite="true" failonerror="false" />
 		<copy file="${target.directory}/${ikube.war}" todir="${tomcat.3}/webapps" overwrite="true" failonerror="false" />
@@ -86,7 +83,7 @@
 		files will then be jared and added to the war as a convenience. Also for the testing the configuration jar
 		will be unjared into one of the servers to continuously test the external configuration.  
 	-->
-	<target name="configuration">
+	<target name="copy.configuration">
 		<delete dir="${configuration.directory}" />
 		<copy todir="${configuration.directory}">
 			<fileset dir="../core/src/main/resources/META-INF">

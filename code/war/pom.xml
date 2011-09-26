@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation=" http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation=" http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>ikube</groupId>
@@ -10,9 +11,12 @@
 
 	<properties>
 		<jetty.version>6.1.11</jetty.version>
-		<final.name>${project.groupId}-${project.version}</final.name>
+		<webapps>webapps</webapps>
+		<ikube.war>ikube.war</ikube.war>
+		<final.name>${project.build.finalName}.${project.packaging}</final.name>
+		<final.path>${target.directory}/${final.name}</final.path>
 	</properties>
-	
+
 	<parent>
 		<groupId>ikube</groupId>
 		<artifactId>ikube</artifactId>
@@ -21,7 +25,6 @@
 	</parent>
 
 	<build>
-		<finalName>${final.name}</finalName>
 		<resources>
 			<resource>
 				<directory>src/main/java</directory>
@@ -31,6 +34,24 @@
 			</resource>
 		</resources>
 		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>properties-maven-plugin</artifactId>
+				<version>1.0-alpha-1</version>
+				<executions>
+					<execution>
+						<phase>initialize</phase>
+						<goals>
+							<goal>read-project-properties</goal>
+						</goals>
+						<configuration>
+							<files>
+								<file>build.properties</file>
+							</files>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
@@ -64,7 +85,7 @@
 					<stopKey>stop</stopKey>
 					<stopPort>9090</stopPort>
 					<scanIntervalSeconds>10000</scanIntervalSeconds>
-					<contextPath>/${final.name}</contextPath>
+					<contextPath>/${project.build.finalName}</contextPath>
 					<scanTargets>
 						<scanTarget>src/main/resources</scanTarget>
 						<scanTarget>src/main/webapp</scanTarget>
@@ -97,12 +118,9 @@
 				</executions>
 				<dependencies>
 					<dependency>
-						<!-- 
-							XXX It is included to force commons-logging to use 2.5 API instead of 2.3. This caused by 
-							internal dependencies of Jetty, which use version 2.5, but have it packaged in a different group 
-							ID: org.mortbay.jetty. TODO (Roman): If it gets broken again, try to "exclude" servlet-api 
-							dependencies from commons-logging and commons-fileupload. 
-						-->
+						<!-- XXX It is included to force commons-logging to use 2.5 API instead of 2.3. This caused by internal dependencies of Jetty, which use 
+							version 2.5, but have it packaged in a different group ID: org.mortbay.jetty. TODO (Roman): If it gets broken again, try to "exclude" servlet-api 
+							dependencies from commons-logging and commons-fileupload. -->
 						<groupId>javax.servlet</groupId>
 						<artifactId>servlet-api</artifactId>
 						<version>2.5</version>
@@ -122,12 +140,53 @@
 				<version>1.6</version>
 				<executions>
 					<execution>
-						<id>install</id>
+						<id>stop-cluster</id>
+						<phase>pre-integration-test</phase>
+						<configuration>
+							<target>
+								<!-- Try calling the Tomcats and shut them down. -->
+								<echo message="Turning off cluster : " />
+								<ant antfile="build.xml" target="stop.tomcat.cluster" inheritrefs="true" />
+							</target>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>deploy-and-start-cluster</id>
 						<phase>install</phase>
 						<configuration>
-							<tasks>
-								<ant antfile="build.xml" target="all" inheritrefs="true" /> 
-							</tasks>
+							<target>
+								<!-- Delete the index directories in the cluster. -->
+								<echo message="Deleting indexes : " />
+								<delete includeemptydirs="true" failonerror="false">
+									<fileset dir="${cluster.directory}/">
+										<include name="**/indexes/**"  />
+									</fileset>
+								</delete>
+								<!-- Delete the ikube deployed directories in the cluster. -->
+								<echo message="Deleting old deployment directories : " />
+								<delete includeemptydirs="true" failonerror="false">
+									<fileset dir="${cluster.directory}/">
+										<include name="**/ikube*.war" />
+										<include name="**/ikube*/**" />
+									</fileset>
+								</delete>
+								<!-- Deploy the ikube war into the cluster. -->
+								<echo message="Deploying Ikube to cluster : " />
+								<copy file="${final.path}" todir="${tomcat.1}/${webapps}" overwrite="true" failonerror="false"  />
+								<copy file="${final.path}" todir="${tomcat.2}/${webapps}" overwrite="true" failonerror="false" />
+								<copy file="${final.path}" todir="${tomcat.3}/${webapps}" overwrite="true" failonerror="false" />
+								<!-- Rename the wars to ikube.war for convenience. -->
+								<echo message="Renaming Ikube war for convenience : " />
+								<move file="${tomcat.1}/${webapps}/${final.name}" tofile="${tomcat.1}/${webapps}/${ikube.war}" />
+								<move file="${tomcat.2}/${webapps}/${final.name}" tofile="${tomcat.2}/${webapps}/${ikube.war}" />
+								<move file="${tomcat.3}/${webapps}/${final.name}" tofile="${tomcat.3}/${webapps}/${ikube.war}" />
+								<!-- Start the cluster of Tomcats. -->
+								<ant antfile="build.xml" target="copy.configuration" inheritrefs="true" />
+								<ant antfile="build.xml" target="start.tomcat.cluster" inheritrefs="true" />
+							</target>
 						</configuration>
 						<goals>
 							<goal>run</goal>
