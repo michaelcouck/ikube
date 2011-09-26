@@ -131,6 +131,9 @@ public class SearchController extends BaseController {
 	}
 
 	private boolean isNumeric(String string) {
+		if (string == null) {
+			return Boolean.FALSE;
+		}
 		char[] chars = string.toCharArray();
 		for (char c : chars) {
 			if (c == '.') {
