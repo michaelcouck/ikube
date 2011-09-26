@@ -26,17 +26,17 @@ import org.springframework.core.io.Resource;
  */
 public final class ApplicationContextManager {
 
-	private static final Logger LOGGER;
-	private static final String EXTERNAL_SPRING_CONFIGURATION_FILE = "." + IConstants.SEP + IConstants.SPRING_XML;
-	private static ApplicationContext APPLICATION_CONTEXT;
+	private static final Logger			LOGGER;
+	private static final String			EXTERNAL_SPRING_CONFIGURATION_FILE	= "." + IConstants.SEP + IConstants.IKUBE + IConstants.SEP
+																					+ IConstants.SPRING_XML;
+	private static ApplicationContext	APPLICATION_CONTEXT;
 
 	static {
 		Logging.configure();
 		LOGGER = Logger.getLogger(ApplicationContextManager.class);
 	}
 
-	private ApplicationContextManager() {
-	}
+	private ApplicationContextManager() {}
 
 	/**
 	 * System wide access to the Spring context.
@@ -49,8 +49,7 @@ public final class ApplicationContextManager {
 				// First see if there is a configuration file at the base of where the Jvm was started
 				File configFile = new File(EXTERNAL_SPRING_CONFIGURATION_FILE);
 				if (configFile.exists()) {
-					LOGGER.info("External configuration file : " + configFile + ", " + configFile.getAbsolutePath() + ", "
-							+ configFile.exists());
+					LOGGER.info("External configuration file : " + configFile + ", " + configFile.getAbsolutePath() + ", " + configFile.exists());
 					APPLICATION_CONTEXT = getApplicationContext(configFile);
 				} else {
 					APPLICATION_CONTEXT = getApplicationContext(IConstants.SPRING_CONFIGURATION_FILE);
@@ -80,8 +79,8 @@ public final class ApplicationContextManager {
 	}
 
 	/**
-	 * Convenience method to get the bean type from the bean name. Note that this method is not type checked and there is a distinct
-	 * possibility for a class cast exception.
+	 * Convenience method to get the bean type from the bean name. Note that this method is not type checked and there
+	 * is a distinct possibility for a class cast exception.
 	 * 
 	 * @param name
 	 *            the name of the bean

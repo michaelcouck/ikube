@@ -18,7 +18,7 @@
             http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 	
 	<context:property-placeholder
-		location="classpath:/META-INF/common/spring.properties" 
+		location="**/spring.properties" 
 		properties-ref="ikube.toolkit.PropertyConfigurer" />
 	
 	<!-- This bean will look through the classpath and load every Spring properties file it finds. -->
@@ -30,19 +30,19 @@
 		init-method="initialize" />
 	
 	<!-- Mandatory system configuration files. -->
-	<import resource="classpath:/META-INF/common/spring-aop.xml" />
-	<import resource="classpath:/META-INF/common/spring-beans.xml" />
-	<import resource="classpath:/META-INF/common/spring-actions.xml" />
-	<import resource="classpath:/META-INF/common/spring-h2-jdbc.xml" />
-	<import resource="classpath:/META-INF/common/spring-db2-jdbc.xml" />
+	<import resource="**/spring-aop.xml" />
+	<import resource="**/spring-beans.xml" />
+	<import resource="**/spring-actions.xml" />
+	<import resource="**/spring-h2-jdbc.xml" />
+	<import resource="**/spring-db2-jdbc.xml" />
 	
 	<!-- Optional system configuration files. -->
-	<import resource="classpath:/META-INF/common/spring-ikube.xml" />
-	<import resource="classpath:/META-INF/common/spring-geospatial.xml" />
+	<import resource="**/spring-ikube.xml" />
+	<import resource="**/spring-geospatial.xml" />
 
 	<!-- Optional client configuration files for indexables. -->
-	<import resource="classpath:/META-INF/client/spring-client.xml" />
+	<import resource="**/spring-client.xml" />
 	<!-- Optional client configurations. -->
-	<import resource="classpath:/META-INF/client/spring-client-*.xml" />
+	<import resource="**/spring-client-*.xml" />
 	
 </beans>

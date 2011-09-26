@@ -85,7 +85,7 @@
 					<stopKey>stop</stopKey>
 					<stopPort>9090</stopPort>
 					<scanIntervalSeconds>10000</scanIntervalSeconds>
-					<contextPath>/${project.build.finalName}</contextPath>
+					<contextPath>/ikube</contextPath>
 					<scanTargets>
 						<scanTarget>src/main/resources</scanTarget>
 						<scanTarget>src/main/webapp</scanTarget>

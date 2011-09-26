@@ -1,21 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!--
-	This is a test file for the startup of the application context.
- -->
 <beans
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://www.springframework.org/schema/beans"
-	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:property="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+
 	xsi:schemaLocation="
 			http://www.springframework.org/schema/beans
             http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
             http://www.springframework.org/schema/context
             http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
-	<context:property-placeholder location="**/spring.properties" />
-		
-	<import resource="**/spring-*.xml" />
-
+	<bean
+		id="anotherMailerExternal"
+		name="anotherMailerExternal"
+		class="ikube.notify.Mailer"
+		property:auth="true"
+		property:mailHost="smtp.gmail.com"
+		property:password="caherline"
+		property:port="465"
+		property:protocol="${protocol}"
+		property:recipients="ikube.ikube@gmail.com"
+		property:sender="ikube.ikube@gmail.com"
+		property:user="ikube.ikube" />
+	
 </beans>

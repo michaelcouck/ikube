@@ -9,64 +9,46 @@
 	</tr>
 	<tr>
 		<td colspan="2">
-			<strong>basics</strong>&nbsp;
-			Configuration is not trivial and generally would need a developer to administer. Over and above that he/she would 
-			need to have an in depth knowledge of Spring. Now that I have scared off 99% of people we'll get down to it.
+			<strong>configuration</strong>&nbsp;
+			Internet and file system configurations are not particularly difficult, but database configuration is not trivial and generally would 
+			need a developer to administer. Over and above that he/she would need to have knowledge of Spring. Please refer to 
+			the <a href="<c:url value="/documentation/configuration.html" />" >quick start</a> to get Ikube running in a Tomcat as the 
+			configuration tutorial will use this as a starting point.
 		</td>
 	</tr>
 	<tr>
 		<td colspan="2">
-			All configuration is done via Spring configuration files. All the beans that are defined in the configuration files are 
-			entities as well so theoretically it could be possible to have the configuration in the database. In this case the Spring 
-			context would have to be instantiated manually, which I don't recommend, certainly not with the AOP involved, but possible.
-			
-			Ikube will first check the startup directory or dot directory for a 'spring.xml' file. If this file is found then it will be used for the 
-			configuration. This allows the configuration to be external to the war/jar. Note that the external configuration uses the file system 
-			application context and the paths to imported files needs to be relative to the importing file. There is a 
-			<a href="<c:url value="/docs/configuration.jar" />" >configuration.jar</a> in the docs folder in the war with all the necessary 
-			configuration files. This jar can be unpacked to the bin directory of Tomcat for example as is and then modified to suit the client.
+			All configuration is done via Spring configuration files. For a first configuration please download the configuration files at 
+			<a href="<c:url value="/docs/configuration.jar" />" >configuration.jar</a>. Unpack the jar to the bin folder of Tomcat. 
+			Ikube will first check the startup directory or dot directory for a './ikube/spring.xml' file. If this file is found then it will be used for the 
+			configuration. This allows the configuration to be external to the war/jar.
 			<br><br>
-			If this file is not found then the files in the META-INF directory packaged in the ikube-core.jar will be used for the configuration. 
-			Generally Ikube will be used in war format, i.e. it will be deployed in a server like Tomcat. The advantage of deploying Ikube in 
-			a server is firstly the UI will be available which is invaluable and also allows server clustering which in turn facilitates fail over and 
-			horizontal scaling. We will assume for the rest of this document that Ikube will be used as a war and the configuration will be 
-			found in the war/WEB-INF/lib/ikube-core.jar/META-INF. Please refer to the mandatory and optional system and client configuration 
-			files in the quick start page. It is not necessary to know what is in the mandatory system configuration files, however it will be 
-			necessary to add the client specific configuration to the Spring configuration, generally this will be added in the spring.xml file, i.e. 
-			the top level Spring configuration file.
+			If the spring.xml file is not found in the bin(startup) directory then the files that are packaged with the ikube-core.jar are used.
 		</td>
 	</tr>
 	<tr>
 		<td colspan="2">
-			Ikube can index data bases, internet/intranet, file systems and email. For each source of data you need to define an 'indexable' 
-			in a Spring configuration file and add it to the spring.xml file as  in the following screen shot:<br><br>
+			Ikube can index data bases, internet/intranet, file systems and email. For each internet site, database or file share you need to 
+			define an indexable. The exact structure of the configuration files is not important, all you need to do is add your configuration file 
+			to the $TOMCAT_INSTALL_BIN/ikube directory, and call it spring-client-*.xml replacing the asterisk with a meaningful name for 
+			your configuration, perhaps spring-client-custom.xml for example. 
 			
-			<img src="<c:url value="/images/spring.xml.small.jpg" />" alt="The Spring configuration file" /><br><br>
-			
-			As you can see from the above screen shot, the spring-client.xml is added to the configuration. In this file are 
-			the definitions of the sources of data, from data base or file system etc. To begin with it is advisable to use the 
-			spring-client.xml and modify it as needed. The data base configuration files can also be used by adapting them 
-			to suit your environment.
+			There is a spring-client.xml file that is a working example of a configuration. This file can be modified to add your internet sites 
+			and databases.
  		</td>
 	</tr>
-	<tr>
-		<td colspan="2">
-			&nbsp;
-		</td>
-	</tr>
+	
+	<tr><td colspan="2">&nbsp;</td></tr>
 	
 	<tr>
-		<th colspan="2">IndexContext definition parameters</th>
+		<th colspan="2">Index context definition parameters</th>
 	</tr>
 	<tr>
 		<td colspan="2">
-			The IndexContext is the top level object in the configuration. It will contain the 'indexables'. Indexables are 
-			specific object that have the information to index a database or an intranet. An IndexContext can be seen as 
-			a wrapper for one Lucene index, please note the screen shot below:<br><br>
+			The index context is the top level object in the configuration. It will contain the internet site configurations and database 
+			configurations, essentially a wrapper for a Lucene index:<br><br>
 			
 			<img src="<c:url value="/images/index.context.xml.jpg" />" alt="The default index context" /><br><br>
-			
-			
 		</td>
 	</tr>
 	
@@ -142,7 +124,7 @@
 	</tr>
 	<tr>
 		<td> maxFieldLength</td>
-		<td> 
+		<td>
 			Refer to the <a href="http://lucene.apache.org/java/docs/index.html" target="_top">Lucene</a> documentation for information 
 			on the maximum field length.
 		</td>
@@ -198,11 +180,158 @@
 		</td>
 	</tr>
 	
+	<tr><td colspan="2">&nbsp;</td></tr>
+	
 	<tr>
-		<td colspan="2">&nbsp;</td>
+		<th colspan="2">Indexable internet definition parameters</th>
 	</tr>
 	<tr>
-		<th colspan="2">IndexableTable definition parameters</th>
+		<td colspan="2">
+			This indexable is an internet site or an intranet site. Note that the crawler is multi-threaded but not clusterable.
+		</td>
+	</tr>
+	<tr>
+		<th>Parameter</th>
+		<th>Description</th>
+	</tr>
+	<tr>
+		<td>name</td>
+		<td> 
+			This is the name of the indexable, it should be unique within the configuration. It can be an arbitrary string.
+		</td>
+	</tr>
+	<tr>
+		<td>url</td>
+		<td>
+			The url of the site to index. Note that the host fragment of the url will be used as the base url 
+			and the point to start the index. All pages and documents that are linked to this host or have the host as the 
+			fragment in their url will be indexed.
+		</td>
+	</tr>
+	<tr>
+		<td>idFieldName</td>
+		<td>
+			The name of the field in the Lucene index for the identifier of this url. This is a field that will 
+			be searched against when the index is created.
+		</td>
+	</tr>
+	<tr>
+		<td>titleFieldName</td>
+		<td> 
+			As above with the id field name this is the field in the Lucene index that will be searched against 
+			for the title of the document. In the case of an HTML page the title tag. In the case of a word document 
+			the parser will attempt to extract the title from the document for this field and so on.
+		</td>
+	</tr>
+	<tr>
+		<td>contentFieldName</td>
+		<td> 
+			The name of the lucene content field for the documents. When searching this index the field 
+			and search string will be logically something like 'where {contentFieldName} = {searchString}'. 
+		</td>
+	</tr>
+	<tr>
+		<td>excludedPattern</td>
+		<td> 
+			Patterns that will be excluded from the indexing process. If there are files that should not be 
+			indexed like images for example this can be used to exclude them from the indexing process.
+		</td>
+	</tr>
+	<tr>
+		<td>analyzed</td>
+		<td> 
+			Whether the data will be analyzed by Lucene before being written to the index. Typically this 
+			will be true. For more information on the Lucene parameters please refer to the Lucene documentation.
+		</td>
+	</tr>
+	<tr>
+		<td>stored</td>
+		<td> 
+			Whether to store the data in the index. This will also typically be true as the fragment of text 
+			returned by the search results will need the stored data to generate the fragment. However in the 
+			case of very large document sets this will increase the index size considerably and my not be necessary.
+		</td>
+	</tr>
+	<tr>
+		<td>vectored</td>
+		<td> 
+			Whether the data from the documents will be vectored by Lucene. Please refer to the Lucene 
+			documentation for more details on this parameter.
+		</td>
+	</tr>
+	
+	<tr><td colspan="2">&nbsp;</td></tr>
+	
+	<tr>
+		<th colspan="2">Indexable file system definition parameters</th>
+	</tr>
+	<tr>
+		<td colspan="2">
+			This indexable definition is for a file share. It can be on the local machine or on the network. For a local directory 
+			the path to the folder will be /path/to/folder and on the network would be something like //computer.name/path/to/folder.
+		</td>
+	</tr>
+	<tr>
+		<th>Parameter</th>
+		<th>Description</th>
+	</tr>
+	<tr>
+		<td>name</td>
+		<td>
+			The uniqiue name of this indexable in the configuration.
+		</td>
+	</tr>
+	<tr>
+		<td>path</td>
+		<td>
+			The absolute or relative path to the file or folder to index. This can be accross the network 
+			provided the drive is mapped to the machine where Ikube is running.
+		</td>
+	</tr>
+	<tr>
+		<td>pathFieldName</td>
+		<td>
+			The name in the Lucene index of the path to the file that is being indexed.
+		</td>
+	</tr>
+	<tr>
+		<td>nameFieldName</td>
+		<td>
+			The name in the Lucene index of the name of the file.
+		</td>
+	</tr>
+	<tr>
+		<td>lengthFieldname</td>
+		<td>
+			The name of the field in the Lucene index of the length of the file, ie. the size of it. 
+		</td>
+	</tr>
+	<tr>
+		<td>contentFieldName</td>
+		<td>
+			The name of the field in the Lucene index for the fiel content. This is typically the important field 
+			that will be searched once the index is created.
+		</td>
+	</tr>
+	<tr>
+		<td>excludedPattern</td>
+		<td>
+			Any excluded patterns that would be excluded from the indexing process, like for example 
+			exe files and video as Ikube can't index video just yet, although there is some investigation into 
+			this at the moment.
+		</td>
+	</tr>
+	<tr>
+		<td>lastModifiedFieldName</td>
+		<td>
+			The name of the field in the Lucene index for the last modified timestamp of the file being indexed.
+		</td>
+	</tr>
+	
+	<tr><td colspan="2">&nbsp;</td></tr>
+	
+	<tr>
+		<th colspan="2">Indexable table definition parameters</th>
 	</tr>
 	<tr>
 		<td colspan="2"> 
@@ -278,65 +407,30 @@
 		<td colspan="2">
 			As mentioned previously the sql to access the data is generated from the configuration. Tables can be nested within each 
 			other as is normally the case with tables in a relational database. If a table is defined as a primary table and a child table is added 
-			to the child indexables of the table then the logic to index the tables will be as follows:<br><br>
+			to the parent table then Ikube, while iterating over the results from the parent table, select related records from the child table(s) 
+			and add the data to the parents' index documents.<br><br>
 			
-			1) Select the records from the primary table using the batch size defined in the index context and the predicate<br>
-			2) Go to the next result in the result set for the table<br>
-			3) Using the foreign key defined in the secondary table definition select the records from the second table<br> 
-			4) Iterate over the second table results and index the data for the columns<br>
-			5) Return to the primary table and move to the next result in the result set<br><br>
-					
-			Here is a solid example of the mechanism of indexing tables. We will index two tables, related to each other by a foreign key, the 'faq' 
-			table and the 'attachments' table. The attachments table is 
-			related to the faq table by a foreign key attachment.faqId =&gt; faq.id. We want to index all the data in the faq table and include all the 
-			attachments for each faq. The logic during indexing is as follows.<br><br>
-					
-			1) select id, question, answer from faq where id &gt; 1000 and id &lt; 2000<br>
-			2) ResultSet.next()<br>
-			3) Extract column data and populate the Lucene document with the fields<br>
-			4) select id, name, attachment from attachment where faq.id = 1000<br>
-			5) ResultSet.next()<br>
-			6) Extract column data and populate the Lucene document with the fields<br>
-			7) Goto 5 until result set is depleted<br>
-			8) Goto 2 until records are depleted<br>
-			9) Goto 1, incrementing the batch, i.e. the id until there are no more records<br><br>
-					
+			In the spring-client.xml configuration file is the definition of the 'faq' and 'attachment' tables. These are an example 
+			of the table nesting in the configuration.
+			
 			The result of this is a Lucene document with the following fields and values:<br><br>
 					
 			&lt;{id=faq.1}, {question=where is Paris}, {answer=In France}, {name=documentOne.doc}, 
 			{attachment=Paris and Lyon are both situated in France}&gt;<br><br>
 					
-			The configuration of tables can be arbitrarily complex, nesting depth can be up to 10 tables or more. Testing has only been done 
-			to a depth of seven nested tables. In the unit test configuration the depth is four nested tables. With each level in the table hierarchy 
-			there needs to be a select on the child table. This has a negative exponential performance effect on the indexing speed as with each 
-			table there needs to be a select. For example:<br><br>
-					
-			* faq - 1000 records<br>
-			* attachment - 10000 records, one for each faq<br> 
-			* Version - 10000 records, one for each attachment<br><br>
-				
-			The selects on the database will be:<br><br>
-				
-			* faq - 1<br>
-			* attachment - 1000<br>
-			* version - 10000000<br><br>
-					
-			As you can see ten million selects on the version table could be time consuming. Increasing the size of the 
-			faq table will have an exponential effect on the time it takes to index the data. In this case it could be interesting 
-			to create two indexes, one for the versions and one for the faqs.
+			The configuration of tables can be arbitrarily complex, nesting depth can be up to 10 tables or more.<br><br>
 		</td>
 	</tr>
 	
-	<tr>
-		<td colspan="2">&nbsp;</td>
-	</tr>
+	<tr><td colspan="2">&nbsp;</td></tr>
+	
 	<tr>
 		<td colspan="2">
 			Columns are defined and added to the tables as children. Below is a table of parameters that can be defined for columns.
 		</td>
 	</tr>
 	<tr>
-		<th colspan="2">IndexableColumn definition parameters</th>
+		<th colspan="2">Indexable column definition parameters</th>
 	</tr>
 	<tr>
 		<th>Parameter</th>
@@ -405,102 +499,18 @@
 		</td>
 	</tr>
 	<tr>
-		<td colspan="2"> 
-			Please refer to the 
-			<a href="http://code.google.com/p/ikube/source/browse/#svn%2Ftrunk%2Fcode%2Fcore%2Fsrc%2Fmain%2Fresources%2FMETA-INF"
-				target="_top">default configuration</a> 
-			for a complete example of a nested table configuration.
-		</td>
+		<td colspan="2">Please refer to the default configuration for a complete example of a nested table configuration.</td>
 	</tr>
 	
+	<tr><td colspan="2">&nbsp;</td></tr>
+	
 	<tr>
-		<td colspan="2">&nbsp;</td>
-	</tr>
-	<tr>
-		<th colspan="2">IndexableInternet definition parameters</th>
+		<th colspan="2">Indexable email definition parameters</th>
 	</tr>
 	<tr>
 		<td colspan="2">
-			This indexable is an internet site or an intranet site. Note that the crawler is multi-threaded but not clusterable. To facilitate 
-			good performance in the crawler the urls are hashed and stored in memory, this could become problematic if the number of pages 
-			exceeds 10 million. This problem will be addressed in the near future by including a fast database like ObjectDb.
+			This indexable is to index the content in an email account.
 		</td>
-	</tr>
-	<tr>
-		<th>Parameter</th>
-		<th>Description</th>
-	</tr>
-	<tr>
-		<td>name</td>
-		<td> 
-			This is the name of the indexable, it should be unique within the configuration. It can be an arbitrary string.
-		</td>
-	</tr>
-	<tr>
-		<td>url</td>
-		<td>
-			The url of the site to index. Note that the host fragment of the url will be used as the base url 
-			and the point to start the index. All pages and documents that are linked to this host or have the host as the 
-			fragment in their url will be indexed.
-		</td>
-	</tr>
-	<tr>
-		<td>idFieldName</td>
-		<td>
-			The name of the field in the Lucene index for the identifier of this url. This is a field that will 
-			be searched against when the index is created.
-		</td>
-	</tr>
-	<tr>
-		<td>titleFieldName</td>
-		<td> 
-			As above with the id field name this is the field in the Lucene index that will be searched against 
-			for the title of the document. In the case of an HTML page the title tag. In the case of a word document 
-			the parser will attempt to extract the title from the document for this field and so on.
-		</td>
-	</tr>
-	<tr>
-		<td>contentFieldName</td>
-		<td> 
-			The name of the lucene content field for the documents. When searching this index the field 
-			and search string will be logically something like 'where {contentFieldName} = {searchString}'. 
-		</td>
-	</tr>
-	<tr>
-		<td>excludedPattern</td>
-		<td> 
-			Patterns that will be excluded from the indexing process. If there are files that should not be 
-			indexed like images for example this can be used to exclude them from the indexing process.
-		</td>
-	</tr>
-	<tr>
-		<td>analyzed</td>
-		<td> 
-			Whether the data will be analyzed by Lucene before being written to the index. Typically this 
-			will be true. For more information on the Lucene parameters please refer to the Lucene documentation.
-		</td>
-	</tr>
-	<tr>
-		<td>stored</td>
-		<td> 
-			Whether to store the data in the index. This will also typically be true as the fragment of text 
-			returned by the search results will need the stored data to generate the fragment. However in the 
-			case of very large document sets this will increase the index size considerably and my not be necessary.
-		</td>
-	</tr>
-	<tr>
-		<td>vectored</td>
-		<td> 
-			Whether the data from the documents will be vectored by Lucene. Please refer to the Lucene 
-			documentation for more details on this parameter.
-		</td>
-	</tr>
-	
-	<tr>
-		<td colspan="2">&nbsp;</td>
-	</tr>
-	<tr>
-		<th colspan="2">IndexableEmail definition parameters</th>
 	</tr>
 	<tr>
 		<th>Parameter</th>
@@ -521,7 +531,7 @@
 	<tr>
 		<td>port</td>
 		<td>
-			The port to use for accessing the mail account. In the case of Gogole mail for example this is 995. This 
+			The port to use for accessing the mail account. In the case of Google mail for example this is 995. This 
 			has to be gotten from the mail provider.
 		</td>
 	</tr>
@@ -576,71 +586,7 @@
 		</td>
 	</tr>
 	
-	<tr>
-		<td colspan="2">&nbsp;</td>
-	</tr>
-	<tr>
-		<th colspan="2">IndexableFileSystem definition parameters</th>
-	</tr>
-	<tr>
-		<th>Parameter</th>
-		<th>Description</th>
-	</tr>
-	<tr>
-		<td>name</td>
-		<td>
-			The uniqiue name of this indexable in the configuration.
-		</td>
-	</tr>
-	<tr>
-		<td>path</td>
-		<td>
-			The absolute or relative path to the file or folder to index. This can be accross the network 
-			provided the drive is mapped to the machine where Ikube is running.
-		</td>
-	</tr>
-	<tr>
-		<td>pathFieldName</td>
-		<td>
-			The name in the Lucene index of the path to the file that is being indexed.
-		</td>
-	</tr>
-	<tr>
-		<td>nameFieldName</td>
-		<td>
-			The name in the Lucene index of the name of the file.
-		</td>
-	</tr>
-	<tr>
-		<td>lengthFieldname</td>
-		<td>
-			The name of the field in the Lucene index of the length of the file, ie. the size of it. 
-		</td>
-	</tr>
-	<tr>
-		<td>contentFieldName</td>
-		<td>
-			The name of the field in the Lucene index for the fiel content. This is typically the important field 
-			that will be searched once the index is created.
-		</td>
-	</tr>
-	<tr>
-		<td>excludedPattern</td>
-		<td>
-			Any excluded patterns that would be excluded from the indexing process, like for example 
-			exe files and video as Ikube can't index video just yet, although there is some investigation into 
-			this at the moment.
-		</td>
-	</tr>
-	<tr>
-		<td>lastModifiedFieldName</td>
-		<td>
-			The name of the field in the Lucene index for the last modified timestamp of the file being indexed.
-		</td>
-	</tr>
-	<tr>
-		<td colspan="2">&nbsp;</td>
-	</tr>
+	<tr><td colspan="2">&nbsp;</td></tr>
 	
 	<tr>
 		<td colspan="2">Please note the other configuration possibilities for mail notification etc. on the 

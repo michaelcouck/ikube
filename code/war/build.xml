@@ -85,7 +85,7 @@
 	-->
 	<target name="copy.configuration">
 		<delete dir="${configuration.directory}" />
-		<copy todir="${configuration.directory}">
+		<copy todir="${configuration.directory}/ikube">
 			<fileset dir="../core/src/main/resources/META-INF">
 				<exclude name="**/aop.xml" />
 				<exclude name="**/log4j.properties" />
@@ -99,30 +99,9 @@
 				<exclude name="**/flatfile/**" />
 			</fileset>
 		</copy>
-		<replace dir="${configuration.directory}" value="" summary="true">
-			<include name="*.xml" />
-			<include name="**/*.xml" />
-			<replacetoken>
-				<![CDATA[classpath:/META-INF]]>
-			</replacetoken>
-		</replace>
-		<replace dir="${configuration.directory}" value="" summary="true">
-			<include name="*.xml" />
-			<include name="**/*.xml" />
-			<replacetoken>
-				<![CDATA[classpath:/META-INF]]>
-			</replacetoken>
-		</replace>
-		<replace dir="${configuration.directory}/client" value="" summary="true">
-			<include name="*.xml" />
-			<include name="**/*.xml" />
-			<replacetoken>
-				<![CDATA[/client]]>
-			</replacetoken>
-		</replace>
-		<jar destfile="${configuration.directory}/configuration.jar" basedir="${configuration.directory}" />
-		<copy file="${configuration.directory}/configuration.jar" todir="./src/main/webapp/docs" failonerror="true" />
-		<unjar src="${configuration.directory}/configuration.jar" dest="${tomcat.1.bin}" overwrite="true" />
+		<jar destfile="${configuration.directory}/${ikube.configuration.jar}" basedir="${configuration.directory}" />
+		<copy file="${configuration.directory}/${ikube.configuration.jar}" todir="./src/main/webapp/docs" failonerror="true" />
+		<unjar src="${configuration.directory}/${ikube.configuration.jar}" dest="${tomcat.1.bin}" overwrite="true" />
 	</target>
 
 	<target name="startUbuntu">
