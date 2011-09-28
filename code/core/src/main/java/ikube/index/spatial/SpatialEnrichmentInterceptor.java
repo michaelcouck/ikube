@@ -9,9 +9,10 @@ import org.apache.lucene.document.Document;
 import org.aspectj.lang.ProceedingJoinPoint;
 
 /**
- * This class will intercept the add document method of the handlers, look through the indexables that they are indexing and accumulate all
- * the address fields. These fields will be fed into one of the geocoding classes that is defined in the configuration. The location in
- * latitude and longitude will be added to the document in Lucene before it is written.
+ * This class will intercept the add document method of the handlers, look through the indexables that they are indexing
+ * and accumulate all the address fields. These fields will be fed into one of the geocoding classes that is defined in
+ * the configuration. The location in latitude and longitude will be added to the document in Lucene before it is
+ * written.
  * 
  * @author Michael Couck
  * @since 06.03.2011
@@ -19,10 +20,10 @@ import org.aspectj.lang.ProceedingJoinPoint;
  */
 public class SpatialEnrichmentInterceptor implements ISpatialEnrichmentInterceptor {
 
-	private static final Logger LOGGER = Logger.getLogger(SpatialEnrichmentInterceptor.class);
+	private static final Logger		LOGGER	= Logger.getLogger(SpatialEnrichmentInterceptor.class);
 
-	private transient IGeocoder geocoder;
-	private transient IEnrichment enrichment;
+	private transient IGeocoder		geocoder;
+	private transient IEnrichment	enrichment;
 
 	@Override
 	public Object enrich(final ProceedingJoinPoint proceedingJoinPoint) throws Throwable {

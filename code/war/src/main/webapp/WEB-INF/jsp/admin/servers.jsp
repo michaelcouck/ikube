@@ -3,8 +3,8 @@
 
 <table class="table-content" width="100%">
 	<tr>
-		<td class="top-content" colspan="6" valign="middle">
-			<span class="top-content-header">Indexes & Servers</span>
+		<td class="top-content" colspan="7" valign="middle">
+			<span class="top-content-header">Indexes</span>
 			<span class="date" style="float: right;"><script type="text/javascript">writeDate();</script></span>
 		</td>
 	</tr>	
@@ -53,8 +53,13 @@
 
 <table class="table-content" width="100%">
 	<tr>
+		<td class="top-content" colspan="7" valign="middle">
+			<span class="top-content-header">Servers</span>
+		</td>
+	</tr>
+	<tr>
 		<th class="td-content" colspan="2">Server</th>
-		<th class="td-content" colspan="2">Working</th>
+		<th class="td-content">Working</th>
 		<th class="td-content">Action</th>
 		<th class="td-content">Index</th>
 		<th class="td-content">Indexable</th>
@@ -75,20 +80,15 @@
 			</td>
 			<c:set var="running" scope="page" value="${server.working ? 'running' : 'stopped'}"/>
 			<td class="td-content" width="1%">
-				<img alt="Working" src="<c:url value="/images/icons/${running}.gif"/>" title="Working"><c:out value="${server.working}" />
+				<img alt="Working" src="<c:url value="/images/icons/${running}.gif"/>" title="Working">
 			</td>
-			<c:choose>
-				<c:when test="${server.action == null}">
-					<td colspan="5"></td>
-				</c:when>
-				<c:otherwise>
-					<td class="td-content"><c:out value="${server.action.actionName}" /></td>
-					<td class="td-content"><c:out value="${server.action.indexName}" /></td>
-					<td class="td-content"><c:out value="${server.action.indexableName}" /></td>
-					<td class="td-content"><c:out value="${server.action.idNumber}" /></td>
-					<td class="td-content"><c:out value="${server.action.startDate}" /></td>
-				</c:otherwise>
-			</c:choose>
+			<c:if test="${server.action != null}">
+				<td class="td-content"><c:out value="${server.action.actionName}" /></td>
+				<td class="td-content"><c:out value="${server.action.indexName}" /></td>
+				<td class="td-content"><c:out value="${server.action.indexableName}" /></td>
+				<td class="td-content"><c:out value="${server.action.idNumber}" /></td>
+				<td class="td-content"><c:out value="${server.action.startDate}" /></td>
+			</c:if>
 		</tr>
 		
 		<tr>
@@ -96,8 +96,7 @@
 		</tr>
 	
 		<tr>
-			<td>&nbsp;</td>
-			<td>&nbsp;</td>
+			<td colspan="2">&nbsp;</td>
 			<td colspan="7">
 				<table class="table-content" width="100%">
 					<tr>
@@ -106,19 +105,17 @@
 								src="<c:url value="/images/icons/index_performance.gif"/>" 
 								title="Indexing performance">
 						</th>
-						<th>
-							Indexing
-						</th>
+						<th>Indexing</th>
 						<th>Duration</th>
 						<th>Executions</th>
 						<th>Per second</th>
 					</tr>
 					<c:forEach var="execution" items="${server.indexingExecutions}">
 					<tr>
-						<td class="td-content"><c:out value="${execution.key}" /></td>
+						<td class="td-content" colspan="2"><c:out value="${execution.key}" /></td>
 						<td class="td-content"><fmt:formatNumber value="${execution.value.duration / 1000000000 / 60}" maxFractionDigits="2" /></td>
 						<td class="td-content"><c:out value="${execution.value.invocations}" /></td>
-						<td colspan="2"><c:out value="${execution.value.executionsPerSecond}" /></td>
+						<td class="td-content"><c:out value="${execution.value.executionsPerSecond}" /></td>
 					</tr>
 					</c:forEach>
 				</table>
@@ -126,8 +123,7 @@
 		</tr>
 	
 		<tr>
-			<td>&nbsp;</td>
-			<td>&nbsp;</td>
+			<td colspan="2">&nbsp;</td>
 			<td colspan="7">
 				<table class="table-content" width="100%">
 					<tr>
@@ -136,27 +132,21 @@
 								src="<c:url value="/images/icons/search_performance.gif"/>" 
 								title="Searching performance">
 						</th>
-						<th>
-							Searching
-						</th>
+						<th>Searching</th>
 						<th>Duration</th>
 						<th>Executions</th>
 						<th>Per second</th>
 					</tr>
 					<c:forEach var="execution" items="${server.searchingExecutions}">
 					<tr>
-						<td class="td-content"><c:out value="${execution.key}" /></td>
+						<td class="td-content" colspan="2"><c:out value="${execution.key}" /></td>
 						<td class="td-content"><fmt:formatNumber value="${execution.value.duration / 1000000000 / 60}" maxFractionDigits="2" /></td>
 						<td class="td-content"><c:out value="${execution.value.invocations}" /></td>
-						<td colspan="2"><c:out value="${execution.value.executionsPerSecond}" /></td>
+						<td class="td-content"><c:out value="${execution.value.executionsPerSecond}" /></td>
 					</tr>
 					</c:forEach>
 				</table>
 			</td>
-		</tr>
-		
-		<tr>	
-			<td colspan="7">&nbsp;</td>
 		</tr>
 	</c:forEach>
 </table>

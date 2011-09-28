@@ -34,37 +34,38 @@
 		property:indexDirectoryPathBackup="${index.directory.path.backup}"
 		property:children-ref="patientIndexables" />
 	<util:list id="patientIndexables">
-		<ref bean="patientTableDb2" />
+		<ref bean="patientTable" />
 	</util:list>
 
 	<!-- Db2 patients -->
 	<bean
-		id="patientTableDb2"
+		id="patientTable"
 		class="ikube.model.IndexableTable"
 		property:name="patient"
-		property:predicate="${patient.predicate}"
 		property:primaryTable="true"
+		property:address="true"
 		property:dataSource-ref="nonXaDataSourceDb2"
-		property:children-ref="patientColumnsDb2" 
+		property:children-ref="patientColumns" 
 		property:maxExceptions="100" />
-	<util:list id="patientColumnsDb2">
+	<util:list id="patientColumns">
 		<ref local="patientId" />
+		<ref local="patientAddressId" />
 		<ref local="firstName" />
 		<ref local="lastName" />
 		<ref local="birthDate" />
 		<ref local="deathDate" />
-		<ref local="addressTableDb2" />
+		<ref local="addressTable" />
 	</util:list>
 	<bean
-		id="addressTableDb2"
+		id="addressTable"
 		class="ikube.model.IndexableTable"
 		property:name="address"
 		property:primaryTable="false"
 		property:address="true"
 		property:dataSource-ref="nonXaDataSourceDb2"
-		property:children-ref="addressColumnsDb2" 
+		property:children-ref="addressColumns" 
 		property:maxExceptions="100" />
-	<util:list id="addressColumnsDb2">
+	<util:list id="addressColumns">
 		<ref local="addressId" />
 		<ref local="numb" />
 		<ref local="street" />
@@ -80,8 +81,17 @@
 		class="ikube.model.IndexableColumn"
 		property:name="id"
 		property:idColumn="true"
+		property:fieldName="patientId"
 		property:analyzed="${analyzed}"
-		property:stored="${not.stored}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="patientAddressId"
+		class="ikube.model.IndexableColumn"
+		property:name="address_Id"
+		property:fieldName="patientAddressId"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
 		id="firstName"
@@ -89,7 +99,7 @@
 		property:name="firstName"
 		property:fieldName="firstName"
 		property:analyzed="${analyzed}"
-		property:stored="${not.stored}"
+		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
 		id="lastName"
@@ -97,7 +107,7 @@
 		property:name="lastName"
 		property:fieldName="lastName"
 		property:analyzed="${analyzed}"
-		property:stored="${not.stored}"
+		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
 		id="birthDate"
@@ -105,7 +115,7 @@
 		property:name="birthDate"
 		property:fieldName="birthDate"
 		property:analyzed="${analyzed}"
-		property:stored="${not.stored}"
+		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
 		id="deathDate"
@@ -113,17 +123,18 @@
 		property:name="deathDate"
 		property:fieldName="deathDate"
 		property:analyzed="${analyzed}"
-		property:stored="${not.stored}"
+		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	
-	<!-- property:idColumn="true" -->
 	<bean
 		id="addressId"
 		class="ikube.model.IndexableColumn"
 		property:name="id"
-		property:foreignKey-ref="patientId"
+		property:idColumn="true"
+		property:fieldName="addressId"
+		property:foreignKey-ref="patientAddressId"
 		property:analyzed="${analyzed}"
-		property:stored="${not.stored}"
+		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
 		id="numb"
@@ -132,7 +143,7 @@
 		property:fieldName="numb"
 		property:address="true"
 		property:analyzed="${analyzed}"
-		property:stored="${not.stored}"
+		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
 		id="street"
@@ -141,7 +152,7 @@
 		property:fieldName="street"
 		property:address="true"
 		property:analyzed="${analyzed}"
-		property:stored="${not.stored}"
+		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
 		id="province"
@@ -150,7 +161,7 @@
 		property:fieldName="province"
 		property:address="true"
 		property:analyzed="${analyzed}"
-		property:stored="${not.stored}"
+		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
 		id="country"
@@ -159,7 +170,7 @@
 		property:fieldName="country"
 		property:address="true"
 		property:analyzed="${analyzed}"
-		property:stored="${not.stored}"
+		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
 		id="postCode"
@@ -168,7 +179,7 @@
 		property:fieldName="postCode"
 		property:address="true"
 		property:analyzed="${analyzed}"
-		property:stored="${not.stored}"
+		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
 		id="latitude"
@@ -176,7 +187,7 @@
 		property:name="latitude"
 		property:fieldName="latitude"
 		property:analyzed="${analyzed}"
-		property:stored="${not.stored}"
+		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
 		id="longitude"
@@ -184,7 +195,7 @@
 		property:name="longitude"
 		property:fieldName="longitude"
 		property:analyzed="${analyzed}"
-		property:stored="${not.stored}"
+		property:stored="${stored}"
 		property:vectored="${vectored}" />
 		
 </beans>

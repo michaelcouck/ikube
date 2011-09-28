@@ -21,12 +21,12 @@ import org.junit.Test;
  */
 public class FileUtilitiesTest extends ATest {
 
-	private File file;
-	private File dotFolder;
-	private File indexFolderOne;
-	private File indexFolderTwo;
-	private File indexFolderThree;
-	private String[] stringPatterns;
+	private File		file;
+	private File		dotFolder;
+	private File		indexFolderOne;
+	private File		indexFolderTwo;
+	private File		indexFolderThree;
+	private String[]	stringPatterns;
 
 	public FileUtilitiesTest() {
 		super(FileUtilitiesTest.class);
@@ -149,12 +149,10 @@ public class FileUtilitiesTest extends ATest {
 		for (int i = 0; i < bytes.length; i++) {
 			bytes[i] = (byte) i;
 		}
-		logger.info("Bytes : " + new String(bytes));
 		file = FileUtilities.getFile(file.getAbsolutePath(), Boolean.FALSE);
 		FileUtilities.setContents(file.getAbsolutePath(), bytes);
 
 		byte[] readBytes = FileUtilities.getContentsFromEnd(file, 512).toByteArray();
-		logger.info("Read bytes : " + new String(readBytes));
 		assertTrue("There must be some bytes in the array : ", readBytes.length > 0);
 		for (int i = readBytes.length - 1; i >= 0; i--) {
 			assertEquals("The bytes must be the same in the ", bytes[i], readBytes[i]);

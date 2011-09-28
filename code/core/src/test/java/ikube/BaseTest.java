@@ -62,10 +62,12 @@ public abstract class BaseTest extends ATest {
 		APPLICATION_CONTEXT = ApplicationContextManager.getApplicationContext();
 		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
 		Server server = clusterManager.getServer();
-		Hazelcast.getTopic(IConstants.SHUTDOWN_TOPIC).publish(server);
 		try {
+			// Sleep for a while to give Hazelcast a chance to get sorted
+			Thread.sleep(10000);
+			Hazelcast.getTopic(IConstants.SHUTDOWN_TOPIC).publish(server);
 			// We'll sleep for a while to give the other servers a time to shut down
-			Thread.sleep(30000);
+			Thread.sleep(10000);
 			final int iterations = 0;
 			final IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
 			PerformanceTester.execute(new PerformanceTester.APerform() {

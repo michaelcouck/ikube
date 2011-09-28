@@ -172,8 +172,9 @@ public class SearchTest extends ATest {
 	@Test
 	@Ignore
 	public void adHoc() throws Exception {
-		String path = "D:/Eclipse/workspace/ikube/indexes/default/1315686200535/192.168.1.4.33621727527171";
-		Directory directory = FSDirectory.open(new File(path));
+		String indexDirectoryName = "127.0.0.1";
+		File indexDirectory = FileUtilities.findFileRecursively(new File("."), indexDirectoryName);
+		Directory directory = FSDirectory.open(indexDirectory);
 		IndexReader indexReader = IndexReader.open(directory);
 		for (int i = 0; i < indexReader.numDocs(); i++) {
 			Document document = indexReader.document(i);

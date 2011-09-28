@@ -46,16 +46,14 @@ public class ApplicationContextManagerTest extends ATest {
 
 	@Test
 	public void getApplicationContextExternal() {
-		File externalFolder = FileUtilities.findFileRecursively(new File("."), "external");
-		FileUtilities.copyFiles(externalFolder, new File(ikubeFolder), "svn");
+		File externalFolder = FileUtilities.findFileRecursively(new File("."), "META-INF");
+		FileUtilities.copyFiles(externalFolder, new File(ikubeFolder), "svn", "spelling", "flatfile", "persistence");
 		ApplicationContext applicationContext = ApplicationContextManager.getApplicationContext();
 		assertNotNull("External context should be available : ", applicationContext);
-		IMailer mailer = (IMailer) applicationContext.getBean("mailerExternal");
-		assertNotNull("The mailer is defined in the beans file : ", mailer);
-		mailer = (IMailer) applicationContext.getBean("anotherMailerExternal");
-		assertNotNull("The mailer is defined in the beans file : ", mailer);
+		Object patientIndex = applicationContext.getBean("patientIndex");
+		assertNotNull("The patient index should be available : ", patientIndex);
 		try {
-			mailer = (IMailer) applicationContext.getBean("anotherMailerExternalNonExistant");
+			IMailer mailer = (IMailer) applicationContext.getBean("anotherMailerExternalNonExistant");
 			assertNull("The mailer is defined in the beans file : ", mailer);
 			fail();
 		} catch (NoSuchBeanDefinitionException e) {

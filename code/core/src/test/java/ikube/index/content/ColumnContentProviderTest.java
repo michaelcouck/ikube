@@ -16,6 +16,7 @@ import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.sql.Blob;
 import java.sql.Clob;
+import java.sql.Date;
 import java.sql.Timestamp;
 import java.sql.Types;
 
@@ -28,8 +29,8 @@ import org.junit.Test;
  */
 public class ColumnContentProviderTest extends ATest {
 
-	private IndexableColumn indexable = mock(IndexableColumn.class);
-	private IContentProvider<IndexableColumn> contentProvider = new ColumnContentProvider();
+	private IndexableColumn						indexable		= mock(IndexableColumn.class);
+	private IContentProvider<IndexableColumn>	contentProvider	= new ColumnContentProvider();
 
 	public ColumnContentProviderTest() {
 		super(ColumnContentProviderTest.class);
@@ -53,6 +54,13 @@ public class ColumnContentProviderTest extends ATest {
 		long time = System.currentTimeMillis();
 		when(indexable.getColumnType()).thenReturn(Types.TIMESTAMP);
 		when(indexable.getContent()).thenReturn(new Timestamp(time));
+		contentProvider.getContent(indexable, outputStream);
+		assertEquals(Long.toString(time), outputStream.toString());
+
+		outputStream = new ByteArrayOutputStream();
+		time = System.currentTimeMillis();
+		when(indexable.getColumnType()).thenReturn(Types.TIMESTAMP);
+		when(indexable.getContent()).thenReturn(new Date(time));
 		contentProvider.getContent(indexable, outputStream);
 		assertEquals(Long.toString(time), outputStream.toString());
 
@@ -113,8 +121,8 @@ public class ColumnContentProviderTest extends ATest {
 	}
 
 	/**
-	 * Returns the max read length byte array plus 1000, i.e. more than the max bytes that the application can read. This forces the indexer
-	 * to get a reader rather than a string.
+	 * Returns the max read length byte array plus 1000, i.e. more than the max bytes that the application can read.
+	 * This forces the indexer to get a reader rather than a string.
 	 * 
 	 * @param string
 	 *            the string to copy to the byte array until the max read length is exceeded

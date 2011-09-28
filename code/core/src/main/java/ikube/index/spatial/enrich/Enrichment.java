@@ -4,6 +4,7 @@ import ikube.IConstants;
 import ikube.index.spatial.Coordinate;
 import ikube.model.Indexable;
 import ikube.model.IndexableColumn;
+import ikube.model.IndexableTable;
 import ikube.toolkit.Logging;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -24,12 +25,12 @@ import org.apache.lucene.util.NumericUtils;
  */
 public class Enrichment implements IEnrichment {
 
-	private static final Logger LOGGER = Logger.getLogger(Enrichment.class);
+	private static final Logger				LOGGER	= Logger.getLogger(Enrichment.class);
 
-	private transient int endTier;
-	private transient int startTier;
-	private transient IProjector projector;
-	private transient CartesianTierPlotter cartesianTierPlotter;
+	private transient int					endTier;
+	private transient int					startTier;
+	private transient IProjector			projector;
+	private transient CartesianTierPlotter	cartesianTierPlotter;
 
 	public Enrichment() {
 		projector = new SinusoidalProjector();
@@ -41,10 +42,8 @@ public class Enrichment implements IEnrichment {
 	 */
 	@Override
 	public void addSpatialLocationFields(Coordinate coordinate, Document document) {
-		document.add(new Field(IConstants.LAT, NumericUtils.doubleToPrefixCoded(coordinate.getLat()), Field.Store.YES,
-				Field.Index.NOT_ANALYZED));
-		document.add(new Field(IConstants.LNG, NumericUtils.doubleToPrefixCoded(coordinate.getLon()), Field.Store.YES,
-				Field.Index.NOT_ANALYZED));
+		document.add(new Field(IConstants.LAT, NumericUtils.doubleToPrefixCoded(coordinate.getLat()), Field.Store.YES, Field.Index.NOT_ANALYZED));
+		document.add(new Field(IConstants.LNG, NumericUtils.doubleToPrefixCoded(coordinate.getLon()), Field.Store.YES, Field.Index.NOT_ANALYZED));
 		addCartesianTiers(coordinate, document, startTier, endTier);
 	}
 
@@ -75,6 +74,12 @@ public class Enrichment implements IEnrichment {
 		Coordinate coordinate = null;
 		for (Indexable<?> child : indexable.getChildren()) {
 			try {
+				if (IndexableTable.class.isAssignableFrom(child.getClass())) {
+					coordinate = getCoordinate(child);
+					if (coordinate != null) {
+						return coordinate;
+					}
+				}
 				if (!IndexableColumn.class.isAssignableFrom(child.getClass())) {
 					continue;
 				}

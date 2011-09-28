@@ -15,7 +15,8 @@ import java.sql.Types;
 import org.apache.log4j.Logger;
 
 /**
- * This class allows writing an object returned from a column in a database to the output stream specified in the parameter list.
+ * This class allows writing an object returned from a column in a database to the output stream specified in the
+ * parameter list.
  * 
  * @author Michael Couck
  * @since 21.11.10
@@ -23,7 +24,7 @@ import org.apache.log4j.Logger;
  */
 public class ColumnContentProvider implements IContentProvider<IndexableColumn> {
 
-	private static final Logger LOGGER = Logger.getLogger(ColumnContentProvider.class);
+	private static final Logger	LOGGER	= Logger.getLogger(ColumnContentProvider.class);
 
 	@Override
 	public void getContent(final IndexableColumn indexable, final OutputStream outputStream) {
@@ -75,7 +76,8 @@ public class ColumnContentProvider implements IContentProvider<IndexableColumn> 
 			case Types.TIME:
 			case Types.TIMESTAMP:
 				// So for Oracle that has to be special the timestamp object doesn't implement the Java timestamp
-				// so we have to guess the method to call to get a representation of the object, so we will just look for a
+				// so we have to guess the method to call to get a representation of the object, so we will just look
+				// for a
 				// method that returns a Timestamp from the class without any parameters and hope for the best
 				Method method = findMethod(object, Timestamp.class);
 				Timestamp timestamp = null;
@@ -90,6 +92,11 @@ public class ColumnContentProvider implements IContentProvider<IndexableColumn> 
 				if (timestamp != null) {
 					String string = Long.toString(timestamp.getTime());
 					outputStream.write(string.getBytes());
+				} else {
+					if (java.util.Date.class.isAssignableFrom(object.getClass())) {
+						long time = ((java.util.Date) object).getTime();
+						outputStream.write(Long.toString(time).getBytes());
+					}
 				}
 				break;
 
@@ -146,7 +153,7 @@ public class ColumnContentProvider implements IContentProvider<IndexableColumn> 
 				// inputStream = new ReaderInputStream(reader);
 				FileUtilities.getContents(reader, outputStream, Integer.MAX_VALUE);
 				break;
-			default: 
+			default:
 				throw new Exception("Type of column not known : " + columnType + ", " + indexable);
 			}
 		} catch (Exception e) {
@@ -163,12 +170,12 @@ public class ColumnContentProvider implements IContentProvider<IndexableColumn> 
 	}
 
 	/**
-	 * Finds a method in an object that has as return type the class of the second parameter. For example in the Blob object for Oracle
-	 * there is a method getBinaryStream that returns an input stream to the blob.
+	 * Finds a method in an object that has as return type the class of the second parameter. For example in the Blob
+	 * object for Oracle there is a method getBinaryStream that returns an input stream to the blob.
 	 * 
-	 * In DB2 it's getInputStream. We, due to the inability of these database vendors to implement the java.sq.Blob interface, have to guess
-	 * what the method is. We don't care if it is a string stream or an ASCII stream the final data will be read in bytes and converted to
-	 * string anyway.
+	 * In DB2 it's getInputStream. We, due to the inability of these database vendors to implement the java.sq.Blob
+	 * interface, have to guess what the method is. We don't care if it is a string stream or an ASCII stream the final
+	 * data will be read in bytes and converted to string anyway.
 	 * 
 	 * @param object
 	 *            the object that we need to find a method on

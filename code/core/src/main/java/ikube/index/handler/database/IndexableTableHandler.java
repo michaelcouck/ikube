@@ -39,15 +39,15 @@ import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
 
 /**
- * This class performs the indexing of tables. It is the primary focus of Ikube. This class is essentially a database crawler, and is multi
- * threaded. Because Ikube is clusterable it means that there are two levels of threading, within this Jvm and within the cluster. The
- * cluster synchronization is done using the {@link IClusterManager}.
+ * This class performs the indexing of tables. It is the primary focus of Ikube. This class is essentially a database
+ * crawler, and is multi threaded. Because Ikube is clusterable it means that there are two levels of threading, within
+ * this Jvm and within the cluster. The cluster synchronization is done using the {@link IClusterManager}.
  * 
- * This is just a simple explanation of the table structure and the way the hierarchy is accessed, more information can be found on the
- * Wiki.
+ * This is just a simple explanation of the table structure and the way the hierarchy is accessed, more information can
+ * be found on the Wiki.
  * 
- * Tables are hierarchical, as such the configuration is also and the table handler will recursively call it's self to navigate the
- * hierarchy. The operation is as follows:
+ * Tables are hierarchical, as such the configuration is also and the table handler will recursively call it's self to
+ * navigate the hierarchy. The operation is as follows:
  * 
  * 1) Sql will be generated to select the top level table<br>
  * 2) Move to the first row<br>
@@ -63,24 +63,24 @@ import org.apache.lucene.document.Field.TermVector;
 public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 
 	/**
-	 * This value is how many times we will try to get a result set without any data before we give up. When looking for a result set the
-	 * predicate could be something like 'where id < 100000', if there are 100 000 000 records in the table then the getResultSet method
-	 * will recursively call it's self until there are records in the result set, incrementing the batch size each time. The first call will
-	 * be:<br>
+	 * This value is how many times we will try to get a result set without any data before we give up. When looking for
+	 * a result set the predicate could be something like 'where id < 100000', if there are 100 000 000 records in the
+	 * table then the getResultSet method will recursively call it's self until there are records in the result set,
+	 * incrementing the batch size each time. The first call will be:<br>
 	 * where id > 0 and id < 10 and id < 100000<br>
 	 * But once we reach:<br>
 	 * where id > 100000 and id < 100010 and id < 100000<br>
-	 * There will be no records, so the method recursively calls it's self, until there are no more id's in the database, i.e. until the
-	 * predicate is:<br>
+	 * There will be no records, so the method recursively calls it's self, until there are no more id's in the
+	 * database, i.e. until the predicate is:<br>
 	 * where id > 100 000 000 and id < 100 000 010 and id < 100000<br>
-	 * The problem is of course is that there will be 100 000 recursive calls, which can't happen; So this variable limits the number of
-	 * recursive calls, to 10, which I think is more than enough.
+	 * The problem is of course is that there will be 100 000 recursive calls, which can't happen; So this variable
+	 * limits the number of recursive calls, to 10, which I think is more than enough.
 	 */
-	private static final int MAX_REENTRANT = 10;
+	private static final int	MAX_REENTRANT	= 10;
 
 	/**
-	 * This method starts threads and passes the indexable to them. The threads are added to the list of threads that are returned to the
-	 * caller that will have to wait for them to finish indexing all the data.
+	 * This method starts threads and passes the indexable to them. The threads are added to the list of threads that
+	 * are returned to the caller that will have to wait for them to finish indexing all the data.
 	 */
 	@Override
 	public List<Thread> handle(final IndexContext<?> indexContext, final IndexableTable indexable) throws Exception {
@@ -122,16 +122,17 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 					}
 				}, this.getClass().getSimpleName() + "." + i);
 				threads.add(thread);
-				if (cloneIndexableTable.isAllColumns()) {
-					List<String> columnNames = DatabaseUtilities.getAllColumns(connection, cloneIndexableTable.getName());
-					for (String columnName : columnNames) {
-						IndexableColumn indexableColumn = new IndexableColumn();
-						indexableColumn.setAnalyzed(Boolean.TRUE);
-						indexableColumn.setFieldName(IConstants.CONTENTS);
-						IndexableColumn foreignKeyColumn = getForeignKeyColumn(cloneIndexableTable);
-						// TODO Build the foreign keys and construct the hierarchy
-					}
-				}
+				// if (cloneIndexableTable.isAllColumns()) {
+				// List<String> columnNames = DatabaseUtilities.getAllColumns(connection,
+				// cloneIndexableTable.getName());
+				// for (String columnName : columnNames) {
+				// IndexableColumn indexableColumn = new IndexableColumn();
+				// indexableColumn.setAnalyzed(Boolean.TRUE);
+				// indexableColumn.setFieldName(IConstants.CONTENTS);
+				// IndexableColumn foreignKeyColumn = getForeignKeyColumn(cloneIndexableTable);
+				// // TODO Build the foreign keys and construct the hierarchy
+				// }
+				// }
 			}
 			for (Thread thread : threads) {
 				logger.debug("Starting thread : " + thread);
@@ -167,14 +168,15 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	 * @param indexContext
 	 *            the index context that we are indexing
 	 * @param indexableTable
-	 *            the table that we are indexing, this is generally a clone of the original because there is state in the table that is used
-	 *            by different threads
+	 *            the table that we are indexing, this is generally a clone of the original because there is state in
+	 *            the table that is used by different threads
 	 * @param connection
-	 *            the connection to the database that must be closed when there are no more records left in the top level table
+	 *            the connection to the database that must be closed when there are no more records left in the top
+	 *            level table
 	 * @param document
-	 *            the document that came from the top level table. As we recurse the table hierarchy, we have to pass this document to the
-	 *            child tables so they can add their data to the document. When this method is called with the top level table the document
-	 *            is null of course
+	 *            the document that came from the top level table. As we recurse the table hierarchy, we have to pass
+	 *            this document to the child tables so they can add their data to the document. When this method is
+	 *            called with the top level table the document is null of course
 	 */
 	protected void handleTable(final IContentProvider<IndexableColumn> contentProvider, final IndexContext<?> indexContext,
 			final IndexableTable indexableTable, final Connection connection, Document document, int exceptions) {
@@ -248,8 +250,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 						}
 					}
 				} catch (Exception e) {
-					logger.error("Exception indexing table : " + indexableTable + ", connection : " + connection + ", exceptions : "
-							+ exceptions, e);
+					logger.error("Exception indexing table : " + indexableTable + ", connection : " + connection + ", exceptions : " + exceptions, e);
 					exceptions++;
 					if (exceptions > indexableTable.getMaxExceptions()) {
 						logger.error("Maximum exception exceeded, exiting indexing table : " + indexableTable);
@@ -288,8 +289,9 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	/**
 	 * This method gets the result set. There are two cases:
 	 * 
-	 * 1) When the indexable is a top level table the result set is based on the predicate that is defined for the table and the next row in
-	 * the batch. We use the column indexables defined in the configuration to build the sql to access the table.<br>
+	 * 1) When the indexable is a top level table the result set is based on the predicate that is defined for the table
+	 * and the next row in the batch. We use the column indexables defined in the configuration to build the sql to
+	 * access the table.<br>
 	 * 2) When the indexable is not a top level table then we use the id of the parent table in the sql generation.<br>
 	 * 
 	 * More detail on how the sql gets generated is in the documentation for the buildSql method.
@@ -324,8 +326,8 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 					indexableTable.setMinimumId(minimumId);
 				}
 				IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
-				nextIdNumber = clusterManager.getIdNumber(indexContext.getIndexName(), indexableTable.getName(),
-						indexContext.getBatchSize(), minimumId);
+				nextIdNumber = clusterManager.getIdNumber(indexContext.getIndexName(), indexableTable.getName(), indexContext.getBatchSize(),
+						minimumId);
 			}
 
 			// Now we build the sql based on the columns defined in the configuration
@@ -378,8 +380,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	 * @return the string sql for the table
 	 * @throws Exception
 	 */
-	protected synchronized String buildSql(final IndexableTable indexableTable, final long batchSize, final long nextIdNumber)
-			throws Exception {
+	protected synchronized String buildSql(final IndexableTable indexableTable, final long batchSize, final long nextIdNumber) throws Exception {
 		try {
 			StringBuilder builder = new StringBuilder();
 			builder.append("select ");
@@ -465,17 +466,17 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	}
 
 	/**
-	 * This method sets the parameters in the statement. Typically the sub tables need the id from the parent. The sql generated would be
-	 * something like: "...where foreignKey = parentId", so we have to get the parent id column and set the parameter.
+	 * This method sets the parameters in the statement. Typically the sub tables need the id from the parent. The sql
+	 * generated would be something like: "...where foreignKey = parentId", so we have to get the parent id column and
+	 * set the parameter.
 	 * 
 	 * @param indexableTable
-	 *            the table that is being iterated over at the moment, this could be a top level table n which case there will be no foreign
-	 *            key references, but in the case of a sub table the parent id will be accessed
+	 *            the table that is being iterated over at the moment, this could be a top level table n which case
+	 *            there will be no foreign key references, but in the case of a sub table the parent id will be accessed
 	 * @param preparedStatement
 	 *            the statement to set the parameters in
 	 */
-	protected synchronized void setParameters(final IndexableTable indexableTable, final PreparedStatement preparedStatement)
-			throws Exception {
+	protected synchronized void setParameters(final IndexableTable indexableTable, final PreparedStatement preparedStatement) throws Exception {
 		try {
 			List<Indexable<?>> children = indexableTable.getChildren();
 			int index = 1;
@@ -498,8 +499,8 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	}
 
 	/**
-	 * This method selects from the specified table using a function, typically something like "max" or "min". In some cases we need to know
-	 * if we have reached the end of the table, or what the first id is in the table.
+	 * This method selects from the specified table using a function, typically something like "max" or "min". In some
+	 * cases we need to know if we have reached the end of the table, or what the first id is in the table.
 	 * 
 	 * @param indexableTable
 	 *            the table to execute the function on
@@ -550,8 +551,8 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	 * 
 	 * @param indexableColumns
 	 *            the columns to look through
-	 * @return the id column or null if no such column is defined. Generally this will mean a configuration problem, every table must have a
-	 *         unique id column
+	 * @return the id column or null if no such column is defined. Generally this will mean a configuration problem,
+	 *         every table must have a unique id column
 	 */
 	protected IndexableColumn getIdColumn(final List<Indexable<?>> indexableColumns) {
 		for (Indexable<?> indexable : indexableColumns) {
@@ -568,16 +569,15 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	}
 
 	/**
-	 * This method handles a column. Essentially what this means is that the data from the table is extracted and added to the document, in
-	 * the field specified.
+	 * This method handles a column. Essentially what this means is that the data from the table is extracted and added
+	 * to the document, in the field specified.
 	 * 
 	 * @param indexable
 	 *            the column to extract the data from and add to the document
 	 * @param document
 	 *            the document to add the data to using the field name specified in the column definition
 	 */
-	protected void handleColumn(final IContentProvider<IndexableColumn> contentProvider, final IndexableColumn indexable,
-			final Document document) {
+	protected void handleColumn(final IContentProvider<IndexableColumn> contentProvider, final IndexableColumn indexable, final Document document) {
 		InputStream inputStream = null;
 		OutputStream parsedOutputStream = null;
 		ByteOutputStream byteOutputStream = null;
@@ -624,9 +624,9 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	}
 
 	/**
-	 * Sets the id field for this document. Typically the id for the document in the index is unique in the index but it may not be. It is
-	 * always a good idea to have a unique field, but a table may be indexed twice of course, in which case there will be duplicates in the
-	 * id fields.
+	 * Sets the id field for this document. Typically the id for the document in the index is unique in the index but it
+	 * may not be. It is always a good idea to have a unique field, but a table may be indexed twice of course, in which
+	 * case there will be duplicates in the id fields.
 	 * 
 	 * @param indexableTable
 	 *            the table to get the id for
@@ -650,8 +650,8 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	}
 
 	/**
-	 * This method sets the data from the table columns in the column objects as well as the type which is gotten from the result set emta
-	 * data.
+	 * This method sets the data from the table columns in the column objects as well as the type which is gotten from
+	 * the result set emta data.
 	 * 
 	 * @param children
 	 *            the children indexables of the table object
