@@ -175,5 +175,6 @@ public interface IConstants {
 	long				MAX_ACTIONS									= 100000;
 	String				DELAY										= "delay";
 	String				SPRING_PROPERTIES							= "spring.properties";
+	String				TIER										= "tier";
 
 }

@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:property="http://www.springframework.org/schema/p"
+	xmlns:util="http://www.springframework.org/schema/util"
+
+	xsi:schemaLocation="
+			http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+            http://www.springframework.org/schema/context
+            http://www.springframework.org/schema/context/spring-context-3.0.xsd
+            http://www.springframework.org/schema/util
+            http://www.springframework.org/schema/util/spring-util.xsd">
+
+	<bean
+		id="patientIndex"
+		class="ikube.model.IndexContext"
+		property:name="patientIndex"
+		property:maxAge="${max.age}"
+		property:compoundFile="${compound.file}"
+		property:bufferedDocs="${buffered.docs}"
+		property:bufferSize="${buffer.size}"
+		property:batchSize="${jdbc.batch.size}"
+		property:internetBatchSize="${internet.batch.size}"
+		property:mergeFactor="${merge.factor}"
+		property:maxFieldLength="${max.field.length}"
+		property:maxReadLength="${max.read.length}"
+		property:queueTimeout="${max.age}"
+		property:throttle="${throttle}"
+		property:indexDirectoryPath="${index.directory.path}"
+		property:indexDirectoryPathBackup="${index.directory.path.backup}"
+		property:children-ref="patientIndexables" />
+	<util:list id="patientIndexables">
+		<ref bean="patientTableDb2" />
+	</util:list>
+
+	<!-- Db2 patients -->
+	<bean
+		id="patientTableDb2"
+		class="ikube.model.IndexableTable"
+		property:name="patient"
+		property:predicate="${patient.predicate}"
+		property:primaryTable="true"
+		property:dataSource-ref="nonXaDataSourceDb2"
+		property:children-ref="patientColumnsDb2" 
+		property:maxExceptions="100" />
+	<util:list id="patientColumnsDb2">
+		<ref local="patientId" />
+		<ref local="firstName" />
+		<ref local="lastName" />
+		<ref local="birthDate" />
+		<ref local="deathDate" />
+		<ref local="addressTableDb2" />
+	</util:list>
+	<bean
+		id="addressTableDb2"
+		class="ikube.model.IndexableTable"
+		property:name="address"
+		property:primaryTable="false"
+		property:address="true"
+		property:dataSource-ref="nonXaDataSourceDb2"
+		property:children-ref="addressColumnsDb2" 
+		property:maxExceptions="100" />
+	<util:list id="addressColumnsDb2">
+		<ref local="addressId" />
+		<ref local="numb" />
+		<ref local="street" />
+		<ref local="province" />
+		<ref local="country" />
+		<ref local="postCode" />
+		<ref local="latitude" />
+		<ref local="longitude" />
+	</util:list>
+
+	<bean
+		id="patientId"
+		class="ikube.model.IndexableColumn"
+		property:name="id"
+		property:idColumn="true"
+		property:analyzed="${analyzed}"
+		property:stored="${not.stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="firstName"
+		class="ikube.model.IndexableColumn"
+		property:name="firstName"
+		property:fieldName="firstName"
+		property:analyzed="${analyzed}"
+		property:stored="${not.stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="lastName"
+		class="ikube.model.IndexableColumn"
+		property:name="lastName"
+		property:fieldName="lastName"
+		property:analyzed="${analyzed}"
+		property:stored="${not.stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="birthDate"
+		class="ikube.model.IndexableColumn"
+		property:name="birthDate"
+		property:fieldName="birthDate"
+		property:analyzed="${analyzed}"
+		property:stored="${not.stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="deathDate"
+		class="ikube.model.IndexableColumn"
+		property:name="deathDate"
+		property:fieldName="deathDate"
+		property:analyzed="${analyzed}"
+		property:stored="${not.stored}"
+		property:vectored="${vectored}" />
+	
+	<!-- property:idColumn="true" -->
+	<bean
+		id="addressId"
+		class="ikube.model.IndexableColumn"
+		property:name="id"
+		property:foreignKey-ref="patientId"
+		property:analyzed="${analyzed}"
+		property:stored="${not.stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="numb"
+		class="ikube.model.IndexableColumn"
+		property:name="numb"
+		property:fieldName="numb"
+		property:address="true"
+		property:analyzed="${analyzed}"
+		property:stored="${not.stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="street"
+		class="ikube.model.IndexableColumn"
+		property:name="street"
+		property:fieldName="street"
+		property:address="true"
+		property:analyzed="${analyzed}"
+		property:stored="${not.stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="province"
+		class="ikube.model.IndexableColumn"
+		property:name="province"
+		property:fieldName="province"
+		property:address="true"
+		property:analyzed="${analyzed}"
+		property:stored="${not.stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="country"
+		class="ikube.model.IndexableColumn"
+		property:name="country"
+		property:fieldName="country"
+		property:address="true"
+		property:analyzed="${analyzed}"
+		property:stored="${not.stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="postCode"
+		class="ikube.model.IndexableColumn"
+		property:name="postCode"
+		property:fieldName="postCode"
+		property:address="true"
+		property:analyzed="${analyzed}"
+		property:stored="${not.stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="latitude"
+		class="ikube.model.IndexableColumn"
+		property:name="latitude"
+		property:fieldName="latitude"
+		property:analyzed="${analyzed}"
+		property:stored="${not.stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="longitude"
+		class="ikube.model.IndexableColumn"
+		property:name="longitude"
+		property:fieldName="longitude"
+		property:analyzed="${analyzed}"
+		property:stored="${not.stored}"
+		property:vectored="${vectored}" />
+		
+</beans>

@@ -28,13 +28,14 @@ import org.springframework.context.ApplicationContext;
 import com.hazelcast.core.Hazelcast;
 
 /**
- * This is the base class for tests that start up the application context. Generally we don't want to start the context for several reasons
- * not the least of which is that it is time consuming, but in some cases we do. Most tests should be mocked using Mockito and Jmockit.
+ * This is the base class for tests that start up the application context. Generally we don't want to start the context
+ * for several reasons not the least of which is that it is time consuming, but in some cases we do. Most tests should
+ * be mocked using Mockito and Jmockit.
  * 
- * This class will start the {@link ApplicationContextManager} and initialize the context. This means that the data sources will be started,
- * and injected into Jndi, the aspects will be woven in, Hazelcast will be started, ultimately almost like starting a server, which is nice
- * for integration tests, but not so nice for unit tests that we want to run in a fraction of a second. This startup process can take up to
- * 30 seconds, clearly not nice for a unit test.
+ * This class will start the {@link ApplicationContextManager} and initialize the context. This means that the data
+ * sources will be started, and injected into Jndi, the aspects will be woven in, Hazelcast will be started, ultimately
+ * almost like starting a server, which is nice for integration tests, but not so nice for unit tests that we want to
+ * run in a fraction of a second. This startup process can take up to 30 seconds, clearly not nice for a unit test.
  * 
  * @author Michael Couck
  * @since 21.11.10
@@ -42,11 +43,11 @@ import com.hazelcast.core.Hazelcast;
  */
 public abstract class BaseTest extends ATest {
 
-	private static final Logger LOGGER = Logger.getLogger(BaseTest.class);
+	private static final Logger				LOGGER		= Logger.getLogger(BaseTest.class);
 
-	protected static ApplicationContext APPLICATION_CONTEXT;
-	protected static EntityManagerFactory ENTITY_MANAGER_FACTORY;
-	protected static boolean INITIALIZED = Boolean.FALSE;
+	protected static ApplicationContext		APPLICATION_CONTEXT;
+	protected static EntityManagerFactory	ENTITY_MANAGER_FACTORY;
+	protected static boolean				INITIALIZED	= Boolean.FALSE;
 
 	@BeforeClass
 	public static void beforeClass() {
@@ -99,7 +100,7 @@ public abstract class BaseTest extends ATest {
 		ListenerManager.removeListeners();
 	}
 
-	protected IndexContext<?> indexContext;
+	protected IndexContext<?>	indexContext;
 
 	public BaseTest(Class<?> subClass) {
 		super(subClass);

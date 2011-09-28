@@ -17,10 +17,10 @@ import org.apache.lucene.search.Searchable;
 import org.apache.lucene.search.Searcher;
 
 /**
- * This class searches all the fields in the index with the specified search string. This is a convenience class that will dynamically get
- * all the fields in the index and add them to the fields to search rather than explicitly setting the fields to search. Typically the usage
- * of this class will be having one search string and the index name. In this case the search string will be duplicated for each search
- * field found in the index.
+ * This class searches all the fields in the index with the specified search string. This is a convenience class that
+ * will dynamically get all the fields in the index and add them to the fields to search rather than explicitly setting
+ * the fields to search. Typically the usage of this class will be having one search string and the index name. In this
+ * case the search string will be duplicated for each search field found in the index.
  * 
  * @see Search
  * @author Michael Couck
@@ -48,7 +48,8 @@ public class SearchMultiAll extends SearchMulti {
 		String[] newSearchStrings = new String[searchFields.length];
 		int minLength = Math.min(searchStrings.length, newSearchStrings.length);
 		System.arraycopy(searchStrings, 0, newSearchStrings, 0, minLength);
-		Arrays.fill(newSearchStrings, minLength, newSearchStrings.length, searchStrings[0]);
+		String searchString = searchStrings != null && searchStrings.length > 0 ? searchStrings[0] : "";
+		Arrays.fill(newSearchStrings, minLength, newSearchStrings.length, searchString);
 		searchStrings = newSearchStrings;
 		return MultiFieldQueryParser.parse(IConstants.VERSION, searchStrings, searchFields, IConstants.ANALYZER);
 	}

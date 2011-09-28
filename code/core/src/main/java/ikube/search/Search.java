@@ -122,7 +122,8 @@ public abstract class Search {
 		for (Fieldable field : document.getFields()) {
 			String fieldName = field.name();
 			// Don't add the latitude and longitude tier field, very ugly data, and not useful
-			if (fieldName != null && (fieldName.equals(IConstants.LAT) || fieldName.equals(IConstants.LNG))) {
+			if (fieldName != null
+					&& ((fieldName.equals(IConstants.LAT) || fieldName.equals(IConstants.LNG)) || (fieldName.contains(IConstants.TIER)))) {
 				continue;
 			}
 			String stringValue = field.stringValue();
