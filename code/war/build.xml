@@ -102,6 +102,7 @@
 		<jar destfile="${configuration.directory}/${ikube.configuration.jar}" basedir="${configuration.directory}" />
 		<copy file="${configuration.directory}/${ikube.configuration.jar}" todir="./src/main/webapp/docs" failonerror="true" />
 		<unjar src="${configuration.directory}/${ikube.configuration.jar}" dest="${tomcat.1.bin}" overwrite="true" />
+		<unjar src="${configuration.directory}/${ikube.configuration.jar}" dest="${ikube.configuration.directory}" overwrite="true" />
 	</target>
 
 	<target name="startUbuntu">

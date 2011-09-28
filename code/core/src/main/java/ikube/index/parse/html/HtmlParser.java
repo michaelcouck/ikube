@@ -15,6 +15,8 @@ import net.htmlparser.jericho.Source;
 import net.htmlparser.jericho.TextExtractor;
 
 /**
+ * TODO Redo this parser.
+ * 
  * @author Michael Couck
  * @since 03.09.10
  * @version 01.00
@@ -34,7 +36,7 @@ public class HtmlParser implements IParser {
 		source.fullSequentialParse();
 		TextExtractor textExtractor = new TextExtractor(source);
 		textExtractor.setExcludeNonHTMLElements(Boolean.TRUE);
-		textExtractor.setIncludeAttributes(Boolean.TRUE);
+		textExtractor.setIncludeAttributes(Boolean.FALSE);
 		textExtractor.setConvertNonBreakingSpaces(Boolean.TRUE);
 		outputStream.write(textExtractor.toString().getBytes(IConstants.ENCODING));
 		return outputStream;

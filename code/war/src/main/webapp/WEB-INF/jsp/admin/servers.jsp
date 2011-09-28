@@ -3,7 +3,7 @@
 
 <table class="table-content" width="100%">
 	<tr>
-		<td class="top-content" colspan="7" valign="middle">
+		<td class="top-content" colspan="9" valign="middle">
 			<span class="top-content-header">Indexes</span>
 			<span class="date" style="float: right;"><script type="text/javascript">writeDate();</script></span>
 		</td>
@@ -49,6 +49,8 @@
 	</tr>
 	</c:forEach>
 </table>
+<br>
+<br>
 <br>
 
 <table class="table-content" width="100%">

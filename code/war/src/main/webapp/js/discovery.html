@@ -1,12 +1,484 @@
+
+
+
 <html>
 	<head>
-		<title>Discovery</title>
-		<script type="text/javascript" src="ikube.js""></script>
+		<title>Ikube</title>
+		<link rel="shortcut icon" href="/ikube/images/icon.ico" />
+		<link href="/ikube/style/style-white.css" rel="stylesheet" type="text/css" media="screen" />
+		<script type="text/javascript" src="/ikube/js/ikube.js"></script>
+
 		<meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+		<meta name="Keywords" content="Michael Couck, Ikube, Enterprise Search, Web Site Search, Database Search, High Volume" />
+		<meta name="Description" content="Ikube Enterprise Search." />
+		<script src="http://www.google-analytics.com/ga.js" type="text/javascript"></script>
 	</head>
 
 	<body onload="JavaScript:timedRefresh(10000);">
-		Hello World!
-	</body>
+		<script type="text/javascript">
+			try {
+				var pageTracker = _gat._getTracker("UA-13044914-4");
+				pageTracker._trackPageview();
+			} catch(err) {
+				document.write('<!-- ' + err + ' -->');
+			}
+		</script>
+
+		<center>
+			<table border="0" align="center" cellpadding="0" cellspacing="0">
+				<tr>
+					<td colspan="2">
+											
+					
+					<table id="header" border="0">
+						<tr>
+							<td style="padding-left : 35px;" valign="bottom" width="50">
+								<img alt="Ikube" src="/ikube/images/multi_ikube.jpg"  width="50" height="50">
+							</td>
+
+							<td valign="top" align="left">
+								<a class="title" href="/ikube/index.html">Ikube</a>
+							</td>
+							<td align="right" style="padding-bottom: 30px">
+								<a class="link" href="http://code.google.com/p/ikube/downloads/list">download</a>
+								<a class="link" href="/ikube/documentation/quickstart.html">quick start</a>
+								<a class="link" href="/ikube/documentation/configuration.html">configuration</a>
+
+								<a class="link" href="/ikube/documentation/searching.html">searching</a>
+								<a class="link" href="/ikube/documentation/extra.html">extra</a>
+								<a class="link" href="/ikube/documentation/clustering.html">clustering</a>
+								<a class="link" href="/ikube/documentation/indexes.html">indexes</a>
+								&nbsp;&nbsp;
+
+								<a href="/ikube/index.html?language=english">
+
+									<img alt="english" src="/ikube/images/flags/gb.gif" title="english">
+								</a>
+								<a href="/ikube/index.html?language=french" title="franÃ§ais">
+									<img alt="franÃ§ais" src="/ikube/images/flags/fr.gif">
+								</a>
+								<a href="/ikube/index.html?language=german" title="deutsch">
+									<img alt="deutsch" src="/ikube/images/flags/de.gif">
+								</a>
+								<a href="/ikube/index.html?language=dutch" title="nederlands">
+
+									<img alt="nederlands" src="/ikube/images/flags/be.gif">
+								</a>
+								<a href="/ikube/index.html?language=russian" title="Ð ÑÑÑÐºÐ¸Ð¹">
+									<img alt="Ð ÑÑÑÐºÐ¸Ð¹" src="/ikube/images/flags/ru.gif">
+								</a>
+
+								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+							</td>
+						</tr>
+
+					</table>
+
+					</td>
+				</tr>
+				<tr id="content">
+					<td width="250">
+						
+
+<script type="text/javascript">
+	window.onload = function() {
+		document.ikubeSearchForm.searchStrings.focus();
+	}
+</script>
+
+<div id="sidebar" class="menu">
+	<ul>
+
+		<li id="search">
+			
+			<form name="ikubeSearchForm" id="ikubeSearchForm" action="/ikube/results.html">
+				<input name="targetSearchUrl" type="hidden" value="/results.html">
+				<fieldset>
+					<input type="text" name="searchStrings" id="search-text" 	value="" />
+					<input type="submit" id="search-submit" value="Go" />
+				</fieldset>
+			</form>
+			
+		</li>
+
+		<li>
+			<h2>Navigation</h2>
+			<ul>
+				<li><a href="/ikube/index.html">Home</a></li>
+				<li><a href="/ikube/admin/servers.html">Monitoring</a></li>
+				
+				<li><a href="/ikube/documentation/index.html">Documentation</a></li>
+			</ul>
+
+		</li>
+		<li>
+			<ul></ul>
+		</li>
+		<li>
+			<h2>libraries used</h2>
+			<ul>
+				<li><a href="https://wiki.jenkins-ci.org/display/JENKINS/Serenity+Plugin">Serenity</a></li>
+
+				<li><a href="http://lucene.apache.org/">Lucene</a></li>
+				<li><a href="http://pdfbox.apache.org/">PdfBox</a></li>
+				<li><a href="http://www.neodatis.org/">Neodatis</a></li>
+				<li><a href="http://sourceforge.net/projects/c3p0/">C3p0</a></li>
+				<li><a href="http://www.springsource.org">Spring</a></li>
+				<li><a href="http://www.hazelcast.com/">Hazelcast</a></li>
+
+				<li><a href="http://jenkins-ci.org/">Jenkins CI</a></li>
+				<li><a href="http://www.h2database.com/html/main.html">H2 database</a></li>
+				<li><a href="http://openjpa.apache.org/">OpenJpa</a></li>
+			</ul>
+		</li>
+		<li>
+			<ul>&nbsp;</ul>
+
+		</li>
+		<li>
+			<h2>Similar products</h2>
+			<ul>
+				<li><a href="http://en.wikipedia.org/wiki/Apache_Solr">Solr</a></li>
+				<li><a href="http://en.wikipedia.org/wiki/ISYS_Search_Software">Isys</a></li>
+				<li><a href="http://en.wikipedia.org/wiki/Autonomy_Corporation">Autonomy</a></li>
+
+				<li><a href="http://en.wikipedia.org/wiki/Google_Search_Appliance">Google Search Appliance</a></li>
+				<li><a href="http://www.searchtools.com/info/database-search.html">Database search tools</a></li>
+			</ul>
+		</li>
+		<li>
+			<h2>Interesting Java Links</h2>
+			<ul>
+
+				<li><a href="http://jenkins-ci.org/">Jenkins CI</a></li>
+				<li><a href="http://www.springbyexample.org">Spring by Example</a></li>
+				<li><a href="http://en.wikipedia.org/wiki/Software_package_metrics">Code Metrics</a></li>
+				<li><a href="http://en.wikipedia.org/wiki/PageRank">Page Rank</a></li>
+			</ul>
+		</li>
+	</ul>
+
+</div>
+					</td>
+					<td width="700">
+						
+
+
+<!--
+	This page is for viewing the index and the fields in the index. 
+ -->
+
+
+<form name="ikubeSearchForm" id="ikubeSearchForm" action="/ikube/admin/index.html">
+<input name="targetSearchUrl" type="hidden" value="/admin/index.html">
+<input name="indexName" type="hidden" value="geospatial">
+<table class="table-content" width="100%">
+	<tr>
+		<td class="top-content" colspan="2">
+
+			<span class="top-content-header">Index</span>
+			<span class="date" style="float: right;"><script type="text/javascript">writeDate();</script></span>
+		</td>
+	</tr>
+	<tr><th colspan="2">geospatial</th></tr>
 	
+	<tr>
+		<td>
+
+			
+			
+
+
+<!--
+	This snippit is for recursively rendering the indexables. 
+ -->
+
+
+<table>
+	<tr>
+		<th>Name</th>
+		<th>Class</th>
+		<th>Address</th>
+		<th>Stored</th>
+
+		<th>Analysed</th>
+		<th>Vectored</th>
+	</tr>
+	
+	<tr>
+		<td>geoname</td>
+		<td>IndexableTable</td>
+		<td>true</td>
+
+		<td>false</td>
+		<td>true</td>
+		<td>false</td>
+	</tr>
+	
+		
+		
+		
+
+
+<!--
+	This snippit is for recursively rendering the indexables. 
+ -->
+
+
+<table>
+	<tr>
+
+		<th>Name</th>
+		<th>Class</th>
+		<th>Address</th>
+		<th>Stored</th>
+		<th>Analysed</th>
+		<th>Vectored</th>
+
+	</tr>
+	
+	<tr>
+		<td>id</td>
+		<td>IndexableColumn</td>
+		<td>false</td>
+		<td>false</td>
+		<td>true</td>
+
+		<td>true</td>
+	</tr>
+	
+	
+	<tr>
+		<td>name</td>
+		<td>IndexableColumn</td>
+		<td>true</td>
+		<td>true</td>
+
+		<td>true</td>
+		<td>true</td>
+	</tr>
+	
+	
+	<tr>
+		<td>city</td>
+		<td>IndexableColumn</td>
+		<td>true</td>
+
+		<td>true</td>
+		<td>true</td>
+		<td>true</td>
+	</tr>
+	
+	
+	<tr>
+		<td>country</td>
+		<td>IndexableColumn</td>
+
+		<td>true</td>
+		<td>true</td>
+		<td>true</td>
+		<td>true</td>
+	</tr>
+	
+	
+	<tr>
+		<td>asciiname</td>
+
+		<td>IndexableColumn</td>
+		<td>true</td>
+		<td>true</td>
+		<td>true</td>
+		<td>true</td>
+	</tr>
+
+	
+	
+	<tr>
+		<td>latitude</td>
+		<td>IndexableColumn</td>
+		<td>false</td>
+		<td>true</td>
+		<td>true</td>
+
+		<td>true</td>
+	</tr>
+	
+	
+	<tr>
+		<td>longitude</td>
+		<td>IndexableColumn</td>
+		<td>false</td>
+		<td>true</td>
+
+		<td>true</td>
+		<td>true</td>
+	</tr>
+	
+	
+	<tr>
+		<td>featureclass</td>
+		<td>IndexableColumn</td>
+		<td>false</td>
+
+		<td>false</td>
+		<td>true</td>
+		<td>true</td>
+	</tr>
+	
+	
+	<tr>
+		<td>featurecode</td>
+		<td>IndexableColumn</td>
+
+		<td>false</td>
+		<td>false</td>
+		<td>true</td>
+		<td>true</td>
+	</tr>
+	
+	
+	<tr>
+		<td>countrycode</td>
+
+		<td>IndexableColumn</td>
+		<td>false</td>
+		<td>false</td>
+		<td>true</td>
+		<td>true</td>
+	</tr>
+
+	
+	
+	<tr>
+		<td>timezone</td>
+		<td>IndexableColumn</td>
+		<td>false</td>
+		<td>true</td>
+		<td>true</td>
+
+		<td>true</td>
+	</tr>
+	
+	
+</table>
+
+	
+	
+</table>
+
+		</td>
+	</tr>
+	<tr>
+
+		<td>
+			<input type="text" name="searchStrings" id="search-text" 	value="" />
+			<input type="submit" id="search-submit" value="Go" />
+			
+		</td>
+	</tr>
+</table>
+</form>
+
+<table>
+	
+
+
+
+<!--
+	This page is for the results. To enable this page please have a look at the SearchController to know
+	what must be included in the model for the page. Typically it is things like the first and maximum results, 
+	also the total results for the search and of course the results them selves which are a list of maps. 
+ -->
+	<tr>
+
+		<td>
+			From : 1,
+			
+			to : 0,
+			total : ,
+			for '',
+			took  ms<br /><br>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			
+
+
+
+<!--
+	This snippit is just for pagination so it can be included at various places
+	in the search results' pages. 
+ -->
+	<tr>
+
+		<td>
+			
+			
+			 
+  				
+  					
+  					<a href="/ikube/results.html?targetSearchUrl=/results.html&searchStrings=&firstResult=0&maxResults=10">0</a>
+  				
+			 
+		</td>
+	</tr> 
+		</td>
+	</tr>
+	<tr>
+		<td>
+			
+		</td>
+
+	</tr>
+	<tr>
+		<td>
+			
+
+
+
+<!--
+	This snippit is just for pagination so it can be included at various places
+	in the search results' pages. 
+ -->
+	<tr>
+		<td>
+			
+			
+			 
+  				
+  					
+  					<a href="/ikube/results.html?targetSearchUrl=/results.html&searchStrings=&firstResult=0&maxResults=10">0</a>
+  				
+			 
+		</td>
+
+	</tr> 
+		</td>
+	</tr>
+</table>
+
+<table>
+	<tr>
+		<td class="td-content" colspan="2">
+			<strong>index</strong>&nbsp;
+			This is the individual index properties and fields page.
+		</td>
+
+	</tr>
+</table>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<div id="footer">
+	<p>(c) 2009 Ikube Design by <a href="http://www.nodethirtythree.com/">nodethirtythree</a>
+
+</div>
+
+					</td>
+				</tr>
+			</table>
+		</center>
+	</body>
 </html>

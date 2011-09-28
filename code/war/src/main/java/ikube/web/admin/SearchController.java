@@ -20,6 +20,7 @@ import java.util.TreeSet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -29,6 +30,8 @@ import org.springframework.web.servlet.ModelAndView;
  * @version 01.00
  */
 public class SearchController extends BaseController {
+
+	protected Logger			logger			= Logger.getLogger(this.getClass());
 
 	/** These are the default values for first and max results. */
 	private static final int	FIRST_RESULT	= 0;
@@ -45,35 +48,30 @@ public class SearchController extends BaseController {
 		Server server = ApplicationContextManager.getBean(IClusterManager.class).getServer();
 
 		// Get all the search strings from the request, we'll search all the indexes, all the fields, all strings
-		Set<String> searchStrings = new TreeSet<String>();
-		Map<String, String[]> parameterMap = request.getParameterMap();
-		for (Map.Entry<String, String[]> entry : parameterMap.entrySet()) {
-			// Check that the field is a search string field
-			if (!entry.getKey().startsWith("search")) {
-				continue;
-			}
-			String[] fieldValues = entry.getValue();
-			// Check that there is a value in the fields from the request
-			if (fieldValues == null || fieldValues.length == 0) {
-				// Don't want to search for empty strings, not useful
-				continue;
-			}
-			for (String fieldValue : fieldValues) {
-				if (!StringUtils.hasLength(fieldValue)) {
-					continue;
+		Set<String> searchStrings = getSearchStrings(request);
+
+		// This check is specifically for classes that inherit from this class and don't
+		// necessarily have search strings in the parameter list
+		boolean mustSearch = Boolean.FALSE;
+		if (searchStrings == null || searchStrings.size() == 0) {
+			for (String searchString : searchStrings) {
+				if (searchString != null && "".equals(searchString.trim())) {
+					mustSearch = Boolean.TRUE;
+					break;
 				}
-				searchStrings.add(fieldValue);
+			}
+			if (!mustSearch) {
+				return modelAndView;
 			}
 		}
 
-		IMonitorWebService monitorWebService = ApplicationContextManager.getBean(IMonitorWebService.class);
 		ISearcherWebService searcherWebService = ServiceLocator.getService(ISearcherWebService.class, server.getSearchWebServiceUrl(),
 				ISearcherWebService.NAMESPACE, ISearcherWebService.SERVICE);
 
 		int firstResult = getParameter(IConstants.FIRST_RESULT, FIRST_RESULT, request);
 		int maxResults = getParameter(IConstants.MAX_RESULTS, MAX_RESULTS, request);
 
-		String[] indexNames = monitorWebService.getIndexNames();
+		String[] indexNames = getIndexNames(request);
 
 		// Search all the indexes and merge the results
 		int total = 0;
@@ -128,6 +126,38 @@ public class SearchController extends BaseController {
 
 		modelAndView.addObject(IConstants.SERVER, server);
 		return modelAndView;
+	}
+
+	protected String[] getIndexNames(HttpServletRequest request) {
+		IMonitorWebService monitorWebService = ApplicationContextManager.getBean(IMonitorWebService.class);
+		String[] indexNames = monitorWebService.getIndexNames();
+		return indexNames;
+	}
+
+	@SuppressWarnings("unchecked")
+	protected Set<String> getSearchStrings(HttpServletRequest request) {
+		// Get all the search strings from the request, we'll search all the indexes, all the fields, all strings
+		Set<String> searchStrings = new TreeSet<String>();
+		Map<String, String[]> parameterMap = request.getParameterMap();
+		for (Map.Entry<String, String[]> entry : parameterMap.entrySet()) {
+			// Check that the field is a search string field
+			if (!entry.getKey().startsWith("search")) {
+				continue;
+			}
+			String[] fieldValues = entry.getValue();
+			// Check that there is a value in the fields from the request
+			if (fieldValues == null || fieldValues.length == 0) {
+				// Don't want to search for empty strings, not useful
+				continue;
+			}
+			for (String fieldValue : fieldValues) {
+				if (!StringUtils.hasLength(fieldValue)) {
+					continue;
+				}
+				searchStrings.add(fieldValue);
+			}
+		}
+		return searchStrings;
 	}
 
 	private boolean isNumeric(String string) {

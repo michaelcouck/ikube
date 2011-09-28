@@ -25,6 +25,9 @@
 	<tr>
 		<td>
 			<c:forEach var="result" items="${results}">
+				<c:if test="${param.indexName != null}">
+					indexName : <c:out value="${param.indexName}" /><br>
+				</c:if>
 				<c:forEach var="entry" items="${result}">
 					<c:out value="${entry.key}" /> : <c:out value="${entry.value}" escapeXml="false" /><br>
 				</c:forEach>

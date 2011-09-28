@@ -1,5 +1,6 @@
 package ikube.search;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import ikube.ATest;
 import ikube.IConstants;
@@ -96,7 +97,6 @@ public class SearchTest extends ATest {
 		searchSingle.setSearchString("hello");
 		searchSingle.setSortField(new String[] { IConstants.ID });
 		List<Map<String, String>> results = searchSingle.execute();
-		logger.info("Results : " + results);
 		assertTrue(results.size() > 1);
 	}
 
@@ -110,7 +110,6 @@ public class SearchTest extends ATest {
 		searchMulti.setSearchString("id.1~", "hello");
 		searchMulti.setSortField(new String[] { IConstants.ID });
 		List<Map<String, String>> results = searchMulti.execute();
-		logger.info("Results : " + results);
 		assertTrue(results.size() > 1);
 	}
 
@@ -124,7 +123,6 @@ public class SearchTest extends ATest {
 		searchMultiSorted.setSearchString("id.1~", "hello");
 		searchMultiSorted.setSortField(new String[] { IConstants.ID });
 		List<Map<String, String>> results = searchMultiSorted.execute();
-		logger.info("Results : " + results);
 		assertTrue(results.size() > 1);
 
 		// Verify that all the results are in ascending order according to the id
@@ -165,8 +163,8 @@ public class SearchTest extends ATest {
 		List<Map<String, String>> results = search.execute();
 		search.addStatistics(results, 79, 23);
 		Map<String, String> statistics = results.get(results.size() - 1);
-		assertTrue(statistics.get(IConstants.SEARCH_STRINGS).equals("michael, AND, couck"));
-		assertTrue(statistics.get(IConstants.CORRECTIONS).equals("michael, AND, houck"));
+		assertEquals("michael AND couck", statistics.get(IConstants.SEARCH_STRINGS));
+		assertEquals("michael AND houck", statistics.get(IConstants.CORRECTIONS));
 	}
 
 	@Test
@@ -184,8 +182,6 @@ public class SearchTest extends ATest {
 				logger.error(fieldable);
 			}
 		}
-		// Searchable[] searchables = new Searchable[] { new IndexSearcher(directory) };
-		// SEARCHER = new MultiSearcher(searchables);
 	}
 
 }

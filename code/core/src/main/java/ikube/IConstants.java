@@ -21,6 +21,7 @@ public interface IConstants {
 	String				IKUBE_LOG									= IKUBE + ".log";
 	/** The file separator for the system. */
 	String				SEP											= "/";
+	String				BCK_SEP										= "\\";
 	/** We expect the configuration file to be in the META-INF as seems to be the fashion at the moment. */
 	String				META_INF									= SEP + "META-INF";
 	/** The name of the spring file. */
@@ -51,7 +52,7 @@ public interface IConstants {
 	Version				VERSION										= Version.LUCENE_30;
 	Analyzer			ANALYZER									= new StandardAnalyzer(VERSION);
 	long				MAX_READ_LENGTH								= 1000000;
-	int					MAX_RESULT_FIELD_LENGTH						= 1000;
+	int					MAX_RESULT_FIELD_LENGTH						= 100;
 
 	String				READER_FILE_SUFFIX							= ".ikube";
 	int					MAX_FRAGMENTS								= 3;

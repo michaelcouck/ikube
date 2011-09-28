@@ -185,6 +185,13 @@ public abstract class Search {
 			totalHits = topDocs.totalHits;
 			// TODO If there are no results here then do a search for the
 			// corrected spelling to see if there are any results from that
+			if (totalHits == 0 && searchStrings.length == 1) {
+				StringBuilder searchStringBuider = new StringBuilder();
+				StringBuilder correctedSearchStringBuilder = new StringBuilder();
+				getCorrections(searchStringBuider, correctedSearchStringBuilder);
+				searchStrings[0] = correctedSearchStringBuilder.toString().trim();
+				totalHits = topDocs.totalHits;
+			}
 			results = getResults(topDocs, query);
 		} catch (Exception e) {
 			String searchString = searchStrings != null && searchStrings.length > 0 ? searchStrings[0] : "null";
@@ -327,6 +334,20 @@ public abstract class Search {
 		Map<String, String> statistics = new HashMap<String, String>();
 		statistics.put(IConstants.TOTAL, Long.toString(totalHits));
 		statistics.put(IConstants.DURATION, Long.toString(duration));
+
+		StringBuilder searchStringBuider = new StringBuilder();
+		StringBuilder correctedSearchStringBuilder = new StringBuilder();
+		getCorrections(searchStringBuider, correctedSearchStringBuilder);
+
+		statistics.put(IConstants.SEARCH_STRINGS, searchStringBuider.toString().trim());
+		if (correctedSearchStringBuilder.length() > 0) {
+			statistics.put(IConstants.CORRECTIONS, correctedSearchStringBuilder.toString().trim());
+		}
+
+		results.add(statistics);
+	}
+
+	protected void getCorrections(StringBuilder searchStringBuider, StringBuilder correctedSearchStringBuilder) {
 		Set<String> searchStringSet = new LinkedHashSet<String>();
 		Set<String> correctedSearchStringSet = new LinkedHashSet<String>();
 		boolean corrections = Boolean.FALSE;
@@ -344,15 +365,16 @@ public abstract class Search {
 				}
 			}
 		}
-		String searchString = searchStringSet.toString();
-		searchString = StringUtils.strip(searchString, IConstants.STRIP_CHARACTERS);
-		statistics.put(IConstants.SEARCH_STRINGS, searchString);
-		if (corrections) {
-			String correctedSearchString = correctedSearchStringSet.toString();
-			correctedSearchString = StringUtils.strip(correctedSearchString, IConstants.STRIP_CHARACTERS);
-			statistics.put(IConstants.CORRECTIONS, correctedSearchString);
+		for (String searchString : searchStringSet) {
+			searchStringBuider.append(searchString);
+			searchStringBuider.append(' ');
 		}
-		results.add(statistics);
+		if (corrections) {
+			for (String correctedSearchString : correctedSearchStringSet) {
+				correctedSearchStringBuilder.append(correctedSearchString);
+				correctedSearchStringBuilder.append(' ');
+			}
+		}
 	}
 
 }

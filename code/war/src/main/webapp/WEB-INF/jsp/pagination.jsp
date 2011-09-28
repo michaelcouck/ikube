@@ -13,7 +13,7 @@
 			<c:forEach var="index" begin="0" end="${total}" varStatus="counter"> 
   				<c:if test="${index % maxResults == 0}">
   					<c:set var="searchUrl" value="${targetSearchUrl != null ? targetSearchUrl : '/results.html'}" />
-  					<a href="<c:url value="${searchUrl}"  />?targetSearchUrl=${searchUrl}&searchStrings=${searchStrings}&firstResult=${index}&maxResults=${maxResults}">${index}</a>
+  					<a href="<c:url value="${searchUrl}"  />?indexName=${indexName}&targetSearchUrl=${searchUrl}&searchStrings=${searchStrings}&firstResult=${index}&maxResults=${maxResults}">${index}</a>
   				</c:if>
 			</c:forEach> 
 		</td>

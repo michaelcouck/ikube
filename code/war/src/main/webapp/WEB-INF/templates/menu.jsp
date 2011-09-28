@@ -2,7 +2,7 @@
 
 <script type="text/javascript">
 	window.onload = function() {
-		document.ikubeSearchForm.content.focus();
+		document.ikubeSearchForm.searchStrings.focus();
 	}
 </script>
 

@@ -18,7 +18,7 @@
 		<th>Class</th>
 		<th>Address</th>
 		<th>Stored</th>
-		<th>Analyzed</th>
+		<th>Analysed</th>
 		<th>Vectored</th>
 	</tr>
 	<c:forEach var="child" items="${clonedChildren}">
@@ -39,7 +39,11 @@
 			var="children" 
 			value="${child.children}" 
 			scope="session" />
-		<jsp:include page="/WEB-INF/jsp/admin/indexable.jsp" flush="true" />
+		<tr>
+			<td colspan="6">
+				<jsp:include page="/WEB-INF/jsp/admin/indexable.jsp" flush="true" />
+			</td>
+		</tr>
 	</c:if>
 	</c:forEach>
 </table>
