@@ -58,7 +58,7 @@ public interface IConstants {
 	int					MAX_FRAGMENTS								= 3;
 	String				FRAGMENT_SEPERATOR							= "...";
 	int					BATCH_SIZE									= 10;
-	int					RESET_DELETE_BATCH_SIZE						= 100;
+	int					RESET_DELETE_BATCH_SIZE						= 1000;
 
 	String				ID											= "id";
 	String				INDEX										= "index";

@@ -56,13 +56,15 @@ public class AsposePowerPointParser implements IParser {
 					shape = shps.get(shpCount);
 					if (shape.getPlaceholder() != null) {
 						try {
-							// Getting AutoShape from group shapes set
-							AutoShapeEx aShape = (AutoShapeEx) shape;
-							if (aShape.getTextFrame() != null) {
-								// Accessing the text frame of shape
-								TextFrameEx tfText = aShape.getTextFrame();
-								getText(tfText, outputStream);
-							}// End Text Frame IF
+							if (shape instanceof AutoShapeEx) {
+								// Getting AutoShape from group shapes set
+								AutoShapeEx aShape = (AutoShapeEx) shape;
+								if (aShape.getTextFrame() != null) {
+									// Accessing the text frame of shape
+									TextFrameEx tfText = aShape.getTextFrame();
+									getText(tfText, outputStream);
+								}// End Text Frame IF
+							}
 						} catch (Exception e) {
 							LOGGER.error("Exception : " + e.getMessage());
 						}

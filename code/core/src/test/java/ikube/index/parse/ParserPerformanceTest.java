@@ -2,14 +2,6 @@ package ikube.index.parse;
 
 import static org.junit.Assert.assertTrue;
 import ikube.ATest;
-import ikube.index.parse.excel.ExcelParser;
-import ikube.index.parse.html.HtmlParser;
-import ikube.index.parse.pdf.PdfParser;
-import ikube.index.parse.pp.PowerPointParser;
-import ikube.index.parse.rtf.RtfParser;
-import ikube.index.parse.text.TextParser;
-import ikube.index.parse.word.WordParser;
-import ikube.index.parse.xml.XMLParser;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.PerformanceTester;
 
@@ -30,112 +22,27 @@ import org.junit.Test;
  */
 public class ParserPerformanceTest extends ATest {
 
+	private int			iterations	= 25;
+	private String[]	files		= { "pdf.pdf", "xml.xml", "html.html", "xls.xls", "doc.doc", "txt.txt", "pot.pot", "docx.docx", "xlsx.xlsx",
+			"pptx.pptx", "rtf.rtf"	};
+
 	public ParserPerformanceTest() {
 		super(ParserPerformanceTest.class);
 	}
 
 	@Test
-	public void pdfPerformance() throws Exception {
-		final File file = FileUtilities.findFileRecursively(new File("."), "pdf.pdf");
-		final PdfParser pdfParser = new PdfParser();
-		PerformanceTester.execute(new PerformanceTester.APerform() {
-			@Override
-			public void execute() throws Exception {
-				InputStream inputStream = new FileInputStream(file);
-				pdfParser.parse(inputStream, new ByteArrayOutputStream());
-			}
-		}, "Pdf parser", 100);
-	}
-
-	@Test
-	public void xmlPerformance() throws Exception {
-		final File file = FileUtilities.findFileRecursively(new File("."), "xml.xml");
-		final XMLParser xmlParser = new XMLParser();
-		PerformanceTester.execute(new PerformanceTester.APerform() {
-			@Override
-			public void execute() throws Exception {
-				InputStream inputStream = new FileInputStream(file);
-				xmlParser.parse(inputStream, new ByteArrayOutputStream());
-			}
-		}, "Xml parser", 100);
-	}
-
-	@Test
-	public void htmlPerformance() throws Exception {
-		final File file = FileUtilities.findFileRecursively(new File("."), "html.html");
-		final HtmlParser htmlParser = new HtmlParser();
-		PerformanceTester.execute(new PerformanceTester.APerform() {
-			@Override
-			public void execute() throws Exception {
-				InputStream inputStream = new FileInputStream(file);
-				htmlParser.parse(inputStream, new ByteArrayOutputStream());
-			}
-		}, "Html parser", 100);
-	}
-
-	@Test
-	public void wordPerformance() throws Exception {
-		final File file = FileUtilities.findFileRecursively(new File("."), "doc.doc");
-		final WordParser wordParser = new WordParser();
-		PerformanceTester.execute(new PerformanceTester.APerform() {
-			@Override
-			public void execute() throws Exception {
-				InputStream inputStream = new FileInputStream(file);
-				wordParser.parse(inputStream, new ByteArrayOutputStream());
-			}
-		}, "Word parser", 100);
-	}
-
-	@Test
-	public void textPerformance() throws Exception {
-		final File file = FileUtilities.findFileRecursively(new File("."), "txt.txt");
-		final TextParser textParser = new TextParser();
-		PerformanceTester.execute(new PerformanceTester.APerform() {
-			@Override
-			public void execute() throws Exception {
-				InputStream inputStream = new FileInputStream(file);
-				textParser.parse(inputStream, new ByteArrayOutputStream());
-			}
-		}, "Text parser", 10);
-	}
-
-	@Test
-	public void excelPerformance() throws Exception {
-		final File file = FileUtilities.findFileRecursively(new File("."), "xls.xls");
-		final ExcelParser excelParser = new ExcelParser();
-		PerformanceTester.execute(new PerformanceTester.APerform() {
-			@Override
-			public void execute() throws Exception {
-				InputStream inputStream = new FileInputStream(file);
-				excelParser.parse(inputStream, new ByteArrayOutputStream());
-			}
-		}, "Excel parser", 100);
-	}
-
-	@Test
-	public void ppPerformance() throws Exception {
-		final File file = FileUtilities.findFileRecursively(new File("."), "pot.pot");
-		final PowerPointParser ppParser = new PowerPointParser();
-		PerformanceTester.execute(new PerformanceTester.APerform() {
-			@Override
-			public void execute() throws Exception {
-				InputStream inputStream = new FileInputStream(file);
-				ppParser.parse(inputStream, new ByteArrayOutputStream());
-			}
-		}, "PP parser", 100);
-	}
-
-	@Test
-	public void rtfPerformance() throws Exception {
-		final File file = FileUtilities.findFileRecursively(new File("."), "rtf.rtf");
-		final RtfParser rtfParser = new RtfParser();
-		PerformanceTester.execute(new PerformanceTester.APerform() {
-			@Override
-			public void execute() throws Exception {
-				InputStream inputStream = new FileInputStream(file);
-				rtfParser.parse(inputStream, new ByteArrayOutputStream());
-			}
-		}, "Rtf parser", 100);
+	public void parserPerformance() throws Exception {
+		for (String fileName : files) {
+			final File file = FileUtilities.findFileRecursively(new File("."), fileName);
+			final IParser parser = ParserProvider.getParser(file.getName(), new byte[0]);
+			PerformanceTester.execute(new PerformanceTester.APerform() {
+				@Override
+				public void execute() throws Exception {
+					InputStream inputStream = new FileInputStream(file);
+					parser.parse(inputStream, new ByteArrayOutputStream());
+				}
+			}, parser.getClass().getSimpleName() + ", file name : " + fileName, iterations);
+		}
 	}
 
 	@Test
@@ -146,8 +53,7 @@ public class ParserPerformanceTest extends ATest {
 		final String string = FileUtilities.getContents(inputStream, Integer.MAX_VALUE).toString();
 		// (@)?(href=')?(HREF=')?(HREF=\")?(href=\")?
 		// This pattern will extract the urls form the log so we can check them
-		final Pattern pattern = Pattern
-				.compile("(http://|https://)[a-zA-Z_0-9\\-]+(\\.\\w[a-zA-Z_0-9\\-]+)+(/[#&\\n\\-=?\\+\\%/\\.\\w]+)?");
+		final Pattern pattern = Pattern.compile("(http://|https://)[a-zA-Z_0-9\\-]+(\\.\\w[a-zA-Z_0-9\\-]+)+(/[#&\\n\\-=?\\+\\%/\\.\\w]+)?");
 		double executionsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
 			public void execute() {
 				Matcher matcher = pattern.matcher(string);

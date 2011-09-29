@@ -4,7 +4,6 @@ import ikube.IConstants;
 import ikube.database.IDataBase;
 import ikube.model.File;
 import ikube.model.IndexContext;
-import ikube.model.Indexable;
 import ikube.model.Url;
 import ikube.toolkit.ApplicationContextManager;
 
@@ -13,9 +12,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This class resets the data in the cluster. It is imperative that nothing gets reset if there are any servers working of course. The urls
- * that are published into the cluster during the indexing need to be deleted. This deletion action will delete them not only from this
- * server's map but from all the servers' maps.
+ * This class resets the data in the cluster. It is imperative that nothing gets reset if there are any servers working
+ * of course. The urls that are published into the cluster during the indexing need to be deleted. This deletion action
+ * will delete them not only from this server's map but from all the servers' maps.
  * 
  * The actions need to be cleaned when all the servers are finished working.
  * 
@@ -31,31 +30,32 @@ public class Reset extends Action<IndexContext<?>, Boolean> {
 	@Override
 	public Boolean execute(final IndexContext<?> indexContext) {
 		try {
+			logger.info("Resetting : ");
 			IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
 			Map<String, Object> parameters = new HashMap<String, Object>();
 			parameters.put(IConstants.NAME, indexContext.getName());
 			delete(dataBase, Url.class, Url.SELECT_FROM_URL_BY_NAME, parameters);
 			delete(dataBase, File.class, File.SELECT_FROM_FILE_BY_NAME, parameters);
-			for (Indexable<?> indexable : indexContext.getIndexables()) {
-				parameters.put(IConstants.NAME, indexable.getName());
-				delete(dataBase, Url.class, Url.SELECT_FROM_URL_BY_NAME, parameters);
-				delete(dataBase, File.class, File.SELECT_FROM_FILE_BY_NAME, parameters);
-			}
 			Long count = dataBase.execute(Long.class, ikube.model.Action.SELECT_FROM_ACTIONS_COUNT);
+			logger.info("Resetting : " + count + " entities");
 			if (count > IConstants.MAX_ACTIONS) {
 				parameters.clear();
 				delete(dataBase, ikube.model.Action.class, ikube.model.Action.SELECT_FROM_ACTIONS, parameters);
 			}
 		} finally {
+			logger.info("Resetting releasing cluster : ");
 			getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getSimpleName(), "", Boolean.FALSE);
+			logger.info("Resetting released cluster : ");
 		}
 		return Boolean.TRUE;
 	}
 
 	protected void delete(final IDataBase dataBase, final Class<?> klass, final String sql, final Map<String, Object> parameters) {
 		try {
+			logger.info("Resetting looking for entities to delete : ");
 			List<?> list = dataBase.find(klass, sql, parameters, 0, IConstants.RESET_DELETE_BATCH_SIZE);
 			do {
+				logger.info("Resetting, deleting entities : " + (list != null ? list.size() : 0));
 				dataBase.removeBatch(list);
 				list = dataBase.find(klass, sql, parameters, 0, IConstants.RESET_DELETE_BATCH_SIZE);
 			} while (list.size() > 0);

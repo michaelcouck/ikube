@@ -8,7 +8,7 @@
 <c:set var="targetSearchUrl" value="/admin/index.html" />
 <form name="ikubeSearchForm" id="ikubeSearchForm" action="<c:url value="${targetSearchUrl}"/>">
 <input name="targetSearchUrl" type="hidden" value="${targetSearchUrl}">
-<input name="indexName" type="hidden" value="${param.indexName}">
+<input name="indexName" type="hidden" value="${indexName}">
 <table class="table-content" width="100%">
 	<tr>
 		<td class="top-content" colspan="2">
@@ -26,7 +26,7 @@
 	</tr>
 	<tr>
 		<td>
-			<input type="text" name="searchStrings" id="search-text" 	value="<c:out value='${param.searchStrings}' />" />
+			<input type="text" name="searchStrings" id="search-text" 	value="<c:out value='${searchStrings}' />" />
 			<input type="submit" id="search-submit" value="Go" />
 			<c:if test="${corrections != null}">
 				<br>

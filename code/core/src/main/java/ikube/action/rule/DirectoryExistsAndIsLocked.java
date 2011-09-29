@@ -28,7 +28,7 @@ public class DirectoryExistsAndIsLocked extends ARule<File> {
 			directory = FSDirectory.open(indexDirectory);
 			boolean exists = IndexReader.indexExists(directory);
 			boolean locked = IndexWriter.isLocked(directory);
-			logger.info(Logging.getString("Server index directory : ", indexDirectory, "exists : ", exists, "locked : ", locked));
+			logger.debug(Logging.getString("Server index directory : ", indexDirectory, "exists : ", exists, "locked : ", locked));
 			if (exists && locked) {
 				return Boolean.TRUE;
 			} else {

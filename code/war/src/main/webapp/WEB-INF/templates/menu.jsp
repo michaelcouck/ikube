@@ -13,7 +13,7 @@
 			<form name="ikubeSearchForm" id="ikubeSearchForm" action="<c:url value="${targetSearchUrl}"/>">
 				<input name="targetSearchUrl" type="hidden" value="${targetSearchUrl}">
 				<fieldset>
-					<input type="text" name="searchStrings" id="search-text" 	value="<c:out value='${param.searchStrings}' />" />
+					<input type="text" name="searchStrings" id="search-text" 	value="<c:out value='${searchStrings}' />" />
 					<input type="submit" id="search-submit" value="Go" />
 				</fieldset>
 			</form>

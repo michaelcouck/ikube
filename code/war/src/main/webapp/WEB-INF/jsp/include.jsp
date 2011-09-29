@@ -7,10 +7,10 @@
 	what must be included in the model for the page. Typically it is things like the first and maximum results, 
 	also the total results for the search and of course the results them selves which are a list of maps. 
  -->
+	<c:set var="toResults" value="${total < firstResult + maxResults ? firstResult + (total % 10) : firstResult + maxResults}" />
 	<tr>
 		<td>
 			From : <c:out value='${firstResult + 1}' />,
-			<c:set var="toResults" value="${total < firstResult + maxResults ? firstResult + (total % 10) : firstResult + maxResults}" />
 			to : <c:out value='${toResults}' />,
 			total : <c:out value='${total}' />,
 			for '<c:out value='${searchStrings}' />',
@@ -25,8 +25,8 @@
 	<tr>
 		<td>
 			<c:forEach var="result" items="${results}">
-				<c:if test="${param.indexName != null}">
-					indexName : <c:out value="${param.indexName}" /><br>
+				<c:if test="${indexName != null}">
+					indexName : <c:out value="${indexName}" /><br>
 				</c:if>
 				<c:forEach var="entry" items="${result}">
 					<c:out value="${entry.key}" /> : <c:out value="${entry.value}" escapeXml="false" /><br>
