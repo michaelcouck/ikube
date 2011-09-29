@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!--
+	This file contains the actions that generate the indexes, and open and close the indexes 
+	when necessary. These actions are governed by rules. The rules that determine when actions 
+	get executed are also defined in this configuration file. Rules like for instance 'if the server is not working'
+	and the 'index is out of date' then start a new index. 
+ -->
 <beans
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://www.springframework.org/schema/beans"
@@ -25,6 +31,7 @@
 		class="ikube.IndexEngine"
 		property:actions-ref="actions" />
 	<util:list id="actions">
+		<ref bean="ikube.action.Prune" />
 		<ref bean="ikube.action.Reset" />
 		<ref bean="ikube.action.Restore" />
 		<ref bean="ikube.action.Close"  />
@@ -44,6 +51,19 @@
 	<bean 
 		id="ikube.action.Reset" 
 		class="ikube.action.Reset" 
+		property:ruleExpression="
+			!IsThisServerWorking &#38;&#38; 
+			!AnyServersWorking">
+		<property name="rules">
+			<util:list>
+				<ref local="ikube.action.rule.IsThisServerWorking" />
+				<ref local="ikube.action.rule.AnyServersWorking" />
+			</util:list>
+		</property>
+	</bean>
+	<bean 
+		id="ikube.action.Prune" 
+		class="ikube.action.Prune" 
 		property:ruleExpression="
 			!IsThisServerWorking &#38;&#38; 
 			!AnyServersWorking">

@@ -26,7 +26,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 		@NamedQuery(name = Action.SELECT_FROM_ACTIONS_COUNT, query = Action.SELECT_FROM_ACTIONS_COUNT) })
 public class Action extends Persistable {
 
-	public static final String	SELECT_FROM_ACTIONS			= "select a from Action as a order by a.id desc";
+	public static final String	SELECT_FROM_ACTIONS			= "select a from Action as a order by a.id asc";
 	public static final String	SELECT_FROM_ACTIONS_COUNT	= "select count(a) from Action as a";
 
 	/** The row id of the next row. */
