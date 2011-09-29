@@ -16,8 +16,6 @@ import java.util.Map;
  * of course. The urls that are published into the cluster during the indexing need to be deleted. This deletion action
  * will delete them not only from this server's map but from all the servers' maps.
  * 
- * The actions need to be cleaned when all the servers are finished working.
- * 
  * @author Michael Couck
  * @since 31.10.10
  * @version 01.00
@@ -36,12 +34,6 @@ public class Reset extends Action<IndexContext<?>, Boolean> {
 			parameters.put(IConstants.NAME, indexContext.getName());
 			delete(dataBase, Url.class, Url.SELECT_FROM_URL_BY_NAME, parameters);
 			delete(dataBase, File.class, File.SELECT_FROM_FILE_BY_NAME, parameters);
-			Long count = dataBase.execute(Long.class, ikube.model.Action.SELECT_FROM_ACTIONS_COUNT);
-			logger.info("Resetting : " + count + " entities");
-			if (count > IConstants.MAX_ACTIONS) {
-				parameters.clear();
-				delete(dataBase, ikube.model.Action.class, ikube.model.Action.SELECT_FROM_ACTIONS, parameters);
-			}
 		} finally {
 			logger.info("Resetting releasing cluster : ");
 			getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getSimpleName(), "", Boolean.FALSE);

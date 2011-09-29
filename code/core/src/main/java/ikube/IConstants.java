@@ -58,7 +58,7 @@ public interface IConstants {
 	int					MAX_FRAGMENTS								= 3;
 	String				FRAGMENT_SEPERATOR							= "...";
 	int					BATCH_SIZE									= 10;
-	int					RESET_DELETE_BATCH_SIZE						= 1000;
+	int					RESET_DELETE_BATCH_SIZE						= 100;
 
 	String				ID											= "id";
 	String				INDEX										= "index";
@@ -173,7 +173,7 @@ public interface IConstants {
 
 	String				STRIP_CHARACTERS							= ",,[]{},;,";
 
-	long				MAX_ACTIONS									= 100000;
+	long				MAX_ACTIONS									= 10000;
 	String				DELAY										= "delay";
 	String				SPRING_PROPERTIES							= "spring.properties";
 	String				TIER										= "tier";
