@@ -28,26 +28,26 @@ public class Reset extends Action<IndexContext<?>, Boolean> {
 	@Override
 	public Boolean execute(final IndexContext<?> indexContext) {
 		try {
-			logger.info("Resetting : ");
+			logger.info("Resetting : " + Thread.currentThread().hashCode());
 			IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
 			Map<String, Object> parameters = new HashMap<String, Object>();
 			parameters.put(IConstants.NAME, indexContext.getName());
 			delete(dataBase, Url.class, Url.SELECT_FROM_URL_BY_NAME, parameters);
 			delete(dataBase, File.class, File.SELECT_FROM_FILE_BY_NAME, parameters);
 		} finally {
-			logger.info("Resetting releasing cluster : ");
+			logger.info("Resetting releasing cluster : " + Thread.currentThread().hashCode());
 			getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getSimpleName(), "", Boolean.FALSE);
-			logger.info("Resetting released cluster : ");
+			logger.info("Resetting released cluster : " + Thread.currentThread().hashCode());
 		}
 		return Boolean.TRUE;
 	}
 
 	protected void delete(final IDataBase dataBase, final Class<?> klass, final String sql, final Map<String, Object> parameters) {
 		try {
-			logger.info("Resetting looking for entities to delete : ");
+			logger.info("Resetting looking for entities to delete : " + Thread.currentThread().hashCode());
 			List<?> list = dataBase.find(klass, sql, parameters, 0, IConstants.RESET_DELETE_BATCH_SIZE);
 			do {
-				logger.info("Resetting, deleting entities : " + (list != null ? list.size() : 0));
+				logger.info("Resetting, deleting entities : " + (list != null ? list.size() : 0) + ", " + Thread.currentThread().hashCode());
 				dataBase.removeBatch(list);
 				list = dataBase.find(klass, sql, parameters, 0, IConstants.RESET_DELETE_BATCH_SIZE);
 			} while (list.size() > 0);

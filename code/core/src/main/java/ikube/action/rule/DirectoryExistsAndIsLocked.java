@@ -32,7 +32,7 @@ public class DirectoryExistsAndIsLocked extends ARule<File> {
 			if (exists && locked) {
 				return Boolean.TRUE;
 			} else {
-				logger.info("Locked directory : " + directory);
+				logger.info("Directory not locked and exists : " + directory + ", exists : " + exists + ", locked : " + locked);
 			}
 		} catch (Exception e) {
 			logger.error("Exception checking the directories : ", e);
