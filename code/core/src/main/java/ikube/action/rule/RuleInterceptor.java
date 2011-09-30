@@ -4,7 +4,6 @@ import ikube.IConstants;
 import ikube.action.IAction;
 import ikube.cluster.AtomicAction;
 import ikube.cluster.IClusterManager;
-import ikube.database.IDataBase;
 import ikube.model.Action;
 import ikube.model.IndexContext;
 import ikube.model.Rule;
@@ -34,9 +33,9 @@ import com.hazelcast.core.ILock;
  */
 public class RuleInterceptor implements IRuleInterceptor {
 
-	private static final transient Logger LOGGER = Logger.getLogger(RuleInterceptor.class);
+	private static final transient Logger	LOGGER			= Logger.getLogger(RuleInterceptor.class);
 
-	private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(10);
+	private final ScheduledExecutorService	executorService	= Executors.newScheduledThreadPool(10);
 
 	/**
 	 * {@inheritDoc}
@@ -131,9 +130,9 @@ public class RuleInterceptor implements IRuleInterceptor {
 			modelAction.setActionName(actionName);
 			modelAction.setIndexName(indexName);
 			modelAction.setStartTime(new Timestamp(System.currentTimeMillis()));
-			IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
-			dataBase.persist(modelAction);
 			if (proceed) {
+				// IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
+				// dataBase.persist(modelAction);
 				proceed(proceedingJoinPoint, actionName, indexName, modelAction);
 			}
 		} catch (Throwable t) {
@@ -155,10 +154,10 @@ public class RuleInterceptor implements IRuleInterceptor {
 			clusterManager.setWorking(actionName, indexName, "", Boolean.TRUE);
 			executorService.schedule(new Runnable() {
 				public void run() {
-					IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
 					try {
 						modelAction.setWorking(Boolean.TRUE);
-						dataBase.merge(modelAction);
+						// IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
+						// dataBase.merge(modelAction);
 						proceedingJoinPoint.proceed();
 					} catch (Throwable e) {
 						LOGGER.error("Exception proceeding on join point : " + proceedingJoinPoint, e);
@@ -166,7 +165,7 @@ public class RuleInterceptor implements IRuleInterceptor {
 						modelAction.setEndTime(new Timestamp(System.currentTimeMillis()));
 						modelAction.setDuration(modelAction.getEndTime().getTime() - modelAction.getStartTime().getTime());
 						modelAction.setWorking(Boolean.FALSE);
-						dataBase.merge(modelAction);
+						// dataBase.merge(modelAction);
 					}
 				}
 			}, delay, TimeUnit.MILLISECONDS);

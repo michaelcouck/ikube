@@ -41,7 +41,7 @@ public class ParserProviderTest extends ATest {
 
 	@Test
 	public void getParserPerformance() {
-		int iterations = 10000;
+		int iterations = 100;
 		final String mimeTypeString = ".txt";
 		final byte[] bytes = "hello world".getBytes();
 		double executionsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {

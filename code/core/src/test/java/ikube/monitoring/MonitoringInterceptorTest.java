@@ -11,7 +11,6 @@ import ikube.model.Execution;
 import ikube.model.Server;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.PerformanceTester;
-
 import mockit.Mockit;
 
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -28,16 +27,16 @@ import org.junit.Test;
  */
 public class MonitoringInterceptorTest extends ATest {
 
-	private Signature signature;
-	private ProceedingJoinPoint proceedingJoinPoint;
-	private MonitoringInterceptor monitoringInterceptor;
-	private Object[] arguments;
-	
+	private Signature				signature;
+	private ProceedingJoinPoint		proceedingJoinPoint;
+	private MonitoringInterceptor	monitoringInterceptor;
+	private Object[]				arguments;
+
 	@BeforeClass
 	public static void beforeClass() {
 		Mockit.setUpMocks(ApplicationContextManagerMock.class);
 	}
-	
+
 	@AfterClass
 	public static void afterClass() {
 		Mockit.tearDownMocks(ApplicationContextManager.class);
@@ -71,7 +70,7 @@ public class MonitoringInterceptorTest extends ATest {
 			public void execute() throws Throwable {
 				monitoringInterceptor.indexingPerformance(proceedingJoinPoint);
 			}
-		}, "Indexing interceptor : ", 10000, Boolean.FALSE);
+		}, "Indexing interceptor : ", 100, Boolean.FALSE);
 		assertTrue(executionsPerSecond > 1000);
 	}
 
@@ -91,7 +90,7 @@ public class MonitoringInterceptorTest extends ATest {
 			public void execute() throws Throwable {
 				monitoringInterceptor.searchingPerformance(proceedingJoinPoint);
 			}
-		}, "Indexing interceptor : ", 10000, Boolean.FALSE);
+		}, "Indexing interceptor : ", 100, Boolean.FALSE);
 		assertTrue(executionsPerSecond > 1000);
 	}
 
@@ -103,7 +102,7 @@ public class MonitoringInterceptorTest extends ATest {
 		Server server = new Server();
 		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
 		when(clusterManager.getServer()).thenReturn(server);
-			
+
 		Event event = mock(Event.class);
 		when(event.getType()).thenReturn(Event.PERFORMANCE);
 		monitoringInterceptor.handleNotification(event);

@@ -22,9 +22,9 @@ import org.junit.Test;
  */
 public class ParserPerformanceTest extends ATest {
 
-	private int			iterations	= 25;
+	private int			iterations	= 10;
 	private String[]	files		= { "pdf.pdf", "xml.xml", "html.html", "xls.xls", "doc.doc", "txt.txt", "pot.pot", "docx.docx", "xlsx.xlsx",
-			"pptx.pptx", "rtf.rtf"	};
+			"rtf.rtf" /* "pptx.pptx" */};
 
 	public ParserPerformanceTest() {
 		super(ParserPerformanceTest.class);
