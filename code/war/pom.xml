@@ -211,7 +211,7 @@
 				</executions>
 				<configuration>
 					<serverId>googlecode</serverId>
-					<failsOnError>true</failsOnError>
+					<failsOnError>false</failsOnError>
 					<projectName>${project.groupId}</projectName>
 					<uploads>
 						<upload>
