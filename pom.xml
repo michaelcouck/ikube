@@ -5,6 +5,25 @@
 	<artifactId>ikube</artifactId>
 	<packaging>pom</packaging>
 	<version>2.1.4-SNAPSHOT</version>
+	
+	<scm>
+		<url>https://ikube.googlecode.com/svn/trunk</url>
+		<connection>scm:svn:https://ikube.googlecode.com/svn/trunk</connection>
+		<developerConnection>scm:svn:https://ikube.googlecode.com/svn/trunk</developerConnection>
+	</scm>
+	
+	<distributionManagement>
+		<site>
+			<id>ikube</id>
+			<name>ikube-releases</name>
+			<url>file:C:/Users/Administrator/.m2/repository</url>
+		</site>
+		<repository>
+			<id>ikube</id>
+			<name>ikube-releases</name>
+			<url>http://ikube.dyndns.org:9000/artifactory/libs-release-local</url>
+		</repository>
+	</distributionManagement>
 
 	<properties>
 		<targetJdk>1.6</targetJdk>
@@ -14,7 +33,7 @@
 		<slf4j.version>1.5.10</slf4j.version>
 		<logback.version>0.9.15</logback.version>
 		<junit.version>4.8.2</junit.version>
-		<encoding>UTF-8</encoding>
+		<encoding>UTF8</encoding>
 		<project.build.sourceEncoding>${encoding}</project.build.sourceEncoding>
 
 		<write.classes>-Dwrite.classes=true</write.classes>
@@ -635,12 +654,6 @@
 		</repository>
 	</repositories>
 
-	<scm>
-		<url>https://ikube.googlecode.com/svn/trunk</url>
-		<connection>scm:svn:https://ikube.googlecode.com/svn/trunk</connection>
-		<developerConnection>scm:svn:https://ikube.googlecode.com/svn/trunk</developerConnection>
-	</scm>
-
 	<pluginRepositories>
 		<pluginRepository>
 			<id>maven.java.net</id>
@@ -649,18 +662,6 @@
 		</pluginRepository>
 	</pluginRepositories>
 
-	<distributionManagement>
-		<site>
-			<id>ikube</id>
-			<name>ikube-releases</name>
-			<url>file:C:/Users/Administrator/.m2/repository</url>
-		</site>
-		<repository>
-			<id>ikube</id>
-			<name>ikube-releases</name>
-			<url>http://ikube.dyndns.org:9000/artifactory/libs-release-local</url>
-		</repository>
-	</distributionManagement>
 
 	<reporting>
 		<plugins>

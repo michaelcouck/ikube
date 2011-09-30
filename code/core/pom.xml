@@ -32,6 +32,11 @@
 			</resource>
 		</resources>
 		<plugins>
+			<!--
+				This configuration packages ikube in a jar and all the dependencies in 
+				the lib folder. The manifest of the jar gets the Ikube.main as the main class 
+				with all the libs on the classpath so it can be started stand alone. 
+			 -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
@@ -48,31 +53,25 @@
 					</archive>
 				</configuration>
 			</plugin>
+			<!--
+				This plugin runs the unit tests. 
+			 -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.7.1</version>
 				<configuration>
-					<skip>true</skip>
+					<!-- <parallel>false</parallel> -->
+					<forkMode>once</forkMode>
+					<!-- <threadCount>10</threadCount>
+					<useUnlimitedThreads>true</useUnlimitedThreads> -->
+					<argLine>-javaagent:../../serenity/serenity.jar ${memory.parameters} ${serenity.parameters}</argLine>
+					<excludes>
+						<exclude>**/TextParserTest.java</exclude>
+					</excludes>
 				</configuration>
-				<executions>
-					<execution>
-						<id>surefire</id>
-						<phase>install</phase>
-						<goals>
-							<goal>test</goal>
-						</goals>
-						<configuration>
-							<skip>false</skip>
-							<forkMode>once</forkMode>
-							<argLine>-javaagent:../../serenity/serenity.jar ${memory.parameters} ${serenity.parameters}</argLine>
-							<excludes>
-								<exclude>**/TextParserTest.java</exclude>
-							</excludes>
-						</configuration>
-					</execution>
-				</executions>
 			</plugin>
+			<!-- No idea what this plugin does. -->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>jxr-maven-plugin</artifactId>
@@ -96,6 +95,11 @@
 					</execution>
 				</executions>
 			</plugin>
+			<!--
+				This plugin enhances the entities for OpenJpa. Very important for the 
+				performance of OpenJpa, indeed the performance will drop 1000% if the 
+				classes are runtime enhanced or by reflection. 
+			 -->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>openjpa-maven-plugin</artifactId>
