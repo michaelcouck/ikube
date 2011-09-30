@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation=" http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation=" http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>ikube</groupId>
 	<artifactId>ikube-war</artifactId>
 	<packaging>war</packaging>
-	<version>2.1.5-SNAPSHOT</version>
+	<version>2.1.4-SNAPSHOT</version>
 
 	<properties>
 		<jetty.version>6.1.11</jetty.version>
@@ -19,7 +20,7 @@
 	<parent>
 		<groupId>ikube</groupId>
 		<artifactId>ikube</artifactId>
-		<version>2.1.5-SNAPSHOT</version>
+		<version>2.1.4-SNAPSHOT</version>
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
 
@@ -161,7 +162,7 @@
 								<!-- <echo message="Deleting indexes : " />
 								<delete includeemptydirs="true" failonerror="false">
 									<fileset dir="${cluster.directory}/">
-										<include name="**/indexes/**" />
+										<include name="**/indexes/**"  />
 									</fileset>
 								</delete> -->
 								<!-- Delete the ikube deployed directories in the cluster. -->
@@ -174,7 +175,7 @@
 								</delete>
 								<!-- Deploy the ikube war into the cluster. -->
 								<echo message="Deploying Ikube to cluster : " />
-								<copy file="${final.path}" todir="${tomcat.1}/${webapps}" overwrite="true" failonerror="false" />
+								<copy file="${final.path}" todir="${tomcat.1}/${webapps}" overwrite="true" failonerror="false"  />
 								<copy file="${final.path}" todir="${tomcat.2}/${webapps}" overwrite="true" failonerror="false" />
 								<copy file="${final.path}" todir="${tomcat.3}/${webapps}" overwrite="true" failonerror="false" />
 								<!-- Rename the wars to ikube.war for convenience. -->
