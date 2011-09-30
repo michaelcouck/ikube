@@ -17,6 +17,7 @@ import mockit.Mockit;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -24,6 +25,7 @@ import org.junit.Test;
  * @since 06.03.11
  * @version 01.00
  */
+@SuppressWarnings("deprecation")
 public class SearchServletTest {
 
 	static {
@@ -56,6 +58,7 @@ public class SearchServletTest {
 	}
 
 	@Test
+	@Ignore
 	public void doGet() throws Exception {
 		searchServlet.doGet(request, response);
 		assertTrue(true);

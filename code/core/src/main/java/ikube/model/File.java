@@ -22,6 +22,7 @@ import javax.persistence.Transient;
 		@NamedQuery(name = File.SELECT_FROM_FILE_BY_HASH, query = File.SELECT_FROM_FILE_BY_HASH),
 		@NamedQuery(name = File.SELECT_FROM_FILE_BY_FILE_ID, query = File.SELECT_FROM_FILE_BY_FILE_ID),
 		@NamedQuery(name = File.SELECT_FROM_FILE_BY_NAME, query = File.SELECT_FROM_FILE_BY_NAME),
+		@NamedQuery(name = File.SELECT_COUNT_FROM_FILE_BY_NAME, query = File.SELECT_COUNT_FROM_FILE_BY_NAME),
 		@NamedQuery(name = File.SELECT_FROM_FILE_BY_NAME_AND_INDEXED, query = File.SELECT_FROM_FILE_BY_NAME_AND_INDEXED),
 		@NamedQuery(name = File.SELECT_FROM_FILE_WHERE_ID_GREATER_AND_NOT_INDEXED, query = File.SELECT_FROM_FILE_WHERE_ID_GREATER_AND_NOT_INDEXED) })
 public class File extends Persistable {
@@ -30,6 +31,7 @@ public class File extends Persistable {
 	public static final String SELECT_FROM_FILE_BY_HASH = "select f from File as f where f.hash = :hash";
 	public static final String SELECT_FROM_FILE_BY_FILE_ID = "select f from File as f where f.urlId = :urlId";
 	public static final String SELECT_FROM_FILE_BY_NAME = "select f from File as f where f.name = :name";
+	public static final String SELECT_COUNT_FROM_FILE_BY_NAME = "select count(f) from File as f where f.name = :name";
 	public static final String SELECT_FROM_FILE_BY_NAME_AND_INDEXED = "select f from File as f where f.name = :name and f.indexed = :indexed";
 	public static final String SELECT_FROM_FILE_WHERE_ID_GREATER_AND_NOT_INDEXED = "select f from File as f where f.id >= :id and f.indexed = :indexed";
 

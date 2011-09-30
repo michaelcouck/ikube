@@ -24,6 +24,7 @@ import org.apache.openjpa.persistence.jdbc.Index;
 		@NamedQuery(name = Url.SELECT_FROM_URL_BY_HASH, query = Url.SELECT_FROM_URL_BY_HASH),
 		@NamedQuery(name = Url.SELECT_FROM_URL_BY_URL_ID, query = Url.SELECT_FROM_URL_BY_URL_ID),
 		@NamedQuery(name = Url.SELECT_FROM_URL_BY_NAME, query = Url.SELECT_FROM_URL_BY_NAME),
+		@NamedQuery(name = Url.SELECT_COUNT_FROM_URL_BY_NAME, query = Url.SELECT_COUNT_FROM_URL_BY_NAME),
 		@NamedQuery(name = Url.SELECT_FROM_URL_BY_NAME_AND_INDEXED, query = Url.SELECT_FROM_URL_BY_NAME_AND_INDEXED),
 		@NamedQuery(name = Url.SELECT_FROM_URL_WHERE_ID_GREATER_AND_NOT_INDEXED, query = Url.SELECT_FROM_URL_WHERE_ID_GREATER_AND_NOT_INDEXED) })
 public class Url extends Persistable {
@@ -32,6 +33,7 @@ public class Url extends Persistable {
 	public static final String SELECT_FROM_URL_BY_HASH = "select u from Url as u where u.hash = :hash";
 	public static final String SELECT_FROM_URL_BY_URL_ID = "select u from Url as u where u.urlId = :urlId";
 	public static final String SELECT_FROM_URL_BY_NAME = "select u from Url as u where u.name = :name";
+	public static final String SELECT_COUNT_FROM_URL_BY_NAME = "select count(u) from Url as u where u.name = :name";
 	public static final String SELECT_FROM_URL_BY_NAME_AND_INDEXED = "select u from Url as u where u.name = :name and u.indexed = :indexed";
 	public static final String SELECT_FROM_URL_WHERE_ID_GREATER_AND_NOT_INDEXED = "select u from Url as u where u.id >= :id and u.indexed = :indexed";
 

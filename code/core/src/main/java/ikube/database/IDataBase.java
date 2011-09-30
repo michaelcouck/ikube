@@ -194,5 +194,7 @@ public interface IDataBase {
 	 * TODO Document me!
 	 */
 	<T> T execute(Class<T> klass, String sql);
+	
+	<T> T execute(Class<T> klass, String sql, Map<String, Object> parameters);
 
 }

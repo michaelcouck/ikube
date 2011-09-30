@@ -198,6 +198,17 @@ public class DataBaseJpa implements IDataBase {
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	@SuppressWarnings("unchecked")
+	public <T> T execute(Class<T> klass, String sql, Map<String, Object> parameters) {
+		Query query = entityManager.createNamedQuery(sql);
+		setParameters(query, parameters);
+		return (T) query.getSingleResult();
+	}
+
+	/**
 	 * This method sets the parameters in the query.
 	 * 
 	 * @param query

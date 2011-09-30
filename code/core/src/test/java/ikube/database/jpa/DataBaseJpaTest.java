@@ -132,7 +132,7 @@ public class DataBaseJpaTest extends BaseTest {
 	public void performance() {
 		final int iterations = 10;
 		final int batchSize = 1000;
-		double minimumInsertsPerSecond = 1000d;
+		double minimumInsertsPerSecond = 100d;
 		for (int i = 0; i < iterations; i++) {
 			double perSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
 				@Override
@@ -143,7 +143,7 @@ public class DataBaseJpaTest extends BaseTest {
 			}, "Iterations per second : ", iterations);
 			double insertsPerSecond = (perSecond * batchSize);
 			logger.info("Inserts per second : " + insertsPerSecond);
-			assertTrue("We must have at least " + minimumInsertsPerSecond + " inserts per second : ",
+			assertTrue("We must have at least " + minimumInsertsPerSecond + " inserts per second : " + insertsPerSecond,
 					insertsPerSecond > minimumInsertsPerSecond);
 		}
 	}
