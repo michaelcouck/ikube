@@ -25,7 +25,7 @@ import org.junit.Test;
 public class CacheTest extends ATest {
 
 	private transient Url url;
-	private transient Cache cache;
+	private transient CacheHazelcast cache;
 
 	public CacheTest() {
 		super(CacheTest.class);
@@ -33,7 +33,7 @@ public class CacheTest extends ATest {
 
 	@Before
 	public void before() {
-		cache = new Cache();
+		cache = new CacheHazelcast();
 		cache.initialise();
 		url = new Url();
 		url.setUrl("http://localhost");

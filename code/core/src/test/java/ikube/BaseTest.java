@@ -25,8 +25,6 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.springframework.context.ApplicationContext;
 
-import com.hazelcast.core.Hazelcast;
-
 /**
  * This is the base class for tests that start up the application context. Generally we don't want to start the context
  * for several reasons not the least of which is that it is time consuming, but in some cases we do. Most tests should
@@ -65,7 +63,7 @@ public abstract class BaseTest extends ATest {
 		try {
 			// Sleep for a while to give Hazelcast a chance to get sorted
 			Thread.sleep(10000);
-			Hazelcast.getTopic(IConstants.SHUTDOWN_TOPIC).publish(server);
+			// Hazelcast.getTopic(IConstants.SHUTDOWN_TOPIC).publish(server);
 			// We'll sleep for a while to give the other servers a time to shut down
 			Thread.sleep(10000);
 			final int iterations = 0;

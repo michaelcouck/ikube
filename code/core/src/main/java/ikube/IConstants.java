@@ -26,6 +26,8 @@ public interface IConstants {
 	String				META_INF									= SEP + "META-INF";
 	/** The name of the spring file. */
 	String				SPRING_XML									= "spring.xml";
+	/** The JGroups configuration file. */
+	String				UDP_XML										= "udp.xml";
 	/** Where the whole application is wired together. */
 	String				SPRING_CONFIGURATION_FILE					= META_INF + SEP + SPRING_XML;
 	/** The persistence units' names. */

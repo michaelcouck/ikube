@@ -4,7 +4,6 @@ import ikube.IConstants;
 import ikube.integration.strategy.JspStrategy;
 import ikube.integration.strategy.LoadStrategy;
 import ikube.listener.ListenerManager;
-import ikube.model.Server;
 import ikube.toolkit.Logging;
 import ikube.toolkit.PropertyConfigurer;
 
@@ -12,9 +11,6 @@ import java.util.Properties;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
-
-import com.hazelcast.core.Hazelcast;
-import com.hazelcast.core.IMap;
 
 /**
  * TODO Document me when I am running properly.
@@ -48,18 +44,18 @@ public class Integration {
 			logger.info("Initial sleep period : " + sleep);
 			Thread.sleep(sleep);
 			do {
-				boolean anyWorking = Boolean.FALSE;
-				IMap<String, Server> serversMap = Hazelcast.getMap(Server.class.getName());
-				for (Server server : serversMap.values()) {
-					if (server.getWorking()) {
-						anyWorking = Boolean.TRUE;
-						break;
-					}
-				}
-				logger.info("Any servers working : " + anyWorking);
-				if (!anyWorking) {
-					break;
-				}
+				// boolean anyWorking = Boolean.FALSE;
+				// IMap<String, Server> serversMap = Hazelcast.getMap(Server.class.getName());
+				// for (Server server : serversMap.values()) {
+				// if (server.getWorking()) {
+				// anyWorking = Boolean.TRUE;
+				// break;
+				// }
+				// }
+				// logger.info("Any servers working : " + anyWorking);
+				// if (!anyWorking) {
+				// break;
+				// }
 				ListenerManager.removeListeners();
 				Thread.sleep(Long.valueOf(delay.toString()) / 2);
 			} while (true);
@@ -84,9 +80,9 @@ public class Integration {
 		logger.info("Operating system : " + osName + ", server : " + osName.toLowerCase().contains("server") + ", 64 bit : "
 				+ properties.getProperty("os.arch").contains("64"));
 		if (!osName.toLowerCase().contains("server") && properties.getProperty("os.arch").contains("64")) {
-			return Boolean.TRUE;
+			return Boolean.FALSE;
 		}
-		return Boolean.TRUE;
+		return Boolean.FALSE;
 	}
 
 }

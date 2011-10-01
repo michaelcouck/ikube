@@ -120,4 +120,8 @@ public interface IClusterManager {
 	 */
 	void setException(boolean exception);
 
+	boolean lock(String name);
+
+	boolean unlock(String name);
+
 }

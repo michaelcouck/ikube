@@ -19,11 +19,11 @@ import com.hazelcast.query.SqlPredicate;
  * @since 15.12.10
  * @version 01.00
  */
-public class Cache implements ICache {
+public class CacheHazelcast implements ICache {
 
-	private transient Logger logger;
+	private transient Logger	logger;
 	/** The underlying database. */
-	private transient IDataBase dataBase;
+	private transient IDataBase	dataBase;
 
 	public void initialise() {
 		logger = Logger.getLogger(this.getClass());
@@ -135,6 +135,18 @@ public class Cache implements ICache {
 
 	public void setDataBase(final IDataBase dataBase) {
 		this.dataBase = dataBase;
+	}
+
+	@Override
+	public boolean lock(String name) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean unlock(String name) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }

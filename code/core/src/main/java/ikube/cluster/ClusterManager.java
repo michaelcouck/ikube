@@ -9,21 +9,13 @@ import ikube.listener.IListener;
 import ikube.listener.ListenerManager;
 import ikube.model.Action;
 import ikube.model.Server;
-import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.HashUtilities;
 
 import java.net.InetAddress;
 import java.sql.Timestamp;
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
-
-import com.hazelcast.core.Hazelcast;
-import com.hazelcast.core.ITopic;
-import com.hazelcast.core.MessageListener;
 
 /**
  * This class is responsible for the cluster synchronisation functionality.
@@ -45,33 +37,33 @@ public class ClusterManager implements IClusterManager, IConstants {
 	 */
 	public static void addShutdownHook() {
 		LOGGER.info("Adding shutdown listener : ");
-		ITopic<Server> topic = Hazelcast.getTopic(IConstants.SHUTDOWN_TOPIC);
-		topic.addMessageListener(new MessageListener<Server>() {
-			@Override
-			public void onMessage(final Server other) {
-				if (other == null) {
-					return;
-				}
-				LOGGER.info("Got shutdown message : " + other);
-				Server server = ApplicationContextManager.getBean(IClusterManager.class).getServer();
-				if (other.getAddress().equals(server.getAddress())) {
-					// We don't shutdown our selves of course
-					return;
-				}
-				long delay = 1000;
-				ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
-				executorService.schedule(new Runnable() {
-					public void run() {
-						LOGGER.warn("Shutting down Ikube server : " + other);
-						ListenerManager.removeListeners();
-						ApplicationContextManager.closeApplicationContext();
-						Hazelcast.shutdownAll();
-						System.exit(0);
-					}
-				}, delay, TimeUnit.MILLISECONDS);
-				executorService.shutdown();
-			}
-		});
+		// ITopic<Server> topic = Hazelcast.getTopic(IConstants.SHUTDOWN_TOPIC);
+		// topic.addMessageListener(new MessageListener<Server>() {
+		// @Override
+		// public void onMessage(final Server other) {
+		// if (other == null) {
+		// return;
+		// }
+		// LOGGER.info("Got shutdown message : " + other);
+		// Server server = ApplicationContextManager.getBean(IClusterManager.class).getServer();
+		// if (other.getAddress().equals(server.getAddress())) {
+		// // We don't shutdown our selves of course
+		// return;
+		// }
+		// long delay = 1000;
+		// ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
+		// executorService.schedule(new Runnable() {
+		// public void run() {
+		// LOGGER.warn("Shutting down Ikube server : " + other);
+		// ListenerManager.removeListeners();
+		// ApplicationContextManager.closeApplicationContext();
+		// Hazelcast.shutdownAll();
+		// System.exit(0);
+		// }
+		// }, delay, TimeUnit.MILLISECONDS);
+		// executorService.shutdown();
+		// }
+		// });
 	}
 
 	/**
@@ -80,14 +72,14 @@ public class ClusterManager implements IClusterManager, IConstants {
 	public static void addClusterExceptionListener() {
 		// Add the listener for general cluster directives like forcing an index to start
 		LOGGER.info("Adding exception listener : ");
-		ITopic<Boolean> topic = Hazelcast.getTopic(IConstants.EXCEPTION_TOPIC);
-		topic.addMessageListener(new MessageListener<Boolean>() {
-			@Override
-			public void onMessage(Boolean command) {
-				LOGGER.info("Got exception message : " + command);
-				ApplicationContextManager.getBean(IClusterManager.class).setException(command);
-			}
-		});
+		// ITopic<Boolean> topic = Hazelcast.getTopic(IConstants.EXCEPTION_TOPIC);
+		// topic.addMessageListener(new MessageListener<Boolean>() {
+		// @Override
+		// public void onMessage(Boolean command) {
+		// LOGGER.info("Got exception message : " + command);
+		// ApplicationContextManager.getBean(IClusterManager.class).setException(command);
+		// }
+		// });
 	}
 
 	/** The ip of this server. */
@@ -373,6 +365,16 @@ public class ClusterManager implements IClusterManager, IConstants {
 	@Override
 	public void setException(boolean exception) {
 		this.exception = exception;
+	}
+
+	@Override
+	public boolean lock(final String name) {
+		return cache.lock(name);
+	}
+
+	@Override
+	public boolean unlock(String name) {
+		return cache.unlock(name);
 	}
 
 	public void setAddress(String address) {

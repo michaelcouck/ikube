@@ -9,7 +9,7 @@ import ikube.ATest;
 import ikube.IConstants;
 import ikube.action.Index;
 import ikube.action.Open;
-import ikube.cluster.cache.Cache;
+import ikube.cluster.cache.CacheHazelcast;
 import ikube.listener.ListenerManager;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.model.Action;
@@ -79,7 +79,7 @@ public class ClusterManagerTest extends ATest {
 		remoteServer.setId(HashUtilities.hash(remoteServer.getAddress()));
 		// remoteServer.setWorking(Boolean.FALSE);
 
-		Cache cache = new Cache();
+		CacheHazelcast cache = new CacheHazelcast();
 		clusterManager = new ClusterManager(cache);
 		cache.initialise();
 		clusterManager.clear(Url.class.getName());

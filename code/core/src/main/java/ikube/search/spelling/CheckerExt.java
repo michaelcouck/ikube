@@ -88,7 +88,9 @@ public class CheckerExt {
 				try {
 					inputStream = CheckerExt.class.getResourceAsStream(WORD_FILE_DIRECTORY + wordFile);
 					LOGGER.info("Word file : " + wordFile + ", input stream : " + inputStream);
-					SPELL_CHECKER.indexDictionary(new PlainTextDictionary(inputStream));
+					if (inputStream != null) {
+						SPELL_CHECKER.indexDictionary(new PlainTextDictionary(inputStream));
+					}
 				} catch (Exception e) {
 					LOGGER.error("", e);
 				} finally {

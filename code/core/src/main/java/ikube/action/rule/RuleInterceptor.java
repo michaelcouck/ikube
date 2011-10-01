@@ -2,7 +2,6 @@ package ikube.action.rule;
 
 import ikube.IConstants;
 import ikube.action.IAction;
-import ikube.cluster.AtomicAction;
 import ikube.cluster.IClusterManager;
 import ikube.model.Action;
 import ikube.model.IndexContext;
@@ -21,8 +20,6 @@ import org.apache.log4j.Logger;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.nfunk.jep.JEP;
 import org.nfunk.jep.SymbolTable;
-
-import com.hazelcast.core.ILock;
 
 /**
  * @see IRuleInterceptor
@@ -53,14 +50,15 @@ public class RuleInterceptor implements IRuleInterceptor {
 		// two evaluate to false, so they both start the action they shouldn't start. Generally this
 		// will never happen because the timers will be different, but in a very small percentage
 		// of cases they overlap
-		ILock lock = AtomicAction.lock(IConstants.SERVER_LOCK);
+		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
+		boolean gotLock = clusterManager.lock(IConstants.IKUBE);
 		try {
 			Action modelAction = new Action();
 			modelAction.setRules(new ArrayList<Rule>());
 			if (!IAction.class.isAssignableFrom(target.getClass())) {
 				LOGGER.warn("Can't intercept non action class, proceeding : " + target);
 				return proceedingJoinPoint.proceed();
-			} else if (lock == null) {
+			} else if (!gotLock) {
 				LOGGER.info("Couldn't aquire lock : ");
 				proceed = Boolean.FALSE;
 			} else {
@@ -137,7 +135,8 @@ public class RuleInterceptor implements IRuleInterceptor {
 		} catch (Throwable t) {
 			LOGGER.error("Exception evaluating the rules : ", t);
 		} finally {
-			AtomicAction.unlock(lock);
+			boolean unlocked = clusterManager.unlock(IConstants.IKUBE);
+			LOGGER.info("Unlocked : " + unlocked);
 		}
 		return proceed;
 	}
