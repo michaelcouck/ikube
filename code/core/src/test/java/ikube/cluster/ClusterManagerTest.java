@@ -6,7 +6,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import ikube.ATest;
-import ikube.IConstants;
 import ikube.action.Index;
 import ikube.action.Open;
 import ikube.cluster.cache.CacheHazelcast;
@@ -29,10 +28,7 @@ import mockit.Mockit;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-
-import com.hazelcast.core.Hazelcast;
 
 /**
  * @author Michael Couck
@@ -313,24 +309,6 @@ public class ClusterManagerTest extends ATest {
 	public void getServer() {
 		Server server = clusterManager.getServer();
 		assertNotNull("The server can never be null : ", server);
-	}
-
-	@Test
-	@Ignore
-	public void shutDown() throws Exception {
-		ClusterManager.addShutdownHook();
-		Server server = new Server();
-		server.setAddress("address");
-		Hazelcast.getTopic(IConstants.SHUTDOWN_TOPIC).publish(server);
-		Thread.sleep(15000);
-		assertEquals("We expect the listener for shutdown to be invoked : ", 0, SystemMock.status);
-	}
-
-	@Test
-	public void exceptionListener() {
-		ClusterManager.addClusterExceptionListener();
-		Hazelcast.getTopic(IConstants.EXCEPTION_TOPIC).publish(Boolean.TRUE);
-		// We'll just execute this, we don't care what happens
 	}
 
 	@Test

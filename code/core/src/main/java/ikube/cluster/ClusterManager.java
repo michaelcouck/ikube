@@ -30,111 +30,62 @@ public class ClusterManager implements IClusterManager, IConstants {
 	/** The logger, doh. */
 	protected static final Logger	LOGGER	= Logger.getLogger(ClusterManager.class);
 
-	/**
-	 * This method adds a shutdown hook that can be executed remotely causing the the cluster to close down, but not
-	 * ourselves. This is useful when a unit test needs to run without the cluster running as the synchronization will
-	 * affect the tests.
-	 */
-	public static void addShutdownHook() {
-		LOGGER.info("Adding shutdown listener : ");
-		// ITopic<Server> topic = Hazelcast.getTopic(IConstants.SHUTDOWN_TOPIC);
-		// topic.addMessageListener(new MessageListener<Server>() {
-		// @Override
-		// public void onMessage(final Server other) {
-		// if (other == null) {
-		// return;
-		// }
-		// LOGGER.info("Got shutdown message : " + other);
-		// Server server = ApplicationContextManager.getBean(IClusterManager.class).getServer();
-		// if (other.getAddress().equals(server.getAddress())) {
-		// // We don't shutdown our selves of course
-		// return;
-		// }
-		// long delay = 1000;
-		// ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
-		// executorService.schedule(new Runnable() {
-		// public void run() {
-		// LOGGER.warn("Shutting down Ikube server : " + other);
-		// ListenerManager.removeListeners();
-		// ApplicationContextManager.closeApplicationContext();
-		// Hazelcast.shutdownAll();
-		// System.exit(0);
-		// }
-		// }, delay, TimeUnit.MILLISECONDS);
-		// executorService.shutdown();
-		// }
-		// });
-	}
-
-	/**
-	 * This method adds a listener to the cluster topic to make exception when evaluating the rules.
-	 */
-	public static void addClusterExceptionListener() {
-		// Add the listener for general cluster directives like forcing an index to start
-		LOGGER.info("Adding exception listener : ");
-		// ITopic<Boolean> topic = Hazelcast.getTopic(IConstants.EXCEPTION_TOPIC);
-		// topic.addMessageListener(new MessageListener<Boolean>() {
-		// @Override
-		// public void onMessage(Boolean command) {
-		// LOGGER.info("Got exception message : " + command);
-		// ApplicationContextManager.getBean(IClusterManager.class).setException(command);
-		// }
-		// });
-	}
-
 	/** The ip of this server. */
-	private transient String	ip;
+	private transient String		ip;
 	/**
 	 * The address of this server, this must be unique in the cluster. Typically this is the ip address added to the
 	 * system time. The chance of a hash clash with any other server is in the billions, we will disregard this
 	 * possibility on prudent grounds.
 	 */
-	private transient String	address;
-	protected transient ICache	cache;
+	private transient String		address;
+	protected transient ICache		cache;
 	/** This flag is set cluster wide to make exception for the rules. */
-	private transient boolean	exception;
+	private transient boolean		exception;
+
+	class ClusterListener implements IListener {
+		@Override
+		public void handleNotification(Event event) {
+			if (!event.getType().equals(Event.CLEAN)) {
+				return;
+			}
+			Server server = getServer();
+			// Remove all servers that are past the max age
+			List<Server> servers = getServers();
+			for (Server remoteServer : servers) {
+				if (remoteServer.getAddress().equals(server.getAddress())) {
+					continue;
+				}
+				if (System.currentTimeMillis() - remoteServer.getAge() > MAX_AGE) {
+					LOGGER.info("Removing server : " + remoteServer + ", " + (System.currentTimeMillis() - remoteServer.getAge() > MAX_AGE));
+					remove(Server.class.getName(), remoteServer.getId());
+				}
+			}
+		}
+	}
+
+	class AliveListener implements IListener {
+		@Override
+		public void handleNotification(Event event) {
+			if (!event.getType().equals(Event.ALIVE)) {
+				return;
+			}
+			// Set our own server age
+			Server server = getServer();
+			server.setAge(System.currentTimeMillis());
+			set(Server.class.getName(), server.getId(), server);
+		}
+	}
 
 	/**
 	 * This listener will respond to clean events and it will remove servers that have not checked in, i.e. their sell
 	 * by date is expired.
 	 */
-	private IListener			cleanerListener	= new IListener() {
-													@Override
-													public void handleNotification(Event event) {
-														if (!event.getType().equals(Event.CLEAN)) {
-															return;
-														}
-														Server server = getServer();
-														// Remove all servers that are past the max age
-														List<Server> servers = getServers();
-														for (Server remoteServer : servers) {
-															if (remoteServer.getAddress().equals(server.getAddress())) {
-																continue;
-															}
-															if (System.currentTimeMillis() - remoteServer.getAge() > MAX_AGE) {
-																LOGGER.info("Removing server : " + remoteServer + ", "
-																		+ (System.currentTimeMillis() - remoteServer.getAge() > MAX_AGE));
-																remove(Server.class.getName(), remoteServer.getId());
-															}
-														}
-													}
-												};
+	private IListener	cleanerListener	= new ClusterListener();
 
 	/**
 	 * This listener will reset this server, with the latest timestamp so we can stay in the server club.
 	 */
-	private IListener			aliveListener	= new IListener() {
-													@Override
-													public void handleNotification(Event event) {
-														if (!event.getType().equals(Event.ALIVE)) {
-															return;
-														}
-														// Set our own server age
-														Server server = getServer();
-														server.setAge(System.currentTimeMillis());
-														set(Server.class.getName(), server.getId(), server);
-													}
-												};
+	private IListener	aliveListener	= new AliveListener();
 
 	/**
 	 * In the constructor we initialise the logger but most importantly the address of this server. Please see the

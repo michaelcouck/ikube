@@ -1,12 +1,15 @@
 package ikube.cluster.cache;
 
 import ikube.IConstants;
+import ikube.listener.ListenerManager;
+import ikube.model.Server;
+import ikube.toolkit.ApplicationContextManager;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 
@@ -15,28 +18,15 @@ import org.jgroups.Address;
 import org.jgroups.JChannel;
 import org.jgroups.Message;
 import org.jgroups.ReceiverAdapter;
-import org.jgroups.View;
 import org.jgroups.blocks.ReplicatedHashMap;
 import org.jgroups.blocks.locking.LockService;
 
 /**
- * JGroups does not have a distributed map unfortunately.
- * 
  * @see ICache
  * @author Michael Couck
  * @since 01.10.11
  * @version 01.00
  */
-class DMap implements Serializable {
-	public String				name;
-	public Map<Long, Object>	map;
-
-	public DMap(String name, Map<Long, Object> map) {
-		this.name = name;
-		this.map = map;
-	}
-}
-
 public class CacheJGroups implements ICache {
 
 	private Logger							logger;
@@ -44,26 +34,45 @@ public class CacheJGroups implements ICache {
 	private LockService						lockService;
 	private Map<String, Map<Long, Object>>	maps;
 
+	class ShutdownReceiverAdapter extends ReceiverAdapter {
+		public void receive(Message message) {
+			Address address = message.getSrc();
+			Object other = message.getObject();
+			logger.info("Message : " + message.getObject() + ", address : " + address + ", other : " + other);
+			if (other == null || !Server.class.isAssignableFrom(other.getClass())) {
+				return;
+			}
+			logger.warn("Got shutdown message : " + other);
+			long delay = 1000;
+			java.util.concurrent.ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
+			executorService.schedule(new Runnable() {
+				public void run() {
+					logger.warn("Shutting down Ikube server : " + this);
+					ListenerManager.removeListeners();
+					ApplicationContextManager.closeApplicationContext();
+					channel.clearChannelListeners();
+					channel.close();
+					System.exit(0);
+				}
+			}, delay, TimeUnit.MILLISECONDS);
+			executorService.shutdown();
+		}
+	}
+
+	/**
+	 * This method adds a shutdown hook that can be executed remotely causing the the cluster to close down, but not
+	 * ourselves. This is useful when a unit test needs to run without the cluster running as the synchronisation will
+	 * affect the tests.
+	 */
 	public void initialise() throws Exception {
 		maps = new HashMap<String, Map<Long, Object>>();
 		logger = Logger.getLogger(this.getClass());
 		channel = new JChannel(getClass().getResource(IConstants.META_INF + IConstants.SEP + IConstants.UDP_XML));
 		channel.setDiscardOwnMessages(Boolean.TRUE);
 		channel.connect(IConstants.IKUBE);
-		channel.setReceiver(new ReceiverAdapter() {
-			public void viewAccepted(View view) {
-				logger.info("View : " + view);
-			}
-
-			public void receive(Message msg) {
-				Address sender = msg.getSrc();
-				logger.info("Message : " + msg.getObject() + ", sender : " + sender + ".");
-				// DMap map = (DMap) msg.getObject();
-				// maps.put(map.name, map.map);
-			}
-		});
 		channel.send(null, "Ikube running : ");
 		lockService = new LockService(channel);
+		channel.setReceiver(new ShutdownReceiverAdapter());
 	}
 
 	/**
@@ -89,7 +98,6 @@ public class CacheJGroups implements ICache {
 	@Override
 	public <T extends Object> void set(final String name, final Long id, final T object) {
 		getMap(name).put(id, object);
-		distribute(name);
 	}
 
 	/**
@@ -98,7 +106,6 @@ public class CacheJGroups implements ICache {
 	@Override
 	public void remove(final String name, final Long id) {
 		getMap(name).remove(id);
-		distribute(name);
 	}
 
 	/**
@@ -114,10 +121,12 @@ public class CacheJGroups implements ICache {
 				break;
 			}
 			T t = (T) mapEntry.getValue();
-			if (criteria != null && criteria.evaluate(t)) {
+			if (criteria == null) {
 				result.add(t);
 			} else {
-				result.add(t);
+				if (criteria.evaluate(t)) {
+					result.add(t);
+				}
 			}
 			if (action != null) {
 				action.execute(t);
@@ -168,22 +177,9 @@ public class CacheJGroups implements ICache {
 		return Boolean.FALSE;
 	}
 
-	private void distribute(final String name) {
-		// Map<Long, Object> map = getMap(name);
-		// DMap dmap = new DMap(name, map);
-		// Message message = new Message();
-		// message.setObject(dmap);
-		try {
-			// channel.send(message);
-		} catch (Exception e) {
-			logger.error("Exception distributing the map data : ", e);
-		}
-	}
-
 	private Map<Long, Object> getMap(String name) {
 		Map<Long, Object> map = maps.get(name);
 		if (map == null) {
-			// map = new HashMap<Long, Object>();
 			map = new ReplicatedHashMap<Long, Object>(channel);
 			maps.put(name, map);
 		}

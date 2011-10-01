@@ -120,14 +120,6 @@
 			<ref local="ikube.cluster.cache.CacheJGroups" />
 		</constructor-arg>
 	</bean>
-	<bean 
-		class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
-		property:staticMethod="ikube.cluster.ClusterManager.addShutdownHook"
-		lazy-init="false" />
-	<bean 
-		class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
-		property:staticMethod="ikube.cluster.ClusterManager.addClusterExceptionListener"
-		lazy-init="false" />
 	
 	<!-- 
 		These are just pojos that delegate to the real class that can be intercepted by Spring. 
