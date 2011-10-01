@@ -9,7 +9,6 @@ import ikube.toolkit.ApplicationContextManager;
 
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -66,17 +65,17 @@ public class ServersController extends BaseController {
 			indexContext.setNumDocs(numDocs);
 		}
 
-		String[] indexNames = monitorWebService.getIndexNames();
-		modelAndView.addObject(IConstants.INDEX_NAMES, indexNames);
-
-		for (String indexName : indexNames) {
-			Map<String, Object> indexProperties = new HashMap<String, Object>();
-			long indexSize = monitorWebService.getIndexSize(indexName);
-			int numDocs = monitorWebService.getIndexDocuments(indexName);
-			indexProperties.put(IConstants.INDEX_SIZE, indexSize);
-			indexProperties.put(IConstants.INDEX_DOCUMENTS, numDocs);
-			modelAndView.addObject(indexName, indexProperties);
-		}
+		// String[] indexNames = monitorWebService.getIndexNames();
+		// modelAndView.addObject(IConstants.INDEX_NAMES, indexNames);
+		//
+		// for (String indexName : indexNames) {
+		// Map<String, Object> indexProperties = new HashMap<String, Object>();
+		// long indexSize = monitorWebService.getIndexSize(indexName);
+		// int numDocs = monitorWebService.getIndexDocuments(indexName);
+		// indexProperties.put(IConstants.INDEX_SIZE, indexSize);
+		// indexProperties.put(IConstants.INDEX_DOCUMENTS, numDocs);
+		// modelAndView.addObject(indexName, indexProperties);
+		// }
 
 		return modelAndView;
 	}

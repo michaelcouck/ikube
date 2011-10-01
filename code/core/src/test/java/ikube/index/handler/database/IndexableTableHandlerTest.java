@@ -38,12 +38,12 @@ import org.junit.Test;
  */
 public class IndexableTableHandlerTest extends BaseTest {
 
-	private IndexableTable faqIndexableTable;
-	private IndexableColumn faqIdIndexableColumn;
-	private IndexableTable attachmentIndexableTable;
-	private List<Indexable<?>> faqIndexableColumns;
-	private IndexableTableHandler indexableTableHandler;
-	private Connection connection;
+	private IndexableTable			faqIndexableTable;
+	private IndexableColumn			faqIdIndexableColumn;
+	private IndexableTable			attachmentIndexableTable;
+	private List<Indexable<?>>		faqIndexableColumns;
+	private IndexableTableHandler	indexableTableHandler;
+	private Connection				connection;
 
 	public IndexableTableHandlerTest() {
 		super(IndexableTableHandlerTest.class);
@@ -63,13 +63,13 @@ public class IndexableTableHandlerTest extends BaseTest {
 		connection = ((DataSource) ApplicationContextManager.getBean("nonXaDataSourceOracle")).getConnection();
 
 		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
-		clusterManager.setWorking(Index.class.getSimpleName(), indexContext.getIndexName(), faqIndexableTable.getName(), Boolean.FALSE);
+		clusterManager.stopWorking(Index.class.getSimpleName(), indexContext.getIndexName(), faqIndexableTable.getName());
 	}
 
 	@After
 	public void after() {
 		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
-		clusterManager.setWorking(Index.class.getSimpleName(), indexContext.getIndexName(), faqIndexableTable.getName(), Boolean.FALSE);
+		clusterManager.stopWorking(Index.class.getSimpleName(), indexContext.getIndexName(), faqIndexableTable.getName());
 		Server server = clusterManager.getServer();
 		server.setAction(null);
 		clusterManager.set(Server.class.getName(), server.getId(), server);
@@ -161,8 +161,7 @@ public class IndexableTableHandlerTest extends BaseTest {
 		logger.debug("Document : " + document);
 		String idFieldValue = document.get(IConstants.ID);
 		logger.debug("Id field : " + idFieldValue);
-		assertTrue("The id field for the table is the name of the table and the column name, then the value : ",
-				idFieldValue.contains("faq.faqId"));
+		assertTrue("The id field for the table is the name of the table and the column name, then the value : ", idFieldValue.contains("faq.faqId"));
 
 		DatabaseUtilities.close(resultSet);
 		DatabaseUtilities.close(statement);

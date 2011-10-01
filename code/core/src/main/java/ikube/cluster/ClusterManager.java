@@ -26,7 +26,7 @@ import com.hazelcast.core.ITopic;
 import com.hazelcast.core.MessageListener;
 
 /**
- * This class is responsible for the cluster synchronization functionality.
+ * This class is responsible for the cluster synchronisation functionality.
  * 
  * @see IClusterManager
  * @author Michael Couck
@@ -36,11 +36,12 @@ import com.hazelcast.core.MessageListener;
 public class ClusterManager implements IClusterManager, IConstants {
 
 	/** The logger, doh. */
-	protected static final Logger LOGGER = Logger.getLogger(ClusterManager.class);
+	protected static final Logger	LOGGER	= Logger.getLogger(ClusterManager.class);
 
 	/**
-	 * This method adds a shutdown hook that can be executed remotely causing the the cluster to close down, but not ourselves. This is
-	 * useful when a unit test needs to run without the cluster running as the synchronization will affect the tests.
+	 * This method adds a shutdown hook that can be executed remotely causing the the cluster to close down, but not
+	 * ourselves. This is useful when a unit test needs to run without the cluster running as the synchronization will
+	 * affect the tests.
 	 */
 	public static void addShutdownHook() {
 		LOGGER.info("Adding shutdown listener : ");
@@ -90,62 +91,67 @@ public class ClusterManager implements IClusterManager, IConstants {
 	}
 
 	/** The ip of this server. */
-	private transient String ip;
+	private transient String	ip;
 	/**
-	 * The address of this server, this must be unique in the cluster. Typically this is the ip address added to the system time. The chance
-	 * of a hash clash with any other server is in the billions, we will disregard this possibility on prudent grounds.
+	 * The address of this server, this must be unique in the cluster. Typically this is the ip address added to the
+	 * system time. The chance of a hash clash with any other server is in the billions, we will disregard this
+	 * possibility on prudent grounds.
 	 */
-	private transient String address;
+	private transient String	address;
 	/** The cluster wide cache. */
-	protected transient ICache cache;
+	protected transient ICache	cache;
 	/** This flag is set cluster wide to make exception for the rules. */
-	private transient boolean exception;
+	private transient boolean	exception;
 
 	/**
-	 * This listener will respond to clean events and it will remove servers that have not checked in, i.e. their sell by date is expired.
+	 * This listener will respond to clean events and it will remove servers that have not checked in, i.e. their sell
+	 * by date is expired.
 	 */
-	private IListener cleanerListener = new IListener() {
-		@Override
-		public void handleNotification(Event event) {
-			if (!event.getType().equals(Event.CLEAN)) {
-				return;
-			}
-			Server server = getServer();
-			// Remove all servers that are past the max age
-			List<Server> servers = getServers();
-			for (Server remoteServer : servers) {
-				if (remoteServer.getAddress().equals(server.getAddress())) {
-					continue;
-				}
-				if (System.currentTimeMillis() - remoteServer.getAge() > MAX_AGE) {
-					LOGGER.info("Removing server : " + remoteServer + ", " + (System.currentTimeMillis() - remoteServer.getAge() > MAX_AGE));
-					remove(Server.class.getName(), remoteServer.getId());
-				}
-			}
-		}
-	};
+	private IListener			cleanerListener	= new IListener() {
+													@Override
+													public void handleNotification(Event event) {
+														if (!event.getType().equals(Event.CLEAN)) {
+															return;
+														}
+														Server server = getServer();
+														// Remove all servers that are past the max age
+														List<Server> servers = getServers();
+														for (Server remoteServer : servers) {
+															if (remoteServer.getAddress().equals(server.getAddress())) {
+																continue;
+															}
+															if (System.currentTimeMillis() - remoteServer.getAge() > MAX_AGE) {
+																LOGGER.info("Removing server : " + remoteServer + ", "
+																		+ (System.currentTimeMillis() - remoteServer.getAge() > MAX_AGE));
+																remove(Server.class.getName(), remoteServer.getId());
+															}
+														}
+													}
+												};
 
 	/**
 	 * This listener will reset this server, with the latest timestamp so we can stay in the server club.
 	 */
-	private IListener aliveListener = new IListener() {
-		@Override
-		public void handleNotification(Event event) {
-			if (!event.getType().equals(Event.ALIVE)) {
-				return;
-			}
-			// Set our own server age
-			Server server = getServer();
-			server.setAge(System.currentTimeMillis());
-			set(Server.class.getName(), server.getId(), server);
-		}
-	};
+	private IListener			aliveListener	= new IListener() {
+													@Override
+													public void handleNotification(Event event) {
+														if (!event.getType().equals(Event.ALIVE)) {
+															return;
+														}
+														// Set our own server age
+														Server server = getServer();
+														server.setAge(System.currentTimeMillis());
+														set(Server.class.getName(), server.getId(), server);
+													}
+												};
 
 	/**
-	 * In the constructor we initialize the logger but most importantly the address of this server. Please see the comments.
+	 * In the constructor we initialise the logger but most importantly the address of this server. Please see the
+	 * comments.
 	 * 
 	 * @throws Exception
-	 *             this can only be the InetAddress exception, which can never happen because we are looking for the localhost
+	 *             this can only be the InetAddress exception, which can never happen because we are looking for the
+	 *             localhost
 	 */
 	public ClusterManager(ICache cache) throws Exception {
 		this.cache = cache;
@@ -265,21 +271,46 @@ public class ClusterManager implements IClusterManager, IConstants {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized long setWorking(final String actionName, final String indexName, final String indexableName, final boolean isWorking) {
+	public synchronized long startWorking(final String actionName, final String indexName, final String indexableName) {
+		try {
+			long startTime = System.currentTimeMillis();
+			Server server = getServer();
+			Action action = new Action();
+			// Reset the id of this action
+			action.setIdNumber(0);
+			action.setActionName(actionName);
+			action.setIndexName(indexName);
+			action.setIndexableName(indexableName);
+			// Reset the time in the action for each action
+			action.setStartTime(new Timestamp(startTime));
+			action.setWorking(Boolean.TRUE);
+			action.setServerName(server.getAddress());
+			// Publish the fact that this server is starting to work on an action
+			server.setAction(action);
+			set(Server.class.getName(), server.getId(), server);
+			return startTime;
+		} finally {
+			notifyAll();
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public synchronized void stopWorking(final String actionName, final String indexName, final String indexableName) {
 		try {
 			Server server = getServer();
-			server.setAction(new Action());
-			// Reset the id of this action
-			server.getAction().setIdNumber(0);
-			server.getAction().setActionName(actionName);
-			server.getAction().setIndexableName(indexableName);
-			server.getAction().setIndexName(indexName);
-			// Reset the time in the action for each action
-			server.getAction().setStartTime(new Timestamp(System.currentTimeMillis()));
-			server.getAction().setWorking(isWorking);
+			Action action = server.getAction();
+			if (action != null) {
+				action.setWorking(Boolean.FALSE);
+				action.setEndTime(new Timestamp(System.currentTimeMillis()));
+				action.setDuration(action.getEndTime().getTime() - action.getStartTime().getTime());
+				LOGGER.info("'Action : " + action);
+			}
+			server.setAction(null);
 			// Publish the fact that this server is starting to work on an action
 			set(Server.class.getName(), server.getId(), server);
-			return server.getAction().getStartTime().getTime();
 		} finally {
 			notifyAll();
 		}

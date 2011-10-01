@@ -61,7 +61,7 @@ public class Server extends Persistable implements Comparable<Server> {
 	}
 
 	public boolean getWorking() {
-		return this.action != null ? this.action.getWorking() : Boolean.FALSE;
+		return this.action == null ? Boolean.FALSE : this.action.getWorking();
 	}
 
 	public void setAddress(final String address) {

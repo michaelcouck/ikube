@@ -1,17 +1,19 @@
 package ikube.action;
 
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import ikube.ATest;
 import ikube.index.IndexManager;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.mock.IndexManagerMock;
+import ikube.model.Action;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
+import java.sql.Timestamp;
 
 import mockit.Mockit;
 
@@ -34,7 +36,11 @@ public class IndexTest extends ATest {
 	public void before() {
 		Mockit.setUpMocks(IndexManagerMock.class, ApplicationContextManagerMock.class);
 		when(INDEX.getIndexWriter()).thenReturn(INDEX_WRITER);
-		when(CLUSTER_MANAGER.setWorking(anyString(), anyString(), anyString(), anyBoolean())).thenReturn(System.currentTimeMillis());
+		when(CLUSTER_MANAGER.startWorking(anyString(), anyString(), anyString())).thenReturn(System.currentTimeMillis());
+		when(CLUSTER_MANAGER.getServer()).thenReturn(SERVER);
+		Action action = mock(Action.class);
+		when(action.getStartTime()).thenReturn(new Timestamp(System.currentTimeMillis()));
+		when(SERVER.getAction()).thenReturn(action);
 	}
 
 	@After

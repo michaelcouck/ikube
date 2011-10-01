@@ -14,7 +14,7 @@ import mockit.MockClass;
 @MockClass(realClass = ClusterManager.class)
 public class ClusterManagerMock {
 
-	private Server server = mock(Server.class);
+	private Server	server	= mock(Server.class);
 
 	@Mock()
 	public Server getServer() {
@@ -22,7 +22,7 @@ public class ClusterManagerMock {
 	}
 
 	@Mock()
-	public synchronized long setWorking(final String actionName, final String indexName, final String indexableName, final boolean isWorking) {
+	public synchronized long startWorking(final String actionName, final String indexName, final String indexableName) {
 		return System.currentTimeMillis();
 	}
 

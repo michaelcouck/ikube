@@ -1,7 +1,6 @@
 package ikube.action;
 
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 import ikube.ATest;
@@ -36,7 +35,7 @@ public class SearcherTest extends ATest {
 	public void before() {
 		Mockit.setUpMocks(IndexManagerMock.class, ApplicationContextManagerMock.class, ClusterManagerMock.class, ServiceLocatorMock.class);
 		when(INDEX.getIndexWriter()).thenReturn(INDEX_WRITER);
-		when(CLUSTER_MANAGER.setWorking(anyString(), anyString(), anyString(), anyBoolean())).thenReturn(System.currentTimeMillis());
+		when(CLUSTER_MANAGER.startWorking(anyString(), anyString(), anyString())).thenReturn(System.currentTimeMillis());
 	}
 
 	@After

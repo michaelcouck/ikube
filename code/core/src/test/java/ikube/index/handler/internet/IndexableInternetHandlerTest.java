@@ -28,10 +28,10 @@ import org.junit.Test;
  */
 public class IndexableInternetHandlerTest extends BaseTest {
 
-	private IDataBase dataBase;
-	private IndexContext<?> indexContext;
-	private IndexableInternet indexableInternet;
-	private IndexableInternetHandler indexableInternetHandler;
+	private IDataBase					dataBase;
+	private IndexContext<?>				indexContext;
+	private IndexableInternet			indexableInternet;
+	private IndexableInternetHandler	indexableInternetHandler;
 
 	public IndexableInternetHandlerTest() {
 		super(IndexableInternetHandlerTest.class);
@@ -45,8 +45,8 @@ public class IndexableInternetHandlerTest extends BaseTest {
 		indexableInternet = ApplicationContextManager.getBean("ikubeGoogleCode");
 		indexableInternetHandler = ApplicationContextManager.getBean(IndexableInternetHandler.class);
 		dataBase = ApplicationContextManager.getBean(IDataBase.class);
-		ApplicationContextManager.getBean(IClusterManager.class).setWorking(Index.class.getSimpleName(), indexContext.getName(),
-				indexableInternet.getName(), Boolean.FALSE);
+		ApplicationContextManager.getBean(IClusterManager.class).startWorking(Index.class.getSimpleName(), indexContext.getName(),
+				indexableInternet.getName());
 		delete(dataBase, Url.class);
 	}
 
@@ -88,7 +88,7 @@ public class IndexableInternetHandlerTest extends BaseTest {
 		indexableInternet.setBaseUrl(null);
 		inputStream = new URL(baseUrl.getUrl()).openStream();
 		indexableInternetHandler.extractLinksFromContent(dataBase, indexableInternet, baseUrl, inputStream);
-		
+
 		// TODO Mock the cache and check that there are some urls added to it
 	}
 

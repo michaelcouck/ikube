@@ -18,8 +18,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This class will do a search on the indexes on the index defined in this server. If there are not as many results as expected then a mail
- * will be sent to the administrator.
+ * This class will do a search on the indexes on the index defined in this server. If there are not as many results as
+ * expected then a mail will be sent to the administrator.
  * 
  * @author Michael Couck
  * @since 31.10.10
@@ -27,12 +27,12 @@ import java.util.Map;
  */
 public class Searcher extends Action<IndexContext<?>, Boolean> {
 
-	private int start = 0;
-	private int end = 10;
-	private int iterations = 1;
-	private String searchString = "Hello";
-	private int resultsSizeMinimum = 0;
-	private boolean fragment = Boolean.TRUE;
+	private int		start				= 0;
+	private int		end					= 10;
+	private int		iterations			= 1;
+	private String	searchString		= "Hello";
+	private int		resultsSizeMinimum	= 0;
+	private boolean	fragment			= Boolean.TRUE;
 
 	/**
 	 * {@inheritDoc}
@@ -45,8 +45,8 @@ public class Searcher extends Action<IndexContext<?>, Boolean> {
 
 			Server server = ApplicationContextManager.getBean(IClusterManager.class).getServer();
 			String webServiceUrl = server.getSearchWebServiceUrl();
-			ISearcherWebService searchRemote = ServiceLocator.getService(ISearcherWebService.class, webServiceUrl,
-					ISearcherWebService.NAMESPACE, ISearcherWebService.SERVICE);
+			ISearcherWebService searchRemote = ServiceLocator.getService(ISearcherWebService.class, webServiceUrl, ISearcherWebService.NAMESPACE,
+					ISearcherWebService.SERVICE);
 			String monitoringWebServiceUrl = server.getMonitoringWebServiceUrl();
 			IMonitorWebService monitorWebService = ServiceLocator.getService(IMonitorWebService.class, monitoringWebServiceUrl,
 					IMonitorWebService.NAMESPACE, IMonitorWebService.SERVICE);
@@ -61,11 +61,11 @@ public class Searcher extends Action<IndexContext<?>, Boolean> {
 			for (int i = 0; i < iterations; i++) {
 				xml = searchRemote.searchSingle(indexName, searchString, searchFields[0], Boolean.TRUE, 0, 10);
 				xml = searchRemote.searchMulti(indexName, searchStrings, searchFields, fragment, start, end);
-				// xml = searchRemote.searchMultiSorted(indexName, searchStrings, SEARCH_FIELDS, sortFields, fragment, start, end);
+				// xml = searchRemote.searchMultiSorted(indexName, searchStrings, SEARCH_FIELDS, sortFields, fragment,
+				// start, end);
 				double latitude = 50.7930727874172;
 				double longitude = 4.36242219751376;
-				xml = searchRemote
-						.searchSpacialMulti(indexName, searchStrings, searchFields, fragment, start, end, 10, latitude, longitude);
+				xml = searchRemote.searchSpacialMulti(indexName, searchStrings, searchFields, fragment, start, end, 10, latitude, longitude);
 				xml = searchRemote.searchMultiAll(indexName, searchStrings, fragment, start, end);
 			}
 
@@ -74,8 +74,8 @@ public class Searcher extends Action<IndexContext<?>, Boolean> {
 				results = (List<Map<String, String>>) SerializationUtilities.deserialize(xml);
 			}
 			if (results.size() < resultsSizeMinimum) {
-				String message = Logging.getString("Results not expected : ", results.size(), indexContext.getIndexName(), searchString,
-						start, end, resultsSizeMinimum);
+				String message = Logging.getString("Results not expected : ", results.size(), indexContext.getIndexName(), searchString, start, end,
+						resultsSizeMinimum);
 				logger.info(message);
 				ListenerManager.fireEvent(Event.NO_RESULTS, System.currentTimeMillis(), null, Boolean.TRUE);
 				String subject = "Search results for index : " + indexContext.getIndexName() + ", server : " + server.getAddress();
@@ -85,7 +85,7 @@ public class Searcher extends Action<IndexContext<?>, Boolean> {
 				ListenerManager.fireEvent(Event.RESULTS, System.currentTimeMillis(), null, Boolean.TRUE);
 			}
 		} finally {
-			getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getSimpleName(), "", Boolean.FALSE);
+			getClusterManager().stopWorking(indexContext.getIndexName(), this.getClass().getSimpleName(), "");
 		}
 		return Boolean.TRUE;
 	}

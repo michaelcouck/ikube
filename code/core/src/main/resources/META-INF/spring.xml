@@ -44,5 +44,7 @@
 	<import resource="**/spring-client.xml" />
 	<!-- Optional client configurations. -->
 	<import resource="**/spring-client-*.xml" />
+	<import resource="/client/spring-client-*.xml" />
+	<import resource="file:**/spring-client-*.xml" />
 	
 </beans>

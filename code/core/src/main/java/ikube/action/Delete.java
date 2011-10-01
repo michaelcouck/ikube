@@ -10,8 +10,8 @@ import java.util.Arrays;
 import java.util.Comparator;
 
 /**
- * This action deletes the old indexes. There should always be one index, and potentially an index that is being generated. Any other index
- * files should be deleted. This class will also delete the old indexes that are backups.
+ * This action deletes the old indexes. There should always be one index, and potentially an index that is being
+ * generated. Any other index files should be deleted. This class will also delete the old indexes that are backups.
  * 
  * @author Michael Couck
  * @since 31.10.10
@@ -31,7 +31,7 @@ public class Delete extends Action<IndexContext<?>, Boolean> {
 			deletedBoth |= deleteOldIndexes(indexDirectoryPathBackup);
 			return deletedBoth;
 		} finally {
-			getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getSimpleName(), "", Boolean.FALSE);
+			getClusterManager().stopWorking(indexContext.getIndexName(), this.getClass().getSimpleName(), "");
 		}
 	}
 

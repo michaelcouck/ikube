@@ -82,8 +82,7 @@ public class Clean<E, F> extends Action<IndexContext<?>, Boolean> {
 						}
 						if (shouldDelete && !locked) {
 							try {
-								logger.warn("Deleting directory : " + serverIndexDirectory
-										+ ", as it either corrupt, or partially deleted : ");
+								logger.warn("Deleting directory : " + serverIndexDirectory + ", as it either corrupt, or partially deleted : ");
 								FileUtilities.deleteFile(serverIndexDirectory, 1);
 							} catch (Exception e) {
 								logger.error("Exception purging corrupt or partly deleted index directory : " + serverIndexDirectory, e);
@@ -94,7 +93,7 @@ public class Clean<E, F> extends Action<IndexContext<?>, Boolean> {
 			}
 			return Boolean.TRUE;
 		} finally {
-			getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getSimpleName(), "", Boolean.FALSE);
+			getClusterManager().stopWorking(indexContext.getIndexName(), this.getClass().getSimpleName(), "");
 		}
 	}
 

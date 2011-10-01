@@ -7,7 +7,6 @@ import ikube.cluster.IClusterManager;
 import ikube.model.Action;
 import ikube.model.IndexContext;
 import ikube.model.Rule;
-import ikube.model.Server;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.Logging;
 
@@ -148,23 +147,24 @@ public class RuleInterceptor implements IRuleInterceptor {
 		try {
 			long delay = 1;
 			final IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
-			Server server = clusterManager.getServer();
-			modelAction.setServerName(server.getAddress());
+			// Server server = clusterManager.getServer();
+			// modelAction.setServerName(server.getAddress());
 			// We set the working flag in the action within the cluster lock when setting to true
-			clusterManager.setWorking(actionName, indexName, "", Boolean.TRUE);
+			clusterManager.startWorking(actionName, indexName, "");
 			executorService.schedule(new Runnable() {
 				public void run() {
 					try {
-						modelAction.setWorking(Boolean.TRUE);
+						// modelAction.setWorking(Boolean.TRUE);
 						// IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
 						// dataBase.merge(modelAction);
 						proceedingJoinPoint.proceed();
 					} catch (Throwable e) {
 						LOGGER.error("Exception proceeding on join point : " + proceedingJoinPoint, e);
 					} finally {
-						modelAction.setEndTime(new Timestamp(System.currentTimeMillis()));
-						modelAction.setDuration(modelAction.getEndTime().getTime() - modelAction.getStartTime().getTime());
-						modelAction.setWorking(Boolean.FALSE);
+						// modelAction.setEndTime(new Timestamp(System.currentTimeMillis()));
+						// modelAction.setDuration(modelAction.getEndTime().getTime() -
+						// modelAction.getStartTime().getTime());
+						// modelAction.setWorking(Boolean.FALSE);
 						// dataBase.merge(modelAction);
 					}
 				}

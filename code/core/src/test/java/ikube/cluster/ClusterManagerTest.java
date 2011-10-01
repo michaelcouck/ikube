@@ -43,7 +43,7 @@ public class ClusterManagerTest extends ATest {
 
 	@MockClass(realClass = System.class)
 	public static class SystemMock {
-		public static int status = -1;
+		public static int	status	= -1;
 
 		@Mock()
 		public static void exit(int status) {
@@ -52,16 +52,16 @@ public class ClusterManagerTest extends ATest {
 		}
 	}
 
-	private transient Server remoteServer;
+	private transient Server	remoteServer;
 
-	private transient String indexName;
-	private transient String indexableName;
-	private transient String actionName = Index.class.getSimpleName();
+	private transient String	indexName;
+	private transient String	indexableName;
+	private transient String	actionName	= Index.class.getSimpleName();
 
-	private transient int batchSize = 10;
+	private transient int		batchSize	= 10;
 
 	/** The class under test. */
-	private ClusterManager clusterManager;
+	private ClusterManager		clusterManager;
 
 	public ClusterManagerTest() {
 		super(ClusterManagerTest.class);
@@ -244,8 +244,7 @@ public class ClusterManagerTest extends ATest {
 		// The local server gets set every time we call the set working
 		// method and the time gets set at that time too
 		final long expectedStartTime = System.currentTimeMillis();
-		localServer.setAction(new Action(0, Index.class.getSimpleName(), indexableName, indexName, new Timestamp(expectedStartTime),
-				Boolean.TRUE));
+		localServer.setAction(new Action(0, Index.class.getSimpleName(), indexableName, indexName, new Timestamp(expectedStartTime), Boolean.TRUE));
 		clusterManager.set(Server.class.getName(), localServer.getId(), localServer);
 		// Verify that the remote server has the action and the time we want
 		Server server = clusterManager.get(Server.class.getName(), "id = " + localServer.getId());
@@ -260,13 +259,11 @@ public class ClusterManagerTest extends ATest {
 			Thread thread = new Thread(new Runnable() {
 				public void run() {
 					for (int i = 0; i < iterations; i++) {
-						long actualStartTime = clusterManager.setWorking(Index.class.getSimpleName(), indexName, indexableName,
-								Boolean.TRUE);
+						long actualStartTime = clusterManager.startWorking(Index.class.getSimpleName(), indexName, indexableName);
 						assertTrue("The start time should be incremented each iteration : ", expectedStartTime < actualStartTime);
-						actualStartTime = clusterManager.setWorking(Open.class.getSimpleName(), indexName, indexableName, Boolean.TRUE);
-						actualStartTime = clusterManager.setWorking(Index.class.getSimpleName(), indexName, indexableName, Boolean.FALSE);
-						assertTrue("The start time should be incremented each iteration : ", expectedStartTime < actualStartTime);
-						actualStartTime = clusterManager.setWorking(Open.class.getSimpleName(), indexName, indexableName, Boolean.FALSE);
+						actualStartTime = clusterManager.startWorking(Open.class.getSimpleName(), indexName, indexableName);
+						clusterManager.stopWorking(Index.class.getSimpleName(), indexName, indexableName);
+						clusterManager.stopWorking(Open.class.getSimpleName(), indexName, indexableName);
 					}
 				}
 			}, "ClusterManagerTestThread : " + i);
@@ -298,7 +295,7 @@ public class ClusterManagerTest extends ATest {
 	public void anyWorking() {
 		boolean anyWorking = clusterManager.anyWorking();
 		assertFalse("We haven't set any server working : ", anyWorking);
-		clusterManager.setWorking(actionName, indexName, indexableName, Boolean.TRUE);
+		clusterManager.startWorking(actionName, indexName, indexableName);
 		anyWorking = clusterManager.anyWorking();
 		assertFalse("This server should not be registered as working : ", anyWorking);
 	}
@@ -307,7 +304,7 @@ public class ClusterManagerTest extends ATest {
 	public void anyWorkingIndexName() {
 		boolean anyWorking = clusterManager.anyWorking(indexName);
 		assertFalse("There should be no servers working : ", anyWorking);
-		clusterManager.setWorking(actionName, indexName, indexableName, Boolean.TRUE);
+		clusterManager.startWorking(actionName, indexName, indexableName);
 		anyWorking = clusterManager.anyWorking(indexName);
 		assertTrue("This server should be working on the index now : ", anyWorking);
 	}
@@ -335,7 +332,7 @@ public class ClusterManagerTest extends ATest {
 		Hazelcast.getTopic(IConstants.EXCEPTION_TOPIC).publish(Boolean.TRUE);
 		// We'll just execute this, we don't care what happens
 	}
-	
+
 	@Test
 	public void removeDeadServer() {
 		// TODO implement me

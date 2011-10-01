@@ -17,8 +17,9 @@ import javax.persistence.Persistence;
 import javax.persistence.Query;
 
 /**
- * This class will try to enrich the GeoName table with country and city data. First it will search the GeoName index to find the closest
- * city to the feature and take the top result, then it will select from the database to find the country and set that too.
+ * This class will try to enrich the GeoName table with country and city data. First it will search the GeoName index to
+ * find the closest city to the feature and take the top result, then it will select from the database to find the
+ * country and set that too.
  * 
  * @author Michael Couck
  * @since 15.05.2011
@@ -26,16 +27,16 @@ import javax.persistence.Query;
  */
 public class Enrichment extends Action<IndexContext<?>, Boolean> implements IConstants {
 
-	public static final String CITY_FEATURE_CLASS = "P S T";
-	public static final String CITY_FEATURE_CODE = "PPL PPL PPLA PPLA2 PPLA3 PPLA4 PPLC PPLF PPLG PPLL PPLQ PPLR PPLS PPLW PPLX STLMT";
-	public static final String COUNTRY_FEATURE_CLASS = "A";
-	public static final String COUNTRY_FEATURE_CODE = "PCLI ADM1 ADM2 ADM3 ADM4 ADMD LTER PCL PCLD PCLF PCLI PCLIX PCLS PRSH TERR ZN ZNB";
-	private static final String[] SEARCH_FIELDS = { FEATURECLASS, FEATURECODE, COUNTRYCODE };
+	public static final String		CITY_FEATURE_CLASS		= "P S T";
+	public static final String		CITY_FEATURE_CODE		= "PPL PPL PPLA PPLA2 PPLA3 PPLA4 PPLC PPLF PPLG PPLL PPLQ PPLR PPLS PPLW PPLX STLMT";
+	public static final String		COUNTRY_FEATURE_CLASS	= "A";
+	public static final String		COUNTRY_FEATURE_CODE	= "PCLI ADM1 ADM2 ADM3 ADM4 ADMD LTER PCL PCLD PCLF PCLI PCLIX PCLS PRSH TERR ZN ZNB";
+	private static final String[]	SEARCH_FIELDS			= { FEATURECLASS, FEATURECODE, COUNTRYCODE };
 
 	/** Once the enrichment has been handled on this machine then don't do it again. */
-	private static boolean DONE = Boolean.FALSE;
+	private static boolean			DONE					= Boolean.FALSE;
 
-	private EntityManager entityManager;
+	private EntityManager			entityManager;
 
 	/**
 	 * {@inheritDoc}
@@ -101,7 +102,7 @@ public class Enrichment extends Action<IndexContext<?>, Boolean> implements ICon
 			} while (true);
 		} finally {
 			commitTransaction(entityManager);
-			getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getSimpleName(), "", Boolean.FALSE);
+			getClusterManager().stopWorking(indexContext.getIndexName(), this.getClass().getSimpleName(), "");
 		}
 		return Boolean.TRUE;
 	}

@@ -157,13 +157,6 @@
 						<phase>install</phase>
 						<configuration>
 							<target>
-								<!-- Delete the index directories in the cluster. -->
-								<!-- <echo message="Deleting indexes : " />
-								<delete includeemptydirs="true" failonerror="false">
-									<fileset dir="${cluster.directory}/">
-										<include name="**/indexes/**" />
-									</fileset>
-								</delete> -->
 								<!-- Delete the ikube deployed directories in the cluster. -->
 								<echo message="Deleting old deployment directories : " />
 								<delete includeemptydirs="true" failonerror="false">
@@ -202,7 +195,7 @@
 				<executions>
 					<execution>
 						<id>gcode-upload</id>
-						<phase>release</phase>
+						<phase>site</phase>
 						<goals>
 							<goal>upload</goal>
 						</goals>
@@ -214,7 +207,7 @@
 					<projectName>${project.groupId}</projectName>
 					<uploads>
 						<upload>
-							<file>${project.build.directory}/${final.name}.${project.packaging}</file>
+							<file>${project.build.directory}/${final.name}</file>
 							<summary>${project.groupId} release ${project.version}</summary>
 							<labels>
 								<label>Featured</label>

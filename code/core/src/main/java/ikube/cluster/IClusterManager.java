@@ -6,8 +6,8 @@ import ikube.model.Server;
 import java.util.List;
 
 /**
- * This is the interface that will synchronise and coordinate the servers in the cluster. The implementors are critical to the functioning
- * of Ikube.
+ * This is the interface that will synchronise and coordinate the servers in the cluster. The implementors are critical
+ * to the functioning of Ikube.
  * 
  * @author Michael Couck
  * @since 21.11.10
@@ -16,8 +16,9 @@ import java.util.List;
 public interface IClusterManager {
 
 	/**
-	 * @return whether there are any servers in the cluster that are working excluding this one. If this server is working then the server
-	 *         must be retrieved with the {@link IClusterManager#getServer()} and check the {@link Server#getWorking()} method
+	 * @return whether there are any servers in the cluster that are working excluding this one. If this server is
+	 *         working then the server must be retrieved with the {@link IClusterManager#getServer()} and check the
+	 *         {@link Server#getWorking()} method
 	 */
 	boolean anyWorking();
 
@@ -37,10 +38,12 @@ public interface IClusterManager {
 	 *            the name of the currently executing indexable
 	 * @param isWorking
 	 *            whether the server is working or not
-	 * @return this method returns the first time that was registered for any server that has executed this index and this indexable. This
-	 *         needs to be in one method so that the servers can be locked before this operation
+	 * @return this method returns the first time that was registered for any server that has executed this index and
+	 *         this indexable. This needs to be in one method so that the servers can be locked before this operation
 	 */
-	long setWorking(String actionName, String indexName, String indexableName, boolean isWorking);
+	long startWorking(String actionName, String indexName, String indexableName);
+
+	void stopWorking(String actionName, String indexName, String indexableName);
 
 	/**
 	 * Returns the next id from one of the servers. The id would be the id in the table for this index.
@@ -50,8 +53,8 @@ public interface IClusterManager {
 	 * @param indexName
 	 *            the name of the index currently getting executed
 	 * @param batchSize
-	 *            the size of the batch for this index context. This batch size will then be added to the action and published into the
-	 *            cluster effectively determining the next if of this table
+	 *            the size of the batch for this index context. This batch size will then be added to the action and
+	 *            published into the cluster effectively determining the next if of this table
 	 * @return the id of the next row in the table for this index
 	 */
 	long getIdNumber(String indexableName, String indexName, long batchSize, long minId);

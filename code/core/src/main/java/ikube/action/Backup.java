@@ -46,7 +46,7 @@ public class Backup extends Action<IndexContext<?>, Boolean> {
 				return Boolean.FALSE;
 			}
 		} finally {
-			getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getSimpleName(), "", Boolean.FALSE);
+			getClusterManager().stopWorking(indexContext.getIndexName(), this.getClass().getSimpleName(), "");
 		}
 		return Boolean.TRUE;
 	}

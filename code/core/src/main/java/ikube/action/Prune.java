@@ -25,7 +25,6 @@ public class Prune extends Action<IndexContext<?>, Boolean> {
 	public Boolean execute(final IndexContext<?> indexContext) {
 		try {
 			logger.info("Pruning releasing cluster : " + Thread.currentThread().hashCode());
-			getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getSimpleName(), "", Boolean.FALSE);
 			logger.info("Pruning released cluster : " + Thread.currentThread().hashCode());
 			logger.info("Pruning : " + Thread.currentThread().hashCode());
 			IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
@@ -37,7 +36,7 @@ public class Prune extends Action<IndexContext<?>, Boolean> {
 				count = dataBase.execute(Long.class, ikube.model.Action.SELECT_FROM_ACTIONS_COUNT);
 			}
 		} finally {
-			getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getSimpleName(), "", Boolean.FALSE);
+			getClusterManager().stopWorking(indexContext.getIndexName(), this.getClass().getSimpleName(), "");
 		}
 		return Boolean.TRUE;
 	}

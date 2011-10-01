@@ -12,9 +12,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This class resets the data in the cluster. It is imperative that nothing gets reset if there are any servers working of course. The urls
- * that are published into the cluster during the indexing need to be deleted. This deletion action will delete them not only from this
- * server's map but from all the servers' maps.
+ * This class resets the data in the cluster. It is imperative that nothing gets reset if there are any servers working
+ * of course. The urls that are published into the cluster during the indexing need to be deleted. This deletion action
+ * will delete them not only from this server's map but from all the servers' maps.
  * 
  * @author Michael Couck
  * @since 31.10.10
@@ -42,7 +42,7 @@ public class Reset extends Action<IndexContext<?>, Boolean> {
 			}
 		} finally {
 			logger.info("Resetting releasing cluster : " + Thread.currentThread().hashCode());
-			getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getSimpleName(), "", Boolean.FALSE);
+			getClusterManager().stopWorking(indexContext.getIndexName(), this.getClass().getSimpleName(), "");
 			logger.info("Resetting released cluster : " + Thread.currentThread().hashCode());
 			logger.error("Servers : " + getClusterManager().getServers());
 		}

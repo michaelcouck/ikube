@@ -15,7 +15,8 @@ import ikube.toolkit.FileUtilities;
 import java.io.File;
 
 /**
- * This class will just validate that there are indexes in a searchable condition and if not send a mail to the administrator.
+ * This class will just validate that there are indexes in a searchable condition and if not send a mail to the
+ * administrator.
  * 
  * @author Michael Couck
  * @since 31.10.10
@@ -32,7 +33,8 @@ public class Validator extends Action<IndexContext<?>, Boolean> {
 	 * 5) There are indexes but they are corrupt<br>
 	 * 6) Any of the above and the searcher is not opened for some reason<br>
 	 * <br>
-	 * There must be at least one index being generated, or one index created // and one being generated for each index context
+	 * There must be at least one index being generated, or one index created // and one being generated for each index
+	 * context
 	 */
 	@Override
 	public Boolean execute(final IndexContext<?> indexContext) {
@@ -108,7 +110,7 @@ public class Validator extends Action<IndexContext<?>, Boolean> {
 			logger.error("Exception validating the system : " + indexContext, e);
 			everythingInitialized &= Boolean.FALSE;
 		} finally {
-			getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getSimpleName(), "", Boolean.FALSE);
+			getClusterManager().stopWorking(indexContext.getIndexName(), this.getClass().getSimpleName(), "");
 		}
 		return everythingInitialized;
 	}

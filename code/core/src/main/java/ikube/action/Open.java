@@ -20,15 +20,16 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
 /**
- * This action is called to open the searcher on potentially new indexes. The close operation should run just before this action. In that
- * case the searcher in the index context will be null which is an indication that the searcher should be opened on the new index. The
- * trigger then for this action to complete successfully is the searcher in the context being null.
+ * This action is called to open the searcher on potentially new indexes. The close operation should run just before
+ * this action. In that case the searcher in the index context will be null which is an indication that the searcher
+ * should be opened on the new index. The trigger then for this action to complete successfully is the searcher in the
+ * context being null.
  * 
- * This action will find the latest index directory based on the folder name which is a long(the time the index was started), find all the
- * server directories in the directory and open a searchable on each of the 'server indexes'. A multi searcher will be opened on the
- * SEARCHABLES and this will be set in the index context. An even will be fired to alert all interested parties that there is a new searcher
- * and they can perform whatever logic the need to, like the {@link SearcherWebService} which will then open the single and multi search
- * objects on the new multi searcher.
+ * This action will find the latest index directory based on the folder name which is a long(the time the index was
+ * started), find all the server directories in the directory and open a searchable on each of the 'server indexes'. A
+ * multi searcher will be opened on the SEARCHABLES and this will be set in the index context. An even will be fired to
+ * alert all interested parties that there is a new searcher and they can perform whatever logic the need to, like the
+ * {@link SearcherWebService} which will then open the single and multi search objects on the new multi searcher.
  * 
  * @author Michael Couck
  * @since 31.10.10
@@ -47,7 +48,7 @@ public class Open extends Action<IndexContext<?>, Boolean> {
 		try {
 			return openOnFile(indexContext);
 		} finally {
-			getClusterManager().setWorking(indexContext.getIndexName(), this.getClass().getSimpleName(), "", Boolean.FALSE);
+			getClusterManager().stopWorking(indexContext.getIndexName(), this.getClass().getSimpleName(), "");
 		}
 	}
 
