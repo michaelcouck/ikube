@@ -102,7 +102,7 @@ public class Enrichment extends Action<IndexContext<?>, Boolean> implements ICon
 			} while (true);
 		} finally {
 			commitTransaction(entityManager);
-			getClusterManager().stopWorking(indexContext.getIndexName(), this.getClass().getSimpleName(), "");
+			getClusterManager().stopWorking(getClass().getSimpleName(), indexContext.getIndexName(), "");
 		}
 		return Boolean.TRUE;
 	}

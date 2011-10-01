@@ -7,7 +7,6 @@ import ikube.model.IndexContext;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.GeneralUtilities;
-import ikube.web.servlet.SearchServlet;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -17,13 +16,12 @@ import java.util.Map;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.mortbay.jetty.Server;
-import org.mortbay.jetty.servlet.Context;
-import org.mortbay.jetty.servlet.ServletHolder;
 import org.mortbay.jetty.webapp.WebAppContext;
 
 /**
- * This test is for integration testing in a cluster in a server. This test will start a Jetty server on a port, then wait for a while, then
- * run the JspStrategy to test all the Jsps, then the ServletStrategy to stress test the servlet for searches.
+ * This test is for integration testing in a cluster in a server. This test will start a Jetty server on a port, then
+ * wait for a while, then run the JspStrategy to test all the Jsps, then the ServletStrategy to stress test the servlet
+ * for searches.
  * 
  * @author Michael Couck
  * @since 26.03.11
@@ -33,10 +31,10 @@ import org.mortbay.jetty.webapp.WebAppContext;
 public class IntegrationJetty extends Integration {
 
 	/** The port to start from. */
-	private int port = 80;
-	private String webApp = "webapp";
-	private String ikubeWar = "ikube-war";
-	private String contextPath = IConstants.SEP + IConstants.IKUBE;
+	private int		port		= 8080;
+	private String	webApp		= "webapp";
+	private String	ikubeWar	= "ikube-war";
+	private String	contextPath	= IConstants.SEP + IConstants.IKUBE;
 
 	@Test
 	@Override
@@ -53,9 +51,7 @@ public class IntegrationJetty extends Integration {
 			Thread.sleep((long) Math.random() * 10000l);
 			logger.info("Starting server on port : " + port + ",  in directory : " + webAppContextFilePath);
 			server = new Server(port);
-			Context root = new Context(server, contextPath, Context.SESSIONS);
 			server.setHandler(new WebAppContext(webAppContextFilePath, contextPath));
-			root.addServlet(new ServletHolder(new SearchServlet()), IConstants.SEP + SearchServlet.class.getSimpleName());
 			server.start();
 		} catch (Exception e) {
 			logger.info("Port occupied? We'll try another one : " + port);

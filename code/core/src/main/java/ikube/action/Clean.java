@@ -93,7 +93,7 @@ public class Clean<E, F> extends Action<IndexContext<?>, Boolean> {
 			}
 			return Boolean.TRUE;
 		} finally {
-			getClusterManager().stopWorking(indexContext.getIndexName(), this.getClass().getSimpleName(), "");
+			getClusterManager().stopWorking(getClass().getSimpleName(), indexContext.getIndexName(), "");
 		}
 	}
 

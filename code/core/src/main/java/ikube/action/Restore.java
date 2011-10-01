@@ -34,7 +34,7 @@ public class Restore extends Action<IndexContext<?>, Boolean> {
 			// Copy the backup to the index directory
 			FileUtilities.copyFiles(latestIndexDirectoryBackup, restoredIndexDirectory);
 		} finally {
-			getClusterManager().stopWorking(indexContext.getIndexName(), this.getClass().getSimpleName(), "");
+			getClusterManager().stopWorking(getClass().getSimpleName(), indexContext.getIndexName(), "");
 		}
 		return Boolean.TRUE;
 	}

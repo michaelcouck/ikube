@@ -29,7 +29,7 @@ public class Integration {
 		Logging.configure();
 	}
 
-	protected Logger logger = Logger.getLogger(this.getClass());
+	protected Logger	logger	= Logger.getLogger(this.getClass());
 
 	@Test
 	public void main() throws Exception {
@@ -84,9 +84,9 @@ public class Integration {
 		logger.info("Operating system : " + osName + ", server : " + osName.toLowerCase().contains("server") + ", 64 bit : "
 				+ properties.getProperty("os.arch").contains("64"));
 		if (!osName.toLowerCase().contains("server") && properties.getProperty("os.arch").contains("64")) {
-			return Boolean.FALSE;
+			return Boolean.TRUE;
 		}
-		return Boolean.FALSE;
+		return Boolean.TRUE;
 	}
 
 }

@@ -36,7 +36,7 @@ public class Prune extends Action<IndexContext<?>, Boolean> {
 				count = dataBase.execute(Long.class, ikube.model.Action.SELECT_FROM_ACTIONS_COUNT);
 			}
 		} finally {
-			getClusterManager().stopWorking(indexContext.getIndexName(), this.getClass().getSimpleName(), "");
+			getClusterManager().stopWorking(getClass().getSimpleName(), indexContext.getIndexName(), "");
 		}
 		return Boolean.TRUE;
 	}

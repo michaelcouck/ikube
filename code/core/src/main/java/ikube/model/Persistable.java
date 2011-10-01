@@ -27,7 +27,7 @@ public abstract class Persistable implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "persistable")
 	@SequenceGenerator(name = "persistable", sequenceName = "persistable", allocationSize = 1000)
-	private long id;
+	private long	id;
 
 	public long getId() {
 		return id;
@@ -36,9 +36,9 @@ public abstract class Persistable implements Serializable {
 	public void setId(final long id) {
 		this.id = id;
 	}
-	
+
 	public String toString() {
-		return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+		return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE).concat(Long.toString(hashCode()));
 	}
 
 }

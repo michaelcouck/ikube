@@ -6,7 +6,6 @@ import ikube.listener.Event;
 import ikube.listener.IListener;
 import ikube.listener.ListenerManager;
 import ikube.model.IndexContext;
-import ikube.model.Server;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.Logging;
 import ikube.toolkit.SerializationUtilities;
@@ -55,8 +54,8 @@ public class IndexEngine implements IIndexEngine {
 
 		// If this server is working on anything then return
 		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
-		Server server = clusterManager.getServer();
-		if (server.getWorking()) {
+		if (clusterManager.getServer().getWorking()) {
+			LOGGER.info("Server working : " + clusterManager.getServer().getAction());
 			return;
 		}
 
@@ -67,22 +66,26 @@ public class IndexEngine implements IIndexEngine {
 				LOGGER.warn("No actions configured for index engine : " + indexContext.getIndexName());
 				continue;
 			}
-			LOGGER.info("Start working : " + indexContext.getIndexName() + ", server : " + server.getAddress());
+			LOGGER.info("Start working : " + indexContext.getIndexName() + ", server : " + clusterManager.getServer().getAddress());
 			for (IAction<IndexContext<?>, Boolean> action : actions) {
 				try {
-					if ((server = clusterManager.getServer()).getWorking()) {
+					if (clusterManager.getServer().getWorking()) {
 						// Sleep for a random time, 10 < a < 20 seconds if the server is working
 						// to give the previous action a little time before we execute the rules
 						long sleep = 3000; // Math.max(1000, (long) (Math.random() * 3000d));
-						LOGGER.debug("Sleeping : " + sleep + ", action : " + action + ", server working : " + server.getWorking());
+						LOGGER.debug("Sleeping : " + sleep + ", action : " + action + ", server working : " + clusterManager.getServer().getWorking());
 						Thread.sleep(sleep);
+						if (clusterManager.getServer().getWorking()) {
+							continue;
+						}
 					}
 					action.execute(indexContext);
 				} catch (Exception e) {
 					LOGGER.error("Exception executing action : " + action, e);
 				}
 			}
-			LOGGER.info(Logging.getString("Finished working : " + indexContext.getIndexName() + ", server : " + server.getAddress()));
+			LOGGER.info(Logging.getString("Finished working : " + indexContext.getIndexName() + ", server : "
+					+ clusterManager.getServer().getAddress()));
 		}
 	}
 

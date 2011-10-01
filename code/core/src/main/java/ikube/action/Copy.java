@@ -22,7 +22,7 @@ public class Copy<E, F> extends Action<IndexContext<?>, Boolean> {
 		try {
 			return Boolean.TRUE;
 		} finally {
-			getClusterManager().stopWorking(indexContext.getIndexName(), this.getClass().getSimpleName(), "");
+			getClusterManager().stopWorking(getClass().getSimpleName(), indexContext.getIndexName(), "");
 		}
 	}
 

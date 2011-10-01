@@ -42,8 +42,10 @@ public class Reset extends Action<IndexContext<?>, Boolean> {
 			}
 		} finally {
 			logger.info("Resetting releasing cluster : " + Thread.currentThread().hashCode());
-			getClusterManager().stopWorking(indexContext.getIndexName(), this.getClass().getSimpleName(), "");
+			logger.error("Action : " + getClusterManager().getServer().getAction());
+			getClusterManager().stopWorking(getClass().getSimpleName(), indexContext.getIndexName(), "");
 			logger.info("Resetting released cluster : " + Thread.currentThread().hashCode());
+			logger.error("Action : " + getClusterManager().getServer().getAction());
 			logger.error("Servers : " + getClusterManager().getServers());
 		}
 		return Boolean.TRUE;

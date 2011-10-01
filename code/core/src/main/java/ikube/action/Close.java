@@ -51,7 +51,7 @@ public class Close extends Action<IndexContext<?>, Boolean> {
 			indexContext.getIndex().setMultiSearcher(null);
 			return Boolean.TRUE;
 		} finally {
-			getClusterManager().stopWorking(indexContext.getIndexName(), this.getClass().getSimpleName(), "");
+			getClusterManager().stopWorking(getClass().getSimpleName(), indexContext.getIndexName(), "");
 		}
 	}
 

@@ -98,7 +98,6 @@ public class ClusterManager implements IClusterManager, IConstants {
 	 * possibility on prudent grounds.
 	 */
 	private transient String	address;
-	/** The cluster wide cache. */
 	protected transient ICache	cache;
 	/** This flag is set cluster wide to make exception for the rules. */
 	private transient boolean	exception;
@@ -288,6 +287,7 @@ public class ClusterManager implements IClusterManager, IConstants {
 			// Publish the fact that this server is starting to work on an action
 			server.setAction(action);
 			set(Server.class.getName(), server.getId(), server);
+			LOGGER.info("Published action : " + getServer().getAction());
 			return startTime;
 		} finally {
 			notifyAll();
@@ -310,7 +310,9 @@ public class ClusterManager implements IClusterManager, IConstants {
 			}
 			server.setAction(null);
 			// Publish the fact that this server is starting to work on an action
+			// remove(Server.class.getName(), server.getId());
 			set(Server.class.getName(), server.getId(), server);
+			LOGGER.info("Published action : " + getServer().getAction());
 		} finally {
 			notifyAll();
 		}
