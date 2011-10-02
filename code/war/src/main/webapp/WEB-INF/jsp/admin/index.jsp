@@ -7,12 +7,12 @@
 <c:set var="renderedIndexables"  value="${ikube:add(null, null)}" scope="session" />
 <table class="table-content" width="100%">
 	<tr>
-		<td class="top-content" colspan="2">
+		<td class="top-content">
 			<span class="top-content-header">Index</span>
 			<span class="date" style="float: right;"><script type="text/javascript">writeDate();</script></span>
 		</td>
 	</tr>
-	<tr><th colspan="2">${indexContext.name}</th></tr>
+	<tr><th>${indexContext.name}</th></tr>
 	
 	<tr>
 		<td>
@@ -69,7 +69,7 @@
 
 <table>
 	<tr>
-		<td class="td-content" colspan="2">
+		<td class="td-content">
 			<strong>index</strong>&nbsp;
 			This is the individual index properties and fields page.
 		</td>

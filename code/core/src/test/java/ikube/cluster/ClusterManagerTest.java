@@ -8,7 +8,7 @@ import static org.junit.Assert.assertTrue;
 import ikube.ATest;
 import ikube.action.Index;
 import ikube.action.Open;
-import ikube.cluster.cache.CacheHazelcast;
+import ikube.cluster.cache.CacheJGroups;
 import ikube.listener.ListenerManager;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.model.Action;
@@ -28,6 +28,7 @@ import mockit.Mockit;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -75,9 +76,10 @@ public class ClusterManagerTest extends ATest {
 		remoteServer.setId(HashUtilities.hash(remoteServer.getAddress()));
 		// remoteServer.setWorking(Boolean.FALSE);
 
-		CacheHazelcast cache = new CacheHazelcast();
-		clusterManager = new ClusterManager(cache);
+		CacheJGroups cache = new CacheJGroups();
+		// CacheHazelcast cache = new CacheHazelcast();
 		cache.initialise();
+		clusterManager = new ClusterManager(cache);
 		clusterManager.clear(Url.class.getName());
 		clusterManager.clear(Server.class.getName());
 		ListenerManager.removeListeners();
@@ -111,7 +113,7 @@ public class ClusterManagerTest extends ATest {
 		assertEquals(0, servers.size());
 	}
 
-	@Test
+	@Test(expected = RuntimeException.class)
 	public void getNameSql() {
 		// What we want to achieve here is to set an object
 		// in the cache then do a sql like query on the cache and
@@ -243,7 +245,7 @@ public class ClusterManagerTest extends ATest {
 		localServer.setAction(new Action(0, Index.class.getSimpleName(), indexableName, indexName, new Timestamp(expectedStartTime), Boolean.TRUE));
 		clusterManager.set(Server.class.getName(), localServer.getId(), localServer);
 		// Verify that the remote server has the action and the time we want
-		Server server = clusterManager.get(Server.class.getName(), "id = " + localServer.getId());
+		Server server = clusterManager.get(Server.class.getName(), localServer.getId());
 		assertNotNull(server);
 		assertNotNull("The local server has the action set : ", server.getAction());
 		assertEquals(expectedStartTime, server.getAction().getStartTime().getTime());
@@ -314,6 +316,17 @@ public class ClusterManagerTest extends ATest {
 	@Test
 	public void removeDeadServer() {
 		// TODO implement me
+	}
+
+	/**
+	 * To test the configuration you have to start this test twice and verify that there are messages passed between the
+	 * Jvms.
+	 */
+	@Test
+	@Ignore
+	public void jGroupsConfiguration() throws Exception {
+		new CacheJGroups().initialise();
+		Thread.sleep(10000);
 	}
 
 }
