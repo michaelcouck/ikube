@@ -1,11 +1,9 @@
 package ikube;
 
-import ikube.cluster.IClusterManager;
 import ikube.database.IDataBase;
 import ikube.listener.ListenerManager;
 import ikube.listener.Scheduler;
 import ikube.model.IndexContext;
-import ikube.model.Server;
 import ikube.model.faq.Attachment;
 import ikube.model.faq.Faq;
 import ikube.toolkit.ApplicationContextManager;
@@ -30,7 +28,7 @@ import org.springframework.context.ApplicationContext;
  * for several reasons not the least of which is that it is time consuming, but in some cases we do. Most tests should
  * be mocked using Mockito and Jmockit.
  * 
- * This class will start the {@link ApplicationContextManager} and initialize the context. This means that the data
+ * This class will start the {@link ApplicationContextManager} and initialise the context. This means that the data
  * sources will be started, and injected into Jndi, the aspects will be woven in, Hazelcast will be started, ultimately
  * almost like starting a server, which is nice for integration tests, but not so nice for unit tests that we want to
  * run in a fraction of a second. This startup process can take up to 30 seconds, clearly not nice for a unit test.
@@ -58,12 +56,16 @@ public abstract class BaseTest extends ATest {
 		// with each other. Generally there will be none, but the Tomcat shutdown command
 		// does not always work
 		APPLICATION_CONTEXT = ApplicationContextManager.getApplicationContext();
-		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
-		Server server = clusterManager.getServer();
 		try {
-			// Sleep for a while to give Hazelcast a chance to get sorted
-			Thread.sleep(10000);
-			// Hazelcast.getTopic(IConstants.SHUTDOWN_TOPIC).publish(server);
+			// IClusterManager clusterManager = APPLICATION_CONTEXT.getBean(IClusterManager.class);
+			// Server server = clusterManager.getServer();
+			// String path = IConstants.META_INF + IConstants.SEP + IConstants.UDP_XML;
+			// InputStream inputStream = BaseTest.class.getResourceAsStream(path);
+			// JChannel channel = new JChannel(inputStream);
+			// channel.connect(IConstants.IKUBE);
+			// Message message = new Message();
+			// message.setObject(server);
+			// channel.send(message);
 			// We'll sleep for a while to give the other servers a time to shut down
 			Thread.sleep(10000);
 			final int iterations = 0;

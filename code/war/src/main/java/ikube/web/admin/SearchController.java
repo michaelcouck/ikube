@@ -80,18 +80,36 @@ public class SearchController extends BaseController {
 		List<Map<String, String>> results = new ArrayList<Map<String, String>>();
 		String[] searchStringsArray = searchStrings.toArray(new String[searchStrings.size()]);
 		for (String indexName : indexNames) {
-			String xml = searcherWebService.searchMultiAll(indexName, searchStringsArray, Boolean.TRUE, firstResult, maxResults);
-			List<Map<String, String>> indexResults = (List<Map<String, String>>) SerializationUtilities.deserialize(xml);
-			Map<String, String> statistics = indexResults.get(indexResults.size() - 1);
-			if (isNumeric(statistics.get(IConstants.TOTAL))) {
-				total += Integer.parseInt(statistics.get(IConstants.TOTAL));
+			String latitude = getParameter(IConstants.LATITUDE, null, request);
+			String longitude = getParameter(IConstants.LONGITUDE, null, request);
+			String distance = getParameter(IConstants.DISTANCE, null, request);
+
+			String xml = null;
+			if (isNumeric(latitude) && isNumeric(longitude) && isNumeric(distance)) {
+				// Do the geospatial search
+				modelAndView.addObject(IConstants.LONGITUDE, longitude);
+				modelAndView.addObject(IConstants.LATITUDE, latitude);
+				modelAndView.addObject(IConstants.DISTANCE, distance);
+				searcherWebService.searchSpacialMultiAll(indexName, searchStringsArray, Boolean.TRUE, firstResult, maxResults,
+						Integer.parseInt(distance), Double.parseDouble(latitude), Double.parseDouble(longitude));
+			} else {
+				// Normal search with all the fields
+				xml = searcherWebService.searchMultiAll(indexName, searchStringsArray, Boolean.TRUE, firstResult, maxResults);
 			}
-			if (isNumeric(statistics.get(IConstants.DURATION))) {
-				duration += Long.parseLong(statistics.get(IConstants.DURATION));
+
+			if (xml != null) {
+				List<Map<String, String>> indexResults = (List<Map<String, String>>) SerializationUtilities.deserialize(xml);
+				Map<String, String> statistics = indexResults.get(indexResults.size() - 1);
+				if (isNumeric(statistics.get(IConstants.TOTAL))) {
+					total += Integer.parseInt(statistics.get(IConstants.TOTAL));
+				}
+				if (isNumeric(statistics.get(IConstants.DURATION))) {
+					duration += Long.parseLong(statistics.get(IConstants.DURATION));
+				}
+				corrections = statistics.get(IConstants.CORRECTIONS);
+				indexResults.remove(statistics);
+				results.addAll(indexResults);
 			}
-			corrections = statistics.get(IConstants.CORRECTIONS);
-			indexResults.remove(statistics);
-			results.addAll(indexResults);
 		}
 
 		// Sort the results according to the score. This will essentially merge the results and

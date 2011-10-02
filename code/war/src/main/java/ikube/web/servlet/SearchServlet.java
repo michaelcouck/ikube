@@ -30,9 +30,9 @@ import org.apache.log4j.Logger;
 @Deprecated
 public class SearchServlet extends HttpServlet {
 
-	private static final transient Logger LOGGER = Logger.getLogger(SearchServlet.class);
+	private static final transient Logger	LOGGER		= Logger.getLogger(SearchServlet.class);
 
-	private String contentType = "text/html";
+	private String							contentType	= "text/html";
 
 	/**
 	 * {@inheritDoc}
@@ -69,8 +69,7 @@ public class SearchServlet extends HttpServlet {
 			for (IndexContext<?> indexContext : indexContexts.values()) {
 				if (indexContext.getIndexName().equals(indexName)) {
 					if (indexContext.getIndex().getMultiSearcher() != null) {
-						Search search = getSearch(indexContext, indexName, searchStrings, searchFields, sortFields, firstResult,
-								maxResults, fragment);
+						Search search = getSearch(indexContext, indexName, searchStrings, searchFields, sortFields, firstResult, maxResults, fragment);
 						List<Map<String, String>> results = search.execute();
 						String xml = SerializationUtilities.serialize(results);
 						out.print(xml);
@@ -106,11 +105,11 @@ public class SearchServlet extends HttpServlet {
 	private String getParameters(HttpServletRequest request) {
 		StringBuilder builder = new StringBuilder();
 		Map<String, String[]> parameters = request.getParameterMap();
-		for (String name : parameters.keySet()) {
+		for (Map.Entry<String, String[]> entry : parameters.entrySet()) {
 			builder.append("[");
-			builder.append(name);
+			builder.append(entry.getKey());
 			builder.append(":");
-			builder.append(Arrays.asList(parameters.get(name)));
+			builder.append(Arrays.asList(entry.getValue()));
 			builder.append("]");
 			builder.append("<br>");
 		}

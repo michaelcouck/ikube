@@ -98,6 +98,16 @@ public class SearcherWebServiceTest extends ATest {
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
+	public void searchSpatialAll() {
+		String result = this.searcherWebService.searchSpacialMultiAll(INDEX_CONTEXT.getIndexName(), new String[] { "search", "strings" },
+				Boolean.TRUE, 0, 10, 10, 47.0008, 53.0001);
+		logger.debug("Multi sorted search result : " + result);
+		List<Map<String, String>> resultsList = (List<Map<String, String>>) SerializationUtilities.deserialize(result);
+		verifyResults(resultsList);
+	}
+
+	@Test
 	public void ipAddress() throws Exception {
 		InetAddress[] addresses = InetAddress.getAllByName(InetAddress.getLocalHost().getHostName());
 		if (addresses != null) {

@@ -2,6 +2,7 @@ package ikube.cluster.discovery;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -22,7 +23,7 @@ import com.hazelcast.core.IMap;
 @Ignore
 public class Discovery {
 
-	private Logger logger = Logger.getLogger(Discovery.class);
+	private Logger	logger	= Logger.getLogger(Discovery.class);
 
 	@Test
 	public void discover() throws Exception {
@@ -65,6 +66,7 @@ public class Discovery {
 		List<Thread> threadList = new ArrayList<Thread>();
 		final int threads = 10;
 		final int iterations = 1000;
+		final Random random = new Random(11);
 		for (int i = 0; i < threads; i++) {
 			Thread thread = new Thread(new Runnable() {
 
@@ -100,21 +102,21 @@ public class Discovery {
 								// logger.error("Couldn't acquire lock : " + server.name);
 							}
 							// Sleep for a random time
-							Thread.sleep((int) Math.random() * 10000);
+							Thread.sleep(random.nextLong());
 							// Increment the id in the indexable
 							indexable.id++;
 							setWorking(server, index, indexable, Boolean.TRUE);
 							// Sleep for a random time
-							Thread.sleep((int) Math.random() * 10000);
+							Thread.sleep(random.nextLong());
 							// Change the indexable to another one
 							indexable = indexables[(int) Math.max(Math.random() * indexables.length, indexables.length - 1)];
 							setWorking(server, index, indexable, Boolean.TRUE);
 							// Sleep for a random time
-							Thread.sleep((int) Math.random() * 10000);
+							Thread.sleep(random.nextLong());
 							// Set the action to finished
 							setWorking(server, index, indexable, Boolean.FALSE);
 							// Sleep for a random time
-							Thread.sleep((int) Math.random() * 10000);
+							Thread.sleep(random.nextLong());
 						} catch (Exception e) {
 							logger.error("Exception executing : ", e);
 						}
@@ -141,8 +143,8 @@ public class Discovery {
 			server.action.index.indexable = indexable;
 			server.action.working = working;
 		}
-		logger.info("Set working : " + server.name + ", " + working + ", " + index.name + ", " + indexable.name + ", " + indexable.id
-				+ ", " + (server.action != null ? server.action.name : ""));
+		logger.info("Set working : " + server.name + ", " + working + ", " + index.name + ", " + indexable.name + ", " + indexable.id + ", "
+				+ (server.action != null ? server.action.name : ""));
 		setServer(server);
 	}
 
@@ -191,44 +193,48 @@ public class Discovery {
 				while (true) {
 					try {
 						Thread.sleep(100);
-						// Verify that there are no two servers working on the same action and index
-						ILock lock = Hazelcast.getLock(Server.class.getSimpleName());
-						if (lock.tryLock()) {
-							try {
-								Set<Action> workingActions = new TreeSet<Action>();
-								IMap<String, Server> servers = getServers();
-								for (Server server : servers.values()) {
-									if (server.action == null) {
+					} catch (InterruptedException e1) {
+						e1.printStackTrace();
+					}
+					// Verify that there are no two servers working on the same action and index
+					ILock lock = Hazelcast.getLock(Server.class.getSimpleName());
+					if (lock.tryLock()) {
+						try {
+							Set<Action> workingActions = new TreeSet<Action>();
+							IMap<String, Server> servers = getServers();
+							for (Server server : servers.values()) {
+								if (server.action == null) {
+									continue;
+								}
+								if (server.action.working) {
+									workingActions.add(server.action);
+								}
+								// Check that there are no two actions in the actions set
+								// that are both on the same index
+							}
+							logger.info("Actions : " + workingActions.size() + ", " + workingActions);
+							for (Action action : workingActions) {
+								for (Action subAction : workingActions) {
+									if (action.equals(subAction)) {
 										continue;
 									}
-									if (server.action.working) {
-										workingActions.add(server.action);
-									}
-									// Check that there are no two actions in the actions set
-									// that are both on the same index
-								}
-								logger.info("Actions : " + workingActions.size() + ", " + workingActions);
-								for (Action action : workingActions) {
-									for (Action subAction : workingActions) {
-										if (action.equals(subAction)) {
-											continue;
-										}
-										if (action.index.name.equals(subAction.index.name)) {
-											// Two actions working on the same index
-											logger.fatal("Actions : " + action + ", " + subAction);
+									if (action.index.name.equals(subAction.index.name)) {
+										// Two actions working on the same index
+										logger.fatal("Actions : " + action + ", " + subAction);
+										try {
 											Thread.sleep(1000);
-											System.exit(1);
+										} catch (InterruptedException e) {
+											e.printStackTrace();
 										}
+										System.exit(1);
 									}
 								}
-							} finally {
-								lock.unlock();
 							}
-						} else {
-							logger.error("Couldn't acquire lock : ");
+						} finally {
+							lock.unlock();
 						}
-					} catch (Exception e) {
-						logger.error("Error...", e);
+					} else {
+						logger.error("Couldn't acquire lock : ");
 					}
 				}
 			}
@@ -236,8 +242,8 @@ public class Discovery {
 	}
 
 	/**
-	 * This method iterates through the list of threads looking for one that is still alive and joins it. Once all the threads have finished
-	 * then this method will return to the caller indicating that all the threads have finished.
+	 * This method iterates through the list of threads looking for one that is still alive and joins it. Once all the
+	 * threads have finished then this method will return to the caller indicating that all the threads have finished.
 	 * 
 	 * @param threads
 	 *            the threads to wait for

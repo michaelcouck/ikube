@@ -3,9 +3,11 @@ package ikube.action.rule;
 import ikube.IConstants;
 import ikube.action.IAction;
 import ikube.cluster.IClusterManager;
+import ikube.database.IDataBase;
 import ikube.model.Action;
 import ikube.model.IndexContext;
 import ikube.model.Rule;
+import ikube.model.Server;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.Logging;
 
@@ -121,22 +123,22 @@ public class RuleInterceptor implements IRuleInterceptor {
 			}
 			String indexName = indexContext != null ? indexContext.getIndexName() : null;
 			if (LOGGER.isDebugEnabled()) {
-				LOGGER.info(Logging.getString("Rule intercepter proceeding : ", proceed, target, actionName, indexName));
+				LOGGER.debug(Logging.getString("Rule intercepter proceeding : ", proceed, target, actionName, indexName));
 				printSymbolTable(jep, indexName);
 			}
 			modelAction.setActionName(actionName);
 			modelAction.setIndexName(indexName);
 			modelAction.setStartTime(new Timestamp(System.currentTimeMillis()));
+			IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
+			dataBase.persist(modelAction);
 			if (proceed) {
-				// IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
-				// dataBase.persist(modelAction);
 				proceed(proceedingJoinPoint, actionName, indexName, modelAction);
 			}
 		} catch (Throwable t) {
 			LOGGER.error("Exception evaluating the rules : ", t);
 		} finally {
 			boolean unlocked = clusterManager.unlock(IConstants.IKUBE);
-			LOGGER.info("Unlocked : " + unlocked);
+			LOGGER.debug("Unlocked : " + unlocked);
 		}
 		return proceed;
 	}
@@ -146,25 +148,24 @@ public class RuleInterceptor implements IRuleInterceptor {
 		try {
 			long delay = 1;
 			final IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
-			// Server server = clusterManager.getServer();
-			// modelAction.setServerName(server.getAddress());
+			Server server = clusterManager.getServer();
+			modelAction.setServerName(server.getAddress());
 			// We set the working flag in the action within the cluster lock when setting to true
 			clusterManager.startWorking(actionName, indexName, "");
 			executorService.schedule(new Runnable() {
 				public void run() {
+					IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
 					try {
-						// modelAction.setWorking(Boolean.TRUE);
-						// IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
-						// dataBase.merge(modelAction);
+						modelAction.setWorking(Boolean.TRUE);
+						dataBase.merge(modelAction);
 						proceedingJoinPoint.proceed();
 					} catch (Throwable e) {
 						LOGGER.error("Exception proceeding on join point : " + proceedingJoinPoint, e);
 					} finally {
-						// modelAction.setEndTime(new Timestamp(System.currentTimeMillis()));
-						// modelAction.setDuration(modelAction.getEndTime().getTime() -
-						// modelAction.getStartTime().getTime());
-						// modelAction.setWorking(Boolean.FALSE);
-						// dataBase.merge(modelAction);
+						modelAction.setEndTime(new Timestamp(System.currentTimeMillis()));
+						modelAction.setDuration(modelAction.getEndTime().getTime() - modelAction.getStartTime().getTime());
+						modelAction.setWorking(Boolean.FALSE);
+						dataBase.merge(modelAction);
 					}
 				}
 			}, delay, TimeUnit.MILLISECONDS);

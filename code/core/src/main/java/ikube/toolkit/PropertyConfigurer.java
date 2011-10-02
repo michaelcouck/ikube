@@ -1,7 +1,5 @@
 package ikube.toolkit;
 
-import ikube.IConstants;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -27,26 +25,9 @@ import org.apache.log4j.Logger;
  */
 public class PropertyConfigurer extends Properties {
 
-	private static final transient Logger	LOGGER		= Logger.getLogger(PropertyConfigurer.class);
+	private static final Logger	LOGGER	= Logger.getLogger(PropertyConfigurer.class);
 
-	private static PropertyConfigurer		INSTANCE;
-	private static boolean					INITIALIZED	= Boolean.FALSE;
-
-	private Pattern							fileNamePattern;
-
-	static {
-		getStaticProperty("any.key");
-	}
-
-	public static Object getStaticProperty(String key) {
-		if (INSTANCE == null || !INITIALIZED) {
-			INITIALIZED = Boolean.TRUE;
-			INSTANCE = new PropertyConfigurer();
-			INSTANCE.setFileNamePattern(IConstants.SPRING_PROPERTIES);
-			INSTANCE.initialize();
-		}
-		return INSTANCE.get(key);
-	}
+	private Pattern				fileNamePattern;
 
 	/**
 	 * This method will look through the class path for properties file with the name specified in the file name
@@ -54,8 +35,7 @@ public class PropertyConfigurer extends Properties {
 	 * and any jars that are on the file system below the application will also be checked for the properties file name
 	 * pattern to load into the property map.
 	 */
-	public synchronized void initialize() {
-		INITIALIZED = Boolean.TRUE;
+	public void initialize() {
 		try {
 			// First we check our own jar
 			File thisJar = new File(getClass().getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
@@ -142,7 +122,7 @@ public class PropertyConfigurer extends Properties {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized boolean equals(Object o) {
+	public boolean equals(Object o) {
 		return super.equals(o);
 	}
 
@@ -150,7 +130,7 @@ public class PropertyConfigurer extends Properties {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized int hashCode() {
+	public int hashCode() {
 		return super.hashCode();
 	}
 

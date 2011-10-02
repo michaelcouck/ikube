@@ -13,8 +13,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * This test is for the {@link IsNewIndexCreated} class that will check if there is a newer index than the one that is opened in the index
- * searcher.
+ * This test is for the {@link IsNewIndexCreated} class that will check if there is a newer index than the one that is
+ * opened in the index searcher.
  * 
  * @author Michael Couck
  * @since 11.06.11
@@ -22,7 +22,7 @@ import org.junit.Test;
  */
 public class IsNewIndexCreatedTest extends ATest {
 
-	private String originalDirectoryPath;
+	private String	originalDirectoryPath;
 
 	public IsNewIndexCreatedTest() {
 		super(IsNewIndexCreatedTest.class);
@@ -59,8 +59,7 @@ public class IsNewIndexCreatedTest extends ATest {
 		result = isNewIndexCreated.evaluate(INDEX_CONTEXT);
 		assertFalse("The latest index is already opened : ", result);
 
-		indexDirectory = createIndex(INDEX_CONTEXT, "Some more data : ");
-		serverIndexDirectory = new File(indexDirectory, IP);
+		createIndex(INDEX_CONTEXT, "Some more data : ");
 		result = isNewIndexCreated.evaluate(INDEX_CONTEXT);
 		assertTrue("There is a new index, and the searcher is open on the old one : ", result);
 	}

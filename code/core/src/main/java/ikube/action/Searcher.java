@@ -1,5 +1,6 @@
 package ikube.action;
 
+import ikube.IConstants;
 import ikube.cluster.IClusterManager;
 import ikube.listener.Event;
 import ikube.listener.ListenerManager;
@@ -59,10 +60,11 @@ public class Searcher extends Action<IndexContext<?>, Boolean> {
 			Arrays.fill(searchStrings, 0, searchStrings.length, searchString);
 			System.arraycopy(searchFields, 0, sortFields, 0, sortFields.length);
 			for (int i = 0; i < iterations; i++) {
+				if (searchFields == null || searchFields.length == 0) {
+					searchFields = new String[] { IConstants.CONTENT };
+				}
 				xml = searchRemote.searchSingle(indexName, searchString, searchFields[0], Boolean.TRUE, 0, 10);
 				xml = searchRemote.searchMulti(indexName, searchStrings, searchFields, fragment, start, end);
-				// xml = searchRemote.searchMultiSorted(indexName, searchStrings, SEARCH_FIELDS, sortFields, fragment,
-				// start, end);
 				double latitude = 50.7930727874172;
 				double longitude = 4.36242219751376;
 				xml = searchRemote.searchSpacialMulti(indexName, searchStrings, searchFields, fragment, start, end, 10, latitude, longitude);

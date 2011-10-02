@@ -3,9 +3,7 @@ package ikube.integration;
 import ikube.IConstants;
 import ikube.integration.strategy.JspStrategy;
 import ikube.integration.strategy.LoadStrategy;
-import ikube.listener.ListenerManager;
 import ikube.toolkit.Logging;
-import ikube.toolkit.PropertyConfigurer;
 
 import java.util.Properties;
 
@@ -39,26 +37,7 @@ public class Integration {
 
 	protected void waitToFinish() {
 		try {
-			Object delay = PropertyConfigurer.getStaticProperty(IConstants.DELAY);
-			long sleep = Long.valueOf(delay.toString()) * 2;
-			logger.info("Initial sleep period : " + sleep);
-			Thread.sleep(sleep);
-			do {
-				// boolean anyWorking = Boolean.FALSE;
-				// IMap<String, Server> serversMap = Hazelcast.getMap(Server.class.getName());
-				// for (Server server : serversMap.values()) {
-				// if (server.getWorking()) {
-				// anyWorking = Boolean.TRUE;
-				// break;
-				// }
-				// }
-				// logger.info("Any servers working : " + anyWorking);
-				// if (!anyWorking) {
-				// break;
-				// }
-				ListenerManager.removeListeners();
-				Thread.sleep(Long.valueOf(delay.toString()) / 2);
-			} while (true);
+			// TODO Implement this block to wait for a while
 		} catch (Exception e) {
 			logger.error("Exception waiting for servers to finish : ", e);
 		}

@@ -166,7 +166,7 @@ public class ClusterManager implements IClusterManager, IConstants {
 		Server server = getServer();
 		Action action = server.getAction();
 		if (action == null) {
-			LOGGER.warn("Setting action : " + indexName + ", " + indexableName + ", " + batchSize);
+			LOGGER.debug("Setting action : " + indexName + ", " + indexableName + ", " + batchSize);
 			action = new Action(0, null, indexableName, indexName, new Timestamp(System.currentTimeMillis()), Boolean.TRUE);
 			server.setAction(action);
 		}
@@ -203,8 +203,8 @@ public class ClusterManager implements IClusterManager, IConstants {
 			server.setId(HashUtilities.hash(address));
 			server.setAge(System.currentTimeMillis());
 			cache.set(Server.class.getName(), server.getId(), server);
-			LOGGER.info("Published server : " + server);
-			LOGGER.info("Server from cache : " + cache.get(Server.class.getName(), server.getId()));
+			LOGGER.debug("Published server : " + server);
+			LOGGER.debug("Server from cache : " + cache.get(Server.class.getName(), server.getId()));
 		}
 		return server;
 	}
@@ -230,7 +230,7 @@ public class ClusterManager implements IClusterManager, IConstants {
 			// Publish the fact that this server is starting to work on an action
 			server.setAction(action);
 			set(Server.class.getName(), server.getId(), server);
-			LOGGER.info("Published action : " + getServer().getAction());
+			LOGGER.debug("Published action : " + getServer().getAction());
 			return startTime;
 		} finally {
 			notifyAll();
@@ -249,13 +249,13 @@ public class ClusterManager implements IClusterManager, IConstants {
 				action.setWorking(Boolean.FALSE);
 				action.setEndTime(new Timestamp(System.currentTimeMillis()));
 				action.setDuration(action.getEndTime().getTime() - action.getStartTime().getTime());
-				LOGGER.info("'Action : " + action);
+				LOGGER.debug("'Action : " + action);
 			}
 			server.setAction(null);
 			// Publish the fact that this server is starting to work on an action
 			// remove(Server.class.getName(), server.getId());
 			set(Server.class.getName(), server.getId(), server);
-			LOGGER.info("Published action : " + getServer().getAction());
+			LOGGER.debug("Published action : " + getServer().getAction());
 		} finally {
 			notifyAll();
 		}

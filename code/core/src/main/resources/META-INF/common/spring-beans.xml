@@ -152,6 +152,11 @@
 		property:threads="${table.handler.threads}"
 		property:indexableClass="ikube.model.IndexableTable" 
 		property:documentDelegate-ref="ikube.index.handler.IDocumentDelegate" />
+	<bean
+		class="ikube.index.handler.filesystem.IndexableDictionaryHandler"
+		property:threads="${filesystem.handler.threads}"
+		property:indexableClass="ikube.model.IndexableDictionary" 
+		property:documentDelegate-ref="ikube.index.handler.IDocumentDelegate" />
 
 	<bean id="ikube.index.parse.mime.MimeMapper" class="ikube.index.parse.mime.MimeMapper">
 		<constructor-arg value="/META-INF/mime/mime-mapping.xml" />

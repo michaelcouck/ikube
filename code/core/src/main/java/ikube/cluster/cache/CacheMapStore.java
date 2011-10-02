@@ -1,7 +1,6 @@
 package ikube.cluster.cache;
 
 import ikube.database.IDataBase;
-
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.DatabaseUtilities;
 
@@ -15,8 +14,8 @@ import org.apache.log4j.Logger;
 import com.hazelcast.core.MapStore;
 
 /**
- * This class will persist the cache to the local file system. Currently this is not very useful but will be when large volumes of internet
- * data is accessed and the cache contains too much data for memory.
+ * This class will persist the cache to the local file system. Currently this is not very useful but will be when large
+ * volumes of internet data is accessed and the cache contains too much data for memory.
  * 
  * @author Michael Couck
  * @since 15.12.10
@@ -24,9 +23,9 @@ import com.hazelcast.core.MapStore;
  */
 public class CacheMapStore implements MapStore<Long, Object> {
 
-	protected static final Logger LOGGER = Logger.getLogger(CacheMapStore.class);
+	protected static final Logger	LOGGER	= Logger.getLogger(CacheMapStore.class);
 	/** The database object where the data will be persisted. */
-	private transient IDataBase dataBase;
+	private transient IDataBase		dataBase;
 
 	/**
 	 * {@inheritDoc}
@@ -82,8 +81,9 @@ public class CacheMapStore implements MapStore<Long, Object> {
 	@Override
 	public synchronized void storeAll(final Map<Long, Object> map) {
 		try {
-			for (Long key : map.keySet()) {
-				Object object = map.get(key);
+			for (Map.Entry<Long, Object> entry : map.entrySet()) {
+				Long key = entry.getKey();
+				Object object = entry.getValue();
 				Object persistable = getDataBase().find(object.getClass(), key);
 				if (persistable == null) {
 					getDataBase().persist(map.get(key));

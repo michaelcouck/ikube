@@ -85,13 +85,9 @@ public class SearchControllerTest {
 		modelAndView = searchController.handleRequest(request, response);
 
 		total = modelAndView.getModel().get(IConstants.TOTAL);
-		duration = modelAndView.getModel().get(IConstants.DURATION);
 		results = (List<Map<String, String>>) modelAndView.getModel().get(IConstants.RESULTS);
-		corrections = modelAndView.getModel().get(IConstants.CORRECTIONS);
-		searchStrings = modelAndView.getModel().get(IConstants.SEARCH_STRINGS);
 		firstResult = modelAndView.getModel().get(IConstants.FIRST_RESULT);
 		maxResults = modelAndView.getModel().get(IConstants.MAX_RESULTS);
-		server = modelAndView.getModel().get(IConstants.SERVER);
 
 		assertEquals("Start result is 0 : ", 0, firstResult);
 		assertEquals("End result is 10 : ", 10, maxResults);

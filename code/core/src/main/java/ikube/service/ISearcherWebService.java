@@ -17,12 +17,12 @@ import javax.jws.soap.SOAPBinding;
 @WebService(name = ISearcherWebService.NAME, targetNamespace = ISearcherWebService.NAMESPACE, serviceName = ISearcherWebService.SERVICE)
 public interface ISearcherWebService {
 
-	String NAME = "searcher";
-	String SERVICE = "searcher";
-	String NAMESPACE = "http://ikube.search/";
+	String	NAME			= "searcher";
+	String	SERVICE			= "searcher";
+	String	NAMESPACE		= "http://ikube.search/";
 
-	int PUBLISHED_PORT = 8081;
-	String PUBLISHED_PATH = "/" + ISearcherWebService.class.getName().replace(".", "/") + "?wsdl";
+	int		PUBLISHED_PORT	= 8081;
+	String	PUBLISHED_PATH	= "/" + ISearcherWebService.class.getName().replace(".", "/") + "?wsdl";
 
 	/**
 	 * Does a search on a single field on the index defined in the parameter list.
@@ -66,10 +66,9 @@ public interface ISearcherWebService {
 	 */
 	@WebMethod
 	@WebResult(name = "result")
-	String searchMulti(@WebParam(name = "indexName") final String indexName,
-			@WebParam(name = "searchStrings") final String[] searchStrings, @WebParam(name = "searchFields") final String[] searchFields,
-			@WebParam(name = "fragment") final boolean fragment, @WebParam(name = "firstResult") final int firstResult,
-			@WebParam(name = "maxResults") final int maxResults);
+	String searchMulti(@WebParam(name = "indexName") final String indexName, @WebParam(name = "searchStrings") final String[] searchStrings,
+			@WebParam(name = "searchFields") final String[] searchFields, @WebParam(name = "fragment") final boolean fragment,
+			@WebParam(name = "firstResult") final int firstResult, @WebParam(name = "maxResults") final int maxResults);
 
 	/**
 	 * Does a search on multiple fields and multiple search strings and sorts the results according the sort fields.
@@ -92,10 +91,10 @@ public interface ISearcherWebService {
 	 */
 	@WebMethod
 	@WebResult(name = "result")
-	String searchMultiSorted(@WebParam(name = "indexName") final String indexName,
-			@WebParam(name = "searchStrings") final String[] searchStrings, @WebParam(name = "searchFields") final String[] searchFields,
-			@WebParam(name = "sortFields") final String[] sortFields, @WebParam(name = "fragment") final boolean fragment,
-			@WebParam(name = "firstResult") final int firstResult, @WebParam(name = "maxResults") final int maxResults);
+	String searchMultiSorted(@WebParam(name = "indexName") final String indexName, @WebParam(name = "searchStrings") final String[] searchStrings,
+			@WebParam(name = "searchFields") final String[] searchFields, @WebParam(name = "sortFields") final String[] sortFields,
+			@WebParam(name = "fragment") final boolean fragment, @WebParam(name = "firstResult") final int firstResult,
+			@WebParam(name = "maxResults") final int maxResults);
 
 	/**
 	 * This is a convenient method to search for the specified strings in all the fields.
@@ -114,14 +113,14 @@ public interface ISearcherWebService {
 	 */
 	@WebMethod
 	@WebResult(name = "result")
-	String searchMultiAll(@WebParam(name = "indexName") final String indexName,
-			@WebParam(name = "searchStrings") final String[] searchStrings, @WebParam(name = "fragment") final boolean fragment,
-			@WebParam(name = "firstResult") final int firstResult, @WebParam(name = "maxResults") final int maxResults);
+	String searchMultiAll(@WebParam(name = "indexName") final String indexName, @WebParam(name = "searchStrings") final String[] searchStrings,
+			@WebParam(name = "fragment") final boolean fragment, @WebParam(name = "firstResult") final int firstResult,
+			@WebParam(name = "maxResults") final int maxResults);
 
 	/**
-	 * This method will search for the specified strings in the specified fields, with the usual parameters like whether to generate a
-	 * fragment and so on, but will sort the results according to the distance from the co-ordinate that was specified in the parameters
-	 * list.
+	 * This method will search for the specified strings in the specified fields, with the usual parameters like whether
+	 * to generate a fragment and so on, but will sort the results according to the distance from the co-ordinate that
+	 * was specified in the parameters list.
 	 * 
 	 * @param indexName
 	 *            the name of the index to search
@@ -145,10 +144,31 @@ public interface ISearcherWebService {
 	 */
 	@WebMethod
 	@WebResult(name = "result")
-	String searchSpacialMulti(@WebParam(name = "indexName") final String indexName,
-			@WebParam(name = "searchStrings") final String[] searchStrings, @WebParam(name = "searchFields") final String[] searchFields,
-			@WebParam(name = "fragment") final boolean fragment, @WebParam(name = "firstResult") final int firstResult,
-			@WebParam(name = "maxResults") final int maxResults, @WebParam(name = "distance") final int distance,
-			@WebParam(name = "latitude") final double latitude, @WebParam(name = "longitude") final double longitude);
+	String searchSpacialMulti(@WebParam(name = "indexName") final String indexName, @WebParam(name = "searchStrings") final String[] searchStrings,
+			@WebParam(name = "searchFields") final String[] searchFields, @WebParam(name = "fragment") final boolean fragment,
+			@WebParam(name = "firstResult") final int firstResult, @WebParam(name = "maxResults") final int maxResults,
+			@WebParam(name = "distance") final int distance, @WebParam(name = "latitude") final double latitude,
+			@WebParam(name = "longitude") final double longitude);
+
+	/**
+	 * TODO Document me!
+	 * 
+	 * @param indexName
+	 * @param searchStrings
+	 * @param fragment
+	 * @param firstResult
+	 * @param maxResults
+	 * @param distance
+	 * @param latitude
+	 * @param longitude
+	 * @return
+	 */
+	@WebMethod
+	@WebResult(name = "result")
+	String searchSpacialMultiAll(@WebParam(name = "indexName") final String indexName,
+			@WebParam(name = "searchStrings") final String[] searchStrings, @WebParam(name = "fragment") final boolean fragment,
+			@WebParam(name = "firstResult") final int firstResult, @WebParam(name = "maxResults") final int maxResults,
+			@WebParam(name = "distance") final int distance, @WebParam(name = "latitude") final double latitude,
+			@WebParam(name = "longitude") final double longitude);
 
 }

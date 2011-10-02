@@ -16,8 +16,8 @@ import javax.persistence.metamodel.EntityType;
 import org.apache.log4j.Logger;
 
 /**
- * This class is the API to the database, specifically the JPA implementation. This class will typically be wired for transactions either
- * using a transaction handling library like Spring or in the server.
+ * This class is the API to the database, specifically the JPA implementation. This class will typically be wired for
+ * transactions either using a transaction handling library like Spring or in the server.
  * 
  * @author Michael Couck
  * @since 28.04.10
@@ -26,10 +26,10 @@ import org.apache.log4j.Logger;
 public class DataBaseJpa implements IDataBase {
 
 	/** The logger for the bean. */
-	protected static final Logger LOGGER = Logger.getLogger(DataBaseJpa.class);
+	protected static final Logger	LOGGER	= Logger.getLogger(DataBaseJpa.class);
 
 	@PersistenceContext(type = PersistenceContextType.TRANSACTION, unitName = IConstants.PERSISTENCE_UNIT_H2)
-	protected EntityManager entityManager;
+	protected EntityManager			entityManager;
 
 	/**
 	 * {@inheritDoc}
@@ -217,8 +217,10 @@ public class DataBaseJpa implements IDataBase {
 	 *            and the parameter map, key value pairs
 	 */
 	private void setParameters(final Query query, final Map<String, Object> parameters) {
-		for (String parameter : parameters.keySet()) {
-			query.setParameter(parameter, parameters.get(parameter));
+		for (Map.Entry<String, Object> entry : parameters.entrySet()) {
+			String key = entry.getKey();
+			Object value = entry.getValue();
+			query.setParameter(key, value);
 		}
 	}
 

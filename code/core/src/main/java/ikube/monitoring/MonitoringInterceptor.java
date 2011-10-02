@@ -26,10 +26,10 @@ import org.aspectj.lang.ProceedingJoinPoint;
 public class MonitoringInterceptor implements IMonitoringInterceptor, IListener {
 
 	@SuppressWarnings("unused")
-	private static final Logger LOGGER = Logger.getLogger(MonitoringInterceptor.class);
+	private static final Logger							LOGGER	= Logger.getLogger(MonitoringInterceptor.class);
 
-	protected transient final Map<String, Execution> indexingExecutions;
-	protected transient final Map<String, Execution> searchingExecutions;
+	protected transient final Map<String, Execution>	indexingExecutions;
+	protected transient final Map<String, Execution>	searchingExecutions;
 
 	public MonitoringInterceptor() {
 		ListenerManager.addListener(this);
@@ -113,7 +113,7 @@ public class MonitoringInterceptor implements IMonitoringInterceptor, IListener 
 		for (Execution execution : executions.values()) {
 			long duration = TimeUnit.NANOSECONDS.toSeconds(execution.duration);
 			if (duration > 0) {
-				execution.executionsPerSecond = execution.invocations / duration;
+				execution.executionsPerSecond = (double) (execution.invocations / duration);
 			}
 		}
 	}

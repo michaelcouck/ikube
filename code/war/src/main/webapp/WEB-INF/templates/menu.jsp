@@ -9,7 +9,7 @@
 <div id="sidebar" class="menu">
 	<ul>
 		<li id="search">
-			<c:set var="targetSearchUrl" value="/results.html"></c:set>
+			<c:set var="targetSearchUrl" value="/results.html" />
 			<form name="ikubeSearchForm" id="ikubeSearchForm" action="<c:url value="${targetSearchUrl}"/>">
 				<input name="targetSearchUrl" type="hidden" value="${targetSearchUrl}">
 				<fieldset>
@@ -17,7 +17,7 @@
 					<input type="submit" id="search-submit" value="Go" />
 				</fieldset>
 			</form>
-			<c:if test="${corrections != null}">
+			<c:if test="${!empty corrections}">
 				Did you mean : 
 				<a href="<c:url value="${targetSearchUrl}" />?targetSearchUrl=${targetSearchUrl}&searchStrings=${corrections}">${corrections}</a><br>
 			</c:if>
@@ -50,7 +50,7 @@
 			</ul>
 		</li>
 		<li>
-			<ul>&nbsp;</ul>
+			<ul></ul>
 		</li>
 		<li>
 			<h2>Similar products</h2>

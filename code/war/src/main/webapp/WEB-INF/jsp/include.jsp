@@ -25,12 +25,12 @@
 	<tr>
 		<td>
 			<c:forEach var="result" items="${results}">
-				<c:if test="${indexName != null}">
-					indexName : <c:out value="${indexName}" /><br>
-				</c:if>
 				<c:forEach var="entry" items="${result}">
 					<c:out value="${entry.key}" /> : <c:out value="${entry.value}" escapeXml="false" /><br>
 				</c:forEach>
+				<c:if test="${!empty indexName}">
+					index : <c:out value="${indexName}" /><br>
+				</c:if>
 				<br>
 			</c:forEach>
 		</td>

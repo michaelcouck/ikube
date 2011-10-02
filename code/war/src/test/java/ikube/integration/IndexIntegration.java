@@ -102,8 +102,8 @@ public class IndexIntegration {
 
 			List<Map<String, String>> results = searchSpatial.execute();
 			for (Map<String, String> result : results) {
-				for (String key : result.keySet()) {
-					logger.info("Key : " + key + ", " + result.get(key));
+				for (Map.Entry<String, String> entry : result.entrySet()) {
+					logger.info("Key : " + entry.getKey() + ", " + entry.getValue());
 				}
 				logger.info("");
 			}

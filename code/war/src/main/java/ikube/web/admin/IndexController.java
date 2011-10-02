@@ -2,8 +2,10 @@ package ikube.web.admin;
 
 import ikube.IConstants;
 import ikube.model.IndexContext;
+import ikube.model.Indexable;
 import ikube.toolkit.ApplicationContextManager;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -34,10 +36,21 @@ public class IndexController extends SearchController {
 			if (indexName.equals(indexContext.getName())) {
 				modelAndView.addObject(IConstants.INDEX_NAME, indexContext.getName());
 				modelAndView.addObject(IConstants.INDEX_CONTEXT, indexContext);
+				modelAndView.addObject(IConstants.GEOSPATIAL, isGeospatial(indexContext.getChildren()));
 				break;
 			}
 		}
 		return modelAndView;
+	}
+
+	private boolean isGeospatial(List<Indexable<?>> indexables) {
+		boolean isGeospatial = Boolean.FALSE;
+		if (indexables != null) {
+			for (Indexable<?> indexable : indexables) {
+				isGeospatial = indexable.isAddress() | isGeospatial(indexable.getChildren());
+			}
+		}
+		return isGeospatial;
 	}
 
 	protected String[] getIndexNames(HttpServletRequest request) {

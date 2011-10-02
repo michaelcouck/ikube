@@ -12,16 +12,15 @@ import org.junit.Test;
 
 /**
  * TODO Comment me.
+ * 
  * @author Michael Couck
  * @since 27.03.11
  * @version 01.00
  */
 public class SpellingTagTest extends ATagTest {
 
-	private SpellingTag spellingTag;
-	private String searchString = "wrongk";
-	@SuppressWarnings("unused")
-	private String correctedString = "wrongs";
+	private SpellingTag	spellingTag;
+	private String		searchString	= "wrongk";
 
 	@Before
 	public void before() throws Exception {

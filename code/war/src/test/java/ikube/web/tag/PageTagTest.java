@@ -8,13 +8,14 @@ import org.junit.Test;
 
 /**
  * TODO Comment me.
+ * 
  * @author Michael Couck
  * @since 27.03.11
  * @version 01.00
  */
 public class PageTagTest extends ATagTest {
 
-	private PageTag pageTag = new PageTag();
+	private PageTag	pageTag	= new PageTag();
 
 	@Test
 	@SuppressWarnings("unused")
@@ -23,13 +24,13 @@ public class PageTagTest extends ATagTest {
 		pageTag.setParent(pagerTag);
 		int result = pageTag.doEndTag();
 		assertEquals(Tag.EVAL_PAGE, result);
-		String output = pagerTag.getBodyContent().getString();
+		pagerTag.getBodyContent().getString();
 		// assertEquals("0", output);
 
 		pagerTag.doAfterBody();
 		result = pageTag.doEndTag();
 		assertEquals(Tag.EVAL_PAGE, result);
-		output = pagerTag.getBodyContent().getString();
+		// output = pagerTag.getBodyContent().getString();
 		// assertEquals("010", output);
 	}
 

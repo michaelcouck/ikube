@@ -11,7 +11,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.io.InputStreamReader;
 
 import org.junit.Ignore;
@@ -31,7 +30,7 @@ import co.uk.hjcs.canyon.session.SessionFactory;
 @Ignore
 public class DataGeneratorGeospatialTest extends ATest {
 
-	private String fileName = "allCountries.txt";
+	private String	fileName	= "allCountries.txt";
 
 	public DataGeneratorGeospatialTest() {
 		super(DataGeneratorGeospatialTest.class);
@@ -120,19 +119,15 @@ public class DataGeneratorGeospatialTest extends ATest {
 			BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 			for (int i = 0; i < 1000; i++) {
 				String line = bufferedReader.readLine();
-				line = line.length() > 200 ? line.substring(0, 199) : line;
-				logger.info("Line : " + line);
+				if (line != null) {
+					line = line.length() > 200 ? line.substring(0, 199) : line;
+					logger.info("Line : " + line);
+				}
 			}
 		} catch (Exception e) {
 			logger.error("", e);
 		} finally {
-			if (fileInputStream != null) {
-				try {
-					fileInputStream.close();
-				} catch (IOException e) {
-					logger.error("", e);
-				}
-			}
+			FileUtilities.close(fileInputStream);
 		}
 	}
 
@@ -155,7 +150,8 @@ public class DataGeneratorGeospatialTest extends ATest {
 	// @Ignore
 	// public void flatPack() throws Exception {
 	// ParserFactory parserFactory = DefaultParserFactory.getInstance();
-	// Parser parser = parserFactory.newDelimitedParser(new FileReader(mappingFile), new FileReader(dataFile), '\t', '"', true);
+	// Parser parser = parserFactory.newDelimitedParser(new FileReader(mappingFile), new FileReader(dataFile), '\t',
+	// '"', true);
 	// DataSet ds = parser.parse();
 	// for (int i = 0; i < 100; i++) {
 	// if (ds.next()) {

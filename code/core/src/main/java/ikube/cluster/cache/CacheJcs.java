@@ -2,8 +2,6 @@ package ikube.cluster.cache;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
-
 /**
  * No maven support, and this project looks like it is dying.
  * 
@@ -14,12 +12,7 @@ import org.apache.log4j.Logger;
  */
 public class CacheJcs implements ICache {
 
-	@SuppressWarnings("unused")
-	private transient Logger	logger;
-
-	public void initialise() throws Exception {
-		logger = Logger.getLogger(this.getClass());
-	}
+	public void initialise() throws Exception {}
 
 	/**
 	 * {@inheritDoc}

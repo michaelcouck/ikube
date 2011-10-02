@@ -52,11 +52,7 @@ public class CheckerExt {
 		if (SPELL_CHECKER != null) {
 			return;
 		}
-		File spellingIndexDirectory = new File(WORD_INDEX_DIRECTORY);
-		if (!spellingIndexDirectory.exists()) {
-			boolean created = spellingIndexDirectory.mkdirs();
-			LOGGER.info("Created spelling " + created + ", index at : " + spellingIndexDirectory.getAbsolutePath());
-		}
+		File spellingIndexDirectory = FileUtilities.getFile(WORD_INDEX_DIRECTORY, Boolean.TRUE);
 		Directory directory = FSDirectory.open(spellingIndexDirectory);
 		boolean mustIndex = true;
 		if (IndexReader.indexExists(directory)) {

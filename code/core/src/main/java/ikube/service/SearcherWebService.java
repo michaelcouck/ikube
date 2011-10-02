@@ -8,6 +8,7 @@ import ikube.search.SearchMultiAll;
 import ikube.search.SearchMultiSorted;
 import ikube.search.SearchSingle;
 import ikube.search.SearchSpatial;
+import ikube.search.SearchSpatialAll;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.Logging;
 import ikube.toolkit.SerializationUtilities;
@@ -40,13 +41,13 @@ import org.apache.lucene.search.Searcher;
 @WebService(name = ISearcherWebService.NAME, targetNamespace = ISearcherWebService.NAMESPACE, serviceName = ISearcherWebService.SERVICE)
 public class SearcherWebService implements ISearcherWebService {
 
-	private static final Logger LOGGER = Logger.getLogger(SearcherWebService.class);
+	private static final Logger				LOGGER			= Logger.getLogger(SearcherWebService.class);
 
-	protected int publishedPort = ISearcherWebService.PUBLISHED_PORT;
-	protected String publishedPath = ISearcherWebService.PUBLISHED_PATH;
+	protected int							publishedPort	= ISearcherWebService.PUBLISHED_PORT;
+	protected String						publishedPath	= ISearcherWebService.PUBLISHED_PATH;
 
-	private SearchDelegate searchDelegate;
-	private Map<String, IndexContext<?>> indexContexts;
+	private SearchDelegate					searchDelegate;
+	private Map<String, IndexContext<?>>	indexContexts;
 
 	public SearcherWebService() {
 		indexContexts = new HashMap<String, IndexContext<?>>();
@@ -58,10 +59,9 @@ public class SearcherWebService implements ISearcherWebService {
 	@Override
 	@WebMethod
 	@WebResult(name = "result")
-	public String searchSingle(@WebParam(name = "indexName") final String indexName,
-			@WebParam(name = "searchString") final String searchString, @WebParam(name = "searchField") final String searchField,
-			@WebParam(name = "fragment") final boolean fragment, @WebParam(name = "firstResult") final int firstResult,
-			@WebParam(name = "maxResults") final int maxResults) {
+	public String searchSingle(@WebParam(name = "indexName") final String indexName, @WebParam(name = "searchString") final String searchString,
+			@WebParam(name = "searchField") final String searchField, @WebParam(name = "fragment") final boolean fragment,
+			@WebParam(name = "firstResult") final int firstResult, @WebParam(name = "maxResults") final int maxResults) {
 		try {
 			SearchSingle searchSingle = getSearch(SearchSingle.class, indexName);
 			if (searchSingle != null) {
@@ -74,8 +74,8 @@ public class SearcherWebService implements ISearcherWebService {
 				return SerializationUtilities.serialize(results);
 			}
 		} catch (Exception e) {
-			String message = Logging.getString("Exception doing search on index : ", indexName, searchString, searchField, fragment,
-					firstResult, maxResults);
+			String message = Logging.getString("Exception doing search on index : ", indexName, searchString, searchField, fragment, firstResult,
+					maxResults);
 			LOGGER.error(message, e);
 		}
 		return SerializationUtilities.serialize(getMessageResults(indexName));
@@ -87,10 +87,9 @@ public class SearcherWebService implements ISearcherWebService {
 	@Override
 	@WebMethod
 	@WebResult(name = "result")
-	public String searchMulti(@WebParam(name = "indexName") final String indexName,
-			@WebParam(name = "searchStrings") final String[] searchStrings, @WebParam(name = "searchFields") final String[] searchFields,
-			@WebParam(name = "fragment") final boolean fragment, @WebParam(name = "firstResult") final int firstResult,
-			@WebParam(name = "maxResults") final int maxResults) {
+	public String searchMulti(@WebParam(name = "indexName") final String indexName, @WebParam(name = "searchStrings") final String[] searchStrings,
+			@WebParam(name = "searchFields") final String[] searchFields, @WebParam(name = "fragment") final boolean fragment,
+			@WebParam(name = "firstResult") final int firstResult, @WebParam(name = "maxResults") final int maxResults) {
 		try {
 			SearchMulti searchMulti = getSearch(SearchMulti.class, indexName);
 			if (searchMulti != null) {
@@ -156,14 +155,12 @@ public class SearcherWebService implements ISearcherWebService {
 				searchMultiAll.setFragment(fragment);
 				searchMultiAll.setMaxResults(maxResults);
 				searchMultiAll.setSearchString(searchStrings);
-				// searchMultiSorted.setSearchField(searchFields);
-				// searchMultiSorted.setSortField(sortFields);
 				List<Map<String, String>> results = searchDelegate.execute(indexName, searchMultiAll);
 				return SerializationUtilities.serialize(results);
 			}
 		} catch (Exception e) {
-			String message = Logging.getString("Exception doing search on index : ", indexName, Arrays.asList(searchStrings), fragment,
-					firstResult, maxResults);
+			String message = Logging.getString("Exception doing search on index : ", indexName, Arrays.asList(searchStrings), fragment, firstResult,
+					maxResults);
 			LOGGER.error(message, e);
 		}
 		return SerializationUtilities.serialize(getMessageResults(indexName));
@@ -190,22 +187,52 @@ public class SearcherWebService implements ISearcherWebService {
 				searchSpatial.setSearchField(searchFields);
 				searchSpatial.setCoordinate(new Coordinate(latitude, longitude));
 				searchSpatial.setDistance(distance);
-				// searchMultiSorted.setSortField(sortFields);
 				List<Map<String, String>> results = searchDelegate.execute(indexName, searchSpatial);
 				return SerializationUtilities.serialize(results);
 			}
 		} catch (Exception e) {
-			String message = Logging.getString("Exception doing search on index : ", indexName, Arrays.asList(searchStrings), fragment,
-					firstResult, maxResults, latitude, longitude, distance);
+			String message = Logging.getString("Exception doing search on index : ", indexName, Arrays.asList(searchStrings), fragment, firstResult,
+					maxResults, latitude, longitude, distance);
 			LOGGER.error(message, e);
 		}
 		return SerializationUtilities.serialize(getMessageResults(indexName));
 	}
 
 	/**
-	 * This method will return an instance of the search class, based on the class in the parameter list and the index context name. For
-	 * each search there is an instance created for the searcher classes to avoid thread overlap. The instance is created using reflection
-	 * :( but is there a more elegant way?
+	 * {@inheritDoc}
+	 */
+	@Override
+	@WebMethod
+	@WebResult(name = "result")
+	public String searchSpacialMultiAll(@WebParam(name = "indexName") final String indexName,
+			@WebParam(name = "searchStrings") final String[] searchStrings, @WebParam(name = "fragment") final boolean fragment,
+			@WebParam(name = "firstResult") final int firstResult, @WebParam(name = "maxResults") final int maxResults,
+			@WebParam(name = "distance") final int distance, @WebParam(name = "latitude") final double latitude,
+			@WebParam(name = "longitude") final double longitude) {
+		try {
+			SearchSpatialAll searchSpatial = getSearch(SearchSpatialAll.class, indexName);
+			if (searchSpatial != null) {
+				searchSpatial.setFirstResult(firstResult);
+				searchSpatial.setFragment(fragment);
+				searchSpatial.setMaxResults(maxResults);
+				searchSpatial.setSearchString(searchStrings);
+				searchSpatial.setCoordinate(new Coordinate(latitude, longitude));
+				searchSpatial.setDistance(distance);
+				List<Map<String, String>> results = searchDelegate.execute(indexName, searchSpatial);
+				return SerializationUtilities.serialize(results);
+			}
+		} catch (Exception e) {
+			String message = Logging.getString("Exception doing search on index : ", indexName, Arrays.asList(searchStrings), fragment, firstResult,
+					maxResults, latitude, longitude, distance);
+			LOGGER.error(message, e);
+		}
+		return SerializationUtilities.serialize(getMessageResults(indexName));
+	}
+
+	/**
+	 * This method will return an instance of the search class, based on the class in the parameter list and the index
+	 * context name. For each search there is an instance created for the searcher classes to avoid thread overlap. The
+	 * instance is created using reflection :( but is there a more elegant way?
 	 * 
 	 * @param <T>
 	 *            the type of class that is expected as a result
@@ -240,8 +267,8 @@ public class SearcherWebService implements ISearcherWebService {
 	}
 
 	/**
-	 * This method returns the default message if there is no searcher defined for the index context, or the index is not generated or
-	 * opened.
+	 * This method returns the default message if there is no searcher defined for the index context, or the index is
+	 * not generated or opened.
 	 * 
 	 * @param indexName
 	 *            the name of the index
@@ -265,4 +292,5 @@ public class SearcherWebService implements ISearcherWebService {
 	public void setSearchDelegate(SearchDelegate searchDelegate) {
 		this.searchDelegate = searchDelegate;
 	}
+
 }

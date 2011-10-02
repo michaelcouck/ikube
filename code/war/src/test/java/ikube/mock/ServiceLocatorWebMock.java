@@ -31,6 +31,7 @@ public class ServiceLocatorWebMock {
 		String[] searchStrings = new String[] { IConstants.IKUBE };
 		when(MONITOR_WEB_SERVICE.getIndexFieldNames(any(String.class))).thenReturn(new String[] { "name", "latitude", "longitude" });
 		when(SEARCHER_WEB_SERVICE.searchMultiAll(IConstants.IKUBE, searchStrings, true, 0, 10)).thenReturn(results);
+		when(SEARCHER_WEB_SERVICE.searchSpacialMultiAll(IConstants.IKUBE, searchStrings, true, 0, 10, 0, 0, 0)).thenReturn(results);
 	}
 
 	@Mock()

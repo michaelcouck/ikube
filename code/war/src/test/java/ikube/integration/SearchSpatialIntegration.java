@@ -50,7 +50,7 @@ public class SearchSpatialIntegration {
 					antwerpLatitude, antwerpLongitude);
 			LOGGER.error(results);
 
-			results = searchRemote.searchMultiAll(indexName, searchStrings, Boolean.TRUE, firstResult, maxResults);
+			searchRemote.searchMultiAll(indexName, searchStrings, Boolean.TRUE, firstResult, maxResults);
 			// LOGGER.error(results);
 		} catch (Exception e) {
 			LOGGER.error("Exception searching remote service : ", e);

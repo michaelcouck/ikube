@@ -42,7 +42,7 @@ public class DataBaseJpaTest extends BaseTest {
 		BaseTest.beforeClass();
 	}
 
-	private IDataBase dataBase;
+	private IDataBase	dataBase;
 
 	public DataBaseJpaTest() {
 		super(DataBaseJpaTest.class);
@@ -109,7 +109,7 @@ public class DataBaseJpaTest extends BaseTest {
 		long hash = System.nanoTime();
 		Url url = new Url();
 		url.setHash(hash);
-		url = dataBase.persist(url);
+		dataBase.persist(url);
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		parameters.put(IConstants.HASH, hash);
 		List<Url> urls = dataBase.find(Url.class, Url.SELECT_FROM_URL_BY_HASH, parameters, 0, 100);
@@ -150,7 +150,7 @@ public class DataBaseJpaTest extends BaseTest {
 
 	@Test
 	public void executeQuery() {
-		
+
 		Long count = dataBase.execute(Long.class, Action.SELECT_FROM_ACTIONS_COUNT);
 		assertNotNull("The count should never be null : ", count);
 
@@ -159,7 +159,7 @@ public class DataBaseJpaTest extends BaseTest {
 
 		count = dataBase.execute(Long.class, Action.SELECT_FROM_ACTIONS_COUNT);
 		assertNotNull("The count should never be null : ", count);
-		assertEquals("The count should be the size of the url list : ", new Long(actions.size()), count);
+		assertEquals("The count should be the size of the url list : ", Long.valueOf(actions.size()), count);
 	}
 
 	private List<Url> getUrls(int batchSize) {

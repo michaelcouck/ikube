@@ -3,7 +3,6 @@ package ikube.web.tag;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.SerializationUtilities;
 
@@ -24,6 +23,7 @@ import org.junit.Test;
 
 /**
  * TODO Comment me.
+ * 
  * @author Michael Couck
  * @since 27.03.11
  * @version 01.00
@@ -31,7 +31,7 @@ import org.junit.Test;
 @Ignore
 public class SearchTagTest extends ATagTest {
 
-	private SearchTag searchTag;
+	private SearchTag	searchTag;
 
 	@Before
 	public void before() throws Exception {
@@ -82,11 +82,10 @@ public class SearchTagTest extends ATagTest {
 	}
 
 	@Test
-	@SuppressWarnings("unused")
 	public void doStartTag() throws Exception {
 		int result = searchTag.doStartTag();
 		assertEquals(BodyTag.EVAL_BODY_BUFFERED, result);
-		Object results = request.getSession().getAttribute(ATag.RESULTS);
+		// Object results = request.getSession().getAttribute(ATag.RESULTS);
 		// TODO Fix these
 		// assertNotNull(results);
 		// assertTrue(List.class.isInstance(results));
