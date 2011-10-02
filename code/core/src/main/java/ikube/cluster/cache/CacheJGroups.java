@@ -5,11 +5,12 @@ import ikube.listener.ListenerManager;
 import ikube.model.Server;
 import ikube.toolkit.ApplicationContextManager;
 
+import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 
@@ -18,7 +19,7 @@ import org.jgroups.Address;
 import org.jgroups.JChannel;
 import org.jgroups.Message;
 import org.jgroups.ReceiverAdapter;
-import org.jgroups.blocks.ReplicatedHashMap;
+import org.jgroups.View;
 import org.jgroups.blocks.locking.LockService;
 
 /**
@@ -29,22 +30,30 @@ import org.jgroups.blocks.locking.LockService;
  */
 public class CacheJGroups implements ICache {
 
-	private Logger							logger;
-	private JChannel						channel;
-	private LockService						lockService;
-	private Map<String, Map<Long, Object>>	maps;
+	private Logger		logger;
+	private JChannel	channel;
+	private LockService	lockService;
+
+	// private Map<String, ReplicatedHashMap<Long, Object>> maps;
 
 	class ShutdownReceiverAdapter extends ReceiverAdapter {
+
+		@Override
+		public void viewAccepted(View view) {
+			// logger.info("View : " + view);
+			super.viewAccepted(view);
+		}
+
 		public void receive(Message message) {
 			Address address = message.getSrc();
 			Object other = message.getObject();
-			logger.info("Message : " + message.getObject() + ", address : " + address + ", other : " + other);
+			logger.info("Message : " + message.getObject() + ", this : " + address + ", other : " + other);
 			if (other == null || !Server.class.isAssignableFrom(other.getClass())) {
 				return;
 			}
 			logger.warn("Got shutdown message : " + other);
 			long delay = 1000;
-			java.util.concurrent.ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
+			ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
 			executorService.schedule(new Runnable() {
 				public void run() {
 					logger.warn("Shutting down Ikube server : " + this);
@@ -65,14 +74,16 @@ public class CacheJGroups implements ICache {
 	 * affect the tests.
 	 */
 	public void initialise() throws Exception {
-		maps = new HashMap<String, Map<Long, Object>>();
 		logger = Logger.getLogger(this.getClass());
-		channel = new JChannel(getClass().getResource(IConstants.META_INF + IConstants.SEP + IConstants.UDP_XML));
-		channel.setDiscardOwnMessages(Boolean.TRUE);
+		// maps = new HashMap<String, ReplicatedHashMap<Long, Object>>();
+		String configurationFile = IConstants.META_INF + IConstants.SEP + IConstants.UDP_XML;
+		InputStream inputStream = getClass().getResourceAsStream(configurationFile);
+		channel = new JChannel(inputStream);
+		// channel.setDiscardOwnMessages(Boolean.TRUE);
 		channel.connect(IConstants.IKUBE);
-		channel.send(null, "Ikube running : ");
-		lockService = new LockService(channel);
 		channel.setReceiver(new ShutdownReceiverAdapter());
+		lockService = new LockService(channel);
+		// channel.send(null, "Ikube running : " + channel.getAddressAsString());
 	}
 
 	/**
@@ -156,13 +167,11 @@ public class CacheJGroups implements ICache {
 		if (lock != null) {
 			try {
 				boolean gotLock = lock.tryLock(3000, TimeUnit.MILLISECONDS);
-				// logger.info("Got lock : " + gotLock);
 				return gotLock;
 			} catch (InterruptedException e) {
 				logger.error("Exception acquiring the cluster lock : " + name, e);
 			}
 		}
-		// logger.info("Didn't get lock : ");
 		return Boolean.FALSE;
 	}
 
@@ -170,20 +179,29 @@ public class CacheJGroups implements ICache {
 		Lock lock = lockService.getLock(name);
 		if (lock != null) {
 			lock.unlock();
-			// logger.info("Unlocked : ");
 			return Boolean.TRUE;
 		}
-		// logger.info("Couldn't unlock : ");
 		return Boolean.FALSE;
 	}
 
 	private Map<Long, Object> getMap(String name) {
-		Map<Long, Object> map = maps.get(name);
-		if (map == null) {
-			map = new ReplicatedHashMap<Long, Object>(channel);
-			maps.put(name, map);
-		}
-		return map;
+		// ReplicatedHashMap<Long, Object> map = maps.get(name);
+		// if (map == null) {
+		// try {
+		// // JChannel channel = new JChannel();
+		// // channel.connect(IConstants.IKUBE);
+		// map = new ReplicatedHashMap<Long, Object>(channel);
+		// map.setBlockingUpdates(Boolean.TRUE);
+		// int timeout = 3000;
+		// map.setTimeout(timeout);
+		// map.start(timeout);
+		// maps.put(name, map);
+		// } catch (Exception e) {
+		// logger.error("Exception opening the channel on the map : ", e);
+		// }
+		// }
+		// return map;
+		return null;
 	}
 
 }

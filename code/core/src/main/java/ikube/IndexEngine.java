@@ -13,6 +13,7 @@ import ikube.toolkit.SerializationUtilities;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.apache.log4j.Logger;
 
@@ -59,6 +60,7 @@ public class IndexEngine implements IIndexEngine {
 			return;
 		}
 
+		Random random = new Random();
 		@SuppressWarnings("rawtypes")
 		Map<String, IndexContext> indexContexts = ApplicationContextManager.getBeans(IndexContext.class);
 		for (IndexContext<?> indexContext : indexContexts.values()) {
@@ -72,8 +74,7 @@ public class IndexEngine implements IIndexEngine {
 					if (clusterManager.getServer().getWorking()) {
 						// Sleep for a random time, 10 < a < 20 seconds if the server is working
 						// to give the previous action a little time before we execute the rules
-						long sleep = 3000; // Math.max(1000, (long) (Math.random() * 3000d));
-						LOGGER.debug("Sleeping : " + sleep + ", action : " + action + ", server working : " + clusterManager.getServer().getWorking());
+						long sleep = random.nextLong() % 1000;
 						Thread.sleep(sleep);
 						if (clusterManager.getServer().getWorking()) {
 							continue;

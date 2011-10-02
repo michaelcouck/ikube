@@ -12,7 +12,7 @@
 	var="cleanedClonedChildren" 
 	value="${ikube:remove(clonedChildren, renderedIndexables)}" 
 	scope="page" />
-<table>
+<table width="100%">
 	<tr>
 		<th>Name</th>
 		<th>Class</th>

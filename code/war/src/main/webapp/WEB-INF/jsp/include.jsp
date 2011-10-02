@@ -35,8 +35,4 @@
 			</c:forEach>
 		</td>
 	</tr>
-	<tr>
-		<td>
-			<jsp:include page="/WEB-INF/jsp/pagination.jsp" flush="true" /> 
-		</td>
-	</tr>
+	<jsp:include page="/WEB-INF/jsp/pagination.jsp" flush="true" />

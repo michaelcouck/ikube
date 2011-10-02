@@ -79,10 +79,12 @@ public class SearchController extends BaseController {
 		String corrections = null;
 		List<Map<String, String>> results = new ArrayList<Map<String, String>>();
 		String[] searchStringsArray = searchStrings.toArray(new String[searchStrings.size()]);
+
+		String latitude = getParameter(IConstants.LATITUDE, null, request);
+		String longitude = getParameter(IConstants.LONGITUDE, null, request);
+		String distance = getParameter(IConstants.DISTANCE, null, request);
+
 		for (String indexName : indexNames) {
-			String latitude = getParameter(IConstants.LATITUDE, null, request);
-			String longitude = getParameter(IConstants.LONGITUDE, null, request);
-			String distance = getParameter(IConstants.DISTANCE, null, request);
 
 			String xml = null;
 			if (isNumeric(latitude) && isNumeric(longitude) && isNumeric(distance)) {

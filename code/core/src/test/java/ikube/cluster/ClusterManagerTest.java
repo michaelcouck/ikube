@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 import ikube.ATest;
 import ikube.action.Index;
 import ikube.action.Open;
+import ikube.cluster.cache.CacheInfinispan;
 import ikube.cluster.cache.CacheJGroups;
 import ikube.listener.ListenerManager;
 import ikube.mock.ApplicationContextManagerMock;
@@ -28,6 +29,7 @@ import mockit.Mockit;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -49,19 +51,26 @@ public class ClusterManagerTest extends ATest {
 		}
 	}
 
-	private transient Server	remoteServer;
+	private transient Server		remoteServer;
 
-	private transient String	indexName;
-	private transient String	indexableName;
-	private transient String	actionName	= Index.class.getSimpleName();
+	private transient String		indexName;
+	private transient String		indexableName;
+	private transient String		actionName	= Index.class.getSimpleName();
 
-	private transient int		batchSize	= 10;
+	private transient int			batchSize	= 10;
 
+	private static CacheInfinispan	CACHE;
 	/** The class under test. */
-	private ClusterManager		clusterManager;
+	private ClusterManager			clusterManager;
 
 	public ClusterManagerTest() {
 		super(ClusterManagerTest.class);
+	}
+
+	@BeforeClass
+	public static void beforeClass() throws Exception {
+		CACHE = new CacheInfinispan();
+		CACHE.initialise();
 	}
 
 	@Before
@@ -76,10 +85,7 @@ public class ClusterManagerTest extends ATest {
 		remoteServer.setId(HashUtilities.hash(remoteServer.getAddress()));
 		// remoteServer.setWorking(Boolean.FALSE);
 
-		CacheJGroups cache = new CacheJGroups();
-		// CacheHazelcast cache = new CacheHazelcast();
-		cache.initialise();
-		clusterManager = new ClusterManager(cache);
+		clusterManager = new ClusterManager(CACHE);
 		clusterManager.clear(Url.class.getName());
 		clusterManager.clear(Server.class.getName());
 		ListenerManager.removeListeners();
@@ -325,8 +331,12 @@ public class ClusterManagerTest extends ATest {
 	@Test
 	@Ignore
 	public void jGroupsConfiguration() throws Exception {
-		new CacheJGroups().initialise();
+		CacheJGroups cacheJGroups = new CacheJGroups();
+		cacheJGroups.initialise();
+		cacheJGroups.set(Server.class.getName(), System.currentTimeMillis(), new Server());
 		Thread.sleep(10000);
+		List<Server> servers = cacheJGroups.get(Server.class.getName(), null, null, Integer.MAX_VALUE);
+		logger.error("Servers : " + servers.size());
 	}
 
 }

@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!--
+	This file is not to be modified by users generally.
+	
+	This is the configuration for the interceptor for the rules, the enrichment 
+	interceptor for enriching the indexes with the geospatial data and the monitoring 
+	interceptor that will collect statistical data in production. 
+ -->
 <beans
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://www.springframework.org/schema/beans"

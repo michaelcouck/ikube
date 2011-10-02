@@ -300,11 +300,12 @@ public abstract class Search {
 					int fragments = 0;
 					for (String searchField : searchFields) {
 						String fragment = getFragments(document, searchField, query);
-						if (fragment != null) {
-							builder.append(fragment);
-							builder.append(' ');
+						if (fragment == null || "".equals(fragment.trim())) {
+							continue;
 						}
 						fragments++;
+						builder.append(fragment);
+						builder.append(' ');
 						if (fragments >= IConstants.MAX_FRAGMENTS) {
 							break;
 						}

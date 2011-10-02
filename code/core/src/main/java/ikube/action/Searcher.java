@@ -42,6 +42,11 @@ public class Searcher extends Action<IndexContext<?>, Boolean> {
 	@SuppressWarnings("unchecked")
 	public Boolean execute(final IndexContext<?> indexContext) {
 		try {
+			String indexName = indexContext.getIndexName();
+
+			if (indexName.contains("dictionary")) {
+				return Boolean.FALSE;
+			}
 			String xml = null;
 
 			Server server = ApplicationContextManager.getBean(IClusterManager.class).getServer();
@@ -51,8 +56,6 @@ public class Searcher extends Action<IndexContext<?>, Boolean> {
 			String monitoringWebServiceUrl = server.getMonitoringWebServiceUrl();
 			IMonitorWebService monitorWebService = ServiceLocator.getService(IMonitorWebService.class, monitoringWebServiceUrl,
 					IMonitorWebService.NAMESPACE, IMonitorWebService.SERVICE);
-
-			String indexName = indexContext.getIndexName();
 
 			String[] searchFields = monitorWebService.getIndexFieldNames(indexName);
 			String[] searchStrings = new String[searchFields.length];

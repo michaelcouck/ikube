@@ -13,14 +13,6 @@
 		</td>
 	</tr>
 	<tr><th>${indexContext.name}</th></tr>
-	
-	<tr>
-		<td>
-			<c:set var="children" value="${indexContext.indexables}" scope="session" />
-			<jsp:include page="/WEB-INF/jsp/admin/indexable.jsp" />
-		</td>
-	</tr>
-	
 	<tr>
 		<td>
 			<c:set var="targetSearchUrl" value="/admin/index.html" />
@@ -63,11 +55,20 @@
 	</tr>
 </table>
 
-<table>
+<table width="100%">
 	<jsp:include page="/WEB-INF/jsp/include.jsp" flush="true" />
 </table>
 
-<table>
+<table width="100%">
+	<tr>
+		<td>
+			<c:set var="children" value="${indexContext.indexables}" scope="session" />
+			<jsp:include page="/WEB-INF/jsp/admin/indexable.jsp" />
+		</td>
+	</tr>
+</table>
+
+<table width="100%">
 	<tr>
 		<td class="td-content">
 			<strong>index</strong>&nbsp;

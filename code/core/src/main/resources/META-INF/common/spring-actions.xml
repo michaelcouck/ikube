@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
+	This file is not to be modified by users generally.
+	
 	This file contains the actions that generate the indexes, and open and close the indexes 
 	when necessary. These actions are governed by rules. The rules that determine when actions 
 	get executed are also defined in this configuration file. Rules like for instance 'if the server is not working'

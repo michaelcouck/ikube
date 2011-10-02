@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
+	This file is not to be modified by users generally.
+	
 	This is the standard configuration for indexing the Ikube documentation wherever 
 	it is deployed. We assume the port to be the default, i.e. 80, although this may not be 
 	the case. The online documentation should mention this and the search results 

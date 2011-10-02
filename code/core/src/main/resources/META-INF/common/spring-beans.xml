@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!--
+	This file is not to be modified by users generally.
+	
+	This is the configuration for the beans used by Ikube. It contains the entity manager for Jpa,
+	the handlers for the data sources and the schedulers for the timing of jobs.  
+ -->
 <beans
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://www.springframework.org/schema/beans"
@@ -107,9 +113,14 @@
 		class="ikube.cluster.cache.CacheHazelcast"
 		lazy-init="false"
 		init-method="initialise" /> -->
-	<bean
+	<!-- <bean
 		id="ikube.cluster.cache.CacheJGroups"
 		class="ikube.cluster.cache.CacheJGroups"
+		lazy-init="false"
+		init-method="initialise" /> -->
+	<bean
+		id="ikube.cluster.cache.CacheInfinispan"
+		class="ikube.cluster.cache.CacheInfinispan"
 		lazy-init="false"
 		init-method="initialise" />
 	<bean
@@ -117,7 +128,7 @@
 		class="ikube.cluster.ClusterManager"
 		lazy-init="true" >
 		<constructor-arg>
-			<ref local="ikube.cluster.cache.CacheJGroups" />
+			<ref local="ikube.cluster.cache.CacheInfinispan" />
 		</constructor-arg>
 	</bean>
 	

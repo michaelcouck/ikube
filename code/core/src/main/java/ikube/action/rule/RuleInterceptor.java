@@ -133,6 +133,11 @@ public class RuleInterceptor implements IRuleInterceptor {
 			dataBase.persist(modelAction);
 			if (proceed) {
 				proceed(proceedingJoinPoint, actionName, indexName, modelAction);
+			} else {
+				modelAction.setEndTime(new Timestamp(System.currentTimeMillis()));
+				modelAction.setDuration(modelAction.getEndTime().getTime() - modelAction.getStartTime().getTime());
+				modelAction.setWorking(Boolean.FALSE);
+				dataBase.merge(modelAction);
 			}
 		} catch (Throwable t) {
 			LOGGER.error("Exception evaluating the rules : ", t);

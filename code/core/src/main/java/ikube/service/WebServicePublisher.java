@@ -27,8 +27,8 @@ import org.springframework.util.ReflectionUtils;
  */
 public class WebServicePublisher implements IWebServicePublisher {
 
-	private Logger logger;
-	private transient final IClusterManager clusterManager;
+	private Logger							logger;
+	private transient final IClusterManager	clusterManager;
 
 	public WebServicePublisher(final IClusterManager clusterManager) {
 		logger = Logger.getLogger(this.getClass());
@@ -75,7 +75,7 @@ public class WebServicePublisher implements IWebServicePublisher {
 						break;
 					} catch (Exception e) {
 						String message = Logging.getString("Exception publishing web service : ", url, bean, e.getMessage());
-						logger.warn(message, e);
+						logger.warn(message);
 						port++;
 					}
 				} while (++retryCount < IConstants.MAX_RETRY_WEB_SERVICE_PUBLISHER);
