@@ -7,11 +7,11 @@ import static org.junit.Assert.assertTrue;
 import ikube.ATest;
 import ikube.IConstants;
 import ikube.model.Server;
+import ikube.toolkit.ApplicationContextManager;
 
 import java.util.List;
 
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
@@ -21,26 +21,20 @@ import org.junit.Test;
  */
 public class CacheInfinispanTest extends ATest {
 
-	private long					id		= 0l;
-	private String					name	= IConstants.IKUBE;
-	private Server					server	= new Server();
+	private long			id		= 0l;
+	private String			name	= IConstants.IKUBE;
+	private Server			server	= new Server();
 
 	/** Class under test. */
-	private static CacheInfinispan	cacheInfinispan;
+	private CacheInfinispan	cacheInfinispan;
 
 	public CacheInfinispanTest() {
 		super(CacheInfinispanTest.class);
 	}
 
-	@BeforeClass
-	public static void beforeClass() throws Exception {
-		cacheInfinispan = new CacheInfinispan();
-		cacheInfinispan.initialise();
-	}
-
 	@Before
 	public void before() throws Exception {
-		Thread.sleep(1000);
+		cacheInfinispan = ApplicationContextManager.getBean(CacheInfinispan.class);
 	}
 
 	@Test

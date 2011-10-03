@@ -15,4 +15,7 @@
 			<sync />
 		</clustering>
 	</default>
+	<namedCache  name="ikube.model.Url" />
+    <namedCache  name="ikube.model.Server" />
+    <namedCache  name="ikube.model.File" />
 </infinispan>

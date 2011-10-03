@@ -11,6 +11,7 @@ import ikube.model.Server;
 import java.util.List;
 
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -18,6 +19,7 @@ import org.junit.Test;
  * @since 01.10.11
  * @version 01.00
  */
+@Ignore
 public class CacheJGroupsTest extends ATest {
 
 	private long				id		= 0l;

@@ -179,5 +179,6 @@ public interface IConstants {
 	String				DELAY										= "delay";
 	String				SPRING_PROPERTIES							= "spring.properties";
 	String				TIER										= "tier";
+	int					MAX_RETRY_COUNTER							= 5;
 
 }

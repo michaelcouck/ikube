@@ -15,6 +15,7 @@ import ikube.mock.ApplicationContextManagerMock;
 import ikube.model.Action;
 import ikube.model.Server;
 import ikube.model.Url;
+import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.HashUtilities;
 import ikube.toolkit.ThreadUtilities;
 
@@ -29,7 +30,6 @@ import mockit.Mockit;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -51,30 +51,25 @@ public class ClusterManagerTest extends ATest {
 		}
 	}
 
-	private transient Server		remoteServer;
+	private transient Server	remoteServer;
 
-	private transient String		indexName;
-	private transient String		indexableName;
-	private transient String		actionName	= Index.class.getSimpleName();
+	private transient String	indexName;
+	private transient String	indexableName;
+	private transient String	actionName	= Index.class.getSimpleName();
 
-	private transient int			batchSize	= 10;
+	private transient int		batchSize	= 10;
 
-	private static CacheInfinispan	CACHE;
+	private CacheInfinispan		cacheInfinispan;
 	/** The class under test. */
-	private ClusterManager			clusterManager;
+	private ClusterManager		clusterManager;
 
 	public ClusterManagerTest() {
 		super(ClusterManagerTest.class);
 	}
 
-	@BeforeClass
-	public static void beforeClass() throws Exception {
-		CACHE = new CacheInfinispan();
-		CACHE.initialise();
-	}
-
 	@Before
 	public void before() throws Exception {
+		cacheInfinispan = ApplicationContextManager.getBean(CacheInfinispan.class);
 		Mockit.setUpMocks(SystemMock.class, ApplicationContextManagerMock.class);
 
 		indexName = INDEX_CONTEXT.getIndexName();
@@ -85,7 +80,7 @@ public class ClusterManagerTest extends ATest {
 		remoteServer.setId(HashUtilities.hash(remoteServer.getAddress()));
 		// remoteServer.setWorking(Boolean.FALSE);
 
-		clusterManager = new ClusterManager(CACHE);
+		clusterManager = new ClusterManager(cacheInfinispan);
 		clusterManager.clear(Url.class.getName());
 		clusterManager.clear(Server.class.getName());
 		ListenerManager.removeListeners();

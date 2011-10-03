@@ -13,13 +13,15 @@ import mockit.Mockit;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
+@Ignore
 public class CacheMapStoreTest extends ATest {
 
-	private CacheMapStore cacheMapStore;
-	private Collection<Long> keys;
-	private Map<Long, Object> objects;
+	private CacheMapStore		cacheMapStore;
+	private Collection<Long>	keys;
+	private Map<Long, Object>	objects;
 
 	public CacheMapStoreTest() {
 		super(CacheMapStoreTest.class);
@@ -36,7 +38,7 @@ public class CacheMapStoreTest extends ATest {
 		cacheMapStore = new CacheMapStore();
 		Mockit.setUpMocks(ApplicationContextManagerMock.class);
 	}
-	
+
 	@After
 	public void after() {
 		Mockit.tearDownMocks(ApplicationContextManager.class);

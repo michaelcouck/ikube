@@ -243,24 +243,43 @@ public class ClusterManager implements IClusterManager, IConstants {
 	@Override
 	public synchronized void stopWorking(final String actionName, final String indexName, final String indexableName) {
 		try {
-			LOGGER.info("Stopping action : " + actionName + ", " + indexName + ", " + indexableName);
 			Server server = getServer();
 			Action action = server.getAction();
 			if (action != null) {
 				action.setWorking(Boolean.FALSE);
 				action.setEndTime(new Timestamp(System.currentTimeMillis()));
 				action.setDuration(action.getEndTime().getTime() - action.getStartTime().getTime());
-				LOGGER.debug("'Action : " + action);
 			}
 			server.setAction(null);
-			// Publish the fact that this server is starting to work on an action
-			// remove(Server.class.getName(), server.getId());
 			set(Server.class.getName(), server.getId(), server);
-			LOGGER.debug("Published action : " + getServer().getAction());
 		} catch (Exception e) {
 			LOGGER.error("Exception stopping working : " + actionName + ", " + indexName + ", " + indexableName, e);
+			new Thread(new Runnable() {
+				public void run() {
+					stopWorkingRretry(actionName, indexName, indexableName, 0);
+				}
+			}).start();
 		} finally {
 			notifyAll();
+		}
+	}
+
+	private void stopWorkingRretry(final String actionName, final String indexName, final String indexableName, int retryCount) {
+		try {
+			Server server = getServer();
+			Action action = server.getAction();
+			if (action != null) {
+				action.setWorking(Boolean.FALSE);
+				action.setEndTime(new Timestamp(System.currentTimeMillis()));
+				action.setDuration(action.getEndTime().getTime() - action.getStartTime().getTime());
+			}
+			server.setAction(null);
+			set(Server.class.getName(), server.getId(), server);
+		} catch (Exception e) {
+			LOGGER.error("Exception re-trying to stop working : " + actionName + ", " + indexName + ", " + indexableName, e);
+			if (retryCount < MAX_RETRY_COUNTER) {
+				stopWorkingRretry(actionName, indexName, indexableName, ++retryCount);
+			}
 		}
 	}
 

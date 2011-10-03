@@ -249,7 +249,7 @@
 		property:fragment="true"
 		property:start="0"
 		property:end="10"
-		property:searchString="cape OR town"
+		property:searchString="cape OR town OR roets OR 1001 OR ikube"
 		property:resultsSizeMinimum="2"
 		property:iterations="10">
 		<property name="rules">
