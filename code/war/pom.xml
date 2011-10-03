@@ -33,6 +33,10 @@
 			</resource>
 		</resources>
 		<plugins>
+			<!--
+				This plugin reads the properties from the buid.properties file and 
+				makes them all available to the rest of the Maven build process. 
+			 -->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>properties-maven-plugin</artifactId>
@@ -51,6 +55,9 @@
 					</execution>
 				</executions>
 			</plugin>
+			<!--
+				This plugin runs the unit tests. 
+			 -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
@@ -68,6 +75,11 @@
 					</includes>
 				</configuration>
 			</plugin>
+			<!--
+				This plugin starts a Jetty server before the integration tests and stops 
+				it after the integration tests. It can also be used to start a jetty server from 
+				the command line for testing.
+			 -->
 			<plugin>
 				<groupId>org.mortbay.jetty</groupId>
 				<artifactId>maven-jetty-plugin</artifactId>
@@ -125,6 +137,12 @@
 					</dependency>
 				</dependencies>
 			</plugin>
+			<!--
+				This plugin runs an Ant script after the integration tests to deploy ikube.war 
+				to the cluster. The cluster directories are also cleaned, all the wars and exploded 
+				directories are deleted before the deploy. It will also start the Tomcats in the 
+				cluster.
+			 -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-antrun-plugin</artifactId>
@@ -180,6 +198,11 @@
 					</execution>
 				</executions>
 			</plugin>
+			<!--
+				This plugin will upload the artifacts to Google code, making them available for 
+				download. Unfortunately this can't run in the deploy phase because the artifacts 
+				are still SNAPSHOTS, which is not what is required as a download. 
+			-->
 			<plugin>
 				<groupId>com.googlecode.maven-gcu-plugin</groupId>
 				<artifactId>maven-gcu-plugin</artifactId>

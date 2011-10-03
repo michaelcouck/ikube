@@ -10,6 +10,7 @@ import ikube.model.Server;
 
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -35,6 +36,11 @@ public class CacheInfinispanTest extends ATest {
 	public static void beforeClass() throws Exception {
 		cacheInfinispan = new CacheInfinispan();
 		cacheInfinispan.initialise();
+	}
+
+	@Before
+	public void before() throws Exception {
+		Thread.sleep(1000);
 	}
 
 	@Test

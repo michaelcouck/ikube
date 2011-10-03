@@ -32,6 +32,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
+ * This is an integration test as it will go to the database.
+ * 
  * @author Michael Couck
  * @since 12.10.2010
  * @version 01.00

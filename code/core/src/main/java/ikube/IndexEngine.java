@@ -74,7 +74,7 @@ public class IndexEngine implements IIndexEngine {
 					if (clusterManager.getServer().getWorking()) {
 						// Sleep for a random time, 10 < a < 20 seconds if the server is working
 						// to give the previous action a little time before we execute the rules
-						long sleep = random.nextLong() % 1000;
+						long sleep = Math.abs(random.nextLong()) % 1000;
 						Thread.sleep(sleep);
 						if (clusterManager.getServer().getWorking()) {
 							continue;

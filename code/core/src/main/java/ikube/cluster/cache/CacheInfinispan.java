@@ -3,10 +3,8 @@ package ikube.cluster.cache;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import org.infinispan.Cache;
-import org.infinispan.config.GlobalConfiguration;
 import org.infinispan.manager.DefaultCacheManager;
 import org.infinispan.manager.EmbeddedCacheManager;
 
@@ -20,13 +18,16 @@ public class CacheInfinispan implements ICache {
 
 	private EmbeddedCacheManager	manager;
 
+	/** TODO Create the shutdown listener, and the alive listener. */
+
 	public void initialise() throws Exception {
-		GlobalConfiguration globalConfiguration = GlobalConfiguration.getClusteredDefault();
+		// GlobalConfiguration globalConfiguration = GlobalConfiguration.getClusteredDefault();
 		// new GlobalConfiguration();
-		Properties p = new Properties();
-		p.setProperty("configurationFile", "jgroups-udp.xml");
-		globalConfiguration.setTransportProperties(p);
-		manager = new DefaultCacheManager(globalConfiguration);
+		// Properties p = new Properties();
+		// p.setProperty("configurationFile", "jgroups-udp.xml");
+		// globalConfiguration.setTransportProperties(p);
+		// TODO This can be moved to the Spring configuration files
+		manager = new DefaultCacheManager("META-INF/infinispan.xml");
 	}
 
 	/**

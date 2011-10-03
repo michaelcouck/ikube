@@ -243,6 +243,7 @@ public class ClusterManager implements IClusterManager, IConstants {
 	@Override
 	public synchronized void stopWorking(final String actionName, final String indexName, final String indexableName) {
 		try {
+			LOGGER.info("Stopping action : " + actionName + ", " + indexName + ", " + indexableName);
 			Server server = getServer();
 			Action action = server.getAction();
 			if (action != null) {
@@ -256,6 +257,8 @@ public class ClusterManager implements IClusterManager, IConstants {
 			// remove(Server.class.getName(), server.getId());
 			set(Server.class.getName(), server.getId(), server);
 			LOGGER.debug("Published action : " + getServer().getAction());
+		} catch (Exception e) {
+			LOGGER.error("Exception stopping working : " + actionName + ", " + indexName + ", " + indexableName, e);
 		} finally {
 			notifyAll();
 		}

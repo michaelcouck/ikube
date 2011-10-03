@@ -43,7 +43,8 @@
 				<li><a href="http://www.neodatis.org/">Neodatis</a></li>
 				<li><a href="http://sourceforge.net/projects/c3p0/">C3p0</a></li>
 				<li><a href="http://www.springsource.org">Spring</a></li>
-				<li><a href="http://www.hazelcast.com/">Hazelcast</a></li>
+				<!-- <li><a href="http://www.hazelcast.com/">Hazelcast</a></li> -->
+				<li><a href="http://www.infinispan.org/">Infinispan</a></li>
 				<li><a href="http://jenkins-ci.org/">Jenkins CI</a></li>
 				<li><a href="http://www.h2database.com/html/main.html">H2 database</a></li>
 				<li><a href="http://openjpa.apache.org/">OpenJpa</a></li>

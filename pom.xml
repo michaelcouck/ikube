@@ -105,6 +105,7 @@
 					</compilerArguments>
 				</configuration>
 			</plugin>
+			<!-- This plugin runs FindBugs on the project, generating the reports. -->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>findbugs-maven-plugin</artifactId>
