@@ -72,8 +72,8 @@ public class ClusterManagerTest extends ATest {
 		cacheInfinispan = ApplicationContextManager.getBean(CacheInfinispan.class);
 		Mockit.setUpMocks(SystemMock.class, ApplicationContextManagerMock.class);
 
-		indexName = INDEX_CONTEXT.getIndexName();
-		indexableName = INDEXABLE_COLUMN.getName();
+		indexName = indexContext.getIndexName();
+		indexableName = indexableColumn.getName();
 
 		remoteServer = new Server();
 		remoteServer.setAddress(InetAddress.getLocalHost().getHostAddress() + "." + System.nanoTime());
@@ -83,7 +83,7 @@ public class ClusterManagerTest extends ATest {
 		clusterManager = new ClusterManager(cacheInfinispan);
 		clusterManager.clear(Url.class.getName());
 		clusterManager.clear(Server.class.getName());
-		ListenerManager.removeListeners();
+		ListenerManager.getInstance().removeListeners();
 	}
 
 	@After
@@ -226,7 +226,7 @@ public class ClusterManagerTest extends ATest {
 
 	@Test
 	public void setWorking() {
-		ListenerManager.removeListeners();
+		ListenerManager.getInstance().removeListeners();
 		// First clear the map of servers
 		Server localServer = clusterManager.getServer();
 		localServer.setAction(null);

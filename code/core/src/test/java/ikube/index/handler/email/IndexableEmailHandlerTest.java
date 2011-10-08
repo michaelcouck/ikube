@@ -27,7 +27,7 @@ public class IndexableEmailHandlerTest extends BaseTest {
 		IMailer mailer = ApplicationContextManager.getBean(Mailer.class);
 		mailer.sendMail("MailhandlerTest Subject", "Mail handler test mail body");
 
-		indexContext.getIndex().setIndexWriter(INDEX_WRITER);
+		indexContext.getIndex().setIndexWriter(indexWriter);
 
 		IndexableEmail indexableEmail = ApplicationContextManager.getBean(IndexableEmail.class);
 		IndexableEmailHandler indexableEmailHandler = ApplicationContextManager.getBean(IndexableEmailHandler.class);

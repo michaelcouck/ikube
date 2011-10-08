@@ -11,7 +11,6 @@ import ikube.database.IDataBase;
 import ikube.index.IndexManager;
 import ikube.index.parse.mime.MimeMapper;
 import ikube.index.parse.mime.MimeTypes;
-import ikube.listener.ListenerManager;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.mock.IndexManagerMock;
 import ikube.model.Index;
@@ -52,8 +51,8 @@ import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.Lock;
 
 /**
- * This is the base test for all mocked tests. There are several useful mocks in this class that can be re-used like the index context and
- * the index reader etc. There are also helpful methods for creating Lucene indexes.
+ * This is the base test for all mocked tests. There are several useful mocks in this class that can be re-used like the
+ * index context and the index reader etc. There are also helpful methods for creating Lucene indexes.
  * 
  * @author Michael Couck
  * @since 21.11.10
@@ -67,90 +66,88 @@ public abstract class ATest {
 		new MimeMapper(IConstants.MIME_MAPPING);
 	}
 
-	protected Logger logger;
+	protected Logger				logger;
 
 	/** These are all mocked objects that are used in sub classes. */
-	protected String IP;
-	protected ScoreDoc[] SCORE_DOCS;
-	protected Searchable[] SEARCHABLES;
-	protected List<Indexable<?>> INDEXABLES;
+	protected String				ip;
+	protected ScoreDoc[]			scoreDocs;
+	protected Searchable[]			searchables;
+	protected List<Indexable<?>>	indexables;
 
-	protected Lock LOCK = mock(Lock.class);
-	protected Index INDEX = mock(Index.class);
-	protected Server SERVER = mock(Server.class);
-	protected TopDocs TOP_DOCS = mock(TopDocs.class);
-	protected FSDirectory FS_DIRECTORY = mock(FSDirectory.class);
-	protected IndexWriter INDEX_WRITER = mock(IndexWriter.class);
-	protected IndexReader INDEX_READER = mock(IndexReader.class);
-	protected TopFieldDocs TOP_FIELD_DOCS = mock(TopFieldDocs.class);
-	protected MultiSearcher MULTI_SEARCHER = mock(MultiSearcher.class);
-	protected IndexSearcher INDEX_SEARCHER = mock(IndexSearcher.class);
-	protected IndexContext<?> INDEX_CONTEXT = mock(IndexContext.class);
-	protected IClusterManager CLUSTER_MANAGER = mock(IClusterManager.class);
-	protected IndexableTable INDEXABLE_TABLE = mock(IndexableTable.class);
-	protected IndexableColumn INDEXABLE_COLUMN = mock(IndexableColumn.class);
+	protected Lock					lock						= mock(Lock.class);
+	protected Index					index						= mock(Index.class);
+	protected Server				server						= mock(Server.class);
+	protected TopDocs				topDocs						= mock(TopDocs.class);
+	protected FSDirectory			fsDirectory					= mock(FSDirectory.class);
+	protected IndexWriter			indexWriter					= mock(IndexWriter.class);
+	protected IndexReader			indexReader					= mock(IndexReader.class);
+	protected TopFieldDocs			topFieldDocs				= mock(TopFieldDocs.class);
+	protected MultiSearcher			multiSearcher				= mock(MultiSearcher.class);
+	protected IndexSearcher			indexSearcher				= mock(IndexSearcher.class);
+	protected IndexContext<?>		indexContext				= mock(IndexContext.class);
+	protected IClusterManager		clusterManager				= mock(IClusterManager.class);
+	protected IndexableTable		indexableTable				= mock(IndexableTable.class);
+	protected IndexableColumn		indexableColumn				= mock(IndexableColumn.class);
 
-	protected String indexDirectoryPath = "./indexes";
-	protected String indexDirectoryPathBackup = "./indexes/backup";
+	protected String				indexDirectoryPath			= "./indexes";
+	protected String				indexDirectoryPathBackup	= "./indexes/backup";
 
 	public ATest(Class<?> subClass) {
 		logger = Logger.getLogger(subClass);
-		SEARCHABLES = new Searchable[] { INDEX_SEARCHER };
-		SCORE_DOCS = new ScoreDoc[0];
-		INDEXABLES = new ArrayList<Indexable<?>>();
+		searchables = new Searchable[] { indexSearcher };
+		scoreDocs = new ScoreDoc[0];
+		indexables = new ArrayList<Indexable<?>>();
 
 		try {
-			IP = InetAddress.getLocalHost().getHostAddress();
-			when(INDEX_SEARCHER.getIndexReader()).thenReturn(INDEX_READER);
-			when(INDEX_SEARCHER.search(any(Query.class), anyInt())).thenReturn(TOP_DOCS);
+			ip = InetAddress.getLocalHost().getHostAddress();
+			when(indexSearcher.getIndexReader()).thenReturn(indexReader);
+			when(indexSearcher.search(any(Query.class), anyInt())).thenReturn(topDocs);
 
-			when(MULTI_SEARCHER.getSearchables()).thenReturn(SEARCHABLES);
-			when(MULTI_SEARCHER.search(any(Query.class), anyInt())).thenReturn(TOP_DOCS);
-			when(MULTI_SEARCHER.search(any(Query.class), any(Filter.class), anyInt(), any(Sort.class))).thenReturn(TOP_FIELD_DOCS);
+			when(multiSearcher.getSearchables()).thenReturn(searchables);
+			when(multiSearcher.search(any(Query.class), anyInt())).thenReturn(topDocs);
+			when(multiSearcher.search(any(Query.class), any(Filter.class), anyInt(), any(Sort.class))).thenReturn(topFieldDocs);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
-		TOP_DOCS.totalHits = 0;
-		TOP_DOCS.scoreDocs = SCORE_DOCS;
-		TOP_FIELD_DOCS.totalHits = 0;
-		TOP_FIELD_DOCS.scoreDocs = SCORE_DOCS;
-		when(INDEX_READER.directory()).thenReturn(FS_DIRECTORY);
-		when(INDEX_READER.getFieldNames(any(FieldOption.class))).thenReturn(
-				Arrays.asList(IConstants.ID, IConstants.FRAGMENT, IConstants.CONTENTS));
-		when(FS_DIRECTORY.makeLock(anyString())).thenReturn(LOCK);
+		topDocs.totalHits = 0;
+		topDocs.scoreDocs = scoreDocs;
+		topFieldDocs.totalHits = 0;
+		topFieldDocs.scoreDocs = scoreDocs;
+		when(indexReader.directory()).thenReturn(fsDirectory);
+		when(indexReader.getFieldNames(any(FieldOption.class))).thenReturn(Arrays.asList(IConstants.ID, IConstants.FRAGMENT, IConstants.CONTENTS));
+		when(fsDirectory.makeLock(anyString())).thenReturn(lock);
 
-		when(INDEX_CONTEXT.getIndexDirectoryPath()).thenReturn(indexDirectoryPath);
-		when(INDEX_CONTEXT.getIndexDirectoryPathBackup()).thenReturn(indexDirectoryPathBackup);
-		when(INDEX_CONTEXT.getIndexName()).thenReturn("index");
-		when(INDEX_CONTEXT.getIndexables()).thenReturn(INDEXABLES);
+		when(indexContext.getIndexDirectoryPath()).thenReturn(indexDirectoryPath);
+		when(indexContext.getIndexDirectoryPathBackup()).thenReturn(indexDirectoryPathBackup);
+		when(indexContext.getIndexName()).thenReturn("index");
+		when(indexContext.getIndexables()).thenReturn(indexables);
 
-		when(INDEX_CONTEXT.getIndex()).thenReturn(INDEX);
-		when(INDEX.getMultiSearcher()).thenReturn(MULTI_SEARCHER);
+		when(indexContext.getIndex()).thenReturn(index);
+		when(index.getMultiSearcher()).thenReturn(multiSearcher);
 
-		when(INDEX_CONTEXT.getBufferedDocs()).thenReturn(100);
-		when(INDEX_CONTEXT.getBufferSize()).thenReturn(100d);
-		when(INDEX_CONTEXT.getMaxFieldLength()).thenReturn(100);
-		when(INDEX_CONTEXT.getMaxReadLength()).thenReturn(1000000l);
-		when(INDEX_CONTEXT.getMergeFactor()).thenReturn(100);
-		when(INDEX_CONTEXT.getMaxAge()).thenReturn((long) (60));
-		when(CLUSTER_MANAGER.getServer()).thenReturn(SERVER);
-		when(SERVER.getWorking()).thenReturn(Boolean.FALSE);
-		when(SERVER.getAddress()).thenReturn(IP);
-		when(SERVER.getIp()).thenReturn(IP);
-		when(INDEX.getIndexWriter()).thenReturn(INDEX_WRITER);
-		INDEXABLES.add(INDEXABLE_TABLE);
-		INDEXABLES.add(INDEXABLE_COLUMN);
-		when(INDEXABLE_COLUMN.getContent()).thenReturn("9a avenue road, cape town, south africa");
-		when(INDEXABLE_COLUMN.isAddress()).thenReturn(Boolean.TRUE);
-		when(INDEXABLE_COLUMN.getName()).thenReturn("indexableName");
+		when(indexContext.getBufferedDocs()).thenReturn(100);
+		when(indexContext.getBufferSize()).thenReturn(100d);
+		when(indexContext.getMaxFieldLength()).thenReturn(100);
+		when(indexContext.getMaxReadLength()).thenReturn(1000000l);
+		when(indexContext.getMergeFactor()).thenReturn(100);
+		when(indexContext.getMaxAge()).thenReturn((long) (60));
+		when(clusterManager.getServer()).thenReturn(server);
+		when(clusterManager.lock(anyString())).thenReturn(Boolean.TRUE);
+		when(server.getWorking()).thenReturn(Boolean.FALSE);
+		when(server.getAddress()).thenReturn(ip);
+		when(server.getIp()).thenReturn(ip);
+		when(index.getIndexWriter()).thenReturn(indexWriter);
+		indexables.add(indexableTable);
+		indexables.add(indexableColumn);
+		when(indexableColumn.getContent()).thenReturn("9a avenue road, cape town, south africa");
+		when(indexableColumn.isAddress()).thenReturn(Boolean.TRUE);
+		when(indexableColumn.getName()).thenReturn("indexableName");
 
-		IndexManagerMock.INDEX_WRITER = INDEX_WRITER;
-		ApplicationContextManagerMock.INDEX_CONTEXT = INDEX_CONTEXT;
-		ApplicationContextManagerMock.CLUSTER_MANAGER = CLUSTER_MANAGER;
+		IndexManagerMock.INDEX_WRITER = indexWriter;
+		ApplicationContextManagerMock.INDEX_CONTEXT = indexContext;
+		ApplicationContextManagerMock.CLUSTER_MANAGER = clusterManager;
 		when(ApplicationContextManagerMock.HANDLER.getIndexableClass()).thenReturn(IndexableTable.class);
-
-		ListenerManager.removeListeners();
 	}
 
 	protected void delete(final IDataBase dataBase, final Class<?>... klasses) {
@@ -168,21 +165,22 @@ public abstract class ATest {
 	}
 
 	/**
-	 * Returns the path to the latest index directory for this server and this context. The result will be something like
-	 * './index/faq/1234567890/127.0.0.1'.
+	 * Returns the path to the latest index directory for this server and this context. The result will be something
+	 * like './index/faq/1234567890/127.0.0.1'.
 	 * 
 	 * @param indexContext
 	 *            the index context to get the directory path for
 	 * @return the directory path to the latest index directory for this servers and context
 	 */
 	protected String getServerIndexDirectoryPath(final IndexContext<?> indexContext) {
-		return IndexManager.getIndexDirectory(indexContext, System.currentTimeMillis(), IP);
+		return IndexManager.getIndexDirectory(indexContext, System.currentTimeMillis(), ip);
 	}
 
 	/**
-	 * This method creates an index using the index path in the context, the time and the ip and returns the latest index directory, i.e.
-	 * the index that has just been created. Note that if there are still cascading mocks from JMockit, the index writer sill not create the
-	 * index! So you have to tear down all mocks prior to using this method.
+	 * This method creates an index using the index path in the context, the time and the ip and returns the latest
+	 * index directory, i.e. the index that has just been created. Note that if there are still cascading mocks from
+	 * JMockit, the index writer sill not create the index! So you have to tear down all mocks prior to using this
+	 * method.
 	 * 
 	 * @param indexContext
 	 *            the index context to use for the path to the index
@@ -193,7 +191,7 @@ public abstract class ATest {
 	protected File createIndex(IndexContext<?> indexContext, String... strings) {
 		IndexWriter indexWriter = null;
 		try {
-			indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), IP);
+			indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
 			Document document = new Document();
 			IndexManager.addStringField(IConstants.CONTENTS, "Michael Couck", document, Store.YES, Field.Index.ANALYZED, TermVector.YES);
 			indexWriter.addDocument(document);
@@ -208,7 +206,7 @@ public abstract class ATest {
 			IndexManager.closeIndexWriter(indexWriter);
 		}
 		File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
-		File serverIndexDirectory = new File(latestIndexDirectory, IP);
+		File serverIndexDirectory = new File(latestIndexDirectory, ip);
 		logger.info("Created index in : " + serverIndexDirectory.getAbsolutePath());
 		return latestIndexDirectory;
 	}

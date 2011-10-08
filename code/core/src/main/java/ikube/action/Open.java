@@ -119,7 +119,7 @@ public class Open extends Action<IndexContext<?>, Boolean> {
 				Searchable[] searchables = searchers.toArray(new IndexSearcher[searchers.size()]);
 				MultiSearcher multiSearcher = new MultiSearcher(searchables);
 				indexContext.getIndex().setMultiSearcher(multiSearcher);
-				ListenerManager.fireEvent(Event.SEARCHER_OPENED, System.currentTimeMillis(), indexContext, Boolean.FALSE);
+				ListenerManager.getInstance().fireEvent(Event.SEARCHER_OPENED, System.currentTimeMillis(), indexContext, Boolean.FALSE);
 				return Boolean.TRUE;
 			}
 		} catch (Exception e) {

@@ -29,29 +29,29 @@ public class BackupTest extends ATest {
 	@Before
 	public void before() throws Exception {
 		backup = new Backup();
-		FileUtilities.deleteFile(new File(INDEX_CONTEXT.getIndexDirectoryPath()), 1);
-		FileUtilities.deleteFile(new File(INDEX_CONTEXT.getIndexDirectoryPathBackup()), 1);
+		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
+		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPathBackup()), 1);
 	}
 
 	@After
 	public void after() throws Exception {
 		Mockit.tearDownMocks();
-		FileUtilities.deleteFile(new File(INDEX_CONTEXT.getIndexDirectoryPath()), 1);
-		FileUtilities.deleteFile(new File(INDEX_CONTEXT.getIndexDirectoryPathBackup()), 1);
+		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
+		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPathBackup()), 1);
 	}
 
 	@Test
 	public void execute() throws Exception {
-		File latestIndexDirectory = createIndex(INDEX_CONTEXT);
+		File latestIndexDirectory = createIndex(indexContext);
 
 		Mockit.setUpMocks(IndexManagerMock.class, ApplicationContextManagerMock.class);
-		backup.execute(INDEX_CONTEXT);
+		backup.execute(indexContext);
 		Mockit.tearDownMocks();
 
-		File backupDirectory = new File(IndexManager.getIndexDirectoryPathBackup(INDEX_CONTEXT));
+		File backupDirectory = new File(IndexManager.getIndexDirectoryPathBackup(indexContext));
 		assertTrue(backupDirectory.exists());
 		File latestBackupDirectory = new File(backupDirectory, latestIndexDirectory.getName());
-		File latestServerBackupIndexDirectory = new File(latestBackupDirectory, IP);
+		File latestServerBackupIndexDirectory = new File(latestBackupDirectory, ip);
 		Directory directory = null;
 		try {
 			directory = FSDirectory.open(latestServerBackupIndexDirectory);

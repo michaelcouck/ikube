@@ -4,9 +4,6 @@ import ikube.IConstants;
 import ikube.cluster.cache.ICache;
 import ikube.cluster.cache.ICache.IAction;
 import ikube.cluster.cache.ICache.ICriteria;
-import ikube.listener.Event;
-import ikube.listener.IListener;
-import ikube.listener.ListenerManager;
 import ikube.model.Action;
 import ikube.model.Server;
 import ikube.toolkit.HashUtilities;
@@ -42,51 +39,6 @@ public class ClusterManager implements IClusterManager, IConstants {
 	/** This flag is set cluster wide to make exception for the rules. */
 	private transient boolean		exception;
 
-	class ClusterListener implements IListener {
-		@Override
-		public void handleNotification(Event event) {
-			if (!event.getType().equals(Event.CLEAN)) {
-				return;
-			}
-			Server server = getServer();
-			// Remove all servers that are past the max age
-			List<Server> servers = getServers();
-			for (Server remoteServer : servers) {
-				if (remoteServer.getAddress().equals(server.getAddress())) {
-					continue;
-				}
-				if (System.currentTimeMillis() - remoteServer.getAge() > MAX_AGE) {
-					LOGGER.info("Removing server : " + remoteServer + ", " + (System.currentTimeMillis() - remoteServer.getAge() > MAX_AGE));
-					remove(Server.class.getName(), remoteServer.getId());
-				}
-			}
-		}
-	}
-
-	class AliveListener implements IListener {
-		@Override
-		public void handleNotification(Event event) {
-			if (!event.getType().equals(Event.ALIVE)) {
-				return;
-			}
-			// Set our own server age
-			Server server = getServer();
-			server.setAge(System.currentTimeMillis());
-			set(Server.class.getName(), server.getId(), server);
-		}
-	}
-
-	/**
-	 * This listener will respond to clean events and it will remove servers that have not checked in, i.e. their sell
-	 * by date is expired.
-	 */
-	private IListener	cleanerListener	= new ClusterListener();
-
-	/**
-	 * This listener will reset this server, with the latest timestamp so we can stay in the server club.
-	 */
-	private IListener	aliveListener	= new AliveListener();
-
 	/**
 	 * In the constructor we initialise the logger but most importantly the address of this server. Please see the
 	 * comments.
@@ -106,10 +58,6 @@ public class ClusterManager implements IClusterManager, IConstants {
 		this.address = ip + "." + System.nanoTime();
 		Server server = getServer();
 		LOGGER.info("This server started : " + server);
-		// This listener will iterate over the servers and remove any that have expired
-		// and will also register this server as still alive in the cluster
-		ListenerManager.addListener(aliveListener);
-		ListenerManager.addListener(cleanerListener);
 	}
 
 	/**

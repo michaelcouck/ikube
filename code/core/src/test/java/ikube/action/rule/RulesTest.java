@@ -35,7 +35,7 @@ public class RulesTest extends ATest {
 		for (IAction action : actions.values()) {
 			List<IRule<IndexContext>> rules = action.getRules();
 			for (IRule<IndexContext> rule : rules) {
-				boolean result = rule.evaluate(INDEX_CONTEXT);
+				boolean result = rule.evaluate(indexContext);
 				logger.info("Rule : " + rule + ", result : " + result);
 			}
 		}

@@ -1,11 +1,10 @@
 package ikube.cluster.cache;
 
 import ikube.IConstants;
-import ikube.listener.ListenerManager;
 import ikube.model.Server;
 import ikube.toolkit.ApplicationContextManager;
 
-import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -34,13 +33,10 @@ public class CacheJGroups implements ICache {
 	private JChannel	channel;
 	private LockService	lockService;
 
-	// private Map<String, ReplicatedHashMap<Long, Object>> maps;
-
 	class ShutdownReceiverAdapter extends ReceiverAdapter {
 
 		@Override
 		public void viewAccepted(View view) {
-			// logger.info("View : " + view);
 			super.viewAccepted(view);
 		}
 
@@ -57,7 +53,6 @@ public class CacheJGroups implements ICache {
 			executorService.schedule(new Runnable() {
 				public void run() {
 					logger.warn("Shutting down Ikube server : " + this);
-					ListenerManager.removeListeners();
 					ApplicationContextManager.closeApplicationContext();
 					channel.clearChannelListeners();
 					channel.close();
@@ -75,11 +70,9 @@ public class CacheJGroups implements ICache {
 	 */
 	public void initialise() throws Exception {
 		logger = Logger.getLogger(this.getClass());
-		// maps = new HashMap<String, ReplicatedHashMap<Long, Object>>();
 		String configurationFile = IConstants.META_INF + IConstants.SEP + IConstants.UDP_XML;
-		InputStream inputStream = getClass().getResourceAsStream(configurationFile);
-		channel = new JChannel(inputStream);
-		// channel.setDiscardOwnMessages(Boolean.TRUE);
+		URL url = getClass().getResource(configurationFile);
+		channel = new JChannel(url);
 		channel.connect(IConstants.IKUBE);
 		channel.setReceiver(new ShutdownReceiverAdapter());
 		lockService = new LockService(channel);

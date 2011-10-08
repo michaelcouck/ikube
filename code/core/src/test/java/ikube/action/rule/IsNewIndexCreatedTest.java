@@ -30,37 +30,37 @@ public class IsNewIndexCreatedTest extends ATest {
 
 	@Before
 	public void before() {
-		originalDirectoryPath = INDEX_CONTEXT.getIndexDirectoryPath();
-		when(INDEX_CONTEXT.getIndexDirectoryPath()).thenReturn("./" + getClass().getSimpleName());
-		FileUtilities.deleteFile(new File(INDEX_CONTEXT.getIndexDirectoryPath()), 1);
+		originalDirectoryPath = indexContext.getIndexDirectoryPath();
+		when(indexContext.getIndexDirectoryPath()).thenReturn("./" + getClass().getSimpleName());
+		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
 	}
 
 	@After
 	public void after() {
-		FileUtilities.deleteFile(new File(INDEX_CONTEXT.getIndexDirectoryPath()), 1);
-		when(INDEX_CONTEXT.getIndexDirectoryPath()).thenReturn(originalDirectoryPath);
+		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
+		when(indexContext.getIndexDirectoryPath()).thenReturn(originalDirectoryPath);
 	}
 
 	@Test
 	public void evaluate() throws Exception {
 		// final IndexContext<?> indexContext
 		IsNewIndexCreated isNewIndexCreated = new IsNewIndexCreated();
-		boolean result = isNewIndexCreated.evaluate(INDEX_CONTEXT);
+		boolean result = isNewIndexCreated.evaluate(indexContext);
 		assertFalse("There is no index created : ", result);
 
-		File indexDirectory = createIndex(INDEX_CONTEXT, "Some data : ");
+		File indexDirectory = createIndex(indexContext, "Some data : ");
 
-		result = isNewIndexCreated.evaluate(INDEX_CONTEXT);
+		result = isNewIndexCreated.evaluate(indexContext);
 		assertTrue("The index is created : ", result);
 
 		// Open the index searcher on the latest index
-		File serverIndexDirectory = new File(indexDirectory, IP);
-		when(FS_DIRECTORY.getFile()).thenReturn(serverIndexDirectory);
-		result = isNewIndexCreated.evaluate(INDEX_CONTEXT);
+		File serverIndexDirectory = new File(indexDirectory, ip);
+		when(fsDirectory.getFile()).thenReturn(serverIndexDirectory);
+		result = isNewIndexCreated.evaluate(indexContext);
 		assertFalse("The latest index is already opened : ", result);
 
-		createIndex(INDEX_CONTEXT, "Some more data : ");
-		result = isNewIndexCreated.evaluate(INDEX_CONTEXT);
+		createIndex(indexContext, "Some more data : ");
+		result = isNewIndexCreated.evaluate(indexContext);
 		assertTrue("There is a new index, and the searcher is open on the old one : ", result);
 	}
 

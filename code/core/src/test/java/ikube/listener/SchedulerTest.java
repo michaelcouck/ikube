@@ -1,15 +1,15 @@
 package ikube.listener;
 
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import ikube.ATest;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
+import org.mockito.Mockito;
 
 /**
  * @author Michael Couck
@@ -18,38 +18,39 @@ import org.mockito.stubbing.Answer;
  */
 public class SchedulerTest extends ATest {
 
-	private boolean notified = Boolean.FALSE;
+	private Scheduler	scheduler;
 
 	public SchedulerTest() {
 		super(SchedulerTest.class);
 	}
 
-	@Test
-	public void initialize() throws Exception {
-		IListener listener = mock(IListener.class);
-		doAnswer(new Answer<Object>() {
-			@Override
-			public Object answer(InvocationOnMock invocation) throws Throwable {
-				notified();
-				return null;
-			}
-		}).when(listener).handleNotification(any(Event.class));
-
-		ListenerManager.addListener(listener);
-
-		Schedule schedule = mock(Schedule.class);
-		when(schedule.getDelay()).thenReturn(100l);
-		when(schedule.getPeriod()).thenReturn(1000000l);
-		when(schedule.getType()).thenReturn(Event.TIMER);
-		Scheduler.addSchedule(schedule);
-		Scheduler.initialize();
-		Thread.sleep(1000);
-
-		assertTrue(notified);
+	@Before
+	public void before() {
+		scheduler = new Scheduler();
 	}
 
-	private void notified() {
-		this.notified = Boolean.TRUE;
+	@After
+	public void after() {
+		scheduler.shutdown();
+	}
+
+	@Test
+	public void initialize() throws Exception {
+		ListenerManager listenerManager = mock(ListenerManager.class);
+		Schedule schedule = mock(Schedule.class);
+		when(schedule.getDelay()).thenReturn(10l);
+		when(schedule.getPeriod()).thenReturn(10l);
+		when(schedule.getType()).thenReturn(Event.TIMER);
+
+		scheduler.setListenerManager(listenerManager);
+		scheduler.setSchedule(schedule);
+		scheduler.initialize();
+
+		Thread.sleep(1000);
+		verify(listenerManager, Mockito.atLeastOnce()).fireEvent(any(Event.class));
+
+		Thread.sleep(1000);
+		verify(listenerManager, Mockito.atLeast(10)).fireEvent(any(Event.class));
 	}
 
 }

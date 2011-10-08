@@ -30,23 +30,23 @@ public class AreIndexesCreatedTest extends ATest {
 	@Before
 	public void before() {
 		indexesCreated = new AreIndexesCreated();
-		when(INDEX_CONTEXT.getIndexDirectoryPath()).thenReturn("./" + this.getClass().getSimpleName());
-		FileUtilities.deleteFile(new File(INDEX_CONTEXT.getIndexDirectoryPath()), 1);
+		when(indexContext.getIndexDirectoryPath()).thenReturn("./" + this.getClass().getSimpleName());
+		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
 	}
 
 	@After
 	public void after() {
-		FileUtilities.deleteFile(new File(INDEX_CONTEXT.getIndexDirectoryPath()), 1);
+		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
 	}
 
 	@Test
 	public void evaluate() {
-		boolean result = indexesCreated.evaluate(INDEX_CONTEXT);
+		boolean result = indexesCreated.evaluate(indexContext);
 		// This seems to fail in Maven, probably because of
 		// conflicts in the creation of the indexes
 		assertFalse(result);
-		createIndex(INDEX_CONTEXT, "soem data, wif wong smelling");
-		result = indexesCreated.evaluate(INDEX_CONTEXT);
+		createIndex(indexContext, "soem data, wif wong smelling");
+		result = indexesCreated.evaluate(indexContext);
 		assertTrue(result);
 	}
 

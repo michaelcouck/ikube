@@ -80,7 +80,7 @@ public class IndexableTableHandlerTest extends BaseTest {
 
 	@Test
 	public void handleTable() throws Exception {
-		indexContext.getIndex().setIndexWriter(INDEX_WRITER);
+		indexContext.getIndex().setIndexWriter(indexWriter);
 		List<Thread> threads = indexableTableHandler.handle(indexContext, faqIndexableTable);
 		ThreadUtilities.waitForThreads(threads);
 		// We just need to succeed, the integration tests test the

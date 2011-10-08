@@ -2,12 +2,12 @@ package ikube;
 
 import ikube.database.IDataBase;
 import ikube.listener.ListenerManager;
-import ikube.listener.Scheduler;
 import ikube.model.IndexContext;
 import ikube.model.faq.Attachment;
 import ikube.model.faq.Faq;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
+import ikube.toolkit.Logging;
 import ikube.toolkit.PerformanceTester;
 import ikube.toolkit.data.DataGeneratorFour;
 import ikube.toolkit.data.DataGeneratorMedical;
@@ -16,12 +16,7 @@ import ikube.toolkit.data.IDataGenerator;
 import java.io.File;
 import java.io.InputStream;
 
-import javax.persistence.EntityManagerFactory;
-
 import org.apache.log4j.Logger;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.springframework.context.ApplicationContext;
 
 /**
  * This is the base class for tests that start up the application context. Generally we don't want to start the context
@@ -39,35 +34,13 @@ import org.springframework.context.ApplicationContext;
  */
 public abstract class BaseTest extends ATest {
 
-	private static final Logger				LOGGER		= Logger.getLogger(BaseTest.class);
+	private static final Logger	LOGGER	= Logger.getLogger(BaseTest.class);
 
-	protected static ApplicationContext		APPLICATION_CONTEXT;
-	protected static EntityManagerFactory	ENTITY_MANAGER_FACTORY;
-	protected static boolean				INITIALIZED	= Boolean.FALSE;
-
-	@BeforeClass
-	public static void beforeClass() {
-		shutdownSchedules();
-		if (INITIALIZED) {
-			return;
-		}
-		INITIALIZED = Boolean.TRUE;
-		// Close down all the instances in the environment because we will be conflicting
-		// with each other. Generally there will be none, but the Tomcat shutdown command
-		// does not always work
-		APPLICATION_CONTEXT = ApplicationContextManager.getApplicationContext();
+	static {
+		Logging.configure();
+		ApplicationContextManager.getApplicationContext();
+		ListenerManager.getInstance().removeListeners();
 		try {
-			// IClusterManager clusterManager = APPLICATION_CONTEXT.getBean(IClusterManager.class);
-			// Server server = clusterManager.getServer();
-			// String path = IConstants.META_INF + IConstants.SEP + IConstants.UDP_XML;
-			// InputStream inputStream = BaseTest.class.getResourceAsStream(path);
-			// JChannel channel = new JChannel(inputStream);
-			// channel.connect(IConstants.IKUBE);
-			// Message message = new Message();
-			// message.setObject(server);
-			// channel.send(message);
-			// We'll sleep for a while to give the other servers a time to shut down
-			Thread.sleep(10000);
 			final int iterations = 0;
 			final IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
 			PerformanceTester.execute(new PerformanceTester.APerform() {
@@ -89,17 +62,6 @@ public abstract class BaseTest extends ATest {
 		} catch (Exception e) {
 			LOGGER.error("Exception inserting the data for the base test : ", e);
 		}
-		shutdownSchedules();
-	}
-
-	@AfterClass
-	public static void afterClass() {
-		shutdownSchedules();
-	}
-
-	protected static final void shutdownSchedules() {
-		Scheduler.shutdown();
-		ListenerManager.removeListeners();
 	}
 
 	protected IndexContext<?>	indexContext;

@@ -4,11 +4,8 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import ikube.ATest;
-import ikube.cluster.IClusterManager;
-import ikube.listener.Event;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.model.Execution;
-import ikube.model.Server;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.PerformanceTester;
 import mockit.Mockit;
@@ -56,15 +53,15 @@ public class MonitoringInterceptorTest extends ATest {
 
 	@Test
 	public void indexingPerformance() throws Throwable {
-		arguments = new Object[] { INDEX_CONTEXT };
+		arguments = new Object[] { indexContext };
 		when(proceedingJoinPoint.getArgs()).thenReturn(arguments);
 
 		monitoringInterceptor.indexingPerformance(proceedingJoinPoint);
 		logger.info(monitoringInterceptor.indexingExecutions);
 		assertTrue(monitoringInterceptor.indexingExecutions.size() == 1);
-		assertTrue(monitoringInterceptor.indexingExecutions.containsKey(INDEX_CONTEXT.getIndexName()));
-		Execution execution = monitoringInterceptor.indexingExecutions.get(INDEX_CONTEXT.getIndexName());
-		assertTrue(execution.invocations > 0);
+		assertTrue(monitoringInterceptor.indexingExecutions.containsKey(indexContext.getIndexName()));
+		Execution execution = monitoringInterceptor.indexingExecutions.get(indexContext.getIndexName());
+		assertTrue(execution.getInvocations() > 0);
 		// Performance test
 		double executionsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
 			public void execute() throws Throwable {
@@ -76,7 +73,7 @@ public class MonitoringInterceptorTest extends ATest {
 
 	@Test
 	public void searchingPerformance() throws Throwable {
-		arguments = new Object[] { INDEX_CONTEXT.getIndexName() };
+		arguments = new Object[] { indexContext.getIndexName() };
 		when(proceedingJoinPoint.getArgs()).thenReturn(arguments);
 
 		monitoringInterceptor.searchingPerformance(proceedingJoinPoint);
@@ -84,7 +81,7 @@ public class MonitoringInterceptorTest extends ATest {
 		assertTrue(monitoringInterceptor.searchingExecutions.size() == 1);
 		assertTrue(monitoringInterceptor.searchingExecutions.containsKey(arguments[0]));
 		Execution execution = monitoringInterceptor.searchingExecutions.get(arguments[0]);
-		assertTrue(execution.invocations > 0);
+		assertTrue(execution.getInvocations() > 0);
 		// Performance test
 		double executionsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
 			public void execute() throws Throwable {
@@ -92,23 +89,6 @@ public class MonitoringInterceptorTest extends ATest {
 			}
 		}, "Indexing interceptor : ", 100, Boolean.FALSE);
 		assertTrue(executionsPerSecond > 100);
-	}
-
-	@Test
-	public void handleNotification() throws Throwable {
-		indexingPerformance();
-		searchingPerformance();
-
-		Server server = new Server();
-		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
-		when(clusterManager.getServer()).thenReturn(server);
-
-		Event event = mock(Event.class);
-		when(event.getType()).thenReturn(Event.PERFORMANCE);
-		monitoringInterceptor.handleNotification(event);
-		// Verify that the server in the cluster manager has the new data
-		assertTrue("There should be some executions in the profiling data : ", server.getSearchingExecutions().size() > 0);
-		assertTrue("There should be some executions in the profiling data : ", server.getIndexingExecutions().size() > 0);
 	}
 
 }

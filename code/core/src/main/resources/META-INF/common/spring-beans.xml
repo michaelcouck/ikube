@@ -1,11 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!--
-	This file is not to be modified by users generally.
-	
-	This is the configuration for the beans used by Ikube. It contains the entity manager for Jpa,
-	the handlers for the data sources and the schedulers for the timing of jobs.  
- -->
 <beans
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://www.springframework.org/schema/beans"
@@ -26,21 +20,30 @@
             http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
             http://www.springframework.org/schema/context
             http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+	
+	<description>
+		This file is not to be modified by users generally.
+		This is the configuration for the beans used by Ikube. It contains the entity manager for Jpa,
+		the handlers for the data sources and the schedulers for the timing of jobs.
+	</description>
 
 	<context:annotation-config />
 	<context:component-scan base-package="ikube" />
 	<transaction:annotation-driven transaction-manager="transactionManager"/>
+	
+	<bean
+		id="ikube.IndexEngine"
+		name="ikube.IndexEngine"
+		class="ikube.IndexEngine"
+		property:actions-ref="ikube.IndexEngine.actions"
+		property:clusterManager-ref="ikube.cluster.IClusterManager" />
 
-	<!-- <bean
-		class="ikube.toolkit.ApplicationContextManagerPostProcessor" /> -->
 	<bean 
 		class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor" />
-
 	<bean 
 		id="transactionManager" 
 		class="org.springframework.orm.jpa.JpaTransactionManager" 
 		property:entityManagerFactory-ref="entityManagerFactory" />
-
 	<bean 
 		id="entityManagerFactory" 
 		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean" 
@@ -53,13 +56,11 @@
 		</property>
 		<property name="persistenceUnitName" value="${ikube.persistenceUnit}"></property>
 	</bean>
-
 	<bean 
 		id="jpaAdapter" 
 		class="org.springframework.orm.jpa.vendor.OpenJpaVendorAdapter"
 		property:database="${ikube.dataSourceType}" 
 		property:showSql="false" />
-		
 	<util:map id="jpaPropertyMap">
 		<entry key="openjpa.ConnectionFactoryProperties" value="PrettyPrint=true,PrettyPrintLineLength=150" />
 		<entry key="openjpa.Log" value="DefaultLevel=ERROR,JDBC=ERROR,SQL=ERROR,File=openjpa.log,Runtime=ERROR,Tool=ERROR" />
@@ -97,27 +98,16 @@
 	</transaction:advice>
 
 	<aop:config>
-		<aop:pointcut id="dataBaseOperation" expression="execution(* ikube.database.jpa.DataBaseJpa.*(..))" />
+		<aop:pointcut id="dataBaseOperation" expression="execution(* ikube.database.jpa.DataBase*.*(..))" />
 		<aop:advisor advice-ref="transactionAdvice" pointcut-ref="dataBaseOperation" />
 	</aop:config>
 	
 	<!-- The Jpa database for large sets of data. -->
 	<bean
-		id="ikube.database.jpa.DataBaseJpa"
+		id="ikube.database.IDataBase"
 		class="ikube.database.jpa.DataBaseJpa"
 		lazy-init="false" />
 	
-	<!-- The cluster manager that is responsible for all cluster synchronisation stuff. -->
-	<!-- <bean
-		id="ikube.cluster.cache.CacheHazelcast"
-		class="ikube.cluster.cache.CacheHazelcast"
-		lazy-init="false"
-		init-method="initialise" /> -->
-	<!-- <bean
-		id="ikube.cluster.cache.CacheJGroups"
-		class="ikube.cluster.cache.CacheJGroups"
-		lazy-init="false"
-		init-method="initialise" /> -->
 	<bean
 		id="ikube.cluster.cache.CacheInfinispan"
 		class="ikube.cluster.cache.CacheInfinispan"
@@ -190,50 +180,55 @@
 		<constructor-arg ref="ikube.cluster.IClusterManager" />
 	</bean>
 	
-	<!-- The schedules that fire events to start actions. -->
-	<bean
-		id="ikube.listener.Schedule"
-		class="ikube.listener.Schedule"
-		property:type="timer"
-		property:delay="${delay}"
-		property:period="${period}" />
-	<bean
-		id="ikube.listener.ScheduleBroadCaster"
-		class="ikube.listener.Schedule"
-		property:type="alive"
-		property:delay="60000"
-		property:period="60000" />
-	<bean
-		id="ikube.listener.ScheduleBroadClean"
-		class="ikube.listener.Schedule"
-		property:type="clean"
-		property:delay="600000"
-		property:period="600000" />
-	<bean
-		id="ikube.listener.SchedulePerformance"
-		class="ikube.listener.Schedule"
-		property:type="performance"
-		property:delay="60000"
-		property:period="60000" />
-	<util:list id="ikube.listener.Schedules">
-		<ref bean="ikube.listener.Schedule" />
-		<ref bean="ikube.listener.ScheduleBroadCaster" />
-		<ref bean="ikube.listener.ScheduleBroadClean" />
-		<ref bean="ikube.listener.SchedulePerformance" />
+	<bean 
+		id="ikube.listener.ListenerManager"
+		class="ikube.listener.ListenerManager"
+		destroy-method="removeListeners"
+		property:listeners-ref="ikube.listener.ListenerManager.listeners" />
+	<util:list id="ikube.listener.ListenerManager.listeners">
+		<ref bean="ikube.IndexEngine" />
+		<ref bean="ikube.monitoring.IMonitoringInterceptor" />
+		<bean 
+			class="ikube.listener.AliveListener"
+			property:clusterManager-ref="ikube.cluster.IClusterManager" />
+		<bean 
+			class="ikube.listener.ClusterListener"
+			property:clusterManager-ref="ikube.cluster.IClusterManager" />
+		<bean 
+			class="ikube.listener.MonitoringListener"
+			property:clusterManager-ref="ikube.cluster.IClusterManager" />
 	</util:list>
 	
 	<bean 
-		class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
-		property:staticMethod="ikube.listener.Scheduler.addSchedules">
-		<property name="arguments">
-			<ref local="ikube.listener.Schedules" />
-		</property>
-	</bean>
-	<bean 
-		id="schedulerInitialize" 
-		class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
-		property:staticMethod="ikube.listener.Scheduler.initialize">
-	</bean>
+		id="ikube.listener.Scheduler" 
+		class="ikube.listener.Scheduler"
+		init-method="initialize"
+		destroy-method="shutdown"
+		property:schedules-ref="ikube.listener.Scheduler.schedules"
+		property:listenerManager-ref="ikube.listener.ListenerManager" />
+	<!-- The schedules that fire events to start actions. -->
+	<util:list id="ikube.listener.Scheduler.schedules">
+		<bean
+			class="ikube.listener.Schedule"
+			property:type="timer"
+			property:delay="${delay}"
+			property:period="${period}" />
+		<bean
+			class="ikube.listener.Schedule"
+			property:type="alive"
+			property:delay="60000"
+			property:period="60000" />
+		<bean
+			class="ikube.listener.Schedule"
+			property:type="clean"
+			property:delay="600000"
+			property:period="600000" />
+		<bean
+			class="ikube.listener.Schedule"
+			property:type="performance"
+			property:delay="60000"
+			property:period="60000" />
+	</util:list>
 	
 	<!-- 
 		This is the mailer that will send mail to targets when things go right, and wrong in fact. This 

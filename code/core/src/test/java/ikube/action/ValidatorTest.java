@@ -53,20 +53,20 @@ public class ValidatorTest extends ATest {
 				return null;
 			}
 		}).when(validator).sendNotification(anyString(), anyString());
-		when(INDEX_CONTEXT.getIndexDirectoryPath()).thenReturn("./" + this.getClass().getSimpleName());
-		FileUtilities.deleteFile(new File(INDEX_CONTEXT.getIndexDirectoryPath()), 1);
+		when(indexContext.getIndexDirectoryPath()).thenReturn("./" + this.getClass().getSimpleName());
+		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
 		Mockit.setUpMocks(ApplicationContextManagerMock.class, ClusterManagerMock.class);
 	}
 
 	@After
 	public void after() {
 		Mockit.tearDownMocks();
-		FileUtilities.deleteFile(new File(INDEX_CONTEXT.getIndexDirectoryPath()), 1);
+		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
 	}
 
 	@Test
 	public void validate() throws Exception {
-		boolean result = validator.execute(INDEX_CONTEXT);
+		boolean result = validator.execute(indexContext);
 		assertFalse("There are no indexes created : ", result);
 		// There should be a mail sent because there are no indexes created
 		// There should also be a mail sent because the searchable is not opened
@@ -74,23 +74,23 @@ public class ValidatorTest extends ATest {
 		int invocations = 3;
 		verify(validator, Mockito.times(invocations)).sendNotification(anyString(), anyString());
 
-		File latestIndexDirectory = createIndex(INDEX_CONTEXT, "a little sentence");
-		File serverIndexDirectory = new File(latestIndexDirectory, IP);
-		result = validator.execute(INDEX_CONTEXT);
+		File latestIndexDirectory = createIndex(indexContext, "a little sentence");
+		File serverIndexDirectory = new File(latestIndexDirectory, ip);
+		result = validator.execute(indexContext);
 		assertFalse("There is an index created but no backup : ", result);
 		// There should be no mail sent because there is an index generated
 		// There should be a mail sent because there is no backup for this index
 		invocations++;
 		verify(validator, Mockito.times(invocations)).sendNotification(anyString(), anyString());
 		
-		new Backup().execute(INDEX_CONTEXT);
-		result = validator.execute(INDEX_CONTEXT);
+		new Backup().execute(indexContext);
+		result = validator.execute(indexContext);
 		assertTrue("There is an index created : ", result);
 
 		Directory directory = FSDirectory.open(serverIndexDirectory);
 		Lock lock = directory.makeLock(IndexWriter.WRITE_LOCK_NAME);
 		lock.obtain(1000);
-		result = validator.execute(INDEX_CONTEXT);
+		result = validator.execute(indexContext);
 		assertFalse("The index is locked : ", result);
 		// There should be a message sent to notify that there is an index being
 		// generated and that the current index is not current
@@ -104,14 +104,14 @@ public class ValidatorTest extends ATest {
 		for (File file : files) {
 			FileUtilities.deleteFile(file, 1);
 		}
-		result = validator.execute(INDEX_CONTEXT);
+		result = validator.execute(indexContext);
 		assertFalse("The index is corrupt : ", result);
 		// There should be a mail sent because the index is corrupt
 		invocations++;
 		invocations++;
 		verify(validator, Mockito.times(invocations)).sendNotification(anyString(), anyString());
 
-		result = validator.execute(INDEX_CONTEXT);
+		result = validator.execute(indexContext);
 		// There should be another mail sent
 		invocations++;
 		invocations++;

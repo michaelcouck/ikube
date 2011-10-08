@@ -12,10 +12,8 @@ import ikube.mock.ApplicationContextManagerMock;
 import ikube.mock.ClusterManagerMock;
 import ikube.model.IndexContext;
 import ikube.toolkit.Logging;
-import ikube.toolkit.PermutationUtilities;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,13 +21,10 @@ import java.util.Map;
 import mockit.Mock;
 import mockit.MockClass;
 import mockit.Mockit;
-import mockit.NonStrict;
-import mockit.NonStrictExpectations;
 
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.junit.AfterClass;
+import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.nfunk.jep.JEP;
 
@@ -50,52 +45,30 @@ public class RuleInterceptorTest extends ATest {
 
 	}
 
-	// @MockClass(realClass = AtomicAction.class)
-	// public static class AtomicActionMock {
-	//
-	// @Mock()
-	// public ILock lock(String lockName) {
-	// return mock(ILock.class);
-	// }
-	//
-	// }
-
 	@SuppressWarnings("rawtypes")
-	private static Map<String, IAction>				ACTIONS;
+	private Map<String, IAction>		actions;
 
-	private transient ProceedingJoinPoint			joinPoint;
-	private transient IRuleInterceptor				ruleInterceptor;
+	private ProceedingJoinPoint			joinPoint;
+	/** Class under test. */
+	private IRuleInterceptor			ruleInterceptor;
 
-	private transient final List<Boolean[]>			matrix	= new ArrayList<Boolean[]>();
-	private transient final Boolean[]				vector	= { Boolean.TRUE, Boolean.FALSE, Boolean.TRUE, Boolean.FALSE, Boolean.TRUE };
-
-	@NonStrict
-	private IAction<?, ?>							action;
-	private transient IsMultiSearcherInitialised	isMultiSearcherInitialised;
-	private transient AreSearchablesInitialised		areSearchablesInitialised;
-	private transient IsIndexCurrent				isIndexCurrent;
-	private transient AreIndexesCreated				areIndexesCreated;
-	private transient AreUnopenedIndexes			areUnopenedIndexes;
+	private IAction<IndexContext<?>, ?>	action;
+	private IsMultiSearcherInitialised	isMultiSearcherInitialised;
+	private AreSearchablesInitialised	areSearchablesInitialised;
+	private IsIndexCurrent				isIndexCurrent;
+	private AreIndexesCreated			areIndexesCreated;
+	private AreUnopenedIndexes			areUnopenedIndexes;
 
 	public RuleInterceptorTest() {
 		super(RuleInterceptorTest.class);
 	}
 
-	@BeforeClass
-	@SuppressWarnings("rawtypes")
-	public static void beforeClass() {
-		ACTIONS = new HashMap<String, IAction>();
-		Mockit.setUpMocks(ApplicationContextManagerMock.class, ClusterManagerMock.class/* , AtomicActionMock.class */);
-	}
-
-	@AfterClass
-	public static void afterClass() {
-		Mockit.tearDownMocks();
-	}
-
 	@Before
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void before() throws Throwable {
-		new PermutationUtilities().getPermutations(vector, matrix, vector.length, 0);
+		Mockit.setUpMocks(ApplicationContextManagerMock.class, ClusterManagerMock.class, JEPMock.class);
+		actions = new HashMap<String, IAction>();
+
 		final List<IRule<IndexContext<?>>> rules = new ArrayList<IRule<IndexContext<?>>>();
 
 		isMultiSearcherInitialised = mock(IsMultiSearcherInitialised.class);
@@ -104,18 +77,19 @@ public class RuleInterceptorTest extends ATest {
 		areIndexesCreated = mock(AreIndexesCreated.class);
 		areUnopenedIndexes = mock(AreUnopenedIndexes.class);
 
+		action = mock(IAction.class);
+		Close close = mock(Close.class);
+
 		rules.add(isMultiSearcherInitialised);
 		rules.add(areSearchablesInitialised);
 		rules.add(isIndexCurrent);
 		rules.add(areIndexesCreated);
 		rules.add(areUnopenedIndexes);
 
-		Close close = mock(Close.class);
 		StringBuilder builder = new StringBuilder();
 
 		boolean first = Boolean.TRUE;
-		for (@SuppressWarnings("rawtypes")
-		IRule rule : rules) {
+		for (IRule rule : rules) {
 			if (!first) {
 				builder.append(" && ");
 			}
@@ -123,8 +97,6 @@ public class RuleInterceptorTest extends ATest {
 			builder.append(rule.getClass().getSimpleName());
 		}
 
-		// IsMultiSearcherInitialised && AreSearchablesInitialised && !IsIndexCurrent && AreIndexesCreated &&
-		// AreUnopenedIndexes
 		final String predicate = builder.toString();
 		when(close.getRuleExpression()).thenReturn(predicate);
 		when(close.getRules()).thenReturn(rules);
@@ -132,49 +104,46 @@ public class RuleInterceptorTest extends ATest {
 
 		joinPoint = mock(ProceedingJoinPoint.class);
 		when(joinPoint.getTarget()).thenReturn(close);
-		when(joinPoint.getArgs()).thenReturn(new Object[] { INDEX_CONTEXT });
+		when(joinPoint.getArgs()).thenReturn(new Object[] { indexContext });
 		when(joinPoint.proceed()).thenReturn(Boolean.TRUE);
 		ruleInterceptor = new RuleInterceptor() {};
 
-		new NonStrictExpectations() {
-			{
-				action.getRules();
-				result = rules;
-				action.getRuleExpression();
-				result = predicate;
-			}
-		};
-		ACTIONS.put(action.toString(), action);
+		when(action.getRules()).thenReturn(rules);
+		when(action.getRuleExpression()).thenReturn(predicate);
+
+		actions.put(action.toString(), action);
+	}
+
+	@After
+	public void after() {
+		Mockit.tearDownMocks();
 	}
 
 	@Test
 	public void decide() throws Throwable {
-		for (final Boolean[] vector : matrix) {
+		// IsMultiSearcherInitialised && AreSearchablesInitialised && IsIndexCurrent && AreIndexesCreated &&
+		// AreUnopenedIndexes
+		when(isMultiSearcherInitialised.evaluate(indexContext)).thenReturn(Boolean.TRUE);
+		when(areSearchablesInitialised.evaluate(indexContext)).thenReturn(Boolean.FALSE);
+		when(isIndexCurrent.evaluate(indexContext)).thenReturn(Boolean.TRUE);
+		when(areIndexesCreated.evaluate(indexContext)).thenReturn(Boolean.FALSE);
+		when(areUnopenedIndexes.evaluate(indexContext)).thenReturn(Boolean.TRUE);
 
-			when(isMultiSearcherInitialised.evaluate(INDEX_CONTEXT)).thenReturn(vector[0]);
-			when(areSearchablesInitialised.evaluate(INDEX_CONTEXT)).thenReturn(vector[1]);
-			when(isIndexCurrent.evaluate(INDEX_CONTEXT)).thenReturn(vector[2]);
-			when(areIndexesCreated.evaluate(INDEX_CONTEXT)).thenReturn(vector[3]);
-			when(areUnopenedIndexes.evaluate(INDEX_CONTEXT)).thenReturn(vector[4]);
-
-			Object result = ruleInterceptor.decide(joinPoint);
-			Object expected = vector[0] && vector[1] && vector[2] && vector[3] && vector[4];
-			String message = Logging.getString("Expected : ", expected, ", result : ", result, " booleans : ", Arrays.asList(vector));
-			logger.debug("Result : " + message);
-			assertEquals(message, expected, result);
-		}
+		Object result = ruleInterceptor.decide(joinPoint);
+		Object expected = true;
+		String message = Logging.getString("Expected : ", expected, ", result : ", result);
+		logger.debug("Result : " + message);
+		assertEquals(message, expected, result);
 	}
 
 	@Test
 	@SuppressWarnings("rawtypes")
 	public void decideActions() throws Throwable {
-		Mockit.setUpMocks(JEPMock.class);
-		for (IAction action : ACTIONS.values()) {
+		for (IAction action : actions.values()) {
 			when(joinPoint.getTarget()).thenReturn(action);
 			Object result = ruleInterceptor.decide(joinPoint);
 			logger.debug("Result : " + result);
 		}
-		Mockit.tearDownMocks(JEPMock.class);
 	}
 
 	@Test

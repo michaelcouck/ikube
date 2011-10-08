@@ -96,7 +96,7 @@ public class RuleInterceptor implements IRuleInterceptor {
 							modelAction.getRules().add(modelRule);
 							jep.addVariable(ruleName, evaluation);
 							if (LOGGER.isDebugEnabled()) {
-								LOGGER.debug(Logging.getString("Rule : ", rule, ", parameter : ", ruleName, ", evaluation : ", evaluation));
+								LOGGER.error(Logging.getString("Rule : ", rule, ", parameter : ", ruleName, ", evaluation : ", evaluation));
 							}
 						}
 						String predicate = action.getRuleExpression();

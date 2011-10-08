@@ -17,26 +17,31 @@ import org.apache.log4j.Logger;
  */
 public class Scheduler {
 
-	private static Logger LOGGER = Logger.getLogger(Scheduler.class);
-	/** The scheduler. */
-	private static transient ScheduledExecutorService SCHEDULER;
+	private static Logger				LOGGER	= Logger.getLogger(Scheduler.class);
+
 	/** The list of schedules. */
-	private static transient List<Schedule> SCHEDULES = new ArrayList<Schedule>();
+	private List<Schedule>				schedules;
+	/** The listener manager that will notify the listeners when a schedule is triggered. */
+	private ListenerManager				listenerManager;
+	/** The scheduler. */
+	private ScheduledExecutorService	scheduledExecuterService;
 
 	/**
 	 * Iterates over the schedules scheduling them for execution.
 	 */
-	public static void initialize() {
-		SCHEDULER = Executors.newScheduledThreadPool(10);
-		for (final Schedule schedule : SCHEDULES) {
+	public void initialize() {
+		LOGGER.info("Scheduler : ");
+		scheduledExecuterService = Executors.newScheduledThreadPool(10);
+		for (final Schedule schedule : schedules) {
 			try {
-				SCHEDULER.scheduleAtFixedRate(new Runnable() {
+				LOGGER.info("Scheduling : " + schedule);
+				scheduledExecuterService.scheduleAtFixedRate(new Runnable() {
 					public void run() {
 						Event event = new Event();
 						event.setType(schedule.getType());
 						event.setConsumed(Boolean.FALSE);
 						event.setTimestamp(System.currentTimeMillis());
-						ListenerManager.fireEvent(event);
+						listenerManager.fireEvent(event);
 					}
 				}, schedule.getDelay(), schedule.getPeriod(), TimeUnit.MILLISECONDS);
 			} catch (Exception e) {
@@ -45,21 +50,24 @@ public class Scheduler {
 		}
 	}
 
-	public static void shutdown() {
-		Scheduler.SCHEDULES.clear();
-		if (Scheduler.SCHEDULER == null) {
-			LOGGER.warn("Tried to shutdown the scheduler but it is null : ");
-			return;
-		}
-		Scheduler.SCHEDULER.shutdown();
+	public void shutdown() {
+		this.schedules.clear();
+		this.scheduledExecuterService.shutdown();
 	}
 
-	public static void addSchedule(Schedule schedule) {
-		Scheduler.SCHEDULES.add(schedule);
+	public void setSchedule(Schedule schedule) {
+		if (this.schedules == null) {
+			this.schedules = new ArrayList<Schedule>();
+		}
+		this.schedules.add(schedule);
 	}
-	
-	public static void addSchedules(List<Schedule> schedules) {
-		Scheduler.SCHEDULES.addAll(schedules);
+
+	public void setSchedules(List<Schedule> schedules) {
+		this.schedules = schedules;
+	}
+
+	public void setListenerManager(ListenerManager listenerManager) {
+		this.listenerManager = listenerManager;
 	}
 
 }

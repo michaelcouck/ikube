@@ -1,11 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!--
-	This file is not to be modified by users generally.
-	
-	This is the configuration for the GeoSpatial index which is an index 
-	of the geonames table on the Ikube server. 
- -->
 <beans
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://www.springframework.org/schema/beans"
@@ -21,6 +15,12 @@
             http://www.springframework.org/schema/util
             http://www.springframework.org/schema/util/spring-util.xsd">
 
+	<description>
+		This file is not to be modified by users generally.
+		This is the configuration for the GeoSpatial index which is an index 
+		of the geonames table on the Ikube server.
+	</description>
+	
 	<bean
 		id="geospatial"
 		class="ikube.model.IndexContext"

@@ -35,23 +35,23 @@ public class IndexTest extends ATest {
 	@Before
 	public void before() {
 		Mockit.setUpMocks(IndexManagerMock.class, ApplicationContextManagerMock.class);
-		when(INDEX.getIndexWriter()).thenReturn(INDEX_WRITER);
-		when(CLUSTER_MANAGER.startWorking(anyString(), anyString(), anyString())).thenReturn(System.currentTimeMillis());
-		when(CLUSTER_MANAGER.getServer()).thenReturn(SERVER);
+		when(index.getIndexWriter()).thenReturn(indexWriter);
+		when(clusterManager.startWorking(anyString(), anyString(), anyString())).thenReturn(System.currentTimeMillis());
+		when(clusterManager.getServer()).thenReturn(server);
 		Action action = mock(Action.class);
 		when(action.getStartTime()).thenReturn(new Timestamp(System.currentTimeMillis()));
-		when(SERVER.getAction()).thenReturn(action);
+		when(server.getAction()).thenReturn(action);
 	}
 
 	@After
 	public void after() {
-		FileUtilities.deleteFile(new File(INDEX_CONTEXT.getIndexDirectoryPath()), 1);
+		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
 		Mockit.tearDownMocks(IndexManager.class, ApplicationContextManager.class);
 	}
 
 	@Test
 	public void execute() throws Exception {
-		boolean result = new Index().execute(INDEX_CONTEXT);
+		boolean result = new Index().execute(indexContext);
 		assertTrue(result);
 	}
 

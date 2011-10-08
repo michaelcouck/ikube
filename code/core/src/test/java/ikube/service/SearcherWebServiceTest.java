@@ -37,7 +37,7 @@ public class SearcherWebServiceTest extends ATest {
 	@Before
 	public void before() {
 		Mockit.setUpMocks(ApplicationContextManagerMock.class);
-		ApplicationContextManagerMock.BEAN = INDEX_CONTEXT;
+		ApplicationContextManagerMock.BEAN = indexContext;
 		this.searcherWebService = new SearcherWebService();
 		((SearcherWebService) this.searcherWebService).setSearchDelegate(new SearchDelegate());
 	}
@@ -51,7 +51,7 @@ public class SearcherWebServiceTest extends ATest {
 	@Test
 	@SuppressWarnings("unchecked")
 	public void searchSingle() {
-		String result = this.searcherWebService.searchSingle(INDEX_CONTEXT.getIndexName(), "search string", IConstants.CONTENTS, Boolean.TRUE, 0, 10);
+		String result = this.searcherWebService.searchSingle(indexContext.getIndexName(), "search string", IConstants.CONTENTS, Boolean.TRUE, 0, 10);
 		logger.debug("Single search result : " + result);
 		List<Map<String, String>> resultsList = (List<Map<String, String>>) SerializationUtilities.deserialize(result);
 		verifyResults(resultsList);
@@ -60,7 +60,7 @@ public class SearcherWebServiceTest extends ATest {
 	@Test
 	@SuppressWarnings("unchecked")
 	public void searchMulti() {
-		String result = this.searcherWebService.searchMulti(INDEX_CONTEXT.getIndexName(), new String[] { "search", "strings" }, new String[] {
+		String result = this.searcherWebService.searchMulti(indexContext.getIndexName(), new String[] { "search", "strings" }, new String[] {
 				IConstants.CONTENTS, IConstants.ID }, Boolean.TRUE, 0, 10);
 		logger.debug("Multi search result : " + result);
 		List<Map<String, String>> resultsList = (List<Map<String, String>>) SerializationUtilities.deserialize(result);
@@ -70,7 +70,7 @@ public class SearcherWebServiceTest extends ATest {
 	@Test
 	@SuppressWarnings("unchecked")
 	public void searchMultiSorted() {
-		String result = this.searcherWebService.searchMultiSorted(INDEX_CONTEXT.getIndexName(), new String[] { "search", "strings" }, new String[] {
+		String result = this.searcherWebService.searchMultiSorted(indexContext.getIndexName(), new String[] { "search", "strings" }, new String[] {
 				IConstants.CONTENTS, IConstants.ID }, new String[] { "", "" }, Boolean.TRUE, 0, 10);
 		logger.debug("Multi sorted search result : " + result);
 		List<Map<String, String>> resultsList = (List<Map<String, String>>) SerializationUtilities.deserialize(result);
@@ -80,7 +80,7 @@ public class SearcherWebServiceTest extends ATest {
 	@Test
 	@SuppressWarnings("unchecked")
 	public void searchMultiAll() {
-		String result = this.searcherWebService.searchMultiAll(INDEX_CONTEXT.getIndexName(), new String[] { "search", "strings" }, Boolean.TRUE, 0,
+		String result = this.searcherWebService.searchMultiAll(indexContext.getIndexName(), new String[] { "search", "strings" }, Boolean.TRUE, 0,
 				10);
 		logger.debug("Multi sorted search result : " + result);
 		List<Map<String, String>> resultsList = (List<Map<String, String>>) SerializationUtilities.deserialize(result);
@@ -90,7 +90,7 @@ public class SearcherWebServiceTest extends ATest {
 	@Test
 	@SuppressWarnings("unchecked")
 	public void searchSpatial() {
-		String result = this.searcherWebService.searchSpacialMulti(INDEX_CONTEXT.getIndexName(), new String[] { "search", "strings" }, new String[] {
+		String result = this.searcherWebService.searchSpacialMulti(indexContext.getIndexName(), new String[] { "search", "strings" }, new String[] {
 				IConstants.CONTENTS, IConstants.ID }, Boolean.TRUE, 0, 10, 10, 47.0008, 53.0001);
 		logger.debug("Multi sorted search result : " + result);
 		List<Map<String, String>> resultsList = (List<Map<String, String>>) SerializationUtilities.deserialize(result);
@@ -100,7 +100,7 @@ public class SearcherWebServiceTest extends ATest {
 	@Test
 	@SuppressWarnings("unchecked")
 	public void searchSpatialAll() {
-		String result = this.searcherWebService.searchSpacialMultiAll(INDEX_CONTEXT.getIndexName(), new String[] { "search", "strings" },
+		String result = this.searcherWebService.searchSpacialMultiAll(indexContext.getIndexName(), new String[] { "search", "strings" },
 				Boolean.TRUE, 0, 10, 10, 47.0008, 53.0001);
 		logger.debug("Multi sorted search result : " + result);
 		List<Map<String, String>> resultsList = (List<Map<String, String>>) SerializationUtilities.deserialize(result);

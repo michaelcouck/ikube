@@ -4,7 +4,7 @@ import static org.junit.Assert.assertNotNull;
 import ikube.ATest;
 import ikube.IConstants;
 import ikube.cluster.ClusterManager;
-import ikube.cluster.cache.CacheHazelcast;
+import ikube.cluster.cache.ICache;
 import ikube.mock.ClusterManagerMock;
 
 import java.net.InetAddress;
@@ -15,10 +15,11 @@ import mockit.Mockit;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 public class WebServicePublisherTest extends ATest {
 
-	protected WebServicePublisher webServicePublisher;
+	protected WebServicePublisher	webServicePublisher;
 
 	public WebServicePublisherTest() {
 		super(WebServicePublisherTest.class);
@@ -27,7 +28,7 @@ public class WebServicePublisherTest extends ATest {
 	@Before
 	public void before() throws Exception {
 		Mockit.setUpMocks(ClusterManagerMock.class);
-		webServicePublisher = new WebServicePublisher(new ClusterManager(new CacheHazelcast()));
+		webServicePublisher = new WebServicePublisher(new ClusterManager(Mockito.mock(ICache.class)));
 		webServicePublisher.postProcessAfterInitialization(new MonitorWebService(), MonitorWebService.class.getSimpleName());
 		webServicePublisher.postProcessAfterInitialization(new SearcherWebService(), SearcherWebService.class.getSimpleName());
 	}
@@ -45,8 +46,8 @@ public class WebServicePublisherTest extends ATest {
 		String path = ISearcherWebService.PUBLISHED_PATH;
 		URL url = new URL("http", host, port, path);
 		String searcherWebServiceUrl = url.toString();
-		ISearcherWebService webService = ServiceLocator.getService(ISearcherWebService.class, searcherWebServiceUrl,
-				ISearcherWebService.NAMESPACE, ISearcherWebService.SERVICE);
+		ISearcherWebService webService = ServiceLocator.getService(ISearcherWebService.class, searcherWebServiceUrl, ISearcherWebService.NAMESPACE,
+				ISearcherWebService.SERVICE);
 		assertNotNull("The service must be published : ", webService);
 	}
 
@@ -57,8 +58,8 @@ public class WebServicePublisherTest extends ATest {
 				ISearcherWebService.SERVICE);
 		String[] searchStrings = { "cape town", "cape town" };
 		String[] searchFields = { "name" };
-		String results = webService.searchSpacialMulti(IConstants.GEOSPATIAL, searchStrings, searchFields, Boolean.TRUE, 0, 10, 15,
-				-33.9693580, 18.4622110);
+		String results = webService.searchSpacialMulti(IConstants.GEOSPATIAL, searchStrings, searchFields, Boolean.TRUE, 0, 10, 15, -33.9693580,
+				18.4622110);
 		System.out.println(results);
 	}
 

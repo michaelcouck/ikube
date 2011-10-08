@@ -82,12 +82,12 @@ public class Searcher extends Action<IndexContext<?>, Boolean> {
 				String message = Logging.getString("Results not expected : ", results.size(), indexContext.getIndexName(), searchString, start, end,
 						resultsSizeMinimum);
 				logger.info(message);
-				ListenerManager.fireEvent(Event.NO_RESULTS, System.currentTimeMillis(), null, Boolean.TRUE);
+				ListenerManager.getInstance().fireEvent(Event.NO_RESULTS, System.currentTimeMillis(), null, Boolean.TRUE);
 				String subject = "Search results for index : " + indexContext.getIndexName() + ", server : " + server.getAddress();
 				String body = xml;
 				sendNotification(subject, body);
 			} else {
-				ListenerManager.fireEvent(Event.RESULTS, System.currentTimeMillis(), null, Boolean.TRUE);
+				ListenerManager.getInstance().fireEvent(Event.RESULTS, System.currentTimeMillis(), null, Boolean.TRUE);
 			}
 		} finally {
 			getClusterManager().stopWorking(getClass().getSimpleName(), indexContext.getIndexName(), "");

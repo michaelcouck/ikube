@@ -1,13 +1,9 @@
 package ikube;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import ikube.action.IAction;
-import ikube.action.Process;
+import ikube.action.Index;
 import ikube.listener.Event;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.model.IndexContext;
@@ -21,8 +17,7 @@ import mockit.Mockit;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
+import org.mockito.Mockito;
 
 /**
  * @author Michael Couck
@@ -31,11 +26,10 @@ import org.mockito.stubbing.Answer;
  */
 public class IndexEngineTest extends ATest {
 
-	private Process process;
-	private boolean invoked;
+	private Index									index;
 	/** Class under test. */
-	private IndexEngine indexEngine;
-	private List<IAction<IndexContext<?>, Boolean>> actions;
+	private IndexEngine								indexEngine;
+	private List<IAction<IndexContext<?>, Boolean>>	actions;
 
 	public IndexEngineTest() {
 		super(IndexEngineTest.class);
@@ -43,22 +37,18 @@ public class IndexEngineTest extends ATest {
 
 	@Before
 	public void before() {
-		process = spy(new Process());
-		doAnswer(new Answer<Object>() {
-			@Override
-			public Object answer(InvocationOnMock invocation) throws Throwable {
-				logger.info("Invocation : " + invocation);
-				invoked = Boolean.TRUE;
-				return null;
-			}
-		}).when(process).execute(any(IndexContext.class));
-		when(SERVER.getWorking()).thenReturn(Boolean.FALSE);
-		when(CLUSTER_MANAGER.getServer()).thenReturn(SERVER);
-		Mockit.setUpMocks(ApplicationContextManagerMock.class);
-		actions = new ArrayList<IAction<IndexContext<?>, Boolean>>();
-		actions.add(process);
 		indexEngine = new IndexEngine();
+		actions = new ArrayList<IAction<IndexContext<?>, Boolean>>();
+
+		index = mock(Index.class);
+		actions.add(index);
+		when(server.getWorking()).thenReturn(Boolean.FALSE);
+		when(clusterManager.getServer()).thenReturn(server);
+
 		indexEngine.setActions(actions);
+		indexEngine.setClusterManager(clusterManager);
+
+		Mockit.setUpMocks(ApplicationContextManagerMock.class);
 	}
 
 	@After
@@ -67,17 +57,18 @@ public class IndexEngineTest extends ATest {
 	}
 
 	@Test
-	public void handleNotification() {
+	public void handleNotification() throws Exception {
 		Event event = new Event();
 		event.setTimestamp(System.currentTimeMillis());
 		event.setType(Event.TIMER);
 		indexEngine.handleNotification(event);
-		assertTrue("The process action should be invoked : ", invoked);
-		invoked = Boolean.FALSE;
+		Mockito.verify(index, Mockito.atLeast(1)).execute(Mockito.any(IndexContext.class));
+		Mockito.verify(index, Mockito.atMost(1)).execute(Mockito.any(IndexContext.class));
 
-		when(SERVER.getWorking()).thenReturn(Boolean.TRUE);
+		when(server.getWorking()).thenReturn(Boolean.TRUE);
 		indexEngine.handleNotification(event);
-		assertFalse("The process action should not be invoked : ", invoked);
+		Mockito.verify(index, Mockito.atLeast(1)).execute(Mockito.any(IndexContext.class));
+		Mockito.verify(index, Mockito.atMost(1)).execute(Mockito.any(IndexContext.class));
 	}
 
 }

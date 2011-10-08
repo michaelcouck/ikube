@@ -4,7 +4,6 @@ import ikube.action.IAction;
 import ikube.cluster.IClusterManager;
 import ikube.listener.Event;
 import ikube.listener.IListener;
-import ikube.listener.ListenerManager;
 import ikube.model.IndexContext;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.Logging;
@@ -31,30 +30,21 @@ import org.apache.log4j.Logger;
  * @since 21.11.10
  * @version 01.00
  */
-public class IndexEngine implements IIndexEngine {
+public class IndexEngine implements IIndexEngine, IListener {
 
-	private static final Logger									LOGGER	= Logger.getLogger(IndexEngine.class);
-	private transient List<IAction<IndexContext<?>, Boolean>>	actions;
+	private static final Logger						LOGGER	= Logger.getLogger(IndexEngine.class);
+
+	private IClusterManager							clusterManager;
+	private List<IAction<IndexContext<?>, Boolean>>	actions;
 
 	public IndexEngine() {
-		IListener listener = new IListener() {
-			@Override
-			public void handleNotification(final Event event) {
-				IndexEngine.this.handleNotification(event);
-			}
-		};
-		ListenerManager.addListener(listener);
 		LOGGER.info("Index engine : " + this);
 		SerializationUtilities.setTransientFields(IndexContext.class, new ArrayList<Class<?>>());
 	}
 
-	protected void handleNotification(final Event event) {
-		if (!event.getType().equals(Event.TIMER)) {
-			return;
-		}
-
+	@Override
+	public void handleNotification(final Event event) {
 		// If this server is working on anything then return
-		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
 		if (clusterManager.getServer().getWorking()) {
 			LOGGER.info("Server working : " + clusterManager.getServer().getAction());
 			return;
@@ -88,6 +78,10 @@ public class IndexEngine implements IIndexEngine {
 			LOGGER.info(Logging.getString("Finished working : " + indexContext.getIndexName() + ", server : "
 					+ clusterManager.getServer().getAddress()));
 		}
+	}
+
+	public void setClusterManager(IClusterManager clusterManager) {
+		this.clusterManager = clusterManager;
 	}
 
 	public void setActions(final List<IAction<IndexContext<?>, Boolean>> actions) {

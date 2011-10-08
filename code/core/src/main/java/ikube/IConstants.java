@@ -181,4 +181,6 @@ public interface IConstants {
 	String				TIER										= "tier";
 	int					MAX_RETRY_COUNTER							= 5;
 
+	String				SEARCH										= "search";
+
 }

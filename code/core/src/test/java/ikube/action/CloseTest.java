@@ -39,7 +39,7 @@ public class CloseTest extends ATest {
 
 	@Test
 	public void execute() throws IOException {
-		boolean closed = close.execute(INDEX_CONTEXT);
+		boolean closed = close.execute(indexContext);
 		assertTrue("The index was open and it should have been closed in the action : ", closed);
 	}
 

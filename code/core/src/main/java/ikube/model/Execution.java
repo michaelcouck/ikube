@@ -13,10 +13,11 @@ import javax.persistence.InheritanceType;
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Execution extends Persistable {
 
-	public String name;
-	public int invocations;
-	public long duration;
-	public double executionsPerSecond;
+	private String	name;
+	private String	type;
+	private int		invocations;
+	private long	duration;
+	private double	executionsPerSecond;
 
 	public String getName() {
 		return name;
@@ -24,6 +25,14 @@ public class Execution extends Persistable {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 
 	public int getInvocations() {

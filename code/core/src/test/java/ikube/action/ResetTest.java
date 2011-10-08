@@ -40,7 +40,7 @@ public class ResetTest extends BaseTest {
 		url.setContentType("");
 		url.setHash(System.nanoTime());
 		url.setIndexed(Boolean.TRUE);
-		url.setName(INDEX_CONTEXT.getName());
+		url.setName(indexContext.getName());
 		url.setParsedContent("");
 		url.setRawContent(null);
 		url.setTitle("");
@@ -52,7 +52,7 @@ public class ResetTest extends BaseTest {
 		urls = dataBase.find(Url.class, 0, Integer.MAX_VALUE);
 		assertEquals("There should be one url in the database : ", 1, urls.size());
 
-		boolean result = reset.execute(INDEX_CONTEXT);
+		boolean result = reset.execute(indexContext);
 		assertTrue(result);
 
 		urls = dataBase.find(Url.class, 0, Integer.MAX_VALUE);

@@ -32,25 +32,25 @@ public class IsThisIndexCreatedTest extends ATest {
 	@Before
 	public void before() {
 		isThisIndexCreated = new IsThisIndexCreated();
-		when(INDEX_CONTEXT.getIndexDirectoryPath()).thenReturn("./" + this.getClass().getSimpleName());
-		FileUtilities.deleteFile(new File(INDEX_CONTEXT.getIndexDirectoryPath()), 1);
+		when(indexContext.getIndexDirectoryPath()).thenReturn("./" + this.getClass().getSimpleName());
+		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
 		Mockit.setUpMocks(ApplicationContextManagerMock.class, ClusterManagerMock.class);
 	}
 
 	@After
 	public void after() {
 		Mockit.tearDownMocks();
-		FileUtilities.deleteFile(new File(INDEX_CONTEXT.getIndexDirectoryPath()), 1);
+		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
 	}
 
 	@Test
 	public void execute() {
-		boolean isIndexCreated = isThisIndexCreated.evaluate(INDEX_CONTEXT);
+		boolean isIndexCreated = isThisIndexCreated.evaluate(indexContext);
 		assertFalse("This index is not created yet : ", isIndexCreated);
 
-		createIndex(INDEX_CONTEXT, "Some data : ");
+		createIndex(indexContext, "Some data : ");
 
-		isIndexCreated = isThisIndexCreated.evaluate(INDEX_CONTEXT);
+		isIndexCreated = isThisIndexCreated.evaluate(indexContext);
 		assertTrue("This index is not created yet : ", isIndexCreated);
 	}
 

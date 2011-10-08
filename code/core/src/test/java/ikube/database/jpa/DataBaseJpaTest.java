@@ -19,11 +19,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import mockit.Mockit;
-
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
@@ -34,13 +31,6 @@ import org.junit.Test;
  * @version 01.00
  */
 public class DataBaseJpaTest extends BaseTest {
-
-	@BeforeClass
-	public static void beforeClass() {
-		ApplicationContextManager.closeApplicationContext();
-		Mockit.tearDownMocks(ApplicationContextManager.class);
-		BaseTest.beforeClass();
-	}
 
 	private IDataBase	dataBase;
 
@@ -130,7 +120,7 @@ public class DataBaseJpaTest extends BaseTest {
 
 	@Test
 	public void performance() {
-		final int iterations = 10;
+		final int iterations = 3;
 		final int batchSize = 1000;
 		double minimumInsertsPerSecond = 100d;
 		for (int i = 0; i < iterations; i++) {

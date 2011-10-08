@@ -33,27 +33,27 @@ public class IsIndexBackedUpTest extends ATest {
 	public void before() {
 		isIndexBackedUp = new IsIndexBackedUp();
 		Mockit.tearDownMocks();
-		FileUtilities.deleteFile(new File(INDEX_CONTEXT.getIndexDirectoryPath()), 1);
-		FileUtilities.deleteFile(new File(INDEX_CONTEXT.getIndexDirectoryPathBackup()), 1);
+		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
+		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPathBackup()), 1);
 	}
 
 	@After
 	public void after() {
 		Mockit.tearDownMocks();
-		FileUtilities.deleteFile(new File(INDEX_CONTEXT.getIndexDirectoryPath()), 1);
-		FileUtilities.deleteFile(new File(INDEX_CONTEXT.getIndexDirectoryPathBackup()), 1);
+		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
+		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPathBackup()), 1);
 	}
 
 	@Test
 	public void evaluate() throws IOException {
-		File latestIndexDirectory = createIndex(INDEX_CONTEXT, "some strings");
-		boolean result = isIndexBackedUp.evaluate(INDEX_CONTEXT);
+		File latestIndexDirectory = createIndex(indexContext, "some strings");
+		boolean result = isIndexBackedUp.evaluate(indexContext);
 		assertFalse(result);
 
-		File indexDirectoryBackup = new File(IndexManager.getIndexDirectoryPathBackup(INDEX_CONTEXT));
+		File indexDirectoryBackup = new File(IndexManager.getIndexDirectoryPathBackup(indexContext));
 		FileUtils.copyDirectoryToDirectory(latestIndexDirectory, indexDirectoryBackup);
 
-		result = isIndexBackedUp.evaluate(INDEX_CONTEXT);
+		result = isIndexBackedUp.evaluate(indexContext);
 		assertTrue(result);
 	}
 

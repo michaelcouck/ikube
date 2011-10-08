@@ -34,14 +34,14 @@ public class SearcherTest extends ATest {
 	@Before
 	public void before() {
 		Mockit.setUpMocks(IndexManagerMock.class, ApplicationContextManagerMock.class, ClusterManagerMock.class, ServiceLocatorMock.class);
-		when(INDEX.getIndexWriter()).thenReturn(INDEX_WRITER);
-		when(CLUSTER_MANAGER.startWorking(anyString(), anyString(), anyString())).thenReturn(System.currentTimeMillis());
+		when(index.getIndexWriter()).thenReturn(indexWriter);
+		when(clusterManager.startWorking(anyString(), anyString(), anyString())).thenReturn(System.currentTimeMillis());
 	}
 
 	@After
 	public void after() {
 		Mockit.tearDownMocks(ApplicationContextManager.class, ClusterManager.class);
-		FileUtilities.deleteFile(new File(INDEX_CONTEXT.getIndexDirectoryPath()), 1);
+		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
 	}
 
 	@Test
@@ -55,7 +55,7 @@ public class SearcherTest extends ATest {
 		searcher.setRules(null);
 		searcher.setSearchString("Hello World!");
 		searcher.setStart(0);
-		boolean result = searcher.execute(INDEX_CONTEXT);
+		boolean result = searcher.execute(indexContext);
 		assertTrue(result);
 	}
 }

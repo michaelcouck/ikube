@@ -18,14 +18,7 @@ public class CacheInfinispan implements ICache {
 
 	private EmbeddedCacheManager	manager;
 
-	/** TODO Create the shutdown listener, and the alive listener. */
-
 	public void initialise() throws Exception {
-		// GlobalConfiguration globalConfiguration = GlobalConfiguration.getClusteredDefault();
-		// new GlobalConfiguration();
-		// Properties p = new Properties();
-		// p.setProperty("configurationFile", "jgroups-udp.xml");
-		// globalConfiguration.setTransportProperties(p);
 		// TODO This can be moved to the Spring configuration files
 		manager = new DefaultCacheManager("META-INF/infinispan.xml");
 	}

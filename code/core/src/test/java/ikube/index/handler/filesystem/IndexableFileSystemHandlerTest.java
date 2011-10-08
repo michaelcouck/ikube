@@ -90,7 +90,7 @@ public class IndexableFileSystemHandlerTest extends ATest {
 	@Test
 	@SuppressWarnings("unchecked")
 	public void handle() throws Exception {
-		List<Thread> threads = indexableFileSystemHandler.handle(INDEX_CONTEXT, indexableFileSystem);
+		List<Thread> threads = indexableFileSystemHandler.handle(indexContext, indexableFileSystem);
 		ThreadUtilities.waitForThreads(threads);
 		// Verify that the database is called to find
 		verify(dataBase, Mockito.atLeastOnce()).find(any(Class.class), anyString(), anyMap(), anyInt(), anyInt());
@@ -108,7 +108,7 @@ public class IndexableFileSystemHandlerTest extends ATest {
 	@Test
 	@SuppressWarnings("unchecked")
 	public void iterateFileSystem() {
-		indexableFileSystemHandler.iterateFileSystem(dataBase, INDEX_CONTEXT, indexableFileSystem, new File("."), Pattern.compile(""),
+		indexableFileSystemHandler.iterateFileSystem(dataBase, indexContext, indexableFileSystem, new File("."), Pattern.compile(""),
 				new TreeSet<File>());
 		// Verify that the database was called to persist
 		verify(dataBase, Mockito.atLeastOnce()).persistBatch(anyList());
@@ -129,8 +129,8 @@ public class IndexableFileSystemHandlerTest extends ATest {
 	public void handleFile() throws Exception {
 		ikube.model.File file = new ikube.model.File();
 		file.setUrl(powerPointFile.getAbsolutePath());
-		indexableFileSystemHandler.handleFile(INDEX_CONTEXT, indexableFileSystem, file);
-		IndexManager.closeIndexWriter(INDEX_CONTEXT);
+		indexableFileSystemHandler.handleFile(indexContext, indexableFileSystem, file);
+		IndexManager.closeIndexWriter(indexContext);
 		// Verify that the file is in the index
 		verify(documentDelegate, Mockito.atLeastOnce()).addDocument(any(IndexContext.class), any(Indexable.class), any(Document.class));
 	}

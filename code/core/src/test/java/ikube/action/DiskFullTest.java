@@ -36,7 +36,7 @@ public class DiskFullTest extends ATest {
 
 	@Test
 	public void execute() throws Exception {
-		boolean diskFull = this.diskFull.execute(INDEX_CONTEXT);
+		boolean diskFull = this.diskFull.execute(indexContext);
 		assertFalse("The disk should never be too full : ", diskFull);
 	}
 

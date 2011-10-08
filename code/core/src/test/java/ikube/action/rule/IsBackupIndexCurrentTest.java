@@ -30,29 +30,29 @@ public class IsBackupIndexCurrentTest extends ATest {
 	@Before
 	public void before() {
 		isBackupIndexCurrent = new IsBackupIndexCurrent();
-		FileUtilities.deleteFile(new File(INDEX_CONTEXT.getIndexDirectoryPath()), 1);
-		FileUtilities.deleteFile(new File(INDEX_CONTEXT.getIndexDirectoryPathBackup()), 1);
+		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
+		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPathBackup()), 1);
 	}
 
 	@After
 	public void after() {
-		FileUtilities.deleteFile(new File(INDEX_CONTEXT.getIndexDirectoryPath()), 1);
-		FileUtilities.deleteFile(new File(INDEX_CONTEXT.getIndexDirectoryPathBackup()), 1);
+		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
+		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPathBackup()), 1);
 	}
 
 	@Test
 	public void evaluate() throws IOException {
-		File latestIndexDirectory = createIndex(INDEX_CONTEXT, "some strings");
-		boolean result = isBackupIndexCurrent.evaluate(INDEX_CONTEXT);
+		File latestIndexDirectory = createIndex(indexContext, "some strings");
+		boolean result = isBackupIndexCurrent.evaluate(indexContext);
 		assertFalse(result);
 
-		File indexDirectoryBackup = new File(IndexManager.getIndexDirectoryPathBackup(INDEX_CONTEXT));
+		File indexDirectoryBackup = new File(IndexManager.getIndexDirectoryPathBackup(indexContext));
 		FileUtils.copyDirectoryToDirectory(latestIndexDirectory, indexDirectoryBackup);
 
-		result = isBackupIndexCurrent.evaluate(INDEX_CONTEXT);
+		result = isBackupIndexCurrent.evaluate(indexContext);
 		assertTrue(result);
 
-		File latestIndexDirectoryBackup = FileUtilities.getLatestIndexDirectory(INDEX_CONTEXT.getIndexDirectoryPathBackup());
+		File latestIndexDirectoryBackup = FileUtilities.getLatestIndexDirectory(indexContext.getIndexDirectoryPathBackup());
 		String oldDirectoryName = Long.toString(System.currentTimeMillis() - (1000 * 60 * 60 * 24 * 365));
 		File latestIndexDirectoryBackupOld = new File(latestIndexDirectory.getParentFile(), oldDirectoryName);
 		boolean renamed = latestIndexDirectoryBackup.renameTo(latestIndexDirectoryBackupOld);
@@ -61,7 +61,7 @@ public class IsBackupIndexCurrentTest extends ATest {
 			logger.warn("Couldn't rename the directory : " + latestIndexDirectoryBackup + ", " + latestIndexDirectoryBackupOld);
 		}
 
-		result = isBackupIndexCurrent.evaluate(INDEX_CONTEXT);
+		result = isBackupIndexCurrent.evaluate(indexContext);
 		assertFalse(result);
 	}
 

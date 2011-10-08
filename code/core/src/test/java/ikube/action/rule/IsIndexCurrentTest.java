@@ -57,11 +57,11 @@ public class IsIndexCurrentTest extends ATest {
 		String indexDirectory = "./indexes/index/";
 		latestIndexDirectory = indexDirectory + (System.currentTimeMillis() - (1000 * 60 * 60 * 10));
 		
-		boolean isIndexCurrent = isIndexCurrentRule.evaluate(INDEX_CONTEXT);
+		boolean isIndexCurrent = isIndexCurrentRule.evaluate(indexContext);
 		assertFalse(isIndexCurrent);
 
 		latestIndexDirectory = indexDirectory + System.currentTimeMillis();
-		isIndexCurrent = isIndexCurrentRule.evaluate(INDEX_CONTEXT);
+		isIndexCurrent = isIndexCurrentRule.evaluate(indexContext);
 		assertTrue(isIndexCurrent);
 	}
 

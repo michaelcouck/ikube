@@ -49,9 +49,9 @@ public class EnrichmentTest extends ATest {
 	@Test
 	public void buildAddress() {
 		// Indexable<?>, StringBuilder
-		String address = enrichment.buildAddress(INDEXABLE_COLUMN, new StringBuilder()).toString();
+		String address = enrichment.buildAddress(indexableColumn, new StringBuilder()).toString();
 		logger.info("Address : " + address);
-		assertEquals(INDEXABLE_COLUMN.getContent(), address);
+		assertEquals(indexableColumn.getContent(), address);
 	}
 
 	@Test

@@ -35,15 +35,15 @@ public class CleanTest extends ATest {
 
 	@Before
 	public void before() {
-		when(INDEX_CONTEXT.getIndexDirectoryPath()).thenReturn("./" + this.getClass().getSimpleName());
-		FileUtilities.deleteFile(new File(INDEX_CONTEXT.getIndexDirectoryPath()), 1);
+		when(indexContext.getIndexDirectoryPath()).thenReturn("./" + this.getClass().getSimpleName());
+		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
 		Mockit.setUpMocks(ApplicationContextManagerMock.class, ClusterManagerMock.class);
 	}
 
 	@After
 	public void after() {
 		Mockit.tearDownMocks();
-		FileUtilities.deleteFile(new File(INDEX_CONTEXT.getIndexDirectoryPath()), 1);
+		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
 	}
 
 	/**
@@ -55,12 +55,12 @@ public class CleanTest extends ATest {
 	 */
 	@Test
 	public void execute() throws Exception {
-		File latestIndexDirectory = createIndex(INDEX_CONTEXT, "some words to index");
-		File serverIndexDirectory = new File(latestIndexDirectory, IP);
+		File latestIndexDirectory = createIndex(indexContext, "some words to index");
+		File serverIndexDirectory = new File(latestIndexDirectory, ip);
 
 		// Running the clean the locked index directory should be un-locked
 		Clean<IndexContext<?>, Boolean> clean = new Clean<IndexContext<?>, Boolean>();
-		clean.execute(INDEX_CONTEXT);
+		clean.execute(indexContext);
 
 		Directory directory = FSDirectory.open(serverIndexDirectory);
 		try {
@@ -74,16 +74,16 @@ public class CleanTest extends ATest {
 			FileUtilities.deleteFile(file, 1);
 		}
 
-		clean.execute(INDEX_CONTEXT);
+		clean.execute(indexContext);
 		assertFalse("The index directory should have been deleted because it is corrupt : ", serverIndexDirectory.exists());
 
-		latestIndexDirectory = createIndex(INDEX_CONTEXT, "some words to index");
-		serverIndexDirectory = new File(latestIndexDirectory, IP);
+		latestIndexDirectory = createIndex(indexContext, "some words to index");
+		serverIndexDirectory = new File(latestIndexDirectory, ip);
 		Lock lock = getLock(FSDirectory.open(serverIndexDirectory), serverIndexDirectory);
 		boolean isLocked = lock.isLocked();
 		assertTrue("We should be able to get the lock from the index directory : ", isLocked);
 
-		clean.execute(INDEX_CONTEXT);
+		clean.execute(indexContext);
 
 		directory = FSDirectory.open(serverIndexDirectory);
 		try {
@@ -92,7 +92,7 @@ public class CleanTest extends ATest {
 		} finally {
 			directory.close();
 		}
-		clean.execute(INDEX_CONTEXT);
+		clean.execute(indexContext);
 		lock.release();
 	}
 

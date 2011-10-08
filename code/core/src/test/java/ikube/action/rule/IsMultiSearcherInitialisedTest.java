@@ -28,12 +28,12 @@ public class IsMultiSearcherInitialisedTest extends ATest {
 
 	@Test
 	public void evaluate() {
-		when(INDEX.getMultiSearcher()).thenReturn(null);
-		boolean isMultiSearcherInitialized = rule.evaluate(INDEX_CONTEXT);
+		when(index.getMultiSearcher()).thenReturn(null);
+		boolean isMultiSearcherInitialized = rule.evaluate(indexContext);
 		assertFalse(isMultiSearcherInitialized);
 
-		when(INDEX.getMultiSearcher()).thenReturn(MULTI_SEARCHER);
-		isMultiSearcherInitialized = rule.evaluate(INDEX_CONTEXT);
+		when(index.getMultiSearcher()).thenReturn(multiSearcher);
+		isMultiSearcherInitialized = rule.evaluate(indexContext);
 		assertTrue(isMultiSearcherInitialized);
 	}
 

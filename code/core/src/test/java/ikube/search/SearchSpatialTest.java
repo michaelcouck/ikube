@@ -55,10 +55,10 @@ public class SearchSpatialTest extends ATest {
 	@Before
 	public void before() throws Exception {
 		// Create and index with the spatial data
-		indexDirectory = new File(INDEX_CONTEXT.getIndexDirectoryPath());
+		indexDirectory = new File(indexContext.getIndexDirectoryPath());
 		boolean deleted = FileUtilities.deleteFile(indexDirectory, 1);
 		logger.info("Deleted : " + deleted + ", index directory : " + indexDirectory);
-		IndexWriter indexWriter = IndexManager.openIndexWriter(INDEX_CONTEXT, indexDirectory, Boolean.TRUE);
+		IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, indexDirectory, Boolean.TRUE);
 		IEnrichment enrichment = new Enrichment();
 		enrichment.setMinKm(10);
 		enrichment.setMaxKm(20);

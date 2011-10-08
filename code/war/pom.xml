@@ -13,7 +13,6 @@
 		<webapps>webapps</webapps>
 		<ikube.war>ikube.war</ikube.war>
 		<final.name>${project.build.finalName}.${project.packaging}</final.name>
-		<final.path>${target.directory}/${final.name}</final.path>
 	</properties>
 
 	<parent>
@@ -172,24 +171,23 @@
 								<delete includeemptydirs="true" failonerror="false">
 									<fileset dir="${cluster.directory}/">
 										<include name="**/ikube*.war" />
-										<include name="**/ikube*/**" />
+										<!-- <include name="**/ikube*/**" /> -->
 									</fileset>
 								</delete>
-								<!-- Deploy the ikube war into the cluster. -->
-								<echo message="Deploying Ikube to cluster : " />
-								<copy file="${final.path}" todir="${tomcat.1}/${webapps}" overwrite="true" failonerror="false" />
-								<copy file="${final.path}" todir="${tomcat.2}/${webapps}" overwrite="true" failonerror="false" />
-								<copy file="${final.path}" todir="${tomcat.3}/${webapps}" overwrite="true" failonerror="false" />
 								<!-- Rename the wars to ikube.war for convenience. -->
 								<echo message="Renaming Ikube war for convenience : " />
-								<move file="${tomcat.1}/${webapps}/${final.name}" tofile="${tomcat.1}/${webapps}/${ikube.war}" />
-								<move file="${tomcat.2}/${webapps}/${final.name}" tofile="${tomcat.2}/${webapps}/${ikube.war}" />
-								<move file="${tomcat.3}/${webapps}/${final.name}" tofile="${tomcat.3}/${webapps}/${ikube.war}" />
-								<!-- Start the cluster of Tomcats. -->
+								<move file="${target.directory}/${final.name}" tofile="${target.directory}/${ikube.war}" />
+								<!-- Deploy the ikube war into the cluster. -->
+								<echo message="Deploying Ikube to cluster : " />
+								<copy file="${target.directory}/${ikube.war}" todir="${tomcat.1}/${webapps}" overwrite="true" failonerror="false" />
+								<copy file="${target.directory}/${ikube.war}" todir="${tomcat.2}/${webapps}" overwrite="true" failonerror="false" />
+								<copy file="${target.directory}/${ikube.war}" todir="${tomcat.3}/${webapps}" overwrite="true" failonerror="false" />
+								<!-- Copy the external configuration to the first Tomcat. -->
 								<echo message="Copying configuration to Tomcat bin : " />
 								<ant antfile="build.xml" target="copy.configuration" inheritrefs="true" />
-								<echo message="Starting the cluster of Tomcats : " />
-								<ant antfile="build.xml" target="start.tomcat.cluster" inheritrefs="true" />
+								<!-- Start the cluster of Tomcats. -->
+								<!-- <echo message="Starting the cluster of Tomcats : " />
+								<ant antfile="build.xml" target="start.tomcat.cluster" inheritrefs="true" /> -->
 							</target>
 						</configuration>
 						<goals>

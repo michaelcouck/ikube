@@ -30,13 +30,13 @@ public class IndexableDictionaryHandlerTest extends ATest {
 
 	@Before
 	public void before() {
-		File dictionaryIndexDirectory = FileUtilities.getFile(INDEX_CONTEXT.getIndexDirectoryPath(), Boolean.TRUE);
+		File dictionaryIndexDirectory = FileUtilities.getFile(indexContext.getIndexDirectoryPath(), Boolean.TRUE);
 		FileUtilities.deleteFile(dictionaryIndexDirectory, 1);
 	}
 
 	@After
 	public void after() {
-		File dictionaryIndexDirectory = FileUtilities.getFile(INDEX_CONTEXT.getIndexDirectoryPath(), Boolean.TRUE);
+		File dictionaryIndexDirectory = FileUtilities.getFile(indexContext.getIndexDirectoryPath(), Boolean.TRUE);
 		FileUtilities.deleteFile(dictionaryIndexDirectory, 1);
 	}
 
@@ -47,9 +47,9 @@ public class IndexableDictionaryHandlerTest extends ATest {
 		when(indexableDictionary.getPath()).thenReturn(dictionariesDirectory.getAbsolutePath());
 		IndexableDictionaryHandler dictionaryHandler = new IndexableDictionaryHandler();
 		dictionaryHandler.setThreads(1);
-		List<Thread> threads = dictionaryHandler.handle(INDEX_CONTEXT, indexableDictionary);
+		List<Thread> threads = dictionaryHandler.handle(indexContext, indexableDictionary);
 		ThreadUtilities.waitForThreads(threads);
-		File dictionaryIndexDirectory = FileUtilities.getFile(INDEX_CONTEXT.getIndexDirectoryPath(), Boolean.TRUE);
+		File dictionaryIndexDirectory = FileUtilities.getFile(indexContext.getIndexDirectoryPath(), Boolean.TRUE);
 		boolean indexExists = IndexReader.indexExists(FSDirectory.open(dictionaryIndexDirectory));
 		assertTrue("The dictionary index should be created : ", indexExists);
 	}

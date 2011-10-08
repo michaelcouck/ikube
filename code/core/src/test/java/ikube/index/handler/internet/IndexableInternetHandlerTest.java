@@ -6,7 +6,6 @@ import ikube.action.Index;
 import ikube.cluster.IClusterManager;
 import ikube.database.IDataBase;
 import ikube.listener.ListenerManager;
-import ikube.listener.Scheduler;
 import ikube.model.IndexContext;
 import ikube.model.IndexableInternet;
 import ikube.model.Url;
@@ -39,8 +38,7 @@ public class IndexableInternetHandlerTest extends BaseTest {
 
 	@Before
 	public void before() {
-		Scheduler.shutdown();
-		ListenerManager.removeListeners();
+		ListenerManager.getInstance().removeListeners();
 		indexContext = ApplicationContextManager.getBean("ikube");
 		indexableInternet = ApplicationContextManager.getBean("ikubeGoogleCode");
 		indexableInternetHandler = ApplicationContextManager.getBean(IndexableInternetHandler.class);
@@ -52,14 +50,13 @@ public class IndexableInternetHandlerTest extends BaseTest {
 
 	@After
 	public void after() {
-		Scheduler.shutdown();
-		ListenerManager.removeListeners();
+		ListenerManager.getInstance().removeListeners();
 		// delete(dataBase, Url.class);
 	}
 
 	@Test
 	public void handle() throws Exception {
-		indexContext.getIndex().setIndexWriter(INDEX_WRITER);
+		indexContext.getIndex().setIndexWriter(indexWriter);
 		List<Thread> threads = indexableInternetHandler.handle(indexContext, indexableInternet);
 		ThreadUtilities.waitForThreads(threads);
 		int expectedAtLeast = 10;

@@ -1,12 +1,9 @@
 package ikube.aop;
 
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import ikube.ATest;
-import ikube.action.Index;
 import ikube.index.handler.database.IndexableTableHandler;
-import ikube.mock.AtomicActionMock;
 import ikube.model.Indexable;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
@@ -21,16 +18,15 @@ import mockit.Mockit;
 import org.apache.lucene.document.Document;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 /**
- * This test is to see if the intercepter is in fact intercepting the classes that it should. Difficult to automate this test of course so
- * it is a manual test. We could of course write an intercepter for the intercepter and verify that the intercepter is called by Spring,
- * personally I think that is a little over kill.
+ * This test is to see if the intercepter is in fact intercepting the classes that it should. Difficult to automate this
+ * test of course so it is a manual test. We could of course write an intercepter for the intercepter and verify that
+ * the intercepter is called by Spring, personally I think that is a little over kill.
  * 
  * @author Michael Couck
  * @since 30.04.2011
@@ -39,7 +35,7 @@ import org.mockito.stubbing.Answer;
 public class AopTest extends ATest {
 
 	@Cascading
-	private Document document;
+	private Document	document;
 
 	public AopTest() {
 		super(AopTest.class);
@@ -48,51 +44,35 @@ public class AopTest extends ATest {
 	@Before
 	public void before() {
 		Mockit.setUpMocks();
-		Mockit.setUpMocks(AtomicActionMock.class);
-		when(INDEX_CONTEXT.getIndexables()).thenAnswer(new Answer<List<Indexable<?>>>() {
+		when(indexContext.getIndexables()).thenAnswer(new Answer<List<Indexable<?>>>() {
 			@Override
 			public List<Indexable<?>> answer(InvocationOnMock invocation) throws Throwable {
 				return Arrays.asList();
 			}
 		});
 		// .thenCallRealMethod()
-		INDEX_CONTEXT.setIndexName("indexName");
-		INDEX_CONTEXT.setBufferedDocs(10);
-		INDEX_CONTEXT.setMaxFieldLength(1000);
-		INDEX_CONTEXT.setMergeFactor(100);
-		INDEX_CONTEXT.setBufferSize(64);
-		INDEX_CONTEXT.getIndex().setIndexWriter(INDEX_WRITER);
-		INDEX_CONTEXT.setIndexDirectoryPath(this.indexDirectoryPath);
+		indexContext.setIndexName("indexName");
+		indexContext.setBufferedDocs(10);
+		indexContext.setMaxFieldLength(1000);
+		indexContext.setMergeFactor(100);
+		indexContext.setBufferSize(64);
+		indexContext.getIndex().setIndexWriter(indexWriter);
+		indexContext.setIndexDirectoryPath(this.indexDirectoryPath);
 	}
 
 	@After
 	public void after() {
 		Mockit.tearDownMocks();
-		FileUtilities.deleteFile(new File(INDEX_CONTEXT.getIndexDirectoryPath()), 1);
-	}
-
-	@Test
-	@Ignore
-	public void rule() throws Exception {
-		AtomicActionMock.INVOCATIONS = 0;
-		Index index = ApplicationContextManager.getBean(Index.class);
-		index.execute(INDEX_CONTEXT);
-		Thread.sleep(3000);
-		assertTrue("There should be at least one invocation of getting the lock : ", AtomicActionMock.INVOCATIONS > 0);
-		AtomicActionMock.INVOCATIONS = 0;
-
-		// This doesn't work in the combined unit tests because there could
-		// be a lock on the cluster from another object
-		verify(INDEX_CONTEXT, Mockito.atLeastOnce()).getIndexables();
+		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
 	}
 
 	@Test
 	public void enrichment() throws Exception {
 		IndexableTableHandler indexableHandler = ApplicationContextManager.getBean(IndexableTableHandler.class);
-		when(INDEXABLE_TABLE.isAddress()).thenReturn(Boolean.FALSE);
-		indexableHandler.addDocument(INDEX_CONTEXT, INDEXABLE_TABLE, document);
-		when(INDEXABLE_TABLE.isAddress()).thenReturn(Boolean.TRUE);
-		verify(INDEXABLE_TABLE, Mockito.atLeastOnce()).isAddress();
+		when(indexableTable.isAddress()).thenReturn(Boolean.FALSE);
+		indexableHandler.addDocument(indexContext, indexableTable, document);
+		when(indexableTable.isAddress()).thenReturn(Boolean.TRUE);
+		verify(indexableTable, Mockito.atLeastOnce()).isAddress();
 	}
 
 	@Test

@@ -38,33 +38,33 @@ public class RestoreTest extends ATest {
 	@Before
 	public void before() throws Exception {
 		restore = new Restore();
-		FileUtilities.deleteFile(new File(INDEX_CONTEXT.getIndexDirectoryPath()), 1);
-		FileUtilities.deleteFile(new File(INDEX_CONTEXT.getIndexDirectoryPathBackup()), 1);
+		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
+		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPathBackup()), 1);
 	}
 
 	@After
 	public void after() throws Exception {
 		Mockit.tearDownMocks();
-		FileUtilities.deleteFile(new File(INDEX_CONTEXT.getIndexDirectoryPath()), 1);
-		FileUtilities.deleteFile(new File(INDEX_CONTEXT.getIndexDirectoryPathBackup()), 1);
+		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
+		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPathBackup()), 1);
 	}
 
 	@Test
 	public void execute() throws Exception {
 		// Create an index in the normal directory
-		File latestIndexDirectory = createIndex(INDEX_CONTEXT, "the original text fragment");
+		File latestIndexDirectory = createIndex(indexContext, "the original text fragment");
 
 		// Create an index in the backup directory
-		when(INDEX_CONTEXT.getIndexDirectoryPath()).thenReturn(indexDirectoryPathBackup);
-		createIndex(INDEX_CONTEXT, "a little text");
-		when(INDEX_CONTEXT.getIndexDirectoryPath()).thenReturn(indexDirectoryPath);
+		when(indexContext.getIndexDirectoryPath()).thenReturn(indexDirectoryPathBackup);
+		createIndex(indexContext, "a little text");
+		when(indexContext.getIndexDirectoryPath()).thenReturn(indexDirectoryPath);
 
 		// Corrupt the index
 		FileUtilities.deleteFiles(latestIndexDirectory, "segments");
 
 		// Run the restore
 		Mockit.setUpMocks(ApplicationContextManagerMock.class);
-		restore.execute(INDEX_CONTEXT);
+		restore.execute(indexContext);
 		Mockit.tearDownMocks(ApplicationContextManager.class);
 
 		indexExists();
@@ -73,14 +73,14 @@ public class RestoreTest extends ATest {
 		FileUtilities.deleteFile(latestIndexDirectory, 1);
 		assertFalse("The index directory should be deleted : ", latestIndexDirectory.exists());
 
-		restore.execute(INDEX_CONTEXT);
+		restore.execute(indexContext);
 		indexExists();
 	}
 
 	private void indexExists() throws Exception {
 		// Check that the index is restored
-		File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(INDEX_CONTEXT.getIndexDirectoryPath());
-		File latestServerIndexDirectory = new File(latestIndexDirectory, IP);
+		File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
+		File latestServerIndexDirectory = new File(latestIndexDirectory, ip);
 		Directory directory = null;
 		try {
 			directory = FSDirectory.open(latestServerIndexDirectory);

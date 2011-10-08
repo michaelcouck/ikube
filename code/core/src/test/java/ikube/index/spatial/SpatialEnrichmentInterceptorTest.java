@@ -76,11 +76,11 @@ public class SpatialEnrichmentInterceptorTest extends ATest {
 	@Test
 	public void enrich() {
 		// Object[]
-		Object[] arguments = new Object[] { document, INDEXABLE_COLUMN };
+		Object[] arguments = new Object[] { document, indexableColumn };
 		interceptor.enrich(arguments);
 		assertTrue(true);
 
-		when(INDEXABLE_COLUMN.getContent()).thenReturn(address);
+		when(indexableColumn.getContent()).thenReturn(address);
 		interceptor.enrich(arguments);
 		assertTrue("There must be at least one invocation on the enricher : ", invocations > 0);
 	}

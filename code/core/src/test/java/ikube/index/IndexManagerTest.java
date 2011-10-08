@@ -40,10 +40,10 @@ public class IndexManagerTest extends ATest {
 	@Test
 	public void openIndexWriter() throws Exception {
 		// String, IndexContext, long
-		IndexWriter indexWriter = IndexManager.openIndexWriter(INDEX_CONTEXT, System.currentTimeMillis(), IP);
+		IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
 		assertNotNull(indexWriter);
-		IndexManager.closeIndexWriter(INDEX_CONTEXT);
-		FileUtilities.deleteFile(new File(INDEX_CONTEXT.getIndexDirectoryPath()), 1);
+		IndexManager.closeIndexWriter(indexContext);
+		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
 	}
 
 	@Test
@@ -97,38 +97,38 @@ public class IndexManagerTest extends ATest {
 	@Test
 	public void closeIndexWriter() throws Exception {
 		// IndexContext
-		IndexWriter indexWriter = IndexManager.openIndexWriter(INDEX_CONTEXT, System.currentTimeMillis(), IP);
+		IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
 		assertNotNull(indexWriter);
-		IndexManager.closeIndexWriter(INDEX_CONTEXT);
+		IndexManager.closeIndexWriter(indexContext);
 		// assertNull(INDEX_CONTEXT.getIndex().getIndexWriter());
-		FileUtilities.deleteFile(new File(INDEX_CONTEXT.getIndexDirectoryPath()), 1);
+		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
 	}
 
 	@Test
 	public void getIndexDirectory() {
-		String indexDirectoryPath = IndexManager.getIndexDirectory(INDEX_CONTEXT, System.currentTimeMillis(), IP);
+		String indexDirectoryPath = IndexManager.getIndexDirectory(indexContext, System.currentTimeMillis(), ip);
 		logger.info("Index directory : " + new File(indexDirectoryPath).getAbsolutePath());
 		assertNotNull(indexDirectoryPath);
 	}
 
 	@Test
 	public void getIndexDirectoryPathBackup() {
-		String indexDirectoryPathBackup = IndexManager.getIndexDirectoryPathBackup(INDEX_CONTEXT);
+		String indexDirectoryPathBackup = IndexManager.getIndexDirectoryPathBackup(indexContext);
 		logger.info("Index directory path backup : " + indexDirectoryPathBackup);
 
-		when(INDEX_CONTEXT.getIndexDirectoryPathBackup()).thenReturn("./indexes/./backup");
-		String newIndexDirectoryPathBackup = IndexManager.getIndexDirectoryPathBackup(INDEX_CONTEXT);
+		when(indexContext.getIndexDirectoryPathBackup()).thenReturn("./indexes/./backup");
+		String newIndexDirectoryPathBackup = IndexManager.getIndexDirectoryPathBackup(indexContext);
 		String expectedIndexDirectoryPathBackup = "./indexes/backup/index";
 		assertEquals("Expected path to be : " + expectedIndexDirectoryPathBackup, expectedIndexDirectoryPathBackup,
 				newIndexDirectoryPathBackup);
 
-		when(INDEX_CONTEXT.getIndexDirectoryPathBackup()).thenReturn(".\\indexes\\.\\backup");
-		newIndexDirectoryPathBackup = IndexManager.getIndexDirectoryPathBackup(INDEX_CONTEXT);
+		when(indexContext.getIndexDirectoryPathBackup()).thenReturn(".\\indexes\\.\\backup");
+		newIndexDirectoryPathBackup = IndexManager.getIndexDirectoryPathBackup(indexContext);
 		expectedIndexDirectoryPathBackup = "./indexes/backup/index";
 		assertEquals("Expected path to be : " + expectedIndexDirectoryPathBackup, expectedIndexDirectoryPathBackup,
 				newIndexDirectoryPathBackup);
 
-		when(INDEX_CONTEXT.getIndexDirectoryPathBackup()).thenReturn(indexDirectoryPathBackup);
+		when(indexContext.getIndexDirectoryPathBackup()).thenReturn(indexDirectoryPathBackup);
 	}
 
 	private <T extends Reader> T getReader(Class<T> t) throws Exception {

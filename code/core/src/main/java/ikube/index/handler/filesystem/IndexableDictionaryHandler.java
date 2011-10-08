@@ -40,6 +40,9 @@ public class IndexableDictionaryHandler extends IndexableHandler<IndexableDictio
 						File[] files = new File(indexable.getPath()).listFiles();
 						logger.info("Dictionary file : " + Arrays.asList(files));
 						for (File file : files) {
+							if (file.isDirectory()) {
+								continue;
+							}
 							InputStream inputStream = null;
 							try {
 								logger.info("Indexing dictionary file : " + file);

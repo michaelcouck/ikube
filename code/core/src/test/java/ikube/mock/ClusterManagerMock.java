@@ -31,4 +31,9 @@ public class ClusterManagerMock {
 		// Do nothing
 	}
 
+	@Mock()
+	public boolean lock(String name) {
+		return Boolean.TRUE;
+	}
+
 }

@@ -30,26 +30,26 @@ public class AreUnopenedIndexesTest extends ATest {
 	@Before
 	public void before() {
 		areUnopenedIndexes = new AreUnopenedIndexes();
-		FileUtilities.deleteFile(new File(INDEX_CONTEXT.getIndexDirectoryPath()), 1);
+		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
 	}
 	
 	@After
 	public void after() {
-		FileUtilities.deleteFile(new File(INDEX_CONTEXT.getIndexDirectoryPath()), 1);
+		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
 	}
 
 	@Test
 	public void evaluate() {
-		boolean result = areUnopenedIndexes.evaluate(INDEX_CONTEXT);
+		boolean result = areUnopenedIndexes.evaluate(indexContext);
 		assertFalse(result);
 		
-		File latestIndexDirectory = createIndex(INDEX_CONTEXT, "some words to index");
-		File serverIndexDirectory = new File(latestIndexDirectory, IP);
-		result = areUnopenedIndexes.evaluate(INDEX_CONTEXT);
+		File latestIndexDirectory = createIndex(indexContext, "some words to index");
+		File serverIndexDirectory = new File(latestIndexDirectory, ip);
+		result = areUnopenedIndexes.evaluate(indexContext);
 		assertTrue(result);
 		
-		when(FS_DIRECTORY.getFile()).thenReturn(serverIndexDirectory);
-		result = areUnopenedIndexes.evaluate(INDEX_CONTEXT);
+		when(fsDirectory.getFile()).thenReturn(serverIndexDirectory);
+		result = areUnopenedIndexes.evaluate(indexContext);
 		assertFalse(result);
 	}
 

@@ -3,6 +3,7 @@ package ikube.integration;
 import ikube.IConstants;
 import ikube.integration.strategy.JspStrategy;
 import ikube.integration.strategy.LoadStrategy;
+import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.Logging;
 
 import java.util.Properties;
@@ -11,8 +12,6 @@ import org.apache.log4j.Logger;
 import org.junit.Test;
 
 /**
- * TODO Document me when I am running properly.
- * 
  * @author Michael Couck
  * @since 20.12.10
  * @version 01.00
@@ -37,7 +36,8 @@ public class Integration {
 
 	protected void waitToFinish() {
 		try {
-			// TODO Implement this block to wait for a while
+			ApplicationContextManager.getApplicationContext();
+			Thread.sleep(600000);
 		} catch (Exception e) {
 			logger.error("Exception waiting for servers to finish : ", e);
 		}

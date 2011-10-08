@@ -47,18 +47,18 @@ public class LuceneTest extends ATest {
 
 	@Before
 	public void before() throws Exception {
-		FileUtilities.deleteFile(new File(INDEX_CONTEXT.getIndexDirectoryPath()), 1);
+		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
 	}
 
 	@After
 	public void after() throws Exception {
-		FileUtilities.deleteFile(new File(INDEX_CONTEXT.getIndexDirectoryPath()), 1);
+		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
 	}
 
 	@Test
 	public void search() throws Exception {
-		File latestIndexDirectory = createIndex(INDEX_CONTEXT, string);
-		File serverIndexDirectory = new File(latestIndexDirectory, IP);
+		File latestIndexDirectory = createIndex(indexContext, string);
+		File serverIndexDirectory = new File(latestIndexDirectory, ip);
 		IndexSearcher indexSearcher = new IndexSearcher(FSDirectory.open(serverIndexDirectory));
 		Searchable[] searchables = new Searchable[] { indexSearcher };
 		MultiSearcher searcher = new MultiSearcher(searchables);
