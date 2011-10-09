@@ -60,13 +60,14 @@ import org.apache.lucene.document.Field.TermVector;
 import org.apache.lucene.index.CorruptIndexException;
 
 /**
- * This is the crawler for internet and intranets sites. There are several levels of caches to improve performance in this class. Firstly
- * the JPA cache provided by the implementation. Then the query cache also from the JPA implementation. There is a new cache that is used to
- * cache new urls to batch them for insert, and then there is the url cache that is added to manually.
+ * This is the crawler for internet and intranets sites. There are several levels of caches to improve performance in
+ * this class. Firstly the JPA cache provided by the implementation. Then the query cache also from the JPA
+ * implementation. There is a new cache that is used to cache new urls to batch them for insert, and then there is the
+ * url cache that is added to manually.
  * 
- * This class is optimised for performance, as such the elegance has taken a back seat. To facilitate several hundred million pages
- * performance was by far the most important aspect of this logic. Memory concerns and trips to the database are critical, and we would like
- * to keep both to an absolute minimum, ergo the caches.
+ * This class is optimised for performance, as such the elegance has taken a back seat. To facilitate several hundred
+ * million pages performance was by far the most important aspect of this logic. Memory concerns and trips to the
+ * database are critical, and we would like to keep both to an absolute minimum, ergo the caches.
  * 
  * @author Michael Couck
  * @since 29.11.10
@@ -74,10 +75,10 @@ import org.apache.lucene.index.CorruptIndexException;
  */
 public class IndexableInternetHandler extends IndexableHandler<IndexableInternet> {
 
-	private Map<String, Object> notIndexedParameters;
-	private Cache cache = CacheManager.create().getCache("UrlCache");
-	private Cache newCache = CacheManager.create().getCache("NewUrlCache");
-	private ThreadLocal<Map<String, Object>> localUrlIdParameters = new ThreadLocal<Map<String, Object>>();
+	private Map<String, Object>					notIndexedParameters;
+	private Cache								cache					= CacheManager.create().getCache("UrlCache");
+	private Cache								newCache				= CacheManager.create().getCache("NewUrlCache");
+	private ThreadLocal<Map<String, Object>>	localUrlIdParameters	= new ThreadLocal<Map<String, Object>>();
 
 	/**
 	 * {@inheritDoc}
@@ -154,8 +155,8 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	 * @param httpClient
 	 *            the client to use for accessing the pages over http
 	 */
-	protected void doUrls(final IDataBase dataBase, final IndexContext<?> indexContext, final IndexableInternet indexable,
-			final List<Url> urlBatch, final IContentProvider<IndexableInternet> contentProvider, final HttpClient httpClient) {
+	protected void doUrls(final IDataBase dataBase, final IndexContext<?> indexContext, final IndexableInternet indexable, final List<Url> urlBatch,
+			final IContentProvider<IndexableInternet> contentProvider, final HttpClient httpClient) {
 		if (urlBatch.size() > 0) {
 			logger.info("Batch : " + urlBatch.size() + ", first url : " + urlBatch.get(0));
 		}
@@ -188,14 +189,15 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	}
 
 	/**
-	 * This method gets the next batch of urls from the database that have not been visited yet in this iteration. The urls that are
-	 * returned will have had the indexed flag set to true and merged back into the database.
+	 * This method gets the next batch of urls from the database that have not been visited yet in this iteration. The
+	 * urls that are returned will have had the indexed flag set to true and merged back into the database.
 	 * 
 	 * @param dataBase
 	 *            the database to persistence
 	 * @param indexableInternet
 	 *            the base indexable for the url
-	 * @return the list of urls that have not been visited, this list could be empty if there are no urls that have not been visited
+	 * @return the list of urls that have not been visited, this list could be empty if there are no urls that have not
+	 *         been visited
 	 */
 	protected synchronized List<Url> getUrlBatch(final IDataBase dataBase, final IndexableInternet indexableInternet) {
 		try {
@@ -273,6 +275,8 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 					// Nothing in the db with the hash
 				} catch (NonUniqueResultException e) {
 					// More than one? Shouldn't be
+					url.setRawContent(null);
+					url.setParsedContent(null);
 					logger.warn("Duplicate url or data : " + url, e);
 					return;
 				} catch (OptimisticLockException e) {
@@ -371,8 +375,8 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	}
 
 	/**
-	 * Adds the document to the index with all the defined fields. Typically the fields are the title, the field names that are defined in
-	 * the configuration and the content field name.
+	 * Adds the document to the index with all the defined fields. Typically the fields are the title, the field names
+	 * that are defined in the configuration and the content field name.
 	 * 
 	 * @param indexable
 	 *            the indexable or base host for this crawl
@@ -381,8 +385,7 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	 * @param parsedContent
 	 *            the content that was extracted from the url
 	 */
-	protected void addDocumentToIndex(final IndexContext<?> indexContext, final IndexableInternet indexable, final Url url,
-			final String parsedContent) {
+	protected void addDocumentToIndex(final IndexContext<?> indexContext, final IndexableInternet indexable, final Url url, final String parsedContent) {
 		try {
 			Document document = new Document();
 			Store store = indexable.isStored() ? Store.YES : Store.NO;
@@ -419,8 +422,8 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	}
 
 	/**
-	 * Extracts all the links from the content and sets them in the cluster wide cache. The cache is persistence backed so any overflow then
-	 * goes to a local object oriented database on each server.
+	 * Extracts all the links from the content and sets them in the cluster wide cache. The cache is persistence backed
+	 * so any overflow then goes to a local object oriented database on each server.
 	 * 
 	 * @param indexableInternet
 	 *            the indexable that is being crawled
@@ -512,8 +515,8 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	}
 
 	/**
-	 * This method will take all the new urls that were added to the new url cache and persist them in a batch, then clear the cache for the
-	 * next batch.
+	 * This method will take all the new urls that were added to the new url cache and persist them in a batch, then
+	 * clear the cache for the next batch.
 	 * 
 	 * @param dataBase
 	 *            the database to persist the batch of new urls to
@@ -549,9 +552,9 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	}
 
 	/**
-	 * This method checks to see that there is at least one other thread that is still in the runnable state. If there are no other threads
-	 * in the runnable state then all the urls have been visited on this base url. There will also be no more urls added so we can exit this
-	 * thread.
+	 * This method checks to see that there is at least one other thread that is still in the runnable state. If there
+	 * are no other threads in the runnable state then all the urls have been visited on this base url. There will also
+	 * be no more urls added so we can exit this thread.
 	 * 
 	 * @param threads
 	 *            the threads to check for the runnable state
@@ -571,7 +574,8 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	}
 
 	/**
-	 * This method will add the first or base url to the database. Typically this method gets called before starting the crawl.
+	 * This method will add the first or base url to the database. Typically this method gets called before starting the
+	 * crawl.
 	 * 
 	 * @param dataBase
 	 *            the database for the persistence

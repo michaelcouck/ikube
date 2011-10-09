@@ -7,6 +7,8 @@ import ikube.listener.IListener;
 import ikube.model.Execution;
 import ikube.model.IndexContext;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -75,10 +77,12 @@ public class MonitoringInterceptor implements IMonitoringInterceptor, IListener 
 
 	protected void persistExecutions(Map<String, Execution> executions) {
 		try {
-			for (Map.Entry<String, Execution> entry : executions.entrySet()) {
-				dataBase.persist(entry.getValue());
-			}
+			Collection<Execution> clonedValues = new ArrayList<Execution>();
+			clonedValues.addAll(executions.values());
 			executions.clear();
+			for (Execution execution : clonedValues) {
+				dataBase.persist(execution);
+			}
 		} catch (Exception e) {
 			LOGGER.error("Exception persisting the executions : ", e);
 		}

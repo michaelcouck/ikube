@@ -38,6 +38,9 @@ public class IndexableDictionaryHandler extends IndexableHandler<IndexableDictio
 				Thread thread = new Thread(new Runnable() {
 					public void run() {
 						File[] files = new File(indexable.getPath()).listFiles();
+						if (files == null) {
+							return;
+						}
 						logger.info("Dictionary file : " + Arrays.asList(files));
 						for (File file : files) {
 							if (file.isDirectory()) {

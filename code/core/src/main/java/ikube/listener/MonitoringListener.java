@@ -32,7 +32,7 @@ public class MonitoringListener implements IListener {
 		for (Execution execution : executions.values()) {
 			long duration = TimeUnit.NANOSECONDS.toSeconds(execution.getDuration());
 			if (duration > 0) {
-				execution.setExecutionsPerSecond((double) (execution.getInvocations() / duration));
+				execution.setExecutionsPerSecond(((double) execution.getInvocations() / (double) duration));
 			}
 		}
 	}

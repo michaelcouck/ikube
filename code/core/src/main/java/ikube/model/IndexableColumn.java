@@ -11,24 +11,26 @@ import javax.persistence.Transient;
  * @version 01.00
  */
 @Entity()
+@SuppressWarnings("serial")
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class IndexableColumn extends Indexable<IndexableColumn> {
 
 	@Transient
-	private transient int columnType;
+	private transient int		columnType;
 	@Transient
-	private transient Object content;
+	private transient Object	content;
 
 	@Field()
-	private String fieldName;
-	private boolean idColumn;
-	private IndexableColumn foreignKey;
+	private String				fieldName;
+	private boolean				idColumn;
+	private IndexableColumn		foreignKey;
 
 	/**
-	 * This is the column where the name of the column is stored. In the case of a file in the database the name of the file can be used to
-	 * get the correct parser for that type of content. This will typically be a sibling in the same table.
+	 * This is the column where the name of the column is stored. In the case of a file in the database the name of the
+	 * file can be used to get the correct parser for that type of content. This will typically be a sibling in the same
+	 * table.
 	 */
-	private IndexableColumn nameColumn;
+	private IndexableColumn		nameColumn;
 
 	public String getFieldName() {
 		return fieldName;

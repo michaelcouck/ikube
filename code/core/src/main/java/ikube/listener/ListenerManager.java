@@ -15,17 +15,11 @@ import org.apache.log4j.Logger;
  */
 public class ListenerManager {
 
-	private static final Logger		LOGGER	= Logger.getLogger(ListenerManager.class);
-	private static ListenerManager	INSTANCE;
+	private static final Logger	LOGGER	= Logger.getLogger(ListenerManager.class);
 
-	public static final ListenerManager getInstance() {
-		return INSTANCE;
-	}
-
-	private List<IListener>	listeners;
+	private List<IListener>		listeners;
 
 	public ListenerManager() {
-		INSTANCE = this;
 		listeners = new ArrayList<IListener>();
 	}
 

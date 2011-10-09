@@ -78,16 +78,17 @@ public class Searcher extends Action<IndexContext<?>, Boolean> {
 			if (xml != null) {
 				results = (List<Map<String, String>>) SerializationUtilities.deserialize(xml);
 			}
+			ListenerManager listenerManager = ApplicationContextManager.getBean(ListenerManager.class);
 			if (results.size() < resultsSizeMinimum) {
 				String message = Logging.getString("Results not expected : ", results.size(), indexContext.getIndexName(), searchString, start, end,
 						resultsSizeMinimum);
 				logger.info(message);
-				ListenerManager.getInstance().fireEvent(Event.NO_RESULTS, System.currentTimeMillis(), null, Boolean.TRUE);
+				listenerManager.fireEvent(Event.NO_RESULTS, System.currentTimeMillis(), null, Boolean.TRUE);
 				String subject = "Search results for index : " + indexContext.getIndexName() + ", server : " + server.getAddress();
 				String body = xml;
 				sendNotification(subject, body);
 			} else {
-				ListenerManager.getInstance().fireEvent(Event.RESULTS, System.currentTimeMillis(), null, Boolean.TRUE);
+				listenerManager.fireEvent(Event.RESULTS, System.currentTimeMillis(), null, Boolean.TRUE);
 			}
 		} finally {
 			getClusterManager().stopWorking(getClass().getSimpleName(), indexContext.getIndexName(), "");

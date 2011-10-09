@@ -12,6 +12,7 @@ import javax.sql.DataSource;
  * @version 01.00
  */
 @Entity()
+@SuppressWarnings("serial")
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class IndexableTable extends Indexable<IndexableTable> {
 

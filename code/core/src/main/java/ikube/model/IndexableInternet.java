@@ -16,30 +16,31 @@ import javax.persistence.Transient;
  * @version 01.00
  */
 @Entity()
+@SuppressWarnings("serial")
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class IndexableInternet extends Indexable<IndexableInternet> {
 
 	@Transient
-	private transient String currentUrl;
+	private transient String		currentUrl;
 	@Transient
-	private transient InputStream currentInputStream;
+	private transient InputStream	currentInputStream;
 	@Transient
-	private transient Pattern pattern;
+	private transient Pattern		pattern;
 	@Transient
-	private transient URI uri;
+	private transient URI			uri;
 	@Transient
-	private transient String baseUrl;
+	private transient String		baseUrl;
 
-	private String url;
-	private int internetBatchSize;
-	private String excludedPattern;
-	private int timeout;
+	private String					url;
+	private int						internetBatchSize;
+	private String					excludedPattern;
+	private int						timeout;
 	@Field()
-	private String titleFieldName;
+	private String					titleFieldName;
 	@Field()
-	private String idFieldName;
+	private String					idFieldName;
 	@Field()
-	private String contentFieldName;
+	private String					contentFieldName;
 
 	public URI getUri() {
 		if (uri == null && getUrl() != null) {

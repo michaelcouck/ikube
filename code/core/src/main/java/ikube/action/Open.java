@@ -5,6 +5,7 @@ import ikube.listener.Event;
 import ikube.listener.ListenerManager;
 import ikube.model.IndexContext;
 import ikube.service.SearcherWebService;
+import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.Logging;
 
@@ -119,7 +120,8 @@ public class Open extends Action<IndexContext<?>, Boolean> {
 				Searchable[] searchables = searchers.toArray(new IndexSearcher[searchers.size()]);
 				MultiSearcher multiSearcher = new MultiSearcher(searchables);
 				indexContext.getIndex().setMultiSearcher(multiSearcher);
-				ListenerManager.getInstance().fireEvent(Event.SEARCHER_OPENED, System.currentTimeMillis(), indexContext, Boolean.FALSE);
+				ListenerManager listenerManager = ApplicationContextManager.getBean(ListenerManager.class);
+				listenerManager.fireEvent(Event.SEARCHER_OPENED, System.currentTimeMillis(), indexContext, Boolean.FALSE);
 				return Boolean.TRUE;
 			}
 		} catch (Exception e) {

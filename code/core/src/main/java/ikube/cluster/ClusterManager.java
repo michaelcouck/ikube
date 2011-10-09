@@ -9,6 +9,7 @@ import ikube.model.Server;
 import ikube.toolkit.HashUtilities;
 
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -43,12 +44,11 @@ public class ClusterManager implements IClusterManager, IConstants {
 	 * In the constructor we initialise the logger but most importantly the address of this server. Please see the
 	 * comments.
 	 * 
-	 * @throws Exception
+	 * @throws UnknownHostException
 	 *             this can only be the InetAddress exception, which can never happen because we are looking for the
 	 *             localhost
 	 */
-	public ClusterManager(ICache cache) throws Exception {
-		this.cache = cache;
+	public ClusterManager() throws UnknownHostException {
 		// We give each server a unique name because there can be several servers
 		// started on the same machine. For example several Tomcats each with a war. In
 		// this case the ip addresses will overlap. Ikube can also be started as stand alone
@@ -56,8 +56,10 @@ public class ClusterManager implements IClusterManager, IConstants {
 		// same ip address
 		this.ip = InetAddress.getLocalHost().getHostAddress();
 		this.address = ip + "." + System.nanoTime();
-		Server server = getServer();
-		LOGGER.info("This server started : " + server);
+	}
+
+	public void setCache(ICache cache) {
+		this.cache = cache;
 	}
 
 	/**

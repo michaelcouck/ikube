@@ -15,18 +15,19 @@ import org.apache.lucene.store.Directory;
  * @version 01.00
  */
 @Entity()
+@SuppressWarnings("serial")
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Index extends Persistable {
 
 	/** Can be null if there are no indexes running. */
 	@Transient
-	private transient IndexWriter indexWriter;
+	private transient IndexWriter	indexWriter;
 	/** This is the latest directory from the indexing process. */
 	@Transient
-	private transient Directory directory;
+	private transient Directory		directory;
 	/** Can be null if there is no index created. */
 	@Transient
-	private transient MultiSearcher multiSearcher;
+	private transient MultiSearcher	multiSearcher;
 
 	public IndexWriter getIndexWriter() {
 		return indexWriter;
