@@ -37,8 +37,8 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 /**
- * Tests the general functionality of the file system handler. There are no specific checks on the data that is indexed as the sub
- * components are tested seperately and the integration tests verify that the data is collected.
+ * Tests the general functionality of the file system handler. There are no specific checks on the data that is indexed
+ * as the sub components are tested seperately and the integration tests verify that the data is collected.
  * 
  * @author Michael Couck
  * @since 21.11.10
@@ -46,12 +46,12 @@ import org.mockito.Mockito;
  */
 public class IndexableFileSystemHandlerTest extends ATest {
 
-	private File powerPointFile;
-	private IDataBase dataBase;
-	private IDocumentDelegate documentDelegate;
-	private IndexableFileSystem indexableFileSystem;
+	private File						powerPointFile;
+	private IDataBase					dataBase;
+	private IDocumentDelegate			documentDelegate;
+	private IndexableFileSystem			indexableFileSystem;
 	/** Class under test. */
-	private IndexableFilesystemHandler indexableFileSystemHandler;
+	private IndexableFilesystemHandler	indexableFileSystemHandler;
 
 	public IndexableFileSystemHandlerTest() {
 		super(IndexableFileSystemHandlerTest.class);
@@ -79,7 +79,7 @@ public class IndexableFileSystemHandlerTest extends ATest {
 		when(indexableFileSystem.getMaxReadLength()).thenReturn(Long.MAX_VALUE);
 		when(indexableFileSystem.getNameFieldName()).thenReturn("nameFieldName");
 		when(indexableFileSystem.getPathFieldName()).thenReturn("pathFieldName");
-		ApplicationContextManagerMock.DATABASE = dataBase;
+		ApplicationContextManagerMock.setDataBase(dataBase);
 	}
 
 	@After

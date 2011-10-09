@@ -24,11 +24,11 @@ import org.springframework.util.ReflectionUtils;
 public class EnrichmentTest extends ATest {
 
 	@Cascading
-	private Document document;
-	private Coordinate coordinate;
-	private IEnrichment enrichment;
-	private double minKm = 0;
-	private double maxKm = 10;
+	private Document	document;
+	private Coordinate	coordinate;
+	private IEnrichment	enrichment;
+	private double		minKm	= 0;
+	private double		maxKm	= 10;
 
 	public EnrichmentTest() {
 		super(EnrichmentTest.class);
@@ -95,8 +95,8 @@ public class EnrichmentTest extends ATest {
 		endTierField.setAccessible(Boolean.TRUE);
 		Object endTier = ReflectionUtils.getField(endTierField, enrichment);
 
-		assertEquals("", new Integer(0), (Integer) startTier, 1);
-		assertEquals("", new Integer(15), (Integer) endTier, 1);
+		assertEquals("", Integer.valueOf(0), (Integer) startTier, 1);
+		assertEquals("", Integer.valueOf(15), (Integer) endTier, 1);
 	}
 
 	@Test

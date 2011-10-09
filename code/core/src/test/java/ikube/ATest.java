@@ -144,9 +144,9 @@ public abstract class ATest {
 		when(indexableColumn.isAddress()).thenReturn(Boolean.TRUE);
 		when(indexableColumn.getName()).thenReturn("indexableName");
 
-		IndexManagerMock.INDEX_WRITER = indexWriter;
-		ApplicationContextManagerMock.INDEX_CONTEXT = indexContext;
-		ApplicationContextManagerMock.CLUSTER_MANAGER = clusterManager;
+		IndexManagerMock.setIndexWriter(indexWriter);
+		ApplicationContextManagerMock.setIndexContext(indexContext);
+		ApplicationContextManagerMock.setClusterManager(clusterManager);
 		when(ApplicationContextManagerMock.HANDLER.getIndexableClass()).thenReturn(IndexableTable.class);
 	}
 
@@ -159,7 +159,7 @@ public abstract class ATest {
 					list = dataBase.find(klass, 0, 1000);
 				} while (list.size() > 0);
 			} catch (Exception e) {
-				logger.error(e.getMessage());
+				logger.error(e.getMessage(), e);
 			}
 		}
 	}

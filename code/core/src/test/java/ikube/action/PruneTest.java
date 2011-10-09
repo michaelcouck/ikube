@@ -45,7 +45,7 @@ public class PruneTest extends BaseTest {
 		actions = dataBase.find(Action.class, 0, Integer.MAX_VALUE);
 		assertEquals("There should be one action in the database : ", 1, actions.size());
 
-		boolean result = prune.execute(indexContext);
+		boolean result = prune.execute(realIndexContext);
 		assertTrue(result);
 		actions = dataBase.find(Action.class, 0, Integer.MAX_VALUE);
 		assertEquals("There should be one action in the database : ", 1, actions.size());
@@ -57,7 +57,7 @@ public class PruneTest extends BaseTest {
 		actions = dataBase.find(Action.class, 0, Integer.MAX_VALUE);
 		assertTrue("There should be a lot of actions in the database : ", actions.size() > IConstants.MAX_ACTIONS);
 
-		result = prune.execute(indexContext);
+		result = prune.execute(realIndexContext);
 		assertTrue(result);
 		actions = dataBase.find(Action.class, 0, Integer.MAX_VALUE);
 		assertTrue("There should be less actions in the database than the maximum : ", IConstants.MAX_ACTIONS > actions.size());

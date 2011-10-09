@@ -39,7 +39,7 @@ public abstract class BaseTest extends ATest {
 	static {
 		Logging.configure();
 		ApplicationContextManager.getApplicationContext();
-		ListenerManager.getInstance().removeListeners();
+		ApplicationContextManager.getBean(ListenerManager.class).removeListeners();
 		try {
 			final int iterations = 0;
 			final IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
@@ -64,11 +64,11 @@ public abstract class BaseTest extends ATest {
 		}
 	}
 
-	protected IndexContext<?>	indexContext;
+	protected IndexContext<?>	realIndexContext;
 
 	public BaseTest(Class<?> subClass) {
 		super(subClass);
-		indexContext = ApplicationContextManager.getBean("indexContext");
+		realIndexContext = ApplicationContextManager.getBean("indexContext");
 	}
 
 }

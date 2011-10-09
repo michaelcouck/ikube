@@ -14,22 +14,23 @@ import javax.servlet.jsp.tagext.BodyContent;
 import org.apache.log4j.Logger;
 
 /**
- * This is the pager tag for any application. It could be reused for other applications. What is required for this tag to function are three
- * parameters that should be set in the session, the names of the attributes in the session are in this class:<br>
+ * This is the pager tag for any application. It could be reused for other applications. What is required for this tag
+ * to function are three parameters that should be set in the session, the names of the attributes in the session are in
+ * this class:<br>
  * 
  * 1) total - The total count for all the results as a Number<br>
  * 2) firstResult - The index of the first result that you will need.<br>
  * 3) maxResults - The maximum results that should be shown.<br>
  * 
- * All the parameters from the request are added to the url. Urls are generated for each page. So for example if you have results from 0 to
- * 17 and the max results that you want to see on the page are 10 and the action for your url is /myapp/myaction.action then the generated
- * urls will be the following:<br>
+ * All the parameters from the request are added to the url. Urls are generated for each page. So for example if you
+ * have results from 0 to 17 and the max results that you want to see on the page are 10 and the action for your url is
+ * /myapp/myaction.action then the generated urls will be the following:<br>
  * 
  * 1) url=/myapp/myaction.action?firstResult=0&maxResults=10, page=1<br>
  * 2) url=/myapp/myaction.action?firstResult=10&maxResults=10, page=2<br>
  * 
- * The link tag can then access the next url in the list and print it to the page. The page tag can access the page number and print that to
- * the page. Nesting the tags should look something like:<br>
+ * The link tag can then access the next url in the list and print it to the page. The page tag can access the page
+ * number and print that to the page. Nesting the tags should look something like:<br>
  * 
  * <pre>
  * 		Show items per &lt;ccff:pagerTag&gt;&lt;a href=&quot;&lt;ccff:linkTag /&gt;&quot;&gt;&lt;ccff:pageTag /&gt;&lt;/a&gt; &lt;/ccff:pagerTag&gt;
@@ -40,16 +41,17 @@ import org.apache.log4j.Logger;
  * @since 12.12.08
  * @version 01.00
  */
+@SuppressWarnings("serial")
 public class PagerTag extends ATag {
 
 	/** The url to the search page. */
-	private transient String searchUrl;
+	private transient String			searchUrl;
 	/** The next url in the list. */
-	private transient Url url;
+	private transient Url				url;
 	/** The list of generated urls. */
-	private transient LinkedList<Url> urls;
+	private transient LinkedList<Url>	urls;
 
-	protected transient Logger logger = Logger.getLogger(this.getClass());
+	protected transient Logger			logger	= Logger.getLogger(this.getClass());
 
 	public void setSearchUrl(String searchUrl) {
 		this.searchUrl = searchUrl;
@@ -128,8 +130,8 @@ public class PagerTag extends ATag {
 	}
 
 	/**
-	 * This method builds the url for the next page. We take all the parameters from the request and add them to the url. This forms the
-	 * base url for the paging.
+	 * This method builds the url for the next page. We take all the parameters from the request and add them to the
+	 * url. This forms the base url for the paging.
 	 * 
 	 * @param request
 	 *            the request to access the parameters from
@@ -163,9 +165,10 @@ public class PagerTag extends ATag {
 	}
 
 	/**
-	 * Builds the paging urls. In the above method the base url is built, this method builds several urls each one increments the first
-	 * result parameter, effectively setting the scene for the next page. In your action you then access the first result and max results
-	 * parameters and do your paging logic to ensure that you have the next set of results for your page.
+	 * Builds the paging urls. In the above method the base url is built, this method builds several urls each one
+	 * increments the first result parameter, effectively setting the scene for the next page. In your action you then
+	 * access the first result and max results parameters and do your paging logic to ensure that you have the next set
+	 * of results for your page.
 	 * 
 	 * @param request
 	 *            the request to get the session from
@@ -175,7 +178,8 @@ public class PagerTag extends ATag {
 	 */
 	protected void buildUrls(HttpServletRequest request, String baseUrl) throws JspException {
 		HttpSession session = request.getSession();
-		// Get the total results and the max results from the session. These must already have been set by the action of course
+		// Get the total results and the max results from the session. These must already have been set by the action of
+		// course
 		Number total = (Number) session.getAttribute(TOTAL);
 		Number maxResults = (Number) session.getAttribute(MAX_RESULTS);
 		if (total == null || maxResults == null) {

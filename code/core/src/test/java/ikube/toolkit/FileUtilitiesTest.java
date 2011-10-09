@@ -60,13 +60,13 @@ public class FileUtilitiesTest extends ATest {
 	@Test
 	public void findFiles() throws Exception {
 		assertFalse(file.exists());
-		file.createNewFile();
+		assertTrue(file.createNewFile());
 		assertTrue(file.exists());
 
 		File[] files = FileUtilities.findFiles(dotFolder, stringPatterns);
 		int initialLength = files.length;
 		assertTrue(initialLength >= 1);
-		file.delete();
+		assertTrue(file.delete());
 
 		files = FileUtilities.findFiles(dotFolder, stringPatterns);
 		assertEquals(initialLength - 1, files.length);
@@ -75,7 +75,7 @@ public class FileUtilitiesTest extends ATest {
 	@Test
 	public void findFilesRecursively() throws Exception {
 		assertFalse(file.exists());
-		file.createNewFile();
+		assertTrue(file.createNewFile());
 		assertTrue(file.exists());
 
 		List<File> files = FileUtilities.findFilesRecursively(dotFolder, new ArrayList<File>(), stringPatterns);
@@ -91,7 +91,7 @@ public class FileUtilitiesTest extends ATest {
 	@Test
 	public void deleteFile() throws Exception {
 		assertFalse(file.exists());
-		file.createNewFile();
+		assertTrue(file.createNewFile());
 		assertTrue(file.exists());
 
 		FileUtilities.deleteFile(file, 1);
@@ -101,7 +101,7 @@ public class FileUtilitiesTest extends ATest {
 	@Test
 	public void deleteFiles() throws Exception {
 		assertFalse(file.exists());
-		file.createNewFile();
+		assertTrue(file.createNewFile());
 		assertTrue(file.exists());
 
 		FileUtilities.deleteFiles(dotFolder, stringPatterns);

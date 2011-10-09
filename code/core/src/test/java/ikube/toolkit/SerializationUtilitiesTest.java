@@ -8,13 +8,11 @@ import ikube.model.IndexContext;
 import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -60,15 +58,6 @@ public class SerializationUtilitiesTest extends ATest {
 			}
 		}
 		assertTrue("The index field should be set to transient : ", containsIndex);
-	}
-
-	@Test
-	@Ignore
-	public void deserialize() {
-		File file = new File("D:/Eclipse/workspace/ikube/results.xml");
-		String xml = FileUtilities.getContents(file, Integer.MAX_VALUE, IConstants.ENCODING);
-		Object result = SerializationUtilities.deserialize(xml);
-		logger.error("Result : " + result);
 	}
 
 }

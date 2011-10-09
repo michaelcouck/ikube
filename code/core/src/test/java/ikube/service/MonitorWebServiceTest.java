@@ -32,13 +32,13 @@ public class MonitorWebServiceTest extends BaseTest {
 
 	@Before
 	public void before() {
-		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
+		FileUtilities.deleteFile(new File(realIndexContext.getIndexDirectoryPath()), 1);
 		monitorWebService = ApplicationContextManager.getBean(IMonitorWebService.class);
 	}
 
 	@After
 	public void after() {
-		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
+		FileUtilities.deleteFile(new File(realIndexContext.getIndexDirectoryPath()), 1);
 	}
 
 	@Test
@@ -75,16 +75,16 @@ public class MonitorWebServiceTest extends BaseTest {
 
 	@Test
 	public void getIndexSize() throws Exception {
-		createIndex(indexContext, "The strings to index");
-		long indexSize = monitorWebService.getIndexSize(indexContext.getIndexName());
+		createIndex(realIndexContext, "The strings to index");
+		long indexSize = monitorWebService.getIndexSize(realIndexContext.getIndexName());
 		logger.info("Index size : " + indexSize);
 		assertTrue("There should be some data in the index : ", indexSize > 0);
 	}
 
 	@Test
 	public void getIndexDocuments() throws Exception {
-		createIndex(indexContext, "The strings to index");
-		long indexDocuments = monitorWebService.getIndexDocuments(indexContext.getIndexName());
+		createIndex(realIndexContext, "The strings to index");
+		long indexDocuments = monitorWebService.getIndexDocuments(realIndexContext.getIndexName());
 		logger.info("Index documents : " + indexDocuments);
 		assertEquals("There should be at least one document in the index : ", 2, indexDocuments, 1);
 	}

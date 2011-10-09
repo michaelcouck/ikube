@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.springframework.org/schema/beans" xmlns:property="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+
+	xsi:schemaLocation="
+			http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+            http://www.springframework.org/schema/context
+            http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+	<description>
+		This file is not to be modified by users generally.
+	</description>
+
+	<!-- Bitronix Transaction Manager embedded configuration. -->
+	<bean 
+		id="btmConfig" 
+		factory-method="getConfiguration" 
+		class="bitronix.tm.TransactionManagerServices">
+		<property name="serverId" value="spring-btm" />
+	</bean>
+
+	<!-- create BTM transaction manager. -->
+	<bean 
+		id="BitronixTransactionManager" 
+		factory-method="getTransactionManager" 
+		class="bitronix.tm.TransactionManagerServices"
+		depends-on="btmConfig" 
+		destroy-method="shutdown" />
+
+	<!-- Spring JtaTransactionManager. -->
+	<bean 
+		id="JtaTransactionManager" 
+		class="org.springframework.transaction.jta.JtaTransactionManager"
+		property:transactionManager-ref="BitronixTransactionManager"
+		property:userTransaction-ref="BitronixTransactionManager" />
+
+	<!-- Set the transaction manager available to Infinispan. -->
+	<bean 
+		id="atomikosSetter" 
+		class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" 
+		property:staticMethod="ikube.toolkit.AtomikosTransactionManagerLookup.setTransactionManager">
+		<property name="arguments">
+			<array>
+				<ref local="BitronixTransactionManager" />
+			</array>
+		</property>
+	</bean>
+
+</beans>

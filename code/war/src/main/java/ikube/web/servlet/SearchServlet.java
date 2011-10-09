@@ -28,6 +28,7 @@ import org.apache.log4j.Logger;
  * @version 01.00
  */
 @Deprecated
+@SuppressWarnings("serial")
 public class SearchServlet extends HttpServlet {
 
 	private static final transient Logger	LOGGER		= Logger.getLogger(SearchServlet.class);

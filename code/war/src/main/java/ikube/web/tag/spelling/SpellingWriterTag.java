@@ -13,9 +13,10 @@ import org.apache.log4j.Logger;
  * @since 10.02.10
  * @version 01.00
  */
+@SuppressWarnings("serial")
 public class SpellingWriterTag extends ATag {
 
-	protected transient Logger logger = Logger.getLogger(this.getClass());
+	protected transient Logger	logger	= Logger.getLogger(this.getClass());
 
 	/**
 	 * {@inheritDoc}

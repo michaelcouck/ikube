@@ -13,9 +13,10 @@ import org.apache.log4j.Logger;
  * @since 19.03.10
  * @version 01.00
  */
+@SuppressWarnings("serial")
 public class ContextTag extends ATag {
 
-	protected transient Logger logger = Logger.getLogger(this.getClass());
+	protected transient Logger	logger	= Logger.getLogger(this.getClass());
 
 	/**
 	 * {@inheritDoc}

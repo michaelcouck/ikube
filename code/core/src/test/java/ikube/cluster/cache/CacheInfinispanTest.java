@@ -1,6 +1,7 @@
 package ikube.cluster.cache;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -8,10 +9,12 @@ import ikube.ATest;
 import ikube.IConstants;
 import ikube.model.Server;
 import ikube.toolkit.ApplicationContextManager;
+import ikube.toolkit.PerformanceTester;
 
 import java.util.List;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
@@ -21,20 +24,29 @@ import org.junit.Test;
  */
 public class CacheInfinispanTest extends ATest {
 
-	private long			id		= 0l;
-	private String			name	= IConstants.IKUBE;
-	private Server			server	= new Server();
+	private long					id;
+	private String					name;
+	private Server					server;
 
 	/** Class under test. */
-	private CacheInfinispan	cacheInfinispan;
+	private static CacheInfinispan	cacheInfinispan;
 
 	public CacheInfinispanTest() {
 		super(CacheInfinispanTest.class);
 	}
 
-	@Before
-	public void before() throws Exception {
+	@BeforeClass
+	public static void beforeClass() throws Exception {
+		// cacheInfinispan = new CacheInfinispan();
+		// cacheInfinispan.initialise();
 		cacheInfinispan = ApplicationContextManager.getBean(CacheInfinispan.class);
+	}
+
+	@Before
+	public void before() {
+		id = 0l;
+		name = IConstants.IKUBE;
+		server = new Server();
 	}
 
 	@Test
@@ -64,10 +76,15 @@ public class CacheInfinispanTest extends ATest {
 
 	@Test
 	public void lock() {
-		boolean locked = cacheInfinispan.lock(IConstants.IKUBE);
-		assertTrue(locked);
-		boolean unlocked = cacheInfinispan.unlock(IConstants.IKUBE);
-		assertTrue(unlocked);
+		boolean locked = cacheInfinispan.lock(name);
+		assertTrue("Cache not locked, should be able to acquire this lock : ", locked);
+		locked = cacheInfinispan.lock(name);
+		assertFalse("Cache already locked, shouldn't be able to get the lock : ", locked);
+
+		boolean unlocked = cacheInfinispan.unlock(name);
+		assertTrue("Cache was locked but we should be able to unlock it : ", unlocked);
+		unlocked = cacheInfinispan.unlock(name);
+		assertFalse("Cache not locked, so method returns false : ", unlocked);
 	}
 
 	@Test
@@ -82,7 +99,43 @@ public class CacheInfinispanTest extends ATest {
 
 	@Test(expected = RuntimeException.class)
 	public void getStringString() {
-		cacheInfinispan.get(IConstants.IKUBE, IConstants.IKUBE);
+		cacheInfinispan.get(name, name);
+	}
+
+	int	iterations	= 100;
+
+	@Test
+	public void performanceLockingAndUnlocking() {
+		double executionsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
+			@Override
+			public void execute() throws Throwable {
+				cacheInfinispan.lock(name);
+				cacheInfinispan.unlock(name);
+			}
+		}, "Locking : ", iterations, Boolean.TRUE);
+		assertTrue("Must be fast : ", executionsPerSecond > 25);
+	}
+
+	@Test
+	public void performanceSetting() {
+		double executionsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
+			@Override
+			public void execute() throws Throwable {
+				cacheInfinispan.set(server.getClass().getName(), server.getId(), server);
+			}
+		}, "Setting : ", iterations, Boolean.TRUE);
+		assertTrue("Must be fast : ", executionsPerSecond > 25);
+	}
+
+	@Test
+	public void performanceGetting() {
+		double executionsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
+			@Override
+			public void execute() throws Throwable {
+				cacheInfinispan.get(server.getClass().getName(), server.getId());
+			}
+		}, "Getting : ", iterations, Boolean.TRUE);
+		assertTrue("Must be fast : ", executionsPerSecond > 25);
 	}
 
 }

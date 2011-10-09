@@ -8,10 +8,8 @@ import ikube.toolkit.FileUtilities;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.InputStreamReader;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -109,59 +107,6 @@ public class DataGeneratorGeospatialTest extends ATest {
 	}
 
 	@Test
-	@Ignore
-	public void readFile() {
-		File file = FileUtilities.findFileRecursively(new File("."), fileName);
-		FileInputStream fileInputStream = null;
-		try {
-			fileInputStream = new FileInputStream(file);
-			InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
-			BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-			for (int i = 0; i < 1000; i++) {
-				String line = bufferedReader.readLine();
-				if (line != null) {
-					line = line.length() > 200 ? line.substring(0, 199) : line;
-					logger.info("Line : " + line);
-				}
-			}
-		} catch (Exception e) {
-			logger.error("", e);
-		} finally {
-			FileUtilities.close(fileInputStream);
-		}
-	}
-
-	// @Test
-	// @Ignore
-	// public void jRecordBind() throws Exception {
-	// File file = FileUtilities.findFileRecursively(new File("."), "geoname.xsd");
-	// FileReader fileReader = new FileReader(file);
-	// // Marshaller< GeoName> marshaller = new Marshaller<GeoName>(fileReader);
-	// Unmarshaller<GeoName> unmarshaller = new Unmarshaller<GeoName>(fileReader);
-	// File dataFile = new File(fileName);
-	// FileReader dataFileReader = new FileReader(dataFile);
-	// Iterator<GeoName> geoNameIterator = unmarshaller.unmarshall(dataFileReader);
-	// for (int i = 0; i < 100; i++) {
-	// logger.info("Geo name : " + geoNameIterator.next());
-	// }
-	// }
-
-	// @Test
-	// @Ignore
-	// public void flatPack() throws Exception {
-	// ParserFactory parserFactory = DefaultParserFactory.getInstance();
-	// Parser parser = parserFactory.newDelimitedParser(new FileReader(mappingFile), new FileReader(dataFile), '\t',
-	// '"', true);
-	// DataSet ds = parser.parse();
-	// for (int i = 0; i < 100; i++) {
-	// if (ds.next()) {
-	// logger.info(ds.getString("geonameid"));
-	// }
-	// }
-	// }
-
-	@Test
-	@Ignore
 	public void canyon() {
 		Session session = SessionFactory.getSession("canyon.cfg.xml", "geoname");
 		GeoName geoName = session.next(GeoName.class);
@@ -173,17 +118,24 @@ public class DataGeneratorGeospatialTest extends ATest {
 	public void convert() throws Exception {
 		File inputFile = FileUtilities.findFileRecursively(new File("."), fileName);
 		File outputFile = FileUtilities.getFile("./code/core/src/main/resources/allCountriesCsv.txt", Boolean.FALSE);
-		FileReader fileReader = new FileReader(inputFile);
-		FileWriter fileWriter = new FileWriter(outputFile);
-		BufferedReader bufferedReader = new BufferedReader(fileReader);
-		String line = null;
-		while ((line = bufferedReader.readLine()) != null) {
-			line = StringUtils.replace(line, "\t", ";");
-			line = line + "\n";
-			fileWriter.write(line);
+		FileReader fileReader = null;
+		FileWriter fileWriter = null;
+		BufferedReader bufferedReader = null;
+		try {
+			fileReader = new FileReader(inputFile);
+			fileWriter = new FileWriter(outputFile);
+			bufferedReader = new BufferedReader(fileReader);
+			String line = null;
+			while ((line = bufferedReader.readLine()) != null) {
+				line = StringUtils.replace(line, "\t", ";");
+				line = line + "\n";
+				fileWriter.write(line);
+			}
+		} finally {
+			FileUtilities.close(bufferedReader);
+			FileUtilities.close(fileReader);
+			FileUtilities.close(fileWriter);
 		}
-		fileWriter.close();
-		fileReader.close();
 	}
 
 	@Test
@@ -193,24 +145,32 @@ public class DataGeneratorGeospatialTest extends ATest {
 		File inputFile = FileUtilities.findFileRecursively(new File("."), "allCountriesCsv.txt");
 		int number = 1;
 		File outputFile = FileUtilities.getFile(path + "allCountries" + number + "Csv.txt", Boolean.FALSE);
-		FileReader fileReader = new FileReader(inputFile);
-		FileWriter fileWriter = new FileWriter(outputFile);
-		BufferedReader bufferedReader = new BufferedReader(fileReader);
-		String line = null;
-		int counter = 0;
-		while ((line = bufferedReader.readLine()) != null) {
-			if (++counter >= 1000000) {
-				counter = 0;
-				fileWriter.close();
-				outputFile = FileUtilities.getFile(path + "allCountries" + ++number + "Csv.txt", Boolean.FALSE);
-				fileWriter = new FileWriter(outputFile);
+		FileReader fileReader = null;
+		FileWriter fileWriter = null;
+		BufferedReader bufferedReader = null;
+
+		try {
+			fileReader = new FileReader(inputFile);
+			fileWriter = new FileWriter(outputFile);
+			bufferedReader = new BufferedReader(fileReader);
+			String line = null;
+			int counter = 0;
+			while ((line = bufferedReader.readLine()) != null) {
+				if (++counter >= 1000000) {
+					counter = 0;
+					fileWriter.close();
+					outputFile = FileUtilities.getFile(path + "allCountries" + ++number + "Csv.txt", Boolean.FALSE);
+					fileWriter = new FileWriter(outputFile);
+				}
+				line = StringUtils.replace(line, "\t", ";");
+				line = line + "\n";
+				fileWriter.write(line);
 			}
-			line = StringUtils.replace(line, "\t", ";");
-			line = line + "\n";
-			fileWriter.write(line);
+		} finally {
+			FileUtilities.close(bufferedReader);
+			FileUtilities.close(fileReader);
+			FileUtilities.close(fileWriter);
 		}
-		fileWriter.close();
-		fileReader.close();
 	}
 
 }

@@ -40,15 +40,15 @@ public class DirectoryExistsAndIsLockedTest extends ATest {
 
 	@Test
 	public void evaluate() throws IOException {
-		IndexReaderMock.INDEX_EXISTS = Boolean.FALSE;
-		IndexWriterMock.IS_LOCKED = Boolean.FALSE;
+		IndexReaderMock.setIndexExists(Boolean.FALSE);
+		IndexWriterMock.setIsLocked(Boolean.FALSE);
 		Mockit.setUpMocks(IndexWriterMock.class, IndexReaderMock.class, FSDirectoryMock.class);
 		boolean result = existsAndIsLocked.evaluate(null);
 		Mockit.tearDownMocks();
 		assertFalse(result);
 
-		IndexReaderMock.INDEX_EXISTS = Boolean.TRUE;
-		IndexWriterMock.IS_LOCKED = Boolean.TRUE;
+		IndexReaderMock.setIndexExists(Boolean.TRUE);
+		IndexWriterMock.setIsLocked(Boolean.TRUE);
 		Mockit.setUpMocks(IndexWriterMock.class, IndexReaderMock.class, FSDirectoryMock.class);
 		// result = existsAndIsLocked.evaluate(null);
 		Mockit.tearDownMocks();

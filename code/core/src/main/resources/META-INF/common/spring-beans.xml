@@ -98,8 +98,10 @@
 	</transaction:advice>
 
 	<aop:config>
-		<aop:pointcut id="dataBaseOperation" expression="execution(* ikube.database.jpa.DataBase*.*(..))" />
-		<aop:advisor advice-ref="transactionAdvice" pointcut-ref="dataBaseOperation" />
+		<aop:pointcut id="dataBaseJpa" expression="execution(* ikube.database.jpa.DataBaseJpa.*(..))" />
+		<aop:pointcut id="dataBaseAbstract" expression="execution(* ikube.database.jpa.ADataBaseJpa.*(..))" />
+		<aop:advisor advice-ref="transactionAdvice" pointcut-ref="dataBaseJpa" />
+		<aop:advisor advice-ref="transactionAdvice" pointcut-ref="dataBaseAbstract"/>
 	</aop:config>
 	
 	<!-- The Jpa database for large sets of data. -->
@@ -109,18 +111,16 @@
 		lazy-init="false" />
 	
 	<bean
-		id="ikube.cluster.cache.CacheInfinispan"
+		id="ikube.cluster.cache.ICache"
 		class="ikube.cluster.cache.CacheInfinispan"
 		lazy-init="false"
-		init-method="initialise" />
+		init-method="initialise"
+		property:configurationFile="META-INF/infinispan.xml" />
 	<bean
 		id="ikube.cluster.IClusterManager"
 		class="ikube.cluster.ClusterManager"
-		lazy-init="true" >
-		<constructor-arg>
-			<ref local="ikube.cluster.cache.CacheInfinispan" />
-		</constructor-arg>
-	</bean>
+		lazy-init="true" 
+		property:cache-ref="ikube.cluster.cache.ICache" />
 	
 	<!-- 
 		These are just pojos that delegate to the real class that can be intercepted by Spring. 

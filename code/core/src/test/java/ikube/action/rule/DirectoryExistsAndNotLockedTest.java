@@ -33,7 +33,7 @@ public class DirectoryExistsAndNotLockedTest extends ATest {
 		Mockit.tearDownMocks();
 	}
 
-	private DirectoryExistsAndNotLocked existsAndNotLocked;
+	private DirectoryExistsAndNotLocked	existsAndNotLocked;
 
 	public DirectoryExistsAndNotLockedTest() {
 		super(DirectoryExistsAndNotLockedTest.class);
@@ -46,13 +46,13 @@ public class DirectoryExistsAndNotLockedTest extends ATest {
 
 	@Test
 	public void evaluate() throws IOException {
-		IndexWriterMock.IS_LOCKED = Boolean.FALSE;
-		IndexReaderMock.INDEX_EXISTS = Boolean.TRUE;
+		IndexWriterMock.setIsLocked(Boolean.FALSE);
+		IndexReaderMock.setIndexExists(Boolean.TRUE);
 		boolean existsAndIsNotLocked = existsAndNotLocked.evaluate(null);
 		assertTrue(existsAndIsNotLocked);
 
-		IndexWriterMock.IS_LOCKED = Boolean.TRUE;
-		IndexReaderMock.INDEX_EXISTS = Boolean.FALSE;
+		IndexWriterMock.setIsLocked(Boolean.TRUE);
+		IndexReaderMock.setIndexExists(Boolean.FALSE);
 		existsAndIsNotLocked = existsAndNotLocked.evaluate(null);
 		assertFalse(existsAndIsNotLocked);
 	}

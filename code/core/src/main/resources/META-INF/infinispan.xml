@@ -1,6 +1,4 @@
-<infinispan 
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-	xsi:schemaLocation="urn:infinispan:config:5.0 http://www.infinispan.org/schemas/infinispan-config-5.0.xsd"
+<infinispan xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:infinispan:config:5.0 http://www.infinispan.org/schemas/infinispan-config-5.0.xsd"
 	xmlns="urn:infinispan:config:5.0">
 	<global>
 		<transport>
@@ -14,8 +12,14 @@
 		<clustering mode="replication">
 			<sync />
 		</clustering>
+		<transaction 
+			useEagerLocking="false" 
+			useSynchronization="true" 
+			syncCommitPhase="true" 
+			syncRollbackPhase="true"
+			transactionManagerLookupClass="ikube.toolkit.AtomikosTransactionManagerLookup" />
 	</default>
-	<namedCache  name="ikube.model.Url" />
-    <namedCache  name="ikube.model.Server" />
-    <namedCache  name="ikube.model.File" />
+	<namedCache name="ikube.model.Url" />
+	<namedCache name="ikube.model.Server" />
+	<namedCache name="ikube.model.File" />
 </infinispan>

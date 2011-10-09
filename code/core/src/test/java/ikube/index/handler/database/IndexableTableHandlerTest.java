@@ -65,13 +65,13 @@ public class IndexableTableHandlerTest extends BaseTest {
 		connection = ((DataSource) ApplicationContextManager.getBean("nonXaDataSourceOracle")).getConnection();
 
 		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
-		clusterManager.stopWorking(Index.class.getSimpleName(), indexContext.getIndexName(), faqIndexableTable.getName());
+		clusterManager.stopWorking(Index.class.getSimpleName(), realIndexContext.getIndexName(), faqIndexableTable.getName());
 	}
 
 	@After
 	public void after() {
 		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
-		clusterManager.stopWorking(Index.class.getSimpleName(), indexContext.getIndexName(), faqIndexableTable.getName());
+		clusterManager.stopWorking(Index.class.getSimpleName(), realIndexContext.getIndexName(), faqIndexableTable.getName());
 		Server server = clusterManager.getServer();
 		server.setAction(null);
 		clusterManager.set(Server.class.getName(), server.getId(), server);
@@ -80,8 +80,8 @@ public class IndexableTableHandlerTest extends BaseTest {
 
 	@Test
 	public void handleTable() throws Exception {
-		indexContext.getIndex().setIndexWriter(indexWriter);
-		List<Thread> threads = indexableTableHandler.handle(indexContext, faqIndexableTable);
+		realIndexContext.getIndex().setIndexWriter(indexWriter);
+		List<Thread> threads = indexableTableHandler.handle(realIndexContext, faqIndexableTable);
 		ThreadUtilities.waitForThreads(threads);
 		// We just need to succeed, the integration tests test the
 		// data that is indexed and validates it
@@ -89,11 +89,11 @@ public class IndexableTableHandlerTest extends BaseTest {
 
 	@Test
 	public void buildSql() throws Exception {
-		indexContext.setBatchSize(10);
+		realIndexContext.setBatchSize(10);
 		String expectedSql = "select faq.faqId, faq.creationtimestamp, faq.modifiedtimestamp, "
 				+ "faq.creator, faq.modifier, faq.question, faq.answer, faq.published from faq";
 		long nextIdNumber = 0;
-		String sql = indexableTableHandler.buildSql(faqIndexableTable, indexContext.getBatchSize(), nextIdNumber);
+		String sql = indexableTableHandler.buildSql(faqIndexableTable, realIndexContext.getBatchSize(), nextIdNumber);
 		logger.info("Sql : " + sql);
 		assertTrue(sql.contains(expectedSql));
 	}
@@ -132,7 +132,7 @@ public class IndexableTableHandlerTest extends BaseTest {
 	@Test
 	public void getResultSet() throws Exception {
 		faqIdIndexableColumn.setContent(1);
-		ResultSet resultSet = indexableTableHandler.getResultSet(indexContext, faqIndexableTable, connection, 1);
+		ResultSet resultSet = indexableTableHandler.getResultSet(realIndexContext, faqIndexableTable, connection, 1);
 		assertNotNull(resultSet);
 
 		Statement statement = resultSet.getStatement();

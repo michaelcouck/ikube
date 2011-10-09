@@ -27,7 +27,7 @@ public class Integration {
 	@Test
 	public void main() throws Exception {
 		if (!isServer()) {
-			return;
+			// return;
 		}
 		waitToFinish();
 		validateJsps();

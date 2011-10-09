@@ -16,12 +16,16 @@ import org.apache.lucene.index.IndexWriter;
  */
 @MockClass(realClass = IndexManager.class)
 public class IndexManagerMock {
-	
-	public static IndexWriter INDEX_WRITER;
+
+	public static IndexWriter	INDEX_WRITER;
 
 	@Mock()
 	public static synchronized IndexWriter openIndexWriter(final IndexContext<?> indexContext, final long time, final String ip) {
 		return INDEX_WRITER;
+	}
+
+	public static void setIndexWriter(IndexWriter indexWriter) {
+		IndexManagerMock.INDEX_WRITER = indexWriter;
 	}
 
 }

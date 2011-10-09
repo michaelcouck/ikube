@@ -38,7 +38,7 @@ public class IndexableInternetHandlerTest extends BaseTest {
 
 	@Before
 	public void before() {
-		ListenerManager.getInstance().removeListeners();
+		ApplicationContextManager.getBean(ListenerManager.class).removeListeners();
 		indexContext = ApplicationContextManager.getBean("ikube");
 		indexableInternet = ApplicationContextManager.getBean("ikubeGoogleCode");
 		indexableInternetHandler = ApplicationContextManager.getBean(IndexableInternetHandler.class);
@@ -50,8 +50,7 @@ public class IndexableInternetHandlerTest extends BaseTest {
 
 	@After
 	public void after() {
-		ListenerManager.getInstance().removeListeners();
-		// delete(dataBase, Url.class);
+		ApplicationContextManager.getBean(ListenerManager.class).removeListeners();
 	}
 
 	@Test

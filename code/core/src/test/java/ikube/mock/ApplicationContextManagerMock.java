@@ -96,6 +96,22 @@ public class ApplicationContextManagerMock {
 		return (T) BEAN;
 	}
 
+	public static <T> void setBean(T bean) {
+		ApplicationContextManagerMock.BEAN = bean;
+	}
+
+	public static void setClusterManager(IClusterManager clusterManager) {
+		ApplicationContextManagerMock.CLUSTER_MANAGER = clusterManager;
+	}
+
+	public static void setIndexContext(IndexContext<?> indexContext) {
+		ApplicationContextManagerMock.INDEX_CONTEXT = indexContext;
+	}
+
+	public static void setDataBase(IDataBase dataBase) {
+		ApplicationContextManagerMock.DATABASE = dataBase;
+	}
+
 	public static void main(String[] args) {
 		ApplicationContextManagerMock.getBean(IClusterManager.class);
 	}

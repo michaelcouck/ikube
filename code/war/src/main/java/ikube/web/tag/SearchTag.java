@@ -25,10 +25,11 @@ import org.apache.log4j.Logger;
  * @since 04.02.10
  * @version 01.00
  */
+@SuppressWarnings("serial")
 public class SearchTag extends ATag {
 
-	protected transient Logger logger = Logger.getLogger(this.getClass());
-	private String searchUrl;
+	protected transient Logger	logger	= Logger.getLogger(this.getClass());
+	private String				searchUrl;
 
 	public void setSearchUrl(String searchUrl) {
 		this.searchUrl = searchUrl;
@@ -92,7 +93,8 @@ public class SearchTag extends ATag {
 	}
 
 	/**
-	 * This method should be called if the search servlet is being used and there are no results in the request or the session.
+	 * This method should be called if the search servlet is being used and there are no results in the request or the
+	 * session.
 	 * 
 	 * @throws IOException
 	 */

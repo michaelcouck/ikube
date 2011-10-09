@@ -80,10 +80,11 @@ public class ClusterManagerTest extends ATest {
 		remoteServer.setId(HashUtilities.hash(remoteServer.getAddress()));
 		// remoteServer.setWorking(Boolean.FALSE);
 
-		clusterManager = new ClusterManager(cacheInfinispan);
+		clusterManager = new ClusterManager();
+		clusterManager.setCache(cacheInfinispan);
 		clusterManager.clear(Url.class.getName());
 		clusterManager.clear(Server.class.getName());
-		ListenerManager.getInstance().removeListeners();
+		ApplicationContextManager.getBean(ListenerManager.class).removeListeners();
 	}
 
 	@After
@@ -226,7 +227,7 @@ public class ClusterManagerTest extends ATest {
 
 	@Test
 	public void setWorking() {
-		ListenerManager.getInstance().removeListeners();
+		ApplicationContextManager.getBean(ListenerManager.class).removeListeners();
 		// First clear the map of servers
 		Server localServer = clusterManager.getServer();
 		localServer.setAction(null);

@@ -37,7 +37,7 @@ public class SearcherWebServiceTest extends ATest {
 	@Before
 	public void before() {
 		Mockit.setUpMocks(ApplicationContextManagerMock.class);
-		ApplicationContextManagerMock.BEAN = indexContext;
+		ApplicationContextManagerMock.setBean(indexContext);
 		this.searcherWebService = new SearcherWebService();
 		((SearcherWebService) this.searcherWebService).setSearchDelegate(new SearchDelegate());
 	}
@@ -45,7 +45,7 @@ public class SearcherWebServiceTest extends ATest {
 	@After
 	public void after() {
 		Mockit.tearDownMocks(ApplicationContextManager.class);
-		ApplicationContextManagerMock.BEAN = null;
+		ApplicationContextManagerMock.setBean(null);
 	}
 
 	@Test
@@ -80,8 +80,8 @@ public class SearcherWebServiceTest extends ATest {
 	@Test
 	@SuppressWarnings("unchecked")
 	public void searchMultiAll() {
-		String result = this.searcherWebService.searchMultiAll(indexContext.getIndexName(), new String[] { "search", "strings" }, Boolean.TRUE, 0,
-				10);
+		String result = this.searcherWebService
+				.searchMultiAll(indexContext.getIndexName(), new String[] { "search", "strings" }, Boolean.TRUE, 0, 10);
 		logger.debug("Multi sorted search result : " + result);
 		List<Map<String, String>> resultsList = (List<Map<String, String>>) SerializationUtilities.deserialize(result);
 		verifyResults(resultsList);

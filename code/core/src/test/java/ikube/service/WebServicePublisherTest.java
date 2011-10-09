@@ -28,7 +28,9 @@ public class WebServicePublisherTest extends ATest {
 	@Before
 	public void before() throws Exception {
 		Mockit.setUpMocks(ClusterManagerMock.class);
-		webServicePublisher = new WebServicePublisher(new ClusterManager(Mockito.mock(ICache.class)));
+		ClusterManager clusterManager = new ClusterManager();
+		clusterManager.setCache(Mockito.mock(ICache.class));
+		webServicePublisher = new WebServicePublisher(clusterManager);
 		webServicePublisher.postProcessAfterInitialization(new MonitorWebService(), MonitorWebService.class.getSimpleName());
 		webServicePublisher.postProcessAfterInitialization(new SearcherWebService(), SearcherWebService.class.getSimpleName());
 	}

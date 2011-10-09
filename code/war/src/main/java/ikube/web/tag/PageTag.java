@@ -6,16 +6,17 @@ import javax.servlet.jsp.tagext.TagSupport;
 import org.apache.log4j.Logger;
 
 /**
- * This tag is nested in the pager tag. Each iteration over the pager tag a page number is made available to the children. This tag then
- * accesses the next page number from the pager tag and prints it to the page.
+ * This tag is nested in the pager tag. Each iteration over the pager tag a page number is made available to the
+ * children. This tag then accesses the next page number from the pager tag and prints it to the page.
  * 
  * @author Michael Couck
  * @since 12.12.08
  * @version 01.00
  */
+@SuppressWarnings("serial")
 public class PageTag extends ATag {
 
-	protected transient Logger logger = Logger.getLogger(this.getClass());
+	protected transient Logger	logger	= Logger.getLogger(this.getClass());
 
 	/**
 	 * {@inheritDoc}
