@@ -154,7 +154,7 @@
 							<target>
 								<!-- Try calling the Tomcats and shut them down. -->
 								<echo message="Turning off cluster : " />
-								<ant antfile="build.xml" target="stop.tomcat.cluster" inheritrefs="true" />
+								<!-- <ant antfile="build.xml" target="stop.tomcat.cluster" inheritrefs="true" /> -->
 							</target>
 						</configuration>
 						<goals>
