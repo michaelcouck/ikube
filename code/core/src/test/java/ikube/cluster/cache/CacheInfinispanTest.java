@@ -10,7 +10,9 @@ import ikube.IConstants;
 import ikube.model.Server;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.PerformanceTester;
+import ikube.toolkit.ThreadUtilities;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Before;
@@ -27,6 +29,7 @@ public class CacheInfinispanTest extends ATest {
 	private long					id;
 	private String					name;
 	private Server					server;
+	int								iterations	= 100;
 
 	/** Class under test. */
 	private static CacheInfinispan	cacheInfinispan;
@@ -102,8 +105,6 @@ public class CacheInfinispanTest extends ATest {
 		cacheInfinispan.get(name, name);
 	}
 
-	int	iterations	= 100;
-
 	@Test
 	public void performanceLockingAndUnlocking() {
 		double executionsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
@@ -136,6 +137,37 @@ public class CacheInfinispanTest extends ATest {
 			}
 		}, "Getting : ", iterations, Boolean.TRUE);
 		assertTrue("Must be fast : ", executionsPerSecond > 25);
+	}
+
+	@Test
+	public void multiThreaded() {
+		List<Thread> threads = new ArrayList<Thread>();
+		for (int i = 0; i < 10; i++) {
+			Thread thread = new Thread(new Runnable() {
+				public void run() {
+					PerformanceTester.execute(new PerformanceTester.APerform() {
+						@Override
+						public void execute() throws Throwable {
+							double random = Math.random();
+							if (random > 0.25) {
+								cacheInfinispan.get(server.getClass().getName(), server.getId());
+							} else if (0.25 < random && random < 0.5) {
+								cacheInfinispan.lock(server.getClass().getName());
+							} else if (0.5 < random && random < 0.75) {
+								cacheInfinispan.unlock(server.getClass().getName());
+							} else {
+								cacheInfinispan.set(server.getClass().getName(), id, server);
+							}
+						}
+					}, "Multi threaded : ", 100000, Boolean.TRUE);
+				}
+			});
+			threads.add(thread);
+		}
+		for (Thread thread : threads) {
+			thread.start();
+		}
+		ThreadUtilities.waitForThreads(threads);
 	}
 
 }
