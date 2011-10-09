@@ -658,7 +658,39 @@
 		<dependency>
 			<groupId>org.infinispan</groupId>
 			<artifactId>infinispan-core</artifactId>
-			<version>[4.0.0,4.9.9)</version>
+			<version>[4.0.0,)</version>
+			<exclusions>
+            <exclusion>
+               <groupId>org.rhq.helpers</groupId>
+               <artifactId>rhq-pluginAnnotations</artifactId>
+            </exclusion>
+         </exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.rhq.helpers</groupId>
+			<artifactId>rhq-pluginAnnotations</artifactId>
+			<version>3.0.1.GA</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.atomikos</groupId>
+			<artifactId>transactions</artifactId>
+			<version>3.7.0</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.atomikos</groupId>
+			<artifactId>transactions-jta</artifactId>
+			<version>3.7.0</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.btm</groupId>
+			<artifactId>btm</artifactId>
+			<version>2.1.0</version>
 		</dependency>
 	</dependencies>
 
@@ -689,6 +721,13 @@
 			<snapshots>
 				<enabled>true</enabled>
 				<updatePolicy>never</updatePolicy>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>codehaus-snapshots</id>
+			<url>https://nexus.codehaus.org/content/repositories/snapshots</url>
+			<snapshots>
+				<enabled>true</enabled>
 			</snapshots>
 		</repository>
 	</repositories>
