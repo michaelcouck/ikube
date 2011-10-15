@@ -1,10 +1,11 @@
-package ikube.action;
+package ikube.integration.action;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import ikube.BaseTest;
 import ikube.IConstants;
+import ikube.action.Prune;
 import ikube.database.IDataBase;
+import ikube.integration.AbstractIntegration;
 import ikube.model.Action;
 import ikube.toolkit.ApplicationContextManager;
 
@@ -19,14 +20,10 @@ import org.junit.Test;
  * @since 29.09.11
  * @version 01.00
  */
-public class PruneTest extends BaseTest {
+public class PruneIntegration extends AbstractIntegration {
 
 	private Prune		prune;
 	private IDataBase	dataBase;
-
-	public PruneTest() {
-		super(PruneTest.class);
-	}
 
 	@Before
 	public void before() {
@@ -37,17 +34,19 @@ public class PruneTest extends BaseTest {
 
 	@Test
 	public void execute() {
-		List<ikube.model.Action> actions = dataBase.find(ikube.model.Action.class, 0, Integer.MAX_VALUE);
+		int startIndex = 0;
+		int maxResults = 10;
+		List<Action> actions = dataBase.find(Action.class, startIndex, maxResults);
 		assertEquals("There should be no actions in the database : ", 0, actions.size());
 
 		persistAction();
 
-		actions = dataBase.find(Action.class, 0, Integer.MAX_VALUE);
+		actions = dataBase.find(Action.class, startIndex, maxResults);
 		assertEquals("There should be one action in the database : ", 1, actions.size());
 
 		boolean result = prune.execute(realIndexContext);
 		assertTrue(result);
-		actions = dataBase.find(Action.class, 0, Integer.MAX_VALUE);
+		actions = dataBase.find(Action.class, startIndex, maxResults);
 		assertEquals("There should be one action in the database : ", 1, actions.size());
 
 		for (int i = 0; i < IConstants.MAX_ACTIONS + 100; i++) {

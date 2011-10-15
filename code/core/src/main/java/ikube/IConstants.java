@@ -175,7 +175,7 @@ public interface IConstants {
 
 	String				STRIP_CHARACTERS							= ",,[]{},;,";
 
-	long				MAX_ACTIONS									= 10000;
+	long				MAX_ACTIONS									= 1000;
 	String				DELAY										= "delay";
 	String				SPRING_PROPERTIES							= "spring.properties";
 	String				TIER										= "tier";

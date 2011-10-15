@@ -1,11 +1,12 @@
-package ikube.service;
+package ikube.integration.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import ikube.BaseTest;
 import ikube.IConstants;
+import ikube.integration.AbstractIntegration;
 import ikube.model.IndexContext;
+import ikube.service.IMonitorWebService;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
 
@@ -22,13 +23,9 @@ import org.junit.Test;
  * @since 12.10.2010
  * @version 01.00
  */
-public class MonitorWebServiceTest extends BaseTest {
+public class MonitorWebServiceTest extends AbstractIntegration {
 
 	private IMonitorWebService	monitorWebService;
-
-	public MonitorWebServiceTest() {
-		super(MonitorWebServiceTest.class);
-	}
 
 	@Before
 	public void before() {

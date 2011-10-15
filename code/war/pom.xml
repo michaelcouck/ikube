@@ -67,7 +67,7 @@
 				<version>2.6</version>
 				<configuration>
 					<skip>true</skip>
-					<argLine>-Xms512m -Xmx2048m</argLine>
+					<argLine>-Xms512m -Xmx1536m</argLine>
 					<forkMode>once</forkMode>
 					<includes>
 						<include>**/*Integration*.java</include>

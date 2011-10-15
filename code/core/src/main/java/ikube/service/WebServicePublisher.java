@@ -1,8 +1,6 @@
 package ikube.service;
 
 import ikube.IConstants;
-import ikube.cluster.IClusterManager;
-import ikube.model.Server;
 import ikube.toolkit.GeneralUtilities;
 import ikube.toolkit.Logging;
 
@@ -27,12 +25,10 @@ import org.springframework.util.ReflectionUtils;
  */
 public class WebServicePublisher implements IWebServicePublisher {
 
-	private Logger							logger;
-	private transient final IClusterManager	clusterManager;
+	private Logger	logger;
 
-	public WebServicePublisher(final IClusterManager clusterManager) {
+	public WebServicePublisher() {
 		logger = Logger.getLogger(this.getClass());
-		this.clusterManager = clusterManager;
 	}
 
 	@Override
@@ -55,9 +51,7 @@ public class WebServicePublisher implements IWebServicePublisher {
 					URL url = null;
 					try {
 						String host = InetAddress.getLocalHost().getHostAddress();
-
 						port = GeneralUtilities.findFirstOpenPort(port);
-
 						url = new URL("http", host, port, path);
 
 						Endpoint endpoint = Endpoint.publish(url.toString(), bean);
@@ -67,11 +61,6 @@ public class WebServicePublisher implements IWebServicePublisher {
 						String message = Logging.getString("Endpoint : ", endpoint, "binding : ", binding, "implementor : ", bean);
 						logger.info(message);
 
-						Server server = clusterManager.getServer();
-						server.getWebServiceUrls().add(url.toString());
-						// Publish the server to the cluster with the new urls
-						clusterManager.set(Server.class.getName(), server.getId(), server);
-						Thread.sleep(1000);
 						break;
 					} catch (Exception e) {
 						String message = Logging.getString("Exception publishing web service : ", url, bean, e.getMessage());

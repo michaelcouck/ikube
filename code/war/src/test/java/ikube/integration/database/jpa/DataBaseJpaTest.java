@@ -1,12 +1,12 @@
-package ikube.database.jpa;
+package ikube.integration.database.jpa;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import ikube.BaseTest;
 import ikube.IConstants;
 import ikube.database.IDataBase;
+import ikube.integration.AbstractIntegration;
 import ikube.model.Action;
 import ikube.model.File;
 import ikube.model.Url;
@@ -30,13 +30,9 @@ import org.junit.Test;
  * @since long time
  * @version 01.00
  */
-public class DataBaseJpaTest extends BaseTest {
+public class DataBaseJpaTest extends AbstractIntegration {
 
 	private IDataBase	dataBase;
-
-	public DataBaseJpaTest() {
-		super(DataBaseJpaTest.class);
-	}
 
 	@Before
 	public void before() {

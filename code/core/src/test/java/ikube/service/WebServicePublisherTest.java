@@ -3,8 +3,6 @@ package ikube.service;
 import static org.junit.Assert.assertNotNull;
 import ikube.ATest;
 import ikube.IConstants;
-import ikube.cluster.ClusterManager;
-import ikube.cluster.cache.ICache;
 import ikube.mock.ClusterManagerMock;
 
 import java.net.InetAddress;
@@ -15,7 +13,6 @@ import mockit.Mockit;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 public class WebServicePublisherTest extends ATest {
 
@@ -28,9 +25,7 @@ public class WebServicePublisherTest extends ATest {
 	@Before
 	public void before() throws Exception {
 		Mockit.setUpMocks(ClusterManagerMock.class);
-		ClusterManager clusterManager = new ClusterManager();
-		clusterManager.setCache(Mockito.mock(ICache.class));
-		webServicePublisher = new WebServicePublisher(clusterManager);
+		webServicePublisher = new WebServicePublisher();
 		webServicePublisher.postProcessAfterInitialization(new MonitorWebService(), MonitorWebService.class.getSimpleName());
 		webServicePublisher.postProcessAfterInitialization(new SearcherWebService(), SearcherWebService.class.getSimpleName());
 	}

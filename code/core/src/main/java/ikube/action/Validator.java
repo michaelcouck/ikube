@@ -5,11 +5,9 @@ import ikube.action.rule.DirectoryExistsAndIsLocked;
 import ikube.action.rule.IsIndexBackedUp;
 import ikube.action.rule.IsIndexCorrupt;
 import ikube.action.rule.IsIndexCurrent;
-import ikube.cluster.IClusterManager;
 import ikube.index.IndexManager;
 import ikube.model.IndexContext;
 import ikube.model.Server;
-import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
@@ -42,7 +40,7 @@ public class Validator extends Action<IndexContext<?>, Boolean> {
 		String body = null;
 		boolean everythingInitialized = Boolean.TRUE;
 		try {
-			Server server = ApplicationContextManager.getBean(IClusterManager.class).getServer();
+			Server server = getClusterManager().getServer();
 			IsIndexCurrent isIndexCurrent = new IsIndexCurrent();
 			IsIndexCorrupt isIndexCorrupt = new IsIndexCorrupt();
 			AreIndexesCreated areIndexesCreated = new AreIndexesCreated();

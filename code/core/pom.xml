@@ -112,7 +112,7 @@
 				<executions>
 					<execution>
 						<id>enhancer</id>
-						<phase>process-classes</phase>
+						<phase>package</phase>
 						<goals>
 							<goal>enhance</goal>
 						</goals>

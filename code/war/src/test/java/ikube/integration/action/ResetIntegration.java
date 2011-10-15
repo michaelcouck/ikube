@@ -1,9 +1,10 @@
-package ikube.action;
+package ikube.integration.action;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import ikube.BaseTest;
+import ikube.action.Reset;
 import ikube.database.IDataBase;
+import ikube.integration.AbstractIntegration;
 import ikube.model.Url;
 import ikube.toolkit.ApplicationContextManager;
 
@@ -17,17 +18,15 @@ import org.junit.Test;
  * @since 21.11.10
  * @version 01.00
  */
-public class ResetTest extends BaseTest {
+public class ResetIntegration extends AbstractIntegration {
 
-	private final Reset reset = new Reset();
-	private IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
-
-	public ResetTest() {
-		super(ResetTest.class);
-	}
+	private Reset		reset;
+	private IDataBase	dataBase;
 
 	@Before
 	public void before() {
+		reset = new Reset();
+		dataBase = ApplicationContextManager.getBean(IDataBase.class);
 		delete(dataBase, Url.class);
 	}
 

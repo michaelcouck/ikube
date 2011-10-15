@@ -1,7 +1,6 @@
 package ikube.action;
 
 import ikube.IConstants;
-import ikube.cluster.IClusterManager;
 import ikube.listener.Event;
 import ikube.listener.ListenerManager;
 import ikube.model.IndexContext;
@@ -49,7 +48,7 @@ public class Searcher extends Action<IndexContext<?>, Boolean> {
 			}
 			String xml = null;
 
-			Server server = ApplicationContextManager.getBean(IClusterManager.class).getServer();
+			Server server = getClusterManager().getServer();
 			String webServiceUrl = server.getSearchWebServiceUrl();
 			ISearcherWebService searchRemote = ServiceLocator.getService(ISearcherWebService.class, webServiceUrl, ISearcherWebService.NAMESPACE,
 					ISearcherWebService.SERVICE);

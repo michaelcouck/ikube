@@ -176,9 +176,7 @@
 		class="ikube.service.MonitorWebService" />
 	<bean
 		id="ikube.service.WebServicePublisher"
-		class="ikube.service.WebServicePublisher">
-		<constructor-arg ref="ikube.cluster.IClusterManager" />
-	</bean>
+		class="ikube.service.WebServicePublisher" />
 	
 	<bean 
 		id="ikube.listener.ListenerManager"
