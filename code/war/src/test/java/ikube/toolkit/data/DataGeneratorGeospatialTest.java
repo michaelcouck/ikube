@@ -1,6 +1,5 @@
 package ikube.toolkit.data;
 
-import ikube.ATest;
 import ikube.database.IDataBase;
 import ikube.model.geospatial.GeoName;
 import ikube.toolkit.ApplicationContextManager;
@@ -11,6 +10,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 
+import org.apache.log4j.Logger;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.util.StringUtils;
@@ -26,13 +26,10 @@ import co.uk.hjcs.canyon.session.SessionFactory;
  * @version 01.00
  */
 @Ignore
-public class DataGeneratorGeospatialTest extends ATest {
+public class DataGeneratorGeospatialTest {
 
+	private Logger	logger		= Logger.getLogger(this.getClass());
 	private String	fileName	= "allCountries.txt";
-
-	public DataGeneratorGeospatialTest() {
-		super(DataGeneratorGeospatialTest.class);
-	}
 
 	@Test
 	public void generate1() throws Exception {

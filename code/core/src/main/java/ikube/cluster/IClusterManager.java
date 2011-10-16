@@ -69,13 +69,6 @@ public interface IClusterManager {
 	 */
 	Server getServer();
 
-	/** Cluster wide cache access. */
-
-	/**
-	 * @see ICache#get(String, String)
-	 */
-	<T> T get(String name, String sql);
-
 	/**
 	 * @see ICache#get(String, Long)
 	 */

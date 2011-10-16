@@ -162,7 +162,7 @@ public class RuleInterceptor implements IRuleInterceptor {
 					IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
 					try {
 						modelAction.setWorking(Boolean.TRUE);
-						dataBase.merge(modelAction);
+						// dataBase.merge(modelAction);
 						proceedingJoinPoint.proceed();
 					} catch (Throwable e) {
 						LOGGER.error("Exception proceeding on join point : " + proceedingJoinPoint, e);
@@ -170,7 +170,7 @@ public class RuleInterceptor implements IRuleInterceptor {
 						modelAction.setEndTime(new Timestamp(System.currentTimeMillis()));
 						modelAction.setDuration(modelAction.getEndTime().getTime() - modelAction.getStartTime().getTime());
 						modelAction.setWorking(Boolean.FALSE);
-						dataBase.merge(modelAction);
+						// dataBase.merge(modelAction);
 					}
 				}
 			}, delay, TimeUnit.MILLISECONDS);

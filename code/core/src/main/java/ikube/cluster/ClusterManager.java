@@ -266,12 +266,6 @@ public class ClusterManager implements IClusterManager, IConstants {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public <T> T get(String name, String sql) {
-		return (T) cache.get(name, sql);
-	}
-
-	@Override
 	public <T> List<T> get(final Class<T> klass, final String name, final ICriteria<T> criteria, final IAction<T> action, final int size) {
 		return cache.get(name, criteria, action, size);
 	}

@@ -1,4 +1,4 @@
-package ikube.toolkit;
+package ikube.integration.toolkit;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -7,6 +7,8 @@ import ikube.ATest;
 import ikube.IConstants;
 import ikube.action.rule.RuleInterceptor;
 import ikube.notify.IMailer;
+import ikube.toolkit.ApplicationContextManager;
+import ikube.toolkit.FileUtilities;
 
 import java.io.File;
 

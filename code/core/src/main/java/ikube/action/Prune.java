@@ -26,7 +26,7 @@ public class Prune extends Action<IndexContext<?>, Boolean> {
 		try {
 			IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
 			Long count = dataBase.execute(Long.class, ikube.model.Action.SELECT_FROM_ACTIONS_COUNT);
-			while (count > IConstants.MAX_ACTIONS / 2) {
+			while (count != null && count > IConstants.MAX_ACTIONS / 2) {
 				logger.info("Pruning : " + count);
 				Map<String, Object> parameters = new HashMap<String, Object>();
 				delete(dataBase, ikube.model.Action.class, ikube.model.Action.SELECT_FROM_ACTIONS, parameters);

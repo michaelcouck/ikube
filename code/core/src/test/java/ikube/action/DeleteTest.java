@@ -5,6 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 import ikube.ATest;
+import ikube.mock.ApplicationContextManagerMock;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
@@ -27,7 +28,7 @@ import org.junit.Test;
  */
 public class DeleteTest extends ATest {
 
-	private Delete delete;
+	private Delete	delete;
 
 	public DeleteTest() {
 		super(DeleteTest.class);
@@ -35,7 +36,8 @@ public class DeleteTest extends ATest {
 
 	@Before
 	public void before() {
-		Mockit.tearDownMocks();
+		// , IndexSearcherMock.class, IndexReaderMock.class, MultiSearcherMock.class
+		Mockit.setUpMocks(ApplicationContextManagerMock.class);
 		when(indexContext.getIndexDirectoryPath()).thenReturn("./" + this.getClass().getSimpleName());
 		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
 		delete = new Delete();

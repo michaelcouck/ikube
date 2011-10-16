@@ -1,6 +1,5 @@
 package ikube.toolkit.data;
 
-import ikube.ATest;
 import ikube.IConstants;
 import ikube.database.IDataBase;
 import ikube.toolkit.ApplicationContextManager;
@@ -15,18 +14,16 @@ import java.util.Collections;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import org.apache.log4j.Logger;
 import org.dom4j.Element;
 import org.junit.Ignore;
 import org.junit.Test;
 
 @Ignore
-public class DataGeneratorMedicalTest extends ATest {
+public class DataGeneratorMedicalTest {
 
+	private Logger	logger		= Logger.getLogger(this.getClass());
 	private String	searchUrl	= "http://mapp.truvo.com/BE/yellow/search.ds?what=";
-
-	public DataGeneratorMedicalTest() {
-		super(DataGeneratorMedicalTest.class);
-	}
 
 	@Test
 	public void generate() throws Exception {

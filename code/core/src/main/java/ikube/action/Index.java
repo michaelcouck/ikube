@@ -34,7 +34,12 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 		String actionName = this.getClass().getSimpleName();
 		try {
 			if (indexables != null && indexables.size() > 0) {
-				long lastWorkingStartTime = server.getAction().getStartTime().getTime();
+				// TODO Get the action from the database
+				long lastWorkingStartTime = System.currentTimeMillis();
+				ikube.model.Action action = server.getAction();
+				if (action != null) {
+					lastWorkingStartTime = action.getStartTime().getTime();
+				}
 				if (lastWorkingStartTime <= 0) {
 					logger.warn("Failed to join the cluster indexing : " + indexContext);
 					return Boolean.FALSE;

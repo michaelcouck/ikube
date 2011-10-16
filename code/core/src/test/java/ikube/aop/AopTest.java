@@ -18,6 +18,7 @@ import mockit.Mockit;
 import org.apache.lucene.document.Document;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
@@ -32,6 +33,7 @@ import org.mockito.stubbing.Answer;
  * @since 30.04.2011
  * @version 01.00
  */
+@Ignore
 public class AopTest extends ATest {
 
 	@Cascading

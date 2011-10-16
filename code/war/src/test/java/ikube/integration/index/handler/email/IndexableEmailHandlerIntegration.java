@@ -21,7 +21,7 @@ import org.junit.Test;
  * @since this century
  * @version 102235366.2215.3688.744RC112556
  */
-public class IndexableEmailHandlerTest extends AbstractIntegration {
+public class IndexableEmailHandlerIntegration extends AbstractIntegration {
 
 	@Test
 	public void handle() throws Exception {

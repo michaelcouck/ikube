@@ -44,7 +44,7 @@ import org.junit.Test;
  * @since 12.10.2010
  * @version 01.00
  */
-public class IndexableTableHandlerTest extends AbstractIntegration {
+public class IndexableTableHandlerIntegration extends AbstractIntegration {
 
 	private IndexableTable			faqIndexableTable;
 	private IndexableColumn			faqIdIndexableColumn;
@@ -108,11 +108,11 @@ public class IndexableTableHandlerTest extends AbstractIntegration {
 	@Test
 	public void getIdFunction() throws Exception {
 		// long minId = indexableTableHandler.getIdFunction(faqIndexableTable, connection, "min");
-		long minId = Deencapsulation.invoke(indexableTableHandler, "getIdFunction", faqIndexableTable, connection, "min");
+		Long minId = Deencapsulation.invoke(indexableTableHandler, "getIdFunction", faqIndexableTable, connection, "min");
 		logger.debug("Min id : " + minId);
 		assertTrue("This is dependant on the database being used : ", minId > 0);
 		// long maxId = indexableTableHandler.getIdFunction(faqIndexableTable, connection, "max");
-		long maxId = Deencapsulation.invoke(indexableTableHandler, "getIdFunction", faqIndexableTable, connection, "max");
+		Long maxId = Deencapsulation.invoke(indexableTableHandler, "getIdFunction", faqIndexableTable, connection, "max");
 		logger.debug("Max id : " + maxId);
 		assertTrue(maxId < 1000000000);
 	}

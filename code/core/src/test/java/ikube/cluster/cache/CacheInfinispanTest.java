@@ -8,7 +8,6 @@ import static org.junit.Assert.assertTrue;
 import ikube.ATest;
 import ikube.IConstants;
 import ikube.model.Server;
-import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.PerformanceTester;
 import ikube.toolkit.ThreadUtilities;
 
@@ -40,9 +39,10 @@ public class CacheInfinispanTest extends ATest {
 
 	@BeforeClass
 	public static void beforeClass() throws Exception {
-		// cacheInfinispan = new CacheInfinispan();
-		// cacheInfinispan.initialise();
-		cacheInfinispan = ApplicationContextManager.getBean(CacheInfinispan.class);
+		cacheInfinispan = new CacheInfinispan();
+		cacheInfinispan.setConfigurationFile("META-INF/infinispan.xml");
+		cacheInfinispan.initialise();
+		// cacheInfinispan = ApplicationContextManager.getBean(CacheInfinispan.class);
 	}
 
 	@Before

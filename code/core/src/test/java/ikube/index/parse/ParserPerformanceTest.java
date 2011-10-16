@@ -61,7 +61,7 @@ public class ParserPerformanceTest extends ATest {
 					matcher.group();
 				}
 			}
-		}, "Pattern matcher : ", 1000);
+		}, "Pattern matcher : ", 100);
 		assertTrue(executionsPerSecond > 10);
 	}
 

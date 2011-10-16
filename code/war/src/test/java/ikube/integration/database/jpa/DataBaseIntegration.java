@@ -30,7 +30,7 @@ import org.junit.Test;
  * @since long time
  * @version 01.00
  */
-public class DataBaseJpaTest extends AbstractIntegration {
+public class DataBaseIntegration extends AbstractIntegration {
 
 	private IDataBase	dataBase;
 
