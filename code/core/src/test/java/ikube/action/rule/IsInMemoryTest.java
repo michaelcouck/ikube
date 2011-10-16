@@ -2,6 +2,8 @@ package ikube.action.rule;
 
 import ikube.ATest;
 
+import org.junit.Test;
+
 /**
  * TODO Implement me!
  * 
@@ -15,7 +17,7 @@ public class IsInMemoryTest extends ATest {
 		super(IsInMemoryTest.class);
 	}
 
-	public void evaluate() {
-	}
+	@Test
+	public void evaluate() {}
 
 }

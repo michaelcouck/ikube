@@ -23,7 +23,7 @@ import org.junit.Test;
  * @since 12.10.2010
  * @version 01.00
  */
-public class MonitorWebServiceTest extends AbstractIntegration {
+public class MonitorWebServiceIntegration extends AbstractIntegration {
 
 	private IMonitorWebService	monitorWebService;
 

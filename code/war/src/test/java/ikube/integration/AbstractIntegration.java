@@ -25,14 +25,22 @@ import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
 import org.apache.lucene.index.IndexWriter;
 import org.dbunit.ext.h2.H2DataTypeFactory;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 
 @Ignore
 public abstract class AbstractIntegration {
 
-	private static final Logger	LOGGER				= Logger.getLogger(AbstractIntegration.class);
+	private static final Logger	LOGGER		= Logger.getLogger(AbstractIntegration.class);
 
-	static {
+	private static boolean		INITIALIZED	= Boolean.FALSE;
+
+	@BeforeClass
+	public static void beforeClass() {
+		if (INITIALIZED) {
+			return;
+		}
+		INITIALIZED = Boolean.TRUE;
 		Logging.configure();
 		try {
 			FileUtilities.deleteFiles(new File("."), "btm1.tlog", "btm2.tlog", "ikube.h2.db", "ikube.lobs.db", "ikube.log", "openjpa.log");

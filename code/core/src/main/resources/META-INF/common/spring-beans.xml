@@ -77,7 +77,7 @@
 		<entry key="openjpa.Multithreaded" value="true" />
 		<entry key="openjpa.AutoDetach" value="commit" />
 		<entry key="openjpa.FlushBeforeQueries" value="true" />
-		<entry key="openjpa.RuntimeUnenhancedClasses" value="supported" />
+		<entry key="openjpa.RuntimeUnenhancedClasses" value="unsupported" />
 		<entry key="openjpa.jdbc.DBDictionary" value="${ikube.jdbc.dictionary}" />
 		
 		<!-- <entry key="openjpa.Connection2UserName" value="${ikube.jdbc.userid}" />

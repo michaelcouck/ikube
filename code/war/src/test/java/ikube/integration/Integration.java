@@ -9,6 +9,7 @@ import ikube.toolkit.Logging;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -16,6 +17,7 @@ import org.junit.Test;
  * @since 20.12.10
  * @version 01.00
  */
+@Ignore
 public class Integration {
 
 	static {
