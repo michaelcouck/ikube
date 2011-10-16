@@ -58,7 +58,7 @@ public class IndexableTableHandlerTest extends AbstractIntegration {
 		indexableTableHandler = ApplicationContextManager.getBean(IndexableTableHandler.class);
 
 		faqIndexableTable = ApplicationContextManager.getBean("faqTableH2");
-		faqIndexableTable.setPredicate("where faqid < 176386");
+		// faqIndexableTable.setPredicate("where faqid < 176386");
 		attachmentIndexableTable = ApplicationContextManager.getBean("attachmentTableH2");
 
 		faqIndexableColumns = faqIndexableTable.getChildren();

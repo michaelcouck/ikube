@@ -22,7 +22,7 @@ import org.junit.Test;
 @Ignore
 public class DataGeneratorMedicalTest extends ATest {
 
-	private String searchUrl = "http://mapp.truvo.com/BE/yellow/search.ds?what=";
+	private String	searchUrl	= "http://mapp.truvo.com/BE/yellow/search.ds?what=";
 
 	public DataGeneratorMedicalTest() {
 		super(DataGeneratorMedicalTest.class);
@@ -32,7 +32,7 @@ public class DataGeneratorMedicalTest extends ATest {
 	public void generate() throws Exception {
 		ApplicationContextManager.getApplicationContext();
 		IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
-		File wordsFile = FileUtilities.findFileRecursively(new File("."), "words.txt");
+		File wordsFile = FileUtilities.findFileRecursively(new File("."), "english.txt");
 		String wordsData = FileUtilities.getContents(wordsFile.toURI().toURL().openStream(), Short.MAX_VALUE).toString();
 		StringTokenizer stringTokenizer = new StringTokenizer(wordsData);
 		List<String> words = new ArrayList<String>();

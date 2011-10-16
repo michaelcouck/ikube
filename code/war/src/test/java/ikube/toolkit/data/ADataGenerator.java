@@ -40,14 +40,14 @@ public abstract class ADataGenerator implements IDataGenerator {
 		Logging.configure();
 	}
 
-	private static final long MAX_FILE_LENGTH = 100000;
+	private static final long		MAX_FILE_LENGTH	= 100000;
 
-	protected Logger logger = Logger.getLogger(this.getClass());
-	private String wordsFilePath = "words.txt";
-	protected List<String> words;
-	protected Map<String, byte[]> fileContents;
-	protected Map<Class<?>, Object> entities;
-	protected IDataBase dataBase;
+	protected Logger				logger			= Logger.getLogger(this.getClass());
+	private String					wordsFilePath	= "english.txt";
+	protected List<String>			words;
+	protected Map<String, byte[]>	fileContents;
+	protected Map<Class<?>, Object>	entities;
+	protected IDataBase				dataBase;
 
 	public ADataGenerator(IDataBase dataBase) {
 		this.dataBase = dataBase;
@@ -217,7 +217,6 @@ public abstract class ADataGenerator implements IDataGenerator {
 		return null;
 	}
 
-	public void after() {
-	}
+	public void after() {}
 
 }
