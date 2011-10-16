@@ -35,7 +35,7 @@ public abstract class AbstractIntegration {
 	static {
 		Logging.configure();
 		try {
-			FileUtilities.deleteFiles(new File("."), ".tlog", ".db", ".log");
+			FileUtilities.deleteFiles(new File("."), "btm1.tlog", "btm2.tlog", "ikube.h2.db", "ikube.lobs.db", "ikube.log", "openjpa.log");
 			ApplicationContextManager.getBean(ListenerManager.class).removeListeners();
 			IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
 			dataBase.find(Faq.class, 0l);
