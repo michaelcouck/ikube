@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:property="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+
+	xsi:schemaLocation="
+			http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+            http://www.springframework.org/schema/context
+            http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+	<description>
+		This file is not to be modified by users generally.
+		This is the configuration of the Db2 database on the Ikube server.
+	</description>
+	
+	<bean 
+		id="nonXaDataSourceDb2"
+		class="com.mchange.v2.c3p0.ComboPooledDataSource"
+		destroy-method="close"
+		property:user="${db2.jdbc.userid}"
+		property:password="${db2.jdbc.password}"
+		property:driverClass="${db2.jdbc.driver}"
+		property:jdbcUrl="${db2.jdbc.url}"
+		property:initialPoolSize="${jdbc.minPoolSize}"
+		property:maxPoolSize="${jdbc.maxPoolSize}"
+		property:maxStatements="${jdbc.maxStatements}"
+		property:maxStatementsPerConnection="${jdbc.maxStatements}"
+		property:checkoutTimeout="${jdbc.checkOutTimeout}"
+		property:numHelperThreads="${jdbc.numHelperThreads}"
+		property:breakAfterAcquireFailure="${jdbc.breakAfterAcquireFailure}"
+		property:debugUnreturnedConnectionStackTraces="${jdbc.debugUnreturnedConnectionStackTraces}"
+		property:testConnectionOnCheckin="${jdbc.testConnectionOnCheckin}"
+		property:testConnectionOnCheckout="${jdbc.testConnectionOnCheckout}"
+		property:unreturnedConnectionTimeout="${jdbc.unreturnedConnectionTimeout}" />
+	
+	<bean id="db2DataSourceBinder" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
+		property:staticMethod="ikube.toolkit.JndiInjector.bind">
+		<property name="arguments">
+			<array>
+				<value>nonXaDataSourceDb2</value>
+				<ref local="nonXaDataSourceDb2" />
+			</array>
+		</property>
+	</bean>
+
+</beans>
