@@ -6,9 +6,13 @@ import ikube.cluster.cache.ICache.IAction;
 import ikube.cluster.cache.ICache.ICriteria;
 import ikube.model.Action;
 import ikube.model.Server;
+import ikube.service.IMonitorWebService;
+import ikube.service.ISearcherWebService;
+import ikube.service.ServiceLocator;
 import ikube.toolkit.HashUtilities;
 
 import java.net.InetAddress;
+import java.net.MalformedURLException;
 import java.net.UnknownHostException;
 import java.sql.Timestamp;
 import java.util.List;
@@ -152,11 +156,40 @@ public class ClusterManager implements IClusterManager, IConstants {
 			server.setAddress(address);
 			server.setId(HashUtilities.hash(address));
 			server.setAge(System.currentTimeMillis());
+			// ISearcherWebService.PUBLISHED_PATH
+			int monitoringPort = getServicePort(IMonitorWebService.class, IMonitorWebService.PUBLISHED_PORT, IMonitorWebService.PUBLISHED_PATH,
+					IMonitorWebService.NAMESPACE, IMonitorWebService.SERVICE, 0);
+			int searcherPort = getServicePort(ISearcherWebService.class, ISearcherWebService.PUBLISHED_PORT, ISearcherWebService.PUBLISHED_PATH,
+					ISearcherWebService.NAMESPACE, ISearcherWebService.SERVICE, 0);
+			server.setMonitoringWebServicePort(monitoringPort);
+			server.setSearchWebServicePort(searcherPort);
+
+			try {
+				java.net.URL searcherWebServiceUrl = new java.net.URL("http", ip, searcherPort, ISearcherWebService.PUBLISHED_PATH);
+				server.setSearchWebServiceUrl(searcherWebServiceUrl.toString());
+			} catch (MalformedURLException e) {
+				LOGGER.error("Exception setting the search web service url : ", e);
+			}
+
 			cache.set(Server.class.getName(), server.getId(), server);
 			LOGGER.debug("Published server : " + server);
 			LOGGER.debug("Server from cache : " + cache.get(Server.class.getName(), server.getId()));
 		}
 		return server;
+	}
+
+	private int getServicePort(Class<?> klass, int port, String path, String nameSpace, String serviceName, int retryCount) {
+		try {
+			Object service = ServiceLocator.getService(klass, "http", ip, port, path, nameSpace, serviceName);
+			if (service != null) {
+				return port;
+			}
+		} catch (Exception e) {
+			if (IConstants.MAX_RETRY_COUNTER < retryCount) {
+				return getServicePort(klass, ++port, path, nameSpace, serviceName, ++retryCount);
+			}
+		}
+		return 0;
 	}
 
 	/**

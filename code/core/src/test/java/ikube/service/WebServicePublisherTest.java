@@ -3,6 +3,7 @@ package ikube.service;
 import static org.junit.Assert.assertNotNull;
 import ikube.ATest;
 import ikube.IConstants;
+import ikube.mock.ApplicationContextManagerMock;
 import ikube.mock.ClusterManagerMock;
 
 import java.net.InetAddress;
@@ -24,7 +25,7 @@ public class WebServicePublisherTest extends ATest {
 
 	@Before
 	public void before() throws Exception {
-		Mockit.setUpMocks(ClusterManagerMock.class);
+		Mockit.setUpMocks(ApplicationContextManagerMock.class, ClusterManagerMock.class);
 		webServicePublisher = new WebServicePublisher();
 		webServicePublisher.postProcessAfterInitialization(new MonitorWebService(), MonitorWebService.class.getSimpleName());
 		webServicePublisher.postProcessAfterInitialization(new SearcherWebService(), SearcherWebService.class.getSimpleName());

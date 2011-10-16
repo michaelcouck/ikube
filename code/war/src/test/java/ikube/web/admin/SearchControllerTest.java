@@ -4,9 +4,14 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import ikube.IConstants;
-import ikube.mock.ApplicationContextManagerWebMock;
-import ikube.mock.ServiceLocatorWebMock;
+import ikube.cluster.IClusterManager;
+import ikube.model.Server;
+import ikube.service.IMonitorWebService;
+import ikube.service.ISearcherWebService;
+import ikube.service.ServiceLocator;
+import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
+import ikube.web.MockFactory;
 
 import java.io.File;
 import java.util.HashMap;
@@ -16,7 +21,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import mockit.Mocked;
+import mockit.Mock;
+import mockit.MockClass;
 import mockit.Mockit;
 
 import org.apache.log4j.Logger;
@@ -27,10 +33,57 @@ import org.springframework.web.servlet.ModelAndView;
 
 public class SearchControllerTest {
 
-	private static final Logger	LOGGER		= Logger.getLogger(SearchControllerTest.class);
+	private static final Logger	LOGGER	= Logger.getLogger(SearchControllerTest.class);
+
+	@MockClass(realClass = ApplicationContextManager.class)
+	public static class ApplicationContextManagerMock {
+
+		@Mock()
+		@SuppressWarnings("unchecked")
+		public static synchronized <T> T getBean(final Class<T> klass) {
+			return (T) MockFactory.getMock(klass);
+		}
+
+		@Mock()
+		@SuppressWarnings("unchecked")
+		public static synchronized <T> Map<String, T> getBeans(final Class<T> klass) {
+			Map<String, T> beans = new HashMap<String, T>();
+			Object object = MockFactory.getMock(klass);
+			beans.put(object.getClass().getSimpleName(), (T) object);
+			return beans;
+		}
+
+		@Mock
+		@SuppressWarnings("unchecked")
+		public static synchronized <T> T getBean(final String name) {
+			try {
+				Class<?> klass = Class.forName(name);
+				return (T) MockFactory.getMock(klass);
+			} catch (ClassNotFoundException e) {
+				LOGGER.error("Class not found : ", e);
+			}
+			return null;
+		}
+	}
+
+	@MockClass(realClass = ServiceLocator.class)
+	public static class ServiceLocatorMock {
+
+		@Mock()
+		@SuppressWarnings("unchecked")
+		public static <T> T getService(final Class<T> klass, final String protocol, final String host, final int port, final String path,
+				final String nameSpace, final String serviceName) {
+			return (T) MockFactory.getMock(klass);
+		}
+
+		@Mock()
+		@SuppressWarnings("unchecked")
+		public static <T> T getService(final Class<T> klass, final String url, final String nameSpace, final String serviceName) {
+			return (T) MockFactory.getMock(klass);
+		}
+	}
 
 	/** Class under test. */
-	@Mocked(inverse = false, methods = { "getViewUri" })
 	private SearchController	searchController;
 
 	private HttpServletRequest	request		= mock(HttpServletRequest.class);
@@ -38,10 +91,16 @@ public class SearchControllerTest {
 
 	@Before
 	public void before() {
-		Mockit.setUpMocks(ApplicationContextManagerWebMock.class, ServiceLocatorWebMock.class);
+		searchController = new SearchController();
+		Mockit.setUpMocks(ApplicationContextManagerMock.class, ServiceLocatorMock.class);
 		Map<String, String[]> parameterMap = new HashMap<String, String[]>();
 		parameterMap.put(IConstants.SEARCH_STRINGS, new String[] { IConstants.IKUBE });
 		when(request.getParameterMap()).thenReturn(parameterMap);
+		Server server = mock(Server.class);
+		IClusterManager clusterManager = ApplicationContextManagerMock.getBean(IClusterManager.class);
+		when(clusterManager.getServer()).thenReturn(server);
+		IMonitorWebService monitorWebService = ApplicationContextManagerMock.getBean(IMonitorWebService.class);
+		when(monitorWebService.getIndexNames()).thenReturn(new String[] { "ikube", "ikube", "ikube" });
 	}
 
 	@After
@@ -52,7 +111,12 @@ public class SearchControllerTest {
 	@Test
 	@SuppressWarnings("unchecked")
 	public void handleRequest() throws Exception {
-		// HttpServletRequest request, HttpServletResponse response
+		File file = FileUtilities.findFileRecursively(new File("."), "default.results.xml");
+		String xml = FileUtilities.getContents(file, Integer.MAX_VALUE, IConstants.ENCODING);
+
+		ISearcherWebService searcherWebService = ServiceLocatorMock.getService(ISearcherWebService.class, null, null, null);
+		when(searcherWebService.searchMultiAll(IConstants.IKUBE, new String[] { IConstants.IKUBE }, true, 0, 10)).thenReturn(xml);
+
 		ModelAndView modelAndView = searchController.handleRequest(request, response);
 		Object total = modelAndView.getModel().get(IConstants.TOTAL);
 		Object duration = modelAndView.getModel().get(IConstants.DURATION);
@@ -77,10 +141,9 @@ public class SearchControllerTest {
 		assertEquals("There are 11 * 3 results : ", 33, total);
 		assertEquals("There are 10 * 3 results : ", 10, results.size());
 
-		File file = FileUtilities.findFileRecursively(new File("."), "default.results.small.xml");
-		String xml = FileUtilities.getContents(file, Integer.MAX_VALUE, IConstants.ENCODING);
-		when(ServiceLocatorWebMock.SEARCHER_WEB_SERVICE.searchMultiAll(IConstants.IKUBE, new String[] { IConstants.IKUBE }, true, 0, 10)).thenReturn(
-				xml);
+		file = FileUtilities.findFileRecursively(new File("."), "default.results.small.xml");
+		xml = FileUtilities.getContents(file, Integer.MAX_VALUE, IConstants.ENCODING);
+		when(searcherWebService.searchMultiAll(IConstants.IKUBE, new String[] { IConstants.IKUBE }, true, 0, 10)).thenReturn(xml);
 
 		modelAndView = searchController.handleRequest(request, response);
 

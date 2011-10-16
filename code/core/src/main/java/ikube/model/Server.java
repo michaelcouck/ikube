@@ -1,11 +1,6 @@
 package ikube.model;
 
-import ikube.service.IMonitorWebService;
-import ikube.service.ISearcherWebService;
-
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.persistence.Entity;
@@ -24,26 +19,25 @@ import javax.persistence.InheritanceType;
 public class Server extends Persistable implements Comparable<Server> {
 
 	/** The ip of the server. */
-	private String ip;
+	private String					ip;
+	/** The port that the search web service is published to. */
+	private int						searchWebServicePort;
+	/** The port that the monitoring web service is published to. */
+	private int						monitoringWebServicePort;
 	/** The address of this machine. */
-	private String address;
+	private String					address;
 	/** The details about the action that this server is executing. */
-	private Action action;
-	/** The search web service url for this server. */
-	private String searchWebServiceUrl;
-	/** The monitoring service for this server. */
-	private String monitoringWebServiceUrl;
-	/** The list of web service urls. */
-	private final List<String> webServiceUrls;
+	private Action					action;
 	/** The age of this server. */
-	private long age;
+	private long					age;
 	/** The performance monitoring data. */
-	private Map<String, Execution> indexingExecutions;
-	private Map<String, Execution> searchingExecutions;
+	private Map<String, Execution>	indexingExecutions;
+	private Map<String, Execution>	searchingExecutions;
+
+	private String					searchWebServiceUrl;
 
 	public Server() {
 		super();
-		this.webServiceUrls = new ArrayList<String>();
 		this.searchingExecutions = new HashMap<String, Execution>();
 		this.indexingExecutions = new HashMap<String, Execution>();
 	}
@@ -76,32 +70,28 @@ public class Server extends Persistable implements Comparable<Server> {
 		this.action = action;
 	}
 
-	public List<String> getWebServiceUrls() {
-		return webServiceUrls;
+	public int getSearchWebServicePort() {
+		return searchWebServicePort;
+	}
+
+	public void setSearchWebServicePort(int searchWebServicePort) {
+		this.searchWebServicePort = searchWebServicePort;
 	}
 
 	public String getSearchWebServiceUrl() {
-		if (this.searchWebServiceUrl == null) {
-			for (String webServiceUrl : webServiceUrls) {
-				if (webServiceUrl.contains(ISearcherWebService.class.getSimpleName())) {
-					this.searchWebServiceUrl = webServiceUrl;
-					break;
-				}
-			}
-		}
-		return this.searchWebServiceUrl;
+		return searchWebServiceUrl;
 	}
 
-	public String getMonitoringWebServiceUrl() {
-		if (this.monitoringWebServiceUrl == null) {
-			for (String webServiceUrl : webServiceUrls) {
-				if (webServiceUrl.contains(IMonitorWebService.class.getSimpleName())) {
-					this.monitoringWebServiceUrl = webServiceUrl;
-					break;
-				}
-			}
-		}
-		return this.monitoringWebServiceUrl;
+	public void setSearchWebServiceUrl(String searchWebServiceUrl) {
+		this.searchWebServiceUrl = searchWebServiceUrl;
+	}
+
+	public int getMonitoringWebServicePort() {
+		return monitoringWebServicePort;
+	}
+
+	public void setMonitoringWebServicePort(int monitoringWebServicePort) {
+		this.monitoringWebServicePort = monitoringWebServicePort;
 	}
 
 	public long getAge() {

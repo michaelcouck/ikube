@@ -9,6 +9,7 @@ import ikube.service.ServiceLocator;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.SerializationUtilities;
 
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -65,8 +66,10 @@ public class SearchController extends BaseController {
 			}
 		}
 
-		ISearcherWebService searcherWebService = ServiceLocator.getService(ISearcherWebService.class, server.getSearchWebServiceUrl(),
-				ISearcherWebService.NAMESPACE, ISearcherWebService.SERVICE);
+		String ip = InetAddress.getLocalHost().getHostAddress();
+		int searchWebServicePort = server.getSearchWebServicePort();
+		ISearcherWebService searcherWebService = ServiceLocator.getService(ISearcherWebService.class, "http", ip, searchWebServicePort,
+				ISearcherWebService.PUBLISHED_PATH, ISearcherWebService.NAMESPACE, ISearcherWebService.SERVICE);
 
 		int firstResult = getParameter(IConstants.FIRST_RESULT, FIRST_RESULT, request);
 		int maxResults = getParameter(IConstants.MAX_RESULTS, MAX_RESULTS, request);

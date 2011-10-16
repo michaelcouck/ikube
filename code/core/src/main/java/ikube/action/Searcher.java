@@ -12,6 +12,8 @@ import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.Logging;
 import ikube.toolkit.SerializationUtilities;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -49,12 +51,16 @@ public class Searcher extends Action<IndexContext<?>, Boolean> {
 			String xml = null;
 
 			Server server = getClusterManager().getServer();
-			String webServiceUrl = server.getSearchWebServiceUrl();
-			ISearcherWebService searchRemote = ServiceLocator.getService(ISearcherWebService.class, webServiceUrl, ISearcherWebService.NAMESPACE,
-					ISearcherWebService.SERVICE);
-			String monitoringWebServiceUrl = server.getMonitoringWebServiceUrl();
-			IMonitorWebService monitorWebService = ServiceLocator.getService(IMonitorWebService.class, monitoringWebServiceUrl,
-					IMonitorWebService.NAMESPACE, IMonitorWebService.SERVICE);
+
+			String ip = InetAddress.getLocalHost().getHostAddress();
+			int searchWebServicePort = server.getSearchWebServicePort();
+			ISearcherWebService searcherWebService = ServiceLocator.getService(ISearcherWebService.class, "http", ip, searchWebServicePort,
+					ISearcherWebService.PUBLISHED_PATH, ISearcherWebService.NAMESPACE, ISearcherWebService.SERVICE);
+
+			int monitoringPort = server.getMonitoringWebServicePort();
+
+			IMonitorWebService monitorWebService = ServiceLocator.getService(IMonitorWebService.class, "http", ip, monitoringPort,
+					IMonitorWebService.PUBLISHED_PATH, IMonitorWebService.NAMESPACE, IMonitorWebService.SERVICE);
 
 			String[] searchFields = monitorWebService.getIndexFieldNames(indexName);
 			String[] searchStrings = new String[searchFields.length];
@@ -65,12 +71,12 @@ public class Searcher extends Action<IndexContext<?>, Boolean> {
 				if (searchFields == null || searchFields.length == 0) {
 					searchFields = new String[] { IConstants.CONTENT };
 				}
-				xml = searchRemote.searchSingle(indexName, searchString, searchFields[0], Boolean.TRUE, 0, 10);
-				xml = searchRemote.searchMulti(indexName, searchStrings, searchFields, fragment, start, end);
+				xml = searcherWebService.searchSingle(indexName, searchString, searchFields[0], Boolean.TRUE, 0, 10);
+				xml = searcherWebService.searchMulti(indexName, searchStrings, searchFields, fragment, start, end);
 				double latitude = 50.7930727874172;
 				double longitude = 4.36242219751376;
-				xml = searchRemote.searchSpacialMulti(indexName, searchStrings, searchFields, fragment, start, end, 10, latitude, longitude);
-				xml = searchRemote.searchMultiAll(indexName, searchStrings, fragment, start, end);
+				xml = searcherWebService.searchSpacialMulti(indexName, searchStrings, searchFields, fragment, start, end, 10, latitude, longitude);
+				xml = searcherWebService.searchMultiAll(indexName, searchStrings, fragment, start, end);
 			}
 
 			List<Map<String, String>> results = new ArrayList<Map<String, String>>();
@@ -89,6 +95,8 @@ public class Searcher extends Action<IndexContext<?>, Boolean> {
 			} else {
 				listenerManager.fireEvent(Event.RESULTS, System.currentTimeMillis(), null, Boolean.TRUE);
 			}
+		} catch (UnknownHostException e) {
+			logger.error("Exception searching index : ", e);
 		} finally {
 			getClusterManager().stopWorking(getClass().getSimpleName(), indexContext.getIndexName(), "");
 		}
