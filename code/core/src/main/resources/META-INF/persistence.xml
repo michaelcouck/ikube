@@ -26,7 +26,8 @@
 		<class>ikube.model.IndexableColumn</class>
 		<class>ikube.model.Index</class>
 		
-		<class>org.springframework.batch.core.JobInstance</class>
+		<class>ikube.model.geospatial.GeoName</class>
+		<class>ikube.model.geospatial.AlternateName</class>
 		
 		<exclude-unlisted-classes>false</exclude-unlisted-classes>
 		
@@ -67,6 +68,9 @@
 		<class>ikube.model.IndexableColumn</class>
 		<class>ikube.model.Index</class>
 		
+		<class>ikube.model.geospatial.GeoName</class>
+		<class>ikube.model.geospatial.AlternateName</class>
+		
 		<exclude-unlisted-classes>false</exclude-unlisted-classes>
 		
 		<properties>
@@ -99,6 +103,9 @@
 		<class>ikube.model.IndexableColumn</class>
 		<class>ikube.model.Index</class>
 		
+		<class>ikube.model.geospatial.GeoName</class>
+		<class>ikube.model.geospatial.AlternateName</class>
+		
 		<exclude-unlisted-classes>false</exclude-unlisted-classes>
 		
 		<properties>
@@ -129,6 +136,9 @@
 		<class>ikube.model.IndexableEmail</class>
 		<class>ikube.model.IndexableColumn</class>
 		<class>ikube.model.Index</class>
+		
+		<class>ikube.model.geospatial.GeoName</class>
+		<class>ikube.model.geospatial.AlternateName</class>
 		
 		<exclude-unlisted-classes>false</exclude-unlisted-classes>
 		

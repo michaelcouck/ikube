@@ -6,16 +6,12 @@ import ikube.index.IndexManager;
 import ikube.listener.ListenerManager;
 import ikube.model.IndexContext;
 import ikube.toolkit.ApplicationContextManager;
-import ikube.toolkit.DataUtilities;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.Logging;
 
 import java.io.File;
 import java.net.InetAddress;
-import java.sql.Connection;
 import java.util.List;
-
-import javax.sql.DataSource;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
@@ -23,7 +19,6 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
 import org.apache.lucene.index.IndexWriter;
-import org.dbunit.ext.h2.H2DataTypeFactory;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 
@@ -46,11 +41,6 @@ public abstract class AbstractIntegration {
 			ApplicationContextManager.getBean(ListenerManager.class).removeListeners();
 			IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
 			dataBase.find(ikube.model.File.class, 0l);
-			DataSource dataSource = ApplicationContextManager.getBean("nonXaDataSourceH2");
-			Connection connection = dataSource.getConnection();
-			String filePath = FileUtilities.findFileRecursively(new File("."), "allData.xml").getAbsolutePath();
-			DataUtilities.DATA_TYPE_FACTORY = new H2DataTypeFactory();
-			DataUtilities.insertData(connection, filePath);
 		} catch (Exception e) {
 			LOGGER.error("Exception inserting the data for the base test : ", e);
 		}
