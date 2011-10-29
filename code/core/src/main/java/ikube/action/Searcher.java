@@ -20,8 +20,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This class will do a search on the indexes on the index defined in this server. If there are not as many results as
- * expected then a mail will be sent to the administrator.
+ * This class will do a search on the indexes on the index defined in this server. If there are not as many results as expected then a mail
+ * will be sent to the administrator.
  * 
  * @author Michael Couck
  * @since 31.10.10
@@ -29,12 +29,12 @@ import java.util.Map;
  */
 public class Searcher extends Action<IndexContext<?>, Boolean> {
 
-	private int		start				= 0;
-	private int		end					= 10;
-	private int		iterations			= 1;
-	private String	searchString		= "Hello";
-	private int		resultsSizeMinimum	= 0;
-	private boolean	fragment			= Boolean.TRUE;
+	private int start = 0;
+	private int end = 10;
+	private int iterations = 1;
+	private String searchString = "Hello";
+	private int resultsSizeMinimum = 0;
+	private boolean fragment = Boolean.TRUE;
 
 	/**
 	 * {@inheritDoc}
@@ -75,7 +75,8 @@ public class Searcher extends Action<IndexContext<?>, Boolean> {
 				xml = searcherWebService.searchMulti(indexName, searchStrings, searchFields, fragment, start, end);
 				double latitude = 50.7930727874172;
 				double longitude = 4.36242219751376;
-				xml = searcherWebService.searchSpacialMulti(indexName, searchStrings, searchFields, fragment, start, end, 10, latitude, longitude);
+				xml = searcherWebService.searchSpacialMulti(indexName, searchStrings, searchFields, fragment, start, end, 10, latitude,
+						longitude);
 				xml = searcherWebService.searchMultiAll(indexName, searchStrings, fragment, start, end);
 			}
 
@@ -85,8 +86,8 @@ public class Searcher extends Action<IndexContext<?>, Boolean> {
 			}
 			ListenerManager listenerManager = ApplicationContextManager.getBean(ListenerManager.class);
 			if (results.size() < resultsSizeMinimum) {
-				String message = Logging.getString("Results not expected : ", results.size(), indexContext.getIndexName(), searchString, start, end,
-						resultsSizeMinimum);
+				String message = Logging.getString("Results not expected : ", results.size(), indexContext.getIndexName(), searchString,
+						start, end, resultsSizeMinimum);
 				logger.info(message);
 				listenerManager.fireEvent(Event.NO_RESULTS, System.currentTimeMillis(), null, Boolean.TRUE);
 				String subject = "Search results for index : " + indexContext.getIndexName() + ", server : " + server.getAddress();

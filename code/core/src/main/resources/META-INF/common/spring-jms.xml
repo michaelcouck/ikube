@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans 
+	xmlns="http://www.springframework.org/schema/beans" 
+	xmlns:amq="http://activemq.apache.org/schema/core" 
+	xmlns:jms="http://www.springframework.org/schema/jms"
+	xmlns:context="http://www.springframework.org/schema/context" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+		http://activemq.apache.org/schema/core 
+		http://activemq.apache.org/schema/core/activemq-core-5.2.0.xsd
+		http://www.springframework.org/schema/context 
+		http://www.springframework.org/schema/context/spring-context-2.5.xsd
+		http://www.springframework.org/schema/jms 
+		http://www.springframework.org/schema/jms/spring-jms-2.5.xsd">
+
+	<!-- Create an embedded ActiveMQ Broker -->
+	<amq:broker 
+		useJmx="false" 
+		persistent="true">
+		<amq:transportConnectors>
+			<amq:transportConnector uri="tcp://localhost:61616" />
+		</amq:transportConnectors>
+	</amq:broker>
+
+	<!-- A connection to ActiveMQ -->
+	<bean 
+		id="amqConnectionFactory" 
+		class="org.apache.activemq.ActiveMQConnectionFactory" 
+		p:brokerURL="tcp://localhost:61616" />
+
+	<!-- A cached connection to wrap the ActiveMQ connection -->
+	<bean 
+		id="cachedConnectionFactory" 
+		class="org.springframework.jms.connection.CachingConnectionFactory" 
+		p:targetConnectionFactory-ref="amqConnectionFactory"
+		p:sessionCacheSize="10" />
+
+	<!-- A queue in ActiveMQ -->
+	<bean 
+		id="queue" 
+		class="org.apache.activemq.command.ActiveMQQueue">
+		<constructor-arg value="ikube.queue" />
+	</bean>
+	
+	<!-- A topic in ActiveMQ -->
+	<bean 
+		id="topic" 
+		class="org.apache.activemq.command.ActiveMQQueue">
+		<constructor-arg value="ikube.topic" />
+	</bean>
+
+	<!-- A JmsTemplate instance that uses the cached connection and queue -->
+	<bean 
+		id="jmsQueueTemplate" 
+		class="org.springframework.jms.core.JmsTemplate" 
+		p:connectionFactory-ref="cachedConnectionFactory"
+		p:defaultDestination-ref="queue" />
+	
+	<!-- A JmsTemplate instance that uses the cached connection and topic -->
+	<bean 
+		id="jmsTopicTemplate" 
+		class="org.springframework.jms.core.JmsTemplate" 
+		p:connectionFactory-ref="cachedConnectionFactory"
+		p:defaultDestination-ref="topic" />
+
+	<!-- The Spring message listener container configuration -->
+	<jms:listener-container 
+		container-type="default" 
+		connection-factory="amqConnectionFactory" 
+		acknowledge="auto">
+		<jms:listener 
+			destination="ikube.topic" 
+			ref="ikube.cluster.ClusterManagerJms" 
+			method="onMessage" />
+	</jms:listener-container>
+	
+	<!-- This is the listener and the producer of messages. -->
+	<bean 
+		id="ikube.cluster.ClusterManagerJms"
+		class="ikube.cluster.ClusterManagerJms"
+		p:jmsTemplate-ref="jmsTopicTemplate" />
+</beans>

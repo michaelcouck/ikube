@@ -5,11 +5,10 @@ import ikube.database.IDataBase;
 import ikube.index.IndexManager;
 import ikube.listener.ListenerManager;
 import ikube.model.IndexContext;
-import ikube.model.faq.Faq;
 import ikube.toolkit.ApplicationContextManager;
+import ikube.toolkit.DataUtilities;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.Logging;
-import ikube.toolkit.data.DataUtilities;
 
 import java.io.File;
 import java.net.InetAddress;
@@ -31,9 +30,9 @@ import org.junit.Ignore;
 @Ignore
 public abstract class AbstractIntegration {
 
-	private static final Logger	LOGGER		= Logger.getLogger(AbstractIntegration.class);
+	private static final Logger LOGGER = Logger.getLogger(AbstractIntegration.class);
 
-	private static boolean		INITIALIZED	= Boolean.FALSE;
+	private static boolean INITIALIZED = Boolean.FALSE;
 
 	@BeforeClass
 	public static void beforeClass() {
@@ -46,7 +45,7 @@ public abstract class AbstractIntegration {
 			FileUtilities.deleteFiles(new File("."), "btm1.tlog", "btm2.tlog", "ikube.h2.db", "ikube.lobs.db", "ikube.log", "openjpa.log");
 			ApplicationContextManager.getBean(ListenerManager.class).removeListeners();
 			IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
-			dataBase.find(Faq.class, 0l);
+			dataBase.find(ikube.model.File.class, 0l);
 			DataSource dataSource = ApplicationContextManager.getBean("nonXaDataSourceH2");
 			Connection connection = dataSource.getConnection();
 			String filePath = FileUtilities.findFileRecursively(new File("."), "allData.xml").getAbsolutePath();
@@ -57,8 +56,8 @@ public abstract class AbstractIntegration {
 		}
 	}
 
-	protected IndexContext<?>	realIndexContext	= ApplicationContextManager.getBean("indexContext");
-	protected Logger			logger				= Logger.getLogger(this.getClass());
+	protected IndexContext<?> realIndexContext = ApplicationContextManager.getBean("indexContext");
+	protected Logger logger = Logger.getLogger(this.getClass());
 
 	public static void delete(final IDataBase dataBase, final Class<?>... klasses) {
 		int batchSize = 1000;
@@ -76,10 +75,9 @@ public abstract class AbstractIntegration {
 	}
 
 	/**
-	 * This method creates an index using the index path in the context, the time and the ip and returns the latest
-	 * index directory, i.e. the index that has just been created. Note that if there are still cascading mocks from
-	 * JMockit, the index writer sill not create the index! So you have to tear down all mocks prior to using this
-	 * method.
+	 * This method creates an index using the index path in the context, the time and the ip and returns the latest index directory, i.e.
+	 * the index that has just been created. Note that if there are still cascading mocks from JMockit, the index writer sill not create the
+	 * index! So you have to tear down all mocks prior to using this method.
 	 * 
 	 * @param indexContext
 	 *            the index context to use for the path to the index

@@ -41,59 +41,65 @@ public class Clean<E, F> extends Action<IndexContext<?>, Boolean> {
 					// return Boolean.FALSE;
 					continue;
 				}
-				for (File serverIndexDirectory : serverIndexDirectories) {
-					Directory directory = null;
-					boolean locked = Boolean.FALSE;
-					boolean shouldDelete = Boolean.FALSE;
-					try {
-						directory = FSDirectory.open(serverIndexDirectory);
-						locked = IndexWriter.isLocked(directory);
-						if (locked) {
-							// We assume that there are no other servers working so this directory
-							// has been locked and the server is dead, we will unlock the index, and perhaps
-							// try to optimize it too
-							IndexWriter.unlock(directory);
-							locked = IndexWriter.isLocked(directory);
-							if (locked) {
-								logger.warn("Directory still locked : " + serverIndexDirectory);
-							} else {
-								IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, serverIndexDirectory, Boolean.FALSE);
-								indexContext.getIndex().setIndexWriter(indexWriter);
-								IndexManager.closeIndexWriter(indexContext);
-							}
-						}
-						if (!IndexReader.indexExists(directory) || locked) {
-							// Try to delete the directory
-							shouldDelete = Boolean.TRUE;
-						}
-					} catch (IOException e) {
-						logger.error("Directory : " + serverIndexDirectory + " not ok, will try to delete : ", e);
-						shouldDelete = Boolean.TRUE;
-					} catch (Exception e) {
-						logger.error("Directory : " + serverIndexDirectory + " not ok, will try to delete : ", e);
-						shouldDelete = Boolean.TRUE;
-					} finally {
-						if (directory != null) {
-							try {
-								directory.close();
-							} catch (Exception e) {
-								logger.error("Exception closing the directory : ", e);
-							}
-						}
-						if (shouldDelete && !locked) {
-							try {
-								logger.warn("Deleting directory : " + serverIndexDirectory + ", as it either corrupt, or partially deleted : ");
-								FileUtilities.deleteFile(serverIndexDirectory, 1);
-							} catch (Exception e) {
-								logger.error("Exception purging corrupt or partly deleted index directory : " + serverIndexDirectory, e);
-							}
-						}
-					}
-				}
+				processDirectories(indexContext, serverIndexDirectories);
 			}
 			return Boolean.TRUE;
 		} finally {
 			getClusterManager().stopWorking(getClass().getSimpleName(), indexContext.getIndexName(), "");
+		}
+	}
+
+	private void processDirectories(IndexContext<?> indexContext, File... serverIndexDirectories) {
+		for (File serverIndexDirectory : serverIndexDirectories) {
+			Directory directory = null;
+			boolean locked = Boolean.FALSE;
+			boolean shouldDelete = Boolean.FALSE;
+			try {
+				directory = FSDirectory.open(serverIndexDirectory);
+				locked = IndexWriter.isLocked(directory);
+				if (locked) {
+					// We assume that there are no other servers working so this directory
+					// has been locked and the server is dead, we will unlock the index, and perhaps
+					// try to optimise it too
+					IndexWriter.unlock(directory);
+					locked = IndexWriter.isLocked(directory);
+				}
+				if (locked) {
+					logger.warn("Directory still locked : " + serverIndexDirectory);
+				}
+				// else {
+				// // Open the index writer then close it which will optimise the index
+				// IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, serverIndexDirectory, Boolean.FALSE);
+				// indexContext.getIndex().setIndexWriter(indexWriter);
+				// IndexManager.closeIndexWriter(indexContext);
+				// }
+				if (!IndexReader.indexExists(directory) || locked) {
+					// Try to delete the directory
+					shouldDelete = Boolean.TRUE;
+				}
+			} catch (IOException e) {
+				logger.error("Directory : " + serverIndexDirectory + " not ok, will try to delete : ", e);
+				shouldDelete = Boolean.TRUE;
+			} catch (Exception e) {
+				logger.error("Directory : " + serverIndexDirectory + " not ok, will try to delete : ", e);
+				shouldDelete = Boolean.TRUE;
+			} finally {
+				if (directory != null) {
+					try {
+						directory.close();
+					} catch (Exception e) {
+						logger.error("Exception closing the directory : ", e);
+					}
+				}
+				if (shouldDelete && !locked) {
+					try {
+						logger.warn("Deleting directory : " + serverIndexDirectory + ", as it either corrupt, or partially deleted : ");
+						FileUtilities.deleteFile(serverIndexDirectory, 1);
+					} catch (Exception e) {
+						logger.error("Exception purging corrupt or partly deleted index directory : " + serverIndexDirectory, e);
+					}
+				}
+			}
 		}
 	}
 

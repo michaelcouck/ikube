@@ -14,6 +14,7 @@ import ikube.toolkit.ThreadUtilities;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -28,65 +29,70 @@ public class CacheInfinispanTest extends ATest {
 	private long					id;
 	private String					name;
 	private Server					server;
-	int								iterations	= 100;
+	int								iterations	= 1000;
 
 	/** Class under test. */
-	private static CacheInfinispan	cacheInfinispan;
+	private static CacheInfinispan	CACHE_INFINISPAN;
+
+	@BeforeClass
+	public static void beforeClass() throws Exception {
+		CACHE_INFINISPAN = new CacheInfinispan();
+		CACHE_INFINISPAN.setConfigurationFile("META-INF/infinispan.xml");
+		CACHE_INFINISPAN.initialise();
+	}
+
+	@AfterClass
+	public static void afterClass() {
+		CACHE_INFINISPAN.destroy();
+	}
 
 	public CacheInfinispanTest() {
 		super(CacheInfinispanTest.class);
 	}
 
-	@BeforeClass
-	public static void beforeClass() throws Exception {
-		cacheInfinispan = new CacheInfinispan();
-		cacheInfinispan.setConfigurationFile("META-INF/infinispan.xml");
-		cacheInfinispan.initialise();
-		// cacheInfinispan = ApplicationContextManager.getBean(CacheInfinispan.class);
-	}
-
 	@Before
 	public void before() {
-		id = 0l;
+		id = System.currentTimeMillis();
 		name = IConstants.IKUBE;
 		server = new Server();
+		server.setId(id);
 	}
 
 	@Test
 	public void clear() {
-		cacheInfinispan.set(name, id, server);
-		int size = cacheInfinispan.size(name);
+		CACHE_INFINISPAN.set(name, id, server);
+		int size = CACHE_INFINISPAN.size(name);
 		assertEquals("There should only be one object in the cache : ", 1, size);
-		cacheInfinispan.clear(name);
-		size = cacheInfinispan.size(name);
+		CACHE_INFINISPAN.clear(name);
+		size = CACHE_INFINISPAN.size(name);
 		assertEquals("There should be no objects in the cache : ", 0, size);
 	}
 
 	@Test
 	public void getStringLong() {
-		cacheInfinispan.set(name, id, server);
-		Server server = cacheInfinispan.get(name, id);
+		CACHE_INFINISPAN.set(name, id, server);
+		Server server = CACHE_INFINISPAN.get(name, id);
 		assertNotNull("The server is in the cache : ", server);
 	}
 
 	@Test
 	public void remove() {
-		cacheInfinispan.set(name, id, server);
-		cacheInfinispan.remove(name, id);
-		Server server = cacheInfinispan.get(name, id);
+		CACHE_INFINISPAN.set(name, id, server);
+		CACHE_INFINISPAN.remove(name, id);
+		Server server = CACHE_INFINISPAN.get(name, id);
 		assertNull("The server should be removed : ", server);
 	}
 
 	@Test
 	public void lock() {
-		boolean locked = cacheInfinispan.lock(name);
+		boolean locked = CACHE_INFINISPAN.lock(name);
 		assertTrue("Cache not locked, should be able to acquire this lock : ", locked);
-		locked = cacheInfinispan.lock(name);
+		locked = CACHE_INFINISPAN.lock(name);
 		assertFalse("Cache already locked, shouldn't be able to get the lock : ", locked);
 
-		boolean unlocked = cacheInfinispan.unlock(name);
+		boolean unlocked = CACHE_INFINISPAN.unlock(name);
 		assertTrue("Cache was locked but we should be able to unlock it : ", unlocked);
-		unlocked = cacheInfinispan.unlock(name);
+		unlocked = CACHE_INFINISPAN.unlock(name);
 		assertFalse("Cache not locked, so method returns false : ", unlocked);
 	}
 
@@ -94,15 +100,15 @@ public class CacheInfinispanTest extends ATest {
 	public void getCriteria() {
 		int size = 100;
 		for (int i = 0; i < size + 5; i++) {
-			cacheInfinispan.set(name, id++, new Server());
+			CACHE_INFINISPAN.set(name, id++, new Server());
 		}
-		List<Server> servers = cacheInfinispan.get(name, null, null, size);
+		List<Server> servers = CACHE_INFINISPAN.get(name, null, null, size);
 		assertEquals("Should be " + size + " servers : ", size, servers.size());
 	}
 
 	@Test(expected = RuntimeException.class)
 	public void getStringString() {
-		cacheInfinispan.get(name, name);
+		CACHE_INFINISPAN.get(name, name);
 	}
 
 	@Test
@@ -110,8 +116,8 @@ public class CacheInfinispanTest extends ATest {
 		double executionsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
 			@Override
 			public void execute() throws Throwable {
-				cacheInfinispan.lock(name);
-				cacheInfinispan.unlock(name);
+				CACHE_INFINISPAN.lock(name);
+				CACHE_INFINISPAN.unlock(name);
 			}
 		}, "Locking : ", iterations, Boolean.TRUE);
 		assertTrue("Must be fast : ", executionsPerSecond > 25);
@@ -122,7 +128,7 @@ public class CacheInfinispanTest extends ATest {
 		double executionsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
 			@Override
 			public void execute() throws Throwable {
-				cacheInfinispan.set(server.getClass().getName(), server.getId(), server);
+				CACHE_INFINISPAN.set(server.getClass().getName(), server.getId(), server);
 			}
 		}, "Setting : ", iterations, Boolean.TRUE);
 		assertTrue("Must be fast : ", executionsPerSecond > 25);
@@ -133,7 +139,7 @@ public class CacheInfinispanTest extends ATest {
 		double executionsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
 			@Override
 			public void execute() throws Throwable {
-				cacheInfinispan.get(server.getClass().getName(), server.getId());
+				CACHE_INFINISPAN.get(server.getClass().getName(), server.getId());
 			}
 		}, "Getting : ", iterations, Boolean.TRUE);
 		assertTrue("Must be fast : ", executionsPerSecond > 25);
@@ -150,16 +156,16 @@ public class CacheInfinispanTest extends ATest {
 						public void execute() throws Throwable {
 							double random = Math.random();
 							if (random > 0.25) {
-								cacheInfinispan.get(server.getClass().getName(), server.getId());
+								CACHE_INFINISPAN.get(server.getClass().getName(), server.getId());
 							} else if (0.25 < random && random < 0.5) {
-								cacheInfinispan.lock(server.getClass().getName());
+								CACHE_INFINISPAN.lock(server.getClass().getName());
 							} else if (0.5 < random && random < 0.75) {
-								cacheInfinispan.unlock(server.getClass().getName());
+								CACHE_INFINISPAN.unlock(server.getClass().getName());
 							} else {
-								cacheInfinispan.set(server.getClass().getName(), id, server);
+								CACHE_INFINISPAN.set(server.getClass().getName(), id, server);
 							}
 						}
-					}, "Multi threaded : ", 100000, Boolean.TRUE);
+					}, "Multi threaded Infinispan cache : ", iterations, Boolean.TRUE);
 				}
 			});
 			threads.add(thread);
@@ -168,6 +174,34 @@ public class CacheInfinispanTest extends ATest {
 			thread.start();
 		}
 		ThreadUtilities.waitForThreads(threads);
+	}
+
+	/**
+	 * This main is to start the Infinispan cache in more than one Jvm simulating a cluster.
+	 * 
+	 * @param args
+	 * @throws Exception
+	 */
+	public static void main(String[] args) throws Exception {
+		CacheInfinispan cacheInfinispan = new CacheInfinispan();
+		cacheInfinispan.setConfigurationFile("META-INF/infinispan.xml");
+		cacheInfinispan.initialise();
+		Server server = new Server();
+		for (int i = 0; i < 100; i++) {
+			sleep();
+			server.setId(System.currentTimeMillis());
+			cacheInfinispan.set(Server.class.getName(), server.getId(), server);
+			sleep();
+			List<Server> servers = cacheInfinispan.get(Server.class.getName(), null, null, Integer.MAX_VALUE);
+			System.out.println(i + ":" + servers.size() + ":" + (i == servers.size()));
+		}
+		System.exit(0);
+	}
+
+	private static void sleep() throws InterruptedException {
+		double sleepTime = 10000;
+		long sleep = (long) (Math.random() * sleepTime);
+		Thread.sleep(sleep);
 	}
 
 }

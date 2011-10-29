@@ -18,6 +18,7 @@ import mockit.Mockit;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -25,6 +26,8 @@ import org.junit.Test;
  * @since 17.04.11
  * @version 01.00
  */
+/** TODO Re-do this test. */
+@Ignore
 public class SearcherTest extends ATest {
 
 	public SearcherTest() {

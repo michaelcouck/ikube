@@ -1,4 +1,4 @@
-package ikube.toolkit.data;
+package ikube.toolkit;
 
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.Logging;

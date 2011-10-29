@@ -62,43 +62,39 @@ public final class IndexManager {
 	 */
 	public static synchronized IndexWriter openIndexWriter(final IndexContext<?> indexContext, final long time, final String ip) {
 		boolean delete = Boolean.FALSE;
-		boolean exception = Boolean.FALSE;
+		boolean success = Boolean.FALSE;
 		File indexDirectory = null;
 		IndexWriter indexWriter = null;
 		try {
-			try {
-				String indexDirectoryPath = getIndexDirectory(indexContext, time, ip);
-				indexDirectory = FileUtilities.getFile(indexDirectoryPath, Boolean.TRUE);
-				LOGGER.info(Logging.getString("Index directory time : ", time, "date : ", new Date(time), "writing index to directory ",
-						indexDirectory.getAbsolutePath()));
-				indexWriter = openIndexWriter(indexContext, indexDirectory, Boolean.TRUE);
-				indexContext.getIndex().setIndexWriter(indexWriter);
-			} catch (CorruptIndexException e) {
-				LOGGER.error("We expected a new index and got a corrupt one.", e);
-				LOGGER.warn("Didn't initialise the index writer. Will try to delete the index directory.");
-				closeIndexWriter(indexContext);
-				exception = Boolean.TRUE;
-				delete = Boolean.TRUE;
-			} catch (LockObtainFailedException e) {
-				LOGGER.error("Failed to obtain the LOCK on the directory. Check the file system permissions.", e);
-				exception = Boolean.TRUE;
-			} catch (IOException e) {
-				LOGGER.error("IO exception detected opening the writer", e);
-				exception = Boolean.TRUE;
-			} catch (Exception e) {
-				LOGGER.error("Unexpected exception detected while initializing the IndexWriter", e);
-				exception = Boolean.TRUE;
-			}
-			return indexWriter;
+			String indexDirectoryPath = getIndexDirectory(indexContext, time, ip);
+			indexDirectory = FileUtilities.getFile(indexDirectoryPath, Boolean.TRUE);
+			LOGGER.info(Logging.getString("Index directory time : ", time, "date : ", new Date(time), "writing index to directory ",
+					indexDirectory.getAbsolutePath()));
+			indexWriter = openIndexWriter(indexContext, indexDirectory, Boolean.TRUE);
+			indexContext.getIndex().setIndexWriter(indexWriter);
+			success = Boolean.TRUE;
+		} catch (CorruptIndexException e) {
+			LOGGER.error("We expected a new index and got a corrupt one.", e);
+			LOGGER.warn("Didn't initialise the index writer. Will try to delete the index directory.");
+			delete = Boolean.TRUE;
+		} catch (LockObtainFailedException e) {
+			LOGGER.error("Failed to obtain the lock on the directory. Check the file system permissions or failed indexing jobs, "
+					+ "there will be a lock file in one of the index directories.", e);
+		} catch (IOException e) {
+			LOGGER.error("IO exception detected opening the writer", e);
+		} catch (Exception e) {
+			LOGGER.error("Unexpected exception detected while initializing the IndexWriter", e);
 		} finally {
-			if (exception) {
+			if (!success) {
 				closeIndexWriter(indexWriter);
+				indexWriter = null;
 			}
 			if (delete && indexDirectory != null && indexDirectory.exists()) {
 				FileUtilities.deleteFile(indexDirectory, 1);
 			}
 			IndexManager.class.notifyAll();
 		}
+		return indexWriter;
 	}
 
 	/**
@@ -156,9 +152,10 @@ public final class IndexManager {
 			LOGGER.warn("Tried to close a null writer : ");
 			return;
 		}
-		Directory directory = indexWriter.getDirectory();
+		Directory directory = null;
 		LOGGER.info("Optimizing and closing the index : " + indexWriter);
 		try {
+			directory = indexWriter.getDirectory();
 			indexWriter.commit();
 			indexWriter.optimize(Boolean.TRUE);
 		} catch (NullPointerException e) {
@@ -181,7 +178,11 @@ public final class IndexManager {
 		try {
 			if (directory != null) {
 				if (IndexWriter.isLocked(directory)) {
+					LOGGER.warn("Index still locked : " + directory);
 					IndexWriter.unlock(directory);
+					if (IndexWriter.isLocked(directory)) {
+						LOGGER.error("Index still locked : " + directory);
+					}
 				}
 			}
 		} catch (Exception e) {

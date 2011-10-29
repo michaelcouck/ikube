@@ -1,17 +1,18 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation=" http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation=" http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>ikube</groupId>
 	<artifactId>ikube</artifactId>
 	<packaging>pom</packaging>
 	<version>2.1.5-SNAPSHOT</version>
-	
+
 	<scm>
 		<url>https://ikube.googlecode.com/svn/trunk</url>
 		<connection>scm:svn:https://ikube.googlecode.com/svn/trunk</connection>
 		<developerConnection>scm:svn:https://ikube.googlecode.com/svn/trunk</developerConnection>
 	</scm>
-	
+
 	<distributionManagement>
 		<site>
 			<id>ikube</id>
@@ -54,12 +55,12 @@
 
 	<build>
 		<extensions>
-            <extension>
-                <groupId>org.jvnet.wagon-svn</groupId>
-                <artifactId>wagon-svn</artifactId>
-                <version>1.8</version>
-            </extension>
-        </extensions>
+			<extension>
+				<groupId>org.jvnet.wagon-svn</groupId>
+				<artifactId>wagon-svn</artifactId>
+				<version>1.8</version>
+			</extension>
+		</extensions>
 		<pluginManagement>
 			<plugins>
 				<plugin>
@@ -76,10 +77,10 @@
 					</configuration>
 				</plugin>
 				<plugin>
-                    <groupId>com.googlecode.maven-gcu-plugin</groupId>
-                    <artifactId>maven-gcu-plugin</artifactId>
-                    <version>1.1</version>
-                </plugin>
+					<groupId>com.googlecode.maven-gcu-plugin</groupId>
+					<artifactId>maven-gcu-plugin</artifactId>
+					<version>1.1</version>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 		<plugins>
@@ -201,6 +202,18 @@
 			<version>${spring.version}</version>
 			<type>jar</type>
 			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-jms</artifactId>
+			<version>${spring.version}</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.xbean</groupId>
+			<artifactId>xbean-spring</artifactId>
+			<version>3.6</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springbyexample</groupId>
@@ -571,20 +584,10 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
-		<!-- <dependency>
-			<groupId>com.hazelcast</groupId>
-			<artifactId>hazelcast</artifactId>
-			<version>[1.9.3.1,)</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency> -->
-		<!-- <dependency>
-			<groupId>net.sf.ehcache</groupId>
-			<artifactId>ehcache-core</artifactId>
-			<version>2.4.2</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency> -->
+		<!-- <dependency> <groupId>com.hazelcast</groupId> <artifactId>hazelcast</artifactId> <version>[1.9.3.1,)</version> <type>jar</type> <scope>compile</scope> 
+			</dependency> -->
+		<!-- <dependency> <groupId>net.sf.ehcache</groupId> <artifactId>ehcache-core</artifactId> <version>2.4.2</version> <type>jar</type> <scope>compile</scope> 
+			</dependency> -->
 		<dependency>
 			<groupId>aspose</groupId>
 			<artifactId>aspose.words</artifactId>
@@ -641,13 +644,8 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
-		<!-- <dependency>
-			<groupId>org.jgroups</groupId>
-			<artifactId>jgroups</artifactId>
-			<version>3.0.0.CR4</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency> -->
+		<!-- <dependency> <groupId>org.jgroups</groupId> <artifactId>jgroups</artifactId> <version>3.0.0.CR4</version> <type>jar</type> <scope>compile</scope> 
+			</dependency> -->
 		<dependency>
 			<groupId>net.sf.ehcache</groupId>
 			<artifactId>ehcache-core</artifactId>
@@ -660,11 +658,11 @@
 			<artifactId>infinispan-core</artifactId>
 			<version>[4.0.0,)</version>
 			<exclusions>
-            <exclusion>
-               <groupId>org.rhq.helpers</groupId>
-               <artifactId>rhq-pluginAnnotations</artifactId>
-            </exclusion>
-         </exclusions>
+				<exclusion>
+					<groupId>org.rhq.helpers</groupId>
+					<artifactId>rhq-pluginAnnotations</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.rhq.helpers</groupId>
@@ -691,6 +689,46 @@
 			<groupId>org.codehaus.btm</groupId>
 			<artifactId>btm</artifactId>
 			<version>2.1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.activemq</groupId>
+			<artifactId>activemq-core</artifactId>
+			<version>5.5.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.batch</groupId>
+			<artifactId>spring-batch-core</artifactId>
+			<version>2.1.8.RELEASE</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.batch</groupId>
+			<artifactId>spring-batch-admin-manager</artifactId>
+			<version>1.2.1.RELEASE</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.batch</groupId>
+			<artifactId>spring-batch-integration</artifactId>
+			<version>1.2.0.RELEASE</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.batch</groupId>
+			<artifactId>spring-batch-samples</artifactId>
+			<version>1.1.4.RELEASE</version>
+			<type>jar</type>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.openjpa</groupId>
+			<artifactId>openjpa-all</artifactId>
+			<version>2.1.0</version>
+			<type>jar</type>
+			<scope>compile</scope>
 		</dependency>
 	</dependencies>
 

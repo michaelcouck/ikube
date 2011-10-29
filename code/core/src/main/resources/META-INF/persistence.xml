@@ -10,21 +10,6 @@
 		<!-- <non-jta-data-source>nonXaDataSourceH2</non-jta-data-source> -->
 		<class>ikube.model.Persistable</class>
 		
-		<class>ikube.model.faq.Faq</class>
-		<class>ikube.model.faq.Attachment</class>
-		
-		<class>ikube.model.medical.Hospital</class>
-		<class>ikube.model.medical.Administration</class>
-		<class>ikube.model.medical.Person</class>
-		<class>ikube.model.medical.Doctor</class>
-		<class>ikube.model.medical.Patient</class>
-		<class>ikube.model.medical.Inpatient</class>
-		<class>ikube.model.medical.Condition</class>
-		<class>ikube.model.medical.Medication</class>
-		<class>ikube.model.medical.Treatment</class>
-		<class>ikube.model.medical.Record</class>
-		<class>ikube.model.medical.Address</class>
-		
 		<class>ikube.model.Url</class>
 		<class>ikube.model.File</class>
 		<class>ikube.model.Server</class>
@@ -32,9 +17,6 @@
 		<class>ikube.model.Action</class>
 		<class>ikube.model.Rule</class>
 
-		<class>ikube.model.geospatial.GeoName</class>
-		<class>ikube.model.geospatial.AlternateName</class>
-		
 		<class>ikube.model.Indexable</class>
 		<class>ikube.model.IndexContext</class>
 		<class>ikube.model.IndexableTable</class>
@@ -43,6 +25,8 @@
 		<class>ikube.model.IndexableEmail</class>
 		<class>ikube.model.IndexableColumn</class>
 		<class>ikube.model.Index</class>
+		
+		<class>org.springframework.batch.core.JobInstance</class>
 		
 		<exclude-unlisted-classes>false</exclude-unlisted-classes>
 		
@@ -67,21 +51,6 @@
 		<!-- <non-jta-data-source>nonXaDataSourceDb2</non-jta-data-source> -->
 		<class>ikube.model.Persistable</class>
 		
-		<class>ikube.model.faq.Faq</class>
-		<class>ikube.model.faq.Attachment</class>
-		
-		<class>ikube.model.medical.Hospital</class>
-		<class>ikube.model.medical.Administration</class>
-		<class>ikube.model.medical.Person</class>
-		<class>ikube.model.medical.Doctor</class>
-		<class>ikube.model.medical.Patient</class>
-		<class>ikube.model.medical.Inpatient</class>
-		<class>ikube.model.medical.Condition</class>
-		<class>ikube.model.medical.Medication</class>
-		<class>ikube.model.medical.Treatment</class>
-		<class>ikube.model.medical.Record</class>
-		<class>ikube.model.medical.Address</class>
-		
 		<class>ikube.model.Url</class>
 		<class>ikube.model.File</class>
 		<class>ikube.model.Server</class>
@@ -89,9 +58,6 @@
 		<class>ikube.model.Action</class>
 		<class>ikube.model.Rule</class>
 
-		<class>ikube.model.geospatial.GeoName</class>
-		<class>ikube.model.geospatial.AlternateName</class>
-		
 		<class>ikube.model.Indexable</class>
 		<class>ikube.model.IndexContext</class>
 		<class>ikube.model.IndexableTable</class>
@@ -117,21 +83,6 @@
 		<!-- <non-jta-data-source>nonXaDataSourceOracle</non-jta-data-source> -->
 		<class>ikube.model.Persistable</class>
 		
-		<class>ikube.model.faq.Faq</class>
-		<class>ikube.model.faq.Attachment</class>
-		
-		<class>ikube.model.medical.Hospital</class>
-		<class>ikube.model.medical.Administration</class>
-		<class>ikube.model.medical.Person</class>
-		<class>ikube.model.medical.Doctor</class>
-		<class>ikube.model.medical.Patient</class>
-		<class>ikube.model.medical.Inpatient</class>
-		<class>ikube.model.medical.Condition</class>
-		<class>ikube.model.medical.Medication</class>
-		<class>ikube.model.medical.Treatment</class>
-		<class>ikube.model.medical.Record</class>
-		<class>ikube.model.medical.Address</class>
-		
 		<class>ikube.model.Url</class>
 		<class>ikube.model.File</class>
 		<class>ikube.model.Server</class>
@@ -139,9 +90,6 @@
 		<class>ikube.model.Action</class>
 		<class>ikube.model.Rule</class>
 
-		<class>ikube.model.geospatial.GeoName</class>
-		<class>ikube.model.geospatial.AlternateName</class>
-		
 		<class>ikube.model.Indexable</class>
 		<class>ikube.model.IndexContext</class>
 		<class>ikube.model.IndexableTable</class>
@@ -166,21 +114,6 @@
 		<provider>com.objectdb.jpa.Provider</provider>
 		<class>ikube.model.Persistable</class>
 		
-		<class>ikube.model.faq.Faq</class>
-		<class>ikube.model.faq.Attachment</class>
-		
-		<class>ikube.model.medical.Hospital</class>
-		<class>ikube.model.medical.Administration</class>
-		<class>ikube.model.medical.Person</class>
-		<class>ikube.model.medical.Doctor</class>
-		<class>ikube.model.medical.Patient</class>
-		<class>ikube.model.medical.Inpatient</class>
-		<class>ikube.model.medical.Condition</class>
-		<class>ikube.model.medical.Medication</class>
-		<class>ikube.model.medical.Treatment</class>
-		<class>ikube.model.medical.Record</class>
-		<class>ikube.model.medical.Address</class>
-		
 		<class>ikube.model.Url</class>
 		<class>ikube.model.File</class>
 		<class>ikube.model.Server</class>
@@ -188,9 +121,6 @@
 		<class>ikube.model.Action</class>
 		<class>ikube.model.Rule</class>
 
-		<class>ikube.model.geospatial.GeoName</class>
-		<class>ikube.model.geospatial.AlternateName</class>
-		
 		<class>ikube.model.Indexable</class>
 		<class>ikube.model.IndexContext</class>
 		<class>ikube.model.IndexableTable</class>

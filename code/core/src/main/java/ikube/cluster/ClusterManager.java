@@ -239,7 +239,7 @@ public class ClusterManager implements IClusterManager, IConstants {
 			LOGGER.error("Exception stopping working : " + actionName + ", " + indexName + ", " + indexableName, e);
 			new Thread(new Runnable() {
 				public void run() {
-					stopWorkingRretry(actionName, indexName, indexableName, 0);
+					stopWorkingRetry(actionName, indexName, indexableName, 0);
 				}
 			}).start();
 		} finally {
@@ -247,7 +247,7 @@ public class ClusterManager implements IClusterManager, IConstants {
 		}
 	}
 
-	private void stopWorkingRretry(final String actionName, final String indexName, final String indexableName, int retryCount) {
+	private void stopWorkingRetry(final String actionName, final String indexName, final String indexableName, int retryCount) {
 		try {
 			Server server = getServer();
 			Action action = server.getAction();
@@ -261,7 +261,7 @@ public class ClusterManager implements IClusterManager, IConstants {
 		} catch (Exception e) {
 			LOGGER.error("Exception re-trying to stop working : " + actionName + ", " + indexName + ", " + indexableName, e);
 			if (retryCount < MAX_RETRY_COUNTER) {
-				stopWorkingRretry(actionName, indexName, indexableName, ++retryCount);
+				stopWorkingRetry(actionName, indexName, indexableName, ++retryCount);
 			}
 		}
 	}

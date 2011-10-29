@@ -6,6 +6,7 @@ import ikube.toolkit.HashUtilities;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.transaction.Status;
 import javax.transaction.TransactionManager;
@@ -30,8 +31,36 @@ public class CacheInfinispan implements ICache {
 	private EmbeddedCacheManager	manager;
 
 	public void initialise() throws Exception {
+		System.setProperty("jgroups.bind_addr", "localhost");
+		System.setProperty("java.net.preferIPv4Stack", "true");
+		// GlobalConfiguration.getClusteredDefault().
 		manager = new DefaultCacheManager(configurationFile);
+		Set<String> cacheNames = manager.getCacheNames();
+		manager.startCaches(cacheNames.toArray(new String[cacheNames.size()]));
+
+		// We need to sleep here to give Infinispan a chance to start the caches
+		// or the whole thing just goes to shit!
+		Thread.sleep(10000);
 		manager.start();
+		// Cache<?, ?> cache = manager.getCache(Server.class.getName());
+		// AdvancedCache<?, ?> advancedCache = cache.getAdvancedCache();
+		// advancedCache.addInterceptor(new CommandInterceptor() {
+		// @Override
+		// protected Object handleDefault(InvocationContext ctx, VisitableCommand command) throws Throwable {
+		// // LOGGER.info("Context : " + ctx + ", " + command);
+		// return super.handleDefault(ctx, command);
+		// }
+		// }, 1);
+	}
+
+	public void destroy() {
+		if (manager != null) {
+			try {
+				manager.stop();
+			} catch (Exception e) {
+				LOGGER.error("Exception shutting down Infinispan : " + manager, e);
+			}
+		}
 	}
 
 	public void setConfigurationFile(String configurationFile) {
@@ -117,19 +146,12 @@ public class CacheInfinispan implements ICache {
 	public boolean lock(final String name) {
 		Cache<Long, Object> cache = manager.getCache(name);
 		long lockHash = HashUtilities.hash(IConstants.ID_LOCK);
-
-		// Object lock = cache.get(lockHash);
-		// if (lock == null) {
-		// getMap(name).put(lockHash, new Object());
-		// return Boolean.TRUE;
-		// }
-		// return Boolean.FALSE;
-
 		AdvancedCache<Long, Object> advancedCache = cache.getAdvancedCache();
 		TransactionManager transactionManager = advancedCache.getTransactionManager();
 		boolean locked = Boolean.FALSE;
 		try {
 			transactionManager.begin();
+			// advancedCache.lock(lockHash);
 			Object lock = advancedCache.get(lockHash);
 			if (lock != null) {
 				LOGGER.info("Cache locked : " + name + ", " + lock);
@@ -161,19 +183,12 @@ public class CacheInfinispan implements ICache {
 	public boolean unlock(String name) {
 		Cache<Long, Object> cache = manager.getCache(name);
 		long lockHash = HashUtilities.hash(IConstants.ID_LOCK);
-
-		// Object lock = cache.get(lockHash);
-		// if (lock != null) {
-		// getMap(name).remove(lockHash);
-		// return Boolean.TRUE;
-		// }
-		// return Boolean.FALSE;
-
 		AdvancedCache<Long, Object> advancedCache = cache.getAdvancedCache();
 		TransactionManager transactionManager = advancedCache.getTransactionManager();
 		boolean unlocked = Boolean.FALSE;
 		try {
 			transactionManager.begin();
+			// advancedCache.lock(lockHash);
 			Object lock = advancedCache.get(lockHash);
 			if (lock == null) {
 				LOGGER.info("Cache not locked : " + name + ", " + advancedCache.getLockManager().printLockInfo());

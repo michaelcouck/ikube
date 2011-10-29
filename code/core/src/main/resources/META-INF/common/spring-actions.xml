@@ -44,7 +44,6 @@
 		<ref bean="ikube.action.Searcher" />
 		<ref bean="ikube.action.Validator" />
 		<ref bean="ikube.action.Prune" />
-		<!-- <ref bean="ikube.action.Enrichment" /> -->
 	</util:list>
 
 	<bean 
@@ -202,23 +201,6 @@
 		<property name="rules">
 			<util:list>
 				<ref local="ikube.action.rule.IsThisServerWorking" />
-			</util:list>
-		</property>
-	</bean>
-	<bean 
-		id="ikube.action.Enrichment" 
-		class="ikube.action.Enrichment" 
-		property:ruleExpression="
-			!IsThisServerWorking &#38;&#38; 
-			!AnyServersWorking &#38;&#38; 
-			AreIndexesCreated &#38;&#38; 
-			AreSearchablesInitialised">
-		<property name="rules">
-			<util:list>
-				<ref local="ikube.action.rule.IsThisServerWorking" />
-				<ref local="ikube.action.rule.AnyServersWorking" />
-				<ref local="ikube.action.rule.AreIndexesCreated" />
-				<ref local="ikube.action.rule.AreSearchablesInitialised" />
 			</util:list>
 		</property>
 	</bean>
