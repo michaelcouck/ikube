@@ -21,11 +21,15 @@ import org.springframework.jms.core.MessageCreator;
 
 public class ClusterManagerJms implements IClusterManager, MessageListener, Lock {
 
-	private static final Logger	LOGGER	= Logger.getLogger(ClusterManagerJms.class);
-	private static final String	LOCK	= "lock";
+	private static final Logger LOGGER = Logger.getLogger(ClusterManagerJms.class);
+	private static final String LOCK = "lock";
 
-	private JmsTemplate			jmsTemplate;
-	private List<Lock>			locks	= new ArrayList<Lock>();
+	private JmsTemplate jmsTemplate;
+	private List<Lock> locks = new ArrayList<Lock>();
+
+	public ClusterManagerJms() {
+
+	}
 
 	@Override
 	public void onMessage(Message message) {
@@ -65,10 +69,12 @@ public class ClusterManagerJms implements IClusterManager, MessageListener, Lock
 	}
 
 	@Override
-	public void lock() {}
+	public void lock() {
+	}
 
 	@Override
-	public void lockInterruptibly() throws InterruptedException {}
+	public void lockInterruptibly() throws InterruptedException {
+	}
 
 	@Override
 	public boolean tryLock() {
@@ -81,7 +87,8 @@ public class ClusterManagerJms implements IClusterManager, MessageListener, Lock
 	}
 
 	@Override
-	public void unlock() {}
+	public void unlock() {
+	}
 
 	@Override
 	public Condition newCondition() {
@@ -104,7 +111,8 @@ public class ClusterManagerJms implements IClusterManager, MessageListener, Lock
 	}
 
 	@Override
-	public void stopWorking(String actionName, String indexName, String indexableName) {}
+	public void stopWorking(String actionName, String indexName, String indexableName) {
+	}
 
 	@Override
 	public long getIdNumber(String indexableName, String indexName, long batchSize, long minId) {
@@ -132,10 +140,12 @@ public class ClusterManagerJms implements IClusterManager, MessageListener, Lock
 	}
 
 	@Override
-	public <T> void set(String name, Long id, T object) {}
+	public <T> void set(String name, Long id, T object) {
+	}
 
 	@Override
-	public <T> void clear(String name) {}
+	public <T> void clear(String name) {
+	}
 
 	@Override
 	public <T> int size(String klass) {
@@ -143,7 +153,8 @@ public class ClusterManagerJms implements IClusterManager, MessageListener, Lock
 	}
 
 	@Override
-	public <T> void remove(String name, Long id) {}
+	public <T> void remove(String name, Long id) {
+	}
 
 	@Override
 	public boolean isException() {
@@ -151,7 +162,8 @@ public class ClusterManagerJms implements IClusterManager, MessageListener, Lock
 	}
 
 	@Override
-	public void setException(boolean exception) {}
+	public void setException(boolean exception) {
+	}
 
 	public void setJmsTemplate(JmsTemplate jmsTemplate) {
 		this.jmsTemplate = jmsTemplate;

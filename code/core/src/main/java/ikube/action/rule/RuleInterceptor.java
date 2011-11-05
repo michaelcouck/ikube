@@ -8,7 +8,6 @@ import ikube.model.Action;
 import ikube.model.IndexContext;
 import ikube.model.Rule;
 import ikube.model.Server;
-import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.Logging;
 
 import java.sql.Timestamp;
@@ -31,9 +30,11 @@ import org.nfunk.jep.SymbolTable;
  */
 public class RuleInterceptor implements IRuleInterceptor {
 
-	private static final transient Logger	LOGGER			= Logger.getLogger(RuleInterceptor.class);
+	private static final transient Logger LOGGER = Logger.getLogger(RuleInterceptor.class);
 
-	private final ScheduledExecutorService	executorService	= Executors.newScheduledThreadPool(10);
+	private IDataBase dataBase;
+	private IClusterManager clusterManager;
+	private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(10);
 
 	/**
 	 * {@inheritDoc}
@@ -52,7 +53,6 @@ public class RuleInterceptor implements IRuleInterceptor {
 		// two evaluate to false, so they both start the action they shouldn't start. Generally this
 		// will never happen because the timers will be different, but in a very small percentage
 		// of cases they overlap
-		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
 		boolean gotLock = clusterManager.lock(IConstants.IKUBE);
 		try {
 			Action modelAction = new Action();
@@ -129,7 +129,6 @@ public class RuleInterceptor implements IRuleInterceptor {
 			modelAction.setActionName(actionName);
 			modelAction.setIndexName(indexName);
 			modelAction.setStartTime(new Timestamp(System.currentTimeMillis()));
-			IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
 			dataBase.persist(modelAction);
 			if (proceed) {
 				proceed(proceedingJoinPoint, actionName, indexName, modelAction);
@@ -152,14 +151,12 @@ public class RuleInterceptor implements IRuleInterceptor {
 			final Action modelAction) {
 		try {
 			long delay = 1;
-			final IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
 			Server server = clusterManager.getServer();
 			modelAction.setServerName(server.getAddress());
 			// We set the working flag in the action within the cluster lock when setting to true
 			clusterManager.startWorking(actionName, indexName, "");
 			executorService.schedule(new Runnable() {
 				public void run() {
-					IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
 					try {
 						modelAction.setWorking(Boolean.TRUE);
 						// dataBase.merge(modelAction);
@@ -187,6 +184,14 @@ public class RuleInterceptor implements IRuleInterceptor {
 		} catch (Exception e) {
 			LOGGER.error("Exception printing the nodes : ", e);
 		}
+	}
+
+	public void setDataBase(IDataBase dataBase) {
+		this.dataBase = dataBase;
+	}
+
+	public void setClusterManager(IClusterManager clusterManager) {
+		this.clusterManager = clusterManager;
 	}
 
 }

@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -26,17 +27,18 @@ import org.springframework.core.io.Resource;
  */
 public final class ApplicationContextManager {
 
-	private static final Logger			LOGGER;
-	private static final String			EXTERNAL_SPRING_CONFIGURATION_FILE	= "." + IConstants.SEP + IConstants.IKUBE + IConstants.SEP
-																					+ IConstants.SPRING_XML;
-	private static ApplicationContext	APPLICATION_CONTEXT;
+	private static final Logger LOGGER;
+	private static final String EXTERNAL_SPRING_CONFIGURATION_FILE = "." + IConstants.SEP + IConstants.IKUBE + IConstants.SEP
+			+ IConstants.SPRING_XML;
+	private static ApplicationContext APPLICATION_CONTEXT;
 
 	static {
 		Logging.configure();
 		LOGGER = Logger.getLogger(ApplicationContextManager.class);
 	}
 
-	private ApplicationContextManager() {}
+	private ApplicationContextManager() {
+	}
 
 	/**
 	 * System wide access to the Spring context.
@@ -49,7 +51,8 @@ public final class ApplicationContextManager {
 				// First see if there is a configuration file at the base of where the Jvm was started
 				File configFile = new File(EXTERNAL_SPRING_CONFIGURATION_FILE);
 				if (configFile.exists()) {
-					LOGGER.info("External configuration file : " + configFile + ", " + configFile.getAbsolutePath() + ", " + configFile.exists());
+					LOGGER.info("External configuration file : " + configFile + ", " + configFile.getAbsolutePath() + ", "
+							+ configFile.exists());
 					APPLICATION_CONTEXT = getApplicationContext(configFile);
 				} else {
 					APPLICATION_CONTEXT = getApplicationContext(IConstants.SPRING_CONFIGURATION_FILE);
@@ -78,9 +81,23 @@ public final class ApplicationContextManager {
 		}
 	}
 
+	public static synchronized Map<String, Object> getBeans() {
+		try {
+			Map<String, Object> beans = new HashMap<String, Object>();
+			String[] beanNames = getApplicationContext().getBeanDefinitionNames();
+			for (String beanName : beanNames) {
+				Object bean = getApplicationContext().getBean(beanName);
+				beans.put(beanName, bean);
+			}
+			return beans;
+		} finally {
+			ApplicationContextManager.class.notifyAll();
+		}
+	}
+
 	/**
-	 * Convenience method to get the bean type from the bean name. Note that this method is not type checked and there
-	 * is a distinct possibility for a class cast exception.
+	 * Convenience method to get the bean type from the bean name. Note that this method is not type checked and there is a distinct
+	 * possibility for a class cast exception.
 	 * 
 	 * @param name
 	 *            the name of the bean

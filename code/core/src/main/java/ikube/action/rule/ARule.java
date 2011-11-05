@@ -1,5 +1,6 @@
 package ikube.action.rule;
 
+import ikube.cluster.IClusterManager;
 import ikube.model.IndexContext;
 import ikube.toolkit.FileUtilities;
 
@@ -24,6 +25,8 @@ import org.apache.lucene.store.FSDirectory;
 public abstract class ARule<T> implements IRule<T> {
 
 	protected Logger logger = Logger.getLogger(this.getClass());
+
+	private IClusterManager clusterManager;
 
 	/**
 	 * This method goes through all the server index directories in the latest index directory and checks that each index is created and not
@@ -92,6 +95,14 @@ public abstract class ARule<T> implements IRule<T> {
 			return Boolean.FALSE;
 		}
 		return Boolean.TRUE;
+	}
+
+	protected IClusterManager getClusterManager() {
+		return clusterManager;
+	}
+
+	public void setClusterManager(IClusterManager clusterManager) {
+		this.clusterManager = clusterManager;
 	}
 
 }

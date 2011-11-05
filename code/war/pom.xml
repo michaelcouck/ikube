@@ -166,18 +166,18 @@
 						<phase>install</phase>
 						<configuration>
 							<target>
-								<!-- Delete the ikube deployed directories in the cluster. -->
+								<!-- Delete the Ikube deployed directories in the cluster. -->
 								<echo message="Deleting old deployment directories : " />
 								<delete includeemptydirs="true" failonerror="false">
 									<fileset dir="${cluster.directory}/">
 										<include name="**/ikube*.war" />
-										<!-- <include name="**/ikube*/**" /> -->
+										<include name="**/ikube*/**" />
 									</fileset>
 								</delete>
 								<!-- Rename the wars to ikube.war for convenience. -->
 								<echo message="Renaming Ikube war for convenience : " />
 								<move file="${target.directory}/${final.name}" tofile="${target.directory}/${ikube.war}" />
-								<!-- Deploy the ikube war into the cluster. -->
+								<!-- Deploy the Ikube war into the cluster. -->
 								<echo message="Deploying Ikube to cluster : " />
 								<copy file="${target.directory}/${ikube.war}" todir="${tomcat.1}/${webapps}" overwrite="true" failonerror="false" />
 								<copy file="${target.directory}/${ikube.war}" todir="${tomcat.2}/${webapps}" overwrite="true" failonerror="false" />

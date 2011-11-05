@@ -1,8 +1,6 @@
 package ikube.action.rule;
 
-import ikube.cluster.IClusterManager;
 import ikube.model.IndexContext;
-import ikube.toolkit.ApplicationContextManager;
 
 /**
  * This rule checks to see if there are any other servers working on this index. This will allow all the servers in the cluster to start the
@@ -12,14 +10,14 @@ import ikube.toolkit.ApplicationContextManager;
  * @since 12.02.2011
  * @version 01.00
  */
-public class AnyServersWorkingThisIndex implements IRule<IndexContext<?>> {
+public class AnyServersWorkingThisIndex extends ARule<IndexContext<?>> {
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public boolean evaluate(final IndexContext<?> indexContext) {
-		return ApplicationContextManager.getBean(IClusterManager.class).anyWorking(indexContext.getIndexName());
+		return getClusterManager().anyWorking(indexContext.getIndexName());
 	}
 
 }

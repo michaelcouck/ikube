@@ -1,8 +1,6 @@
 package ikube.action.rule;
 
-import ikube.cluster.IClusterManager;
 import ikube.model.IndexContext;
-import ikube.toolkit.ApplicationContextManager;
 
 /**
  * This rule is for one exception to be made, regardless of the outcome of the other rules. For example if you want to force an index to be
@@ -20,7 +18,7 @@ public class SingleRuleException extends ARule<IndexContext<?>> {
 	 */
 	@Override
 	public boolean evaluate(final IndexContext<?> indexContext) {
-		return ApplicationContextManager.getBean(IClusterManager.class).isException();
+		return getClusterManager().isException();
 	}
 
 }

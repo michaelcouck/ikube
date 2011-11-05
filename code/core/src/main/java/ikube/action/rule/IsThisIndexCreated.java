@@ -1,10 +1,8 @@
 package ikube.action.rule;
 
-import ikube.cluster.IClusterManager;
 import ikube.index.IndexManager;
 import ikube.model.IndexContext;
 import ikube.model.Server;
-import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
@@ -16,7 +14,7 @@ import java.io.File;
  * @since 30.03.2011
  * @version 01.00
  */
-public class IsThisIndexCreated implements IRule<IndexContext<?>> {
+public class IsThisIndexCreated extends ARule<IndexContext<?>> {
 
 	/**
 	 * @param indexContext
@@ -29,7 +27,7 @@ public class IsThisIndexCreated implements IRule<IndexContext<?>> {
 		// different from the timestamp of the latest index directory for this server
 		String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
 		File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexDirectoryPath);
-		Server server = ApplicationContextManager.getBean(IClusterManager.class).getServer();
+		Server server = getClusterManager().getServer();
 		String address = server.getAddress();
 		// Check that this server has created the index. If so then this server
 		// finished first and there are still other servers working, but we should not join them

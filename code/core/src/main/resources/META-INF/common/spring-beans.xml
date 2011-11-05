@@ -29,7 +29,7 @@
 
 	<context:annotation-config />
 	<context:component-scan base-package="ikube" />
-	<transaction:annotation-driven transaction-manager="transactionManager"/>
+	<transaction:annotation-driven transaction-manager="transactionManager" />
 	
 	<bean
 		id="ikube.IndexEngine"
@@ -50,12 +50,12 @@
 		lazy-init="false"
 		property:jpaVendorAdapter-ref="jpaAdapter"
 		property:jpaPropertyMap-ref="jpaPropertyMap"
-		property:dataSource-ref="${ikube.dataSource}">
-		<property name="loadTimeWeaver">
-			<bean class="org.springframework.instrument.classloading.InstrumentationLoadTimeWeaver" />
-		</property>
-		<property name="persistenceUnitName" value="${ikube.persistenceUnit}"></property>
-	</bean>
+		property:dataSource-ref="${ikube.dataSource}"
+		property:persistenceUnitName="${ikube.persistenceUnit}"
+		property:loadTimeWeaver-ref="loadTimeWeaver" />
+	<bean
+		id="loadTimeWeaver" 
+		class="org.springframework.instrument.classloading.InstrumentationLoadTimeWeaver" />
 	<bean 
 		id="jpaAdapter" 
 		class="org.springframework.orm.jpa.vendor.OpenJpaVendorAdapter"
@@ -77,7 +77,7 @@
 		<entry key="openjpa.Multithreaded" value="true" />
 		<entry key="openjpa.AutoDetach" value="commit" />
 		<entry key="openjpa.FlushBeforeQueries" value="true" />
-		<entry key="openjpa.RuntimeUnenhancedClasses" value="unsupported" />
+		<entry key="openjpa.RuntimeUnenhancedClasses" value="supported" />
 		<entry key="openjpa.jdbc.DBDictionary" value="${ikube.jdbc.dictionary}" />
 		
 		<!-- <entry key="openjpa.Connection2UserName" value="${ikube.jdbc.userid}" />
@@ -110,12 +110,16 @@
 		class="ikube.database.jpa.DataBaseJpa"
 		lazy-init="false" />
 	
-	<bean
+	<!-- <bean
 		id="ikube.cluster.cache.ICache"
 		class="ikube.cluster.cache.CacheInfinispan"
 		lazy-init="false"
 		init-method="initialise"
-		property:configurationFile="META-INF/infinispan.xml" />
+		property:configurationFile="META-INF/infinispan.xml" /> -->
+	<bean
+		id="ikube.cluster.cache.ICache"
+		class="ikube.cluster.cache.CacheLocal"
+		lazy-init="false" />
 	<bean
 		id="ikube.cluster.IClusterManager"
 		class="ikube.cluster.ClusterManager"
@@ -195,6 +199,9 @@
 		<bean 
 			class="ikube.listener.MonitoringListener"
 			property:clusterManager-ref="ikube.cluster.IClusterManager" />
+		<bean 
+			class="ikube.listener.JmsListener"
+			property:jmsTemplate-ref="jmsTopicTemplate" />
 	</util:list>
 	
 	<bean 
@@ -226,6 +233,11 @@
 			property:type="performance"
 			property:delay="60000"
 			property:period="60000" />
+		<bean
+			class="ikube.listener.Schedule"
+			property:type="jms"
+			property:delay="10000"
+			property:period="10000" />
 	</util:list>
 	
 	<!-- 

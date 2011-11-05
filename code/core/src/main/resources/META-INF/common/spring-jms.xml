@@ -17,12 +17,28 @@
 		http://www.springframework.org/schema/jms 
 		http://www.springframework.org/schema/jms/spring-jms-2.5.xsd">
 
+	<context:property-placeholder
+		location="classpath*:**/spring.properties" />
+	
 	<!-- Create an embedded ActiveMQ Broker -->
 	<amq:broker 
 		useJmx="false" 
 		persistent="true">
+		<amq:networkConnectors>
+			<amq:networkConnector uri="multicast://default">
+				<!-- <amq:dynamicallyIncludedDestinations>
+					<amq:topic physicalName="topic" />
+					<amq:queue physicalName="queue" />
+				</amq:dynamicallyIncludedDestinations> -->
+			</amq:networkConnector>
+		</amq:networkConnectors>
+		<amq:persistenceAdapter>
+			<amq:memoryPersistenceAdapter />
+		</amq:persistenceAdapter>
 		<amq:transportConnectors>
-			<amq:transportConnector uri="tcp://localhost:61616" />
+			<amq:transportConnector 
+				uri="tcp://localhost:${activemq.port}" 
+				discoveryUri="multicast://default?initialReconnectDelay=1000" />
 		</amq:transportConnectors>
 	</amq:broker>
 
@@ -30,7 +46,7 @@
 	<bean 
 		id="amqConnectionFactory" 
 		class="org.apache.activemq.ActiveMQConnectionFactory" 
-		p:brokerURL="tcp://localhost:61616" />
+		p:brokerURL="tcp://localhost:${activemq.port}" />
 
 	<!-- A cached connection to wrap the ActiveMQ connection -->
 	<bean 
@@ -43,14 +59,14 @@
 	<bean 
 		id="queue" 
 		class="org.apache.activemq.command.ActiveMQQueue">
-		<constructor-arg value="ikube.queue" />
+		<constructor-arg value="queue" />
 	</bean>
 	
 	<!-- A topic in ActiveMQ -->
 	<bean 
 		id="topic" 
 		class="org.apache.activemq.command.ActiveMQQueue">
-		<constructor-arg value="ikube.topic" />
+		<constructor-arg value="topic" />
 	</bean>
 
 	<!-- A JmsTemplate instance that uses the cached connection and queue -->
@@ -73,7 +89,7 @@
 		connection-factory="amqConnectionFactory" 
 		acknowledge="auto">
 		<jms:listener 
-			destination="ikube.topic" 
+			destination="topic" 
 			ref="ikube.cluster.ClusterManagerJms" 
 			method="onMessage" />
 	</jms:listener-container>
