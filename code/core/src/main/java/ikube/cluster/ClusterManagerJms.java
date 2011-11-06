@@ -4,95 +4,149 @@ import ikube.cluster.cache.ICache.IAction;
 import ikube.cluster.cache.ICache.ICriteria;
 import ikube.model.Server;
 
-import java.util.ArrayList;
+import java.io.Serializable;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
+import java.util.Map;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
+import javax.jms.ObjectMessage;
 import javax.jms.Session;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
 import org.apache.log4j.Logger;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 
-public class ClusterManagerJms implements IClusterManager, MessageListener, Lock {
+public class ClusterManagerJms implements IClusterManager, MessageListener {
+
+	public static class Lock implements Serializable {
+		public String ip;
+		public Date shout;
+		public boolean lock;
+
+		public Lock(String ip, boolean lock, Date shout) {
+			this.ip = ip;
+			this.lock = lock;
+			this.shout = shout;
+		}
+
+		public String toString() {
+			return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+		}
+	}
 
 	private static final Logger LOGGER = Logger.getLogger(ClusterManagerJms.class);
-	private static final String LOCK = "lock";
 
+	private String ip;
+	private Map<String, Lock> locks;
 	private JmsTemplate jmsTemplate;
-	private List<Lock> locks = new ArrayList<Lock>();
 
-	public ClusterManagerJms() {
+	public ClusterManagerJms() throws UnknownHostException {
+		locks = new HashMap<String, ClusterManagerJms.Lock>();
+		ip = InetAddress.getLocalHost().getHostAddress() + ":" + Thread.currentThread().hashCode();
+		getLock(ip, false, new Date());
+	}
 
+	@Override
+	public synchronized boolean lock(String name) {
+		try {
+			if (isLocked()) {
+				return Boolean.FALSE;
+			}
+			LOGGER.info(ip + " : " + locks);
+			Date shout = new Date();
+			Lock lock = getLock(ip, true, shout);
+			sendLock(lock);
+			waitForResponse();
+			if (!haveLock(shout)) {
+				lock = getLock(ip, false, new Date());
+				sendLock(lock);
+				return Boolean.FALSE;
+			}
+			LOGGER.info(ip + " : got lock : " + locks);
+			return Boolean.TRUE;
+		} finally {
+			notifyAll();
+		}
 	}
 
 	@Override
 	public void onMessage(Message message) {
-		LOGGER.error("Message : " + message);
 		try {
-			Object object = message.getObjectProperty(LOCK);
-			if (object != null && Lock.class.isAssignableFrom(object.getClass())) {
-				Lock lock = (Lock) object;
-				locks.add(lock);
-			}
-		} catch (JMSException e) {
+			ObjectMessage objectMessage = (ObjectMessage) message;
+			Lock lock = (Lock) objectMessage.getObject();
+			locks.put(lock.ip, lock);
+			LOGGER.info(ip + " : " + locks);
+		} catch (Exception e) {
 			LOGGER.error("Exception getting message : ", e);
 		}
 	}
 
 	@Override
-	public boolean lock(String name) {
+	public synchronized boolean unlock(String name) {
+		try {
+			LOGGER.info(ip + " : " + locks);
+			Lock lock = getLock(ip, false, new Date());
+			sendLock(lock);
+			return Boolean.FALSE;
+		} finally {
+			notifyAll();
+		}
+	}
+
+	private boolean isLocked() {
+		for (Lock stackLock : locks.values()) {
+			if (stackLock.lock) {
+				return Boolean.TRUE;
+			}
+		}
+		return Boolean.FALSE;
+	}
+
+	private boolean haveLock(Date shout) {
+		for (Lock stackLock : locks.values()) {
+			if (stackLock.lock && stackLock.ip.equals(ip) && stackLock.shout.getTime() > shout.getTime()) {
+				return Boolean.TRUE;
+			}
+		}
+		return Boolean.FALSE;
+	}
+
+	private void waitForResponse() {
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			LOGGER.error("", e);
+		}
+	}
+
+	protected void sendLock(final Lock lock) {
 		jmsTemplate.send(new MessageCreator() {
 			@Override
 			public Message createMessage(Session session) throws JMSException {
-				return session.createTextMessage("Lock the cluster if possible");
+				ObjectMessage objectMessage = session.createObjectMessage((Serializable) lock);
+				return objectMessage;
 			}
 		});
-		// Wait for the acknowledgement
-		return false;
 	}
 
-	@Override
-	public boolean unlock(String name) {
-		jmsTemplate.send(new MessageCreator() {
-			@Override
-			public Message createMessage(Session session) throws JMSException {
-				return session.createTextMessage("Unlock the cluster if possible");
-			}
-		});
-		return false;
-	}
-
-	@Override
-	public void lock() {
-	}
-
-	@Override
-	public void lockInterruptibly() throws InterruptedException {
-	}
-
-	@Override
-	public boolean tryLock() {
-		return false;
-	}
-
-	@Override
-	public boolean tryLock(long time, TimeUnit unit) throws InterruptedException {
-		return false;
-	}
-
-	@Override
-	public void unlock() {
-	}
-
-	@Override
-	public Condition newCondition() {
-		return null;
+	private Lock getLock(String ip, boolean mustLock, Date shout) {
+		Lock lock = locks.get(ip);
+		if (lock == null) {
+			lock = new Lock(ip, mustLock, shout);
+			locks.put(ip, lock);
+		} else {
+			lock.lock = mustLock;
+			lock.shout = shout;
+		}
+		return lock;
 	}
 
 	@Override
