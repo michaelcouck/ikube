@@ -10,8 +10,8 @@ import ikube.cluster.ClusterManagerJms.Lock;
 import ikube.toolkit.ThreadUtilities;
 
 import java.io.Serializable;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.jms.ObjectMessage;
@@ -23,8 +23,12 @@ import org.mockito.stubbing.Answer;
 
 public class ClusterManagerJmsTest extends ATest {
 
-	private int iterations = 100;
-	private int clusterManagersSize = 3;
+	private int iterations = 1000;
+	private int clusterManagersSize = 10;
+
+	private boolean wait;
+	private boolean[] locks;
+	private boolean[] unlocks;
 	private List<ClusterManagerJms> clusterManagers;
 
 	public ClusterManagerJmsTest() {
@@ -33,6 +37,8 @@ public class ClusterManagerJmsTest extends ATest {
 
 	@Before
 	public void before() throws Exception {
+		locks = new boolean[clusterManagersSize];
+		unlocks = new boolean[clusterManagersSize];
 		clusterManagers = new ArrayList<ClusterManagerJms>();
 	}
 
@@ -40,6 +46,7 @@ public class ClusterManagerJmsTest extends ATest {
 	public void integration() throws Exception {
 		List<Thread> threads = new ArrayList<Thread>();
 		for (int i = 0; i < clusterManagersSize; i++) {
+			final int index = i;
 			Thread thread = new Thread(new Runnable() {
 				public void run() {
 					ClusterManagerJms clusterManagerJms = getClusterManagerJms();
@@ -47,11 +54,14 @@ public class ClusterManagerJmsTest extends ATest {
 					for (int i = 0; i < iterations; i++) {
 						sleepRandom();
 						if (Math.random() < 0.5) {
-							clusterManagerJms.lock(null);
-							// logger.info("Lock : " + Thread.currentThread().hashCode() + " : " + clusterManagerJms.lock(null));
+							boolean lock = clusterManagerJms.lock(null);
+							locks[index] = lock;
 						} else {
-							clusterManagerJms.unlock(null);
-							// logger.info("Unlock : " + Thread.currentThread().hashCode() + " : " + clusterManagerJms.unlock(null));
+							boolean unlocked = clusterManagerJms.unlock(null);
+							unlocks[index] = unlocked;
+						}
+						if (wait) {
+							waitForRestart(1000);
 						}
 					}
 				}
@@ -63,6 +73,36 @@ public class ClusterManagerJmsTest extends ATest {
 			sleepRandom();
 			thread.start();
 		}
+		Thread verifier = new Thread(new Runnable() {
+			public void run() {
+				while (true) {
+					wait = Boolean.TRUE;
+					waitForRestart(1000);
+					// Check that there is only one that is locking the cluster
+					for (int i = 0; i < clusterManagers.size(); i++) {
+						ClusterManagerJms clusterManagerJms = clusterManagers.get(i);
+						Iterator<Lock> iterator = clusterManagerJms.locks.values().iterator();
+						int count = 0;
+						for (int j = 0; iterator.hasNext(); j++) {
+							Lock lock = iterator.next();
+							if (lock.lock) {
+								count++;
+							}
+						}
+						if (count > 1) {
+							logger.error("There can be only one cluster manager with the lock : ");
+							logger.error(clusterManagerJms.locks);
+							System.exit(1);
+						}
+					}
+					wait = Boolean.FALSE;
+					// Check that there is only one lock and one unlock in the arrays
+					waitForRestart(3000);
+				}
+			}
+		});
+		verifier.setDaemon(Boolean.TRUE);
+		verifier.start();
 		ThreadUtilities.waitForThreads(threads);
 	}
 
@@ -70,7 +110,7 @@ public class ClusterManagerJmsTest extends ATest {
 		ClusterManagerJms clusterManagerJms = null;
 		try {
 			clusterManagerJms = new ClusterManagerJms();
-		} catch (UnknownHostException e) {
+		} catch (Exception e) {
 			logger.error("", e);
 		}
 		ClusterManagerJms clusterManagerJmsSpy = spy(clusterManagerJms);
@@ -90,11 +130,17 @@ public class ClusterManagerJmsTest extends ATest {
 		return clusterManagerJmsSpy;
 	}
 
+	private void waitForRestart(long sleep) {
+		try {
+			Thread.sleep(sleep);
+		} catch (Exception e) {
+		}
+	}
+
 	private void sleepRandom() {
 		try {
 			Thread.sleep((long) (Math.random() * 1000d));
 		} catch (InterruptedException e) {
-			e.printStackTrace();
 		}
 	}
 

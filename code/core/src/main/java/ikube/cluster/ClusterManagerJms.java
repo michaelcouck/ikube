@@ -45,13 +45,14 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 	private static final Logger LOGGER = Logger.getLogger(ClusterManagerJms.class);
 
 	private String ip;
-	private Map<String, Lock> locks;
+	protected Map<String, Lock> locks;
 	private JmsTemplate jmsTemplate;
 
-	public ClusterManagerJms() throws UnknownHostException {
+	public ClusterManagerJms() throws UnknownHostException, InterruptedException {
 		locks = new HashMap<String, ClusterManagerJms.Lock>();
 		ip = InetAddress.getLocalHost().getHostAddress() + ":" + Thread.currentThread().hashCode();
 		getLock(ip, false, new Date());
+		Thread.sleep((long) (Math.random() * 10000));
 	}
 
 	@Override
@@ -83,7 +84,7 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 			ObjectMessage objectMessage = (ObjectMessage) message;
 			Lock lock = (Lock) objectMessage.getObject();
 			locks.put(lock.ip, lock);
-			LOGGER.info(ip + " : " + locks);
+			// LOGGER.info(ip + " : " + locks);
 		} catch (Exception e) {
 			LOGGER.error("Exception getting message : ", e);
 		}
@@ -111,12 +112,24 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 	}
 
 	private boolean haveLock(Date shout) {
+		boolean locked = Boolean.TRUE;
 		for (Lock stackLock : locks.values()) {
-			if (stackLock.lock && stackLock.ip.equals(ip) && stackLock.shout.getTime() > shout.getTime()) {
-				return Boolean.TRUE;
+			if (stackLock.ip.equals(ip) || !stackLock.lock) {
+				continue;
+			}
+			if (stackLock.shout.getTime() <= shout.getTime()) {
+				locked = Boolean.FALSE;
 			}
 		}
-		return Boolean.FALSE;
+		if (locked) {
+			for (Lock stackLock : locks.values()) {
+				if (stackLock.ip.equals(ip) || !stackLock.lock) {
+					continue;
+				}
+				stackLock.lock = Boolean.FALSE;
+			}
+		}
+		return locked;
 	}
 
 	private void waitForResponse() {
