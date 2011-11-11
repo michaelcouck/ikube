@@ -14,21 +14,14 @@ import mockit.MockClass;
 @MockClass(realClass = ClusterManager.class)
 public class ClusterManagerMock {
 
-	private Server	server	= mock(Server.class);
-
 	@Mock()
 	public Server getServer() {
-		return server;
+		return mock(Server.class);
 	}
 
 	@Mock()
 	public synchronized long startWorking(final String actionName, final String indexName, final String indexableName) {
 		return System.currentTimeMillis();
-	}
-
-	@Mock()
-	public <T> void set(String name, Long id, T object) {
-		// Do nothing
 	}
 
 	@Mock()

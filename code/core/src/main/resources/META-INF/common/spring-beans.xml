@@ -116,15 +116,21 @@
 		lazy-init="false"
 		init-method="initialise"
 		property:configurationFile="META-INF/infinispan.xml" /> -->
-	<bean
+	<!-- <bean
 		id="ikube.cluster.cache.ICache"
 		class="ikube.cluster.cache.CacheLocal"
 		lazy-init="false" />
 	<bean
 		id="ikube.cluster.IClusterManager"
-		class="ikube.cluster.ClusterManager"
+		class="ikube.cluster.ClusterManagerJms"
 		lazy-init="true" 
-		property:cache-ref="ikube.cluster.cache.ICache" />
+		property:cache-ref="ikube.cluster.cache.ICache" /> -->
+	
+	<!-- This is the listener and the producer of messages. -->
+	<bean 
+		id="ikube.cluster.IClusterManager"
+		class="ikube.cluster.ClusterManagerJms"
+		property:jmsTemplate-ref="jmsTopicTemplate" />
 	
 	<!-- 
 		These are just pojos that delegate to the real class that can be intercepted by Spring. 
@@ -190,7 +196,7 @@
 	<util:list id="ikube.listener.ListenerManager.listeners">
 		<ref bean="ikube.IndexEngine" />
 		<ref bean="ikube.monitoring.IMonitoringInterceptor" />
-		<bean 
+		<!-- <bean 
 			class="ikube.listener.AliveListener"
 			property:clusterManager-ref="ikube.cluster.IClusterManager" />
 		<bean 
@@ -198,7 +204,7 @@
 			property:clusterManager-ref="ikube.cluster.IClusterManager" />
 		<bean 
 			class="ikube.listener.MonitoringListener"
-			property:clusterManager-ref="ikube.cluster.IClusterManager" />
+			property:clusterManager-ref="ikube.cluster.IClusterManager" /> -->
 		<bean 
 			class="ikube.listener.JmsListener"
 			property:jmsTemplate-ref="jmsTopicTemplate" />

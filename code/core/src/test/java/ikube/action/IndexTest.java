@@ -51,7 +51,9 @@ public class IndexTest extends ATest {
 
 	@Test
 	public void execute() throws Exception {
-		boolean result = new Index().execute(indexContext);
+		Index index = new Index();
+		index.setClusterManager(clusterManager);
+		boolean result = index.execute(indexContext);
 		assertTrue(result);
 	}
 

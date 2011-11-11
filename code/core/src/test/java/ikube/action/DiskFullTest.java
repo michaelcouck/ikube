@@ -26,6 +26,7 @@ public class DiskFullTest extends ATest {
 	@Before
 	public void before() throws Exception {
 		diskFull = new DiskFull();
+		diskFull.setClusterManager(clusterManager);
 		Mockit.setUpMocks(ApplicationContextManagerMock.class, ClusterManagerMock.class);
 	}
 

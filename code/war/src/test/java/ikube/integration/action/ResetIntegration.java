@@ -1,8 +1,11 @@
 package ikube.integration.action;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.*;
+
 import static org.junit.Assert.assertTrue;
 import ikube.action.Reset;
+import ikube.cluster.IClusterManager;
 import ikube.database.IDataBase;
 import ikube.integration.AbstractIntegration;
 import ikube.model.Url;
@@ -26,6 +29,7 @@ public class ResetIntegration extends AbstractIntegration {
 	@Before
 	public void before() {
 		reset = new Reset();
+		reset.setClusterManager(mock(IClusterManager.class));
 		dataBase = ApplicationContextManager.getBean(IDataBase.class);
 		delete(dataBase, Url.class);
 	}

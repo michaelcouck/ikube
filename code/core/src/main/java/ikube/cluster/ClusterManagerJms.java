@@ -1,7 +1,6 @@
 package ikube.cluster;
 
-import ikube.cluster.cache.ICache.IAction;
-import ikube.cluster.cache.ICache.ICriteria;
+import ikube.IConstants;
 import ikube.model.Action;
 import ikube.model.Server;
 
@@ -10,10 +9,12 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -21,61 +22,127 @@ import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
 
+import org.apache.activemq.broker.Broker;
+import org.apache.activemq.network.NetworkBridge;
+import org.apache.activemq.network.NetworkConnector;
+import org.apache.activemq.xbean.XBeanBrokerService;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 
 public class ClusterManagerJms implements IClusterManager, MessageListener {
 
 	public static class Lock implements Serializable {
-		public String ip;
-		public long shout;
-		public boolean lock;
 
-		public Lock(String ip, boolean lock, long shout) {
+		protected String ip;
+		protected long shout;
+		protected boolean locked;
+
+		public Lock(String ip, long shout, boolean locked) {
 			this.ip = ip;
-			this.lock = lock;
 			this.shout = shout;
+			this.locked = locked;
 		}
 
 		public String toString() {
-			return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE).concat(new Date(shout).toString());
+			return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
 		}
 	}
 
 	private static final Logger LOGGER = Logger.getLogger(ClusterManagerJms.class);
 
-	protected String ip;
+	private static final long RESPONSE_TIME = 1000;
+	private static final long LOCK_TIME_OUT = 5000;
+	private static final long SERVER_TIME_OUT = 600000;
+	private static final long LOCK_THREAD_WAIT_TIME = 1000;
+
+	private String ip;
 	private Server server;
-	private Map<String, Server> servers;
-	protected Map<String, Lock> locks;
-	private Map<String, Action> actions;
+	private Map<String, Lock> locks;
 	private JmsTemplate jmsTemplate;
+	private Map<String, Server> servers;
+	@Autowired
+	private XBeanBrokerService xBeanBrokerService;
 
 	public ClusterManagerJms() throws UnknownHostException, InterruptedException {
+		locks = new HashMap<String, Lock>();
 		servers = new HashMap<String, Server>();
-		locks = new HashMap<String, ClusterManagerJms.Lock>();
-		actions = new HashMap<String, Action>();
 		ip = InetAddress.getLocalHost().getHostAddress() + ":" + Thread.currentThread().hashCode();
+		getLock(ip, Long.MAX_VALUE, Boolean.FALSE);
+		Thread lockTimeOutThread = new Thread(new Runnable() {
+			public void run() {
+				while (true) {
+					List<String> toRemove = new ArrayList<String>();
+					for (Entry<String, Lock> entry : locks.entrySet()) {
+						if (System.currentTimeMillis() - entry.getValue().shout > LOCK_TIME_OUT) {
+							toRemove.add(entry.getKey());
+						}
+					}
+					for (String lockKey : toRemove) {
+						LOGGER.warn("Removing lock from time out : " + locks.get(lockKey));
+						locks.remove(lockKey);
+					}
+					sleepForSomeTime(LOCK_THREAD_WAIT_TIME);
+				}
+			}
+		}, "Ikube lock time out thread");
+		lockTimeOutThread.start();
+		Thread serverTimeOutThread = new Thread(new Runnable() {
+			public void run() {
+				while (true) {
+					sleepForSomeTime(SERVER_TIME_OUT);
+					Server server = getServer();
+					// Remove all servers that are past the max age
+					List<Server> toRemove = new ArrayList<Server>();
+					List<Server> servers = getServers();
+					for (Server remoteServer : servers) {
+						if (remoteServer.getAddress().equals(server.getAddress())) {
+							continue;
+						}
+						if (System.currentTimeMillis() - remoteServer.getAge() > IConstants.MAX_AGE) {
+							LOGGER.info("Removing server : " + remoteServer + ", "
+									+ (System.currentTimeMillis() - remoteServer.getAge() > IConstants.MAX_AGE));
+							toRemove.add(remoteServer);
+						}
+					}
+					for (Server toRemoveServer : toRemove) {
+						servers.remove(toRemoveServer);
+					}
+				}
+			}
+		}, "Ikube server time out thread");
+		serverTimeOutThread.start();
 	}
 
 	@Override
 	public synchronized boolean lock(String name) {
 		try {
+			sendMessage(getServer());
 			if (isLocked()) {
+				// LOGGER.info("Is locked : " + ip + ":" + locks);
+				// Republish our selves
 				return Boolean.FALSE;
 			}
-			LOGGER.info(ip + " : " + locks);
-			Lock lock = getLock(ip, true, System.currentTimeMillis());
+			// LOGGER.info("Before : " + locks);
+			long shout = System.currentTimeMillis();
+			// Send the lock with the locked flag to try get the lock from the cluster
+			Lock lock = getLock(ip, shout, Boolean.TRUE);
 			sendMessage((Serializable) lock);
-			waitForResponse();
-			boolean haveLock = haveLock(lock.shout);
+			sleepForSomeTime(RESPONSE_TIME);
+			boolean haveLock = haveLock(shout);
 			if (haveLock) {
-				LOGGER.info(ip + " : got lock : " + locks);
+				// If we have the lock, i.e. we were first to shout then
+				// we do nothing and the other servers will reset their locks to false
+				LOGGER.info("Got lock : " + ip + ":" + lock);
 			} else {
-				LOGGER.info(ip + " : didn't get lock : " + locks);
+				// If we don't get the lock then we reset our lock to false
+				// for the whole cluster
+				getLock(ip, Long.MAX_VALUE, Boolean.FALSE);
+				sendMessage((Serializable) lock);
+				LOGGER.info("Didn't get lock : " + ip + ":" + lock);
 			}
 			return haveLock;
 		} finally {
@@ -90,15 +157,11 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 			Object object = objectMessage.getObject();
 			if (Lock.class.isAssignableFrom(object.getClass())) {
 				Lock lock = (Lock) object;
-				locks.put(lock.ip, lock);
-			} else if (Action.class.isAssignableFrom(object.getClass())) {
-				Action action = (Action) object;
-				actions.put(action.getServerName(), action);
+				this.locks.put(lock.ip, lock);
 			} else if (Server.class.isAssignableFrom(object.getClass())) {
 				Server server = (Server) object;
 				servers.put(server.getAddress(), server);
 			}
-			LOGGER.info(object);
 		} catch (Exception e) {
 			LOGGER.error("Exception getting message : ", e);
 		}
@@ -107,10 +170,12 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 	@Override
 	public synchronized boolean unlock(String name) {
 		try {
-			LOGGER.info(ip + " : " + locks);
 			Lock lock = locks.get(ip);
-			if (lock != null && lock.lock) {
+			if (lock.locked) {
+				// We only set the lock for the cluster to false if we have it
+				lock = getLock(ip, Long.MAX_VALUE, Boolean.FALSE);
 				sendMessage((Serializable) lock);
+				LOGGER.info("Unlock : " + ip + ":" + locks);
 				return Boolean.TRUE;
 			}
 			return Boolean.FALSE;
@@ -121,7 +186,7 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 
 	private boolean isLocked() {
 		for (Lock stackLock : locks.values()) {
-			if (stackLock.lock) {
+			if (stackLock.locked) {
 				return Boolean.TRUE;
 			}
 		}
@@ -129,29 +194,25 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 	}
 
 	protected boolean haveLock(long shout) {
-		Lock lock = locks.get(ip);
-		if (!lock.lock) {
-			return Boolean.FALSE;
-		}
-		for (Lock stackLock : locks.values()) {
-			if (!stackLock.lock) {
+		for (Entry<String, Lock> entry : locks.entrySet()) {
+			if (!entry.getValue().locked) {
 				continue;
 			}
-			if (stackLock.ip.equals(ip)) {
+			if (entry.getKey().equals(ip)) {
 				continue;
 			}
-			if (stackLock.shout <= lock.shout) {
+			if (entry.getValue().shout <= shout) {
 				return Boolean.FALSE;
 			}
 		}
 		return Boolean.TRUE;
 	}
 
-	private void waitForResponse() {
+	private void sleepForSomeTime(long sleep) {
 		try {
-			Thread.sleep(1500);
+			Thread.sleep(sleep);
 		} catch (InterruptedException e) {
-			LOGGER.error("", e);
+			LOGGER.error("Exception waiting for the cluster : ", e);
 		}
 	}
 
@@ -162,23 +223,38 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 				return session.createObjectMessage(serializable);
 			}
 		});
+		try {
+			Broker broker = xBeanBrokerService.getBroker();
+			List<NetworkConnector> networkConnectors = broker.getBrokerService().getNetworkConnectors();
+			for (NetworkConnector networkConnector : networkConnectors) {
+				Collection<NetworkBridge> networkBridges = networkConnector.activeBridges();
+				networkConnector.getDynamicallyIncludedDestinations();
+				for (NetworkBridge networkBridge : networkBridges) {
+					String remoteAddress = networkBridge.getRemoteAddress();
+					LOGGER.error("Remote address : " + remoteAddress);
+				}
+			}
+		} catch (Exception e) {
+			LOGGER.error("Exception accessing the cluster network : ", e);
+		}
 	}
 
-	private Lock getLock(String ip, boolean mustLock, long shout) {
+	protected Lock getLock(String ip, long shout, boolean locked) {
 		Lock lock = locks.get(ip);
 		if (lock == null) {
-			lock = new Lock(ip, mustLock, shout);
+			lock = new Lock(ip, shout, locked);
 			locks.put(ip, lock);
 		}
-		lock.lock = mustLock;
 		lock.shout = shout;
+		lock.locked = locked;
 		return lock;
 	}
 
 	@Override
 	public boolean anyWorking() {
-		for (Lock stackLock : locks.values()) {
-			if (stackLock.lock) {
+		for (Server server : servers.values()) {
+			Action action = server.getAction();
+			if (action != null && action.getWorking()) {
 				return Boolean.TRUE;
 			}
 		}
@@ -187,8 +263,9 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 
 	@Override
 	public boolean anyWorking(String indexName) {
-		for (Action action : actions.values()) {
-			if (indexName.equals(action.getIndexName())) {
+		for (Server server : servers.values()) {
+			Action action = server.getAction();
+			if (action != null && action.getWorking() && indexName.equals(action.getIndexName())) {
 				return Boolean.TRUE;
 			}
 		}
@@ -198,7 +275,10 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 	@Override
 	public long startWorking(String actionName, String indexName, String indexableName) {
 		Action action = getAction(indexName, actionName, indexableName, Boolean.TRUE);
-		sendMessage((Serializable) action);
+		Server server = getServer();
+		server.setAction(action);
+		servers.put(server.getAddress(), server);
+		sendMessage((Serializable) server);
 		return 0;
 	}
 
@@ -219,15 +299,23 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 	@Override
 	public void stopWorking(String actionName, String indexName, String indexableName) {
 		Action action = getAction(indexName, actionName, indexableName, Boolean.FALSE);
-		sendMessage((Serializable) action);
+		Server server = getServer();
+		server.setAction(action);
+		sendMessage((Serializable) server);
 	}
 
 	@Override
 	public long getIdNumber(String indexableName, String indexName, long batchSize, long minId) {
-		for (Action action : actions.values()) {
-			if (action.getWorking() && action.getIndexableName().equals(indexableName) && action.getIndexName().equals(indexName)) {
+		for (Server server : servers.values()) {
+			Action action = server.getAction();
+			if (action != null && action.getWorking() && indexableName.equals(action.getIndexableName())
+					&& indexName.equals(action.getIndexName())) {
 				long idNumber = action.getIdNumber();
+				if (idNumber < minId) {
+					idNumber = minId;
+				}
 				action.setIdNumber(idNumber + batchSize);
+				sendMessage(server);
 				return idNumber;
 			}
 		}
@@ -237,9 +325,7 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 	@Override
 	public List<Server> getServers() {
 		List<Server> servers = new ArrayList<Server>();
-		for (Server server : this.servers.values()) {
-			servers.add(server);
-		}
+		Collections.addAll(servers, this.servers.values().toArray(new Server[this.servers.values().size()]));
 		return servers;
 	}
 
@@ -247,39 +333,12 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 	public Server getServer() {
 		if (server == null) {
 			server = new Server();
-			server.setAddress(ip);
-			server.setAge(System.currentTimeMillis());
-			server.setId(System.nanoTime());
-			server.setIp(ip);
 		}
+		server.setAddress(ip);
+		server.setAge(System.currentTimeMillis());
+		server.setId(System.nanoTime());
+		server.setIp(ip);
 		return server;
-	}
-
-	@Override
-	public <T> T get(String name, Long id) {
-		return null;
-	}
-
-	@Override
-	public <T> List<T> get(Class<T> klass, String name, ICriteria<T> criteria, IAction<T> action, int size) {
-		return null;
-	}
-
-	@Override
-	public <T> void set(String name, Long id, T object) {
-	}
-
-	@Override
-	public <T> void clear(String name) {
-	}
-
-	@Override
-	public <T> int size(String klass) {
-		return 0;
-	}
-
-	@Override
-	public <T> void remove(String name, Long id) {
 	}
 
 	@Override

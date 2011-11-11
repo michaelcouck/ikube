@@ -10,6 +10,7 @@ import ikube.model.Server;
  * @since 08.10.11
  * @version 01.00
  */
+@Deprecated
 public class AliveListener implements IListener {
 
 	private IClusterManager	clusterManager;
@@ -22,7 +23,7 @@ public class AliveListener implements IListener {
 		// Set our own server age
 		Server server = clusterManager.getServer();
 		server.setAge(System.currentTimeMillis());
-		clusterManager.set(Server.class.getName(), server.getId(), server);
+		// clusterManager.set(Server.class.getName(), server.getId(), server);
 	}
 
 	public void setClusterManager(IClusterManager clusterManager) {

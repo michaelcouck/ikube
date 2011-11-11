@@ -24,7 +24,7 @@ public class MonitoringListener implements IListener {
 			// TODO Get the searching executions from the database, and calculate
 			// TODO Get the indexing executions from the database, and calculate
 			// Publish the server with the new data
-			clusterManager.set(Server.class.getName(), server.getId(), server);
+			// clusterManager.set(Server.class.getName(), server.getId(), server);
 		}
 	}
 

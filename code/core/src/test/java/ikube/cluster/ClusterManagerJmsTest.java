@@ -4,13 +4,14 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import ikube.ATest;
-import ikube.cluster.ClusterManagerJms.Lock;
 import ikube.toolkit.ThreadUtilities;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.jms.ObjectMessage;
 
@@ -18,16 +19,17 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
+@Ignore
 public class ClusterManagerJmsTest extends ATest {
 
-	private int iterations = 100000;
-	private int clusterManagersSize = 5;
 	private long maxWait = 100;
+	private int iterations = 1000000;
+	private int clusterManagersSize = 25;
 
 	private boolean wait;
-	private boolean[] locks;
-	private boolean[] unlocks;
 	private List<ClusterManagerJms> clusterManagers;
+	private Map<ClusterManagerJms, Boolean> locks;
+	private Map<ClusterManagerJms, Boolean> unlocks;
 
 	public ClusterManagerJmsTest() {
 		super(ClusterManagerJmsTest.class);
@@ -35,86 +37,76 @@ public class ClusterManagerJmsTest extends ATest {
 
 	@Before
 	public void before() throws Exception {
-		locks = new boolean[clusterManagersSize];
-		unlocks = new boolean[clusterManagersSize];
 		clusterManagers = new ArrayList<ClusterManagerJms>();
+		locks = new HashMap<ClusterManagerJms, Boolean>();
+		unlocks = new HashMap<ClusterManagerJms, Boolean>();
 	}
 
 	@Test
-	@Ignore
-	public void haveLock() throws Exception {
-		ClusterManagerJms clusterManagerJms = getClusterManagerJms();
-
-		boolean gotLock = clusterManagerJms.lock(null);
-		assertTrue(gotLock);
-
-		Lock lock = clusterManagerJms.locks.get(clusterManagerJms.ip);
-		boolean haveLock = clusterManagerJms.haveLock(lock.shout);
-		assertTrue("We must have the lock : ", haveLock);
-
-		boolean unlocked = clusterManagerJms.unlock(null);
-		assertTrue(unlocked);
-	}
-
-	@Test
-	public void integration() throws Exception {
+	public void clusterSynchronisation() throws Exception {
+		startVerifier();
 		List<Thread> threads = new ArrayList<Thread>();
 		for (int i = 0; i < clusterManagersSize; i++) {
-			final int index = i;
 			Thread thread = new Thread(new Runnable() {
 				public void run() {
 					ClusterManagerJms clusterManagerJms = getClusterManagerJms();
 					sleepRandom(maxWait);
 					for (int i = 0; i < iterations; i++) {
 						sleepRandom(maxWait);
-						if (Math.random() < (maxWait / 2)) {
-							locks[index] = clusterManagerJms.lock(null);
-						} else {
-							unlocks[index] = clusterManagerJms.unlock(null);
-						}
-						if (wait) {
-							waitForRestart(maxWait * 2);
+						try {
+							if (Math.random() < 0.5) {
+								locks.put(clusterManagerJms, clusterManagerJms.lock(null));
+							} else {
+								unlocks.put(clusterManagerJms, clusterManagerJms.unlock(null));
+							}
+							if (wait) {
+								sleepForAWhile(maxWait * 2);
+							}
+						} catch (Exception e) {
+							logger.error("Exception locking or unlocking : ", e);
 						}
 					}
 				}
 			}, "Cluster manager thread : " + hashCode());
 			threads.add(thread);
-			waitForRestart(maxWait);
+			// sleepForAWhile(1000);
 		}
 		for (Thread thread : threads) {
+			sleepForAWhile(1000);
 			thread.start();
 		}
+		ThreadUtilities.waitForThreads(threads);
+	}
+
+	private void startVerifier() {
 		Thread verifier = new Thread(new Runnable() {
 			public void run() {
 				while (true) {
 					wait = Boolean.TRUE;
-					waitForRestart(maxWait * 3);
-					// Check that there is only one that is locking the cluster
-					for (int i = 0; i < clusterManagers.size(); i++) {
-						ClusterManagerJms clusterManagerJms = clusterManagers.get(i);
-						Iterator<Lock> iterator = clusterManagerJms.locks.values().iterator();
-						int count = 0;
-						for (int j = 0; iterator.hasNext(); j++) {
-							Lock lock = iterator.next();
-							if (lock.lock) {
-								count++;
-							}
-						}
-						if (count > 1) {
-							logger.error("There can be only one cluster manager with the lock : " + clusterManagerJms.locks.size());
-							logger.error(clusterManagerJms.locks);
-							System.exit(1);
-						}
-					}
+					sleepForAWhile(maxWait * 3);
+					logger.info("Locks : " + locks.values().contains(Boolean.TRUE) + ":" + locks.values());
 					wait = Boolean.FALSE;
 					// Check that there is only one lock and one unlock in the arrays
-					waitForRestart(maxWait * 3);
+					if (moreThanOneLock(locks.values())/* || moreThanOneLock(unlocks.values()) */) {
+						logger.error("Only one server can have the lock or unlock : " + locks);
+						System.exit(0);
+					}
+					sleepForAWhile(maxWait * 3);
 				}
 			}
 		});
 		verifier.setDaemon(Boolean.TRUE);
 		verifier.start();
-		ThreadUtilities.waitForThreads(threads);
+	}
+
+	private boolean moreThanOneLock(Collection<Boolean> collection) {
+		int count = 0;
+		for (Boolean bool : collection) {
+			if (bool) {
+				count++;
+			}
+		}
+		return count > 1;
 	}
 
 	private ClusterManagerJms getClusterManagerJms() {
@@ -136,40 +128,30 @@ public class ClusterManagerJmsTest extends ATest {
 		} catch (Exception e) {
 			logger.error("", e);
 		}
-		// ClusterManagerJms clusterManagerJmsSpy = spy(clusterManagerJms);
-		// doAnswer(new Answer<Object>() {
-		// @Override
-		// public Object answer(InvocationOnMock invocation) throws Throwable {
-		// Object[] arguments = invocation.getArguments();
-		// ObjectMessage objectMessage = mock(ObjectMessage.class);
-		// when(objectMessage.getObject()).thenReturn((Serializable) arguments[0]);
-		// try {
-		// for (ClusterManagerJms clusterManagerJms : clusterManagers) {
-		// clusterManagerJms.onMessage(objectMessage);
-		// }
-		// } catch (Exception e) {
-		// logger.error("Exception iterating over the cluster managers : ", e);
-		// }
-		// return null;
-		// }
-		// }).when(clusterManagerJmsSpy).sendMessage(any(Lock.class));
-
 		clusterManagers.add(clusterManagerJms);
 		return clusterManagerJms;
 	}
 
-	private void waitForRestart(long sleep) {
+	private void sleepRandom(double max) {
+		sleepForAWhile((long) (Math.random() * max));
+	}
+
+	private void sleepForAWhile(long sleep) {
 		try {
 			Thread.sleep(sleep);
 		} catch (Exception e) {
+			logger.error("Exception sleeping : ", e);
 		}
 	}
 
-	private void sleepRandom(double max) {
-		try {
-			Thread.sleep((long) (Math.random() * max));
-		} catch (InterruptedException e) {
-		}
+	@Test
+	@Ignore
+	public void haveLock() throws Exception {
+		ClusterManagerJms clusterManagerJms = getClusterManagerJms();
+		boolean gotLock = clusterManagerJms.lock(null);
+		assertTrue(gotLock);
+		boolean unlocked = clusterManagerJms.unlock(null);
+		assertTrue(unlocked);
 	}
 
 }

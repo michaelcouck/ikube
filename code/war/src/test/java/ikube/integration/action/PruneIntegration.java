@@ -1,9 +1,13 @@
 package ikube.integration.action;
 
+import static org.mockito.Mockito.*;
+
 import static org.junit.Assert.assertEquals;
+
 import static org.junit.Assert.assertTrue;
 import ikube.IConstants;
 import ikube.action.Prune;
+import ikube.cluster.IClusterManager;
 import ikube.database.IDataBase;
 import ikube.integration.AbstractIntegration;
 import ikube.model.Action;
@@ -28,6 +32,7 @@ public class PruneIntegration extends AbstractIntegration {
 	@Before
 	public void before() {
 		prune = new Prune();
+		prune.setClusterManager(mock(IClusterManager.class));
 		dataBase = ApplicationContextManager.getBean(IDataBase.class);
 		delete(dataBase, Action.class);
 	}

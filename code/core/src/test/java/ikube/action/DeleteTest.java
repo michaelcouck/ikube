@@ -41,6 +41,7 @@ public class DeleteTest extends ATest {
 		when(indexContext.getIndexDirectoryPath()).thenReturn("./" + this.getClass().getSimpleName());
 		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
 		delete = new Delete();
+		delete.setClusterManager(clusterManager);
 	}
 
 	@After

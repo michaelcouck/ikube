@@ -2,8 +2,6 @@ package ikube.cluster;
 
 import ikube.IConstants;
 import ikube.cluster.cache.ICache;
-import ikube.cluster.cache.ICache.IAction;
-import ikube.cluster.cache.ICache.ICriteria;
 import ikube.model.Action;
 import ikube.model.Server;
 import ikube.service.IMonitorWebService;
@@ -15,7 +13,9 @@ import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
 import java.sql.Timestamp;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
@@ -30,27 +30,26 @@ import org.apache.log4j.Logger;
 public class ClusterManager implements IClusterManager, IConstants {
 
 	/** The logger, doh. */
-	protected static final Logger	LOGGER	= Logger.getLogger(ClusterManager.class);
+	protected static final Logger LOGGER = Logger.getLogger(ClusterManager.class);
 
 	/** The ip of this server. */
-	private transient String		ip;
+	private transient String ip;
 	/**
-	 * The address of this server, this must be unique in the cluster. Typically this is the ip address added to the
-	 * system time. The chance of a hash clash with any other server is in the billions, we will disregard this
-	 * possibility on prudent grounds.
+	 * The address of this server, this must be unique in the cluster. Typically this is the ip address added to the system time. The chance
+	 * of a hash clash with any other server is in the billions, we will disregard this possibility on prudent grounds.
 	 */
-	private transient String		address;
-	protected transient ICache		cache;
+	private transient String address;
+	protected transient ICache cache;
 	/** This flag is set cluster wide to make exception for the rules. */
-	private transient boolean		exception;
+	private transient boolean exception;
+
+	private Map<String, Server> servers;
 
 	/**
-	 * In the constructor we initialise the logger but most importantly the address of this server. Please see the
-	 * comments.
+	 * In the constructor we initialise the logger but most importantly the address of this server. Please see the comments.
 	 * 
 	 * @throws UnknownHostException
-	 *             this can only be the InetAddress exception, which can never happen because we are looking for the
-	 *             localhost
+	 *             this can only be the InetAddress exception, which can never happen because we are looking for the localhost
 	 */
 	public ClusterManager() throws UnknownHostException {
 		// We give each server a unique name because there can be several servers
@@ -60,6 +59,7 @@ public class ClusterManager implements IClusterManager, IConstants {
 		// same ip address
 		this.ip = InetAddress.getLocalHost().getHostAddress();
 		this.address = ip + "." + System.nanoTime();
+		this.servers = new HashMap<String, Server>();
 	}
 
 	public void setCache(ICache cache) {
@@ -132,7 +132,8 @@ public class ClusterManager implements IClusterManager, IConstants {
 		// Set the next row number to the current + the batch size
 		action.setIdNumber(nextIdNumber);
 		// Publish the server to the cluster
-		set(Server.class.getName(), server.getId(), server);
+		// set(Server.class.getName(), server.getId(), server);
+		servers.put(server.getAddress(), server);
 		return idNumber;
 	}
 
@@ -157,10 +158,10 @@ public class ClusterManager implements IClusterManager, IConstants {
 			server.setId(HashUtilities.hash(address));
 			server.setAge(System.currentTimeMillis());
 			// ISearcherWebService.PUBLISHED_PATH
-			int monitoringPort = getServicePort(IMonitorWebService.class, IMonitorWebService.PUBLISHED_PORT, IMonitorWebService.PUBLISHED_PATH,
-					IMonitorWebService.NAMESPACE, IMonitorWebService.SERVICE, 0);
-			int searcherPort = getServicePort(ISearcherWebService.class, ISearcherWebService.PUBLISHED_PORT, ISearcherWebService.PUBLISHED_PATH,
-					ISearcherWebService.NAMESPACE, ISearcherWebService.SERVICE, 0);
+			int monitoringPort = getServicePort(IMonitorWebService.class, IMonitorWebService.PUBLISHED_PORT,
+					IMonitorWebService.PUBLISHED_PATH, IMonitorWebService.NAMESPACE, IMonitorWebService.SERVICE, 0);
+			int searcherPort = getServicePort(ISearcherWebService.class, ISearcherWebService.PUBLISHED_PORT,
+					ISearcherWebService.PUBLISHED_PATH, ISearcherWebService.NAMESPACE, ISearcherWebService.SERVICE, 0);
 			server.setMonitoringWebServicePort(monitoringPort);
 			server.setSearchWebServicePort(searcherPort);
 
@@ -212,7 +213,8 @@ public class ClusterManager implements IClusterManager, IConstants {
 			action.setServerName(server.getAddress());
 			// Publish the fact that this server is starting to work on an action
 			server.setAction(action);
-			set(Server.class.getName(), server.getId(), server);
+			servers.put(server.getAddress(), server);
+			// set(Server.class.getName(), server.getId(), server);
 			LOGGER.debug("Published action : " + getServer().getAction());
 			return startTime;
 		} finally {
@@ -234,7 +236,8 @@ public class ClusterManager implements IClusterManager, IConstants {
 				action.setDuration(action.getEndTime().getTime() - action.getStartTime().getTime());
 			}
 			server.setAction(null);
-			set(Server.class.getName(), server.getId(), server);
+			servers.put(server.getAddress(), server);
+			// set(Server.class.getName(), server.getId(), server);
 		} catch (Exception e) {
 			LOGGER.error("Exception stopping working : " + actionName + ", " + indexName + ", " + indexableName, e);
 			new Thread(new Runnable() {
@@ -257,50 +260,14 @@ public class ClusterManager implements IClusterManager, IConstants {
 				action.setDuration(action.getEndTime().getTime() - action.getStartTime().getTime());
 			}
 			server.setAction(null);
-			set(Server.class.getName(), server.getId(), server);
+			servers.put(server.getAddress(), server);
+			// set(Server.class.getName(), server.getId(), server);
 		} catch (Exception e) {
 			LOGGER.error("Exception re-trying to stop working : " + actionName + ", " + indexName + ", " + indexableName, e);
 			if (retryCount < MAX_RETRY_COUNTER) {
 				stopWorkingRetry(actionName, indexName, indexableName, ++retryCount);
 			}
 		}
-	}
-
-	@Override
-	public <T> void set(String name, Long id, T object) {
-		cache.set(name, id, object);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public <T> int size(String name) {
-		return this.cache.size(name);
-	}
-
-	@Override
-	public <T> void clear(String name) {
-		this.cache.clear(name);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public <T> void remove(String name, Long id) {
-		this.cache.remove(name, id);
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	public <T> T get(String name, Long id) {
-		return (T) this.cache.get(name, id);
-	}
-
-	@Override
-	public <T> List<T> get(final Class<T> klass, final String name, final ICriteria<T> criteria, final IAction<T> action, final int size) {
-		return cache.get(name, criteria, action, size);
 	}
 
 	@Override

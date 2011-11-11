@@ -60,6 +60,7 @@ public class CleanTest extends ATest {
 
 		// Running the clean the locked index directory should be un-locked
 		Clean<IndexContext<?>, Boolean> clean = new Clean<IndexContext<?>, Boolean>();
+		clean.setClusterManager(clusterManager);
 		clean.execute(indexContext);
 
 		Directory directory = FSDirectory.open(serverIndexDirectory);

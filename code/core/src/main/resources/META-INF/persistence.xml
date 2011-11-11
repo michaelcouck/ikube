@@ -29,6 +29,21 @@
 		<class>ikube.model.geospatial.GeoName</class>
 		<class>ikube.model.geospatial.AlternateName</class>
 		
+		<class>ikube.model.faq.Faq</class>
+		<class>ikube.model.faq.Attachment</class>
+		
+		<class>ikube.model.medical.Address</class>
+		<class>ikube.model.medical.Administration</class>
+		<class>ikube.model.medical.Condition</class>
+		<class>ikube.model.medical.Doctor</class>
+		<class>ikube.model.medical.Hospital</class>
+		<class>ikube.model.medical.Inpatient</class>
+		<class>ikube.model.medical.Medication</class>
+		<class>ikube.model.medical.Patient</class>
+		<class>ikube.model.medical.Person</class>
+		<class>ikube.model.medical.Record</class>
+		<class>ikube.model.medical.Treatment</class>
+		
 		<exclude-unlisted-classes>false</exclude-unlisted-classes>
 		
 		<!--
@@ -71,6 +86,21 @@
 		<class>ikube.model.geospatial.GeoName</class>
 		<class>ikube.model.geospatial.AlternateName</class>
 		
+		<class>ikube.model.faq.Faq</class>
+		<class>ikube.model.faq.Attachment</class>
+		
+		<class>ikube.model.medical.Address</class>
+		<class>ikube.model.medical.Administration</class>
+		<class>ikube.model.medical.Condition</class>
+		<class>ikube.model.medical.Doctor</class>
+		<class>ikube.model.medical.Hospital</class>
+		<class>ikube.model.medical.Inpatient</class>
+		<class>ikube.model.medical.Medication</class>
+		<class>ikube.model.medical.Patient</class>
+		<class>ikube.model.medical.Person</class>
+		<class>ikube.model.medical.Record</class>
+		<class>ikube.model.medical.Treatment</class>
+		
 		<exclude-unlisted-classes>false</exclude-unlisted-classes>
 		
 		<properties>
@@ -106,6 +136,21 @@
 		<class>ikube.model.geospatial.GeoName</class>
 		<class>ikube.model.geospatial.AlternateName</class>
 		
+		<class>ikube.model.faq.Faq</class>
+		<class>ikube.model.faq.Attachment</class>
+		
+		<class>ikube.model.medical.Address</class>
+		<class>ikube.model.medical.Administration</class>
+		<class>ikube.model.medical.Condition</class>
+		<class>ikube.model.medical.Doctor</class>
+		<class>ikube.model.medical.Hospital</class>
+		<class>ikube.model.medical.Inpatient</class>
+		<class>ikube.model.medical.Medication</class>
+		<class>ikube.model.medical.Patient</class>
+		<class>ikube.model.medical.Person</class>
+		<class>ikube.model.medical.Record</class>
+		<class>ikube.model.medical.Treatment</class>
+		
 		<exclude-unlisted-classes>false</exclude-unlisted-classes>
 		
 		<properties>
@@ -139,6 +184,21 @@
 		
 		<class>ikube.model.geospatial.GeoName</class>
 		<class>ikube.model.geospatial.AlternateName</class>
+		
+		<class>ikube.model.faq.Faq</class>
+		<class>ikube.model.faq.Attachment</class>
+		
+		<class>ikube.model.medical.Address</class>
+		<class>ikube.model.medical.Administration</class>
+		<class>ikube.model.medical.Condition</class>
+		<class>ikube.model.medical.Doctor</class>
+		<class>ikube.model.medical.Hospital</class>
+		<class>ikube.model.medical.Inpatient</class>
+		<class>ikube.model.medical.Medication</class>
+		<class>ikube.model.medical.Patient</class>
+		<class>ikube.model.medical.Person</class>
+		<class>ikube.model.medical.Record</class>
+		<class>ikube.model.medical.Treatment</class>
 		
 		<exclude-unlisted-classes>false</exclude-unlisted-classes>
 		

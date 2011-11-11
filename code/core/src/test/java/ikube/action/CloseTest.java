@@ -30,6 +30,7 @@ public class CloseTest extends ATest {
 	public void before() {
 		Mockit.setUpMocks(ApplicationContextManagerMock.class, ClusterManagerMock.class);
 		close = new Close();
+		close.setClusterManager(clusterManager);
 	}
 	
 	@After

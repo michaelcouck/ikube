@@ -45,6 +45,7 @@ public class ValidatorTest extends ATest {
 
 	@Before
 	public void before() {
+		Mockit.setUpMocks(ApplicationContextManagerMock.class, ClusterManagerMock.class);
 		validator = spy(new Validator());
 		doAnswer(new Answer<Object>() {
 			@Override
@@ -53,9 +54,9 @@ public class ValidatorTest extends ATest {
 				return null;
 			}
 		}).when(validator).sendNotification(anyString(), anyString());
+		validator.setClusterManager(clusterManager);
 		when(indexContext.getIndexDirectoryPath()).thenReturn("./" + this.getClass().getSimpleName());
 		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
-		Mockit.setUpMocks(ApplicationContextManagerMock.class, ClusterManagerMock.class);
 	}
 
 	@After
@@ -82,8 +83,10 @@ public class ValidatorTest extends ATest {
 		// There should be a mail sent because there is no backup for this index
 		invocations++;
 		verify(validator, Mockito.times(invocations)).sendNotification(anyString(), anyString());
-		
-		new Backup().execute(indexContext);
+
+		Backup backup = new Backup();
+		backup.setClusterManager(clusterManager);
+		backup.execute(indexContext);
 		result = validator.execute(indexContext);
 		assertTrue("There is an index created : ", result);
 

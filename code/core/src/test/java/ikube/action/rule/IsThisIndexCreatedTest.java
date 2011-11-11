@@ -32,6 +32,7 @@ public class IsThisIndexCreatedTest extends ATest {
 	@Before
 	public void before() {
 		isThisIndexCreated = new IsThisIndexCreated();
+		isThisIndexCreated.setClusterManager(clusterManager);
 		when(indexContext.getIndexDirectoryPath()).thenReturn("./" + this.getClass().getSimpleName());
 		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
 		Mockit.setUpMocks(ApplicationContextManagerMock.class, ClusterManagerMock.class);

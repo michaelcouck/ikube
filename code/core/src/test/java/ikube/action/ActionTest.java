@@ -28,6 +28,7 @@ public class ActionTest extends ATest {
 				return null;
 			}
 		};
+		action.setClusterManager(clusterManager);
 	}
 
 	@After

@@ -38,6 +38,7 @@ public class RestoreTest extends ATest {
 	@Before
 	public void before() throws Exception {
 		restore = new Restore();
+		restore.setClusterManager(clusterManager);
 		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
 		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPathBackup()), 1);
 	}

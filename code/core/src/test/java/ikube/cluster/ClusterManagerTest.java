@@ -3,23 +3,18 @@ package ikube.cluster;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 import ikube.ATest;
 import ikube.action.Index;
-import ikube.action.Open;
 import ikube.cluster.cache.ICache;
 import ikube.mock.ApplicationContextManagerMock;
-import ikube.model.Action;
 import ikube.model.Server;
 import ikube.toolkit.HashUtilities;
-import ikube.toolkit.ThreadUtilities;
 
 import java.net.InetAddress;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -104,52 +99,52 @@ public class ClusterManagerTest extends ATest {
 		assertEquals(startIdNumber + batchSize, idNumber);
 	}
 
-	@Test
-	public void setWorking() {
-		// First clear the map of servers
-		Server localServer = clusterManager.getServer();
-		localServer.setAction(null);
-		clusterManager.set(Server.class.getName(), localServer.getId(), localServer);
-		remoteServer.setAction(null);
-		clusterManager.set(Server.class.getName(), remoteServer.getId(), remoteServer);
-
-		// Verify that there are no actions in any server in the map
-		List<Server> servers = clusterManager.getServers();
-		for (Server server : servers) {
-			assertNull("All the actions should be null : ", server.getAction());
-		}
-
-		// The local server gets set every time we call the set working
-		// method and the time gets set at that time too
-		final long expectedStartTime = System.currentTimeMillis();
-		localServer.setAction(new Action(0, Index.class.getSimpleName(), indexableName, indexName, new Timestamp(expectedStartTime), Boolean.TRUE));
-		clusterManager.set(Server.class.getName(), localServer.getId(), localServer);
-		// Verify that the remote server has the action and the time we want
-		Server server = clusterManager.get(Server.class.getName(), localServer.getId());
-		assertNotNull(server);
-		assertNotNull("The local server has the action set : ", server.getAction());
-		assertEquals(expectedStartTime, server.getAction().getStartTime().getTime());
-
-		List<Thread> threads = new ArrayList<Thread>();
-		int threadSize = 3;
-		final int iterations = 100;
-		for (int i = 0; i < threadSize; i++) {
-			Thread thread = new Thread(new Runnable() {
-				public void run() {
-					for (int i = 0; i < iterations; i++) {
-						long actualStartTime = clusterManager.startWorking(Index.class.getSimpleName(), indexName, indexableName);
-						assertTrue("The start time should be incremented each iteration : ", expectedStartTime < actualStartTime);
-						actualStartTime = clusterManager.startWorking(Open.class.getSimpleName(), indexName, indexableName);
-						clusterManager.stopWorking(Index.class.getSimpleName(), indexName, indexableName);
-						clusterManager.stopWorking(Open.class.getSimpleName(), indexName, indexableName);
-					}
-				}
-			}, "ClusterManagerTestThread : " + i);
-			threads.add(thread);
-			thread.start();
-		}
-		ThreadUtilities.waitForThreads(threads);
-	}
+//	@Test
+//	public void setWorking() {
+//		// First clear the map of servers
+//		Server localServer = clusterManager.getServer();
+//		localServer.setAction(null);
+//		clusterManager.set(Server.class.getName(), localServer.getId(), localServer);
+//		remoteServer.setAction(null);
+//		clusterManager.set(Server.class.getName(), remoteServer.getId(), remoteServer);
+//
+//		// Verify that there are no actions in any server in the map
+//		List<Server> servers = clusterManager.getServers();
+//		for (Server server : servers) {
+//			assertNull("All the actions should be null : ", server.getAction());
+//		}
+//
+//		// The local server gets set every time we call the set working
+//		// method and the time gets set at that time too
+//		final long expectedStartTime = System.currentTimeMillis();
+//		localServer.setAction(new Action(0, Index.class.getSimpleName(), indexableName, indexName, new Timestamp(expectedStartTime), Boolean.TRUE));
+//		clusterManager.set(Server.class.getName(), localServer.getId(), localServer);
+//		// Verify that the remote server has the action and the time we want
+//		Server server = clusterManager.get(Server.class.getName(), localServer.getId());
+//		assertNotNull(server);
+//		assertNotNull("The local server has the action set : ", server.getAction());
+//		assertEquals(expectedStartTime, server.getAction().getStartTime().getTime());
+//
+//		List<Thread> threads = new ArrayList<Thread>();
+//		int threadSize = 3;
+//		final int iterations = 100;
+//		for (int i = 0; i < threadSize; i++) {
+//			Thread thread = new Thread(new Runnable() {
+//				public void run() {
+//					for (int i = 0; i < iterations; i++) {
+//						long actualStartTime = clusterManager.startWorking(Index.class.getSimpleName(), indexName, indexableName);
+//						assertTrue("The start time should be incremented each iteration : ", expectedStartTime < actualStartTime);
+//						actualStartTime = clusterManager.startWorking(Open.class.getSimpleName(), indexName, indexableName);
+//						clusterManager.stopWorking(Index.class.getSimpleName(), indexName, indexableName);
+//						clusterManager.stopWorking(Open.class.getSimpleName(), indexName, indexableName);
+//					}
+//				}
+//			}, "ClusterManagerTestThread : " + i);
+//			threads.add(thread);
+//			thread.start();
+//		}
+//		ThreadUtilities.waitForThreads(threads);
+//	}
 
 	@Test
 	public void anyWorking() {

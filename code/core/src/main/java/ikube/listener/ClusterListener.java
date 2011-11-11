@@ -16,6 +16,7 @@ import org.apache.log4j.Logger;
  * @since 08.10.11
  * @version 01.00
  */
+@Deprecated
 public class ClusterListener implements IListener {
 
 	private static final Logger	LOGGER	= Logger.getLogger(ClusterListener.class);
@@ -36,7 +37,7 @@ public class ClusterListener implements IListener {
 			}
 			if (System.currentTimeMillis() - remoteServer.getAge() > IConstants.MAX_AGE) {
 				LOGGER.info("Removing server : " + remoteServer + ", " + (System.currentTimeMillis() - remoteServer.getAge() > IConstants.MAX_AGE));
-				clusterManager.remove(Server.class.getName(), remoteServer.getId());
+				// clusterManager.remove(Server.class.getName(), remoteServer.getId());
 			}
 		}
 	}

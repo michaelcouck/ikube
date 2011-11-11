@@ -90,13 +90,7 @@
 		acknowledge="auto">
 		<jms:listener 
 			destination="topic" 
-			ref="ikube.cluster.ClusterManagerJms" 
+			ref="ikube.cluster.IClusterManager" 
 			method="onMessage" />
 	</jms:listener-container>
-	
-	<!-- This is the listener and the producer of messages. -->
-	<bean 
-		id="ikube.cluster.ClusterManagerJms"
-		class="ikube.cluster.ClusterManagerJms"
-		p:jmsTemplate-ref="jmsTopicTemplate" />
 </beans>
