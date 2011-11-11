@@ -60,7 +60,7 @@ public class WebServicePublisher implements IWebServicePublisher {
 						logger.info("Published web service to : " + url);
 						String message = Logging.getString("Endpoint : ", endpoint, "binding : ", binding, "implementor : ", bean);
 						logger.info(message);
-
+						
 						break;
 					} catch (Exception e) {
 						String message = Logging.getString("Exception publishing web service : ", url, bean, e.getMessage());

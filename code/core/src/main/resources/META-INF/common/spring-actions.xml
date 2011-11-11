@@ -241,7 +241,8 @@
 		property:end="10"
 		property:searchString="cape OR town OR roets OR 1001 OR ikube"
 		property:resultsSizeMinimum="2"
-		property:iterations="10">
+		property:iterations="10"
+		property:clusterManager-ref="ikube.cluster.IClusterManager">
 		<property name="rules">
 			<util:list>
 				<ref local="ikube.action.rule.IsThisServerWorking" />

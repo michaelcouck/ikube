@@ -37,12 +37,12 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 
 	public static class Lock implements Serializable {
 
-		protected String ip;
+		protected String address;
 		protected long shout;
 		protected boolean locked;
 
-		public Lock(String ip, long shout, boolean locked) {
-			this.ip = ip;
+		public Lock(String address, long shout, boolean locked) {
+			this.address = address;
 			this.shout = shout;
 			this.locked = locked;
 		}
@@ -60,6 +60,7 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 	private static final long LOCK_THREAD_WAIT_TIME = 1000;
 
 	private String ip;
+	private String address;
 	private Server server;
 	private Map<String, Lock> locks;
 	private JmsTemplate jmsTemplate;
@@ -70,8 +71,9 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 	public ClusterManagerJms() throws UnknownHostException, InterruptedException {
 		locks = new HashMap<String, Lock>();
 		servers = new HashMap<String, Server>();
-		ip = InetAddress.getLocalHost().getHostAddress() + ":" + Thread.currentThread().hashCode();
-		getLock(ip, Long.MAX_VALUE, Boolean.FALSE);
+		ip = InetAddress.getLocalHost().getHostAddress();
+		address = ip  + "." + Thread.currentThread().hashCode();
+		getLock(address, Long.MAX_VALUE, Boolean.FALSE);
 		Thread lockTimeOutThread = new Thread(new Runnable() {
 			public void run() {
 				while (true) {
@@ -129,20 +131,20 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 			// LOGGER.info("Before : " + locks);
 			long shout = System.currentTimeMillis();
 			// Send the lock with the locked flag to try get the lock from the cluster
-			Lock lock = getLock(ip, shout, Boolean.TRUE);
+			Lock lock = getLock(address, shout, Boolean.TRUE);
 			sendMessage((Serializable) lock);
 			sleepForSomeTime(RESPONSE_TIME);
 			boolean haveLock = haveLock(shout);
 			if (haveLock) {
 				// If we have the lock, i.e. we were first to shout then
 				// we do nothing and the other servers will reset their locks to false
-				LOGGER.info("Got lock : " + ip + ":" + lock);
+				LOGGER.info("Got lock : " + address + ":" + lock);
 			} else {
 				// If we don't get the lock then we reset our lock to false
 				// for the whole cluster
-				getLock(ip, Long.MAX_VALUE, Boolean.FALSE);
+				getLock(address, Long.MAX_VALUE, Boolean.FALSE);
 				sendMessage((Serializable) lock);
-				LOGGER.info("Didn't get lock : " + ip + ":" + lock);
+				LOGGER.info("Didn't get lock : " + address + ":" + lock);
 			}
 			return haveLock;
 		} finally {
@@ -157,7 +159,7 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 			Object object = objectMessage.getObject();
 			if (Lock.class.isAssignableFrom(object.getClass())) {
 				Lock lock = (Lock) object;
-				this.locks.put(lock.ip, lock);
+				this.locks.put(lock.address, lock);
 			} else if (Server.class.isAssignableFrom(object.getClass())) {
 				Server server = (Server) object;
 				servers.put(server.getAddress(), server);
@@ -170,12 +172,12 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 	@Override
 	public synchronized boolean unlock(String name) {
 		try {
-			Lock lock = locks.get(ip);
+			Lock lock = locks.get(address);
 			if (lock.locked) {
 				// We only set the lock for the cluster to false if we have it
-				lock = getLock(ip, Long.MAX_VALUE, Boolean.FALSE);
+				lock = getLock(address, Long.MAX_VALUE, Boolean.FALSE);
 				sendMessage((Serializable) lock);
-				LOGGER.info("Unlock : " + ip + ":" + locks);
+				LOGGER.info("Unlock : " + address + ":" + locks);
 				return Boolean.TRUE;
 			}
 			return Boolean.FALSE;
@@ -198,7 +200,7 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 			if (!entry.getValue().locked) {
 				continue;
 			}
-			if (entry.getKey().equals(ip)) {
+			if (entry.getKey().equals(address)) {
 				continue;
 			}
 			if (entry.getValue().shout <= shout) {
@@ -239,11 +241,11 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 		}
 	}
 
-	protected Lock getLock(String ip, long shout, boolean locked) {
-		Lock lock = locks.get(ip);
+	protected Lock getLock(String address, long shout, boolean locked) {
+		Lock lock = locks.get(address);
 		if (lock == null) {
-			lock = new Lock(ip, shout, locked);
-			locks.put(ip, lock);
+			lock = new Lock(address, shout, locked);
+			locks.put(address, lock);
 		}
 		lock.shout = shout;
 		lock.locked = locked;
@@ -290,7 +292,7 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 		action.setIdNumber(0);
 		action.setIndexableName(indexableName);
 		action.setIndexName(indexName);
-		action.setServerName(ip);
+		action.setServerName(address);
 		action.setStartTime(new Timestamp(System.currentTimeMillis()));
 		action.setWorking(working);
 		return action;
@@ -334,7 +336,7 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 		if (server == null) {
 			server = new Server();
 		}
-		server.setAddress(ip);
+		server.setAddress(address);
 		server.setAge(System.currentTimeMillis());
 		server.setId(System.nanoTime());
 		server.setIp(ip);

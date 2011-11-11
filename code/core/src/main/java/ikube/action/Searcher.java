@@ -12,8 +12,6 @@ import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.Logging;
 import ikube.toolkit.SerializationUtilities;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -49,19 +47,14 @@ public class Searcher extends Action<IndexContext<?>, Boolean> {
 				return Boolean.FALSE;
 			}
 			String xml = null;
-
 			Server server = getClusterManager().getServer();
-
-			String ip = InetAddress.getLocalHost().getHostAddress();
-			int searchWebServicePort = server.getSearchWebServicePort();
-			ISearcherWebService searcherWebService = ServiceLocator.getService(ISearcherWebService.class, "http", ip, searchWebServicePort,
-					ISearcherWebService.PUBLISHED_PATH, ISearcherWebService.NAMESPACE, ISearcherWebService.SERVICE);
-
-			int monitoringPort = server.getMonitoringWebServicePort();
-
-			IMonitorWebService monitorWebService = ServiceLocator.getService(IMonitorWebService.class, "http", ip, monitoringPort,
-					IMonitorWebService.PUBLISHED_PATH, IMonitorWebService.NAMESPACE, IMonitorWebService.SERVICE);
-
+			String ip = server.getIp();
+			ISearcherWebService searcherWebService = ServiceLocator.getService(ISearcherWebService.class, "http", ip,
+					ISearcherWebService.PUBLISHED_PORT, ISearcherWebService.PUBLISHED_PATH, ISearcherWebService.NAMESPACE,
+					ISearcherWebService.SERVICE);
+			IMonitorWebService monitorWebService = ServiceLocator.getService(IMonitorWebService.class, "http", ip,
+					IMonitorWebService.PUBLISHED_PORT, IMonitorWebService.PUBLISHED_PATH, IMonitorWebService.NAMESPACE,
+					IMonitorWebService.SERVICE);
 			String[] searchFields = monitorWebService.getIndexFieldNames(indexName);
 			String[] searchStrings = new String[searchFields.length];
 			String[] sortFields = new String[searchFields.length];
@@ -96,7 +89,7 @@ public class Searcher extends Action<IndexContext<?>, Boolean> {
 			} else {
 				listenerManager.fireEvent(Event.RESULTS, System.currentTimeMillis(), null, Boolean.TRUE);
 			}
-		} catch (UnknownHostException e) {
+		} catch (Exception e) {
 			logger.error("Exception searching index : ", e);
 		} finally {
 			getClusterManager().stopWorking(getClass().getSimpleName(), indexContext.getIndexName(), "");

@@ -19,11 +19,10 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-@Ignore
 public class ClusterManagerJmsTest extends ATest {
 
 	private long maxWait = 100;
-	private int iterations = 1000000;
+	private int iterations = 1000;
 	private int clusterManagersSize = 25;
 
 	private boolean wait;

@@ -69,7 +69,7 @@ public final class IndexManager {
 			String indexDirectoryPath = getIndexDirectory(indexContext, time, ip);
 			indexDirectory = FileUtilities.getFile(indexDirectoryPath, Boolean.TRUE);
 			LOGGER.info(Logging.getString("Index directory time : ", time, "date : ", new Date(time), "writing index to directory ",
-					indexDirectory.getAbsolutePath()));
+					indexDirectoryPath));
 			indexWriter = openIndexWriter(indexContext, indexDirectory, Boolean.TRUE);
 			indexContext.getIndex().setIndexWriter(indexWriter);
 			success = Boolean.TRUE;
@@ -202,9 +202,9 @@ public final class IndexManager {
 	public static String getIndexDirectory(final IndexContext<?> indexContext, final long time, final String ip) {
 		StringBuilder builder = new StringBuilder();
 		builder.append(IndexManager.getIndexDirectoryPath(indexContext));
-		builder.append(File.separator);
+		builder.append(IConstants.SEP);
 		builder.append(time); // Time
-		builder.append(File.separator);
+		builder.append(IConstants.SEP);
 		builder.append(ip); // Ip
 		return builder.toString();
 	}

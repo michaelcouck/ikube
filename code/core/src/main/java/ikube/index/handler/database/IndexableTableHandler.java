@@ -151,6 +151,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 		return Arrays.asList();
 	}
 
+	@SuppressWarnings("unused")
 	private IndexableColumn getForeignKeyColumn(IndexableTable indexableTable) {
 		Indexable<?> parent = indexableTable.getParent();
 		if (parent != null && IndexableTable.class.isAssignableFrom(parent.getClass())) {

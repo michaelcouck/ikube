@@ -72,7 +72,7 @@ public class JmsListener implements IListener {
 		jmsTemplate.send(new MessageCreator() {
 			@Override
 			public Message createMessage(Session session) throws JMSException {
-				return session.createTextMessage("Message from : " + id);
+				return session.createObjectMessage("Message from : " + id);
 			}
 		});
 	}

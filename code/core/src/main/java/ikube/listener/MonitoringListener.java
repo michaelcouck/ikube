@@ -2,7 +2,6 @@ package ikube.listener;
 
 import ikube.cluster.IClusterManager;
 import ikube.model.Execution;
-import ikube.model.Server;
 
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -14,13 +13,14 @@ import java.util.concurrent.TimeUnit;
  */
 public class MonitoringListener implements IListener {
 
-	private IClusterManager	clusterManager;
+	@SuppressWarnings("unused")
+	private IClusterManager clusterManager;
 
 	@Override
 	public void handleNotification(Event event) {
 		if (event.getType().equals(Event.PERFORMANCE)) {
 			// Get the server
-			Server server = clusterManager.getServer();
+			// Server server = clusterManager.getServer();
 			// TODO Get the searching executions from the database, and calculate
 			// TODO Get the indexing executions from the database, and calculate
 			// Publish the server with the new data

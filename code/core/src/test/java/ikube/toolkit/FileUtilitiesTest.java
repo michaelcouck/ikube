@@ -177,5 +177,11 @@ public class FileUtilitiesTest extends ATest {
 		assertNotNull("The configuration should be copied to the external folder : ", springBeansFile);
 		assertTrue("This file should be persisted, and available : ", springBeansFile.exists());
 	}
+	
+	@Test
+	public void getFile() {
+		File file = FileUtilities.getFile("./indexes/campaignIndex/1321025482078/192.168.1.35.1178697512", Boolean.TRUE);
+		assertNotNull(file);
+	}
 
 }

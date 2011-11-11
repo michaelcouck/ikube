@@ -10,6 +10,7 @@ import ikube.web.servlet.SearchServlet;
 import java.net.URL;
 import java.net.URLEncoder;
 
+@SuppressWarnings("deprecation")
 public class ServletStrategy extends AStrategy {
 
 	private int iterations;

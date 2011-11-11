@@ -18,7 +18,6 @@ public class PageTagTest extends ATagTest {
 	private PageTag	pageTag	= new PageTag();
 
 	@Test
-	@SuppressWarnings("unused")
 	public void doEndTag() throws Exception {
 		pagerTag.doStartTag();
 		pageTag.setParent(pagerTag);

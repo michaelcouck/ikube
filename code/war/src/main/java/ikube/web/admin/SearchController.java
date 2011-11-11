@@ -32,11 +32,11 @@ import org.springframework.web.servlet.ModelAndView;
  */
 public class SearchController extends BaseController {
 
-	protected Logger			logger			= Logger.getLogger(this.getClass());
+	protected Logger logger = Logger.getLogger(this.getClass());
 
 	/** These are the default values for first and max results. */
-	private static final int	FIRST_RESULT	= 0;
-	private static final int	MAX_RESULTS		= 10;
+	private static final int FIRST_RESULT = 0;
+	private static final int MAX_RESULTS = 10;
 
 	/**
 	 * {@inheritDoc}
@@ -67,9 +67,9 @@ public class SearchController extends BaseController {
 		}
 
 		String ip = InetAddress.getLocalHost().getHostAddress();
-		int searchWebServicePort = server.getSearchWebServicePort();
-		ISearcherWebService searcherWebService = ServiceLocator.getService(ISearcherWebService.class, "http", ip, searchWebServicePort,
-				ISearcherWebService.PUBLISHED_PATH, ISearcherWebService.NAMESPACE, ISearcherWebService.SERVICE);
+		ISearcherWebService searcherWebService = ServiceLocator.getService(ISearcherWebService.class, "http", ip,
+				ISearcherWebService.PUBLISHED_PORT, ISearcherWebService.PUBLISHED_PATH, ISearcherWebService.NAMESPACE,
+				ISearcherWebService.SERVICE);
 
 		int firstResult = getParameter(IConstants.FIRST_RESULT, FIRST_RESULT, request);
 		int maxResults = getParameter(IConstants.MAX_RESULTS, MAX_RESULTS, request);
