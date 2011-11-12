@@ -1,10 +1,8 @@
 package ikube.web.admin;
 
 import ikube.IConstants;
-import ikube.cluster.IClusterManager;
 import ikube.model.IndexContext;
 import ikube.model.Server;
-import ikube.service.IMonitorWebService;
 import ikube.toolkit.ApplicationContextManager;
 
 import java.util.Collections;
@@ -33,7 +31,6 @@ public class ServersController extends BaseController {
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		String viewUrl = getViewUri(request);
 		ModelAndView modelAndView = new ModelAndView(viewUrl);
-		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
 		// Get the servers and sort them
 		List<Server> servers = clusterManager.getServers();
 		Collections.sort(servers, new Comparator<Server>() {
@@ -56,7 +53,6 @@ public class ServersController extends BaseController {
 		Map<String, IndexContext> indexContexts = ApplicationContextManager.getBeans(IndexContext.class);
 		modelAndView.addObject(IConstants.INDEX_CONTEXTS, indexContexts.values());
 
-		IMonitorWebService monitorWebService = ApplicationContextManager.getBean(IMonitorWebService.class);
 		for (IndexContext<?> indexContext : indexContexts.values()) {
 			String indexName = indexContext.getIndexName();
 			long indexSize = monitorWebService.getIndexSize(indexName);

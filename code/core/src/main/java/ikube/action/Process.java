@@ -19,7 +19,7 @@ public class Process extends Action<IndexContext<?>, Boolean> {
 		try {
 			// TODO Process all the data collected during the indexing
 		} finally {
-			getClusterManager().stopWorking(getClass().getSimpleName(), indexContext.getIndexName(), "");
+			clusterManager.stopWorking(getClass().getSimpleName(), indexContext.getIndexName(), "");
 		}
 		return Boolean.TRUE;
 	}

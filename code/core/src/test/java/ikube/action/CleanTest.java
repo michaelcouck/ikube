@@ -16,6 +16,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import mockit.Deencapsulation;
 import mockit.Mockit;
 
 import org.apache.lucene.index.IndexReader;
@@ -60,7 +61,7 @@ public class CleanTest extends ATest {
 
 		// Running the clean the locked index directory should be un-locked
 		Clean<IndexContext<?>, Boolean> clean = new Clean<IndexContext<?>, Boolean>();
-		clean.setClusterManager(clusterManager);
+		Deencapsulation.setField(clean, clusterManager);
 		clean.execute(indexContext);
 
 		Directory directory = FSDirectory.open(serverIndexDirectory);

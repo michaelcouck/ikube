@@ -1,21 +1,10 @@
 package ikube.cluster.cache;
 
-import ikube.IConstants;
-import ikube.toolkit.HashUtilities;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
-import javax.transaction.Status;
-import javax.transaction.TransactionManager;
 
 import org.apache.log4j.Logger;
-import org.infinispan.AdvancedCache;
-import org.infinispan.Cache;
-import org.infinispan.manager.DefaultCacheManager;
-import org.infinispan.manager.EmbeddedCacheManager;
 
 /**
  * @see ICache
@@ -23,25 +12,28 @@ import org.infinispan.manager.EmbeddedCacheManager;
  * @since 01.10.11
  * @version 01.00
  */
+@Deprecated
 public class CacheInfinispan implements ICache {
 
+	@SuppressWarnings("unused")
 	private static final Logger		LOGGER	= Logger.getLogger(CacheInfinispan.class);
 
+	@SuppressWarnings("unused")
 	private String					configurationFile;
-	private EmbeddedCacheManager	manager;
+	// private EmbeddedCacheManager	manager;
 
 	public void initialise() throws Exception {
 		System.setProperty("jgroups.bind_addr", "localhost");
 		System.setProperty("java.net.preferIPv4Stack", "true");
 		// GlobalConfiguration.getClusteredDefault().
-		manager = new DefaultCacheManager(configurationFile);
-		Set<String> cacheNames = manager.getCacheNames();
-		manager.startCaches(cacheNames.toArray(new String[cacheNames.size()]));
+		// manager = new DefaultCacheManager(configurationFile);
+		// Set<String> cacheNames = manager.getCacheNames();
+		// manager.startCaches(cacheNames.toArray(new String[cacheNames.size()]));
 
 		// We need to sleep here to give Infinispan a chance to start the caches
 		// or the whole thing just goes to shit!
 		Thread.sleep(10000);
-		manager.start();
+		// manager.start();
 		// Cache<?, ?> cache = manager.getCache(Server.class.getName());
 		// AdvancedCache<?, ?> advancedCache = cache.getAdvancedCache();
 		// advancedCache.addInterceptor(new CommandInterceptor() {
@@ -54,13 +46,13 @@ public class CacheInfinispan implements ICache {
 	}
 
 	public void destroy() {
-		if (manager != null) {
-			try {
-				manager.stop();
-			} catch (Exception e) {
-				LOGGER.error("Exception shutting down Infinispan : " + manager, e);
-			}
-		}
+//		if (manager != null) {
+//			try {
+//				manager.stop();
+//			} catch (Exception e) {
+//				LOGGER.error("Exception shutting down Infinispan : " + manager, e);
+//			}
+//		}
 	}
 
 	public void setConfigurationFile(String configurationFile) {
@@ -144,81 +136,82 @@ public class CacheInfinispan implements ICache {
 	}
 
 	public boolean lock(final String name) {
-		Cache<Long, Object> cache = manager.getCache(name);
-		long lockHash = HashUtilities.hash(IConstants.ID_LOCK);
-		AdvancedCache<Long, Object> advancedCache = cache.getAdvancedCache();
-		TransactionManager transactionManager = advancedCache.getTransactionManager();
 		boolean locked = Boolean.FALSE;
-		try {
-			transactionManager.begin();
-			// advancedCache.lock(lockHash);
-			Object lock = advancedCache.get(lockHash);
-			if (lock != null) {
-				LOGGER.info("Cache locked : " + name + ", " + lock);
-			} else {
-				advancedCache.put(lockHash, IConstants.ID_LOCK);
-				locked = Boolean.TRUE;
-			}
-		} catch (Exception e) {
-			LOGGER.error("Exception acquiring the transaction and the lock on : " + name, e);
-			try {
-				transactionManager.getTransaction().setRollbackOnly();
-			} catch (Exception ex) {
-				LOGGER.error("Exception setting rollback on transaction : ", e);
-			}
-		} finally {
-			try {
-				if (transactionManager.getTransaction().getStatus() == Status.STATUS_MARKED_ROLLBACK) {
-					transactionManager.getTransaction().rollback();
-				} else {
-					transactionManager.commit();
-				}
-			} catch (Exception e) {
-				LOGGER.error("Exception rolling back or comitting the transaction : ", e);
-			}
-		}
+//		Cache<Long, Object> cache = manager.getCache(name);
+//		long lockHash = HashUtilities.hash(IConstants.ID_LOCK);
+//		AdvancedCache<Long, Object> advancedCache = cache.getAdvancedCache();
+//		TransactionManager transactionManager = advancedCache.getTransactionManager();
+//		try {
+//			transactionManager.begin();
+//			// advancedCache.lock(lockHash);
+//			Object lock = advancedCache.get(lockHash);
+//			if (lock != null) {
+//				LOGGER.info("Cache locked : " + name + ", " + lock);
+//			} else {
+//				advancedCache.put(lockHash, IConstants.ID_LOCK);
+//				locked = Boolean.TRUE;
+//			}
+//		} catch (Exception e) {
+//			LOGGER.error("Exception acquiring the transaction and the lock on : " + name, e);
+//			try {
+//				transactionManager.getTransaction().setRollbackOnly();
+//			} catch (Exception ex) {
+//				LOGGER.error("Exception setting rollback on transaction : ", e);
+//			}
+//		} finally {
+//			try {
+//				if (transactionManager.getTransaction().getStatus() == Status.STATUS_MARKED_ROLLBACK) {
+//					transactionManager.getTransaction().rollback();
+//				} else {
+//					transactionManager.commit();
+//				}
+//			} catch (Exception e) {
+//				LOGGER.error("Exception rolling back or comitting the transaction : ", e);
+//			}
+//		}
 		return locked;
 	}
 
 	public boolean unlock(String name) {
-		Cache<Long, Object> cache = manager.getCache(name);
-		long lockHash = HashUtilities.hash(IConstants.ID_LOCK);
-		AdvancedCache<Long, Object> advancedCache = cache.getAdvancedCache();
-		TransactionManager transactionManager = advancedCache.getTransactionManager();
 		boolean unlocked = Boolean.FALSE;
-		try {
-			transactionManager.begin();
-			// advancedCache.lock(lockHash);
-			Object lock = advancedCache.get(lockHash);
-			if (lock == null) {
-				LOGGER.info("Cache not locked : " + name + ", " + advancedCache.getLockManager().printLockInfo());
-			} else {
-				advancedCache.evict(lockHash);
-				unlocked = Boolean.TRUE;
-			}
-		} catch (Exception e) {
-			LOGGER.error("Exception comitting the transaction and removing the lock on : " + name, e);
-			try {
-				transactionManager.getTransaction().setRollbackOnly();
-			} catch (Exception ex) {
-				LOGGER.error("Exception setting rollback on transaction : ", e);
-			}
-		} finally {
-			try {
-				if (transactionManager.getTransaction().getStatus() == Status.STATUS_MARKED_ROLLBACK) {
-					transactionManager.getTransaction().rollback();
-				} else {
-					transactionManager.commit();
-				}
-			} catch (Exception e) {
-				LOGGER.error("Exception rolling back or comitting the transaction : ", e);
-			}
-		}
+//		Cache<Long, Object> cache = manager.getCache(name);
+//		long lockHash = HashUtilities.hash(IConstants.ID_LOCK);
+//		AdvancedCache<Long, Object> advancedCache = cache.getAdvancedCache();
+//		TransactionManager transactionManager = advancedCache.getTransactionManager();
+//		try {
+//			transactionManager.begin();
+//			// advancedCache.lock(lockHash);
+//			Object lock = advancedCache.get(lockHash);
+//			if (lock == null) {
+//				LOGGER.info("Cache not locked : " + name + ", " + advancedCache.getLockManager().printLockInfo());
+//			} else {
+//				advancedCache.evict(lockHash);
+//				unlocked = Boolean.TRUE;
+//			}
+//		} catch (Exception e) {
+//			LOGGER.error("Exception comitting the transaction and removing the lock on : " + name, e);
+//			try {
+//				transactionManager.getTransaction().setRollbackOnly();
+//			} catch (Exception ex) {
+//				LOGGER.error("Exception setting rollback on transaction : ", e);
+//			}
+//		} finally {
+//			try {
+//				if (transactionManager.getTransaction().getStatus() == Status.STATUS_MARKED_ROLLBACK) {
+//					transactionManager.getTransaction().rollback();
+//				} else {
+//					transactionManager.commit();
+//				}
+//			} catch (Exception e) {
+//				LOGGER.error("Exception rolling back or comitting the transaction : ", e);
+//			}
+//		}
 		return unlocked;
 	}
 
 	private Map<Long, Object> getMap(String name) {
-		return manager.getCache(name);
+		// return manager.getCache(name);
+		return null;
 	}
 
 }

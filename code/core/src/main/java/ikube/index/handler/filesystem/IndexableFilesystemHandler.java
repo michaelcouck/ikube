@@ -8,7 +8,6 @@ import ikube.index.parse.IParser;
 import ikube.index.parse.ParserProvider;
 import ikube.model.IndexContext;
 import ikube.model.IndexableFileSystem;
-import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.HashUtilities;
 import ikube.toolkit.SerializationUtilities;
@@ -34,10 +33,10 @@ import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
 
 /**
- * This class indexes a file share on the network. It is multi threaded but not cluster load balanced. First the files
- * are iterated over and added to the database. Then the crawler threads are started and they will get batches of files,
- * process them, then set the indexed flag for the files and merge them back to the database. This prevents too many
- * threads iterating over the file system which seems to be the bottleneck in the process.
+ * This class indexes a file share on the network. It is multi threaded but not cluster load balanced. First the files are iterated over and
+ * added to the database. Then the crawler threads are started and they will get batches of files, process them, then set the indexed flag
+ * for the files and merge them back to the database. This prevents too many threads iterating over the file system which seems to be the
+ * bottleneck in the process.
  * 
  * This class is optimised for performance, as such it is not very elegant.
  * 
@@ -54,7 +53,6 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 	 */
 	@Override
 	public List<Thread> handle(final IndexContext<?> indexContext, final IndexableFileSystem indexable) throws Exception {
-		final IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
 		final File baseFile = new File(indexable.getPath());
 		final Pattern pattern = getPattern(indexable.getExcludedPattern());
 		if (isExcluded(baseFile, pattern)) {
@@ -112,8 +110,8 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 			Map<String, Object> parameters = new HashMap<String, Object>();
 			parameters.put(IConstants.NAME, indexable.getName());
 			parameters.put(IConstants.INDEXED, Boolean.FALSE);
-			List<ikube.model.File> dbFiles = dataBase.find(ikube.model.File.class, ikube.model.File.SELECT_FROM_FILE_BY_NAME_AND_INDEXED, parameters,
-					0, indexable.getBatchSize());
+			List<ikube.model.File> dbFiles = dataBase.find(ikube.model.File.class, ikube.model.File.SELECT_FROM_FILE_BY_NAME_AND_INDEXED,
+					parameters, 0, indexable.getBatchSize());
 			for (ikube.model.File dbFile : dbFiles) {
 				dbFile.setIndexed(Boolean.TRUE);
 			}
@@ -126,8 +124,8 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 	}
 
 	/**
-	 * As the name suggests this method handles a folder. Iterates over the files and folders in the folder recursively
-	 * indexing the files as they are encountered.
+	 * As the name suggests this method handles a folder. Iterates over the files and folders in the folder recursively indexing the files
+	 * as they are encountered.
 	 * 
 	 * @param indexContext
 	 *            the index context for the index
@@ -194,7 +192,8 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 	 * @param file
 	 *            the file to parse and index
 	 */
-	protected void handleFile(final IndexContext<?> indexContext, final IndexableFileSystem indexableFileSystem, final ikube.model.File dbFile) {
+	protected void handleFile(final IndexContext<?> indexContext, final IndexableFileSystem indexableFileSystem,
+			final ikube.model.File dbFile) {
 		File file = new File(dbFile.getUrl());
 		try {
 			// logger.error("Db file : " + dbFile);
@@ -246,8 +245,8 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 	}
 
 	/**
-	 * This method checks to see if the file can be read, that it exists and that it is not in the excluded pattern
-	 * defined in the configuration.
+	 * This method checks to see if the file can be read, that it exists and that it is not in the excluded pattern defined in the
+	 * configuration.
 	 * 
 	 * @param file
 	 *            the file to check for inclusion in the processing

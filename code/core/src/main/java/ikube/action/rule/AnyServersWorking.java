@@ -17,7 +17,7 @@ public class AnyServersWorking extends ARule<IndexContext<?>> {
 	 */
 	@Override
 	public boolean evaluate(final IndexContext<?> indexContext) {
-		return getClusterManager().anyWorking();
+		return clusterManager.anyWorking();
 	}
 
 }

@@ -13,9 +13,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This class executes the handlers on the indexables, effectively creating the index. Each indexable has a handler that
- * is implemented to handle it. Each handler will return a list of threads that will do the indexing. The caller(in this
- * case, this class) must then wait for the threads to finish.
+ * This class executes the handlers on the indexables, effectively creating the index. Each indexable has a handler that is implemented to
+ * handle it. Each handler will return a list of threads that will do the indexing. The caller(in this case, this class) must then wait for
+ * the threads to finish.
  * 
  * @author Michael Couck
  * @since 21.11.10
@@ -29,7 +29,7 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 	@Override
 	public Boolean execute(final IndexContext<?> indexContext) throws Exception {
 		String indexName = indexContext.getIndexName();
-		Server server = getClusterManager().getServer();
+		Server server = clusterManager.getServer();
 		List<Indexable<?>> indexables = indexContext.getIndexables();
 		String actionName = this.getClass().getSimpleName();
 		try {
@@ -58,13 +58,13 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 						continue;
 					}
 					try {
-						server = getClusterManager().getServer();
+						server = clusterManager.getServer();
 						if (server.getAction() != null) {
 							// We need to reset the id of the next row
 							// after each indexable has been indexed of course
 							server.getAction().setIdNumber(0);
 						}
-						getClusterManager().startWorking(actionName, indexName, indexable.getName());
+						clusterManager.startWorking(actionName, indexName, indexable.getName());
 						logger.info("Executing handler : " + handler + ", " + indexable.getName());
 						// Execute the handler and wait for the threads to finish
 						List<Thread> threads = handler.handle(indexContext, indexable);
@@ -81,7 +81,7 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 		} finally {
 			logger.debug(Logging.getString("Finished indexing : ", indexName));
 			IndexManager.closeIndexWriter(indexContext);
-			getClusterManager().stopWorking(getClass().getSimpleName(), indexContext.getIndexName(), "");
+			clusterManager.stopWorking(getClass().getSimpleName(), indexContext.getIndexName(), "");
 		}
 		return Boolean.FALSE;
 	}
@@ -93,8 +93,8 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 	 *            a map of all the handlers in the configuration
 	 * @param indexable
 	 *            the indexable to find the handler for
-	 * @return the handler for the indexable or null if there is no handler for the indexable. This will fail with a
-	 *         warning if there is no handler for the indexable
+	 * @return the handler for the indexable or null if there is no handler for the indexable. This will fail with a warning if there is no
+	 *         handler for the indexable
 	 */
 	protected IHandler<Indexable<?>> getHandler(final Indexable<?> indexable) {
 		@SuppressWarnings("rawtypes")

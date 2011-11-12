@@ -1,12 +1,9 @@
 package ikube.web.admin;
 
 import ikube.IConstants;
-import ikube.cluster.IClusterManager;
 import ikube.model.Server;
-import ikube.service.IMonitorWebService;
 import ikube.service.ISearcherWebService;
 import ikube.service.ServiceLocator;
-import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.SerializationUtilities;
 
 import java.net.InetAddress;
@@ -46,7 +43,7 @@ public class SearchController extends BaseController {
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		String viewUrl = getViewUri(request);
 		ModelAndView modelAndView = new ModelAndView(viewUrl);
-		Server server = ApplicationContextManager.getBean(IClusterManager.class).getServer();
+		Server server = clusterManager.getServer();
 
 		// Get all the search strings from the request, we'll search all the indexes, all the fields, all strings
 		Set<String> searchStrings = getSearchStrings(request);
@@ -152,7 +149,6 @@ public class SearchController extends BaseController {
 	}
 
 	protected String[] getIndexNames(HttpServletRequest request) {
-		IMonitorWebService monitorWebService = ApplicationContextManager.getBean(IMonitorWebService.class);
 		String[] indexNames = monitorWebService.getIndexNames();
 		return indexNames;
 	}

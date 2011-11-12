@@ -3,17 +3,16 @@ package ikube.action;
 import ikube.action.rule.IRule;
 import ikube.action.rule.RuleInterceptor;
 import ikube.cluster.IClusterManager;
+import ikube.database.IDataBase;
+import ikube.listener.ListenerManager;
 import ikube.notify.IMailer;
-import ikube.notify.Mailer;
-import ikube.toolkit.ApplicationContextManager;
 
 import java.util.List;
-
-import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.log4j.Logger;
 import org.nfunk.jep.JEP;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * This is the base class for actions. Actions execute logic on index contexts. Actions may include opening the searcher on a new index,
@@ -28,15 +27,22 @@ public abstract class Action<E, F> implements IAction<E, F> {
 
 	protected transient Logger logger = Logger.getLogger(Action.class);
 
+	@Autowired
+	private IMailer mailer;
+	@Autowired
+	protected IDataBase dataBase;
+	@Autowired
+	protected ListenerManager listenerManager;
+	/** The cluster manager for locking the cluster during rule evaluation. */
+	@Autowired
+	protected IClusterManager clusterManager;
+
 	/**
 	 * These are the rules defined for this action. They will be evaluated collectively by the {@link RuleInterceptor} and the action will
 	 * be executed depending on the result of the rules.
 	 */
-	@Transient
-	private transient List<IRule<E>> rules;
-	/** The cluster manager for locking the cluster during rule evaluation. */
-	@Transient
-	private transient IClusterManager clusterManager;
+	private List<IRule<E>> rules;
+
 	/**
 	 * This is the predicate that will be evaluated. The predicate consists of a boolean expression that contains the individual results of
 	 * the rules. For example '!IsThisServerWorking && !AnyServersWorking'. The rules' results will be inserted into the parameter place
@@ -77,22 +83,12 @@ public abstract class Action<E, F> implements IAction<E, F> {
 	}
 
 	protected void sendNotification(final String subject, final String body) {
-		IMailer mailer = null;
 		try {
-			mailer = ApplicationContextManager.getBean(Mailer.class);
 			mailer.sendMail(subject, body);
 		} catch (Exception e) {
 			logger.error("Exception sending mail : " + subject, e);
 			logger.error("Mailer details : " + ToStringBuilder.reflectionToString(mailer), e);
 		}
-	}
-
-	public void setClusterManager(IClusterManager clusterManager) {
-		this.clusterManager = clusterManager;
-	}
-
-	protected IClusterManager getClusterManager() {
-		return clusterManager;
 	}
 
 }

@@ -59,7 +59,7 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.7.1</version>
 				<configuration>
-					<parallel>false</parallel>
+					<parallel>true</parallel>
 					<forkMode>once</forkMode>
 					<!-- <threadCount>10</threadCount> -->
 					<!-- <useUnlimitedThreads>true</useUnlimitedThreads> -->

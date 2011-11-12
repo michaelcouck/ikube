@@ -17,6 +17,7 @@ import java.util.List;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -24,6 +25,7 @@ import org.junit.Test;
  * @since 01.10.11
  * @version 01.00
  */
+@Ignore
 public class CacheInfinispanTest extends ATest {
 
 	private long					id;

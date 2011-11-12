@@ -1,25 +1,10 @@
 package ikube.cluster.cache;
 
-import ikube.IConstants;
-import ikube.model.Server;
-import ikube.toolkit.ApplicationContextManager;
-
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Lock;
 
 import org.apache.log4j.Logger;
-import org.jgroups.Address;
-import org.jgroups.JChannel;
-import org.jgroups.Message;
-import org.jgroups.ReceiverAdapter;
-import org.jgroups.View;
-import org.jgroups.blocks.locking.LockService;
 
 /**
  * @see ICache
@@ -27,55 +12,56 @@ import org.jgroups.blocks.locking.LockService;
  * @since 01.10.11
  * @version 01.00
  */
+@Deprecated
 public class CacheJGroups implements ICache {
 
-	private Logger		logger;
-	private JChannel	channel;
-	private LockService	lockService;
+	@SuppressWarnings("unused")
+	private Logger logger;
+	// private JChannel channel;
+	// private LockService lockService;
 
-	class ShutdownReceiverAdapter extends ReceiverAdapter {
+	class ShutdownReceiverAdapter /* extends ReceiverAdapter */ {
 
-		@Override
-		public void viewAccepted(View view) {
-			super.viewAccepted(view);
-		}
-
-		public void receive(Message message) {
-			Address address = message.getSrc();
-			Object other = message.getObject();
-			logger.info("Message : " + message.getObject() + ", this : " + address + ", other : " + other);
-			if (other == null || !Server.class.isAssignableFrom(other.getClass())) {
-				return;
-			}
-			logger.warn("Got shutdown message : " + other);
-			long delay = 1000;
-			ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
-			executorService.schedule(new Runnable() {
-				public void run() {
-					logger.warn("Shutting down Ikube server : " + this);
-					ApplicationContextManager.closeApplicationContext();
-					channel.clearChannelListeners();
-					channel.close();
-					System.exit(0);
-				}
-			}, delay, TimeUnit.MILLISECONDS);
-			executorService.shutdown();
-		}
+//		@Override
+//		public void viewAccepted(View view) {
+//			super.viewAccepted(view);
+//		}
+//
+//		public void receive(Message message) {
+//			Address address = message.getSrc();
+//			Object other = message.getObject();
+//			logger.info("Message : " + message.getObject() + ", this : " + address + ", other : " + other);
+//			if (other == null || !Server.class.isAssignableFrom(other.getClass())) {
+//				return;
+//			}
+//			logger.warn("Got shutdown message : " + other);
+//			long delay = 1000;
+//			ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
+//			executorService.schedule(new Runnable() {
+//				public void run() {
+//					logger.warn("Shutting down Ikube server : " + this);
+//					ApplicationContextManager.closeApplicationContext();
+//					channel.clearChannelListeners();
+//					channel.close();
+//					System.exit(0);
+//				}
+//			}, delay, TimeUnit.MILLISECONDS);
+//			executorService.shutdown();
+//		}
 	}
 
 	/**
-	 * This method adds a shutdown hook that can be executed remotely causing the the cluster to close down, but not
-	 * ourselves. This is useful when a unit test needs to run without the cluster running as the synchronisation will
-	 * affect the tests.
+	 * This method adds a shutdown hook that can be executed remotely causing the the cluster to close down, but not ourselves. This is
+	 * useful when a unit test needs to run without the cluster running as the synchronisation will affect the tests.
 	 */
 	public void initialise() throws Exception {
 		logger = Logger.getLogger(this.getClass());
-		String configurationFile = IConstants.META_INF + IConstants.SEP + IConstants.UDP_XML;
-		URL url = getClass().getResource(configurationFile);
-		channel = new JChannel(url);
-		channel.connect(IConstants.IKUBE);
-		channel.setReceiver(new ShutdownReceiverAdapter());
-		lockService = new LockService(channel);
+//		String configurationFile = IConstants.META_INF + IConstants.SEP + IConstants.UDP_XML;
+//		URL url = getClass().getResource(configurationFile);
+//		channel = new JChannel(url);
+//		channel.connect(IConstants.IKUBE);
+//		channel.setReceiver(new ShutdownReceiverAdapter());
+//		lockService = new LockService(channel);
 		// channel.send(null, "Ikube running : " + channel.getAddressAsString());
 	}
 
@@ -156,24 +142,24 @@ public class CacheJGroups implements ICache {
 	}
 
 	public boolean lock(final String name) {
-		Lock lock = lockService.getLock(name);
-		if (lock != null) {
-			try {
-				boolean gotLock = lock.tryLock(3000, TimeUnit.MILLISECONDS);
-				return gotLock;
-			} catch (InterruptedException e) {
-				logger.error("Exception acquiring the cluster lock : " + name, e);
-			}
-		}
+//		Lock lock = lockService.getLock(name);
+//		if (lock != null) {
+//			try {
+//				boolean gotLock = lock.tryLock(3000, TimeUnit.MILLISECONDS);
+//				return gotLock;
+//			} catch (InterruptedException e) {
+//				logger.error("Exception acquiring the cluster lock : " + name, e);
+//			}
+//		}
 		return Boolean.FALSE;
 	}
 
 	public boolean unlock(String name) {
-		Lock lock = lockService.getLock(name);
-		if (lock != null) {
-			lock.unlock();
-			return Boolean.TRUE;
-		}
+//		Lock lock = lockService.getLock(name);
+//		if (lock != null) {
+//			lock.unlock();
+//			return Boolean.TRUE;
+//		}
 		return Boolean.FALSE;
 	}
 

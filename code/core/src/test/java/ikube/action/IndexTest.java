@@ -15,6 +15,7 @@ import ikube.toolkit.FileUtilities;
 import java.io.File;
 import java.sql.Timestamp;
 
+import mockit.Deencapsulation;
 import mockit.Mockit;
 
 import org.junit.After;
@@ -52,7 +53,7 @@ public class IndexTest extends ATest {
 	@Test
 	public void execute() throws Exception {
 		Index index = new Index();
-		index.setClusterManager(clusterManager);
+		Deencapsulation.setField(index, clusterManager);
 		boolean result = index.execute(indexContext);
 		assertTrue(result);
 	}

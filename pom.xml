@@ -584,10 +584,6 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
-		<!-- <dependency> <groupId>com.hazelcast</groupId> <artifactId>hazelcast</artifactId> <version>[1.9.3.1,)</version> <type>jar</type> <scope>compile</scope> 
-			</dependency> -->
-		<!-- <dependency> <groupId>net.sf.ehcache</groupId> <artifactId>ehcache-core</artifactId> <version>2.4.2</version> <type>jar</type> <scope>compile</scope> 
-			</dependency> -->
 		<dependency>
 			<groupId>aspose</groupId>
 			<artifactId>aspose.words</artifactId>
@@ -644,8 +640,6 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
-		<!-- <dependency> <groupId>org.jgroups</groupId> <artifactId>jgroups</artifactId> <version>3.0.0.CR4</version> <type>jar</type> <scope>compile</scope> 
-			</dependency> -->
 		<dependency>
 			<groupId>net.sf.ehcache</groupId>
 			<artifactId>ehcache-core</artifactId>
@@ -653,7 +647,7 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
-		<dependency>
+		<!-- <dependency>
 			<groupId>org.infinispan</groupId>
 			<artifactId>infinispan-core</artifactId>
 			<version>[4.0.0,)</version>
@@ -663,15 +657,15 @@
 					<artifactId>rhq-pluginAnnotations</artifactId>
 				</exclusion>
 			</exclusions>
-		</dependency>
-		<dependency>
+		</dependency> -->
+		<!-- <dependency>
 			<groupId>org.rhq.helpers</groupId>
 			<artifactId>rhq-pluginAnnotations</artifactId>
 			<version>3.0.1.GA</version>
 			<type>jar</type>
 			<scope>compile</scope>
-		</dependency>
-		<dependency>
+		</dependency> -->
+		<!-- <dependency>
 			<groupId>com.atomikos</groupId>
 			<artifactId>transactions</artifactId>
 			<version>3.7.0</version>
@@ -684,12 +678,12 @@
 			<version>3.7.0</version>
 			<type>jar</type>
 			<scope>compile</scope>
-		</dependency>
-		<dependency>
+		</dependency> -->
+		<!-- <dependency>
 			<groupId>org.codehaus.btm</groupId>
 			<artifactId>btm</artifactId>
 			<version>2.1.0</version>
-		</dependency>
+		</dependency> -->
 		<dependency>
 			<groupId>org.apache.activemq</groupId>
 			<artifactId>activemq-core</artifactId>

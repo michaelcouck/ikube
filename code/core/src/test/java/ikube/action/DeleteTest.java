@@ -11,6 +11,7 @@ import ikube.toolkit.FileUtilities;
 import java.io.File;
 import java.io.IOException;
 
+import mockit.Deencapsulation;
 import mockit.Mockit;
 
 import org.apache.lucene.index.IndexWriter;
@@ -41,7 +42,7 @@ public class DeleteTest extends ATest {
 		when(indexContext.getIndexDirectoryPath()).thenReturn("./" + this.getClass().getSimpleName());
 		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
 		delete = new Delete();
-		delete.setClusterManager(clusterManager);
+		Deencapsulation.setField(delete, clusterManager);
 	}
 
 	@After

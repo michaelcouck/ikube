@@ -33,25 +33,6 @@
 			</resource>
 		</resources>
 		<plugins>
-			<!-- This plugin reads the properties from the buid.properties file and makes them all available to the rest of the Maven build process. -->
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>properties-maven-plugin</artifactId>
-				<version>1.0-alpha-1</version>
-				<executions>
-					<execution>
-						<phase>initialize</phase>
-						<goals>
-							<goal>read-project-properties</goal>
-						</goals>
-						<configuration>
-							<files>
-								<file>build.properties</file>
-							</files>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
 			<!-- This plugin runs the unit tests. -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -79,6 +60,25 @@
 							<goal>integration-test</goal>
 							<goal>verify</goal> 
 						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- This plugin reads the properties from the buid.properties file and makes them all available to the rest of the Maven build process. -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>properties-maven-plugin</artifactId>
+				<version>1.0-alpha-1</version>
+				<executions>
+					<execution>
+						<phase>initialize</phase>
+						<goals>
+							<goal>read-project-properties</goal>
+						</goals>
+						<configuration>
+							<files>
+								<file>build.properties</file>
+							</files>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
@@ -278,7 +278,7 @@
 			<scope>test</scope>
 		</dependency>
 
-		<dependency>
+		<!-- <dependency>
 			<groupId>tomcat</groupId>
 			<artifactId>jasper-runtime</artifactId>
 			<version>5.5.23</version>
@@ -305,7 +305,7 @@
 			<version>1.6.5</version>
 			<type>jar</type>
 			<scope>test</scope>
-		</dependency>
+		</dependency> -->
 		<dependency>
 			<groupId>taglibs</groupId>
 			<artifactId>standard</artifactId>

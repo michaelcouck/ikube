@@ -40,7 +40,7 @@ public class Validator extends Action<IndexContext<?>, Boolean> {
 		String body = null;
 		boolean everythingInitialized = Boolean.TRUE;
 		try {
-			Server server = getClusterManager().getServer();
+			Server server = clusterManager.getServer();
 			IsIndexCurrent isIndexCurrent = new IsIndexCurrent();
 			IsIndexCorrupt isIndexCorrupt = new IsIndexCorrupt();
 			AreIndexesCreated areIndexesCreated = new AreIndexesCreated();
@@ -108,7 +108,7 @@ public class Validator extends Action<IndexContext<?>, Boolean> {
 			logger.error("Exception validating the system : " + indexContext, e);
 			everythingInitialized &= Boolean.FALSE;
 		} finally {
-			getClusterManager().stopWorking(getClass().getSimpleName(), indexContext.getIndexName(), "");
+			clusterManager.stopWorking(getClass().getSimpleName(), indexContext.getIndexName(), "");
 		}
 		return everythingInitialized;
 	}

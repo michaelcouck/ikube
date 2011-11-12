@@ -33,12 +33,33 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 
+/**
+ * This class is the cluster manager implementation using Jms.
+ * 
+ * During the executions of the rules, we need the cluster to be locked so that one of the other servers doesn't start writing an index and
+ * essentially upset the rules executions. This can happen in the case where this server is checking for an index that has expired, finds
+ * that the index is expired and starts indexing the data. Between the server having checked for the index expired date and the time the
+ * action is set in the cluster to indicate that this index is being generated, another server can start the same index, a race condition,
+ * which will cause both servers to create indexes for exactly the same index. We want to avoid duplicate work. As such when the rules are
+ * executed and an action is taken, it must happen atomically in the cluster.
+ * 
+ * @author Michael Couck
+ * @since 11.11.11
+ * @version 01.00
+ */
 public class ClusterManagerJms implements IClusterManager, MessageListener {
 
+	/**
+	 * This class is the lock class that is passed around the cluster containing the unique address of the server in the cluster and the
+	 * shout time, which determines who gets the lock.
+	 */
 	public static class Lock implements Serializable {
 
-		protected String address;
+		/** The timestamp for the server that shouted first. */
 		protected long shout;
+		/** The unique address of the server that sent the lock request. */
+		protected String address;
+		/** Whether the lock was requested or granted. */
 		protected boolean locked;
 
 		public Lock(String address, long shout, boolean locked) {
@@ -54,17 +75,31 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 
 	private static final Logger LOGGER = Logger.getLogger(ClusterManagerJms.class);
 
+	/** The time to wait for the responses from the cluster servers. */
 	private static final long RESPONSE_TIME = 1000;
-	private static final long LOCK_TIME_OUT = 5000;
+	/** The time out time for the lock in case a server dies. */
+	private static final long LOCK_TIME_OUT = 60000;
+	/** The time to sleep between trying to remove dead locks. */
+	private static final long LOCK_THREAD_WAIT_TIME = LOCK_TIME_OUT / 10;
+	/** The time out for a server, also in case it dies and retains the action/working flag. */
 	private static final long SERVER_TIME_OUT = 600000;
-	private static final long LOCK_THREAD_WAIT_TIME = 1000;
+	/** The time between refreshing the server in the cluster, i.e. sending it to the other servers. */
+	private static final long SERVER_REFRESH_THREAD_WAIT_TIME = SERVER_TIME_OUT / 10;
 
+	/** The textual representation of the ip address for this server. */
 	private String ip;
+	/** The address or unique identifier for this server. */
 	private String address;
+	/** The reference to the server object of this server. */
 	private Server server;
+	/** The list of locks that have been applied/accepted for. Please refer to the class JavaDoc for more information. */
 	private Map<String, Lock> locks;
-	private JmsTemplate jmsTemplate;
+	/** The list of servers in the cluster. */
 	private Map<String, Server> servers;
+	/** The Jms template to send messages. */
+	@Autowired
+	private JmsTemplate jmsTemplate;
+	/** Access to the ActiveMq cluster functionality. */
 	@Autowired
 	private XBeanBrokerService xBeanBrokerService;
 
@@ -72,11 +107,13 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 		locks = new HashMap<String, Lock>();
 		servers = new HashMap<String, Server>();
 		ip = InetAddress.getLocalHost().getHostAddress();
-		address = ip  + "." + Thread.currentThread().hashCode();
+		address = ip + "." + Thread.currentThread().hashCode();
 		getLock(address, Long.MAX_VALUE, Boolean.FALSE);
-		Thread lockTimeOutThread = new Thread(new Runnable() {
+		// This thread removes locks that have expired
+		new Thread(new Runnable() {
 			public void run() {
 				while (true) {
+					sleepForSomeTime(LOCK_THREAD_WAIT_TIME);
 					List<String> toRemove = new ArrayList<String>();
 					for (Entry<String, Lock> entry : locks.entrySet()) {
 						if (System.currentTimeMillis() - entry.getValue().shout > LOCK_TIME_OUT) {
@@ -87,12 +124,11 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 						LOGGER.warn("Removing lock from time out : " + locks.get(lockKey));
 						locks.remove(lockKey);
 					}
-					sleepForSomeTime(LOCK_THREAD_WAIT_TIME);
 				}
 			}
-		}, "Ikube lock time out thread");
-		lockTimeOutThread.start();
-		Thread serverTimeOutThread = new Thread(new Runnable() {
+		}, "Ikube lock time out thread").start();
+		// This thread removed servers that have expired
+		new Thread(new Runnable() {
 			public void run() {
 				while (true) {
 					sleepForSomeTime(SERVER_TIME_OUT);
@@ -115,24 +151,35 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 					}
 				}
 			}
-		}, "Ikube server time out thread");
-		serverTimeOutThread.start();
+		}, "Ikube server time out thread").start();
+		// This thread posts this server to the cluster to stay in the club
+		new Thread(new Runnable() {
+			public void run() {
+				while (true) {
+					sleepForSomeTime(SERVER_REFRESH_THREAD_WAIT_TIME);
+					sendMessage(getServer());
+				}
+			}
+		}).start();
 	}
 
+	/**
+	 * This method will post a message to all servers, with a lock containing the time the lock was requested. It will then wait a short
+	 * time for responses. Then the server that made the request first will get the lock. Generally though most servers will not be
+	 * competing for the lock.
+	 * 
+	 * @see ClusterManagerJms
+	 */
 	@Override
 	public synchronized boolean lock(String name) {
 		try {
-			sendMessage(getServer());
 			if (isLocked()) {
-				// LOGGER.info("Is locked : " + ip + ":" + locks);
-				// Republish our selves
 				return Boolean.FALSE;
 			}
-			// LOGGER.info("Before : " + locks);
 			long shout = System.currentTimeMillis();
 			// Send the lock with the locked flag to try get the lock from the cluster
 			Lock lock = getLock(address, shout, Boolean.TRUE);
-			sendMessage((Serializable) lock);
+			sendMessage(lock);
 			sleepForSomeTime(RESPONSE_TIME);
 			boolean haveLock = haveLock(shout);
 			if (haveLock) {
@@ -143,7 +190,7 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 				// If we don't get the lock then we reset our lock to false
 				// for the whole cluster
 				getLock(address, Long.MAX_VALUE, Boolean.FALSE);
-				sendMessage((Serializable) lock);
+				sendMessage(lock);
 				LOGGER.info("Didn't get lock : " + address + ":" + lock);
 			}
 			return haveLock;
@@ -152,6 +199,10 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 		}
 	}
 
+	/**
+	 * This method just listens on a topic for messages. Typically messages will contain locks and server objects. These objects from remote
+	 * servers will then be inserted into the locks and servers maps, updating the data on this server.
+	 */
 	@Override
 	public void onMessage(Message message) {
 		try {
@@ -169,6 +220,9 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 		}
 	}
 
+	/**
+	 * This method will unlock the cluster. We only unlock the cluster if we already have the lock of course.
+	 */
 	@Override
 	public synchronized boolean unlock(String name) {
 		try {
@@ -176,7 +230,7 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 			if (lock.locked) {
 				// We only set the lock for the cluster to false if we have it
 				lock = getLock(address, Long.MAX_VALUE, Boolean.FALSE);
-				sendMessage((Serializable) lock);
+				sendMessage(lock);
 				LOGGER.info("Unlock : " + address + ":" + locks);
 				return Boolean.TRUE;
 			}
@@ -186,6 +240,11 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 		}
 	}
 
+	/**
+	 * Checks to see if any server is currently holding the lock for the cluster.
+	 * 
+	 * @return whether any server has been granted the lock
+	 */
 	private boolean isLocked() {
 		for (Lock stackLock : locks.values()) {
 			if (stackLock.locked) {
@@ -195,6 +254,14 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 		return Boolean.FALSE;
 	}
 
+	/**
+	 * This method checks to see if we have the lock. When a server wants the lock it posts the {@link Lock} object to the cluster. Other
+	 * servers that may or may not be competing for the lock also post their locks. Whoever shouts for the lock first then get it. This
+	 * method checks to see if this server shouted first based on the locks from the other servers in the cluster.
+	 * 
+	 * @param shout the time that this server shouted for the lock
+	 * @return whether this server shouted for the lock first thereby getting the lock for the cluster
+	 */
 	protected boolean haveLock(long shout) {
 		for (Entry<String, Lock> entry : locks.entrySet()) {
 			if (!entry.getValue().locked) {
@@ -218,6 +285,13 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 		}
 	}
 
+	/**
+	 * TODO Complete the sending to the whole cluster based on the ip addresses returned from AtiveMq.
+	 * 
+	 * This method will send messages to the whole cluster.
+	 * 
+	 * @param serializable the object to send in the message
+	 */
 	protected void sendMessage(final Serializable serializable) {
 		jmsTemplate.send(new MessageCreator() {
 			@Override
@@ -241,6 +315,14 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 		}
 	}
 
+	/**
+	 * Creates the lock if it is not already instantiated.
+	 * 
+	 * @param address the address of this server
+	 * @param shout the time the server shouted for the lock
+	 * @param locked whether this is a request for the lock or a reset of false to release the lock
+	 * @return the lock for this server
+	 */
 	protected Lock getLock(String address, long shout, boolean locked) {
 		Lock lock = locks.get(address);
 		if (lock == null) {
@@ -252,6 +334,9 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 		return lock;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean anyWorking() {
 		for (Server server : servers.values()) {
@@ -263,6 +348,9 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 		return Boolean.FALSE;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean anyWorking(String indexName) {
 		for (Server server : servers.values()) {
@@ -274,13 +362,16 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 		return Boolean.FALSE;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public long startWorking(String actionName, String indexName, String indexableName) {
 		Action action = getAction(indexName, actionName, indexableName, Boolean.TRUE);
 		Server server = getServer();
 		server.setAction(action);
 		servers.put(server.getAddress(), server);
-		sendMessage((Serializable) server);
+		sendMessage(server);
 		return 0;
 	}
 
@@ -298,15 +389,22 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 		return action;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void stopWorking(String actionName, String indexName, String indexableName) {
 		Action action = getAction(indexName, actionName, indexableName, Boolean.FALSE);
 		Server server = getServer();
 		server.setAction(action);
-		sendMessage((Serializable) server);
+		sendMessage(server);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
+	@Deprecated
 	public long getIdNumber(String indexableName, String indexName, long batchSize, long minId) {
 		for (Server server : servers.values()) {
 			Action action = server.getAction();
@@ -324,6 +422,9 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 		return 0;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public List<Server> getServers() {
 		List<Server> servers = new ArrayList<Server>();
@@ -331,6 +432,9 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 		return servers;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Server getServer() {
 		if (server == null) {
@@ -343,17 +447,19 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 		return server;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean isException() {
 		return false;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void setException(boolean exception) {
-	}
-
-	public void setJmsTemplate(JmsTemplate jmsTemplate) {
-		this.jmsTemplate = jmsTemplate;
 	}
 
 }

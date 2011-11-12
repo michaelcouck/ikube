@@ -3,7 +3,6 @@ package ikube.action;
 import ikube.IConstants;
 import ikube.database.IDataBase;
 import ikube.model.IndexContext;
-import ikube.toolkit.ApplicationContextManager;
 
 import java.util.HashMap;
 import java.util.List;
@@ -24,7 +23,6 @@ public class Prune extends Action<IndexContext<?>, Boolean> {
 	@Override
 	public Boolean execute(final IndexContext<?> indexContext) {
 		try {
-			IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
 			Long count = dataBase.execute(Long.class, ikube.model.Action.SELECT_FROM_ACTIONS_COUNT);
 			while (count != null && count > IConstants.MAX_ACTIONS / 2) {
 				logger.info("Pruning : " + count);
@@ -33,7 +31,7 @@ public class Prune extends Action<IndexContext<?>, Boolean> {
 				count = dataBase.execute(Long.class, ikube.model.Action.SELECT_FROM_ACTIONS_COUNT);
 			}
 		} finally {
-			getClusterManager().stopWorking(getClass().getSimpleName(), indexContext.getIndexName(), "");
+			clusterManager.stopWorking(getClass().getSimpleName(), indexContext.getIndexName(), "");
 		}
 		return Boolean.TRUE;
 	}

@@ -1,8 +1,12 @@
 package ikube.web.admin;
 
+import ikube.cluster.IClusterManager;
+import ikube.service.IMonitorWebService;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
@@ -23,11 +27,18 @@ import org.springframework.web.servlet.mvc.AbstractController;
  */
 public abstract class BaseController extends AbstractController {
 
+	@Autowired
+	protected IClusterManager clusterManager;
+	@Autowired
+	protected IMonitorWebService monitorWebService;
+
 	/**
-	 * TODO Document me.
+	 * This method returns the uri for the target page. The Url for the application will be something like /ikube/admin/search.html, but
+	 * Spring wants to map the /admin/search to /admin/search.jsp, so it will prepend the .jsp to the uri before forwarding. This method
+	 * remove the context(ikube) and the .html from the uri and leave /admin/search for Spring to map forward.
 	 * 
-	 * @param request
-	 * @return
+	 * @param request the resuest for the page
+	 * @return the stripped uri to be prepended with .jsp by Spring
 	 */
 	protected String getViewUri(HttpServletRequest request) {
 		// Get the request url

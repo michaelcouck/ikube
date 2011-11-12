@@ -21,6 +21,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import mockit.Deencapsulation;
 import mockit.Mock;
 import mockit.MockClass;
 import mockit.Mockit;
@@ -97,10 +98,12 @@ public class SearchControllerTest {
 		parameterMap.put(IConstants.SEARCH_STRINGS, new String[] { IConstants.IKUBE });
 		when(request.getParameterMap()).thenReturn(parameterMap);
 		Server server = mock(Server.class);
-		IClusterManager clusterManager = ApplicationContextManagerMock.getBean(IClusterManager.class);
+		IClusterManager clusterManager = mock(IClusterManager.class); // ApplicationContextManagerMock.getBean(IClusterManager.class);
 		when(clusterManager.getServer()).thenReturn(server);
-		IMonitorWebService monitorWebService = ApplicationContextManagerMock.getBean(IMonitorWebService.class);
+		IMonitorWebService monitorWebService = mock(IMonitorWebService.class); // ApplicationContextManagerMock.getBean(IMonitorWebService.class);
 		when(monitorWebService.getIndexNames()).thenReturn(new String[] { "ikube", "ikube", "ikube" });
+		Deencapsulation.setField(searchController, clusterManager);
+		Deencapsulation.setField(searchController, monitorWebService);
 	}
 
 	@After

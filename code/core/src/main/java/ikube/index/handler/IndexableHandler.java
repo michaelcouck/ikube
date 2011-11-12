@@ -1,5 +1,6 @@
 package ikube.index.handler;
 
+import ikube.database.IDataBase;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
 
@@ -8,6 +9,7 @@ import java.io.IOException;
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.CorruptIndexException;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Base class for the handlers that contains access to common functionality like the threads etc.
@@ -26,6 +28,8 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IHandl
 	private Class<T> indexableClass;
 	/** The class that we will need to intercept the document adding to the index. */
 	private IDocumentDelegate documentDelegate;
+	@Autowired
+	protected IDataBase dataBase;
 
 	public int getThreads() {
 		return threads;

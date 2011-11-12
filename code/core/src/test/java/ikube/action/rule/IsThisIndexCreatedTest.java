@@ -10,6 +10,7 @@ import ikube.toolkit.FileUtilities;
 
 import java.io.File;
 
+import mockit.Deencapsulation;
 import mockit.Mockit;
 
 import org.junit.After;
@@ -32,7 +33,7 @@ public class IsThisIndexCreatedTest extends ATest {
 	@Before
 	public void before() {
 		isThisIndexCreated = new IsThisIndexCreated();
-		isThisIndexCreated.setClusterManager(clusterManager);
+		Deencapsulation.setField(isThisIndexCreated, clusterManager);
 		when(indexContext.getIndexDirectoryPath()).thenReturn("./" + this.getClass().getSimpleName());
 		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
 		Mockit.setUpMocks(ApplicationContextManagerMock.class, ClusterManagerMock.class);

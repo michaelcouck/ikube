@@ -31,7 +31,7 @@ public class Delete extends Action<IndexContext<?>, Boolean> {
 			deletedBoth |= deleteOldIndexes(indexDirectoryPathBackup);
 			return deletedBoth;
 		} finally {
-			getClusterManager().stopWorking(getClass().getSimpleName(), indexContext.getIndexName(), "");
+			clusterManager.stopWorking(getClass().getSimpleName(), indexContext.getIndexName(), "");
 		}
 	}
 

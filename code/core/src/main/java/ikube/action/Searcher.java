@@ -2,13 +2,11 @@ package ikube.action;
 
 import ikube.IConstants;
 import ikube.listener.Event;
-import ikube.listener.ListenerManager;
 import ikube.model.IndexContext;
 import ikube.model.Server;
 import ikube.service.IMonitorWebService;
 import ikube.service.ISearcherWebService;
 import ikube.service.ServiceLocator;
-import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.Logging;
 import ikube.toolkit.SerializationUtilities;
 
@@ -47,7 +45,7 @@ public class Searcher extends Action<IndexContext<?>, Boolean> {
 				return Boolean.FALSE;
 			}
 			String xml = null;
-			Server server = getClusterManager().getServer();
+			Server server = clusterManager.getServer();
 			String ip = server.getIp();
 			ISearcherWebService searcherWebService = ServiceLocator.getService(ISearcherWebService.class, "http", ip,
 					ISearcherWebService.PUBLISHED_PORT, ISearcherWebService.PUBLISHED_PATH, ISearcherWebService.NAMESPACE,
@@ -77,7 +75,6 @@ public class Searcher extends Action<IndexContext<?>, Boolean> {
 			if (xml != null) {
 				results = (List<Map<String, String>>) SerializationUtilities.deserialize(xml);
 			}
-			ListenerManager listenerManager = ApplicationContextManager.getBean(ListenerManager.class);
 			if (results.size() < resultsSizeMinimum) {
 				String message = Logging.getString("Results not expected : ", results.size(), indexContext.getIndexName(), searchString,
 						start, end, resultsSizeMinimum);
@@ -92,7 +89,7 @@ public class Searcher extends Action<IndexContext<?>, Boolean> {
 		} catch (Exception e) {
 			logger.error("Exception searching index : ", e);
 		} finally {
-			getClusterManager().stopWorking(getClass().getSimpleName(), indexContext.getIndexName(), "");
+			clusterManager.stopWorking(getClass().getSimpleName(), indexContext.getIndexName(), "");
 		}
 		return Boolean.TRUE;
 	}

@@ -27,7 +27,7 @@ public class IsThisIndexCreated extends ARule<IndexContext<?>> {
 		// different from the timestamp of the latest index directory for this server
 		String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
 		File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexDirectoryPath);
-		Server server = getClusterManager().getServer();
+		Server server = clusterManager.getServer();
 		String address = server.getAddress();
 		// Check that this server has created the index. If so then this server
 		// finished first and there are still other servers working, but we should not join them

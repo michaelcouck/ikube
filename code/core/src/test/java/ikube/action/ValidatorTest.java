@@ -16,6 +16,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import mockit.Deencapsulation;
 import mockit.Mockit;
 
 import org.apache.lucene.index.IndexWriter;
@@ -54,7 +55,7 @@ public class ValidatorTest extends ATest {
 				return null;
 			}
 		}).when(validator).sendNotification(anyString(), anyString());
-		validator.setClusterManager(clusterManager);
+		Deencapsulation.setField(validator, clusterManager);
 		when(indexContext.getIndexDirectoryPath()).thenReturn("./" + this.getClass().getSimpleName());
 		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
 	}
@@ -85,7 +86,7 @@ public class ValidatorTest extends ATest {
 		verify(validator, Mockito.times(invocations)).sendNotification(anyString(), anyString());
 
 		Backup backup = new Backup();
-		backup.setClusterManager(clusterManager);
+		Deencapsulation.setField(backup, clusterManager);
 		backup.execute(indexContext);
 		result = validator.execute(indexContext);
 		assertTrue("There is an index created : ", result);

@@ -2,10 +2,8 @@ package ikube.action;
 
 import ikube.index.IndexManager;
 import ikube.listener.Event;
-import ikube.listener.ListenerManager;
 import ikube.model.IndexContext;
 import ikube.service.SearcherWebService;
-import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.Logging;
 
@@ -49,7 +47,7 @@ public class Open extends Action<IndexContext<?>, Boolean> {
 		try {
 			return openOnFile(indexContext);
 		} finally {
-			getClusterManager().stopWorking(getClass().getSimpleName(), indexContext.getIndexName(), "");
+			clusterManager.stopWorking(getClass().getSimpleName(), indexContext.getIndexName(), "");
 		}
 	}
 
@@ -112,7 +110,6 @@ public class Open extends Action<IndexContext<?>, Boolean> {
 				Searchable[] searchables = searchers.toArray(new IndexSearcher[searchers.size()]);
 				MultiSearcher multiSearcher = new MultiSearcher(searchables);
 				indexContext.getIndex().setMultiSearcher(multiSearcher);
-				ListenerManager listenerManager = ApplicationContextManager.getBean(ListenerManager.class);
 				listenerManager.fireEvent(Event.SEARCHER_OPENED, System.currentTimeMillis(), indexContext, Boolean.FALSE);
 				return Boolean.TRUE;
 			}

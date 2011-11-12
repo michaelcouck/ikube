@@ -2,9 +2,10 @@ package ikube.toolkit;
 
 import javax.transaction.TransactionManager;
 
-import org.infinispan.transaction.lookup.GenericTransactionManagerLookup;
+// import org.infinispan.transaction.lookup.GenericTransactionManagerLookup;
 
-public class AtomikosTransactionManagerLookup extends GenericTransactionManagerLookup {
+@Deprecated
+public class AtomikosTransactionManagerLookup /* extends GenericTransactionManagerLookup */ {
 
 	private static TransactionManager	transactionManager;
 
@@ -12,9 +13,10 @@ public class AtomikosTransactionManagerLookup extends GenericTransactionManagerL
 		// return ApplicationContextManager.getBean(TransactionManager.class);
 		// return super.getTransactionManager();
 		if (transactionManager != null) {
-			return AtomikosTransactionManagerLookup.transactionManager;
+			// return AtomikosTransactionManagerLookup.transactionManager;
 		}
-		return super.getTransactionManager();
+		// return super.getTransactionManager();
+		return null;
 	}
 
 	public static void setTransactionManager(TransactionManager transactionManager) {

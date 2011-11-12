@@ -19,6 +19,9 @@ import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.core.io.Resource;
 
 /**
+ * TODO Add support to this class to load the default core application configuration from the jar and other client configuration from the
+ * Ikube folder out side the container.
+ * 
  * Class for accessing the Spring context.
  * 
  * @author Michael Couck
@@ -191,7 +194,11 @@ public final class ApplicationContextManager {
 	}
 
 	/**
-	 * This class is to be able to mix and match the configuration from the file system and the classpath.
+	 * TODO Implement this class completely.
+	 * 
+	 * This class is to be able to mix and match the configuration from the file system and the classpath. Essentially what we want to do is
+	 * to have the default and application configuration in the core jar and the client configuration outside the container in the Ikube
+	 * folder.
 	 * 
 	 * @author Michael Couck
 	 * @since 07.06.11

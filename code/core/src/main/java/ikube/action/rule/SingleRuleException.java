@@ -18,7 +18,7 @@ public class SingleRuleException extends ARule<IndexContext<?>> {
 	 */
 	@Override
 	public boolean evaluate(final IndexContext<?> indexContext) {
-		return getClusterManager().isException();
+		return clusterManager.isException();
 	}
 
 }

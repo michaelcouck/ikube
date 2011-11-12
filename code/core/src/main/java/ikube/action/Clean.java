@@ -45,7 +45,7 @@ public class Clean<E, F> extends Action<IndexContext<?>, Boolean> {
 			}
 			return Boolean.TRUE;
 		} finally {
-			getClusterManager().stopWorking(getClass().getSimpleName(), indexContext.getIndexName(), "");
+			clusterManager.stopWorking(getClass().getSimpleName(), indexContext.getIndexName(), "");
 		}
 	}
 

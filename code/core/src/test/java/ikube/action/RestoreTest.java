@@ -10,6 +10,7 @@ import ikube.toolkit.FileUtilities;
 
 import java.io.File;
 
+import mockit.Deencapsulation;
 import mockit.Mockit;
 
 import org.apache.lucene.index.IndexReader;
@@ -38,7 +39,7 @@ public class RestoreTest extends ATest {
 	@Before
 	public void before() throws Exception {
 		restore = new Restore();
-		restore.setClusterManager(clusterManager);
+		Deencapsulation.setField(restore, clusterManager);
 		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
 		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPathBackup()), 1);
 	}

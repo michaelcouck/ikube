@@ -7,6 +7,7 @@ import ikube.mock.ClusterManagerMock;
 
 import java.io.IOException;
 
+import mockit.Deencapsulation;
 import mockit.Mockit;
 
 import org.junit.After;
@@ -30,7 +31,7 @@ public class CloseTest extends ATest {
 	public void before() {
 		Mockit.setUpMocks(ApplicationContextManagerMock.class, ClusterManagerMock.class);
 		close = new Close();
-		close.setClusterManager(clusterManager);
+		Deencapsulation.setField(close, clusterManager);
 	}
 	
 	@After

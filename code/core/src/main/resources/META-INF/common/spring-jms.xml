@@ -6,7 +6,7 @@
 	xmlns:jms="http://www.springframework.org/schema/jms"
 	xmlns:context="http://www.springframework.org/schema/context" 
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:property="http://www.springframework.org/schema/p"
 	xsi:schemaLocation="
 		http://www.springframework.org/schema/beans 
 		http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
@@ -46,14 +46,14 @@
 	<bean 
 		id="amqConnectionFactory" 
 		class="org.apache.activemq.ActiveMQConnectionFactory" 
-		p:brokerURL="tcp://localhost:${activemq.port}" />
+		property:brokerURL="tcp://localhost:${activemq.port}" />
 
 	<!-- A cached connection to wrap the ActiveMQ connection -->
 	<bean 
 		id="cachedConnectionFactory" 
 		class="org.springframework.jms.connection.CachingConnectionFactory" 
-		p:targetConnectionFactory-ref="amqConnectionFactory"
-		p:sessionCacheSize="10" />
+		property:targetConnectionFactory-ref="amqConnectionFactory"
+		property:sessionCacheSize="10" />
 
 	<!-- A queue in ActiveMQ -->
 	<bean 
@@ -70,18 +70,18 @@
 	</bean>
 
 	<!-- A JmsTemplate instance that uses the cached connection and queue -->
-	<bean 
+	<!-- <bean 
 		id="jmsQueueTemplate" 
 		class="org.springframework.jms.core.JmsTemplate" 
-		p:connectionFactory-ref="cachedConnectionFactory"
-		p:defaultDestination-ref="queue" />
+		property:connectionFactory-ref="cachedConnectionFactory"
+		property:defaultDestination-ref="queue" /> -->
 	
 	<!-- A JmsTemplate instance that uses the cached connection and topic -->
 	<bean 
 		id="jmsTopicTemplate" 
 		class="org.springframework.jms.core.JmsTemplate" 
-		p:connectionFactory-ref="cachedConnectionFactory"
-		p:defaultDestination-ref="topic" />
+		property:connectionFactory-ref="cachedConnectionFactory"
+		property:defaultDestination-ref="topic" />
 
 	<!-- The Spring message listener container configuration -->
 	<jms:listener-container 

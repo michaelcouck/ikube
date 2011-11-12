@@ -16,6 +16,8 @@ import ikube.toolkit.ApplicationContextManager;
 import java.sql.Timestamp;
 import java.util.List;
 
+import mockit.Deencapsulation;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -26,14 +28,15 @@ import org.junit.Test;
  */
 public class PruneIntegration extends AbstractIntegration {
 
-	private Prune		prune;
-	private IDataBase	dataBase;
+	private Prune prune;
+	private IDataBase dataBase;
 
 	@Before
 	public void before() {
 		prune = new Prune();
-		prune.setClusterManager(mock(IClusterManager.class));
 		dataBase = ApplicationContextManager.getBean(IDataBase.class);
+		Deencapsulation.setField(prune, dataBase);
+		Deencapsulation.setField(prune, mock(IClusterManager.class));
 		delete(dataBase, Action.class);
 	}
 

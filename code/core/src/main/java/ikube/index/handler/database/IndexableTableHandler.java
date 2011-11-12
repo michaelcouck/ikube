@@ -141,7 +141,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 			}
 			return threads;
 		} catch (Exception e) {
-			logger.error("Exception starting the table handler threads : ", e);
+			logger.error("Exception starting the table handler threads : " + indexable, e);
 			// Try to close the connection
 			for (Connection connection : connections) {
 				logger.debug("Closing connection : " + connection);

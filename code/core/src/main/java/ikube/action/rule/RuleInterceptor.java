@@ -21,6 +21,7 @@ import org.apache.log4j.Logger;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.nfunk.jep.JEP;
 import org.nfunk.jep.SymbolTable;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * @see IRuleInterceptor
@@ -32,7 +33,9 @@ public class RuleInterceptor implements IRuleInterceptor {
 
 	private static final transient Logger LOGGER = Logger.getLogger(RuleInterceptor.class);
 
+	@Autowired
 	private IDataBase dataBase;
+	@Autowired
 	private IClusterManager clusterManager;
 	private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(10);
 
@@ -184,14 +187,6 @@ public class RuleInterceptor implements IRuleInterceptor {
 		} catch (Exception e) {
 			LOGGER.error("Exception printing the nodes : ", e);
 		}
-	}
-
-	public void setDataBase(IDataBase dataBase) {
-		this.dataBase = dataBase;
-	}
-
-	public void setClusterManager(IClusterManager clusterManager) {
-		this.clusterManager = clusterManager;
 	}
 
 }

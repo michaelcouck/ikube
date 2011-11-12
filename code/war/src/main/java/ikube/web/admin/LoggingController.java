@@ -1,9 +1,7 @@
 package ikube.web.admin;
 
 import ikube.IConstants;
-import ikube.cluster.IClusterManager;
 import ikube.model.Server;
-import ikube.toolkit.ApplicationContextManager;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -24,7 +22,7 @@ public class LoggingController extends BaseController {
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		String viewUrl = getViewUri(request);
 		ModelAndView modelAndView = new ModelAndView(viewUrl);
-		Server server = ApplicationContextManager.getBean(IClusterManager.class).getServer();
+		Server server = clusterManager.getServer();
 		modelAndView.addObject(IConstants.SERVER, server);
 		return modelAndView;
 	}

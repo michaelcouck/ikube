@@ -4,6 +4,7 @@ import static org.junit.Assert.assertFalse;
 import ikube.ATest;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.mock.ClusterManagerMock;
+import mockit.Deencapsulation;
 import mockit.Mockit;
 
 import org.junit.After;
@@ -26,7 +27,7 @@ public class DiskFullTest extends ATest {
 	@Before
 	public void before() throws Exception {
 		diskFull = new DiskFull();
-		diskFull.setClusterManager(clusterManager);
+		Deencapsulation.setField(diskFull, clusterManager);
 		Mockit.setUpMocks(ApplicationContextManagerMock.class, ClusterManagerMock.class);
 	}
 

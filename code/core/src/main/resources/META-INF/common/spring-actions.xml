@@ -51,8 +51,7 @@
 		class="ikube.action.Reset" 
 		property:ruleExpression="
 			!IsThisServerWorking &#38;&#38; 
-			!AnyServersWorking"
-		property:clusterManager-ref="ikube.cluster.IClusterManager">
+			!AnyServersWorking">
 		<property name="rules">
 			<util:list>
 				<ref local="ikube.action.rule.IsThisServerWorking" />
@@ -65,8 +64,7 @@
 		class="ikube.action.Prune" 
 		property:ruleExpression="
 			!IsThisServerWorking &#38;&#38; 
-			!AnyServersWorking"
-		property:clusterManager-ref="ikube.cluster.IClusterManager">
+			!AnyServersWorking">
 		<property name="rules">
 			<util:list>
 				<ref local="ikube.action.rule.IsThisServerWorking" />
@@ -82,8 +80,7 @@
 			!AnyServersWorking &#38;&#38;
 			DoesBackupIndexExist &#38;&#38;
 			(!AreIndexesCreated || 
-			IsIndexCorrupt)"
-		property:clusterManager-ref="ikube.cluster.IClusterManager">
+			IsIndexCorrupt)">
 		<property name="rules">
 			<util:list>
 				<ref local="ikube.action.rule.IsThisServerWorking" />
@@ -103,8 +100,7 @@
 			(!IsIndexCurrent  || 
 			IsIndexCorrupt || 
 			(AreIndexesCreated || 
-			AreUnopenedIndexes))"
-		property:clusterManager-ref="ikube.cluster.IClusterManager">
+			AreUnopenedIndexes))">
 		<property name="rules">
 			<util:list>
 				<ref local="ikube.action.rule.IsThisServerWorking" />
@@ -125,8 +121,7 @@
 			(!IsMultiSearcherInitialised ||  
 			!AreSearchablesInitialised) &#38;&#38;
 			(AreIndexesCreated || 
-			AreUnopenedIndexes)"
-		property:clusterManager-ref="ikube.cluster.IClusterManager">
+			AreUnopenedIndexes)">
 		<property name="rules">
 			<util:list>
 				<ref local="ikube.action.rule.IsThisServerWorking" />
@@ -146,8 +141,7 @@
 			(!AnyServersWorkingThisIndex &#38;&#38;
 			(!IsIndexCurrent || 
 			 IsIndexCorrupt)) ||
-			 SingleRuleException"
-		property:clusterManager-ref="ikube.cluster.IClusterManager">
+			 SingleRuleException">
 		<property name="rules">
 			<util:list>
 				<ref local="ikube.action.rule.IsThisServerWorking" />
@@ -163,8 +157,7 @@
 		class="ikube.action.Delete" 
 		property:ruleExpression="
 			!IsThisServerWorking &#38;&#38; 
-			!AnyServersWorking"
-		property:clusterManager-ref="ikube.cluster.IClusterManager">
+			!AnyServersWorking">
 		<property name="rules">
 			<util:list>
 				<ref local="ikube.action.rule.IsThisServerWorking" />
@@ -177,8 +170,7 @@
 		class="ikube.action.Clean" 
 		property:ruleExpression="
 			!IsThisServerWorking &#38;&#38; 
-			!AnyServersWorking"
-		property:clusterManager-ref="ikube.cluster.IClusterManager">
+			!AnyServersWorking">
 		<property name="rules">
 			<util:list>
 				<ref local="ikube.action.rule.IsThisServerWorking" />
@@ -192,8 +184,7 @@
 		property:ruleExpression="
 			!IsThisServerWorking &#38;&#38; 
 			!AnyServersWorking &#38;&#38;  
-			!IsIndexBackedUp"
-		property:clusterManager-ref="ikube.cluster.IClusterManager">
+			!IsIndexBackedUp">
 		<property name="rules">
 			<util:list>
 				<ref local="ikube.action.rule.IsThisServerWorking" />
@@ -206,8 +197,7 @@
 		id="ikube.action.DiskFull" 
 		class="ikube.action.DiskFull" 
 		property:ruleExpression="
-			!IsThisServerWorking"
-		property:clusterManager-ref="ikube.cluster.IClusterManager">
+			!IsThisServerWorking">
 		<property name="rules">
 			<util:list>
 				<ref local="ikube.action.rule.IsThisServerWorking" />
@@ -219,8 +209,7 @@
 		class="ikube.action.Validator" 
 		property:ruleExpression="
 			!IsThisServerWorking &#38;&#38; 
-			!AnyServersWorking"
-		property:clusterManager-ref="ikube.cluster.IClusterManager">
+			!AnyServersWorking">
 		<property name="rules">
 			<util:list>
 				<ref local="ikube.action.rule.IsThisServerWorking" />
@@ -241,8 +230,7 @@
 		property:end="10"
 		property:searchString="cape OR town OR roets OR 1001 OR ikube"
 		property:resultsSizeMinimum="2"
-		property:iterations="10"
-		property:clusterManager-ref="ikube.cluster.IClusterManager">
+		property:iterations="10">
 		<property name="rules">
 			<util:list>
 				<ref local="ikube.action.rule.IsThisServerWorking" />
@@ -254,23 +242,23 @@
 	</bean>
 	
 	<bean id="ikube.action.rule.IsInMemory" class="ikube.action.rule.IsInMemory" />
-	<bean id="ikube.action.rule.AnyServersWorking" class="ikube.action.rule.AnyServersWorking"  property:clusterManager-ref="ikube.cluster.IClusterManager" />
+	<bean id="ikube.action.rule.AnyServersWorking" class="ikube.action.rule.AnyServersWorking" />
 	<bean id="ikube.action.rule.AreDirectoriesEqual" class="ikube.action.rule.AreDirectoriesEqual" />
-	<bean id="ikube.action.rule.AreIndexesCreated" class="ikube.action.rule.AreIndexesCreated" property:clusterManager-ref="ikube.cluster.IClusterManager" />
+	<bean id="ikube.action.rule.AreIndexesCreated" class="ikube.action.rule.AreIndexesCreated" />
 	<bean id="ikube.action.rule.AreSearchablesInitialised" class="ikube.action.rule.AreSearchablesInitialised" />
 	<bean id="ikube.action.rule.AreUnopenedIndexes" class="ikube.action.rule.AreUnopenedIndexes" />
-	<bean id="ikube.action.rule.DirectoryExistsAndIsLocked" class="ikube.action.rule.DirectoryExistsAndIsLocked" property:clusterManager-ref="ikube.cluster.IClusterManager" />
+	<bean id="ikube.action.rule.DirectoryExistsAndIsLocked" class="ikube.action.rule.DirectoryExistsAndIsLocked" />
 	<bean id="ikube.action.rule.DirectoryExistsAndNotLocked" class="ikube.action.rule.DirectoryExistsAndNotLocked" />
-	<bean id="ikube.action.rule.IsIndexCurrent" class="ikube.action.rule.IsIndexCurrent" property:clusterManager-ref="ikube.cluster.IClusterManager" />
+	<bean id="ikube.action.rule.IsIndexCurrent" class="ikube.action.rule.IsIndexCurrent" />
 	<bean id="ikube.action.rule.IsMultiSearcherInitialised" class="ikube.action.rule.IsMultiSearcherInitialised" />
-	<bean id="ikube.action.rule.IsThisIndexCreated" class="ikube.action.rule.IsThisIndexCreated" property:clusterManager-ref="ikube.cluster.IClusterManager" />
-	<bean id="ikube.action.rule.IsIndexCorrupt" class="ikube.action.rule.IsIndexCorrupt" property:clusterManager-ref="ikube.cluster.IClusterManager" />
-	<bean id="ikube.action.rule.IsIndexBackedUp" class="ikube.action.rule.IsIndexBackedUp" property:clusterManager-ref="ikube.cluster.IClusterManager" />
-	<bean id="ikube.action.rule.IsBackupIndexCurrent" class="ikube.action.rule.IsBackupIndexCurrent" property:clusterManager-ref="ikube.cluster.IClusterManager" />
-	<bean id="ikube.action.rule.SingleRuleException" class="ikube.action.rule.SingleRuleException" property:clusterManager-ref="ikube.cluster.IClusterManager" />
-	<bean id="ikube.action.rule.AnyServersWorkingThisIndex" class="ikube.action.rule.AnyServersWorkingThisIndex" property:clusterManager-ref="ikube.cluster.IClusterManager" />
-	<bean id="ikube.action.rule.IsThisServerWorking" class="ikube.action.rule.IsThisServerWorking" property:clusterManager-ref="ikube.cluster.IClusterManager" />
-	<bean id="ikube.action.rule.IsNewIndexCreated" class="ikube.action.rule.IsNewIndexCreated" property:clusterManager-ref="ikube.cluster.IClusterManager" />
-	<bean id="ikube.action.rule.DoesBackupIndexExist" class="ikube.action.rule.DoesBackupIndexExist" property:clusterManager-ref="ikube.cluster.IClusterManager" />
+	<bean id="ikube.action.rule.IsThisIndexCreated" class="ikube.action.rule.IsThisIndexCreated" />
+	<bean id="ikube.action.rule.IsIndexCorrupt" class="ikube.action.rule.IsIndexCorrupt" />
+	<bean id="ikube.action.rule.IsIndexBackedUp" class="ikube.action.rule.IsIndexBackedUp" />
+	<bean id="ikube.action.rule.IsBackupIndexCurrent" class="ikube.action.rule.IsBackupIndexCurrent" />
+	<bean id="ikube.action.rule.SingleRuleException" class="ikube.action.rule.SingleRuleException" />
+	<bean id="ikube.action.rule.AnyServersWorkingThisIndex" class="ikube.action.rule.AnyServersWorkingThisIndex" />
+	<bean id="ikube.action.rule.IsThisServerWorking" class="ikube.action.rule.IsThisServerWorking" />
+	<bean id="ikube.action.rule.IsNewIndexCreated" class="ikube.action.rule.IsNewIndexCreated" />
+	<bean id="ikube.action.rule.DoesBackupIndexExist" class="ikube.action.rule.DoesBackupIndexExist" />
 	
 </beans>

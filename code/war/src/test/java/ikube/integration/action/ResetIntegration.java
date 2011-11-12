@@ -13,6 +13,8 @@ import ikube.toolkit.ApplicationContextManager;
 
 import java.util.List;
 
+import mockit.Deencapsulation;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -29,8 +31,9 @@ public class ResetIntegration extends AbstractIntegration {
 	@Before
 	public void before() {
 		reset = new Reset();
-		reset.setClusterManager(mock(IClusterManager.class));
 		dataBase = ApplicationContextManager.getBean(IDataBase.class);
+		Deencapsulation.setField(reset, dataBase);
+		Deencapsulation.setField(reset, mock(IClusterManager.class));
 		delete(dataBase, Url.class);
 	}
 
