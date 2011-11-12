@@ -27,6 +27,7 @@ import org.apache.log4j.Logger;
  * @since 21.11.10
  * @version 01.00
  */
+@SuppressWarnings("deprecation")
 public class ClusterManager implements IClusterManager, IConstants {
 
 	/** The logger, doh. */
@@ -48,8 +49,8 @@ public class ClusterManager implements IClusterManager, IConstants {
 	/**
 	 * In the constructor we initialise the logger but most importantly the address of this server. Please see the comments.
 	 * 
-	 * @throws UnknownHostException
-	 *             this can only be the InetAddress exception, which can never happen because we are looking for the localhost
+	 * @throws UnknownHostException this can only be the InetAddress exception, which can never happen because we are looking for the
+	 *             localhost
 	 */
 	public ClusterManager() throws UnknownHostException {
 		// We give each server a unique name because there can be several servers
@@ -210,7 +211,6 @@ public class ClusterManager implements IClusterManager, IConstants {
 			// Reset the time in the action for each action
 			action.setStartTime(new Timestamp(startTime));
 			action.setWorking(Boolean.TRUE);
-			action.setServerName(server.getAddress());
 			// Publish the fact that this server is starting to work on an action
 			server.setAction(action);
 			servers.put(server.getAddress(), server);

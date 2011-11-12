@@ -7,7 +7,6 @@ import ikube.database.IDataBase;
 import ikube.model.Action;
 import ikube.model.IndexContext;
 import ikube.model.Rule;
-import ikube.model.Server;
 import ikube.toolkit.Logging;
 
 import java.sql.Timestamp;
@@ -64,7 +63,7 @@ public class RuleInterceptor implements IRuleInterceptor {
 				LOGGER.warn("Can't intercept non action class, proceeding : " + target);
 				return proceedingJoinPoint.proceed();
 			} else if (!gotLock) {
-				LOGGER.info("Couldn't aquire lock : ");
+				LOGGER.debug("Couldn't aquire lock : ");
 				proceed = Boolean.FALSE;
 			} else {
 				// Get the rules associated with this action
@@ -154,8 +153,6 @@ public class RuleInterceptor implements IRuleInterceptor {
 			final Action modelAction) {
 		try {
 			long delay = 1;
-			Server server = clusterManager.getServer();
-			modelAction.setServerName(server.getAddress());
 			// We set the working flag in the action within the cluster lock when setting to true
 			clusterManager.startWorking(actionName, indexName, "");
 			executorService.schedule(new Runnable() {

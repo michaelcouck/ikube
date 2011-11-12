@@ -179,9 +179,7 @@
 	<util:list id="ikube.listener.ListenerManager.listeners">
 		<ref bean="ikube.IndexEngine" />
 		<ref bean="ikube.monitoring.IMonitoringInterceptor" />
-		<bean 
-			class="ikube.listener.JmsListener"
-			property:jmsTemplate-ref="jmsTopicTemplate" />
+		<bean class="ikube.listener.JmsListener" />
 	</util:list>
 	
 	<bean 

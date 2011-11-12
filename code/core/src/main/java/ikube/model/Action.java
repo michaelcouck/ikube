@@ -26,44 +26,43 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 		@NamedQuery(name = Action.SELECT_FROM_ACTIONS_COUNT, query = Action.SELECT_FROM_ACTIONS_COUNT) })
 public class Action extends Persistable {
 
-	public static final String	SELECT_FROM_ACTIONS			= "select a from Action as a order by a.id asc";
-	public static final String	SELECT_FROM_ACTIONS_COUNT	= "select count(a) from Action as a";
+	public static final String SELECT_FROM_ACTIONS = "select a from Action as a order by a.id asc";
+	public static final String SELECT_FROM_ACTIONS_COUNT = "select count(a) from Action as a";
 
 	/** The row id of the next row. */
-	private long				idNumber;
+	private long idNumber;
 	/** The name of the action that is executing. */
-	private String				actionName;
-	/** The name of the server that executes this action. */
-	private String				serverName;
+	private String actionName;
 	/** The currently executing indexable. */
-	private String				indexableName;
+	private String indexableName;
 	/** The actionName of the currently executing index. */
-	private String				indexName;
+	private String indexName;
 	/** The time the action was started. */
 	@Temporal(value = TemporalType.TIMESTAMP)
-	private Timestamp			startTime;
+	private Timestamp startTime;
 	/** The time the action ended. */
 	@Temporal(value = TemporalType.TIMESTAMP)
-	private Timestamp			endTime;
+	private Timestamp endTime;
 	/** The time it took for this action to finish. */
-	private long				duration;
+	private long duration;
 	/** Whether this server is working. */
-	private boolean				working;
+	private boolean working;
 	/** The predicate for the rules. */
-	private String				ruleExpression;
+	private String ruleExpression;
 	/** The rules that were evaluated for this action. */
 	@OneToMany(cascade = { CascadeType.ALL }, mappedBy = "action", fetch = FetchType.EAGER)
-	private List<Rule>			rules;
+	private List<Rule> rules;
 	/** The result from the rules and the predicate. */
-	private boolean				result;
+	private boolean result;
 
 	/**
 	 * Default constructor.
 	 */
-	public Action() {}
+	public Action() {
+	}
 
-	public Action(final long idNumber, final String actionName, final String indexableName, final String indexName, final Timestamp startTime,
-			final boolean working) {
+	public Action(final long idNumber, final String actionName, final String indexableName, final String indexName,
+			final Timestamp startTime, final boolean working) {
 		this.idNumber = idNumber;
 		this.actionName = actionName;
 		this.indexableName = indexableName;
@@ -72,10 +71,12 @@ public class Action extends Persistable {
 		this.working = working;
 	}
 
+	@Deprecated
 	public long getIdNumber() {
 		return idNumber;
 	}
 
+	@Deprecated
 	public void setIdNumber(final long idNumber) {
 		this.idNumber = idNumber;
 	}
@@ -86,14 +87,6 @@ public class Action extends Persistable {
 
 	public void setActionName(String actionName) {
 		this.actionName = actionName;
-	}
-
-	public String getServerName() {
-		return serverName;
-	}
-
-	public void setServerName(String serverName) {
-		this.serverName = serverName;
 	}
 
 	public String getIndexableName() {

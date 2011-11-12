@@ -26,10 +26,10 @@
 		persistent="true">
 		<amq:networkConnectors>
 			<amq:networkConnector uri="multicast://default">
-				<!-- <amq:dynamicallyIncludedDestinations>
+				<amq:dynamicallyIncludedDestinations>
 					<amq:topic physicalName="topic" />
 					<amq:queue physicalName="queue" />
-				</amq:dynamicallyIncludedDestinations> -->
+				</amq:dynamicallyIncludedDestinations>
 			</amq:networkConnector>
 		</amq:networkConnectors>
 		<amq:persistenceAdapter>
@@ -65,7 +65,7 @@
 	<!-- A topic in ActiveMQ -->
 	<bean 
 		id="topic" 
-		class="org.apache.activemq.command.ActiveMQQueue">
+		class="org.apache.activemq.command.ActiveMQTopic">
 		<constructor-arg value="topic" />
 	</bean>
 
@@ -78,10 +78,10 @@
 	
 	<!-- A JmsTemplate instance that uses the cached connection and topic -->
 	<bean 
-		id="jmsTopicTemplate" 
+		id="jmsTemplate" 
 		class="org.springframework.jms.core.JmsTemplate" 
 		property:connectionFactory-ref="cachedConnectionFactory"
-		property:defaultDestination-ref="topic" />
+		property:defaultDestination-ref="queue" />
 
 	<!-- The Spring message listener container configuration -->
 	<jms:listener-container 
@@ -89,7 +89,7 @@
 		connection-factory="amqConnectionFactory" 
 		acknowledge="auto">
 		<jms:listener 
-			destination="topic" 
+			destination="queue" 
 			ref="ikube.cluster.IClusterManager" 
 			method="onMessage" />
 	</jms:listener-container>

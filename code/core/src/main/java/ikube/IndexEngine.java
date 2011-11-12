@@ -19,12 +19,11 @@ import org.apache.log4j.Logger;
 /**
  * This class is the central class for creating indexes.
  * 
- * This class then only looks up the index contexts and executes actions on them. The index engine registers a listener
- * with the scheduler and responds to the {@link Event#TIMER} type of event. This event schedule can be configured in
- * the configuration, as can most schedules and executors.
+ * This class then only looks up the index contexts and executes actions on them. The index engine registers a listener with the scheduler
+ * and responds to the {@link Event#TIMER} type of event. This event schedule can be configured in the configuration, as can most schedules
+ * and executors.
  * 
- * Index contexts contain parameters and indexables. Indexables are objects that can be indexed, like files and
- * databases.
+ * Index contexts contain parameters and indexables. Indexables are objects that can be indexed, like files and databases.
  * 
  * @author Michael Couck
  * @since 21.11.10
@@ -32,10 +31,10 @@ import org.apache.log4j.Logger;
  */
 public class IndexEngine implements IIndexEngine, IListener {
 
-	private static final Logger						LOGGER	= Logger.getLogger(IndexEngine.class);
+	private static final Logger LOGGER = Logger.getLogger(IndexEngine.class);
 
-	private IClusterManager							clusterManager;
-	private List<IAction<IndexContext<?>, Boolean>>	actions;
+	private IClusterManager clusterManager;
+	private List<IAction<IndexContext<?>, Boolean>> actions;
 
 	public IndexEngine() {
 		LOGGER.info("Index engine : " + this);
@@ -46,7 +45,7 @@ public class IndexEngine implements IIndexEngine, IListener {
 	public void handleNotification(final Event event) {
 		// If this server is working on anything then return
 		if (clusterManager.getServer().getWorking()) {
-			LOGGER.info("Server working : " + clusterManager.getServer().getAction());
+			LOGGER.debug("Server working : " + clusterManager.getServer().getAction());
 			return;
 		}
 
@@ -58,14 +57,13 @@ public class IndexEngine implements IIndexEngine, IListener {
 				LOGGER.warn("No actions configured for index engine : " + indexContext.getIndexName());
 				continue;
 			}
-			LOGGER.info("Start working : " + indexContext.getIndexName() + ", server : " + clusterManager.getServer().getAddress());
+			LOGGER.debug(Logging.getString("Start working : ", indexContext.getIndexName()));
 			for (IAction<IndexContext<?>, Boolean> action : actions) {
 				try {
 					if (clusterManager.getServer().getWorking()) {
-						// Sleep for a random time, 10 < a < 20 seconds if the server is working
+						// Sleep for a random time, 0 < a < 1 seconds if the server is working
 						// to give the previous action a little time before we execute the rules
-						long sleep = Math.abs(random.nextLong()) % 1000;
-						Thread.sleep(sleep);
+						Thread.sleep((long) Math.abs(random.nextLong()) % 3000);
 						if (clusterManager.getServer().getWorking()) {
 							continue;
 						}
@@ -75,8 +73,7 @@ public class IndexEngine implements IIndexEngine, IListener {
 					LOGGER.error("Exception executing action : " + action, e);
 				}
 			}
-			LOGGER.info(Logging.getString("Finished working : " + indexContext.getIndexName() + ", server : "
-					+ clusterManager.getServer().getAddress()));
+			LOGGER.debug(Logging.getString("Finished working : ", indexContext.getIndexName()));
 		}
 	}
 

@@ -15,6 +15,7 @@ import org.apache.activemq.network.NetworkBridge;
 import org.apache.activemq.network.NetworkConnector;
 import org.apache.activemq.xbean.XBeanBrokerService;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 
@@ -28,6 +29,7 @@ public class JmsListener implements IListener {
 	private static final Logger LOGGER = Logger.getLogger(JmsListener.class);
 
 	private long id;
+	@Autowired
 	private JmsTemplate jmsTemplate;
 
 	public JmsListener() {
@@ -75,10 +77,6 @@ public class JmsListener implements IListener {
 				return session.createObjectMessage("Message from : " + id);
 			}
 		});
-	}
-
-	public void setJmsTemplate(JmsTemplate jmsTemplate) {
-		this.jmsTemplate = jmsTemplate;
 	}
 
 }

@@ -2,11 +2,11 @@ package ikube.web.admin;
 
 import ikube.cluster.IClusterManager;
 import ikube.service.IMonitorWebService;
+import ikube.toolkit.ApplicationContextManager;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
@@ -27,10 +27,8 @@ import org.springframework.web.servlet.mvc.AbstractController;
  */
 public abstract class BaseController extends AbstractController {
 
-	@Autowired
-	protected IClusterManager clusterManager;
-	@Autowired
-	protected IMonitorWebService monitorWebService;
+	protected IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
+	protected IMonitorWebService monitorWebService = ApplicationContextManager.getBean(IMonitorWebService.class);
 
 	/**
 	 * This method returns the uri for the target page. The Url for the application will be something like /ikube/admin/search.html, but

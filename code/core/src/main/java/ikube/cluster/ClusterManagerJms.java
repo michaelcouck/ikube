@@ -16,13 +16,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.jms.Connection;
+import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
+import javax.jms.MessageProducer;
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
 
+import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.broker.Broker;
+import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.network.NetworkBridge;
 import org.apache.activemq.network.NetworkConnector;
 import org.apache.activemq.xbean.XBeanBrokerService;
@@ -47,7 +52,21 @@ import org.springframework.jms.core.MessageCreator;
  * @since 11.11.11
  * @version 01.00
  */
+@SuppressWarnings("deprecation")
 public class ClusterManagerJms implements IClusterManager, MessageListener {
+
+	class RemoteDestination {
+
+		RemoteDestination(String address, Connection connection, Session session) {
+			this.address = address;
+			this.connection = connection;
+			this.session = session;
+		}
+
+		String address;
+		Session session;
+		Connection connection;
+	}
 
 	/**
 	 * This class is the lock class that is passed around the cluster containing the unique address of the server in the cluster and the
@@ -96,6 +115,8 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 	private Map<String, Lock> locks;
 	/** The list of servers in the cluster. */
 	private Map<String, Server> servers;
+	/** The cluster destinations. */
+	private Map<String, RemoteDestination> remoteDestinations;
 	/** The Jms template to send messages. */
 	@Autowired
 	private JmsTemplate jmsTemplate;
@@ -106,61 +127,11 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 	public ClusterManagerJms() throws UnknownHostException, InterruptedException {
 		locks = new HashMap<String, Lock>();
 		servers = new HashMap<String, Server>();
+		remoteDestinations = new HashMap<String, ClusterManagerJms.RemoteDestination>();
 		ip = InetAddress.getLocalHost().getHostAddress();
 		address = ip + "." + Thread.currentThread().hashCode();
 		getLock(address, Long.MAX_VALUE, Boolean.FALSE);
-		// This thread removes locks that have expired
-		new Thread(new Runnable() {
-			public void run() {
-				while (true) {
-					sleepForSomeTime(LOCK_THREAD_WAIT_TIME);
-					List<String> toRemove = new ArrayList<String>();
-					for (Entry<String, Lock> entry : locks.entrySet()) {
-						if (System.currentTimeMillis() - entry.getValue().shout > LOCK_TIME_OUT) {
-							toRemove.add(entry.getKey());
-						}
-					}
-					for (String lockKey : toRemove) {
-						LOGGER.warn("Removing lock from time out : " + locks.get(lockKey));
-						locks.remove(lockKey);
-					}
-				}
-			}
-		}, "Ikube lock time out thread").start();
-		// This thread removed servers that have expired
-		new Thread(new Runnable() {
-			public void run() {
-				while (true) {
-					sleepForSomeTime(SERVER_TIME_OUT);
-					Server server = getServer();
-					// Remove all servers that are past the max age
-					List<Server> toRemove = new ArrayList<Server>();
-					List<Server> servers = getServers();
-					for (Server remoteServer : servers) {
-						if (remoteServer.getAddress().equals(server.getAddress())) {
-							continue;
-						}
-						if (System.currentTimeMillis() - remoteServer.getAge() > IConstants.MAX_AGE) {
-							LOGGER.info("Removing server : " + remoteServer + ", "
-									+ (System.currentTimeMillis() - remoteServer.getAge() > IConstants.MAX_AGE));
-							toRemove.add(remoteServer);
-						}
-					}
-					for (Server toRemoveServer : toRemove) {
-						servers.remove(toRemoveServer);
-					}
-				}
-			}
-		}, "Ikube server time out thread").start();
-		// This thread posts this server to the cluster to stay in the club
-		new Thread(new Runnable() {
-			public void run() {
-				while (true) {
-					sleepForSomeTime(SERVER_REFRESH_THREAD_WAIT_TIME);
-					sendMessage(getServer());
-				}
-			}
-		}).start();
+		initializeCleaners();
 	}
 
 	/**
@@ -196,27 +167,6 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 			return haveLock;
 		} finally {
 			notifyAll();
-		}
-	}
-
-	/**
-	 * This method just listens on a topic for messages. Typically messages will contain locks and server objects. These objects from remote
-	 * servers will then be inserted into the locks and servers maps, updating the data on this server.
-	 */
-	@Override
-	public void onMessage(Message message) {
-		try {
-			ObjectMessage objectMessage = (ObjectMessage) message;
-			Object object = objectMessage.getObject();
-			if (Lock.class.isAssignableFrom(object.getClass())) {
-				Lock lock = (Lock) object;
-				this.locks.put(lock.address, lock);
-			} else if (Server.class.isAssignableFrom(object.getClass())) {
-				Server server = (Server) object;
-				servers.put(server.getAddress(), server);
-			}
-		} catch (Exception e) {
-			LOGGER.error("Exception getting message : ", e);
 		}
 	}
 
@@ -286,13 +236,38 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 	}
 
 	/**
-	 * TODO Complete the sending to the whole cluster based on the ip addresses returned from AtiveMq.
-	 * 
+	 * This method just listens on a topic for messages. Typically messages will contain locks and server objects. These objects from remote
+	 * servers will then be inserted into the locks and servers maps, updating the data on this server.
+	 */
+	@Override
+	public void onMessage(Message message) {
+		try {
+			if (ObjectMessage.class.isAssignableFrom(message.getClass())) {
+				ObjectMessage objectMessage = (ObjectMessage) message;
+				Object object = objectMessage.getObject();
+				LOGGER.info("Message object : " + object);
+				if (Lock.class.isAssignableFrom(object.getClass())) {
+					Lock lock = (Lock) object;
+					locks.put(lock.address, lock);
+				} else if (Server.class.isAssignableFrom(object.getClass())) {
+					Server server = (Server) object;
+					servers.put(server.getAddress(), server);
+				}
+			} else {
+				LOGGER.warn("Message type not supported : " + message);
+			}
+		} catch (Exception e) {
+			LOGGER.error("Exception getting message : ", e);
+		}
+	}
+
+	/**
 	 * This method will send messages to the whole cluster.
 	 * 
 	 * @param serializable the object to send in the message
 	 */
 	protected void sendMessage(final Serializable serializable) {
+		// Send to our selves
 		jmsTemplate.send(new MessageCreator() {
 			@Override
 			public Message createMessage(Session session) throws JMSException {
@@ -300,18 +275,71 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 			}
 		});
 		try {
+			// Send to the cluster
 			Broker broker = xBeanBrokerService.getBroker();
-			List<NetworkConnector> networkConnectors = broker.getBrokerService().getNetworkConnectors();
+			BrokerService brokerService = broker.getBrokerService();
+			List<NetworkConnector> networkConnectors = brokerService.getNetworkConnectors();
 			for (NetworkConnector networkConnector : networkConnectors) {
 				Collection<NetworkBridge> networkBridges = networkConnector.activeBridges();
-				networkConnector.getDynamicallyIncludedDestinations();
 				for (NetworkBridge networkBridge : networkBridges) {
-					String remoteAddress = networkBridge.getRemoteAddress();
-					LOGGER.error("Remote address : " + remoteAddress);
+					String address = networkBridge.getRemoteAddress();
+					RemoteDestination remoteDestination = null;
+					try {
+						LOGGER.info("Remote address : " + address);
+						remoteDestination = getRemoteDestination(address);
+						Destination destination = remoteDestination.session.createTopic("queue");
+						MessageProducer producer = remoteDestination.session.createProducer(destination);
+						ObjectMessage objectMessage = remoteDestination.session.createObjectMessage(serializable);
+						producer.send(objectMessage);
+					} catch (Exception e) {
+						LOGGER.error("Exception accessing server : " + address, e);
+						remoteDestinations.remove(address);
+						if (remoteDestination != null) {
+							closeConnection(remoteDestination.session, remoteDestination.connection);
+						}
+					}
 				}
 			}
 		} catch (Exception e) {
 			LOGGER.error("Exception accessing the cluster network : ", e);
+		}
+	}
+
+	private RemoteDestination getRemoteDestination(String address) {
+		RemoteDestination remoteDestination = remoteDestinations.get(address);
+		if (remoteDestination == null) {
+			Connection connection = null;
+			Session session = null;
+			boolean success = Boolean.FALSE;
+			try {
+				connection = ActiveMQConnection.makeConnection("tcp:/" + address);
+				connection.start();
+				session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+				remoteDestination = new RemoteDestination(address, connection, session);
+				remoteDestinations.put(address, remoteDestination);
+				success = Boolean.TRUE;
+			} catch (Exception e) {
+				LOGGER.error("Exception sending message to : " + address, e);
+			} finally {
+				if (!success) {
+					remoteDestinations.remove(address);
+					closeConnection(session, connection);
+				}
+			}
+		}
+		return remoteDestination;
+	}
+
+	private void closeConnection(Session session, Connection connection) {
+		try {
+			session.close();
+		} catch (Exception e) {
+			LOGGER.error("Exception closing the session and connection to : " + address, e);
+		}
+		try {
+			connection.close();
+		} catch (Exception e) {
+			LOGGER.error("Exception closing the session and connection to : " + address, e);
 		}
 	}
 
@@ -370,7 +398,6 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 		Action action = getAction(indexName, actionName, indexableName, Boolean.TRUE);
 		Server server = getServer();
 		server.setAction(action);
-		servers.put(server.getAddress(), server);
 		sendMessage(server);
 		return 0;
 	}
@@ -383,7 +410,6 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 		action.setIdNumber(0);
 		action.setIndexableName(indexableName);
 		action.setIndexName(indexName);
-		action.setServerName(address);
 		action.setStartTime(new Timestamp(System.currentTimeMillis()));
 		action.setWorking(working);
 		return action;
@@ -442,7 +468,7 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 		}
 		server.setAddress(address);
 		server.setAge(System.currentTimeMillis());
-		server.setId(System.nanoTime());
+		server.setId(System.currentTimeMillis());
 		server.setIp(ip);
 		return server;
 	}
@@ -460,6 +486,61 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 	 */
 	@Override
 	public void setException(boolean exception) {
+	}
+
+	private void initializeCleaners() {
+		// This thread removes locks that have expired
+		new Thread(new Runnable() {
+			public void run() {
+				while (true) {
+					sleepForSomeTime(LOCK_THREAD_WAIT_TIME);
+					List<String> toRemove = new ArrayList<String>();
+					for (Entry<String, Lock> entry : locks.entrySet()) {
+						if (System.currentTimeMillis() - entry.getValue().shout > LOCK_TIME_OUT) {
+							toRemove.add(entry.getKey());
+						}
+					}
+					for (String lockKey : toRemove) {
+						LOGGER.warn("Removing lock from time out : " + locks.get(lockKey));
+						locks.remove(lockKey);
+					}
+				}
+			}
+		}, "Ikube lock time out thread").start();
+		// This thread removed servers that have expired
+		new Thread(new Runnable() {
+			public void run() {
+				while (true) {
+					sleepForSomeTime(SERVER_TIME_OUT);
+					Server server = getServer();
+					// Remove all servers that are past the max age
+					List<Server> toRemove = new ArrayList<Server>();
+					List<Server> servers = getServers();
+					for (Server remoteServer : servers) {
+						if (remoteServer.getAddress().equals(server.getAddress())) {
+							continue;
+						}
+						if (System.currentTimeMillis() - remoteServer.getAge() > IConstants.MAX_AGE) {
+							LOGGER.info("Removing server : " + remoteServer + ", "
+									+ (System.currentTimeMillis() - remoteServer.getAge() > IConstants.MAX_AGE));
+							toRemove.add(remoteServer);
+						}
+					}
+					for (Server toRemoveServer : toRemove) {
+						servers.remove(toRemoveServer);
+					}
+				}
+			}
+		}, "Ikube server time out thread").start();
+		// This thread posts this server to the cluster to stay in the club
+		new Thread(new Runnable() {
+			public void run() {
+				while (true) {
+					sleepForSomeTime(SERVER_REFRESH_THREAD_WAIT_TIME);
+					sendMessage(getServer());
+				}
+			}
+		}).start();
 	}
 
 }

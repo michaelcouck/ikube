@@ -155,7 +155,7 @@
 							<target>
 								<!-- Try calling the Tomcats and shut them down. -->
 								<echo message="Turning off cluster : " />
-								<!-- <ant antfile="build.xml" target="stop.tomcat.cluster" inheritrefs="true" /> -->
+								<ant antfile="build.xml" target="stop.tomcat.cluster" inheritrefs="true" />
 							</target>
 						</configuration>
 						<goals>
@@ -167,28 +167,20 @@
 						<phase>install</phase>
 						<configuration>
 							<target>
-								<!-- Delete the Ikube deployed directories in the cluster. -->
-								<echo message="Deleting old deployment directories : " />
-								<delete includeemptydirs="true" failonerror="false">
-									<fileset dir="${cluster.directory}/">
-										<include name="**/ikube*.war" />
-										<include name="**/ikube*/**" />
-									</fileset>
-								</delete>
 								<!-- Rename the wars to ikube.war for convenience. -->
 								<echo message="Renaming Ikube war for convenience : " />
 								<move file="${target.directory}/${final.name}" tofile="${target.directory}/${ikube.war}" />
+								<!-- Delete the Ikube deployed directories in the cluster. -->
+								<echo message="Deleting old deployment directories : " />
 								<!-- Deploy the Ikube war into the cluster. -->
 								<echo message="Deploying Ikube to cluster : " />
-								<copy file="${target.directory}/${ikube.war}" todir="${tomcat.1}/${webapps}" overwrite="true" failonerror="false" />
-								<copy file="${target.directory}/${ikube.war}" todir="${tomcat.2}/${webapps}" overwrite="true" failonerror="false" />
-								<copy file="${target.directory}/${ikube.war}" todir="${tomcat.3}/${webapps}" overwrite="true" failonerror="false" />
+								<ant antfile="build.xml" target="deploy" inheritrefs="true" />
 								<!-- Copy the external configuration to the first Tomcat. -->
 								<echo message="Copying configuration to Tomcat bin : " />
 								<ant antfile="build.xml" target="copy.configuration" inheritrefs="true" />
 								<!-- Start the cluster of Tomcats. -->
-								<!-- <echo message="Starting the cluster of Tomcats : " /> <ant antfile="build.xml" target="start.tomcat.cluster" inheritrefs="true" 
-									/> -->
+								<echo message="Starting the cluster of Tomcats : " />
+								<!-- <ant antfile="build.xml" target="start.tomcat.cluster" inheritrefs="true" /> -->
 							</target>
 						</configuration>
 						<goals>

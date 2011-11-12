@@ -5,12 +5,13 @@
 <html>
 	<head>
 		<title>Ikube</title>
-		<link rel="shortcut icon" href="<c:url value="/images/icon.ico"/>" />
-		<link href="<c:url value="/style/style-white.css"/>" rel="stylesheet" type="text/css" media="screen" />
-		<script type="text/javascript" src="<c:url value="/js/ikube.js" />"></script>
+		<meta http-equiv="refresh" content="5"> 
 		<meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
 		<meta name="Keywords" content="Michael Couck, Ikube, Enterprise Search, Web Site Search, Database Search, High Volume" />
 		<meta name="Description" content="Ikube Enterprise Search." />
+		<link rel="shortcut icon" href="<c:url value="/images/icon.ico"/>" />
+		<link href="<c:url value="/style/style-white.css"/>" rel="stylesheet" type="text/css" media="screen" />
+		<script type="text/javascript" src="<c:url value="/js/ikube.js" />"></script>
 		<script src="http://www.google-analytics.com/ga.js" type="text/javascript"></script>
 	</head>
 

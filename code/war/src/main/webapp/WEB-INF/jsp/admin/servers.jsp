@@ -22,11 +22,11 @@
 	<tr>
 		<td width="1">
 			<img alt="Search index ${indexContext.name}" 
-				src="<c:url value="/images/icons/search.gif"/>" 
+				src="<c:url value="/images/icons/search.gif" />" 
 				title="Search index ${indexContext.name}">
 		</td>
 		<td class="td-content">
-			<a href="<c:url value="/admin/index.html"/>?indexName=${indexContext.name}" 
+			<a href="<c:url value="/admin/index.html" />?indexName=${indexContext.name}" 
 				style="font-style: italic;" 
 				title="Search index ${indexContext.name}">
 				${indexContext.name}
@@ -71,7 +71,7 @@
 	<c:forEach var="server" items="${requestScope.servers}">
 		<tr>
 			<td width="1%">
-				<img alt="Server" src="<c:url value="/images/icons/server.gif"/>" title="Server">
+				<img alt="Server" src="<c:url value="/images/icons/server.gif" />" title="Server">
 			</td>
 			<td class="td-content" nowrap="nowrap">
 				<a href="<c:url value="${server.searchWebServiceUrl}" />"
@@ -80,7 +80,7 @@
 					<c:out value="${server.address}" />
 				</a>
 			</td>
-			<c:set var="running" scope="page" value="${server.working ? 'running' : 'stopped'}"/>
+			<c:set var="running" scope="page" value="${server.action != null && server.action.working ? 'running' : 'stopped'}"/>
 			<td class="td-content" width="1%">
 				<img alt="Working" src="<c:url value="/images/icons/${running}.gif"/>" title="Working">
 			</td>

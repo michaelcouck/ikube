@@ -14,6 +14,8 @@
 	<context:annotation-config />
 	<context:component-scan base-package="ikube" />
 	
+	<import resource="classpath*:**/spring*.xml" />
+	
 	<!-- This configures the tiles container. -->
 	<bean 
 		id="tilesConfigurer" 
