@@ -51,8 +51,8 @@ import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.Lock;
 
 /**
- * This is the base test for all mocked tests. There are several useful mocks in this class that can be re-used like the
- * index context and the index reader etc. There are also helpful methods for creating Lucene indexes.
+ * This is the base test for all mocked tests. There are several useful mocks in this class that can be re-used like the index context and
+ * the index reader etc. There are also helpful methods for creating Lucene indexes.
  * 
  * @author Michael Couck
  * @since 21.11.10
@@ -66,31 +66,31 @@ public abstract class ATest {
 		new MimeMapper(IConstants.MIME_MAPPING);
 	}
 
-	protected Logger				logger;
+	protected Logger logger;
 
 	/** These are all mocked objects that are used in sub classes. */
-	protected String				ip;
-	protected ScoreDoc[]			scoreDocs;
-	protected Searchable[]			searchables;
-	protected List<Indexable<?>>	indexables;
+	protected String ip;
+	protected ScoreDoc[] scoreDocs;
+	protected Searchable[] searchables;
+	protected List<Indexable<?>> indexables;
 
-	protected Lock					lock						= mock(Lock.class);
-	protected Index					index						= mock(Index.class);
-	protected Server				server						= mock(Server.class);
-	protected TopDocs				topDocs						= mock(TopDocs.class);
-	protected FSDirectory			fsDirectory					= mock(FSDirectory.class);
-	protected IndexWriter			indexWriter					= mock(IndexWriter.class);
-	protected IndexReader			indexReader					= mock(IndexReader.class);
-	protected TopFieldDocs			topFieldDocs				= mock(TopFieldDocs.class);
-	protected MultiSearcher			multiSearcher				= mock(MultiSearcher.class);
-	protected IndexSearcher			indexSearcher				= mock(IndexSearcher.class);
-	protected IndexContext<?>		indexContext				= mock(IndexContext.class);
-	protected IClusterManager		clusterManager				= mock(IClusterManager.class);
-	protected IndexableTable		indexableTable				= mock(IndexableTable.class);
-	protected IndexableColumn		indexableColumn				= mock(IndexableColumn.class);
+	protected Lock lock = mock(Lock.class);
+	protected Index index = mock(Index.class);
+	protected Server server = mock(Server.class);
+	protected TopDocs topDocs = mock(TopDocs.class);
+	protected FSDirectory fsDirectory = mock(FSDirectory.class);
+	protected IndexWriter indexWriter = mock(IndexWriter.class);
+	protected IndexReader indexReader = mock(IndexReader.class);
+	protected TopFieldDocs topFieldDocs = mock(TopFieldDocs.class);
+	protected MultiSearcher multiSearcher = mock(MultiSearcher.class);
+	protected IndexSearcher indexSearcher = mock(IndexSearcher.class);
+	protected IndexContext<?> indexContext = mock(IndexContext.class);
+	protected IClusterManager clusterManager = mock(IClusterManager.class);
+	protected IndexableTable indexableTable = mock(IndexableTable.class);
+	protected IndexableColumn indexableColumn = mock(IndexableColumn.class);
 
-	protected String				indexDirectoryPath			= "./indexes";
-	protected String				indexDirectoryPathBackup	= "./indexes/backup";
+	protected String indexDirectoryPath = "./indexes";
+	protected String indexDirectoryPathBackup = "./indexes/backup";
 
 	public ATest(Class<?> subClass) {
 		logger = Logger.getLogger(subClass);
@@ -115,7 +115,8 @@ public abstract class ATest {
 		topFieldDocs.totalHits = 0;
 		topFieldDocs.scoreDocs = scoreDocs;
 		when(indexReader.directory()).thenReturn(fsDirectory);
-		when(indexReader.getFieldNames(any(FieldOption.class))).thenReturn(Arrays.asList(IConstants.ID, IConstants.FRAGMENT, IConstants.CONTENTS));
+		when(indexReader.getFieldNames(any(FieldOption.class))).thenReturn(
+				Arrays.asList(IConstants.ID, IConstants.FRAGMENT, IConstants.CONTENTS));
 		when(fsDirectory.makeLock(anyString())).thenReturn(lock);
 
 		when(indexContext.getIndexDirectoryPath()).thenReturn(indexDirectoryPath);
@@ -165,11 +166,10 @@ public abstract class ATest {
 	}
 
 	/**
-	 * Returns the path to the latest index directory for this server and this context. The result will be something
-	 * like './index/faq/1234567890/127.0.0.1'.
+	 * Returns the path to the latest index directory for this server and this context. The result will be something like
+	 * './index/faq/1234567890/127.0.0.1'.
 	 * 
-	 * @param indexContext
-	 *            the index context to get the directory path for
+	 * @param indexContext the index context to get the directory path for
 	 * @return the directory path to the latest index directory for this servers and context
 	 */
 	protected String getServerIndexDirectoryPath(final IndexContext<?> indexContext) {
@@ -177,15 +177,12 @@ public abstract class ATest {
 	}
 
 	/**
-	 * This method creates an index using the index path in the context, the time and the ip and returns the latest
-	 * index directory, i.e. the index that has just been created. Note that if there are still cascading mocks from
-	 * JMockit, the index writer sill not create the index! So you have to tear down all mocks prior to using this
-	 * method.
+	 * This method creates an index using the index path in the context, the time and the ip and returns the latest index directory, i.e.
+	 * the index that has just been created. Note that if there are still cascading mocks from JMockit, the index writer sill not create the
+	 * index! So you have to tear down all mocks prior to using this method.
 	 * 
-	 * @param indexContext
-	 *            the index context to use for the path to the index
-	 * @param strings
-	 *            the data that must be in the index
+	 * @param indexContext the index context to use for the path to the index
+	 * @param strings the data that must be in the index
 	 * @return the latest index directory, i.e. the one that has just been created
 	 */
 	protected File createIndex(IndexContext<?> indexContext, String... strings) {

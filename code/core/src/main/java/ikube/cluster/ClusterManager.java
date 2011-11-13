@@ -20,14 +20,14 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 /**
- * This class is responsible for the cluster synchronisation functionality.
+ * This class is responsible for the cluster synchronization functionality.
  * 
  * @see IClusterManager
  * @author Michael Couck
  * @since 21.11.10
  * @version 01.00
  */
-@SuppressWarnings("deprecation")
+@Deprecated
 public class ClusterManager implements IClusterManager, IConstants {
 
 	/** The logger, doh. */

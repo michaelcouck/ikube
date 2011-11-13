@@ -13,7 +13,6 @@ import ikube.index.parse.mime.MimeType;
 import ikube.index.parse.mime.MimeTypes;
 import ikube.index.parse.xml.XMLParser;
 import ikube.model.IndexContext;
-import ikube.model.Indexable;
 import ikube.model.IndexableInternet;
 import ikube.model.Url;
 import ikube.toolkit.HashUtilities;
@@ -56,7 +55,6 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
-import org.apache.lucene.index.CorruptIndexException;
 
 /**
  * This is the crawler for internet and intranets sites. There are several levels of caches to improve performance in this class. Firstly
@@ -139,18 +137,12 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	/**
 	 * This method iterates over the batch of urls and indexes the content, also extracting other links from the pages.
 	 * 
-	 * @param dataBase
-	 *            the database to use for persistence
-	 * @param indexContext
-	 *            the index context for this internet url
-	 * @param indexable
-	 *            the indexable, which is the url configuration
-	 * @param urlBatch
-	 *            the batch of urls to index
-	 * @param contentProvider
-	 *            the content provider for http pages
-	 * @param httpClient
-	 *            the client to use for accessing the pages over http
+	 * @param dataBase the database to use for persistence
+	 * @param indexContext the index context for this internet url
+	 * @param indexable the indexable, which is the url configuration
+	 * @param urlBatch the batch of urls to index
+	 * @param contentProvider the content provider for http pages
+	 * @param httpClient the client to use for accessing the pages over http
 	 */
 	protected void doUrls(final IDataBase dataBase, final IndexContext<?> indexContext, final IndexableInternet indexable,
 			final List<Url> urlBatch, final IContentProvider<IndexableInternet> contentProvider, final HttpClient httpClient) {
@@ -189,10 +181,8 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	 * This method gets the next batch of urls from the database that have not been visited yet in this iteration. The urls that are
 	 * returned will have had the indexed flag set to true and merged back into the database.
 	 * 
-	 * @param dataBase
-	 *            the database to persistence
-	 * @param indexableInternet
-	 *            the base indexable for the url
+	 * @param dataBase the database to persistence
+	 * @param indexableInternet the base indexable for the url
 	 * @return the list of urls that have not been visited, this list could be empty if there are no urls that have not been visited
 	 */
 	protected synchronized List<Url> getUrlBatch(final IDataBase dataBase, final IndexableInternet indexableInternet) {
@@ -201,7 +191,7 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 			List<Url> urls = dataBase.find(Url.class, Url.SELECT_FROM_URL_BY_NAME_AND_INDEXED, notIndexedParameters, 0,
 					indexableInternet.getInternetBatchSize());
 			if (urls.isEmpty()) {
-				// If there are no urls that need to be indexed than empty the new url cache
+				// If there are no urls that need to be indexed then empty the new url cache
 				// into the database and try again
 				persistBatch(dataBase);
 				urls = dataBase.find(Url.class, Url.SELECT_FROM_URL_BY_NAME_AND_INDEXED, notIndexedParameters, 0,
@@ -221,18 +211,12 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	/**
 	 * This method will do the actions that visit the url, parse the data and add it to the index.
 	 * 
-	 * @param dataBase
-	 *            the database for the persistence
-	 * @param indexContext
-	 *            the index context for this index
-	 * @param indexable
-	 *            the internet base url configuration object
-	 * @param url
-	 *            the url that will be indexed in this call
-	 * @param contentProvider
-	 *            the content provider for internet http pages
-	 * @param httpClient
-	 *            the client for accessing the pages
+	 * @param dataBase the database for the persistence
+	 * @param indexContext the index context for this index
+	 * @param indexable the internet base url configuration object
+	 * @param url the url that will be indexed in this call
+	 * @param contentProvider the content provider for internet http pages
+	 * @param httpClient the client for accessing the pages
 	 */
 	protected void handle(final IDataBase dataBase, final IndexContext<?> indexContext, final IndexableInternet indexable, final Url url,
 			final IContentProvider<IndexableInternet> contentProvider, final HttpClient httpClient) {
@@ -292,10 +276,8 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	/**
 	 * Gets the raw data from the url.
 	 * 
-	 * @param indexable
-	 *            the indexable to set the transient data in
-	 * @param url
-	 *            the url to get the data from
+	 * @param indexable the indexable to set the transient data in
+	 * @param url the url to get the data from
 	 * @return the raw data from the url
 	 */
 	protected ByteOutputStream getContentFromUrl(final IContentProvider<IndexableInternet> contentProvider, final HttpClient httpClient,
@@ -333,10 +315,8 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	/**
 	 * Parses the content from the input stream into a string. The content can be anything, rich text, xml, etc.
 	 * 
-	 * @param url
-	 *            the url where the data is
-	 * @param byteOutputStream
-	 *            the output stream of data from the url
+	 * @param url the url where the data is
+	 * @param byteOutputStream the output stream of data from the url
 	 * @return the parsed content
 	 */
 	protected String getParsedContent(final Url url, final ByteOutputStream byteOutputStream) {
@@ -374,12 +354,9 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	 * Adds the document to the index with all the defined fields. Typically the fields are the title, the field names that are defined in
 	 * the configuration and the content field name.
 	 * 
-	 * @param indexable
-	 *            the indexable or base host for this crawl
-	 * @param url
-	 *            the url being added to the index, i.e. just been visited and the data has been extracted
-	 * @param parsedContent
-	 *            the content that was extracted from the url
+	 * @param indexable the indexable or base host for this crawl
+	 * @param url the url being added to the index, i.e. just been visited and the data has been extracted
+	 * @param parsedContent the content that was extracted from the url
 	 */
 	protected void addDocumentToIndex(final IndexContext<?> indexContext, final IndexableInternet indexable, final Url url,
 			final String parsedContent) {
@@ -422,12 +399,9 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	 * Extracts all the links from the content and sets them in the cluster wide cache. The cache is persistence backed so any overflow then
 	 * goes to a local object oriented database on each server.
 	 * 
-	 * @param indexableInternet
-	 *            the indexable that is being crawled
-	 * @param baseUrl
-	 *            the base url that the link was found in
-	 * @param inputStream
-	 *            the input stream of the data from the base url, i.e. the html
+	 * @param indexableInternet the indexable that is being crawled
+	 * @param baseUrl the base url that the link was found in
+	 * @param inputStream the input stream of the data from the base url, i.e. the html
 	 */
 	protected void extractLinksFromContent(final IDataBase dataBase, final IndexableInternet indexableInternet, final Url baseUrl,
 			final InputStream inputStream) {
@@ -515,8 +489,7 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	 * This method will take all the new urls that were added to the new url cache and persist them in a batch, then clear the cache for the
 	 * next batch.
 	 * 
-	 * @param dataBase
-	 *            the database to persist the batch of new urls to
+	 * @param dataBase the database to persist the batch of new urls to
 	 */
 	protected synchronized void persistBatch(final IDataBase dataBase) {
 		try {
@@ -541,8 +514,11 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 					logger.error("Exception persisting the url batch : ", e);
 				}
 			}
-			newCache.removeAll();
 			dataBase.persistBatch(newUrls);
+			for (Object key : keys) {
+				newCache.remove(key);
+			}
+			// newCache.removeAll();
 		} finally {
 			notifyAll();
 		}
@@ -553,8 +529,7 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	 * in the runnable state then all the urls have been visited on this base url. There will also be no more urls added so we can exit this
 	 * thread.
 	 * 
-	 * @param threads
-	 *            the threads to check for the runnable state
+	 * @param threads the threads to check for the runnable state
 	 * @return true if there is at least one other thread that is in the runnable state
 	 */
 	protected boolean isCrawling(final List<Thread> threads) {
@@ -573,10 +548,8 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	/**
 	 * This method will add the first or base url to the database. Typically this method gets called before starting the crawl.
 	 * 
-	 * @param dataBase
-	 *            the database for the persistence
-	 * @param indexableInternet
-	 *            the base url object from the configuration for the site/intranet
+	 * @param dataBase the database for the persistence
+	 * @param indexableInternet the base url object from the configuration for the site/intranet
 	 */
 	protected void seedUrl(final IDataBase dataBase, final IndexableInternet indexableInternet) {
 		String urlString = indexableInternet.getUrl();
@@ -594,10 +567,10 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
-	public void addDocument(final IndexContext<?> indexContext, final Indexable<IndexableInternet> indexable, final Document document)
-			throws CorruptIndexException, IOException {
-		super.addDocument(indexContext, indexable, document);
-	}
+	// @Override
+	// public void addDocument(final IndexContext<?> indexContext, final Indexable<IndexableInternet> indexable, final Document document)
+	// throws CorruptIndexException, IOException {
+	// super.addDocument(indexContext, indexable, document);
+	// }
 
 }

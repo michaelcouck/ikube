@@ -65,7 +65,7 @@ public class IndexableFileSystemHandlerTest extends ATest {
 		documentDelegate = mock(IDocumentDelegate.class);
 
 		indexableFileSystemHandler = new IndexableFilesystemHandler();
-		indexableFileSystemHandler.setDocumentDelegate(documentDelegate);
+		Deencapsulation.setField(indexableFileSystemHandler, documentDelegate);
 		indexableFileSystemHandler.setThreads(1);
 
 		powerPointFile = FileUtilities.findFileRecursively(new File("."), "pot.pot");

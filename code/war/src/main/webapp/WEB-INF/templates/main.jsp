@@ -5,7 +5,7 @@
 <html>
 	<head>
 		<title>Ikube</title>
-		<meta http-equiv="refresh" content="5"> 
+		<!-- <meta http-equiv="refresh" content="5"> -->
 		<meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
 		<meta name="Keywords" content="Michael Couck, Ikube, Enterprise Search, Web Site Search, Database Search, High Volume" />
 		<meta name="Description" content="Ikube Enterprise Search." />

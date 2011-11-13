@@ -34,6 +34,7 @@ public class IsThisIndexCreated extends ARule<IndexContext<?>> {
 		if (latestIndexDirectory == null) {
 			return Boolean.FALSE;
 		}
+		logger.info("Looking for files in : " + latestIndexDirectory.getAbsolutePath());
 		File thisIndexDirectory = FileUtilities.findFileRecursively(latestIndexDirectory, address);
 		return thisIndexDirectory != null;
 	}

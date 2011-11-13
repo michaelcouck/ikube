@@ -7,7 +7,7 @@ import ikube.index.handler.IDocumentDelegate;
 import ikube.search.Search;
 
 /**
- * This interface is for Spring to intercept. Please refer to the JavaDoc in the {@link IDocumentDelegate} class for an explaination.
+ * This interface is for Spring to intercept. Please refer to the JavaDoc in the {@link IDocumentDelegate} class for an explanation.
  * 
  * @author Michael Couck
  * @since 22.05.11

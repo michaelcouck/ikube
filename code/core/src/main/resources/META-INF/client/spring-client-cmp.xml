@@ -15,34 +15,6 @@
             http://www.springframework.org/schema/util
             http://www.springframework.org/schema/util/spring-util.xsd">
 
-	<bean id="campaignDatabase"
-		class="com.mchange.v2.c3p0.ComboPooledDataSource"
-		destroy-method="close"
-		property:user="cmp"
-		property:password="pwd"
-		property:driverClass="org.postgresql.Driver"
-		property:jdbcUrl="jdbc:postgresql://localhost:5432/cmp"
-		property:initialPoolSize="${jdbc.minPoolSize}"
-		property:maxPoolSize="${jdbc.maxPoolSize}"
-		property:maxStatements="${jdbc.maxStatements}"
-		property:checkoutTimeout="${jdbc.checkOutTimeout}"
-		property:numHelperThreads="${jdbc.numHelperThreads}"
-		property:breakAfterAcquireFailure="${jdbc.breakAfterAcquireFailure}"
-		property:debugUnreturnedConnectionStackTraces="${jdbc.debugUnreturnedConnectionStackTraces}"
-		property:testConnectionOnCheckin="${jdbc.testConnectionOnCheckin}"
-		property:testConnectionOnCheckout="${jdbc.testConnectionOnCheckout}"
-		property:unreturnedConnectionTimeout="${jdbc.unreturnedConnectionTimeout}" />
-	
-	<bean id="campaignDatabaseBinder" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
-		property:staticMethod="ikube.toolkit.JndiInjector.bind">
-		<property name="arguments">
-			<array>
-				<value>campaignDatabase</value>
-				<ref local="campaignDatabase" />
-			</array>
-		</property>
-	</bean>
-	
 	<bean
 		id="campaignIndex"
 		class="ikube.model.IndexContext"

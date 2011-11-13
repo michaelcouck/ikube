@@ -13,7 +13,8 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
 /**
- * This action cleans old indexes that are corrupt or partially deleted.
+ * This action cleans old indexes that are corrupt or partially deleted. This class will also delete the files that were unpacked by the
+ * indexing of the file system, i.e. the zip and jar files for example.
  * 
  * @author Michael Couck
  * @since 31.10.10
@@ -43,6 +44,9 @@ public class Clean<E, F> extends Action<IndexContext<?>, Boolean> {
 				}
 				processDirectories(indexContext, serverIndexDirectories);
 			}
+			// TODO Go to the database and select all the files that were unpacked by the
+			// file system handler and delete them. Generally they will be the files that are prefixed
+			// with the user directory path
 			return Boolean.TRUE;
 		} finally {
 			clusterManager.stopWorking(getClass().getSimpleName(), indexContext.getIndexName(), "");
@@ -60,7 +64,7 @@ public class Clean<E, F> extends Action<IndexContext<?>, Boolean> {
 				if (locked) {
 					// We assume that there are no other servers working so this directory
 					// has been locked and the server is dead, we will unlock the index, and perhaps
-					// try to optimise it too
+					// try to optimize it too
 					IndexWriter.unlock(directory);
 					locked = IndexWriter.isLocked(directory);
 				}

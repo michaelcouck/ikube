@@ -48,12 +48,12 @@ public class IsThisIndexCreatedTest extends ATest {
 	@Test
 	public void execute() {
 		boolean isIndexCreated = isThisIndexCreated.evaluate(indexContext);
-		assertFalse("This index is not created yet : ", isIndexCreated);
+		assertFalse("This index should not be created yet : ", isIndexCreated);
 
 		createIndex(indexContext, "Some data : ");
 
 		isIndexCreated = isThisIndexCreated.evaluate(indexContext);
-		assertTrue("This index is not created yet : ", isIndexCreated);
+		assertTrue("This index should be created : ", isIndexCreated);
 	}
 
 }

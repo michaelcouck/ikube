@@ -36,8 +36,7 @@ public interface IHandler<T extends Indexable<?>> {
 	/**
 	 * Sets the type of indexable that this handler can handle.
 	 * 
-	 * @param indexableClass
-	 *            the class that this handler can handle
+	 * @param indexableClass the class that this handler can handle
 	 */
 	void setIndexableClass(Class<T> indexableClass);
 
@@ -45,10 +44,8 @@ public interface IHandler<T extends Indexable<?>> {
 	 * This method executes the handler logic. The method returns a list of threads(if it is multi-threaded) that the caller must wait for.
 	 * Once all the threads are dead then the handler's logic is complete.
 	 * 
-	 * @param indexContext
-	 *            the index context for the index
-	 * @param indexable
-	 *            the indexable that the handler must handle
+	 * @param indexContext the index context for the index
+	 * @param indexable the indexable that the handler must handle
 	 * @return the list of threads that the caller must wait for
 	 * @throws Exception
 	 */
@@ -58,17 +55,12 @@ public interface IHandler<T extends Indexable<?>> {
 	 * This method is to add the document to the index during the processing. Typically this method will be intercepted and other logic
 	 * performed like spatial enrichment and monitoring the performance.
 	 * 
-	 * @param indexContext
-	 *            the index context to add the document to
-	 * @param indexable
-	 *            the indexable that holds the data to add to the index
-	 * @param document
-	 *            the document that will be added to the index
+	 * @param indexContext the index context to add the document to
+	 * @param indexable the indexable that holds the data to add to the index
+	 * @param document the document that will be added to the index
 	 * @throws CorruptIndexException
 	 * @throws IOException
 	 */
 	void addDocument(IndexContext<?> indexContext, Indexable<T> indexable, Document document) throws CorruptIndexException, IOException;
-	
-	void setDocumentDelegate(IDocumentDelegate documentDelegate);
 
 }

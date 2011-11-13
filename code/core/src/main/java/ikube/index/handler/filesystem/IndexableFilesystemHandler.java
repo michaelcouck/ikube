@@ -48,6 +48,9 @@ import org.apache.lucene.document.Field.TermVector;
  */
 public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSystem> {
 
+	private static final String STRING_PATTERN = ".*(.zip).*|.*(.jar).*|.*(.war).*|.*(.ear).*";
+	private static final Pattern ZIP_JAR_WAR_EAR_PATTERN = Pattern.compile(STRING_PATTERN);
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -60,10 +63,12 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 			return new ArrayList<Thread>();
 		}
 		// Add all the files to the database
-		final Set<File> filesDone = new TreeSet<File>();
-		iterateFileSystem(dataBase, indexContext, indexable, baseFile, getPattern(indexable.getExcludedPattern()), filesDone);
+		final Set<File> batchedFiles = new TreeSet<File>();
+		iterateFileSystem(dataBase, indexContext, indexable, baseFile, pattern, batchedFiles);
 		// Persist the last of the files in the list
-		persistFilesBatch(dataBase, indexable, filesDone);
+		if (batchedFiles.size() > 0) {
+			persistFilesBatch(dataBase, indexable, batchedFiles);
+		}
 		// Now start the threads indexing the files from the database
 		try {
 			List<Thread> threads = new ArrayList<Thread>();
@@ -99,10 +104,8 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 	/**
 	 * This method will get the next batch of files from the database that are not yet processed.
 	 * 
-	 * @param dataBase
-	 *            the database for the persistence
-	 * @param indexable
-	 *            the file system configuration object
+	 * @param dataBase the database for the persistence
+	 * @param indexable the file system configuration object
 	 * @return the list of files still to be indexed, could be empty if there are not more files
 	 */
 	private synchronized List<ikube.model.File> getBatch(final IDataBase dataBase, final IndexableFileSystem indexable) {
@@ -127,17 +130,13 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 	 * As the name suggests this method handles a folder. Iterates over the files and folders in the folder recursively indexing the files
 	 * as they are encountered.
 	 * 
-	 * @param indexContext
-	 *            the index context for the index
-	 * @param indexableFileSystem
-	 *            the file system object for storing data during the indexing
-	 * @param folder
-	 *            the folder that we are iterating over
-	 * @param excludedPattern
-	 *            the excluded patterns
+	 * @param indexContext the index context for the index
+	 * @param indexableFileSystem the file system object for storing data during the indexing
+	 * @param folder the folder that we are iterating over
+	 * @param excludedPattern the excluded patterns
 	 */
 	protected void iterateFileSystem(final IDataBase dataBase, final IndexContext<?> indexContext, final IndexableFileSystem indexable,
-			final File folder, final Pattern excludedPattern, final Set<File> filesDone) {
+			final File folder, final Pattern excludedPattern, final Set<File> batchedFiles) {
 		File[] files = folder.listFiles();
 		if (files != null) {
 			for (File file : files) {
@@ -145,11 +144,17 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 					continue;
 				}
 				if (file.isDirectory()) {
-					iterateFileSystem(dataBase, indexContext, indexable, file, excludedPattern, filesDone);
+					iterateFileSystem(dataBase, indexContext, indexable, file, excludedPattern, batchedFiles);
 				} else {
-					filesDone.add(file);
-					if (filesDone.size() >= indexable.getBatchSize()) {
-						persistFilesBatch(dataBase, indexable, filesDone);
+					if (ZIP_JAR_WAR_EAR_PATTERN.matcher(file.getName()).matches()) {
+						// TODO Unpack the file and return the folder that it was unpacked to
+						// to this method, essentially iterating over the files that were unpacked
+						logger.info("Found zip, must still implement this functionality : " + file.getName());
+					} else {
+						batchedFiles.add(file);
+					}
+					if (batchedFiles.size() >= indexable.getBatchSize()) {
+						persistFilesBatch(dataBase, indexable, batchedFiles);
 					}
 				}
 			}
@@ -159,12 +164,9 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 	/**
 	 * This method will persist the batch of files that have been accumulated by iterating over the file system.
 	 * 
-	 * @param dataBase
-	 *            the database for the persistence
-	 * @param indexable
-	 *            the file system base configuration object
-	 * @param batchedFiles
-	 *            the batch of files that have been collected by iterating over the file system
+	 * @param dataBase the database for the persistence
+	 * @param indexable the file system base configuration object
+	 * @param batchedFiles the batch of files that have been collected by iterating over the file system
 	 */
 	protected void persistFilesBatch(final IDataBase dataBase, final IndexableFileSystem indexable, final Set<File> batchedFiles) {
 		logger.info("Persisting files : " + batchedFiles.size());
@@ -185,12 +187,9 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 	/**
 	 * As the name suggests this method accesses a file, and hopefully indexes the data adding it to the index.
 	 * 
-	 * @param indexContext
-	 *            the context for this index
-	 * @param indexableFileSystem
-	 *            the file system object for storing data during the indexing
-	 * @param file
-	 *            the file to parse and index
+	 * @param indexContext the context for this index
+	 * @param indexableFileSystem the file system object for storing data during the indexing
+	 * @param file the file to parse and index
 	 */
 	protected void handleFile(final IndexContext<?> indexContext, final IndexableFileSystem indexableFileSystem,
 			final ikube.model.File dbFile) {
@@ -248,10 +247,8 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 	 * This method checks to see if the file can be read, that it exists and that it is not in the excluded pattern defined in the
 	 * configuration.
 	 * 
-	 * @param file
-	 *            the file to check for inclusion in the processing
-	 * @param pattern
-	 *            the pattern that excludes explicitly files and folders
+	 * @param file the file to check for inclusion in the processing
+	 * @param pattern the pattern that excludes explicitly files and folders
 	 * @return whether this file is included and can be processed
 	 */
 	protected boolean isExcluded(final File file, final Pattern pattern) {

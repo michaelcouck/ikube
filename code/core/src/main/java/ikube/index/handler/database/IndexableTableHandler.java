@@ -1,6 +1,7 @@
 package ikube.index.handler.database;
 
 import ikube.IConstants;
+import ikube.cluster.IClusterManager;
 import ikube.index.IndexManager;
 import ikube.index.content.ByteOutputStream;
 import ikube.index.content.ColumnContentProvider;
@@ -167,17 +168,13 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	/**
 	 * This method does the actual indexing, and calls it's self recursively.
 	 * 
-	 * @param indexContext
-	 *            the index context that we are indexing
-	 * @param indexableTable
-	 *            the table that we are indexing, this is generally a clone of the original because there is state in the table that is used
-	 *            by different threads
-	 * @param connection
-	 *            the connection to the database that must be closed when there are no more records left in the top level table
-	 * @param document
-	 *            the document that came from the top level table. As we recurse the table hierarchy, we have to pass this document to the
-	 *            child tables so they can add their data to the document. When this method is called with the top level table the document
-	 *            is null of course
+	 * @param indexContext the index context that we are indexing
+	 * @param indexableTable the table that we are indexing, this is generally a clone of the original because there is state in the table
+	 *            that is used by different threads
+	 * @param connection the connection to the database that must be closed when there are no more records left in the top level table
+	 * @param document the document that came from the top level table. As we recurse the table hierarchy, we have to pass this document to
+	 *            the child tables so they can add their data to the document. When this method is called with the top level table the
+	 *            document is null of course
 	 */
 	protected void handleTable(final IContentProvider<IndexableColumn> contentProvider, final IndexContext<?> indexContext,
 			final IndexableTable indexableTable, final Connection connection, Document document, int exceptions) {
@@ -297,12 +294,9 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	 * 
 	 * More detail on how the sql gets generated is in the documentation for the buildSql method.
 	 * 
-	 * @param indexContext
-	 *            the index context for this index
-	 * @param indexableTable
-	 *            the table indexable that is being indexed
-	 * @param connection
-	 *            the connection to the database
+	 * @param indexContext the index context for this index
+	 * @param indexableTable the table indexable that is being indexed
+	 * @param connection the connection to the database
 	 * @return the result set for the table
 	 * @throws Exception
 	 */
@@ -378,12 +372,9 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	/**
 	 * This method builds the sql from the columns in the configuration.
 	 * 
-	 * @param indexableTable
-	 *            the table to generate the sql for
-	 * @param batchSize
-	 *            the batch size of the table
-	 * @param nextIdNumber
-	 *            the next row id for the table
+	 * @param indexableTable the table to generate the sql for
+	 * @param batchSize the batch size of the table
+	 * @param nextIdNumber the next row id for the table
 	 * @return the string sql for the table
 	 * @throws Exception
 	 */
@@ -477,11 +468,9 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	 * This method sets the parameters in the statement. Typically the sub tables need the id from the parent. The sql generated would be
 	 * something like: "...where foreignKey = parentId", so we have to get the parent id column and set the parameter.
 	 * 
-	 * @param indexableTable
-	 *            the table that is being iterated over at the moment, this could be a top level table n which case there will be no foreign
-	 *            key references, but in the case of a sub table the parent id will be accessed
-	 * @param preparedStatement
-	 *            the statement to set the parameters in
+	 * @param indexableTable the table that is being iterated over at the moment, this could be a top level table n which case there will be
+	 *            no foreign key references, but in the case of a sub table the parent id will be accessed
+	 * @param preparedStatement the statement to set the parameters in
 	 */
 	protected synchronized void setParameters(final IndexableTable indexableTable, final PreparedStatement preparedStatement)
 			throws Exception {
@@ -510,12 +499,9 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	 * This method selects from the specified table using a function, typically something like "max" or "min". In some cases we need to know
 	 * if we have reached the end of the table, or what the first id is in the table.
 	 * 
-	 * @param indexableTable
-	 *            the table to execute the function on
-	 * @param connection
-	 *            the database connection
-	 * @param function
-	 *            the function to execute on the table
+	 * @param indexableTable the table to execute the function on
+	 * @param connection the database connection
+	 * @param function the function to execute on the table
 	 * @return the id that resulted from the function
 	 * @throws Exception
 	 */
@@ -557,8 +543,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	/**
 	 * Looks through the columns and returns the id column.
 	 * 
-	 * @param indexableColumns
-	 *            the columns to look through
+	 * @param indexableColumns the columns to look through
 	 * @return the id column or null if no such column is defined. Generally this will mean a configuration problem, every table must have a
 	 *         unique id column
 	 */
@@ -580,10 +565,8 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	 * This method handles a column. Essentially what this means is that the data from the table is extracted and added to the document, in
 	 * the field specified.
 	 * 
-	 * @param indexable
-	 *            the column to extract the data from and add to the document
-	 * @param document
-	 *            the document to add the data to using the field name specified in the column definition
+	 * @param indexable the column to extract the data from and add to the document
+	 * @param document the document to add the data to using the field name specified in the column definition
 	 */
 	protected void handleColumn(final IContentProvider<IndexableColumn> contentProvider, final IndexableColumn indexable,
 			final Document document) {
@@ -637,10 +620,8 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	 * always a good idea to have a unique field, but a table may be indexed twice of course, in which case there will be duplicates in the
 	 * id fields.
 	 * 
-	 * @param indexableTable
-	 *            the table to get the id for
-	 * @param document
-	 *            the document to set the id field in
+	 * @param indexableTable the table to get the id for
+	 * @param document the document to set the id field in
 	 * @throws Exception
 	 */
 	protected void setIdField(final IndexableTable indexableTable, final Document document) throws Exception {
@@ -662,10 +643,8 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	 * This method sets the data from the table columns in the column objects as well as the type which is gotten from the result set emta
 	 * data.
 	 * 
-	 * @param children
-	 *            the children indexables of the table object
-	 * @param resultSet
-	 *            the result set for the table
+	 * @param children the children indexables of the table object
+	 * @param resultSet the result set for the table
 	 * @throws Exception
 	 */
 	protected void setColumnTypesAndData(final List<Indexable<?>> children, final ResultSet resultSet) throws Exception {
