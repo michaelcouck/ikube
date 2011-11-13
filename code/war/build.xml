@@ -104,6 +104,15 @@
 		<unjar src="${configuration.directory}/${ikube.configuration.jar}" dest="${tomcat.1.bin}" overwrite="true" />
 		<unjar src="${configuration.directory}/${ikube.configuration.jar}" dest="${tomcat.2.bin}" overwrite="true" />
 		<unjar src="${configuration.directory}/${ikube.configuration.jar}" dest="${tomcat.3.bin}" overwrite="true" />
+
+		<replace dir="${tomcat.2.bin}" value="61617">
+			<include name="**/spring.properties" />
+			<replacetoken><![CDATA[61616]]></replacetoken>
+		</replace>
+		<replace dir="${tomcat.3.bin}" value="61618">
+			<include name="**/spring.properties" />
+			<replacetoken><![CDATA[61616]]></replacetoken>
+		</replace>
 	</target>
 
 	<target name="startUbuntu">

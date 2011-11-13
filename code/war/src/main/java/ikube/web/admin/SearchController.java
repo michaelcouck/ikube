@@ -34,6 +34,10 @@ public class SearchController extends BaseController {
 	/** These are the default values for first and max results. */
 	private static final int FIRST_RESULT = 0;
 	private static final int MAX_RESULTS = 10;
+	
+	public SearchController() {
+		super();
+	}
 
 	/**
 	 * {@inheritDoc}

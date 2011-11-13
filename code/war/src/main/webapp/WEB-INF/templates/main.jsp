@@ -4,7 +4,7 @@
 
 <html>
 	<head>
-		<title>Ikube</title>
+		<title><tiles:insertAttribute name="title" /></title>
 		<!-- <meta http-equiv="refresh" content="5"> -->
 		<meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
 		<meta name="Keywords" content="Michael Couck, Ikube, Enterprise Search, Web Site Search, Database Search, High Volume" />

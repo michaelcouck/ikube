@@ -1,9 +1,7 @@
 <%@ taglib prefix="ikube" uri="http://ikube" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<!--
-	This snippit is for recursively rendering the indexables. 
- -->
+<!-- This snippit is for recursively rendering the indexables. -->
 <c:set 
 	var="clonedChildren" 
 	value="${ikube:clone(children)}" 

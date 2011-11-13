@@ -1,13 +1,69 @@
 package ikube.web;
 
 import static org.mockito.Mockito.mock;
+import ikube.service.ServiceLocator;
+import ikube.toolkit.ApplicationContextManager;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import mockit.Mock;
+import mockit.MockClass;
+
+import org.apache.log4j.Logger;
+
 public class MockFactory {
 
-	private static Map<Class<?>, Object>	MOCKS	= new HashMap<Class<?>, Object>();
+	private static final Logger LOGGER = Logger.getLogger(MockFactory.class);
+	private static final Map<Class<?>, Object> MOCKS = new HashMap<Class<?>, Object>();
+
+	@MockClass(realClass = ApplicationContextManager.class)
+	public static class ApplicationContextManagerMock {
+
+		@Mock()
+		@SuppressWarnings("unchecked")
+		public static synchronized <T> T getBean(final Class<T> klass) {
+			return (T) MockFactory.getMock(klass);
+		}
+
+		@Mock()
+		@SuppressWarnings("unchecked")
+		public static synchronized <T> Map<String, T> getBeans(final Class<T> klass) {
+			Map<String, T> beans = new HashMap<String, T>();
+			Object object = MockFactory.getMock(klass);
+			beans.put(object.getClass().getSimpleName(), (T) object);
+			return beans;
+		}
+
+		@Mock
+		@SuppressWarnings("unchecked")
+		public static synchronized <T> T getBean(final String name) {
+			try {
+				Class<?> klass = Class.forName(name);
+				return (T) MockFactory.getMock(klass);
+			} catch (ClassNotFoundException e) {
+				LOGGER.error("Class not found : ", e);
+			}
+			return null;
+		}
+	}
+
+	@MockClass(realClass = ServiceLocator.class)
+	public static class ServiceLocatorMock {
+
+		@Mock()
+		@SuppressWarnings("unchecked")
+		public static <T> T getService(final Class<T> klass, final String protocol, final String host, final int port, final String path,
+				final String nameSpace, final String serviceName) {
+			return (T) MockFactory.getMock(klass);
+		}
+
+		@Mock()
+		@SuppressWarnings("unchecked")
+		public static <T> T getService(final Class<T> klass, final String url, final String nameSpace, final String serviceName) {
+			return (T) MockFactory.getMock(klass);
+		}
+	}
 
 	public static Object getMock(Class<?> klass) {
 		if (MOCKS.get(klass) == null) {
@@ -20,5 +76,4 @@ public class MockFactory {
 	public static void removeMock(Class<?> klass) {
 		MOCKS.remove(klass);
 	}
-
 }

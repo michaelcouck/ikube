@@ -9,6 +9,7 @@
 	<tr>
 		<td class="top-content">
 			<span class="top-content-header">Index</span>
+			&nbsp;<c:out value="${server.address}" />
 			<span class="date" style="float: right;"><script type="text/javascript">writeDate();</script></span>
 		</td>
 	</tr>

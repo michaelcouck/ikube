@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import mockit.Deencapsulation;
 import mockit.Mock;
 import mockit.MockClass;
 import mockit.Mockit;
@@ -37,27 +38,25 @@ public class RuleInterceptorTest extends ATest {
 
 	@MockClass(realClass = JEP.class)
 	public static class JEPMock {
-
 		@Mock()
 		public Object getValueAsObject() {
 			return new Double("1.0");
 		}
-
 	}
 
 	@SuppressWarnings("rawtypes")
-	private Map<String, IAction>		actions;
+	private Map<String, IAction> actions;
 
-	private ProceedingJoinPoint			joinPoint;
+	private ProceedingJoinPoint joinPoint;
 	/** Class under test. */
-	private IRuleInterceptor			ruleInterceptor;
+	private IRuleInterceptor ruleInterceptor;
 
-	private IAction<IndexContext<?>, ?>	action;
-	private IsMultiSearcherInitialised	isMultiSearcherInitialised;
-	private AreSearchablesInitialised	areSearchablesInitialised;
-	private IsIndexCurrent				isIndexCurrent;
-	private AreIndexesCreated			areIndexesCreated;
-	private AreUnopenedIndexes			areUnopenedIndexes;
+	private IAction<IndexContext<?>, ?> action;
+	private IsMultiSearcherInitialised isMultiSearcherInitialised;
+	private AreSearchablesInitialised areSearchablesInitialised;
+	private IsIndexCurrent isIndexCurrent;
+	private AreIndexesCreated areIndexesCreated;
+	private AreUnopenedIndexes areUnopenedIndexes;
 
 	public RuleInterceptorTest() {
 		super(RuleInterceptorTest.class);
@@ -106,12 +105,15 @@ public class RuleInterceptorTest extends ATest {
 		when(joinPoint.getTarget()).thenReturn(close);
 		when(joinPoint.getArgs()).thenReturn(new Object[] { indexContext });
 		when(joinPoint.proceed()).thenReturn(Boolean.TRUE);
-		ruleInterceptor = new RuleInterceptor() {};
+		ruleInterceptor = new RuleInterceptor() {
+		};
 
 		when(action.getRules()).thenReturn(rules);
 		when(action.getRuleExpression()).thenReturn(predicate);
 
 		actions.put(action.toString(), action);
+		
+		Deencapsulation.setField(ruleInterceptor, clusterManager);
 	}
 
 	@After

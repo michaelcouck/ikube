@@ -59,6 +59,7 @@ window.onload=starttime
 	<tr>
 		<td class="top-content" colspan="9" valign="middle">
 			<span class="top-content-header">Indexes</span>
+			&nbsp;<c:out value="${server.address}" />
 			<span class="date" style="float: right;"><script type="text/javascript">writeDate();</script></span>
 		</td>
 	</tr>	

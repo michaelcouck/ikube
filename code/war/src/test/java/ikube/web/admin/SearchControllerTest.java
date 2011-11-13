@@ -8,10 +8,9 @@ import ikube.cluster.IClusterManager;
 import ikube.model.Server;
 import ikube.service.IMonitorWebService;
 import ikube.service.ISearcherWebService;
-import ikube.service.ServiceLocator;
-import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
-import ikube.web.MockFactory;
+import ikube.web.MockFactory.ApplicationContextManagerMock;
+import ikube.web.MockFactory.ServiceLocatorMock;
 
 import java.io.File;
 import java.util.HashMap;
@@ -22,8 +21,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import mockit.Deencapsulation;
-import mockit.Mock;
-import mockit.MockClass;
 import mockit.Mockit;
 
 import org.apache.log4j.Logger;
@@ -34,61 +31,13 @@ import org.springframework.web.servlet.ModelAndView;
 
 public class SearchControllerTest {
 
-	private static final Logger	LOGGER	= Logger.getLogger(SearchControllerTest.class);
-
-	@MockClass(realClass = ApplicationContextManager.class)
-	public static class ApplicationContextManagerMock {
-
-		@Mock()
-		@SuppressWarnings("unchecked")
-		public static synchronized <T> T getBean(final Class<T> klass) {
-			return (T) MockFactory.getMock(klass);
-		}
-
-		@Mock()
-		@SuppressWarnings("unchecked")
-		public static synchronized <T> Map<String, T> getBeans(final Class<T> klass) {
-			Map<String, T> beans = new HashMap<String, T>();
-			Object object = MockFactory.getMock(klass);
-			beans.put(object.getClass().getSimpleName(), (T) object);
-			return beans;
-		}
-
-		@Mock
-		@SuppressWarnings("unchecked")
-		public static synchronized <T> T getBean(final String name) {
-			try {
-				Class<?> klass = Class.forName(name);
-				return (T) MockFactory.getMock(klass);
-			} catch (ClassNotFoundException e) {
-				LOGGER.error("Class not found : ", e);
-			}
-			return null;
-		}
-	}
-
-	@MockClass(realClass = ServiceLocator.class)
-	public static class ServiceLocatorMock {
-
-		@Mock()
-		@SuppressWarnings("unchecked")
-		public static <T> T getService(final Class<T> klass, final String protocol, final String host, final int port, final String path,
-				final String nameSpace, final String serviceName) {
-			return (T) MockFactory.getMock(klass);
-		}
-
-		@Mock()
-		@SuppressWarnings("unchecked")
-		public static <T> T getService(final Class<T> klass, final String url, final String nameSpace, final String serviceName) {
-			return (T) MockFactory.getMock(klass);
-		}
-	}
+	private static final Logger LOGGER = Logger.getLogger(SearchControllerTest.class);
 
 	/** Class under test. */
-	private SearchController	searchController;
+	private SearchController searchController;
 
-	private HttpServletRequest	request		= mock(HttpServletRequest.class);
-	private HttpServletResponse	response	= mock(HttpServletResponse.class);
+	private HttpServletRequest request = mock(HttpServletRequest.class);
+	private HttpServletResponse response = mock(HttpServletResponse.class);
 
 	@Before
 	public void before() {

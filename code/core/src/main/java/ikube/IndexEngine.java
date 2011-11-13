@@ -10,6 +10,7 @@ import ikube.toolkit.Logging;
 import ikube.toolkit.SerializationUtilities;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -52,7 +53,10 @@ public class IndexEngine implements IIndexEngine, IListener {
 		Random random = new Random();
 		@SuppressWarnings("rawtypes")
 		Map<String, IndexContext> indexContexts = ApplicationContextManager.getBeans(IndexContext.class);
-		for (IndexContext<?> indexContext : indexContexts.values()) {
+		@SuppressWarnings("rawtypes")
+		List<IndexContext> randomContexts = new ArrayList<IndexContext>(indexContexts.values());
+		Collections.shuffle(randomContexts);
+		for (IndexContext<?> indexContext : randomContexts) {
 			if (actions == null || actions.isEmpty()) {
 				LOGGER.warn("No actions configured for index engine : " + indexContext.getIndexName());
 				continue;

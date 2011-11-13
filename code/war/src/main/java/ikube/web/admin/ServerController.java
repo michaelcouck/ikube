@@ -11,6 +11,10 @@ import org.springframework.web.servlet.ModelAndView;
  * @version 01.00
  */
 public class ServerController extends ServersController {
+	
+	public ServerController() {
+		super();
+	}
 
 	/**
 	 * {@inheritDoc}

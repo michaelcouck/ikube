@@ -3,6 +3,7 @@ package ikube.web.admin;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import ikube.toolkit.Logging;
+import ikube.web.MockFactory.ApplicationContextManagerMock;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -28,7 +29,7 @@ public class BaseControllerTest {
 	
 	@Before
 	public void before() {
-		Mockit.setUpMocks();
+		Mockit.setUpMocks(ApplicationContextManagerMock.class);
 	}
 	
 	@After

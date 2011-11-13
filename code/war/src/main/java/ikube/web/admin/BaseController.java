@@ -29,6 +29,11 @@ public abstract class BaseController extends AbstractController {
 
 	protected IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
 	protected IMonitorWebService monitorWebService = ApplicationContextManager.getBean(IMonitorWebService.class);
+	
+	public BaseController() {
+		clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
+		monitorWebService = ApplicationContextManager.getBean(IMonitorWebService.class);
+	}
 
 	/**
 	 * This method returns the uri for the target page. The Url for the application will be something like /ikube/admin/search.html, but

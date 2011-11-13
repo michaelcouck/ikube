@@ -99,18 +99,18 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 	/** The time out time for the lock in case a server dies. */
 	private static final long LOCK_TIME_OUT = 60000;
 	/** The time to sleep between trying to remove dead locks. */
-	private static final long LOCK_THREAD_WAIT_TIME = LOCK_TIME_OUT / 10;
+	private static final long LOCK_THREAD_WAIT_TIME = LOCK_TIME_OUT / 3;
 	/** The time out for a server, also in case it dies and retains the action/working flag. */
 	private static final long SERVER_TIME_OUT = 600000;
 	/** The time between refreshing the server in the cluster, i.e. sending it to the other servers. */
-	private static final long SERVER_REFRESH_THREAD_WAIT_TIME = SERVER_TIME_OUT / 10;
+	private static final long SERVER_REFRESH_THREAD_WAIT_TIME = SERVER_TIME_OUT / 3;
+	/** The maximum amount of times to retry to send a message to the cluster. */
+	private static final int MAX_RETRY = 5;
 
 	/** The textual representation of the ip address for this server. */
 	private String ip;
 	/** The address or unique identifier for this server. */
 	private String address;
-	/** The reference to the server object of this server. */
-	private Server server;
 	/** The list of locks that have been applied/accepted for. Please refer to the class JavaDoc for more information. */
 	private Map<String, Lock> locks;
 	/** The list of servers in the cluster. */
@@ -279,9 +279,13 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 			Broker broker = xBeanBrokerService.getBroker();
 			BrokerService brokerService = broker.getBrokerService();
 			List<NetworkConnector> networkConnectors = brokerService.getNetworkConnectors();
-			for (NetworkConnector networkConnector : networkConnectors) {
+			int retry = 0;
+			networkBridges: for (NetworkConnector networkConnector : networkConnectors) {
 				Collection<NetworkBridge> networkBridges = networkConnector.activeBridges();
 				for (NetworkBridge networkBridge : networkBridges) {
+					if (retry > MAX_RETRY) {
+						continue;
+					}
 					String address = networkBridge.getRemoteAddress();
 					RemoteDestination remoteDestination = null;
 					try {
@@ -292,11 +296,13 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 						ObjectMessage objectMessage = remoteDestination.session.createObjectMessage(serializable);
 						producer.send(objectMessage);
 					} catch (Exception e) {
+						retry++;
 						LOGGER.error("Exception accessing server : " + address, e);
 						remoteDestinations.remove(address);
 						if (remoteDestination != null) {
 							closeConnection(remoteDestination.session, remoteDestination.connection);
 						}
+						continue networkBridges;
 					}
 				}
 			}
@@ -402,6 +408,17 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 		return 0;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void stopWorking(String actionName, String indexName, String indexableName) {
+		Action action = getAction(indexName, actionName, indexableName, Boolean.FALSE);
+		Server server = getServer();
+		server.setAction(action);
+		sendMessage(server);
+	}
+
 	private Action getAction(String indexName, String actionName, String indexableName, boolean working) {
 		Action action = new Action();
 		action.setActionName(actionName);
@@ -413,17 +430,6 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 		action.setStartTime(new Timestamp(System.currentTimeMillis()));
 		action.setWorking(working);
 		return action;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void stopWorking(String actionName, String indexName, String indexableName) {
-		Action action = getAction(indexName, actionName, indexableName, Boolean.FALSE);
-		Server server = getServer();
-		server.setAction(action);
-		sendMessage(server);
 	}
 
 	/**
@@ -463,13 +469,16 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 	 */
 	@Override
 	public Server getServer() {
+		Server server = servers.get(address);
 		if (server == null) {
 			server = new Server();
+			servers.put(address, server);
 		}
-		server.setAddress(address);
-		server.setAge(System.currentTimeMillis());
-		server.setId(System.currentTimeMillis());
+		long time = System.currentTimeMillis();
 		server.setIp(ip);
+		server.setId(time);
+		server.setAge(time);
+		server.setAddress(address);
 		return server;
 	}
 
