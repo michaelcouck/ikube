@@ -3,10 +3,9 @@ package ikube.web.admin;
 import ikube.IConstants;
 import ikube.model.Server;
 import ikube.service.ISearcherWebService;
-import ikube.service.ServiceLocator;
+import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.SerializationUtilities;
 
-import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -34,9 +33,12 @@ public class SearchController extends BaseController {
 	/** These are the default values for first and max results. */
 	private static final int FIRST_RESULT = 0;
 	private static final int MAX_RESULTS = 10;
-	
+
+	private ISearcherWebService searcherWebService;
+
 	public SearchController() {
 		super();
+		searcherWebService = ApplicationContextManager.getBean(ISearcherWebService.class);
 	}
 
 	/**
@@ -67,15 +69,10 @@ public class SearchController extends BaseController {
 			}
 		}
 
-		String ip = InetAddress.getLocalHost().getHostAddress();
-		ISearcherWebService searcherWebService = ServiceLocator.getService(ISearcherWebService.class, "http", ip,
-				ISearcherWebService.PUBLISHED_PORT, ISearcherWebService.PUBLISHED_PATH, ISearcherWebService.NAMESPACE,
-				ISearcherWebService.SERVICE);
-
 		int firstResult = getParameter(IConstants.FIRST_RESULT, FIRST_RESULT, request);
 		int maxResults = getParameter(IConstants.MAX_RESULTS, MAX_RESULTS, request);
 
-		String[] indexNames = getIndexNames(request);
+		String[] indexNames = monitorWebService.getIndexNames();
 
 		// Search all the indexes and merge the results
 		int total = 0;
@@ -150,11 +147,6 @@ public class SearchController extends BaseController {
 
 		modelAndView.addObject(IConstants.SERVER, server);
 		return modelAndView;
-	}
-
-	protected String[] getIndexNames(HttpServletRequest request) {
-		String[] indexNames = monitorWebService.getIndexNames();
-		return indexNames;
 	}
 
 	@SuppressWarnings("unchecked")

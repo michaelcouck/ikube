@@ -27,9 +27,9 @@ import org.springframework.web.servlet.mvc.AbstractController;
  */
 public abstract class BaseController extends AbstractController {
 
-	protected IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
-	protected IMonitorWebService monitorWebService = ApplicationContextManager.getBean(IMonitorWebService.class);
-	
+	protected IClusterManager clusterManager;
+	protected IMonitorWebService monitorWebService;
+
 	public BaseController() {
 		clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
 		monitorWebService = ApplicationContextManager.getBean(IMonitorWebService.class);

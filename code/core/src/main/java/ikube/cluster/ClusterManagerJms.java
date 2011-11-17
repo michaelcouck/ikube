@@ -130,6 +130,8 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 		remoteDestinations = new HashMap<String, ClusterManagerJms.RemoteDestination>();
 		ip = InetAddress.getLocalHost().getHostAddress();
 		address = ip + "." + Thread.currentThread().hashCode();
+
+		getServer();
 		getLock(address, Long.MAX_VALUE, Boolean.FALSE);
 		initializeCleaners();
 	}
@@ -289,7 +291,7 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 					String address = networkBridge.getRemoteAddress();
 					RemoteDestination remoteDestination = null;
 					try {
-						LOGGER.info("Remote address : " + address);
+						LOGGER.debug("Remote address : " + address);
 						remoteDestination = getRemoteDestination(address);
 						Destination destination = remoteDestination.session.createTopic("queue");
 						MessageProducer producer = remoteDestination.session.createProducer(destination);
@@ -361,10 +363,10 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 		Lock lock = locks.get(address);
 		if (lock == null) {
 			lock = new Lock(address, shout, locked);
-			locks.put(address, lock);
 		}
 		lock.shout = shout;
 		lock.locked = locked;
+		locks.put(address, lock);
 		return lock;
 	}
 
@@ -472,13 +474,13 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 		Server server = servers.get(address);
 		if (server == null) {
 			server = new Server();
-			servers.put(address, server);
 		}
 		long time = System.currentTimeMillis();
 		server.setIp(ip);
 		server.setId(time);
 		server.setAge(time);
 		server.setAddress(address);
+		servers.put(address, server);
 		return server;
 	}
 
