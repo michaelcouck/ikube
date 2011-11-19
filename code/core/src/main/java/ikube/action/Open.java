@@ -45,9 +45,10 @@ public class Open extends Action<IndexContext<?>, Boolean> {
 			// return openInMemory(indexContext);
 		}
 		try {
+			start(indexContext, "");
 			return openOnFile(indexContext);
 		} finally {
-			clusterManager.stopWorking(getClass().getSimpleName(), indexContext.getIndexName(), "");
+			stop(indexContext, "");
 		}
 	}
 

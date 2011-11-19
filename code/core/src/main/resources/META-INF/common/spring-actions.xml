@@ -96,6 +96,7 @@
 		class="ikube.action.Close" 
 		property:ruleExpression="
 			!IsThisServerWorking &#38;&#38;
+			!AnyServersWorkingThisIndex &#38;&#38; 
 			IsNewIndexCreated &#38;&#38; 
 			(!IsIndexCurrent  || 
 			IsIndexCorrupt || 
@@ -109,6 +110,7 @@
 				<ref local="ikube.action.rule.IsIndexCurrent" />
 				<ref local="ikube.action.rule.AreIndexesCreated" />
 				<ref local="ikube.action.rule.AreUnopenedIndexes" />
+				<ref local="ikube.action.rule.AnyServersWorkingThisIndex" />
 			</util:list>
 		</property>
 	</bean>
@@ -117,6 +119,7 @@
 		class="ikube.action.Open" 
 		property:ruleExpression="
 			!IsThisServerWorking &#38;&#38;
+			!AnyServersWorkingThisIndex &#38;&#38; 
 			IsNewIndexCreated &#38;&#38; 
 			(!IsMultiSearcherInitialised ||  
 			!AreSearchablesInitialised) &#38;&#38;
@@ -130,6 +133,7 @@
 				<ref local="ikube.action.rule.AreUnopenedIndexes" />
 				<ref local="ikube.action.rule.IsMultiSearcherInitialised" />
 				<ref local="ikube.action.rule.AreSearchablesInitialised" />
+				<ref local="ikube.action.rule.AnyServersWorkingThisIndex" />
 			</util:list>
 		</property>
 	</bean>

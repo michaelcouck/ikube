@@ -24,6 +24,7 @@ public class Close extends Action<IndexContext<?>, Boolean> {
 	@Override
 	public Boolean execute(final IndexContext<?> indexContext) {
 		try {
+			start(indexContext, "");
 			MultiSearcher multiSearcher = indexContext.getIndex().getMultiSearcher();
 			if (multiSearcher != null) {
 				// Get all the searchables from the searcher and close them one by one
@@ -36,7 +37,7 @@ public class Close extends Action<IndexContext<?>, Boolean> {
 			indexContext.getIndex().setMultiSearcher(null);
 			return Boolean.TRUE;
 		} finally {
-			clusterManager.stopWorking(getClass().getSimpleName(), indexContext.getIndexName(), "");
+			stop(indexContext, "");
 		}
 	}
 

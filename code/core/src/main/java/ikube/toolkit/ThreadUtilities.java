@@ -14,7 +14,7 @@ import org.apache.log4j.Logger;
 public final class ThreadUtilities {
 
 	private static final Logger LOGGER = Logger.getLogger(ThreadUtilities.class);
-	
+
 	private ThreadUtilities() {
 	}
 
@@ -22,8 +22,7 @@ public final class ThreadUtilities {
 	 * This method iterates through the list of threads looking for one that is still alive and joins it. Once all the threads have finished
 	 * then this method will return to the caller indicating that all the threads have finished.
 	 * 
-	 * @param threads
-	 *            the threads to wait for
+	 * @param threads the threads to wait for
 	 */
 	public static void waitForThreads(final List<Thread> threads) {
 		if (threads == null) {
@@ -42,6 +41,14 @@ public final class ThreadUtilities {
 				}
 			}
 			break;
+		}
+	}
+
+	public static void sleep(long sleep) {
+		try {
+			Thread.sleep(sleep);
+		} catch (InterruptedException e) {
+			LOGGER.error("Sleep interrupted : " + Thread.currentThread(), e);
 		}
 	}
 

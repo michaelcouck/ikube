@@ -27,12 +27,13 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 	 * {@inheritDoc}
 	 */
 	@Override
+	@SuppressWarnings("deprecation")
 	public Boolean execute(final IndexContext<?> indexContext) throws Exception {
 		String indexName = indexContext.getIndexName();
 		Server server = clusterManager.getServer();
 		List<Indexable<?>> indexables = indexContext.getIndexables();
-		String actionName = this.getClass().getSimpleName();
 		try {
+			start(indexContext, "");
 			if (indexables != null && indexables.size() > 0) {
 				// TODO Get the action from the database
 				long lastWorkingStartTime = System.currentTimeMillis();
@@ -64,7 +65,7 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 							// after each indexable has been indexed of course
 							server.getAction().setIdNumber(0);
 						}
-						clusterManager.startWorking(actionName, indexName, indexable.getName());
+						start(indexContext, indexable.getName());
 						logger.info("Executing handler : " + handler + ", " + indexable.getName());
 						// Execute the handler and wait for the threads to finish
 						List<Thread> threads = handler.handle(indexContext, indexable);
@@ -72,6 +73,7 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 							logger.info("Waiting for threads : " + threads);
 							ThreadUtilities.waitForThreads(threads);
 						}
+						stop(indexContext, indexable.getName());
 					} catch (Exception e) {
 						logger.error("Exception indexing data : " + indexName, e);
 					}
@@ -81,7 +83,7 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 		} finally {
 			logger.debug(Logging.getString("Finished indexing : ", indexName));
 			IndexManager.closeIndexWriter(indexContext);
-			clusterManager.stopWorking(getClass().getSimpleName(), indexContext.getIndexName(), "");
+			stop(indexContext, "");
 		}
 		return Boolean.FALSE;
 	}
@@ -89,10 +91,8 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 	/**
 	 * This method finds the correct handler for the indexable.
 	 * 
-	 * @param indexableHandlers
-	 *            a map of all the handlers in the configuration
-	 * @param indexable
-	 *            the indexable to find the handler for
+	 * @param indexableHandlers a map of all the handlers in the configuration
+	 * @param indexable the indexable to find the handler for
 	 * @return the handler for the indexable or null if there is no handler for the indexable. This will fail with a warning if there is no
 	 *         handler for the indexable
 	 */

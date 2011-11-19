@@ -39,8 +39,8 @@ public class Searcher extends Action<IndexContext<?>, Boolean> {
 	@SuppressWarnings("unchecked")
 	public Boolean execute(final IndexContext<?> indexContext) {
 		try {
+			start(indexContext, "");
 			String indexName = indexContext.getIndexName();
-
 			if (indexName.contains("dictionary")) {
 				return Boolean.FALSE;
 			}
@@ -89,7 +89,7 @@ public class Searcher extends Action<IndexContext<?>, Boolean> {
 		} catch (Exception e) {
 			logger.error("Exception searching index : ", e);
 		} finally {
-			clusterManager.stopWorking(getClass().getSimpleName(), indexContext.getIndexName(), "");
+			stop(indexContext, "");
 		}
 		return Boolean.TRUE;
 	}

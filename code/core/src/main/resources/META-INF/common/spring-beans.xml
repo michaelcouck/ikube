@@ -35,8 +35,8 @@
 		id="ikube.IndexEngine"
 		name="ikube.IndexEngine"
 		class="ikube.IndexEngine"
-		property:actions-ref="ikube.IndexEngine.actions"
-		property:clusterManager-ref="ikube.cluster.IClusterManager" />
+		property:actions-ref="ikube.IndexEngine.actions" />
+	<!-- property:clusterManager-ref="ikube.cluster.IClusterManager"  -->
 
 	<bean 
 		class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor" />
@@ -107,7 +107,7 @@
 	<!-- The Jpa database for large sets of data. -->
 	<bean
 		id="ikube.database.IDataBase"
-		class="ikube.database.jpa.DataBaseJpa"
+		class="${ikube.dataBaseClass}"
 		lazy-init="false" />
 	
 	<!-- This is the listener and the producer of messages. -->

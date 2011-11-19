@@ -28,6 +28,7 @@ public class Clean<E, F> extends Action<IndexContext<?>, Boolean> {
 	@Override
 	public Boolean execute(final IndexContext<?> indexContext) {
 		try {
+			start(indexContext, "");
 			String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
 			File baseIndexDirectory = FileUtilities.getFile(indexDirectoryPath, Boolean.TRUE);
 			File[] timeIndexDirectories = baseIndexDirectory.listFiles();
@@ -49,7 +50,7 @@ public class Clean<E, F> extends Action<IndexContext<?>, Boolean> {
 			// with the user directory path
 			return Boolean.TRUE;
 		} finally {
-			clusterManager.stopWorking(getClass().getSimpleName(), indexContext.getIndexName(), "");
+			stop(indexContext, "");
 		}
 	}
 

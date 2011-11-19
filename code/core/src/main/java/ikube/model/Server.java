@@ -132,7 +132,7 @@ public class Server extends Persistable implements Comparable<Server> {
 		if (this.getId() == 0) {
 			return super.hashCode();
 		}
-		return (int) this.getId();
+		return (int) (long) this.getId();
 	}
 
 	@Override

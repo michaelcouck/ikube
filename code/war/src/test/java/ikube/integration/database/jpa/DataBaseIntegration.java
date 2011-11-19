@@ -32,7 +32,7 @@ import org.junit.Test;
  */
 public class DataBaseIntegration extends AbstractIntegration {
 
-	private IDataBase	dataBase;
+	private IDataBase dataBase;
 
 	@Before
 	public void before() {
@@ -115,28 +115,29 @@ public class DataBaseIntegration extends AbstractIntegration {
 	}
 
 	@Test
-	public void performance() {
+	public void performance() throws Exception {
 		final int iterations = 3;
-		final int batchSize = 1000;
-		double minimumInsertsPerSecond = 100d;
+		final int batchSize = 100;
+		double minimumInsertsPerSecond = 10d;
 		for (int i = 0; i < iterations; i++) {
 			double perSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
 				@Override
 				public void execute() throws Throwable {
-					List<Url> urls = getUrls(batchSize);
+					final List<Url> urls = getUrls(batchSize);
 					dataBase.persistBatch(urls);
+					urls.clear();
 				}
 			}, "Iterations per second : ", iterations);
 			double insertsPerSecond = (perSecond * batchSize);
 			logger.info("Inserts per second : " + insertsPerSecond);
 			assertTrue("We must have at least " + minimumInsertsPerSecond + " inserts per second : " + insertsPerSecond,
 					insertsPerSecond > minimumInsertsPerSecond);
+			delete(dataBase, Url.class);
 		}
 	}
 
 	@Test
 	public void executeQuery() {
-
 		Long count = dataBase.execute(Long.class, Action.SELECT_FROM_ACTIONS_COUNT);
 		assertNotNull("The count should never be null : ", count);
 
@@ -148,8 +149,36 @@ public class DataBaseIntegration extends AbstractIntegration {
 		assertEquals("The count should be the size of the url list : ", Long.valueOf(actions.size()), count);
 	}
 
-	private List<Url> getUrls(int batchSize) {
+	@Test
+	public void findClassSortFieldsDirectionOfSortFirstMaxResults() throws Exception {
+		int totalUrlInserted = 10;
+		List<Url> urls = getUrls(totalUrlInserted);
+		dataBase.persistBatch(urls);
+		List<Url> dbUrls = dataBase.find(Url.class, new String[] { "urlId" }, new boolean[] { false }, 0, Integer.MAX_VALUE);
+		logger.info("Urls : " + dbUrls.size());
+		long previousId = Long.MAX_VALUE;
+		for (Url url : dbUrls) {
+			logger.info("Url : " + url.getId() + ", " + url.getHash());
+			assertTrue("The ids must be in descending order : ", previousId > url.getId());
+			previousId = url.getId();
+		}
+
+		int firstResult = totalUrlInserted / 4;
+		int maxResults = totalUrlInserted / 2;
+		dbUrls = dataBase.find(Url.class, new String[] { "urlId" }, new boolean[] { false }, firstResult, maxResults);
+		assertEquals("Max results should be half the total : ", maxResults, dbUrls.size());
+		previousId = Long.MAX_VALUE;
+		for (Url url : dbUrls) {
+			logger.info("Url : " + url.getId() + ", " + url.getHash());
+			assertTrue("The ids must be in descending order : ", previousId > url.getId());
+			previousId = url.getId();
+			// assertTrue("", url.getId() >= 4 && url.getId() <= 8);
+		}
+	}
+
+	protected List<Url> getUrls(int batchSize) throws Exception {
 		List<Url> urls = new ArrayList<Url>();
+		long hash = System.currentTimeMillis();
 		for (int i = 0; i < batchSize; i++) {
 			Url url = new Url();
 			url.setName("index");
@@ -157,8 +186,8 @@ public class DataBaseIntegration extends AbstractIntegration {
 			url.setRawContent(new byte[0]);
 			url.setTitle("title");
 			url.setUrl("url");
-			url.setUrlId(System.nanoTime());
-			url.setHash(System.nanoTime());
+			url.setUrlId(hash++);
+			url.setHash(hash++);
 			url.setIndexed(Boolean.FALSE);
 			url.setContentType("content type");
 			urls.add(url);

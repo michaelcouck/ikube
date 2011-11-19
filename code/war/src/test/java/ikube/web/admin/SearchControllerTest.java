@@ -41,8 +41,8 @@ public class SearchControllerTest {
 
 	@Before
 	public void before() {
-		searchController = new SearchController();
 		Mockit.setUpMocks(ApplicationContextManagerMock.class, ServiceLocatorMock.class);
+		searchController = new SearchController();
 		Map<String, String[]> parameterMap = new HashMap<String, String[]>();
 		parameterMap.put(IConstants.SEARCH_STRINGS, new String[] { IConstants.IKUBE });
 		when(request.getParameterMap()).thenReturn(parameterMap);

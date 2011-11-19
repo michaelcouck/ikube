@@ -41,7 +41,7 @@
 		id="dropbox"
 		class="ikube.model.IndexableFileSystem"
 		property:name="dropbox"
-		property:path="C:/Users/Administrator/Dropbox"
+		property:path="C:/Dropbox"
 		property:pathFieldName="title"
 		property:nameFieldName="name"
 		property:lengthFieldName="length"

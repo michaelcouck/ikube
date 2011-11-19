@@ -5,10 +5,12 @@ import ikube.action.IAction;
 import ikube.cluster.IClusterManager;
 import ikube.model.IndexContext;
 import ikube.toolkit.Logging;
+import ikube.toolkit.ThreadUtilities;
 
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
@@ -58,6 +60,9 @@ public class RuleInterceptor implements IRuleInterceptor {
 			if (!IAction.class.isAssignableFrom(target.getClass())) {
 				LOGGER.warn("Can't intercept non action class, proceeding : " + target);
 				proceed = Boolean.TRUE;
+			} else if (clusterManager.getServer().getWorking()) {
+				LOGGER.debug("Server already working : ");
+				proceed = Boolean.FALSE;
 			} else if (!gotLock) {
 				LOGGER.debug("Couldn't aquire lock : ");
 				proceed = Boolean.FALSE;
@@ -130,21 +135,32 @@ public class RuleInterceptor implements IRuleInterceptor {
 	}
 
 	protected synchronized void proceed(final ProceedingJoinPoint proceedingJoinPoint, final String actionName, final String indexName) {
+		long delay = 1;
 		try {
-			long delay = 1;
 			// We set the working flag in the action within the cluster lock when setting to true
-			clusterManager.startWorking(actionName, indexName, "");
-			executorService.schedule(new Runnable() {
+			// clusterManager.startWorking(actionName, indexName, "");
+			ScheduledFuture<?> scheduledFuture = executorService.schedule(new Runnable() {
 				public void run() {
 					try {
 						proceedingJoinPoint.proceed();
 					} catch (Throwable e) {
 						LOGGER.error("Exception proceeding on join point : " + proceedingJoinPoint, e);
-					} finally {
-						clusterManager.stopWorking(actionName, indexName, "");
 					}
+					// finally {
+					// clusterManager.stopWorking(actionName, indexName, "");
+					// }
 				}
 			}, delay, TimeUnit.MILLISECONDS);
+			long maxWait = 3000;
+			long start = System.currentTimeMillis();
+			while (!scheduledFuture.isDone()) {
+				ThreadUtilities.sleep(100);
+				long waitedFor = System.currentTimeMillis() - start;
+				LOGGER.info("Waited : " + waitedFor);
+				if (waitedFor > maxWait) {
+					break;
+				}
+			}
 		} finally {
 			notifyAll();
 		}

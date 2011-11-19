@@ -46,8 +46,8 @@ public abstract class AbstractIntegration {
 			FileUtilities.deleteFiles(new File("."), "btm1.tlog", "btm2.tlog", "ikube.h2.db", "ikube.lobs.db", "ikube.log", "openjpa.log");
 			ApplicationContextManager.getBean(ListenerManager.class).removeListeners();
 			IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
-			dataBase.find(ikube.model.File.class, 0l);
 			dataBase.find(Address.class, 0l);
+			dataBase.find(ikube.model.File.class, 0l);
 			
 			DataSource dataSource = ApplicationContextManager.getBean("nonXaDataSourceH2");
 			Connection connection = dataSource.getConnection();

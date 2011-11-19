@@ -5,6 +5,7 @@ import ikube.action.rule.RuleInterceptor;
 import ikube.cluster.IClusterManager;
 import ikube.database.IDataBase;
 import ikube.listener.ListenerManager;
+import ikube.model.IndexContext;
 import ikube.notify.IMailer;
 
 import java.util.List;
@@ -49,6 +50,14 @@ public abstract class Action<E, F> implements IAction<E, F> {
 	 * holders and the expression evaluated by {@link JEP}.
 	 */
 	private String predicate;
+
+	protected void start(IndexContext<?> indexContext, String indexableName) {
+		clusterManager.startWorking(getClass().getSimpleName(), indexContext.getIndexName(), "");
+	}
+
+	protected void stop(IndexContext<?> indexContext, String indexableName) {
+		clusterManager.stopWorking(getClass().getSimpleName(), indexContext.getIndexName(), "");
+	}
 
 	/**
 	 * {@inheritDoc}

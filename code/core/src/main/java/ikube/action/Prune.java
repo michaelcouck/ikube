@@ -4,7 +4,6 @@ import ikube.IConstants;
 import ikube.database.IDataBase;
 import ikube.model.IndexContext;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,19 +22,29 @@ public class Prune extends Action<IndexContext<?>, Boolean> {
 	@Override
 	public Boolean execute(final IndexContext<?> indexContext) {
 		try {
-			Long count = dataBase.execute(Long.class, ikube.model.Action.SELECT_FROM_ACTIONS_COUNT);
-			while (count != null && count > IConstants.MAX_ACTIONS / 2) {
-				logger.info("Pruning : " + count);
-				Map<String, Object> parameters = new HashMap<String, Object>();
-				delete(dataBase, ikube.model.Action.class, ikube.model.Action.SELECT_FROM_ACTIONS, parameters);
-				count = dataBase.execute(Long.class, ikube.model.Action.SELECT_FROM_ACTIONS_COUNT);
-			}
+			start(indexContext, "");
+			delete(dataBase, ikube.model.Action.class, new String[] { "startTime" }, new boolean[] { true }, (int) IConstants.MAX_ACTIONS);
 		} finally {
-			clusterManager.stopWorking(getClass().getSimpleName(), indexContext.getIndexName(), "");
+			stop(indexContext, "");
 		}
 		return Boolean.TRUE;
 	}
 
+	protected void delete(final IDataBase dataBase, final Class<?> klass, final String[] fieldsToSortOn, final boolean[] directionOfSort,
+			final int maxSize) {
+		int doubleMaxSize = maxSize * 2;
+		List<?> entities = dataBase.find(klass, fieldsToSortOn, directionOfSort, 0, doubleMaxSize);
+		if (entities.size() <= maxSize) {
+			return;
+		}
+		for (int i = 0; i < entities.size() - maxSize; i++) {
+			Object entity = entities.get(i);
+			dataBase.remove(entity);
+		}
+		delete(dataBase, klass, fieldsToSortOn, directionOfSort, maxSize);
+	}
+
+	@Deprecated
 	protected void delete(final IDataBase dataBase, final Class<?> klass, final String sql, final Map<String, Object> parameters) {
 		try {
 			List<?> list = dataBase.find(klass, sql, parameters, 0, IConstants.RESET_DELETE_BATCH_SIZE);

@@ -1,6 +1,7 @@
 package ikube.cluster;
 
 import ikube.IConstants;
+import ikube.database.IDataBase;
 import ikube.model.Action;
 import ikube.model.Server;
 
@@ -94,8 +95,10 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 
 	private static final Logger LOGGER = Logger.getLogger(ClusterManagerJms.class);
 
+	/** The maximum amount of times to retry to send a message to the cluster. */
+	private static final int MAX_RETRY = 5;
 	/** The time to wait for the responses from the cluster servers. */
-	private static final long RESPONSE_TIME = 1000;
+	private static final long RESPONSE_TIME = 250;
 	/** The time out time for the lock in case a server dies. */
 	private static final long LOCK_TIME_OUT = 60000;
 	/** The time to sleep between trying to remove dead locks. */
@@ -104,8 +107,6 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 	private static final long SERVER_TIME_OUT = 600000;
 	/** The time between refreshing the server in the cluster, i.e. sending it to the other servers. */
 	private static final long SERVER_REFRESH_THREAD_WAIT_TIME = SERVER_TIME_OUT / 3;
-	/** The maximum amount of times to retry to send a message to the cluster. */
-	private static final int MAX_RETRY = 5;
 
 	/** The textual representation of the ip address for this server. */
 	private String ip;
@@ -117,6 +118,8 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 	private Map<String, Server> servers;
 	/** The cluster destinations. */
 	private Map<String, RemoteDestination> remoteDestinations;
+	@Autowired
+	private IDataBase dataBase;
 	/** The Jms template to send messages. */
 	@Autowired
 	private JmsTemplate jmsTemplate;
@@ -158,13 +161,13 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 			if (haveLock) {
 				// If we have the lock, i.e. we were first to shout then
 				// we do nothing and the other servers will reset their locks to false
-				LOGGER.info("Got lock : " + address + ":" + lock);
+				LOGGER.debug("Got lock : " + address + ":" + lock);
 			} else {
 				// If we don't get the lock then we reset our lock to false
 				// for the whole cluster
 				getLock(address, Long.MAX_VALUE, Boolean.FALSE);
 				sendMessage(lock);
-				LOGGER.info("Didn't get lock : " + address + ":" + lock);
+				LOGGER.debug("Didn't get lock : " + address + ":" + lock);
 			}
 			return haveLock;
 		} finally {
@@ -183,7 +186,7 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 				// We only set the lock for the cluster to false if we have it
 				lock = getLock(address, Long.MAX_VALUE, Boolean.FALSE);
 				sendMessage(lock);
-				LOGGER.info("Unlock : " + address + ":" + locks);
+				LOGGER.debug("Unlock : " + address + ":" + locks);
 				return Boolean.TRUE;
 			}
 			return Boolean.FALSE;
@@ -247,7 +250,7 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 			if (ObjectMessage.class.isAssignableFrom(message.getClass())) {
 				ObjectMessage objectMessage = (ObjectMessage) message;
 				Object object = objectMessage.getObject();
-				LOGGER.info("Message object : " + object);
+				LOGGER.debug("Message object : " + object);
 				if (Lock.class.isAssignableFrom(object.getClass())) {
 					Lock lock = (Lock) object;
 					locks.put(lock.address, lock);
@@ -404,6 +407,7 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 	@Override
 	public long startWorking(String actionName, String indexName, String indexableName) {
 		Action action = getAction(indexName, actionName, indexableName, Boolean.TRUE);
+		dataBase.persist(action);
 		Server server = getServer();
 		server.setAction(action);
 		sendMessage(server);
@@ -415,7 +419,31 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 	 */
 	@Override
 	public void stopWorking(String actionName, String indexName, String indexableName) {
-		Action action = getAction(indexName, actionName, indexableName, Boolean.FALSE);
+		// List<Action> actions = dataBase.find(Action.class, new String[] { "startTime" }, new boolean[] { false }, 0, 1);
+		Map<String, Object> parameters = new HashMap<String, Object>();
+		parameters.put("actionName", actionName);
+		parameters.put("indexName", indexName);
+		parameters.put("working", Boolean.TRUE);
+		List<Action> actions = dataBase.find(Action.class, Action.SELECT_FROM_ACTIONS_BY_ACTION_NAME_INDEX_NAME_AND_WORKING, parameters, 0,
+				Integer.MAX_VALUE);
+		Action action = null;
+		if (actions.size() > 0) {
+			action = actions.get(0);
+			if (actions.size() > 1) {
+				LOGGER.warn("Duplicate actions, resetting all to not working : " + actions.size());
+			}
+			for (Action dbAction : actions) {
+				action.setWorking(Boolean.FALSE);
+				if (dbAction.getEndTime() == null) {
+					action.setEndTime(new Timestamp(System.currentTimeMillis()));
+					action.setDuration(action.getEndTime().getTime() - action.getStartTime().getTime());
+				}
+				dataBase.merge(action);
+			}
+		} else {
+			action = getAction(indexName, actionName, indexableName, Boolean.FALSE);
+			LOGGER.warn("No start action, creating one : " + action);
+		}
 		Server server = getServer();
 		server.setAction(action);
 		sendMessage(server);
@@ -425,12 +453,13 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 		Action action = new Action();
 		action.setActionName(actionName);
 		action.setDuration(0);
-		action.setId(System.currentTimeMillis());
+		// action.setId(System.currentTimeMillis());
 		action.setIdNumber(0);
 		action.setIndexableName(indexableName);
 		action.setIndexName(indexName);
 		action.setStartTime(new Timestamp(System.currentTimeMillis()));
 		action.setWorking(working);
+		action.setServerAddress(address);
 		return action;
 	}
 

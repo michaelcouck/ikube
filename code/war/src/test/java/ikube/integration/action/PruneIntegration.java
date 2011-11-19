@@ -67,7 +67,7 @@ public class PruneIntegration extends AbstractIntegration {
 		result = prune.execute(realIndexContext);
 		assertTrue(result);
 		actions = dataBase.find(Action.class, 0, Integer.MAX_VALUE);
-		assertTrue("There should be less actions in the database than the maximum : ", IConstants.MAX_ACTIONS > actions.size());
+		assertTrue("There should be less actions in the database than the maximum : ", IConstants.MAX_ACTIONS >= actions.size());
 	}
 
 	private void persistAction() {

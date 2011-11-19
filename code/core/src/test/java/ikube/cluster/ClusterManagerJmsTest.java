@@ -19,10 +19,18 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
+/**
+ * This test is for the locking of the cluster. It will start several threads that will lock and unlock the cluster in a random fashion and
+ * there should never be more than one thread that has the lock at any given time.
+ * 
+ * @author Michael Couck
+ * @since 19.11.11
+ * @version 01.00
+ */
 public class ClusterManagerJmsTest extends ATest {
 
 	private long maxWait = 100;
-	private int iterations = 1000;
+	private int iterations = 100;
 	private int clusterManagersSize = 25;
 
 	private boolean wait;
@@ -45,6 +53,7 @@ public class ClusterManagerJmsTest extends ATest {
 	public void clusterSynchronisation() throws Exception {
 		startVerifier();
 		List<Thread> threads = new ArrayList<Thread>();
+		// Lock and unlock the cluster in threads to simulate a cluster
 		for (int i = 0; i < clusterManagersSize; i++) {
 			Thread thread = new Thread(new Runnable() {
 				public void run() {
@@ -77,6 +86,10 @@ public class ClusterManagerJmsTest extends ATest {
 		ThreadUtilities.waitForThreads(threads);
 	}
 
+	/**
+	 * This method starts a thread that will then verify that there are never more that one servers that have the lock for the cluster at
+	 * any time.
+	 */
 	private void startVerifier() {
 		Thread verifier = new Thread(new Runnable() {
 			public void run() {

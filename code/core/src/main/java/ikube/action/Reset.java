@@ -27,6 +27,7 @@ public class Reset extends Action<IndexContext<?>, Boolean> {
 	@Override
 	public Boolean execute(final IndexContext<?> indexContext) {
 		try {
+			start(indexContext, "");
 			Map<String, Object> parameters = new HashMap<String, Object>();
 			parameters.put(IConstants.NAME, indexContext.getName());
 			long count = dataBase.execute(Long.class, Url.SELECT_COUNT_FROM_URL_BY_NAME, parameters);
@@ -38,7 +39,7 @@ public class Reset extends Action<IndexContext<?>, Boolean> {
 				delete(dataBase, File.class, File.SELECT_FROM_FILE_BY_NAME, parameters);
 			}
 		} finally {
-			clusterManager.stopWorking(getClass().getSimpleName(), indexContext.getIndexName(), "");
+			stop(indexContext, "");
 		}
 		return Boolean.TRUE;
 	}

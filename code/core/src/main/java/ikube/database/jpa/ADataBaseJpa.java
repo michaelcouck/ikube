@@ -2,12 +2,18 @@ package ikube.database.jpa;
 
 import ikube.database.IDataBase;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.EntityType;
 
 import org.apache.log4j.Logger;
@@ -28,6 +34,7 @@ public abstract class ADataBaseJpa implements IDataBase {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public <T> T remove(final Class<T> klass, Long id) {
 		T toBeRemoved = find(klass, id);
 		if (toBeRemoved != null) {
@@ -115,6 +122,7 @@ public abstract class ADataBaseJpa implements IDataBase {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public <T> T find(final Class<T> klass, final Long id) {
 		return getEntityManager().find(klass, id);
 	}
@@ -122,6 +130,7 @@ public abstract class ADataBaseJpa implements IDataBase {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public <T> List<T> find(final Class<T> klass, final int firstResult, final int maxResults) {
 		String name = klass.getSimpleName();
@@ -135,6 +144,33 @@ public abstract class ADataBaseJpa implements IDataBase {
 		query.setFirstResult(firstResult);
 		query.setMaxResults(maxResults);
 		return query.getResultList();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public <T> List<T> find(Class<T> klass, String[] fieldsToSortOn, boolean[] directionOfSort, int firstResult, int maxResults) {
+		CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
+		CriteriaQuery<T> criteriaQuery = criteriaBuilder.createQuery(klass);
+		Root<T> root = criteriaQuery.from(klass);
+		criteriaQuery = criteriaQuery.select(root);
+		List<Order> orderByOrders = new ArrayList<Order>();
+		for (int i = 0; i < fieldsToSortOn.length; i++) {
+			String fieldToSortOn = fieldsToSortOn[i];
+			if (directionOfSort[i]) {
+				orderByOrders.add(criteriaBuilder.asc(root.get(fieldToSortOn)));
+			} else {
+				orderByOrders.add(criteriaBuilder.desc(root.get(fieldToSortOn)));
+			}
+		}
+		if (orderByOrders.size() > 0) {
+			criteriaQuery.orderBy(orderByOrders);
+		}
+		TypedQuery<T> typedQuery = getEntityManager().createQuery(criteriaQuery);
+		typedQuery.setFirstResult(firstResult);
+		typedQuery.setMaxResults(maxResults);
+		return typedQuery.getResultList();
 	}
 
 	/**

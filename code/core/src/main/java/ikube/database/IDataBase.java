@@ -121,6 +121,19 @@ public interface IDataBase {
 	<T> List<T> find(Class<T> klass, int startIndex, int endIndex);
 
 	/**
+	 * TODO Document me!
+	 * 
+	 * @param <T>
+	 * @param klass
+	 * @param fieldsToSortOn
+	 * @param directionOfSort
+	 * @param firstResult
+	 * @param maxResults
+	 * @return
+	 */
+	<T> List<T> find(Class<T> klass, String[] fieldsToSortOn, boolean[] directionOfSort, int firstResult, int maxResults);
+
+	/**
 	 * Selects a single object based on the sql and the parameters. The combination of parameters should result in a single unique entity
 	 * being returned from the database, otherwise a non unique exception should be thrown.
 	 * 

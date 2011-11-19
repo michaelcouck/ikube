@@ -17,6 +17,7 @@ public class SingleRuleException extends ARule<IndexContext<?>> {
 	 * {@inheritDoc}
 	 */
 	@Override
+	@SuppressWarnings("deprecation")
 	public boolean evaluate(final IndexContext<?> indexContext) {
 		return clusterManager.isException();
 	}

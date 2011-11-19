@@ -25,6 +25,8 @@ public class TextParser implements IParser {
 				char c = chars[i];
 				if (Character.isLetterOrDigit(c) || Character.isSpaceChar(c)) {
 					builder.append(c);
+				} else if (c == '\n' || c == '\r') {
+					builder.append(' ');
 				}
 			}
 			read = inputStreamReader.read(chars);
