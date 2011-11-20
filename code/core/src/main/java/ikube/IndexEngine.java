@@ -8,10 +8,12 @@ import ikube.model.IndexContext;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.Logging;
 import ikube.toolkit.SerializationUtilities;
+import ikube.toolkit.ThreadUtilities;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +53,7 @@ public class IndexEngine implements IIndexEngine, IListener {
 		// return;
 		// }
 
-		// Random random = new Random();
+		Random random = new Random();
 		@SuppressWarnings("rawtypes")
 		Map<String, IndexContext> indexContexts = ApplicationContextManager.getBeans(IndexContext.class);
 		// @SuppressWarnings("rawtypes")
@@ -74,7 +76,7 @@ public class IndexEngine implements IIndexEngine, IListener {
 					// }
 					// }
 					action.execute(indexContext);
-					// Thread.sleep(3000);
+					ThreadUtilities.sleep((long) Math.abs(random.nextLong()) % 3000);
 				} catch (Exception e) {
 					LOGGER.error("Exception executing action : " + action, e);
 				}

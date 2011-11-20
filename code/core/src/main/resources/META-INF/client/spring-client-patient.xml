@@ -46,7 +46,8 @@
 		property:address="true"
 		property:dataSource-ref="nonXaDataSourceDb2"
 		property:children-ref="patientColumns" 
-		property:maxExceptions="100" />
+		property:maxExceptions="100"
+		property:predicate="${patient.predicate}" />
 	<util:list id="patientColumns">
 		<ref local="patientId" />
 		<ref local="patientAddressId" />

@@ -1,6 +1,7 @@
 package ikube.monitoring;
 
 import ikube.IConstants;
+import ikube.cluster.IClusterManager;
 import ikube.database.IDataBase;
 import ikube.listener.Event;
 import ikube.listener.IListener;
@@ -10,10 +11,12 @@ import ikube.model.IndexContext;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.aspectj.lang.ProceedingJoinPoint;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * TODO Start a timer to persist the executions periodically.
@@ -25,11 +28,14 @@ import org.aspectj.lang.ProceedingJoinPoint;
  */
 public class MonitoringInterceptor implements IMonitoringInterceptor, IListener {
 
-	private static final Logger			LOGGER	= Logger.getLogger(MonitoringInterceptor.class);
+	private static final Logger LOGGER = Logger.getLogger(MonitoringInterceptor.class);
 
-	private IDataBase					dataBase;
-	protected Map<String, Execution>	indexingExecutions;
-	protected Map<String, Execution>	searchingExecutions;
+	@Autowired
+	private IDataBase dataBase;
+	@Autowired
+	private IClusterManager clusterManager;
+	protected final Map<String, Execution> indexingExecutions;
+	protected final Map<String, Execution> searchingExecutions;
 
 	public MonitoringInterceptor() {
 		this.indexingExecutions = new HashMap<String, Execution>();
@@ -40,14 +46,15 @@ public class MonitoringInterceptor implements IMonitoringInterceptor, IListener 
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Object indexingPerformance(final ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
+	public final Object indexingPerformance(final ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
 		Object[] args = proceedingJoinPoint.getArgs();
 		String indexName = ((IndexContext<?>) args[0]).getIndexName();
-		Execution execution = getExecution(indexName, IConstants.INDEX, indexingExecutions);
 		long start = System.nanoTime();
 		try {
 			return proceedingJoinPoint.proceed();
 		} finally {
+			Execution execution = getExecution(indexName, IConstants.INDEX, indexingExecutions);
+			execution.setInvocations(execution.getInvocations() + 1);
 			execution.setDuration(execution.getDuration() + System.nanoTime() - start);
 		}
 	}
@@ -56,52 +63,70 @@ public class MonitoringInterceptor implements IMonitoringInterceptor, IListener 
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Object searchingPerformance(final ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
+	public final Object searchingPerformance(final ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
 		// We expect to have the SearcherWebService, and nothing else for the time being
 		Object[] args = proceedingJoinPoint.getArgs();
 		String indexName = (String) args[0];
-		Execution execution = getExecution(indexName, IConstants.SEARCH, searchingExecutions);
 		long start = System.nanoTime();
 		try {
 			return proceedingJoinPoint.proceed();
 		} finally {
+			Execution execution = getExecution(indexName, IConstants.SEARCH, searchingExecutions);
+			execution.setInvocations(execution.getInvocations() + 1);
 			execution.setDuration(execution.getDuration() + System.nanoTime() - start);
 		}
 	}
 
+	protected final Execution getExecution(final String name, final String type, final Map<String, Execution> executions) {
+		Execution execution = executions.get(name);
+		// Try find it in the database
+		if (execution == null) {
+			try {
+				Map<String, Object> parameters = new HashMap<String, Object>();
+				parameters.put("name", name);
+				parameters.put("type", type);
+				parameters.put("address", clusterManager.getServer().getAddress());
+				List<Execution> dbExecutions = dataBase.find(Execution.class, Execution.SELECT_FROM_EXECUTIONS_BY_NAME_TYPE_AND_ADDRESS,
+						parameters, 0, Integer.MAX_VALUE);
+				if (dbExecutions.size() == 0) {
+					LOGGER.info("Persisting execution : ");
+				} else if (dbExecutions.size() == 1) {
+					execution = dbExecutions.get(0);
+				} else {
+					LOGGER.warn("Using the dame database in a cluster?");
+					execution = dbExecutions.get(0);
+				}
+			} catch (Exception e) {
+				LOGGER.info("No result for execution : " + e.getMessage());
+			}
+			if (execution == null) {
+				execution = new Execution();
+				execution.setName(name);
+				execution.setType(type);
+				executions.put(execution.getName(), execution);
+				dataBase.persist(execution);
+			}
+		}
+		return execution;
+	}
+
 	@Override
-	public void handleNotification(Event event) {
+	public final void handleNotification(Event event) {
 		persistExecutions(indexingExecutions);
 		persistExecutions(searchingExecutions);
 	}
 
-	protected void persistExecutions(Map<String, Execution> executions) {
+	protected final void persistExecutions(Map<String, Execution> executions) {
 		try {
 			Collection<Execution> clonedValues = new ArrayList<Execution>();
 			clonedValues.addAll(executions.values());
 			executions.clear();
 			for (Execution execution : clonedValues) {
-				dataBase.persist(execution);
+				dataBase.merge(execution);
 			}
 		} catch (Exception e) {
 			LOGGER.error("Exception persisting the executions : ", e);
 		}
-	}
-
-	protected Execution getExecution(String name, String type, Map<String, Execution> executions) {
-		Execution execution = executions.get(name);
-		if (execution == null) {
-			execution = new Execution();
-			execution.setName(name);
-			execution.setType(type);
-			executions.put(execution.getName(), execution);
-		}
-		execution.setInvocations(execution.getInvocations() + 1);
-		return execution;
-	}
-
-	public void setDataBase(IDataBase dataBase) {
-		this.dataBase = dataBase;
 	}
 
 }

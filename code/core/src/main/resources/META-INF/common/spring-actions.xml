@@ -35,14 +35,14 @@
 		<ref bean="ikube.action.Close"  />
 		<ref bean="ikube.action.Open"  />
 		<ref bean="ikube.action.Index"  />
-		<ref bean="ikube.action.Close"  />
-		<ref bean="ikube.action.Open"  />
+		<!-- <ref bean="ikube.action.Close"  />
+		<ref bean="ikube.action.Open"  /> -->
 		<ref bean="ikube.action.Delete" />
 		<ref bean="ikube.action.Clean" />
 		<ref bean="ikube.action.Backup" />
-		<ref bean="ikube.action.DiskFull" />
+		<!-- <ref bean="ikube.action.DiskFull" /> -->
 		<!-- <ref bean="ikube.action.Searcher" /> -->
-		<ref bean="ikube.action.Validator" />
+		<!-- <ref bean="ikube.action.Validator" /> -->
 		<ref bean="ikube.action.Prune" />
 	</util:list>
 
@@ -201,7 +201,8 @@
 		id="ikube.action.DiskFull" 
 		class="ikube.action.DiskFull" 
 		property:ruleExpression="
-			!IsThisServerWorking">
+			!IsThisServerWorking || 
+			IsThisServerWorking">
 		<property name="rules">
 			<util:list>
 				<ref local="ikube.action.rule.IsThisServerWorking" />

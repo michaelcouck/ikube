@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import ikube.cluster.ClusterManagerJms;
 import ikube.cluster.IClusterManager;
+import ikube.integration.AbstractIntegration;
 import ikube.model.Server;
 import ikube.toolkit.ApplicationContextManager;
 
@@ -21,7 +22,7 @@ import org.junit.Test;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 
-public class ClusterManagerJmsIntegration {
+public class ClusterManagerJmsIntegration extends AbstractIntegration {
 
 	@Test
 	public void clusterSynchronisation() throws Exception {
@@ -57,6 +58,7 @@ public class ClusterManagerJmsIntegration {
 		assertTrue("This server is working on this index : ", anyWorkingOnIndex);
 
 		clusterManager.stopWorking(actionName, indexName, indexableName);
+		Thread.sleep(1000);
 		anyWorking = clusterManager.anyWorking();
 		assertFalse("There should be no servers working : ", anyWorking);
 		anyWorkingOnIndex = clusterManager.anyWorking(indexName);
