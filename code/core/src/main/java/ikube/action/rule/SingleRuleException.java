@@ -11,15 +11,15 @@ import ikube.model.IndexContext;
  * @since 12.02.2011
  * @version 01.00
  */
+@Deprecated
 public class SingleRuleException extends ARule<IndexContext<?>> {
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	@SuppressWarnings("deprecation")
 	public boolean evaluate(final IndexContext<?> indexContext) {
-		return clusterManager.isException();
+		return Boolean.FALSE; // clusterManager.isException();
 	}
 
 }

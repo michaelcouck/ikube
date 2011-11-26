@@ -44,11 +44,12 @@ public class Open extends Action<IndexContext<?>, Boolean> {
 		if (indexContext.getInMemory()) {
 			// return openInMemory(indexContext);
 		}
+		long actionId = 0;
 		try {
-			start(indexContext, "");
+			actionId = start(indexContext, "");
 			return openOnFile(indexContext);
 		} finally {
-			stop(indexContext, "");
+			stop(indexContext, actionId);
 		}
 	}
 
@@ -71,7 +72,7 @@ public class Open extends Action<IndexContext<?>, Boolean> {
 				directory = FSDirectory.open(serverIndexDirectory);
 				boolean exists = IndexReader.indexExists(directory);
 				boolean locked = IndexWriter.isLocked(directory);
-				logger.info("Exists : " + exists + ", locked : " + locked);
+				logger.debug("Exists : " + exists + ", locked : " + locked);
 				if (!exists || locked) {
 					// We don't open locked directories. Could be
 					// that one configuration is still indexing on this
@@ -90,7 +91,7 @@ public class Open extends Action<IndexContext<?>, Boolean> {
 				reader = IndexReader.open(directory, Boolean.TRUE);
 				searcher = new IndexSearcher(reader);
 				searchers.add(searcher);
-				logger.info(Logging.getString("Opened searcher on : ", serverIndexDirectory, "exists : ", exists, "locked : ", locked));
+				logger.debug(Logging.getString("Opened searcher on : ", serverIndexDirectory, "exists : ", exists, "locked : ", locked));
 			} catch (Exception e) {
 				logger.error("Exception opening directory : " + serverIndexDirectory, e);
 				exceptionOpening = Boolean.TRUE;

@@ -16,11 +16,12 @@ public class Process extends Action<IndexContext<?>, Boolean> {
 	 */
 	@Override
 	public Boolean execute(final IndexContext<?> indexContext) {
+		long actionId = 0;
 		try {
-			start(indexContext, "");
+			actionId = start(indexContext, "");
 			// TODO Process all the data collected during the indexing
 		} finally {
-			stop(indexContext, "");
+			stop(indexContext, actionId);
 		}
 		return Boolean.TRUE;
 	}

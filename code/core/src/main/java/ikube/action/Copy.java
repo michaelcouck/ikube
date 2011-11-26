@@ -19,11 +19,12 @@ public class Copy<E, F> extends Action<IndexContext<?>, Boolean> {
 	 */
 	@Override
 	public Boolean execute(final IndexContext<?> indexContext) {
+		long actionId = 0;
 		try {
-			start(indexContext, "");
+			actionId = start(indexContext, "");
 			return Boolean.TRUE;
 		} finally {
-			stop(indexContext, "");
+			stop(indexContext, actionId);
 		}
 	}
 

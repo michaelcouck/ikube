@@ -57,23 +57,12 @@ public interface IClusterManager {
 	 * Stops the server working. This will broadcast to the cluster that the action/job is finished. This indicates that another server can
 	 * start working.
 	 * 
+	 * @param id the id of the action that was started
 	 * @param actionName the name of the action that has stopped or finished working
 	 * @param indexName the name of the index that the action was working on
 	 * @param indexableName the name of the indexable that the action was working on
 	 */
-	void stopWorking(String actionName, String indexName, String indexableName);
-
-	/**
-	 * Returns the next id from one of the servers. The id would be the id in the table for this index.
-	 * 
-	 * @param indexableName the name of the indexable that we want the id for
-	 * @param indexName the name of the index currently getting executed
-	 * @param batchSize the size of the batch for this index context. This batch size will then be added to the action and published into
-	 *            the cluster effectively determining the next if of this table
-	 * @return the id of the next row in the table for this index
-	 */
-	@Deprecated
-	long getIdNumber(String indexableName, String indexName, long batchSize, long minId);
+	void stopWorking(long id, String actionName, String indexName, String indexableName);
 
 	/**
 	 * @return the servers in the cluster
@@ -84,11 +73,5 @@ public interface IClusterManager {
 	 * @return this server object
 	 */
 	Server getServer();
-
-	@Deprecated
-	boolean isException();
-
-	@Deprecated
-	void setException(boolean exception);
 
 }

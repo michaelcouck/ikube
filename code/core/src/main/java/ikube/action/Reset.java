@@ -26,8 +26,9 @@ public class Reset extends Action<IndexContext<?>, Boolean> {
 	 */
 	@Override
 	public Boolean execute(final IndexContext<?> indexContext) {
+		long actionId = 0;
 		try {
-			start(indexContext, "");
+			actionId = start(indexContext, "");
 			Map<String, Object> parameters = new HashMap<String, Object>();
 			parameters.put(IConstants.NAME, indexContext.getName());
 			long count = dataBase.execute(Long.class, Url.SELECT_COUNT_FROM_URL_BY_NAME, parameters);
@@ -39,7 +40,7 @@ public class Reset extends Action<IndexContext<?>, Boolean> {
 				delete(dataBase, File.class, File.SELECT_FROM_FILE_BY_NAME, parameters);
 			}
 		} finally {
-			stop(indexContext, "");
+			stop(indexContext, actionId);
 		}
 		return Boolean.TRUE;
 	}

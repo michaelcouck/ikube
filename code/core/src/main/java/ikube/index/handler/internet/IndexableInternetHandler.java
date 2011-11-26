@@ -147,7 +147,7 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	protected void doUrls(final IDataBase dataBase, final IndexContext<?> indexContext, final IndexableInternet indexable,
 			final List<Url> urlBatch, final IContentProvider<IndexableInternet> contentProvider, final HttpClient httpClient) {
 		if (urlBatch.size() > 0) {
-			logger.info("Batch : " + urlBatch.size() + ", first url : " + urlBatch.get(0));
+			logger.debug("Batch : " + urlBatch.size() + ", first url : " + urlBatch.get(0));
 		}
 		for (Url url : urlBatch) {
 			try {

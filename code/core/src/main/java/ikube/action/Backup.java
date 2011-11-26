@@ -21,8 +21,9 @@ public class Backup extends Action<IndexContext<?>, Boolean> {
 	 */
 	@Override
 	public Boolean execute(final IndexContext<?> indexContext) {
+		long actionId = 0;
 		try {
-			start(indexContext, "");
+			actionId = start(indexContext, "");
 			String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
 			File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexDirectoryPath);
 			if (latestIndexDirectory == null || !latestIndexDirectory.exists()) {
@@ -47,7 +48,7 @@ public class Backup extends Action<IndexContext<?>, Boolean> {
 				return Boolean.FALSE;
 			}
 		} finally {
-			stop(indexContext, "");
+			stop(indexContext, actionId);
 		}
 		return Boolean.TRUE;
 	}

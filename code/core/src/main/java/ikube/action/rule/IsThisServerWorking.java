@@ -16,7 +16,7 @@ public class IsThisServerWorking extends ARule<IndexContext<?>> {
 	public boolean evaluate(final IndexContext<?> indexContext) {
 		boolean serverWorking = clusterManager.getServer().getWorking();
 		if (serverWorking) {
-			logger.info("Server already working : " + clusterManager.getServer());
+			logger.debug("Server already working : " + clusterManager.getServer());
 		}
 		return serverWorking;
 	}

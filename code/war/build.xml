@@ -14,12 +14,12 @@
 			<param name="tomcat.bin" value="${tomcat.2.bin}" />
 			<param name="tomcat.home" value="${tomcat.2}" />
 		</antcall>
-		<!-- sleep seconds="${sleep}" />
+		<sleep seconds="${sleep}" />
 		<antcall target="executeTomcatAction">
 			<param name="action" value="start" />
 			<param name="tomcat.bin" value="${tomcat.3.bin}" />
 			<param name="tomcat.home" value="${tomcat.3}" />
-		</antcall -->
+		</antcall>
 	</target>
 	<target name="stop.tomcat.cluster">
 		<antcall target="executeTomcatAction">
@@ -96,6 +96,9 @@
 				<exclude name="**/persistence/**" />
 				<exclude name="**/mime/**" />
 				<exclude name="**/flatfile/**" />
+				<exclude name="**/META-INF/**" />
+				<exclude name="**/integration/**" />
+				<exclude name="**/discarded/**" />
 			</fileset>
 		</copy>
 		<jar destfile="${configuration.directory}/${ikube.configuration.jar}" basedir="${configuration.directory}" />

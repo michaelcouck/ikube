@@ -12,7 +12,6 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
@@ -38,6 +37,14 @@ public final class ApplicationContextManager {
 	static {
 		Logging.configure();
 		LOGGER = Logger.getLogger(ApplicationContextManager.class);
+		// Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+		// public void run() {
+		// LOGGER.info("Shuting down application : ");
+		// AbstractApplicationContext applicationContext = (AbstractApplicationContext) getApplicationContext();
+		// applicationContext.close();
+		// LOGGER.info("Shut down application : " + applicationContext);
+		// }
+		// }));
 	}
 
 	private ApplicationContextManager() {
@@ -70,10 +77,8 @@ public final class ApplicationContextManager {
 	/**
 	 * Convenience method to get the bean type from the class.
 	 * 
-	 * @param <T>
-	 *            the type of bean to return
-	 * @param klass
-	 *            the class of the bean
+	 * @param <T> the type of bean to return
+	 * @param klass the class of the bean
 	 * @return the bean with the specified class
 	 */
 	public static synchronized <T> T getBean(final Class<T> klass) {
@@ -102,8 +107,7 @@ public final class ApplicationContextManager {
 	 * Convenience method to get the bean type from the bean name. Note that this method is not type checked and there is a distinct
 	 * possibility for a class cast exception.
 	 * 
-	 * @param name
-	 *            the name of the bean
+	 * @param name the name of the bean
 	 * @return the bean with the specified name
 	 */
 	@SuppressWarnings("unchecked")
@@ -118,10 +122,8 @@ public final class ApplicationContextManager {
 	/**
 	 * Access to all the beans of a particular type.
 	 * 
-	 * @param <T>
-	 *            the expected type
-	 * @param klass
-	 *            the class of the beans
+	 * @param <T> the expected type
+	 * @param klass the class of the beans
 	 * @return a map of bean names and beans of type T
 	 */
 	public static synchronized <T> Map<String, T> getBeans(final Class<T> klass) {
@@ -135,8 +137,7 @@ public final class ApplicationContextManager {
 	/**
 	 * Instantiates the application context using all the configuration files in the parameter list.
 	 * 
-	 * @param configFiles
-	 *            the locations of the configuration files
+	 * @param configFiles the locations of the configuration files
 	 * @return the merged application context for all the configuration files
 	 */
 	public static synchronized ApplicationContext getApplicationContext(final File... configFiles) {
@@ -148,7 +149,7 @@ public final class ApplicationContextManager {
 					configLocations.add(configurationFile.getAbsolutePath());
 				}
 				APPLICATION_CONTEXT = new FileSystemXmlApplicationContext(configLocations.toArray(new String[configLocations.size()]));
-				((ConfigurableApplicationContext) APPLICATION_CONTEXT).registerShutdownHook();
+				((AbstractApplicationContext) APPLICATION_CONTEXT).registerShutdownHook();
 				LOGGER.info("Loaded the application context with configurations : " + Arrays.asList(configFiles));
 			}
 			return APPLICATION_CONTEXT;
@@ -160,16 +161,14 @@ public final class ApplicationContextManager {
 	/**
 	 * Instantiates the application context using all the configuration files in the parameter list.
 	 * 
-	 * @param configLocations
-	 *            the locations of the configuration files
+	 * @param configLocations the locations of the configuration files
 	 * @return the merged application context for all the configuration files
 	 */
 	public static synchronized ApplicationContext getApplicationContext(final String... configLocations) {
 		try {
 			if (APPLICATION_CONTEXT == null) {
 				LOGGER.info("Loading the application context with configurations : " + Arrays.asList(configLocations));
-				APPLICATION_CONTEXT = new RelativeXmlApplicationContext(configLocations);
-				((ConfigurableApplicationContext) APPLICATION_CONTEXT).registerShutdownHook();
+				APPLICATION_CONTEXT = new ClassPathXmlApplicationContext(configLocations);
 				((AbstractApplicationContext) APPLICATION_CONTEXT).registerShutdownHook();
 				LOGGER.info("Loaded the application context with configurations : " + Arrays.asList(configLocations));
 			}

@@ -1,10 +1,10 @@
 package ikube.cluster;
 
 import ikube.IConstants;
-import ikube.action.Index;
 import ikube.database.IDataBase;
 import ikube.model.Action;
 import ikube.model.Server;
+import ikube.toolkit.ThreadUtilities;
 
 import java.io.Serializable;
 import java.net.InetAddress;
@@ -35,6 +35,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 
@@ -52,7 +53,6 @@ import org.springframework.jms.core.MessageCreator;
  * @since 11.11.11
  * @version 01.00
  */
-@SuppressWarnings("deprecation")
 public class ClusterManagerJms implements IClusterManager, MessageListener {
 
 	/**
@@ -82,7 +82,7 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 	private static final Logger LOGGER = Logger.getLogger(ClusterManagerJms.class);
 
 	/** The maximum amount of times to retry to send a message to the cluster. */
-	private static final int MAX_RETRY = 5;
+	// private static final int MAX_RETRY = 5;
 	/** The time to wait for the responses from the cluster servers. */
 	private static final long RESPONSE_TIME = 250;
 	/** The time out time for the lock in case a server dies. */
@@ -93,10 +93,14 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 	private static final long SERVER_TIME_OUT = 600000;
 	/** The time between refreshing the server in the cluster, i.e. sending it to the other servers. */
 	private static final long SERVER_REFRESH_THREAD_WAIT_TIME = SERVER_TIME_OUT / 3;
-	private static final long ACTION_TIME_OUT = 60000;
+	// private static final long ACTION_TIME_OUT = 60000;
 
 	/** The textual representation of the ip address for this server. */
 	private String ip;
+	@Value("${activemq.port}")
+	private long jmsPort;
+	@Value("${activemq.destination}")
+	private String destination;
 	/** The address or unique identifier for this server. */
 	private String address;
 	/** The list of locks that have been applied/accepted for. Please refer to the class JavaDoc for more information. */
@@ -106,25 +110,13 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 	@Autowired
 	private IDataBase dataBase;
 	/** The Jms template to send messages. */
-	@Autowired
-	private JmsTemplate jmsTemplate;
+	// @Autowired
+	// private JmsTemplate jmsTemplate;
 	/** Access to the ActiveMq cluster functionality. */
 	@Autowired
 	private XBeanBrokerService xBeanBrokerService;
 	/** A map of templates to send messages to the cluster. */
 	private Map<String, JmsTemplate> jmsTemplates;
-
-	public ClusterManagerJms() throws UnknownHostException, InterruptedException {
-		locks = new HashMap<String, Lock>();
-		servers = new HashMap<String, Server>();
-		jmsTemplates = new HashMap<String, JmsTemplate>();
-		ip = InetAddress.getLocalHost().getHostAddress();
-		address = ip + "." + Thread.currentThread().hashCode();
-
-		getServer();
-		getLock(address, Long.MAX_VALUE, Boolean.FALSE);
-		initializeCleaners();
-	}
 
 	/**
 	 * This method will post a message to all servers, with a lock containing the time the lock was requested. It will then wait a short
@@ -143,7 +135,7 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 			// Send the lock with the locked flag to try get the lock from the cluster
 			Lock lock = getLock(address, shout, Boolean.TRUE);
 			sendMessage(lock);
-			sleepForSomeTime(RESPONSE_TIME);
+			ThreadUtilities.sleep(RESPONSE_TIME);
 			boolean haveLock = haveLock(shout);
 			if (haveLock) {
 				// If we have the lock, i.e. we were first to shout then
@@ -219,14 +211,6 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 		return Boolean.TRUE;
 	}
 
-	private void sleepForSomeTime(long sleep) {
-		try {
-			Thread.sleep(sleep);
-		} catch (InterruptedException e) {
-			LOGGER.error("Exception waiting for the cluster : ", e);
-		}
-	}
-
 	/**
 	 * This method just listens on a topic for messages. Typically messages will contain locks and server objects. These objects from remote
 	 * servers will then be inserted into the locks and servers maps, updating the data on this server.
@@ -237,13 +221,18 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 			if (ObjectMessage.class.isAssignableFrom(message.getClass())) {
 				ObjectMessage objectMessage = (ObjectMessage) message;
 				Object object = objectMessage.getObject();
-				LOGGER.info("Message object : " + object);
 				if (Lock.class.isAssignableFrom(object.getClass())) {
 					Lock lock = (Lock) object;
 					locks.put(lock.address, lock);
 				} else if (Server.class.isAssignableFrom(object.getClass())) {
 					Server server = (Server) object;
 					servers.put(server.getAddress(), server);
+					List<Action> actions = server.getActions();
+					if (actions.size() > 0) {
+						Action action = actions.get(actions.size() - 1);
+						LOGGER.info("Message action : " + server.getAddress() + ", " + action.getId() + ", " + action.getActionName()
+								+ ", " + action.getWorking() + ", " + action.getIndexName());
+					}
 				}
 			} else {
 				LOGGER.warn("Message type not supported : " + message);
@@ -251,6 +240,7 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 		} catch (Exception e) {
 			LOGGER.error("Exception getting message : ", e);
 		} finally {
+			// This dead locks
 			// notifyAll();
 		}
 	}
@@ -267,42 +257,46 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 				return session.createObjectMessage(serializable);
 			}
 		};
-		jmsTemplate.send(messageCreator);
+		// jmsTemplate.send(messageCreator);
+		// Send to the cluster
+		Broker broker;
 		try {
-			// Send to the cluster
-			Broker broker = xBeanBrokerService.getBroker();
-			BrokerService brokerService = broker.getBrokerService();
-			List<NetworkConnector> networkConnectors = brokerService.getNetworkConnectors();
-			int retry = 0;
-			jmsTemplates: for (NetworkConnector networkConnector : networkConnectors) {
-				Collection<NetworkBridge> networkBridges = networkConnector.activeBridges();
-				for (NetworkBridge networkBridge : networkBridges) {
-					if (retry > MAX_RETRY) {
-						continue;
-					}
-					String address = networkBridge.getRemoteAddress();
-					try {
-						LOGGER.info("Remote address : " + address);
-						JmsTemplate jmsTemplate = getJmsTemplate(address);
-						jmsTemplate.send(messageCreator);
-					} catch (Exception e) {
-						retry++;
-						LOGGER.error("Exception accessing server : " + address, e);
-						try {
-							JmsTemplate jmsTemplate = jmsTemplates.remove(address);
-							if (jmsTemplate != null) {
-								ConnectionFactory connectionFactory = jmsTemplate.getConnectionFactory();
-								LOGGER.info("Failed connection object : " + connectionFactory);
-							}
-						} catch (Exception ex) {
-							LOGGER.error("Exception accessing server : " + address, e);
-						}
-						continue jmsTemplates;
-					}
+			broker = xBeanBrokerService.getBroker();
+		} catch (Exception e) {
+			throw new RuntimeException("Exception accessing the Jms broker from the mBean : " + xBeanBrokerService, e);
+		}
+		BrokerService brokerService = broker.getBrokerService();
+		List<NetworkConnector> networkConnectors = brokerService.getNetworkConnectors();
+		for (NetworkConnector networkConnector : networkConnectors) {
+			Collection<NetworkBridge> networkBridges = networkConnector.activeBridges();
+			for (NetworkBridge networkBridge : networkBridges) {
+				String address = networkBridge.getRemoteAddress();
+				try {
+					LOGGER.debug("Remote address : " + address);
+					JmsTemplate jmsTemplate = getJmsTemplate(address);
+					jmsTemplate.send(messageCreator);
+				} catch (Exception e) {
+					LOGGER.error("Exception sending message to : " + address + ", will remove template : ", e);
+					closeConnection(address);
 				}
 			}
+		}
+	}
+
+	private void closeConnection(String address) {
+		try {
+			JmsTemplate jmsTemplate = jmsTemplates.remove(address);
+			if (jmsTemplate != null) {
+				ConnectionFactory connectionFactory = jmsTemplate.getConnectionFactory();
+				if (connectionFactory != null) {
+					connectionFactory.createConnection().close();
+				}
+				LOGGER.info("Failed connection object : " + connectionFactory);
+			} else {
+				LOGGER.warn("Jms template was null : " + address);
+			}
 		} catch (Exception e) {
-			LOGGER.error("Exception accessing the cluster network : ", e);
+			LOGGER.error("Exception removing Jms template to cluster node : " + address, e);
 		}
 	}
 
@@ -313,7 +307,7 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 		String url = "tcp:/" + address;
 		ConnectionFactory connectionFactory = new ActiveMQConnectionFactory(url);
 		JmsTemplate jmsTemplate = new JmsTemplate(connectionFactory);
-		jmsTemplate.setDefaultDestinationName("queue");
+		jmsTemplate.setDefaultDestinationName(destination);
 		jmsTemplates.put(address, jmsTemplate);
 		return jmsTemplate;
 	}
@@ -343,8 +337,7 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 	@Override
 	public boolean anyWorking() {
 		for (Server server : servers.values()) {
-			Action action = server.getAction();
-			if (action != null && action.getWorking()) {
+			if (server.getWorking()) {
 				return Boolean.TRUE;
 			}
 		}
@@ -357,9 +350,11 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 	@Override
 	public boolean anyWorking(String indexName) {
 		for (Server server : servers.values()) {
-			Action action = server.getAction();
-			if (action != null && action.getWorking() && indexName.equals(action.getIndexName())) {
-				return Boolean.TRUE;
+			List<Action> actions = server.getActions();
+			for (Action action : actions) {
+				if (action != null && action.getWorking() && indexName.equals(action.getIndexName())) {
+					return Boolean.TRUE;
+				}
 			}
 		}
 		return Boolean.FALSE;
@@ -369,67 +364,73 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public long startWorking(String actionName, String indexName, String indexableName) {
-		Action action = getAction(indexName, actionName, indexableName, Boolean.TRUE);
-		dataBase.persist(action);
-		Server server = getServer();
-		server.setAction(action);
-		sendMessage(server);
-		return 0;
+	public synchronized long startWorking(String actionName, String indexName, String indexableName) {
+		try {
+			Action action = getAction(indexName, actionName, indexableName, Boolean.TRUE);
+			Server server = getServer();
+			server.getActions().add(action);
+			dataBase.persist(action);
+			LOGGER.info("Start working : " + action.getId() + ", " + action.getActionName() + ", " + action.getIndexName());
+			sendMessage(server);
+			return action.getId();
+		} finally {
+			notifyAll();
+		}
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void stopWorking(String actionName, String indexName, String indexableName) {
-		Server server = getServer();
-		Action action = server.getAction();
-		if (action == null) {
-			action = getAction(indexName, actionName, indexableName, Boolean.FALSE);
-			action.setStartTime(new Timestamp(System.currentTimeMillis()));
+	public synchronized void stopWorking(long id, String actionName, String indexName, String indexableName) {
+		try {
+			Server server = getServer();
+			List<Action> actions = server.getActions();
+			Action action = null;
+			int index = 0;
+			for (int i = index; i < actions.size(); i++, index++) {
+				Action serverAction = actions.get(i);
+				if (serverAction.getId() == id) {
+					action = serverAction;
+					break;
+				}
+			}
+			if (action != null) {
+				action.setWorking(Boolean.FALSE);
+				action.setEndTime(new Timestamp(System.currentTimeMillis()));
+				action.setDuration(action.getEndTime().getTime() - action.getStartTime().getTime());
+				dataBase.merge(action);
+				LOGGER.info("Stop working : " + index + ", " + action.getId() + ", " + action.getActionName() + ", "
+						+ action.getIndexName());
+				server.getActions().remove(index);
+				sendMessage(server);
+			} else {
+				LOGGER.warn("Action not found : " + id + ", " + actionName + ", " + indexName);
+			}
+			if (server.getWorking()) {
+				LOGGER.info("Server still working : ");
+				for (Action serverAction : actions) {
+					if (serverAction.getWorking()) {
+						LOGGER.info("        still working : " + serverAction.getId() + ", " + serverAction.getActionName() + ", "
+								+ serverAction.getIndexName());
+					}
+				}
+			}
+		} finally {
+			notifyAll();
 		}
-		action.setWorking(Boolean.FALSE);
-		action.setEndTime(new Timestamp(System.currentTimeMillis()));
-		action.setDuration(action.getEndTime().getTime() - action.getStartTime().getTime());
-		server.setAction(action);
-		dataBase.merge(action);
-		sendMessage(server);
 	}
 
 	private Action getAction(String indexName, String actionName, String indexableName, boolean working) {
 		Action action = new Action();
 		action.setActionName(actionName);
 		action.setDuration(0);
-		action.setIdNumber(0);
 		action.setIndexableName(indexableName);
 		action.setIndexName(indexName);
 		action.setStartTime(new Timestamp(System.currentTimeMillis()));
 		action.setWorking(working);
 		action.setServerAddress(address);
 		return action;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	@Deprecated
-	public long getIdNumber(String indexableName, String indexName, long batchSize, long minId) {
-		for (Server server : servers.values()) {
-			Action action = server.getAction();
-			if (action != null && action.getWorking() && indexableName.equals(action.getIndexableName())
-					&& indexName.equals(action.getIndexName())) {
-				long idNumber = action.getIdNumber();
-				if (idNumber < minId) {
-					idNumber = minId;
-				}
-				action.setIdNumber(idNumber + batchSize);
-				sendMessage(server);
-				return idNumber;
-			}
-		}
-		return 0;
 	}
 
 	/**
@@ -456,40 +457,37 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 		server.setId(time);
 		server.setAge(time);
 		server.setAddress(address);
-		servers.put(address, server);
+		servers.put(server.getAddress(), server);
 		return server;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean isException() {
-		return false;
-	}
+	public void initialize() throws UnknownHostException {
+		locks = new HashMap<String, Lock>();
+		servers = new HashMap<String, Server>();
+		jmsTemplates = new HashMap<String, JmsTemplate>();
+		ip = InetAddress.getLocalHost().getHostAddress();
+		address = ip + "." + jmsPort;
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void setException(boolean exception) {
-	}
-
-	private void initializeCleaners() {
+		getServer();
+		getLock(address, Long.MAX_VALUE, Boolean.FALSE);
 		// This thread removes locks that have expired
 		new Thread(new Runnable() {
 			public void run() {
 				while (true) {
-					sleepForSomeTime(LOCK_THREAD_WAIT_TIME);
-					List<String> toRemove = new ArrayList<String>();
-					for (Entry<String, Lock> entry : locks.entrySet()) {
-						if (System.currentTimeMillis() - entry.getValue().shout > LOCK_TIME_OUT) {
-							toRemove.add(entry.getKey());
+					try {
+						ThreadUtilities.sleep(LOCK_THREAD_WAIT_TIME);
+						List<String> toRemove = new ArrayList<String>();
+						for (Entry<String, Lock> entry : locks.entrySet()) {
+							if (System.currentTimeMillis() - entry.getValue().shout > LOCK_TIME_OUT) {
+								toRemove.add(entry.getKey());
+							}
 						}
-					}
-					for (String lockKey : toRemove) {
-						LOGGER.warn("Removing lock from time out : " + locks.get(lockKey));
-						locks.remove(lockKey);
+						for (String lockKey : toRemove) {
+							LOGGER.warn("Removing lock from time out : " + locks.get(lockKey));
+							locks.remove(lockKey);
+						}
+					} catch (Exception e) {
+						LOGGER.error("Exception in the lock timeout thread : ", e);
 					}
 				}
 			}
@@ -498,7 +496,7 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 		new Thread(new Runnable() {
 			public void run() {
 				while (true) {
-					sleepForSomeTime(SERVER_TIME_OUT);
+					ThreadUtilities.sleep(SERVER_TIME_OUT);
 					Server server = getServer();
 					// Remove all servers that are past the max age
 					List<Server> toRemove = new ArrayList<Server>();
@@ -523,28 +521,35 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 		new Thread(new Runnable() {
 			public void run() {
 				while (true) {
-					sleepForSomeTime(SERVER_REFRESH_THREAD_WAIT_TIME);
+					ThreadUtilities.sleep(SERVER_REFRESH_THREAD_WAIT_TIME);
 					sendMessage(getServer());
 				}
 			}
 		}, "Ikube server club thread").start();
-		new Thread(new Runnable() {
-			public void run() {
-				while (true) {
-					sleepForSomeTime(ACTION_TIME_OUT);
-					Server server = getServer();
-					Action action = server.getAction();
-					if (action != null) {
-						if (Index.class.getSimpleName().equals(action.getActionName())) {
-							continue;
-						}
-						if (System.currentTimeMillis() - action.getStartTime().getTime() > ACTION_TIME_OUT) {
-							stopWorking(action.getActionName(), action.getIndexName(), action.getIndexableName());
-						}
-					}
-				}
-			}
-		}, "Ikube action timeout thread").start();
+		// This thread will time out the actions if they take too long
+		// new Thread(new Runnable() {
+		// public void run() {
+		// while (true) {
+		// ThreadUtilities.sleep(ACTION_TIME_OUT);
+		// Server server = getServer();
+		// Action action = server.getAction();
+		// if (action != null) {
+		// if (Index.class.getSimpleName().equals(action.getActionName())) {
+		// continue;
+		// }
+		// if (System.currentTimeMillis() - action.getStartTime().getTime() > ACTION_TIME_OUT) {
+		// LOGGER.warn("Action timed out : " + action);
+		// stopWorking(action.getActionName(), action.getIndexName(), action.getIndexableName());
+		// }
+		// }
+		// }
+		// }
+		// }, "Ikube action timeout thread").start();
+	}
+
+	public void destroy() {
+		this.servers.clear();
+		this.jmsTemplates.clear();
 	}
 
 }

@@ -1,7 +1,6 @@
 package ikube;
 
 import ikube.toolkit.ApplicationContextManager;
-import ikube.toolkit.Logging;
 
 /**
  * This is the bootstrap class for stand alone. The libraries that are required are defined in the manifest of the core jar, and the
@@ -12,11 +11,8 @@ import ikube.toolkit.Logging;
  * @version 01.00
  */
 public final class Ikube {
-	
-	private Ikube() {}
 
 	public static void main(final String[] args) {
-		Logging.configure();
 		ApplicationContextManager.getApplicationContext();
 	}
 

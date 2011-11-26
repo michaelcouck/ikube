@@ -41,7 +41,8 @@ public class IndexTest extends ATest {
 		when(clusterManager.getServer()).thenReturn(server);
 		Action action = mock(Action.class);
 		when(action.getStartTime()).thenReturn(new Timestamp(System.currentTimeMillis()));
-		when(server.getAction()).thenReturn(action);
+		server.getActions().add(action);
+		// when(server.getActions().get(0)).thenReturn(action);
 	}
 
 	@After

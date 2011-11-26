@@ -23,7 +23,7 @@ import org.springframework.web.servlet.ModelAndView;
  * @version 01.00
  */
 public class ServersController extends BaseController {
-	
+
 	public ServersController() {
 		super();
 	}
@@ -44,11 +44,14 @@ public class ServersController extends BaseController {
 			}
 		});
 		modelAndView.addObject(IConstants.SERVERS, servers);
+		// for (Server server : servers) {
+		// logger.info("Server : " + server.getActions().size());
+		// }
 
 		// Put the server and other related stuff in the response
 		Server server = clusterManager.getServer();
 		modelAndView.addObject(IConstants.SERVER, server);
-		modelAndView.addObject(IConstants.ACTION, server.getAction());
+		modelAndView.addObject(IConstants.ACTION, server.getActions());
 		// modelAndView.addObject(IConstants.WEB_SERVICE_URLS, server.getWebServiceUrls());
 		modelAndView.addObject(IConstants.INDEXING_EXECUTIONS, server.getIndexingExecutions());
 		modelAndView.addObject(IConstants.SEARCHING_EXECUTIONS, server.getSearchingExecutions());

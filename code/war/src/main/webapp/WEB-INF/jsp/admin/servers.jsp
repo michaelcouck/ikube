@@ -1,5 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <script language="JavaScript" type="text/javascript">
 // CREDITS:
@@ -18,7 +19,7 @@
 // CONFIGURATION STARTS HERE
 
 // Configure refresh interval (in seconds)
-var refreshinterval=5
+var refreshinterval=3
 
 // Shall the coundown be displayed inside your status bar? Say "yes" or "no" below:
 var displaycountdown="yes"
@@ -115,13 +116,8 @@ window.onload=starttime
 		</td>
 	</tr>
 	<tr>
-		<th class="td-content" colspan="2">Server</th>
-		<th class="td-content">Working</th>
-		<th class="td-content">Action</th>
-		<th class="td-content">Index</th>
-		<th class="td-content">Indexable</th>
-		<th class="td-content">Id</th>
-		<th class="td-content">Start time</th>
+		<th class="td-content" colspan="2" width="25%">Server</th>
+		<th class="td-content" colspan="5" width="75%">Actions</th>
 	</tr>
 	<c:forEach var="server" items="${requestScope.servers}">
 		<tr>
@@ -129,23 +125,54 @@ window.onload=starttime
 				<img alt="Server" src="<c:url value="/images/icons/server.gif" />" title="Server">
 			</td>
 			<td class="td-content" nowrap="nowrap">
-				<a href="<c:url value="${server.searchWebServiceUrl}" />"
+				<a href="<c:url value="${server.ip}" />"
 					style="font-style: italic;" 
-					title="${server.searchWebServiceUrl}">
+					title="${server.address}">
 					<c:out value="${server.address}" />
 				</a>
 			</td>
-			<c:set var="running" scope="page" value="${server.action != null && server.action.working ? 'running' : 'stopped'}"/>
-			<td class="td-content" width="1%">
-				<img alt="Working" src="<c:url value="/images/icons/${running}.gif"/>" title="Working">
+			
+			<td class="td-content" colspan="5">
+				<c:choose>
+					<c:when test="${fn:length(server.actions) == 0}">
+						<table class="table-content" width="100%">
+							<tr>
+								<th class="td-content" width="10%">Working</th>
+								<th class="td-content" width="90%">Message</th>
+							</tr>
+							<tr>
+								<td class="td-content" width="10%">
+									<img alt="Working" src="<c:url value="/images/icons/stopped.gif"/>" title="Not working">
+								</td>
+								<td class="td-content">
+									Not working
+								</td>
+							</tr>
+						</table>
+					</c:when>
+					<c:otherwise>
+						<table class="table-content" width="100%">
+							<tr>
+								<th class="td-content" width="10%">Working</th>
+								<th class="td-content" width="10%">Id</th>
+								<th class="td-content" width="20">Action</th>
+								<th class="td-content" width="20%">Index</th>
+								<th class="td-content" width="40%">Start time</th>
+							</tr>
+							<c:forEach var="action" items="${server.actions}">
+								<tr>
+									<c:set var="running" scope="page" value="${action.working ? 'running' : 'stopped'}"/>
+									<td class="td-content"><img alt="Working" src="<c:url value="/images/icons/${running}.gif"/>" title="Working"></td>
+									<td class="td-content"><c:out value="${action.id}" /></td>
+									<td class="td-content"><c:out value="${action.actionName}" /></td>
+									<td class="td-content"><c:out value="${action.indexName}" /></td>
+									<td class="td-content"><c:out value="${action.startDate}" /></td>
+								</tr>
+							</c:forEach>
+						</table>
+					</c:otherwise>
+				</c:choose>
 			</td>
-			<c:if test="${server.action != null}">
-				<td class="td-content"><c:out value="${server.action.actionName}" /></td>
-				<td class="td-content"><c:out value="${server.action.indexName}" /></td>
-				<td class="td-content"><c:out value="${server.action.indexableName}" /></td>
-				<td class="td-content"><c:out value="${server.action.idNumber}" /></td>
-				<td class="td-content"><c:out value="${server.action.startDate}" /></td>
-			</c:if>
 		</tr>
 		
 	</c:forEach>

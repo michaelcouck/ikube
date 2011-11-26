@@ -26,8 +26,9 @@ public class DiskFull extends Action<IndexContext<?>, Boolean> {
 	 */
 	@Override
 	public Boolean execute(final IndexContext<?> indexContext) {
+		long actionId = 0;
 		try {
-			start(indexContext, "");
+			actionId = start(indexContext, "");
 			File indexesDirectory = FileUtilities.getFile(indexContext.getIndexDirectoryPath(), Boolean.TRUE);
 			if (!indexesDirectory.exists() || !indexesDirectory.isDirectory()) {
 				return Boolean.FALSE;
@@ -65,7 +66,7 @@ public class DiskFull extends Action<IndexContext<?>, Boolean> {
 				logger.error("Exception looking for the free space : " + indexesDirectory, e);
 			}
 		} finally {
-			stop(indexContext, "");
+			stop(indexContext, actionId);
 		}
 		return Boolean.FALSE;
 	}

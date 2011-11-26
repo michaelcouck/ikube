@@ -180,7 +180,7 @@
 								<ant antfile="build.xml" target="copy.configuration" inheritrefs="true" />
 								<!-- Start the cluster of Tomcats. -->
 								<echo message="Starting the cluster of Tomcats : " />
-								<!-- <ant antfile="build.xml" target="start.tomcat.cluster" inheritrefs="true" /> -->
+								<ant antfile="build.xml" target="start.tomcat.cluster" inheritrefs="true" />
 							</target>
 						</configuration>
 						<goals>

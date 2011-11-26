@@ -1,10 +1,8 @@
 package ikube.integration.action;
 
-import static org.mockito.Mockito.*;
-
 import static org.junit.Assert.assertEquals;
-
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 import ikube.IConstants;
 import ikube.action.Prune;
 import ikube.cluster.IClusterManager;
@@ -32,7 +30,13 @@ public class PruneIntegration extends AbstractIntegration {
 	private IDataBase dataBase;
 
 	@Before
-	public void before() {
+	public void before() throws Exception {
+		try {
+			// MappingTool.main(new String[] { MappingTool.ACTION_BUILD_SCHEMA });
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
 		prune = new Prune();
 		dataBase = ApplicationContextManager.getBean(IDataBase.class);
 		Deencapsulation.setField(prune, dataBase);
@@ -70,6 +74,7 @@ public class PruneIntegration extends AbstractIntegration {
 		assertTrue("There should be less actions in the database than the maximum : ", IConstants.MAX_ACTIONS >= actions.size());
 	}
 
+	@SuppressWarnings("deprecation")
 	private void persistAction() {
 		Action action = new Action();
 		action.setActionName("actionName");

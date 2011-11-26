@@ -80,11 +80,15 @@
 		<entry key="openjpa.RuntimeUnenhancedClasses" value="supported" />
 		<entry key="openjpa.jdbc.DBDictionary" value="${ikube.jdbc.dictionary}" />
 		
-		<!-- <entry key="openjpa.Connection2UserName" value="${ikube.jdbc.userid}" />
-		<entry key="openjpa.Connection2Password" value="${ikube.jdbc.password}" />
+		<!-- 
+			ForeignKeys=true,Indexes=true,SchemaAction='drop,add',
+			SchemaAction='add,deleteTableContents'
+		 -->
 		<entry key="openjpa.Connection2URL" value="${ikube.jdbc.url}" />
+		<entry key="openjpa.Connection2UserName" value="${ikube.jdbc.userid}" />
+		<entry key="openjpa.Connection2Password" value="${ikube.jdbc.password}" />
 		<entry key="openjpa.Connection2DriverName" value="${ikube.jdbc.driver}" />
-		<entry key="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" /> -->
+		<entry key="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
 	</util:map>
 
 	<transaction:advice id="transactionAdvice" transaction-manager="transactionManager">
@@ -109,11 +113,6 @@
 		id="ikube.database.IDataBase"
 		class="${ikube.dataBaseClass}"
 		lazy-init="false" />
-	
-	<!-- This is the listener and the producer of messages. -->
-	<bean 
-		id="ikube.cluster.IClusterManager"
-		class="ikube.cluster.ClusterManagerJms" />
 	
 	<!-- These are just pojos that delegate to the real class that can be intercepted by Spring. -->
 	<bean 

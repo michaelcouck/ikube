@@ -21,11 +21,12 @@ public class Prune extends Action<IndexContext<?>, Boolean> {
 	 */
 	@Override
 	public Boolean execute(final IndexContext<?> indexContext) {
+		long actionId = 0;
 		try {
-			start(indexContext, "");
+			actionId = start(indexContext, "");
 			delete(dataBase, ikube.model.Action.class, new String[] { "startTime" }, new boolean[] { true }, (int) IConstants.MAX_ACTIONS);
 		} finally {
-			stop(indexContext, "");
+			stop(indexContext, actionId);
 		}
 		return Boolean.TRUE;
 	}

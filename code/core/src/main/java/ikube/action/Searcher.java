@@ -38,8 +38,9 @@ public class Searcher extends Action<IndexContext<?>, Boolean> {
 	@Override
 	@SuppressWarnings("unchecked")
 	public Boolean execute(final IndexContext<?> indexContext) {
+		long actionId = 0;
 		try {
-			start(indexContext, "");
+			actionId = start(indexContext, "");
 			String indexName = indexContext.getIndexName();
 			if (indexName.contains("dictionary")) {
 				return Boolean.FALSE;
@@ -89,7 +90,7 @@ public class Searcher extends Action<IndexContext<?>, Boolean> {
 		} catch (Exception e) {
 			logger.error("Exception searching index : ", e);
 		} finally {
-			stop(indexContext, "");
+			stop(indexContext, actionId);
 		}
 		return Boolean.TRUE;
 	}

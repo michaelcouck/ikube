@@ -27,8 +27,9 @@ public class Clean<E, F> extends Action<IndexContext<?>, Boolean> {
 	 */
 	@Override
 	public Boolean execute(final IndexContext<?> indexContext) {
+		long actionId = 0;
 		try {
-			start(indexContext, "");
+			actionId = start(indexContext, "");
 			String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
 			File baseIndexDirectory = FileUtilities.getFile(indexDirectoryPath, Boolean.TRUE);
 			File[] timeIndexDirectories = baseIndexDirectory.listFiles();
@@ -50,7 +51,7 @@ public class Clean<E, F> extends Action<IndexContext<?>, Boolean> {
 			// with the user directory path
 			return Boolean.TRUE;
 		} finally {
-			stop(indexContext, "");
+			stop(indexContext, actionId);
 		}
 	}
 

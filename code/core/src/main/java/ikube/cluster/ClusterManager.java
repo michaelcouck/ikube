@@ -42,6 +42,7 @@ public class ClusterManager implements IClusterManager, IConstants {
 	private transient String address;
 	protected transient ICache cache;
 	/** This flag is set cluster wide to make exception for the rules. */
+	@SuppressWarnings("unused")
 	private transient boolean exception;
 
 	private Map<String, Server> servers;
@@ -91,15 +92,16 @@ public class ClusterManager implements IClusterManager, IConstants {
 	 * {@inheritDoc}
 	 */
 	@Override
+	@SuppressWarnings("unused")
 	public boolean anyWorking(final String indexName) {
 		Boolean anyWorking = Boolean.FALSE;
 		List<Server> servers = getServers();
 		outer: for (Server server : servers) {
 			if (server.getWorking()) {
-				if (server.getAction() != null && server.getAction().getIndexName().equals(indexName)) {
-					anyWorking = Boolean.TRUE;
-					break outer;
-				}
+				// if (server.getAction() != null && server.getAction().getIndexName().equals(indexName)) {
+				// anyWorking = Boolean.TRUE;
+				// break outer;
+				// }
 			}
 		}
 		return anyWorking;
@@ -114,29 +116,29 @@ public class ClusterManager implements IClusterManager, IConstants {
 	 * 			Id number =>
 	 * </pre>
 	 */
-	@Override
-	public long getIdNumber(final String indexName, final String indexableName, final long batchSize, final long minId) {
-		long idNumber = 0;
-		// We find the action for this server
-		Server server = getServer();
-		Action action = server.getAction();
-		if (action == null) {
-			LOGGER.debug("Setting action : " + indexName + ", " + indexableName + ", " + batchSize);
-			action = new Action(0, null, indexableName, indexName, new Timestamp(System.currentTimeMillis()), Boolean.TRUE);
-			server.setAction(action);
-		}
-		idNumber = action.getIdNumber();
-		if (idNumber < minId) {
-			idNumber = minId;
-		}
-		long nextIdNumber = idNumber + batchSize;
-		// Set the next row number to the current + the batch size
-		action.setIdNumber(nextIdNumber);
-		// Publish the server to the cluster
-		// set(Server.class.getName(), server.getId(), server);
-		servers.put(server.getAddress(), server);
-		return idNumber;
-	}
+	// @Override
+	// public long getIdNumber(final String indexName, final String indexableName, final long batchSize, final long minId) {
+	// long idNumber = 0;
+	// // We find the action for this server
+	// Server server = getServer();
+	// Action action = null; // server.getAction();
+	// if (action == null) {
+	// LOGGER.debug("Setting action : " + indexName + ", " + indexableName + ", " + batchSize);
+	// action = new Action(0, null, indexableName, indexName, new Timestamp(System.currentTimeMillis()), Boolean.TRUE);
+	// // server.setAction(action);
+	// }
+	// idNumber = action.getIdNumber();
+	// if (idNumber < minId) {
+	// idNumber = minId;
+	// }
+	// long nextIdNumber = idNumber + batchSize;
+	// // Set the next row number to the current + the batch size
+	// action.setIdNumber(nextIdNumber);
+	// // Publish the server to the cluster
+	// // set(Server.class.getName(), server.getId(), server);
+	// servers.put(server.getAddress(), server);
+	// return idNumber;
+	// }
 
 	/**
 	 * {@inheritDoc}
@@ -212,10 +214,10 @@ public class ClusterManager implements IClusterManager, IConstants {
 			action.setStartTime(new Timestamp(startTime));
 			action.setWorking(Boolean.TRUE);
 			// Publish the fact that this server is starting to work on an action
-			server.setAction(action);
+			// server.setAction(action);
 			servers.put(server.getAddress(), server);
 			// set(Server.class.getName(), server.getId(), server);
-			LOGGER.debug("Published action : " + getServer().getAction());
+			LOGGER.debug("Published action : " + getServer().getActions());
 			return startTime;
 		} finally {
 			notifyAll();
@@ -226,16 +228,17 @@ public class ClusterManager implements IClusterManager, IConstants {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized void stopWorking(final String actionName, final String indexName, final String indexableName) {
+	@SuppressWarnings("unused")
+	public synchronized void stopWorking(long id, final String actionName, final String indexName, final String indexableName) {
 		try {
 			Server server = getServer();
-			Action action = server.getAction();
+			Action action = null; // server.getAction();
 			if (action != null) {
 				action.setWorking(Boolean.FALSE);
 				action.setEndTime(new Timestamp(System.currentTimeMillis()));
 				action.setDuration(action.getEndTime().getTime() - action.getStartTime().getTime());
 			}
-			server.setAction(null);
+			// server.setAction(null);
 			servers.put(server.getAddress(), server);
 			// set(Server.class.getName(), server.getId(), server);
 		} catch (Exception e) {
@@ -250,16 +253,17 @@ public class ClusterManager implements IClusterManager, IConstants {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	private void stopWorkingRetry(final String actionName, final String indexName, final String indexableName, int retryCount) {
 		try {
 			Server server = getServer();
-			Action action = server.getAction();
+			Action action = null; // server.getAction();
 			if (action != null) {
 				action.setWorking(Boolean.FALSE);
 				action.setEndTime(new Timestamp(System.currentTimeMillis()));
 				action.setDuration(action.getEndTime().getTime() - action.getStartTime().getTime());
 			}
-			server.setAction(null);
+			// server.setAction(null);
 			servers.put(server.getAddress(), server);
 			// set(Server.class.getName(), server.getId(), server);
 		} catch (Exception e) {
@@ -270,19 +274,19 @@ public class ClusterManager implements IClusterManager, IConstants {
 		}
 	}
 
-	@Override
-	public boolean isException() {
-		try {
-			return exception;
-		} finally {
-			exception = Boolean.FALSE;
-		}
-	}
-
-	@Override
-	public void setException(boolean exception) {
-		this.exception = exception;
-	}
+	// @Override
+	// public boolean isException() {
+	// try {
+	// return exception;
+	// } finally {
+	// exception = Boolean.FALSE;
+	// }
+	// }
+	//
+	// @Override
+	// public void setException(boolean exception) {
+	// this.exception = exception;
+	// }
 
 	@Override
 	public boolean lock(final String name) {

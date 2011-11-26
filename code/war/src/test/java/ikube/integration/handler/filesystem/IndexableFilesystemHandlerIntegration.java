@@ -28,7 +28,7 @@ public class IndexableFilesystemHandlerIntegration extends AbstractIntegration {
 
 	@Before
 	public void before() {
-		dropboxIndexable = ApplicationContextManager.getBean("dropbox");
+		dropboxIndexable = ApplicationContextManager.getBean("dropboxIndexable");
 		dropboxIndexContext = ApplicationContextManager.getBean("dropboxIndex");
 		indexableFilesystemHandler = ApplicationContextManager.getBean(IndexableFilesystemHandler.class);
 		FileUtilities.deleteFile(new File(dropboxIndexContext.getIndexDirectoryPath()), 1);

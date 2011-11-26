@@ -27,17 +27,18 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	@SuppressWarnings("deprecation")
+	// @SuppressWarnings("deprecation")
 	public Boolean execute(final IndexContext<?> indexContext) throws Exception {
 		String indexName = indexContext.getIndexName();
 		Server server = clusterManager.getServer();
 		List<Indexable<?>> indexables = indexContext.getIndexables();
+		long actionId = 0;
 		try {
-			start(indexContext, "");
+			actionId = start(indexContext, "");
 			if (indexables != null && indexables.size() > 0) {
 				// TODO Get the action from the database
 				long lastWorkingStartTime = System.currentTimeMillis();
-				ikube.model.Action action = server.getAction();
+				ikube.model.Action action = getAction(server, actionId);
 				if (action != null) {
 					lastWorkingStartTime = action.getStartTime().getTime();
 				}
@@ -48,7 +49,7 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 				// If we get here then there are two possibilities:
 				// 1) The index is not current and we will start the index
 				// 2) The index is current and there are other servers working on the index, so we join them
-				logger.info(Logging.getString("Last working time : ", lastWorkingStartTime));
+				logger.debug(Logging.getString("Last working time : ", lastWorkingStartTime));
 				// Start the indexing for this server
 				IndexManager.openIndexWriter(indexContext, lastWorkingStartTime, server.getAddress());
 				for (Indexable<?> indexable : indexables) {
@@ -60,20 +61,20 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 					}
 					try {
 						server = clusterManager.getServer();
-						if (server.getAction() != null) {
+						if (getAction(server, actionId) != null) {
 							// We need to reset the id of the next row
 							// after each indexable has been indexed of course
-							server.getAction().setIdNumber(0);
+							// getAction(server, actionId).setIdNumber(0);
 						}
-						start(indexContext, indexable.getName());
-						logger.info("Executing handler : " + handler + ", " + indexable.getName());
+						// start(indexContext, indexable.getName());
+						logger.debug("Executing handler : " + handler + ", " + indexable.getName());
 						// Execute the handler and wait for the threads to finish
 						List<Thread> threads = handler.handle(indexContext, indexable);
 						if (threads != null && !threads.isEmpty()) {
-							logger.info("Waiting for threads : " + threads);
+							logger.debug("Waiting for threads : " + threads);
 							ThreadUtilities.waitForThreads(threads);
 						}
-						stop(indexContext, indexable.getName());
+						// stop(indexContext, actionId);
 					} catch (Exception e) {
 						logger.error("Exception indexing data : " + indexName, e);
 					}
@@ -83,9 +84,18 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 		} finally {
 			logger.debug(Logging.getString("Finished indexing : ", indexName));
 			IndexManager.closeIndexWriter(indexContext);
-			stop(indexContext, "");
+			stop(indexContext, actionId);
 		}
 		return Boolean.FALSE;
+	}
+
+	private ikube.model.Action getAction(Server server, long id) {
+		for (ikube.model.Action action : server.getActions()) {
+			if (action.getId() == id) {
+				return action;
+			}
+		}
+		return null;
 	}
 
 	/**

@@ -11,6 +11,7 @@ import mockit.MockClass;
  * @since 29.04.11
  * @version 01.00
  */
+@SuppressWarnings("deprecation")
 @MockClass(realClass = ClusterManager.class)
 public class ClusterManagerMock {
 

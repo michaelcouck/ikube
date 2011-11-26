@@ -51,12 +51,12 @@ public abstract class Action<E, F> implements IAction<E, F> {
 	 */
 	private String predicate;
 
-	protected void start(IndexContext<?> indexContext, String indexableName) {
-		clusterManager.startWorking(getClass().getSimpleName(), indexContext.getIndexName(), "");
+	protected long start(IndexContext<?> indexContext, String indexableName) {
+		return clusterManager.startWorking(getClass().getSimpleName(), indexContext.getIndexName(), "");
 	}
 
-	protected void stop(IndexContext<?> indexContext, String indexableName) {
-		clusterManager.stopWorking(getClass().getSimpleName(), indexContext.getIndexName(), "");
+	protected void stop(IndexContext<?> indexContext, long actionId) {
+		clusterManager.stopWorking(actionId, getClass().getSimpleName(), indexContext.getIndexName(), "");
 	}
 
 	/**

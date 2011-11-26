@@ -62,7 +62,7 @@ public class RuleInterceptor implements IRuleInterceptor {
 				LOGGER.warn("Can't intercept non action class, proceeding : " + target);
 				proceed = Boolean.TRUE;
 			} else if (!clusterManager.lock(IConstants.IKUBE)) {
-				LOGGER.info("Couldn't aquire lock : ");
+				LOGGER.debug("Couldn't aquire lock : ");
 				proceed = Boolean.FALSE;
 			} else {
 				// Find the index context
@@ -70,7 +70,7 @@ public class RuleInterceptor implements IRuleInterceptor {
 				if (indexContext == null) {
 					LOGGER.warn("Couldn't find the index context : " + proceedingJoinPoint);
 				} else {
-					LOGGER.info("Aquired lock : ");
+					LOGGER.debug("Aquired lock : ");
 					@SuppressWarnings("rawtypes")
 					IAction action = (IAction) target;
 					proceed = evaluateRules(indexContext, action);
@@ -188,10 +188,16 @@ public class RuleInterceptor implements IRuleInterceptor {
 					LOGGER.info("Action done : " + proceedingJoinPoint.getTarget().getClass().getSimpleName());
 				}
 			}
-			LOGGER.info("Waited for : " + (System.currentTimeMillis() - start));
+			LOGGER.debug("Waited for : " + (System.currentTimeMillis() - start));
 		} finally {
 			notifyAll();
 		}
+	}
+	
+	public void destroy() {
+		executorService.shutdown();
+		List<Runnable> runnables =  executorService.shutdownNow();
+		LOGGER.info("Shutdown runnables : " + runnables);
 	}
 
 	protected void printSymbolTable(final JEP jep, final String indexName) {

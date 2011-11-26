@@ -1,6 +1,8 @@
 package ikube.model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.persistence.Entity;
@@ -19,25 +21,26 @@ import javax.persistence.InheritanceType;
 public class Server extends Persistable implements Comparable<Server> {
 
 	/** The ip of the server. */
-	private String					ip;
+	private String ip;
 	/** The port that the search web service is published to. */
-	private int						searchWebServicePort;
+	private int searchWebServicePort;
 	/** The port that the monitoring web service is published to. */
-	private int						monitoringWebServicePort;
+	private int monitoringWebServicePort;
 	/** The address of this machine. */
-	private String					address;
+	private String address;
 	/** The details about the action that this server is executing. */
-	private Action					action;
+	private List<Action> actions;
 	/** The age of this server. */
-	private long					age;
+	private long age;
 	/** The performance monitoring data. */
-	private Map<String, Execution>	indexingExecutions;
-	private Map<String, Execution>	searchingExecutions;
+	private Map<String, Execution> indexingExecutions;
+	private Map<String, Execution> searchingExecutions;
 
-	private String					searchWebServiceUrl;
+	private String searchWebServiceUrl;
 
 	public Server() {
 		super();
+		this.actions = new ArrayList<Action>();
 		this.searchingExecutions = new HashMap<String, Execution>();
 		this.indexingExecutions = new HashMap<String, Execution>();
 	}
@@ -55,19 +58,24 @@ public class Server extends Persistable implements Comparable<Server> {
 	}
 
 	public boolean getWorking() {
-		return this.action == null ? Boolean.FALSE : this.action.getWorking();
+		for (Action action : actions) {
+			if (action.getWorking()) {
+				return Boolean.TRUE;
+			}
+		}
+		return Boolean.FALSE;
 	}
 
 	public void setAddress(final String address) {
 		this.address = address;
 	}
 
-	public Action getAction() {
-		return action;
+	public List<Action> getActions() {
+		return actions;
 	}
 
-	public void setAction(Action action) {
-		this.action = action;
+	public void setActions(List<Action> actions) {
+		this.actions = actions;
 	}
 
 	public int getSearchWebServicePort() {

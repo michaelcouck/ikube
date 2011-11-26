@@ -18,11 +18,45 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.Session;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 
 public class ClusterManagerJmsIntegration extends AbstractIntegration {
+
+	private IClusterManager clusterManager;
+
+	private String lockName = "lockName";
+	private String indexName = "indexName";
+	private String actionName = "actionName";
+	private String indexableName = "indexableName";
+
+	@Before
+	public void before() {
+		clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
+	}
+
+	@Test
+	public void startStopWorking() {
+		long actionId = clusterManager.startWorking(actionName, indexName, indexableName);
+		Server server = clusterManager.getServer();
+		logger.info("Action id : " + actionId + ", " + server.getActions().size());
+		assertEquals("There should be one action in the server : ", 1, server.getActions().size());
+		clusterManager.stopWorking(actionId, actionName, indexName, indexableName);
+		server = clusterManager.getServer();
+		assertEquals("The action should be deleted : ", 0, server.getActions().size());
+
+		actionId = clusterManager.startWorking(actionName, indexName, indexableName);
+		server = clusterManager.getServer();
+		logger.info("Action id : " + actionId + ", " + server.getActions().size());
+		assertEquals("There should be onr action in the server : ", 1, server.getActions().size());
+		
+		actionId = clusterManager.startWorking(actionName, indexName, indexableName);
+		assertEquals("There should be two actions in the server : ", 2, server.getActions().size());
+		
+		assertTrue("The server should be working : ", server.getWorking());
+	}
 
 	@Test
 	public void clusterSynchronisation() throws Exception {
@@ -36,13 +70,10 @@ public class ClusterManagerJmsIntegration extends AbstractIntegration {
 			}
 		});
 
-		String lockName = "lockName";
-		String indexName = "indexName";
-		String actionName = "actionName";
-		String indexableName = "indexableName";
-
-		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
-		clusterManager.stopWorking(actionName, indexName, indexableName);
+		List<Server> servers = clusterManager.getServers();
+		for (Server server : servers) {
+			server.getActions().clear();
+		}
 		boolean anyWorking = clusterManager.anyWorking();
 		assertFalse("There should be no servers working : ", anyWorking);
 		boolean anyWorkingOnIndex = clusterManager.anyWorking(indexName);
@@ -51,13 +82,13 @@ public class ClusterManagerJmsIntegration extends AbstractIntegration {
 		boolean gotLock = clusterManager.lock(lockName);
 		assertTrue("We should have the lock : ", gotLock);
 
-		clusterManager.startWorking(actionName, indexName, indexableName);
+		long actionId = clusterManager.startWorking(actionName, indexName, indexableName);
 		anyWorking = clusterManager.anyWorking();
 		assertTrue("This server is now working : ", anyWorking);
 		anyWorkingOnIndex = clusterManager.anyWorking(indexName);
 		assertTrue("This server is working on this index : ", anyWorkingOnIndex);
 
-		clusterManager.stopWorking(actionName, indexName, indexableName);
+		clusterManager.stopWorking(actionId, actionName, indexName, indexableName);
 		Thread.sleep(1000);
 		anyWorking = clusterManager.anyWorking();
 		assertFalse("There should be no servers working : ", anyWorking);
@@ -69,7 +100,7 @@ public class ClusterManagerJmsIntegration extends AbstractIntegration {
 
 		Server server = clusterManager.getServer();
 		assertNotNull("The local server must never be null : ", server);
-		List<Server> servers = clusterManager.getServers();
+		servers = clusterManager.getServers();
 		assertEquals("There must be at least one server : ", 1, servers.size());
 	}
 

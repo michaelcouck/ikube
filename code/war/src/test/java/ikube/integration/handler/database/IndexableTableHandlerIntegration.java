@@ -61,13 +61,13 @@ public class IndexableTableHandlerIntegration extends AbstractIntegration {
 		faqIdIndexableColumn = Deencapsulation.invoke(indexableTableHandler, "getIdColumn", faqIndexableColumns);
 		connection = ((DataSource) ApplicationContextManager.getBean("nonXaDataSourceH2")).getConnection();
 		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
-		clusterManager.stopWorking(Index.class.getSimpleName(), realIndexContext.getIndexName(), faqIndexableTable.getName());
+		clusterManager.stopWorking(0, Index.class.getSimpleName(), realIndexContext.getIndexName(), faqIndexableTable.getName());
 	}
 
 	@After
 	public void after() {
 		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
-		clusterManager.stopWorking(Index.class.getSimpleName(), realIndexContext.getIndexName(), faqIndexableTable.getName());
+		clusterManager.stopWorking(0, Index.class.getSimpleName(), realIndexContext.getIndexName(), faqIndexableTable.getName());
 		DatabaseUtilities.close(connection);
 	}
 

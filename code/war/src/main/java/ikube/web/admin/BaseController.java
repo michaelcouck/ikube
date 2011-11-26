@@ -7,6 +7,7 @@ import ikube.toolkit.ApplicationContextManager;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
@@ -27,6 +28,7 @@ import org.springframework.web.servlet.mvc.AbstractController;
  */
 public abstract class BaseController extends AbstractController {
 
+	protected Logger logger = Logger.getLogger(this.getClass());
 	protected IClusterManager clusterManager;
 	protected IMonitorWebService monitorWebService;
 

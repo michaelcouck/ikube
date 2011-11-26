@@ -7,27 +7,38 @@
 	xmlns:context="http://www.springframework.org/schema/context" 
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 	xmlns:property="http://www.springframework.org/schema/p"
+	
 	xsi:schemaLocation="
-		http://www.springframework.org/schema/beans 
-		http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+		http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
 		http://activemq.apache.org/schema/core 
 		http://activemq.apache.org/schema/core/activemq-core-5.2.0.xsd
-		http://www.springframework.org/schema/context 
-		http://www.springframework.org/schema/context/spring-context-2.5.xsd
+		http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context-3.0.xsd
 		http://www.springframework.org/schema/jms 
-		http://www.springframework.org/schema/jms/spring-jms-2.5.xsd">
+		http://www.springframework.org/schema/jms/spring-jms-3.0.xsd">
 
-	<context:property-placeholder
+	<context:property-placeholder 
 		location="classpath*:**/spring.properties" />
-	
+
 	<!-- Create an embedded ActiveMQ Broker -->
-	<amq:broker 
-		useJmx="false" 
-		persistent="true">
+	<amq:broker useJmx="false" persistent="true">
+		<amq:destinationInterceptors>
+			<amq:virtualDestinationInterceptor>
+				<amq:virtualDestinations>
+					<amq:compositeQueue id="composite.destination" name="composite.destination">
+						<amq:forwardTo>
+							<amq:queue physicalName="destination" />
+							<!-- <amq:topic physicalName="destination" /> -->
+						</amq:forwardTo>
+					</amq:compositeQueue>
+				</amq:virtualDestinations>
+			</amq:virtualDestinationInterceptor>
+		</amq:destinationInterceptors>
 		<amq:networkConnectors>
 			<amq:networkConnector uri="multicast://default">
 				<amq:dynamicallyIncludedDestinations>
-					<amq:topic physicalName="topic" />
+					<amq:topic physicalName="destination" />
 					<amq:queue physicalName="queue" />
 				</amq:dynamicallyIncludedDestinations>
 			</amq:networkConnector>
@@ -51,17 +62,17 @@
 	<!-- A cached connection to wrap the ActiveMQ connection -->
 	<bean 
 		id="cachedConnectionFactory" 
-		class="org.springframework.jms.connection.CachingConnectionFactory" 
-		property:targetConnectionFactory-ref="amqConnectionFactory"
+		class="org.springframework.jms.connection.CachingConnectionFactory"
+		property:targetConnectionFactory-ref="amqConnectionFactory" 
 		property:sessionCacheSize="10" />
 
 	<!-- A queue in ActiveMQ -->
 	<bean 
-		id="queue" 
+		id="destination" 
 		class="org.apache.activemq.command.ActiveMQQueue">
-		<constructor-arg value="queue" />
+		<constructor-arg value="destination" />
 	</bean>
-	
+
 	<!-- A topic in ActiveMQ -->
 	<bean 
 		id="topic" 
@@ -69,19 +80,19 @@
 		<constructor-arg value="topic" />
 	</bean>
 
-	<!-- A JmsTemplate instance that uses the cached connection and queue -->
-	<!-- <bean 
-		id="jmsQueueTemplate" 
-		class="org.springframework.jms.core.JmsTemplate" 
-		property:connectionFactory-ref="cachedConnectionFactory"
-		property:defaultDestination-ref="queue" /> -->
-	
 	<!-- A JmsTemplate instance that uses the cached connection and topic -->
 	<bean 
 		id="jmsTemplate" 
 		class="org.springframework.jms.core.JmsTemplate" 
 		property:connectionFactory-ref="cachedConnectionFactory"
-		property:defaultDestination-ref="queue" />
+		property:defaultDestination-ref="destination" />
+		
+	<!-- This is the listener and the producer of messages. -->
+	<bean 
+		id="ikube.cluster.IClusterManager"
+		class="ikube.cluster.ClusterManagerJms"
+		init-method="initialize"
+		destroy-method="destroy" />
 
 	<!-- The Spring message listener container configuration -->
 	<jms:listener-container 
@@ -89,7 +100,7 @@
 		connection-factory="amqConnectionFactory" 
 		acknowledge="auto">
 		<jms:listener 
-			destination="queue" 
+			destination="destination" 
 			ref="ikube.cluster.IClusterManager" 
 			method="onMessage" />
 	</jms:listener-container>
