@@ -30,19 +30,17 @@
 	<aop:aspectj-autoproxy proxy-target-class="true" />
 	
 	<util:list id="ikube.IndexEngine.actions">
-		<ref bean="ikube.action.Reset" />
-		<ref bean="ikube.action.Restore" />
 		<ref bean="ikube.action.Close"  />
 		<ref bean="ikube.action.Open"  />
+		<ref bean="ikube.action.Reset" />
+		<ref bean="ikube.action.Restore" />
 		<ref bean="ikube.action.Index"  />
-		<!-- <ref bean="ikube.action.Close"  />
-		<ref bean="ikube.action.Open"  /> -->
 		<ref bean="ikube.action.Delete" />
 		<ref bean="ikube.action.Clean" />
 		<ref bean="ikube.action.Backup" />
-		<!-- <ref bean="ikube.action.DiskFull" /> -->
+		<ref bean="ikube.action.DiskFull" />
 		<!-- <ref bean="ikube.action.Searcher" /> -->
-		<!-- <ref bean="ikube.action.Validator" /> -->
+		<ref bean="ikube.action.Validator" />
 		<ref bean="ikube.action.Prune" />
 	</util:list>
 
@@ -233,7 +231,7 @@
 		property:fragment="true"
 		property:start="0"
 		property:end="10"
-		property:searchString="cape OR town OR roets OR 1001 OR ikube"
+		property:searchString="cape town roets 1001 ikube facebook"
 		property:resultsSizeMinimum="2"
 		property:iterations="10">
 		<property name="rules">

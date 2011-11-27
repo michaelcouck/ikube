@@ -14,12 +14,12 @@
 			<param name="tomcat.bin" value="${tomcat.2.bin}" />
 			<param name="tomcat.home" value="${tomcat.2}" />
 		</antcall>
-		<sleep seconds="${sleep}" />
+		<!-- sleep seconds="${sleep}" />
 		<antcall target="executeTomcatAction">
 			<param name="action" value="start" />
 			<param name="tomcat.bin" value="${tomcat.3.bin}" />
 			<param name="tomcat.home" value="${tomcat.3}" />
-		</antcall>
+		</antcall -->
 	</target>
 	<target name="stop.tomcat.cluster">
 		<antcall target="executeTomcatAction">
@@ -132,5 +132,5 @@
 			<arg value="file:${database.dir}/${database.name}" />
 		</java>
 	</target>
-
+	
 </project>

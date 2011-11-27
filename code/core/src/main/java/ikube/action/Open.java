@@ -66,7 +66,7 @@ public class Open extends Action<IndexContext<?>, Boolean> {
 		Directory directory = null;
 		IndexReader reader = null;
 		Searchable searcher = null;
-		boolean exceptionOpening = Boolean.FALSE;
+		boolean exceptionOpening = Boolean.TRUE;
 		for (File serverIndexDirectory : serverIndexDirectories) {
 			try {
 				directory = FSDirectory.open(serverIndexDirectory);
@@ -81,20 +81,16 @@ public class Open extends Action<IndexContext<?>, Boolean> {
 					// doesn't exist in the directory for some odd reason
 					// then we just ignore it, and the problem will eventually
 					// get deleted(at the next full index of course).
-					directory.close();
+					close(directory, reader, searcher);
 					continue;
 				}
-				// TODO - Verify that all the files are there. Could be
-				// that this server is still getting the files for this index
-				// from one of the other servers, and all the files are
-				// not copied over yet
 				reader = IndexReader.open(directory, Boolean.TRUE);
 				searcher = new IndexSearcher(reader);
 				searchers.add(searcher);
+				exceptionOpening = Boolean.FALSE;
 				logger.debug(Logging.getString("Opened searcher on : ", serverIndexDirectory, "exists : ", exists, "locked : ", locked));
 			} catch (Exception e) {
 				logger.error("Exception opening directory : " + serverIndexDirectory, e);
-				exceptionOpening = Boolean.TRUE;
 			} finally {
 				if (exceptionOpening) {
 					close(directory, reader, searcher);

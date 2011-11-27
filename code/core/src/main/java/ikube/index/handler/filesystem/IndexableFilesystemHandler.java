@@ -48,7 +48,7 @@ import org.apache.lucene.document.Field.TermVector;
  */
 public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSystem> {
 
-	private static final String STRING_PATTERN = ".*(.zip).*|.*(.jar).*|.*(.war).*|.*(.ear).*";
+	private static final String STRING_PATTERN = ".*(\\.zip).*|.*(\\.jar).*|.*(\\.war).*|.*(\\.ear).*";
 	private static final Pattern ZIP_JAR_WAR_EAR_PATTERN = Pattern.compile(STRING_PATTERN);
 
 	/**

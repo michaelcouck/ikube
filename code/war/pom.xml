@@ -149,6 +149,21 @@
 				<version>1.6</version>
 				<executions>
 					<execution>
+						<id>write-release-info</id>
+						<phase>validate</phase>
+						<configuration>
+							<target>
+								<echo message="Writing release file : " />
+								<echo file="src/main/webapp/WEB-INF/templates/release.txt" append="false">
+									${pom.version}
+								</echo>
+							</target>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+					<execution>
 						<id>stop-cluster</id>
 						<phase>pre-integration-test</phase>
 						<configuration>
@@ -270,34 +285,6 @@
 			<scope>test</scope>
 		</dependency>
 
-		<!-- <dependency>
-			<groupId>tomcat</groupId>
-			<artifactId>jasper-runtime</artifactId>
-			<version>5.5.23</version>
-			<type>jar</type>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>tomcat</groupId>
-			<artifactId>jasper-compiler</artifactId>
-			<version>5.5.23</version>
-			<type>jar</type>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.sun</groupId>
-			<artifactId>tools</artifactId>
-			<version>1.6.0_20</version>
-			<scope>system</scope>
-			<systemPath>${java.home}/../lib/tools.jar</systemPath>
-		</dependency>
-		<dependency>
-			<groupId>ant</groupId>
-			<artifactId>ant</artifactId>
-			<version>1.6.5</version>
-			<type>jar</type>
-			<scope>test</scope>
-		</dependency> -->
 		<dependency>
 			<groupId>taglibs</groupId>
 			<artifactId>standard</artifactId>

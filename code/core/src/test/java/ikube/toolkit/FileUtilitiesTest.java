@@ -21,12 +21,12 @@ import org.junit.Test;
  */
 public class FileUtilitiesTest extends ATest {
 
-	private File		file;
-	private File		dotFolder;
-	private File		indexFolderOne;
-	private File		indexFolderTwo;
-	private File		indexFolderThree;
-	private String[]	stringPatterns;
+	private File file;
+	private File dotFolder;
+	private File indexFolderOne;
+	private File indexFolderTwo;
+	private File indexFolderThree;
+	private String[] stringPatterns;
 
 	public FileUtilitiesTest() {
 		super(FileUtilitiesTest.class);
@@ -177,11 +177,24 @@ public class FileUtilitiesTest extends ATest {
 		assertNotNull("The configuration should be copied to the external folder : ", springBeansFile);
 		assertTrue("This file should be persisted, and available : ", springBeansFile.exists());
 	}
-	
+
 	@Test
 	public void getFile() {
 		File file = FileUtilities.getFile("./indexes/campaignIndex/1321025482078/192.168.1.35.1178697512", Boolean.TRUE);
 		assertNotNull(file);
+	}
+
+	@Test
+	public void unzip() {
+		FileUtilities.deleteFile(new File(".", "jar.jar"), 1);
+		File jarFile = FileUtilities.findFileRecursively(new File("."), "jar.jar");
+		File unzipedDirectory = FileUtilities.unzip(jarFile.getAbsolutePath());
+		assertNotNull(unzipedDirectory);
+		assertTrue(unzipedDirectory.exists());
+		File ruleInterceptorFile = FileUtilities.findFileRecursively(unzipedDirectory, "RuleInterceptor.java");
+		assertNotNull(ruleInterceptorFile);
+		assertTrue(ruleInterceptorFile.exists());
+		FileUtilities.deleteFile(new File(".", "jar.jar"), 1);
 	}
 
 }
