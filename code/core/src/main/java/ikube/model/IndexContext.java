@@ -16,10 +16,9 @@ import javax.persistence.Transient;
 import org.apache.commons.lang.StringUtils;
 
 /**
- * This is the context for a single index. It has the properties that define the index like what it is going to index,
- * i.e. the databases, intranets etc., and properties relating to the Lucene index. This object acts a like the command
- * in the 'Command Pattern' as in this context is passed to handlers that will perform certain logic based on the
- * properties of this context.
+ * This is the context for a single index. It has the properties that define the index like what it is going to index, i.e. the databases,
+ * intranets etc., and properties relating to the Lucene index. This object acts a like the command in the 'Command Pattern' as in this
+ * context is passed to handlers that will perform certain logic based on the properties of this context.
  * 
  * @author Michael Couck
  * @since 21.11.10
@@ -31,45 +30,44 @@ import org.apache.commons.lang.StringUtils;
 public class IndexContext<T> extends Indexable<T> implements Comparable<IndexContext<?>> {
 
 	@Transient
-	private transient Index		index;
+	private transient Index index;
 	@Transient
-	private transient String	latestIndexTimestamp;
+	private transient String latestIndexTimestamp;
 	@Transient
-	private transient long		indexSize;
+	private transient long indexSize;
 	@Transient
-	private transient long		numDocs;
+	private transient long numDocs;
 
 	/** The maximum age of the index defined in minutes. */
-	private long				maxAge;
+	private long maxAge;
 	/** Is this used anymore? */
-	private long				queueTimeout;
+	private long queueTimeout;
 	/** The delay between documents being indexed, slows the indexing down. */
-	private long				throttle;
+	private long throttle;
 
 	/** Lucene properties. */
-	private int					mergeFactor;
-	private int					bufferedDocs;
-	private double				bufferSize;
-	private int					maxFieldLength;
-	private boolean				compoundFile;
+	private int mergeFactor;
+	private int bufferedDocs;
+	private double bufferSize;
+	private int maxFieldLength;
+	private boolean compoundFile;
 
 	/** Jdbc properties. */
-	private int					batchSize;
+	private int batchSize;
 	/** Internet properties. */
-	private int					internetBatchSize;
+	private int internetBatchSize;
 
 	/** The maximum length of a document that can be read. */
-	private long				maxReadLength;
+	private long maxReadLength;
 	/** The path to the index directory, either relative or absolute. */
-	private String				indexDirectoryPath;
+	private String indexDirectoryPath;
 	/** The path to the backup index directory, either relative or absolute. */
-	private String				indexDirectoryPathBackup;
+	private String indexDirectoryPathBackup;
 	/** Whether the index should be in memory. */
-	private boolean				inMemory;
+	private boolean inMemory;
 
 	/**
-	 * The constructor instantiates a new {@link Index} object. In this object the Lucene index will be kept and
-	 * updated.
+	 * The constructor instantiates a new {@link Index} object. In this object the Lucene index will be kept and updated.
 	 */
 	public IndexContext() {
 		super();

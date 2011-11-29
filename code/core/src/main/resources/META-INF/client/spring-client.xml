@@ -22,7 +22,7 @@
 		id="indexContext"
 		class="ikube.model.IndexContext"
 		property:name="default"
-		property:maxAge="600"
+		property:maxAge="1440"
 		property:compoundFile="${compound.file}"
 		property:bufferedDocs="${buffered.docs}"
 		property:bufferSize="${buffer.size}"
@@ -40,19 +40,19 @@
 		<ref local="mail" />
 		<ref local="internet" />
 		<ref local="hazelcast" />
-		<ref local="internetMillion" />
+		<!-- <ref local="internetMillion" />
 		<ref local="filesystem" />
-		<ref local="wikidata" />
+		<ref local="wikidata" /> -->
 		<ref local="dropboxDefault" />
 		<!-- <ref local="filesystemMillion" /> -->
-		<ref bean="faqTableH2" />
+		<!-- <ref bean="faqTableH2" />
 		<ref bean="faqTableDb2" />
 		<ref bean="faqTableOracle" />
 		<ref bean="patientTableH2" />
 		<ref bean="patientTableDb2" />
 		<ref bean="patientTableOracle" />
-		<ref bean="addressTableDb2" />
-		<ref bean="attachmentTableDb2Direct" />
+		<ref bean="addressTableDb2" /> -->
+		<!-- <ref bean="attachmentTableDb2Direct" /> -->
 	</util:list>
 
 	<!-- H2 Faqs -->

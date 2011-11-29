@@ -1,3 +1,5 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
 <table class="table-content" width="100%">
 	<tr>
 		<td class="top-content"><span class="top-content-header">
@@ -22,6 +24,11 @@
 			is less than 100 000 000), so there will be no need to run Ikube locally, just send me the details of your database, 
 			and the index will be ready, well when it is ready I guess. Generally an hour per 100 000 000 records, although 
 			over the net this will be reliant on the network speed and the data volume.<br><br>
+		</td>
+	</tr>
+	<tr>
+		<td class="td-content">
+			Go to the <a href="<c:url value="/admin/servers.html"/>">monitoring page</a>.
 		</td>
 	</tr>
 	<tr>

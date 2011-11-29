@@ -43,15 +43,6 @@ public abstract class AbstractIntegration {
 		INITIALIZED = Boolean.TRUE;
 		Logging.configure();
 		try {
-			// ApplicationContextManager.getApplicationContext();
-			// Map<String, String> map = new HashMap<String, String>();
-			// map.put("openjpa.Connection2UserName", "XE");
-			// map.put("openjpa.Connection2Password", "admin");
-			// map.put("openjpa.Connection2URL", "jdbc:oracle:thin:@//ikube:1521/XE");
-			// map.put("openjpa.Connection2DriverName", "oracle.jdbc.driver.OracleDriver");
-			// map.put("openjpa.jdbc.SynchronizeMappings", "buildSchema(SchemaAction='add,deleteTableContents')");
-			// Persistence.createEntityManagerFactory(IConstants.PERSISTENCE_UNIT_ORACLE).createEntityManager(map);
-
 			FileUtilities.deleteFiles(new File("."), "btm1.tlog", "btm2.tlog", "ikube.h2.db", "ikube.lobs.db", "ikube.log", "openjpa.log");
 			ApplicationContextManager.getBean(ListenerManager.class).removeListeners();
 			IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);

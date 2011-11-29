@@ -12,7 +12,6 @@ import java.net.UnknownHostException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -250,7 +249,8 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 	 * 
 	 * @param serializable the object to send in the message
 	 */
-	protected void sendMessage(final Serializable serializable) {
+	@Override
+	public void sendMessage(final Serializable serializable) {
 		MessageCreator messageCreator = new MessageCreator() {
 			@Override
 			public Message createMessage(Session session) throws JMSException {
@@ -437,10 +437,16 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<Server> getServers() {
-		List<Server> servers = new ArrayList<Server>();
-		Collections.addAll(servers, this.servers.values().toArray(new Server[this.servers.values().size()]));
+	public Map<String, Server> getServers() {
 		return servers;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Map<String, Lock> getLocks() {
+		return locks;
 	}
 
 	/**
@@ -500,7 +506,7 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 					Server server = getServer();
 					// Remove all servers that are past the max age
 					List<Server> toRemove = new ArrayList<Server>();
-					List<Server> servers = getServers();
+					Collection<Server> servers = getServers().values();
 					for (Server remoteServer : servers) {
 						if (remoteServer.getAddress().equals(server.getAddress())) {
 							continue;
@@ -526,25 +532,6 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 				}
 			}
 		}, "Ikube server club thread").start();
-		// This thread will time out the actions if they take too long
-		// new Thread(new Runnable() {
-		// public void run() {
-		// while (true) {
-		// ThreadUtilities.sleep(ACTION_TIME_OUT);
-		// Server server = getServer();
-		// Action action = server.getAction();
-		// if (action != null) {
-		// if (Index.class.getSimpleName().equals(action.getActionName())) {
-		// continue;
-		// }
-		// if (System.currentTimeMillis() - action.getStartTime().getTime() > ACTION_TIME_OUT) {
-		// LOGGER.warn("Action timed out : " + action);
-		// stopWorking(action.getActionName(), action.getIndexName(), action.getIndexableName());
-		// }
-		// }
-		// }
-		// }
-		// }, "Ikube action timeout thread").start();
 	}
 
 	public void destroy() {

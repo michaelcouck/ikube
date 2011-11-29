@@ -1,6 +1,7 @@
 package ikube.cluster;
 
 import ikube.IConstants;
+import ikube.cluster.ClusterManagerJms.Lock;
 import ikube.cluster.cache.ICache;
 import ikube.model.Action;
 import ikube.model.Server;
@@ -9,12 +10,13 @@ import ikube.service.ISearcherWebService;
 import ikube.service.ServiceLocator;
 import ikube.toolkit.HashUtilities;
 
+import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
 import java.sql.Timestamp;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -75,7 +77,7 @@ public class ClusterManager implements IClusterManager, IConstants {
 	public boolean anyWorking() {
 		Boolean anyWorking = Boolean.FALSE;
 		Server server = getServer();
-		List<Server> servers = getServers();
+		Collection<Server> servers = getServers().values();
 		for (Server other : servers) {
 			if (other.getAddress().equals(server.getAddress())) {
 				continue;
@@ -95,7 +97,7 @@ public class ClusterManager implements IClusterManager, IConstants {
 	@SuppressWarnings("unused")
 	public boolean anyWorking(final String indexName) {
 		Boolean anyWorking = Boolean.FALSE;
-		List<Server> servers = getServers();
+		Collection<Server> servers = getServers().values();
 		outer: for (Server server : servers) {
 			if (server.getWorking()) {
 				// if (server.getAction() != null && server.getAction().getIndexName().equals(indexName)) {
@@ -144,8 +146,8 @@ public class ClusterManager implements IClusterManager, IConstants {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<Server> getServers() {
-		return cache.get(Server.class.getName(), null, null, Integer.MAX_VALUE);
+	public Map<String, Server> getServers() {
+		return null; // cache.get(Server.class.getName(), null, null, Integer.MAX_VALUE);
 	}
 
 	/**
@@ -300,6 +302,13 @@ public class ClusterManager implements IClusterManager, IConstants {
 
 	public void setAddress(String address) {
 		this.address = address;
+	}
+
+	public void sendMessage(final Serializable serializable) {
+	}
+
+	public Map<String, Lock> getLocks() {
+		return null;
 	}
 
 }

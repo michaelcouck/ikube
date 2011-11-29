@@ -1,7 +1,7 @@
 package ikube.mock;
 
 import static org.mockito.Mockito.mock;
-import ikube.cluster.ClusterManager;
+import ikube.cluster.ClusterManagerJms;
 import ikube.model.Server;
 import mockit.Mock;
 import mockit.MockClass;
@@ -11,8 +11,7 @@ import mockit.MockClass;
  * @since 29.04.11
  * @version 01.00
  */
-@SuppressWarnings("deprecation")
-@MockClass(realClass = ClusterManager.class)
+@MockClass(realClass = ClusterManagerJms.class)
 public class ClusterManagerMock {
 
 	@Mock()

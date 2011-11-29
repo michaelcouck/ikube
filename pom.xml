@@ -582,7 +582,7 @@
 			<artifactId>canyon</artifactId>
 			<version>0.9.8</version>
 			<type>jar</type>
-			<scope>compile</scope>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>aspose</groupId>
@@ -647,43 +647,6 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
-		<!-- <dependency>
-			<groupId>org.infinispan</groupId>
-			<artifactId>infinispan-core</artifactId>
-			<version>[4.0.0,)</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.rhq.helpers</groupId>
-					<artifactId>rhq-pluginAnnotations</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency> -->
-		<!-- <dependency>
-			<groupId>org.rhq.helpers</groupId>
-			<artifactId>rhq-pluginAnnotations</artifactId>
-			<version>3.0.1.GA</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency> -->
-		<!-- <dependency>
-			<groupId>com.atomikos</groupId>
-			<artifactId>transactions</artifactId>
-			<version>3.7.0</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.atomikos</groupId>
-			<artifactId>transactions-jta</artifactId>
-			<version>3.7.0</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency> -->
-		<!-- <dependency>
-			<groupId>org.codehaus.btm</groupId>
-			<artifactId>btm</artifactId>
-			<version>2.1.0</version>
-		</dependency> -->
 		<dependency>
 			<groupId>org.apache.activemq</groupId>
 			<artifactId>activemq-core</artifactId>

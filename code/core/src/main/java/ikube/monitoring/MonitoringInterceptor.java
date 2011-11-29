@@ -55,7 +55,7 @@ public class MonitoringInterceptor implements IMonitoringInterceptor, IListener 
 		} finally {
 			Execution execution = getExecution(indexName, IConstants.INDEX, indexingExecutions);
 			execution.setInvocations(execution.getInvocations() + 1);
-			execution.setDuration(execution.getDuration() + System.nanoTime() - start);
+			execution.setDuration(execution.getDuration() + (System.nanoTime() - start));
 		}
 	}
 
@@ -73,17 +73,17 @@ public class MonitoringInterceptor implements IMonitoringInterceptor, IListener 
 		} finally {
 			Execution execution = getExecution(indexName, IConstants.SEARCH, searchingExecutions);
 			execution.setInvocations(execution.getInvocations() + 1);
-			execution.setDuration(execution.getDuration() + System.nanoTime() - start);
+			execution.setDuration(execution.getDuration() + (System.nanoTime() - start));
 		}
 	}
 
-	protected final Execution getExecution(final String name, final String type, final Map<String, Execution> executions) {
-		Execution execution = executions.get(name);
+	protected final Execution getExecution(final String indexName, final String type, final Map<String, Execution> executions) {
+		Execution execution = executions.get(indexName);
 		// Try find it in the database
 		if (execution == null) {
 			try {
 				Map<String, Object> parameters = new HashMap<String, Object>();
-				parameters.put("name", name);
+				parameters.put("indexName", indexName);
 				parameters.put("type", type);
 				parameters.put("address", clusterManager.getServer().getAddress());
 				List<Execution> dbExecutions = dataBase.find(Execution.class, Execution.SELECT_FROM_EXECUTIONS_BY_NAME_TYPE_AND_ADDRESS,
@@ -93,7 +93,7 @@ public class MonitoringInterceptor implements IMonitoringInterceptor, IListener 
 				} else if (dbExecutions.size() == 1) {
 					execution = dbExecutions.get(0);
 				} else {
-					LOGGER.warn("Using the dame database in a cluster?");
+					LOGGER.warn("Using the same database in a cluster?");
 					execution = dbExecutions.get(0);
 				}
 			} catch (Exception e) {
@@ -101,10 +101,15 @@ public class MonitoringInterceptor implements IMonitoringInterceptor, IListener 
 			}
 			if (execution == null) {
 				execution = new Execution();
-				execution.setName(name);
+				execution.setIndexName(indexName);
 				execution.setType(type);
-				executions.put(execution.getName(), execution);
+				executions.put(execution.getIndexName(), execution);
 				dataBase.persist(execution);
+				if (IConstants.SEARCHING_EXECUTIONS.equals(type)) {
+					clusterManager.getServer().getSearchingExecutions().put(indexName, execution);
+				} else {
+					clusterManager.getServer().getIndexingExecutions().put(indexName, execution);
+				}
 			}
 		}
 		return execution;
@@ -112,8 +117,8 @@ public class MonitoringInterceptor implements IMonitoringInterceptor, IListener 
 
 	@Override
 	public final void handleNotification(Event event) {
-		persistExecutions(indexingExecutions);
-		persistExecutions(searchingExecutions);
+		// persistExecutions(indexingExecutions);
+		// persistExecutions(searchingExecutions);
 	}
 
 	protected final void persistExecutions(Map<String, Execution> executions) {
@@ -122,7 +127,7 @@ public class MonitoringInterceptor implements IMonitoringInterceptor, IListener 
 			clonedValues.addAll(executions.values());
 			executions.clear();
 			for (Execution execution : clonedValues) {
-				dataBase.merge(execution);
+				dataBase.persist(execution);
 			}
 		} catch (Exception e) {
 			LOGGER.error("Exception persisting the executions : ", e);

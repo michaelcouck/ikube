@@ -12,7 +12,7 @@ import ikube.toolkit.ApplicationContextManager;
 
 import java.io.Serializable;
 import java.net.InetAddress;
-import java.util.List;
+import java.util.Collection;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -51,10 +51,10 @@ public class ClusterManagerJmsIntegration extends AbstractIntegration {
 		server = clusterManager.getServer();
 		logger.info("Action id : " + actionId + ", " + server.getActions().size());
 		assertEquals("There should be onr action in the server : ", 1, server.getActions().size());
-		
+
 		actionId = clusterManager.startWorking(actionName, indexName, indexableName);
 		assertEquals("There should be two actions in the server : ", 2, server.getActions().size());
-		
+
 		assertTrue("The server should be working : ", server.getWorking());
 	}
 
@@ -70,7 +70,7 @@ public class ClusterManagerJmsIntegration extends AbstractIntegration {
 			}
 		});
 
-		List<Server> servers = clusterManager.getServers();
+		Collection<Server> servers = clusterManager.getServers().values();
 		for (Server server : servers) {
 			server.getActions().clear();
 		}
@@ -100,7 +100,7 @@ public class ClusterManagerJmsIntegration extends AbstractIntegration {
 
 		Server server = clusterManager.getServer();
 		assertNotNull("The local server must never be null : ", server);
-		servers = clusterManager.getServers();
+		servers = clusterManager.getServers().values();
 		assertEquals("There must be at least one server : ", 1, servers.size());
 	}
 

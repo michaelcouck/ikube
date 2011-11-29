@@ -93,13 +93,12 @@
 		id="ikube.action.Close" 
 		class="ikube.action.Close" 
 		property:ruleExpression="
-			!IsThisServerWorking &#38;&#38;
+			(!IsThisServerWorking &#38;&#38;
 			!AnyServersWorkingThisIndex &#38;&#38; 
-			IsNewIndexCreated &#38;&#38; 
-			(!IsIndexCurrent  || 
-			IsIndexCorrupt || 
-			(AreIndexesCreated || 
-			AreUnopenedIndexes))">
+			  (IsNewIndexCreated &#38;&#38; !IsIndexCurrent) ||
+			  (AreIndexesCreated &#38;&#38; AreUnopenedIndexes)
+			 ) ||  
+			IsIndexCorrupt">
 		<property name="rules">
 			<util:list>
 				<ref local="ikube.action.rule.IsThisServerWorking" />

@@ -16,21 +16,21 @@ import javax.persistence.NamedQuery;
 @NamedQueries(value = { @NamedQuery(name = Execution.SELECT_FROM_EXECUTIONS_BY_NAME_TYPE_AND_ADDRESS, query = Execution.SELECT_FROM_EXECUTIONS_BY_NAME_TYPE_AND_ADDRESS) })
 public class Execution extends Persistable {
 
-	public static final String SELECT_FROM_EXECUTIONS_BY_NAME_TYPE_AND_ADDRESS = "select e from Execution as e where e.name = :name and e.type = :type and e.address = :address";
+	public static final String SELECT_FROM_EXECUTIONS_BY_NAME_TYPE_AND_ADDRESS = "select e from Execution as e where e.indexName = :indexName and e.type = :type and e.address = :address";
 
-	private String name;
+	private String indexName;
 	private String type;
 	private String address;
 	private int invocations;
 	private long duration;
 	private double executionsPerSecond;
 
-	public String getName() {
-		return name;
+	public String getIndexName() {
+		return indexName;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setIndexName(String name) {
+		this.indexName = name;
 	}
 
 	public String getType() {

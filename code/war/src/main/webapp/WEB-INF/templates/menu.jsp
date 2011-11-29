@@ -27,7 +27,6 @@
 			<ul>
 				<li><a href="<c:url value="/index.html"/>">Home</a></li>
 				<li><a href="<c:url value="/admin/servers.html"/>">Monitoring</a></li>
-				<%-- <li><a href="<c:url value="/admin/admin.html"/>">Administration</a></li> --%>
 				<li><a href="<c:url value="/documentation/index.html"/>">Documentation</a></li>
 			</ul>
 		</li>
@@ -40,21 +39,20 @@
 				<li><a href="https://wiki.jenkins-ci.org/display/JENKINS/Serenity+Plugin">Serenity</a></li>
 				<li><a href="http://lucene.apache.org/">Lucene</a></li>
 				<li><a href="http://pdfbox.apache.org/">PdfBox</a></li>
-				<li><a href="http://www.neodatis.org/">Neodatis</a></li>
 				<li><a href="http://sourceforge.net/projects/c3p0/">C3p0</a></li>
 				<li><a href="http://www.springsource.org">Spring</a></li>
-				<!-- <li><a href="http://www.hazelcast.com/">Hazelcast</a></li> -->
-				<li><a href="http://www.infinispan.org/">Infinispan</a></li>
+				<li><a href="http://activemq.apache.org/">ActiveMQ</a></li>
 				<li><a href="http://jenkins-ci.org/">Jenkins CI</a></li>
 				<li><a href="http://www.h2database.com/html/main.html">H2 database</a></li>
 				<li><a href="http://openjpa.apache.org/">OpenJpa</a></li>
+				<li><a href="http://www.singularsys.com/jep/">Jep</a></li>
 			</ul>
 		</li>
 		<li>
 			<ul></ul>
 		</li>
 		<li>
-			<h2>Similar products</h2>
+			<h2>similar products</h2>
 			<ul>
 				<li><a href="http://en.wikipedia.org/wiki/Apache_Solr">Solr</a></li>
 				<li><a href="http://en.wikipedia.org/wiki/ISYS_Search_Software">Isys</a></li>
@@ -64,7 +62,7 @@
 			</ul>
 		</li>
 		<li>
-			<h2>Interesting Java Links</h2>
+			<h2>interesting Java Links</h2>
 			<ul>
 				<li><a href="http://jenkins-ci.org/">Jenkins CI</a></li>
 				<li><a href="http://www.springbyexample.org">Spring by Example</a></li>

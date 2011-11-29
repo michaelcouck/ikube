@@ -140,6 +140,7 @@ public interface IConstants {
 
 	String INDEX_NAME = "indexName";
 	String MAX_RESULTS = "maxResults";
+	String TYPE = "type";
 
 	String SEARCH_FIELDS = "searchFields";
 	String SEARCH_STRINGS = "searchStrings";

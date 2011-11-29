@@ -35,10 +35,8 @@ public final class DatabaseUtilities {
 	/**
 	 * Executes an arbitrary sql statement against the database.
 	 * 
-	 * @param dataSource
-	 *            the data source to get the connection from
-	 * @param sql
-	 *            the sql to execute
+	 * @param dataSource the data source to get the connection from
+	 * @param sql the sql to execute
 	 */
 	public static void executeStatement(final DataSource dataSource, final String sql) {
 		LOGGER.info("Executing statement : " + sql + ", on data source : " + dataSource);
@@ -64,8 +62,7 @@ public final class DatabaseUtilities {
 	 * This method will close all related resources to the result set object in the parameter list. First getting the statement from the
 	 * result set, then the connection from the statement and closing them, result set, statement then connection.
 	 * 
-	 * @param resultSet
-	 *            the result set and related database resources to close
+	 * @param resultSet the result set and related database resources to close
 	 */
 	public static void closeAll(final ResultSet resultSet) {
 		Statement statement = null;
@@ -88,8 +85,7 @@ public final class DatabaseUtilities {
 	/**
 	 * This method just closes the statement.
 	 * 
-	 * @param statement
-	 *            the statement to close
+	 * @param statement the statement to close
 	 */
 	public static void close(final Statement statement) {
 		if (statement == null) {
@@ -105,8 +101,7 @@ public final class DatabaseUtilities {
 	/**
 	 * This method just closes the connection.
 	 * 
-	 * @param connection
-	 *            the connection to close
+	 * @param connection the connection to close
 	 */
 	public static void close(final Connection connection) {
 		if (connection == null) {
@@ -122,8 +117,7 @@ public final class DatabaseUtilities {
 	/**
 	 * This method closes the result set.
 	 * 
-	 * @param resultSet
-	 *            the result set to close
+	 * @param resultSet the result set to close
 	 */
 	public static void close(final ResultSet resultSet) {
 		if (resultSet == null) {
@@ -139,8 +133,7 @@ public final class DatabaseUtilities {
 	/**
 	 * Commits the connection, only if the auto commit has been set to false, i.e. the user will manually commit the connection.
 	 * 
-	 * @param connection
-	 *            the connection to commit
+	 * @param connection the connection to commit
 	 */
 	public static void commit(Connection connection) {
 		if (connection == null) {
@@ -149,10 +142,10 @@ public final class DatabaseUtilities {
 		}
 		try {
 			if (!connection.getAutoCommit()) {
-				if (!connection.isClosed()) {
-					connection.commit();
-				} else {
+				if (connection.isClosed()) {
 					LOGGER.info("Connection already closed : " + connection);
+				} else {
+					connection.commit();
 				}
 			} else {
 				LOGGER.warn("Can't commit the connection as it is not user comitted : " + connection);
@@ -166,12 +159,9 @@ public final class DatabaseUtilities {
 	 * This method will look into an object and try to find the field that is the id field in the object, then set it with the id specified
 	 * in the parameter list.
 	 * 
-	 * @param <T>
-	 *            the type of object to set the id field for
-	 * @param object
-	 *            the object to set the id field for
-	 * @param id
-	 *            the id to set in the object
+	 * @param <T> the type of object to set the id field for
+	 * @param object the object to set the id field for
+	 * @param id the id to set in the object
 	 */
 	public static <T> void setIdField(final T object, final long id) {
 		if (object == null) {
@@ -194,10 +184,8 @@ public final class DatabaseUtilities {
 	/**
 	 * Gets the id field in an object. The id field is defined by the {@link Id} annotation.
 	 * 
-	 * @param klass
-	 *            the class of the object
-	 * @param superKlass
-	 *            the super class of the object
+	 * @param klass the class of the object
+	 * @param superKlass the super class of the object
 	 * @return the id field for the object or null if there is no field designated as the id
 	 */
 	public static Field getIdField(final Class<?> klass, final Class<?> superKlass) {
@@ -225,10 +213,8 @@ public final class DatabaseUtilities {
 	/**
 	 * Gets the value of the id foeld of an object.
 	 * 
-	 * @param <T>
-	 *            the type of object
-	 * @param object
-	 *            the object to find the id field value in
+	 * @param <T> the type of object
+	 * @param object the object to find the id field value in
 	 * @return the id field value for the object or null if there is no id field or if the id field is null
 	 */
 	public static <T> Object getIdFieldValue(final T object) {
@@ -253,10 +239,8 @@ public final class DatabaseUtilities {
 	/**
 	 * This method just returns all the column names for a particular table.
 	 * 
-	 * @param connection
-	 *            the connection to the database
-	 * @param table
-	 *            the name of the table to get the columns for
+	 * @param connection the connection to the database
+	 * @param table the name of the table to get the columns for
 	 * @return the list of all columns for the table
 	 */
 	public static List<String> getAllColumns(Connection connection, String table) {
@@ -318,8 +302,7 @@ public final class DatabaseUtilities {
 	/**
 	 * Gets the name of the id field in the object.
 	 * 
-	 * @param klass
-	 *            the class of the object
+	 * @param klass the class of the object
 	 * @return the name of the id field or null if there is no id field defined
 	 */
 	public static String getIdFieldName(final Class<?> klass) {

@@ -17,6 +17,9 @@
 		This is the H2 database configuration. This is the configuration that will be
 		used in production environments.
 	</description>
+	
+	<context:property-placeholder
+		location="**/spring.properties" />
 
 	<bean id="nonXaDataSourceH2"
 		class="com.mchange.v2.c3p0.ComboPooledDataSource"

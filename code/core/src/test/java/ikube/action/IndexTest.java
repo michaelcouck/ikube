@@ -1,14 +1,19 @@
 package ikube.action;
 
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import ikube.ATest;
 import ikube.index.IndexManager;
+import ikube.index.handler.IHandler;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.mock.IndexManagerMock;
-import ikube.model.Action;
+import ikube.model.IndexContext;
+import ikube.model.Indexable;
+import ikube.model.Server;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
 
@@ -29,20 +34,24 @@ import org.junit.Test;
  */
 public class IndexTest extends ATest {
 
+	private Index index = mock(Index.class);
+
 	public IndexTest() {
 		super(IndexTest.class);
 	}
 
 	@Before
-	public void before() {
+	public void before() throws Exception {
 		Mockit.setUpMocks(IndexManagerMock.class, ApplicationContextManagerMock.class);
-		when(index.getIndexWriter()).thenReturn(indexWriter);
+		index = mock(Index.class);
 		when(clusterManager.startWorking(anyString(), anyString(), anyString())).thenReturn(System.currentTimeMillis());
 		when(clusterManager.getServer()).thenReturn(server);
-		Action action = mock(Action.class);
 		when(action.getStartTime()).thenReturn(new Timestamp(System.currentTimeMillis()));
-		server.getActions().add(action);
-		// when(server.getActions().get(0)).thenReturn(action);
+		when(index.getAction(any(Server.class), anyLong())).thenReturn(action);
+		when(index.execute(any(IndexContext.class))).thenCallRealMethod();
+		IHandler handler = mock(IHandler.class);
+		when(index.getHandler(any(Indexable.class))).thenReturn(handler);
+		Deencapsulation.setField(index, logger);
 	}
 
 	@After
@@ -53,7 +62,6 @@ public class IndexTest extends ATest {
 
 	@Test
 	public void execute() throws Exception {
-		Index index = new Index();
 		Deencapsulation.setField(index, clusterManager);
 		boolean result = index.execute(indexContext);
 		assertTrue(result);

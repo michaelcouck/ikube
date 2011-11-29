@@ -115,7 +115,7 @@ public final class IndexManager {
 		} else {
 			directory = FSDirectory.open(indexDirectory);
 		}
-		indexContext.getIndex().setDirectory(directory);
+		// indexContext.getIndex().setDirectory(directory);
 		IndexWriter indexWriter = new IndexWriter(directory, IConstants.ANALYZER, create, MaxFieldLength.UNLIMITED);
 		indexWriter.setUseCompoundFile(indexContext.isCompoundFile());
 		indexWriter.setMaxBufferedDocs(indexContext.getBufferedDocs());

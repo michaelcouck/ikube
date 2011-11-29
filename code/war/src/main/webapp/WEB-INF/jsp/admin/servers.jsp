@@ -120,6 +120,11 @@ window.onload=starttime
 		<th class="td-content" colspan="5" width="75%">Actions</th>
 	</tr>
 	<c:forEach var="server" items="${requestScope.servers}">
+		<%-- <tr>
+			<td>
+				<c:out value="${server.indexingExecutions}"></c:out>
+			</td>
+		</tr> --%>
 		<tr>
 			<td width="1%">
 				<img alt="Server" src="<c:url value="/images/icons/server.gif" />" title="Server">
@@ -141,7 +146,7 @@ window.onload=starttime
 								<th class="td-content" width="90%">Message</th>
 							</tr>
 							<tr>
-								<td class="td-content" width="10%">
+								<td class="td-content">
 									<img alt="Working" src="<c:url value="/images/icons/stopped.gif"/>" title="Not working">
 								</td>
 								<td class="td-content">
@@ -155,9 +160,11 @@ window.onload=starttime
 							<tr>
 								<th class="td-content" width="10%">Working</th>
 								<th class="td-content" width="10%">Id</th>
-								<th class="td-content" width="20">Action</th>
-								<th class="td-content" width="20%">Index</th>
-								<th class="td-content" width="40%">Start time</th>
+								<th class="td-content" width="10">Action</th>
+								<th class="td-content" width="15%">Index</th>
+								<th class="td-content" width="15%">Indexable</th>
+								<th class="td-content" width="10%">Exec</th>
+								<th class="td-content" width="30%">Start time</th>
 							</tr>
 							<c:forEach var="action" items="${server.actions}">
 								<tr>
@@ -166,6 +173,13 @@ window.onload=starttime
 									<td class="td-content"><c:out value="${action.id}" /></td>
 									<td class="td-content"><c:out value="${action.actionName}" /></td>
 									<td class="td-content"><c:out value="${action.indexName}" /></td>
+									<td class="td-content"><c:out value="${action.indexableName}" /></td>
+									<c:set 
+										var="executions" 
+										scope="page" 
+										value="${server.indexingExecutions[action.indexName] != null ? 
+											server.indexingExecutions[action.indexName].invocations : '0'}" />
+									<td class="td-content"><c:out value="${executions}" /></td>
 									<td class="td-content"><c:out value="${action.startDate}" /></td>
 								</tr>
 							</c:forEach>
@@ -174,6 +188,5 @@ window.onload=starttime
 				</c:choose>
 			</td>
 		</tr>
-		
 	</c:forEach>
 </table>

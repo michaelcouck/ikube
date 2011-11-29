@@ -60,12 +60,13 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 						continue;
 					}
 					try {
-						server = clusterManager.getServer();
-						if (getAction(server, actionId) != null) {
-							// We need to reset the id of the next row
-							// after each indexable has been indexed of course
-							// getAction(server, actionId).setIdNumber(0);
-						}
+						action.setIndexableName(indexable.getName());
+						// server = clusterManager.getServer();
+						// if (getAction(server, actionId) != null) {
+						// We need to reset the id of the next row
+						// after each indexable has been indexed of course
+						// getAction(server, actionId).setIdNumber(0);
+						// }
 						// start(indexContext, indexable.getName());
 						logger.debug("Executing handler : " + handler + ", " + indexable.getName());
 						// Execute the handler and wait for the threads to finish
@@ -89,7 +90,7 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 		return Boolean.FALSE;
 	}
 
-	private ikube.model.Action getAction(Server server, long id) {
+	protected ikube.model.Action getAction(Server server, long id) {
 		for (ikube.model.Action action : server.getActions()) {
 			if (action.getId() == id) {
 				return action;

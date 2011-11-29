@@ -159,7 +159,7 @@ public class ClusterManagerJmsTest extends ATest {
 	@Test
 	@Ignore
 	public void haveLock() throws Exception {
-		ClusterManagerJms clusterManagerJms = getClusterManagerJms();
+		IClusterManager clusterManagerJms = getClusterManagerJms();
 		boolean gotLock = clusterManagerJms.lock(null);
 		assertTrue(gotLock);
 		boolean unlocked = clusterManagerJms.unlock(null);

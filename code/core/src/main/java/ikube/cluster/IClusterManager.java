@@ -1,8 +1,10 @@
 package ikube.cluster;
 
+import ikube.cluster.ClusterManagerJms.Lock;
 import ikube.model.Server;
 
-import java.util.List;
+import java.io.Serializable;
+import java.util.Map;
 
 /**
  * This is the interface that will synchronize and coordinate the servers in the cluster. The implementors are critical to the functioning
@@ -67,11 +69,15 @@ public interface IClusterManager {
 	/**
 	 * @return the servers in the cluster
 	 */
-	List<Server> getServers();
+	Map<String, Server> getServers();
 
 	/**
 	 * @return this server object
 	 */
 	Server getServer();
+
+	void sendMessage(Serializable serializable);
+
+	Map<String, Lock> getLocks();
 
 }

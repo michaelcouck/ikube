@@ -104,22 +104,23 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 				final IndexableTable cloneIndexableTable = (IndexableTable) SerializationUtilities.clone(indexable);
 				Thread thread = new Thread(new Runnable() {
 					public void run() {
-						boolean autoCommit = Boolean.TRUE;
 						try {
-							autoCommit = connection.getAutoCommit();
 							connection.setAutoCommit(Boolean.FALSE);
 						} catch (Exception e) {
 							logger.error("Exception setting the auto commit : ", e);
 						}
-						IContentProvider<IndexableColumn> contentProvider = new ColumnContentProvider();
-						handleTable(contentProvider, indexContext, cloneIndexableTable, connection, null, 0);
-						logger.debug("Closing connection : " + connection);
-						DatabaseUtilities.commit(connection);
 						try {
-							connection.setAutoCommit(autoCommit);
+							IContentProvider<IndexableColumn> contentProvider = new ColumnContentProvider();
+							handleTable(contentProvider, indexContext, cloneIndexableTable, connection, null, 0);
+						} catch (Exception e) {
+							logger.error("Exception indexing table : " + cloneIndexableTable.getName(), e);
+						}
+						try {
+							DatabaseUtilities.commit(connection);
 						} catch (Exception e) {
 							logger.error("Exception setting the auto commit : ", e);
 						}
+						logger.debug("Closing connection : " + connection);
 						DatabaseUtilities.close(connection);
 					}
 				}, this.getClass().getSimpleName() + "." + i);
@@ -248,8 +249,8 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 						}
 					}
 				} catch (Exception e) {
-					logger.error("Exception indexing table : " + indexableTable + ", connection : " + connection + ", exceptions : "
-							+ exceptions, e);
+					logger.error("Exception indexing table : " + indexableTable.getName() + ", connection : " + connection
+							+ ", exceptions : " + exceptions, e);
 					exceptions++;
 					if (exceptions > indexableTable.getMaxExceptions()) {
 						logger.error("Maximum exception exceeded, exiting indexing table : " + indexableTable);

@@ -13,6 +13,7 @@ import ikube.index.parse.mime.MimeMapper;
 import ikube.index.parse.mime.MimeTypes;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.mock.IndexManagerMock;
+import ikube.model.Action;
 import ikube.model.Index;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
@@ -77,6 +78,7 @@ public abstract class ATest {
 	protected Lock lock = mock(Lock.class);
 	protected Index index = mock(Index.class);
 	protected Server server = mock(Server.class);
+	protected Action action = mock(Action.class);
 	protected TopDocs topDocs = mock(TopDocs.class);
 	protected FSDirectory fsDirectory = mock(FSDirectory.class);
 	protected IndexWriter indexWriter = mock(IndexWriter.class);
@@ -138,6 +140,7 @@ public abstract class ATest {
 		when(server.getWorking()).thenReturn(Boolean.FALSE);
 		when(server.getAddress()).thenReturn(ip);
 		when(server.getIp()).thenReturn(ip);
+		when(server.getActions()).thenReturn(Arrays.asList(action));
 		when(index.getIndexWriter()).thenReturn(indexWriter);
 		indexables.add(indexableTable);
 		indexables.add(indexableColumn);

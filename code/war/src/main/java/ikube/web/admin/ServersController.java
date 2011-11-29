@@ -5,6 +5,7 @@ import ikube.model.IndexContext;
 import ikube.model.Server;
 import ikube.toolkit.ApplicationContextManager;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -36,7 +37,8 @@ public class ServersController extends BaseController {
 		String viewUrl = getViewUri(request);
 		ModelAndView modelAndView = new ModelAndView(viewUrl);
 		// Get the servers and sort them
-		List<Server> servers = clusterManager.getServers();
+		List<Server> servers = new ArrayList<Server>(clusterManager.getServers().values());
+
 		Collections.sort(servers, new Comparator<Server>() {
 			@Override
 			public int compare(Server o1, Server o2) {
@@ -44,15 +46,11 @@ public class ServersController extends BaseController {
 			}
 		});
 		modelAndView.addObject(IConstants.SERVERS, servers);
-		// for (Server server : servers) {
-		// logger.info("Server : " + server.getActions().size());
-		// }
 
 		// Put the server and other related stuff in the response
 		Server server = clusterManager.getServer();
 		modelAndView.addObject(IConstants.SERVER, server);
 		modelAndView.addObject(IConstants.ACTION, server.getActions());
-		// modelAndView.addObject(IConstants.WEB_SERVICE_URLS, server.getWebServiceUrls());
 		modelAndView.addObject(IConstants.INDEXING_EXECUTIONS, server.getIndexingExecutions());
 		modelAndView.addObject(IConstants.SEARCHING_EXECUTIONS, server.getSearchingExecutions());
 
