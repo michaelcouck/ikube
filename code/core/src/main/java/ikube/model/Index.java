@@ -24,9 +24,6 @@ public class Index extends Persistable {
 	/** Can be null if there are no indexes running. */
 	@Transient
 	private transient IndexWriter indexWriter;
-	/** This is the latest directory from the indexing process. */
-	// @Transient
-	// private transient Directory directory;
 	/** Can be null if there is no index created. */
 	@Transient
 	private transient MultiSearcher multiSearcher;
@@ -38,14 +35,6 @@ public class Index extends Persistable {
 	public void setIndexWriter(final IndexWriter indexWriter) {
 		this.indexWriter = indexWriter;
 	}
-
-	// public Directory getDirectory() {
-	// return directory;
-	// }
-	//
-	// public void setDirectory(final Directory directory) {
-	// this.directory = directory;
-	// }
 
 	public MultiSearcher getMultiSearcher() {
 		return multiSearcher;

@@ -42,6 +42,7 @@ public class ClusterManagerJmsIntegration extends AbstractIntegration {
 		long actionId = clusterManager.startWorking(actionName, indexName, indexableName);
 		Server server = clusterManager.getServer();
 		logger.info("Action id : " + actionId + ", " + server.getActions().size());
+		assertTrue("The action id must be from the database : ", actionId > 0);
 		assertEquals("There should be one action in the server : ", 1, server.getActions().size());
 		clusterManager.stopWorking(actionId, actionName, indexName, indexableName);
 		server = clusterManager.getServer();

@@ -27,7 +27,6 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	// @SuppressWarnings("deprecation")
 	public Boolean execute(final IndexContext<?> indexContext) throws Exception {
 		String indexName = indexContext.getIndexName();
 		Server server = clusterManager.getServer();
@@ -36,7 +35,6 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 		try {
 			actionId = start(indexContext, "");
 			if (indexables != null && indexables.size() > 0) {
-				// TODO Get the action from the database
 				long lastWorkingStartTime = System.currentTimeMillis();
 				ikube.model.Action action = getAction(server, actionId);
 				if (action != null) {
@@ -61,13 +59,6 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 					}
 					try {
 						action.setIndexableName(indexable.getName());
-						// server = clusterManager.getServer();
-						// if (getAction(server, actionId) != null) {
-						// We need to reset the id of the next row
-						// after each indexable has been indexed of course
-						// getAction(server, actionId).setIdNumber(0);
-						// }
-						// start(indexContext, indexable.getName());
 						logger.debug("Executing handler : " + handler + ", " + indexable.getName());
 						// Execute the handler and wait for the threads to finish
 						List<Thread> threads = handler.handle(indexContext, indexable);
@@ -75,7 +66,6 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 							logger.debug("Waiting for threads : " + threads);
 							ThreadUtilities.waitForThreads(threads);
 						}
-						// stop(indexContext, actionId);
 					} catch (Exception e) {
 						logger.error("Exception indexing data : " + indexName, e);
 					}

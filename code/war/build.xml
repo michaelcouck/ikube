@@ -8,12 +8,12 @@
 			<param name="tomcat.bin" value="${tomcat.1.bin}" />
 			<param name="tomcat.home" value="${tomcat.1}" />
 		</antcall>
-		<!-- sleep seconds="${sleep}" />
+		<sleep seconds="${sleep}" />
 		<antcall target="executeTomcatAction">
 			<param name="action" value="start" />
 			<param name="tomcat.bin" value="${tomcat.2.bin}" />
 			<param name="tomcat.home" value="${tomcat.2}" />
-		</antcall -->
+		</antcall>
 		<!-- sleep seconds="${sleep}" />
 		<antcall target="executeTomcatAction">
 			<param name="action" value="start" />

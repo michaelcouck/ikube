@@ -74,15 +74,13 @@ public class RuleInterceptor implements IRuleInterceptor {
 					@SuppressWarnings("rawtypes")
 					IAction action = (IAction) target;
 					proceed = evaluateRules(indexContext, action);
-					if (proceed) {
-						// TODO Take a snapshot of the cluster at the time of the rule becoming
-						// true and an index started, including the state of the indexes on the file
-						// system and the other servers
-						// proceed = Boolean.TRUE;
-					}
 				}
 			}
 			if (proceed) {
+				// TODO Take a snapshot of the cluster at the time of the rule becoming
+				// true and an index started, including the state of the indexes on the file
+				// system and the other servers
+				// proceed = Boolean.TRUE;
 				proceed(proceedingJoinPoint);
 			}
 		} catch (Exception t) {
@@ -104,12 +102,12 @@ public class RuleInterceptor implements IRuleInterceptor {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	protected boolean evaluateRules(IndexContext<?> indexContext, IAction action) {
 		boolean finalResult = Boolean.TRUE;
-		JEP jep = new JEP();
 		// Get the rules associated with this action
 		List<IRule<IndexContext<?>>> classRules = action.getRules();
 		if (classRules == null || classRules.size() == 0) {
 			LOGGER.info("No rules defined, proceeding : " + action);
 		} else {
+			JEP jep = new JEP();
 			Object result = null;
 			for (IRule<IndexContext<?>> rule : classRules) {
 				boolean evaluation = rule.evaluate(indexContext);

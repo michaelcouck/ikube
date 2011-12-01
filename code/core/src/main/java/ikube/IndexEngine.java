@@ -47,18 +47,9 @@ public class IndexEngine implements IIndexEngine, IListener {
 
 	@Override
 	public void handleNotification(final Event event) {
-		// If this server is working on anything then return
-		// if (clusterManager.getServer().getWorking()) {
-		// LOGGER.debug("Server working : " + clusterManager.getServer().getAction());
-		// return;
-		// }
-
 		Random random = new Random();
 		@SuppressWarnings("rawtypes")
 		Map<String, IndexContext> indexContexts = ApplicationContextManager.getBeans(IndexContext.class);
-		// @SuppressWarnings("rawtypes")
-		// List<IndexContext> randomContexts = new ArrayList<IndexContext>(indexContexts.values());
-		// Collections.shuffle(randomContexts);
 		for (IndexContext<?> indexContext : indexContexts.values()) {
 			if (actions == null || actions.isEmpty()) {
 				LOGGER.warn("No actions configured for index engine : " + indexContext.getIndexName());
@@ -67,14 +58,6 @@ public class IndexEngine implements IIndexEngine, IListener {
 			LOGGER.debug(Logging.getString("Start working : ", indexContext.getIndexName()));
 			for (IAction<IndexContext<?>, Boolean> action : actions) {
 				try {
-					// if (clusterManager.getServer().getWorking()) {
-					// // Sleep for a random time, 0 < a < 1 seconds if the server is working
-					// // to give the previous action a little time before we execute the rules
-					// Thread.sleep((long) Math.abs(random.nextLong()) % 1000);
-					// if (clusterManager.getServer().getWorking()) {
-					// continue;
-					// }
-					// }
 					action.execute(indexContext);
 					ThreadUtilities.sleep((long) Math.abs(random.nextLong()) % 3000);
 				} catch (Exception e) {
@@ -84,10 +67,6 @@ public class IndexEngine implements IIndexEngine, IListener {
 			LOGGER.debug(Logging.getString("Finished working : ", indexContext.getIndexName()));
 		}
 	}
-
-	// public void setClusterManager(IClusterManager clusterManager) {
-	// this.clusterManager = clusterManager;
-	// }
 
 	public void setActions(final List<IAction<IndexContext<?>, Boolean>> actions) {
 		this.actions = actions;

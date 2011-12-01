@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.Transient;
 
 /**
  * This object is passed around in the cluster.
@@ -33,8 +34,10 @@ public class Server extends Persistable implements Comparable<Server> {
 	/** The age of this server. */
 	private long age;
 	/** The performance monitoring data. */
-	private Map<String, Execution> indexingExecutions;
-	private Map<String, Execution> searchingExecutions;
+	@Transient
+	private transient Map<String, Execution> indexingExecutions;
+	@Transient
+	private transient Map<String, Execution> searchingExecutions;
 
 	private String searchWebServiceUrl;
 

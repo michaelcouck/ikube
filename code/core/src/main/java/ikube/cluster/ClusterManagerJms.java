@@ -80,8 +80,6 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 
 	private static final Logger LOGGER = Logger.getLogger(ClusterManagerJms.class);
 
-	/** The maximum amount of times to retry to send a message to the cluster. */
-	// private static final int MAX_RETRY = 5;
 	/** The time to wait for the responses from the cluster servers. */
 	private static final long RESPONSE_TIME = 250;
 	/** The time out time for the lock in case a server dies. */
@@ -92,7 +90,6 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 	private static final long SERVER_TIME_OUT = 600000;
 	/** The time between refreshing the server in the cluster, i.e. sending it to the other servers. */
 	private static final long SERVER_REFRESH_THREAD_WAIT_TIME = SERVER_TIME_OUT / 3;
-	// private static final long ACTION_TIME_OUT = 60000;
 
 	/** The textual representation of the ip address for this server. */
 	private String ip;
@@ -108,9 +105,6 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 	private Map<String, Server> servers;
 	@Autowired
 	private IDataBase dataBase;
-	/** The Jms template to send messages. */
-	// @Autowired
-	// private JmsTemplate jmsTemplate;
 	/** Access to the ActiveMq cluster functionality. */
 	@Autowired
 	private XBeanBrokerService xBeanBrokerService;
@@ -257,8 +251,6 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 				return session.createObjectMessage(serializable);
 			}
 		};
-		// jmsTemplate.send(messageCreator);
-		// Send to the cluster
 		Broker broker;
 		try {
 			broker = xBeanBrokerService.getBroker();
@@ -369,6 +361,7 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 			Action action = getAction(indexName, actionName, indexableName, Boolean.TRUE);
 			Server server = getServer();
 			server.getActions().add(action);
+			// Must persist the action to get an id
 			dataBase.persist(action);
 			LOGGER.info("Start working : " + action.getId() + ", " + action.getActionName() + ", " + action.getIndexName());
 			sendMessage(server);
@@ -399,11 +392,11 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 				action.setWorking(Boolean.FALSE);
 				action.setEndTime(new Timestamp(System.currentTimeMillis()));
 				action.setDuration(action.getEndTime().getTime() - action.getStartTime().getTime());
-				dataBase.merge(action);
 				LOGGER.info("Stop working : " + index + ", " + action.getId() + ", " + action.getActionName() + ", "
 						+ action.getIndexName());
 				server.getActions().remove(index);
 				sendMessage(server);
+				dataBase.merge(action);
 			} else {
 				LOGGER.warn("Action not found : " + id + ", " + actionName + ", " + indexName);
 			}
