@@ -3,7 +3,6 @@ package ikube.action.rule;
 import ikube.index.IndexManager;
 import ikube.model.IndexContext;
 import ikube.toolkit.FileUtilities;
-import ikube.toolkit.Logging;
 
 import java.io.File;
 
@@ -29,43 +28,36 @@ public class IsNewIndexCreated extends ARule<IndexContext<?>> {
 	public boolean evaluate(final IndexContext<?> indexContext) {
 		MultiSearcher searcher = indexContext.getIndex() != null ? indexContext.getIndex().getMultiSearcher() : null;
 		Searchable[] searchables = searcher != null ? searcher.getSearchables() : null;
-		if (searchables == null) {
-			return new AreIndexesCreated().evaluate(indexContext);
-		}
-		File baseIndexDirectory = new File(IndexManager.getIndexDirectoryPath(indexContext));
-		File[] timeIndexDirectories = baseIndexDirectory.listFiles();
-		if (timeIndexDirectories == null || timeIndexDirectories.length == 0) {
-			return Boolean.FALSE;
-		}
+
 		String baseIndexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
 		File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(baseIndexDirectoryPath);
-		if (latestIndexDirectory == null || !latestIndexDirectory.exists()) {
-			return Boolean.FALSE;
-		}
 
-		IRule<File[]> areDirectoriesEqual = new AreDirectoriesEqual();
-		IRule<File> directoryExistsAndNotLocked = new DirectoryExistsAndNotLocked();
-
-		File[] serverIndexDirectories = latestIndexDirectory.listFiles();
-		boolean indexAlreadyOpen = Boolean.FALSE;
-		for (File serverIndexDirectory : serverIndexDirectories) {
+		if (searchables != null) {
+			IRule<File[]> areDirectoriesEqual = new AreDirectoriesEqual();
+			IRule<File> directoryExistsAndNotLocked = new DirectoryExistsAndNotLocked();
 			for (Searchable searchable : searchables) {
 				IndexSearcher indexSearcher = (IndexSearcher) searchable;
 				IndexReader indexReader = indexSearcher.getIndexReader();
 				FSDirectory fsDirectory = (FSDirectory) indexReader.directory();
-				File indexDirectory = fsDirectory.getFile();
-				if (areDirectoriesEqual.evaluate(new File[] { serverIndexDirectory, indexDirectory })) {
-					indexAlreadyOpen = directoryExistsAndNotLocked.evaluate(serverIndexDirectory);
-					break;
+				File serverIndexDirectoryFromSearcher = fsDirectory.getFile();
+				if (serverIndexDirectoryFromSearcher != null) {
+					File latestIndexDirectoryFromSearcher = serverIndexDirectoryFromSearcher.getParentFile();
+					if (areDirectoriesEqual.evaluate(new File[] { latestIndexDirectory, latestIndexDirectoryFromSearcher })) {
+						File[] serverIndexDirectories = latestIndexDirectory.listFiles();
+						for (File serverIndexDirectory : serverIndexDirectories) {
+							if (directoryExistsAndNotLocked.evaluate(serverIndexDirectory)) {
+								// Here we have found that the latest index is indeed the same as
+								// the index in the searchable, so we return false, i.e. no new index
+								// found
+								return Boolean.FALSE;
+							}
+						}
+					}
 				}
-			}
-			if (!indexAlreadyOpen) {
-				logger.debug(Logging.getString("Found new index directory : ", serverIndexDirectory, " will try to re-open : "));
-				return Boolean.TRUE;
 			}
 		}
 
-		return Boolean.FALSE;
+		return new AreIndexesCreated().evaluate(indexContext);
 	}
 
 }

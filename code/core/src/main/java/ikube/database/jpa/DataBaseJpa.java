@@ -18,7 +18,7 @@ import javax.persistence.PersistenceContextType;
 public class DataBaseJpa extends ADataBaseJpa {
 
 	@PersistenceContext(type = PersistenceContextType.TRANSACTION, unitName = IConstants.PERSISTENCE_UNIT_H2)
-	protected EntityManager	entityManager;
+	protected EntityManager entityManager;
 
 	@Override
 	protected EntityManager getEntityManager() {

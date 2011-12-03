@@ -91,7 +91,6 @@ public class DataBaseIntegration extends AbstractIntegration {
 
 	@Test
 	public void findClassStringMapIntInt() {
-		// Find class string map int int
 		long hash = System.nanoTime();
 		Url url = new Url();
 		url.setHash(hash);
@@ -171,9 +170,48 @@ public class DataBaseIntegration extends AbstractIntegration {
 		for (Url url : dbUrls) {
 			logger.info("Url : " + url.getId() + ", " + url.getHash());
 			assertTrue("The ids must be in descending order : ", previousId > url.getId());
-			previousId = url.getId();
-			// assertTrue("", url.getId() >= 4 && url.getId() <= 8);
 		}
+	}
+
+	@Test
+	public void findClassStringNamesValues() throws Exception {
+		List<Url> urls = getUrls(1);
+		dataBase.persistBatch(urls);
+		String[] names = new String[] { IConstants.NAME };
+		Object[] values = new Object[] { "index" };
+		Url url = dataBase.find(Url.class, Url.SELECT_FROM_URL_BY_NAME, names, values);
+		assertNotNull("There should be at least one url with this name : ", url);
+	}
+
+	@Test
+	public void findClassStringNamesValuesStartMax() throws Exception {
+		int inserted = 90;
+		List<Url> urls = getUrls(inserted);
+		dataBase.persistBatch(urls);
+		String[] names = new String[] { IConstants.NAME };
+		Object[] values = new Object[] { "index" };
+		List<Url> dbUrls = dataBase.find(Url.class, Url.SELECT_FROM_URL_BY_NAME, names, values, 0, Integer.MAX_VALUE);
+		assertNotNull(dbUrls);
+		assertTrue(dbUrls.size() > 0);
+		assertEquals(dbUrls.size(), inserted);
+		
+		int fetched = inserted / 3;
+		dbUrls = dataBase.find(Url.class, Url.SELECT_FROM_URL_BY_NAME, names, values, 0, fetched);
+		assertNotNull(dbUrls);
+		assertTrue(dbUrls.size() > 0);
+		assertEquals(dbUrls.size(), fetched);
+		
+		int started = 10;
+		dbUrls = dataBase.find(Url.class, Url.SELECT_FROM_URL_BY_NAME, names, values, started, fetched);
+		assertNotNull(dbUrls);
+		assertTrue(dbUrls.size() > 0);
+		assertEquals(dbUrls.size(), Math.min(inserted - started, fetched));
+		
+		started = 80;
+		dbUrls = dataBase.find(Url.class, Url.SELECT_FROM_URL_BY_NAME, names, values, started, fetched);
+		assertNotNull(dbUrls);
+		assertTrue(dbUrls.size() > 0);
+		assertEquals(dbUrls.size(), inserted - started);
 	}
 
 	protected List<Url> getUrls(int batchSize) throws Exception {

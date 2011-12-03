@@ -63,8 +63,6 @@ public class IndexContext<T> extends Indexable<T> implements Comparable<IndexCon
 	private String indexDirectoryPath;
 	/** The path to the backup index directory, either relative or absolute. */
 	private String indexDirectoryPathBackup;
-	/** Whether the index should be in memory. */
-	private boolean inMemory;
 
 	/**
 	 * The constructor instantiates a new {@link Index} object. In this object the Lucene index will be kept and updated.
@@ -186,14 +184,6 @@ public class IndexContext<T> extends Indexable<T> implements Comparable<IndexCon
 
 	public void setIndexDirectoryPathBackup(final String indexDirectoryPathBackup) {
 		this.indexDirectoryPathBackup = indexDirectoryPathBackup;
-	}
-
-	public Boolean getInMemory() {
-		return inMemory;
-	}
-
-	public void setInMemory(final Boolean inMemory) {
-		this.inMemory = inMemory;
 	}
 
 	public List<Indexable<?>> getIndexables() {

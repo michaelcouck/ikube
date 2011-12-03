@@ -2,6 +2,7 @@ package ikube.action.rule;
 
 import ikube.ATest;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -11,6 +12,8 @@ import org.junit.Test;
  * @since 29.03.2011
  * @version 01.00
  */
+@Ignore
+@Deprecated
 public class IsInMemoryTest extends ATest {
 
 	public IsInMemoryTest() {

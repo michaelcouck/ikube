@@ -10,15 +10,15 @@ import ikube.toolkit.Logging;
 import ikube.toolkit.ThreadUtilities;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.Future;
 
-import org.apache.log4j.Logger;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.nfunk.jep.JEP;
 import org.nfunk.jep.SymbolTable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -35,14 +35,14 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class RuleInterceptor implements IRuleInterceptor {
 
-	private static final transient Logger LOGGER = Logger.getLogger(RuleInterceptor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(RuleInterceptor.class);
 
 	@Autowired
 	private IClusterManager clusterManager;
-	private ScheduledExecutorService executorService;
+	private ExecutorService executorService;
 
 	public RuleInterceptor() {
-		executorService = Executors.newScheduledThreadPool(10);
+		executorService = Executors.newFixedThreadPool(10);
 	}
 
 	/**
@@ -81,7 +81,7 @@ public class RuleInterceptor implements IRuleInterceptor {
 				// true and an index started, including the state of the indexes on the file
 				// system and the other servers
 				// proceed = Boolean.TRUE;
-				proceed(proceedingJoinPoint);
+				proceed(indexContext, proceedingJoinPoint, target);
 			}
 		} catch (Exception t) {
 			LOGGER.error("Exception evaluating the rules : target : " + target + ", context : " + indexContext, t);
@@ -100,7 +100,7 @@ public class RuleInterceptor implements IRuleInterceptor {
 	 * @return the result from the execution of the rules for the action
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	protected boolean evaluateRules(IndexContext<?> indexContext, IAction action) {
+	protected boolean evaluateRules(final IndexContext<?> indexContext, final IAction action) {
 		boolean finalResult = Boolean.TRUE;
 		// Get the rules associated with this action
 		List<IRule<IndexContext<?>>> classRules = action.getRules();
@@ -161,29 +161,29 @@ public class RuleInterceptor implements IRuleInterceptor {
 	 * 
 	 * @param proceedingJoinPoint the intercepted action join point
 	 */
-	protected synchronized void proceed(final ProceedingJoinPoint proceedingJoinPoint) {
-		long delay = 1;
+	protected synchronized void proceed(final IndexContext<?> indexContext, final ProceedingJoinPoint proceedingJoinPoint,
+			final Object target) {
 		try {
 			// We set the working flag in the action within the cluster lock when setting to true
-			ScheduledFuture<?> scheduledFuture = executorService.schedule(new Runnable() {
+			final Object[] objects = new Object[] { target.getClass().getSimpleName(), indexContext.getIndexName() };
+			Future<?> future = executorService.submit(new Runnable() {
 				public void run() {
+					LOGGER.info("Action start : {} {}", objects);
 					try {
 						proceedingJoinPoint.proceed();
 					} catch (Throwable e) {
 						LOGGER.error("Exception proceeding on join point : " + proceedingJoinPoint, e);
+					} finally {
+						LOGGER.info("Action finished : {} {}", objects);
 					}
 				}
-			}, delay, TimeUnit.MILLISECONDS);
+			});
 			long maxWait = 3000;
 			long start = System.currentTimeMillis();
-			while (!scheduledFuture.isDone()) {
+			while (!future.isDone()) {
 				ThreadUtilities.sleep(10);
-				long waitedSoFar = System.currentTimeMillis() - start;
-				if (waitedSoFar > maxWait) {
+				if ((System.currentTimeMillis() - start) > maxWait) {
 					break;
-				}
-				if (scheduledFuture.isDone()) {
-					LOGGER.info("Action done : " + proceedingJoinPoint.getTarget().getClass().getSimpleName());
 				}
 			}
 			LOGGER.debug("Waited for : " + (System.currentTimeMillis() - start));
@@ -191,10 +191,10 @@ public class RuleInterceptor implements IRuleInterceptor {
 			notifyAll();
 		}
 	}
-	
+
 	public void destroy() {
 		executorService.shutdown();
-		List<Runnable> runnables =  executorService.shutdownNow();
+		List<Runnable> runnables = executorService.shutdownNow();
 		LOGGER.info("Shutdown runnables : " + runnables);
 	}
 

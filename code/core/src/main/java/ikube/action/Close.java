@@ -26,38 +26,38 @@ public class Close extends Action<IndexContext<?>, Boolean> {
 		long actionId = 0;
 		try {
 			actionId = start(indexContext, "");
-			MultiSearcher multiSearcher = indexContext.getIndex().getMultiSearcher();
-			if (multiSearcher != null) {
-				// Get all the searchables from the searcher and close them one by one
-				Searchable[] searchables = multiSearcher.getSearchables();
-				processSearchables(searchables);
-			}
+			closeSearchables(indexContext);
 			// Set the searcher to null so the open action
 			// will then be invoked to re-open the searcher
 			// during the next iteration over the actions
-			indexContext.getIndex().setMultiSearcher(null);
 			return Boolean.TRUE;
 		} finally {
 			stop(indexContext, actionId);
 		}
 	}
 
-	private void processSearchables(Searchable... searchables) {
-		if (searchables != null && searchables.length > 0) {
-			for (Searchable searchable : searchables) {
-				try {
-					IndexSearcher indexSearcher = (IndexSearcher) searchable;
-					IndexReader reader = indexSearcher.getIndexReader();
-					Directory directory = reader.directory();
-					if (IndexWriter.isLocked(directory)) {
-						IndexWriter.unlock(directory);
+	private void closeSearchables(IndexContext<?> indexContext) {
+		MultiSearcher multiSearcher = indexContext.getIndex().getMultiSearcher();
+		if (multiSearcher != null) {
+			// Get all the searchables from the searcher and close them one by one
+			Searchable[] searchables = multiSearcher.getSearchables();
+			if (searchables != null) {
+				for (Searchable searchable : searchables) {
+					try {
+						IndexSearcher indexSearcher = (IndexSearcher) searchable;
+						IndexReader reader = indexSearcher.getIndexReader();
+						Directory directory = reader.directory();
+						if (IndexWriter.isLocked(directory)) {
+							IndexWriter.unlock(directory);
+						}
+						reader.close();
+						searchable.close();
+					} catch (Exception e) {
+						logger.error("Exception trying to close the searcher", e);
 					}
-					reader.close();
-					searchable.close();
-				} catch (Exception e) {
-					logger.error("Exception trying to close the searcher", e);
 				}
 			}
+			indexContext.getIndex().setMultiSearcher(null);
 		}
 	}
 

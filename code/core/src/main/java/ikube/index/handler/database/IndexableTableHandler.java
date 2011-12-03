@@ -90,15 +90,11 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 		// the threads to the caller that they can then wait for the threads to finish
 		DataSource dataSource = indexable.getDataSource();
 		logger.debug("Data source : " + dataSource);
-		List<Connection> connections = new ArrayList<Connection>();
 		try {
 			List<Thread> threads = new ArrayList<Thread>();
 			for (int i = 0; i < getThreads(); i++) {
-				logger.debug("Looking for connection : ");
 				// One connection per thread, the connection will be closed by the thread when finished
 				final Connection connection = dataSource.getConnection();
-				connections.add(connection);
-				logger.debug("Got for connection : " + connection);
 				// Because the transient state data is stored in the indexable during indexing we have
 				// to clone the indexable for each thread
 				final IndexableTable cloneIndexableTable = (IndexableTable) SerializationUtilities.clone(indexable);
@@ -106,36 +102,18 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 					public void run() {
 						try {
 							connection.setAutoCommit(Boolean.FALSE);
-						} catch (Exception e) {
-							logger.error("Exception setting the auto commit : ", e);
-						}
-						try {
 							IContentProvider<IndexableColumn> contentProvider = new ColumnContentProvider();
 							handleTable(contentProvider, indexContext, cloneIndexableTable, connection, null, 0);
 						} catch (Exception e) {
-							logger.error("Exception indexing table : " + cloneIndexableTable.getName(), e);
-						}
-						try {
+							throw new RuntimeException(e);
+						} finally {
+							logger.info("Closing connection : " + connection);
 							DatabaseUtilities.commit(connection);
-						} catch (Exception e) {
-							logger.error("Exception setting the auto commit : ", e);
+							DatabaseUtilities.close(connection);
 						}
-						logger.debug("Closing connection : " + connection);
-						DatabaseUtilities.close(connection);
 					}
 				}, this.getClass().getSimpleName() + "." + i);
 				threads.add(thread);
-				// if (cloneIndexableTable.isAllColumns()) {
-				// List<String> columnNames = DatabaseUtilities.getAllColumns(connection,
-				// cloneIndexableTable.getName());
-				// for (String columnName : columnNames) {
-				// IndexableColumn indexableColumn = new IndexableColumn();
-				// indexableColumn.setAnalyzed(Boolean.TRUE);
-				// indexableColumn.setFieldName(IConstants.CONTENTS);
-				// IndexableColumn foreignKeyColumn = getForeignKeyColumn(cloneIndexableTable);
-				// // TODO Build the foreign keys and construct the hierarchy
-				// }
-				// }
 			}
 			for (Thread thread : threads) {
 				logger.debug("Starting thread : " + thread);
@@ -144,11 +122,6 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 			return threads;
 		} catch (Exception e) {
 			logger.error("Exception starting the table handler threads : " + indexable, e);
-			// Try to close the connection
-			for (Connection connection : connections) {
-				logger.debug("Closing connection : " + connection);
-				DatabaseUtilities.close(connection);
-			}
 		}
 		return Arrays.asList();
 	}
@@ -159,7 +132,6 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 		if (parent != null && IndexableTable.class.isAssignableFrom(parent.getClass())) {
 			for (Indexable<?> indexable : parent.getChildren()) {
 				if (IndexableTable.class.isAssignableFrom(indexable.getClass())) {
-
 				}
 			}
 		}
@@ -308,11 +280,9 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 				return null;
 			}
 			long nextIdNumber = 0;
-			// If this is a primary table then we need to find the first id in the table. For example if we are just
-			// starting to access this table then the id number will be 0, but the first id in the table could be 1 234
-			// 567,
-			// in which case we will have no records, so we need to execute where id > 1 234 567 and < 1 234 567 +
-			// batchSize
+			// If this is a primary table then we need to find the first id in the table. For example if we are just starting to access this
+			// table then the id number will be 0, but the first id in the table could be 1 234 567, in which case we will have no records,
+			// so we need to execute where id > 1 234 567 and < 1 234 567 + batchSize
 			if (indexableTable.isPrimaryTable()) {
 				// Commit the connection to release the cursors
 				// DatabaseUtilities.commit(connection);
@@ -321,10 +291,6 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 					minimumId = getIdFunction(indexableTable, connection, "min");
 					indexableTable.setMinimumId(minimumId);
 				}
-				// IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
-				// nextIdNumber = clusterManager.getIdNumber(indexContext.getIndexName(), indexableTable.getName(),
-				// indexContext.getBatchSize(),
-				// minimumId);
 				if (currentId < minimumId) {
 					currentId = minimumId;
 				}
@@ -343,11 +309,9 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 			if (!resultSet.next()) {
 				DatabaseUtilities.close(resultSet);
 				DatabaseUtilities.close(preparedStatement);
-				// No results, if this is a primary table then check that we have
-				// reached the end of the table, it could be that the predicate is
-				// id > 1 234 567 and < 1 234 567 + batchSize but there are no results
-				// between these values, so the next predicate would be
-				// id > 1 234 567 + batchSize and < 1 234 567 + (batchSize * 2)
+				// No results, if this is a primary table then check that we have reached the end of the table, it could be that the
+				// predicate is id > 1 234 567 and < 1 234 567 + batchSize but there are no results between these values, so the next
+				// predicate would be id > 1 234 567 + batchSize and < 1 234 567 + (batchSize * 2)
 				if (indexableTable.isPrimaryTable()) {
 					long maximumId = indexableTable.getMaximumId();
 					if (maximumId < 0) {
@@ -360,6 +324,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 						return getResultSet(indexContext, indexableTable, connection, ++reentrant);
 					}
 				}
+				// No more results for the primary table, we are finished
 				return null;
 			}
 			return resultSet;
@@ -608,11 +573,8 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 			logger.error("Exception accessing the column content : " + byteOutputStream, e);
 		} finally {
 			FileUtilities.close(inputStream);
-			inputStream = null;
 			FileUtilities.close(parsedOutputStream);
-			parsedOutputStream = null;
 			FileUtilities.close(byteOutputStream);
-			byteOutputStream = null;
 		}
 	}
 

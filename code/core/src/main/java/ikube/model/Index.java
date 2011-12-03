@@ -8,6 +8,7 @@ import javax.persistence.Transient;
 import org.apache.log4j.Logger;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.MultiSearcher;
+import org.apache.lucene.search.Searchable;
 
 /**
  * @author Michael Couck
@@ -45,7 +46,16 @@ public class Index extends Persistable {
 		if (this.multiSearcher != null) {
 			try {
 				LOGGER.info("Searcher not closed, will close now : " + this.multiSearcher);
-				this.multiSearcher.close();
+				Searchable[] searchables = multiSearcher.getSearchables();
+				if (searchables != null) {
+					for (Searchable searchable : searchables) {
+						try {
+							searchable.close();
+						} catch (Exception e) {
+							LOGGER.error("Exception closing the searchable : ", e);
+						}
+					}
+				}
 			} catch (Exception e) {
 				LOGGER.error("Exception closing the searcher : " + this.multiSearcher, e);
 			}

@@ -9,6 +9,7 @@ import ikube.model.IndexContext;
  * @since 27.02.2011
  * @version 01.00
  */
+@Deprecated
 public class IsInMemory implements IRule<IndexContext<?>> {
 
 	/**
@@ -20,7 +21,8 @@ public class IsInMemory implements IRule<IndexContext<?>> {
 	 */
 	@Override
 	public boolean evaluate(final IndexContext<?> indexContext) {
-		return indexContext.getInMemory();
+		// return indexContext.getInMemory();
+		return Boolean.FALSE;
 	}
 
 }

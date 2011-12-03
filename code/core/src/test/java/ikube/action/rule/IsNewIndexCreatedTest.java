@@ -30,9 +30,10 @@ public class IsNewIndexCreatedTest extends ATest {
 
 	@Before
 	public void before() {
+		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
 		originalDirectoryPath = indexContext.getIndexDirectoryPath();
 		when(indexContext.getIndexDirectoryPath()).thenReturn("./" + getClass().getSimpleName());
-		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
+		when(indexReader.directory()).thenReturn(fsDirectory);
 	}
 
 	@After

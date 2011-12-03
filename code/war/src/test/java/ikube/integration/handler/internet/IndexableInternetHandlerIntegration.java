@@ -33,16 +33,16 @@ import org.junit.Test;
  */
 public class IndexableInternetHandlerIntegration extends AbstractIntegration {
 
-	private IDataBase					dataBase;
-	private IndexContext<?>				indexContext;
-	private IndexableInternet			indexableInternet;
-	private IndexableInternetHandler	indexableInternetHandler;
+	private IDataBase dataBase;
+	private IndexContext<?> indexContext;
+	private IndexableInternet indexableInternet;
+	private IndexableInternetHandler indexableInternetHandler;
 
 	@Before
 	public void before() {
 		ApplicationContextManager.getBean(ListenerManager.class).removeListeners();
 		indexContext = ApplicationContextManager.getBean("indexContext");
-		indexableInternet = ApplicationContextManager.getBean("coldwell");
+		indexableInternet = ApplicationContextManager.getBean("hazelcast");
 		indexableInternetHandler = ApplicationContextManager.getBean(IndexableInternetHandler.class);
 		dataBase = ApplicationContextManager.getBean(IDataBase.class);
 		ApplicationContextManager.getBean(IClusterManager.class).startWorking(Index.class.getSimpleName(), indexContext.getName(),

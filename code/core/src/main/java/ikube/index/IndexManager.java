@@ -27,7 +27,6 @@ import org.apache.lucene.index.IndexWriter.MaxFieldLength;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.LockObtainFailedException;
-import org.apache.lucene.store.RAMDirectory;
 
 /**
  * This class opens and closes the Lucene index writer. There are also methods that get the path to the index directory based on the path in
@@ -49,12 +48,9 @@ public final class IndexManager {
 	 * documents to it during the index. The index writer is opened on a directory that will be the index path on the file system, the name
 	 * of the index, then the
 	 * 
-	 * @param ip
-	 *            the ip address of this machine
-	 * @param indexContext
-	 *            the index context to open the writer for
-	 * @param time
-	 *            the time stamp for the index directory. This can come from the system time but it can also come from another server. When
+	 * @param ip the ip address of this machine
+	 * @param indexContext the index context to open the writer for
+	 * @param time the time stamp for the index directory. This can come from the system time but it can also come from another server. When
 	 *            an index is started the server will publish the time it started the index. In this way we can check the timestamp for the
 	 *            index, and if it is set then we use the cluster timestamp. As a result we write the index in the same 'timestamp'
 	 *            directory
@@ -108,14 +104,7 @@ public final class IndexManager {
 	 */
 	public static synchronized IndexWriter openIndexWriter(IndexContext<?> indexContext, File indexDirectory, boolean create)
 			throws Exception {
-		Directory directory = null;
-		if (indexContext.getInMemory()) {
-			LOGGER.info("Index in memory : ");
-			directory = new RAMDirectory();
-		} else {
-			directory = FSDirectory.open(indexDirectory);
-		}
-		// indexContext.getIndex().setDirectory(directory);
+		Directory directory = FSDirectory.open(indexDirectory);
 		IndexWriter indexWriter = new IndexWriter(directory, IConstants.ANALYZER, create, MaxFieldLength.UNLIMITED);
 		indexWriter.setUseCompoundFile(indexContext.isCompoundFile());
 		indexWriter.setMaxBufferedDocs(indexContext.getBufferedDocs());

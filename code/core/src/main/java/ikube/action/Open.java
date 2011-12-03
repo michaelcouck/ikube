@@ -1,7 +1,6 @@
 package ikube.action;
 
 import ikube.index.IndexManager;
-import ikube.listener.Event;
 import ikube.model.IndexContext;
 import ikube.service.SearcherWebService;
 import ikube.toolkit.FileUtilities;
@@ -41,15 +40,14 @@ public class Open extends Action<IndexContext<?>, Boolean> {
 	 */
 	@Override
 	public Boolean execute(final IndexContext<?> indexContext) {
-		if (indexContext.getInMemory()) {
-			// return openInMemory(indexContext);
-		}
 		long actionId = 0;
+		boolean succeeded = Boolean.FALSE;
 		try {
 			actionId = start(indexContext, "");
 			return openOnFile(indexContext);
 		} finally {
 			stop(indexContext, actionId);
+			logger.info("Succeeded : " + succeeded);
 		}
 	}
 
@@ -72,15 +70,11 @@ public class Open extends Action<IndexContext<?>, Boolean> {
 				directory = FSDirectory.open(serverIndexDirectory);
 				boolean exists = IndexReader.indexExists(directory);
 				boolean locked = IndexWriter.isLocked(directory);
-				logger.debug("Exists : " + exists + ", locked : " + locked);
+				logger.info("Exists : " + exists + ", locked : " + locked);
 				if (!exists || locked) {
-					// We don't open locked directories. Could be
-					// that one configuration is still indexing on this
-					// file system, but we still want to open the index
-					// on the other new indexes. Of course if the index
-					// doesn't exist in the directory for some odd reason
-					// then we just ignore it, and the problem will eventually
-					// get deleted(at the next full index of course).
+					// We don't open locked directories. Could be that one configuration is still indexing on this file system, but we still
+					// want to open the index on the other new indexes. Of course if the index doesn't exist in the directory for some odd
+					// reason then we just ignore it, and the problem will eventually get deleted(at the next full index of course).
 					close(directory, reader, searcher);
 					continue;
 				}
@@ -88,7 +82,7 @@ public class Open extends Action<IndexContext<?>, Boolean> {
 				searcher = new IndexSearcher(reader);
 				searchers.add(searcher);
 				exceptionOpening = Boolean.FALSE;
-				logger.debug(Logging.getString("Opened searcher on : ", serverIndexDirectory, "exists : ", exists, "locked : ", locked));
+				logger.info(Logging.getString("Opened searcher on : ", serverIndexDirectory, "exists : ", exists, "locked : ", locked));
 			} catch (Exception e) {
 				logger.error("Exception opening directory : " + serverIndexDirectory, e);
 			} finally {
@@ -108,7 +102,6 @@ public class Open extends Action<IndexContext<?>, Boolean> {
 				Searchable[] searchables = searchers.toArray(new IndexSearcher[searchers.size()]);
 				MultiSearcher multiSearcher = new MultiSearcher(searchables);
 				indexContext.getIndex().setMultiSearcher(multiSearcher);
-				listenerManager.fireEvent(Event.SEARCHER_OPENED, System.currentTimeMillis(), indexContext, Boolean.FALSE);
 				return Boolean.TRUE;
 			}
 		} catch (Exception e) {

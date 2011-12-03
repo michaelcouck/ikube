@@ -218,6 +218,30 @@ public abstract class ADataBaseJpa implements IDataBase {
 		return query.getResultList();
 	}
 
+	@Override
+	@SuppressWarnings("unchecked")
+	public <T> T find(Class<T> klass, String sql, String[] names, Object[] values) {
+		Query query = getEntityManager().createNamedQuery(sql, klass);
+		setParameters(query, names, values);
+		return (T) query.getSingleResult();
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public <T> List<T> find(Class<T> klass, String sql, String[] names, Object[] values, int startPosition, int maxResults) {
+		Query query = getEntityManager().createNamedQuery(sql, klass);
+		query.setFirstResult(startPosition);
+		query.setMaxResults(maxResults);
+		setParameters(query, names, values);
+		return query.getResultList();
+	}
+
+	private void setParameters(Query query, String[] names, Object[] values) {
+		for (int i = 0; i < names.length; i++) {
+			query.setParameter(names[i], values[i]);
+		}
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */

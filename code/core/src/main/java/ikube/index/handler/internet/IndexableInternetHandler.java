@@ -27,7 +27,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
-import java.lang.Thread.State;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -71,10 +70,75 @@ import org.apache.lucene.document.Field.TermVector;
  */
 public class IndexableInternetHandler extends IndexableHandler<IndexableInternet> {
 
-	private Map<String, Object> notIndexedParameters;
-	private Cache cache = CacheManager.create().getCache("UrlCache");
-	private Cache newCache = CacheManager.create().getCache("NewUrlCache");
-	private ThreadLocal<Map<String, Object>> localUrlIdParameters = new ThreadLocal<Map<String, Object>>();
+	private Cache cache;
+	private Cache newCache;
+
+	public IndexableInternetHandler() {
+		CacheManager cacheManager = CacheManager.create();
+		cache = cacheManager.getCache("UrlCache");
+		newCache = cacheManager.getCache("NewUrlCache");
+	}
+
+	class IndexableInternetHandlerWorker implements Runnable {
+
+		boolean waiting;
+		IndexableInternet indexableInternet;
+		IndexContext<?> indexContext;
+		List<IndexableInternetHandlerWorker> handlerWorkers;
+
+		IndexableInternetHandlerWorker(IndexContext<?> indexContext, IndexableInternet indexable,
+				List<IndexableInternetHandlerWorker> handlerWorkers) {
+			this.indexContext = indexContext;
+			this.indexableInternet = (IndexableInternet) SerializationUtilities.clone(indexable);
+			this.indexableInternet.setParent(indexContext);
+			this.handlerWorkers = handlerWorkers;
+			this.waiting = Boolean.FALSE;
+		}
+
+		public void run() {
+			HttpClient httpClient = new HttpClient();
+			IContentProvider<IndexableInternet> contentProvider = new InternetContentProvider();
+			while (true) {
+				List<Url> urls = getUrlBatch(dataBase, indexableInternet);
+				if (urls.isEmpty()) {
+					// Check if there are any other threads still working
+					// other than this thread of course
+					waiting = Boolean.TRUE;
+					if (areRunning(handlerWorkers)) {
+						synchronized (this) {
+							try {
+								wait(1000);
+							} catch (Exception e) {
+								logger.error("Exception waiting for more resources to crawl : ", e);
+							}
+						}
+					} else {
+						// Return and die
+						cache.removeAll();
+						break;
+					}
+				}
+				doUrls(dataBase, indexContext, indexableInternet, urls, contentProvider, httpClient);
+			}
+		}
+
+		/**
+		 * This method checks to see that there is at least one other thread that is still in the runnable state. If there are no other
+		 * threads in the runnable state then all the urls have been visited on this base url. There will also be no more urls added so we
+		 * can exit this thread.
+		 * 
+		 * @param handlerWorkers the threads to check for the runnable state
+		 * @return true if there is at least one other thread that is in the runnable state
+		 */
+		protected boolean areRunning(final List<IndexableInternetHandlerWorker> handlerWorkers) {
+			for (IndexableInternetHandlerWorker handlerWorker : handlerWorkers) {
+				if (!handlerWorker.waiting) {
+					return Boolean.TRUE;
+				}
+			}
+			return Boolean.FALSE;
+		}
+	}
 
 	/**
 	 * {@inheritDoc}
@@ -83,46 +147,16 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	public List<Thread> handle(final IndexContext<?> indexContext, final IndexableInternet indexable) throws Exception {
 		cache.removeAll();
 		newCache.removeAll();
-		notIndexedParameters = new HashMap<String, Object>();
-		notIndexedParameters.put(IConstants.INDEXED, Boolean.FALSE);
-		notIndexedParameters.put(IConstants.NAME, indexable.getName());
-
 		// The start url
 		seedUrl(dataBase, indexable);
-
 		try {
-			final List<Thread> threads = new ArrayList<Thread>();
+			List<Thread> threads = new ArrayList<Thread>();
+			List<IndexableInternetHandlerWorker> handlerWorkers = new ArrayList<IndexableInternetHandler.IndexableInternetHandlerWorker>();
 			for (int i = 0; i < getThreads(); i++) {
-				Thread thread = new Thread(new Runnable() {
-					public void run() {
-						HttpClient httpClient = new HttpClient();
-						IContentProvider<IndexableInternet> contentProvider = new InternetContentProvider();
-						localUrlIdParameters.set(new HashMap<String, Object>());
-						IndexableInternet indexableInternet = (IndexableInternet) SerializationUtilities.clone(indexable);
-						indexableInternet.setParent(indexContext);
-						while (true) {
-							List<Url> urls = getUrlBatch(dataBase, indexableInternet);
-							if (urls.isEmpty()) {
-								// Check if there are any other threads still working
-								// other than this thread of course
-								if (isCrawling(threads)) {
-									synchronized (this) {
-										try {
-											wait(1000);
-										} catch (Exception e) {
-											logger.error("Exception waiting for more resources to crawl : ", e);
-										}
-									}
-								} else {
-									cache.removeAll();
-									break;
-								}
-							}
-							doUrls(dataBase, indexContext, indexable, urls, contentProvider, httpClient);
-						}
-					}
-				}, this.getClass().getSimpleName() + "." + i);
-				threads.add(thread);
+				IndexableInternetHandlerWorker handlerWorker = new IndexableInternetHandlerWorker(indexContext, indexable, handlerWorkers);
+				handlerWorkers.add(handlerWorker);
+				String name = this.getClass().getSimpleName() + "." + i;
+				threads.add(new Thread(handlerWorker, name));
 			}
 			for (Thread thread : threads) {
 				thread.start();
@@ -146,12 +180,10 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	 */
 	protected void doUrls(final IDataBase dataBase, final IndexContext<?> indexContext, final IndexableInternet indexable,
 			final List<Url> urlBatch, final IContentProvider<IndexableInternet> contentProvider, final HttpClient httpClient) {
-		if (urlBatch.size() > 0) {
-			logger.debug("Batch : " + urlBatch.size() + ", first url : " + urlBatch.get(0));
-		}
 		for (Url url : urlBatch) {
 			try {
 				if (url == null || url.getUrl() == null) {
+					logger.warn("Null url : " + url);
 					continue;
 				}
 				handle(dataBase, indexContext, indexable, url, contentProvider, httpClient);
@@ -188,13 +220,15 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	protected synchronized List<Url> getUrlBatch(final IDataBase dataBase, final IndexableInternet indexableInternet) {
 		try {
 			// Get the next batch
-			List<Url> urls = dataBase.find(Url.class, Url.SELECT_FROM_URL_BY_NAME_AND_INDEXED, notIndexedParameters, 0,
+			String[] names = new String[] { IConstants.NAME, IConstants.INDEXED };
+			Object[] values = new Object[] { indexableInternet.getName(), Boolean.FALSE };
+			List<Url> urls = dataBase.find(Url.class, Url.SELECT_FROM_URL_BY_NAME_AND_INDEXED, names, values, 0,
 					indexableInternet.getInternetBatchSize());
 			if (urls.isEmpty()) {
 				// If there are no urls that need to be indexed then empty the new url cache
 				// into the database and try again
 				persistBatch(dataBase);
-				urls = dataBase.find(Url.class, Url.SELECT_FROM_URL_BY_NAME_AND_INDEXED, notIndexedParameters, 0,
+				urls = dataBase.find(Url.class, Url.SELECT_FROM_URL_BY_NAME_AND_INDEXED, names, values, 0,
 						indexableInternet.getInternetBatchSize());
 			}
 			// Set all the indexed flags to true
@@ -257,7 +291,7 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 					// More than one? Shouldn't be
 					url.setRawContent(null);
 					url.setParsedContent(null);
-					logger.warn("Duplicate url or data : " + url, e);
+					logger.info("Duplicate url or data : " + url, e);
 					return;
 				} catch (OptimisticLockException e) {
 					// TODO We should re-try this url a certain number of times
@@ -267,7 +301,7 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 				cache.put(new net.sf.ehcache.Element(hash, url));
 			}
 			// Add the document to the index
-			addDocumentToIndex(indexContext, indexable, url, parsedContent);
+			addDocument(indexContext, indexable, url, parsedContent);
 		} catch (Exception e) {
 			logger.error("Exception visiting page : " + (url != null ? url.getUrl() : null), e);
 		}
@@ -358,7 +392,7 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	 * @param url the url being added to the index, i.e. just been visited and the data has been extracted
 	 * @param parsedContent the content that was extracted from the url
 	 */
-	protected void addDocumentToIndex(final IndexContext<?> indexContext, final IndexableInternet indexable, final Url url,
+	protected void addDocument(final IndexContext<?> indexContext, final IndexableInternet indexable, final Url url,
 			final String parsedContent) {
 		try {
 			Document document = new Document();
@@ -406,9 +440,6 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	protected void extractLinksFromContent(final IDataBase dataBase, final IndexableInternet indexableInternet, final Url baseUrl,
 			final InputStream inputStream) {
 		try {
-			if (localUrlIdParameters.get() == null) {
-				localUrlIdParameters.set(new HashMap<String, Object>());
-			}
 			Reader reader = new InputStreamReader(inputStream, IConstants.ENCODING);
 			Source source = new Source(reader);
 			List<Tag> tags = source.getAllTags();
@@ -445,10 +476,11 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 								continue;
 							}
 							// Check the database for this url
-							localUrlIdParameters.get().put(IConstants.URL_ID, urlId);
 							Url dbUrl = null;
 							try {
-								dbUrl = dataBase.find(Url.class, Url.SELECT_FROM_URL_BY_URL_ID, localUrlIdParameters.get());
+								String[] names = new String[] { IConstants.URL_ID };
+								Object[] values = new Object[] { urlId };
+								dbUrl = dataBase.find(Url.class, Url.SELECT_FROM_URL_BY_URL_ID, names, values);
 							} catch (NonUniqueResultException e) {
 								continue;
 							} catch (NoResultException e) {
@@ -499,7 +531,6 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 			for (Object key : keys) {
 				try {
 					net.sf.ehcache.Element element = newCache.get(key);
-					// logger.info("Cache element : " + element);
 					if (element == null) {
 						continue;
 					}
@@ -518,31 +549,9 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 			for (Object key : keys) {
 				newCache.remove(key);
 			}
-			// newCache.removeAll();
 		} finally {
 			notifyAll();
 		}
-	}
-
-	/**
-	 * This method checks to see that there is at least one other thread that is still in the runnable state. If there are no other threads
-	 * in the runnable state then all the urls have been visited on this base url. There will also be no more urls added so we can exit this
-	 * thread.
-	 * 
-	 * @param threads the threads to check for the runnable state
-	 * @return true if there is at least one other thread that is in the runnable state
-	 */
-	protected boolean isCrawling(final List<Thread> threads) {
-		int threadsRunnable = 0;
-		for (Thread thread : threads) {
-			if (thread.getState().equals(State.RUNNABLE)) {
-				threadsRunnable++;
-			}
-		}
-		if (threadsRunnable >= 2) {
-			return Boolean.TRUE;
-		}
-		return Boolean.FALSE;
 	}
 
 	/**
@@ -563,14 +572,5 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 
 		dataBase.persist(url);
 	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	// @Override
-	// public void addDocument(final IndexContext<?> indexContext, final Indexable<IndexableInternet> indexable, final Document document)
-	// throws CorruptIndexException, IOException {
-	// super.addDocument(indexContext, indexable, document);
-	// }
 
 }

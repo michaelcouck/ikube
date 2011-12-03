@@ -184,4 +184,8 @@ public interface IDataBase {
 	 */
 	<T> T execute(Class<T> klass, String sql, Map<String, Object> parameters);
 
+	<T> T find(Class<T> klass, String sql, String[] names, Object[] values);
+
+	<T> List<T> find(Class<T> klass, String sql, String[] names, Object[] values, int startPosition, int maxResults);
+
 }

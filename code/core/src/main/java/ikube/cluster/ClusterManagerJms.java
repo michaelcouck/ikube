@@ -32,7 +32,8 @@ import org.apache.activemq.network.NetworkConnector;
 import org.apache.activemq.xbean.XBeanBrokerService;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jms.core.JmsTemplate;
@@ -78,7 +79,7 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 		}
 	}
 
-	private static final Logger LOGGER = Logger.getLogger(ClusterManagerJms.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ClusterManagerJms.class);
 
 	/** The time to wait for the responses from the cluster servers. */
 	private static final long RESPONSE_TIME = 250;
@@ -133,13 +134,13 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 			if (haveLock) {
 				// If we have the lock, i.e. we were first to shout then
 				// we do nothing and the other servers will reset their locks to false
-				LOGGER.debug("Got lock : " + address + ":" + lock);
+				LOGGER.debug("Got lock : {} : {}", address, lock);
 			} else {
 				// If we don't get the lock then we reset our lock to false
 				// for the whole cluster
 				getLock(address, Long.MAX_VALUE, Boolean.FALSE);
 				sendMessage(lock);
-				LOGGER.debug("Didn't get lock : " + address + ":" + lock);
+				LOGGER.debug("Didn't get lock : {} : {} : ", address, lock);
 			}
 			return haveLock;
 		} finally {
@@ -158,7 +159,7 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 				// We only set the lock for the cluster to false if we have it
 				lock = getLock(address, Long.MAX_VALUE, Boolean.FALSE);
 				sendMessage(lock);
-				LOGGER.debug("Unlock : " + address + ":" + locks);
+				LOGGER.debug("Unlock : {} : {} : ", address, locks);
 				return Boolean.TRUE;
 			}
 			return Boolean.FALSE;
@@ -223,12 +224,14 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 					List<Action> actions = server.getActions();
 					if (actions.size() > 0) {
 						Action action = actions.get(actions.size() - 1);
-						LOGGER.info("Message action : " + server.getAddress() + ", " + action.getId() + ", " + action.getActionName()
-								+ ", " + action.getWorking() + ", " + action.getIndexName());
+						LOGGER.debug(
+								"Message action : {} {} {} {} {}",
+								new Object[] { server.getAddress(), action.getId(), action.getActionName(), action.getWorking(),
+										action.getIndexName() });
 					}
 				}
 			} else {
-				LOGGER.warn("Message type not supported : " + message);
+				LOGGER.warn("Message type not supported : {} ", message);
 			}
 		} catch (Exception e) {
 			LOGGER.error("Exception getting message : ", e);
@@ -264,7 +267,7 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 			for (NetworkBridge networkBridge : networkBridges) {
 				String address = networkBridge.getRemoteAddress();
 				try {
-					LOGGER.debug("Remote address : " + address);
+					LOGGER.debug("Remote address : {} ", address);
 					JmsTemplate jmsTemplate = getJmsTemplate(address);
 					jmsTemplate.send(messageCreator);
 				} catch (Exception e) {
@@ -363,7 +366,7 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 			server.getActions().add(action);
 			// Must persist the action to get an id
 			dataBase.persist(action);
-			LOGGER.info("Start working : " + action.getId() + ", " + action.getActionName() + ", " + action.getIndexName());
+			LOGGER.debug("Start working : {} {} {}", new Object[] { action.getId(), action.getActionName(), action.getIndexName() });
 			sendMessage(server);
 			return action.getId();
 		} finally {
@@ -392,20 +395,20 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 				action.setWorking(Boolean.FALSE);
 				action.setEndTime(new Timestamp(System.currentTimeMillis()));
 				action.setDuration(action.getEndTime().getTime() - action.getStartTime().getTime());
-				LOGGER.info("Stop working : " + index + ", " + action.getId() + ", " + action.getActionName() + ", "
-						+ action.getIndexName());
+				LOGGER.debug("Stop working : {} {} {} {} ",
+						new Object[] { index, action.getId(), action.getActionName(), action.getIndexName() });
 				server.getActions().remove(index);
 				sendMessage(server);
 				dataBase.merge(action);
 			} else {
-				LOGGER.warn("Action not found : " + id + ", " + actionName + ", " + indexName);
+				LOGGER.warn("Action not found : ", new Object[] { id, actionName, indexName });
 			}
 			if (server.getWorking()) {
-				LOGGER.info("Server still working : ");
+				LOGGER.debug("Server still working : ");
 				for (Action serverAction : actions) {
 					if (serverAction.getWorking()) {
-						LOGGER.info("        still working : " + serverAction.getId() + ", " + serverAction.getActionName() + ", "
-								+ serverAction.getIndexName());
+						LOGGER.debug("        still working : {} {} {}", new Object[] { serverAction.getId(), serverAction.getActionName(),
+								serverAction.getIndexName() });
 					}
 				}
 			}

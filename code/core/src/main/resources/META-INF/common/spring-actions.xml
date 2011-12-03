@@ -31,16 +31,16 @@
 	
 	<util:list id="ikube.IndexEngine.actions">
 		<ref bean="ikube.action.Close"  />
-		<ref bean="ikube.action.Open"  />
 		<ref bean="ikube.action.Reset" />
 		<ref bean="ikube.action.Restore" />
 		<ref bean="ikube.action.Index"  />
+		<ref bean="ikube.action.Open"  />
 		<ref bean="ikube.action.Delete" />
 		<ref bean="ikube.action.Clean" />
 		<ref bean="ikube.action.Backup" />
 		<ref bean="ikube.action.DiskFull" />
 		<!-- <ref bean="ikube.action.Searcher" /> -->
-		<ref bean="ikube.action.Validator" />
+		<!-- <ref bean="ikube.action.Validator" /> -->
 		<ref bean="ikube.action.Prune" />
 	</util:list>
 
@@ -89,15 +89,16 @@
 			</util:list>
 		</property>
 	</bean>
+	<!-- 
+		!IsThisServerWorking &#38;&#38;
+		!AnyServersWorkingThisIndex &#38;&#38; 
+		  (IsNewIndexCreated &#38;&#38; !IsIndexCurrent) ||
+		  (AreIndexesCreated &#38;&#38; AreUnopenedIndexes) 
+	-->
 	<bean 
 		id="ikube.action.Close" 
 		class="ikube.action.Close" 
 		property:ruleExpression="
-			(!IsThisServerWorking &#38;&#38;
-			!AnyServersWorkingThisIndex &#38;&#38; 
-			  (IsNewIndexCreated &#38;&#38; !IsIndexCurrent) ||
-			  (AreIndexesCreated &#38;&#38; AreUnopenedIndexes)
-			 ) ||  
 			IsIndexCorrupt">
 		<property name="rules">
 			<util:list>
@@ -111,11 +112,11 @@
 			</util:list>
 		</property>
 	</bean>
+	<!-- !IsThisServerWorking &#38;&#38; -->
 	<bean 
 		id="ikube.action.Open" 
 		class="ikube.action.Open" 
 		property:ruleExpression="
-			!IsThisServerWorking &#38;&#38;
 			!AnyServersWorkingThisIndex &#38;&#38; 
 			IsNewIndexCreated &#38;&#38; 
 			(!IsMultiSearcherInitialised ||  
@@ -134,15 +135,17 @@
 			</util:list>
 		</property>
 	</bean>
+	<!-- 
+		!AnyServersWorkingThisIndex &#38;&#38;
+		!IsThisServerWorking &#38;&#38; 
+	-->
 	<bean 
 		id="ikube.action.Index" 
 		class="ikube.action.Index" 
 		property:ruleExpression="
-			!IsThisServerWorking &#38;&#38; 
-			(!AnyServersWorkingThisIndex &#38;&#38;
+			!AnyServersWorkingThisIndex &#38;&#38;
 			(!IsIndexCurrent || 
-			 IsIndexCorrupt)) ||
-			 SingleRuleException">
+			 IsIndexCorrupt)">
 		<property name="rules">
 			<util:list>
 				<ref local="ikube.action.rule.IsThisServerWorking" />
@@ -243,7 +246,7 @@
 		</property>
 	</bean>
 	
-	<bean id="ikube.action.rule.IsInMemory" class="ikube.action.rule.IsInMemory" />
+	<!-- <bean id="ikube.action.rule.IsInMemory" class="ikube.action.rule.IsInMemory" /> -->
 	<bean id="ikube.action.rule.AnyServersWorking" class="ikube.action.rule.AnyServersWorking" />
 	<bean id="ikube.action.rule.AreDirectoriesEqual" class="ikube.action.rule.AreDirectoriesEqual" />
 	<bean id="ikube.action.rule.AreIndexesCreated" class="ikube.action.rule.AreIndexesCreated" />
