@@ -11,7 +11,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
@@ -27,27 +29,17 @@ import org.springframework.core.io.Resource;
  * @since 29.04.09
  * @version 01.00
  */
-public final class ApplicationContextManager {
+public final class ApplicationContextManager implements ApplicationContextAware {
 
 	private static final Logger LOGGER;
 	private static final String EXTERNAL_SPRING_CONFIGURATION_FILE = "." + IConstants.SEP + IConstants.IKUBE + IConstants.SEP
 			+ IConstants.SPRING_XML;
+
 	private static ApplicationContext APPLICATION_CONTEXT;
 
 	static {
 		Logging.configure();
 		LOGGER = Logger.getLogger(ApplicationContextManager.class);
-		// Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-		// public void run() {
-		// LOGGER.info("Shuting down application : ");
-		// AbstractApplicationContext applicationContext = (AbstractApplicationContext) getApplicationContext();
-		// applicationContext.close();
-		// LOGGER.info("Shut down application : " + applicationContext);
-		// }
-		// }));
-	}
-
-	private ApplicationContextManager() {
 	}
 
 	/**
@@ -189,6 +181,16 @@ public final class ApplicationContextManager {
 			}
 		} finally {
 			ApplicationContextManager.class.notifyAll();
+		}
+	}
+
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+		if (APPLICATION_CONTEXT == null) {
+			LOGGER.info("Setting the application context : " + applicationContext);
+			ApplicationContextManager.APPLICATION_CONTEXT = applicationContext;
+		} else {
+			LOGGER.info("Application context already loaded : " + APPLICATION_CONTEXT);
 		}
 	}
 

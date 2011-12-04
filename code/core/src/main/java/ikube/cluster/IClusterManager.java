@@ -1,6 +1,6 @@
 package ikube.cluster;
 
-import ikube.cluster.ClusterManagerJms.Lock;
+import ikube.cluster.jms.ClusterManagerJms.Lock;
 import ikube.model.Server;
 
 import java.io.Serializable;

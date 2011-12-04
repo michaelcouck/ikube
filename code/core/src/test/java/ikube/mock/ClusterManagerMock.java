@@ -1,7 +1,7 @@
 package ikube.mock;
 
 import static org.mockito.Mockito.mock;
-import ikube.cluster.ClusterManagerJms;
+import ikube.cluster.jms.ClusterManagerJms;
 import ikube.model.Server;
 import mockit.Mock;
 import mockit.MockClass;

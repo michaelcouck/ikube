@@ -4,6 +4,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import ikube.ATest;
+import ikube.cluster.jms.ClusterManagerJms;
 import ikube.toolkit.ThreadUtilities;
 
 import java.io.Serializable;

@@ -155,7 +155,7 @@
 							<target>
 								<echo message="Writing release file : " />
 								<echo file="src/main/webapp/WEB-INF/templates/release.txt" append="false">
-									${pom.version}
+									${project.version}
 								</echo>
 							</target>
 						</configuration>

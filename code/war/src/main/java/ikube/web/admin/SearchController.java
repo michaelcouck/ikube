@@ -2,9 +2,6 @@ package ikube.web.admin;
 
 import ikube.IConstants;
 import ikube.model.Server;
-import ikube.service.ISearcherWebService;
-import ikube.toolkit.ApplicationContextManager;
-import ikube.toolkit.SerializationUtilities;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,7 +14,6 @@ import java.util.TreeSet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -26,26 +22,12 @@ import org.springframework.web.servlet.ModelAndView;
  * @since 15.05.2011
  * @version 01.00
  */
-public class SearchController extends BaseController {
-
-	protected Logger logger = Logger.getLogger(this.getClass());
-
-	/** These are the default values for first and max results. */
-	private static final int FIRST_RESULT = 0;
-	private static final int MAX_RESULTS = 10;
-
-	private ISearcherWebService searcherWebService;
-
-	public SearchController() {
-		super();
-		searcherWebService = ApplicationContextManager.getBean(ISearcherWebService.class);
-	}
+public class SearchController extends SearchBaseController {
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		String viewUrl = getViewUri(request);
 		ModelAndView modelAndView = new ModelAndView(viewUrl);
@@ -69,9 +51,6 @@ public class SearchController extends BaseController {
 			}
 		}
 
-		int firstResult = getParameter(IConstants.FIRST_RESULT, FIRST_RESULT, request);
-		int maxResults = getParameter(IConstants.MAX_RESULTS, MAX_RESULTS, request);
-
 		String[] indexNames = monitorWebService.getIndexNames();
 
 		// Search all the indexes and merge the results
@@ -81,38 +60,18 @@ public class SearchController extends BaseController {
 		List<Map<String, String>> results = new ArrayList<Map<String, String>>();
 		String[] searchStringsArray = searchStrings.toArray(new String[searchStrings.size()]);
 
-		String latitude = getParameter(IConstants.LATITUDE, null, request);
-		String longitude = getParameter(IConstants.LONGITUDE, null, request);
-		String distance = getParameter(IConstants.DISTANCE, null, request);
-
 		for (String indexName : indexNames) {
-
-			String xml = null;
-			if (isNumeric(latitude) && isNumeric(longitude) && isNumeric(distance)) {
-				// Do the geospatial search
-				modelAndView.addObject(IConstants.LONGITUDE, longitude);
-				modelAndView.addObject(IConstants.LATITUDE, latitude);
-				modelAndView.addObject(IConstants.DISTANCE, distance);
-				searcherWebService.searchSpacialMultiAll(indexName, searchStringsArray, Boolean.TRUE, firstResult, maxResults,
-						Integer.parseInt(distance), Double.parseDouble(latitude), Double.parseDouble(longitude));
-			} else {
-				// Normal search with all the fields
-				xml = searcherWebService.searchMultiAll(indexName, searchStringsArray, Boolean.TRUE, firstResult, maxResults);
+			List<Map<String, String>> indexResults = doSearch(request, modelAndView, indexName, searchStringsArray);
+			Map<String, String> statistics = indexResults.get(indexResults.size() - 1);
+			if (isNumeric(statistics.get(IConstants.TOTAL))) {
+				total += Integer.parseInt(statistics.get(IConstants.TOTAL));
 			}
-
-			if (xml != null) {
-				List<Map<String, String>> indexResults = (List<Map<String, String>>) SerializationUtilities.deserialize(xml);
-				Map<String, String> statistics = indexResults.get(indexResults.size() - 1);
-				if (isNumeric(statistics.get(IConstants.TOTAL))) {
-					total += Integer.parseInt(statistics.get(IConstants.TOTAL));
-				}
-				if (isNumeric(statistics.get(IConstants.DURATION))) {
-					duration += Long.parseLong(statistics.get(IConstants.DURATION));
-				}
-				corrections = statistics.get(IConstants.CORRECTIONS);
-				indexResults.remove(statistics);
-				results.addAll(indexResults);
+			if (isNumeric(statistics.get(IConstants.DURATION))) {
+				duration += Long.parseLong(statistics.get(IConstants.DURATION));
 			}
+			corrections = statistics.get(IConstants.CORRECTIONS);
+			indexResults.remove(statistics);
+			results.addAll(indexResults);
 		}
 
 		// Sort the results according to the score. This will essentially merge the results and
@@ -127,6 +86,8 @@ public class SearchController extends BaseController {
 			}
 		});
 
+		int firstResult = getParameter(IConstants.FIRST_RESULT, FIRST_RESULT, request);
+		int maxResults = getParameter(IConstants.MAX_RESULTS, MAX_RESULTS, request);
 		// Now just take the top results, i.e. the max results that are defined by the user
 		results = results.subList(0, results.size() < maxResults ? results.size() : maxResults);
 
@@ -173,39 +134,6 @@ public class SearchController extends BaseController {
 			}
 		}
 		return searchStrings;
-	}
-
-	private boolean isNumeric(String string) {
-		if (string == null) {
-			return Boolean.FALSE;
-		}
-		char[] chars = string.toCharArray();
-		for (char c : chars) {
-			if (c == '.') {
-				continue;
-			}
-			if (Character.isDigit(c)) {
-				continue;
-			}
-			return Boolean.FALSE;
-		}
-		return Boolean.TRUE;
-	}
-
-	private String getParameter(String name, String defaultValue, HttpServletRequest request) {
-		String parameter = request.getParameter(name);
-		if (parameter != null && !"".equals(parameter)) {
-			return parameter;
-		}
-		return defaultValue;
-	}
-
-	private int getParameter(String name, int defaultValue, HttpServletRequest request) {
-		String parameter = request.getParameter(name);
-		if (parameter != null && !"".equals(parameter) && org.apache.commons.lang.StringUtils.isNumeric(parameter)) {
-			return Integer.parseInt(parameter);
-		}
-		return defaultValue;
 	}
 
 }

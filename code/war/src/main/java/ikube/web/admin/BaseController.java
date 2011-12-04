@@ -2,12 +2,12 @@ package ikube.web.admin;
 
 import ikube.cluster.IClusterManager;
 import ikube.service.IMonitorWebService;
-import ikube.toolkit.ApplicationContextManager;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
@@ -29,12 +29,17 @@ import org.springframework.web.servlet.mvc.AbstractController;
 public abstract class BaseController extends AbstractController {
 
 	protected Logger logger = Logger.getLogger(this.getClass());
+	@Autowired
 	protected IClusterManager clusterManager;
+	@Autowired
 	protected IMonitorWebService monitorWebService;
 
-	public BaseController() {
-		clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
-		monitorWebService = ApplicationContextManager.getBean(IMonitorWebService.class);
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		return handleRequest(request, response);
 	}
 
 	/**
@@ -42,7 +47,7 @@ public abstract class BaseController extends AbstractController {
 	 * Spring wants to map the /admin/search to /admin/search.jsp, so it will prepend the .jsp to the uri before forwarding. This method
 	 * remove the context(ikube) and the .html from the uri and leave /admin/search for Spring to map forward.
 	 * 
-	 * @param request the resuest for the page
+	 * @param request the request for the page
 	 * @return the stripped uri to be prepended with .jsp by Spring
 	 */
 	protected String getViewUri(HttpServletRequest request) {
@@ -56,12 +61,37 @@ public abstract class BaseController extends AbstractController {
 		return uriSansContext;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		return handleRequest(request, response);
+	protected boolean isNumeric(String string) {
+		if (string == null) {
+			return Boolean.FALSE;
+		}
+		char[] chars = string.toCharArray();
+		for (char c : chars) {
+			if (c == '.') {
+				continue;
+			}
+			if (Character.isDigit(c)) {
+				continue;
+			}
+			return Boolean.FALSE;
+		}
+		return Boolean.TRUE;
+	}
+
+	protected String getParameter(String name, String defaultValue, HttpServletRequest request) {
+		String parameter = request.getParameter(name);
+		if (parameter != null && !"".equals(parameter)) {
+			return parameter;
+		}
+		return defaultValue;
+	}
+
+	protected int getParameter(String name, int defaultValue, HttpServletRequest request) {
+		String parameter = request.getParameter(name);
+		if (parameter != null && !"".equals(parameter) && org.apache.commons.lang.StringUtils.isNumeric(parameter)) {
+			return Integer.parseInt(parameter);
+		}
+		return defaultValue;
 	}
 
 }

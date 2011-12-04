@@ -11,10 +11,27 @@
 		http://www.springframework.org/schema/context
 		http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
+	<context:property-placeholder
+		location="**/spring.properties" 
+		properties-ref="ikube.toolkit.PropertyConfigurer" />
+	
+	<!-- This bean will look through the classpath and load every Spring properties file it finds. -->
+	<bean
+		id="ikube.toolkit.PropertyConfigurer"
+		class="ikube.toolkit.PropertyConfigurer"
+		p:fileNamePattern="spring.properties"
+		lazy-init="false"
+		init-method="initialize" />
+	
+	<!-- <import resource="/**/spring*.xml" /> -->
+	<!-- <import resource="classpath*:**/spring*.xml" /> -->
+	<import resource="file:**/spring-*.xml" />
+	<!-- <import resource="classpath*:/**/spring*.xml" /> -->
+	
+	<bean class="ikube.toolkit.ApplicationContextManager" />
+	
 	<context:annotation-config />
 	<context:component-scan base-package="ikube" />
-	
-	<import resource="classpath*:**/spring*.xml" />
 	
 	<!-- This configures the tiles container. -->
 	<bean 
@@ -30,11 +47,11 @@
 		<property name="mappings">
 			<props>
 				<prop key="/results.html">ikube.web.admin.SearchController</prop>
-				<prop key="/admin/search.html">ikube.web.admin.SearchController</prop>
 				<prop key="/admin/server.html">ikube.web.admin.ServerController</prop>
 				<prop key="/admin/servers.html">ikube.web.admin.ServersController</prop>
 				<prop key="/admin/logging.html">ikube.web.admin.LoggingController</prop>
 				<prop key="/admin/index.html">ikube.web.admin.IndexController</prop>
+				<prop key="/admin/search.html">ikube.web.admin.SearchIndexController</prop>
 			</props>
 		</property>
 	</bean>
@@ -57,6 +74,7 @@
 	<bean name="ikube.web.admin.ServersController" class="ikube.web.admin.ServersController" />
 	<bean name="ikube.web.admin.LoggingController" class="ikube.web.admin.LoggingController" />
 	<bean name="ikube.web.admin.IndexController" class="ikube.web.admin.IndexController" />
+	<bean name="ikube.web.admin.SearchIndexController" class="ikube.web.admin.SearchIndexController" />
 
 	<!-- These are static resources basically. -->
 	<mvc:view-controller path="/index.html" />

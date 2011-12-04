@@ -97,6 +97,7 @@ public interface IConstants {
 	String INDEX_CONTEXT = "indexContext";
 	String INDEX_CONTEXTS = "indexContexts";
 	String INDEX_NAMES = "indexNames";
+	String INDEX_FIELD_NAMES_AND_VALUES = "indexFieldNamesAndValues";
 	String GEOSPATIAL = "geospatial";
 	String DEFAULT = "default";
 	String FEATURECLASS = "featureclass";
@@ -110,23 +111,14 @@ public interface IConstants {
 
 	/** Url response codes */
 	Integer HTTP_200 = Integer.valueOf(200); // OK
-	Integer HTTP_301 = Integer.valueOf(301); // Move
-												// permanently
-	Integer HTTP_400 = Integer.valueOf(400); // Bad
-												// request
+	Integer HTTP_301 = Integer.valueOf(301); // Move permanently
+	Integer HTTP_400 = Integer.valueOf(400); // Bad request
 	Integer HTTP_401 = Integer.valueOf(401); // Unauthorized
 	Integer HTTP_403 = Integer.valueOf(403); // Forbidden
-	Integer HTTP_404 = Integer.valueOf(404); // Not
-												// found
-	Integer HTTP_418 = Integer.valueOf(418); // I"m
-												// a
-												// tea
-												// pot
-	Integer HTTP_500 = Integer.valueOf(500); // Internal
-												// server
-												// error
-	Integer HTTP_503 = Integer.valueOf(503); // Service
-												// unavailable
+	Integer HTTP_404 = Integer.valueOf(404); // Not found
+	Integer HTTP_418 = Integer.valueOf(418); // I"m a tea pot
+	Integer HTTP_500 = Integer.valueOf(500); // Internal server error
+	Integer HTTP_503 = Integer.valueOf(503); // Service unavailable
 
 	/** These can be extracted into the messages.properties file */
 	String NO_END_TAG = "Not end tag in Html";

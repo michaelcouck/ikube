@@ -245,6 +245,19 @@ hr { display: none; }
 	border : solid black 1px;
 }
 
+.index-search-text {
+	width: 80px;
+	padding: 0px 0px 0px 0px;
+	background: #eeeeee;
+	border: none;
+	font-family: Tahoma,""Trebuchet MS", Arial, Helvetica, sans-serif;
+	color: #636363;
+	height : 12px;
+	line-height : 18px;
+	vertical-align : top;
+	border : solid black 1px;
+}
+
 /* Page */
 #page {
 	width: 840px;

@@ -1,8 +1,8 @@
 package ikube.cluster;
 
 import ikube.IConstants;
-import ikube.cluster.ClusterManagerJms.Lock;
 import ikube.cluster.cache.ICache;
+import ikube.cluster.jms.ClusterManagerJms.Lock;
 import ikube.model.Action;
 import ikube.model.Server;
 import ikube.service.IMonitorWebService;

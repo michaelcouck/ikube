@@ -10,15 +10,7 @@
 	var="cleanedClonedChildren" 
 	value="${ikube:remove(clonedChildren, renderedIndexables)}" 
 	scope="page" />
-<table width="100%">
-	<tr>
-		<th>Name</th>
-		<th>Class</th>
-		<th>Address</th>
-		<th>Stored</th>
-		<th>Analysed</th>
-		<th>Vectored</th>
-	</tr>
+<!-- <table width="100%"> -->
 	<c:forEach var="child" items="${clonedChildren}">
 	<tr>
 		<td>${child.name}</td>
@@ -37,11 +29,7 @@
 			var="children" 
 			value="${child.children}" 
 			scope="session" />
-		<tr>
-			<td colspan="6">
-				<jsp:include page="/WEB-INF/jsp/admin/indexable.jsp" flush="true" />
-			</td>
-		</tr>
+		<jsp:include page="/WEB-INF/jsp/admin/indexable.jsp" flush="true" />
 	</c:if>
 	</c:forEach>
-</table>
+<!-- </table> -->

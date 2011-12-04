@@ -1,6 +1,6 @@
-package ikube.cluster;
+package ikube.cluster.jms;
 
-import ikube.IConstants;
+import ikube.cluster.IClusterManager;
 import ikube.database.IDataBase;
 import ikube.model.Action;
 import ikube.model.Server;
@@ -10,7 +10,6 @@ import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -83,14 +82,6 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 
 	/** The time to wait for the responses from the cluster servers. */
 	private static final long RESPONSE_TIME = 250;
-	/** The time out time for the lock in case a server dies. */
-	private static final long LOCK_TIME_OUT = 60000;
-	/** The time to sleep between trying to remove dead locks. */
-	private static final long LOCK_THREAD_WAIT_TIME = LOCK_TIME_OUT / 3;
-	/** The time out for a server, also in case it dies and retains the action/working flag. */
-	private static final long SERVER_TIME_OUT = 600000;
-	/** The time between refreshing the server in the cluster, i.e. sending it to the other servers. */
-	private static final long SERVER_REFRESH_THREAD_WAIT_TIME = SERVER_TIME_OUT / 3;
 
 	/** The textual representation of the ip address for this server. */
 	private String ip;
@@ -472,62 +463,6 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 
 		getServer();
 		getLock(address, Long.MAX_VALUE, Boolean.FALSE);
-		// This thread removes locks that have expired
-		new Thread(new Runnable() {
-			public void run() {
-				while (true) {
-					try {
-						ThreadUtilities.sleep(LOCK_THREAD_WAIT_TIME);
-						List<String> toRemove = new ArrayList<String>();
-						for (Entry<String, Lock> entry : locks.entrySet()) {
-							if (System.currentTimeMillis() - entry.getValue().shout > LOCK_TIME_OUT) {
-								toRemove.add(entry.getKey());
-							}
-						}
-						for (String lockKey : toRemove) {
-							LOGGER.warn("Removing lock from time out : " + locks.get(lockKey));
-							locks.remove(lockKey);
-						}
-					} catch (Exception e) {
-						LOGGER.error("Exception in the lock timeout thread : ", e);
-					}
-				}
-			}
-		}, "Ikube lock time out thread").start();
-		// This thread removed servers that have expired
-		new Thread(new Runnable() {
-			public void run() {
-				while (true) {
-					ThreadUtilities.sleep(SERVER_TIME_OUT);
-					Server server = getServer();
-					// Remove all servers that are past the max age
-					List<Server> toRemove = new ArrayList<Server>();
-					Collection<Server> servers = getServers().values();
-					for (Server remoteServer : servers) {
-						if (remoteServer.getAddress().equals(server.getAddress())) {
-							continue;
-						}
-						if (System.currentTimeMillis() - remoteServer.getAge() > IConstants.MAX_AGE) {
-							LOGGER.info("Removing server : " + remoteServer + ", "
-									+ (System.currentTimeMillis() - remoteServer.getAge() > IConstants.MAX_AGE));
-							toRemove.add(remoteServer);
-						}
-					}
-					for (Server toRemoveServer : toRemove) {
-						servers.remove(toRemoveServer);
-					}
-				}
-			}
-		}, "Ikube server time out thread").start();
-		// This thread posts this server to the cluster to stay in the club
-		new Thread(new Runnable() {
-			public void run() {
-				while (true) {
-					ThreadUtilities.sleep(SERVER_REFRESH_THREAD_WAIT_TIME);
-					sendMessage(getServer());
-				}
-			}
-		}, "Ikube server club thread").start();
 	}
 
 	public void destroy() {

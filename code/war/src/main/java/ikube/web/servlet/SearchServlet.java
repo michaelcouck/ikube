@@ -31,16 +31,16 @@ import org.apache.log4j.Logger;
 @SuppressWarnings("serial")
 public class SearchServlet extends HttpServlet {
 
-	private static final transient Logger	LOGGER		= Logger.getLogger(SearchServlet.class);
+	private static final transient Logger LOGGER = Logger.getLogger(SearchServlet.class);
 
-	private String							contentType	= "text/html";
+	private String contentType = "text/html";
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public void init() throws ServletException {
-		ApplicationContextManager.getApplicationContext();
+		// ApplicationContextManager.getApplicationContext();
 		try {
 			// Persistence.createEntityManagerFactory(IConstants.PERSISTENCE_UNIT_H2).createEntityManager();
 		} catch (Exception e) {
@@ -70,7 +70,8 @@ public class SearchServlet extends HttpServlet {
 			for (IndexContext<?> indexContext : indexContexts.values()) {
 				if (indexContext.getIndexName().equals(indexName)) {
 					if (indexContext.getIndex().getMultiSearcher() != null) {
-						Search search = getSearch(indexContext, indexName, searchStrings, searchFields, sortFields, firstResult, maxResults, fragment);
+						Search search = getSearch(indexContext, indexName, searchStrings, searchFields, sortFields, firstResult,
+								maxResults, fragment);
 						List<Map<String, String>> results = search.execute();
 						String xml = SerializationUtilities.serialize(results);
 						out.print(xml);

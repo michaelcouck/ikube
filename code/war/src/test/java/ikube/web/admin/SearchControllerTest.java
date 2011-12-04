@@ -38,6 +38,10 @@ public class SearchControllerTest {
 
 	private HttpServletRequest request = mock(HttpServletRequest.class);
 	private HttpServletResponse response = mock(HttpServletResponse.class);
+	private ISearcherWebService searcherWebService = mock(ISearcherWebService.class);
+	private IMonitorWebService monitorWebService = mock(IMonitorWebService.class);
+	private IClusterManager clusterManager = mock(IClusterManager.class);
+	private Server server = mock(Server.class);
 
 	@Before
 	public void before() {
@@ -46,13 +50,11 @@ public class SearchControllerTest {
 		Map<String, String[]> parameterMap = new HashMap<String, String[]>();
 		parameterMap.put(IConstants.SEARCH_STRINGS, new String[] { IConstants.IKUBE });
 		when(request.getParameterMap()).thenReturn(parameterMap);
-		Server server = mock(Server.class);
-		IClusterManager clusterManager = mock(IClusterManager.class); // ApplicationContextManagerMock.getBean(IClusterManager.class);
 		when(clusterManager.getServer()).thenReturn(server);
-		IMonitorWebService monitorWebService = mock(IMonitorWebService.class); // ApplicationContextManagerMock.getBean(IMonitorWebService.class);
 		when(monitorWebService.getIndexNames()).thenReturn(new String[] { "ikube", "ikube", "ikube" });
 		Deencapsulation.setField(searchController, clusterManager);
 		Deencapsulation.setField(searchController, monitorWebService);
+		Deencapsulation.setField(searchController, searcherWebService);
 	}
 
 	@After
@@ -65,8 +67,6 @@ public class SearchControllerTest {
 	public void handleRequest() throws Exception {
 		File file = FileUtilities.findFileRecursively(new File("."), "default.results.xml");
 		String xml = FileUtilities.getContents(file, Integer.MAX_VALUE, IConstants.ENCODING);
-
-		ISearcherWebService searcherWebService = ServiceLocatorMock.getService(ISearcherWebService.class, null, null, null);
 		when(searcherWebService.searchMultiAll(IConstants.IKUBE, new String[] { IConstants.IKUBE }, true, 0, 10)).thenReturn(xml);
 
 		ModelAndView modelAndView = searchController.handleRequest(request, response);

@@ -162,6 +162,15 @@
 	<bean
 		id="ikube.service.WebServicePublisher"
 		class="ikube.service.WebServicePublisher" />
+	<bean
+		id="ikube.cluster.jms.LockRemovalListener"
+		class="ikube.cluster.jms.LockRemovalListener" />
+	<bean
+		id="ikube.cluster.jms.ServerRemovalListener"
+		class="ikube.cluster.jms.ServerRemovalListener" />
+	<bean
+		id="ikube.cluster.jms.ServerClubListener"
+		class="ikube.cluster.jms.ServerClubListener" />
 	
 	<bean 
 		id="ikube.listener.ListenerManager"
@@ -171,6 +180,9 @@
 	<util:list id="ikube.listener.ListenerManager.listeners">
 		<ref bean="ikube.IndexEngine" />
 		<ref bean="ikube.monitoring.IMonitoringInterceptor" />
+		<ref bean="ikube.cluster.jms.LockRemovalListener" />
+		<ref bean="ikube.cluster.jms.ServerRemovalListener" />
+		<ref bean="ikube.cluster.jms.ServerClubListener" />
 	</util:list>
 	
 	<bean 
@@ -207,6 +219,21 @@
 			property:type="jms"
 			property:delay="10000"
 			property:period="10000" />
+		<bean
+			class="ikube.listener.Schedule"
+			property:type="lockRelease"
+			property:delay="30000"
+			property:period="30000" />
+		<bean
+			class="ikube.listener.Schedule"
+			property:type="serverRelease"
+			property:delay="600000"
+			property:period="600000" />
+		<bean
+			class="ikube.listener.Schedule"
+			property:type="serverClub"
+			property:delay="200000"
+			property:period="200000" />
 	</util:list>
 	
 	<!-- 

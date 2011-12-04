@@ -2,6 +2,12 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
+<!--
+	This page displays the servers, the indexes that are defined in the server 
+	and the actions that are currently being executed, including the number of
+	documents that have been indexed since the time the server started. 
+ -->
+
 <script language="JavaScript" type="text/javascript">
 // CREDITS:
 // Automatic Page Refresher by Peter Gehrig and Urs Dudli
@@ -65,7 +71,7 @@ window.onload=starttime
 		</td>
 	</tr>	
 	<tr>
-		<th class="td-content" colspan="2">Index</th>
+		<th class="td-content" colspan="3">Index</th>
 		<th class="td-content">Docs</th>
 		<th class="td-content">Size</th>
 		<th class="td-content" colspan="2">Open</th>
@@ -76,10 +82,21 @@ window.onload=starttime
 	
 	<c:forEach var="indexContext" items="${requestScope.indexContexts}">
 	<tr>
-		<td width="1">
-			<img alt="Search index ${indexContext.name}" 
-				src="<c:url value="/images/icons/search.gif" />" 
+		<td width="1" nowrap="nowrap">
+			<a href="<c:url value="/admin/index.html" />?indexName=${indexContext.name}"
+				title="View indexables for ${indexContext.name}">
+				<img alt="Search index ${indexContext.name}" 
+					src="<c:url value="/images/icons/index.gif" />" 
+					title="View indexables for ${indexContext.name}">
+			</a>
+		</td>
+		<td>
+			<a href="<c:url value="/admin/search.html" />?indexName=${indexContext.name}"
 				title="Search index ${indexContext.name}">
+				<img alt="Search index ${indexContext.name}" 
+					src="<c:url value="/images/icons/search.gif" />" 
+					title="Search index ${indexContext.name}">
+			</a>
 		</td>
 		<td class="td-content">
 			<a href="<c:url value="/admin/index.html" />?indexName=${indexContext.name}" 
@@ -120,17 +137,12 @@ window.onload=starttime
 		<th class="td-content" colspan="5" width="75%">Actions</th>
 	</tr>
 	<c:forEach var="server" items="${requestScope.servers}">
-		<%-- <tr>
-			<td>
-				<c:out value="${server.indexingExecutions}"></c:out>
-			</td>
-		</tr> --%>
 		<tr>
 			<td width="1%">
 				<img alt="Server" src="<c:url value="/images/icons/server.gif" />" title="Server">
 			</td>
 			<td class="td-content" nowrap="nowrap">
-				<a href="<c:url value="${server.ip}" />"
+				<a href="<c:url value="${server.searchWebServiceUrl}" />"
 					style="font-style: italic;" 
 					title="${server.address}">
 					<c:out value="${server.address}" />

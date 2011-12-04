@@ -28,17 +28,16 @@ import org.apache.lucene.search.highlight.QueryScorer;
 import org.apache.lucene.search.highlight.Scorer;
 
 /**
- * This action does the actual search on the index. The searcher that is current in the Instance is passed to this
- * action. The search is done on the index. The results are then processed for use in the front end. A list of maps is
- * generated from the results. There are three standard fields in each map. Each map then represents one record or
- * result from the search. The three standard items in the map are the index in the lucene result set, id of the record
- * and the score that the result got. Optionally the fragment generated from the result if this is specified.
+ * This action does the actual search on the index. The searcher that is current in the Instance is passed to this action. The search is
+ * done on the index. The results are then processed for use in the front end. A list of maps is generated from the results. There are three
+ * standard fields in each map. Each map then represents one record or result from the search. The three standard items in the map are the
+ * index in the lucene result set, id of the record and the score that the result got. Optionally the fragment generated from the result if
+ * this is specified.
  * 
  * The id of the record generated using the name of the object indexed and the primary field in the database.
  * 
- * For paging functionality the search method can be called specifying the start and end parameters which will give
- * logical paging. Although the search will be done for each page forward the search is so fast that this is not
- * relevant.
+ * For paging functionality the search method can be called specifying the start and end parameters which will give logical paging. Although
+ * the search will be done for each page forward the search is so fast that this is not relevant.
  * 
  * @author Michael Couck
  * @since 22.08.08
@@ -46,26 +45,27 @@ import org.apache.lucene.search.highlight.Scorer;
  */
 public abstract class Search {
 
-	private static transient Map<String, QueryParser>	QUERY_PARSERS	= new HashMap<String, QueryParser>();
+	// private static transient Pattern AND_OR_PATTERN = Pattern.compile(".*\\pAND\\p.*|.*\\pOR\\p.*");
+	private static transient Map<String, QueryParser> QUERY_PARSERS = new HashMap<String, QueryParser>();
 
-	protected Logger									logger;
+	protected Logger logger;
 	/** The searcher that will be used for the search. */
-	protected transient Searcher						searcher;
+	protected transient Searcher searcher;
 	/** The query parsers for various query fields. */
 
 	/** The search string that we are looking for. */
-	protected transient String[]						searchStrings;
+	protected transient String[] searchStrings;
 	/** The fields in index to add to the search. */
-	protected transient String[]						searchFields;
+	protected transient String[] searchFields;
 	/** The fields to sort the results by. */
-	protected transient String[]						sortFields;
+	protected transient String[] sortFields;
 
 	/** Whether to generate fragments for the search string or not. */
-	protected transient boolean							fragment;
+	protected transient boolean fragment;
 	/** The start position in the search results to return maps from. */
-	protected transient int								firstResult;
+	protected transient int firstResult;
 	/** The end position in the results to stop returning results from. */
-	protected transient int								maxResults;
+	protected transient int maxResults;
 
 	Search(final Searcher searcher) {
 		this.logger = Logger.getLogger(this.getClass());
@@ -73,20 +73,16 @@ public abstract class Search {
 	}
 
 	/**
-	 * Takes a result from the Lucene search query and selects the fragments that have the search word(s) in it, taking
-	 * only the first few instances of the data where the term appears and returns the fragments. For example in the
-	 * document the data is the following "The quick brown fox jumps over the lazy dog" and we search for 'quick', 'fox'
-	 * and 'lazy'. The result will be '...The quick brown fox jumps...the lazy dog...'.<br>
+	 * Takes a result from the Lucene search query and selects the fragments that have the search word(s) in it, taking only the first few
+	 * instances of the data where the term appears and returns the fragments. For example in the document the data is the following
+	 * "The quick brown fox jumps over the lazy dog" and we search for 'quick', 'fox' and 'lazy'. The result will be '...The quick brown fox
+	 * jumps...the lazy dog...'.<br>
 	 * <br>
-	 * The fragments are from the current document, so calling get next document will move the document to the next on
-	 * in the Hits object.
+	 * The fragments are from the current document, so calling get next document will move the document to the next on in the Hits object.
 	 * 
-	 * @param the
-	 *            document to get the fragments from
-	 * @param fieldName
-	 *            the name of the field that was searched
-	 * @param the
-	 *            query that generated the results
+	 * @param the document to get the fragments from
+	 * @param fieldName the name of the field that was searched
+	 * @param the query that generated the results
 	 * @return the best fragments of text containing the search keywords
 	 */
 	protected String getFragments(final Document document, final String fieldName, final Query query) {
@@ -112,10 +108,8 @@ public abstract class Search {
 	/**
 	 * Adds the fields to the results.
 	 * 
-	 * @param document
-	 *            the document to get the fields from to add to the result
-	 * @param result
-	 *            the result map to add the field values to
+	 * @param document the document to get the fields from to add to the result
+	 * @param result the result map to add the field values to
 	 * @throws Exception
 	 */
 	protected void addFieldsToResults(final Document document, final Map<String, String> result) throws Exception {
@@ -139,8 +133,7 @@ public abstract class Search {
 	/**
 	 * Sets the strings that will be searched for.
 	 * 
-	 * @param searchStrings
-	 *            the search strings
+	 * @param searchStrings the search strings
 	 */
 	public void setSearchString(final String... searchStrings) {
 		if (searchStrings != null) {
@@ -155,8 +148,7 @@ public abstract class Search {
 	/**
 	 * Sets the fields in the index that will be searched for.
 	 * 
-	 * @param searchFields
-	 *            the fields in the index to search through
+	 * @param searchFields the fields in the index to search through
 	 */
 	public void setSearchField(final String... searchFields) {
 		this.searchFields = searchFields;
@@ -169,8 +161,8 @@ public abstract class Search {
 	/**
 	 * This executed the search with the parameters set for the search fields and the search strings.
 	 * 
-	 * @return the results which are a list of maps. Each map has the fields in it if they are strings, not readers, and
-	 *         the map entries for index, score, fragment, total and duration
+	 * @return the results which are a list of maps. Each map has the fields in it if they are strings, not readers, and the map entries for
+	 *         index, score, fragment, total and duration
 	 */
 	public List<Map<String, String>> execute() {
 		if (searcher == null) {
@@ -217,8 +209,7 @@ public abstract class Search {
 	/**
 	 * Does the actual search on the Lucene index.
 	 * 
-	 * @param query
-	 *            the query to execute against the index
+	 * @param query the query to execute against the index
 	 * @return the top documents from the search
 	 * @throws IOException
 	 */
@@ -227,8 +218,7 @@ public abstract class Search {
 	/**
 	 * Sets whether the fragment made of the best part of the document should be included in the search results.
 	 * 
-	 * @param fragment
-	 *            the flag for generating the best fragments in the results
+	 * @param fragment the flag for generating the best fragments in the results
 	 */
 	public void setFragment(final boolean fragment) {
 		this.fragment = fragment;
@@ -237,8 +227,7 @@ public abstract class Search {
 	/**
 	 * Sets the first result in the index.
 	 * 
-	 * @param start
-	 *            the first result to return from the results
+	 * @param start the first result to return from the results
 	 */
 	public void setFirstResult(final int start) {
 		this.firstResult = start;
@@ -247,8 +236,7 @@ public abstract class Search {
 	/**
 	 * Sets the maximum results to return.
 	 * 
-	 * @param maxResults
-	 *            the maximum results to return
+	 * @param maxResults the maximum results to return
 	 */
 	public void setMaxResults(final int maxResults) {
 		this.maxResults = maxResults;
@@ -257,8 +245,7 @@ public abstract class Search {
 	/**
 	 * Access to the query parsers for a particular field in the documents.
 	 * 
-	 * @param searchField
-	 *            the name of the field that needs to be searched
+	 * @param searchField the name of the field that needs to be searched
 	 * @return the query parser for the particular field
 	 */
 	protected QueryParser getQueryParser(final String searchField) {
@@ -273,10 +260,8 @@ public abstract class Search {
 	/**
 	 * Builds the list of results(a list of maps) from the top documents returned from Lucene.
 	 * 
-	 * @param topDocs
-	 *            the top documents from the Lucene search
-	 * @param query
-	 *            the query that was used for the query
+	 * @param topDocs the top documents from the Lucene search
+	 * @param query the query that was used for the query
 	 * @return the list of results from the search
 	 */
 	protected List<Map<String, String>> getResults(final TopDocs topDocs, final Query query) {
@@ -323,12 +308,9 @@ public abstract class Search {
 	/**
 	 * Adds the time it took for the search and adds the spelling corrected strings.
 	 * 
-	 * @param results
-	 *            the total number of results
-	 * @param totalHits
-	 *            the total hits
-	 * @param duration
-	 *            how long the search took in milliseconds
+	 * @param results the total number of results
+	 * @param totalHits the total hits
+	 * @param duration how long the search took in milliseconds
 	 */
 	protected void addStatistics(final List<Map<String, String>> results, final long totalHits, final long duration) {
 		// Add the search results size as a last result

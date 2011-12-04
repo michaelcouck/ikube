@@ -31,7 +31,7 @@
 	
 	<import resource="/**/spring-*.xml" />
 	<!-- <import resource="file:**/spring-*.xml" /> -->
-
+	
 	<!-- Mandatory system configuration files. -->
 	<!-- <import resource="**/spring-aop.xml" />
 	<import resource="**/spring-beans.xml" />

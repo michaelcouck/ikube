@@ -19,10 +19,6 @@ import org.springframework.web.servlet.ModelAndView;
  * @version 01.00
  */
 public class IndexController extends SearchController {
-	
-	public IndexController() {
-		super();
-	}
 
 	/**
 	 * {@inheritDoc}

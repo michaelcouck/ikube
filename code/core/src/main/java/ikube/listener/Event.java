@@ -27,6 +27,9 @@ public class Event {
 	public static final String ALIVE = "alive";
 	public static final String CLEAN = "clean";
 	public static final String JMS = "jms";
+	public static final String LOCK_RELEASE = "lockRelease";
+	public static final String SERVER_RELEASE = "serverRelease";
+	public static final String SERVER_CLUB = "serverClub";
 
 	private String type;
 	private long timestamp;

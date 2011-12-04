@@ -1,6 +1,7 @@
 package ikube.service;
 
 import ikube.IConstants;
+import ikube.cluster.IClusterManager;
 import ikube.toolkit.GeneralUtilities;
 import ikube.toolkit.Logging;
 
@@ -15,6 +16,7 @@ import javax.xml.ws.Endpoint;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ReflectionUtils;
 
 /**
@@ -25,7 +27,9 @@ import org.springframework.util.ReflectionUtils;
  */
 public class WebServicePublisher implements IWebServicePublisher {
 
-	private Logger	logger;
+	private Logger logger;
+	@Autowired
+	private IClusterManager clusterManager;
 
 	public WebServicePublisher() {
 		logger = Logger.getLogger(this.getClass());
@@ -61,6 +65,8 @@ public class WebServicePublisher implements IWebServicePublisher {
 						String message = Logging.getString("Endpoint : ", endpoint, "binding : ", binding, "implementor : ", bean);
 						logger.info(message);
 						
+						clusterManager.getServer().setSearchWebServiceUrl(url.toString());
+
 						break;
 					} catch (Exception e) {
 						String message = Logging.getString("Exception publishing web service : ", url, bean, e.getMessage());
