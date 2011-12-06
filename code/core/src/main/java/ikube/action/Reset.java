@@ -4,6 +4,7 @@ import ikube.IConstants;
 import ikube.database.IDataBase;
 import ikube.model.File;
 import ikube.model.IndexContext;
+import ikube.model.Indexable;
 import ikube.model.Url;
 
 import java.util.HashMap;
@@ -29,20 +30,23 @@ public class Reset extends Action<IndexContext<?>, Boolean> {
 		long actionId = 0;
 		try {
 			actionId = start(indexContext, "");
-			Map<String, Object> parameters = new HashMap<String, Object>();
-			parameters.put(IConstants.NAME, indexContext.getName());
-			long count = dataBase.execute(Long.class, Url.SELECT_COUNT_FROM_URL_BY_NAME, parameters);
-			if (count > 0) {
-				delete(dataBase, Url.class, Url.SELECT_FROM_URL_BY_NAME, parameters);
-			}
-			count = dataBase.execute(Long.class, File.SELECT_COUNT_FROM_FILE_BY_NAME, parameters);
-			if (count > 0) {
-				delete(dataBase, File.class, File.SELECT_FROM_FILE_BY_NAME, parameters);
-			}
+			delete(dataBase, indexContext);
 		} finally {
 			stop(indexContext, actionId);
 		}
 		return Boolean.TRUE;
+	}
+	
+	protected void delete(final IDataBase dataBase, final Indexable<?> indexable) {
+		Map<String, Object> parameters = new HashMap<String, Object>();
+		parameters.put(IConstants.NAME, indexable.getName());
+		delete(dataBase, Url.class, Url.SELECT_FROM_URL_BY_NAME, parameters);
+		delete(dataBase, File.class, File.SELECT_FROM_FILE_BY_NAME, parameters);
+		if (indexable.getChildren() != null) {
+			for (Indexable<?> child : indexable.getChildren()) {
+				delete(dataBase, child);
+			}
+		}
 	}
 
 	protected void delete(final IDataBase dataBase, final Class<?> klass, final String sql, final Map<String, Object> parameters) {

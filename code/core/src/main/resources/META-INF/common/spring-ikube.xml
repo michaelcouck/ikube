@@ -27,7 +27,7 @@
 		id="ikube"
 		class="ikube.model.IndexContext"
 		property:name="ikube"
-		property:maxAge="60"
+		property:maxAge="6"
 		property:compoundFile="true"
 		property:bufferedDocs="100"
 		property:bufferSize="32"
@@ -43,9 +43,6 @@
 	<util:list id="ikubeIndexables">
 		<ref local="ikubeInternet" />
 		<ref local="ikubeInternet8080" />
-		<ref local="ikubeInternet9000" />
-		<ref local="ikubeInternetDynDns" />
-		<ref local="ikubeGoogleCode" />
 	</util:list>
 	
 	<bean
@@ -73,44 +70,5 @@
 		property:analyzed="true"
 		property:stored="true"
 		property:vectored="true"
-		property:internetBatchSize="${internet.batch.size}" />
-	<bean
-		id="ikubeInternet9000"
-		class="ikube.model.IndexableInternet"
-		property:name="internet9000"
-		property:url="${ikube.url.9000}" 
-		property:idFieldName="id"
-		property:titleFieldName="title"
-		property:contentFieldName="content"
-		property:excludedPattern="${internet.excluded.pattern}"
-		property:analyzed="true"
-		property:stored="true"
-		property:vectored="true"
-		property:internetBatchSize="${internet.batch.size}" />
-	<bean
-		id="ikubeInternetDynDns"
-		class="ikube.model.IndexableInternet"
-		property:name="internetDynDns"
-		property:url="${ikube.url.dyndns}" 
-		property:idFieldName="id"
-		property:titleFieldName="title"
-		property:contentFieldName="content"
-		property:excludedPattern="${internet.excluded.pattern}"
-		property:analyzed="true"
-		property:stored="true"
-		property:vectored="true" 
-		property:internetBatchSize="${internet.batch.size}" />
-	<bean
-		id="ikubeGoogleCode"
-		class="ikube.model.IndexableInternet"
-		property:name="ikubeGoogleCode"
-		property:url="${ikube.google.code}" 
-		property:idFieldName="id"
-		property:titleFieldName="title"
-		property:contentFieldName="content"
-		property:excludedPattern="${internet.excluded.pattern}"
-		property:analyzed="true"
-		property:stored="true"
-		property:vectored="true" 
 		property:internetBatchSize="${internet.batch.size}" />
 </beans>

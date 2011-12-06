@@ -31,7 +31,7 @@ public class IsNewIndexCreated extends ARule<IndexContext<?>> {
 
 		String baseIndexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
 		File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(baseIndexDirectoryPath);
-
+		
 		if (searchables != null) {
 			IRule<File[]> areDirectoriesEqual = new AreDirectoriesEqual();
 			IRule<File> directoryExistsAndNotLocked = new DirectoryExistsAndNotLocked();

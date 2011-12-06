@@ -46,7 +46,7 @@ public class Index extends Persistable {
 		if (this.multiSearcher != null) {
 			try {
 				LOGGER.info("Searcher not closed, will close now : " + this.multiSearcher);
-				Searchable[] searchables = multiSearcher.getSearchables();
+				Searchable[] searchables = this.multiSearcher.getSearchables();
 				if (searchables != null) {
 					for (Searchable searchable : searchables) {
 						try {

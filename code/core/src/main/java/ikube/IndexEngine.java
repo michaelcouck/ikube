@@ -1,7 +1,6 @@
 package ikube;
 
 import ikube.action.IAction;
-import ikube.cluster.IClusterManager;
 import ikube.listener.Event;
 import ikube.listener.IListener;
 import ikube.model.IndexContext;
@@ -16,7 +15,6 @@ import java.util.Map;
 import java.util.Random;
 
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * This class is the central class for creating indexes.
@@ -35,9 +33,6 @@ public class IndexEngine implements IIndexEngine, IListener {
 
 	private static final Logger LOGGER = Logger.getLogger(IndexEngine.class);
 
-	@Autowired
-	@SuppressWarnings("unused")
-	private IClusterManager clusterManager;
 	private List<IAction<IndexContext<?>, Boolean>> actions;
 
 	public IndexEngine() {
@@ -47,6 +42,9 @@ public class IndexEngine implements IIndexEngine, IListener {
 
 	@Override
 	public void handleNotification(final Event event) {
+		if (!Event.TIMER.equals(event.getType())) {
+			return;
+		}
 		Random random = new Random();
 		@SuppressWarnings("rawtypes")
 		Map<String, IndexContext> indexContexts = ApplicationContextManager.getBeans(IndexContext.class);

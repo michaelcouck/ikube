@@ -7,6 +7,7 @@ import ikube.listener.Event;
 import ikube.listener.IListener;
 import ikube.model.Execution;
 import ikube.model.IndexContext;
+import ikube.toolkit.SerializationUtilities;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -104,7 +105,7 @@ public class MonitoringInterceptor implements IMonitoringInterceptor, IListener 
 				execution.setIndexName(indexName);
 				execution.setType(type);
 				executions.put(execution.getIndexName(), execution);
-				dataBase.persist(execution);
+				dataBase.persist(SerializationUtilities.clone(execution));
 				if (IConstants.SEARCHING_EXECUTIONS.equals(type)) {
 					clusterManager.getServer().getSearchingExecutions().put(indexName, execution);
 				} else {
