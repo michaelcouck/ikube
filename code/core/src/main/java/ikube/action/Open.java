@@ -59,6 +59,8 @@ public class Open extends Action<IndexContext<?>, Boolean> {
 			logger.info("No indexes : " + indexDirectoryPath);
 			return Boolean.FALSE;
 		}
+		// Make sure that the old one is closed first
+		closeSearchables(indexContext);
 
 		File[] serverIndexDirectories = latestIndexDirectory.listFiles();
 		Directory directory = null;
@@ -108,22 +110,6 @@ public class Open extends Action<IndexContext<?>, Boolean> {
 			logger.error("Exception opening the multi searcher", e);
 		}
 		return Boolean.FALSE;
-	}
-
-	private void close(Directory directory, IndexReader reader, Searchable searcher) {
-		try {
-			if (directory != null) {
-				directory.close();
-			}
-			if (reader != null) {
-				reader.close();
-			}
-			if (searcher != null) {
-				searcher.close();
-			}
-		} catch (Exception e) {
-			logger.error("Exception closing the searcher after an exception opening it : ", e);
-		}
 	}
 
 }

@@ -12,6 +12,12 @@ import java.util.List;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.log4j.Logger;
+import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.MultiSearcher;
+import org.apache.lucene.search.Searchable;
+import org.apache.lucene.store.Directory;
 import org.nfunk.jep.JEP;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -89,6 +95,54 @@ public abstract class Action<E, F> implements IAction<E, F> {
 	@Override
 	public void setRules(final List<IRule<E>> rules) {
 		this.rules = rules;
+	}
+
+	protected void closeSearchables(IndexContext<?> indexContext) {
+		MultiSearcher multiSearcher = indexContext.getIndex().getMultiSearcher();
+		if (multiSearcher != null) {
+			// Get all the searchables from the searcher and close them one by one
+			Searchable[] searchables = multiSearcher.getSearchables();
+			if (searchables != null) {
+				for (Searchable searchable : searchables) {
+					try {
+						IndexSearcher indexSearcher = (IndexSearcher) searchable;
+						IndexReader reader = indexSearcher.getIndexReader();
+						Directory directory = reader.directory();
+						if (IndexWriter.isLocked(directory)) {
+							IndexWriter.unlock(directory);
+						}
+						close(directory, reader, searchable);
+					} catch (Exception e) {
+						logger.error("Exception trying to close the searcher", e);
+					}
+				}
+			}
+			indexContext.getIndex().setMultiSearcher(null);
+		}
+	}
+
+	protected void close(Directory directory, IndexReader reader, Searchable searcher) {
+		try {
+			if (directory != null) {
+				directory.close();
+			}
+		} catch (Exception e) {
+			logger.error("Exception closing the searcher : ", e);
+		}
+		try {
+			if (reader != null) {
+				reader.close();
+			}
+		} catch (Exception e) {
+			logger.error("Exception closing the searcher : ", e);
+		}
+		try {
+			if (searcher != null) {
+				searcher.close();
+			}
+		} catch (Exception e) {
+			logger.error("Exception closing the searcher : ", e);
+		}
 	}
 
 	protected void sendNotification(final String subject, final String body) {

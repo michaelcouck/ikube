@@ -2,13 +2,6 @@ package ikube.action;
 
 import ikube.model.IndexContext;
 
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.MultiSearcher;
-import org.apache.lucene.search.Searchable;
-import org.apache.lucene.store.Directory;
-
 /**
  * This class takes the searcher and tries to close the searcher on the directory.
  * 
@@ -33,31 +26,6 @@ public class Close extends Action<IndexContext<?>, Boolean> {
 			return Boolean.TRUE;
 		} finally {
 			stop(indexContext, actionId);
-		}
-	}
-
-	private void closeSearchables(IndexContext<?> indexContext) {
-		MultiSearcher multiSearcher = indexContext.getIndex().getMultiSearcher();
-		if (multiSearcher != null) {
-			// Get all the searchables from the searcher and close them one by one
-			Searchable[] searchables = multiSearcher.getSearchables();
-			if (searchables != null) {
-				for (Searchable searchable : searchables) {
-					try {
-						IndexSearcher indexSearcher = (IndexSearcher) searchable;
-						IndexReader reader = indexSearcher.getIndexReader();
-						Directory directory = reader.directory();
-						if (IndexWriter.isLocked(directory)) {
-							IndexWriter.unlock(directory);
-						}
-						reader.close();
-						searchable.close();
-					} catch (Exception e) {
-						logger.error("Exception trying to close the searcher", e);
-					}
-				}
-			}
-			indexContext.getIndex().setMultiSearcher(null);
 		}
 	}
 

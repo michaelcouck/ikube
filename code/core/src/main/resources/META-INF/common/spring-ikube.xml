@@ -41,7 +41,7 @@
 		property:indexDirectoryPathBackup="./indexes/backup"
 		property:children-ref="ikubeIndexables" />
 	<util:list id="ikubeIndexables">
-		<ref local="ikubeInternet" />
+		<!-- <ref local="ikubeInternet" /> -->
 		<ref local="ikubeInternet8080" />
 	</util:list>
 	
