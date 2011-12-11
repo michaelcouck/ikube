@@ -4,17 +4,18 @@
 	xmlns:mvc="http://www.springframework.org/schema/mvc"
 	xmlns:context="http://www.springframework.org/schema/context"
 	
-	xsi:schemaLocation="http://www.springframework.org/schema/beans
-		http://www.springframework.org/schema/beans/spring-beans.xsd
-		http://www.springframework.org/schema/mvc
-		http://www.springframework.org/schema/mvc/spring-mvc.xsd
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/mvc 
+        http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
 		http://www.springframework.org/schema/context
 		http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
 	<context:property-placeholder
 		location="**/spring.properties" 
 		properties-ref="ikube.toolkit.PropertyConfigurer" />
-	
+
 	<!-- This bean will look through the classpath and load every Spring properties file it finds. -->
 	<bean
 		id="ikube.toolkit.PropertyConfigurer"
@@ -22,16 +23,29 @@
 		p:fileNamePattern="spring.properties"
 		lazy-init="false"
 		init-method="initialize" />
+
+	<!-- External file system resources. -->
+	<import resource="file:**/spring-*.xml" />
 	
+	<!-- Classpath resources. -->
 	<!-- <import resource="/**/spring*.xml" /> -->
 	<!-- <import resource="classpath*:**/spring*.xml" /> -->
-	<import resource="file:**/spring-*.xml" />
 	<!-- <import resource="classpath*:/**/spring*.xml" /> -->
-	
-	<bean class="ikube.toolkit.ApplicationContextManager" />
 	
 	<context:annotation-config />
 	<context:component-scan base-package="ikube" />
+	<mvc:annotation-driven />
+	
+	<!-- Issue here with the spring.handlers files in the jars. -->
+	<!-- <mvc:resources mapping="/js/**" location="/js/" />
+	<mvc:resources mapping="/style/**" location="/style/" />
+	<mvc:resources mapping="/images/**" location="/images/" /> -->
+	
+	<bean class="ikube.toolkit.ApplicationContextManager" />
+	<bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping" />
+    <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter" />
+    <bean class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter" />
+	
 	
 	<!-- This configures the tiles container. -->
 	<bean 

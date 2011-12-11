@@ -197,4 +197,11 @@ public class FileUtilitiesTest extends ATest {
 		FileUtilities.deleteFile(new File(".", "jar.jar"), 1);
 	}
 
+	@Test
+	public void deleteTmpFiles() {
+		FileUtilities.deleteFiles(new File("C:/Users/Michael/AppData/Local/Temp"), "JF");
+		FileUtilities.deleteFiles(new File("C:/Users/db2admin/AppData/Local/Temp"), "JF");
+		FileUtilities.deleteFiles(new File("C:/Users/Administrator/AppData/Local/Temp"), "JF");
+	}
+
 }

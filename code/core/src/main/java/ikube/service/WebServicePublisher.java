@@ -65,7 +65,9 @@ public class WebServicePublisher implements IWebServicePublisher {
 						String message = Logging.getString("Endpoint : ", endpoint, "binding : ", binding, "implementor : ", bean);
 						logger.info(message);
 						
-						clusterManager.getServer().setSearchWebServiceUrl(url.toString());
+						if (url.toString().contains(ISearcherWebService.class.getSimpleName())) {
+							clusterManager.getServer().setSearchWebServiceUrl(url.toString());
+						}
 
 						break;
 					} catch (Exception e) {

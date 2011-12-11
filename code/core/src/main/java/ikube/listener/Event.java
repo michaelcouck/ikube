@@ -30,6 +30,8 @@ public class Event {
 	public static final String LOCK_RELEASE = "lockRelease";
 	public static final String SERVER_RELEASE = "serverRelease";
 	public static final String SERVER_CLUB = "serverClub";
+	public static final String STARTUP = "startup";
+	public static final String TERMINATE = "terminate";
 
 	private String type;
 	private long timestamp;

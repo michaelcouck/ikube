@@ -109,7 +109,7 @@ public abstract class ATest {
 			when(multiSearcher.search(any(Query.class), anyInt())).thenReturn(topDocs);
 			when(multiSearcher.search(any(Query.class), any(Filter.class), anyInt(), any(Sort.class))).thenReturn(topFieldDocs);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 
 		topDocs.totalHits = 0;
@@ -142,16 +142,16 @@ public abstract class ATest {
 		when(server.getIp()).thenReturn(ip);
 		when(server.getActions()).thenReturn(Arrays.asList(action));
 		when(index.getIndexWriter()).thenReturn(indexWriter);
-		indexables.add(indexableTable);
-		indexables.add(indexableColumn);
 		when(indexableColumn.getContent()).thenReturn("9a avenue road, cape town, south africa");
 		when(indexableColumn.isAddress()).thenReturn(Boolean.TRUE);
 		when(indexableColumn.getName()).thenReturn("indexableName");
+		when(ApplicationContextManagerMock.HANDLER.getIndexableClass()).thenReturn(IndexableTable.class);
 
+		indexables.add(indexableTable);
+		indexables.add(indexableColumn);
 		IndexManagerMock.setIndexWriter(indexWriter);
 		ApplicationContextManagerMock.setIndexContext(indexContext);
 		ApplicationContextManagerMock.setClusterManager(clusterManager);
-		when(ApplicationContextManagerMock.HANDLER.getIndexableClass()).thenReturn(IndexableTable.class);
 	}
 
 	protected void delete(final IDataBase dataBase, final Class<?>... klasses) {

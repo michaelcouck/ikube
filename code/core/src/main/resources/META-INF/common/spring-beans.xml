@@ -183,6 +183,7 @@
 		<ref bean="ikube.cluster.jms.LockRemovalListener" />
 		<ref bean="ikube.cluster.jms.ServerRemovalListener" />
 		<ref bean="ikube.cluster.jms.ServerClubListener" />
+		<ref bean="ikube.action.rule.IRuleInterceptor" />
 	</util:list>
 	
 	<bean 

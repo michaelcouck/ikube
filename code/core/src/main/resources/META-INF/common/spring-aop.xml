@@ -21,16 +21,22 @@
             
 	<description>
 		This file is not to be modified by users generally.
-		This is the configuration for the interceptor for the rules, the enrichment 
-		interceptor for enriching the indexes with the geospatial data and the monitoring 
-		interceptor that will collect statistical data in production.
+		This is the configuration for the intercepter for the rules, the enrichment 
+		intercepter for enriching the indexes with the geospatial data and the monitoring 
+		intercepter that will collect statistical data in production.
 	</description>
 	
 	<aop:aspectj-autoproxy proxy-target-class="true" />
 	
+	<!--
+		This bean will intercept the actions, execute the rules that are associated with the 
+		actions, and based on the results from the execution of the rules and the evaluation 
+		of the boolean rule expression execute the action or not. 
+	 -->
 	<bean 
 		id="ikube.action.rule.IRuleInterceptor" 
 		class="ikube.action.rule.RuleInterceptor"
+		init-method="initialize"
 		destroy-method="destroy" />
 	<aop:config proxy-target-class="true">
 		<aop:aspect ref="ikube.action.rule.IRuleInterceptor">
@@ -66,6 +72,11 @@
 		</aop:aspect>
 	</aop:config>
 	
+	<!--
+		This bean will intercept the searching and the indexing, specifically adding documents 
+		to the Lucene index. A counter will be incremented for each document added and the 
+		indexing performance can be monitored. 
+	 -->
 	<bean 
 		id="ikube.monitoring.IMonitoringInterceptor" 
 		name="ikube.monitoring.IMonitoringInterceptor"

@@ -128,18 +128,38 @@ window.onload=starttime
 
 <table class="table-content" width="100%">
 	<tr>
-		<td class="top-content" colspan="7" valign="middle">
+		<td class="top-content" colspan="9" valign="middle">
 			<span class="top-content-header">Servers</span>
 		</td>
 	</tr>
 	<tr>
-		<th class="td-content" colspan="2" width="25%">Server</th>
+		<th class="td-content" colspan="4" width="25%">Server</th>
 		<th class="td-content" colspan="5" width="75%">Actions</th>
 	</tr>
 	<c:forEach var="server" items="${requestScope.servers}">
 		<tr>
+			<td  width="1%">
+				<c:set var="message" value="Terminate all actions" />
+				<a 
+					href="<c:url value="/admin/terminate.html?targetView=/admin/servers.html&command=terminate" />" 
+					title="${message}">
+					<img alt="${message}" src="<c:url value="/images/icons/red_square.gif" />" title="${message}">
+				</a>
+			</td>
+			<td  width="1%">
+				<c:set var="message" value="Restart all actions" />
+				<a 
+					href="<c:url value="/admin/terminate.html?targetView=/admin/servers.html&command=startup" />" 
+					title="${message}">
+					<img alt="${message}" src="<c:url value="/images/icons/relaunch.gif" />" title="${message}">
+				</a>
+			</td>
 			<td width="1%">
-				<img alt="Server" src="<c:url value="/images/icons/server.gif" />" title="Server">
+				<c:set var="message" value="Searcher web service" />
+				<a 
+					href="<c:url value="${server.searchWebServiceUrl}" />" 
+					title="${message}"><img alt="${message}" src="<c:url value="/images/icons/search_again.gif" />" title="${message}">
+				</a>
 			</td>
 			<td class="td-content" nowrap="nowrap">
 				<a href="<c:url value="${server.searchWebServiceUrl}" />"

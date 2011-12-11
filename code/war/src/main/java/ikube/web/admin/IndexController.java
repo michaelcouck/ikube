@@ -14,6 +14,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
+ * This controller sets the properties for the index in the model for the user interface. Also extends the search controller because it will
+ * also do searches on individual indexes.
+ * 
  * @author Michael Couck
  * @since 17.09.2011
  * @version 01.00

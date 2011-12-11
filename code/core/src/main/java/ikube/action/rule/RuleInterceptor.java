@@ -5,6 +5,8 @@ import ikube.action.IAction;
 import ikube.action.Index;
 import ikube.action.Open;
 import ikube.cluster.IClusterManager;
+import ikube.listener.Event;
+import ikube.listener.IListener;
 import ikube.model.IndexContext;
 import ikube.toolkit.Logging;
 import ikube.toolkit.ThreadUtilities;
@@ -33,17 +35,13 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @since 12.02.2011
  * @version 01.00
  */
-public class RuleInterceptor implements IRuleInterceptor {
+public class RuleInterceptor implements IRuleInterceptor, IListener {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(RuleInterceptor.class);
 
 	@Autowired
 	private IClusterManager clusterManager;
 	private ExecutorService executorService;
-
-	public RuleInterceptor() {
-		executorService = Executors.newFixedThreadPool(10);
-	}
 
 	/**
 	 * {@inheritDoc}
@@ -164,6 +162,10 @@ public class RuleInterceptor implements IRuleInterceptor {
 	protected synchronized void proceed(final IndexContext<?> indexContext, final ProceedingJoinPoint proceedingJoinPoint,
 			final Object target) {
 		try {
+			if (executorService.isTerminated()) {
+				LOGGER.warn("The executor service is shutdown!");
+				return;
+			}
 			// We set the working flag in the action within the cluster lock when setting to true
 			final Object[] objects = new Object[] { target.getClass().getSimpleName(), indexContext.getIndexName() };
 			Future<?> future = executorService.submit(new Runnable() {
@@ -181,7 +183,7 @@ public class RuleInterceptor implements IRuleInterceptor {
 			long maxWait = 3000;
 			long start = System.currentTimeMillis();
 			while (!future.isDone()) {
-				ThreadUtilities.sleep(10);
+				ThreadUtilities.sleep(100);
 				if ((System.currentTimeMillis() - start) > maxWait) {
 					break;
 				}
@@ -190,6 +192,10 @@ public class RuleInterceptor implements IRuleInterceptor {
 		} finally {
 			notifyAll();
 		}
+	}
+
+	public void initialize() {
+		executorService = Executors.newFixedThreadPool(10);
 	}
 
 	public void destroy() {
@@ -205,6 +211,17 @@ public class RuleInterceptor implements IRuleInterceptor {
 			LOGGER.info("Symbol table : " + symbolTable);
 		} catch (Exception e) {
 			LOGGER.error("Exception printing the nodes : ", e);
+		}
+	}
+
+	@Override
+	public void handleNotification(Event event) {
+		if (Event.TERMINATE.equals(event.getType())) {
+			LOGGER.warn("Terminating indexing and all other processes : ");
+			destroy();
+		} else if (Event.STARTUP.equals(event.getType())) {
+			LOGGER.info("Starting the thread pool to handle indexing and other processes : ");
+			initialize();
 		}
 	}
 
