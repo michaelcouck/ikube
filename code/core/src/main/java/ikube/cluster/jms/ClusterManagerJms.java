@@ -212,13 +212,15 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 				} else if (Server.class.isAssignableFrom(object.getClass())) {
 					Server server = (Server) object;
 					servers.put(server.getAddress(), server);
-					List<Action> actions = server.getActions();
-					if (actions.size() > 0) {
-						Action action = actions.get(actions.size() - 1);
-						LOGGER.debug(
-								"Message action : {} {} {} {} {}",
-								new Object[] { server.getAddress(), action.getId(), action.getActionName(), action.getWorking(),
-										action.getIndexName() });
+					if (LOGGER.isDebugEnabled()) {
+						List<Action> actions = server.getActions();
+						if (actions.size() > 0) {
+							Action action = actions.get(actions.size() - 1);
+							LOGGER.debug(
+									"Message action : {} {} {} {} {}",
+									new Object[] { server.getAddress(), action.getId(), action.getActionName(), action.getWorking(),
+											action.getIndexName() });
+						}
 					}
 				}
 			} else {

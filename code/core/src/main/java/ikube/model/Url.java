@@ -52,6 +52,7 @@ public class Url extends Persistable {
 	@Index(name = "hash_index", enabled = true)
 	private long hash;
 	@Column(length = 64)
+	@Index(name = "name_index", enabled = true)
 	private String name;
 	@Column(length = 512)
 	private String url;

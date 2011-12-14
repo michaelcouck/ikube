@@ -1,4 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="security" uri="http://www.springframework.org/security/tags" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <script type="text/javascript">
 	window.onload = function() {
@@ -31,9 +33,6 @@
 			</ul>
 		</li>
 		<li>
-			<ul></ul>
-		</li>
-		<li>
 			<h2>libraries used</h2>
 			<ul>
 				<li><a href="https://wiki.jenkins-ci.org/display/JENKINS/Serenity+Plugin">Serenity</a></li>
@@ -47,9 +46,6 @@
 				<li><a href="http://openjpa.apache.org/">OpenJpa</a></li>
 				<li><a href="http://www.singularsys.com/jep/">Jep</a></li>
 			</ul>
-		</li>
-		<li>
-			<ul></ul>
 		</li>
 		<li>
 			<h2>similar products</h2>
@@ -70,5 +66,21 @@
 				<li><a href="http://en.wikipedia.org/wiki/PageRank">Page Rank</a></li>
 			</ul>
 		</li>
+		<security:authorize access="isAuthenticated()">
+		<li>
+			<h2><!-- Logout --></h2>
+			<ul>
+				<li>
+					<spring:message code="security.logged.in.as" /><br>
+					<security:authentication property="name" /><br>
+					<%-- <security:authentication property="authorities" /><br> --%>
+					<a href="<spring:url 
+						value="/logout" htmlEscape="true" />" title="<spring:message 
+						code="security.logout" />"><spring:message 
+						code="security.logout" /></a>
+				</li>
+			</ul>
+		</li>
+		</security:authorize>
 	</ul>
 </div>

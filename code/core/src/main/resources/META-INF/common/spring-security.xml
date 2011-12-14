@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans:beans 
+	xmlns="http://www.springframework.org/schema/security" 
+	xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:util="http://www.springframework.org/schema/util"
+	
+	xsi:schemaLocation="
+			http://www.springframework.org/schema/beans
+			http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+			http://www.springframework.org/schema/security
+			http://www.springframework.org/schema/security/spring-security-3.0.xsd
+			http://www.springframework.org/schema/context 
+			http://www.springframework.org/schema/context/spring-context-3.0.xsd
+			http://www.springframework.org/schema/aop
+            http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+            http://www.springframework.org/schema/util
+            http://www.springframework.org/schema/util/spring-util.xsd">
+
+	<beans:description>
+		This is the security configuration for the application.
+	</beans:description>
+	
+	<context:annotation-config />
+	<context:component-scan base-package="ikube" />
+	<aop:aspectj-autoproxy proxy-target-class="false" />
+	
+	<http auto-config="true">
+		<anonymous />
+		<intercept-url 
+			pattern="/docs/**" 
+			access="IS_AUTHENTICATED_ANONYMOUSLY" />
+		<intercept-url 
+			pattern="/images/**" 
+			access="IS_AUTHENTICATED_ANONYMOUSLY" />
+		<intercept-url 
+			pattern="/js/**" 
+			access="IS_AUTHENTICATED_ANONYMOUSLY" />
+		<intercept-url 
+			pattern="/style/**" 
+			access="IS_AUTHENTICATED_ANONYMOUSLY" />
+		<intercept-url 
+			pattern="/service/**" 
+			access="IS_AUTHENTICATED_ANONYMOUSLY" />
+		<intercept-url 
+			pattern="/documentation/**" 
+			access="IS_AUTHENTICATED_ANONYMOUSLY" />
+		<intercept-url 
+			pattern="/admin/login**" 
+			access="IS_AUTHENTICATED_ANONYMOUSLY" />
+		<!-- All resources are restricted to authentication except for the exclusions. -->
+		<intercept-url 
+			pattern="/**" 
+			access="ROLE_USER,ROLE_ADMIN" />
+		<!-- The login page, this goes to the login controller then to the login view/page(loginPage/login.jsp). -->
+		<form-login
+			always-use-default-target="false"
+			default-target-url="/" 
+			login-page="/admin/login.html" 
+			authentication-failure-url="/admin/login.html" 
+			login-processing-url="/login" />
+		<!-- The logout page that will be displayed. -->
+		<logout 
+			invalidate-session="true"
+			logout-success-url="/admin/login.html"
+			logout-url="/logout" />
+		<!-- <access-denied-handler /> -->
+	</http>
+
+	<!-- <beans:bean id="authenticationEntryPoint"
+		class="org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint">
+			<beans:property name="realmName" value="API Realm"></beans:property>
+	</beans:bean> -->
+
+	<!--
+		This is the authentication manager that will access the data sources to authenticate the user. There are two 
+		in this configuration that will be called in a chain. If the first one doesn't manage to authenticate the user then 
+		the second one will be called. First one is the Ldap server that is local for test, and will be remote for production.
+		The second one is an ad hoc provider where single users and passwords can be added when users don't exist in 
+		the Ldap yet.
+	 -->
+	<authentication-manager alias="authenticationManager">
+		<!-- 
+			LDAP authentication provider, un-comment to add your own Ldap. 
+		-->
+		<!-- <authentication-provider ref="ldapAuthProvider" /> -->
+		<!-- Local authentication provider. -->
+		<authentication-provider user-service-ref="userService"  />
+	</authentication-manager>
+	
+	<user-service id="userService">
+	    <user name="user" password="user" authorities="ROLE_USER" />
+	    <user name="guest" password="guest" authorities="ROLE_USER" />
+	    <user name="administrator" password="administrator" authorities="ROLE_USER,ROLE_ADMIN" />
+  	</user-service>
+  	
+  	<!-- This bean enables the authorization. -->
+	<beans:bean 
+		id="defaultWebSecurityExpressionHandler"
+		class="org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler" />
+
+	<!--  Begin LDAP authentication -->
+	<!-- <beans:bean 
+		id="ldapServer" 
+		class="org.springframework.security.ldap.DefaultSpringSecurityContextSource">
+		<beans:constructor-arg value="${settings.security.ldap.url}" />
+		<beans:property name="userDn" value="${settings.security.ldap.manager.dn}" />
+		<beans:property name="password" value="${settings.security.ldap.manager.password}" />
+	</beans:bean>
+
+	<beans:bean 
+		id="ldapAuthProvider"
+		name="ldapAuthProvider"
+		class="org.springframework.security.ldap.authentication.LdapAuthenticationProvider">
+		<beans:constructor-arg ref="bindAuthenticator"/>
+		<beans:constructor-arg ref="ldapAuthoritiesPopulator"/>
+	</beans:bean>
+	
+	<beans:bean	
+		id="bindAuthenticator"
+		class="org.springframework.security.ldap.authentication.BindAuthenticator">
+		<beans:constructor-arg ref="ldapServer" />
+		<beans:property name="userSearch" ref="ldapUserSearch"/>
+	</beans:bean>
+	
+	<beans:bean 
+		id="ldapUserSearch"	
+		class="org.springframework.security.ldap.search.FilterBasedLdapUserSearch"
+		p:searchSubtree="true">
+		<beans:constructor-arg value="${settings.security.ldap.search.user.base}" />
+		<beans:constructor-arg value="${settings.security.ldap.search.user.filter}" />
+		<beans:constructor-arg ref="ldapServer"/>
+	</beans:bean>
+	
+	<beans:bean 
+		id="ldapUserService" 
+		class="org.springframework.security.ldap.userdetails.LdapUserDetailsService">
+		<beans:constructor-arg ref="ldapUserSearch" />
+		<beans:constructor-arg ref="ldapAuthoritiesPopulator" />
+	</beans:bean> -->
+	<!-- End LDAP authentication -->
+	
+	<!-- This is the security at the method level. -->
+	<!-- <global-method-security>
+		<protect-pointcut 
+			expression="execution(* ikube.*.*(..))" 
+			access="ROLE_USER,ROLE_API_USER,ROLE_ADMINISTRATOR" />
+		<after-invocation-provider ref="afterInvocationProviderImpl" />		
+	</global-method-security> --> 
+	
+</beans:beans>

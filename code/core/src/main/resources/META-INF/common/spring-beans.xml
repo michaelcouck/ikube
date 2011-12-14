@@ -36,7 +36,6 @@
 		name="ikube.IndexEngine"
 		class="ikube.IndexEngine"
 		property:actions-ref="ikube.IndexEngine.actions" />
-	<!-- property:clusterManager-ref="ikube.cluster.IClusterManager"  -->
 
 	<bean 
 		class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor" />
@@ -251,5 +250,17 @@
 		property:mailHost="smtp.gmail.com"
 		property:sender="ikube.ikube@gmail.com"
 		property:recipients="ikube.ikube@gmail.com" />
+
+	<bean 
+		id="messageSource" 
+		class="org.springframework.context.support.ReloadableResourceBundleMessageSource"
+		property:basenames-ref="messageProperties">
+		<property name="defaultEncoding" value="UTF-8" />
+	</bean>
+	
+	<util:list id="messageProperties">
+		<value>/WEB-INF/i18n/i18n</value>
+		<!-- <value>classpath*:**/i18n</value> -->
+	</util:list>
 	
 </beans>
