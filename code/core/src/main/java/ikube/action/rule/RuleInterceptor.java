@@ -215,14 +215,12 @@ public class RuleInterceptor implements IRuleInterceptor, IListener {
 	}
 
 	@Override
-	public void handleNotification(Event event) {
+	public void handleNotification(final Event event) {
 		if (Event.TERMINATE.equals(event.getType())) {
 			LOGGER.warn("Terminating indexing and all other processes : ");
-			Thread.dumpStack();
 			destroy();
 		} else if (Event.STARTUP.equals(event.getType())) {
 			LOGGER.info("Starting the thread pool to handle indexing and other processes : ");
-			Thread.dumpStack();
 			initialize();
 		}
 	}

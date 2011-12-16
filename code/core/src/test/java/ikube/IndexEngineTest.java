@@ -12,7 +12,6 @@ import ikube.toolkit.ApplicationContextManager;
 import java.util.ArrayList;
 import java.util.List;
 
-import mockit.Deencapsulation;
 import mockit.Mockit;
 
 import org.junit.After;
@@ -27,10 +26,10 @@ import org.mockito.Mockito;
  */
 public class IndexEngineTest extends ATest {
 
-	private Index									index;
+	private Index index;
 	/** Class under test. */
-	private IndexEngine								indexEngine;
-	private List<IAction<IndexContext<?>, Boolean>>	actions;
+	private IndexEngine indexEngine;
+	private List<IAction<IndexContext<?>, Boolean>> actions;
 
 	public IndexEngineTest() {
 		super(IndexEngineTest.class);
@@ -48,7 +47,7 @@ public class IndexEngineTest extends ATest {
 
 		indexEngine.setActions(actions);
 		// indexEngine.setClusterManager(clusterManager);
-		Deencapsulation.setField(indexEngine, clusterManager);
+		// Deencapsulation.setField(indexEngine, clusterManager);
 
 		Mockit.setUpMocks(ApplicationContextManagerMock.class);
 	}

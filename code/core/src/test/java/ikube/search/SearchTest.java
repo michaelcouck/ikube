@@ -52,9 +52,8 @@ public class SearchTest extends ATest {
 		if (!IndexReader.indexExists(directory)) {
 			IndexWriter indexWriter = new IndexWriter(directory, IConstants.ANALYZER, true, MaxFieldLength.UNLIMITED);
 			int numDocs = 50;
-			for (double i = 0; i < numDocs; i++) {
-
-				String id = new StringBuilder("id.").append(Double.toString(Math.random() * i)).toString();
+			for (int i = 0; i < numDocs; i++) {
+				String id = Integer.toString(i * 100);
 				String contents = new StringBuilder("Hello world. ").append(i).toString();
 
 				Document document = new Document();

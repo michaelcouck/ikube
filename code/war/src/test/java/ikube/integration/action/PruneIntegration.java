@@ -74,13 +74,11 @@ public class PruneIntegration extends AbstractIntegration {
 		assertTrue("There should be less actions in the database than the maximum : ", IConstants.MAX_ACTIONS >= actions.size());
 	}
 
-	@SuppressWarnings("deprecation")
 	private void persistAction() {
 		Action action = new Action();
 		action.setActionName("actionName");
 		action.setDuration(System.currentTimeMillis());
 		action.setEndTime(new Timestamp(System.currentTimeMillis()));
-		action.setIdNumber(System.currentTimeMillis());
 		action.setIndexableName("indexableName");
 		action.setIndexName("indexName");
 		action.setStartTime(new Timestamp(System.currentTimeMillis()));

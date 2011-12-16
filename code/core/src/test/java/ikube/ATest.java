@@ -80,6 +80,7 @@ public abstract class ATest {
 	protected Server server = mock(Server.class);
 	protected Action action = mock(Action.class);
 	protected TopDocs topDocs = mock(TopDocs.class);
+	protected IDataBase dataBase = mock(IDataBase.class);
 	protected FSDirectory fsDirectory = mock(FSDirectory.class);
 	protected IndexWriter indexWriter = mock(IndexWriter.class);
 	protected IndexReader indexReader = mock(IndexReader.class);

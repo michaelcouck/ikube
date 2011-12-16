@@ -4,12 +4,10 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 import ikube.ATest;
-import ikube.cluster.ClusterManager;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.mock.ClusterManagerMock;
 import ikube.mock.IndexManagerMock;
 import ikube.mock.ServiceLocatorMock;
-import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
@@ -43,7 +41,6 @@ public class SearcherTest extends ATest {
 
 	@After
 	public void after() {
-		Mockit.tearDownMocks(ApplicationContextManager.class, ClusterManager.class);
 		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
 	}
 

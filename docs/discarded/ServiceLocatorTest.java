@@ -19,7 +19,7 @@ public class ServiceLocatorTest {
 		// http://192.168.1.39:8084/ikube/service/ISearcherWebService?wsdl
 		String host = "192.168.1.39"; // "81.82.213.177" ; // InetAddress.getLocalHost().getHostAddress();
 		// int port = ISearcherWebService.PUBLISHED_PORT;
-		String path = ISearcherWebService.PUBLISHED_PATH;
+		String path = SearcherWebService.PUBLISHED_PATH;
 		int[] ports = { 8081 };
 		String[] indexNames = { IConstants.GEOSPATIAL /* , IConstants.IKUBE, IConstants.DEFAULT */};
 		for (int port : ports) {

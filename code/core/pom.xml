@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation=" http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project 
+	xmlns="http://maven.apache.org/POM/4.0.0" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation=" 
+		http://maven.apache.org/POM/4.0.0 
+		http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>ikube</groupId>
@@ -11,8 +16,6 @@
 	<properties>
 		<main.class>ikube.Ikube</main.class>
 		<project.build.sourceEncoding>${encoding}</project.build.sourceEncoding>
-		<memory.parameters>-Xms512m -Xmx1024m -XX:PermSize=64m -XX:MaxPermSize=128m</memory.parameters>
-		<serenity.parameters>${included.adapters} ${included.packages} ${excluded.packages} ${write.classes} ${clean.classes}</serenity.parameters>
 	</properties>
 	
 	<parent>
@@ -59,13 +62,25 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.7.1</version>
 				<configuration>
-					<parallel>true</parallel>
 					<forkMode>once</forkMode>
+					<!-- <parallel>false</parallel> -->
 					<!-- <threadCount>10</threadCount> -->
 					<!-- <useUnlimitedThreads>true</useUnlimitedThreads> -->
 					<argLine>-javaagent:../../serenity/serenity.jar ${memory.parameters} ${serenity.parameters}</argLine>
 					<excludes>
 						<exclude>**/TextParserTest.java</exclude>
+						<!-- <exclude>/ikube/action/ActionTest.java</exclude>
+						<exclude>/ikube/action/BackupTest.java</exclude> -->
+						<!-- <exclude>/ikube/action/CleanTest.java</exclude>
+						<exclude>/ikube/action/CloseTest.java</exclude>
+						<exclude>/ikube/action/DeleteTest.java</exclude>
+						<exclude>/ikube/action/DiskFullTest.java</exclude>
+						<exclude>/ikube/action/IndexTest.java</exclude>
+						<exclude>/ikube/action/OpenTest.java</exclude>
+						<exclude>/ikube/action/RestoreTest.java</exclude>
+						<exclude>/ikube/action/SearcherTest.java</exclude>
+						<exclude>/ikube/action/ValidatorTest.java</exclude> -->
+						<!-- <exclude>**/action/rule/*Test.java</exclude> -->
 					</excludes>
 				</configuration>
 			</plugin>

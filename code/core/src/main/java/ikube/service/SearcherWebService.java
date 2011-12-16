@@ -29,6 +29,8 @@ import javax.jws.soap.SOAPBinding;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.search.Searcher;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 /**
  * @see ISearcherWebService
@@ -41,17 +43,14 @@ import org.apache.lucene.search.Searcher;
 @WebService(name = ISearcherWebService.NAME, targetNamespace = ISearcherWebService.NAMESPACE, serviceName = ISearcherWebService.SERVICE)
 public class SearcherWebService implements ISearcherWebService {
 
-	private static final Logger				LOGGER			= Logger.getLogger(SearcherWebService.class);
+	private static final Logger LOGGER = Logger.getLogger(SearcherWebService.class);
 
-	protected int							publishedPort	= ISearcherWebService.PUBLISHED_PORT;
-	protected String						publishedPath	= ISearcherWebService.PUBLISHED_PATH;
-
-	private SearchDelegate					searchDelegate;
-	private Map<String, IndexContext<?>>	indexContexts;
-
-	public SearcherWebService() {
-		indexContexts = new HashMap<String, IndexContext<?>>();
-	}
+	@Value("${searcher.web.service.port}")
+	private int port;
+	@Value("${searcher.web.service.path}")
+	private String path;
+	@Autowired
+	private SearchDelegate searchDelegate;
 
 	/**
 	 * {@inheritDoc}
@@ -59,9 +58,10 @@ public class SearcherWebService implements ISearcherWebService {
 	@Override
 	@WebMethod
 	@WebResult(name = "result")
-	public String searchSingle(@WebParam(name = "indexName") final String indexName, @WebParam(name = "searchString") final String searchString,
-			@WebParam(name = "searchField") final String searchField, @WebParam(name = "fragment") final boolean fragment,
-			@WebParam(name = "firstResult") final int firstResult, @WebParam(name = "maxResults") final int maxResults) {
+	public String searchSingle(@WebParam(name = "indexName") final String indexName,
+			@WebParam(name = "searchString") final String searchString, @WebParam(name = "searchField") final String searchField,
+			@WebParam(name = "fragment") final boolean fragment, @WebParam(name = "firstResult") final int firstResult,
+			@WebParam(name = "maxResults") final int maxResults) {
 		try {
 			SearchSingle searchSingle = getSearch(SearchSingle.class, indexName);
 			if (searchSingle != null) {
@@ -74,8 +74,8 @@ public class SearcherWebService implements ISearcherWebService {
 				return SerializationUtilities.serialize(results);
 			}
 		} catch (Exception e) {
-			String message = Logging.getString("Exception doing search on index : ", indexName, searchString, searchField, fragment, firstResult,
-					maxResults);
+			String message = Logging.getString("Exception doing search on index : ", indexName, searchString, searchField, fragment,
+					firstResult, maxResults);
 			LOGGER.error(message, e);
 		}
 		return SerializationUtilities.serialize(getMessageResults(indexName));
@@ -87,9 +87,10 @@ public class SearcherWebService implements ISearcherWebService {
 	@Override
 	@WebMethod
 	@WebResult(name = "result")
-	public String searchMulti(@WebParam(name = "indexName") final String indexName, @WebParam(name = "searchStrings") final String[] searchStrings,
-			@WebParam(name = "searchFields") final String[] searchFields, @WebParam(name = "fragment") final boolean fragment,
-			@WebParam(name = "firstResult") final int firstResult, @WebParam(name = "maxResults") final int maxResults) {
+	public String searchMulti(@WebParam(name = "indexName") final String indexName,
+			@WebParam(name = "searchStrings") final String[] searchStrings, @WebParam(name = "searchFields") final String[] searchFields,
+			@WebParam(name = "fragment") final boolean fragment, @WebParam(name = "firstResult") final int firstResult,
+			@WebParam(name = "maxResults") final int maxResults) {
 		try {
 			SearchMulti searchMulti = getSearch(SearchMulti.class, indexName);
 			if (searchMulti != null) {
@@ -159,8 +160,8 @@ public class SearcherWebService implements ISearcherWebService {
 				return SerializationUtilities.serialize(results);
 			}
 		} catch (Exception e) {
-			String message = Logging.getString("Exception doing search on index : ", indexName, Arrays.asList(searchStrings), fragment, firstResult,
-					maxResults);
+			String message = Logging.getString("Exception doing search on index : ", indexName, Arrays.asList(searchStrings), fragment,
+					firstResult, maxResults);
 			LOGGER.error(message, e);
 		}
 		return SerializationUtilities.serialize(getMessageResults(indexName));
@@ -191,8 +192,8 @@ public class SearcherWebService implements ISearcherWebService {
 				return SerializationUtilities.serialize(results);
 			}
 		} catch (Exception e) {
-			String message = Logging.getString("Exception doing search on index : ", indexName, Arrays.asList(searchStrings), fragment, firstResult,
-					maxResults, latitude, longitude, distance);
+			String message = Logging.getString("Exception doing search on index : ", indexName, Arrays.asList(searchStrings), fragment,
+					firstResult, maxResults, latitude, longitude, distance);
 			LOGGER.error(message, e);
 		}
 		return SerializationUtilities.serialize(getMessageResults(indexName));
@@ -222,59 +223,47 @@ public class SearcherWebService implements ISearcherWebService {
 				return SerializationUtilities.serialize(results);
 			}
 		} catch (Exception e) {
-			String message = Logging.getString("Exception doing search on index : ", indexName, Arrays.asList(searchStrings), fragment, firstResult,
-					maxResults, latitude, longitude, distance);
+			String message = Logging.getString("Exception doing search on index : ", indexName, Arrays.asList(searchStrings), fragment,
+					firstResult, maxResults, latitude, longitude, distance);
 			LOGGER.error(message, e);
 		}
 		return SerializationUtilities.serialize(getMessageResults(indexName));
 	}
 
 	/**
-	 * This method will return an instance of the search class, based on the class in the parameter list and the index
-	 * context name. For each search there is an instance created for the searcher classes to avoid thread overlap. The
-	 * instance is created using reflection :( but is there a more elegant way?
+	 * This method will return an instance of the search class, based on the class in the parameter list and the index context name. For
+	 * each search there is an instance created for the searcher classes to avoid thread overlap. The instance is created using reflection
+	 * :( but is there a more elegant way?
 	 * 
-	 * @param <T>
-	 *            the type of class that is expected as a result
-	 * @param klass
-	 *            the class of the searcher
-	 * @param indexName
-	 *            the name of the index
+	 * @param <T> the type of class that is expected as a result
+	 * @param klass the class of the searcher
+	 * @param indexName the name of the index
 	 * @return the searcher with the searchable injected
 	 * @throws Exception
 	 */
 	@SuppressWarnings("unchecked")
-	protected <T> T getSearch(Class<?> klass, String indexName) throws Exception {
-		IndexContext<?> indexContext = this.indexContexts.get(indexName);
-		if (indexContext == null) {
-			@SuppressWarnings("rawtypes")
-			Map<String, IndexContext> indexContexts = ApplicationContextManager.getBeans(IndexContext.class);
-			for (IndexContext<?> context : indexContexts.values()) {
-				if (context.getIndexName().equals(indexName)) {
-					this.indexContexts.put(indexName, context);
-					indexContext = context;
-					break;
+	protected <T> T getSearch(final Class<?> klass, final String indexName) throws Exception {
+		@SuppressWarnings("rawtypes")
+		Map<String, IndexContext> indexContexts = ApplicationContextManager.getBeans(IndexContext.class);
+		for (IndexContext<?> context : indexContexts.values()) {
+			if (context.getIndexName().equals(indexName)) {
+				if (context.getIndex().getMultiSearcher() != null) {
+					Constructor<?> constructor = klass.getConstructor(Searcher.class);
+					return (T) constructor.newInstance(context.getIndex().getMultiSearcher());
 				}
-			}
-		}
-		if (indexContext != null) {
-			if (indexContext.getIndex().getMultiSearcher() != null) {
-				Constructor<?> constructor = klass.getConstructor(Searcher.class);
-				return (T) constructor.newInstance(indexContext.getIndex().getMultiSearcher());
 			}
 		}
 		return null;
 	}
 
 	/**
-	 * This method returns the default message if there is no searcher defined for the index context, or the index is
-	 * not generated or opened.
+	 * This method returns the default message if there is no searcher defined for the index context, or the index is not generated or
+	 * opened.
 	 * 
-	 * @param indexName
-	 *            the name of the index
+	 * @param indexName the name of the index
 	 * @return the message/map that will be sent to the client
 	 */
-	protected List<Map<String, String>> getMessageResults(String indexName) {
+	protected List<Map<String, String>> getMessageResults(final String indexName) {
 		List<Map<String, String>> results = new ArrayList<Map<String, String>>();
 		Map<String, String> notification = new HashMap<String, String>();
 		notification.put(IConstants.CONTENTS, "No index defined for name : " + indexName);
@@ -283,14 +272,24 @@ public class SearcherWebService implements ISearcherWebService {
 		return results;
 	}
 
-	/**
-	 * This method sets the search delegate that will be intercepted to accumulate the search statistics.
-	 * 
-	 * @param searchDelegate
-	 *            the search delegate to be used for the delegation and finally the interception
-	 */
-	public void setSearchDelegate(SearchDelegate searchDelegate) {
-		this.searchDelegate = searchDelegate;
+	@Override
+	public void setPort(int port) {
+		this.port = port;
+	}
+
+	@Override
+	public void setPath(String path) {
+		this.path = path;
+	}
+
+	@Override
+	public int getPort() {
+		return port;
+	}
+
+	@Override
+	public String getPath() {
+		return path;
 	}
 
 }

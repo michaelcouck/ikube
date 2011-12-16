@@ -76,16 +76,6 @@ public class Action extends Persistable {
 		this.working = working;
 	}
 
-	@Deprecated
-	public long getIdNumber() {
-		return idNumber;
-	}
-
-	@Deprecated
-	public void setIdNumber(final long idNumber) {
-		this.idNumber = idNumber;
-	}
-
 	public String getActionName() {
 		return actionName;
 	}

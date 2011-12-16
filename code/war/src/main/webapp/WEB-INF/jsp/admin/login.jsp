@@ -3,31 +3,41 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter" %>
 
-<body onload="document.form.j_username.focus();">
-	<c:if test="${not empty SPRING_SECURITY_LAST_EXCEPTION.message}">
-    	<div id="infomessage" class="error message" >
-    		<ul>
-    			<li>
-    				<spring:message code="login.failed" />
-    			</li>
-    		</ul>
-    	</div>
-	</c:if>
-	<form name="form" action="<spring:url value="/login" htmlEscape="true" />" method="POST">
-	<table>
-		<tr>
-			<td><spring:message code="login.user" /></td>
-			<td><input tabindex="1" type="text" name="j_username" value=""></td>
-		</tr>
-		<tr>
-			<td><spring:message code="login.password" /></td>
-			<td><input tabindex="2" type="password" name="j_password" /></td>
-		</tr>
-		<tr>
-			<td>
-				<input id="login" name="submit" type="submit" value="<spring:message code="login.loginbutton" />" alt="<spring:message code="login.loginbutton" />" />
-			</td>
-		</tr>
-	</table>
-	</form>
-</body>
+<script language="JavaScript" type="text/javascript">
+	window.onload=document.form.j_username.focus()
+</script>
+
+<form name="form" action="<spring:url value="/login" htmlEscape="true" />" method="POST">
+<table class="table-content" width="100%">
+<tr>
+	<td class="top-content" colspan="9" valign="middle">
+		<span class="top-content-header">Login</span>
+		<span class="date" style="float: right;"><script type="text/javascript">writeDate();</script></span>
+	</td>
+</tr>
+<tr>
+	<td>
+		<c:if test="${not empty SPRING_SECURITY_LAST_EXCEPTION.message}">
+			<spring:message code="login.failed" />
+		</c:if>
+	</td>
+</tr>
+<tr>
+	<td><spring:message code="login.user" /></td>
+	<td><input id="search-text"  tabindex="1" type="text" name="j_username" value=""></td>
+</tr>
+<tr>
+	<td><spring:message code="login.password" /></td>
+	<td><input id="search-text"  tabindex="2" type="password" name="j_password" /></td>
+</tr>
+<tr>
+	<td>
+		<!-- id="login" -->
+		<input id="search-submit-plain" name="submit" type="submit" 
+			value="<spring:message code="login.loginbutton" />" 
+			alt="<spring:message code="login.loginbutton" />" />
+	</td>
+</tr>
+</table>
+</form>
+<!-- <body onload="document.form.j_username.focus();"></body> -->

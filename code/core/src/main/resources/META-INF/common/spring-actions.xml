@@ -138,16 +138,20 @@
 		id="ikube.action.Index" 
 		class="ikube.action.Index" 
 		property:ruleExpression="
-			!AnyServersWorkingThisIndex &#38;&#38;
+			!AnyServersWorkingThisIndex &#38;&#38; 
 			(!IsIndexCurrent || 
-			 IsIndexCorrupt)">
+			 IsIndexCorrupt) &#38;&#38; 
+			!(IsThisServerWorking &#38;&#38; 
+			 AreOtherServers  &#38;&#38; 
+			 !AnyServersWorking)">
 		<property name="rules">
 			<util:list>
-				<!-- <ref local="ikube.action.rule.IsThisServerWorking" /> -->
+				<ref local="ikube.action.rule.IsThisServerWorking" />
 				<ref local="ikube.action.rule.AnyServersWorkingThisIndex" />
 				<ref local="ikube.action.rule.IsIndexCurrent" />
 				<ref local="ikube.action.rule.IsIndexCorrupt" />
-				<!-- <ref local="ikube.action.rule.SingleRuleException" /> -->
+				<ref local="ikube.action.rule.AnyServersWorking" />
+				<ref local="ikube.action.rule.AreOtherServers" />
 			</util:list>
 		</property>
 	</bean>
@@ -241,7 +245,6 @@
 		</property>
 	</bean>
 	
-	<!-- <bean id="ikube.action.rule.IsInMemory" class="ikube.action.rule.IsInMemory" /> -->
 	<bean id="ikube.action.rule.AnyServersWorking" class="ikube.action.rule.AnyServersWorking" />
 	<bean id="ikube.action.rule.AreDirectoriesEqual" class="ikube.action.rule.AreDirectoriesEqual" />
 	<bean id="ikube.action.rule.AreIndexesCreated" class="ikube.action.rule.AreIndexesCreated" />
@@ -255,10 +258,10 @@
 	<bean id="ikube.action.rule.IsIndexCorrupt" class="ikube.action.rule.IsIndexCorrupt" />
 	<bean id="ikube.action.rule.IsIndexBackedUp" class="ikube.action.rule.IsIndexBackedUp" />
 	<bean id="ikube.action.rule.IsBackupIndexCurrent" class="ikube.action.rule.IsBackupIndexCurrent" />
-	<bean id="ikube.action.rule.SingleRuleException" class="ikube.action.rule.SingleRuleException" />
 	<bean id="ikube.action.rule.AnyServersWorkingThisIndex" class="ikube.action.rule.AnyServersWorkingThisIndex" />
 	<bean id="ikube.action.rule.IsThisServerWorking" class="ikube.action.rule.IsThisServerWorking" />
 	<bean id="ikube.action.rule.IsNewIndexCreated" class="ikube.action.rule.IsNewIndexCreated" />
 	<bean id="ikube.action.rule.DoesBackupIndexExist" class="ikube.action.rule.DoesBackupIndexExist" />
+	<bean id="ikube.action.rule.AreOtherServers" class="ikube.action.rule.AreOtherServers" />
 	
 </beans>

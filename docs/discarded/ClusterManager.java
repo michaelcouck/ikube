@@ -163,8 +163,8 @@ public class ClusterManager implements IClusterManager, IConstants {
 			server.setId(HashUtilities.hash(address));
 			server.setAge(System.currentTimeMillis());
 			// ISearcherWebService.PUBLISHED_PATH
-			int monitoringPort = getServicePort(IMonitorWebService.class, IMonitorWebService.PUBLISHED_PORT,
-					IMonitorWebService.PUBLISHED_PATH, IMonitorWebService.NAMESPACE, IMonitorWebService.SERVICE, 0);
+			int monitoringPort = 0; // getServicePort(IMonitorWebService.class, IMonitorWebService.PUBLISHED_PORT,
+			// IMonitorWebService.PUBLISHED_PATH, IMonitorWebService.NAMESPACE, IMonitorWebService.SERVICE, 0);
 			int searcherPort = getServicePort(ISearcherWebService.class, ISearcherWebService.PUBLISHED_PORT,
 					ISearcherWebService.PUBLISHED_PATH, ISearcherWebService.NAMESPACE, ISearcherWebService.SERVICE, 0);
 			server.setMonitoringWebServicePort(monitoringPort);

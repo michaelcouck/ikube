@@ -16,14 +16,11 @@ import javax.jws.soap.SOAPBinding;
  */
 @SOAPBinding(style = SOAPBinding.Style.DOCUMENT)
 @WebService(name = IMonitorWebService.NAME, targetNamespace = IMonitorWebService.NAMESPACE, serviceName = IMonitorWebService.SERVICE)
-public interface IMonitorWebService {
+public interface IMonitorWebService extends IPublishable {
 
 	String NAME = "monitor";
 	String SERVICE = "monitor";
 	String NAMESPACE = "http://ikube.monitor/";
-
-	int PUBLISHED_PORT = 8082;
-	String PUBLISHED_PATH = "/" + IMonitorWebService.class.getName().replace(".", "/") + "?wsdl";
 
 	/**
 	 * Accesses the index names defined in the configuration. The index names are the names given to the indexes by the user. For example in
@@ -38,8 +35,7 @@ public interface IMonitorWebService {
 	/**
 	 * This method will return the indexable names for a particular index.
 	 * 
-	 * @param indexName
-	 *            the name of the index
+	 * @param indexName the name of the index
 	 * @return the indexable names for this index
 	 */
 	@WebMethod
@@ -59,8 +55,7 @@ public interface IMonitorWebService {
 	/**
 	 * This method will return all the field names for a particular index.
 	 * 
-	 * @param indexName
-	 *            the name of the index
+	 * @param indexName the name of the index
 	 * @return all the field names defined for this index, this will include all the fields in all the indexables
 	 */
 	@WebMethod
@@ -70,8 +65,7 @@ public interface IMonitorWebService {
 	/**
 	 * This method will return the field names for a particular indexable.
 	 * 
-	 * @param indexableName
-	 *            the name of the indexable to get the field names for
+	 * @param indexableName the name of the indexable to get the field names for
 	 * @return the field names defined for this particular indexable
 	 */
 	@WebMethod

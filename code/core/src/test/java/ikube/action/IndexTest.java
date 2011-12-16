@@ -26,6 +26,7 @@ import mockit.Mockit;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 /**
  * @author Michael Couck
@@ -35,21 +36,22 @@ import org.junit.Test;
 public class IndexTest extends ATest {
 
 	private Index index = mock(Index.class);
+	@SuppressWarnings("rawtypes")
+	private IHandler handler = mock(IHandler.class);
 
 	public IndexTest() {
 		super(IndexTest.class);
 	}
 
 	@Before
+	@SuppressWarnings({ "unchecked" })
 	public void before() throws Exception {
 		Mockit.setUpMocks(IndexManagerMock.class, ApplicationContextManagerMock.class);
-		index = mock(Index.class);
 		when(clusterManager.startWorking(anyString(), anyString(), anyString())).thenReturn(System.currentTimeMillis());
 		when(clusterManager.getServer()).thenReturn(server);
 		when(action.getStartTime()).thenReturn(new Timestamp(System.currentTimeMillis()));
 		when(index.getAction(any(Server.class), anyLong())).thenReturn(action);
 		when(index.execute(any(IndexContext.class))).thenCallRealMethod();
-		IHandler handler = mock(IHandler.class);
 		when(index.getHandler(any(Indexable.class))).thenReturn(handler);
 		Deencapsulation.setField(index, logger);
 	}
@@ -61,9 +63,11 @@ public class IndexTest extends ATest {
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	public void execute() throws Exception {
 		Deencapsulation.setField(index, clusterManager);
 		boolean result = index.execute(indexContext);
+		Mockito.verify(handler, Mockito.atLeastOnce()).handle(any(IndexContext.class), any(Indexable.class));
 		assertTrue(result);
 	}
 

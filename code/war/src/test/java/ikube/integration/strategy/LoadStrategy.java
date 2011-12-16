@@ -27,8 +27,8 @@ public class LoadStrategy implements IStrategy {
 	@Override
 	public void perform() throws Exception {
 		String host = InetAddress.getLocalHost().getHostAddress();
-		int port = ISearcherWebService.PUBLISHED_PORT;
-		String path = ISearcherWebService.PUBLISHED_PATH;
+		int port = 8081;
+		String path = "/ikube/service/SearcherWebService?wsdl";
 		URL url = new URL("http", host, port, path);
 		String searcherWebServiceUrl = url.toString();
 		final ISearcherWebService searcherWebService = ServiceLocator.getService(ISearcherWebService.class, searcherWebServiceUrl,

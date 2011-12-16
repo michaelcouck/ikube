@@ -2,13 +2,14 @@ package ikube.service;
 
 import static org.junit.Assert.assertNotNull;
 import ikube.ATest;
-import ikube.IConstants;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.mock.ClusterManagerMock;
 
 import java.net.InetAddress;
 import java.net.URL;
+import java.util.Arrays;
 
+import mockit.Deencapsulation;
 import mockit.Mockit;
 
 import org.junit.After;
@@ -17,7 +18,10 @@ import org.junit.Test;
 
 public class WebServicePublisherTest extends ATest {
 
-	protected WebServicePublisher	webServicePublisher;
+	private int port = 8081;
+	private WebServicePublisher webServicePublisher;
+	private String path = "/ikube/service/SearcherWebService?wsdl";
+	private SearcherWebService searcherWebService;
 
 	public WebServicePublisherTest() {
 		super(WebServicePublisherTest.class);
@@ -27,8 +31,10 @@ public class WebServicePublisherTest extends ATest {
 	public void before() throws Exception {
 		Mockit.setUpMocks(ApplicationContextManagerMock.class, ClusterManagerMock.class);
 		webServicePublisher = new WebServicePublisher();
-		webServicePublisher.postProcessAfterInitialization(new MonitorWebService(), MonitorWebService.class.getSimpleName());
-		webServicePublisher.postProcessAfterInitialization(new SearcherWebService(), SearcherWebService.class.getSimpleName());
+		searcherWebService = new SearcherWebService();
+		Deencapsulation.setField(searcherWebService, port);
+		Deencapsulation.setField(searcherWebService, path);
+		Deencapsulation.setField(webServicePublisher, Arrays.asList(searcherWebService));
 	}
 
 	@After
@@ -38,27 +44,14 @@ public class WebServicePublisherTest extends ATest {
 
 	@Test
 	public void publish() throws Exception {
+		webServicePublisher.publish();
 		// Verify that the services are published
 		String host = InetAddress.getLocalHost().getHostAddress();
-		int port = ISearcherWebService.PUBLISHED_PORT;
-		String path = ISearcherWebService.PUBLISHED_PATH;
 		URL url = new URL("http", host, port, path);
 		String searcherWebServiceUrl = url.toString();
-		ISearcherWebService webService = ServiceLocator.getService(ISearcherWebService.class, searcherWebServiceUrl, ISearcherWebService.NAMESPACE,
-				ISearcherWebService.SERVICE);
+		ISearcherWebService webService = ServiceLocator.getService(ISearcherWebService.class, searcherWebServiceUrl,
+				ISearcherWebService.NAMESPACE, ISearcherWebService.SERVICE);
 		assertNotNull("The service must be published : ", webService);
-	}
-
-	public static void main(String[] args) {
-		// http://ikube.dyndns.org:8081/ikube/service/ISearcherWebService?swdl
-		String url = "http://192.168.1.17:8081/ikube/service/ISearcherWebService?wsdl";
-		ISearcherWebService webService = ServiceLocator.getService(ISearcherWebService.class, url, ISearcherWebService.NAMESPACE,
-				ISearcherWebService.SERVICE);
-		String[] searchStrings = { "cape town", "cape town" };
-		String[] searchFields = { "name" };
-		String results = webService.searchSpacialMulti(IConstants.GEOSPATIAL, searchStrings, searchFields, Boolean.TRUE, 0, 10, 15, -33.9693580,
-				18.4622110);
-		System.out.println(results);
 	}
 
 }

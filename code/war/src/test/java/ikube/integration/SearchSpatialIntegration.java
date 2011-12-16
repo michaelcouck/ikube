@@ -20,15 +20,9 @@ public class SearchSpatialIntegration extends AbstractIntegration {
 	@Test
 	public void searchSpatial() throws UnknownHostException {
 		String ip = InetAddress.getLocalHost().getHostAddress();
-		ISearcherWebService searchRemote = ServiceLocator.getService(ISearcherWebService.class, "http", ip, ISearcherWebService.PUBLISHED_PORT,
-				ISearcherWebService.PUBLISHED_PATH, ISearcherWebService.NAMESPACE, ISearcherWebService.SERVICE);
+		ISearcherWebService searchRemote = ServiceLocator.getService(ISearcherWebService.class, "http", ip, 8081,
+				"/ikube/service/SearcherWebService?wsdl", ISearcherWebService.NAMESPACE, ISearcherWebService.SERVICE);
 		String indexName = "patientIndex";
-
-		// String[] searchStrings = { "16279506~" };
-		// String[] searchFields = { "id" };
-
-		// String[] searchStrings = { "capitoline" };
-		// String[] searchFields = { "lastName" };
 
 		String[] searchStrings = { "2018" }; // , "Antwerpen"
 		String[] searchFields = { "postCode" }; // , "province"
@@ -40,8 +34,8 @@ public class SearchSpatialIntegration extends AbstractIntegration {
 
 		double antwerpLatitude = 51.216667;
 		double antwerpLongitude = 4.416667;
-		String results = searchRemote.searchSpacialMulti(indexName, searchStrings, searchFields, fragment, firstResult, maxResults, distance,
-				antwerpLatitude, antwerpLongitude);
+		String results = searchRemote.searchSpacialMulti(indexName, searchStrings, searchFields, fragment, firstResult, maxResults,
+				distance, antwerpLatitude, antwerpLongitude);
 		logger.info(results);
 
 		searchRemote.searchMultiAll(indexName, searchStrings, Boolean.TRUE, firstResult, maxResults);

@@ -28,6 +28,7 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
+import org.springframework.beans.factory.annotation.Value;
 
 /**
  * @see IMonitorWebService
@@ -42,8 +43,10 @@ public class MonitorWebService implements IMonitorWebService {
 
 	private static final Logger LOGGER = Logger.getLogger(MonitorWebService.class);
 
-	protected int publishedPort = IMonitorWebService.PUBLISHED_PORT;
-	protected String publishedPath = IMonitorWebService.PUBLISHED_PATH;
+	@Value("${monitor.web.service.port}")
+	private int port;
+	@Value("${monitor.web.service.path}")
+	private String path;
 
 	/**
 	 * {@inheritDoc}
@@ -205,10 +208,10 @@ public class MonitorWebService implements IMonitorWebService {
 	}
 
 	/**
-	 * TODO Comment me!
+	 * Accesses the index context by the name.
 	 * 
-	 * @param indexName
-	 * @return
+	 * @param indexName the name of the context we are looking for
+	 * @return the index context with the name or null if not found
 	 */
 	protected IndexContext<?> getIndexContext(String indexName) {
 		String[] indexContextNames = getIndexContextNames();
@@ -224,9 +227,9 @@ public class MonitorWebService implements IMonitorWebService {
 	}
 
 	/**
-	 * TODO Comment me!
+	 * Closes the index reader after we have counted the document in it.
 	 * 
-	 * @param indexReader
+	 * @param indexReader the reader to close
 	 */
 	protected void closeIndexReader(IndexReader indexReader) {
 		if (indexReader == null) {
@@ -248,11 +251,11 @@ public class MonitorWebService implements IMonitorWebService {
 	}
 
 	/**
-	 * TODO Comment me!
+	 * Gets all the fields for the indexable. Fields are defined by adding the {@link ikube.model.Field} annotation to the field.
 	 * 
-	 * @param indexables
-	 * @param fieldNames
-	 * @return
+	 * @param indexables the indexables to look through and get the fields
+	 * @param fieldNames set of field names to collect the fields in
+	 * @return the set of field names from the indexable, and child indexables if there are any
 	 */
 	protected Set<String> getFields(final List<Indexable<?>> indexables, final Set<String> fieldNames) {
 		if (indexables != null) {
@@ -264,11 +267,7 @@ public class MonitorWebService implements IMonitorWebService {
 	}
 
 	/**
-	 * TODO Comment me!
-	 * 
-	 * @param indexable
-	 * @param fieldNames
-	 * @return
+	 * See {@link MonitorWebService#getFields(List, Set)}
 	 */
 	protected Set<String> getFields(final Indexable<?> indexable, final Set<String> fieldNames) {
 		if (indexable == null) {
@@ -290,6 +289,26 @@ public class MonitorWebService implements IMonitorWebService {
 		}
 		getFields(indexable.getChildren(), fieldNames);
 		return fieldNames;
+	}
+
+	@Override
+	public void setPort(int port) {
+		this.port = port;
+	}
+
+	@Override
+	public void setPath(String path) {
+		this.path = path;
+	}
+
+	@Override
+	public int getPort() {
+		return port;
+	}
+
+	@Override
+	public String getPath() {
+		return path;
 	}
 
 }

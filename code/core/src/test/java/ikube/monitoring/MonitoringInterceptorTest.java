@@ -8,6 +8,7 @@ import ikube.mock.ApplicationContextManagerMock;
 import ikube.model.Execution;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.PerformanceTester;
+import mockit.Deencapsulation;
 import mockit.Mockit;
 
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -24,10 +25,10 @@ import org.junit.Test;
  */
 public class MonitoringInterceptorTest extends ATest {
 
-	private Signature				signature;
-	private ProceedingJoinPoint		proceedingJoinPoint;
-	private MonitoringInterceptor	monitoringInterceptor;
-	private Object[]				arguments;
+	private Signature signature;
+	private ProceedingJoinPoint proceedingJoinPoint;
+	private MonitoringInterceptor monitoringInterceptor;
+	private Object[] arguments;
 
 	@BeforeClass
 	public static void beforeClass() {
@@ -49,6 +50,8 @@ public class MonitoringInterceptorTest extends ATest {
 		proceedingJoinPoint = mock(ProceedingJoinPoint.class);
 		when(proceedingJoinPoint.getSignature()).thenReturn(signature);
 		monitoringInterceptor = new MonitoringInterceptor();
+		Deencapsulation.setField(monitoringInterceptor, dataBase);
+		Deencapsulation.setField(monitoringInterceptor, clusterManager);
 	}
 
 	@Test

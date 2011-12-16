@@ -14,6 +14,7 @@
 		<webapps>webapps</webapps>
 		<ikube.war>ikube.war</ikube.war>
 		<final.name>${project.build.finalName}.${project.packaging}</final.name>
+		<maven.build.timestamp.format>dd-MM-yyyy HH:mm:ss</maven.build.timestamp.format>
 	</properties>
 
 	<parent>
@@ -39,6 +40,8 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.7.1</version>
 				<configuration>
+					<forkMode>once</forkMode>
+					<argLine>-javaagent:../../serenity/serenity.jar ${memory.parameters} ${serenity.parameters}</argLine>
 					<excludes>
 						<exclude>**/*Integration*.java</exclude>
 					</excludes>
@@ -49,7 +52,7 @@
 				<version>2.6</version>
 				<configuration>
 					<forkMode>once</forkMode>
-					<argLine>-Xms512m -Xmx1024m</argLine>
+					<argLine>-javaagent:../../serenity/serenity.jar ${memory.parameters} ${serenity.parameters}</argLine>
 					<includes>
 						<include>**/*Integration*.java</include>
 					</includes>
@@ -155,7 +158,7 @@
 							<target>
 								<echo message="Writing release file : " />
 								<echo file="src/main/webapp/WEB-INF/templates/release.txt" append="false">
-									${project.version}
+									${project.version} - ${maven.build.timestamp}
 								</echo>
 							</target>
 						</configuration>

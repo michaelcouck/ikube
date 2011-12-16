@@ -236,8 +236,8 @@ hr { display: none; }
 	border : solid black 1px;
 }
 #search-submit-plain {
-	float: right;
-	width: 25px;
+	/* float: right; */
+	width: 50px;
 	border: none;
 	color: #636363;
 	height : 20px;

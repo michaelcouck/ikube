@@ -13,6 +13,7 @@ import java.net.InetAddress;
 import java.util.List;
 import java.util.Map;
 
+import mockit.Deencapsulation;
 import mockit.Mockit;
 
 import org.junit.After;
@@ -39,7 +40,8 @@ public class SearcherWebServiceTest extends ATest {
 		Mockit.setUpMocks(ApplicationContextManagerMock.class);
 		ApplicationContextManagerMock.setBean(indexContext);
 		this.searcherWebService = new SearcherWebService();
-		((SearcherWebService) this.searcherWebService).setSearchDelegate(new SearchDelegate());
+		// ((SearcherWebService) this.searcherWebService).setSearchDelegate(new SearchDelegate());
+		Deencapsulation.setField(searcherWebService, new SearchDelegate());
 	}
 
 	@After

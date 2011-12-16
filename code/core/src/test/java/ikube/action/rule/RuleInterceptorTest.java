@@ -105,8 +105,8 @@ public class RuleInterceptorTest extends ATest {
 		when(joinPoint.getTarget()).thenReturn(close);
 		when(joinPoint.getArgs()).thenReturn(new Object[] { indexContext });
 		when(joinPoint.proceed()).thenReturn(Boolean.TRUE);
-		ruleInterceptor = new RuleInterceptor() {
-		};
+		ruleInterceptor = new RuleInterceptor();
+		((RuleInterceptor) ruleInterceptor).initialize();
 
 		when(action.getRules()).thenReturn(rules);
 		when(action.getRuleExpression()).thenReturn(predicate);
@@ -119,6 +119,7 @@ public class RuleInterceptorTest extends ATest {
 	@After
 	public void after() {
 		Mockit.tearDownMocks();
+		((RuleInterceptor) ruleInterceptor).destroy();
 	}
 
 	@Test
@@ -156,7 +157,7 @@ public class RuleInterceptorTest extends ATest {
 		jep.addVariable("c", Boolean.TRUE);
 		jep.addVariable("d", Boolean.TRUE);
 		jep.addVariable("e", Boolean.TRUE);
-		jep.parseExpression("((a || b) || !c) && (d && e)");
+		jep.parseExpression("((a || b) || !c) && !(d && e)");
 		Object result = jep.getValueAsObject();
 		logger.info("Jep result : " + result);
 		assertNotNull(result);

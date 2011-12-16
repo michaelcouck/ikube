@@ -212,16 +212,7 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 				} else if (Server.class.isAssignableFrom(object.getClass())) {
 					Server server = (Server) object;
 					servers.put(server.getAddress(), server);
-					if (LOGGER.isDebugEnabled()) {
-						List<Action> actions = server.getActions();
-						if (actions.size() > 0) {
-							Action action = actions.get(actions.size() - 1);
-							LOGGER.debug(
-									"Message action : {} {} {} {} {}",
-									new Object[] { server.getAddress(), action.getId(), action.getActionName(), action.getWorking(),
-											action.getIndexName() });
-						}
-					}
+					debug(server);
 				}
 			} else {
 				LOGGER.warn("Message type not supported : {} ", message);
@@ -398,12 +389,7 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 			}
 			if (server.getWorking()) {
 				LOGGER.debug("Server still working : ");
-				for (Action serverAction : actions) {
-					if (serverAction.getWorking()) {
-						LOGGER.debug("        still working : {} {} {}", new Object[] { serverAction.getId(), serverAction.getActionName(),
-								serverAction.getIndexName() });
-					}
-				}
+				debug(server);
 			}
 		} finally {
 			notifyAll();
@@ -470,6 +456,20 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 	public void destroy() {
 		this.servers.clear();
 		this.jmsTemplates.clear();
+	}
+
+	private void debug(Server server) {
+		if (LOGGER.isDebugEnabled()) {
+			List<Action> actions = server.getActions();
+			if (actions.size() > 0) {
+				for (Action serverAction : actions) {
+					if (serverAction.getWorking()) {
+						LOGGER.debug("        still working : {} {} {}", new Object[] { serverAction.getId(), serverAction.getActionName(),
+								serverAction.getIndexName() });
+					}
+				}
+			}
+		}
 	}
 
 }

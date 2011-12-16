@@ -55,10 +55,12 @@ public class DiskFull extends Action<IndexContext<?>, Boolean> {
 						String subject = "No more disk space on server!";
 						String body = "We have run out of disk space on this driver : " + indexesDirectory;
 						body += "This server will exit to save the machine : " + freeSpaceMegabytes;
+						logger.error(subject + " " + body);
 						logger.fatal(subject);
 						logger.fatal(body);
 						sendNotification(subject, body);
-						System.exit(0);
+						// TODO Uncomment this when the bug is found
+						// System.exit(0);
 						return Boolean.TRUE;
 					}
 				}

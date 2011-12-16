@@ -1,6 +1,6 @@
 <beans xmlns="http://www.springframework.org/schema/beans" 
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:property="http://www.springframework.org/schema/p"
 	xmlns:mvc="http://www.springframework.org/schema/mvc"
 	xmlns:context="http://www.springframework.org/schema/context"
 	
@@ -20,7 +20,7 @@
 	<bean
 		id="ikube.toolkit.PropertyConfigurer"
 		class="ikube.toolkit.PropertyConfigurer"
-		p:fileNamePattern="spring.properties"
+		property:fileNamePattern="spring.properties"
 		lazy-init="false"
 		init-method="initialize" />
 
@@ -50,13 +50,13 @@
 	<bean 
 		id="tilesConfigurer" 
 		class="org.springframework.web.servlet.view.tiles2.TilesConfigurer" 
-		p:definitions="/WEB-INF/tiles-defs/templates.xml" />
+		property:definitions="/WEB-INF/tiles-defs/templates.xml" />
 
 	<!-- This is the first handler that will be invoked by the dispatcher servlet. -->
 	<bean 
 		id="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping" 
 		class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping"
-		p:order="1">
+		property:order="1">
 		<property name="mappings">
 			<props>
 				<prop key="/results.html">ikube.web.admin.SearchController</prop>
@@ -76,10 +76,10 @@
 	<bean 
 		id="vewResolver" 
 		class="org.springframework.web.servlet.view.UrlBasedViewResolver" 
-		p:order="2"
-		p:suffix=".jsp"
-		p:prefix="/WEB-INF/jsp/" 
-		p:viewClass="org.springbyexample.web.servlet.view.tiles2.DynamicTilesView" />
+		property:order="2"
+		property:suffix=".jsp"
+		property:prefix="/WEB-INF/jsp/" 
+		property:viewClass="org.springbyexample.web.servlet.view.tiles2.DynamicTilesView" />
 
 	<!-- The controllers for the various pages that do the access logic if necessary. -->
 	<bean name="ikube.web.admin.SearchController" class="ikube.web.admin.SearchController" />
@@ -104,20 +104,20 @@
 	<mvc:interceptors>
 		<bean 
 			class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor"
-			p:paramName="lang" />
+			property:paramName="language" />
 		<!-- <bean id="messageHandler" class="com.truvo.cmp.server.web.interceptor.MessageHandlerInterceptor" /> -->
 	</mvc:interceptors>
 
 	<bean 
 		id="localeResolver" 
 		class="org.springframework.web.servlet.i18n.CookieLocaleResolver"
-		p:cookieName="lang"
-		p:cookieMaxAge="604800" />
+		property:cookieName="language"
+		property:cookieMaxAge="604800" />
 	
 	<!-- Configure the multipart resolver -->
 	<bean 
 		id="multipartResolver" 
 		class="org.springframework.web.multipart.commons.CommonsMultipartResolver" 
-		p:maxUploadSize="10000000" />
+		property:maxUploadSize="10000000" />
 
 </beans>

@@ -154,13 +154,17 @@
 	<bean
 		id="ikube.service.SearcherWebService"
 		class="ikube.service.SearcherWebService"
-		property:searchDelegate-ref="ikube.service.ISearchDelegate" />
+		property:port="${searcher.web.service.port}"
+		property:path="${searcher.web.service.path}" />
 	<bean
 		id="ikube.service.MonitorWebService"
-		class="ikube.service.MonitorWebService" />
+		class="ikube.service.MonitorWebService"
+		property:port="${monitor.web.service.port}"
+		property:path="${monitor.web.service.path}" />
 	<bean
 		id="ikube.service.WebServicePublisher"
-		class="ikube.service.WebServicePublisher" />
+		class="ikube.service.WebServicePublisher"
+		init-method="publish" />
 	<bean
 		id="ikube.cluster.jms.LockRemovalListener"
 		class="ikube.cluster.jms.LockRemovalListener" />
@@ -170,6 +174,11 @@
 	<bean
 		id="ikube.cluster.jms.ServerClubListener"
 		class="ikube.cluster.jms.ServerClubListener" />
+		
+	<util:list id="publishables">
+		<ref bean="ikube.service.SearcherWebService" />
+		<ref bean="ikube.service.MonitorWebService" />
+	</util:list>
 	
 	<bean 
 		id="ikube.listener.ListenerManager"
@@ -260,7 +269,6 @@
 	
 	<util:list id="messageProperties">
 		<value>/WEB-INF/i18n/i18n</value>
-		<!-- <value>classpath*:**/i18n</value> -->
 	</util:list>
 	
 </beans>

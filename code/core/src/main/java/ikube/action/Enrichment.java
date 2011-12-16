@@ -1,23 +1,21 @@
-package ikube.integration;
+package ikube.action;
 
 import ikube.IConstants;
+import ikube.database.IDataBase;
+import ikube.model.IndexContext;
 import ikube.model.geospatial.GeoName;
 import ikube.service.ISearcherWebService;
-import ikube.service.ServiceLocator;
 import ikube.toolkit.Logging;
 import ikube.toolkit.SerializationUtilities;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Persistence;
-import javax.persistence.Query;
-
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * This class will try to enrich the GeoName table with country and city data. First it will search the GeoName index to find the closest
@@ -27,7 +25,7 @@ import org.apache.log4j.Logger;
  * @since 15.05.2011
  * @version 01.00
  */
-public class Enrichment implements IConstants {
+public class Enrichment extends Action<IndexContext<?>, Boolean> implements IConstants {
 
 	public static final String CITY_FEATURE_CLASS = "P S T";
 	public static final String CITY_FEATURE_CODE = "PPL PPL PPLA PPLA2 PPLA3 PPLA4 PPLC PPLF PPLG PPLL PPLQ PPLR PPLS PPLW PPLX STLMT";
@@ -35,89 +33,56 @@ public class Enrichment implements IConstants {
 	public static final String COUNTRY_FEATURE_CODE = "PCLI ADM1 ADM2 ADM3 ADM4 ADMD LTER PCL PCLD PCLF PCLI PCLIX PCLS PRSH TERR ZN ZNB";
 	private static final String[] SEARCH_FIELDS = { FEATURECLASS, FEATURECODE, COUNTRYCODE };
 
-	private Logger logger = Logger.getLogger(this.getClass());
-	private EntityManager entityManager;
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
+
+	@Autowired
+	private IDataBase dataBase;
+	@Autowired
+	private ISearcherWebService searcherWebService;
 
 	/**
 	 * {@inheritDoc}
-	 * 
-	 * @throws MalformedURLException
 	 */
-	@SuppressWarnings("unchecked")
-	public Boolean execute() throws MalformedURLException {
+	@Override
+	public Boolean execute(IndexContext<?> context) throws Exception {
 		logger.info("Running the enrichment : ");
-		try {
-			// List all the entities in the geoname table
-			int batch = 100;
-			long id = 0;
-			int exceptions = 0;
-			int maxExceptions = 1000;
-			List<GeoName> geoNames = new ArrayList<GeoName>();
-			if (entityManager == null) {
-				entityManager = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_DB2).createEntityManager();
-			}
+		// List all the entities in the geoname table
+		int batch = 100;
+		long id = 0;
+		int exceptions = 0;
+		int maxExceptions = 1000;
+		List<GeoName> geoNames = new ArrayList<GeoName>();
 
-			URL url = new URL("http", "ikube.dyndns.org", ISearcherWebService.PUBLISHED_PORT, ISearcherWebService.PUBLISHED_PATH);
-			String searcherWebServiceUrl = url.toString();
-			ISearcherWebService searcherWebService = ServiceLocator.getService(ISearcherWebService.class, searcherWebServiceUrl,
-					ISearcherWebService.NAMESPACE, ISearcherWebService.SERVICE);
-
-			String[] searchStrings = new String[3];
-			do {
-				try {
-					for (GeoName geoName : geoNames) {
-						id = geoName.getId();
-						if (geoName.getCity() == null) {
-							setCity(searcherWebService, geoName, searchStrings);
-						}
-						if (geoName.getCountry() == null) {
-							setCountry(searcherWebService, geoName, searchStrings);
-						}
-						// Merge the entity
-						entityManager.merge(geoName);
+		String[] searchStrings = new String[3];
+		do {
+			try {
+				for (GeoName geoName : geoNames) {
+					id = geoName.getId();
+					if (geoName.getCity() == null) {
+						setCity(searcherWebService, geoName, searchStrings);
 					}
-					commitTransaction(entityManager);
-					entityManager.getTransaction().begin();
-					Query query = entityManager.createNamedQuery(GeoName.SELECT_FROM_GEONAME_BY_ID_GREATER_AND_SMALLER);
-					id += batch;
-					query.setParameter(ID, id);
-					query.setMaxResults(batch);
-					geoNames = query.getResultList();
-					logger.info("Geoname size : " + geoNames.size() + ", " + id);
-					if (geoNames.size() == 0) {
-						commitTransaction(entityManager);
-						break;
+					if (geoName.getCountry() == null) {
+						setCountry(searcherWebService, geoName, searchStrings);
 					}
-				} catch (Exception e) {
-					logger.error("Exception enriching the GeoName data : ", e);
-					exceptions++;
-					if (exceptions > maxExceptions) {
-						break;
-					}
+					// Merge the entity
+					dataBase.merge(geoName);
 				}
-			} while (true);
-		} finally {
-			commitTransaction(entityManager);
-		}
+				Map<String, Object> parameters = new HashMap<String, Object>();
+				parameters.put(IConstants.ID, id);
+				geoNames = dataBase.find(GeoName.class, GeoName.SELECT_FROM_GEONAME_BY_ID_GREATER_AND_SMALLER, parameters, 0, batch);
+				logger.info("Geoname size : " + geoNames.size() + ", " + id);
+				if (geoNames.isEmpty()) {
+					break;
+				}
+			} catch (Exception e) {
+				logger.error("Exception enriching the GeoName data : ", e);
+				exceptions++;
+				if (exceptions > maxExceptions) {
+					break;
+				}
+			}
+		} while (true);
 		return Boolean.TRUE;
-	}
-
-	private void commitTransaction(EntityManager entityManager) {
-		try {
-			if (entityManager != null) {
-				if (entityManager.getTransaction().isActive()) {
-					if (entityManager.getTransaction().getRollbackOnly()) {
-						entityManager.getTransaction().rollback();
-					} else {
-						entityManager.flush();
-						entityManager.getTransaction().commit();
-						entityManager.clear();
-					}
-				}
-			}
-		} catch (Exception e) {
-			logger.error("Exception comitting or rolling back the transaction : ", e);
-		}
 	}
 
 	protected void setCity(ISearcherWebService searcherWebService, GeoName geoName, String[] searchStrings) {

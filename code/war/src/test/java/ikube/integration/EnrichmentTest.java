@@ -1,6 +1,7 @@
 package ikube.integration;
 
 import ikube.IConstants;
+import ikube.action.Enrichment;
 import ikube.model.IndexContext;
 import ikube.toolkit.ApplicationContextManager;
 
@@ -26,7 +27,7 @@ public class EnrichmentTest extends AbstractIntegration {
 			Thread.sleep(1000);
 		}
 		Thread.sleep(1000);
-		enrichment.execute();
+		enrichment.execute(indexContext);
 		while (true) {
 			Thread.sleep(1000);
 		}

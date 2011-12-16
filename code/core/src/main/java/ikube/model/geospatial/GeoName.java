@@ -29,7 +29,8 @@ public class GeoName extends Persistable {
 	public static final String SELECT_FROM_GEONAME_BY_ID_GREATER_AND_SMALLER = "select g from GeoName as g " + //
 			"where " + //
 			"(g.city is null and " + //
-			" g.country is null) and " + "g.id > :id " + //
+			" g.country is null) " + //
+			"and g.id > :id " + //
 			"order by g.id";
 	public static final String SELECT_FROM_GEONAME_BY_FEATURECLASS_FEATURECODE_COUNTRYCODE = "select g from GeoName as g " + //
 			"where " + //
