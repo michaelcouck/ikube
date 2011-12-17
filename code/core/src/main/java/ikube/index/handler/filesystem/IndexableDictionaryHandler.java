@@ -4,6 +4,7 @@ import ikube.index.handler.IndexableHandler;
 import ikube.model.IndexContext;
 import ikube.model.IndexableDictionary;
 import ikube.toolkit.FileUtilities;
+import ikube.toolkit.ThreadUtilities;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -11,6 +12,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Future;
 
 import org.apache.lucene.search.spell.PlainTextDictionary;
 import org.apache.lucene.search.spell.SpellChecker;
@@ -28,14 +30,15 @@ public class IndexableDictionaryHandler extends IndexableHandler<IndexableDictio
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<Thread> handle(final IndexContext<?> indexContext, final IndexableDictionary indexable) throws Exception {
+	public List<Future<?>> handle(final IndexContext<?> indexContext, final IndexableDictionary indexable) throws Exception {
 		try {
-			List<Thread> threads = new ArrayList<Thread>();
+			// List<Thread> threads = new ArrayList<Thread>();
+			List<Future<?>> futures = new ArrayList<Future<?>>();
 			File spellingIndexDirectory = FileUtilities.getFile(indexContext.getIndexDirectoryPath(), Boolean.TRUE);
 			Directory directory = FSDirectory.open(spellingIndexDirectory);
 			final SpellChecker spellChecker = new SpellChecker(directory);
 			for (int i = 0; i < getThreads(); i++) {
-				Thread thread = new Thread(new Runnable() {
+				Runnable runnable = new Runnable() {
 					public void run() {
 						File[] files = new File(indexable.getPath()).listFiles();
 						if (files == null) {
@@ -58,13 +61,17 @@ public class IndexableDictionaryHandler extends IndexableHandler<IndexableDictio
 							}
 						}
 					}
-				}, this.getClass().getSimpleName() + "." + i);
-				threads.add(thread);
+				};
+				Future<?> future = ThreadUtilities.submit(runnable);
+				futures.add(future);
+				// Thread thread = new Thread(runnable, this.getClass().getSimpleName() + "." + i);
+				// threads.add(thread);
 			}
-			for (Thread thread : threads) {
-				thread.start();
-			}
-			return threads;
+			// for (Thread thread : threads) {
+			// thread.start();
+			// }
+			// return threads;
+			return futures;
 		} catch (Exception e) {
 			logger.error("Exception starting the file system indexer threads : ", e);
 		}

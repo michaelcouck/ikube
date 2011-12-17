@@ -29,7 +29,8 @@
 		lazy-init="false"
 		init-method="initialize" />
 	
-	<import resource="/**/spring-*.xml" />
+	<import resource="**/spring-*.xml" />
+	<!-- <import resource="/**/spring-*.xml" /> -->
 	<!-- <import resource="file:**/spring-*.xml" /> -->
 	
 	<!-- Mandatory system configuration files. -->

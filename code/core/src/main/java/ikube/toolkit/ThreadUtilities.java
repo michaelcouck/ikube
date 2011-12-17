@@ -1,6 +1,9 @@
 package ikube.toolkit;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.apache.log4j.Logger;
 
@@ -15,7 +18,45 @@ public final class ThreadUtilities {
 
 	private static final Logger LOGGER = Logger.getLogger(ThreadUtilities.class);
 
+	private static ExecutorService EXECUTER_SERVICE;
+
 	private ThreadUtilities() {
+	}
+
+	public static Future<?> submit(Runnable runnable) {
+		return EXECUTER_SERVICE.submit(runnable);
+	}
+
+	public static void initialize() {
+		ThreadUtilities.destroy();
+		EXECUTER_SERVICE = Executors.newFixedThreadPool(100);
+	}
+
+	public static void destroy() {
+		if (EXECUTER_SERVICE == null || EXECUTER_SERVICE.isShutdown()) {
+			LOGGER.warn("Executer service already shutdown : ");
+			return;
+		}
+		EXECUTER_SERVICE.shutdown();
+		List<Runnable> runnables = EXECUTER_SERVICE.shutdownNow();
+		LOGGER.info("Shutdown runnables : " + runnables);
+	}
+
+	public static void waitForFutures(List<Future<?>> futures, long maxWait) {
+		for (Future<?> future : futures) {
+			ThreadUtilities.waitForFuture(future, maxWait);
+		}
+	}
+
+	public static void waitForFuture(Future<?> future, long maxWait) {
+		long start = System.currentTimeMillis();
+		while (!future.isDone()) {
+			ThreadUtilities.sleep(1000);
+			LOGGER.info("Future : " + future);
+			if ((System.currentTimeMillis() - start) > maxWait) {
+				break;
+			}
+		}
 	}
 
 	/**
@@ -49,6 +90,7 @@ public final class ThreadUtilities {
 			Thread.sleep(sleep);
 		} catch (InterruptedException e) {
 			LOGGER.error("Sleep interrupted : " + Thread.currentThread(), e);
+			throw new RuntimeException(e);
 		}
 	}
 

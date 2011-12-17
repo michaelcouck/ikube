@@ -17,6 +17,7 @@ import ikube.model.IndexableInternet;
 import ikube.model.Url;
 import ikube.toolkit.HashUtilities;
 import ikube.toolkit.SerializationUtilities;
+import ikube.toolkit.ThreadUtilities;
 import ikube.toolkit.UriUtilities;
 
 import java.io.ByteArrayInputStream;
@@ -27,12 +28,15 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Future;
 
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
@@ -49,6 +53,9 @@ import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 
 import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.UsernamePasswordCredentials;
+import org.apache.commons.httpclient.auth.AuthPolicy;
+import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Index;
@@ -98,6 +105,9 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 		public void run() {
 			HttpClient httpClient = new HttpClient();
 			IContentProvider<IndexableInternet> contentProvider = new InternetContentProvider();
+			if (indexableInternet.getLoginUrl() != null) {
+				login(indexableInternet, httpClient);
+			}
 			while (true) {
 				List<Url> urls = getUrlBatch(dataBase, indexableInternet);
 				if (urls.isEmpty()) {
@@ -118,7 +128,12 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 						break;
 					}
 				}
-				doUrls(dataBase, indexContext, indexableInternet, urls, contentProvider, httpClient);
+				try {
+					doUrls(dataBase, indexContext, indexableInternet, urls, contentProvider, httpClient);
+				} catch (InterruptedException e) {
+					logger.error("Indeing terminated : ", e);
+					return;
+				}
 			}
 		}
 
@@ -144,24 +159,28 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<Thread> handle(final IndexContext<?> indexContext, final IndexableInternet indexable) throws Exception {
+	public List<Future<?>> handle(final IndexContext<?> indexContext, final IndexableInternet indexable) throws Exception {
 		cache.removeAll();
 		newCache.removeAll();
 		// The start url
 		seedUrl(dataBase, indexable);
 		try {
-			List<Thread> threads = new ArrayList<Thread>();
+			// List<Thread> threads = new ArrayList<Thread>();
+			List<Future<?>> futures = new ArrayList<Future<?>>();
 			List<IndexableInternetHandlerWorker> handlerWorkers = new ArrayList<IndexableInternetHandler.IndexableInternetHandlerWorker>();
 			for (int i = 0; i < getThreads(); i++) {
 				IndexableInternetHandlerWorker handlerWorker = new IndexableInternetHandlerWorker(indexContext, indexable, handlerWorkers);
 				handlerWorkers.add(handlerWorker);
-				String name = this.getClass().getSimpleName() + "." + i;
-				threads.add(new Thread(handlerWorker, name));
+				// String name = this.getClass().getSimpleName() + "." + i;
+				// threads.add(new Thread(handlerWorker, name));
+				Future<?> future = ThreadUtilities.submit(handlerWorker);
+				futures.add(future);
 			}
-			for (Thread thread : threads) {
-				thread.start();
-			}
-			return threads;
+			// for (Thread thread : threads) {
+			// thread.start();
+			// }
+			// return threads;
+			return futures;
 		} catch (Exception e) {
 			logger.error("Exception starting the internet handler threads : ", e);
 		}
@@ -177,9 +196,11 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	 * @param urlBatch the batch of urls to index
 	 * @param contentProvider the content provider for http pages
 	 * @param httpClient the client to use for accessing the pages over http
+	 * @throws InterruptedException
 	 */
 	protected void doUrls(final IDataBase dataBase, final IndexContext<?> indexContext, final IndexableInternet indexable,
-			final List<Url> urlBatch, final IContentProvider<IndexableInternet> contentProvider, final HttpClient httpClient) {
+			final List<Url> urlBatch, final IContentProvider<IndexableInternet> contentProvider, final HttpClient httpClient)
+			throws InterruptedException {
 		for (Url url : urlBatch) {
 			try {
 				if (url == null || url.getUrl() == null) {
@@ -187,6 +208,8 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 					continue;
 				}
 				handle(dataBase, indexContext, indexable, url, contentProvider, httpClient);
+			} catch (InterruptedException e) {
+				throw e;
 			} catch (Exception e) {
 				logger.error("Exception doing url : " + url, e);
 			} finally {
@@ -251,9 +274,10 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	 * @param url the url that will be indexed in this call
 	 * @param contentProvider the content provider for internet http pages
 	 * @param httpClient the client for accessing the pages
+	 * @throws InterruptedException
 	 */
 	protected void handle(final IDataBase dataBase, final IndexContext<?> indexContext, final IndexableInternet indexable, final Url url,
-			final IContentProvider<IndexableInternet> contentProvider, final HttpClient httpClient) {
+			final IContentProvider<IndexableInternet> contentProvider, final HttpClient httpClient) throws InterruptedException {
 		try {
 			// Get the content from the url
 			ByteOutputStream byteOutputStream = getContentFromUrl(contentProvider, httpClient, indexable, url);
@@ -302,6 +326,9 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 			}
 			// Add the document to the index
 			addDocument(indexContext, indexable, url, parsedContent);
+			Thread.sleep(indexContext.getThrottle());
+		} catch (InterruptedException e) {
+			throw e;
 		} catch (Exception e) {
 			logger.error("Exception visiting page : " + (url != null ? url.getUrl() : null), e);
 		}
@@ -571,6 +598,24 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 		url.setIndexed(Boolean.FALSE);
 
 		dataBase.persist(url);
+	}
+
+	protected void login(IndexableInternet indexableInternet, HttpClient httpClient) {
+		List<String> authPrefs = new ArrayList<String>(2);
+		authPrefs.add(AuthPolicy.DIGEST);
+		authPrefs.add(AuthPolicy.BASIC);
+		httpClient.getParams().setParameter(AuthPolicy.AUTH_SCHEME_PRIORITY, authPrefs);
+		httpClient.getParams().setAuthenticationPreemptive(true);
+		URL loginUrl;
+		try {
+			loginUrl = new URL(indexableInternet.getLoginUrl());
+			AuthScope authScope = new AuthScope(loginUrl.getHost(), loginUrl.getPort(), AuthScope.ANY_REALM);
+			UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(indexableInternet.getUserid(),
+					indexableInternet.getPassword());
+			httpClient.getState().setCredentials(authScope, credentials);
+		} catch (MalformedURLException e) {
+			logger.error("Exception logging in to site : " + indexableInternet, e);
+		}
 	}
 
 }

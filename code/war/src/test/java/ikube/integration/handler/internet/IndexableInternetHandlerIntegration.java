@@ -18,6 +18,7 @@ import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.URL;
 import java.util.List;
+import java.util.concurrent.Future;
 
 import mockit.Deencapsulation;
 
@@ -60,8 +61,8 @@ public class IndexableInternetHandlerIntegration extends AbstractIntegration {
 		String ip = InetAddress.getLocalHost().getHostAddress();
 		IndexWriter indexWriter = IndexManager.openIndexWriter(realIndexContext, System.currentTimeMillis(), ip);
 		indexContext.getIndex().setIndexWriter(indexWriter);
-		List<Thread> threads = indexableInternetHandler.handle(indexContext, indexableInternet);
-		ThreadUtilities.waitForThreads(threads);
+		List<Future<?>> threads = indexableInternetHandler.handle(indexContext, indexableInternet);
+		ThreadUtilities.waitForFutures(threads, Integer.MAX_VALUE);
 		int expectedAtLeast = 10;
 		List<Url> urls = dataBase.find(Url.class, 0, Integer.MAX_VALUE);
 		int totalUrlsCrawled = urls.size();

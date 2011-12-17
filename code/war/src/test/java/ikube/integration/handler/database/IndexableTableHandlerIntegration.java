@@ -9,8 +9,10 @@ import ikube.cluster.IClusterManager;
 import ikube.index.IndexManager;
 import ikube.index.content.ColumnContentProvider;
 import ikube.index.content.IContentProvider;
+import ikube.index.handler.DocumentDelegate;
 import ikube.index.handler.database.IndexableTableHandler;
 import ikube.integration.AbstractIntegration;
+import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.model.IndexableColumn;
 import ikube.model.IndexableTable;
@@ -25,6 +27,8 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.List;
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicLong;
 
 import javax.sql.DataSource;
 
@@ -62,6 +66,9 @@ public class IndexableTableHandlerIntegration extends AbstractIntegration {
 		connection = ((DataSource) ApplicationContextManager.getBean("nonXaDataSourceH2")).getConnection();
 		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
 		clusterManager.stopWorking(0, Index.class.getSimpleName(), realIndexContext.getIndexName(), faqIndexableTable.getName());
+		if (Deencapsulation.getField(indexableTableHandler, "documentDelegate") == null) {
+			Deencapsulation.setField(indexableTableHandler, new DocumentDelegate());
+		}
 	}
 
 	@After
@@ -118,7 +125,7 @@ public class IndexableTableHandlerIntegration extends AbstractIntegration {
 	public void getResultSet() throws Exception {
 		faqIdIndexableColumn.setContent(1);
 		ResultSet resultSet = Deencapsulation.invoke(indexableTableHandler, "getResultSet", realIndexContext, faqIndexableTable,
-				connection, 1);
+				connection, new AtomicLong(0), 1);
 		assertNotNull(resultSet);
 
 		Statement statement = resultSet.getStatement();
@@ -179,9 +186,34 @@ public class IndexableTableHandlerIntegration extends AbstractIntegration {
 		String ip = InetAddress.getLocalHost().getHostAddress();
 		IndexWriter indexWriter = IndexManager.openIndexWriter(realIndexContext, System.currentTimeMillis(), ip);
 		realIndexContext.getIndex().setIndexWriter(indexWriter);
-		List<Thread> threads = indexableTableHandler.handle(realIndexContext, faqIndexableTable);
-		ThreadUtilities.waitForThreads(threads);
+		List<Future<?>> threads = indexableTableHandler.handle(realIndexContext, faqIndexableTable);
+		ThreadUtilities.waitForFutures(threads, Integer.MAX_VALUE);
 		// TODO Verify that the data has been indexed
+	}
+
+	@Test
+	public void interrupt() throws Exception {
+		try {
+			IndexableTable indexable = ApplicationContextManager.getBean("geoname");
+			IndexContext<?> indexContext = ApplicationContextManager.getBean("geospatial");
+			String ip = InetAddress.getLocalHost().getHostAddress();
+			IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
+			indexContext.getIndex().setIndexWriter(indexWriter);
+			Thread thread = new Thread(new Runnable() {
+				public void run() {
+					ThreadUtilities.sleep(15000);
+					ThreadUtilities.destroy();
+				}
+			});
+			thread.setDaemon(Boolean.TRUE);
+			thread.start();
+			List<Future<?>> futures = indexableTableHandler.handle(indexContext, indexable);
+			ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
+			// We should get here when the futures are interrupted
+			assertTrue(Boolean.TRUE);
+		} finally {
+			ThreadUtilities.initialize();
+		}
 	}
 
 }

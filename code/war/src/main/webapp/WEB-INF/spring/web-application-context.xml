@@ -25,12 +25,24 @@
 		init-method="initialize" />
 
 	<!-- External file system resources. -->
-	<import resource="file:**/spring-*.xml" />
+	<!-- <import resource="file:**/spring*.xml" />
+	<import resource="file:**/spring-*.xml" /> -->
+	<!-- <import resource="file:**/spring-*.xml" /> -->
+	<import resource="file:ikube/spring-*.xml" />
+	<import resource="file:ikube/**/spring-*.xml" />
+	<import resource="file:**/ikube/spring-*.xml" />
+	<import resource="file:**/ikube/**/spring-*.xml" />
+	<!-- <import resource="file*:**/ikube/spring-*.xml" />
+	<import resource="file*:**/ikube/**/spring-*.xml" /> -->
+	<!-- <import resource="file:target/configuration/ikube/spring.xml" /> -->
+	<!-- <import resource="file:target/configuration/ikube/spring-*.xml" />
+	<import resource="file:target/configuration/ikube/**/spring-*.xml" /> -->
 	
 	<!-- Classpath resources. -->
-	<!-- <import resource="/**/spring*.xml" /> -->
-	<!-- <import resource="classpath*:**/spring*.xml" /> -->
-	<!-- <import resource="classpath*:/**/spring*.xml" /> -->
+	<!-- <import resource="/**/spring*.xml" />
+	<import resource="classpath*:**/spring-*.xml" />
+	<import resource="classpath:**/spring*.xml" />
+	<import resource="classpath*:/**/spring*.xml" /> -->
 	
 	<context:annotation-config />
 	<context:component-scan base-package="ikube" />

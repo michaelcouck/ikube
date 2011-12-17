@@ -11,6 +11,7 @@ import ikube.model.IndexableFileSystem;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.HashUtilities;
 import ikube.toolkit.SerializationUtilities;
+import ikube.toolkit.ThreadUtilities;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -25,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.Future;
 import java.util.regex.Pattern;
 
 import org.apache.lucene.document.Document;
@@ -55,12 +57,12 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<Thread> handle(final IndexContext<?> indexContext, final IndexableFileSystem indexable) throws Exception {
+	public List<Future<?>> handle(final IndexContext<?> indexContext, final IndexableFileSystem indexable) throws Exception {
 		final File baseFile = new File(indexable.getPath());
 		final Pattern pattern = getPattern(indexable.getExcludedPattern());
 		if (isExcluded(baseFile, pattern)) {
 			logger.warn("Base directory excluded : " + baseFile + ", " + indexable.getExcludedPattern());
-			return new ArrayList<Thread>();
+			return Arrays.asList();
 		}
 		// Add all the files to the database
 		final Set<File> batchedFiles = new TreeSet<File>();
@@ -71,9 +73,10 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 		}
 		// Now start the threads indexing the files from the database
 		try {
-			List<Thread> threads = new ArrayList<Thread>();
+			// List<Thread> threads = new ArrayList<Thread>();
+			List<Future<?>> futures = new ArrayList<Future<?>>();
 			for (int i = 0; i < getThreads(); i++) {
-				Thread thread = new Thread(new Runnable() {
+				Runnable runnable = new Runnable() {
 					public void run() {
 						IndexableFileSystem indexableFileSystem = (IndexableFileSystem) SerializationUtilities.clone(indexable);
 						List<ikube.model.File> dbFiles = getBatch(dataBase, indexableFileSystem);
@@ -83,18 +86,27 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 									logger.warn("DB file url null : ");
 									continue;
 								}
-								handleFile(indexContext, indexableFileSystem, dbFile);
+								try {
+									handleFile(indexContext, indexableFileSystem, dbFile);
+								} catch (InterruptedException e) {
+									logger.error("Thread terminated, and indexing stopped : ", e);
+									return;
+								}
 							}
 							dbFiles = getBatch(dataBase, indexableFileSystem);
 						} while (!dbFiles.isEmpty());
 					}
-				}, this.getClass().getSimpleName() + "." + i);
-				threads.add(thread);
+				};
+				Future<?> future = ThreadUtilities.submit(runnable);
+				futures.add(future);
+				// Thread thread = new Thread(runnable, this.getClass().getSimpleName() + "." + i);
+				// threads.add(thread);
 			}
-			for (Thread thread : threads) {
-				thread.start();
-			}
-			return threads;
+			// for (Thread thread : threads) {
+			// thread.start();
+			// }
+			// return threads;
+			return futures;
 		} catch (Exception e) {
 			logger.error("Exception starting the file system indexer threads : ", e);
 		}
@@ -190,9 +202,10 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 	 * @param indexContext the context for this index
 	 * @param indexableFileSystem the file system object for storing data during the indexing
 	 * @param file the file to parse and index
+	 * @throws InterruptedException
 	 */
 	protected void handleFile(final IndexContext<?> indexContext, final IndexableFileSystem indexableFileSystem,
-			final ikube.model.File dbFile) {
+			final ikube.model.File dbFile) throws InterruptedException {
 		File file = new File(dbFile.getUrl());
 		try {
 			// logger.error("Db file : " + dbFile);
@@ -232,6 +245,10 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 			IndexManager.addStringField(lengthFieldName, Long.toString(file.length()), document, store, analyzed, termVector);
 			IndexManager.addStringField(contentFieldName, parsedContent, document, store, analyzed, termVector);
 			addDocument(indexContext, indexableFileSystem, document);
+
+			Thread.sleep(indexContext.getThrottle());
+		} catch (InterruptedException e) {
+			throw e;
 		} catch (IOException e) {
 			logger.error("Exception indexing file : " + file, e);
 		} catch (Exception e) {

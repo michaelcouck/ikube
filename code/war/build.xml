@@ -82,7 +82,7 @@
 		files will then be jared and added to the war as a convenience. Also for the testing the configuration jar
 		will be unjared into one of the servers to continuously test the external configuration.  
 	-->
-	<target name="copy.configuration">
+	<target name="unpack.configuration">
 		<delete dir="${configuration.directory}" />
 		<copy todir="${configuration.directory}/ikube">
 			<fileset dir="../core/src/main/resources/META-INF">
@@ -101,6 +101,8 @@
 				<exclude name="**/discarded/**" />
 			</fileset>
 		</copy>
+	</target>
+	<target name="copy.configuration" depends="unpack.configuration">
 		<jar destfile="${configuration.directory}/${ikube.configuration.jar}" basedir="${configuration.directory}" />
 		<copy file="${configuration.directory}/${ikube.configuration.jar}" todir="./src/main/webapp/docs" failonerror="true" />
 		<!-- unjar src="${configuration.directory}/${ikube.configuration.jar}" dest="${ikube.configuration.directory}" overwrite="true" / -->
@@ -110,11 +112,15 @@
 
 		<replace dir="${tomcat.2.bin}" value="61617">
 			<include name="**/spring.properties" />
-			<replacetoken><![CDATA[61616]]></replacetoken>
+			<replacetoken>
+				<![CDATA[61616]]>
+			</replacetoken>
 		</replace>
 		<replace dir="${tomcat.3.bin}" value="61618">
 			<include name="**/spring.properties" />
-			<replacetoken><![CDATA[61616]]></replacetoken>
+			<replacetoken>
+				<![CDATA[61616]]>
+			</replacetoken>
 		</replace>
 	</target>
 
@@ -132,5 +138,5 @@
 			<arg value="file:${database.dir}/${database.name}" />
 		</java>
 	</target>
-	
+
 </project>

@@ -49,7 +49,7 @@ public class RuleInterceptorTest extends ATest {
 
 	private ProceedingJoinPoint joinPoint;
 	/** Class under test. */
-	private IRuleInterceptor ruleInterceptor;
+	private RuleInterceptor ruleInterceptor;
 
 	private IAction<IndexContext<?>, ?> action;
 	private IsMultiSearcherInitialised isMultiSearcherInitialised;
@@ -112,7 +112,7 @@ public class RuleInterceptorTest extends ATest {
 		when(action.getRuleExpression()).thenReturn(predicate);
 
 		actions.put(action.toString(), action);
-		
+
 		Deencapsulation.setField(ruleInterceptor, clusterManager);
 	}
 
@@ -148,6 +148,35 @@ public class RuleInterceptorTest extends ATest {
 			logger.debug("Result : " + result);
 		}
 	}
+
+	// @Test
+	// public void destroy() throws Throwable {
+	// ThreadUtilities.initialize();
+	// final ProceedingJoinPoint proceedingJoinPoint = Mockito.mock(ProceedingJoinPoint.class);
+	// final Thread thread = new Thread(new Runnable() {
+	// public void run() {
+	// try {
+	// logger.info("Sleeping : ");
+	// Thread.sleep(1000);
+	// ThreadUtilities.destroy();
+	// } catch (InterruptedException e) {
+	// logger.error("Thread interrupted : " + this, e);
+	// }
+	// }
+	// });
+	// Mockito.when(proceedingJoinPoint.proceed()).thenAnswer(new Answer<Object>() {
+	// @Override
+	// public Object answer(InvocationOnMock invocation) throws Throwable {
+	// Thread target = (Thread) proceedingJoinPoint.getTarget();
+	// thread.start();
+	// thread.join();
+	// return target;
+	// }
+	// });
+	// Mockito.when(proceedingJoinPoint.getTarget()).thenReturn(thread);
+	// ruleInterceptor.proceed(indexContext, proceedingJoinPoint);
+	// logger.info("Finished running : " + Thread.currentThread());
+	// }
 
 	@Test
 	public void jep() {

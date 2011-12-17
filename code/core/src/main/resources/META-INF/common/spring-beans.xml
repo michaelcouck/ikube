@@ -165,15 +165,6 @@
 		id="ikube.service.WebServicePublisher"
 		class="ikube.service.WebServicePublisher"
 		init-method="publish" />
-	<bean
-		id="ikube.cluster.jms.LockRemovalListener"
-		class="ikube.cluster.jms.LockRemovalListener" />
-	<bean
-		id="ikube.cluster.jms.ServerRemovalListener"
-		class="ikube.cluster.jms.ServerRemovalListener" />
-	<bean
-		id="ikube.cluster.jms.ServerClubListener"
-		class="ikube.cluster.jms.ServerClubListener" />
 		
 	<util:list id="publishables">
 		<ref bean="ikube.service.SearcherWebService" />
@@ -188,10 +179,13 @@
 	<util:list id="ikube.listener.ListenerManager.listeners">
 		<ref bean="ikube.IndexEngine" />
 		<ref bean="ikube.monitoring.IMonitoringInterceptor" />
-		<ref bean="ikube.cluster.jms.LockRemovalListener" />
-		<ref bean="ikube.cluster.jms.ServerRemovalListener" />
-		<ref bean="ikube.cluster.jms.ServerClubListener" />
-		<ref bean="ikube.action.rule.IRuleInterceptor" />
+		
+		<bean class="ikube.cluster.jms.LockRemovalListener" />
+		<bean class="ikube.cluster.jms.ServerRemovalListener" />
+		<bean class="ikube.cluster.jms.ServerClubListener" />
+		
+		<bean class="ikube.listener.StartupListener" />
+		<bean class="ikube.listener.TerminationListener" />
 	</util:list>
 	
 	<bean 
@@ -270,5 +264,11 @@
 	<util:list id="messageProperties">
 		<value>/WEB-INF/i18n/i18n</value>
 	</util:list>
+	
+	<bean 
+		id="ikube.toolkit.ThreadUtilities.initializer" 
+		class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
+		property:staticMethod="ikube.toolkit.ThreadUtilities.initialize">
+	</bean>
 	
 </beans>

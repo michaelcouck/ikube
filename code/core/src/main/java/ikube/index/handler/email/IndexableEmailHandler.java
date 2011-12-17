@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.Future;
 
 import javax.mail.Authenticator;
 import javax.mail.BodyPart;
@@ -53,7 +54,7 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<Thread> handle(final IndexContext<?> indexContext, final IndexableEmail indexable) throws Exception {
+	public List<Future<?>> handle(final IndexContext<?> indexContext, final IndexableEmail indexable) throws Exception {
 		// First check to see if this indexable is handled by another server
 		handleEmail(indexContext, indexable);
 		return Arrays.asList();
@@ -62,10 +63,8 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 	/**
 	 * This method actually goes to the account and indexes the data.
 	 * 
-	 * @param indexContext
-	 *            the context for the index
-	 * @param indexableMail
-	 *            the indexable to index
+	 * @param indexContext the context for the index
+	 * @param indexableMail the indexable to index
 	 */
 	protected void handleEmail(final IndexContext<?> indexContext, final IndexableEmail indexableMail) {
 		Store store;
@@ -114,13 +113,13 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 	/**
 	 * Handles one folder in the mail account, reading the messages and indexing the content.
 	 * 
-	 * @param indexContext
-	 *            the index context
+	 * @param indexContext the index context
 	 * @param indexableMail
 	 * @param folder
 	 * @throws Exception
 	 */
-	protected void handleFolder(final IndexContext<?> indexContext, final IndexableEmail indexableMail, final Folder folder) throws Exception {
+	protected void handleFolder(final IndexContext<?> indexContext, final IndexableEmail indexableMail, final Folder folder)
+			throws Exception {
 		folder.open(Folder.READ_ONLY);
 
 		// For each message found in the server, index it.
@@ -178,8 +177,7 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 	/**
 	 * Closes the connection to the mail server
 	 * 
-	 * @param store
-	 *            The Store object that holds the connection to the mail server.
+	 * @param store The Store object that holds the connection to the mail server.
 	 */
 	private void closeMailServerConnection(final javax.mail.Store store) {
 		try {
@@ -192,13 +190,10 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 	/**
 	 * Returns a message content given a SynchronizationMessage object
 	 * 
-	 * @param message
-	 *            The SynchronizationMessage object representing a message in the mail server
+	 * @param message The SynchronizationMessage object representing a message in the mail server
 	 * @return The message content.
-	 * @throws IOException
-	 *             If some problem occurs when trying to access the message content.
-	 * @throws MessagingException
-	 *             If some problem occurs when trying to access the message content.
+	 * @throws IOException If some problem occurs when trying to access the message content.
+	 * @throws MessagingException If some problem occurs when trying to access the message content.
 	 */
 	private String getMessageContent(final Message message) throws IOException, MessagingException {
 		String messageContent = null;
@@ -234,11 +229,9 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 	/**
 	 * Returns a connection to the mail server given a Mail visitable
 	 * 
-	 * @param indexableMail
-	 *            The {@link IndexableEmail} indexable object
+	 * @param indexableMail The {@link IndexableEmail} indexable object
 	 * @return The {@link Store} object that holds a connection to the mail server.
-	 * @throws NoSuchProviderException
-	 *             If the mail provider wasn't correct specified.
+	 * @throws NoSuchProviderException If the mail provider wasn't correct specified.
 	 */
 	private Store getStore(final IndexableEmail indexableMail) throws NoSuchProviderException {
 		String host = indexableMail.getMailHost();

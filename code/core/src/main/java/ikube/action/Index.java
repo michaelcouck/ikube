@@ -11,6 +11,7 @@ import ikube.toolkit.ThreadUtilities;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Future;
 
 /**
  * This class executes the handlers on the indexables, effectively creating the index. Each indexable has a handler that is implemented to
@@ -57,7 +58,7 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 						logger.warn(Logging.getString("Not handling indexable : ", indexable, " no handler defined."));
 						continue;
 					}
-					List<Thread> threads = null;
+					List<Future<?>> threads = null;
 					try {
 						action.setIndexableName(indexable.getName());
 						logger.debug("Executing handler : " + handler + ", " + indexable.getName());
@@ -65,20 +66,20 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 						threads = handler.handle(indexContext, indexable);
 						if (threads != null && !threads.isEmpty()) {
 							logger.debug("Waiting for threads : " + threads);
-							ThreadUtilities.waitForThreads(threads);
+							ThreadUtilities.waitForFutures(threads, Integer.MAX_VALUE);
 						}
-					} catch (InterruptedException e) {
+						// } catch (InterruptedException e) {
 						// This is a kill switch for the server, terminate all the threads
-						if (threads != null) {
-							for (Thread thread : threads) {
-								try {
-									logger.warn("Interrupting thread : " + thread);
-									thread.interrupt();
-								} catch (Exception ex) {
-									logger.error("Exception terminating thread : " + thread, e);
-								}
-							}
-						}
+						// if (threads != null) {
+						// for (Thread thread : threads) {
+						// try {
+						// logger.warn("Interrupting thread : " + thread);
+						// thread.interrupt();
+						// } catch (Exception ex) {
+						// logger.error("Exception terminating thread : " + thread, e);
+						// }
+						// }
+						// }
 					} catch (Exception e) {
 						logger.error("Exception indexing data : " + indexName, e);
 					}

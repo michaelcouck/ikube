@@ -17,6 +17,7 @@ import ikube.toolkit.DatabaseUtilities;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.Logging;
 import ikube.toolkit.SerializationUtilities;
+import ikube.toolkit.ThreadUtilities;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -29,6 +30,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicLong;
 
 import javax.sql.DataSource;
 
@@ -77,33 +80,34 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	 */
 	private static final int MAX_REENTRANT = 10;
 
-	private long currentId;
-
 	/**
 	 * This method starts threads and passes the indexable to them. The threads are added to the list of threads that are returned to the
 	 * caller that will have to wait for them to finish indexing all the data.
 	 */
 	@Override
-	public List<Thread> handle(final IndexContext<?> indexContext, final IndexableTable indexable) throws Exception {
-		currentId = 0;
+	public List<Future<?>> handle(final IndexContext<?> indexContext, final IndexableTable indexable) throws Exception {
 		// We start as many threads to access this table as defined. We return
 		// the threads to the caller that they can then wait for the threads to finish
 		DataSource dataSource = indexable.getDataSource();
 		logger.debug("Data source : " + dataSource);
 		try {
-			List<Thread> threads = new ArrayList<Thread>();
+			// List<Thread> threads = new ArrayList<Thread>();
+			List<Future<?>> futures = new ArrayList<Future<?>>();
+			final AtomicLong currentId = new AtomicLong(0);
 			for (int i = 0; i < getThreads(); i++) {
 				// One connection per thread, the connection will be closed by the thread when finished
 				final Connection connection = dataSource.getConnection();
 				// Because the transient state data is stored in the indexable during indexing we have
 				// to clone the indexable for each thread
 				final IndexableTable cloneIndexableTable = (IndexableTable) SerializationUtilities.clone(indexable);
-				Thread thread = new Thread(new Runnable() {
+				Runnable runnable = new Runnable() {
 					public void run() {
 						try {
 							connection.setAutoCommit(Boolean.FALSE);
 							IContentProvider<IndexableColumn> contentProvider = new ColumnContentProvider();
-							handleTable(contentProvider, indexContext, cloneIndexableTable, connection, null, 0);
+							handleTable(contentProvider, indexContext, cloneIndexableTable, connection, null, 0, currentId);
+						} catch (InterruptedException e) {
+							throw new RuntimeException(e);
 						} catch (Exception e) {
 							throw new RuntimeException(e);
 						} finally {
@@ -112,14 +116,17 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 							DatabaseUtilities.close(connection);
 						}
 					}
-				}, this.getClass().getSimpleName() + "." + i);
-				threads.add(thread);
+				};
+				Future<?> future = ThreadUtilities.submit(runnable);
+				futures.add(future);
+				// Thread thread = new Thread(runnable, this.getClass().getSimpleName() + "." + i);
+				// threads.add(thread);
 			}
-			for (Thread thread : threads) {
-				logger.debug("Starting thread : " + thread);
-				thread.start();
-			}
-			return threads;
+			// for (Thread thread : threads) {
+			// logger.debug("Starting thread : " + thread);
+			// thread.start();
+			// }
+			return futures;
 		} catch (Exception e) {
 			logger.error("Exception starting the table handler threads : " + indexable, e);
 		}
@@ -148,12 +155,15 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	 * @param document the document that came from the top level table. As we recurse the table hierarchy, we have to pass this document to
 	 *            the child tables so they can add their data to the document. When this method is called with the top level table the
 	 *            document is null of course
+	 * @throws InterruptedException
 	 */
 	protected void handleTable(final IContentProvider<IndexableColumn> contentProvider, final IndexContext<?> indexContext,
-			final IndexableTable indexableTable, final Connection connection, Document document, int exceptions) {
+			final IndexableTable indexableTable, final Connection connection, Document document, int exceptions, AtomicLong currentId)
+			throws InterruptedException {
 		ResultSet resultSet = null;
 		try {
-			resultSet = getResultSet(indexContext, indexableTable, connection, 1);
+			// long currentId = 0;
+			resultSet = getResultSet(indexContext, indexableTable, connection, currentId, 1);
 			do {
 				try {
 					if (resultSet == null) {
@@ -202,7 +212,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 						// Here we recursively call this method with the child tables. We pass the document
 						// to the child table for this row in the parent table so they can add their fields to the
 						// index
-						handleTable(contentProvider, indexContext, childIndexableTable, connection, document, exceptions);
+						handleTable(contentProvider, indexContext, childIndexableTable, connection, document, exceptions, currentId);
 					}
 					// Add the document to the index if this is the primary table
 					if (indexableTable.isPrimaryTable()) {
@@ -213,13 +223,20 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 					if (!resultSet.next()) {
 						if (indexableTable.isPrimaryTable()) {
 							// We need to see if there are any more results
-							resultSet = getResultSet(indexContext, indexableTable, connection, 1);
+							resultSet = getResultSet(indexContext, indexableTable, connection, currentId, 1);
 						} else {
 							// If the table is not primary then we have exhausted the results
 							// for this sub selection, we go up one level to the parent table
 							break;
 						}
 					}
+					if (Thread.currentThread().isInterrupted()) {
+						throw new InterruptedException("Table indexing teminated : ");
+					}
+				} catch (InterruptedException e) {
+					// If we are interrupted then this index action has
+					// been terminated by the executer service and we should exit
+					throw e;
 				} catch (Exception e) {
 					logger.error("Exception indexing table : " + indexableTable.getName() + ", connection : " + connection
 							+ ", exceptions : " + exceptions, e);
@@ -230,6 +247,8 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 					}
 				}
 			} while (true);
+		} catch (InterruptedException e) {
+			throw e;
 		} catch (Exception e) {
 			String message = Logging.getString("Exception indexing table : " + indexableTable.getName(), ", connection : ", connection,
 					", exceptions : ", exceptions);
@@ -274,7 +293,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	 * @throws Exception
 	 */
 	protected synchronized ResultSet getResultSet(final IndexContext<?> indexContext, final IndexableTable indexableTable,
-			final Connection connection, int reentrant) throws Exception {
+			final Connection connection, AtomicLong currentId, int reentrant) throws Exception {
 		try {
 			if (reentrant >= MAX_REENTRANT) {
 				return null;
@@ -291,11 +310,14 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 					minimumId = getIdFunction(indexableTable, connection, "min");
 					indexableTable.setMinimumId(minimumId);
 				}
-				if (currentId < minimumId) {
-					currentId = minimumId;
+				if (currentId.get() < minimumId) {
+					// currentId = minimumId;
+					currentId.set(minimumId);
 				}
-				nextIdNumber = currentId;
-				currentId += indexContext.getBatchSize();
+				// nextIdNumber = currentId;
+				nextIdNumber = currentId.get();
+				// currentId += indexContext.getBatchSize();
+				currentId.set(new Long(currentId.get() + indexContext.getBatchSize()));
 			}
 
 			// Now we build the sql based on the columns defined in the configuration
@@ -321,7 +343,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 					// If we have exhausted the results then we return null and the thread dies
 					if (nextIdNumber < maximumId) {
 						// Try the next predicate + batchSize
-						return getResultSet(indexContext, indexableTable, connection, ++reentrant);
+						return getResultSet(indexContext, indexableTable, connection, currentId, ++reentrant);
 					}
 				}
 				// No more results for the primary table, we are finished

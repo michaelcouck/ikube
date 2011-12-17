@@ -6,7 +6,6 @@ import ikube.action.Index;
 import ikube.action.Open;
 import ikube.cluster.IClusterManager;
 import ikube.listener.Event;
-import ikube.listener.IListener;
 import ikube.model.IndexContext;
 import ikube.toolkit.Logging;
 import ikube.toolkit.ThreadUtilities;
@@ -35,7 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @since 12.02.2011
  * @version 01.00
  */
-public class RuleInterceptor implements IRuleInterceptor, IListener {
+public class RuleInterceptor implements IRuleInterceptor {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(RuleInterceptor.class);
 
@@ -79,7 +78,7 @@ public class RuleInterceptor implements IRuleInterceptor, IListener {
 				// true and an index started, including the state of the indexes on the file
 				// system and the other servers
 				// proceed = Boolean.TRUE;
-				proceed(indexContext, proceedingJoinPoint, target);
+				proceed(indexContext, proceedingJoinPoint);
 			}
 		} catch (Exception t) {
 			LOGGER.error("Exception evaluating the rules : target : " + target + ", context : " + indexContext, t);
@@ -159,36 +158,31 @@ public class RuleInterceptor implements IRuleInterceptor, IListener {
 	 * 
 	 * @param proceedingJoinPoint the intercepted action join point
 	 */
-	protected synchronized void proceed(final IndexContext<?> indexContext, final ProceedingJoinPoint proceedingJoinPoint,
-			final Object target) {
+	protected synchronized void proceed(final IndexContext<?> indexContext, final ProceedingJoinPoint proceedingJoinPoint) {
 		try {
-			if (executorService.isTerminated()) {
-				LOGGER.warn("The executor service is shutdown!");
-				return;
-			}
+			// if (executorService.isTerminated()) {
+			// LOGGER.warn("The executor service is shutdown!");
+			// return;
+			// }
 			// We set the working flag in the action within the cluster lock when setting to true
-			final Object[] objects = new Object[] { target.getClass().getSimpleName(), indexContext.getIndexName() };
-			Future<?> future = executorService.submit(new Runnable() {
+			Runnable runnable = new Runnable() {
 				public void run() {
+					Object[] objects = new Object[] { proceedingJoinPoint, indexContext.getIndexName() };
 					LOGGER.info("Action start : {} {}", objects);
 					try {
-						proceedingJoinPoint.proceed();
+						Object returnValue = proceedingJoinPoint.proceed();
+						LOGGER.info("Returned from join point : " + returnValue);
 					} catch (Throwable e) {
 						LOGGER.error("Exception proceeding on join point : " + proceedingJoinPoint, e);
 					} finally {
 						LOGGER.info("Action finished : {} {}", objects);
 					}
 				}
-			});
-			long maxWait = 3000;
-			long start = System.currentTimeMillis();
-			while (!future.isDone()) {
-				ThreadUtilities.sleep(100);
-				if ((System.currentTimeMillis() - start) > maxWait) {
-					break;
-				}
-			}
-			LOGGER.debug("Waited for : " + (System.currentTimeMillis() - start));
+			};
+			Future<?> future = ThreadUtilities.submit(runnable);
+			// Future<?> future = executorService.submit(runnable);
+			ThreadUtilities.waitForFuture(future, 3000);
+			LOGGER.info("Finished waiting for future : " + future);
 		} finally {
 			notifyAll();
 		}
@@ -199,7 +193,7 @@ public class RuleInterceptor implements IRuleInterceptor, IListener {
 	}
 
 	public void destroy() {
-		executorService.shutdown();
+		// executorService.shutdown();
 		List<Runnable> runnables = executorService.shutdownNow();
 		LOGGER.info("Shutdown runnables : " + runnables);
 	}
@@ -214,7 +208,8 @@ public class RuleInterceptor implements IRuleInterceptor, IListener {
 		}
 	}
 
-	@Override
+	// @Override
+	@Deprecated
 	public void handleNotification(final Event event) {
 		if (Event.TERMINATE.equals(event.getType())) {
 			LOGGER.warn("Terminating indexing and all other processes : ");

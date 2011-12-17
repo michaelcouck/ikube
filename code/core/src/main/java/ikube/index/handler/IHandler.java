@@ -8,6 +8,7 @@ import ikube.model.IndexableEmail;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
+import java.util.concurrent.Future;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.CorruptIndexException;
@@ -49,7 +50,7 @@ public interface IHandler<T extends Indexable<?>> {
 	 * @return the list of threads that the caller must wait for
 	 * @throws Exception
 	 */
-	List<Thread> handle(IndexContext<?> indexContext, T indexable) throws Exception;
+	List<Future<?>> handle(IndexContext<?> indexContext, T indexable) throws Exception;
 
 	/**
 	 * This method is to add the document to the index during the processing. Typically this method will be intercepted and other logic

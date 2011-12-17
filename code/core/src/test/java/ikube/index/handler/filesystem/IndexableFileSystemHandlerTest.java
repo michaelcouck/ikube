@@ -24,6 +24,7 @@ import java.io.File;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.Future;
 import java.util.regex.Pattern;
 
 import mockit.Deencapsulation;
@@ -88,8 +89,8 @@ public class IndexableFileSystemHandlerTest extends ATest {
 	@Test
 	@SuppressWarnings("unchecked")
 	public void handle() throws Exception {
-		List<Thread> threads = indexableFileSystemHandler.handle(indexContext, indexableFileSystem);
-		ThreadUtilities.waitForThreads(threads);
+		List<Future<?>> futures = indexableFileSystemHandler.handle(indexContext, indexableFileSystem);
+		ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
 		// Verify that the database is called to find
 		verify(dataBase, Mockito.atLeastOnce()).find(any(Class.class), anyString(), anyMap(), anyInt(), anyInt());
 	}

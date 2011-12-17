@@ -13,6 +13,7 @@ import ikube.toolkit.ThreadUtilities;
 import java.io.File;
 import java.net.InetAddress;
 import java.util.List;
+import java.util.concurrent.Future;
 
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.store.Directory;
@@ -40,8 +41,8 @@ public class IndexableFilesystemHandlerIntegration extends AbstractIntegration {
 		try {
 			String ip = InetAddress.getLocalHost().getHostAddress();
 			IndexManager.openIndexWriter(dropboxIndexContext, System.currentTimeMillis(), ip);
-			List<Thread> threads = indexableFilesystemHandler.handle(dropboxIndexContext, dropboxIndexable);
-			ThreadUtilities.waitForThreads(threads);
+			List<Future<?>> threads = indexableFilesystemHandler.handle(dropboxIndexContext, dropboxIndexable);
+			ThreadUtilities.waitForFutures(threads, Integer.MAX_VALUE);
 			File dropboxIndexFolder = FileUtilities.findFileRecursively(new File(dropboxIndexContext.getIndexDirectoryPath()),
 					"dropboxIndex");
 			logger.info("Dropbox folder : " + dropboxIndexFolder.getAbsolutePath());

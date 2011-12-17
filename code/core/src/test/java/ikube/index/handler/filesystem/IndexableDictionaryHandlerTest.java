@@ -10,6 +10,7 @@ import ikube.toolkit.ThreadUtilities;
 
 import java.io.File;
 import java.util.List;
+import java.util.concurrent.Future;
 
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.store.FSDirectory;
@@ -47,8 +48,8 @@ public class IndexableDictionaryHandlerTest extends ATest {
 		when(indexableDictionary.getPath()).thenReturn(dictionariesDirectory.getAbsolutePath());
 		IndexableDictionaryHandler dictionaryHandler = new IndexableDictionaryHandler();
 		dictionaryHandler.setThreads(1);
-		List<Thread> threads = dictionaryHandler.handle(indexContext, indexableDictionary);
-		ThreadUtilities.waitForThreads(threads);
+		List<Future<?>> threads = dictionaryHandler.handle(indexContext, indexableDictionary);
+		ThreadUtilities.waitForFutures(threads, Integer.MAX_VALUE);
 		File dictionaryIndexDirectory = FileUtilities.getFile(indexContext.getIndexDirectoryPath(), Boolean.TRUE);
 		boolean indexExists = IndexReader.indexExists(FSDirectory.open(dictionaryIndexDirectory));
 		assertTrue("The dictionary index should be created : ", indexExists);

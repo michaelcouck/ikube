@@ -21,26 +21,29 @@ import javax.persistence.Transient;
 public class IndexableInternet extends Indexable<IndexableInternet> {
 
 	@Transient
-	private transient String		currentUrl;
+	private transient String currentUrl;
 	@Transient
-	private transient InputStream	currentInputStream;
+	private transient InputStream currentInputStream;
 	@Transient
-	private transient Pattern		pattern;
+	private transient Pattern pattern;
 	@Transient
-	private transient URI			uri;
+	private transient URI uri;
 	@Transient
-	private transient String		baseUrl;
+	private transient String baseUrl;
 
-	private String					url;
-	private int						internetBatchSize;
-	private String					excludedPattern;
-	private int						timeout;
+	private String url;
+	private String loginUrl;
+	private String userid;
+	private String password;
+	private int internetBatchSize;
+	private String excludedPattern;
+	private int timeout;
 	@Field()
-	private String					titleFieldName;
+	private String titleFieldName;
 	@Field()
-	private String					idFieldName;
+	private String idFieldName;
 	@Field()
-	private String					contentFieldName;
+	private String contentFieldName;
 
 	public URI getUri() {
 		if (uri == null && getUrl() != null) {
@@ -80,6 +83,30 @@ public class IndexableInternet extends Indexable<IndexableInternet> {
 
 	public void setUrl(final String url) {
 		this.url = url;
+	}
+
+	public String getLoginUrl() {
+		return loginUrl;
+	}
+
+	public void setLoginUrl(String loginUrl) {
+		this.loginUrl = loginUrl;
+	}
+
+	public String getUserid() {
+		return userid;
+	}
+
+	public void setUserid(String userid) {
+		this.userid = userid;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
 	public String getTitleFieldName() {
