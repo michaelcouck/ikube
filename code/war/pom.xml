@@ -41,7 +41,6 @@
 				<version>2.7.1</version>
 				<configuration>
 					<forkMode>once</forkMode>
-					<argLine>-javaagent:../../serenity/serenity.jar ${memory.parameters} ${serenity.parameters}</argLine>
 					<excludes>
 						<exclude>**/*Integration*.java</exclude>
 					</excludes>
@@ -52,7 +51,6 @@
 				<version>2.6</version>
 				<configuration>
 					<forkMode>once</forkMode>
-					<!-- <argLine>-javaagent:../../serenity/serenity.jar ${memory.parameters} ${serenity.parameters}</argLine> -->
 					<includes>
 						<include>**/*Integration*.java</include>
 					</includes>
