@@ -22,7 +22,7 @@
 		location="classpath*:**/spring.properties" />
 
 	<!-- Create an embedded ActiveMQ Broker -->
-	<amq:broker useJmx="false" persistent="true" start="false">
+	<amq:broker useJmx="false" persistent="true">
 		<amq:destinationInterceptors>
 			<amq:virtualDestinationInterceptor>
 				<amq:virtualDestinations>

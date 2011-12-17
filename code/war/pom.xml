@@ -51,7 +51,7 @@
 				<artifactId>maven-failsafe-plugin</artifactId>
 				<version>2.6</version>
 				<configuration>
-					<forkMode>never</forkMode>
+					<forkMode>once</forkMode>
 					<!-- <argLine>-javaagent:../../serenity/serenity.jar ${memory.parameters} ${serenity.parameters}</argLine> -->
 					<includes>
 						<include>**/*Integration*.java</include>
@@ -172,7 +172,7 @@
 					</connectors>
 				</configuration>
 				<executions>
-					<execution>
+					<!-- <execution>
 						<id>start-jetty</id>
 						<phase>pre-integration-test</phase>
 						<goals>
@@ -188,7 +188,7 @@
 						<goals>
 							<goal>stop</goal>
 						</goals>
-					</execution>
+					</execution> -->
 				</executions>
 				<dependencies>
 					<dependency>
@@ -289,6 +289,28 @@
 			<scope>test</scope>
 		</dependency>
 
+		<!-- Alternative Jetty dependencies. -->
+		<!-- <dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-server</artifactId>
+			<version>7.2.2.v20101205</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-webapp</artifactId>
+			<version>7.2.2.v20101205</version>
+		</dependency>	
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-jsp-2.1</artifactId>
+			<version>7.2.2.v20101205</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mortbay.jetty</groupId>
+			<artifactId>jsp-2.1-glassfish</artifactId>
+			<version>2.1.v20100127</version>
+		</dependency> -->
+
 		<dependency>
 			<groupId>taglibs</groupId>
 			<artifactId>standard</artifactId>
@@ -302,6 +324,13 @@
 			<version>1.1.2</version>
 			<type>jar</type>
 			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mortbay.jetty</groupId>
+			<artifactId>jetty-runner</artifactId>
+			<version>7.0.0.v20091005</version>
+			<type>jar</type>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 

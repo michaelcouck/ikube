@@ -110,7 +110,7 @@ public class FileUtilitiesTest extends ATest {
 
 	@Test
 	public void findFile() {
-		File file = FileUtilities.findFileRecursively(new File("."), new String[] { "doctors.xml" });
+		File file = FileUtilities.findFileRecursively(new File("."), "doctors.xml");
 		assertNotNull(file);
 	}
 
@@ -202,6 +202,18 @@ public class FileUtilitiesTest extends ATest {
 		FileUtilities.deleteFiles(new File("C:/Users/Michael/AppData/Local/Temp"), "JF");
 		FileUtilities.deleteFiles(new File("C:/Users/db2admin/AppData/Local/Temp"), "JF");
 		FileUtilities.deleteFiles(new File("C:/Users/Administrator/AppData/Local/Temp"), "JF");
+	}
+
+	@Test
+	public void findFileRecursivelyOnlyFile() {
+		File file = FileUtilities.findFileRecursively(new File("."), false, "doctors.xml");
+		assertNotNull(file);
+		assertTrue(file.isFile());
+		assertTrue(file.exists());
+		file = FileUtilities.findFileRecursively(new File("."), true, "data");
+		assertNotNull(file);
+		assertTrue(file.exists());
+		assertTrue(file.isDirectory());
 	}
 
 }

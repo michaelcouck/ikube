@@ -32,8 +32,6 @@ public class Action extends Persistable {
 	public static final String SELECT_FROM_ACTIONS_COUNT = "select count(a) from Action as a";
 	public static final String SELECT_FROM_ACTIONS_BY_ACTION_NAME_INDEX_NAME_AND_WORKING = "select a from Action as a where a.actionName = :actionName and a.indexName = :indexName and a.working = :working order by a.startTime desc";
 
-	/** The row id of the next row. */
-	private long idNumber;
 	/** The name of the action that is executing. */
 	private String actionName;
 	/** The currently executing indexable. */
@@ -59,22 +57,6 @@ public class Action extends Persistable {
 	private boolean result;
 	/** The unique id of the server in the cluster */
 	private String serverAddress;
-
-	/**
-	 * Default constructor.
-	 */
-	public Action() {
-	}
-
-	public Action(final long idNumber, final String actionName, final String indexableName, final String indexName,
-			final Timestamp startTime, final boolean working) {
-		this.idNumber = idNumber;
-		this.actionName = actionName;
-		this.indexableName = indexableName;
-		this.indexName = indexName;
-		this.startTime = startTime;
-		this.working = working;
-	}
 
 	public String getActionName() {
 		return actionName;

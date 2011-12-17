@@ -12,8 +12,12 @@ import ikube.toolkit.FileUtilities;
 import ikube.toolkit.Logging;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.net.InetAddress;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 
 import javax.sql.DataSource;
@@ -27,6 +31,8 @@ import org.apache.lucene.index.IndexWriter;
 import org.dbunit.ext.h2.H2DataTypeFactory;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
+import org.mortbay.jetty.Server;
+import org.mortbay.jetty.webapp.WebAppContext;
 
 @Ignore
 public abstract class AbstractIntegration {
@@ -36,7 +42,7 @@ public abstract class AbstractIntegration {
 	private static boolean INITIALIZED = Boolean.FALSE;
 
 	@BeforeClass
-	public static void beforeClass() {
+	public static synchronized void beforeClass() {
 		if (INITIALIZED) {
 			return;
 		}
@@ -44,25 +50,42 @@ public abstract class AbstractIntegration {
 		Logging.configure();
 		try {
 			FileUtilities.deleteFiles(new File("."), "btm1.tlog", "btm2.tlog", "ikube.h2.db", "ikube.lobs.db", "ikube.log", "openjpa.log");
-			// "/META-INF/spring.xml"
-			ApplicationContextManager.getApplicationContext();
-			ApplicationContextManager.getBean(ListenerManager.class).removeListeners();
-			IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
-			dataBase.find(Address.class, 0l);
-			dataBase.find(ikube.model.File.class, 0l);
-
-			DataSource dataSource = ApplicationContextManager.getBean("nonXaDataSourceH2");
-			Connection connection = dataSource.getConnection();
-			String filePath = FileUtilities.findFileRecursively(new File("."), "allData.xml").getAbsolutePath();
-			DataUtilities.DATA_TYPE_FACTORY = new H2DataTypeFactory();
-			DataUtilities.insertData(connection, filePath);
+			startJetty();
+			Thread.sleep(3000);
+			startContext();
+			Thread.sleep(3000);
+			insertData();
 		} catch (Exception e) {
 			LOGGER.error("Exception inserting the data for the base test : ", e);
 		}
 	}
 
-	protected IndexContext<?> realIndexContext = ApplicationContextManager.getBean("indexContext");
-	protected Logger logger = Logger.getLogger(this.getClass());
+	private static void startContext() {
+		ApplicationContextManager.getBean(ListenerManager.class).removeListeners();
+		IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
+		dataBase.find(Address.class, 0l);
+		dataBase.find(ikube.model.File.class, 0l);
+	}
+
+	private static void insertData() throws SQLException, FileNotFoundException {
+		DataSource dataSource = ApplicationContextManager.getBean("nonXaDataSourceH2");
+		Connection connection = dataSource.getConnection();
+		File dotDirectory = new File(".");
+		LOGGER.info("Dot directory : " + dotDirectory.getAbsolutePath());
+		File allData = FileUtilities.findFileRecursively(dotDirectory, false, "allData");
+		InputStream inputStream = new FileInputStream(allData);
+		DataUtilities.setDataTypeFactory(new H2DataTypeFactory());
+		DataUtilities.insertData(connection, inputStream);
+	}
+
+	private static void startJetty() throws Exception {
+		Server server = new Server(9300);
+		File webappDirectory = FileUtilities.findFileRecursively(new File("."), "webapp");
+		WebAppContext webAppContext = new WebAppContext(webappDirectory.getAbsolutePath(), "/ikube");
+		webAppContext.setServer(server);
+		server.setHandler(webAppContext);
+		server.start();
+	}
 
 	public static void delete(final IDataBase dataBase, final Class<?>... klasses) {
 		int batchSize = 1000;
@@ -78,6 +101,9 @@ public abstract class AbstractIntegration {
 			}
 		}
 	}
+
+	protected IndexContext<?> realIndexContext = ApplicationContextManager.getBean("indexContext");
+	protected Logger logger = Logger.getLogger(this.getClass());
 
 	/**
 	 * This method creates an index using the index path in the context, the time and the ip and returns the latest index directory, i.e.

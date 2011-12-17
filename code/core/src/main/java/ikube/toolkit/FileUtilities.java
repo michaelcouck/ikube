@@ -118,6 +118,22 @@ public final class FileUtilities {
 		return !files.isEmpty() ? files.get(0) : null;
 	}
 
+	public static File findFileRecursively(final File folder, final boolean directory, final String... stringPatterns) {
+		List<File> files = FileUtilities.findFilesRecursively(folder, new ArrayList<File>(), stringPatterns);
+		for (File file : files) {
+			if (directory) {
+				if (file.isDirectory()) {
+					return file;
+				}
+			} else {
+				if (file.isFile()) {
+					return file;
+				}
+			}
+		}
+		return null;
+	}
+
 	/**
 	 * This method will look through all the files in the top level folder, and all the sub folders, adding files to the list when they
 	 * match the patterns that are provided.

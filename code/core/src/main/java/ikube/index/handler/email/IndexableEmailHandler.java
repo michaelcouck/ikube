@@ -7,12 +7,13 @@ import ikube.index.parse.ParserProvider;
 import ikube.model.IndexContext;
 import ikube.model.IndexableEmail;
 import ikube.toolkit.Logging;
+import ikube.toolkit.ThreadUtilities;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
@@ -55,9 +56,16 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 	 */
 	@Override
 	public List<Future<?>> handle(final IndexContext<?> indexContext, final IndexableEmail indexable) throws Exception {
-		// First check to see if this indexable is handled by another server
-		handleEmail(indexContext, indexable);
-		return Arrays.asList();
+		Runnable runnable = new Runnable() {
+			@Override
+			public void run() {
+				handleEmail(indexContext, indexable);
+			}
+		};
+		Future<?> future = ThreadUtilities.submit(runnable);
+		List<Future<?>> futures = new ArrayList<Future<?>>();
+		futures.add(future);
+		return futures;
 	}
 
 	/**
@@ -158,6 +166,7 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 				IndexManager.addStringField(indexableMail.getContentField(), fieldContent, document, mustStore, analyzed, termVector);
 			}
 			addDocument(indexContext, indexableMail, document);
+			Thread.sleep(indexContext.getThrottle());
 		}
 		folder.close(true);
 	}

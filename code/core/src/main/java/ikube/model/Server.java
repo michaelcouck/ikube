@@ -44,8 +44,8 @@ public class Server extends Persistable implements Comparable<Server> {
 	public Server() {
 		super();
 		this.actions = new ArrayList<Action>();
-		this.searchingExecutions = new HashMap<String, Execution>();
 		this.indexingExecutions = new HashMap<String, Execution>();
+		this.searchingExecutions = new HashMap<String, Execution>();
 	}
 
 	public String getIp() {
