@@ -50,7 +50,7 @@ import org.apache.lucene.document.Field.TermVector;
  */
 public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSystem> {
 
-	private static final String STRING_PATTERN = ".*(\\.zip).*|.*(\\.jar).*|.*(\\.war).*|.*(\\.ear).*";
+	private static final String STRING_PATTERN = ".*(\\.zip\\Z).*|.*(\\.jar\\Z).*|.*(\\.war\\Z).*|.*(\\.ear\\Z).*|.*(\\.gz\\Z).*|.*(\\.sar\\Z).*|.*(\\.tar\\Z).*";
 	private static final Pattern ZIP_JAR_WAR_EAR_PATTERN = Pattern.compile(STRING_PATTERN);
 
 	/**
@@ -66,15 +66,19 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 		}
 		// Add all the files to the database
 		final Set<File> batchedFiles = new TreeSet<File>();
-		iterateFileSystem(dataBase, indexContext, indexable, baseFile, pattern, batchedFiles);
-		// Persist the last of the files in the list
-		if (batchedFiles.size() > 0) {
-			persistFilesBatch(dataBase, indexable, batchedFiles);
-		}
+		Future<?> fileSystemFuture = ThreadUtilities.submit(new Runnable() {
+			public void run() {
+				iterateFileSystem(dataBase, indexContext, indexable, baseFile, pattern, batchedFiles);
+				// Persist the last of the files in the list
+				if (batchedFiles.size() > 0) {
+					persistFilesBatch(dataBase, indexable, batchedFiles);
+				}
+			}
+		});
+		ThreadUtilities.waitForFuture(fileSystemFuture, Integer.MAX_VALUE);
 		// Now start the threads indexing the files from the database
+		List<Future<?>> futures = new ArrayList<Future<?>>();
 		try {
-			// List<Thread> threads = new ArrayList<Thread>();
-			List<Future<?>> futures = new ArrayList<Future<?>>();
 			for (int i = 0; i < getThreads(); i++) {
 				Runnable runnable = new Runnable() {
 					public void run() {
@@ -99,18 +103,11 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 				};
 				Future<?> future = ThreadUtilities.submit(runnable);
 				futures.add(future);
-				// Thread thread = new Thread(runnable, this.getClass().getSimpleName() + "." + i);
-				// threads.add(thread);
 			}
-			// for (Thread thread : threads) {
-			// thread.start();
-			// }
-			// return threads;
-			return futures;
 		} catch (Exception e) {
 			logger.error("Exception starting the file system indexer threads : ", e);
 		}
-		return Arrays.asList();
+		return futures;
 	}
 
 	/**
@@ -158,10 +155,14 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 				if (file.isDirectory()) {
 					iterateFileSystem(dataBase, indexContext, indexable, file, excludedPattern, batchedFiles);
 				} else {
-					if (ZIP_JAR_WAR_EAR_PATTERN.matcher(file.getName()).matches()) {
+					if (ZIP_JAR_WAR_EAR_PATTERN.matcher(file.getName()).matches() && file.isFile()) {
 						// TODO Unpack the file and return the folder that it was unpacked to
 						// to this method, essentially iterating over the files that were unpacked
-						logger.info("Found zip, must still implement this functionality : " + file.getName());
+						File unzippedToFolder = FileUtilities.unzip(file.getAbsolutePath());
+						if (unzippedToFolder != null && unzippedToFolder.exists() && unzippedToFolder.isFile()) {
+							iterateFileSystem(dataBase, indexContext, indexable, unzippedToFolder, excludedPattern, batchedFiles);
+						}
+						// logger.info("Found zip, must still implement this functionality : " + file.getName());
 					} else {
 						batchedFiles.add(file);
 					}
@@ -208,7 +209,7 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 			final ikube.model.File dbFile) throws InterruptedException {
 		File file = new File(dbFile.getUrl());
 		try {
-			// logger.error("Db file : " + dbFile);
+			// logger.info("Db file : " + dbFile);
 			Document document = new Document();
 			indexableFileSystem.setCurrentFile(file);
 

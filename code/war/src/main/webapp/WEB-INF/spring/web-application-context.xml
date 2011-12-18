@@ -28,8 +28,8 @@
 	<!-- <import resource="file:**/spring*.xml" />
 	<import resource="file:**/spring-*.xml" /> -->
 	<!-- <import resource="file:**/spring-*.xml" /> -->
-	<import resource="file:ikube/spring-*.xml" />
-	<import resource="file:ikube/**/spring-*.xml" />
+	<!-- <import resource="file:ikube/spring-*.xml" />
+	<import resource="file:ikube/**/spring-*.xml" /> -->
 	<import resource="file:**/ikube/spring-*.xml" />
 	<import resource="file:**/ikube/**/spring-*.xml" />
 	<!-- <import resource="file*:**/ikube/spring-*.xml" />

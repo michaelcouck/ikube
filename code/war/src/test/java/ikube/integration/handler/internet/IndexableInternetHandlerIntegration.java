@@ -1,6 +1,7 @@
 package ikube.integration.handler.internet;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
+
 import ikube.action.Index;
 import ikube.cluster.IClusterManager;
 import ikube.database.IDataBase;
@@ -12,6 +13,7 @@ import ikube.model.IndexContext;
 import ikube.model.IndexableInternet;
 import ikube.model.Url;
 import ikube.toolkit.ApplicationContextManager;
+import ikube.toolkit.FileUtilities;
 import ikube.toolkit.ThreadUtilities;
 
 import java.io.InputStream;
@@ -22,9 +24,12 @@ import java.util.concurrent.Future;
 
 import mockit.Deencapsulation;
 
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.lucene.index.IndexWriter;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -79,8 +84,8 @@ public class IndexableInternetHandlerIntegration extends AbstractIntegration {
 		indexableInternet.setUrl(baseUrl.getUrl());
 		indexableInternet.setBaseUrl(null);
 		InputStream inputStream = new URL(baseUrl.getUrl()).openStream();
-		// indexableInternetHandler.extractLinksFromContent(dataBase, indexableInternet, baseUrl, inputStream);
 		Deencapsulation.invoke(indexableInternetHandler, "extractLinksFromContent", dataBase, indexableInternet, baseUrl, inputStream);
+		// TODO Verify the links collected
 
 		baseUrl = new Url();
 		baseUrl.setName("name");
@@ -89,9 +94,25 @@ public class IndexableInternetHandlerIntegration extends AbstractIntegration {
 		indexableInternet.setUrl(baseUrl.getUrl());
 		indexableInternet.setBaseUrl(null);
 		inputStream = new URL(baseUrl.getUrl()).openStream();
-
-		// indexableInternetHandler.extractLinksFromContent(dataBase, indexableInternet, baseUrl, inputStream);
 		Deencapsulation.invoke(indexableInternetHandler, "extractLinksFromContent", dataBase, indexableInternet, baseUrl, inputStream);
+		// TODO Verify the links collected
+	}
+
+	@Test
+	@Ignore
+	public void login() throws Exception {
+		HttpClient httpClient = new HttpClient();
+		// indexableInternetHandler.login(indexableInternet, httpClient);
+		indexableInternet.setLoginUrl("http://localhost:9300/ikube/admin/login.html");
+		indexableInternet.setUserid("guest");
+		indexableInternet.setPassword("guest");
+		Deencapsulation.invoke(indexableInternetHandler, "login", indexableInternet, httpClient);
+		GetMethod get = new GetMethod("http://localhost:9300/ikube/admin/servers.html");
+		httpClient.executeMethod(get);
+		InputStream responseInputStream = get.getResponseBodyAsStream();
+		String content = FileUtilities.getContents(responseInputStream, Integer.MAX_VALUE).toString();
+		logger.info(content);
+		assertTrue("Must contain the timestamp heading from the servers table : ", content.contains("Timestamp"));
 	}
 
 }

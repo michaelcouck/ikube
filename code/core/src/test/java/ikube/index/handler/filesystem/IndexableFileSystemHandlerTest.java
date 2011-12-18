@@ -11,11 +11,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import ikube.ATest;
 import ikube.index.IndexManager;
-import ikube.index.handler.IDocumentDelegate;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.mock.ClusterManagerMock;
-import ikube.model.IndexContext;
-import ikube.model.Indexable;
 import ikube.model.IndexableFileSystem;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.ThreadUtilities;
@@ -30,7 +27,6 @@ import java.util.regex.Pattern;
 import mockit.Deencapsulation;
 import mockit.Mockit;
 
-import org.apache.lucene.document.Document;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,7 +43,7 @@ import org.mockito.Mockito;
 public class IndexableFileSystemHandlerTest extends ATest {
 
 	private File powerPointFile;
-	private IDocumentDelegate documentDelegate;
+	// private IDocumentDelegate documentDelegate;
 	private IndexableFileSystem indexableFileSystem;
 	/** Class under test. */
 	private IndexableFilesystemHandler indexableFileSystemHandler;
@@ -60,10 +56,10 @@ public class IndexableFileSystemHandlerTest extends ATest {
 	public void before() {
 		Mockit.setUpMocks(ApplicationContextManagerMock.class, ClusterManagerMock.class);
 		indexableFileSystem = mock(IndexableFileSystem.class);
-		documentDelegate = mock(IDocumentDelegate.class);
+		// documentDelegate = mock(IDocumentDelegate.class);
 
 		indexableFileSystemHandler = new IndexableFilesystemHandler();
-		Deencapsulation.setField(indexableFileSystemHandler, documentDelegate);
+		// Deencapsulation.setField(indexableFileSystemHandler, documentDelegate);
 		indexableFileSystemHandler.setThreads(1);
 
 		powerPointFile = FileUtilities.findFileRecursively(new File("."), "pot.pot");
@@ -124,14 +120,15 @@ public class IndexableFileSystemHandlerTest extends ATest {
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void handleFile() throws Exception {
 		ikube.model.File file = new ikube.model.File();
 		file.setUrl(powerPointFile.getAbsolutePath());
 		indexableFileSystemHandler.handleFile(indexContext, indexableFileSystem, file);
 		IndexManager.closeIndexWriter(indexContext);
 		// Verify that the file is in the index
-		verify(documentDelegate, Mockito.atLeastOnce()).addDocument(any(IndexContext.class), any(Indexable.class), any(Document.class));
+		// verify(documentDelegate, Mockito.atLeastOnce()).addDocument(any(IndexContext.class), any(Indexable.class), any(Document.class));
+		verify(indexContext, Mockito.atLeastOnce()).getIndex(); 
+		// addDocument(any(IndexContext.class), any(Indexable.class), any(Document.class));
 	}
 
 	@Test

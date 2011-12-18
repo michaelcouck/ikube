@@ -11,7 +11,7 @@
 	<groupId>ikube</groupId>
 	<artifactId>ikube-core</artifactId>
 	<packaging>jar</packaging>
-	<version>2.1.5-SNAPSHOT</version>
+	<version>3.0.0-SNAPSHOT</version>
 
 	<properties>
 		<main.class>ikube.Ikube</main.class>
@@ -21,7 +21,7 @@
 	<parent>
 		<groupId>ikube</groupId>
 		<artifactId>ikube</artifactId>
-		<version>2.1.5-SNAPSHOT</version>
+		<version>3.0.0-SNAPSHOT</version>
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
 

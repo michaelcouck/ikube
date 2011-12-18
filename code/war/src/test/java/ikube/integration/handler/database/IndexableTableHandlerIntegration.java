@@ -9,7 +9,6 @@ import ikube.cluster.IClusterManager;
 import ikube.index.IndexManager;
 import ikube.index.content.ColumnContentProvider;
 import ikube.index.content.IContentProvider;
-import ikube.index.handler.DocumentDelegate;
 import ikube.index.handler.database.IndexableTableHandler;
 import ikube.integration.AbstractIntegration;
 import ikube.model.IndexContext;
@@ -66,9 +65,9 @@ public class IndexableTableHandlerIntegration extends AbstractIntegration {
 		connection = ((DataSource) ApplicationContextManager.getBean("nonXaDataSourceH2")).getConnection();
 		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
 		clusterManager.stopWorking(0, Index.class.getSimpleName(), realIndexContext.getIndexName(), faqIndexableTable.getName());
-		if (Deencapsulation.getField(indexableTableHandler, "documentDelegate") == null) {
-			Deencapsulation.setField(indexableTableHandler, new DocumentDelegate());
-		}
+		// if (Deencapsulation.getField(indexableTableHandler, "documentDelegate") == null) {
+		// Deencapsulation.setField(indexableTableHandler, new DocumentDelegate());
+		// }
 	}
 
 	@After
@@ -189,6 +188,32 @@ public class IndexableTableHandlerIntegration extends AbstractIntegration {
 		List<Future<?>> threads = indexableTableHandler.handle(realIndexContext, faqIndexableTable);
 		ThreadUtilities.waitForFutures(threads, Integer.MAX_VALUE);
 		// TODO Verify that the data has been indexed
+	}
+
+	@Test
+	public void handleAllColumnsTable() throws Exception {
+		IndexableTable indexable = ApplicationContextManager.getBean("campaign");
+		IndexContext<?> indexContext = ApplicationContextManager.getBean("campaignIndex");
+		String ip = InetAddress.getLocalHost().getHostAddress();
+		IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
+		indexContext.getIndex().setIndexWriter(indexWriter);
+		List<Future<?>> futures = indexableTableHandler.handle(indexContext, indexable);
+		ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
+	}
+
+	@Test
+	public void handleAllColumnsAllTables() throws Exception {
+		IndexContext<?> indexContext = ApplicationContextManager.getBean("campaignIndex");
+		for (Indexable<?> indexable : indexContext.getChildren()) {
+			if (!IndexableTable.class.isAssignableFrom(indexable.getClass())) {
+				continue;
+			}
+			String ip = InetAddress.getLocalHost().getHostAddress();
+			IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
+			indexContext.getIndex().setIndexWriter(indexWriter);
+			List<Future<?>> futures = indexableTableHandler.handle(indexContext, (IndexableTable) indexable);
+			ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
+		}
 	}
 
 	@Test

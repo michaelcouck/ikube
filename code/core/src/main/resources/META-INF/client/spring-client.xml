@@ -42,7 +42,7 @@
 		<ref local="hazelcast" />
 		<!-- <ref local="internetMillion" />
 		<ref local="filesystem" /> -->
-		<ref local="wikidata" />
+		<!-- <ref local="wikidata" /> -->
 		<ref local="dropboxDefault" />
 		<!-- <ref local="filesystemMillion" /> -->
 		<!-- <ref bean="faqTableH2" />

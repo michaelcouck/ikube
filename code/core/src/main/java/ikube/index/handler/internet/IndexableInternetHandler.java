@@ -32,7 +32,6 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -164,27 +163,19 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 		newCache.removeAll();
 		// The start url
 		seedUrl(dataBase, indexable);
+		List<Future<?>> futures = new ArrayList<Future<?>>();
 		try {
-			// List<Thread> threads = new ArrayList<Thread>();
-			List<Future<?>> futures = new ArrayList<Future<?>>();
 			List<IndexableInternetHandlerWorker> handlerWorkers = new ArrayList<IndexableInternetHandler.IndexableInternetHandlerWorker>();
 			for (int i = 0; i < getThreads(); i++) {
 				IndexableInternetHandlerWorker handlerWorker = new IndexableInternetHandlerWorker(indexContext, indexable, handlerWorkers);
 				handlerWorkers.add(handlerWorker);
-				// String name = this.getClass().getSimpleName() + "." + i;
-				// threads.add(new Thread(handlerWorker, name));
 				Future<?> future = ThreadUtilities.submit(handlerWorker);
 				futures.add(future);
 			}
-			// for (Thread thread : threads) {
-			// thread.start();
-			// }
-			// return threads;
-			return futures;
 		} catch (Exception e) {
 			logger.error("Exception starting the internet handler threads : ", e);
 		}
-		return Arrays.asList();
+		return futures;
 	}
 
 	/**

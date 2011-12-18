@@ -64,22 +64,8 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 						logger.debug("Executing handler : " + handler + ", " + indexable.getName());
 						// Execute the handler and wait for the threads to finish
 						threads = handler.handle(indexContext, indexable);
-						if (threads != null && !threads.isEmpty()) {
-							logger.debug("Waiting for threads : " + threads);
-							ThreadUtilities.waitForFutures(threads, Integer.MAX_VALUE);
-						}
-						// } catch (InterruptedException e) {
-						// This is a kill switch for the server, terminate all the threads
-						// if (threads != null) {
-						// for (Thread thread : threads) {
-						// try {
-						// logger.warn("Interrupting thread : " + thread);
-						// thread.interrupt();
-						// } catch (Exception ex) {
-						// logger.error("Exception terminating thread : " + thread, e);
-						// }
-						// }
-						// }
+						logger.debug("Waiting for threads : " + threads);
+						ThreadUtilities.waitForFutures(threads, Integer.MAX_VALUE);
 					} catch (Exception e) {
 						logger.error("Exception indexing data : " + indexName, e);
 					}

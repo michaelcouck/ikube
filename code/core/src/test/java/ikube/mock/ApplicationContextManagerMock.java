@@ -24,9 +24,8 @@ import mockit.MockClass;
 import org.apache.log4j.Logger;
 
 /**
- * This mock is for the application context manager so we can return mocked index contexts and so on rather than
- * instantiating the Spring context along with all the associated items like the data sources etc. which take a very
- * long time to initialize.
+ * This mock is for the application context manager so we can return mocked index contexts and so on rather than instantiating the Spring
+ * context along with all the associated items like the data sources etc. which take a very long time to initialize.
  * 
  * @author Michael Couck
  * @since 20.03.11
@@ -39,15 +38,15 @@ public class ApplicationContextManagerMock {
 		Logging.configure();
 	}
 
-	private static final Logger			LOGGER				= Logger.getLogger(ApplicationContextManagerMock.class);
+	private static final Logger LOGGER = Logger.getLogger(ApplicationContextManagerMock.class);
 
-	public static Object				BEAN;
-	public static IndexContext<?>		INDEX_CONTEXT;
-	public static IClusterManager		CLUSTER_MANAGER		= mock(IClusterManager.class);
-	public static IDataBase				DATABASE			= mock(IDataBase.class);
-	public static IndexableTableHandler	HANDLER				= mock(IndexableTableHandler.class);
-	public static Server				SERVER				= mock(Server.class);
-	public static IMonitorWebService	MONITOR_WEB_SERVICE	= mock(IMonitorWebService.class);
+	public static Object BEAN;
+	public static IndexContext<?> INDEX_CONTEXT;
+	public static IClusterManager CLUSTER_MANAGER = mock(IClusterManager.class);
+	public static IDataBase DATABASE = mock(IDataBase.class);
+	public static IndexableTableHandler HANDLER = mock(IndexableTableHandler.class);
+	public static Server SERVER = mock(Server.class);
+	public static IMonitorWebService MONITOR_WEB_SERVICE = mock(IMonitorWebService.class);
 
 	static {
 		when(CLUSTER_MANAGER.getServer()).thenReturn(SERVER);

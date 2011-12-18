@@ -36,9 +36,7 @@ public class IndexableInternetHandlerTest extends ATest {
 		Mockito.when(indexableInternet.getPassword()).thenReturn("guest");
 
 		HttpClient httpClient = new HttpClient();
-
 		indexableInternetHandler.login(indexableInternet, httpClient);
-
 		GetMethod get = new GetMethod("http://localhost:8080/ikube/admin/servers.html");
 		httpClient.executeMethod(get);
 		InputStream responseInputStream = get.getResponseBodyAsStream();

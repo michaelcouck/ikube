@@ -29,9 +29,10 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IHandl
 	/** Access to the database. */
 	@Autowired
 	protected IDataBase dataBase;
+
 	/** The class that we will need to intercept the document adding to the index. */
-	@Autowired
-	private IDocumentDelegate documentDelegate;
+	// @Autowired
+	// private IDocumentDelegate documentDelegate;
 
 	public int getThreads() {
 		return threads;
@@ -63,8 +64,8 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IHandl
 	@Override
 	public void addDocument(final IndexContext<?> indexContext, final Indexable<T> indexable, final Document document)
 			throws CorruptIndexException, IOException {
-		// indexContext.getIndex().getIndexWriter().addDocument(document);
-		documentDelegate.addDocument(indexContext, indexable, document);
+		indexContext.getIndex().getIndexWriter().addDocument(document);
+		// documentDelegate.addDocument(indexContext, indexable, document);
 	}
 
 }

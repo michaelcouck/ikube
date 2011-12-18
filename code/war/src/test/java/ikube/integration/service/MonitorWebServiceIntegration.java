@@ -25,7 +25,7 @@ import org.junit.Test;
  */
 public class MonitorWebServiceIntegration extends AbstractIntegration {
 
-	private IMonitorWebService	monitorWebService;
+	private IMonitorWebService monitorWebService;
 
 	@Before
 	public void before() {

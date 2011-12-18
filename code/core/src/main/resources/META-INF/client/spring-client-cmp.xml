@@ -34,189 +34,439 @@
 		property:indexDirectoryPathBackup="${index.directory.path.backup}"
 		property:children-ref="campaignIndexables" />
 	<util:list id="campaignIndexables">
+		<ref local="active_geo_position" />
+		<ref local="active_period" />
+		<ref local="banner" />
 		<ref local="campaign" />
+		<ref local="campaign_action" />
+		<ref local="campaign_customer_artwork" />
+		<ref local="campaign_event" />
+		<ref local="campaign_facebook_ad_group" />
+		<ref local="campaign_facebook_virual" />
+		<ref local="campaign_set" />
+		<ref local="campaign_set_parameter" />
+		<ref local="campaign_set_parameter_type" />
+		<ref local="campaign_set_placement_type" />
+		<ref local="campaign_set_site" />
+		<ref local="campaign_set_target_age_group" />
+		<ref local="campaign_set_target_heading" />
+		<ref local="campaign_set_target_location" />
+		<ref local="campaign_set_target_segment" />
+		<ref local="country" />
+		<ref local="customer_artwork" />
+		<ref local="dbmaintain_scripts" />
+		<ref local="facebook_ad_group" />
+		<ref local="job_retry_detail" />
+		<ref local="language" />
+		<ref local="language_site_configuration" />
+		<ref local="locale" />
+		<ref local="message_track" />
+		<ref local="network_delivery_channel" />
+		<ref local="network_delivery_channel_configuration" />
+		<ref local="network_delivery_channel_site" />
+		<ref local="persistent_logins" />
+		<ref local="placement_type" />
+		<ref local="placement_type_site" />
+		<ref local="position" />
+		<ref local="position_text" />
+		<ref local="position_type" />
+		<ref local="position_type_site" />
+		<ref local="role" />
+		<ref local="site" />
+		<ref local="site_configuration" />
+		<ref local="site_configuration_target_segment" />
+		<ref local="target_age_group" />
+		<ref local="target_heading" />
+		<ref local="target_location" />
+		<ref local="target_segment" />
+		<ref local="target_segment_target_heading" />
+		<ref local="user" />
+		<ref local="user_role" />
 	</util:list>
+	
 	<bean
-		id="campaign"
+		id="active_geo_position"
 		class="ikube.model.IndexableTable"
-		property:name="campaign"
+		property:name="active_geo_position"
+		property:allColumns="true"
 		property:primaryTable="true"
 		property:dataSource-ref="campaignDatabase"
-		property:children-ref="campaignChildren" 
 		property:maxExceptions="100" />
-	<util:list id="campaignChildren">
-		<ref local="campaign_id" />
-		<ref local="campaign_set_id" />
-		<ref local="truvo_orderline_pub_id" />
-		<ref local="notes_cmp" />
-		<ref local="more_info_url" />
-		<ref local="more_info_email" />
-		<ref local="status" />
-		<ref local="date_created" />
-		<ref local="date_updated" />
-		<ref local="created_by" />
-		<ref local="updated_by" />
-		<ref local="external_campaign_id" />
-		<ref local="banner_body_text" />
-		<ref local="banner_set_id" />
-		<!-- <ref local="position" /> -->
-	</util:list>
-	
 	<bean
-		id="campaign_id"
-		class="ikube.model.IndexableColumn"
-		property:name="id"
-		property:idColumn="true"
-		property:analyzed="${analyzed}"
-		property:stored="${stored}"
-		property:vectored="${vectored}" />
-	<bean
-		id="campaign_set_id"
-		class="ikube.model.IndexableColumn"
-		property:name="campaign_set_id"
-		property:fieldName="campaign_set_id"
-		property:analyzed="${analyzed}"
-		property:stored="${stored}"
-		property:vectored="${vectored}" />
-	<bean
-		id="truvo_orderline_pub_id"
-		class="ikube.model.IndexableColumn"
-		property:name="truvo_orderline_pub_id"
-		property:fieldName="truvo_orderline_pub_id"
-		property:analyzed="${analyzed}"
-		property:stored="${stored}"
-		property:vectored="${vectored}" />
-	<bean
-		id="notes_cmp"
-		class="ikube.model.IndexableColumn"
-		property:name="notes_cmp"
-		property:fieldName="notes_cmp"
-		property:analyzed="${analyzed}"
-		property:stored="${stored}"
-		property:vectored="${vectored}" />
-	<bean
-		id="more_info_url"
-		class="ikube.model.IndexableColumn"
-		property:name="more_info_url"
-		property:fieldName="more_info_url"
-		property:analyzed="${analyzed}"
-		property:stored="${stored}"
-		property:vectored="${vectored}" />
-	<bean
-		id="more_info_email"
-		class="ikube.model.IndexableColumn"
-		property:name="more_info_email"
-		property:fieldName="more_info_email"
-		property:analyzed="${analyzed}"
-		property:stored="${stored}"
-		property:vectored="${vectored}" />
-	<bean
-		id="status"
-		class="ikube.model.IndexableColumn"
-		property:name="status"
-		property:fieldName="status"
-		property:analyzed="${analyzed}"
-		property:stored="${stored}"
-		property:vectored="${vectored}" />
-	<bean
-		id="date_created"
-		class="ikube.model.IndexableColumn"
-		property:name="date_created"
-		property:fieldName="date_created"
-		property:analyzed="${analyzed}"
-		property:stored="${stored}"
-		property:vectored="${vectored}" />
-	<bean
-		id="date_updated"
-		class="ikube.model.IndexableColumn"
-		property:name="date_updated"
-		property:fieldName="date_updated"
-		property:analyzed="${analyzed}"
-		property:stored="${stored}"
-		property:vectored="${vectored}" />
-	<bean
-		id="created_by"
-		class="ikube.model.IndexableColumn"
-		property:name="created_by"
-		property:fieldName="created_by"
-		property:analyzed="${analyzed}"
-		property:stored="${stored}"
-		property:vectored="${vectored}" />
-	<bean
-		id="updated_by"
-		class="ikube.model.IndexableColumn"
-		property:name="updated_by"
-		property:fieldName="updated_by"
-		property:analyzed="${analyzed}"
-		property:stored="${stored}"
-		property:vectored="${vectored}" />
-	<bean
-		id="external_campaign_id"
-		class="ikube.model.IndexableColumn"
-		property:name="external_campaign_id"
-		property:fieldName="external_campaign_id"
-		property:analyzed="${analyzed}"
-		property:stored="${stored}"
-		property:vectored="${vectored}" />
-	<bean
-		id="banner_body_text"
-		class="ikube.model.IndexableColumn"
-		property:name="banner_body_text"
-		property:fieldName="banner_body_text"
-		property:analyzed="${analyzed}"
-		property:stored="${stored}"
-		property:vectored="${vectored}" />
-	<bean
-		id="banner_set_id"
-		class="ikube.model.IndexableColumn"
-		property:name="banner_set_id"
-		property:fieldName="banner_set_id"
-		property:analyzed="${analyzed}"
-		property:stored="${stored}"
-		property:vectored="${vectored}" />
-	
-	<bean
-		id="position"
+		id="active_period"
 		class="ikube.model.IndexableTable"
-		property:name="position"
-		property:primaryTable="false"
+		property:name="active_period"
+		property:allColumns="true"
+		property:primaryTable="true"
 		property:dataSource-ref="campaignDatabase"
-		property:children-ref="positionChildren" 
 		property:maxExceptions="100" />
-	<util:list id="positionChildren">
-		<!-- <ref local="id" />
-		<ref local="campaign_id" />
-		<ref local="positionText" />
-		<ref local="banner" /> -->
-	</util:list>
-	<bean
-		id="positionText"
-		class="ikube.model.IndexableTable"
-		property:name="position_text"
-		property:primaryTable="false"
-		property:dataSource-ref="campaignDatabase"
-		property:children-ref="positionTextChildren" 
-		property:maxExceptions="100" />
-	<util:list id="positionTextChildren">
-		<!-- <ref local="id" />
-		<ref local="position_id" />
-		<ref local="type" />
-		<ref local="text" /> -->
-	</util:list>
 	<bean
 		id="banner"
 		class="ikube.model.IndexableTable"
 		property:name="banner"
-		property:primaryTable="false"
+		property:allColumns="true"
+		property:primaryTable="true"
 		property:dataSource-ref="campaignDatabase"
-		property:children-ref="bannerChildren" 
 		property:maxExceptions="100" />
-	<util:list id="bannerChildren">
-		<!-- <ref local="id" />
-		<ref local="position_id" />
-		<ref local="workflow_id" />
-		<ref local="ref_file_name" />
-		<ref local="ref_file_type" /> -->
-	</util:list>
-		
+	<bean
+		id="campaign"
+		class="ikube.model.IndexableTable"
+		property:name="campaign"
+		property:allColumns="true"
+		property:primaryTable="true"
+		property:dataSource-ref="campaignDatabase"
+		property:maxExceptions="100" />
+	<bean
+		id="campaign_action"
+		class="ikube.model.IndexableTable"
+		property:name="campaign_action"
+		property:allColumns="true"
+		property:primaryTable="true"
+		property:dataSource-ref="campaignDatabase"
+		property:maxExceptions="100" />
+	<bean
+		id="campaign_customer_artwork"
+		class="ikube.model.IndexableTable"
+		property:name="campaign_customer_artwork"
+		property:allColumns="true"
+		property:primaryTable="true"
+		property:dataSource-ref="campaignDatabase"
+		property:maxExceptions="100" />
+	<bean
+		id="campaign_event"
+		class="ikube.model.IndexableTable"
+		property:name="campaign_event"
+		property:allColumns="true"
+		property:primaryTable="true"
+		property:dataSource-ref="campaignDatabase"
+		property:maxExceptions="100" />
+	<bean
+		id="campaign_facebook_ad_group"
+		class="ikube.model.IndexableTable"
+		property:name="campaign_facebook_ad_group"
+		property:allColumns="true"
+		property:primaryTable="true"
+		property:dataSource-ref="campaignDatabase"
+		property:maxExceptions="100" />
+	<bean
+		id="campaign_facebook_virual"
+		class="ikube.model.IndexableTable"
+		property:name="campaign_facebook_virual"
+		property:allColumns="true"
+		property:primaryTable="true"
+		property:dataSource-ref="campaignDatabase"
+		property:maxExceptions="100" />
+	<bean
+		id="campaign_set"
+		class="ikube.model.IndexableTable"
+		property:name="campaign_set"
+		property:allColumns="true"
+		property:primaryTable="true"
+		property:dataSource-ref="campaignDatabase"
+		property:maxExceptions="100" />
+	<bean
+		id="campaign_set_parameter"
+		class="ikube.model.IndexableTable"
+		property:name="campaign_set_parameter"
+		property:allColumns="true"
+		property:primaryTable="true"
+		property:dataSource-ref="campaignDatabase"
+		property:maxExceptions="100" />
+	<bean
+		id="campaign_set_parameter_type"
+		class="ikube.model.IndexableTable"
+		property:name="campaign_set_parameter_type"
+		property:allColumns="true"
+		property:primaryTable="true"
+		property:dataSource-ref="campaignDatabase"
+		property:maxExceptions="100" />
+	<bean
+		id="campaign_set_placement_type"
+		class="ikube.model.IndexableTable"
+		property:name="campaign_set_placement_type"
+		property:allColumns="true"
+		property:primaryTable="true"
+		property:dataSource-ref="campaignDatabase"
+		property:maxExceptions="100" />
+	<bean
+		id="campaign_set_site"
+		class="ikube.model.IndexableTable"
+		property:name="campaign_set_site"
+		property:allColumns="true"
+		property:primaryTable="true"
+		property:dataSource-ref="campaignDatabase"
+		property:maxExceptions="100" />
+	<bean
+		id="campaign_set_target_age_group"
+		class="ikube.model.IndexableTable"
+		property:name="campaign_set_target_age_group"
+		property:allColumns="true"
+		property:primaryTable="true"
+		property:dataSource-ref="campaignDatabase"
+		property:maxExceptions="100" />
+	<bean
+		id="campaign_set_target_heading"
+		class="ikube.model.IndexableTable"
+		property:name="campaign_set_target_heading"
+		property:allColumns="true"
+		property:primaryTable="true"
+		property:dataSource-ref="campaignDatabase"
+		property:maxExceptions="100" />
+	<bean
+		id="campaign_set_target_location"
+		class="ikube.model.IndexableTable"
+		property:name="campaign_set_target_location"
+		property:allColumns="true"
+		property:primaryTable="true"
+		property:dataSource-ref="campaignDatabase"
+		property:maxExceptions="100" />
+	<bean
+		id="campaign_set_target_segment"
+		class="ikube.model.IndexableTable"
+		property:name="campaign_set_target_segment"
+		property:allColumns="true"
+		property:primaryTable="true"
+		property:dataSource-ref="campaignDatabase"
+		property:maxExceptions="100" />
+	<bean
+		id="country"
+		class="ikube.model.IndexableTable"
+		property:name="country"
+		property:allColumns="true"
+		property:primaryTable="true"
+		property:dataSource-ref="campaignDatabase"
+		property:maxExceptions="100" />
+	<bean
+		id="customer_artwork"
+		class="ikube.model.IndexableTable"
+		property:name="customer_artwork"
+		property:allColumns="true"
+		property:primaryTable="true"
+		property:dataSource-ref="campaignDatabase"
+		property:maxExceptions="100" />
+	<bean
+		id="dbmaintain_scripts"
+		class="ikube.model.IndexableTable"
+		property:name="dbmaintain_scripts"
+		property:allColumns="true"
+		property:primaryTable="true"
+		property:dataSource-ref="campaignDatabase"
+		property:maxExceptions="100" />
+	<bean
+		id="facebook_ad_group"
+		class="ikube.model.IndexableTable"
+		property:name="facebook_ad_group"
+		property:allColumns="true"
+		property:primaryTable="true"
+		property:dataSource-ref="campaignDatabase"
+		property:maxExceptions="100" />
+	<bean
+		id="job_retry_detail"
+		class="ikube.model.IndexableTable"
+		property:name="job_retry_detail"
+		property:allColumns="true"
+		property:primaryTable="true"
+		property:dataSource-ref="campaignDatabase"
+		property:maxExceptions="100" />
+	<bean
+		id="language"
+		class="ikube.model.IndexableTable"
+		property:name="language"
+		property:allColumns="true"
+		property:primaryTable="true"
+		property:dataSource-ref="campaignDatabase"
+		property:maxExceptions="100" />
+	<bean
+		id="language_site_configuration"
+		class="ikube.model.IndexableTable"
+		property:name="language_site_configuration"
+		property:allColumns="true"
+		property:primaryTable="true"
+		property:dataSource-ref="campaignDatabase"
+		property:maxExceptions="100" />
+	<bean
+		id="locale"
+		class="ikube.model.IndexableTable"
+		property:name="locale"
+		property:allColumns="true"
+		property:primaryTable="true"
+		property:dataSource-ref="campaignDatabase"
+		property:maxExceptions="100" />
+	<bean
+		id="message_track"
+		class="ikube.model.IndexableTable"
+		property:name="message_track"
+		property:allColumns="true"
+		property:primaryTable="true"
+		property:dataSource-ref="campaignDatabase"
+		property:maxExceptions="100" />
+	<bean
+		id="network_delivery_channel"
+		class="ikube.model.IndexableTable"
+		property:name="network_delivery_channel"
+		property:allColumns="true"
+		property:primaryTable="true"
+		property:dataSource-ref="campaignDatabase"
+		property:maxExceptions="100" />
+	<bean
+		id="network_delivery_channel_configuration"
+		class="ikube.model.IndexableTable"
+		property:name="network_delivery_channel_configuration"
+		property:allColumns="true"
+		property:primaryTable="true"
+		property:dataSource-ref="campaignDatabase"
+		property:maxExceptions="100" />
+	<bean
+		id="network_delivery_channel_site"
+		class="ikube.model.IndexableTable"
+		property:name="network_delivery_channel_site"
+		property:allColumns="true"
+		property:primaryTable="true"
+		property:dataSource-ref="campaignDatabase"
+		property:maxExceptions="100" />
+	<bean
+		id="persistent_logins"
+		class="ikube.model.IndexableTable"
+		property:name="persistent_logins"
+		property:allColumns="true"
+		property:primaryTable="true"
+		property:dataSource-ref="campaignDatabase"
+		property:maxExceptions="100" />
+	<bean
+		id="placement_type"
+		class="ikube.model.IndexableTable"
+		property:name="placement_type"
+		property:allColumns="true"
+		property:primaryTable="true"
+		property:dataSource-ref="campaignDatabase"
+		property:maxExceptions="100" />
+	<bean
+		id="placement_type_site"
+		class="ikube.model.IndexableTable"
+		property:name="placement_type_site"
+		property:allColumns="true"
+		property:primaryTable="true"
+		property:dataSource-ref="campaignDatabase"
+		property:maxExceptions="100" />
+	<bean
+		id="position"
+		class="ikube.model.IndexableTable"
+		property:name="position"
+		property:allColumns="true"
+		property:primaryTable="true"
+		property:dataSource-ref="campaignDatabase"
+		property:maxExceptions="100" />
+	<bean
+		id="position_text"
+		class="ikube.model.IndexableTable"
+		property:name="position_text"
+		property:allColumns="true"
+		property:primaryTable="true"
+		property:dataSource-ref="campaignDatabase"
+		property:maxExceptions="100" />
+	<bean
+		id="position_type"
+		class="ikube.model.IndexableTable"
+		property:name="position_type"
+		property:allColumns="true"
+		property:primaryTable="true"
+		property:dataSource-ref="campaignDatabase"
+		property:maxExceptions="100" />
+	<bean
+		id="position_type_site"
+		class="ikube.model.IndexableTable"
+		property:name="position_type_site"
+		property:allColumns="true"
+		property:primaryTable="true"
+		property:dataSource-ref="campaignDatabase"
+		property:maxExceptions="100" />
+	<bean
+		id="role"
+		class="ikube.model.IndexableTable"
+		property:name="role"
+		property:allColumns="true"
+		property:primaryTable="true"
+		property:dataSource-ref="campaignDatabase"
+		property:maxExceptions="100" />
+	<bean
+		id="site"
+		class="ikube.model.IndexableTable"
+		property:name="site"
+		property:allColumns="true"
+		property:primaryTable="true"
+		property:dataSource-ref="campaignDatabase"
+		property:maxExceptions="100" />
+	<bean
+		id="site_configuration"
+		class="ikube.model.IndexableTable"
+		property:name="site_configuration"
+		property:primaryTable="true"
+		property:dataSource-ref="campaignDatabase"
+		property:allColumns="true"
+		property:maxExceptions="100" />
+	<bean
+		id="site_configuration_target_segment"
+		class="ikube.model.IndexableTable"
+		property:name="site_configuration_target_segment"
+		property:allColumns="true"
+		property:primaryTable="true"
+		property:dataSource-ref="campaignDatabase"
+		property:maxExceptions="100" />
+	<bean
+		id="target_age_group"
+		class="ikube.model.IndexableTable"
+		property:name="target_age_group"
+		property:allColumns="true"
+		property:primaryTable="true"
+		property:dataSource-ref="campaignDatabase"
+		property:maxExceptions="100" />
+	<bean
+		id="target_heading"
+		class="ikube.model.IndexableTable"
+		property:name="target_heading"
+		property:allColumns="true"
+		property:primaryTable="true"
+		property:dataSource-ref="campaignDatabase"
+		property:maxExceptions="100" />
+	<bean
+		id="target_location"
+		class="ikube.model.IndexableTable"
+		property:name="target_location"
+		property:allColumns="true"
+		property:primaryTable="true"
+		property:dataSource-ref="campaignDatabase"
+		property:maxExceptions="100" />
+	<bean
+		id="target_segment"
+		class="ikube.model.IndexableTable"
+		property:name="target_segment"
+		property:allColumns="true"
+		property:primaryTable="true"
+		property:dataSource-ref="campaignDatabase"
+		property:maxExceptions="100" />
+	<bean
+		id="target_segment_target_heading"
+		class="ikube.model.IndexableTable"
+		property:name="target_segment_target_heading"
+		property:allColumns="true"
+		property:primaryTable="true"
+		property:dataSource-ref="campaignDatabase"
+		property:maxExceptions="100" />
+	<bean
+		id="user"
+		class="ikube.model.IndexableTable"
+		property:name="user"
+		property:allColumns="true"
+		property:primaryTable="true"
+		property:dataSource-ref="campaignDatabase"
+		property:maxExceptions="100" />
+	<bean
+		id="user_role"
+		class="ikube.model.IndexableTable"
+		property:name="user_role"
+		property:allColumns="true"
+		property:primaryTable="true"
+		property:dataSource-ref="campaignDatabase"
+		property:maxExceptions="100" />
+	
 </beans>

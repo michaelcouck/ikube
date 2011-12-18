@@ -52,7 +52,7 @@ public final class ThreadUtilities {
 		long start = System.currentTimeMillis();
 		while (!future.isDone()) {
 			ThreadUtilities.sleep(1000);
-			LOGGER.info("Future : " + future);
+			LOGGER.debug("Future : " + future);
 			if ((System.currentTimeMillis() - start) > maxWait) {
 				break;
 			}

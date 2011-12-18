@@ -593,6 +593,12 @@ public final class FileUtilities {
 
 	private static final int BUFFER = 2048;
 
+	/**
+	 * This method unzips a file to a folder in the user directory with the name of the file.
+	 * 
+	 * @param zipFile the zip file to unpack, this file name sill be used for the folder to unzip to
+	 * @return the folder where the file was unpacked to
+	 */
 	public static File unzip(String zipFile) {
 		File file;
 		ZipFile zip;
@@ -607,7 +613,7 @@ public final class FileUtilities {
 		try {
 			Enumeration<? extends ZipEntry> zipFileEntries = zip.entries();
 			// Process each entry
-			destinationFolder = FileUtilities.getFile(System.getProperty("user.dir") + IConstants.SEP + file.getName(), Boolean.TRUE);
+			destinationFolder = FileUtilities.getFile(System.getProperty("java.io.tmp") + IConstants.SEP + file.getName(), Boolean.TRUE);
 			while (zipFileEntries.hasMoreElements()) {
 				// Grab a zip file entry
 				ZipEntry entry = zipFileEntries.nextElement();
@@ -640,6 +646,7 @@ public final class FileUtilities {
 					close(outputStream);
 					close(destinationOutputStream);
 				}
+				destinationFile.deleteOnExit();
 			}
 		} catch (Exception e) {
 			LOGGER.error("Exception extracting zip file : " + zipFile + ", " + zip, e);

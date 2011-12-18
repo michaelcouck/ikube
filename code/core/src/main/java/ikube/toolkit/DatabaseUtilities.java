@@ -141,12 +141,12 @@ public final class DatabaseUtilities {
 			return;
 		}
 		try {
+			if (connection.isClosed()) {
+				LOGGER.info("Connection already closed : " + connection);
+				return;
+			}
 			if (!connection.getAutoCommit()) {
-				if (connection.isClosed()) {
-					LOGGER.info("Connection already closed : " + connection);
-				} else {
-					connection.commit();
-				}
+				connection.commit();
 			} else {
 				LOGGER.warn("Can't commit the connection as it is not user comitted : " + connection);
 			}
@@ -243,58 +243,93 @@ public final class DatabaseUtilities {
 	 * @param table the name of the table to get the columns for
 	 * @return the list of all columns for the table
 	 */
-	public static List<String> getAllColumns(Connection connection, String table) {
-		String sql = "select * from " + table;
-		Statement statement = null;
-		ResultSet resultSet = null;
+	public static List<String> getAllColumns(final Connection connection, final String table) {
 		List<String> columnNames = new ArrayList<String>();
+		ResultSet columnsResultSet = null;
 		try {
-			statement = connection.createStatement();
-			resultSet = statement.executeQuery(sql);
-			ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
-			for (int i = 1; i <= resultSetMetaData.getColumnCount(); i++) {
-				String columnName = resultSetMetaData.getColumnName(i);
-				columnNames.add(columnName);
+			String tableName = null;
+			String databaseName = connection.getMetaData().getDatabaseProductName();
+			if (databaseName.contains("Postgre")) {
+				// No upper case for Postgres!
+				tableName = table;
+			} else {
+				// Oracle and Db2 are fine with upper case
+				tableName = table.toUpperCase();
+			}
+			LOGGER.info("Database name : " + databaseName);
+			DatabaseMetaData databaseMetaData = connection.getMetaData();
+			columnsResultSet = databaseMetaData.getColumns(null, null, tableName, null);
+			// printResultSet(columnsResultSet);
+			while (columnsResultSet.next()) {
+				Object columnValue = columnsResultSet.getObject("COLUMN_NAME");
+				columnNames.add(columnValue.toString());
 			}
 		} catch (SQLException e) {
 			LOGGER.error("Exception getting the column names for table : " + table, e);
 		} finally {
-			close(resultSet);
-			close(statement);
+			close(columnsResultSet);
 		}
 		return columnNames;
 	}
 
-	public static List<String[]> getForeignKeys(Connection connection, String table) {
-		List<String[]> foreignKeys = new ArrayList<String[]>();
-		String[] types = { "TABLE" };
+	public static List<String> getPrimaryKeys(final Connection connection, final String table) {
 		DatabaseMetaData databaseMetaData = null;
-		ResultSet resultSet = null;
+		ResultSet primaryKeyResultSet = null;
+		List<String> primaryKeyColumns = new ArrayList<String>();
+		try {
+			databaseMetaData = connection.getMetaData();
+			primaryKeyResultSet = databaseMetaData.getPrimaryKeys(null, null, table.toUpperCase());
+			while (primaryKeyResultSet.next()) {
+				Object columnName = primaryKeyResultSet.getObject("COLUMN_NAME");
+				primaryKeyColumns.add(columnName.toString());
+			}
+		} catch (SQLException e) {
+			LOGGER.error("Exception getting the primary keys for table : " + table, e);
+		}
+		return primaryKeyColumns;
+	}
+
+	public static void printResultSet(ResultSet resultSet) {
+		try {
+			ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
+			while (resultSet.next()) {
+				StringBuilder stringBuilder = new StringBuilder();
+				for (int i = 1; i < resultSetMetaData.getColumnCount(); i++) {
+					String columnName = resultSetMetaData.getColumnName(i);
+					Object columnValue = resultSet.getObject(i);
+					stringBuilder.append(columnName);
+					stringBuilder.append("=");
+					stringBuilder.append(columnValue);
+					stringBuilder.append("\n");
+				}
+				LOGGER.warn(stringBuilder.toString());
+			}
+		} catch (SQLException e) {
+			LOGGER.error("Exception printing the result set : ", e);
+		} finally {
+			DatabaseUtilities.close(resultSet);
+		}
+	}
+
+	public static List<String[]> getForeignKeys(final Connection connection, final String table) {
+		String tableName = table.toUpperCase();
+		List<String[]> foreignKeys = new ArrayList<String[]>();
+		DatabaseMetaData databaseMetaData = null;
 		ResultSet importedKeys = null;
 		try {
 			databaseMetaData = connection.getMetaData();
-			resultSet = databaseMetaData.getTables(null, null, "%", types);
-			// Get the table names
-			while (resultSet.next()) {
-				String tableCatalog = resultSet.getString(1);
-				String tableSchema = resultSet.getString(2);
-				String tableName = resultSet.getString(3);
-				// LOGGER.error("Catalog : " + tableCatalog + ", " + tableSchema + ", " + tableName);
-				if (tableName.equalsIgnoreCase(table)) {
-					importedKeys = databaseMetaData.getImportedKeys(tableCatalog, tableSchema, tableName);
-					while (importedKeys.next()) {
-						String fkTableName = importedKeys.getString("FKTABLE_NAME");
-						String fkColumnName = importedKeys.getString("FKCOLUMN_NAME");
-						String[] key = { fkTableName, fkColumnName };
-						foreignKeys.add(key);
-					}
-				}
+			importedKeys = databaseMetaData.getImportedKeys(connection.getCatalog(), null, tableName);
+			while (importedKeys.next()) {
+				printResultSet(importedKeys);
+				// String fkTableName = importedKeys.getString("FKTABLE_NAME");
+				// String fkColumnName = importedKeys.getString("FKCOLUMN_NAME");
+				// String[] key = { fkTableName, fkColumnName };
+				// foreignKeys.add(key);
 			}
 		} catch (SQLException e) {
-			LOGGER.error("Exception getting the foreign keys : " + table, e);
+			LOGGER.error("Exception getting the foreign keys : " + tableName, e);
 		} finally {
 			close(importedKeys);
-			close(resultSet);
 		}
 		return foreignKeys;
 	}
