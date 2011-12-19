@@ -34,7 +34,7 @@ import org.mockito.Mockito;
 
 /**
  * Tests the general functionality of the file system handler. There are no specific checks on the data that is indexed as the sub
- * components are tested seperately and the integration tests verify that the data is collected.
+ * components are tested separately and the integration tests verify that the data is collected.
  * 
  * @author Michael Couck
  * @since 21.11.10
@@ -43,7 +43,6 @@ import org.mockito.Mockito;
 public class IndexableFileSystemHandlerTest extends ATest {
 
 	private File powerPointFile;
-	// private IDocumentDelegate documentDelegate;
 	private IndexableFileSystem indexableFileSystem;
 	/** Class under test. */
 	private IndexableFilesystemHandler indexableFileSystemHandler;
@@ -56,10 +55,8 @@ public class IndexableFileSystemHandlerTest extends ATest {
 	public void before() {
 		Mockit.setUpMocks(ApplicationContextManagerMock.class, ClusterManagerMock.class);
 		indexableFileSystem = mock(IndexableFileSystem.class);
-		// documentDelegate = mock(IDocumentDelegate.class);
 
 		indexableFileSystemHandler = new IndexableFilesystemHandler();
-		// Deencapsulation.setField(indexableFileSystemHandler, documentDelegate);
 		indexableFileSystemHandler.setThreads(1);
 
 		powerPointFile = FileUtilities.findFileRecursively(new File("."), "pot.pot");
@@ -126,9 +123,7 @@ public class IndexableFileSystemHandlerTest extends ATest {
 		indexableFileSystemHandler.handleFile(indexContext, indexableFileSystem, file);
 		IndexManager.closeIndexWriter(indexContext);
 		// Verify that the file is in the index
-		// verify(documentDelegate, Mockito.atLeastOnce()).addDocument(any(IndexContext.class), any(Indexable.class), any(Document.class));
-		verify(indexContext, Mockito.atLeastOnce()).getIndex(); 
-		// addDocument(any(IndexContext.class), any(Indexable.class), any(Document.class));
+		verify(indexContext, Mockito.atLeastOnce()).getIndex();
 	}
 
 	@Test

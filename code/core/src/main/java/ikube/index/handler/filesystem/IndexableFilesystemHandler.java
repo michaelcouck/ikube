@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,10 +28,12 @@ import java.util.TreeSet;
 import java.util.concurrent.Future;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
+import org.apache.lucene.index.CorruptIndexException;
 
 /**
  * This class indexes a file share on the network. It is multi threaded but not cluster load balanced. First the files are iterated over and
@@ -52,6 +53,8 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 
 	private static final String STRING_PATTERN = ".*(\\.zip\\Z).*|.*(\\.jar\\Z).*|.*(\\.war\\Z).*|.*(\\.ear\\Z).*|.*(\\.gz\\Z).*|.*(\\.sar\\Z).*|.*(\\.tar\\Z).*";
 	private static final Pattern ZIP_JAR_WAR_EAR_PATTERN = Pattern.compile(STRING_PATTERN);
+	// private static final String JAVA_IO_TEMP_DIR = System.getProperty("java.io.tmpdir");
+	private static final String TO_DIR = "/tmp/unzipped";
 
 	/**
 	 * {@inheritDoc}
@@ -60,10 +63,6 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 	public List<Future<?>> handle(final IndexContext<?> indexContext, final IndexableFileSystem indexable) throws Exception {
 		final File baseFile = new File(indexable.getPath());
 		final Pattern pattern = getPattern(indexable.getExcludedPattern());
-		if (isExcluded(baseFile, pattern)) {
-			logger.warn("Base directory excluded : " + baseFile + ", " + indexable.getExcludedPattern());
-			return Arrays.asList();
-		}
 		// Add all the files to the database
 		final Set<File> batchedFiles = new TreeSet<File>();
 		Future<?> fileSystemFuture = ThreadUtilities.submit(new Runnable() {
@@ -155,17 +154,7 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 				if (file.isDirectory()) {
 					iterateFileSystem(dataBase, indexContext, indexable, file, excludedPattern, batchedFiles);
 				} else {
-					if (ZIP_JAR_WAR_EAR_PATTERN.matcher(file.getName()).matches() && file.isFile()) {
-						// TODO Unpack the file and return the folder that it was unpacked to
-						// to this method, essentially iterating over the files that were unpacked
-						File unzippedToFolder = FileUtilities.unzip(file.getAbsolutePath());
-						if (unzippedToFolder != null && unzippedToFolder.exists() && unzippedToFolder.isFile()) {
-							iterateFileSystem(dataBase, indexContext, indexable, unzippedToFolder, excludedPattern, batchedFiles);
-						}
-						// logger.info("Found zip, must still implement this functionality : " + file.getName());
-					} else {
-						batchedFiles.add(file);
-					}
+					batchedFiles.add(file);
 					if (batchedFiles.size() >= indexable.getBatchSize()) {
 						persistFilesBatch(dataBase, indexable, batchedFiles);
 					}
@@ -197,6 +186,22 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 		batchedFiles.clear();
 	}
 
+	protected void persistFileBatchTemporary(final IDataBase dataBase, final IndexableFileSystem indexable, final Set<File> batchedFiles) {
+		logger.info("Persisting temporary files : " + batchedFiles.size());
+		List<ikube.model.File> filesToPersist = new ArrayList<ikube.model.File>();
+		for (File toPersistFile : batchedFiles) {
+			long urlId = HashUtilities.hash(toPersistFile.getAbsolutePath());
+			ikube.model.File dbFile = new ikube.model.File();
+			dbFile.setName(indexable.getName());
+			dbFile.setIndexed(Boolean.FALSE);
+			dbFile.setUrl(toPersistFile.getAbsolutePath());
+			dbFile.setUrlId(urlId);
+			filesToPersist.add(dbFile);
+		}
+		dataBase.persistBatch(filesToPersist);
+		batchedFiles.clear();
+	}
+
 	/**
 	 * As the name suggests this method accesses a file, and hopefully indexes the data adding it to the index.
 	 * 
@@ -209,6 +214,20 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 			final ikube.model.File dbFile) throws InterruptedException {
 		File file = new File(dbFile.getUrl());
 		try {
+			// We have to unpack the zip files
+			boolean isZipAndFile = ZIP_JAR_WAR_EAR_PATTERN.matcher(file.getName()).matches() && file.isFile();
+			// logger.info("Doing file : " + isZipAndFile + ", " + file.getAbsolutePath());
+			if (isZipAndFile) {
+				File unzippedToFolder = FileUtilities.unzip(file.getAbsolutePath(), "." + TO_DIR);
+				logger.warn("Unzipping : " + file.getAbsolutePath() + " to " + unzippedToFolder);
+				if (unzippedToFolder != null && unzippedToFolder.exists() && unzippedToFolder.isFile()) {
+					Pattern excludedPattern = getPattern(indexableFileSystem.getExcludedPattern());
+					Set<File> batchedFiles = new TreeSet<File>();
+					iterateFileSystem(dataBase, indexContext, indexableFileSystem, unzippedToFolder, excludedPattern, batchedFiles);
+					persistFilesBatch(dataBase, indexableFileSystem, batchedFiles);
+				}
+			}
+
 			// logger.info("Db file : " + dbFile);
 			Document document = new Document();
 			indexableFileSystem.setCurrentFile(file);
@@ -245,15 +264,25 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 			IndexManager.addStringField(modifiedFieldName, Long.toString(file.lastModified()), document, store, analyzed, termVector);
 			IndexManager.addStringField(lengthFieldName, Long.toString(file.length()), document, store, analyzed, termVector);
 			IndexManager.addStringField(contentFieldName, parsedContent, document, store, analyzed, termVector);
-			addDocument(indexContext, indexableFileSystem, document);
+			addDocument(indexContext, document);
 
 			Thread.sleep(indexContext.getThrottle());
 		} catch (InterruptedException e) {
+			// This means that the scheduler has been forcefully destroyed
 			throw e;
 		} catch (IOException e) {
 			logger.error("Exception indexing file : " + file, e);
 		} catch (Exception e) {
 			logger.error("Exception occured while trying to index the file " + file.getAbsolutePath(), e);
+		} finally {
+			String filePath = file.getAbsolutePath();
+			StringUtils.replace(filePath, "\\", "/");
+			boolean isFileAndInTemp = file.isFile() && filePath.contains(TO_DIR);
+			logger.warn("Java temp : " + isFileAndInTemp + ", " + filePath);
+			if (isFileAndInTemp) {
+				logger.warn("Deleting file : " + filePath);
+				FileUtilities.deleteFile(file, 1);
+			}
 		}
 	}
 
@@ -272,6 +301,11 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 	protected boolean isExcluded(final File file, final Pattern pattern) {
 		// If it does not exist, we can't read it or directory excluded with the pattern
 		return file == null || !file.exists() || !file.canRead() || pattern.matcher(file.getName()).matches();
+	}
+
+	@Override
+	public void addDocument(IndexContext<?> indexContext, Document document) throws CorruptIndexException, IOException {
+		indexContext.getIndex().getIndexWriter().addDocument(document);
 	}
 
 }

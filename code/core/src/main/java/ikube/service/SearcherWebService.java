@@ -49,9 +49,6 @@ public class SearcherWebService implements ISearcherWebService {
 	@Value("${searcher.web.service.path}")
 	private String path;
 
-	// @Autowired
-	// private SearchDelegate searchDelegate;
-
 	/**
 	 * {@inheritDoc}
 	 */

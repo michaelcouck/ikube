@@ -599,7 +599,7 @@ public final class FileUtilities {
 	 * @param zipFile the zip file to unpack, this file name sill be used for the folder to unzip to
 	 * @return the folder where the file was unpacked to
 	 */
-	public static File unzip(String zipFile) {
+	public static File unzip(String zipFile, String toDir) {
 		File file;
 		ZipFile zip;
 		try {
@@ -613,7 +613,7 @@ public final class FileUtilities {
 		try {
 			Enumeration<? extends ZipEntry> zipFileEntries = zip.entries();
 			// Process each entry
-			destinationFolder = FileUtilities.getFile(System.getProperty("java.io.tmp") + IConstants.SEP + file.getName(), Boolean.TRUE);
+			destinationFolder = FileUtilities.getFile(toDir + IConstants.SEP + file.getName(), Boolean.TRUE);
 			while (zipFileEntries.hasMoreElements()) {
 				// Grab a zip file entry
 				ZipEntry entry = zipFileEntries.nextElement();
@@ -622,6 +622,7 @@ public final class FileUtilities {
 				}
 				String destinationPath = destinationFolder.getAbsolutePath() + IConstants.SEP + entry.getName();
 				File destinationFile = FileUtilities.getFile(destinationPath, Boolean.FALSE);
+				LOGGER.info("Unzipped file : " + destinationFile.getAbsolutePath());
 				InputStream inputStream = null;
 				OutputStream outputStream = null;
 				OutputStream destinationOutputStream = null;
@@ -646,7 +647,6 @@ public final class FileUtilities {
 					close(outputStream);
 					close(destinationOutputStream);
 				}
-				destinationFile.deleteOnExit();
 			}
 		} catch (Exception e) {
 			LOGGER.error("Exception extracting zip file : " + zipFile + ", " + zip, e);

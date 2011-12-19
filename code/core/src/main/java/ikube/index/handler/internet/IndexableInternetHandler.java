@@ -60,6 +60,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
+import org.apache.lucene.index.CorruptIndexException;
 
 /**
  * This is the crawler for internet and intranets sites. There are several levels of caches to improve performance in this class. Firstly
@@ -437,7 +438,7 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 			}
 			// Add the contents field
 			IndexManager.addStringField(indexable.getContentFieldName(), parsedContent, document, store, analyzed, termVector);
-			this.addDocument(indexContext, indexable, document);
+			this.addDocument(indexContext, document);
 		} catch (Exception e) {
 			if (url != null) {
 				url.setParsedContent(null);
@@ -607,6 +608,11 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 		} catch (MalformedURLException e) {
 			logger.error("Exception logging in to site : " + indexableInternet, e);
 		}
+	}
+
+	@Override
+	public void addDocument(IndexContext<?> indexContext, Document document) throws CorruptIndexException, IOException {
+		indexContext.getIndex().getIndexWriter().addDocument(document);
 	}
 
 }

@@ -8,12 +8,15 @@ import ikube.toolkit.ThreadUtilities;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Future;
 
+import org.apache.lucene.document.Document;
+import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.search.spell.PlainTextDictionary;
 import org.apache.lucene.search.spell.SpellChecker;
 import org.apache.lucene.store.Directory;
@@ -31,9 +34,8 @@ public class IndexableDictionaryHandler extends IndexableHandler<IndexableDictio
 	 */
 	@Override
 	public List<Future<?>> handle(final IndexContext<?> indexContext, final IndexableDictionary indexable) throws Exception {
+		List<Future<?>> futures = new ArrayList<Future<?>>();
 		try {
-			// List<Thread> threads = new ArrayList<Thread>();
-			List<Future<?>> futures = new ArrayList<Future<?>>();
 			File spellingIndexDirectory = FileUtilities.getFile(indexContext.getIndexDirectoryPath(), Boolean.TRUE);
 			Directory directory = FSDirectory.open(spellingIndexDirectory);
 			final SpellChecker spellChecker = new SpellChecker(directory);
@@ -64,18 +66,16 @@ public class IndexableDictionaryHandler extends IndexableHandler<IndexableDictio
 				};
 				Future<?> future = ThreadUtilities.submit(runnable);
 				futures.add(future);
-				// Thread thread = new Thread(runnable, this.getClass().getSimpleName() + "." + i);
-				// threads.add(thread);
 			}
-			// for (Thread thread : threads) {
-			// thread.start();
-			// }
-			// return threads;
-			return futures;
 		} catch (Exception e) {
 			logger.error("Exception starting the file system indexer threads : ", e);
 		}
-		return Arrays.asList();
+		return futures;
+	}
+
+	@Override
+	public void addDocument(IndexContext<?> indexContext, Document document) throws CorruptIndexException, IOException {
+		indexContext.getIndex().getIndexWriter().addDocument(document);
 	}
 
 }

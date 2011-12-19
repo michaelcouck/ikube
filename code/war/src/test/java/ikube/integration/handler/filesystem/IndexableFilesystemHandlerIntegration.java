@@ -1,6 +1,7 @@
 package ikube.integration.handler.filesystem;
 
 import static org.junit.Assert.assertTrue;
+import ikube.database.IDataBase;
 import ikube.index.IndexManager;
 import ikube.index.handler.filesystem.IndexableFilesystemHandler;
 import ikube.integration.AbstractIntegration;
@@ -32,6 +33,7 @@ public class IndexableFilesystemHandlerIntegration extends AbstractIntegration {
 		dropboxIndexable = ApplicationContextManager.getBean("dropboxIndexable");
 		dropboxIndexContext = ApplicationContextManager.getBean("dropboxIndex");
 		indexableFilesystemHandler = ApplicationContextManager.getBean(IndexableFilesystemHandler.class);
+		delete(ApplicationContextManager.getBean(IDataBase.class), ikube.model.File.class);
 		FileUtilities.deleteFile(new File(dropboxIndexContext.getIndexDirectoryPath()), 1);
 	}
 

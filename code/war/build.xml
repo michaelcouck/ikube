@@ -112,15 +112,11 @@
 
 		<replace dir="${tomcat.2.bin}" value="61617">
 			<include name="**/spring.properties" />
-			<replacetoken>
-				<![CDATA[61616]]>
-			</replacetoken>
+			<replacetoken><![CDATA[61616]]></replacetoken>
 		</replace>
 		<replace dir="${tomcat.3.bin}" value="61618">
 			<include name="**/spring.properties" />
-			<replacetoken>
-				<![CDATA[61616]]>
-			</replacetoken>
+			<replacetoken><![CDATA[61616]]></replacetoken>
 		</replace>
 	</target>
 

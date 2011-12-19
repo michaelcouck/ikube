@@ -189,6 +189,13 @@ public final class ApplicationContextManager implements ApplicationContextAware 
 		if (APPLICATION_CONTEXT == null) {
 			LOGGER.info("Setting the application context : " + applicationContext);
 			ApplicationContextManager.APPLICATION_CONTEXT = applicationContext;
+			((AbstractApplicationContext) ApplicationContextManager.APPLICATION_CONTEXT).registerShutdownHook();
+			Runtime.getRuntime().addShutdownHook(new Thread() {
+				@Override
+				public void run() {
+					ThreadUtilities.destroy();
+				}
+			});
 		} else {
 			LOGGER.info("Application context already loaded : " + APPLICATION_CONTEXT);
 		}

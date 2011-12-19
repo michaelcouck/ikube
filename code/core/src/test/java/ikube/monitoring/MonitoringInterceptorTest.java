@@ -8,6 +8,9 @@ import ikube.mock.ApplicationContextManagerMock;
 import ikube.model.Execution;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.PerformanceTester;
+
+import java.util.Map;
+
 import mockit.Deencapsulation;
 import mockit.Mockit;
 
@@ -60,10 +63,12 @@ public class MonitoringInterceptorTest extends ATest {
 		when(proceedingJoinPoint.getArgs()).thenReturn(arguments);
 
 		monitoringInterceptor.indexingPerformance(proceedingJoinPoint);
-		logger.info(monitoringInterceptor.indexingExecutions);
-		assertTrue(monitoringInterceptor.indexingExecutions.size() == 1);
-		assertTrue(monitoringInterceptor.indexingExecutions.containsKey(indexContext.getIndexName()));
-		Execution execution = monitoringInterceptor.indexingExecutions.get(indexContext.getIndexName());
+
+		Map<String, Execution> indexingExecutions = Deencapsulation.getField(monitoringInterceptor, "indexingExecutions");
+		logger.info(indexingExecutions);
+		assertTrue(indexingExecutions.size() == 1);
+		assertTrue(indexingExecutions.containsKey(indexContext.getIndexName()));
+		Execution execution = indexingExecutions.get(indexContext.getIndexName());
 		assertTrue(execution.getInvocations() > 0);
 		// Performance test
 		double executionsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
@@ -80,10 +85,12 @@ public class MonitoringInterceptorTest extends ATest {
 		when(proceedingJoinPoint.getArgs()).thenReturn(arguments);
 
 		monitoringInterceptor.searchingPerformance(proceedingJoinPoint);
-		logger.info(monitoringInterceptor.searchingExecutions);
-		assertTrue(monitoringInterceptor.searchingExecutions.size() == 1);
-		assertTrue(monitoringInterceptor.searchingExecutions.containsKey(arguments[0]));
-		Execution execution = monitoringInterceptor.searchingExecutions.get(arguments[0]);
+
+		Map<String, Execution> searchingExecutions = Deencapsulation.getField(monitoringInterceptor, "searchingExecutions");
+		logger.info(searchingExecutions);
+		assertTrue(searchingExecutions.size() == 1);
+		assertTrue(searchingExecutions.containsKey(arguments[0]));
+		Execution execution = searchingExecutions.get(arguments[0]);
 		assertTrue(execution.getInvocations() > 0);
 		// Performance test
 		double executionsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {

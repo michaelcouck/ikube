@@ -35,14 +35,6 @@ public class File extends Persistable {
 	public static final String SELECT_FROM_FILE_BY_NAME_AND_INDEXED = "select f from File as f where f.name = :name and f.indexed = :indexed";
 	public static final String SELECT_FROM_FILE_WHERE_ID_GREATER_AND_NOT_INDEXED = "select f from File as f where f.id >= :id and f.indexed = :indexed";
 
-	private long urlId;
-	private boolean indexed;
-	private long hash;
-
-	@Column(length = 64)
-	private String name;
-	@Column(length = 255)
-	private String url;
 	@Transient
 	private String title;
 	@Transient
@@ -51,6 +43,15 @@ public class File extends Persistable {
 	private byte[] rawContent;
 	@Transient
 	private String parsedContent;
+
+	private long hash;
+	private long urlId;
+	private boolean indexed;
+	private boolean temporary;
+	@Column(length = 64)
+	private String name;
+	@Column(length = 255)
+	private String url;
 
 	public long getUrlId() {
 		return urlId;
@@ -121,6 +122,14 @@ public class File extends Persistable {
 
 	public void setIndexed(final boolean indexed) {
 		this.indexed = indexed;
+	}
+
+	public boolean isTemporary() {
+		return temporary;
+	}
+
+	public void setTemporary(boolean temporary) {
+		this.temporary = temporary;
 	}
 
 	public long getHash() {

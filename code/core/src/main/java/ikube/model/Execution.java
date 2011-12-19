@@ -15,12 +15,12 @@ import javax.persistence.NamedQuery;
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @NamedQueries(value = { 
 		@NamedQuery(
-				name = Execution.SELECT_FROM_EXECUTIONS_BY_NAME_TYPE_AND_ADDRESS, 
-				query = Execution.SELECT_FROM_EXECUTIONS_BY_NAME_TYPE_AND_ADDRESS) })
+				name = Execution.SELECT_FROM_EXECUTIONS_BY_NAME_TYPE, 
+				query = Execution.SELECT_FROM_EXECUTIONS_BY_NAME_TYPE) })
 public class Execution extends Persistable {
 
-	public static final String SELECT_FROM_EXECUTIONS_BY_NAME_TYPE_AND_ADDRESS = //
-		"select e from Execution as e where e.indexName = :indexName and e.type = :type and e.address = :address";
+	public static final String SELECT_FROM_EXECUTIONS_BY_NAME_TYPE = //
+		"select e from Execution as e where e.indexName = :indexName and e.type = :type";
 
 	private String type;
 	private long duration;

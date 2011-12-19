@@ -83,37 +83,11 @@
 		class="ikube.monitoring.MonitoringInterceptor" />
 	<aop:config proxy-target-class="true">
 		<aop:aspect ref="ikube.monitoring.IMonitoringInterceptor">
-			<aop:around method="searchingPerformance" pointcut="execution(* ikube.service.SearcherWebService.searchSingle(..))" />
+			<aop:around method="searchingPerformance" pointcut="execution(* ikube.service.SearcherWebService.search*(..))" />
 		</aop:aspect>
 		<aop:aspect ref="ikube.monitoring.IMonitoringInterceptor">
-			<aop:around method="searchingPerformance" pointcut="execution(* ikube.service.SearcherWebService.searchMulti(..))" />
+			<aop:around method="indexingPerformance" pointcut="execution(* ikube.index.handler.*.*.addDocument*(..))" />
 		</aop:aspect>
-		<aop:aspect ref="ikube.monitoring.IMonitoringInterceptor">
-			<aop:around method="searchingPerformance" pointcut="execution(* ikube.service.SearcherWebService.searchMultiSorted(..))" />
-		</aop:aspect>
-		<aop:aspect ref="ikube.monitoring.IMonitoringInterceptor">
-			<aop:around method="searchingPerformance" pointcut="execution(* ikube.service.SearcherWebService.searchMultiAll(..))" />
-		</aop:aspect>
-		<aop:aspect ref="ikube.monitoring.IMonitoringInterceptor">
-			<aop:around method="searchingPerformance" pointcut="execution(* ikube.service.SearcherWebService.searchSpacialMulti(..))" />
-		</aop:aspect>
-		<aop:aspect ref="ikube.monitoring.IMonitoringInterceptor">
-			<aop:around method="searchingPerformance" pointcut="execution(* ikube.service.SearcherWebService.searchSpacialMultiAll(..))" />
-		</aop:aspect>
-		
-		<aop:aspect ref="ikube.monitoring.IMonitoringInterceptor">
-			<aop:around method="indexingPerformance" pointcut="execution(* ikube.index.handler.*.*.addDocument(..))" />
-		</aop:aspect>
-		<aop:aspect ref="ikube.monitoring.IMonitoringInterceptor">
-			<aop:around method="indexingPerformance" pointcut="execution(* ikube.index.handler.IndexableHandler.addDocument(..))" />
-		</aop:aspect>
-
-		<!-- <aop:aspect ref="ikube.monitoring.IMonitoringInterceptor">
-			<aop:around method="searchingPerformance" pointcut="execution(* ikube.service.SearchDelegate.execute(..))" />
-		</aop:aspect>
-		<aop:aspect ref="ikube.monitoring.IMonitoringInterceptor">
-			<aop:around method="indexingPerformance" pointcut="execution(* ikube.index.handler.DocumentDelegate.addDocument(..))" />
-		</aop:aspect> -->
 	</aop:config>
 	
 </beans>

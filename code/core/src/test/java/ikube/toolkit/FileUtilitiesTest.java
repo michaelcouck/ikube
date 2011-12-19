@@ -188,7 +188,7 @@ public class FileUtilitiesTest extends ATest {
 	public void unzip() {
 		// FileUtilities.deleteFile(new File(".", "jar.jar"), 1);
 		File jarFile = FileUtilities.findFileRecursively(new File("."), false, "jar.jar\\Z");
-		File unzipedDirectory = FileUtilities.unzip(jarFile.getAbsolutePath());
+		File unzipedDirectory = FileUtilities.unzip(jarFile.getAbsolutePath(), "./deleteMe");
 		assertNotNull(unzipedDirectory);
 		assertTrue(unzipedDirectory.exists());
 		File ruleInterceptorFile = FileUtilities.findFileRecursively(unzipedDirectory, "RuleInterceptor.java");

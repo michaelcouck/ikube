@@ -18,25 +18,25 @@ import javax.persistence.Transient;
 public class IndexableFileSystem extends Indexable<IndexableFileSystem> {
 
 	@Transient
-	private transient File	currentFile;
+	private transient File currentFile;
 
-	private String			path;
-	private String			excludedPattern;
-	private String			includedPattern;
-	private long			maxReadLength	= 10000000;
+	private String path;
+	private String excludedPattern;
+	private String includedPattern;
+	private long maxReadLength = 10000000;
 
 	@Field()
-	private String			nameFieldName;
+	private String nameFieldName;
 	@Field()
-	private String			pathFieldName;
+	private String pathFieldName;
 	@Field()
-	private String			lastModifiedFieldName;
+	private String lastModifiedFieldName;
 	@Field()
-	private String			contentFieldName;
+	private String contentFieldName;
 	@Field()
-	private String			lengthFieldName;
+	private String lengthFieldName;
 	@Field()
-	private int				batchSize;
+	private int batchSize;
 
 	public String getPath() {
 		return path;

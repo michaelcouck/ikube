@@ -13,6 +13,7 @@ import ikube.search.Search;
  * @since 22.05.11
  * @version 01.00
  */
+@Deprecated
 public interface ISearchDelegate {
 
 	/**

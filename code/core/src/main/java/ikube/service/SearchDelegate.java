@@ -11,6 +11,7 @@ import java.util.Map;
  * @since 22.05.11
  * @version 01.00
  */
+@Deprecated
 public class SearchDelegate implements ISearchDelegate {
 	
 	public SearchDelegate() {}

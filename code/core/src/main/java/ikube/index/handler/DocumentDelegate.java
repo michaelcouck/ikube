@@ -19,6 +19,7 @@ import org.apache.lucene.index.CorruptIndexException;
  * @since 15.05.2011
  * @version 01.00
  */
+@Deprecated
 public class DocumentDelegate implements IDocumentDelegate {
 
 	@Override

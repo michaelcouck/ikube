@@ -20,6 +20,7 @@ import ikube.toolkit.SerializationUtilities;
 import ikube.toolkit.ThreadUtilities;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.sql.Connection;
@@ -39,6 +40,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
+import org.apache.lucene.index.CorruptIndexException;
 
 /**
  * This class performs the indexing of tables. It is the primary focus of Ikube. This class is essentially a database crawler, and is multi
@@ -219,7 +221,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 					}
 					// Add the document to the index if this is the primary table
 					if (indexableTable.isPrimaryTable()) {
-						addDocument(indexContext, indexableTable, document);
+						addDocument(indexContext, document);
 						Thread.sleep(indexContext.getThrottle());
 					}
 					// Move to the next row in the result set
@@ -635,6 +637,11 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 			indexableColumn.setContent(object);
 			index++;
 		}
+	}
+
+	@Override
+	public void addDocument(IndexContext<?> indexContext, Document document) throws CorruptIndexException, IOException {
+		indexContext.getIndex().getIndexWriter().addDocument(document);
 	}
 
 }
