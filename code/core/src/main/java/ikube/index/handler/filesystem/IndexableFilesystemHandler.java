@@ -219,7 +219,7 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 			// logger.info("Doing file : " + isZipAndFile + ", " + file.getAbsolutePath());
 			if (isZipAndFile) {
 				File unzippedToFolder = FileUtilities.unzip(file.getAbsolutePath(), "." + TO_DIR);
-				logger.warn("Unzipping : " + file.getAbsolutePath() + " to " + unzippedToFolder);
+				// logger.warn("Unzipping : " + file.getAbsolutePath() + " to " + unzippedToFolder);
 				if (unzippedToFolder != null && unzippedToFolder.exists() && unzippedToFolder.isFile()) {
 					Pattern excludedPattern = getPattern(indexableFileSystem.getExcludedPattern());
 					Set<File> batchedFiles = new TreeSet<File>();
@@ -278,7 +278,7 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 			String filePath = file.getAbsolutePath();
 			StringUtils.replace(filePath, "\\", "/");
 			boolean isFileAndInTemp = file.isFile() && filePath.contains(TO_DIR);
-			logger.warn("Java temp : " + isFileAndInTemp + ", " + filePath);
+			// logger.warn("Java temp : " + isFileAndInTemp + ", " + filePath);
 			if (isFileAndInTemp) {
 				logger.warn("Deleting file : " + filePath);
 				FileUtilities.deleteFile(file, 1);
@@ -303,7 +303,7 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 		return file == null || !file.exists() || !file.canRead() || pattern.matcher(file.getName()).matches();
 	}
 
-	@Override
+	// @Override
 	public void addDocument(IndexContext<?> indexContext, Document document) throws CorruptIndexException, IOException {
 		indexContext.getIndex().getIndexWriter().addDocument(document);
 	}

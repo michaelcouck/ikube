@@ -276,7 +276,7 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 		return store;
 	}
 
-	@Override
+	// @Override
 	public void addDocument(IndexContext<?> indexContext, Document document) throws CorruptIndexException, IOException {
 		indexContext.getIndex().getIndexWriter().addDocument(document);
 	}

@@ -610,7 +610,7 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 		}
 	}
 
-	@Override
+	// @Override
 	public void addDocument(IndexContext<?> indexContext, Document document) throws CorruptIndexException, IOException {
 		indexContext.getIndex().getIndexWriter().addDocument(document);
 	}

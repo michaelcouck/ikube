@@ -73,7 +73,7 @@ public class IndexableDictionaryHandler extends IndexableHandler<IndexableDictio
 		return futures;
 	}
 
-	@Override
+	// @Override
 	public void addDocument(IndexContext<?> indexContext, Document document) throws CorruptIndexException, IOException {
 		indexContext.getIndex().getIndexWriter().addDocument(document);
 	}

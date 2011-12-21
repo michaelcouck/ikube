@@ -638,9 +638,8 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 			index++;
 		}
 	}
-
-	@Override
-	public void addDocument(IndexContext<?> indexContext, Document document) throws CorruptIndexException, IOException {
+	
+	public void addDocument(final IndexContext<?> indexContext, final Document document) throws CorruptIndexException, IOException {
 		indexContext.getIndex().getIndexWriter().addDocument(document);
 	}
 

@@ -622,7 +622,7 @@ public final class FileUtilities {
 				}
 				String destinationPath = destinationFolder.getAbsolutePath() + IConstants.SEP + entry.getName();
 				File destinationFile = FileUtilities.getFile(destinationPath, Boolean.FALSE);
-				LOGGER.info("Unzipped file : " + destinationFile.getAbsolutePath());
+				// LOGGER.info("Unzipped file : " + destinationFile.getAbsolutePath());
 				InputStream inputStream = null;
 				OutputStream outputStream = null;
 				OutputStream destinationOutputStream = null;
