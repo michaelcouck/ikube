@@ -27,6 +27,7 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.MultiSearcher;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -90,6 +91,7 @@ public class AopIntegration extends AbstractIntegration {
 	}
 
 	@Test
+	@Ignore
 	@SuppressWarnings("rawtypes")
 	public void search() throws Exception {
 		Map<String, IndexContext> indexContexts = ApplicationContextManager.getBeans(IndexContext.class);

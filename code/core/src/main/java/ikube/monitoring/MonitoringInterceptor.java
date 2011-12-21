@@ -3,8 +3,6 @@ package ikube.monitoring;
 import ikube.IConstants;
 import ikube.cluster.IClusterManager;
 import ikube.database.IDataBase;
-import ikube.listener.Event;
-import ikube.listener.IListener;
 import ikube.model.Execution;
 import ikube.model.IndexContext;
 
@@ -21,7 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @since 08.05.2011
  * @version 01.00
  */
-public class MonitoringInterceptor implements IMonitoringInterceptor, IListener {
+public class MonitoringInterceptor implements IMonitoringInterceptor {
 
 	private static final Logger LOGGER = Logger.getLogger(MonitoringInterceptor.class);
 
@@ -45,7 +43,6 @@ public class MonitoringInterceptor implements IMonitoringInterceptor, IListener 
 	@Override
 	public final Object indexingPerformance(final ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
 		Object[] args = proceedingJoinPoint.getArgs();
-		// Object[] parameters = (Object[]) args[0];
 		String indexName = ((IndexContext<?>) args[0]).getIndexName();
 		long start = System.nanoTime();
 		try {
@@ -111,10 +108,6 @@ public class MonitoringInterceptor implements IMonitoringInterceptor, IListener 
 			}
 		}
 		return execution;
-	}
-
-	@Override
-	public final void handleNotification(Event event) {
 	}
 
 }
