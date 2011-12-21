@@ -22,7 +22,7 @@
 		</antcall -->
 	</target>
 	<target name="stop.tomcat.cluster">
-		<antcall target="executeTomcatAction">
+		<!-- antcall target="executeTomcatAction">
 			<param name="action" value="stop" />
 			<param name="tomcat.bin" value="${tomcat.1.bin}" />
 			<param name="tomcat.home" value="${tomcat.1}" />
@@ -36,7 +36,7 @@
 			<param name="action" value="stop" />
 			<param name="tomcat.bin" value="${tomcat.3.bin}" />
 			<param name="tomcat.home" value="${tomcat.3}" />
-		</antcall>
+		</antcall -->
 	</target>
 
 	<target name="executeTomcatAction">
@@ -70,9 +70,11 @@
 			</fileset>
 		</delete>
 		<!-- Deploy the ikube war into the cluster. -->
+		<echo level="error" message="Jboss directory : ${jboss.1.deploy}" />
 		<copy file="${target.directory}/${ikube.war}" todir="${tomcat.1.webapps}" overwrite="true" failonerror="false" />
 		<copy file="${target.directory}/${ikube.war}" todir="${tomcat.2.webapps}" overwrite="true" failonerror="false" />
 		<copy file="${target.directory}/${ikube.war}" todir="${tomcat.3.webapps}" overwrite="true" failonerror="false" />
+		<copy file="${target.directory}/${ikube.war}" todir="${jboss.1.deploy}" overwrite="true" failonerror="false" />
 	</target>
 
 	<!-- 
@@ -105,16 +107,19 @@
 	<target name="copy.configuration" depends="unpack.configuration">
 		<jar destfile="${configuration.directory}/${ikube.configuration.jar}" basedir="${configuration.directory}" />
 		<copy file="${configuration.directory}/${ikube.configuration.jar}" todir="./src/main/webapp/docs" failonerror="true" />
-		<!-- unjar src="${configuration.directory}/${ikube.configuration.jar}" dest="${ikube.configuration.directory}" overwrite="true" / -->
 		<unjar src="${configuration.directory}/${ikube.configuration.jar}" dest="${tomcat.1.bin}" overwrite="true" />
 		<unjar src="${configuration.directory}/${ikube.configuration.jar}" dest="${tomcat.2.bin}" overwrite="true" />
 		<unjar src="${configuration.directory}/${ikube.configuration.jar}" dest="${tomcat.3.bin}" overwrite="true" />
-
+		<unjar src="${configuration.directory}/${ikube.configuration.jar}" dest="${jboss.1.bin}" overwrite="true" />
 		<replace dir="${tomcat.2.bin}" value="61617">
 			<include name="**/spring.properties" />
 			<replacetoken><![CDATA[61616]]></replacetoken>
 		</replace>
 		<replace dir="${tomcat.3.bin}" value="61618">
+			<include name="**/spring.properties" />
+			<replacetoken><![CDATA[61616]]></replacetoken>
+		</replace>
+		<replace dir="${jboss.1.bin}" value="61619">
 			<include name="**/spring.properties" />
 			<replacetoken><![CDATA[61616]]></replacetoken>
 		</replace>

@@ -8,15 +8,12 @@ import ikube.toolkit.ThreadUtilities;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Future;
 
-import org.apache.lucene.document.Document;
-import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.search.spell.PlainTextDictionary;
 import org.apache.lucene.search.spell.SpellChecker;
 import org.apache.lucene.store.Directory;
@@ -71,11 +68,6 @@ public class IndexableDictionaryHandler extends IndexableHandler<IndexableDictio
 			logger.error("Exception starting the file system indexer threads : ", e);
 		}
 		return futures;
-	}
-
-	// @Override
-	public void addDocument(IndexContext<?> indexContext, Document document) throws CorruptIndexException, IOException {
-		indexContext.getIndex().getIndexWriter().addDocument(document);
 	}
 
 }

@@ -4,7 +4,6 @@ import ikube.action.rule.IRule;
 import ikube.action.rule.RuleInterceptor;
 import ikube.cluster.IClusterManager;
 import ikube.database.IDataBase;
-import ikube.listener.ListenerManager;
 import ikube.model.IndexContext;
 import ikube.notify.IMailer;
 
@@ -38,8 +37,6 @@ public abstract class Action<E, F> implements IAction<E, F> {
 	private IMailer mailer;
 	@Autowired
 	protected IDataBase dataBase;
-	@Autowired
-	protected ListenerManager listenerManager;
 	/** The cluster manager for locking the cluster during rule evaluation. */
 	@Autowired
 	protected IClusterManager clusterManager;

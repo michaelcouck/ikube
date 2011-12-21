@@ -4,11 +4,8 @@ import ikube.database.IDataBase;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
 
-import java.io.IOException;
-
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.index.CorruptIndexException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -29,6 +26,8 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IHandl
 	/** Access to the database. */
 	@Autowired
 	protected IDataBase dataBase;
+	@Autowired
+	protected IDelegate delegate;
 
 	public int getThreads() {
 		return threads;
@@ -57,9 +56,9 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IHandl
 	/**
 	 * {@inheritDoc}
 	 */
-	// @Override
-//	public void addDocument(final IndexContext<?> indexContext, final Document document) throws CorruptIndexException, IOException {
-//		indexContext.getIndex().getIndexWriter().addDocument(document);
-//	}
+	@Override
+	public void addDocument(final IndexContext<?> indexContext, final Document document) throws Exception {
+		delegate.delegate(indexContext, document);
+	}
 
 }

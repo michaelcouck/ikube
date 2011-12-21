@@ -35,7 +35,6 @@ import javax.mail.internet.MimeMultipart;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.index.CorruptIndexException;
 
 import com.sun.mail.pop3.POP3SSLStore;
 
@@ -274,11 +273,6 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 			store = session.getStore(url);
 		}
 		return store;
-	}
-
-	// @Override
-	public void addDocument(IndexContext<?> indexContext, Document document) throws CorruptIndexException, IOException {
-		indexContext.getIndex().getIndexWriter().addDocument(document);
 	}
 
 }

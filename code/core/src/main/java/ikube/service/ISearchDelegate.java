@@ -3,11 +3,11 @@ package ikube.service;
 import java.util.List;
 import java.util.Map;
 
-import ikube.index.handler.IDocumentDelegate;
+import ikube.index.handler.IDelegate;
 import ikube.search.Search;
 
 /**
- * This interface is for Spring to intercept. Please refer to the JavaDoc in the {@link IDocumentDelegate} class for an explanation.
+ * This interface is for Spring to intercept. Please refer to the JavaDoc in the {@link IDelegate} class for an explanation.
  * 
  * @author Michael Couck
  * @since 22.05.11

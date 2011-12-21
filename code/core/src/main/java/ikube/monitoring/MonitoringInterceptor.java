@@ -23,7 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class MonitoringInterceptor implements IMonitoringInterceptor, IListener {
 
-	@SuppressWarnings("unused")
 	private static final Logger LOGGER = Logger.getLogger(MonitoringInterceptor.class);
 
 	@Autowired
@@ -46,9 +45,11 @@ public class MonitoringInterceptor implements IMonitoringInterceptor, IListener 
 	@Override
 	public final Object indexingPerformance(final ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
 		Object[] args = proceedingJoinPoint.getArgs();
+		// Object[] parameters = (Object[]) args[0];
 		String indexName = ((IndexContext<?>) args[0]).getIndexName();
 		long start = System.nanoTime();
 		try {
+			LOGGER.info("Intercepting : " + proceedingJoinPoint);
 			return proceedingJoinPoint.proceed();
 		} finally {
 			Execution execution = getExecution(indexName, IConstants.INDEX, indexingExecutions);

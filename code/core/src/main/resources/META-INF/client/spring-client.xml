@@ -579,7 +579,7 @@
 		id="filesystem"
 		class="ikube.model.IndexableFileSystem"
 		property:name="filesOne"
-		property:path="C:/h2"
+		property:path="C:/Dropbox/Sumo"
 		property:pathFieldName="path"
 		property:nameFieldName="name"
 		property:lengthFieldName="length"

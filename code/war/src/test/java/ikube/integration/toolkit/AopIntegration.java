@@ -27,7 +27,6 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.MultiSearcher;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -42,7 +41,6 @@ import org.mockito.Mockito;
  * @since 30.04.2011
  * @version 01.00
  */
-@Ignore
 public class AopIntegration extends AbstractIntegration {
 
 	@MockClass(realClass = Search.class, inverse = true)

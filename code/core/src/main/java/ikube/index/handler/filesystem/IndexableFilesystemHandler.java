@@ -33,7 +33,6 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
-import org.apache.lucene.index.CorruptIndexException;
 
 /**
  * This class indexes a file share on the network. It is multi threaded but not cluster load balanced. First the files are iterated over and
@@ -301,11 +300,6 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 	protected boolean isExcluded(final File file, final Pattern pattern) {
 		// If it does not exist, we can't read it or directory excluded with the pattern
 		return file == null || !file.exists() || !file.canRead() || pattern.matcher(file.getName()).matches();
-	}
-
-	// @Override
-	public void addDocument(IndexContext<?> indexContext, Document document) throws CorruptIndexException, IOException {
-		indexContext.getIndex().getIndexWriter().addDocument(document);
 	}
 
 }
