@@ -5,7 +5,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import ikube.IConstants;
 import ikube.integration.AbstractIntegration;
-import ikube.model.IndexContext;
 import ikube.service.IMonitorWebService;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
@@ -47,18 +46,10 @@ public class MonitorWebServiceIntegration extends AbstractIntegration {
 
 	@Test
 	public void getIndexFieldNames() {
-		String[] indexContextNames = monitorWebService.getIndexContextNames();
-		for (String indexContextName : indexContextNames) {
-			IndexContext<?> indexContext = ApplicationContextManager.getBean(indexContextName);
-			logger.info("Index context name : " + indexContextName);
-			if (indexContext.getName().contains("dictionary")) {
-				continue;
-			}
-			String[] fieldNames = monitorWebService.getIndexFieldNames(indexContext.getIndexName());
-			assertTrue(fieldNames.length > 0);
-			for (String fieldName : fieldNames) {
-				logger.debug("        : field name : " + fieldName);
-			}
+		String[] fieldNames = monitorWebService.getIndexFieldNames(IConstants.GEOSPATIAL);
+		assertTrue(fieldNames.length > 0);
+		for (String fieldName : fieldNames) {
+			logger.debug("        : field name : " + fieldName);
 		}
 		String[] indexFieldNames = monitorWebService.getIndexFieldNames(IConstants.IKUBE);
 		for (String indexfieldName : indexFieldNames) {

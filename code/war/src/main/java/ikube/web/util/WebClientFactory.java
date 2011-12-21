@@ -14,14 +14,12 @@ import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.WebWindow;
 
 /**
- * This class opens the WebClient and sets the default handlers and so on. In the case that a client wants to open a web
- * client with different properties then the WebClient should be closed and
- * {@link WebClientFactory#getWebClient(BrowserVersion, boolean, boolean, boolean)} called with the appropriate
- * parameters.
+ * This class opens the WebClient and sets the default handlers and so on. In the case that a client wants to open a web client with
+ * different properties then the WebClient should be closed and
+ * {@link WebClientFactory#getWebClient(BrowserVersion, boolean, boolean, boolean)} called with the appropriate parameters.
  * 
- * The default {@link WebClientFactory#getWebClient()} returns the default WebClient with Firefox as the version and
- * JavaScript and CSS not enabled. Note that JavaScript and CSS are memory intensive and should not be used in
- * combination with long or deep crawls.
+ * The default {@link WebClientFactory#getWebClient()} returns the default WebClient with Firefox as the version and JavaScript and CSS not
+ * enabled. Note that JavaScript and CSS are memory intensive and should not be used in combination with long or deep crawls.
  * 
  * @author Michael Couck
  * @since 25.09.10
@@ -29,8 +27,8 @@ import com.gargoylesoftware.htmlunit.WebWindow;
  */
 public class WebClientFactory {
 
-	private static Logger		LOGGER	= LoggerFactory.getLogger(WebClientFactory.class);
-	private static WebClient	WEB_CLIENT;
+	private static Logger LOGGER = LoggerFactory.getLogger(WebClientFactory.class);
+	private static WebClient WEB_CLIENT;
 
 	/**
 	 * This listener just overrides the default logging for obsolete 'JavaScript' text as it is very verbose.
@@ -41,8 +39,8 @@ public class WebClientFactory {
 	 */
 	public static class IncorrectnessListenerImpl implements IncorrectnessListener {
 
-		private final Logger				logger	= LoggerFactory.getLogger(this.getClass());
-		private final IncorrectnessListener	incorrectnessListener;
+		private final Logger logger = LoggerFactory.getLogger(this.getClass());
+		private final IncorrectnessListener incorrectnessListener;
 
 		public IncorrectnessListenerImpl(IncorrectnessListener incorrectnessListener) {
 			this.incorrectnessListener = incorrectnessListener;
@@ -59,8 +57,8 @@ public class WebClientFactory {
 	}
 
 	/**
-	 * Instantiates and or returns the default web client. Please refer to class JavaDoc for more information on the
-	 * default client. This will be FireFox 3.6 with no JavaScript or Css enabled.
+	 * Instantiates and or returns the default web client. Please refer to class JavaDoc for more information on the default client. This
+	 * will be FireFox 3.6 with no JavaScript or Css enabled.
 	 * 
 	 * @return the currently alive web client, if the web client is not active then it will be instantiated
 	 */
@@ -74,18 +72,14 @@ public class WebClientFactory {
 	}
 
 	/**
-	 * Instantiates the web client with the desired properties if the client is not already instantiated. If the web
-	 * client is instantiated and not null then it just returns the currently alive client.
+	 * Instantiates the web client with the desired properties if the client is not already instantiated. If the web client is instantiated
+	 * and not null then it just returns the currently alive client.
 	 * 
-	 * @param browserVersion
-	 *            the browser version, possible values are Firefox, IE... Have a look at the {@link BrowserVersion} for
-	 *            possible values
-	 * @param javaScriptEnabled
-	 *            whether the JavaScript in the pages will be executed. Note that this is memory and time intensive
-	 * @param cssEnabled
-	 *            whether the CSS is enables. This will generally cause a lot of debug logging
-	 * @param throwExceptionOnScriptError
-	 *            whether to throw exceptions on JavaScript errors
+	 * @param browserVersion the browser version, possible values are Firefox, IE... Have a look at the {@link BrowserVersion} for possible
+	 *            values
+	 * @param javaScriptEnabled whether the JavaScript in the pages will be executed. Note that this is memory and time intensive
+	 * @param cssEnabled whether the CSS is enables. This will generally cause a lot of debug logging
+	 * @param throwExceptionOnScriptError whether to throw exceptions on JavaScript errors
 	 * @return
 	 */
 	public static synchronized WebClient getWebClient(BrowserVersion browserVersion, boolean javaScriptEnabled, boolean cssEnabled,
@@ -124,8 +118,8 @@ public class WebClientFactory {
 	}
 
 	/**
-	 * Closes the web client and releases all the resources, nulling the default static web client as well making it
-	 * ready to change browser versions.
+	 * Closes the web client and releases all the resources, nulling the default static web client as well making it ready to change browser
+	 * versions.
 	 */
 	public static synchronized void closeWebClient() {
 		if (WEB_CLIENT == null) {

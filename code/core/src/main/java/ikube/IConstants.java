@@ -2,6 +2,7 @@ package ikube;
 
 import java.io.Reader;
 import java.text.SimpleDateFormat;
+import java.util.regex.Pattern;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.LowerCaseTokenizer;
@@ -183,5 +184,9 @@ public interface IConstants {
 	int MAX_RETRY_COUNTER = 5;
 
 	String SEARCH = "search";
+
+	String TO_DIR = "/tmp/unzipped";
+	String STRING_PATTERN = ".*(\\.zip\\Z).*|.*(\\.jar\\Z).*|.*(\\.war\\Z).*|.*(\\.ear\\Z).*|.*(\\.gz\\Z).*|.*(\\.sar\\Z).*|.*(\\.tar\\Z).*";
+	Pattern ZIP_JAR_WAR_EAR_PATTERN = Pattern.compile(STRING_PATTERN);
 
 }

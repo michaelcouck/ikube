@@ -42,6 +42,7 @@ import org.mockito.Mockito;
  * @since 30.04.2011
  * @version 01.00
  */
+@Ignore
 public class AopIntegration extends AbstractIntegration {
 
 	@MockClass(realClass = Search.class, inverse = true)

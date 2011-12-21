@@ -26,7 +26,6 @@
 	<context:property-placeholder
 		location="**/spring.properties" 
 		properties-ref="ikube.toolkit.PropertyConfigurer" />
-	
 
 	<!-- This bean will look through the classpath and load every Spring properties file it finds. -->
 	<bean
@@ -37,13 +36,19 @@
 		init-method="initialize" />
 
 	<!-- External file system resources. -->
+	<import resource="file:**/ikube/spring-*.xml" />
+	<import resource="file:**/ikube/**/spring-*.xml" />
+
+	<mvc:annotation-driven />
+	<context:annotation-config />
+	<context:component-scan base-package="ikube" />
+
+	<!-- Don't try this at home. -->
 	<!-- <import resource="file:**/spring*.xml" />
 	<import resource="file:**/spring-*.xml" /> -->
 	<!-- <import resource="file:**/spring-*.xml" /> -->
 	<!-- <import resource="file:ikube/spring-*.xml" />
 	<import resource="file:ikube/**/spring-*.xml" /> -->
-	<import resource="file:**/ikube/spring-*.xml" />
-	<import resource="file:**/ikube/**/spring-*.xml" />
 	<!-- <import resource="file*:**/ikube/spring-*.xml" />
 	<import resource="file*:**/ikube/**/spring-*.xml" /> -->
 	<!-- <import resource="file:target/configuration/ikube/spring.xml" /> -->
@@ -55,10 +60,6 @@
 	<import resource="classpath*:**/spring-*.xml" />
 	<import resource="classpath:**/spring*.xml" />
 	<import resource="classpath*:/**/spring*.xml" /> -->
-	
-	<context:annotation-config />
-	<context:component-scan base-package="ikube" />
-	<mvc:annotation-driven />
 	
 	<!-- Issue here with the spring.handlers files in the jars. -->
 	<!-- <mvc:resources mapping="/js/**" location="/js/" />
@@ -129,7 +130,6 @@
 		<bean 
 			class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor"
 			property:paramName="language" />
-		<!-- <bean id="messageHandler" class="com.truvo.cmp.server.web.interceptor.MessageHandlerInterceptor" /> -->
 	</mvc:interceptors>
 
 	<bean 

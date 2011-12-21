@@ -76,7 +76,7 @@ public class MonitoringInterceptorTest extends ATest {
 				monitoringInterceptor.indexingPerformance(proceedingJoinPoint);
 			}
 		}, "Indexing interceptor : ", 100, Boolean.FALSE);
-		assertTrue(executionsPerSecond > 100);
+		assertTrue(executionsPerSecond > 10);
 	}
 
 	@Test
@@ -98,7 +98,7 @@ public class MonitoringInterceptorTest extends ATest {
 				monitoringInterceptor.searchingPerformance(proceedingJoinPoint);
 			}
 		}, "Indexing interceptor : ", 100, Boolean.FALSE);
-		assertTrue(executionsPerSecond > 100);
+		assertTrue(executionsPerSecond > 10);
 	}
 
 }

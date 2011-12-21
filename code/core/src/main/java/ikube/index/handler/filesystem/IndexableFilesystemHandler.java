@@ -50,11 +50,6 @@ import org.apache.lucene.document.Field.TermVector;
  */
 public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSystem> {
 
-	private static final String STRING_PATTERN = ".*(\\.zip\\Z).*|.*(\\.jar\\Z).*|.*(\\.war\\Z).*|.*(\\.ear\\Z).*|.*(\\.gz\\Z).*|.*(\\.sar\\Z).*|.*(\\.tar\\Z).*";
-	private static final Pattern ZIP_JAR_WAR_EAR_PATTERN = Pattern.compile(STRING_PATTERN);
-	// private static final String JAVA_IO_TEMP_DIR = System.getProperty("java.io.tmpdir");
-	private static final String TO_DIR = "/tmp/unzipped";
-
 	/**
 	 * {@inheritDoc}
 	 */
@@ -214,11 +209,9 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 		File file = new File(dbFile.getUrl());
 		try {
 			// We have to unpack the zip files
-			boolean isZipAndFile = ZIP_JAR_WAR_EAR_PATTERN.matcher(file.getName()).matches() && file.isFile();
-			// logger.info("Doing file : " + isZipAndFile + ", " + file.getAbsolutePath());
+			boolean isZipAndFile = IConstants.ZIP_JAR_WAR_EAR_PATTERN.matcher(file.getName()).matches() && file.isFile();
 			if (isZipAndFile) {
-				File unzippedToFolder = FileUtilities.unzip(file.getAbsolutePath(), "." + TO_DIR);
-				// logger.warn("Unzipping : " + file.getAbsolutePath() + " to " + unzippedToFolder);
+				File unzippedToFolder = FileUtilities.unzip(file.getAbsolutePath(), "." + IConstants.TO_DIR);
 				if (unzippedToFolder != null && unzippedToFolder.exists() && unzippedToFolder.isFile()) {
 					Pattern excludedPattern = getPattern(indexableFileSystem.getExcludedPattern());
 					Set<File> batchedFiles = new TreeSet<File>();
@@ -227,7 +220,6 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 				}
 			}
 
-			// logger.info("Db file : " + dbFile);
 			Document document = new Document();
 			indexableFileSystem.setCurrentFile(file);
 
@@ -276,8 +268,7 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 		} finally {
 			String filePath = file.getAbsolutePath();
 			StringUtils.replace(filePath, "\\", "/");
-			boolean isFileAndInTemp = file.isFile() && filePath.contains(TO_DIR);
-			// logger.warn("Java temp : " + isFileAndInTemp + ", " + filePath);
+			boolean isFileAndInTemp = file.isFile() && filePath.contains(IConstants.TO_DIR);
 			if (isFileAndInTemp) {
 				logger.warn("Deleting file : " + filePath);
 				FileUtilities.deleteFile(file, 1);

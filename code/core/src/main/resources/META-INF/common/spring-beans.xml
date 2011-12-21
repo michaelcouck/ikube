@@ -149,12 +149,9 @@
 		property:listeners-ref="ikube.listener.ListenerManager.listeners" />
 	<util:list id="ikube.listener.ListenerManager.listeners">
 		<ref bean="ikube.IndexEngine" />
-		<ref bean="ikube.monitoring.IMonitoringInterceptor" />
-		
 		<bean class="ikube.cluster.jms.LockRemovalListener" />
 		<bean class="ikube.cluster.jms.ServerRemovalListener" />
 		<bean class="ikube.cluster.jms.ServerClubListener" />
-		
 		<bean class="ikube.listener.StartupListener" />
 		<bean class="ikube.listener.TerminationListener" />
 	</util:list>

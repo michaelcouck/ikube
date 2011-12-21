@@ -19,15 +19,15 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IHandl
 
 	protected Logger logger = Logger.getLogger(this.getClass());
 
-	/** The number of threads that this handler will spawn. */
-	private int threads;
-	/** The class that this handler can handle. */
-	private Class<T> indexableClass;
 	/** Access to the database. */
 	@Autowired
 	protected IDataBase dataBase;
 	@Autowired
 	protected IDelegate delegate;
+	/** The number of threads that this handler will spawn. */
+	private int threads;
+	/** The class that this handler can handle. */
+	private Class<T> indexableClass;
 
 	public int getThreads() {
 		return threads;

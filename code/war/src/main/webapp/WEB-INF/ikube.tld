@@ -14,52 +14,6 @@
 	<uri>http://ikube</uri>
 	<!-- <description>Ikube Taglib</description> -->
 
-	<tag>
-		<name>linkTag</name>
-		<tag-class>ikube.web.tag.LinkTag</tag-class>
-		<body-content>JSP</body-content>
-	</tag>
-	<tag>
-		<name>pageTag</name>
-		<tag-class>ikube.web.tag.PageTag</tag-class>
-		<body-content>JSP</body-content>
-	</tag>
-	<tag>
-		<name>pagerTag</name>
-		<tag-class>ikube.web.tag.PagerTag</tag-class>
-		<body-content>JSP</body-content>
-		<attribute>
-			<name>searchUrl</name>
-			<required>true</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-	</tag>
-	<tag>
-		<name>searchTag</name>
-		<tag-class>ikube.web.tag.SearchTag</tag-class>
-		<body-content>JSP</body-content>
-		<attribute>
-			<name>searchUrl</name>
-			<required>true</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-	</tag>
-	<tag>
-		<name>spellingTag</name>
-		<tag-class>ikube.web.tag.spelling.SpellingTag</tag-class>
-		<body-content>JSP</body-content>
-		<attribute>
-			<name>fieldParameterNames</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-	</tag>
-	<tag>
-		<name>spellingWriterTag</name>
-		<tag-class>ikube.web.tag.spelling.SpellingWriterTag</tag-class>
-		<body-content>JSP</body-content>
-	</tag>
-
 	<function>
 		<name>className</name>
 		<function-class>ikube.web.tag.Toolkit</function-class>
