@@ -6,7 +6,8 @@ import ikube.service.IMonitorWebService;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.util.StringUtils;
@@ -29,7 +30,7 @@ import org.springframework.web.servlet.mvc.AbstractController;
  */
 public abstract class BaseController extends AbstractController {
 
-	protected Logger logger = Logger.getLogger(this.getClass());
+	protected Logger logger = LoggerFactory.getLogger(this.getClass());
 	@Autowired
 	protected MessageSource messageSource;
 	@Autowired

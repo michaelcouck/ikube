@@ -5,14 +5,10 @@ import ikube.action.IAction;
 import ikube.action.Index;
 import ikube.action.Open;
 import ikube.cluster.IClusterManager;
-import ikube.listener.Event;
 import ikube.model.IndexContext;
-import ikube.toolkit.Logging;
 import ikube.toolkit.ThreadUtilities;
 
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -40,7 +36,6 @@ public class RuleInterceptor implements IRuleInterceptor {
 
 	@Autowired
 	private IClusterManager clusterManager;
-	private ExecutorService executorService;
 
 	/**
 	 * {@inheritDoc}
@@ -74,17 +69,13 @@ public class RuleInterceptor implements IRuleInterceptor {
 				}
 			}
 			if (proceed) {
-				// TODO Take a snapshot of the cluster at the time of the rule becoming
-				// true and an index started, including the state of the indexes on the file
-				// system and the other servers
-				// proceed = Boolean.TRUE;
 				proceed(indexContext, proceedingJoinPoint);
 			}
 		} catch (Exception t) {
 			LOGGER.error("Exception evaluating the rules : target : " + target + ", context : " + indexContext, t);
 		} finally {
 			boolean unlocked = clusterManager.unlock(IConstants.IKUBE);
-			LOGGER.debug("Unlocked : " + unlocked);
+			LOGGER.debug("Unlocked : {} ", unlocked);
 		}
 		return proceed;
 	}
@@ -111,7 +102,7 @@ public class RuleInterceptor implements IRuleInterceptor {
 				String ruleName = rule.getClass().getSimpleName();
 				jep.addVariable(ruleName, evaluation);
 				if (LOGGER.isDebugEnabled()) {
-					LOGGER.error(Logging.getString("Rule : ", rule, ", parameter : ", ruleName, ", evaluation : ", evaluation));
+					LOGGER.debug("Rule : rule {}, : name : {}, evaluation {} : ", new Object[] { rule, ruleName, evaluation });
 				}
 			}
 			String predicate = action.getRuleExpression();
@@ -126,7 +117,7 @@ public class RuleInterceptor implements IRuleInterceptor {
 			}
 			finalResult = result != null && (result.equals(1.0d) || result.equals(Boolean.TRUE));
 			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug(Logging.getString("Rule intercepter proceeding : ", finalResult, action, indexContext.getIndexName()));
+				LOGGER.debug("Rule intercepter proceeding : {} {} {}", new Object[] { finalResult, action, indexContext.getIndexName() });
 				printSymbolTable(jep, indexContext.getIndexName());
 			}
 		}
@@ -160,42 +151,27 @@ public class RuleInterceptor implements IRuleInterceptor {
 	 */
 	protected synchronized void proceed(final IndexContext<?> indexContext, final ProceedingJoinPoint proceedingJoinPoint) {
 		try {
-			// if (executorService.isTerminated()) {
-			// LOGGER.warn("The executor service is shutdown!");
-			// return;
-			// }
 			// We set the working flag in the action within the cluster lock when setting to true
 			Runnable runnable = new Runnable() {
 				public void run() {
 					Object[] objects = new Object[] { proceedingJoinPoint, indexContext.getIndexName() };
-					LOGGER.info("Action start : {} {}", objects);
 					try {
+						LOGGER.debug("Action start : {} {}", objects);
 						Object returnValue = proceedingJoinPoint.proceed();
-						LOGGER.info("Returned from join point : " + returnValue);
+						LOGGER.debug("Returned from join point : " + returnValue);
 					} catch (Throwable e) {
 						LOGGER.error("Exception proceeding on join point : " + proceedingJoinPoint, e);
 					} finally {
-						LOGGER.info("Action finished : {} {}", objects);
+						LOGGER.debug("Action finished : {} {}", objects);
 					}
 				}
 			};
 			Future<?> future = ThreadUtilities.submit(runnable);
-			// Future<?> future = executorService.submit(runnable);
 			ThreadUtilities.waitForFuture(future, 3000);
-			LOGGER.info("Finished waiting for future : " + future);
+			LOGGER.debug("Finished waiting for future : {} ", future);
 		} finally {
 			notifyAll();
 		}
-	}
-
-	public void initialize() {
-		executorService = Executors.newFixedThreadPool(10);
-	}
-
-	public void destroy() {
-		// executorService.shutdown();
-		List<Runnable> runnables = executorService.shutdownNow();
-		LOGGER.info("Shutdown runnables : " + runnables);
 	}
 
 	protected void printSymbolTable(final JEP jep, final String indexName) {
@@ -205,18 +181,6 @@ public class RuleInterceptor implements IRuleInterceptor {
 			LOGGER.info("Symbol table : " + symbolTable);
 		} catch (Exception e) {
 			LOGGER.error("Exception printing the nodes : ", e);
-		}
-	}
-
-	// @Override
-	@Deprecated
-	public void handleNotification(final Event event) {
-		if (Event.TERMINATE.equals(event.getType())) {
-			LOGGER.warn("Terminating indexing and all other processes : ");
-			destroy();
-		} else if (Event.STARTUP.equals(event.getType())) {
-			LOGGER.info("Starting the thread pool to handle indexing and other processes : ");
-			initialize();
 		}
 	}
 

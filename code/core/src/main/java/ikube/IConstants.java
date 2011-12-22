@@ -107,6 +107,7 @@ public interface IConstants {
 	String TIMEZONE = "timezone";
 	String ASCIINAME = "asciiname";
 	String CORRECTIONS = "corrections";
+	String ACTION_NAME = "actionName";
 
 	String ENCODING = "UTF-8";
 

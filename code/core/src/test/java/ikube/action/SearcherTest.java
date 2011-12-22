@@ -36,7 +36,7 @@ public class SearcherTest extends ATest {
 	public void before() {
 		Mockit.setUpMocks(IndexManagerMock.class, ApplicationContextManagerMock.class, ClusterManagerMock.class, ServiceLocatorMock.class);
 		when(index.getIndexWriter()).thenReturn(indexWriter);
-		when(clusterManager.startWorking(anyString(), anyString(), anyString())).thenReturn(System.currentTimeMillis());
+		when(clusterManager.startWorking(anyString(), anyString(), anyString())).thenReturn(action);
 	}
 
 	@After

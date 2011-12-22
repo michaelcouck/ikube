@@ -49,4 +49,10 @@
 		<function-class>ikube.web.tag.Toolkit</function-class>
 		<function-signature>int size(java.util.Collection)</function-signature>
 	</function>
+	
+	<function>
+		<name>concat</name>
+		<function-class>ikube.web.tag.Toolkit</function-class>
+		<function-signature>java.lang.String concatenate(java.lang.String, java.lang.String)</function-signature>
+	</function>
 </taglib>

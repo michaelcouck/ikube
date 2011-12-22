@@ -39,7 +39,7 @@ public class Validator extends Action<IndexContext<?>, Boolean> {
 		String subject = null;
 		String body = null;
 		boolean everythingInitialized = Boolean.TRUE;
-		long actionId = start(indexContext, "");
+		ikube.model.Action action = start(indexContext.getIndexName(), "");
 		try {
 			Server server = clusterManager.getServer();
 			IsIndexCurrent isIndexCurrent = new IsIndexCurrent();
@@ -109,7 +109,7 @@ public class Validator extends Action<IndexContext<?>, Boolean> {
 			logger.error("Exception validating the system : " + indexContext, e);
 			everythingInitialized &= Boolean.FALSE;
 		} finally {
-			stop(actionId);
+			stop(action);
 		}
 		return everythingInitialized;
 	}

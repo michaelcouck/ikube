@@ -13,7 +13,6 @@
 		<class>ikube.model.File</class>
 		<class>ikube.model.Server</class>
 		<class>ikube.model.Action</class>
-		<class>ikube.model.Rule</class>
 
 		<class>ikube.model.Indexable</class>
 		<class>ikube.model.IndexContext</class>

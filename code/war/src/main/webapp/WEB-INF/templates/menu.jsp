@@ -28,8 +28,9 @@
 			<h2>Navigation</h2>
 			<ul>
 				<li><a href="<c:url value="/index.html"/>">Home</a></li>
-				<li><a href="<c:url value="/admin/servers.html"/>">Monitoring</a></li>
-				<li><a href="<c:url value="/documentation/index.html"/>">Documentation</a></li>
+				<li><a href="<c:url value="/admin/servers.html" />">Monitoring</a></li>
+				<li><a href="<c:url value="/admin/actions.html?start=0&end=10" />">Actions</a></li>
+				<li><a href="<c:url value="/documentation/index.html" />">Documentation</a></li>
 			</ul>
 		</li>
 		<li>

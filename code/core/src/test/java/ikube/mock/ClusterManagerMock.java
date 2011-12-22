@@ -2,9 +2,12 @@ package ikube.mock;
 
 import static org.mockito.Mockito.mock;
 import ikube.cluster.jms.ClusterManagerJms;
+import ikube.model.Action;
 import ikube.model.Server;
 import mockit.Mock;
 import mockit.MockClass;
+
+import org.mockito.Mockito;
 
 /**
  * @author Michael Couck
@@ -20,8 +23,8 @@ public class ClusterManagerMock {
 	}
 
 	@Mock()
-	public synchronized long startWorking(final String actionName, final String indexName, final String indexableName) {
-		return System.currentTimeMillis();
+	public synchronized Action startWorking(final String actionName, final String indexName, final String indexableName) {
+		return Mockito.mock(Action.class);
 	}
 
 	@Mock()

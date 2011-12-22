@@ -437,7 +437,7 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 			}
 			// Add the contents field
 			IndexManager.addStringField(indexable.getContentFieldName(), parsedContent, document, store, analyzed, termVector);
-			this.addDocument(indexContext, document);
+			this.addDocument(indexContext, indexable, document);
 		} catch (Exception e) {
 			if (url != null) {
 				url.setParsedContent(null);

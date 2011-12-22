@@ -209,14 +209,16 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 		File file = new File(dbFile.getUrl());
 		try {
 			// We have to unpack the zip files
-			boolean isZipAndFile = IConstants.ZIP_JAR_WAR_EAR_PATTERN.matcher(file.getName()).matches() && file.isFile();
-			if (isZipAndFile) {
-				File unzippedToFolder = FileUtilities.unzip(file.getAbsolutePath(), "." + IConstants.TMP_UNZIPPED_FOLDER);
-				if (unzippedToFolder != null && unzippedToFolder.exists() && unzippedToFolder.isFile()) {
-					Pattern excludedPattern = getPattern(indexableFileSystem.getExcludedPattern());
-					Set<File> batchedFiles = new TreeSet<File>();
-					iterateFileSystem(dataBase, indexContext, indexableFileSystem, unzippedToFolder, excludedPattern, batchedFiles);
-					persistFilesBatch(dataBase, indexableFileSystem, batchedFiles);
+			if (indexableFileSystem.isUnpackZips()) {
+				boolean isZipAndFile = IConstants.ZIP_JAR_WAR_EAR_PATTERN.matcher(file.getName()).matches() && file.isFile();
+				if (isZipAndFile) {
+					File unzippedToFolder = FileUtilities.unzip(file.getAbsolutePath(), "." + IConstants.TMP_UNZIPPED_FOLDER);
+					if (unzippedToFolder != null && unzippedToFolder.exists() && unzippedToFolder.isFile()) {
+						Pattern excludedPattern = getPattern(indexableFileSystem.getExcludedPattern());
+						Set<File> batchedFiles = new TreeSet<File>();
+						iterateFileSystem(dataBase, indexContext, indexableFileSystem, unzippedToFolder, excludedPattern, batchedFiles);
+						persistFilesBatch(dataBase, indexableFileSystem, batchedFiles);
+					}
 				}
 			}
 
@@ -255,7 +257,7 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 			IndexManager.addStringField(modifiedFieldName, Long.toString(file.lastModified()), document, store, analyzed, termVector);
 			IndexManager.addStringField(lengthFieldName, Long.toString(file.length()), document, store, analyzed, termVector);
 			IndexManager.addStringField(contentFieldName, parsedContent, document, store, analyzed, termVector);
-			addDocument(indexContext, document);
+			addDocument(indexContext, indexableFileSystem, document);
 
 			Thread.sleep(indexContext.getThrottle());
 		} catch (InterruptedException e) {

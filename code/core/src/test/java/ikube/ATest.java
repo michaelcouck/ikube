@@ -139,6 +139,7 @@ public abstract class ATest {
 		when(indexContext.getMaxReadLength()).thenReturn(1000000l);
 		when(indexContext.getMergeFactor()).thenReturn(100);
 		when(indexContext.getMaxAge()).thenReturn((long) (60));
+		when(indexContext.getAction()).thenReturn(action);
 		when(clusterManager.getServer()).thenReturn(server);
 		when(clusterManager.lock(anyString())).thenReturn(Boolean.TRUE);
 		when(server.isWorking()).thenReturn(Boolean.FALSE);

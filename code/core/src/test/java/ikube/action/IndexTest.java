@@ -47,7 +47,7 @@ public class IndexTest extends ATest {
 	@SuppressWarnings({ "unchecked" })
 	public void before() throws Exception {
 		Mockit.setUpMocks(IndexManagerMock.class, ApplicationContextManagerMock.class);
-		when(clusterManager.startWorking(anyString(), anyString(), anyString())).thenReturn(System.currentTimeMillis());
+		when(clusterManager.startWorking(anyString(), anyString(), anyString())).thenReturn(action);
 		when(clusterManager.getServer()).thenReturn(server);
 		when(action.getStartTime()).thenReturn(new Timestamp(System.currentTimeMillis()));
 		when(index.getAction(any(Server.class), anyLong())).thenReturn(action);

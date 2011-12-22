@@ -165,7 +165,7 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 				// Add the content field to the document
 				IndexManager.addStringField(indexableMail.getContentField(), fieldContent, document, mustStore, analyzed, termVector);
 			}
-			addDocument(indexContext, document);
+			addDocument(indexContext, indexableMail, document);
 			Thread.sleep(indexContext.getThrottle());
 		}
 		folder.close(true);

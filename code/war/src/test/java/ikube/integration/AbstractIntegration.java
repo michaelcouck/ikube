@@ -5,6 +5,7 @@ import ikube.database.IDataBase;
 import ikube.index.IndexManager;
 import ikube.integration.toolkit.DataUtilities;
 import ikube.listener.ListenerManager;
+import ikube.model.Action;
 import ikube.model.IndexContext;
 import ikube.model.medical.Address;
 import ikube.toolkit.ApplicationContextManager;
@@ -103,8 +104,12 @@ public abstract class AbstractIntegration {
 		}
 	}
 
-	protected IndexContext<?> realIndexContext = ApplicationContextManager.getBean("indexContext");
+	protected IndexContext<?> realIndexContext;
 	protected Logger logger = Logger.getLogger(this.getClass());
+	{
+		realIndexContext = ApplicationContextManager.getBean("indexContext");
+		realIndexContext.setAction(new Action());
+	}
 
 	/**
 	 * This method creates an index using the index path in the context, the time and the ip and returns the latest index directory, i.e.

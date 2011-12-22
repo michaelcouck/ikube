@@ -11,7 +11,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import ikube.ATest;
 import ikube.index.IndexManager;
-import ikube.index.handler.IDelegate;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.mock.ClusterManagerMock;
 import ikube.model.IndexableFileSystem;
@@ -25,7 +24,6 @@ import java.util.TreeSet;
 import java.util.concurrent.Future;
 import java.util.regex.Pattern;
 
-import mockit.Cascading;
 import mockit.Deencapsulation;
 import mockit.Mockit;
 
@@ -48,8 +46,6 @@ public class IndexableFileSystemHandlerTest extends ATest {
 	private IndexableFileSystem indexableFileSystem;
 	/** Class under test. */
 	private IndexableFilesystemHandler indexableFileSystemHandler;
-	@Cascading
-	private IDelegate delegate;
 
 	public IndexableFileSystemHandlerTest() {
 		super(IndexableFileSystemHandlerTest.class);
@@ -124,7 +120,6 @@ public class IndexableFileSystemHandlerTest extends ATest {
 	public void handleFile() throws Exception {
 		ikube.model.File file = new ikube.model.File();
 		file.setUrl(powerPointFile.getAbsolutePath());
-		Deencapsulation.setField(indexableFileSystemHandler, delegate);
 		indexableFileSystemHandler.handleFile(indexContext, indexableFileSystem, file);
 		IndexManager.closeIndexWriter(indexContext);
 		// Verify that the file is in the index

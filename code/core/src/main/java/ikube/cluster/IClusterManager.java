@@ -1,6 +1,7 @@
 package ikube.cluster;
 
 import ikube.cluster.jms.ClusterManagerJms.Lock;
+import ikube.model.Action;
 import ikube.model.Server;
 
 import java.io.Serializable;
@@ -50,18 +51,17 @@ public interface IClusterManager {
 	 * @param indexName the name of the index that this server will work on
 	 * @param indexableName the name of the currently executing indexable
 	 * @param isWorking whether the server is working or not
-	 * @return this method returns the first time that was registered for any server that has executed this index and this indexable. This
-	 *         needs to be in one method so that the servers can be locked before this operation
+	 * @return the action that was started
 	 */
-	long startWorking(String actionName, String indexName, String indexableName);
+	Action startWorking(String actionName, String indexName, String indexableName);
 
 	/**
 	 * Stops the server working. This will broadcast to the cluster that the action/job is finished. This indicates that another server can
 	 * start working.
 	 * 
-	 * @param id the id of the action that was started
+	 * @param action the action that was started
 	 */
-	void stopWorking(long id);
+	void stopWorking(Action action);
 
 	/**
 	 * @return the servers in the cluster

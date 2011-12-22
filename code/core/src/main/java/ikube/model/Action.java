@@ -4,16 +4,12 @@ import ikube.IConstants;
 
 import java.sql.Timestamp;
 import java.util.Date;
-import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
@@ -22,15 +18,28 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 
 @Entity()
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-@NamedQueries(value = {
-		@NamedQuery(name = Action.SELECT_FROM_ACTIONS, query = Action.SELECT_FROM_ACTIONS),
+@NamedQueries(value = { //
+@NamedQuery(name = Action.SELECT_FROM_ACTIONS, query = Action.SELECT_FROM_ACTIONS),
 		@NamedQuery(name = Action.SELECT_FROM_ACTIONS_COUNT, query = Action.SELECT_FROM_ACTIONS_COUNT),
-		@NamedQuery(name = Action.SELECT_FROM_ACTIONS_BY_ACTION_NAME_INDEX_NAME_AND_WORKING, query = Action.SELECT_FROM_ACTIONS_BY_ACTION_NAME_INDEX_NAME_AND_WORKING) })
+		@NamedQuery(name = Action.SELECT_FROM_ACTIONS_BY_NAME_COUNT, query = Action.SELECT_FROM_ACTIONS_BY_NAME_COUNT),
+		@NamedQuery(name = Action.SELECT_FROM_ACTIONS_BY_NAME_DESC, query = Action.SELECT_FROM_ACTIONS_BY_NAME_DESC),
+		@NamedQuery(name = Action.SELECT_FROM_ACTIONS_BY_ACTION_NAME_INDEX_NAME_AND_WORKING, //
+		query = Action.SELECT_FROM_ACTIONS_BY_ACTION_NAME_INDEX_NAME_AND_WORKING) })
 public class Action extends Persistable {
 
-	public static final String SELECT_FROM_ACTIONS = "select a from Action as a order by a.id asc";
 	public static final String SELECT_FROM_ACTIONS_COUNT = "select count(a) from Action as a";
-	public static final String SELECT_FROM_ACTIONS_BY_ACTION_NAME_INDEX_NAME_AND_WORKING = "select a from Action as a where a.actionName = :actionName and a.indexName = :indexName and a.working = :working order by a.startTime desc";
+	public static final String SELECT_FROM_ACTIONS_BY_NAME_COUNT = "select count(a) from Action as a " //
+			+ "where a.actionName = :actionName";
+	public static final String SELECT_FROM_ACTIONS = "select a from Action as a " //
+			+ "order by a.id asc";
+	public static final String SELECT_FROM_ACTIONS_BY_NAME_DESC = "select a from Action as a " //
+			+ "where a.actionName = :actionName " //
+			+ "order by a.id desc";
+	public static final String SELECT_FROM_ACTIONS_BY_ACTION_NAME_INDEX_NAME_AND_WORKING = "select a from Action as a " //
+			+ "where a.actionName = :actionName " //
+			+ "and a.indexName = :indexName " //
+			+ "and a.endTime is null " //
+			+ "order by a.startTime desc";
 
 	/** The name of the action that is executing. */
 	private String actionName;
@@ -48,9 +57,6 @@ public class Action extends Persistable {
 	private long duration;
 	/** The predicate for the rules. */
 	private String ruleExpression;
-	/** The rules that were evaluated for this action. */
-	@OneToMany(cascade = { CascadeType.ALL }, mappedBy = "action", fetch = FetchType.EAGER)
-	private List<Rule> rules;
 	/** The result from the rules and the predicate. */
 	private boolean result;
 	/** The number of documents that were added during the execution of the action. */
@@ -116,14 +122,6 @@ public class Action extends Persistable {
 		this.ruleExpression = ruleExpression;
 	}
 
-	public List<Rule> getRules() {
-		return rules;
-	}
-
-	public void setRules(List<Rule> rules) {
-		this.rules = rules;
-	}
-
 	public boolean isResult() {
 		return result;
 	}
@@ -139,9 +137,13 @@ public class Action extends Persistable {
 	public void setInvocations(int invocations) {
 		this.invocations = invocations;
 	}
-	
+
 	public long getInvocationsPerSecond() {
-		return (invocations / ((System.currentTimeMillis() - startTime.getTime()) / 1000));
+		long duration = (System.currentTimeMillis() - startTime.getTime()) / 1000;
+		if (duration == 0) {
+			return 0;
+		}
+		return (invocations / duration);
 	}
 
 	@Override

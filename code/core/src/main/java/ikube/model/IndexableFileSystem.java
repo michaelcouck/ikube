@@ -37,6 +37,7 @@ public class IndexableFileSystem extends Indexable<IndexableFileSystem> {
 	private String lengthFieldName;
 	@Field()
 	private int batchSize;
+	private boolean unpackZips;
 
 	public String getPath() {
 		return path;
@@ -124,6 +125,14 @@ public class IndexableFileSystem extends Indexable<IndexableFileSystem> {
 
 	public void setBatchSize(int batchSize) {
 		this.batchSize = batchSize;
+	}
+
+	public boolean isUnpackZips() {
+		return unpackZips;
+	}
+
+	public void setUnpackZips(boolean unpackZips) {
+		this.unpackZips = unpackZips;
 	}
 
 }

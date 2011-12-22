@@ -56,4 +56,8 @@ public class Toolkit {
 		return cloned;
 	}
 
+	public static String concatenate(String one, String two) {
+		return new StringBuilder(one).append(two).toString();
+	}
+
 }

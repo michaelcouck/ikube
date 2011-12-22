@@ -55,12 +55,12 @@ public abstract class Action<E, F> implements IAction<E, F> {
 	 */
 	private String predicate;
 
-	protected long start(IndexContext<?> indexContext, String indexableName) {
-		return clusterManager.startWorking(getClass().getSimpleName(), indexContext.getIndexName(), indexableName);
+	protected ikube.model.Action start(String indexName, String indexableName) {
+		return clusterManager.startWorking(getClass().getSimpleName(), indexName, indexableName);
 	}
 
-	protected void stop(long actionId) {
-		clusterManager.stopWorking(actionId);
+	protected void stop(ikube.model.Action action) {
+		clusterManager.stopWorking(action);
 	}
 
 	/**

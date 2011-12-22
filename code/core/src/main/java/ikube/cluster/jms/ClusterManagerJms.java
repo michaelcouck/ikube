@@ -125,13 +125,13 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 			if (haveLock) {
 				// If we have the lock, i.e. we were first to shout then
 				// we do nothing and the other servers will reset their locks to false
-				LOGGER.debug("Got lock : {} : {}", address, lock);
+				LOGGER.debug("Got lock : {} : {}", new Object[] { address, lock });
 			} else {
 				// If we don't get the lock then we reset our lock to false
 				// for the whole cluster
 				getLock(address, Long.MAX_VALUE, Boolean.FALSE);
 				sendMessage(lock);
-				LOGGER.debug("Didn't get lock : {} : {} : ", address, lock);
+				LOGGER.debug("Didn't get lock : {} : {} : ", new Object[] { address, lock });
 			}
 			return haveLock;
 		} finally {
@@ -150,7 +150,7 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 				// We only set the lock for the cluster to false if we have it
 				lock = getLock(address, Long.MAX_VALUE, Boolean.FALSE);
 				sendMessage(lock);
-				LOGGER.debug("Unlock : {} : {} : ", address, locks);
+				LOGGER.debug("Unlock : {} : {} : ", new Object[] { address, locks });
 				return Boolean.TRUE;
 			}
 			return Boolean.FALSE;
@@ -255,7 +255,7 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 					JmsTemplate jmsTemplate = getJmsTemplate(address);
 					jmsTemplate.send(messageCreator);
 				} catch (Exception e) {
-					LOGGER.error("Exception sending message to : " + address + ", will remove template : ", e);
+					LOGGER.error("Exception sending message to : {}, will remove template : " + address, e);
 					closeConnection(address);
 				}
 			}
@@ -343,14 +343,14 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized long startWorking(String actionName, String indexName, String indexableName) {
+	public synchronized Action startWorking(String actionName, String indexName, String indexableName) {
 		try {
-			Action action = getAction(indexName, actionName, indexableName, Boolean.TRUE);
+			Action action = getAction(actionName, indexName, indexableName, Boolean.TRUE);
 			Server server = getServer();
 			server.getActions().add(action);
-			LOGGER.info("Start working : {} ", action);
+			LOGGER.debug("Start working : {} ", action);
 			sendMessage(server);
-			return action.getId();
+			return action;
 		} finally {
 			notifyAll();
 		}
@@ -360,40 +360,26 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized void stopWorking(long id) {
+	public synchronized void stopWorking(Action action) {
 		try {
 			Server server = getServer();
-			List<Action> actions = server.getActions();
-			Action action = null;
-			int index = 0;
-			for (int i = index; i < actions.size(); i++, index++) {
-				Action serverAction = actions.get(i);
-				if (serverAction.getId() == id) {
-					action = serverAction;
-					break;
-				}
-			}
-			if (action != null) {
-				action.setEndTime(new Timestamp(System.currentTimeMillis()));
-				action.setDuration(action.getEndTime().getTime() - action.getStartTime().getTime());
-				LOGGER.info("Stop working : {} ", action);
-				server.getActions().remove(index);
-				dataBase.merge(action);
-				sendMessage(server);
-			} else {
-				LOGGER.warn("Action not found : {} ", id );
-			}
+			action.setEndTime(new Timestamp(System.currentTimeMillis()));
+			action.setDuration(action.getEndTime().getTime() - action.getStartTime().getTime());
+			LOGGER.debug("Stop working : {} ", action);
+			server.getActions().remove(action);
+			dataBase.merge(action);
+			sendMessage(server);
 		} finally {
 			notifyAll();
 		}
 	}
 
-	private Action getAction(String indexName, String actionName, String indexableName, boolean working) {
+	private Action getAction(String actionName, String indexName, String indexableName, boolean working) {
 		Action action = new Action();
 		action.setActionName(actionName);
-		action.setDuration(0);
-		action.setIndexableName(indexableName);
 		action.setIndexName(indexName);
+		action.setIndexableName(indexableName);
+		action.setDuration(0);
 		action.setStartTime(new Timestamp(System.currentTimeMillis()));
 		// Must persist the action to get an id
 		dataBase.persist(action);

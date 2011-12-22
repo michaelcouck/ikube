@@ -25,14 +25,14 @@ public class Searcher extends Action<IndexContext<?>, Boolean> {
 	 */
 	@Override
 	public Boolean execute(final IndexContext<?> indexContext) {
-		long actionId = 0;
+		ikube.model.Action action = null;
 		try {
-			actionId = start(indexContext, "");
+			action = start(indexContext.getIndexName(), "");
 			// TODO Re-implement this
 		} catch (Exception e) {
 			logger.error("Exception searching index : ", e);
 		} finally {
-			stop(actionId);
+			stop(action);
 		}
 		return Boolean.TRUE;
 	}

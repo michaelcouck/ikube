@@ -27,12 +27,12 @@ public class Reset extends Action<IndexContext<?>, Boolean> {
 	 */
 	@Override
 	public Boolean execute(final IndexContext<?> indexContext) {
-		long actionId = 0;
+		ikube.model.Action action = null;
 		try {
-			actionId = start(indexContext, "");
+			action = start(indexContext.getIndexName(), "");
 			delete(dataBase, indexContext);
 		} finally {
-			stop(actionId);
+			stop(action);
 		}
 		return Boolean.TRUE;
 	}

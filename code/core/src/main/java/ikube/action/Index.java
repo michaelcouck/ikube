@@ -32,7 +32,7 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 		String indexName = indexContext.getIndexName();
 		Server server = clusterManager.getServer();
 		List<Indexable<?>> indexables = indexContext.getIndexables();
-		long actionId = 0;
+		ikube.model.Action action = null;
 		try {
 			if (indexables != null && indexables.size() > 0) {
 				long startTime = System.currentTimeMillis();
@@ -45,11 +45,9 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 						if (handler == null) {
 							String message = Logging.getString("Not handling indexable : ", indexable.getName(), " no handler defined.");
 							logger.warn(message);
-							// throw new RuntimeException(message);
 							continue;
 						}
-						actionId = start(indexContext, indexable.getName());
-						ikube.model.Action action = getAction(server, actionId);
+						action = start(indexContext.getIndexName(), indexable.getName());
 						indexContext.setAction(action);
 						// Execute the handler and wait for the threads to finish
 						List<Future<?>> futures = handler.handle(indexContext, indexable);
@@ -57,7 +55,7 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 					} catch (Exception e) {
 						logger.error("Exception indexing data : " + indexName, e);
 					} finally {
-						stop(actionId);
+						stop(action);
 					}
 				}
 				return Boolean.TRUE;
@@ -66,7 +64,7 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 			logger.debug(Logging.getString("Finished indexing : ", indexName));
 			IndexManager.closeIndexWriter(indexContext);
 			indexContext.setAction(null);
-			stop(actionId);
+			stop(action);
 		}
 		return Boolean.FALSE;
 	}

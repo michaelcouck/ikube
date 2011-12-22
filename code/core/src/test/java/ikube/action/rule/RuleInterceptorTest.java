@@ -106,7 +106,6 @@ public class RuleInterceptorTest extends ATest {
 		when(joinPoint.getArgs()).thenReturn(new Object[] { indexContext });
 		when(joinPoint.proceed()).thenReturn(Boolean.TRUE);
 		ruleInterceptor = new RuleInterceptor();
-		((RuleInterceptor) ruleInterceptor).initialize();
 
 		when(action.getRules()).thenReturn(rules);
 		when(action.getRuleExpression()).thenReturn(predicate);
@@ -119,7 +118,6 @@ public class RuleInterceptorTest extends ATest {
 	@After
 	public void after() {
 		Mockit.tearDownMocks();
-		((RuleInterceptor) ruleInterceptor).destroy();
 	}
 
 	@Test

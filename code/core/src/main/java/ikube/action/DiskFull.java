@@ -25,9 +25,9 @@ public class DiskFull extends Action<IndexContext<?>, Boolean> {
 	 */
 	@Override
 	public Boolean execute(final IndexContext<?> indexContext) {
-		long actionId = 0;
+		ikube.model.Action action = null;
 		try {
-			actionId = start(indexContext, "");
+			action = start(indexContext.getIndexName(), "");
 			File indexesDirectory = FileUtilities.getFile(indexContext.getIndexDirectoryPath(), Boolean.TRUE);
 			if (!indexesDirectory.exists() || !indexesDirectory.isDirectory()) {
 				return Boolean.FALSE;
@@ -65,7 +65,7 @@ public class DiskFull extends Action<IndexContext<?>, Boolean> {
 				logger.error("Exception looking for the free space : " + indexesDirectory, e);
 			}
 		} finally {
-			stop(actionId);
+			stop(action);
 		}
 		return Boolean.FALSE;
 	}

@@ -40,13 +40,13 @@ public class Open extends Action<IndexContext<?>, Boolean> {
 	 */
 	@Override
 	public Boolean execute(final IndexContext<?> indexContext) {
-		long actionId = 0;
 		boolean succeeded = Boolean.FALSE;
+		ikube.model.Action action = null;
 		try {
-			actionId = start(indexContext, "");
+			action = start(indexContext.getIndexName(), "");
 			return openOnFile(indexContext);
 		} finally {
-			stop(actionId);
+			stop(action);
 			logger.info("Succeeded : " + succeeded);
 		}
 	}

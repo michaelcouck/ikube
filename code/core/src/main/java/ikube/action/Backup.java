@@ -21,9 +21,9 @@ public class Backup extends Action<IndexContext<?>, Boolean> {
 	 */
 	@Override
 	public Boolean execute(final IndexContext<?> indexContext) {
-		long actionId = 0;
+		ikube.model.Action action = null;
 		try {
-			actionId = start(indexContext, "");
+			action = start(indexContext.getIndexName(), "");
 			String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
 			File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexDirectoryPath);
 			if (latestIndexDirectory == null || !latestIndexDirectory.exists()) {
@@ -48,7 +48,7 @@ public class Backup extends Action<IndexContext<?>, Boolean> {
 				return Boolean.FALSE;
 			}
 		} finally {
-			stop(actionId);
+			stop(action);
 		}
 		return Boolean.TRUE;
 	}

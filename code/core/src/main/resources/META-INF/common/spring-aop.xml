@@ -35,9 +35,7 @@
 	 -->
 	<bean 
 		id="ikube.action.rule.IRuleInterceptor" 
-		class="ikube.action.rule.RuleInterceptor"
-		init-method="initialize"
-		destroy-method="destroy" />
+		class="ikube.action.rule.RuleInterceptor" />
 	<aop:config proxy-target-class="true">
 		<aop:aspect ref="ikube.action.rule.IRuleInterceptor">
 			<aop:around method="decide" pointcut="execution(* ikube.action.*.*(..))"  />

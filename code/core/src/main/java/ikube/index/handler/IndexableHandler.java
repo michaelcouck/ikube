@@ -1,6 +1,9 @@
 package ikube.index.handler;
 
 import ikube.database.IDataBase;
+import ikube.index.spatial.Coordinate;
+import ikube.index.spatial.enrich.IEnrichment;
+import ikube.index.spatial.geocode.IGeocoder;
 import ikube.model.Action;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
@@ -23,12 +26,14 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IHandl
 	/** Access to the database. */
 	@Autowired
 	protected IDataBase dataBase;
-	@Autowired
-	protected IDelegate delegate;
 	/** The number of threads that this handler will spawn. */
 	private int threads;
 	/** The class that this handler can handle. */
 	private Class<T> indexableClass;
+	@Autowired
+	private IGeocoder geocoder;
+	@Autowired
+	private IEnrichment enrichment;
 
 	public int getThreads() {
 		return threads;
@@ -58,10 +63,34 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IHandl
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void addDocument(final IndexContext<?> indexContext, final Document document) throws Exception {
+	public void addDocument(final IndexContext<?> indexContext, final Indexable<?> indexable, final Document document) throws Exception {
 		Action action = indexContext.getAction();
 		action.setInvocations(action.getInvocations() + 1);
-		delegate.delegate(indexContext, document);
+		if (indexable.isAddress()) {
+			addSpatialEnrichment(indexable, document);
+		}
+		indexContext.getIndex().getIndexWriter().addDocument(document);
+	}
+
+	private void addSpatialEnrichment(Indexable<?> indexable, Document document) {
+		// We look for the first latitude and longitude from the children
+		Coordinate coordinate = enrichment.getCoordinate(indexable);
+		// If the coordinate is null then either there were no latitude and longitude
+		// indexable children in the address indexable or there was a data problem, so we will
+		// see if there is a geocoder to get the coordinate
+		if (coordinate == null) {
+			String address = enrichment.buildAddress(indexable, new StringBuilder()).toString();
+			try {
+				// The GeoCoder is a last resort in fact
+				coordinate = geocoder.getCoordinate(address);
+			} catch (Exception e) {
+				logger.error("Exception accessing the geocoder : " + geocoder + ", " + address, e);
+			}
+			if (coordinate == null) {
+				return;
+			}
+		}
+		enrichment.addSpatialLocationFields(coordinate, document);
 	}
 
 }

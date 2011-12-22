@@ -219,7 +219,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 					}
 					// Add the document to the index if this is the primary table
 					if (indexableTable.isPrimaryTable()) {
-						addDocument(indexContext, document);
+						addDocument(indexContext, indexableTable, document);
 						Thread.sleep(indexContext.getThrottle());
 					}
 					// Move to the next row in the result set
