@@ -201,24 +201,14 @@ window.onload=starttime
 				</tr>
 				<c:forEach var="action" items="${server.actions}">
 				<tr>
-					<c:set var="running" scope="page" value="${action.working ? 'running' : 'stopped'}"/>
+					<c:set var="running" scope="page" value="${empty action.endTime ? 'running' : 'stopped'}"/>
 					<td class="td-content"><img alt="Working" src="<c:url value="/images/icons/${running}.gif"/>" title="Working"></td>
 					<td class="td-content"><c:out value="${action.id}" /></td>
 					<td class="td-content"><c:out value="${action.actionName}" /></td>
 					<td class="td-content"><c:out value="${action.indexName}" /></td>
 					<td class="td-content"><c:out value="${action.indexableName}" /></td>
-					<c:set 
-						var="executions" 
-						scope="page" 
-						value="${server.indexingExecutions[action.indexName] != null ? 
-							server.indexingExecutions[action.indexName].invocations : '0'}" />
-					<c:set 
-						var="executionsPerSecond" 
-						scope="page" 
-						value="${server.indexingExecutions[action.indexName] != null ? 
-							server.indexingExecutions[action.indexName].executionsPerSecond : '0'}" />
-					<td class="td-content"><c:out value="${executions}" /></td>
-					<td class="td-content"><c:out value="${executionsPerSecond}" /></td>
+					<td class="td-content"><c:out value="${action.invocations}" /></td>
+					<td class="td-content"><c:out value="${action.invocationsPerSecond}" /></td>
 					<td class="td-content"><c:out value="${action.startDate}" /></td>
 				</tr>
 				</c:forEach>

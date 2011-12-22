@@ -1,5 +1,6 @@
 package ikube.action;
 
+import ikube.IConstants;
 import ikube.index.IndexManager;
 import ikube.model.IndexContext;
 import ikube.toolkit.FileUtilities;
@@ -46,12 +47,10 @@ public class Clean<E, F> extends Action<IndexContext<?>, Boolean> {
 				}
 				processDirectories(indexContext, serverIndexDirectories);
 			}
-			// TODO Go to the database and select all the files that were unpacked by the
-			// file system handler and delete them. Generally they will be the files that are prefixed
-			// with the user directory path
+			FileUtilities.deleteFile(new File(IConstants.TMP_UNZIPPED_FOLDER), 1);
 			return Boolean.TRUE;
 		} finally {
-			stop(indexContext, actionId);
+			stop(actionId);
 		}
 	}
 

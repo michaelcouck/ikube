@@ -211,7 +211,7 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 			// We have to unpack the zip files
 			boolean isZipAndFile = IConstants.ZIP_JAR_WAR_EAR_PATTERN.matcher(file.getName()).matches() && file.isFile();
 			if (isZipAndFile) {
-				File unzippedToFolder = FileUtilities.unzip(file.getAbsolutePath(), "." + IConstants.TO_DIR);
+				File unzippedToFolder = FileUtilities.unzip(file.getAbsolutePath(), "." + IConstants.TMP_UNZIPPED_FOLDER);
 				if (unzippedToFolder != null && unzippedToFolder.exists() && unzippedToFolder.isFile()) {
 					Pattern excludedPattern = getPattern(indexableFileSystem.getExcludedPattern());
 					Set<File> batchedFiles = new TreeSet<File>();
@@ -268,7 +268,7 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 		} finally {
 			String filePath = file.getAbsolutePath();
 			StringUtils.replace(filePath, "\\", "/");
-			boolean isFileAndInTemp = file.isFile() && filePath.contains(IConstants.TO_DIR);
+			boolean isFileAndInTemp = file.isFile() && filePath.contains(IConstants.TMP_UNZIPPED_FOLDER);
 			if (isFileAndInTemp) {
 				logger.warn("Deleting file : " + filePath);
 				FileUtilities.deleteFile(file, 1);

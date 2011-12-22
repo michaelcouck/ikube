@@ -51,8 +51,8 @@ public class ServersController extends BaseController {
 		Server server = clusterManager.getServer();
 		modelAndView.addObject(IConstants.SERVER, server);
 		modelAndView.addObject(IConstants.ACTION, server.getActions());
-		modelAndView.addObject(IConstants.INDEXING_EXECUTIONS, server.getIndexingExecutions());
-		modelAndView.addObject(IConstants.SEARCHING_EXECUTIONS, server.getSearchingExecutions());
+		// modelAndView.addObject(IConstants.INDEXING_EXECUTIONS, server.getIndexingExecutions());
+		// modelAndView.addObject(IConstants.SEARCHING_EXECUTIONS, server.getSearchingExecutions());
 
 		@SuppressWarnings("rawtypes")
 		Map<String, IndexContext> indexContexts = ApplicationContextManager.getBeans(IndexContext.class);

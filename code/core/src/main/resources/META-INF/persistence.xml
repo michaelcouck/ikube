@@ -12,7 +12,6 @@
 		<class>ikube.model.Url</class>
 		<class>ikube.model.File</class>
 		<class>ikube.model.Server</class>
-		<class>ikube.model.Execution</class>
 		<class>ikube.model.Action</class>
 		<class>ikube.model.Rule</class>
 

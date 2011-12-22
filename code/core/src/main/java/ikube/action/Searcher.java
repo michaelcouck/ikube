@@ -32,7 +32,7 @@ public class Searcher extends Action<IndexContext<?>, Boolean> {
 		} catch (Exception e) {
 			logger.error("Exception searching index : ", e);
 		} finally {
-			stop(indexContext, actionId);
+			stop(actionId);
 		}
 		return Boolean.TRUE;
 	}

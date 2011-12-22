@@ -316,7 +316,7 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 	@Override
 	public boolean anyWorking() {
 		for (Server server : servers.values()) {
-			if (server.getWorking()) {
+			if (server.isWorking()) {
 				return Boolean.TRUE;
 			}
 		}
@@ -331,7 +331,7 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 		for (Server server : servers.values()) {
 			List<Action> actions = server.getActions();
 			for (Action action : actions) {
-				if (action != null && action.getWorking() && indexName.equals(action.getIndexName())) {
+				if (action != null && action.getEndTime() == null && indexName.equals(action.getIndexName())) {
 					return Boolean.TRUE;
 				}
 			}
@@ -348,9 +348,7 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 			Action action = getAction(indexName, actionName, indexableName, Boolean.TRUE);
 			Server server = getServer();
 			server.getActions().add(action);
-			// Must persist the action to get an id
-			dataBase.persist(action);
-			LOGGER.debug("Start working : {} {} {}", new Object[] { action.getId(), action.getActionName(), action.getIndexName() });
+			LOGGER.info("Start working : {} ", action);
 			sendMessage(server);
 			return action.getId();
 		} finally {
@@ -362,7 +360,7 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized void stopWorking(long id, String actionName, String indexName, String indexableName) {
+	public synchronized void stopWorking(long id) {
 		try {
 			Server server = getServer();
 			List<Action> actions = server.getActions();
@@ -376,20 +374,14 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 				}
 			}
 			if (action != null) {
-				action.setWorking(Boolean.FALSE);
 				action.setEndTime(new Timestamp(System.currentTimeMillis()));
 				action.setDuration(action.getEndTime().getTime() - action.getStartTime().getTime());
-				LOGGER.debug("Stop working : {} {} {} {} ",
-						new Object[] { index, action.getId(), action.getActionName(), action.getIndexName() });
+				LOGGER.info("Stop working : {} ", action);
 				server.getActions().remove(index);
-				sendMessage(server);
 				dataBase.merge(action);
+				sendMessage(server);
 			} else {
-				LOGGER.warn("Action not found : ", new Object[] { id, actionName, indexName });
-			}
-			if (server.getWorking()) {
-				LOGGER.debug("Server still working : ");
-				debug(server);
+				LOGGER.warn("Action not found : {} ", id );
 			}
 		} finally {
 			notifyAll();
@@ -403,8 +395,8 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 		action.setIndexableName(indexableName);
 		action.setIndexName(indexName);
 		action.setStartTime(new Timestamp(System.currentTimeMillis()));
-		action.setWorking(working);
-		action.setServerAddress(address);
+		// Must persist the action to get an id
+		dataBase.persist(action);
 		return action;
 	}
 
@@ -463,7 +455,7 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 			List<Action> actions = server.getActions();
 			if (actions.size() > 0) {
 				for (Action serverAction : actions) {
-					if (serverAction.getWorking()) {
+					if (serverAction.getEndTime() == null) {
 						LOGGER.debug("        still working : {} {} {}", new Object[] { serverAction.getId(), serverAction.getActionName(),
 								serverAction.getIndexName() });
 					}

@@ -41,7 +41,7 @@
 		id="filesystemIndexable"
 		class="ikube.model.IndexableFileSystem"
 		property:name="filesystemIndexable"
-		property:path="C:/"
+		property:path="C:/Dropbox/Sumo"
 		property:pathFieldName="title"
 		property:nameFieldName="name"
 		property:lengthFieldName="length"

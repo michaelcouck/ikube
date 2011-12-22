@@ -46,8 +46,6 @@ public class Action extends Persistable {
 	private Timestamp endTime;
 	/** The time it took for this action to finish. */
 	private long duration;
-	/** Whether this server is working. */
-	private boolean working;
 	/** The predicate for the rules. */
 	private String ruleExpression;
 	/** The rules that were evaluated for this action. */
@@ -55,8 +53,8 @@ public class Action extends Persistable {
 	private List<Rule> rules;
 	/** The result from the rules and the predicate. */
 	private boolean result;
-	/** The unique id of the server in the cluster */
-	private String serverAddress;
+	/** The number of documents that were added during the execution of the action. */
+	private int invocations;
 
 	public String getActionName() {
 		return actionName;
@@ -106,14 +104,6 @@ public class Action extends Persistable {
 		this.duration = duration;
 	}
 
-	public boolean getWorking() {
-		return working;
-	}
-
-	public void setWorking(final boolean working) {
-		this.working = working;
-	}
-
 	public String getStartDate() {
 		return IConstants.HHMMSS_DDMMYYYY.format(new Date(this.startTime.getTime()));
 	}
@@ -142,12 +132,16 @@ public class Action extends Persistable {
 		this.result = result;
 	}
 
-	public String getServerAddress() {
-		return serverAddress;
+	public int getInvocations() {
+		return invocations;
 	}
 
-	public void setServerAddress(String serverAddress) {
-		this.serverAddress = serverAddress;
+	public void setInvocations(int invocations) {
+		this.invocations = invocations;
+	}
+	
+	public long getInvocationsPerSecond() {
+		return (invocations / ((System.currentTimeMillis() - startTime.getTime()) / 1000));
 	}
 
 	@Override

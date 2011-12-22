@@ -127,7 +127,7 @@ public class DatabaseUtilitiesTest extends ATest {
 		try {
 			connection = getDb2Connection();
 			List<String> primaryKeyColumns = DatabaseUtilities.getPrimaryKeys(connection, "attachment");
-			logger.info(primaryKeyColumns);
+			logger.info(primaryKeyColumns.toString());
 			assertTrue("Must contain the attachment id column : ", primaryKeyColumns.contains("ATTACHMENTID"));
 		} finally {
 			DatabaseUtilities.close(connection);

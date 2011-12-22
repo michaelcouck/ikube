@@ -82,7 +82,6 @@ public class PruneIntegration extends AbstractIntegration {
 		action.setIndexableName("indexableName");
 		action.setIndexName("indexName");
 		action.setStartTime(new Timestamp(System.currentTimeMillis()));
-		action.setWorking(Boolean.TRUE);
 		action.setResult(Boolean.TRUE);
 
 		dataBase.persist(action);

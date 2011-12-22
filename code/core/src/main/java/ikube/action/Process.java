@@ -21,7 +21,7 @@ public class Process extends Action<IndexContext<?>, Boolean> {
 			actionId = start(indexContext, "");
 			// TODO Process all the data collected during the indexing
 		} finally {
-			stop(indexContext, actionId);
+			stop(actionId);
 		}
 		return Boolean.TRUE;
 	}

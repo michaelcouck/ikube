@@ -65,6 +65,7 @@ public abstract class AbstractIntegration {
 		IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
 		dataBase.find(Address.class, 0l);
 		dataBase.find(ikube.model.File.class, 0l);
+		ApplicationContextManager.getBean(ListenerManager.class).removeListeners();
 	}
 
 	private static void insertData() throws SQLException, FileNotFoundException {

@@ -31,7 +31,6 @@ public class PowerPointParserTest extends ATest {
 		byte[] bytes = FileUtilities.getContents(file, Integer.MAX_VALUE).toByteArray();
 		IParser parser = ParserProvider.getParser("application/vnd.ms-powerpoint", bytes);
 		OutputStream parsed = parser.parse(new ByteArrayInputStream(bytes), new ByteArrayOutputStream());
-		logger.info(parsed);
 		assertNotNull(parsed);
 		assertTrue(parsed.toString().length() > 0);
 		assertTrue(parsed.toString().contains("Lorem"));

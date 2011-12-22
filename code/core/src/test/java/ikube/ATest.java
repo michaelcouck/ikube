@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Field.Store;
@@ -51,6 +50,8 @@ import org.apache.lucene.search.TopFieldDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.Lock;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This is the base test for all mocked tests. There are several useful mocks in this class that can be re-used like the index context and
@@ -98,7 +99,7 @@ public abstract class ATest {
 	protected String indexDirectoryPathBackup = "./indexes/backup";
 
 	public ATest(Class<?> subClass) {
-		logger = Logger.getLogger(subClass);
+		logger = LoggerFactory.getLogger(subClass);
 		searchables = new Searchable[] { indexSearcher };
 		scoreDocs = new ScoreDoc[0];
 		indexables = new ArrayList<Indexable<?>>();
@@ -140,7 +141,7 @@ public abstract class ATest {
 		when(indexContext.getMaxAge()).thenReturn((long) (60));
 		when(clusterManager.getServer()).thenReturn(server);
 		when(clusterManager.lock(anyString())).thenReturn(Boolean.TRUE);
-		when(server.getWorking()).thenReturn(Boolean.FALSE);
+		when(server.isWorking()).thenReturn(Boolean.FALSE);
 		when(server.getAddress()).thenReturn(ip);
 		when(server.getIp()).thenReturn(ip);
 		when(server.getActions()).thenReturn(Arrays.asList(action));

@@ -34,40 +34,30 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 		List<Indexable<?>> indexables = indexContext.getIndexables();
 		long actionId = 0;
 		try {
-			actionId = start(indexContext, "");
 			if (indexables != null && indexables.size() > 0) {
-				long lastWorkingStartTime = System.currentTimeMillis();
-				ikube.model.Action action = getAction(server, actionId);
-				if (action != null) {
-					lastWorkingStartTime = action.getStartTime().getTime();
-				}
-				if (lastWorkingStartTime <= 0) {
-					logger.warn("Failed to join the cluster indexing : " + indexContext);
-					return Boolean.FALSE;
-				}
-				// If we get here then there are two possibilities:
-				// 1) The index is not current and we will start the index
-				// 2) The index is current and there are other servers working on the index, so we join them
-				logger.debug(Logging.getString("Last working time : ", lastWorkingStartTime));
+				long startTime = System.currentTimeMillis();
 				// Start the indexing for this server
-				IndexManager.openIndexWriter(indexContext, lastWorkingStartTime, server.getAddress());
+				IndexManager.openIndexWriter(indexContext, startTime, server.getAddress());
 				for (Indexable<?> indexable : indexables) {
-					// Get the right handler for this indexable
-					IHandler<Indexable<?>> handler = getHandler(indexable);
-					if (handler == null) {
-						logger.warn(Logging.getString("Not handling indexable : ", indexable, " no handler defined."));
-						continue;
-					}
-					List<Future<?>> threads = null;
 					try {
-						action.setIndexableName(indexable.getName());
-						logger.debug("Executing handler : " + handler + ", " + indexable.getName());
+						// Get the right handler for this indexable
+						IHandler<Indexable<?>> handler = getHandler(indexable);
+						if (handler == null) {
+							String message = Logging.getString("Not handling indexable : ", indexable.getName(), " no handler defined.");
+							logger.warn(message);
+							// throw new RuntimeException(message);
+							continue;
+						}
+						actionId = start(indexContext, indexable.getName());
+						ikube.model.Action action = getAction(server, actionId);
+						indexContext.setAction(action);
 						// Execute the handler and wait for the threads to finish
-						threads = handler.handle(indexContext, indexable);
-						logger.debug("Waiting for threads : " + threads);
-						ThreadUtilities.waitForFutures(threads, Integer.MAX_VALUE);
+						List<Future<?>> futures = handler.handle(indexContext, indexable);
+						ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
 					} catch (Exception e) {
 						logger.error("Exception indexing data : " + indexName, e);
+					} finally {
+						stop(actionId);
 					}
 				}
 				return Boolean.TRUE;
@@ -75,7 +65,8 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 		} finally {
 			logger.debug(Logging.getString("Finished indexing : ", indexName));
 			IndexManager.closeIndexWriter(indexContext);
-			stop(indexContext, actionId);
+			indexContext.setAction(null);
+			stop(actionId);
 		}
 		return Boolean.FALSE;
 	}

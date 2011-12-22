@@ -60,11 +60,8 @@ public interface IClusterManager {
 	 * start working.
 	 * 
 	 * @param id the id of the action that was started
-	 * @param actionName the name of the action that has stopped or finished working
-	 * @param indexName the name of the index that the action was working on
-	 * @param indexableName the name of the indexable that the action was working on
 	 */
-	void stopWorking(long id, String actionName, String indexName, String indexableName);
+	void stopWorking(long id);
 
 	/**
 	 * @return the servers in the cluster

@@ -10,7 +10,6 @@ import ikube.notify.IMailer;
 import java.util.List;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.log4j.Logger;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
@@ -18,6 +17,8 @@ import org.apache.lucene.search.MultiSearcher;
 import org.apache.lucene.search.Searchable;
 import org.apache.lucene.store.Directory;
 import org.nfunk.jep.JEP;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -31,7 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public abstract class Action<E, F> implements IAction<E, F> {
 
-	protected transient Logger logger = Logger.getLogger(Action.class);
+	protected transient Logger logger = LoggerFactory.getLogger(Action.class);
 
 	@Autowired
 	private IMailer mailer;
@@ -55,11 +56,11 @@ public abstract class Action<E, F> implements IAction<E, F> {
 	private String predicate;
 
 	protected long start(IndexContext<?> indexContext, String indexableName) {
-		return clusterManager.startWorking(getClass().getSimpleName(), indexContext.getIndexName(), "");
+		return clusterManager.startWorking(getClass().getSimpleName(), indexContext.getIndexName(), indexableName);
 	}
 
-	protected void stop(IndexContext<?> indexContext, long actionId) {
-		clusterManager.stopWorking(actionId, getClass().getSimpleName(), indexContext.getIndexName(), "");
+	protected void stop(long actionId) {
+		clusterManager.stopWorking(actionId);
 	}
 
 	/**

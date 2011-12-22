@@ -46,7 +46,7 @@ public class Open extends Action<IndexContext<?>, Boolean> {
 			actionId = start(indexContext, "");
 			return openOnFile(indexContext);
 		} finally {
-			stop(indexContext, actionId);
+			stop(actionId);
 			logger.info("Succeeded : " + succeeded);
 		}
 	}

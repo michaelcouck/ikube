@@ -39,12 +39,14 @@ public class ClusterManagerJmsIntegration extends AbstractIntegration {
 
 	@Test
 	public void startStopWorking() {
-		long actionId = clusterManager.startWorking(actionName, indexName, indexableName);
 		Server server = clusterManager.getServer();
+		server.getActions().clear();
+		long actionId = clusterManager.startWorking(actionName, indexName, indexableName);
+		server = clusterManager.getServer();
 		logger.info("Action id : " + actionId + ", " + server.getActions().size());
 		assertTrue("The action id must be from the database : ", actionId > 0);
 		assertEquals("There should be one action in the server : ", 1, server.getActions().size());
-		clusterManager.stopWorking(actionId, actionName, indexName, indexableName);
+		clusterManager.stopWorking(actionId);
 		server = clusterManager.getServer();
 		assertEquals("The action should be deleted : ", 0, server.getActions().size());
 
@@ -56,7 +58,7 @@ public class ClusterManagerJmsIntegration extends AbstractIntegration {
 		actionId = clusterManager.startWorking(actionName, indexName, indexableName);
 		assertEquals("There should be two actions in the server : ", 2, server.getActions().size());
 
-		assertTrue("The server should be working : ", server.getWorking());
+		assertTrue("The server should be working : ", server.isWorking());
 	}
 
 	@Test
@@ -89,7 +91,7 @@ public class ClusterManagerJmsIntegration extends AbstractIntegration {
 		anyWorkingOnIndex = clusterManager.anyWorking(indexName);
 		assertTrue("This server is working on this index : ", anyWorkingOnIndex);
 
-		clusterManager.stopWorking(actionId, actionName, indexName, indexableName);
+		clusterManager.stopWorking(actionId);
 		Thread.sleep(1000);
 		anyWorking = clusterManager.anyWorking();
 		assertFalse("There should be no servers working : ", anyWorking);

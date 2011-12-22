@@ -175,10 +175,10 @@ public class SearchTest extends ATest {
 		IndexReader indexReader = IndexReader.open(directory);
 		for (int i = 0; i < indexReader.numDocs(); i++) {
 			Document document = indexReader.document(i);
-			logger.error(document);
+			logger.error(document.toString());
 			List<Fieldable> fields = document.getFields();
 			for (Fieldable fieldable : fields) {
-				logger.error(fieldable);
+				logger.error(fieldable.toString());
 			}
 		}
 	}

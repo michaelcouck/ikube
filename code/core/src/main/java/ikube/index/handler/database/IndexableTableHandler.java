@@ -137,13 +137,13 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 		for (String columnName : columnNames) {
 			IndexableColumn indexableColumn = new IndexableColumn();
 			indexableColumn.setAddress(Boolean.FALSE);
-			indexableColumn.setAnalyzed(Boolean.TRUE);
 			indexableColumn.setFieldName(columnName);
 			indexableColumn.setIdColumn(columnName.equalsIgnoreCase(primaryKeyColumn));
 			indexableColumn.setName(columnName);
 			indexableColumn.setParent(indexableTable);
-			indexableColumn.setStored(Boolean.TRUE);
-			indexableColumn.setVectored(Boolean.TRUE);
+			indexableColumn.setAnalyzed(indexableTable.isAnalyzed());
+			indexableColumn.setStored(indexableTable.isStored());
+			indexableColumn.setVectored(indexableTable.isVectored());
 			children.add(indexableColumn);
 		}
 		indexableTable.setChildren(children);

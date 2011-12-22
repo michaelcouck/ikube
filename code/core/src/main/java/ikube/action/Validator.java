@@ -109,7 +109,7 @@ public class Validator extends Action<IndexContext<?>, Boolean> {
 			logger.error("Exception validating the system : " + indexContext, e);
 			everythingInitialized &= Boolean.FALSE;
 		} finally {
-			stop(indexContext, actionId);
+			stop(actionId);
 		}
 		return everythingInitialized;
 	}

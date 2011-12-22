@@ -36,7 +36,7 @@ public class Restore extends Action<IndexContext<?>, Boolean> {
 			// Copy the backup to the index directory
 			FileUtilities.copyFiles(latestIndexDirectoryBackup, restoredIndexDirectory);
 		} finally {
-			stop(indexContext, actionId);
+			stop(actionId);
 		}
 		return Boolean.TRUE;
 	}

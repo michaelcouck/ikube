@@ -32,7 +32,7 @@ public class Reset extends Action<IndexContext<?>, Boolean> {
 			actionId = start(indexContext, "");
 			delete(dataBase, indexContext);
 		} finally {
-			stop(indexContext, actionId);
+			stop(actionId);
 		}
 		return Boolean.TRUE;
 	}

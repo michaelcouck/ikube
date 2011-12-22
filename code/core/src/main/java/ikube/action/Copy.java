@@ -24,7 +24,7 @@ public class Copy<E, F> extends Action<IndexContext<?>, Boolean> {
 			actionId = start(indexContext, "");
 			return Boolean.TRUE;
 		} finally {
-			stop(indexContext, actionId);
+			stop(actionId);
 		}
 	}
 

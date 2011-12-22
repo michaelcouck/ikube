@@ -42,7 +42,7 @@ public class IndexEngineTest extends ATest {
 
 		index = mock(Index.class);
 		actions.add(index);
-		when(server.getWorking()).thenReturn(Boolean.FALSE);
+		when(server.isWorking()).thenReturn(Boolean.FALSE);
 		when(clusterManager.getServer()).thenReturn(server);
 
 		indexEngine.setActions(actions);
@@ -66,7 +66,7 @@ public class IndexEngineTest extends ATest {
 		Mockito.verify(index, Mockito.atLeast(1)).execute(Mockito.any(IndexContext.class));
 		Mockito.verify(index, Mockito.atMost(1)).execute(Mockito.any(IndexContext.class));
 
-		when(server.getWorking()).thenReturn(Boolean.TRUE);
+		when(server.isWorking()).thenReturn(Boolean.TRUE);
 		indexEngine.handleNotification(event);
 		Mockito.verify(index, Mockito.atLeast(1)).execute(Mockito.any(IndexContext.class));
 		Mockito.verify(index, Mockito.atMost(2)).execute(Mockito.any(IndexContext.class));

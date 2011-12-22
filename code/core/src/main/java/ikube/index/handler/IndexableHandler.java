@@ -1,6 +1,7 @@
 package ikube.index.handler;
 
 import ikube.database.IDataBase;
+import ikube.model.Action;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
 
@@ -58,6 +59,8 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IHandl
 	 */
 	@Override
 	public void addDocument(final IndexContext<?> indexContext, final Document document) throws Exception {
+		Action action = indexContext.getAction();
+		action.setInvocations(action.getInvocations() + 1);
 		delegate.delegate(indexContext, document);
 	}
 

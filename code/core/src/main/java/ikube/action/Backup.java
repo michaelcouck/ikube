@@ -48,7 +48,7 @@ public class Backup extends Action<IndexContext<?>, Boolean> {
 				return Boolean.FALSE;
 			}
 		} finally {
-			stop(indexContext, actionId);
+			stop(actionId);
 		}
 		return Boolean.TRUE;
 	}

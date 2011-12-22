@@ -1,7 +1,7 @@
 package ikube.listener;
 
 import ikube.cluster.IClusterManager;
-import ikube.model.Execution;
+// import ikube.model.Execution;
 
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -11,9 +11,9 @@ import java.util.concurrent.TimeUnit;
  * @since 08.10.11
  * @version 01.00
  */
+@SuppressWarnings("unused")
 public class MonitoringListener implements IListener {
 
-	@SuppressWarnings("unused")
 	private IClusterManager clusterManager;
 
 	@Override
@@ -28,14 +28,14 @@ public class MonitoringListener implements IListener {
 		}
 	}
 
-	protected void calculateStatistics(Map<String, Execution> executions) {
-		for (Execution execution : executions.values()) {
-			long duration = TimeUnit.NANOSECONDS.toSeconds(execution.getDuration());
-			if (duration > 0) {
-				execution.setExecutionsPerSecond(((double) execution.getInvocations() / (double) duration));
-			}
-		}
-	}
+//	protected void calculateStatistics(Map<String, Execution> executions) {
+//		for (Execution execution : executions.values()) {
+//			long duration = TimeUnit.NANOSECONDS.toSeconds(execution.getDuration());
+//			if (duration > 0) {
+//				execution.setExecutionsPerSecond(((double) execution.getInvocations() / (double) duration));
+//			}
+//		}
+//	}
 
 	public void setClusterManager(IClusterManager clusterManager) {
 		this.clusterManager = clusterManager;

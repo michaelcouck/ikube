@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import ikube.IConstants;
-import ikube.action.Index;
 import ikube.cluster.IClusterManager;
 import ikube.index.IndexManager;
 import ikube.index.content.ColumnContentProvider;
@@ -64,7 +63,7 @@ public class IndexableTableHandlerIntegration extends AbstractIntegration {
 		faqIdIndexableColumn = Deencapsulation.invoke(indexableTableHandler, "getIdColumn", faqIndexableColumns);
 		connection = ((DataSource) ApplicationContextManager.getBean("nonXaDataSourceH2")).getConnection();
 		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
-		clusterManager.stopWorking(0, Index.class.getSimpleName(), realIndexContext.getIndexName(), faqIndexableTable.getName());
+		clusterManager.stopWorking(0);
 		// if (Deencapsulation.getField(indexableTableHandler, "documentDelegate") == null) {
 		// Deencapsulation.setField(indexableTableHandler, new DocumentDelegate());
 		// }
@@ -73,7 +72,7 @@ public class IndexableTableHandlerIntegration extends AbstractIntegration {
 	@After
 	public void after() {
 		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
-		clusterManager.stopWorking(0, Index.class.getSimpleName(), realIndexContext.getIndexName(), faqIndexableTable.getName());
+		clusterManager.stopWorking(0);
 		DatabaseUtilities.close(connection);
 	}
 
@@ -187,7 +186,7 @@ public class IndexableTableHandlerIntegration extends AbstractIntegration {
 		realIndexContext.getIndex().setIndexWriter(indexWriter);
 		List<Future<?>> threads = indexableTableHandler.handle(realIndexContext, faqIndexableTable);
 		ThreadUtilities.waitForFutures(threads, Integer.MAX_VALUE);
-		// TODO Verify that the data has been indexed
+		assertTrue("There must be some data in the index : ", realIndexContext.getIndex().getIndexWriter().numDocs() > 0);
 	}
 
 	@Test
@@ -199,6 +198,7 @@ public class IndexableTableHandlerIntegration extends AbstractIntegration {
 		indexContext.getIndex().setIndexWriter(indexWriter);
 		List<Future<?>> futures = indexableTableHandler.handle(indexContext, indexable);
 		ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
+		assertTrue("There must be some data in the index : ", indexContext.getIndex().getIndexWriter().numDocs() > 0);
 	}
 
 	@Test
@@ -214,6 +214,7 @@ public class IndexableTableHandlerIntegration extends AbstractIntegration {
 			List<Future<?>> futures = indexableTableHandler.handle(indexContext, (IndexableTable) indexable);
 			ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
 		}
+		assertTrue("There must be some data in the index : ", indexContext.getIndex().getIndexWriter().numDocs() > 0);
 	}
 
 	@Test

@@ -25,7 +25,7 @@ public class Close extends Action<IndexContext<?>, Boolean> {
 			// during the next iteration over the actions
 			return Boolean.TRUE;
 		} finally {
-			stop(indexContext, actionId);
+			stop(actionId);
 		}
 	}
 
