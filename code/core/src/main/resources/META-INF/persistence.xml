@@ -21,6 +21,7 @@
 		<class>ikube.model.IndexableFileSystem</class>
 		<class>ikube.model.IndexableEmail</class>
 		<class>ikube.model.IndexableColumn</class>
+		<class>ikube.model.IndexableImdb</class>
 		<class>ikube.model.Index</class>
 		
 		<class>ikube.model.geospatial.GeoName</class>
