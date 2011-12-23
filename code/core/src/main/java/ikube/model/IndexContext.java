@@ -1,6 +1,5 @@
 package ikube.model;
 
-import ikube.IConstants;
 import ikube.index.IndexManager;
 import ikube.toolkit.FileUtilities;
 
@@ -32,8 +31,6 @@ public class IndexContext<T> extends Indexable<T> implements Comparable<IndexCon
 	@Transient
 	private transient Index index;
 	@Transient
-	private transient String latestIndexTimestamp;
-	@Transient
 	private transient long indexSize;
 	@Transient
 	private transient long numDocs;
@@ -43,8 +40,6 @@ public class IndexContext<T> extends Indexable<T> implements Comparable<IndexCon
 
 	/** The maximum age of the index defined in minutes. */
 	private long maxAge;
-	/** Is this used anymore? */
-	private long queueTimeout;
 	/** The delay between documents being indexed, slows the indexing down. */
 	private long throttle;
 
@@ -91,14 +86,6 @@ public class IndexContext<T> extends Indexable<T> implements Comparable<IndexCon
 
 	public void setMaxAge(final long maxAge) {
 		this.maxAge = maxAge;
-	}
-
-	public long getQueueTimeout() {
-		return queueTimeout;
-	}
-
-	public void setQueueTimeout(final long queueTimeout) {
-		this.queueTimeout = queueTimeout;
 	}
 
 	public long getThrottle() {
@@ -205,7 +192,7 @@ public class IndexContext<T> extends Indexable<T> implements Comparable<IndexCon
 		this.index = index;
 	}
 
-	public String getLatestIndexTimestamp() {
+	public Date getLatestIndexTimestamp() {
 		long timestamp = 0;
 		String indexDirectoryPath = IndexManager.getIndexDirectoryPath(this);
 		File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexDirectoryPath);
@@ -215,8 +202,7 @@ public class IndexContext<T> extends Indexable<T> implements Comparable<IndexCon
 				timestamp = Long.parseLong(name);
 			}
 		}
-		this.latestIndexTimestamp = IConstants.HHMMSS_DDMMYYYY.format(new Date(timestamp));
-		return this.latestIndexTimestamp;
+		return new Date(timestamp);
 	}
 
 	public long getIndexSize() {

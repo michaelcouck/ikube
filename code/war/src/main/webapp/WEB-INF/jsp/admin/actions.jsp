@@ -5,7 +5,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
-<c:set var="colspan" value="9" />
+<c:set var="colspan" value="10" />
 <table class="table-content" width="100%">
 	<tr>
 		<td class="top-content" colspan="${colspan}" valign="middle">
@@ -34,6 +34,10 @@
 	</tr>
 	<c:forEach var="action" items="${actions}">
 	<tr>
+		<c:set var="text" value="Indexable ${action.indexableName}" />
+		<td width="1" nowrap="nowrap">
+			<img alt="${text}" src="<c:url value="/images/icons/register_view.gif" />" title="${text}">
+		</td>
 		<td class="td-content">${action.id}</td>
 		<td class="td-content">${action.actionName}</td>
 		<td class="td-content">${action.indexableName}</td>

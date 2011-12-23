@@ -35,7 +35,6 @@
 		property:mergeFactor="10"
 		property:maxFieldLength="10000"
 		property:maxReadLength="10000000"
-		property:queueTimeout="84600000"
 		property:throttle="0"
 		property:indexDirectoryPath="./indexes"
 		property:indexDirectoryPathBackup="./indexes/backup"

@@ -22,7 +22,7 @@
 		id="indexContext"
 		class="ikube.model.IndexContext"
 		property:name="default"
-		property:maxAge="1440"
+		property:maxAge="5760"
 		property:compoundFile="${compound.file}"
 		property:bufferedDocs="${buffered.docs}"
 		property:bufferSize="${buffer.size}"
@@ -31,7 +31,6 @@
 		property:mergeFactor="${merge.factor}"
 		property:maxFieldLength="${max.field.length}"
 		property:maxReadLength="${max.read.length}"
-		property:queueTimeout="${max.age}"
 		property:throttle="${throttle}"
 		property:indexDirectoryPath="${index.directory.path}"
 		property:indexDirectoryPathBackup="${index.directory.path.backup}"
@@ -42,7 +41,7 @@
 		<ref local="hazelcast" />
 		<!-- <ref local="internetMillion" /> -->
 		<!-- <ref local="filesystem" /> -->
-		<!-- <ref local="wikidata" /> -->
+		<ref local="wikidata" />
 		<!-- <ref local="dropboxDefault" /> -->
 		<!-- <ref local="filesystemMillion" /> -->
 		<!-- <ref bean="faqTableH2" />
@@ -590,7 +589,7 @@
 		property:maxReadLength="${file.max.read.length}"
 		property:unpackZips="false" />
 	
-	<!-- <bean
+	<bean
 		id="wikidata"
 		class="ikube.model.IndexableFileSystem"
 		property:name="wikidata"
@@ -599,10 +598,11 @@
 		property:nameFieldName="name"
 		property:lengthFieldName="length"
 		property:contentFieldName="contents"
+		property:unpackZips="false"
 		property:excludedPattern="${files.excluded.pattern}"
 		property:lastModifiedFieldName="lastmodified"
 		property:batchSize="${file.batch.size}"
-		property:maxReadLength="${file.max.read.length}" /> -->
+		property:maxReadLength="${file.max.read.length}" />
 	
 	<!-- <bean
 		id="dropboxDefault"

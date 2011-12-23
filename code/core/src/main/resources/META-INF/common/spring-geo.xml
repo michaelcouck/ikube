@@ -34,7 +34,6 @@
 		property:mergeFactor="${merge.factor}"
 		property:maxFieldLength="${max.field.length}"
 		property:maxReadLength="${max.read.length}"
-		property:queueTimeout="${max.age.geospatial}"
 		property:throttle="${throttle}"
 		property:indexDirectoryPath="${index.directory.path}"
 		property:indexDirectoryPathBackup="${index.directory.path.backup}"

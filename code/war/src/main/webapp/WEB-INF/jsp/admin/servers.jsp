@@ -68,7 +68,9 @@
 		</td>
 		<td class="td-content">${indexContext.index.multiSearcher != null}</td>
 		<td class="td-content">${indexContext.maxAge / 60}</td>
-		<td class="td-content" nowrap="nowrap">${indexContext.latestIndexTimestamp}</td>
+		<td class="td-content" nowrap="nowrap">
+			<fmt:formatDate value="${indexContext.latestIndexTimestamp}" pattern="dd/MM HH:mm:ss" type="DATE" />
+		</td>
 		<td class="td-content" nowrap="nowrap">${indexContext.indexDirectoryPath}/${indexContext.name}</td>
 	</tr>
 	</c:forEach>
