@@ -20,6 +20,6 @@ public interface IListener {
 	 * @param event
 	 *            the event that was fired by a component
 	 */
-	void handleNotification(Event event);
+	void handleNotification(final Event event);
 
 }

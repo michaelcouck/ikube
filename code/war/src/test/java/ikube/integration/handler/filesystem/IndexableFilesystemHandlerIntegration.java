@@ -31,8 +31,8 @@ public class IndexableFilesystemHandlerIntegration extends AbstractIntegration {
 
 	@Before
 	public void before() {
-		dropboxIndexable = ApplicationContextManager.getBean("dropboxIndexable");
-		dropboxIndexContext = ApplicationContextManager.getBean("dropboxIndex");
+		dropboxIndexable = ApplicationContextManager.getBean("wikidata");
+		dropboxIndexContext = ApplicationContextManager.getBean("indexContext");
 		dropboxIndexContext.setAction(new Action());
 		indexableFilesystemHandler = ApplicationContextManager.getBean(IndexableFilesystemHandler.class);
 		delete(ApplicationContextManager.getBean(IDataBase.class), ikube.model.File.class);

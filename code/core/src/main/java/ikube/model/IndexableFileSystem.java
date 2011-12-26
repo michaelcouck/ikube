@@ -19,6 +19,8 @@ public class IndexableFileSystem extends Indexable<IndexableFileSystem> {
 
 	@Transient
 	private transient File currentFile;
+	@Transient
+	private transient byte[] byteBuffer;
 
 	private String path;
 	private String excludedPattern;
@@ -117,6 +119,14 @@ public class IndexableFileSystem extends Indexable<IndexableFileSystem> {
 
 	public void setCurrentFile(final File currentFile) {
 		this.currentFile = currentFile;
+	}
+
+	public byte[] getByteBuffer() {
+		return byteBuffer;
+	}
+
+	public void setByteBuffer(byte[] byteBuffer) {
+		this.byteBuffer = byteBuffer;
 	}
 
 	public int getBatchSize() {

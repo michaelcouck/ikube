@@ -702,10 +702,13 @@ public final class FileUtilities {
 
 	private static final String PAGE_START = "<page>";
 	private static final String PAGE_FINISH = "</page>";
+	private static final String wikiDataPath = "C:/wiki.data/";
 
-	public static void main(String[] args) {
+	/**
+	 * This method will read from the xml Wiki data file and unpack it to directories.
+	 */
+	protected static final void unpackWikiData() {
 		Logging.configure();
-		String wikiDataPath = "C:/wiki.data/";
 		File outputDirectory = null;
 		File file = new File(wikiDataPath, "enwiki-latest-pages-articles.xml");
 		FileInputStream fileInputStream = null;
@@ -772,6 +775,44 @@ public final class FileUtilities {
 			LOGGER.error("IO exception : ", e);
 		} finally {
 			close(fileInputStream);
+		}
+	}
+
+	public static void main(String[] args) throws Exception {
+		Logging.configure();
+		File wikiDataFolder = new File(wikiDataPath);
+		File[] folders = wikiDataFolder.listFiles(new FileFilter() {
+			@Override
+			public boolean accept(File pathname) {
+				return pathname.isDirectory() && pathname.exists();
+			}
+		});
+		for (File folder : folders) {
+			LOGGER.info("Doing folder : " + folder);
+			File[] files = folder.listFiles(new FileFilter() {
+				@Override
+				public boolean accept(File pathname) {
+					return pathname.isFile() && pathname.exists();
+				}
+			});
+			if (files != null && files.length > 0) {
+				File outputFolder = null;
+				for (int i = 0; i < files.length; i++) {
+					File file = files[i];
+					if (i % 1000 == 0) {
+						outputFolder = new File(folder, Integer.toString(i));
+						if (!outputFolder.exists()) {
+							outputFolder.mkdirs();
+						}
+						LOGGER.info("Output folder : " + outputFolder);
+					}
+					File renamedFile = new File(outputFolder, file.getName());
+					boolean renamed = file.renameTo(renamedFile);
+					if (!renamed) {
+						LOGGER.warn("Couldn't rename : " + renamedFile);
+					}
+				}
+			}
 		}
 	}
 

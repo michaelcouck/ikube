@@ -17,14 +17,14 @@ import org.apache.log4j.Logger;
  */
 public class Scheduler {
 
-	private static Logger				LOGGER	= Logger.getLogger(Scheduler.class);
+	private static final Logger LOGGER = Logger.getLogger(Scheduler.class);
 
 	/** The list of schedules. */
-	private List<Schedule>				schedules;
+	private List<Schedule> schedules;
 	/** The listener manager that will notify the listeners when a schedule is triggered. */
-	private ListenerManager				listenerManager;
+	private ListenerManager listenerManager;
 	/** The scheduler. */
-	private ScheduledExecutorService	scheduledExecuterService;
+	private ScheduledExecutorService scheduledExecuterService;
 
 	/**
 	 * Iterates over the schedules scheduling them for execution.

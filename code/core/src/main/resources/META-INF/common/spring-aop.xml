@@ -71,86 +71,14 @@
 	</aop:config>
 	
 	<!-- These are just pojos that delegate to the real class that can be intercepted by Spring. -->
-	<bean 
+	<!-- <bean 
 		id="ikube.service.ISearchDelegate"
-		class="ikube.service.SearchDelegate" />
+		class="ikube.service.SearchDelegate" /> -->
 	<bean 
 		id="ikube.index.handler.InterceptorDelegate"
 		class="ikube.index.handler.InterceptorDelegate" />
 	
-	<!--
-		This bean will intercept the searching and the indexing, specifically adding documents 
-		to the Lucene index. A counter will be incremented for each document added and the 
-		indexing performance can be monitored. 
-	 -->
-	<bean 
-		id="ikube.monitoring.IMonitoringInterceptor" 
-		name="ikube.monitoring.IMonitoringInterceptor"
-		class="ikube.monitoring.MonitoringInterceptor" />
 	<aop:config proxy-target-class="true">
-		<!-- <aop:aspect ref="ikube.monitoring.IMonitoringInterceptor">
-			<aop:around method="searchingPerformance" pointcut="execution(* ikube.service.SearcherWebService.search*(..))" />
-		</aop:aspect> -->
-		<!-- <aop:aspect ref="ikube.monitoring.IMonitoringInterceptor">
-			<aop:around method="indexingPerformance" pointcut="execution(* ikube.index.handler.*.*(..))" />
-		</aop:aspect> -->
-		<aop:aspect ref="ikube.monitoring.IMonitoringInterceptor">
-			<aop:around method="indexingPerformance" pointcut="execution(* ikube.index.handler.IndexableHandler.addDocument(..))" />
-		</aop:aspect>
-		<aop:aspect ref="ikube.monitoring.IMonitoringInterceptor">
-			<aop:around method="indexingPerformance" pointcut="execution(* ikube.index.handler.database.IndexableTableHandler.addDocument(..))" />
-		</aop:aspect>
-		<!-- <aop:aspect ref="ikube.monitoring.IMonitoringInterceptor">
-			<aop:around method="indexingPerformance" pointcut="execution(* ikube.index.handler..*.*(..))" />
-		</aop:aspect>
-		<aop:aspect ref="ikube.monitoring.IMonitoringInterceptor">
-			<aop:around method="indexingPerformance" pointcut="execution(* ikube.index.handler.InterceptorDelegate.*(..))" />
-		</aop:aspect> -->
-		<!-- <aop:aspect ref="ikube.monitoring.IMonitoringInterceptor">
-			<aop:around method="indexingPerformance" pointcut="execution(* ikube.index.handler.*.*.*(..))" />
-		</aop:aspect>
-		<aop:aspect ref="ikube.monitoring.IMonitoringInterceptor">
-			<aop:around method="indexingPerformance" pointcut="execution(* ikube.index.handler..*.*(..))" />
-		</aop:aspect>
-		<aop:aspect ref="ikube.monitoring.IMonitoringInterceptor">
-			<aop:around method="indexingPerformance" pointcut="execution(* ikube.index.handler...*(..))" />
-		</aop:aspect> -->
 	</aop:config>
-	
-	<!-- The handlers that do the indexing logic. -->
-	<bean
-		id="ikube.index.handler.IHandler"
-		class="ikube.index.handler.IHandler"
-		abstract="true" />
-	<bean 
-		id="ikube.index.handler.IndexableHandler"
-		parent="ikube.index.handler.IHandler"
-		class="ikube.index.handler.IndexableHandler" 
-		abstract="true" />
-	<bean
-		parent="ikube.index.handler.IndexableHandler"
-		class="ikube.index.handler.internet.IndexableInternetHandler"
-		property:threads="${internet.handler.threads}" 
-		property:indexableClass="ikube.model.IndexableInternet" />
-	<bean
-		parent="ikube.index.handler.IndexableHandler"
-		class="ikube.index.handler.email.IndexableEmailHandler"
-		property:threads="${email.handler.threads}"
-		property:indexableClass="ikube.model.IndexableEmail" />
-	<bean
-		parent="ikube.index.handler.IndexableHandler"
-		class="ikube.index.handler.filesystem.IndexableFilesystemHandler"
-		property:threads="${filesystem.handler.threads}"
-		property:indexableClass="ikube.model.IndexableFileSystem" />
-	<bean
-		parent="ikube.index.handler.IndexableHandler"
-		class="ikube.index.handler.database.IndexableTableHandler"
-		property:threads="${table.handler.threads}"
-		property:indexableClass="ikube.model.IndexableTable" />
-	<bean
-		parent="ikube.index.handler.IndexableHandler"
-		class="ikube.index.handler.filesystem.IndexableDictionaryHandler"
-		property:threads="${filesystem.handler.threads}"
-		property:indexableClass="ikube.model.IndexableDictionary" />
 	
 </beans>

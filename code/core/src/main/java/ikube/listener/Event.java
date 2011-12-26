@@ -6,6 +6,9 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
 /**
+ * Events are fired by clients and received by interested parties who can act on them, for example the end of an indexing process might
+ * trigger the opening of that index.
+ * 
  * @author Michael Couck
  * @since 21.11.10
  * @version 01.00

@@ -15,9 +15,9 @@ import org.apache.log4j.Logger;
  */
 public class ListenerManager {
 
-	private static final Logger	LOGGER	= Logger.getLogger(ListenerManager.class);
+	private static final Logger LOGGER = Logger.getLogger(ListenerManager.class);
 
-	private List<IListener>		listeners;
+	private List<IListener> listeners;
 
 	public ListenerManager() {
 		listeners = new ArrayList<IListener>();
@@ -41,8 +41,7 @@ public class ListenerManager {
 	}
 
 	/**
-	 * @param listener
-	 *            the listener to add for notifications of end of action events
+	 * @param listener the listener to add for notifications of end of action events
 	 */
 	public synchronized void addListener(final IListener listener) {
 		try {
@@ -70,8 +69,7 @@ public class ListenerManager {
 	/**
 	 * Notifies all the listeners for a particular instance of an event.
 	 * 
-	 * @param event
-	 *            the event for distribution
+	 * @param event the event for distribution
 	 */
 	private void notifyListeners(final Event event) {
 		for (final IListener listener : listeners) {

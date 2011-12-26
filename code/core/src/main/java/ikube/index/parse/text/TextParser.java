@@ -6,8 +6,11 @@ import ikube.index.parse.IParser;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.nio.CharBuffer;
 
 /**
+ * TODO Re-implement this class using system array copies.
+ * 
  * @author Michael Couck
  * @since 03.09.10
  * @version 01.00
@@ -20,17 +23,18 @@ public class TextParser implements IParser {
 	private static final int HIGH_ARABIC = 1621;
 	private static final char NEW_LINE = '\n';
 	private static final char CARRIAGE_RETURN = '\r';
+	private static final char[] CHARS = new char[1024];
 
 	@Override
 	public final OutputStream parse(final InputStream inputStream, final OutputStream outputStream) throws Exception {
 		StringBuilder builder = new StringBuilder();
+		CharBuffer charBuffer = CharBuffer.allocate(0);
 		InputStreamReader inputStreamReader = new InputStreamReader(inputStream, IConstants.ENCODING);
-		char[] chars = new char[1024];
-		int read = inputStreamReader.read(chars);
+		int read = inputStreamReader.read(CHARS);
 		while (read > -1) {
 			char previous = 0;
 			for (int i = 0; i < read; i++) {
-				char c = chars[i];
+				char c = CHARS[i];
 				if (Character.isLetterOrDigit(c)) {
 					builder.append(c);
 					previous = c;
@@ -53,7 +57,7 @@ public class TextParser implements IParser {
 					}
 				}
 			}
-			read = inputStreamReader.read(chars);
+			read = inputStreamReader.read(CHARS);
 		}
 		outputStream.write(builder.toString().getBytes());
 		return outputStream;
