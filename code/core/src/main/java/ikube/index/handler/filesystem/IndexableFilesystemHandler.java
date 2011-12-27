@@ -53,24 +53,24 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 		private Stack<File> directories;
 		private IndexContext<?> indexContext;
 		private IndexableFileSystem indexableFileSystem;
-		private byte[] byteBuffer = new byte[1024 * 1024];
-		private ByteArrayInputStream byteInputStream = new ByteArrayInputStream(byteBuffer);
-		private ByteArrayOutputStream byteOutputStream = new ByteArrayOutputStream();
+		// private byte[] byteBuffer = new byte[1024 * 1024];
+		private ByteArrayInputStream byteInputStream; //  = new ByteArrayInputStream(byteBuffer);
+		private ByteArrayOutputStream byteOutputStream; // = new ByteArrayOutputStream();
 
 		IndexableFilesystemHandlerWorker(IndexContext<?> indexContext, IndexableFileSystem indexableFileSystem, Stack<File> directories) {
 			this.indexContext = indexContext;
 			this.indexableFileSystem = indexableFileSystem;
 			this.directories = directories;
-			byteBuffer = new byte[(int) this.indexableFileSystem.getMaxReadLength()];
-			byteInputStream = new ByteArrayInputStream(byteBuffer);
-			byteOutputStream = new ByteArrayOutputStream();
+			// byteBuffer = new byte[(int) this.indexableFileSystem.getMaxReadLength()];
+			// byteInputStream = new ByteArrayInputStream(byteBuffer);
+			// byteOutputStream = new ByteArrayOutputStream();
 		}
 
 		public void run() {
 			try {
 				List<File> files = getBatch(indexableFileSystem, directories);
-				byte[] byteBuffer = new byte[(int) indexableFileSystem.getMaxReadLength()];
-				indexableFileSystem.setByteBuffer(byteBuffer);
+				// byte[] byteBuffer = new byte[(int) indexableFileSystem.getMaxReadLength()];
+				// indexableFileSystem.setByteBuffer(byteBuffer);
 				if (files != null) {
 					do {
 						for (File file : files) {
@@ -112,8 +112,15 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 
 				inputStream = new FileInputStream(file);
 
-				Arrays.fill(byteBuffer, (byte) 0);
-				int read = inputStream.read(byteBuffer);
+				// Arrays.fill(byteBuffer, (byte) 0);
+				int length = Math.min((int) indexableFileSystem.getMaxReadLength(), (int) file.length());
+				byte[] byteBuffer = new byte[length];
+				int read = inputStream.read(byteBuffer, 0, byteBuffer.length);
+				
+				byteInputStream = new ByteArrayInputStream(byteBuffer, 0, read);
+				byteOutputStream = new ByteArrayOutputStream();
+				
+				// System.arraycopy(byteBuffer, 0, subByteByffer, 0, subByteByffer.length);
 
 				IParser parser = ParserProvider.getParser(file.getName(), byteBuffer);
 				// logger.info("Parser : " + parser);
@@ -147,10 +154,8 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 				logger.error("Exception occured while trying to index the file " + file.getAbsolutePath(), e);
 			} finally {
 				FileUtilities.close(inputStream);
-//				byteInputStream.reset();
-//				byteOutputStream.reset();
-				// FileUtilities.close(byteInputStream);
-				// FileUtilities.close(byteOutputStream);
+				FileUtilities.close(byteInputStream);
+				FileUtilities.close(byteOutputStream);
 				// String filePath = file.getAbsolutePath();
 				// StringUtils.replace(filePath, "\\", "/");
 				// boolean isFileAndInTemp = file.isFile() && filePath.contains(IConstants.TMP_UNZIPPED_FOLDER);
