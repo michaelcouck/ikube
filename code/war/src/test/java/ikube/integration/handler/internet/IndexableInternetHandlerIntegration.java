@@ -48,6 +48,7 @@ public class IndexableInternetHandlerIntegration extends AbstractIntegration {
 	public void before() {
 		ApplicationContextManager.getBean(ListenerManager.class).removeListeners();
 		indexContext = ApplicationContextManager.getBean("indexContext");
+		indexContext.setIndexDirectoryPath("./indexes");
 		indexableInternet = ApplicationContextManager.getBean("hazelcast");
 		indexableInternetHandler = ApplicationContextManager.getBean(IndexableInternetHandler.class);
 		dataBase = ApplicationContextManager.getBean(IDataBase.class);
@@ -66,6 +67,11 @@ public class IndexableInternetHandlerIntegration extends AbstractIntegration {
 		String ip = InetAddress.getLocalHost().getHostAddress();
 		IndexWriter indexWriter = IndexManager.openIndexWriter(realIndexContext, System.currentTimeMillis(), ip);
 		indexContext.getIndex().setIndexWriter(indexWriter);
+		indexableInternet.setUrl("http://sum.agj1.post.bpgnet.net/wiki");
+		indexableInternet.setExcludedPattern("download");
+		// indexableInternet.setUserid("U365981");
+		// indexableInternet.setLoginUrl(loginUrl);
+		// indexableInternet.setPassword(password);
 		List<Future<?>> threads = indexableInternetHandler.handle(indexContext, indexableInternet);
 		ThreadUtilities.waitForFutures(threads, Integer.MAX_VALUE);
 		int expectedAtLeast = 10;

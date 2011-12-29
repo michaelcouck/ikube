@@ -133,8 +133,14 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 		List<String> columnNames = DatabaseUtilities.getAllColumns(connection, indexableTable.getName());
 		List<String> primaryKeyColumns = DatabaseUtilities.getPrimaryKeys(connection, indexableTable.getName());
 		String primaryKeyColumn = primaryKeyColumns.size() > 0 ? primaryKeyColumns.get(0) : columnNames.get(0);
-		List<Indexable<?>> children = new ArrayList<Indexable<?>>();
+		List<Indexable<?>> children = indexableTable.getChildren();
+		if (children == null) {
+			children = new ArrayList<Indexable<?>>();
+		}
 		for (String columnName : columnNames) {
+			if (containsColumn(indexableTable, columnName)) {
+				continue;
+			}
 			IndexableColumn indexableColumn = new IndexableColumn();
 			indexableColumn.setAddress(Boolean.FALSE);
 			indexableColumn.setFieldName(columnName);
@@ -147,6 +153,28 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 			children.add(indexableColumn);
 		}
 		indexableTable.setChildren(children);
+	}
+	
+	protected boolean containsPrimaryKeyColumn(IndexableTable indexableTable) {
+		for (Indexable<?> child : indexableTable.getChildren()) {
+			if (IndexableColumn.class.isAssignableFrom(child.getClass())) {
+				if (((IndexableColumn) child).isIdColumn()) {
+					return Boolean.TRUE;
+				}
+			}
+		}
+		return Boolean.FALSE;
+	}
+	
+	protected boolean containsColumn(IndexableTable indexableTable, String columnName) {
+		for (Indexable<?> child : indexableTable.getChildren()) {
+			if (IndexableColumn.class.isAssignableFrom(child.getClass())) {
+				if (((IndexableColumn) child).getName().equals(columnName)) {
+					return Boolean.TRUE;
+				}
+			}
+		}
+		return Boolean.FALSE;
 	}
 
 	/**
@@ -507,7 +535,8 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 			statement = connection.createStatement();
 			resultSet = statement.executeQuery(builder.toString());
 			if (resultSet.next()) {
-				result = resultSet.getLong(1);
+				Object object = resultSet.getObject(1);
+				result = Long.class.isAssignableFrom(object.getClass()) ? (Long) object : Long.parseLong(object.toString().trim()); 
 			}
 			return result;
 		} finally {

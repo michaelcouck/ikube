@@ -69,7 +69,7 @@ function countdown() {
 window.onload=starttime
 </script>
 
-<spring:message code="refresh.rate" />
+<spring:message code="refresh.rate" />&nbsp;${sessionScope.refreshinterval}&nbsp;
 <c:choose>
 	<c:when test="${empty pageContext.request.queryString}">
 		<c:set var="uri" value="${pageContext.request.pathInfo}?" />
@@ -86,5 +86,7 @@ window.onload=starttime
 		</c:forEach>
 	</c:otherwise>
 </c:choose>
-<a href="<c:url value="${uri}refreshinterval=${sessionScope.refreshinterval + 1}" />">++</a>
-<a href="<c:url value="${uri}refreshinterval=${sessionScope.refreshinterval - 1}" />">--</a>
+<a href="<c:url value="${uri}refreshinterval=${sessionScope.refreshinterval + 1}" />">+</a>
+<a href="<c:url value="${uri}refreshinterval=${sessionScope.refreshinterval + 5}" />">++</a>
+<a href="<c:url value="${uri}refreshinterval=${sessionScope.refreshinterval - 1}" />">-</a>
+<a href="<c:url value="${uri}refreshinterval=${sessionScope.refreshinterval - 5}" />">--</a>

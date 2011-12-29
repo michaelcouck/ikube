@@ -53,24 +53,18 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 		private Stack<File> directories;
 		private IndexContext<?> indexContext;
 		private IndexableFileSystem indexableFileSystem;
-		// private byte[] byteBuffer = new byte[1024 * 1024];
-		private ByteArrayInputStream byteInputStream; //  = new ByteArrayInputStream(byteBuffer);
-		private ByteArrayOutputStream byteOutputStream; // = new ByteArrayOutputStream();
+		private ByteArrayInputStream byteInputStream;
+		private ByteArrayOutputStream byteOutputStream;
 
 		IndexableFilesystemHandlerWorker(IndexContext<?> indexContext, IndexableFileSystem indexableFileSystem, Stack<File> directories) {
 			this.indexContext = indexContext;
 			this.indexableFileSystem = indexableFileSystem;
 			this.directories = directories;
-			// byteBuffer = new byte[(int) this.indexableFileSystem.getMaxReadLength()];
-			// byteInputStream = new ByteArrayInputStream(byteBuffer);
-			// byteOutputStream = new ByteArrayOutputStream();
 		}
 
 		public void run() {
 			try {
 				List<File> files = getBatch(indexableFileSystem, directories);
-				// byte[] byteBuffer = new byte[(int) indexableFileSystem.getMaxReadLength()];
-				// indexableFileSystem.setByteBuffer(byteBuffer);
 				if (files != null) {
 					do {
 						for (File file : files) {
@@ -123,7 +117,6 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 				// System.arraycopy(byteBuffer, 0, subByteByffer, 0, subByteByffer.length);
 
 				IParser parser = ParserProvider.getParser(file.getName(), byteBuffer);
-				// logger.info("Parser : " + parser);
 				parsedContent = parser.parse(byteInputStream, byteOutputStream).toString();
 
 				Store store = indexableFileSystem.isStored() ? Store.YES : Store.NO;

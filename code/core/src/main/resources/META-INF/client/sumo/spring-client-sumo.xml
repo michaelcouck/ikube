@@ -17,12 +17,12 @@
 		property:maxReadLength="${max.read.length}" property:throttle="${throttle}" property:indexDirectoryPath="${index.directory.path}"
 		property:indexDirectoryPathBackup="${index.directory.path.backup}" property:children-ref="sumoIndexables" />
 	<util:list id="sumoIndexables">
-		<ref local="ABO2000" />
+		<!-- <ref local="ABO2000" />
 		<ref local="ADIDLIST" />
 		<ref local="ADRESSENBS2000" />
-		<ref local="ADR_ING_HIST" />
+		<ref local="ADR_ING_HIST" /> -->
 		<ref local="ADR_ROMA_PDP_BASE" />
-		<ref local="ADR_STATUS" />
+		<!-- <ref local="ADR_STATUS" />
 		<ref local="ADR_TO_VALIDATE" />
 		<ref local="ADR_UITG_HIST" />
 		<ref local="ADR_VALIDATED" />
@@ -222,7 +222,7 @@
 		<ref local="WIJZIGINGENBESTAND" />
 		<ref local="WIJZIGINGSAANVRAAG" />
 		<ref local="XMLERRORCODES" />
-		<ref local="Z_KRANT_ETIKETTEN_NBR" />
+		<ref local="Z_KRANT_ETIKETTEN_NBR" /> -->
 	</util:list>
 
 	<bean id="ABO2000" class="ikube.model.IndexableTable" property:name="ABO2000" property:allColumns="true" property:primaryTable="true"
@@ -237,9 +237,31 @@
 	<bean id="ADR_ING_HIST" class="ikube.model.IndexableTable" property:name="ADR_ING_HIST" property:allColumns="true"
 		property:primaryTable="true" property:dataSource-ref="nonXaSumoDataSourceOracle" property:maxExceptions="10" property:stored="false"
 		property:analyzed="true" property:vectored="true" />
-	<bean id="ADR_ROMA_PDP_BASE" class="ikube.model.IndexableTable" property:name="ADR_ROMA_PDP_BASE" property:allColumns="true"
-		property:primaryTable="true" property:dataSource-ref="nonXaSumoDataSourceOracle" property:maxExceptions="10" property:stored="false"
-		property:analyzed="true" property:vectored="true" />
+	<bean 
+		id="ADR_ROMA_PDP_BASE" 
+		class="ikube.model.IndexableTable" 
+		property:name="ADR_ROMA_PDP_BASE" 
+		property:allColumns="true"
+		property:primaryTable="true" 
+		property:dataSource-ref="nonXaSumoDataSourceOracle" 
+		property:maxExceptions="10" 
+		property:stored="true"
+		property:analyzed="true" 
+		property:vectored="true"
+		property:children-ref="pdpColumns" />
+	<util:list id="pdpColumns">
+		<ref local="pdpId" />
+	</util:list>
+	<bean
+		id="pdpId"
+		class="ikube.model.IndexableColumn"
+		property:name="pdp_id"
+		property:idColumn="true"
+		property:fieldName="pdp_id"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	
 	<bean id="ADR_STATUS" class="ikube.model.IndexableTable" property:name="ADR_STATUS" property:allColumns="true" property:primaryTable="true"
 		property:dataSource-ref="nonXaSumoDataSourceOracle" property:maxExceptions="10" property:stored="false" property:analyzed="true"
 		property:vectored="true" />
