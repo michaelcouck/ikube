@@ -43,7 +43,7 @@ public final class SerializationUtilities {
 	private static ExceptionListener EXCEPTION_LISTENER = new ExceptionListener() {
 		@Override
 		public void exceptionThrown(final Exception exception) {
-			LOGGER.error("General exception : " + exception);
+			LOGGER.error("General exception : ", exception);
 		}
 	};
 
@@ -58,6 +58,7 @@ public final class SerializationUtilities {
 
 	public static String serialize(final Object object) {
 		try {
+			// LOGGER.info("Serializing object : " + object.getClass());
 			SerializationUtilities.setTransientFields(object.getClass(), new ArrayList<Class<?>>());
 			ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 			XMLEncoder xmlEncoder = new XMLEncoder(byteArrayOutputStream);
@@ -68,6 +69,8 @@ public final class SerializationUtilities {
 			return byteArrayOutputStream.toString(IConstants.ENCODING);
 		} catch (UnsupportedEncodingException e) {
 			LOGGER.error("Unsupported encoding : ", e);
+		} catch (Exception e) {
+			LOGGER.error("Exception serializing object : " + object, e);
 		}
 		return null;
 	}

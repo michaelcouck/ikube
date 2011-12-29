@@ -39,19 +39,19 @@
 		<ref local="mail" />
 		<ref local="internet" />
 		<ref local="hazelcast" />
-		<!-- <ref local="internetMillion" /> -->
-		<!-- <ref local="filesystem" /> -->
+		<ref local="internetMillion" />
+		<ref local="filesystem" />
 		<!-- <ref local="wikidata" /> -->
-		<!-- <ref local="dropboxDefault" /> -->
-		<!-- <ref local="filesystemMillion" /> -->
+		<ref local="dropboxDefault" />
+		<ref local="filesystemMillion" />
 		<!-- <ref bean="faqTableH2" />
 		<ref bean="faqTableDb2" />
 		<ref bean="faqTableOracle" />
 		<ref bean="patientTableH2" />
 		<ref bean="patientTableDb2" />
 		<ref bean="patientTableOracle" />
-		<ref bean="addressTableDb2" /> -->
-		<!-- <ref bean="attachmentTableDb2Direct" /> -->
+		<ref bean="addressTableDb2" />
+		<ref bean="attachmentTableDb2Direct" /> -->
 	</util:list>
 
 	<!-- H2 Faqs -->
@@ -604,7 +604,7 @@
 		property:batchSize="${file.batch.size}"
 		property:maxReadLength="${file.max.read.length}" />
 	
-	<!-- <bean
+	 <bean
 		id="dropboxDefault"
 		class="ikube.model.IndexableFileSystem"
 		property:name="dropboxDefault"
@@ -619,9 +619,9 @@
 		property:maxReadLength="${file.max.read.length}"
 		property:stored="true"
 		property:vectored="true"
-		property:analyzed="true" /> -->
+		property:analyzed="true" />
 	
-	<!-- <bean
+	<bean
 		id="filesystemMillion"
 		class="ikube.model.IndexableFileSystem"
 		property:name="filesMillionOne"
@@ -634,5 +634,5 @@
 		property:excludedPattern="${files.excluded.pattern}"
 		property:lastModifiedFieldName="lastmodified" 
 		property:batchSize="${file.batch.size}" 
-		property:maxReadLength="${file.max.read.length}" /> -->
+		property:maxReadLength="${file.max.read.length}" />
 </beans>

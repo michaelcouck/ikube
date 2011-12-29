@@ -98,6 +98,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 				final Connection connection = dataSource.getConnection();
 				// Because the transient state data is stored in the indexable during indexing we have
 				// to clone the indexable for each thread
+				logger.info("Indexable : " + indexable.getName());
 				final IndexableTable cloneIndexableTable = (IndexableTable) SerializationUtilities.clone(indexable);
 				if (cloneIndexableTable.isAllColumns()) {
 					logger.info("Adding all columns to table : " + cloneIndexableTable.getName());
@@ -154,7 +155,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 		}
 		indexableTable.setChildren(children);
 	}
-	
+
 	protected boolean containsPrimaryKeyColumn(IndexableTable indexableTable) {
 		for (Indexable<?> child : indexableTable.getChildren()) {
 			if (IndexableColumn.class.isAssignableFrom(child.getClass())) {
@@ -165,8 +166,11 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 		}
 		return Boolean.FALSE;
 	}
-	
+
 	protected boolean containsColumn(IndexableTable indexableTable, String columnName) {
+		if (indexableTable.getChildren() == null) {
+			return Boolean.FALSE;
+		}
 		for (Indexable<?> child : indexableTable.getChildren()) {
 			if (IndexableColumn.class.isAssignableFrom(child.getClass())) {
 				if (((IndexableColumn) child).getName().equals(columnName)) {
@@ -536,7 +540,11 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 			resultSet = statement.executeQuery(builder.toString());
 			if (resultSet.next()) {
 				Object object = resultSet.getObject(1);
-				result = Long.class.isAssignableFrom(object.getClass()) ? (Long) object : Long.parseLong(object.toString().trim()); 
+				if (object == null) {
+					logger.warn("No result from min or max from table : " + indexableTable.getName());
+					return 0;
+				}
+				result = Long.class.isAssignableFrom(object.getClass()) ? (Long) object : Long.parseLong(object.toString().trim());
 			}
 			return result;
 		} finally {
@@ -665,5 +673,5 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 			index++;
 		}
 	}
-	
+
 }

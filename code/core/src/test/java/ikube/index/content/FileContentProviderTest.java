@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.OutputStream;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -21,6 +22,8 @@ import org.junit.Test;
  * @since 12.10.2010
  * @version 01.00
  */
+@Ignore
+@Deprecated
 public class FileContentProviderTest extends ATest {
 
 	private FileContentProvider contentProvider;
@@ -39,7 +42,7 @@ public class FileContentProviderTest extends ATest {
 		OutputStream outputStream = new ByteArrayOutputStream();
 		IndexableFileSystem indexableFileSystem = mock(IndexableFileSystem.class);
 		File file = FileUtilities.findFileRecursively(new File("."), "xml.xml");
-		when(indexableFileSystem.getCurrentFile()).thenReturn(file);
+		// when(indexableFileSystem.getCurrentFile()).thenReturn(file);
 		when(indexableFileSystem.getMaxReadLength()).thenReturn(Long.MAX_VALUE);
 		this.contentProvider.getContent(indexableFileSystem, outputStream);
 		String content = outputStream.toString();

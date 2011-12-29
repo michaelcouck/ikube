@@ -1,11 +1,8 @@
 package ikube.model;
 
-import java.io.File;
-
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
-import javax.persistence.Transient;
 
 /**
  * @author Michael Couck
@@ -16,11 +13,6 @@ import javax.persistence.Transient;
 @SuppressWarnings("serial")
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class IndexableFileSystem extends Indexable<IndexableFileSystem> {
-
-	@Transient
-	private transient File currentFile;
-	@Transient
-	private transient byte[] byteBuffer;
 
 	private String path;
 	private String excludedPattern;
@@ -111,22 +103,6 @@ public class IndexableFileSystem extends Indexable<IndexableFileSystem> {
 
 	public void setMaxReadLength(long maxReadLength) {
 		this.maxReadLength = maxReadLength;
-	}
-
-	public File getCurrentFile() {
-		return currentFile;
-	}
-
-	public void setCurrentFile(final File currentFile) {
-		this.currentFile = currentFile;
-	}
-
-	public byte[] getByteBuffer() {
-		return byteBuffer;
-	}
-
-	public void setByteBuffer(byte[] byteBuffer) {
-		this.byteBuffer = byteBuffer;
 	}
 
 	public int getBatchSize() {

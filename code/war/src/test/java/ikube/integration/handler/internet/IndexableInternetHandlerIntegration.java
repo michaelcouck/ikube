@@ -67,8 +67,8 @@ public class IndexableInternetHandlerIntegration extends AbstractIntegration {
 		String ip = InetAddress.getLocalHost().getHostAddress();
 		IndexWriter indexWriter = IndexManager.openIndexWriter(realIndexContext, System.currentTimeMillis(), ip);
 		indexContext.getIndex().setIndexWriter(indexWriter);
-		indexableInternet.setUrl("http://sum.agj1.post.bpgnet.net/wiki");
-		indexableInternet.setExcludedPattern("download");
+		// indexableInternet.setUrl("http://sum.agj1.post.bpgnet.net/wiki");
+		// indexableInternet.setExcludedPattern("download");
 		// indexableInternet.setUserid("U365981");
 		// indexableInternet.setLoginUrl(loginUrl);
 		// indexableInternet.setPassword(password);
@@ -82,6 +82,7 @@ public class IndexableInternetHandlerIntegration extends AbstractIntegration {
 	}
 
 	@Test
+	@Ignore
 	public void extractLinksFromContent() throws Exception {
 		Url baseUrl = new Url();
 		baseUrl.setName("name");

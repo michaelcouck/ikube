@@ -1,9 +1,11 @@
 package ikube.toolkit;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
+
 import ikube.ATest;
 import ikube.IConstants;
 import ikube.model.IndexContext;
+import ikube.model.IndexableTable;
 
 import java.beans.BeanInfo;
 import java.beans.Introspector;
@@ -58,6 +60,13 @@ public class SerializationUtilitiesTest extends ATest {
 			}
 		}
 		assertTrue("The index field should be set to transient : ", containsIndex);
+	}
+	
+	@Test
+	public void cloneIndexableTable() throws Exception {
+		IndexableTable indexableTable = new IndexableTable();
+		Object clone = SerializationUtilities.clone(indexableTable);
+		assertNotNull(clone);
 	}
 
 }

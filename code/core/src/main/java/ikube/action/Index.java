@@ -49,6 +49,8 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 						}
 						action = start(indexContext.getIndexName(), indexable.getName());
 						indexContext.setAction(action);
+						logger.info("Indexable : " + indexable.getName());
+						logger.info("Handler : " + handler.getClass() + ", " + handler.getIndexableClass());
 						// Execute the handler and wait for the threads to finish
 						List<Future<?>> futures = handler.handle(indexContext, indexable);
 						ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
@@ -94,7 +96,7 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 				return handler;
 			}
 		}
-		logger.warn("No handler for type : " + indexable);
+		logger.warn("No handler for type : " + indexable.getName());
 		return null;
 	}
 

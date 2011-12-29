@@ -51,7 +51,7 @@ public abstract class AbstractIntegration {
 		Logging.configure();
 		try {
 			FileUtilities.deleteFiles(new File("."), "btm1.tlog", "btm2.tlog", "ikube.h2.db", "ikube.lobs.db", "ikube.log", "openjpa.log");
-			startJetty();
+			// startJetty();
 			Thread.sleep(3000);
 			startContext();
 			Thread.sleep(3000);

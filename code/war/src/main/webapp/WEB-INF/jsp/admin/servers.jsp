@@ -8,6 +8,7 @@
 	and the actions that are currently being executed, including the number of
 	documents that have been indexed since the time the server started. 
  -->
+<c:set var="datePattern" value="dd/MM HH:mm:ss" />
 <table class="table-content" width="100%">
 	<tr>
 		<td class="top-content" colspan="10" valign="middle">
@@ -69,7 +70,7 @@
 		<td class="td-content">${indexContext.index.multiSearcher != null}</td>
 		<td class="td-content">${indexContext.maxAge / 60}</td>
 		<td class="td-content" nowrap="nowrap">
-			<fmt:formatDate value="${indexContext.latestIndexTimestamp}" pattern="dd/MM HH:mm:ss" type="DATE" />
+			<fmt:formatDate value="${indexContext.latestIndexTimestamp}" pattern="${datePattern}" type="DATE" />
 		</td>
 		<td class="td-content" nowrap="nowrap">${indexContext.indexDirectoryPath}/${indexContext.name}</td>
 	</tr>
@@ -162,7 +163,9 @@
 					<td class="td-content"><c:out value="${action.indexableName}" /></td>
 					<td class="td-content"><c:out value="${action.invocations}" /></td>
 					<td class="td-content"><c:out value="${action.invocationsPerSecond}" /></td>
-					<td class="td-content"><c:out value="${action.startDate}" /></td>
+					<td class="td-content">
+						<fmt:formatDate value="${action.startDate}" pattern="${datePattern}" type="DATE" />
+					</td>
 				</tr>
 				</c:forEach>
 			</table>

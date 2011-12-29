@@ -3,7 +3,7 @@
 	<property file="build.properties" />
 
 	<target name="start.tomcat.cluster">
-		<!-- antcall target="executeTomcatAction">
+		<antcall target="executeTomcatAction">
 			<param name="action" value="start" />
 			<param name="tomcat.bin" value="${tomcat.1.bin}" />
 			<param name="tomcat.home" value="${tomcat.1}" />
@@ -13,16 +13,16 @@
 			<param name="action" value="start" />
 			<param name="tomcat.bin" value="${tomcat.2.bin}" />
 			<param name="tomcat.home" value="${tomcat.2}" />
-		</antcall -->
-		<!-- sleep seconds="${sleep}" />
+		</antcall>
+		<sleep seconds="${sleep}" />
 		<antcall target="executeTomcatAction">
 			<param name="action" value="start" />
 			<param name="tomcat.bin" value="${tomcat.3.bin}" />
 			<param name="tomcat.home" value="${tomcat.3}" />
-		</antcall -->
+		</antcall>
 	</target>
 	<target name="stop.tomcat.cluster">
-		<!-- antcall target="executeTomcatAction">
+		<antcall target="executeTomcatAction">
 			<param name="action" value="stop" />
 			<param name="tomcat.bin" value="${tomcat.1.bin}" />
 			<param name="tomcat.home" value="${tomcat.1}" />
@@ -36,7 +36,7 @@
 			<param name="action" value="stop" />
 			<param name="tomcat.bin" value="${tomcat.3.bin}" />
 			<param name="tomcat.home" value="${tomcat.3}" />
-		</antcall -->
+		</antcall>
 	</target>
 
 	<target name="executeTomcatAction">
@@ -63,18 +63,20 @@
 
 	<target name="deploy">
 		<!-- Delete the index directories in the cluster. -->
-		<delete includeemptydirs="true" failonerror="false">
+		<!-- delete includeemptydirs="true" failonerror="false">
 			<fileset dir="${cluster.directory}/">
 				<include name="**/ikube*.war" />
 				<include name="**/ikube*/**" />
 			</fileset>
-		</delete>
+		</delete -->
 		<!-- Deploy the ikube war into the cluster. -->
-		<echo level="error" message="Jboss directory : ${jboss.1.deploy}" />
 		<copy file="${target.directory}/${ikube.war}" todir="${tomcat.1.webapps}" overwrite="true" failonerror="false" />
 		<copy file="${target.directory}/${ikube.war}" todir="${tomcat.2.webapps}" overwrite="true" failonerror="false" />
 		<copy file="${target.directory}/${ikube.war}" todir="${tomcat.3.webapps}" overwrite="true" failonerror="false" />
 		<copy file="${target.directory}/${ikube.war}" todir="${jboss.1.deploy}" overwrite="true" failonerror="false" />
+		<copy file="${target.directory}/${ikube.war}" todir="${glassfish.1.deploy}" overwrite="true" failonerror="false" />
+		<copy file="${target.directory}/${ikube.war}" todir="${oc4j.1.deploy}" overwrite="true" failonerror="false" />
+		<copy file="${target.directory}/${ikube.war}" todir="${weblogic.1.deploy}" overwrite="true" failonerror="false" />
 	</target>
 
 	<!-- 
@@ -111,6 +113,9 @@
 		<unjar src="${configuration.directory}/${ikube.configuration.jar}" dest="${tomcat.2.bin}" overwrite="true" />
 		<unjar src="${configuration.directory}/${ikube.configuration.jar}" dest="${tomcat.3.bin}" overwrite="true" />
 		<unjar src="${configuration.directory}/${ikube.configuration.jar}" dest="${jboss.1.bin}" overwrite="true" />
+		<unjar src="${configuration.directory}/${ikube.configuration.jar}" dest="${glassfish.1.bin}" overwrite="true" />
+		<unjar src="${configuration.directory}/${ikube.configuration.jar}" dest="${oc4j.1.bin}" overwrite="true" />
+		<unjar src="${configuration.directory}/${ikube.configuration.jar}" dest="${weblogic.1.bin}" overwrite="true" />
 		<replace dir="${tomcat.2.bin}" value="61617">
 			<include name="**/spring.properties" />
 			<replacetoken><![CDATA[61616]]></replacetoken>
@@ -120,6 +125,18 @@
 			<replacetoken><![CDATA[61616]]></replacetoken>
 		</replace>
 		<replace dir="${jboss.1.bin}" value="61619">
+			<include name="**/spring.properties" />
+			<replacetoken><![CDATA[61616]]></replacetoken>
+		</replace>
+		<replace dir="${glassfish.1.bin}" value="61620">
+			<include name="**/spring.properties" />
+			<replacetoken><![CDATA[61616]]></replacetoken>
+		</replace>
+		<replace dir="${oc4j.1.bin}" value="61621">
+			<include name="**/spring.properties" />
+			<replacetoken><![CDATA[61616]]></replacetoken>
+		</replace>
+		<replace dir="${weblogic.1.bin}" value="61622">
 			<include name="**/spring.properties" />
 			<replacetoken><![CDATA[61616]]></replacetoken>
 		</replace>

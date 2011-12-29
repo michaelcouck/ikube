@@ -37,6 +37,7 @@ import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
@@ -69,7 +70,7 @@ public class IndexableFileSystemHandlerTest extends ATest {
 		indexableFileSystemHandler.setThreads(1);
 
 		powerPointFile = FileUtilities.findFileRecursively(new File("."), "pot.pot");
-		when(indexableFileSystem.getPath()).thenReturn("C:/wiki.data");
+		when(indexableFileSystem.getPath()).thenReturn("./");
 		when(indexableFileSystem.getBatchSize()).thenReturn(1000);
 
 		when(indexableFileSystem.getContentFieldName()).thenReturn("contentFieldName");
@@ -99,10 +100,11 @@ public class IndexableFileSystemHandlerTest extends ATest {
 	}
 
 	@Test
+	@Ignore
 	public void getBatch() {
 		Stack<File> directories = new Stack<File>();
 		directories.push(new File(indexableFileSystem.getPath()));
-		Object result = Deencapsulation.invoke(indexableFileSystemHandler, "getBatch", directories);
+		Object result = Deencapsulation.invoke(indexableFileSystemHandler, "getBatch", indexableFileSystem, directories);
 		logger.warn("Result : " + result);
 		// Verify that the database is called to merge
 		// verify(dataBase, Mockito.atLeastOnce()).mergeBatch(anyList());

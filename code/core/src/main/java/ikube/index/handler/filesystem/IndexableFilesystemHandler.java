@@ -17,12 +17,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
 import java.util.concurrent.Future;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
@@ -31,10 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This class indexes a file share on the network. It is multi threaded but not cluster load balanced. First the files are iterated over and
- * added to the database. Then the crawler threads are started and they will get batches of files, process them, then set the indexed flag
- * for the files and merge them back to the database. This prevents too many threads iterating over the file system which seems to be the
- * bottleneck in the process.
+ * This class indexes a file share on the network. It is multi threaded but not cluster load balanced.
  * 
  * This class is optimised for performance, as such it is not very elegant.
  * 
@@ -83,7 +80,7 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 			} catch (Exception e) {
 				logger.error("Exception in worker : ", e);
 			} finally {
-				indexableFileSystem.setByteBuffer(null);
+				// indexableFileSystem.setByteBuffer(null);
 			}
 		}
 
@@ -102,19 +99,15 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 			InputStream inputStream = null;
 			try {
 				document = new Document();
-				// indexableFileSystem.setCurrentFile(file);
 
 				inputStream = new FileInputStream(file);
 
-				// Arrays.fill(byteBuffer, (byte) 0);
 				int length = Math.min((int) indexableFileSystem.getMaxReadLength(), (int) file.length());
 				byte[] byteBuffer = new byte[length];
 				int read = inputStream.read(byteBuffer, 0, byteBuffer.length);
-				
+
 				byteInputStream = new ByteArrayInputStream(byteBuffer, 0, read);
 				byteOutputStream = new ByteArrayOutputStream();
-				
-				// System.arraycopy(byteBuffer, 0, subByteByffer, 0, subByteByffer.length);
 
 				IParser parser = ParserProvider.getParser(file.getName(), byteBuffer);
 				parsedContent = parser.parse(byteInputStream, byteOutputStream).toString();
@@ -149,13 +142,13 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 				FileUtilities.close(inputStream);
 				FileUtilities.close(byteInputStream);
 				FileUtilities.close(byteOutputStream);
-				// String filePath = file.getAbsolutePath();
-				// StringUtils.replace(filePath, "\\", "/");
-				// boolean isFileAndInTemp = file.isFile() && filePath.contains(IConstants.TMP_UNZIPPED_FOLDER);
-				// if (isFileAndInTemp) {
-				// logger.warn("Deleting file : " + filePath);
-				// FileUtilities.deleteFile(file, 1);
-				// }
+				String filePath = file.getAbsolutePath();
+				StringUtils.replace(filePath, "\\", "/");
+				boolean isFileAndInTemp = file.isFile() && filePath.contains(IConstants.TMP_UNZIPPED_FOLDER);
+				if (isFileAndInTemp) {
+					logger.warn("Deleting file : " + filePath);
+					FileUtilities.deleteFile(file, 1);
+				}
 			}
 		}
 
@@ -163,28 +156,31 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 			try {
 				Pattern pattern = getPattern(indexableFileSystem.getExcludedPattern());
 				List<File> results = new ArrayList<File>();
-				File directory = directories.pop();
-				if (directory != null) {
-					File[] files = directory.listFiles();
-					if (files != null && files.length > 0) {
-						// Put all the directories on the stack
-						for (File file : files) {
-							if (isExcluded(file, pattern)) {
-								continue;
-							}
-							if (file.isDirectory()) {
-								directories.push(file);
-							} else {
-								results.add(file);
+				if (!directories.isEmpty()) {
+					File directory = directories.pop();
+					if (directory != null) {
+						File[] files = directory.listFiles();
+						if (files != null && files.length > 0) {
+							for (File file : files) {
+								if (isExcluded(file, pattern)) {
+									continue;
+								}
+								if (file.isDirectory()) {
+									// Put all the directories on the stack
+									directories.push(file);
+								} else {
+									// We'll do this file ourselves
+									results.add(file);
+								}
 							}
 						}
+						if (results.isEmpty()) {
+							return getBatch(indexableFileSystem, directories);
+						}
+						logger.info("Directories : " + directories.size());
+						logger.info("Doing files : " + results.size());
+						return results;
 					}
-					if (results.isEmpty()) {
-						return getBatch(indexableFileSystem, directories);
-					}
-					logger.info("Directories : " + directories.size());
-					logger.info("Doing files : " + results.size());
-					return results;
 				}
 				return null;
 			} finally {

@@ -111,8 +111,7 @@
 						<configuration>
 							<target>
 								<!-- Try calling the Tomcats and shut them down. -->
-								<echo message="Turning off cluster : " />
-								<ant antfile="build.xml" target="stop.tomcat.cluster" inheritrefs="true" />
+								<echo message="Unpacking configuration : " />
 								<ant antfile="build.xml" target="unpack.configuration" inheritrefs="true" />
 							</target>
 						</configuration>
@@ -121,7 +120,7 @@
 						</goals>
 					</execution>
 					<execution>
-						<id>deploy-and-start-cluster</id>
+						<id>deploy-to-the-cluster</id>
 						<phase>install</phase>
 						<configuration>
 							<target>
@@ -136,9 +135,6 @@
 								<!-- Copy the external configuration to the first Tomcat. -->
 								<echo message="Copying configuration to Tomcat bin : " />
 								<ant antfile="build.xml" target="copy.configuration" inheritrefs="true" />
-								<!-- Start the cluster of Tomcats. -->
-								<echo message="Starting the cluster of Tomcats : " />
-								<ant antfile="build.xml" target="start.tomcat.cluster" inheritrefs="true" />
 							</target>
 						</configuration>
 						<goals>

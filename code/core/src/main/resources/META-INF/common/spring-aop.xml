@@ -26,6 +26,7 @@
 		intercepter that will collect statistical data in production.
 	</description>
 	
+	<aop:config proxy-target-class="true" />
 	<aop:aspectj-autoproxy proxy-target-class="true" />
 	
 	<!--
@@ -68,17 +69,6 @@
 		<!-- <aop:aspect ref="ikube.index.spatial.ISpatialEnrichmentInterceptor">
 			<aop:around method="enrich" pointcut="execution(* ikube.index.handler.*.*.add*(..))" />
 		</aop:aspect> -->
-	</aop:config>
-	
-	<!-- These are just pojos that delegate to the real class that can be intercepted by Spring. -->
-	<!-- <bean 
-		id="ikube.service.ISearchDelegate"
-		class="ikube.service.SearchDelegate" /> -->
-	<bean 
-		id="ikube.index.handler.InterceptorDelegate"
-		class="ikube.index.handler.InterceptorDelegate" />
-	
-	<aop:config proxy-target-class="true">
 	</aop:config>
 	
 </beans>
