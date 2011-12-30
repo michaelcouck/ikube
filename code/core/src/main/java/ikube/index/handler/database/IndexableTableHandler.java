@@ -641,9 +641,9 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 		StringBuilder builder = new StringBuilder();
 
 		builder.append(indexableTable.getName());
-		builder.append('.');
+		builder.append(' ');
 		builder.append(idColumn.getName());
-		builder.append('.');
+		builder.append(' ');
 		builder.append(idColumn.getContent());
 
 		String id = builder.toString();

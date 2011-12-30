@@ -48,9 +48,12 @@ public final class IndexManager {
 	 * documents to it during the index. The index writer is opened on a directory that will be the index path on the file system, the name
 	 * of the index, then the
 	 * 
-	 * @param ip the ip address of this machine
-	 * @param indexContext the index context to open the writer for
-	 * @param time the time stamp for the index directory. This can come from the system time but it can also come from another server. When
+	 * @param ip
+	 *            the ip address of this machine
+	 * @param indexContext
+	 *            the index context to open the writer for
+	 * @param time
+	 *            the time stamp for the index directory. This can come from the system time but it can also come from another server. When
 	 *            an index is started the server will publish the time it started the index. In this way we can check the timestamp for the
 	 *            index, and if it is set then we use the cluster timestamp. As a result we write the index in the same 'timestamp'
 	 *            directory
@@ -166,11 +169,14 @@ public final class IndexManager {
 		}
 		try {
 			if (directory != null) {
-				if (IndexWriter.isLocked(directory)) {
-					LOGGER.warn("Index still locked : " + directory);
-					IndexWriter.unlock(directory);
+				// We have to wait for the merges and the close
+				while (IndexWriter.isLocked(directory)) {
 					if (IndexWriter.isLocked(directory)) {
-						LOGGER.error("Index still locked : " + directory);
+						LOGGER.warn("Index still locked : " + directory);
+						// IndexWriter.unlock(directory);
+						// if (IndexWriter.isLocked(directory)) {
+						// LOGGER.error("Index still locked : " + directory);
+						// }
 					}
 				}
 			}
