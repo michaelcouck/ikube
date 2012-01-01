@@ -22,6 +22,7 @@
 		</td>
 	</tr>
 	<tr>
+		<th class="td-content"><!-- The icon --></th>
 		<th class="td-content">Id</th>
 		<th class="td-content">Action</th>
 		<th class="td-content">Indexable</th>
@@ -29,7 +30,6 @@
 		<th class="td-content">Start</th>
 		<th class="td-content">End</th>
 		<th class="td-content">Duration</th>
-		<th class="td-content">Result</th>
 		<th class="td-content">Invocations</th>
 	</tr>
 	<c:forEach var="action" items="${actions}">
@@ -49,7 +49,6 @@
 			<fmt:formatDate value="${action.endTime}" pattern="dd/MM HH:mm:ss" type="DATE" />
 		</td>
 		<td class="td-content">${action.duration / 1000}</td>
-		<td class="td-content">${action.result}</td>
 		<td class="td-content">${action.invocations}</td>
 	</tr>
 	</c:forEach>

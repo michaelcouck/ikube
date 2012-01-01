@@ -9,6 +9,7 @@ import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.Logging;
 import ikube.toolkit.ThreadUtilities;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
@@ -34,11 +35,13 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 		List<Indexable<?>> indexables = indexContext.getIndexables();
 		ikube.model.Action action = null;
 		try {
-			if (indexables != null && indexables.size() > 0) {
+			if (indexables != null) {
 				long startTime = System.currentTimeMillis();
 				// Start the indexing for this server
 				IndexManager.openIndexWriter(indexContext, startTime, server.getAddress());
-				for (Indexable<?> indexable : indexables) {
+				Iterator<Indexable<?>> iterator = indexables.iterator();
+				while (iterator.hasNext()) {
+					Indexable<?> indexable = iterator.next();
 					try {
 						// Get the right handler for this indexable
 						IHandler<Indexable<?>> handler = getHandler(indexable);
@@ -57,6 +60,10 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 					} catch (Exception e) {
 						logger.error("Exception indexing data : " + indexName, e);
 					} finally {
+						// Close the index writer before the last action is stopped
+						if (!iterator.hasNext()) {
+							IndexManager.closeIndexWriter(indexContext);
+						}
 						stop(action);
 					}
 				}
@@ -64,6 +71,7 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 			}
 		} finally {
 			logger.debug(Logging.getString("Finished indexing : ", indexName));
+			// We'll try to close the writer, even though it should already be closed
 			IndexManager.closeIndexWriter(indexContext);
 			indexContext.setAction(null);
 			stop(action);

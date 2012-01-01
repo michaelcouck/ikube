@@ -6,6 +6,7 @@ import ikube.model.Server;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -38,17 +39,18 @@ public class SearchController extends SearchBaseController {
 
 		// This check is specifically for classes that inherit from this class and don't
 		// necessarily have search strings in the parameter list
-		boolean mustSearch = Boolean.FALSE;
+		boolean mustSearch = Boolean.TRUE;
 		if (searchStrings == null || searchStrings.size() == 0) {
-			for (String searchString : searchStrings) {
-				if (searchString != null && "".equals(searchString.trim())) {
-					mustSearch = Boolean.TRUE;
-					break;
-				}
+			searchStrings = new TreeSet<String>();
+		}
+		for (String searchString : searchStrings) {
+			if (searchString != null && "".equals(searchString.trim())) {
+				// mustSearch = Boolean.TRUE;
+				break;
 			}
-			if (!mustSearch) {
-				return modelAndView;
-			}
+		}
+		if (!mustSearch) {
+			return modelAndView;
 		}
 
 		String[] indexNames = monitorWebService.getIndexNames();
@@ -61,8 +63,8 @@ public class SearchController extends SearchBaseController {
 		String[] searchStringsArray = searchStrings.toArray(new String[searchStrings.size()]);
 
 		for (String indexName : indexNames) {
-			List<Map<String, String>> indexResults = doSearch(request, modelAndView, indexName, searchStringsArray);
-			Map<String, String> statistics = indexResults.get(indexResults.size() - 1);
+			ArrayList<HashMap<String, String>> indexResults = doSearch(request, modelAndView, indexName, searchStringsArray);
+			HashMap<String, String> statistics = indexResults.get(indexResults.size() - 1);
 			if (isNumeric(statistics.get(IConstants.TOTAL))) {
 				total += Integer.parseInt(statistics.get(IConstants.TOTAL));
 			}

@@ -156,7 +156,7 @@ public class IndexableTableHandlerIntegration extends AbstractIntegration {
 		String idFieldValue = document.get(IConstants.ID);
 		logger.debug("Id field : " + idFieldValue);
 		assertTrue("The id field for the table is the name of the table and the column name, then the value : ",
-				idFieldValue.contains("faq.faqId"));
+				idFieldValue.contains("faq faqId"));
 
 		DatabaseUtilities.close(resultSet);
 		DatabaseUtilities.close(statement);

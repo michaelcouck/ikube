@@ -8,8 +8,8 @@ import ikube.search.SearchSingle;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
-import java.util.List;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.MultiSearcher;
@@ -21,9 +21,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Various tests for Lucene indexes, including language indexing and searching. This is just a sanity test for language
- * support etc. Can Lucene search for other character sets and are the results in the correct format, things like that,
- * just to stay ahead of the insane.
+ * Various tests for Lucene indexes, including language indexing and searching. This is just a sanity test for language support etc. Can
+ * Lucene search for other character sets and are the results in the correct format, things like that, just to stay ahead of the insane.
  * 
  * @author Michael Couck
  * @since 06.03.10
@@ -31,14 +30,14 @@ import org.junit.Test;
  */
 public class LuceneTest extends ATest {
 
-	private String	russian					= "определяет";
-	private String	german					= "Produktivität";
-	private String	french					= "productivité";
-	private String	somthingElseAlToGether	= "Soleymān Khāţer";
-	private String	string					= "Qu'est ce qui détermine la productivité, et comment est-il mesuré? " //
-													+ "Was bestimmt die Produktivität, und wie wird sie gemessen? " //
-													+ "Что определяет производительность труда, и как ее измерить? " + //
-													"Soleymān Khāţer Solţānābād";
+	private String russian = "определяет";
+	private String german = "Produktivität";
+	private String french = "productivité";
+	private String somthingElseAlToGether = "Soleymān Khāţer";
+	private String string = "Qu'est ce qui détermine la productivité, et comment est-il mesuré? " //
+			+ "Was bestimmt die Produktivität, und wie wird sie gemessen? " //
+			+ "Что определяет производительность труда, и как ее измерить? " + //
+			"Soleymān Khāţer Solţānābād";
 
 	public LuceneTest() {
 		super(LuceneTest.class);
@@ -69,7 +68,7 @@ public class LuceneTest extends ATest {
 			searchSingle.setSearchField(IConstants.CONTENTS);
 
 			searchSingle.setSearchString(russian);
-			List<Map<String, String>> results = searchSingle.execute();
+			ArrayList<HashMap<String, String>> results = searchSingle.execute();
 			// logger.warn(results);
 			assertEquals(2, results.size());
 
@@ -110,14 +109,16 @@ public class LuceneTest extends ATest {
 			searchSingle.setSearchField(IConstants.CONTENTS);
 
 			searchSingle.setSearchString("Solţānābād");
-			List<Map<String, String>> results = searchSingle.execute();
+			ArrayList<HashMap<String, String>> results = searchSingle.execute();
 			assertTrue("There must be at least one result : ", results.size() > 1);
 
 			searchSingle.setSearchString("Soleymān Khater");
 			results = searchSingle.execute();
 			assertTrue("There must be at least one result : ", results.size() > 1);
 		} finally {
-			indexSearcher.close();
+			if (indexSearcher != null) {
+				indexSearcher.close();
+			}
 		}
 	}
 

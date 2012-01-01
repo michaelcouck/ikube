@@ -1,8 +1,5 @@
 package ikube.web.admin;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,7 +25,7 @@ public class LoginController extends BaseController {
 	 * @return the login page view
 	 */
 	@RequestMapping(value = "/admin/login.html", method = { RequestMethod.GET, RequestMethod.POST })
-	public String get(Model model, HttpServletRequest request, HttpServletResponse response) {
+	public String get(Model model) {
 		logger.debug("Login page : {}", model);
 		return "/admin/login";
 	}

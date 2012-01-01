@@ -66,6 +66,9 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 					do {
 						for (File file : files) {
 							try {
+								if (unzip(indexableFileSystem, file)) {
+									continue;
+								}
 								this.handleFile(indexContext, indexableFileSystem, file);
 							} catch (InterruptedException e) {
 								logger.error("Thread terminated, and indexing stopped : ", e);
@@ -152,6 +155,21 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 			}
 		}
 
+		private boolean unzip(IndexableFileSystem indexableFileSystem, File file) {
+			// We have to unpack the zip files
+			if (indexableFileSystem.isUnpackZips()) {
+				boolean isZipAndFile = IConstants.ZIP_JAR_WAR_EAR_PATTERN.matcher(file.getName()).matches() && file.isFile();
+				if (isZipAndFile) {
+					File unzippedToFolder = FileUtilities.unzip(file.getAbsolutePath(), "." + IConstants.TMP_UNZIPPED_FOLDER);
+					if (unzippedToFolder != null && unzippedToFolder.exists() && unzippedToFolder.isDirectory()) {
+						directories.add(unzippedToFolder);
+						return Boolean.TRUE;
+					}
+				}
+			}
+			return Boolean.FALSE;
+		}
+
 		protected synchronized List<File> getBatch(IndexableFileSystem indexableFileSystem, Stack<File> directories) {
 			try {
 				Pattern pattern = getPattern(indexableFileSystem.getExcludedPattern());
@@ -225,20 +243,6 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 			logger.error("Exception starting the file system indexer threads : ", e);
 		}
 		return futures;
-	}
-
-	@SuppressWarnings("unused")
-	private void unzip(IndexableFileSystem indexableFileSystem, File file) {
-		// We have to unpack the zip files
-		if (indexableFileSystem.isUnpackZips()) {
-			boolean isZipAndFile = IConstants.ZIP_JAR_WAR_EAR_PATTERN.matcher(file.getName()).matches() && file.isFile();
-			if (isZipAndFile) {
-				File unzippedToFolder = FileUtilities.unzip(file.getAbsolutePath(), "." + IConstants.TMP_UNZIPPED_FOLDER);
-				if (unzippedToFolder != null && unzippedToFolder.exists() && unzippedToFolder.isFile()) {
-
-				}
-			}
-		}
 	}
 
 }

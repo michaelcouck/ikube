@@ -29,8 +29,6 @@ import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.network.NetworkBridge;
 import org.apache.activemq.network.NetworkConnector;
 import org.apache.activemq.xbean.XBeanBrokerService;
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,30 +52,6 @@ import org.springframework.jms.core.MessageCreator;
  */
 public class ClusterManagerJms implements IClusterManager, MessageListener {
 
-	/**
-	 * This class is the lock class that is passed around the cluster containing the unique address of the server in the cluster and the
-	 * shout time, which determines who gets the lock.
-	 */
-	public static class Lock implements Serializable {
-
-		/** The timestamp for the server that shouted first. */
-		protected long shout;
-		/** The unique address of the server that sent the lock request. */
-		protected String address;
-		/** Whether the lock was requested or granted. */
-		protected boolean locked;
-
-		public Lock(String address, long shout, boolean locked) {
-			this.address = address;
-			this.shout = shout;
-			this.locked = locked;
-		}
-
-		public String toString() {
-			return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
-		}
-	}
-
 	private static final Logger LOGGER = LoggerFactory.getLogger(ClusterManagerJms.class);
 
 	/** The time to wait for the responses from the cluster servers. */
@@ -92,7 +66,7 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 	/** The address or unique identifier for this server. */
 	private String address;
 	/** The list of locks that have been applied/accepted for. Please refer to the class JavaDoc for more information. */
-	private Map<String, Lock> locks;
+	private Map<String, ClusterManagerJmsLock> locks;
 	/** The list of servers in the cluster. */
 	private Map<String, Server> servers;
 	@Autowired
@@ -111,14 +85,14 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 	 * @see ClusterManagerJms
 	 */
 	@Override
-	public synchronized boolean lock(String name) {
+	public synchronized boolean lock(final String name) {
 		try {
 			if (isLocked()) {
 				return Boolean.FALSE;
 			}
 			long shout = System.currentTimeMillis();
 			// Send the lock with the locked flag to try get the lock from the cluster
-			Lock lock = getLock(address, shout, Boolean.TRUE);
+			ClusterManagerJmsLock lock = getLock(address, shout, Boolean.TRUE);
 			sendMessage(lock);
 			ThreadUtilities.sleep(RESPONSE_TIME);
 			boolean haveLock = haveLock(shout);
@@ -143,10 +117,10 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 	 * This method will unlock the cluster. We only unlock the cluster if we already have the lock of course.
 	 */
 	@Override
-	public synchronized boolean unlock(String name) {
+	public synchronized boolean unlock(final String name) {
 		try {
-			Lock lock = locks.get(address);
-			if (lock.locked) {
+			ClusterManagerJmsLock lock = locks.get(address);
+			if (lock.isLocked()) {
 				// We only set the lock for the cluster to false if we have it
 				lock = getLock(address, Long.MAX_VALUE, Boolean.FALSE);
 				sendMessage(lock);
@@ -165,8 +139,8 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 	 * @return whether any server has been granted the lock
 	 */
 	private boolean isLocked() {
-		for (Lock stackLock : locks.values()) {
-			if (stackLock.locked) {
+		for (ClusterManagerJmsLock stackLock : locks.values()) {
+			if (stackLock.isLocked()) {
 				return Boolean.TRUE;
 			}
 		}
@@ -174,22 +148,22 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 	}
 
 	/**
-	 * This method checks to see if we have the lock. When a server wants the lock it posts the {@link Lock} object to the cluster. Other
-	 * servers that may or may not be competing for the lock also post their locks. Whoever shouts for the lock first then get it. This
-	 * method checks to see if this server shouted first based on the locks from the other servers in the cluster.
+	 * This method checks to see if we have the lock. When a server wants the lock it posts the {@link ClusterManagerJmsLock} object to the
+	 * cluster. Other servers that may or may not be competing for the lock also post their locks. Whoever shouts for the lock first then
+	 * get it. This method checks to see if this server shouted first based on the locks from the other servers in the cluster.
 	 * 
 	 * @param shout the time that this server shouted for the lock
 	 * @return whether this server shouted for the lock first thereby getting the lock for the cluster
 	 */
-	protected boolean haveLock(long shout) {
-		for (Entry<String, Lock> entry : locks.entrySet()) {
-			if (!entry.getValue().locked) {
+	protected boolean haveLock(final long shout) {
+		for (Entry<String, ClusterManagerJmsLock> entry : locks.entrySet()) {
+			if (!entry.getValue().isLocked()) {
 				continue;
 			}
 			if (entry.getKey().equals(address)) {
 				continue;
 			}
-			if (entry.getValue().shout <= shout) {
+			if (entry.getValue().getShout() <= shout) {
 				return Boolean.FALSE;
 			}
 		}
@@ -201,14 +175,14 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 	 * servers will then be inserted into the locks and servers maps, updating the data on this server.
 	 */
 	@Override
-	public void onMessage(Message message) {
+	public void onMessage(final Message message) {
 		try {
 			if (ObjectMessage.class.isAssignableFrom(message.getClass())) {
 				ObjectMessage objectMessage = (ObjectMessage) message;
 				Object object = objectMessage.getObject();
-				if (Lock.class.isAssignableFrom(object.getClass())) {
-					Lock lock = (Lock) object;
-					locks.put(lock.address, lock);
+				if (ClusterManagerJmsLock.class.isAssignableFrom(object.getClass())) {
+					ClusterManagerJmsLock lock = (ClusterManagerJmsLock) object;
+					locks.put(lock.getAddress(), lock);
 				} else if (Server.class.isAssignableFrom(object.getClass())) {
 					Server server = (Server) object;
 					servers.put(server.getAddress(), server);
@@ -262,7 +236,7 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 		}
 	}
 
-	private void closeConnection(String address) {
+	private void closeConnection(final String address) {
 		try {
 			JmsTemplate jmsTemplate = jmsTemplates.remove(address);
 			if (jmsTemplate != null) {
@@ -279,7 +253,7 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 		}
 	}
 
-	private JmsTemplate getJmsTemplate(String address) {
+	private JmsTemplate getJmsTemplate(final String address) {
 		if (jmsTemplates.get(address) != null) {
 			return jmsTemplates.get(address);
 		}
@@ -299,13 +273,13 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 	 * @param locked whether this is a request for the lock or a reset of false to release the lock
 	 * @return the lock for this server
 	 */
-	protected Lock getLock(String address, long shout, boolean locked) {
-		Lock lock = locks.get(address);
+	protected ClusterManagerJmsLock getLock(final String address, final long shout, final boolean locked) {
+		ClusterManagerJmsLock lock = locks.get(address);
 		if (lock == null) {
-			lock = new Lock(address, shout, locked);
+			lock = new ClusterManagerJmsLock(address, shout, locked);
 		}
-		lock.shout = shout;
-		lock.locked = locked;
+		lock.setShout(shout);
+		lock.setLocked(locked);
 		locks.put(address, lock);
 		return lock;
 	}
@@ -327,7 +301,7 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean anyWorking(String indexName) {
+	public boolean anyWorking(final String indexName) {
 		for (Server server : servers.values()) {
 			List<Action> actions = server.getActions();
 			for (Action action : actions) {
@@ -343,9 +317,9 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized Action startWorking(String actionName, String indexName, String indexableName) {
+	public synchronized Action startWorking(final String actionName, final String indexName, final String indexableName) {
 		try {
-			Action action = getAction(actionName, indexName, indexableName, Boolean.TRUE);
+			Action action = getAction(actionName, indexName, indexableName);
 			Server server = getServer();
 			server.getActions().add(action);
 			LOGGER.debug("Start working : {} ", action);
@@ -360,7 +334,7 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized void stopWorking(Action action) {
+	public synchronized void stopWorking(final Action action) {
 		try {
 			Server server = getServer();
 			action.setEndTime(new Timestamp(System.currentTimeMillis()));
@@ -374,7 +348,7 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 		}
 	}
 
-	private Action getAction(String actionName, String indexName, String indexableName, boolean working) {
+	private Action getAction(final String actionName, final String indexName, final String indexableName) {
 		Action action = new Action();
 		action.setActionName(actionName);
 		action.setIndexName(indexName);
@@ -398,7 +372,7 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Map<String, Lock> getLocks() {
+	public Map<String, ClusterManagerJmsLock> getLocks() {
 		return locks;
 	}
 
@@ -421,7 +395,7 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 	}
 
 	public void initialize() throws UnknownHostException {
-		locks = new HashMap<String, Lock>();
+		locks = new HashMap<String, ClusterManagerJmsLock>();
 		servers = new HashMap<String, Server>();
 		jmsTemplates = new HashMap<String, JmsTemplate>();
 		ip = InetAddress.getLocalHost().getHostAddress();
@@ -436,7 +410,7 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 		this.jmsTemplates.clear();
 	}
 
-	private void debug(Server server) {
+	private void debug(final Server server) {
 		if (LOGGER.isDebugEnabled()) {
 			List<Action> actions = server.getActions();
 			if (actions.size() > 0) {

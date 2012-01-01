@@ -1,5 +1,8 @@
 package ikube.service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebResult;
@@ -34,9 +37,10 @@ public interface ISearcherWebService extends IPublishable {
 	 */
 	@WebMethod
 	@WebResult(name = "result")
-	String searchSingle(@WebParam(name = "indexName") final String indexName, @WebParam(name = "searchString") final String searchString,
-			@WebParam(name = "searchField") final String searchField, @WebParam(name = "fragment") final boolean fragment,
-			@WebParam(name = "firstResult") final int firstResult, @WebParam(name = "maxResults") final int maxResults);
+	ArrayList<HashMap<String, String>> searchSingle(@WebParam(name = "indexName") final String indexName,
+			@WebParam(name = "searchString") final String searchString, @WebParam(name = "searchField") final String searchField,
+			@WebParam(name = "fragment") final boolean fragment, @WebParam(name = "firstResult") final int firstResult,
+			@WebParam(name = "maxResults") final int maxResults);
 
 	/**
 	 * Does a search on multiple fields and multiple search strings.
@@ -51,7 +55,7 @@ public interface ISearcherWebService extends IPublishable {
 	 */
 	@WebMethod
 	@WebResult(name = "result")
-	String searchMulti(@WebParam(name = "indexName") final String indexName,
+	ArrayList<HashMap<String, String>> searchMulti(@WebParam(name = "indexName") final String indexName,
 			@WebParam(name = "searchStrings") final String[] searchStrings, @WebParam(name = "searchFields") final String[] searchFields,
 			@WebParam(name = "fragment") final boolean fragment, @WebParam(name = "firstResult") final int firstResult,
 			@WebParam(name = "maxResults") final int maxResults);
@@ -70,7 +74,7 @@ public interface ISearcherWebService extends IPublishable {
 	 */
 	@WebMethod
 	@WebResult(name = "result")
-	String searchMultiSorted(@WebParam(name = "indexName") final String indexName,
+	ArrayList<HashMap<String, String>> searchMultiSorted(@WebParam(name = "indexName") final String indexName,
 			@WebParam(name = "searchStrings") final String[] searchStrings, @WebParam(name = "searchFields") final String[] searchFields,
 			@WebParam(name = "sortFields") final String[] sortFields, @WebParam(name = "fragment") final boolean fragment,
 			@WebParam(name = "firstResult") final int firstResult, @WebParam(name = "maxResults") final int maxResults);
@@ -87,7 +91,7 @@ public interface ISearcherWebService extends IPublishable {
 	 */
 	@WebMethod
 	@WebResult(name = "result")
-	String searchMultiAll(@WebParam(name = "indexName") final String indexName,
+	ArrayList<HashMap<String, String>> searchMultiAll(@WebParam(name = "indexName") final String indexName,
 			@WebParam(name = "searchStrings") final String[] searchStrings, @WebParam(name = "fragment") final boolean fragment,
 			@WebParam(name = "firstResult") final int firstResult, @WebParam(name = "maxResults") final int maxResults);
 
@@ -109,7 +113,7 @@ public interface ISearcherWebService extends IPublishable {
 	 */
 	@WebMethod
 	@WebResult(name = "result")
-	String searchSpacialMulti(@WebParam(name = "indexName") final String indexName,
+	ArrayList<HashMap<String, String>> searchSpacialMulti(@WebParam(name = "indexName") final String indexName,
 			@WebParam(name = "searchStrings") final String[] searchStrings, @WebParam(name = "searchFields") final String[] searchFields,
 			@WebParam(name = "fragment") final boolean fragment, @WebParam(name = "firstResult") final int firstResult,
 			@WebParam(name = "maxResults") final int maxResults, @WebParam(name = "distance") final int distance,
@@ -130,7 +134,7 @@ public interface ISearcherWebService extends IPublishable {
 	 */
 	@WebMethod
 	@WebResult(name = "result")
-	String searchSpacialMultiAll(@WebParam(name = "indexName") final String indexName,
+	ArrayList<HashMap<String, String>> searchSpacialMultiAll(@WebParam(name = "indexName") final String indexName,
 			@WebParam(name = "searchStrings") final String[] searchStrings, @WebParam(name = "fragment") final boolean fragment,
 			@WebParam(name = "firstResult") final int firstResult, @WebParam(name = "maxResults") final int maxResults,
 			@WebParam(name = "distance") final int distance, @WebParam(name = "latitude") final double latitude,

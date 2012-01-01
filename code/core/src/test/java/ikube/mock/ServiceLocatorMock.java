@@ -8,9 +8,12 @@ import ikube.service.IMonitorWebService;
 import ikube.service.ISearcherWebService;
 import ikube.service.ServiceLocator;
 import ikube.toolkit.FileUtilities;
+import ikube.toolkit.SerializationUtilities;
 
 import java.io.File;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import mockit.Mock;
 import mockit.MockClass;
@@ -20,16 +23,18 @@ import org.apache.log4j.Logger;
 @MockClass(realClass = ServiceLocator.class)
 public class ServiceLocatorMock {
 
-	private static final Logger					LOGGER					= Logger.getLogger(ServiceLocatorMock.class);
+	private static final Logger LOGGER = Logger.getLogger(ServiceLocatorMock.class);
 
-	private static final IMonitorWebService		MONITOR_WEB_SERVICE		= mock(IMonitorWebService.class);
-	private static final ISearcherWebService	SEARCHER_WEB_SERVICE	= mock(ISearcherWebService.class);
+	private static final IMonitorWebService MONITOR_WEB_SERVICE = mock(IMonitorWebService.class);
+	private static final ISearcherWebService SEARCHER_WEB_SERVICE = mock(ISearcherWebService.class);
 
 	static {
 		when(MONITOR_WEB_SERVICE.getIndexFieldNames(any(String.class))).thenReturn(new String[] { "name", "latitude", "longitude" });
 		File file = FileUtilities.findFileRecursively(new File("."), "default.results.xml");
-		String results = FileUtilities.getContents(file, Integer.MAX_VALUE, IConstants.ENCODING);
+		String xml = FileUtilities.getContents(file, Integer.MAX_VALUE, IConstants.ENCODING);
 		String[] searchStrings = new String[] { IConstants.IKUBE };
+		@SuppressWarnings("unchecked")
+		ArrayList<HashMap<String, String>> results = (ArrayList<HashMap<String, String>>) SerializationUtilities.deserialize(xml);
 		when(SEARCHER_WEB_SERVICE.searchMultiAll(IConstants.IKUBE, searchStrings, true, 0, 10)).thenReturn(results);
 	}
 

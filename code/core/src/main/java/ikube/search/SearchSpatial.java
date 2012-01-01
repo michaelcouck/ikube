@@ -5,7 +5,7 @@ import ikube.index.spatial.Coordinate;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.lucene.search.Query;
@@ -39,8 +39,7 @@ public class SearchSpatial extends SearchMulti {
 	/**
 	 * Constructor takes the searcher. This class needs to be instantiated for each search performed, and is certainly not thread safe.
 	 * 
-	 * @param searcher
-	 *            the searcher, with geolocation data in it, that we will perform the distance search on
+	 * @param searcher the searcher, with geolocation data in it, that we will perform the distance search on
 	 */
 	public SearchSpatial(final Searcher searcher) {
 		super(searcher);
@@ -69,12 +68,12 @@ public class SearchSpatial extends SearchMulti {
 	/**
 	 * {@inheritDoc}
 	 */
-	public List<Map<String, String>> execute() {
+	public ArrayList<HashMap<String, String>> execute() {
 		if (searcher == null) {
 			logger.warn("No searcher on any index, is an index created?");
 		}
 		long totalHits = 0;
-		List<Map<String, String>> results = null;
+		ArrayList<HashMap<String, String>> results = null;
 		long start = System.currentTimeMillis();
 		try {
 			Query query = getQuery();
@@ -90,7 +89,7 @@ public class SearchSpatial extends SearchMulti {
 		} catch (Exception e) {
 			logger.error("Exception searching for string " + searchStrings[0] + " in searcher " + searcher, e);
 			if (results == null) {
-				results = new ArrayList<Map<String, String>>();
+				results = new ArrayList<HashMap<String, String>>();
 			}
 		}
 		long duration = System.currentTimeMillis() - start;

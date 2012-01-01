@@ -26,7 +26,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
@@ -130,7 +129,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 		return futures;
 	}
 
-	protected void addAllColumns(IndexableTable indexableTable, Connection connection) throws SQLException {
+	protected void addAllColumns(IndexableTable indexableTable, Connection connection) {
 		List<String> columnNames = DatabaseUtilities.getAllColumns(connection, indexableTable.getName());
 		List<String> primaryKeyColumns = DatabaseUtilities.getPrimaryKeys(connection, indexableTable.getName());
 		String primaryKeyColumn = primaryKeyColumns.size() > 0 ? primaryKeyColumns.get(0) : columnNames.get(0);
@@ -139,6 +138,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 			children = new ArrayList<Indexable<?>>();
 		}
 		for (String columnName : columnNames) {
+			// We skip the columns that have been explicitly defined in the configuration
 			if (containsColumn(indexableTable, columnName)) {
 				continue;
 			}
@@ -252,8 +252,8 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 					// Add the document to the index if this is the primary table
 					if (indexableTable.isPrimaryTable()) {
 						addDocument(indexContext, indexableTable, document);
-						Thread.sleep(indexContext.getThrottle());
 					}
+					Thread.sleep(indexContext.getThrottle());
 					// Move to the next row in the result set
 					if (!resultSet.next()) {
 						if (indexableTable.isPrimaryTable()) {
@@ -616,7 +616,11 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 			Index analyzed = indexable.isAnalyzed() ? Index.ANALYZED : Index.NOT_ANALYZED;
 			TermVector termVector = indexable.isVectored() ? TermVector.YES : TermVector.NO;
 			String fieldContent = parsedOutputStream.toString();
-			IndexManager.addStringField(fieldName, fieldContent, document, store, analyzed, termVector);
+			if (indexable.isNumeric()) {
+				IndexManager.addNumericField(fieldName, fieldContent, document, store);
+			} else {
+				IndexManager.addStringField(fieldName, fieldContent, document, store, analyzed, termVector);
+			}
 		} catch (Exception e) {
 			logger.error("Exception accessing the column content : " + byteOutputStream, e);
 		} finally {

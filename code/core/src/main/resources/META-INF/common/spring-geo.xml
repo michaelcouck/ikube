@@ -57,23 +57,23 @@
 		<ref local="geospatialCity" />
 		<ref local="geospatialCountry" />
 		<ref local="geospatialAsciiname" />
-		<!-- <ref local="geospatialAlternatenames" /> -->
+		<ref local="geospatialAlternatenames" />
 		<ref local="geospatialLatitude" />
 		<ref local="geospatialLongitude" />
 		<ref local="geospatialFeatureClass" />
 		<ref local="geospatialFeatureCode" />
 		<ref local="geospatialCountryCode" />
 		<ref local="geospatialTimezone" />
-		<!-- <ref local="geospatialCc2" /> -->
-		<!-- <ref local="geospatialGeonameid" /> -->
-		<!-- <ref local="geospatialAdmin1Code" /> -->
-		<!-- <ref local="geospatialAdmin2Code" /> -->
-		<!-- <ref local="geospatialAdmin3Code" /> -->
-		<!-- <ref local="geospatialAdmin4Code" /> -->
-		<!-- <ref local="geospatialModification" /> -->
-		<!-- <ref local="geospatialPopulation" /> -->
-		<!-- <ref local="geospatialElevation" /> -->
-		<!-- <ref local="geospatialGtopo30" /> -->
+		<ref local="geospatialCc2" />
+		<ref local="geospatialGeonameid" />
+		<ref local="geospatialAdmin1Code" />
+		<ref local="geospatialAdmin2Code" />
+		<ref local="geospatialAdmin3Code" />
+		<ref local="geospatialAdmin4Code" />
+		<ref local="geospatialModification" />
+		<ref local="geospatialPopulation" />
+		<ref local="geospatialElevation" />
+		<ref local="geospatialGtopo30" />
 	</util:list>
 	
 	<bean
@@ -82,7 +82,7 @@
 		property:name="id"
 		property:idColumn="true"
 		property:analyzed="${analyzed}"
-		property:stored="${not.stored}"
+		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
 		id="geospatialName"
@@ -99,13 +99,13 @@
 		property:name="geonameid"
 		property:fieldName="geonameid"
 		property:analyzed="${analyzed}"
-		property:stored="${not.stored}"
+		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
 		id="geospatialCity"
 		class="ikube.model.IndexableColumn"
 		property:name="city"
-		property:fieldName="name"
+		property:fieldName="city"
 		property:address="true"
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
@@ -114,7 +114,7 @@
 		id="geospatialCountry"
 		class="ikube.model.IndexableColumn"
 		property:name="country"
-		property:fieldName="name"
+		property:fieldName="country"
 		property:address="true"
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
@@ -123,7 +123,7 @@
 		id="geospatialAsciiname"
 		class="ikube.model.IndexableColumn"
 		property:name="asciiname"
-		property:fieldName="name"
+		property:fieldName="asciiname"
 		property:address="true"
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
@@ -135,7 +135,7 @@
 		property:fieldName="alternatenames"
 		property:address="true"
 		property:analyzed="${analyzed}"
-		property:stored="${not.stored}"
+		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
 		id="geospatialLatitude"
@@ -144,7 +144,8 @@
 		property:fieldName="latitude"
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
-		property:vectored="${vectored}" />
+		property:vectored="${vectored}"
+		property:numeric="true" />
 	<bean
 		id="geospatialLongitude"
 		class="ikube.model.IndexableColumn"
@@ -152,14 +153,15 @@
 		property:fieldName="longitude"
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
-		property:vectored="${vectored}" />
+		property:vectored="${vectored}"
+		property:numeric="true" />
 	<bean
 		id="geospatialFeatureClass"
 		class="ikube.model.IndexableColumn"
 		property:name="featureclass"
 		property:fieldName="featureclass"
 		property:analyzed="${analyzed}"
-		property:stored="${not.stored}"
+		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
 		id="geospatialFeatureCode"
@@ -167,7 +169,7 @@
 		property:name="featurecode"
 		property:fieldName="featurecode"
 		property:analyzed="${analyzed}"
-		property:stored="${not.stored}"
+		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
 		id="geospatialCountryCode"
@@ -175,7 +177,7 @@
 		property:name="countrycode"
 		property:fieldName="countrycode"
 		property:analyzed="${analyzed}"
-		property:stored="${not.stored}"
+		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
 		id="geospatialCc2"
@@ -183,7 +185,7 @@
 		property:name="cc2"
 		property:fieldName="cc2"
 		property:analyzed="${analyzed}"
-		property:stored="${not.stored}"
+		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
 		id="geospatialAdmin1Code"
@@ -191,7 +193,7 @@
 		property:name="admin1code"
 		property:fieldName="admin1code"
 		property:analyzed="${analyzed}"
-		property:stored="${not.stored}"
+		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
 		id="geospatialAdmin2Code"
@@ -199,7 +201,7 @@
 		property:name="admin2code"
 		property:fieldName="admin2code"
 		property:analyzed="${analyzed}"
-		property:stored="${not.stored}"
+		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
 		id="geospatialAdmin3Code"
@@ -207,7 +209,7 @@
 		property:name="admin3code"
 		property:fieldName="admin3code"
 		property:analyzed="${analyzed}"
-		property:stored="${not.stored}"
+		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
 		id="geospatialAdmin4Code"
@@ -215,7 +217,7 @@
 		property:name="admin4code"
 		property:fieldName="admin4code"
 		property:analyzed="${analyzed}"
-		property:stored="${not.stored}"
+		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
 		id="geospatialPopulation"
@@ -231,7 +233,7 @@
 		property:name="elevation"
 		property:fieldName="elevation"
 		property:analyzed="${analyzed}"
-		property:stored="${not.stored}"
+		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
 		id="geospatialGtopo30"
@@ -239,7 +241,7 @@
 		property:name="gtopo30"
 		property:fieldName="gtopo30"
 		property:analyzed="${analyzed}"
-		property:stored="${not.stored}"
+		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
 		id="geospatialTimezone"
@@ -255,7 +257,7 @@
 		property:name="modification"
 		property:fieldName="modification"
 		property:analyzed="${analyzed}"
-		property:stored="${not.stored}"
+		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	
 </beans>

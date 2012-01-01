@@ -7,11 +7,10 @@ import ikube.ATest;
 import ikube.IConstants;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.toolkit.ApplicationContextManager;
-import ikube.toolkit.SerializationUtilities;
 
 import java.net.InetAddress;
-import java.util.List;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import mockit.Mockit;
 
@@ -50,63 +49,51 @@ public class SearcherWebServiceTest extends ATest {
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void searchSingle() {
-		String result = this.searcherWebService.searchSingle(indexContext.getIndexName(), "search string", IConstants.CONTENTS,
-				Boolean.TRUE, 0, 10);
-		logger.debug("Single search result : " + result);
-		List<Map<String, String>> resultsList = (List<Map<String, String>>) SerializationUtilities.deserialize(result);
-		verifyResults(resultsList);
+		ArrayList<HashMap<String, String>> results = this.searcherWebService.searchSingle(indexContext.getIndexName(), "search string",
+				IConstants.CONTENTS, Boolean.TRUE, 0, 10);
+		logger.debug("Single search result : " + results);
+		verifyResults(results);
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void searchMulti() {
-		String result = this.searcherWebService.searchMulti(indexContext.getIndexName(), new String[] { "search", "strings" },
-				new String[] { IConstants.CONTENTS, IConstants.ID }, Boolean.TRUE, 0, 10);
-		logger.debug("Multi search result : " + result);
-		List<Map<String, String>> resultsList = (List<Map<String, String>>) SerializationUtilities.deserialize(result);
-		verifyResults(resultsList);
+		ArrayList<HashMap<String, String>> results = this.searcherWebService.searchMulti(indexContext.getIndexName(), new String[] {
+				"search", "strings" }, new String[] { IConstants.CONTENTS, IConstants.ID }, Boolean.TRUE, 0, 10);
+		logger.debug("Multi search result : " + results);
+		verifyResults(results);
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void searchMultiSorted() {
-		String result = this.searcherWebService.searchMultiSorted(indexContext.getIndexName(), new String[] { "search", "strings" },
-				new String[] { IConstants.CONTENTS, IConstants.ID }, new String[] { "", "" }, Boolean.TRUE, 0, 10);
-		logger.debug("Multi sorted search result : " + result);
-		List<Map<String, String>> resultsList = (List<Map<String, String>>) SerializationUtilities.deserialize(result);
-		verifyResults(resultsList);
+		ArrayList<HashMap<String, String>> results = this.searcherWebService.searchMultiSorted(indexContext.getIndexName(), new String[] {
+				"search", "strings" }, new String[] { IConstants.CONTENTS, IConstants.ID }, new String[] { "", "" }, Boolean.TRUE, 0, 10);
+		logger.debug("Multi sorted search result : " + results);
+		verifyResults(results);
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void searchMultiAll() {
-		String result = this.searcherWebService.searchMultiAll(indexContext.getIndexName(), new String[] { "search", "strings" },
-				Boolean.TRUE, 0, 10);
-		logger.debug("Multi sorted search result : " + result);
-		List<Map<String, String>> resultsList = (List<Map<String, String>>) SerializationUtilities.deserialize(result);
-		verifyResults(resultsList);
+		ArrayList<HashMap<String, String>> results = this.searcherWebService.searchMultiAll(indexContext.getIndexName(), new String[] {
+				"search", "strings" }, Boolean.TRUE, 0, 10);
+		logger.debug("Multi sorted search result : " + results);
+		verifyResults(results);
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void searchSpatial() {
-		String result = this.searcherWebService.searchSpacialMulti(indexContext.getIndexName(), new String[] { "search", "strings" },
-				new String[] { IConstants.CONTENTS, IConstants.ID }, Boolean.TRUE, 0, 10, 10, 47.0008, 53.0001);
-		logger.debug("Multi sorted search result : " + result);
-		List<Map<String, String>> resultsList = (List<Map<String, String>>) SerializationUtilities.deserialize(result);
-		verifyResults(resultsList);
+		ArrayList<HashMap<String, String>> results = this.searcherWebService.searchSpacialMulti(indexContext.getIndexName(), new String[] {
+				"search", "strings" }, new String[] { IConstants.CONTENTS, IConstants.ID }, Boolean.TRUE, 0, 10, 10, 47.0008, 53.0001);
+		logger.debug("Multi sorted search result : " + results);
+		verifyResults(results);
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void searchSpatialAll() {
-		String result = this.searcherWebService.searchSpacialMultiAll(indexContext.getIndexName(), new String[] { "search", "strings" },
-				Boolean.TRUE, 0, 10, 10, 47.0008, 53.0001);
-		logger.debug("Multi sorted search result : " + result);
-		List<Map<String, String>> resultsList = (List<Map<String, String>>) SerializationUtilities.deserialize(result);
-		verifyResults(resultsList);
+		ArrayList<HashMap<String, String>> results = this.searcherWebService.searchSpacialMultiAll(indexContext.getIndexName(),
+				new String[] { "search", "strings" }, Boolean.TRUE, 0, 10, 10, 47.0008, 53.0001);
+		logger.debug("Multi sorted search result : " + results);
+		verifyResults(results);
 	}
 
 	@Test
@@ -122,12 +109,12 @@ public class SearcherWebServiceTest extends ATest {
 
 	@Test
 	public void getMessageResults() {
-		List<Map<String, String>> messageResults = this.searcherWebService.getMessageResults("indexName");
+		ArrayList<HashMap<String, String>> messageResults = this.searcherWebService.getMessageResults("indexName");
 		assertNotNull("The message can't be null : ", messageResults);
 		assertEquals("There should be one entry in the list : ", 1, messageResults.size());
 	}
 
-	private void verifyResults(List<Map<String, String>> resultsList) {
+	private void verifyResults(ArrayList<HashMap<String, String>> resultsList) {
 		assertNotNull("Results should never be null : ", resultsList);
 		assertTrue("There should always be at least one map in the results : ", resultsList.size() >= 1);
 	}

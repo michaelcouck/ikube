@@ -86,7 +86,7 @@ window.onload=starttime
 		</c:forEach>
 	</c:otherwise>
 </c:choose>
-<a href="<c:url value="${uri}refreshinterval=${sessionScope.refreshinterval + 1}" />">+</a>
-<a href="<c:url value="${uri}refreshinterval=${sessionScope.refreshinterval + 5}" />">++</a>
 <a href="<c:url value="${uri}refreshinterval=${sessionScope.refreshinterval - 1}" />">-</a>
 <a href="<c:url value="${uri}refreshinterval=${sessionScope.refreshinterval - 5}" />">--</a>
+<a href="<c:url value="${uri}refreshinterval=${sessionScope.refreshinterval + 1}" />">+</a>
+<a href="<c:url value="${uri}refreshinterval=${sessionScope.refreshinterval + 5}" />">++</a>

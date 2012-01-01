@@ -15,13 +15,10 @@ import ikube.mock.ClusterManagerMock;
 import ikube.mock.ServiceLocatorMock;
 import ikube.service.ISearcherWebService;
 import ikube.service.ServiceLocator;
-import ikube.toolkit.SerializationUtilities;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import mockit.Mockit;
 
@@ -45,9 +42,9 @@ public class GeocoderTest extends ATest {
 		Mockit.setUpMocks(ApplicationContextManagerMock.class, ClusterManagerMock.class, ServiceLocatorMock.class);
 		ISearcherWebService searcherWebService = ServiceLocator.getService(ISearcherWebService.class, "searchUrl",
 				ISearcherWebService.NAMESPACE, ISearcherWebService.SERVICE);
-		List<Map<String, String>> results = new ArrayList<Map<String, String>>();
+		ArrayList<HashMap<String, String>> results = new ArrayList<HashMap<String, String>>();
 		// Add the target result
-		Map<String, String> result = new HashMap<String, String>();
+		HashMap<String, String> result = new HashMap<String, String>();
 		result.put(IConstants.LATITUDE, "-33.9693580");
 		result.put(IConstants.LONGITUDE, "18.4622110");
 		results.add(result);
@@ -55,9 +52,8 @@ public class GeocoderTest extends ATest {
 		result = new HashMap<String, String>();
 		results.add(result);
 		// Serialize the results and force the mock to return it
-		String xml = SerializationUtilities.serialize(results);
 		when(searcherWebService.searchMulti(anyString(), any(String[].class), any(String[].class), anyBoolean(), anyInt(), anyInt()))
-				.thenReturn(xml);
+				.thenReturn(results);
 	}
 
 	@After

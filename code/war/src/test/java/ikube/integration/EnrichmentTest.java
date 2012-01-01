@@ -2,10 +2,10 @@ package ikube.integration;
 
 import ikube.IConstants;
 import ikube.action.Enrichment;
+import ikube.action.Open;
 import ikube.model.IndexContext;
 import ikube.toolkit.ApplicationContextManager;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -15,18 +15,15 @@ import org.junit.Test;
  * @since 15.05.2011
  * @version 01.00
  */
-@Ignore
 public class EnrichmentTest extends AbstractIntegration {
 
 	@Test
 	public void execute() throws Exception {
 		// final IndexContext indexContext
 		IndexContext<?> indexContext = ApplicationContextManager.getBean(IConstants.GEOSPATIAL);
-		Enrichment enrichment = new Enrichment();
-		while (indexContext.getIndex().getMultiSearcher() == null) {
-			Thread.sleep(1000);
-		}
-		Thread.sleep(1000);
+		Open open = ApplicationContextManager.getBean(Open.class);
+		open.execute(indexContext);
+		Enrichment enrichment = ApplicationContextManager.getBean(Enrichment.class);
 		enrichment.execute(indexContext);
 		while (true) {
 			Thread.sleep(1000);

@@ -4,6 +4,7 @@ import ikube.IConstants;
 import ikube.model.IndexContext;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.Logging;
+import ikube.toolkit.ThreadUtilities;
 
 import java.io.File;
 import java.io.FileReader;
@@ -21,6 +22,7 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
+import org.apache.lucene.document.NumericField;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriter.MaxFieldLength;
@@ -40,7 +42,11 @@ public final class IndexManager {
 
 	private static final Logger LOGGER = Logger.getLogger(IndexManager.class);
 
+	/**
+	 * Singularity.
+	 */
 	private IndexManager() {
+		// Documented
 	}
 
 	/**
@@ -48,12 +54,9 @@ public final class IndexManager {
 	 * documents to it during the index. The index writer is opened on a directory that will be the index path on the file system, the name
 	 * of the index, then the
 	 * 
-	 * @param ip
-	 *            the ip address of this machine
-	 * @param indexContext
-	 *            the index context to open the writer for
-	 * @param time
-	 *            the time stamp for the index directory. This can come from the system time but it can also come from another server. When
+	 * @param ip the ip address of this machine
+	 * @param indexContext the index context to open the writer for
+	 * @param time the time stamp for the index directory. This can come from the system time but it can also come from another server. When
 	 *            an index is started the server will publish the time it started the index. In this way we can check the timestamp for the
 	 *            index, and if it is set then we use the cluster timestamp. As a result we write the index in the same 'timestamp'
 	 *            directory
@@ -173,10 +176,7 @@ public final class IndexManager {
 				while (IndexWriter.isLocked(directory)) {
 					if (IndexWriter.isLocked(directory)) {
 						LOGGER.warn("Index still locked : " + directory);
-						// IndexWriter.unlock(directory);
-						// if (IndexWriter.isLocked(directory)) {
-						// LOGGER.error("Index still locked : " + directory);
-						// }
+						ThreadUtilities.sleep(1000);
 					}
 				}
 			}
@@ -267,6 +267,20 @@ public final class IndexManager {
 			StringBuilder builder = new StringBuilder(fieldValue).append(' ').append(fieldContent);
 			field.setValue(builder.toString());
 		}
+	}
+
+	/**
+	 * TODO Document me!
+	 * 
+	 * @param fieldName
+	 * @param fieldContent
+	 * @param document
+	 * @param store
+	 */
+	public static void addNumericField(final String fieldName, final String fieldContent, final Document document, final Store store) {
+		NumericField field = new NumericField(fieldName, 10, store, true);
+		field.setDoubleValue(Double.parseDouble(fieldContent));
+		document.add(field);
 	}
 
 	/**

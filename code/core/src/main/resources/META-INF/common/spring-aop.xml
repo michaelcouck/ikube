@@ -21,9 +21,7 @@
             
 	<description>
 		This file is not to be modified by users generally.
-		This is the configuration for the intercepter for the rules, the enrichment 
-		intercepter for enriching the indexes with the geospatial data and the monitoring 
-		intercepter that will collect statistical data in production.
+		This is the configuration for the intercepter for the rules.
 	</description>
 	
 	<aop:config proxy-target-class="true" />
@@ -41,34 +39,6 @@
 		<aop:aspect ref="ikube.action.rule.IRuleInterceptor">
 			<aop:around method="decide" pointcut="execution(* ikube.action.*.*(..))"  />
 		</aop:aspect>
-	</aop:config>
-	
-	<!-- 
-		This bean is the geocoder, it will enrich the data with spatial co-ordinates if
-		the indexables contain address fields. The Url for this service  
-	-->
-	<bean
-		id="ikube.index.spatial.geocode.Geocoder"
-		class="ikube.index.spatial.geocode.Geocoder"
-		property:searchFields-ref="geospatialFields" 
-		property:searchUrl="${searcher.web.service.url}" />
-	<util:list id="geospatialFields">
-		<value>name</value>
-	</util:list>
-	<bean 
-		id="ikube.index.spatial.enrich.IEnrichment"
-		class="ikube.index.spatial.enrich.Enrichment"
-		property:minKm="10"
-		property:maxKm="20"  />
-	<bean 
-		id="ikube.index.spatial.ISpatialEnrichmentInterceptor" 
-		class="ikube.index.spatial.SpatialEnrichmentInterceptor"
-		property:geocoder-ref="ikube.index.spatial.geocode.Geocoder"
-		property:enrichment-ref="ikube.index.spatial.enrich.IEnrichment" />
-	<aop:config proxy-target-class="true">
-		<!-- <aop:aspect ref="ikube.index.spatial.ISpatialEnrichmentInterceptor">
-			<aop:around method="enrich" pointcut="execution(* ikube.index.handler.*.*.add*(..))" />
-		</aop:aspect> -->
 	</aop:config>
 	
 </beans>

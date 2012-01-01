@@ -4,9 +4,10 @@ import ikube.IConstants;
 import ikube.index.spatial.Coordinate;
 import ikube.service.ISearcherWebService;
 import ikube.service.ServiceLocator;
-import ikube.toolkit.SerializationUtilities;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -34,7 +35,6 @@ public class Geocoder implements IGeocoder {
 	 * {@inheritDoc}
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public Coordinate getCoordinate(String address) {
 		try {
 			// Get the GeoSpatial search service
@@ -50,9 +50,9 @@ public class Geocoder implements IGeocoder {
 			// Trim the address for strange characters to get a better result
 			String trimmedAddress = StringUtils.trim(address);
 			Arrays.fill(searchStrings, trimmedAddress);
-			String results = searchRemote.searchMulti(IConstants.GEOSPATIAL, searchStrings, searchFields, Boolean.TRUE, 0, 10);
-			List<Map<String, String>> list = (List<Map<String, String>>) SerializationUtilities.deserialize(results);
-			Map<String, String> firstResult = list.size() >= 2 ? list.get(0) : null;
+			ArrayList<HashMap<String, String>> results = searchRemote.searchMulti(IConstants.GEOSPATIAL, searchStrings, searchFields,
+					Boolean.TRUE, 0, 10);
+			Map<String, String> firstResult = results.size() >= 2 ? results.get(0) : null;
 			if (firstResult != null) {
 				// We got a result, so we'll rely on Lucene to provide the best match for
 				// the address according to the data from GeoNames
@@ -83,9 +83,8 @@ public class Geocoder implements IGeocoder {
 	 * 'country'. The city and country fields are in fact the enriched data. Essentially all three of these fields will be searched, in
 	 * order and the best match for them aggregated will be used for the results.
 	 * 
-	 * @param searchFields
-	 *            the search fields to search in the GeoSpatial index, typically this will be the name field because this is an aggregation
-	 *            of the name of the feature in the GeoNames data and the enriched fields for the city and the country
+	 * @param searchFields the search fields to search in the GeoSpatial index, typically this will be the name field because this is an
+	 *            aggregation of the name of the feature in the GeoNames data and the enriched fields for the city and the country
 	 */
 	public void setSearchFields(List<String> searchFields) {
 		this.searchFields = searchFields.toArray(new String[searchFields.size()]);

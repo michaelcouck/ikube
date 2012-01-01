@@ -2,10 +2,9 @@ package ikube.web.admin;
 
 import ikube.IConstants;
 import ikube.service.ISearcherWebService;
-import ikube.toolkit.SerializationUtilities;
 
-import java.util.List;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -26,8 +25,7 @@ public abstract class SearchBaseController extends BaseController {
 	@Autowired
 	protected ISearcherWebService searcherWebService;
 
-	@SuppressWarnings("unchecked")
-	protected List<Map<String, String>> doSearch(HttpServletRequest request, ModelAndView modelAndView, String indexName,
+	protected ArrayList<HashMap<String, String>> doSearch(HttpServletRequest request, ModelAndView modelAndView, String indexName,
 			String... searchStrings) {
 		int firstResult = getParameter(IConstants.FIRST_RESULT, FIRST_RESULT, request);
 		int maxResults = getParameter(IConstants.MAX_RESULTS, MAX_RESULTS, request);
@@ -36,24 +34,20 @@ public abstract class SearchBaseController extends BaseController {
 		String longitude = getParameter(IConstants.LONGITUDE, null, request);
 		String distance = getParameter(IConstants.DISTANCE, null, request);
 
-		String xml = null;
+		ArrayList<HashMap<String, String>> results = null;
 		if (isNumeric(latitude) && isNumeric(longitude) && isNumeric(distance)) {
 			// Do the geospatial search
 			modelAndView.addObject(IConstants.LONGITUDE, longitude);
 			modelAndView.addObject(IConstants.LATITUDE, latitude);
 			modelAndView.addObject(IConstants.DISTANCE, distance);
-			searcherWebService.searchSpacialMultiAll(indexName, searchStrings, Boolean.TRUE, firstResult, maxResults,
+			results = searcherWebService.searchSpacialMultiAll(indexName, searchStrings, Boolean.TRUE, firstResult, maxResults,
 					Integer.parseInt(distance), Double.parseDouble(latitude), Double.parseDouble(longitude));
 		} else {
 			// Normal search with all the fields
-			xml = searcherWebService.searchMultiAll(indexName, searchStrings, Boolean.TRUE, firstResult, maxResults);
+			results = searcherWebService.searchMultiAll(indexName, searchStrings, Boolean.TRUE, firstResult, maxResults);
 		}
 
-		if (xml != null) {
-			return (List<Map<String, String>>) SerializationUtilities.deserialize(xml);
-		}
-
-		return null;
+		return results;
 	}
 
 }

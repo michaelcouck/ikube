@@ -2,7 +2,6 @@ package ikube.web.admin;
 
 import ikube.IConstants;
 import ikube.model.Server;
-import ikube.toolkit.SerializationUtilities;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,14 +28,13 @@ public class SearchIndexController extends SearchBaseController {
 	 * {@inheritDoc}
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		String viewUrl = getViewUri(request);
 		ModelAndView modelAndView = new ModelAndView(viewUrl);
 		Server server = clusterManager.getServer();
 
-		List<Map<String, String>> results = null;
-		Map<String, String> fieldNamesAndValues = new HashMap<String, String>();
+		ArrayList<HashMap<String, String>> results = null;
+		HashMap<String, String> fieldNamesAndValues = new HashMap<String, String>();
 		int firstResult = getParameter(IConstants.FIRST_RESULT, FIRST_RESULT, request);
 		int maxResults = getParameter(IConstants.MAX_RESULTS, MAX_RESULTS, request);
 		// If the 'searchStrings' is in the request then this is a search on all fields
@@ -60,9 +58,8 @@ public class SearchIndexController extends SearchBaseController {
 					fieldNamesAndValues.put(indexFieldName, indexFieldValue);
 				}
 			}
-			String xml = searcherWebService.searchMulti(indexName, searchStrings.toArray(new String[searchStrings.size()]),
+			results = searcherWebService.searchMulti(indexName, searchStrings.toArray(new String[searchStrings.size()]),
 					searchFields.toArray(new String[searchFields.size()]), Boolean.TRUE, firstResult, maxResults);
-			results = (List<Map<String, String>>) SerializationUtilities.deserialize(xml);
 		}
 
 		Map<String, String> statistics = results.get(results.size() - 1);

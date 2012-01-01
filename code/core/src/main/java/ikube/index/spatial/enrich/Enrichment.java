@@ -25,12 +25,12 @@ import org.apache.lucene.util.NumericUtils;
  */
 public class Enrichment implements IEnrichment {
 
-	private static final Logger				LOGGER	= Logger.getLogger(Enrichment.class);
+	private static final Logger LOGGER = Logger.getLogger(Enrichment.class);
 
-	private transient int					endTier;
-	private transient int					startTier;
-	private transient IProjector			projector;
-	private transient CartesianTierPlotter	cartesianTierPlotter;
+	private transient int endTier;
+	private transient int startTier;
+	private transient IProjector projector;
+	private transient CartesianTierPlotter cartesianTierPlotter;
 
 	public Enrichment() {
 		projector = new SinusoidalProjector();
@@ -42,8 +42,10 @@ public class Enrichment implements IEnrichment {
 	 */
 	@Override
 	public void addSpatialLocationFields(Coordinate coordinate, Document document) {
-		document.add(new Field(IConstants.LAT, NumericUtils.doubleToPrefixCoded(coordinate.getLat()), Field.Store.YES, Field.Index.NOT_ANALYZED));
-		document.add(new Field(IConstants.LNG, NumericUtils.doubleToPrefixCoded(coordinate.getLon()), Field.Store.YES, Field.Index.NOT_ANALYZED));
+		document.add(new Field(IConstants.LAT, NumericUtils.doubleToPrefixCoded(coordinate.getLat()), Field.Store.YES,
+				Field.Index.NOT_ANALYZED));
+		document.add(new Field(IConstants.LNG, NumericUtils.doubleToPrefixCoded(coordinate.getLon()), Field.Store.YES,
+				Field.Index.NOT_ANALYZED));
 		addCartesianTiers(coordinate, document, startTier, endTier);
 	}
 

@@ -5,7 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import ikube.cluster.IClusterManager;
-import ikube.cluster.jms.ClusterManagerJms;
+import ikube.cluster.jms.ClusterManagerJmsLock;
 import ikube.integration.AbstractIntegration;
 import ikube.model.Server;
 import ikube.toolkit.ApplicationContextManager;
@@ -64,7 +64,7 @@ public class ClusterManagerJmsIntegration extends AbstractIntegration {
 	@Test
 	public void clusterSynchronisation() throws Exception {
 		JmsTemplate jmsTemplate = ApplicationContextManager.getBean(JmsTemplate.class);
-		final Serializable serializable = new ClusterManagerJms.Lock(InetAddress.getLocalHost().getHostAddress(),
+		final Serializable serializable = new ClusterManagerJmsLock(InetAddress.getLocalHost().getHostAddress(),
 				System.currentTimeMillis(), Boolean.FALSE);
 		jmsTemplate.send(new MessageCreator() {
 			@Override

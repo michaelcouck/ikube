@@ -1,6 +1,6 @@
 package ikube.cluster;
 
-import ikube.cluster.jms.ClusterManagerJms.Lock;
+import ikube.cluster.jms.ClusterManagerJmsLock;
 import ikube.model.Action;
 import ikube.model.Server;
 
@@ -73,8 +73,19 @@ public interface IClusterManager {
 	 */
 	Server getServer();
 
+	/**
+	 * Sends a message to the cluster. Messages may include actions that this server is working on, or a lock attempt, or the server object
+	 * to stay in the cluster club.
+	 * 
+	 * @param serializable the object to send to the cluster
+	 */
 	void sendMessage(Serializable serializable);
 
-	Map<String, Lock> getLocks();
+	/**
+	 * Access to the cluster locks. This lock set is exposed to allow listeners to remove locks that time out due to the server going down.
+	 * 
+	 * @return the locks for the cluster that are cached in this server
+	 */
+	Map<String, ClusterManagerJmsLock> getLocks();
 
 }

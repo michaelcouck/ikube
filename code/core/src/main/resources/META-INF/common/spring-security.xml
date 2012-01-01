@@ -68,26 +68,13 @@
 			invalidate-session="true"
 			logout-success-url="/admin/login.html"
 			logout-url="/logout" />
-		<!-- <access-denied-handler /> -->
 	</http>
 
-	<!-- <beans:bean id="authenticationEntryPoint"
-		class="org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint">
-			<beans:property name="realmName" value="API Realm"></beans:property>
-	</beans:bean> -->
-
 	<!--
-		This is the authentication manager that will access the data sources to authenticate the user. There are two 
-		in this configuration that will be called in a chain. If the first one doesn't manage to authenticate the user then 
-		the second one will be called. First one is the Ldap server that is local for test, and will be remote for production.
-		The second one is an ad hoc provider where single users and passwords can be added when users don't exist in 
-		the Ldap yet.
+		This is the authentication manager that will block access to the user interface 
+		if the user is not logged in.
 	 -->
 	<authentication-manager alias="authenticationManager">
-		<!-- 
-			LDAP authentication provider, un-comment to add your own Ldap. 
-		-->
-		<!-- <authentication-provider ref="ldapAuthProvider" /> -->
 		<!-- Local authentication provider. -->
 		<authentication-provider user-service-ref="userService"  />
 	</authentication-manager>
@@ -103,53 +90,4 @@
 		id="defaultWebSecurityExpressionHandler"
 		class="org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler" />
 
-	<!--  Begin LDAP authentication -->
-	<!-- <beans:bean 
-		id="ldapServer" 
-		class="org.springframework.security.ldap.DefaultSpringSecurityContextSource">
-		<beans:constructor-arg value="${settings.security.ldap.url}" />
-		<beans:property name="userDn" value="${settings.security.ldap.manager.dn}" />
-		<beans:property name="password" value="${settings.security.ldap.manager.password}" />
-	</beans:bean>
-
-	<beans:bean 
-		id="ldapAuthProvider"
-		name="ldapAuthProvider"
-		class="org.springframework.security.ldap.authentication.LdapAuthenticationProvider">
-		<beans:constructor-arg ref="bindAuthenticator"/>
-		<beans:constructor-arg ref="ldapAuthoritiesPopulator"/>
-	</beans:bean>
-	
-	<beans:bean	
-		id="bindAuthenticator"
-		class="org.springframework.security.ldap.authentication.BindAuthenticator">
-		<beans:constructor-arg ref="ldapServer" />
-		<beans:property name="userSearch" ref="ldapUserSearch"/>
-	</beans:bean>
-	
-	<beans:bean 
-		id="ldapUserSearch"	
-		class="org.springframework.security.ldap.search.FilterBasedLdapUserSearch"
-		p:searchSubtree="true">
-		<beans:constructor-arg value="${settings.security.ldap.search.user.base}" />
-		<beans:constructor-arg value="${settings.security.ldap.search.user.filter}" />
-		<beans:constructor-arg ref="ldapServer"/>
-	</beans:bean>
-	
-	<beans:bean 
-		id="ldapUserService" 
-		class="org.springframework.security.ldap.userdetails.LdapUserDetailsService">
-		<beans:constructor-arg ref="ldapUserSearch" />
-		<beans:constructor-arg ref="ldapAuthoritiesPopulator" />
-	</beans:bean> -->
-	<!-- End LDAP authentication -->
-	
-	<!-- This is the security at the method level. -->
-	<!-- <global-method-security>
-		<protect-pointcut 
-			expression="execution(* ikube.*.*(..))" 
-			access="ROLE_USER,ROLE_API_USER,ROLE_ADMINISTRATOR" />
-		<after-invocation-provider ref="afterInvocationProviderImpl" />		
-	</global-method-security> --> 
-	
 </beans:beans>

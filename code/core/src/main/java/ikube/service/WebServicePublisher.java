@@ -56,8 +56,7 @@ public class WebServicePublisher implements IWebServicePublisher {
 					}
 					break;
 				} catch (Exception e) {
-					String message = Logging.getString("Exception publishing web service : ", url, publishable, e.getMessage());
-					logger.warn(message);
+					logger.warn("Exception publishing web service : ", e);
 					port++;
 				}
 			} while (++retryCount < IConstants.MAX_RETRY_WEB_SERVICE_PUBLISHER);

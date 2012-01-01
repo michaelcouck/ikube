@@ -5,6 +5,8 @@ import ikube.service.ServiceLocator;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -36,8 +38,8 @@ public class SearchSpatialIntegration extends AbstractIntegration {
 
 		double antwerpLatitude = 51.216667;
 		double antwerpLongitude = 4.416667;
-		String results = searchRemote.searchSpacialMulti(indexName, searchStrings, searchFields, fragment, firstResult, maxResults,
-				distance, antwerpLatitude, antwerpLongitude);
+		ArrayList<HashMap<String, String>> results = searchRemote.searchSpacialMulti(indexName, searchStrings, searchFields, fragment,
+				firstResult, maxResults, distance, antwerpLatitude, antwerpLongitude);
 		logger.info(results);
 
 		searchRemote.searchMultiAll(indexName, searchStrings, Boolean.TRUE, firstResult, maxResults);

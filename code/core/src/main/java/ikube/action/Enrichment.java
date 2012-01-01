@@ -5,8 +5,6 @@ import ikube.database.IDataBase;
 import ikube.model.IndexContext;
 import ikube.model.geospatial.GeoName;
 import ikube.service.ISearcherWebService;
-import ikube.toolkit.Logging;
-import ikube.toolkit.SerializationUtilities;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,6 +34,7 @@ public class Enrichment extends Action<IndexContext<?>, Boolean> implements ICon
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	@Autowired
+	// @Qualifier("ikube.database.IDataBase.GeoSpatial")
 	private IDataBase dataBase;
 	@Autowired
 	private ISearcherWebService searcherWebService;
@@ -44,60 +43,63 @@ public class Enrichment extends Action<IndexContext<?>, Boolean> implements ICon
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Boolean execute(IndexContext<?> context) throws Exception {
+	public Boolean execute(final IndexContext<?> context) throws Exception {
 		logger.info("Running the enrichment : ");
-		// List all the entities in the geoname table
-		int batch = 100;
-		long id = 0;
-		int exceptions = 0;
-		int maxExceptions = 1000;
-		List<GeoName> geoNames = new ArrayList<GeoName>();
-
-		String[] searchStrings = new String[3];
-		do {
-			try {
-				for (GeoName geoName : geoNames) {
-					id = geoName.getId();
-					if (geoName.getCity() == null) {
-						setCity(searcherWebService, geoName, searchStrings);
+		ikube.model.Action action = null;
+		try {
+			action = start("enrichment", "enrichment");
+			// List all the entities in the geoname table
+			int id = 0;
+			int batch = 10000;
+			int exceptions = 0;
+			int maxExceptions = 1000;
+			List<GeoName> geoNames = new ArrayList<GeoName>();
+			String[] searchStrings = new String[3];
+			do {
+				try {
+					for (GeoName geoName : geoNames) {
+						if (geoName.getCity() == null) {
+							setCity(searcherWebService, geoName, searchStrings);
+						}
+						if (geoName.getCountry() == null) {
+							setCountry(searcherWebService, geoName, searchStrings);
+						}
 					}
-					if (geoName.getCountry() == null) {
-						setCountry(searcherWebService, geoName, searchStrings);
+					// Merge the entity batch
+					dataBase.mergeBatch(geoNames);
+					geoNames = dataBase.find(GeoName.class, GeoName.SELECT_FROM_GEONAME_BY_CITY_AND_COUNTRY_NULL, new String[] {},
+							new Object[] {}, id, batch);
+					logger.info("Geoname size : " + geoNames.size() + ", " + id);
+					if (geoNames.isEmpty()) {
+						break;
 					}
-					// Merge the entity
-					dataBase.merge(geoName);
+				} catch (Exception e) {
+					logger.error("Exception enriching the GeoName data : ", e);
+					exceptions++;
+					if (exceptions > maxExceptions) {
+						break;
+					}
+				} finally {
+					id += batch;
 				}
-				Map<String, Object> parameters = new HashMap<String, Object>();
-				parameters.put(IConstants.ID, id);
-				geoNames = dataBase.find(GeoName.class, GeoName.SELECT_FROM_GEONAME_BY_ID_GREATER_AND_SMALLER, parameters, 0, batch);
-				logger.info("Geoname size : " + geoNames.size() + ", " + id);
-				if (geoNames.isEmpty()) {
-					break;
-				}
-			} catch (Exception e) {
-				logger.error("Exception enriching the GeoName data : ", e);
-				exceptions++;
-				if (exceptions > maxExceptions) {
-					break;
-				}
-			}
-		} while (true);
+			} while (true);
+		} finally {
+			stop(action);
+		}
 		return Boolean.TRUE;
 	}
 
-	protected void setCity(ISearcherWebService searcherWebService, GeoName geoName, String[] searchStrings) {
+	protected void setCity(final ISearcherWebService searcherWebService, final GeoName geoName, final String[] searchStrings) {
 		// Search the geoname index for the closest city
 		searchStrings[0] = CITY_FEATURE_CLASS;
 		searchStrings[1] = CITY_FEATURE_CODE;
 		searchStrings[2] = geoName.getCountryCode();
 		double latitude = geoName.getLatitude();
 		double longitude = geoName.getLongitude();
-		String xml = searcherWebService.searchSpacialMulti(IConstants.GEOSPATIAL, searchStrings, SEARCH_FIELDS, Boolean.TRUE, 0, 10, 15,
-				latitude, longitude);
-		@SuppressWarnings("unchecked")
-		List<Map<String, String>> results = (List<Map<String, String>>) SerializationUtilities.deserialize(xml);
+		ArrayList<HashMap<String, String>> results = searcherWebService.searchSpacialMulti(IConstants.GEOSPATIAL, searchStrings,
+				SEARCH_FIELDS, Boolean.TRUE, 0, 10, 15, latitude, longitude);
 		if (results.size() > 1) {
-			// Find the result that is a country, i.e. the feature class with 'T'
+			// Find the result that is a city close to the feature
 			String city = null;
 			for (Map<String, String> result : results) {
 				String featureclass = result.get(FEATURECLASS);
@@ -113,20 +115,17 @@ public class Enrichment extends Action<IndexContext<?>, Boolean> implements ICon
 			if (city == null) {
 				city = results.get(0).get(ASCIINAME);
 			}
-			if (logger.isDebugEnabled()) {
-				logger.debug(Logging.getString("City : ", city, geoName));
-			}
+			// logger.info("City : {} {} ", city, geoName);
 			geoName.setCity(city);
 		}
 	}
 
-	protected void setCountry(ISearcherWebService searcherWebService, GeoName geoName, String[] searchStrings) {
+	protected void setCountry(final ISearcherWebService searcherWebService, final GeoName geoName, final String[] searchStrings) {
 		searchStrings[0] = COUNTRY_FEATURE_CLASS;
 		searchStrings[1] = COUNTRY_FEATURE_CODE;
 		searchStrings[2] = geoName.getCountryCode();
-		String xml = searcherWebService.searchMulti(IConstants.GEOSPATIAL, searchStrings, SEARCH_FIELDS, Boolean.TRUE, 0, 10);
-		@SuppressWarnings("unchecked")
-		List<Map<String, String>> results = (List<Map<String, String>>) SerializationUtilities.deserialize(xml);
+		ArrayList<HashMap<String, String>> results = searcherWebService.searchMulti(IConstants.GEOSPATIAL, searchStrings, SEARCH_FIELDS,
+				Boolean.TRUE, 0, 10);
 		if (results.size() > 1) {
 			// Find the result that is a country, i.e. the feature class with 'T'
 			String country = null;
@@ -144,9 +143,7 @@ public class Enrichment extends Action<IndexContext<?>, Boolean> implements ICon
 			if (country == null) {
 				country = results.get(0).get(ASCIINAME);
 			}
-			if (logger.isDebugEnabled()) {
-				logger.debug(Logging.getString("Country : ", country, geoName));
-			}
+			// logger.info("Country : {} {} ", country, geoName);
 			geoName.setCountry(country);
 		}
 	}

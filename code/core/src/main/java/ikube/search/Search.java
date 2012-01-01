@@ -8,7 +8,6 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -112,7 +111,7 @@ public abstract class Search {
 	 * @param result the result map to add the field values to
 	 * @throws Exception
 	 */
-	protected void addFieldsToResults(final Document document, final Map<String, String> result) throws Exception {
+	protected void addFieldsToResults(final Document document, final HashMap<String, String> result) throws Exception {
 		for (Fieldable field : document.getFields()) {
 			String fieldName = field.name();
 			// Don't add the latitude and longitude tier field, very ugly data, and not useful
@@ -164,13 +163,13 @@ public abstract class Search {
 	 * @return the results which are a list of maps. Each map has the fields in it if they are strings, not readers, and the map entries for
 	 *         index, score, fragment, total and duration
 	 */
-	public List<Map<String, String>> execute() {
+	public ArrayList<HashMap<String, String>> execute() {
 		if (searcher == null) {
 			logger.warn("No searcher on any index, is an index created?");
 		}
 		long totalHits = 0;
 		long start = System.currentTimeMillis();
-		List<Map<String, String>> results = null;
+		ArrayList<HashMap<String, String>> results = null;
 		try {
 			Query query = getQuery();
 			TopDocs topDocs = search(query);
@@ -189,7 +188,7 @@ public abstract class Search {
 			String searchString = searchStrings != null && searchStrings.length > 0 ? searchStrings[0] : "null";
 			logger.error("Exception searching for string " + searchString + " in searcher " + searcher, e);
 			if (results == null) {
-				results = new ArrayList<Map<String, String>>();
+				results = new ArrayList<HashMap<String, String>>();
 			}
 		}
 		long duration = System.currentTimeMillis() - start;
@@ -264,8 +263,8 @@ public abstract class Search {
 	 * @param query the query that was used for the query
 	 * @return the list of results from the search
 	 */
-	protected List<Map<String, String>> getResults(final TopDocs topDocs, final Query query) {
-		List<Map<String, String>> results = new ArrayList<Map<String, String>>();
+	protected ArrayList<HashMap<String, String>> getResults(final TopDocs topDocs, final Query query) {
+		ArrayList<HashMap<String, String>> results = new ArrayList<HashMap<String, String>>();
 		long totalHits = topDocs.totalHits;
 		long scoreHits = topDocs.scoreDocs.length;
 		for (int i = 0; i < totalHits && i < scoreHits; i++) {
@@ -273,7 +272,7 @@ public abstract class Search {
 				continue;
 			}
 			try {
-				Map<String, String> result = new HashMap<String, String>();
+				HashMap<String, String> result = new HashMap<String, String>();
 				Document document = searcher.doc(topDocs.scoreDocs[i].doc);
 				float score = topDocs.scoreDocs[i].score;
 				String index = Integer.toString(topDocs.scoreDocs[i].doc);
@@ -312,9 +311,9 @@ public abstract class Search {
 	 * @param totalHits the total hits
 	 * @param duration how long the search took in milliseconds
 	 */
-	protected void addStatistics(final List<Map<String, String>> results, final long totalHits, final long duration) {
+	protected void addStatistics(final ArrayList<HashMap<String, String>> results, final long totalHits, final long duration) {
 		// Add the search results size as a last result
-		Map<String, String> statistics = new HashMap<String, String>();
+		HashMap<String, String> statistics = new HashMap<String, String>();
 		statistics.put(IConstants.TOTAL, Long.toString(totalHits));
 		statistics.put(IConstants.DURATION, Long.toString(duration));
 

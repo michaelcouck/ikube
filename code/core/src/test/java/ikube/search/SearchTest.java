@@ -8,6 +8,8 @@ import ikube.index.IndexManager;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -37,8 +39,8 @@ import org.junit.Test;
  */
 public class SearchTest extends ATest {
 
-	private static Searcher	SEARCHER;
-	private static String	INDEX_DIRECTORY_PATH	= "./" + SearchTest.class.getSimpleName();
+	private static Searcher SEARCHER;
+	private static String INDEX_DIRECTORY_PATH = "./" + SearchTest.class.getSimpleName();
 
 	@BeforeClass
 	public static void beforeClass() throws Exception {
@@ -80,7 +82,7 @@ public class SearchTest extends ATest {
 		FileUtilities.deleteFile(new File(INDEX_DIRECTORY_PATH), 1);
 	}
 
-	private int	maxResults	= 10;
+	private int maxResults = 10;
 
 	public SearchTest() {
 		super(SearchTest.class);
@@ -95,7 +97,7 @@ public class SearchTest extends ATest {
 		searchSingle.setSearchField(IConstants.CONTENTS);
 		searchSingle.setSearchString("hello");
 		searchSingle.setSortField(new String[] { IConstants.ID });
-		List<Map<String, String>> results = searchSingle.execute();
+		ArrayList<HashMap<String, String>> results = searchSingle.execute();
 		assertTrue(results.size() > 1);
 	}
 
@@ -108,7 +110,7 @@ public class SearchTest extends ATest {
 		searchMulti.setSearchField(IConstants.ID, IConstants.CONTENTS);
 		searchMulti.setSearchString("id.1~", "hello");
 		searchMulti.setSortField(new String[] { IConstants.ID });
-		List<Map<String, String>> results = searchMulti.execute();
+		ArrayList<HashMap<String, String>> results = searchMulti.execute();
 		assertTrue(results.size() > 1);
 	}
 
@@ -121,7 +123,7 @@ public class SearchTest extends ATest {
 		searchMultiSorted.setSearchField(IConstants.ID, IConstants.CONTENTS);
 		searchMultiSorted.setSearchString("id.1~", "hello");
 		searchMultiSorted.setSortField(new String[] { IConstants.ID });
-		List<Map<String, String>> results = searchMultiSorted.execute();
+		ArrayList<HashMap<String, String>> results = searchMultiSorted.execute();
 		assertTrue(results.size() > 1);
 
 		// Verify that all the results are in ascending order according to the id
@@ -145,7 +147,7 @@ public class SearchTest extends ATest {
 		searchMultiAll.setSearchField("content");
 		searchMultiAll.setSearchString("Michael");
 		searchMultiAll.setSortField("content");
-		List<Map<String, String>> results = searchMultiAll.execute();
+		ArrayList<HashMap<String, String>> results = searchMultiAll.execute();
 		assertTrue(results.size() > 1);
 	}
 
@@ -159,7 +161,7 @@ public class SearchTest extends ATest {
 		search.setSearchString("michael AND couck");
 		search.setSortField("content");
 
-		List<Map<String, String>> results = search.execute();
+		ArrayList<HashMap<String, String>> results = search.execute();
 		search.addStatistics(results, 79, 23);
 		Map<String, String> statistics = results.get(results.size() - 1);
 		assertEquals("michael AND couck", statistics.get(IConstants.SEARCH_STRINGS));

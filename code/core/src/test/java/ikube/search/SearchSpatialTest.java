@@ -12,8 +12,8 @@ import ikube.index.spatial.enrich.IEnrichment;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
-import java.util.List;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Index;
@@ -23,30 +23,33 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.MultiSearcher;
+import org.apache.lucene.search.NumericRangeQuery;
 import org.apache.lucene.search.Searchable;
 import org.apache.lucene.search.Searcher;
+import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class SearchSpatialTest extends ATest {
 
-	private String			searchString				= " churches and cathedrals";
-	private Coordinate		zurichCoordinate			= new Coordinate(47.3690239, 8.5380326, "Zürich in 8000" + searchString);
-	private Coordinate		schwammeningenCoordinate	= new Coordinate(47.4008593, 8.5781373, "Schwammedingen" + searchString);
-	private Coordinate		seebackCoordinate			= new Coordinate(47.4232860, 8.5422655, "Seebach" + searchString);
-	private Coordinate		adliswilCoordinate			= new Coordinate(47.3119892, 8.5256064, "Adliswil" + searchString);
+	private String searchString = " churches and cathedrals";
+	private Coordinate zurichCoordinate = new Coordinate(47.3690239, 8.5380326, "Zürich in 8000" + searchString);
+	private Coordinate schwammeningenCoordinate = new Coordinate(47.4008593, 8.5781373, "Schwammedingen" + searchString);
+	private Coordinate seebackCoordinate = new Coordinate(47.4232860, 8.5422655, "Seebach" + searchString);
+	private Coordinate adliswilCoordinate = new Coordinate(47.3119892, 8.5256064, "Adliswil" + searchString);
 
-	private Coordinate[]	coordinates					= new Coordinate[] { zurichCoordinate,
-			new Coordinate(47.0819237, 8.3415740, "Ebikon" + searchString), seebackCoordinate, schwammeningenCoordinate, adliswilCoordinate,
+	private Coordinate[] coordinates = new Coordinate[] { zurichCoordinate, new Coordinate(47.0819237, 8.3415740, "Ebikon" + searchString),
+			seebackCoordinate, schwammeningenCoordinate, adliswilCoordinate,
 			new Coordinate(47.2237640, 8.4611790, "Knonau" + searchString), new Coordinate(47.1934110, 8.5230670, "Baar" + searchString) };
 
-	private File			indexDirectory;
-	private Directory		directory;
-	private Searcher		searcher;
-	private IndexReader		indexReader;
+	private File indexDirectory;
+	private Directory directory;
+	private Searcher searcher;
+	private IndexReader indexReader;
 
 	public SearchSpatialTest() {
 		super(SearchSpatialTest.class);
@@ -92,7 +95,7 @@ public class SearchSpatialTest extends ATest {
 		searchSpatial.setSearchField(IConstants.CONTENTS);
 		searchSpatial.setSearchString(zurichCoordinate.getName());
 		searchSpatial.setCoordinate(zurichCoordinate);
-		List<Map<String, String>> results = searchSpatial.execute();
+		ArrayList<HashMap<String, String>> results = searchSpatial.execute();
 		logger.info("Results : " + results);
 		assertNotNull(results);
 		assertEquals(5, results.size());
@@ -118,6 +121,65 @@ public class SearchSpatialTest extends ATest {
 		assertTrue(results.get(1).get(IConstants.CONTENTS).equals(schwammeningenCoordinate.toString()));
 		assertTrue(results.get(2).get(IConstants.CONTENTS).equals(seebackCoordinate.toString()));
 		assertTrue(results.get(3).get(IConstants.CONTENTS).equals(adliswilCoordinate.toString()));
+	}
+
+	@Test
+	@Ignore
+	public void searchGeospatialIndex() throws Exception {
+		File file = new File("C:/cluster/indexes/geospatial/1325434893573/192.168.1.36.61616");
+		IndexSearcher indexSearcher = null;
+		try {
+			Directory directory = FSDirectory.open(file);
+			indexSearcher = new IndexSearcher(directory);
+			SearchSpatial searchSpatial = new SearchSpatial(indexSearcher);
+
+			searchGeospatialIndex(searchSpatial, 1); // Minimum results within 1 km
+			searchGeospatialIndex(searchSpatial, 10); // Minimum results within 10 km
+			searchGeospatialIndex(searchSpatial, 15); // In between results within 15 km
+			searchGeospatialIndex(searchSpatial, 20); // Maximum results within 20 km
+			searchGeospatialIndex(searchSpatial, 30); // Out side the bounding box, i.e. no results
+			searchGeospatialIndex(searchSpatial, 50); // Out side the bounding box, i.e. no results
+
+			searchGeospatialRange("latitude", 1, 50f, 55f);
+			searchGeospatialRange("latitude", 1, 50f, 55f);
+			searchGeospatialRange("latitude", 10, 50f, 55f);
+			searchGeospatialRange("latitude", 100, 50f, 55f);
+			searchGeospatialRange("latitude", 1000, 50f, 55f);
+			searchGeospatialRange("latitude", 10000, 50f, 55f);
+			searchGeospatialRange("latitude", 100000, 50f, 55f);
+			searchGeospatialRange("latitude", 1000000, 50f, 55f);
+			searchGeospatialRange("latitude", 10000000, 50f, 55f);
+			searchGeospatialRange("latitude", 100000000, 50f, 55f);
+
+			searchGeospatialRange("latitude", 100000000, 0f, 1000000f);
+		} finally {
+			if (indexSearcher != null) {
+				indexSearcher.close();
+			}
+		}
+	}
+
+	private void searchGeospatialRange(String field, int precision, float min, float max) throws Exception {
+		NumericRangeQuery<Float> numericRangeQuery = NumericRangeQuery.newFloatRange(field, precision, min, max, true, true);
+		TopDocs topDocs = indexSearcher.search(numericRangeQuery, 10);
+		logger.info("Top docs : " + topDocs.totalHits);
+	}
+
+	private void searchGeospatialIndex(SearchSpatial searchSpatial, int distance) throws Exception {
+		Coordinate coordinate = new Coordinate(52.52274, 13.4166);
+		searchSpatial.setCoordinate(coordinate);
+		searchSpatial.setDistance(distance);
+		searchSpatial.setFirstResult(0);
+		searchSpatial.setFragment(true);
+		searchSpatial.setMaxResults(1);
+		String searchString = "berlin";
+		searchSpatial.setSearchField(IConstants.ASCIINAME, IConstants.CITY, IConstants.COUNTRY, IConstants.NAME);
+		searchSpatial.setSearchString(searchString, searchString, searchString, searchString);
+		ArrayList<HashMap<String, String>> results = searchSpatial.execute();
+		logger.info("Results : " + distance + ", " + results.get(results.size() - 1));
+		for (HashMap<String, String> result : results) {
+			logger.info(result.toString());
+		}
 	}
 
 }

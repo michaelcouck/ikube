@@ -55,6 +55,8 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This is the crawler for internet and intranets sites. There are several levels of caches to improve performance in this class. Firstly
@@ -72,6 +74,8 @@ import org.apache.lucene.document.Field.TermVector;
 public class IndexableInternetHandler extends IndexableHandler<IndexableInternet> {
 
 	class IndexableInternetHandlerWorker implements Runnable {
+
+		private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 		Stack<Url> in;
 		Set<Long> out;
@@ -101,7 +105,7 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 				if (urls.isEmpty()) {
 					// Check if there are any other threads still working
 					// other than this thread of course
-					waiting = Boolean.TRUE;
+					waiting = Boolean.TRUE.booleanValue();
 					if (areRunning(handlerWorkers)) {
 						synchronized (this) {
 							try {
@@ -135,10 +139,10 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 		protected boolean areRunning(final List<IndexableInternetHandlerWorker> handlerWorkers) {
 			for (IndexableInternetHandlerWorker handlerWorker : handlerWorkers) {
 				if (!handlerWorker.waiting) {
-					return Boolean.TRUE;
+					return Boolean.TRUE.booleanValue();
 				}
 			}
-			return Boolean.FALSE;
+			return Boolean.FALSE.booleanValue();
 		}
 	}
 
@@ -204,14 +208,16 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 				}
 			}
 		}
+		dataBase.persistBatch(urlBatch);
 	}
 
 	/**
-	 * This method gets the next batch of urls from the database that have not been visited yet in this iteration. The urls that are
-	 * returned will have had the indexed flag set to true and merged back into the database.
+	 * This method gets the next batch of urls from the stack that have not been visited yet in this iteration. The urls that are returned
+	 * will have had the indexed flag set to true and merged back into the stack.
 	 * 
-	 * @param dataBase the database to persistence
 	 * @param indexableInternet the base indexable for the url
+	 * @param in the input stack of urls that have not been indexed
+	 * @param out the output stack of hashes of urls that have been indexed
 	 * @return the list of urls that have not been visited, this list could be empty if there are no urls that have not been visited
 	 */
 	protected synchronized List<Url> getUrlBatch(final IndexableInternet indexableInternet, Stack<Url> in, Set<Long> out) {
@@ -220,8 +226,8 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 			while (!in.isEmpty() && urls.size() <= indexableInternet.getInternetBatchSize()) {
 				Url url = in.pop();
 				urls.add(url);
+				out.add(HashUtilities.hash(url.getUrl()));
 			}
-			dataBase.persistBatch(urls);
 			logger.info("Done urls : " + out.size());
 			logger.info("Doing urls : " + urls.size());
 			logger.info("Still to do urls : " + in.size());
@@ -253,17 +259,20 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 			}
 			InputStream inputStream = new ByteArrayInputStream(byteOutputStream.getBytes());
 			// Extract the links from the url if any
-			extractLinksFromContent(indexable, url, inputStream, in, out);
+			extractLinksFromContent(indexable, inputStream, in, out);
 
 			// Parse the content from the url
 			String parsedContent = getParsedContent(url, byteOutputStream);
 			if (parsedContent == null) {
 				return;
 			}
-			long hash = HashUtilities.hash(parsedContent);
-			url.setHash(hash);
+			Long hash = HashUtilities.hash(parsedContent);
+			url.setHash(hash.longValue());
 
-			// TODO Check for duplicates
+			if (dataBase.find(Url.class, Url.SELECT_FROM_URL_BY_HASH, new String[] { "hash" }, new Object[] { hash }, 0, 1).size() > 0) {
+				logger.info("Skipping duplicate content : ");
+				return;
+			}
 
 			// Add the document to the index
 			addDocument(indexContext, indexable, url, parsedContent);
@@ -402,11 +411,10 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	 * goes to a local object oriented database on each server.
 	 * 
 	 * @param indexableInternet the indexable that is being crawled
-	 * @param baseUrl the base url that the link was found in
 	 * @param inputStream the input stream of the data from the base url, i.e. the html
 	 */
-	protected void extractLinksFromContent(final IndexableInternet indexableInternet, final Url baseUrl, final InputStream inputStream,
-			Stack<Url> in, Set<Long> out) {
+	protected void extractLinksFromContent(final IndexableInternet indexableInternet, final InputStream inputStream, Stack<Url> in,
+			Set<Long> out) {
 		try {
 			Reader reader = new InputStreamReader(inputStream, IConstants.ENCODING);
 			Source source = new Source(reader);
@@ -441,14 +449,14 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 							Long urlId = HashUtilities.hash(strippedAnchorLink);
 
 							// Check the out stack for this url
-							long hash = HashUtilities.hash(strippedAnchorLink);
+							Long hash = HashUtilities.hash(strippedAnchorLink);
 							if (!out.add(hash)) {
 								continue;
 							}
 							Url url = new Url();
-							url.setUrlId(urlId);
+							url.setUrlId(urlId.longValue());
 							url.setName(indexableInternet.getName());
-							url.setIndexed(Boolean.FALSE);
+							url.setIndexed(Boolean.FALSE.booleanValue());
 							url.setUrl(strippedAnchorLink);
 							// Add the new url to the cache, we'll batch them in an insert later
 							// logger.info("Persisting url : " + url);
@@ -478,9 +486,9 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 
 		Url url = new Url();
 		url.setName(indexableInternet.getName());
-		url.setUrlId(HashUtilities.hash(urlString));
+		url.setUrlId(HashUtilities.hash(urlString).longValue());
 		url.setUrl(urlString);
-		url.setIndexed(Boolean.FALSE);
+		url.setIndexed(Boolean.FALSE.booleanValue());
 
 		in.push(url);
 		out.add(HashUtilities.hash(url.getUrl()));

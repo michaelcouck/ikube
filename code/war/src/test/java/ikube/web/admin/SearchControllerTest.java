@@ -9,12 +9,13 @@ import ikube.model.Server;
 import ikube.service.IMonitorWebService;
 import ikube.service.ISearcherWebService;
 import ikube.toolkit.FileUtilities;
+import ikube.toolkit.SerializationUtilities;
 import ikube.web.MockFactory.ApplicationContextManagerMock;
 import ikube.web.MockFactory.ServiceLocatorMock;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -67,12 +68,13 @@ public class SearchControllerTest {
 	public void handleRequest() throws Exception {
 		File file = FileUtilities.findFileRecursively(new File("."), "default.results.xml");
 		String xml = FileUtilities.getContents(file, Integer.MAX_VALUE, IConstants.ENCODING);
-		when(searcherWebService.searchMultiAll(IConstants.IKUBE, new String[] { IConstants.IKUBE }, true, 0, 10)).thenReturn(xml);
+		ArrayList<HashMap<String, String>> results = (ArrayList<HashMap<String, String>>) SerializationUtilities.deserialize(xml);
+		when(searcherWebService.searchMultiAll(IConstants.IKUBE, new String[] { IConstants.IKUBE }, true, 0, 10)).thenReturn(results);
 
 		ModelAndView modelAndView = searchController.handleRequest(request, response);
 		Object total = modelAndView.getModel().get(IConstants.TOTAL);
 		Object duration = modelAndView.getModel().get(IConstants.DURATION);
-		List<Map<String, String>> results = (List<Map<String, String>>) modelAndView.getModel().get(IConstants.RESULTS);
+		results = (ArrayList<HashMap<String, String>>) modelAndView.getModel().get(IConstants.RESULTS);
 		Object corrections = modelAndView.getModel().get(IConstants.CORRECTIONS);
 		Object searchStrings = modelAndView.getModel().get(IConstants.SEARCH_STRINGS);
 		Object firstResult = modelAndView.getModel().get(IConstants.FIRST_RESULT);
@@ -95,12 +97,13 @@ public class SearchControllerTest {
 
 		file = FileUtilities.findFileRecursively(new File("."), "default.results.small.xml");
 		xml = FileUtilities.getContents(file, Integer.MAX_VALUE, IConstants.ENCODING);
-		when(searcherWebService.searchMultiAll(IConstants.IKUBE, new String[] { IConstants.IKUBE }, true, 0, 10)).thenReturn(xml);
+		results = (ArrayList<HashMap<String, String>>) SerializationUtilities.deserialize(xml);
+		when(searcherWebService.searchMultiAll(IConstants.IKUBE, new String[] { IConstants.IKUBE }, true, 0, 10)).thenReturn(results);
 
 		modelAndView = searchController.handleRequest(request, response);
 
 		total = modelAndView.getModel().get(IConstants.TOTAL);
-		results = (List<Map<String, String>>) modelAndView.getModel().get(IConstants.RESULTS);
+		results = (ArrayList<HashMap<String, String>>) modelAndView.getModel().get(IConstants.RESULTS);
 		firstResult = modelAndView.getModel().get(IConstants.FIRST_RESULT);
 		maxResults = modelAndView.getModel().get(IConstants.MAX_RESULTS);
 

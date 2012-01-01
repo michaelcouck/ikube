@@ -34,12 +34,13 @@ public class GoogleGeocoder implements IGeocoder {
 	private transient String searchUrl;
 
 	@Override
-	public Coordinate getCoordinate(String address) {
+	public Coordinate getCoordinate(final String address) {
+		String strippedAddress = null;
 		try {
-			address = StringUtils.trim(address);
-			address = URLEncoder.encode(address, IConstants.ENCODING);
+			strippedAddress = StringUtils.trim(address);
+			strippedAddress = URLEncoder.encode(strippedAddress, IConstants.ENCODING);
 			// Call the geocoder with the address
-			String uri = getUri(address);
+			String uri = getUri(strippedAddress);
 			URL url = new URL(uri);
 			String xml = FileUtilities.getContents(url.openStream(), Integer.MAX_VALUE).toString();
 			InputStream inputStream = new ByteArrayInputStream(xml.getBytes());
@@ -49,9 +50,9 @@ public class GoogleGeocoder implements IGeocoder {
 			Element longitudeElement = XmlUtilities.getElement(element, IConstants.LNG);
 			double lat = Double.parseDouble(latitudeElement.getText());
 			double lng = Double.parseDouble(longitudeElement.getText());
-			return new Coordinate(lat, lng, address);
+			return new Coordinate(lat, lng, strippedAddress);
 		} catch (Exception e) {
-			LOGGER.error("Exception accessing the GeoCode url : " + searchUrl + ", " + address, e);
+			LOGGER.error("Exception accessing the GeoCode url : " + searchUrl + ", " + strippedAddress, e);
 		}
 		return null;
 	}

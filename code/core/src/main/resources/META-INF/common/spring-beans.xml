@@ -65,8 +65,8 @@
 		<entry key="openjpa.ConnectionFactoryProperties" value="PrettyPrint=true,PrettyPrintLineLength=150" />
 		<entry key="openjpa.Log" value="DefaultLevel=ERROR,JDBC=ERROR,SQL=ERROR,File=openjpa.log,Runtime=ERROR,Tool=ERROR" />
 
-		<!-- <entry key="openjpa.DataCache" value="true(CacheSize=10000,SoftReferenceSize=10000)" />
-		<entry key="openjpa.QueryCache" value="true(CacheSize=10000,SoftReferenceSize=10000)" /> -->
+		<entry key="openjpa.DataCache" value="true(CacheSize=100000,SoftReferenceSize=100000)" />
+		<entry key="openjpa.QueryCache" value="true(CacheSize=100000,SoftReferenceSize=100000)" />
 
 		<entry key="openjpa.Optimistic" value="false" />
 		<entry key="openjpa.ReadLockLevel" value="write" />
@@ -103,8 +103,12 @@
 
 	<aop:config>
 		<aop:pointcut id="dataBaseJpa" expression="execution(* ikube.database.jpa.DataBaseJpa.*(..))" />
+		<aop:pointcut id="dataBaseJpaDb2" expression="execution(* ikube.database.jpa.DataBaseJpaDb2.*(..))" />
+		<aop:pointcut id="dataBaseJpaOracle" expression="execution(* ikube.database.jpa.DataBaseJpaOracle.*(..))" />
 		<aop:pointcut id="dataBaseAbstract" expression="execution(* ikube.database.jpa.ADataBaseJpa.*(..))" />
 		<aop:advisor advice-ref="transactionAdvice" pointcut-ref="dataBaseJpa" />
+		<aop:advisor advice-ref="transactionAdvice" pointcut-ref="dataBaseJpaDb2" />
+		<aop:advisor advice-ref="transactionAdvice" pointcut-ref="dataBaseJpaOracle" />
 		<aop:advisor advice-ref="transactionAdvice" pointcut-ref="dataBaseAbstract"/>
 	</aop:config>
 	
@@ -238,5 +242,23 @@
 		class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
 		property:staticMethod="ikube.toolkit.ThreadUtilities.initialize">
 	</bean>
+	
+	<!-- 
+		This bean is the geocoder, it will enrich the data with spatial co-ordinates if
+		the indexables contain address fields. The Url for this service  
+	-->
+	<bean
+		id="ikube.index.spatial.geocode.Geocoder"
+		class="ikube.index.spatial.geocode.Geocoder"
+		property:searchFields-ref="geospatialFields" 
+		property:searchUrl="${searcher.web.service.url}" />
+	<util:list id="geospatialFields">
+		<value>name</value>
+	</util:list>
+	<bean 
+		id="ikube.index.spatial.enrich.IEnrichment"
+		class="ikube.index.spatial.enrich.Enrichment"
+		property:minKm="10"
+		property:maxKm="20"  />
 	
 </beans>

@@ -1,9 +1,6 @@
 package ikube.model;
 
-import ikube.IConstants;
-
 import java.sql.Timestamp;
-import java.util.Date;
 
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
@@ -108,10 +105,6 @@ public class Action extends Persistable {
 
 	public void setDuration(long duration) {
 		this.duration = duration;
-	}
-
-	public String getStartDate() {
-		return IConstants.HHMMSS_DDMMYYYY.format(new Date(this.startTime.getTime()));
 	}
 
 	public String getRuleExpression() {

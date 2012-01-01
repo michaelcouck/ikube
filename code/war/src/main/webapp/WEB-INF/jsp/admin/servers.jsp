@@ -164,7 +164,7 @@
 					<td class="td-content"><c:out value="${action.invocations}" /></td>
 					<td class="td-content"><c:out value="${action.invocationsPerSecond}" /></td>
 					<td class="td-content">
-						<fmt:formatDate value="${action.startDate}" pattern="${datePattern}" type="DATE" />
+						<fmt:formatDate value="${action.startTime}" pattern="${datePattern}" type="DATE" />
 					</td>
 				</tr>
 				</c:forEach>

@@ -106,6 +106,8 @@ public interface IConstants {
 	String COUNTRYCODE = "countrycode";
 	String TIMEZONE = "timezone";
 	String ASCIINAME = "asciiname";
+	String CITY = "city";
+	String COUNTRY = "country";
 	String CORRECTIONS = "corrections";
 	String ACTION_NAME = "actionName";
 

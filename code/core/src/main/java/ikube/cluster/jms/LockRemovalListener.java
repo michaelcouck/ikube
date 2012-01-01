@@ -1,7 +1,6 @@
 package ikube.cluster.jms;
 
 import ikube.cluster.IClusterManager;
-import ikube.cluster.jms.ClusterManagerJms.Lock;
 import ikube.listener.Event;
 import ikube.listener.IListener;
 
@@ -13,6 +12,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+/**
+ * This class will get triggered by the scheduler. When a server wants to execute an action, it has to send a lock message to the cluster
+ * that the execution of the rules happens atomically. However, if the server gains the lock and then dies before releasing it, the cluster
+ * will stay locked. This class will remove locks that have times out. Typically a lock is only held for a few seconds before being
+ * released.
+ * 
+ * @author Michael Couck
+ * @since 31.12.11
+ * @version 01.00
+ */
 public class LockRemovalListener implements IListener {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(LockRemovalListener.class);
@@ -20,9 +29,13 @@ public class LockRemovalListener implements IListener {
 	/** The time out time for the lock in case a server dies. */
 	private static final long LOCK_TIME_OUT = 60000;
 
+	/** The access to the locks for this server. */
 	@Autowired
 	private IClusterManager clusterManager;
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void handleNotification(Event event) {
 		if (!Event.LOCK_RELEASE.equals(event.getType())) {
@@ -30,8 +43,8 @@ public class LockRemovalListener implements IListener {
 		}
 		try {
 			List<String> toRemove = new ArrayList<String>();
-			for (Entry<String, Lock> entry : clusterManager.getLocks().entrySet()) {
-				if (System.currentTimeMillis() - entry.getValue().shout > LOCK_TIME_OUT) {
+			for (Entry<String, ClusterManagerJmsLock> entry : clusterManager.getLocks().entrySet()) {
+				if (System.currentTimeMillis() - entry.getValue().getShout() > LOCK_TIME_OUT) {
 					toRemove.add(entry.getKey());
 				}
 			}

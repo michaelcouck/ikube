@@ -6,14 +6,21 @@ import ikube.listener.Event;
 import ikube.listener.IListener;
 import ikube.model.Server;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.Iterator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+/**
+ * This listener is for removing any servers that have times out. We do not poll the servers, they send messages to maintain their status in
+ * the cluster. If the timestamp of the server runs out then they are removed from each member in the cluster.
+ * 
+ * @author Michael Couck
+ * @since 31.12.11
+ * @version 01.00
+ */
 public class ServerRemovalListener implements IListener {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ServerRemovalListener.class);
@@ -26,22 +33,15 @@ public class ServerRemovalListener implements IListener {
 		if (!Event.SERVER_RELEASE.equals(event.getType())) {
 			return;
 		}
-		Server server = clusterManager.getServer();
 		// Remove all servers that are past the max age
-		List<Server> toRemove = new ArrayList<Server>();
 		Collection<Server> servers = clusterManager.getServers().values();
-		for (Server remoteServer : servers) {
-			if (remoteServer.getAddress().equals(server.getAddress())) {
-				continue;
+		Iterator<Server> iterator = servers.iterator();
+		while (iterator.hasNext()) {
+			Server server = iterator.next();
+			if (System.currentTimeMillis() - server.getAge() > IConstants.MAX_AGE) {
+				LOGGER.info("Removing server : " + server + ", " + (System.currentTimeMillis() - server.getAge() > IConstants.MAX_AGE));
+				iterator.remove();
 			}
-			if (System.currentTimeMillis() - remoteServer.getAge() > IConstants.MAX_AGE) {
-				LOGGER.info("Removing server : " + remoteServer + ", "
-						+ (System.currentTimeMillis() - remoteServer.getAge() > IConstants.MAX_AGE));
-				toRemove.add(remoteServer);
-			}
-		}
-		for (Server toRemoveServer : toRemove) {
-			servers.remove(toRemoveServer);
 		}
 	}
 }

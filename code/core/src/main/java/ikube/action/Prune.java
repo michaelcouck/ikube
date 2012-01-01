@@ -23,7 +23,8 @@ public class Prune extends Action<IndexContext<?>, Boolean> {
 		ikube.model.Action action = null;
 		try {
 			action = start(indexContext.getIndexName(), "");
-			delete(dataBase, ikube.model.Action.class, new String[] { "startTime" }, new boolean[] { true }, (int) IConstants.MAX_ACTIONS);
+			delete(dataBase, ikube.model.Action.class, new String[] { "startTime" }, new boolean[] { true },
+					(int) IConstants.MAX_ACTIONS / 5);
 		} finally {
 			stop(action);
 		}
@@ -31,17 +32,14 @@ public class Prune extends Action<IndexContext<?>, Boolean> {
 	}
 
 	protected void delete(final IDataBase dataBase, final Class<?> klass, final String[] fieldsToSortOn, final boolean[] directionOfSort,
-			final int maxSize) {
-		int doubleMaxSize = maxSize * 2;
-		List<?> entities = dataBase.find(klass, fieldsToSortOn, directionOfSort, 0, doubleMaxSize);
-		if (entities.size() <= maxSize) {
-			return;
+			final int batchSize) {
+		List<?> entities = dataBase.find(klass, fieldsToSortOn, directionOfSort, 0, batchSize);
+		if (entities.size() >= batchSize) {
+			do {
+				dataBase.removeBatch(entities);
+				entities = dataBase.find(klass, fieldsToSortOn, directionOfSort, 0, batchSize);
+			} while (entities.size() >= batchSize);
 		}
-		for (int i = 0; i < entities.size() - maxSize; i++) {
-			Object entity = entities.get(i);
-			dataBase.remove(entity);
-		}
-		delete(dataBase, klass, fieldsToSortOn, directionOfSort, maxSize);
 	}
 
 }

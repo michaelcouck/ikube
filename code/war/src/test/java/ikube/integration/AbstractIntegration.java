@@ -80,6 +80,7 @@ public abstract class AbstractIntegration {
 		DataUtilities.insertData(connection, inputStream);
 	}
 
+	@SuppressWarnings("unused")
 	private static void startJetty() throws Exception {
 		Server server = new Server(9300);
 		File webappDirectory = FileUtilities.findFileRecursively(new File("."), "webapp");

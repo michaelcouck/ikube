@@ -20,28 +20,24 @@ public final class ServiceLocator {
 
 	private static final Logger LOGGER = Logger.getLogger(ServiceLocator.class);
 
+	/**
+	 * Singularity.
+	 */
 	private ServiceLocator() {
+		// Documented
 	}
 
 	/**
 	 * This method will return the web service based on the parameters, building the url with the components.
 	 * 
-	 * @param <T>
-	 *            the type of service to return
-	 * @param klass
-	 *            the class of web service object to return
-	 * @param protocol
-	 *            the protocol for the web service
-	 * @param host
-	 *            the host machine, or domain where the service is located
-	 * @param port
-	 *            the expected port of the web service
-	 * @param path
-	 *            the path of the url to the service
-	 * @param nameSpace
-	 *            the name space for the web service
-	 * @param serviceName
-	 *            and the service name for the web service
+	 * @param <T> the type of service to return
+	 * @param klass the class of web service object to return
+	 * @param protocol the protocol for the web service
+	 * @param host the host machine, or domain where the service is located
+	 * @param port the expected port of the web service
+	 * @param path the path of the url to the service
+	 * @param nameSpace the name space for the web service
+	 * @param serviceName and the service name for the web service
 	 * @return the web service class at the specified url or null if there is a problem, either the service doesn't exist at the specified
 	 *         url or the components were incorrectly specified
 	 */
@@ -61,14 +57,10 @@ public final class ServiceLocator {
 	 * This method will return the web service based on the complete url specified in the parameter list and the service name and name
 	 * space.
 	 * 
-	 * @param <T>
-	 *            the type of service to return
-	 * @param klass
-	 *            the class of web service object to return
-	 * @param nameSpace
-	 *            the name space for the web service
-	 * @param serviceName
-	 *            and the service name for the web service
+	 * @param <T> the type of service to return
+	 * @param klass the class of web service object to return
+	 * @param nameSpace the name space for the web service
+	 * @param serviceName and the service name for the web service
 	 * @return the web service class at the specified url or null if there is a problem, either the service doesn't exist at the specified
 	 *         url or the components were incorrectly specified
 	 */

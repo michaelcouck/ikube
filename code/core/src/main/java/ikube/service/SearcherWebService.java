@@ -11,13 +11,11 @@ import ikube.search.SearchSpatial;
 import ikube.search.SearchSpatialAll;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.Logging;
-import ikube.toolkit.SerializationUtilities;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.ejb.Remote;
@@ -55,7 +53,7 @@ public class SearcherWebService implements ISearcherWebService {
 	@Override
 	@WebMethod
 	@WebResult(name = "result")
-	public String searchSingle(@WebParam(name = "indexName") final String indexName,
+	public ArrayList<HashMap<String, String>> searchSingle(@WebParam(name = "indexName") final String indexName,
 			@WebParam(name = "searchString") final String searchString, @WebParam(name = "searchField") final String searchField,
 			@WebParam(name = "fragment") final boolean fragment, @WebParam(name = "firstResult") final int firstResult,
 			@WebParam(name = "maxResults") final int maxResults) {
@@ -67,15 +65,15 @@ public class SearcherWebService implements ISearcherWebService {
 				searchSingle.setMaxResults(maxResults);
 				searchSingle.setSearchField(searchField);
 				searchSingle.setSearchString(searchString);
-				List<Map<String, String>> results = searchSingle.execute(); // searchDelegate.execute(indexName, searchSingle);
-				return SerializationUtilities.serialize(results);
+				ArrayList<HashMap<String, String>> results = searchSingle.execute(); // searchDelegate.execute(indexName, searchSingle);
+				return results; // SerializationUtilities.serialize(results);
 			}
 		} catch (Exception e) {
 			String message = Logging.getString("Exception doing search on index : ", indexName, searchString, searchField, fragment,
 					firstResult, maxResults);
 			LOGGER.error(message, e);
 		}
-		return SerializationUtilities.serialize(getMessageResults(indexName));
+		return null; // getMessageResults(indexName); // SerializationUtilities.serialize(getMessageResults(indexName));
 	}
 
 	/**
@@ -84,7 +82,7 @@ public class SearcherWebService implements ISearcherWebService {
 	@Override
 	@WebMethod
 	@WebResult(name = "result")
-	public String searchMulti(@WebParam(name = "indexName") final String indexName,
+	public ArrayList<HashMap<String, String>> searchMulti(@WebParam(name = "indexName") final String indexName,
 			@WebParam(name = "searchStrings") final String[] searchStrings, @WebParam(name = "searchFields") final String[] searchFields,
 			@WebParam(name = "fragment") final boolean fragment, @WebParam(name = "firstResult") final int firstResult,
 			@WebParam(name = "maxResults") final int maxResults) {
@@ -96,15 +94,15 @@ public class SearcherWebService implements ISearcherWebService {
 				searchMulti.setMaxResults(maxResults);
 				searchMulti.setSearchField(searchFields);
 				searchMulti.setSearchString(searchStrings);
-				List<Map<String, String>> results = searchMulti.execute(); // searchDelegate.execute(indexName, searchMulti);
-				return SerializationUtilities.serialize(results);
+				ArrayList<HashMap<String, String>> results = searchMulti.execute(); // searchDelegate.execute(indexName, searchMulti);
+				return results; // SerializationUtilities.serialize(results);
 			}
 		} catch (Exception e) {
 			String message = Logging.getString("Exception doing search on index : ", indexName, Arrays.asList(searchStrings),
 					Arrays.asList(searchFields), fragment, firstResult, maxResults);
 			LOGGER.error(message, e);
 		}
-		return SerializationUtilities.serialize(getMessageResults(indexName));
+		return getMessageResults(indexName); // SerializationUtilities.serialize(getMessageResults(indexName));
 	}
 
 	/**
@@ -113,7 +111,7 @@ public class SearcherWebService implements ISearcherWebService {
 	@Override
 	@WebMethod
 	@WebResult(name = "result")
-	public String searchMultiSorted(@WebParam(name = "indexName") final String indexName,
+	public ArrayList<HashMap<String, String>> searchMultiSorted(@WebParam(name = "indexName") final String indexName,
 			@WebParam(name = "searchStrings") final String[] searchStrings, @WebParam(name = "searchFields") final String[] searchFields,
 			@WebParam(name = "sortFields") final String[] sortFields, @WebParam(name = "fragment") final boolean fragment,
 			@WebParam(name = "firstResult") final int firstResult, @WebParam(name = "maxResults") final int maxResults) {
@@ -126,15 +124,16 @@ public class SearcherWebService implements ISearcherWebService {
 				searchMultiSorted.setSearchField(searchFields);
 				searchMultiSorted.setSearchString(searchStrings);
 				searchMultiSorted.setSortField(sortFields);
-				List<Map<String, String>> results = searchMultiSorted.execute(); // searchDelegate.execute(indexName, searchMultiSorted);
-				return SerializationUtilities.serialize(results);
+				ArrayList<HashMap<String, String>> results = searchMultiSorted.execute(); // searchDelegate.execute(indexName,
+																							// searchMultiSorted);
+				return results; // SerializationUtilities.serialize(results);
 			}
 		} catch (Exception e) {
 			String message = Logging.getString("Exception doing search on index : ", indexName, Arrays.asList(searchStrings),
 					Arrays.asList(searchFields), Arrays.asList(sortFields), fragment, firstResult, maxResults);
 			LOGGER.error(message, e);
 		}
-		return SerializationUtilities.serialize(getMessageResults(indexName));
+		return getMessageResults(indexName); // SerializationUtilities.serialize(getMessageResults(indexName));
 	}
 
 	/**
@@ -143,7 +142,7 @@ public class SearcherWebService implements ISearcherWebService {
 	@Override
 	@WebMethod
 	@WebResult(name = "result")
-	public String searchMultiAll(@WebParam(name = "indexName") final String indexName,
+	public ArrayList<HashMap<String, String>> searchMultiAll(@WebParam(name = "indexName") final String indexName,
 			@WebParam(name = "searchStrings") final String[] searchStrings, @WebParam(name = "fragment") final boolean fragment,
 			@WebParam(name = "firstResult") final int firstResult, @WebParam(name = "maxResults") final int maxResults) {
 		try {
@@ -153,15 +152,15 @@ public class SearcherWebService implements ISearcherWebService {
 				searchMultiAll.setFragment(fragment);
 				searchMultiAll.setMaxResults(maxResults);
 				searchMultiAll.setSearchString(searchStrings);
-				List<Map<String, String>> results = searchMultiAll.execute(); // searchDelegate.execute(indexName, searchMultiAll);
-				return SerializationUtilities.serialize(results);
+				ArrayList<HashMap<String, String>> results = searchMultiAll.execute(); // searchDelegate.execute(indexName, searchMultiAll);
+				return results; // SerializationUtilities.serialize(results);
 			}
 		} catch (Exception e) {
 			String message = Logging.getString("Exception doing search on index : ", indexName, Arrays.asList(searchStrings), fragment,
 					firstResult, maxResults);
 			LOGGER.error(message, e);
 		}
-		return SerializationUtilities.serialize(getMessageResults(indexName));
+		return getMessageResults(indexName); // SerializationUtilities.serialize(getMessageResults(indexName));
 	}
 
 	/**
@@ -170,7 +169,7 @@ public class SearcherWebService implements ISearcherWebService {
 	@Override
 	@WebMethod
 	@WebResult(name = "result")
-	public String searchSpacialMulti(@WebParam(name = "indexName") final String indexName,
+	public ArrayList<HashMap<String, String>> searchSpacialMulti(@WebParam(name = "indexName") final String indexName,
 			@WebParam(name = "searchStrings") final String[] searchStrings, @WebParam(name = "searchFields") final String[] searchFields,
 			@WebParam(name = "fragment") final boolean fragment, @WebParam(name = "firstResult") final int firstResult,
 			@WebParam(name = "maxResults") final int maxResults, @WebParam(name = "distance") final int distance,
@@ -185,15 +184,15 @@ public class SearcherWebService implements ISearcherWebService {
 				searchSpatial.setSearchField(searchFields);
 				searchSpatial.setCoordinate(new Coordinate(latitude, longitude));
 				searchSpatial.setDistance(distance);
-				List<Map<String, String>> results = searchSpatial.execute(); // searchDelegate.execute(indexName, searchSpatial);
-				return SerializationUtilities.serialize(results);
+				ArrayList<HashMap<String, String>> results = searchSpatial.execute(); // searchDelegate.execute(indexName, searchSpatial);
+				return results; // SerializationUtilities.serialize(results);
 			}
 		} catch (Exception e) {
 			String message = Logging.getString("Exception doing search on index : ", indexName, Arrays.asList(searchStrings), fragment,
 					firstResult, maxResults, latitude, longitude, distance);
 			LOGGER.error(message, e);
 		}
-		return SerializationUtilities.serialize(getMessageResults(indexName));
+		return getMessageResults(indexName); // SerializationUtilities.serialize(getMessageResults(indexName));
 	}
 
 	/**
@@ -202,7 +201,7 @@ public class SearcherWebService implements ISearcherWebService {
 	@Override
 	@WebMethod
 	@WebResult(name = "result")
-	public String searchSpacialMultiAll(@WebParam(name = "indexName") final String indexName,
+	public ArrayList<HashMap<String, String>> searchSpacialMultiAll(@WebParam(name = "indexName") final String indexName,
 			@WebParam(name = "searchStrings") final String[] searchStrings, @WebParam(name = "fragment") final boolean fragment,
 			@WebParam(name = "firstResult") final int firstResult, @WebParam(name = "maxResults") final int maxResults,
 			@WebParam(name = "distance") final int distance, @WebParam(name = "latitude") final double latitude,
@@ -216,15 +215,15 @@ public class SearcherWebService implements ISearcherWebService {
 				searchSpatial.setSearchString(searchStrings);
 				searchSpatial.setCoordinate(new Coordinate(latitude, longitude));
 				searchSpatial.setDistance(distance);
-				List<Map<String, String>> results = searchSpatial.execute(); // searchDelegate.execute(indexName, searchSpatial);
-				return SerializationUtilities.serialize(results);
+				ArrayList<HashMap<String, String>> results = searchSpatial.execute(); // searchDelegate.execute(indexName, searchSpatial);
+				return results; // SerializationUtilities.serialize(results);
 			}
 		} catch (Exception e) {
 			String message = Logging.getString("Exception doing search on index : ", indexName, Arrays.asList(searchStrings), fragment,
 					firstResult, maxResults, latitude, longitude, distance);
 			LOGGER.error(message, e);
 		}
-		return SerializationUtilities.serialize(getMessageResults(indexName));
+		return getMessageResults(indexName); // SerializationUtilities.serialize(getMessageResults(indexName));
 	}
 
 	/**
@@ -260,9 +259,9 @@ public class SearcherWebService implements ISearcherWebService {
 	 * @param indexName the name of the index
 	 * @return the message/map that will be sent to the client
 	 */
-	protected List<Map<String, String>> getMessageResults(final String indexName) {
-		List<Map<String, String>> results = new ArrayList<Map<String, String>>();
-		Map<String, String> notification = new HashMap<String, String>();
+	protected ArrayList<HashMap<String, String>> getMessageResults(final String indexName) {
+		ArrayList<HashMap<String, String>> results = new ArrayList<HashMap<String, String>>();
+		HashMap<String, String> notification = new HashMap<String, String>();
 		notification.put(IConstants.CONTENTS, "No index defined for name : " + indexName);
 		notification.put(IConstants.FRAGMENT, "Or exception thrown during search : " + indexName);
 		results.add(notification);
