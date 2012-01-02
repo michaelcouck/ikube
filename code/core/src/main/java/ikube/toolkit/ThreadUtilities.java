@@ -1,5 +1,6 @@
 package ikube.toolkit;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -63,9 +64,10 @@ public final class ThreadUtilities {
 	 * This method iterates through the list of threads looking for one that is still alive and joins it. Once all the threads have finished
 	 * then this method will return to the caller indicating that all the threads have finished.
 	 * 
-	 * @param threads the threads to wait for
+	 * @param threads
+	 *            the threads to wait for
 	 */
-	public static void waitForThreads(final List<Thread> threads) {
+	public static void waitForThreads(final Collection<Thread> threads) {
 		if (threads == null) {
 			LOGGER.warn("Threads null : ");
 			return;

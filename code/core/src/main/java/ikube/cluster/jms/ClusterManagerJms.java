@@ -96,16 +96,15 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 			sendMessage(lock);
 			ThreadUtilities.sleep(RESPONSE_TIME);
 			boolean haveLock = haveLock(shout);
-			if (haveLock) {
-				// If we have the lock, i.e. we were first to shout then
-				// we do nothing and the other servers will reset their locks to false
-				LOGGER.debug("Got lock : {} : {}", new Object[] { address, lock });
-			} else {
-				// If we don't get the lock then we reset our lock to false
-				// for the whole cluster
+			if (!haveLock) {
+				// If we don't get the lock then we reset our lock to false for the whole cluster
+				LOGGER.info("Didn't get lock : {} : {} : ", new Object[] { address, lock });
 				getLock(address, Long.MAX_VALUE, Boolean.FALSE);
 				sendMessage(lock);
-				LOGGER.debug("Didn't get lock : {} : {} : ", new Object[] { address, lock });
+			} else {
+				// If we have the lock, i.e. we were first to shout then
+				// we do nothing and the other servers will reset their locks to false
+				LOGGER.info("Got lock : {} : {}", new Object[] { address, lock });
 			}
 			return haveLock;
 		} finally {
@@ -124,7 +123,9 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 				// We only set the lock for the cluster to false if we have it
 				lock = getLock(address, Long.MAX_VALUE, Boolean.FALSE);
 				sendMessage(lock);
-				LOGGER.debug("Unlock : {} : {} : ", new Object[] { address, locks });
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug("Unlock : {} : {} : ", new Object[] { address, locks });
+				}
 				return Boolean.TRUE;
 			}
 			return Boolean.FALSE;
@@ -152,7 +153,8 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 	 * cluster. Other servers that may or may not be competing for the lock also post their locks. Whoever shouts for the lock first then
 	 * get it. This method checks to see if this server shouted first based on the locks from the other servers in the cluster.
 	 * 
-	 * @param shout the time that this server shouted for the lock
+	 * @param shout
+	 *            the time that this server shouted for the lock
 	 * @return whether this server shouted for the lock first thereby getting the lock for the cluster
 	 */
 	protected boolean haveLock(final long shout) {
@@ -202,7 +204,8 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 	/**
 	 * This method will send messages to the whole cluster.
 	 * 
-	 * @param serializable the object to send in the message
+	 * @param serializable
+	 *            the object to send in the message
 	 */
 	@Override
 	public void sendMessage(final Serializable serializable) {
@@ -268,9 +271,12 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 	/**
 	 * Creates the lock if it is not already instantiated.
 	 * 
-	 * @param address the address of this server
-	 * @param shout the time the server shouted for the lock
-	 * @param locked whether this is a request for the lock or a reset of false to release the lock
+	 * @param address
+	 *            the address of this server
+	 * @param shout
+	 *            the time the server shouted for the lock
+	 * @param locked
+	 *            whether this is a request for the lock or a reset of false to release the lock
 	 * @return the lock for this server
 	 */
 	protected ClusterManagerJmsLock getLock(final String address, final long shout, final boolean locked) {

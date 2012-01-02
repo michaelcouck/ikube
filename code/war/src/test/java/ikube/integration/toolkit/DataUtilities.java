@@ -46,8 +46,6 @@ public final class DataUtilities {
 	private static Logger LOGGER = Logger.getLogger(DataUtilities.class);
 	private static IDataTypeFactory DATA_TYPE_FACTORY;
 	private static IMetadataHandler METADATA_HANDLER;
-	
-	
 
 	public static void setDataTypeFactory(final IDataTypeFactory dataTypeFactory) {
 		DATA_TYPE_FACTORY = dataTypeFactory;
@@ -60,11 +58,15 @@ public final class DataUtilities {
 	/**
 	 * This method inserts data from a DBUnit file into the database defined by the url in the parameter list.
 	 * 
-	 * @param url the url for the database
-	 * @param userid the userid for the database
-	 * @param password the password for the database
-	 * @param filePath the relative or absolute file path for the DBUnit data file. If the path is relative, for example './folder/file.xml'
-	 *            then note that this is relative to where the Jvm starts
+	 * @param url
+	 *            the url for the database
+	 * @param userid
+	 *            the userid for the database
+	 * @param password
+	 *            the password for the database
+	 * @param filePath
+	 *            the relative or absolute file path for the DBUnit data file. If the path is relative, for example './folder/file.xml' then
+	 *            note that this is relative to where the Jvm starts
 	 */
 	public static final void insertData(final String url, final String userid, final String password, final String filePath) {
 		IDatabaseConnection databaseConnection = null;
@@ -107,11 +109,15 @@ public final class DataUtilities {
 	/**
 	 * This method inserts data from a DBUnit file into the database defined by the url in the parameter list.
 	 * 
-	 * @param DATABASE_URL the url for the database
-	 * @param USER_ID the userid for the database
-	 * @param PASSWORD the password for the database
-	 * @param filePath the relative or absolute file path for the DBUnit data file. If the path is relative, for example './folder/file.xml'
-	 *            then note that this is relative to where the Jvm starts
+	 * @param DATABASE_URL
+	 *            the url for the database
+	 * @param USER_ID
+	 *            the userid for the database
+	 * @param PASSWORD
+	 *            the password for the database
+	 * @param filePath
+	 *            the relative or absolute file path for the DBUnit data file. If the path is relative, for example './folder/file.xml' then
+	 *            note that this is relative to where the Jvm starts
 	 */
 	public static final void insertData(final Connection connection, final String filePath) {
 		IDatabaseConnection databaseConnection = null;
@@ -144,11 +150,15 @@ public final class DataUtilities {
 	/**
 	 * This method deletes the data in the database that corresponds to the data in the DBUnit data file.
 	 * 
-	 * @param url the url for the database
-	 * @param userid the userid for the database
-	 * @param password the password for the database
-	 * @param filePath the relative or absolute file path for the DBUnit data file. If the path is relative, for example './folder/file.xml'
-	 *            then note that this is relative to where the Jvm starts
+	 * @param url
+	 *            the url for the database
+	 * @param userid
+	 *            the userid for the database
+	 * @param password
+	 *            the password for the database
+	 * @param filePath
+	 *            the relative or absolute file path for the DBUnit data file. If the path is relative, for example './folder/file.xml' then
+	 *            note that this is relative to where the Jvm starts
 	 */
 	public static final void deleteData(final String url, final String userid, final String password, final String filePath) {
 		IDatabaseConnection databaseConnection = null;
@@ -167,11 +177,15 @@ public final class DataUtilities {
 	 * This method will first delete the data in the database that corresponds to the data in the DBUnit data file, then insert the data
 	 * again, essentially acting like a refresh of the data in the data file.
 	 * 
-	 * @param url the url for the database
-	 * @param userid the userid for the database
-	 * @param password the password for the database
-	 * @param filePath the relative or absolute file path for the DBUnit data file. If the path is relative, for example './folder/file.xml'
-	 *            then note that this is relative to where the Jvm starts
+	 * @param url
+	 *            the url for the database
+	 * @param userid
+	 *            the userid for the database
+	 * @param password
+	 *            the password for the database
+	 * @param filePath
+	 *            the relative or absolute file path for the DBUnit data file. If the path is relative, for example './folder/file.xml' then
+	 *            note that this is relative to where the Jvm starts
 	 */
 	public static final void deleteInsertData(final String url, final String userid, final String password, final String filePath) {
 		deleteData(url, userid, password, filePath);
@@ -181,7 +195,8 @@ public final class DataUtilities {
 	/**
 	 * Closes the connection to the database.
 	 * 
-	 * @param connection the connection to close
+	 * @param connection
+	 *            the connection to close
 	 */
 	public static final void close(final Connection connection) {
 		try {
@@ -206,7 +221,8 @@ public final class DataUtilities {
 	/**
 	 * Closes the DBUnit database connection.
 	 * 
-	 * @param connection the DBUnit connection to close
+	 * @param connection
+	 *            the DBUnit connection to close
 	 */
 	public static final void close(final IDatabaseConnection connection) {
 		try {
@@ -221,7 +237,8 @@ public final class DataUtilities {
 	/**
 	 * Closes an input stream.
 	 * 
-	 * @param inputStream the input stream to close
+	 * @param inputStream
+	 *            the input stream to close
 	 */
 	public static final void close(final InputStream inputStream) {
 		try {
@@ -236,9 +253,12 @@ public final class DataUtilities {
 	/**
 	 * This method first gets a connection to the database, then uses this connection object to create a DBUnit connection.
 	 * 
-	 * @param url the url for the database
-	 * @param userid the userid for the database
-	 * @param password the password for the database
+	 * @param url
+	 *            the url for the database
+	 * @param userid
+	 *            the userid for the database
+	 * @param password
+	 *            the password for the database
 	 * @return the DBUnit connection
 	 */
 	private static final IDatabaseConnection getDatabaseConnection(final String url, final String userid, final String password) {
@@ -270,9 +290,12 @@ public final class DataUtilities {
 	 * This method will get a straight connection to the database using the standard driver manager mechanism. Note that this connection
 	 * will not be transactional.
 	 * 
-	 * @param url the url for the database
-	 * @param userid the userid for the database
-	 * @param password the password for the database
+	 * @param url
+	 *            the url for the database
+	 * @param userid
+	 *            the userid for the database
+	 * @param password
+	 *            the password for the database
 	 * @return the database connection or null if there is an exception
 	 */
 	public static final Connection getConnection(final String url, final String userid, final String password) {
@@ -295,8 +318,9 @@ public final class DataUtilities {
 	 * This method will get a DBUnit data set based on the file path passed as a parameter. Note that the entire file is read into memory,
 	 * so it is not a good idea to try this method with very large data sets, like 100 meg for instance.
 	 * 
-	 * @param filePath the relative or absolute file path for the DBUnit data file. If the path is relative, for example './folder/file.xml'
-	 *            then note that this is relative to where the Jvm starts
+	 * @param filePath
+	 *            the relative or absolute file path for the DBUnit data file. If the path is relative, for example './folder/file.xml' then
+	 *            note that this is relative to where the Jvm starts
 	 * @return the DBUnit data set that can then be inserted into the database
 	 */
 	private static final IDataSet getDataSet(String filePath) {
