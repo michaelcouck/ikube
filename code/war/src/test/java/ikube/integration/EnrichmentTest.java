@@ -6,6 +6,7 @@ import ikube.action.Open;
 import ikube.model.IndexContext;
 import ikube.toolkit.ApplicationContextManager;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -18,6 +19,7 @@ import org.junit.Test;
 public class EnrichmentTest extends AbstractIntegration {
 
 	@Test
+	@Ignore
 	public void execute() throws Exception {
 		// final IndexContext indexContext
 		IndexContext<?> indexContext = ApplicationContextManager.getBean(IConstants.GEOSPATIAL);

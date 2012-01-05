@@ -31,7 +31,7 @@ public class ServiceLocatorMock {
 	static {
 		when(MONITOR_WEB_SERVICE.getIndexFieldNames(any(String.class))).thenReturn(new String[] { "name", "latitude", "longitude" });
 		File file = FileUtilities.findFileRecursively(new File("."), "default.results.xml");
-		String xml = FileUtilities.getContents(file, Integer.MAX_VALUE, IConstants.ENCODING);
+		String xml = FileUtilities.getContents(file, IConstants.ENCODING);
 		String[] searchStrings = new String[] { IConstants.IKUBE };
 		@SuppressWarnings("unchecked")
 		ArrayList<HashMap<String, String>> results = (ArrayList<HashMap<String, String>>) SerializationUtilities.deserialize(xml);

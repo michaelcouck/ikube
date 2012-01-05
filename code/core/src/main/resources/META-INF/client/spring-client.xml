@@ -40,10 +40,11 @@
 		<ref local="internet" />
 		<ref local="hazelcast" />
 		<!-- <ref local="internetMillion" /> -->
-		<ref local="filesystem" />
+		<!-- <ref local="filesystem" /> -->
 		<!-- <ref local="wikidata" /> -->
-		<ref local="dropboxDefault" />
 		<!-- <ref local="filesystemMillion" /> -->
+		<ref bean="faqTableH2" />
+		<ref bean="attachmentTableH2" />
 		<!-- <ref bean="faqTableH2" />
 		<ref bean="faqTableDb2" />
 		<ref bean="faqTableOracle" />
@@ -603,23 +604,6 @@
 		property:lastModifiedFieldName="lastmodified"
 		property:batchSize="${file.batch.size}"
 		property:maxReadLength="${file.max.read.length}" />
-	
-	 <bean
-		id="dropboxDefault"
-		class="ikube.model.IndexableFileSystem"
-		property:name="dropboxDefault"
-		property:path="C:/Dropbox"
-		property:pathFieldName="title"
-		property:nameFieldName="name"
-		property:lengthFieldName="length"
-		property:contentFieldName="contents"
-		property:excludedPattern="${files.excluded.pattern}"
-		property:lastModifiedFieldName="lastmodified"
-		property:batchSize="${file.batch.size}"
-		property:maxReadLength="${file.max.read.length}"
-		property:stored="true"
-		property:vectored="true"
-		property:analyzed="true" />
 	
 	<bean
 		id="filesystemMillion"

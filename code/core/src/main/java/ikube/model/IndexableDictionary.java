@@ -13,7 +13,7 @@ import javax.persistence.InheritanceType;
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class IndexableDictionary extends Indexable<IndexableDictionary> {
 
-	private String	path;
+	private String path;
 
 	public String getPath() {
 		return path;

@@ -55,6 +55,7 @@
 		<module>code/core</module>
 		<module>code/war</module>
 		<module>code/libs</module>
+		<module>code/tool</module>
 	</modules>
 
 	<build>
@@ -646,7 +647,7 @@
 			<artifactId>canyon</artifactId>
 			<version>0.9.8</version>
 			<type>jar</type>
-			<scope>test</scope>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>aspose</groupId>
@@ -785,6 +786,13 @@
 		<repository>
 			<id>codehaus-snapshots</id>
 			<url>https://nexus.codehaus.org/content/repositories/snapshots</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>ikube-repository</id>
+			<url>http://localhost:9000/artifactory/libs-release-local/</url>
 			<snapshots>
 				<enabled>true</enabled>
 			</snapshots>

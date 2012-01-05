@@ -34,7 +34,11 @@ public final class FileUtilities {
 
 	private static final Logger LOGGER = Logger.getLogger(FileUtilities.class);
 
+	/**
+	 * Singularity.
+	 */
 	private FileUtilities() {
+		// Documented
 	}
 
 	/**
@@ -231,10 +235,9 @@ public final class FileUtilities {
 				file.deleteOnExit();
 			}
 			return Boolean.FALSE;
-		} else {
-			LOGGER.debug("Retrying count : " + retryCount + ", file : " + file);
-			return deleteFile(file, maxRetryCount, retryCount + 1);
 		}
+		LOGGER.debug("Retrying count : " + retryCount + ", file : " + file);
+		return deleteFile(file, maxRetryCount, retryCount + 1);
 	}
 
 	/**
@@ -367,7 +370,7 @@ public final class FileUtilities {
 		return getContents(inputStream, maxReadLength);
 	}
 
-	public static String getContents(final File file, final int maxReadLength, String encoding) {
+	public static String getContents(final File file, String encoding) {
 		StringBuilder builder = new StringBuilder();
 		Reader reader = null;
 		try {
@@ -628,6 +631,7 @@ public final class FileUtilities {
 				OutputStream destinationOutputStream = null;
 				try {
 					if (!entry.isDirectory()) {
+						LOGGER.info("Unzipping entry : " + entry);
 						inputStream = new BufferedInputStream(zip.getInputStream(entry));
 						int currentByte;
 						// establish buffer for writing file

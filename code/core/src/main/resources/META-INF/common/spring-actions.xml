@@ -35,6 +35,7 @@
 		<ref bean="ikube.action.Restore" />
 		<ref bean="ikube.action.Index"  />
 		<ref bean="ikube.action.Open"  />
+		<!-- <ref bean="ikube.action.Enrichment" /> -->
 		<ref bean="ikube.action.Delete" />
 		<ref bean="ikube.action.Clean" />
 		<ref bean="ikube.action.Backup" />
@@ -42,7 +43,6 @@
 		<ref bean="ikube.action.Searcher" />
 		<ref bean="ikube.action.Validator" />
 		<ref bean="ikube.action.Prune" />
-		<ref bean="ikube.action.Enrichment" />
 	</util:list>
 
 	<bean 

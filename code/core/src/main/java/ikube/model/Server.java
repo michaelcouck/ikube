@@ -36,7 +36,7 @@ public class Server extends Persistable implements Comparable<Server> {
 	private long age;
 
 	private String searchWebServiceUrl;
-	
+
 	public Server() {
 		this.actions = new ArrayList<Action>();
 	}
@@ -52,8 +52,6 @@ public class Server extends Persistable implements Comparable<Server> {
 	public String getAddress() {
 		return address;
 	}
-	
-	
 
 	public List<Action> getActions() {
 		return actions;
@@ -124,7 +122,7 @@ public class Server extends Persistable implements Comparable<Server> {
 		if (this.getId() == 0) {
 			return super.hashCode();
 		}
-		return (int) (long) this.getId();
+		return (int) this.getId();
 	}
 
 	@Override

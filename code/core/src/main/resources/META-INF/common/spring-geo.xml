@@ -48,10 +48,10 @@
 		property:name="geoname"
 		property:primaryTable="true"
 		property:address="true"
-		property:dataSource-ref="nonXaDataSourceDb2"
-		property:children-ref="geonameColumnsDb2" 
+		property:dataSource-ref="nonXaDataSourceH2"
+		property:children-ref="geonameColumnsH2" 
 		property:maxExceptions="100" />
-	<util:list id="geonameColumnsDb2">
+	<util:list id="geonameColumnsH2">
 		<ref local="geospatialId" />
 		<ref local="geospatialName" />
 		<ref local="geospatialCity" />

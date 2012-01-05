@@ -23,15 +23,17 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IHandl
 
 	protected Logger logger = Logger.getLogger(this.getClass());
 
-	/** Access to the database. */
-	@Autowired
-	protected IDataBase dataBase;
 	/** The number of threads that this handler will spawn. */
 	private int threads;
 	/** The class that this handler can handle. */
 	private Class<T> indexableClass;
+	/** Access to the database. */
+	@Autowired
+	protected IDataBase dataBase;
+	/** The geocoder to get the co-ordinates for the indexable. */
 	@Autowired
 	private IGeocoder geocoder;
+	/** The enricher that will add the spatial tiers to the document. */
 	@Autowired
 	private IEnrichment enrichment;
 
@@ -89,6 +91,7 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IHandl
 			if (coordinate == null) {
 				return;
 			}
+			logger.info("Got co-ordinate for : " + indexable.getName() + ", " + coordinate);
 		}
 		enrichment.addSpatialLocationFields(coordinate, document);
 	}

@@ -98,13 +98,17 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 			boolean haveLock = haveLock(shout);
 			if (!haveLock) {
 				// If we don't get the lock then we reset our lock to false for the whole cluster
-				LOGGER.info("Didn't get lock : {} : {} : ", new Object[] { address, lock });
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug("Didn't get lock : {} : {} : ", new Object[] { address, lock });
+				}
 				getLock(address, Long.MAX_VALUE, Boolean.FALSE);
 				sendMessage(lock);
 			} else {
 				// If we have the lock, i.e. we were first to shout then
 				// we do nothing and the other servers will reset their locks to false
-				LOGGER.info("Got lock : {} : {}", new Object[] { address, lock });
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.info("Got lock : {} : {}", new Object[] { address, lock });
+				}
 			}
 			return haveLock;
 		} finally {

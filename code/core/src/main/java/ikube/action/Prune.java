@@ -24,7 +24,7 @@ public class Prune extends Action<IndexContext<?>, Boolean> {
 		try {
 			action = start(indexContext.getIndexName(), "");
 			delete(dataBase, ikube.model.Action.class, new String[] { "startTime" }, new boolean[] { true },
-					(int) IConstants.MAX_ACTIONS / 5);
+					(int) IConstants.MAX_ACTIONS / 10);
 		} finally {
 			stop(action);
 		}

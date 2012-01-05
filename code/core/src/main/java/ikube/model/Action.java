@@ -1,6 +1,7 @@
 package ikube.model;
 
 import java.sql.Timestamp;
+import java.util.Date;
 
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
@@ -45,11 +46,11 @@ public class Action extends Persistable {
 	/** The actionName of the currently executing index. */
 	private String indexName;
 	/** The time the action was started. */
-	@Temporal(value = TemporalType.TIMESTAMP)
-	private Timestamp startTime;
+	@Temporal(value = TemporalType.DATE)
+	private Date startTime;
 	/** The time the action ended. */
-	@Temporal(value = TemporalType.TIMESTAMP)
-	private Timestamp endTime;
+	@Temporal(value = TemporalType.DATE)
+	private Date endTime;
 	/** The time it took for this action to finish. */
 	private long duration;
 	/** The predicate for the rules. */
@@ -83,19 +84,19 @@ public class Action extends Persistable {
 		this.indexName = indexName;
 	}
 
-	public Timestamp getStartTime() {
+	public Date getStartTime() {
 		return startTime;
 	}
 
-	public void setStartTime(final Timestamp startTime) {
+	public void setStartTime(final Date startTime) {
 		this.startTime = startTime;
 	}
 
-	public Timestamp getEndTime() {
+	public Date getEndTime() {
 		return endTime;
 	}
 
-	public void setEndTime(final Timestamp endTime) {
+	public void setEndTime(final Date endTime) {
 		this.endTime = endTime;
 	}
 

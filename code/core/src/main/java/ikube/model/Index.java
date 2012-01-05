@@ -20,6 +20,7 @@ import org.apache.lucene.search.Searchable;
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Index extends Persistable {
 
+	@Transient
 	private static final transient Logger LOGGER = Logger.getLogger(Index.class);
 
 	/** Can be null if there are no indexes running. */

@@ -21,16 +21,24 @@ public final class ThreadUtilities {
 
 	private static ExecutorService EXECUTER_SERVICE;
 
+	/**
+	 * Singularity.
+	 */
 	private ThreadUtilities() {
+		// Documented
 	}
 
 	public static Future<?> submit(Runnable runnable) {
+		if (EXECUTER_SERVICE.isShutdown()) {
+			LOGGER.warn("Executer service already shutdown : " + runnable);
+			return null;
+		}
 		return EXECUTER_SERVICE.submit(runnable);
 	}
 
 	public static void initialize() {
 		ThreadUtilities.destroy();
-		EXECUTER_SERVICE = Executors.newFixedThreadPool(100);
+		EXECUTER_SERVICE = Executors.newFixedThreadPool(10);
 	}
 
 	public static void destroy() {
@@ -50,6 +58,10 @@ public final class ThreadUtilities {
 	}
 
 	public static void waitForFuture(Future<?> future, long maxWait) {
+		if (future == null) {
+			LOGGER.warn("Future null returning : ");
+			return;
+		}
 		long start = System.currentTimeMillis();
 		while (!future.isDone()) {
 			ThreadUtilities.sleep(1000);

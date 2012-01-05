@@ -67,7 +67,7 @@ public class SearchControllerTest {
 	@SuppressWarnings("unchecked")
 	public void handleRequest() throws Exception {
 		File file = FileUtilities.findFileRecursively(new File("."), "default.results.xml");
-		String xml = FileUtilities.getContents(file, Integer.MAX_VALUE, IConstants.ENCODING);
+		String xml = FileUtilities.getContents(file, IConstants.ENCODING);
 		ArrayList<HashMap<String, String>> results = (ArrayList<HashMap<String, String>>) SerializationUtilities.deserialize(xml);
 		when(searcherWebService.searchMultiAll(IConstants.IKUBE, new String[] { IConstants.IKUBE }, true, 0, 10)).thenReturn(results);
 
@@ -96,7 +96,7 @@ public class SearchControllerTest {
 		assertEquals("There are 10 * 3 results : ", 10, results.size());
 
 		file = FileUtilities.findFileRecursively(new File("."), "default.results.small.xml");
-		xml = FileUtilities.getContents(file, Integer.MAX_VALUE, IConstants.ENCODING);
+		xml = FileUtilities.getContents(file, IConstants.ENCODING);
 		results = (ArrayList<HashMap<String, String>>) SerializationUtilities.deserialize(xml);
 		when(searcherWebService.searchMultiAll(IConstants.IKUBE, new String[] { IConstants.IKUBE }, true, 0, 10)).thenReturn(results);
 

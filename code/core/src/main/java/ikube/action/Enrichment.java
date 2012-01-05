@@ -70,6 +70,7 @@ public class Enrichment extends Action<IndexContext<?>, Boolean> implements ICon
 					geoNames = dataBase.find(GeoName.class, GeoName.SELECT_FROM_GEONAME_BY_CITY_AND_COUNTRY_NULL, new String[] {},
 							new Object[] {}, id, batch);
 					logger.info("Geoname size : " + geoNames.size() + ", " + id);
+					action.setInvocations(id);
 					if (geoNames.isEmpty()) {
 						break;
 					}

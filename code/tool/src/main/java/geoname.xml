@@ -1,0 +1,23 @@
+<mapping>
+	<class name="ikube.model.geospatial.GeoName" type="DELIMITED" delimiter=";">
+		<property name="geonameid" position="0" type="integer" />
+		<property name="name" position="1" type="string" trim="true" />
+		<property name="asciiname" position="2" type="string" trim="true" />
+		<property name="alternatenames" position="3" type="string" trim="true" />
+		<property name="latitude" position="4" type="double" trim="true" />
+		<property name="longitude" position="5" type="double" trim="true" />
+		<property name="featureClass" position="6" type="string" trim="true" />
+		<property name="featureCode" position="7" type="string" trim="true" />
+		<property name="countryCode" position="8" type="string" trim="true" />
+		<property name="cc2" position="9" type="string" trim="true" />
+		<property name="admin1Code" position="10" type="string" trim="true" />
+		<property name="admin2Code" position="11" type="string" trim="true" />
+		<property name="admin3Code" position="12" type="string" trim="true" />
+		<property name="admin4Code" position="13" type="string" trim="true" />
+		<property name="population" position="14" type="integer" trim="true" />
+		<property name="elevation" position="15" type="integer" trim="true" />
+		<property name="gtopo30" position="16" type="integer" trim="true" />
+		<property name="timezone" position="17" type="string" trim="true"/>
+		<property name="modification" position="18" type="date" date_format="yyyy-MM-dd" />
+	</class>
+</mapping>

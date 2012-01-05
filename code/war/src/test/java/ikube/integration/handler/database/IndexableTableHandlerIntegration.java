@@ -37,6 +37,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -184,6 +185,7 @@ public class IndexableTableHandlerIntegration extends AbstractIntegration {
 		IndexWriter indexWriter = IndexManager.openIndexWriter(realIndexContext, System.currentTimeMillis(), ip);
 		realIndexContext.getIndex().setIndexWriter(indexWriter);
 		realIndexContext.setAction(new Action());
+		DatabaseUtilities.printResultSet(connection.createStatement().executeQuery("select * from faq"));
 		List<Future<?>> threads = indexableTableHandler.handle(realIndexContext, faqIndexableTable);
 		ThreadUtilities.waitForFutures(threads, Integer.MAX_VALUE);
 		assertTrue("There must be some data in the index : ", realIndexContext.getIndex().getIndexWriter().numDocs() > 0);
@@ -220,6 +222,7 @@ public class IndexableTableHandlerIntegration extends AbstractIntegration {
 	}
 
 	@Test
+	@Ignore
 	public void interrupt() throws Exception {
 		try {
 			IndexableTable indexable = ApplicationContextManager.getBean("geoname");

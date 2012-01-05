@@ -37,29 +37,13 @@ public class SearchController extends SearchBaseController {
 		// Get all the search strings from the request, we'll search all the indexes, all the fields, all strings
 		Set<String> searchStrings = getSearchStrings(request);
 
-		// This check is specifically for classes that inherit from this class and don't
-		// necessarily have search strings in the parameter list
-		boolean mustSearch = Boolean.TRUE;
-		if (searchStrings == null || searchStrings.size() == 0) {
-			searchStrings = new TreeSet<String>();
-		}
-		for (String searchString : searchStrings) {
-			if (searchString != null && "".equals(searchString.trim())) {
-				// mustSearch = Boolean.TRUE;
-				break;
-			}
-		}
-		if (!mustSearch) {
-			return modelAndView;
-		}
-
 		String[] indexNames = monitorWebService.getIndexNames();
 
 		// Search all the indexes and merge the results
 		int total = 0;
 		long duration = 0;
 		String corrections = null;
-		List<Map<String, String>> results = new ArrayList<Map<String, String>>();
+		List<HashMap<String, String>> results = new ArrayList<HashMap<String, String>>();
 		String[] searchStringsArray = searchStrings.toArray(new String[searchStrings.size()]);
 
 		for (String indexName : indexNames) {
@@ -72,8 +56,9 @@ public class SearchController extends SearchBaseController {
 				duration += Long.parseLong(statistics.get(IConstants.DURATION));
 			}
 			corrections = statistics.get(IConstants.CORRECTIONS);
-			indexResults.remove(statistics);
 			results.addAll(indexResults);
+			// Remove the statistics map from the end
+			results.remove(results.size() - 1);
 		}
 
 		// Sort the results according to the score. This will essentially merge the results and
@@ -91,7 +76,10 @@ public class SearchController extends SearchBaseController {
 		int firstResult = getParameter(IConstants.FIRST_RESULT, FIRST_RESULT, request);
 		int maxResults = getParameter(IConstants.MAX_RESULTS, MAX_RESULTS, request);
 		// Now just take the top results, i.e. the max results that are defined by the user
-		results = results.subList(0, results.size() < maxResults ? results.size() : maxResults);
+		int subLength = results.size() < maxResults ? results.size() : maxResults;
+		List<HashMap<String, String>> subResults = results.subList(0, subLength);
+		results = new ArrayList<HashMap<String, String>>();
+		results.addAll(subResults);
 
 		modelAndView.addObject(IConstants.TOTAL, total);
 		modelAndView.addObject(IConstants.DURATION, duration);

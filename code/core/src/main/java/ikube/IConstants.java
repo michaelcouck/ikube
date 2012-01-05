@@ -39,6 +39,7 @@ public interface IConstants {
 	String PERSISTENCE_UNIT_H2 = "IkubePersistenceUnitH2";
 	String PERSISTENCE_UNIT_DB2 = "IkubePersistenceUnitDb2";
 	String PERSISTENCE_UNIT_ORACLE = "IkubePersistenceUnitOracle";
+	String PERSISTENCE_UNIT_POSTGRES = "IkubePersistenceUnitPostgres";
 	String PERSISTENCE_UNIT_OBJECT_DB = "IkubePersistenceUnitObjectDb";
 
 	String DATA_SOURCE_H2 = "nonXaDataSourceH2";

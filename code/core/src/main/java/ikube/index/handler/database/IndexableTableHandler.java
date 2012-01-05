@@ -331,7 +331,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 			// so we need to execute where id > 1 234 567 and < 1 234 567 + batchSize
 			if (indexableTable.isPrimaryTable()) {
 				long minimumId = indexableTable.getMinimumId();
-				if (minimumId < 0) {
+				if (minimumId <= 0) {
 					minimumId = getIdFunction(indexableTable, connection, "min");
 					indexableTable.setMinimumId(minimumId);
 				}
@@ -358,7 +358,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 				// predicate would be id > 1 234 567 + batchSize and < 1 234 567 + (batchSize * 2)
 				if (indexableTable.isPrimaryTable()) {
 					long maximumId = indexableTable.getMaximumId();
-					if (maximumId < 0) {
+					if (maximumId <= 0) {
 						maximumId = getIdFunction(indexableTable, connection, "max");
 						indexableTable.setMaximumId(maximumId);
 					}

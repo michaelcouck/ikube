@@ -1,6 +1,7 @@
 package ikube.index.spatial.geocode;
 
 import ikube.IConstants;
+
 import ikube.index.spatial.Coordinate;
 import ikube.service.ISearcherWebService;
 import ikube.service.ServiceLocator;
@@ -14,7 +15,8 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @see IGeocoder
@@ -24,7 +26,7 @@ import org.apache.log4j.Logger;
  */
 public class Geocoder implements IGeocoder {
 
-	private static final Logger LOGGER = Logger.getLogger(Geocoder.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(Geocoder.class);
 
 	private String searchUrl;
 	private String[] searchStrings;
@@ -52,20 +54,22 @@ public class Geocoder implements IGeocoder {
 			Arrays.fill(searchStrings, trimmedAddress);
 			ArrayList<HashMap<String, String>> results = searchRemote.searchMulti(IConstants.GEOSPATIAL, searchStrings, searchFields,
 					Boolean.TRUE, 0, 10);
-			Map<String, String> firstResult = results.size() >= 2 ? results.get(0) : null;
-			if (firstResult != null) {
+			if (results.size() >= 2) {
+				Map<String, String> firstResult = results.get(0);
 				// We got a result, so we'll rely on Lucene to provide the best match for
 				// the address according to the data from GeoNames
 				String latitude = firstResult.get(IConstants.LATITUDE);
 				String longitude = firstResult.get(IConstants.LONGITUDE);
-				double lat = Double.parseDouble(latitude);
-				double lng = Double.parseDouble(longitude);
-				return new Coordinate(lat, lng, trimmedAddress);
+				if (latitude != null && longitude != null) {
+					double lat = Double.parseDouble(latitude);
+					double lng = Double.parseDouble(longitude);
+					return new Coordinate(lat, lng, trimmedAddress);
+				}
+				LOGGER.info("Result from geoname search : " + firstResult);
 			}
 		} catch (Exception e) {
-			String message = "Exception accessing the spatial search service : " + address
-					+ ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
-			LOGGER.error(message, e);
+			LOGGER.error("Address and geocoder : ", address, toString());
+			LOGGER.error("Exception accessing the spatial search service : ", e);
 		}
 		return null;
 	}
@@ -89,6 +93,10 @@ public class Geocoder implements IGeocoder {
 	public void setSearchFields(List<String> searchFields) {
 		this.searchFields = searchFields.toArray(new String[searchFields.size()]);
 		this.searchStrings = new String[searchFields.size()];
+	}
+	
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
 	}
 
 }

@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -31,6 +32,7 @@ public class SerializationUtilitiesTest extends ATest {
 	}
 
 	@Test
+	@Ignore
 	@SuppressWarnings("unchecked")
 	public void serializeAndDeserialize() {
 		List<Map<String, String>> results = new ArrayList<Map<String, String>>();

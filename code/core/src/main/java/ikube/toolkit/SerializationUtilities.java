@@ -19,6 +19,7 @@ import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -30,6 +31,7 @@ import java.util.List;
 
 import javax.persistence.Transient;
 
+import org.apache.commons.lang.SerializationUtils;
 import org.apache.log4j.Logger;
 
 /**
@@ -57,20 +59,24 @@ public final class SerializationUtilities {
 	}
 
 	public static String serialize(final Object object) {
+		XMLEncoder xmlEncoder = null;
 		try {
-			// LOGGER.info("Serializing object : " + object.getClass());
+			LOGGER.info("Serializing object : " + object.getClass());
 			SerializationUtilities.setTransientFields(object.getClass(), new ArrayList<Class<?>>());
 			ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-			XMLEncoder xmlEncoder = new XMLEncoder(byteArrayOutputStream);
-			xmlEncoder.setExceptionListener(EXCEPTION_LISTENER);
+			xmlEncoder = new XMLEncoder(byteArrayOutputStream);
+			// xmlEncoder.setExceptionListener(EXCEPTION_LISTENER);
 			xmlEncoder.writeObject(object);
 			xmlEncoder.flush();
-			xmlEncoder.close();
 			return byteArrayOutputStream.toString(IConstants.ENCODING);
 		} catch (UnsupportedEncodingException e) {
 			LOGGER.error("Unsupported encoding : ", e);
 		} catch (Exception e) {
 			LOGGER.error("Exception serializing object : " + object, e);
+		} finally {
+			if (xmlEncoder != null) {
+				xmlEncoder.close();
+			}
 		}
 		return null;
 	}
@@ -141,22 +147,30 @@ public final class SerializationUtilities {
 
 	public static Object deserialize(final String xml) {
 		byte[] bytes = null;
+		XMLDecoder xmlDecoder = null;
 		try {
 			bytes = xml.getBytes(IConstants.ENCODING);
 			ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
-			XMLDecoder xmlDecoder = new XMLDecoder(byteArrayInputStream);
+			xmlDecoder = new XMLDecoder(byteArrayInputStream);
 			xmlDecoder.setExceptionListener(EXCEPTION_LISTENER);
 			return xmlDecoder.readObject();
 		} catch (UnsupportedEncodingException e) {
 			LOGGER.error("Unsupported encoding : ", e);
 		} catch (Exception e) {
 			LOGGER.error("Exception de-serialising object : " + xml, e);
+		} finally {
+			if (xmlDecoder != null) {
+				xmlDecoder.close();
+			}
 		}
 		return null;
 	}
 
 	public static Object clone(final Object object) {
-		return SerializationUtilities.deserialize(SerializationUtilities.serialize(object));
+		return SerializationUtils.clone((Serializable) object);
+//		String xml = SerializationUtilities.serialize(object);
+//		LOGGER.info("Serialized : " + xml);
+//		return SerializationUtilities.deserialize(xml);
 	}
 
 	/**
@@ -184,7 +198,11 @@ public final class SerializationUtilities {
 		return field;
 	}
 
+	/**
+	 * Singularity.
+	 */
 	private SerializationUtilities() {
+		// Documented
 	}
 
 }

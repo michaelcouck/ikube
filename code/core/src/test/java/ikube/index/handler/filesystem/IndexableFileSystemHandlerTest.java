@@ -1,14 +1,8 @@
 package ikube.index.handler.filesystem;
 
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import ikube.ATest;
-import ikube.index.IndexManager;
-import ikube.index.parse.IParser;
-import ikube.index.parse.ParserProvider;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.mock.ClusterManagerMock;
 import ikube.model.IndexableFileSystem;
@@ -16,32 +10,17 @@ import ikube.toolkit.FileUtilities;
 import ikube.toolkit.ThreadUtilities;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 import java.util.concurrent.Future;
-import java.util.regex.Pattern;
 
 import mockit.Deencapsulation;
-import mockit.Mock;
-import mockit.MockClass;
 import mockit.Mockit;
 
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field.Index;
-import org.apache.lucene.document.Field.Store;
-import org.apache.lucene.document.Field.TermVector;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.mockito.Mockito;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Tests the general functionality of the file system handler. There are no specific checks on the data that is indexed as the sub
@@ -90,6 +69,7 @@ public class IndexableFileSystemHandlerTest extends ATest {
 	}
 
 	@Test
+	@Ignore
 	public void handle() throws Exception {
 		ThreadUtilities.initialize();
 		List<Future<?>> futures = indexableFileSystemHandler.handle(indexContext, indexableFileSystem);
@@ -129,28 +109,28 @@ public class IndexableFileSystemHandlerTest extends ATest {
 
 	@Test
 	public void handleFile() throws Exception {
-//		ikube.model.File file = new ikube.model.File();
-//		file.setUrl(powerPointFile.getAbsolutePath());
-//		indexableFileSystemHandler.handleFile(indexContext, indexableFileSystem, new File(file.getUrl()));
-//		IndexManager.closeIndexWriter(indexContext);
-//		// Verify that the file is in the index
-//		verify(indexContext, Mockito.atLeastOnce()).getIndex();
+		// ikube.model.File file = new ikube.model.File();
+		// file.setUrl(powerPointFile.getAbsolutePath());
+		// indexableFileSystemHandler.handleFile(indexContext, indexableFileSystem, new File(file.getUrl()));
+		// IndexManager.closeIndexWriter(indexContext);
+		// // Verify that the file is in the index
+		// verify(indexContext, Mockito.atLeastOnce()).getIndex();
 	}
 
-//	@Test
-//	public void getPattern() {
-//		String excluded = "excluded";
-//		Pattern pattern = indexableFileSystemHandler.getPattern(excluded);
-//		boolean isExcluded = pattern.matcher(excluded).matches();
-//		assertTrue("This pattern is excluded : ", isExcluded);
-//	}
+	// @Test
+	// public void getPattern() {
+	// String excluded = "excluded";
+	// Pattern pattern = indexableFileSystemHandler.getPattern(excluded);
+	// boolean isExcluded = pattern.matcher(excluded).matches();
+	// assertTrue("This pattern is excluded : ", isExcluded);
+	// }
 
 	@Test
 	public void isExcluded() {
-//		Pattern pattern = Pattern.compile("excluded");
-//		File file = new File("./excluded");
-//		boolean isExcluded = indexableFileSystemHandler.isExcluded(file, pattern);
-//		assertTrue("This pattern is excluded : ", isExcluded);
+		// Pattern pattern = Pattern.compile("excluded");
+		// File file = new File("./excluded");
+		// boolean isExcluded = indexableFileSystemHandler.isExcluded(file, pattern);
+		// assertTrue("This pattern is excluded : ", isExcluded);
 	}
 
 }
