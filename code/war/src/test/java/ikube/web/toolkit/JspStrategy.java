@@ -1,4 +1,4 @@
-package ikube.integration.strategy;
+package ikube.web.toolkit;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;

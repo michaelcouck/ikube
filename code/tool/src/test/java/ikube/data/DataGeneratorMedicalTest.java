@@ -1,4 +1,4 @@
-package ikube.integration.data;
+package ikube.data;
 
 import ikube.IConstants;
 import ikube.database.IDataBase;

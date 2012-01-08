@@ -1,5 +1,6 @@
-package ikube.integration;
+package ikube.integration.service;
 
+import ikube.integration.AbstractIntegration;
 import ikube.service.ISearcherWebService;
 import ikube.service.ServiceLocator;
 

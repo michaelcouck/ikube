@@ -1,4 +1,4 @@
-package ikube.integration.database.jpa;
+package ikube.integration.database;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

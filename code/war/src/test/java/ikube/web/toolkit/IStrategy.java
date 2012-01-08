@@ -1,4 +1,4 @@
-package ikube.integration.strategy;
+package ikube.web.toolkit;
 
 public interface IStrategy {
 	

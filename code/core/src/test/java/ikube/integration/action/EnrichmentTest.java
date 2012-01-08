@@ -1,8 +1,9 @@
-package ikube.integration;
+package ikube.integration.action;
 
 import ikube.IConstants;
 import ikube.action.Enrichment;
 import ikube.action.Open;
+import ikube.integration.AbstractIntegration;
 import ikube.model.IndexContext;
 import ikube.toolkit.ApplicationContextManager;
 

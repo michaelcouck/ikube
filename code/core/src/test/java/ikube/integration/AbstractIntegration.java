@@ -32,8 +32,6 @@ import org.apache.lucene.index.IndexWriter;
 import org.dbunit.ext.h2.H2DataTypeFactory;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.webapp.WebAppContext;
 
 @Ignore
 public abstract class AbstractIntegration {
@@ -80,15 +78,15 @@ public abstract class AbstractIntegration {
 		DataUtilities.insertData(connection, inputStream);
 	}
 
-	@SuppressWarnings("unused")
-	private static void startJetty() throws Exception {
-		Server server = new Server(9300);
-		File webappDirectory = FileUtilities.findFileRecursively(new File("."), "webapp");
-		WebAppContext webAppContext = new WebAppContext(webappDirectory.getAbsolutePath(), "/ikube");
-		webAppContext.setServer(server);
-		server.setHandler(webAppContext);
-		server.start();
-	}
+	// @SuppressWarnings("unused")
+	// private static void startJetty() throws Exception {
+	// Server server = new Server(9300);
+	// File webappDirectory = FileUtilities.findFileRecursively(new File("."), "webapp");
+	// WebAppContext webAppContext = new WebAppContext(webappDirectory.getAbsolutePath(), "/ikube");
+	// webAppContext.setServer(server);
+	// server.setHandler(webAppContext);
+	// server.start();
+	// }
 
 	public static void delete(final IDataBase dataBase, final Class<?>... klasses) {
 		int batchSize = 1000;

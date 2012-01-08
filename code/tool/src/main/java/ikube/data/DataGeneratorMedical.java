@@ -1,4 +1,4 @@
-package ikube.integration.data;
+package ikube.data;
 
 import ikube.database.IDataBase;
 import ikube.model.medical.Doctor;

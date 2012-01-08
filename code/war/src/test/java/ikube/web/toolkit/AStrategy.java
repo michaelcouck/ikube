@@ -1,4 +1,4 @@
-package ikube.integration.strategy;
+package ikube.web.toolkit;
 
 import net.htmlparser.jericho.MasonTagTypes;
 import net.htmlparser.jericho.MicrosoftTagTypes;
