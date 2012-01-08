@@ -50,16 +50,16 @@
 			then OpenJpa will use these to get a connection to the db and can then commit on
 			that connection as it will not be xa.
 		-->
-		<properties>
+		<!-- <properties>
 			<property name="openjpa.Connection2UserName" value="sa" />
 			<property name="openjpa.Connection2Password" value="" />
-			<property name="openjpa.Connection2URL" value="jdbc:h2:tcp://localhost/~/test" />
+			<property name="openjpa.Connection2URL" value="jdbc:h2:file:ikube" />
 			<property name="openjpa.Connection2DriverName" value="org.h2.Driver" />
 			<property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
-		</properties>
+		</properties> -->
 	</persistence-unit>
 	
-	<!-- <persistence-unit name="IkubePersistenceUnitDb2" transaction-type="RESOURCE_LOCAL">
+	<persistence-unit name="IkubePersistenceUnitDb2" transaction-type="RESOURCE_LOCAL">
 		<provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
 		<class>ikube.model.Persistable</class>
 		
@@ -101,7 +101,7 @@
 		<properties>
 			<property name="openjpa.Connection2UserName" value="db2admin" />
 			<property name="openjpa.Connection2Password" value="db2admin" />
-			<property name="openjpa.Connection2URL" value="jdbc:db2://ikube:50000/ikube" />
+			<property name="openjpa.Connection2URL" value="jdbc:db2://ikube:50000/ikube_3" />
 			<property name="openjpa.Connection2DriverName" value="com.ibm.db2.jcc.DB2Driver" />
 			<property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
 		</properties>
@@ -153,7 +153,7 @@
 			<property name="openjpa.Connection2DriverName" value="oracle.jdbc.driver.OracleDriver" />
 			<property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
 		</properties>
-	</persistence-unit> -->
+	</persistence-unit>
 	
 	<persistence-unit name="IkubePersistenceUnitPostgres" transaction-type="RESOURCE_LOCAL">
 		<provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>

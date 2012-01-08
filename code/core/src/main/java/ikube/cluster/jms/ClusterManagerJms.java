@@ -71,11 +71,22 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 	private Map<String, Server> servers;
 	@Autowired
 	private IDataBase dataBase;
-	/** Access to the ActiveMq cluster functionality. */
+	/** Access to the ActiveMQ cluster functionality. */
 	@Autowired
 	private XBeanBrokerService xBeanBrokerService;
 	/** A map of templates to send messages to the cluster. */
 	private Map<String, JmsTemplate> jmsTemplates;
+
+	public void initialize() throws UnknownHostException {
+		locks = new HashMap<String, ClusterManagerJmsLock>();
+		servers = new HashMap<String, Server>();
+		jmsTemplates = new HashMap<String, JmsTemplate>();
+		ip = InetAddress.getLocalHost().getHostAddress();
+		address = ip + "." + jmsPort;
+
+		getServer();
+		getLock(address, Long.MAX_VALUE, Boolean.FALSE);
+	}
 
 	/**
 	 * This method will post a message to all servers, with a lock containing the time the lock was requested. It will then wait a short
@@ -157,8 +168,7 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 	 * cluster. Other servers that may or may not be competing for the lock also post their locks. Whoever shouts for the lock first then
 	 * get it. This method checks to see if this server shouted first based on the locks from the other servers in the cluster.
 	 * 
-	 * @param shout
-	 *            the time that this server shouted for the lock
+	 * @param shout the time that this server shouted for the lock
 	 * @return whether this server shouted for the lock first thereby getting the lock for the cluster
 	 */
 	protected boolean haveLock(final long shout) {
@@ -193,6 +203,8 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 					Server server = (Server) object;
 					servers.put(server.getAddress(), server);
 					debug(server);
+				} else {
+					LOGGER.warn("Object type not supported : " + object);
 				}
 			} else {
 				LOGGER.warn("Message type not supported : {} ", message);
@@ -208,8 +220,7 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 	/**
 	 * This method will send messages to the whole cluster.
 	 * 
-	 * @param serializable
-	 *            the object to send in the message
+	 * @param serializable the object to send in the message
 	 */
 	@Override
 	public void sendMessage(final Serializable serializable) {
@@ -275,12 +286,9 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 	/**
 	 * Creates the lock if it is not already instantiated.
 	 * 
-	 * @param address
-	 *            the address of this server
-	 * @param shout
-	 *            the time the server shouted for the lock
-	 * @param locked
-	 *            whether this is a request for the lock or a reset of false to release the lock
+	 * @param address the address of this server
+	 * @param shout the time the server shouted for the lock
+	 * @param locked whether this is a request for the lock or a reset of false to release the lock
 	 * @return the lock for this server
 	 */
 	protected ClusterManagerJmsLock getLock(final String address, final long shout, final boolean locked) {
@@ -402,17 +410,6 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 		server.setAddress(address);
 		servers.put(server.getAddress(), server);
 		return server;
-	}
-
-	public void initialize() throws UnknownHostException {
-		locks = new HashMap<String, ClusterManagerJmsLock>();
-		servers = new HashMap<String, Server>();
-		jmsTemplates = new HashMap<String, JmsTemplate>();
-		ip = InetAddress.getLocalHost().getHostAddress();
-		address = ip + "." + jmsPort;
-
-		getServer();
-		getLock(address, Long.MAX_VALUE, Boolean.FALSE);
 	}
 
 	public void destroy() {

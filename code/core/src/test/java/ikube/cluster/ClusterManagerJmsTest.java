@@ -20,7 +20,6 @@ import javax.jms.ObjectMessage;
 
 import mockit.Deencapsulation;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -35,11 +34,12 @@ import org.mockito.stubbing.Answer;
  */
 public class ClusterManagerJmsTest extends ATest {
 
-	private int clubSize = 25;
+	private int clubSize = 10;
 	private long timeSpent = 60 * 1000;
 	private Random random = new Random();
 	private boolean[] locks = new boolean[clubSize];
 	private boolean[] unlocks = new boolean[clubSize];
+	private boolean success = Boolean.TRUE;
 
 	/**
 	 * This class will execute locking and unlocking on the cluster manager in the constructor. It will also check the locks for the
@@ -62,23 +62,32 @@ public class ClusterManagerJmsTest extends ATest {
 		}
 
 		public void run() {
-			long start = System.currentTimeMillis();
-			while (System.currentTimeMillis() - start < timeSpent) {
-				boolean bool = random.nextBoolean();
-				if (bool) {
-					locks[index] = clusterManagerJms.lock(IConstants.ID_LOCK);
-				} else {
-					unlocks[index] = clusterManagerJms.unlock(IConstants.ID_LOCK);
+			try {
+				long start = System.currentTimeMillis();
+				while (System.currentTimeMillis() - start < timeSpent) {
+					boolean bool = random.nextBoolean();
+					if (bool) {
+						locks[index] = clusterManagerJms.lock(IConstants.ID_LOCK);
+					} else {
+						unlocks[index] = clusterManagerJms.unlock(IConstants.ID_LOCK);
+					}
+					ThreadUtilities.sleep((long) (random.nextDouble() * 3d));
+					boolean moreThanOneLock = containsMoreThanOne(locks);
+					boolean moreThanOneUnlock = containsMoreThanOne(unlocks);
+					if (moreThanOneLock) {
+						logger.info("Locked : " + Arrays.toString(locks) + ", unlocked : " + Arrays.toString(unlocks));
+						logger.info("More than one lock : " + moreThanOneLock);
+						logger.info("More than one unlock : " + moreThanOneUnlock);
+						// System.exit(0);
+						success = Boolean.FALSE;
+						ThreadUtilities.destroy();
+						return;
+					}
 				}
-				ThreadUtilities.sleep((long) (random.nextDouble() * 3d));
-				boolean moreThanOneLock = containsMoreThanOne(locks);
-				boolean moreThanOneUnlock = containsMoreThanOne(unlocks);
-				if (moreThanOneLock) {
-					logger.info("Locked : " + Arrays.toString(locks) + ", unlocked : " + Arrays.toString(unlocks));
-					logger.info("More than one lock : " + moreThanOneLock);
-					logger.info("More than one unlock : " + moreThanOneUnlock);
-					System.exit(0);
-				}
+			} catch (Exception e) {
+				logger.error("Exception locking and unlocking the cluster : " + this, e);
+				success = Boolean.FALSE;
+				return;
 			}
 		}
 
@@ -95,10 +104,6 @@ public class ClusterManagerJmsTest extends ATest {
 		super(ClusterManagerJmsTest.class);
 	}
 
-	@Before
-	public void before() throws Exception {
-	}
-
 	@Test
 	public void clusterSynchronisation() throws Exception {
 		ArrayList<Thread> threads = new ArrayList<Thread>();
@@ -110,6 +115,7 @@ public class ClusterManagerJmsTest extends ATest {
 			thread.start();
 		}
 		ThreadUtilities.waitForThreads(threads);
+		assertTrue("More than one lock : ", success);
 	}
 
 	private ArrayList<ClusterManagerJms> getClusterManagerJmsClub(final int size) throws Exception {

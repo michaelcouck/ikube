@@ -185,7 +185,7 @@ public class IndexableTableHandlerIntegration extends AbstractIntegration {
 		IndexWriter indexWriter = IndexManager.openIndexWriter(realIndexContext, System.currentTimeMillis(), ip);
 		realIndexContext.getIndex().setIndexWriter(indexWriter);
 		realIndexContext.setAction(new Action());
-		DatabaseUtilities.printResultSet(connection.createStatement().executeQuery("select * from faq"));
+		// DatabaseUtilities.printResultSet(connection.createStatement().executeQuery("select * from faq"));
 		List<Future<?>> threads = indexableTableHandler.handle(realIndexContext, faqIndexableTable);
 		ThreadUtilities.waitForFutures(threads, Integer.MAX_VALUE);
 		assertTrue("There must be some data in the index : ", realIndexContext.getIndex().getIndexWriter().numDocs() > 0);

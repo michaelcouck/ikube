@@ -50,6 +50,9 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 							logger.warn(message);
 							continue;
 						}
+						if (action != null) {
+							stop(action);
+						}
 						action = start(indexContext.getIndexName(), indexable.getName());
 						indexContext.setAction(action);
 						logger.info("Indexable : " + indexable.getName());
@@ -64,11 +67,10 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 						if (!iterator.hasNext()) {
 							IndexManager.closeIndexWriter(indexContext);
 						}
-						stop(action);
 					}
 				}
-				return Boolean.TRUE;
 			}
+			return Boolean.TRUE;
 		} finally {
 			logger.debug(Logging.getString("Finished indexing : ", indexName));
 			// We'll try to close the writer, even though it should already be closed
@@ -76,7 +78,6 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 			indexContext.setAction(null);
 			stop(action);
 		}
-		return Boolean.FALSE;
 	}
 
 	protected ikube.model.Action getAction(Server server, long id) {

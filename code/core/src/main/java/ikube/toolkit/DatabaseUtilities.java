@@ -29,7 +29,11 @@ public final class DatabaseUtilities {
 	private static final Logger LOGGER = Logger.getLogger(DatabaseUtilities.class);
 	private static final Map<Class<?>, Field> ID_FIELDS = new HashMap<Class<?>, Field>();
 
+	/**
+	 * Singularity.
+	 */
 	private DatabaseUtilities() {
+		// Documented
 	}
 
 	/**

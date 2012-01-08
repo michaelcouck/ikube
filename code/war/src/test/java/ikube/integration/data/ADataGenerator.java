@@ -217,7 +217,11 @@ public abstract class ADataGenerator implements IDataGenerator {
 		return null;
 	}
 
+	/**
+	 * Default empty implementation.
+	 */
 	public void after() {
+		// Sub classes to implement 
 	}
 
 }
