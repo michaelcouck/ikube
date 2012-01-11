@@ -16,10 +16,10 @@
             http://www.springframework.org/schema/util/spring-util.xsd">
 
 	<bean
-		id="filesystemIndex"
+		id="coldwellIndex"
 		class="ikube.model.IndexContext"
-		property:name="filesystemIndex"
-		property:maxAge="5760"
+		property:name="coldwellIndex"
+		property:maxAge="6"
 		property:compoundFile="${compound.file}"
 		property:bufferedDocs="${buffered.docs}"
 		property:bufferSize="${buffer.size}"
@@ -31,26 +31,23 @@
 		property:throttle="${throttle}"
 		property:indexDirectoryPath="${index.directory.path}"
 		property:indexDirectoryPathBackup="${index.directory.path.backup}"
-		property:children-ref="filesystemIndexables" />
-	<util:list id="filesystemIndexables">
-		<ref local="filesystemIndexable" />
+		property:children-ref="coldwellIndexables" />
+	<util:list id="coldwellIndexables">
+		<ref local="coldwellIndexable" />
 	</util:list>
 	
 	<bean
-		id="filesystemIndexable"
-		class="ikube.model.IndexableFileSystem"
-		property:name="filesystemIndexable"
-		property:path="D:/"
-		property:pathFieldName="title"
-		property:nameFieldName="name"
-		property:lengthFieldName="length"
-		property:contentFieldName="contents"
-		property:excludedPattern="${files.excluded.pattern}"
-		property:lastModifiedFieldName="lastmodified"
-		property:batchSize="${file.batch.size}"
-		property:maxReadLength="${file.max.read.length}"
+		id="coldwellIndexable"
+		class="ikube.model.IndexableInternet"
+		property:name="coldwellIndexable"
+		property:url="http://www.offshore-professional.com/" 
+		property:idFieldName="id"
+		property:titleFieldName="title"
+		property:contentFieldName="content"
+		property:analyzed="true"
 		property:stored="true"
 		property:vectored="true"
-		property:analyzed="true" />
+		property:internetBatchSize="${internet.batch.size}"
+		property:excludedPattern="${internet.excluded.pattern}" />
 	
 </beans>

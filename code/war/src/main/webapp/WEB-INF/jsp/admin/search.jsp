@@ -20,16 +20,16 @@
 <input name="targetSearchUrl" type="hidden" value="${targetSearchUrl}">
 <input name="indexName" type="hidden" value="${indexName}">
 <table width="100%">
-	<tr><th colspan="3">Multi search ${indexName}</th></tr>
+	<tr><th>Multi search ${indexName}</th></tr>
 	<tr>
-		<td>Search all fields: </td>
-		<td id="search" style="padding-bottom: 0;">
+		<td>
+			Search all fields: 
 			<input id="search-text" type="text" name="searchStrings" value="<c:out value='${searchStrings}' />" />
 			<input type="submit" id="search-submit" value="Go" />
 		</td>
 	</tr>
 	<tr>
-		<td colspan="3">
+		<td>
 			<c:if test="${!empty corrections}">
 				<br>
 				Did you mean : 
@@ -45,39 +45,22 @@
 <input name="targetSearchUrl" type="hidden" value="${targetSearchUrl}">
 <input name="indexName" type="hidden" value="${indexName}">
 <table width="100%">
-	<tr><th colspan="3">Individual field(s) search ${indexName}</th></tr>
+	<tr><th colspan="2">Individual field(s) search ${indexName}</th></tr>
 	<c:forEach var="indexFieldNameEntry" items="${indexFieldNamesAndValues}">
 		<tr>
-			<td>${indexFieldNameEntry.key}</td>
-			<td id="search" style="padding-bottom: 0;">
+			<td>
+				${indexFieldNameEntry.key}
+			</td>
+			<td style="padding-bottom: 0;">
 				<input id="search-text" type="text" name="${indexFieldNameEntry.key}" value="${indexFieldNameEntry.value}" />
-				<input type="submit" id="search-submit" value="Go" />
 			</td>
 		</tr>
 	</c:forEach>
-	<c:if test="${!empty geospatial && geospatial == 'true'}">
 	<tr>
-		<td>Latitude: </td>
-		<td id="search" style="padding-bottom: 0;">
-			<input id="search-text" type="text" name="latitude" value="<c:out value='${latitude}' />" />
+		<td colspan="2">
 			<input type="submit" id="search-submit" value="Go" />
 		</td>
 	</tr>
-	<tr>
-		<td>Longitude: </td>
-		<td id="search" style="padding-bottom: 0;">
-			<input id="search-text" type="text" name="longitude" value="<c:out value='${longitude}' />" />
-			<input type="submit" id="search-submit" value="Go" />
-		</td>
-	</tr>
-	<tr>
-		<td>Distance: </td>
-		<td id="search" style="padding-bottom: 0;">
-			<input id="search-text" type="text" name="distance" value="<c:out value='${distance}' />" />
-			<input type="submit" id="search-submit" value="Go" />
-		</td>
-	</tr>
-	</c:if>
 	<tr>
 		<td colspan="2">
 			<c:if test="${!empty corrections}">

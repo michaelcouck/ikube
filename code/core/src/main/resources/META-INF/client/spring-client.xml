@@ -37,22 +37,20 @@
 		property:children-ref="indexables" />
 	<util:list id="indexables">
 		<ref local="mail" />
-		<ref local="internet" />
 		<ref local="hazelcast" />
-		<!-- <ref local="internetMillion" /> -->
-		<!-- <ref local="filesystem" /> -->
+		<ref local="internetMillion" />
 		<!-- <ref local="wikidata" /> -->
-		<!-- <ref local="filesystemMillion" /> -->
+		<ref local="filesystemMillion" />
 		<ref bean="faqTableH2" />
 		<ref bean="attachmentTableH2" />
-		<!-- <ref bean="faqTableH2" />
+		<ref bean="faqTableH2" />
 		<ref bean="faqTableDb2" />
 		<ref bean="faqTableOracle" />
 		<ref bean="patientTableH2" />
 		<ref bean="patientTableDb2" />
 		<ref bean="patientTableOracle" />
 		<ref bean="addressTableDb2" />
-		<ref bean="attachmentTableDb2Direct" /> -->
+		<ref bean="attachmentTableDb2Direct" />
 	</util:list>
 
 	<!-- H2 Faqs -->
@@ -63,7 +61,8 @@
 		property:primaryTable="true"
 		property:dataSource-ref="nonXaDataSourceH2"
 		property:children-ref="faqColumnsH2" 
-		property:maxExceptions="100" />
+		property:maxExceptions="100"
+		property:allColumns="true" />
 	<bean
 		id="attachmentTableH2"
 		class="ikube.model.IndexableTable"
@@ -71,16 +70,10 @@
 		property:primaryTable="false"
 		property:dataSource-ref="nonXaDataSourceH2"
 		property:children-ref="attachmentColumnsH2" 
-		property:maxExceptions="100" />
+		property:maxExceptions="100"
+		property:allColumns="true" />
 	<util:list id="faqColumnsH2">
 		<ref local="faqId" />
-		<ref local="creationtimestamp" />
-		<ref local="modifiedtimestamp" />
-		<ref local="creator" />
-		<ref local="modifier" />
-		<ref local="question" />
-		<ref local="answer" />
-		<ref local="published" />
 		<ref local="attachmentTableH2" />
 	</util:list>
 	<util:list id="attachmentColumnsH2">
@@ -88,7 +81,6 @@
 		<ref local="attachmentId" />
 		<ref local="name" />
 		<ref local="attachment" />
-		<ref local="length" />
 	</util:list>
 	
 	<!-- Db2 Faqs -->
@@ -99,7 +91,8 @@
 		property:primaryTable="true"
 		property:dataSource-ref="nonXaDataSourceDb2"
 		property:children-ref="faqColumnsDb2" 
-		property:maxExceptions="100" />
+		property:maxExceptions="100"
+		property:allColumns="true"  />
 	<bean
 		id="attachmentTableDb2"
 		class="ikube.model.IndexableTable"
@@ -107,7 +100,8 @@
 		property:primaryTable="false"
 		property:dataSource-ref="nonXaDataSourceDb2"
 		property:children-ref="attachmentColumnsDb2" 
-		property:maxExceptions="100" />
+		property:maxExceptions="100"
+		property:allColumns="true"  />
 	
 	<!-- This table is the attachment table direct, no dependencies. -->
 	<bean
@@ -117,24 +111,17 @@
 		property:primaryTable="true"
 		property:dataSource-ref="nonXaDataSourceDb2"
 		property:children-ref="attachmentColumnsDb2" 
-		property:maxExceptions="100" />
+		property:maxExceptions="100"
+		property:allColumns="true"  />
 	
 	<util:list id="faqColumnsDb2">
 		<ref local="faqId" />
-		<ref local="creationtimestamp" />
-		<ref local="modifiedtimestamp" />
-		<ref local="creator" />
-		<ref local="modifier" />
-		<ref local="question" />
-		<ref local="answer" />
-		<ref local="published" />
 		<ref local="attachmentTableDb2" />
 	</util:list>
 	<util:list id="attachmentColumnsDb2">
 		<ref local="attachmentId" />
 		<ref local="name" />
 		<ref local="attachment" />
-		<ref local="length" />
 	</util:list>
 	
 	<!-- Oracle Faqs -->
@@ -145,7 +132,8 @@
 		property:primaryTable="true"
 		property:dataSource-ref="nonXaDataSourceOracle"
 		property:children-ref="faqColumnsOracle" 
-		property:maxExceptions="100" />
+		property:maxExceptions="100"
+		property:allColumns="true" />
 	<bean
 		id="attachmentTableOracle"
 		class="ikube.model.IndexableTable"
@@ -153,16 +141,10 @@
 		property:primaryTable="false"
 		property:dataSource-ref="nonXaDataSourceOracle"
 		property:children-ref="attachmentColumnsOracle" 
-		property:maxExceptions="100" />
+		property:maxExceptions="100"
+		property:allColumns="true" />
 	<util:list id="faqColumnsOracle">
 		<ref local="faqId" />
-		<ref local="creationtimestamp" />
-		<ref local="modifiedtimestamp" />
-		<ref local="creator" />
-		<ref local="modifier" />
-		<ref local="question" />
-		<ref local="answer" />
-		<ref local="published" />
 		<ref local="attachmentTableOracle" />
 	</util:list>
 	<util:list id="attachmentColumnsOracle">
@@ -170,7 +152,6 @@
 		<ref local="attachmentId" />
 		<ref local="name" />
 		<ref local="attachment" />
-		<ref local="length" />
 	</util:list>
 
 	<bean
@@ -178,62 +159,6 @@
 		class="ikube.model.IndexableColumn"
 		property:name="faqId"
 		property:idColumn="true"
-		property:analyzed="${analyzed}"
-		property:stored="${not.stored}"
-		property:vectored="${vectored}" />
-	<bean
-		id="creationtimestamp"
-		class="ikube.model.IndexableColumn"
-		property:name="creationtimestamp"
-		property:fieldName="creationtimestamp"
-		property:analyzed="${analyzed}"
-		property:stored="${not.stored}"
-		property:vectored="${vectored}" />
-	<bean
-		id="modifiedtimestamp"
-		class="ikube.model.IndexableColumn"
-		property:name="modifiedtimestamp"
-		property:fieldName="modifiedtimestamp"
-		property:analyzed="${analyzed}"
-		property:stored="${not.stored}"
-		property:vectored="${vectored}" />
-	<bean
-		id="creator"
-		class="ikube.model.IndexableColumn"
-		property:name="creator"
-		property:fieldName="creator"
-		property:analyzed="${analyzed}"
-		property:stored="${not.stored}"
-		property:vectored="${vectored}" />
-	<bean
-		id="modifier"
-		class="ikube.model.IndexableColumn"
-		property:name="modifier"
-		property:fieldName="modifier"
-		property:analyzed="${analyzed}"
-		property:stored="${not.stored}"
-		property:vectored="${vectored}" />
-	<bean
-		id="question"
-		class="ikube.model.IndexableColumn"
-		property:name="question"
-		property:fieldName="question"
-		property:analyzed="${analyzed}"
-		property:stored="${not.stored}"
-		property:vectored="${vectored}" />
-	<bean
-		id="answer"
-		class="ikube.model.IndexableColumn"
-		property:name="answer"
-		property:fieldName="answer"
-		property:analyzed="${analyzed}"
-		property:stored="${not.stored}"
-		property:vectored="${vectored}" />
-	<bean
-		id="published"
-		class="ikube.model.IndexableColumn"
-		property:name="published"
-		property:fieldName="published"
 		property:analyzed="${analyzed}"
 		property:stored="${not.stored}"
 		property:vectored="${vectored}" />
@@ -273,14 +198,6 @@
 		property:analyzed="${analyzed}"
 		property:stored="${not.stored}"
 		property:vectored="${vectored}" />
-	<bean
-		id="length"
-		class="ikube.model.IndexableColumn"
-		property:name="length"
-		property:fieldName="length"
-		property:analyzed="${analyzed}"
-		property:stored="${not.stored}"
-		property:vectored="${vectored}" />
 		
 	<!-- H2 patients -->
 	<bean
@@ -290,13 +207,10 @@
 		property:primaryTable="true"
 		property:dataSource-ref="nonXaDataSourceH2"
 		property:children-ref="patientColumnsH2" 
-		property:maxExceptions="100" />
+		property:maxExceptions="100"
+		property:allColumns="true" />
 	<util:list id="patientColumnsH2">
 		<ref local="patientId" />
-		<ref local="firstName" />
-		<ref local="lastName" />
-		<ref local="birthDate" />
-		<ref local="deathDate" />
 		<ref local="addressTableH2" />
 	</util:list>
 	<bean
@@ -307,7 +221,8 @@
 		property:address="true"
 		property:dataSource-ref="nonXaDataSourceH2"
 		property:children-ref="addressColumnsH2" 
-		property:maxExceptions="100" />
+		property:maxExceptions="100"
+		property:allColumns="true" />
 	<util:list id="addressColumnsH2">
 		<ref local="addressId" />
 		<ref local="numb" />
@@ -520,34 +435,6 @@
 		property:titleField="title" />
 	
 	<bean
-		id="internet"
-		class="ikube.model.IndexableInternet"
-		property:name="internet"
-		property:url="${url}" 
-		property:idFieldName="id"
-		property:titleFieldName="title"
-		property:contentFieldName="content"
-		property:analyzed="${analyzed}"
-		property:stored="${stored}"
-		property:vectored="${vectored}"
-		property:internetBatchSize="${internet.batch.size}"
-		property:excludedPattern="${internet.excluded.pattern}" />
-	
-	<bean
-		id="coldwell"
-		class="ikube.model.IndexableInternet"
-		property:name="internet"
-		property:url="http://www.offshore-professional.com/de/index.html" 
-		property:idFieldName="id"
-		property:titleFieldName="title"
-		property:contentFieldName="content"
-		property:analyzed="false"
-		property:stored="false"
-		property:vectored="false"
-		property:internetBatchSize="${internet.batch.size}"
-		property:excludedPattern="${internet.excluded.pattern}" />
-	
-	<bean
 		id="hazelcast"
 		class="ikube.model.IndexableInternet"
 		property:name="internet"
@@ -574,21 +461,6 @@
 		property:vectored="${vectored}"
 		property:internetBatchSize="${internet.batch.size}"
 		property:excludedPattern="${internet.excluded.pattern}" />
-	
-	<bean
-		id="filesystem"
-		class="ikube.model.IndexableFileSystem"
-		property:name="filesOne"
-		property:path="C:/Dropbox/Sumo"
-		property:pathFieldName="path"
-		property:nameFieldName="name"
-		property:lengthFieldName="length"
-		property:contentFieldName="contents"
-		property:excludedPattern="${files.excluded.pattern}"
-		property:lastModifiedFieldName="lastmodified"
-		property:batchSize="${file.batch.size}"
-		property:maxReadLength="${file.max.read.length}"
-		property:unpackZips="false" />
 	
 	<bean
 		id="wikidata"

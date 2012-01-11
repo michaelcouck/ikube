@@ -154,13 +154,17 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 	 * 
 	 * @return whether any server has been granted the lock
 	 */
-	private boolean isLocked() {
-		for (ClusterManagerJmsLock stackLock : locks.values()) {
-			if (stackLock.isLocked()) {
-				return Boolean.TRUE;
+	private synchronized boolean isLocked() {
+		try {
+			for (ClusterManagerJmsLock stackLock : locks.values()) {
+				if (stackLock.isLocked()) {
+					return Boolean.TRUE;
+				}
 			}
+			return Boolean.FALSE;
+		} finally {
+			notifyAll();
 		}
-		return Boolean.FALSE;
 	}
 
 	/**
@@ -171,19 +175,23 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 	 * @param shout the time that this server shouted for the lock
 	 * @return whether this server shouted for the lock first thereby getting the lock for the cluster
 	 */
-	protected boolean haveLock(final long shout) {
-		for (Entry<String, ClusterManagerJmsLock> entry : locks.entrySet()) {
-			if (!entry.getValue().isLocked()) {
-				continue;
+	protected synchronized boolean haveLock(final long shout) {
+		try {
+			for (Entry<String, ClusterManagerJmsLock> entry : locks.entrySet()) {
+				if (!entry.getValue().isLocked()) {
+					continue;
+				}
+				if (entry.getKey().equals(address)) {
+					continue;
+				}
+				if (entry.getValue().getShout() <= shout) {
+					return Boolean.FALSE;
+				}
 			}
-			if (entry.getKey().equals(address)) {
-				continue;
-			}
-			if (entry.getValue().getShout() <= shout) {
-				return Boolean.FALSE;
-			}
+			return Boolean.TRUE;
+		} finally {
+			notifyAll();
 		}
-		return Boolean.TRUE;
 	}
 
 	/**

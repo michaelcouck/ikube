@@ -254,6 +254,12 @@
 		property:searchUrl="${searcher.web.service.url}" />
 	<util:list id="geospatialFields">
 		<value>name</value>
+		<value>city</value>
+		<value>country</value>
+		<value>latitude</value>
+		<value>longitude</value>
+		<value>asciiname</value>
+		<value>alternatenames</value>
 	</util:list>
 	<bean 
 		id="ikube.index.spatial.enrich.IEnrichment"
