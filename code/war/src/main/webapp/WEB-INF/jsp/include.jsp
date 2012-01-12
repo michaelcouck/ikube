@@ -10,11 +10,13 @@
 	<c:set var="toResults" value="${total < firstResult + maxResults ? firstResult + (total % 10) : firstResult + maxResults}" />
 	<tr>
 		<td>
-			From : <c:out value='${firstResult + 1}' />,
-			to : <c:out value='${toResults}' />,
-			total : <c:out value='${total}' />,
-			for '<c:out value='${searchStrings}' />',
-			took <c:out value='${duration}' /> ms<br /><br>
+			<c:if test="${!empty searchStrings && !empty total}">
+				From : <c:out value='${firstResult + 1}' />,
+				to : <c:out value='${toResults}' />,
+				total : <c:out value='${total}' />,
+				for '<c:out value='${searchStrings}' />',
+				took <c:out value='${duration}' /> ms<br /><br>
+			</c:if>
 		</td>
 	</tr>
 	<tr>
