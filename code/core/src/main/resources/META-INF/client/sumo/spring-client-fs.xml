@@ -40,7 +40,7 @@
 		id="filesystemIndexable"
 		class="ikube.model.IndexableFileSystem"
 		property:name="filesystemIndexable"
-		property:path="D:/"
+		property:path="./"
 		property:pathFieldName="title"
 		property:nameFieldName="name"
 		property:lengthFieldName="length"

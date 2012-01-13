@@ -79,11 +79,13 @@ public class IndexableTableHandlerIntegration extends AbstractIntegration {
 	@Test
 	public void buildSql() throws Exception {
 		realIndexContext.setBatchSize(10);
-		String expectedSql = "select faq.faqId, faq.creationtimestamp, faq.modifiedtimestamp, "
-				+ "faq.creator, faq.modifier, faq.question, faq.answer, faq.published from faq";
+		String expectedSql = "select faq.faqid, faq.answer, faq.creationtimestamp, faq.creator, faq.modifiedtimestamp, faq.modifier, "
+				+ "faq.published, faq.question from faq";
 		long nextIdNumber = 0;
 		long batchSize = realIndexContext.getBatchSize();
+		Deencapsulation.invoke(indexableTableHandler, "addAllColumns", faqIndexableTable, connection);
 		String sql = Deencapsulation.invoke(indexableTableHandler, "buildSql", faqIndexableTable, batchSize, nextIdNumber);
+		sql = sql.toLowerCase();
 		logger.info("Sql : " + sql);
 		assertTrue(sql.contains(expectedSql));
 	}

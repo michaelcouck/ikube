@@ -44,6 +44,7 @@ class IndexableFilesystemHandlerWorker implements Runnable {
 	private ByteArrayInputStream byteInputStream;
 	private ByteArrayOutputStream byteOutputStream;
 	private IndexableHandler<IndexableFileSystem> indexableHandler;
+	private Pattern pattern;
 
 	IndexableFilesystemHandlerWorker(IndexableHandler<IndexableFileSystem> indexableHandler, IndexContext<?> indexContext,
 			IndexableFileSystem indexableFileSystem, Stack<File> directories) {
@@ -76,8 +77,6 @@ class IndexableFilesystemHandlerWorker implements Runnable {
 			}
 		} catch (Exception e) {
 			logger.error("Exception in worker : ", e);
-		} finally {
-			// indexableFileSystem.setByteBuffer(null);
 		}
 	}
 
@@ -149,7 +148,7 @@ class IndexableFilesystemHandlerWorker implements Runnable {
 		}
 	}
 
-	private boolean unzip(IndexableFileSystem indexableFileSystem, File file) {
+	protected boolean unzip(IndexableFileSystem indexableFileSystem, File file) {
 		// We have to unpack the zip files
 		if (indexableFileSystem.isUnpackZips()) {
 			boolean isZipAndFile = IConstants.ZIP_JAR_WAR_EAR_PATTERN.matcher(file.getName()).matches() && file.isFile();
@@ -202,7 +201,10 @@ class IndexableFilesystemHandlerWorker implements Runnable {
 	}
 
 	protected synchronized Pattern getPattern(final String pattern) {
-		return Pattern.compile(pattern != null ? pattern : "");
+		if (this.pattern == null) {
+			this.pattern = Pattern.compile(pattern != null ? pattern : "");
+		}
+		return this.pattern;
 	}
 
 	/**

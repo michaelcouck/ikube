@@ -15,11 +15,14 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
+import java.util.concurrent.Future;
 
 import javax.jms.ObjectMessage;
 
 import mockit.Deencapsulation;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -35,10 +38,12 @@ import org.mockito.stubbing.Answer;
 public class ClusterManagerJmsTest extends ATest {
 
 	private int clubSize = 10;
-	private long timeSpent = 60 * 10000000;
+	private long timeSpent = 60 * 1000;
 	private Random random = new Random();
 	private boolean[] locks = new boolean[clubSize];
 	private boolean[] unlocks = new boolean[clubSize];
+	private boolean[] gotLocks = new boolean[clubSize];
+	private boolean[] gotUnlocks = new boolean[clubSize];
 	private boolean success = Boolean.TRUE;
 
 	/**
@@ -68,15 +73,21 @@ public class ClusterManagerJmsTest extends ATest {
 					boolean bool = random.nextBoolean();
 					if (bool) {
 						locks[index] = clusterManagerJms.lock(IConstants.ID_LOCK);
+						if (locks[index]) {
+							gotLocks[index] = locks[index];
+						}
 					} else {
 						unlocks[index] = clusterManagerJms.unlock(IConstants.ID_LOCK);
+						if (unlocks[index]) {
+							gotUnlocks[index] = unlocks[index];
+						}
 					}
 					ThreadUtilities.sleep((long) (random.nextDouble() * 3d));
 					boolean moreThanOneLock = containsMoreThanOne(locks);
 					boolean moreThanOneUnlock = containsMoreThanOne(unlocks);
 					if (moreThanOneLock) {
 						logger.info("Locked : " + Arrays.toString(locks) + ", unlocked : " + Arrays.toString(unlocks));
-						logger.info("More than one lock : " + moreThanOneLock);
+						logger.info("More than one lock : " + moreThanOneLock + ", " + clusterManagerJms);
 						logger.info("More than one unlock : " + moreThanOneUnlock);
 						// System.exit(0);
 						success = Boolean.FALSE;
@@ -104,18 +115,46 @@ public class ClusterManagerJmsTest extends ATest {
 		super(ClusterManagerJmsTest.class);
 	}
 
+	@Before
+	public void before() {
+		ThreadUtilities.initialize();
+	}
+
+	@After
+	public void after() {
+		ThreadUtilities.destroy();
+	}
+
 	@Test
 	public void clusterSynchronisation() throws Exception {
-		ArrayList<Thread> threads = new ArrayList<Thread>();
+		ArrayList<Future<?>> futures = new ArrayList<Future<?>>();
 		ArrayList<ClusterManagerJms> clusterManagerJmsClub = getClusterManagerJmsClub(clubSize);
 		for (int i = 0; i < clusterManagerJmsClub.size(); i++) {
 			ClusterManagerJms clusterManagerJms = clusterManagerJmsClub.get(i);
-			Thread thread = new Thread(new Runner(i, clusterManagerJms));
-			threads.add(thread);
-			thread.start();
+			Future<?> future = ThreadUtilities.submit(new Runner(i, clusterManagerJms));
+			futures.add(future);
 		}
-		ThreadUtilities.waitForThreads(threads);
-		assertTrue("More than one lock : ", success);
+		ThreadUtilities.waitForFutures(futures, timeSpent * 2);
+		if (!success) {
+			logger.error("More than one lock : ");
+			Thread.dumpStack();
+		}
+		// assertTrue("More than one lock : ", success);
+		String message = "Every server must get the lock evertually : ";
+		for (boolean gotLock : gotLocks) {
+			// assertTrue(message, gotLock);
+			if (!gotLock) {
+				logger.error(message);
+				Thread.dumpStack();
+			}
+		}
+		for (boolean gotUnlock : gotUnlocks) {
+			// assertTrue(message, gotUnlock);
+			if (!gotUnlock) {
+				logger.error(message);
+				Thread.dumpStack();
+			}
+		}
 	}
 
 	private ArrayList<ClusterManagerJms> getClusterManagerJmsClub(final int size) throws Exception {

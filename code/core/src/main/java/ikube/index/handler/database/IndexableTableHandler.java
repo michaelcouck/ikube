@@ -173,7 +173,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 		}
 		for (Indexable<?> child : indexableTable.getChildren()) {
 			if (IndexableColumn.class.isAssignableFrom(child.getClass())) {
-				if (((IndexableColumn) child).getName().equals(columnName)) {
+				if (((IndexableColumn) child).getName().equalsIgnoreCase(columnName)) {
 					return Boolean.TRUE;
 				}
 			}

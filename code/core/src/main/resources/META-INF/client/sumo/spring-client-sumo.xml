@@ -11,11 +11,23 @@
             http://www.springframework.org/schema/util
             http://www.springframework.org/schema/util/spring-util.xsd">
 
-	<bean id="sumoIndex" class="ikube.model.IndexContext" property:name="sumoIndex" property:maxAge="${max.age}" property:compoundFile="${compound.file}"
-		property:bufferedDocs="${buffered.docs}" property:bufferSize="${buffer.size}" property:batchSize="${jdbc.batch.size}"
-		property:internetBatchSize="${internet.batch.size}" property:mergeFactor="${merge.factor}" property:maxFieldLength="${max.field.length}"
-		property:maxReadLength="${max.read.length}" property:throttle="${throttle}" property:indexDirectoryPath="${index.directory.path}"
-		property:indexDirectoryPathBackup="${index.directory.path.backup}" property:children-ref="sumoIndexables" />
+	<bean 
+		id="sumoIndex" 
+		class="ikube.model.IndexContext" 
+		property:name="sumoIndex" 
+		property:maxAge="${max.age}" 
+		property:compoundFile="${compound.file}"
+		property:bufferedDocs="${buffered.docs}" 
+		property:bufferSize="${buffer.size}" 
+		property:batchSize="${jdbc.batch.size}"
+		property:internetBatchSize="${internet.batch.size}" 
+		property:mergeFactor="${merge.factor}" 
+		property:maxFieldLength="${max.field.length}"
+		property:maxReadLength="${max.read.length}" 
+		property:throttle="10" 
+		property:indexDirectoryPath="${index.directory.path}"
+		property:indexDirectoryPathBackup="${index.directory.path.backup}" 
+		property:children-ref="sumoIndexables" />
 	<util:list id="sumoIndexables">
 		<!-- <ref local="ABO2000" />
 		<ref local="ADIDLIST" />
@@ -225,18 +237,50 @@
 		<ref local="Z_KRANT_ETIKETTEN_NBR" /> -->
 	</util:list>
 
-	<bean id="ABO2000" class="ikube.model.IndexableTable" property:name="ABO2000" property:allColumns="true" property:primaryTable="true"
-		property:dataSource-ref="nonXaSumoDataSourceOracle" property:maxExceptions="10" property:stored="false" property:analyzed="true"
+	<bean 
+		id="ABO2000" 
+		class="ikube.model.IndexableTable" 
+		property:name="ABO2000" 
+		property:allColumns="true" 
+		property:primaryTable="true"
+		property:dataSource-ref="nonXaSumoDataSourceOracle" 
+		property:maxExceptions="10" 
+		property:stored="false" 
+		property:analyzed="true"
 		property:vectored="true" />
-	<bean id="ADIDLIST" class="ikube.model.IndexableTable" property:name="ADIDLIST" property:allColumns="true" property:primaryTable="true"
-		property:dataSource-ref="nonXaSumoDataSourceOracle" property:maxExceptions="10" property:stored="false" property:analyzed="true"
+	<bean 
+		id="ADIDLIST" 
+		class="ikube.model.IndexableTable" 
+		property:name="ADIDLIST" 
+		property:allColumns="true" 
+		property:primaryTable="true"
+		property:dataSource-ref="nonXaSumoDataSourceOracle" 
+		property:maxExceptions="10" 
+		property:stored="false" 
+		property:analyzed="true"
 		property:vectored="true" />
-	<bean id="ADRESSENBS2000" class="ikube.model.IndexableTable" property:name="ADRESSENBS2000" property:allColumns="true"
-		property:primaryTable="true" property:dataSource-ref="nonXaSumoDataSourceOracle" property:maxExceptions="10" property:stored="false"
-		property:analyzed="true" property:vectored="true" />
-	<bean id="ADR_ING_HIST" class="ikube.model.IndexableTable" property:name="ADR_ING_HIST" property:allColumns="true"
-		property:primaryTable="true" property:dataSource-ref="nonXaSumoDataSourceOracle" property:maxExceptions="10" property:stored="false"
-		property:analyzed="true" property:vectored="true" />
+	<bean 
+		id="ADRESSENBS2000" 
+		class="ikube.model.IndexableTable" 
+		property:name="ADRESSENBS2000" 
+		property:allColumns="true"
+		property:primaryTable="true" 
+		property:dataSource-ref="nonXaSumoDataSourceOracle" 
+		property:maxExceptions="10" 
+		property:stored="false"
+		property:analyzed="true" 
+		property:vectored="true" />
+	<bean 
+		id="ADR_ING_HIST" 
+		class="ikube.model.IndexableTable" 
+		property:name="ADR_ING_HIST" 
+		property:allColumns="true"
+		property:primaryTable="true" 
+		property:dataSource-ref="nonXaSumoDataSourceOracle" 
+		property:maxExceptions="10" 
+		property:stored="false"
+		property:analyzed="true" 
+		property:vectored="true" />
 	<bean 
 		id="ADR_ROMA_PDP_BASE" 
 		class="ikube.model.IndexableTable" 
@@ -262,49 +306,164 @@
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	
-	<bean id="ADR_STATUS" class="ikube.model.IndexableTable" property:name="ADR_STATUS" property:allColumns="true" property:primaryTable="true"
-		property:dataSource-ref="nonXaSumoDataSourceOracle" property:maxExceptions="10" property:stored="false" property:analyzed="true"
+	<bean 
+		id="ADR_STATUS" 
+		class="ikube.model.IndexableTable" 
+		property:name="ADR_STATUS" 
+		property:allColumns="true" 
+		property:primaryTable="true"
+		property:dataSource-ref="nonXaSumoDataSourceOracle" 
+		property:maxExceptions="10" 
+		property:stored="false" 
+		property:analyzed="true"
 		property:vectored="true" />
-	<bean id="ADR_TO_VALIDATE" class="ikube.model.IndexableTable" property:name="ADR_TO_VALIDATE" property:allColumns="true"
-		property:primaryTable="true" property:dataSource-ref="nonXaSumoDataSourceOracle" property:maxExceptions="10" property:stored="false"
-		property:analyzed="true" property:vectored="true" />
-	<bean id="ADR_UITG_HIST" class="ikube.model.IndexableTable" property:name="ADR_UITG_HIST" property:allColumns="true"
-		property:primaryTable="true" property:dataSource-ref="nonXaSumoDataSourceOracle" property:maxExceptions="10" property:stored="false"
-		property:analyzed="true" property:vectored="true" />
-	<bean id="ADR_VALIDATED" class="ikube.model.IndexableTable" property:name="ADR_VALIDATED" property:allColumns="true"
-		property:primaryTable="true" property:dataSource-ref="nonXaSumoDataSourceOracle" property:maxExceptions="10" property:stored="false"
-		property:analyzed="true" property:vectored="true" />
-	<bean id="AF_FEEDBACK_FILE" class="ikube.model.IndexableTable" property:name="AF_FEEDBACK_FILE" property:allColumns="true"
-		property:primaryTable="true" property:dataSource-ref="nonXaSumoDataSourceOracle" property:maxExceptions="10" property:stored="false"
-		property:analyzed="true" property:vectored="true" />
-	<bean id="AF_FEEDBACK_LINE" class="ikube.model.IndexableTable" property:name="AF_FEEDBACK_LINE" property:allColumns="true"
-		property:primaryTable="true" property:dataSource-ref="nonXaSumoDataSourceOracle" property:maxExceptions="10" property:stored="false"
-		property:analyzed="true" property:vectored="true" />
-	<bean id="AF_LABEL_CREATION_RESULT" class="ikube.model.IndexableTable" property:name="AF_LABEL_CREATION_RESULT" property:allColumns="true"
-		property:primaryTable="true" property:dataSource-ref="nonXaSumoDataSourceOracle" property:maxExceptions="10" property:stored="false"
-		property:analyzed="true" property:vectored="true" />
-	<bean id="ARCH_ADRES" class="ikube.model.IndexableTable" property:name="ARCH_ADRES" property:allColumns="true" property:primaryTable="true"
-		property:dataSource-ref="nonXaSumoDataSourceOracle" property:maxExceptions="10" property:stored="false" property:analyzed="true"
+	<bean 
+		id="ADR_TO_VALIDATE" 
+		class="ikube.model.IndexableTable" 
+		property:name="ADR_TO_VALIDATE" 
+		property:allColumns="true"
+		property:primaryTable="true" 
+		property:dataSource-ref="nonXaSumoDataSourceOracle" 
+		property:maxExceptions="10" 
+		property:stored="false"
+		property:analyzed="true" 
 		property:vectored="true" />
-	<bean id="ARCH_LOGGING" class="ikube.model.IndexableTable" property:name="ARCH_LOGGING" property:allColumns="true"
-		property:primaryTable="true" property:dataSource-ref="nonXaSumoDataSourceOracle" property:maxExceptions="10" property:stored="false"
-		property:analyzed="true" property:vectored="true" />
-	<bean id="ARCH_SINGLE_ADRES" class="ikube.model.IndexableTable" property:name="ARCH_SINGLE_ADRES" property:allColumns="true"
-		property:primaryTable="true" property:dataSource-ref="nonXaSumoDataSourceOracle" property:maxExceptions="10" property:stored="false"
-		property:analyzed="true" property:vectored="true" />
-	<bean id="ARM_ADR_STATUS" class="ikube.model.IndexableTable" property:name="ARM_ADR_STATUS" property:allColumns="true"
-		property:primaryTable="true" property:dataSource-ref="nonXaSumoDataSourceOracle" property:maxExceptions="10" property:stored="false"
-		property:analyzed="true" property:vectored="true" />
-	<bean id="ARM_ADR_TO_VALIDATE" class="ikube.model.IndexableTable" property:name="ARM_ADR_TO_VALIDATE" property:allColumns="true"
-		property:primaryTable="true" property:dataSource-ref="nonXaSumoDataSourceOracle" property:maxExceptions="10" property:stored="false"
-		property:analyzed="true" property:vectored="true" />
-	<bean id="ARP_PARTITION_INFO" class="ikube.model.IndexableTable" property:name="ARP_PARTITION_INFO" property:allColumns="true"
-		property:primaryTable="true" property:dataSource-ref="nonXaSumoDataSourceOracle" property:maxExceptions="10" property:stored="false"
-		property:analyzed="true" property:vectored="true" />
-	<bean id="AR4_KRANTABONNEMENT" class="ikube.model.IndexableTable" property:name="AR4_KRANTABONNEMENT" property:allColumns="true"
-		property:primaryTable="true" property:dataSource-ref="nonXaSumoDataSourceOracle" property:maxExceptions="10" property:stored="false"
-		property:analyzed="true" property:vectored="true" />
-	<bean id="AR4_KRANTUITREIKINGSTAAK" class="ikube.model.IndexableTable" property:name="AR4_KRANTUITREIKINGSTAAK" property:allColumns="true"
+	<bean 
+		id="ADR_UITG_HIST" 
+		class="ikube.model.IndexableTable" 
+		property:name="ADR_UITG_HIST" 
+		property:allColumns="true"
+		property:primaryTable="true" 
+		property:dataSource-ref="nonXaSumoDataSourceOracle" 
+		property:maxExceptions="10" 
+		property:stored="false"
+		property:analyzed="true" 
+		property:vectored="true" />
+	<bean 
+		id="ADR_VALIDATED" 
+		class="ikube.model.IndexableTable" 
+		property:name="ADR_VALIDATED" 
+		property:allColumns="true"
+		property:primaryTable="true" 
+		property:dataSource-ref="nonXaSumoDataSourceOracle" 
+		property:maxExceptions="10" 
+		property:stored="false"
+		property:analyzed="true" 
+		property:vectored="true" />
+	<bean 
+		id="AF_FEEDBACK_FILE" 
+		class="ikube.model.IndexableTable" 
+		property:name="AF_FEEDBACK_FILE" 
+		property:allColumns="true"
+		property:primaryTable="true" 
+		property:dataSource-ref="nonXaSumoDataSourceOracle" 
+		property:maxExceptions="10" 
+		property:stored="false"
+		property:analyzed="true" 
+		property:vectored="true" />
+	<bean 
+		id="AF_FEEDBACK_LINE" 
+		class="ikube.model.IndexableTable" 
+		property:name="AF_FEEDBACK_LINE" 
+		property:allColumns="true"
+		property:primaryTable="true" 
+		property:dataSource-ref="nonXaSumoDataSourceOracle" 
+		property:maxExceptions="10" 
+		property:stored="false"
+		property:analyzed="true" 
+		property:vectored="true" />
+	<bean 
+		id="AF_LABEL_CREATION_RESULT" 
+		class="ikube.model.IndexableTable" 
+		property:name="AF_LABEL_CREATION_RESULT" 
+		property:allColumns="true"
+		property:primaryTable="true" 
+		property:dataSource-ref="nonXaSumoDataSourceOracle" 
+		property:maxExceptions="10" 
+		property:stored="false"
+		property:analyzed="true" 
+		property:vectored="true" />
+	<bean 
+		id="ARCH_ADRES" 
+		class="ikube.model.IndexableTable" 
+		property:name="ARCH_ADRES" 
+		property:allColumns="true" 
+		property:primaryTable="true"
+		property:dataSource-ref="nonXaSumoDataSourceOracle" 
+		property:maxExceptions="10" 
+		property:stored="false" 
+		property:analyzed="true"
+		property:vectored="true" />
+	<bean 
+		id="ARCH_LOGGING" 
+		class="ikube.model.IndexableTable" 
+		property:name="ARCH_LOGGING" 
+		property:allColumns="true"
+		property:primaryTable="true" 
+		property:dataSource-ref="nonXaSumoDataSourceOracle" 
+		property:maxExceptions="10" 
+		property:stored="false"
+		property:analyzed="true" 
+		property:vectored="true" />
+	<bean 
+		id="ARCH_SINGLE_ADRES" 
+		class="ikube.model.IndexableTable" 
+		property:name="ARCH_SINGLE_ADRES" 
+		property:allColumns="true"
+		property:primaryTable="true" 
+		property:dataSource-ref="nonXaSumoDataSourceOracle" 
+		property:maxExceptions="10" 
+		property:stored="false"
+		property:analyzed="true" 
+		property:vectored="true" />
+	<bean 
+		id="ARM_ADR_STATUS" 
+		class="ikube.model.IndexableTable" 
+		property:name="ARM_ADR_STATUS" 
+		property:allColumns="true"
+		property:primaryTable="true" 
+		property:dataSource-ref="nonXaSumoDataSourceOracle" 
+		property:maxExceptions="10" 
+		property:stored="false"
+		property:analyzed="true" 
+		property:vectored="true" />
+	<bean 
+		id="ARM_ADR_TO_VALIDATE" 
+		class="ikube.model.IndexableTable" 
+		property:name="ARM_ADR_TO_VALIDATE" 
+		property:allColumns="true"
+		property:primaryTable="true" 
+		property:dataSource-ref="nonXaSumoDataSourceOracle" 
+		property:maxExceptions="10" 
+		property:stored="false"
+		property:analyzed="true" 
+		property:vectored="true" />
+	<bean 
+		id="ARP_PARTITION_INFO" 
+		class="ikube.model.IndexableTable" 
+		property:name="ARP_PARTITION_INFO" 
+		property:allColumns="true"
+		property:primaryTable="true" 
+		property:dataSource-ref="nonXaSumoDataSourceOracle" 
+		property:maxExceptions="10" 
+		property:stored="false"
+		property:analyzed="true" 
+		property:vectored="true" />
+	<bean 
+		id="AR4_KRANTABONNEMENT" 
+		class="ikube.model.IndexableTable" 
+		property:name="AR4_KRANTABONNEMENT" 
+		property:allColumns="true"
+		property:primaryTable="true" 
+		property:dataSource-ref="nonXaSumoDataSourceOracle" 
+		property:maxExceptions="10" 
+		property:stored="false"
+		property:analyzed="true" 
+		property:vectored="true" />
+	<bean 
+		id="AR4_KRANTUITREIKINGSTAAK" 
+		class="ikube.model.IndexableTable" 
+		property:name="AR4_KRANTUITREIKINGSTAAK" property:allColumns="true"
 		property:primaryTable="true" property:dataSource-ref="nonXaSumoDataSourceOracle" property:maxExceptions="10" property:stored="false"
 		property:analyzed="true" property:vectored="true" />
 	<bean id="AR4_SP_ABONNEEBEDELINGSPAR" class="ikube.model.IndexableTable" property:name="AR4_SP_ABONNEEBEDELINGSPAR"

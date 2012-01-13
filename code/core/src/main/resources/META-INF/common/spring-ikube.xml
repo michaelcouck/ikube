@@ -31,13 +31,13 @@
 		property:compoundFile="true"
 		property:bufferedDocs="100"
 		property:bufferSize="32"
-		property:internetBatchSize="1"
-		property:mergeFactor="10"
+		property:internetBatchSize="10"
+		property:mergeFactor="100"
 		property:maxFieldLength="10000"
 		property:maxReadLength="10000000"
 		property:throttle="0"
-		property:indexDirectoryPath="./indexes"
-		property:indexDirectoryPathBackup="./indexes/backup"
+		property:indexDirectoryPath="./ikube/index"
+		property:indexDirectoryPathBackup="./ikube/index/backup"
 		property:children-ref="ikubeIndexables" />
 	<util:list id="ikubeIndexables">
 		<!-- <ref local="ikubeInternet" /> -->

@@ -11,7 +11,6 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.sql.Timestamp;
 import java.util.Collection;
-import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -100,27 +99,36 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 	public synchronized boolean lock(final String name) {
 		try {
 			if (isLocked()) {
-				return Boolean.FALSE;
+				// LOGGER.info("Is locked : {} : {} : ", new Object[] { address, locks });
+				return false;
 			}
-			long shout = System.currentTimeMillis();
+			long shout = System.nanoTime();
 			// Send the lock with the locked flag to try get the lock from the cluster
-			ClusterManagerJmsLock lock = getLock(address, shout, Boolean.TRUE);
+			ClusterManagerJmsLock lock = getLock(address, shout, true);
 			sendMessage(lock);
 			ThreadUtilities.sleep(RESPONSE_TIME);
 			boolean haveLock = haveLock(shout);
 			if (!haveLock) {
 				// If we don't get the lock then we reset our lock to false for the whole cluster
-				if (LOGGER.isDebugEnabled()) {
-					LOGGER.debug("Didn't get lock : {} : {} : ", new Object[] { address, lock });
-				}
-				getLock(address, Long.MAX_VALUE, Boolean.FALSE);
+				LOGGER.info("Didn't get lock : {} : {} : ", new Object[] { address, locks });
+				// getLock(address, Long.MAX_VALUE, Boolean.FALSE);
+				lock.setLocked(false);
+				lock.setShout(Long.MAX_VALUE);
 				sendMessage(lock);
 			} else {
 				// If we have the lock, i.e. we were first to shout then
-				// we do nothing and the other servers will reset their locks to false
-				if (LOGGER.isDebugEnabled()) {
-					LOGGER.info("Got lock : {} : {}", new Object[] { address, lock });
-				}
+				// the other servers will reset their locks to false, we wait for a
+				// second and check that we have sole lock ownership
+//				ThreadUtilities.sleep(RESPONSE_TIME);
+//				if (duplicates()) {
+//					LOGGER.info("Duplicates : {} : {} : ", new Object[] { address, locks });
+//					// getLock(address, Long.MAX_VALUE, Boolean.FALSE);
+//					lock.setLocked(false);
+//					sendMessage(lock);
+//					haveLock = false;
+//				} else {
+//				}
+				LOGGER.info("Got lock : {} : {}", new Object[] { address, locks });
 			}
 			return haveLock;
 		} finally {
@@ -137,14 +145,13 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 			ClusterManagerJmsLock lock = locks.get(address);
 			if (lock.isLocked()) {
 				// We only set the lock for the cluster to false if we have it
-				lock = getLock(address, Long.MAX_VALUE, Boolean.FALSE);
+				lock.setLocked(false);
+				lock.setShout(Long.MAX_VALUE);
 				sendMessage(lock);
-				if (LOGGER.isDebugEnabled()) {
-					LOGGER.debug("Unlock : {} : {} : ", new Object[] { address, locks });
-				}
-				return Boolean.TRUE;
+				LOGGER.info("Unlock : {} : {} : ", new Object[] { address, locks });
+				return true;
 			}
-			return Boolean.FALSE;
+			return false;
 		} finally {
 			notifyAll();
 		}
@@ -159,13 +166,26 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 		try {
 			for (ClusterManagerJmsLock stackLock : locks.values()) {
 				if (stackLock.isLocked()) {
-					return Boolean.TRUE;
+					return true;
 				}
 			}
-			return Boolean.FALSE;
-		} catch (ConcurrentModificationException e) {
-			LOGGER.error("Concurrent modification : ", e);
-			return Boolean.TRUE;
+			return false;
+		} finally {
+			notifyAll();
+		}
+	}
+
+	protected synchronized boolean duplicates() {
+		try {
+			for (Entry<String, ClusterManagerJmsLock> entry : locks.entrySet()) {
+				if (entry.getKey().equals(address)) {
+					continue;
+				}
+				if (entry.getValue().isLocked()) {
+					return true;
+				}
+			}
+			return true;
 		} finally {
 			notifyAll();
 		}
@@ -181,6 +201,7 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 	 */
 	protected synchronized boolean haveLock(final long shout) {
 		try {
+			boolean haveLock = true;
 			for (Entry<String, ClusterManagerJmsLock> entry : locks.entrySet()) {
 				if (!entry.getValue().isLocked()) {
 					continue;
@@ -189,10 +210,11 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 					continue;
 				}
 				if (entry.getValue().getShout() <= shout) {
-					return Boolean.FALSE;
+					haveLock = false;
+					break;
 				}
 			}
-			return Boolean.TRUE;
+			return haveLock;
 		} finally {
 			notifyAll();
 		}
