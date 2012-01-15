@@ -52,7 +52,7 @@ final class MimeTypesReader {
 				}
 			}
 		}
-		return (MimeType[]) types.toArray(new MimeType[types.size()]);
+		return types.toArray(new MimeType[types.size()]);
 	}
 
 	/** Read Element named mime-type. */

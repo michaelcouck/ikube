@@ -1,6 +1,10 @@
 package ikube;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.atLeast;
+import static org.mockito.Mockito.atMost;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import ikube.action.IAction;
 import ikube.action.Index;
@@ -17,7 +21,6 @@ import mockit.Mockit;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 /**
  * @author Michael Couck
@@ -63,13 +66,13 @@ public class IndexEngineTest extends ATest {
 		event.setTimestamp(System.currentTimeMillis());
 		event.setType(Event.TIMER);
 		indexEngine.handleNotification(event);
-		Mockito.verify(index, Mockito.atLeast(1)).execute(Mockito.any(IndexContext.class));
-		Mockito.verify(index, Mockito.atMost(1)).execute(Mockito.any(IndexContext.class));
+		verify(index, atLeast(1)).execute(any(IndexContext.class));
+		verify(index, atMost(1)).execute(any(IndexContext.class));
 
 		when(server.isWorking()).thenReturn(Boolean.TRUE);
 		indexEngine.handleNotification(event);
-		Mockito.verify(index, Mockito.atLeast(1)).execute(Mockito.any(IndexContext.class));
-		Mockito.verify(index, Mockito.atMost(2)).execute(Mockito.any(IndexContext.class));
+		verify(index, atLeast(1)).execute(any(IndexContext.class));
+		verify(index, atMost(2)).execute(any(IndexContext.class));
 	}
 
 }

@@ -57,7 +57,7 @@ public class PermutationUtilities {
 		}
 		for (int i = 0; i < n; i++) {
 			swap(objects, i, n - 1);
-			getPermutations(objects, permutations, n - 1, ++counter);
+			getPermutations(objects, permutations, n - 1, counter + 1);
 			swap(objects, i, n - 1);
 		}
 	}

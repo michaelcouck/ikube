@@ -179,7 +179,7 @@ public final class MimeType {
 	 * @return the extensions associated to this mime-type.
 	 */
 	String[] getExtensions() {
-		return (String[]) extensions.toArray(new String[extensions.size()]);
+		return extensions.toArray(new String[extensions.size()]);
 	}
 
 	void addMagic(final int offset, final String type, final String magic) {
@@ -188,10 +188,8 @@ public final class MimeType {
 			return;
 		}
 		Magic m = new Magic(offset, type, magic);
-		if (m != null) {
-			magics.add(m);
-			minLength = Math.max(minLength, m.size());
-		}
+		magics.add(m);
+		minLength = Math.max(minLength, m.size());
 	}
 
 	int getMinLength() {
@@ -208,7 +206,7 @@ public final class MimeType {
 		}
 		Magic tested = null;
 		for (int i = 0; i < magics.size(); i++) {
-			tested = (Magic) magics.get(i);
+			tested = magics.get(i);
 			if (tested.matches(data)) {
 				return true;
 			}

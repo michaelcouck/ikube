@@ -59,8 +59,10 @@ public class PdfParser implements IParser {
 			// formatDate(info.getModificationDate());
 		} finally {
 			try {
-				pdfDocument.getDocument().close();
-				pdfDocument.close();
+				if (pdfDocument != null) {
+					pdfDocument.getDocument().close();
+					pdfDocument.close();
+				}
 			} catch (Exception t) {
 				LOGGER.error("Exception thrown closing pdf : " + inputStream, t);
 			}

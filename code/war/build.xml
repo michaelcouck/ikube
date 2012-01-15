@@ -96,33 +96,26 @@
 		</delete>
 	</target>
 	<!-- 
-		This target will copy all the Spring configuration files to a location. Then remove all the classpath 
-		parts of the configuration files as they will be used in an external configuration, and the Spring application 
-		context will use the file system application context which is relative to ehe individual files. The configuration 
-		files will then be jared and added to the war as a convenience. Also for the testing the configuration jar
-		will be unjared into one of the servers to continuously test the external configuration.  
+		This target will copy the common, the production and the profile configuration to the 
+		specified output directory. The profile must be the name of the configuration directory 
+		int eh conf folder int he core resources folder.  
 	-->
-	<target name="unpack.configuration">
+	<target name="package.configuration">
 		<delete dir="${configuration.directory}" />
-		<copy todir="${configuration.directory}/ikube">
-			<fileset dir="../core/src/main/resources/META-INF">
-				<exclude name="**/aop.xml" />
-				<exclude name="**/log4j.properties" />
-				<exclude name="**/persistence.xml" />
-				<exclude name="**/spring.handlers" />
-				<exclude name="**/spring.schemas" />
-				<exclude name="**/spring.tooling" />
-				<exclude name="**/spelling/**" />
-				<exclude name="**/persistence/**" />
-				<exclude name="**/mime/**" />
-				<exclude name="**/flatfile/**" />
-				<exclude name="**/META-INF/**" />
-				<exclude name="**/integration/**" />
-				<exclude name="**/discarded/**" />
-			</fileset>
+		<!-- Copy the common configuration -->
+		<copy todir="${configuration.directory}/ikube/common">
+			<fileset dir="../core/src/main/resources/conf/common" />
+		</copy>
+		<!-- Copy the profile configuration -->
+		<copy todir="${configuration.directory}/ikube/${profile}">
+			<fileset dir="../core/src/main/resources/conf/${profile}" />
+		</copy>
+		<!-- Copy the production configuration, with the geo name stuff -->
+		<copy todir="${configuration.directory}/ikube/production">
+			<fileset dir="../core/src/main/resources/conf/production" />
 		</copy>
 	</target>
-	<target name="copy.configuration" depends="unpack.configuration">
+	<target name="deploy.configuration">
 		<jar destfile="${configuration.directory}/${ikube.configuration.jar}" basedir="${configuration.directory}" />
 		<copy file="${configuration.directory}/${ikube.configuration.jar}" todir="./src/main/webapp/docs" failonerror="true" />
 		<unjar src="${configuration.directory}/${ikube.configuration.jar}" dest="${tomcat.1.bin}" overwrite="true" />

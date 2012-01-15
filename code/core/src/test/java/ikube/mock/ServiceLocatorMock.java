@@ -39,13 +39,14 @@ public class ServiceLocatorMock {
 	}
 
 	@Mock()
+	@SuppressWarnings("unused")
 	public static <T> T getService(final Class<T> klass, final String protocol, final String host, final int port, final String path,
 			final String nameSpace, final String serviceName) {
 		return mock(klass);
 	}
 
 	@Mock()
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "unused" })
 	public static <T> T getService(final Class<T> klass, final String url, final String nameSpace, final String serviceName) {
 		Field[] fields = ServiceLocatorMock.class.getDeclaredFields();
 		for (Field field : fields) {

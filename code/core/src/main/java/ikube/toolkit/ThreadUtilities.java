@@ -1,10 +1,13 @@
 package ikube.toolkit;
 
+import ikube.IConstants;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
@@ -28,6 +31,12 @@ public final class ThreadUtilities {
 		// Documented
 	}
 
+	/**
+	 * This method submits a runnable with the executer service from the concurrent package and returns the future immediately.
+	 * 
+	 * @param runnable the runnable to execute
+	 * @return the future that will be a handle to the thread running the runnable
+	 */
 	public static Future<?> submit(Runnable runnable) {
 		if (EXECUTER_SERVICE.isShutdown()) {
 			LOGGER.warn("Executer service already shutdown : " + runnable);
@@ -36,11 +45,18 @@ public final class ThreadUtilities {
 		return EXECUTER_SERVICE.submit(runnable);
 	}
 
+	/**
+	 * This method initializes the executer service, and the thread pool that will execute runnables.
+	 */
 	public static void initialize() {
 		ThreadUtilities.destroy();
-		EXECUTER_SERVICE = Executors.newFixedThreadPool(10);
+		EXECUTER_SERVICE = Executors.newFixedThreadPool(IConstants.THREAD_POOL_SIZE);
 	}
 
+	/**
+	 * This method will destroy the thread pool. All threads that are currently running will be interrupted,and should catch this exception
+	 * and exit the run method.
+	 */
 	public static void destroy() {
 		if (EXECUTER_SERVICE == null || EXECUTER_SERVICE.isShutdown()) {
 			LOGGER.warn("Executer service already shutdown : ");
@@ -51,12 +67,23 @@ public final class ThreadUtilities {
 		LOGGER.info("Shutdown runnables : " + runnables);
 	}
 
+	/**
+	 * This method will wait for all the futures to finish their logic.
+	 * 
+	 * @param futures the futures to wait for
+	 * @param maxWait and the maximum amount of time to wait
+	 */
 	public static void waitForFutures(List<Future<?>> futures, long maxWait) {
 		for (Future<?> future : futures) {
 			ThreadUtilities.waitForFuture(future, maxWait);
 		}
 	}
 
+	/**
+	 * 
+	 * @param future
+	 * @param maxWait
+	 */
 	public static void waitForFuture(Future<?> future, long maxWait) {
 		if (future == null) {
 			LOGGER.warn("Future null returning : ");
@@ -64,6 +91,11 @@ public final class ThreadUtilities {
 		}
 		long start = System.currentTimeMillis();
 		while (!future.isDone()) {
+			try {
+				future.get(maxWait, TimeUnit.SECONDS);
+			} catch (Exception e) {
+				LOGGER.error("Exception waiting for future : ", e);
+			}
 			ThreadUtilities.sleep(1000);
 			LOGGER.debug("Future : " + future);
 			if ((System.currentTimeMillis() - start) > maxWait) {
@@ -76,8 +108,7 @@ public final class ThreadUtilities {
 	 * This method iterates through the list of threads looking for one that is still alive and joins it. Once all the threads have finished
 	 * then this method will return to the caller indicating that all the threads have finished.
 	 * 
-	 * @param threads
-	 *            the threads to wait for
+	 * @param threads the threads to wait for
 	 */
 	public static void waitForThreads(final Collection<Thread> threads) {
 		if (threads == null) {
@@ -88,7 +119,7 @@ public final class ThreadUtilities {
 			for (Thread thread : threads) {
 				if (thread.isAlive()) {
 					try {
-						thread.join(60000);
+						thread.join(10000);
 					} catch (InterruptedException e) {
 						LOGGER.error("Interrupted waiting for thread : " + thread + ", this thread : " + Thread.currentThread(), e);
 					}

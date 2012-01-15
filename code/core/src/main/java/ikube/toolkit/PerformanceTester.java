@@ -13,7 +13,11 @@ public class PerformanceTester {
 
 	private static final Logger LOGGER = Logger.getLogger(PerformanceTester.class);
 
+	/**
+	 * Singularity.
+	 */
 	private PerformanceTester() {
+		// Documented
 	}
 
 	/**
@@ -28,6 +32,7 @@ public class PerformanceTester {
 	public static class APerform implements IPerform {
 
 		public void execute() throws Throwable {
+			// To be implemented by clients
 		}
 
 		public boolean log() {

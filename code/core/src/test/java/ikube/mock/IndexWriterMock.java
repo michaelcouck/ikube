@@ -14,6 +14,7 @@ public class IndexWriterMock {
 	public static boolean	IS_LOCKED;
 
 	@Mock
+	@SuppressWarnings("unused")
 	public static boolean isLocked(Directory directory) throws IOException {
 		return IS_LOCKED;
 	}

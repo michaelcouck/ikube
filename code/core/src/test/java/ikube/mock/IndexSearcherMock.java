@@ -12,7 +12,9 @@ import org.apache.lucene.search.IndexSearcher;
 public class IndexSearcherMock {
 
 	@Mock
+	@SuppressWarnings("unused")
 	public IndexSearcherMock(IndexReader r) {
+		// Documented
 	}
 
 	@Mock

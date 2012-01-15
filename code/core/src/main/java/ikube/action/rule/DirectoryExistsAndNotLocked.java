@@ -32,9 +32,8 @@ public class DirectoryExistsAndNotLocked implements IRule<File> {
 			boolean locked = IndexWriter.isLocked(directory);
 			if (exists && !locked) {
 				return Boolean.TRUE;
-			} else {
-				LOGGER.info("Non existant or locked directory found, will not open on this one yet : " + directory);
 			}
+			LOGGER.info("Non existant or locked directory found, will not open on this one yet : " + directory);
 		} catch (Exception e) {
 			LOGGER.error("Exception checking the directories : ", e);
 		} finally {

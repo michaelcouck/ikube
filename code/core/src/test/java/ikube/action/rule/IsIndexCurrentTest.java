@@ -30,6 +30,7 @@ public class IsIndexCurrentTest extends ATest {
 		private static File	LATEST_INDEX_DIRECTORY;
 
 		@Mock()
+		@SuppressWarnings("unused")
 		public static synchronized File getLatestIndexDirectory(final String baseIndexDirectoryPath) {
 			return LATEST_INDEX_DIRECTORY;
 		}

@@ -49,11 +49,13 @@
 		id="ikube.action.Reset" 
 		class="ikube.action.Reset" 
 		property:ruleExpression="
-			!IsThisServerWorking">
+			!IsThisServerWorking &#38;&#38;
+			!AnyServersWorkingThisIndex">
 		<property name="rules">
 			<util:list>
+				<!-- <ref local="ikube.action.rule.ChainedRule" /> -->
 				<ref local="ikube.action.rule.IsThisServerWorking" />
-				<!-- <ref local="ikube.action.rule.AnyServersWorkingThisIndex" /> -->
+				<ref local="ikube.action.rule.AnyServersWorkingThisIndex" />
 			</util:list>
 		</property>
 	</bean>
@@ -284,41 +286,6 @@
 	<bean id="ikube.action.rule.IsNewIndexCreated" class="ikube.action.rule.IsNewIndexCreated" />
 	<bean id="ikube.action.rule.DoesBackupIndexExist" class="ikube.action.rule.DoesBackupIndexExist" />
 	<bean id="ikube.action.rule.AreOtherServers" class="ikube.action.rule.AreOtherServers" />
-	
-	<!-- The handlers that do the indexing logic. -->
-	<bean
-		id="ikube.index.handler.IHandler"
-		class="ikube.index.handler.IHandler"
-		abstract="true" />
-	<bean 
-		id="ikube.index.handler.IndexableHandler"
-		parent="ikube.index.handler.IHandler"
-		class="ikube.index.handler.IndexableHandler" 
-		abstract="true" />
-	<bean
-		parent="ikube.index.handler.IndexableHandler"
-		class="ikube.index.handler.internet.IndexableInternetHandler"
-		property:threads="${internet.handler.threads}" 
-		property:indexableClass="ikube.model.IndexableInternet" />
-	<bean
-		parent="ikube.index.handler.IndexableHandler"
-		class="ikube.index.handler.email.IndexableEmailHandler"
-		property:threads="${email.handler.threads}"
-		property:indexableClass="ikube.model.IndexableEmail" />
-	<bean
-		parent="ikube.index.handler.IndexableHandler"
-		class="ikube.index.handler.filesystem.IndexableFilesystemHandler"
-		property:threads="${filesystem.handler.threads}"
-		property:indexableClass="ikube.model.IndexableFileSystem" />
-	<bean
-		parent="ikube.index.handler.IndexableHandler"
-		class="ikube.index.handler.database.IndexableTableHandler"
-		property:threads="${table.handler.threads}"
-		property:indexableClass="ikube.model.IndexableTable" />
-	<bean
-		parent="ikube.index.handler.IndexableHandler"
-		class="ikube.index.handler.filesystem.IndexableDictionaryHandler"
-		property:threads="${filesystem.handler.threads}"
-		property:indexableClass="ikube.model.IndexableDictionary" />
+	<bean id="ikube.action.rule.ChainedRule" class="ikube.action.rule.ChainedRule" />
 	
 </beans>

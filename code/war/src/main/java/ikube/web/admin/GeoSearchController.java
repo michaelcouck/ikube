@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,12 +30,12 @@ public class GeoSearchController extends SearchBaseController {
 	 * {@inheritDoc}
 	 */
 	@RequestMapping(value = "/admin/geosearch.html", method = RequestMethod.GET)
-	public String terminate(@RequestParam(required = true, value = "targetView") String targetView,
+	public String search(@RequestParam(required = true, value = "targetView") String targetView,
 			@RequestParam(required = true, value = "indexName") String indexName,
 			@RequestParam(required = true, value = "searchStrings") String searchStrings,
 			@RequestParam(required = true, value = "latitude") String latitude,
 			@RequestParam(required = true, value = "longitude") String longitude,
-			@RequestParam(required = true, value = "distance") String distance, Model model) throws Exception {
+			@RequestParam(required = true, value = "distance") String distance, Model model, HttpServletRequest request) throws Exception {
 
 		Server server = clusterManager.getServer();
 
@@ -44,7 +46,7 @@ public class GeoSearchController extends SearchBaseController {
 		List<HashMap<String, String>> results = new ArrayList<HashMap<String, String>>();
 		String[] searchStringsArray = { searchStrings };
 
-		ArrayList<HashMap<String, String>> indexResults = null; // doSearch(null, model, indexName, searchStringsArray);
+		ArrayList<HashMap<String, String>> indexResults = null; // doSearch(request, model, indexName, searchStringsArray);
 		HashMap<String, String> statistics = indexResults.get(indexResults.size() - 1);
 		if (isNumeric(statistics.get(IConstants.TOTAL))) {
 			total += Integer.parseInt(statistics.get(IConstants.TOTAL));

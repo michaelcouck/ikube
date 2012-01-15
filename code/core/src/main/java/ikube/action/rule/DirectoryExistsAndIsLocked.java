@@ -31,9 +31,8 @@ public class DirectoryExistsAndIsLocked extends ARule<File> {
 			logger.debug(Logging.getString("Server index directory : ", indexDirectory, "exists : ", exists, "locked : ", locked));
 			if (exists && locked) {
 				return Boolean.TRUE;
-			} else {
-				logger.info("Directory not locked and exists : " + directory + ", exists : " + exists + ", locked : " + locked);
 			}
+			logger.info("Directory not locked and exists : " + directory + ", exists : " + exists + ", locked : " + locked);
 		} catch (Exception e) {
 			logger.error("Exception checking the directories : ", e);
 		} finally {

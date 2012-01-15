@@ -23,7 +23,7 @@ public class Delete extends Action<IndexContext<?>, Boolean> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Boolean execute(final IndexContext<?> indexContext) {
+	public boolean executeInternal(final IndexContext<?> indexContext) {
 		ikube.model.Action action = null;
 		try {
 			action = start(indexContext.getIndexName(), "");

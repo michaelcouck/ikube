@@ -23,11 +23,13 @@ public class ClusterManagerMock {
 	}
 
 	@Mock()
+	@SuppressWarnings("unused")
 	public synchronized Action startWorking(final String actionName, final String indexName, final String indexableName) {
 		return Mockito.mock(Action.class);
 	}
 
 	@Mock()
+	@SuppressWarnings("unused")
 	public boolean lock(String name) {
 		return Boolean.TRUE;
 	}

@@ -8,6 +8,7 @@ import ikube.toolkit.FileUtilities;
 import java.io.File;
 import java.io.IOException;
 
+import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.Directory;
@@ -27,7 +28,7 @@ public class Clean<E, F> extends Action<IndexContext<?>, Boolean> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Boolean execute(final IndexContext<?> indexContext) {
+	public boolean executeInternal(final IndexContext<?> indexContext) {
 		ikube.model.Action action = null;
 		try {
 			action = start(indexContext.getIndexName(), "");
@@ -45,8 +46,9 @@ public class Clean<E, F> extends Action<IndexContext<?>, Boolean> {
 					// return Boolean.FALSE;
 					continue;
 				}
-				processDirectories(indexContext, serverIndexDirectories);
+				processDirectories(serverIndexDirectories);
 			}
+			// Try to delete the temporary unzipped files
 			FileUtilities.deleteFile(new File(IConstants.TMP_UNZIPPED_FOLDER), 1);
 			return Boolean.TRUE;
 		} finally {
@@ -54,55 +56,35 @@ public class Clean<E, F> extends Action<IndexContext<?>, Boolean> {
 		}
 	}
 
-	private void processDirectories(IndexContext<?> indexContext, File... serverIndexDirectories) {
+	private void processDirectories(File... serverIndexDirectories) {
 		for (File serverIndexDirectory : serverIndexDirectories) {
 			Directory directory = null;
-			boolean locked = Boolean.FALSE;
-			boolean shouldDelete = Boolean.FALSE;
+			boolean corrupt = Boolean.TRUE;
 			try {
 				directory = FSDirectory.open(serverIndexDirectory);
-				locked = IndexWriter.isLocked(directory);
-				if (locked) {
-					// We assume that there are no other servers working so this directory
-					// has been locked and the server is dead, we will unlock the index, and perhaps
-					// try to optimize it too
+				if (IndexWriter.isLocked(directory)) {
 					IndexWriter.unlock(directory);
-					locked = IndexWriter.isLocked(directory);
+					if (IndexWriter.isLocked(directory)) {
+						logger.warn("Directory still locked : " + serverIndexDirectory);
+						corrupt = Boolean.FALSE;
+						continue;
+					}
 				}
-				if (locked) {
-					logger.warn("Directory still locked : " + serverIndexDirectory);
-				}
-				// else {
-				// // Open the index writer then close it which will optimise the index
-				// IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, serverIndexDirectory, Boolean.FALSE);
-				// indexContext.getIndex().setIndexWriter(indexWriter);
-				// IndexManager.closeIndexWriter(indexContext);
-				// }
-				if (!IndexReader.indexExists(directory) || locked) {
+				if (IndexReader.indexExists(directory)) {
 					// Try to delete the directory
-					shouldDelete = Boolean.TRUE;
+					corrupt = Boolean.FALSE;
 				}
+			} catch (CorruptIndexException e) {
+				logger.error("Index corrupt : " + serverIndexDirectory + ", will try to delete : ", e);
 			} catch (IOException e) {
 				logger.error("Directory : " + serverIndexDirectory + " not ok, will try to delete : ", e);
-				shouldDelete = Boolean.TRUE;
 			} catch (Exception e) {
-				logger.error("Directory : " + serverIndexDirectory + " not ok, will try to delete : ", e);
-				shouldDelete = Boolean.TRUE;
+				logger.error("General exception : " + serverIndexDirectory + " not ok, will try to delete : ", e);
 			} finally {
-				if (directory != null) {
-					try {
-						directory.close();
-					} catch (Exception e) {
-						logger.error("Exception closing the directory : ", e);
-					}
-				}
-				if (shouldDelete && !locked) {
-					try {
-						logger.warn("Deleting directory : " + serverIndexDirectory + ", as it either corrupt, or partially deleted : ");
-						FileUtilities.deleteFile(serverIndexDirectory, 1);
-					} catch (Exception e) {
-						logger.error("Exception purging corrupt or partly deleted index directory : " + serverIndexDirectory, e);
-					}
+				close(directory, null, null);
+				if (corrupt) {
+					logger.warn("Deleting directory : " + serverIndexDirectory + ", as it either corrupt, or partially deleted : ");
+					FileUtilities.deleteFile(serverIndexDirectory, 1);
 				}
 			}
 		}

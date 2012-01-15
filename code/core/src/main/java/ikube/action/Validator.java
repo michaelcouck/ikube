@@ -35,7 +35,7 @@ public class Validator extends Action<IndexContext<?>, Boolean> {
 	 * context
 	 */
 	@Override
-	public Boolean execute(final IndexContext<?> indexContext) {
+	public boolean executeInternal(final IndexContext<?> indexContext) {
 		String subject = null;
 		String body = null;
 		boolean everythingInitialized = Boolean.TRUE;

@@ -135,6 +135,11 @@
 				<artifactId>findbugs-maven-plugin</artifactId>
 				<version>2.3.2</version>
 			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>truezip-maven-plugin</artifactId>
+				<version>1.0-beta-5</version>
+			</plugin>
 		</plugins>
 	</build>
 
@@ -830,6 +835,11 @@
 			<name>Java.net Maven2 Repository</name>
 			<url>http://download.java.net/maven/2</url>
 		</pluginRepository>
+		<pluginRepository>
+			<id>com.goldin.plugins</id>
+			<name>Maven Copy Plugin</name>
+			<url>http://evgeny-goldin.org/artifactory/plugins-releases/</url>
+		</pluginRepository>
 	</pluginRepositories>
 
 
@@ -1002,5 +1012,5 @@
 			</plugin>
 		</plugins>
 	</reporting>
-
+	
 </project>

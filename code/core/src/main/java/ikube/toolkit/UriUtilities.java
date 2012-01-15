@@ -18,7 +18,11 @@ public final class UriUtilities {
 
 	protected static final Logger LOGGER = Logger.getLogger(UriUtilities.class);
 	
+	/**
+	 * Singularity.
+	 */
 	private UriUtilities() {
+		// Documented
 	}
 
 	/** Accepted protocols. */

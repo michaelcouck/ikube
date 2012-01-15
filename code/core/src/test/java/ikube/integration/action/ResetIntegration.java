@@ -25,8 +25,8 @@ import org.junit.Test;
  */
 public class ResetIntegration extends AbstractIntegration {
 
-	private Reset		reset;
-	private IDataBase	dataBase;
+	private Reset reset;
+	private IDataBase dataBase;
 
 	@Before
 	public void before() {
@@ -38,7 +38,7 @@ public class ResetIntegration extends AbstractIntegration {
 	}
 
 	@Test
-	public void execute() {
+	public void execute() throws Exception {
 		List<Url> urls = dataBase.find(Url.class, 0, Integer.MAX_VALUE);
 		assertEquals("There should be no urls in the database : ", 0, urls.size());
 		Url url = new Url();

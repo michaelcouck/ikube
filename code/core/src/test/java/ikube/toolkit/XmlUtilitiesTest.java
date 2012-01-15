@@ -20,7 +20,7 @@ public class XmlUtilitiesTest extends ATest {
 
 	@Test
 	public void getDocumentElementsAndElement() {
-		InputStream inputStream = getClass().getResourceAsStream("/META-INF/spring.xml");
+		InputStream inputStream = getClass().getResourceAsStream("/conf/spring.xml");
 		Document document = XmlUtilities.getDocument(inputStream, IConstants.ENCODING);
 		assertNotNull("This should be the Spring configuration file : ", document);
 		List<Element> elements = XmlUtilities.getElements(document.getRootElement(), "import");

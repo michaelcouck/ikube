@@ -30,7 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @since 21.11.10
  * @version 01.00
  */
-public abstract class Action<E, F> implements IAction<E, F> {
+public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> {
 
 	protected transient Logger logger = LoggerFactory.getLogger(Action.class);
 
@@ -41,12 +41,17 @@ public abstract class Action<E, F> implements IAction<E, F> {
 	/** The cluster manager for locking the cluster during rule evaluation. */
 	@Autowired
 	protected IClusterManager clusterManager;
+	/**
+	 * This is an optional action that the action depends on. For example the index action requires that the reset action is run completely
+	 * first for this index context
+	 */
+	private IAction<IndexContext<?>, Boolean> dependent;
 
 	/**
 	 * These are the rules defined for this action. They will be evaluated collectively by the {@link RuleInterceptor} and the action will
 	 * be executed depending on the result of the rules.
 	 */
-	private List<IRule<E>> rules;
+	private List<IRule<IndexContext<?>>> rules;
 
 	/**
 	 * This is the predicate that will be evaluated. The predicate consists of a boolean expression that contains the individual results of
@@ -55,10 +60,44 @@ public abstract class Action<E, F> implements IAction<E, F> {
 	 */
 	private String predicate;
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Boolean execute(IndexContext<?> context) throws Exception {
+		if (dependent != null) {
+			logger.info("Executing dependent action : " + dependent);
+			dependent.execute(context);
+		}
+		return executeInternal(context);
+	}
+
+	/**
+	 * This method is called by the super class, i.e. this class on the implementations, which allows the super class to execute any actions
+	 * that need to be executed, that the implementing classes rely on, like the reset action which may not have executed between indexes.
+	 * 
+	 * @param indexContext the index context to execute the action on
+	 * @return whether the execution was successful
+	 * @throws Exception
+	 */
+	public abstract boolean executeInternal(final IndexContext<?> indexContext) throws Exception;
+
+	/**
+	 * This is a convenience method for the implementing classes to call to announce to the cluster that the action is started.
+	 * 
+	 * @param indexName the name of the index that the actions is starting on
+	 * @param indexableName the name of the indexable that the action is performing on
+	 * @return the action that is returned by the cluster manager
+	 */
 	protected ikube.model.Action start(String indexName, String indexableName) {
 		return clusterManager.startWorking(getClass().getSimpleName(), indexName, indexableName);
 	}
 
+	/**
+	 * This is a convenience method for the implementing classes to call to announce to the cluster that the action has ended.
+	 * 
+	 * @param action the action to announce to the cluster that is ended
+	 */
 	protected void stop(ikube.model.Action action) {
 		clusterManager.stopWorking(action);
 	}
@@ -83,7 +122,7 @@ public abstract class Action<E, F> implements IAction<E, F> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<IRule<E>> getRules() {
+	public List<IRule<IndexContext<?>>> getRules() {
 		return rules;
 	}
 
@@ -91,10 +130,16 @@ public abstract class Action<E, F> implements IAction<E, F> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void setRules(final List<IRule<E>> rules) {
+	public void setRules(final List<IRule<IndexContext<?>>> rules) {
 		this.rules = rules;
 	}
 
+	/**
+	 * This method will close the searchables. All the sub searchables are closed one by one first then the composite searchable to ensure
+	 * that they are all closed completely.
+	 * 
+	 * @param indexContext the index context to close the searchables for
+	 */
 	protected void closeSearchables(IndexContext<?> indexContext) {
 		MultiSearcher multiSearcher = indexContext.getIndex().getMultiSearcher();
 		if (multiSearcher != null) {
@@ -119,20 +164,27 @@ public abstract class Action<E, F> implements IAction<E, F> {
 		}
 	}
 
+	/**
+	 * This method sill close the directory, the reader and or the searchable depending on whether they are still open.
+	 * 
+	 * @param directory the Lucene directory to close
+	 * @param reader the Lucene reader to close
+	 * @param searcher the Lucene searchable to close
+	 */
 	protected void close(Directory directory, IndexReader reader, Searchable searcher) {
 		try {
 			if (directory != null) {
 				directory.close();
 			}
 		} catch (Exception e) {
-			logger.error("Exception closing the searcher : ", e);
+			logger.error("Exception closing the directory : ", e);
 		}
 		try {
 			if (reader != null) {
 				reader.close();
 			}
 		} catch (Exception e) {
-			logger.error("Exception closing the searcher : ", e);
+			logger.error("Exception closing the reader : ", e);
 		}
 		try {
 			if (searcher != null) {
@@ -143,6 +195,12 @@ public abstract class Action<E, F> implements IAction<E, F> {
 		}
 	}
 
+	/**
+	 * This method will send a mail to the address that is configured for the {@link IMailer}.
+	 * 
+	 * @param subject the subject of the message
+	 * @param body and the main text for the message
+	 */
 	protected void sendNotification(final String subject, final String body) {
 		try {
 			mailer.sendMail(subject, body);
@@ -150,6 +208,17 @@ public abstract class Action<E, F> implements IAction<E, F> {
 			logger.error("Exception sending mail : " + subject, e);
 			logger.error("Mailer details : " + ToStringBuilder.reflectionToString(mailer), e);
 		}
+	}
+
+	/**
+	 * Sets the action that this action is dependent on. For example the the index action requires that the reset action is executed first.
+	 * In this way the actions can be chained and the results from the previous action used to determine whether the action is then
+	 * executed.
+	 * 
+	 * @param dependent the action that this action is dependent on
+	 */
+	public void setDependent(IAction<IndexContext<?>, Boolean> dependent) {
+		this.dependent = dependent;
 	}
 
 }

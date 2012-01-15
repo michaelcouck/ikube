@@ -194,8 +194,10 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	 * @throws InterruptedException
 	 */
 	protected void handleTable(final IContentProvider<IndexableColumn> contentProvider, final IndexContext<?> indexContext,
-			final IndexableTable indexableTable, final Connection connection, Document document, int exceptions, AtomicLong currentId)
-			throws InterruptedException {
+			final IndexableTable indexableTable, final Connection connection, final Document superDocument, final int superExceptions,
+			final AtomicLong currentId) throws InterruptedException {
+		Document currentDocument = superDocument;
+		int currentExceptions = superExceptions;
 		ResultSet resultSet = null;
 		try {
 			resultSet = getResultSet(indexContext, indexableTable, connection, currentId, 1);
@@ -209,8 +211,8 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 					setColumnTypesAndData(children, resultSet);
 					// Set the id field if this is a primary table
 					if (indexableTable.isPrimaryTable()) {
-						document = new Document();
-						setIdField(indexableTable, document);
+						currentDocument = new Document();
+						setIdField(indexableTable, currentDocument);
 					}
 					// Handle all the columns that are 'normal', i.e. that don't have references
 					// to the values in other columns, like the attachment that needs the name
@@ -223,7 +225,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 						if (indexableColumn.getNameColumn() != null) {
 							continue;
 						}
-						handleColumn(contentProvider, indexableColumn, document);
+						handleColumn(contentProvider, indexableColumn, currentDocument);
 					}
 					// Handle all the columns that rely on another column, like the attachment
 					// column that needs the name from the name column to get the content type
@@ -236,7 +238,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 						if (indexableColumn.getNameColumn() == null) {
 							continue;
 						}
-						handleColumn(contentProvider, indexableColumn, document);
+						handleColumn(contentProvider, indexableColumn, currentDocument);
 					}
 					// Handle all the sub tables
 					for (Indexable<?> indexable : children) {
@@ -247,11 +249,12 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 						// Here we recursively call this method with the child tables. We pass the document
 						// to the child table for this row in the parent table so they can add their fields to the
 						// index
-						handleTable(contentProvider, indexContext, childIndexableTable, connection, document, exceptions, currentId);
+						handleTable(contentProvider, indexContext, childIndexableTable, connection, currentDocument, currentExceptions,
+								currentId);
 					}
 					// Add the document to the index if this is the primary table
 					if (indexableTable.isPrimaryTable()) {
-						addDocument(indexContext, indexableTable, document);
+						addDocument(indexContext, indexableTable, currentDocument);
 					}
 					Thread.sleep(indexContext.getThrottle());
 					// Move to the next row in the result set
@@ -274,9 +277,9 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 					throw e;
 				} catch (Exception e) {
 					logger.error("Exception indexing table : " + indexableTable.getName() + ", connection : " + connection
-							+ ", exceptions : " + exceptions, e);
-					exceptions++;
-					if (exceptions > indexableTable.getMaxExceptions()) {
+							+ ", exceptions : " + currentExceptions, e);
+					++currentExceptions;
+					if (currentExceptions > indexableTable.getMaxExceptions()) {
 						logger.error("Maximum exception exceeded, exiting indexing table : " + indexableTable.getName());
 						break;
 					}
@@ -286,7 +289,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 			throw e;
 		} catch (Exception e) {
 			String message = Logging.getString("Exception indexing table : " + indexableTable.getName(), ", connection : ", connection,
-					", exceptions : ", exceptions);
+					", exceptions : ", currentExceptions);
 			logger.error(message, e);
 		} finally {
 			// Close the result set and the statement for this
@@ -320,9 +323,10 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	 * @throws Exception
 	 */
 	protected synchronized ResultSet getResultSet(final IndexContext<?> indexContext, final IndexableTable indexableTable,
-			final Connection connection, AtomicLong currentId, int reentrant) throws Exception {
+			final Connection connection, final AtomicLong currentId, final int superReentrant) throws Exception {
+		int currentReentrant = superReentrant;
 		try {
-			if (reentrant >= MAX_REENTRANT) {
+			if (currentReentrant >= MAX_REENTRANT) {
 				return null;
 			}
 			long nextIdNumber = 0;
@@ -365,7 +369,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 					// If we have exhausted the results then we return null and the thread dies
 					if (nextIdNumber < maximumId) {
 						// Try the next predicate + batchSize
-						return getResultSet(indexContext, indexableTable, connection, currentId, ++reentrant);
+						return getResultSet(indexContext, indexableTable, connection, currentId, ++currentReentrant);
 					}
 				}
 				// No more results for the primary table, we are finished

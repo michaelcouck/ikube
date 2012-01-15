@@ -19,6 +19,10 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
+ * This is the search controller that will search all the indexes, in all the fields for the search strings. It will then merge the results
+ * and sort them according to the highest score. Then the sub set of results are taken for the top ranking results. Meaning that some
+ * indexes will not be represented in the results at all of course.
+ * 
  * @author Michael Couck
  * @since 15.05.2011
  * @version 01.00
@@ -46,6 +50,7 @@ public class SearchController extends SearchBaseController {
 		List<HashMap<String, String>> results = new ArrayList<HashMap<String, String>>();
 		String[] searchStringsArray = searchStrings.toArray(new String[searchStrings.size()]);
 
+		// Search all the indexes
 		for (String indexName : indexNames) {
 			ArrayList<HashMap<String, String>> indexResults = doSearch(request, modelAndView, indexName, searchStringsArray);
 			HashMap<String, String> statistics = indexResults.get(indexResults.size() - 1);
@@ -81,6 +86,7 @@ public class SearchController extends SearchBaseController {
 		results = new ArrayList<HashMap<String, String>>();
 		results.addAll(subResults);
 
+		// Put everything required in the model for the ui
 		modelAndView.addObject(IConstants.TOTAL, total);
 		modelAndView.addObject(IConstants.DURATION, duration);
 		modelAndView.addObject(IConstants.RESULTS, results);

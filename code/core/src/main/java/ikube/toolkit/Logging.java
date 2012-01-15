@@ -23,7 +23,11 @@ public final class Logging implements IConstants {
 	private static boolean INITIALISED = false;
 	private static File LOG_FILE;
 
+	/**
+	 * Singularity.
+	 */
 	private Logging() {
+		//Documented
 	}
 
 	/**

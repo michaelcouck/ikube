@@ -27,14 +27,11 @@ public interface IConstants {
 	/** The file separator for the system. */
 	String SEP = "/";
 	String BCK_SEP = "\\";
-	/** We expect the configuration file to be in the META-INF as seems to be the fashion at the moment. */
 	String META_INF = SEP + "META-INF";
 	/** The name of the spring file. */
 	String SPRING_XML = "spring.xml";
-	/** The JGroups configuration file. */
-	String UDP_XML = "udp.xml";
 	/** Where the whole application is wired together. */
-	String SPRING_CONFIGURATION_FILE = META_INF + SEP + SPRING_XML;
+	String SPRING_CONFIGURATION_FILE = SEP + "conf" + SEP + SPRING_XML;
 	/** The persistence units' names. */
 	String PERSISTENCE_UNIT_H2 = "IkubePersistenceUnitH2";
 	String PERSISTENCE_UNIT_DB2 = "IkubePersistenceUnitDb2";
@@ -48,14 +45,9 @@ public interface IConstants {
 	String LOG_4_J_PROPERTIES = META_INF + SEP + "log4j.properties";
 
 	/** Maps mime types to file extensions.. */
-	String MIME_TYPES = META_INF + SEP + "mime" + SEP + "mime-types.xml";
+	String MIME_TYPES = "mime-types.xml";
 	/** Maps parsers to mime types. */
-	String MIME_MAPPING = META_INF + SEP + "mime" + SEP + "mime-mapping.xml";
-
-	/** The database file name. */
-	String DATABASE_FILE = "ikube.odb";
-	/** The transaction files from Neodatis. */
-	String TRANSACTION_FILES = ".transaction";
+	String MIME_MAPPING = "mime-mapping.xml";
 
 	Version VERSION = Version.LUCENE_30;
 	Analyzer ANALYZER = new StandardAnalyzer(VERSION) {
@@ -69,8 +61,7 @@ public interface IConstants {
 	String READER_FILE_SUFFIX = ".ikube";
 	int MAX_FRAGMENTS = 3;
 	String FRAGMENT_SEPERATOR = "...";
-	int BATCH_SIZE = 10;
-	int RESET_DELETE_BATCH_SIZE = 100;
+	int RESET_DELETE_BATCH_SIZE = 1000;
 
 	String ID = "id";
 	String INDEX = "index";
@@ -192,5 +183,7 @@ public interface IConstants {
 	String TMP_UNZIPPED_FOLDER = "/tmp/unzipped";
 	String STRING_PATTERN = ".*(\\.zip\\Z).*|.*(\\.jar\\Z).*|.*(\\.war\\Z).*|.*(\\.ear\\Z).*|.*(\\.gz\\Z).*|.*(\\.sar\\Z).*|.*(\\.tar\\Z).*";
 	Pattern ZIP_JAR_WAR_EAR_PATTERN = Pattern.compile(STRING_PATTERN);
+	
+	int THREAD_POOL_SIZE = 25;
 
 }

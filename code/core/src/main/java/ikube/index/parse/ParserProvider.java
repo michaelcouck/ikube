@@ -21,7 +21,11 @@ public final class ParserProvider {
 
 	private static final Logger LOGGER = Logger.getLogger(ParserProvider.class);
 
+	/**
+	 * Singularity.
+	 */
 	private ParserProvider() {
+		//M Documented
 	};
 
 	/** The map of content type to parsers. */

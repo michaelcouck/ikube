@@ -52,6 +52,7 @@ public class IndexTest extends ATest {
 		when(action.getStartTime()).thenReturn(new Timestamp(System.currentTimeMillis()));
 		when(index.getAction(any(Server.class), anyLong())).thenReturn(action);
 		when(index.execute(any(IndexContext.class))).thenCallRealMethod();
+		when(index.executeInternal(any(IndexContext.class))).thenCallRealMethod();
 		when(index.getHandler(any(Indexable.class))).thenReturn(handler);
 		Deencapsulation.setField(index, logger);
 	}
@@ -67,8 +68,8 @@ public class IndexTest extends ATest {
 	public void execute() throws Exception {
 		Deencapsulation.setField(index, clusterManager);
 		boolean result = index.execute(indexContext);
-		Mockito.verify(handler, Mockito.atLeastOnce()).handle(any(IndexContext.class), any(Indexable.class));
 		assertTrue(result);
+		Mockito.verify(handler, Mockito.atLeastOnce()).handle(any(IndexContext.class), any(Indexable.class));
 	}
 
 }

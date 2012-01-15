@@ -244,12 +244,13 @@ public class Base64Utilities {
 	public static byte[] decode(char[] in, int iOff, int iLen) {
 		if (iLen % 4 != 0)
 			throw new IllegalArgumentException("Length of Base64Utilities encoded input string is not a multiple of 4.");
-		while (iLen > 0 && in[iOff + iLen - 1] == '=')
-			iLen--;
-		int oLen = (iLen * 3) / 4;
+		int newILen = iLen;
+		while (newILen > 0 && in[iOff + newILen - 1] == '=')
+			newILen--;
+		int oLen = (newILen * 3) / 4;
 		byte[] out = new byte[oLen];
 		int ip = iOff;
-		int iEnd = iOff + iLen;
+		int iEnd = iOff + newILen;
 		int op = 0;
 		while (ip < iEnd) {
 			int i0 = in[ip++];
@@ -278,6 +279,7 @@ public class Base64Utilities {
 
 	// Dummy constructor.
 	private Base64Utilities() {
+		// Documented
 	}
 
 } // end class Base64Coder

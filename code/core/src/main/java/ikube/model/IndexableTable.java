@@ -26,7 +26,7 @@ public class IndexableTable extends Indexable<IndexableTable> {
 
 	private String predicate;
 	private boolean primaryTable;
-	private int maxExceptions = 100;
+	private int maxExceptions = 10;
 	private boolean allColumns = Boolean.FALSE;
 
 	public boolean isAllColumns() {

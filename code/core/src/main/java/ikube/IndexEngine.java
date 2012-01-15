@@ -57,7 +57,7 @@ public class IndexEngine implements IIndexEngine, IListener {
 			for (IAction<IndexContext<?>, Boolean> action : actions) {
 				try {
 					action.execute(indexContext);
-					ThreadUtilities.sleep((long) Math.abs(random.nextLong()) % 3000);
+					ThreadUtilities.sleep(Math.abs(random.nextLong()) % 3000l);
 				} catch (Exception e) {
 					LOGGER.error("Exception executing action : " + action, e);
 				}

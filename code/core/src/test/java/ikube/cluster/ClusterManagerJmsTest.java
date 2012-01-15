@@ -38,7 +38,7 @@ import org.mockito.stubbing.Answer;
 public class ClusterManagerJmsTest extends ATest {
 
 	private int clubSize = 10;
-	private long timeSpent = 60 * 1000;
+	private long timeSpent = 10 * 1000;
 	private Random random = new Random();
 	private boolean[] locks = new boolean[clubSize];
 	private boolean[] unlocks = new boolean[clubSize];

@@ -1,5 +1,9 @@
 package ikube.index.parse.mime;
 
+import ikube.toolkit.FileUtilities;
+
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
@@ -8,7 +12,6 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
-import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
@@ -24,9 +27,11 @@ public final class MimeMapper {
 	private static final Logger LOGGER = Logger.getLogger(MimeMapper.class);
 	private static final Map<String, String> MAPPING = new HashMap<String, String>();
 
-	public MimeMapper(final String filePath) {
+	public MimeMapper(final String fileName) {
+		InputStream inputStream = null;
 		try {
-			InputStream inputStream = getClass().getResourceAsStream(filePath);
+			File file = FileUtilities.findFileRecursively(new File("."), Boolean.FALSE, fileName);
+			inputStream = new FileInputStream(file);
 			SAXReader reader = new SAXReader();
 			Document doc = reader.read(inputStream);
 			Element root = doc.getRootElement();
@@ -37,18 +42,21 @@ public final class MimeMapper {
 					Attribute type = element.attribute("type");
 					Attribute parser = element.attribute("parser");
 					if (type != null && parser != null) {
-						// System.out.println(type.getValue() + ":" + parser.getValue());
 						MAPPING.put(type.getValue(), parser.getValue());
 					}
 				}
 			}
-		} catch (DocumentException t) {
-			LOGGER.error("Exception loading the mapping for parsers : " + filePath, t);
+		} catch (Exception e) {
+			String message = "Exception loading the mapping for parsers : " + fileName;
+			LOGGER.error(message, e);
+			throw new RuntimeException(message, e);
+		} finally {
+			FileUtilities.close(inputStream);
 		}
 	}
 
 	public static String getParserClass(final String mimeType) {
-		return (String) MAPPING.get(mimeType);
+		return MAPPING.get(mimeType);
 	}
 
 }

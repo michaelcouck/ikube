@@ -27,6 +27,11 @@ public interface IAction<E, F> {
 	 */
 	String getRuleExpression();
 
+	/**
+	 * Sets the rules that are 
+	 * 
+	 * @param rules
+	 */
 	void setRules(final List<IRule<E>> rules);
 
 	/**

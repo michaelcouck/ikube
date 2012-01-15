@@ -45,7 +45,7 @@
 		property:address="true"
 		property:dataSource-ref="nonXaDataSourceDb2"
 		property:children-ref="patientColumns" 
-		property:maxExceptions="100" />
+		property:maxExceptions="10" />
 	<util:list id="patientColumns">
 		<ref local="patientId" />
 		<ref local="patientAddressId" />
@@ -63,7 +63,7 @@
 		property:address="true"
 		property:dataSource-ref="nonXaDataSourceDb2"
 		property:children-ref="addressColumns" 
-		property:maxExceptions="100" />
+		property:maxExceptions="10" />
 	<util:list id="addressColumns">
 		<ref local="addressId" />
 		<ref local="numb" />

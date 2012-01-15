@@ -1,6 +1,5 @@
 package ikube.toolkit;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -25,7 +24,12 @@ public final class XmlUtilities {
 
 	private static final Logger	LOGGER	= Logger.getLogger(XmlUtilities.class);
 
-	private XmlUtilities() {}
+	/**
+	 * Singularity.
+	 */
+	private XmlUtilities() {
+		// Documented
+	}
 
 	/**
 	 * Finds the node in the xml with the specified name recursively iterating through the elements in the document.
@@ -84,7 +88,6 @@ public final class XmlUtilities {
 	 * @return the XML document from the xml string
 	 */
 	public static Document getDocument(final InputStream inputStream, final String encoding) {
-		ByteArrayOutputStream bos = null;
 		Document document = null;
 		try {
 			SAXReader reader = new SAXReader(false);
@@ -92,15 +95,8 @@ public final class XmlUtilities {
 			reader.setValidation(false);
 			document = reader.read(inputStream);
 		} catch (Exception e) {
-			LOGGER.error("Exception reading xml and generating a document : " + bos, e);
+			LOGGER.error("Exception reading xml and generating a document : ", e);
 		} finally {
-			if (bos != null) {
-				try {
-					bos.close();
-				} catch (Exception e) {
-					LOGGER.error("Exception", e);
-				}
-			}
 			if (inputStream != null) {
 				try {
 					inputStream.close();

@@ -61,6 +61,7 @@ import org.slf4j.LoggerFactory;
  * @since 21.11.10
  * @version 01.00
  */
+@SuppressWarnings("unused")
 public abstract class ATest {
 
 	static {

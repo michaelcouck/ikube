@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation=" http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	xsi:schemaLocation=" 
+		http://maven.apache.org/POM/4.0.0 
+		http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>ikube</groupId>
@@ -93,8 +96,10 @@
 						<configuration>
 							<target>
 								<!-- Try calling the Tomcats and shut them down. -->
-								<echo message="Unpacking configuration : " />
-								<ant antfile="build.xml" target="unpack.configuration" inheritrefs="true" />
+								<echo message="Building the configuration : " />
+								<ant antfile="build.xml" target="package.configuration" inheritrefs="true">
+									<property name="profile"  value="${profile}" />
+								</ant>
 							</target>
 						</configuration>
 						<goals>
@@ -114,9 +119,9 @@
 								<!-- Deploy the Ikube war into the cluster. -->
 								<echo message="Deploying Ikube to cluster : " />
 								<ant antfile="build.xml" target="deploy" inheritrefs="true" />
-								<!-- Copy the external configuration to the first Tomcat. -->
+								<!-- Copy the external configuration to the servers. -->
 								<echo message="Copying configuration to Tomcat bin : " />
-								<ant antfile="build.xml" target="copy.configuration" inheritrefs="true" />
+								<ant antfile="build.xml" target="deploy.configuration" inheritrefs="true" />
 							</target>
 						</configuration>
 						<goals>
@@ -265,28 +270,6 @@
 			<scope>test</scope>
 		</dependency>
 
-		<!-- Alternative Jetty dependencies. -->
-		<!-- <dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-server</artifactId>
-			<version>7.2.2.v20101205</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-webapp</artifactId>
-			<version>7.2.2.v20101205</version>
-		</dependency>	
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-jsp-2.1</artifactId>
-			<version>7.2.2.v20101205</version>
-		</dependency>
-		<dependency>
-			<groupId>org.mortbay.jetty</groupId>
-			<artifactId>jsp-2.1-glassfish</artifactId>
-			<version>2.1.v20100127</version>
-		</dependency> -->
-
 		<dependency>
 			<groupId>taglibs</groupId>
 			<artifactId>standard</artifactId>
@@ -309,5 +292,17 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+	
+	<profiles>
+		<profile>
+			<id>bpost</id>
+		</profile>
+		<profile>
+			<id>integration</id>
+		</profile>
+		<profile>
+			<id>production</id>
+		</profile>
+	</profiles>
 
 </project>

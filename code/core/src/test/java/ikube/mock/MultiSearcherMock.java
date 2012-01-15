@@ -12,7 +12,9 @@ import org.apache.lucene.search.Searchable;
 public class MultiSearcherMock {
 
 	@Mock
+	@SuppressWarnings("unused")
 	public MultiSearcherMock(Searchable... searchables) throws IOException {
+		// Documented
 	}
 	
 }

@@ -7,10 +7,8 @@ import static org.mockito.Mockito.when;
 import ikube.ATest;
 import ikube.IConstants;
 import ikube.model.IndexableFileSystem;
-import ikube.toolkit.FileUtilities;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.OutputStream;
 
 import org.junit.Before;
@@ -41,7 +39,7 @@ public class FileContentProviderTest extends ATest {
 	public void getContent() {
 		OutputStream outputStream = new ByteArrayOutputStream();
 		IndexableFileSystem indexableFileSystem = mock(IndexableFileSystem.class);
-		File file = FileUtilities.findFileRecursively(new File("."), "xml.xml");
+		// File file = FileUtilities.findFileRecursively(new File("."), "xml.xml");
 		// when(indexableFileSystem.getCurrentFile()).thenReturn(file);
 		when(indexableFileSystem.getMaxReadLength()).thenReturn(Long.MAX_VALUE);
 		this.contentProvider.getContent(indexableFileSystem, outputStream);

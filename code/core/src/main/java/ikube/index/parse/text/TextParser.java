@@ -6,7 +6,6 @@ import ikube.index.parse.IParser;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.nio.CharBuffer;
 
 /**
  * TODO Re-implement this class using system array copies.
@@ -28,7 +27,6 @@ public class TextParser implements IParser {
 	@Override
 	public final OutputStream parse(final InputStream inputStream, final OutputStream outputStream) throws Exception {
 		StringBuilder builder = new StringBuilder();
-		CharBuffer charBuffer = CharBuffer.allocate(0);
 		InputStreamReader inputStreamReader = new InputStreamReader(inputStream, IConstants.ENCODING);
 		int read = inputStreamReader.read(CHARS);
 		while (read > -1) {

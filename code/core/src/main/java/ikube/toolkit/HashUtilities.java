@@ -7,7 +7,11 @@ package ikube.toolkit;
  */
 public final class HashUtilities {
 	
+	/**
+	 * Singularity.
+	 */
 	private HashUtilities() {
+		// Documented
 	}
 
 	/**

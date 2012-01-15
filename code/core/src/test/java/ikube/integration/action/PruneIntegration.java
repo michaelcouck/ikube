@@ -45,7 +45,7 @@ public class PruneIntegration extends AbstractIntegration {
 	}
 
 	@Test
-	public void execute() {
+	public void execute() throws Exception {
 		int startIndex = 0;
 		int maxResults = 10;
 		List<Action> actions = dataBase.find(Action.class, startIndex, maxResults);

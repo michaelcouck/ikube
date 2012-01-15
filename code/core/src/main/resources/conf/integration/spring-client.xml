@@ -21,7 +21,7 @@
 	<bean
 		id="indexContext"
 		class="ikube.model.IndexContext"
-		property:name="default"
+		property:name="indexContext"
 		property:maxAge="600"
 		property:compoundFile="${compound.file}"
 		property:bufferedDocs="${buffered.docs}"
@@ -38,9 +38,9 @@
 	<util:list id="indexables">
 		<ref local="mail" />
 		<ref local="hazelcast" />
-		<ref local="internetMillion" />
+		<!-- <ref local="internetMillion" /> -->
 		<!-- <ref local="wikidata" /> -->
-		<ref local="filesystemMillion" />
+		<!-- <ref local="filesystemMillion" /> -->
 		<ref bean="faqTableH2" />
 		<ref bean="attachmentTableH2" />
 		<ref bean="faqTableH2" />
@@ -61,7 +61,7 @@
 		property:primaryTable="true"
 		property:dataSource-ref="nonXaDataSourceH2"
 		property:children-ref="faqColumnsH2" 
-		property:maxExceptions="100"
+		property:maxExceptions="10"
 		property:allColumns="true" />
 	<bean
 		id="attachmentTableH2"
@@ -70,7 +70,7 @@
 		property:primaryTable="false"
 		property:dataSource-ref="nonXaDataSourceH2"
 		property:children-ref="attachmentColumnsH2" 
-		property:maxExceptions="100"
+		property:maxExceptions="10"
 		property:allColumns="true" />
 	<util:list id="faqColumnsH2">
 		<ref local="faqId" />
@@ -91,7 +91,7 @@
 		property:primaryTable="true"
 		property:dataSource-ref="nonXaDataSourceDb2"
 		property:children-ref="faqColumnsDb2" 
-		property:maxExceptions="100"
+		property:maxExceptions="10"
 		property:allColumns="true"  />
 	<bean
 		id="attachmentTableDb2"
@@ -100,7 +100,7 @@
 		property:primaryTable="false"
 		property:dataSource-ref="nonXaDataSourceDb2"
 		property:children-ref="attachmentColumnsDb2" 
-		property:maxExceptions="100"
+		property:maxExceptions="10"
 		property:allColumns="true"  />
 	
 	<!-- This table is the attachment table direct, no dependencies. -->
@@ -111,7 +111,7 @@
 		property:primaryTable="true"
 		property:dataSource-ref="nonXaDataSourceDb2"
 		property:children-ref="attachmentColumnsDb2" 
-		property:maxExceptions="100"
+		property:maxExceptions="10"
 		property:allColumns="true"  />
 	
 	<util:list id="faqColumnsDb2">
@@ -132,7 +132,7 @@
 		property:primaryTable="true"
 		property:dataSource-ref="nonXaDataSourceOracle"
 		property:children-ref="faqColumnsOracle" 
-		property:maxExceptions="100"
+		property:maxExceptions="10"
 		property:allColumns="true" />
 	<bean
 		id="attachmentTableOracle"
@@ -141,7 +141,7 @@
 		property:primaryTable="false"
 		property:dataSource-ref="nonXaDataSourceOracle"
 		property:children-ref="attachmentColumnsOracle" 
-		property:maxExceptions="100"
+		property:maxExceptions="10"
 		property:allColumns="true" />
 	<util:list id="faqColumnsOracle">
 		<ref local="faqId" />
@@ -207,7 +207,7 @@
 		property:primaryTable="true"
 		property:dataSource-ref="nonXaDataSourceH2"
 		property:children-ref="patientColumnsH2" 
-		property:maxExceptions="100"
+		property:maxExceptions="10"
 		property:allColumns="true" />
 	<util:list id="patientColumnsH2">
 		<ref local="patientId" />
@@ -221,7 +221,7 @@
 		property:address="true"
 		property:dataSource-ref="nonXaDataSourceH2"
 		property:children-ref="addressColumnsH2" 
-		property:maxExceptions="100"
+		property:maxExceptions="10"
 		property:allColumns="true" />
 	<util:list id="addressColumnsH2">
 		<ref local="addressId" />
@@ -242,7 +242,7 @@
 		property:primaryTable="true"
 		property:dataSource-ref="nonXaDataSourceDb2"
 		property:children-ref="patientColumnsDb2" 
-		property:maxExceptions="100" />
+		property:maxExceptions="10" />
 	<util:list id="patientColumnsDb2">
 		<ref local="patientId" />
 		<ref local="firstName" />
@@ -259,7 +259,7 @@
 		property:address="true"
 		property:dataSource-ref="nonXaDataSourceDb2"
 		property:children-ref="addressColumnsDb2" 
-		property:maxExceptions="100" />
+		property:maxExceptions="10" />
 	<util:list id="addressColumnsDb2">
 		<ref local="addressId" />
 		<ref local="numb" />
@@ -279,7 +279,7 @@
 		property:primaryTable="true"
 		property:dataSource-ref="nonXaDataSourceOracle"
 		property:children-ref="patientColumnsOracle" 
-		property:maxExceptions="100" />
+		property:maxExceptions="10" />
 	<util:list id="patientColumnsOracle">
 		<ref local="patientId" />
 		<ref local="firstName" />
@@ -296,7 +296,7 @@
 		property:address="true"
 		property:dataSource-ref="nonXaDataSourceOracle"
 		property:children-ref="addressColumnsOracle" 
-		property:maxExceptions="100" />
+		property:maxExceptions="10" />
 	<util:list id="addressColumnsOracle">
 		<ref local="addressId" />
 		<ref local="numb" />

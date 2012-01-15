@@ -83,14 +83,14 @@ public class ApplicationContextManagerMock {
 		} else {
 			T t = getBean(klass);
 			if (t != null) {
-				beans.put(t.getClass().getSimpleName(), (T) t);
+				beans.put(t.getClass().getSimpleName(), t);
 			}
 		}
 		return beans;
 	}
 
 	@Mock
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "unused" })
 	public static synchronized <T> T getBean(final String name) {
 		return (T) BEAN;
 	}

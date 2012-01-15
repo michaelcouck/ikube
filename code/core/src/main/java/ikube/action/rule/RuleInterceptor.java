@@ -101,9 +101,7 @@ public class RuleInterceptor implements IRuleInterceptor {
 				boolean evaluation = rule.evaluate(indexContext);
 				String ruleName = rule.getClass().getSimpleName();
 				jep.addVariable(ruleName, evaluation);
-				if (LOGGER.isDebugEnabled()) {
-					LOGGER.debug("Rule : rule {}, : name : {}, evaluation {} : ", new Object[] { rule, ruleName, evaluation });
-				}
+				// LOGGER.info("Rule : rule {}, : name : {}, evaluation {} : ", new Object[] { rule, ruleName, evaluation });
 			}
 			String predicate = action.getRuleExpression();
 			jep.parseExpression(predicate);

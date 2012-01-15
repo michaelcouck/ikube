@@ -14,4 +14,5 @@ import javax.persistence.InheritanceType;
 @Entity()
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Patient extends Person {
+	// Documented
 }

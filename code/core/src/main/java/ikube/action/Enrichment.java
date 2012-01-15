@@ -43,7 +43,7 @@ public class Enrichment extends Action<IndexContext<?>, Boolean> implements ICon
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Boolean execute(final IndexContext<?> context) throws Exception {
+	public boolean executeInternal(final IndexContext<?> context) throws Exception {
 		logger.info("Running the enrichment : ");
 		ikube.model.Action action = null;
 		try {

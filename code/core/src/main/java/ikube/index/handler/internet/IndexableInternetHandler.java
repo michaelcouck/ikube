@@ -105,7 +105,7 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 				if (urls.isEmpty()) {
 					// Check if there are any other threads still working
 					// other than this thread of course
-					waiting = Boolean.TRUE.booleanValue();
+					waiting = Boolean.TRUE;
 					if (areRunning(handlerWorkers)) {
 						synchronized (this) {
 							try {
@@ -139,10 +139,10 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 		protected boolean areRunning(final List<IndexableInternetHandlerWorker> handlerWorkers) {
 			for (IndexableInternetHandlerWorker handlerWorker : handlerWorkers) {
 				if (!handlerWorker.waiting) {
-					return Boolean.TRUE.booleanValue();
+					return Boolean.TRUE;
 				}
 			}
-			return Boolean.FALSE.booleanValue();
+			return Boolean.FALSE;
 		}
 	}
 
@@ -456,7 +456,7 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 							Url url = new Url();
 							url.setUrlId(urlId.longValue());
 							url.setName(indexableInternet.getName());
-							url.setIndexed(Boolean.FALSE.booleanValue());
+							url.setIndexed(Boolean.FALSE);
 							url.setUrl(strippedAnchorLink);
 							// Add the new url to the cache, we'll batch them in an insert later
 							// logger.info("Persisting url : " + url);
@@ -488,7 +488,7 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 		url.setName(indexableInternet.getName());
 		url.setUrlId(HashUtilities.hash(urlString).longValue());
 		url.setUrl(urlString);
-		url.setIndexed(Boolean.FALSE.booleanValue());
+		url.setIndexed(Boolean.FALSE);
 
 		in.push(url);
 		out.add(HashUtilities.hash(url.getUrl()));

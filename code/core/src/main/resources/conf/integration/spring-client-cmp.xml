@@ -90,7 +90,10 @@
 		property:allColumns="true"
 		property:primaryTable="true"
 		property:dataSource-ref="campaignDatabase"
-		property:maxExceptions="100" />
+		property:maxExceptions="10"
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true" />
 	<bean
 		id="active_period"
 		class="ikube.model.IndexableTable"
@@ -98,7 +101,10 @@
 		property:allColumns="true"
 		property:primaryTable="true"
 		property:dataSource-ref="campaignDatabase"
-		property:maxExceptions="100" />
+		property:maxExceptions="10" 
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true" />
 	<bean
 		id="banner"
 		class="ikube.model.IndexableTable"
@@ -106,7 +112,10 @@
 		property:allColumns="true"
 		property:primaryTable="true"
 		property:dataSource-ref="campaignDatabase"
-		property:maxExceptions="100" />
+		property:maxExceptions="10" 
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true" />
 	<bean
 		id="campaign"
 		class="ikube.model.IndexableTable"
@@ -114,7 +123,10 @@
 		property:allColumns="true"
 		property:primaryTable="true"
 		property:dataSource-ref="campaignDatabase"
-		property:maxExceptions="100" />
+		property:maxExceptions="10" 
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true" />
 	<bean
 		id="campaign_action"
 		class="ikube.model.IndexableTable"
@@ -122,7 +134,10 @@
 		property:allColumns="true"
 		property:primaryTable="true"
 		property:dataSource-ref="campaignDatabase"
-		property:maxExceptions="100" />
+		property:maxExceptions="10" 
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true" />
 	<bean
 		id="campaign_customer_artwork"
 		class="ikube.model.IndexableTable"
@@ -130,7 +145,10 @@
 		property:allColumns="true"
 		property:primaryTable="true"
 		property:dataSource-ref="campaignDatabase"
-		property:maxExceptions="100" />
+		property:maxExceptions="10" 
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true" />
 	<bean
 		id="campaign_event"
 		class="ikube.model.IndexableTable"
@@ -138,7 +156,10 @@
 		property:allColumns="true"
 		property:primaryTable="true"
 		property:dataSource-ref="campaignDatabase"
-		property:maxExceptions="100" />
+		property:maxExceptions="10" 
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true" />
 	<bean
 		id="campaign_facebook_ad_group"
 		class="ikube.model.IndexableTable"
@@ -146,7 +167,10 @@
 		property:allColumns="true"
 		property:primaryTable="true"
 		property:dataSource-ref="campaignDatabase"
-		property:maxExceptions="100" />
+		property:maxExceptions="10" 
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true" />
 	<bean
 		id="campaign_facebook_virual"
 		class="ikube.model.IndexableTable"
@@ -154,7 +178,10 @@
 		property:allColumns="true"
 		property:primaryTable="true"
 		property:dataSource-ref="campaignDatabase"
-		property:maxExceptions="100" />
+		property:maxExceptions="10" 
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true" />
 	<bean
 		id="campaign_set"
 		class="ikube.model.IndexableTable"
@@ -162,7 +189,10 @@
 		property:allColumns="true"
 		property:primaryTable="true"
 		property:dataSource-ref="campaignDatabase"
-		property:maxExceptions="100" />
+		property:maxExceptions="10" 
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true" />
 	<bean
 		id="campaign_set_parameter"
 		class="ikube.model.IndexableTable"
@@ -170,7 +200,10 @@
 		property:allColumns="true"
 		property:primaryTable="true"
 		property:dataSource-ref="campaignDatabase"
-		property:maxExceptions="100" />
+		property:maxExceptions="10" 
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true" />
 	<bean
 		id="campaign_set_parameter_type"
 		class="ikube.model.IndexableTable"
@@ -178,7 +211,10 @@
 		property:allColumns="true"
 		property:primaryTable="true"
 		property:dataSource-ref="campaignDatabase"
-		property:maxExceptions="100" />
+		property:maxExceptions="10" 
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true" />
 	<bean
 		id="campaign_set_placement_type"
 		class="ikube.model.IndexableTable"
@@ -186,7 +222,10 @@
 		property:allColumns="true"
 		property:primaryTable="true"
 		property:dataSource-ref="campaignDatabase"
-		property:maxExceptions="100" />
+		property:maxExceptions="10" 
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true" />
 	<bean
 		id="campaign_set_site"
 		class="ikube.model.IndexableTable"
@@ -194,7 +233,10 @@
 		property:allColumns="true"
 		property:primaryTable="true"
 		property:dataSource-ref="campaignDatabase"
-		property:maxExceptions="100" />
+		property:maxExceptions="10" 
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true" />
 	<bean
 		id="campaign_set_target_age_group"
 		class="ikube.model.IndexableTable"
@@ -202,7 +244,10 @@
 		property:allColumns="true"
 		property:primaryTable="true"
 		property:dataSource-ref="campaignDatabase"
-		property:maxExceptions="100" />
+		property:maxExceptions="10" 
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true" />
 	<bean
 		id="campaign_set_target_heading"
 		class="ikube.model.IndexableTable"
@@ -210,7 +255,10 @@
 		property:allColumns="true"
 		property:primaryTable="true"
 		property:dataSource-ref="campaignDatabase"
-		property:maxExceptions="100" />
+		property:maxExceptions="10" 
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true" />
 	<bean
 		id="campaign_set_target_location"
 		class="ikube.model.IndexableTable"
@@ -218,7 +266,10 @@
 		property:allColumns="true"
 		property:primaryTable="true"
 		property:dataSource-ref="campaignDatabase"
-		property:maxExceptions="100" />
+		property:maxExceptions="10" 
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true" />
 	<bean
 		id="campaign_set_target_segment"
 		class="ikube.model.IndexableTable"
@@ -226,7 +277,10 @@
 		property:allColumns="true"
 		property:primaryTable="true"
 		property:dataSource-ref="campaignDatabase"
-		property:maxExceptions="100" />
+		property:maxExceptions="10" 
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true" />
 	<bean
 		id="country"
 		class="ikube.model.IndexableTable"
@@ -234,7 +288,10 @@
 		property:allColumns="true"
 		property:primaryTable="true"
 		property:dataSource-ref="campaignDatabase"
-		property:maxExceptions="100" />
+		property:maxExceptions="10" 
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true" />
 	<bean
 		id="customer_artwork"
 		class="ikube.model.IndexableTable"
@@ -242,7 +299,10 @@
 		property:allColumns="true"
 		property:primaryTable="true"
 		property:dataSource-ref="campaignDatabase"
-		property:maxExceptions="100" />
+		property:maxExceptions="10" 
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true" />
 	<bean
 		id="dbmaintain_scripts"
 		class="ikube.model.IndexableTable"
@@ -250,7 +310,10 @@
 		property:allColumns="true"
 		property:primaryTable="true"
 		property:dataSource-ref="campaignDatabase"
-		property:maxExceptions="100" />
+		property:maxExceptions="10" 
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true" />
 	<bean
 		id="facebook_ad_group"
 		class="ikube.model.IndexableTable"
@@ -258,7 +321,10 @@
 		property:allColumns="true"
 		property:primaryTable="true"
 		property:dataSource-ref="campaignDatabase"
-		property:maxExceptions="100" />
+		property:maxExceptions="10" 
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true" />
 	<bean
 		id="job_retry_detail"
 		class="ikube.model.IndexableTable"
@@ -266,7 +332,10 @@
 		property:allColumns="true"
 		property:primaryTable="true"
 		property:dataSource-ref="campaignDatabase"
-		property:maxExceptions="100" />
+		property:maxExceptions="10" 
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true" />
 	<bean
 		id="language"
 		class="ikube.model.IndexableTable"
@@ -274,7 +343,10 @@
 		property:allColumns="true"
 		property:primaryTable="true"
 		property:dataSource-ref="campaignDatabase"
-		property:maxExceptions="100" />
+		property:maxExceptions="10" 
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true" />
 	<bean
 		id="language_site_configuration"
 		class="ikube.model.IndexableTable"
@@ -282,7 +354,10 @@
 		property:allColumns="true"
 		property:primaryTable="true"
 		property:dataSource-ref="campaignDatabase"
-		property:maxExceptions="100" />
+		property:maxExceptions="10" 
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true" />
 	<bean
 		id="locale"
 		class="ikube.model.IndexableTable"
@@ -290,7 +365,10 @@
 		property:allColumns="true"
 		property:primaryTable="true"
 		property:dataSource-ref="campaignDatabase"
-		property:maxExceptions="100" />
+		property:maxExceptions="10" 
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true" />
 	<bean
 		id="message_track"
 		class="ikube.model.IndexableTable"
@@ -298,7 +376,10 @@
 		property:allColumns="true"
 		property:primaryTable="true"
 		property:dataSource-ref="campaignDatabase"
-		property:maxExceptions="100" />
+		property:maxExceptions="10" 
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true" />
 	<bean
 		id="network_delivery_channel"
 		class="ikube.model.IndexableTable"
@@ -306,7 +387,10 @@
 		property:allColumns="true"
 		property:primaryTable="true"
 		property:dataSource-ref="campaignDatabase"
-		property:maxExceptions="100" />
+		property:maxExceptions="10" 
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true" />
 	<bean
 		id="network_delivery_channel_configuration"
 		class="ikube.model.IndexableTable"
@@ -314,7 +398,10 @@
 		property:allColumns="true"
 		property:primaryTable="true"
 		property:dataSource-ref="campaignDatabase"
-		property:maxExceptions="100" />
+		property:maxExceptions="10" 
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true" />
 	<bean
 		id="network_delivery_channel_site"
 		class="ikube.model.IndexableTable"
@@ -322,7 +409,10 @@
 		property:allColumns="true"
 		property:primaryTable="true"
 		property:dataSource-ref="campaignDatabase"
-		property:maxExceptions="100" />
+		property:maxExceptions="10" 
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true" />
 	<bean
 		id="persistent_logins"
 		class="ikube.model.IndexableTable"
@@ -330,7 +420,10 @@
 		property:allColumns="true"
 		property:primaryTable="true"
 		property:dataSource-ref="campaignDatabase"
-		property:maxExceptions="100" />
+		property:maxExceptions="10" 
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true" />
 	<bean
 		id="placement_type"
 		class="ikube.model.IndexableTable"
@@ -338,7 +431,10 @@
 		property:allColumns="true"
 		property:primaryTable="true"
 		property:dataSource-ref="campaignDatabase"
-		property:maxExceptions="100" />
+		property:maxExceptions="10" 
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true" />
 	<bean
 		id="placement_type_site"
 		class="ikube.model.IndexableTable"
@@ -346,7 +442,10 @@
 		property:allColumns="true"
 		property:primaryTable="true"
 		property:dataSource-ref="campaignDatabase"
-		property:maxExceptions="100" />
+		property:maxExceptions="10" 
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true" />
 	<bean
 		id="position"
 		class="ikube.model.IndexableTable"
@@ -354,7 +453,10 @@
 		property:allColumns="true"
 		property:primaryTable="true"
 		property:dataSource-ref="campaignDatabase"
-		property:maxExceptions="100" />
+		property:maxExceptions="10" 
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true" />
 	<bean
 		id="position_text"
 		class="ikube.model.IndexableTable"
@@ -362,7 +464,10 @@
 		property:allColumns="true"
 		property:primaryTable="true"
 		property:dataSource-ref="campaignDatabase"
-		property:maxExceptions="100" />
+		property:maxExceptions="10" 
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true" />
 	<bean
 		id="position_type"
 		class="ikube.model.IndexableTable"
@@ -370,7 +475,10 @@
 		property:allColumns="true"
 		property:primaryTable="true"
 		property:dataSource-ref="campaignDatabase"
-		property:maxExceptions="100" />
+		property:maxExceptions="10" 
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true" />
 	<bean
 		id="position_type_site"
 		class="ikube.model.IndexableTable"
@@ -378,7 +486,10 @@
 		property:allColumns="true"
 		property:primaryTable="true"
 		property:dataSource-ref="campaignDatabase"
-		property:maxExceptions="100" />
+		property:maxExceptions="10" 
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true" />
 	<bean
 		id="role"
 		class="ikube.model.IndexableTable"
@@ -386,7 +497,10 @@
 		property:allColumns="true"
 		property:primaryTable="true"
 		property:dataSource-ref="campaignDatabase"
-		property:maxExceptions="100" />
+		property:maxExceptions="10" 
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true" />
 	<bean
 		id="site"
 		class="ikube.model.IndexableTable"
@@ -394,7 +508,10 @@
 		property:allColumns="true"
 		property:primaryTable="true"
 		property:dataSource-ref="campaignDatabase"
-		property:maxExceptions="100" />
+		property:maxExceptions="10" 
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true" />
 	<bean
 		id="site_configuration"
 		class="ikube.model.IndexableTable"
@@ -402,7 +519,10 @@
 		property:primaryTable="true"
 		property:dataSource-ref="campaignDatabase"
 		property:allColumns="true"
-		property:maxExceptions="100" />
+		property:maxExceptions="10" 
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true" />
 	<bean
 		id="site_configuration_target_segment"
 		class="ikube.model.IndexableTable"
@@ -410,7 +530,10 @@
 		property:allColumns="true"
 		property:primaryTable="true"
 		property:dataSource-ref="campaignDatabase"
-		property:maxExceptions="100" />
+		property:maxExceptions="10" 
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true" />
 	<bean
 		id="target_age_group"
 		class="ikube.model.IndexableTable"
@@ -418,7 +541,10 @@
 		property:allColumns="true"
 		property:primaryTable="true"
 		property:dataSource-ref="campaignDatabase"
-		property:maxExceptions="100" />
+		property:maxExceptions="10" 
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true" />
 	<bean
 		id="target_heading"
 		class="ikube.model.IndexableTable"
@@ -426,7 +552,10 @@
 		property:allColumns="true"
 		property:primaryTable="true"
 		property:dataSource-ref="campaignDatabase"
-		property:maxExceptions="100" />
+		property:maxExceptions="10" 
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true" />
 	<bean
 		id="target_location"
 		class="ikube.model.IndexableTable"
@@ -434,7 +563,10 @@
 		property:allColumns="true"
 		property:primaryTable="true"
 		property:dataSource-ref="campaignDatabase"
-		property:maxExceptions="100" />
+		property:maxExceptions="10" 
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true" />
 	<bean
 		id="target_segment"
 		class="ikube.model.IndexableTable"
@@ -442,7 +574,10 @@
 		property:allColumns="true"
 		property:primaryTable="true"
 		property:dataSource-ref="campaignDatabase"
-		property:maxExceptions="100" />
+		property:maxExceptions="10" 
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true" />
 	<bean
 		id="target_segment_target_heading"
 		class="ikube.model.IndexableTable"
@@ -450,7 +585,10 @@
 		property:allColumns="true"
 		property:primaryTable="true"
 		property:dataSource-ref="campaignDatabase"
-		property:maxExceptions="100" />
+		property:maxExceptions="10" 
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true" />
 	<bean
 		id="user"
 		class="ikube.model.IndexableTable"
@@ -458,7 +596,10 @@
 		property:allColumns="true"
 		property:primaryTable="true"
 		property:dataSource-ref="campaignDatabase"
-		property:maxExceptions="100" />
+		property:maxExceptions="10" 
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true" />
 	<bean
 		id="user_role"
 		class="ikube.model.IndexableTable"
@@ -466,6 +607,9 @@
 		property:allColumns="true"
 		property:primaryTable="true"
 		property:dataSource-ref="campaignDatabase"
-		property:maxExceptions="100" />
+		property:maxExceptions="10" 
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true" />
 	
 </beans>

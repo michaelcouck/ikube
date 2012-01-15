@@ -9,6 +9,7 @@ import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.Logging;
 import ikube.toolkit.ThreadUtilities;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -29,11 +30,11 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Boolean execute(final IndexContext<?> indexContext) throws Exception {
+	public boolean executeInternal(final IndexContext<?> indexContext) throws Exception {
 		String indexName = indexContext.getIndexName();
 		Server server = clusterManager.getServer();
 		List<Indexable<?>> indexables = indexContext.getIndexables();
-		ikube.model.Action action = null;
+		List<ikube.model.Action> actions = new ArrayList<ikube.model.Action>();
 		try {
 			if (indexables != null) {
 				long startTime = System.currentTimeMillis();
@@ -50,10 +51,8 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 							logger.warn(message);
 							continue;
 						}
-						if (action != null) {
-							stop(action);
-						}
-						action = start(indexContext.getIndexName(), indexable.getName());
+						ikube.model.Action action = start(indexContext.getIndexName(), indexable.getName());
+						actions.add(action);
 						indexContext.setAction(action);
 						logger.info("Indexable : " + indexable.getName());
 						logger.info("Handler : " + handler.getClass() + ", " + handler.getIndexableClass());
@@ -63,7 +62,9 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 					} catch (Exception e) {
 						logger.error("Exception indexing data : " + indexName, e);
 					} finally {
-						// Close the index writer before the last action is stopped
+						// Close the index writer before the last action is stopped or 
+						// in the ui it looks like the action has completely stopped but the 
+						// index is still being optimised
 						if (!iterator.hasNext()) {
 							IndexManager.closeIndexWriter(indexContext);
 						}
@@ -72,11 +73,13 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 			}
 			return Boolean.TRUE;
 		} finally {
-			logger.debug(Logging.getString("Finished indexing : ", indexName));
 			// We'll try to close the writer, even though it should already be closed
 			IndexManager.closeIndexWriter(indexContext);
 			indexContext.setAction(null);
-			stop(action);
+			for (ikube.model.Action action : actions) {
+				stop(action);
+			}
+			logger.debug(Logging.getString("Finished indexing : ", indexName));
 		}
 	}
 

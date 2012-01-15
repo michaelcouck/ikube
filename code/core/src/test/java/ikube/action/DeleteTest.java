@@ -9,7 +9,6 @@ import ikube.mock.ApplicationContextManagerMock;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
-import java.io.IOException;
 
 import mockit.Deencapsulation;
 import mockit.Mockit;
@@ -29,7 +28,7 @@ import org.junit.Test;
  */
 public class DeleteTest extends ATest {
 
-	private Delete	delete;
+	private Delete delete;
 
 	public DeleteTest() {
 		super(DeleteTest.class);
@@ -53,7 +52,7 @@ public class DeleteTest extends ATest {
 	}
 
 	@Test
-	public void execute() throws IOException {
+	public void execute() throws Exception {
 		File baseIndexDirectory = FileUtilities.getFile(indexContext.getIndexDirectoryPath(), Boolean.TRUE);
 		FileUtilities.deleteFile(baseIndexDirectory, 1);
 		baseIndexDirectory = FileUtilities.getFile(indexContext.getIndexDirectoryPath(), Boolean.TRUE);

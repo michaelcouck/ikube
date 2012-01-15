@@ -7,4 +7,5 @@ package ikube;
  * @version 01.00
  */
 public interface IIndexEngine {
+	// Documented
 }

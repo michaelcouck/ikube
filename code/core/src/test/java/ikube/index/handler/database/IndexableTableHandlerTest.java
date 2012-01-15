@@ -28,11 +28,13 @@ public class IndexableTableHandlerTest extends ATest {
 	@MockClass(realClass = DatabaseUtilities.class)
 	public static class DatabaseUtilitiesMock {
 		@Mock()
+		@SuppressWarnings("unused")
 		public static List<String> getAllColumns(final Connection connection, final String table) {
 			return ALL_COLUMNS;
 		}
 
 		@Mock()
+		@SuppressWarnings("unused")
 		public static List<String> getPrimaryKeys(final Connection connection, final String table) {
 			return PRIMARY_KEYS;
 		}

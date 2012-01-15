@@ -49,7 +49,6 @@ public abstract class AbstractIntegration {
 		Logging.configure();
 		try {
 			FileUtilities.deleteFiles(new File("."), "btm1.tlog", "btm2.tlog", "ikube.h2.db", "ikube.lobs.db", "ikube.log", "openjpa.log");
-			// startJetty();
 			Thread.sleep(3000);
 			startContext();
 			Thread.sleep(3000);
@@ -78,16 +77,6 @@ public abstract class AbstractIntegration {
 		DataUtilities.insertData(connection, inputStream);
 	}
 
-	// @SuppressWarnings("unused")
-	// private static void startJetty() throws Exception {
-	// Server server = new Server(9300);
-	// File webappDirectory = FileUtilities.findFileRecursively(new File("."), "webapp");
-	// WebAppContext webAppContext = new WebAppContext(webappDirectory.getAbsolutePath(), "/ikube");
-	// webAppContext.setServer(server);
-	// server.setHandler(webAppContext);
-	// server.start();
-	// }
-
 	public static void delete(final IDataBase dataBase, final Class<?>... klasses) {
 		int batchSize = 1000;
 		for (Class<?> klass : klasses) {
@@ -108,6 +97,7 @@ public abstract class AbstractIntegration {
 	{
 		realIndexContext = ApplicationContextManager.getBean("indexContext");
 		realIndexContext.setAction(new Action());
+		FileUtilities.deleteFile(new File(realIndexContext.getIndexDirectoryPath()), 1);
 	}
 
 	/**

@@ -16,6 +16,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
+ * This search controller will search a particular index and put the results in the model.
+ * 
  * @author Michael Couck
  * @since 04.12.11
  * @version 01.00

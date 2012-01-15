@@ -40,7 +40,7 @@
 				the lib folder. The manifest of the jar gets the Ikube.main as the main class 
 				with all the libs on the classpath so it can be started stand alone. 
 			 -->
-			<plugin>
+			 <plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
 				<version>2.3.1</version>
@@ -69,18 +69,6 @@
 					<argLine>-javaagent:../../serenity/serenity.jar ${memory.parameters} ${serenity.parameters}</argLine>
 					<excludes>
 						<exclude>**/TextParserTest.java</exclude>
-						<!-- <exclude>/ikube/action/ActionTest.java</exclude>
-						<exclude>/ikube/action/BackupTest.java</exclude> -->
-						<!-- <exclude>/ikube/action/CleanTest.java</exclude>
-						<exclude>/ikube/action/CloseTest.java</exclude>
-						<exclude>/ikube/action/DeleteTest.java</exclude>
-						<exclude>/ikube/action/DiskFullTest.java</exclude>
-						<exclude>/ikube/action/IndexTest.java</exclude>
-						<exclude>/ikube/action/OpenTest.java</exclude>
-						<exclude>/ikube/action/RestoreTest.java</exclude>
-						<exclude>/ikube/action/SearcherTest.java</exclude>
-						<exclude>/ikube/action/ValidatorTest.java</exclude> -->
-						<!-- <exclude>**/action/rule/*Test.java</exclude> -->
 					</excludes>
 				</configuration>
 			</plugin>

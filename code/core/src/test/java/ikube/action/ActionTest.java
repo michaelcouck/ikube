@@ -5,6 +5,7 @@ import static org.mockito.Mockito.mock;
 import ikube.ATest;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.mock.ClusterManagerMock;
+import ikube.model.IndexContext;
 import ikube.notify.IMailer;
 import mockit.Deencapsulation;
 import mockit.Mockit;
@@ -27,8 +28,13 @@ public class ActionTest extends ATest {
 		Mockit.setUpMocks(ApplicationContextManagerMock.class, ClusterManagerMock.class);
 		action = new Action<Object, Object>() {
 			@Override
-			public Object execute(Object context) throws Exception {
+			public Boolean execute(IndexContext<?> context) throws Exception {
 				return null;
+			}
+
+			@Override
+			public boolean executeInternal(IndexContext<?> indexContext) throws Exception {
+				return false;
 			}
 		};
 		Deencapsulation.setField(action, clusterManager);
@@ -40,6 +46,7 @@ public class ActionTest extends ATest {
 	}
 
 	@Test
+	@SuppressWarnings("static-access")
 	public void executeAllMethods() throws Exception {
 		action.setRuleExpression("predicate");
 		action.getRuleExpression();

@@ -1,11 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!--
-	This is the top level Spring configuration file for Ikube. Generally this file will be in the 
-	META-INF directory of the ikube-core.jar, where Spring will read all the configuration. This 
-	file contains the mandatory configuration system files and typically will also contain the client 
-	specific files with indexables and data sources in it(them).
- -->
 <beans
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://www.springframework.org/schema/beans"

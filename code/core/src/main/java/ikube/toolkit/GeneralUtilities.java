@@ -25,7 +25,11 @@ public final class GeneralUtilities {
 
 	private static final long MAX_PORT_SIZE = Short.MAX_VALUE;
 
+	/**
+	 * Singularity.
+	 */
 	private GeneralUtilities() {
+		// Documented
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -103,20 +107,21 @@ public final class GeneralUtilities {
 	 *            the port number to start from
 	 * @return the first available port from the starting port
 	 */
-	public static synchronized int findFirstOpenPort(int port) {
+	public static synchronized int findFirstOpenPort(final int port) {
 		try {
 			ServerSocket ss = null;
 			DatagramSocket ds = null;
-			while (true && port < MAX_PORT_SIZE) {
+			int nextPort = port;
+			while (true && nextPort < MAX_PORT_SIZE) {
 				try {
-					ss = new ServerSocket(port);
+					ss = new ServerSocket(nextPort);
 					ss.setReuseAddress(true);
-					ds = new DatagramSocket(port);
+					ds = new DatagramSocket(nextPort);
 					ds.setReuseAddress(true);
-					return port;
+					return nextPort;
 				} catch (IOException e) {
-					LOGGER.info("Exception opening port : " + port, e);
-					port++;
+					LOGGER.info("Exception opening port : " + nextPort, e);
+					nextPort++;
 				} finally {
 					if (ds != null) {
 						ds.close();
@@ -130,12 +135,13 @@ public final class GeneralUtilities {
 					}
 				}
 			}
-			throw new RuntimeException("Couldn't find an open port : " + port + ", maximum port size : " + MAX_PORT_SIZE);
+			throw new RuntimeException("Couldn't find an open port : " + nextPort + ", maximum port size : " + MAX_PORT_SIZE);
 		} finally {
 			GeneralUtilities.class.notifyAll();
 		}
 	}
 
+	@SuppressWarnings("unused")
 	public static <T> T findObject(Class<T> klass, Collection<T> collection, String fieldName, String fieldValue) {
 		for (T t : collection) {
 			Field field = ReflectionUtils.findField(t.getClass(), fieldName);
