@@ -29,7 +29,9 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -78,6 +80,7 @@ public abstract class ATest {
 	protected ScoreDoc[] scoreDocs;
 	protected Searchable[] searchables;
 	protected List<Indexable<?>> indexables;
+	protected Map<String, Server> servers;
 
 	protected Lock lock = mock(Lock.class);
 	protected Index index = mock(Index.class);
@@ -104,6 +107,7 @@ public abstract class ATest {
 		searchables = new Searchable[] { indexSearcher };
 		scoreDocs = new ScoreDoc[0];
 		indexables = new ArrayList<Indexable<?>>();
+		servers = new HashMap<String, Server>();
 
 		try {
 			ip = InetAddress.getLocalHost().getHostAddress();
@@ -142,6 +146,7 @@ public abstract class ATest {
 		when(indexContext.getMaxAge()).thenReturn((long) (60));
 		when(indexContext.getAction()).thenReturn(action);
 		when(clusterManager.getServer()).thenReturn(server);
+		when(clusterManager.getServers()).thenReturn(servers);
 		when(clusterManager.lock(anyString())).thenReturn(Boolean.TRUE);
 		when(server.isWorking()).thenReturn(Boolean.FALSE);
 		when(server.getAddress()).thenReturn(ip);
@@ -155,6 +160,7 @@ public abstract class ATest {
 
 		indexables.add(indexableTable);
 		indexables.add(indexableColumn);
+		servers.put(ip, server);
 		IndexManagerMock.setIndexWriter(indexWriter);
 		ApplicationContextManagerMock.setIndexContext(indexContext);
 		ApplicationContextManagerMock.setClusterManager(clusterManager);

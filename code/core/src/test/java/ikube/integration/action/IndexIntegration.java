@@ -31,13 +31,14 @@ public class IndexIntegration extends AbstractIntegration {
 		clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
 		Deencapsulation.setField(index, dataBase);
 		Deencapsulation.setField(index, clusterManager);
+		clusterManager.getServer().getActions().clear();
 		delete(dataBase, Action.class);
 	}
 
 	@Test
 	public void execute() throws Exception {
-		IndexContext<?> coldwellIndex = ApplicationContextManager.getBean("coldwellIndex");
-		boolean result = index.execute(coldwellIndex);
+		IndexContext<?> dropboxIndex = ApplicationContextManager.getBean("dropboxIndex");
+		boolean result = index.execute(dropboxIndex);
 		logger.info("Result from index action : " + result);
 		assertTrue("The index must execute properly : ", result);
 		// Stop all the actions

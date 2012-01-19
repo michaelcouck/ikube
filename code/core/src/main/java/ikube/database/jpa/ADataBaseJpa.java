@@ -156,15 +156,15 @@ public abstract class ADataBaseJpa implements IDataBase {
 		Root<T> root = criteriaQuery.from(klass);
 		criteriaQuery = criteriaQuery.select(root);
 		List<Order> orderByOrders = new ArrayList<Order>();
-		for (int i = 0; i < fieldsToSortOn.length; i++) {
-			String fieldToSortOn = fieldsToSortOn[i];
-			if (directionOfSort[i]) {
-				orderByOrders.add(criteriaBuilder.asc(root.get(fieldToSortOn)));
-			} else {
-				orderByOrders.add(criteriaBuilder.desc(root.get(fieldToSortOn)));
+		if (fieldsToSortOn.length > 0) {
+			for (int i = 0; i < fieldsToSortOn.length; i++) {
+				String fieldToSortOn = fieldsToSortOn[i];
+				if (directionOfSort[i]) {
+					orderByOrders.add(criteriaBuilder.asc(root.get(fieldToSortOn)));
+				} else {
+					orderByOrders.add(criteriaBuilder.desc(root.get(fieldToSortOn)));
+				}
 			}
-		}
-		if (orderByOrders.size() > 0) {
 			criteriaQuery.orderBy(orderByOrders);
 		}
 		TypedQuery<T> typedQuery = getEntityManager().createQuery(criteriaQuery);

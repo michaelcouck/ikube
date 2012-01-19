@@ -59,7 +59,7 @@ public class IndexableTableHandlerIntegration extends AbstractIntegration {
 	@Before
 	public void before() throws Exception {
 		indexableTableHandler = ApplicationContextManager.getBean(IndexableTableHandler.class);
-		faqIndexableTable = ApplicationContextManager.getBean("faqTableH2");
+		faqIndexableTable = ApplicationContextManager.getBean("faqTableOracle");
 		attachmentIndexableTable = ApplicationContextManager.getBean("attachmentTableH2");
 		faqIndexableColumns = faqIndexableTable.getChildren();
 		faqIdIndexableColumn = Deencapsulation.invoke(indexableTableHandler, "getIdColumn", faqIndexableColumns);

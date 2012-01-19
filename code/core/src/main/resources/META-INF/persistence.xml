@@ -1,6 +1,9 @@
 <?xml version="1.0"?>
 
-<persistence xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<persistence 
+	xmlns="http://java.sun.com/xml/ns/persistence" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	
 	xsi:schemaLocation="
 		http://java.sun.com/xml/ns/persistence
     	http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd" version="1.0">
@@ -59,7 +62,7 @@
 		</properties>
 	</persistence-unit>
 	
-	<persistence-unit name="IkubePersistenceUnitDb2" transaction-type="RESOURCE_LOCAL">
+<!-- 	<persistence-unit name="IkubePersistenceUnitDb2" transaction-type="RESOURCE_LOCAL">
 		<provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
 		<class>ikube.model.Persistable</class>
 		
@@ -193,13 +196,6 @@
 		<class>ikube.model.medical.Treatment</class>
 		
 		<exclude-unlisted-classes>false</exclude-unlisted-classes>
-		<!--
-			For the first run these have to be uncommented to allow OpenJpa to create the
-			tables in the database and commit the connection. Typically the connection
-			is managed Xa so can't be committed by OpenJpa. If the properties are uncommented
-			then OpenJpa will use these to get a connection to the db and can then commit on
-			that connection as it will not be xa.
-		-->
 		<properties>
 			<property name="openjpa.Connection2UserName" value="ikube" />
 			<property name="openjpa.Connection2Password" value="ikube" />
@@ -207,6 +203,6 @@
 			<property name="openjpa.Connection2DriverName" value="org.postgresql.Driver" />
 			<property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
 		</properties>
-	</persistence-unit>
+	</persistence-unit> -->
 	
 </persistence>

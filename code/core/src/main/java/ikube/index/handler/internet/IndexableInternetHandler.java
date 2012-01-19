@@ -228,9 +228,11 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 				urls.add(url);
 				out.add(HashUtilities.hash(url.getUrl()));
 			}
-			logger.info("Done urls : " + out.size());
-			logger.info("Doing urls : " + urls.size());
-			logger.info("Still to do urls : " + in.size());
+			if (logger.isDebugEnabled()) {
+				logger.debug("Done urls : " + out.size());
+				logger.debug("Doing urls : " + urls.size());
+				logger.debug("Still to do urls : " + in.size());
+			}
 			return urls;
 		} finally {
 			notifyAll();

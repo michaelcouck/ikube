@@ -57,7 +57,7 @@ public class Server extends Persistable implements Comparable<Server> {
 		return actions;
 	}
 
-	public void setActions(List<Action> actions) {
+	public void setActions(final List<Action> actions) {
 		this.actions = actions;
 	}
 
@@ -80,7 +80,7 @@ public class Server extends Persistable implements Comparable<Server> {
 		return searchWebServicePort;
 	}
 
-	public void setSearchWebServicePort(int searchWebServicePort) {
+	public void setSearchWebServicePort(final int searchWebServicePort) {
 		this.searchWebServicePort = searchWebServicePort;
 	}
 
@@ -88,7 +88,7 @@ public class Server extends Persistable implements Comparable<Server> {
 		return searchWebServiceUrl;
 	}
 
-	public void setSearchWebServiceUrl(String searchWebServiceUrl) {
+	public void setSearchWebServiceUrl(final String searchWebServiceUrl) {
 		this.searchWebServiceUrl = searchWebServiceUrl;
 	}
 
@@ -96,7 +96,7 @@ public class Server extends Persistable implements Comparable<Server> {
 		return monitoringWebServicePort;
 	}
 
-	public void setMonitoringWebServicePort(int monitoringWebServicePort) {
+	public void setMonitoringWebServicePort(final int monitoringWebServicePort) {
 		this.monitoringWebServicePort = monitoringWebServicePort;
 	}
 
@@ -108,7 +108,7 @@ public class Server extends Persistable implements Comparable<Server> {
 		this.age = age;
 	}
 
-	public boolean equals(Object object) {
+	public boolean equals(final Object object) {
 		if (object == null) {
 			return Boolean.FALSE;
 		}

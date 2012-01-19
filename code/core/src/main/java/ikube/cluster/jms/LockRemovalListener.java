@@ -44,7 +44,9 @@ public class LockRemovalListener implements IListener {
 		try {
 			List<String> toRemove = new ArrayList<String>();
 			for (Entry<String, ClusterManagerJmsLock> entry : clusterManager.getLocks().entrySet()) {
-				if (System.currentTimeMillis() - entry.getValue().getShout() > LOCK_TIME_OUT) {
+				boolean locked = entry.getValue().isLocked();
+				boolean timedOut = System.currentTimeMillis() - entry.getValue().getShout() > LOCK_TIME_OUT;
+				if (locked && timedOut) {
 					toRemove.add(entry.getKey());
 				}
 			}

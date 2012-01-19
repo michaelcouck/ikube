@@ -103,11 +103,11 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 					logger.info("Adding all columns to table : " + cloneIndexableTable.getName());
 					addAllColumns(cloneIndexableTable, connection);
 				}
-				Runnable runnable = new Runnable() {
+				final Runnable runnable = new Runnable() {
 					public void run() {
 						try {
 							connection.setAutoCommit(Boolean.FALSE);
-							IContentProvider<IndexableColumn> contentProvider = new ColumnContentProvider();
+							final IContentProvider<IndexableColumn> contentProvider = new ColumnContentProvider();
 							handleTable(contentProvider, indexContext, cloneIndexableTable, connection, null, 0, currentId);
 						} catch (InterruptedException e) {
 							throw new RuntimeException(e);
@@ -120,7 +120,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 						}
 					}
 				};
-				Future<?> future = ThreadUtilities.submit(runnable);
+				final Future<?> future = ThreadUtilities.submit(runnable);
 				futures.add(future);
 			}
 		} catch (Exception e) {
@@ -472,6 +472,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 					}
 				}
 			}
+			// logger.info("Sql : " + Thread.currentThread().hashCode() + " - " + builder.toString());
 			return builder.toString();
 		} finally {
 			notifyAll();

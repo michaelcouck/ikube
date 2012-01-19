@@ -142,6 +142,7 @@
 		class="ikube.action.Index" 
 		property:ruleExpression="
 			!AnyServersWorkingThisIndex &#38;&#38; 
+			!TooManyActionsRule &#38;&#38; 
 			(!IsIndexCurrent || 
 			 IsIndexCorrupt) &#38;&#38; 
 			!(IsThisServerWorking &#38;&#38; 
@@ -155,6 +156,7 @@
 				<ref local="ikube.action.rule.IsIndexCorrupt" />
 				<ref local="ikube.action.rule.AnyServersWorking" />
 				<ref local="ikube.action.rule.AreOtherServers" />
+				<ref local="ikube.action.rule.TooManyActionsRule" />
 			</util:list>
 		</property>
 	</bean>
@@ -287,5 +289,6 @@
 	<bean id="ikube.action.rule.DoesBackupIndexExist" class="ikube.action.rule.DoesBackupIndexExist" />
 	<bean id="ikube.action.rule.AreOtherServers" class="ikube.action.rule.AreOtherServers" />
 	<bean id="ikube.action.rule.ChainedRule" class="ikube.action.rule.ChainedRule" />
+	<bean id="ikube.action.rule.TooManyActionsRule" class="ikube.action.rule.TooManyActionsRule" />
 	
 </beans>

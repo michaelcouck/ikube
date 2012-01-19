@@ -135,7 +135,7 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 	public synchronized boolean unlock(final String name) {
 		try {
 			ClusterManagerJmsLock lock = locks.get(address);
-			if (lock.isLocked()) {
+			if (lock != null && lock.isLocked()) {
 				// We only set the lock for the cluster to false if we have it
 				lock = getLock(address, Long.MAX_VALUE, Boolean.FALSE);
 				sendMessage(lock);

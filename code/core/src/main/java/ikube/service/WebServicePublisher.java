@@ -34,6 +34,9 @@ public class WebServicePublisher implements IWebServicePublisher {
 		logger = Logger.getLogger(this.getClass());
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void publish() throws BeansException {
 		// Publish the web service
 		for (IPublishable publishable : publishables) {
@@ -56,7 +59,7 @@ public class WebServicePublisher implements IWebServicePublisher {
 					}
 					break;
 				} catch (Exception e) {
-					logger.warn("Exception publishing web service : ", e);
+					logger.warn("Exception publishing web service : " + e.getMessage());
 					port++;
 				}
 			} while (++retryCount < IConstants.MAX_RETRY_WEB_SERVICE_PUBLISHER);

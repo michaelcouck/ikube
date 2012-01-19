@@ -53,7 +53,7 @@ public class Reset extends Action<IndexContext<?>, Boolean> {
 		try {
 			List<?> list = dataBase.find(klass, sql, parameters, 0, IConstants.RESET_DELETE_BATCH_SIZE);
 			do {
-				logger.info("Removing : " + list.size() + ", classes : " + klass);
+				logger.debug("Removing size {} : classes {}", new Object[] { list.size(), klass });
 				dataBase.removeBatch(list);
 				list = dataBase.find(klass, sql, parameters, 0, IConstants.RESET_DELETE_BATCH_SIZE);
 			} while (list.size() > 0);

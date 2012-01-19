@@ -133,5 +133,13 @@ public abstract class AbstractIntegration {
 		logger.info("Created index in : " + serverIndexDirectory.getAbsolutePath());
 		return latestIndexDirectory;
 	}
+	
+	public static void main(String[] args) {
+		FileUtilities.deleteFiles(new File("C:/Users/Administrator/AppData/Local/Temp"), "JF");
+		FileUtilities.deleteFiles(new File("C:/Users/Administrator/db2admin/Local/Temp"), "JF", "xml", "txt", "dat", "Jetty", "ikube");
+		FileUtilities.deleteFiles(new File("C:/Users/Administrator/Default/Local/Temp"), "JF", "xml", "txt", "dat", "Jetty", "ikube");
+		FileUtilities.deleteFiles(new File("C:/Users/Administrator/Michael/Local/Temp"), "JF", "xml", "txt", "dat", "Jetty", "ikube");
+		FileUtilities.deleteFiles(new File("C:/Users/Administrator/postgres/Local/Temp"), "JF", "xml", "txt", "dat", "Jetty", "ikube");
+	}
 
 }

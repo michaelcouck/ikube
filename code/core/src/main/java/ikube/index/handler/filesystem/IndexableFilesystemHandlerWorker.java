@@ -189,8 +189,10 @@ class IndexableFilesystemHandlerWorker implements Runnable {
 					if (results.isEmpty()) {
 						return getBatch(indexableFileSystem, directories);
 					}
-					logger.info("Directories : " + directories.size());
-					logger.info("Doing files : " + results.size());
+					if (logger.isDebugEnabled()) {
+						logger.debug("Directories : " + directories.size());
+						logger.debug("Doing files : " + results.size());
+					}
 					return results;
 				}
 			}

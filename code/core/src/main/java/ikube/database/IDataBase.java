@@ -121,15 +121,18 @@ public interface IDataBase {
 	<T> List<T> find(Class<T> klass, int startIndex, int endIndex);
 
 	/**
-	 * TODO Document me!
+	 * This method will find the class type specified in the database, and then sort by multiple fields, in the order that they were
+	 * specified. the direction of sort is boolean for ascending and false for descending.
 	 * 
-	 * @param <T>
-	 * @param klass
-	 * @param fieldsToSortOn
-	 * @param directionOfSort
-	 * @param firstResult
-	 * @param maxResults
-	 * @return
+	 * @param <T> the type to expect
+	 * @param klass the class to select from the database
+	 * @param fieldsToSortOn the fields to sort on, in the order of the sort requirements, i.e. first on start time then on end time for
+	 *            example
+	 * @param directionOfSort the direction of the sort for each field. For example sort acesnding on the start time and descending on the
+	 *            end time
+	 * @param firstResult the first result in the set, i.e. skip the first n results
+	 * @param maxResults and the size of the result set
+	 * @return the list of sorted entities from the database
 	 */
 	<T> List<T> find(Class<T> klass, String[] fieldsToSortOn, boolean[] directionOfSort, int firstResult, int maxResults);
 
@@ -184,8 +187,30 @@ public interface IDataBase {
 	 */
 	<T> T execute(Class<T> klass, String sql, Map<String, Object> parameters);
 
+	/**
+	 * TODO Document me!
+	 * 
+	 * @param <T>
+	 * @param klass
+	 * @param sql
+	 * @param names
+	 * @param values
+	 * @return
+	 */
 	<T> T find(Class<T> klass, String sql, String[] names, Object[] values);
 
+	/**
+	 * TODO Document me!
+	 * 
+	 * @param <T>
+	 * @param klass
+	 * @param sql
+	 * @param names
+	 * @param values
+	 * @param startPosition
+	 * @param maxResults
+	 * @return
+	 */
 	<T> List<T> find(Class<T> klass, String sql, String[] names, Object[] values, int startPosition, int maxResults);
 
 }
