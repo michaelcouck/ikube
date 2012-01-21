@@ -65,15 +65,15 @@ public class SearcherWebService implements ISearcherWebService {
 				searchSingle.setMaxResults(maxResults);
 				searchSingle.setSearchField(searchField);
 				searchSingle.setSearchString(searchString);
-				ArrayList<HashMap<String, String>> results = searchSingle.execute(); // searchDelegate.execute(indexName, searchSingle);
-				return results; // SerializationUtilities.serialize(results);
+				ArrayList<HashMap<String, String>> results = searchSingle.execute();
+				return results;
 			}
 		} catch (Exception e) {
 			String message = Logging.getString("Exception doing search on index : ", indexName, searchString, searchField, fragment,
 					firstResult, maxResults);
 			LOGGER.error(message, e);
 		}
-		return null; // getMessageResults(indexName); // SerializationUtilities.serialize(getMessageResults(indexName));
+		return getMessageResults(indexName);
 	}
 
 	/**
@@ -94,15 +94,15 @@ public class SearcherWebService implements ISearcherWebService {
 				searchMulti.setMaxResults(maxResults);
 				searchMulti.setSearchField(searchFields);
 				searchMulti.setSearchString(searchStrings);
-				ArrayList<HashMap<String, String>> results = searchMulti.execute(); // searchDelegate.execute(indexName, searchMulti);
-				return results; // SerializationUtilities.serialize(results);
+				ArrayList<HashMap<String, String>> results = searchMulti.execute();
+				return results;
 			}
 		} catch (Exception e) {
 			String message = Logging.getString("Exception doing search on index : ", indexName, Arrays.asList(searchStrings),
 					Arrays.asList(searchFields), fragment, firstResult, maxResults);
 			LOGGER.error(message, e);
 		}
-		return getMessageResults(indexName); // SerializationUtilities.serialize(getMessageResults(indexName));
+		return getMessageResults(indexName);
 	}
 
 	/**
@@ -124,16 +124,15 @@ public class SearcherWebService implements ISearcherWebService {
 				searchMultiSorted.setSearchField(searchFields);
 				searchMultiSorted.setSearchString(searchStrings);
 				searchMultiSorted.setSortField(sortFields);
-				ArrayList<HashMap<String, String>> results = searchMultiSorted.execute(); // searchDelegate.execute(indexName,
-																							// searchMultiSorted);
-				return results; // SerializationUtilities.serialize(results);
+				ArrayList<HashMap<String, String>> results = searchMultiSorted.execute();
+				return results;
 			}
 		} catch (Exception e) {
 			String message = Logging.getString("Exception doing search on index : ", indexName, Arrays.asList(searchStrings),
 					Arrays.asList(searchFields), Arrays.asList(sortFields), fragment, firstResult, maxResults);
 			LOGGER.error(message, e);
 		}
-		return getMessageResults(indexName); // SerializationUtilities.serialize(getMessageResults(indexName));
+		return getMessageResults(indexName);
 	}
 
 	/**
@@ -153,14 +152,14 @@ public class SearcherWebService implements ISearcherWebService {
 				searchMultiAll.setMaxResults(maxResults);
 				searchMultiAll.setSearchString(searchStrings);
 				ArrayList<HashMap<String, String>> results = searchMultiAll.execute(); // searchDelegate.execute(indexName, searchMultiAll);
-				return results; // SerializationUtilities.serialize(results);
+				return results;
 			}
 		} catch (Exception e) {
 			String message = Logging.getString("Exception doing search on index : ", indexName, Arrays.asList(searchStrings), fragment,
 					firstResult, maxResults);
 			LOGGER.error(message, e);
 		}
-		return getMessageResults(indexName); // SerializationUtilities.serialize(getMessageResults(indexName));
+		return getMessageResults(indexName);
 	}
 
 	/**
@@ -184,15 +183,15 @@ public class SearcherWebService implements ISearcherWebService {
 				searchSpatial.setSearchField(searchFields);
 				searchSpatial.setCoordinate(new Coordinate(latitude, longitude));
 				searchSpatial.setDistance(distance);
-				ArrayList<HashMap<String, String>> results = searchSpatial.execute(); // searchDelegate.execute(indexName, searchSpatial);
-				return results; // SerializationUtilities.serialize(results);
+				ArrayList<HashMap<String, String>> results = searchSpatial.execute();
+				return results;
 			}
 		} catch (Exception e) {
 			String message = Logging.getString("Exception doing search on index : ", indexName, Arrays.asList(searchStrings), fragment,
 					firstResult, maxResults, latitude, longitude, distance);
 			LOGGER.error(message, e);
 		}
-		return getMessageResults(indexName); // SerializationUtilities.serialize(getMessageResults(indexName));
+		return getMessageResults(indexName);
 	}
 
 	/**
@@ -216,14 +215,14 @@ public class SearcherWebService implements ISearcherWebService {
 				searchSpatial.setCoordinate(new Coordinate(latitude, longitude));
 				searchSpatial.setDistance(distance);
 				ArrayList<HashMap<String, String>> results = searchSpatial.execute(); // searchDelegate.execute(indexName, searchSpatial);
-				return results; // SerializationUtilities.serialize(results);
+				return results;
 			}
 		} catch (Exception e) {
 			String message = Logging.getString("Exception doing search on index : ", indexName, Arrays.asList(searchStrings), fragment,
 					firstResult, maxResults, latitude, longitude, distance);
 			LOGGER.error(message, e);
 		}
-		return getMessageResults(indexName); // SerializationUtilities.serialize(getMessageResults(indexName));
+		return getMessageResults(indexName);
 	}
 
 	/**

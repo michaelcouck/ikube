@@ -17,6 +17,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
 
 /**
  * @author Michael Couck
@@ -30,12 +31,12 @@ public class GeoSearchController extends SearchBaseController {
 	 * {@inheritDoc}
 	 */
 	@RequestMapping(value = "/admin/geosearch.html", method = RequestMethod.GET)
-	public String search(@RequestParam(required = true, value = "targetView") String targetView,
+	public ModelAndView search(@RequestParam(required = true, value = "targetView") String targetView,
 			@RequestParam(required = true, value = "indexName") String indexName,
 			@RequestParam(required = true, value = "searchStrings") String searchStrings,
 			@RequestParam(required = true, value = "latitude") String latitude,
 			@RequestParam(required = true, value = "longitude") String longitude,
-			@RequestParam(required = true, value = "distance") String distance, Model model, HttpServletRequest request) throws Exception {
+			@RequestParam(required = true, value = "distance") String distance, ModelAndView model, HttpServletRequest request) throws Exception {
 
 		Server server = clusterManager.getServer();
 
@@ -79,23 +80,23 @@ public class GeoSearchController extends SearchBaseController {
 		results = new ArrayList<HashMap<String, String>>();
 		results.addAll(subResults);
 
-		model.addAttribute(IConstants.TOTAL, total);
-		model.addAttribute(IConstants.DURATION, duration);
-		model.addAttribute(IConstants.RESULTS, results);
-		model.addAttribute(IConstants.CORRECTIONS, corrections);
+		model.addObject(IConstants.TOTAL, total);
+		model.addObject(IConstants.DURATION, duration);
+		model.addObject(IConstants.RESULTS, results);
+		model.addObject(IConstants.CORRECTIONS, corrections);
 
 		String searchString = searchStrings.toString();
 		// Strictly speaking this is not necessary because the searchers will clean the strings
 		searchString = org.apache.commons.lang.StringUtils.strip(searchString, IConstants.STRIP_CHARACTERS);
-		model.addAttribute(IConstants.SEARCH_STRINGS, searchString);
+		model.addObject(IConstants.SEARCH_STRINGS, searchString);
 		String targetSearchUrl = getParameter(IConstants.TARGET_SEARCH_URL, "/results.html", null);
-		model.addAttribute(IConstants.TARGET_SEARCH_URL, targetSearchUrl);
+		model.addObject(IConstants.TARGET_SEARCH_URL, targetSearchUrl);
 
-		model.addAttribute(IConstants.FIRST_RESULT, firstResult);
-		model.addAttribute(IConstants.MAX_RESULTS, maxResults);
+		model.addObject(IConstants.FIRST_RESULT, firstResult);
+		model.addObject(IConstants.MAX_RESULTS, maxResults);
 
-		model.addAttribute(IConstants.SERVER, server);
-		return targetView;
+		model.addObject(IConstants.SERVER, server);
+		return model;
 	}
 
 }

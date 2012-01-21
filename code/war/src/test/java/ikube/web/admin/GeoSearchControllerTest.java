@@ -78,7 +78,8 @@ public class GeoSearchControllerTest {
 		ArrayList<HashMap<String, String>> results = (ArrayList<HashMap<String, String>>) SerializationUtilities.deserialize(xml);
 		when(searcherWebService.searchMultiAll(IConstants.IKUBE, new String[] { IConstants.IKUBE }, true, 0, 10)).thenReturn(results);
 
-		ModelAndView modelAndView = geoSearchController.handleRequest(request, response);
+		ModelAndView modelAndView = new ModelAndView();
+		modelAndView = geoSearchController.search("targetView", "geospatial", "searchStrings", "10", "10", "10", modelAndView, request);
 		Object total = modelAndView.getModel().get(IConstants.TOTAL);
 		Object duration = modelAndView.getModel().get(IConstants.DURATION);
 		results = (ArrayList<HashMap<String, String>>) modelAndView.getModel().get(IConstants.RESULTS);

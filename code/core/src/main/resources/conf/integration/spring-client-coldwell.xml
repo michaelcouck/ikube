@@ -19,7 +19,7 @@
 		id="coldwellIndex"
 		class="ikube.model.IndexContext"
 		property:name="coldwellIndex"
-		property:maxAge="6"
+		property:maxAge="60"
 		property:compoundFile="${compound.file}"
 		property:bufferedDocs="${buffered.docs}"
 		property:bufferSize="${buffer.size}"
