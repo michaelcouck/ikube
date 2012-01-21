@@ -1,6 +1,7 @@
 <project name="Deploy Ikube Cluster" default="start.tomcat.cluster">
 
 	<property file="build.properties" />
+	<property name="profile" value="production" />
 
 	<target name="start.tomcat.cluster">
 		<antcall target="executeTomcatAction">
@@ -98,7 +99,7 @@
 	<!-- 
 		This target will copy the common, the production and the profile configuration to the 
 		specified output directory. The profile must be the name of the configuration directory 
-		int eh conf folder int he core resources folder.  
+		in the conf folder int he core resources folder.  
 	-->
 	<target name="package.configuration">
 		<delete dir="${configuration.directory}" />
