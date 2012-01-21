@@ -237,5 +237,15 @@ public final class ApplicationContextManager implements ApplicationContextAware 
 		}
 
 	}
+	
+	public static void main(String[] args) {
+		File file = FileUtilities.findFileRecursively(new File("."), "Ikube.html");
+		String content = FileUtilities.getContents(file, Integer.MAX_VALUE).toString();
+		System.out.println(content);
+		
+		System.out.println("  _   _           _");
+		System.out.println(" |_| | |         | |      ");
+		System.out.println("      | |         | |     ");
+	}
 
 }
