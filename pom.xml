@@ -22,7 +22,7 @@
 		<repository>
 			<id>ikube</id>
 			<name>ikube-releases</name>
-			<url>http://ikube.dyndns.org:9000/artifactory/libs-release-local</url>
+			<url>http://localhost:9000/artifactory/libs-release-local</url>
 		</repository>
 	</distributionManagement>
 
