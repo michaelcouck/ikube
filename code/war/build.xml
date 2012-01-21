@@ -103,15 +103,15 @@
 	<target name="package.configuration">
 		<delete dir="${configuration.directory}" />
 		<!-- Copy the common configuration -->
-		<copy todir="${configuration.directory}/ikube/common">
+		<copy todir="${configuration.directory}/ikube/common" failonerror="false">
 			<fileset dir="../core/src/main/resources/conf/common" />
 		</copy>
 		<!-- Copy the profile configuration -->
-		<copy todir="${configuration.directory}/ikube/${profile}">
+		<copy todir="${configuration.directory}/ikube/${profile}" failonerror="false">
 			<fileset dir="../core/src/main/resources/conf/${profile}" />
 		</copy>
 		<!-- Copy the production configuration, with the geo name stuff -->
-		<copy todir="${configuration.directory}/ikube/production">
+		<copy todir="${configuration.directory}/ikube/production" failonerror="false">
 			<fileset dir="../core/src/main/resources/conf/production" />
 		</copy>
 	</target>
