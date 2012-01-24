@@ -185,5 +185,8 @@ public interface IConstants {
 	Pattern ZIP_JAR_WAR_EAR_PATTERN = Pattern.compile(STRING_PATTERN);
 	
 	int THREAD_POOL_SIZE = 25;
+	
+	String EXCEPTION = "exception";
+	String EXCEPTION_STACK = "exceptionStack";
 
 }

@@ -18,6 +18,10 @@
 		<ikube.war>ikube.war</ikube.war>
 		<final.name>${project.build.finalName}.${project.packaging}</final.name>
 		<maven.build.timestamp.format>dd-MM-yyyy HH:mm:ss</maven.build.timestamp.format>
+		<axis.version>1.4</axis.version>
+		<jaxrpc.api.version>1.1</jaxrpc.api.version>
+		<jersey.version>1.9.1</jersey.version>
+		<jaxb-api.version>2.2.1</jaxb-api.version>
 	</properties>
 
 	<parent>
@@ -98,7 +102,7 @@
 								<!-- Try calling the Tomcats and shut them down. -->
 								<echo message="Building the configuration : " />
 								<ant antfile="build.xml" target="package.configuration" inheritrefs="true">
-									<property name="profile"  value="${profile}" />
+									<property name="profile" value="${profile}" />
 								</ant>
 							</target>
 						</configuration>
@@ -291,18 +295,50 @@
 			<type>jar</type>
 			<scope>test</scope>
 		</dependency>
+
+		<dependency>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-server</artifactId>
+			<version>1.0.3</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.jersey.contribs</groupId>
+			<artifactId>jersey-spring</artifactId>
+			<version>1.0.1</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-core</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-beans</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-context</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-web</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.xml.bind</groupId>
+			<artifactId>jaxb-impl</artifactId>
+			<version>2.1.9</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.ws.rs</groupId>
+			<artifactId>jsr311-api</artifactId>
+			<version>1.0</version>
+		</dependency>
+
 	</dependencies>
-	
-	<profiles>
-		<profile>
-			<id>bpost</id>
-		</profile>
-		<profile>
-			<id>integration</id>
-		</profile>
-		<profile>
-			<id>production</id>
-		</profile>
-	</profiles>
 
 </project>

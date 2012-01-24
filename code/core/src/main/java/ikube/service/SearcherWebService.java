@@ -151,7 +151,7 @@ public class SearcherWebService implements ISearcherWebService {
 				searchMultiAll.setFragment(fragment);
 				searchMultiAll.setMaxResults(maxResults);
 				searchMultiAll.setSearchString(searchStrings);
-				ArrayList<HashMap<String, String>> results = searchMultiAll.execute(); // searchDelegate.execute(indexName, searchMultiAll);
+				ArrayList<HashMap<String, String>> results = searchMultiAll.execute();
 				return results;
 			}
 		} catch (Exception e) {
@@ -214,7 +214,7 @@ public class SearcherWebService implements ISearcherWebService {
 				searchSpatial.setSearchString(searchStrings);
 				searchSpatial.setCoordinate(new Coordinate(latitude, longitude));
 				searchSpatial.setDistance(distance);
-				ArrayList<HashMap<String, String>> results = searchSpatial.execute(); // searchDelegate.execute(indexName, searchSpatial);
+				ArrayList<HashMap<String, String>> results = searchSpatial.execute();
 				return results;
 			}
 		} catch (Exception e) {

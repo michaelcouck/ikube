@@ -190,10 +190,6 @@
 			<scope>compile</scope>
 		</dependency>
 
-		<!-- <dependency> <groupId>org.springframework.security</groupId> <artifactId>spring-security-config</artifactId> <version>${spring.version}</version> 
-			<type>jar</type> <scope>compile</scope> </dependency> <dependency> <groupId>org.springframework.security</groupId> <artifactId>spring-security-core</artifactId> 
-			<version>${spring.version}</version> <type>jar</type> <scope>compile</scope> </dependency> -->
-
 		<!-- Spring Security -->
 		<dependency>
 			<groupId>org.springframework.security</groupId>
@@ -259,9 +255,6 @@
 			<artifactId>spring-security-ldap</artifactId>
 			<version>${spring.security.version}</version>
 		</dependency>
-		<!-- <dependency> <groupId>org.springframework.ldap</groupId> <artifactId>spring-ldap-core</artifactId> <version>${spring.ldap.version}</version> 
-			</dependency> <dependency> <groupId>org.springframework.ldap</groupId> <artifactId>spring-ldap-core-tiger</artifactId> <version>${spring.ldap.version}</version> 
-			</dependency> -->
 
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -270,13 +263,6 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
-		<!-- <dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-web</artifactId>
-			<version>${spring.version}</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency> -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-tx</artifactId>
@@ -474,13 +460,6 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
-		<!-- <dependency>
-			<groupId>com.h2database</groupId>
-			<artifactId>h2</artifactId>
-			<version>1.2.134</version>
-			<type>jar</type>
-			<scope>runtime</scope>
-		</dependency> -->
 		<dependency>
 			<groupId>com.ibm.db2.jcc</groupId>
 			<artifactId>db2jcc4</artifactId>
@@ -800,6 +779,13 @@
 			<url>http://download.java.net/maven/2</url>
 		</repository>
 		<repository>
+			<id>codehaus-snapshots</id>
+			<url>https://nexus.codehaus.org/content/repositories/snapshots</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+		<repository>
 			<id>jboss-public-repository-group</id>
 			<name>JBoss Public Maven Repository Group</name>
 			<url>https://repository.jboss.org/nexus/content/groups/public-jboss/</url>
@@ -814,15 +800,8 @@
 			</snapshots>
 		</repository>
 		<repository>
-			<id>codehaus-snapshots</id>
-			<url>https://nexus.codehaus.org/content/repositories/snapshots</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-		<repository>
 			<id>ikube-repository</id>
-			<url>http://ikube.dyndns.org:9000/artifactory/libs-release-local/</url>
+			<url>http://localhost:9000/artifactory/libs-release-local/</url>
 			<snapshots>
 				<enabled>true</enabled>
 			</snapshots>

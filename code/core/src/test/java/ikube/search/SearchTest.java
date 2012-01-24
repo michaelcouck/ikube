@@ -162,7 +162,7 @@ public class SearchTest extends ATest {
 		search.setSortField("content");
 
 		ArrayList<HashMap<String, String>> results = search.execute();
-		search.addStatistics(results, 79, 23);
+		search.addStatistics(results, 79, 23, null);
 		Map<String, String> statistics = results.get(results.size() - 1);
 		assertEquals("michael AND couck", statistics.get(IConstants.SEARCH_STRINGS));
 		assertEquals("michael AND houck", statistics.get(IConstants.CORRECTIONS));

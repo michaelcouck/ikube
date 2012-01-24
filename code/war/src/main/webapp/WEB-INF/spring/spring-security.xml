@@ -52,6 +52,9 @@
 		<intercept-url 
 			pattern="/admin/login**" 
 			access="IS_AUTHENTICATED_ANONYMOUSLY" />
+		<intercept-url
+			pattern="/service/**" 
+			access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		<!-- All resources are restricted to authentication except for the exclusions. -->
 		<intercept-url 
 			pattern="/**" 

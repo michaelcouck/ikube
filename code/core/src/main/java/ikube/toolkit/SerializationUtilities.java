@@ -61,7 +61,7 @@ public final class SerializationUtilities {
 	public static String serialize(final Object object) {
 		XMLEncoder xmlEncoder = null;
 		try {
-			LOGGER.info("Serializing object : " + object.getClass());
+			// LOGGER.info("Serializing object : " + object.getClass());
 			SerializationUtilities.setTransientFields(object.getClass(), new ArrayList<Class<?>>());
 			ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 			xmlEncoder = new XMLEncoder(byteArrayOutputStream);
@@ -79,6 +79,31 @@ public final class SerializationUtilities {
 			}
 		}
 		return null;
+	}
+
+	public static Object deserialize(final String xml) {
+		byte[] bytes = null;
+		XMLDecoder xmlDecoder = null;
+		try {
+			bytes = xml.getBytes(IConstants.ENCODING);
+			ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
+			xmlDecoder = new XMLDecoder(byteArrayInputStream);
+			xmlDecoder.setExceptionListener(EXCEPTION_LISTENER);
+			return xmlDecoder.readObject();
+		} catch (UnsupportedEncodingException e) {
+			LOGGER.error("Unsupported encoding : ", e);
+		} catch (Exception e) {
+			LOGGER.error("Exception de-serialising object : " + xml, e);
+		} finally {
+			if (xmlDecoder != null) {
+				xmlDecoder.close();
+			}
+		}
+		return null;
+	}
+
+	public static Object clone(final Object object) {
+		return SerializationUtils.clone((Serializable) object);
 	}
 
 	public static void setTransientFields(Class<?>... classes) {
@@ -145,41 +170,11 @@ public final class SerializationUtilities {
 		}
 	}
 
-	public static Object deserialize(final String xml) {
-		byte[] bytes = null;
-		XMLDecoder xmlDecoder = null;
-		try {
-			bytes = xml.getBytes(IConstants.ENCODING);
-			ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
-			xmlDecoder = new XMLDecoder(byteArrayInputStream);
-			xmlDecoder.setExceptionListener(EXCEPTION_LISTENER);
-			return xmlDecoder.readObject();
-		} catch (UnsupportedEncodingException e) {
-			LOGGER.error("Unsupported encoding : ", e);
-		} catch (Exception e) {
-			LOGGER.error("Exception de-serialising object : " + xml, e);
-		} finally {
-			if (xmlDecoder != null) {
-				xmlDecoder.close();
-			}
-		}
-		return null;
-	}
-
-	public static Object clone(final Object object) {
-		return SerializationUtils.clone((Serializable) object);
-//		String xml = SerializationUtilities.serialize(object);
-//		LOGGER.info("Serialized : " + xml);
-//		return SerializationUtilities.deserialize(xml);
-	}
-
 	/**
 	 * Gets a field in the class or in the hierarchy of the class.
 	 * 
-	 * @param klass
-	 *            the original class
-	 * @param name
-	 *            the name of the field
+	 * @param klass the original class
+	 * @param name the name of the field
 	 * @return the field in the object or super classes of the object
 	 */
 	public static Field getField(final Class<?> klass, final String name) {

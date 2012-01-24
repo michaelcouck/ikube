@@ -152,20 +152,22 @@ public class RuleInterceptor implements IRuleInterceptor {
 			// We set the working flag in the action within the cluster lock when setting to true
 			Runnable runnable = new Runnable() {
 				public void run() {
-					Object[] objects = new Object[] { proceedingJoinPoint, indexContext.getIndexName() };
 					try {
-						LOGGER.debug("Action start : {} {}", objects);
 						Object returnValue = proceedingJoinPoint.proceed();
 						LOGGER.debug("Returned from join point : " + returnValue);
 					} catch (Throwable e) {
 						LOGGER.error("Exception proceeding on join point : " + proceedingJoinPoint, e);
 					} finally {
-						LOGGER.debug("Action finished : {} {}", objects);
+						if (LOGGER.isDebugEnabled()) {
+							Object[] objects = new Object[] { proceedingJoinPoint, indexContext.getIndexName() };
+							LOGGER.debug("Action finished : {} {}", objects);
+						}
 					}
 				}
 			};
 			Future<?> future = ThreadUtilities.submit(runnable);
-			ThreadUtilities.waitForFuture(future, 3000);
+			// We'll wait a few seconds for this action, perhaps it is a fast one
+			ThreadUtilities.waitForFuture(future, 1000);
 			LOGGER.debug("Finished waiting for future : {} ", future);
 		} finally {
 			notifyAll();

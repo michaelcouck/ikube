@@ -14,11 +14,15 @@
 <c:set var="targetSearchUrl" value="/admin/geosearch.html" />
 <form name="geoSearchForm" id="geoSearchForm" action="<c:url value="${targetSearchUrl}"/>">
 <input name="targetSearchUrl" type="hidden" value="${targetSearchUrl}">
-<input name="indexName" type="hidden" value="${indexName}">
 <table width="100%">
-	<tr><th>Geo search ${indexName}</th></tr>
+	<tr><th colspan="2">Geo search ${indexName}</th></tr>
+	
 	<tr>
-		<td>All fields:</td>
+		<td>Index name:</td>
+		<td><input id="search-text" type="text" name="indexName" value="<c:out value='${indexName}' />" /></td>
+	</tr>
+	<tr>
+		<td>Search string:</td>
 		<td><input id="search-text" type="text" name="searchStrings" value="<c:out value='${searchStrings}' />" /></td>
 	</tr>
 	<tr>
@@ -33,7 +37,14 @@
 		<td>Distance:</td>
 		<td><input id="search-text" type="text" name="distance" value="<c:out value='${distance}' />" /></td>
 	</tr>
-	
+	<tr>
+		<td>First result:</td>
+		<td><input id="search-text" type="text" name="firstResult" value="<c:out value='${firstResult}' />" /></td>
+	</tr>
+	<tr>
+		<td>Max results:</td>
+		<td><input id="search-text" type="text" name="maxResults" value="<c:out value='${maxResults}' />" /></td>
+	</tr>
 	<tr>
 		<td><input type="submit" id="search-submit" value="Go" /></td>
 	</tr>
@@ -43,12 +54,22 @@
 			<c:if test="${!empty corrections}">
 				<br>
 				Did you mean : 
-				<a href="<c:url value="${targetSearchUrl}" />?indexName=${indexName}&targetSearchUrl=${targetSearchUrl}&searchStrings=${corrections}">${corrections}</a><br>
+				<a href="#" onclick="JavaScript:submitForm(${corrections})">${corrections}</a><br>
 			</c:if>
 		</td>
 	</tr>
 </table>
 </form>
+
+<script type="text/javascript">
+	function submitForm(var corrections) {
+		var searchStrings = 'searchStrings';
+		var geoSearchForm = 'geoSearchForm';
+		var oFormObject = document.forms[geoSearchForm];
+		oFormObject.elements[searchStrings].value = corrections;
+		document.forms[geoSearchForm].submit();
+	}
+</script>
 	
 <table width="100%">
 	<jsp:include page="/WEB-INF/jsp/include.jsp" flush="true" />

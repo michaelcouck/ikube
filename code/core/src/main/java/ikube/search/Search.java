@@ -4,6 +4,8 @@ import ikube.IConstants;
 import ikube.search.spelling.CheckerExt;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,6 +15,7 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.kahadb.util.ByteArrayOutputStream;
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.document.Document;
@@ -170,21 +173,16 @@ public abstract class Search {
 		long totalHits = 0;
 		long start = System.currentTimeMillis();
 		ArrayList<HashMap<String, String>> results = null;
+		Exception exception = null;
 		try {
 			Query query = getQuery();
 			TopDocs topDocs = search(query);
 			totalHits = topDocs.totalHits;
 			// TODO If there are no results here then do a search for the
 			// corrected spelling to see if there are any results from that
-			if (totalHits == 0 && searchStrings.length == 1) {
-				StringBuilder searchStringBuider = new StringBuilder();
-				StringBuilder correctedSearchStringBuilder = new StringBuilder();
-				getCorrections(searchStringBuider, correctedSearchStringBuilder);
-				searchStrings[0] = correctedSearchStringBuilder.toString().trim();
-				totalHits = topDocs.totalHits;
-			}
 			results = getResults(topDocs, query);
 		} catch (Exception e) {
+			exception = e;
 			String searchString = searchStrings != null && searchStrings.length > 0 ? searchStrings[0] : "null";
 			logger.error("Exception searching for string " + searchString + " in searcher " + searcher, e);
 			if (results == null) {
@@ -193,7 +191,7 @@ public abstract class Search {
 		}
 		long duration = System.currentTimeMillis() - start;
 		// Add the search results size as a last result
-		addStatistics(results, totalHits, duration);
+		addStatistics(results, totalHits, duration, exception);
 		return results;
 	}
 
@@ -311,7 +309,8 @@ public abstract class Search {
 	 * @param totalHits the total hits
 	 * @param duration how long the search took in milliseconds
 	 */
-	protected void addStatistics(final ArrayList<HashMap<String, String>> results, final long totalHits, final long duration) {
+	protected void addStatistics(final ArrayList<HashMap<String, String>> results, final long totalHits, final long duration,
+			final Exception exception) {
 		// Add the search results size as a last result
 		HashMap<String, String> statistics = new HashMap<String, String>();
 		statistics.put(IConstants.TOTAL, Long.toString(totalHits));
@@ -324,6 +323,13 @@ public abstract class Search {
 		statistics.put(IConstants.SEARCH_STRINGS, searchStringBuider.toString().trim());
 		if (correctedSearchStringBuilder.length() > 0) {
 			statistics.put(IConstants.CORRECTIONS, correctedSearchStringBuilder.toString().trim());
+		}
+
+		if (exception != null) {
+			statistics.put(IConstants.EXCEPTION, exception.getMessage());
+			OutputStream outputStream = new ByteArrayOutputStream();
+			exception.printStackTrace(new PrintWriter(outputStream));
+			statistics.put(IConstants.EXCEPTION_STACK, exception.getMessage());
 		}
 
 		results.add(statistics);

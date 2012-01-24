@@ -4,16 +4,9 @@ import ikube.IConstants;
 import ikube.model.Server;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -27,70 +20,40 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 public class GeoSearchController extends SearchBaseController {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@RequestMapping(value = "/admin/geosearch.html", method = RequestMethod.GET)
-	public ModelAndView search(@RequestParam(required = true, value = "targetView") String targetView,
-			@RequestParam(required = true, value = "indexName") String indexName,
-			@RequestParam(required = true, value = "searchStrings") String searchStrings,
-			@RequestParam(required = true, value = "latitude") String latitude,
-			@RequestParam(required = true, value = "longitude") String longitude,
-			@RequestParam(required = true, value = "distance") String distance, ModelAndView model, HttpServletRequest request) throws Exception {
+	@RequestMapping(value = "/admin/geosearch.html", method = { RequestMethod.GET, RequestMethod.POST })
+	public ModelAndView search(@RequestParam(required = false, value = "indexName") String indexName,
+			@RequestParam(required = false, value = "searchStrings") String searchStrings,
+			@RequestParam(required = false, value = "latitude") Double latitude,
+			@RequestParam(required = false, value = "longitude") Double longitude,
+			@RequestParam(required = false, value = "distance") Integer distance,
+			@RequestParam(required = false, value = "firstResult") Integer firstResult,
+			@RequestParam(required = false, value = "maxResults") Integer maxResults, ModelAndView model) throws Exception {
 
 		Server server = clusterManager.getServer();
+		model.setViewName("/admin/geosearch");
 
-		// Search all the indexes and merge the results
-		int total = 0;
-		long duration = 0;
-		String corrections = null;
-		List<HashMap<String, String>> results = new ArrayList<HashMap<String, String>>();
-		String[] searchStringsArray = { searchStrings };
+		model.addObject(IConstants.LONGITUDE, longitude);
+		model.addObject(IConstants.LATITUDE, latitude);
+		model.addObject(IConstants.DISTANCE, distance);
 
-		ArrayList<HashMap<String, String>> indexResults = null; // doSearch(request, model, indexName, searchStringsArray);
-		HashMap<String, String> statistics = indexResults.get(indexResults.size() - 1);
-		if (isNumeric(statistics.get(IConstants.TOTAL))) {
-			total += Integer.parseInt(statistics.get(IConstants.TOTAL));
+		if (indexName != null) {
+			ArrayList<HashMap<String, String>> results = searcherWebService.searchSpacialMultiAll(indexName,
+					new String[] { searchStrings }, Boolean.TRUE, firstResult, maxResults, distance, latitude, longitude);
+
+			HashMap<String, String> statistics = results.get(results.size() - 1);
+			String total = statistics.get(IConstants.TOTAL);
+			String duration = statistics.get(IConstants.DURATION);
+			String corrections = statistics.get(IConstants.CORRECTIONS);
+
+			model.addObject(IConstants.INDEX_NAME, indexName);
+			model.addObject(IConstants.TOTAL, total);
+			model.addObject(IConstants.DURATION, duration);
+			model.addObject(IConstants.RESULTS, results);
+			model.addObject(IConstants.CORRECTIONS, corrections);
 		}
-		if (isNumeric(statistics.get(IConstants.DURATION))) {
-			duration += Long.parseLong(statistics.get(IConstants.DURATION));
-		}
-		corrections = statistics.get(IConstants.CORRECTIONS);
-		results.addAll(indexResults);
-		// Remove the statistics map from the end
-		results.remove(results.size() - 1);
 
-		// Sort the results according to the score. This will essentially merge the results and
-		// the front end will then display the top maximum results regardless of the score. This
-		// does mean that some indexes will never have any results of course
-		Collections.sort(results, new Comparator<Map<String, String>>() {
-			@Override
-			public int compare(Map<String, String> o1, Map<String, String> o2) {
-				Double s1 = Double.parseDouble(o1.get(IConstants.SCORE));
-				Double s2 = Double.parseDouble(o2.get(IConstants.SCORE));
-				return s1.compareTo(s2);
-			}
-		});
-
-		int firstResult = getParameter(IConstants.FIRST_RESULT, FIRST_RESULT, null);
-		int maxResults = getParameter(IConstants.MAX_RESULTS, MAX_RESULTS, null);
-		// Now just take the top results, i.e. the max results that are defined by the user
-		int subLength = results.size() < maxResults ? results.size() : maxResults;
-		List<HashMap<String, String>> subResults = results.subList(0, subLength);
-		results = new ArrayList<HashMap<String, String>>();
-		results.addAll(subResults);
-
-		model.addObject(IConstants.TOTAL, total);
-		model.addObject(IConstants.DURATION, duration);
-		model.addObject(IConstants.RESULTS, results);
-		model.addObject(IConstants.CORRECTIONS, corrections);
-
-		String searchString = searchStrings.toString();
-		// Strictly speaking this is not necessary because the searchers will clean the strings
-		searchString = org.apache.commons.lang.StringUtils.strip(searchString, IConstants.STRIP_CHARACTERS);
-		model.addObject(IConstants.SEARCH_STRINGS, searchString);
-		String targetSearchUrl = getParameter(IConstants.TARGET_SEARCH_URL, "/results.html", null);
-		model.addObject(IConstants.TARGET_SEARCH_URL, targetSearchUrl);
+		model.addObject(IConstants.SEARCH_STRINGS, searchStrings);
+		// model.addObject(IConstants.TARGET_SEARCH_URL, targetSearchUrl);
 
 		model.addObject(IConstants.FIRST_RESULT, firstResult);
 		model.addObject(IConstants.MAX_RESULTS, maxResults);

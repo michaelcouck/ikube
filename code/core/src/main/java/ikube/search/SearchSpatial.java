@@ -75,6 +75,7 @@ public class SearchSpatial extends SearchMulti {
 		long totalHits = 0;
 		ArrayList<HashMap<String, String>> results = null;
 		long start = System.currentTimeMillis();
+		Exception exception = null;
 		try {
 			Query query = getQuery();
 			TopDocs topDocs = search(query);
@@ -87,6 +88,7 @@ public class SearchSpatial extends SearchMulti {
 				result.put(IConstants.DISTANCE, Double.toString(distanceFromOrigin));
 			}
 		} catch (Exception e) {
+			exception = e;
 			logger.error("Exception searching for string " + searchStrings[0] + " in searcher " + searcher, e);
 			if (results == null) {
 				results = new ArrayList<HashMap<String, String>>();
@@ -94,7 +96,7 @@ public class SearchSpatial extends SearchMulti {
 		}
 		long duration = System.currentTimeMillis() - start;
 		// Add the search results size as a last result
-		addStatistics(results, totalHits, duration);
+		addStatistics(results, totalHits, duration, exception);
 		return results;
 	}
 
