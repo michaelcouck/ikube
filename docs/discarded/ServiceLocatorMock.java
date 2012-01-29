@@ -6,7 +6,6 @@ import static org.mockito.Mockito.when;
 import ikube.IConstants;
 import ikube.service.IMonitorWebService;
 import ikube.service.ISearcherWebService;
-import ikube.service.ServiceLocator;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.SerializationUtilities;
 
@@ -16,11 +15,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import mockit.Mock;
-import mockit.MockClass;
 
 import org.apache.log4j.Logger;
 
-@MockClass(realClass = ServiceLocator.class)
+// @MockClass(realClass = ServiceLocator.class)
 public class ServiceLocatorMock {
 
 	private static final Logger LOGGER = Logger.getLogger(ServiceLocatorMock.class);

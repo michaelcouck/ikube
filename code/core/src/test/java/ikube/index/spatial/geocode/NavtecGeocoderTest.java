@@ -3,12 +3,7 @@ package ikube.index.spatial.geocode;
 import static org.junit.Assert.assertNull;
 import ikube.ATest;
 import ikube.index.spatial.Coordinate;
-import ikube.mock.ServiceLocatorMock;
 
-import mockit.Mockit;
-
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -20,16 +15,6 @@ public class NavtecGeocoderTest extends ATest {
 
 	public NavtecGeocoderTest() {
 		super(NavtecGeocoderTest.class);
-	}
-	
-	@Before
-	public void before() {
-		Mockit.setUpMocks(ServiceLocatorMock.class);
-	}
-	
-	@After
-	public void after() {
-		Mockit.tearDownMocks();
 	}
 
 	@Test

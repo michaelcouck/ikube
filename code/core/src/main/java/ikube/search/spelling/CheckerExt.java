@@ -3,6 +3,7 @@ package ikube.search.spelling;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -65,7 +66,12 @@ public class CheckerExt {
 		if (mustIndex) {
 			File languagesDirectory = FileUtilities.findFileRecursively(new File("."), Boolean.TRUE, LANGUAGES_DIRECTORY);
 			if (languagesDirectory != null && languagesDirectory.exists() && languagesDirectory.isDirectory()) {
-				File[] languageFiles = languagesDirectory.listFiles();
+				File[] languageFiles = languagesDirectory.listFiles(new FileFilter() {
+					@Override
+					public boolean accept(File pathname) {
+						return pathname.getName().endsWith(".txt");
+					}
+				});
 				if (languageFiles != null && languageFiles.length > 0) {
 					for (File languageFile : languageFiles) {
 						InputStream inputStream = null;

@@ -2,7 +2,6 @@ package ikube.web.integration;
 
 import ikube.IConstants;
 import ikube.service.ISearcherWebService;
-import ikube.service.ServiceLocator;
 
 import java.net.InetAddress;
 import java.net.URL;
@@ -24,8 +23,9 @@ public class GeoSearchControllerIntegration {
 		String host = InetAddress.getLocalHost().getHostAddress();
 		URL url = new URL("http", host, port, path);
 		String searcherWebServiceUrl = url.toString();
-		ISearcherWebService webService = ServiceLocator.getService(ISearcherWebService.class, searcherWebServiceUrl,
-				ISearcherWebService.NAMESPACE, ISearcherWebService.SERVICE);
+		ISearcherWebService webService = null;
+		// ServiceLocator.getService(ISearcherWebService.class, searcherWebServiceUrl,
+		// ISearcherWebService.NAMESPACE, ISearcherWebService.SERVICE);
 
 		String indexName = IConstants.GEOSPATIAL;
 		String[] searchStrings = new String[] { "berlin", "berlin", "germany", "berlin" };

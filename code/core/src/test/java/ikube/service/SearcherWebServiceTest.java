@@ -82,7 +82,7 @@ public class SearcherWebServiceTest extends ATest {
 
 	@Test
 	public void searchSpatial() {
-		ArrayList<HashMap<String, String>> results = this.searcherWebService.searchSpacialMulti(indexContext.getIndexName(), new String[] {
+		ArrayList<HashMap<String, String>> results = this.searcherWebService.searchMultiSpacial(indexContext.getIndexName(), new String[] {
 				"search", "strings" }, new String[] { IConstants.CONTENTS, IConstants.ID }, Boolean.TRUE, 0, 10, 10, 47.0008, 53.0001);
 		logger.debug("Multi sorted search result : " + results);
 		verifyResults(results);
@@ -90,7 +90,7 @@ public class SearcherWebServiceTest extends ATest {
 
 	@Test
 	public void searchSpatialAll() {
-		ArrayList<HashMap<String, String>> results = this.searcherWebService.searchSpacialMultiAll(indexContext.getIndexName(),
+		ArrayList<HashMap<String, String>> results = this.searcherWebService.searchMultiSpacialAll(indexContext.getIndexName(),
 				new String[] { "search", "strings" }, Boolean.TRUE, 0, 10, 10, 47.0008, 53.0001);
 		logger.debug("Multi sorted search result : " + results);
 		verifyResults(results);

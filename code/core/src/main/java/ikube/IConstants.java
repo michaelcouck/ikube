@@ -188,5 +188,7 @@ public interface IConstants {
 	
 	String EXCEPTION = "exception";
 	String EXCEPTION_STACK = "exceptionStack";
+	
+	String SEMI_COLON = ";";
 
 }

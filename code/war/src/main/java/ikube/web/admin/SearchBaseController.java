@@ -40,7 +40,7 @@ public abstract class SearchBaseController extends BaseController {
 			modelAndView.addObject(IConstants.LONGITUDE, longitude);
 			modelAndView.addObject(IConstants.LATITUDE, latitude);
 			modelAndView.addObject(IConstants.DISTANCE, distance);
-			results = searcherWebService.searchSpacialMultiAll(indexName, searchStrings, Boolean.TRUE, firstResult, maxResults,
+			results = searcherWebService.searchMultiSpacialAll(indexName, searchStrings, Boolean.TRUE, firstResult, maxResults,
 					Integer.parseInt(distance), Double.parseDouble(latitude), Double.parseDouble(longitude));
 		} else {
 			// Normal search with all the fields

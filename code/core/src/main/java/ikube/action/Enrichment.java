@@ -97,7 +97,7 @@ public class Enrichment extends Action<IndexContext<?>, Boolean> implements ICon
 		searchStrings[2] = geoName.getCountryCode();
 		double latitude = geoName.getLatitude();
 		double longitude = geoName.getLongitude();
-		ArrayList<HashMap<String, String>> results = searcherWebService.searchSpacialMulti(IConstants.GEOSPATIAL, searchStrings,
+		ArrayList<HashMap<String, String>> results = searcherWebService.searchMultiSpacial(IConstants.GEOSPATIAL, searchStrings,
 				SEARCH_FIELDS, Boolean.TRUE, 0, 10, 15, latitude, longitude);
 		if (results.size() > 1) {
 			// Find the result that is a city close to the feature

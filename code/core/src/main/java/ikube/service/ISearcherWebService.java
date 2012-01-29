@@ -113,7 +113,7 @@ public interface ISearcherWebService extends IPublishable {
 	 */
 	@WebMethod
 	@WebResult(name = "result")
-	ArrayList<HashMap<String, String>> searchSpacialMulti(@WebParam(name = "indexName") final String indexName,
+	ArrayList<HashMap<String, String>> searchMultiSpacial(@WebParam(name = "indexName") final String indexName,
 			@WebParam(name = "searchStrings") final String[] searchStrings, @WebParam(name = "searchFields") final String[] searchFields,
 			@WebParam(name = "fragment") final boolean fragment, @WebParam(name = "firstResult") final int firstResult,
 			@WebParam(name = "maxResults") final int maxResults, @WebParam(name = "distance") final int distance,
@@ -134,7 +134,7 @@ public interface ISearcherWebService extends IPublishable {
 	 */
 	@WebMethod
 	@WebResult(name = "result")
-	ArrayList<HashMap<String, String>> searchSpacialMultiAll(@WebParam(name = "indexName") final String indexName,
+	ArrayList<HashMap<String, String>> searchMultiSpacialAll(@WebParam(name = "indexName") final String indexName,
 			@WebParam(name = "searchStrings") final String[] searchStrings, @WebParam(name = "fragment") final boolean fragment,
 			@WebParam(name = "firstResult") final int firstResult, @WebParam(name = "maxResults") final int maxResults,
 			@WebParam(name = "distance") final int distance, @WebParam(name = "latitude") final double latitude,

@@ -31,6 +31,7 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class SearchSpatialTest extends ATest {
@@ -123,6 +124,7 @@ public class SearchSpatialTest extends ATest {
 	}
 
 	@Test
+	@Ignore
 	public void searchGeospatialIndex() throws Exception {
 		File file = new File("C:/cluster/indexes/geospatial/1327243011030/192.168.1.22.61616");
 		IndexSearcher indexSearcher = null;

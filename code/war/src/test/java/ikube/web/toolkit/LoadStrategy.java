@@ -4,7 +4,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import ikube.IConstants;
 import ikube.service.ISearcherWebService;
-import ikube.service.ServiceLocator;
 import ikube.toolkit.PerformanceTester;
 
 import java.net.InetAddress;
@@ -31,8 +30,9 @@ public class LoadStrategy implements IStrategy {
 		String path = "/ikube/service/SearcherWebService?wsdl";
 		URL url = new URL("http", host, port, path);
 		String searcherWebServiceUrl = url.toString();
-		final ISearcherWebService searcherWebService = ServiceLocator.getService(ISearcherWebService.class, searcherWebServiceUrl,
-				ISearcherWebService.NAMESPACE, ISearcherWebService.SERVICE);
+		final ISearcherWebService searcherWebService = null;
+		// ServiceLocator.getService(ISearcherWebService.class, searcherWebServiceUrl,
+		// ISearcherWebService.NAMESPACE, ISearcherWebService.SERVICE);
 		final String[] searchStrings = { "cape AND town" };
 		final String[] searchFields = { "name" };
 		final boolean fragment = Boolean.TRUE;
@@ -48,7 +48,7 @@ public class LoadStrategy implements IStrategy {
 		double executionsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
 			@Override
 			public void execute() throws Throwable {
-				searcherWebService.searchSpacialMulti(IConstants.GEOSPATIAL, searchStrings, searchFields, fragment, firstResult,
+				searcherWebService.searchMultiSpacial(IConstants.GEOSPATIAL, searchStrings, searchFields, fragment, firstResult,
 						maxResults, distance, latitude, longitude);
 			}
 		}, "Load test of the web service : ", iterations, Boolean.TRUE);

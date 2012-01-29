@@ -7,7 +7,6 @@ import ikube.ATest;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.mock.ClusterManagerMock;
 import ikube.mock.IndexManagerMock;
-import ikube.mock.ServiceLocatorMock;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
@@ -34,7 +33,7 @@ public class SearcherTest extends ATest {
 
 	@Before
 	public void before() {
-		Mockit.setUpMocks(IndexManagerMock.class, ApplicationContextManagerMock.class, ClusterManagerMock.class, ServiceLocatorMock.class);
+		Mockit.setUpMocks(IndexManagerMock.class, ApplicationContextManagerMock.class, ClusterManagerMock.class);
 		when(index.getIndexWriter()).thenReturn(indexWriter);
 		when(clusterManager.startWorking(anyString(), anyString(), anyString())).thenReturn(action);
 	}

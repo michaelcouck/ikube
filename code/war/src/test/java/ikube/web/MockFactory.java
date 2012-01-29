@@ -1,7 +1,6 @@
 package ikube.web;
 
 import static org.mockito.Mockito.mock;
-import ikube.service.ServiceLocator;
 import ikube.toolkit.ApplicationContextManager;
 
 import java.util.HashMap;
@@ -45,23 +44,6 @@ public class MockFactory {
 				LOGGER.error("Class not found : ", e);
 			}
 			return null;
-		}
-	}
-
-	@MockClass(realClass = ServiceLocator.class)
-	public static class ServiceLocatorMock {
-
-		@Mock()
-		@SuppressWarnings("unchecked")
-		public static <T> T getService(final Class<T> klass, final String protocol, final String host, final int port, final String path,
-				final String nameSpace, final String serviceName) {
-			return (T) MockFactory.getMock(klass);
-		}
-
-		@Mock()
-		@SuppressWarnings("unchecked")
-		public static <T> T getService(final Class<T> klass, final String url, final String nameSpace, final String serviceName) {
-			return (T) MockFactory.getMock(klass);
 		}
 	}
 

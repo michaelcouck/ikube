@@ -1,7 +1,7 @@
 package ikube.toolkit;
 
-import static org.junit.Assert.*;
-
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import ikube.ATest;
 import ikube.IConstants;
 import ikube.model.IndexContext;
@@ -12,10 +12,7 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -27,26 +24,38 @@ import org.junit.Test;
  */
 public class SerializationUtilitiesTest extends ATest {
 
+	private String russian = "Что определяет производительность";
+	private String arabic = "تيات تبحث عن ابن الحلالللصداقة و الزوا";
+
 	public SerializationUtilitiesTest() {
 		super(SerializationUtilitiesTest.class);
 	}
 
 	@Test
-	@Ignore
-	@SuppressWarnings("unchecked")
-	public void serializeAndDeserialize() {
-		List<Map<String, String>> results = new ArrayList<Map<String, String>>();
-		Map<String, String> result = new HashMap<String, String>();
-		String russian = "Что определяет производительность";
-		String arabic = "تيات تبحث عن ابن الحلالللصداقة و الزوا";
-		result.put(IConstants.FRAGMENT, russian + arabic);
-		results.add(result);
+	public void serialize() {
+		ArrayList<HashMap<String, String>> results = getResults();
 		String xml = SerializationUtilities.serialize(results);
 		assertTrue("The serialized string should contain the Russian characters : ", xml.contains(russian));
 
-		results = (List<Map<String, String>>) SerializationUtilities.deserialize(xml);
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void deserialize() {
+		// TODO Implement me
+		ArrayList<HashMap<String, String>> results = getResults();
+		String xml = SerializationUtilities.serialize(results);
+		results = (ArrayList<HashMap<String, String>>) SerializationUtilities.deserialize(xml);
 		String fragment = results.get(0).get(IConstants.FRAGMENT);
 		assertTrue("The de-serialized fragment should contain the Russian characters : ", fragment.contains(russian));
+	}
+
+	private ArrayList<HashMap<String, String>> getResults() {
+		ArrayList<HashMap<String, String>> results = new ArrayList<HashMap<String, String>>();
+		HashMap<String, String> result = new HashMap<String, String>();
+		result.put(IConstants.FRAGMENT, russian + arabic);
+		results.add(result);
+		return results;
 	}
 
 	@Test
@@ -63,7 +72,7 @@ public class SerializationUtilitiesTest extends ATest {
 		}
 		assertTrue("The index field should be set to transient : ", containsIndex);
 	}
-	
+
 	@Test
 	public void cloneIndexableTable() throws Exception {
 		IndexableTable indexableTable = new IndexableTable();

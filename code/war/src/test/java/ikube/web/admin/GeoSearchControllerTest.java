@@ -69,7 +69,7 @@ public class GeoSearchControllerTest {
 		String xml = FileUtilities.getContents(file, IConstants.ENCODING);
 		ArrayList<HashMap<String, String>> results = (ArrayList<HashMap<String, String>>) SerializationUtilities.deserialize(xml);
 		when(
-				searcherWebService.searchSpacialMultiAll(anyString(), any(String[].class), anyBoolean(), anyInt(), anyInt(), anyInt(),
+				searcherWebService.searchMultiSpacialAll(anyString(), any(String[].class), anyBoolean(), anyInt(), anyInt(), anyInt(),
 						anyDouble(), anyDouble())).thenReturn(results);
 
 		int distanceInt = 10;

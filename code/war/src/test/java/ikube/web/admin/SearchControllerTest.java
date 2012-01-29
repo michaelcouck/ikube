@@ -11,7 +11,6 @@ import ikube.service.ISearcherWebService;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.SerializationUtilities;
 import ikube.web.MockFactory.ApplicationContextManagerMock;
-import ikube.web.MockFactory.ServiceLocatorMock;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -46,7 +45,7 @@ public class SearchControllerTest {
 
 	@Before
 	public void before() {
-		Mockit.setUpMocks(ApplicationContextManagerMock.class, ServiceLocatorMock.class);
+		Mockit.setUpMocks(ApplicationContextManagerMock.class);
 		searchController = new SearchController();
 		Map<String, String[]> parameterMap = new HashMap<String, String[]>();
 		parameterMap.put(IConstants.SEARCH_STRINGS, new String[] { IConstants.IKUBE });

@@ -2,7 +2,6 @@ package ikube.integration.service;
 
 import ikube.integration.AbstractIntegration;
 import ikube.service.ISearcherWebService;
-import ikube.service.ServiceLocator;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -25,8 +24,9 @@ public class SearchSpatialIntegration extends AbstractIntegration {
 	@Test
 	public void searchSpatial() throws UnknownHostException {
 		String ip = InetAddress.getLocalHost().getHostAddress();
-		ISearcherWebService searchRemote = ServiceLocator.getService(ISearcherWebService.class, "http", ip, 8081,
-				"/ikube/service/SearcherWebService?wsdl", ISearcherWebService.NAMESPACE, ISearcherWebService.SERVICE);
+		ISearcherWebService searchRemote = null;
+		// ServiceLocator.getService(ISearcherWebService.class, "http", ip, 8081,
+		// "/ikube/service/SearcherWebService?wsdl", ISearcherWebService.NAMESPACE, ISearcherWebService.SERVICE);
 		String indexName = "patientIndex";
 
 		String[] searchStrings = { "2018" }; // , "Antwerpen"
@@ -39,7 +39,7 @@ public class SearchSpatialIntegration extends AbstractIntegration {
 
 		double antwerpLatitude = 51.216667;
 		double antwerpLongitude = 4.416667;
-		ArrayList<HashMap<String, String>> results = searchRemote.searchSpacialMulti(indexName, searchStrings, searchFields, fragment,
+		ArrayList<HashMap<String, String>> results = searchRemote.searchMultiSpacial(indexName, searchStrings, searchFields, fragment,
 				firstResult, maxResults, distance, antwerpLatitude, antwerpLongitude);
 		logger.info(results);
 

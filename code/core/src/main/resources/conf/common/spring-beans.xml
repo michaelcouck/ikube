@@ -142,15 +142,15 @@
 		class="ikube.service.MonitorWebService"
 		property:port="${monitor.web.service.port}"
 		property:path="${monitor.web.service.path}" />
-	<bean
+	<!-- <bean
 		id="ikube.service.WebServicePublisher"
 		class="ikube.service.WebServicePublisher"
-		init-method="publish" />
+		init-method="publish" /> -->
 		
-	<util:list id="publishables">
+	<!-- <util:list id="publishables">
 		<ref bean="ikube.service.SearcherWebService" />
 		<ref bean="ikube.service.MonitorWebService" />
-	</util:list>
+	</util:list> -->
 	
 	<bean 
 		id="ikube.listener.ListenerManager"
@@ -257,6 +257,8 @@
 		id="ikube.index.spatial.geocode.Geocoder"
 		class="ikube.index.spatial.geocode.Geocoder"
 		property:searchFields-ref="geospatialFields" 
+		property:userid="user"
+		property:password="user" 
 		property:searchUrl="${searcher.web.service.url}" />
 	<util:list id="geospatialFields">
 		<value>name</value>
