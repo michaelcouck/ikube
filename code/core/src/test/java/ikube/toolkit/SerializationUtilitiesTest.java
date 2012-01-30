@@ -36,15 +36,14 @@ public class SerializationUtilitiesTest extends ATest {
 		ArrayList<HashMap<String, String>> results = getResults();
 		String xml = SerializationUtilities.serialize(results);
 		assertTrue("The serialized string should contain the Russian characters : ", xml.contains(russian));
-
 	}
 
 	@Test
 	@SuppressWarnings("unchecked")
 	public void deserialize() {
-		// TODO Implement me
 		ArrayList<HashMap<String, String>> results = getResults();
 		String xml = SerializationUtilities.serialize(results);
+		logger.info("Xml : " + xml);
 		results = (ArrayList<HashMap<String, String>>) SerializationUtilities.deserialize(xml);
 		String fragment = results.get(0).get(IConstants.FRAGMENT);
 		assertTrue("The de-serialized fragment should contain the Russian characters : ", fragment.contains(russian));

@@ -6,6 +6,8 @@ import ikube.security.WebServiceAuthentication;
 import ikube.web.service.Searcher;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.NameValuePair;
@@ -19,17 +21,18 @@ public class SearcherIntegration {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SearcherIntegration.class);
 
-	private static String LOCALHOST = "localhost";
+	private static String LOCALHOST = "ikube.dyndns.org";
 	/** This client({@link HttpClient}) is for the web services. */
 	protected static HttpClient HTTP_CLIENT = new HttpClient();
-	protected static int SERVER_PORT = 9080;
+	protected static int SERVER_PORT = 8080;
 	protected static String REST_USER_NAME = "user";
 	protected static String REST_PASSWORD = "user";
 
 	/**
 	 * Authentication for the web client.
 	 * 
-	 * @param client the client to authenticate with basic authentication
+	 * @param client
+	 *            the client to authenticate with basic authentication
 	 */
 	@BeforeClass
 	public static void beforeClass() throws Exception {
@@ -37,25 +40,136 @@ public class SearcherIntegration {
 	}
 
 	@Test
-	public void search() throws Exception {
+	public void searchSingle() throws Exception {
+		// String, String, String, boolean, int, int
 		String path = IConstants.SEP + IConstants.IKUBE + Searcher.SERVICE + Searcher.SEARCH + Searcher.SINGLE;
 		String url = new URL("http", LOCALHOST, SERVER_PORT, path).toString();
 		LOGGER.info("Looking for url : " + url);
 
-		NameValuePair indexName = new NameValuePair(IConstants.INDEX_NAME, IConstants.GEOSPATIAL);
-		NameValuePair searchStrings = new NameValuePair(IConstants.SEARCH_STRINGS, "cape AND town AND university");
-		NameValuePair searchFields = new NameValuePair(IConstants.SEARCH_FIELDS, IConstants.NAME);
-		NameValuePair fragment = new NameValuePair(IConstants.FRAGMENT, Boolean.TRUE.toString());
-		NameValuePair firstResult = new NameValuePair(IConstants.FIRST_RESULT, "0");
-		NameValuePair maxResults = new NameValuePair(IConstants.MAX_RESULTS, "10");
+		String[] names = { IConstants.INDEX_NAME, IConstants.SEARCH_STRINGS, IConstants.SEARCH_FIELDS, IConstants.FRAGMENT,
+				IConstants.FIRST_RESULT, IConstants.MAX_RESULTS };
+		String[] values = { IConstants.GEOSPATIAL, "cape AND town AND university", IConstants.NAME, Boolean.TRUE.toString(), "0", "10" };
+		NameValuePair[] params = getNameValuePairs(names, values);
 
 		GetMethod getMethod = new GetMethod(url);
-		NameValuePair[] params = new NameValuePair[] { indexName, searchStrings, searchFields, fragment, firstResult, maxResults };
 		getMethod.setQueryString(params);
 		int result = HTTP_CLIENT.executeMethod(getMethod);
 		String actual = getMethod.getResponseBodyAsString();
 		LOGGER.info("Result : " + actual);
 		assertTrue("We should get something : " + result, actual.length() > 0);
+	}
+
+	@Test
+	public void searchMulti() throws Exception {
+		// String, String, String, boolean, int, int
+		String path = IConstants.SEP + IConstants.IKUBE + Searcher.SERVICE + Searcher.SEARCH + Searcher.MULTI;
+		String url = new URL("http", LOCALHOST, SERVER_PORT, path).toString();
+		LOGGER.info("Looking for url : " + url);
+
+		String[] names = { IConstants.INDEX_NAME, IConstants.SEARCH_STRINGS, IConstants.SEARCH_FIELDS, IConstants.FRAGMENT,
+				IConstants.FIRST_RESULT, IConstants.MAX_RESULTS };
+		String[] values = { IConstants.GEOSPATIAL, "cape AND town AND university;south africa", IConstants.NAME + ";" + IConstants.COUNTRY,
+				Boolean.TRUE.toString(), "0", "10" };
+		NameValuePair[] params = getNameValuePairs(names, values);
+
+		GetMethod getMethod = new GetMethod(url);
+		getMethod.setQueryString(params);
+		int result = HTTP_CLIENT.executeMethod(getMethod);
+		String actual = getMethod.getResponseBodyAsString();
+		LOGGER.info("Result : " + actual);
+		assertTrue("We should get something : " + result, actual.length() > 0);
+	}
+
+	@Test
+	public void searchMultiAll() throws Exception {
+		// String, String, boolean, int, int
+		String path = IConstants.SEP + IConstants.IKUBE + Searcher.SERVICE + Searcher.SEARCH + Searcher.MULTI_ALL;
+		String url = new URL("http", LOCALHOST, SERVER_PORT, path).toString();
+		LOGGER.info("Looking for url : " + url);
+
+		String[] names = { IConstants.INDEX_NAME, IConstants.SEARCH_STRINGS, IConstants.FRAGMENT, IConstants.FIRST_RESULT,
+				IConstants.MAX_RESULTS };
+		String[] values = { IConstants.GEOSPATIAL, "cape AND town AND university;south africa", Boolean.TRUE.toString(), "0", "10" };
+		NameValuePair[] params = getNameValuePairs(names, values);
+
+		GetMethod getMethod = new GetMethod(url);
+		getMethod.setQueryString(params);
+		int result = HTTP_CLIENT.executeMethod(getMethod);
+		String actual = getMethod.getResponseBodyAsString();
+		LOGGER.info("Result : " + actual);
+		assertTrue("We should get something : " + result, actual.length() > 0);
+	}
+
+	@Test
+	public void searchMultiSorted() throws Exception {
+		// String, String, String, String, boolean, int, int
+		String path = IConstants.SEP + IConstants.IKUBE + Searcher.SERVICE + Searcher.SEARCH + Searcher.MULTI_SORTED;
+		String url = new URL("http", LOCALHOST, SERVER_PORT, path).toString();
+		LOGGER.info("Looking for url : " + url);
+
+		String[] names = { IConstants.INDEX_NAME, IConstants.SEARCH_STRINGS, IConstants.SEARCH_FIELDS, IConstants.SORT_FIELDS,
+				IConstants.FRAGMENT, IConstants.FIRST_RESULT, IConstants.MAX_RESULTS };
+		String[] values = { IConstants.GEOSPATIAL, "cape AND town AND university;south africa", IConstants.NAME + ";" + IConstants.COUNTRY,
+				IConstants.NAME + ";" + IConstants.COUNTRY, Boolean.TRUE.toString(), "0", "10" };
+		NameValuePair[] params = getNameValuePairs(names, values);
+
+		GetMethod getMethod = new GetMethod(url);
+		getMethod.setQueryString(params);
+		int result = HTTP_CLIENT.executeMethod(getMethod);
+		String actual = getMethod.getResponseBodyAsString();
+		LOGGER.info("Result : " + actual);
+		assertTrue("We should get something : " + result, actual.length() > 0);
+	}
+
+	@Test
+	public void searchMultiSpacial() throws Exception {
+		// String, String, String, boolean, int, int, int, String, String
+		String path = IConstants.SEP + IConstants.IKUBE + Searcher.SERVICE + Searcher.SEARCH + Searcher.MULTI_SPATIAL;
+		String url = new URL("http", LOCALHOST, SERVER_PORT, path).toString();
+		LOGGER.info("Looking for url : " + url);
+
+		String[] names = { IConstants.INDEX_NAME, IConstants.SEARCH_STRINGS, IConstants.SEARCH_FIELDS, IConstants.FRAGMENT,
+				IConstants.FIRST_RESULT, IConstants.MAX_RESULTS, IConstants.DISTANCE, IConstants.LATITUDE, IConstants.LONGITUDE };
+		String[] values = { IConstants.GEOSPATIAL, "cape AND town AND university;south africa", IConstants.NAME + ";" + IConstants.COUNTRY,
+				Boolean.TRUE.toString(), "0", "10", "50", "50.7930727874172", "4.36242219751376" };
+		NameValuePair[] params = getNameValuePairs(names, values);
+
+		GetMethod getMethod = new GetMethod(url);
+		getMethod.setQueryString(params);
+		int result = HTTP_CLIENT.executeMethod(getMethod);
+		String actual = getMethod.getResponseBodyAsString();
+		LOGGER.info("Result : " + actual);
+		assertTrue("We should get something : " + result, actual.length() > 0);
+	}
+
+	@Test
+	public void searchMultiSpacialAll() throws Exception {
+		// String, String, boolean, int, int, int, String, String
+		String path = IConstants.SEP + IConstants.IKUBE + Searcher.SERVICE + Searcher.SEARCH + Searcher.MULTI_SPATIAL;
+		String url = new URL("http", LOCALHOST, SERVER_PORT, path).toString();
+		LOGGER.info("Looking for url : " + url);
+
+		String[] names = { IConstants.INDEX_NAME, IConstants.SEARCH_STRINGS, IConstants.FRAGMENT, IConstants.FIRST_RESULT,
+				IConstants.MAX_RESULTS, IConstants.DISTANCE, IConstants.LATITUDE, IConstants.LONGITUDE };
+		String[] values = { IConstants.GEOSPATIAL, "cape AND town AND university;south africa", Boolean.TRUE.toString(), "0", "10", "50",
+				"50.7930727874172", "4.36242219751376" };
+		NameValuePair[] params = getNameValuePairs(names, values);
+
+		GetMethod getMethod = new GetMethod(url);
+		getMethod.setQueryString(params);
+		int result = HTTP_CLIENT.executeMethod(getMethod);
+		String actual = getMethod.getResponseBodyAsString();
+		LOGGER.info("Result : " + actual);
+		assertTrue("We should get something : " + result, actual.length() > 0);
+	}
+
+	private NameValuePair[] getNameValuePairs(String[] names, String[] values) {
+		List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+		for (int i = 0; i < names.length && i < values.length; i++) {
+			NameValuePair nameValuePair = new NameValuePair(names[i], values[i]);
+			nameValuePairs.add(nameValuePair);
+		}
+		return nameValuePairs.toArray(new NameValuePair[nameValuePairs.size()]);
 	}
 
 }

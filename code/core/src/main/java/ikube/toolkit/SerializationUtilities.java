@@ -65,9 +65,11 @@ public final class SerializationUtilities {
 			SerializationUtilities.setTransientFields(object.getClass(), new ArrayList<Class<?>>());
 			ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 			xmlEncoder = new XMLEncoder(byteArrayOutputStream);
-			// xmlEncoder.setExceptionListener(EXCEPTION_LISTENER);
+			xmlEncoder.setExceptionListener(EXCEPTION_LISTENER);
 			xmlEncoder.writeObject(object);
 			xmlEncoder.flush();
+			xmlEncoder.close();
+			xmlEncoder = null;
 			return byteArrayOutputStream.toString(IConstants.ENCODING);
 		} catch (UnsupportedEncodingException e) {
 			LOGGER.error("Unsupported encoding : ", e);
@@ -173,8 +175,10 @@ public final class SerializationUtilities {
 	/**
 	 * Gets a field in the class or in the hierarchy of the class.
 	 * 
-	 * @param klass the original class
-	 * @param name the name of the field
+	 * @param klass
+	 *            the original class
+	 * @param name
+	 *            the name of the field
 	 * @return the field in the object or super classes of the object
 	 */
 	public static Field getField(final Class<?> klass, final String name) {
