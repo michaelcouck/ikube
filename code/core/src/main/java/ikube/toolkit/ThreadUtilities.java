@@ -25,13 +25,6 @@ public final class ThreadUtilities {
 	private static ExecutorService EXECUTER_SERVICE;
 
 	/**
-	 * Singularity.
-	 */
-	private ThreadUtilities() {
-		// Documented
-	}
-
-	/**
 	 * This method submits a runnable with the executer service from the concurrent package and returns the future immediately.
 	 * 
 	 * @param runnable the runnable to execute
@@ -94,7 +87,7 @@ public final class ThreadUtilities {
 			try {
 				future.get(maxWait, TimeUnit.SECONDS);
 			} catch (Exception e) {
-				LOGGER.error("Exception waiting for future : ", e);
+				LOGGER.warn("Exception waiting for future : ", e);
 			}
 			ThreadUtilities.sleep(1000);
 			LOGGER.debug("Future : " + future);
@@ -119,7 +112,7 @@ public final class ThreadUtilities {
 			for (Thread thread : threads) {
 				if (thread.isAlive()) {
 					try {
-						thread.join(10000);
+						thread.join(1000);
 					} catch (InterruptedException e) {
 						LOGGER.error("Interrupted waiting for thread : " + thread + ", this thread : " + Thread.currentThread(), e);
 					}
@@ -137,6 +130,13 @@ public final class ThreadUtilities {
 			LOGGER.error("Sleep interrupted : " + Thread.currentThread(), e);
 			throw new RuntimeException(e);
 		}
+	}
+
+	/**
+	 * Singularity.
+	 */
+	private ThreadUtilities() {
+		// Documented
 	}
 
 }

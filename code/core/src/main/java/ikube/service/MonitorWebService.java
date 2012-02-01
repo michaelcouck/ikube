@@ -28,7 +28,6 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
-import org.springframework.beans.factory.annotation.Value;
 
 /**
  * @see IMonitorWebService
@@ -42,11 +41,6 @@ import org.springframework.beans.factory.annotation.Value;
 public class MonitorWebService implements IMonitorWebService {
 
 	private static final Logger LOGGER = Logger.getLogger(MonitorWebService.class);
-
-	@Value("${monitor.web.service.port}")
-	private int port;
-	@Value("${monitor.web.service.path}")
-	private String path;
 
 	/**
 	 * {@inheritDoc}
@@ -289,26 +283,6 @@ public class MonitorWebService implements IMonitorWebService {
 		}
 		getFields(indexable.getChildren(), fieldNames);
 		return fieldNames;
-	}
-
-	@Override
-	public void setPort(int port) {
-		this.port = port;
-	}
-
-	@Override
-	public void setPath(String path) {
-		this.path = path;
-	}
-
-	@Override
-	public int getPort() {
-		return port;
-	}
-
-	@Override
-	public String getPath() {
-		return path;
 	}
 
 }

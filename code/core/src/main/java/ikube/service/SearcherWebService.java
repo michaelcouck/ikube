@@ -27,7 +27,6 @@ import javax.jws.soap.SOAPBinding;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.search.Searcher;
-import org.springframework.beans.factory.annotation.Value;
 
 /**
  * @see ISearcherWebService
@@ -41,11 +40,6 @@ import org.springframework.beans.factory.annotation.Value;
 public class SearcherWebService implements ISearcherWebService {
 
 	private static final Logger LOGGER = Logger.getLogger(SearcherWebService.class);
-
-	@Value("${searcher.web.service.port}")
-	private int port;
-	@Value("${searcher.web.service.path}")
-	private String path;
 
 	/**
 	 * {@inheritDoc}
@@ -265,26 +259,6 @@ public class SearcherWebService implements ISearcherWebService {
 		notification.put(IConstants.FRAGMENT, "Or exception thrown during search : " + indexName);
 		results.add(notification);
 		return results;
-	}
-
-	@Override
-	public void setPort(int port) {
-		this.port = port;
-	}
-
-	@Override
-	public void setPath(String path) {
-		this.path = path;
-	}
-
-	@Override
-	public int getPort() {
-		return port;
-	}
-
-	@Override
-	public String getPath() {
-		return path;
 	}
 
 }

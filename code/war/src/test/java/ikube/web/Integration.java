@@ -1,29 +1,28 @@
 package ikube.web;
 
-import ikube.IConstants;
-import ikube.web.toolkit.JspStrategy;
-import ikube.web.toolkit.LoadStrategy;
+import ikube.security.WebServiceAuthentication;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import org.apache.commons.httpclient.HttpClient;
+import org.junit.BeforeClass;
 
 public class Integration {
 
-	@Test
-	@Ignore
-	public void integration() throws Exception {
-		validateJsps();
-		loadWebService();
-	}
+	protected static String LOCALHOST = "localhost";
+	/** This client({@link HttpClient}) is for the web services. */
+	protected static HttpClient HTTP_CLIENT = new HttpClient();
+	protected static int SERVER_PORT = 9080;
+	protected static String REST_USER_NAME = "user";
+	protected static String REST_PASSWORD = "user";
 
-	protected void validateJsps() throws Exception {
-		// Test all the jsps
-		new JspStrategy(IConstants.SEP + IConstants.IKUBE, 9080).perform();
-	}
-
-	protected void loadWebService() throws Exception {
-		// Load test the web service
-		new LoadStrategy(10000, 10).perform();
+	/**
+	 * Authentication for the web client.
+	 * 
+	 * @param client the client to authenticate with basic authentication
+	 */
+	@BeforeClass
+	public static void beforeClass() {
+		// We need to wait for the geospatial index to be created
+		WebServiceAuthentication.authenticate(HTTP_CLIENT, LOCALHOST, SERVER_PORT, REST_USER_NAME, REST_PASSWORD);
 	}
 
 }

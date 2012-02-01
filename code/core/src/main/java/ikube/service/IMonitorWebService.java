@@ -16,7 +16,7 @@ import javax.jws.soap.SOAPBinding;
  */
 @SOAPBinding(style = SOAPBinding.Style.DOCUMENT)
 @WebService(name = IMonitorWebService.NAME, targetNamespace = IMonitorWebService.NAMESPACE, serviceName = IMonitorWebService.SERVICE)
-public interface IMonitorWebService extends IPublishable {
+public interface IMonitorWebService {
 
 	String NAME = "monitor";
 	String SERVICE = "monitor";

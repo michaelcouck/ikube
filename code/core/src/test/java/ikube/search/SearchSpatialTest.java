@@ -122,14 +122,29 @@ public class SearchSpatialTest extends ATest {
 		assertTrue(results.get(2).get(IConstants.CONTENTS).equals(seebackCoordinate.toString()));
 		assertTrue(results.get(3).get(IConstants.CONTENTS).equals(adliswilCoordinate.toString()));
 	}
+	
+	@Test
+	public void searchGeospatial() throws Exception {
+		IndexSearcher searcher = getIndexSearcher(); 
+		SearchSpatialAll searchSpatialAll = new SearchSpatialAll(searcher);
+		Coordinate coordinate = new Coordinate(52.52274, 13.4166);
+		searchSpatialAll.setCoordinate(coordinate);
+		searchSpatialAll.setDistance(10);
+		searchSpatialAll.setFirstResult(0);
+		searchSpatialAll.setFragment(true);
+		searchSpatialAll.setMaxResults(1000);
+		searchSpatialAll.setSearchField();
+		searchSpatialAll.setSearchString("berlin");
+		searchSpatialAll.setSortField();
+		ArrayList<HashMap<String, String>> results = searchSpatialAll.execute();
+		logger.info("Results : " + results);
+	}
 
 	@Test
 	@Ignore
 	public void searchGeospatialIndex() throws Exception {
-		File file = new File("C:/cluster/indexes/geospatial/1327243011030/192.168.1.22.61616");
-		IndexSearcher indexSearcher = null;
+		IndexSearcher indexSearcher = getIndexSearcher();
 		try {
-			Directory directory = FSDirectory.open(file);
 			indexSearcher = new IndexSearcher(directory);
 			SearchSpatial searchSpatial = new SearchSpatial(indexSearcher);
 
@@ -157,6 +172,12 @@ public class SearchSpatialTest extends ATest {
 				indexSearcher.close();
 			}
 		}
+	}
+	
+	private IndexSearcher getIndexSearcher() throws Exception {
+		File file = new File("C:/temp/geospatial");
+		Directory directory = FSDirectory.open(file);
+		return new IndexSearcher(directory);
 	}
 
 	private void searchGeospatialRange(String field, int precision, float min, float max) throws Exception {

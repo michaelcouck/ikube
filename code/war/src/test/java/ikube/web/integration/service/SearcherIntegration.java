@@ -2,42 +2,22 @@ package ikube.web.integration.service;
 
 import static org.junit.Assert.assertTrue;
 import ikube.IConstants;
-import ikube.security.WebServiceAuthentication;
+import ikube.web.Integration;
 import ikube.web.service.Searcher;
 
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.GetMethod;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SearcherIntegration {
+public class SearcherIntegration extends Integration {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SearcherIntegration.class);
-
-	private static String LOCALHOST = "ikube.dyndns.org";
-	/** This client({@link HttpClient}) is for the web services. */
-	protected static HttpClient HTTP_CLIENT = new HttpClient();
-	protected static int SERVER_PORT = 8080;
-	protected static String REST_USER_NAME = "user";
-	protected static String REST_PASSWORD = "user";
-
-	/**
-	 * Authentication for the web client.
-	 * 
-	 * @param client
-	 *            the client to authenticate with basic authentication
-	 */
-	@BeforeClass
-	public static void beforeClass() throws Exception {
-		WebServiceAuthentication.authenticate(HTTP_CLIENT, LOCALHOST, SERVER_PORT, REST_USER_NAME, REST_PASSWORD);
-	}
 
 	@Test
 	public void searchSingle() throws Exception {

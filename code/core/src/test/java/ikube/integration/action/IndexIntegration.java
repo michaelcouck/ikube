@@ -37,8 +37,8 @@ public class IndexIntegration extends AbstractIntegration {
 
 	@Test
 	public void execute() throws Exception {
-		IndexContext<?> dropboxIndex = ApplicationContextManager.getBean("dropboxIndex");
-		boolean result = index.execute(dropboxIndex);
+		IndexContext<?> indexContext = ApplicationContextManager.getBean("dropboxIndex");
+		boolean result = index.execute(indexContext);
 		logger.info("Result from index action : " + result);
 		assertTrue("The index must execute properly : ", result);
 		// Stop all the actions

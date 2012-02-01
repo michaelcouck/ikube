@@ -18,7 +18,7 @@ import javax.jws.soap.SOAPBinding;
  */
 @SOAPBinding(style = SOAPBinding.Style.DOCUMENT)
 @WebService(name = ISearcherWebService.NAME, targetNamespace = ISearcherWebService.NAMESPACE, serviceName = ISearcherWebService.SERVICE)
-public interface ISearcherWebService extends IPublishable {
+public interface ISearcherWebService {
 
 	String NAME = "searcher";
 	String SERVICE = "searcher";

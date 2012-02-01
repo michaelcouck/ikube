@@ -109,6 +109,7 @@
 					<includes>ikube/model/*.class,ikube/model/**/*.class</includes>
 					<addDefaultConstructor>false</addDefaultConstructor>
 					<enforcePropertyRestrictions>true</enforcePropertyRestrictions>
+					<persistenceXmlFile>${project.basedir}/src/main/resources/META-INF/persistence/persistence.xml</persistenceXmlFile> 
 				</configuration>
 				<executions>
 					<execution>

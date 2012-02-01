@@ -37,6 +37,20 @@
 		name="ikube.IndexEngine"
 		class="ikube.IndexEngine"
 		property:actions-ref="ikube.IndexEngine.actions" />
+		
+	<!-- 
+		The default persistence manager so we can specify more than one persistence file, and 
+		also we can hide the persistence xml file from the application servers so they don't try to 
+		inject the persistence resources into the classes.
+	-->
+	<bean 
+		id="defaultPersistenceUnitManager"
+		class="org.springframework.orm.jpa.persistenceunit.DefaultPersistenceUnitManager"
+		property:persistenceXmlLocations-ref="persistenceXmlLocations"
+		property:defaultDataSource-ref="nonXaDataSourceH2" />
+	<util:list id="persistenceXmlLocations">
+		<value>classpath*:META-INF/persistence/persistence.xml</value>
+	</util:list>
 
 	<bean 
 		class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor" />
@@ -52,6 +66,7 @@
 		property:jpaPropertyMap-ref="jpaPropertyMap"
 		property:dataSource-ref="${ikube.dataSource}"
 		property:persistenceUnitName="${ikube.persistenceUnit}"
+		property:persistenceUnitManager-ref="defaultPersistenceUnitManager"
 		property:loadTimeWeaver-ref="loadTimeWeaver" />
 	<bean
 		id="loadTimeWeaver" 
@@ -131,26 +146,13 @@
 		<constructor-arg value="mime-types.xml" />
 	</bean>
 	
-	<!-- The web services. -->
+	<!-- The search and monitoring services. -->
 	<bean
 		id="ikube.service.SearcherWebService"
-		class="ikube.service.SearcherWebService"
-		property:port="${searcher.web.service.port}"
-		property:path="${searcher.web.service.path}" />
+		class="ikube.service.SearcherWebService" />
 	<bean
 		id="ikube.service.MonitorWebService"
-		class="ikube.service.MonitorWebService"
-		property:port="${monitor.web.service.port}"
-		property:path="${monitor.web.service.path}" />
-	<!-- <bean
-		id="ikube.service.WebServicePublisher"
-		class="ikube.service.WebServicePublisher"
-		init-method="publish" /> -->
-		
-	<!-- <util:list id="publishables">
-		<ref bean="ikube.service.SearcherWebService" />
-		<ref bean="ikube.service.MonitorWebService" />
-	</util:list> -->
+		class="ikube.service.MonitorWebService" />
 	
 	<bean 
 		id="ikube.listener.ListenerManager"
