@@ -1,6 +1,7 @@
 package ikube.data.wiki;
 
 import java.io.InputStream;
+import java.nio.charset.Charset;
 
 public class WikiDataUnpackerWorker implements Runnable {
 
@@ -29,10 +30,10 @@ public class WikiDataUnpackerWorker implements Runnable {
 			int read = -1;
 			int count = 0;
 			try {
-				while ((read = inputStream.read()) > -1) {
+				while ((read = inputStream.read(bytes)) > -1 && count < length) {
 					count += read;
 					Thread.sleep(100);
-					System.out.println("Thread : " + this.hashCode() + ", " + count + ", " + new String(bytes));
+					System.out.println("Thread : " + this.hashCode() + ", " + count + ", " + new String(bytes, 0, read, Charset.forName("UTF-8")));
 				}
 			} catch (Exception e) {
 				e.printStackTrace();

@@ -15,7 +15,7 @@
 		id="sumoIndex" 
 		class="ikube.model.IndexContext" 
 		property:name="sumoIndex" 
-		property:maxAge="${max.age}" 
+		property:maxAge="1200" 
 		property:compoundFile="${compound.file}"
 		property:bufferedDocs="${buffered.docs}" 
 		property:bufferSize="${buffer.size}" 
@@ -463,49 +463,159 @@
 	<bean 
 		id="AR4_KRANTUITREIKINGSTAAK" 
 		class="ikube.model.IndexableTable" 
-		property:name="AR4_KRANTUITREIKINGSTAAK" property:allColumns="true"
-		property:primaryTable="true" property:dataSource-ref="nonXaSumoDataSourceOracle" property:maxExceptions="10" property:stored="false"
-		property:analyzed="true" property:vectored="true" />
-	<bean id="AR4_SP_ABONNEEBEDELINGSPAR" class="ikube.model.IndexableTable" property:name="AR4_SP_ABONNEEBEDELINGSPAR"
-		property:allColumns="true" property:primaryTable="true" property:dataSource-ref="nonXaSumoDataSourceOracle" property:maxExceptions="100"
-		property:stored="false" property:analyzed="true" property:vectored="true" />
-	<bean id="AR4_TIJDSCHRIFTABONNEMENT" class="ikube.model.IndexableTable" property:name="AR4_TIJDSCHRIFTABONNEMENT" property:allColumns="true"
-		property:primaryTable="true" property:dataSource-ref="nonXaSumoDataSourceOracle" property:maxExceptions="10" property:stored="false"
-		property:analyzed="true" property:vectored="true" />
-	<bean id="AR4_TIJDSCHRIFTUITREIKINGSTAAK" class="ikube.model.IndexableTable" property:name="AR4_TIJDSCHRIFTUITREIKINGSTAAK"
-		property:allColumns="true" property:primaryTable="true" property:dataSource-ref="nonXaSumoDataSourceOracle" property:maxExceptions="100"
-		property:stored="false" property:analyzed="true" property:vectored="true" />
-	<bean id="AR5_ADRES" class="ikube.model.IndexableTable" property:name="AR5_ADRES" property:allColumns="true" property:primaryTable="true"
-		property:dataSource-ref="nonXaSumoDataSourceOracle" property:maxExceptions="10" property:stored="false" property:analyzed="true"
+		property:name="AR4_KRANTUITREIKINGSTAAK" 
+		property:allColumns="true"
+		property:primaryTable="true" 
+		property:dataSource-ref="nonXaSumoDataSourceOracle" 
+		property:maxExceptions="10" 
+		property:stored="false"
+		property:analyzed="true" 
 		property:vectored="true" />
-	<bean id="AR5_ADR_STATUS" class="ikube.model.IndexableTable" property:name="AR5_ADR_STATUS" property:allColumns="true"
-		property:primaryTable="true" property:dataSource-ref="nonXaSumoDataSourceOracle" property:maxExceptions="10" property:stored="false"
-		property:analyzed="true" property:vectored="true" />
-	<bean id="AR5_ADR_TO_VALIDATE" class="ikube.model.IndexableTable" property:name="AR5_ADR_TO_VALIDATE" property:allColumns="true"
-		property:primaryTable="true" property:dataSource-ref="nonXaSumoDataSourceOracle" property:maxExceptions="10" property:stored="false"
-		property:analyzed="true" property:vectored="true" />
-	<bean id="AR5_ADR_UITG_HIST" class="ikube.model.IndexableTable" property:name="AR5_ADR_UITG_HIST" property:allColumns="true"
-		property:primaryTable="true" property:dataSource-ref="nonXaSumoDataSourceOracle" property:maxExceptions="10" property:stored="false"
-		property:analyzed="true" property:vectored="true" />
-	<bean id="AR5_KRANTABONNEMENT" class="ikube.model.IndexableTable" property:name="AR5_KRANTABONNEMENT" property:allColumns="true"
-		property:primaryTable="true" property:dataSource-ref="nonXaSumoDataSourceOracle" property:maxExceptions="10" property:stored="false"
-		property:analyzed="true" property:vectored="true" />
-	<bean id="AR5_KRANTUITREIKINGSTAAK" class="ikube.model.IndexableTable" property:name="AR5_KRANTUITREIKINGSTAAK" property:allColumns="true"
-		property:primaryTable="true" property:dataSource-ref="nonXaSumoDataSourceOracle" property:maxExceptions="10" property:stored="false"
-		property:analyzed="true" property:vectored="true" />
-	<bean id="AR5_SP_ABONNEEBEDELINGSPAR" class="ikube.model.IndexableTable" property:name="AR5_SP_ABONNEEBEDELINGSPAR"
-		property:allColumns="true" property:primaryTable="true" property:dataSource-ref="nonXaSumoDataSourceOracle" property:maxExceptions="100"
-		property:stored="false" property:analyzed="true" property:vectored="true" />
-	<bean id="AR5_TIJDSCHRIFTABONNEMENT" class="ikube.model.IndexableTable" property:name="AR5_TIJDSCHRIFTABONNEMENT" property:allColumns="true"
-		property:primaryTable="true" property:dataSource-ref="nonXaSumoDataSourceOracle" property:maxExceptions="10" property:stored="false"
-		property:analyzed="true" property:vectored="true" />
-	<bean id="AR5_TIJDSCHRIFTUITREIKINGSTAAK" class="ikube.model.IndexableTable" property:name="AR5_TIJDSCHRIFTUITREIKINGSTAAK"
-		property:allColumns="true" property:primaryTable="true" property:dataSource-ref="nonXaSumoDataSourceOracle" property:maxExceptions="100"
-		property:stored="false" property:analyzed="true" property:vectored="true" />
-	<bean id="AR5_WIJZIGINGENBESTAND" class="ikube.model.IndexableTable" property:name="AR5_WIJZIGINGENBESTAND" property:allColumns="true"
-		property:primaryTable="true" property:dataSource-ref="nonXaSumoDataSourceOracle" property:maxExceptions="10" property:stored="false"
-		property:analyzed="true" property:vectored="true" />
-	<bean id="AR5_WIJZIGINGSAANVRAAG" class="ikube.model.IndexableTable" property:name="AR5_WIJZIGINGSAANVRAAG" property:allColumns="true"
+	<bean 
+		id="AR4_SP_ABONNEEBEDELINGSPAR" 
+		class="ikube.model.IndexableTable" 
+		property:name="AR4_SP_ABONNEEBEDELINGSPAR"
+		property:allColumns="true" 
+		property:primaryTable="true" 
+		property:dataSource-ref="nonXaSumoDataSourceOracle" 
+		property:maxExceptions="100"
+		property:stored="false" 
+		property:analyzed="true" 
+		property:vectored="true" />
+	<bean 
+		id="AR4_TIJDSCHRIFTABONNEMENT" 
+		class="ikube.model.IndexableTable" 
+		property:name="AR4_TIJDSCHRIFTABONNEMENT" 
+		property:allColumns="true"
+		property:primaryTable="true" 
+		property:dataSource-ref="nonXaSumoDataSourceOracle" 
+		property:maxExceptions="10" 
+		property:stored="false"
+		property:analyzed="true" 
+		property:vectored="true" />
+	<bean 
+		id="AR4_TIJDSCHRIFTUITREIKINGSTAAK" 
+		class="ikube.model.IndexableTable" 
+		property:name="AR4_TIJDSCHRIFTUITREIKINGSTAAK"
+		property:allColumns="true" 
+		property:primaryTable="true" 
+		property:dataSource-ref="nonXaSumoDataSourceOracle" 
+		property:maxExceptions="100"
+		property:stored="false" 
+		property:analyzed="true" 
+		property:vectored="true" />
+	<bean 
+		id="AR5_ADRES" 
+		class="ikube.model.IndexableTable" 
+		property:name="AR5_ADRES" 
+		property:allColumns="true" 
+		property:primaryTable="true"
+		property:dataSource-ref="nonXaSumoDataSourceOracle" 
+		property:maxExceptions="10" 
+		property:stored="false" 
+		property:analyzed="true"
+		property:vectored="true" />
+	<bean 
+		id="AR5_ADR_STATUS" 
+		class="ikube.model.IndexableTable" 
+		property:name="AR5_ADR_STATUS" 
+		property:allColumns="true"
+		property:primaryTable="true" 
+		property:dataSource-ref="nonXaSumoDataSourceOracle" 
+		property:maxExceptions="10" 
+		property:stored="false"
+		property:analyzed="true" 
+		property:vectored="true" />
+	<bean 
+		id="AR5_ADR_TO_VALIDATE" 
+		class="ikube.model.IndexableTable" 
+		property:name="AR5_ADR_TO_VALIDATE" 
+		property:allColumns="true"
+		property:primaryTable="true" 
+		property:dataSource-ref="nonXaSumoDataSourceOracle" 
+		property:maxExceptions="10" 
+		property:stored="false"
+		property:analyzed="true" 
+		property:vectored="true" />
+	<bean 
+		id="AR5_ADR_UITG_HIST" 
+		class="ikube.model.IndexableTable" 
+		property:name="AR5_ADR_UITG_HIST" 
+		property:allColumns="true"
+		property:primaryTable="true" 
+		property:dataSource-ref="nonXaSumoDataSourceOracle" 
+		property:maxExceptions="10" 
+		property:stored="false"
+		property:analyzed="true" 
+		property:vectored="true" />
+	<bean 
+		id="AR5_KRANTABONNEMENT" 
+		class="ikube.model.IndexableTable" 
+		property:name="AR5_KRANTABONNEMENT" 
+		property:allColumns="true"
+		property:primaryTable="true" 
+		property:dataSource-ref="nonXaSumoDataSourceOracle" 
+		property:maxExceptions="10" 
+		property:stored="false"
+		property:analyzed="true" 
+		property:vectored="true" />
+	<bean 
+		id="AR5_KRANTUITREIKINGSTAAK" 
+		class="ikube.model.IndexableTable" 
+		property:name="AR5_KRANTUITREIKINGSTAAK" 
+		property:allColumns="true"
+		property:primaryTable="true" 
+		property:dataSource-ref="nonXaSumoDataSourceOracle" 
+		property:maxExceptions="10" 
+		property:stored="false"
+		property:analyzed="true" 
+		property:vectored="true" />
+	<bean 
+		id="AR5_SP_ABONNEEBEDELINGSPAR" 
+		class="ikube.model.IndexableTable" 
+		property:name="AR5_SP_ABONNEEBEDELINGSPAR"
+		property:allColumns="true" 
+		property:primaryTable="true" 
+		property:dataSource-ref="nonXaSumoDataSourceOracle" 
+		property:maxExceptions="100"
+		property:stored="false" 
+		property:analyzed="true" 
+		property:vectored="true" />
+	<bean 
+		id="AR5_TIJDSCHRIFTABONNEMENT" 
+		class="ikube.model.IndexableTable" 
+		property:name="AR5_TIJDSCHRIFTABONNEMENT" 
+		property:allColumns="true"
+		property:primaryTable="true" 
+		property:dataSource-ref="nonXaSumoDataSourceOracle" 
+		property:maxExceptions="10" 
+		property:stored="false"
+		property:analyzed="true" 
+		property:vectored="true" />
+	<bean 
+		id="AR5_TIJDSCHRIFTUITREIKINGSTAAK" 
+		class="ikube.model.IndexableTable" 
+		property:name="AR5_TIJDSCHRIFTUITREIKINGSTAAK"
+		property:allColumns="true" 
+		property:primaryTable="true" 
+		property:dataSource-ref="nonXaSumoDataSourceOracle" 
+		property:maxExceptions="100"
+		property:stored="false" 
+		property:analyzed="true" 
+		property:vectored="true" />
+	<bean 
+		id="AR5_WIJZIGINGENBESTAND" 
+		class="ikube.model.IndexableTable" 
+		property:name="AR5_WIJZIGINGENBESTAND" 
+		property:allColumns="true"
+		property:primaryTable="true" 
+		property:dataSource-ref="nonXaSumoDataSourceOracle" 
+		property:maxExceptions="10" 
+		property:stored="false"
+		property:analyzed="true" 
+		property:vectored="true" />
+	<bean 
+		id="AR5_WIJZIGINGSAANVRAAG" class="ikube.model.IndexableTable" property:name="AR5_WIJZIGINGSAANVRAAG" property:allColumns="true"
 		property:primaryTable="true" property:dataSource-ref="nonXaSumoDataSourceOracle" property:maxExceptions="10" property:stored="false"
 		property:analyzed="true" property:vectored="true" />
 	<bean id="BATCHJOB_STATUS" class="ikube.model.IndexableTable" property:name="BATCHJOB_STATUS" property:allColumns="true"
