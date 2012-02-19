@@ -3,6 +3,7 @@ rem        <group-id>      the group that the file should be registered under
 rem        <artifact-id>   the artifact name for the file
 rem        <version>       the version of the file
 rem        <packaging>     the packaging of the file e.g. jar
+rem
 
 rem This file needs to be executed, one line at a time to deploy the jars to the local repository.
 
