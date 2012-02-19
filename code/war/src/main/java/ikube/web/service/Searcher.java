@@ -15,6 +15,8 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -44,6 +46,8 @@ import org.springframework.stereotype.Component;
 @Scope(Searcher.REQUEST)
 @Produces(MediaType.TEXT_PLAIN)
 public class Searcher {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(Searcher.class);
 
 	/** Constants for the paths to the web services. */
 	public static final String REQUEST = "request";
@@ -72,7 +76,7 @@ public class Searcher {
 	 */
 	@GET
 	@Path(Searcher.SINGLE)
-	@Consumes(MediaType.TEXT_PLAIN)
+	@Consumes(MediaType.APPLICATION_XML)
 	public String searchSingle(@QueryParam(value = IConstants.INDEX_NAME) final String indexName,
 			@QueryParam(value = IConstants.SEARCH_STRINGS) final String searchStrings,
 			@QueryParam(value = IConstants.SEARCH_FIELDS) final String searchFields,
@@ -97,7 +101,7 @@ public class Searcher {
 	 */
 	@GET
 	@Path(Searcher.MULTI)
-	@Consumes(MediaType.TEXT_PLAIN)
+	@Consumes(MediaType.APPLICATION_XML)
 	public String searchMulti(@QueryParam(value = IConstants.INDEX_NAME) final String indexName,
 			@QueryParam(value = IConstants.SEARCH_STRINGS) final String searchStrings,
 			@QueryParam(value = IConstants.SEARCH_FIELDS) final String searchFields,
@@ -125,7 +129,7 @@ public class Searcher {
 	 */
 	@GET
 	@Path(Searcher.MULTI_SORTED)
-	@Consumes(MediaType.TEXT_PLAIN)
+	@Consumes(MediaType.APPLICATION_XML)
 	public String searchMultiSorted(@QueryParam(value = IConstants.INDEX_NAME) final String indexName,
 			@QueryParam(value = IConstants.SEARCH_STRINGS) final String searchStrings,
 			@QueryParam(value = IConstants.SEARCH_FIELDS) final String searchFields,
@@ -153,7 +157,7 @@ public class Searcher {
 	 */
 	@GET
 	@Path(Searcher.MULTI_ALL)
-	@Consumes(MediaType.TEXT_PLAIN)
+	@Consumes(MediaType.APPLICATION_XML)
 	public String searchMultiAll(@QueryParam(value = IConstants.INDEX_NAME) final String indexName,
 			@QueryParam(value = IConstants.SEARCH_STRINGS) final String searchStrings,
 			@QueryParam(value = IConstants.FRAGMENT) final boolean fragment,
@@ -162,7 +166,9 @@ public class Searcher {
 		String[] searchStringsArray = StringUtils.split(searchStrings, IConstants.SEMI_COLON);
 		ArrayList<HashMap<String, String>> results = searcherWebService.searchMultiAll(indexName, searchStringsArray, fragment,
 				firstResult, maxResults);
-		return SerializationUtilities.serialize(results);
+		String xml = SerializationUtilities.serialize(results);
+		// LOGGER.info("Xml : " + xml);
+		return xml;
 	}
 
 	/**
@@ -183,7 +189,7 @@ public class Searcher {
 	 */
 	@GET
 	@Path(Searcher.MULTI_SPATIAL)
-	@Consumes(MediaType.TEXT_PLAIN)
+	@Consumes(MediaType.APPLICATION_XML)
 	public String searchMultiSpacial(@QueryParam(value = IConstants.INDEX_NAME) final String indexName,
 			@QueryParam(value = IConstants.SEARCH_STRINGS) final String searchStrings,
 			@QueryParam(value = IConstants.SEARCH_FIELDS) final String searchFields,
@@ -215,7 +221,7 @@ public class Searcher {
 	 */
 	@GET
 	@Path(Searcher.MULTI_SPATIAL_ALL)
-	@Consumes(MediaType.TEXT_PLAIN)
+	@Consumes(MediaType.APPLICATION_XML)
 	public String searchMultiSpacialAll(@QueryParam(value = IConstants.INDEX_NAME) final String indexName,
 			@QueryParam(value = IConstants.SEARCH_STRINGS) final String searchStrings,
 			@QueryParam(value = IConstants.FRAGMENT) final boolean fragment,

@@ -23,6 +23,11 @@
 	</td>
 </tr>
 <tr>
+	<td colspan="2">
+		The default userid and password is user/user, guest/guest or administrator/administrator.
+	</td>
+</tr>
+<tr>
 	<td><spring:message code="login.user" /></td>
 	<td><input id="search-text"  tabindex="1" type="text" name="j_username" value=""></td>
 </tr>

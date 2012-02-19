@@ -35,6 +35,7 @@ public class SerializationUtilitiesTest extends ATest {
 	public void serialize() {
 		ArrayList<HashMap<String, String>> results = getResults();
 		String xml = SerializationUtilities.serialize(results);
+		logger.info("Results : " + xml);
 		assertTrue("The serialized string should contain the Russian characters : ", xml.contains(russian));
 	}
 

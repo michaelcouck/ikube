@@ -770,6 +770,13 @@
 
 	<repositories>
 		<repository>
+			<id>ikube</id>
+			<url>http://localhost:9000/artifactory/libs-release-local/</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+		<repository>
 			<id>springbyexample.org</id>
 			<name>Spring by Example</name>
 			<url>http://www.springbyexample.org/maven/repo</url>
@@ -802,13 +809,6 @@
 			<snapshots>
 				<enabled>true</enabled>
 				<updatePolicy>never</updatePolicy>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>ikube-repository</id>
-			<url>http://localhost:9000/artifactory/libs-release-local/</url>
-			<snapshots>
-				<enabled>true</enabled>
 			</snapshots>
 		</repository>
 	</repositories>

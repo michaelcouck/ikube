@@ -1,3 +1,7 @@
+<!--
+	This is the mapping file that maps the CSV data from the Geonames data to the 
+	GeoName entity. The mapping is done by the Canyon flat file mapping tool. 
+ -->
 <mapping>
 	<class name="ikube.model.geospatial.GeoName" type="DELIMITED" delimiter=";">
 		<property name="geonameid" position="0" type="integer" />

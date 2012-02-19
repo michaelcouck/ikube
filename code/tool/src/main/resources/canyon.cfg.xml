@@ -1,12 +1,12 @@
 <canyon-configuration>
-	<session-factory name="geoname1">
+	<session-factory name="geoname">
 		<mapping>
 			<config resource="geoname.xml" />
-			<input resource="allCountries1Csv.txt" />
+			<input resource="allCountriesCsv.txt" />
 		</mapping>
 	</session-factory>
 	
-	<session-factory name="geoname2">
+	<!-- <session-factory name="geoname2">
 		<mapping>
 			<config resource="geoname.xml" />
 			<input resource="allCountries2Csv.txt" />
@@ -53,5 +53,5 @@
 			<config resource="geoname.xml" />
 			<input resource="allCountries8Csv.txt" />
 		</mapping>
-	</session-factory>
+	</session-factory> -->
 </canyon-configuration>

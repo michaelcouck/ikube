@@ -65,12 +65,14 @@
 	<target name="deploy">
 		<!-- Delete the index directories in the cluster. -->
 		<antcall target="clean.server">
+			<param name="directory" value="${tomcat.bin}" />
+		</antcall>
+		<antcall target="clean.server">
+			<param name="directory" value="${tomcat.webapps}" />
+		</antcall>
+		<antcall target="clean.server">
 			<param name="directory" value="${tomcat.1.bin}" />
 		</antcall>
-		<delete includeemptydirs="true" failonerror="false">
-			<fileset dir="${tomcat.1}/webapps/ikube" />
-			<fileset file="${tomcat.1}/webapps/ikube.war" />
-		</delete>
 		<antcall target="clean.server">
 			<param name="directory" value="${tomcat.2}" />
 		</antcall>
@@ -78,6 +80,7 @@
 			<param name="directory" value="${tomcat.3}" />
 		</antcall>
 		<!-- Deploy the ikube war into the cluster. -->
+		<copy file="${target.directory}/${ikube.war}" todir="${tomcat.webapps}" overwrite="true" failonerror="false" />
 		<copy file="${target.directory}/${ikube.war}" todir="${tomcat.1.webapps}" overwrite="true" failonerror="false" />
 		<copy file="${target.directory}/${ikube.war}" todir="${tomcat.2.webapps}" overwrite="true" failonerror="false" />
 		<copy file="${target.directory}/${ikube.war}" todir="${tomcat.3.webapps}" overwrite="true" failonerror="false" />
@@ -119,6 +122,7 @@
 	<target name="deploy.configuration">
 		<jar destfile="${configuration.directory}/${ikube.configuration.jar}" basedir="${configuration.directory}" />
 		<copy file="${configuration.directory}/${ikube.configuration.jar}" todir="./src/main/webapp/docs" failonerror="true" />
+		<unjar src="${configuration.directory}/${ikube.configuration.jar}" dest="${tomcat.bin}" overwrite="true" />
 		<unjar src="${configuration.directory}/${ikube.configuration.jar}" dest="${tomcat.1.bin}" overwrite="true" />
 		<unjar src="${configuration.directory}/${ikube.configuration.jar}" dest="${tomcat.2.bin}" overwrite="true" />
 		<unjar src="${configuration.directory}/${ikube.configuration.jar}" dest="${tomcat.3.bin}" overwrite="true" />
@@ -126,7 +130,7 @@
 		<unjar src="${configuration.directory}/${ikube.configuration.jar}" dest="${glassfish.1.bin}" overwrite="true" />
 		<unjar src="${configuration.directory}/${ikube.configuration.jar}" dest="${oc4j.1.bin}" overwrite="true" />
 		<unjar src="${configuration.directory}/${ikube.configuration.jar}" dest="${weblogic.1.bin}" overwrite="true" />
-		<replace dir="${tomcat.2.bin}" value="61617">
+		<replace dir="${tomcat.2.bin}" value="61616">
 			<include name="**/spring.properties" />
 			<replacetoken><![CDATA[61616]]></replacetoken>
 		</replace>

@@ -1,5 +1,6 @@
 package ikube.data.wiki;
 
+import ikube.toolkit.FileUtilities;
 import ikube.toolkit.ThreadUtilities;
 
 import java.io.File;
@@ -12,22 +13,30 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class WikiDataUnpacker {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(WikiDataUnpacker.class);
+	private static final String[] OUTPUT_DIRECTORIES = { "/usr/local/wiki/history/one", "/usr/local/wiki/history/two" };
+	private static final String INPUT_FILE = "/home/michael/Downloads/enwiki-20100130-pages-meta-history.xml.7z";
 
 	public static void main(String[] args) throws Exception {
 		readBz2Tar();
 	}
 
 	protected static void readBz2Tar() throws Exception {
-		Collection<Thread> threads = new ArrayList<Thread>();
-		int length = 100000;
 		int offset = 0;
-		for (int i = 0; i < 3; i++) {
-			FileInputStream in = new FileInputStream("C:/Tmp/sumo.4000.2012.02.07.15.20.48.877.21763386990804.csv.bz2");
+		int length = 100000;
+		Collection<Thread> threads = new ArrayList<Thread>();
+		for (String outputDirectory : OUTPUT_DIRECTORIES) {
+			FileInputStream in = new FileInputStream(INPUT_FILE);
 			BZip2CompressorInputStream inputStream = new BZip2CompressorInputStream(in);
-			System.out.println("Input stream : " + inputStream.getClass());
-			Thread thread = new Thread(new WikiDataUnpackerWorker(inputStream, offset, length));
+			LOGGER.info("Input stream : " + inputStream.getClass());
+			File outputDirectoryFile = FileUtilities.getFile(outputDirectory, Boolean.TRUE);
+			WikiDataUnpackerWorker wikiDataUnpackerWorker = new WikiDataUnpackerWorker(inputStream, offset, length, outputDirectoryFile);
+			Thread thread = new Thread(wikiDataUnpackerWorker);
 			threads.add(thread);
 			thread.start();
 			offset += length;
@@ -49,8 +58,9 @@ public class WikiDataUnpacker {
 			int offset = 0;
 			for (int i = 0; i < 3; i++) {
 				final InputStream inputStream = zipFile.getInputStream(zipEntry);
-				System.out.println("Input stream : " + inputStream.getClass());
-				Thread thread = new Thread(new WikiDataUnpackerWorker(inputStream, offset, length));
+				LOGGER.info("Input stream : " + inputStream.getClass());
+				Thread thread = new Thread(new WikiDataUnpackerWorker(inputStream, offset, length, FileUtilities.getFile("/tmp",
+						Boolean.TRUE)));
 				thread.start();
 				threads.add(thread);
 				offset += length;

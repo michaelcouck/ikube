@@ -57,11 +57,8 @@ public class SearchSpatial extends SearchMulti {
 		DistanceFieldComparatorSource fieldComparator = new DistanceFieldComparatorSource(queryBuilder.getDistanceFilter());
 		// Create a distance sort
 		Sort sort = new Sort(new SortField("geo_distance", fieldComparator));
-		TopDocs topDocs = searcher.search(query, queryBuilder.getFilter(), maxResults, sort);
+		TopDocs topDocs = searcher.search(query, queryBuilder.getFilter(), firstResult + maxResults, sort);
 		distances = queryBuilder.getDistanceFilter().getDistances();
-		if (logger.isDebugEnabled()) {
-			logger.debug("Distances : " + distances);
-		}
 		return topDocs;
 	}
 
@@ -73,6 +70,7 @@ public class SearchSpatial extends SearchMulti {
 			logger.warn("No searcher on any index, is an index created?");
 		}
 		long totalHits = 0;
+		long scoreHits = 0;
 		ArrayList<HashMap<String, String>> results = null;
 		long start = System.currentTimeMillis();
 		Exception exception = null;
@@ -80,19 +78,23 @@ public class SearchSpatial extends SearchMulti {
 			Query query = getQuery();
 			TopDocs topDocs = search(query);
 			totalHits = topDocs.totalHits;
+			scoreHits = topDocs.scoreDocs.length;
 			results = getResults(topDocs, query);
-			for (int i = 0; i < maxResults && i < topDocs.totalHits && i < topDocs.scoreDocs.length; i++) {
+			for (int i = 0, j = 0; i < totalHits && i < scoreHits; i++) {
+				if (i < firstResult) {
+					continue;
+				}
 				final int docID = topDocs.scoreDocs[i].doc;
 				double distanceFromOrigin = distances.get(docID);
-				Map<String, String> result = results.get(i);
+				Map<String, String> result = results.get(j++);
 				result.put(IConstants.DISTANCE, Double.toString(distanceFromOrigin));
 			}
 		} catch (Exception e) {
 			exception = e;
 			logger.error("Exception searching for string " + searchStrings[0] + " in searcher " + searcher, e);
-			if (results == null) {
-				results = new ArrayList<HashMap<String, String>>();
-			}
+		}
+		if (results == null) {
+			results = new ArrayList<HashMap<String, String>>();
 		}
 		long duration = System.currentTimeMillis() - start;
 		// Add the search results size as a last result

@@ -82,12 +82,6 @@
 		<authentication-provider user-service-ref="userService"  />
 	</authentication-manager>
 	
-	<user-service id="userService">
-	    <user name="user" password="user" authorities="ROLE_USER" />
-	    <user name="guest" password="guest" authorities="ROLE_USER" />
-	    <user name="administrator" password="administrator" authorities="ROLE_USER,ROLE_ADMIN" />
-  	</user-service>
-  	
   	<!-- This bean enables the authorization. -->
 	<beans:bean 
 		id="defaultWebSecurityExpressionHandler"

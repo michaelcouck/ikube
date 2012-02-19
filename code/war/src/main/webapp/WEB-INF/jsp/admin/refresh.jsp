@@ -9,7 +9,7 @@
 	<c:set var="refreshinterval" scope="session" value="${param.refreshinterval}" />
 </c:if>
 <c:if test="${empty sessionScope.refreshinterval}">
-	<c:set var="refreshinterval" scope="session" value="3" />
+	<c:set var="refreshinterval" scope="session" value="60" />
 </c:if>
 <c:if test="${sessionScope.refreshinterval <= 1 }">
 	<c:set var="refreshinterval" scope="session" value="1" />

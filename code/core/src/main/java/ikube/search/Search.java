@@ -185,9 +185,9 @@ public abstract class Search {
 			exception = e;
 			String searchString = searchStrings != null && searchStrings.length > 0 ? searchStrings[0] : "null";
 			logger.error("Exception searching for string " + searchString + " in searcher " + searcher, e);
-			if (results == null) {
-				results = new ArrayList<HashMap<String, String>>();
-			}
+		}
+		if (results == null) {
+			results = new ArrayList<HashMap<String, String>>();
 		}
 		long duration = System.currentTimeMillis() - start;
 		// Add the search results size as a last result
@@ -285,9 +285,9 @@ public abstract class Search {
 						if (fragment == null || "".equals(fragment.trim())) {
 							continue;
 						}
-						fragments++;
 						builder.append(fragment);
 						builder.append(' ');
+						fragments++;
 						if (fragments >= IConstants.MAX_FRAGMENTS) {
 							break;
 						}

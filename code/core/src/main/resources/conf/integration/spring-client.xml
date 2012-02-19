@@ -22,7 +22,7 @@
 		id="indexContext"
 		class="ikube.model.IndexContext"
 		property:name="indexContext"
-		property:maxAge="600"
+		property:maxAge="6000"
 		property:compoundFile="${compound.file}"
 		property:bufferedDocs="${buffered.docs}"
 		property:bufferSize="${buffer.size}"
@@ -38,9 +38,8 @@
 	<util:list id="indexables">
 		<ref local="mail" />
 		<ref local="hazelcast" />
-		<!-- <ref local="internetMillion" /> -->
-		<!-- <ref local="wikidata" /> -->
-		<!-- <ref local="filesystemMillion" /> -->
+		<ref local="internetMillion" />
+		<ref local="filesystemMillion" />
 		<ref bean="faqTableH2" />
 		<ref bean="attachmentTableH2" />
 		<ref bean="faqTableDb2" />
@@ -428,7 +427,7 @@
 		property:port="995"
 		property:protocol="pop3"
 		property:secureSocketLayer="true"
-		property:password="caherline"
+		property:password="Caherl2ne"
 		property:username="ikube.ikube@gmail.com" 
 		property:idField="identifier"
 		property:contentField="email"
@@ -463,21 +462,6 @@
 		property:excludedPattern="${internet.excluded.pattern}" />
 	
 	<bean
-		id="wikidata"
-		class="ikube.model.IndexableFileSystem"
-		property:name="wikidata"
-		property:path="C:/wiki.data"
-		property:pathFieldName="path"
-		property:nameFieldName="name"
-		property:lengthFieldName="length"
-		property:contentFieldName="contents"
-		property:unpackZips="false"
-		property:excludedPattern="${files.excluded.pattern}"
-		property:lastModifiedFieldName="lastmodified"
-		property:batchSize="${file.batch.size}"
-		property:maxReadLength="${file.max.read.length}" />
-	
-	<bean
 		id="filesystemMillion"
 		class="ikube.model.IndexableFileSystem"
 		property:name="filesMillionOne"
@@ -491,4 +475,5 @@
 		property:lastModifiedFieldName="lastmodified" 
 		property:batchSize="${file.batch.size}" 
 		property:maxReadLength="${file.max.read.length}" />
+
 </beans>

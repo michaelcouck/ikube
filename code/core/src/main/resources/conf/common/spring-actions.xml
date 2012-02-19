@@ -35,7 +35,7 @@
 		<ref bean="ikube.action.Restore" />
 		<ref bean="ikube.action.Index"  />
 		<ref bean="ikube.action.Open"  />
-		<ref bean="ikube.action.Enrichment" />
+		<!-- <ref bean="ikube.action.Enrichment" /> -->
 		<ref bean="ikube.action.Delete" />
 		<ref bean="ikube.action.Clean" />
 		<ref bean="ikube.action.Backup" />
@@ -45,16 +45,16 @@
 		<ref bean="ikube.action.Prune" />
 	</util:list>
 
+	<!-- !IsThisServerWorking &#38;&#38; -->
 	<bean 
 		id="ikube.action.Reset" 
 		class="ikube.action.Reset" 
 		property:ruleExpression="
-			!IsThisServerWorking &#38;&#38;
 			!AnyServersWorkingThisIndex">
 		<property name="rules">
 			<util:list>
 				<!-- <ref local="ikube.action.rule.ChainedRule" /> -->
-				<ref local="ikube.action.rule.IsThisServerWorking" />
+				<!-- <ref local="ikube.action.rule.IsThisServerWorking" /> -->
 				<ref local="ikube.action.rule.AnyServersWorkingThisIndex" />
 			</util:list>
 		</property>

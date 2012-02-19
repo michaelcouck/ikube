@@ -143,6 +143,25 @@ public class SearcherIntegration extends Integration {
 		assertTrue("We should get something : " + result, actual.length() > 0);
 	}
 
+	@Test
+	public void adHoc() throws Exception {
+		String path = IConstants.SEP + IConstants.IKUBE + Searcher.SERVICE + Searcher.SEARCH + Searcher.MULTI_ALL;
+		String url = new URL("http", LOCALHOST, SERVER_PORT, path).toString();
+		LOGGER.info("Looking for url : " + url);
+
+		String[] names = { IConstants.INDEX_NAME, IConstants.SEARCH_STRINGS, IConstants.FRAGMENT, IConstants.FIRST_RESULT,
+				IConstants.MAX_RESULTS };
+		String[] values = { "wikiContext", "Небесные создания", Boolean.TRUE.toString(), "0", "10" };
+		NameValuePair[] params = getNameValuePairs(names, values);
+
+		GetMethod getMethod = new GetMethod(url);
+		getMethod.setQueryString(params);
+		int result = HTTP_CLIENT.executeMethod(getMethod);
+		String actual = getMethod.getResponseBodyAsString();
+		LOGGER.info("Result : " + actual);
+		assertTrue("We should get something : " + result, actual.length() > 0);
+	}
+
 	private NameValuePair[] getNameValuePairs(String[] names, String[] values) {
 		List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
 		for (int i = 0; i < names.length && i < values.length; i++) {

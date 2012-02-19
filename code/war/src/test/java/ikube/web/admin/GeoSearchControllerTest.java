@@ -81,7 +81,7 @@ public class GeoSearchControllerTest {
 
 		ModelAndView modelAndView = new ModelAndView();
 		modelAndView = geoSearchController.search("geospatial", "searchStrings", latitudeDouble, longitudeDouble, distanceInt,
-				firstResultInt, maxResultsInt, modelAndView);
+				firstResultInt, maxResultsInt, "", modelAndView);
 		Object total = modelAndView.getModel().get(IConstants.TOTAL);
 		Object duration = modelAndView.getModel().get(IConstants.DURATION);
 		results = (ArrayList<HashMap<String, String>>) modelAndView.getModel().get(IConstants.RESULTS);

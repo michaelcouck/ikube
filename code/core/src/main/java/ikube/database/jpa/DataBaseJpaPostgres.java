@@ -1,6 +1,10 @@
 package ikube.database.jpa;
 
+import ikube.IConstants;
+
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceContextType;
 
 /**
  * @author Michael Couck
@@ -9,7 +13,7 @@ import javax.persistence.EntityManager;
  */
 public class DataBaseJpaPostgres extends ADataBaseJpa {
 
-	// @PersistenceContext(type = PersistenceContextType.TRANSACTION, unitName = IConstants.PERSISTENCE_UNIT_POSTGRES)
+	@PersistenceContext(type = PersistenceContextType.TRANSACTION, unitName = IConstants.PERSISTENCE_UNIT_POSTGRES)
 	protected EntityManager entityManager;
 
 	@Override

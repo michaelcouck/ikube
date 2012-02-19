@@ -12,7 +12,8 @@ import java.util.concurrent.TimeUnit;
 import org.apache.log4j.Logger;
 
 /**
- * This class just has a method that will wait for a list of threads to finish.
+ * This class just has a method that will wait for a list of threads to finish and an executer service that will execute 'threads' and
+ * return futures that can be waited for by the callers.
  * 
  * @author Michael Couck
  * @since 12.02.2011
@@ -22,6 +23,7 @@ public final class ThreadUtilities {
 
 	private static final Logger LOGGER = Logger.getLogger(ThreadUtilities.class);
 
+	/** Executes the 'threads' and returns a future. */
 	private static ExecutorService EXECUTER_SERVICE;
 
 	/**
@@ -32,7 +34,7 @@ public final class ThreadUtilities {
 	 */
 	public static Future<?> submit(Runnable runnable) {
 		if (EXECUTER_SERVICE.isShutdown()) {
-			LOGGER.warn("Executer service already shutdown : " + runnable);
+			LOGGER.debug("Executer service already shutdown : " + runnable);
 			return null;
 		}
 		return EXECUTER_SERVICE.submit(runnable);
@@ -73,13 +75,16 @@ public final class ThreadUtilities {
 	}
 
 	/**
+	 * This method will wait for the future to finish doing it's work. In the event the future is interrupted, for example by the executer
+	 * service closing down and interrupting all it's threads, it will return immediately. If the future takes too long and passes the
+	 * maximum wait time, then the method will return immediately.
 	 * 
-	 * @param future
-	 * @param maxWait
+	 * @param future the future to wait for
+	 * @param maxWait the maximum amount of time to wait
 	 */
 	public static void waitForFuture(Future<?> future, long maxWait) {
 		if (future == null) {
-			LOGGER.warn("Future null returning : ");
+			LOGGER.debug("Future null returning : ");
 			return;
 		}
 		long start = System.currentTimeMillis();

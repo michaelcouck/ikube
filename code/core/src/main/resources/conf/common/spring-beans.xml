@@ -47,7 +47,7 @@
 		id="defaultPersistenceUnitManager"
 		class="org.springframework.orm.jpa.persistenceunit.DefaultPersistenceUnitManager"
 		property:persistenceXmlLocations-ref="persistenceXmlLocations"
-		property:defaultDataSource-ref="nonXaDataSourceH2" />
+		property:defaultDataSource-ref="${ikube.dataSource}" />
 	<util:list id="persistenceXmlLocations">
 		<value>classpath*:META-INF/persistence/persistence.xml</value>
 	</util:list>
@@ -229,7 +229,7 @@
 		property:auth="true"
 		property:protocol="pop3"
 		property:user="ikube.ikube"
-		property:password="caherline"
+		property:password="Caherl2ne"
 		property:mailHost="smtp.gmail.com"
 		property:sender="ikube.ikube@gmail.com"
 		property:recipients="ikube.ikube@gmail.com" />

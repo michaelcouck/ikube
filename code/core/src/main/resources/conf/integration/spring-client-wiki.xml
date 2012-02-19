@@ -15,15 +15,11 @@
             http://www.springframework.org/schema/util
             http://www.springframework.org/schema/util/spring-util.xsd">
 
-	<!-- 
-		This configuration is to index the local file system. Please feel free to delete this 
-		index context from the configuration if not needed.
-	-->
 	<bean
-		id="localFileSystemContext"
+		id="wikiContext"
 		class="ikube.model.IndexContext"
-		property:name="localFileSystemContext"
-		property:maxAge="6000"
+		property:name="wikiContext"
+		property:maxAge="60000"
 		property:compoundFile="${compound.file}"
 		property:bufferedDocs="${buffered.docs}"
 		property:bufferSize="${buffer.size}"
@@ -35,20 +31,16 @@
 		property:throttle="${throttle}"
 		property:indexDirectoryPath="${index.directory.path}"
 		property:indexDirectoryPathBackup="${index.directory.path.backup}"
-		property:children-ref="localFileSystemIndexables" />
-	<util:list id="localFileSystemIndexables">
-		<ref local="localFileSystemIndexable" />
+		property:children-ref="wikiIndexables" />
+	<util:list id="wikiIndexables">
+		<ref local="wikidata" />
 	</util:list>
 	
-	<!-- 
-		Note that the path to the files is a slash, on Linux this is the root and on Windows this will be the
-		root of the drive that the application is started on, so it would be C:/ if the Tomcat is on the C drive.  
-	-->
 	<bean
-		id="localFileSystemIndexable"
+		id="wikidata"
 		class="ikube.model.IndexableFileSystem"
-		property:name="localFileSystemIndexable"
-		property:path="/tmp"
+		property:name="wikidata"
+		property:path="/usr/local/wiki/data/1048576"
 		property:pathFieldName="path"
 		property:nameFieldName="name"
 		property:lengthFieldName="length"

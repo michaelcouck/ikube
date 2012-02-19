@@ -27,7 +27,8 @@ public class GeoSearchController extends SearchBaseController {
 			@RequestParam(required = false, value = "longitude") Double longitude,
 			@RequestParam(required = false, value = "distance") Integer distance,
 			@RequestParam(required = false, value = "firstResult") Integer firstResult,
-			@RequestParam(required = false, value = "maxResults") Integer maxResults, ModelAndView model) throws Exception {
+			@RequestParam(required = false, value = "maxResults") Integer maxResults,
+			@RequestParam(required = false, value = "targetSearchUrl") String targetSearchUrl, ModelAndView model) throws Exception {
 
 		Server server = clusterManager.getServer();
 		model.setViewName("/admin/geosearch");
@@ -53,7 +54,7 @@ public class GeoSearchController extends SearchBaseController {
 		}
 
 		model.addObject(IConstants.SEARCH_STRINGS, searchStrings);
-		// model.addObject(IConstants.TARGET_SEARCH_URL, targetSearchUrl);
+		model.addObject(IConstants.TARGET_SEARCH_URL, targetSearchUrl);
 
 		model.addObject(IConstants.FIRST_RESULT, firstResult);
 		model.addObject(IConstants.MAX_RESULTS, maxResults);

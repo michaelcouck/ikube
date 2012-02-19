@@ -56,6 +56,7 @@ class IndexableFilesystemHandlerWorker implements Runnable {
 
 	public void run() {
 		try {
+			// Hello world
 			List<File> files = getBatch(indexableFileSystem, directories);
 			if (files != null) {
 				do {
@@ -134,6 +135,7 @@ class IndexableFilesystemHandlerWorker implements Runnable {
 			throw e;
 		} catch (Exception e) {
 			logger.error("Exception occured while trying to index the file " + file.getAbsolutePath(), e);
+			// TODO Add a maximum exceptions before exiting this indexable
 		} finally {
 			FileUtilities.close(inputStream);
 			FileUtilities.close(byteInputStream);
@@ -189,10 +191,8 @@ class IndexableFilesystemHandlerWorker implements Runnable {
 					if (results.isEmpty()) {
 						return getBatch(indexableFileSystem, directories);
 					}
-					if (logger.isDebugEnabled()) {
-						logger.debug("Directories : " + directories.size());
-						logger.debug("Doing files : " + results.size());
-					}
+					logger.info("Directories : " + directories.size());
+					logger.info("Doing files : " + results.size());
 					return results;
 				}
 			}

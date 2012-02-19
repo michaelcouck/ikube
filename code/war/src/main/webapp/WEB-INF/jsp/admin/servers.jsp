@@ -82,12 +82,12 @@
 
 <table class="table-content" width="100%">
 	<tr>
-		<td class="top-content" colspan="5" valign="middle">
+		<td class="top-content" colspan="4" valign="middle">
 			<span class="top-content-header">Servers</span>
 		</td>
 	</tr>
 	<tr>
-		<th class="td-content" colspan="4" width="25%">Server</th>
+		<th class="td-content" colspan="3" width="25%">Server</th>
 		<th class="td-content" width="75%">Actions</th>
 	</tr>
 	<c:forEach var="server" items="${requestScope.servers}">
@@ -106,13 +106,6 @@
 				href="<c:url value="/admin/terminate.html?targetView=/admin/servers.html&command=startup" />" 
 				title="${message}">
 				<img alt="${message}" src="<c:url value="/images/icons/relaunch.gif" />" title="${message}">
-			</a>
-		</td>
-		<td width="1%">
-			<c:set var="message" value="Searcher web service" />
-			<a 
-				href="<c:url value="${server.searchWebServiceUrl}" />" 
-				title="${message}"><img alt="${message}" src="<c:url value="/images/icons/search_again.gif" />" title="${message}">
 			</a>
 		</td>
 		<td class="td-content" nowrap="nowrap">

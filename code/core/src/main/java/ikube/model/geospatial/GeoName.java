@@ -23,6 +23,8 @@ import org.apache.commons.lang.builder.ToStringStyle;
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @NamedQueries(value = {
 		@NamedQuery(name = GeoName.SELECT_FROM_GEONAME_COUNT, query = GeoName.SELECT_FROM_GEONAME_COUNT),
+		@NamedQuery(name = GeoName.SELECT_FROM_GEONAME_BY_NAME, query = GeoName.SELECT_FROM_GEONAME_BY_NAME),
+		@NamedQuery(name = GeoName.SELECT_FROM_GEONAME_BY_GEONAMEID, query = GeoName.SELECT_FROM_GEONAME_BY_GEONAMEID),
 		@NamedQuery(name = GeoName.SELECT_FROM_GEONAME_BY_CITY_AND_COUNTRY_NULL, query = GeoName.SELECT_FROM_GEONAME_BY_CITY_AND_COUNTRY_NULL),
 		@NamedQuery(name = GeoName.SELECT_FROM_GEONAME_BY_ID_GREATER_AND_SMALLER, query = GeoName.SELECT_FROM_GEONAME_BY_ID_GREATER_AND_SMALLER),
 		@NamedQuery(name = GeoName.SELECT_FROM_GEONAME_BY_FEATURECLASS_FEATURECODE_COUNTRYCODE, query = GeoName.SELECT_FROM_GEONAME_BY_FEATURECLASS_FEATURECODE_COUNTRYCODE) })
@@ -45,6 +47,8 @@ public class GeoName extends Persistable {
 			"g.city is null and " + //
 			"g.country is null " + //
 			"order by g.id";
+	public static final String SELECT_FROM_GEONAME_BY_NAME = "select g from GeoName as g where g.name = :name";
+	public static final String SELECT_FROM_GEONAME_BY_GEONAMEID = "select g from GeoName as g where g.geonameid = :geonameid";
 
 	public static final String GEONAME_NAME = "geoname_name";
 	public static final String GEONAME_ASCIINAME = "geoname_asciiname";
@@ -54,7 +58,7 @@ public class GeoName extends Persistable {
 	public static final String[] CREATE_INDEX = { //
 	"create index geoname_name on geoname (name)", //
 			"create index geoname_asciiname on geoname (asciiname)", //
-			"create index geoname_city Oon geoname (city)",//
+			"create index geoname_city on geoname (city)",//
 			"create index geoname_country on geoname (country)"//
 	};
 

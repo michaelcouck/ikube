@@ -66,7 +66,7 @@
 		</properties>
 	</persistence-unit>
 	
-<!-- 	<persistence-unit name="IkubePersistenceUnitDb2" transaction-type="RESOURCE_LOCAL">
+ 	<persistence-unit name="IkubePersistenceUnitDb2" transaction-type="RESOURCE_LOCAL">
 		<provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
 		<class>ikube.model.Persistable</class>
 		
@@ -106,9 +106,9 @@
 		<exclude-unlisted-classes>false</exclude-unlisted-classes>
 		
 		<properties>
-			<property name="openjpa.Connection2UserName" value="db2admin" />
-			<property name="openjpa.Connection2Password" value="db2admin" />
-			<property name="openjpa.Connection2URL" value="jdbc:db2://ikube:50000/ikube_3" />
+			<property name="openjpa.Connection2UserName" value="ubuntu" />
+			<property name="openjpa.Connection2Password" value="Caherl1ne" />
+			<property name="openjpa.Connection2URL" value="jdbc:db2://ikube.dyndns.org:50000/ikube" />
 			<property name="openjpa.Connection2DriverName" value="com.ibm.db2.jcc.DB2Driver" />
 			<property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
 		</properties>
@@ -154,9 +154,9 @@
 		<exclude-unlisted-classes>false</exclude-unlisted-classes>
 		
 		<properties>
-			<property name="openjpa.Connection2UserName" value="XE" />
-			<property name="openjpa.Connection2Password" value="admin" />
-			<property name="openjpa.Connection2URL" value="jdbc:oracle:thin:@//ikube:1521/XE" />
+			<property name="openjpa.Connection2UserName" value="ikube" />
+			<property name="openjpa.Connection2Password" value="Caherl1ne" />
+			<property name="openjpa.Connection2URL" value="jdbc:oracle:thin:@//ikube.dyndns.org:1521/ikube" />
 			<property name="openjpa.Connection2DriverName" value="oracle.jdbc.driver.OracleDriver" />
 			<property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
 		</properties>
@@ -201,12 +201,12 @@
 		
 		<exclude-unlisted-classes>false</exclude-unlisted-classes>
 		<properties>
-			<property name="openjpa.Connection2UserName" value="ikube" />
-			<property name="openjpa.Connection2Password" value="ikube" />
-			<property name="openjpa.Connection2URL" value="jdbc:postgresql://localhost:5432/ikube" />
+			<property name="openjpa.Connection2UserName" value="ubuntu" />
+			<property name="openjpa.Connection2Password" value="Caherl1ne" />
+			<property name="openjpa.Connection2URL" value="jdbc:postgresql://ikube.dyndns.org:5432/ikube" />
 			<property name="openjpa.Connection2DriverName" value="org.postgresql.Driver" />
 			<property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
 		</properties>
-	</persistence-unit> -->
+	</persistence-unit>
 	
 </persistence>
