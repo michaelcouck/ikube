@@ -17,7 +17,7 @@ public class IndexableFileSystem extends Indexable<IndexableFileSystem> {
 	private String path;
 	private String excludedPattern;
 	private String includedPattern;
-	private long maxReadLength = 10000000;
+	private long maxReadLength = 1000000;
 
 	@Field()
 	private String nameFieldName;

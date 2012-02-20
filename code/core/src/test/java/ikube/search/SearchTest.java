@@ -29,7 +29,6 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -169,18 +168,17 @@ public class SearchTest extends ATest {
 	}
 
 	@Test
-	@Ignore
 	public void adHoc() throws Exception {
-		String indexDirectoryName = "127.0.0.1";
-		File indexDirectory = FileUtilities.findFileRecursively(new File("."), indexDirectoryName);
+		File indexDirectory = new File("C:/cluster/indexes/localFileSystemContext/1329391054706/10.100.109.138.61616");
 		Directory directory = FSDirectory.open(indexDirectory);
 		IndexReader indexReader = IndexReader.open(directory);
 		for (int i = 0; i < indexReader.numDocs(); i++) {
 			Document document = indexReader.document(i);
-			logger.error(document.toString());
+			logger.error("Document : " + i);
 			List<Fieldable> fields = document.getFields();
 			for (Fieldable fieldable : fields) {
-				logger.error(fieldable.toString());
+				int length = fieldable.stringValue() != null ? fieldable.stringValue().length() : 0;
+				logger.error("        : " + fieldable.name() + ", " + length);
 			}
 		}
 	}

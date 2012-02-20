@@ -23,6 +23,7 @@ import org.apache.log4j.Logger;
  * @since 27.03.11
  * @version 01.00
  */
+@SuppressWarnings("serial")
 public class PropertyConfigurer extends Properties {
 
 	private static final Logger LOGGER = Logger.getLogger(PropertyConfigurer.class);
@@ -78,6 +79,7 @@ public class PropertyConfigurer extends Properties {
 				LOGGER.error("Exception reading jar file : " + jarFile, e);
 			}
 		}
+		LOGGER.info("Properties : " + this.defaults);
 	}
 
 	/**

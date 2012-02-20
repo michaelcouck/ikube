@@ -19,6 +19,7 @@
 		<link href="<c:url value="/style/style-white.css"/>" rel="stylesheet" type="text/css" media="screen" />
 		<script type="text/javascript" src="<c:url value="/js/ikube.js" />"></script>
 		<script src="http://www.google-analytics.com/ga.js" type="text/javascript"></script>
+		<script src="http://maps.google.com/maps/api/js?sensor=false" type="text/javascript"></script>
 	</head>
 
 	<body onload="JavaScript:timedRefresh(10000);">

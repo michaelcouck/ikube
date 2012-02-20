@@ -17,6 +17,8 @@ import java.net.InetAddress;
 import java.util.List;
 import java.util.concurrent.Future;
 
+import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Fieldable;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
@@ -47,6 +49,7 @@ public class IndexableFilesystemHandlerIntegration extends AbstractIntegration {
 			IndexManager.openIndexWriter(dropboxIndexContext, System.currentTimeMillis(), ip);
 			List<Future<?>> threads = indexableFilesystemHandler.handle(dropboxIndexContext, dropboxIndexable);
 			ThreadUtilities.waitForFutures(threads, Integer.MAX_VALUE);
+			IndexManager.closeIndexWriter(dropboxIndexContext);
 			File dropboxIndexFolder = FileUtilities.findFileRecursively(new File(dropboxIndexContext.getIndexDirectoryPath()),
 					"dropboxIndex");
 			logger.info("Dropbox folder : " + dropboxIndexFolder.getAbsolutePath());
@@ -57,11 +60,33 @@ public class IndexableFilesystemHandlerIntegration extends AbstractIntegration {
 			directory = FSDirectory.open(indexDirectory);
 			boolean indexExists = IndexReader.indexExists(directory);
 			assertTrue("The index should be created : ", indexExists);
+			// Verify that there are some documents in the index
+			IndexReader indexReader = IndexReader.open(directory);
+			printIndex(indexReader);
 		} finally {
 			if (directory != null) {
 				directory.close();
 			}
 		}
+	}
+	
+	private static void printIndex(final IndexReader indexReader) throws Exception {
+		for (int i = 0; i < indexReader.numDocs(); i++) {
+			Document document = indexReader.document(i);
+			System.out.println("Document : " + i);
+			List<Fieldable> fields = document.getFields();
+			for (Fieldable fieldable : fields) {
+				String fieldName = fieldable.name();
+				String fieldValue = fieldable.stringValue();
+				int fieldLength = fieldValue != null ? fieldValue.length() : 0;
+				System.out.println("        : " + fieldName + ", " + fieldLength);
+			}
+		}
+	}
+	
+	public static void main(String[] args) throws Exception {
+		IndexReader indexReader = IndexReader.open(FSDirectory.open(new File("./dropBoxIndex/dropboxIndex/1329386771703/10.100.109.138")));
+		printIndex(indexReader); 
 	}
 
 }
