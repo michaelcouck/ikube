@@ -21,14 +21,14 @@ import org.springframework.web.servlet.ModelAndView;
 public class GeoSearchController extends SearchBaseController {
 
 	@RequestMapping(value = "/admin/geosearch.html", method = { RequestMethod.GET, RequestMethod.POST })
-	public ModelAndView search(@RequestParam(required = false, value = "indexName") String indexName,
-			@RequestParam(required = false, value = "searchStrings") String searchStrings,
-			@RequestParam(required = false, value = "latitude") Double latitude,
-			@RequestParam(required = false, value = "longitude") Double longitude,
-			@RequestParam(required = false, value = "distance") Integer distance,
-			@RequestParam(required = false, value = "firstResult") Integer firstResult,
-			@RequestParam(required = false, value = "maxResults") Integer maxResults,
-			@RequestParam(required = false, value = "targetSearchUrl") String targetSearchUrl, ModelAndView model) throws Exception {
+	public ModelAndView search(@RequestParam(required = true, value = "indexName") String indexName,
+			@RequestParam(required = true, value = "searchStrings") String searchStrings,
+			@RequestParam(required = true, value = "latitude") Double latitude,
+			@RequestParam(required = true, value = "longitude") Double longitude,
+			@RequestParam(required = true, value = "distance") Integer distance,
+			@RequestParam(required = true, value = "firstResult") Integer firstResult,
+			@RequestParam(required = true, value = "maxResults") Integer maxResults,
+			@RequestParam(required = true, value = "targetSearchUrl") String targetSearchUrl, ModelAndView model) throws Exception {
 
 		Server server = clusterManager.getServer();
 		model.setViewName("/admin/geosearch");

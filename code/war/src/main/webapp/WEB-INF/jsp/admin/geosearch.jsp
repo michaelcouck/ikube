@@ -12,36 +12,36 @@
 </table>
 
 <c:choose>
-	<c:when test="${empty total || total == 1}">
+	<c:when test="${empty total || total == 0}">
 		<script type="text/javascript">
   			function initialize() {
-    			var myOptions = {
+    			var options = {
       				center: new google.maps.LatLng(-34.397, 150.644),
       				zoom: 8,
       				mapTypeId: google.maps.MapTypeId.ROADMAP
     			};
-    			var map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
+    			var map = new google.maps.Map(document.getElementById("map_canvas"), options);
   			}
 		</script>
 	</c:when>
 	<c:otherwise>
 		<script type="text/javascript">
   			function initialize() {
-    			var myOptions = {
+    			var options = {
       				center: new google.maps.LatLng(${results[0]['latitude']}, ${results[0]['longitude']}),
-      				zoom: 8,
+      				zoom: 13,
       				mapTypeId: google.maps.MapTypeId.ROADMAP
     			};
-    			var resultsMap = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
+    			var marker;
+    			var coordinate;
+    			var map = new google.maps.Map(document.getElementById("map_canvas"), options);
     			<c:forEach var="result" items="${results}">
-	 				<c:out value="${result['latitude']}" />
-	 				var point = new google.maps.LatLng(parseFloat(${result['latitude']}),parseFloat(${result['longitude']}));
-	 				resultsMap.bounds.extend(point);
-	 				var marker = new google.maps.Marker({
-	 			        position: point,
-	 			        map: resultsMap.map
+    			   coordinate = new google.maps.LatLng(parseFloat(${result['latitude']}),parseFloat(${result['longitude']}));
+	 				marker = new google.maps.Marker({
+	 			        position: coordinate,
+	 			        map : map,
+	 			        title : "<c:out value="${result['name']}" />"
 	 			    });
-	 				resultsMap.map.fitBounds(resultsMap.bounds);
     			</c:forEach>
   			}
 		</script>
@@ -105,6 +105,7 @@
 			</table>
 		</td>
 		<td>
+			
 			<div id="map_canvas" style="width:300px; height:300px; border: solid black 1px;"></div>
 		</td>
 	</tr>
