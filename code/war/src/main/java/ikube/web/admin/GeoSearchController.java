@@ -37,7 +37,9 @@ public class GeoSearchController extends SearchBaseController {
 		model.addObject(IConstants.LATITUDE, latitude);
 		model.addObject(IConstants.DISTANCE, distance);
 
-		if (indexName != null) {
+		// TODO This should go in a validation framework
+		if (indexName != null && searchStrings != null && latitude != null && longitude != null && distance != null && firstResult != null
+				&& maxResults != null) {
 			ArrayList<HashMap<String, String>> results = searcherWebService.searchMultiSpacialAll(indexName,
 					new String[] { searchStrings }, Boolean.TRUE, firstResult, maxResults, distance, latitude, longitude);
 

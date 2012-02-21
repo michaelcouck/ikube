@@ -27,20 +27,25 @@
 	<c:otherwise>
 		<script type="text/javascript">
   			function initialize() {
-    			var options = {
-      				center: new google.maps.LatLng(${results[0]['latitude']}, ${results[0]['longitude']}),
+  				var options = {
+      				center: new google.maps.LatLng(parseFloat(${latitude}), parseFloat(${longitude})),
       				zoom: 13,
       				mapTypeId: google.maps.MapTypeId.ROADMAP
     			};
-    			var marker;
-    			var coordinate;
     			var map = new google.maps.Map(document.getElementById("map_canvas"), options);
+    			var coordinate = new google.maps.LatLng(parseFloat(${latitude}), parseFloat(${longitude}));
+    			var marker = new google.maps.Marker({
+ 			        position: coordinate,
+ 			        map : map,
+ 			        title : "Coordinate [<c:out value="${latitude}" />, <c:out value="${longitude}" />]",
+ 			        icon: "<c:url value="/images/icons/center_pin.png" />"
+ 			    });
     			<c:forEach var="result" items="${results}">
     			   coordinate = new google.maps.LatLng(parseFloat(${result['latitude']}),parseFloat(${result['longitude']}));
 	 				marker = new google.maps.Marker({
 	 			        position: coordinate,
 	 			        map : map,
-	 			        title : "<c:out value="${result['name']}" />"
+	 			        title : "<c:out value="${result['name']}" />, distance : <c:out value="${result['distance']}" />"
 	 			    });
     			</c:forEach>
   			}
