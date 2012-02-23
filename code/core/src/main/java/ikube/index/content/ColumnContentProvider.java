@@ -79,11 +79,11 @@ public class ColumnContentProvider implements IContentProvider<IndexableColumn> 
 				// so we have to guess the method to call to get a representation of the object, so we will just look
 				// for a
 				// method that returns a Timestamp from the class without any parameters and hope for the best
-				Method method = findMethod(object, Timestamp.class);
 				Timestamp timestamp = null;
 				if (Timestamp.class.isAssignableFrom(object.getClass())) {
 					timestamp = (Timestamp) object;
 				} else {
+					Method method = findMethod(object, Timestamp.class);
 					if (method != null) {
 						method.setAccessible(true);
 						timestamp = (Timestamp) method.invoke(object, (Object[]) null);
@@ -126,7 +126,7 @@ public class ColumnContentProvider implements IContentProvider<IndexableColumn> 
 				if (Blob.class.isAssignableFrom(object.getClass())) {
 					inputStream = ((Blob) object).getBinaryStream();
 				} else {
-					method = findMethod(object, InputStream.class);
+					Method method = findMethod(object, InputStream.class);
 					if (method != null) {
 						method.setAccessible(true);
 						// Get the input stream and read the data from the column
@@ -143,7 +143,7 @@ public class ColumnContentProvider implements IContentProvider<IndexableColumn> 
 				if (Clob.class.isAssignableFrom(object.getClass())) {
 					reader = ((Clob) object).getCharacterStream();
 				} else {
-					method = findMethod(object, Reader.class);
+					Method method = findMethod(object, Reader.class);
 					if (method != null) {
 						method.setAccessible(true);
 						// Get the input stream and read the data from the column

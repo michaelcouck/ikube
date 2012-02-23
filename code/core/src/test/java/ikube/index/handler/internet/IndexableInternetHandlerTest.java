@@ -1,7 +1,11 @@
 package ikube.index.handler.internet;
 
+import static org.junit.Assert.*;
+
 import ikube.ATest;
+
 import ikube.model.IndexableInternet;
+import ikube.model.Url;
 import ikube.toolkit.FileUtilities;
 
 import java.io.InputStream;
@@ -26,6 +30,18 @@ public class IndexableInternetHandlerTest extends ATest {
 	public void before() {
 		indexableInternet = Mockito.mock(IndexableInternet.class);
 		indexableInternetHandler = new IndexableInternetHandler();
+	}
+	
+	@Test
+	public void addDocument() {
+		Url url = new Url();
+		String title = "The title";
+		String content = "<html><head><title>" + title + "</title></head></html>";
+		url.setContentType("text/html");
+		url.setRawContent(content.getBytes());
+		indexableInternetHandler.addDocument(indexContext, indexableInternet, url, content);
+		assertNotNull(url.getTitle());
+		assertEquals(title, url.getTitle());
 	}
 
 	@Test

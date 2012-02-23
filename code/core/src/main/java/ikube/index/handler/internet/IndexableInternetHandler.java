@@ -383,13 +383,14 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 			IndexManager.addStringField(indexable.getIdFieldName(), url.getUrl(), document, Store.YES, Index.ANALYZED, TermVector.YES);
 			// Add the title field
 			MimeType mimeType = MimeTypes.getMimeType(url.getContentType(), url.getRawContent());
-			if (mimeType != null && mimeType.getPrimaryType().toLowerCase().contains(HTMLElementName.HTML.toLowerCase())) {
+			if (mimeType != null && mimeType.getSubType().toLowerCase().contains(HTMLElementName.HTML.toLowerCase())) {
 				InputStream inputStream = new ByteArrayInputStream(url.getRawContent());
 				Reader reader = new InputStreamReader(inputStream, IConstants.ENCODING);
 				Source source = new Source(reader);
 				Element titleElement = source.getNextElement(0, HTMLElementName.TITLE);
 				if (titleElement != null) {
 					String title = titleElement.getContent().toString();
+					url.setTitle(title);
 					IndexManager.addStringField(indexable.getTitleFieldName(), title, document, store, analyzed, termVector);
 				}
 			} else {
