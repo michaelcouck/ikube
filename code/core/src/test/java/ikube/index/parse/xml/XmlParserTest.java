@@ -31,9 +31,11 @@ public class XmlParserTest extends ATest {
 		byte[] bytes = FileUtilities.getContents(file, Integer.MAX_VALUE).toByteArray();
 		IParser parser = ParserProvider.getParser("text/xml", bytes);
 		OutputStream parsed = parser.parse(new ByteArrayInputStream(bytes), new ByteArrayOutputStream());
+		logger.info("Parsed : " + parsed);
 		assertNotNull(parsed);
 		assertTrue(parsed.toString().length() > 0);
 		assertTrue(parsed.toString().contains("ikube"));
+		assertTrue(parsed.toString().contains("modelVersion"));
 	}
 
 }
