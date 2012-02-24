@@ -41,18 +41,14 @@ public final class FileUtilities {
 	}
 
 	/**
-	 * Deletes all files recursively, that have the specified pattern in the
-	 * path. Note that this is dangerous and you really need to know what files
-	 * are in the directory that you feed this method. There is no turning back,
-	 * these files will be completely deleted, no re-cycle bin and all that.
+	 * Deletes all files recursively, that have the specified pattern in the path. Note that this is dangerous and you really need to know
+	 * what files are in the directory that you feed this method. There is no turning back, these files will be completely deleted, no
+	 * re-cycle bin and all that.
 	 * 
-	 * @param file
-	 *            the top level directory or file to start looking into
-	 * @param stringPatterns
-	 *            the patterns to look for in the file paths
+	 * @param file the top level directory or file to start looking into
+	 * @param stringPatterns the patterns to look for in the file paths
 	 */
-	public static void deleteFiles(final File file,
-			final String... stringPatterns) {
+	public static void deleteFiles(final File file, final String... stringPatterns) {
 		if (file.isDirectory()) {
 			File[] childFiles = file.listFiles();
 			if (childFiles != null && childFiles.length > 0) {
@@ -71,8 +67,7 @@ public final class FileUtilities {
 	/**
 	 * Creates the pattern object from the regular expression patterns.
 	 * 
-	 * @param stringPatterns
-	 *            the regular expression patterns
+	 * @param stringPatterns the regular expression patterns
 	 * @return the pattern generated from the strings
 	 */
 	public static Pattern getPattern(final String... stringPatterns) {
@@ -93,17 +88,13 @@ public final class FileUtilities {
 	}
 
 	/**
-	 * Finds files with the specified pattern only in the folder specified in
-	 * the parameter list, i.e. not recursively.
+	 * Finds files with the specified pattern only in the folder specified in the parameter list, i.e. not recursively.
 	 * 
-	 * @param folder
-	 *            the folder to look for files in
-	 * @param stringPatterns
-	 *            the pattern to look for in the file path
+	 * @param folder the folder to look for files in
+	 * @param stringPatterns the pattern to look for in the file path
 	 * @return an array of files with the specified pattern in the path
 	 */
-	public static File[] findFiles(final File folder,
-			final String[] stringPatterns) {
+	public static File[] findFiles(final File folder, final String[] stringPatterns) {
 		final Pattern pattern = getPattern(stringPatterns);
 		File[] files = folder.listFiles(new FileFilter() {
 			@Override
@@ -119,28 +110,20 @@ public final class FileUtilities {
 	}
 
 	/**
-	 * This method looks through all the files defined in the folder in the
-	 * parameter list, recursively, and gets the first one that matches the
-	 * pattern.
+	 * This method looks through all the files defined in the folder in the parameter list, recursively, and gets the first one that matches
+	 * the pattern.
 	 * 
-	 * @param folder
-	 *            the folder to start looking through
-	 * @param stringPatterns
-	 *            the patterns to look for in the file paths
-	 * @return the first file that was encountered that has the specified
-	 *         pattern(s) in it
+	 * @param folder the folder to start looking through
+	 * @param stringPatterns the patterns to look for in the file paths
+	 * @return the first file that was encountered that has the specified pattern(s) in it
 	 */
-	public static File findFileRecursively(final File folder,
-			final String... stringPatterns) {
-		List<File> files = FileUtilities.findFilesRecursively(folder,
-				new ArrayList<File>(), stringPatterns);
+	public static File findFileRecursively(final File folder, final String... stringPatterns) {
+		List<File> files = FileUtilities.findFilesRecursively(folder, new ArrayList<File>(), stringPatterns);
 		return !files.isEmpty() ? files.get(0) : null;
 	}
 
-	public static File findFileRecursively(final File folder,
-			final boolean directory, final String... stringPatterns) {
-		List<File> files = FileUtilities.findFilesRecursively(folder,
-				new ArrayList<File>(), stringPatterns);
+	public static File findFileRecursively(final File folder, final boolean directory, final String... stringPatterns) {
+		List<File> files = FileUtilities.findFilesRecursively(folder, new ArrayList<File>(), stringPatterns);
 		for (File file : files) {
 			if (directory) {
 				if (file.isDirectory()) {
@@ -156,23 +139,17 @@ public final class FileUtilities {
 	}
 
 	/**
-	 * This method will look through all the files in the top level folder, and
-	 * all the sub folders, adding files to the list when they match the
-	 * patterns that are provided.
+	 * This method will look through all the files in the top level folder, and all the sub folders, adding files to the list when they
+	 * match the patterns that are provided.
 	 * 
-	 * @param folder
-	 *            the folder to start looking through
-	 * @param stringPatterns
-	 *            the patterns to match the file paths with
-	 * @param files
-	 *            the files list to add all the files to
+	 * @param folder the folder to start looking through
+	 * @param stringPatterns the patterns to match the file paths with
+	 * @param files the files list to add all the files to
 	 * @return the list of files that match the patterns
 	 */
-	public static List<File> findFilesRecursively(final File folder,
-			final List<File> files, final String... stringPatterns) {
+	public static List<File> findFilesRecursively(final File folder, final List<File> files, final String... stringPatterns) {
 		if (folder.isDirectory()) {
-			File[] folderFiles = FileUtilities
-					.findFiles(folder, stringPatterns);
+			File[] folderFiles = FileUtilities.findFiles(folder, stringPatterns);
 			files.addAll(Arrays.asList(folderFiles));
 			File[] childFolders = folder.listFiles();
 			for (File childFolder : childFolders) {
@@ -183,31 +160,24 @@ public final class FileUtilities {
 	}
 
 	/**
-	 * Deletes the file/folder recursively. If the file cannot be deleted then
-	 * the file is set to delete on exit of the JVM, which doesn't generally
-	 * work of course, but we try anyway.
+	 * Deletes the file/folder recursively. If the file cannot be deleted then the file is set to delete on exit of the JVM, which doesn't
+	 * generally work of course, but we try anyway.
 	 * 
-	 * @param file
-	 *            the file/folder to delete
-	 * @param maxRetryCount
-	 *            the number of times to re-try the delete operation
+	 * @param file the file/folder to delete
+	 * @param maxRetryCount the number of times to re-try the delete operation
 	 */
 	public static boolean deleteFile(final File file, final int maxRetryCount) {
 		return FileUtilities.deleteFile(file, maxRetryCount, 0);
 	}
 
 	/**
-	 * Gets a single file. First looking to find it, if it can not be found then
-	 * it is created.
+	 * Gets a single file. First looking to find it, if it can not be found then it is created.
 	 * 
-	 * @param filePath
-	 *            the path to the file that is requested
-	 * @param directory
-	 *            whether the file is a directory of a file
+	 * @param filePath the path to the file that is requested
+	 * @param directory whether the file is a directory of a file
 	 * @return
 	 */
-	public static synchronized File getFile(final String filePath,
-			final boolean directory) {
+	public static synchronized File getFile(final String filePath, final boolean directory) {
 		try {
 			if (filePath == null) {
 				return null;
@@ -226,8 +196,7 @@ public final class FileUtilities {
 					return file;
 				}
 				File parent = file.getParentFile();
-				parent = FileUtilities.getFile(parent.getAbsolutePath(),
-						Boolean.TRUE);
+				parent = FileUtilities.getFile(parent.getAbsolutePath(), Boolean.TRUE);
 				if (parent != null) {
 					try {
 						boolean created = file.createNewFile();
@@ -245,8 +214,7 @@ public final class FileUtilities {
 		}
 	}
 
-	protected static boolean deleteFile(final File file,
-			final int maxRetryCount, final int retryCount) {
+	protected static boolean deleteFile(final File file, final int maxRetryCount, final int retryCount) {
 		if (file == null || !file.exists()) {
 			return Boolean.FALSE;
 		}
@@ -273,32 +241,23 @@ public final class FileUtilities {
 	}
 
 	/**
-	 * This method gets the latest index directory. Index directories are
-	 * defined by:<br>
+	 * This method gets the latest index directory. Index directories are defined by:<br>
 	 * 
 	 * 1) The path to the index on the file system<br>
 	 * 2) The name of the index<br>
-	 * 3) The time(as a long) that the index was created 4) The ip address of
-	 * the server that created the index<br>
+	 * 3) The time(as a long) that the index was created 4) The ip address of the server that created the index<br>
 	 * 
-	 * The result of this is something like ./indexes/ikube/123456789/127.0.0.1.
-	 * This method will return the directory ./indexes/ikube/123456789. In other
-	 * words the timestamp directory, not the individual server index
-	 * directories.
+	 * The result of this is something like ./indexes/ikube/123456789/127.0.0.1. This method will return the directory
+	 * ./indexes/ikube/123456789. In other words the timestamp directory, not the individual server index directories.
 	 * 
-	 * @param baseIndexDirectoryPath
-	 *            the base path to the indexes, i.e. the ./indexes part
-	 * @return the latest time stamped directory at this path, in other words
-	 *         the ./indexes/ikube/123456789 directory. Note that there is no
-	 *         Lucene index at this path, the Lucene index is still in the
-	 *         server ip address directory in this time stamp directory, i.e. at
+	 * @param baseIndexDirectoryPath the base path to the indexes, i.e. the ./indexes part
+	 * @return the latest time stamped directory at this path, in other words the ./indexes/ikube/123456789 directory. Note that there is no
+	 *         Lucene index at this path, the Lucene index is still in the server ip address directory in this time stamp directory, i.e. at
 	 *         ./indexes/ikube/123456789/127.0.0.1
 	 */
-	public static synchronized File getLatestIndexDirectory(
-			final String baseIndexDirectoryPath) {
+	public static synchronized File getLatestIndexDirectory(final String baseIndexDirectoryPath) {
 		try {
-			File baseIndexDirectory = FileUtilities.getFile(
-					baseIndexDirectoryPath, Boolean.TRUE);
+			File baseIndexDirectory = FileUtilities.getFile(baseIndexDirectoryPath, Boolean.TRUE);
 			LOGGER.debug("Base index directory : " + baseIndexDirectory);
 			return getLatestIndexDirectory(baseIndexDirectory, null);
 		} finally {
@@ -306,8 +265,7 @@ public final class FileUtilities {
 		}
 	}
 
-	protected static synchronized File getLatestIndexDirectory(final File file,
-			final File latestSoFar) {
+	protected static synchronized File getLatestIndexDirectory(final File file, final File latestSoFar) {
 		if (file == null) {
 			return latestSoFar;
 		}
@@ -331,11 +289,9 @@ public final class FileUtilities {
 	}
 
 	/**
-	 * Verifies that all the characters in a string are digits, ie. the string
-	 * is a number.
+	 * Verifies that all the characters in a string are digits, ie. the string is a number.
 	 * 
-	 * @param string
-	 *            the string to verify for digit data
+	 * @param string the string to verify for digit data
 	 * @return whether every character in a string is a digit
 	 */
 	public static boolean isDigits(final String string) {
@@ -354,10 +310,8 @@ public final class FileUtilities {
 	/**
 	 * Writes the contents of a byte array to a file.
 	 * 
-	 * @param file
-	 *            the file to write to
-	 * @param bytes
-	 *            the byte data to write
+	 * @param file the file to write to
+	 * @param bytes the byte data to write
 	 */
 	public static void setContents(final String filePath, final byte[] bytes) {
 		File file = FileUtilities.getFile(filePath, Boolean.FALSE);
@@ -377,10 +331,8 @@ public final class FileUtilities {
 	/**
 	 * Writes the contents of a byte array to a file.
 	 * 
-	 * @param file
-	 *            the file to write to
-	 * @param bytes
-	 *            the byte data to write
+	 * @param file the file to write to
+	 * @param bytes the byte data to write
 	 */
 	public static void setContents(final String filePath, final String string) {
 		File file = FileUtilities.getFile(filePath, Boolean.FALSE);
@@ -388,8 +340,7 @@ public final class FileUtilities {
 		OutputStreamWriter outputStreamWriter = null;
 		try {
 			fileOutputStream = new FileOutputStream(file);
-			outputStreamWriter = new OutputStreamWriter(fileOutputStream,
-					IConstants.ENCODING);
+			outputStreamWriter = new OutputStreamWriter(fileOutputStream, IConstants.ENCODING);
 			outputStreamWriter.write(string);
 		} catch (FileNotFoundException e) {
 			LOGGER.error("File " + file + " not found", e);
@@ -402,15 +353,12 @@ public final class FileUtilities {
 	}
 
 	/**
-	 * Reads the contents of the file and returns the contents in a byte array
-	 * form.
+	 * Reads the contents of the file and returns the contents in a byte array form.
 	 * 
-	 * @param file
-	 *            the file to read the contents from
+	 * @param file the file to read the contents from
 	 * @return the file contents in a byte array output stream
 	 */
-	public static ByteArrayOutputStream getContents(final File file,
-			final int maxReadLength) {
+	public static ByteArrayOutputStream getContents(final File file, final int maxReadLength) {
 		InputStream inputStream = null;
 		try {
 			inputStream = new FileInputStream(file);
@@ -441,17 +389,13 @@ public final class FileUtilities {
 	}
 
 	/**
-	 * Reads the contents of the file and returns the contents in a byte array
-	 * form.
+	 * Reads the contents of the file and returns the contents in a byte array form.
 	 * 
-	 * @param inputStream
-	 *            the file to read the contents from
-	 * @param maxLength
-	 *            the maximum number of bytes to read into the buffer
+	 * @param inputStream the file to read the contents from
+	 * @param maxLength the maximum number of bytes to read into the buffer
 	 * @return the file contents in a byte array output stream
 	 */
-	public static ByteArrayOutputStream getContents(
-			final InputStream inputStream, final long maxLength) {
+	public static ByteArrayOutputStream getContents(final InputStream inputStream, final long maxLength) {
 		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 		if (inputStream == null) {
 			return byteArrayOutputStream;
@@ -464,8 +408,7 @@ public final class FileUtilities {
 				read = inputStream.read(bytes);
 			}
 		} catch (Exception e) {
-			LOGGER.error("Exception accessing the file contents : "
-					+ inputStream, e);
+			LOGGER.error("Exception accessing the file contents : " + inputStream, e);
 		} finally {
 			close(inputStream);
 		}
@@ -473,18 +416,13 @@ public final class FileUtilities {
 	}
 
 	/**
-	 * This method will read the contents of a file from the end, reading the
-	 * number of bytes specified in the parameter list.
+	 * This method will read the contents of a file from the end, reading the number of bytes specified in the parameter list.
 	 * 
-	 * @param file
-	 *            the file to read from the end
-	 * @param bytesToRead
-	 *            the number of bytes to read
-	 * @return the byte array with the bytes read, could be empty if there is no
-	 *         data in the file or if there is an exception
+	 * @param file the file to read from the end
+	 * @param bytesToRead the number of bytes to read
+	 * @return the byte array with the bytes read, could be empty if there is no data in the file or if there is an exception
 	 */
-	public static ByteArrayOutputStream getContentsFromEnd(final File file,
-			final long bytesToRead) {
+	public static ByteArrayOutputStream getContentsFromEnd(final File file, final long bytesToRead) {
 		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 		FileInputStream fileInputStream = null;
 		try {
@@ -506,18 +444,13 @@ public final class FileUtilities {
 	}
 
 	/**
-	 * Reads the contents of the file and returns the contents in a byte array
-	 * form.
+	 * Reads the contents of the file and returns the contents in a byte array form.
 	 * 
-	 * @param inputStream
-	 *            the file to read the contents from
-	 * @param outputStream
-	 *            the output stream to write the data to
-	 * @param maxLength
-	 *            the maximum number of bytes to read into the buffer
+	 * @param inputStream the file to read the contents from
+	 * @param outputStream the output stream to write the data to
+	 * @param maxLength the maximum number of bytes to read into the buffer
 	 */
-	public static void getContents(final InputStream inputStream,
-			final OutputStream outputStream, final long maxLength) {
+	public static void getContents(final InputStream inputStream, final OutputStream outputStream, final long maxLength) {
 		if (inputStream == null) {
 			return;
 		}
@@ -537,8 +470,7 @@ public final class FileUtilities {
 		}
 	}
 
-	public static void getContents(final Reader reader,
-			final OutputStream outputStream, final long maxLength) {
+	public static void getContents(final Reader reader, final OutputStream outputStream, final long maxLength) {
 		if (reader == null) {
 			return;
 		}
@@ -567,24 +499,19 @@ public final class FileUtilities {
 	}
 
 	/**
-	 * This function will copy files or directories from one location to
-	 * another. note that the source and the destination must be mutually
-	 * exclusive. This function can not be used to copy a directory to a sub
-	 * directory of itself. The function will also have problems if the
-	 * destination files already exist.
+	 * This function will copy files or directories from one location to another. note that the source and the destination must be mutually
+	 * exclusive. This function can not be used to copy a directory to a sub directory of itself. The function will also have problems if
+	 * the destination files already exist.
 	 * 
-	 * @param src
-	 *            A File object that represents the source for the copy
-	 * @param dest
-	 *            A File object that represents the destination for the copy.
+	 * @param src A File object that represents the source for the copy
+	 * @param dest A File object that represents the destination for the copy.
 	 */
 	public static void copyFiles(File src, File dest, String... patterns) {
 		// Check to ensure that the source is valid...
 		if (src == null || !src.exists()) {
 			LOGGER.warn("Source file/directory does not exist : " + src);
 			return;
-		} else if (!src.canRead()) { // check to ensure we have rights to the
-										// source...
+		} else if (!src.canRead()) { // check to ensure we have rights to the source...
 			LOGGER.warn("Source file/directory not readable : " + src);
 			return;
 		}
@@ -599,8 +526,7 @@ public final class FileUtilities {
 				// if not we need to make it exist if possible (note this is
 				// mkdirs not mkdir)
 				if (!dest.mkdirs()) {
-					LOGGER.warn("Could not create the new destination directory : "
-							+ dest);
+					LOGGER.warn("Could not create the new destination directory : " + dest);
 				} else {
 					LOGGER.info("Created directory : " + dest);
 				}
@@ -626,17 +552,14 @@ public final class FileUtilities {
 		}
 		if (!out.getParentFile().exists()) {
 			if (!out.getParentFile().mkdirs()) {
-				LOGGER.info("Didn't create parent directories : "
-						+ out.getParentFile().getAbsolutePath());
+				LOGGER.info("Didn't create parent directories : " + out.getParentFile().getAbsolutePath());
 			}
 		}
 		if (!out.exists()) {
 			try {
 				out.createNewFile();
 			} catch (IOException e) {
-				LOGGER.error(
-						"Exception creating new file : "
-								+ out.getAbsolutePath(), e);
+				LOGGER.error("Exception creating new file : " + out.getAbsolutePath(), e);
 			}
 		}
 		LOGGER.debug("Copying file : " + in + ", to : " + out);
@@ -675,12 +598,9 @@ public final class FileUtilities {
 	private static final int BUFFER = 2048;
 
 	/**
-	 * This method unzips a file to a folder in the user directory with the name
-	 * of the file.
+	 * This method unzips a file to a folder in the user directory with the name of the file.
 	 * 
-	 * @param zipFile
-	 *            the zip file to unpack, this file name sill be used for the
-	 *            folder to unzip to
+	 * @param zipFile the zip file to unpack, this file name sill be used for the folder to unzip to
 	 * @return the folder where the file was unpacked to
 	 */
 	public static File unzip(String zipFile, String toDir) {
@@ -697,18 +617,15 @@ public final class FileUtilities {
 		try {
 			Enumeration<? extends ZipEntry> zipFileEntries = zip.entries();
 			// Process each entry
-			destinationFolder = FileUtilities.getFile(toDir + IConstants.SEP
-					+ file.getName(), Boolean.TRUE);
+			destinationFolder = FileUtilities.getFile(toDir + IConstants.SEP + file.getName(), Boolean.TRUE);
 			while (zipFileEntries.hasMoreElements()) {
 				// Grab a zip file entry
 				ZipEntry entry = zipFileEntries.nextElement();
 				if (entry.isDirectory()) {
 					continue;
 				}
-				String destinationPath = destinationFolder.getAbsolutePath()
-						+ IConstants.SEP + entry.getName();
-				File destinationFile = FileUtilities.getFile(destinationPath,
-						Boolean.FALSE);
+				String destinationPath = destinationFolder.getAbsolutePath() + IConstants.SEP + entry.getName();
+				File destinationFile = FileUtilities.getFile(destinationPath, Boolean.FALSE);
 				// LOGGER.info("Unzipped file : " +
 				// destinationFile.getAbsolutePath());
 				InputStream inputStream = null;
@@ -717,15 +634,13 @@ public final class FileUtilities {
 				try {
 					if (!entry.isDirectory()) {
 						LOGGER.info("Unzipping entry : " + entry);
-						inputStream = new BufferedInputStream(
-								zip.getInputStream(entry));
+						inputStream = new BufferedInputStream(zip.getInputStream(entry));
 						int currentByte;
 						// establish buffer for writing file
 						byte data[] = new byte[BUFFER];
 						// write the current file to disk
 						outputStream = new FileOutputStream(destinationFile);
-						destinationOutputStream = new BufferedOutputStream(
-								outputStream, BUFFER);
+						destinationOutputStream = new BufferedOutputStream(outputStream, BUFFER);
 						// read and write until last byte is encountered
 						while ((currentByte = inputStream.read(data, 0, BUFFER)) != -1) {
 							destinationOutputStream.write(data, 0, currentByte);
@@ -740,8 +655,7 @@ public final class FileUtilities {
 				}
 			}
 		} catch (Exception e) {
-			LOGGER.error("Exception extracting zip file : " + zipFile + ", "
-					+ zip, e);
+			LOGGER.error("Exception extracting zip file : " + zipFile + ", " + zip, e);
 		} finally {
 			try {
 				zip.close();

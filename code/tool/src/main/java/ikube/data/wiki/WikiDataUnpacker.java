@@ -59,8 +59,10 @@ public class WikiDataUnpacker {
 			for (int i = 0; i < 3; i++) {
 				final InputStream inputStream = zipFile.getInputStream(zipEntry);
 				LOGGER.info("Input stream : " + inputStream.getClass());
-				Thread thread = new Thread(new WikiDataUnpackerWorker(inputStream, offset, length, FileUtilities.getFile("/tmp",
-						Boolean.TRUE)));
+				
+				WikiDataUnpackerWorker wikiDataUnpackerWorker = new WikiDataUnpackerWorker(inputStream, offset, length,
+						FileUtilities.getFile("/tmp", Boolean.TRUE));
+				Thread thread = new Thread(wikiDataUnpackerWorker);
 				thread.start();
 				threads.add(thread);
 				offset += length;

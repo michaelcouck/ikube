@@ -1,6 +1,5 @@
 package ikube.index.handler.filesystem;
 
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -111,19 +110,10 @@ public class IndexableFileSystemHandlerWorkerTest extends ATest {
 	}
 
 	@Test
-	public void unzip() {
-		File jarJarFolder = null;
-		try {
-			File zipFile = FileUtilities.findFileRecursively(new File("./"), Boolean.FALSE, "jar\\.jar");
-			boolean unzipped = indexableFileSystemHandlerWorker.unzip(indexableFilesystem, zipFile);
-			assertTrue("The file is fine to unzip : ", unzipped);
-			jarJarFolder = FileUtilities.findFileRecursively(new File("."), Boolean.TRUE, "jar\\.jar");
-			assertNotNull("The jarJar folder is where the file is unzipped : ", jarJarFolder);
-		} finally {
-			if (jarJarFolder != null) {
-				FileUtilities.deleteFile(jarJarFolder, 1);
-			}
-		}
+	public void unzip() throws Exception {
+		File zipFile = FileUtilities.findFileRecursively(new File("./"), Boolean.FALSE, "zip\\.zip");
+		boolean unzipped = indexableFileSystemHandlerWorker.unzip(indexableFilesystem, zipFile);
+		assertTrue("The file is fine to unzip : ", unzipped);
 	}
 
 }

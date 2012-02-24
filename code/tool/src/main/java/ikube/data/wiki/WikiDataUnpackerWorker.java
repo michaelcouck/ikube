@@ -4,10 +4,16 @@ import ikube.IConstants;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.HashUtilities;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +22,7 @@ public class WikiDataUnpackerWorker implements Runnable {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(WikiDataUnpackerWorker.class);
 
+	private static final int BUFFER = 2048;
 	private static final String PAGE_START = "<page>";
 	private static final String PAGE_FINISH = "</page>";
 
@@ -96,6 +103,10 @@ public class WikiDataUnpackerWorker implements Runnable {
 				stringBuilder.delete(startOffset, endOffset);
 				String hash = Long.toString(HashUtilities.hash(segment));
 				if (outputDirectory == null || count % 10000 == 0) {
+					if (outputDirectory != null) {
+						// Now zip the files to compress them
+						// pack(outputDirectory);
+					}
 					LOGGER.info("Count : " + count + ", position : " + offset);
 					outputDirectory = new File(directory, Long.toString(count));
 				}
@@ -103,6 +114,51 @@ public class WikiDataUnpackerWorker implements Runnable {
 				FileUtilities.setContents(filePath, segment.getBytes(Charset.forName(IConstants.ENCODING)));
 				count++;
 			}
+		}
+	}
+
+	protected void pack(File outputDirectory) {
+		File zipFile = new File(outputDirectory, outputDirectory.getName() + ".zip");
+		zipFile = FileUtilities.getFile(zipFile.getAbsolutePath(), Boolean.FALSE);
+
+		FileOutputStream zipFileOutputStream = null;
+		ZipOutputStream zipOutputStream = null;
+		BufferedOutputStream bufferedOutputStream = null;
+		try {
+			zipFileOutputStream = new FileOutputStream(zipFile);
+			bufferedOutputStream = new BufferedOutputStream(zipFileOutputStream);
+			zipOutputStream = new ZipOutputStream(bufferedOutputStream);
+			byte data[] = new byte[BUFFER];
+			File[] files = outputDirectory.listFiles();
+			for (int i = 0; i < files.length; i++) {
+				FileInputStream fileInputStream = null;
+				BufferedInputStream bufferedInputStream = null;
+				try {
+					LOGGER.info("Adding: " + files[i]);
+					fileInputStream = new FileInputStream(files[i]);
+					bufferedInputStream = new BufferedInputStream(fileInputStream, BUFFER);
+					ZipEntry entry = new ZipEntry(files[i].getName());
+					zipOutputStream.putNextEntry(entry);
+					int count;
+					while ((count = bufferedInputStream.read(data, 0, BUFFER)) != -1) {
+						zipOutputStream.write(data, 0, count);
+					}
+				} catch (Exception e) {
+					LOGGER.error(null, e);
+				} finally {
+					FileUtilities.close(fileInputStream);
+					FileUtilities.close(bufferedInputStream);
+					// And delete the source if we can
+					boolean deleted = FileUtilities.deleteFile(files[i], 1);
+					if (!deleted) {
+						LOGGER.warn("Couldn't delete file : " + files[i]);
+					}
+				}
+			}
+		} catch (Exception e) {
+			LOGGER.error(null, e);
+		} finally {
+			FileUtilities.close(zipOutputStream);
 		}
 	}
 

@@ -19,13 +19,15 @@ import java.util.List;
 import java.util.Stack;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.io.input.ReaderInputStream;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import de.schlichtherle.io.FileReader;
 
 /**
  * This is the runnable class that will iterate over the file system and index the files, along with other threads.
@@ -92,44 +94,11 @@ class IndexableFilesystemHandlerWorker implements Runnable {
 	protected void handleFile(final IndexContext<?> indexContext, final IndexableFileSystem indexableFileSystem, final File file)
 			throws InterruptedException {
 		Document document = null;
-		String parsedContent = null;
 		InputStream inputStream = null;
 		try {
 			document = new Document();
-
 			inputStream = new FileInputStream(file);
-
-			int length = Math.min((int) indexableFileSystem.getMaxReadLength(), (int) file.length());
-			byte[] byteBuffer = new byte[length];
-			int read = inputStream.read(byteBuffer, 0, byteBuffer.length);
-
-			byteInputStream = new ByteArrayInputStream(byteBuffer, 0, read);
-			byteOutputStream = new ByteArrayOutputStream();
-
-			IParser parser = ParserProvider.getParser(file.getName(), byteBuffer);
-			parsedContent = parser.parse(byteInputStream, byteOutputStream).toString();
-
-			Store store = indexableFileSystem.isStored() ? Store.YES : Store.NO;
-			Index analyzed = indexableFileSystem.isAnalyzed() ? Index.ANALYZED : Index.NOT_ANALYZED;
-			TermVector termVector = indexableFileSystem.isVectored() ? TermVector.YES : TermVector.NO;
-
-			String pathFieldName = indexableFileSystem.getPathFieldName();
-			String nameFieldName = indexableFileSystem.getNameFieldName();
-			String modifiedFieldName = indexableFileSystem.getLastModifiedFieldName();
-			String lengthFieldName = indexableFileSystem.getLengthFieldName();
-			String contentFieldName = indexableFileSystem.getContentFieldName();
-
-			IndexManager.addStringField(pathFieldName, file.getAbsolutePath(), document, store, analyzed, termVector);
-			IndexManager.addStringField(nameFieldName, file.getName(), document, store, analyzed, termVector);
-			IndexManager.addStringField(modifiedFieldName, Long.toString(file.lastModified()), document, store, analyzed, termVector);
-			IndexManager.addStringField(lengthFieldName, Long.toString(file.length()), document, store, analyzed, termVector);
-			IndexManager.addStringField(contentFieldName, parsedContent, document, store, analyzed, termVector);
-			indexableHandler.addDocument(indexContext, indexableFileSystem, document);
-
-			if (Thread.currentThread().isInterrupted()) {
-				throw new InterruptedException("Interrupted...");
-			}
-			Thread.sleep(indexContext.getThrottle());
+			handleFile(file, inputStream, document);
 		} catch (InterruptedException e) {
 			// This means that the scheduler has been forcefully destroyed
 			throw e;
@@ -140,30 +109,80 @@ class IndexableFilesystemHandlerWorker implements Runnable {
 			FileUtilities.close(inputStream);
 			FileUtilities.close(byteInputStream);
 			FileUtilities.close(byteOutputStream);
-			String filePath = file.getAbsolutePath();
-			StringUtils.replace(filePath, "\\", "/");
-			boolean isFileAndInTemp = file.isFile() && filePath.contains(IConstants.TMP_UNZIPPED_FOLDER);
-			if (isFileAndInTemp) {
-				logger.warn("Deleting file : " + filePath);
-				FileUtilities.deleteFile(file, 1);
-			}
 		}
 	}
 
-	protected boolean unzip(IndexableFileSystem indexableFileSystem, File file) {
+	protected void handleFile(final File file, final InputStream inputStream, final Document document) throws Exception {
+		int length = Math.min((int) indexableFileSystem.getMaxReadLength(), (int) file.length());
+		byte[] byteBuffer = new byte[length];
+		int read = inputStream.read(byteBuffer, 0, byteBuffer.length);
+
+		byteInputStream = new ByteArrayInputStream(byteBuffer, 0, read);
+		byteOutputStream = new ByteArrayOutputStream();
+
+		IParser parser = ParserProvider.getParser(file.getName(), byteBuffer);
+		String parsedContent = parser.parse(byteInputStream, byteOutputStream).toString();
+		// logger.info("Parsed content : " + parsedContent);
+
+		Store store = indexableFileSystem.isStored() ? Store.YES : Store.NO;
+		Index analyzed = indexableFileSystem.isAnalyzed() ? Index.ANALYZED : Index.NOT_ANALYZED;
+		TermVector termVector = indexableFileSystem.isVectored() ? TermVector.YES : TermVector.NO;
+
+		String pathFieldName = indexableFileSystem.getPathFieldName();
+		String nameFieldName = indexableFileSystem.getNameFieldName();
+		String modifiedFieldName = indexableFileSystem.getLastModifiedFieldName();
+		String lengthFieldName = indexableFileSystem.getLengthFieldName();
+		String contentFieldName = indexableFileSystem.getContentFieldName();
+
+		IndexManager.addStringField(pathFieldName, file.getAbsolutePath(), document, store, analyzed, termVector);
+		IndexManager.addStringField(nameFieldName, file.getName(), document, store, analyzed, termVector);
+		IndexManager.addStringField(modifiedFieldName, Long.toString(file.lastModified()), document, store, analyzed, termVector);
+		IndexManager.addStringField(lengthFieldName, Long.toString(file.length()), document, store, analyzed, termVector);
+		IndexManager.addStringField(contentFieldName, parsedContent, document, store, analyzed, termVector);
+		indexableHandler.addDocument(indexContext, indexableFileSystem, document);
+
+		if (Thread.currentThread().isInterrupted()) {
+			throw new InterruptedException("Interrupted...");
+		}
+		Thread.sleep(indexContext.getThrottle());
+	}
+
+	protected boolean unzip(IndexableFileSystem indexableFileSystem, File file) throws Exception {
 		// We have to unpack the zip files
 		if (indexableFileSystem.isUnpackZips()) {
 			boolean isZipAndFile = IConstants.ZIP_JAR_WAR_EAR_PATTERN.matcher(file.getName()).matches() && file.isFile();
 			if (isZipAndFile) {
-				File unzippedToFolder = FileUtilities.unzip(file.getAbsolutePath(), "." + IConstants.TMP_UNZIPPED_FOLDER);
-				if (unzippedToFolder != null && unzippedToFolder.exists() && unzippedToFolder.isDirectory()) {
-					logger.info("Added unzipped folder : " + unzippedToFolder.getAbsolutePath());
-					directories.add(unzippedToFolder);
-					return Boolean.TRUE;
+				de.schlichtherle.io.File trueZipFile = new de.schlichtherle.io.File(file);
+				File[] files = trueZipFile.listFiles();
+				for (File innerFile : files) {
+					try {
+						handleFile(innerFile);
+					} catch (Exception e) {
+						logger.error("Exception reading inner file : " + innerFile, e);
+					}
 				}
 			}
+			return Boolean.TRUE;
 		}
 		return Boolean.FALSE;
+	}
+
+	protected void handleFile(final File file) throws Exception {
+		FileReader fileReader = null;
+		try {
+			if (file.isDirectory()) {
+				for (File innerFile : file.listFiles()) {
+					handleFile(innerFile);
+				}
+				return;
+			}
+			// logger.info("Reading file : " + file);
+			fileReader = new FileReader((de.schlichtherle.io.File) file);
+			InputStream inputStream = new ReaderInputStream(fileReader);
+			handleFile(file, inputStream, new Document());
+		} finally {
+			FileUtilities.close(fileReader);
+		}
 	}
 
 	protected synchronized List<File> getBatch(IndexableFileSystem indexableFileSystem, Stack<File> directories) {
