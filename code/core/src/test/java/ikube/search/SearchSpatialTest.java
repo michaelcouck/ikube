@@ -124,6 +124,7 @@ public class SearchSpatialTest extends ATest {
 	}
 	
 	@Test
+	@Ignore
 	public void searchGeospatial() throws Exception {
 		IndexSearcher searcher = getIndexSearcher(); 
 		SearchSpatialAll searchSpatialAll = new SearchSpatialAll(searcher);
@@ -175,7 +176,7 @@ public class SearchSpatialTest extends ATest {
 	}
 	
 	private IndexSearcher getIndexSearcher() throws Exception {
-		File file = new File("C:/temp/geospatial");
+		File file = new File("/temp/geospatial");
 		Directory directory = FSDirectory.open(file);
 		return new IndexSearcher(directory);
 	}

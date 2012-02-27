@@ -194,6 +194,7 @@ public class IndexableTableHandlerIntegration extends AbstractIntegration {
 	}
 
 	@Test
+	@Ignore
 	public void handleAllColumnsTable() throws Exception {
 		IndexableTable indexable = ApplicationContextManager.getBean("campaign");
 		IndexContext<?> indexContext = ApplicationContextManager.getBean("campaignIndex");
@@ -207,6 +208,7 @@ public class IndexableTableHandlerIntegration extends AbstractIntegration {
 	}
 
 	@Test
+	@Ignore
 	public void handleAllColumnsAllTables() throws Exception {
 		IndexContext<?> indexContext = ApplicationContextManager.getBean("campaignIndex");
 		indexContext.setAction(new Action());

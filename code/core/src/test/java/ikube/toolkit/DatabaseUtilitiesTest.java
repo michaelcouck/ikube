@@ -81,6 +81,7 @@ public class DatabaseUtilitiesTest extends ATest {
 	}
 
 	@Test
+	@Ignore
 	public void getAllColumns() throws Exception {
 		Connection connection = null;
 		List<String> allColumns = null;
@@ -92,7 +93,7 @@ public class DatabaseUtilitiesTest extends ATest {
 			assertEquals("All the columns from the doctor table : ", allColumnsString, allColumns.toString());
 			DatabaseUtilities.close(connection);
 
-			connection = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:XE", "XE", "admin");
+			connection = DriverManager.getConnection("jdbc:oracle:thin:@ikube.dyndns.org:1521:ikube", "ubuntu", "Caherl1ne");
 			allColumns = DatabaseUtilities.getAllColumns(connection, "doctor");
 			logger.info("All columns : " + allColumns);
 			assertEquals("All the columns from the doctor table : ", allColumnsString, allColumns.toString());
@@ -135,7 +136,7 @@ public class DatabaseUtilitiesTest extends ATest {
 	}
 
 	private Connection getDb2Connection() throws SQLException {
-		return DriverManager.getConnection("jdbc:db2://ikube:50000/ikube", "db2admin", "db2admin");
+		return DriverManager.getConnection("jdbc:db2://ikube.dyndns.org:50000/ikube", "ubuntu", "Caherl1ne");
 	}
 
 }

@@ -26,10 +26,10 @@ public class WikiDataUnpackerWorker implements Runnable {
 	private static final String PAGE_START = "<page>";
 	private static final String PAGE_FINISH = "</page>";
 
+	private File directory;
 	private InputStream inputStream;
 	private int offset;
 	private int length;
-	private File directory;
 
 	/**
 	 * Constructor sets up the variables like where to start reading the input stream and how much to read.
@@ -38,11 +38,11 @@ public class WikiDataUnpackerWorker implements Runnable {
 	 * @param offset the offset in the stream to start reading from
 	 * @param length the length of xml to read from the stream
 	 */
-	public WikiDataUnpackerWorker(final InputStream inputStream, final int offset, final int length, final File directory) {
+	public WikiDataUnpackerWorker(final File directory, final InputStream inputStream, final int offset, final int length) {
+		this.directory = directory;
 		this.inputStream = inputStream;
 		this.offset = offset;
 		this.length = length;
-		this.directory = directory;
 	}
 
 	public void run() {
@@ -103,10 +103,6 @@ public class WikiDataUnpackerWorker implements Runnable {
 				stringBuilder.delete(startOffset, endOffset);
 				String hash = Long.toString(HashUtilities.hash(segment));
 				if (outputDirectory == null || count % 10000 == 0) {
-					if (outputDirectory != null) {
-						// Now zip the files to compress them
-						// pack(outputDirectory);
-					}
 					LOGGER.info("Count : " + count + ", position : " + offset);
 					outputDirectory = new File(directory, Long.toString(count));
 				}

@@ -132,6 +132,10 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	protected void addAllColumns(IndexableTable indexableTable, Connection connection) {
 		List<String> columnNames = DatabaseUtilities.getAllColumns(connection, indexableTable.getName());
 		List<String> primaryKeyColumns = DatabaseUtilities.getPrimaryKeys(connection, indexableTable.getName());
+		if (columnNames.size() == 0) {
+			logger.warn("No columns found for table : " + indexableTable.getName());
+			return;
+		}
 		String primaryKeyColumn = primaryKeyColumns.size() > 0 ? primaryKeyColumns.get(0) : columnNames.get(0);
 		List<Indexable<?>> children = indexableTable.getChildren();
 		if (children == null) {

@@ -2,7 +2,7 @@
 	<session-factory name="geoname">
 		<mapping>
 			<config resource="geoname.xml" />
-			<input resource="allCountriesCsv.txt" />
+			<input resource="allCountries.txt" />
 		</mapping>
 	</session-factory>
 	

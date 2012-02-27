@@ -65,7 +65,7 @@
 		property:jpaVendorAdapter-ref="jpaAdapter"
 		property:jpaPropertyMap-ref="jpaPropertyMap"
 		property:dataSource-ref="${ikube.dataSource}"
-		property:persistenceUnitName="${ikube.persistenceUnit}"
+		property:persistenceUnitName="${ikube.persistenceUnit}"  
 		property:persistenceUnitManager-ref="defaultPersistenceUnitManager"
 		property:loadTimeWeaver-ref="loadTimeWeaver" />
 	<bean
@@ -99,11 +99,11 @@
 			ForeignKeys=true,Indexes=true,SchemaAction='drop,add',
 			SchemaAction='add,deleteTableContents'
 		 -->
-		<entry key="openjpa.Connection2URL" value="${ikube.jdbc.url}" />
+		<!-- <entry key="openjpa.Connection2URL" value="${ikube.jdbc.url}" />
 		<entry key="openjpa.Connection2UserName" value="${ikube.jdbc.userid}" />
 		<entry key="openjpa.Connection2Password" value="${ikube.jdbc.password}" />
 		<entry key="openjpa.Connection2DriverName" value="${ikube.jdbc.driver}" />
-		<entry key="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
+		<entry key="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" /> -->
 	</util:map>
 
 	<transaction:advice id="transactionAdvice" transaction-manager="transactionManager">
@@ -134,6 +134,18 @@
 		id="ikube.database.IDataBase"
 		class="${ikube.dataBaseClass}"
 		lazy-init="false" />
+<!-- 	<bean
+		id="ikube.database.IDataBase.Db2"
+		class="ikube.database.jpa.DataBaseJpaDb2"
+		lazy-init="false" />
+	<bean
+		id="ikube.database.IDataBase.Postgres"
+		class="ikube.database.jpa.DataBaseJpaPostgres"
+		lazy-init="false" />
+	<bean
+		id="ikube.database.IDataBase.Oracle"
+		class="ikube.database.jpa.DataBaseJpaOracle"
+		lazy-init="false" /> -->
 	
 	<bean 
 		id="ikube.index.parse.mime.MimeMapper" 

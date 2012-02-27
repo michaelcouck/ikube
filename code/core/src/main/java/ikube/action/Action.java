@@ -7,6 +7,8 @@ import ikube.database.IDataBase;
 import ikube.model.IndexContext;
 import ikube.notify.IMailer;
 
+import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.util.List;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -204,6 +206,17 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
 	 */
 	protected void sendNotification(final String subject, final String body) {
 		try {
+			 InetAddress inetAddress = InetAddress.getLocalHost();
+			 NetworkInterface network = NetworkInterface.getByInetAddress(inetAddress);
+			 StringBuilder stringBuilder = new StringBuilder();
+			 stringBuilder.append(subject);
+			 stringBuilder.append(", server : ");
+			 stringBuilder.append(inetAddress.getHostAddress());
+			 if (network != null) {
+				 byte[] mac = network.getHardwareAddress();
+				 stringBuilder.append(", mac : ");
+				 stringBuilder.append(new String(mac));
+			 }
 			mailer.sendMail(subject, body);
 		} catch (Exception e) {
 			logger.error("Exception sending mail : " + subject, e);

@@ -110,9 +110,9 @@ public class IndexableFileSystemHandlerWorkerTest extends ATest {
 	}
 
 	@Test
-	public void unzip() throws Exception {
+	public void handleZip() throws Exception {
 		File zipFile = FileUtilities.findFileRecursively(new File("./"), Boolean.FALSE, "zip\\.zip");
-		boolean unzipped = indexableFileSystemHandlerWorker.unzip(indexableFilesystem, zipFile);
+		boolean unzipped = indexableFileSystemHandlerWorker.handleZip(indexableFilesystem, zipFile);
 		assertTrue("The file is fine to unzip : ", unzipped);
 	}
 

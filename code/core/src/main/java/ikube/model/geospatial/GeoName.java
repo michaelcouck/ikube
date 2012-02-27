@@ -49,6 +49,7 @@ public class GeoName extends Persistable {
 			"order by g.id";
 	public static final String SELECT_FROM_GEONAME_BY_NAME = "select g from GeoName as g where g.name = :name";
 	public static final String SELECT_FROM_GEONAME_BY_GEONAMEID = "select g from GeoName as g where g.geonameid = :geonameid";
+	public static final String SELECT_FROM_GEONAME_WHERE_GEONAMEID_IN = "select g from GeoName as g where g.geonameid in (${geonameids})";
 
 	public static final String GEONAME_NAME = "geoname_name";
 	public static final String GEONAME_ASCIINAME = "geoname_asciiname";

@@ -4,7 +4,9 @@ import ikube.security.WebServiceAuthentication;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 
+@Ignore
 public class Integration {
 
 	protected static String LOCALHOST = "localhost";

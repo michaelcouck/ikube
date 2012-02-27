@@ -18,9 +18,10 @@ import org.slf4j.LoggerFactory;
 
 public class WikiDataUnpacker {
 
+	public static final String[] OUTPUT_DIRECTORIES = { "/usr/local/wiki/history/one", "/usr/local/wiki/history/two" };
+	public static final String INPUT_FILE = "/home/michael/Downloads/enwiki-20100130-pages-meta-history.xml.7z";
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(WikiDataUnpacker.class);
-	private static final String[] OUTPUT_DIRECTORIES = { "/usr/local/wiki/history/one", "/usr/local/wiki/history/two" };
-	private static final String INPUT_FILE = "/home/michael/Downloads/enwiki-20100130-pages-meta-history.xml.7z";
 
 	public static void main(String[] args) throws Exception {
 		readBz2Tar();
@@ -31,11 +32,12 @@ public class WikiDataUnpacker {
 		int length = 100000;
 		Collection<Thread> threads = new ArrayList<Thread>();
 		for (String outputDirectory : OUTPUT_DIRECTORIES) {
-			FileInputStream in = new FileInputStream(INPUT_FILE);
-			BZip2CompressorInputStream inputStream = new BZip2CompressorInputStream(in);
-			LOGGER.info("Input stream : " + inputStream.getClass());
+			FileInputStream fileInputStream = new FileInputStream(INPUT_FILE);
+			BZip2CompressorInputStream bZip2CompressorInputStream = new BZip2CompressorInputStream(fileInputStream);
+			LOGGER.info("Input stream : " + bZip2CompressorInputStream.getClass());
 			File outputDirectoryFile = FileUtilities.getFile(outputDirectory, Boolean.TRUE);
-			WikiDataUnpackerWorker wikiDataUnpackerWorker = new WikiDataUnpackerWorker(inputStream, offset, length, outputDirectoryFile);
+			WikiDataUnpackerWorker wikiDataUnpackerWorker = new WikiDataUnpackerWorker(outputDirectoryFile, bZip2CompressorInputStream,
+					offset, length);
 			Thread thread = new Thread(wikiDataUnpackerWorker);
 			threads.add(thread);
 			thread.start();
@@ -59,9 +61,8 @@ public class WikiDataUnpacker {
 			for (int i = 0; i < 3; i++) {
 				final InputStream inputStream = zipFile.getInputStream(zipEntry);
 				LOGGER.info("Input stream : " + inputStream.getClass());
-				
-				WikiDataUnpackerWorker wikiDataUnpackerWorker = new WikiDataUnpackerWorker(inputStream, offset, length,
-						FileUtilities.getFile("/tmp", Boolean.TRUE));
+				WikiDataUnpackerWorker wikiDataUnpackerWorker = new WikiDataUnpackerWorker(FileUtilities.getFile("/tmp", Boolean.TRUE),
+						inputStream, offset, length);
 				Thread thread = new Thread(wikiDataUnpackerWorker);
 				thread.start();
 				threads.add(thread);

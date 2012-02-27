@@ -53,7 +53,7 @@
 		property:nameFieldName="name"
 		property:lengthFieldName="length"
 		property:contentFieldName="contents"
-		property:unpackZips="false"
+		property:unpackZips="true"
 		property:stored="true"
 		property:analyzed="true"
 		property:vectored="true"

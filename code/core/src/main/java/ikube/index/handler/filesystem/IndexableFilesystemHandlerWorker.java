@@ -64,7 +64,7 @@ class IndexableFilesystemHandlerWorker implements Runnable {
 				do {
 					for (File file : files) {
 						try {
-							if (unzip(indexableFileSystem, file)) {
+							if (handleZip(indexableFileSystem, file)) {
 								continue;
 							}
 							this.handleFile(indexContext, indexableFileSystem, file);
@@ -147,16 +147,20 @@ class IndexableFilesystemHandlerWorker implements Runnable {
 		Thread.sleep(indexContext.getThrottle());
 	}
 
-	protected boolean unzip(IndexableFileSystem indexableFileSystem, File file) throws Exception {
+	protected boolean handleZip(IndexableFileSystem indexableFileSystem, File file) throws Exception {
 		// We have to unpack the zip files
 		if (indexableFileSystem.isUnpackZips()) {
-			boolean isZipAndFile = IConstants.ZIP_JAR_WAR_EAR_PATTERN.matcher(file.getName()).matches() && file.isFile();
+			boolean isZip = IConstants.ZIP_JAR_WAR_EAR_PATTERN.matcher(file.getName()).matches();
+			boolean isFile = file.isFile();
+			boolean isTrueFile = de.schlichtherle.io.File.class.isAssignableFrom(file.getClass());
+			boolean isZipAndFile = isZip && (isFile || isTrueFile);
 			if (isZipAndFile) {
 				de.schlichtherle.io.File trueZipFile = new de.schlichtherle.io.File(file);
 				File[] files = trueZipFile.listFiles();
 				for (File innerFile : files) {
 					try {
 						handleFile(innerFile);
+						handleZip(indexableFileSystem, innerFile);
 					} catch (Exception e) {
 						logger.error("Exception reading inner file : " + innerFile, e);
 					}

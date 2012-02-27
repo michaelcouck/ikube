@@ -46,7 +46,6 @@ public class ActionTest extends ATest {
 	}
 
 	@Test
-	@SuppressWarnings("static-access")
 	public void executeAllMethods() throws Exception {
 		action.setRuleExpression("predicate");
 		action.getRuleExpression();

@@ -29,6 +29,7 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -168,8 +169,9 @@ public class SearchTest extends ATest {
 	}
 
 	@Test
+	@Ignore
 	public void adHoc() throws Exception {
-		File indexDirectory = new File("C:/cluster/indexes/localFileSystemContext/1329391054706/10.100.109.138.61616");
+		File indexDirectory = new File("/usr/local/cluster/indexes/localFileSystemContext/1329391054706/10.100.109.138.61616");
 		Directory directory = FSDirectory.open(indexDirectory);
 		IndexReader indexReader = IndexReader.open(directory);
 		for (int i = 0; i < indexReader.numDocs(); i++) {

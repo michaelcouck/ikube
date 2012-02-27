@@ -10,8 +10,6 @@ import ikube.toolkit.Logging;
 import ikube.toolkit.SerializationUtilities;
 import ikube.toolkit.ThreadUtilities;
 
-import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -122,18 +120,12 @@ public class GeonamePopulator {
 		while (session.hasNext(GeoName.class)) {
 			count++;
 			try {
+				GeoName geoName = session.next(GeoName.class);
 				if (count % 1000 == 0) {
 					LOGGER.info("Count : " + count);
 				}
-				GeoName geoName = session.next(GeoName.class);
-				GeoName dbGeoName = dataBase.find(GeoName.class, GeoName.SELECT_FROM_GEONAME_BY_GEONAMEID, new String[] { "geonameid" },
-						new Object[] { geoName.getGeonameid() });
-				if (dbGeoName != null) {
-					continue;
-				}
-				LOGGER.info("Didn't find : " + geoName);
 				geoNames.add(geoName);
-				if (geoNames.size() >= batchSize) {
+				if (geoNames.size() >= batchSize || !session.hasNext(GeoName.class)) {
 					persistBatch(dataBase, geoNames);
 				}
 			} catch (Exception e) {
@@ -141,21 +133,18 @@ public class GeonamePopulator {
 				persistBatch(dataBase, geoNames);
 			}
 		}
-		persistBatch(dataBase, geoNames);
 	}
 
-	@SuppressWarnings("unused")
-	private static void startProcess(Class<?> klass, String[] sessions) throws IOException, InterruptedException {
-		for (String session : sessions) {
-			String javaHome = System.getProperty("java.home");
-			String javaBin = javaHome + File.separator + "bin" + File.separator + "java";
-			String classpath = System.getProperty("java.class.path");
-			String className = klass.getCanonicalName();
-			ProcessBuilder builder = new ProcessBuilder(javaBin, "-cp", classpath, className);
-			Process process = builder.start();
-			process.waitFor();
-			process.exitValue();
+	private static String[] GEONAMEID = new String[] { "geonameid" };
+	private static Object[] GEONAMEID_VALUE = new Object[1];
+
+	protected static boolean geonameExists(final IDataBase dataBase, final GeoName geoName) {
+		GEONAMEID_VALUE[0] = geoName.getGeonameid();
+		GeoName dbGeoName = dataBase.find(GeoName.class, GeoName.SELECT_FROM_GEONAME_BY_GEONAMEID, GEONAMEID, GEONAMEID_VALUE);
+		if (dbGeoName != null) {
+			return Boolean.TRUE;
 		}
+		return Boolean.FALSE;
 	}
 
 	private static void persistBatch(IDataBase dataBase, List<GeoName> geoNames) {

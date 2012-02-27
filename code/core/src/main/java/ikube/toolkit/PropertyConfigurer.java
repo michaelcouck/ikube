@@ -7,6 +7,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.jar.JarEntry;
@@ -74,12 +75,19 @@ public class PropertyConfigurer extends Properties {
 		List<File> jarFiles = FileUtilities.findFilesRecursively(new File("."), new ArrayList<File>(), ".jar\\Z");
 		for (File jarFile : jarFiles) {
 			try {
+				LOGGER.debug("        : Loading properties from : " + jarFile);
 				checkJar(jarFile);
 			} catch (Exception e) {
 				LOGGER.error("Exception reading jar file : " + jarFile, e);
 			}
 		}
-		LOGGER.info("Properties : " + this.defaults);
+	}
+	
+	@SuppressWarnings("unused")
+	private void printProperties() {
+		for (Map.Entry<Object, Object> entry : this.entrySet()) {
+			LOGGER.info("Entry : " + entry.getKey() + ":" + entry.getValue());
+		}
 	}
 
 	/**

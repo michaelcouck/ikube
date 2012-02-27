@@ -22,7 +22,7 @@ public class MailerTest extends ATest {
 		IMailer mailer = new Mailer();
 		mailer.setAuth("true");
 		mailer.setMailHost("smtp.gmail.com");
-		mailer.setPassword("caherline");
+		mailer.setPassword("Caherl2ne");
 		mailer.setPort("465");
 		mailer.setProtocol("pop3");
 		mailer.setRecipients("ikube.ikube@gmail.com");

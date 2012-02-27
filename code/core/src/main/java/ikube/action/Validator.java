@@ -7,7 +7,6 @@ import ikube.action.rule.IsIndexCorrupt;
 import ikube.action.rule.IsIndexCurrent;
 import ikube.index.IndexManager;
 import ikube.model.IndexContext;
-import ikube.model.Server;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
@@ -41,7 +40,6 @@ public class Validator extends Action<IndexContext<?>, Boolean> {
 		boolean everythingInitialized = Boolean.TRUE;
 		ikube.model.Action action = start(indexContext.getIndexName(), "");
 		try {
-			Server server = clusterManager.getServer();
 			IsIndexCurrent isIndexCurrent = new IsIndexCurrent();
 			IsIndexCorrupt isIndexCorrupt = new IsIndexCorrupt();
 			AreIndexesCreated areIndexesCreated = new AreIndexesCreated();
@@ -51,7 +49,7 @@ public class Validator extends Action<IndexContext<?>, Boolean> {
 			// Are there any indexes at all
 			if (!areIndexesCreated.evaluate(indexContext)) {
 				if (latestIndexDirectory == null || !latestIndexDirectory.exists()) {
-					subject = "No index : " + indexContext.getIndexName() + ", server : " + server.getAddress();
+					subject = "No index : " + indexContext.getIndexName();
 					body = "No index : " + indexContext.toString();
 					everythingInitialized &= Boolean.FALSE;
 					sendNotification(subject, body);
@@ -59,7 +57,7 @@ public class Validator extends Action<IndexContext<?>, Boolean> {
 			}
 			// Is the index corrupt for some reason
 			if (isIndexCorrupt.evaluate(indexContext)) {
-				subject = "Index corrupt : " + indexContext.getIndexName() + ", server : " + server.getAddress();
+				subject = "Index corrupt : " + indexContext.getIndexName();
 				body = "There is an index but it is corrupt. Generally another index will be generated immediately, but "
 						+ "if there is a backup for the index the restore will be invoked first, depending on the position of the action "
 						+ "in the action set.";
@@ -68,7 +66,7 @@ public class Validator extends Action<IndexContext<?>, Boolean> {
 			}
 			// Is the index current
 			if (!isIndexCurrent.evaluate(indexContext)) {
-				subject = "Index not current : " + indexContext.getIndexName() + ", server : " + server.getAddress();
+				subject = "Index not current : " + indexContext.getIndexName();
 				body = "The index for " + indexContext.getName() + " is not current. Generally another index "
 						+ "wil be generated immediately, this message is just for information.";
 				everythingInitialized &= Boolean.FALSE;
@@ -80,7 +78,7 @@ public class Validator extends Action<IndexContext<?>, Boolean> {
 				File[] serverIndexDirectories = latestIndexDirectory.listFiles();
 				for (File serverIndexDirectory : serverIndexDirectories) {
 					if (directoryExistsAndIsLocked.evaluate(serverIndexDirectory)) {
-						subject = "Index being generated : " + indexContext.getIndexName() + ", server : " + server.getAddress();
+						subject = "Index being generated : " + indexContext.getIndexName();
 						body = "The index is being generated for index context " + indexContext.getName()
 								+ ". This message is just for informational purposes, no action is required.";
 						everythingInitialized &= Boolean.FALSE;
@@ -91,7 +89,7 @@ public class Validator extends Action<IndexContext<?>, Boolean> {
 			}
 			// Is the index open, and if not why not
 			if (indexContext.getIndex().getMultiSearcher() == null) {
-				subject = "Index not open : " + indexContext.getIndexName() + ", server : " + server.getAddress();
+				subject = "Index not open : " + indexContext.getIndexName();
 				body = "Searcher not opened for index " + indexContext.getIndexName()
 						+ ". This could require some investigation from the administrator.";
 				everythingInitialized &= Boolean.FALSE;
@@ -99,7 +97,7 @@ public class Validator extends Action<IndexContext<?>, Boolean> {
 			}
 			// Check that the index is backed up
 			if (!isIndexBackedUp.evaluate(indexContext)) {
-				subject = "Index not backed up : " + indexContext.getIndexName() + ", server : " + server.getAddress();
+				subject = "Index not backed up : " + indexContext.getIndexName();
 				body = "The index is not backed up. Generally this is temporary and the next iteration over the actions "
 						+ "will cause the index to be backed up. This can be regarded as an informational message.";
 				everythingInitialized &= Boolean.FALSE;
