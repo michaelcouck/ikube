@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 public class WikiDataUnpacker {
 
 	public static final String[] OUTPUT_DIRECTORIES = { "/usr/local/wiki/history/one", "/usr/local/wiki/history/two" };
-	public static final String INPUT_FILE = "/home/michael/Downloads/enwiki-20100130-pages-meta-history.xml.7z";
+	public static final String INPUT_FILE = "C:/jboss-4.2.2.GA/bin/labeling/output/sumo.4000.2012.02.07.15.20.48.877.21763386990804.7z";
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(WikiDataUnpacker.class);
 
