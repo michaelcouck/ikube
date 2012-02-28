@@ -16,7 +16,7 @@
 	</td>
 </tr>
 <tr>
-	<td>
+	<td colspan="2">
 		<c:if test="${not empty SPRING_SECURITY_LAST_EXCEPTION.message}">
 			<spring:message code="login.failed" />
 		</c:if>
@@ -25,6 +25,11 @@
 <tr>
 	<td colspan="2">
 		The default userid and password is user/user, guest/guest or administrator/administrator.
+	</td>
+</tr>
+<tr>
+	<td colspan="2">
+		&nbsp;
 	</td>
 </tr>
 <tr>
@@ -45,4 +50,3 @@
 </tr>
 </table>
 </form>
-<!-- <body onload="document.form.j_username.focus();"></body> -->
