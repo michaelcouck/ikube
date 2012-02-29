@@ -50,6 +50,18 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
+
+		<dependency>
+			<groupId>sevenzip</groupId>
+			<artifactId>jbinding</artifactId>
+			<version>4.65.1</version>
+		</dependency>
+		<dependency>
+			<groupId>sevenzip</groupId>
+			<artifactId>jbinding-linux</artifactId>
+			<version>4.65.1</version>
+		</dependency>
+
 	</dependencies>
-	
+
 </project>

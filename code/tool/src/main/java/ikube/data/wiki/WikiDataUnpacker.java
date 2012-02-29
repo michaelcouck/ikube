@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 public class WikiDataUnpacker {
 
 	public static final String[] OUTPUT_DIRECTORIES = { "/usr/local/wiki/history/one", "/usr/local/wiki/history/two" };
-	public static final String INPUT_FILE = "C:/jboss-4.2.2.GA/bin/labeling/output/sumo.4000.2012.02.07.15.20.48.877.21763386990804.7z";
+	public static final String INPUT_FILE = "/home/michael/Downloads/enwiki-20100130-pages-meta-history.xml.7z";
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(WikiDataUnpacker.class);
 
@@ -36,9 +36,8 @@ public class WikiDataUnpacker {
 			BZip2CompressorInputStream bZip2CompressorInputStream = new BZip2CompressorInputStream(fileInputStream);
 			LOGGER.info("Input stream : " + bZip2CompressorInputStream.getClass());
 			File outputDirectoryFile = FileUtilities.getFile(outputDirectory, Boolean.TRUE);
-			WikiDataUnpackerWorker wikiDataUnpackerWorker = new WikiDataUnpackerWorker(outputDirectoryFile, bZip2CompressorInputStream,
-					offset, length);
-			Thread thread = new Thread(wikiDataUnpackerWorker);
+			WikiDataUnpackerWorker wikiDataUnpackerWorker = null;
+			Thread thread = null;
 			threads.add(thread);
 			thread.start();
 			offset += length;
@@ -61,9 +60,8 @@ public class WikiDataUnpacker {
 			for (int i = 0; i < 3; i++) {
 				final InputStream inputStream = zipFile.getInputStream(zipEntry);
 				LOGGER.info("Input stream : " + inputStream.getClass());
-				WikiDataUnpackerWorker wikiDataUnpackerWorker = new WikiDataUnpackerWorker(FileUtilities.getFile("/tmp", Boolean.TRUE),
-						inputStream, offset, length);
-				Thread thread = new Thread(wikiDataUnpackerWorker);
+				WikiDataUnpackerWorker wikiDataUnpackerWorker = null;
+				Thread thread = null;
 				thread.start();
 				threads.add(thread);
 				offset += length;

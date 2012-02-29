@@ -180,7 +180,7 @@ class IndexableFilesystemHandlerWorker implements Runnable {
 				}
 				return;
 			}
-			logger.info("Reading file : " + file);
+			// logger.info("Reading file : " + file);
 			fileReader = new FileReader((de.schlichtherle.io.File) file);
 			InputStream inputStream = new ReaderInputStream(fileReader);
 			handleFile(file, inputStream, new Document());
