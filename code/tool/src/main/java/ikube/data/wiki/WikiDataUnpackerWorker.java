@@ -5,7 +5,6 @@ import ikube.toolkit.FileUtilities;
 import ikube.toolkit.HashUtilities;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.nio.charset.Charset;
 
 import org.slf4j.Logger;
@@ -19,54 +18,20 @@ public class WikiDataUnpackerWorker {
 	private static final String PAGE_START = "<revision>";
 	private static final String PAGE_FINISH = "</revision>";
 
+	int count = 0;
 	private File directory;
-	private int offset;
 
 	/**
 	 * Constructor sets up the variables like where to start reading the input stream and how much to read.
 	 * 
 	 * @param directory the output directory
-	 * @param offset the offset in the stream to start reading from
-	 * @param length the length of xml to read from the stream
 	 */
-	public WikiDataUnpackerWorker(final File directory, final int offset) {
+	public WikiDataUnpackerWorker(final File directory) {
 		this.directory = directory;
-		this.offset = offset;
-	}
-
-	public void initialize() {
 		this.stringBuilder = new StringBuilder();
-		// Seek to the offset in the input stream
-		try {
-			LOGGER.info("Skipping to offset : " + offset);
-			// Skip to the last offset directory
-			long directoryOffset = getDirectoryOffset();
-			offset += directoryOffset;
-			LOGGER.info("Skipped another : " + offset);
-		} catch (Exception e) {
-			LOGGER.error(null, e);
-		}
 	}
 
-	private long getDirectoryOffset() {
-		File[] files = directory.listFiles(new FileFilter() {
-			@Override
-			public boolean accept(File pathname) {
-				return pathname.isDirectory();
-			}
-		});
-		long directoryOffset = 0;
-		for (File file : files) {
-			if (Long.parseLong(file.getName()) > directoryOffset) {
-				directoryOffset = Long.parseLong(file.getName());
-			}
-		}
-		return directoryOffset;
-	}
-
-	public void unpack(final byte[] bytes) throws Exception {
-		int count = 0;
-		File outputDirectory = null;
+	public int unpack(final byte[] bytes) throws Exception {
 		String string = new String(bytes, 0, bytes.length, Charset.forName(IConstants.ENCODING));
 		stringBuilder.append(string);
 		while (true) {
@@ -82,14 +47,14 @@ public class WikiDataUnpackerWorker {
 			String segment = stringBuilder.substring(startOffset, endOffset);
 			stringBuilder.delete(startOffset, endOffset);
 			String hash = Long.toString(HashUtilities.hash(segment));
-			if (outputDirectory == null || count % 10000 == 0) {
-				LOGGER.info("Count : " + count + ", position : " + offset);
-				outputDirectory = FileUtilities.getFile(new File(directory, Long.toString(count)).getAbsolutePath(), Boolean.TRUE);
+			if (count % 10000 == 0) {
+				LOGGER.info("Count : " + count);
 			}
-			String filePath = outputDirectory.getAbsolutePath() + File.separator + hash + ".html";
+			String filePath = directory.getAbsolutePath() + File.separator + hash + ".html";
 			FileUtilities.setContents(filePath, segment.getBytes(Charset.forName(IConstants.ENCODING)));
 			count++;
 		}
+		return count;
 	}
 
 }

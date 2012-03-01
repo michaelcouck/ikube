@@ -25,7 +25,7 @@ public class WikiDataUnpackerWorkerTest {
 	private static final Logger LOGGER = LoggerFactory.getLogger(WikiDataUnpackerWorkerTest.class);
 
 	private String inputFile = "/home/michael/Downloads/enwiki-20100130-pages-meta-history.xml.7z";
-	
+
 	private String outputDirectoryPath = "/tmp/wiki/test";
 	private File outputDirectory;
 	/** Class under test. */
@@ -45,8 +45,7 @@ public class WikiDataUnpackerWorkerTest {
 
 	@Test
 	public void run() throws Exception {
-		wikiDataUnpackerWorker = new WikiDataUnpackerWorker(outputDirectory, 1000000);
-		wikiDataUnpackerWorker.initialize();
+		wikiDataUnpackerWorker = new WikiDataUnpackerWorker(outputDirectory);
 
 		SevenZip.initSevenZipFromPlatformJAR();
 		RandomAccessFile randomAccessFile = new RandomAccessFile(inputFile, "r");
