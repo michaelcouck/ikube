@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -276,6 +277,12 @@ public abstract class ADataBaseJpa implements IDataBase {
 		}
 	}
 
+	/**
+	 * This method is for sub-classes to implement. The entity managers are defined in annotations, and essentially hard coded, meaning that
+	 * each database like DB2 or H2 needs to have their own persistence unit in the {@link PersistenceContext} annotation at compile time.
+	 * 
+	 * @return the entity manager that is defined in the sub-class for a specific database and persistence unit
+	 */
 	protected abstract EntityManager getEntityManager();
 
 }

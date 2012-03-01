@@ -2,16 +2,45 @@
 <%@ taglib prefix="security" uri="http://www.springframework.org/security/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
+<c:set var="targetSearchUrl" value="/results.html" />
+
 <script type="text/javascript">
 	window.onload = function() {
 		document.ikubeSearchForm.searchStrings.focus();
 	}
+	
+	$("#searchStrings").autocomplete({
+	      source: function(request, response){
+	           $.ajax({
+	               type: "GET",
+	               url: "<c:url value='/ikube/autocomplete'/>",
+	               data: "{'Project_ID':'1'}",
+	               contentType: "application/json; charset=utf-8",
+	               dataType: "json",
+	               success: function (msg) {
+	                   response($.parseJSON(msg.d).Records);
+	               },
+	               error: function (msg) {
+	                   alert(msg.status + ' ' + msg.statusText);
+	               }
+	           })
+	       },
+	       select: function (event, ui) {
+	           $("#searchStrings").val(ui.item.Work_Item);
+	           return false;
+	       }
+	}).data("autocomplete")._renderItem = function (ul, item) {
+	    return $("<li></li>")
+	    .data("item.autocomplete", item)
+	    .append("<a>" + item.Work_Item + "</a>")
+	    .appendTo(ul);
+	};
+	
 </script>
 
 <div id="sidebar" class="menu">
 	<ul>
 		<li id="search">
-			<c:set var="targetSearchUrl" value="/results.html" />
 			<form name="ikubeSearchForm" id="ikubeSearchForm" action="<c:url value="${targetSearchUrl}"/>">
 				<input name="targetSearchUrl" type="hidden" value="${targetSearchUrl}">
 				<fieldset>

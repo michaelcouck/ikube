@@ -10,27 +10,23 @@
 	<tr>
 		<td class="td-content">
 			<strong>access</strong>&nbsp;
-			The access to search results is a via a web service. Method signatures for the web service methods for 
+			The access to search results is a via a rest web service. Method signatures for the web service methods for 
 			searching are:<br><br>
 			
-			1) Search in a single field in the index - ISearcherWebService#searchSingle(String indexName, String searchString, 
-				String searchField, boolean fragment, int firstResult, int maxResults)<br>
-			2) Search multiple fields in the index - ISearcherWebService#searchMulti(String indexName, String[] searchStrings, 
-				String[] searchFields, boolean fragment, int firstResult, int maxResults)<br>
-			3) Search multiple fields in the index and sort them according to particular fields - ISearcherWebService#searchMultiSorted(String 
-				indexName, String[] searchStrings, String[] searchFields, String[] sortFields, boolean fragment, int firstResult, int maxResults)<br>
-			4) Search all the fields in the index and sort them according to particular fields - ISearcherWebService#searchMultiAll(String 
-				indexName, String[] searchStrings, boolean fragment, int firstResult, int maxResults)<br>
-			5) Search multiple fields and sort the results in ascending order by distance from a point(latitude and longitude) - 
-				ISearcherWebService#searchMulti(String indexName, String[] searchStrings, String[] searchFields, boolean fragment, 
-				int firstResult, int maxResults, int distance, double latitude, double longitude)<br><br>
+			1) Search in a single field in the index - http://ikube.dyndns.org:8080/ikube/service/search/single?indexName=geospatial&searchStrings=cape%20AND%20town%20AND%20university&searchFields=name&fragment=true&firstResult=0&maxResults=10<br>
+			2) Search multiple fields in the index - http://ikube.dyndns.org:8080/ikube/service/search/multi?indexName=geospatial&searchStrings=cape+AND+town+AND+university%3Bsouth+africa&searchFields=name%3Bcountry&fragment=true&firstResult=0&maxResults=10<br>
+			3) Search all the fields in the index - http://ikube.dyndns.org:8080/ikube/service/search/multi/all?indexName=geospatial&searchStrings=cape+AND+town+AND+university%3Bsouth+africa&fragment=true&firstResult=0&maxResults=10<br>
+			4) Search all the fields in the index and sort them according to the sort fields - http://ikube.dyndns.org:8080/ikube/service/search/multi/sorted?indexName=geospatial&searchStrings=cape+town+university%3Bsouth+africa&searchFields=name%3Bcountry&sortFields=name%3Bcountry&fragment=true&firstResult=0&maxResults=10<br>
+			5) Search a single field and sort the results according to distance from a point - http://ikube.dyndns.org:8080/ikube/service/search/multi/spatial?indexName=geospatial&searchStrings=cape%20town%20university&searchFields=name&fragment=true&firstResult=0&maxResults=10&distance=10&latitude=-33.95796&longitude=18.46082<br>
+			6) Search all the fields and sort the results according to distance from a point - http://ikube.dyndns.org:8080/ikube/service/search/multi/spatial?indexName=geospatial&searchStrings=cape%20town%20university&fragment=true&firstResult=0&maxResults=10&distance=10&latitude=-33.95796&longitude=18.46082<br>
 			
 			Parameters for searching:<br>
 			1) Index name - The index name is the name of the index that you want to search.<br> 
 			2) Search string(s) - The search string is the search string(s), which could have Lucene syntax, for example for wild card searches 
 				and the like. Please refer to the <a href="http://lucene.apache.org/java/3_0_0/queryparsersyntax.html">Lucene syntax</a> 
 				documentation for all the possibilities that you can use for searching indexes. Keep in mind that a wild card search will iterate through all 
-				the documents fields' running a Levenshtein distance on the data, and will be very expensive.<br><br>
+				the documents fields' running a Levenshtein distance on the data, and will be very expensive. The search strings(if there are more than one) 
+				are delimited by a semi-colon for example 'hotels;bed and breakfast'<br><br>
 			3) Search field(s) - The search fields are the fields in the Lucene index that you want to search.<br>
 			4) Sort field(s) - The sort fields are the fields that will be sorted on, in the order that they are specified.<br>
 			5) Fragment - Whether to create a fragment from the data stored in the index. Note that fragments can only be generated 
@@ -40,13 +36,11 @@
 			7) Max results - This parameter will limit the results to a set, perhaps 10 or even 100, starting at the point in the results where 
 				the first result parameter was specified.<br>
 			8) Distance - The distance is for spatial searches. This defines the best fit distance that should be taken into consideration when 
-				allocating the results from a point. The value of this should be around 10.
+				allocating the results from a point. The value of this should be from 1 up to 20 as 20 is the defined tiers' size during indexing. This 
+				will become a property and can be modified by the user for different spatial indexes.
 			9) Latitude and longitude - These are the points that will be used as the origin of the search, i.e. the starting point to find 
 				results around. This will also be used to sort the results, radiating outward from this point.<br><br>
 				
-			For other platforms a client will need to be generated using tools for that platform from the WSDL, which is published on a particular 
-			port during the startup of Ikube.<br><br>
-			
 			In all cases the result is a string. This string is a serialized list of maps. Each map is one result. A result consists of four fields:<br><br>
 			
 			1) index - the offset in the Lucene index of the Lucene document<br>
@@ -76,29 +70,12 @@
 			* latitude - -33.9693580<br>
 			* longitude - 18.4622110<br><br>
 			
-			The web service will automatically be published to http://169.254.107.201:8081/ikube/service/ISearcherWebService?wsdl, replacing 
-			the ip with the ip of the machine, using the standard Java web service publisher, using Endpoint endpoint = Endpoint.publish(url, 
-			implementor). This will bind the web service to the defined url and port. If there are more than one servers running on the same 
-			machine then the port will be incremented before publishing, starting at 8081. So for three servers on one machine the ports would be 
-			8081, 8082, 8083.<br><br>
-			
-			It is possible to use the classes included in Ikube to do the search, this does however mean putting ikube code on the classpath. There 
-			is an example how to do this in the ikube.action.Searcher class. Here is the required code:<br><br>
-			
-			ISearcherWebService searchRemote = ServiceLocator.getService(ISearcherWebService.class, protocol, host, port, path,
-				ISearcherWebService.NAMESPACE, ISearcherWebService.SERVICE);<br>
-			String xml = searchRemote.searchSingle(indexName, searchString, fieldName, fragment, start, end);<br>
-			List&lt;Map&lt;String, String&gt;&gt; results = (List&lt;Map&lt;String, String&gt;&gt;) SerializationUtilities.deserialize(xml);<br><br>
+			The rest web service is published by Jersey, and protected by Spring Security. To access this web service you need to be logged in with one of the userids 
+			and passwords defined in the spring-security.xml which is in the configuration folder.<br><br>
 			
 			The final map in the list will have two fields, the total results that were returned by the search and the duration for the search, just 
 			for interests' sake. The last map will also contain the spelling corrections, or the original search string if there were no spelling errors.
 			<br><br>
-			
-			For convenience there are also tags for iterating over the results. These can be used as is. You just need to extract the jar 
-			from the war and look at the include.jsp for an example of how to use the tags. As well as this there is a spelling checker 
-			tag that can be added. This tag has an example of the usage in the menu.jsp in the war. At the time of writing there 
-			was only spelling checking for English but to add more languages all you would need to do is to add text files with word lists 
-			from other languages to the ./spellingIndex directory, something like italian.txt for example.<br><br>
 			
 			If you have any questions please feel free to give me a shout at michael dot couck at gmail dot com.<br><br>
 			

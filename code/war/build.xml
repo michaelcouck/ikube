@@ -88,6 +88,7 @@
 		<copy file="${target.directory}/${ikube.war}" todir="${glassfish.1.deploy}" overwrite="true" failonerror="false" />
 		<copy file="${target.directory}/${ikube.war}" todir="${oc4j.1.deploy}" overwrite="true" failonerror="false" />
 		<copy file="${target.directory}/${ikube.war}" todir="${weblogic.1.deploy}" overwrite="true" failonerror="false" />
+		<copy file="${target.directory}/${ikube.war}" todir="C:/jboss-4.2.2.GA/server/default/deploy" overwrite="true" failonerror="false" />
 	</target>
 
 	<target name="clean.server">
@@ -130,6 +131,7 @@
 		<unjar src="${configuration.directory}/${ikube.configuration.jar}" dest="${glassfish.1.bin}" overwrite="true" />
 		<unjar src="${configuration.directory}/${ikube.configuration.jar}" dest="${oc4j.1.bin}" overwrite="true" />
 		<unjar src="${configuration.directory}/${ikube.configuration.jar}" dest="${weblogic.1.bin}" overwrite="true" />
+		<unjar src="${configuration.directory}/${ikube.configuration.jar}" dest="C:/jboss-4.2.2.GA/bin" overwrite="true" />
 		<replace dir="${tomcat.2.bin}" value="61616">
 			<include name="**/spring.properties" />
 			<replacetoken><![CDATA[61616]]></replacetoken>

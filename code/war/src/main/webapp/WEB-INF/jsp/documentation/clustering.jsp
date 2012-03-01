@@ -9,22 +9,43 @@
 		<td class="td-content" colspan="2">
 			<strong>clustering</strong>&nbsp;
 			Ikube will automatically cluster them selves via UDP broadcasting. Whether it is installed in a server, a 
-			cluster of servers or stand alone. Provided the machines and the Jvms are reachable through the firewall there 
-			will be automatic load distribution during the indexing. This facilitates large volumes, and in fact it is not 
-			recommended to use Ikube for anything less than 100m records of any kind due to the overhead 
-			of the configuration which is not trivial. There are other much simpler index engines available that are 
-			considerably easier to configure and deploy. Having said that few if any at all have the capability to index
-			data in complex hierarchical structures in databases. 
+			cluster of servers or stand alone. Provided the machines and the Jvms are reachable through the firewall. Each instance is 
+			multi threaded, however there is no load distribution during indexing. Each instance will index one defined index completely. For 
+			large indexes the data must be partitioned statically, i.e. within the definition of the index. This is described later.
 		</td>
 	</tr>
 	<tr>
 		<td class="td-content" colspan="2">
 			There is no difference between configuration for Ikube stand alone and in a cluster. However the location 
-			of the indexes, specifically the index directory path('index.directory.path' in the client spring.properties file) must 
-			be on the network as all the servers in the cluster will write to the same index directory and will then open 
-			the index searcher on that directory when the index is finished. So all that needs to be done is to set up 
-			the indexables to index(database, internet, file system etc) and drop the war into the server deploy directory 
-			or deploy as instructed by your server documentation.
+			of the indexes, i.e. where they will be written by each instance can either be defined as a relative directory 
+			meaning that the instance will write the index to the local file system. Or it can be defined as an absolute path 
+			on the network, where all the instances will write their indexes. In the first case each instance will perform the 
+			indexing on every index, which is undesirable. In the latter case only one instance will index the data and all the 
+			instances will use the same index. 
+		</td>
+	</tr>
+	<tr>
+		<td class="td-content" colspan="2">
+			For very large data sets(1 000 000 000) documents++, it is advisable that the load get statically distributed over the 
+			cluster using the configuration to partition the data into segments per server. For example if you have one billion documents 
+			spread out over 10 file servers, roughly evenly, then you should create and index per file server, rather than putting all the 
+			file servers in the same index. This way each Ikube instance will index one file server, in parallel, and the load will be distributed 
+			evenly over the cluster.
+		</td>
+	</tr>
+	<tr>
+		<td class="td-content" colspan="2">
+			One thing to note is that the disk io will probably be the bottleneck and not the cpu. If you have one billion documents on a single 
+			disk then this will take a very long time to index indeed. To be able to index this volume you need to split the data on separate disks 
+			and define multiple indexes, each with a single thread. Adding threads to the file system handlers does not increase the throughput 
+			of the indexing process, indeed it will probably slow it down.
+		</td>
+	</tr>
+	<tr>
+		<td class="td-content" colspan="2">
+			Another this with large volumes is that on Windows, the operating system does not release resources efficiently, and the maximum 
+			I found on Server 2008 EE was around 8 million before the machine (Dell Rack) ran out of memory. I have not performed volume tests 
+			on Windows environments as most if not all production systems will be Linux.
 		</td>
 	</tr>
 </table>

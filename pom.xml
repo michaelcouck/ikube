@@ -17,7 +17,7 @@
 		<site>
 			<id>ikube</id>
 			<name>ikube-releases</name>
-			<url>file:C:/Users/Administrator/.m2/repository</url>
+			<url>file:/home/michael/.m2/repository</url>
 		</site>
 		<repository>
 			<id>ikube</id>
@@ -771,6 +771,12 @@
 			<artifactId>truezip</artifactId>
 			<version>6.8.4</version>
 			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>2.1</version>
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>

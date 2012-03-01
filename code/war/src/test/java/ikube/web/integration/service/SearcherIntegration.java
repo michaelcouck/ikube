@@ -33,6 +33,7 @@ public class SearcherIntegration extends Integration {
 
 		GetMethod getMethod = new GetMethod(url);
 		getMethod.setQueryString(params);
+		LOGGER.info("Query string : " + getMethod.getQueryString());
 		int result = HTTP_CLIENT.executeMethod(getMethod);
 		String actual = getMethod.getResponseBodyAsString();
 		LOGGER.info("Result : " + actual);
@@ -54,6 +55,7 @@ public class SearcherIntegration extends Integration {
 
 		GetMethod getMethod = new GetMethod(url);
 		getMethod.setQueryString(params);
+		LOGGER.info("Query string : " + getMethod.getQueryString());
 		int result = HTTP_CLIENT.executeMethod(getMethod);
 		String actual = getMethod.getResponseBodyAsString();
 		LOGGER.info("Result : " + actual);
@@ -74,6 +76,7 @@ public class SearcherIntegration extends Integration {
 
 		GetMethod getMethod = new GetMethod(url);
 		getMethod.setQueryString(params);
+		LOGGER.info("Query string : " + getMethod.getQueryString());
 		int result = HTTP_CLIENT.executeMethod(getMethod);
 		String actual = getMethod.getResponseBodyAsString();
 		LOGGER.info("Result : " + actual);
@@ -95,6 +98,7 @@ public class SearcherIntegration extends Integration {
 
 		GetMethod getMethod = new GetMethod(url);
 		getMethod.setQueryString(params);
+		LOGGER.info("Query string : " + getMethod.getQueryString());
 		int result = HTTP_CLIENT.executeMethod(getMethod);
 		String actual = getMethod.getResponseBodyAsString();
 		LOGGER.info("Result : " + actual);
@@ -111,11 +115,12 @@ public class SearcherIntegration extends Integration {
 		String[] names = { IConstants.INDEX_NAME, IConstants.SEARCH_STRINGS, IConstants.SEARCH_FIELDS, IConstants.FRAGMENT,
 				IConstants.FIRST_RESULT, IConstants.MAX_RESULTS, IConstants.DISTANCE, IConstants.LATITUDE, IConstants.LONGITUDE };
 		String[] values = { IConstants.GEOSPATIAL, "cape AND town AND university;south africa", IConstants.NAME + ";" + IConstants.COUNTRY,
-				Boolean.TRUE.toString(), "0", "10", "50", "50.7930727874172", "4.36242219751376" };
+				Boolean.TRUE.toString(), "0", "10", "50", "18.46082", "-33.95796" };
 		NameValuePair[] params = getNameValuePairs(names, values);
 
 		GetMethod getMethod = new GetMethod(url);
 		getMethod.setQueryString(params);
+		LOGGER.info("Query string : " + getMethod.getQueryString());
 		int result = HTTP_CLIENT.executeMethod(getMethod);
 		String actual = getMethod.getResponseBodyAsString();
 		LOGGER.info("Result : " + actual);
@@ -131,12 +136,13 @@ public class SearcherIntegration extends Integration {
 
 		String[] names = { IConstants.INDEX_NAME, IConstants.SEARCH_STRINGS, IConstants.FRAGMENT, IConstants.FIRST_RESULT,
 				IConstants.MAX_RESULTS, IConstants.DISTANCE, IConstants.LATITUDE, IConstants.LONGITUDE };
-		String[] values = { IConstants.GEOSPATIAL, "cape AND town AND university;south africa", Boolean.TRUE.toString(), "0", "10", "50",
-				"50.7930727874172", "4.36242219751376" };
+		String[] values = { IConstants.GEOSPATIAL, "cape town university", Boolean.TRUE.toString(), "0", "10", "10", "18.46082",
+				"-33.95796" };
 		NameValuePair[] params = getNameValuePairs(names, values);
 
 		GetMethod getMethod = new GetMethod(url);
 		getMethod.setQueryString(params);
+		LOGGER.info("Query string : " + getMethod.getQueryString());
 		int result = HTTP_CLIENT.executeMethod(getMethod);
 		String actual = getMethod.getResponseBodyAsString();
 		LOGGER.info("Result : " + actual);
@@ -156,6 +162,7 @@ public class SearcherIntegration extends Integration {
 
 		GetMethod getMethod = new GetMethod(url);
 		getMethod.setQueryString(params);
+		LOGGER.info("Query string : " + getMethod.getQueryString());
 		int result = HTTP_CLIENT.executeMethod(getMethod);
 		String actual = getMethod.getResponseBodyAsString();
 		LOGGER.info("Result : " + actual);

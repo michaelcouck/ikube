@@ -5,13 +5,19 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import ikube.ATest;
 import ikube.IConstants;
+import ikube.database.jpa.ADataBaseJpa;
+import ikube.database.jpa.DataBaseJpa;
 import ikube.mock.ApplicationContextManagerMock;
+import ikube.model.Search;
 import ikube.toolkit.ApplicationContextManager;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import mockit.Deencapsulation;
+import mockit.Mock;
+import mockit.MockClass;
 import mockit.Mockit;
 
 import org.junit.After;
@@ -26,6 +32,26 @@ import org.junit.Test;
  * @version 01.00
  */
 public class SearcherWebServiceTest extends ATest {
+	
+	@MockClass(realClass = ADataBaseJpa.class)
+	public static class IDataBaseMock {
+		@Mock()
+		@SuppressWarnings("unchecked")
+		public <T> T find(Class<T> klass, String sql, String[] names, Object[] values) {
+			Search search = new Search();
+			search.setCount(10);
+			search.setSearchStrings("hello world");
+			return (T) search;
+		}
+		@Mock()
+		public <T> T merge(T object) {
+			return object;
+		}
+		@Mock()
+		public <T> T persist(T object) {
+			return object;
+		}
+	}
 
 	private SearcherWebService searcherWebService;
 
@@ -35,11 +61,10 @@ public class SearcherWebServiceTest extends ATest {
 
 	@Before
 	public void before() {
-		Mockit.setUpMocks(ApplicationContextManagerMock.class);
-		ApplicationContextManagerMock.setBean(indexContext);
+		Mockit.setUpMocks(ApplicationContextManagerMock.class, IDataBaseMock.class );
 		this.searcherWebService = new SearcherWebService();
-		// ((SearcherWebService) this.searcherWebService).setSearchDelegate(new SearchDelegate());
-		// Deencapsulation.setField(searcherWebService, new SearchDelegate());
+		ApplicationContextManagerMock.setBean(indexContext);
+		Deencapsulation.setField(searcherWebService, new DataBaseJpa());
 	}
 
 	@After
@@ -113,10 +138,16 @@ public class SearcherWebServiceTest extends ATest {
 		assertNotNull("The message can't be null : ", messageResults);
 		assertEquals("There should be one entry in the list : ", 1, messageResults.size());
 	}
+	
+	@Test
+	public void addSearchStatistics() {
+		String[] searchStrings = new String[] { "hello world" };
+		this.searcherWebService.addSearchStatistics(searchStrings);
+	}
 
 	private void verifyResults(ArrayList<HashMap<String, String>> resultsList) {
 		assertNotNull("Results should never be null : ", resultsList);
 		assertTrue("There should always be at least one map in the results : ", resultsList.size() >= 1);
 	}
-
+	
 }
