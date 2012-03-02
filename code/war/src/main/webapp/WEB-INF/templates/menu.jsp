@@ -4,38 +4,14 @@
 
 <c:set var="targetSearchUrl" value="/results.html" />
 
+
 <script type="text/javascript">
-	window.onload = function() {
-		document.ikubeSearchForm.searchStrings.focus();
-	}
-	
-	$("#searchStrings").autocomplete({
-	      source: function(request, response){
-	           $.ajax({
-	               type: "GET",
-	               url: "<c:url value='/ikube/autocomplete'/>",
-	               data: "{'Project_ID':'1'}",
-	               contentType: "application/json; charset=utf-8",
-	               dataType: "json",
-	               success: function (msg) {
-	                   response($.parseJSON(msg.d).Records);
-	               },
-	               error: function (msg) {
-	                   alert(msg.status + ' ' + msg.statusText);
-	               }
-	           })
-	       },
-	       select: function (event, ui) {
-	           $("#searchStrings").val(ui.item.Work_Item);
-	           return false;
-	       }
-	}).data("autocomplete")._renderItem = function (ul, item) {
-	    return $("<li></li>")
-	    .data("item.autocomplete", item)
-	    .append("<a>" + item.Work_Item + "</a>")
-	    .appendTo(ul);
-	};
-	
+			$(document).ready(function() {
+				alert("Hello");
+    $("input#search-text").autocomplete({
+            source: ["c++", "java", "php", "coldfusion", "javascript", "asp", "ruby"]
+        });              
+}
 </script>
 
 <div id="sidebar" class="menu">

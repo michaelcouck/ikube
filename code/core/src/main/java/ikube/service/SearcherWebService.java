@@ -19,6 +19,7 @@ import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.ejb.Remote;
@@ -47,6 +48,8 @@ public class SearcherWebService implements ISearcherWebService {
 
 	@Autowired
 	private IDataBase dataBase;
+	private Object[] values = new Object[1];
+	private String[] names = { IConstants.SEARCH_STRINGS };
 
 	/**
 	 * {@inheritDoc}
@@ -268,22 +271,21 @@ public class SearcherWebService implements ISearcherWebService {
 		return results;
 	}
 
-	private Object[] values = new Object[1];
-	private String[] names = { IConstants.SEARCH_STRINGS };
-
 	protected void addSearchStatistics(final String[] searchStrings) {
 		for (String searchString : searchStrings) {
 			// First verify that all the words are ok
 			String correctedSearchString = CheckerExt.getCheckerExt().checkWords(searchString);
 			// We only save this search if it is ok
 			if (correctedSearchString == null) {
-				Search search = dataBase.find(Search.class, Search.SELECT_FROM_SEARCH_BY_SEARCH_STRINGS_LIKE, names, values);
-				if (search == null) {
-					search = new Search();
+				values[0] = searchString;
+				List<Search> searches = dataBase.find(Search.class, Search.SELECT_FROM_SEARCH_BY_SEARCH_STRINGS, names, values, 0, 1);
+				if (searches.isEmpty()) {
+					Search search = new Search();
 					search.setCount(1);
 					search.setSearchStrings(searchString);
 					dataBase.persist(search);
 				} else {
+					Search search = searches.get(0);
 					search.setCount(search.getCount() + 1);
 					dataBase.merge(search);
 				}

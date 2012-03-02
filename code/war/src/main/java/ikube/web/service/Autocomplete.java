@@ -27,7 +27,7 @@ import com.google.gson.Gson;
  * @version 01.00
  */
 @Component
-@Path(Autocomplete.SEARCH)
+@Path(Autocomplete.AUTOCOMPLETE)
 @Scope(Autocomplete.REQUEST)
 @Produces(MediaType.TEXT_PLAIN)
 public class Autocomplete {
@@ -37,7 +37,7 @@ public class Autocomplete {
 	/** Constants for the paths to the web services. */
 	public static final String SINGLE = "/single";
 	public static final String REQUEST = "request";
-	public static final String SEARCH = "/autocomplete";
+	public static final String AUTOCOMPLETE = "/autocomplete";
 
 	@Autowired
 	private IDataBase dataBase;
@@ -51,6 +51,7 @@ public class Autocomplete {
 	public String autocomplete(@QueryParam(value = IConstants.SEARCH_STRINGS) final String searchStrings) {
 		values[0] = searchStrings + "%";
 		List<Search> searches = dataBase.find(Search.class, Search.SELECT_FROM_SEARCH_BY_SEARCH_STRINGS_LIKE, names, values, 0, 10);
+		LOGGER.info("Searches : " + searches);
 		return gson.toJson(searches);
 	}
 

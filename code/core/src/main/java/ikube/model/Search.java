@@ -16,10 +16,15 @@ import javax.persistence.NamedQuery;
  */
 @Entity()
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-@NamedQueries(value = { @NamedQuery(name = Search.SELECT_FROM_SEARCH_BY_SEARCH_STRINGS_LIKE, query = Search.SELECT_FROM_SEARCH_BY_SEARCH_STRINGS_LIKE) })
+@NamedQueries(value = {
+		@NamedQuery(name = Search.SELECT_FROM_SEARCH_BY_SEARCH_STRINGS, query = Search.SELECT_FROM_SEARCH_BY_SEARCH_STRINGS),
+		@NamedQuery(name = Search.SELECT_FROM_SEARCH_BY_SEARCH_STRINGS_LIKE, query = Search.SELECT_FROM_SEARCH_BY_SEARCH_STRINGS_LIKE),
+		@NamedQuery(name = Search.SELECT_COUNT_SEARCH_BY_SEARCH_STRINGS, query = Search.SELECT_COUNT_SEARCH_BY_SEARCH_STRINGS) })
 public class Search extends Persistable {
 
-	public static final String SELECT_FROM_SEARCH_BY_SEARCH_STRINGS_LIKE = "select s from Search as s where s.searchStrings like :searchStrings order by count desc";
+	public static final String SELECT_COUNT_SEARCH_BY_SEARCH_STRINGS = "select count(s) from Search as s where s.searchStrings = :searchStrings";
+	public static final String SELECT_FROM_SEARCH_BY_SEARCH_STRINGS = "select s from Search as s where s.searchStrings = :searchStrings";
+	public static final String SELECT_FROM_SEARCH_BY_SEARCH_STRINGS_LIKE = "select s from Search as s where s.searchStrings like :searchStrings order by s.count desc";
 
 	private int count;
 	private String searchStrings;

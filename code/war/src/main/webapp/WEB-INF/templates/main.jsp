@@ -23,6 +23,7 @@
 		<script type="text/javascript" src="<c:url value="/js/ikube.js" />"></script>
 		<script type="text/javascript" src="<c:url value="/style/prettyprint/prettify.js" />"></script>
 		
+		<script src="<c:url value="/js/jquery-1.7.1.js"/>" type="text/javascript"></script>
 		<script src="http://www.google-analytics.com/ga.js" type="text/javascript"></script>
 		<script src="http://maps.google.com/maps/api/js?sensor=false" type="text/javascript"></script>
 	</head>
