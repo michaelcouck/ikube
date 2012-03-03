@@ -1,7 +1,12 @@
 package ikube.web.tag;
 
+import ikube.toolkit.DatabaseUtilities;
+
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
+
+import org.springframework.util.ReflectionUtils;
 
 public class Toolkit {
 
@@ -58,6 +63,15 @@ public class Toolkit {
 
 	public static String concatenate(String one, String two) {
 		return new StringBuilder(one).append(two).toString();
+	}
+	
+	public static Object fieldValue(final String fieldName, final Object object) {
+		if (object == null) {
+			return null;
+		}
+		Field field = ReflectionUtils.findField(object.getClass(), fieldName);
+		ReflectionUtils.makeAccessible(field);
+		return DatabaseUtilities.getFieldValue(field, object);
 	}
 
 }

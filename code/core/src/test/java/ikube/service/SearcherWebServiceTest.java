@@ -3,26 +3,28 @@ package ikube.service;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.when;
 import ikube.ATest;
 import ikube.IConstants;
-import ikube.database.jpa.ADataBaseJpa;
-import ikube.database.jpa.DataBaseJpa;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.model.Search;
 import ikube.toolkit.ApplicationContextManager;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import mockit.Deencapsulation;
-import mockit.Mock;
-import mockit.MockClass;
 import mockit.Mockit;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 /**
  * These tests must just pass with out exception.
@@ -32,27 +34,12 @@ import org.junit.Test;
  * @version 01.00
  */
 public class SearcherWebServiceTest extends ATest {
-	
-	@MockClass(realClass = ADataBaseJpa.class)
-	public static class IDataBaseMock {
-		@Mock()
-		@SuppressWarnings("unchecked")
-		public <T> T find(Class<T> klass, String sql, String[] names, Object[] values) {
-			Search search = new Search();
-			search.setCount(10);
-			search.setSearchStrings("hello world");
-			return (T) search;
-		}
-		@Mock()
-		public <T> T merge(T object) {
-			return object;
-		}
-		@Mock()
-		public <T> T persist(T object) {
-			return object;
-		}
-	}
 
+	private Search search = new Search();
+	{
+		search.setCount(10);
+		search.setSearchStrings("hello world");
+	}
 	private SearcherWebService searcherWebService;
 
 	public SearcherWebServiceTest() {
@@ -61,10 +48,10 @@ public class SearcherWebServiceTest extends ATest {
 
 	@Before
 	public void before() {
-		Mockit.setUpMocks(ApplicationContextManagerMock.class, IDataBaseMock.class );
+		Mockit.setUpMocks(ApplicationContextManagerMock.class);
 		this.searcherWebService = new SearcherWebService();
 		ApplicationContextManagerMock.setBean(indexContext);
-		Deencapsulation.setField(searcherWebService, new DataBaseJpa());
+		Deencapsulation.setField(searcherWebService, dataBase);
 	}
 
 	@After
@@ -138,16 +125,24 @@ public class SearcherWebServiceTest extends ATest {
 		assertNotNull("The message can't be null : ", messageResults);
 		assertEquals("There should be one entry in the list : ", 1, messageResults.size());
 	}
-	
+
 	@Test
+	@SuppressWarnings("unchecked")
 	public void addSearchStatistics() {
-		String[] searchStrings = new String[] { "hello world" };
-		this.searcherWebService.addSearchStatistics(searchStrings);
+		when(dataBase.find(any(Class.class), anyString(), any(String[].class), any(Object[].class), anyInt(), anyInt())).thenReturn(
+				Arrays.asList());
+		this.searcherWebService.addSearchStatistics("indexName", new String[] { "hello world" }, 1, 1);
+		Mockito.verify(dataBase, Mockito.atLeast(1)).persist(any(Search.class));
+
+		when(dataBase.find(any(Class.class), anyString(), any(String[].class), any(Object[].class), anyInt(), anyInt())).thenReturn(
+				Arrays.asList(search));
+		this.searcherWebService.addSearchStatistics("indexName", new String[] { "hello world" }, 1, 1);
+		Mockito.verify(dataBase, Mockito.atLeast(1)).merge(any(Search.class));
 	}
 
 	private void verifyResults(ArrayList<HashMap<String, String>> resultsList) {
 		assertNotNull("Results should never be null : ", resultsList);
 		assertTrue("There should always be at least one map in the results : ", resultsList.size() >= 1);
 	}
-	
+
 }

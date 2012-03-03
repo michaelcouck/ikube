@@ -10,20 +10,28 @@
 
 <html>
 	<head>
+		<meta http-equiv="Expires" content="-1">
+		<meta http-equiv="Pragma" content="no-cache">
+		<meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+		
 		<title><tiles:insertAttribute name="title" /></title>
 		
-		<meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
 		<meta name="Keywords" content="Michael Couck, Ikube, Enterprise Search, Web Site Search, Database Search, High Volume" />
 		<meta name="Description" content="Ikube Enterprise Search." />
 		
 		<link rel="shortcut icon" href="<c:url value="/images/icon.ico"/>" />
 		<link href="<c:url value="/style/style-white.css"/>" rel="stylesheet" type="text/css" media="screen" />
 		<link href="<c:url value="/style/prettyprint/prettify.css"/>" rel="stylesheet" type="text/css" media="screen" />
+		<link href="<c:url value="/js/jquery.autocomplete.css"/>" rel="stylesheet" type="text/css" media="screen" />
 		
 		<script type="text/javascript" src="<c:url value="/js/ikube.js" />"></script>
 		<script type="text/javascript" src="<c:url value="/style/prettyprint/prettify.js" />"></script>
 		
 		<script src="<c:url value="/js/jquery-1.7.1.js"/>" type="text/javascript"></script>
+		<script src="<c:url value="/js/jquery.autocomplete.js"/>" type="text/javascript"></script>
+		<script src="<c:url value="/js/jquery.autocomplete.min.js"/>" type="text/javascript"></script>
+		<script src="<c:url value="/js/jquery.autocomplete.pack.js"/>" type="text/javascript"></script>
+		
 		<script src="http://www.google-analytics.com/ga.js" type="text/javascript"></script>
 		<script src="http://maps.google.com/maps/api/js?sensor=false" type="text/javascript"></script>
 	</head>

@@ -55,4 +55,10 @@
 		<function-class>ikube.web.tag.Toolkit</function-class>
 		<function-signature>java.lang.String concatenate(java.lang.String, java.lang.String)</function-signature>
 	</function>
+	
+	<function>
+		<name>fieldValue</name>
+		<function-class>ikube.web.tag.Toolkit</function-class>
+		<function-signature>java.lang.Object fieldValue(java.lang.String, java.lang.Object)</function-signature>
+	</function>
 </taglib>

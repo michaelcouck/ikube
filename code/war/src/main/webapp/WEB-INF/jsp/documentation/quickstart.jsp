@@ -13,7 +13,7 @@
 			
 			1) Down-load the latest version at <a href="http://code.google.com/p/ikube/downloads/list" target="_top">war</a>.<br>
 			2) Copy the war to the webapps directory of Tomcat.<br>
-			3) Copy the 'ikube' configuration folder to the bin directory of Tomcat<br>
+			3) Copy the 'ikube' configuration folder(in the zip) to the bin directory of Tomcat<br>
 			4) Change the name of the war to ikube.war.<br>
 			5) Start Tomcat. <br>
 			6) Have a cup of coffee.<br><br>

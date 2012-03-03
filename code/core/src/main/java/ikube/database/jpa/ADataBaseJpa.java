@@ -31,6 +31,17 @@ import org.apache.log4j.Logger;
 public abstract class ADataBaseJpa implements IDataBase {
 
 	protected static final Logger LOGGER = Logger.getLogger(ADataBaseJpa.class);
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public <T> Long count(Class<T> klass) {
+		StringBuilder query = new StringBuilder("select count(c) from ");
+		query.append(klass.getSimpleName());
+		query.append(" as c ");
+		return (Long) getEntityManager().createQuery(query.toString()).getSingleResult();
+	}
 
 	/**
 	 * {@inheritDoc}

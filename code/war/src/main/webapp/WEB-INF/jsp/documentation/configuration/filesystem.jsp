@@ -11,32 +11,16 @@
 		<td colspan="2">
 			<strong>file system</strong>&nbsp;
 			This configuration section is to index a file system. Could be on the local machine or across the network. It could be on Windows or Linux, it 
-			makes no difference. Before going through the configuration options, please make sure you have an instance of Tomcat running with an instance 
-			of Ikube in it by refering to the quick start at <a href="<c:url value="/documentation/configuration.html" />" >quick start</a>.
-		</td>
-	</tr>
-	<tr>
-		<td colspan="2">
+			makes no difference. 
 			
-		</td>
-	</tr>
-	<tr>
-		<td colspan="2">
+			For a local directory the path to the folder will be /path/to/folder and on the network would be something like //computer.name/path/to/folder 
+			depending on your favourite operating system. 
 			
- 		</td>
+			Before going through the configuration options, please make sure you have an instance of Tomcat running with an instance 
+			of Ikube in it by refering to the quick start at <a href="<c:url value="/documentation/quickstart.html" />" >quick start</a>.
+		</td>
 	</tr>
 	
-	<tr><td colspan="2">&nbsp;</td></tr>
-	
-	<tr>
-		<th colspan="2">Indexable file system definition parameters</th>
-	</tr>
-	<tr>
-		<td colspan="2">
-			This indexable definition is for a file share. It can be on the local machine or on the network. For a local directory 
-			the path to the folder will be /path/to/folder and on the network would be something like //computer.name/path/to/folder.
-		</td>
-	</tr>
 	<tr>
 		<th>Parameter</th>
 		<th>Description</th>

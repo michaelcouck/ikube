@@ -63,29 +63,26 @@ public class GeoName extends Persistable {
 			"create index geoname_country on geoname (country)"//
 	};
 
+	@Column()
 	private Integer geonameid; // : integer id of record in geonames database
 	@Column(length = 200)
-	// @Index(name = GeoName.GEONAME_NAME)
 	private String name; // : name of geographical point (utf8) varchar(200)
 	@Column(length = 200)
-	// @Index(name = GeoName.GEONAME_CITY)
 	private String city;
 	@Column(length = 200)
-	// @Index(name = GeoName.GEONAME_COUNTRY)
 	private String country;
 	@Column(length = 200)
-	// @Index(name = GeoName.GEONAME_ASCIINAME)
 	private String asciiname; // : name of geographical point in plain ascii characters, varchar(200)
 	@Lob
 	@Column(length = 5000)
 	@Basic(fetch = FetchType.EAGER)
 	private String alternatenames; // : alternate names, comma separated varchar(5000)
+	@Column()
 	private Double latitude; // : latitude in decimal degrees (wgs84)
+	@Column()
 	private Double longitude; // : longitude in decimal degrees (wgs84)
-	// @Index
 	@Column(length = 1)
 	private String featureClass; // : see http://www.geonames.org/export/codes.html, char(1)
-	// @Index
 	@Column(length = 10)
 	private String featureCode; // : see http://www.geonames.org/export/codes.html, varchar(10)
 	@Column(length = 2)
@@ -101,8 +98,11 @@ public class GeoName extends Persistable {
 	private String admin3Code; // : code for third level administrative division, varchar(20)
 	@Column(length = 20)
 	private String admin4Code; // : code for fourth level administrative division, varchar(20)
+	@Column()
 	private Integer population; // : bigint (8 byte int)
+	@Column()
 	private Integer elevation; // : in meters, integer
+	@Column()
 	private Integer gtopo30; // : average elevation of 30'x30' (ca 900mx900m) area in meters, integer
 	@Column(length = 48)
 	private String timezone; // : the timezone id (see file timeZone.txt)

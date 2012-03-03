@@ -86,7 +86,7 @@
 		<entry key="openjpa.Optimistic" value="false" />
 		<entry key="openjpa.ReadLockLevel" value="write" />
 		<entry key="openjpa.WriteLockLevel" value="write" />
-		<entry key="openjpa.NontransactionalRead" value="false" />
+		<entry key="openjpa.NontransactionalRead" value="true" />
 		<entry key="openjpa.LockTimeout" value="60000" />
 
 		<entry key="openjpa.Multithreaded" value="true" />

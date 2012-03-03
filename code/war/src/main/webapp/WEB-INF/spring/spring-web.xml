@@ -121,12 +121,19 @@
 	<mvc:view-controller path="/admin/admin.html" />
 	<mvc:view-controller path="/documentation/index.html" />
 	<mvc:view-controller path="/documentation/quickstart.html" />
-	<mvc:view-controller path="/documentation/configuration.html" />
+	
 	<mvc:view-controller path="/documentation/searching.html" />
 	<mvc:view-controller path="/documentation/extra.html" />
 	<mvc:view-controller path="/documentation/clustering.html" />
 	<mvc:view-controller path="/documentation/indexes.html" />
 	<mvc:view-controller path="/documentation/tutorial.html" />
+	
+	<mvc:view-controller path="/documentation/configuration/context.html" />
+	<mvc:view-controller path="/documentation/configuration/database.html" />
+	<mvc:view-controller path="/documentation/configuration/email.html" />
+	<mvc:view-controller path="/documentation/configuration/filesystem.html" />
+	<mvc:view-controller path="/documentation/configuration/internet.html" />
+	
 
 	<mvc:interceptors>
 		<bean 

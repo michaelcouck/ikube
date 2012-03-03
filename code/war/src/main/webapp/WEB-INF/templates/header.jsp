@@ -11,7 +11,6 @@
 							<td align="right" style="padding-bottom: 30px">
 								<a class="link" href="<c:url value="http://code.google.com/p/ikube/downloads/list" />">download</a>
 								<a class="link" href="<c:url value="/documentation/quickstart.html" />">quick start</a>
-								<a class="link" href="<c:url value="/documentation/configuration.html" />">configuration</a>
 								<a class="link" href="<c:url value="/documentation/searching.html" />">searching</a>
 								<a class="link" href="<c:url value="/documentation/extra.html" />">extra</a>
 								<a class="link" href="<c:url value="/documentation/clustering.html"/>">clustering</a>

@@ -59,5 +59,23 @@
 			</array>
 		</property>
 	</bean>
+	<bean id="indexCreatorIndexName" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
+		property:staticMethod="ikube.toolkit.DatabaseUtilities.executeStatement">
+		<property name="arguments">
+			<array>
+				<ref bean="nonXaDataSourceH2" />
+				<value type="java.lang.String">create index search_indexname if not exists on search(indexname)</value>
+			</array>
+		</property>
+	</bean>
+	<bean id="indexCreatorsearchStrings" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
+		property:staticMethod="ikube.toolkit.DatabaseUtilities.executeStatement">
+		<property name="arguments">
+			<array>
+				<ref bean="nonXaDataSourceH2" />
+				<value type="java.lang.String">create index search_searchstrings if not exists on search(searchstrings)</value>
+			</array>
+		</property>
+	</bean>
 	
 </beans>

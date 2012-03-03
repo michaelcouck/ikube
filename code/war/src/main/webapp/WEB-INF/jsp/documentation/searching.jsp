@@ -13,14 +13,21 @@
 			The access to search results is a via a rest web service. Method signatures for the web service methods for 
 			searching are:<br><br>
 			
-			1) Search in a single field in the index - http://ikube.dyndns.org:8080/ikube/service/search/single?indexName=geospatial&searchStrings=cape%20AND%20town%20AND%20university&searchFields=name&fragment=true&firstResult=0&maxResults=10<br>
-			2) Search multiple fields in the index - http://ikube.dyndns.org:8080/ikube/service/search/multi?indexName=geospatial&searchStrings=cape+AND+town+AND+university%3Bsouth+africa&searchFields=name%3Bcountry&fragment=true&firstResult=0&maxResults=10<br>
-			3) Search all the fields in the index - http://ikube.dyndns.org:8080/ikube/service/search/multi/all?indexName=geospatial&searchStrings=cape+AND+town+AND+university%3Bsouth+africa&fragment=true&firstResult=0&maxResults=10<br>
-			4) Search all the fields in the index and sort them according to the sort fields - http://ikube.dyndns.org:8080/ikube/service/search/multi/sorted?indexName=geospatial&searchStrings=cape+town+university%3Bsouth+africa&searchFields=name%3Bcountry&sortFields=name%3Bcountry&fragment=true&firstResult=0&maxResults=10<br>
-			5) Search a single field and sort the results according to distance from a point - http://ikube.dyndns.org:8080/ikube/service/search/multi/spatial?indexName=geospatial&searchStrings=cape%20town%20university&searchFields=name&fragment=true&firstResult=0&maxResults=10&distance=10&latitude=-33.95796&longitude=18.46082<br>
-			6) Search all the fields and sort the results according to distance from a point - http://ikube.dyndns.org:8080/ikube/service/search/multi/spatial?indexName=geospatial&searchStrings=cape%20town%20university&fragment=true&firstResult=0&maxResults=10&distance=10&latitude=-33.95796&longitude=18.46082<br>
+			1) Search in a single field in the index - 
+				<a href="http://ikube.dyndns.org:8080/ikube/service/search/single?indexName=geospatial&searchStrings=cape%20AND%20town%20AND%20university&searchFields=name&fragment=true&firstResult=0&maxResults=10">go</a><br>
+			2) Search multiple fields in the index - 
+				<a href="http://ikube.dyndns.org:8080/ikube/service/search/multi?indexName=geospatial&searchStrings=cape+AND+town+AND+university%3Bsouth+africa&searchFields=name%3Bcountry&fragment=true&firstResult=0&maxResults=10">go</a><br>
+			3) Search all the fields in the index - 
+				<a href="http://ikube.dyndns.org:8080/ikube/service/search/multi/all?indexName=geospatial&searchStrings=cape+AND+town+AND+university%3Bsouth+africa&fragment=true&firstResult=0&maxResults=10">go</a><br>
+			4) Search all the fields in the index and sort them according to the sort fields - 
+				<a href="http://ikube.dyndns.org:8080/ikube/service/search/multi/sorted?indexName=geospatial&searchStrings=cape+town+university%3Bsouth+africa&searchFields=name%3Bcountry&sortFields=name%3Bcountry&fragment=true&firstResult=0&maxResults=10">go</a><br>
+			5) Search a single field and sort the results according to distance from a point - 
+				<a href="http://ikube.dyndns.org:8080/ikube/service/search/multi/spatial?indexName=geospatial&searchStrings=cape%20town%20university&searchFields=name&fragment=true&firstResult=0&maxResults=10&distance=10&latitude=-33.95796&longitude=18.46082">go</a><br>
+			6) Search all the fields and sort the results according to distance from a point - 
+				<a href="http://ikube.dyndns.org:8080/ikube/service/search/multi/spatial?indexName=geospatial&searchStrings=cape%20town%20university&fragment=true&firstResult=0&maxResults=10&distance=10&latitude=-33.95796&longitude=18.46082">go</a><br>
 			
-			Parameters for searching:<br>
+			<br><br>
+			<strong>Parameters for searching:</strong><br>
 			1) Index name - The index name is the name of the index that you want to search.<br> 
 			2) Search string(s) - The search string is the search string(s), which could have Lucene syntax, for example for wild card searches 
 				and the like. Please refer to the <a href="http://lucene.apache.org/java/3_0_0/queryparsersyntax.html">Lucene syntax</a> 

@@ -48,8 +48,8 @@ public class SearcherWebService implements ISearcherWebService {
 
 	@Autowired
 	private IDataBase dataBase;
-	private Object[] values = new Object[1];
-	private String[] names = { IConstants.SEARCH_STRINGS };
+	private Object[] values = new Object[2];
+	private String[] names = { IConstants.INDEX_NAME, IConstants.SEARCH_STRINGS };
 
 	/**
 	 * {@inheritDoc}
@@ -62,7 +62,6 @@ public class SearcherWebService implements ISearcherWebService {
 			@WebParam(name = "fragment") final boolean fragment, @WebParam(name = "firstResult") final int firstResult,
 			@WebParam(name = "maxResults") final int maxResults) {
 		try {
-			addSearchStatistics(new String[] { searchString });
 			SearchSingle searchSingle = getSearch(SearchSingle.class, indexName);
 			if (searchSingle != null) {
 				searchSingle.setFirstResult(firstResult);
@@ -70,7 +69,13 @@ public class SearcherWebService implements ISearcherWebService {
 				searchSingle.setMaxResults(maxResults);
 				searchSingle.setSearchField(searchField);
 				searchSingle.setSearchString(searchString);
-				return searchSingle.execute();
+				ArrayList<HashMap<String, String>> results = searchSingle.execute();
+				double highScore = 0;
+				if (results.size() > 1) {
+					highScore =Double.parseDouble(results.get(0).get(IConstants.SCORE));
+				}
+				addSearchStatistics(indexName, new String[] { searchString }, results.size(), highScore);
+				return results;
 			}
 		} catch (Exception e) {
 			String message = Logging.getString("Exception doing search on index : ", indexName, searchString, searchField, fragment,
@@ -91,7 +96,6 @@ public class SearcherWebService implements ISearcherWebService {
 			@WebParam(name = "fragment") final boolean fragment, @WebParam(name = "firstResult") final int firstResult,
 			@WebParam(name = "maxResults") final int maxResults) {
 		try {
-			addSearchStatistics(searchStrings);
 			SearchMulti searchMulti = getSearch(SearchMulti.class, indexName);
 			if (searchMulti != null) {
 				searchMulti.setFirstResult(firstResult);
@@ -99,7 +103,12 @@ public class SearcherWebService implements ISearcherWebService {
 				searchMulti.setMaxResults(maxResults);
 				searchMulti.setSearchField(searchFields);
 				searchMulti.setSearchString(searchStrings);
-				return searchMulti.execute();
+				ArrayList<HashMap<String, String>> results = searchMulti.execute();
+				double highScore = 0;
+				if (results.size() > 1) {
+					highScore =Double.parseDouble(results.get(0).get(IConstants.SCORE));
+				}
+				addSearchStatistics(indexName, searchStrings, results.size(), highScore);
 			}
 		} catch (Exception e) {
 			String message = Logging.getString("Exception doing search on index : ", indexName, Arrays.asList(searchStrings),
@@ -120,7 +129,6 @@ public class SearcherWebService implements ISearcherWebService {
 			@WebParam(name = "sortFields") final String[] sortFields, @WebParam(name = "fragment") final boolean fragment,
 			@WebParam(name = "firstResult") final int firstResult, @WebParam(name = "maxResults") final int maxResults) {
 		try {
-			addSearchStatistics(searchStrings);
 			SearchMultiSorted searchMultiSorted = getSearch(SearchMultiSorted.class, indexName);
 			if (searchMultiSorted != null) {
 				searchMultiSorted.setFirstResult(firstResult);
@@ -129,7 +137,13 @@ public class SearcherWebService implements ISearcherWebService {
 				searchMultiSorted.setSearchField(searchFields);
 				searchMultiSorted.setSearchString(searchStrings);
 				searchMultiSorted.setSortField(sortFields);
-				return searchMultiSorted.execute();
+				ArrayList<HashMap<String, String>> results = searchMultiSorted.execute();
+				double highScore = 0;
+				if (results.size() > 1) {
+					highScore =Double.parseDouble(results.get(0).get(IConstants.SCORE));
+				}
+				addSearchStatistics(indexName, searchStrings, results.size(), highScore);
+				return results;
 			}
 		} catch (Exception e) {
 			String message = Logging.getString("Exception doing search on index : ", indexName, Arrays.asList(searchStrings),
@@ -149,14 +163,19 @@ public class SearcherWebService implements ISearcherWebService {
 			@WebParam(name = "searchStrings") final String[] searchStrings, @WebParam(name = "fragment") final boolean fragment,
 			@WebParam(name = "firstResult") final int firstResult, @WebParam(name = "maxResults") final int maxResults) {
 		try {
-			addSearchStatistics(searchStrings);
 			SearchMultiAll searchMultiAll = getSearch(SearchMultiAll.class, indexName);
 			if (searchMultiAll != null) {
 				searchMultiAll.setFirstResult(firstResult);
 				searchMultiAll.setFragment(fragment);
 				searchMultiAll.setMaxResults(maxResults);
 				searchMultiAll.setSearchString(searchStrings);
-				return searchMultiAll.execute();
+				ArrayList<HashMap<String, String>> results = searchMultiAll.execute();
+				double highScore = 0;
+				if (results.size() > 1) {
+					highScore =Double.parseDouble(results.get(0).get(IConstants.SCORE));
+				}
+				addSearchStatistics(indexName, searchStrings, results.size(), highScore);
+				return results;
 			}
 		} catch (Exception e) {
 			String message = Logging.getString("Exception doing search on index : ", indexName, Arrays.asList(searchStrings), fragment,
@@ -178,7 +197,6 @@ public class SearcherWebService implements ISearcherWebService {
 			@WebParam(name = "maxResults") final int maxResults, @WebParam(name = "distance") final int distance,
 			@WebParam(name = "latitude") final double latitude, @WebParam(name = "longitude") final double longitude) {
 		try {
-			addSearchStatistics(searchStrings);
 			SearchSpatial searchSpatial = getSearch(SearchSpatial.class, indexName);
 			if (searchSpatial != null) {
 				searchSpatial.setFirstResult(firstResult);
@@ -188,7 +206,10 @@ public class SearcherWebService implements ISearcherWebService {
 				searchSpatial.setSearchField(searchFields);
 				searchSpatial.setCoordinate(new Coordinate(latitude, longitude));
 				searchSpatial.setDistance(distance);
-				return searchSpatial.execute();
+				ArrayList<HashMap<String, String>> results = searchSpatial.execute();
+				double highScore = 0;
+				addSearchStatistics(indexName, searchStrings, results.size(), highScore);
+				return results;
 			}
 		} catch (Exception e) {
 			String message = Logging.getString("Exception doing search on index : ", indexName, Arrays.asList(searchStrings), fragment,
@@ -210,16 +231,18 @@ public class SearcherWebService implements ISearcherWebService {
 			@WebParam(name = "distance") final int distance, @WebParam(name = "latitude") final double latitude,
 			@WebParam(name = "longitude") final double longitude) {
 		try {
-			addSearchStatistics(searchStrings);
-			SearchSpatialAll searchSpatial = getSearch(SearchSpatialAll.class, indexName);
-			if (searchSpatial != null) {
-				searchSpatial.setFirstResult(firstResult);
-				searchSpatial.setFragment(fragment);
-				searchSpatial.setMaxResults(maxResults);
-				searchSpatial.setSearchString(searchStrings);
-				searchSpatial.setCoordinate(new Coordinate(latitude, longitude));
-				searchSpatial.setDistance(distance);
-				return searchSpatial.execute();
+			SearchSpatialAll searchSpatialAll = getSearch(SearchSpatialAll.class, indexName);
+			if (searchSpatialAll != null) {
+				searchSpatialAll.setFirstResult(firstResult);
+				searchSpatialAll.setFragment(fragment);
+				searchSpatialAll.setMaxResults(maxResults);
+				searchSpatialAll.setSearchString(searchStrings);
+				searchSpatialAll.setCoordinate(new Coordinate(latitude, longitude));
+				searchSpatialAll.setDistance(distance);
+				ArrayList<HashMap<String, String>> results = searchSpatialAll.execute();
+				double highScore = 0;
+				addSearchStatistics(indexName, searchStrings, results.size(), highScore);
+				return results;
 			}
 		} catch (Exception e) {
 			String message = Logging.getString("Exception doing search on index : ", indexName, Arrays.asList(searchStrings), fragment,
@@ -271,24 +294,30 @@ public class SearcherWebService implements ISearcherWebService {
 		return results;
 	}
 
-	protected void addSearchStatistics(final String[] searchStrings) {
+	protected void addSearchStatistics(final String indexName, final String[] searchStrings, final int results, final double highScore) {
 		for (String searchString : searchStrings) {
 			// First verify that all the words are ok
 			String correctedSearchString = CheckerExt.getCheckerExt().checkWords(searchString);
-			// We only save this search if it is ok
-			if (correctedSearchString == null) {
-				values[0] = searchString;
-				List<Search> searches = dataBase.find(Search.class, Search.SELECT_FROM_SEARCH_BY_SEARCH_STRINGS, names, values, 0, 1);
-				if (searches.isEmpty()) {
-					Search search = new Search();
-					search.setCount(1);
-					search.setSearchStrings(searchString);
-					dataBase.persist(search);
-				} else {
-					Search search = searches.get(0);
-					search.setCount(search.getCount() + 1);
-					dataBase.merge(search);
-				}
+			values[0] = indexName;
+			values[1] = searchString;
+			String sql = Search.SELECT_FROM_SEARCH_BY_INDEX_NAME_AND_SEARCH_STRINGS;
+			List<Search> searches = dataBase.find(Search.class, sql, names, values, 0, 1);
+			if (searches.isEmpty()) {
+				Search search = new Search();
+				search.setCount(1);
+				search.setSearchStrings(searchString);
+				search.setIndexName(indexName);
+				search.setResults(results);
+				search.setHighScore(highScore);
+				search.setCorrections(correctedSearchString != null);
+				dataBase.persist(search);
+			} else {
+				Search search = searches.get(0);
+				search.setCount(search.getCount() + 1);
+				search.setResults(results);
+				search.setHighScore(highScore);
+				search.setCorrections(correctedSearchString != null);
+				dataBase.merge(search);
 			}
 		}
 	}

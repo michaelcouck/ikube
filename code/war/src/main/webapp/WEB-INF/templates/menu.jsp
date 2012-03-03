@@ -4,14 +4,20 @@
 
 <c:set var="targetSearchUrl" value="/results.html" />
 
-
 <script type="text/javascript">
-			$(document).ready(function() {
-				alert("Hello");
-    $("input#search-text").autocomplete({
-            source: ["c++", "java", "php", "coldfusion", "javascript", "asp", "ruby"]
-        });              
+window.onload = function() {
+	document.ikubeSearchForm.searchStrings.focus();
 }
+$('#searchStrings').autocomplete({
+	  url: '<c:url value="/service/autocomplete/single" />?searchStrings=hello', //jQuery UI 1.6rc2
+	  // source : 'suggestion.php', //jQuery UI 1.8.18
+	  width: 300,
+	  max: 10,
+	  delay: 100,
+	  cacheLength: 1,
+	  scroll: false,
+	  highlight: false
+	});
 </script>
 
 <div id="sidebar" class="menu">
@@ -35,10 +41,23 @@
 				<li><a href="<c:url value="/index.html"/>">Home</a></li>
 				<li><a href="<c:url value="/admin/geosearch.html" />">Geo search</a></li>
 				<li><a href="<c:url value="/admin/servers.html" />">Monitoring</a></li>
+				<li><a href="<c:url value="/admin/database.html" />?classType=ikube.model.Search&start=0&end=10">Searches</a></li>
 				<li><a href="<c:url value="/admin/actions.html?start=0&end=10" />">Actions</a></li>
 				<li><a href="<c:url value="/documentation/index.html" />">Documentation</a></li>
 			</ul>
 		</li>
+		
+		<li>
+			<h2>Configuration</h2>
+			<ul>
+				<li><a href="<c:url value="/documentation/configuration/context.html"/>">Context</a></li>
+				<li><a href="<c:url value="/documentation/configuration/database.html" />">Database</a></li>
+				<li><a href="<c:url value="/documentation/configuration/email.html" />">Email</a></li>
+				<li><a href="<c:url value="/documentation/configuration/filesystem.html" />">File system</a></li>
+				<li><a href="<c:url value="/documentation/configuration/internet.html" />">Internet</a></li>
+			</ul>
+		</li>
+		
 		<li>
 			<h2>libraries used</h2>
 			<ul>

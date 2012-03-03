@@ -57,6 +57,14 @@
 	window.onload=initialize
 </script>
 
+<c:set var="indexName" value="${param.indexName != null ? param.indexName : 'geospatial'}" />
+<c:set var="searchStrings" value="${param.searchStrings != null ? param.searchStrings : 'cape AND town'}" />
+<c:set var="latitude" value="${param.latitude != null ? param.latitude : '-33.9693580'}" />
+<c:set var="longitude" value="${param.longitude != null ? param.longitude : '18.4622110'}" />
+<c:set var="distance" value="${param.distance != null ? param.distance : '20'}" />
+<c:set var="firstResult" value="${param.firstResult != null ? param.firstResult : '0'}" />
+<c:set var="maxResults" value="${param.maxResults != null ? param.maxResults : '100'}" />
+
 <c:set var="targetSearchUrl" value="/admin/geosearch.html" />
 <form name="geoSearchForm" id="geoSearchForm" action="<c:url value="${targetSearchUrl}"/>">
 <input name="targetSearchUrl" type="hidden" value="${targetSearchUrl}">

@@ -190,5 +190,8 @@ public interface IConstants {
 	String EXCEPTION_STACK = "exceptionStack";
 	
 	String SEMI_COLON = ";";
+	
+	String ENTITIES = "entities";
+	String FIELD_NAMES = "fieldNames";
 
 }

@@ -13,6 +13,14 @@ import java.util.Map;
  * @version 01.00
  */
 public interface IDataBase {
+	
+	/**
+	 * This method counts the number of entities in the database.
+	 * 
+	 * @param klass the class of entities to count
+	 * @return the number of rows in the database
+	 */
+	<T> Long count(Class<T> klass);
 
 	/**
 	 * This method removed the specified entity from the database.

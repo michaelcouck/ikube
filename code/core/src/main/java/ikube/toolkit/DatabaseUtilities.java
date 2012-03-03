@@ -1,6 +1,7 @@
 package ikube.toolkit;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -12,10 +13,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.sql.DataSource;
 
 import org.apache.log4j.Logger;
+import org.springframework.util.ReflectionUtils;
 
 /**
  * General database operations like closing result sets etc.
@@ -347,6 +350,29 @@ public final class DatabaseUtilities {
 	public static String getIdFieldName(final Class<?> klass) {
 		Field field = getIdField(klass, null);
 		return field != null ? field.getName() : null;
+	}
+
+	public static List<String> getFieldNames(final Class<?> klass, final List<String> fieldNames) {
+		ReflectionUtils.doWithFields(klass, new ReflectionUtils.FieldCallback() {
+			@Override
+			public void doWith(Field field) throws IllegalArgumentException, IllegalAccessException {
+				ReflectionUtils.makeAccessible(field);
+				Column column = field.getAnnotation(Column.class);
+				if (column != null) {
+					fieldNames.add(field.getName());
+				}
+			}
+		});
+		return fieldNames;
+	}
+
+	public static Object getFieldValue(final Field field, final Object object) {
+		try {
+			return field.get(object);
+		} catch (Exception e) {
+			LOGGER.error("Exceptino accing field : " + field, e);
+		}
+		return null;
 	}
 
 }
