@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation=" http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation=" http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>ikube</groupId>
 	<artifactId>ikube-libs</artifactId>
 	<packaging>jar</packaging>
-	<version>3.0.1-SNAPSHOT</version>
+	<version>3.0.0-SNAPSHOT</version>
 	<description>
 		This module/project is just for the libraries that are used by Ikube that are not
 		in a public repository. This pom will install the libraries used to the ikube Artifactory.
@@ -15,7 +16,7 @@
 	<parent>
 		<groupId>ikube</groupId>
 		<artifactId>ikube</artifactId>
-		<version>3.0.1-SNAPSHOT</version>
+		<version>3.0.0-SNAPSHOT</version>
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
 
