@@ -783,11 +783,9 @@
 
 	<repositories>
 		<repository>
-			<id>ikube</id>
-			<url>http://ikube.dyndns.org:8080/artifactory/libs-release-local/</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
+			<id>repository.springframework.maven.release</id>
+			<name>Spring Framework Maven Release Repository</name>
+			<url>http://maven.springframework.org/release</url>
 		</repository>
 		<repository>
 			<id>springbyexample.org</id>
@@ -822,6 +820,13 @@
 			<snapshots>
 				<enabled>true</enabled>
 				<updatePolicy>never</updatePolicy>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>ikube</id>
+			<url>http://ikube.dyndns.org:8080/artifactory/libs-release-local/</url>
+			<snapshots>
+				<enabled>true</enabled>
 			</snapshots>
 		</repository>
 	</repositories>
