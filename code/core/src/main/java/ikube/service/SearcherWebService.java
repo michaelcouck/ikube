@@ -75,6 +75,7 @@ public class SearcherWebService implements ISearcherWebService {
 					highScore =Double.parseDouble(results.get(0).get(IConstants.SCORE));
 				}
 				addSearchStatistics(indexName, new String[] { searchString }, results.size(), highScore);
+				addIndexName(indexName, results);
 				return results;
 			}
 		} catch (Exception e) {
@@ -109,6 +110,8 @@ public class SearcherWebService implements ISearcherWebService {
 					highScore =Double.parseDouble(results.get(0).get(IConstants.SCORE));
 				}
 				addSearchStatistics(indexName, searchStrings, results.size(), highScore);
+				addIndexName(indexName, results);
+				return results;
 			}
 		} catch (Exception e) {
 			String message = Logging.getString("Exception doing search on index : ", indexName, Arrays.asList(searchStrings),
@@ -143,6 +146,7 @@ public class SearcherWebService implements ISearcherWebService {
 					highScore =Double.parseDouble(results.get(0).get(IConstants.SCORE));
 				}
 				addSearchStatistics(indexName, searchStrings, results.size(), highScore);
+				addIndexName(indexName, results);
 				return results;
 			}
 		} catch (Exception e) {
@@ -175,6 +179,7 @@ public class SearcherWebService implements ISearcherWebService {
 					highScore =Double.parseDouble(results.get(0).get(IConstants.SCORE));
 				}
 				addSearchStatistics(indexName, searchStrings, results.size(), highScore);
+				addIndexName(indexName, results);
 				return results;
 			}
 		} catch (Exception e) {
@@ -209,6 +214,7 @@ public class SearcherWebService implements ISearcherWebService {
 				ArrayList<HashMap<String, String>> results = searchSpatial.execute();
 				double highScore = 0;
 				addSearchStatistics(indexName, searchStrings, results.size(), highScore);
+				addIndexName(indexName, results);
 				return results;
 			}
 		} catch (Exception e) {
@@ -242,6 +248,7 @@ public class SearcherWebService implements ISearcherWebService {
 				ArrayList<HashMap<String, String>> results = searchSpatialAll.execute();
 				double highScore = 0;
 				addSearchStatistics(indexName, searchStrings, results.size(), highScore);
+				addIndexName(indexName, results);
 				return results;
 			}
 		} catch (Exception e) {
@@ -292,6 +299,10 @@ public class SearcherWebService implements ISearcherWebService {
 		notification.put(IConstants.FRAGMENT, "Or exception thrown during search : " + indexName);
 		results.add(notification);
 		return results;
+	}
+	
+	protected void addIndexName(final String indexName, final ArrayList<HashMap<String, String>> results) {
+		results.get(results.size() - 1).put(IConstants.INDEX_NAME, indexName);
 	}
 
 	protected void addSearchStatistics(final String indexName, final String[] searchStrings, final int results, final double highScore) {

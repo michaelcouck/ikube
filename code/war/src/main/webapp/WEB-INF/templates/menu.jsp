@@ -41,9 +41,10 @@ $('#searchStrings').autocomplete({
 				<li><a href="<c:url value="/index.html"/>">Home</a></li>
 				<li><a href="<c:url value="/admin/geosearch.html" />">Geo search</a></li>
 				<li><a href="<c:url value="/admin/servers.html" />">Monitoring</a></li>
-				<li><a href="<c:url value="/admin/database.html" />?classType=ikube.model.Search&start=0&end=10">Searches</a></li>
+				<li><a href="<c:url value="/admin/database.html" />?targetView=/admin/database&classType=ikube.model.Search&start=0&end=10&heading=Searches">Searches</a></li>
 				<li><a href="<c:url value="/admin/actions.html?start=0&end=10" />">Actions</a></li>
 				<li><a href="<c:url value="/documentation/index.html" />">Documentation</a></li>
+				<%-- <li><a href="<c:url value="/admin/properties.html" />?targetView=/admin/properties">Properties</a></li> --%>
 			</ul>
 		</li>
 		

@@ -40,7 +40,7 @@
 		id="wikidata"
 		class="ikube.model.IndexableFileSystem"
 		property:name="wikidata"
-		property:path="/usr/local/wiki/data/1048576"
+		property:path="/usr/local/wiki/data"
 		property:pathFieldName="path"
 		property:nameFieldName="name"
 		property:lengthFieldName="length"

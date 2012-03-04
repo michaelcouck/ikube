@@ -10,7 +10,7 @@
 <table class="table-content" width="100%">
 	<tr>
 		<td class="top-content" valign="middle">
-			<span class="top-content-header">Searches</span>
+			<span class="top-content-header">${param.heading}</span>
 			&nbsp;<c:out value="${server.address}" />
 			<span class="date" style="float: right;"><script type="text/javascript">writeDate();</script></span>
 		</td>
@@ -62,7 +62,7 @@
 				<c:if test="${index % block == 0}">
 					<a href="<c:url 
 						value="/admin/database.html" 
-						/>?classType=${param.classType}&start=${index}&end=${block}">${index}</a>
+						/>?targetView=${param.targetView}&classType=${param.classType}&start=${index}&end=${block}&heading=${param.heading}">${index}</a>
 				</c:if>
 			</c:forEach> 
 		</td>

@@ -37,7 +37,6 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -194,39 +193,41 @@ public class IndexableTableHandlerIntegration extends AbstractIntegration {
 	}
 
 	@Test
-	@Ignore
 	public void handleAllColumnsTable() throws Exception {
-		IndexableTable indexable = ApplicationContextManager.getBean("campaign");
-		IndexContext<?> indexContext = ApplicationContextManager.getBean("campaignIndex");
+		IndexableTable indexable = ApplicationContextManager.getBean("patientTableH2");
+		IndexContext<?> indexContext = ApplicationContextManager.getBean("indexContext");
 		String ip = InetAddress.getLocalHost().getHostAddress();
 		IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
 		indexContext.getIndex().setIndexWriter(indexWriter);
 		indexContext.setAction(new Action());
+		// ((IndexableTable) indexable).setPredicate("where geoname.id > 18842835");
 		List<Future<?>> futures = indexableTableHandler.handle(indexContext, indexable);
 		ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
 		assertTrue("There must be some data in the index : ", indexContext.getIndex().getIndexWriter().numDocs() > 0);
 	}
 
 	@Test
-	@Ignore
 	public void handleAllColumnsAllTables() throws Exception {
-		IndexContext<?> indexContext = ApplicationContextManager.getBean("campaignIndex");
+		IndexContext<?> indexContext = ApplicationContextManager.getBean("indexContext");
 		indexContext.setAction(new Action());
+		String ip = InetAddress.getLocalHost().getHostAddress();
+		IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
+		indexContext.getIndex().setIndexWriter(indexWriter);
 		for (Indexable<?> indexable : indexContext.getChildren()) {
 			if (!IndexableTable.class.isAssignableFrom(indexable.getClass())) {
 				continue;
 			}
-			String ip = InetAddress.getLocalHost().getHostAddress();
-			IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
-			indexContext.getIndex().setIndexWriter(indexWriter);
-			List<Future<?>> futures = indexableTableHandler.handle(indexContext, (IndexableTable) indexable);
-			ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
+			try {
+				List<Future<?>> futures = indexableTableHandler.handle(indexContext, (IndexableTable) indexable);
+				ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
+			} catch (Exception e) {
+				logger.error(e.getMessage());
+			}
 		}
 		assertTrue("There must be some data in the index : ", indexContext.getIndex().getIndexWriter().numDocs() > 0);
 	}
 
 	@Test
-	@Ignore
 	public void interrupt() throws Exception {
 		try {
 			IndexableTable indexable = ApplicationContextManager.getBean("geoname");

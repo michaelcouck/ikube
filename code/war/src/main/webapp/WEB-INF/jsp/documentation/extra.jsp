@@ -23,15 +23,14 @@
 			data that was used to generate the index. The data has been enriched, and addresses include city and 
 			country which should help to refine the search. When Telenet get around to giving me the subnet mask 
 			and the default gateway(which could be never of course, this is Belgium) the url for the GeoSpatial web service 
-			will be http://81.82.213.177:8081/ikube/service/ISearcherWebService?swdl, until then the url defined in the configuration for the 
-			GeoSpatial web service is http://ikube.dyndns.org:8081/ikube/service/ISearcherWebService?wsdl.<br><br>
+			will be http://ikube.dyndns.org:8080/ikube/service/search/... Please refer to the documentation on searching 
+			for more details on the searcher service.<br><br>
 		</td>
 	</tr>
 	<tr>
 		<td class="td-content">
 			<strong>geospatial cont...</strong>&nbsp;
-			The geospatial enricher is defined in spring-aop.xml file. The enricher is an intercepter, which can be removed 
-			of course, which will intercept adding the documents to the Lucene index. If the indexable is defined as an address 
+			The geospatial enricher is defined in spring-aop.xml file. If the indexable is defined as an address 
 			then all the children will be iterated over to concatenate the address columns and data. The result of the concatenation 
 			will be used to search the geospatial index, and the co-ordinates added to the index. The Geocoder can be switched 
 			for another one of course, just by implementing the interface and changing the configuration. Of course this is the case 

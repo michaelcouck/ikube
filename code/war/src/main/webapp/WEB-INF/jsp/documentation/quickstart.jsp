@@ -9,9 +9,9 @@
 	</tr>
 	<tr>
 		<td>
-			<strong>installation</strong>&nbsp; Five simple steps:<br><br>
+			<strong>installation</strong>&nbsp; Six steps:<br><br>
 			
-			1) Down-load the latest version at <a href="http://code.google.com/p/ikube/downloads/list" target="_top">war</a>.<br>
+			1) Down-load the latest version at <a href="http://code.google.com/p/ikube/downloads/list" target="_top">zip</a>.<br>
 			2) Copy the war to the webapps directory of Tomcat.<br>
 			3) Copy the 'ikube' configuration folder(in the zip) to the bin directory of Tomcat<br>
 			4) Change the name of the war to ikube.war.<br>
@@ -24,7 +24,7 @@
 			
 			You can go to <a href="http://localhost:8080/ikube/admin/servers.html">Ikube</a> to monitor how the indexes are coming along. There is also 
 			a search page that will search all the fields in all the indexes. By searching for 'university AND of AND cape AND town AND NOT ikube' you should get some 
-			results from the Geospatial index.<br><br> 
+			results from the Geospatial index at the very least.<br><br> 
 			 
 			The default wait period for the scheduler to start is generally around five minutes. Of course you can change this we'll get into this in 
 			the configuration section.<br><br>

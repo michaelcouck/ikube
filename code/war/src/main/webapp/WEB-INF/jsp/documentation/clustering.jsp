@@ -43,9 +43,10 @@
 	</tr>
 	<tr>
 		<td class="td-content" colspan="2">
-			Another this with large volumes is that on Windows, the operating system does not release resources efficiently, and the maximum 
+			Another thing this with large volumes is that on Windows, the operating system does not release resources efficiently, and the maximum 
 			I found on Server 2008 EE was around 8 million before the machine (Dell Rack) ran out of memory. I have not performed volume tests 
-			on Windows environments as most if not all production systems will be Linux.
+			on Windows environments as most if not all production systems will be Linux, and d indeed it is not possible it seems, from within Java at least 
+			to have large indexes generated on Windows.
 		</td>
 	</tr>
 </table>

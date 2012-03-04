@@ -8,11 +8,9 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Set;
-import java.util.StringTokenizer;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.kahadb.util.ByteArrayOutputStream;
@@ -123,7 +121,7 @@ public abstract class Search {
 				continue;
 			}
 			String stringValue = field.stringValue();
-			if (stringValue != null) {
+			if (!StringUtils.isEmpty(stringValue)) {
 				if (stringValue.length() > IConstants.MAX_RESULT_FIELD_LENGTH) {
 					stringValue = stringValue.substring(0, IConstants.MAX_RESULT_FIELD_LENGTH);
 				}
@@ -156,6 +154,11 @@ public abstract class Search {
 		this.searchFields = searchFields;
 	}
 
+	/**
+	 * Sets the fields that will be used to sort the results by Lucene.
+	 * 
+	 * @param sortFields the fields to sort with in the index
+	 */
 	public void setSortField(final String... sortFields) {
 		this.sortFields = sortFields;
 	}
@@ -316,53 +319,43 @@ public abstract class Search {
 		statistics.put(IConstants.TOTAL, Long.toString(totalHits));
 		statistics.put(IConstants.DURATION, Long.toString(duration));
 
-		StringBuilder searchStringBuider = new StringBuilder();
-		StringBuilder correctedSearchStringBuilder = new StringBuilder();
-		getCorrections(searchStringBuider, correctedSearchStringBuilder);
+		String[] correctedSearchStrings = getCorrections();
 
-		statistics.put(IConstants.SEARCH_STRINGS, searchStringBuider.toString().trim());
-		if (correctedSearchStringBuilder.length() > 0) {
-			statistics.put(IConstants.CORRECTIONS, correctedSearchStringBuilder.toString().trim());
-		}
+		statistics.put(IConstants.SEARCH_STRINGS, Arrays.deepToString(searchStrings));
+		statistics.put(IConstants.CORRECTIONS, Arrays.deepToString(correctedSearchStrings));
 
 		if (exception != null) {
 			statistics.put(IConstants.EXCEPTION, exception.getMessage());
 			OutputStream outputStream = new ByteArrayOutputStream();
 			exception.printStackTrace(new PrintWriter(outputStream));
-			statistics.put(IConstants.EXCEPTION_STACK, exception.getMessage());
+			statistics.put(IConstants.EXCEPTION_STACK, outputStream.toString());
+			statistics.put(IConstants.EXCEPTION_MESSAGE, exception.getMessage());
 		}
 
 		results.add(statistics);
 	}
 
-	protected void getCorrections(StringBuilder searchStringBuider, StringBuilder correctedSearchStringBuilder) {
-		Set<String> searchStringSet = new LinkedHashSet<String>();
-		Set<String> correctedSearchStringSet = new LinkedHashSet<String>();
+	/**
+	 * This method will return an array of strings that have been corrected using the spelling and words defined in the languages directory.
+	 * If there are no corrections, i.e. the strings are all correct then this array will be empty.
+	 * 
+	 * @return the array of strings that have been corrected using the language and word lists in the language directory
+	 */
+	protected String[] getCorrections() {
 		boolean corrections = Boolean.FALSE;
-		for (String searchString : searchStrings) {
-			StringTokenizer stringTokenizer = new StringTokenizer(searchString);
-			while (stringTokenizer.hasMoreTokens()) {
-				String token = stringTokenizer.nextToken();
-				searchStringSet.add(token);
-				String correctedSearchString = CheckerExt.getCheckerExt().checkWords(token.toLowerCase());
-				if (correctedSearchString == null) {
-					correctedSearchStringSet.add(token);
-				} else {
-					corrections = Boolean.TRUE;
-					correctedSearchStringSet.add(correctedSearchString);
-				}
+		String[] correctedSearchStrings = new String[searchStrings.length];
+		System.arraycopy(searchStrings, 0, correctedSearchStrings, 0, searchStrings.length);
+		for (int i = 0; i < searchStrings.length; i++) {
+			String correctedSearchString = CheckerExt.getCheckerExt().checkWords(searchStrings[i].toLowerCase());
+			if (correctedSearchString != null) {
+				corrections = Boolean.TRUE;
+				correctedSearchStrings[i] = correctedSearchString;
 			}
-		}
-		for (String searchString : searchStringSet) {
-			searchStringBuider.append(searchString);
-			searchStringBuider.append(' ');
 		}
 		if (corrections) {
-			for (String correctedSearchString : correctedSearchStringSet) {
-				correctedSearchStringBuilder.append(correctedSearchString);
-				correctedSearchStringBuilder.append(' ');
-			}
+			return correctedSearchStrings;
 		}
+		return new String[0];
 	}
 
 }

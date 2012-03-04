@@ -84,5 +84,9 @@
 			documentation for more details on this parameter.
 		</td>
 	</tr>
+	
+	<tr>
+		<td colspan="2">&nbsp;</td>
+	</tr>
 		
 </table>

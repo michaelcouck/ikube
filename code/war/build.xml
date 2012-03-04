@@ -61,6 +61,13 @@
 			<arg line="start" />
 		</java>
 	</target>
+	
+	<target name="zip">
+		<zip destfile="${target.directory}/ikube.zip" compress="true" filesonly="false" update="false" whenempty="skip">
+			<fileset dir="${configuration.directory}" />
+			<fileset dir="${target.directory}" includes="${ikube.war}" />
+		</zip>
+	</target>
 
 	<target name="deploy">
 		<!-- Delete the index directories in the cluster. -->

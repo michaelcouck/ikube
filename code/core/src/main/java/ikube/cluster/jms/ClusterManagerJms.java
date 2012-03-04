@@ -56,7 +56,7 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ClusterManagerJms.class);
 
 	/** The time to wait for the responses from the cluster servers. */
-	private static final long RESPONSE_TIME = 250;
+	private static final long RESPONSE_TIME = 500;
 
 	/** The textual representation of the ip address for this server. */
 	private String ip;

@@ -9,6 +9,7 @@ import ikube.toolkit.FileUtilities;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -153,19 +154,29 @@ public class SearchTest extends ATest {
 
 	@Test
 	public void addStatistics() {
+		String searchString = "michael AND couck";
 		Search search = new SearchMultiAll(SEARCHER);
-		search.setFirstResult(0);
-		search.setFragment(Boolean.TRUE);
-		search.setMaxResults(10);
-		search.setSearchField("content");
-		search.setSearchString("michael AND couck");
-		search.setSortField("content");
+		search.setSearchString(searchString);
 
-		ArrayList<HashMap<String, String>> results = search.execute();
+		ArrayList<HashMap<String, String>> results = new ArrayList<HashMap<String, String>>();
 		search.addStatistics(results, 79, 23, null);
 		Map<String, String> statistics = results.get(results.size() - 1);
-		assertEquals("michael AND couck", statistics.get(IConstants.SEARCH_STRINGS));
-		assertEquals("michael AND houck", statistics.get(IConstants.CORRECTIONS));
+		logger.info("Search strings : " + statistics.get(IConstants.SEARCH_STRINGS));
+		logger.info("Corrected search strings : " + statistics.get(IConstants.CORRECTIONS));
+		assertEquals("[michael AND couck]", statistics.get(IConstants.SEARCH_STRINGS));
+		assertEquals("[michael and houck]", statistics.get(IConstants.CORRECTIONS));
+	}
+
+	@Test
+	public void getCorrections() {
+		String[] searchStrings = { "some words", "are niet corect", "AND there are AND some words WITH AND another" };
+		Search search = new SearchSingle(SEARCHER);
+		search.setSearchString(searchStrings);
+		String[] expectedCorrectedSearchStrings = { "some words", "are net correct", "AND there are AND some words WITH AND another" };
+		String[] correctedSearchStrings = search.getCorrections();
+		logger.info("Corrected : " + Arrays.deepToString(correctedSearchStrings));
+		assertEquals("Only the completely incorrect words should be replaced : ", Arrays.deepToString(expectedCorrectedSearchStrings),
+				Arrays.deepToString(correctedSearchStrings));
 	}
 
 	@Test

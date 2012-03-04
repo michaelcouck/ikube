@@ -64,7 +64,7 @@
 		<property name="arguments">
 			<array>
 				<ref bean="nonXaDataSourceH2" />
-				<value type="java.lang.String">create index search_indexname if not exists on search(indexname)</value>
+				<value type="java.lang.String">create index if not exists search_indexname on search(indexname)</value>
 			</array>
 		</property>
 	</bean>
@@ -73,7 +73,7 @@
 		<property name="arguments">
 			<array>
 				<ref bean="nonXaDataSourceH2" />
-				<value type="java.lang.String">create index search_searchstrings if not exists on search(searchstrings)</value>
+				<value type="java.lang.String">create index if not exists search_searchstrings on search(searchstrings)</value>
 			</array>
 		</property>
 	</bean>

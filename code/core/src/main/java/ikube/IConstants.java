@@ -184,14 +184,20 @@ public interface IConstants {
 	String STRING_PATTERN = ".*(\\.zip\\Z).*|.*(\\.jar\\Z).*|.*(\\.war\\Z).*|.*(\\.ear\\Z).*|.*(\\.gz\\Z).*|.*(\\.sar\\Z).*|.*(\\.tar\\Z).*";
 	Pattern ZIP_JAR_WAR_EAR_PATTERN = Pattern.compile(STRING_PATTERN);
 	
+	String LUCENE_CONJUNCTIONS_PATTERN_STRING = "and|or|between|not";
+	Pattern LUCENE_CONJUNCTIONS_PATTERN = Pattern.compile(LUCENE_CONJUNCTIONS_PATTERN_STRING);
+	
 	int THREAD_POOL_SIZE = 25;
 	
 	String EXCEPTION = "exception";
 	String EXCEPTION_STACK = "exceptionStack";
+	String EXCEPTION_MESSAGE = "exceptionMessage";
 	
 	String SEMI_COLON = ";";
 	
 	String ENTITIES = "entities";
 	String FIELD_NAMES = "fieldNames";
+	
+	String PROPERTIES = "properties";
 
 }

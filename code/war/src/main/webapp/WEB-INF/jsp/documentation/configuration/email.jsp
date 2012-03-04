@@ -83,9 +83,9 @@
 			The name of the title field in the Lucene index.
 		</td>
 	</tr>
+	
 	<tr>
-		<td></td>
-		<td> 
-		</td>
+		<td colspan="2">&nbsp;</td>
 	</tr>
+	
 </table>

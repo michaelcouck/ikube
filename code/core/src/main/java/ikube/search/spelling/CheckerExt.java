@@ -1,5 +1,6 @@
 package ikube.search.spelling;
 
+import ikube.IConstants;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
@@ -107,13 +108,17 @@ public class CheckerExt {
 		boolean hasCorrections = false;
 		while (tokenizer.hasMoreTokens()) {
 			String token = tokenizer.nextToken();
+			// Skip the Lucene specific conjunctions like 'and' and 'or'
+			if (IConstants.LUCENE_CONJUNCTIONS_PATTERN.matcher(token).matches()) {
+				correctWords.append(token);
+				addSpace(tokenizer, correctWords);
+				continue;
+			}
 			String[] strings;
 			try {
 				if (SPELL_CHECKER.exist(token)) {
 					correctWords.append(token);
-					if (tokenizer.hasMoreTokens()) {
-						correctWords.append(" ");
-					}
+					addSpace(tokenizer, correctWords);
 					continue;
 				}
 				hasCorrections = true;
@@ -124,14 +129,18 @@ public class CheckerExt {
 			}
 			if (strings != null && strings.length > 0) {
 				correctWords.append(strings[0]);
-				if (tokenizer.hasMoreTokens()) {
-					correctWords.append(" ");
-				}
+				addSpace(tokenizer, correctWords);
 			}
 		}
 		if (hasCorrections) {
 			return correctWords.toString();
 		}
 		return null;
+	}
+	
+	private void addSpace(final StringTokenizer tokenizer, final StringBuilder correctWords) {
+		if (tokenizer.hasMoreTokens()) {
+			correctWords.append(" ");
+		}
 	}
 }

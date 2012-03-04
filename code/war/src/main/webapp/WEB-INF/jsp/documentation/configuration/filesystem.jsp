@@ -77,4 +77,9 @@
 			The name of the field in the Lucene index for the last modified timestamp of the file being indexed.
 		</td>
 	</tr>
+	
+	<tr>
+		<td colspan="2">&nbsp;</td>
+	</tr>
+	
 </table>

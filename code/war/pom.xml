@@ -126,6 +126,9 @@
 								<!-- Copy the external configuration to the servers. -->
 								<echo message="Copying configuration to Tomcat bin : " />
 								<ant antfile="build.xml" target="deploy.configuration" inheritrefs="true" />
+								<!-- Zip Ikube and the configuration directory for upload to Google Code -->
+								<echo message="Zipping ikube with configuration : " />
+								<ant antfile="build.xml" target="zip" inheritrefs="true" />
 							</target>
 						</configuration>
 						<goals>
@@ -157,7 +160,7 @@
 					</connectors>
 				</configuration>
 				<executions>
-					<!-- <execution>
+					<execution>
 						<id>start-jetty</id>
 						<phase>pre-integration-test</phase>
 						<goals>
@@ -173,7 +176,7 @@
 						<goals>
 							<goal>stop</goal>
 						</goals>
-					</execution> -->
+					</execution>
 				</executions>
 				<dependencies>
 					<dependency>

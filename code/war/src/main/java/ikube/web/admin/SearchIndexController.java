@@ -42,26 +42,25 @@ public class SearchIndexController extends SearchBaseController {
 		// If the 'searchStrings' is in the request then this is a search on all fields
 		String indexName = getParameter(IConstants.INDEX_NAME, null, request);
 		String searchString = getParameter(IConstants.SEARCH_STRINGS, null, request);
+		String[] searchStrings = StringUtils.split(searchString, ",");
 		String[] indexFieldNames = monitorWebService.getIndexFieldNames(indexName);
 		for (String indexFieldName : indexFieldNames) {
 			fieldNamesAndValues.put(indexFieldName, "");
 		}
 		if (StringUtils.hasLength(searchString)) {
-			results = doSearch(request, modelAndView, indexName, searchString);
+			results = doSearch(request, modelAndView, indexName, searchStrings);
 		} else {
 			// Search all the fields individually
 			List<String> searchFields = new ArrayList<String>();
-			List<String> searchStrings = new ArrayList<String>();
 			for (String indexFieldName : indexFieldNames) {
 				String indexFieldValue = getParameter(indexFieldName, null, request);
 				if (StringUtils.hasLength(indexFieldValue)) {
 					searchFields.add(indexFieldName);
-					searchStrings.add(indexFieldValue);
 					fieldNamesAndValues.put(indexFieldName, indexFieldValue);
 				}
 			}
-			results = searcherWebService.searchMulti(indexName, searchStrings.toArray(new String[searchStrings.size()]),
-					searchFields.toArray(new String[searchFields.size()]), Boolean.TRUE, firstResult, maxResults);
+			String[] searchFieldsArray = searchFields.toArray(new String[searchFields.size()]);
+			results = searcherWebService.searchMulti(indexName, searchStrings, searchFieldsArray, Boolean.TRUE, firstResult, maxResults);
 		}
 
 		Map<String, String> statistics = results.get(results.size() - 1);

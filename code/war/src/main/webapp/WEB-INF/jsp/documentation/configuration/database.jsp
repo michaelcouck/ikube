@@ -203,4 +203,8 @@
 		<td colspan="2">Please refer to the default configuration for a complete example of a nested table configuration.</td>
 	</tr>
 	
+	<tr>
+		<td colspan="2">&nbsp;</td>
+	</tr>
+	
 </table>

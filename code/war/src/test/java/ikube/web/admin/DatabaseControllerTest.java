@@ -2,60 +2,53 @@ package ikube.web.admin;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import ikube.IConstants;
-import ikube.database.jpa.ADataBaseJpa;
-import ikube.database.jpa.DataBaseJpa;
+import ikube.cluster.IClusterManager;
+import ikube.database.IDataBase;
 import ikube.model.Search;
 
 import java.util.Arrays;
-import java.util.List;
 
 import mockit.Deencapsulation;
-import mockit.Mock;
-import mockit.MockClass;
-import mockit.Mockit;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.ui.ExtendedModelMap;
-import org.springframework.ui.Model;
+import org.springframework.web.servlet.ModelAndView;
 
 /**
  * @author Michael Couck
  * @since 03.03.12
-@version 01.00
+ * @version 01.00
  */
 public class DatabaseControllerTest {
-
-	@MockClass(realClass = ADataBaseJpa.class)
-	public static class IDataBaseMock {
-		@Mock()
-		@SuppressWarnings("unchecked")
-		public <T> List<T> find(Class<T> klass, int startIndex, int endIndex) {
-			Search search = new Search();
-			return (List<T>) Arrays.asList(search);
-		}
-	}
 
 	/** Class under test. */
 	private DatabaseController databaseController;
 
 	@Before
+	@SuppressWarnings("unchecked")
 	public void before() {
-		Mockit.setUpMocks(IDataBaseMock.class);
+		IDataBase dataBase = mock(IDataBase.class);
+		IClusterManager clusterManager = mock(IClusterManager.class);
 		databaseController = new DatabaseController();
-		Deencapsulation.setField(databaseController, new DataBaseJpa());
+		when(dataBase.find(any(Class.class), anyInt(), anyInt())).thenReturn(Arrays.asList(new Search()));
+		Deencapsulation.setField(databaseController, dataBase);
+		Deencapsulation.setField(databaseController, clusterManager);
 	}
 
 	@Test
 	public void entities() throws Exception {
 		String targetView = "targetView";
-		Model model = new ExtendedModelMap();
-		String targetViewResult = databaseController.entities(targetView, Search.class.getName(), 0, 10, model);
-		assertTrue(model.asMap().size() == 3);
-		assertTrue(model.asMap().get(IConstants.ENTITIES) != null);
-		assertTrue(model.asMap().get(IConstants.FIELD_NAMES) != null);
-		assertEquals("The redirect view has the redirect suffix : ", "redirect:" + targetView, targetViewResult);
+		ModelAndView model = new ModelAndView();
+		ModelAndView returnModel = databaseController.entities(targetView, Search.class.getName(), 0, 10, model);
+		assertEquals(4, model.getModel().size());
+		assertTrue(model.getModel().get(IConstants.ENTITIES) != null);
+		assertTrue(model.getModel().get(IConstants.FIELD_NAMES) != null);
+		assertEquals("The view name should be set in the model : ", targetView, returnModel.getViewName());
 	}
 
 }
