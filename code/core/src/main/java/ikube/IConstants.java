@@ -170,7 +170,7 @@ public interface IConstants {
 
 	String CLASSPATH_PROPERTY = "java.class.path";
 
-	String STRIP_CHARACTERS = ",,[]{},;,";
+	String STRIP_CHARACTERS = ",[]{};";
 
 	long MAX_ACTIONS = 100000;
 	String DELAY = "delay";

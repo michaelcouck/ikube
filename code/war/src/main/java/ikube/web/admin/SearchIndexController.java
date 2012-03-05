@@ -42,7 +42,13 @@ public class SearchIndexController extends SearchBaseController {
 		// If the 'searchStrings' is in the request then this is a search on all fields
 		String indexName = getParameter(IConstants.INDEX_NAME, null, request);
 		String searchString = getParameter(IConstants.SEARCH_STRINGS, null, request);
-		String[] searchStrings = StringUtils.split(searchString, ",");
+		char delimiter = ',';
+		String[] searchStrings = null;
+		if (searchString != null && searchString.indexOf(delimiter) > -1) {
+			searchStrings = StringUtils.split(searchString, ",");
+		} else {
+			searchStrings = new String[] { searchString };
+		}
 		String[] indexFieldNames = monitorWebService.getIndexFieldNames(indexName);
 		for (String indexFieldName : indexFieldNames) {
 			fieldNamesAndValues.put(indexFieldName, "");
@@ -69,7 +75,7 @@ public class SearchIndexController extends SearchBaseController {
 		modelAndView.addObject(IConstants.TOTAL, statistics.get(IConstants.TOTAL));
 		modelAndView.addObject(IConstants.DURATION, statistics.get(IConstants.DURATION));
 		modelAndView.addObject(IConstants.CORRECTIONS, statistics.get(IConstants.CORRECTIONS));
-		modelAndView.addObject(IConstants.SEARCH_STRINGS, statistics.get(IConstants.SEARCH_STRINGS));
+		modelAndView.addObject(IConstants.SEARCH_STRINGS, searchString);
 
 		String targetSearchUrl = getParameter(IConstants.TARGET_SEARCH_URL, "/admin/search.html", request);
 		modelAndView.addObject(IConstants.TARGET_SEARCH_URL, targetSearchUrl);
@@ -80,5 +86,5 @@ public class SearchIndexController extends SearchBaseController {
 		modelAndView.addObject(IConstants.SERVER, server);
 		return modelAndView;
 	}
-
+	
 }

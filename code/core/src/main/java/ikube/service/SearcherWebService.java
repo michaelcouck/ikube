@@ -114,8 +114,8 @@ public class SearcherWebService implements ISearcherWebService {
 				return results;
 			}
 		} catch (Exception e) {
-			String message = Logging.getString("Exception doing search on index : ", indexName, Arrays.asList(searchStrings),
-					Arrays.asList(searchFields), fragment, firstResult, maxResults);
+			String message = Logging.getString("Exception doing search on index : ", indexName, searchStrings, searchFields, fragment,
+					firstResult, maxResults);
 			LOGGER.error(message, e);
 		}
 		return getMessageResults(indexName);
@@ -150,8 +150,8 @@ public class SearcherWebService implements ISearcherWebService {
 				return results;
 			}
 		} catch (Exception e) {
-			String message = Logging.getString("Exception doing search on index : ", indexName, Arrays.asList(searchStrings),
-					Arrays.asList(searchFields), Arrays.asList(sortFields), fragment, firstResult, maxResults);
+			String message = Logging.getString("Exception doing search on index : ", indexName, searchStrings,
+					searchFields, Arrays.asList(sortFields), fragment, firstResult, maxResults);
 			LOGGER.error(message, e);
 		}
 		return getMessageResults(indexName);
@@ -183,7 +183,7 @@ public class SearcherWebService implements ISearcherWebService {
 				return results;
 			}
 		} catch (Exception e) {
-			String message = Logging.getString("Exception doing search on index : ", indexName, Arrays.asList(searchStrings), fragment,
+			String message = Logging.getString("Exception doing search on index : ", indexName, searchStrings, fragment,
 					firstResult, maxResults);
 			LOGGER.error(message, e);
 		}
@@ -218,7 +218,7 @@ public class SearcherWebService implements ISearcherWebService {
 				return results;
 			}
 		} catch (Exception e) {
-			String message = Logging.getString("Exception doing search on index : ", indexName, Arrays.asList(searchStrings), fragment,
+			String message = Logging.getString("Exception doing search on index : ", indexName, searchStrings, fragment,
 					firstResult, maxResults, latitude, longitude, distance);
 			LOGGER.error(message, e);
 		}
@@ -252,7 +252,7 @@ public class SearcherWebService implements ISearcherWebService {
 				return results;
 			}
 		} catch (Exception e) {
-			String message = Logging.getString("Exception doing search on index : ", indexName, Arrays.asList(searchStrings), fragment,
+			String message = Logging.getString("Exception doing search on index : ", indexName, searchStrings, fragment,
 					firstResult, maxResults, latitude, longitude, distance);
 			LOGGER.error(message, e);
 		}

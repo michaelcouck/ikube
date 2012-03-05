@@ -45,7 +45,7 @@
 			</a>
 		</td>
 		<td>
-			<a href="<c:url value="/admin/search.html" />?indexName=${indexContext.name}"
+			<a href="<c:url value="/admin/search.html" />?indexName=${indexContext.name}&searchStrings=nothing+eclipse"
 				title="Search index ${indexContext.name}">
 				<img alt="Search index ${indexContext.name}" 
 					src="<c:url value="/images/icons/search.gif" />" 

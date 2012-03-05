@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
@@ -163,8 +164,8 @@ public class SearchTest extends ATest {
 		Map<String, String> statistics = results.get(results.size() - 1);
 		logger.info("Search strings : " + statistics.get(IConstants.SEARCH_STRINGS));
 		logger.info("Corrected search strings : " + statistics.get(IConstants.CORRECTIONS));
-		assertEquals("[michael AND couck]", statistics.get(IConstants.SEARCH_STRINGS));
-		assertEquals("[michael and houck]", statistics.get(IConstants.CORRECTIONS));
+		assertEquals("michael AND couck", statistics.get(IConstants.SEARCH_STRINGS));
+		assertEquals("michael and houck", statistics.get(IConstants.CORRECTIONS));
 	}
 
 	@Test
@@ -172,9 +173,10 @@ public class SearchTest extends ATest {
 		String[] searchStrings = { "some words", "are niet corect", "AND there are AND some words WITH AND another" };
 		Search search = new SearchSingle(SEARCHER);
 		search.setSearchString(searchStrings);
-		String[] expectedCorrectedSearchStrings = { "some words", "are net correct", "AND there are AND some words WITH AND another" };
+		String[] expectedCorrectedSearchStrings = { "AND there are AND some words WITH AND another", "are net correct", "some words" };
 		String[] correctedSearchStrings = search.getCorrections();
-		logger.info("Corrected : " + Arrays.deepToString(correctedSearchStrings));
+		String correctedSearchString = StringUtils.strip(Arrays.deepToString(correctedSearchStrings), IConstants.STRIP_CHARACTERS);
+		logger.info("Corrected : " + correctedSearchString);
 		assertEquals("Only the completely incorrect words should be replaced : ", Arrays.deepToString(expectedCorrectedSearchStrings),
 				Arrays.deepToString(correctedSearchStrings));
 	}
@@ -195,5 +197,5 @@ public class SearchTest extends ATest {
 			}
 		}
 	}
-
+	
 }

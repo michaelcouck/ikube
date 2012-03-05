@@ -40,7 +40,7 @@
 		id="dropboxIndexable"
 		class="ikube.model.IndexableFileSystem"
 		property:name="dropboxIndexable"
-		property:path="/home/michael/Dropbox"
+		property:path="/home/michael/Dropbox/Sumo"
 		property:pathFieldName="title"
 		property:nameFieldName="name"
 		property:lengthFieldName="length"

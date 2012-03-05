@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.kahadb.util.ByteArrayOutputStream;
@@ -321,8 +323,10 @@ public abstract class Search {
 
 		String[] correctedSearchStrings = getCorrections();
 
-		statistics.put(IConstants.SEARCH_STRINGS, Arrays.deepToString(searchStrings));
-		statistics.put(IConstants.CORRECTIONS, Arrays.deepToString(correctedSearchStrings));
+		String searchString = StringUtils.strip(Arrays.deepToString(searchStrings), IConstants.STRIP_CHARACTERS);
+		String correctedSearchString = StringUtils.strip(Arrays.deepToString(correctedSearchStrings), IConstants.STRIP_CHARACTERS);
+		statistics.put(IConstants.SEARCH_STRINGS, searchString);
+		statistics.put(IConstants.CORRECTIONS, correctedSearchString);
 
 		if (exception != null) {
 			statistics.put(IConstants.EXCEPTION, exception.getMessage());
@@ -343,17 +347,19 @@ public abstract class Search {
 	 */
 	protected String[] getCorrections() {
 		boolean corrections = Boolean.FALSE;
-		String[] correctedSearchStrings = new String[searchStrings.length];
-		System.arraycopy(searchStrings, 0, correctedSearchStrings, 0, searchStrings.length);
+		Set<String> correctedSearchStrings = new TreeSet<String>();
 		for (int i = 0; i < searchStrings.length; i++) {
-			String correctedSearchString = CheckerExt.getCheckerExt().checkWords(searchStrings[i].toLowerCase());
+			String searchString = StringUtils.strip(searchStrings[i], IConstants.STRIP_CHARACTERS);
+			String correctedSearchString = CheckerExt.getCheckerExt().checkWords(searchString.toLowerCase());
 			if (correctedSearchString != null) {
 				corrections = Boolean.TRUE;
-				correctedSearchStrings[i] = correctedSearchString;
+				correctedSearchStrings.add(correctedSearchString);
+			} else {
+				correctedSearchStrings.add(searchString);
 			}
 		}
 		if (corrections) {
-			return correctedSearchStrings;
+			return correctedSearchStrings.toArray(new String[correctedSearchStrings.size()]);
 		}
 		return new String[0];
 	}
