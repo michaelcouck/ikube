@@ -84,8 +84,79 @@
 			for interests' sake. The last map will also contain the spelling corrections, or the original search string if there were no spelling errors.
 			<br><br>
 			
-			If you have any questions please feel free to give me a shout at michael dot couck at gmail dot com.<br><br>
+		</td>
+	</tr>
+	<tr>
+		<td class="td-content">
+			<strong>API</strong>&nbsp;
+			The API and parameters for the web service are:<br><br>
 			
+			Search a single field in a single index: http://localhost:8080/ikube/service/search/single<br>
+			Parameters:<br>
+			1) indexName=geospatial<br>
+			2) searchStrings=cape+AND+town+AND+university<br>
+			3) searchFields=name<br>
+			4) fragment=true<br>
+			5) firstResult=0<br>
+			6) maxResults=10<br><br>
+			
+			Search multiple fields with multiple search strings in an index: http://localhost:8080/ikube/service/search/multi<br>
+			Parameters:<br>
+			1) indexName=geospatial<br>
+			2) searchStrings=cape+AND+town+AND+university%3Bsouth+africa<br>
+			3) searchFields=name%3Bcountry<br>
+			4) fragment=true<br>
+			5) firstResult=0<br>
+			6) maxResults=10<br><br>
+			
+			Search all the fields in an index with one or more search strings: http://localhost:8080/ikube/service/search/multi/all<br>
+			Parameters:<br>
+			1) indexName=geospatial<br>
+			2) searchStrings=cape+AND+town+AND+university%3Bsouth+africa<br>
+			3) fragment=true<br>
+			4) firstResult=0<br>
+			5) maxResults=10<br><br>
+			
+			Search all the fields in the index with one or more search strings and sort the results according to one or more fields: http://localhost:8080/ikube/service/search/multi/sorted<br>
+			Parameters:<br>
+			1) indexName=geospatial<br>
+			2) searchStrings=cape+AND+town+AND+university%3Bsouth+africa<br>
+			3) searchFields=name%3Bcountry<br>
+			4) sortFields=name%3Bcountry<br>
+			5) fragment=true<br>
+			6) firstResult=0<br>
+			7) maxResults=10<br><br>
+			
+			Search multiple fields in a spatial index, with one or more search strings: http://localhost:8080/ikube/service/search/multi/spatial<br>
+			Parameters:<br>
+			1) indexName=geospatial<br>
+			2) searchStrings=cape+AND+town+AND+university%3Bsouth+africa<br>
+			3) searchFields=name%3Bcountry<br>
+			4) fragment=true<br>
+			5) firstResult=0<br>
+			6) maxResults=10<br>
+			7) distance=50<br>
+			8) latitude=18.46082<br>
+			9) longitude=-33.95796<br><br>
+			
+			Search all the fields in a spatial index, with one or more search strings: http://localhost:8080/ikube/service/search/multi/spatial/all<br>
+			Parameters:<br>
+			1) indexName=geospatial<br>
+			2) searchStrings=cape+town+university<br>
+			3) fragment=true<br>
+			4) firstResult=0<br>
+			5) maxResults=10<br>
+			6) distance=10<br>
+			7) latitude=18.46082<br>
+			8) longitude=-33.95796<br><br>
+			
+		</td>
+	</tr>
+	
+	<tr>
+		<td class="td-content">
+			<strong>more questions</strong>&nbsp;
+			If you have any questions please feel free to give me a shout at michael dot couck at gmail dot com.<br><br>
 			Happy searching!
 		</td>
 	</tr>
