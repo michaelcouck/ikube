@@ -37,11 +37,14 @@ public class DatabaseController extends BaseController {
 	@RequestMapping(value = "/admin/database.html", method = RequestMethod.GET)
 	public ModelAndView entities(@RequestParam(required = true, value = "targetView") String targetView,
 			@RequestParam(required = true, value = "classType") String classType,
+			@RequestParam(required = true, value = "sortFields") List<String> sortFields,
+			@RequestParam(required = true, value = "directionOfSort") List<Boolean> directionOfSort,
 			@RequestParam(required = true, value = "start") int start, @RequestParam(required = true, value = "end") int end,
 			ModelAndView modelAndView) throws Exception {
 		Class<?> klass = Class.forName(classType);
 		Long total = dataBase.count(Search.class);
-		List<?> list = dataBase.find(klass, start, end);
+		List<?> list = dataBase.find(klass, sortFields.toArray(new String[sortFields.size()]),
+				directionOfSort.toArray(new Boolean[directionOfSort.size()]), start, end);
 		modelAndView.addObject(IConstants.TOTAL, total);
 		modelAndView.addObject(IConstants.ENTITIES, list);
 		List<String> fieldNames = DatabaseUtilities.getFieldNames(klass, new ArrayList<String>());
@@ -51,7 +54,7 @@ public class DatabaseController extends BaseController {
 		modelAndView.addObject(IConstants.SERVER, server);
 
 		modelAndView.setViewName(targetView);
-		
+
 		return modelAndView;
 	}
 

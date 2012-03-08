@@ -12,6 +12,7 @@ import ikube.database.IDataBase;
 import ikube.model.Search;
 
 import java.util.Arrays;
+import java.util.List;
 
 import mockit.Deencapsulation;
 
@@ -44,7 +45,9 @@ public class DatabaseControllerTest {
 	public void entities() throws Exception {
 		String targetView = "targetView";
 		ModelAndView model = new ModelAndView();
-		ModelAndView returnModel = databaseController.entities(targetView, Search.class.getName(), 0, 10, model);
+		List<String> sortFields = Arrays.asList("id");
+		List<Boolean> directionOfSort = Arrays.asList(Boolean.TRUE);
+		ModelAndView returnModel = databaseController.entities(targetView, Search.class.getName(), sortFields, directionOfSort, 0, 10, model);
 		assertEquals(4, model.getModel().size());
 		assertTrue(model.getModel().get(IConstants.ENTITIES) != null);
 		assertTrue(model.getModel().get(IConstants.FIELD_NAMES) != null);

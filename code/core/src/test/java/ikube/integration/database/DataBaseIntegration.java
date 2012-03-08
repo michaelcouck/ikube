@@ -153,7 +153,7 @@ public class DataBaseIntegration extends AbstractIntegration {
 		int totalUrlInserted = 10;
 		List<Url> urls = getUrls(totalUrlInserted);
 		dataBase.persistBatch(urls);
-		List<Url> dbUrls = dataBase.find(Url.class, new String[] { "urlId" }, new boolean[] { false }, 0, Integer.MAX_VALUE);
+		List<Url> dbUrls = dataBase.find(Url.class, new String[] { "urlId" }, new Boolean[] { false }, 0, Integer.MAX_VALUE);
 		logger.info("Urls : " + dbUrls.size());
 		long previousId = Long.MAX_VALUE;
 		for (Url url : dbUrls) {
@@ -164,7 +164,7 @@ public class DataBaseIntegration extends AbstractIntegration {
 
 		int firstResult = totalUrlInserted / 4;
 		int maxResults = totalUrlInserted / 2;
-		dbUrls = dataBase.find(Url.class, new String[] { "urlId" }, new boolean[] { false }, firstResult, maxResults);
+		dbUrls = dataBase.find(Url.class, new String[] { "urlId" }, new Boolean[] { false }, firstResult, maxResults);
 		assertEquals("Max results should be half the total : ", maxResults, dbUrls.size());
 		previousId = Long.MAX_VALUE;
 		for (Url url : dbUrls) {

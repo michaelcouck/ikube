@@ -15,15 +15,11 @@
             http://www.springframework.org/schema/util
             http://www.springframework.org/schema/util/spring-util.xsd">
 
-	<!-- 
-		This configuration is to index the local file system. Please feel free to delete this 
-		index context from the configuration if not needed.
-	-->
 	<bean
-		id="localFileSystemContext"
+		id="filesystemIndexLogs"
 		class="ikube.model.IndexContext"
-		property:name="localFileSystemContext"
-		property:maxAge="6000"
+		property:name="filesystemIndexLogs"
+		property:maxAge="60"
 		property:compoundFile="${compound.file}"
 		property:bufferedDocs="${buffered.docs}"
 		property:bufferSize="${buffer.size}"
@@ -35,31 +31,20 @@
 		property:throttle="${throttle}"
 		property:indexDirectoryPath="${index.directory.path}"
 		property:indexDirectoryPathBackup="${index.directory.path.backup}"
-		property:children-ref="localFileSystemIndexables" />
-	<util:list id="localFileSystemIndexables">
-		<ref local="localFileSystemIndexable" />
+		property:children-ref="filesystemIndexablesLogs" />
+	<util:list id="filesystemIndexablesLogs">
+		<ref local="filesystemIndexableLogs" />
 	</util:list>
 	
-	<!-- 
-		Note that the path to the files is a slash, on Linux this is the root and on Windows this will be the
-		root of the drive that the application is started on, so it would be C:/ if the Tomcat is on the C drive.  
-	-->
 	<bean
-		id="localFileSystemIndexable"
-		class="ikube.model.IndexableFileSystem"
-		property:name="localFileSystemIndexable"
-		property:path="/tmp"
-		property:pathFieldName="path"
-		property:nameFieldName="name"
-		property:lengthFieldName="length"
-		property:contentFieldName="contents"
-		property:unpackZips="false"
+		id="filesystemIndexableLogs"
+		class="ikube.model.IndexableFileSystemLog"
+		property:name="filesystemIndexableLogs"
+		property:path="/jboss-4.2.2.GA/server/default/logs"
+		property:lineFieldName="lineNumber"
+		property:contentFieldName="lineContents"
 		property:stored="true"
-		property:analyzed="true"
 		property:vectored="true"
-		property:excludedPattern="${files.excluded.pattern}"
-		property:lastModifiedFieldName="lastmodified"
-		property:batchSize="${file.batch.size}"
-		property:maxReadLength="${file.max.read.length}" />
-
+		property:analyzed="true" />
+	
 </beans>

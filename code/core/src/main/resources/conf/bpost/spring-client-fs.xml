@@ -40,7 +40,7 @@
 		id="filesystemIndexable"
 		class="ikube.model.IndexableFileSystem"
 		property:name="filesystemIndexable"
-		property:path="./"
+		property:path="/"
 		property:pathFieldName="title"
 		property:nameFieldName="name"
 		property:lengthFieldName="length"
@@ -49,6 +49,7 @@
 		property:lastModifiedFieldName="lastmodified"
 		property:batchSize="${file.batch.size}"
 		property:maxReadLength="${file.max.read.length}"
+		property:unpackZips="true"
 		property:stored="true"
 		property:vectored="true"
 		property:analyzed="true" />

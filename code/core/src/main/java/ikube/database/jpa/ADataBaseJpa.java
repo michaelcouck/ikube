@@ -3,6 +3,7 @@ package ikube.database.jpa;
 import ikube.database.IDataBase;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -31,7 +32,7 @@ import org.apache.log4j.Logger;
 public abstract class ADataBaseJpa implements IDataBase {
 
 	protected static final Logger LOGGER = Logger.getLogger(ADataBaseJpa.class);
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -162,7 +163,7 @@ public abstract class ADataBaseJpa implements IDataBase {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public <T> List<T> find(Class<T> klass, String[] fieldsToSortOn, boolean[] directionOfSort, int firstResult, int maxResults) {
+	public <T> List<T> find(Class<T> klass, String[] fieldsToSortOn, Boolean[] directionOfSort, int firstResult, int maxResults) {
 		CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
 		CriteriaQuery<T> criteriaQuery = criteriaBuilder.createQuery(klass);
 		Root<T> root = criteriaQuery.from(klass);
@@ -231,27 +232,15 @@ public abstract class ADataBaseJpa implements IDataBase {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public <T> T find(Class<T> klass, String sql, String[] names, Object[] values) {
-		Query query = getEntityManager().createNamedQuery(sql, klass);
-		setParameters(query, names, values);
-		return (T) query.getSingleResult();
+		Map<String, Object> parameters = getParameterMap(names, values);
+		return find(klass, sql, parameters);
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public <T> List<T> find(Class<T> klass, String sql, String[] names, Object[] values, int startPosition, int maxResults) {
-		Query query = getEntityManager().createNamedQuery(sql, klass);
-		query.setFirstResult(startPosition);
-		query.setMaxResults(maxResults);
-		setParameters(query, names, values);
-		return query.getResultList();
-	}
-
-	private void setParameters(Query query, String[] names, Object[] values) {
-		for (int i = 0; i < names.length; i++) {
-			query.setParameter(names[i], values[i]);
-		}
+		Map<String, Object> parameters = getParameterMap(names, values);
+		return find(klass, sql, parameters, startPosition, maxResults);
 	}
 
 	/**
@@ -272,6 +261,14 @@ public abstract class ADataBaseJpa implements IDataBase {
 		Query query = getEntityManager().createNamedQuery(sql);
 		setParameters(query, parameters);
 		return (T) query.getSingleResult();
+	}
+
+	private Map<String, Object> getParameterMap(final String[] names, final Object[] values) {
+		Map<String, Object> parameters = new HashMap<String, Object>();
+		for (int i = 0; i < names.length; i++) {
+			parameters.put(names[i], values[i]);
+		}
+		return parameters;
 	}
 
 	/**

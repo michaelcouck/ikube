@@ -13,7 +13,7 @@ import java.util.Map;
  * @version 01.00
  */
 public interface IDataBase {
-	
+
 	/**
 	 * This method counts the number of entities in the database.
 	 * 
@@ -135,14 +135,14 @@ public interface IDataBase {
 	 * @param <T> the type to expect
 	 * @param klass the class to select from the database
 	 * @param fieldsToSortOn the fields to sort on, in the order of the sort requirements, i.e. first on start time then on end time for
-	 *            example
+	 *        example
 	 * @param directionOfSort the direction of the sort for each field. For example sort acesnding on the start time and descending on the
-	 *            end time
+	 *        end time
 	 * @param firstResult the first result in the set, i.e. skip the first n results
 	 * @param maxResults and the size of the result set
 	 * @return the list of sorted entities from the database
 	 */
-	<T> List<T> find(Class<T> klass, String[] fieldsToSortOn, boolean[] directionOfSort, int firstResult, int maxResults);
+	<T> List<T> find(Class<T> klass, String[] fieldsToSortOn, Boolean[] directionOfSort, int firstResult, int maxResults);
 
 	/**
 	 * Selects a single object based on the sql and the parameters. The combination of parameters should result in a single unique entity
@@ -196,28 +196,30 @@ public interface IDataBase {
 	<T> T execute(Class<T> klass, String sql, Map<String, Object> parameters);
 
 	/**
-	 * TODO Document me!
+	 * This method does a query on the entities using the class type and the parameters are n array format, for the names of the fields to
+	 * use in the predicate and the values for those fields in the predicate.
 	 * 
-	 * @param <T>
-	 * @param klass
-	 * @param sql
-	 * @param names
-	 * @param values
-	 * @return
+	 * @param <T> the type to return
+	 * @param klass the class of the return type
+	 * @param sql the sql to execute on the database, note that this is a named query, i.e. must be defined for the JPA implementation
+	 * @param names the names of the fields to use as filter in the query
+	 * @param values the values of the fields to use for the filter in the query
+	 * @return the entity that matches the fields and values, or null if no such entity exists
 	 */
 	<T> T find(Class<T> klass, String sql, String[] names, Object[] values);
 
 	/**
 	 * TODO Document me!
 	 * 
-	 * @param <T>
-	 * @param klass
-	 * @param sql
-	 * @param names
-	 * @param values
-	 * @param startPosition
-	 * @param maxResults
-	 * @return
+	 * @param <T> the type to return
+	 * @param klass the class of the return type
+	 * @param sql the sql to execute on the database, note that this is a named query, i.e. must be defined for the JPA implementation
+	 * @param names the names of the fields to use as filter in the query
+	 * @param values the values of the fields to use for the filter in the query
+	 * @param startPosition the first entity in the result, in the case that this list os sorted by the id for example thsn this will be the
+	 *        next page in the results, if not then the results are defined by the JPA implementation
+	 * @param maxResults the maximum results to return from the database
+	 * @return the list of entities in the database that match the names and values for the fields
 	 */
 	<T> List<T> find(Class<T> klass, String sql, String[] names, Object[] values, int startPosition, int maxResults);
 
