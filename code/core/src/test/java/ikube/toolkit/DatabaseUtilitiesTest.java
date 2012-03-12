@@ -125,6 +125,7 @@ public class DatabaseUtilitiesTest extends ATest {
 	}
 
 	@Test
+	@Ignore
 	public void getPrimaryKeys() throws Exception {
 		Connection connection = null;
 		try {

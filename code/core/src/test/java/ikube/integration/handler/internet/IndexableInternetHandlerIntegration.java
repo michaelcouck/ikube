@@ -9,6 +9,7 @@ import ikube.index.IndexManager;
 import ikube.index.handler.internet.IndexableInternetHandler;
 import ikube.integration.AbstractIntegration;
 import ikube.listener.ListenerManager;
+import ikube.model.Action;
 import ikube.model.IndexContext;
 import ikube.model.IndexableInternet;
 import ikube.model.Url;
@@ -47,9 +48,9 @@ public class IndexableInternetHandlerIntegration extends AbstractIntegration {
 	@Before
 	public void before() {
 		ApplicationContextManager.getBean(ListenerManager.class).removeListeners();
-		indexContext = ApplicationContextManager.getBean("indexContext");
+		indexContext = ApplicationContextManager.getBean("coldwellIndex");
 		indexContext.setIndexDirectoryPath("./indexes");
-		indexableInternet = ApplicationContextManager.getBean("hazelcast");
+		indexableInternet = ApplicationContextManager.getBean("coldwellIndexable");
 		indexableInternetHandler = ApplicationContextManager.getBean(IndexableInternetHandler.class);
 		dataBase = ApplicationContextManager.getBean(IDataBase.class);
 		ApplicationContextManager.getBean(IClusterManager.class).startWorking(Index.class.getSimpleName(), indexContext.getName(),
@@ -67,6 +68,7 @@ public class IndexableInternetHandlerIntegration extends AbstractIntegration {
 		String ip = InetAddress.getLocalHost().getHostAddress();
 		IndexWriter indexWriter = IndexManager.openIndexWriter(realIndexContext, System.currentTimeMillis(), ip);
 		indexContext.getIndex().setIndexWriter(indexWriter);
+		indexContext.setAction(new Action());
 		// indexableInternet.setUrl("http://sum.agj1.post.bpgnet.net/wiki");
 		// indexableInternet.setExcludedPattern("download");
 		// indexableInternet.setUserid("U365981");

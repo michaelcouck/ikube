@@ -58,6 +58,13 @@ $('#searchStrings').autocomplete({
 				<li><a href="<c:url value="/documentation/configuration/internet.html" />">Internet</a></li>
 			</ul>
 		</li>
+
+		<%-- <li>
+			<h2>Index creation</h2>
+			<ul>
+				<li><a href="<c:url value="/admin/indexContext.html"/>">Index context</a></li>
+			</ul>
+		</li> --%>
 		
 		<li>
 			<h2>libraries used</h2>

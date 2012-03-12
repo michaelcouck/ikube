@@ -40,13 +40,23 @@ class IndexableFilesystemHandlerWorker implements Runnable {
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-	private Stack<File> directories;
-	private IndexContext<?> indexContext;
-	private IndexableFileSystem indexableFileSystem;
-	private ByteArrayInputStream byteInputStream;
-	private ByteArrayOutputStream byteOutputStream;
-	private IndexableHandler<IndexableFileSystem> indexableHandler;
+	/** The pattern of excluded paths, like /secure/ for example, or /images/. */
 	private Pattern pattern;
+	/**
+	 * This is the dynamic stack of directories that the threads all have access to. While iterating over the file system, each thread will
+	 * add directories to this stack. In this way each directory will only be read once even though there are multiple threads iterating
+	 * over the file system.
+	 */
+	private Stack<File> directories;
+	/** The index context for this index. */
+	private IndexContext<?> indexContext;
+	/**
+	 * The file system configuration object that has the path to the resource and other properties that will beused by the file system
+	 * worker, like whether to store the content in the index.
+	 */
+	private IndexableFileSystem indexableFileSystem;
+	/** The 'parent' handler for this worker. */
+	private IndexableHandler<IndexableFileSystem> indexableHandler;
 
 	IndexableFilesystemHandlerWorker(IndexableHandler<IndexableFileSystem> indexableHandler, IndexContext<?> indexContext,
 			IndexableFileSystem indexableFileSystem, Stack<File> directories) {
@@ -56,31 +66,31 @@ class IndexableFilesystemHandlerWorker implements Runnable {
 		this.directories = directories;
 	}
 
+	/**
+	 * This method will iterate over the file system, adding directories to the stack that is shared amongst the worker threads, and index
+	 * the files as they are read from the directories.
+	 */
 	public void run() {
-		try {
-			// Hello world
-			List<File> files = getBatch(indexableFileSystem, directories);
-			if (files != null) {
-				do {
-					for (File file : files) {
-						try {
-							if (handleZip(indexableFileSystem, file)) {
-								continue;
-							}
-							this.handleFile(indexContext, indexableFileSystem, file);
-						} catch (InterruptedException e) {
-							logger.error("Thread terminated, and indexing stopped : ", e);
-							return;
-						} catch (Exception e) {
-							logger.error("Exception handling file : " + file, e);
-						}
+		List<File> files = getBatch(indexableFileSystem, directories);
+		do {
+			for (File file : files) {
+				try {
+					if (handleZip(indexableFileSystem, file)) {
+						continue;
 					}
-					files = getBatch(indexableFileSystem, directories);
-				} while (files != null && files.size() > 0);
+					this.handleFile(indexContext, indexableFileSystem, file);
+				} catch (InterruptedException e) {
+					logger.error("Thread terminated, and indexing stopped : ", e);
+					return;
+				} catch (Exception e) {
+					logger.error("Exception handling file : " + file, e);
+				}
 			}
-		} catch (Exception e) {
-			logger.error("Exception in worker : ", e);
-		}
+			files = getBatch(indexableFileSystem, directories);
+			if (files.size() == 0) {
+				break;
+			}
+		} while (true);
 	}
 
 	/**
@@ -93,10 +103,9 @@ class IndexableFilesystemHandlerWorker implements Runnable {
 	 */
 	protected void handleFile(final IndexContext<?> indexContext, final IndexableFileSystem indexableFileSystem, final File file)
 			throws InterruptedException {
-		Document document = null;
 		InputStream inputStream = null;
 		try {
-			document = new Document();
+			Document document = new Document();
 			inputStream = new FileInputStream(file);
 			handleFile(file, inputStream, document);
 		} catch (InterruptedException e) {
@@ -107,122 +116,121 @@ class IndexableFilesystemHandlerWorker implements Runnable {
 			// TODO Add a maximum exceptions before exiting this indexable
 		} finally {
 			FileUtilities.close(inputStream);
+		}
+	}
+
+	protected void handleFile(final File file, final InputStream inputStream, final Document document) throws Exception {
+		ByteArrayInputStream byteInputStream = null;
+		ByteArrayOutputStream byteOutputStream = null;
+		try {
+			int length = Math.min((int) indexableFileSystem.getMaxReadLength(), (int) file.length());
+			byte[] byteBuffer = new byte[length];
+			int read = inputStream.read(byteBuffer, 0, byteBuffer.length);
+
+			byteInputStream = new ByteArrayInputStream(byteBuffer, 0, read);
+			byteOutputStream = new ByteArrayOutputStream();
+
+			IParser parser = ParserProvider.getParser(file.getName(), byteBuffer);
+			String parsedContent = parser.parse(byteInputStream, byteOutputStream).toString();
+			// logger.info("Parsed content : " + parsedContent);
+
+			Store store = indexableFileSystem.isStored() ? Store.YES : Store.NO;
+			Index analyzed = indexableFileSystem.isAnalyzed() ? Index.ANALYZED : Index.NOT_ANALYZED;
+			TermVector termVector = indexableFileSystem.isVectored() ? TermVector.YES : TermVector.NO;
+
+			String pathFieldName = indexableFileSystem.getPathFieldName();
+			String nameFieldName = indexableFileSystem.getNameFieldName();
+			String modifiedFieldName = indexableFileSystem.getLastModifiedFieldName();
+			String lengthFieldName = indexableFileSystem.getLengthFieldName();
+			String contentFieldName = indexableFileSystem.getContentFieldName();
+
+			IndexManager.addStringField(pathFieldName, file.getAbsolutePath(), document, Store.YES, analyzed, termVector);
+			IndexManager.addStringField(nameFieldName, file.getName(), document, Store.YES, analyzed, termVector);
+			IndexManager.addStringField(modifiedFieldName, Long.toString(file.lastModified()), document, Store.YES, analyzed, termVector);
+			IndexManager.addStringField(lengthFieldName, Long.toString(file.length()), document, Store.YES, analyzed, termVector);
+			IndexManager.addStringField(contentFieldName, parsedContent, document, store, analyzed, termVector);
+			indexableHandler.addDocument(indexContext, indexableFileSystem, document);
+
+			if (Thread.currentThread().isInterrupted()) {
+				throw new InterruptedException("Interrupted...");
+			}
+			Thread.sleep(indexContext.getThrottle());
+		} finally {
 			FileUtilities.close(byteInputStream);
 			FileUtilities.close(byteOutputStream);
 		}
 	}
 
-	protected void handleFile(final File file, final InputStream inputStream, final Document document) throws Exception {
-		int length = Math.min((int) indexableFileSystem.getMaxReadLength(), (int) file.length());
-		byte[] byteBuffer = new byte[length];
-		int read = inputStream.read(byteBuffer, 0, byteBuffer.length);
-
-		byteInputStream = new ByteArrayInputStream(byteBuffer, 0, read);
-		byteOutputStream = new ByteArrayOutputStream();
-
-		IParser parser = ParserProvider.getParser(file.getName(), byteBuffer);
-		String parsedContent = parser.parse(byteInputStream, byteOutputStream).toString();
-		// logger.info("Parsed content : " + parsedContent);
-
-		Store store = indexableFileSystem.isStored() ? Store.YES : Store.NO;
-		Index analyzed = indexableFileSystem.isAnalyzed() ? Index.ANALYZED : Index.NOT_ANALYZED;
-		TermVector termVector = indexableFileSystem.isVectored() ? TermVector.YES : TermVector.NO;
-
-		String pathFieldName = indexableFileSystem.getPathFieldName();
-		String nameFieldName = indexableFileSystem.getNameFieldName();
-		String modifiedFieldName = indexableFileSystem.getLastModifiedFieldName();
-		String lengthFieldName = indexableFileSystem.getLengthFieldName();
-		String contentFieldName = indexableFileSystem.getContentFieldName();
-
-		IndexManager.addStringField(pathFieldName, file.getAbsolutePath(), document, store, analyzed, termVector);
-		IndexManager.addStringField(nameFieldName, file.getName(), document, store, analyzed, termVector);
-		IndexManager.addStringField(modifiedFieldName, Long.toString(file.lastModified()), document, store, analyzed, termVector);
-		IndexManager.addStringField(lengthFieldName, Long.toString(file.length()), document, store, analyzed, termVector);
-		IndexManager.addStringField(contentFieldName, parsedContent, document, store, analyzed, termVector);
-		indexableHandler.addDocument(indexContext, indexableFileSystem, document);
-
-		if (Thread.currentThread().isInterrupted()) {
-			throw new InterruptedException("Interrupted...");
-		}
-		Thread.sleep(indexContext.getThrottle());
-	}
-
 	protected boolean handleZip(IndexableFileSystem indexableFileSystem, File file) throws Exception {
 		// We have to unpack the zip files
-		if (indexableFileSystem.isUnpackZips()) {
-			boolean isZip = IConstants.ZIP_JAR_WAR_EAR_PATTERN.matcher(file.getName()).matches();
-			boolean isFile = file.isFile();
-			boolean isTrueFile = de.schlichtherle.io.File.class.isAssignableFrom(file.getClass());
-			boolean isZipAndFile = isZip && (isFile || isTrueFile);
-			if (isZipAndFile) {
-				de.schlichtherle.io.File trueZipFile = new de.schlichtherle.io.File(file);
-				File[] files = trueZipFile.listFiles();
-				for (File innerFile : files) {
-					try {
-						handleFile(innerFile);
-						handleZip(indexableFileSystem, innerFile);
-					} catch (Exception e) {
-						logger.error("Exception reading inner file : " + innerFile, e);
-					}
+		if (!indexableFileSystem.isUnpackZips()) {
+			return Boolean.FALSE;
+		}
+		boolean isZip = IConstants.ZIP_JAR_WAR_EAR_PATTERN.matcher(file.getName()).matches();
+		boolean isFile = file.isFile();
+		boolean isTrueFile = de.schlichtherle.io.File.class.isAssignableFrom(file.getClass());
+		boolean isZipAndFile = isZip && (isFile || isTrueFile);
+		if (isZipAndFile) {
+			de.schlichtherle.io.File trueZipFile = new de.schlichtherle.io.File(file);
+			File[] files = trueZipFile.listFiles();
+			for (File innerFile : files) {
+				try {
+					handleFile(innerFile);
+					handleZip(indexableFileSystem, innerFile);
+				} catch (Exception e) {
+					logger.error("Exception reading inner file : " + innerFile, e);
 				}
 			}
-			return Boolean.TRUE;
 		}
-		return Boolean.FALSE;
+		return Boolean.TRUE;
 	}
 
 	protected void handleFile(final File file) throws Exception {
 		FileReader fileReader = null;
 		try {
+			// logger.info("Reading file : " + file + ", directory : " + file.isDirectory());
 			if (file.isDirectory()) {
 				for (File innerFile : file.listFiles()) {
 					handleFile(innerFile);
 				}
-				return;
+			} else {
+				fileReader = new FileReader((de.schlichtherle.io.File) file);
+				InputStream inputStream = new ReaderInputStream(fileReader);
+				handleFile(file, inputStream, new Document());
 			}
-			// logger.info("Reading file : " + file);
-			fileReader = new FileReader((de.schlichtherle.io.File) file);
-			InputStream inputStream = new ReaderInputStream(fileReader);
-			handleFile(file, inputStream, new Document());
 		} finally {
 			FileUtilities.close(fileReader);
 		}
 	}
 
-	protected synchronized List<File> getBatch(IndexableFileSystem indexableFileSystem, Stack<File> directories) {
-		try {
-			Pattern pattern = getPattern(indexableFileSystem.getExcludedPattern());
-			List<File> results = new ArrayList<File>();
-			if (!directories.isEmpty()) {
-				File directory = directories.pop();
-				if (directory != null) {
-					File[] files = directory.listFiles();
-					if (files != null && files.length > 0) {
-						for (File file : files) {
-							if (isExcluded(file, pattern)) {
-								continue;
-							}
-							if (file.isDirectory()) {
-								// Put all the directories on the stack
-								directories.push(file);
-							} else {
-								// We'll do this file ourselves
-								results.add(file);
-							}
-						}
+	protected List<File> getBatch(IndexableFileSystem indexableFileSystem, Stack<File> directories) {
+		Pattern pattern = getPattern(indexableFileSystem.getExcludedPattern());
+		List<File> results = new ArrayList<File>();
+		if (!directories.isEmpty()) {
+			File directory = directories.pop();
+			// Get the files for our directory that we are going to index
+			File[] files = directory.listFiles();
+			if (files != null && files.length > 0) {
+				for (File file : files) {
+					if (isExcluded(file, pattern)) {
+						continue;
 					}
-					if (results.isEmpty()) {
-						return getBatch(indexableFileSystem, directories);
+					if (file.isDirectory()) {
+						// Put all the directories on the stack
+						directories.push(file);
+					} else {
+						// We'll do this file ourselves
+						results.add(file);
 					}
-					logger.info("Directories : " + directories.size());
-					logger.info("Doing files : " + results.size());
-					return results;
 				}
 			}
-			return null;
-		} finally {
-			notifyAll();
+			if (results.isEmpty()) {
+				// Means that there were no files in this directory
+				return getBatch(indexableFileSystem, directories);
+			}
 		}
+		logger.info("Directories : " + directories.size() + ", doing files : " + results.size());
+		return results;
 	}
 
 	protected synchronized Pattern getPattern(final String pattern) {

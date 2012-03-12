@@ -63,9 +63,9 @@
 			are used for GeoSpatial functionality. Address tables and the data contained in the columns are concatenated, a search 
 			is done against the Ikube GeoSpatial index to find the closest match for the address and the latitude and longitude 
 			properties for the address are added to the Lucene index. This facilitates searching for results around a point and ordering 
-			them according to distance from that point. More information on how to configure the index with geospatial functionality 
-			is available on the GeoSpatial page of the documentation(todo when the static ip is configured and the geospatial data 
-			is enhanced).
+			them according to distance from that point. If the latitude and longitude data is available in you data, i.e. as a column, Ikube 
+			will look for colmuns that are named lat/lng or latitude/longitude, and use these values to enrich the index with the necessary 
+			geospatial tiers for sorting results from a point. 
 		</td>
 	</tr>
 	<tr>
@@ -109,7 +109,8 @@
 			As mentioned previously the sql to access the data is generated from the configuration. Tables can be nested within each 
 			other as is normally the case with tables in a relational database. If a table is defined as a primary table and a child table is added 
 			to the parent table then Ikube, while iterating over the results from the parent table, select related records from the child table(s) 
-			and add the data to the parents' index documents.<br><br>
+			and add the data to the parents' index documents. In this way arbitrary complex hierarchies can be indexed, like a client with all their 
+			products that were bought, and all the addresses that the products were bought at.<br><br>
 			
 			In the spring-client.xml configuration file is the definition of the 'faq' and 'attachment' tables. These are an example 
 			of the table nesting in the configuration.
@@ -119,7 +120,9 @@
 			&lt;{id=faq.1}, {question=where is Paris}, {answer=In France}, {name=documentOne.doc}, 
 			{attachment=Paris and Lyon are both situated in France}&gt;<br><br>
 					
-			The configuration of tables can be arbitrarily complex, nesting depth can be up to 10 tables or more.<br><br>
+			The configuration of tables can be arbitrarily complex, nesting depth can be up to 10 tables or more. Note that with each sub table there is a 
+			cartesian product of selects that will have to be executed on the database, and depending on the distribution of the data will be a performance 
+			bottleneck if the table nesting depth high, i.e. more than 3.<br><br>
 		</td>
 	</tr>
 	
@@ -161,8 +164,8 @@
 		<td>fieldName</td>
 		<td> 
 			 The name of the field in the Lucene index. This allows columns to have separate field names, increasing the flexibility when searching. For 
-			 example if there are timestamps for creation and they are defined as separate Lucene fields then searches like timestamp &gt; 12/12/2010 
-			 AND timestamp &lt; 12/12/2011 are possible.
+			 example if there are timestamps for creation and they are defined as separate Lucene fields then searches for timestamp specifically rather than the 
+			 column name of 'last_updated_on' for example.
 		</td>
 	</tr>
 	<tr>
@@ -176,7 +179,8 @@
 	<tr>
 		<td>foreignKey</td>
 		<td> 
-			  The reference to the foreign key in the 'parent' table. This is used to select the records from the 'child' table referring to the parent id.
+			  The reference to the foreign key in the 'parent' table. This is used to select the records from the 'child' table referring to the parent id. Note that 
+			  the id fields in the tables should be unique or the performance for the selects will suffer.	
 		</td>
 	</tr>
 	<tr>

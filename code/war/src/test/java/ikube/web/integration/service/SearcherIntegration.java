@@ -130,7 +130,7 @@ public class SearcherIntegration extends Integration {
 	@Test
 	public void searchMultiSpacialAll() throws Exception {
 		// String, String, boolean, int, int, int, String, String
-		String path = IConstants.SEP + IConstants.IKUBE + Searcher.SERVICE + Searcher.SEARCH + Searcher.MULTI_SPATIAL;
+		String path = IConstants.SEP + IConstants.IKUBE + Searcher.SERVICE + Searcher.SEARCH + Searcher.MULTI_SPATIAL_ALL;
 		String url = new URL("http", LOCALHOST, SERVER_PORT, path).toString();
 		LOGGER.info("Looking for url : " + url);
 
@@ -148,6 +148,8 @@ public class SearcherIntegration extends Integration {
 		LOGGER.info("Result : " + actual);
 		assertTrue("We should get something : " + result, actual.length() > 0);
 	}
+	
+	
 
 	@Test
 	public void adHoc() throws Exception {

@@ -10,6 +10,9 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Value;
 
 /**
+ * This rule is to limit the number of actions an instance can perform concurrently. Essentially there can be 100 indexes defined and the
+ * same server can start doing all the indexing and the performance will drop because of time switching and so on.
+ * 
  * @author Michael Couck
  * @since 14.01.2012
  * @version 01.00

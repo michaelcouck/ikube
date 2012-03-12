@@ -34,8 +34,9 @@
 	<tr>
 		<td>path</td>
 		<td>
-			The absolute or relative path to the file or folder to index. This can be accross the network 
-			provided the drive is mapped to the machine where Ikube is running.
+			The absolute or relative path to the file or folder to index. If the path is relative to the starting directory of the server, Tomcat for example, 
+			then the path should start with a point, './path/to/index'. Generally though the path to the directory that is to be indexed will be absolute, for 
+			example '/usr/local/documentation'. This can be accross the network provided the drive is mapped to the machine where Ikube is running.
 		</td>
 	</tr>
 	<tr>
@@ -75,6 +76,44 @@
 		<td>lastModifiedFieldName</td>
 		<td>
 			The name of the field in the Lucene index for the last modified timestamp of the file being indexed.
+		</td>
+	</tr>
+	<tr>
+		<td>maxReadLength</td>
+		<td>
+			the maximum length of any file to read before passing the data to the parsers. Unfortunately Word and PDF files require 
+			that the entire document is read into memory before being analyzed. As a result this property will limit files of 100 meg being 
+			read into memory.
+		</td>
+	</tr>
+	
+	<tr>
+		<td>unpackZips</td>
+		<td>
+			This flag is to indicate whether zips and other compressed files should be opened and the contents indexed as well. Each file 
+			in the archive will be treated as a separate file, and will not be added the the archive's data. Note that this is not a good idea on 
+			Windows due to some strange behaviour while opening encrypted files in jars. The handler can become stuck. This problem is not 
+			experienced on Linux and Mac however. Note that the archives are not really unpacked, the data is read inside the archives.
+		</td>
+	</tr>
+	<tr>
+		<td>analyzed</td>
+		<td> 
+			A Lucene parameter, whether the data should be analyzed. Generally this is true.
+		</td>
+	</tr>
+	<tr>
+		<td>stored</td>
+		<td> 
+			A Lucene parameter, whether the data should be stored in the index. Generally this is true. Of course if there is very large volumes of data 
+			then storing the data could be prohibitively expensive, in terms of disk space and time. The write time of the index is a large proportion of the 
+			indexing time.   
+		</td>
+	</tr>
+	<tr>
+		<td>vectored</td>
+		<td> 
+			A Lucene parameter, whether the data should vectored. Generally this is true.
 		</td>
 	</tr>
 	

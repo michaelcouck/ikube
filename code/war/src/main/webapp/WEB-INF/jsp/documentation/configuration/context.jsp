@@ -18,10 +18,11 @@
 	</tr>
 	<tr>
 		<td colspan="2">
-			All configuration is done via Spring configuration files. For a first configuration please download the configuration files at 
-			<a href="<c:url value="/docs/configuration.jar" />" >configuration.jar</a>. Unpack the jar to the bin folder of Tomcat.
+			All configuration is done via Spring configuration files. The default configuration is packed in the Ikube zip. Unpack the zip 
+			and copy the 'ikube' folder to the bin folder of Tomcat.
 			<br><br>
-			If the spring.xml file is not found in the bin(startup) directory then the result is undefined.
+			If the configuration files are not found in the bin(startup) directory then the result is undefined, probably a crash, due to the security 
+			beans not being present in the configuration files.
 		</td>
 	</tr>
 	<tr>
@@ -63,7 +64,7 @@
 		<td> maxAge</td>
 		<td> 
 			The maximum age the index can become before a new one is generated. An index is triggered by an index 
-			passing the maximum age. This is defined in milli seconds. 
+			passing the maximum age. This is defined in minutes. 
 		</td>
 	</tr>
 	<tr>
@@ -80,7 +81,7 @@
 		<td> 
 			Refer to the <a href="http://lucene.apache.org/java/docs/index.html" target="_top">Lucene</a> documentation for information 
 			on the buffered documents. This is the number of documents that will be stored in memory before being committed to the 
-			index during indexing. Generally though you don't need to change this, the default is 1000, which is fine for most users.
+			index during indexing. Generally though you don't need to change this, the default is 100, which is fine for most users.
 		</td>
 	</tr>
 	<tr>
@@ -99,7 +100,7 @@
 			is 1 for example as selects are generally fast. However please note that if you have a database that has blobs in it, and you have a batch 
 			size of 10 000, the database will materialize the blob in some cases, like Db2, and if the blobs are 5 000 bytes then the database will 
 			need 50 000 000 bytes available. In Db2 this will throw a -4477 error if I remember correctly. As well as this the table handler is multi 
-			threaded which will compound the effect. The recommended batch size is 1000.
+			threaded which will compound the effect. The recommended batch size is 100.
 		</td>
 	</tr>
 	<tr>
@@ -148,13 +149,13 @@
 	<tr>
 		<td>indexDirectoryPath</td>
 		<td> 
-			The path to the indexes. This path combined with the index name will determine the exact location on the file system where  
-			the index is written. This path can be relative, for example ./indexes. In this case Ikube will create the directory that it needs in 
+			The path to the indexes. This path combined with the index name and the server ip address will determine the exact location on the 
+			file system where the index is written. This path can be relative, for example ./indexes. In this case Ikube will create the directory that it needs in 
 			the dot folder, i.e. where the Jvm was started. In the case of a Tomcat install this folder will be TOMCAT_INSTALL/bin/indexes. 
 			In the case of a cluster the path needs to be defined for all the servers, and in the same place as in the default configuration, it is 
 			D:/cluster/indexes. All the servers will then write their portion of the index to this position, and consequently they will also all read 
 			and search the index at this location. To reiterate, for a single server the relative path ./indexes is fine but for a cluster the path 
-			needs to be on the network something like Z:/path/to/indexes. 
+			needs to be on the network something like /mnt/disk-one/path/to/indexes. 
 		</td>
 	</tr>
 	<tr>
@@ -171,7 +172,8 @@
 		<td>indexables</td>
 		<td> 
 			These are the sources of data that will be indexed, like a web site and a database for example. They are defined as children 
-			in the index context. Indexables and their definitions are described below.
+			in the index context. Indexables and their definitions are described in the Database/File system/Email and Internet configuration pages
+			from the menu.
 		</td>
 	</tr>
 	

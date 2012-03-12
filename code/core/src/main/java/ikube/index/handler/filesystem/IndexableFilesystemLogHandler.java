@@ -44,7 +44,7 @@ public class IndexableFilesystemLogHandler extends IndexableHandler<IndexableFil
 					File[] logFiles = directory.listFiles(new FileFilter() {
 						@Override
 						public boolean accept(File pathname) {
-							return pathname.getName().endsWith("log");
+							return pathname.getName().contains("log");
 						}
 					});
 					for (File logFile : logFiles) {

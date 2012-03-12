@@ -18,7 +18,7 @@ public class WikiDataUnpackerWorker {
 	private static final String PAGE_START = "<revision>";
 	private static final String PAGE_FINISH = "</revision>";
 
-	int count = 0;
+	private int count = 0;
 	private File directory;
 
 	/**

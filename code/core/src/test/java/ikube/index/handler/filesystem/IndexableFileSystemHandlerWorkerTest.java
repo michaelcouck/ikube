@@ -21,7 +21,6 @@ import mockit.Mockit;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -93,12 +92,12 @@ public class IndexableFileSystemHandlerWorkerTest extends ATest {
 		// Verify that the file is in the index
 		verify(indexContext, Mockito.atLeastOnce()).getIndex();
 	}
-	
+
 	@Test
-	@Ignore
 	public void handleZipFile() throws Exception {
+		File zipFile = FileUtilities.findFileRecursively(new File("."), "zip\\.zip");
 		ikube.model.File file = new ikube.model.File();
-		file.setUrl("/home/michael/Downloads/jboss-4.2.2.GA.zip");
+		file.setUrl(zipFile.getAbsolutePath());
 		indexableFileSystemHandlerWorker.handleZip(indexableFilesystem, new File(file.getUrl()));
 		IndexManager.closeIndexWriter(indexContext);
 		// Verify that the file is in the index

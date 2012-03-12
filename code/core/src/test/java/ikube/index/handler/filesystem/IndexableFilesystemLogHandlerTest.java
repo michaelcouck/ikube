@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.concurrent.Future;
 
 import org.apache.lucene.document.Document;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -26,14 +27,20 @@ public class IndexableFilesystemLogHandlerTest extends ATest {
 
 	@Before
 	public void before() {
+		ThreadUtilities.initialize();
 		indexableFilesystemLogHandler = new IndexableFilesystemLogHandler();
+	}
+
+	@After
+	public void after() {
+		ThreadUtilities.destroy();
 	}
 
 	@Test
 	public void handle() throws Exception {
 		IndexableFileSystemLog indexableFileSystemLog = new IndexableFileSystemLog();
-		File logDirectory = FileUtilities.findFileRecursively(new File("."), "ikube\\.1\\.log");
-		indexableFileSystemLog.setPath(logDirectory.getParentFile().getAbsolutePath());
+		File logDirectory = FileUtilities.findFileRecursively(new File("."), true, "logs");
+		indexableFileSystemLog.setPath(logDirectory.getAbsolutePath());
 		indexableFileSystemLog.setLineFieldName("lineNumber");
 		indexableFileSystemLog.setContentFieldName("lineContents");
 		List<Future<?>> futures = indexableFilesystemLogHandler.handle(indexContext, indexableFileSystemLog);

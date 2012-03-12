@@ -52,6 +52,7 @@ public class WikiDataUnpackerWorkerTest {
 		SevenZip.initSevenZipFromPlatformJAR();
 		RandomAccessFile randomAccessFile = new RandomAccessFile(inputFile, "r");
 		RandomAccessFileInStream randomAccessFileInStream = new RandomAccessFileInStream(randomAccessFile);
+		// randomAccessFileInStream.seek(1000000, 1);
 		ISevenZipInArchive inArchive = SevenZip.openInArchive(null, randomAccessFileInStream);
 		ISimpleInArchive simpleInArchive = inArchive.getSimpleInterface();
 		for (ISimpleInArchiveItem simpleInArchiveItem : simpleInArchive.getArchiveItems()) {
