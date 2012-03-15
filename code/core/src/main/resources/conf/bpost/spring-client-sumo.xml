@@ -33,7 +33,7 @@
 		<ref local="ADIDLIST" />
 		<ref local="ADRESSENBS2000" />
 		<ref local="ADR_ING_HIST" /> -->
-		<ref local="ADR_ROMA_PDP_BASE" />
+		<!-- <ref local="ADR_ROMA_PDP_BASE" /> -->
 		<!-- <ref local="ADR_STATUS" />
 		<ref local="ADR_TO_VALIDATE" />
 		<ref local="ADR_UITG_HIST" />
@@ -615,54 +615,179 @@
 		property:analyzed="true" 
 		property:vectored="true" />
 	<bean 
-		id="AR5_WIJZIGINGSAANVRAAG" class="ikube.model.IndexableTable" property:name="AR5_WIJZIGINGSAANVRAAG" property:allColumns="true"
-		property:primaryTable="true" property:dataSource-ref="nonXaSumoDataSourceOracle" property:maxExceptions="10" property:stored="false"
-		property:analyzed="true" property:vectored="true" />
-	<bean id="BATCHJOB_STATUS" class="ikube.model.IndexableTable" property:name="BATCHJOB_STATUS" property:allColumns="true"
-		property:primaryTable="true" property:dataSource-ref="nonXaSumoDataSourceOracle" property:maxExceptions="10" property:stored="false"
-		property:analyzed="true" property:vectored="true" />
-	<bean id="BATCH_PROPERTIES" class="ikube.model.IndexableTable" property:name="BATCH_PROPERTIES" property:allColumns="true"
-		property:primaryTable="true" property:dataSource-ref="nonXaSumoDataSourceOracle" property:maxExceptions="10" property:stored="false"
-		property:analyzed="true" property:vectored="true" />
-	<bean id="BO_MVIEW_LOG" class="ikube.model.IndexableTable" property:name="BO_MVIEW_LOG" property:allColumns="true"
-		property:primaryTable="true" property:dataSource-ref="nonXaSumoDataSourceOracle" property:maxExceptions="10" property:stored="false"
-		property:analyzed="true" property:vectored="true" />
-	<bean id="BO_TNU_HIST" class="ikube.model.IndexableTable" property:name="BO_TNU_HIST" property:allColumns="true"
-		property:primaryTable="true" property:dataSource-ref="nonXaSumoDataSourceOracle" property:maxExceptions="10" property:stored="false"
-		property:analyzed="true" property:vectored="true" />
-	<bean id="BU" class="ikube.model.IndexableTable" property:name="BU" property:allColumns="true" property:primaryTable="true"
-		property:dataSource-ref="nonXaSumoDataSourceOracle" property:maxExceptions="10" property:stored="false" property:analyzed="true"
+		id="AR5_WIJZIGINGSAANVRAAG" 
+		class="ikube.model.IndexableTable" 
+		property:name="AR5_WIJZIGINGSAANVRAAG" 
+		property:allColumns="true"
+		property:primaryTable="true" 
+		property:dataSource-ref="nonXaSumoDataSourceOracle" 
+		property:maxExceptions="10" 
+		property:stored="false"
+		property:analyzed="true" 
 		property:vectored="true" />
-	<bean id="CHECKSUMS" class="ikube.model.IndexableTable" property:name="CHECKSUMS" property:allColumns="true" property:primaryTable="true"
-		property:dataSource-ref="nonXaSumoDataSourceOracle" property:maxExceptions="10" property:stored="false" property:analyzed="true"
+	<bean 
+		id="BATCHJOB_STATUS" 
+		class="ikube.model.IndexableTable" 
+		property:name="BATCHJOB_STATUS" 
+		property:allColumns="true"
+		property:primaryTable="true" 
+		property:dataSource-ref="nonXaSumoDataSourceOracle" 
+		property:maxExceptions="10" 
+		property:stored="false"
+		property:analyzed="true" 
 		property:vectored="true" />
-	<bean id="COMMUNICATION710" class="ikube.model.IndexableTable" property:name="COMMUNICATION710" property:allColumns="true"
-		property:primaryTable="true" property:dataSource-ref="nonXaSumoDataSourceOracle" property:maxExceptions="10" property:stored="false"
-		property:analyzed="true" property:vectored="true" />
-	<bean id="COMMUNICATION710_UK" class="ikube.model.IndexableTable" property:name="COMMUNICATION710_UK" property:allColumns="true"
-		property:primaryTable="true" property:dataSource-ref="nonXaSumoDataSourceOracle" property:maxExceptions="10" property:stored="false"
-		property:analyzed="true" property:vectored="true" />
-	<bean id="COMPLAINT" class="ikube.model.IndexableTable" property:name="COMPLAINT" property:allColumns="true" property:primaryTable="true"
-		property:dataSource-ref="nonXaSumoDataSourceOracle" property:maxExceptions="10" property:stored="false" property:analyzed="true"
+	<bean 
+		id="BATCH_PROPERTIES" 
+		class="ikube.model.IndexableTable" 
+		property:name="BATCH_PROPERTIES" 
+		property:allColumns="true"
+		property:primaryTable="true" 
+		property:dataSource-ref="nonXaSumoDataSourceOracle" 
+		property:maxExceptions="10" 
+		property:stored="false"
+		property:analyzed="true" 
 		property:vectored="true" />
-	<bean id="COMPLAINT_APPROVAL_HISTORY" class="ikube.model.IndexableTable" property:name="COMPLAINT_APPROVAL_HISTORY"
-		property:allColumns="true" property:primaryTable="true" property:dataSource-ref="nonXaSumoDataSourceOracle" property:maxExceptions="100"
+	<bean 
+		id="BO_MVIEW_LOG" 
+		class="ikube.model.IndexableTable" 
+		property:name="BO_MVIEW_LOG" 
+		property:allColumns="true"
+		property:primaryTable="true" 
+		property:dataSource-ref="nonXaSumoDataSourceOracle" 
+		property:maxExceptions="10" 
+		property:stored="false"
+		property:analyzed="true" 
+		property:vectored="true" />
+	<bean 
+		id="BO_TNU_HIST" 
+		class="ikube.model.IndexableTable" 
+		property:name="BO_TNU_HIST" 
+		property:allColumns="true"
+		property:primaryTable="true" 
+		property:dataSource-ref="nonXaSumoDataSourceOracle" 
+		property:maxExceptions="10" 
+		property:stored="false"
+		property:analyzed="true" 
+		property:vectored="true" />
+	<bean 
+		id="BU" 
+		class="ikube.model.IndexableTable" 
+		property:name="BU" 
+		property:allColumns="true" 
+		property:primaryTable="true"
+		property:dataSource-ref="nonXaSumoDataSourceOracle" 
+		property:maxExceptions="10" 
+		property:stored="false" 
+		property:analyzed="true"
+		property:vectored="true" />
+	<bean 
+		id="CHECKSUMS" 
+		class="ikube.model.IndexableTable" 
+		property:name="CHECKSUMS" 
+		property:allColumns="true" 
+		property:primaryTable="true"
+		property:dataSource-ref="nonXaSumoDataSourceOracle" 
+		property:maxExceptions="10" 
+		property:stored="false" 
+		property:analyzed="true"
+		property:vectored="true" />
+	<bean 
+		id="COMMUNICATION710" 
+		class="ikube.model.IndexableTable" 
+		property:name="COMMUNICATION710" 
+		property:allColumns="true"
+		property:primaryTable="true" 
+		property:dataSource-ref="nonXaSumoDataSourceOracle" 
+		property:maxExceptions="10" 
+		property:stored="false"
+		property:analyzed="true" 
+		property:vectored="true" />
+	<bean 
+		id="COMMUNICATION710_UK" 
+		class="ikube.model.IndexableTable" 
+		property:name="COMMUNICATION710_UK" 
+		property:allColumns="true"
+		property:primaryTable="true" 
+		property:dataSource-ref="nonXaSumoDataSourceOracle" 
+		property:maxExceptions="10" 
+		property:stored="false"
+		property:analyzed="true" 
+		property:vectored="true" />
+	<bean 
+		id="COMPLAINT" 
+		class="ikube.model.IndexableTable" 
+		property:name="COMPLAINT" 
+		property:allColumns="true" 
+		property:primaryTable="true"
+		property:dataSource-ref="nonXaSumoDataSourceOracle" 
+		property:maxExceptions="10" 
+		property:stored="false" 
+		property:analyzed="true"
+		property:vectored="true" />
+	<bean 
+		id="COMPLAINT_APPROVAL_HISTORY" 
+		class="ikube.model.IndexableTable" 
+		property:name="COMPLAINT_APPROVAL_HISTORY"
+		property:allColumns="true" 
+		property:primaryTable="true" 
+		property:dataSource-ref="nonXaSumoDataSourceOracle" 
+		property:maxExceptions="100"
 		property:stored="false" property:analyzed="true" property:vectored="true" />
-	<bean id="COMPLAINT_BLOCK_HISTORY" class="ikube.model.IndexableTable" property:name="COMPLAINT_BLOCK_HISTORY" property:allColumns="true"
-		property:primaryTable="true" property:dataSource-ref="nonXaSumoDataSourceOracle" property:maxExceptions="10" property:stored="false"
-		property:analyzed="true" property:vectored="true" />
-	<bean id="COMPLAINT_CAUSE" class="ikube.model.IndexableTable" property:name="COMPLAINT_CAUSE" property:allColumns="true"
-		property:primaryTable="true" property:dataSource-ref="nonXaSumoDataSourceOracle" property:maxExceptions="10" property:stored="false"
-		property:analyzed="true" property:vectored="true" />
-	<bean id="COMPLAINT_CAUSE_TYPE" class="ikube.model.IndexableTable" property:name="COMPLAINT_CAUSE_TYPE" property:allColumns="true"
-		property:primaryTable="true" property:dataSource-ref="nonXaSumoDataSourceOracle" property:maxExceptions="10" property:stored="false"
-		property:analyzed="true" property:vectored="true" />
-	<bean id="COMPLAINT_FILE" class="ikube.model.IndexableTable" property:name="COMPLAINT_FILE" property:allColumns="true"
-		property:primaryTable="true" property:dataSource-ref="nonXaSumoDataSourceOracle" property:maxExceptions="10" property:stored="false"
-		property:analyzed="true" property:vectored="true" />
-	<bean id="COMPLAINT_LINE" class="ikube.model.IndexableTable" property:name="COMPLAINT_LINE" property:allColumns="true"
-		property:primaryTable="true" property:dataSource-ref="nonXaSumoDataSourceOracle" property:maxExceptions="10" property:stored="false"
-		property:analyzed="true" property:vectored="true" />
+	<bean 
+		id="COMPLAINT_BLOCK_HISTORY" 
+		class="ikube.model.IndexableTable" 
+		property:name="COMPLAINT_BLOCK_HISTORY" 
+		property:allColumns="true"
+		property:primaryTable="true" 
+		property:dataSource-ref="nonXaSumoDataSourceOracle" 
+		property:maxExceptions="10" 
+		property:stored="false"
+		property:analyzed="true" 
+		property:vectored="true" />
+	<bean 
+		id="COMPLAINT_CAUSE" 
+		class="ikube.model.IndexableTable" 
+		property:name="COMPLAINT_CAUSE" 
+		property:allColumns="true"
+		property:primaryTable="true" 
+		property:dataSource-ref="nonXaSumoDataSourceOracle" 
+		property:maxExceptions="10" 
+		property:stored="false"
+		property:analyzed="true" 
+		property:vectored="true" />
+	<bean 
+		id="COMPLAINT_CAUSE_TYPE" 
+		class="ikube.model.IndexableTable" 
+		property:name="COMPLAINT_CAUSE_TYPE" 
+		property:allColumns="true"
+		property:primaryTable="true" 
+		property:dataSource-ref="nonXaSumoDataSourceOracle" 
+		property:maxExceptions="10" 
+		property:stored="false"
+		property:analyzed="true" 
+		property:vectored="true" />
+	<bean 
+		id="COMPLAINT_FILE" 
+		class="ikube.model.IndexableTable" 
+		property:name="COMPLAINT_FILE" 
+		property:allColumns="true"
+		property:primaryTable="true" 
+		property:dataSource-ref="nonXaSumoDataSourceOracle" 
+		property:maxExceptions="10" 
+		property:stored="false"
+		property:analyzed="true" 
+		property:vectored="true" />
+	<bean 
+		id="COMPLAINT_LINE" 
+		class="ikube.model.IndexableTable" 
+		property:name="COMPLAINT_LINE" 
+		property:allColumns="true"
+		property:primaryTable="true" 
+		property:dataSource-ref="nonXaSumoDataSourceOracle" 
+		property:maxExceptions="10" 
+		property:stored="false"
+		property:analyzed="true" 
+		property:vectored="true" />
 	<bean id="COMPLAINT_RFI_HISTORY" class="ikube.model.IndexableTable" property:name="COMPLAINT_RFI_HISTORY" property:allColumns="true"
 		property:primaryTable="true" property:dataSource-ref="nonXaSumoDataSourceOracle" property:maxExceptions="10" property:stored="false"
 		property:analyzed="true" property:vectored="true" />

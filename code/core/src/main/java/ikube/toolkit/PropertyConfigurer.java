@@ -1,5 +1,7 @@
 package ikube.toolkit;
 
+import ikube.IConstants;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -80,6 +82,10 @@ public class PropertyConfigurer extends Properties {
 			} catch (Exception e) {
 				LOGGER.error("Exception reading jar file : " + jarFile, e);
 			}
+		}
+		// If the system property for the configuration has not been set then set it to the dot directory
+		if (System.getProperty(IConstants.IKUBE_CONFIGURATION) == null) {
+			System.setProperty(IConstants.IKUBE_CONFIGURATION, ".");
 		}
 	}
 	

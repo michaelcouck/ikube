@@ -41,6 +41,8 @@ public class IndexableFilesystemLogHandlerTest extends ATest {
 		IndexableFileSystemLog indexableFileSystemLog = new IndexableFileSystemLog();
 		File logDirectory = FileUtilities.findFileRecursively(new File("."), true, "logs");
 		indexableFileSystemLog.setPath(logDirectory.getAbsolutePath());
+		indexableFileSystemLog.setFileFieldName("fileName");
+		indexableFileSystemLog.setPathFieldName("filePath");
 		indexableFileSystemLog.setLineFieldName("lineNumber");
 		indexableFileSystemLog.setContentFieldName("lineContents");
 		List<Future<?>> futures = indexableFilesystemLogHandler.handle(indexContext, indexableFileSystemLog);

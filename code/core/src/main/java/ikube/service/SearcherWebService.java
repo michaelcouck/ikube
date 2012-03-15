@@ -11,7 +11,7 @@ import ikube.search.SearchMultiSorted;
 import ikube.search.SearchSingle;
 import ikube.search.SearchSpatial;
 import ikube.search.SearchSpatialAll;
-import ikube.search.spelling.CheckerExt;
+import ikube.search.spelling.SpellingChecker;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.Logging;
 
@@ -48,6 +48,8 @@ public class SearcherWebService implements ISearcherWebService {
 
 	@Autowired
 	private IDataBase dataBase;
+	@Autowired
+	private SpellingChecker spellingChecker;
 	private Object[] values = new Object[2];
 	private String[] names = { IConstants.INDEX_NAME, IConstants.SEARCH_STRINGS };
 
@@ -308,7 +310,7 @@ public class SearcherWebService implements ISearcherWebService {
 	protected void addSearchStatistics(final String indexName, final String[] searchStrings, final int results, final double highScore) {
 		for (String searchString : searchStrings) {
 			// First verify that all the words are ok
-			String correctedSearchString = CheckerExt.getCheckerExt().checkWords(searchString);
+			String correctedSearchString = spellingChecker.checkWords(searchString);
 			values[0] = indexName;
 			values[1] = searchString;
 			String sql = Search.SELECT_FROM_SEARCH_BY_INDEX_NAME_AND_SEARCH_STRINGS;

@@ -1,3 +1,4 @@
+<%@ taglib prefix="ikube" uri="http://ikube" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -72,7 +73,7 @@
 		<td class="td-content" nowrap="nowrap">
 			<fmt:formatDate value="${indexContext.latestIndexTimestamp}" pattern="${datePattern}" type="DATE" />
 		</td>
-		<td class="td-content" nowrap="nowrap">${indexContext.indexDirectoryPath}/${indexContext.name}</td>
+		<td class="td-content" nowrap="nowrap">${ikube:subString(indexContext.indexDirectoryPath, 0, 30)}/${indexContext.name}</td>
 	</tr>
 	</c:forEach>
 </table>

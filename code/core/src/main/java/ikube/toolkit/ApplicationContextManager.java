@@ -3,21 +3,20 @@ package ikube.toolkit;
 import ikube.IConstants;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
-import org.springframework.core.io.Resource;
 
 /**
  * TODO Add support to this class to load the default core application configuration from the jar and other client configuration from the
@@ -39,7 +38,7 @@ public final class ApplicationContextManager implements ApplicationContextAware 
 
 	static {
 		Logging.configure();
-		LOGGER = Logger.getLogger(ApplicationContextManager.class);
+		LOGGER = LoggerFactory.getLogger(ApplicationContextManager.class);
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			@Override
 			public void run() {
@@ -191,7 +190,7 @@ public final class ApplicationContextManager implements ApplicationContextAware 
 	}
 
 	@Override
-	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+	public void setApplicationContext(final ApplicationContext applicationContext) throws BeansException {
 		if (APPLICATION_CONTEXT == null) {
 			LOGGER.info("Setting the application context : " + applicationContext);
 			ApplicationContextManager.APPLICATION_CONTEXT = applicationContext;
@@ -199,53 +198,6 @@ public final class ApplicationContextManager implements ApplicationContextAware 
 		} else {
 			LOGGER.info("Application context already loaded : " + APPLICATION_CONTEXT);
 		}
-	}
-
-	/**
-	 * TODO Implement this class completely.
-	 * 
-	 * This class is to be able to mix and match the configuration from the file system and the classpath. Essentially what we want to do is
-	 * to have the default and application configuration in the core jar and the client configuration outside the container in the Ikube
-	 * folder.
-	 * 
-	 * @author Michael Couck
-	 * @since 07.06.11
-	 * @version 01.00
-	 */
-	public static class RelativeXmlApplicationContext extends ClassPathXmlApplicationContext {
-
-		public RelativeXmlApplicationContext(String... configLocations) {
-			super(configLocations);
-		}
-
-		@Override
-		public Resource[] getResources(String locationPattern) throws IOException {
-			// LOGGER.info("Location pattern : " + locationPattern);
-			return super.getResources(locationPattern);
-		}
-
-		@Override
-		public Resource getResource(String location) {
-			// LOGGER.info("Location : " + location);
-			return super.getResource(location);
-		}
-
-		@Override
-		protected Resource getResourceByPath(String path) {
-			// LOGGER.info("Path : " + path);
-			return super.getResourceByPath(path);
-		}
-
-	}
-	
-	public static void main(String[] args) {
-		File file = FileUtilities.findFileRecursively(new File("."), "Ikube.html");
-		String content = FileUtilities.getContents(file, Integer.MAX_VALUE).toString();
-		System.out.println(content);
-		
-		System.out.println("  _   _           _");
-		System.out.println(" |_| | |         | |      ");
-		System.out.println("      | |         | |     ");
 	}
 
 }

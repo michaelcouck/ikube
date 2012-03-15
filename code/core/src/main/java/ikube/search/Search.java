@@ -1,7 +1,7 @@
 package ikube.search;
 
 import ikube.IConstants;
-import ikube.search.spelling.CheckerExt;
+import ikube.search.spelling.SpellingChecker;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -350,7 +350,7 @@ public abstract class Search {
 		Set<String> correctedSearchStrings = new TreeSet<String>();
 		for (int i = 0; i < searchStrings.length; i++) {
 			String searchString = StringUtils.strip(searchStrings[i], IConstants.STRIP_CHARACTERS);
-			String correctedSearchString = CheckerExt.getCheckerExt().checkWords(searchString.toLowerCase());
+			String correctedSearchString = SpellingChecker.getSpellingChecker().checkWords(searchString.toLowerCase());
 			if (correctedSearchString != null) {
 				corrections = Boolean.TRUE;
 				correctedSearchStrings.add(correctedSearchString);

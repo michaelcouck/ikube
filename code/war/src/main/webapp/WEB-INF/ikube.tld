@@ -61,4 +61,10 @@
 		<function-class>ikube.web.tag.Toolkit</function-class>
 		<function-signature>java.lang.Object fieldValue(java.lang.String, java.lang.Object)</function-signature>
 	</function>
+	
+	<function>
+		<name>subString</name>
+		<function-class>ikube.web.tag.Toolkit</function-class>
+		<function-signature>java.lang.String subString(java.lang.String, int, int)</function-signature>
+	</function>
 </taglib>

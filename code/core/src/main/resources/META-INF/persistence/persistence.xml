@@ -57,11 +57,11 @@
 		<properties>
 			<property name="openjpa.Connection2UserName" value="sa" />
 			<property name="openjpa.Connection2Password" value="" />
-			<property name="openjpa.Connection2URL" value="jdbc:h2:file:ikube" />
+			<property name="openjpa.Connection2URL" value="jdbc:h2:file:/usr/local/post/app-rep/sum-st/sum-v000618-batch-UC4-st1-node1/ikube/ikube" />
 			<property name="openjpa.Connection2DriverName" value="org.h2.Driver" />
 			<property name="openjpa.ConnectionUserName" value="sa" />
 			<property name="openjpa.ConnectionPassword" value="" />
-			<property name="openjpa.ConnectionURL" value="jdbc:h2:file:ikube" />
+			<property name="openjpa.ConnectionURL" value="jdbc:h2:file:/usr/local/post/app-rep/sum-st/sum-v000618-batch-UC4-st1-node1/ikube/ikube" />
 			<property name="openjpa.ConnectionDriverName" value="org.h2.Driver" />
 			<property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
 		</properties>

@@ -10,12 +10,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.StringTokenizer;
 
-import org.apache.log4j.Logger;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.spell.PlainTextDictionary;
 import org.apache.lucene.search.spell.SpellChecker;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 
 /**
  * This class will index the text files with the words form various languages in them, and check tokens or words against the index of words.
@@ -26,32 +28,27 @@ import org.apache.lucene.store.FSDirectory;
  * @since 05.03.10
  * @version 01.00
  */
-public class CheckerExt {
+public class SpellingChecker {
 
-	private static final Logger LOGGER = Logger.getLogger(CheckerExt.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(SpellingChecker.class);
+	private static SpellingChecker INSTANCE;
 
-	private static final String LANGUAGES_DIRECTORY = "languages";
-	private static final String WORD_INDEX_DIRECTORY = "./spellingIndex";
-	private static SpellChecker SPELL_CHECKER;
-	private static CheckerExt CHECKER_EXT = new CheckerExt();
+	private SpellChecker spellChecker;
+	@Value("${language.word.lists.directory}")
+	private String languageWordListsDirectory;
+	@Value("${language.word.lists.directory.index}")
+	private String spellingIndexDirectoryPath;
 
-	public static CheckerExt getCheckerExt() {
-		return CHECKER_EXT;
+	public static final SpellingChecker getSpellingChecker() {
+		return SpellingChecker.INSTANCE;
 	}
 
-	private CheckerExt() {
-		try {
-			openDictionary();
-		} catch (Exception e) {
-			LOGGER.error("Exception opening the spelling index", e);
-		}
+	public SpellingChecker() {
+		SpellingChecker.INSTANCE = this;
 	}
 
-	private void openDictionary() throws Exception {
-		if (SPELL_CHECKER != null) {
-			return;
-		}
-		File spellingIndexDirectory = FileUtilities.getFile(WORD_INDEX_DIRECTORY, Boolean.TRUE);
+	public void initialize() throws Exception {
+		File spellingIndexDirectory = FileUtilities.getFile(spellingIndexDirectoryPath, Boolean.TRUE);
 		Directory directory = FSDirectory.open(spellingIndexDirectory);
 		boolean mustIndex = true;
 		if (IndexReader.indexExists(directory)) {
@@ -63,9 +60,9 @@ public class CheckerExt {
 				}
 			}
 		}
-		SPELL_CHECKER = new SpellChecker(directory);
+		spellChecker = new SpellChecker(directory);
 		if (mustIndex) {
-			File languagesDirectory = FileUtilities.findFileRecursively(new File("."), Boolean.TRUE, LANGUAGES_DIRECTORY);
+			File languagesDirectory = FileUtilities.findFileRecursively(new File("."), Boolean.TRUE, languageWordListsDirectory);
 			if (languagesDirectory != null && languagesDirectory.exists() && languagesDirectory.isDirectory()) {
 				File[] languageFiles = languagesDirectory.listFiles(new FileFilter() {
 					@Override
@@ -80,7 +77,7 @@ public class CheckerExt {
 							LOGGER.info("Language file : " + languageFile);
 							inputStream = new FileInputStream(languageFile);
 							LOGGER.info("Input stream : " + inputStream);
-							SPELL_CHECKER.indexDictionary(new PlainTextDictionary(inputStream));
+							spellChecker.indexDictionary(new PlainTextDictionary(inputStream));
 						} catch (Exception e) {
 							LOGGER.error("Exception indexing language file : " + languageFile, e);
 						} finally {
@@ -109,20 +106,20 @@ public class CheckerExt {
 		while (tokenizer.hasMoreTokens()) {
 			String token = tokenizer.nextToken();
 			// Skip the Lucene specific conjunctions like 'and' and 'or'
-			if (IConstants.LUCENE_CONJUNCTIONS_PATTERN.matcher(token).matches()) {
+			if (IConstants.LUCENE_CONJUNCTIONS_PATTERN.matcher(token.toLowerCase()).matches()) {
 				correctWords.append(token);
 				addSpace(tokenizer, correctWords);
 				continue;
 			}
 			String[] strings;
 			try {
-				if (SPELL_CHECKER.exist(token)) {
+				if (spellChecker.exist(token)) {
 					correctWords.append(token);
 					addSpace(tokenizer, correctWords);
 					continue;
 				}
 				hasCorrections = true;
-				strings = SPELL_CHECKER.suggestSimilar(token, 1);
+				strings = spellChecker.suggestSimilar(token, 1);
 			} catch (IOException e) {
 				LOGGER.error("Exception checking spelling for : " + token, e);
 				continue;
@@ -137,10 +134,20 @@ public class CheckerExt {
 		}
 		return null;
 	}
-	
+
 	private void addSpace(final StringTokenizer tokenizer, final StringBuilder correctWords) {
 		if (tokenizer.hasMoreTokens()) {
 			correctWords.append(" ");
+		}
+	}
+
+	public void destroy() {
+		if (this.spellChecker != null) {
+			try {
+				this.spellChecker.close();
+			} catch (Exception e) {
+				LOGGER.error("Exception closing the spelling checker : ", e);
+			}
 		}
 	}
 }

@@ -15,6 +15,8 @@ import javax.persistence.InheritanceType;
 public class IndexableFileSystemLog extends Indexable<IndexableFileSystemLog> {
 
 	private String path;
+	private String fileFieldName;
+	private String pathFieldName;
 	private String lineFieldName;
 	private String contentFieldName;
 
@@ -24,6 +26,22 @@ public class IndexableFileSystemLog extends Indexable<IndexableFileSystemLog> {
 
 	public void setPath(final String path) {
 		this.path = path;
+	}
+
+	public String getFileFieldName() {
+		return fileFieldName;
+	}
+
+	public void setFileFieldName(String fileFieldName) {
+		this.fileFieldName = fileFieldName;
+	}
+
+	public String getPathFieldName() {
+		return pathFieldName;
+	}
+
+	public void setPathFieldName(String pathFieldName) {
+		this.pathFieldName = pathFieldName;
 	}
 
 	public String getLineFieldName() {

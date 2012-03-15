@@ -6,10 +6,24 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.util.ReflectionUtils;
 
+/**
+ * A set of functions that can be used in Jsp pages, like concatenation of strings and getting the size of collections.
+ * 
+ * @author Michael Couck
+ * @since 12.12.11
+ * @version 01.00
+ */
 public class Toolkit {
 
+	/**
+	 * Returns the size of a collection to the pate.
+	 * 
+	 * @param collection the collection to get the size for
+	 * @return the size of the collection
+	 */
 	public static int size(Collection<?> collection) {
 		if (collection == null) {
 			return 0;
@@ -17,6 +31,13 @@ public class Toolkit {
 		return collection.size();
 	}
 
+	/**
+	 * 
+	 * 
+	 * @param one
+	 * @param two
+	 * @return
+	 */
 	public static Collection<?> remove(Collection<?> one, Collection<?> two) {
 		if (one != null && two != null) {
 			one.removeAll(two);
@@ -64,7 +85,7 @@ public class Toolkit {
 	public static String concatenate(String one, String two) {
 		return new StringBuilder(one).append(two).toString();
 	}
-	
+
 	public static Object fieldValue(final String fieldName, final Object object) {
 		if (object == null) {
 			return null;
@@ -72,6 +93,20 @@ public class Toolkit {
 		Field field = ReflectionUtils.findField(object.getClass(), fieldName);
 		ReflectionUtils.makeAccessible(field);
 		return DatabaseUtilities.getFieldValue(field, object);
+	}
+
+	public static String subString(final String string, final int startPosition, final int maxLength) {
+		if (StringUtils.isEmpty(string)) {
+			return string;
+		}
+		String dots = "...";
+		if (string.length() <= startPosition) {
+			return dots;
+		}
+		if (string.length() <= startPosition + maxLength) {
+			return string.substring(startPosition, string.length()) + dots;
+		}
+		return string.substring(startPosition, startPosition + maxLength) + dots;
 	}
 
 }

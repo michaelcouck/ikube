@@ -20,7 +20,7 @@ import org.springframework.context.ApplicationContext;
 
 public class ApplicationContextManagerIntegration extends AbstractIntegration {
 
-	private String	ikubeFolder	= "./" + IConstants.IKUBE;
+	private String ikubeFolder = "./" + IConstants.IKUBE;
 
 	@Before
 	public void before() {
@@ -35,11 +35,10 @@ public class ApplicationContextManagerIntegration extends AbstractIntegration {
 	@Test
 	public void getApplicationContext() {
 		ApplicationContext applicationContext = ApplicationContextManager.getApplicationContext(IConstants.SPRING_CONFIGURATION_FILE);
-		assertNotNull(applicationContext);
+		assertNotNull("External context should be available : ", applicationContext);
 		RuleInterceptor ruleInterceptor = ApplicationContextManager.getBean(RuleInterceptor.class);
 		assertNotNull(ruleInterceptor);
 
-		assertNotNull("External context should be available : ", applicationContext);
 		Object patientIndex = applicationContext.getBean("patientIndex");
 		assertNotNull("The patient index should be available : ", patientIndex);
 		try {

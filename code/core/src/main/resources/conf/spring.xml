@@ -11,6 +11,12 @@
             http://www.springframework.org/schema/context
             http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 	
+	<description>
+		This file is only used int he integration tests to load all the configuration files when normally 
+		all the configuration files will be loaded by the web application configuration by scanning the 
+		starting/user directory for spring-*.xml files.
+	</description>
+	
 	<context:property-placeholder
 		location="**/spring.properties" 
 		properties-ref="ikube.toolkit.PropertyConfigurer" />
@@ -24,21 +30,4 @@
 		init-method="initialize" />
 	
 	<import resource="**/spring-*.xml" />
-	<!-- <import resource="/**/spring-*.xml" /> -->
-	<!-- <import resource="file:**/spring-*.xml" /> -->
-	
-	<!-- Mandatory system configuration files. -->
-	<!-- <import resource="**/spring-aop.xml" />
-	<import resource="**/spring-beans.xml" />
-	<import resource="**/spring-tx-btm.xml" />
-	<import resource="**/spring-actions.xml" />
-	<import resource="**/spring-h2-jdbc.xml" />
-	<import resource="**/spring-db2-jdbc.xml" /> -->
-	<!-- Optional system configuration files. -->
-	<!-- <import resource="**/spring-ikube.xml" />
-	<import resource="**/spring-geo.xml" /> -->
-	<!-- Optional client configuration files for indexables. -->
-	<!-- <import resource="/client/spring-client-*.xml" /> -->
-	<!-- <import resource="file:**/spring-client-*.xml" /> -->
-	
 </beans>

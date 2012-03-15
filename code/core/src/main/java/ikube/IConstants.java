@@ -22,6 +22,8 @@ public interface IConstants {
 
 	/** Application name. */
 	String IKUBE = "ikube";
+	/** The property for the configuration location. */
+	String IKUBE_CONFIGURATION = IKUBE + ".configuration";
 	/** The name of the log file. */
 	String IKUBE_LOG = IKUBE + ".log";
 	/** The file separator for the system. */

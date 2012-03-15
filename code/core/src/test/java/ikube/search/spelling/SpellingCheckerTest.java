@@ -4,7 +4,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import ikube.ATest;
 import ikube.toolkit.PerformanceTester;
+import mockit.Deencapsulation;
 
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -12,12 +14,20 @@ import org.junit.Test;
  * @since 27.03.11
  * @version 01.00
  */
-public class CheckerExtTest extends ATest {
+public class SpellingCheckerTest extends ATest {
 
-	private CheckerExt	checkerExt	= CheckerExt.getCheckerExt();
+	private SpellingChecker checkerExt;
 
-	public CheckerExtTest() {
-		super(CheckerExtTest.class);
+	public SpellingCheckerTest() {
+		super(SpellingCheckerTest.class);
+	}
+
+	@Before
+	public void before() throws Exception {
+		checkerExt = new SpellingChecker();
+		Deencapsulation.setField(checkerExt, "languageWordListsDirectory", "languages");
+		Deencapsulation.setField(checkerExt, "spellingIndexDirectoryPath", "./spellingIndex");
+		checkerExt.initialize();
 	}
 
 	@Test
@@ -27,6 +37,11 @@ public class CheckerExtTest extends ATest {
 		String corrected = checkerExt.checkWords(wrong);
 		logger.info("Corrected words : " + corrected);
 		assertEquals(correct, corrected);
+
+		String phraseWrong = wrong + " AND " + wrong;
+		corrected = checkerExt.checkWords(phraseWrong);
+		logger.info("Corrected words : " + corrected);
+		assertEquals(correct + " AND " + correct, corrected);
 	}
 
 	@Test

@@ -18,7 +18,7 @@
 		property:user="ABO_OWNER"
 		property:password="ABO_OWNER"
 		property:driverClass="${oracle.jdbc.driver}"
-		property:jdbcUrl="jdbc:oracle:thin:@slds802-vip:1526/MA3D1"
+		property:jdbcUrl="jdbc:oracle:thin:@ldap://oid.netpost/MA3T1,cn=OracleContext,dc=pr,dc=netpost,dc=be"
 		property:initialPoolSize="${jdbc.minPoolSize}"
 		property:maxPoolSize="${jdbc.maxPoolSize}"
 		property:maxStatements="${jdbc.maxStatements}"
