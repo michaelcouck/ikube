@@ -39,50 +39,50 @@ public class PropertyConfigurer extends Properties {
 	 * the application will also be checked for the properties file name pattern to load into the property map.
 	 */
 	public void initialize() {
-		try {
-			// First we check our own jar
-			File thisJar = new File(getClass().getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
-			LOGGER.info("Checking our own jar : " + thisJar);
-			checkJar(thisJar);
-		} catch (URISyntaxException e) {
-			LOGGER.error("Aaai karumbi! Where am I?", e);
-		}
-		try {
-			// First check the classpath, this could take a while of course
-			String classPathString = System.getProperty("java.class.path");
-			StringTokenizer tokenizer = new StringTokenizer(classPathString, ";", Boolean.FALSE);
-			while (tokenizer.hasMoreTokens()) {
-				String jarLocation = tokenizer.nextToken();
-				try {
-					LOGGER.debug("        : Checking location : " + jarLocation);
-					checkJar(new File(jarLocation));
-				} catch (Exception e) {
-					LOGGER.error("Exception checking jar : " + jarLocation, e);
-				}
-			}
-		} catch (Exception e) {
-			LOGGER.error("Exception scanning the classpath : ", e);
-		}
+//		try {
+//			// First we check our own jar
+//			File thisJar = new File(getClass().getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
+//			LOGGER.info("Checking our own jar : " + thisJar);
+//			checkJar(thisJar);
+//		} catch (URISyntaxException e) {
+//			LOGGER.error("Aaai karumbi! Where am I?", e);
+//		}
+//		try {
+//			// First check the classpath, this could take a while of course
+//			String classPathString = System.getProperty("java.class.path");
+//			StringTokenizer tokenizer = new StringTokenizer(classPathString, ";", Boolean.FALSE);
+//			while (tokenizer.hasMoreTokens()) {
+//				String jarLocation = tokenizer.nextToken();
+//				try {
+//					LOGGER.debug("        : Checking location : " + jarLocation);
+//					checkJar(new File(jarLocation));
+//				} catch (Exception e) {
+//					LOGGER.error("Exception checking jar : " + jarLocation, e);
+//				}
+//			}
+//		} catch (Exception e) {
+//			LOGGER.error("Exception scanning the classpath : ", e);
+//		}
 		// Check the file system for properties files
 		List<File> propertyFiles = FileUtilities.findFilesRecursively(new File("."), new ArrayList<File>(), fileNamePattern.toString());
 		for (File propertyFile : propertyFiles) {
 			try {
-				LOGGER.debug("        : Loading properties from : " + propertyFile);
+				LOGGER.info("        : Loading properties from : " + propertyFile);
 				this.load(new FileInputStream(propertyFile));
 			} catch (Exception e) {
 				LOGGER.error("Exception reading property file : " + propertyFile, e);
 			}
 		}
 		// Check the file system for jars that have the properties files
-		List<File> jarFiles = FileUtilities.findFilesRecursively(new File("."), new ArrayList<File>(), ".jar\\Z");
-		for (File jarFile : jarFiles) {
-			try {
-				LOGGER.debug("        : Loading properties from : " + jarFile);
-				checkJar(jarFile);
-			} catch (Exception e) {
-				LOGGER.error("Exception reading jar file : " + jarFile, e);
-			}
-		}
+//		List<File> jarFiles = FileUtilities.findFilesRecursively(new File("."), new ArrayList<File>(), ".jar\\Z");
+//		for (File jarFile : jarFiles) {
+//			try {
+//				LOGGER.debug("        : Loading properties from : " + jarFile);
+//				checkJar(jarFile);
+//			} catch (Exception e) {
+//				LOGGER.error("Exception reading jar file : " + jarFile, e);
+//			}
+//		}
 		// If the system property for the configuration has not been set then set it to the dot directory
 		if (System.getProperty(IConstants.IKUBE_CONFIGURATION) == null) {
 			System.setProperty(IConstants.IKUBE_CONFIGURATION, ".");

@@ -36,8 +36,8 @@
 		init-method="initialize" />
 	
 	<!-- External file system resources. -->
-	<import resource="file:**/ikube/spring-*.xml" />
-	<import resource="file:**/ikube/**/spring-*.xml" />
+	<import resource="file:ikube/spring-*.xml" />
+	<import resource="file:ikube/**/spring-*.xml" />
 
 	<mvc:annotation-driven />
 	<context:annotation-config />

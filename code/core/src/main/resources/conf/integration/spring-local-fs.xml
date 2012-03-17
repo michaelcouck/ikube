@@ -61,5 +61,22 @@
 		property:lastModifiedFieldName="lastmodified"
 		property:batchSize="${file.batch.size}"
 		property:maxReadLength="${file.max.read.length}" />
+	
+	<bean
+		id="tomcatIndexable"
+		class="ikube.model.IndexableFileSystem"
+		property:name="tomcatIndexable"
+		property:path="/usr/local/apache-tomcat-7.0.25"
+		property:pathFieldName="path"
+		property:nameFieldName="name"
+		property:lengthFieldName="length"
+		property:contentFieldName="contents"
+		property:unpackZips="true"
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true"
+		property:lastModifiedFieldName="lastmodified"
+		property:batchSize="${file.batch.size}"
+		property:maxReadLength="${file.max.read.length}" />
 
 </beans>

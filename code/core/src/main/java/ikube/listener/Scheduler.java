@@ -1,12 +1,14 @@
 package ikube.listener;
 
 import java.util.ArrayList;
+
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class just schedules events to be fired a a particular rate. Listeners can then respond to the events.
@@ -17,7 +19,7 @@ import org.apache.log4j.Logger;
  */
 public class Scheduler {
 
-	private static final Logger LOGGER = Logger.getLogger(Scheduler.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(Scheduler.class);
 
 	/** The list of schedules. */
 	private List<Schedule> schedules;
@@ -31,6 +33,9 @@ public class Scheduler {
 	 */
 	public void initialize() {
 		LOGGER.info("Scheduler : ");
+		if (scheduledExecuterService != null) {
+			shutdown();
+		}
 		scheduledExecuterService = Executors.newScheduledThreadPool(10);
 		for (final Schedule schedule : schedules) {
 			try {

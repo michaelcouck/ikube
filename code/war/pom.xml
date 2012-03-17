@@ -100,6 +100,8 @@
 								<ant antfile="build.xml" target="package.configuration" inheritrefs="true">
 									<property name="profile" value="${profile}" />
 								</ant>
+								<ant antfile="build.xml" target="jar.configuration" inheritrefs="true" />
+								<ant antfile="build.xml" target="deploy.configuration.for.jetty" inheritrefs="true" />
 							</target>
 						</configuration>
 						<goals>
@@ -118,9 +120,9 @@
 								<echo message="Deleting old deployment directories : " />
 								<!-- Deploy the Ikube war into the cluster. -->
 								<echo message="Deploying Ikube to cluster : " />
+								<ant antfile="build.xml" target="clean.servers" inheritrefs="true" />
 								<ant antfile="build.xml" target="deploy" inheritrefs="true" />
 								<!-- Copy the external configuration to the servers. -->
-								<echo message="Copying configuration to Tomcat bin : " />
 								<ant antfile="build.xml" target="deploy.configuration" inheritrefs="true" />
 								<!-- Zip Ikube and the configuration directory for upload to Google Code -->
 								<echo message="Zipping ikube with configuration : " />

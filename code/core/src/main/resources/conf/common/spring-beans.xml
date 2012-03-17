@@ -79,7 +79,7 @@
 	<util:map id="jpaPropertyMap">
 		<entry key="openjpa.ConnectionFactoryProperties" value="PrettyPrint=true,PrettyPrintLineLength=150" />
 		<entry key="openjpa.Log" 
-			value="DefaultLevel=ERROR,JDBC=ERROR,SQL=ERROR,File=/usr/local/post/app-rep/sum-st/sum-v000618-batch-UC4-st1-node1/ikube/openjpa.log,Runtime=ERROR,Tool=ERROR" />
+			value="DefaultLevel=ERROR,JDBC=ERROR,SQL=ERROR,File=ikube/openjpa.log,Runtime=ERROR,Tool=ERROR" />
 
 		<entry key="openjpa.DataCache" value="true(CacheSize=100000,SoftReferenceSize=100000)" />
 		<entry key="openjpa.QueryCache" value="true(CacheSize=100000,SoftReferenceSize=100000)" />
