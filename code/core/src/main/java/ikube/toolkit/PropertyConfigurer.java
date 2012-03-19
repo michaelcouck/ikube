@@ -11,7 +11,6 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.StringTokenizer;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.regex.Pattern;
@@ -39,14 +38,14 @@ public class PropertyConfigurer extends Properties {
 	 * the application will also be checked for the properties file name pattern to load into the property map.
 	 */
 	public void initialize() {
-//		try {
-//			// First we check our own jar
-//			File thisJar = new File(getClass().getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
-//			LOGGER.info("Checking our own jar : " + thisJar);
-//			checkJar(thisJar);
-//		} catch (URISyntaxException e) {
-//			LOGGER.error("Aaai karumbi! Where am I?", e);
-//		}
+		try {
+			// First we check our own jar
+			File thisJar = new File(getClass().getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
+			LOGGER.info("Checking our own jar : " + thisJar);
+			checkJar(thisJar);
+		} catch (URISyntaxException e) {
+			LOGGER.error("Aaai karumbi! Where am I?", e);
+		}
 //		try {
 //			// First check the classpath, this could take a while of course
 //			String classPathString = System.getProperty("java.class.path");

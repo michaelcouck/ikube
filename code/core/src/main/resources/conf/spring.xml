@@ -18,7 +18,7 @@
 	</description>
 	
 	<context:property-placeholder
-		location="**/spring.properties" 
+		location="spring.properties" 
 		properties-ref="ikube.toolkit.PropertyConfigurer" />
 	
 	<!-- This bean will look through the classpath and load every Spring properties file it finds. -->

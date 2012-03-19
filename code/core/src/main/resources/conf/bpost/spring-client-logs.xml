@@ -36,7 +36,6 @@
 		<ref local="filesystemIndexableLogs" />
 	</util:list>
 	
-	<!-- property:path="/jboss-4.2.2.GA/server/default/logs" -->
 	<bean
 		id="filesystemIndexableLogs"
 		class="ikube.model.IndexableFileSystemLog"

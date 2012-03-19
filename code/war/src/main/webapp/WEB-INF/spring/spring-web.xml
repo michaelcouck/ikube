@@ -24,7 +24,7 @@
 	<transaction:annotation-driven transaction-manager="transactionManager" />
 
 	<context:property-placeholder
-		location="**/spring.properties" 
+		location="classpath*:**/spring.properties" 
 		properties-ref="ikube.toolkit.PropertyConfigurer" />
 
 	<!-- This bean will look through the classpath and load every Spring properties file it finds. -->

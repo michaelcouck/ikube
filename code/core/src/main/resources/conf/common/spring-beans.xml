@@ -26,7 +26,7 @@
 		This is the configuration for the beans used by Ikube. It contains the entity manager for Jpa,
 		the handlers for the data sources and the schedulers for the timing of jobs.
 	</description>
-
+	
 	<context:annotation-config />
 	<aop:aspectj-autoproxy proxy-target-class="true" />
 	<context:component-scan base-package="ikube" />
@@ -133,7 +133,7 @@
 	<!-- The Jpa database for large sets of data. -->
 	<bean
 		id="ikube.database.IDataBase"
-		class="${ikube.dataBaseClass}"
+		class="ikube.database.jpa.DataBaseJpa"
 		lazy-init="false" />
 	<!-- 	<bean
 		id="ikube.database.IDataBase.Db2"

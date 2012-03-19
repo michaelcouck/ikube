@@ -15,9 +15,6 @@
             http://www.springframework.org/schema/util
             http://www.springframework.org/schema/util/spring-util.xsd">
 
-	<!-- Optional client configuration files for data sources. -->
-	<import resource="**/spring-oracle-jdbc.xml" />
-	
 	<bean
 		id="indexContext"
 		class="ikube.model.IndexContext"

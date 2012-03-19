@@ -23,6 +23,9 @@ import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
 
 /**
+ * This handler is a custom handler for the BPost. It will index log files in a particular directory, and unlike the
+ * {@link IndexableFilesystemHandler} which indexes files file by file, this handler will index log files line by line.
+ * 
  * @author Michael Couck
  * @since 08.02.2011
  * @version 01.00
