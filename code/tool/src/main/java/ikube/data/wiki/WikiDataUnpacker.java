@@ -1,15 +1,13 @@
 package ikube.data.wiki;
 
-import ikube.IConstants;
 import ikube.toolkit.FileUtilities;
-import ikube.toolkit.HashUtilities;
 import ikube.toolkit.Logging;
 
 import java.io.File;
-import java.io.FileFilter;
-import java.io.IOException;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.io.RandomAccessFile;
-import java.nio.charset.Charset;
 
 import net.sf.sevenzipjbinding.ExtractOperationResult;
 import net.sf.sevenzipjbinding.ISequentialOutStream;
@@ -20,7 +18,9 @@ import net.sf.sevenzipjbinding.impl.RandomAccessFileInStream;
 import net.sf.sevenzipjbinding.simple.ISimpleInArchive;
 import net.sf.sevenzipjbinding.simple.ISimpleInArchiveItem;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.compress.compressors.CompressorOutputStream;
+import org.apache.commons.compress.compressors.CompressorStreamFactory;
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,74 +30,82 @@ public class WikiDataUnpacker {
 		Logging.configure();
 	}
 
-	public static final String[] OUTPUT_DIRECTORIES = {
-	// "/dev/sdb1"
-	"/mnt/disk-one/"
-	// , "/usr/local/wiki/history/two",
-	// "/usr/local/wiki/history/three", "/usr/local/wiki/history/four", "/usr/local/wiki/history/five", "/usr/local/wiki/history/six",
-	// "/usr/local/wiki/history/seven", "/usr/local/wiki/history/eight", "/usr/local/wiki/history/nine", "/usr/local/wiki/history/ten"
-	};
-	public static final String INPUT_FILE = "/home/michael/Downloads/enwiki-20100130-pages-meta-history.xml.7z";
+	public static final String[] OUTPUT_DIRECTORIES = { "/mnt/disk-one/" };
+	public static final String[] INPUT_FILES = { "/usr/local/wiki/enwiki-20100130-pages-meta-history.xml.7z.bz2.001" };
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(WikiDataUnpacker.class);
 
 	public static void main(String[] args) throws Exception {
-		readBz2Tar();
+		read7ZandWriteBzip2();
 	}
 
-	protected static void readBz2Tar() throws Exception {
+	protected static void readBz2() throws Exception {
+		for (int i = 0; i < OUTPUT_DIRECTORIES.length; i++) {
+			int count = 0;
+			int directoryNumber = 1;
+			FileInputStream in = new FileInputStream(INPUT_FILES[i]);
+			BZip2CompressorInputStream bzIn = new BZip2CompressorInputStream(in);
+			File baseDirectory = FileUtilities.getFile(OUTPUT_DIRECTORIES[i], Boolean.TRUE);
+			File outputDirectory = FileUtilities.getFile(baseDirectory.getAbsolutePath() + File.separator + directoryNumber, Boolean.TRUE);
+			WikiDataUnpackerWorker wikiDataUnpackerWorker = new WikiDataUnpackerWorker();
+			wikiDataUnpackerWorker.setDirectory(outputDirectory);
+			int read = -1;
+			byte[] bytes = new byte[1024 * 1024];
+			while ((read = bzIn.read(bytes)) > -1) {
+				count += wikiDataUnpackerWorker.unpack(bytes, 0, read);
+				if (count >= 10000) {
+					count = 0;
+					directoryNumber++;
+					outputDirectory = FileUtilities.getFile(baseDirectory.getAbsolutePath() + File.separator + directoryNumber,
+							Boolean.TRUE);
+					wikiDataUnpackerWorker.setDirectory(outputDirectory);
+				}
+			}
+		}
+	}
+
+	protected static void read7ZandWriteBzip2() throws Exception {
 		SevenZip.initSevenZipFromPlatformJAR();
-		final long offset = 0;
-		final RandomAccessFile randomAccessFile = new RandomAccessFile(INPUT_FILE, "r");
+		// Get the input stream
+		final String filePath = "/home/michael/Downloads/enwiki-20100130-pages-meta-history.xml.7z";
+		final RandomAccessFile randomAccessFile = new RandomAccessFile(filePath, "r");
 		final RandomAccessFileInStream randomAccessFileInStream = new RandomAccessFileInStream(randomAccessFile);
 		final ISevenZipInArchive inArchive = SevenZip.openInArchive(null, randomAccessFileInStream);
 		final ISimpleInArchive simpleInArchive = inArchive.getSimpleInterface();
-		randomAccessFileInStream.seek(offset, RandomAccessFileInStream.SEEK_SET);
+
 		for (ISimpleInArchiveItem simpleInArchiveItem : simpleInArchive.getArchiveItems()) {
 			if (!simpleInArchiveItem.isFolder()) {
-				final StringBuilder stringBuilder = new StringBuilder();
 				ExtractOperationResult extractOperationResult = simpleInArchiveItem.extractSlow(new ISequentialOutStream() {
-					int count = 1;
-					String PAGE_START = "<revision>";
-					String PAGE_FINISH = "</revision>";
-					File baseDirectory = FileUtilities.getFile(OUTPUT_DIRECTORIES[0], Boolean.TRUE);
-					File outputDirectory = FileUtilities.getFile(baseDirectory.getAbsolutePath() + IConstants.SEP + "0", Boolean.TRUE);
-					long directoryOffset;
-					{
-						directoryOffset = getDirectoryOffset(baseDirectory);
-						LOGGER.info("Starting at directory offset : " + directoryOffset);
-					}
+
+					long reads;
+					long offset;
+					long file = 1;
+					long oneHundredGig = 107374182400l;
+					CompressorOutputStream compressorOutputStream;
+
 					@Override
 					public int write(byte[] bytes) throws SevenZipException {
-						String string = new String(bytes, 0, bytes.length, Charset.forName(IConstants.ENCODING));
-						stringBuilder.append(string);
-						while (true) {
-							int startOffset = stringBuilder.indexOf(PAGE_START);
-							int endOffset = stringBuilder.indexOf(PAGE_FINISH);
-							if (startOffset == -1 || endOffset == -1) {
-								break;
+						reads++;
+						if (reads % 10 == 0) {
+							LOGGER.info("Reads : " + reads + ", " + offset + ", " + file + ", " + oneHundredGig);
+						}
+						try {
+							if (offset > oneHundredGig || compressorOutputStream == null) {
+								// Get the output stream
+								File outputFile = FileUtilities.getFile("/usr/local/wiki/history/enwiki-20100130-pages-meta-history.xml."
+										+ file + ".bz2", Boolean.FALSE);
+								OutputStream outputStream = new FileOutputStream(outputFile);
+								compressorOutputStream = new CompressorStreamFactory().createCompressorOutputStream("bzip2", outputStream);
+								LOGGER.info("New output stream : " + outputFile);
+								LOGGER.info("Reads : " + reads + ", " + offset + ", " + file + ", " + oneHundredGig);
+								offset = 0;
+								file += 1;
 							}
-							if (endOffset <= startOffset) {
-								startOffset = endOffset;
-							}
-							endOffset += PAGE_FINISH.length();
-							stringBuilder.delete(startOffset, endOffset);
-							if (count % 10000 == 0) {
-								String outputDirectoryPath = baseDirectory.getAbsolutePath() + IConstants.SEP + count;
-								outputDirectory = FileUtilities.getFile(outputDirectoryPath, Boolean.TRUE);
-								try {
-									LOGGER.info("Count : " + count + ", " + outputDirectory + ", " + randomAccessFile.getFilePointer());
-								} catch (IOException e) {
-									LOGGER.error("IOException getting the offset in the files : ", e);
-								}
-							}
-							if (count >= directoryOffset) {
-								String segment = stringBuilder.substring(startOffset, endOffset);
-								String hash = Long.toString(HashUtilities.hash(segment));
-								String filePath = outputDirectory.getAbsolutePath() + File.separator + hash + ".html";
-								FileUtilities.setContents(filePath, segment.getBytes(Charset.forName(IConstants.ENCODING)));
-							}
-							count++;
+							offset += bytes.length;
+							compressorOutputStream.write(bytes);
+						} catch (Exception e) {
+							LOGGER.error(null, e);
+							throw new SevenZipException(e);
 						}
 						return bytes.length;
 					}
@@ -105,25 +113,6 @@ public class WikiDataUnpacker {
 				LOGGER.info("Extract operation : " + extractOperationResult);
 			}
 		}
-	}
-
-	protected static long getDirectoryOffset(final File directory) {
-		File[] files = directory.listFiles(new FileFilter() {
-			@Override
-			public boolean accept(File pathname) {
-				return pathname.isDirectory();
-			}
-		});
-		long directoryOffset = 0;
-		for (File file : files) {
-			if (!StringUtils.isNumeric(file.getName())) {
-				continue;
-			}
-			if (Long.parseLong(file.getName()) > directoryOffset) {
-				directoryOffset = Long.parseLong(file.getName());
-			}
-		}
-		return directoryOffset;
 	}
 
 }

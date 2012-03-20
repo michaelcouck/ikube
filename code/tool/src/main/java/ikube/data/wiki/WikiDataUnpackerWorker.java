@@ -18,7 +18,7 @@ public class WikiDataUnpackerWorker {
 	private static final String PAGE_START = "<revision>";
 	private static final String PAGE_FINISH = "</revision>";
 
-	private int count = 0;
+	private int count;
 	private File directory;
 
 	/**
@@ -26,13 +26,12 @@ public class WikiDataUnpackerWorker {
 	 * 
 	 * @param directory the output directory
 	 */
-	public WikiDataUnpackerWorker(final File directory) {
-		this.directory = directory;
+	public WikiDataUnpackerWorker() {
 		this.stringBuilder = new StringBuilder();
 	}
 
-	public int unpack(final byte[] bytes) throws Exception {
-		String string = new String(bytes, 0, bytes.length, Charset.forName(IConstants.ENCODING));
+	public int unpack(final byte[] bytes, int start, int length) throws Exception {
+		String string = new String(bytes, start, length, Charset.forName(IConstants.ENCODING));
 		stringBuilder.append(string);
 		while (true) {
 			int startOffset = stringBuilder.indexOf(PAGE_START);
@@ -55,6 +54,10 @@ public class WikiDataUnpackerWorker {
 			count++;
 		}
 		return count;
+	}
+
+	protected void setDirectory(final File directory) {
+		this.directory = directory;
 	}
 
 }

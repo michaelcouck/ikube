@@ -47,7 +47,8 @@ public class WikiDataUnpackerWorkerTest {
 
 	@Test
 	public void run() throws Exception {
-		wikiDataUnpackerWorker = new WikiDataUnpackerWorker(outputDirectory);
+		wikiDataUnpackerWorker = new WikiDataUnpackerWorker();
+		wikiDataUnpackerWorker.setDirectory(outputDirectory);
 
 		SevenZip.initSevenZipFromPlatformJAR();
 		RandomAccessFile randomAccessFile = new RandomAccessFile(inputFile, "r");
@@ -61,7 +62,7 @@ public class WikiDataUnpackerWorkerTest {
 					@Override
 					public int write(byte[] bytes) throws SevenZipException {
 						try {
-							wikiDataUnpackerWorker.unpack(bytes);
+							wikiDataUnpackerWorker.unpack(bytes, 0, bytes.length);
 						} catch (Exception e) {
 							LOGGER.error(null, e);
 						}
