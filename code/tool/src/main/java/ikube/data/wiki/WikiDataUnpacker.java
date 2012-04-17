@@ -2,12 +2,17 @@ package ikube.data.wiki;
 
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.Logging;
+import ikube.toolkit.ThreadUtilities;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import net.sf.sevenzipjbinding.ExtractOperationResult;
 import net.sf.sevenzipjbinding.ISequentialOutStream;
@@ -20,50 +25,56 @@ import net.sf.sevenzipjbinding.simple.ISimpleInArchiveItem;
 
 import org.apache.commons.compress.compressors.CompressorOutputStream;
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
-import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * This class will unpack the 7z files from Wiki and repack the data into Bzip2 files. Then unpack the Bzip2 files onto the disks.
+ * 
+ * @author Michael Couck
+ * @since at least 14.04.2012
+ * @version 01.00
+ */
 public class WikiDataUnpacker {
 
 	static {
+		// Init the logging config
 		Logging.configure();
 	}
-
-	public static final String[] OUTPUT_DIRECTORIES = { "/mnt/disk-one/" };
-	public static final String[] INPUT_FILES = { "/usr/local/wiki/enwiki-20100130-pages-meta-history.xml.7z.bz2.001" };
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(WikiDataUnpacker.class);
 
 	public static void main(String[] args) throws Exception {
-		read7ZandWriteBzip2();
+		// read7ZandWriteBzip2();
+		readBz2AndUnpackFiles();
 	}
 
-	protected static void readBz2() throws Exception {
-		for (int i = 0; i < OUTPUT_DIRECTORIES.length; i++) {
-			int count = 0;
-			int directoryNumber = 1;
-			FileInputStream in = new FileInputStream(INPUT_FILES[i]);
-			BZip2CompressorInputStream bzIn = new BZip2CompressorInputStream(in);
-			File baseDirectory = FileUtilities.getFile(OUTPUT_DIRECTORIES[i], Boolean.TRUE);
-			File outputDirectory = FileUtilities.getFile(baseDirectory.getAbsolutePath() + File.separator + directoryNumber, Boolean.TRUE);
-			WikiDataUnpackerWorker wikiDataUnpackerWorker = new WikiDataUnpackerWorker();
-			wikiDataUnpackerWorker.setDirectory(outputDirectory);
-			int read = -1;
-			byte[] bytes = new byte[1024 * 1024];
-			while ((read = bzIn.read(bytes)) > -1) {
-				count += wikiDataUnpackerWorker.unpack(bytes, 0, read);
-				if (count >= 10000) {
-					count = 0;
-					directoryNumber++;
-					outputDirectory = FileUtilities.getFile(baseDirectory.getAbsolutePath() + File.separator + directoryNumber,
-							Boolean.TRUE);
-					wikiDataUnpackerWorker.setDirectory(outputDirectory);
-				}
-			}
+	/**
+	 * This method will read the bzip2 files one by one and unpack them onto the external disks.
+	 */
+	protected static void readBz2AndUnpackFiles() throws Exception {
+		// Get the output directories/disks in the media folder
+		File[] disks = FileUtilities.findFiles(new File("/media"), new String[] { "disk" });
+		// Get the input files that are the Bzip2 files with a big xml in them
+		File[] files = FileUtilities.findFiles(new File("/usr/local/wiki/history"), new String[] { "bz2" });
+		// Init the executor service with 10 threads so we don't have too many running at the same time
+		List<Future<?>> futures = new ArrayList<Future<?>>();
+		ExecutorService executorService = Executors.newFixedThreadPool(4);
+		int diskIndex = 0;
+		for (File file : files) {
+			File disk = disks[diskIndex];
+			Future<Void> future = executorService.submit(new WikiDataUnpackerWorker(file, disk), null);
+			futures.add(future);
+			diskIndex = diskIndex >= disks.length ? 0 : ++diskIndex;
+			LOGGER.info("Disk : " + disk + ", file : " + file);
 		}
+		ThreadUtilities.waitForFutures(futures, Long.MAX_VALUE);
 	}
 
+	/**
+	 * This method will read the 7z history of the wiki, unpack the compressed file, break it up into segments of one giga-byte then write
+	 * the file to a compressed bzip2 file.
+	 */
 	protected static void read7ZandWriteBzip2() throws Exception {
 		SevenZip.initSevenZipFromPlatformJAR();
 		// Get the input stream

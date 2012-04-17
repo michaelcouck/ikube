@@ -135,7 +135,7 @@
 		id="ikube.database.IDataBase"
 		class="ikube.database.jpa.DataBaseJpa"
 		lazy-init="false" />
-	<!-- 	<bean
+	<!-- <bean
 		id="ikube.database.IDataBase.Db2"
 		class="ikube.database.jpa.DataBaseJpaDb2"
 		lazy-init="false" />

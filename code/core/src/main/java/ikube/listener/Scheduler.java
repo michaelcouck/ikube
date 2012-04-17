@@ -1,7 +1,6 @@
 package ikube.listener;
 
 import java.util.ArrayList;
-
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -36,7 +35,7 @@ public class Scheduler {
 		if (scheduledExecuterService != null) {
 			shutdown();
 		}
-		scheduledExecuterService = Executors.newScheduledThreadPool(10);
+		scheduledExecuterService = Executors.newScheduledThreadPool(100);
 		for (final Schedule schedule : schedules) {
 			try {
 				LOGGER.info("Scheduling : " + schedule);
