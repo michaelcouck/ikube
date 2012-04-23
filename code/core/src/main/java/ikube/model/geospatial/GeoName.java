@@ -16,9 +16,6 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
-
 @Entity()
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @NamedQueries(value = {
@@ -275,10 +272,6 @@ public class GeoName extends Persistable {
 
 	public void setModification(Date modification) {
 		this.modification = modification;
-	}
-
-	public String toString() {
-		return ToStringBuilder.reflectionToString(this, ToStringStyle.SIMPLE_STYLE);
 	}
 
 }

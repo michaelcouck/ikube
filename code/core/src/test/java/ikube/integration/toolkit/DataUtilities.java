@@ -1,5 +1,6 @@
 package ikube.integration.toolkit;
 
+import ikube.toolkit.DatabaseUtilities;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.Logging;
 
@@ -193,32 +194,6 @@ public final class DataUtilities {
 	}
 
 	/**
-	 * Closes the connection to the database.
-	 * 
-	 * @param connection
-	 *            the connection to close
-	 */
-	public static final void close(final Connection connection) {
-		try {
-			if (connection != null) {
-				connection.close();
-			}
-		} catch (Exception e) {
-			LOGGER.error("Exception : " + connection, e);
-		}
-	}
-
-	public static final void close(Statement statement) {
-		try {
-			if (statement != null) {
-				statement.close();
-			}
-		} catch (Exception e) {
-			LOGGER.error("Exception : " + statement, e);
-		}
-	}
-
-	/**
 	 * Closes the DBUnit database connection.
 	 * 
 	 * @param connection
@@ -308,7 +283,7 @@ public final class DataUtilities {
 			LOGGER.error("Exception : " + url, e);
 		} finally {
 			if (exception) {
-				close(connection);
+				DatabaseUtilities.close(connection);
 			}
 		}
 		return null;
@@ -360,7 +335,7 @@ public final class DataUtilities {
 		} catch (Exception e) {
 			LOGGER.error("Exception : " + filePath, e);
 		} finally {
-			close(connection);
+			DatabaseUtilities.close(connection);
 		}
 	}
 
@@ -374,8 +349,8 @@ public final class DataUtilities {
 		} catch (Exception e) {
 			LOGGER.error("Exception : " + sql, e);
 		} finally {
-			close(statement);
-			close(connection);
+			DatabaseUtilities.close(statement);
+			DatabaseUtilities.close(connection);
 		}
 	}
 

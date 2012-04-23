@@ -103,6 +103,7 @@
 	<mvc:view-controller path="/documentation/clustering.html" />
 	<mvc:view-controller path="/documentation/indexes.html" />
 	<mvc:view-controller path="/documentation/tutorial.html" />
+	<mvc:view-controller path="/documentation/customisation.html" />
 	
 	<mvc:view-controller path="/documentation/configuration/context.html" />
 	<mvc:view-controller path="/documentation/configuration/database.html" />
