@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,13 +56,26 @@ public final class ApplicationContextManager implements ApplicationContextAware 
 	public static synchronized ApplicationContext getApplicationContext() {
 		try {
 			if (APPLICATION_CONTEXT == null) {
-				// First see if there is a configuration file at the base of where the Jvm was started
-				File configFile = new File(EXTERNAL_SPRING_CONFIGURATION_FILE);
+				Properties properties = System.getProperties();
+				for (Map.Entry<Object, Object> mapEntry : properties.entrySet()) {
+					LOGGER.info("System property : " + mapEntry.getKey() + " : " + mapEntry.getValue());
+				}
+				File configFile = null;
+				Object ikubeConfigurationPathProperty = System.getProperty(IConstants.IKUBE_CONFIGURATION);
+				
+				LOGGER.info("Configuration property file : " + ikubeConfigurationPathProperty);
+				
+				if (ikubeConfigurationPathProperty != null) {
+					configFile = new File(ikubeConfigurationPathProperty.toString());
+				} else {
+					// See if there is a configuration file at the base of where the Jvm was started
+					configFile = new File(EXTERNAL_SPRING_CONFIGURATION_FILE);
+				}
+				LOGGER.info("External configuration file : " + configFile.getAbsolutePath() + ", " + configFile.exists());
 				if (configFile.exists()) {
-					LOGGER.info("External configuration file : " + configFile + ", " + configFile.getAbsolutePath() + ", "
-							+ configFile.exists());
 					APPLICATION_CONTEXT = getApplicationContext(configFile);
 				} else {
+					// Try the classpath
 					APPLICATION_CONTEXT = getApplicationContext(IConstants.SPRING_CONFIGURATION_FILE);
 				}
 			}
