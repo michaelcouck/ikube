@@ -7,8 +7,13 @@ import ikube.toolkit.HashUtilities;
 import java.io.File;
 import java.io.FileInputStream;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,19 +32,15 @@ public class WikiDataUnpackerWorker implements Runnable {
 	private static final String PAGE_START = "<revision>";
 	private static final String PAGE_FINISH = "</revision>";
 
-	/** The input Bzip2 xml file. */
-	private File file;
 	/** The disk where this file is to be unpacked. */
 	private File disk;
 
 	/**
 	 * Constructor takes the input file, i.e. the Bzip file with the xml data, and the disk where the file is to be unpacked.
 	 * 
-	 * @param file the input file
 	 * @param disk the output disk
 	 */
-	public WikiDataUnpackerWorker(final File file, final File disk) {
-		this.file = file;
+	public WikiDataUnpackerWorker(final File disk) {
 		this.disk = disk;
 	}
 
@@ -48,31 +49,49 @@ public class WikiDataUnpackerWorker implements Runnable {
 	 */
 	@Override
 	public void run() {
-		FileInputStream fileInputStream = null;
-		BZip2CompressorInputStream bZip2CompressorInputStream = null;
-		try {
-			int read = -1;
-			int count = 0;
-			File outputDirectory = getNextDirectory();
-			fileInputStream = new FileInputStream(file);
-			bZip2CompressorInputStream = new BZip2CompressorInputStream(fileInputStream);
-			byte[] bytes = new byte[1024 * 1024];
-			StringBuilder stringBuilder = new StringBuilder();
-			while ((read = bZip2CompressorInputStream.read(bytes)) > -1) {
-				String string = new String(bytes, 0, read, Charset.forName(IConstants.ENCODING));
-				stringBuilder.append(string);
-				count += unpack(outputDirectory, stringBuilder);
-				if (count > 10000) {
-					outputDirectory = getNextDirectory();
-					LOGGER.info("Count : " + count + ", output directory : " + outputDirectory);
-					count = 0;
-				}
+		List<File> bZip2Files = FileUtilities.findFilesRecursively(disk, new ArrayList<File>(), "bz2");
+		// Sort them by the name
+		Collections.sort(bZip2Files, new Comparator<File>() {
+			@Override
+			public int compare(File o1, File o2) {
+				return o1.getName().compareTo(o2.getName());
 			}
-		} catch (Exception e) {
-			LOGGER.error("Exception reading and uncompressing the zip file : " + file + ", " + disk, e);
-		} finally {
-			FileUtilities.close(fileInputStream);
-			FileUtilities.close(bZip2CompressorInputStream);
+		});
+		LOGGER.info("Files : " + bZip2Files);
+		for (File bZip2File : bZip2Files) {
+			File baseDirectory = new File(disk, FilenameUtils.removeExtension(bZip2File.getName()));
+			if (baseDirectory.exists() && baseDirectory.isDirectory()) {
+				LOGGER.info("Not doing file : " + baseDirectory);
+				continue;
+			}
+			LOGGER.info("Doing file : " + bZip2File + ", on disk : " + disk);
+			FileInputStream fileInputStream = null;
+			BZip2CompressorInputStream bZip2CompressorInputStream = null;
+			int totalCount = 0;
+			try {
+				int read = -1;
+				int count = 0;
+				File outputDirectory = getNextDirectory(bZip2File, System.currentTimeMillis());
+				fileInputStream = new FileInputStream(bZip2File);
+				bZip2CompressorInputStream = new BZip2CompressorInputStream(fileInputStream);
+				byte[] bytes = new byte[1024 * 1024];
+				StringBuilder stringBuilder = new StringBuilder();
+				while ((read = bZip2CompressorInputStream.read(bytes)) > -1) {
+					String string = new String(bytes, 0, read, Charset.forName(IConstants.ENCODING));
+					stringBuilder.append(string);
+					count += unpack(outputDirectory, stringBuilder);
+					if (count > 10000) {
+						outputDirectory = getNextDirectory(bZip2File, System.currentTimeMillis());
+						LOGGER.info("Count : " + count + ", output directory : " + outputDirectory + ", total : " + (totalCount += count));
+						count = 0;
+					}
+				}
+			} catch (Exception e) {
+				LOGGER.error("Exception reading and uncompressing the zip file : " + bZip2File + ", " + disk, e);
+			} finally {
+				FileUtilities.close(fileInputStream);
+				FileUtilities.close(bZip2CompressorInputStream);
+			}
 		}
 	}
 
@@ -103,17 +122,18 @@ public class WikiDataUnpackerWorker implements Runnable {
 			String filePath = outputDirectory.getAbsolutePath() + File.separator + hash + ".html";
 			FileUtilities.setContents(filePath, segment.getBytes(Charset.forName(IConstants.ENCODING)));
 			count++;
-			if (count % 1000 == 0) {
-				LOGGER.info("Count : " + count + ", " + this.hashCode());
-			}
 		}
 		return count;
 	}
 
-	private File getNextDirectory() {
-		String path = disk.getAbsolutePath() + File.separator + Long.toString(System.currentTimeMillis());
-		File outputDirectory = FileUtilities.getFile(path, Boolean.TRUE);
-		return outputDirectory;
+	private File getNextDirectory(final File bZip2File, final long fileName) {
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append(disk.getAbsolutePath());
+		stringBuilder.append(File.separator);
+		stringBuilder.append(FilenameUtils.removeExtension(bZip2File.getName()));
+		stringBuilder.append(File.separator);
+		stringBuilder.append(fileName);
+		return FileUtilities.getFile(stringBuilder.toString(), Boolean.TRUE);
 	}
 
 }

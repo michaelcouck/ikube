@@ -64,6 +64,7 @@ public class IndexableInternetHandlerIntegration extends AbstractIntegration {
 	}
 
 	@Test
+	@Ignore
 	public void handle() throws Exception {
 		String ip = InetAddress.getLocalHost().getHostAddress();
 		IndexWriter indexWriter = IndexManager.openIndexWriter(realIndexContext, System.currentTimeMillis(), ip);

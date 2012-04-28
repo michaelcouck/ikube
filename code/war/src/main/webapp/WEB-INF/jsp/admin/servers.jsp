@@ -73,7 +73,7 @@
 		<td class="td-content" nowrap="nowrap">
 			<fmt:formatDate value="${indexContext.latestIndexTimestamp}" pattern="${datePattern}" type="DATE" />
 		</td>
-		<td class="td-content" nowrap="nowrap">${ikube:subString(indexContext.indexDirectoryPath, 0, 30)}/${indexContext.name}</td>
+		<td class="td-content" nowrap="nowrap">${ikube:subString(indexContext.indexDirectoryPath, 0, 20)}/${indexContext.name}</td>
 	</tr>
 	</c:forEach>
 </table>

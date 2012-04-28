@@ -16,11 +16,11 @@
             http://www.springframework.org/schema/util/spring-util.xsd">
 
 	<bean
-		id="wikiHistoryContextOne"
+		id="wikiHistoryOne"
 		class="ikube.model.IndexContext"
-		property:name="wikiHistoryContextOne"
+		property:name="wikiHistoryOne"
 		property:maxAge="600000"
-		property:compoundFile="${compound.file}"
+		property:compoundFile="false"
 		property:bufferedDocs="${buffered.docs}"
 		property:bufferSize="${buffer.size}"
 		property:batchSize="${jdbc.batch.size}"
@@ -28,25 +28,176 @@
 		property:mergeFactor="${merge.factor}"
 		property:maxFieldLength="${max.field.length}"
 		property:maxReadLength="${max.read.length}"
-		property:throttle="${throttle}"
-		property:indexDirectoryPath="${index.directory.path}"
-		property:indexDirectoryPathBackup="${index.directory.path.backup}"
+		property:throttle="0"
+		property:indexDirectoryPath="/media/0300e299-8a4d-4cbb-853a-641567fc3d91/index"
+		property:indexDirectoryPathBackup="/media/0300e299-8a4d-4cbb-853a-641567fc3d91/index"
 		property:children-ref="wikiHistoryIndexablesOne" />
 	<util:list id="wikiHistoryIndexablesOne">
 		<ref local="wikiHistoryDataOne" />
 	</util:list>
-	
 	<bean
 		id="wikiHistoryDataOne"
 		class="ikube.model.IndexableFileSystem"
 		property:name="wikiHistoryDataOne"
-		property:path="/mnt/disk-one"
+		property:path="/media/0300e299-8a4d-4cbb-853a-641567fc3d91"
 		property:pathFieldName="path"
 		property:nameFieldName="name"
 		property:lengthFieldName="length"
 		property:contentFieldName="contents"
 		property:lastModifiedFieldName="lastmodified"
-		property:stored="false"
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true"
+		property:unpackZips="false"
+		property:excludedPattern="${files.excluded.pattern}"
+		property:batchSize="${file.batch.size}"
+		property:maxReadLength="${file.max.read.length}" />
+	
+	<bean
+		id="wikiHistoryTwo"
+		class="ikube.model.IndexContext"
+		property:name="wikiHistoryTwo"
+		property:maxAge="600000"
+		property:compoundFile="false"
+		property:bufferedDocs="${buffered.docs}"
+		property:bufferSize="${buffer.size}"
+		property:batchSize="${jdbc.batch.size}"
+		property:internetBatchSize="${internet.batch.size}"
+		property:mergeFactor="${merge.factor}"
+		property:maxFieldLength="${max.field.length}"
+		property:maxReadLength="${max.read.length}"
+		property:throttle="0"
+		property:indexDirectoryPath="/media/ab47bde2-1cc2-4c57-ba10-231952d3b131/index"
+		property:indexDirectoryPathBackup="/media/ab47bde2-1cc2-4c57-ba10-231952d3b131/index"
+		property:children-ref="wikiHistoryIndexablesTwo" />
+	<util:list id="wikiHistoryIndexablesTwo">
+		<ref local="wikiHistoryDataTwo" />
+	</util:list>
+	<bean
+		id="wikiHistoryDataTwo"
+		class="ikube.model.IndexableFileSystem"
+		property:name="wikiHistoryDataTwo"
+		property:path="/media/ab47bde2-1cc2-4c57-ba10-231952d3b131"
+		property:pathFieldName="path"
+		property:nameFieldName="name"
+		property:lengthFieldName="length"
+		property:contentFieldName="contents"
+		property:lastModifiedFieldName="lastmodified"
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true"
+		property:unpackZips="false"
+		property:excludedPattern="${files.excluded.pattern}"
+		property:batchSize="${file.batch.size}"
+		property:maxReadLength="${file.max.read.length}" />
+
+	<bean
+		id="wikiHistoryThree"
+		class="ikube.model.IndexContext"
+		property:name="wikiHistoryThree"
+		property:maxAge="600000"
+		property:compoundFile="false"
+		property:bufferedDocs="${buffered.docs}"
+		property:bufferSize="${buffer.size}"
+		property:batchSize="${jdbc.batch.size}"
+		property:internetBatchSize="${internet.batch.size}"
+		property:mergeFactor="${merge.factor}"
+		property:maxFieldLength="${max.field.length}"
+		property:maxReadLength="${max.read.length}"
+		property:throttle="0"
+		property:indexDirectoryPath="/media/c7ac9170-65b0-4868-9700-034812ab21de/index"
+		property:indexDirectoryPathBackup="/media/c7ac9170-65b0-4868-9700-034812ab21de/index"
+		property:children-ref="wikiHistoryIndexablesThree" />
+	<util:list id="wikiHistoryIndexablesThree">
+		<ref local="wikiHistoryDataThree" />
+	</util:list>
+	<bean
+		id="wikiHistoryDataThree"
+		class="ikube.model.IndexableFileSystem"
+		property:name="wikiHistoryDataThree"
+		property:path="/media/c7ac9170-65b0-4868-9700-034812ab21de"
+		property:pathFieldName="path"
+		property:nameFieldName="name"
+		property:lengthFieldName="length"
+		property:contentFieldName="contents"
+		property:lastModifiedFieldName="lastmodified"
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true"
+		property:unpackZips="false"
+		property:excludedPattern="${files.excluded.pattern}"
+		property:batchSize="${file.batch.size}"
+		property:maxReadLength="${file.max.read.length}" />
+
+	<bean
+		id="wikiHistoryFour"
+		class="ikube.model.IndexContext"
+		property:name="wikiHistoryFour"
+		property:maxAge="600000"
+		property:compoundFile="false"
+		property:bufferedDocs="${buffered.docs}"
+		property:bufferSize="${buffer.size}"
+		property:batchSize="${jdbc.batch.size}"
+		property:internetBatchSize="${internet.batch.size}"
+		property:mergeFactor="${merge.factor}"
+		property:maxFieldLength="${max.field.length}"
+		property:maxReadLength="${max.read.length}"
+		property:throttle="0"
+		property:indexDirectoryPath="/media/f13d2c9b-8d84-4656-8eb0-8665fecab782/index"
+		property:indexDirectoryPathBackup="/media/f13d2c9b-8d84-4656-8eb0-8665fecab782/index"
+		property:children-ref="wikiHistoryIndexablesFour" />
+	<util:list id="wikiHistoryIndexablesFour">
+		<ref local="wikiHistoryDataFour" />
+	</util:list>
+	<bean
+		id="wikiHistoryDataFour"
+		class="ikube.model.IndexableFileSystem"
+		property:name="wikiHistoryDataFour"
+		property:path="/media/f13d2c9b-8d84-4656-8eb0-8665fecab782"
+		property:pathFieldName="path"
+		property:nameFieldName="name"
+		property:lengthFieldName="length"
+		property:contentFieldName="contents"
+		property:lastModifiedFieldName="lastmodified"
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true"
+		property:unpackZips="false"
+		property:excludedPattern="${files.excluded.pattern}"
+		property:batchSize="${file.batch.size}"
+		property:maxReadLength="${file.max.read.length}" />
+
+	<bean
+		id="wikiHistoryFive"
+		class="ikube.model.IndexContext"
+		property:name="wikiHistoryFive"
+		property:maxAge="600000"
+		property:compoundFile="false"
+		property:bufferedDocs="${buffered.docs}"
+		property:bufferSize="${buffer.size}"
+		property:batchSize="${jdbc.batch.size}"
+		property:internetBatchSize="${internet.batch.size}"
+		property:mergeFactor="${merge.factor}"
+		property:maxFieldLength="${max.field.length}"
+		property:maxReadLength="${max.read.length}"
+		property:throttle="0"
+		property:indexDirectoryPath="/media/f1406627-30c0-4156-b54a-c49d98a5b053/index"
+		property:indexDirectoryPathBackup="/media/f1406627-30c0-4156-b54a-c49d98a5b053/index"
+		property:children-ref="wikiHistoryIndexablesFive" />
+	<util:list id="wikiHistoryIndexablesFive">
+		<ref local="wikiHistoryDataFive" />
+	</util:list>
+	<bean
+		id="wikiHistoryDataFive"
+		class="ikube.model.IndexableFileSystem"
+		property:name="wikiHistoryDataFive"
+		property:path="/media/f1406627-30c0-4156-b54a-c49d98a5b053"
+		property:pathFieldName="path"
+		property:nameFieldName="name"
+		property:lengthFieldName="length"
+		property:contentFieldName="contents"
+		property:lastModifiedFieldName="lastmodified"
+		property:stored="true"
 		property:analyzed="true"
 		property:vectored="true"
 		property:unpackZips="false"

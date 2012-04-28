@@ -62,7 +62,7 @@
 				<c:if test="${index % block == 0}">
 					<a href="<c:url 
 						value="/admin/database.html" 
-						/>?targetView=${param.targetView}&classType=${param.classType}&start=${index}&end=${block}&heading=${param.heading}">${index}</a>
+						/>?targetView=${param.targetView}&classType=${param.classType}&sortFields=${param.sortFields}&directionOfSort=${param.directionOfSort}&start=${index}&end=${block}&heading=${param.heading}">${index}</a>
 				</c:if>
 			</c:forEach> 
 		</td>

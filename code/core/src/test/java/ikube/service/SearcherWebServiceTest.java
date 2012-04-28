@@ -11,8 +11,11 @@ import ikube.ATest;
 import ikube.IConstants;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.model.Search;
+import ikube.search.spelling.SpellingChecker;
 import ikube.toolkit.ApplicationContextManager;
+import ikube.toolkit.FileUtilities;
 
+import java.io.File;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,17 +50,24 @@ public class SearcherWebServiceTest extends ATest {
 	}
 
 	@Before
-	public void before() {
+	public void before() throws Exception {
 		Mockit.setUpMocks(ApplicationContextManagerMock.class);
 		this.searcherWebService = new SearcherWebService();
 		ApplicationContextManagerMock.setBean(indexContext);
 		Deencapsulation.setField(searcherWebService, dataBase);
+		SpellingChecker spellingChecker = new SpellingChecker();
+		Deencapsulation.setField(spellingChecker, "languageWordListsDirectory", "./languageWordListsDirectory");
+		Deencapsulation.setField(spellingChecker, "spellingIndexDirectoryPath", "./spellingIndexDirectoryPath");
+		spellingChecker.initialize();
+		Deencapsulation.setField(searcherWebService, spellingChecker);
 	}
 
 	@After
 	public void after() {
 		Mockit.tearDownMocks(ApplicationContextManager.class);
 		ApplicationContextManagerMock.setBean(null);
+		FileUtilities.deleteFile(new File("./languageWordListsDirectory"), 1);
+		FileUtilities.deleteFile(new File("./spellingIndexDirectoryPath"), 1);
 	}
 
 	@Test

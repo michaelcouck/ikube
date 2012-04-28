@@ -48,46 +48,56 @@ public class SpellingChecker {
 	}
 
 	public void initialize() throws Exception {
+
 		File spellingIndexDirectory = FileUtilities.getFile(spellingIndexDirectoryPath, Boolean.TRUE);
-		Directory directory = FSDirectory.open(spellingIndexDirectory);
 		boolean mustIndex = true;
-		if (IndexReader.indexExists(directory)) {
-			String[] files = directory.listAll();
-			mustIndex = files.length < 3;
-			if (mustIndex) {
-				for (String file : files) {
-					directory.deleteFile(file);
+
+		Directory directory = null;
+		try {
+			directory = FSDirectory.open(spellingIndexDirectory);
+			if (IndexReader.indexExists(directory)) {
+				String[] files = directory.listAll();
+				mustIndex = files.length < 3;
+				if (mustIndex) {
+					for (String file : files) {
+						directory.deleteFile(file);
+					}
 				}
 			}
+		} catch (Exception e) {
+			LOGGER.error("Exception removing corrupt spelling index directory : ", e);
 		}
-		spellChecker = new SpellChecker(directory);
-		if (mustIndex) {
-			File languagesDirectory = FileUtilities.findFileRecursively(new File("."), Boolean.TRUE, languageWordListsDirectory);
-			if (languagesDirectory != null && languagesDirectory.exists() && languagesDirectory.isDirectory()) {
-				File[] languageFiles = languagesDirectory.listFiles(new FileFilter() {
-					@Override
-					public boolean accept(File pathname) {
-						return pathname.getName().endsWith(".txt");
-					}
-				});
-				if (languageFiles != null && languageFiles.length > 0) {
-					for (File languageFile : languageFiles) {
-						InputStream inputStream = null;
-						try {
-							LOGGER.info("Language file : " + languageFile);
-							inputStream = new FileInputStream(languageFile);
-							LOGGER.info("Input stream : " + inputStream);
-							spellChecker.indexDictionary(new PlainTextDictionary(inputStream));
-						} catch (Exception e) {
-							LOGGER.error("Exception indexing language file : " + languageFile, e);
-						} finally {
-							FileUtilities.close(inputStream);
+
+		if (directory != null) {
+			spellChecker = new SpellChecker(directory);
+			if (mustIndex) {
+				File languagesDirectory = FileUtilities.findFileRecursively(new File("."), Boolean.TRUE, languageWordListsDirectory);
+				if (languagesDirectory != null && languagesDirectory.exists() && languagesDirectory.isDirectory()) {
+					File[] languageFiles = languagesDirectory.listFiles(new FileFilter() {
+						@Override
+						public boolean accept(File pathname) {
+							return pathname.getName().endsWith(".txt");
+						}
+					});
+					if (languageFiles != null && languageFiles.length > 0) {
+						for (File languageFile : languageFiles) {
+							InputStream inputStream = null;
+							try {
+								LOGGER.info("Language file : " + languageFile);
+								inputStream = new FileInputStream(languageFile);
+								LOGGER.info("Input stream : " + inputStream);
+								spellChecker.indexDictionary(new PlainTextDictionary(inputStream));
+							} catch (Exception e) {
+								LOGGER.error("Exception indexing language file : " + languageFile, e);
+							} finally {
+								FileUtilities.close(inputStream);
+							}
 						}
 					}
 				}
 			}
+			LOGGER.info("Opened spelling index on : " + spellingIndexDirectory.getAbsolutePath());
 		}
-		LOGGER.info("Opened spelling index on : " + spellingIndexDirectory.getAbsolutePath());
 	}
 
 	/**

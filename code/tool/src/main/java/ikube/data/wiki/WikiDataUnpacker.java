@@ -5,6 +5,7 @@ import ikube.toolkit.Logging;
 import ikube.toolkit.ThreadUtilities;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
@@ -54,19 +55,19 @@ public class WikiDataUnpacker {
 	 */
 	protected static void readBz2AndUnpackFiles() throws Exception {
 		// Get the output directories/disks in the media folder
-		File[] disks = FileUtilities.findFiles(new File("/media"), new String[] { "disk" });
-		// Get the input files that are the Bzip2 files with a big xml in them
-		File[] files = FileUtilities.findFiles(new File("/usr/local/wiki/history"), new String[] { "bz2" });
+		File[] disks = new File("/media").listFiles(new FileFilter() {
+			@Override
+			public boolean accept(File pathname) {
+				return pathname.isDirectory() && !pathname.getName().startsWith(".");
+			}
+		});
 		// Init the executor service with 10 threads so we don't have too many running at the same time
 		List<Future<?>> futures = new ArrayList<Future<?>>();
 		ExecutorService executorService = Executors.newFixedThreadPool(4);
-		int diskIndex = 0;
-		for (File file : files) {
-			File disk = disks[diskIndex];
-			Future<Void> future = executorService.submit(new WikiDataUnpackerWorker(file, disk), null);
+		for (File disk : disks) {
+			WikiDataUnpackerWorker wikiDataUnpackerWorker = new WikiDataUnpackerWorker(disk);
+			Future<Void> future = executorService.submit(wikiDataUnpackerWorker, null);
 			futures.add(future);
-			diskIndex = diskIndex >= disks.length ? 0 : ++diskIndex;
-			LOGGER.info("Disk : " + disk + ", file : " + file);
 		}
 		ThreadUtilities.waitForFutures(futures, Long.MAX_VALUE);
 	}

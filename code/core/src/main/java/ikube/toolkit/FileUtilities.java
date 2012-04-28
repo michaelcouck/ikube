@@ -150,10 +150,14 @@ public final class FileUtilities {
 	public static List<File> findFilesRecursively(final File folder, final List<File> files, final String... stringPatterns) {
 		if (folder.isDirectory()) {
 			File[] folderFiles = FileUtilities.findFiles(folder, stringPatterns);
-			files.addAll(Arrays.asList(folderFiles));
+			if (folderFiles != null && folderFiles.length > 0) {
+				files.addAll(Arrays.asList(folderFiles));
+			}
 			File[] childFolders = folder.listFiles();
-			for (File childFolder : childFolders) {
-				findFilesRecursively(childFolder, files, stringPatterns);
+			if (childFolders != null && childFolders.length > 0) {
+				for (File childFolder : childFolders) {
+					findFilesRecursively(childFolder, files, stringPatterns);
+				}
 			}
 		}
 		return files;

@@ -5,11 +5,14 @@ import static org.junit.Assert.assertTrue;
 import ikube.ATest;
 import ikube.IConstants;
 import ikube.search.SearchSingle;
+import ikube.search.spelling.SpellingChecker;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import mockit.Deencapsulation;
 
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.MultiSearcher;
@@ -46,11 +49,16 @@ public class LuceneTest extends ATest {
 	@Before
 	public void before() throws Exception {
 		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
+		SpellingChecker spellingChecker = new SpellingChecker();
+		Deencapsulation.setField(spellingChecker, "languageWordListsDirectory", "./languageWordListsDirectory");
+		Deencapsulation.setField(spellingChecker, "spellingIndexDirectoryPath", "./spellingIndexDirectoryPath");
+		spellingChecker.initialize();
 	}
 
 	@After
 	public void after() throws Exception {
 		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
+		FileUtilities.deleteFile(new File("./spellingIndexDirectoryPath"), 1);
 	}
 
 	@Test
