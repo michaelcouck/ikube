@@ -1,7 +1,6 @@
 package ikube.toolkit;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -58,7 +57,8 @@ public final class DatabaseUtilities {
 				LOGGER.info("Result is a result set : " + statement.getResultSet());
 			}
 		} catch (Exception e) {
-			LOGGER.error("Exception executing statement : " + sql + ", on data source : " + dataSource, e);
+			LOGGER.error("Exception executing statement : " + sql + ", on data source : " + dataSource);
+			LOGGER.debug(null, e);
 		} finally {
 			close(statement);
 			close(connection);

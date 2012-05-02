@@ -49,5 +49,19 @@ public class ApplicationContextManagerIntegration extends AbstractIntegration {
 			// Expected
 		}
 	}
+	
+	@Test
+	public void getApplicationContextSpecifiedConfigurationPath() {
+		ApplicationContextManager.closeApplicationContext();
+		File configurationFolder = FileUtilities.findFileRecursively(new File("."), "external");
+		File configurationFile = FileUtilities.findFileRecursively(configurationFolder, "spring.xml");
+		String configurationFolderPath = configurationFile.getAbsolutePath();
+		System.setProperty(IConstants.IKUBE_CONFIGURATION, configurationFolderPath);
+		
+		ApplicationContext applicationContext = ApplicationContextManager.getApplicationContext();
+		assertNotNull(applicationContext);
+		Object externalMailer = applicationContext.getBean("mailerExternal");
+		assertNotNull(externalMailer);
+	}
 
 }
