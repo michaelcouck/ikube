@@ -58,7 +58,7 @@ public class WikiDataUnpacker {
 		File[] disks = new File("/media").listFiles(new FileFilter() {
 			@Override
 			public boolean accept(File pathname) {
-				return pathname.isDirectory() && !pathname.getName().startsWith(".");
+				return pathname.isDirectory() && !pathname.getName().startsWith("nas");
 			}
 		});
 		// Init the executor service with 10 threads so we don't have too many running at the same time
@@ -85,43 +85,46 @@ public class WikiDataUnpacker {
 		final ISevenZipInArchive inArchive = SevenZip.openInArchive(null, randomAccessFileInStream);
 		final ISimpleInArchive simpleInArchive = inArchive.getSimpleInterface();
 
+		class SequentialOutStream implements ISequentialOutStream {
+
+			long reads;
+			long offset;
+			long file = 1;
+			long oneHundredGig = 107374182400l;
+			CompressorOutputStream compressorOutputStream;
+
+			@Override
+			public int write(byte[] bytes) throws SevenZipException {
+				reads++;
+				if (reads % 10 == 0) {
+					LOGGER.info("Reads : " + reads + ", " + offset + ", " + file + ", " + oneHundredGig);
+				}
+				try {
+					if (offset > oneHundredGig || compressorOutputStream == null) {
+						// Get the output stream
+						String bzip2FilePath = "/usr/local/wiki/history/enwiki-20100130-pages-meta-history.xml." + file + ".bz2";
+						File outputFile = FileUtilities.getFile(bzip2FilePath, Boolean.FALSE);
+						OutputStream outputStream = new FileOutputStream(outputFile);
+						compressorOutputStream = new CompressorStreamFactory().createCompressorOutputStream("bzip2", outputStream);
+						LOGGER.info("New output stream : " + outputFile);
+						LOGGER.info("Reads : " + reads + ", " + offset + ", " + file + ", " + oneHundredGig);
+						offset = 0;
+						file += 1;
+					}
+					offset += bytes.length;
+					compressorOutputStream.write(bytes);
+				} catch (Exception e) {
+					LOGGER.error(null, e);
+					throw new SevenZipException(e);
+				}
+				return bytes.length;
+			}
+		}
+
 		for (ISimpleInArchiveItem simpleInArchiveItem : simpleInArchive.getArchiveItems()) {
 			if (!simpleInArchiveItem.isFolder()) {
-				ExtractOperationResult extractOperationResult = simpleInArchiveItem.extractSlow(new ISequentialOutStream() {
-
-					long reads;
-					long offset;
-					long file = 1;
-					long oneHundredGig = 107374182400l;
-					CompressorOutputStream compressorOutputStream;
-
-					@Override
-					public int write(byte[] bytes) throws SevenZipException {
-						reads++;
-						if (reads % 10 == 0) {
-							LOGGER.info("Reads : " + reads + ", " + offset + ", " + file + ", " + oneHundredGig);
-						}
-						try {
-							if (offset > oneHundredGig || compressorOutputStream == null) {
-								// Get the output stream
-								File outputFile = FileUtilities.getFile("/usr/local/wiki/history/enwiki-20100130-pages-meta-history.xml."
-										+ file + ".bz2", Boolean.FALSE);
-								OutputStream outputStream = new FileOutputStream(outputFile);
-								compressorOutputStream = new CompressorStreamFactory().createCompressorOutputStream("bzip2", outputStream);
-								LOGGER.info("New output stream : " + outputFile);
-								LOGGER.info("Reads : " + reads + ", " + offset + ", " + file + ", " + oneHundredGig);
-								offset = 0;
-								file += 1;
-							}
-							offset += bytes.length;
-							compressorOutputStream.write(bytes);
-						} catch (Exception e) {
-							LOGGER.error(null, e);
-							throw new SevenZipException(e);
-						}
-						return bytes.length;
-					}
-				});
+				ISequentialOutStream sequentialOutStream = new SequentialOutStream();
+				ExtractOperationResult extractOperationResult = simpleInArchiveItem.extractSlow(sequentialOutStream);
 				LOGGER.info("Extract operation : " + extractOperationResult);
 			}
 		}

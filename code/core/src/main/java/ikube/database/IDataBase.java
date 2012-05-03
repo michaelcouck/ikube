@@ -135,9 +135,9 @@ public interface IDataBase {
 	 * @param <T> the type to expect
 	 * @param klass the class to select from the database
 	 * @param fieldsToSortOn the fields to sort on, in the order of the sort requirements, i.e. first on start time then on end time for
-	 *        example
+	 *            example
 	 * @param directionOfSort the direction of the sort for each field. For example sort acesnding on the start time and descending on the
-	 *        end time
+	 *            end time
 	 * @param firstResult the first result in the set, i.e. skip the first n results
 	 * @param maxResults and the size of the result set
 	 * @return the list of sorted entities from the database
@@ -217,10 +217,24 @@ public interface IDataBase {
 	 * @param names the names of the fields to use as filter in the query
 	 * @param values the values of the fields to use for the filter in the query
 	 * @param startPosition the first entity in the result, in the case that this list os sorted by the id for example thsn this will be the
-	 *        next page in the results, if not then the results are defined by the JPA implementation
+	 *            next page in the results, if not then the results are defined by the JPA implementation
 	 * @param maxResults the maximum results to return from the database
 	 * @return the list of entities in the database that match the names and values for the fields
 	 */
 	<T> List<T> find(Class<T> klass, String sql, String[] names, Object[] values, int startPosition, int maxResults);
+
+	/**
+	 * This method will create a dynamic criteria query based on the field names and the values passed to the query. Note that this query is
+	 * not type safe and the compiler will not correct and discrepancies in the query prior to execution live.
+	 * 
+	 * @param <T> the type of class expected to be returned
+	 * @param klass the class type expected
+	 * @param fieldsToFilterOn the fields in the target entity to use for the selection/filtering
+	 * @param valuesToFilterOn the values in the target entity to use in the selection/filtering
+	 * @param firstResult the first result in the collection, i.e. the starting position in the results
+	 * @param maxResults the maximum results to return in the collection
+	 * @return the resultant collection, can be empty, based on the fields and values specified for the selection
+	 */
+	<T> List<T> findCriteria(Class<T> klass, String[] fieldsToFilterOn, Object[] valuesToFilterOn, int firstResult, int maxResults);
 
 }

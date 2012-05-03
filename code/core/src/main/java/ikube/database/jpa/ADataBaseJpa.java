@@ -15,6 +15,8 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.EntityType;
 
@@ -180,6 +182,31 @@ public abstract class ADataBaseJpa implements IDataBase {
 			}
 			criteriaQuery.orderBy(orderByOrders);
 		}
+		TypedQuery<T> typedQuery = getEntityManager().createQuery(criteriaQuery);
+		typedQuery.setFirstResult(firstResult);
+		typedQuery.setMaxResults(maxResults);
+		return typedQuery.getResultList();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public <T> List<T> findCriteria(final Class<T> klass, final String[] fieldsToFilterOn, final Object[] valuesToFilterOn,
+			final int firstResult, final int maxResults) {
+		CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
+		CriteriaQuery<T> criteriaQuery = criteriaBuilder.createQuery(klass);
+		Root<T> root = criteriaQuery.from(klass);
+		criteriaQuery = criteriaQuery.select(root);
+
+		List<Predicate> predicates = new ArrayList<Predicate>();
+		for (int i = 0; i < fieldsToFilterOn.length; i++) {
+			Path<?> path = root.get(fieldsToFilterOn[i]);
+			Predicate predicate = criteriaBuilder.equal(path, valuesToFilterOn[i]);
+			predicates.add(predicate);
+		}
+		criteriaQuery.where(predicates.toArray(new Predicate[predicates.size()]));
+
 		TypedQuery<T> typedQuery = getEntityManager().createQuery(criteriaQuery);
 		typedQuery.setFirstResult(firstResult);
 		typedQuery.setMaxResults(maxResults);

@@ -2,12 +2,15 @@ package ikube.web.admin;
 
 import ikube.IConstants;
 import ikube.database.IDataBase;
+import ikube.model.Index;
 import ikube.model.Search;
 import ikube.model.Server;
 import ikube.toolkit.DatabaseUtilities;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -45,16 +48,37 @@ public class DatabaseController extends BaseController {
 		Long total = dataBase.count(Search.class);
 		List<?> list = dataBase.find(klass, sortFields.toArray(new String[sortFields.size()]),
 				directionOfSort.toArray(new Boolean[directionOfSort.size()]), start, end);
+		List<String> fieldNames = DatabaseUtilities.getFieldNames(klass, new ArrayList<String>());
+		Server server = clusterManager.getServer();
+
 		modelAndView.addObject(IConstants.TOTAL, total);
 		modelAndView.addObject(IConstants.ENTITIES, list);
-		List<String> fieldNames = DatabaseUtilities.getFieldNames(klass, new ArrayList<String>());
 		modelAndView.addObject(IConstants.FIELD_NAMES, fieldNames);
-
-		Server server = clusterManager.getServer();
 		modelAndView.addObject(IConstants.SERVER, server);
 
 		modelAndView.setViewName(targetView);
+		return modelAndView;
+	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@RequestMapping(value = "/admin/database.html", method = RequestMethod.GET)
+	public ModelAndView select(@RequestParam(required = true, value = "targetView") String targetView,
+			@RequestParam(required = true, value = "class") final String klass,
+			@RequestParam(required = true, value = "fieldsToFilterOn") final List<String> fieldsToFilterOn,
+			@RequestParam(required = true, value = "valuesToFilterOn") final List<Object> valuesToFilterOn,
+			@RequestParam(required = true, value = "firstResult") final int firstResult,
+			@RequestParam(required = true, value = "maxResults") final int maxResults, final ModelAndView modelAndView) throws Exception {
+		Map<String, Object> parameters = new HashMap<String, Object>();
+		parameters.put(IConstants.ACTION_NAME, Index.class.getSimpleName());
+		Long total = dataBase.count(Class.forName(klass));
+		List<?> actions = dataBase.findCriteria(Class.forName(klass), fieldsToFilterOn.toArray(new String[fieldsToFilterOn.size()]),
+				valuesToFilterOn.toArray(new Object[valuesToFilterOn.size()]), firstResult, maxResults);
+		modelAndView.addObject(IConstants.TOTAL, total);
+		modelAndView.addObject(IConstants.ACTIONS, actions);
+
+		modelAndView.setViewName(targetView);
 		return modelAndView;
 	}
 

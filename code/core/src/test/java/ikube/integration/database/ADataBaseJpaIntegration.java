@@ -30,7 +30,7 @@ import org.junit.Test;
  * @since long time
  * @version 01.00
  */
-public class DataBaseIntegration extends AbstractIntegration {
+public class ADataBaseJpaIntegration extends AbstractIntegration {
 
 	private IDataBase dataBase;
 
@@ -194,24 +194,35 @@ public class DataBaseIntegration extends AbstractIntegration {
 		assertNotNull(dbUrls);
 		assertTrue(dbUrls.size() > 0);
 		assertEquals(dbUrls.size(), inserted);
-		
+
 		int fetched = inserted / 3;
 		dbUrls = dataBase.find(Url.class, Url.SELECT_FROM_URL_BY_NAME, names, values, 0, fetched);
 		assertNotNull(dbUrls);
 		assertTrue(dbUrls.size() > 0);
 		assertEquals(dbUrls.size(), fetched);
-		
+
 		int started = 10;
 		dbUrls = dataBase.find(Url.class, Url.SELECT_FROM_URL_BY_NAME, names, values, started, fetched);
 		assertNotNull(dbUrls);
 		assertTrue(dbUrls.size() > 0);
 		assertEquals(dbUrls.size(), Math.min(inserted - started, fetched));
-		
+
 		started = 80;
 		dbUrls = dataBase.find(Url.class, Url.SELECT_FROM_URL_BY_NAME, names, values, started, fetched);
 		assertNotNull(dbUrls);
 		assertTrue(dbUrls.size() > 0);
 		assertEquals(dbUrls.size(), inserted - started);
+	}
+
+	@Test
+	public void findCriteria() throws Exception {
+		Url url = getUrls(1).get(0);
+		int hash = (int) System.currentTimeMillis();
+		url.setHash(hash);
+		dataBase.persist(url);
+
+		List<Url> urls = dataBase.findCriteria(Url.class, new String[] { "hash" }, new Object[] { hash }, 0, 10);
+		assertEquals("There should be one url in the database, and one result based ont he hash : ", 1, urls.size());
 	}
 
 	protected List<Url> getUrls(int batchSize) throws Exception {
