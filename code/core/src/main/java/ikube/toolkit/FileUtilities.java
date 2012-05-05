@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.nio.ByteBuffer;
@@ -329,30 +328,6 @@ public final class FileUtilities {
 			LOGGER.error("IO exception writing file contents", e);
 		} finally {
 			close(fileOutputStream);
-		}
-	}
-
-	/**
-	 * Writes the contents of a byte array to a file.
-	 * 
-	 * @param file the file to write to
-	 * @param bytes the byte data to write
-	 */
-	public static void setContents(final String filePath, final String string) {
-		File file = FileUtilities.getFile(filePath, Boolean.FALSE);
-		FileOutputStream fileOutputStream = null;
-		OutputStreamWriter outputStreamWriter = null;
-		try {
-			fileOutputStream = new FileOutputStream(file);
-			outputStreamWriter = new OutputStreamWriter(fileOutputStream, IConstants.ENCODING);
-			outputStreamWriter.write(string);
-		} catch (FileNotFoundException e) {
-			LOGGER.error("File " + file + " not found", e);
-		} catch (IOException e) {
-			LOGGER.error("IO exception writing file contents", e);
-		} finally {
-			close(fileOutputStream);
-			close(outputStreamWriter);
 		}
 	}
 
@@ -683,6 +658,11 @@ public final class FileUtilities {
 	public static void close(Writer writer) {
 		if (writer != null) {
 			try {
+				writer.flush();
+			} catch (Exception e) {
+				LOGGER.error("Exception closing the writer : " + writer, e);
+			}
+			try {
 				writer.close();
 			} catch (Exception e) {
 				LOGGER.error("Exception closing the writer : " + writer, e);
@@ -701,12 +681,17 @@ public final class FileUtilities {
 	}
 
 	public static void close(OutputStream outputStream) {
-		try {
-			if (outputStream != null) {
-				outputStream.close();
+		if (outputStream != null) {
+			try {
+				outputStream.flush();
+			} catch (Exception e) {
+				LOGGER.error("Exception closing stream : " + outputStream, e);
 			}
-		} catch (Exception e) {
-			LOGGER.error("Exception closing stream : " + outputStream, e);
+			try {
+				outputStream.close();
+			} catch (Exception e) {
+				LOGGER.error("Exception closing stream : " + outputStream, e);
+			}
 		}
 	}
 
