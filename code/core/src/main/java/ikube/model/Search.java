@@ -27,17 +27,17 @@ public class Search extends Persistable {
 	public static final String SELECT_FROM_SEARCH_BY_INDEX_NAME_AND_SEARCH_STRINGS = //
 	"select s from Search as s where s.indexName = :indexName and s.searchStrings = :searchStrings";
 
-	@Column()
+	@Column
 	private int count;
-	@Column()
+	@Column
 	private int results;
-	@Column()
+	@Column
 	private String indexName;
-	@Column()
+	@Column
 	private String searchStrings;
-	@Column()
+	@Column
 	private double highScore;
-	@Column()
+	@Column
 	private boolean corrections;
 
 	public int getCount() {

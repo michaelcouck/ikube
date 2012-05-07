@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  * @version 01.00
  */
 @Controller
+@Deprecated
 public class DynamicController {
 
 	private static final String ACTIONS_VIEW = "/admin/actions";

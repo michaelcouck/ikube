@@ -67,4 +67,17 @@
 		<function-class>ikube.web.tag.Toolkit</function-class>
 		<function-signature>java.lang.String subString(java.lang.String, int, int)</function-signature>
 	</function>
+
+	<function>
+		<name>queryString</name>
+		<function-class>ikube.web.tag.Toolkit</function-class>
+		<function-signature>java.lang.String queryString(java.util.Map, java.util.List, java.util.List)</function-signature>
+	</function>
+
+	<function>
+		<name>asList</name>
+		<function-class>ikube.web.tag.Toolkit</function-class>
+		<function-signature>java.util.List asList(java.lang.Object)</function-signature>
+	</function>
+	
 </taglib>

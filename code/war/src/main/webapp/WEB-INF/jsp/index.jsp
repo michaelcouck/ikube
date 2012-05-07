@@ -1,6 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<table class="table-content" width="100%">
+<table class="table-content">
 	<tr>
 		<td class="top-content"><span class="top-content-header">
 		Introduction </span> <span class="date" style="float: right;">

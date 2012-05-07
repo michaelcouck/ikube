@@ -1,3 +1,6 @@
+<%@page import="java.util.Arrays"%>
+<%@page import="ikube.web.tag.Toolkit"%>
+<%@page import="java.util.Properties"%>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Map" %>
 
@@ -18,8 +21,7 @@
 	
 	<tr>
 		<td>
-			<strong>searches</strong>&nbsp;
-			This is the results of the searches that were performed on the indexes in Ikube.
+			<strong>Total: ${total}</strong>&nbsp;
 		</td>
 	</tr>
 	
@@ -60,9 +62,7 @@
 			<c:set var="total" value="${total > 100 ? 100 : total}"></c:set>
 			<c:forEach var="index" begin="0" end="${total}" varStatus="counter"> 
 				<c:if test="${index % block == 0}">
-					<a href="<c:url 
-						value="/admin/database.html" 
-						/>?targetView=${param.targetView}&classType=${param.classType}&sortFields=${param.sortFields}&directionOfSort=${param.directionOfSort}&start=${index}&end=${block}&heading=${param.heading}">${index}</a>
+					<a href="<c:url value="${uri}" />${ikube:queryString(paramValues, ikube:asList('firstResult'), ikube:asList(index))}">${index}</a>
 				</c:if>
 			</c:forEach> 
 		</td>

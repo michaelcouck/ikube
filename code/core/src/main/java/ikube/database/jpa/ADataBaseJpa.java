@@ -50,6 +50,34 @@ public abstract class ADataBaseJpa implements IDataBase {
 	 * {@inheritDoc}
 	 */
 	@Override
+	public <T> Long count(Class<T> klass, Map<String, Object> parameters) {
+		StringBuilder stringBuilder = new StringBuilder("select count(c) from ");
+		stringBuilder.append(klass.getSimpleName());
+		stringBuilder.append(" as c ");
+		if (parameters.size() > 0) {
+			stringBuilder.append(" where ");
+			boolean first = true;
+			for (Map.Entry<String, Object> parameter : parameters.entrySet()) {
+				if (!first) {
+					stringBuilder.append(" and ");
+				}
+				stringBuilder.append("c.");
+				stringBuilder.append(parameter.getKey());
+				stringBuilder.append(" = ");
+				stringBuilder.append(":");
+				stringBuilder.append(parameter.getKey());
+			}
+		}
+		LOGGER.info("Query : " + stringBuilder);
+		Query query = getEntityManager().createQuery(stringBuilder.toString());
+		setParameters(query, parameters);
+		return (Long) query.getSingleResult();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public <T> T remove(final Class<T> klass, Long id) {
 		T toBeRemoved = find(klass, id);
 		if (toBeRemoved != null) {

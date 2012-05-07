@@ -34,7 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> {
 
-	protected transient Logger logger = LoggerFactory.getLogger(Action.class);
+	protected transient Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	/** This class sends mails to the configured recipient from the configured sender. */
 	@Autowired

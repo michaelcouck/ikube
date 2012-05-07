@@ -45,27 +45,26 @@
 				document.write('<!-- ' + err + ' -->');
 			}
 		</script>
-		<center>
-			<table border="0" align="center" cellpadding="0" cellspacing="0">
-				<tr>
-					<td colspan="2">
-						<tiles:insertAttribute name="header" />
-					</td>
-				</tr>
-				<tr id="content">
-					<td width="250">
-						<tiles:insertAttribute name="menu" />
-					</td>
-					<td width="700">
-						<tiles:insertAttribute name="content" />
-					</td>
-				</tr>
-				<tr>
-					<td colspan="2">
-						<tiles:insertAttribute name="footer" />
-					</td>
-				</tr>
-			</table>
-		</center>
+		<table>
+			<tr>
+				<td colspan="3">
+					<tiles:insertAttribute name="header" />
+				</td>
+			</tr>
+			<tr id="content">
+				<td width="250">
+					<tiles:insertAttribute name="menu" />
+				</td>
+				<td>&nbsp;</td>
+				<td width="100%">
+					<tiles:insertAttribute name="content" />
+				</td>
+			</tr>
+			<tr>
+				<td colspan="3">
+					<tiles:insertAttribute name="footer" />
+				</td>
+			</tr>
+		</table>
 	</body>
 </html>

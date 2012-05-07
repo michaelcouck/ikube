@@ -1,115 +1,13 @@
-<class-diagram version="0.9.86" icons="true" always-add-relationships="true" generalizations="true" realizations="true" 
+<class-diagram version="1.0.7" icons="true" always-add-relationships="true" generalizations="true" realizations="true" 
   associations="true" dependencies="true" nesting-relationships="true">  
-  <class corner="BOTTOM_RIGHT" language="java" name="ikube.IndexEngine" project="ikube" 
-    file="/ikube/code/core/src/main/java/ikube/IndexEngine.java" binary="false">    
-    <position x="573" y="25" width="191" height="77"/>    
-    <display autosize="false" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="true" package="true" protected="true" private="true"/>      
-      <operations public="true" package="true" protected="true" private="true"/>    
-    </display>  
-  </class>  
-  <interface corner="BOTTOM_RIGHT" language="java" name="ikube.action.IAction" project="ikube" 
-    file="/ikube/code/core/src/main/java/ikube/action/IAction.java" binary="false">    
-    <position x="676" y="199" width="-1" height="-1"/>    
-    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="true" package="true" protected="true" private="true"/>      
-      <operations public="true" package="true" protected="true" private="true"/>    
-    </display>  
-  </interface>  
-  <class corner="BOTTOM_RIGHT" language="java" name="ikube.action.Action" project="ikube" 
-    file="/ikube/code/core/src/main/java/ikube/action/Action.java" binary="false">    
-    <position x="548" y="322" width="201" height="130"/>    
-    <display autosize="false" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="true" package="true" protected="true" private="true"/>      
-      <operations public="true" package="true" protected="true" private="true"/>    
-    </display>  
-  </class>  
-  <class corner="BOTTOM_RIGHT" language="java" name="ikube.action.Delete" project="ikube" 
-    file="/ikube/code/core/src/main/java/ikube/action/Delete.java" binary="false">    
-    <position x="21" y="9" width="178" height="68"/>    
-    <display autosize="false" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="true" package="true" protected="true" private="true"/>      
-      <operations public="true" package="true" protected="true" private="true"/>    
-    </display>  
-  </class>  
-  <class corner="BOTTOM_RIGHT" language="java" name="ikube.action.Index" project="ikube" 
-    file="/ikube/code/core/src/main/java/ikube/action/Index.java" binary="false">    
-    <position x="20" y="89" width="177" height="83"/>    
-    <display autosize="false" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="true" package="true" protected="true" private="true"/>      
-      <operations public="true" package="true" protected="true" private="true"/>    
-    </display>  
-  </class>  
-  <class corner="BOTTOM_RIGHT" language="java" name="ikube.action.Reset" project="ikube" 
-    file="/ikube/code/core/src/main/java/ikube/action/Reset.java" binary="false">    
-    <position x="108" y="220" width="-1" height="-1"/>    
+  <class id="1" corner="BOTTOM_RIGHT" language="java" name="ikube.IndexEngine" project="ikube-core" 
+    file="/ikube-core/src/main/java/ikube/IndexEngine.java" binary="false">    
+    <position height="-1" width="-1" x="169" y="84"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true"/>      
       <operations public="true" package="true" protected="true" private="true"/>    
     </display>  
   </class>  
-  <class corner="BOTTOM_RIGHT" language="java" name="ikube.action.Open" project="ikube" 
-    file="/ikube/code/core/src/main/java/ikube/action/Open.java" binary="false">    
-    <position x="123" y="314" width="-1" height="-1"/>    
-    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="true" package="true" protected="true" private="true"/>      
-      <operations public="true" package="true" protected="true" private="true"/>    
-    </display>  
-  </class>  
-  <class corner="BOTTOM_RIGHT" language="java" name="ikube.action.Close" project="ikube" 
-    file="/ikube/code/core/src/main/java/ikube/action/Close.java" binary="false">    
-    <position x="18" y="376" width="179" height="74"/>    
-    <display autosize="false" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="true" package="true" protected="true" private="true"/>      
-      <operations public="true" package="true" protected="true" private="true"/>    
-    </display>  
-  </class>  
-  <generalization>    
-    <source project="ikube" name="ikube.action.Reset" file="/ikube/code/core/src/main/java/ikube/action/Reset.java" 
-      binary="false"/>    
-    <target project="ikube" name="ikube.action.Action" file="/ikube/code/core/src/main/java/ikube/action/Action.java" 
-      binary="false"/>  
-  </generalization>  
-  <generalization>    
-    <source project="ikube" name="ikube.action.Delete" file="/ikube/code/core/src/main/java/ikube/action/Delete.java" 
-      binary="false"/>    
-    <target project="ikube" name="ikube.action.Action" file="/ikube/code/core/src/main/java/ikube/action/Action.java" 
-      binary="false"/>  
-  </generalization>  
-  <generalization>    
-    <source project="ikube" name="ikube.action.Index" file="/ikube/code/core/src/main/java/ikube/action/Index.java" 
-      binary="false"/>    
-    <target project="ikube" name="ikube.action.Action" file="/ikube/code/core/src/main/java/ikube/action/Action.java" 
-      binary="false"/>  
-  </generalization>  
-  <realization>    
-    <source project="ikube" name="ikube.action.Action" file="/ikube/code/core/src/main/java/ikube/action/Action.java" 
-      binary="false"/>    
-    <target project="ikube" name="ikube.action.IAction" file="/ikube/code/core/src/main/java/ikube/action/IAction.java" 
-      binary="false"/>  
-  </realization>  
-  <generalization>    
-    <source project="ikube" name="ikube.action.Close" file="/ikube/code/core/src/main/java/ikube/action/Close.java" 
-      binary="false"/>    
-    <target project="ikube" name="ikube.action.Action" file="/ikube/code/core/src/main/java/ikube/action/Action.java" 
-      binary="false"/>  
-  </generalization>  
-  <generalization>    
-    <source project="ikube" name="ikube.action.Open" file="/ikube/code/core/src/main/java/ikube/action/Open.java" 
-      binary="false"/>    
-    <target project="ikube" name="ikube.action.Action" file="/ikube/code/core/src/main/java/ikube/action/Action.java" 
-      binary="false"/>  
-  </generalization>  
-  <association>    
-    <source project="ikube" name="ikube.IndexEngine" file="/ikube/code/core/src/main/java/ikube/IndexEngine.java" 
-      binary="false" navigable="false">      
-      <attribute name="actions"/>      
-      <multiplicity minimum="0" maximum="2147483647"/>    
-    </source>    
-    <target project="ikube" name="ikube.action.IAction" file="/ikube/code/core/src/main/java/ikube/action/IAction.java" 
-      binary="false" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
   <classifier-display autosize="true" package="true" initial-value="false" signature="true" visibility="true">    
     <attributes public="true" package="true" protected="true" private="true"/>    
     <operations public="true" package="true" protected="true" private="true"/>  

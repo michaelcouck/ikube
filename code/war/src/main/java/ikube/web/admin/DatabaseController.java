@@ -2,8 +2,6 @@ package ikube.web.admin;
 
 import ikube.IConstants;
 import ikube.database.IDataBase;
-import ikube.model.Index;
-import ikube.model.Search;
 import ikube.model.Server;
 import ikube.toolkit.DatabaseUtilities;
 
@@ -35,19 +33,48 @@ public class DatabaseController extends BaseController {
 	private IDataBase dataBase;
 
 	/**
-	 * {@inheritDoc}
+	 * TODO Comment this method.
 	 */
-	@RequestMapping(value = "/admin/database.html", method = RequestMethod.GET)
-	public ModelAndView entities(@RequestParam(required = true, value = "targetView") String targetView,
+	@RequestMapping(value = "/admin/database/sorted.html", method = RequestMethod.GET)
+	public ModelAndView selectWithSort(@RequestParam(required = true, value = "targetView") String targetView,
 			@RequestParam(required = true, value = "classType") String classType,
 			@RequestParam(required = true, value = "sortFields") List<String> sortFields,
 			@RequestParam(required = true, value = "directionOfSort") List<Boolean> directionOfSort,
-			@RequestParam(required = true, value = "start") int start, @RequestParam(required = true, value = "end") int end,
-			ModelAndView modelAndView) throws Exception {
+			@RequestParam(required = true, value = "firstResult") int firstResult,
+			@RequestParam(required = true, value = "maxResults") int maxResults, ModelAndView modelAndView) throws Exception {
+		String[] sortFieldsArray = sortFields.toArray(new String[sortFields.size()]);
+		Boolean[] directionOfSortArray = directionOfSort.toArray(new Boolean[directionOfSort.size()]);
+		List<?> list = dataBase.find(Class.forName(classType), sortFieldsArray, directionOfSortArray, firstResult, maxResults);
+		setProperties(classType, list, new String[0], new Object[0], targetView, modelAndView);
+		return modelAndView;
+	}
+
+	/**
+	 * TODO Comment this method.
+	 */
+	@RequestMapping(value = "/admin/database/filtered.html", method = RequestMethod.GET)
+	public ModelAndView selectWithFiltering(@RequestParam(required = true, value = "targetView") String targetView,
+			@RequestParam(required = true, value = "classType") String classType,
+			@RequestParam(required = true, value = "fieldsToFilterOn") List<String> fieldsToFilterOn,
+			@RequestParam(required = true, value = "valuesToFilterOn") List<Object> valuesToFilterOn,
+			@RequestParam(required = true, value = "firstResult") long firstResult,
+			@RequestParam(required = true, value = "maxResults") long maxResults, ModelAndView modelAndView) throws Exception {
+		String[] fieldsToFilterOnArray = fieldsToFilterOn.toArray(new String[fieldsToFilterOn.size()]);
+		Object[] valuesToFilterOnArray = valuesToFilterOn.toArray(new Object[valuesToFilterOn.size()]);
+		List<?> list = dataBase.findCriteria(Class.forName(classType), fieldsToFilterOnArray, valuesToFilterOnArray, (int) firstResult,
+				(int) maxResults);
+		setProperties(classType, list, fieldsToFilterOnArray, valuesToFilterOnArray, targetView, modelAndView);
+		return modelAndView;
+	}
+
+	private void setProperties(final String classType, final List<?> list, final String[] fieldsToFilterOnArray,
+			final Object[] valuesToFilterOnArray, final String targetView, final ModelAndView modelAndView) throws Exception {
 		Class<?> klass = Class.forName(classType);
-		Long total = dataBase.count(Search.class);
-		List<?> list = dataBase.find(klass, sortFields.toArray(new String[sortFields.size()]),
-				directionOfSort.toArray(new Boolean[directionOfSort.size()]), start, end);
+		Map<String, Object> parameters = new HashMap<String, Object>();
+		for (int i = 0; i < fieldsToFilterOnArray.length; i++) {
+			parameters.put(fieldsToFilterOnArray[i], valuesToFilterOnArray[i]);
+		}
+		Long total = dataBase.count(klass, parameters);
 		List<String> fieldNames = DatabaseUtilities.getFieldNames(klass, new ArrayList<String>());
 		Server server = clusterManager.getServer();
 
@@ -55,31 +82,7 @@ public class DatabaseController extends BaseController {
 		modelAndView.addObject(IConstants.ENTITIES, list);
 		modelAndView.addObject(IConstants.FIELD_NAMES, fieldNames);
 		modelAndView.addObject(IConstants.SERVER, server);
-
 		modelAndView.setViewName(targetView);
-		return modelAndView;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@RequestMapping(value = "/admin/database.html", method = RequestMethod.GET)
-	public ModelAndView select(@RequestParam(required = true, value = "targetView") String targetView,
-			@RequestParam(required = true, value = "class") final String klass,
-			@RequestParam(required = true, value = "fieldsToFilterOn") final List<String> fieldsToFilterOn,
-			@RequestParam(required = true, value = "valuesToFilterOn") final List<Object> valuesToFilterOn,
-			@RequestParam(required = true, value = "firstResult") final int firstResult,
-			@RequestParam(required = true, value = "maxResults") final int maxResults, final ModelAndView modelAndView) throws Exception {
-		Map<String, Object> parameters = new HashMap<String, Object>();
-		parameters.put(IConstants.ACTION_NAME, Index.class.getSimpleName());
-		Long total = dataBase.count(Class.forName(klass));
-		List<?> actions = dataBase.findCriteria(Class.forName(klass), fieldsToFilterOn.toArray(new String[fieldsToFilterOn.size()]),
-				valuesToFilterOn.toArray(new Object[valuesToFilterOn.size()]), firstResult, maxResults);
-		modelAndView.addObject(IConstants.TOTAL, total);
-		modelAndView.addObject(IConstants.ACTIONS, actions);
-
-		modelAndView.setViewName(targetView);
-		return modelAndView;
 	}
 
 }

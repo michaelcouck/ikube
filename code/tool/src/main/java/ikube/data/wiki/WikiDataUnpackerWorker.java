@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.io.FilenameUtils;
@@ -26,11 +28,11 @@ import org.slf4j.LoggerFactory;
  */
 public class WikiDataUnpackerWorker implements Runnable {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(WikiDataUnpackerWorker.class);
-
 	/** This is the start and end tags for the xml data, one per page essentially. */
-	private static final String PAGE_START = "<revision>";
-	private static final String PAGE_FINISH = "</revision>";
+	public static final String PAGE_START = "<revision>";
+	public static final String PAGE_FINISH = "</revision>";
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(WikiDataUnpackerWorker.class);
 
 	/** The disk where this file is to be unpacked. */
 	private File disk;
@@ -60,9 +62,13 @@ public class WikiDataUnpackerWorker implements Runnable {
 		LOGGER.info("Files : " + bZip2Files);
 		for (File bZip2File : bZip2Files) {
 			File baseDirectory = new File(disk, FilenameUtils.removeExtension(bZip2File.getName()));
+			Set<String> fileHashes = new TreeSet<String>();
 			if (baseDirectory.exists() && baseDirectory.isDirectory()) {
-				LOGGER.info("Not doing file : " + baseDirectory);
-				continue;
+				// Get all the files in the directory and add them to the set of names
+				List<File> files = FileUtilities.findFilesRecursively(baseDirectory, new ArrayList<File>(), "html");
+				for (File file : files) {
+					fileHashes.add(file.getName());
+				}
 			}
 			LOGGER.info("Doing file : " + bZip2File + ", on disk : " + disk);
 			FileInputStream fileInputStream = null;
@@ -74,12 +80,12 @@ public class WikiDataUnpackerWorker implements Runnable {
 				File outputDirectory = getNextDirectory(bZip2File, System.currentTimeMillis());
 				fileInputStream = new FileInputStream(bZip2File);
 				bZip2CompressorInputStream = new BZip2CompressorInputStream(fileInputStream);
-				byte[] bytes = new byte[1024 * 1024];
+				byte[] bytes = new byte[1024 * 1024 * 8];
 				StringBuilder stringBuilder = new StringBuilder();
 				while ((read = bZip2CompressorInputStream.read(bytes)) > -1) {
 					String string = new String(bytes, 0, read, Charset.forName(IConstants.ENCODING));
 					stringBuilder.append(string);
-					count += unpack(outputDirectory, stringBuilder);
+					count += unpack(outputDirectory, stringBuilder, fileHashes);
 					if (count > 10000) {
 						outputDirectory = getNextDirectory(bZip2File, System.currentTimeMillis());
 						LOGGER.info("Count : " + count + ", output directory : " + outputDirectory + ", total : " + (totalCount += count));
@@ -96,6 +102,27 @@ public class WikiDataUnpackerWorker implements Runnable {
 	}
 
 	/**
+	 * This method will get all the unpacked files in the directory and put the names in a set.
+	 * 
+	 * @param bZip2File the file that will be unpacked
+	 * @return the set of file names that are already unpacked
+	 */
+	protected Set<String> getFileHashes(final File bZip2File) {
+		File baseDirectory = new File(disk, FilenameUtils.removeExtension(bZip2File.getName()));
+		Set<String> fileHashes = new TreeSet<String>();
+		if (baseDirectory.exists() && baseDirectory.isDirectory()) {
+			// Get all the files in the directory and add them to the set of names
+			List<File> files = FileUtilities.findFilesRecursively(baseDirectory, new ArrayList<File>(), "html");
+			for (File file : files) {
+				if (!fileHashes.add(FilenameUtils.getBaseName(file.getName()))) {
+					LOGGER.warn("Already contained : " + file.getName());
+				}
+			}
+		}
+		return fileHashes;
+	}
+
+	/**
 	 * This method will take the input data(the string builder) and parse it, breaking the xml into 'pages' between the start and end tags,
 	 * then write this 'segment' to individual files.
 	 * 
@@ -104,7 +131,7 @@ public class WikiDataUnpackerWorker implements Runnable {
 	 * @return the number of files written to the disk
 	 * @throws Exception
 	 */
-	private int unpack(final File outputDirectory, final StringBuilder stringBuilder) throws Exception {
+	protected int unpack(final File outputDirectory, final StringBuilder stringBuilder, final Set<String> fileHashes) throws Exception {
 		int count = 0;
 		while (true) {
 			int startOffset = stringBuilder.indexOf(PAGE_START);
@@ -119,6 +146,10 @@ public class WikiDataUnpackerWorker implements Runnable {
 			String segment = stringBuilder.substring(startOffset, endOffset);
 			stringBuilder.delete(startOffset, endOffset);
 			String hash = Long.toString(HashUtilities.hash(segment));
+			// Check if this file is written already
+			if (fileHashes.contains(hash)) {
+				continue;
+			}
 			String filePath = outputDirectory.getAbsolutePath() + File.separator + hash + ".html";
 			FileUtilities.setContents(filePath, segment.getBytes(Charset.forName(IConstants.ENCODING)));
 			count++;

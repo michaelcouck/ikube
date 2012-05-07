@@ -6,8 +6,6 @@ import ikube.web.Integration;
 import ikube.web.service.Searcher;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.GetMethod;
@@ -148,8 +146,6 @@ public class SearcherIntegration extends Integration {
 		LOGGER.info("Result : " + actual);
 		assertTrue("We should get something : " + result, actual.length() > 0);
 	}
-	
-	
 
 	@Test
 	public void adHoc() throws Exception {
@@ -169,15 +165,6 @@ public class SearcherIntegration extends Integration {
 		String actual = getMethod.getResponseBodyAsString();
 		LOGGER.info("Result : " + actual);
 		assertTrue("We should get something : " + result, actual.length() > 0);
-	}
-
-	private NameValuePair[] getNameValuePairs(String[] names, String[] values) {
-		List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
-		for (int i = 0; i < names.length && i < values.length; i++) {
-			NameValuePair nameValuePair = new NameValuePair(names[i], values[i]);
-			nameValuePairs.add(nameValuePair);
-		}
-		return nameValuePairs.toArray(new NameValuePair[nameValuePairs.size()]);
 	}
 
 }

@@ -21,6 +21,15 @@ public interface IDataBase {
 	 * @return the number of rows in the database
 	 */
 	<T> Long count(Class<T> klass);
+	
+	/**
+	 * This method counts the number of entities in the database reduced by the parameters.
+	 * 
+	 * @param klass the class of entities to count
+	 * @param parameters the parameters to filter on
+	 * @return the number of rows in the database
+	 */
+	<T> Long count(Class<T> klass, Map<String, Object> parameters);
 
 	/**
 	 * This method removed the specified entity from the database.

@@ -68,19 +68,19 @@
 <c:set var="targetSearchUrl" value="/admin/geosearch.html" />
 <form name="geoSearchForm" id="geoSearchForm" action="<c:url value="${targetSearchUrl}"/>">
 <input name="targetSearchUrl" type="hidden" value="${targetSearchUrl}">
-<table width="100%">
+<table>
 	<tr>
-		<th>Geo search ${indexName}</th>
+		<th colspan="2">Geo search ${indexName}</th>
 	</tr>
 	<tr>
 		<td>
-			<table>
+			<table style="padding-right: 20px;">
 				<tr>
-					<td>Index name:</td>
+					<td nowrap="nowrap">Index name:</td>
 					<td><input id="search-text" type="text" name="indexName" value="<c:out value='${indexName}' />" /></td>
 				</tr>
 				<tr>
-					<td>Search string:</td>
+					<td nowrap="nowrap">Search string:</td>
 					<td><input id="search-text" type="text" name="searchStrings" value="<c:out value='${searchStrings}' />" /></td>
 				</tr>
 				<tr>
@@ -117,9 +117,8 @@
 				</tr>
 			</table>
 		</td>
-		<td>
-			
-			<div id="map_canvas" style="width:300px; height:300px; border: solid black 1px;"></div>
+		<td width="100%">
+			<div id="map_canvas" style="width:450px; height:450px; border: solid black 1px;"></div>
 		</td>
 	</tr>
 </table>
@@ -135,11 +134,11 @@
 	}
 </script>
 	
-<table width="100%">
+<table>
 	<jsp:include page="/WEB-INF/jsp/include.jsp" flush="true" />
 </table>
 
-<table width="100%">
+<table>
 	<tr>
 		<td class="td-content">
 			<strong>geo search</strong>&nbsp;

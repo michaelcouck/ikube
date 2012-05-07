@@ -97,13 +97,13 @@ hr { display: none; }
 
 /* Header */
 #header-wrapper {
-	width: 920px;
+	width: 100%;
 	height: 173px;
 	margin: 0px auto;
 	padding: 0px;
 }
 #header {
-	width: 920px;
+	width: 100%;
 	height: 80px;
 	margin: 0px auto;
 	text-decoration : none;
@@ -260,14 +260,14 @@ hr { display: none; }
 
 /* Page */
 #page {
-	width: 840px;
+	width: 100%;
 	margin: 0px auto;
 	padding: 40px 40px 0px 40px;
 }
 
 /* Content */
 #content {
-	width: 750px;
+	width: 100%;
 }
 #content .top-content {
 	height: 50px;
@@ -443,7 +443,7 @@ hr { display: none; }
 
 /* Footer */
 #footer {
-	width: 920px;
+	width: 100%;
 	height: 100px;
 	margin: 0px auto;
 	padding: 0px;

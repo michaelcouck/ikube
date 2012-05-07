@@ -2,6 +2,7 @@ package ikube.model;
 
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
@@ -39,24 +40,33 @@ public class Action extends Persistable {
 			+ "order by a.startTime desc";
 
 	/** The name of the action that is executing. */
+	@Column
 	private String actionName;
 	/** The currently executing indexable. */
+	@Column
 	private String indexableName;
 	/** The actionName of the currently executing index. */
+	@Column
 	private String indexName;
 	/** The time the action was started. */
+	@Column
 	@Temporal(value = TemporalType.DATE)
 	private Date startTime;
 	/** The time the action ended. */
+	@Column
 	@Temporal(value = TemporalType.DATE)
 	private Date endTime;
 	/** The time it took for this action to finish. */
+	@Column
 	private long duration;
 	/** The predicate for the rules. */
+	@Column
 	private String ruleExpression;
 	/** The result from the rules and the predicate. */
+	@Column
 	private boolean result;
 	/** The number of documents that were added during the execution of the action. */
+	@Column
 	private int invocations;
 
 	public String getActionName() {

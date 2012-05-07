@@ -4,7 +4,10 @@ import ikube.toolkit.DatabaseUtilities;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.util.ReflectionUtils;
@@ -32,11 +35,11 @@ public class Toolkit {
 	}
 
 	/**
+	 * This method removes the target collection from the source.
 	 * 
-	 * 
-	 * @param one
-	 * @param two
-	 * @return
+	 * @param one the source collection to have purged by the target
+	 * @param two the target collection who's entries are to be removesd from the source
+	 * @return the purged collection sans the elements in the target collection
 	 */
 	public static Collection<?> remove(Collection<?> one, Collection<?> two) {
 		if (one != null && two != null) {
@@ -103,10 +106,49 @@ public class Toolkit {
 		if (string.length() <= startPosition) {
 			return dots;
 		}
-		if (string.length() <= startPosition + maxLength) {
-			return string.substring(startPosition, string.length()) + dots;
+		int endPosition = startPosition + maxLength;
+		if (endPosition <= string.length()) {
+			return string.substring(startPosition, endPosition) + dots;
 		}
-		return string.substring(startPosition, startPosition + maxLength) + dots;
+		return string.substring(startPosition, string.length());
+	}
+
+	/**
+	 * This method will build a query string using the parameters in the map in the signature. This avoids scripting in the Jsp or very long
+	 * urls built parameter by parameter.
+	 * 
+	 * @param parameterMap the map of parameters to use in the query string
+	 * @param parameterNamesReplacements the names of the parameters to be replaced in the original map
+	 * @param parameterValuesReplacements the values of the parameters to be replaced in the original map
+	 * @return the string query for he parameters and replacements, would be something like
+	 *         '?paramOne=paramValueOne&paramTwo=paramValueTwo&...'
+	 */
+	public static String queryString(final Map<Object, Object> parameterMap, final List<Object> parameterNamesReplacements,
+			final List<Object> parameterValuesReplacements) {
+		StringBuilder stringBuilder = new StringBuilder("?");
+		for (Map.Entry<Object, Object> entry : parameterMap.entrySet()) {
+			Object parameterName = entry.getKey();
+			String[] parameterValues = (String[]) entry.getValue();
+			int indexOfParameterName = parameterNamesReplacements.indexOf(parameterName);
+			if (indexOfParameterName > -1) {
+				parameterValues = new String[] { parameterValuesReplacements.get(indexOfParameterName).toString() };
+			}
+			if (parameterValues == null || parameterValues.length == 0) {
+				continue;
+			}
+			stringBuilder.append(parameterName);
+			stringBuilder.append("=");
+			stringBuilder.append(parameterValues[0]);
+			stringBuilder.append("&");
+		}
+		return stringBuilder.toString();
+	}
+
+	public static List<Object> asList(Object object) {
+		if (object.getClass().isArray()) {
+			return Arrays.asList((Object[]) object);
+		}
+		return Arrays.asList(object);
 	}
 
 }

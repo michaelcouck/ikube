@@ -58,14 +58,14 @@ public class IndexableFilesystemWikiHandler extends IndexableHandler<IndexableFi
 	}
 
 	/**
-	 * This method will take a Bzip2 file, read it, unpack it gradually. Parse the contents, extracting the revision data for the Wiki which
+	 * This method will take a Bzip2 file, read it, decompress it gradually. Parse the contents, extracting the revision data for the Wiki which
 	 * is in <revision> tags. Each revision will then be added to the index as a unique document.
 	 * 
 	 * @param indexContext the index context for the index
-	 * @param indexableFileSystem the fiel system object, i.e. the path to the bzip file
+	 * @param indexableFileSystem the file system object, i.e. the path to the bzip file
 	 * @param file the Bzip2 file with the Wiki data in it
 	 */
-	private void handleFile(final IndexContext<?> indexContext, final IndexableFileSystem indexableFileSystem, final File file) {
+	protected void handleFile(final IndexContext<?> indexContext, final IndexableFileSystem indexableFileSystem, final File file) {
 		// Get the wiki history file
 		FileInputStream fileInputStream = null;
 		BZip2CompressorInputStream bZip2CompressorInputStream = null;

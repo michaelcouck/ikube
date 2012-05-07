@@ -41,16 +41,18 @@ $('#searchStrings').autocomplete({
 				<li><a href="<c:url value="/index.html"/>">Home</a></li>
 				<li><a href="<c:url value="/admin/geosearch.html" />">Geo search</a></li>
 				<li><a href="<c:url value="/admin/servers.html" />">Monitoring</a></li>
-				<li><a href="<c:url value="/admin/database.html" />?targetView=/admin/database&classType=ikube.model.Search&sortFields=id&directionOfSort=false&start=0&end=10&heading=Searches">Searches</a></li>
-				<li><a href="<c:url value="/admin/actions.html?start=0&end=10" />">Actions</a></li>
-				<li><a href="<c:url value="/documentation/index.html" />">Documentation</a></li>
+				<li><a href="<c:url value="/admin/database/sorted.html" />?uri=/admin/database/sorted.html&targetView=/admin/database&classType=ikube.model.Search&sortFields=id&directionOfSort=false&firstResult=0&maxResults=10&heading=Searches">Searches</a></li>
+				<li><a href="<c:url value="/admin/database/filtered.html" />?uri=/admin/database/filtered.html&targetView=/admin/database&classType=ikube.model.Action&fieldsToFilterOn=actionName&valuesToFilterOn=Index&firstResult=0&maxResults=10&heading=Actions">Actions</a></li>
+				<%-- <li><a href="<c:url value="/admin/actions.html?start=0&end=10" />">Actions</a></li> --%>
+				<%-- <li><a href="<c:url value="/documentation/index.html" />">Documentation</a></li> --%>
 				<%-- <li><a href="<c:url value="/admin/properties.html" />?targetView=/admin/properties">Properties</a></li> --%>
 			</ul>
 		</li>
 		
 		<li>
-			<h2>Configuration</h2>
+			<h2>Documentation</h2>
 			<ul>
+				<li><a href="<c:url value="/documentation/index.html" />">Index</a></li>
 				<li><a href="<c:url value="/documentation/configuration/context.html"/>">Context</a></li>
 				<li><a href="<c:url value="/documentation/configuration/database.html" />">Database</a></li>
 				<li><a href="<c:url value="/documentation/configuration/email.html" />">Email</a></li>

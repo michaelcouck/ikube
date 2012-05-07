@@ -225,6 +225,21 @@ public class ADataBaseJpaIntegration extends AbstractIntegration {
 		assertEquals("There should be one url in the database, and one result based ont he hash : ", 1, urls.size());
 	}
 
+	@Test
+	public void count() throws Exception {
+		int inserted = 10;
+		List<Url> urls = getUrls(inserted);
+		dataBase.persistBatch(urls);
+		
+		Long total = dataBase.count(Url.class);
+		assertEquals(inserted, total.intValue());
+		
+		Map<String, Object> parameters = new HashMap<String, Object>();
+		parameters.put("urlId", 5l);
+		total = dataBase.count(Url.class, parameters);
+		assertEquals(1, total.intValue());
+	}
+
 	protected List<Url> getUrls(int batchSize) throws Exception {
 		List<Url> urls = new ArrayList<Url>();
 		long hash = System.currentTimeMillis();
@@ -235,7 +250,7 @@ public class ADataBaseJpaIntegration extends AbstractIntegration {
 			url.setRawContent(new byte[0]);
 			url.setTitle("title");
 			url.setUrl("url");
-			url.setUrlId(hash++);
+			url.setUrlId(i);
 			url.setHash(hash++);
 			url.setIndexed(Boolean.FALSE);
 			url.setContentType("content type");

@@ -14,4 +14,13 @@
 			space on the machine where the index is being written.
 		</td>
 	</tr>
+	<tr>
+		<td class="td-content">
+			<strong>stopping and starting</strong>&nbsp;
+			Indexing can be stopped using the stop button on the monitoring page. This will terminate all threads, and indeed the pool of threads, immediately 
+			teminating all indexing jobs abruptly. This can be usefull fo various reasons, like for example the index disk running out of space, incorrect index definitions 
+			and so on.<br>
+			To start the thread pool again click on the start button. This will set in motion all the events and the threads to start indexing processes and so on.
+		</td>
+	</tr>
 </table>
