@@ -25,6 +25,7 @@ public class EnrichmentTest extends ATest {
 
 	@Cascading
 	private Document	document;
+	// @Cascading
 	private Coordinate	coordinate;
 	private IEnrichment	enrichment;
 	private double		minKm	= 0;

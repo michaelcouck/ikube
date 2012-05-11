@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:property="http://www.springframework.org/schema/p"
+	xmlns:util="http://www.springframework.org/schema/util"
+
+	xsi:schemaLocation="
+			http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+            http://www.springframework.org/schema/context
+            http://www.springframework.org/schema/context/spring-context-3.0.xsd
+            http://www.springframework.org/schema/util
+            http://www.springframework.org/schema/util/spring-util.xsd">
+
+	<bean
+		id="wikiHistoryArabic"
+		class="ikube.model.IndexContext"
+		property:name="wikiHistoryArabic"
+		property:maxAge="600000"
+		property:compoundFile="false"
+		property:bufferedDocs="${buffered.docs}"
+		property:bufferSize="${buffer.size}"
+		property:batchSize="${jdbc.batch.size}"
+		property:internetBatchSize="${internet.batch.size}"
+		property:mergeFactor="${merge.factor}"
+		property:maxFieldLength="${max.field.length}"
+		property:maxReadLength="${max.read.length}"
+		property:throttle="0"
+		property:indexDirectoryPath="/media/path-to-language-wiki-data/arabic/index"
+		property:indexDirectoryPathBackup="/media/path-to-language-wiki-data/arabic/index"
+		property:children-ref="wikiHistoryIndexablesArabic" />
+	<util:list id="wikiHistoryIndexablesArabic">
+		<ref local="wikiHistoryDataArabic" />
+	</util:list>
+	<bean
+		id="wikiHistoryDataArabic"
+		class="ikube.model.IndexableFileSystem"
+		property:name="wikiHistoryDataArabic"
+		property:path="/media/path-to-language-wiki-data/arabic"
+		property:pathFieldName="path"
+		property:nameFieldName="name"
+		property:lengthFieldName="length"
+		property:contentFieldName="contents"
+		property:lastModifiedFieldName="lastmodified"
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true"
+		property:unpackZips="false"
+		property:excludedPattern="${files.excluded.pattern}"
+		property:batchSize="${file.batch.size}"
+		property:maxReadLength="${file.max.read.length}" />
+	
+	<bean
+		id="wikiHistoryDutch"
+		class="ikube.model.IndexContext"
+		property:name="wikiHistoryDutch"
+		property:maxAge="600000"
+		property:compoundFile="false"
+		property:bufferedDocs="${buffered.docs}"
+		property:bufferSize="${buffer.size}"
+		property:batchSize="${jdbc.batch.size}"
+		property:internetBatchSize="${internet.batch.size}"
+		property:mergeFactor="${merge.factor}"
+		property:maxFieldLength="${max.field.length}"
+		property:maxReadLength="${max.read.length}"
+		property:throttle="0"
+		property:indexDirectoryPath="/media/path-to-language-wiki-data/dutch/index"
+		property:indexDirectoryPathBackup="/media/path-to-language-wiki-data/dutch/index"
+		property:children-ref="wikiHistoryIndexablesDutch" />
+	<util:list id="wikiHistoryIndexablesDutch">
+		<ref local="wikiHistoryDataDutch" />
+	</util:list>
+	<bean
+		id="wikiHistoryDataDutch"
+		class="ikube.model.IndexableFileSystem"
+		property:name="wikiHistoryDataDutch"
+		property:path="/media/path-to-language-wiki-data/dutch"
+		property:pathFieldName="path"
+		property:nameFieldName="name"
+		property:lengthFieldName="length"
+		property:contentFieldName="contents"
+		property:lastModifiedFieldName="lastmodified"
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true"
+		property:unpackZips="false"
+		property:excludedPattern="${files.excluded.pattern}"
+		property:batchSize="${file.batch.size}"
+		property:maxReadLength="${file.max.read.length}" />
+
+	<bean
+		id="wikiHistoryFrench"
+		class="ikube.model.IndexContext"
+		property:name="wikiHistoryFrench"
+		property:maxAge="600000"
+		property:compoundFile="false"
+		property:bufferedDocs="${buffered.docs}"
+		property:bufferSize="${buffer.size}"
+		property:batchSize="${jdbc.batch.size}"
+		property:internetBatchSize="${internet.batch.size}"
+		property:mergeFactor="${merge.factor}"
+		property:maxFieldLength="${max.field.length}"
+		property:maxReadLength="${max.read.length}"
+		property:throttle="0"
+		property:indexDirectoryPath="/media/path-to-language-wiki-data/french/index"
+		property:indexDirectoryPathBackup="/media/path-to-language-wiki-data/french/index"
+		property:children-ref="wikiHistoryIndexablesFrench" />
+	<util:list id="wikiHistoryIndexablesFrench">
+		<ref local="wikiHistoryDataFrench" />
+	</util:list>
+	<bean
+		id="wikiHistoryDataFrench"
+		class="ikube.model.IndexableFileSystem"
+		property:name="wikiHistoryDataFrench"
+		property:path="/media/path-to-language-wiki-data/french"
+		property:pathFieldName="path"
+		property:nameFieldName="name"
+		property:lengthFieldName="length"
+		property:contentFieldName="contents"
+		property:lastModifiedFieldName="lastmodified"
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true"
+		property:unpackZips="false"
+		property:excludedPattern="${files.excluded.pattern}"
+		property:batchSize="${file.batch.size}"
+		property:maxReadLength="${file.max.read.length}" />
+
+	<bean
+		id="wikiHistoryGerman"
+		class="ikube.model.IndexContext"
+		property:name="wikiHistoryGerman"
+		property:maxAge="600000"
+		property:compoundFile="false"
+		property:bufferedDocs="${buffered.docs}"
+		property:bufferSize="${buffer.size}"
+		property:batchSize="${jdbc.batch.size}"
+		property:internetBatchSize="${internet.batch.size}"
+		property:mergeFactor="${merge.factor}"
+		property:maxFieldLength="${max.field.length}"
+		property:maxReadLength="${max.read.length}"
+		property:throttle="0"
+		property:indexDirectoryPath="/media/path-to-language-wiki-data/german/index"
+		property:indexDirectoryPathBackup="/media/path-to-language-wiki-data/german/index"
+		property:children-ref="wikiHistoryIndexablesGerman" />
+	<util:list id="wikiHistoryIndexablesGerman">
+		<ref local="wikiHistoryDataGerman" />
+	</util:list>
+	<bean
+		id="wikiHistoryDataGerman"
+		class="ikube.model.IndexableFileSystem"
+		property:name="wikiHistoryDataGerman"
+		property:path="/media/path-to-language-wiki-data/german"
+		property:pathFieldName="path"
+		property:nameFieldName="name"
+		property:lengthFieldName="length"
+		property:contentFieldName="contents"
+		property:lastModifiedFieldName="lastmodified"
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true"
+		property:unpackZips="false"
+		property:excludedPattern="${files.excluded.pattern}"
+		property:batchSize="${file.batch.size}"
+		property:maxReadLength="${file.max.read.length}" />
+
+	<bean
+		id="wikiHistoryPolish"
+		class="ikube.model.IndexContext"
+		property:name="wikiHistoryPolish"
+		property:maxAge="600000"
+		property:compoundFile="false"
+		property:bufferedDocs="${buffered.docs}"
+		property:bufferSize="${buffer.size}"
+		property:batchSize="${jdbc.batch.size}"
+		property:internetBatchSize="${internet.batch.size}"
+		property:mergeFactor="${merge.factor}"
+		property:maxFieldLength="${max.field.length}"
+		property:maxReadLength="${max.read.length}"
+		property:throttle="0"
+		property:indexDirectoryPath="/media/path-to-language-wiki-data/polish/index"
+		property:indexDirectoryPathBackup="/media/path-to-language-wiki-data/polish/index"
+		property:children-ref="wikiHistoryIndexablesPolish" />
+	<util:list id="wikiHistoryIndexablesPolish">
+		<ref local="wikiHistoryDataPolish" />
+	</util:list>
+	<bean
+		id="wikiHistoryDataPolish"
+		class="ikube.model.IndexableFileSystem"
+		property:name="wikiHistoryDataPolish"
+		property:path="/media/path-to-language-wiki-data/polish"
+		property:pathFieldName="path"
+		property:nameFieldName="name"
+		property:lengthFieldName="length"
+		property:contentFieldName="contents"
+		property:lastModifiedFieldName="lastmodified"
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true"
+		property:unpackZips="false"
+		property:excludedPattern="${files.excluded.pattern}"
+		property:batchSize="${file.batch.size}"
+		property:maxReadLength="${file.max.read.length}" />
+		
+	<bean
+		id="wikiHistoryPortuguese"
+		class="ikube.model.IndexContext"
+		property:name="wikiHistoryPortuguese"
+		property:maxAge="600000"
+		property:compoundFile="false"
+		property:bufferedDocs="${buffered.docs}"
+		property:bufferSize="${buffer.size}"
+		property:batchSize="${jdbc.batch.size}"
+		property:internetBatchSize="${internet.batch.size}"
+		property:mergeFactor="${merge.factor}"
+		property:maxFieldLength="${max.field.length}"
+		property:maxReadLength="${max.read.length}"
+		property:throttle="0"
+		property:indexDirectoryPath="/media/path-to-language-wiki-data/portuguese/index"
+		property:indexDirectoryPathBackup="/media/path-to-language-wiki-data/portuguese/index"
+		property:children-ref="wikiHistoryIndexablesPortuguese" />
+	<util:list id="wikiHistoryIndexablesPortuguese">
+		<ref local="wikiHistoryDataPortuguese" />
+	</util:list>
+	<bean
+		id="wikiHistoryDataPortuguese"
+		class="ikube.model.IndexableFileSystem"
+		property:name="wikiHistoryDataPortuguese"
+		property:path="/media/path-to-language-wiki-data/portuguese"
+		property:pathFieldName="path"
+		property:nameFieldName="name"
+		property:lengthFieldName="length"
+		property:contentFieldName="contents"
+		property:lastModifiedFieldName="lastmodified"
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true"
+		property:unpackZips="false"
+		property:excludedPattern="${files.excluded.pattern}"
+		property:batchSize="${file.batch.size}"
+		property:maxReadLength="${file.max.read.length}" />
+		
+	<bean
+		id="wikiHistoryRussian"
+		class="ikube.model.IndexContext"
+		property:name="wikiHistoryRussian"
+		property:maxAge="600000"
+		property:compoundFile="false"
+		property:bufferedDocs="${buffered.docs}"
+		property:bufferSize="${buffer.size}"
+		property:batchSize="${jdbc.batch.size}"
+		property:internetBatchSize="${internet.batch.size}"
+		property:mergeFactor="${merge.factor}"
+		property:maxFieldLength="${max.field.length}"
+		property:maxReadLength="${max.read.length}"
+		property:throttle="0"
+		property:indexDirectoryPath="/media/path-to-language-wiki-data/russian/index"
+		property:indexDirectoryPathBackup="/media/path-to-language-wiki-data/russian/index"
+		property:children-ref="wikiHistoryIndexablesRussian" />
+	<util:list id="wikiHistoryIndexablesRussian">
+		<ref local="wikiHistoryDataRussian" />
+	</util:list>
+	<bean
+		id="wikiHistoryDataRussian"
+		class="ikube.model.IndexableFileSystem"
+		property:name="wikiHistoryDataRussian"
+		property:path="/media/path-to-language-wiki-data/russian"
+		property:pathFieldName="path"
+		property:nameFieldName="name"
+		property:lengthFieldName="length"
+		property:contentFieldName="contents"
+		property:lastModifiedFieldName="lastmodified"
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true"
+		property:unpackZips="false"
+		property:excludedPattern="${files.excluded.pattern}"
+		property:batchSize="${file.batch.size}"
+		property:maxReadLength="${file.max.read.length}" />
+		
+	<bean
+		id="wikiHistorySpanish"
+		class="ikube.model.IndexContext"
+		property:name="wikiHistorySpanish"
+		property:maxAge="600000"
+		property:compoundFile="false"
+		property:bufferedDocs="${buffered.docs}"
+		property:bufferSize="${buffer.size}"
+		property:batchSize="${jdbc.batch.size}"
+		property:internetBatchSize="${internet.batch.size}"
+		property:mergeFactor="${merge.factor}"
+		property:maxFieldLength="${max.field.length}"
+		property:maxReadLength="${max.read.length}"
+		property:throttle="0"
+		property:indexDirectoryPath="/media/path-to-language-wiki-data/spanish/index"
+		property:indexDirectoryPathBackup="/media/path-to-language-wiki-data/spanish/index"
+		property:children-ref="wikiHistoryIndexablesSpanish" />
+	<util:list id="wikiHistoryIndexablesSpanish">
+		<ref local="wikiHistoryDataSpanish" />
+	</util:list>
+	<bean
+		id="wikiHistoryDataSpanish"
+		class="ikube.model.IndexableFileSystem"
+		property:name="wikiHistoryDataSpanish"
+		property:path="/media/path-to-language-wiki-data/spanish"
+		property:pathFieldName="path"
+		property:nameFieldName="name"
+		property:lengthFieldName="length"
+		property:contentFieldName="contents"
+		property:lastModifiedFieldName="lastmodified"
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true"
+		property:unpackZips="false"
+		property:excludedPattern="${files.excluded.pattern}"
+		property:batchSize="${file.batch.size}"
+		property:maxReadLength="${file.max.read.length}" />
+
+</beans>

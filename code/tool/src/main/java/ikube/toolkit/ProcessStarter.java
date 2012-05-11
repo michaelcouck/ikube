@@ -3,7 +3,9 @@ package ikube.toolkit;
 import ikube.geospatial.GeonamePopulator;
 
 import java.io.File;
+import java.net.URL;
 
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,6 +14,20 @@ public class ProcessStarter {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProcessStarter.class);
 
 	public static void main(String[] args) throws Exception {
+		new ProcessStarter().goToUrl();
+	}
+
+	@Test
+	public void goToUrl() throws Exception {
+		System.setProperty("http.proxyHost", "proxy.pxpost.netpost");
+		System.setProperty("http.proxyPort", "8080");
+		
+		URL url = new URL("http://ikube.dyndns.org:8080/ikube");
+		String string = FileUtilities.getContents(url.openStream(), Integer.MAX_VALUE).toString();
+		System.out.println(string);
+	}
+
+	protected static void startProcess() throws Exception {
 		Class<?> klass = GeonamePopulator.class;
 		String javaHome = System.getProperty("java.home");
 		String javaBin = javaHome + File.separator + "bin" + File.separator + "java";

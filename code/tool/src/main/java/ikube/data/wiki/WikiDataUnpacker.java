@@ -6,28 +6,11 @@ import ikube.toolkit.ThreadUtilities;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
-import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-
-import net.sf.sevenzipjbinding.ExtractOperationResult;
-import net.sf.sevenzipjbinding.ISequentialOutStream;
-import net.sf.sevenzipjbinding.ISevenZipInArchive;
-import net.sf.sevenzipjbinding.SevenZip;
-import net.sf.sevenzipjbinding.SevenZipException;
-import net.sf.sevenzipjbinding.impl.RandomAccessFileInStream;
-import net.sf.sevenzipjbinding.simple.ISimpleInArchive;
-import net.sf.sevenzipjbinding.simple.ISimpleInArchiveItem;
-
-import org.apache.commons.compress.compressors.CompressorOutputStream;
-import org.apache.commons.compress.compressors.CompressorStreamFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This class will unpack the 7z files from Wiki and repack the data into Bzip2 files. Then unpack the Bzip2 files onto the disks.
@@ -43,7 +26,7 @@ public class WikiDataUnpacker {
 		Logging.configure();
 	}
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(WikiDataUnpacker.class);
+	private static ExecutorService EXECUTER_SERVICE = Executors.newFixedThreadPool(4);
 
 	public static void main(String[] args) throws Exception {
 		// read7ZandWriteBzip2();
@@ -58,15 +41,14 @@ public class WikiDataUnpacker {
 		File[] disks = new File("/media").listFiles(new FileFilter() {
 			@Override
 			public boolean accept(File pathname) {
-				return pathname.isDirectory() && !pathname.getName().startsWith("nas");
+				return pathname.isDirectory();
 			}
 		});
 		// Init the executor service with 10 threads so we don't have too many running at the same time
 		List<Future<?>> futures = new ArrayList<Future<?>>();
-		ExecutorService executorService = Executors.newFixedThreadPool(4);
 		for (File disk : disks) {
 			WikiDataUnpackerWorker wikiDataUnpackerWorker = new WikiDataUnpackerWorker(disk);
-			Future<Void> future = executorService.submit(wikiDataUnpackerWorker, null);
+			Future<Void> future = EXECUTER_SERVICE.submit(wikiDataUnpackerWorker, null);
 			futures.add(future);
 		}
 		ThreadUtilities.waitForFutures(futures, Long.MAX_VALUE);
@@ -77,57 +59,15 @@ public class WikiDataUnpacker {
 	 * the file to a compressed bzip2 file.
 	 */
 	protected static void read7ZandWriteBzip2() throws Exception {
-		SevenZip.initSevenZipFromPlatformJAR();
-		// Get the input stream
-		final String filePath = "/home/michael/Downloads/enwiki-20100130-pages-meta-history.xml.7z";
-		final RandomAccessFile randomAccessFile = new RandomAccessFile(filePath, "r");
-		final RandomAccessFileInStream randomAccessFileInStream = new RandomAccessFileInStream(randomAccessFile);
-		final ISevenZipInArchive inArchive = SevenZip.openInArchive(null, randomAccessFileInStream);
-		final ISimpleInArchive simpleInArchive = inArchive.getSimpleInterface();
-
-		class SequentialOutStream implements ISequentialOutStream {
-
-			long reads;
-			long offset;
-			long file = 1;
-			long oneHundredGig = 107374182400l;
-			CompressorOutputStream compressorOutputStream;
-
-			@Override
-			public int write(byte[] bytes) throws SevenZipException {
-				reads++;
-				if (reads % 10 == 0) {
-					LOGGER.info("Reads : " + reads + ", " + offset + ", " + file + ", " + oneHundredGig);
-				}
-				try {
-					if (offset > oneHundredGig || compressorOutputStream == null) {
-						// Get the output stream
-						String bzip2FilePath = "/usr/local/wiki/history/enwiki-20100130-pages-meta-history.xml." + file + ".bz2";
-						File outputFile = FileUtilities.getFile(bzip2FilePath, Boolean.FALSE);
-						OutputStream outputStream = new FileOutputStream(outputFile);
-						compressorOutputStream = new CompressorStreamFactory().createCompressorOutputStream("bzip2", outputStream);
-						LOGGER.info("New output stream : " + outputFile);
-						LOGGER.info("Reads : " + reads + ", " + offset + ", " + file + ", " + oneHundredGig);
-						offset = 0;
-						file += 1;
-					}
-					offset += bytes.length;
-					compressorOutputStream.write(bytes);
-				} catch (Exception e) {
-					LOGGER.error(null, e);
-					throw new SevenZipException(e);
-				}
-				return bytes.length;
-			}
+		List<File> files = FileUtilities.findFilesRecursively(new File("/media/disk-with-compressed-wiki-language-files"),
+				new ArrayList<File>(), "7z");
+		List<Future<?>> futures = new ArrayList<Future<?>>();
+		for (File file : files) {
+			WikiDataUnpacker7ZWorker dataUnpacker7ZWorker = new WikiDataUnpacker7ZWorker(file);
+			Future<Void> future = EXECUTER_SERVICE.submit(dataUnpacker7ZWorker, null);
+			futures.add(future);
 		}
-
-		for (ISimpleInArchiveItem simpleInArchiveItem : simpleInArchive.getArchiveItems()) {
-			if (!simpleInArchiveItem.isFolder()) {
-				ISequentialOutStream sequentialOutStream = new SequentialOutStream();
-				ExtractOperationResult extractOperationResult = simpleInArchiveItem.extractSlow(sequentialOutStream);
-				LOGGER.info("Extract operation : " + extractOperationResult);
-			}
-		}
+		ThreadUtilities.waitForFutures(futures, Long.MAX_VALUE);
 	}
 
 }

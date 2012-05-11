@@ -18,8 +18,8 @@ public class Dummy {
 
 	@Test
 	public void nothing() {
-		anything.something();
 		System.out.println(anything);
+		anything.something();
 	}
 
 }
