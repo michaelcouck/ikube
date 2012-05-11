@@ -201,5 +201,8 @@ public interface IConstants {
 	String FIELD_NAMES = "fieldNames";
 	
 	String PROPERTIES = "properties";
-
+	
+	String TOTAL_SIZE = "totalSize";
+	String TOTAL_DOCS = "totalDocs";
+	
 }

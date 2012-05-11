@@ -51,18 +51,25 @@ public class ServersController extends BaseController {
 		Server server = clusterManager.getServer();
 		modelAndView.addObject(IConstants.SERVER, server);
 		modelAndView.addObject(IConstants.ACTION, server.getActions());
-
+		
 		@SuppressWarnings("rawtypes")
 		Map<String, IndexContext> indexContexts = ApplicationContextManager.getBeans(IndexContext.class);
 		modelAndView.addObject(IConstants.INDEX_CONTEXTS, indexContexts.values());
 
+		int totalSize = 0;
+		int totalDocs = 0;
 		for (IndexContext<?> indexContext : indexContexts.values()) {
 			String indexName = indexContext.getIndexName();
 			long indexSize = monitorWebService.getIndexSize(indexName);
 			long numDocs = monitorWebService.getIndexDocuments(indexName);
 			indexContext.setIndexSize(indexSize);
 			indexContext.setNumDocs(numDocs);
+			totalSize += indexSize;
+			totalDocs += numDocs;
 		}
+		
+		modelAndView.addObject(IConstants.TOTAL_DOCS, totalDocs);
+		modelAndView.addObject(IConstants.TOTAL_SIZE, totalSize);
 
 		return modelAndView;
 	}
