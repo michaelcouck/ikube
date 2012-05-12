@@ -29,8 +29,8 @@
 		property:maxFieldLength="${max.field.length}"
 		property:maxReadLength="${max.read.length}"
 		property:throttle="0"
-		property:indexDirectoryPath="/media/nas-one/index"
-		property:indexDirectoryPathBackup="/media/nas-one/index"
+		property:indexDirectoryPath="/media/0300e299-8a4d-4cbb-853a-641567fc3d91/index"
+		property:indexDirectoryPathBackup="/media/0300e299-8a4d-4cbb-853a-641567fc3d91/index"
 		property:children-ref="wikiHistoryIndexablesOne" />
 	<util:list id="wikiHistoryIndexablesOne">
 		<ref local="wikiHistoryDataOne" />
@@ -39,7 +39,7 @@
 		id="wikiHistoryDataOne"
 		class="ikube.model.IndexableFileSystem"
 		property:name="wikiHistoryDataOne"
-		property:path="/media/nas-one"
+		property:path="/media/0300e299-8a4d-4cbb-853a-641567fc3d91"
 		property:pathFieldName="path"
 		property:nameFieldName="name"
 		property:lengthFieldName="length"
@@ -67,8 +67,8 @@
 		property:maxFieldLength="${max.field.length}"
 		property:maxReadLength="${max.read.length}"
 		property:throttle="0"
-		property:indexDirectoryPath="/media/nas-two/index"
-		property:indexDirectoryPathBackup="/media/nas-two/index"
+		property:indexDirectoryPath="/media/ab47bde2-1cc2-4c57-ba10-231952d3b131_/index"
+		property:indexDirectoryPathBackup="/media/ab47bde2-1cc2-4c57-ba10-231952d3b131_/index"
 		property:children-ref="wikiHistoryIndexablesTwo" />
 	<util:list id="wikiHistoryIndexablesTwo">
 		<ref local="wikiHistoryDataTwo" />
@@ -77,7 +77,7 @@
 		id="wikiHistoryDataTwo"
 		class="ikube.model.IndexableFileSystem"
 		property:name="wikiHistoryDataTwo"
-		property:path="/media/nas-two"
+		property:path="/media/ab47bde2-1cc2-4c57-ba10-231952d3b131_"
 		property:pathFieldName="path"
 		property:nameFieldName="name"
 		property:lengthFieldName="length"
@@ -105,8 +105,8 @@
 		property:maxFieldLength="${max.field.length}"
 		property:maxReadLength="${max.read.length}"
 		property:throttle="0"
-		property:indexDirectoryPath="/media/nas-three/index"
-		property:indexDirectoryPathBackup="/media/nas-three/index"
+		property:indexDirectoryPath="/media/c7ac9170-65b0-4868-9700-034812ab21de_/index"
+		property:indexDirectoryPathBackup="/media/c7ac9170-65b0-4868-9700-034812ab21de_/index"
 		property:children-ref="wikiHistoryIndexablesThree" />
 	<util:list id="wikiHistoryIndexablesThree">
 		<ref local="wikiHistoryDataThree" />
@@ -115,7 +115,7 @@
 		id="wikiHistoryDataThree"
 		class="ikube.model.IndexableFileSystem"
 		property:name="wikiHistoryDataThree"
-		property:path="/media/nas-three"
+		property:path="/media/c7ac9170-65b0-4868-9700-034812ab21de_"
 		property:pathFieldName="path"
 		property:nameFieldName="name"
 		property:lengthFieldName="length"
@@ -143,8 +143,8 @@
 		property:maxFieldLength="${max.field.length}"
 		property:maxReadLength="${max.read.length}"
 		property:throttle="0"
-		property:indexDirectoryPath="/media/nas-four/index"
-		property:indexDirectoryPathBackup="/media/nas-four/index"
+		property:indexDirectoryPath="/media/f13d2c9b-8d84-4656-8eb0-8665fecab782_/index"
+		property:indexDirectoryPathBackup="/media/f13d2c9b-8d84-4656-8eb0-8665fecab782_/index"
 		property:children-ref="wikiHistoryIndexablesFour" />
 	<util:list id="wikiHistoryIndexablesFour">
 		<ref local="wikiHistoryDataFour" />
@@ -153,7 +153,7 @@
 		id="wikiHistoryDataFour"
 		class="ikube.model.IndexableFileSystem"
 		property:name="wikiHistoryDataFour"
-		property:path="/media/nas-four"
+		property:path="/media/f13d2c9b-8d84-4656-8eb0-8665fecab782_"
 		property:pathFieldName="path"
 		property:nameFieldName="name"
 		property:lengthFieldName="length"
@@ -181,8 +181,8 @@
 		property:maxFieldLength="${max.field.length}"
 		property:maxReadLength="${max.read.length}"
 		property:throttle="0"
-		property:indexDirectoryPath="/media/nas-five/index"
-		property:indexDirectoryPathBackup="/media/nas-five/index"
+		property:indexDirectoryPath="/media/f14/index"
+		property:indexDirectoryPathBackup="/media/f14/index"
 		property:children-ref="wikiHistoryIndexablesFive" />
 	<util:list id="wikiHistoryIndexablesFive">
 		<ref local="wikiHistoryDataFive" />
@@ -191,7 +191,7 @@
 		id="wikiHistoryDataFive"
 		class="ikube.model.IndexableFileSystem"
 		property:name="wikiHistoryDataFive"
-		property:path="/media/nas-five"
+		property:path="/media/f14"
 		property:pathFieldName="path"
 		property:nameFieldName="name"
 		property:lengthFieldName="length"
