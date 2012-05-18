@@ -29,8 +29,8 @@ public class WikiDataUnpacker {
 	private static ExecutorService EXECUTER_SERVICE = Executors.newFixedThreadPool(4);
 
 	public static void main(String[] args) throws Exception {
-		// read7ZandWriteBzip2();
-		readBz2AndUnpackFiles();
+		read7ZandWriteBzip2();
+		// readBz2AndUnpackFiles();
 	}
 
 	/**
@@ -59,11 +59,10 @@ public class WikiDataUnpacker {
 	 * the file to a compressed bzip2 file.
 	 */
 	protected static void read7ZandWriteBzip2() throws Exception {
-		List<File> files = FileUtilities.findFilesRecursively(new File("/media/disk-with-compressed-wiki-language-files"),
-				new ArrayList<File>(), "7z");
+		List<File> files = FileUtilities.findFilesRecursively(new File("/media/xfs"), new ArrayList<File>(), "7z");
 		List<Future<?>> futures = new ArrayList<Future<?>>();
 		for (File file : files) {
-			WikiDataUnpacker7ZWorker dataUnpacker7ZWorker = new WikiDataUnpacker7ZWorker(file);
+			WikiDataUnpacker7ZWorker dataUnpacker7ZWorker = new WikiDataUnpacker7ZWorker(file, 1000);
 			Future<Void> future = EXECUTER_SERVICE.submit(dataUnpacker7ZWorker, null);
 			futures.add(future);
 		}

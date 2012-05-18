@@ -4,11 +4,8 @@
 	xsi:schemaLocation=" http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>ikube</groupId>
 	<artifactId>ikube-tool</artifactId>
 	<packaging>jar</packaging>
-	<version>3.0.1-SNAPSHOT</version>
-
 	<parent>
 		<groupId>ikube</groupId>
 		<artifactId>ikube</artifactId>

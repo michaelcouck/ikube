@@ -39,9 +39,11 @@ public class WikiDataUnpacker7ZWorker implements Runnable, ISequentialOutStream 
 	private CompressorOutputStream compressorOutputStream;
 
 	private File file;
+	private long throttle;
 
-	public WikiDataUnpacker7ZWorker(final File file) {
+	public WikiDataUnpacker7ZWorker(final File file, final long throttle) {
 		this.file = file;
+		this.throttle = throttle;
 	}
 
 	@Override
@@ -75,6 +77,7 @@ public class WikiDataUnpacker7ZWorker implements Runnable, ISequentialOutStream 
 			LOGGER.info("Reads : " + reads + ", " + offset + ", " + fileNumber + ", " + oneHundredGig);
 		}
 		try {
+			Thread.sleep(throttle);
 			if (offset > oneHundredGig || compressorOutputStream == null) {
 				if (compressorOutputStream != null) {
 					FileUtilities.close(compressorOutputStream);
