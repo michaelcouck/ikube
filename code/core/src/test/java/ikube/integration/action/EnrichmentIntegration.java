@@ -17,7 +17,7 @@ import org.junit.Test;
  * @since 15.05.2011
  * @version 01.00
  */
-public class EnrichmentTest extends AbstractIntegration {
+public class EnrichmentIntegration extends AbstractIntegration {
 
 	@Test
 	@Ignore

@@ -50,11 +50,11 @@ public class Action extends Persistable {
 	private String indexName;
 	/** The time the action was started. */
 	@Column
-	@Temporal(value = TemporalType.DATE)
+	@Temporal(value = TemporalType.TIMESTAMP)
 	private Date startTime;
 	/** The time the action ended. */
 	@Column
-	@Temporal(value = TemporalType.DATE)
+	@Temporal(value = TemporalType.TIMESTAMP)
 	private Date endTime;
 	/** The time it took for this action to finish. */
 	@Column

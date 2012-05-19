@@ -253,4 +253,17 @@ public class IndexableTableHandlerIntegration extends AbstractIntegration {
 		}
 	}
 
+	@Test
+	public void handleTableSingleRow() throws Exception {
+		String ip = InetAddress.getLocalHost().getHostAddress();
+		IndexWriter indexWriter = IndexManager.openIndexWriter(realIndexContext, System.currentTimeMillis(), ip);
+		realIndexContext.getIndex().setIndexWriter(indexWriter);
+		realIndexContext.setAction(new Action());
+		faqIndexableTable.setPredicate("where faq.faqId = 330451");
+		// DatabaseUtilities.printResultSet(connection.createStatement().executeQuery("select * from faq"));
+		List<Future<?>> threads = indexableTableHandler.handle(realIndexContext, faqIndexableTable);
+		ThreadUtilities.waitForFutures(threads, Integer.MAX_VALUE);
+		assertEquals("There must be exactly one document in the index : ", 1, realIndexContext.getIndex().getIndexWriter().numDocs());
+	}
+
 }

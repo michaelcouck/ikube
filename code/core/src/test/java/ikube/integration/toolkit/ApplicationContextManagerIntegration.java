@@ -5,7 +5,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 import ikube.IConstants;
 import ikube.action.rule.RuleInterceptor;
-import ikube.integration.AbstractIntegration;
 import ikube.notify.IMailer;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
@@ -14,22 +13,27 @@ import java.io.File;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
 
-public class ApplicationContextManagerIntegration extends AbstractIntegration {
+@Ignore
+public class ApplicationContextManagerIntegration {
 
 	private String ikubeFolder = "./" + IConstants.IKUBE;
 
 	@Before
 	public void before() {
 		FileUtilities.deleteFile(new File(ikubeFolder), 1);
+		ApplicationContextManager.closeApplicationContext();
 	}
 
 	@After
 	public void after() {
+		ApplicationContextManager.closeApplicationContext();
 		FileUtilities.deleteFile(new File(ikubeFolder), 1);
+		System.setProperty(IConstants.IKUBE_CONFIGURATION, null);
 	}
 
 	@Test
@@ -49,15 +53,18 @@ public class ApplicationContextManagerIntegration extends AbstractIntegration {
 			// Expected
 		}
 	}
-	
+
 	@Test
 	public void getApplicationContextSpecifiedConfigurationPath() {
 		ApplicationContextManager.closeApplicationContext();
 		File configurationFolder = FileUtilities.findFileRecursively(new File("."), "external");
 		File configurationFile = FileUtilities.findFileRecursively(configurationFolder, "spring.xml");
-		String configurationFolderPath = configurationFile.getAbsolutePath();
-		System.setProperty(IConstants.IKUBE_CONFIGURATION, configurationFolderPath);
-		
+		String configurationFilePath = configurationFile.getAbsolutePath();
+
+		configurationFilePath = configurationFilePath.replaceAll("/./", "/");
+		configurationFilePath = "file:" + configurationFilePath;
+		System.setProperty(IConstants.IKUBE_CONFIGURATION, configurationFilePath);
+
 		ApplicationContext applicationContext = ApplicationContextManager.getApplicationContext();
 		assertNotNull(applicationContext);
 		Object externalMailer = applicationContext.getBean("mailerExternal");

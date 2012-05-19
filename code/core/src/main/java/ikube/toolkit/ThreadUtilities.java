@@ -132,7 +132,7 @@ public final class ThreadUtilities {
 		try {
 			Thread.sleep(sleep);
 		} catch (InterruptedException e) {
-			LOGGER.error("Sleep interrupted : " + Thread.currentThread(), e);
+			LOGGER.error("Sleep interrupted : " + Thread.currentThread());
 			throw new RuntimeException(e);
 		}
 	}

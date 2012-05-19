@@ -205,9 +205,12 @@ class IndexableFilesystemHandlerWorker implements Runnable {
 
 	protected List<File> getBatch(IndexableFileSystem indexableFileSystem, Stack<File> directories) {
 		Pattern pattern = getPattern(indexableFileSystem.getExcludedPattern());
-		List<File> results = new ArrayList<File>();
+		List<File> fileBatch = new ArrayList<File>();
 		if (!directories.isEmpty()) {
 			File directory = directories.pop();
+			if (directory.isFile()) {
+				fileBatch.add(directory);
+			}
 			// Get the files for our directory that we are going to index
 			File[] files = directory.listFiles();
 			if (files != null && files.length > 0) {
@@ -219,18 +222,20 @@ class IndexableFilesystemHandlerWorker implements Runnable {
 						// Put all the directories on the stack
 						directories.push(file);
 					} else {
-						// We'll do this file ourselves
-						results.add(file);
+						if (file.isFile() && file.canRead()) {
+							// We'll do this file ourselves
+							fileBatch.add(file);
+						}
 					}
 				}
 			}
-			if (results.isEmpty()) {
+			if (fileBatch.isEmpty()) {
 				// Means that there were no files in this directory
 				return getBatch(indexableFileSystem, directories);
 			}
 		}
-		logger.info("Directories : " + directories.size() + ", doing files : " + results.size());
-		return results;
+		logger.info("Directories : " + directories.size() + ", doing files : " + fileBatch.size());
+		return fileBatch;
 	}
 
 	protected synchronized Pattern getPattern(final String pattern) {

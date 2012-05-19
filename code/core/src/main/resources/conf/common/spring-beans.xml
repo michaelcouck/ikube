@@ -336,5 +336,10 @@
 		class="ikube.index.handler.filesystem.IndexableFilesystemLogHandler"
 		property:threads="${filesystem.handler.threads}"
 		property:indexableClass="ikube.model.IndexableFileSystemLog" />
-	
+	<bean
+		parent="ikube.index.handler.IndexableHandler"
+		class="ikube.index.handler.filesystem.IndexableFilesystemWikiHandler"
+		property:threads="${filesystem.handler.threads}"
+		property:indexableClass="ikube.model.IndexableFileSystemWiki" />
+		
 </beans>

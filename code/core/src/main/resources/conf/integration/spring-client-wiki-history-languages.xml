@@ -37,7 +37,7 @@
 	</util:list>
 	<bean
 		id="wikiHistoryDataArabic"
-		class="ikube.model.IndexableFileSystem"
+		class="ikube.model.IndexableFileSystemWiki"
 		property:name="wikiHistoryDataArabic"
 		property:path="/media/nas/xfs/wiki-history-languages/arwiki-latest-pages-meta-history.xml"
 		property:pathFieldName="path"
@@ -75,7 +75,7 @@
 	</util:list>
 	<bean
 		id="wikiHistoryDataDutch"
-		class="ikube.model.IndexableFileSystem"
+		class="ikube.model.IndexableFileSystemWiki"
 		property:name="wikiHistoryDataDutch"
 		property:path="/media/nas/xfs/wiki-history-languages/nlwiki-latest-pages-meta-history.xml"
 		property:pathFieldName="path"
@@ -113,7 +113,7 @@
 	</util:list>
 	<bean
 		id="wikiHistoryDataFrench"
-		class="ikube.model.IndexableFileSystem"
+		class="ikube.model.IndexableFileSystemWiki"
 		property:name="wikiHistoryDataFrench"
 		property:path="/media/nas/xfs/wiki-history-languages/frwiki-latest-pages-meta-history.xml"
 		property:pathFieldName="path"
@@ -151,7 +151,7 @@
 	</util:list>
 	<bean
 		id="wikiHistoryDataGerman"
-		class="ikube.model.IndexableFileSystem"
+		class="ikube.model.IndexableFileSystemWiki"
 		property:name="wikiHistoryDataGerman"
 		property:path="/media/nas/xfs/wiki-history-languages/dewiki-latest-pages-meta-history.xml"
 		property:pathFieldName="path"
@@ -189,7 +189,7 @@
 	</util:list>
 	<bean
 		id="wikiHistoryDataPolish"
-		class="ikube.model.IndexableFileSystem"
+		class="ikube.model.IndexableFileSystemWiki"
 		property:name="wikiHistoryDataPolish"
 		property:path="/media/nas/xfs/wiki-history-languages/plwiki-latest-pages-meta-history.xml"
 		property:pathFieldName="path"
@@ -227,7 +227,7 @@
 	</util:list>
 	<bean
 		id="wikiHistoryDataPortuguese"
-		class="ikube.model.IndexableFileSystem"
+		class="ikube.model.IndexableFileSystemWiki"
 		property:name="wikiHistoryDataPortuguese"
 		property:path="/media/nas/xfs/wiki-history-languages/ptwiki-latest-pages-meta-history.xml"
 		property:pathFieldName="path"
@@ -265,7 +265,7 @@
 	</util:list>
 	<bean
 		id="wikiHistoryDataRussian"
-		class="ikube.model.IndexableFileSystem"
+		class="ikube.model.IndexableFileSystemWiki"
 		property:name="wikiHistoryDataRussian"
 		property:path="/media/nas/xfs/wiki-history-languages/ruwiki-latest-pages-meta-history.xml"
 		property:pathFieldName="path"
@@ -303,7 +303,7 @@
 	</util:list>
 	<bean
 		id="wikiHistoryDataSpanish"
-		class="ikube.model.IndexableFileSystem"
+		class="ikube.model.IndexableFileSystemWiki"
 		property:name="wikiHistoryDataSpanish"
 		property:path="/media/nas/xfs/wiki-history-languages/eswiki-latest-pages-meta-history.xml"
 		property:pathFieldName="path"

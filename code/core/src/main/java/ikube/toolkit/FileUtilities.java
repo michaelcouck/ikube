@@ -612,7 +612,6 @@ public final class FileUtilities {
 				OutputStream destinationOutputStream = null;
 				try {
 					if (!entry.isDirectory()) {
-						LOGGER.info("Unzipping entry : " + entry);
 						inputStream = new BufferedInputStream(zip.getInputStream(entry));
 						int currentByte;
 						// establish buffer for writing file
@@ -630,7 +629,7 @@ public final class FileUtilities {
 				} finally {
 					close(inputStream);
 					close(outputStream);
-					close(destinationOutputStream);
+					// close(destinationOutputStream);
 				}
 			}
 		} catch (Exception e) {
@@ -685,7 +684,7 @@ public final class FileUtilities {
 			try {
 				outputStream.flush();
 			} catch (Exception e) {
-				LOGGER.error("Exception closing stream : " + outputStream, e);
+				LOGGER.error("Exception flushing stream : " + outputStream, e);
 			}
 			try {
 				outputStream.close();

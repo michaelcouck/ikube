@@ -5,6 +5,7 @@ import ikube.index.IndexManager;
 import ikube.index.handler.IndexableHandler;
 import ikube.model.IndexContext;
 import ikube.model.IndexableFileSystem;
+import ikube.model.IndexableFileSystemWiki;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.ThreadUtilities;
 
@@ -28,7 +29,7 @@ import org.slf4j.LoggerFactory;
  * @since 20.04.2012
  * @version 01.00
  */
-public class IndexableFilesystemWikiHandler extends IndexableHandler<IndexableFileSystem> {
+public class IndexableFilesystemWikiHandler extends IndexableHandler<IndexableFileSystemWiki> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(IndexableFilesystemWikiHandler.class);
 
@@ -40,7 +41,7 @@ public class IndexableFilesystemWikiHandler extends IndexableHandler<IndexableFi
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<Future<?>> handle(final IndexContext<?> indexContext, final IndexableFileSystem indexable) throws Exception {
+	public List<Future<?>> handle(final IndexContext<?> indexContext, final IndexableFileSystemWiki indexable) throws Exception {
 		List<Future<?>> futures = new ArrayList<Future<?>>();
 		try {
 			Runnable runnable = new Runnable() {

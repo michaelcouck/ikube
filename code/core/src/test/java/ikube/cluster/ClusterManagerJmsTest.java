@@ -117,6 +117,10 @@ public class ClusterManagerJmsTest extends ATest {
 
 	@Before
 	public void before() {
+		String address = "laptop/127.0.1.1:61618";
+		int forwardSlash = address.indexOf('/');
+		address = address.substring(forwardSlash + 1);
+		System.out.println(address);
 		ThreadUtilities.initialize();
 	}
 
@@ -137,7 +141,7 @@ public class ClusterManagerJmsTest extends ATest {
 		ThreadUtilities.waitForFutures(futures, timeSpent * 2);
 		if (!success) {
 			logger.error("More than one lock : ");
-			Thread.dumpStack();
+			// Thread.dumpStack();
 		}
 		// assertTrue("More than one lock : ", success);
 		String message = "Every server must get the lock evertually : ";
@@ -145,14 +149,14 @@ public class ClusterManagerJmsTest extends ATest {
 			// assertTrue(message, gotLock);
 			if (!gotLock) {
 				logger.error(message);
-				Thread.dumpStack();
+				// Thread.dumpStack();
 			}
 		}
 		for (boolean gotUnlock : gotUnlocks) {
 			// assertTrue(message, gotUnlock);
 			if (!gotUnlock) {
 				logger.error(message);
-				Thread.dumpStack();
+				// Thread.dumpStack();
 			}
 		}
 	}

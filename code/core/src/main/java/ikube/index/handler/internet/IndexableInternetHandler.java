@@ -63,7 +63,7 @@ import org.slf4j.LoggerFactory;
  * the JPA cache provided by the implementation. Then the query cache also from the JPA implementation. There is a new cache that is used to
  * cache new urls to batch them for insert, and then there is the url cache that is added to manually.
  * 
- * This class is optimised for performance, as such the elegance has taken a back seat. To facilitate several hundred million pages
+ * This class is optimized for performance, as such the elegance has taken a back seat. To facilitate several hundred million pages
  * performance was by far the most important aspect of this logic. Memory concerns and trips to the database are critical, and we would like
  * to keep both to an absolute minimum, ergo the caches.
  * 

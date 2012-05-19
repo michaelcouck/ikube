@@ -103,7 +103,7 @@ public class GeoName extends Persistable {
 	private Integer gtopo30; // : average elevation of 30'x30' (ca 900mx900m) area in meters, integer
 	@Column(length = 48)
 	private String timezone; // : the timezone id (see file timeZone.txt)
-	@Temporal(value = TemporalType.DATE)
+	@Temporal(value = TemporalType.TIMESTAMP)
 	private Date modification; // date : date of last modification in yyyy-MM-dd format
 
 	public Integer getGeonameid() {

@@ -24,9 +24,20 @@ public class SearcherIntegration extends Integration {
 		String url = new URL("http", LOCALHOST, SERVER_PORT, path).toString();
 		LOGGER.info("Looking for url : " + url);
 
-		String[] names = { IConstants.INDEX_NAME, IConstants.SEARCH_STRINGS, IConstants.SEARCH_FIELDS, IConstants.FRAGMENT,
-				IConstants.FIRST_RESULT, IConstants.MAX_RESULTS };
-		String[] values = { IConstants.GEOSPATIAL, "cape AND town AND university", IConstants.NAME, Boolean.TRUE.toString(), "0", "10" };
+		String[] names = { //
+		IConstants.INDEX_NAME, //
+				IConstants.SEARCH_STRINGS, //
+				IConstants.SEARCH_FIELDS, //
+				IConstants.FRAGMENT,//
+				IConstants.FIRST_RESULT, //
+				IConstants.MAX_RESULTS };
+		String[] values = {//
+		IConstants.GEOSPATIAL,//
+				"cape AND town AND university",//
+				IConstants.NAME, //
+				Boolean.TRUE.toString(),//
+				"0", //
+				"10" };
 		NameValuePair[] params = getNameValuePairs(names, values);
 
 		GetMethod getMethod = new GetMethod(url);
@@ -45,10 +56,20 @@ public class SearcherIntegration extends Integration {
 		String url = new URL("http", LOCALHOST, SERVER_PORT, path).toString();
 		LOGGER.info("Looking for url : " + url);
 
-		String[] names = { IConstants.INDEX_NAME, IConstants.SEARCH_STRINGS, IConstants.SEARCH_FIELDS, IConstants.FRAGMENT,
-				IConstants.FIRST_RESULT, IConstants.MAX_RESULTS };
-		String[] values = { IConstants.GEOSPATIAL, "cape AND town AND university;south africa", IConstants.NAME + ";" + IConstants.COUNTRY,
-				Boolean.TRUE.toString(), "0", "10" };
+		String[] names = { //
+		IConstants.INDEX_NAME, //
+				IConstants.SEARCH_STRINGS, //
+				IConstants.SEARCH_FIELDS, //
+				IConstants.FRAGMENT,//
+				IConstants.FIRST_RESULT, //
+				IConstants.MAX_RESULTS };
+		String[] values = { //
+		IConstants.GEOSPATIAL, //
+				"cape AND town AND university;south africa", //
+				IConstants.NAME + ";" + IConstants.COUNTRY,//
+				Boolean.TRUE.toString(), //
+				"0", //
+				"10" };
 		NameValuePair[] params = getNameValuePairs(names, values);
 
 		GetMethod getMethod = new GetMethod(url);
@@ -67,9 +88,18 @@ public class SearcherIntegration extends Integration {
 		String url = new URL("http", LOCALHOST, SERVER_PORT, path).toString();
 		LOGGER.info("Looking for url : " + url);
 
-		String[] names = { IConstants.INDEX_NAME, IConstants.SEARCH_STRINGS, IConstants.FRAGMENT, IConstants.FIRST_RESULT,
+		String[] names = { //
+		IConstants.INDEX_NAME, //
+				IConstants.SEARCH_STRINGS, //
+				IConstants.FRAGMENT, //
+				IConstants.FIRST_RESULT,//
 				IConstants.MAX_RESULTS };
-		String[] values = { IConstants.GEOSPATIAL, "cape AND town AND university;south africa", Boolean.TRUE.toString(), "0", "10" };
+		String[] values = { //
+		IConstants.GEOSPATIAL, //
+				"cape AND town AND university;south africa", //
+				Boolean.TRUE.toString(), //
+				"0", //
+				"10" };
 		NameValuePair[] params = getNameValuePairs(names, values);
 
 		GetMethod getMethod = new GetMethod(url);
@@ -88,10 +118,22 @@ public class SearcherIntegration extends Integration {
 		String url = new URL("http", LOCALHOST, SERVER_PORT, path).toString();
 		LOGGER.info("Looking for url : " + url);
 
-		String[] names = { IConstants.INDEX_NAME, IConstants.SEARCH_STRINGS, IConstants.SEARCH_FIELDS, IConstants.SORT_FIELDS,
-				IConstants.FRAGMENT, IConstants.FIRST_RESULT, IConstants.MAX_RESULTS };
-		String[] values = { IConstants.GEOSPATIAL, "cape AND town AND university;south africa", IConstants.NAME + ";" + IConstants.COUNTRY,
-				IConstants.NAME + ";" + IConstants.COUNTRY, Boolean.TRUE.toString(), "0", "10" };
+		String[] names = { //
+		IConstants.INDEX_NAME, //
+				IConstants.SEARCH_STRINGS, //
+				IConstants.SEARCH_FIELDS, //
+				IConstants.SORT_FIELDS,//
+				IConstants.FRAGMENT, //
+				IConstants.FIRST_RESULT, //
+				IConstants.MAX_RESULTS };
+		String[] values = { //
+		IConstants.GEOSPATIAL, //
+				"cape AND town AND university;south africa", //
+				IConstants.NAME + ";" + IConstants.COUNTRY,//
+				IConstants.NAME + ";" + IConstants.COUNTRY, //
+				Boolean.TRUE.toString(), //
+				"0", //
+				"10" };
 		NameValuePair[] params = getNameValuePairs(names, values);
 
 		GetMethod getMethod = new GetMethod(url);
@@ -110,10 +152,26 @@ public class SearcherIntegration extends Integration {
 		String url = new URL("http", LOCALHOST, SERVER_PORT, path).toString();
 		LOGGER.info("Looking for url : " + url);
 
-		String[] names = { IConstants.INDEX_NAME, IConstants.SEARCH_STRINGS, IConstants.SEARCH_FIELDS, IConstants.FRAGMENT,
-				IConstants.FIRST_RESULT, IConstants.MAX_RESULTS, IConstants.DISTANCE, IConstants.LATITUDE, IConstants.LONGITUDE };
-		String[] values = { IConstants.GEOSPATIAL, "cape AND town AND university;south africa", IConstants.NAME + ";" + IConstants.COUNTRY,
-				Boolean.TRUE.toString(), "0", "10", "50", "18.46082", "-33.95796" };
+		String[] names = { //
+		IConstants.INDEX_NAME, //
+				IConstants.SEARCH_STRINGS, //
+				IConstants.SEARCH_FIELDS, //
+				IConstants.FRAGMENT, //
+				IConstants.FIRST_RESULT, //
+				IConstants.MAX_RESULTS, //
+				IConstants.DISTANCE, //
+				IConstants.LATITUDE, //
+				IConstants.LONGITUDE };
+		String[] values = { //
+		IConstants.GEOSPATIAL, //
+				"cape AND town AND university", //
+				IConstants.NAME, //
+				Boolean.TRUE.toString(), //
+				"0", //
+				"10", //
+				"20", //
+				"-33.9693580", //
+				"18.4622110" };
 		NameValuePair[] params = getNameValuePairs(names, values);
 
 		GetMethod getMethod = new GetMethod(url);
@@ -132,10 +190,24 @@ public class SearcherIntegration extends Integration {
 		String url = new URL("http", LOCALHOST, SERVER_PORT, path).toString();
 		LOGGER.info("Looking for url : " + url);
 
-		String[] names = { IConstants.INDEX_NAME, IConstants.SEARCH_STRINGS, IConstants.FRAGMENT, IConstants.FIRST_RESULT,
-				IConstants.MAX_RESULTS, IConstants.DISTANCE, IConstants.LATITUDE, IConstants.LONGITUDE };
-		String[] values = { IConstants.GEOSPATIAL, "cape town university", Boolean.TRUE.toString(), "0", "10", "10", "18.46082",
-				"-33.95796" };
+		String[] names = { //
+		IConstants.INDEX_NAME, //
+				IConstants.SEARCH_STRINGS, //
+				IConstants.FRAGMENT, //
+				IConstants.FIRST_RESULT,//
+				IConstants.MAX_RESULTS, //
+				IConstants.DISTANCE, //
+				IConstants.LATITUDE, //
+				IConstants.LONGITUDE };
+		String[] values = { //
+		IConstants.GEOSPATIAL, //
+				"cape town university", //
+				Boolean.TRUE.toString(), //
+				"0", //
+				"10", //
+				"10", //
+				"-33.9693580", //
+				"18.4622110" };
 		NameValuePair[] params = getNameValuePairs(names, values);
 
 		GetMethod getMethod = new GetMethod(url);
@@ -153,9 +225,18 @@ public class SearcherIntegration extends Integration {
 		String url = new URL("http", LOCALHOST, SERVER_PORT, path).toString();
 		LOGGER.info("Looking for url : " + url);
 
-		String[] names = { IConstants.INDEX_NAME, IConstants.SEARCH_STRINGS, IConstants.FRAGMENT, IConstants.FIRST_RESULT,
+		String[] names = { //
+		IConstants.INDEX_NAME, //
+				IConstants.SEARCH_STRINGS, //
+				IConstants.FRAGMENT, //
+				IConstants.FIRST_RESULT,//
 				IConstants.MAX_RESULTS };
-		String[] values = { "wikiContext", "Небесные создания", Boolean.TRUE.toString(), "0", "10" };
+		String[] values = { //
+		"wikiContext",//
+				"Небесные создания", //
+				Boolean.TRUE.toString(), //
+				"0", //
+				"10" };
 		NameValuePair[] params = getNameValuePairs(names, values);
 
 		GetMethod getMethod = new GetMethod(url);

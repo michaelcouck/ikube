@@ -3,10 +3,10 @@ package ikube.toolkit;
 import ikube.IConstants;
 
 import java.io.File;
-import java.util.ArrayList;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -58,22 +58,32 @@ public final class ApplicationContextManager implements ApplicationContextAware 
 			if (APPLICATION_CONTEXT == null) {
 				Properties properties = System.getProperties();
 				for (Map.Entry<Object, Object> mapEntry : properties.entrySet()) {
-					LOGGER.info("System property : " + mapEntry.getKey() + " : " + mapEntry.getValue());
+					LOGGER.debug("System property : " + mapEntry.getKey() + " : " + mapEntry.getValue());
 				}
 				File configFile = null;
 				Object ikubeConfigurationPathProperty = System.getProperty(IConstants.IKUBE_CONFIGURATION);
-				
+
 				LOGGER.info("Configuration property file : " + ikubeConfigurationPathProperty);
-				
+
 				if (ikubeConfigurationPathProperty != null) {
-					configFile = new File(ikubeConfigurationPathProperty.toString());
+					if (ikubeConfigurationPathProperty.toString().startsWith("file")) {
+						URL url;
+						try {
+							url = new URL(ikubeConfigurationPathProperty.toString());
+							configFile = new File(url.getFile());
+						} catch (MalformedURLException e) {
+							throw new RuntimeException("Couldn't load configuration : " + ikubeConfigurationPathProperty);
+						}
+					} else {
+						configFile = new File(ikubeConfigurationPathProperty.toString());
+					}
 				} else {
 					// See if there is a configuration file at the base of where the Jvm was started
 					configFile = new File(EXTERNAL_SPRING_CONFIGURATION_FILE);
 				}
 				LOGGER.info("External configuration file : " + configFile.getAbsolutePath() + ", " + configFile.exists());
 				if (configFile.exists()) {
-					APPLICATION_CONTEXT = getApplicationContext(configFile);
+					APPLICATION_CONTEXT = getApplicationContext(ikubeConfigurationPathProperty.toString());
 				} else {
 					// Try the classpath
 					APPLICATION_CONTEXT = getApplicationContext(IConstants.SPRING_CONFIGURATION_FILE);
@@ -88,8 +98,10 @@ public final class ApplicationContextManager implements ApplicationContextAware 
 	/**
 	 * Convenience method to get the bean type from the class.
 	 * 
-	 * @param <T> the type of bean to return
-	 * @param klass the class of the bean
+	 * @param <T>
+	 *        the type of bean to return
+	 * @param klass
+	 *        the class of the bean
 	 * @return the bean with the specified class
 	 */
 	public static synchronized <T> T getBean(final Class<T> klass) {
@@ -118,7 +130,8 @@ public final class ApplicationContextManager implements ApplicationContextAware 
 	 * Convenience method to get the bean type from the bean name. Note that this method is not type checked and there is a distinct
 	 * possibility for a class cast exception.
 	 * 
-	 * @param name the name of the bean
+	 * @param name
+	 *        the name of the bean
 	 * @return the bean with the specified name
 	 */
 	@SuppressWarnings("unchecked")
@@ -133,8 +146,10 @@ public final class ApplicationContextManager implements ApplicationContextAware 
 	/**
 	 * Access to all the beans of a particular type.
 	 * 
-	 * @param <T> the expected type
-	 * @param klass the class of the beans
+	 * @param <T>
+	 *        the expected type
+	 * @param klass
+	 *        the class of the beans
 	 * @return a map of bean names and beans of type T
 	 */
 	public static synchronized <T> Map<String, T> getBeans(final Class<T> klass) {
@@ -148,20 +163,17 @@ public final class ApplicationContextManager implements ApplicationContextAware 
 	/**
 	 * Instantiates the application context using all the configuration files in the parameter list.
 	 * 
-	 * @param configFiles the locations of the configuration files
+	 * @param configFiles
+	 *        the locations of the configuration files
 	 * @return the merged application context for all the configuration files
 	 */
-	public static synchronized ApplicationContext getApplicationContext(final File... configFiles) {
+	public static synchronized ApplicationContext getApplicationContextFilesystem(final String... configLocations) {
 		try {
 			if (APPLICATION_CONTEXT == null) {
-				LOGGER.info("Loading the application context with configurations : " + Arrays.asList(configFiles));
-				List<String> configLocations = new ArrayList<String>();
-				for (File configurationFile : configFiles) {
-					configLocations.add(configurationFile.getAbsolutePath());
-				}
-				APPLICATION_CONTEXT = new FileSystemXmlApplicationContext(configLocations.toArray(new String[configLocations.size()]));
+				LOGGER.info("Loading the application context with configurations : " + configLocations);
+				APPLICATION_CONTEXT = new FileSystemXmlApplicationContext(configLocations);
 				((AbstractApplicationContext) APPLICATION_CONTEXT).registerShutdownHook();
-				LOGGER.info("Loaded the application context with configurations : " + Arrays.asList(configFiles));
+				LOGGER.info("Loaded the application context with configurations : " + Arrays.asList(configLocations));
 			}
 			return APPLICATION_CONTEXT;
 		} finally {
@@ -172,7 +184,8 @@ public final class ApplicationContextManager implements ApplicationContextAware 
 	/**
 	 * Instantiates the application context using all the configuration files in the parameter list.
 	 * 
-	 * @param configLocations the locations of the configuration files
+	 * @param configLocations
+	 *        the locations of the configuration files
 	 * @return the merged application context for all the configuration files
 	 */
 	public static synchronized ApplicationContext getApplicationContext(final String... configLocations) {

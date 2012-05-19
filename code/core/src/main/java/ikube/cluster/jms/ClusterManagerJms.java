@@ -84,7 +84,7 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 		jmsTemplates = new HashMap<String, JmsTemplate>();
 		ip = InetAddress.getLocalHost().getHostAddress();
 		address = ip + "." + jmsPort;
-
+		
 		getServer();
 		getLock(address, Long.MAX_VALUE, Boolean.FALSE);
 	}
@@ -255,6 +255,13 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 			for (NetworkBridge networkBridge : networkBridges) {
 				String address = networkBridge.getRemoteAddress();
 				try {
+					int forwardSlash = address.indexOf('/');
+					if (forwardSlash > -1) {
+						// On linux the address is localhost/127.0.1.1:61618, so 
+						// we need to strip the localhost, or whatever the bind address
+						// is for this interface
+						address = address.substring(forwardSlash + 1);
+					}
 					LOGGER.debug("Remote address : {} ", address);
 					JmsTemplate jmsTemplate = getJmsTemplate(address);
 					jmsTemplate.send(messageCreator);
@@ -287,7 +294,7 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 		if (jmsTemplates.get(address) != null) {
 			return jmsTemplates.get(address);
 		}
-		String url = "tcp:/" + address;
+		String url = "tcp://" + address;
 		ConnectionFactory connectionFactory = new ActiveMQConnectionFactory(url);
 		JmsTemplate jmsTemplate = new JmsTemplate(connectionFactory);
 		jmsTemplate.setDefaultDestinationName(destination);
