@@ -1,23 +1,14 @@
 package ikube.geospatial;
 
-import ikube.IConstants;
 import ikube.database.IDataBase;
 import ikube.model.geospatial.GeoName;
-import ikube.security.WebServiceAuthentication;
 import ikube.toolkit.ApplicationContextManager;
-import ikube.toolkit.FileUtilities;
 import ikube.toolkit.Logging;
-import ikube.toolkit.SerializationUtilities;
 import ikube.toolkit.ThreadUtilities;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.NameValuePair;
-import org.apache.commons.httpclient.methods.GetMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,77 +27,13 @@ public class GeonamePopulator {
 
 	static Logger LOGGER;
 
-	static String path = "/ikube/service/search/single";
-	static String[] names = { IConstants.INDEX_NAME, IConstants.SEARCH_STRINGS, IConstants.SEARCH_FIELDS, IConstants.FRAGMENT,
-			IConstants.FIRST_RESULT, IConstants.MAX_RESULTS };
-	static HttpClient httpClient = new HttpClient();
-	static String[] VALUES = { IConstants.GEOSPATIAL, null, IConstants.NAME, Boolean.TRUE.toString(), "0", "10" };
-	static String URL;
-
 	static {
 		Logging.configure();
 		LOGGER = LoggerFactory.getLogger(GeonamePopulator.class);
-		WebServiceAuthentication.authenticate(httpClient, "localhost", 8080, "user", "user");
-		try {
-			URL = new URL("http", "localhost", 8080, path).toString();
-		} catch (Exception e) {
-			LOGGER.error(null, e);
-		}
 	}
 
 	public static void main(String[] args) throws Exception {
 		persist();
-	}
-
-	protected static void verify() throws Exception {
-		// IConstants.SEP + IConstants.IKUBE + Searcher.SERVICE + Searcher.SEARCH + Searcher.SINGLE;
-		String sessionName = "geoname";
-		Session session = SessionFactory.getSession(sessionName);
-		int line = 0;
-		while (session.hasNext(GeoName.class)) {
-			line++;
-			try {
-				GeoName geoName = session.next(GeoName.class);
-				if (!getResult(geoName)) {
-					LOGGER.info("Line : " + line + ", not found : " + geoName);
-				}
-				if (line % 1000 == 0) {
-					LOGGER.info("Line : " + line);
-				}
-			} catch (Exception e) {
-				LOGGER.error("Exception verifying geoname : ", e);
-			}
-		}
-	}
-
-	@SuppressWarnings({ "unchecked", "unused" })
-	protected static boolean getResult(final GeoName geoName) throws Exception {
-		VALUES[1] = geoName.getName();
-		NameValuePair[] params = getNameValuePairs(names, VALUES);
-		GetMethod getMethod = new GetMethod(URL);
-		getMethod.setQueryString(params);
-		int webResult = httpClient.executeMethod(getMethod);
-		String actual = FileUtilities.getContents(getMethod.getResponseBodyAsStream(), Integer.MAX_VALUE).toString();
-		List<Map<String, String>> results = (List<Map<String, String>>) SerializationUtilities.deserialize(actual);
-		if (results.size() > 1) {
-			for (int i = 0; i < results.size() - 1; i++) {
-				Map<String, String> result = results.get(i);
-				String name = result.get(IConstants.NAME);
-				if (name != null && geoName.getName().equals(name)) {
-					return Boolean.TRUE;
-				}
-			}
-		}
-		return Boolean.FALSE;
-	}
-
-	protected static NameValuePair[] getNameValuePairs(String[] names, String[] values) {
-		List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
-		for (int i = 0; i < names.length && i < values.length; i++) {
-			NameValuePair nameValuePair = new NameValuePair(names[i], values[i]);
-			nameValuePairs.add(nameValuePair);
-		}
-		return nameValuePairs.toArray(new NameValuePair[nameValuePairs.size()]);
 	}
 
 	protected static void persist() {
@@ -133,18 +60,6 @@ public class GeonamePopulator {
 				persistBatch(dataBase, geoNames);
 			}
 		}
-	}
-
-	private static String[] GEONAMEID = new String[] { "geonameid" };
-	private static Object[] GEONAMEID_VALUE = new Object[1];
-
-	protected static boolean geonameExists(final IDataBase dataBase, final GeoName geoName) {
-		GEONAMEID_VALUE[0] = geoName.getGeonameid();
-		GeoName dbGeoName = dataBase.find(GeoName.class, GeoName.SELECT_FROM_GEONAME_BY_GEONAMEID, GEONAMEID, GEONAMEID_VALUE);
-		if (dbGeoName != null) {
-			return Boolean.TRUE;
-		}
-		return Boolean.FALSE;
 	}
 
 	private static void persistBatch(IDataBase dataBase, List<GeoName> geoNames) {

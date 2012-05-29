@@ -17,8 +17,10 @@ import org.apache.commons.io.FileSystemUtils;
  */
 public class DiskFull extends Action<IndexContext<?>, Boolean> {
 
-	/** The minimum space that we will accept to carry on, 10 gig. */
-	private static final long MINIMUM_FREE_SPACE = 10000;
+	/** The minimum space that we will accept to carry on, 1 gig. */
+	private static final long MINIMUM_FREE_SPACE = 1000;
+	/** The amount of space until we start sending notifications, 10 gig. */
+	private static final long MINIMUM_FREE_SPACE_FOR_NOTIFICATIONS = MINIMUM_FREE_SPACE * 10;
 
 	/**
 	 * {@inheritDoc}
@@ -47,17 +49,24 @@ public class DiskFull extends Action<IndexContext<?>, Boolean> {
 			}
 			try {
 				if (drive != null) {
-					long freeSpaceKilobytes = FileSystemUtils.freeSpaceKb(drive);
-					long freeSpaceMegabytes = freeSpaceKilobytes / 1000;
+					Long freeSpaceKilobytes = FileSystemUtils.freeSpaceKb(drive);
+					Long freeSpaceMegabytes = freeSpaceKilobytes / 1000;
 					logger.debug("Free space : " + freeSpaceMegabytes + ", " + MINIMUM_FREE_SPACE);
+					String subject = "No more disk space on server!";
 					if (freeSpaceMegabytes < MINIMUM_FREE_SPACE) {
 						// We need to exit this server as the disk will crash
-						String subject = "No more disk space on server!";
-						String body = "We have run out of disk space on this driver : " + indexesDirectory;
-						body += "This server will exit to save the machine : " + freeSpaceMegabytes;
+						String body = buildMessage("We have run out of disk space on this drive : ", indexesDirectory.toString(),
+								"This server will exit to save the machine : ", freeSpaceMegabytes.toString());
 						logger.error(subject + " " + body);
 						sendNotification(subject, body);
-						// System.exit(0);
+						System.exit(0);
+						return Boolean.TRUE;
+					}
+					if (freeSpaceMegabytes < MINIMUM_FREE_SPACE_FOR_NOTIFICATIONS) {
+						String body = buildMessage("We have run out of disk space on this drive : ", indexesDirectory.toString(),
+								"Please clean this disk, free space available : ", freeSpaceMegabytes.toString());
+						logger.error(subject + " " + body);
+						sendNotification(subject, body);
 						return Boolean.TRUE;
 					}
 				}
@@ -68,6 +77,14 @@ public class DiskFull extends Action<IndexContext<?>, Boolean> {
 			stop(action);
 		}
 		return Boolean.FALSE;
+	}
+
+	private String buildMessage(final String... strings) {
+		StringBuilder stringBuilder = new StringBuilder();
+		for (String string : strings) {
+			stringBuilder.append(string);
+		}
+		return stringBuilder.toString();
 	}
 
 }
