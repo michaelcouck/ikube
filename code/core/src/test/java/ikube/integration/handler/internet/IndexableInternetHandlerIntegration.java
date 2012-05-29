@@ -1,36 +1,32 @@
 package ikube.integration.handler.internet;
 
-import static org.junit.Assert.*;
-
+import static org.junit.Assert.assertTrue;
 import ikube.action.Index;
 import ikube.cluster.IClusterManager;
 import ikube.database.IDataBase;
 import ikube.index.IndexManager;
 import ikube.index.handler.internet.IndexableInternetHandler;
 import ikube.integration.AbstractIntegration;
-import ikube.listener.ListenerManager;
 import ikube.model.Action;
 import ikube.model.IndexContext;
 import ikube.model.IndexableInternet;
 import ikube.model.Url;
 import ikube.toolkit.ApplicationContextManager;
-import ikube.toolkit.FileUtilities;
 import ikube.toolkit.ThreadUtilities;
 
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.URL;
 import java.util.List;
+import java.util.Set;
+import java.util.Stack;
+import java.util.TreeSet;
 import java.util.concurrent.Future;
 
 import mockit.Deencapsulation;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.lucene.index.IndexWriter;
-import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -47,34 +43,22 @@ public class IndexableInternetHandlerIntegration extends AbstractIntegration {
 
 	@Before
 	public void before() {
-		ApplicationContextManager.getBean(ListenerManager.class).removeListeners();
-		indexContext = ApplicationContextManager.getBean("coldwellIndex");
-		indexContext.setIndexDirectoryPath("./indexes");
-		indexableInternet = ApplicationContextManager.getBean("coldwellIndexable");
+		indexContext = ApplicationContextManager.getBean("indexContext");
+		indexableInternet = ApplicationContextManager.getBean("ikubeGoogleCode");
 		indexableInternetHandler = ApplicationContextManager.getBean(IndexableInternetHandler.class);
 		dataBase = ApplicationContextManager.getBean(IDataBase.class);
-		ApplicationContextManager.getBean(IClusterManager.class).startWorking(Index.class.getSimpleName(), indexContext.getName(),
-				indexableInternet.getName());
+		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
+
+		clusterManager.startWorking(Index.class.getSimpleName(), indexContext.getName(), indexableInternet.getName());
 		delete(dataBase, Url.class);
 	}
 
-	@After
-	public void after() {
-		ApplicationContextManager.getBean(ListenerManager.class).removeListeners();
-	}
-
 	@Test
-	@Ignore
 	public void handle() throws Exception {
 		String ip = InetAddress.getLocalHost().getHostAddress();
 		IndexWriter indexWriter = IndexManager.openIndexWriter(realIndexContext, System.currentTimeMillis(), ip);
 		indexContext.getIndex().setIndexWriter(indexWriter);
 		indexContext.setAction(new Action());
-		// indexableInternet.setUrl("http://sum.agj1.post.bpgnet.net/wiki");
-		// indexableInternet.setExcludedPattern("download");
-		// indexableInternet.setUserid("U365981");
-		// indexableInternet.setLoginUrl(loginUrl);
-		// indexableInternet.setPassword(password);
 		List<Future<?>> threads = indexableInternetHandler.handle(indexContext, indexableInternet);
 		ThreadUtilities.waitForFutures(threads, Integer.MAX_VALUE);
 		int expectedAtLeast = 10;
@@ -85,44 +69,15 @@ public class IndexableInternetHandlerIntegration extends AbstractIntegration {
 	}
 
 	@Test
-	@Ignore
 	public void extractLinksFromContent() throws Exception {
-		Url baseUrl = new Url();
-		baseUrl.setName("name");
-		baseUrl.setUrl("http://code.google.com/p/ikube/");
-		indexableInternet.setUri(null);
-		indexableInternet.setUrl(baseUrl.getUrl());
-		indexableInternet.setBaseUrl(null);
-		InputStream inputStream = new URL(baseUrl.getUrl()).openStream();
-		Deencapsulation.invoke(indexableInternetHandler, "extractLinksFromContent", dataBase, indexableInternet, baseUrl, inputStream);
-		// TODO Verify the links collected
+		int expectedAtLeast = 3;
 
-		baseUrl = new Url();
-		baseUrl.setName("name");
-		baseUrl.setUrl("http://www.hazelcast.com/product.jsp");
-		indexableInternet.setUri(null);
-		indexableInternet.setUrl(baseUrl.getUrl());
-		indexableInternet.setBaseUrl(null);
-		inputStream = new URL(baseUrl.getUrl()).openStream();
-		Deencapsulation.invoke(indexableInternetHandler, "extractLinksFromContent", dataBase, indexableInternet, baseUrl, inputStream);
-		// TODO Verify the links collected
-	}
+		InputStream inputStream = new URL(indexableInternet.getUrl()).openStream();
+		Stack<Url> in = new Stack<Url>();
+		Set<Long> out = new TreeSet<Long>();
 
-	@Test
-	@Ignore
-	public void login() throws Exception {
-		HttpClient httpClient = new HttpClient();
-		// indexableInternetHandler.login(indexableInternet, httpClient);
-		indexableInternet.setLoginUrl("http://localhost:9300/ikube/admin/login.html");
-		indexableInternet.setUserid("guest");
-		indexableInternet.setPassword("guest");
-		Deencapsulation.invoke(indexableInternetHandler, "login", indexableInternet, httpClient);
-		GetMethod get = new GetMethod("http://localhost:9300/ikube/admin/servers.html");
-		httpClient.executeMethod(get);
-		InputStream responseInputStream = get.getResponseBodyAsStream();
-		String content = FileUtilities.getContents(responseInputStream, Integer.MAX_VALUE).toString();
-		logger.info(content);
-		assertTrue("Must contain the timestamp heading from the servers table : ", content.contains("Timestamp"));
+		Deencapsulation.invoke(indexableInternetHandler, "extractLinksFromContent", indexableInternet, inputStream, in, out);
+		assertTrue("Expected more than " + expectedAtLeast + " and got : " + in.size(), in.size() > expectedAtLeast);
 	}
 
 }

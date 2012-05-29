@@ -6,7 +6,6 @@
 	<artifactId>ikube-core</artifactId>
 	<packaging>jar</packaging>
 	<properties>
-		<main.class>ikube.Ikube</main.class>
 		<project.build.sourceEncoding>${encoding}</project.build.sourceEncoding>
 	</properties>
 	
@@ -27,27 +26,6 @@
 			</resource>
 		</resources>
 		<plugins>
-			<!--
-				This configuration packages ikube in a jar and all the dependencies in 
-				the lib folder. The manifest of the jar gets the Ikube.main as the main class 
-				with all the libs on the classpath so it can be started stand alone. 
-			 -->
-			 <plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<version>2.3.1</version>
-				<configuration>
-					<verbose>true</verbose>
-					<archive>
-						<index>true</index>
-						<manifest>
-							<addClasspath>true</addClasspath>
-							<classpathPrefix>lib/</classpathPrefix>
-							<mainClass>${main.class}</mainClass>
-						</manifest>
-					</archive>
-				</configuration>
-			</plugin>
 			<!-- This plugin runs the unit tests. -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -64,29 +42,11 @@
 					</excludes>
 				</configuration>
 			</plugin>
-			<!-- No idea what this plugin does. -->
+			<!-- No idea what this plugin does, perhaps linked to PMD? -->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>jxr-maven-plugin</artifactId>
 				<version>2.0-beta-1</version>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>copy-dependencies</id>
-						<phase>package</phase>
-						<goals>
-							<goal>copy-dependencies</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>target/lib</outputDirectory>
-							<overWriteReleases>false</overWriteReleases>
-							<overWriteSnapshots>false</overWriteSnapshots>
-						</configuration>
-					</execution>
-				</executions>
 			</plugin>
 			<!--
 				This plugin enhances the entities for OpenJpa. Very important for the 
@@ -121,11 +81,6 @@
 				</dependencies>
 			</plugin>
 		</plugins>
-		<pluginManagement>
-			<plugins>
-				
-			</plugins>
-		</pluginManagement>
 	</build>
 	
 </project>

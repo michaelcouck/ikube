@@ -53,15 +53,17 @@ public class SearchController extends SearchBaseController {
 		// Search all the indexes
 		for (String indexName : indexNames) {
 			ArrayList<HashMap<String, String>> indexResults = doSearch(request, modelAndView, indexName, searchStringsArray);
-			HashMap<String, String> statistics = indexResults.get(indexResults.size() - 1);
-			if (isNumeric(statistics.get(IConstants.TOTAL))) {
-				total += Integer.parseInt(statistics.get(IConstants.TOTAL));
+			if (indexResults != null) {
+				HashMap<String, String> statistics = indexResults.get(indexResults.size() - 1);
+				if (isNumeric(statistics.get(IConstants.TOTAL))) {
+					total += Integer.parseInt(statistics.get(IConstants.TOTAL));
+				}
+				if (isNumeric(statistics.get(IConstants.DURATION))) {
+					duration += Long.parseLong(statistics.get(IConstants.DURATION));
+				}
+				corrections = statistics.get(IConstants.CORRECTIONS);
+				results.addAll(indexResults);
 			}
-			if (isNumeric(statistics.get(IConstants.DURATION))) {
-				duration += Long.parseLong(statistics.get(IConstants.DURATION));
-			}
-			corrections = statistics.get(IConstants.CORRECTIONS);
-			results.addAll(indexResults);
 			// Remove the statistics map from the end
 			results.remove(results.size() - 1);
 		}

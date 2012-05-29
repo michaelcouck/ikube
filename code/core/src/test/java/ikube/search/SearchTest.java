@@ -11,7 +11,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
@@ -19,7 +18,6 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
-import org.apache.lucene.document.Fieldable;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriter.MaxFieldLength;
@@ -31,7 +29,6 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -181,21 +178,4 @@ public class SearchTest extends ATest {
 				Arrays.deepToString(correctedSearchStrings));
 	}
 
-	@Test
-	@Ignore
-	public void adHoc() throws Exception {
-		File indexDirectory = new File("/usr/local/cluster/indexes/localFileSystemContext/1329391054706/10.100.109.138.61616");
-		Directory directory = FSDirectory.open(indexDirectory);
-		IndexReader indexReader = IndexReader.open(directory);
-		for (int i = 0; i < indexReader.numDocs(); i++) {
-			Document document = indexReader.document(i);
-			logger.error("Document : " + i);
-			List<Fieldable> fields = document.getFields();
-			for (Fieldable fieldable : fields) {
-				int length = fieldable.stringValue() != null ? fieldable.stringValue().length() : 0;
-				logger.error("        : " + fieldable.name() + ", " + length);
-			}
-		}
-	}
-	
 }

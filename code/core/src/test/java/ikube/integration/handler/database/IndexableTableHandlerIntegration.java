@@ -76,6 +76,24 @@ public class IndexableTableHandlerIntegration extends AbstractIntegration {
 	}
 
 	@Test
+	public void handleTableSingleRow() throws Exception {
+		String predicate = faqIndexableTable.getPredicate();
+		try {
+			String ip = InetAddress.getLocalHost().getHostAddress();
+			IndexWriter indexWriter = IndexManager.openIndexWriter(realIndexContext, System.currentTimeMillis(), ip);
+			realIndexContext.getIndex().setIndexWriter(indexWriter);
+			realIndexContext.setAction(new Action());
+			faqIndexableTable.setPredicate("where faq.faqId = 330451");
+			DatabaseUtilities.printResultSet(connection.createStatement().executeQuery("select * from faq"));
+			List<Future<?>> threads = indexableTableHandler.handle(realIndexContext, faqIndexableTable);
+			ThreadUtilities.waitForFutures(threads, Integer.MAX_VALUE);
+			assertEquals("There must be exactly one document in the index : ", 1, realIndexContext.getIndex().getIndexWriter().numDocs());
+		} finally {
+			faqIndexableTable.setPredicate(predicate);
+		}
+	}
+
+	@Test
 	public void buildSql() throws Exception {
 		realIndexContext.setBatchSize(10);
 		String expectedSql = "select faq.faqid, faq.answer, faq.creationtimestamp, faq.creator, faq.modifiedtimestamp, faq.modifier, "
@@ -251,19 +269,6 @@ public class IndexableTableHandlerIntegration extends AbstractIntegration {
 		} finally {
 			ThreadUtilities.initialize();
 		}
-	}
-
-	@Test
-	public void handleTableSingleRow() throws Exception {
-		String ip = InetAddress.getLocalHost().getHostAddress();
-		IndexWriter indexWriter = IndexManager.openIndexWriter(realIndexContext, System.currentTimeMillis(), ip);
-		realIndexContext.getIndex().setIndexWriter(indexWriter);
-		realIndexContext.setAction(new Action());
-		faqIndexableTable.setPredicate("where faq.faqId = 330451");
-		// DatabaseUtilities.printResultSet(connection.createStatement().executeQuery("select * from faq"));
-		List<Future<?>> threads = indexableTableHandler.handle(realIndexContext, faqIndexableTable);
-		ThreadUtilities.waitForFutures(threads, Integer.MAX_VALUE);
-		assertEquals("There must be exactly one document in the index : ", 1, realIndexContext.getIndex().getIndexWriter().numDocs());
 	}
 
 }

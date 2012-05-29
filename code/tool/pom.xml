@@ -6,6 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>ikube-tool</artifactId>
 	<packaging>jar</packaging>
+	
 	<parent>
 		<groupId>ikube</groupId>
 		<artifactId>ikube</artifactId>
@@ -90,14 +91,21 @@
 			<groupId>sevenzip</groupId>
 			<artifactId>jbinding</artifactId>
 			<version>4.65.1</version>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>sevenzip</groupId>
 			<artifactId>jbinding-linux</artifactId>
 			<version>4.65.1</version>
+			<scope>compile</scope>
 		</dependency>
-		<!-- <dependency> <groupId>org.codehaus.jackson</groupId> <artifactId>jackson-mapper-asl</artifactId> <version>1.9.5</version> <type>jar</type> 
-			<scope>compile</scope> </dependency> -->
+		<dependency>
+			<groupId>canyon</groupId>
+			<artifactId>canyon</artifactId>
+			<version>0.9.8</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
 	</dependencies>
 
 </project>

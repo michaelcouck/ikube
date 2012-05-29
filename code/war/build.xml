@@ -61,14 +61,25 @@
 			<arg line="start" />
 		</java>
 	</target>
-	
+
+	<!-- 
+		This target will unpack Tomcat, put the war in the web apps directory, unpack the configuration to the 
+		bin directory, then zip everything up again into a zip for distribution/deployment.
+	-->
 	<target name="zip">
-		<zip destfile="${target.directory}/ikube.zip" compress="true" filesonly="false" update="false" whenempty="skip">
-			<fileset dir="${configuration.directory}" />
-			<fileset dir="${target.directory}" includes="${ikube.war}" />
+		<untar compression="gzip" dest="target" src="../libs/tools/${tomcat.gzip}"></untar>
+		<unjar src="${configuration.directory}/${ikube.configuration.jar}" dest="${target.directory}/${tomcat.unpacked}/bin" overwrite="true" />
+		<copy file="${target.directory}/${ikube.war}" todir="${target.directory}/${tomcat.unpacked}/webapps" overwrite="true"></copy>
+		<zip 
+			destfile="${target.directory}/ikube.zip" 
+			compress="true" 
+			filesonly="false" 
+			update="false" 
+			whenempty="skip">
+			<zipfileset dir="${target.directory}/${tomcat.unpacked}" prefix="${tomcat.unpacked}"></zipfileset>
 		</zip>
 	</target>
-	
+
 	<target name="clean.servers">
 		<!-- Clean all the ikube files in the servers. -->
 		<antcall target="clean.server">
@@ -146,31 +157,45 @@
 		<unjar src="${configuration.directory}/${ikube.configuration.jar}" dest="${weblogic.1.bin}" overwrite="true" />
 		<replace dir="${tomcat.bin}" value="61615">
 			<include name="**/spring.properties" />
-			<replacetoken><![CDATA[61617]]></replacetoken>
+			<replacetoken>
+				<![CDATA[61617]]>
+			</replacetoken>
 		</replace>
 		<replace dir="${tomcat.2.bin}" value="61618">
 			<include name="**/spring.properties" />
-			<replacetoken><![CDATA[61617]]></replacetoken>
+			<replacetoken>
+				<![CDATA[61617]]>
+			</replacetoken>
 		</replace>
 		<replace dir="${tomcat.3.bin}" value="61619">
 			<include name="**/spring.properties" />
-			<replacetoken><![CDATA[61617]]></replacetoken>
+			<replacetoken>
+				<![CDATA[61617]]>
+			</replacetoken>
 		</replace>
 		<replace dir="${jboss.1.bin}" value="61620">
 			<include name="**/spring.properties" />
-			<replacetoken><![CDATA[61617]]></replacetoken>
+			<replacetoken>
+				<![CDATA[61617]]>
+			</replacetoken>
 		</replace>
 		<replace dir="${glassfish.1.bin}" value="61621">
 			<include name="**/spring.properties" />
-			<replacetoken><![CDATA[61617]]></replacetoken>
+			<replacetoken>
+				<![CDATA[61617]]>
+			</replacetoken>
 		</replace>
 		<replace dir="${oc4j.1.bin}" value="61622">
 			<include name="**/spring.properties" />
-			<replacetoken><![CDATA[61617]]></replacetoken>
+			<replacetoken>
+				<![CDATA[61617]]>
+			</replacetoken>
 		</replace>
 		<replace dir="${weblogic.1.bin}" value="61623">
 			<include name="**/spring.properties" />
-			<replacetoken><![CDATA[61617]]></replacetoken>
+			<replacetoken>
+				<![CDATA[61617]]>
+			</replacetoken>
 		</replace>
 	</target>
 

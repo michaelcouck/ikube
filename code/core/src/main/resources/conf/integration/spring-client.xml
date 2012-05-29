@@ -35,6 +35,7 @@
 	<util:list id="indexables">
 		<ref local="mail" />
 		<ref local="hazelcast" />
+		<ref local="ikubeGoogleCode" />
 		<ref local="internetMillion" />
 		<ref local="filesystemMillion" />
 		<ref bean="faqTableH2" />
@@ -441,6 +442,20 @@
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}" 
+		property:internetBatchSize="${internet.batch.size}"
+		property:excludedPattern="${internet.excluded.pattern}" />
+	
+	<bean
+		id="ikubeGoogleCode"
+		class="ikube.model.IndexableInternet"
+		property:name="ikubeGoogleCode"
+		property:url="http://code.google.com/p/ikube/" 
+		property:idFieldName="id"
+		property:titleFieldName="title"
+		property:contentFieldName="content"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}"
 		property:internetBatchSize="${internet.batch.size}"
 		property:excludedPattern="${internet.excluded.pattern}" />
 	

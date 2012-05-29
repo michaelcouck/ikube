@@ -1,6 +1,7 @@
 package ikube.cluster;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
+
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
@@ -21,6 +22,7 @@ import javax.jms.ObjectMessage;
 
 import mockit.Deencapsulation;
 
+import org.apache.commons.lang.StringUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -127,6 +129,19 @@ public class ClusterManagerJmsTest extends ATest {
 	@After
 	public void after() {
 		ThreadUtilities.destroy();
+	}
+	
+	@Test
+	public void addressTest() {
+		String address = "localhost/127.0.1.1:61618";
+		String[] strings = StringUtils.split(address, "/:");
+		address = strings[strings.length - 2] + ":" + strings[strings.length - 1];
+		assertEquals("127.0.1.1:61618", address);
+		
+		address = "127.0.1.1:61618";
+		strings = StringUtils.split(address, "/:");
+		address = strings[strings.length - 2] + ":" + strings[strings.length - 1];
+		assertEquals("127.0.1.1:61618", address);
 	}
 
 	@Test

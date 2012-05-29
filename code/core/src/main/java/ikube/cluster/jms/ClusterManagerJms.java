@@ -30,6 +30,7 @@ import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.network.NetworkBridge;
 import org.apache.activemq.network.NetworkConnector;
 import org.apache.activemq.xbean.XBeanBrokerService;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,7 +85,7 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 		jmsTemplates = new HashMap<String, JmsTemplate>();
 		ip = InetAddress.getLocalHost().getHostAddress();
 		address = ip + "." + jmsPort;
-		
+
 		getServer();
 		getLock(address, Long.MAX_VALUE, Boolean.FALSE);
 	}
@@ -176,7 +177,8 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 	 * cluster. Other servers that may or may not be competing for the lock also post their locks. Whoever shouts for the lock first then
 	 * get it. This method checks to see if this server shouted first based on the locks from the other servers in the cluster.
 	 * 
-	 * @param shout the time that this server shouted for the lock
+	 * @param shout
+	 *        the time that this server shouted for the lock
 	 * @return whether this server shouted for the lock first thereby getting the lock for the cluster
 	 */
 	protected synchronized boolean haveLock(final long shout) {
@@ -232,7 +234,8 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 	/**
 	 * This method will send messages to the whole cluster.
 	 * 
-	 * @param serializable the object to send in the message
+	 * @param serializable
+	 *        the object to send in the message
 	 */
 	@Override
 	public void sendMessage(final Serializable serializable) {
@@ -255,14 +258,12 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 			for (NetworkBridge networkBridge : networkBridges) {
 				String address = networkBridge.getRemoteAddress();
 				try {
-					int forwardSlash = address.indexOf('/');
-					if (forwardSlash > -1) {
-						// On linux the address is localhost/127.0.1.1:61618, so 
-						// we need to strip the localhost, or whatever the bind address
-						// is for this interface
-						address = address.substring(forwardSlash + 1);
-					}
-					LOGGER.debug("Remote address : {} ", address);
+					// On linux the address is localhost/127.0.1.1:61618, so
+					// we need to strip the localhost, or whatever the bind address
+					// is for this interface
+					String[] strings = StringUtils.split(address, "/:");
+					address = strings[strings.length - 2] + ":" + strings[strings.length - 1];
+					LOGGER.info("Remote address : {} ", address);
 					JmsTemplate jmsTemplate = getJmsTemplate(address);
 					jmsTemplate.send(messageCreator);
 				} catch (Exception e) {
@@ -278,10 +279,10 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 			JmsTemplate jmsTemplate = jmsTemplates.remove(address);
 			if (jmsTemplate != null) {
 				ConnectionFactory connectionFactory = jmsTemplate.getConnectionFactory();
+				LOGGER.info("Failed connection object : " + connectionFactory);
 				if (connectionFactory != null) {
 					connectionFactory.createConnection().close();
 				}
-				LOGGER.info("Failed connection object : " + connectionFactory);
 			} else {
 				LOGGER.warn("Jms template was null : " + address);
 			}
@@ -305,9 +306,12 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 	/**
 	 * Creates the lock if it is not already instantiated.
 	 * 
-	 * @param address the address of this server
-	 * @param shout the time the server shouted for the lock
-	 * @param locked whether this is a request for the lock or a reset of false to release the lock
+	 * @param address
+	 *        the address of this server
+	 * @param shout
+	 *        the time the server shouted for the lock
+	 * @param locked
+	 *        whether this is a request for the lock or a reset of false to release the lock
 	 * @return the lock for this server
 	 */
 	protected ClusterManagerJmsLock getLock(final String address, final long shout, final boolean locked) {

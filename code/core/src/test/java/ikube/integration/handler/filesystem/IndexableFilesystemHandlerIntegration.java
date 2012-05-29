@@ -29,18 +29,18 @@ import org.junit.Test;
 
 public class IndexableFilesystemHandlerIntegration extends AbstractIntegration {
 
-	private IndexableFileSystem localFilesystemIndexable;
-	private IndexContext<?> localFilesystemIndexContext;
+	private IndexContext<?> desktop;
+	private IndexableFileSystem desktopFolder;
 	private IndexableFilesystemHandler indexableFilesystemHandler;
 
 	@Before
 	public void before() {
-		localFilesystemIndexable = ApplicationContextManager.getBean("localFileSystemIndexable");
-		localFilesystemIndexContext = ApplicationContextManager.getBean("localFileSystemContext");
-		localFilesystemIndexContext.setAction(new Action());
+		desktop = ApplicationContextManager.getBean("desktop");
+		desktopFolder = ApplicationContextManager.getBean("desktopFolder");
+		desktop.setAction(new Action());
 		indexableFilesystemHandler = ApplicationContextManager.getBean(IndexableFilesystemHandler.class);
 		delete(ApplicationContextManager.getBean(IDataBase.class), ikube.model.File.class);
-		FileUtilities.deleteFile(new File(localFilesystemIndexContext.getIndexDirectoryPath()), 1);
+		FileUtilities.deleteFile(new File(desktop.getIndexDirectoryPath()), 1);
 	}
 
 	@Test
@@ -48,15 +48,15 @@ public class IndexableFilesystemHandlerIntegration extends AbstractIntegration {
 		Directory directory = null;
 		try {
 			File dataIndexFolder = FileUtilities.findFileRecursively(new File("."), "data");
-			localFilesystemIndexable.setPath(dataIndexFolder.getAbsolutePath());
+			desktopFolder.setPath(dataIndexFolder.getAbsolutePath());
 			String ip = InetAddress.getLocalHost().getHostAddress();
-			IndexManager.openIndexWriter(localFilesystemIndexContext, System.currentTimeMillis(), ip);
-			List<Future<?>> threads = indexableFilesystemHandler.handle(localFilesystemIndexContext, localFilesystemIndexable);
+			IndexManager.openIndexWriter(desktop, System.currentTimeMillis(), ip);
+			List<Future<?>> threads = indexableFilesystemHandler.handle(desktop, desktopFolder);
 			ThreadUtilities.waitForFutures(threads, Integer.MAX_VALUE);
-			IndexManager.closeIndexWriter(localFilesystemIndexContext);
+			IndexManager.closeIndexWriter(desktop);
 
 			logger.info("Data folder : " + dataIndexFolder.getAbsolutePath());
-			File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(localFilesystemIndexContext.getIndexDirectoryPath());
+			File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(desktop.getIndexDirectoryPath());
 			logger.info("Latest index directory : " + latestIndexDirectory.getAbsolutePath());
 			File indexDirectory = new File(latestIndexDirectory, ip);
 			logger.info("Index directory : " + indexDirectory);
@@ -77,12 +77,12 @@ public class IndexableFilesystemHandlerIntegration extends AbstractIntegration {
 	public void handleSingleFile() throws Exception {
 		File file = FileUtilities.findFileRecursively(new File("."), "txt");
 		String ip = InetAddress.getLocalHost().getHostAddress();
-		IndexWriter indexWriter = IndexManager.openIndexWriter(localFilesystemIndexContext, System.currentTimeMillis(), ip);
-		localFilesystemIndexContext.getIndex().setIndexWriter(indexWriter);
-		localFilesystemIndexable.setPath(file.getAbsolutePath());
-		List<Future<?>> futures = indexableFilesystemHandler.handle(localFilesystemIndexContext, localFilesystemIndexable);
+		IndexWriter indexWriter = IndexManager.openIndexWriter(desktop, System.currentTimeMillis(), ip);
+		desktop.getIndex().setIndexWriter(indexWriter);
+		desktopFolder.setPath(file.getAbsolutePath());
+		List<Future<?>> futures = indexableFilesystemHandler.handle(desktop, desktopFolder);
 		ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
-		assertEquals("There should be one document in the index : ", 1, localFilesystemIndexContext.getIndex().getIndexWriter().numDocs());
+		assertEquals("There should be one document in the index : ", 1, desktop.getIndex().getIndexWriter().numDocs());
 	}
 
 	private static void printIndex(final IndexReader indexReader) throws Exception {

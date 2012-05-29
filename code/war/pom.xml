@@ -6,7 +6,6 @@
 	<artifactId>ikube-war</artifactId>
 	<packaging>war</packaging>
 	<properties>
-		<jetty.version>6.1.11</jetty.version>
 		<webapps>webapps</webapps>
 		<ikube.war>ikube.war</ikube.war>
 		<final.name>${project.build.finalName}.${project.packaging}</final.name>
@@ -34,6 +33,14 @@
 			</resource>
 		</resources>
 		<plugins>
+			
+			<!-- The default plugin for creating the war, we specify a version. -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>2.2</version>
+			</plugin>
+			
 			<!-- This plugin runs the unit tests. -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -46,7 +53,11 @@
 					</excludes>
 				</configuration>
 			</plugin>
-			<!-- This plugin reads the properties from the buid.properties file and makes them all available to the rest of the Maven build process. -->
+			
+			<!-- 
+				This plugin reads the properties from the buid.properties file and makes them all available 
+				to the rest of the Maven build process. 
+			-->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>properties-maven-plugin</artifactId>
@@ -65,8 +76,11 @@
 					</execution>
 				</executions>
 			</plugin>
-			<!-- This plugin runs an Ant script after the integration tests to deploy ikube.war to the cluster. The cluster directories are also cleaned, 
-				all the wars and exploded directories are deleted before the deploy. It will also start the Tomcats in the cluster. -->
+			
+			<!-- 
+				This plugin	runs an Ant script after the integration tests to deploy ikube.war to the cluster. 
+				The cluster directories are also cleaned, all the wars and exploded directories are deleted before 
+				the deploy. It will also start the Tomcats in the cluster. -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-antrun-plugin</artifactId>
@@ -132,8 +146,11 @@
 					</execution>
 				</executions>
 			</plugin>
-			<!-- This plugin starts a Jetty server before the integration tests and stops it after the integration tests. It can also be used to start 
-				a jetty server from the command line for testing. -->
+			
+			<!-- 
+				This plugin starts a Jetty server before the integration tests and stops it after the 
+				integration tests. It can also be used to start a jetty server from the command line for testing. 
+			-->
 			<plugin>
 				<groupId>org.mortbay.jetty</groupId>
 				<artifactId>maven-jetty-plugin</artifactId>
@@ -175,9 +192,12 @@
 				</executions>
 				<dependencies>
 					<dependency>
-						<!-- XXX It is included to force commons-logging to use 2.5 API instead of 2.3. This caused by internal dependencies of Jetty, which use 
-							version 2.5, but have it packaged in a different group ID: org.mortbay.jetty. TODO (Roman): If it gets broken again, try to "exclude" servlet-api 
-							dependencies from commons-logging and commons-fileupload. -->
+						<!-- 
+							XXX It is included to force commons-logging to use 2.5 API instead of 2.3. This caused 
+							by internal dependencies of Jetty, which use version 2.5, but have it packaged in a different 
+							group ID: org.mortbay.jetty. TODO (Roman): If it gets broken again, try to "exclude" servlet-api 
+							dependencies from commons-logging and commons-fileupload. 
+						-->
 						<groupId>javax.servlet</groupId>
 						<artifactId>servlet-api</artifactId>
 						<version>2.5</version>
@@ -191,8 +211,12 @@
 					</dependency>
 				</dependencies>
 			</plugin>
-			<!-- This plugin will upload the artifacts to Google code, making them available for download. Unfortunately this can't run in the deploy 
-				phase because the artifacts are still SNAPSHOTS, which is not what is required as a download. -->
+			
+			<!-- 
+				This plugin will upload the artifacts to Google code, making them available for 
+				download. Unfortunately this can't run in the deploy phase because the artifacts are 
+				still SNAPSHOTS, which is not what is required as a download. 
+			-->
 			<plugin>
 				<groupId>com.googlecode.maven-gcu-plugin</groupId>
 				<artifactId>maven-gcu-plugin</artifactId>
@@ -222,24 +246,8 @@
 					</uploads>
 				</configuration>
 			</plugin>
+			
 		</plugins>
-		<pluginManagement>
-			<plugins>
-				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
-				<plugin>
-					<groupId>org.eclipse.m2e</groupId>
-					<artifactId>lifecycle-mapping</artifactId>
-					<version>1.0.0</version>
-					<configuration>
-						<lifecycleMappingMetadata>
-							<pluginExecutions>
-								
-							</pluginExecutions>
-						</lifecycleMappingMetadata>
-					</configuration>
-				</plugin>
-			</plugins>
-		</pluginManagement>
 	</build>
 
 	<dependencies>
@@ -262,31 +270,6 @@
 			<version>2.0</version>
 			<type>jar</type>
 			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.mortbay.jetty</groupId>
-			<artifactId>jetty-embedded</artifactId>
-			<version>${jetty.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.mortbay.jetty</groupId>
-			<artifactId>jetty</artifactId>
-			<version>${jetty.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.mortbay.jetty</groupId>
-			<artifactId>start</artifactId>
-			<version>${jetty.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.mortbay.jetty</groupId>
-			<artifactId>jetty-util</artifactId>
-			<version>${jetty.version}</version>
-			<scope>test</scope>
 		</dependency>
 
 		<dependency>
@@ -315,11 +298,13 @@
 			<groupId>com.sun.jersey</groupId>
 			<artifactId>jersey-server</artifactId>
 			<version>1.0.3</version>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
             <groupId>com.sun.jersey.contribs</groupId>
             <artifactId>jersey-multipart</artifactId>
             <version>1.0.3</version>
+            <scope>compile</scope>
         </dependency>
 		<dependency>
 			<groupId>com.sun.jersey.contribs</groupId>
@@ -352,17 +337,19 @@
 			<groupId>com.sun.xml.bind</groupId>
 			<artifactId>jaxb-impl</artifactId>
 			<version>2.1.9</version>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>javax.ws.rs</groupId>
 			<artifactId>jsr311-api</artifactId>
 			<version>1.0</version>
+			<scope>compile</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>org.apache.tiles</groupId>
 			<artifactId>tiles-jsp</artifactId>
 			<version>2.2.2</version>
+			<scope>compile</scope>
 		</dependency>
 	</dependencies>
 
