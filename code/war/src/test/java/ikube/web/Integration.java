@@ -3,6 +3,7 @@ package ikube.web;
 import ikube.IConstants;
 import ikube.security.WebServiceAuthentication;
 import ikube.toolkit.SerializationUtilities;
+import ikube.toolkit.ThreadUtilities;
 import ikube.web.service.Searcher;
 
 import java.net.URL;
@@ -43,8 +44,9 @@ public abstract class Integration {
 		// We'll wait here for the integration indexes to be ready
 		while (indexesInitialized()) {
 			LOGGER.info("Waiting : ");
-			Thread.sleep(60000);
+			// Thread.sleep(60000);
 		}
+		ThreadUtilities.initialize();
 	}
 
 	@SuppressWarnings("unchecked")
