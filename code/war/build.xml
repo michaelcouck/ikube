@@ -95,8 +95,28 @@
 			<param name="directory" value="${tomcat.3}" />
 		</antcall>
 	</target>
+	
+	<target name="make.directories">
+		<mkdir dir="${tomcat.webapps}" />
+		<mkdir dir="${tomcat.1.webapps}" />
+		<mkdir dir="${tomcat.2.webapps}" />
+		<mkdir dir="${tomcat.3.webapps}" />
+		<mkdir dir="${jboss.1.deploy}" />
+		<mkdir dir="${glassfish.1.deploy}" />
+		<mkdir dir="${oc4j.1.deploy}" />
+		<mkdir dir="${weblogic.1.deploy}" />
+		
+		<mkdir dir="${tomcat.bin}" />
+		<mkdir dir="${tomcat.1.bin}" />
+		<mkdir dir="${tomcat.2.bin}" />
+		<mkdir dir="${tomcat.3.bin}" />
+		<mkdir dir="${jboss.1.bin}" />
+		<mkdir dir="${glassfish.1.bin}" />
+		<mkdir dir="${oc4j.1.bin}" />
+		<mkdir dir="${weblogic.1.bin}" />
+	</target>
 
-	<target name="deploy">
+	<target name="deploy" depends="make.directories">
 		<!-- Deploy the ikube war into the cluster. -->
 		<copy file="${target.directory}/${ikube.war}" todir="${tomcat.webapps}" overwrite="true" failonerror="false" />
 		<copy file="${target.directory}/${ikube.war}" todir="${tomcat.1.webapps}" overwrite="true" failonerror="false" />
