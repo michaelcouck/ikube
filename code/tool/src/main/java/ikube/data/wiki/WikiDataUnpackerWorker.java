@@ -164,7 +164,9 @@ public class WikiDataUnpackerWorker implements Runnable {
 		stringBuilder.append(FilenameUtils.removeExtension(bZip2File.getName()));
 		stringBuilder.append(File.separator);
 		stringBuilder.append(fileName);
-		return FileUtilities.getFile(stringBuilder.toString(), Boolean.TRUE);
+		File nextDirectory = FileUtilities.getFile(stringBuilder.toString(), Boolean.TRUE);
+		LOGGER.info("Next directory : " + nextDirectory);
+		return nextDirectory;
 	}
 
 }

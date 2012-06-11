@@ -101,19 +101,11 @@
 		<mkdir dir="${tomcat.1.webapps}" />
 		<mkdir dir="${tomcat.2.webapps}" />
 		<mkdir dir="${tomcat.3.webapps}" />
-		<mkdir dir="${jboss.1.deploy}" />
-		<mkdir dir="${glassfish.1.deploy}" />
-		<mkdir dir="${oc4j.1.deploy}" />
-		<mkdir dir="${weblogic.1.deploy}" />
 		
 		<mkdir dir="${tomcat.bin}" />
 		<mkdir dir="${tomcat.1.bin}" />
 		<mkdir dir="${tomcat.2.bin}" />
 		<mkdir dir="${tomcat.3.bin}" />
-		<mkdir dir="${jboss.1.bin}" />
-		<mkdir dir="${glassfish.1.bin}" />
-		<mkdir dir="${oc4j.1.bin}" />
-		<mkdir dir="${weblogic.1.bin}" />
 	</target>
 
 	<target name="deploy" depends="make.directories">
@@ -122,10 +114,8 @@
 		<copy file="${target.directory}/${ikube.war}" todir="${tomcat.1.webapps}" overwrite="true" failonerror="false" />
 		<copy file="${target.directory}/${ikube.war}" todir="${tomcat.2.webapps}" overwrite="true" failonerror="false" />
 		<copy file="${target.directory}/${ikube.war}" todir="${tomcat.3.webapps}" overwrite="true" failonerror="false" />
-		<copy file="${target.directory}/${ikube.war}" todir="${jboss.1.deploy}" overwrite="true" failonerror="false" />
-		<copy file="${target.directory}/${ikube.war}" todir="${glassfish.1.deploy}" overwrite="true" failonerror="false" />
-		<copy file="${target.directory}/${ikube.war}" todir="${oc4j.1.deploy}" overwrite="true" failonerror="false" />
-		<copy file="${target.directory}/${ikube.war}" todir="${weblogic.1.deploy}" overwrite="true" failonerror="false" />
+		<!-- Deploy to the server -->
+		<scp file="${target.directory}/${ikube.war}" todir="michael:caherline@192.168.1.4:/usr/share/apache-tomcat-7.0.27/webapps" trust="true" />
 	</target>
 
 	<target name="clean.server">
@@ -171,60 +161,23 @@
 		<unjar src="${configuration.directory}/${ikube.configuration.jar}" dest="${tomcat.1.bin}" overwrite="true" />
 		<unjar src="${configuration.directory}/${ikube.configuration.jar}" dest="${tomcat.2.bin}" overwrite="true" />
 		<unjar src="${configuration.directory}/${ikube.configuration.jar}" dest="${tomcat.3.bin}" overwrite="true" />
-		<unjar src="${configuration.directory}/${ikube.configuration.jar}" dest="${jboss.1.bin}" overwrite="true" />
-		<unjar src="${configuration.directory}/${ikube.configuration.jar}" dest="${glassfish.1.bin}" overwrite="true" />
-		<unjar src="${configuration.directory}/${ikube.configuration.jar}" dest="${oc4j.1.bin}" overwrite="true" />
-		<unjar src="${configuration.directory}/${ikube.configuration.jar}" dest="${weblogic.1.bin}" overwrite="true" />
+		<!-- Deploy configuration on server -->
+		<scp todir="michael:caherline@192.168.1.4:/usr/share/apache-tomcat-7.0.27/bin/ikube" trust="true">
+	    	<fileset dir="${configuration.directory}/ikube"/>
+		</scp>
+		
 		<replace dir="${tomcat.bin}" value="61615">
 			<include name="**/spring.properties" />
-			<replacetoken>
-				<![CDATA[61617]]>
-			</replacetoken>
+			<replacetoken><![CDATA[61617]]></replacetoken>
 		</replace>
 		<replace dir="${tomcat.2.bin}" value="61618">
 			<include name="**/spring.properties" />
-			<replacetoken>
-				<![CDATA[61617]]>
-			</replacetoken>
+			<replacetoken><![CDATA[61617]]></replacetoken>
 		</replace>
 		<replace dir="${tomcat.3.bin}" value="61619">
 			<include name="**/spring.properties" />
-			<replacetoken>
-				<![CDATA[61617]]>
-			</replacetoken>
+			<replacetoken><![CDATA[61617]]></replacetoken>
 		</replace>
-		<replace dir="${jboss.1.bin}" value="61620">
-			<include name="**/spring.properties" />
-			<replacetoken>
-				<![CDATA[61617]]>
-			</replacetoken>
-		</replace>
-		<replace dir="${glassfish.1.bin}" value="61621">
-			<include name="**/spring.properties" />
-			<replacetoken>
-				<![CDATA[61617]]>
-			</replacetoken>
-		</replace>
-		<replace dir="${oc4j.1.bin}" value="61622">
-			<include name="**/spring.properties" />
-			<replacetoken>
-				<![CDATA[61617]]>
-			</replacetoken>
-		</replace>
-		<replace dir="${weblogic.1.bin}" value="61623">
-			<include name="**/spring.properties" />
-			<replacetoken>
-				<![CDATA[61617]]>
-			</replacetoken>
-		</replace>
-	</target>
-
-	<target name="startUbuntu">
-		<exec executable="cmd">
-			<arg value="VBoxManage" />
-			<arg value="startvm" />
-			<arg value="Ubuntu 11.4" />
-		</exec>
 	</target>
 
 	<target name="hsqldb">

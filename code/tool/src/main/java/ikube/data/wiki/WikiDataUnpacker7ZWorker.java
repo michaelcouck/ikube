@@ -22,7 +22,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * TODO Document this class.
+ * This class will read the 7z files and unpack them to bzip2 files of about 100 gig of data each unpacked. The bzip2 files generated will
+ * be around 5 gig each. These files can then be unpacked to individual files using multiple threads, or read just the way they are and
+ * indexed in compressed form as it were, which is the way the Wiki history in the different languages is indexed.
  * 
  * @author Michael Couck
  * @since 09.04.2012
@@ -49,6 +51,11 @@ public class WikiDataUnpacker7ZWorker implements Runnable, ISequentialOutStream 
 	@Override
 	public void run() {
 		try {
+			// Check that this file is not already done
+			if (new File(getOutputFilePath()).exists()) {
+				LOGGER.warn("File already done : " + file);
+				return;
+			}
 			SevenZip.initSevenZipFromPlatformJAR();
 			RandomAccessFile randomAccessFile = new RandomAccessFile(file, "r");
 			RandomAccessFileInStream randomAccessFileInStream = new RandomAccessFileInStream(randomAccessFile);
@@ -79,21 +86,14 @@ public class WikiDataUnpacker7ZWorker implements Runnable, ISequentialOutStream 
 		try {
 			Thread.sleep(throttle);
 			if (offset > oneHundredGig || compressorOutputStream == null) {
-				if (compressorOutputStream != null) {
-					FileUtilities.close(compressorOutputStream);
-				}
-				// Get the output stream
-				StringBuilder bzip2FilePath = new StringBuilder();
-				bzip2FilePath.append(file.getAbsolutePath());
-				bzip2FilePath.append(fileNumber);
-				bzip2FilePath.append(".bz2");
-				File outputFile = FileUtilities.getFile(bzip2FilePath.toString(), Boolean.FALSE);
+				FileUtilities.close(compressorOutputStream);
+				File outputFile = getOutputFile();
 				OutputStream outputStream = new FileOutputStream(outputFile);
 				compressorOutputStream = new CompressorStreamFactory().createCompressorOutputStream("bzip2", outputStream);
 				LOGGER.info("New output stream : " + outputFile);
 				LOGGER.info("Reads : " + reads + ", " + offset + ", " + fileNumber + ", " + oneHundredGig);
 				offset = 0;
-				fileNumber += 1;
+				fileNumber++;
 			}
 			offset += bytes.length;
 			compressorOutputStream.write(bytes);
@@ -102,6 +102,18 @@ public class WikiDataUnpacker7ZWorker implements Runnable, ISequentialOutStream 
 			throw new SevenZipException(e);
 		}
 		return bytes.length;
+	}
+
+	private File getOutputFile() {
+		return FileUtilities.getFile(getOutputFilePath(), Boolean.FALSE);
+	}
+
+	private String getOutputFilePath() {
+		StringBuilder bzip2FilePath = new StringBuilder();
+		bzip2FilePath.append(file.getAbsolutePath());
+		bzip2FilePath.append(fileNumber);
+		bzip2FilePath.append(".bz2");
+		return bzip2FilePath.toString();
 	}
 
 }

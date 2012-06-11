@@ -3,7 +3,7 @@ package ikube.index.handler.filesystem;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 import ikube.ATest;
-import ikube.model.IndexableFileSystem;
+import ikube.model.IndexableFileSystemWiki;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.ThreadUtilities;
 
@@ -28,13 +28,14 @@ public class IndexableFilesystemWikiHandlerTest extends ATest {
 	@Test
 	public void handle() throws Exception {
 		ThreadUtilities.destroy();
-		IndexableFileSystem indexableFileSystem = new IndexableFileSystem();
+		IndexableFileSystemWiki indexableFileSystem = new IndexableFileSystemWiki();
 		indexableFileSystem.setLastModifiedFieldName("lastModifiedFieldName");
 		indexableFileSystem.setNameFieldName("nameFieldName");
 		indexableFileSystem.setLengthFieldName("lengthFieldName");
 		indexableFileSystem.setMaxReadLength(Integer.MAX_VALUE);
 		indexableFileSystem.setPathFieldName("pathFieldName");
 		indexableFileSystem.setContentFieldName("contentFieldName");
+		indexableFileSystem.setMaxRevisions(Integer.MAX_VALUE);
 		File file = FileUtilities.findFileRecursively(new File("."), "enwiki-revisions.bz2");
 		indexableFileSystem.setPath(file.getAbsolutePath());
 		indexableFilesystemWikiHandler.handleFile(indexContext, indexableFileSystem, file);

@@ -36,6 +36,8 @@ public class IndexableFilesystemWikiHandler extends IndexableHandler<IndexableFi
 	/** This is the start and end tags for the xml data, one per page essentially. */
 	private static final String PAGE_START = "<revision>";
 	private static final String PAGE_FINISH = "</revision>";
+	
+	private static final int MAX_ERRORS = 100;
 
 	/**
 	 * {@inheritDoc}
@@ -43,30 +45,33 @@ public class IndexableFilesystemWikiHandler extends IndexableHandler<IndexableFi
 	@Override
 	public List<Future<?>> handle(final IndexContext<?> indexContext, final IndexableFileSystemWiki indexable) throws Exception {
 		List<Future<?>> futures = new ArrayList<Future<?>>();
-		try {
-			Runnable runnable = new Runnable() {
-				public void run() {
-					String filePath = indexable.getPath();
-					File file = FileUtilities.getFile(filePath, Boolean.FALSE);
-					handleFile(indexContext, indexable, file);
+		Runnable runnable = new Runnable() {
+			public void run() {
+				String filePath = indexable.getPath();
+				File file = FileUtilities.getFile(filePath, Boolean.TRUE);
+				List<File> files = FileUtilities.findFilesRecursively(file, new ArrayList<File>(), "bz2");
+				for (File bZip2File : files) {
+					handleFile(indexContext, indexable, bZip2File);
 				}
-			};
-			futures.add(ThreadUtilities.submit(runnable));
-		} catch (Exception e) {
-			logger.error("Exception starting the file system indexer threads : ", e);
-		}
+			}
+		};
+		futures.add(ThreadUtilities.submit(runnable));
 		return futures;
 	}
 
 	/**
-	 * This method will take a Bzip2 file, read it, decompress it gradually. Parse the contents, extracting the revision data for the Wiki which
-	 * is in <revision> tags. Each revision will then be added to the index as a unique document.
+	 * This method will take a Bzip2 file, read it, decompress it gradually. Parse the contents, extracting the revision data for the Wiki
+	 * which is in <revision> tags. Each revision will then be added to the index as a unique document.
 	 * 
-	 * @param indexContext the index context for the index
-	 * @param indexableFileSystem the file system object, i.e. the path to the bzip file
-	 * @param file the Bzip2 file with the Wiki data in it
+	 * @param indexContext
+	 *        the index context for the index
+	 * @param indexableFileSystem
+	 *        the file system object, i.e. the path to the bzip file
+	 * @param file
+	 *        the Bzip2 file with the Wiki data in it
 	 */
-	protected void handleFile(final IndexContext<?> indexContext, final IndexableFileSystem indexableFileSystem, final File file) {
+	protected void handleFile(final IndexContext<?> indexContext, final IndexableFileSystemWiki indexableFileSystem, final File file) {
+		int errors = 0;
 		// Get the wiki history file
 		FileInputStream fileInputStream = null;
 		BZip2CompressorInputStream bZip2CompressorInputStream = null;
@@ -76,8 +81,9 @@ public class IndexableFilesystemWikiHandler extends IndexableHandler<IndexableFi
 			bZip2CompressorInputStream = new BZip2CompressorInputStream(fileInputStream);
 			byte[] bytes = new byte[1024 * 1024];
 			StringBuilder stringBuilder = new StringBuilder();
+			int counter = 0;
 			// Read a chunk
-			while ((read = bZip2CompressorInputStream.read(bytes)) > -1) {
+			while ((read = bZip2CompressorInputStream.read(bytes)) > -1 && counter < indexableFileSystem.getMaxRevisions()) {
 				String string = new String(bytes, 0, read, Charset.forName(IConstants.ENCODING));
 				stringBuilder.append(string);
 				// Parse the <revision> tags
@@ -95,10 +101,20 @@ public class IndexableFilesystemWikiHandler extends IndexableHandler<IndexableFi
 					stringBuilder.delete(startOffset, endOffset);
 					// Add the documents to the index
 					handleRevision(indexContext, indexableFileSystem, content);
+					counter++;
+					if (counter % 10000 == 0) {
+						LOGGER.info("Revisions done : " + counter + ", " + file.getName());
+					}
 				}
 			}
+		} catch (InterruptedException e) {
+			throw new RuntimeException(e);
 		} catch (Exception e) {
 			LOGGER.error("Exception reading and uncompressing the zip file : " + file, e);
+			errors++;
+			if (errors > MAX_ERRORS) {
+				throw new RuntimeException("Maximum errors in wiki handler : " + this);
+			}
 		} finally {
 			FileUtilities.close(fileInputStream);
 			FileUtilities.close(bZip2CompressorInputStream);
@@ -108,24 +124,26 @@ public class IndexableFilesystemWikiHandler extends IndexableHandler<IndexableFi
 	/**
 	 * This method will read a log file line by line and add a document to the Lucene index for each line.
 	 * 
-	 * @param indexContext the context for this log file set
-	 * @param indexableFileSystem the log file, i.e. the directory where the log files are on the network
-	 * @param logFile and the individual log file that we will index
+	 * @param indexContext
+	 *        the context for this log file set
+	 * @param indexableFileSystem
+	 *        the log file, i.e. the directory where the log files are on the network
+	 * @param logFile
+	 *        and the individual log file that we will index
+	 * @throws Exception
 	 */
-	private void handleRevision(final IndexContext<?> indexContext, final IndexableFileSystem indexableFileSystem, final String content) {
+	private void handleRevision(final IndexContext<?> indexContext, final IndexableFileSystem indexableFileSystem, final String content)
+			throws Exception {
 		Store store = indexableFileSystem.isStored() ? Store.YES : Store.NO;
 		Index analyzed = indexableFileSystem.isAnalyzed() ? Index.ANALYZED : Index.NOT_ANALYZED;
 		TermVector termVector = indexableFileSystem.isVectored() ? TermVector.YES : TermVector.NO;
-		try {
-			Document document = new Document();
-			String pathFieldName = indexableFileSystem.getPathFieldName();
-			String contentFieldName = indexableFileSystem.getContentFieldName();
-			IndexManager.addStringField(pathFieldName, indexableFileSystem.getPath(), document, Store.YES, Index.ANALYZED, TermVector.YES);
-			IndexManager.addStringField(contentFieldName, content, document, store, analyzed, termVector);
-			addDocument(indexContext, indexableFileSystem, document);
-		} catch (Exception e) {
-			logger.error("Exception reading log file : ", e);
-		}
+
+		Document document = new Document();
+		String pathFieldName = indexableFileSystem.getPathFieldName();
+		String contentFieldName = indexableFileSystem.getContentFieldName();
+		IndexManager.addStringField(pathFieldName, indexableFileSystem.getPath(), document, Store.YES, Index.ANALYZED, TermVector.YES);
+		IndexManager.addStringField(contentFieldName, content, document, store, analyzed, termVector);
+		addDocument(indexContext, indexableFileSystem, document);
 	}
 
 }

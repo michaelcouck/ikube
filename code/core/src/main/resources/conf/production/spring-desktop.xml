@@ -48,7 +48,7 @@
 		id="desktopFolder"
 		class="ikube.model.IndexableFileSystem"
 		property:name="desktopFolder"
-		property:path="/"
+		property:path="/tmp"
 		property:pathFieldName="path"
 		property:nameFieldName="name"
 		property:lengthFieldName="length"

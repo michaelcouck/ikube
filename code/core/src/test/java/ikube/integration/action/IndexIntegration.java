@@ -1,9 +1,11 @@
 package ikube.integration.action;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
+
 import ikube.action.Index;
 import ikube.cluster.IClusterManager;
 import ikube.database.IDataBase;
+import ikube.index.handler.filesystem.IndexableFilesystemWikiHandler;
 import ikube.integration.AbstractIntegration;
 import ikube.model.Action;
 import ikube.model.IndexContext;
@@ -42,6 +44,13 @@ public class IndexIntegration extends AbstractIntegration {
 		logger.info("Result from index action : " + result);
 		assertTrue("The index must execute properly : ", result);
 		// Stop all the actions
+	}
+	
+	@Test
+	public void getHandler() {
+		Object wikiHistoryDataArabic = ApplicationContextManager.getBean("wikiHistoryDataArabic");
+		Object handler = Deencapsulation.invoke(new Index(), "getHandler", wikiHistoryDataArabic);
+		assertEquals(IndexableFilesystemWikiHandler.class, handler.getClass());
 	}
 
 }

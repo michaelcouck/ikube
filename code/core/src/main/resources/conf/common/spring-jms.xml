@@ -46,7 +46,7 @@
 		<amq:transportConnectors>
 			<amq:transportConnector
 				name="openwire" 
-				uri="tcp://0.0.0.0:${activemq.port}" 
+				uri="tcp://0.0.0.0:${activemq.port}"
 				discoveryUri="multicast://default?initialReconnectDelay=1000" />
 		</amq:transportConnectors>
 	</amq:broker>

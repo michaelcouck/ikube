@@ -15,4 +15,15 @@ import javax.persistence.InheritanceType;
 @SuppressWarnings("serial")
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class IndexableFileSystemWiki extends IndexableFileSystem {
+
+	private int maxRevisions;
+
+	public int getMaxRevisions() {
+		return maxRevisions;
+	}
+
+	public void setMaxRevisions(int maxRevisions) {
+		this.maxRevisions = maxRevisions;
+	}
+
 }

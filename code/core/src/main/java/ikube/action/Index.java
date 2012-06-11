@@ -104,12 +104,12 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 		@SuppressWarnings("rawtypes")
 		Map<String, IHandler> indexableHandlers = ApplicationContextManager.getBeans(IHandler.class);
 		for (IHandler<Indexable<?>> handler : indexableHandlers.values()) {
-			if (handler.getIndexableClass().isAssignableFrom(indexable.getClass())) {
+			if (handler.getIndexableClass().equals(indexable.getClass())) {
 				return handler;
 			}
 		}
 		logger.warn("No handler for type : " + indexable.getName());
-		return null;
+		throw new RuntimeException("No handler defined for indexable : " + indexable);
 	}
 
 }

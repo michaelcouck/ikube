@@ -82,6 +82,7 @@ public class GeoSearchControllerTest {
 		ModelAndView modelAndView = new ModelAndView();
 		modelAndView = geoSearchController.search("geospatial", "searchStrings", latitudeDouble, longitudeDouble, distanceInt,
 				firstResultInt, maxResultsInt, "", modelAndView);
+
 		Object total = modelAndView.getModel().get(IConstants.TOTAL);
 		Object duration = modelAndView.getModel().get(IConstants.DURATION);
 		results = (ArrayList<HashMap<String, String>>) modelAndView.getModel().get(IConstants.RESULTS);
@@ -104,6 +105,34 @@ public class GeoSearchControllerTest {
 		assertEquals("End result is 10 : ", maxResultsInt, maxResults);
 		assertEquals("There are 11 results : ", Integer.toString(resultsSizeInt), total);
 		assertEquals("There are 11 results : ", resultsSizeInt, results.size());
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void route() throws Exception {
+		File file = FileUtilities.findFileRecursively(new File("."), "geospatial.results.xml");
+		String xml = FileUtilities.getContents(file, IConstants.ENCODING);
+		ArrayList<HashMap<String, String>> results = (ArrayList<HashMap<String, String>>) SerializationUtilities.deserialize(xml);
+		when(
+				searcherWebService.searchMultiSpacialAll(anyString(), any(String[].class), anyBoolean(), anyInt(), anyInt(), anyInt(),
+						anyDouble(), anyDouble())).thenReturn(results);
+
+		int distanceInt = 10;
+		int firstResultInt = 0;
+		int maxResultsInt = 10;
+		double latitudeDouble = 10;
+		double longitudeDouble = 10;
+
+		ModelAndView modelAndView = new ModelAndView();
+		modelAndView = geoSearchController.route("geospatial", "searchStrings", latitudeDouble, longitudeDouble, distanceInt,
+				firstResultInt, maxResultsInt, "", modelAndView);
+
+		ArrayList<HashMap<String, String>> resultsRouted = (ArrayList<HashMap<String, String>>) modelAndView.getModel().get(
+				IConstants.RESULTS_ROUTED);
+		for (int i = 0; i < resultsRouted.size(); i++) {
+			LOGGER.info("Result : " + results.get(i));
+			LOGGER.info("Routed  : " + resultsRouted.get(i));
+		}
 	}
 
 }

@@ -83,6 +83,7 @@ public interface IConstants {
 	String START = "start";
 	String END = "end";
 	String RESULTS = "results";
+	String RESULTS_ROUTED = "resultsRouted";
 	String ADDRESS = "address";
 	String SERVER = "server";
 	String SERVERS = "servers";

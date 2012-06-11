@@ -48,24 +48,61 @@
 	 			        title : "<c:out value="${result['name']}" />, distance : <c:out value="${result['distance']}" />"
 	 			    });
     			</c:forEach>
+    			
+    			var wps = [];
+    			var allWps = [];
+    			<c:forEach var="result" items="${resultsRouted}">
+    				var latitude = parseFloat(${result['latitude']});
+    				var longitude = parseFloat(${result['longitude']});
+    				var waypoint = new google.maps.LatLng(latitude,longitude);
+ 			   		allWps.push({ location: waypoint });
+ 				</c:forEach>
+ 				
+ 				for (var i = 0; i < 8 && i < allWps.length; i++) {
+ 					wps.push(allWps[i]);
+ 				}
+    			
+    			var rendererOptions = { map: map };
+    			directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);
+
+    			var org = new google.maps.LatLng(-33.95796,18.46082);
+    			var dest = new google.maps.LatLng(-33.74898,18.55156);
+
+    			var request = {
+    					origin: org,
+    					destination: dest,
+    					waypoints: wps,
+    					travelMode: google.maps.DirectionsTravelMode.DRIVING
+    					};
+
+    			directionsService = new google.maps.DirectionsService();
+    			directionsService.route(request, function(response, status) {
+    						if (status == google.maps.DirectionsStatus.OK) {
+    							directionsDisplay.setDirections(response);
+    						}
+    						else
+    							alert ('failed to get directions' + status);
+    					});
   			}
+  			
 		</script>
 	</c:otherwise>
 </c:choose>
 
 <script type="text/javascript">
-	window.onload=initialize
+	window.onload=initialize;
 </script>
 
 <c:set var="indexName" value="${param.indexName != null ? param.indexName : 'geospatial'}" />
 <c:set var="searchStrings" value="${param.searchStrings != null ? param.searchStrings : 'cape AND town'}" />
 <c:set var="latitude" value="${param.latitude != null ? param.latitude : '-33.9693580'}" />
 <c:set var="longitude" value="${param.longitude != null ? param.longitude : '18.4622110'}" />
-<c:set var="distance" value="${param.distance != null ? param.distance : '20'}" />
+<c:set var="distance" value="${param.distance != null ? param.distance : '20'}" 
+/>
 <c:set var="firstResult" value="${param.firstResult != null ? param.firstResult : '0'}" />
 <c:set var="maxResults" value="${param.maxResults != null ? param.maxResults : '100'}" />
 
-<c:set var="targetSearchUrl" value="/admin/geosearch.html" />
+<c:set var="targetSearchUrl" value="/admin/georoute.html" />
 <form name="geoSearchForm" id="geoSearchForm" action="<c:url value="${targetSearchUrl}"/>">
 <input name="targetSearchUrl" type="hidden" value="${targetSearchUrl}">
 <table>
@@ -118,7 +155,7 @@
 			</table>
 		</td>
 		<td width="100%">
-			<div id="map_canvas" style="width:450px; height:450px; border: solid black 1px;"></div>
+			<div id="map_canvas" style="width:700px; height:450px; border: solid black 1px;"></div>
 		</td>
 	</tr>
 </table>
