@@ -41,50 +41,53 @@
  			        icon: "<c:url value="/images/icons/center_pin.png" />"
  			    });
     			<c:forEach var="result" items="${results}">
-    			   coordinate = new google.maps.LatLng(parseFloat(${result['latitude']}),parseFloat(${result['longitude']}));
-	 				marker = new google.maps.Marker({
-	 			        position: coordinate,
-	 			        map : map,
-	 			        title : "<c:out value="${result['name']}" />, distance : <c:out value="${result['distance']}" />"
-	 			    });
+					coordinate = new google.maps.LatLng(parseFloat(${result['latitude']}),parseFloat(${result['longitude']}));
+					marker = new google.maps.Marker({
+						position: coordinate,
+						map : map,
+						title : "<c:out value="${result['name']}" />, distance : <c:out value="${result['distance']}" />"
+					});
     			</c:forEach>
     			
     			var wps = [];
-    			var allWps = [];
-    			<c:forEach var="result" items="${resultsRouted}">
-    				var latitude = parseFloat(${result['latitude']});
-    				var longitude = parseFloat(${result['longitude']});
-    				var waypoint = new google.maps.LatLng(latitude,longitude);
- 			   		allWps.push({ location: waypoint });
+    			var org = new google.maps.LatLng(0,0);
+    			var dest = new google.maps.LatLng(0,0);
+    			<c:forEach var="result" varStatus="status" items="${resultsRouted}">
+					<c:if test="${status.count <= 8}">
+						var latitude = parseFloat(${result['latitude']});
+	    				var longitude = parseFloat(${result['longitude']});
+    					var waypoint = new google.maps.LatLng(latitude,longitude);
+						<c:if test="${status.count == 1}">
+							org = waypoint;
+						</c:if>
+						<c:if test="${status.count == 8}">
+							dest = waypoint;
+						</c:if>
+	 					wps.push({ location: waypoint });
+					</c:if>
  				</c:forEach>
  				
- 				for (var i = 0; i < 8 && i < allWps.length; i++) {
- 					wps.push(allWps[i]);
- 				}
-    			
-    			var rendererOptions = { map: map };
+ 				var rendererOptions = { map: map };
     			directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);
 
-    			var org = new google.maps.LatLng(-33.95796,18.46082);
-    			var dest = new google.maps.LatLng(-33.74898,18.55156);
-
     			var request = {
-    					origin: org,
-    					destination: dest,
-    					waypoints: wps,
-    					travelMode: google.maps.DirectionsTravelMode.DRIVING
-    					};
+    				origin: org,
+    				destination: dest,
+    				waypoints: wps,
+    				travelMode: google.maps.DirectionsTravelMode.DRIVING
+    			};
 
     			directionsService = new google.maps.DirectionsService();
-    			directionsService.route(request, function(response, status) {
-    						if (status == google.maps.DirectionsStatus.OK) {
-    							directionsDisplay.setDirections(response);
-    						}
-    						else
-    							alert ('failed to get directions' + status);
-    					});
+    			directionsService.route(request, 
+    				function(response, status) {
+    					if (status == google.maps.DirectionsStatus.OK) {
+    						directionsDisplay.setDirections(response);
+    					} else {
+    						alert ('failed to get directions' + status);
+    					}
+    				}
+    			);
   			}
-  			
 		</script>
 	</c:otherwise>
 </c:choose>

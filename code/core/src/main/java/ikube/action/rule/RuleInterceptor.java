@@ -167,7 +167,7 @@ public class RuleInterceptor implements IRuleInterceptor {
 			};
 			Future<?> future = ThreadUtilities.submit(runnable);
 			// We'll wait a few seconds for this action, perhaps it is a fast one
-			ThreadUtilities.waitForFuture(future, 1000);
+			ThreadUtilities.waitForFuture(future, 3);
 			LOGGER.debug("Finished waiting for future : {} ", future);
 		} finally {
 			notifyAll();

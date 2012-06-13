@@ -87,10 +87,18 @@ public final class ThreadUtilities {
 			LOGGER.debug("Future null returning : ");
 			return;
 		}
-		try {
-			future.get(maxWait, TimeUnit.MILLISECONDS);
-		} catch (Exception e) {
-			LOGGER.warn("Exception waiting for future : ", e);
+		long start = System.currentTimeMillis();
+		while (!future.isDone()) {
+			try {
+				future.get(maxWait, TimeUnit.SECONDS);
+			} catch (Exception e) {
+				LOGGER.warn("Exception waiting for future : ", e);
+			}
+			ThreadUtilities.sleep(1000);
+			LOGGER.debug("Future : " + future);
+			if ((System.currentTimeMillis() - start) > maxWait * 1000) {
+				break;
+			}
 		}
 	}
 
