@@ -32,7 +32,7 @@ public class DiskFull extends Action<IndexContext<?>, Boolean> {
 		try {
 			action = start(indexContext.getIndexName(), "");
 			File indexesDirectory = FileUtilities.getFile(indexContext.getIndexDirectoryPath(), Boolean.TRUE);
-			if (!indexesDirectory.exists() || !indexesDirectory.isDirectory()) {
+			if (indexesDirectory == null || !indexesDirectory.exists() || !indexesDirectory.isDirectory()) {
 				return Boolean.FALSE;
 			}
 			String drive = null;

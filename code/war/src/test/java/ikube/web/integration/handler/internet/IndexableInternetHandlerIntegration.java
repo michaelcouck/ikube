@@ -76,6 +76,16 @@ public class IndexableInternetHandlerIntegration extends Integration {
 		indexableInternet.setPassword(REST_PASSWORD);
 		indexableInternet.setBaseUrl(url.toString());
 		indexableInternet.setUrl(url.toString());
+		indexableInternet.setAddress(false);
+		indexableInternet.setAnalyzed(true);
+		indexableInternet.setContentFieldName("content");
+		indexableInternet.setIdFieldName("id");
+		indexableInternet.setInternetBatchSize(100);
+		indexableInternet.setName("indexableInternet");
+		indexableInternet.setStored(true);
+		indexableInternet.setTimeout(1000);
+		indexableInternet.setTitleFieldName("title");
+		indexableInternet.setVectored(true);
 		// Index the pages in the application
 		List<Future<?>> futures = indexableInternetHandler.handle(indexContext, indexableInternet);
 		ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);

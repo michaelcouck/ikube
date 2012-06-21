@@ -67,16 +67,19 @@
 		bin directory, then zip everything up again into a zip for distribution/deployment.
 	-->
 	<target name="zip">
-		<untar compression="gzip" dest="target" src="../libs/tools/${tomcat.gzip}"></untar>
+		<untar compression="gzip" dest="target" src="../libs/tools/${tomcat.gzip}">
+		</untar>
 		<unjar src="${configuration.directory}/${ikube.configuration.jar}" dest="${target.directory}/${tomcat.unpacked}/bin" overwrite="true" />
-		<copy file="${target.directory}/${ikube.war}" todir="${target.directory}/${tomcat.unpacked}/webapps" overwrite="true"></copy>
+		<copy file="${target.directory}/${ikube.war}" todir="${target.directory}/${tomcat.unpacked}/webapps" overwrite="true">
+		</copy>
 		<zip 
 			destfile="${target.directory}/ikube.zip" 
 			compress="true" 
 			filesonly="false" 
 			update="false" 
 			whenempty="skip">
-			<zipfileset dir="${target.directory}/${tomcat.unpacked}" prefix="${tomcat.unpacked}"></zipfileset>
+			<zipfileset dir="${target.directory}/${tomcat.unpacked}" prefix="${tomcat.unpacked}">
+			</zipfileset>
 		</zip>
 	</target>
 
@@ -95,13 +98,13 @@
 			<param name="directory" value="${tomcat.3}" />
 		</antcall>
 	</target>
-	
+
 	<target name="make.directories">
 		<mkdir dir="${tomcat.webapps}" />
 		<mkdir dir="${tomcat.1.webapps}" />
 		<mkdir dir="${tomcat.2.webapps}" />
 		<mkdir dir="${tomcat.3.webapps}" />
-		
+
 		<mkdir dir="${tomcat.bin}" />
 		<mkdir dir="${tomcat.1.bin}" />
 		<mkdir dir="${tomcat.2.bin}" />
@@ -115,7 +118,10 @@
 		<copy file="${target.directory}/${ikube.war}" todir="${tomcat.2.webapps}" overwrite="true" failonerror="false" />
 		<copy file="${target.directory}/${ikube.war}" todir="${tomcat.3.webapps}" overwrite="true" failonerror="false" />
 		<!-- Deploy to the server -->
-		<scp file="${target.directory}/${ikube.war}" todir="michael:caherline@192.168.1.4:/usr/share/apache-tomcat-7.0.27/webapps" trust="true" />
+		<scp file="${target.directory}/${ikube.war}" todir="michael:caherline@192.168.1.4:/usr/share/apache-tomcat-7.0.27/webapps" trust="true" failonerror="false" />
+		<scp file="${target.directory}/${ikube.war}" todir="michael:caherline@192.168.1.5:/usr/share/apache-tomcat-7.0.27/webapps" trust="true" failonerror="false" />
+		<scp file="${target.directory}/${ikube.war}" todir="michael:caherline@192.168.1.6:/usr/share/apache-tomcat-7.0.27/webapps" trust="true" failonerror="false" />
+		<scp file="${target.directory}/${ikube.war}" todir="michael:caherline@192.168.1.7:/usr/share/apache-tomcat-7.0.27/webapps" trust="true" failonerror="false" />
 	</target>
 
 	<target name="clean.server">
@@ -162,10 +168,19 @@
 		<unjar src="${configuration.directory}/${ikube.configuration.jar}" dest="${tomcat.2.bin}" overwrite="true" />
 		<unjar src="${configuration.directory}/${ikube.configuration.jar}" dest="${tomcat.3.bin}" overwrite="true" />
 		<!-- Deploy configuration on server -->
-		<scp todir="michael:caherline@192.168.1.4:/usr/share/apache-tomcat-7.0.27/bin/ikube" trust="true">
-	    	<fileset dir="${configuration.directory}/ikube"/>
+		<scp todir="michael:caherline@192.168.1.4:/usr/share/apache-tomcat-7.0.27/bin/ikube" trust="true" failonerror="false">
+			<fileset dir="${configuration.directory}/ikube"/>
 		</scp>
-		
+		<scp todir="michael:caherline@192.168.1.5:/usr/share/apache-tomcat-7.0.27/bin/ikube" trust="true" failonerror="false">
+			<fileset dir="${configuration.directory}/ikube" />
+		</scp>
+		<scp todir="michael:caherline@192.168.1.6:/usr/share/apache-tomcat-7.0.27/bin/ikube" trust="true" failonerror="false">
+			<fileset dir="${configuration.directory}/ikube" />
+		</scp>
+		<scp todir="michael:caherline@192.168.1.7:/usr/share/apache-tomcat-7.0.27/bin/ikube" trust="true" failonerror="false">
+			<fileset dir="${configuration.directory}/ikube" />
+		</scp>
+
 		<replace dir="${tomcat.bin}" value="61615">
 			<include name="**/spring.properties" />
 			<replacetoken><![CDATA[61617]]></replacetoken>

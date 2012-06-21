@@ -65,7 +65,9 @@ public class SearchController extends SearchBaseController {
 				results.addAll(indexResults);
 			}
 			// Remove the statistics map from the end
-			results.remove(results.size() - 1);
+			if (results.size() > 0) {
+				results.remove(results.size() - 1);
+			}
 		}
 
 		// Sort the results according to the score. This will essentially merge the results and
