@@ -33,6 +33,7 @@ public class GeonamePopulator {
 	}
 
 	public static void main(String[] args) throws Exception {
+		System.setProperty("ikube.configuration", "file:/usr/share/eclipse/workspace/ikube/code/tool/ikube/spring.xml");
 		persist();
 	}
 
@@ -41,14 +42,14 @@ public class GeonamePopulator {
 		Session session = SessionFactory.getSession(sessionName);
 		IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
 		ThreadUtilities.destroy();
-		int batchSize = 10000;
+		int batchSize = 1000;
 		List<GeoName> geoNames = new ArrayList<GeoName>();
 		int count = 0;
 		while (session.hasNext(GeoName.class)) {
 			count++;
 			try {
 				GeoName geoName = session.next(GeoName.class);
-				if (count % 1000 == 0) {
+				if (count % 10000 == 0) {
 					LOGGER.info("Count : " + count);
 				}
 				geoNames.add(geoName);
@@ -64,7 +65,7 @@ public class GeonamePopulator {
 
 	private static void persistBatch(IDataBase dataBase, List<GeoName> geoNames) {
 		try {
-			LOGGER.info("Persisting batch : " + geoNames.size());
+			// LOGGER.info("Persisting batch : " + geoNames.size());
 			dataBase.persistBatch(geoNames);
 			geoNames.clear();
 		} catch (Exception e) {
@@ -72,9 +73,12 @@ public class GeonamePopulator {
 		} finally {
 			for (GeoName geoName : geoNames) {
 				try {
+					if (geoName.getId() != 0) {
+						continue;
+					}
 					dataBase.persist(geoName);
 				} catch (Exception ex) {
-					LOGGER.error("", ex);
+					LOGGER.error(ex.getMessage());
 				}
 			}
 			geoNames.clear();

@@ -15,7 +15,7 @@
 		<version>3.1.1-SNAPSHOT</version>
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
-
+	
 	<properties>
 		<main.class>ikube.data.wiki.WikiDataUnpacker</main.class>
 	</properties>
@@ -26,6 +26,9 @@
 				<directory>src/main/java</directory>
 			</resource>
 			<resource>
+				<excludes>
+					<exclude>src/main/resources/allCountriesCsv.txt</exclude>
+				</excludes>
 				<directory>src/main/resources</directory>
 			</resource>
 		</resources>

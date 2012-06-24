@@ -235,6 +235,9 @@ public class IndexableTableHandlerIntegration extends AbstractIntegration {
 			if (!IndexableTable.class.isAssignableFrom(indexable.getClass())) {
 				continue;
 			}
+			if (!((IndexableTable) indexable).isPrimaryTable()) {
+				continue;
+			}
 			try {
 				List<Future<?>> futures = indexableTableHandler.handle(indexContext, (IndexableTable) indexable);
 				ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);

@@ -9,6 +9,7 @@ import ikube.notify.IMailer;
 
 import java.net.InetAddress;
 import java.net.NetworkInterface;
+import java.util.Enumeration;
 import java.util.List;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -206,17 +207,34 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
 	 */
 	protected void sendNotification(final String subject, final String body) {
 		try {
-			 InetAddress inetAddress = InetAddress.getLocalHost();
-			 NetworkInterface network = NetworkInterface.getByInetAddress(inetAddress);
-			 StringBuilder stringBuilder = new StringBuilder();
-			 stringBuilder.append(subject);
-			 stringBuilder.append(", server : ");
-			 stringBuilder.append(inetAddress.getHostAddress());
-			 if (network != null) {
-				 byte[] mac = network.getHardwareAddress();
-				 stringBuilder.append(", mac : ");
-				 stringBuilder.append(new String(mac));
-			 }
+			StringBuilder subjectBuilder = new StringBuilder();
+			StringBuilder bodyBuilder = new StringBuilder();
+			
+			subjectBuilder.append(subject);
+			subjectBuilder.append(", ip addresses");
+			bodyBuilder.append(body);
+			bodyBuilder.append("\n\r");
+			bodyBuilder.append("Mac address : ");
+			bodyBuilder.append("\n\r");
+			
+			Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
+			while (networkInterfaces.hasMoreElements()) {
+				NetworkInterface networkInterface = networkInterfaces.nextElement();
+				Enumeration<InetAddress> inetAddresses = networkInterface.getInetAddresses();
+				while (inetAddresses.hasMoreElements()) {
+					InetAddress inetAddress = inetAddresses.nextElement();
+					String ip = inetAddress.getHostAddress();
+					subjectBuilder.append(" - ");
+					subjectBuilder.append(ip);
+					byte[] mac = networkInterface.getHardwareAddress();
+					if (mac != null && mac.length > 0) {
+						bodyBuilder.append(" - ");
+						bodyBuilder.append(new String(mac));
+						bodyBuilder.append("\n\r");
+					}
+				}
+				subjectBuilder.append(networkInterface.getInetAddresses());
+			}
 			mailer.sendMail(subject, body);
 		} catch (Exception e) {
 			logger.error("Exception sending mail : " + subject, e);

@@ -49,7 +49,7 @@ public final class MimeMapper {
 		} catch (Exception e) {
 			String message = "Exception loading the mapping for parsers : " + fileName;
 			LOGGER.error(message, e);
-			throw new RuntimeException(message, e);
+			// throw new RuntimeException(message, e);
 		} finally {
 			FileUtilities.close(inputStream);
 		}

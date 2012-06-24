@@ -40,4 +40,14 @@
 		</property>
 	</bean>
 	
+	<bean id="oracleSequenceCreator" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
+		property:staticMethod="ikube.toolkit.DatabaseUtilities.executeStatement">
+		<property name="arguments">
+			<array>
+				<ref bean="nonXaDataSourceOracle" />
+				<value type="java.lang.String">CREATE SEQUENCE persistable START WITH 1 CACHE 1000</value>
+			</array>
+		</property>
+	</bean>
+
 </beans>

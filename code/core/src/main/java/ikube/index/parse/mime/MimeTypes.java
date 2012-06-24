@@ -61,7 +61,7 @@ public final class MimeTypes {
 		} catch (Exception e) {
 			String message = "Exception loading the mapping file for mime types : ";
 			LOGGER.error(message, e);
-			throw new RuntimeException(message, e);
+			// throw new RuntimeException(message, e);
 		} finally {
 			FileUtilities.close(inputStream);
 		}

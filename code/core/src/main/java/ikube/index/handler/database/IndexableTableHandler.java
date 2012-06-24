@@ -292,8 +292,8 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 		} catch (InterruptedException e) {
 			throw e;
 		} catch (Exception e) {
-			String message = Logging.getString("Exception indexing table : " + indexableTable.getName(), ", connection : ", connection,
-					", exceptions : ", currentExceptions);
+			String message = Logging.getString("Exception indexing table : ", indexableTable.getName(), ", ",
+					indexableTable.getDataSource(), ", connection : ", connection, ", exceptions : ", currentExceptions);
 			logger.error(message, e);
 		} finally {
 			// Close the result set and the statement for this

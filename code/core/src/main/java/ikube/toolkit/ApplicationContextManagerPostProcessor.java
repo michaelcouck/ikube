@@ -33,7 +33,7 @@ public class ApplicationContextManagerPostProcessor implements BeanFactoryPostPr
 			statement = connection.createStatement();
 			statement.executeUpdate("create sequence system");
 		} catch (Exception e) {
-			logger.error("Exception creating the sequence on the H2 database : ", e);
+			logger.error("Exception creating the sequence on the database : ", e);
 		} finally {
 			DatabaseUtilities.close(statement);
 			DatabaseUtilities.close(connection);

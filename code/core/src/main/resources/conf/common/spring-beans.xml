@@ -52,6 +52,7 @@
 		<value>classpath*:META-INF/persistence/persistence.xml</value>
 	</util:list>
 
+	<!-- This bean does the injection of the entity manager into the dao. -->
 	<bean 
 		class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor" />
 	<bean 
@@ -138,12 +139,12 @@
 	<!-- <bean
 		id="ikube.database.IDataBase.Db2"
 		class="ikube.database.jpa.DataBaseJpaDb2"
-		lazy-init="false" />
-	<bean
+		lazy-init="false" />  -->
+	<!-- <bean
 		id="ikube.database.IDataBase.Postgres"
 		class="ikube.database.jpa.DataBaseJpaPostgres"
-		lazy-init="false" />
-	<bean
+		lazy-init="false" /> -->
+	<!-- <bean
 		id="ikube.database.IDataBase.Oracle"
 		class="ikube.database.jpa.DataBaseJpaOracle"
 		lazy-init="false" /> -->

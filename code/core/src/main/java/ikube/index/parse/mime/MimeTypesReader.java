@@ -8,6 +8,8 @@ import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A reader for the mime-types DTD compliant XML files.
@@ -15,6 +17,8 @@ import org.dom4j.io.SAXReader;
  * @author Jerome Charron - http://frutch.free.fr/
  */
 final class MimeTypesReader {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(MimeTypesReader.class);
 
 	protected MimeType[] read(final InputStream inputStream) {
 		MimeType[] types = null;
@@ -23,7 +27,8 @@ final class MimeTypesReader {
 			Document doc = reader.read(inputStream);
 			types = visit(doc);
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			LOGGER.error(null, e);
+			// throw new RuntimeException(e);
 		}
 		return types;
 	}

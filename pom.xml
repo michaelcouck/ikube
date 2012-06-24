@@ -47,7 +47,8 @@
 		<memory.parameters>-Xms512m -Xmx1024m -XX:PermSize=64m -XX:MaxPermSize=128m</memory.parameters>
 
 		<war.base.root>code/war/target/ikube</war.base.root>
-		<postgresql.driver.version>8.4-701.jdbc4</postgresql.driver.version>
+		<!-- 9.1-901-1.jdbc4 -->
+		<postgresql.driver.version>9.1-901-1.jdbc4</postgresql.driver.version>
 		<jetty.version>6.1.11</jetty.version>
 	</properties>
 
@@ -407,13 +408,6 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		<!-- <dependency>
-			<groupId>org.apache.tiles</groupId>
-			<artifactId>com.springsource.org.apache.tiles.jsp</artifactId>
-			<version>${tiles.version}</version>
-			<scope>compile</scope>
-		</dependency> -->
-
 		<dependency>
 			<groupId>dom4j</groupId>
 			<artifactId>dom4j</artifactId>
@@ -548,8 +542,7 @@
 			<groupId>postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 			<version>${postgresql.driver.version}</version>
-			<type>jar</type>
-			<scope>compile</scope>
+			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>oracle.ojdbc6</groupId>
@@ -701,17 +694,6 @@
 			<version>3.0.2</version>
 			<scope>compile</scope>
 		</dependency>
-		<!-- <dependency>
-			<groupId>org.apache.el</groupId>
-			<artifactId>com.springsource.org.apache.el</artifactId>
-			<version>6.0.20</version>
-			<scope>compile</scope>
-		</dependency> -->
-		<!-- <dependency>
-			<groupId>org.apache.el.springsource</groupId>
-			<artifactId>com.springsource.org.apache.el.springsource</artifactId>
-			<version>6.0.32.S2-r1673</version>
-		</dependency> -->
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
@@ -853,11 +835,13 @@
 			<groupId>org.apache.tiles</groupId>
 			<artifactId>tiles-servlet</artifactId>
 			<version>2.2.2</version>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.tiles</groupId>
 			<artifactId>tiles-el</artifactId>
 			<version>2.2.2</version>
+			<scope>compile</scope>
 		</dependency>
 		
 		<dependency>

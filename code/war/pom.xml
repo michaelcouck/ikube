@@ -161,14 +161,12 @@
 								<!-- Rename the wars to ikube.war for convenience. -->
 								<echo message="Renaming Ikube war for convenience : " />
 								<move file="${target.directory}/${final.name}" tofile="${target.directory}/${ikube.war}" />
-								<!-- Delete the Ikube deployed directories in the cluster. -->
-								<echo message="Deleting old deployment directories : " />
 								<!-- Deploy the Ikube war into the cluster. -->
-								<echo message="Deploying Ikube to cluster : " />
-								<ant antfile="build.xml" target="clean.servers" inheritrefs="true" />
-								<ant antfile="build.xml" target="deploy" inheritrefs="true" />
+								<!-- <echo message="Deploying Ikube to cluster : " /> -->
+								<!-- <ant antfile="build.xml" target="clean.servers" inheritrefs="true" /> -->
+								<!-- <ant antfile="build.xml" target="deploy" inheritrefs="true" /> -->
 								<!-- Copy the external configuration to the servers. -->
-								<ant antfile="build.xml" target="deploy.configuration" inheritrefs="true" />
+								<!-- <ant antfile="build.xml" target="deploy.configuration" inheritrefs="true" /> -->
 								<!-- Zip Ikube and the configuration directory for upload to Google Code -->
 								<echo message="Zipping ikube with configuration : " />
 								<ant antfile="build.xml" target="zip" inheritrefs="true" />

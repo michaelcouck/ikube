@@ -30,7 +30,7 @@ public class PropertyConfigurer extends Properties {
 
 	private static final Logger LOGGER = Logger.getLogger(PropertyConfigurer.class);
 
-	private Pattern fileNamePattern;
+	private String fileNamePattern;
 
 	/**
 	 * This method will look through the class path for properties file with the name specified in the file name property. As well as this
@@ -63,7 +63,7 @@ public class PropertyConfigurer extends Properties {
 //			LOGGER.error("Exception scanning the classpath : ", e);
 //		}
 		// Check the file system for properties files
-		List<File> propertyFiles = FileUtilities.findFilesRecursively(new File("."), new ArrayList<File>(), fileNamePattern.toString());
+		List<File> propertyFiles = FileUtilities.findFilesRecursively(new File("."), new ArrayList<File>(), fileNamePattern);
 		for (File propertyFile : propertyFiles) {
 			try {
 				LOGGER.info("        : Loading properties from : " + propertyFile);
@@ -125,7 +125,7 @@ public class PropertyConfigurer extends Properties {
 			try {
 				JarEntry jarEntry = jarEntries.nextElement();
 				String entryName = jarEntry.getName();
-				if (fileNamePattern != null && fileNamePattern.matcher(entryName).matches()) {
+				if (fileNamePattern != null && Pattern.compile(".*(" + fileNamePattern + ").*").matcher(entryName).matches()) {
 					LOGGER.debug("        : Loading properties from : " + jarEntry);
 					InputStream inputStream = jarFile.getInputStream(jarEntry);
 					this.load(inputStream);
@@ -137,7 +137,7 @@ public class PropertyConfigurer extends Properties {
 	}
 
 	public void setFileNamePattern(String fileNamePattern) {
-		this.fileNamePattern = Pattern.compile(".*" + fileNamePattern + ".*");
+		this.fileNamePattern = fileNamePattern;
 	}
 
 	/**
