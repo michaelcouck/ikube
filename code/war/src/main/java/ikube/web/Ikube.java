@@ -40,12 +40,12 @@ public final class Ikube {
 			connector.setHost(ip);
 			server.addConnector(connector);
 
-			WebAppContext wac = new WebAppContext();
-			wac.setContextPath(IConstants.SEP + IConstants.IKUBE);
+			WebAppContext webAppContext = new WebAppContext();
+			webAppContext.setContextPath(IConstants.SEP + IConstants.IKUBE);
 			// This is path to .war OR TO expanded, existing webapp; WILL FIND web.xml and parse it
 			File warFile = FileUtilities.findFileRecursively(new File("."), Boolean.FALSE, "ikube.war");
-			wac.setWar(warFile.getAbsolutePath());
-			server.setHandler(wac);
+			webAppContext.setWar(warFile.getAbsolutePath());
+			server.setHandler(webAppContext);
 			server.setStopAtShutdown(true);
 
 			server.start();

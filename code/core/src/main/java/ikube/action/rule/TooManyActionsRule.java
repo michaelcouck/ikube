@@ -30,7 +30,7 @@ public class TooManyActionsRule extends ARule<IndexContext<?>> {
 		final Map<String, Server> servers = clusterManager.getServers();
 		for (final Server server : servers.values()) {
 			final List<Action> actions = server.getActions();
-			if (actions != null && actions.size() > maxActions) {
+			if (actions != null && actions.size() >= maxActions) {
 				return Boolean.TRUE;
 			}
 		}

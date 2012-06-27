@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import ikube.toolkit.FileUtilities;
-import ikube.toolkit.HashUtilities;
 
 import java.io.File;
 import java.util.Set;
@@ -14,6 +13,11 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * @author michael couck
+ * @since 21.05.2012
+ * @version 01.00
+ */
 public class WikiDataUnpackerWorkerTest {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(WikiDataUnpackerWorkerTest.class);
@@ -42,7 +46,6 @@ public class WikiDataUnpackerWorkerTest {
 	public void unpack() throws Exception {
 		String content = "The data for the revision.";
 		String outputDirectoryPath = "./unpacked";
-		Set<String> fileHashes = wikiDataUnpackerWorker.getFileHashes(bZip2File);
 		File outputDirectory = FileUtilities.getFile(outputDirectoryPath, Boolean.TRUE);
 
 		StringBuilder stringBuilder = new StringBuilder(WikiDataUnpackerWorker.PAGE_START);
@@ -50,7 +53,7 @@ public class WikiDataUnpackerWorkerTest {
 		stringBuilder.append(WikiDataUnpackerWorker.PAGE_FINISH);
 
 		try {
-			int count = wikiDataUnpackerWorker.unpack(outputDirectory, stringBuilder, fileHashes);
+			int count = wikiDataUnpackerWorker.unpack(outputDirectory, stringBuilder);
 			assertEquals(1, count);
 			File unpackedFile = FileUtilities.findFileRecursively(outputDirectory, "html");
 			String unpackedFileContents = FileUtilities.getContents(unpackedFile, Integer.MAX_VALUE).toString();
@@ -59,10 +62,9 @@ public class WikiDataUnpackerWorkerTest {
 			FileUtilities.deleteFile(outputDirectory, 1);
 		}
 
-		fileHashes.add(Long.toString(HashUtilities.hash(stringBuilder.toString())));
 		outputDirectory = FileUtilities.getFile(outputDirectoryPath, Boolean.TRUE);
 		try {
-			int count = wikiDataUnpackerWorker.unpack(outputDirectory, stringBuilder, fileHashes);
+			int count = wikiDataUnpackerWorker.unpack(outputDirectory, stringBuilder);
 			assertEquals(0, count);
 			File unpackedFile = FileUtilities.findFileRecursively(outputDirectory, "html");
 			assertNull(unpackedFile);

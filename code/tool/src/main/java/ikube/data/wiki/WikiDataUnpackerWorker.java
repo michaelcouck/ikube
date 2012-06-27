@@ -62,13 +62,9 @@ public class WikiDataUnpackerWorker implements Runnable {
 		LOGGER.info("Files : " + bZip2Files);
 		for (File bZip2File : bZip2Files) {
 			File baseDirectory = new File(disk, FilenameUtils.removeExtension(bZip2File.getName()));
-			Set<String> fileHashes = new TreeSet<String>();
 			if (baseDirectory.exists() && baseDirectory.isDirectory()) {
-				// Get all the files in the directory and add them to the set of names
-				List<File> files = FileUtilities.findFilesRecursively(baseDirectory, new ArrayList<File>(), "html");
-				for (File file : files) {
-					fileHashes.add(file.getName());
-				}
+				LOGGER.info("Not doing file : " + bZip2File + ", on disk : " + disk);
+				continue;
 			}
 			LOGGER.info("Doing file : " + bZip2File + ", on disk : " + disk);
 			FileInputStream fileInputStream = null;
@@ -85,7 +81,7 @@ public class WikiDataUnpackerWorker implements Runnable {
 				while ((read = bZip2CompressorInputStream.read(bytes)) > -1) {
 					String string = new String(bytes, 0, read, Charset.forName(IConstants.ENCODING));
 					stringBuilder.append(string);
-					count += unpack(outputDirectory, stringBuilder, fileHashes);
+					count += unpack(outputDirectory, stringBuilder);
 					if (count > 10000) {
 						outputDirectory = getNextDirectory(bZip2File, System.currentTimeMillis());
 						LOGGER.info("Count : " + count + ", output directory : " + outputDirectory + ", total : " + (totalCount += count));
@@ -131,7 +127,7 @@ public class WikiDataUnpackerWorker implements Runnable {
 	 * @return the number of files written to the disk
 	 * @throws Exception
 	 */
-	protected int unpack(final File outputDirectory, final StringBuilder stringBuilder, final Set<String> fileHashes) throws Exception {
+	protected int unpack(final File outputDirectory, final StringBuilder stringBuilder) throws Exception {
 		int count = 0;
 		while (true) {
 			int startOffset = stringBuilder.indexOf(PAGE_START);
@@ -146,10 +142,6 @@ public class WikiDataUnpackerWorker implements Runnable {
 			String segment = stringBuilder.substring(startOffset, endOffset);
 			stringBuilder.delete(startOffset, endOffset);
 			String hash = Long.toString(HashUtilities.hash(segment));
-			// Check if this file is written already
-			if (fileHashes.contains(hash)) {
-				continue;
-			}
 			String filePath = outputDirectory.getAbsolutePath() + File.separator + hash + ".html";
 			FileUtilities.setContents(filePath, segment.getBytes(Charset.forName(IConstants.ENCODING)));
 			count++;
