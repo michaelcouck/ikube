@@ -7,8 +7,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceContextType;
 
-import org.springframework.beans.factory.annotation.Value;
-
 /**
  * This class is the primary access to the database via Jpa.
  * 
@@ -19,14 +17,8 @@ import org.springframework.beans.factory.annotation.Value;
  */
 public class DataBaseJpa extends ADataBaseJpa {
 
-	@Value("${ikube.persistenceUnit}")
-	protected static final String PERSISTENCE_UNIT_NAME = IConstants.PERSISTENCE_UNIT_H2;
-	@PersistenceContext(type = PersistenceContextType.TRANSACTION, unitName = DataBaseJpa.PERSISTENCE_UNIT_NAME)
+	@PersistenceContext(type = PersistenceContextType.TRANSACTION, unitName = IConstants.PERSISTENCE_UNIT_H2)
 	protected EntityManager entityManager;
-	
-	public DataBaseJpa() {
-		LOGGER.info("Entity manager : " + entityManager);
-	}
 
 	@Override
 	protected EntityManager getEntityManager() {

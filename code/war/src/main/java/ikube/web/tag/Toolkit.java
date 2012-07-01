@@ -8,8 +8,12 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.ReflectionUtils;
 
 /**
@@ -20,11 +24,14 @@ import org.springframework.util.ReflectionUtils;
  * @version 01.00
  */
 public class Toolkit {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(Toolkit.class);
 
 	/**
 	 * Returns the size of a collection to the pate.
 	 * 
-	 * @param collection the collection to get the size for
+	 * @param collection
+	 *        the collection to get the size for
 	 * @return the size of the collection
 	 */
 	public static int size(Collection<?> collection) {
@@ -37,8 +44,10 @@ public class Toolkit {
 	/**
 	 * This method removes the target collection from the source.
 	 * 
-	 * @param one the source collection to have purged by the target
-	 * @param two the target collection who's entries are to be removesd from the source
+	 * @param one
+	 *        the source collection to have purged by the target
+	 * @param two
+	 *        the target collection who's entries are to be removesd from the source
 	 * @return the purged collection sans the elements in the target collection
 	 */
 	public static Collection<?> remove(Collection<?> one, Collection<?> two) {
@@ -117,9 +126,12 @@ public class Toolkit {
 	 * This method will build a query string using the parameters in the map in the signature. This avoids scripting in the Jsp or very long
 	 * urls built parameter by parameter.
 	 * 
-	 * @param parameterMap the map of parameters to use in the query string
-	 * @param parameterNamesReplacements the names of the parameters to be replaced in the original map
-	 * @param parameterValuesReplacements the values of the parameters to be replaced in the original map
+	 * @param parameterMap
+	 *        the map of parameters to use in the query string
+	 * @param parameterNamesReplacements
+	 *        the names of the parameters to be replaced in the original map
+	 * @param parameterValuesReplacements
+	 *        the values of the parameters to be replaced in the original map
 	 * @return the string query for he parameters and replacements, would be something like
 	 *         '?paramOne=paramValueOne&paramTwo=paramValueTwo&...'
 	 */
@@ -149,6 +161,25 @@ public class Toolkit {
 			return Arrays.asList((Object[]) object);
 		}
 		return Arrays.asList(object);
+	}
+
+	public static String documentIcon(Object path, String icons, String def) {
+		try {
+			String extension = FilenameUtils.getExtension(path.toString());
+			if (StringUtils.isEmpty(extension)) {
+				return def;
+			}
+			StringTokenizer stringTokenizer = new StringTokenizer(icons, "|,;:", false);
+			while (stringTokenizer.hasMoreTokens()) {
+				String icon = stringTokenizer.nextToken().trim();
+				if (icon.startsWith(extension)) {
+					return icon;
+				}
+			}
+		} catch (Exception e) {
+			LOGGER.error("Icon access error : " + path + ", " + icons + ", " + def, e);
+		}
+		return def;
 	}
 
 }

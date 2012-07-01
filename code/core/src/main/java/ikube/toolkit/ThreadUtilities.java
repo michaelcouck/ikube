@@ -29,7 +29,8 @@ public final class ThreadUtilities {
 	/**
 	 * This method submits a runnable with the executer service from the concurrent package and returns the future immediately.
 	 * 
-	 * @param runnable the runnable to execute
+	 * @param runnable
+	 *        the runnable to execute
 	 * @return the future that will be a handle to the thread running the runnable
 	 */
 	public static Future<?> submit(Runnable runnable) {
@@ -65,8 +66,10 @@ public final class ThreadUtilities {
 	/**
 	 * This method will wait for all the futures to finish their logic.
 	 * 
-	 * @param futures the futures to wait for
-	 * @param maxWait and the maximum amount of time to wait
+	 * @param futures
+	 *        the futures to wait for
+	 * @param maxWait
+	 *        and the maximum amount of time to wait
 	 */
 	public static void waitForFutures(List<Future<?>> futures, long maxWait) {
 		for (Future<?> future : futures) {
@@ -79,12 +82,14 @@ public final class ThreadUtilities {
 	 * service closing down and interrupting all it's threads, it will return immediately. If the future takes too long and passes the
 	 * maximum wait time, then the method will return immediately.
 	 * 
-	 * @param future the future to wait for
-	 * @param maxWait the maximum amount of time to wait
+	 * @param future
+	 *        the future to wait for
+	 * @param maxWait
+	 *        the maximum amount of time to wait
 	 */
 	public static void waitForFuture(Future<?> future, long maxWait) {
 		if (future == null) {
-			LOGGER.debug("Future null returning : ");
+			LOGGER.info("Future null returning : ");
 			return;
 		}
 		long start = System.currentTimeMillis();
@@ -92,7 +97,9 @@ public final class ThreadUtilities {
 			try {
 				future.get(maxWait, TimeUnit.SECONDS);
 			} catch (Exception e) {
-				LOGGER.warn("Exception waiting for future : ", e);
+				String message = "Exception waiting for future : " + e.getMessage();
+				LOGGER.warn(message);
+				LOGGER.debug(message, e);
 			}
 			ThreadUtilities.sleep(1000);
 			LOGGER.debug("Future : " + future);
@@ -106,7 +113,8 @@ public final class ThreadUtilities {
 	 * This method iterates through the list of threads looking for one that is still alive and joins it. Once all the threads have finished
 	 * then this method will return to the caller indicating that all the threads have finished.
 	 * 
-	 * @param threads the threads to wait for
+	 * @param threads
+	 *        the threads to wait for
 	 */
 	public static void waitForThreads(final Collection<Thread> threads) {
 		if (threads == null) {

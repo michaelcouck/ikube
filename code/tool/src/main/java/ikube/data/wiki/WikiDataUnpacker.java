@@ -38,6 +38,8 @@ public class WikiDataUnpacker {
 				read7ZandWriteBzip2(args[1]);
 			} else if (args[0].equals(UNPACK)) {
 				readBz2AndUnpackFiles(args[1], args[2]);
+			} else {
+				printUsage();
 			}
 		} catch (Exception e) {
 			printUsage();
@@ -47,7 +49,8 @@ public class WikiDataUnpacker {
 
 	private static final void printUsage() {
 		System.out.println("Usage   : [" + WRITE + " | " + UNPACK + "] & [directory] & [disk patterns, like 'xfs-' for example]");
-		System.out.println("Example : java -jar ikube.jar write /media/nas/xfs/wiki-history-languages xfs-");
+		System.out.println("Example to write bz2 files : java -jar ikube.jar write /media/nas/xfs/wiki-history-languages xfs-");
+		System.out.println("Example to unpack html files from bz2 : java -jar ikube.jar unpack /media/nas/xfs/wiki-history-languages xfs-");
 		System.exit(0);
 	}
 
@@ -57,7 +60,7 @@ public class WikiDataUnpacker {
 	protected static void readBz2AndUnpackFiles(final String directoryPath, final String diskPattern) throws Exception {
 		// Get the output directories/disks in the media folder
 		File directory = new File(directoryPath);
-		List<File> disks = FileUtilities.findFilesRecursively(directory, new ArrayList<File>(), diskPattern);
+		File[] disks = FileUtilities.findFiles(directory, new String[] {diskPattern} );
 		// Init the executor service with 10 threads so we don't have too many running at the same time
 		List<Future<?>> futures = new ArrayList<Future<?>>();
 		for (File disk : disks) {

@@ -5,7 +5,7 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 
 /**
- * This class contains one file, a Bzip2 file for indexing uwing the Wiki handler.
+ * This class contains one file, a Bzip2 file for indexing using the Wiki handler.
  * 
  * @author Michael Couck
  * @since 19.05.12
@@ -16,13 +16,13 @@ import javax.persistence.InheritanceType;
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class IndexableFileSystemWiki extends IndexableFileSystem {
 
-	private int maxRevisions;
+	private long maxRevisions;
 
-	public int getMaxRevisions() {
+	public long getMaxRevisions() {
 		return maxRevisions;
 	}
 
-	public void setMaxRevisions(int maxRevisions) {
+	public void setMaxRevisions(long maxRevisions) {
 		this.maxRevisions = maxRevisions;
 	}
 

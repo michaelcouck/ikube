@@ -28,7 +28,7 @@ public class WikiDataUnpackerWorkerTest {
 
 	@Before
 	public void before() {
-		bZip2File = FileUtilities.findFileRecursively(new File("."), Boolean.FALSE, "bzip2");
+		bZip2File = FileUtilities.findFileRecursively(new File("/media/nas/xfs-one"), Boolean.FALSE, "bz2");
 		disk = bZip2File.getParentFile();
 		wikiDataUnpackerWorker = new WikiDataUnpackerWorker(disk);
 	}
@@ -51,6 +51,8 @@ public class WikiDataUnpackerWorkerTest {
 		StringBuilder stringBuilder = new StringBuilder(WikiDataUnpackerWorker.PAGE_START);
 		stringBuilder.append(content);
 		stringBuilder.append(WikiDataUnpackerWorker.PAGE_FINISH);
+		
+		wikiDataUnpackerWorker.run();
 
 		try {
 			int count = wikiDataUnpackerWorker.unpack(outputDirectory, stringBuilder);

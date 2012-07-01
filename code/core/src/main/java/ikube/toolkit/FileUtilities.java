@@ -320,6 +320,8 @@ public final class FileUtilities {
 		File file = FileUtilities.getFile(filePath, Boolean.FALSE);
 		FileOutputStream fileOutputStream = null;
 		try {
+			file.setReadable(true);
+			file.setWritable(true, false);
 			fileOutputStream = new FileOutputStream(file);
 			fileOutputStream.write(bytes, 0, bytes.length);
 		} catch (FileNotFoundException e) {

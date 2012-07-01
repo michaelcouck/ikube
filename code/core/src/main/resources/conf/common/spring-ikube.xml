@@ -40,8 +40,7 @@
 		property:indexDirectoryPathBackup="./ikube/index/backup"
 		property:children-ref="ikubeIndexables" />
 	<util:list id="ikubeIndexables">
-		<!-- <ref local="ikubeInternet" /> -->
-		<ref local="ikubeInternet8080" />
+		<ref local="ikubeInternet" />
 	</util:list>
 	
 	<bean
@@ -49,22 +48,6 @@
 		class="ikube.model.IndexableInternet"
 		property:name="internet"
 		property:url="${ikube.url}" 
-		property:idFieldName="id"
-		property:titleFieldName="title"
-		property:contentFieldName="content"
-		property:excludedPattern="${internet.excluded.pattern}"
-		property:analyzed="true"
-		property:stored="true"
-		property:vectored="true"
-		property:internetBatchSize="${internet.batch.size}" />
-	<bean
-		id="ikubeInternet8080"
-		class="ikube.model.IndexableInternet"
-		property:name="internet8080"
-		property:url="${ikube.url.8080}" 
-		property:loginUrl="${ikube.url.8080.login}"
-		property:userid="guest"
-		property:password="guest"
 		property:idFieldName="id"
 		property:titleFieldName="title"
 		property:contentFieldName="content"

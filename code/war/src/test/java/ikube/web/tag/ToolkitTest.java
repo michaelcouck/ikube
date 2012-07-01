@@ -56,5 +56,26 @@ public class ToolkitTest {
 		list = Toolkit.asList(new Object[] { "object", "object", "object" });
 		assertEquals(3, list.size());
 	}
+	
+	@Test
+	public void getDocumentIcon() {
+		String def = "blank.ico";
+		String path = "/the/path/to/the/word.doc";
+		String icons = "pdf.ico;doc.ico;html.ico;xml.gif;txt.jpg";
+		String icon = Toolkit.documentIcon(path, icons, def);
+		assertEquals("doc.ico", icon);
+		
+		path = "/the/path/to/the/text.txt";
+		icon = Toolkit.documentIcon(path, icons, def);
+		assertEquals("txt.jpg", icon);
+		
+		path = "/the/path/to/the/text.wierd";
+		icon = Toolkit.documentIcon(path, icons, def);
+		assertEquals(def, icon);
+		
+		path = "http://code.google.com/p/ikube/";
+		icon = Toolkit.documentIcon(path, icons, def);
+		assertEquals(def, icon);
+	}
 
 }

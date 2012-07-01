@@ -8,8 +8,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -51,14 +49,14 @@ public class WikiDataUnpackerWorker implements Runnable {
 	 */
 	@Override
 	public void run() {
-		List<File> bZip2Files = FileUtilities.findFilesRecursively(disk, new ArrayList<File>(), "bz2");
-		// Sort them by the name
-		Collections.sort(bZip2Files, new Comparator<File>() {
-			@Override
-			public int compare(File o1, File o2) {
-				return o1.getName().compareTo(o2.getName());
-			}
-		});
+		File[] bZip2Files = FileUtilities.findFiles(disk, new String[]{"bz2"});
+//		// Sort them by the name
+//		Collections.sort(bZip2Files, new Comparator<File>() {
+//			@Override
+//			public int compare(File o1, File o2) {
+//				return o1.getName().compareTo(o2.getName());
+//			}
+//		});
 		LOGGER.info("Files : " + bZip2Files);
 		for (File bZip2File : bZip2Files) {
 			File baseDirectory = new File(disk, FilenameUtils.removeExtension(bZip2File.getName()));
@@ -157,6 +155,8 @@ public class WikiDataUnpackerWorker implements Runnable {
 		stringBuilder.append(File.separator);
 		stringBuilder.append(fileName);
 		File nextDirectory = FileUtilities.getFile(stringBuilder.toString(), Boolean.TRUE);
+		nextDirectory.setReadable(true);
+		nextDirectory.setWritable(true, false);
 		LOGGER.info("Next directory : " + nextDirectory);
 		return nextDirectory;
 	}

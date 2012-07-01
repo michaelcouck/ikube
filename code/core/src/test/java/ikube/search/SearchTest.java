@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 import ikube.ATest;
 import ikube.IConstants;
 import ikube.index.IndexManager;
+import ikube.search.spelling.SpellingChecker;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
@@ -12,6 +13,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+
+import mockit.Deencapsulation;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
@@ -43,6 +46,10 @@ public class SearchTest extends ATest {
 
 	@BeforeClass
 	public static void beforeClass() throws Exception {
+		SpellingChecker checkerExt = new SpellingChecker();
+		Deencapsulation.setField(checkerExt, "languageWordListsDirectory", "languages");
+		Deencapsulation.setField(checkerExt, "spellingIndexDirectoryPath", "./spellingIndex");
+		checkerExt.initialize();
 		// Create the index with multiple fields
 		File indexDirectory = new File(INDEX_DIRECTORY_PATH);
 		FileUtilities.deleteFile(indexDirectory, 1);
@@ -55,12 +62,12 @@ public class SearchTest extends ATest {
 			int numDocs = 50;
 			for (int i = 0; i < numDocs; i++) {
 				String id = Integer.toString(i * 100);
-				String contents = new StringBuilder("Hello world. ").append(i).toString();
+				String contents = new StringBuilder("Hello world. Россия.").append(i).toString();
 
 				Document document = new Document();
 				IndexManager.addStringField(IConstants.ID, id, document, Store.YES, Index.ANALYZED, TermVector.YES);
 				IndexManager.addStringField(IConstants.CONTENTS, contents, document, Store.YES, Index.ANALYZED, TermVector.YES);
-				IndexManager.addStringField(IConstants.NAME, "Michael Couck", document, Store.YES, Index.ANALYZED, TermVector.YES);
+				IndexManager.addStringField(IConstants.NAME, "Michael Couck. Россия.", document, Store.YES, Index.ANALYZED, TermVector.YES);
 				indexWriter.addDocument(document);
 			}
 
@@ -94,7 +101,7 @@ public class SearchTest extends ATest {
 		searchSingle.setFragment(Boolean.TRUE);
 		searchSingle.setMaxResults(maxResults);
 		searchSingle.setSearchField(IConstants.CONTENTS);
-		searchSingle.setSearchString("hello");
+		searchSingle.setSearchString("Россия");
 		searchSingle.setSortField(new String[] { IConstants.ID });
 		ArrayList<HashMap<String, String>> results = searchSingle.execute();
 		assertTrue(results.size() > 1);

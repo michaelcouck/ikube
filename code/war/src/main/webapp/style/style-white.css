@@ -2,18 +2,18 @@ body {
 	margin: 0px;
 	padding: 0px;
 	background: #ffffff;
-	line-height: 13px;
+	line-height: 15px;
 	font-family: Tahoma, "Trebuchet MS", Arial, Helvetica, sans-serif;
-	font-size: 11px;
+	font-size: 14px;
 	color: #2e2e2e;
 	background-color: #ffffff;
 }
 
 table {
 	/* border: 1px solid black; */
-	line-height: 13px;
+	line-height: 14px;
 	font-family: Tahoma, "Trebuchet MS", Arial, Helvetica, sans-serif;
-	font-size: 11px;
+	font-size: 13px;
 	color: #2e2e2e;
 	text-align: left;
 }
@@ -55,7 +55,7 @@ ul, ol {
 
 a { 
 	color: #111111;
-	font-size: 12px;
+	font-size: 14px;
 	padding-bottom: 5px;
 	line-height: 15px; 
 }
@@ -118,7 +118,7 @@ hr { display: none; }
 #header .link {
 	text-decoration: none;
 	text-transform : lowercase;
-	font-size : 14px;
+	font-size : 15px;
 	padding-left : 5px;
 	padding-right : 10px;
 	padding-bottom : 17px;
@@ -149,7 +149,7 @@ hr { display: none; }
 	float: left;
 	padding: 10px 0px 0px 20px;
 	text-transform: lowercase;
-	font-size: 14px;
+	font-size: 16px;
 	color: #666666;
 }
 #logo a {
@@ -174,7 +174,7 @@ hr { display: none; }
 	padding: 0px 20px 0px 22px;
 	text-decoration: none;
 	text-transform: lowercase;
-	font-size: 14px;
+	font-size: 16px;
 	color: #7B7B7B;
 }
 #menu a:hover {
@@ -221,8 +221,8 @@ hr { display: none; }
 	border: none;
 	font-family: Tahoma,""Trebuchet MS", Arial, Helvetica, sans-serif;
 	color: #636363;
-	height : 12px;
-	line-height : 12px;
+	height : 15px;
+	line-height : 15px;
 	vertical-align : top;
 	border : solid black 1px;
 }
@@ -252,7 +252,7 @@ hr { display: none; }
 	border: none;
 	font-family: Tahoma,""Trebuchet MS", Arial, Helvetica, sans-serif;
 	color: #636363;
-	height : 12px;
+	height : 15px;
 	line-height : 18px;
 	vertical-align : top;
 	border : solid black 1px;
@@ -454,7 +454,7 @@ hr { display: none; }
 	text-align: center;
 	text-transform: lowercase;
 	line-height: normal;
-	font-size: 11px;
+	font-size: 13px;
 	color: #1E1E1E;
 }
 #footer a {

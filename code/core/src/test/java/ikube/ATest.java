@@ -137,11 +137,11 @@ public abstract class ATest {
 		when(indexContext.getIndex()).thenReturn(index);
 		when(index.getMultiSearcher()).thenReturn(multiSearcher);
 
-		when(indexContext.getBufferedDocs()).thenReturn(100);
-		when(indexContext.getBufferSize()).thenReturn(100d);
-		when(indexContext.getMaxFieldLength()).thenReturn(100);
-		when(indexContext.getMaxReadLength()).thenReturn(1000000l);
-		when(indexContext.getMergeFactor()).thenReturn(100);
+		when(indexContext.getBufferedDocs()).thenReturn(10);
+		when(indexContext.getBufferSize()).thenReturn(10d);
+		when(indexContext.getMaxFieldLength()).thenReturn(10);
+		when(indexContext.getMaxReadLength()).thenReturn(10000l);
+		when(indexContext.getMergeFactor()).thenReturn(10);
 		when(indexContext.getMaxAge()).thenReturn((long) (60));
 		when(indexContext.getAction()).thenReturn(action);
 		when(clusterManager.getServer()).thenReturn(server);

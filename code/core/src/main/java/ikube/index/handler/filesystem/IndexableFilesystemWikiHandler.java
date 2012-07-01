@@ -76,10 +76,11 @@ public class IndexableFilesystemWikiHandler extends IndexableHandler<IndexableFi
 		FileInputStream fileInputStream = null;
 		BZip2CompressorInputStream bZip2CompressorInputStream = null;
 		try {
+			long start = System.currentTimeMillis();
 			int read = -1;
 			fileInputStream = new FileInputStream(file);
 			bZip2CompressorInputStream = new BZip2CompressorInputStream(fileInputStream);
-			byte[] bytes = new byte[1024 * 1024];
+			byte[] bytes = new byte[1024 * 1024 * 10];
 			StringBuilder stringBuilder = new StringBuilder();
 			int counter = 0;
 			// Read a chunk
@@ -99,15 +100,19 @@ public class IndexableFilesystemWikiHandler extends IndexableHandler<IndexableFi
 					endOffset += PAGE_FINISH.length();
 					String content = stringBuilder.substring(startOffset, endOffset);
 					stringBuilder.delete(startOffset, endOffset);
+					// LOGGER.info("String buffer size : " + stringBuilder.length());
 					// Add the documents to the index
 					handleRevision(indexContext, indexableFileSystem, content);
 					counter++;
 					if (counter % 10000 == 0) {
-						LOGGER.info("Revisions done : " + counter + ", " + file.getName());
+						long duration = System.currentTimeMillis() - start;
+						double perSecond = counter / (duration / 1000);
+						LOGGER.info("Revisions done : " + counter + ", " + file.getName() + ", " + perSecond);
 					}
 				}
 			}
 		} catch (InterruptedException e) {
+			LOGGER.error("Exception reading and uncompressing the zip file : " + file, e);
 			throw new RuntimeException(e);
 		} catch (Exception e) {
 			LOGGER.error("Exception reading and uncompressing the zip file : " + file, e);
@@ -141,7 +146,7 @@ public class IndexableFilesystemWikiHandler extends IndexableHandler<IndexableFi
 		Document document = new Document();
 		String pathFieldName = indexableFileSystem.getPathFieldName();
 		String contentFieldName = indexableFileSystem.getContentFieldName();
-		IndexManager.addStringField(pathFieldName, indexableFileSystem.getPath(), document, Store.YES, Index.ANALYZED, TermVector.YES);
+		IndexManager.addStringField(pathFieldName, indexableFileSystem.getPath(), document, Store.YES, Index.ANALYZED, TermVector.NO);
 		IndexManager.addStringField(contentFieldName, content, document, store, analyzed, termVector);
 		addDocument(indexContext, indexableFileSystem, document);
 	}

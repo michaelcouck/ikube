@@ -5,7 +5,6 @@ import ikube.model.IndexContext;
 import ikube.model.Server;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
 
@@ -27,12 +26,10 @@ public class TooManyActionsRule extends ARule<IndexContext<?>> {
 	 */
 	@Override
 	public boolean evaluate(final IndexContext<?> indexContext) {
-		final Map<String, Server> servers = clusterManager.getServers();
-		for (final Server server : servers.values()) {
-			final List<Action> actions = server.getActions();
-			if (actions != null && actions.size() >= maxActions) {
-				return Boolean.TRUE;
-			}
+		final Server server = clusterManager.getServer();
+		final List<Action> actions = server.getActions();
+		if (actions != null && actions.size() >= maxActions) {
+			return Boolean.TRUE;
 		}
 		return Boolean.FALSE;
 	}

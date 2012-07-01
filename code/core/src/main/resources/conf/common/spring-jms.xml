@@ -19,7 +19,7 @@
 		http://www.springframework.org/schema/jms/spring-jms-3.0.xsd">
 
 	<!-- Create an embedded ActiveMQ Broker -->
-	<amq:broker useJmx="false" persistent="true">
+	<amq:broker useJmx="true" persistent="true">
 		<amq:destinationInterceptors>
 			<amq:virtualDestinationInterceptor>
 				<amq:virtualDestinations>
@@ -44,7 +44,7 @@
 			<amq:memoryPersistenceAdapter />
 		</amq:persistenceAdapter>
 		<amq:transportConnectors>
-			<amq:transportConnector
+			<amq:transportConnector 
 				name="openwire" 
 				uri="tcp://0.0.0.0:${activemq.port}"
 				discoveryUri="multicast://default?initialReconnectDelay=1000" />

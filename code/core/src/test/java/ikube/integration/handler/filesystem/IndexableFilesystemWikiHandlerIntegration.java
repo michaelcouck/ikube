@@ -43,16 +43,15 @@ public class IndexableFilesystemWikiHandlerIntegration extends AbstractIntegrati
 	public void handle() throws Exception {
 		Directory directory = null;
 		try {
+			ThreadUtilities.initialize();
 			String ip = InetAddress.getLocalHost().getHostAddress();
 			IndexWriter indexWriter = IndexManager.openIndexWriter(wikiHistoryArabic, System.currentTimeMillis(), ip);
 			wikiHistoryArabic.setIndex(new Index());
 			wikiHistoryArabic.getIndex().setIndexWriter(indexWriter);
-			// List<Future<?>> threads =
 			indexableFilesystemHandler.handle(wikiHistoryArabic, wikiHistoryDataArabic);
 
-			Thread.sleep(60000);
+			Thread.sleep(6000000);
 
-			// ThreadUtilities.waitForFutures(threads, Integer.MAX_VALUE);
 			ThreadUtilities.destroy();
 			IndexManager.closeIndexWriter(wikiHistoryArabic);
 

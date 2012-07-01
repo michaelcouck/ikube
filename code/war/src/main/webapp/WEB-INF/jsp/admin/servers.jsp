@@ -77,11 +77,8 @@
 	</tr>
 	</c:forEach>
 	<tr>
-		<td class="td-content">
-			Total documents: ${param.totalDocs}
-		</td>
-		<td colspan="8" class="td-content">
-			Total index sizes: ${param.totalSize}
+		<td class="td-content" colspan="6">
+			Total documents: ${totalDocs}, total index sizes: ${totalSize}
 		</td>
 	</tr>
 </table>
