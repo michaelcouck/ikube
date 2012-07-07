@@ -1,8 +1,10 @@
 package ikube.index;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -118,15 +120,12 @@ public class IndexManagerTest extends ATest {
 
 		when(indexContext.getIndexDirectoryPathBackup()).thenReturn("./indexes/./backup");
 		String newIndexDirectoryPathBackup = IndexManager.getIndexDirectoryPathBackup(indexContext);
-		String expectedIndexDirectoryPathBackup = "/usr/share/eclipse/workspace/ikube/code/core/indexes/backup/index";
-		assertEquals("Expected path to be : " + expectedIndexDirectoryPathBackup, expectedIndexDirectoryPathBackup,
-				newIndexDirectoryPathBackup);
+		assertTrue(newIndexDirectoryPathBackup.contains("indexes/backup/index"));
 
 		when(indexContext.getIndexDirectoryPathBackup()).thenReturn(".\\indexes\\.\\backup");
 		newIndexDirectoryPathBackup = IndexManager.getIndexDirectoryPathBackup(indexContext);
-		expectedIndexDirectoryPathBackup = "/usr/share/eclipse/workspace/ikube/code/core/./indexes/backup/index";
-		assertEquals("Expected path to be : " + expectedIndexDirectoryPathBackup, expectedIndexDirectoryPathBackup,
-				newIndexDirectoryPathBackup);
+		assertTrue(newIndexDirectoryPathBackup.contains("indexes/backup/index"));
+		assertFalse(newIndexDirectoryPathBackup.contains("\\.\\"));
 
 		when(indexContext.getIndexDirectoryPathBackup()).thenReturn(indexDirectoryPathBackup);
 	}

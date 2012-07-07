@@ -20,6 +20,7 @@ import ikube.model.Indexable;
 import ikube.model.IndexableColumn;
 import ikube.model.IndexableTable;
 import ikube.model.Server;
+import ikube.search.spelling.SpellingChecker;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.Logging;
 import ikube.toolkit.ThreadUtilities;
@@ -32,6 +33,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import mockit.Deencapsulation;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Store;
@@ -69,6 +72,14 @@ public abstract class ATest {
 		new MimeTypes(IConstants.MIME_TYPES);
 		new MimeMapper(IConstants.MIME_MAPPING);
 		ThreadUtilities.initialize();
+		SpellingChecker checkerExt = new SpellingChecker();
+		Deencapsulation.setField(checkerExt, "languageWordListsDirectory", "languages");
+		Deencapsulation.setField(checkerExt, "spellingIndexDirectoryPath", "./spellingIndex");
+		try {
+			checkerExt.initialize();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	protected Logger logger;
@@ -202,6 +213,9 @@ public abstract class ATest {
 	 * @return the latest index directory, i.e. the one that has just been created
 	 */
 	protected File createIndex(IndexContext<?> indexContext, String... strings) {
+		if (strings == null || strings.length == 0) {
+			throw new RuntimeException("There must be some strings to index : " + strings);
+		}
 		IndexWriter indexWriter = null;
 		try {
 			indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);

@@ -5,7 +5,6 @@ import static org.junit.Assert.assertTrue;
 import ikube.ATest;
 import ikube.IConstants;
 import ikube.index.IndexManager;
-import ikube.search.spelling.SpellingChecker;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
@@ -13,8 +12,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-
-import mockit.Deencapsulation;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
@@ -46,10 +43,6 @@ public class SearchTest extends ATest {
 
 	@BeforeClass
 	public static void beforeClass() throws Exception {
-		SpellingChecker checkerExt = new SpellingChecker();
-		Deencapsulation.setField(checkerExt, "languageWordListsDirectory", "languages");
-		Deencapsulation.setField(checkerExt, "spellingIndexDirectoryPath", "./spellingIndex");
-		checkerExt.initialize();
 		// Create the index with multiple fields
 		File indexDirectory = new File(INDEX_DIRECTORY_PATH);
 		FileUtilities.deleteFile(indexDirectory, 1);
