@@ -206,7 +206,7 @@
 				<version>6.1.25</version>
 				<configuration>
 					<stopKey>stop</stopKey>
-					<stopPort>9090</stopPort>
+					<stopPort>9081</stopPort>
 					<scanIntervalSeconds>10000</scanIntervalSeconds>
 					<contextPath>/ikube</contextPath>
 					<scanTargets>
