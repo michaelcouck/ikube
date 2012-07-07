@@ -95,7 +95,7 @@ public class DeleteTest extends ATest {
 		directory.clearLock(IndexWriter.WRITE_LOCK_NAME);
 
 		/*************************************/
-		latestIndexDirectory = createIndex(indexContext);
+		latestIndexDirectory = createIndex(indexContext, "some strings");
 		assertEquals(4, latestIndexDirectory.getParentFile().getParentFile().listFiles().length);
 
 		directory = FSDirectory.open(latestIndexDirectory);
