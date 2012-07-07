@@ -35,9 +35,9 @@ public final class SpellingChecker {
 
 	private SpellChecker spellChecker;
 	@Value("${language.word.lists.directory}")
-	private String languageWordListsDirectory;
+	private String languageWordListsDirectory = "./ikube/common/languages";
 	@Value("${language.word.lists.directory.index}")
-	private String spellingIndexDirectoryPath;
+	private String spellingIndexDirectoryPath = "./ikube/common/languages/index";
 
 	public static final SpellingChecker getSpellingChecker() {
 		return SpellingChecker.INSTANCE;
