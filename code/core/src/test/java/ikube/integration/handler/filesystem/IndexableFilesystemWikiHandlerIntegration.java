@@ -50,7 +50,7 @@ public class IndexableFilesystemWikiHandlerIntegration extends AbstractIntegrati
 			wikiHistoryArabic.getIndex().setIndexWriter(indexWriter);
 			indexableFilesystemHandler.handle(wikiHistoryArabic, wikiHistoryDataArabic);
 
-			Thread.sleep(6000000);
+			Thread.sleep(60000);
 
 			ThreadUtilities.destroy();
 			IndexManager.closeIndexWriter(wikiHistoryArabic);

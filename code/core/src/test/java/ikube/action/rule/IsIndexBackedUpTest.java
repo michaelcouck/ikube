@@ -50,7 +50,9 @@ public class IsIndexBackedUpTest extends ATest {
 		boolean result = isIndexBackedUp.evaluate(indexContext);
 		assertFalse(result);
 
-		File indexDirectoryBackup = new File(IndexManager.getIndexDirectoryPathBackup(indexContext));
+		String indexDirectoryBackupPath = IndexManager.getIndexDirectoryPathBackup(indexContext) + "/"
+				+ latestIndexDirectory.getParentFile().getName();
+		File indexDirectoryBackup = new File(indexDirectoryBackupPath);
 		FileUtils.copyDirectoryToDirectory(latestIndexDirectory, indexDirectoryBackup);
 
 		result = isIndexBackedUp.evaluate(indexContext);

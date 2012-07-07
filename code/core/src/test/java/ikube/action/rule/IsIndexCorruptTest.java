@@ -41,10 +41,9 @@ public class IsIndexCorruptTest extends ATest {
 	public void evaluate() throws IOException {
 		// Create an index
 		File latestIndexDirectory = createIndex(indexContext, "a little text for good will");
-		File serverIndexDirectory = new File(latestIndexDirectory, ip);
-		Directory directory = FSDirectory.open(serverIndexDirectory);
+		Directory directory = FSDirectory.open(latestIndexDirectory);
 		// Lock the index
-		Lock lock = getLock(directory, serverIndexDirectory);
+		Lock lock = getLock(directory, latestIndexDirectory);
 		if (!lock.isLocked()) {
 			logger.warn("Couldn't get lock on index : " + lock);
 		}
@@ -56,7 +55,7 @@ public class IsIndexCorruptTest extends ATest {
 		lock.release();
 		directory.clearLock(IndexWriter.WRITE_LOCK_NAME);
 		// Delete the segments files
-		FileUtilities.deleteFiles(serverIndexDirectory, "segments");
+		FileUtilities.deleteFiles(latestIndexDirectory, "segments");
 		// The index should be corrupt
 		isCorrupt = isIndexCorrupt.evaluate(indexContext);
 		assertTrue(isCorrupt);

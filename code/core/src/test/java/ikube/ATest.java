@@ -34,7 +34,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
 import org.apache.lucene.index.IndexReader;
@@ -183,7 +182,8 @@ public abstract class ATest {
 	 * Returns the path to the latest index directory for this server and this context. The result will be something like
 	 * './index/faq/1234567890/127.0.0.1'.
 	 * 
-	 * @param indexContext the index context to get the directory path for
+	 * @param indexContext
+	 *            the index context to get the directory path for
 	 * @return the directory path to the latest index directory for this servers and context
 	 */
 	protected String getServerIndexDirectoryPath(final IndexContext<?> indexContext) {
@@ -195,20 +195,23 @@ public abstract class ATest {
 	 * the index that has just been created. Note that if there are still cascading mocks from JMockit, the index writer sill not create the
 	 * index! So you have to tear down all mocks prior to using this method.
 	 * 
-	 * @param indexContext the index context to use for the path to the index
-	 * @param strings the data that must be in the index
+	 * @param indexContext
+	 *            the index context to use for the path to the index
+	 * @param strings
+	 *            the data that must be in the index
 	 * @return the latest index directory, i.e. the one that has just been created
 	 */
 	protected File createIndex(IndexContext<?> indexContext, String... strings) {
 		IndexWriter indexWriter = null;
 		try {
 			indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
-			Document document = new Document();
-			IndexManager.addStringField(IConstants.CONTENTS, "Michael Couck", document, Store.YES, Field.Index.ANALYZED, TermVector.YES);
-			indexWriter.addDocument(document);
 			for (String string : strings) {
-				document = new Document();
-				IndexManager.addStringField(IConstants.CONTENTS, string, document, Store.YES, Field.Index.ANALYZED, TermVector.YES);
+				org.apache.lucene.document.Field.Index analyzed = org.apache.lucene.document.Field.Index.ANALYZED;
+				String id = Long.toString(System.currentTimeMillis());
+				Document document = new Document();
+				IndexManager.addStringField(IConstants.ID, id, document, Store.YES, analyzed, TermVector.YES);
+				IndexManager.addStringField(IConstants.CONTENTS, string, document, Store.YES, analyzed, TermVector.YES);
+				IndexManager.addStringField(IConstants.NAME, string, document, Store.YES, analyzed, TermVector.YES);
 				indexWriter.addDocument(document);
 			}
 		} catch (Exception e) {
@@ -216,10 +219,11 @@ public abstract class ATest {
 		} finally {
 			IndexManager.closeIndexWriter(indexWriter);
 		}
-		File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
+		String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
+		File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexDirectoryPath);
 		File serverIndexDirectory = new File(latestIndexDirectory, ip);
 		logger.info("Created index in : " + serverIndexDirectory.getAbsolutePath());
-		return latestIndexDirectory;
+		return serverIndexDirectory;
 	}
 
 	protected Lock getLock(Directory directory, File serverIndexDirectory) throws IOException {

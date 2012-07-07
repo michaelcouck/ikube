@@ -34,9 +34,6 @@ public abstract class Integration {
 
 	/**
 	 * Authentication for the web client.
-	 * 
-	 * @param client the client to authenticate with basic authentication
-	 * @throws Exception
 	 */
 	@BeforeClass
 	public static void beforeClass() throws Exception {

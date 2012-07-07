@@ -118,13 +118,13 @@ public class IndexManagerTest extends ATest {
 
 		when(indexContext.getIndexDirectoryPathBackup()).thenReturn("./indexes/./backup");
 		String newIndexDirectoryPathBackup = IndexManager.getIndexDirectoryPathBackup(indexContext);
-		String expectedIndexDirectoryPathBackup = "./indexes/backup/index";
+		String expectedIndexDirectoryPathBackup = "/usr/share/eclipse/workspace/ikube/code/core/indexes/backup/index";
 		assertEquals("Expected path to be : " + expectedIndexDirectoryPathBackup, expectedIndexDirectoryPathBackup,
 				newIndexDirectoryPathBackup);
 
 		when(indexContext.getIndexDirectoryPathBackup()).thenReturn(".\\indexes\\.\\backup");
 		newIndexDirectoryPathBackup = IndexManager.getIndexDirectoryPathBackup(indexContext);
-		expectedIndexDirectoryPathBackup = "./indexes/backup/index";
+		expectedIndexDirectoryPathBackup = "/usr/share/eclipse/workspace/ikube/code/core/./indexes/backup/index";
 		assertEquals("Expected path to be : " + expectedIndexDirectoryPathBackup, expectedIndexDirectoryPathBackup,
 				newIndexDirectoryPathBackup);
 

@@ -58,7 +58,7 @@ public class IndexEngine implements IIndexEngine, IListener {
 				try {
 					action.execute(indexContext);
 					ThreadUtilities.sleep(Math.abs(random.nextLong()) % 3000l);
-				}catch (InterruptedException e) {
+				} catch (InterruptedException e) {
 					LOGGER.warn("Sleep interrupted : " + action + ", " + e.getMessage());
 				} catch (Exception e) {
 					LOGGER.error("Exception executing action : " + action, e);

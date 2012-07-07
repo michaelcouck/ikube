@@ -44,7 +44,7 @@ public class BackupTest extends ATest {
 
 	@Test
 	public void execute() throws Exception {
-		File latestIndexDirectory = createIndex(indexContext);
+		createIndex(indexContext, "Some strings, like Michael Couck");
 
 		Mockit.setUpMocks(IndexManagerMock.class, ApplicationContextManagerMock.class);
 		backup.execute(indexContext);
@@ -52,11 +52,10 @@ public class BackupTest extends ATest {
 
 		File backupDirectory = new File(IndexManager.getIndexDirectoryPathBackup(indexContext));
 		assertTrue(backupDirectory.exists());
-		File latestBackupDirectory = new File(backupDirectory, latestIndexDirectory.getName());
-		File latestServerBackupIndexDirectory = new File(latestBackupDirectory, ip);
+		File latestBackupDirectory = FileUtilities.getLatestIndexDirectory(backupDirectory.getAbsolutePath());
 		Directory directory = null;
 		try {
-			directory = FSDirectory.open(latestServerBackupIndexDirectory);
+			directory = FSDirectory.open(new File(latestBackupDirectory, ip));
 			assertTrue(IndexReader.indexExists(directory));
 		} finally {
 			if (directory != null) {

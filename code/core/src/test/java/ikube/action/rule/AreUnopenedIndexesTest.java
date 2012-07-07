@@ -42,11 +42,10 @@ public class AreUnopenedIndexesTest extends ATest {
 		assertFalse(result);
 
 		File latestIndexDirectory = createIndex(indexContext, "some words to index");
-		File serverIndexDirectory = new File(latestIndexDirectory, ip);
 		result = areUnopenedIndexes.evaluate(indexContext);
 		assertTrue(result);
 
-		when(fsDirectory.getFile()).thenReturn(serverIndexDirectory);
+		when(fsDirectory.getFile()).thenReturn(latestIndexDirectory);
 		result = areUnopenedIndexes.evaluate(indexContext);
 		assertFalse(result);
 	}

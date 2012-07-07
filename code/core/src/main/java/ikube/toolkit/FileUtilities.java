@@ -26,6 +26,7 @@ import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 public final class FileUtilities {
@@ -694,6 +695,13 @@ public final class FileUtilities {
 				LOGGER.error("Exception closing stream : " + outputStream, e);
 			}
 		}
+	}
+	
+	public static String cleanFilePath(final String path) {
+		String indexDirectoryPath = StringUtils.replace(path, "/./", "/");
+		indexDirectoryPath = StringUtils.replace(indexDirectoryPath, "\\.\\", "/");
+		indexDirectoryPath = StringUtils.replace(indexDirectoryPath, "\\", "/");
+		return indexDirectoryPath;
 	}
 
 }

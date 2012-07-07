@@ -28,7 +28,7 @@ public class WikiDataUnpackerWorkerTest {
 
 	@Before
 	public void before() {
-		bZip2File = FileUtilities.findFileRecursively(new File("/media/nas/xfs-one"), Boolean.FALSE, "bz2");
+		bZip2File = FileUtilities.findFileRecursively(new File("."), Boolean.FALSE, "bzip2");
 		disk = bZip2File.getParentFile();
 		wikiDataUnpackerWorker = new WikiDataUnpackerWorker(disk);
 	}

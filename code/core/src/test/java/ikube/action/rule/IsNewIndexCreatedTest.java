@@ -55,8 +55,7 @@ public class IsNewIndexCreatedTest extends ATest {
 		assertTrue("The index is created : ", result);
 
 		// Open the index searcher on the latest index
-		File serverIndexDirectory = new File(indexDirectory, ip);
-		when(fsDirectory.getFile()).thenReturn(serverIndexDirectory);
+		when(fsDirectory.getFile()).thenReturn(indexDirectory);
 		result = isNewIndexCreated.evaluate(indexContext);
 		assertFalse("The latest index is already opened : ", result);
 

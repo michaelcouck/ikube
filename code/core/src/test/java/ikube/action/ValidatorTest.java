@@ -77,7 +77,6 @@ public class ValidatorTest extends ATest {
 		verify(validator, Mockito.times(invocations)).sendNotification(anyString(), anyString());
 
 		File latestIndexDirectory = createIndex(indexContext, "a little sentence");
-		File serverIndexDirectory = new File(latestIndexDirectory, ip);
 		result = validator.execute(indexContext);
 		assertFalse("There is an index created but no backup : ", result);
 		// There should be no mail sent because there is an index generated
@@ -91,7 +90,7 @@ public class ValidatorTest extends ATest {
 		result = validator.execute(indexContext);
 		assertTrue("There is an index created : ", result);
 
-		Directory directory = FSDirectory.open(serverIndexDirectory);
+		Directory directory = FSDirectory.open(latestIndexDirectory);
 		Lock lock = directory.makeLock(IndexWriter.WRITE_LOCK_NAME);
 		lock.obtain(1000);
 		result = validator.execute(indexContext);

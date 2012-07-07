@@ -21,7 +21,6 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
-import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriter.MaxFieldLength;
 import org.apache.lucene.search.IndexSearcher;
@@ -43,6 +42,7 @@ public class SearchTest extends ATest {
 
 	private static Searcher SEARCHER;
 	private static String INDEX_DIRECTORY_PATH = "./" + SearchTest.class.getSimpleName();
+	private static String russian = "Россия";
 
 	@BeforeClass
 	public static void beforeClass() throws Exception {
@@ -57,24 +57,22 @@ public class SearchTest extends ATest {
 
 		Directory directory = FSDirectory.open(indexDirectory);
 
-		if (!IndexReader.indexExists(directory)) {
-			IndexWriter indexWriter = new IndexWriter(directory, IConstants.ANALYZER, true, MaxFieldLength.UNLIMITED);
-			int numDocs = 50;
-			for (int i = 0; i < numDocs; i++) {
-				String id = Integer.toString(i * 100);
-				String contents = new StringBuilder("Hello world. Россия.").append(i).toString();
-
-				Document document = new Document();
-				IndexManager.addStringField(IConstants.ID, id, document, Store.YES, Index.ANALYZED, TermVector.YES);
-				IndexManager.addStringField(IConstants.CONTENTS, contents, document, Store.YES, Index.ANALYZED, TermVector.YES);
-				IndexManager.addStringField(IConstants.NAME, "Michael Couck. Россия.", document, Store.YES, Index.ANALYZED, TermVector.YES);
-				indexWriter.addDocument(document);
-			}
-
-			indexWriter.commit();
-			indexWriter.optimize();
-			indexWriter.close();
+		IndexWriter indexWriter = new IndexWriter(directory, IConstants.ANALYZER, true, MaxFieldLength.UNLIMITED);
+		int numDocs = 50;
+		for (int i = 0; i < numDocs; i++) {
+			String id = Integer.toString(i * 100);
+			String contents = new StringBuilder("Hello world. " + russian).append(i).toString();
+			
+			Document document = new Document();
+			IndexManager.addStringField(IConstants.ID, id, document, Store.YES, Index.ANALYZED, TermVector.YES);
+			IndexManager.addStringField(IConstants.CONTENTS, contents, document, Store.YES, Index.ANALYZED, TermVector.YES);
+			IndexManager.addStringField(IConstants.NAME, "Michael Couck." + russian, document, Store.YES, Index.ANALYZED, TermVector.YES);
+			indexWriter.addDocument(document);
 		}
+		
+		indexWriter.commit();
+		indexWriter.optimize();
+		indexWriter.close();
 
 		Searchable[] searchables = new Searchable[] { new IndexSearcher(directory) };
 		SEARCHER = new MultiSearcher(searchables);
@@ -101,7 +99,7 @@ public class SearchTest extends ATest {
 		searchSingle.setFragment(Boolean.TRUE);
 		searchSingle.setMaxResults(maxResults);
 		searchSingle.setSearchField(IConstants.CONTENTS);
-		searchSingle.setSearchString("Россия");
+		searchSingle.setSearchString(russian);
 		searchSingle.setSortField(new String[] { IConstants.ID });
 		ArrayList<HashMap<String, String>> results = searchSingle.execute();
 		assertTrue(results.size() > 1);

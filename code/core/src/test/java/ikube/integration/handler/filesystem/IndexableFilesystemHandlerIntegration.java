@@ -48,7 +48,8 @@ public class IndexableFilesystemHandlerIntegration extends AbstractIntegration {
 		Directory directory = null;
 		try {
 			File dataIndexFolder = FileUtilities.findFileRecursively(new File("."), "data");
-			desktopFolder.setPath(dataIndexFolder.getAbsolutePath());
+			String dataIndexFolderPath = FileUtilities.cleanFilePath(dataIndexFolder.getAbsolutePath());
+			desktopFolder.setPath(dataIndexFolderPath);
 			String ip = InetAddress.getLocalHost().getHostAddress();
 			IndexManager.openIndexWriter(desktop, System.currentTimeMillis(), ip);
 			List<Future<?>> threads = indexableFilesystemHandler.handle(desktop, desktopFolder);

@@ -57,14 +57,13 @@ public class CleanTest extends ATest {
 	@Test
 	public void execute() throws Exception {
 		File latestIndexDirectory = createIndex(indexContext, "some words to index");
-		File serverIndexDirectory = new File(latestIndexDirectory, ip);
 
 		// Running the clean the locked index directory should be un-locked
 		Clean<IndexContext<?>, Boolean> clean = new Clean<IndexContext<?>, Boolean>();
 		Deencapsulation.setField(clean, clusterManager);
 		clean.execute(indexContext);
 
-		Directory directory = FSDirectory.open(serverIndexDirectory);
+		Directory directory = FSDirectory.open(latestIndexDirectory);
 		try {
 			assertTrue(IndexReader.indexExists(directory));
 		} finally {
@@ -77,17 +76,16 @@ public class CleanTest extends ATest {
 		}
 
 		clean.execute(indexContext);
-		assertFalse("The index directory should have been deleted because it is corrupt : ", serverIndexDirectory.exists());
+		assertFalse("The index directory should have been deleted because it is corrupt : ", latestIndexDirectory.exists());
 
 		latestIndexDirectory = createIndex(indexContext, "some words to index");
-		serverIndexDirectory = new File(latestIndexDirectory, ip);
-		Lock lock = getLock(FSDirectory.open(serverIndexDirectory), serverIndexDirectory);
+		Lock lock = getLock(FSDirectory.open(latestIndexDirectory), latestIndexDirectory);
 		boolean isLocked = lock.isLocked();
 		assertTrue("We should be able to get the lock from the index directory : ", isLocked);
 
 		clean.execute(indexContext);
 
-		directory = FSDirectory.open(serverIndexDirectory);
+		directory = FSDirectory.open(latestIndexDirectory);
 		try {
 			assertTrue("This index exists, but is locked : ", IndexWriter.isLocked(directory));
 			assertTrue("This index exists, but is locked : ", IndexReader.indexExists(directory));

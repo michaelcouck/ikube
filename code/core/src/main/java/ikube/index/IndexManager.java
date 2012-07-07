@@ -15,7 +15,6 @@ import java.io.StringReader;
 import java.io.Writer;
 import java.util.Date;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -235,15 +234,12 @@ public final class IndexManager {
 	 */
 	private static String getIndexDirectoryPath(IndexContext<?> indexContext, String indexDirectory) {
 		StringBuilder builder = new StringBuilder();
-		builder.append(indexDirectory); // Path
+		builder.append(new File(indexDirectory).getAbsolutePath()); // Path
 		builder.append(File.separator);
 		builder.append(indexContext.getIndexName()); // Index name
-		String indexDirectoryPath = StringUtils.replace(builder.toString(), "/./", "/");
-		indexDirectoryPath = StringUtils.replace(indexDirectoryPath, "\\.\\", "/");
-		indexDirectoryPath = StringUtils.replace(indexDirectoryPath, "\\", "/");
-		return indexDirectoryPath;
+		return FileUtilities.cleanFilePath(builder.toString());
 	}
-
+	
 	/**
 	 * TODO Document me!
 	 * 

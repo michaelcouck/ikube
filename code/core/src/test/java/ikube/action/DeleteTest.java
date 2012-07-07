@@ -64,59 +64,54 @@ public class DeleteTest extends ATest {
 		/*******************************************/
 
 		File latestIndexDirectory = createIndex(indexContext, "whatever");
-		File serverIndexDirectory = new File(latestIndexDirectory, ip);
-		assertTrue("Server index directory created : ", serverIndexDirectory.exists());
+		assertTrue("Server index directory created : ", latestIndexDirectory.exists());
 
 		// Only one directory so nothing to delete
 		deleted = delete.execute(indexContext);
 		assertFalse("The index should not have been deleted : ", deleted);
-		assertEquals("There should be only one index : ", 1, serverIndexDirectory.getParentFile().listFiles().length);
+		assertEquals("There should be only one index : ", 1, latestIndexDirectory.getParentFile().listFiles().length);
 		/**************************************************/
 
 		latestIndexDirectory = createIndex(indexContext, "some more whatever");
-		assertEquals(2, latestIndexDirectory.getParentFile().listFiles().length);
+		assertEquals(2, latestIndexDirectory.getParentFile().getParentFile().listFiles().length);
 		// Two directories so both should stay
 		deleted = delete.execute(indexContext);
 		assertFalse(deleted);
-		assertEquals(2, latestIndexDirectory.getParentFile().listFiles().length);
+		assertEquals(2, latestIndexDirectory.getParentFile().getParentFile().listFiles().length);
 
 		/****************************/
 		latestIndexDirectory = createIndex(indexContext, "Tired of this?");
-		assertEquals(3, latestIndexDirectory.getParentFile().listFiles().length);
+		assertEquals(3, latestIndexDirectory.getParentFile().getParentFile().listFiles().length);
 
-		serverIndexDirectory = new File(latestIndexDirectory, ip);
-		Directory directory = FSDirectory.open(serverIndexDirectory);
-		Lock lock = getLock(directory, serverIndexDirectory);
+		Directory directory = FSDirectory.open(latestIndexDirectory);
+		Lock lock = getLock(directory, latestIndexDirectory);
 
 		// Three directories, one locked there should be three left
 		deleted = delete.execute(indexContext);
 		assertFalse(deleted);
-		assertEquals(3, latestIndexDirectory.getParentFile().listFiles().length);
+		assertEquals(3, latestIndexDirectory.getParentFile().getParentFile().listFiles().length);
 
 		lock.release();
 		directory.clearLock(IndexWriter.WRITE_LOCK_NAME);
 
 		/*************************************/
 		latestIndexDirectory = createIndex(indexContext);
-		assertEquals(4, latestIndexDirectory.getParentFile().listFiles().length);
+		assertEquals(4, latestIndexDirectory.getParentFile().getParentFile().listFiles().length);
 
-		serverIndexDirectory = new File(latestIndexDirectory, ip);
-		directory = FSDirectory.open(serverIndexDirectory);
-		lock = getLock(directory, serverIndexDirectory);
+		directory = FSDirectory.open(latestIndexDirectory);
+		lock = getLock(directory, latestIndexDirectory);
 		assertTrue(IndexWriter.isLocked(directory));
 
 		// Four directories, one locked, one should be gone
 		deleted = delete.execute(indexContext);
 		assertTrue(deleted);
-		assertEquals(3, latestIndexDirectory.getParentFile().listFiles().length);
+		assertEquals(3, latestIndexDirectory.getParentFile().getParentFile().listFiles().length);
 
 		lock.release();
 		directory.clearLock(IndexWriter.WRITE_LOCK_NAME);
 
 		FileUtilities.deleteFile(latestIndexDirectory, 1);
-		FileUtilities.deleteFile(serverIndexDirectory, 1);
 
-		assertFalse(serverIndexDirectory.exists());
 		assertFalse(latestIndexDirectory.exists());
 	}
 
