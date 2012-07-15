@@ -53,9 +53,12 @@ public final class IndexManager {
 	 * documents to it during the index. The index writer is opened on a directory that will be the index path on the file system, the name
 	 * of the index, then the
 	 * 
-	 * @param ip the ip address of this machine
-	 * @param indexContext the index context to open the writer for
-	 * @param time the time stamp for the index directory. This can come from the system time but it can also come from another server. When
+	 * @param ip
+	 *            the ip address of this machine
+	 * @param indexContext
+	 *            the index context to open the writer for
+	 * @param time
+	 *            the time stamp for the index directory. This can come from the system time but it can also come from another server. When
 	 *            an index is started the server will publish the time it started the index. In this way we can check the timestamp for the
 	 *            index, and if it is set then we use the cluster timestamp. As a result we write the index in the same 'timestamp'
 	 *            directory
@@ -101,12 +104,15 @@ public final class IndexManager {
 	}
 
 	/**
-	 * TODO Document me!
+	 * This method will open the index writer using the index context and a directory.
 	 * 
 	 * @param indexContext
+	 *            the index context for the parameters for the index writer like compound file and buffer size
 	 * @param indexDirectory
+	 *            the directory to open the index in
 	 * @param create
-	 * @return
+	 *            whether to create the index or open on an existing index
+	 * @return the index writer open on the specified directory
 	 * @throws Exception
 	 */
 	public static synchronized IndexWriter openIndexWriter(IndexContext<?> indexContext, File indexDirectory, boolean create)
@@ -122,9 +128,10 @@ public final class IndexManager {
 	}
 
 	/**
-	 * TODO Document me!
+	 * This method will close the index writer, provided it is not null. Also the index writer in the context will be removed.
 	 * 
 	 * @param indexContext
+	 *            the index context to close the writer for
 	 */
 	public static synchronized void closeIndexWriter(final IndexContext<?> indexContext) {
 		try {
@@ -139,9 +146,10 @@ public final class IndexManager {
 	}
 
 	/**
-	 * TODO Document me!
+	 * This method will close the index writer and optimize it too.
 	 * 
 	 * @param indexWriter
+	 *            the index writer to close and optimize
 	 */
 	public static void closeIndexWriter(final IndexWriter indexWriter) {
 		if (indexWriter == null) {
@@ -188,12 +196,16 @@ public final class IndexManager {
 	}
 
 	/**
-	 * TODO Document me!
+	 * This method will get the path to the index directory that will be created, based on the path in the context, the time and the ip of
+	 * the machine.
 	 * 
 	 * @param indexContext
+	 *            the context to use for the path to the indexes for the context
 	 * @param time
+	 *            the time for the upper directory name
 	 * @param ip
-	 * @return
+	 *            the ip for the index directory name
+	 * @return the full path to the
 	 */
 	public static String getIndexDirectory(final IndexContext<?> indexContext, final long time, final String ip) {
 		StringBuilder builder = new StringBuilder();
@@ -205,33 +217,14 @@ public final class IndexManager {
 		return builder.toString();
 	}
 
-	/**
-	 * TODO Document me!
-	 * 
-	 * @param indexContext
-	 * @return
-	 */
 	public static String getIndexDirectoryPath(final IndexContext<?> indexContext) {
 		return getIndexDirectoryPath(indexContext, indexContext.getIndexDirectoryPath());
 	}
 
-	/**
-	 * TODO Document me!
-	 * 
-	 * @param indexContext
-	 * @return
-	 */
 	public static String getIndexDirectoryPathBackup(final IndexContext<?> indexContext) {
 		return getIndexDirectoryPath(indexContext, indexContext.getIndexDirectoryPathBackup());
 	}
 
-	/**
-	 * TODO Document me!
-	 * 
-	 * @param indexContext
-	 * @param indexDirectory
-	 * @return
-	 */
 	private static String getIndexDirectoryPath(IndexContext<?> indexContext, String indexDirectory) {
 		StringBuilder builder = new StringBuilder();
 		builder.append(new File(indexDirectory).getAbsolutePath()); // Path
@@ -239,17 +232,7 @@ public final class IndexManager {
 		builder.append(indexContext.getIndexName()); // Index name
 		return FileUtilities.cleanFilePath(builder.toString());
 	}
-	
-	/**
-	 * TODO Document me!
-	 * 
-	 * @param fieldName
-	 * @param fieldContent
-	 * @param document
-	 * @param store
-	 * @param analyzed
-	 * @param termVector
-	 */
+
 	public static void addStringField(final String fieldName, final String fieldContent, final Document document, final Store store,
 			final Index analyzed, final TermVector termVector) {
 		if (fieldName == null || fieldContent == null) {
@@ -267,30 +250,12 @@ public final class IndexManager {
 		}
 	}
 
-	/**
-	 * TODO Document me!
-	 * 
-	 * @param fieldName
-	 * @param fieldContent
-	 * @param document
-	 * @param store
-	 */
 	public static void addNumericField(final String fieldName, final String fieldContent, final Document document, final Store store) {
 		NumericField field = new NumericField(fieldName, 10, store, true);
 		field.setDoubleValue(Double.parseDouble(fieldContent));
 		document.add(field);
 	}
 
-	/**
-	 * TODO Document me!
-	 * 
-	 * @param fieldName
-	 * @param document
-	 * @param store
-	 * @param termVector
-	 * @param reader
-	 * @throws Exception
-	 */
 	public static void addReaderField(final String fieldName, final Document document, final Store store, final TermVector termVector,
 			final Reader reader) throws Exception {
 		if (fieldName == null || reader == null) {

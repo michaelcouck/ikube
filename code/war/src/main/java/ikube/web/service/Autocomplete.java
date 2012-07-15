@@ -52,7 +52,11 @@ public class Autocomplete {
 		values[0] = searchStrings + "%";
 		List<Search> searches = dataBase.find(Search.class, Search.SELECT_FROM_SEARCH_BY_SEARCH_STRINGS_LIKE, names, values, 0, 10);
 		LOGGER.info("Searches : " + searches);
-		return gson.toJson(searches);
+		// return gson.toJson(searches);
+		// return "[java, c++, python, pl1]";
+		// return "[\"ActionScript\",\"AppleScript\",\"Asp\",\"BASIC\",\"C\"]";
+		// return "[{\"value\":\"Nirvana\"},{\"value\":\"Pink Floyd\"}]";
+		return "[\"Java\",\"JavaScript\",\"Lisp\"]";
 	}
 
 }

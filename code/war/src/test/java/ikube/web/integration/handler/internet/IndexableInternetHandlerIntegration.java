@@ -6,7 +6,6 @@ import ikube.database.IDataBase;
 import ikube.database.jpa.DataBaseJpa;
 import ikube.index.IndexManager;
 import ikube.index.handler.internet.IndexableInternetHandler;
-import ikube.model.Action;
 import ikube.model.IndexContext;
 import ikube.model.IndexableInternet;
 import ikube.toolkit.FileUtilities;
@@ -65,7 +64,6 @@ public class IndexableInternetHandlerIntegration extends Integration {
 		IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, indexDirectory, true);
 
 		indexContext.getIndex().setIndexWriter(indexWriter);
-		indexContext.setAction(new Action());
 	}
 
 	@Test

@@ -5,7 +5,6 @@ import ikube.database.IDataBase;
 import ikube.index.IndexManager;
 import ikube.index.handler.filesystem.IndexableFilesystemWikiHandler;
 import ikube.integration.AbstractIntegration;
-import ikube.model.Action;
 import ikube.model.Index;
 import ikube.model.IndexContext;
 import ikube.model.IndexableFileSystemWiki;
@@ -33,7 +32,6 @@ public class IndexableFilesystemWikiHandlerIntegration extends AbstractIntegrati
 	public void before() {
 		wikiHistoryArabic = ApplicationContextManager.getBean("wikiHistoryArabic");
 		wikiHistoryDataArabic = ApplicationContextManager.getBean("wikiHistoryDataArabic");
-		wikiHistoryArabic.setAction(new Action());
 		indexableFilesystemHandler = ApplicationContextManager.getBean(IndexableFilesystemWikiHandler.class);
 		delete(ApplicationContextManager.getBean(IDataBase.class), ikube.model.File.class);
 		FileUtilities.deleteFile(new File(wikiHistoryArabic.getIndexDirectoryPath()), 1);
@@ -50,7 +48,7 @@ public class IndexableFilesystemWikiHandlerIntegration extends AbstractIntegrati
 			wikiHistoryArabic.getIndex().setIndexWriter(indexWriter);
 			indexableFilesystemHandler.handle(wikiHistoryArabic, wikiHistoryDataArabic);
 
-			Thread.sleep(60000);
+			Thread.sleep(10000);
 
 			ThreadUtilities.destroy();
 			IndexManager.closeIndexWriter(wikiHistoryArabic);

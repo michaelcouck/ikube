@@ -6,7 +6,6 @@ import ikube.database.IDataBase;
 import ikube.index.IndexManager;
 import ikube.index.handler.filesystem.IndexableFilesystemHandler;
 import ikube.integration.AbstractIntegration;
-import ikube.model.Action;
 import ikube.model.IndexContext;
 import ikube.model.IndexableFileSystem;
 import ikube.toolkit.ApplicationContextManager;
@@ -37,7 +36,6 @@ public class IndexableFilesystemHandlerIntegration extends AbstractIntegration {
 	public void before() {
 		desktop = ApplicationContextManager.getBean("desktop");
 		desktopFolder = ApplicationContextManager.getBean("desktopFolder");
-		desktop.setAction(new Action());
 		indexableFilesystemHandler = ApplicationContextManager.getBean(IndexableFilesystemHandler.class);
 		delete(ApplicationContextManager.getBean(IDataBase.class), ikube.model.File.class);
 		FileUtilities.deleteFile(new File(desktop.getIndexDirectoryPath()), 1);

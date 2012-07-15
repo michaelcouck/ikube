@@ -10,7 +10,6 @@ import ikube.index.content.ColumnContentProvider;
 import ikube.index.content.IContentProvider;
 import ikube.index.handler.database.IndexableTableHandler;
 import ikube.integration.AbstractIntegration;
-import ikube.model.Action;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.model.IndexableColumn;
@@ -63,7 +62,6 @@ public class IndexableTableHandlerIntegration extends AbstractIntegration {
 		faqIndexableColumns = faqIndexableTable.getChildren();
 		faqIdIndexableColumn = Deencapsulation.invoke(indexableTableHandler, "getIdColumn", faqIndexableColumns);
 		connection = ((DataSource) ApplicationContextManager.getBean("nonXaDataSourceH2")).getConnection();
-		realIndexContext.setAction(new Action());
 		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
 		clusterManager.getServer().getActions().clear();
 	}
@@ -82,7 +80,6 @@ public class IndexableTableHandlerIntegration extends AbstractIntegration {
 			String ip = InetAddress.getLocalHost().getHostAddress();
 			IndexWriter indexWriter = IndexManager.openIndexWriter(realIndexContext, System.currentTimeMillis(), ip);
 			realIndexContext.getIndex().setIndexWriter(indexWriter);
-			realIndexContext.setAction(new Action());
 			faqIndexableTable.setPredicate("where faq.faqId = 330451");
 			DatabaseUtilities.printResultSet(connection.createStatement().executeQuery("select * from faq"));
 			List<Future<?>> threads = indexableTableHandler.handle(realIndexContext, faqIndexableTable);
@@ -203,7 +200,6 @@ public class IndexableTableHandlerIntegration extends AbstractIntegration {
 		String ip = InetAddress.getLocalHost().getHostAddress();
 		IndexWriter indexWriter = IndexManager.openIndexWriter(realIndexContext, System.currentTimeMillis(), ip);
 		realIndexContext.getIndex().setIndexWriter(indexWriter);
-		realIndexContext.setAction(new Action());
 		// DatabaseUtilities.printResultSet(connection.createStatement().executeQuery("select * from faq"));
 		List<Future<?>> threads = indexableTableHandler.handle(realIndexContext, faqIndexableTable);
 		ThreadUtilities.waitForFutures(threads, Integer.MAX_VALUE);
@@ -217,7 +213,6 @@ public class IndexableTableHandlerIntegration extends AbstractIntegration {
 		String ip = InetAddress.getLocalHost().getHostAddress();
 		IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
 		indexContext.getIndex().setIndexWriter(indexWriter);
-		indexContext.setAction(new Action());
 		// ((IndexableTable) indexable).setPredicate("where geoname.id > 18842835");
 		List<Future<?>> futures = indexableTableHandler.handle(indexContext, indexable);
 		ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
@@ -227,7 +222,6 @@ public class IndexableTableHandlerIntegration extends AbstractIntegration {
 	@Test
 	public void handleAllColumnsAllTables() throws Exception {
 		IndexContext<?> indexContext = ApplicationContextManager.getBean("indexContext");
-		indexContext.setAction(new Action());
 		String ip = InetAddress.getLocalHost().getHostAddress();
 		IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
 		indexContext.getIndex().setIndexWriter(indexWriter);
@@ -256,7 +250,6 @@ public class IndexableTableHandlerIntegration extends AbstractIntegration {
 			String ip = InetAddress.getLocalHost().getHostAddress();
 			IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
 			indexContext.getIndex().setIndexWriter(indexWriter);
-			indexContext.setAction(new Action());
 			Thread thread = new Thread(new Runnable() {
 				public void run() {
 					ThreadUtilities.sleep(15000);

@@ -8,16 +8,35 @@
 window.onload = function() {
 	document.ikubeSearchForm.searchStrings.focus();
 }
-$('#searchStrings').autocomplete({
-	  url: '<c:url value="/service/autocomplete/single" />?searchStrings=hello', //jQuery UI 1.6rc2
-	  // source : 'suggestion.php', //jQuery UI 1.8.18
-	  width: 300,
-	  max: 10,
-	  delay: 100,
-	  cacheLength: 1,
-	  scroll: false,
-	  highlight: false
-	});
+
+// '<c:url value="/service/autocomplete/single" />'
+// "http://localhost:9080/ikube/service/autocomplete/single",
+
+/* Example #1 - Programming Languages */
+ 	
+ 	// This works but the url to the rest service doesn't, why?
+     $(document).ready(function() {
+        $( "#AC" ).autocomplete({
+            source: ["Java","JavaScript","Lisp"]
+        });
+    });
+
+	
+/* $(document).ready(function() {
+        $( "#AC" ).autocomplete({
+			source: programmingLang,
+			minLength: 2,
+			select: function( event, ui ) {
+				log( ui.item ?
+					"Selected: " + ui.item.value + " aka " + ui.item.id :
+					"Nothing selected, input was " + this.value );
+			}
+		});
+} */
+var programmingLang = ["ActionScript","AppleScript","Asp","BASIC","C","C++",
+                       "Clojure","COBOL","ColdFusion","Erlang","Fortran","Groovy","Haskell",
+                       "Java","JavaScript","Lisp","Perl","PHP","Python","Ruby","Scala","Scheme"]; 
+    
 </script>
 
 <div id="sidebar" class="menu">
@@ -26,7 +45,7 @@ $('#searchStrings').autocomplete({
 			<form name="ikubeSearchForm" id="ikubeSearchForm" action="<c:url value="${targetSearchUrl}"/>">
 				<input name="targetSearchUrl" type="hidden" value="${targetSearchUrl}">
 				<fieldset>
-					<input type="text" name="searchStrings" id="search-text" value="<c:out value='${searchStrings}' />" />
+					<input type="text" name="searchStrings" id="autocomplete" value="<c:out value='${searchStrings}' />" />
 					<input type="submit" id="search-submit" value="Go" />
 				</fieldset>
 			</form>

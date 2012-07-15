@@ -175,9 +175,9 @@
 		property:listeners-ref="ikube.listener.ListenerManager.listeners" />
 	<util:list id="ikube.listener.ListenerManager.listeners">
 		<ref bean="ikube.IndexEngine" />
-		<bean class="ikube.cluster.jms.LockRemovalListener" />
-		<bean class="ikube.cluster.jms.ServerRemovalListener" />
-		<bean class="ikube.cluster.jms.ServerClubListener" />
+		<!-- <bean class="ikube.cluster.jms.LockRemovalListener" /> -->
+		<!-- <bean class="ikube.cluster.jms.ServerRemovalListener" /> -->
+		<!-- <bean class="ikube.cluster.jms.ServerClubListener" /> -->
 		<bean class="ikube.listener.StartupListener" />
 		<bean class="ikube.listener.TerminationListener" />
 	</util:list>
@@ -211,11 +211,11 @@
 			property:type="performance"
 			property:delay="60000"
 			property:period="60000" />
-		<bean
+		<!-- <bean
 			class="ikube.listener.Schedule"
 			property:type="jms"
 			property:delay="10000"
-			property:period="10000" />
+			property:period="10000" /> -->
 		<bean
 			class="ikube.listener.Schedule"
 			property:type="lockRelease"
@@ -296,6 +296,11 @@
 		class="ikube.search.spelling.SpellingChecker"
 		init-method="initialize"
 		destroy-method="destroy" />
+		
+	<bean 
+		id="ikube.cluster.IClusterManager"
+		class="ikube.cluster.hzc.ClusterManagerHazelcast"
+		init-method="initialize" />
 	
 	<!-- The handlers that do the indexing logic. -->
 	<bean

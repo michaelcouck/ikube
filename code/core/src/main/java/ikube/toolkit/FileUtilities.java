@@ -182,37 +182,38 @@ public final class FileUtilities {
 	 * @return
 	 */
 	public static synchronized File getFile(final String filePath, final boolean directory) {
+		if (filePath == null) {
+			return null;
+		}
+		File file = null;
 		try {
-			if (filePath == null) {
-				return null;
-			}
-			File file = new File(filePath);
+			file = new File(filePath);
 			if (directory) {
-				if (file.exists() && file.isDirectory()) {
-					return file;
-				}
-				boolean created = file.mkdirs();
-				if (created && file.exists()) {
-					return file;
+				if (!file.exists() || !file.isDirectory()) {
+					boolean created = file.mkdirs();
+					if (!created) {
+						LOGGER.warn("Didn't create directory/file : " + file);
+					}
 				}
 			} else {
-				if (file.exists() && file.isFile()) {
-					return file;
-				}
-				File parent = file.getParentFile();
-				parent = FileUtilities.getFile(parent.getAbsolutePath(), Boolean.TRUE);
-				if (parent != null) {
-					try {
-						boolean created = file.createNewFile();
-						if (created && file.exists()) {
-							return file;
+				if (!file.exists() || !file.isFile()) {
+					File parent = file.getParentFile();
+					parent = FileUtilities.getFile(parent.getAbsolutePath(), Boolean.TRUE);
+					if (parent != null) {
+						try {
+							boolean created = file.createNewFile();
+							if (!created) {
+								LOGGER.warn("Didn't create directory/file : " + file);
+							}
+						} catch (IOException e) {
+							LOGGER.error("Exception creating file : " + file, e);
 						}
-					} catch (IOException e) {
-						LOGGER.error("Exception creating file : " + file, e);
 					}
 				}
 			}
-			return null;
+			file.setReadable(true, false);
+			file.setWritable(true, false);
+			return file;
 		} finally {
 			FileUtilities.class.notifyAll();
 		}

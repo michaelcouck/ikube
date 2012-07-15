@@ -86,11 +86,11 @@
 		property:defaultDestination-ref="destination" />
 		
 	<!-- This is the listener and the producer of messages. -->
-	<bean 
+	<!-- <bean 
 		id="ikube.cluster.IClusterManager"
 		class="ikube.cluster.jms.ClusterManagerJms"
 		init-method="initialize"
-		destroy-method="destroy" />
+		destroy-method="destroy" /> -->
 
 	<!-- The Spring message listener container configuration -->
 	<jms:listener-container 

@@ -197,6 +197,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	 *            document is null of course
 	 * @throws InterruptedException
 	 */
+	@SuppressWarnings("resource")
 	protected void handleTable(final IContentProvider<IndexableColumn> contentProvider, final IndexContext<?> indexContext,
 			final IndexableTable indexableTable, final Connection connection, final Document superDocument, final int superExceptions,
 			final AtomicLong currentId) throws InterruptedException {

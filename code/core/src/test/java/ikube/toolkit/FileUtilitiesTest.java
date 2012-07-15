@@ -182,6 +182,8 @@ public class FileUtilitiesTest extends ATest {
 	public void getFile() {
 		File file = FileUtilities.getFile("./indexes/campaignIndex/1321025482078/192.168.1.35.1178697512", Boolean.TRUE);
 		assertNotNull(file);
+		// file = FileUtilities.getFile("/media/nas/xfs/indexes/indexContext/1342339046990/192.168.1.14", Boolean.TRUE);
+		// assertNotNull(file);
 	}
 
 	@Test

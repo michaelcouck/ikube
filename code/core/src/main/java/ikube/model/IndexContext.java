@@ -34,9 +34,6 @@ public class IndexContext<T> extends Indexable<T> implements Comparable<IndexCon
 	private transient long indexSize;
 	@Transient
 	private transient long numDocs;
-	/** The currently running action. */
-	@Transient
-	private transient Action action;
 
 	/** The maximum age of the index defined in minutes. */
 	private long maxAge;
@@ -219,14 +216,6 @@ public class IndexContext<T> extends Indexable<T> implements Comparable<IndexCon
 
 	public void setNumDocs(long numDocs) {
 		this.numDocs = numDocs;
-	}
-
-	public Action getAction() {
-		return action;
-	}
-
-	public void setAction(Action action) {
-		this.action = action;
 	}
 
 	@Override

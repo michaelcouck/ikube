@@ -37,7 +37,7 @@
 	</util:list>
 	<bean
 		id="wikiHistoryDataOne"
-		class="ikube.model.IndexableFileSystem"
+		class="ikube.model.IndexableFileSystemWiki"
 		property:name="wikiHistoryDataOne"
 		property:path="/media/nas/xfs-one"
 		property:pathFieldName="path"
@@ -45,10 +45,10 @@
 		property:lengthFieldName="length"
 		property:contentFieldName="contents"
 		property:lastModifiedFieldName="lastmodified"
-		property:stored="true"
-		property:analyzed="true"
-		property:vectored="false"
-		property:unpackZips="false"
+		property:stored="${wiki.history.stored}"
+		property:analyzed="${wiki.history.analyzed}"
+		property:vectored="${wiki.history.vectored}"
+		property:unpackZips="${wiki.history.unpack.zips}"
 		property:excludedPattern="${files.excluded.pattern}"
 		property:batchSize="${file.batch.size}"
 		property:maxReadLength="${file.max.read.length}" />
@@ -75,7 +75,7 @@
 	</util:list>
 	<bean
 		id="wikiHistoryDataTwo"
-		class="ikube.model.IndexableFileSystem"
+		class="ikube.model.IndexableFileSystemWiki"
 		property:name="wikiHistoryDataTwo"
 		property:path="/media/nas/xfs-two"
 		property:pathFieldName="path"
@@ -83,10 +83,10 @@
 		property:lengthFieldName="length"
 		property:contentFieldName="contents"
 		property:lastModifiedFieldName="lastmodified"
-		property:stored="true"
-		property:analyzed="true"
-		property:vectored="false"
-		property:unpackZips="false"
+		property:stored="${wiki.history.stored}"
+		property:analyzed="${wiki.history.analyzed}"
+		property:vectored="${wiki.history.vectored}"
+		property:unpackZips="${wiki.history.unpack.zips}"
 		property:excludedPattern="${files.excluded.pattern}"
 		property:batchSize="${file.batch.size}"
 		property:maxReadLength="${file.max.read.length}" />
@@ -113,7 +113,7 @@
 	</util:list>
 	<bean
 		id="wikiHistoryDataThree"
-		class="ikube.model.IndexableFileSystem"
+		class="ikube.model.IndexableFileSystemWiki"
 		property:name="wikiHistoryDataThree"
 		property:path="/media/nas/xfs-three"
 		property:pathFieldName="path"
@@ -121,10 +121,10 @@
 		property:lengthFieldName="length"
 		property:contentFieldName="contents"
 		property:lastModifiedFieldName="lastmodified"
-		property:stored="true"
-		property:analyzed="true"
-		property:vectored="false"
-		property:unpackZips="false"
+		property:stored="${wiki.history.stored}"
+		property:analyzed="${wiki.history.analyzed}"
+		property:vectored="${wiki.history.vectored}"
+		property:unpackZips="${wiki.history.unpack.zips}"
 		property:excludedPattern="${files.excluded.pattern}"
 		property:batchSize="${file.batch.size}"
 		property:maxReadLength="${file.max.read.length}" />
@@ -151,7 +151,7 @@
 	</util:list>
 	<bean
 		id="wikiHistoryDataFour"
-		class="ikube.model.IndexableFileSystem"
+		class="ikube.model.IndexableFileSystemWiki"
 		property:name="wikiHistoryDataFour"
 		property:path="/media/nas/xfs-four"
 		property:pathFieldName="path"
@@ -159,10 +159,10 @@
 		property:lengthFieldName="length"
 		property:contentFieldName="contents"
 		property:lastModifiedFieldName="lastmodified"
-		property:stored="true"
-		property:analyzed="true"
-		property:vectored="false"
-		property:unpackZips="false"
+		property:stored="${wiki.history.stored}"
+		property:analyzed="${wiki.history.analyzed}"
+		property:vectored="${wiki.history.vectored}"
+		property:unpackZips="${wiki.history.unpack.zips}"
 		property:excludedPattern="${files.excluded.pattern}"
 		property:batchSize="${file.batch.size}"
 		property:maxReadLength="${file.max.read.length}" />
@@ -189,7 +189,7 @@
 	</util:list>
 	<bean
 		id="wikiHistoryDataFive"
-		class="ikube.model.IndexableFileSystem"
+		class="ikube.model.IndexableFileSystemWiki"
 		property:name="wikiHistoryDataFive"
 		property:path="/media/nas/xfs-five"
 		property:pathFieldName="path"
@@ -197,10 +197,10 @@
 		property:lengthFieldName="length"
 		property:contentFieldName="contents"
 		property:lastModifiedFieldName="lastmodified"
-		property:stored="true"
-		property:analyzed="true"
-		property:vectored="false"
-		property:unpackZips="false"
+		property:stored="${wiki.history.stored}"
+		property:analyzed="${wiki.history.analyzed}"
+		property:vectored="${wiki.history.vectored}"
+		property:unpackZips="${wiki.history.unpack.zips}"
 		property:excludedPattern="${files.excluded.pattern}"
 		property:batchSize="${file.batch.size}"
 		property:maxReadLength="${file.max.read.length}" />

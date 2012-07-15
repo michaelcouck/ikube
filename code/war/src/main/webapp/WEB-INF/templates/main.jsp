@@ -28,9 +28,14 @@
 		<script type="text/javascript" src="<c:url value="/style/prettyprint/prettify.js" />"></script>
 		
 		<script src="<c:url value="/js/jquery-1.7.1.js"/>" type="text/javascript"></script>
-		<script src="<c:url value="/js/jquery.autocomplete.js"/>" type="text/javascript"></script>
+		
+		<%-- <script src="<c:url value="/js/jquery.autocomplete.js"/>" type="text/javascript"></script>
 		<script src="<c:url value="/js/jquery.autocomplete.min.js"/>" type="text/javascript"></script>
-		<script src="<c:url value="/js/jquery.autocomplete.pack.js"/>" type="text/javascript"></script>
+		<script src="<c:url value="/js/jquery.autocomplete.pack.js"/>" type="text/javascript"></script> --%>
+		
+		<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/black-tie/jquery-ui.css" type="text/css" />
+    	<script src='http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js'></script>
+    	<script src='http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.2/jquery-ui.min.js'></script>
 		
 		<script src="http://www.google-analytics.com/ga.js" type="text/javascript"></script>
 		<script src="http://maps.google.com/maps/api/js?sensor=false" type="text/javascript"></script>

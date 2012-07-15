@@ -1,15 +1,16 @@
 package ikube.index.handler;
 
+import ikube.cluster.IClusterManager;
 import ikube.database.IDataBase;
 import ikube.index.spatial.Coordinate;
 import ikube.index.spatial.enrich.IEnrichment;
 import ikube.index.spatial.geocode.IGeocoder;
-import ikube.model.Action;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
 
-import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -21,7 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public abstract class IndexableHandler<T extends Indexable<?>> implements IHandler<T> {
 
-	protected Logger logger = Logger.getLogger(this.getClass());
+	protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	/** The number of threads that this handler will spawn. */
 	private int threads;
@@ -36,6 +37,8 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IHandl
 	/** The enricher that will add the spatial tiers to the document. */
 	@Autowired
 	private IEnrichment enrichment;
+	@Autowired
+	private IClusterManager clusterManager; 
 
 	public int getThreads() {
 		return threads;
@@ -66,8 +69,7 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IHandl
 	 */
 	@Override
 	public void addDocument(final IndexContext<?> indexContext, final Indexable<?> indexable, final Document document) throws Exception {
-		Action action = indexContext.getAction();
-		action.setInvocations(action.getInvocations() + 1);
+		// TODO Add the invocations to the action and publish
 		if (indexable.isAddress()) {
 			addSpatialEnrichment(indexable, document);
 		}

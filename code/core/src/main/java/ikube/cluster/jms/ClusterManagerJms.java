@@ -1,13 +1,13 @@
 package ikube.cluster.jms;
 
+import ikube.cluster.AClusterManager;
 import ikube.cluster.IClusterManager;
-import ikube.database.IDataBase;
 import ikube.model.Action;
 import ikube.model.Server;
 import ikube.toolkit.ThreadUtilities;
+import ikube.toolkit.UriUtilities;
 
 import java.io.Serializable;
-import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.sql.Timestamp;
 import java.util.Collection;
@@ -52,27 +52,21 @@ import org.springframework.jms.core.MessageCreator;
  * @since 11.11.11
  * @version 01.00
  */
-public class ClusterManagerJms implements IClusterManager, MessageListener {
+public class ClusterManagerJms extends AClusterManager implements IClusterManager, MessageListener {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ClusterManagerJms.class);
 
 	/** The time to wait for the responses from the cluster servers. */
 	private static final long RESPONSE_TIME = 500;
 
-	/** The textual representation of the ip address for this server. */
-	private String ip;
 	@Value("${activemq.port}")
 	private long jmsPort;
 	@Value("${activemq.destination}")
 	private String destination;
-	/** The address or unique identifier for this server. */
-	private String address;
 	/** The list of locks that have been applied/accepted for. Please refer to the class JavaDoc for more information. */
 	private Map<String, ClusterManagerJmsLock> locks;
 	/** The list of servers in the cluster. */
 	private Map<String, Server> servers;
-	@Autowired
-	private IDataBase dataBase;
 	/** Access to the ActiveMQ cluster functionality. */
 	@Autowired
 	private XBeanBrokerService xBeanBrokerService;
@@ -83,7 +77,7 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 		locks = new HashMap<String, ClusterManagerJmsLock>();
 		servers = new HashMap<String, Server>();
 		jmsTemplates = new HashMap<String, JmsTemplate>();
-		ip = InetAddress.getLocalHost().getHostAddress();
+		ip = UriUtilities.getIp();
 		address = ip + "." + jmsPort;
 
 		getServer();
@@ -178,7 +172,7 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 	 * get it. This method checks to see if this server shouted first based on the locks from the other servers in the cluster.
 	 * 
 	 * @param shout
-	 *        the time that this server shouted for the lock
+	 *            the time that this server shouted for the lock
 	 * @return whether this server shouted for the lock first thereby getting the lock for the cluster
 	 */
 	protected synchronized boolean haveLock(final long shout) {
@@ -235,7 +229,7 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 	 * This method will send messages to the whole cluster.
 	 * 
 	 * @param serializable
-	 *        the object to send in the message
+	 *            the object to send in the message
 	 */
 	@Override
 	public void sendMessage(final Serializable serializable) {
@@ -307,11 +301,11 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 	 * Creates the lock if it is not already instantiated.
 	 * 
 	 * @param address
-	 *        the address of this server
+	 *            the address of this server
 	 * @param shout
-	 *        the time the server shouted for the lock
+	 *            the time the server shouted for the lock
 	 * @param locked
-	 *        whether this is a request for the lock or a reset of false to release the lock
+	 *            whether this is a request for the lock or a reset of false to release the lock
 	 * @return the lock for this server
 	 */
 	protected ClusterManagerJmsLock getLock(final String address, final long shout, final boolean locked) {
@@ -387,18 +381,6 @@ public class ClusterManagerJms implements IClusterManager, MessageListener {
 		} finally {
 			notifyAll();
 		}
-	}
-
-	private Action getAction(final String actionName, final String indexName, final String indexableName) {
-		Action action = new Action();
-		action.setActionName(actionName);
-		action.setIndexName(indexName);
-		action.setIndexableName(indexableName);
-		action.setDuration(0);
-		action.setStartTime(new Timestamp(System.currentTimeMillis()));
-		// Must persist the action to get an id
-		dataBase.persist(action);
-		return action;
 	}
 
 	/**

@@ -11,6 +11,7 @@ import ikube.model.medical.Address;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.Logging;
+import ikube.toolkit.UriUtilities;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -96,7 +97,6 @@ public abstract class AbstractIntegration {
 	protected Logger logger = Logger.getLogger(this.getClass());
 	{
 		realIndexContext = ApplicationContextManager.getBean("indexContext");
-		realIndexContext.setAction(new Action());
 		FileUtilities.deleteFile(new File(realIndexContext.getIndexDirectoryPath()), 1);
 	}
 
@@ -113,7 +113,7 @@ public abstract class AbstractIntegration {
 		IndexWriter indexWriter = null;
 		String ip = null;
 		try {
-			ip = InetAddress.getLocalHost().getHostAddress();
+			ip = UriUtilities.getIp();
 			indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
 			Document document = new Document();
 			IndexManager.addStringField(IConstants.CONTENTS, "Michael Couck", document, Store.YES, Field.Index.ANALYZED, TermVector.YES);

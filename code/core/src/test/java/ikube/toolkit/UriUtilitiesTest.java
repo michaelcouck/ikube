@@ -148,4 +148,11 @@ public class UriUtilitiesTest extends ATest {
 		logger.info("Stripped uri : " + strippedUri);
 		assertEquals("http://www.google.com/ikube/java", strippedUri.toString());
 	}
+	
+	@Test
+	public void getIp() throws Exception {
+		String ipAddress = UriUtilities.getIp();
+		assertFalse(ipAddress.equals("127.0.0.1"));
+		assertFalse(ipAddress.equals("127.0.1.1"));
+	}
 }

@@ -7,7 +7,6 @@ import ikube.database.IDataBase;
 import ikube.index.IndexManager;
 import ikube.index.handler.internet.IndexableInternetHandler;
 import ikube.integration.AbstractIntegration;
-import ikube.model.Action;
 import ikube.model.IndexContext;
 import ikube.model.IndexableInternet;
 import ikube.model.Url;
@@ -58,7 +57,6 @@ public class IndexableInternetHandlerIntegration extends AbstractIntegration {
 		String ip = InetAddress.getLocalHost().getHostAddress();
 		IndexWriter indexWriter = IndexManager.openIndexWriter(realIndexContext, System.currentTimeMillis(), ip);
 		indexContext.getIndex().setIndexWriter(indexWriter);
-		indexContext.setAction(new Action());
 		List<Future<?>> threads = indexableInternetHandler.handle(indexContext, indexableInternet);
 		ThreadUtilities.waitForFutures(threads, Integer.MAX_VALUE);
 		int expectedAtLeast = 10;

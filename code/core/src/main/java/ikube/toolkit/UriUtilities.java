@@ -1,8 +1,13 @@
 package ikube.toolkit;
 
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Enumeration;
 import java.util.Locale;
 import java.util.Stack;
 import java.util.regex.Pattern;
@@ -231,6 +236,43 @@ public final class UriUtilities {
 			LOGGER.error("Exception building the url : " + protocol + ", " + host + ", " + port + ", " + path, e);
 		}
 		return null;
+	}
+	
+	public static String getIp() {
+		Pattern ipPattern = Pattern.compile("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$");
+		Enumeration<NetworkInterface> networkInterfaces;
+		try {
+			networkInterfaces = NetworkInterface.getNetworkInterfaces();
+		} catch (SocketException e) {
+			LOGGER.error("No interfaces? Connected to anything?", e);
+			throw new RuntimeException("Couldn't access the interfaces of this machine : ");
+		}
+		String ip = "127.0.0.1";
+		outer: while (networkInterfaces.hasMoreElements()) {
+			NetworkInterface networkInterface = networkInterfaces.nextElement();
+			Enumeration<InetAddress> inetAddresses = networkInterface.getInetAddresses();
+			while (inetAddresses.hasMoreElements()) {
+				InetAddress inetAddress = inetAddresses.nextElement();
+				String hostAddress = inetAddress.getHostAddress();
+				if (hostAddress.equals(ip) || hostAddress.equals("127.0.1.1") || hostAddress.equals("localhost")) {
+					continue;
+				}
+				try {
+					if (!inetAddress.isReachable(1000)) {
+						continue;
+					}
+				} catch (IOException e) {
+					LOGGER.error("Exception checking the ip address : " + hostAddress, e);
+					continue;
+				}
+				if (ipPattern.matcher(hostAddress).matches()) {
+					ip = hostAddress;
+					LOGGER.info("Ip address : " + ip);
+					break outer;
+				}
+			}
+		}
+		return ip;
 	}
 
 }

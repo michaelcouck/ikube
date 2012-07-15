@@ -53,7 +53,7 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 						}
 						ikube.model.Action action = start(indexContext.getIndexName(), indexable.getName());
 						actions.add(action);
-						indexContext.setAction(action);
+						// indexContext.setAction(action);
 						logger.info("Indexable : " + indexable.getName());
 						logger.info("Handler : " + handler.getClass() + ", " + handler.getIndexableClass());
 						// Execute the handler and wait for the threads to finish
@@ -75,7 +75,7 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 		} finally {
 			// We'll try to close the writer, even though it should already be closed
 			IndexManager.closeIndexWriter(indexContext);
-			indexContext.setAction(null);
+			// indexContext.setAction(null);
 			for (ikube.model.Action action : actions) {
 				stop(action);
 			}
