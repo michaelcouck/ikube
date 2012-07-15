@@ -42,6 +42,12 @@ public class ServersController extends BaseController {
 		Collections.sort(servers, new Comparator<Server>() {
 			@Override
 			public int compare(Server o1, Server o2) {
+				if (o1 == null || o1.getAddress() == null) {
+					return -1;
+				}
+				if (o2 == null || o2.getAddress() == null) {
+					return 1;
+				}
 				return o1.getAddress().compareTo(o2.getAddress());
 			}
 		});

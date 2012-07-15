@@ -55,7 +55,8 @@ public class AutocompleteTest {
 
 	@Test
 	public void autocomplete() {
-		String expectedResult = "[{\"count\":10,\"results\":0,\"searchStrings\":\"something interesting\",\"highScore\":0.0,\"corrections\":false,\"id\":0}]";
+		// String expectedResult = "[{\"count\":10,\"results\":0,\"searchStrings\":\"something interesting\",\"highScore\":0.0,\"corrections\":false,\"id\":0}]";
+		String expectedResult = "[\"Java\",\"JavaScript\",\"Lisp\"]";
 		String result = autocomplete.autocomplete(SEARCH_STRINGS);
 		LOGGER.info("Result : " + result);
 		assertEquals("This should be a serialized version of the search object : ", expectedResult, result);
