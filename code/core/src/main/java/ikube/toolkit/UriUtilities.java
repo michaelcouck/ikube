@@ -238,6 +238,14 @@ public final class UriUtilities {
 		return null;
 	}
 	
+	/**
+	 * This method will get the ip address of the machine. If the machine is connected to the net then the first ip that is not the home
+	 * interface, i.e. not the localhost which is not particularlyusefull in a cluster. So essentially we are looking for the ip that looks
+	 * like 192.... or 10.215.... could be the realy ip from the DNS on the ISP servers of course, but not 127.0.0.1, or on Linux 127.0.1.1
+	 * it turns out.
+	 * 
+	 * @return the first ip address that is not the localhost, something meaningful 
+	 */
 	public static String getIp() {
 		Pattern ipPattern = Pattern.compile("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$");
 		Enumeration<NetworkInterface> networkInterfaces;

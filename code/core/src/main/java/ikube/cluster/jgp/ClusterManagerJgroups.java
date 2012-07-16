@@ -1,4 +1,4 @@
-package ikube.cluster.hzc;
+package ikube.cluster.jgp;
 
 import ikube.IConstants;
 import ikube.cluster.AClusterManager;
@@ -7,15 +7,19 @@ import ikube.model.Action;
 import ikube.model.Server;
 import ikube.toolkit.UriUtilities;
 
+import java.io.InputStream;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+
+import org.jgroups.JChannel;
+import org.jgroups.blocks.locking.LockService;
 
 import com.hazelcast.core.Hazelcast;
-import com.hazelcast.core.ILock;
 import com.hazelcast.core.IMap;
 
 /**
@@ -25,11 +29,18 @@ import com.hazelcast.core.IMap;
  * @since 15.07.12
  * @version 01.00
  */
-public class ClusterManagerHazelcast extends AClusterManager {
+public class ClusterManagerJgroups extends AClusterManager {
+	
+	private JChannel channel;
+	private LockService lockService;
 
-	public void initialize() {
+	public void initialize() throws Exception {
+		InputStream inputStream = getClass().getResourceAsStream("/udp.xml");
+		channel = new JChannel(inputStream);
+		channel.connect(IConstants.IKUBE);
+		lockService = new LockService(channel);
 		ip = UriUtilities.getIp();
-		address = ip + "." + Hazelcast.getConfig().getPort();
+		address = ip;
 	}
 
 	/**
@@ -38,14 +49,16 @@ public class ClusterManagerHazelcast extends AClusterManager {
 	@Override
 	public synchronized boolean lock(String name) {
 		try {
-			ILock lock = Hazelcast.getLock(name);
-			boolean gotLock = false;
+			Lock lock =  lockService.getLock(IConstants.IKUBE);
 			try {
-				gotLock = lock.tryLock(250, TimeUnit.MILLISECONDS);
+				if (lock.tryLock(500, TimeUnit.MILLISECONDS)) {
+					logger.info("Got lock : " + Thread.currentThread().hashCode());
+					return true;
+				}
 			} catch (InterruptedException e) {
-				logger.error("Exception trying for the lock : ", e);
+				logger.error(null, e);
 			}
-			return gotLock;
+			return false;
 		} finally {
 			notifyAll();
 		}
@@ -57,9 +70,17 @@ public class ClusterManagerHazelcast extends AClusterManager {
 	@Override
 	public synchronized boolean unlock(String name) {
 		try {
-			ILock lock = Hazelcast.getLock(name);
-			lock.unlock();
-			return true;
+			Lock lock =  lockService.getLock(IConstants.IKUBE);
+			try {
+				if (lock.tryLock(500, TimeUnit.MILLISECONDS)) {
+					logger.info("Had lock : " + Thread.currentThread().hashCode());
+					lock.unlock();
+					return true;
+				}
+			} catch (InterruptedException e) {
+				logger.error(null, e);
+			}
+			return false;
 		} finally {
 			notifyAll();
 		}

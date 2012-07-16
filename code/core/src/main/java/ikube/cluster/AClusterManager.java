@@ -9,6 +9,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+/**
+ * This base class for the cluster managers just has common methods and the ip and address that each cluster manager will use to distinguish
+ * the servers, added to the port.
+ * 
+ * @author Michael Couck
+ * @since 17.07.12
+ * @version 01.00
+ */
 public abstract class AClusterManager implements IClusterManager {
 
 	protected Logger logger = LoggerFactory.getLogger(this.getClass());

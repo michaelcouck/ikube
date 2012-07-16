@@ -11,13 +11,16 @@ import ikube.IConstants;
 import ikube.database.IDataBase;
 import ikube.model.Action;
 import ikube.model.Server;
+import ikube.toolkit.ThreadUtilities;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Future;
 
 import mockit.Cascading;
 import mockit.Deencapsulation;
@@ -28,13 +31,17 @@ import mockit.Mockit;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.IMap;
 
 public class ClusterManagerHazelcastTest {
 
-	private String actionName = "actinName";
+	protected Logger logger = LoggerFactory.getLogger(this.getClass());
+
+	private String actionName = "actionName";
 	private String indexName = "indexName";
 	private String indexableName = "indexableName";
 
@@ -190,6 +197,45 @@ public class ClusterManagerHazelcastTest {
 	@Test
 	public void getLocks() {
 		// Not implemented
+	}
+
+	@Test
+	public void threaded() {
+		Hazelcast.getLock(IConstants.IKUBE).forceUnlock();
+		ThreadUtilities.initialize();
+		int threads = 10;
+		final int iterations = 10000;
+		final double sleep = 10;
+		final Boolean[] locks = new Boolean[threads];
+		List<Future<?>> futures = new ArrayList<Future<?>>();
+		for (int i = 0; i < threads; i++) {
+			final int thread = i;
+			Runnable runnable = new Runnable() {
+				public void run() {
+					for (int i = 0; i < iterations; i++) {
+						boolean lock = clusterManagerHazelcast.lock(IConstants.IKUBE);
+						locks[thread] = lock;
+						validate(locks);
+						clusterManagerHazelcast.unlock(IConstants.IKUBE);
+						locks[thread] = false;
+						ThreadUtilities.sleep((long) (sleep * Math.random()));
+					}
+				}
+			};
+			Future<?> future = ThreadUtilities.submit(runnable);
+			futures.add(future);
+		}
+		ThreadUtilities.waitForFutures(futures, Long.MAX_VALUE);
+		ThreadUtilities.destroy();
+	}
+
+	private void validate(final Boolean[] locks) {
+		int count = 0;
+		// logger.info("Validate ; " + Arrays.deepToString(locks));
+		for (Boolean lock : locks) {
+			count = lock == null ? count : lock ? count + 1 : count;
+		}
+		assertTrue(count <= 1);
 	}
 
 }
