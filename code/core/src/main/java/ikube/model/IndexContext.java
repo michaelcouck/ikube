@@ -1,18 +1,20 @@
 package ikube.model;
 
-import ikube.index.IndexManager;
-import ikube.toolkit.FileUtilities;
-
-import java.io.File;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.search.MultiSearcher;
+import org.apache.lucene.search.Searchable;
 
 /**
  * This is the context for a single index. It has the properties that define the index like what it is going to index, i.e. the databases,
@@ -28,12 +30,14 @@ import org.apache.commons.lang.StringUtils;
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class IndexContext<T> extends Indexable<T> implements Comparable<IndexContext<?>> {
 
+	private static final transient Logger LOGGER = Logger.getLogger(IndexContext.class);
+
+	/** Can be null if there are no indexes running. */
 	@Transient
-	private transient Index index;
+	private transient IndexWriter indexWriter;
+	/** Can be null if there is no index created. */
 	@Transient
-	private transient long indexSize;
-	@Transient
-	private transient long numDocs;
+	private transient MultiSearcher multiSearcher;
 
 	/** The maximum age of the index defined in minutes. */
 	private long maxAge;
@@ -59,15 +63,8 @@ public class IndexContext<T> extends Indexable<T> implements Comparable<IndexCon
 	/** The path to the backup index directory, either relative or absolute. */
 	private String indexDirectoryPathBackup;
 
-	/**
-	 * The constructor instantiates a new {@link Index} object. In this object the Lucene index will be kept and updated.
-	 */
-	public IndexContext() {
-		super();
-		index = new Index();
-	}
-
-	/** Getters and setters. */
+	@OneToMany(cascade = { CascadeType.ALL }, mappedBy = "indexContext", fetch = FetchType.EAGER)
+	private List<Snapshot> snapshots = new ArrayList<Snapshot>();
 
 	public String getIndexName() {
 		return super.getName();
@@ -181,41 +178,50 @@ public class IndexContext<T> extends Indexable<T> implements Comparable<IndexCon
 		super.setChildren(indexables);
 	}
 
-	public Index getIndex() {
-		return index;
+	public IndexWriter getIndexWriter() {
+		return indexWriter;
 	}
 
-	public void setIndex(final Index index) {
-		this.index = index;
+	public void setIndexWriter(final IndexWriter indexWriter) {
+		this.indexWriter = indexWriter;
 	}
 
-	public Date getLatestIndexTimestamp() {
-		long timestamp = 0;
-		String indexDirectoryPath = IndexManager.getIndexDirectoryPath(this);
-		File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexDirectoryPath);
-		if (latestIndexDirectory != null) {
-			String name = latestIndexDirectory.getName();
-			if (StringUtils.isNumeric(name)) {
-				timestamp = Long.parseLong(name);
+	public MultiSearcher getMultiSearcher() {
+		return multiSearcher;
+	}
+
+	public void setMultiSearcher(final MultiSearcher multiSearcher) {
+		// We'll close the current searcher if it is not already closed
+		if (this.multiSearcher != null && !this.multiSearcher.equals(multiSearcher)) {
+			try {
+				LOGGER.info("Searcher not closed, will close now : " + this.multiSearcher);
+				Searchable[] searchables = this.multiSearcher.getSearchables();
+				if (searchables != null) {
+					for (Searchable searchable : searchables) {
+						try {
+							searchable.close();
+						} catch (Exception e) {
+							LOGGER.error("Exception closing the searchable : ", e);
+						}
+					}
+				}
+			} catch (Exception e) {
+				LOGGER.error("Exception closing the searcher : " + this.multiSearcher, e);
 			}
 		}
-		return new Date(timestamp);
+		this.multiSearcher = multiSearcher;
 	}
 
-	public long getIndexSize() {
-		return indexSize;
+	public List<Snapshot> getSnapshots() {
+		return snapshots;
 	}
 
-	public void setIndexSize(long indexSize) {
-		this.indexSize = indexSize;
+	public void setSnapshots(List<Snapshot> snapshots) {
+		this.snapshots = snapshots;
 	}
-
-	public long getNumDocs() {
-		return numDocs;
-	}
-
-	public void setNumDocs(long numDocs) {
-		this.numDocs = numDocs;
+	
+	public Snapshot getLastSnapshot() {
+		return snapshots.get(snapshots.size() - 1);
 	}
 
 	@Override

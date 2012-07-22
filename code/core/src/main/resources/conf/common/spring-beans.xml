@@ -162,11 +162,11 @@
 	
 	<!-- The search and monitoring services. -->
 	<bean
-		id="ikube.service.SearcherWebService"
-		class="ikube.service.SearcherWebService" />
+		id="ikube.service.SearcherService"
+		class="ikube.service.SearcherService" />
 	<bean
-		id="ikube.service.MonitorWebService"
-		class="ikube.service.MonitorWebService" />
+		id="ikube.service.MonitorService"
+		class="ikube.service.MonitorService" />
 	
 	<bean 
 		id="ikube.listener.ListenerManager"
@@ -175,11 +175,9 @@
 		property:listeners-ref="ikube.listener.ListenerManager.listeners" />
 	<util:list id="ikube.listener.ListenerManager.listeners">
 		<ref bean="ikube.IndexEngine" />
-		<!-- <bean class="ikube.cluster.jms.LockRemovalListener" /> -->
-		<!-- <bean class="ikube.cluster.jms.ServerRemovalListener" /> -->
-		<!-- <bean class="ikube.cluster.jms.ServerClubListener" /> -->
 		<bean class="ikube.listener.StartupListener" />
 		<bean class="ikube.listener.TerminationListener" />
+		<bean class="ikube.listener.SnapshotListener" />
 	</util:list>
 	
 	<bean 
@@ -209,13 +207,8 @@
 		<bean
 			class="ikube.listener.Schedule"
 			property:type="performance"
-			property:delay="60000"
-			property:period="60000" />
-		<!-- <bean
-			class="ikube.listener.Schedule"
-			property:type="jms"
 			property:delay="10000"
-			property:period="10000" /> -->
+			property:period="60000" />
 		<bean
 			class="ikube.listener.Schedule"
 			property:type="lockRelease"
@@ -300,7 +293,8 @@
 	<bean 
 		id="ikube.cluster.IClusterManager"
 		class="ikube.cluster.hzc.ClusterManagerHazelcast"
-		init-method="initialize" />
+		init-method="initialize"
+		lazy-init="false" />
 	
 	<!-- The handlers that do the indexing logic. -->
 	<bean

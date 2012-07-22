@@ -6,6 +6,7 @@ import ikube.cluster.IClusterManager;
 import ikube.database.IDataBase;
 import ikube.model.IndexContext;
 import ikube.notify.IMailer;
+import ikube.toolkit.UriUtilities;
 
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -145,7 +146,7 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
 	 * @param indexContext the index context to close the searchables for
 	 */
 	protected void closeSearchables(IndexContext<?> indexContext) {
-		MultiSearcher multiSearcher = indexContext.getIndex().getMultiSearcher();
+		MultiSearcher multiSearcher = indexContext.getMultiSearcher();
 		if (multiSearcher != null) {
 			// Get all the searchables from the searcher and close them one by one
 			Searchable[] searchables = multiSearcher.getSearchables();
@@ -164,7 +165,7 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
 					}
 				}
 			}
-			indexContext.getIndex().setMultiSearcher(null);
+			indexContext.setMultiSearcher(null);
 		}
 	}
 
@@ -222,8 +223,7 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
 				NetworkInterface networkInterface = networkInterfaces.nextElement();
 				Enumeration<InetAddress> inetAddresses = networkInterface.getInetAddresses();
 				while (inetAddresses.hasMoreElements()) {
-					InetAddress inetAddress = inetAddresses.nextElement();
-					String ip = inetAddress.getHostAddress();
+					String ip = UriUtilities.getIp();
 					subjectBuilder.append(" - ");
 					subjectBuilder.append(ip);
 					byte[] mac = networkInterface.getHardwareAddress();

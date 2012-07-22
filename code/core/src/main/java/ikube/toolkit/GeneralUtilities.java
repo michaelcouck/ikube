@@ -141,7 +141,6 @@ public final class GeneralUtilities {
 		}
 	}
 
-	@SuppressWarnings("unused")
 	public static <T> T findObject(Class<T> klass, Collection<T> collection, String fieldName, String fieldValue) {
 		for (T t : collection) {
 			Field field = ReflectionUtils.findField(t.getClass(), fieldName);

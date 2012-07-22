@@ -1,7 +1,7 @@
 package ikube.web.admin;
 
 import ikube.cluster.IClusterManager;
-import ikube.service.IMonitorWebService;
+import ikube.service.IMonitorService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -36,7 +36,7 @@ public abstract class BaseController extends AbstractController {
 	@Autowired
 	protected IClusterManager clusterManager;
 	@Autowired
-	protected IMonitorWebService monitorWebService;
+	protected IMonitorService monitorService;
 
 	/**
 	 * {@inheritDoc}

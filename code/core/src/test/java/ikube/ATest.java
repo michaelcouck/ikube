@@ -14,7 +14,6 @@ import ikube.index.parse.mime.MimeTypes;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.mock.IndexManagerMock;
 import ikube.model.Action;
-import ikube.model.Index;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.model.IndexableColumn;
@@ -92,7 +91,6 @@ public abstract class ATest {
 	protected Map<String, Server> servers;
 
 	protected Lock lock = mock(Lock.class);
-	protected Index index = mock(Index.class);
 	protected Server server = mock(Server.class);
 	protected Action action = mock(Action.class);
 	protected TopDocs topDocs = mock(TopDocs.class);
@@ -139,13 +137,14 @@ public abstract class ATest {
 				Arrays.asList(IConstants.ID, IConstants.FRAGMENT, IConstants.CONTENTS));
 		when(fsDirectory.makeLock(anyString())).thenReturn(lock);
 
+		when(indexWriter.getDirectory()).thenReturn(fsDirectory);
+
 		when(indexContext.getIndexDirectoryPath()).thenReturn(indexDirectoryPath);
 		when(indexContext.getIndexDirectoryPathBackup()).thenReturn(indexDirectoryPathBackup);
 		when(indexContext.getIndexName()).thenReturn("index");
 		when(indexContext.getIndexables()).thenReturn(indexables);
 
-		when(indexContext.getIndex()).thenReturn(index);
-		when(index.getMultiSearcher()).thenReturn(multiSearcher);
+		when(indexContext.getMultiSearcher()).thenReturn(multiSearcher);
 
 		when(indexContext.getBufferedDocs()).thenReturn(10);
 		when(indexContext.getBufferSize()).thenReturn(10d);
@@ -160,7 +159,7 @@ public abstract class ATest {
 		when(server.getAddress()).thenReturn(ip);
 		when(server.getIp()).thenReturn(ip);
 		when(server.getActions()).thenReturn(Arrays.asList(action));
-		when(index.getIndexWriter()).thenReturn(indexWriter);
+		when(indexContext.getIndexWriter()).thenReturn(indexWriter);
 		when(indexableColumn.getContent()).thenReturn("9a avenue road, cape town, south africa");
 		when(indexableColumn.isAddress()).thenReturn(Boolean.TRUE);
 		when(indexableColumn.getName()).thenReturn("indexableName");

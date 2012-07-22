@@ -1,7 +1,7 @@
 package ikube.web.admin;
 
 import ikube.IConstants;
-import ikube.service.ISearcherWebService;
+import ikube.service.ISearcherService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,7 +24,7 @@ public abstract class SearchBaseController extends BaseController {
 	protected static final int MAX_RESULTS = 10;
 
 	@Autowired
-	protected ISearcherWebService searcherWebService;
+	protected ISearcherService searcherService;
 
 	protected ArrayList<HashMap<String, String>> doSearch(HttpServletRequest request, ModelAndView modelAndView, String indexName,
 			String... searchStrings) {
@@ -50,11 +50,11 @@ public abstract class SearchBaseController extends BaseController {
 					modelAndView.addObject(IConstants.LONGITUDE, longitude);
 					modelAndView.addObject(IConstants.LATITUDE, latitude);
 					modelAndView.addObject(IConstants.DISTANCE, distance);
-					results = searcherWebService.searchMultiSpacialAll(indexName, searchStrings, Boolean.TRUE, firstResult, maxResults,
+					results = searcherService.searchMultiSpacialAll(indexName, searchStrings, Boolean.TRUE, firstResult, maxResults,
 							Integer.parseInt(distance), Double.parseDouble(latitude), Double.parseDouble(longitude));
 				} else {
 					// Normal search with all the fields
-					results = searcherWebService.searchMultiAll(indexName, searchStrings, Boolean.TRUE, firstResult, maxResults);
+					results = searcherService.searchMultiAll(indexName, searchStrings, Boolean.TRUE, firstResult, maxResults);
 				}
 			}
 		}

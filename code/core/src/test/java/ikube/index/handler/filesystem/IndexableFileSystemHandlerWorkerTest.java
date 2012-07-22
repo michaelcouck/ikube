@@ -90,7 +90,7 @@ public class IndexableFileSystemHandlerWorkerTest extends ATest {
 		indexableFileSystemHandlerWorker.handleFile(indexContext, indexableFilesystem, new File(file.getUrl()));
 		IndexManager.closeIndexWriter(indexContext);
 		// Verify that the file is in the index
-		verify(indexContext, Mockito.atLeastOnce()).getIndex();
+		verify(indexContext, Mockito.atLeastOnce()).getIndexWriter();
 	}
 
 	@Test
@@ -101,7 +101,7 @@ public class IndexableFileSystemHandlerWorkerTest extends ATest {
 		indexableFileSystemHandlerWorker.handleZip(indexableFilesystem, new File(file.getUrl()));
 		IndexManager.closeIndexWriter(indexContext);
 		// Verify that the file is in the index
-		verify(indexContext, Mockito.atLeastOnce()).getIndex();
+		verify(indexContext, Mockito.atLeastOnce()).getIndexWriter();
 	}
 
 	@Test
@@ -125,7 +125,7 @@ public class IndexableFileSystemHandlerWorkerTest extends ATest {
 		File zipFile = FileUtilities.findFileRecursively(new File("./"), Boolean.FALSE, "zip\\.zip");
 		boolean unzipped = indexableFileSystemHandlerWorker.handleZip(indexableFilesystem, zipFile);
 		assertTrue("The file is fine to unzip : ", unzipped);
-		verify(indexContext, Mockito.atLeastOnce()).getIndex();
+		verify(indexContext, Mockito.atLeastOnce()).getIndexWriter();
 	}
 
 }

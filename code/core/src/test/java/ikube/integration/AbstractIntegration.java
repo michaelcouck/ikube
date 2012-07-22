@@ -5,9 +5,7 @@ import ikube.database.IDataBase;
 import ikube.index.IndexManager;
 import ikube.integration.toolkit.DataUtilities;
 import ikube.listener.ListenerManager;
-import ikube.model.Action;
 import ikube.model.IndexContext;
-import ikube.model.medical.Address;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.Logging;
@@ -17,7 +15,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.net.InetAddress;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
@@ -62,7 +59,7 @@ public abstract class AbstractIntegration {
 	private static void startContext() {
 		ApplicationContextManager.getBean(ListenerManager.class).removeListeners();
 		IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
-		dataBase.find(Address.class, 0l);
+		// dataBase.find(Address.class, 0l);
 		dataBase.find(ikube.model.File.class, 0l);
 		ApplicationContextManager.getBean(ListenerManager.class).removeListeners();
 	}
@@ -128,9 +125,10 @@ public abstract class AbstractIntegration {
 		} finally {
 			IndexManager.closeIndexWriter(indexWriter);
 		}
-		File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
-		File serverIndexDirectory = new File(latestIndexDirectory, ip);
-		logger.info("Created index in : " + serverIndexDirectory.getAbsolutePath());
+		String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
+		File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexDirectoryPath);
+		// File serverIndexDirectory = new File(latestIndexDirectory, ip);
+		// logger.info("Created index in : " + serverIndexDirectory.getAbsolutePath());
 		return latestIndexDirectory;
 	}
 	

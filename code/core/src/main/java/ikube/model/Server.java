@@ -23,10 +23,6 @@ public class Server extends Persistable implements Comparable<Server> {
 
 	/** The ip of the server. */
 	private String ip;
-	/** The port that the search web service is published to. */
-	private int searchWebServicePort;
-	/** The port that the monitoring web service is published to. */
-	private int monitoringWebServicePort;
 	/** The address of this machine. */
 	private String address;
 	/** The actions of this server. */
@@ -34,8 +30,6 @@ public class Server extends Persistable implements Comparable<Server> {
 	private List<Action> actions;
 	/** The age of this server. */
 	private long age;
-
-	private String searchWebServiceUrl;
 
 	public Server() {
 		this.actions = new ArrayList<Action>();
@@ -74,30 +68,6 @@ public class Server extends Persistable implements Comparable<Server> {
 
 	public void setAddress(final String address) {
 		this.address = address;
-	}
-
-	public int getSearchWebServicePort() {
-		return searchWebServicePort;
-	}
-
-	public void setSearchWebServicePort(final int searchWebServicePort) {
-		this.searchWebServicePort = searchWebServicePort;
-	}
-
-	public String getSearchWebServiceUrl() {
-		return searchWebServiceUrl;
-	}
-
-	public void setSearchWebServiceUrl(final String searchWebServiceUrl) {
-		this.searchWebServiceUrl = searchWebServiceUrl;
-	}
-
-	public int getMonitoringWebServicePort() {
-		return monitoringWebServicePort;
-	}
-
-	public void setMonitoringWebServicePort(final int monitoringWebServicePort) {
-		this.monitoringWebServicePort = monitoringWebServicePort;
 	}
 
 	public long getAge() {

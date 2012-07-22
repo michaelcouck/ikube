@@ -3,6 +3,7 @@ package ikube.web.admin;
 import ikube.IConstants;
 import ikube.model.IndexContext;
 import ikube.model.Server;
+import ikube.model.Snapshot;
 import ikube.toolkit.ApplicationContextManager;
 
 import java.util.ArrayList;
@@ -57,7 +58,7 @@ public class ServersController extends BaseController {
 		Server server = clusterManager.getServer();
 		modelAndView.addObject(IConstants.SERVER, server);
 		modelAndView.addObject(IConstants.ACTION, server.getActions());
-		
+
 		@SuppressWarnings("rawtypes")
 		Map<String, IndexContext> indexContexts = ApplicationContextManager.getBeans(IndexContext.class);
 		modelAndView.addObject(IConstants.INDEX_CONTEXTS, indexContexts.values());
@@ -65,15 +66,14 @@ public class ServersController extends BaseController {
 		int totalSize = 0;
 		int totalDocs = 0;
 		for (IndexContext<?> indexContext : indexContexts.values()) {
-			String indexName = indexContext.getIndexName();
-			long indexSize = monitorWebService.getIndexSize(indexName);
-			long numDocs = monitorWebService.getIndexDocuments(indexName);
-			indexContext.setIndexSize(indexSize);
-			indexContext.setNumDocs(numDocs);
-			totalSize += indexSize;
-			totalDocs += numDocs;
+			if (indexContext.getSnapshots() == null || indexContext.getSnapshots().size() == 0) {
+				continue;
+			}
+			Snapshot snapshot = indexContext.getSnapshots().get(indexContext.getSnapshots().size() - 1);
+			totalSize += snapshot.getIndexSize();
+			totalDocs += snapshot.getNumDocs();
 		}
-		
+
 		modelAndView.addObject(IConstants.TOTAL_DOCS, totalDocs);
 		modelAndView.addObject(IConstants.TOTAL_SIZE, totalSize);
 

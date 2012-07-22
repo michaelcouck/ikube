@@ -8,7 +8,10 @@ import ikube.toolkit.FileUtilities;
 import ikube.toolkit.ThreadUtilities;
 
 import java.io.File;
+import java.util.List;
+import java.util.concurrent.Future;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -22,12 +25,17 @@ public class IndexableFilesystemWikiHandlerTest extends ATest {
 
 	@Before
 	public void before() {
+		ThreadUtilities.initialize();
 		indexableFilesystemWikiHandler = new IndexableFilesystemWikiHandler();
+	}
+
+	@After
+	public void after() {
+		ThreadUtilities.destroy();
 	}
 
 	@Test
 	public void handle() throws Exception {
-		ThreadUtilities.destroy();
 		IndexableFileSystemWiki indexableFileSystem = new IndexableFileSystemWiki();
 		indexableFileSystem.setLastModifiedFieldName("lastModifiedFieldName");
 		indexableFileSystem.setNameFieldName("nameFieldName");
@@ -37,11 +45,11 @@ public class IndexableFilesystemWikiHandlerTest extends ATest {
 		indexableFileSystem.setContentFieldName("contentFieldName");
 		indexableFileSystem.setMaxRevisions(Integer.MAX_VALUE);
 		File file = FileUtilities.findFileRecursively(new File("."), "enwiki-revisions.bz2");
-		indexableFileSystem.setPath(file.getAbsolutePath());
-		indexableFilesystemWikiHandler.handleFile(indexContext, indexableFileSystem, file);
+		indexableFileSystem.setPath(file.getParentFile().getAbsolutePath());
+		List<Future<?>> futures = indexableFilesystemWikiHandler.handle(indexContext, indexableFileSystem);
+		ThreadUtilities.waitForFutures(futures, Long.MAX_VALUE);
 
-		verify(indexContext, atLeastOnce()).getIndex();
-		verify(index, atLeastOnce()).getIndexWriter();
+		verify(indexContext, atLeastOnce()).getIndexWriter();
 	}
 
 }

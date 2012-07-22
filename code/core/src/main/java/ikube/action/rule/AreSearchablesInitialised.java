@@ -23,10 +23,7 @@ public class AreSearchablesInitialised implements IRule<IndexContext<?>> {
 	@Override
 	public boolean evaluate(final IndexContext<?> indexContext) {
 		// No searchables, also try to reopen an index searcher
-		if (indexContext.getIndex() == null) {
-			return Boolean.FALSE;
-		}
-		MultiSearcher searcher = indexContext.getIndex().getMultiSearcher();
+		MultiSearcher searcher = indexContext.getMultiSearcher();
 		if (searcher == null || searcher.getSearchables() == null || searcher.getSearchables().length == 0) {
 			LOGGER.debug("No searchables open, should try to reopen : ");
 			return Boolean.FALSE;

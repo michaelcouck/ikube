@@ -26,7 +26,7 @@ public class IsNewIndexCreated extends ARule<IndexContext<?>> {
 	 */
 	@Override
 	public boolean evaluate(final IndexContext<?> indexContext) {
-		MultiSearcher searcher = indexContext.getIndex() != null ? indexContext.getIndex().getMultiSearcher() : null;
+		MultiSearcher searcher = indexContext.getMultiSearcher();
 		Searchable[] searchables = searcher != null ? searcher.getSearchables() : null;
 
 		String baseIndexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);

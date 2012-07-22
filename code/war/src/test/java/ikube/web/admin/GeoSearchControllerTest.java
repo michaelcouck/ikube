@@ -11,7 +11,7 @@ import static org.mockito.Mockito.when;
 import ikube.IConstants;
 import ikube.cluster.IClusterManager;
 import ikube.model.Server;
-import ikube.service.ISearcherWebService;
+import ikube.service.ISearcherService;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.SerializationUtilities;
 import ikube.web.MockFactory.ApplicationContextManagerMock;
@@ -43,7 +43,7 @@ public class GeoSearchControllerTest {
 
 	private Server server;
 	private IClusterManager clusterManager;
-	private ISearcherWebService searcherWebService;
+	private ISearcherService searcherService;
 
 	@Before
 	public void before() {
@@ -51,10 +51,10 @@ public class GeoSearchControllerTest {
 		geoSearchController = new GeoSearchController();
 		server = mock(Server.class);
 		clusterManager = mock(IClusterManager.class);
-		searcherWebService = mock(ISearcherWebService.class);
+		searcherService = mock(ISearcherService.class);
 		when(clusterManager.getServer()).thenReturn(server);
 		Deencapsulation.setField(geoSearchController, clusterManager);
-		Deencapsulation.setField(geoSearchController, searcherWebService);
+		Deencapsulation.setField(geoSearchController, searcherService);
 	}
 
 	@After
@@ -69,7 +69,7 @@ public class GeoSearchControllerTest {
 		String xml = FileUtilities.getContents(file, IConstants.ENCODING);
 		ArrayList<HashMap<String, String>> results = (ArrayList<HashMap<String, String>>) SerializationUtilities.deserialize(xml);
 		when(
-				searcherWebService.searchMultiSpacialAll(anyString(), any(String[].class), anyBoolean(), anyInt(), anyInt(), anyInt(),
+				searcherService.searchMultiSpacialAll(anyString(), any(String[].class), anyBoolean(), anyInt(), anyInt(), anyInt(),
 						anyDouble(), anyDouble())).thenReturn(results);
 
 		int distanceInt = 10;
@@ -114,7 +114,7 @@ public class GeoSearchControllerTest {
 		String xml = FileUtilities.getContents(file, IConstants.ENCODING);
 		ArrayList<HashMap<String, String>> results = (ArrayList<HashMap<String, String>>) SerializationUtilities.deserialize(xml);
 		when(
-				searcherWebService.searchMultiSpacialAll(anyString(), any(String[].class), anyBoolean(), anyInt(), anyInt(), anyInt(),
+				searcherService.searchMultiSpacialAll(anyString(), any(String[].class), anyBoolean(), anyInt(), anyInt(), anyInt(),
 						anyDouble(), anyDouble())).thenReturn(results);
 
 		int distanceInt = 10;

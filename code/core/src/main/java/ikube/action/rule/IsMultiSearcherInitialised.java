@@ -21,10 +21,7 @@ public class IsMultiSearcherInitialised implements IRule<IndexContext<?>> {
 	 */
 	@Override
 	public boolean evaluate(final IndexContext<?> indexContext) {
-		if (indexContext.getIndex() == null) {
-			return Boolean.FALSE;
-		}
-		if (indexContext.getIndex().getMultiSearcher() == null) {
+		if (indexContext.getMultiSearcher() == null) {
 			LOGGER.debug("Multi searcher null, should try to reopen : ");
 			return Boolean.FALSE;
 		}

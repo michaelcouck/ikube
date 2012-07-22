@@ -8,6 +8,7 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.Table;
 import javax.persistence.Transient;
 
 /**
@@ -16,6 +17,7 @@ import javax.persistence.Transient;
  * @version 01.00
  */
 @Entity()
+@Table(name = "file_")
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @NamedQueries(value = {
 		@NamedQuery(name = File.DELETE_ALL_FILES, query = File.DELETE_ALL_FILES),

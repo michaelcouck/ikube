@@ -56,7 +56,7 @@ public class IndexableInternetHandlerIntegration extends AbstractIntegration {
 	public void handle() throws Exception {
 		String ip = InetAddress.getLocalHost().getHostAddress();
 		IndexWriter indexWriter = IndexManager.openIndexWriter(realIndexContext, System.currentTimeMillis(), ip);
-		indexContext.getIndex().setIndexWriter(indexWriter);
+		indexContext.setIndexWriter(indexWriter);
 		List<Future<?>> threads = indexableInternetHandler.handle(indexContext, indexableInternet);
 		ThreadUtilities.waitForFutures(threads, Integer.MAX_VALUE);
 		int expectedAtLeast = 10;

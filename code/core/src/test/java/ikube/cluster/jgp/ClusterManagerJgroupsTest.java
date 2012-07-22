@@ -30,8 +30,8 @@ public class ClusterManagerJgroupsTest {
 	public void threaded() {
 		ThreadUtilities.initialize();
 		int threads = 3;
-		final int iterations = 10000;
-		final double sleep = 1000;
+		final int iterations = 10;
+		final double sleep = 1;
 		final Boolean[] locks = new Boolean[threads];
 		List<Future<?>> futures = new ArrayList<Future<?>>();
 		for (int i = 0; i < threads; i++) {

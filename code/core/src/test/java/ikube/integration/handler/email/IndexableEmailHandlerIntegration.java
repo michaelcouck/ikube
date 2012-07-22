@@ -29,7 +29,7 @@ public class IndexableEmailHandlerIntegration extends AbstractIntegration {
 		mailer.sendMail("MailhandlerTest Subject", "Mail handler test mail body");
 		String ip = InetAddress.getLocalHost().getHostAddress();
 		IndexWriter indexWriter = IndexManager.openIndexWriter(realIndexContext, System.currentTimeMillis(), ip);
-		realIndexContext.getIndex().setIndexWriter(indexWriter);
+		realIndexContext.setIndexWriter(indexWriter);
 
 		IndexableEmail indexableEmail = ApplicationContextManager.getBean(IndexableEmail.class);
 		IndexableEmailHandler indexableEmailHandler = ApplicationContextManager.getBean(IndexableEmailHandler.class);

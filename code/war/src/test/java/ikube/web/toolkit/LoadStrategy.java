@@ -3,7 +3,7 @@ package ikube.web.toolkit;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import ikube.IConstants;
-import ikube.service.ISearcherWebService;
+import ikube.service.ISearcherService;
 import ikube.toolkit.PerformanceTester;
 
 import java.net.InetAddress;
@@ -27,12 +27,12 @@ public class LoadStrategy implements IStrategy {
 	public void perform() throws Exception {
 		String host = InetAddress.getLocalHost().getHostAddress();
 		int port = 8081;
-		String path = "/ikube/service/SearcherWebService?wsdl";
+		String path = "/ikube/service/SearcherService?wsdl";
 		URL url = new URL("http", host, port, path);
 		String searcherWebServiceUrl = url.toString();
-		final ISearcherWebService searcherWebService = null;
-		// ServiceLocator.getService(ISearcherWebService.class, searcherWebServiceUrl,
-		// ISearcherWebService.NAMESPACE, ISearcherWebService.SERVICE);
+		final ISearcherService searcherService = null;
+		// ServiceLocator.getService(ISearcherService.class, searcherWebServiceUrl,
+		// ISearcherService.NAMESPACE, ISearcherService.SERVICE);
 		final String[] searchStrings = { "cape AND town" };
 		final String[] searchFields = { "name" };
 		final boolean fragment = Boolean.TRUE;
@@ -42,13 +42,13 @@ public class LoadStrategy implements IStrategy {
 		final double latitude = -33.9693580;
 		final double longitude = 18.4622110;
 		LOGGER.info("Executing load test : " + searcherWebServiceUrl);
-		if (searcherWebService == null) {
+		if (searcherService == null) {
 			fail("The searcher web service is not available : ");
 		}
 		double executionsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
 			@Override
 			public void execute() throws Throwable {
-				searcherWebService.searchMultiSpacial(IConstants.GEOSPATIAL, searchStrings, searchFields, fragment, firstResult,
+				searcherService.searchMultiSpacial(IConstants.GEOSPATIAL, searchStrings, searchFields, fragment, firstResult,
 						maxResults, distance, latitude, longitude);
 			}
 		}, "Load test of the web service : ", iterations, Boolean.TRUE);

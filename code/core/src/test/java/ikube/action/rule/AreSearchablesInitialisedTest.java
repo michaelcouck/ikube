@@ -31,16 +31,16 @@ public class AreSearchablesInitialisedTest extends ATest {
 		boolean result = searchablesInitialised.evaluate(indexContext);
 		assertTrue(result);
 
-		when(indexContext.getIndex()).thenReturn(null);
+		when(indexContext.getMultiSearcher()).thenReturn(null);
 		result = searchablesInitialised.evaluate(indexContext);
 		assertFalse(result);
 
-		when(indexContext.getIndex()).thenReturn(index);
-		when(indexContext.getIndex().getMultiSearcher()).thenReturn(null);
 		result = searchablesInitialised.evaluate(indexContext);
 		assertFalse(result);
 
-		when(indexContext.getIndex().getMultiSearcher()).thenReturn(multiSearcher);
+		when(indexContext.getMultiSearcher()).thenReturn(multiSearcher);
+		result = searchablesInitialised.evaluate(indexContext);
+		assertTrue(result);
 	}
 
 }

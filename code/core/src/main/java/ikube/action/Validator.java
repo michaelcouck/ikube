@@ -88,7 +88,7 @@ public class Validator extends Action<IndexContext<?>, Boolean> {
 				}
 			}
 			// Is the index open, and if not why not
-			if (indexContext.getIndex().getMultiSearcher() == null) {
+			if (indexContext.getMultiSearcher() == null) {
 				subject = "Index not open : " + indexContext.getIndexName();
 				body = "Searcher not opened for index " + indexContext.getIndexName()
 						+ ". This could require some investigation from the administrator.";

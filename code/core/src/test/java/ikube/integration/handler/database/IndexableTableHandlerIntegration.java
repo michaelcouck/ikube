@@ -79,12 +79,12 @@ public class IndexableTableHandlerIntegration extends AbstractIntegration {
 		try {
 			String ip = InetAddress.getLocalHost().getHostAddress();
 			IndexWriter indexWriter = IndexManager.openIndexWriter(realIndexContext, System.currentTimeMillis(), ip);
-			realIndexContext.getIndex().setIndexWriter(indexWriter);
+			realIndexContext.setIndexWriter(indexWriter);
 			faqIndexableTable.setPredicate("where faq.faqId = 330451");
 			DatabaseUtilities.printResultSet(connection.createStatement().executeQuery("select * from faq"));
 			List<Future<?>> threads = indexableTableHandler.handle(realIndexContext, faqIndexableTable);
 			ThreadUtilities.waitForFutures(threads, Integer.MAX_VALUE);
-			assertEquals("There must be exactly one document in the index : ", 1, realIndexContext.getIndex().getIndexWriter().numDocs());
+			assertEquals("There must be exactly one document in the index : ", 1, realIndexContext.getIndexWriter().numDocs());
 		} finally {
 			faqIndexableTable.setPredicate(predicate);
 		}
@@ -199,11 +199,11 @@ public class IndexableTableHandlerIntegration extends AbstractIntegration {
 	public void handleTable() throws Exception {
 		String ip = InetAddress.getLocalHost().getHostAddress();
 		IndexWriter indexWriter = IndexManager.openIndexWriter(realIndexContext, System.currentTimeMillis(), ip);
-		realIndexContext.getIndex().setIndexWriter(indexWriter);
+		realIndexContext.setIndexWriter(indexWriter);
 		// DatabaseUtilities.printResultSet(connection.createStatement().executeQuery("select * from faq"));
 		List<Future<?>> threads = indexableTableHandler.handle(realIndexContext, faqIndexableTable);
 		ThreadUtilities.waitForFutures(threads, Integer.MAX_VALUE);
-		assertTrue("There must be some data in the index : ", realIndexContext.getIndex().getIndexWriter().numDocs() > 0);
+		assertTrue("There must be some data in the index : ", realIndexContext.getIndexWriter().numDocs() > 0);
 	}
 
 	@Test
@@ -212,11 +212,11 @@ public class IndexableTableHandlerIntegration extends AbstractIntegration {
 		IndexContext<?> indexContext = ApplicationContextManager.getBean("indexContext");
 		String ip = InetAddress.getLocalHost().getHostAddress();
 		IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
-		indexContext.getIndex().setIndexWriter(indexWriter);
+		indexContext.setIndexWriter(indexWriter);
 		// ((IndexableTable) indexable).setPredicate("where geoname.id > 18842835");
 		List<Future<?>> futures = indexableTableHandler.handle(indexContext, indexable);
 		ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
-		assertTrue("There must be some data in the index : ", indexContext.getIndex().getIndexWriter().numDocs() > 0);
+		assertTrue("There must be some data in the index : ", indexContext.getIndexWriter().numDocs() > 0);
 	}
 
 	@Test
@@ -224,7 +224,7 @@ public class IndexableTableHandlerIntegration extends AbstractIntegration {
 		IndexContext<?> indexContext = ApplicationContextManager.getBean("indexContext");
 		String ip = InetAddress.getLocalHost().getHostAddress();
 		IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
-		indexContext.getIndex().setIndexWriter(indexWriter);
+		indexContext.setIndexWriter(indexWriter);
 		for (Indexable<?> indexable : indexContext.getChildren()) {
 			if (!IndexableTable.class.isAssignableFrom(indexable.getClass())) {
 				continue;
@@ -239,17 +239,18 @@ public class IndexableTableHandlerIntegration extends AbstractIntegration {
 				logger.error(e.getMessage());
 			}
 		}
-		assertTrue("There must be some data in the index : ", indexContext.getIndex().getIndexWriter().numDocs() > 0);
+		assertTrue("There must be some data in the index : ", indexContext.getIndexWriter().numDocs() > 0);
 	}
 
 	@Test
 	public void interrupt() throws Exception {
 		try {
+			long start = System.currentTimeMillis();
 			IndexableTable indexable = ApplicationContextManager.getBean("geoname");
 			IndexContext<?> indexContext = ApplicationContextManager.getBean("geospatial");
 			String ip = InetAddress.getLocalHost().getHostAddress();
 			IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
-			indexContext.getIndex().setIndexWriter(indexWriter);
+			indexContext.setIndexWriter(indexWriter);
 			Thread thread = new Thread(new Runnable() {
 				public void run() {
 					ThreadUtilities.sleep(15000);
@@ -262,6 +263,7 @@ public class IndexableTableHandlerIntegration extends AbstractIntegration {
 			ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
 			// We should get here when the futures are interrupted
 			assertTrue(Boolean.TRUE);
+			assertTrue(System.currentTimeMillis() - start < 60000);
 		} finally {
 			ThreadUtilities.initialize();
 		}

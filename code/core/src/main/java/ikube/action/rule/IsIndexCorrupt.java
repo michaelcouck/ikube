@@ -1,5 +1,6 @@
 package ikube.action.rule;
 
+import ikube.index.IndexManager;
 import ikube.model.IndexContext;
 import ikube.toolkit.FileUtilities;
 
@@ -24,7 +25,8 @@ public class IsIndexCorrupt extends ARule<IndexContext<?>> {
 	 */
 	@Override
 	public boolean evaluate(final IndexContext<?> indexContext) {
-		File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
+		String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext); 
+		File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexDirectoryPath);
 		if (latestIndexDirectory == null) {
 			return Boolean.FALSE;
 		}

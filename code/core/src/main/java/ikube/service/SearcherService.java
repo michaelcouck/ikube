@@ -34,17 +34,17 @@ import org.apache.lucene.search.Searcher;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * @see ISearcherWebService
+ * @see ISearcherService
  * @author Michael Couck
  * @since 21.11.10
  * @version 01.00
  */
-@Remote(ISearcherWebService.class)
+@Remote(ISearcherService.class)
 @SOAPBinding(style = SOAPBinding.Style.DOCUMENT)
-@WebService(name = ISearcherWebService.NAME, targetNamespace = ISearcherWebService.NAMESPACE, serviceName = ISearcherWebService.SERVICE)
-public class SearcherWebService implements ISearcherWebService {
+@WebService(name = ISearcherService.NAME, targetNamespace = ISearcherService.NAMESPACE, serviceName = ISearcherService.SERVICE)
+public class SearcherService implements ISearcherService {
 
-	private static final Logger LOGGER = Logger.getLogger(SearcherWebService.class);
+	private static final Logger LOGGER = Logger.getLogger(SearcherService.class);
 
 	@Autowired
 	private IDataBase dataBase;
@@ -278,9 +278,9 @@ public class SearcherWebService implements ISearcherWebService {
 		Map<String, IndexContext> indexContexts = ApplicationContextManager.getBeans(IndexContext.class);
 		for (IndexContext<?> context : indexContexts.values()) {
 			if (context.getIndexName().equals(indexName)) {
-				if (context.getIndex().getMultiSearcher() != null) {
+				if (context.getMultiSearcher() != null) {
 					Constructor<?> constructor = klass.getConstructor(Searcher.class);
-					return (T) constructor.newInstance(context.getIndex().getMultiSearcher());
+					return (T) constructor.newInstance(context.getMultiSearcher());
 				}
 			}
 		}
@@ -320,14 +320,14 @@ public class SearcherWebService implements ISearcherWebService {
 				search.setCount(1);
 				search.setSearchStrings(searchString);
 				search.setIndexName(indexName);
-				search.setResults(results);
+				search.setResults(Integer.toString(results));
 				search.setHighScore(highScore);
 				search.setCorrections(correctedSearchString != null);
 				dataBase.persist(search);
 			} else {
 				Search search = searches.get(0);
 				search.setCount(search.getCount() + 1);
-				search.setResults(results);
+				search.setResults(Integer.toString(results));
 				search.setHighScore(highScore);
 				search.setCorrections(correctedSearchString != null);
 				dataBase.merge(search);

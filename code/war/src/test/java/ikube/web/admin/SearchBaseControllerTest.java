@@ -5,7 +5,7 @@ import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
-import ikube.service.ISearcherWebService;
+import ikube.service.ISearcherService;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -19,7 +19,7 @@ import org.springframework.web.servlet.ModelAndView;
 public class SearchBaseControllerTest {
 
 	private HttpServletRequest httpServletRequest;
-	private ISearcherWebService searcherWebservice;
+	private ISearcherService searcherWebservice;
 	private SearchBaseController searchBaseController;
 
 	@Before
@@ -27,7 +27,7 @@ public class SearchBaseControllerTest {
 		searchBaseController = new SearchBaseController() {
 		};
 		httpServletRequest = mock(HttpServletRequest.class);
-		searcherWebservice = mock(ISearcherWebService.class);
+		searcherWebservice = mock(ISearcherService.class);
 		Deencapsulation.setField(searchBaseController, searcherWebservice);
 	}
 

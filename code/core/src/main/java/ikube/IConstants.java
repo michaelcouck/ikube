@@ -205,5 +205,8 @@ public interface IConstants {
 	
 	String TOTAL_SIZE = "totalSize";
 	String TOTAL_DOCS = "totalDocs";
+
+	String CLUSTER_SEARCH = "clusterSearch";
+	String CLUSTER_SEARCH_RESPONSE = "clusterSearchResponse";
 	
 }

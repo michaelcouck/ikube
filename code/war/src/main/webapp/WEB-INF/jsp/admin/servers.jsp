@@ -31,8 +31,9 @@
 		<th class="td-content">Size</th>
 		<th class="td-content" colspan="2">Open</th>
 		<th class="td-content" nowrap="nowrap">Max age</th>
-		<th class="td-content">Timestamp</th>
+		<th class="td-content" nowrap="nowrap">Timestamp</th>
 		<th class="td-content" nowrap="nowrap">Index path</th>
+		<th class="td-content" nowrap="nowrap">Per min</th>
 	</tr>
 	
 	<c:forEach var="indexContext" items="${requestScope.indexContexts}">
@@ -60,20 +61,21 @@
 				${indexContext.name}
 			</a>
 		</td>
-		<td class="td-content">${indexContext.numDocs}</td>
+		<td class="td-content">${indexContext.lastSnapshot.numDocs}</td>
 		<td class="td-content"><fmt:formatNumber 
-			value="${indexContext.indexSize / 1000000}" 
+			value="${indexContext.lastSnapshot.indexSize / 1000000}" 
 			maxFractionDigits="0" /></td>
 		<td width="1%">
-			<c:set var="open" scope="page" value="${indexContext.index.multiSearcher != null ? 'open' : 'closed'}"/>
+			<c:set var="open" scope="page" value="${indexContext.multiSearcher != null ? 'open' : 'closed'}"/>
 			<img alt="Server" src="<c:url value="/images/icons/${open}.gif"/>" title="Server">
 		</td>
-		<td class="td-content">${indexContext.index.multiSearcher != null}</td>
+		<td class="td-content">${indexContext.multiSearcher != null}</td>
 		<td class="td-content">${indexContext.maxAge / 60}</td>
 		<td class="td-content" nowrap="nowrap">
-			<fmt:formatDate value="${indexContext.latestIndexTimestamp}" pattern="${datePattern}" type="DATE" />
+			<fmt:formatDate value="${indexContext.lastSnapshot.latestIndexTimestamp}" pattern="${datePattern}" type="DATE" />
 		</td>
 		<td class="td-content" nowrap="nowrap">${ikube:subString(indexContext.indexDirectoryPath, 0, 20)}/${indexContext.name}</td>
+		<td class="td-content" nowrap="nowrap">${indexContext.lastSnapshot.docsPerMinute}</td>
 	</tr>
 	</c:forEach>
 	<tr>
@@ -115,7 +117,7 @@
 			</a>
 		</td>
 		<td class="td-content" nowrap="nowrap">
-			<a href="<c:url value="${server.searchWebServiceUrl}" />"
+			<a href="<c:url value="${server.address}" />"
 				style="font-style: italic;" 
 				title="${server.address}">
 				<c:out value="${server.address}" />
@@ -149,7 +151,7 @@
 					<th class="td-content" width="15%">Index</th>
 					<th class="td-content" width="15%">Indexable</th>
 					<th class="td-content" width="10%">Exec</th>
-					<th class="td-content" width="5%">Sec</th>
+					<!-- <th class="td-content" width="5%">Sec</th> -->
 					<th class="td-content" width="25%">Start time</th>
 				</tr>
 				<c:forEach var="action" items="${server.actions}">
@@ -161,7 +163,7 @@
 					<td class="td-content"><c:out value="${action.indexName}" /></td>
 					<td class="td-content"><c:out value="${action.indexableName}" /></td>
 					<td class="td-content"><c:out value="${action.invocations}" /></td>
-					<td class="td-content"><c:out value="${action.invocationsPerSecond}" /></td>
+					<%-- <td class="td-content"><c:out value="${action.invocationsPerSecond}" /></td> --%>
 					<td class="td-content">
 						<fmt:formatDate value="${action.startTime}" pattern="${datePattern}" type="DATE" />
 					</td>

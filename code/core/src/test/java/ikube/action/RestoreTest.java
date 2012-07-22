@@ -4,6 +4,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 import ikube.ATest;
+import ikube.index.IndexManager;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
@@ -81,7 +82,8 @@ public class RestoreTest extends ATest {
 
 	private void indexExists() throws Exception {
 		// Check that the index is restored
-		File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
+		String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
+		File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexDirectoryPath);
 		File latestServerIndexDirectory = new File(latestIndexDirectory, ip);
 		Directory directory = null;
 		try {

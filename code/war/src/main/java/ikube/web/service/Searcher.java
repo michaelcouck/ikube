@@ -1,7 +1,7 @@
 package ikube.web.service;
 
 import ikube.IConstants;
-import ikube.service.ISearcherWebService;
+import ikube.service.ISearcherService;
 import ikube.toolkit.SerializationUtilities;
 
 import java.util.ArrayList;
@@ -57,7 +57,7 @@ public class Searcher {
 	public static final String MULTI_SPATIAL_ALL = "/multi/spatial/all";
 
 	@Autowired
-	private ISearcherWebService searcherWebService;
+	private ISearcherService searcherService;
 
 	/**
 	 * Does a search on a single field on the index defined in the parameter list.
@@ -85,7 +85,7 @@ public class Searcher {
 			@QueryParam(value = IConstants.FRAGMENT) final boolean fragment,
 			@QueryParam(value = IConstants.FIRST_RESULT) final int firstResult,
 			@QueryParam(value = IConstants.MAX_RESULTS) final int maxResults) {
-		ArrayList<HashMap<String, String>> results = searcherWebService.searchSingle(indexName, searchStrings, searchFields, fragment,
+		ArrayList<HashMap<String, String>> results = searcherService.searchSingle(indexName, searchStrings, searchFields, fragment,
 				firstResult, maxResults);
 		return SerializationUtilities.serialize(results);
 	}
@@ -118,7 +118,7 @@ public class Searcher {
 			@QueryParam(value = IConstants.MAX_RESULTS) final int maxResults) {
 		String[] searchStringsArray = StringUtils.split(searchStrings, IConstants.SEMI_COLON);
 		String[] searchFieldsArray = StringUtils.split(searchFields, IConstants.SEMI_COLON);
-		ArrayList<HashMap<String, String>> results = searcherWebService.searchMulti(indexName, searchStringsArray, searchFieldsArray,
+		ArrayList<HashMap<String, String>> results = searcherService.searchMulti(indexName, searchStringsArray, searchFieldsArray,
 				fragment, firstResult, maxResults);
 		return SerializationUtilities.serialize(results);
 	}
@@ -155,7 +155,7 @@ public class Searcher {
 		String[] searchStringsArray = StringUtils.split(searchStrings, IConstants.SEMI_COLON);
 		String[] searchFieldsArray = StringUtils.split(searchFields, IConstants.SEMI_COLON);
 		String[] sortFieldsArray = StringUtils.split(sortFields, IConstants.SEMI_COLON);
-		ArrayList<HashMap<String, String>> results = searcherWebService.searchMultiSorted(indexName, searchStringsArray, searchFieldsArray,
+		ArrayList<HashMap<String, String>> results = searcherService.searchMultiSorted(indexName, searchStringsArray, searchFieldsArray,
 				sortFieldsArray, fragment, firstResult, maxResults);
 		return SerializationUtilities.serialize(results);
 	}
@@ -184,7 +184,7 @@ public class Searcher {
 			@QueryParam(value = IConstants.FIRST_RESULT) final int firstResult,
 			@QueryParam(value = IConstants.MAX_RESULTS) final int maxResults) {
 		String[] searchStringsArray = StringUtils.split(searchStrings, IConstants.SEMI_COLON);
-		ArrayList<HashMap<String, String>> results = searcherWebService.searchMultiAll(indexName, searchStringsArray, fragment,
+		ArrayList<HashMap<String, String>> results = searcherService.searchMultiAll(indexName, searchStringsArray, fragment,
 				firstResult, maxResults);
 		String xml = SerializationUtilities.serialize(results);
 		// LOGGER.info("Xml : " + xml);
@@ -228,7 +228,7 @@ public class Searcher {
 			@QueryParam(value = IConstants.LATITUDE) final String latitude, @QueryParam(value = IConstants.LONGITUDE) final String longitude) {
 		String[] searchStringsArray = StringUtils.split(searchStrings, IConstants.SEMI_COLON);
 		String[] searchFieldsArray = StringUtils.split(searchFields, IConstants.SEMI_COLON);
-		ArrayList<HashMap<String, String>> results = searcherWebService
+		ArrayList<HashMap<String, String>> results = searcherService
 				.searchMultiSpacial(indexName, searchStringsArray, searchFieldsArray, fragment, firstResult, maxResults, distance,
 						Double.parseDouble(latitude), Double.parseDouble(longitude));
 		return SerializationUtilities.serialize(results);
@@ -266,7 +266,7 @@ public class Searcher {
 			@QueryParam(value = IConstants.MAX_RESULTS) final int maxResults, @QueryParam(value = IConstants.DISTANCE) final int distance,
 			@QueryParam(value = IConstants.LATITUDE) final String latitude, @QueryParam(value = IConstants.LONGITUDE) final String longitude) {
 		String[] searchStringsArray = StringUtils.split(searchStrings, IConstants.SEMI_COLON);
-		ArrayList<HashMap<String, String>> results = searcherWebService.searchMultiSpacialAll(indexName, searchStringsArray, fragment,
+		ArrayList<HashMap<String, String>> results = searcherService.searchMultiSpacialAll(indexName, searchStringsArray, fragment,
 				firstResult, maxResults, distance, Double.parseDouble(latitude), Double.parseDouble(longitude));
 		return SerializationUtilities.serialize(results);
 	}

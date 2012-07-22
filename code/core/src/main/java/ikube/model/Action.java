@@ -59,9 +59,6 @@ public class Action extends Persistable {
 	/** The time it took for this action to finish. */
 	@Column
 	private long duration;
-	/** The predicate for the rules. */
-	@Column
-	private String ruleExpression;
 	/** The result from the rules and the predicate. */
 	@Column
 	private boolean result;
@@ -115,14 +112,6 @@ public class Action extends Persistable {
 
 	public void setDuration(long duration) {
 		this.duration = duration;
-	}
-
-	public String getRuleExpression() {
-		return ruleExpression;
-	}
-
-	public void setRuleExpression(String ruleExpression) {
-		this.ruleExpression = ruleExpression;
 	}
 
 	public boolean isResult() {

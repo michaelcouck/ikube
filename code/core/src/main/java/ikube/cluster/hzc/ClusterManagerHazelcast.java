@@ -16,7 +16,6 @@ import java.util.concurrent.TimeUnit;
 
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.ILock;
-import com.hazelcast.core.IMap;
 
 /**
  * This action checks that the disk is not full, the one where the indexes are, if it is then this instance will close down.
@@ -27,9 +26,14 @@ import com.hazelcast.core.IMap;
  */
 public class ClusterManagerHazelcast extends AClusterManager {
 
+	public ClusterManagerHazelcast() {
+		initialize();
+	}
+
 	public void initialize() {
 		ip = UriUtilities.getIp();
 		address = ip + "." + Hazelcast.getConfig().getPort();
+		logger.info("Cluster manager : " + ip + ", " + address);
 	}
 
 	/**
@@ -41,7 +45,7 @@ public class ClusterManagerHazelcast extends AClusterManager {
 			ILock lock = Hazelcast.getLock(name);
 			boolean gotLock = false;
 			try {
-				gotLock = lock.tryLock(250, TimeUnit.MILLISECONDS);
+				gotLock = lock.tryLock(500, TimeUnit.MILLISECONDS);
 			} catch (InterruptedException e) {
 				logger.error("Exception trying for the lock : ", e);
 			}
@@ -109,10 +113,13 @@ public class ClusterManagerHazelcast extends AClusterManager {
 		try {
 			Action action = getAction(actionName, indexName, indexableName);
 			Server server = getServer();
+			if (server.getAddress() == null) {
+				server.setAddress(address);
+			}
 			server.getActions().add(action);
 			logger.debug("Start working : {} ", action);
-			IMap<String, Server> servers = Hazelcast.getMap(IConstants.SERVERS);
-			servers.put(server.getAddress(), server);
+			Map<String, Server> servers = getServers();
+			servers.put(address, server);
 			return action;
 		} finally {
 			notifyAll();
@@ -125,14 +132,15 @@ public class ClusterManagerHazelcast extends AClusterManager {
 	@Override
 	public synchronized void stopWorking(Action action) {
 		try {
+			logger.debug("Stop working : {} ", action);
+
 			action.setEndTime(new Timestamp(System.currentTimeMillis()));
 			action.setDuration(action.getEndTime().getTime() - action.getStartTime().getTime());
 
 			Server server = getServer();
-			logger.debug("Stop working : {} ", action);
 			Iterator<Action> iterator = server.getActions().iterator();
 			boolean removed = false;
-			// We must iterate oveeer the actions and remove the one by id because the
+			// We must iterate over the actions and remove the one by id because the
 			// equals is modified by Hazelcast it seems
 			while (iterator.hasNext()) {
 				if (iterator.next().getId() == action.getId()) {
@@ -171,12 +179,12 @@ public class ClusterManagerHazelcast extends AClusterManager {
 		}
 		server = new Server();
 		servers.put(address, server);
-		logger.info("Server null, creating new one : " + server);
 		long time = System.currentTimeMillis();
 		server.setIp(ip);
 		server.setId(time);
 		server.setAge(time);
 		server.setAddress(address);
+		logger.info("Server null, creating new one : " + server);
 		return server;
 	}
 

@@ -77,11 +77,11 @@ public class IndexableFilesystemHandlerIntegration extends AbstractIntegration {
 		File file = FileUtilities.findFileRecursively(new File("."), "txt");
 		String ip = InetAddress.getLocalHost().getHostAddress();
 		IndexWriter indexWriter = IndexManager.openIndexWriter(desktop, System.currentTimeMillis(), ip);
-		desktop.getIndex().setIndexWriter(indexWriter);
+		desktop.setIndexWriter(indexWriter);
 		desktopFolder.setPath(file.getAbsolutePath());
 		List<Future<?>> futures = indexableFilesystemHandler.handle(desktop, desktopFolder);
 		ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
-		assertEquals("There should be one document in the index : ", 1, desktop.getIndex().getIndexWriter().numDocs());
+		assertEquals("There should be one document in the index : ", 1, desktop.getIndexWriter().numDocs());
 	}
 
 	private static void printIndex(final IndexReader indexReader) throws Exception {

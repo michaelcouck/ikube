@@ -6,8 +6,8 @@ import static org.mockito.Mockito.when;
 import ikube.IConstants;
 import ikube.cluster.IClusterManager;
 import ikube.model.Server;
-import ikube.service.IMonitorWebService;
-import ikube.service.ISearcherWebService;
+import ikube.service.IMonitorService;
+import ikube.service.ISearcherService;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.SerializationUtilities;
 import ikube.web.MockFactory.ApplicationContextManagerMock;
@@ -38,8 +38,8 @@ public class SearchControllerTest {
 
 	private HttpServletRequest request = mock(HttpServletRequest.class);
 	private HttpServletResponse response = mock(HttpServletResponse.class);
-	private ISearcherWebService searcherWebService = mock(ISearcherWebService.class);
-	private IMonitorWebService monitorWebService = mock(IMonitorWebService.class);
+	private ISearcherService searcherService = mock(ISearcherService.class);
+	private IMonitorService monitorService = mock(IMonitorService.class);
 	private IClusterManager clusterManager = mock(IClusterManager.class);
 	private Server server = mock(Server.class);
 
@@ -51,10 +51,10 @@ public class SearchControllerTest {
 		parameterMap.put(IConstants.SEARCH_STRINGS, new String[] { IConstants.IKUBE });
 		when(request.getParameterMap()).thenReturn(parameterMap);
 		when(clusterManager.getServer()).thenReturn(server);
-		when(monitorWebService.getIndexNames()).thenReturn(new String[] { "ikube", "ikube", "ikube" });
+		when(monitorService.getIndexNames()).thenReturn(new String[] { "ikube", "ikube", "ikube" });
 		Deencapsulation.setField(searchController, clusterManager);
-		Deencapsulation.setField(searchController, monitorWebService);
-		Deencapsulation.setField(searchController, searcherWebService);
+		Deencapsulation.setField(searchController, monitorService);
+		Deencapsulation.setField(searchController, searcherService);
 	}
 
 	@After
@@ -68,7 +68,7 @@ public class SearchControllerTest {
 		File file = FileUtilities.findFileRecursively(new File("."), "default.results.xml");
 		String xml = FileUtilities.getContents(file, IConstants.ENCODING);
 		ArrayList<HashMap<String, String>> results = (ArrayList<HashMap<String, String>>) SerializationUtilities.deserialize(xml);
-		when(searcherWebService.searchMultiAll(IConstants.IKUBE, new String[] { IConstants.IKUBE }, true, 0, 10)).thenReturn(results);
+		when(searcherService.searchMultiAll(IConstants.IKUBE, new String[] { IConstants.IKUBE }, true, 0, 10)).thenReturn(results);
 
 		ModelAndView modelAndView = searchController.handleRequest(request, response);
 		Object total = modelAndView.getModel().get(IConstants.TOTAL);
@@ -97,7 +97,7 @@ public class SearchControllerTest {
 		file = FileUtilities.findFileRecursively(new File("."), "default.results.small.xml");
 		xml = FileUtilities.getContents(file, IConstants.ENCODING);
 		results = (ArrayList<HashMap<String, String>>) SerializationUtilities.deserialize(xml);
-		when(searcherWebService.searchMultiAll(IConstants.IKUBE, new String[] { IConstants.IKUBE }, true, 0, 10)).thenReturn(results);
+		when(searcherService.searchMultiAll(IConstants.IKUBE, new String[] { IConstants.IKUBE }, true, 0, 10)).thenReturn(results);
 
 		modelAndView = searchController.handleRequest(request, response);
 

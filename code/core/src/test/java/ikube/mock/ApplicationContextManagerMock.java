@@ -10,7 +10,7 @@ import ikube.index.handler.database.IndexableTableHandler;
 import ikube.model.IndexContext;
 import ikube.model.IndexableTable;
 import ikube.model.Server;
-import ikube.service.IMonitorWebService;
+import ikube.service.IMonitorService;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.Logging;
 
@@ -46,7 +46,7 @@ public class ApplicationContextManagerMock {
 	public static IDataBase DATABASE = mock(IDataBase.class);
 	public static IndexableTableHandler HANDLER = mock(IndexableTableHandler.class);
 	public static Server SERVER = mock(Server.class);
-	public static IMonitorWebService MONITOR_WEB_SERVICE = mock(IMonitorWebService.class);
+	public static IMonitorService MONITOR_WEB_SERVICE = mock(IMonitorService.class);
 
 	static {
 		when(CLUSTER_MANAGER.getServer()).thenReturn(SERVER);

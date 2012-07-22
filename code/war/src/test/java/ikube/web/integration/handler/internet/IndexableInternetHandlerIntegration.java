@@ -63,7 +63,7 @@ public class IndexableInternetHandlerIntegration extends Integration {
 		File indexDirectory = FileUtilities.getFile("./indexes", Boolean.TRUE);
 		IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, indexDirectory, true);
 
-		indexContext.getIndex().setIndexWriter(indexWriter);
+		indexContext.setIndexWriter(indexWriter);
 	}
 
 	@Test
@@ -87,7 +87,7 @@ public class IndexableInternetHandlerIntegration extends Integration {
 		// Index the pages in the application
 		List<Future<?>> futures = indexableInternetHandler.handle(indexContext, indexableInternet);
 		ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
-		assertTrue("There must be some documents in the index : ", indexContext.getIndex().getIndexWriter().numDocs() > 3);
+		assertTrue("There must be some documents in the index : ", indexContext.getIndexWriter().numDocs() > 3);
 	}
 
 }

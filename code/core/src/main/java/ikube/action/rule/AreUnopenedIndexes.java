@@ -31,7 +31,7 @@ public class AreUnopenedIndexes implements IRule<IndexContext<?>> {
 	 */
 	@Override
 	public boolean evaluate(final IndexContext<?> indexContext) {
-		MultiSearcher searcher = indexContext.getIndex() != null ? indexContext.getIndex().getMultiSearcher() : null;
+		MultiSearcher searcher = indexContext.getMultiSearcher();
 		Searchable[] searchables = searcher != null ? searcher.getSearchables() : null;
 		if (searchables == null) {
 			return new AreIndexesCreated().evaluate(indexContext);

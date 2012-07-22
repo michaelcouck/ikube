@@ -49,7 +49,7 @@ public class SearchIndexController extends SearchBaseController {
 		} else {
 			searchStrings = new String[] { searchString };
 		}
-		String[] indexFieldNames = monitorWebService.getIndexFieldNames(indexName);
+		String[] indexFieldNames = monitorService.getIndexFieldNames(indexName);
 		for (String indexFieldName : indexFieldNames) {
 			fieldNamesAndValues.put(indexFieldName, "");
 		}
@@ -66,7 +66,7 @@ public class SearchIndexController extends SearchBaseController {
 				}
 			}
 			String[] searchFieldsArray = searchFields.toArray(new String[searchFields.size()]);
-			results = searcherWebService.searchMulti(indexName, searchStrings, searchFieldsArray, Boolean.TRUE, firstResult, maxResults);
+			results = searcherService.searchMulti(indexName, searchStrings, searchFieldsArray, Boolean.TRUE, firstResult, maxResults);
 		}
 
 		Map<String, String> statistics = results.get(results.size() - 1);

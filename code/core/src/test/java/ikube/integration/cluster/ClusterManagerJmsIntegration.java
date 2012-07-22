@@ -19,10 +19,12 @@ import javax.jms.Message;
 import javax.jms.Session;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 
+@Ignore
 public class ClusterManagerJmsIntegration extends AbstractIntegration {
 
 	private IClusterManager clusterManager;

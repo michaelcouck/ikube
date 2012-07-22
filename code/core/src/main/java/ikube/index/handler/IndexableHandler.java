@@ -73,7 +73,7 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IHandl
 		if (indexable.isAddress()) {
 			addSpatialEnrichment(indexable, document);
 		}
-		indexContext.getIndex().getIndexWriter().addDocument(document);
+		indexContext.getIndexWriter().addDocument(document);
 	}
 
 	private void addSpatialEnrichment(Indexable<?> indexable, Document document) {

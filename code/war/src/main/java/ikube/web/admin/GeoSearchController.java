@@ -40,7 +40,7 @@ public class GeoSearchController extends SearchBaseController {
 		// TODO This should go in a validation framework
 		if (indexName != null && searchStrings != null && latitude != null && longitude != null && distance != null && firstResult != null
 				&& maxResults != null) {
-			ArrayList<HashMap<String, String>> results = searcherWebService.searchMultiSpacialAll(indexName,
+			ArrayList<HashMap<String, String>> results = searcherService.searchMultiSpacialAll(indexName,
 					new String[] { searchStrings }, Boolean.TRUE, firstResult, maxResults, distance, latitude, longitude);
 
 			HashMap<String, String> statistics = results.get(results.size() - 1);

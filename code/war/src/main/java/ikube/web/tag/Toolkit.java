@@ -156,6 +156,12 @@ public class Toolkit {
 		return stringBuilder.toString();
 	}
 
+	/**
+	 * This method will change an array to a list that is 'printer' friendly, or just return the object in a list if it is not an array.
+	 * 
+	 * @param object the object to convert from an array into a list
+	 * @return the list of objects in the array
+	 */
 	public static List<Object> asList(Object object) {
 		if (object.getClass().isArray()) {
 			return Arrays.asList((Object[]) object);

@@ -41,7 +41,7 @@ public class SearchController extends SearchBaseController {
 		// Get all the search strings from the request, we'll search all the indexes, all the fields, all strings
 		Set<String> searchStrings = getSearchStrings(request);
 
-		String[] indexNames = monitorWebService.getIndexNames();
+		String[] indexNames = monitorService.getIndexNames();
 
 		// Search all the indexes and merge the results
 		int total = 0;

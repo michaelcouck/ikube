@@ -77,7 +77,6 @@ public final class IndexManager {
 			LOGGER.info(Logging.getString("Index directory time : ", time, "date : ", new Date(time), "writing index to directory ",
 					indexDirectoryPath));
 			indexWriter = openIndexWriter(indexContext, indexDirectory, Boolean.TRUE);
-			indexContext.getIndex().setIndexWriter(indexWriter);
 			success = Boolean.TRUE;
 		} catch (CorruptIndexException e) {
 			LOGGER.error("We expected a new index and got a corrupt one.", e);
@@ -135,10 +134,9 @@ public final class IndexManager {
 	 */
 	public static synchronized void closeIndexWriter(final IndexContext<?> indexContext) {
 		try {
-			if (indexContext != null && indexContext.getIndex().getIndexWriter() != null) {
-				IndexWriter indexWriter = indexContext.getIndex().getIndexWriter();
+			if (indexContext != null && indexContext.getIndexWriter() != null) {
+				IndexWriter indexWriter = indexContext.getIndexWriter();
 				closeIndexWriter(indexWriter);
-				indexContext.getIndex().setIndexWriter(null);
 			}
 		} finally {
 			IndexManager.class.notifyAll();

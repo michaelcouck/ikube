@@ -115,7 +115,7 @@ public class RuleInterceptor implements IRuleInterceptor {
 			}
 			finalResult = result != null && (result.equals(1.0d) || result.equals(Boolean.TRUE));
 			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug("Rule intercepter proceeding : {} {} {}", new Object[] { finalResult, action, indexContext.getIndexName() });
+				LOGGER.info("Rule intercepter proceeding : {} {} {}", new Object[] { finalResult, action, indexContext.getIndexName() });
 				printSymbolTable(jep, indexContext.getIndexName());
 			}
 		}

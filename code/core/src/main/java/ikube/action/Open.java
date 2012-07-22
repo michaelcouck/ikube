@@ -2,7 +2,6 @@ package ikube.action;
 
 import ikube.index.IndexManager;
 import ikube.model.IndexContext;
-import ikube.service.SearcherWebService;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.Logging;
 
@@ -26,7 +25,7 @@ import org.apache.lucene.store.FSDirectory;
  * This action will find the latest index directory based on the folder name which is a long(the time the index was started), find all the
  * server directories in the directory and open a searchable on each of the 'server indexes'. A multi searcher will be opened on the
  * SEARCHABLES and this will be set in the index context. An even will be fired to alert all interested parties that there is a new searcher
- * and they can perform whatever logic the need to, like the {@link SearcherWebService} which will then open the single and multi search
+ * and they can perform whatever logic the need to, like the {@link SearcherService} which will then open the single and multi search
  * objects on the new multi searcher.
  * 
  * @author Michael Couck
@@ -66,7 +65,7 @@ public class Open extends Action<IndexContext<?>, Boolean> {
 		Directory directory = null;
 		IndexReader reader = null;
 		Searchable searcher = null;
-		boolean exceptionOpening = Boolean.TRUE;
+		boolean exceptionOpening = Boolean.FALSE;
 		for (File serverIndexDirectory : serverIndexDirectories) {
 			try {
 				directory = FSDirectory.open(serverIndexDirectory);
@@ -83,10 +82,10 @@ public class Open extends Action<IndexContext<?>, Boolean> {
 				reader = IndexReader.open(directory, Boolean.TRUE);
 				searcher = new IndexSearcher(reader);
 				searchers.add(searcher);
-				exceptionOpening = Boolean.FALSE;
 				logger.info(Logging.getString("Opened searcher on : ", serverIndexDirectory, "exists : ", exists, "locked : ", locked));
 			} catch (Exception e) {
 				logger.error("Exception opening directory : " + serverIndexDirectory, e);
+				exceptionOpening = Boolean.TRUE;
 			} finally {
 				if (exceptionOpening) {
 					close(directory, reader, searcher);
@@ -103,7 +102,7 @@ public class Open extends Action<IndexContext<?>, Boolean> {
 			if (!searchers.isEmpty()) {
 				Searchable[] searchables = searchers.toArray(new IndexSearcher[searchers.size()]);
 				MultiSearcher multiSearcher = new MultiSearcher(searchables);
-				indexContext.getIndex().setMultiSearcher(multiSearcher);
+				indexContext.setMultiSearcher(multiSearcher);
 				return Boolean.TRUE;
 			}
 		} catch (Exception e) {

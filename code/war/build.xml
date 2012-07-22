@@ -1,66 +1,7 @@
-<project name="Deploy Ikube Cluster" default="start.tomcat.cluster">
+<project name="Deploy Ikube Cluster" default="deploy">
 
 	<property file="build.properties" />
 	<property name="profile" value="production" />
-
-	<target name="start.tomcat.cluster">
-		<antcall target="executeTomcatAction">
-			<param name="action" value="start" />
-			<param name="tomcat.bin" value="${tomcat.1.bin}" />
-			<param name="tomcat.home" value="${tomcat.1}" />
-		</antcall>
-		<sleep seconds="${sleep}" />
-		<antcall target="executeTomcatAction">
-			<param name="action" value="start" />
-			<param name="tomcat.bin" value="${tomcat.2.bin}" />
-			<param name="tomcat.home" value="${tomcat.2}" />
-		</antcall>
-		<sleep seconds="${sleep}" />
-		<antcall target="executeTomcatAction">
-			<param name="action" value="start" />
-			<param name="tomcat.bin" value="${tomcat.3.bin}" />
-			<param name="tomcat.home" value="${tomcat.3}" />
-		</antcall>
-	</target>
-	<target name="stop.tomcat.cluster">
-		<antcall target="executeTomcatAction">
-			<param name="action" value="stop" />
-			<param name="tomcat.bin" value="${tomcat.1.bin}" />
-			<param name="tomcat.home" value="${tomcat.1}" />
-		</antcall>
-		<antcall target="executeTomcatAction">
-			<param name="action" value="stop" />
-			<param name="tomcat.bin" value="${tomcat.2.bin}" />
-			<param name="tomcat.home" value="${tomcat.2}" />
-		</antcall>
-		<antcall target="executeTomcatAction">
-			<param name="action" value="stop" />
-			<param name="tomcat.bin" value="${tomcat.3.bin}" />
-			<param name="tomcat.home" value="${tomcat.3}" />
-		</antcall>
-	</target>
-
-	<target name="executeTomcatAction">
-		<java jar="${tomcat.bin}/bootstrap.jar" dir="${tomcat.bin}" fork="yes" spawn="true">
-			<jvmarg value="-Dcatalina.home=${tomcat.home}" />
-			<jvmarg value="-Xms512m" />
-			<jvmarg value="-Xmx2048m" />
-			<jvmarg value="-XX:PermSize=64m" />
-			<jvmarg value="-XX:MaxPermSize=256m" />
-			<arg line="${action}" />
-		</java>
-	</target>
-
-	<target name="startJenkins">
-		<java jar="${jenkins.bin}/bootstrap.jar" dir="${jenkins.bin}" fork="yes" spawn="true">
-			<jvmarg value="-Dcatalina.home=${jenkins.home}" />
-			<jvmarg value="-Xms512m" />
-			<jvmarg value="-Xmx2048m" />
-			<jvmarg value="-XX:PermSize=128m" />
-			<jvmarg value="-XX:MaxPermSize=256m" />
-			<arg line="start" />
-		</java>
-	</target>
 
 	<!-- 
 		This target will unpack Tomcat, put the war in the web apps directory, unpack the configuration to the 
@@ -83,40 +24,7 @@
 		</zip>
 	</target>
 
-	<target name="clean.servers">
-		<!-- Clean all the ikube files in the servers. -->
-		<antcall target="clean.server">
-			<param name="directory" value="${tomcat}" />
-		</antcall>
-		<antcall target="clean.server">
-			<param name="directory" value="${tomcat.1}" />
-		</antcall>
-		<antcall target="clean.server">
-			<param name="directory" value="${tomcat.2}" />
-		</antcall>
-		<antcall target="clean.server">
-			<param name="directory" value="${tomcat.3}" />
-		</antcall>
-	</target>
-
-	<target name="make.directories">
-		<mkdir dir="${tomcat.webapps}" />
-		<mkdir dir="${tomcat.1.webapps}" />
-		<mkdir dir="${tomcat.2.webapps}" />
-		<mkdir dir="${tomcat.3.webapps}" />
-
-		<mkdir dir="${tomcat.bin}" />
-		<mkdir dir="${tomcat.1.bin}" />
-		<mkdir dir="${tomcat.2.bin}" />
-		<mkdir dir="${tomcat.3.bin}" />
-	</target>
-
 	<target name="deploy">
-		<!-- Deploy the ikube war into the cluster. -->
-		<!-- copy file="${target.directory}/${ikube.war}" todir="${tomcat.webapps}" overwrite="true" failonerror="false" / -->
-		<!-- copy file="${target.directory}/${ikube.war}" todir="${tomcat.1.webapps}" overwrite="true" failonerror="false" />
-		<copy file="${target.directory}/${ikube.war}" todir="${tomcat.2.webapps}" overwrite="true" failonerror="false" />
-		<copy file="${target.directory}/${ikube.war}" todir="${tomcat.3.webapps}" overwrite="true" failonerror="false" / -->
 		<!-- Deploy to the server -->
 		<scp file="${target.directory}/${ikube.war}" todir="michael:caherline@192.168.1.4:/usr/share/apache-tomcat-7.0.27/webapps" trust="true" failonerror="false" />
 		<scp file="${target.directory}/${ikube.war}" todir="michael:caherline@192.168.1.6:/usr/share/apache-tomcat-7.0.27/webapps" trust="true" failonerror="false" />
@@ -163,10 +71,6 @@
 		<echo>User dir: ${user.dir}</echo>
 		<echo>User home: ${user.home}</echo>
 		<copy file="${configuration.directory}/${ikube.configuration.jar}" todir="./src/main/webapp/docs" failonerror="true" />
-		<!-- unjar src="${configuration.directory}/${ikube.configuration.jar}" dest="${tomcat.bin}" overwrite="true" />
-		<unjar src="${configuration.directory}/${ikube.configuration.jar}" dest="${tomcat.1.bin}" overwrite="true" />
-		<unjar src="${configuration.directory}/${ikube.configuration.jar}" dest="${tomcat.2.bin}" overwrite="true" />
-		<unjar src="${configuration.directory}/${ikube.configuration.jar}" dest="${tomcat.3.bin}" overwrite="true" / -->
 		<!-- Deploy configuration on server -->
 		<scp todir="michael:caherline@192.168.1.4:/usr/share/apache-tomcat-7.0.27/bin/ikube" trust="true" failonerror="false">
 			<fileset dir="${configuration.directory}/ikube"/>
@@ -180,25 +84,56 @@
 		<scp todir="michael:caherline@192.168.1.14:/usr/share/apache-tomcat-7.0.27/bin/ikube" trust="true" failonerror="false">
 			<fileset dir="${configuration.directory}/ikube" />
 		</scp>
-
-		<!-- replace dir="${tomcat.bin}" value="61615">
-			<include name="**/spring.properties" />
-			<replacetoken><![CDATA[61617]]></replacetoken>
-		</replace>
-		<replace dir="${tomcat.2.bin}" value="61618">
-			<include name="**/spring.properties" />
-			<replacetoken><![CDATA[61617]]></replacetoken>
-		</replace>
-		<replace dir="${tomcat.3.bin}" value="61619">
-			<include name="**/spring.properties" />
-			<replacetoken><![CDATA[61617]]></replacetoken>
-		</replace -->
+		<!-- scp todir="michael:caherline@ikube.be:/usr/share/apache-tomcat-7.0.27/bin/ikube" trust="true" failonerror="false">
+			<fileset dir="${configuration.directory}/ikube" />
+		</scp -->
 	</target>
 
-	<target name="hsqldb">
-		<java classname="org.hsqldb.Server" fork="yes" failonerror="true" classpathref="hsqldb">
-			<arg value="-database.0" />
-			<arg value="file:${database.dir}/${database.name}" />
+	<target name="start.tomcat.cluster">
+		<antcall target="executeTomcatAction">
+			<param name="action" value="start" />
+			<param name="tomcat.bin" value="${tomcat.1.bin}" />
+			<param name="tomcat.home" value="${tomcat.1}" />
+		</antcall>
+		<sleep seconds="${sleep}" />
+		<antcall target="executeTomcatAction">
+			<param name="action" value="start" />
+			<param name="tomcat.bin" value="${tomcat.2.bin}" />
+			<param name="tomcat.home" value="${tomcat.2}" />
+		</antcall>
+		<sleep seconds="${sleep}" />
+		<antcall target="executeTomcatAction">
+			<param name="action" value="start" />
+			<param name="tomcat.bin" value="${tomcat.3.bin}" />
+			<param name="tomcat.home" value="${tomcat.3}" />
+		</antcall>
+	</target>
+	<target name="stop.tomcat.cluster">
+		<antcall target="executeTomcatAction">
+			<param name="action" value="stop" />
+			<param name="tomcat.bin" value="${tomcat.1.bin}" />
+			<param name="tomcat.home" value="${tomcat.1}" />
+		</antcall>
+		<antcall target="executeTomcatAction">
+			<param name="action" value="stop" />
+			<param name="tomcat.bin" value="${tomcat.2.bin}" />
+			<param name="tomcat.home" value="${tomcat.2}" />
+		</antcall>
+		<antcall target="executeTomcatAction">
+			<param name="action" value="stop" />
+			<param name="tomcat.bin" value="${tomcat.3.bin}" />
+			<param name="tomcat.home" value="${tomcat.3}" />
+		</antcall>
+	</target>
+
+	<target name="executeTomcatAction">
+		<java jar="${tomcat.bin}/bootstrap.jar" dir="${tomcat.bin}" fork="yes" spawn="true">
+			<jvmarg value="-Dcatalina.home=${tomcat.home}" />
+			<jvmarg value="-Xms512m" />
+			<jvmarg value="-Xmx2048m" />
+			<jvmarg value="-XX:PermSize=64m" />
+			<jvmarg value="-XX:MaxPermSize=256m" />
+			<arg line="${action}" />
 		</java>
 	</target>
 

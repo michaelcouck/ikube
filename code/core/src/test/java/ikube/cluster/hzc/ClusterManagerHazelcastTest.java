@@ -205,7 +205,7 @@ public class ClusterManagerHazelcastTest {
 		ThreadUtilities.initialize();
 		int threads = 10;
 		final int iterations = 10000;
-		final double sleep = 10;
+		final double sleep = 1;
 		final Boolean[] locks = new Boolean[threads];
 		List<Future<?>> futures = new ArrayList<Future<?>>();
 		for (int i = 0; i < threads; i++) {

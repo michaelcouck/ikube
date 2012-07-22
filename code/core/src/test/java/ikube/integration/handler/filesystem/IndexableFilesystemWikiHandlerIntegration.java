@@ -5,7 +5,6 @@ import ikube.database.IDataBase;
 import ikube.index.IndexManager;
 import ikube.index.handler.filesystem.IndexableFilesystemWikiHandler;
 import ikube.integration.AbstractIntegration;
-import ikube.model.Index;
 import ikube.model.IndexContext;
 import ikube.model.IndexableFileSystemWiki;
 import ikube.toolkit.ApplicationContextManager;
@@ -44,8 +43,7 @@ public class IndexableFilesystemWikiHandlerIntegration extends AbstractIntegrati
 			ThreadUtilities.initialize();
 			String ip = InetAddress.getLocalHost().getHostAddress();
 			IndexWriter indexWriter = IndexManager.openIndexWriter(wikiHistoryArabic, System.currentTimeMillis(), ip);
-			wikiHistoryArabic.setIndex(new Index());
-			wikiHistoryArabic.getIndex().setIndexWriter(indexWriter);
+			wikiHistoryArabic.setIndexWriter(indexWriter);
 			indexableFilesystemHandler.handle(wikiHistoryArabic, wikiHistoryDataArabic);
 
 			Thread.sleep(10000);

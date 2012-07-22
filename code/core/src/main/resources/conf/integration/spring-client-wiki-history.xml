@@ -20,7 +20,7 @@
 		class="ikube.model.IndexContext"
 		property:name="wikiHistoryOne"
 		property:maxAge="600000"
-		property:compoundFile="false"
+		property:compoundFile="${wiki.history.compound.file}"
 		property:bufferedDocs="${buffered.docs}"
 		property:bufferSize="${buffer.size}"
 		property:batchSize="${jdbc.batch.size}"
@@ -29,8 +29,8 @@
 		property:maxFieldLength="${max.field.length}"
 		property:maxReadLength="${max.read.length}"
 		property:throttle="0"
-		property:indexDirectoryPath="/media/nas/xfs-one/index"
-		property:indexDirectoryPathBackup="/media/nas/xfs-one/index"
+		property:indexDirectoryPath="/home/michael/Backup/wiki/history/1/index"
+		property:indexDirectoryPathBackup="/home/michael/Backup/wiki/history/1/index"
 		property:children-ref="wikiHistoryIndexablesOne" />
 	<util:list id="wikiHistoryIndexablesOne">
 		<ref local="wikiHistoryDataOne" />
@@ -39,7 +39,7 @@
 		id="wikiHistoryDataOne"
 		class="ikube.model.IndexableFileSystemWiki"
 		property:name="wikiHistoryDataOne"
-		property:path="/media/nas/xfs-one"
+		property:path="/home/michael/Backup/wiki/history/1"
 		property:pathFieldName="path"
 		property:nameFieldName="name"
 		property:lengthFieldName="length"
@@ -51,14 +51,15 @@
 		property:unpackZips="${wiki.history.unpack.zips}"
 		property:excludedPattern="${files.excluded.pattern}"
 		property:batchSize="${file.batch.size}"
-		property:maxReadLength="${file.max.read.length}" />
+		property:maxReadLength="${file.max.read.length}" 
+		property:maxRevisions="${max.revisions}" />
 	
 	<bean
 		id="wikiHistoryTwo"
 		class="ikube.model.IndexContext"
 		property:name="wikiHistoryTwo"
 		property:maxAge="600000"
-		property:compoundFile="false"
+		property:compoundFile="${wiki.history.compound.file}"
 		property:bufferedDocs="${buffered.docs}"
 		property:bufferSize="${buffer.size}"
 		property:batchSize="${jdbc.batch.size}"
@@ -89,14 +90,15 @@
 		property:unpackZips="${wiki.history.unpack.zips}"
 		property:excludedPattern="${files.excluded.pattern}"
 		property:batchSize="${file.batch.size}"
-		property:maxReadLength="${file.max.read.length}" />
+		property:maxReadLength="${file.max.read.length}" 
+		property:maxRevisions="${max.revisions}" />
 
 	<bean
 		id="wikiHistoryThree"
 		class="ikube.model.IndexContext"
 		property:name="wikiHistoryThree"
 		property:maxAge="600000"
-		property:compoundFile="false"
+		property:compoundFile="${wiki.history.compound.file}"
 		property:bufferedDocs="${buffered.docs}"
 		property:bufferSize="${buffer.size}"
 		property:batchSize="${jdbc.batch.size}"
@@ -127,14 +129,15 @@
 		property:unpackZips="${wiki.history.unpack.zips}"
 		property:excludedPattern="${files.excluded.pattern}"
 		property:batchSize="${file.batch.size}"
-		property:maxReadLength="${file.max.read.length}" />
+		property:maxReadLength="${file.max.read.length}" 
+		property:maxRevisions="${max.revisions}" />
 
 	<bean
 		id="wikiHistoryFour"
 		class="ikube.model.IndexContext"
 		property:name="wikiHistoryFour"
 		property:maxAge="600000"
-		property:compoundFile="false"
+		property:compoundFile="${wiki.history.compound.file}"
 		property:bufferedDocs="${buffered.docs}"
 		property:bufferSize="${buffer.size}"
 		property:batchSize="${jdbc.batch.size}"
@@ -165,14 +168,15 @@
 		property:unpackZips="${wiki.history.unpack.zips}"
 		property:excludedPattern="${files.excluded.pattern}"
 		property:batchSize="${file.batch.size}"
-		property:maxReadLength="${file.max.read.length}" />
+		property:maxReadLength="${file.max.read.length}" 
+		property:maxRevisions="${max.revisions}" />
 
 	<bean
 		id="wikiHistoryFive"
 		class="ikube.model.IndexContext"
 		property:name="wikiHistoryFive"
 		property:maxAge="600000"
-		property:compoundFile="false"
+		property:compoundFile="${wiki.history.compound.file}"
 		property:bufferedDocs="${buffered.docs}"
 		property:bufferSize="${buffer.size}"
 		property:batchSize="${jdbc.batch.size}"
@@ -203,6 +207,7 @@
 		property:unpackZips="${wiki.history.unpack.zips}"
 		property:excludedPattern="${files.excluded.pattern}"
 		property:batchSize="${file.batch.size}"
-		property:maxReadLength="${file.max.read.length}" />
+		property:maxReadLength="${file.max.read.length}" 
+		property:maxRevisions="${max.revisions}" />
 
 </beans>

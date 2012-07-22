@@ -112,8 +112,10 @@ class IndexableFilesystemHandlerWorker implements Runnable {
 			// This means that the scheduler has been forcefully destroyed
 			throw e;
 		} catch (Exception e) {
-			logger.error("Exception occured while trying to index the file " + file.getAbsolutePath(), e);
-			// TODO Add a maximum exceptions before exiting this indexable
+			logger.error("Exception occured while trying to index the file " + file.getAbsolutePath());
+			if (logger.isDebugEnabled()) {
+				logger.debug(null, e);
+			}
 		} finally {
 			FileUtilities.close(inputStream);
 		}
@@ -132,7 +134,6 @@ class IndexableFilesystemHandlerWorker implements Runnable {
 
 			IParser parser = ParserProvider.getParser(file.getName(), byteBuffer);
 			String parsedContent = parser.parse(byteInputStream, byteOutputStream).toString();
-			// logger.info("Parsed content : " + parsedContent);
 
 			Store store = indexableFileSystem.isStored() ? Store.YES : Store.NO;
 			Index analyzed = indexableFileSystem.isAnalyzed() ? Index.ANALYZED : Index.NOT_ANALYZED;
@@ -188,7 +189,6 @@ class IndexableFilesystemHandlerWorker implements Runnable {
 	protected void handleFile(final File file) throws Exception {
 		FileReader fileReader = null;
 		try {
-			// logger.info("Reading file : " + file + ", directory : " + file.isDirectory());
 			if (file.isDirectory()) {
 				for (File innerFile : file.listFiles()) {
 					handleFile(innerFile);

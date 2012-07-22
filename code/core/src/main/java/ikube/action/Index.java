@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
 
+import org.apache.lucene.index.IndexWriter;
+
 /**
  * This class executes the handlers on the indexables, effectively creating the index. Each indexable has a handler that is implemented to
  * handle it. Each handler will return a list of threads that will do the indexing. The caller(in this case, this class) must then wait for
@@ -39,7 +41,8 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 			if (indexables != null) {
 				long startTime = System.currentTimeMillis();
 				// Start the indexing for this server
-				IndexManager.openIndexWriter(indexContext, startTime, server.getAddress());
+				IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, startTime, server.getAddress());
+				indexContext.setIndexWriter(indexWriter);
 				Iterator<Indexable<?>> iterator = indexables.iterator();
 				while (iterator.hasNext()) {
 					Indexable<?> indexable = iterator.next();
@@ -67,6 +70,7 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 						// index is still being optimised
 						if (!iterator.hasNext()) {
 							IndexManager.closeIndexWriter(indexContext);
+							indexContext.setIndexWriter(null);
 						}
 					}
 				}
@@ -75,6 +79,7 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 		} finally {
 			// We'll try to close the writer, even though it should already be closed
 			IndexManager.closeIndexWriter(indexContext);
+			indexContext.setIndexWriter(null);
 			// indexContext.setAction(null);
 			for (ikube.model.Action action : actions) {
 				stop(action);
