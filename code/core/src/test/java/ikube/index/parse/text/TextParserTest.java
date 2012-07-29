@@ -5,13 +5,13 @@ import static org.junit.Assert.assertTrue;
 import ikube.ATest;
 import ikube.toolkit.FileUtilities;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import org.apache.kahadb.util.ByteArrayInputStream;
 import org.junit.Before;
 import org.junit.Test;
 

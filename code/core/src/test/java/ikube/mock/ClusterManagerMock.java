@@ -1,7 +1,7 @@
 package ikube.mock;
 
 import static org.mockito.Mockito.mock;
-import ikube.cluster.jms.ClusterManagerJms;
+import ikube.cluster.hzc.ClusterManagerHazelcast;
 import ikube.model.Action;
 import ikube.model.Server;
 import mockit.Mock;
@@ -14,7 +14,7 @@ import org.mockito.Mockito;
  * @since 29.04.11
  * @version 01.00
  */
-@MockClass(realClass = ClusterManagerJms.class)
+@MockClass(realClass = ClusterManagerHazelcast.class)
 public class ClusterManagerMock {
 
 	@Mock()
@@ -23,13 +23,11 @@ public class ClusterManagerMock {
 	}
 
 	@Mock()
-	@SuppressWarnings("unused")
 	public synchronized Action startWorking(final String actionName, final String indexName, final String indexableName) {
 		return Mockito.mock(Action.class);
 	}
 
 	@Mock()
-	@SuppressWarnings("unused")
 	public boolean lock(String name) {
 		return Boolean.TRUE;
 	}

@@ -19,7 +19,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td colspan="10">
+		<td colspan="11">
 			<span style="float: right;">
 				<jsp:include page="/WEB-INF/jsp/admin/refresh.jsp" flush="true" />
 			</span>

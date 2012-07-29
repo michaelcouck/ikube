@@ -29,8 +29,8 @@
 		property:maxFieldLength="${max.field.length}"
 		property:maxReadLength="${max.read.length}"
 		property:throttle="0"
-		property:indexDirectoryPath="/home/michael/Backup/wiki/history/1/index"
-		property:indexDirectoryPathBackup="/home/michael/Backup/wiki/history/1/index"
+		property:indexDirectoryPath="/media/nas/xfs-one/index"
+		property:indexDirectoryPathBackup="/media/nas/xfs-one/index"
 		property:children-ref="wikiHistoryIndexablesOne" />
 	<util:list id="wikiHistoryIndexablesOne">
 		<ref local="wikiHistoryDataOne" />
@@ -39,7 +39,7 @@
 		id="wikiHistoryDataOne"
 		class="ikube.model.IndexableFileSystemWiki"
 		property:name="wikiHistoryDataOne"
-		property:path="/home/michael/Backup/wiki/history/1"
+		property:path="/media/nas/xfs-one"
 		property:pathFieldName="path"
 		property:nameFieldName="name"
 		property:lengthFieldName="length"

@@ -3,6 +3,7 @@ package ikube.search;
 import ikube.IConstants;
 import ikube.search.spelling.SpellingChecker;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
@@ -15,7 +16,6 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.kahadb.util.ByteArrayOutputStream;
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.document.Document;

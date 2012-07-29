@@ -49,11 +49,6 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 					try {
 						// Get the right handler for this indexable
 						IHandler<Indexable<?>> handler = getHandler(indexable);
-						if (handler == null) {
-							String message = Logging.getString("Not handling indexable : ", indexable.getName(), " no handler defined.");
-							logger.warn(message);
-							continue;
-						}
 						ikube.model.Action action = start(indexContext.getIndexName(), indexable.getName());
 						actions.add(action);
 						// indexContext.setAction(action);
