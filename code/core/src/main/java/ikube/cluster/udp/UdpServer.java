@@ -4,6 +4,7 @@ import ikube.toolkit.ThreadUtilities;
 
 import java.io.BufferedReader;
 import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 
@@ -15,8 +16,8 @@ public class UdpServer extends Base implements Runnable {
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	protected boolean active = true;
-	// protected DatagramSocket datagramSocket = null;
-	protected MulticastSocket multicastSocket;
+	protected DatagramSocket multicastSocket = null;
+	// protected MulticastSocket multicastSocket;
 	protected BufferedReader bufferedReader = null;
 
 	public static void main(String[] args) {
@@ -31,8 +32,8 @@ public class UdpServer extends Base implements Runnable {
 
 	public void run() {
 		try {
-			// datagramSocket = new DatagramSocket(port);
-			multicastSocket = new MulticastSocket(port);
+			multicastSocket = new DatagramSocket(port);
+			// multicastSocket = new MulticastSocket(port);
 			while (active) {
 				byte[] buf = "Michael Couck".getBytes();
 				DatagramPacket packet = new DatagramPacket(buf, buf.length, InetAddress.getByName("230.0.0.1"), port);
@@ -43,7 +44,6 @@ public class UdpServer extends Base implements Runnable {
 		} catch (Exception e) {
 			logger.error(null, e);
 		} finally {
-			// datagramSocket.close();
 			multicastSocket.close();
 		}
 	}

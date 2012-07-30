@@ -25,14 +25,21 @@ public class UdpClient extends Base implements Runnable {
 			multicastSocket.joinGroup(inetAddressGroup);
 		} catch (Exception e) {
 			logger.error(null, e);
+			return;
 		}
 		DatagramPacket packet;
 		try {
-			byte[] buf = new byte[256];
-			packet = new DatagramPacket(buf, buf.length);
-			multicastSocket.receive(packet);
-			String received = new String(packet.getData());
-			logger.info("Recieved : " + received);
+			while (true) {
+				try {
+					byte[] buf = new byte[256];
+					packet = new DatagramPacket(buf, buf.length);
+					multicastSocket.receive(packet);
+					String received = new String(packet.getData());
+					logger.info("Recieved : " + received);
+				} catch (Exception e) {
+					logger.error(null, e);
+				}
+			}
 		} catch (Exception e) {
 			logger.error(null, e);
 		} finally {

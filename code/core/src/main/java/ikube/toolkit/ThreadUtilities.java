@@ -45,7 +45,9 @@ public final class ThreadUtilities {
 	 * This method initializes the executer service, and the thread pool that will execute runnables.
 	 */
 	public static void initialize() {
-		ThreadUtilities.destroy();
+		if (EXECUTER_SERVICE != null) {
+			return;
+		}
 		EXECUTER_SERVICE = Executors.newFixedThreadPool(IConstants.THREAD_POOL_SIZE);
 	}
 
@@ -60,6 +62,7 @@ public final class ThreadUtilities {
 		}
 		EXECUTER_SERVICE.shutdown();
 		List<Runnable> runnables = EXECUTER_SERVICE.shutdownNow();
+		EXECUTER_SERVICE = null;
 		LOGGER.info("Shutdown runnables : " + runnables);
 	}
 

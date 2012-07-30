@@ -26,10 +26,10 @@
 
 	<target name="deploy">
 		<!-- Deploy to the server -->
-		<scp file="${target.directory}/${ikube.war}" todir="michael:caherline@ikube.be:/usr/share/apache-tomcat-7.0.27/webapps" trust="true" failonerror="false" />
+		<scp file="${target.directory}/${ikube.war}" todir="michael:caherline@192.168.1.4:/usr/share/apache-tomcat-7.0.27/webapps" trust="true" failonerror="false" />
 		<scp file="${target.directory}/${ikube.war}" todir="michael:caherline@192.168.1.6:/usr/share/apache-tomcat-7.0.27/webapps" trust="true" failonerror="false" />
 		<scp file="${target.directory}/${ikube.war}" todir="michael:caherline@192.168.1.7:/usr/share/apache-tomcat-7.0.27/webapps" trust="true" failonerror="false" />
-		<scp file="${target.directory}/${ikube.war}" todir="michael:caherline@192.168.1.14:/usr/share/apache-tomcat-7.0.27/webapps" trust="true" failonerror="false" />
+		<scp file="${target.directory}/${ikube.war}" todir="michael:caherline@192.168.1.8:/usr/share/apache-tomcat-7.0.27/webapps" trust="true" failonerror="false" />
 	</target>
 
 	<target name="clean.server">
@@ -72,7 +72,7 @@
 		<echo>User home: ${user.home}</echo>
 		<copy file="${configuration.directory}/${ikube.configuration.jar}" todir="./src/main/webapp/docs" failonerror="true" />
 		<!-- Deploy configuration on server -->
-		<scp todir="michael:caherline@ikube.be:/usr/share/apache-tomcat-7.0.27/bin/ikube" trust="true" failonerror="false">
+		<scp todir="michael:caherline@192.168.1.4:/usr/share/apache-tomcat-7.0.27/bin/ikube" trust="true" failonerror="false">
 			<fileset dir="${configuration.directory}/ikube" />
 		</scp>
 		<scp todir="michael:caherline@192.168.1.6:/usr/share/apache-tomcat-7.0.27/bin/ikube" trust="true" failonerror="false">
@@ -81,7 +81,7 @@
 		<scp todir="michael:caherline@192.168.1.7:/usr/share/apache-tomcat-7.0.27/bin/ikube" trust="true" failonerror="false">
 			<fileset dir="${configuration.directory}/ikube" />
 		</scp>
-		<scp todir="michael:caherline@192.168.1.14:/usr/share/apache-tomcat-7.0.27/bin/ikube" trust="true" failonerror="false">
+		<scp todir="michael:caherline@192.168.1.8:/usr/share/apache-tomcat-7.0.27/bin/ikube" trust="true" failonerror="false">
 			<fileset dir="${configuration.directory}/ikube" />
 		</scp>
 	</target>

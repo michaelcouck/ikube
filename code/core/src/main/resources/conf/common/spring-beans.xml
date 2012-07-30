@@ -342,8 +342,9 @@
 		property:threads="${filesystem.handler.threads}"
 		property:indexableClass="ikube.model.IndexableFileSystemWiki" />
 		
-	<bean
-		id="ikube.cluster.udp.UdpClient"
-		class="ikube.cluster.udp.UdpClient" />
+	<!-- <bean
+		id="ikube.cluster.udp.UdpBroadcaster"
+		class="ikube.cluster.udp.UdpBroadcaster"
+		init-method="initialize" /> -->
 		
 </beans>
