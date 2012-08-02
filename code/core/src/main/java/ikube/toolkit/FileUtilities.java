@@ -508,18 +508,14 @@ public final class FileUtilities {
 			if (!dest.exists()) { // does the destination already exist?
 				// if not we need to make it exist if possible (note this is
 				// mkdirs not mkdir)
-				if (!dest.mkdirs()) {
-					LOGGER.warn("Could not create the new destination directory : " + dest);
-				} else {
-					LOGGER.info("Created directory : " + dest);
-				}
+				dest = FileUtilities.getFile(dest.getAbsolutePath(), Boolean.TRUE);
 			}
 			// get a listing of files...
 			String children[] = src.list();
 			// copy all the files in the list.
 			for (int i = 0; i < children.length; i++) {
 				File childSrc = new File(src, children[i]);
-				File childDest = new File(dest, children[i]);
+				File childDest = FileUtilities.getFile(new File(dest, children[i]).getAbsolutePath(), Boolean.TRUE);
 				copyFiles(childSrc, childDest, patterns);
 			}
 		} else {
@@ -534,16 +530,10 @@ public final class FileUtilities {
 			return;
 		}
 		if (!out.getParentFile().exists()) {
-			if (!out.getParentFile().mkdirs()) {
-				LOGGER.info("Didn't create parent directories : " + out.getParentFile().getAbsolutePath());
-			}
+			FileUtilities.getFile(out.getParentFile().getAbsolutePath(), Boolean.TRUE);
 		}
 		if (!out.exists()) {
-			try {
-				out.createNewFile();
-			} catch (IOException e) {
-				LOGGER.error("Exception creating new file : " + out.getAbsolutePath(), e);
-			}
+			FileUtilities.getFile(out.getAbsolutePath(), Boolean.FALSE);
 		}
 		LOGGER.debug("Copying file : " + in + ", to : " + out);
 		FileChannel inChannel = null;
