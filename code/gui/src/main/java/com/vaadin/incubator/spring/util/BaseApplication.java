@@ -31,7 +31,7 @@ public abstract class BaseApplication extends Application implements HttpServlet
 		if (logger.isTraceEnabled()) {
 			logger.trace("onRequestStart()");
 		}
-		ApplicationHolder.setApplication(this);
+		// ApplicationHolder.setApplication(this);
 		requestStart(request, response);
 	}
 
@@ -42,7 +42,7 @@ public abstract class BaseApplication extends Application implements HttpServlet
 		try {
 			requestEnd(request, response);
 		} finally {
-			ApplicationHolder.resetApplication();
+			// ApplicationHolder.resetApplication();
 		}
 	}
 

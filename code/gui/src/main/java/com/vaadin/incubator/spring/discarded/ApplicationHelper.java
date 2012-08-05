@@ -1,4 +1,4 @@
-package com.vaadin.incubator.spring.util;
+package com.vaadin.incubator.spring.discarded;
 
 import java.util.Locale;
 
@@ -51,18 +51,20 @@ public class ApplicationHelper {
 	}
 	
 	public static String getMessage(String key) {
-		return getVaadinApplicationObjectSupport().getMessage(key);
+		// return getVaadinApplicationObjectSupport().getMessage(key);
+		return null;
 	}
 	
 	public static String getMessage(String key, String... args) {
-		return getVaadinApplicationObjectSupport().getMessage(key, args);
-	}
-
-	public static VaadinApplicationObjectSupport getVaadinApplicationObjectSupport() {
-		String names[] = getApplicationContext().getBeanNamesForType(VaadinApplicationObjectSupport.class);
-		if(names != null && names.length == 1) {
-			return (VaadinApplicationObjectSupport) getApplicationContext().getBean(names[0]);
-		}
+		// return getVaadinApplicationObjectSupport().getMessage(key, args);
 		return null;
 	}
+
+//	public static ApplicationObjectSupport getVaadinApplicationObjectSupport() {
+//		String names[] = getApplicationContext().getBeanNamesForType(ApplicationObjectSupport.class);
+//		if(names != null && names.length == 1) {
+//			return (ApplicationObjectSupport) getApplicationContext().getBean(names[0]);
+//		}
+//		return null;
+//	}
 }

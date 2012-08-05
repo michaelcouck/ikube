@@ -1,4 +1,4 @@
-package com.vaadin.incubator.spring.ui;
+package com.vaadin.incubator.spring.discarded;
 
 import com.vaadin.incubator.spring.model.Foo;
 

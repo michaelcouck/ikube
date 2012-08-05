@@ -1,4 +1,4 @@
-package com.vaadin.incubator.spring.ui;
+package com.vaadin.incubator.spring.discarded;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,15 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.incubator.spring.model.Foo;
-import com.vaadin.incubator.spring.service.FooService;
-import com.vaadin.incubator.spring.util.BeanValidationForm;
-import com.vaadin.incubator.spring.util.VaadinApplicationObjectSupport;
+import com.vaadin.incubator.spring.util.ApplicationObjectSupport;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Window.Notification;
 
 @Configurable(preConstruction = true)
@@ -29,7 +27,7 @@ public class FooForm extends BeanValidationForm<Foo> implements ClickListener {
 	@Autowired
 	private transient FooService fooService;
 	@Autowired
-	private transient VaadinApplicationObjectSupport app;
+	private transient ApplicationObjectSupport app;
 
 	private List<FooModelListener> listeners = new ArrayList<FooModelListener>();
 

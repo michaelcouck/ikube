@@ -1,4 +1,4 @@
-package com.vaadin.incubator.spring.ui;
+package com.vaadin.incubator.spring.discarded;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -15,9 +15,7 @@ import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.incubator.spring.model.Foo;
-import com.vaadin.incubator.spring.service.FooService;
-import com.vaadin.incubator.spring.util.ApplicationHelper;
-import com.vaadin.incubator.spring.util.VaadinApplicationObjectSupport;
+import com.vaadin.incubator.spring.util.ApplicationObjectSupport;
 import com.vaadin.ui.Table;
 
 @Configurable(preConstruction = true)
@@ -29,7 +27,7 @@ public class FooTable extends Table implements ItemClickListener {
 	@Autowired
 	private transient FooService fooService;
 	@Autowired
-	private transient VaadinApplicationObjectSupport app;
+	private transient ApplicationObjectSupport app;
 
 	private List<FooClickListener> listeners = new ArrayList<FooClickListener>();
 

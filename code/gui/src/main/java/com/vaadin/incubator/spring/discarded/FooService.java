@@ -1,4 +1,4 @@
-package com.vaadin.incubator.spring.service;
+package com.vaadin.incubator.spring.discarded;
 
 import java.util.List;
 

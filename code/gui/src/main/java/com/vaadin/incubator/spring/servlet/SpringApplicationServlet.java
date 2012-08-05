@@ -53,22 +53,20 @@ public class SpringApplicationServlet extends AbstractApplicationServlet {
 
 	private void initLocaleResolver(ApplicationContext context) {
 		try {
-			this.localeResolver = (LocaleResolver) context.getBean(DispatcherServlet.LOCALE_RESOLVER_BEAN_NAME,
-					LocaleResolver.class);
+			this.localeResolver = (LocaleResolver) context.getBean(DispatcherServlet.LOCALE_RESOLVER_BEAN_NAME, LocaleResolver.class);
 			if (logger.isDebugEnabled()) {
 				logger.debug("Using LocaleResolver [" + this.localeResolver + "]");
 			}
 		} catch (NoSuchBeanDefinitionException ex) {
 			this.localeResolver = new SessionLocaleResolver();
 			if (logger.isDebugEnabled()) {
-				logger.debug("Unable to locate LocaleResolver with name '"
-						+ DispatcherServlet.LOCALE_RESOLVER_BEAN_NAME + "' using default [" + localeResolver + "]");
+				logger.debug("Unable to locate LocaleResolver with name '" + DispatcherServlet.LOCALE_RESOLVER_BEAN_NAME
+						+ "' using default [" + localeResolver + "]");
 			}
 		}
 	}
 
-	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException,
-			IOException {
+	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		final Locale locale = localeResolver.resolveLocale(request);
 		LocaleContextHolder.setLocale(locale);
 		ServletRequestAttributes requestAttributes = new ServletRequestAttributes(request);
@@ -81,8 +79,8 @@ public class SpringApplicationServlet extends AbstractApplicationServlet {
 				}
 			}, response);
 		} finally {
-			if(!locale.equals(LocaleContextHolder.getLocale())) {
-				if(logger.isDebugEnabled()) {
+			if (!locale.equals(LocaleContextHolder.getLocale())) {
+				if (logger.isDebugEnabled()) {
 					logger.debug("locale changed, updating locale resolver");
 				}
 				localeResolver.setLocale(request, response, LocaleContextHolder.getLocale());

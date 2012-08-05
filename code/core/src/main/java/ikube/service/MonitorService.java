@@ -15,13 +15,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import javax.ejb.Remote;
-import javax.jws.WebMethod;
-import javax.jws.WebParam;
-import javax.jws.WebResult;
-import javax.jws.WebService;
-import javax.jws.soap.SOAPBinding;
-
 import org.apache.commons.lang.reflect.FieldUtils;
 import org.apache.log4j.Logger;
 import org.apache.lucene.index.IndexReader;
@@ -35,9 +28,6 @@ import org.apache.lucene.store.FSDirectory;
  * @since 28.12.10
  * @version 01.00
  */
-@Remote(IMonitorService.class)
-@SOAPBinding(style = SOAPBinding.Style.DOCUMENT)
-@WebService(name = IMonitorService.NAME, targetNamespace = IMonitorService.NAMESPACE, serviceName = IMonitorService.SERVICE)
 public class MonitorService implements IMonitorService {
 
 	private static final Logger LOGGER = Logger.getLogger(MonitorService.class);
@@ -46,8 +36,6 @@ public class MonitorService implements IMonitorService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	@WebMethod
-	@WebResult(name = "indexNames")
 	public String[] getIndexNames() {
 		@SuppressWarnings("rawtypes")
 		Map<String, IndexContext> indexContexts = ApplicationContextManager.getBeans(IndexContext.class);
@@ -62,9 +50,7 @@ public class MonitorService implements IMonitorService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	@WebMethod
-	@WebResult(name = "indexableNames")
-	public String[] getIndexableNames(@WebParam(name = "indexName") final String indexName) {
+	public String[] getIndexableNames(final String indexName) {
 		IndexContext<?> indexContext = getIndexContext(indexName);
 		List<Indexable<?>> indexables = indexContext.getIndexables();
 		String[] indexableNames = new String[indexables.size()];
@@ -79,8 +65,6 @@ public class MonitorService implements IMonitorService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	@WebMethod
-	@WebResult(name = "indexContextNames")
 	public String[] getIndexContextNames() {
 		@SuppressWarnings("rawtypes")
 		Map<String, IndexContext> indexContexts = ApplicationContextManager.getBeans(IndexContext.class);
@@ -91,9 +75,7 @@ public class MonitorService implements IMonitorService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	@WebMethod
-	@WebResult(name = "indexFieldNames")
-	public String[] getIndexFieldNames(@WebParam(name = "indexName") final String indexName) {
+	public String[] getIndexFieldNames(final String indexName) {
 		IndexContext<?> indexContext = getIndexContext(indexName);
 		if (indexContext != null) {
 			Set<String> fieldNames = getFields(indexContext.getIndexables(), new TreeSet<String>());
@@ -106,10 +88,8 @@ public class MonitorService implements IMonitorService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	@WebMethod
-	@WebResult(name = "indexableFieldNames")
 	@SuppressWarnings("rawtypes")
-	public String[] getIndexableFieldNames(@WebParam(name = "indexableName") final String indexableName) {
+	public String[] getIndexableFieldNames(final String indexableName) {
 		Map<String, Indexable> indexables = ApplicationContextManager.getBeans(Indexable.class);
 		Indexable<?> indexable = null;
 		for (Indexable ind : indexables.values()) {
@@ -126,9 +106,7 @@ public class MonitorService implements IMonitorService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	@WebMethod
-	@WebResult(name = "indexSize")
-	public long getIndexSize(@WebParam(name = "indexName") final String indexName) {
+	public long getIndexSize(final String indexName) {
 		long length = 0;
 		try {
 			IndexContext<?> indexContext = getIndexContext(indexName);
@@ -163,9 +141,7 @@ public class MonitorService implements IMonitorService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	@WebMethod
-	@WebResult(name = "indexDocuments")
-	public int getIndexDocuments(@WebParam(name = "indexName") final String indexName) {
+	public int getIndexDocuments(final String indexName) {
 		int numDocs = 0;
 		Directory directory = null;
 		IndexReader indexReader = null;
@@ -201,10 +177,16 @@ public class MonitorService implements IMonitorService {
 		return numDocs;
 	}
 
+	@SuppressWarnings("rawtypes")
+	public Map<String, IndexContext> getIndexContexts() {
+		return ApplicationContextManager.getBeans(IndexContext.class);
+	}
+
 	/**
 	 * Accesses the index context by the name.
 	 * 
-	 * @param indexName the name of the context we are looking for
+	 * @param indexName
+	 *            the name of the context we are looking for
 	 * @return the index context with the name or null if not found
 	 */
 	protected IndexContext<?> getIndexContext(String indexName) {
@@ -223,7 +205,8 @@ public class MonitorService implements IMonitorService {
 	/**
 	 * Closes the index reader after we have counted the document in it.
 	 * 
-	 * @param indexReader the reader to close
+	 * @param indexReader
+	 *            the reader to close
 	 */
 	protected void closeIndexReader(IndexReader indexReader) {
 		if (indexReader == null) {
@@ -247,8 +230,10 @@ public class MonitorService implements IMonitorService {
 	/**
 	 * Gets all the fields for the indexable. Fields are defined by adding the {@link ikube.model.Field} annotation to the field.
 	 * 
-	 * @param indexables the indexables to look through and get the fields
-	 * @param fieldNames set of field names to collect the fields in
+	 * @param indexables
+	 *            the indexables to look through and get the fields
+	 * @param fieldNames
+	 *            set of field names to collect the fields in
 	 * @return the set of field names from the indexable, and child indexables if there are any
 	 */
 	protected Set<String> getFields(final List<Indexable<?>> indexables, final Set<String> fieldNames) {

@@ -1,4 +1,4 @@
-package com.vaadin.incubator.spring.util;
+package com.vaadin.incubator.spring.discarded;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;

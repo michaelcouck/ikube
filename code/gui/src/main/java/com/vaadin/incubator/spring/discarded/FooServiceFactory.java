@@ -1,9 +1,9 @@
-package com.vaadin.incubator.spring.service;
+package com.vaadin.incubator.spring.discarded;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.vaadin.incubator.spring.util.VaadinApplicationObjectSupport;
+import com.vaadin.incubator.spring.util.ApplicationObjectSupport;
 /*
  * This class is not used at all but it could be used instead of autowiring these
  * to Vaadin UI objects. It makes serialization easier at least. 
@@ -14,7 +14,7 @@ public class FooServiceFactory {
 	@Autowired
 	private FooService service;
 	@Autowired
-	private VaadinApplicationObjectSupport app;
+	private ApplicationObjectSupport app;
 
 	
 	private static FooServiceFactory instance = new FooServiceFactory();
@@ -26,7 +26,7 @@ public class FooServiceFactory {
 		return service; 
 	}
 	
-	public VaadinApplicationObjectSupport getApp() {
+	public ApplicationObjectSupport getApp() {
 		return app;
 	}
 	

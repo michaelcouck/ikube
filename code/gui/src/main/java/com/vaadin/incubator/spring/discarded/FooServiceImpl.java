@@ -1,4 +1,4 @@
-package com.vaadin.incubator.spring.service;
+package com.vaadin.incubator.spring.discarded;
 
 import java.util.List;
 
@@ -19,7 +19,7 @@ import com.vaadin.incubator.spring.model.Foo;
 public class FooServiceImpl implements FooService {
 	
 	private final static Log logger = LogFactory.getLog(FooServiceImpl.class);
-	@PersistenceContext
+	// @PersistenceContext
 	private EntityManager em;
 
 	@Secured("ROLE_ADMIN")
