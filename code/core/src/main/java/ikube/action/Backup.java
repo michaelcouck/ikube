@@ -7,6 +7,8 @@ import ikube.toolkit.FileUtilities;
 
 import java.io.File;
 
+import org.apache.commons.io.FileUtils;
+
 /**
  * This class backs up the index to a place on the network in the case where the index becomes corrupted.
  * 
@@ -40,8 +42,8 @@ public class Backup extends Action<IndexContext<?>, Boolean> {
 				File latestIndexDirectoryBackup = FileUtilities.getFile(latestIndexDirectoryBackupPath, Boolean.TRUE);
 				logger.info("Backing up index from : " + latestIndexDirectory + ", to : " + latestIndexDirectoryBackup);
 				// Copy the index to the designated place on the network
-				// FileUtils.copyDirectoryToDirectory(latestIndexDirectory, latestIndexDirectoryBackup);
-				FileUtilities.copyFiles(latestIndexDirectory, latestIndexDirectoryBackup);
+				// FileUtilities.copyFiles(latestIndexDirectory, latestIndexDirectoryBackup);
+				FileUtils.copyDirectory(latestIndexDirectory, latestIndexDirectoryBackup);
 				logger.info("Backed up index from : " + latestIndexDirectory + ", to : " + latestIndexDirectoryBackup);
 			} catch (Exception e) {
 				logger.error("Exception backing up indexes : ", e);

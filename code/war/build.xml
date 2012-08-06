@@ -45,6 +45,14 @@
 			</fileset>
 		</delete>
 	</target>
+	
+	<target name="clean-cluster-servers">
+		<sshexec host="somehost"
+  			username="dude"
+  			password="yo"
+  			command="touch somefile"/>
+	</target>
+	
 	<!-- 
 		This target will copy the common, the production and the profile configuration to the 
 		specified output directory. The profile must be the name of the configuration directory 

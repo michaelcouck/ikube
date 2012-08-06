@@ -203,8 +203,8 @@ public class ClusterManagerHazelcastTest {
 	public void threaded() {
 		Hazelcast.getLock(IConstants.IKUBE).forceUnlock();
 		ThreadUtilities.initialize();
-		int threads = 10;
-		final int iterations = 10000;
+		int threads = 3;
+		final int iterations = 100;
 		final double sleep = 1;
 		final Boolean[] locks = new Boolean[threads];
 		List<Future<?>> futures = new ArrayList<Future<?>>();

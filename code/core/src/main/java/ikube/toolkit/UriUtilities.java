@@ -276,6 +276,8 @@ public final class UriUtilities {
 				if (ipPattern.matcher(hostAddress).matches()) {
 					ip = hostAddress;
 					LOGGER.info("Ip address : " + ip);
+					// Thread.dumpStack();
+					// ThreadUtilities.sleep(10000);
 					break outer;
 				}
 			}

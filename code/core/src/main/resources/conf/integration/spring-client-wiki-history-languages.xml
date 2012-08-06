@@ -29,8 +29,8 @@
 		property:maxFieldLength="${history.max.field.length}"
 		property:maxReadLength="${history.max.read.length}"
 		property:throttle="0"
-		property:indexDirectoryPath="/media/nas/xfs/wiki-history-languages/arwiki-latest-pages-meta-history.xml/index"
-		property:indexDirectoryPathBackup="/media/nas/xfs/wiki-history-languages/arwiki-latest-pages-meta-history.xml/index"
+		property:indexDirectoryPath="/media/nas/xfs-one/languages/arwiki/index"
+		property:indexDirectoryPathBackup="/media/nas/xfs-one/languages/arwiki/index"
 		property:children-ref="wikiHistoryIndexablesArabic" />
 	<util:list id="wikiHistoryIndexablesArabic">
 		<ref local="wikiHistoryDataArabic" />
@@ -39,7 +39,7 @@
 		id="wikiHistoryDataArabic"
 		class="ikube.model.IndexableFileSystemWiki"
 		property:name="wikiHistoryDataArabic"
-		property:path="/media/nas/xfs/wiki-history-languages/arwiki-latest-pages-meta-history.xml"
+		property:path="/media/nas/xfs-one/languages/arwiki"
 		property:pathFieldName="path"
 		property:nameFieldName="name"
 		property:lengthFieldName="length"
@@ -68,8 +68,8 @@
 		property:maxFieldLength="${history.max.field.length}"
 		property:maxReadLength="${history.max.read.length}"
 		property:throttle="0"
-		property:indexDirectoryPath="/media/nas/xfs/wiki-history-languages/nlwiki-latest-pages-meta-history.xml/index"
-		property:indexDirectoryPathBackup="/media/nas/xfs/wiki-history-languages/nlwiki-latest-pages-meta-history.xml/index"
+		property:indexDirectoryPath="/media/nas/xfs-one/languages/nlwiki/index"
+		property:indexDirectoryPathBackup="/media/nas/xfs-one/languages/nlwiki/index"
 		property:children-ref="wikiHistoryIndexablesDutch" />
 	<util:list id="wikiHistoryIndexablesDutch">
 		<ref local="wikiHistoryDataDutch" />
@@ -78,7 +78,7 @@
 		id="wikiHistoryDataDutch"
 		class="ikube.model.IndexableFileSystemWiki"
 		property:name="wikiHistoryDataDutch"
-		property:path="/media/nas/xfs/wiki-history-languages/nlwiki-latest-pages-meta-history.xml"
+		property:path="/media/nas/xfs-one/languages/nlwiki"
 		property:pathFieldName="path"
 		property:nameFieldName="name"
 		property:lengthFieldName="length"
@@ -107,8 +107,8 @@
 		property:maxFieldLength="${history.max.field.length}"
 		property:maxReadLength="${history.max.read.length}"
 		property:throttle="0"
-		property:indexDirectoryPath="/media/nas/xfs/wiki-history-languages/frwiki-latest-pages-meta-history.xml/index"
-		property:indexDirectoryPathBackup="/media/nas/xfs/wiki-history-languages/frwiki-latest-pages-meta-history.xml/index"
+		property:indexDirectoryPath="/media/nas/xfs-two/languages/frwiki/index"
+		property:indexDirectoryPathBackup="/media/nas/xfs-two/languages/frwiki/index"
 		property:children-ref="wikiHistoryIndexablesFrench" />
 	<util:list id="wikiHistoryIndexablesFrench">
 		<ref local="wikiHistoryDataFrench" />
@@ -117,7 +117,7 @@
 		id="wikiHistoryDataFrench"
 		class="ikube.model.IndexableFileSystemWiki"
 		property:name="wikiHistoryDataFrench"
-		property:path="/media/nas/xfs/wiki-history-languages/frwiki-latest-pages-meta-history.xml"
+		property:path="/media/nas/xfs-two/languages/frwiki"
 		property:pathFieldName="path"
 		property:nameFieldName="name"
 		property:lengthFieldName="length"
@@ -146,8 +146,8 @@
 		property:maxFieldLength="${history.max.field.length}"
 		property:maxReadLength="${history.max.read.length}"
 		property:throttle="0"
-		property:indexDirectoryPath="/media/nas/xfs/wiki-history-languages/dewiki-latest-pages-meta-history.xml/index"
-		property:indexDirectoryPathBackup="/media/nas/xfs/wiki-history-languages/dewiki-latest-pages-meta-history.xml/index"
+		property:indexDirectoryPath="/media/nas/xfs-two/languages/dewiki/index"
+		property:indexDirectoryPathBackup="/media/nas/xfs-two/languages/dewiki/index"
 		property:children-ref="wikiHistoryIndexablesGerman" />
 	<util:list id="wikiHistoryIndexablesGerman">
 		<ref local="wikiHistoryDataGerman" />
@@ -156,7 +156,7 @@
 		id="wikiHistoryDataGerman"
 		class="ikube.model.IndexableFileSystemWiki"
 		property:name="wikiHistoryDataGerman"
-		property:path="/media/nas/xfs/wiki-history-languages/dewiki-latest-pages-meta-history.xml"
+		property:path="/media/nas/xfs-two/languages/dewiki"
 		property:pathFieldName="path"
 		property:nameFieldName="name"
 		property:lengthFieldName="length"
@@ -185,8 +185,8 @@
 		property:maxFieldLength="${history.max.field.length}"
 		property:maxReadLength="${history.max.read.length}"
 		property:throttle="0"
-		property:indexDirectoryPath="/media/nas/xfs/wiki-history-languages/plwiki-latest-pages-meta-history.xml/index"
-		property:indexDirectoryPathBackup="/media/nas/xfs/wiki-history-languages/plwiki-latest-pages-meta-history.xml/index"
+		property:indexDirectoryPath="/media/nas/xfs-three/languages/plwiki/index"
+		property:indexDirectoryPathBackup="/media/nas/xfs-three/languages/plwiki/index"
 		property:children-ref="wikiHistoryIndexablesPolish" />
 	<util:list id="wikiHistoryIndexablesPolish">
 		<ref local="wikiHistoryDataPolish" />
@@ -195,7 +195,7 @@
 		id="wikiHistoryDataPolish"
 		class="ikube.model.IndexableFileSystemWiki"
 		property:name="wikiHistoryDataPolish"
-		property:path="/media/nas/xfs/wiki-history-languages/plwiki-latest-pages-meta-history.xml"
+		property:path="/media/nas/xfs-three/languages/plwiki"
 		property:pathFieldName="path"
 		property:nameFieldName="name"
 		property:lengthFieldName="length"
@@ -224,8 +224,8 @@
 		property:maxFieldLength="${history.max.field.length}"
 		property:maxReadLength="${history.max.read.length}"
 		property:throttle="0"
-		property:indexDirectoryPath="/media/nas/xfs/wiki-history-languages/ptwiki-latest-pages-meta-history.xml/index"
-		property:indexDirectoryPathBackup="/media/nas/xfs/wiki-history-languages/ptwiki-latest-pages-meta-history.xml/index"
+		property:indexDirectoryPath="/media/nas/xfs-three/languages/ptwiki/index"
+		property:indexDirectoryPathBackup="/media/nas/xfs-three/languages/ptwiki/index"
 		property:children-ref="wikiHistoryIndexablesPortuguese" />
 	<util:list id="wikiHistoryIndexablesPortuguese">
 		<ref local="wikiHistoryDataPortuguese" />
@@ -234,7 +234,7 @@
 		id="wikiHistoryDataPortuguese"
 		class="ikube.model.IndexableFileSystemWiki"
 		property:name="wikiHistoryDataPortuguese"
-		property:path="/media/nas/xfs/wiki-history-languages/ptwiki-latest-pages-meta-history.xml"
+		property:path="/media/nas/xfs-three/languages/ptwiki"
 		property:pathFieldName="path"
 		property:nameFieldName="name"
 		property:lengthFieldName="length"
@@ -263,8 +263,8 @@
 		property:maxFieldLength="${history.max.field.length}"
 		property:maxReadLength="${history.max.read.length}"
 		property:throttle="0"
-		property:indexDirectoryPath="/media/nas/xfs/wiki-history-languages/ruwiki-latest-pages-meta-history.xml/index"
-		property:indexDirectoryPathBackup="/media/nas/xfs/wiki-history-languages/ruwiki-latest-pages-meta-history.xml/index"
+		property:indexDirectoryPath="/media/nas/xfs-four/languages/ruwiki/index"
+		property:indexDirectoryPathBackup="/media/nas/xfs-four/languages/ruwiki/index"
 		property:children-ref="wikiHistoryIndexablesRussian" />
 	<util:list id="wikiHistoryIndexablesRussian">
 		<ref local="wikiHistoryDataRussian" />
@@ -273,7 +273,7 @@
 		id="wikiHistoryDataRussian"
 		class="ikube.model.IndexableFileSystemWiki"
 		property:name="wikiHistoryDataRussian"
-		property:path="/media/nas/xfs/wiki-history-languages/ruwiki-latest-pages-meta-history.xml"
+		property:path="/media/nas/xfs-four/languages/ruwiki"
 		property:pathFieldName="path"
 		property:nameFieldName="name"
 		property:lengthFieldName="length"
@@ -287,7 +287,46 @@
 		property:batchSize="${file.batch.size}"
 		property:maxReadLength="${file.max.read.length}"
 		property:maxRevisions="${max.revisions}" />
-		
+	
+	<bean
+		id="wikiHistoryItalian"
+		class="ikube.model.IndexContext"
+		property:name="wikiHistoryItalian"
+		property:maxAge="600000"
+		property:compoundFile="${history.compound.file}"
+		property:bufferedDocs="${history.buffered.docs}"
+		property:bufferSize="${history.buffer.size}"
+		property:batchSize="${jdbc.batch.size}"
+		property:internetBatchSize="${internet.batch.size}"
+		property:mergeFactor="${history.merge.factor}"
+		property:maxFieldLength="${history.max.field.length}"
+		property:maxReadLength="${history.max.read.length}"
+		property:throttle="0"
+		property:indexDirectoryPath="/media/nas/xfs-four/languages/itwiki/index"
+		property:indexDirectoryPathBackup="/media/nas/xfs-four/languages/itwiki/index"
+		property:children-ref="wikiHistoryIndexablesItalian" />
+	<util:list id="wikiHistoryIndexablesItalian">
+		<ref local="wikiHistoryDataItalian" />
+	</util:list>
+	<bean
+		id="wikiHistoryDataItalian"
+		class="ikube.model.IndexableFileSystemWiki"
+		property:name="wikiHistoryDataItalian"
+		property:path="/media/nas/xfs-four/languages/itwiki"
+		property:pathFieldName="path"
+		property:nameFieldName="name"
+		property:lengthFieldName="length"
+		property:contentFieldName="contents"
+		property:lastModifiedFieldName="lastmodified"
+		property:stored="${wiki.history.languages.stored}"
+		property:analyzed="${wiki.history.languages.analyzed}"
+		property:vectored="${wiki.history.languages.vectored}"
+		property:unpackZips="${wiki.history.languages.unpack.zips}"
+		property:excludedPattern="${files.excluded.pattern}"
+		property:batchSize="${file.batch.size}"
+		property:maxReadLength="${file.max.read.length}"
+		property:maxRevisions="${max.revisions}" />
+	
 	<bean
 		id="wikiHistorySpanish"
 		class="ikube.model.IndexContext"
@@ -302,8 +341,8 @@
 		property:maxFieldLength="${history.max.field.length}"
 		property:maxReadLength="${history.max.read.length}"
 		property:throttle="0"
-		property:indexDirectoryPath="/media/nas/xfs/wiki-history-languages/eswiki-latest-pages-meta-history.xml/index"
-		property:indexDirectoryPathBackup="/media/nas/xfs/wiki-history-languages/eswiki-latest-pages-meta-history.xml/index"
+		property:indexDirectoryPath="/media/nas/xfs-five/languages/eswiki/index"
+		property:indexDirectoryPathBackup="/media/nas/xfs-five/languages/eswiki/index"
 		property:children-ref="wikiHistoryIndexablesSpanish" />
 	<util:list id="wikiHistoryIndexablesSpanish">
 		<ref local="wikiHistoryDataSpanish" />
@@ -312,7 +351,7 @@
 		id="wikiHistoryDataSpanish"
 		class="ikube.model.IndexableFileSystemWiki"
 		property:name="wikiHistoryDataSpanish"
-		property:path="/media/nas/xfs/wiki-history-languages/eswiki-latest-pages-meta-history.xml"
+		property:path="/media/nas/xfs-five/languages/eswiki"
 		property:pathFieldName="path"
 		property:nameFieldName="name"
 		property:lengthFieldName="length"

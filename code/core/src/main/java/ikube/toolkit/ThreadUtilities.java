@@ -34,7 +34,7 @@ public final class ThreadUtilities {
 	 * @return the future that will be a handle to the thread running the runnable
 	 */
 	public static Future<?> submit(Runnable runnable) {
-		if (EXECUTER_SERVICE.isShutdown()) {
+		if (EXECUTER_SERVICE == null || EXECUTER_SERVICE.isShutdown()) {
 			LOGGER.debug("Executer service already shutdown : " + runnable);
 			return null;
 		}
@@ -45,7 +45,8 @@ public final class ThreadUtilities {
 	 * This method initializes the executer service, and the thread pool that will execute runnables.
 	 */
 	public static void initialize() {
-		if (EXECUTER_SERVICE != null) {
+		if (EXECUTER_SERVICE != null && !EXECUTER_SERVICE.isShutdown()) {
+			LOGGER.debug("Executer service already initialized : ");
 			return;
 		}
 		EXECUTER_SERVICE = Executors.newFixedThreadPool(IConstants.THREAD_POOL_SIZE);

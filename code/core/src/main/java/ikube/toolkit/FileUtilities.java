@@ -489,6 +489,7 @@ public final class FileUtilities {
 	 * @param src A File object that represents the source for the copy
 	 * @param dest A File object that represents the destination for the copy.
 	 */
+	@Deprecated
 	public static void copyFiles(File src, File dest, String... patterns) {
 		// Check to ensure that the source is valid...
 		if (src == null || !src.exists()) {

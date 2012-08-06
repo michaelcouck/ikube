@@ -14,6 +14,17 @@ import java.util.concurrent.Future;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * This class can be used as a test bean to see if udp is supported on a network. The class will start a client and a server that will then
+ * talk to each other over multi casted udp. If there are any other instantiations on the network then they will also be involved in the
+ * 'communication' and there will be logging between each of the instances on the machines.
+ * 
+ * If only on one machine then the client and server only talk to each other, sweet no?
+ * 
+ * @author Michael Couck
+ * @since 30.07.12
+ * @version 01.00
+ */
 public class UdpBroadcaster {
 
 	static {
