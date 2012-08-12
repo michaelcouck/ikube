@@ -245,5 +245,14 @@ public interface IDataBase {
 	 * @return the resultant collection, can be empty, based on the fields and values specified for the selection
 	 */
 	<T> List<T> findCriteria(Class<T> klass, String[] fieldsToFilterOn, Object[] valuesToFilterOn, int firstResult, int maxResults);
+	
+	/**
+	 * This method will refresh the entity from the dtabase, essentially getting the changes in the case where it was updated out side of
+	 * the transaction, i.e. in another thread.
+	 * 
+	 * @param t the entity from the database to refresh with the latest data 
+	 * @return the refreshed entity
+	 */
+	<T> T refresh(T t);
 
 }

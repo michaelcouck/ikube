@@ -151,9 +151,9 @@ public class ClusterManagerHazelcast extends AClusterManager {
 			if (!removed) {
 				logger.warn("Didn't removed action : {} {} ", new Object[] { action, server.getActions() });
 			}
-			dataBase.merge(action);
 			Map<String, Server> servers = getServers();
 			servers.put(server.getAddress(), server);
+			dataBase.merge(action);
 		} finally {
 			notifyAll();
 		}

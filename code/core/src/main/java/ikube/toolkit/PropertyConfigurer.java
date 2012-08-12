@@ -11,6 +11,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.StringTokenizer;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.regex.Pattern;
@@ -38,31 +39,34 @@ public class PropertyConfigurer extends Properties {
 	 * the application will also be checked for the properties file name pattern to load into the property map.
 	 */
 	public void initialize() {
+		LOGGER.info("User directory : " + new File(".").getAbsolutePath());
+		// Load the properties from our own jar
+		ownJar();
+		// Check all the jars on the class path
+		// checkClasspath();
+		// Check the file system for properties files
+		// systemProperties();
+		// Check the file system for jars that have the properties files
+		checkFileSystem();
+		// If the system property for the configuration has not been set then set it to the dot directory
+		if (System.getProperty(IConstants.IKUBE_CONFIGURATION) == null) {
+			System.setProperty(IConstants.IKUBE_CONFIGURATION, ".");
+		}
+	}
+
+	private void ownJar() {
 		try {
-			// First we check our own jar
+			// We check our own jar
 			File thisJar = new File(getClass().getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
 			LOGGER.info("Checking our own jar : " + thisJar);
 			checkJar(thisJar);
 		} catch (URISyntaxException e) {
 			LOGGER.error("Aaai karumbi! Where am I?", e);
 		}
-//		try {
-//			// First check the classpath, this could take a while of course
-//			String classPathString = System.getProperty("java.class.path");
-//			StringTokenizer tokenizer = new StringTokenizer(classPathString, ";", Boolean.FALSE);
-//			while (tokenizer.hasMoreTokens()) {
-//				String jarLocation = tokenizer.nextToken();
-//				try {
-//					LOGGER.debug("        : Checking location : " + jarLocation);
-//					checkJar(new File(jarLocation));
-//				} catch (Exception e) {
-//					LOGGER.error("Exception checking jar : " + jarLocation, e);
-//				}
-//			}
-//		} catch (Exception e) {
-//			LOGGER.error("Exception scanning the classpath : ", e);
-//		}
-		// Check the file system for properties files
+	}
+
+	@SuppressWarnings("unused")
+	private void systemProperties() {
 		List<File> propertyFiles = FileUtilities.findFilesRecursively(new File("."), new ArrayList<File>(), fileNamePattern);
 		for (File propertyFile : propertyFiles) {
 			try {
@@ -72,22 +76,41 @@ public class PropertyConfigurer extends Properties {
 				LOGGER.error("Exception reading property file : " + propertyFile, e);
 			}
 		}
-		// Check the file system for jars that have the properties files
-//		List<File> jarFiles = FileUtilities.findFilesRecursively(new File("."), new ArrayList<File>(), ".jar\\Z");
-//		for (File jarFile : jarFiles) {
-//			try {
-//				LOGGER.debug("        : Loading properties from : " + jarFile);
-//				checkJar(jarFile);
-//			} catch (Exception e) {
-//				LOGGER.error("Exception reading jar file : " + jarFile, e);
-//			}
-//		}
-		// If the system property for the configuration has not been set then set it to the dot directory
-		if (System.getProperty(IConstants.IKUBE_CONFIGURATION) == null) {
-			System.setProperty(IConstants.IKUBE_CONFIGURATION, ".");
+	}
+
+	private void checkFileSystem() {
+		// Check all the jars in the path of the server
+		List<File> jarFiles = FileUtilities.findFilesRecursively(new File("."), new ArrayList<File>(), ".jar\\Z");
+		for (File jarFile : jarFiles) {
+			try {
+				LOGGER.debug("        : Loading properties from : " + jarFile);
+				checkJar(jarFile);
+			} catch (Exception e) {
+				LOGGER.error("Exception reading jar file : " + jarFile, e);
+			}
 		}
 	}
-	
+
+	@SuppressWarnings("unused")
+	private void checkClasspath() {
+		try {
+			// Check the classpath, this could take a while of course
+			String classPathString = System.getProperty("java.class.path");
+			StringTokenizer tokenizer = new StringTokenizer(classPathString, ";", Boolean.FALSE);
+			while (tokenizer.hasMoreTokens()) {
+				String jarLocation = tokenizer.nextToken();
+				try {
+					LOGGER.debug("        : Checking location : " + jarLocation);
+					checkJar(new File(jarLocation));
+				} catch (Exception e) {
+					LOGGER.error("Exception checking jar : " + jarLocation, e);
+				}
+			}
+		} catch (Exception e) {
+			LOGGER.error("Exception scanning the classpath : ", e);
+		}
+	}
+
 	@SuppressWarnings("unused")
 	private void printProperties() {
 		for (Map.Entry<Object, Object> entry : this.entrySet()) {

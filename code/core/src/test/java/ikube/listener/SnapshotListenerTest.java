@@ -5,6 +5,8 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 import ikube.ATest;
+import ikube.IConstants;
+import ikube.database.IDataBase;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.model.Snapshot;
 import ikube.toolkit.FileUtilities;
@@ -15,6 +17,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import mockit.Cascading;
+import mockit.Deencapsulation;
 import mockit.Mockit;
 
 import org.junit.After;
@@ -28,6 +32,8 @@ import org.junit.Test;
  */
 public class SnapshotListenerTest extends ATest {
 
+	@Cascading
+	private IDataBase dataBase;
 	private SnapshotListener snapshotListener;
 	private File latestIndexDirectory;
 
@@ -41,6 +47,7 @@ public class SnapshotListenerTest extends ATest {
 		snapshotListener = new SnapshotListener();
 		when(fsDirectory.fileLength(anyString())).thenReturn(Long.MAX_VALUE);
 		when(fsDirectory.listAll()).thenReturn(new String[] { "file" });
+		Mockit.setUpMocks();
 		Mockit.setUpMock(ApplicationContextManagerMock.class);
 	}
 
@@ -52,11 +59,12 @@ public class SnapshotListenerTest extends ATest {
 
 	@Test
 	public void handleNotification() {
+		Deencapsulation.setField(snapshotListener, dataBase);
 		Event event = new Event();
 		event.setType(Event.PERFORMANCE);
 		List<Snapshot> snapshots = new ArrayList<Snapshot>();
 		when(indexContext.getSnapshots()).thenReturn(snapshots);
-		int maxSnapshots = 10010;
+		long maxSnapshots = IConstants.MAX_SNAPSHOTS + 10;
 		for (int i = 0; i < maxSnapshots; i++) {
 			snapshotListener.handleNotification(event);
 		}

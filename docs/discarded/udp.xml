@@ -18,7 +18,7 @@
          thread_naming_pattern="pl"
 
          thread_pool.enabled="true"
-         thread_pool.min_threads="2"
+         thread_pool.min_threads="3"
          thread_pool.max_threads="30"
          thread_pool.keep_alive_time="5000"
          thread_pool.queue_enabled="false"
@@ -26,7 +26,7 @@
          thread_pool.rejection_policy="Discard"
 
          oob_thread_pool.enabled="true"
-         oob_thread_pool.min_threads="2"
+         oob_thread_pool.min_threads="3"
          oob_thread_pool.max_threads="30"
          oob_thread_pool.keep_alive_time="5000"
          oob_thread_pool.queue_enabled="false"

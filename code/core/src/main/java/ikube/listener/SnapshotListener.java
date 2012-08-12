@@ -1,5 +1,6 @@
 package ikube.listener;
 
+import ikube.IConstants;
 import ikube.database.IDataBase;
 import ikube.index.IndexManager;
 import ikube.model.IndexContext;
@@ -9,7 +10,6 @@ import ikube.toolkit.FileUtilities;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -51,12 +51,14 @@ public class SnapshotListener implements IListener {
 				snapshot.setTimestamp(System.currentTimeMillis());
 				snapshot.setLatestIndexTimestamp(getLatestIndexDirectoryDate(indexContext));
 				snapshot.setDocsPerMinute(getDocsPerMinute(indexContext, snapshot));
-				// dataBase.persist(snapshot);
-				snapshot.setIndexContext(indexContext);
+				dataBase.persist(snapshot);
+				// snapshot.setIndexContext(indexContext);
 				indexContext.getSnapshots().add(snapshot);
-				if (indexContext.getSnapshots().size() > 10000) {
-					Collection<Snapshot> toRemove = indexContext.getSnapshots().subList(0, 5000);
-					indexContext.getSnapshots().removeAll(toRemove);
+				if (indexContext.getSnapshots().size() > IConstants.MAX_SNAPSHOTS) {
+					List<Snapshot> subListToRemove = indexContext.getSnapshots().subList(0,
+							(int) (((double) IConstants.MAX_SNAPSHOTS) * 0.75));
+					LOGGER.info("Removing : " + subListToRemove.size());
+					indexContext.getSnapshots().removeAll(subListToRemove);
 				}
 			}
 		}

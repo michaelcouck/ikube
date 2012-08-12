@@ -100,10 +100,12 @@ public final class ThreadUtilities {
 		while (!future.isDone()) {
 			try {
 				future.get(maxWait, TimeUnit.SECONDS);
-			} catch (Exception e) {
+			} catch (InterruptedException e) {
 				String message = "Exception waiting for future : " + e.getMessage();
 				LOGGER.warn(message);
 				LOGGER.debug(message, e);
+			} catch (Exception e) {
+				LOGGER.error("Exception waiting for future : ", e);
 			}
 			ThreadUtilities.sleep(1000);
 			LOGGER.debug("Future : " + future);

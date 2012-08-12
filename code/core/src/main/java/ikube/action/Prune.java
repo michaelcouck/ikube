@@ -24,11 +24,12 @@ public class Prune extends Action<IndexContext<?>, Boolean> {
 		try {
 			action = start(indexContext.getIndexName(), "");
 			delete(dataBase, ikube.model.Action.class, new String[] { "startTime" }, new Boolean[] { true },
-					(int) IConstants.MAX_ACTIONS / 10);
+					(int) IConstants.MAX_ACTIONS / 4);
+			delete(dataBase, ikube.model.Snapshot.class, new String[] {}, new Boolean[] {}, (int) IConstants.MAX_SNAPSHOTS / 4);
+			return Boolean.TRUE;
 		} finally {
 			stop(action);
 		}
-		return Boolean.TRUE;
 	}
 
 	protected void delete(final IDataBase dataBase, final Class<?> klass, final String[] fieldsToSortOn, final Boolean[] directionOfSort,

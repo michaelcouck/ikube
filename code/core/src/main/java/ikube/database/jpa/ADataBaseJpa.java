@@ -318,6 +318,15 @@ public abstract class ADataBaseJpa implements IDataBase {
 		return (T) query.getSingleResult();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public <T> T refresh(final T t) {
+		getEntityManager().refresh(t);
+		return t;
+	}
+
 	private Map<String, Object> getParameterMap(final String[] names, final Object[] values) {
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		for (int i = 0; i < names.length; i++) {

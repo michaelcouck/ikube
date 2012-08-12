@@ -5,10 +5,8 @@ import ikube.IConstants;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,9 +18,6 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 /**
- * TODO Add support to this class to load the default core application configuration from the jar and other client configuration from the
- * Ikube folder out side the container.
- * 
  * Class for accessing the Spring context.
  * 
  * @author Michael Couck
@@ -56,15 +51,10 @@ public final class ApplicationContextManager implements ApplicationContextAware 
 	public static synchronized ApplicationContext getApplicationContext() {
 		try {
 			if (APPLICATION_CONTEXT == null) {
-				Properties properties = System.getProperties();
-				for (Map.Entry<Object, Object> mapEntry : properties.entrySet()) {
-					LOGGER.debug("System property : " + mapEntry.getKey() + " : " + mapEntry.getValue());
-				}
 				File configFile = null;
 				Object ikubeConfigurationPathProperty = System.getProperty(IConstants.IKUBE_CONFIGURATION);
-
 				LOGGER.info("Configuration property file : " + ikubeConfigurationPathProperty);
-
+				// First try the configuration property
 				if (ikubeConfigurationPathProperty != null) {
 					if (ikubeConfigurationPathProperty.toString().startsWith("file")) {
 						URL url;
@@ -77,15 +67,19 @@ public final class ApplicationContextManager implements ApplicationContextAware 
 					} else {
 						configFile = new File(ikubeConfigurationPathProperty.toString());
 					}
-				} else {
-					// See if there is a configuration file at the base of where the Jvm was started
+				}
+				// See if there is a configuration file at the base of where the Jvm was started
+				if (configFile == null || !configFile.isFile()) {
 					configFile = new File(EXTERNAL_SPRING_CONFIGURATION_FILE);
 				}
-				LOGGER.info("External configuration file : " + configFile.getAbsolutePath() + ", " + configFile.exists());
-				if (configFile.exists()) {
-					APPLICATION_CONTEXT = getApplicationContext(ikubeConfigurationPathProperty.toString());
+				if (configFile != null && configFile.isFile()) {
+					// From the file system
+					String configFilePath = FileUtilities.cleanFilePath(configFile.getAbsolutePath());
+					configFilePath = "file:" + configFilePath;
+					LOGGER.info("Configuration file path : " + configFilePath);
+					APPLICATION_CONTEXT = getApplicationContextFilesystem(configFilePath);
 				} else {
-					// Try the classpath
+					// Now just get the class path configuration as a default
 					APPLICATION_CONTEXT = getApplicationContext(IConstants.SPRING_CONFIGURATION_FILE);
 				}
 			}
@@ -99,9 +93,9 @@ public final class ApplicationContextManager implements ApplicationContextAware 
 	 * Convenience method to get the bean type from the class.
 	 * 
 	 * @param <T>
-	 *        the type of bean to return
+	 *            the type of bean to return
 	 * @param klass
-	 *        the class of the bean
+	 *            the class of the bean
 	 * @return the bean with the specified class
 	 */
 	public static synchronized <T> T getBean(final Class<T> klass) {
@@ -131,7 +125,7 @@ public final class ApplicationContextManager implements ApplicationContextAware 
 	 * possibility for a class cast exception.
 	 * 
 	 * @param name
-	 *        the name of the bean
+	 *            the name of the bean
 	 * @return the bean with the specified name
 	 */
 	@SuppressWarnings("unchecked")
@@ -147,9 +141,9 @@ public final class ApplicationContextManager implements ApplicationContextAware 
 	 * Access to all the beans of a particular type.
 	 * 
 	 * @param <T>
-	 *        the expected type
+	 *            the expected type
 	 * @param klass
-	 *        the class of the beans
+	 *            the class of the beans
 	 * @return a map of bean names and beans of type T
 	 */
 	public static synchronized <T> Map<String, T> getBeans(final Class<T> klass) {
@@ -164,16 +158,16 @@ public final class ApplicationContextManager implements ApplicationContextAware 
 	 * Instantiates the application context using all the configuration files in the parameter list.
 	 * 
 	 * @param configFiles
-	 *        the locations of the configuration files
+	 *            the locations of the configuration files
 	 * @return the merged application context for all the configuration files
 	 */
-	public static synchronized ApplicationContext getApplicationContextFilesystem(final String... configLocations) {
+	public static synchronized ApplicationContext getApplicationContextFilesystem(final String configLocation) {
 		try {
 			if (APPLICATION_CONTEXT == null) {
-				LOGGER.info("Loading the application context with configurations : " + configLocations);
-				APPLICATION_CONTEXT = new FileSystemXmlApplicationContext(configLocations);
+				LOGGER.info("Loading the application context with configuration : " + configLocation);
+				APPLICATION_CONTEXT = new FileSystemXmlApplicationContext(configLocation);
 				((AbstractApplicationContext) APPLICATION_CONTEXT).registerShutdownHook();
-				LOGGER.info("Loaded the application context with configurations : " + Arrays.asList(configLocations));
+				LOGGER.info("Loaded the application context with configuration : " + configLocation);
 			}
 			return APPLICATION_CONTEXT;
 		} finally {
@@ -184,17 +178,17 @@ public final class ApplicationContextManager implements ApplicationContextAware 
 	/**
 	 * Instantiates the application context using all the configuration files in the parameter list.
 	 * 
-	 * @param configLocations
-	 *        the locations of the configuration files
+	 * @param configLocation
+	 *            the locations of the configuration files
 	 * @return the merged application context for all the configuration files
 	 */
-	public static synchronized ApplicationContext getApplicationContext(final String... configLocations) {
+	public static synchronized ApplicationContext getApplicationContext(final String configLocation) {
 		try {
 			if (APPLICATION_CONTEXT == null) {
-				LOGGER.info("Loading the application context with configurations : " + Arrays.asList(configLocations));
-				APPLICATION_CONTEXT = new ClassPathXmlApplicationContext(configLocations);
+				LOGGER.info("Loading the application context with configurations : " + configLocation);
+				APPLICATION_CONTEXT = new ClassPathXmlApplicationContext(configLocation);
 				((AbstractApplicationContext) APPLICATION_CONTEXT).registerShutdownHook();
-				LOGGER.info("Loaded the application context with configurations : " + Arrays.asList(configLocations));
+				LOGGER.info("Loaded the application context with configurations : " + configLocation);
 			}
 			return APPLICATION_CONTEXT;
 		} finally {

@@ -33,6 +33,8 @@ public class UdpBroadcaster {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(UdpBroadcaster.class);
 
+	private static final int PORT = 9876;
+
 	public static void main(String[] args) {
 		List<Future<?>> futures = new UdpBroadcaster().initialize();
 		ThreadUtilities.waitForFutures(futures, 60000);
@@ -57,11 +59,11 @@ public class UdpBroadcaster {
 							InetAddress ipAddress = InetAddress.getByName("localhost");
 
 							byte[] sendData = UriUtilities.getIp().getBytes();
-							DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, ipAddress, 9876);
+							DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, ipAddress, PORT);
 							LOGGER.info("Sending : " + new String(sendData));
 							clientSocket.send(sendPacket);
 
-							byte[] receiveData = new byte[1024];
+							byte[] receiveData = new byte[64];
 							DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
 							clientSocket.receive(receivePacket);
 							LOGGER.info("Received from : " + receivePacket.getAddress() + ", " + new String(receivePacket.getData()));
@@ -83,11 +85,11 @@ public class UdpBroadcaster {
 			public void run() {
 				DatagramSocket serverSocket = null;
 				try {
-					serverSocket = new DatagramSocket(9876);
+					serverSocket = new DatagramSocket(PORT);
 					try {
 						while (true) {
 							ThreadUtilities.sleep(10000);
-							byte[] receiveData = new byte[1024];
+							byte[] receiveData = new byte[64];
 							DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
 							serverSocket.receive(receivePacket);
 							LOGGER.info("Server received from : " + receivePacket.getAddress() + ", " + new String(receivePacket.getData()));
