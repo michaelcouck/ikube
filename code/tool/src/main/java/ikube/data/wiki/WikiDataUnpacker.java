@@ -27,6 +27,7 @@ public class WikiDataUnpacker {
 
 	private static final String WRITE = "write";
 	private static final String UNPACK = "unpack";
+	private static final String REPACK = "repack";
 	private static ExecutorService EXECUTER_SERVICE = Executors.newFixedThreadPool(4);
 
 	public static void main(String[] args) throws Exception {
@@ -38,6 +39,8 @@ public class WikiDataUnpacker {
 				read7ZandWriteBzip2(args[1]);
 			} else if (args[0].equals(UNPACK)) {
 				readBz2AndUnpackFiles(args[1], args[2]);
+			} else if (args[0].equals(REPACK)) {
+				readBz2AndWriteBzip2(args[1]);
 			} else {
 				printUsage();
 			}
@@ -48,10 +51,32 @@ public class WikiDataUnpacker {
 	}
 
 	private static final void printUsage() {
-		System.out.println("Usage   : [" + WRITE + " | " + UNPACK + "] & [directory] & [disk patterns, like 'xfs-' for example]");
+		System.out.println("Usage   : [" + WRITE + " | " + UNPACK + " | " + REPACK
+				+ "] & [directory] & [disk patterns, like 'xfs-' for example]");
 		System.out.println("Example to write bz2 files : java -jar ikube.jar write /media/nas/xfs/wiki-history-languages xfs-");
 		System.out.println("Example to unpack html files from bz2 : java -jar ikube.jar unpack /media/nas/xfs/wiki-history-languages xfs-");
+		System.out.println("Example to repack bz2 files : java -jar ikube.jar repack /media/nas/xfs/wiki-history-languages xfs-");
 		System.exit(0);
+	}
+
+	/**
+	 * This method will read all the Bzip2 files in the specified directory and write them to smaller one gig files that can be read easier
+	 * over the network.
+	 * 
+	 * @param directoryPath
+	 *            the path to the directory where the compressed files are
+	 */
+	protected static void readBz2AndWriteBzip2(final String directoryPath) {
+		File directory = new File(directoryPath);
+		List<File> disks = FileUtilities.findFilesRecursively(directory, new ArrayList<File>(), "bz2");
+		ThreadUtilities.initialize();
+		List<Future<?>> futures = new ArrayList<Future<?>>();
+		for (File disk : disks) {
+			WikiDataUnpackerRepackerWorker wikiDataUnpackerWorker = new WikiDataUnpackerRepackerWorker(disk, 0);
+			Future<Void> future = EXECUTER_SERVICE.submit(wikiDataUnpackerWorker, null);
+			futures.add(future);
+		}
+		ThreadUtilities.waitForFutures(futures, Long.MAX_VALUE);
 	}
 
 	/**
@@ -60,7 +85,7 @@ public class WikiDataUnpacker {
 	protected static void readBz2AndUnpackFiles(final String directoryPath, final String diskPattern) throws Exception {
 		// Get the output directories/disks in the media folder
 		File directory = new File(directoryPath);
-		File[] disks = FileUtilities.findFiles(directory, new String[] {diskPattern} );
+		File[] disks = FileUtilities.findFiles(directory, new String[] { diskPattern });
 		// Init the executor service with 10 threads so we don't have too many running at the same time
 		List<Future<?>> futures = new ArrayList<Future<?>>();
 		for (File disk : disks) {
@@ -76,7 +101,7 @@ public class WikiDataUnpacker {
 	 * the file to a compressed bzip2 file.
 	 * 
 	 * @param directoryPath
-	 *        the path to the input files, i.e. the 7z files to convert
+	 *            the path to the input files, i.e. the 7z files to convert
 	 */
 	protected static void read7ZandWriteBzip2(final String directoryPath) throws Exception {
 		File directory = new File(directoryPath);

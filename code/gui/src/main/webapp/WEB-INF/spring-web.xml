@@ -41,6 +41,8 @@
 	<context:component-scan base-package="ikube" />
 
 	<bean class="ikube.util.ApplicationObjectSupport" />
+	<bean class="ikube.toolkit.ApplicationContextManager" />
+
 	<!-- Turn on @Autowired, @PostConstruct etc support -->
 	<bean class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor" />
 	<bean class="org.springframework.context.annotation.CommonAnnotationBeanPostProcessor" />

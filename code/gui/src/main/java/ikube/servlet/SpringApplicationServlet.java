@@ -38,9 +38,6 @@ public class SpringApplicationServlet extends AbstractApplicationServlet {
 	@Override
 	@SuppressWarnings("unchecked")
 	public void init(ServletConfig servletConfig) throws ServletException {
-		if (logger.isDebugEnabled()) {
-			logger.debug("init()");
-		}
 		super.init(servletConfig);
 		applicationBean = servletConfig.getInitParameter("applicationBean");
 		if (applicationBean == null) {
@@ -54,15 +51,10 @@ public class SpringApplicationServlet extends AbstractApplicationServlet {
 	private void initLocaleResolver(ApplicationContext context) {
 		try {
 			this.localeResolver = (LocaleResolver) context.getBean(DispatcherServlet.LOCALE_RESOLVER_BEAN_NAME, LocaleResolver.class);
-			if (logger.isDebugEnabled()) {
-				logger.debug("Using LocaleResolver [" + this.localeResolver + "]");
-			}
 		} catch (NoSuchBeanDefinitionException ex) {
 			this.localeResolver = new SessionLocaleResolver();
-			if (logger.isDebugEnabled()) {
-				logger.debug("Unable to locate LocaleResolver with name '" + DispatcherServlet.LOCALE_RESOLVER_BEAN_NAME
-						+ "' using default [" + localeResolver + "]");
-			}
+			logger.error("Unable to locate LocaleResolver with name '" + DispatcherServlet.LOCALE_RESOLVER_BEAN_NAME + "' using default ["
+					+ localeResolver + "]");
 		}
 	}
 
@@ -80,9 +72,7 @@ public class SpringApplicationServlet extends AbstractApplicationServlet {
 			}, response);
 		} finally {
 			if (!locale.equals(LocaleContextHolder.getLocale())) {
-				if (logger.isDebugEnabled()) {
-					logger.debug("locale changed, updating locale resolver");
-				}
+				logger.debug("locale changed, updating locale resolver");
 				localeResolver.setLocale(request, response, LocaleContextHolder.getLocale());
 			}
 			LocaleContextHolder.resetLocaleContext();
@@ -92,17 +82,13 @@ public class SpringApplicationServlet extends AbstractApplicationServlet {
 
 	@Override
 	protected Application getNewApplication(HttpServletRequest request) throws ServletException {
-		if (logger.isTraceEnabled()) {
-			logger.trace("getNewApplication()");
-		}
+		logger.trace("getNewApplication()");
 		return (Application) applicationContext.getBean(applicationBean);
 	}
 
 	@Override
 	protected Class<? extends Application> getApplicationClass() throws ClassNotFoundException {
-		if (logger.isTraceEnabled()) {
-			logger.trace("getApplicationClass()");
-		}
+		logger.trace("getApplicationClass()");
 		return applicationClass;
 	}
 

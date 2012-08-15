@@ -15,9 +15,9 @@
 	</parent>
 	
 	<properties>
-		<!-- <spring.version>2.5.6</spring.version> -->
 		<aspectj.version>1.6.3.RELEASE</aspectj.version>
 		<spring-security.version>2.0.4</spring-security.version>
+		<gwtVersion>2.2.0</gwtVersion>
 	</properties>
 	
 	<dependencies>
@@ -31,99 +31,18 @@
 			<groupId>com.vaadin</groupId>
 			<artifactId>vaadin</artifactId>
 			<version>6.8.1</version>
+			<!-- <version>6.6.8</version> -->
 		</dependency>
-		<!-- needed for Terracotta class instrumentation because of ClientWidget annotations -->
-		<!-- <dependency>
-			<groupId>com.google.gwt</groupId>
-			<artifactId>gwt-user</artifactId>
-			<version>1.7.1</version>
-		</dependency> -->
-		<!-- <dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>com.springsource.org.apache.commons.logging</artifactId>
-			<version>1.1.1</version>
-		</dependency> -->
 		<dependency>
 			<groupId>org.aspectj</groupId>
 			<artifactId>aspectjweaver</artifactId>
 			<version>1.6.3</version>
 		</dependency>
-		<!-- <dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>org.springframework.aspects</artifactId>
-			<version>${spring.version}</version>
-		</dependency> -->
-		<!-- <dependency>
-			<groupId>edu.emory.mathcs.backport</groupId>
-			<artifactId>com.springsource.edu.emory.mathcs.backport</artifactId>
-			<version>3.1.0</version>
-		</dependency> -->
-		<!-- <dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>com.springsource.org.hibernate.validator</artifactId>
-			<version>4.0.0.GA</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.slf4j</groupId>
-					<artifactId>slf4j-api</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency> -->
-		<!-- <dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>org.springframework.jdbc</artifactId>
-			<version>${spring.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>org.springframework.orm</artifactId>
-			<version>${spring.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>org.springframework.transaction</artifactId>
-			<version>${spring.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>org.springframework.web</artifactId>
-			<version>${spring.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>org.springframework.web.servlet</artifactId>
-			<version>${spring.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.webflow</groupId>
-			<artifactId>org.springframework.js</artifactId>
-			<version>2.0.7.RELEASE</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>com.springsource.org.apache.commons.fileupload</artifactId>
-			<version>1.2.0</version>
-		</dependency> -->
 		<dependency>
 			<groupId>org.tuckey</groupId>
 			<artifactId>com.springsource.org.tuckey.web.filters.urlrewrite</artifactId>
 			<version>3.1.0</version>
 		</dependency>
-		<!-- <dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>com.springsource.javax.servlet.jsp.jstl</artifactId>
-			<version>1.2.0</version>
-		</dependency> -->
-		<!-- <dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-core</artifactId>
-			<version>${spring-security.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-core-tiger</artifactId>
-			<version>${spring-security.version}</version>
-		</dependency> -->
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
@@ -131,28 +50,74 @@
 			<type>jar</type>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+   			<groupId>org.vaadin.addons</groupId>
+   			<artifactId>invient-charts</artifactId>
+   			<version>0.8.6</version>
+		</dependency>
+		
+		<dependency>
+	<groupId>com.google.gwt</groupId>
+	<artifactId>gwt-servlet</artifactId>
+	<version>${gwtVersion}</version>
+</dependency>
+
+		<dependency>
+			<groupId>com.google.gwt</groupId>
+			<artifactId>gwt-user</artifactId>
+			<version>${gwtVersion}</version>
+		</dependency>
 	</dependencies>
 	
 	<build>
 		<plugins>
-			<!-- <plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.2</version>
-				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
-					<encoding>ISO-8859-1</encoding>
-				</configuration>
-			</plugin> -->
-			<!-- <plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-resources-plugin</artifactId>
-                <version>2.4.3</version>
-				<configuration>
-					<encoding>ISO-8859-1</encoding>
-				</configuration>
-			</plugin> -->
+			<plugin>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-maven-plugin</artifactId>
+            <version>1.0.2</version>
+            <executions>
+                <execution>
+                    <configuration>
+                        <!-- if you don't specify any modules, the plugin will find them -->
+                        <modules>
+                            <module>ikube.gui.widgets.InvientWidgets</module>
+                        </modules>
+                    </configuration>
+                    <goals>
+                        <goal>update-widgetset</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
+        
+        <!-- Compiles your custom GWT components with the GWT compiler -->
+        <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>gwt-maven-plugin</artifactId>
+        	<!-- Version 2.1.0-1 works at least with Vaadin 6.5 -->
+            <version>2.2.0</version>
+            <configuration>
+                <!-- if you don't specify any modules, the plugin will find them -->
+                <!--modules>
+                </modules-->
+                <webappDirectory>${project.build.directory}/${project.build.finalName}/VAADIN/widgetsets</webappDirectory>
+                <extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
+                <runTarget>clean</runTarget>
+                <hostedWebapp>${project.build.directory}/${project.build.finalName}</hostedWebapp>
+                <noServer>true</noServer>
+                <port>8080</port>
+                <soyc>false</soyc>
+            </configuration>
+            <executions>
+                <execution>
+                    <goals>
+                        <goal>resources</goal>
+                        <goal>compile</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
+        
 			<!-- 
 				This plugin starts a Jetty server before the integration tests and stops it after the 
 				integration tests. It can also be used to start a jetty server from the command line for testing. 
@@ -217,15 +182,6 @@
 					</dependency>
 				</dependencies>
 			</plugin>
-			<!-- <plugin>
-				<groupId>org.mortbay.jetty</groupId>
-				<artifactId>maven-jetty-plugin</artifactId>
-				<version>6.1.15</version>
-				<configuration>
-					<contextPath>${project.artifactId}</contextPath>
-					<scanIntervalSeconds>-1</scanIntervalSeconds>
-				</configuration>
-			</plugin> -->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>aspectj-maven-plugin</artifactId>
@@ -313,6 +269,32 @@
 										<ignore></ignore>
 									</action>
 								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>com.vaadin</groupId>
+										<artifactId>vaadin-maven-plugin</artifactId>
+										<versionRange>[1.0.1,)</versionRange>
+										<goals>
+											<goal>update-widgetset</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.codehaus.mojo</groupId>
+										<artifactId>gwt-maven-plugin</artifactId>
+										<versionRange>[2.1.0-1,)</versionRange>
+										<goals>
+											<goal>resources</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
 							</pluginExecutions>
 						</lifecycleMappingMetadata>
 					</configuration>
@@ -347,9 +329,23 @@
 			<name>SpringSource Enterprise Bundle Repository - External Bundle Milestones</name>
 			<url>http://repository.springsource.com/maven/bundles/milestone</url>
 		</repository>
+		<repository>
+   			<id>vaadin-addons</id>
+   			<url>http://maven.vaadin.com/vaadin-addons</url>
+		</repository>
 	</repositories>
 	
 	<pluginRepositories>
+		<pluginRepository>
+			<id>codehaus-snapshots</id>
+			<url>http://nexus.codehaus.org/snapshots</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</pluginRepository>
 		<pluginRepository>
 			<id>terracotta-repository</id>
 			<url>http://www.terracotta.org/download/reflector/maven2</url>

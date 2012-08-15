@@ -48,6 +48,10 @@
 			<param-name>applicationBean</param-name>
 			<param-value>application</param-value>
 		</init-param>
+		<init-param>
+    		<param-name>widgetset</param-name>
+    		<param-value>ikube.gui.widgets.InvientWidgets</param-value>
+		</init-param>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>Application</servlet-name>

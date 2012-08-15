@@ -16,7 +16,7 @@ public class IndexPanel extends Panel {
 		treeTable = new TreeTable();
 		treeTable.setSizeFull();
 		treeTable.setSortDisabled(true);
-		treeTable.setPageLength(7);
+		treeTable.setPageLength(10);
 
 		addComponent(treeTable);
 	}

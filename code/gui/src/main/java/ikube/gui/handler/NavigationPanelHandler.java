@@ -1,30 +1,59 @@
 package ikube.gui.handler;
 
+import ikube.gui.IConstant;
+import ikube.gui.Window;
+import ikube.gui.panel.NavigationPanel;
+import ikube.toolkit.ThreadUtilities;
+
+import java.util.ArrayList;
 import java.util.Iterator;
 
+import com.vaadin.data.Container;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Panel;
+import com.vaadin.ui.ProgressIndicator;
 import com.vaadin.ui.Tree;
 
 public class NavigationPanelHandler extends AHandler {
 
-	private Panel panel;
+	private Panel currentPanel;
 
-	public NavigationPanelHandler(final Panel panel) {
-		this.panel = panel;
-	}
-
-	protected void addListenerInternal(final Panel panel) {
-		Iterator<Component> iterator = panel.getComponentIterator();
+	protected void registerHandlerInternal(final Component component, final Container container) {
+		// The dash board is always the first panel in the center
+		currentPanel = (Panel) findComponent(component, IConstant.DASHBOARD, new ArrayList<Component>());
+		Iterator<Component> iterator = ((Panel) component).getComponentIterator();
 		while (iterator.hasNext()) {
-			Component component = iterator.next();
-			if (Tree.class.isAssignableFrom(component.getClass())) {
-				addTreeListener((Tree) component);
+			Component childComponent = iterator.next();
+			if (Tree.class.isAssignableFrom(childComponent.getClass())) {
+				addTreeListener((Tree) childComponent);
 				break;
 			}
 		}
+
+		final int interval = 10000;
+
+		// This poller will request changes from the server periodically
+		ProgressIndicator pollingIndicator = new ProgressIndicator();
+		pollingIndicator.setVisible(Boolean.FALSE);
+		pollingIndicator.setValidationVisible(Boolean.FALSE);
+		pollingIndicator.setPollingInterval(interval);
+		pollingIndicator.setIndeterminate(Boolean.TRUE);
+
+		Window window = Window.INSTANCE;
+		window.addComponent(pollingIndicator);
+
+		ThreadUtilities.submit(new Runnable() {
+			public void run() {
+				while (true) {
+					// LOGGER.info("Setting data : ");
+					((NavigationPanel) component).setData(container);
+					ThreadUtilities.sleep(interval);
+				}
+			}
+		});
+
 	}
 
 	private void addTreeListener(final Tree tree) {
@@ -33,13 +62,14 @@ public class NavigationPanelHandler extends AHandler {
 			public void valueChange(ValueChangeEvent event) {
 				Property property = event.getProperty();
 				Object description = property.getValue();
-				Panel newPanel = getPanel(description);
-				if (newPanel == null) {
-					logger.warn("New panel null : ");
+				Panel newPanel = findPanel(description);
+				if (currentPanel == null || newPanel == null) {
+					logger.warn("Panel : " + currentPanel + ", " + newPanel + ", " + description);
 					return;
 				}
-				switchPanel(panel, newPanel);
-				panel = newPanel;
+				switchPanel(currentPanel, newPanel);
+				currentPanel = newPanel;
+				newPanel.requestRepaintAll();
 			}
 		});
 	}

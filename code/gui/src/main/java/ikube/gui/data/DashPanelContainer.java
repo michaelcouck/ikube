@@ -1,23 +1,27 @@
-package ikube.gui.panel;
+package ikube.gui.data;
+
+import org.springframework.beans.factory.annotation.Configurable;
 
 import com.invient.vaadin.charts.InvientCharts;
 import com.invient.vaadin.charts.InvientCharts.DateTimeSeries;
 import com.invient.vaadin.charts.InvientChartsConfig;
+import com.vaadin.data.util.HierarchicalContainer;
 import com.vaadin.ui.Panel;
 
-public class DashPanel extends Panel {
+@Configurable
+public class DashPanelContainer extends HierarchicalContainer implements IContainer {
 
-	public DashPanel() {
-		setSizeFull();
-		getContent().setSizeFull();
-		setImmediate(true);
+	public void init() {
+	}
 
+	@Override
+	public void init(final Panel target) {
 		InvientCharts chart = new InvientCharts(new InvientChartsConfig());
 		chart.getConfig().getTitle().setText("Chart title");
 		// chart.getConfig().getGeneralChartConfig().setSpacing( new Spacing( 30, 30, 30, 30 ) );
 		chart.getConfig().getGeneralChartConfig().setShadow(true);
 		chart.setSizeFull();
-		// chart.setHeight("500px");
+		chart.setHeight("500px");
 		chart.getConfig().getGeneralChartConfig().setShadow(false);
 
 		InvientChartsConfig.DateTimeAxis xaxis = new InvientChartsConfig.DateTimeAxis();
@@ -31,11 +35,8 @@ public class DashPanel extends Panel {
 
 		DateTimeSeries series = new DateTimeSeries("Used", InvientCharts.SeriesType.SPLINE, new InvientChartsConfig.SeriesConfig(), true);
 		chart.addSeries(series);
-		chart.setVisible(true);
-		chart.setImmediate(true);
 
-		addComponent(chart);
-		getContent().addComponent(chart);
+		target.addComponent(chart);
 	}
 
 }

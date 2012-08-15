@@ -221,7 +221,7 @@ public class IndexContext<T> extends Indexable<T> implements Comparable<IndexCon
 	}
 	
 	public Snapshot getLastSnapshot() {
-		return snapshots.get(snapshots.size() - 1);
+		return snapshots.size() > 0 ? snapshots.get(snapshots.size() - 1) : null;
 	}
 
 	@Override

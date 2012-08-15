@@ -1,4 +1,4 @@
-package ikube.gui;
+package ikube.gui.toolkit;
 
 import java.util.Collection;
 import java.util.Iterator;

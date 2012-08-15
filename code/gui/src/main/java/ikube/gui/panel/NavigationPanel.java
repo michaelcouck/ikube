@@ -1,10 +1,9 @@
 package ikube.gui.panel;
 
-import java.util.Iterator;
+import ikube.gui.data.IContainer;
 
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.vaadin.data.Container;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Tree;
 
@@ -16,22 +15,22 @@ public class NavigationPanel extends Panel {
 	public NavigationPanel() {
 		setSizeFull();
 		getContent().setSizeFull();
-		setImmediate(true);
+		setImmediate(Boolean.TRUE);
 		addNavigationTree();
 	}
 
 	private void addNavigationTree() {
 		tree = new Tree();
-		tree.setImmediate(true);
+		tree.setSizeFull();
+		tree.setVisible(Boolean.TRUE);
+		tree.setImmediate(Boolean.TRUE);
+		tree.setValidationVisible(Boolean.TRUE);
 		addComponent(tree);
 	}
 
 	@Override
-	public void setData(Object data) {
-		tree.setContainerDataSource((Container) data);
-		for (Iterator<?> it = tree.rootItemIds().iterator(); it.hasNext();) {
-			tree.collapseItemsRecursively(it.next());
-		}
+	public void setData(final Object data) {
+		((IContainer) data).init(this);
 	}
 
 }

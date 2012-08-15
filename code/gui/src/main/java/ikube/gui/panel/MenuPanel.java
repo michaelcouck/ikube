@@ -38,6 +38,8 @@ public class MenuPanel extends Panel {
 		tabSheet.addTab(new Label((String) null, Label.CONTENT_XHTML), "Menu two", icon);
 		tabSheet.addTab(new Label((String) null, Label.CONTENT_XHTML), "Menu three", icon);
 		tabSheet.addTab(new Label((String) null, Label.CONTENT_XHTML), "Menu four", icon);
+		
+		tabSheet.setVisible(false);
 
 		horizontalLayout.addComponent(tabSheet, "left: 230px; top: 50px;");
 

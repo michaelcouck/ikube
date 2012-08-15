@@ -1,10 +1,7 @@
 package ikube.gui.panel;
 
-import ikube.gui.Application;
+import ikube.gui.data.IContainer;
 
-import com.vaadin.data.Container;
-import com.vaadin.terminal.ClassResource;
-import com.vaadin.terminal.Resource;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TreeTable;
@@ -20,24 +17,15 @@ public class IndexesPanel extends Panel {
 
 		treeTable = new TreeTable("Indexes");
 		treeTable.setWidth(100, Sizeable.UNITS_PERCENTAGE);
-		treeTable.setSortDisabled(true);
-
-		Resource columnIcon = new ClassResource(this.getClass(), "/images/Fotolia_5864227_XS.jpg", Application.getApplication());
-		Object[] data = { "One", "Two", "Three", "Four", "Five" };
-		for (int i = 0; i < data.length; i++) {
-			String parentId = Integer.toString(i);
-			String itemId = Integer.toString(i * 10);
-			treeTable.addContainerProperty(data[i], String.class, data[i], Integer.toString(i), columnIcon, null);
-			treeTable.addItem(new Object[] { "The", "quick", "brown", "fox", "jumped" }, parentId);
-			treeTable.addItem(new Object[] { "The", "quick", "brown", "fox", "jumped" }, itemId);
-			treeTable.setParent(itemId, parentId);
-		}
+		treeTable.setSelectable(Boolean.TRUE);
+		treeTable.setImmediate(Boolean.TRUE);
+		treeTable.setSortDisabled(Boolean.TRUE);
 
 		addComponent(treeTable);
 	}
 
 	public void setData(final Object data) {
-		
+		((IContainer) data).init(this);
 	}
 
 }

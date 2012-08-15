@@ -1,8 +1,6 @@
-package ikube.cluster.jms;
+package ikube.listener;
 
 import ikube.cluster.IClusterManager;
-import ikube.listener.Event;
-import ikube.listener.IListener;
 
 import org.springframework.beans.factory.annotation.Autowired;
 

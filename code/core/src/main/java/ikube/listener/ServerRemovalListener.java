@@ -1,9 +1,7 @@
-package ikube.cluster.jms;
+package ikube.listener;
 
 import ikube.IConstants;
 import ikube.cluster.IClusterManager;
-import ikube.listener.Event;
-import ikube.listener.IListener;
 import ikube.model.Server;
 
 import java.util.Collection;

@@ -174,17 +174,16 @@ public class ClusterManagerHazelcast extends AClusterManager {
 	public Server getServer() {
 		Map<String, Server> servers = getServers();
 		Server server = (Server) servers.get(address);
-		if (server != null) {
-			return server;
+		if (server == null) {
+			server = new Server();
+			logger.info("Server null, creating new one : " + server);
 		}
-		server = new Server();
-		servers.put(address, server);
 		long time = System.currentTimeMillis();
 		server.setIp(ip);
 		server.setId(time);
 		server.setAge(time);
 		server.setAddress(address);
-		logger.info("Server null, creating new one : " + server);
+		servers.put(address, server);
 		return server;
 	}
 

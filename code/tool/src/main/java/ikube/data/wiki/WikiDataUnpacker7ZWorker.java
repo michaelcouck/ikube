@@ -37,7 +37,7 @@ public class WikiDataUnpacker7ZWorker implements Runnable, ISequentialOutStream 
 	private long reads;
 	private long offset;
 	private long fileNumber = 1;
-	private long oneHundredGig = 107374182400l;
+	private long oneGig = 1073741824l;
 	private CompressorOutputStream compressorOutputStream;
 
 	private File file;
@@ -81,17 +81,17 @@ public class WikiDataUnpacker7ZWorker implements Runnable, ISequentialOutStream 
 	public int write(byte[] bytes) throws SevenZipException {
 		reads++;
 		if (reads % 10 == 0) {
-			LOGGER.info("Reads : " + reads + ", " + offset + ", " + fileNumber + ", " + oneHundredGig);
+			LOGGER.info("Reads : " + reads + ", " + offset + ", " + fileNumber + ", " + oneGig);
 		}
 		try {
 			Thread.sleep(throttle);
-			if (offset > oneHundredGig || compressorOutputStream == null) {
+			if (offset > oneGig || compressorOutputStream == null) {
 				FileUtilities.close(compressorOutputStream);
 				File outputFile = getOutputFile();
 				OutputStream outputStream = new FileOutputStream(outputFile);
 				compressorOutputStream = new CompressorStreamFactory().createCompressorOutputStream("bzip2", outputStream);
 				LOGGER.info("New output stream : " + outputFile);
-				LOGGER.info("Reads : " + reads + ", " + offset + ", " + fileNumber + ", " + oneHundredGig);
+				LOGGER.info("Reads : " + reads + ", " + offset + ", " + fileNumber + ", " + oneGig);
 				offset = 0;
 				fileNumber++;
 			}

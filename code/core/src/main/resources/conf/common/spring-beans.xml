@@ -178,6 +178,7 @@
 		<bean class="ikube.listener.StartupListener" />
 		<bean class="ikube.listener.TerminationListener" />
 		<bean class="ikube.listener.SnapshotListener" />
+		<bean class="ikube.listener.ServerRemovalListener" />
 	</util:list>
 	
 	<bean 
