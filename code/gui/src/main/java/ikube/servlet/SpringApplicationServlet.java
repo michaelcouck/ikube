@@ -30,10 +30,10 @@ public class SpringApplicationServlet extends AbstractApplicationServlet {
 
 	private static final Log logger = LogFactory.getLog(SpringApplicationServlet.class);
 
-	private WebApplicationContext applicationContext;
-	private Class<? extends Application> applicationClass;
 	private String applicationBean;
 	private LocaleResolver localeResolver;
+	private WebApplicationContext applicationContext;
+	private Class<? extends Application> applicationClass;
 
 	@Override
 	@SuppressWarnings("unchecked")

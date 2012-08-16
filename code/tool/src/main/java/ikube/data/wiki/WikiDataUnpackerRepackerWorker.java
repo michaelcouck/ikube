@@ -29,15 +29,13 @@ public class WikiDataUnpackerRepackerWorker implements Runnable {
 	private long reads;
 	private long offset;
 	private long fileNumber = 1;
-	private long size = 1073741824l / 10l;
+	private long size = 1073741824l;
 	private CompressorOutputStream compressorOutputStream;
 
 	private File file;
-	private long throttle;
 
-	public WikiDataUnpackerRepackerWorker(final File file, final long throttle) {
+	public WikiDataUnpackerRepackerWorker(final File file) {
 		this.file = file;
-		this.throttle = throttle;
 	}
 
 	@Override
@@ -70,7 +68,6 @@ public class WikiDataUnpackerRepackerWorker implements Runnable {
 			LOGGER.info("Reads : " + reads + ", " + offset + ", " + fileNumber + ", " + size);
 		}
 		try {
-			Thread.sleep(throttle);
 			if (offset > size || compressorOutputStream == null) {
 				FileUtilities.close(compressorOutputStream);
 				File outputFile = getOutputFile();

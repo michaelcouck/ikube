@@ -12,7 +12,6 @@ import org.junit.Test;
 
 public class WikiDataUnpackerRepackerWorkerTest {
 
-	int throttle = 0;
 	private File file;
 	private String baseDirectory = ".";
 	private WikiDataUnpackerRepackerWorker wikiDataUnpackerRepackerWorker;
@@ -21,7 +20,7 @@ public class WikiDataUnpackerRepackerWorkerTest {
 	public void before() {
 		Logging.configure();
 		file = FileUtilities.findFileRecursively(new File(baseDirectory), "bz2");
-		wikiDataUnpackerRepackerWorker = new WikiDataUnpackerRepackerWorker(file, throttle);
+		wikiDataUnpackerRepackerWorker = new WikiDataUnpackerRepackerWorker(file);
 	}
 
 	@After

@@ -68,11 +68,11 @@ public class WikiDataUnpacker {
 	 */
 	protected static void readBz2AndWriteBzip2(final String directoryPath) {
 		File directory = new File(directoryPath);
-		List<File> disks = FileUtilities.findFilesRecursively(directory, new ArrayList<File>(), "bz2");
+		List<File> bZip2Files = FileUtilities.findFilesRecursively(directory, new ArrayList<File>(), "bz2");
 		ThreadUtilities.initialize();
 		List<Future<?>> futures = new ArrayList<Future<?>>();
-		for (File disk : disks) {
-			WikiDataUnpackerRepackerWorker wikiDataUnpackerWorker = new WikiDataUnpackerRepackerWorker(disk, 0);
+		for (File bZip2File : bZip2Files) {
+			WikiDataUnpackerRepackerWorker wikiDataUnpackerWorker = new WikiDataUnpackerRepackerWorker(bZip2File);
 			Future<Void> future = EXECUTER_SERVICE.submit(wikiDataUnpackerWorker, null);
 			futures.add(future);
 		}
