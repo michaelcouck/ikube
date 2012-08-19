@@ -38,6 +38,7 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
 	/** This class sends mails to the configured recipient from the configured sender. */
 	@Autowired
 	private IMailer mailer;
+	/** Access to the database, like a generic dao. */
 	@Autowired
 	protected IDataBase dataBase;
 	/** The cluster manager for locking the cluster during rule evaluation. */

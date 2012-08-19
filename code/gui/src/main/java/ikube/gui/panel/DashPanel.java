@@ -1,16 +1,11 @@
 package ikube.gui.panel;
 
-import ikube.gui.Application;
-
 import com.invient.vaadin.charts.InvientCharts;
 import com.invient.vaadin.charts.InvientCharts.DateTimeSeries;
 import com.invient.vaadin.charts.InvientChartsConfig;
-import com.vaadin.terminal.ClassResource;
 import com.vaadin.ui.Panel;
 
 public class DashPanel extends Panel {
-
-	private static final String ICON_PATH = "/images/Fotolia_11470344_XS_80px.jpg";
 
 	public DashPanel() {
 		setSizeFull();
@@ -43,10 +38,13 @@ public class DashPanel extends Panel {
 		chart.addSeries(series);
 		chart.setVisible(true);
 		chart.setImmediate(true);
-		chart.setIcon(new ClassResource(this.getClass(), ICON_PATH, Application.getApplication()));
 
 		addComponent(chart);
 		getContent().addComponent(chart);
+	}
+
+	public void setData(Object data) {
+		// TODO Populate the graphs
 	}
 
 }

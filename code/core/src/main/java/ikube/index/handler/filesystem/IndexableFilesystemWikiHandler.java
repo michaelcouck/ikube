@@ -13,6 +13,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Future;
 
@@ -42,16 +44,22 @@ public class IndexableFilesystemWikiHandler extends IndexableHandler<IndexableFi
 		String filePath = indexable.getPath();
 		File directory = FileUtilities.getFile(filePath, Boolean.TRUE);
 		final File[] bZip2Files = FileUtilities.findFiles(directory, new String[] { "bz2" });
-		Runnable runnable = new Runnable() {
-			public void run() {
-				for (final File bZip2File : bZip2Files) {
-					logger.info("Indexing compressed file : " + bZip2File);
-					handleFile(indexContext, indexable, bZip2File);
+		final Iterator<File> iterator = new ArrayList<File>(Arrays.asList(bZip2Files)).iterator();
+		for (int i = 0; i < getThreads(); i++) {
+			Runnable runnable = new Runnable() {
+				public void run() {
+					synchronized(iterator) {
+						while (iterator.hasNext()) {
+							File bZip2File = iterator.next();
+							logger.info("Indexing compressed file : " + bZip2File);
+							handleFile(indexContext, indexable, bZip2File);
+						}
+					}
 				}
-			}
-		};
-		Future<?> future = ThreadUtilities.submit(runnable);
-		futures.add(future);
+			};
+			Future<?> future = ThreadUtilities.submit(runnable);
+			futures.add(future);
+		}
 		return futures;
 	}
 

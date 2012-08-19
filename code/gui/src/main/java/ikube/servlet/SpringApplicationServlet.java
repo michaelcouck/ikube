@@ -1,5 +1,6 @@
 package ikube.servlet;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.Locale;
 
@@ -24,6 +25,7 @@ import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
 import com.vaadin.Application;
 import com.vaadin.terminal.gwt.server.AbstractApplicationServlet;
+import com.vaadin.ui.Window;
 
 @SuppressWarnings("serial")
 public class SpringApplicationServlet extends AbstractApplicationServlet {
@@ -58,6 +60,7 @@ public class SpringApplicationServlet extends AbstractApplicationServlet {
 		}
 	}
 
+	@Override
 	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		final Locale locale = localeResolver.resolveLocale(request);
 		LocaleContextHolder.setLocale(locale);
@@ -90,6 +93,18 @@ public class SpringApplicationServlet extends AbstractApplicationServlet {
 	protected Class<? extends Application> getApplicationClass() throws ClassNotFoundException {
 		logger.trace("getApplicationClass()");
 		return applicationClass;
+	}
+
+	@Override
+	protected void writeAjaxPageHtmlVaadinScripts(Window window, String themeName, Application application, BufferedWriter page,
+			String appUrl, String themeUri, String appId, HttpServletRequest request) throws ServletException, IOException {
+		page.write("<script type=\"text/javascript\">\n");
+		page.write("//<![CDATA[\n");
+		page.write("document.write(\"<script language='javascript' src='./jquery/jquery-1.4.4.min.js'><\\/script>\");\n");
+		page.write("document.write(\"<script language='javascript' src='./js/highcharts.js'><\\/script>\");\n");
+		page.write("document.write(\"<script language='javascript' src='./js/modules/exporting.js'><\\/script>\");\n");
+		page.write("//]]>\n</script>\n");
+		super.writeAjaxPageHtmlVaadinScripts(window, themeName, application, page, appUrl, themeUri, appId, request);
 	}
 
 }

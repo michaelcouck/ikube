@@ -27,6 +27,7 @@ public class IndexableFilesystemWikiHandlerTest extends ATest {
 	public void before() {
 		ThreadUtilities.initialize();
 		indexableFilesystemWikiHandler = new IndexableFilesystemWikiHandler();
+		indexableFilesystemWikiHandler.setThreads(3);
 	}
 
 	@After

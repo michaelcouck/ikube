@@ -7,7 +7,7 @@ public interface IConstant {
 
 	String MENU = "menu";
 	String NAVIGATION = "navigation";
-	String DASHBOARD = "Dashboard";
+	String DASH = "Dash";
 	String INDEX = "Index";
 	String INDEXES = "Indexes";
 	String SERVERS = "Servers";

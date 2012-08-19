@@ -1,17 +1,21 @@
 package ikube.gui;
 
+import ikube.gui.data.DashPanelContainer;
 import ikube.gui.data.IndexPanelContainer;
 import ikube.gui.data.IndexesPanelContainer;
 import ikube.gui.data.NavigationPanelContainer;
+import ikube.gui.data.ServersPanelContainer;
 import ikube.gui.handler.DashPanelHandler;
 import ikube.gui.handler.IndexPanelHandler;
 import ikube.gui.handler.IndexesPanelHandler;
 import ikube.gui.handler.NavigationPanelHandler;
+import ikube.gui.handler.ServersPanelHandler;
 import ikube.gui.panel.DashPanel;
 import ikube.gui.panel.IndexPanel;
 import ikube.gui.panel.IndexesPanel;
 import ikube.gui.panel.MenuPanel;
 import ikube.gui.panel.NavigationPanel;
+import ikube.gui.panel.ServersPanel;
 import ikube.util.ApplicationObjectSupport;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +36,8 @@ public class Window extends com.vaadin.ui.Window {
 	public static Window INSTANCE;
 
 	@Autowired
+	private transient DashPanelContainer dashPanelContainer;
+	@Autowired
 	private transient IndexPanelContainer indexPanelContainer;
 	@Autowired
 	private transient IndexesPanelContainer indexesPanelContainer;
@@ -39,6 +45,8 @@ public class Window extends com.vaadin.ui.Window {
 	private transient ApplicationObjectSupport applicationObjectSupport;
 	@Autowired
 	private transient NavigationPanelContainer navigationPanelContainer;
+	@Autowired
+	private transient ServersPanelContainer serversPanelContainer;
 
 	public Window() {
 		Window.INSTANCE = this;
@@ -70,9 +78,10 @@ public class Window extends com.vaadin.ui.Window {
 		horizontal.addComponent(navigationPanel);
 
 		// Content on the bottom
-		Panel dashboardPanel = new DashPanel();
-		dashboardPanel.setDescription(IConstant.DASHBOARD);
-		horizontal.addComponent(dashboardPanel);
+		Panel dashPanel = new DashPanel();
+		dashPanel.setDescription(IConstant.DASH);
+		dashPanel.setData(dashPanelContainer);
+		horizontal.addComponent(dashPanel);
 
 		Panel indexesPanel = new IndexesPanel();
 		indexesPanel.setDescription(IConstant.INDEXES);
@@ -83,11 +92,16 @@ public class Window extends com.vaadin.ui.Window {
 		indexPanel.setDescription(IConstant.INDEX);
 		indexPanel.setData(indexPanelContainer);
 
+		Panel serversPanel = new ServersPanel();
+		serversPanel.setDescription(IConstant.SERVERS);
+		serversPanel.setData(serversPanelContainer);
+
 		// Add the controllers/listeners/handlers tothe panels
 		new NavigationPanelHandler().registerHandler(navigationPanel, navigationPanelContainer);
-		new DashPanelHandler().registerHandler(dashboardPanel, null);
+		new DashPanelHandler().registerHandler(dashPanel, dashPanelContainer);
 		new IndexesPanelHandler().registerHandler(indexesPanel, indexesPanelContainer);
 		new IndexPanelHandler().registerHandler(indexPanel, indexPanelContainer);
+		new ServersPanelHandler().registerHandler(serversPanel, serversPanelContainer);
 	}
 
 }

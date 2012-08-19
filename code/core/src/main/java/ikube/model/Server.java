@@ -28,6 +28,9 @@ public class Server extends Persistable implements Comparable<Server> {
 	/** The actions of this server. */
 	@OneToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
 	private List<Action> actions;
+	@SuppressWarnings("rawtypes")
+	@OneToMany(cascade = { CascadeType.ALL }, fetch = FetchType.EAGER)
+	private List<IndexContext> indexContexts;
 	/** The age of this server. */
 	private long age;
 
@@ -53,6 +56,16 @@ public class Server extends Persistable implements Comparable<Server> {
 
 	public void setActions(final List<Action> actions) {
 		this.actions = actions;
+	}
+
+	@SuppressWarnings("rawtypes")
+	public List<IndexContext> getIndexContexts() {
+		return indexContexts;
+	}
+
+	@SuppressWarnings("rawtypes")
+	public void setIndexContexts(List<IndexContext> indexContexts) {
+		this.indexContexts = indexContexts;
 	}
 
 	public boolean isWorking() {

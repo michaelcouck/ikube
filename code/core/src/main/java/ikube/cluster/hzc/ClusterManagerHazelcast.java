@@ -4,15 +4,22 @@ import ikube.IConstants;
 import ikube.cluster.AClusterManager;
 import ikube.cluster.jms.ClusterManagerJmsLock;
 import ikube.model.Action;
+import ikube.model.IndexContext;
 import ikube.model.Server;
+import ikube.service.IMonitorService;
 import ikube.toolkit.UriUtilities;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.ILock;
@@ -25,6 +32,9 @@ import com.hazelcast.core.ILock;
  * @version 01.00
  */
 public class ClusterManagerHazelcast extends AClusterManager {
+	
+	@Autowired
+	private IMonitorService monitorService;
 
 	public ClusterManagerHazelcast() {
 		initialize();
@@ -171,6 +181,7 @@ public class ClusterManagerHazelcast extends AClusterManager {
 	 * {@inheritDoc}
 	 */
 	@Override
+	@SuppressWarnings("rawtypes")
 	public Server getServer() {
 		Map<String, Server> servers = getServers();
 		Server server = (Server) servers.get(address);
@@ -183,6 +194,9 @@ public class ClusterManagerHazelcast extends AClusterManager {
 		server.setId(time);
 		server.setAge(time);
 		server.setAddress(address);
+		Collection<IndexContext> collection = monitorService.getIndexContexts().values();
+		List<IndexContext> indexContexts = new ArrayList<IndexContext>(collection);
+		server.setIndexContexts(indexContexts);
 		servers.put(address, server);
 		return server;
 	}

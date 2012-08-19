@@ -7,10 +7,13 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import ikube.ATest;
 import ikube.IConstants;
 import ikube.database.IDataBase;
 import ikube.model.Action;
 import ikube.model.Server;
+import ikube.service.IMonitorService;
+import ikube.service.MonitorService;
 import ikube.toolkit.ThreadUtilities;
 
 import java.util.ArrayList;
@@ -31,13 +34,14 @@ import mockit.Mockit;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.IMap;
 
-public class ClusterManagerHazelcastTest {
+public class ClusterManagerHazelcastTest extends ATest {
 
 	protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -47,7 +51,13 @@ public class ClusterManagerHazelcastTest {
 
 	@Cascading
 	private IDataBase dataBase;
+	@Cascading
+	private IMonitorService monitorService;
 	private ClusterManagerHazelcast clusterManagerHazelcast;
+
+	public ClusterManagerHazelcastTest() {
+		super(ClusterManagerHazelcastTest.class);
+	}
 
 	@Before
 	public void before() {
@@ -159,6 +169,7 @@ public class ClusterManagerHazelcastTest {
 	@Test
 	public void startWorking() {
 		Deencapsulation.setField(clusterManagerHazelcast, dataBase);
+		Deencapsulation.setField(clusterManagerHazelcast, monitorService);
 		Action action = clusterManagerHazelcast.startWorking(actionName, indexName, indexableName);
 		assertEquals(indexName, action.getIndexName());
 	}
@@ -166,6 +177,7 @@ public class ClusterManagerHazelcastTest {
 	@Test
 	public void stopWorking() {
 		Deencapsulation.setField(clusterManagerHazelcast, dataBase);
+		Deencapsulation.setField(clusterManagerHazelcast, monitorService);
 
 		Action action = mock(Action.class);
 		when(action.getStartTime()).thenReturn(new Date());
@@ -182,6 +194,8 @@ public class ClusterManagerHazelcastTest {
 	@Test
 	public void getServerAndServers() {
 		Mockit.tearDownMocks();
+		monitorService = Mockito.mock(MonitorService.class);
+		Deencapsulation.setField(clusterManagerHazelcast, monitorService);
 		Server server = clusterManagerHazelcast.getServer();
 		assertNotNull(server);
 		Map<String, Server> servers = clusterManagerHazelcast.getServers();
@@ -205,7 +219,7 @@ public class ClusterManagerHazelcastTest {
 		ThreadUtilities.initialize();
 		int threads = 3;
 		final int iterations = 100;
-		final double sleep = 1;
+		final double sleep = 10;
 		final Boolean[] locks = new Boolean[threads];
 		List<Future<?>> futures = new ArrayList<Future<?>>();
 		for (int i = 0; i < threads; i++) {

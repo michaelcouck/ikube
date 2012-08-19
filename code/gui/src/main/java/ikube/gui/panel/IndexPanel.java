@@ -11,12 +11,12 @@ public class IndexPanel extends Panel {
 	public IndexPanel() {
 		setSizeFull();
 		getContent().setSizeFull();
-		setImmediate(true);
+		setImmediate(Boolean.TRUE);
 
 		treeTable = new TreeTable();
 		treeTable.setSizeFull();
-		treeTable.setSortDisabled(true);
 		treeTable.setPageLength(10);
+		treeTable.setSortDisabled(Boolean.TRUE);
 
 		addComponent(treeTable);
 	}

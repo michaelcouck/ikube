@@ -481,50 +481,6 @@ public final class FileUtilities {
 		}
 	}
 
-	/**
-	 * This function will copy files or directories from one location to another. note that the source and the destination must be mutually
-	 * exclusive. This function can not be used to copy a directory to a sub directory of itself. The function will also have problems if
-	 * the destination files already exist.
-	 * 
-	 * @param src A File object that represents the source for the copy
-	 * @param dest A File object that represents the destination for the copy.
-	 */
-	@Deprecated
-	public static void copyFiles(File src, File dest, String... patterns) {
-		// Check to ensure that the source is valid...
-		if (src == null || !src.exists()) {
-			LOGGER.warn("Source file/directory does not exist : " + src);
-			return;
-		} else if (!src.canRead()) { // check to ensure we have rights to the source...
-			LOGGER.warn("Source file/directory not readable : " + src);
-			return;
-		}
-		Pattern pattern = getPattern(patterns);
-		if (pattern.matcher(src.getAbsolutePath()).matches()) {
-			LOGGER.info("Not copying file : " + src);
-			return;
-		}
-		// is this a directory copy?
-		if (src.isDirectory()) {
-			if (!dest.exists()) { // does the destination already exist?
-				// if not we need to make it exist if possible (note this is
-				// mkdirs not mkdir)
-				dest = FileUtilities.getFile(dest.getAbsolutePath(), Boolean.TRUE);
-			}
-			// get a listing of files...
-			String children[] = src.list();
-			// copy all the files in the list.
-			for (int i = 0; i < children.length; i++) {
-				File childSrc = new File(src, children[i]);
-				File childDest = FileUtilities.getFile(new File(dest, children[i]).getAbsolutePath(), Boolean.TRUE);
-				copyFiles(childSrc, childDest, patterns);
-			}
-		} else {
-			// This was not a directory, so lets just copy the file
-			copyFile(src, dest);
-		}
-	}
-
 	public static void copyFile(File in, File out) {
 		if (!in.exists() || !in.canRead()) {
 			LOGGER.warn("Can't copy file : " + in);

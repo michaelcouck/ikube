@@ -28,7 +28,6 @@ import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
 import org.apache.lucene.index.IndexWriter;
 import org.dbunit.ext.h2.H2DataTypeFactory;
-import org.junit.BeforeClass;
 import org.junit.Ignore;
 
 @Ignore
@@ -36,17 +35,19 @@ public abstract class AbstractIntegration {
 
 	private static final Logger LOGGER = Logger.getLogger(AbstractIntegration.class);
 
-	private static boolean INITIALIZED = Boolean.FALSE;
+	private static final File DOT_DIRECTORY = new File(".");
 
-	@BeforeClass
-	public static synchronized void beforeClass() {
-		if (INITIALIZED) {
-			return;
-		}
-		INITIALIZED = Boolean.TRUE;
+	static {
 		Logging.configure();
 		try {
-			FileUtilities.deleteFiles(new File("."), "btm1.tlog", "btm2.tlog", "ikube.h2.db", "ikube.lobs.db", "ikube.log", "openjpa.log");
+			FileUtilities.deleteFiles(//
+					DOT_DIRECTORY, //
+					"btm1.tlog", //
+					"btm2.tlog", //
+					"ikube.h2.db", //
+					"ikube.lobs.db", //
+					"ikube.log", //
+					"openjpa.log");
 			Thread.sleep(3000);
 			startContext();
 			Thread.sleep(3000);
@@ -59,7 +60,6 @@ public abstract class AbstractIntegration {
 	private static void startContext() {
 		ApplicationContextManager.getBean(ListenerManager.class).removeListeners();
 		IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
-		// dataBase.find(Address.class, 0l);
 		dataBase.find(ikube.model.File.class, 0l);
 		ApplicationContextManager.getBean(ListenerManager.class).removeListeners();
 	}
@@ -67,9 +67,8 @@ public abstract class AbstractIntegration {
 	private static void insertData() throws SQLException, FileNotFoundException {
 		DataSource dataSource = ApplicationContextManager.getBean("nonXaDataSourceH2");
 		Connection connection = dataSource.getConnection();
-		File dotDirectory = new File(".");
-		LOGGER.info("Dot directory : " + dotDirectory.getAbsolutePath());
-		File allData = FileUtilities.findFileRecursively(dotDirectory, false, "allData");
+		LOGGER.info("Dot directory : " + DOT_DIRECTORY.getAbsolutePath());
+		File allData = FileUtilities.findFileRecursively(DOT_DIRECTORY, false, "allData");
 		InputStream inputStream = new FileInputStream(allData);
 		DataUtilities.setDataTypeFactory(new H2DataTypeFactory());
 		DataUtilities.insertData(connection, inputStream);
@@ -102,8 +101,10 @@ public abstract class AbstractIntegration {
 	 * the index that has just been created. Note that if there are still cascading mocks from JMockit, the index writer sill not create the
 	 * index! So you have to tear down all mocks prior to using this method.
 	 * 
-	 * @param indexContext the index context to use for the path to the index
-	 * @param strings the data that must be in the index
+	 * @param indexContext
+	 *            the index context to use for the path to the index
+	 * @param strings
+	 *            the data that must be in the index
 	 * @return the latest index directory, i.e. the one that has just been created
 	 */
 	protected File createIndex(IndexContext<?> indexContext, String... strings) {
@@ -131,5 +132,5 @@ public abstract class AbstractIntegration {
 		// logger.info("Created index in : " + serverIndexDirectory.getAbsolutePath());
 		return latestIndexDirectory;
 	}
-	
+
 }

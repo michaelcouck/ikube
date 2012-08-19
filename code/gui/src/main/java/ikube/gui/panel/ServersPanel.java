@@ -1,28 +1,32 @@
 package ikube.gui.panel;
 
 import ikube.gui.IConstant;
+import ikube.gui.data.IContainer;
 
 import com.vaadin.terminal.Sizeable;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TreeTable;
 
 public class ServersPanel extends Panel {
 
+	private TreeTable treeTable;
+
 	public ServersPanel() {
 		setSizeFull();
-		setImmediate(true);
+		getContent().setSizeFull();
+		setImmediate(Boolean.TRUE);
 
-		Label text = new Label(IConstant.SERVERS, Label.CONTENT_XHTML);
-		addComponent(text);
-
-		TreeTable treeTable = new TreeTable();
+		treeTable = new TreeTable(IConstant.SERVERS);
 		treeTable.setWidth(100, Sizeable.UNITS_PERCENTAGE);
-		treeTable.setHeight(100, Sizeable.UNITS_PERCENTAGE);
-		treeTable.setSortDisabled(true);
-		treeTable.setPageLength(7);
+		treeTable.setSelectable(Boolean.TRUE);
+		treeTable.setImmediate(Boolean.TRUE);
+		treeTable.setSortDisabled(Boolean.TRUE);
 
 		addComponent(treeTable);
+	}
+
+	public void setData(Object data) {
+		((IContainer) data).init(this);
 	}
 
 }

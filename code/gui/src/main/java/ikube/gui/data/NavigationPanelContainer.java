@@ -32,7 +32,7 @@ public class NavigationPanelContainer extends HierarchicalContainer implements I
 	public void init(final Panel target) {
 		Tree tree = GuiTools.findComponent(target, Tree.class);
 
-		addItemIfNotPresent(IConstant.DASHBOARD, null);
+		addItemIfNotPresent(IConstant.DASH, null);
 		addItemIfNotPresent(IConstant.INDEXES, null);
 
 		for (final Map.Entry<String, IndexContext> mapEntry : monitorService.getIndexContexts().entrySet()) {
@@ -43,7 +43,7 @@ public class NavigationPanelContainer extends HierarchicalContainer implements I
 		addItemIfNotPresent(IConstant.SERVERS, null);
 		for (Map.Entry<String, Server> mapEntry : clusterManager.getServers().entrySet()) {
 			Server server = mapEntry.getValue();
-			String id = server.getAddress();
+			String id = server.getIp();
 			addItemIfNotPresent(id, IConstant.SERVERS);
 		}
 

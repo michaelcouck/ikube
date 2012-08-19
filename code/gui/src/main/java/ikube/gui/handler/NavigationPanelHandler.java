@@ -22,7 +22,7 @@ public class NavigationPanelHandler extends AHandler {
 
 	protected void registerHandlerInternal(final Component component, final Container container) {
 		// The dash board is always the first panel in the center
-		currentPanel = (Panel) findComponent(component, IConstant.DASHBOARD, new ArrayList<Component>());
+		currentPanel = (Panel) findComponent(component, IConstant.DASH, new ArrayList<Component>());
 		Iterator<Component> iterator = ((Panel) component).getComponentIterator();
 		while (iterator.hasNext()) {
 			Component childComponent = iterator.next();

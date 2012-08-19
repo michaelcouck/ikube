@@ -9,6 +9,8 @@ import java.io.File;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 
@@ -16,10 +18,20 @@ public class ApplicationContextManagerIntegration {
 
 	private String ikubeFolder = "./" + IConstants.IKUBE;
 
+	@Before
+	public void before() {
+		ApplicationContextManager.closeApplicationContext();
+	}
+
 	@After
 	public void after() {
 		ApplicationContextManager.closeApplicationContext();
 		FileUtilities.deleteFile(new File(ikubeFolder), 1);
+	}
+
+	@AfterClass
+	public static void afterClass() {
+		ApplicationContextManager.getApplicationContext();
 	}
 
 	@Test
@@ -31,17 +43,23 @@ public class ApplicationContextManagerIntegration {
 
 	@Test
 	public void configuration() {
-		// Test with the configuration property set
-		File configurationFolder = FileUtilities.findFileRecursively(new File("."), "external");
-		File configurationFile = FileUtilities.findFileRecursively(configurationFolder, "spring.xml");
-		String configurationFilePath = configurationFile.getAbsolutePath();
+		try {
+			// Test with the configuration property set
+			File configurationFolder = FileUtilities.findFileRecursively(new File("."), "external");
+			File configurationFile = FileUtilities.findFileRecursively(configurationFolder, "spring.xml");
+			String configurationFilePath = configurationFile.getAbsolutePath();
 
-		configurationFilePath = FileUtilities.cleanFilePath(configurationFilePath);
-		configurationFilePath = "file:" + configurationFilePath;
-		System.setProperty(IConstants.IKUBE_CONFIGURATION, configurationFilePath);
+			configurationFilePath = FileUtilities.cleanFilePath(configurationFilePath);
+			configurationFilePath = "file:" + configurationFilePath;
+			System.setProperty(IConstants.IKUBE_CONFIGURATION, configurationFilePath);
 
-		ApplicationContext applicationContext = ApplicationContextManager.getApplicationContext();
-		assertNotNull(applicationContext);
+			ApplicationContext applicationContext = ApplicationContextManager.getApplicationContext();
+			assertNotNull(applicationContext);
+			Object mailerExternal = applicationContext.getBean("mailerExternal");
+			assertNotNull(mailerExternal);
+		} finally {
+			System.setProperty(IConstants.IKUBE_CONFIGURATION, "none");
+		}
 	}
 
 	@Test
@@ -51,6 +69,8 @@ public class ApplicationContextManagerIntegration {
 		FileUtils.copyDirectory(configurationFolder, ikubeFolder);
 		ApplicationContext applicationContext = ApplicationContextManager.getApplicationContext();
 		assertNotNull(applicationContext);
+		Object mailerExternal = applicationContext.getBean("mailerExternal");
+		assertNotNull(mailerExternal);
 	}
 
 }

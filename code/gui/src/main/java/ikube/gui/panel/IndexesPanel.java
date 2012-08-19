@@ -1,5 +1,6 @@
 package ikube.gui.panel;
 
+import ikube.gui.IConstant;
 import ikube.gui.data.IContainer;
 
 import com.vaadin.terminal.Sizeable;
@@ -15,7 +16,7 @@ public class IndexesPanel extends Panel {
 		getContent().setSizeFull();
 		setImmediate(true);
 
-		treeTable = new TreeTable("Indexes");
+		treeTable = new TreeTable(IConstant.INDEXES);
 		treeTable.setWidth(100, Sizeable.UNITS_PERCENTAGE);
 		treeTable.setSelectable(Boolean.TRUE);
 		treeTable.setImmediate(Boolean.TRUE);

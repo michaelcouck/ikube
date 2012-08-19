@@ -31,12 +31,6 @@ public class PruneIntegration extends AbstractIntegration {
 
 	@Before
 	public void before() throws Exception {
-		try {
-			// MappingTool.main(new String[] { MappingTool.ACTION_BUILD_SCHEMA });
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw e;
-		}
 		prune = new Prune();
 		dataBase = ApplicationContextManager.getBean(IDataBase.class);
 		Deencapsulation.setField(prune, dataBase);

@@ -163,48 +163,22 @@ public class FileUtilitiesTest extends ATest {
 		for (int i = bytes.length - 1; i >= 0; i--) {
 			assertEquals("The bytes must be the same in the ", bytes[i], readBytes[i]);
 		}
-		// TODO Create a file with 50 meg and read 1 meg from the end
-		// Now read 1000 bytes from the end
-		// We won't try to read more than the file will we?
-	}
-
-	@Test
-	public void copyFiles() {
-		File externalFolder = FileUtilities.findFileRecursively(new File("."), "external");
-		File newExternalFolder = new File(".");
-		FileUtilities.copyFiles(externalFolder, newExternalFolder, "svn");
-		File springBeansFile = FileUtilities.findFileRecursively(newExternalFolder, "spring-beans.xml");
-		assertNotNull("The configuration should be copied to the external folder : ", springBeansFile);
-		assertTrue("This file should be persisted, and available : ", springBeansFile.exists());
-	}
-
-	@Test
-	public void getFile() {
-		File file = FileUtilities.getFile("./indexes/campaignIndex/1321025482078/192.168.1.35.1178697512", Boolean.TRUE);
-		assertNotNull(file);
-		// file = FileUtilities.getFile("/media/nas/xfs/indexes/indexContext/1342339046990/192.168.1.14", Boolean.TRUE);
-		// assertNotNull(file);
 	}
 
 	@Test
 	public void unzip() {
-		// FileUtilities.deleteFile(new File(".", "jar.jar"), 1);
-		File jarFile = FileUtilities.findFileRecursively(new File("."), false, "jar.jar\\Z");
-		File unzipedDirectory = FileUtilities.unzip(jarFile.getAbsolutePath(), "./deleteMe");
-		assertNotNull(unzipedDirectory);
-		assertTrue(unzipedDirectory.exists());
-		File ruleInterceptorFile = FileUtilities.findFileRecursively(unzipedDirectory, "RuleInterceptor.java");
-		assertNotNull(ruleInterceptorFile);
-		assertTrue(ruleInterceptorFile.exists());
-		// FileUtilities.deleteFile(new File(".", "jar.jar"), 1);
-		FileUtilities.deleteFile(unzipedDirectory, 1);
-	}
-
-	@Test
-	public void deleteTmpFiles() {
-		FileUtilities.deleteFiles(new File("C:/Users/Michael/AppData/Local/Temp"), "JF");
-		FileUtilities.deleteFiles(new File("C:/Users/db2admin/AppData/Local/Temp"), "JF");
-		FileUtilities.deleteFiles(new File("C:/Users/Administrator/AppData/Local/Temp"), "JF");
+		try {
+			File jarFile = FileUtilities.findFileRecursively(new File("."), false, "jar.jar\\Z");
+			File unzipedDirectory = FileUtilities.unzip(jarFile.getAbsolutePath(), "./deleteMe");
+			assertNotNull(unzipedDirectory);
+			assertTrue(unzipedDirectory.exists());
+			File ruleInterceptorFile = FileUtilities.findFileRecursively(unzipedDirectory, "RuleInterceptor.java");
+			assertNotNull(ruleInterceptorFile);
+			assertTrue(ruleInterceptorFile.exists());
+			FileUtilities.deleteFile(unzipedDirectory, 1);
+		} finally {
+			FileUtilities.deleteFile(new File("./deleteMe"), 1);
+		}
 	}
 
 	@Test

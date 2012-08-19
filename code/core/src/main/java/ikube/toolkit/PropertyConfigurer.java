@@ -43,9 +43,9 @@ public class PropertyConfigurer extends Properties {
 		// Load the properties from our own jar
 		ownJar();
 		// Check all the jars on the class path
-		// checkClasspath();
+		checkClasspath();
 		// Check the file system for properties files
-		// systemProperties();
+		systemProperties();
 		// Check the file system for jars that have the properties files
 		checkFileSystem();
 		// If the system property for the configuration has not been set then set it to the dot directory
@@ -65,11 +65,13 @@ public class PropertyConfigurer extends Properties {
 		}
 	}
 
-	@SuppressWarnings("unused")
 	private void systemProperties() {
 		List<File> propertyFiles = FileUtilities.findFilesRecursively(new File("."), new ArrayList<File>(), fileNamePattern);
 		for (File propertyFile : propertyFiles) {
 			try {
+				if (propertyFile == null || !propertyFile.canRead() || propertyFile.isDirectory()) {
+					continue;
+				}
 				LOGGER.info("        : Loading properties from : " + propertyFile);
 				this.load(new FileInputStream(propertyFile));
 			} catch (Exception e) {
@@ -91,7 +93,6 @@ public class PropertyConfigurer extends Properties {
 		}
 	}
 
-	@SuppressWarnings("unused")
 	private void checkClasspath() {
 		try {
 			// Check the classpath, this could take a while of course
