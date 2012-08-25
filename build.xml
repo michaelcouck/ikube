@@ -1,0 +1,218 @@
+<project name="Deploy Ikube Cluster" default="deploy">
+
+	<property file="build.properties" />
+	<!-- The default profile to deploy. -->
+	<property name="profile" value="production" />
+	<property name="user-dir" value="${user.dir}" />
+	<property name="user-home" value="${user.home}" />
+
+	<target name="everything">
+	    <antcall target="prepare-everything" />
+	    <antcall target="clean-all-servers" />
+	    <antcall target="deploy-ikube" />
+	    <antcall target="deploy-configuration" />
+	</target>
+	
+	<target name="prepare-everything">
+		<antcall target="package-configuration" />
+		<antcall target="jar-configuration" />
+		<antcall target="deploy-configuration-for-jetty" />
+	    
+	    <!-- Rename the wars to ikube.war for convenience. -->
+		<echo message="Renaming Ikube war for convenience : " />
+		<move file="${target-directory}/${final.name}" tofile="${target-directory}/${ikube-war}" />
+		<!-- Zip Ikube and the configuration directory for upload to Google Code -->
+		<echo message="Zipping ikube with configuration : " />
+		<antcall target="zip-ikube" />
+	</target>
+	
+	<!-- 
+		This target will unpack Tomcat, put the war in the web apps directory, unpack the configuration to the 
+		bin directory, then zip everything up again into a zip for distribution/deployment.
+	-->
+	<target name="zip-ikube">
+		<untar compression="gzip" dest="target" src="code/libs/tools/${tomcat-gzip}">
+		</untar>
+		<unjar src="${configuration-directory}/${ikube-configuration-jar}" dest="${target-directory}/${tomcat-unpacked}/bin" overwrite="true" />
+		<copy file="${target-directory}/${ikube-war}" todir="${target-directory}/${tomcat-unpacked}/webapps" overwrite="true">
+		</copy>
+		<zip 
+			destfile="${target-directory}/ikube.zip" 
+			compress="true" 
+			filesonly="false" 
+			update="false" 
+			whenempty="skip">
+			<zipfileset dir="${target-directory}/${tomcat-unpacked}" prefix="${tomcat-unpacked}" />
+		</zip>
+	</target>
+
+	<!-- Deploys the war to all the servers. -->
+	<target name="deploy-ikube">
+		<!-- Deploy to the server -->
+		<antcall target="copy-to-server">
+			<param name="file-to-copy" value="${target-directory}/${ikube-war}" />
+			<param name="server-directory" value="michael:caherline@192.168.1.4:/usr/share/apache-tomcat-7.0.27/webapps" />
+		</antcall>
+		<antcall target="copy-to-server">
+			<param name="file-to-copy" value="${target-gui-directory}/${ikube-gui-war}" />
+			<param name="server-directory" value="michael:caherline@192.168.1.4:/usr/share/apache-tomcat-7.0.27/webapps" />
+		</antcall>
+		<antcall target="copy-to-server">
+			<param name="file-to-copy" value="${target-directory}/${ikube-war}" />
+			<param name="server-directory" value="michael:caherline@192.168.1.6:/usr/share/apache-tomcat-7.0.27/webapps" />
+		</antcall>
+		<antcall target="copy-to-server">
+			<param name="file-to-copy" value="${target-directory}/${ikube-war}" />
+			<param name="server-directory" value="michael:caherline@192.168.1.7:/usr/share/apache-tomcat-7.0.27/webapps" />
+		</antcall>
+		<antcall target="copy-to-server">
+			<param name="file-to-copy" value="${target-directory}/${ikube-war}" />
+			<param name="server-directory" value="michael:caherline@192.168.1.8:/usr/share/apache-tomcat-7.0.27/webapps" />
+		</antcall>
+	</target>
+	
+	<target name="copy-to-server">
+	    <scp file="${file-to-copy}" todir="${server-directory}" trust="true" failonerror="false" />
+	</target>
+
+	<target name="clean-all-servers">
+		<antcall target="clean-server">
+		    <param name="host" value="192.168.1.4" />
+		</antcall>
+		<antcall target="clean-server">
+		    <param name="host" value="192.168.1.6" />
+		</antcall>
+		<antcall target="clean-server">
+		    <param name="host" value="192.168.1.7" />
+		</antcall>
+	</target>
+	
+	<target name="clean-server">
+		<sshexec 
+		    host="${host}"
+			trust="true"
+			username="root"
+			password="caherline"
+			command="rm -r /usr/share/apache-tomcat-7.0.27/bin/ikube/*"
+			failonerror="false" />
+		<sshexec host="${host}"
+			trust="true"
+			username="root"
+			password="caherline"
+			command="rm -r /usr/share/apache-tomcat-7.0.27/webapps/ikube*" 
+			failonerror="false" />
+		<sshexec host="${host}"
+			trust="true"
+			username="root"
+			password="caherline"
+			command="rm -r /usr/share/apache-tomcat-7.0.27/logs/*" 
+			failonerror="false" />
+	</target>
+	
+	<!-- 
+		This target will copy the common, the production and the profile configuration to the 
+		specified output directory. The profile must be the name of the configuration directory 
+		in the conf folder int he core resources folder.  
+	-->
+	<target name="package-configuration">
+		<delete dir="${configuration-directory}" />
+		<!-- Copy the common configuration -->
+		<copy todir="${configuration-directory}/ikube/common" failonerror="false">
+			<fileset dir="../core/src/main/resources/conf/common" />
+		</copy>
+		<!-- Copy the profile configuration -->
+		<copy todir="${configuration-directory}/ikube/${profile}" failonerror="false">
+			<fileset dir="../core/src/main/resources/conf/${profile}" />
+		</copy>
+		<!-- Copy the production configuration, with the geo name stuff -->
+		<copy todir="${configuration-directory}/ikube/production" failonerror="false">
+			<fileset dir="../core/src/main/resources/conf/production" />
+		</copy>
+	</target>
+	<target name="jar-configuration">
+		<jar destfile="${configuration-directory}/${ikube-configuration-jar}" basedir="${configuration-directory}" />
+	</target>
+	<target name="deploy-configuration-for-jetty">
+		<unjar src="${configuration-directory}/${ikube-configuration-jar}" dest="${user-dir}" overwrite="true" />
+	</target>
+	
+	<!-- This target will deploy the configuration to the servers. -->
+	<target name="deploy-configuration">
+		<echo>User dir: ${user-dir}</echo>
+		<echo>User home: ${user-home}</echo>
+		<copy file="${configuration-directory}/${ikube-configuration-jar}" todir="./src/main/webapp/docs" failonerror="true" />
+		
+		<!-- Deploy configuration on server -->
+		<antcall target="copy-directory-to-server">
+			<param name="directory-to-copy" value="${configuration-directory}/ikube" />
+			<param name="server-directory" value="michael:caherline@192.168.1.4:/usr/share/apache-tomcat-7.0.27/bin/ikube" />
+		</antcall>
+		<antcall target="copy-directory-to-server">
+			<param name="directory-to-copy" value="${configuration-directory}/ikube" />
+			<param name="server-directory" value="michael:caherline@192.168.1.6:/usr/share/apache-tomcat-7.0.27/bin/ikube" />
+		</antcall>
+		<antcall target="copy-directory-to-server">
+			<param name="directory-to-copy" value="${configuration-directory}/ikube" />
+			<param name="server-directory" value="michael:caherline@192.168.1.7:/usr/share/apache-tomcat-7.0.27/bin/ikube" />
+		</antcall>
+		<antcall target="copy-directory-to-server">
+			<param name="directory-to-copy" value="${configuration-directory}/ikube" />
+			<param name="server-directory" value="michael:caherline@192.168.1.8:/usr/share/apache-tomcat-7.0.27/bin/ikube" />
+		</antcall>
+	</target>
+	
+	<target name="copy-directory-to-server">
+	    <scp todir="${server-directory}" trust="true" failonerror="false">
+	    	<fileset dir="${directory-to-copy}" />
+	    </scp>
+	</target>
+	
+	<target name="start-tomcat-cluster">
+		<antcall target="executeTomcatAction">
+			<param name="action" value="start" />
+			<param name="tomcat-bin" value="${tomcat-1-bin}" />
+			<param name="tomcat-home" value="${tomcat-1}" />
+		</antcall>
+		<sleep seconds="${sleep}" />
+		<antcall target="executeTomcatAction">
+			<param name="action" value="start" />
+			<param name="tomcat-bin" value="${tomcat-2-bin}" />
+			<param name="tomcat-home" value="${tomcat-2}" />
+		</antcall>
+		<sleep seconds="${sleep}" />
+		<antcall target="executeTomcatAction">
+			<param name="action" value="start" />
+			<param name="tomcat-bin" value="${tomcat-3-bin}" />
+			<param name="tomcat-home" value="${tomcat-3}" />
+		</antcall>
+	</target>
+	<target name="stop-tomcat-cluster">
+		<antcall target="executeTomcatAction">
+			<param name="action" value="stop" />
+			<param name="tomcat-bin" value="${tomcat-1-bin}" />
+			<param name="tomcat-home" value="${tomcat-1}" />
+		</antcall>
+		<antcall target="executeTomcatAction">
+			<param name="action" value="stop" />
+			<param name="tomcat-bin" value="${tomcat-2-bin}" />
+			<param name="tomcat-home" value="${tomcat-2}" />
+		</antcall>
+		<antcall target="executeTomcatAction">
+			<param name="action" value="stop" />
+			<param name="tomcat-bin" value="${tomcat-3-bin}" />
+			<param name="tomcat-home" value="${tomcat-3}" />
+		</antcall>
+	</target>
+
+	<target name="executeTomcatAction">
+		<java jar="${tomcat-bin}/bootstrap.jar" dir="${tomcat-bin}" fork="yes" spawn="true">
+			<jvmarg value="-Dcatalina.home=${tomcat-home}" />
+			<jvmarg value="-Xms512m" />
+			<jvmarg value="-Xmx2048m" />
+			<jvmarg value="-XX:PermSize=64m" />
+			<jvmarg value="-XX:MaxPermSize=256m" />
+			<arg line="${action}" />
+		</java>
+	</target>
+
+</project>

@@ -89,7 +89,7 @@ public class IndexesPanelContainer extends HierarchicalContainer implements ICon
 
 			String indexName = indexContext.getIndexName();
 			String documents = Long.toString(snapshot.getNumDocs());
-			String size = Long.toString(snapshot.getIndexSize());
+			String size = Double.toString(((double) snapshot.getIndexSize()) / 1000000);
 			String open = indexContext.getMultiSearcher() != null ? Boolean.TRUE.toString() : Boolean.FALSE.toString();
 			String maxAge = Long.toString(indexContext.getMaxAge());
 			String timestamp = new SimpleDateFormat("dd/MM/yyyy HH:mm").format(snapshot.getLatestIndexTimestamp());

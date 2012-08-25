@@ -136,6 +136,7 @@ public final class IndexManager {
 		try {
 			if (indexContext != null && indexContext.getIndexWriter() != null) {
 				IndexWriter indexWriter = indexContext.getIndexWriter();
+				LOGGER.info("Optimizing and closing the index : " + indexContext.getIndexName() + ", snapshot : " + indexContext.getLastSnapshot());
 				closeIndexWriter(indexWriter);
 			}
 		} finally {
@@ -155,11 +156,15 @@ public final class IndexManager {
 			return;
 		}
 		Directory directory = null;
-		LOGGER.info("Optimizing and closing the index : " + indexWriter);
 		try {
+			// We'll sleep a few seconds to give the other threads a chance
+			// to release themselves from work and more importantly the index files
+			ThreadUtilities.sleep(5000);
 			directory = indexWriter.getDirectory();
+			indexWriter.prepareCommit();
 			indexWriter.commit();
-			indexWriter.optimize(Boolean.TRUE);
+			indexWriter.maybeMerge();
+			indexWriter.optimize(10, Boolean.TRUE);
 		} catch (NullPointerException e) {
 			LOGGER.error("Null pointer, in the index writer : " + indexWriter);
 			if (LOGGER.isDebugEnabled()) {
@@ -179,8 +184,10 @@ public final class IndexManager {
 		}
 		try {
 			if (directory != null) {
+				int retry = 0;
+				int maxRetry = 10;
 				// We have to wait for the merges and the close
-				while (IndexWriter.isLocked(directory)) {
+				while (IndexWriter.isLocked(directory) && retry++ < maxRetry) {
 					if (IndexWriter.isLocked(directory)) {
 						LOGGER.warn("Index still locked : " + directory);
 						ThreadUtilities.sleep(1000);

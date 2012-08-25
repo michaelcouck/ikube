@@ -37,6 +37,7 @@ public abstract class AHandler implements IHandler {
 	}
 
 	protected Window findMainWindow(final Component component) {
+		// TODO Remove this and replace with GuiTools#findComponent()
 		if (component == null) {
 			return null;
 		}

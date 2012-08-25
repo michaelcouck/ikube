@@ -3,10 +3,12 @@ package ikube.cluster.hzc;
 import ikube.IConstants;
 import ikube.cluster.AClusterManager;
 import ikube.cluster.jms.ClusterManagerJmsLock;
+import ikube.listener.Event;
 import ikube.model.Action;
 import ikube.model.IndexContext;
 import ikube.model.Server;
 import ikube.service.IMonitorService;
+import ikube.toolkit.ThreadUtilities;
 import ikube.toolkit.UriUtilities;
 
 import java.io.Serializable;
@@ -23,27 +25,40 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.ILock;
+import com.hazelcast.core.Message;
+import com.hazelcast.core.MessageListener;
+import com.hazelcast.core.Transaction;
 
 /**
- * This action checks that the disk is not full, the one where the indexes are, if it is then this instance will close down.
- * 
  * @author Michael Couck
  * @since 15.07.12
  * @version 01.00
  */
 public class ClusterManagerHazelcast extends AClusterManager {
-	
+
 	@Autowired
 	private IMonitorService monitorService;
-
-	public ClusterManagerHazelcast() {
-		initialize();
-	}
 
 	public void initialize() {
 		ip = UriUtilities.getIp();
 		address = ip + "." + Hazelcast.getConfig().getPort();
 		logger.info("Cluster manager : " + ip + ", " + address);
+		Hazelcast.getTopic(IConstants.TOPIC).addMessageListener(new MessageListener<Object>() {
+			@Override
+			public void onMessage(Message<Object> message) {
+				// If this is a stop working message then find the future in the
+				// thread utilities and kill it
+				Object source = message.getSource();
+				Object object = message.getMessageObject();
+				logger.info("Got message : " + source + ", " + object);
+				if (object != null && Event.class.isAssignableFrom(object.getClass())) {
+					Event event = (Event) object;
+					if (event.getObject() != null && String.class.isAssignableFrom(event.getObject().getClass())) {
+						ThreadUtilities.destroy((String) event.getObject());
+					}
+				}
+			}
+		});
 	}
 
 	/**
@@ -120,36 +135,56 @@ public class ClusterManagerHazelcast extends AClusterManager {
 	 */
 	@Override
 	public synchronized Action startWorking(String actionName, String indexName, String indexableName) {
+		Transaction transaction = Hazelcast.getTransaction();
+		transaction.begin();
 		try {
+			// TODO Do we need to lock the cluster at every read?
 			Action action = getAction(actionName, indexName, indexableName);
 			Server server = getServer();
 			if (server.getAddress() == null) {
 				server.setAddress(address);
 			}
 			server.getActions().add(action);
-			logger.debug("Start working : {} ", action);
-			Map<String, Server> servers = getServers();
-			servers.put(address, server);
+			Hazelcast.getMap(IConstants.SERVERS).put(server.getAddress(), server);
+			transaction.commit();
 			return action;
+		} catch (Exception e) {
+			logger.error("Exception starting action : " + actionName + ", " + indexName + ", " + indexableName, e);
+			transaction.rollback();
 		} finally {
 			notifyAll();
 		}
+		return null;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized void stopWorking(Action action) {
+	public synchronized void stopWorking(final Action action) {
 		try {
-			logger.debug("Stop working : {} ", action);
+			stopWorking(action, 10);
+		} finally {
+			notifyAll();
+		}
+	}
+
+	private void stopWorking(final Action action, final int retry) {
+		if (retry > IConstants.MAX_RETRY_CLUSTER_REMOVE) {
+			logger.warn("Retried to remove the action, failed : " + retry);
+			return;
+		}
+		Transaction transaction = Hazelcast.getTransaction();
+		transaction.begin();
+		boolean removed = false;
+		Server server = getServer();
+		try {
+			logger.warn("Stop working : {} ", action);
 
 			action.setEndTime(new Timestamp(System.currentTimeMillis()));
 			action.setDuration(action.getEndTime().getTime() - action.getStartTime().getTime());
 
-			Server server = getServer();
 			Iterator<Action> iterator = server.getActions().iterator();
-			boolean removed = false;
 			// We must iterate over the actions and remove the one by id because the
 			// equals is modified by Hazelcast it seems
 			while (iterator.hasNext()) {
@@ -158,14 +193,19 @@ public class ClusterManagerHazelcast extends AClusterManager {
 					removed = true;
 				}
 			}
-			if (!removed) {
-				logger.warn("Didn't removed action : {} {} ", new Object[] { action, server.getActions() });
-			}
-			Map<String, Server> servers = getServers();
-			servers.put(server.getAddress(), server);
+
+			Hazelcast.getMap(IConstants.SERVERS).put(server.getAddress(), server);
+			// Commit the grid because the database is not as important as the cluster
+			transaction.commit();
 			dataBase.merge(action);
-		} finally {
-			notifyAll();
+		} catch (Exception e) {
+			logger.error("Exception stopping action : " + action, e);
+			removed = false;
+			transaction.rollback();
+		}
+		if (!removed) {
+			logger.warn("Retrying to remove the action : " + action);
+			stopWorking(action, retry + 1);
 		}
 	}
 
@@ -183,22 +223,27 @@ public class ClusterManagerHazelcast extends AClusterManager {
 	@Override
 	@SuppressWarnings("rawtypes")
 	public Server getServer() {
-		Map<String, Server> servers = getServers();
-		Server server = (Server) servers.get(address);
-		if (server == null) {
-			server = new Server();
-			logger.info("Server null, creating new one : " + server);
+		try {
+			Server server = (Server) Hazelcast.getMap(IConstants.SERVERS).get(address);
+			if (server == null) {
+				server = new Server();
+				server.setIp(ip);
+				server.setAddress(address);
+				logger.info("Server null, creating new one : " + server);
+			}
+			long time = System.currentTimeMillis();
+			server.setId(time);
+			server.setAge(time);
+
+			Collection<IndexContext> collection = monitorService.getIndexContexts().values();
+			List<IndexContext> indexContexts = new ArrayList<IndexContext>(collection);
+			server.setIndexContexts(indexContexts);
+
+			return server;
+		} catch (Exception e) {
+			logger.error("Exception getting the server : ", e);
 		}
-		long time = System.currentTimeMillis();
-		server.setIp(ip);
-		server.setId(time);
-		server.setAge(time);
-		server.setAddress(address);
-		Collection<IndexContext> collection = monitorService.getIndexContexts().values();
-		List<IndexContext> indexContexts = new ArrayList<IndexContext>(collection);
-		server.setIndexContexts(indexContexts);
-		servers.put(address, server);
-		return server;
+		return null;
 	}
 
 	/**
@@ -206,7 +251,7 @@ public class ClusterManagerHazelcast extends AClusterManager {
 	 */
 	@Override
 	public void sendMessage(Serializable serializable) {
-		// Don't need to do anything, the distributed map should be updated
+		Hazelcast.getTopic(IConstants.TOPIC).publish(serializable);
 	}
 
 	/**

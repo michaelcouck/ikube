@@ -10,6 +10,8 @@ import static org.mockito.Mockito.when;
 import ikube.ATest;
 import ikube.IConstants;
 import ikube.database.IDataBase;
+import ikube.listener.Event;
+import ikube.listener.ListenerManager;
 import ikube.model.Action;
 import ikube.model.Server;
 import ikube.service.IMonitorService;
@@ -40,6 +42,8 @@ import org.slf4j.LoggerFactory;
 
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.IMap;
+import com.hazelcast.core.Message;
+import com.hazelcast.core.MessageListener;
 
 public class ClusterManagerHazelcastTest extends ATest {
 
@@ -200,13 +204,38 @@ public class ClusterManagerHazelcastTest extends ATest {
 		assertNotNull(server);
 		Map<String, Server> servers = clusterManagerHazelcast.getServers();
 		assertNotNull(servers);
-		assertEquals(1, servers.size());
 	}
 
 	@Test
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void sendMessage() {
-		// Not implemented
+		MessageListener messageListener = Mockito.mock(MessageListener.class);
+		Hazelcast.getTopic(IConstants.TOPIC).addMessageListener(messageListener);
+		clusterManagerHazelcast.sendMessage(new Event());
+		ThreadUtilities.sleep(1000);
+		Mockito.verify(messageListener, Mockito.atLeastOnce()).onMessage(Mockito.any(Message.class));
 	}
+	
+	@Test
+	public void submitDestroy() {
+		Mockit.tearDownMocks();
+		Runnable runnable = new Runnable() {
+			@Override
+			public void run() {
+				while (true) {
+					ThreadUtilities.sleep(1000);
+				}
+			}
+		};
+		String name = "name";
+		Future<?> future = ThreadUtilities.submit(name, runnable);
+		logger.info("Future : " + future.isCancelled() + ", " + future.isDone());
+		
+		Event event = ListenerManager.getEvent(Event.TERMINATE, System.currentTimeMillis(), name, Boolean.FALSE);
+		clusterManagerHazelcast.sendMessage(event);
+		ThreadUtilities.sleep(1000);
+		assertTrue(future.isCancelled());
+ 	}
 
 	@Test
 	public void getLocks() {
@@ -242,7 +271,7 @@ public class ClusterManagerHazelcastTest extends ATest {
 		ThreadUtilities.waitForFutures(futures, Long.MAX_VALUE);
 		ThreadUtilities.destroy();
 	}
-
+	
 	private void validate(final Boolean[] locks) {
 		int count = 0;
 		// logger.info("Validate ; " + Arrays.deepToString(locks));

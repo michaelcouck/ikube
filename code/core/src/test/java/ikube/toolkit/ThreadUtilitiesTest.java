@@ -2,12 +2,12 @@ package ikube.toolkit;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import ikube.ATest;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
 
-import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,9 +19,11 @@ import org.junit.Test;
  * @since 20.03.11
  * @version 01.00
  */
-public class ThreadUtilitiesTest {
+public class ThreadUtilitiesTest extends ATest {
 
-	private Logger logger = Logger.getLogger(this.getClass());
+	public ThreadUtilitiesTest() {
+		super(ThreadUtilitiesTest.class);
+	}
 
 	@Before
 	public void before() {
@@ -66,7 +68,7 @@ public class ThreadUtilitiesTest {
 				try {
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {
-					logger.error(e);
+					logger.error(null, e);
 				}
 			}
 		};
@@ -92,8 +94,31 @@ public class ThreadUtilitiesTest {
 			}
 		}).start();
 		ThreadUtilities.waitForFuture(future, Integer.MAX_VALUE);
-		// We must get here
+		// We must get here!
 		assertTrue(true);
+	}
+
+	@Test
+	public void submitDestroy() {
+		Runnable runnable = new Runnable() {
+			@Override
+			public void run() {
+				while (true) {
+					ThreadUtilities.sleep(1000);
+				}
+			}
+		};
+		String name = "name";
+		Future<?> future = ThreadUtilities.submit(name, runnable);
+		logger.info("Future : " + future.isCancelled() + ", " + future.isDone());
+		
+		ThreadUtilities.sleep(3000);
+		ThreadUtilities.destroy(name);
+		ThreadUtilities.sleep(3000);
+		logger.info("Future : " + future.isCancelled() + ", " + future.isDone());
+		
+		assertTrue(future.isDone());
+		assertTrue(future.isCancelled());
 	}
 
 }

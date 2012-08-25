@@ -30,6 +30,9 @@ public class Reset extends Action<IndexContext<?>, Boolean> {
 		ikube.model.Action action = null;
 		try {
 			action = start(indexContext.getIndexName(), "");
+			if (action == null) {
+				return Boolean.FALSE;
+			}
 			delete(dataBase, indexContext);
 		} finally {
 			stop(action);
@@ -53,7 +56,9 @@ public class Reset extends Action<IndexContext<?>, Boolean> {
 		try {
 			List<?> list = dataBase.find(klass, sql, parameters, 0, IConstants.RESET_DELETE_BATCH_SIZE);
 			do {
-				logger.debug("Removing size {} : classes {}", new Object[] { list.size(), klass });
+				if (list.size() > 0) {
+					logger.info("Removing size {} : classes {}", new Object[] { list.size(), klass });
+				}
 				dataBase.removeBatch(list);
 				list = dataBase.find(klass, sql, parameters, 0, IConstants.RESET_DELETE_BATCH_SIZE);
 			} while (list.size() > 0);

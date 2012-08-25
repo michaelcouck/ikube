@@ -69,7 +69,6 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IHandl
 	 */
 	@Override
 	public void addDocument(final IndexContext<?> indexContext, final Indexable<?> indexable, final Document document) throws Exception {
-		// TODO Add the invocations to the action and publish
 		if (indexable.isAddress()) {
 			addSpatialEnrichment(indexable, document);
 		}

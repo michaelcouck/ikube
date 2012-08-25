@@ -9,7 +9,6 @@ import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.Logging;
 import ikube.toolkit.ThreadUtilities;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +35,7 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 		String indexName = indexContext.getIndexName();
 		Server server = clusterManager.getServer();
 		List<Indexable<?>> indexables = indexContext.getIndexables();
-		List<ikube.model.Action> actions = new ArrayList<ikube.model.Action>();
+		ikube.model.Action action = null;
 		try {
 			if (indexables != null) {
 				long startTime = System.currentTimeMillis();
@@ -45,28 +44,26 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 				indexContext.setIndexWriter(indexWriter);
 				Iterator<Indexable<?>> iterator = indexables.iterator();
 				while (iterator.hasNext()) {
-					Indexable<?> indexable = iterator.next();
 					try {
+						Indexable<?> indexable = iterator.next();
 						// Get the right handler for this indexable
 						IHandler<Indexable<?>> handler = getHandler(indexable);
-						ikube.model.Action action = start(indexContext.getIndexName(), indexable.getName());
-						actions.add(action);
-						// indexContext.setAction(action);
+						action = start(indexContext.getIndexName(), indexable.getName());
 						logger.info("Indexable : " + indexable.getName());
-						logger.info("Handler : " + handler.getClass() + ", " + handler.getIndexableClass());
 						// Execute the handler and wait for the threads to finish
 						List<Future<?>> futures = handler.handle(indexContext, indexable);
 						ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
 					} catch (Exception e) {
 						logger.error("Exception indexing data : " + indexName, e);
 					} finally {
-						// Close the index writer before the last action is stopped or 
-						// in the ui it looks like the action has completely stopped but the 
+						// Close the index writer before the last action is stopped or
+						// in the ui it looks like the action has completely stopped but the
 						// index is still being optimised
 						if (!iterator.hasNext()) {
 							IndexManager.closeIndexWriter(indexContext);
 							indexContext.setIndexWriter(null);
 						}
+						stop(action);
 					}
 				}
 			}
@@ -75,10 +72,7 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 			// We'll try to close the writer, even though it should already be closed
 			IndexManager.closeIndexWriter(indexContext);
 			indexContext.setIndexWriter(null);
-			// indexContext.setAction(null);
-			for (ikube.model.Action action : actions) {
-				stop(action);
-			}
+			stop(action);
 			logger.debug(Logging.getString("Finished indexing : ", indexName));
 		}
 	}

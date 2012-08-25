@@ -165,6 +165,28 @@
 			</plugins>
 		</pluginManagement>
 		<plugins>
+			<!-- 
+				This plugin reads the properties from the buid.properties file and makes them all available 
+				to the rest of the Maven build process. 
+			-->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>properties-maven-plugin</artifactId>
+				<version>1.0-alpha-1</version>
+				<executions>
+					<execution>
+						<phase>initialize</phase>
+						<goals>
+							<goal>read-project-properties</goal>
+						</goals>
+						<configuration>
+							<files>
+								<file>build.properties</file>
+							</files>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-resources-plugin</artifactId>
@@ -185,6 +207,18 @@
 					<compilerArguments>
 						<verbose />
 					</compilerArguments>
+				</configuration>
+			</plugin>
+			<!-- This plugin runs the unit tests. -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.7.1</version>
+				<configuration>
+					<forkMode>once</forkMode>
+					<excludes>
+						<exclude>**/*Integration*.java</exclude>
+					</excludes>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -221,6 +255,103 @@
 				<artifactId>maven-site-plugin</artifactId>
 				<version>2.1.1</version>
 			</plugin>
+			
+			<!-- 
+				This plugin	runs an Ant script after the integration tests to deploy ikube.war to the cluster. 
+				The cluster directories are also cleaned, all the wars and exploded directories are deleted before 
+				the deploy. It will also start the Tomcats in the cluster. -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.6</version>
+				<executions>
+					<execution>
+						<id>write-release-info</id>
+						<phase>validate</phase>
+						<configuration>
+							<target>
+								<echo message="Writing release file : " />
+								<echo file="code/war/src/main/webapp/WEB-INF/templates/release.txt" append="false">
+									${project.version} - ${maven.build.timestamp}
+								</echo>
+							</target>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>package-configuration</id>
+						<phase>install</phase>
+						<configuration>
+							<target>
+								<ant antfile="build.xml" target="prepare-everything" inheritrefs="true" />
+								<!-- Rename the wars to ikube.war for convenience. -->
+								<echo message="Renaming Ikube war for convenience : " />
+								<move file="${target-directory}/${final.name}" tofile="${target-directory}/${ikube-war}" />
+								<!-- Zip Ikube and the configuration directory for upload to Google Code -->
+								<echo message="Zipping ikube with configuration : " />
+								<ant antfile="build.xml" target="zip" inheritrefs="true" />
+							</target>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+				<dependencies>
+					<dependency>
+						<groupId>org.apache.ant</groupId>
+						<artifactId>ant-jsch</artifactId>
+						<version>1.8.4</version>
+					</dependency>
+					<dependency>
+						<groupId>org.apache.ant</groupId>
+						<artifactId>ant-commons-net</artifactId>
+						<version>1.8.4</version>
+					</dependency>
+					<dependency>
+						<groupId>ant</groupId>
+						<artifactId>optional</artifactId>
+						<version>1.5.4</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+			
+			<!-- 
+				This plugin will upload the artifacts to Google code, making them available for 
+				download. Unfortunately this can't run in the deploy phase because the artifacts are 
+				still SNAPSHOTS, which is not what is required as a download. 
+			-->
+			<plugin>
+				<groupId>com.googlecode.maven-gcu-plugin</groupId>
+				<artifactId>maven-gcu-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>gcode-upload</id>
+						<phase>site</phase>
+						<goals>
+							<goal>upload</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<serverId>googlecode</serverId>
+					<failsOnError>false</failsOnError>
+					<projectName>${project.groupId}</projectName>
+					<uploads>
+						<upload>
+							<file>${project.build.directory}/${final.name}</file>
+							<summary>${project.groupId} release ${project.version}</summary>
+							<labels>
+								<label>Featured</label>
+								<label>Type-Archive</label>
+							</labels>
+						</upload>
+					</uploads>
+				</configuration>
+			</plugin>
+			
 		</plugins>
 	</build>
 

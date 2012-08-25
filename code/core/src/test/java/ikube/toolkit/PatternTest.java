@@ -60,15 +60,15 @@ public class PatternTest extends ATest {
 		assertTrue(isExcluded);
 
 		pattern = Pattern.compile(".*serenity.odb");
-		input = "file:/D:/Eclipse/workspace/serenity/work/jobs/Discovery/workspace/Discovery/modules/Jar/serenity/serenity.odb";
+		input = "file:/tmp/modules/Jar/serenity/serenity.odb";
 		boolean included = pattern.matcher(input).matches();
 		assertTrue(included);
 
 		pattern = Pattern.compile(".*serenity.*.source.*");
-		input = "file:/D:/Eclipse/workspace/serenity/source/";
+		input = "file:/tmp/serenity/source/";
 		included = pattern.matcher(input).matches();
 		assertTrue(included);
-		input = "file:\\D:\\Eclipse\\workspace\\serenity\\source\\";
+		input = "file:\\tmp\\workspace\\serenity\\source\\";
 		included = pattern.matcher(input).matches();
 		assertTrue(included);
 	}

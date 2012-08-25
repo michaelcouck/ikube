@@ -13,7 +13,7 @@ import org.apache.commons.lang.builder.ToStringStyle;
  * @since 21.11.10
  * @version 01.00
  */
-public class Event {
+public class Event implements Serializable {
 
 	public static final String TIMER = "timer";
 	public static final String PERFORMANCE = "performance";

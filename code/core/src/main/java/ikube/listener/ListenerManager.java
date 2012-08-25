@@ -32,16 +32,22 @@ public class ListenerManager {
 	}
 
 	public void fireEvent(final String type, final long timestamp, final Serializable object, final boolean consumed) {
+		Event event = getEvent(type, timestamp, object, consumed);
+		fireEvent(event);
+	}
+
+	public static Event getEvent(final String type, final long timestamp, final Serializable object, final boolean consumed) {
 		Event event = new Event();
 		event.setType(type);
 		event.setTimestamp(timestamp);
 		event.setConsumed(consumed);
 		event.setObject(object);
-		fireEvent(event);
+		return event;
 	}
 
 	/**
-	 * @param listener the listener to add for notifications of end of action events
+	 * @param listener
+	 *            the listener to add for notifications of end of action events
 	 */
 	public synchronized void addListener(final IListener listener) {
 		try {
@@ -69,7 +75,8 @@ public class ListenerManager {
 	/**
 	 * Notifies all the listeners for a particular instance of an event.
 	 * 
-	 * @param event the event for distribution
+	 * @param event
+	 *            the event for distribution
 	 */
 	private void notifyListeners(final Event event) {
 		for (final IListener listener : listeners) {

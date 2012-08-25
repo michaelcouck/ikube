@@ -34,6 +34,8 @@ public class IndexableFilesystemWikiHandler extends IndexableHandler<IndexableFi
 	/** This is the start and end tags for the xml data, one per page essentially. */
 	private static final String PAGE_START = "<revision>";
 	private static final String PAGE_FINISH = "</revision>";
+	
+	private ThreadLocal<Integer> counter = new ThreadLocal<Integer>();
 
 	/**
 	 * {@inheritDoc}
@@ -48,12 +50,11 @@ public class IndexableFilesystemWikiHandler extends IndexableHandler<IndexableFi
 		for (int i = 0; i < getThreads(); i++) {
 			Runnable runnable = new Runnable() {
 				public void run() {
-					synchronized(iterator) {
-						while (iterator.hasNext()) {
-							File bZip2File = iterator.next();
-							logger.info("Indexing compressed file : " + bZip2File);
-							handleFile(indexContext, indexable, bZip2File);
-						}
+					counter.set(new Integer(0));
+					while (iterator.hasNext()) {
+						File bZip2File = iterator.next();
+						logger.info("Indexing compressed file : " + bZip2File);
+						handleFile(indexContext, indexable, bZip2File);
 					}
 				}
 			};
@@ -74,10 +75,12 @@ public class IndexableFilesystemWikiHandler extends IndexableHandler<IndexableFi
 	 * @param file
 	 *            the Bzip2 file with the Wiki data in it
 	 */
+	@SuppressWarnings("resource")
 	protected void handleFile(final IndexContext<?> indexContext, final IndexableFileSystemWiki indexableFileSystem, final File file) {
 		// Get the wiki history file
 		FileInputStream fileInputStream = null;
 		BZip2CompressorInputStream bZip2CompressorInputStream = null;
+		int localCounter = 0;
 		try {
 			long start = System.currentTimeMillis();
 			int read = -1;
@@ -85,9 +88,8 @@ public class IndexableFilesystemWikiHandler extends IndexableHandler<IndexableFi
 			bZip2CompressorInputStream = new BZip2CompressorInputStream(fileInputStream);
 			byte[] bytes = new byte[1024 * 1024 * 10];
 			StringBuilder stringBuilder = new StringBuilder();
-			int counter = 0;
 			// Read a chunk
-			while ((read = bZip2CompressorInputStream.read(bytes)) > -1 && counter < indexableFileSystem.getMaxRevisions()) {
+			while ((read = bZip2CompressorInputStream.read(bytes)) > -1 && counter.get() < indexableFileSystem.getMaxRevisions()) {
 				String string = new String(bytes, 0, read, Charset.forName(IConstants.ENCODING));
 				stringBuilder.append(string);
 				// Parse the <revision> tags
@@ -106,12 +108,15 @@ public class IndexableFilesystemWikiHandler extends IndexableHandler<IndexableFi
 					// LOGGER.info("String buffer size : " + stringBuilder.length());
 					// Add the documents to the index
 					handleRevision(indexContext, indexableFileSystem, content);
-					counter++;
-					if (counter % 10000 == 0) {
+					localCounter++;
+					if (localCounter % 10000 == 0) {
 						long duration = System.currentTimeMillis() - start;
-						double perSecond = counter / (duration / 1000);
-						logger.info("Revisions done : " + counter + ", " + file.getName() + ", " + perSecond);
+						double perSecond = localCounter / (duration / 1000);
+						logger.info("Revisions done : " + localCounter + ", " + file.getName() + ", " + perSecond);
 					}
+				}
+				if (Thread.currentThread().isInterrupted()) {
+					throw new InterruptedException();
 				}
 			}
 		} catch (InterruptedException e) {
@@ -122,6 +127,8 @@ public class IndexableFilesystemWikiHandler extends IndexableHandler<IndexableFi
 		} finally {
 			FileUtilities.close(fileInputStream);
 			FileUtilities.close(bZip2CompressorInputStream);
+			localCounter += counter.get();
+			counter.set(new Integer(localCounter));
 		}
 	}
 

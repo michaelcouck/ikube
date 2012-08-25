@@ -1,7 +1,6 @@
 package ikube;
 
 import java.io.Reader;
-import java.text.SimpleDateFormat;
 import java.util.regex.Pattern;
 
 import org.apache.lucene.analysis.Analyzer;
@@ -39,9 +38,6 @@ public interface IConstants {
 	String PERSISTENCE_UNIT_DB2 = "IkubePersistenceUnitDb2";
 	String PERSISTENCE_UNIT_ORACLE = "IkubePersistenceUnitOracle";
 	String PERSISTENCE_UNIT_POSTGRES = "IkubePersistenceUnitPostgres";
-	String PERSISTENCE_UNIT_OBJECT_DB = "IkubePersistenceUnitObjectDb";
-
-	String DATA_SOURCE_H2 = "nonXaDataSourceH2";
 
 	/** The default logging properties. */
 	String LOG_4_J_PROPERTIES = META_INF + SEP + "log4j.properties";
@@ -119,26 +115,14 @@ public interface IConstants {
 	Integer HTTP_500 = Integer.valueOf(500); // Internal server error
 	Integer HTTP_503 = Integer.valueOf(503); // Service unavailable
 
-	/** These can be extracted into the messages.properties file */
-	String NO_END_TAG = "Not end tag in Html";
-	String URL_NOT_WELL_FORMED = "Url not well formed";
-	String EXCEPTION_VISITING_PAGE = "Exception visiting page";
-	String PAGE_RESPONSE_NULL = "Page returned from request null";
-	String RESPONSE_CODE_NOT_200 = "Response code not 200/Ok";
-	String EXCEPTION_CLICKING_LINK = "Exception clicking on the link";
-	String EXCEPTION_VALIDATING_HTML = "General exception validating the Html";
-	String EXCEPTION_VISITING_PAGE_POSSIBLY_TIMEOUT = "Exception visiting page, error un-known, possibly a timeout";
-
 	String INDEX_NAME = "indexName";
 	String MAX_RESULTS = "maxResults";
-	String TYPE = "type";
 
 	String SEARCH_FIELDS = "searchFields";
 	String SEARCH_STRINGS = "searchStrings";
 	String TARGET_SEARCH_URL = "targetSearchUrl";
 	String SORT_FIELDS = "sortFields";
 	String FIRST_RESULT = "firstResult";
-	String INDEXABLES = "indexables";
 
 	/** The tags in the response from the Geo Location API. */
 	String LAT = "lat";
@@ -150,64 +134,42 @@ public interface IConstants {
 	String LATITUDE = "latitude";
 	String LONGITUDE = "longitude";
 
-	String EXCEPTION_TOPIC = "exceptionTopic";
-	String SHUTDOWN_TOPIC = "shutdownTopic";
-
-	/** Lock objects for cluster wide locking while we update the cache. */
-	String ID_LOCK = "idLock";
-	String SERVER_LOCK = "serverLock";
-	/** The timeout to wait for the lock. */
-	long LOCK_TIMEOUT = 10000;
 	/** The maximum age that the server can get to before it is deleted from the cluster. */
 	int MAX_AGE = 1800000;
-	/** The retry count for publishing the web services. */
-	int MAX_RETRY_WEB_SERVICE_PUBLISHER = 10;
-
-	String INDEX_SIZE = "indexSize";
-	String INDEX_DOCUMENTS = "indexDocuments";
-
-	String SEARCHING_EXECUTIONS = "searchingExecutions";
-	String INDEXING_EXECUTIONS = "indexingExecutions";
-
-	SimpleDateFormat HHMMSS_DDMMYYYY = new SimpleDateFormat("hh:mm:ss dd/MM/yyyy");
-
-	String CLASSPATH_PROPERTY = "java.class.path";
 
 	String STRIP_CHARACTERS = ",[]{};";
 
 	long MAX_ACTIONS = 10000;
 	long MAX_SNAPSHOTS = 1000;
-	String DELAY = "delay";
-	String SPRING_PROPERTIES = "spring.properties";
 	String TIER = "tier";
-	int MAX_RETRY_COUNTER = 5;
 
 	String SEARCH = "search";
 
 	String TMP_UNZIPPED_FOLDER = "/tmp/unzipped";
 	String STRING_PATTERN = ".*(\\.zip\\Z).*|.*(\\.jar\\Z).*|.*(\\.war\\Z).*|.*(\\.ear\\Z).*|.*(\\.gz\\Z).*|.*(\\.sar\\Z).*|.*(\\.tar\\Z).*";
 	Pattern ZIP_JAR_WAR_EAR_PATTERN = Pattern.compile(STRING_PATTERN);
-	
+
 	String LUCENE_CONJUNCTIONS_PATTERN_STRING = "and|or|between|not";
 	Pattern LUCENE_CONJUNCTIONS_PATTERN = Pattern.compile(LUCENE_CONJUNCTIONS_PATTERN_STRING);
-	
-	int THREAD_POOL_SIZE = 25;
-	
+
+	int THREAD_POOL_SIZE = 100;
+
 	String EXCEPTION = "exception";
 	String EXCEPTION_STACK = "exceptionStack";
 	String EXCEPTION_MESSAGE = "exceptionMessage";
-	
+
 	String SEMI_COLON = ";";
-	
+
 	String ENTITIES = "entities";
 	String FIELD_NAMES = "fieldNames";
-	
+
 	String PROPERTIES = "properties";
-	
+
 	String TOTAL_SIZE = "totalSize";
 	String TOTAL_DOCS = "totalDocs";
 
-	String CLUSTER_SEARCH = "clusterSearch";
-	String CLUSTER_SEARCH_RESPONSE = "clusterSearchResponse";
+	String TOPIC = "topic";
 	
+	int MAX_RETRY_CLUSTER_REMOVE = 10;
+
 }

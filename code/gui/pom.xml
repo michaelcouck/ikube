@@ -109,12 +109,12 @@
                 <soyc>false</soyc>
             </configuration>
             <executions>
-                <execution>
+                <!-- <execution>
                     <goals>
                         <goal>resources</goal>
                         <goal>compile</goal>
                     </goals>
-                </execution>
+                </execution> -->
             </executions>
         </plugin>
         

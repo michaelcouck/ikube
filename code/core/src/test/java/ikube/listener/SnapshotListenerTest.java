@@ -8,14 +8,18 @@ import ikube.ATest;
 import ikube.IConstants;
 import ikube.database.IDataBase;
 import ikube.mock.ApplicationContextManagerMock;
+import ikube.model.IndexContext;
 import ikube.model.Snapshot;
+import ikube.service.IMonitorService;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import mockit.Cascading;
 import mockit.Deencapsulation;
@@ -24,6 +28,7 @@ import mockit.Mockit;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 /**
  * @author Michael Couck
@@ -58,7 +63,13 @@ public class SnapshotListenerTest extends ATest {
 	}
 
 	@Test
+	@SuppressWarnings("rawtypes")
 	public void handleNotification() {
+		IMonitorService monitorService = Mockito.mock(IMonitorService.class);
+		Map<String, IndexContext> indexContexts = new HashMap<String, IndexContext>();
+		indexContexts.put(indexContext.getName(), indexContext);
+		when(monitorService.getIndexContexts()).thenReturn(indexContexts);
+		Deencapsulation.setField(snapshotListener, monitorService);
 		Deencapsulation.setField(snapshotListener, dataBase);
 		Event event = new Event();
 		event.setType(Event.PERFORMANCE);

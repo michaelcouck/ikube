@@ -5,7 +5,7 @@ import ikube.database.IDataBase;
 import ikube.index.IndexManager;
 import ikube.model.IndexContext;
 import ikube.model.Snapshot;
-import ikube.toolkit.ApplicationContextManager;
+import ikube.service.IMonitorService;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
@@ -34,6 +34,8 @@ public class SnapshotListener implements IListener {
 
 	@Autowired
 	private IDataBase dataBase;
+	@Autowired
+	private IMonitorService monitorService;
 
 	/**
 	 * {@inheritDoc}
@@ -42,7 +44,7 @@ public class SnapshotListener implements IListener {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void handleNotification(Event event) {
 		if (Event.PERFORMANCE.equals(event.getType())) {
-			Map<String, IndexContext> indexContexts = ApplicationContextManager.getBeans(IndexContext.class);
+			Map<String, IndexContext> indexContexts = monitorService.getIndexContexts();
 			for (Map.Entry<String, IndexContext> mapEntry : indexContexts.entrySet()) {
 				IndexContext indexContext = mapEntry.getValue();
 				Snapshot snapshot = new Snapshot();
@@ -56,7 +58,7 @@ public class SnapshotListener implements IListener {
 				indexContext.getSnapshots().add(snapshot);
 				if (indexContext.getSnapshots().size() > IConstants.MAX_SNAPSHOTS) {
 					List<Snapshot> subListToRemove = indexContext.getSnapshots().subList(0,
-							(int) (((double) IConstants.MAX_SNAPSHOTS) * 0.75));
+							(int) (((double) IConstants.MAX_SNAPSHOTS) * 0.25));
 					LOGGER.info("Removing : " + subListToRemove.size());
 					indexContext.getSnapshots().removeAll(subListToRemove);
 				}
