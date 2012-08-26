@@ -137,9 +137,10 @@ public class ClusterManagerHazelcast extends AClusterManager {
 	public synchronized Action startWorking(String actionName, String indexName, String indexableName) {
 		Transaction transaction = Hazelcast.getTransaction();
 		transaction.begin();
+		Action action = null;
 		try {
 			// TODO Do we need to lock the cluster at every read?
-			Action action = getAction(actionName, indexName, indexableName);
+			action = getAction(actionName, indexName, indexableName);
 			Server server = getServer();
 			if (server.getAddress() == null) {
 				server.setAddress(address);
@@ -147,14 +148,14 @@ public class ClusterManagerHazelcast extends AClusterManager {
 			server.getActions().add(action);
 			Hazelcast.getMap(IConstants.SERVERS).put(server.getAddress(), server);
 			transaction.commit();
-			return action;
 		} catch (Exception e) {
 			logger.error("Exception starting action : " + actionName + ", " + indexName + ", " + indexableName, e);
 			transaction.rollback();
+			action = null;
 		} finally {
 			notifyAll();
 		}
-		return null;
+		return action;
 	}
 
 	/**
@@ -170,42 +171,45 @@ public class ClusterManagerHazelcast extends AClusterManager {
 	}
 
 	private void stopWorking(final Action action, final int retry) {
+		if (action == null) {
+			logger.warn("Action null : " + action);
+			return;
+		}
 		if (retry > IConstants.MAX_RETRY_CLUSTER_REMOVE) {
 			logger.warn("Retried to remove the action, failed : " + retry);
 			return;
 		}
 		Transaction transaction = Hazelcast.getTransaction();
 		transaction.begin();
-		boolean removed = false;
+		boolean removedAndComitted = false;
 		Server server = getServer();
 		try {
 			logger.warn("Stop working : {} ", action);
-
 			action.setEndTime(new Timestamp(System.currentTimeMillis()));
 			action.setDuration(action.getEndTime().getTime() - action.getStartTime().getTime());
-
 			Iterator<Action> iterator = server.getActions().iterator();
 			// We must iterate over the actions and remove the one by id because the
 			// equals is modified by Hazelcast it seems
+			boolean removedFromServerActions = false;
 			while (iterator.hasNext()) {
 				if (iterator.next().getId() == action.getId()) {
 					iterator.remove();
-					removed = true;
+					removedFromServerActions = true;
 				}
 			}
-
 			Hazelcast.getMap(IConstants.SERVERS).put(server.getAddress(), server);
 			// Commit the grid because the database is not as important as the cluster
 			transaction.commit();
 			dataBase.merge(action);
+			removedAndComitted = removedFromServerActions;
 		} catch (Exception e) {
 			logger.error("Exception stopping action : " + action, e);
-			removed = false;
 			transaction.rollback();
-		}
-		if (!removed) {
-			logger.warn("Retrying to remove the action : " + action);
-			stopWorking(action, retry + 1);
+		} finally {
+			if (!removedAndComitted) {
+				logger.warn("Retrying to remove the action : " + retry + ", " + action);
+				stopWorking(action, retry + 1);
+			}
 		}
 	}
 

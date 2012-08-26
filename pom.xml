@@ -1,4 +1,7 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation=" http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project 
+	xmlns="http://maven.apache.org/POM/4.0.0" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation=" http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>ikube</groupId>
@@ -260,38 +263,17 @@
 				This plugin	runs an Ant script after the integration tests to deploy ikube.war to the cluster. 
 				The cluster directories are also cleaned, all the wars and exploded directories are deleted before 
 				the deploy. It will also start the Tomcats in the cluster. -->
-			<plugin>
+			<!-- <plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-antrun-plugin</artifactId>
 				<version>1.6</version>
 				<executions>
-					<execution>
-						<id>write-release-info</id>
-						<phase>validate</phase>
-						<configuration>
-							<target>
-								<echo message="Writing release file : " />
-								<echo file="code/war/src/main/webapp/WEB-INF/templates/release.txt" append="false">
-									${project.version} - ${maven.build.timestamp}
-								</echo>
-							</target>
-						</configuration>
-						<goals>
-							<goal>run</goal>
-						</goals>
-					</execution>
 					<execution>
 						<id>package-configuration</id>
 						<phase>install</phase>
 						<configuration>
 							<target>
 								<ant antfile="build.xml" target="prepare-everything" inheritrefs="true" />
-								<!-- Rename the wars to ikube.war for convenience. -->
-								<echo message="Renaming Ikube war for convenience : " />
-								<move file="${target-directory}/${final.name}" tofile="${target-directory}/${ikube-war}" />
-								<!-- Zip Ikube and the configuration directory for upload to Google Code -->
-								<echo message="Zipping ikube with configuration : " />
-								<ant antfile="build.xml" target="zip" inheritrefs="true" />
 							</target>
 						</configuration>
 						<goals>
@@ -316,7 +298,7 @@
 						<version>1.5.4</version>
 					</dependency>
 				</dependencies>
-			</plugin>
+			</plugin> -->
 			
 			<!-- 
 				This plugin will upload the artifacts to Google code, making them available for 

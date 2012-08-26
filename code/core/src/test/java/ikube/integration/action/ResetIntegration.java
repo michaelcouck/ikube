@@ -1,13 +1,15 @@
 package ikube.integration.action;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.*;
-
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import ikube.action.Reset;
 import ikube.cluster.IClusterManager;
 import ikube.database.IDataBase;
 import ikube.integration.AbstractIntegration;
+import ikube.model.Action;
 import ikube.model.Url;
 import ikube.toolkit.ApplicationContextManager;
 
@@ -33,7 +35,10 @@ public class ResetIntegration extends AbstractIntegration {
 		reset = new Reset();
 		dataBase = ApplicationContextManager.getBean(IDataBase.class);
 		Deencapsulation.setField(reset, dataBase);
-		Deencapsulation.setField(reset, mock(IClusterManager.class));
+		IClusterManager clusterManager = mock(IClusterManager.class);
+		Action action = mock(Action.class);
+		when(clusterManager.startWorking(anyString(), anyString(), anyString())).thenReturn(action);
+		Deencapsulation.setField(reset, clusterManager);
 		delete(dataBase, Url.class);
 	}
 

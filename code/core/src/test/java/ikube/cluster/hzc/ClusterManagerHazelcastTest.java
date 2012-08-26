@@ -219,6 +219,7 @@ public class ClusterManagerHazelcastTest extends ATest {
 	@Test
 	public void submitDestroy() {
 		Mockit.tearDownMocks();
+		ThreadUtilities.initialize();
 		Runnable runnable = new Runnable() {
 			@Override
 			public void run() {
@@ -235,6 +236,7 @@ public class ClusterManagerHazelcastTest extends ATest {
 		clusterManagerHazelcast.sendMessage(event);
 		ThreadUtilities.sleep(1000);
 		assertTrue(future.isCancelled());
+		ThreadUtilities.destroy();
  	}
 
 	@Test

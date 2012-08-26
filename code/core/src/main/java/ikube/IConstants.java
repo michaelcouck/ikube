@@ -32,7 +32,7 @@ public interface IConstants {
 	/** The name of the spring file. */
 	String SPRING_XML = "spring.xml";
 	/** Where the whole application is wired together. */
-	String SPRING_CONFIGURATION_FILE = SEP + "conf" + SEP + SPRING_XML;
+	String SPRING_CONFIGURATION_FILE = SEP + IKUBE + SEP + SPRING_XML;
 	/** The persistence units' names. */
 	String PERSISTENCE_UNIT_H2 = "IkubePersistenceUnitH2";
 	String PERSISTENCE_UNIT_DB2 = "IkubePersistenceUnitDb2";

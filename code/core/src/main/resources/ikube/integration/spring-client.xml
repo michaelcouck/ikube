@@ -40,13 +40,7 @@
 		<ref local="filesystemMillion" />
 		<ref bean="faqTableH2" />
 		<ref bean="attachmentTableH2" />
-		<ref bean="faqTableDb2" />
-		<ref bean="faqTableOracle" />
 		<ref bean="patientTableH2" />
-		<ref bean="patientTableDb2" />
-		<ref bean="patientTableOracle" />
-		<ref bean="addressTableDb2" />
-		<ref bean="attachmentTableDb2Direct" />
 	</util:list>
 
 	<!-- H2 Faqs -->
@@ -79,78 +73,6 @@
 		<ref local="attachment" />
 	</util:list>
 	
-	<!-- Db2 Faqs -->
-	<bean
-		id="faqTableDb2"
-		class="ikube.model.IndexableTable"
-		property:name="faq"
-		property:primaryTable="true"
-		property:dataSource-ref="nonXaDataSourceDb2"
-		property:children-ref="faqColumnsDb2" 
-		property:maxExceptions="10"
-		property:allColumns="true"  />
-	<bean
-		id="attachmentTableDb2"
-		class="ikube.model.IndexableTable"
-		property:name="attachment"
-		property:primaryTable="false"
-		property:dataSource-ref="nonXaDataSourceDb2"
-		property:children-ref="attachmentColumnsDb2" 
-		property:maxExceptions="10"
-		property:allColumns="true"  />
-	
-	<!-- This table is the attachment table direct, no dependencies. -->
-	<bean
-		id="attachmentTableDb2Direct"
-		class="ikube.model.IndexableTable"
-		property:name="attachment"
-		property:primaryTable="true"
-		property:dataSource-ref="nonXaDataSourceDb2"
-		property:children-ref="attachmentColumnsDb2" 
-		property:maxExceptions="10"
-		property:allColumns="true"  />
-	
-	<util:list id="faqColumnsDb2">
-		<ref local="faqId" />
-		<ref local="attachmentTableDb2" />
-	</util:list>
-	<util:list id="attachmentColumnsDb2">
-		<ref local="attachmentFaqId" />
-		<ref local="attachmentId" />
-		<ref local="name" />
-		<ref local="attachment" />
-	</util:list>
-	
-	<!-- Oracle Faqs -->
-	<bean
-		id="faqTableOracle"
-		class="ikube.model.IndexableTable"
-		property:name="faq"
-		property:primaryTable="true"
-		property:dataSource-ref="nonXaDataSourceOracle"
-		property:children-ref="faqColumnsOracle" 
-		property:maxExceptions="10"
-		property:allColumns="true" />
-	<bean
-		id="attachmentTableOracle"
-		class="ikube.model.IndexableTable"
-		property:name="attachment"
-		property:primaryTable="false"
-		property:dataSource-ref="nonXaDataSourceOracle"
-		property:children-ref="attachmentColumnsOracle" 
-		property:maxExceptions="10"
-		property:allColumns="true" />
-	<util:list id="faqColumnsOracle">
-		<ref local="faqId" />
-		<ref local="attachmentTableOracle" />
-	</util:list>
-	<util:list id="attachmentColumnsOracle">
-		<ref local="attachmentFaqId" />
-		<ref local="attachmentId" />
-		<ref local="name" />
-		<ref local="attachment" />
-	</util:list>
-
 	<bean
 		id="faqId"
 		class="ikube.model.IndexableColumn"
@@ -221,80 +143,6 @@
 		property:maxExceptions="10"
 		property:allColumns="true" />
 	<util:list id="addressColumnsH2">
-		<ref local="addressId" />
-		<ref local="numb" />
-		<ref local="street" />
-		<ref local="province" />
-		<ref local="country" />
-		<ref local="postCode" />
-		<ref local="latitude" />
-		<ref local="longitude" />
-	</util:list>
-	
-	<!-- Db2 patients -->
-	<bean
-		id="patientTableDb2"
-		class="ikube.model.IndexableTable"
-		property:name="patient"
-		property:primaryTable="true"
-		property:dataSource-ref="nonXaDataSourceDb2"
-		property:children-ref="patientColumnsDb2" 
-		property:maxExceptions="10" />
-	<util:list id="patientColumnsDb2">
-		<ref local="patientId" />
-		<ref local="firstName" />
-		<ref local="lastName" />
-		<ref local="birthDate" />
-		<ref local="deathDate" />
-		<ref local="addressTableDb2" />
-	</util:list>
-	<bean
-		id="addressTableDb2"
-		class="ikube.model.IndexableTable"
-		property:name="address"
-		property:primaryTable="false"
-		property:address="true"
-		property:dataSource-ref="nonXaDataSourceDb2"
-		property:children-ref="addressColumnsDb2" 
-		property:maxExceptions="10" />
-	<util:list id="addressColumnsDb2">
-		<ref local="addressId" />
-		<ref local="numb" />
-		<ref local="street" />
-		<ref local="province" />
-		<ref local="country" />
-		<ref local="postCode" />
-		<ref local="latitude" />
-		<ref local="longitude" />
-	</util:list>
-
-	<!-- Oracle patients -->
-	<bean
-		id="patientTableOracle"
-		class="ikube.model.IndexableTable"
-		property:name="patient"
-		property:primaryTable="true"
-		property:dataSource-ref="nonXaDataSourceOracle"
-		property:children-ref="patientColumnsOracle" 
-		property:maxExceptions="10" />
-	<util:list id="patientColumnsOracle">
-		<ref local="patientId" />
-		<ref local="firstName" />
-		<ref local="lastName" />
-		<ref local="birthDate" />
-		<ref local="deathDate" />
-		<ref local="addressTableOracle" />
-	</util:list>
-	<bean
-		id="addressTableOracle"
-		class="ikube.model.IndexableTable"
-		property:name="address"
-		property:primaryTable="false"
-		property:address="true"
-		property:dataSource-ref="nonXaDataSourceOracle"
-		property:children-ref="addressColumnsOracle" 
-		property:maxExceptions="10" />
-	<util:list id="addressColumnsOracle">
 		<ref local="addressId" />
 		<ref local="numb" />
 		<ref local="street" />

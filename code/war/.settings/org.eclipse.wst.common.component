@@ -8,7 +8,7 @@
         <dependent-module archiveName="ikube-core-3.1.1-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/ikube-core/ikube-core">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <property name="context-root" value="ikube-war"/>
         <property name="java-output-path" value="/ikube-war/target/classes"/>
+        <property name="context-root" value="ikube"/>
     </wb-module>
 </project-modules>
