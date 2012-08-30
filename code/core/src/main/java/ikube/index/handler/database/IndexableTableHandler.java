@@ -120,7 +120,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 						}
 					}
 				};
-				final Future<?> future = ThreadUtilities.submit(runnable);
+				final Future<?> future = ThreadUtilities.submit(indexContext.getIndexName(), runnable);
 				futures.add(future);
 			}
 		} catch (Exception e) {

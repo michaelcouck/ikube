@@ -4,17 +4,20 @@ import ikube.gui.data.DashPanelContainer;
 import ikube.gui.data.IndexPanelContainer;
 import ikube.gui.data.IndexesPanelContainer;
 import ikube.gui.data.NavigationPanelContainer;
+import ikube.gui.data.SearchPanelContainer;
 import ikube.gui.data.ServersPanelContainer;
 import ikube.gui.handler.DashPanelHandler;
 import ikube.gui.handler.IndexPanelHandler;
 import ikube.gui.handler.IndexesPanelHandler;
 import ikube.gui.handler.NavigationPanelHandler;
+import ikube.gui.handler.SearchPanelHandler;
 import ikube.gui.handler.ServersPanelHandler;
 import ikube.gui.panel.DashPanel;
 import ikube.gui.panel.IndexPanel;
 import ikube.gui.panel.IndexesPanel;
 import ikube.gui.panel.MenuPanel;
 import ikube.gui.panel.NavigationPanel;
+import ikube.gui.panel.SearchPanel;
 import ikube.gui.panel.ServersPanel;
 import ikube.util.ApplicationObjectSupport;
 
@@ -37,6 +40,8 @@ public class Window extends com.vaadin.ui.Window {
 
 	@Autowired
 	private transient DashPanelContainer dashPanelContainer;
+	@Autowired
+	private transient SearchPanelContainer searchPanelContainer;
 	@Autowired
 	private transient IndexPanelContainer indexPanelContainer;
 	@Autowired
@@ -82,6 +87,10 @@ public class Window extends com.vaadin.ui.Window {
 		dashPanel.setDescription(IConstant.DASH);
 		dashPanel.setData(dashPanelContainer);
 		horizontal.addComponent(dashPanel);
+		
+		Panel searchPanel = new SearchPanel();
+		searchPanel.setDescription(IConstant.SEARCH);
+		searchPanel.setData(searchPanelContainer);
 
 		Panel indexesPanel = new IndexesPanel();
 		indexesPanel.setDescription(IConstant.INDEXES);
@@ -99,6 +108,7 @@ public class Window extends com.vaadin.ui.Window {
 		// Add the controllers/listeners/handlers tothe panels
 		new NavigationPanelHandler().registerHandler(navigationPanel, navigationPanelContainer);
 		new DashPanelHandler().registerHandler(dashPanel, dashPanelContainer);
+		new SearchPanelHandler().registerHandler(searchPanel, searchPanelContainer);
 		new IndexesPanelHandler().registerHandler(indexesPanel, indexesPanelContainer);
 		new IndexPanelHandler().registerHandler(indexPanel, indexPanelContainer);
 		new ServersPanelHandler().registerHandler(serversPanel, serversPanelContainer);

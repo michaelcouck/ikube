@@ -67,10 +67,17 @@
 			<artifactId>gwt-user</artifactId>
 			<version>${gwtVersion}</version>
 		</dependency>
+		
+		<dependency>
+            <groupId>org.vaadin.addon</groupId>
+            <artifactId>confirmdialog</artifactId>
+            <version>1.2.1</version>
+        </dependency>
+		
 	</dependencies>
 
 	<build>
-		<finalName>ikube-console</finalName>
+		<finalName>ikube</finalName>
 		<plugins>
 			<plugin>
 				<groupId>com.vaadin</groupId>

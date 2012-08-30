@@ -20,7 +20,7 @@ public class ProcessStarter {
 		System.setProperty("http.proxyHost", "proxy.pxpost.netpost");
 		System.setProperty("http.proxyPort", "8080");
 
-		URL url = new URL("http://ikube.dyndns.org:8080/ikube");
+		URL url = new URL("http://ikube.be:8080/ikube");
 		String string = FileUtilities.getContents(url.openStream(), Integer.MAX_VALUE).toString();
 		System.out.println(string);
 	}

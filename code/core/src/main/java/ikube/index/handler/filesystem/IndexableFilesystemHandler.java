@@ -37,7 +37,7 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 			for (int i = 0; i < getThreads(); i++) {
 				IndexableFileSystem indexableFileSystem = (IndexableFileSystem) SerializationUtilities.clone(indexable);
 				Runnable runnable = new IndexableFilesystemHandlerWorker(this, indexContext, indexableFileSystem, directories);
-				Future<?> future = ThreadUtilities.submit(runnable);
+				Future<?> future = ThreadUtilities.submit(indexContext.getIndexName(), runnable);
 				futures.add(future);
 			}
 		} catch (Exception e) {

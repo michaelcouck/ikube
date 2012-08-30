@@ -79,6 +79,12 @@
 									${project.version} - ${maven.build.timestamp}
 								</echo>
 								<!-- <copy file="../core/src/main/resources/ikube" todir="ikube" overwrite="true" /> -->
+								<copy todir="ikube" failonerror="false">
+									<fileset dir="../core/src/main/resources/ikube" />
+								</copy>
+								<copy todir="../../ikube" failonerror="false">
+									<fileset dir="../core/src/main/resources/ikube" />
+								</copy>
 							</target>
 						</configuration>
 						<goals>
@@ -112,7 +118,7 @@
 						</connector>
 					</connectors>
 				</configuration>
-				<!-- <executions>
+				<executions>
 					<execution>
 						<id>start-jetty</id>
 						<phase>pre-integration-test</phase>
@@ -130,7 +136,7 @@
 							<goal>stop</goal>
 						</goals>
 					</execution>
-				</executions> -->
+				</executions>
 				<dependencies>
 					<dependency>
 						<!-- 

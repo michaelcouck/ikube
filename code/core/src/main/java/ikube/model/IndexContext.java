@@ -34,10 +34,10 @@ public class IndexContext<T> extends Indexable<T> implements Comparable<IndexCon
 
 	/** Can be null if there are no indexes running. */
 	@Transient
-	private transient IndexWriter indexWriter;
+	private transient volatile IndexWriter indexWriter;
 	/** Can be null if there is no index created. */
 	@Transient
-	private transient MultiSearcher multiSearcher;
+	private transient volatile MultiSearcher multiSearcher;
 
 	/** The maximum age of the index defined in minutes. */
 	private long maxAge;

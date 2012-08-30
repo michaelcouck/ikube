@@ -179,6 +179,7 @@
 		<bean class="ikube.listener.TerminationListener" />
 		<bean class="ikube.listener.SnapshotListener" />
 		<bean class="ikube.listener.ServerRemovalListener" />
+		<bean class="ikube.listener.IndexSizeListener" />
 	</util:list>
 	
 	<bean 
@@ -296,6 +297,12 @@
 		class="ikube.cluster.hzc.ClusterManagerHazelcast"
 		init-method="initialize"
 		lazy-init="false" />
+	<bean 
+	   	id="ikube.cluster.hzc.StartListener" 
+	   	class="ikube.cluster.hzc.StartListener" />
+	<bean 
+	   	id="ikube.cluster.hzc.StopListener" 
+	   	class="ikube.cluster.hzc.StopListener" />
 	
 	<!-- The handlers that do the indexing logic. -->
 	<bean

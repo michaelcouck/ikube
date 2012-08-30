@@ -58,7 +58,7 @@ public class IndexableFilesystemWikiHandler extends IndexableHandler<IndexableFi
 					}
 				}
 			};
-			Future<?> future = ThreadUtilities.submit(runnable);
+			Future<?> future = ThreadUtilities.submit(indexContext.getIndexName(), runnable);
 			futures.add(future);
 		}
 		return futures;

@@ -61,7 +61,7 @@ public class IndexableDictionaryHandler extends IndexableHandler<IndexableDictio
 						}
 					}
 				};
-				Future<?> future = ThreadUtilities.submit(runnable);
+				Future<?> future = ThreadUtilities.submit(indexContext.getIndexName(), runnable);
 				futures.add(future);
 			}
 		} catch (Exception e) {

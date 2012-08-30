@@ -50,6 +50,7 @@
 	<bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver" property:defaultLocale="en_US" />
 	
 	<bean id="ikube.gui.data.DashPanelContainer" class="ikube.gui.data.DashPanelContainer" init-method="init" lazy-init="true" />
+	<bean id="ikube.gui.data.SearchPanelContainer" class="ikube.gui.data.SearchPanelContainer" init-method="init" lazy-init="true" />
 	<bean id="ikube.gui.data.NavigationPanelContainer" class="ikube.gui.data.NavigationPanelContainer" init-method="init" lazy-init="true" />
 	<bean id="ikube.gui.data.IndexesPanelContainer" class="ikube.gui.data.IndexesPanelContainer" init-method="init" lazy-init="true" />
 	<bean id="ikube.gui.data.IndexPanelContainer" class="ikube.gui.data.IndexPanelContainer" init-method="init" lazy-init="true" />

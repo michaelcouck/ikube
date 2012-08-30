@@ -62,7 +62,7 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 				handleEmail(indexContext, indexable);
 			}
 		};
-		Future<?> future = ThreadUtilities.submit(runnable);
+		Future<?> future = ThreadUtilities.submit(indexContext.getIndexName(), runnable);
 		List<Future<?>> futures = new ArrayList<Future<?>>();
 		futures.add(future);
 		return futures;

@@ -33,9 +33,9 @@ public class SearchController extends SearchBaseController {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
+	public ModelAndView handleRequest(final HttpServletRequest request, final HttpServletResponse response) throws Exception {
 		String viewUrl = getViewUri(request);
-		ModelAndView modelAndView = new ModelAndView(viewUrl);
+		final ModelAndView modelAndView = new ModelAndView(viewUrl);
 		Server server = clusterManager.getServer();
 
 		// Get all the search strings from the request, we'll search all the indexes, all the fields, all strings
@@ -48,10 +48,10 @@ public class SearchController extends SearchBaseController {
 		long duration = 0;
 		String corrections = null;
 		List<HashMap<String, String>> results = new ArrayList<HashMap<String, String>>();
-		String[] searchStringsArray = searchStrings.toArray(new String[searchStrings.size()]);
+		final String[] searchStringsArray = searchStrings.toArray(new String[searchStrings.size()]);
 
 		// Search all the indexes
-		for (String indexName : indexNames) {
+		for (final String indexName : indexNames) {
 			ArrayList<HashMap<String, String>> indexResults = doSearch(request, modelAndView, indexName, searchStringsArray);
 			if (indexResults != null) {
 				HashMap<String, String> statistics = indexResults.get(indexResults.size() - 1);
@@ -68,6 +68,7 @@ public class SearchController extends SearchBaseController {
 			if (results.size() > 0) {
 				results.remove(results.size() - 1);
 			}
+
 		}
 
 		// Sort the results according to the score. This will essentially merge the results and

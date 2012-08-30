@@ -163,7 +163,7 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 				IndexableInternetHandlerWorker handlerWorker = new IndexableInternetHandlerWorker(indexContext, indexable, handlerWorkers,
 						in, out);
 				handlerWorkers.add(handlerWorker);
-				Future<?> future = ThreadUtilities.submit(handlerWorker);
+				Future<?> future = ThreadUtilities.submit(indexContext.getIndexName(), handlerWorker);
 				futures.add(future);
 			}
 		} catch (Exception e) {

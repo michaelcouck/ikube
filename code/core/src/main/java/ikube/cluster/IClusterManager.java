@@ -2,6 +2,7 @@ package ikube.cluster;
 
 import ikube.cluster.jms.ClusterManagerJmsLock;
 import ikube.model.Action;
+import ikube.model.Search;
 import ikube.model.Server;
 
 import java.io.Serializable;
@@ -23,7 +24,7 @@ public interface IClusterManager {
 	 * @param name the name of the lock, must be unique
 	 * @return whether the cluster was successfully locked
 	 */
-	boolean lock(String name);
+	boolean lock(final String name);
 
 	/**
 	 * Unlocks the cluster. The server can only unlock the cluster if it already has the lock.
@@ -31,7 +32,7 @@ public interface IClusterManager {
 	 * @param name the name of the lock, must be unique
 	 * @return whether the cluster was unlocked by this server
 	 */
-	boolean unlock(String name);
+	boolean unlock(final String name);
 
 	/**
 	 * @return whether there are any servers in the cluster that are working excluding this one. If this server is working then the server
@@ -42,7 +43,7 @@ public interface IClusterManager {
 	/**
 	 * @return whether there are any servers in the cluster that are working on this index
 	 */
-	boolean anyWorking(String indexName);
+	boolean anyWorking(final String indexName);
 
 	/**
 	 * Sets the server working on this index and this indexable.
@@ -53,7 +54,7 @@ public interface IClusterManager {
 	 * @param isWorking whether the server is working or not
 	 * @return the action that was started
 	 */
-	Action startWorking(String actionName, String indexName, String indexableName);
+	Action startWorking(final String actionName, final String indexName, final String indexableName);
 
 	/**
 	 * Stops the server working. This will broadcast to the cluster that the action/job is finished. This indicates that another server can
@@ -61,14 +62,18 @@ public interface IClusterManager {
 	 * 
 	 * @param action the action that was started
 	 */
-	void stopWorking(Action action);
+	void stopWorking(final Action action);
 
 	/**
+	 * Access to the servers in the distributed cache.
+	 * 
 	 * @return the servers in the cluster
 	 */
 	Map<String, Server> getServers();
 
 	/**
+	 * Access to the current local server object.
+	 * 
 	 * @return this server object
 	 */
 	Server getServer();
@@ -79,13 +84,18 @@ public interface IClusterManager {
 	 * 
 	 * @param serializable the object to send to the cluster
 	 */
-	void sendMessage(Serializable serializable);
+	void sendMessage(final Serializable serializable);
 
 	/**
 	 * Access to the cluster locks. This lock set is exposed to allow listeners to remove locks that time out due to the server going down.
 	 * 
 	 * @return the locks for the cluster that are cached in this server
 	 */
+	@Deprecated
 	Map<String, ClusterManagerJmsLock> getLocks();
+
+	Search getSearch(final String searchKey);
+
+	void setSearch(final String searchKey, final Search search);
 
 }

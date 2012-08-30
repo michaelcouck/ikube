@@ -29,5 +29,9 @@
 		lazy-init="false"
 		init-method="initialize" />
 	
+	<!-- Turn on AspectJ @Configurable support -->
+	<context:spring-configured />
+	<context:component-scan base-package="ikube" />
+	
 	<import resource="**/spring-*.xml" />
 </beans>

@@ -1,5 +1,7 @@
 package ikube.gui.panel;
 
+import ikube.gui.data.IContainer;
+
 import com.invient.vaadin.charts.InvientCharts;
 import com.invient.vaadin.charts.InvientCharts.DateTimeSeries;
 import com.invient.vaadin.charts.InvientChartsConfig;
@@ -12,12 +14,17 @@ public class DashPanel extends Panel {
 		getContent().setSizeFull();
 		setImmediate(true);
 
-		addChart();
+		// addChart();
+	}
+
+	public void setData(Object data) {
+		((IContainer) data).init(this);
 	}
 
 	private void addChart() {
 		InvientCharts chart = new InvientCharts(new InvientChartsConfig());
 		chart.getConfig().getTitle().setText("Chart title");
+
 		// chart.getConfig().getGeneralChartConfig().setSpacing( new Spacing( 30, 30, 30, 30 ) );
 		chart.getConfig().getGeneralChartConfig().setShadow(true);
 		chart.setSizeFull();
@@ -41,10 +48,6 @@ public class DashPanel extends Panel {
 
 		addComponent(chart);
 		getContent().addComponent(chart);
-	}
-
-	public void setData(Object data) {
-		// TODO Populate the graphs
 	}
 
 }

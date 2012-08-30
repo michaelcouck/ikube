@@ -1,11 +1,15 @@
 package ikube.model;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.Transient;
 
 /**
  * This entity represents a search that was done by the user. As searches are done they can be inserted into the database and the data can
@@ -30,15 +34,19 @@ public class Search extends Persistable {
 	@Column
 	private int count;
 	@Column
-	private String results;
+	private int results;
 	@Column
 	private String indexName;
 	@Column
 	private String searchStrings;
 	@Column
+	private String correctedSearchStrings;
+	@Column
 	private double highScore;
 	@Column
 	private boolean corrections;
+	@Transient
+	private ArrayList<HashMap<String, String>> searchResults;
 
 	public int getCount() {
 		return count;
@@ -48,11 +56,11 @@ public class Search extends Persistable {
 		this.count = count;
 	}
 
-	public String getResults() {
+	public int getResults() {
 		return results;
 	}
 
-	public void setResults(String results) {
+	public void setResults(int results) {
 		this.results = results;
 	}
 
@@ -72,6 +80,14 @@ public class Search extends Persistable {
 		this.searchStrings = searchStrings;
 	}
 
+	public String getCorrectedSearchStrings() {
+		return correctedSearchStrings;
+	}
+
+	public void setCorrectedSearchStrings(String correctedSearchStrings) {
+		this.correctedSearchStrings = correctedSearchStrings;
+	}
+
 	public double getHighScore() {
 		return highScore;
 	}
@@ -86,6 +102,14 @@ public class Search extends Persistable {
 
 	public void setCorrections(boolean corrections) {
 		this.corrections = corrections;
+	}
+
+	public ArrayList<HashMap<String, String>> getSearchResults() {
+		return searchResults;
+	}
+
+	public void setSearchResults(ArrayList<HashMap<String, String>> searchResults) {
+		this.searchResults = searchResults;
 	}
 
 }

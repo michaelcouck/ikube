@@ -27,10 +27,35 @@ public final class ThreadUtilities {
 
 	private static final Logger LOGGER = Logger.getLogger(ThreadUtilities.class);
 
+	/**
+	 * This class will iterate over the futures and remove the ones that are finished.
+	 * 
+	 * @author Michael Couck
+	 * @since 24.08.12
+	 * @version 01.00
+	 */
+	static class Cleaner implements Runnable {
+		public void run() {
+			while (true) {
+				ThreadUtilities.sleep(60000);
+				Collection<String> futureNames = new ArrayList<String>(FUTURES.keySet());
+				for (String futureName : futureNames) {
+					List<Future<?>> futures = FUTURES.get(futureName);
+					for (Future<?> future : futures) {
+						if (future.isCancelled() || future.isDone()) {
+							futures.remove(future);
+							LOGGER.info("Removed future : " + future);
+						}
+					}
+				}
+			}
+		}
+	}
+
 	/** Executes the 'threads' and returns a future. */
 	private static ExecutorService EXECUTER_SERVICE;
 	/** A list of futures by name so we can kill them. */
-	private static final Map<String, Future<?>> FUTURES = new HashMap<String, Future<?>>();
+	private static final Map<String, List<Future<?>>> FUTURES = new HashMap<String, List<Future<?>>>();
 
 	/**
 	 * This method will submit the runnable and add it to a map so the caller can cancel the future if necessary.
@@ -41,8 +66,18 @@ public final class ThreadUtilities {
 	 */
 	public static Future<?> submit(final String name, final Runnable runnable) {
 		Future<?> future = submit(runnable);
-		FUTURES.put(name, future);
+		getFutures(name).add(future);
+		LOGGER.info("Submit future : " + name);
 		return future;
+	}
+
+	private static List<Future<?>> getFutures(final String name) {
+		List<Future<?>> futures = FUTURES.get(name);
+		if (futures == null) {
+			futures = new ArrayList<Future<?>>();
+			FUTURES.put(name, futures);
+		}
+		return futures;
 	}
 
 	/**
@@ -68,39 +103,28 @@ public final class ThreadUtilities {
 			return;
 		}
 		EXECUTER_SERVICE = Executors.newFixedThreadPool(IConstants.THREAD_POOL_SIZE);
-		submit(new Runnable() {
-			public void run() {
-				while (true) {
-					ThreadUtilities.sleep(60000);
-					// TODO Do we need to remove futures that are terminated and were not removed
-					// for some reason? Could we have a thread leak?
-					Collection<String> futureNames = new ArrayList<String>(FUTURES.keySet());
-					for (String futureName : futureNames) {
-						Future<?> future = FUTURES.get(futureName);
-						if (future.isCancelled() || future.isDone()) {
-							future = FUTURES.remove(futureName);
-							LOGGER.info("Removed future : " + future);
-						}
-					}
-				}
-			}
-		});
+		submit(new Cleaner());
 	}
 
 	/**
-	 * This method will terminate the future, essentially interrupting it and remove it from the list. In the case where this future is
-	 * running an action the action will terminate abruptly.
+	 * This method will terminate the future(s) with the specified name, essentially interrupting it and remove it from the list. In the
+	 * case where this future is running an action the action will terminate abruptly. Note that futures typically run in groups of three or
+	 * four, and are keyed by the name, so all the futures in the group need to be cancelled.
 	 * 
 	 * @param name the name that was assigned to the future when it was submitted for execution
 	 */
 	public static void destroy(final String name) {
-		Future<?> future = FUTURES.remove(name);
-		if (future == null) {
-			LOGGER.warn("No such future : " + name);
-			return;
+		List<Future<?>> futures = FUTURES.remove(name);
+		if (futures != null) {
+			for (Future<?> future : futures) {
+				if (future == null) {
+					LOGGER.warn("No such future : " + name);
+					return;
+				}
+				future.cancel(true);
+				LOGGER.info("Destroyed and removed future : " + name + ", " + future);
+			}
 		}
-		future.cancel(true);
-		LOGGER.info("Destroyed and removed future : " + name + ", " + future);
 	}
 
 	/**

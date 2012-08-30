@@ -29,6 +29,10 @@
 	
 	<aop:aspectj-autoproxy proxy-target-class="true" />
 	
+	<!-- Turn on AspectJ @Configurable support -->
+	<context:spring-configured />
+	<context:component-scan base-package="ikube" />
+
 	<util:list id="ikube.IndexEngine.actions">
 		<ref bean="ikube.action.Close"  />
 		<ref bean="ikube.action.Reset" />
@@ -39,8 +43,8 @@
 		<ref bean="ikube.action.Delete" />
 		<ref bean="ikube.action.Clean" />
 		<ref bean="ikube.action.Backup" />
-		<!-- <ref bean="ikube.action.DiskFull" /> -->
-		<!-- <ref bean="ikube.action.Validator" /> -->
+		<ref bean="ikube.action.DiskFull" />
+		<ref bean="ikube.action.Validator" />
 		<ref bean="ikube.action.Prune" />
 	</util:list>
 

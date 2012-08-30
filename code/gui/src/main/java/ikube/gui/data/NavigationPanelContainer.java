@@ -33,6 +33,7 @@ public class NavigationPanelContainer extends HierarchicalContainer implements I
 		Tree tree = GuiTools.findComponent(target, Tree.class);
 
 		addItemIfNotPresent(IConstant.DASH, null);
+		addItemIfNotPresent(IConstant.SEARCH, null);
 		addItemIfNotPresent(IConstant.INDEXES, null);
 
 		for (final Map.Entry<String, IndexContext> mapEntry : monitorService.getIndexContexts().entrySet()) {

@@ -61,11 +61,11 @@
 		<!-- Deploy to the server -->
 		<antcall target="copy-to-server">
 			<param name="file-to-copy" value="${target-directory}/${ikube-war}" />
-			<param name="server-directory" value="michael:caherline@192.168.1.4:/usr/share/apache-tomcat-7.0.27/webapps" />
+			<param name="server-directory" value="michael:caherline@ikube.be:/usr/share/apache-tomcat-7.0.27/webapps" />
 		</antcall>
 		<!-- <antcall target="copy-to-server">
-			<param name="file-to-copy" value="${target-gui-directory}/${ikube-gui-war}" />
-			<param name="server-directory" value="michael:caherline@192.168.1.4:/usr/share/apache-tomcat-7.0.27/webapps" />
+			<param name="file-to-copy" value="${target-gui-directory}/${ikube-war}" />
+			<param name="server-directory" value="michael:caherline@ikube.be:/usr/share/apache-tomcat-7.0.27/webapps" />
 		</antcall> -->
 		<antcall target="copy-to-server">
 			<param name="file-to-copy" value="${target-directory}/${ikube-war}" />
@@ -87,7 +87,7 @@
 
 	<target name="clean-all-servers">
 		<antcall target="clean-server">
-		    <param name="host" value="192.168.1.4" />
+		    <param name="host" value="ikube.be" />
 		</antcall>
 		<antcall target="clean-server">
 		    <param name="host" value="192.168.1.6" />
@@ -124,13 +124,13 @@
 			trust="true"
 			username="root"
 			password="caherline"
-			command="mkdir /usr/share/apache-tomcat-7.0.27/bin/ikube" 
+			command="mkdir -p /usr/share/apache-tomcat-7.0.27/bin/ikube" 
 			failonerror="false" />
 		<sshexec host="${host}"
 			trust="true"
 			username="root"
 			password="caherline"
-			command="mkdir /usr/share/apache-tomcat-7.0.27/logs" 
+			command="mkdir -p /usr/share/apache-tomcat-7.0.27/logs" 
 			failonerror="false" />
 		<sshexec host="${host}"
 			trust="true"
@@ -148,6 +148,9 @@
 	<target name="package-configuration">
 	    <delete dir="${output-configuration-directory}" />
 		<!-- Copy the common configuration -->
+		<copy 
+		    	file="code/core/src/main/resources/ikube/spring.xml" 
+		    	todir="${output-configuration-directory}" failonerror="false" />
 		<copy todir="${output-configuration-directory}/common" failonerror="false">
 			<fileset dir="code/core/src/main/resources/ikube/common" />
 		</copy>
@@ -165,6 +168,7 @@
 	</target>
 	<target name="deploy-configuration-for-jetty">
 		<unjar src="${output-configuration-directory}/${ikube-configuration-jar}" dest="code/war/ikube" overwrite="true" />
+		<unjar src="${output-configuration-directory}/${ikube-configuration-jar}" dest="code/gui/ikube" overwrite="true" />
 	</target>
 	
 	<!-- This target will deploy the configuration to the servers. -->
@@ -175,7 +179,7 @@
 		
 		<!-- Deploy configuration on server -->
 		<antcall target="copy-directory-to-server">
-			<param name="host" value="192.168.1.4" />
+			<param name="host" value="ikube.be" />
 			<param name="directory-to-copy" value="${output-configuration-directory}" />
 			<param name="server-directory" value="/usr/share/apache-tomcat-7.0.27/bin/ikube" />
 		</antcall>

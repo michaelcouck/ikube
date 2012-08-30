@@ -65,7 +65,7 @@ public class IndexableFilesystemLogHandler extends IndexableHandler<IndexableFil
 					}
 				}
 			};
-			futures.add(ThreadUtilities.submit(runnable));
+			futures.add(ThreadUtilities.submit(indexContext.getIndexName(), runnable));
 		} catch (Exception e) {
 			logger.error("Exception starting the file system indexer threads : ", e);
 		}

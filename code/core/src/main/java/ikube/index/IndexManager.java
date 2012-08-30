@@ -164,7 +164,7 @@ public final class IndexManager {
 			indexWriter.prepareCommit();
 			indexWriter.commit();
 			indexWriter.maybeMerge();
-			indexWriter.optimize(10, Boolean.TRUE);
+			indexWriter.optimize(5, Boolean.TRUE);
 		} catch (NullPointerException e) {
 			LOGGER.error("Null pointer, in the index writer : " + indexWriter);
 			if (LOGGER.isDebugEnabled()) {

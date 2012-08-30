@@ -116,6 +116,16 @@
 			<artifactId>jsch</artifactId>
 			<version>0.1.48</version>
 		</dependency>
+		<dependency>
+			<groupId>sshxcute</groupId>
+			<artifactId>sshxcute</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>ant</groupId>
+			<artifactId>ant</artifactId>
+			<version>1.7.0</version>
+		</dependency>
 	</dependencies>
 
 </project>

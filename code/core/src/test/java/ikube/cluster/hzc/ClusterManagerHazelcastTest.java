@@ -47,7 +47,24 @@ import com.hazelcast.core.MessageListener;
 
 public class ClusterManagerHazelcastTest extends ATest {
 
+	@MockClass(realClass = Hazelcast.class)
+	public static class HazelcastMock {
+
+		@SuppressWarnings("unchecked")
+		static IMap<String, Server> servers = mock(IMap.class);
+
+		@Mock
+		@SuppressWarnings("unchecked")
+		public static <K, V> IMap<K, V> getMap(String name) {
+			return (IMap<K, V>) servers;
+		}
+	}
+
 	protected Logger logger = LoggerFactory.getLogger(this.getClass());
+
+	private Server server;
+	private Map.Entry<String, Server> entry;
+	private Set<Map.Entry<String, Server>> entrySet;
 
 	private String actionName = "actionName";
 	private String indexName = "indexName";
@@ -57,6 +74,10 @@ public class ClusterManagerHazelcastTest extends ATest {
 	private IDataBase dataBase;
 	@Cascading
 	private IMonitorService monitorService;
+
+	private StartListener startListener;
+	private StopListener stopListener;
+
 	private ClusterManagerHazelcast clusterManagerHazelcast;
 
 	public ClusterManagerHazelcastTest() {
@@ -64,11 +85,22 @@ public class ClusterManagerHazelcastTest extends ATest {
 	}
 
 	@Before
+	@SuppressWarnings("unchecked")
 	public void before() {
 		Mockit.setUpMocks();
 		Mockit.setUpMocks(HazelcastMock.class);
 		clusterManagerHazelcast = new ClusterManagerHazelcast();
-		clusterManagerHazelcast.initialize();
+
+		server = mock(Server.class);
+		entry = mock(Map.Entry.class);
+		startListener = Mockito.mock(StartListener.class);
+		stopListener = Mockito.mock(StopListener.class);
+		entrySet = new HashSet<Map.Entry<String, Server>>();
+
+		when(server.isWorking()).thenReturn(false);
+		when(entry.getValue()).thenReturn(server);
+		when(HazelcastMock.servers.entrySet()).thenReturn(entrySet);
+		when(HazelcastMock.servers.get(anyString())).thenReturn(server);
 	}
 
 	@After
@@ -79,6 +111,7 @@ public class ClusterManagerHazelcastTest extends ATest {
 
 	@Test
 	public void lock() throws Exception {
+		injectServices();
 		boolean gotLock = clusterManagerHazelcast.lock(IConstants.IKUBE);
 		assertTrue(gotLock);
 		Thread thread = new Thread(new Runnable() {
@@ -93,6 +126,7 @@ public class ClusterManagerHazelcastTest extends ATest {
 
 	@Test
 	public void unlock() throws Exception {
+		injectServices();
 		boolean gotLock = clusterManagerHazelcast.lock(IConstants.IKUBE);
 		assertTrue(gotLock);
 		Thread thread = new Thread(new Runnable() {
@@ -116,32 +150,9 @@ public class ClusterManagerHazelcastTest extends ATest {
 		Thread.sleep(1000);
 	}
 
-	@MockClass(realClass = Hazelcast.class)
-	public static class HazelcastMock {
-
-		@SuppressWarnings("unchecked")
-		static IMap<String, Server> servers = mock(IMap.class);
-
-		@Mock
-		@SuppressWarnings("unchecked")
-		public static <K, V> IMap<K, V> getMap(String name) {
-			return (IMap<K, V>) servers;
-		}
-	}
-
-	Set<Map.Entry<String, Server>> entrySet = new HashSet<Map.Entry<String, Server>>();
-	@SuppressWarnings("unchecked")
-	Map.Entry<String, Server> entry = mock(Map.Entry.class);
-	Server server = mock(Server.class);
-	{
-		when(server.isWorking()).thenReturn(false);
-		when(entry.getValue()).thenReturn(server);
-		when(HazelcastMock.servers.entrySet()).thenReturn(entrySet);
-		when(HazelcastMock.servers.get(anyString())).thenReturn(server);
-	}
-
 	@Test
 	public void anyWorking() {
+		injectServices();
 		boolean anyworking = clusterManagerHazelcast.anyWorking();
 		assertFalse(anyworking);
 
@@ -156,7 +167,7 @@ public class ClusterManagerHazelcastTest extends ATest {
 
 	@Test
 	public void anyWorkingIndex() {
-		Deencapsulation.setField(clusterManagerHazelcast, dataBase);
+		injectServices();
 		boolean anyWorkingIndex = clusterManagerHazelcast.anyWorking(indexName);
 		assertFalse(anyWorkingIndex);
 
@@ -172,17 +183,14 @@ public class ClusterManagerHazelcastTest extends ATest {
 
 	@Test
 	public void startWorking() {
-		Deencapsulation.setField(clusterManagerHazelcast, dataBase);
-		Deencapsulation.setField(clusterManagerHazelcast, monitorService);
+		injectServices();
 		Action action = clusterManagerHazelcast.startWorking(actionName, indexName, indexableName);
 		assertEquals(indexName, action.getIndexName());
 	}
 
 	@Test
 	public void stopWorking() {
-		Deencapsulation.setField(clusterManagerHazelcast, dataBase);
-		Deencapsulation.setField(clusterManagerHazelcast, monitorService);
-
+		injectServices();
 		Action action = mock(Action.class);
 		when(action.getStartTime()).thenReturn(new Date());
 		when(action.getEndTime()).thenReturn(new Date());
@@ -197,8 +205,9 @@ public class ClusterManagerHazelcastTest extends ATest {
 
 	@Test
 	public void getServerAndServers() {
+		injectServices();
 		Mockit.tearDownMocks();
-		monitorService = Mockito.mock(MonitorService.class);
+		monitorService = mock(MonitorService.class);
 		Deencapsulation.setField(clusterManagerHazelcast, monitorService);
 		Server server = clusterManagerHazelcast.getServer();
 		assertNotNull(server);
@@ -209,17 +218,23 @@ public class ClusterManagerHazelcastTest extends ATest {
 	@Test
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void sendMessage() {
+		injectServices();
+		clusterManagerHazelcast.initialize();
 		MessageListener messageListener = Mockito.mock(MessageListener.class);
 		Hazelcast.getTopic(IConstants.TOPIC).addMessageListener(messageListener);
 		clusterManagerHazelcast.sendMessage(new Event());
 		ThreadUtilities.sleep(1000);
 		Mockito.verify(messageListener, Mockito.atLeastOnce()).onMessage(Mockito.any(Message.class));
 	}
-	
+
 	@Test
 	public void submitDestroy() {
 		Mockit.tearDownMocks();
+		Deencapsulation.setField(clusterManagerHazelcast, new StartListener());
+		Deencapsulation.setField(clusterManagerHazelcast, new StopListener());
 		ThreadUtilities.initialize();
+		clusterManagerHazelcast.initialize();
+
 		Runnable runnable = new Runnable() {
 			@Override
 			public void run() {
@@ -231,13 +246,13 @@ public class ClusterManagerHazelcastTest extends ATest {
 		String name = "name";
 		Future<?> future = ThreadUtilities.submit(name, runnable);
 		logger.info("Future : " + future.isCancelled() + ", " + future.isDone());
-		
+
 		Event event = ListenerManager.getEvent(Event.TERMINATE, System.currentTimeMillis(), name, Boolean.FALSE);
 		clusterManagerHazelcast.sendMessage(event);
 		ThreadUtilities.sleep(1000);
 		assertTrue(future.isCancelled());
 		ThreadUtilities.destroy();
- 	}
+	}
 
 	@Test
 	public void getLocks() {
@@ -246,6 +261,7 @@ public class ClusterManagerHazelcastTest extends ATest {
 
 	@Test
 	public void threaded() {
+		injectServices();
 		Hazelcast.getLock(IConstants.IKUBE).forceUnlock();
 		ThreadUtilities.initialize();
 		int threads = 3;
@@ -273,7 +289,15 @@ public class ClusterManagerHazelcastTest extends ATest {
 		ThreadUtilities.waitForFutures(futures, Long.MAX_VALUE);
 		ThreadUtilities.destroy();
 	}
-	
+
+	private void injectServices() {
+		Deencapsulation.setField(clusterManagerHazelcast, dataBase);
+		Deencapsulation.setField(clusterManagerHazelcast, monitorService);
+		Deencapsulation.setField(clusterManagerHazelcast, startListener);
+		Deencapsulation.setField(clusterManagerHazelcast, stopListener);
+		clusterManagerHazelcast.initialize();
+	}
+
 	private void validate(final Boolean[] locks) {
 		int count = 0;
 		// logger.info("Validate ; " + Arrays.deepToString(locks));
