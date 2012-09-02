@@ -55,5 +55,6 @@
 	<bean id="ikube.gui.data.IndexesPanelContainer" class="ikube.gui.data.IndexesPanelContainer" init-method="init" lazy-init="true" />
 	<bean id="ikube.gui.data.IndexPanelContainer" class="ikube.gui.data.IndexPanelContainer" init-method="init" lazy-init="true" />
 	<bean id="ikube.gui.data.ServersPanelContainer" class="ikube.gui.data.ServersPanelContainer" init-method="init" lazy-init="true" />
+	<bean id="ikube.gui.data.IndexOptionsContainer" class="ikube.gui.data.IndexOptionsContainer" init-method="init" lazy-init="true" />
 
 </beans>

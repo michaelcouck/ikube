@@ -374,6 +374,7 @@ public class SearcherService implements ISearcherService {
 		search.setHighScore(highScore);
 		search.setCorrections(StringUtils.isNotEmpty(correctedSearchString));
 		search.setCorrectedSearchStrings(correctedSearchString);
+		search.setSearchResults(searchResults);
 		dataBase.persist(search);
 		return search;
 	}

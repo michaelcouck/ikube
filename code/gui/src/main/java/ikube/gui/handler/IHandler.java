@@ -1,10 +1,11 @@
 package ikube.gui.handler;
 
-import com.vaadin.data.Container;
+import ikube.gui.data.IContainer;
+
 import com.vaadin.ui.Component;
 
 public interface IHandler {
 
-	void registerHandler(final Component component, final Container container);
+	void registerHandler(final Component component, final IContainer container);
 
 }

@@ -18,7 +18,7 @@ public class DashPanel extends Panel {
 	}
 
 	public void setData(Object data) {
-		((IContainer) data).init(this);
+		((IContainer) data).setData(this);
 	}
 
 	private void addChart() {

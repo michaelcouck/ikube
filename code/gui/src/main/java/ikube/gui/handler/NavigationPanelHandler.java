@@ -2,13 +2,14 @@ package ikube.gui.handler;
 
 import ikube.gui.IConstant;
 import ikube.gui.Window;
+import ikube.gui.data.IContainer;
 import ikube.gui.panel.NavigationPanel;
+import ikube.gui.toolkit.GuiTools;
 import ikube.toolkit.ThreadUtilities;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import com.vaadin.data.Container;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.ui.Component;
@@ -20,9 +21,10 @@ public class NavigationPanelHandler extends AHandler {
 
 	private Panel currentPanel;
 
-	protected void registerHandlerInternal(final Component component, final Container container) {
+	@Override
+	protected void registerHandlerInternal(final Component component, final IContainer container) {
 		// The dash board is always the first panel in the center
-		currentPanel = (Panel) findComponent(component, IConstant.DASH, new ArrayList<Component>());
+		currentPanel = (Panel) GuiTools.findComponent(component, IConstant.DASH, new ArrayList<Component>());
 		Iterator<Component> iterator = ((Panel) component).getComponentIterator();
 		while (iterator.hasNext()) {
 			Component childComponent = iterator.next();
@@ -37,9 +39,9 @@ public class NavigationPanelHandler extends AHandler {
 		// This poller will request changes from the server periodically
 		ProgressIndicator pollingIndicator = new ProgressIndicator();
 		pollingIndicator.setVisible(Boolean.FALSE);
+		pollingIndicator.setIndeterminate(Boolean.TRUE);
 		pollingIndicator.setValidationVisible(Boolean.FALSE);
 		pollingIndicator.setPollingInterval(interval);
-		pollingIndicator.setIndeterminate(Boolean.TRUE);
 
 		Window window = Window.INSTANCE;
 		window.addComponent(pollingIndicator);

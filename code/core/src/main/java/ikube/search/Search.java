@@ -47,7 +47,6 @@ import org.apache.lucene.search.highlight.Scorer;
  */
 public abstract class Search {
 
-	// private static transient Pattern AND_OR_PATTERN = Pattern.compile(".*\\pAND\\p.*|.*\\pOR\\p.*");
 	private static transient Map<String, QueryParser> QUERY_PARSERS = new HashMap<String, QueryParser>();
 
 	protected Logger logger;

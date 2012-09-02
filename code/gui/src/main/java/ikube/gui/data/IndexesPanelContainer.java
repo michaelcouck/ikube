@@ -68,7 +68,7 @@ public class IndexesPanelContainer extends HierarchicalContainer implements ICon
 	public void init() {
 	}
 
-	public void init(final Panel panel) {
+	public void setData(final Panel panel, final Object... parameters) {
 		// LOGGER.info("Init indexes panel : " + panel);
 		TreeTable treeTable = GuiTools.findComponent(panel, TreeTable.class);
 		if (!initialized) {
@@ -87,7 +87,7 @@ public class IndexesPanelContainer extends HierarchicalContainer implements ICon
 		treeTable.addContainerProperty(MAX_AGE_COLUMN, String.class, MAX_AGE_COLUMN, MAX_AGE_COLUMN, maxAgeIcon, null);
 		treeTable.addContainerProperty(TIMESTAMP_COLUMN, String.class, TIMESTAMP_COLUMN, TIMESTAMP_COLUMN, timestampIcon, null);
 		treeTable.addContainerProperty(PATH_COLUMN, String.class, PATH_COLUMN, PATH_COLUMN, pathIcon, null);
-		treeTable.addContainerProperty(ACTION_COLUMN, Component.class, PATH_COLUMN, PATH_COLUMN, actionIcon, null);
+		treeTable.addContainerProperty(ACTION_COLUMN, Component.class, ACTION_COLUMN, ACTION_COLUMN, actionIcon, null);
 	}
 
 	private void createIcons() {
@@ -101,7 +101,6 @@ public class IndexesPanelContainer extends HierarchicalContainer implements ICon
 		actionIcon = new ClassResource(this.getClass(), "/images/icons/launch_run.gif", Application.getApplication());
 
 		resource = new ClassResource(this.getClass(), "/images/icons/relaunch.gif", Application.getApplication());
-
 	}
 
 	@SuppressWarnings("rawtypes")

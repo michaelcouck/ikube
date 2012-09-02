@@ -1,6 +1,7 @@
 package ikube.gui;
 
 import ikube.gui.data.DashPanelContainer;
+import ikube.gui.data.IndexOptionsContainer;
 import ikube.gui.data.IndexPanelContainer;
 import ikube.gui.data.IndexesPanelContainer;
 import ikube.gui.data.NavigationPanelContainer;
@@ -52,6 +53,8 @@ public class Window extends com.vaadin.ui.Window {
 	private transient NavigationPanelContainer navigationPanelContainer;
 	@Autowired
 	private transient ServersPanelContainer serversPanelContainer;
+	@Autowired
+	private transient IndexOptionsContainer indexOptionsContainer;
 
 	public Window() {
 		Window.INSTANCE = this;
@@ -87,8 +90,8 @@ public class Window extends com.vaadin.ui.Window {
 		dashPanel.setDescription(IConstant.DASH);
 		dashPanel.setData(dashPanelContainer);
 		horizontal.addComponent(dashPanel);
-		
-		Panel searchPanel = new SearchPanel();
+
+		Panel searchPanel = new SearchPanel(indexOptionsContainer);
 		searchPanel.setDescription(IConstant.SEARCH);
 		searchPanel.setData(searchPanelContainer);
 
@@ -105,7 +108,7 @@ public class Window extends com.vaadin.ui.Window {
 		serversPanel.setDescription(IConstant.SERVERS);
 		serversPanel.setData(serversPanelContainer);
 
-		// Add the controllers/listeners/handlers tothe panels
+		// Add the controllers/listeners/handlers to the panels
 		new NavigationPanelHandler().registerHandler(navigationPanel, navigationPanelContainer);
 		new DashPanelHandler().registerHandler(dashPanel, dashPanelContainer);
 		new SearchPanelHandler().registerHandler(searchPanel, searchPanelContainer);

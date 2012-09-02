@@ -14,7 +14,7 @@ public class IndexesPanel extends Panel {
 	public IndexesPanel() {
 		setSizeFull();
 		getContent().setSizeFull();
-		setImmediate(true);
+		setImmediate(Boolean.TRUE);
 
 		treeTable = new TreeTable(IConstant.INDEXES);
 		treeTable.setWidth(100, Sizeable.UNITS_PERCENTAGE);
@@ -26,7 +26,7 @@ public class IndexesPanel extends Panel {
 	}
 
 	public void setData(final Object data) {
-		((IContainer) data).init(this);
+		((IContainer) data).setData(this);
 	}
 
 }

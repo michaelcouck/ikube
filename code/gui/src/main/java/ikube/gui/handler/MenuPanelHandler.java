@@ -1,11 +1,13 @@
 package ikube.gui.handler;
 
-import com.vaadin.data.Container;
+import ikube.gui.data.IContainer;
+
 import com.vaadin.ui.Component;
 
 public class MenuPanelHandler extends AHandler {
 
-	protected void registerHandlerInternal(final Component component, final Container container) {
+	@Override
+	protected void registerHandlerInternal(final Component component, final IContainer container) {
 	}
 
 }

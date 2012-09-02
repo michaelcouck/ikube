@@ -2,6 +2,7 @@ package ikube.gui.data;
 
 import ikube.cluster.IClusterManager;
 import ikube.gui.Application;
+import ikube.gui.IConstant;
 import ikube.gui.Window;
 import ikube.gui.toolkit.GuiTools;
 import ikube.listener.Event;
@@ -39,21 +40,7 @@ import com.vaadin.ui.TreeTable;
 @Configurable
 public class ServersPanelContainer extends HierarchicalContainer implements IContainer {
 
-	private static final String SERVER_COLUMN = "Server";
-	private static final String SIZE_COLUMN = "Size";
-	private static final String DOCS_COLUMN = "Docs";
-	private static final String TIMESTAMP_COLUMN = "Timestamp";
-	private static final String PER_MINUTE_COLUMN = "Per min";
-	private static final String ACTION_COLUMN = "Action";
-
 	private static final Logger LOGGER = LoggerFactory.getLogger(ServersPanelContainer.class);
-
-	private Resource serverIcon;
-	private Resource sizeIcon;
-	private Resource docsIcon;
-	private Resource timestampIcon;
-	private Resource perMinIcon;
-	private Resource actionIcon;
 
 	@Autowired
 	private transient IClusterManager clusterManager;
@@ -63,28 +50,13 @@ public class ServersPanelContainer extends HierarchicalContainer implements ICon
 	public void init() {
 	}
 
-	public void init(final Panel panel) {
-		TreeTable treeTable = GuiTools.findComponent(panel, TreeTable.class);
-		if (serverIcon == null) {
-			serverIcon = new ClassResource(this.getClass(), "/images/icons/index.gif", Application.getApplication());
-			sizeIcon = new ClassResource(this.getClass(), "/images/icons/index.gif", Application.getApplication());
-			docsIcon = new ClassResource(this.getClass(), "/images/icons/index.gif", Application.getApplication());
-			timestampIcon = new ClassResource(this.getClass(), "/images/icons/index.gif", Application.getApplication());
-			perMinIcon = new ClassResource(this.getClass(), "/images/icons/index.gif", Application.getApplication());
-			actionIcon = new ClassResource(this.getClass(), "/images/icons/index.gif", Application.getApplication());
-
-			treeTable.addContainerProperty(SERVER_COLUMN, String.class, null, SERVER_COLUMN, serverIcon, null);
-			treeTable.addContainerProperty(SIZE_COLUMN, String.class, null, SIZE_COLUMN, sizeIcon, null);
-			treeTable.addContainerProperty(DOCS_COLUMN, Long.class, null, DOCS_COLUMN, docsIcon, null);
-			treeTable.addContainerProperty(TIMESTAMP_COLUMN, Date.class, null, TIMESTAMP_COLUMN, timestampIcon, null);
-			treeTable.addContainerProperty(PER_MINUTE_COLUMN, Long.class, null, PER_MINUTE_COLUMN, perMinIcon, null);
-			treeTable.addContainerProperty(ACTION_COLUMN, Component.class, null, ACTION_COLUMN, actionIcon, null);
-		}
+	public void setData(final Panel panel, final Object... parameters) {
+		TreeTable treeTable = (TreeTable) GuiTools.findComponent(panel, IConstant.SERVERS_PANEL_TABLE, new ArrayList<Component>());
 		setData(treeTable);
 	}
 
 	private void setData(final TreeTable treeTable) {
-		treeTable.removeAllItems();
+		// treeTable.removeAllItems();
 		Map<String, Server> servers = clusterManager.getServers();
 		List<Server> sortedServers = new ArrayList<Server>(servers.values());
 		Collections.sort(sortedServers, new Comparator<Server>() {
@@ -95,10 +67,15 @@ public class ServersPanelContainer extends HierarchicalContainer implements ICon
 		});
 		for (Server server : sortedServers) {
 			String ip = server.getIp();
-			treeTable.addItem(new Object[] { ip, null, null, null, null, null }, ip);
-			treeTable.setCollapsed(ip, Boolean.FALSE);
+			if (treeTable.getItem(ip) == null) {
+				LOGGER.info("Adding server : " + ip);
+				treeTable.addItem(new Object[] { ip, null, null, null, null, null, null }, ip);
+				treeTable.setCollapsed(ip, Boolean.FALSE);
+			}
 			addSnapshotData(server, treeTable);
 		}
+		treeTable.requestRepaint();
+		treeTable.requestRepaintAll();
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -123,11 +100,15 @@ public class ServersPanelContainer extends HierarchicalContainer implements ICon
 			if (server.getActions() != null) {
 				for (Action action : server.getActions()) {
 					actionName = action.getActionName();
+					break;
 				}
 			}
-			
+
+			boolean removed = treeTable.removeItem(indexName);
+			LOGGER.info("Adding item : " + removed + ", " + indexName);
+
 			Resource resource = new ClassResource(this.getClass(), "/images/icons/red_square.gif", Application.getApplication());
-			final Embedded embedded = new Embedded(actionName, resource);
+			final Embedded embedded = new Embedded(null, resource);
 			HorizontalLayout horizontalLayout = new HorizontalLayout();
 			horizontalLayout.addComponent(embedded);
 			// The dialog for the confirmation of terrmination
@@ -155,7 +136,7 @@ public class ServersPanelContainer extends HierarchicalContainer implements ICon
 				}
 			}
 			embedded.addListener(new ClickListener());
-			Object[] columnData = new Object[] { indexName, indexSize, numDocs, timestamp, docsPerMinute, horizontalLayout };
+			Object[] columnData = new Object[] { indexName, indexSize, numDocs, timestamp, docsPerMinute, actionName, horizontalLayout };
 			treeTable.addItem(columnData, indexName);
 			treeTable.setParent(indexName, server.getIp());
 		}

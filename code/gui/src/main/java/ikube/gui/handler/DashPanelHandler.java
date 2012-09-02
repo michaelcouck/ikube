@@ -1,16 +1,17 @@
 package ikube.gui.handler;
 
 import ikube.gui.Window;
+import ikube.gui.data.IContainer;
 import ikube.gui.panel.DashPanel;
 import ikube.toolkit.ThreadUtilities;
 
-import com.vaadin.data.Container;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.ProgressIndicator;
 
 public class DashPanelHandler extends AHandler {
 
-	protected void registerHandlerInternal(final Component component, final Container container) {
+	@Override
+	protected void registerHandlerInternal(final Component component, final IContainer container) {
 		final int interval = 10000;
 
 		// This poller will request changes from the server periodically

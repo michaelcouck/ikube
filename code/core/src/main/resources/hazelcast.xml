@@ -57,6 +57,7 @@
 		<backup-count>5</backup-count>
 		<eviction-policy>LFU</eviction-policy>
 		<max-size>10000</max-size>
+		<time-to-live-seconds>600</time-to-live-seconds>
 		<eviction-percentage>25</eviction-percentage>
 		<merge-policy>hz.ADD_NEW_ENTRY</merge-policy>
 		<map-store enabled="false">

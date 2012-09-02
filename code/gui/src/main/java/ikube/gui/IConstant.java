@@ -12,5 +12,12 @@ public interface IConstant {
 	String INDEX = "Index";
 	String INDEXES = "Indexes";
 	String SERVERS = "Servers";
+	String SEARCH_BUTTON = "Search button";
+	String SEARCH_FIELD = "Search field";
+	
+	String SEARCH_PANEL_TREE_TABLE = "Search panel tree table";
+	String INDEXES_OPTION_GROUP = "Search panel option group";
+	String SERVERS_PANEL_TABLE = "Servers panel table";
+	String NAVIGATION_TREE = "The navigation tree";
 
 }
