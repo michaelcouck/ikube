@@ -26,7 +26,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.vaadin.dialogs.ConfirmDialog;
 
-import com.vaadin.data.util.HierarchicalContainer;
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
 import com.vaadin.event.MouseEvents;
 import com.vaadin.event.MouseEvents.ClickEvent;
 import com.vaadin.terminal.ClassResource;
@@ -35,28 +36,27 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Panel;
-import com.vaadin.ui.TreeTable;
+import com.vaadin.ui.Table;
 
 @Configurable
-public class ServersPanelContainer extends HierarchicalContainer implements IContainer {
+public class ServersPanelContainer extends AContainer {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ServersPanelContainer.class);
 
 	@Autowired
-	private transient IClusterManager clusterManager;
-	@Autowired
 	private transient IMonitorService monitorService;
+	@Autowired
+	private transient IClusterManager clusterManager;
 
 	public void init() {
 	}
 
 	public void setData(final Panel panel, final Object... parameters) {
-		TreeTable treeTable = (TreeTable) GuiTools.findComponent(panel, IConstant.SERVERS_PANEL_TABLE, new ArrayList<Component>());
+		Table treeTable = (Table) GuiTools.findComponent(panel, IConstant.SERVERS_PANEL_TABLE, new ArrayList<Component>());
 		setData(treeTable);
 	}
 
-	private void setData(final TreeTable treeTable) {
-		// treeTable.removeAllItems();
+	private void setData(final Table treeTable) {
 		Map<String, Server> servers = clusterManager.getServers();
 		List<Server> sortedServers = new ArrayList<Server>(servers.values());
 		Collections.sort(sortedServers, new Comparator<Server>() {
@@ -66,12 +66,6 @@ public class ServersPanelContainer extends HierarchicalContainer implements ICon
 			}
 		});
 		for (Server server : sortedServers) {
-			String ip = server.getIp();
-			if (treeTable.getItem(ip) == null) {
-				LOGGER.info("Adding server : " + ip);
-				treeTable.addItem(new Object[] { ip, null, null, null, null, null, null }, ip);
-				treeTable.setCollapsed(ip, Boolean.FALSE);
-			}
 			addSnapshotData(server, treeTable);
 		}
 		treeTable.requestRepaint();
@@ -79,18 +73,25 @@ public class ServersPanelContainer extends HierarchicalContainer implements ICon
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private void addSnapshotData(final Server server, final TreeTable treeTable) {
+	private void addSnapshotData(final Server server, final Table treeTable) {
 		for (final IndexContext indexContext : server.getIndexContexts()) {
 			List<Snapshot> snapshots = indexContext.getSnapshots();
 			if (snapshots == null || snapshots.size() == 0) {
 				continue;
 			}
-			if (!isWorking(server, indexContext)) {
+			final String indexName = indexContext.getIndexName();
+			String itemId = server.getIp() + "-" + indexName;
+			boolean isWorking = isWorking(server, indexContext);
+			// LOGGER.info("Server : " + server.getIp() + ", " + isWorking + ", " + indexName);
+			if (!isWorking) {
+				if (treeTable.getItem(itemId) != null) {
+					boolean removed = treeTable.removeItem(itemId);
+					LOGGER.info("Removing : " + removed + ", " + itemId);
+				}
 				continue;
 			}
-			// Verify that this index context has an action working on it
-			final String indexName = indexContext.getIndexName();
-			Snapshot snapshot = snapshots.get(snapshots.size() - 1);
+
+			Snapshot snapshot = indexContext.getLastSnapshot();
 			String indexSize = Double.toString(((double) snapshot.getIndexSize()) / 1000000);
 			Long numDocs = snapshot.getNumDocs();
 			Date timestamp = snapshot.getLatestIndexTimestamp();
@@ -100,55 +101,62 @@ public class ServersPanelContainer extends HierarchicalContainer implements ICon
 			if (server.getActions() != null) {
 				for (Action action : server.getActions()) {
 					actionName = action.getActionName();
-					break;
 				}
 			}
 
-			boolean removed = treeTable.removeItem(indexName);
-			LOGGER.info("Adding item : " + removed + ", " + indexName);
-
-			Resource resource = new ClassResource(this.getClass(), "/images/icons/red_square.gif", Application.getApplication());
-			final Embedded embedded = new Embedded(null, resource);
 			HorizontalLayout horizontalLayout = new HorizontalLayout();
-			horizontalLayout.addComponent(embedded);
-			// The dialog for the confirmation of terrmination
-			class DialogListener implements ConfirmDialog.Listener {
-				@Override
-				public void onClose(ConfirmDialog confirmDialog) {
-					if (confirmDialog.isConfirmed()) {
-						long time = System.currentTimeMillis();
-						Event terminateEvent = ListenerManager.getEvent(Event.TERMINATE, time, indexName, Boolean.FALSE);
-						LOGGER.info("Sending terminate event : " + terminateEvent);
-						clusterManager.sendMessage(terminateEvent);
+
+			Object[] columnData = new Object[] { server.getIp(), indexName, indexSize, numDocs, timestamp, docsPerMinute, actionName,
+					horizontalLayout };
+
+			Item item = treeTable.getItem(itemId);
+			if (item == null) {
+				LOGGER.info("Adding item : " + itemId);
+				Resource resource = new ClassResource(this.getClass(), "/images/icons/red_square.gif", Application.getApplication());
+				Embedded embedded = new Embedded(null, resource);
+				horizontalLayout.addComponent(embedded);
+				addListeners(indexName, embedded);
+				treeTable.addItem(columnData, itemId);
+			} else {
+				Object[] itemPropertyIds = item.getItemPropertyIds().toArray();
+				for (int i = 0; i < columnData.length - 1; i++) {
+					Property property = item.getItemProperty(itemPropertyIds[i]);
+					Object propertyValue = property.getValue();
+					if (!propertyValue.equals(columnData[i])) {
+						// LOGGER.info("Changing value : " + columnData[i]);
+						property.setValue(columnData[i]);
 					}
 				}
 			}
-			// The click listener for the user terminate click
-			class ClickListener implements MouseEvents.ClickListener {
-				@Override
-				public void click(ClickEvent event) {
-					LOGGER.info("Event : " + event + ",  " + event.getSource());
-					if (event.getSource() != null) {
-						String caption = "Terminate index - " + indexName;
-						String message = "Are you sure you want to terminate index [" + indexName + "]";
-						ConfirmDialog.show(Window.INSTANCE, caption, message, "Yes", "No", new DialogListener());
-					}
-				}
-			}
-			embedded.addListener(new ClickListener());
-			Object[] columnData = new Object[] { indexName, indexSize, numDocs, timestamp, docsPerMinute, actionName, horizontalLayout };
-			treeTable.addItem(columnData, indexName);
-			treeTable.setParent(indexName, server.getIp());
 		}
 	}
 
-	private boolean isWorking(final Server server, final IndexContext<?> indexContext) {
-		for (Action action : server.getActions()) {
-			if (indexContext.getIndexName().equals(action.getIndexName())) {
-				return true;
+	private void addListeners(final String indexName, final Embedded embedded) {
+		// The dialog for the confirmation of terrmination
+		class DialogListener implements ConfirmDialog.Listener {
+			@Override
+			public void onClose(ConfirmDialog confirmDialog) {
+				if (confirmDialog.isConfirmed()) {
+					long time = System.currentTimeMillis();
+					Event terminateEvent = ListenerManager.getEvent(Event.TERMINATE, time, indexName, Boolean.FALSE);
+					LOGGER.info("Sending terminate event : " + terminateEvent);
+					clusterManager.sendMessage(terminateEvent);
+				}
 			}
 		}
-		return false;
+		// The click listener for the user terminate click
+		class ClickListener implements MouseEvents.ClickListener {
+			@Override
+			public void click(ClickEvent event) {
+				LOGGER.info("Event : " + event + ",  " + event.getSource());
+				if (event.getSource() != null) {
+					String caption = "Terminate index - " + indexName;
+					String message = "Are you sure you want to terminate index [" + indexName + "]";
+					ConfirmDialog.show(Window.INSTANCE, caption, message, "Yes", "No", new DialogListener());
+				}
+			}
+		}
+		embedded.addListener(new ClickListener());
 	}
 
 }

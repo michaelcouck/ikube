@@ -19,5 +19,9 @@ public interface IConstant {
 	String INDEXES_OPTION_GROUP = "Search panel option group";
 	String SERVERS_PANEL_TABLE = "Servers panel table";
 	String NAVIGATION_TREE = "The navigation tree";
+	
+	String INDEXES_TREE_TABLE = "Indexes tree table";
+	
+	String DASH_CHART = "The dash board chart";
 
 }

@@ -29,9 +29,9 @@ public class IndexesPanelHandler extends AHandler {
 		// This poller will request changes from the server periodically
 		ProgressIndicator pollingIndicator = new ProgressIndicator();
 		pollingIndicator.setPollingInterval(interval);
-		pollingIndicator.setVisible(Boolean.FALSE);
+		pollingIndicator.setVisible(Boolean.TRUE);
 		pollingIndicator.setIndeterminate(Boolean.TRUE);
-		pollingIndicator.setValidationVisible(Boolean.FALSE);
+		pollingIndicator.setValidationVisible(Boolean.TRUE);
 
 		Window window = Window.INSTANCE;
 		window.addComponent(pollingIndicator);

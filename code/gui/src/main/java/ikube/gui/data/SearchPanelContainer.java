@@ -10,8 +10,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
@@ -22,8 +20,6 @@ import com.vaadin.ui.TreeTable;
 
 @Configurable
 public class SearchPanelContainer extends HierarchicalContainer implements IContainer {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(SearchPanelContainer.class);
 
 	@Autowired
 	private transient IMonitorService monitorService;
@@ -52,9 +48,8 @@ public class SearchPanelContainer extends HierarchicalContainer implements ICont
 		Arrays.fill(searchStrings, parameters[1]);
 		ArrayList<HashMap<String, String>> results = searcherService.searchMulti(indexName, searchStrings, searchFields, true, 0, 10);
 		// Set the resultant data in the table
-		HashMap<String, String> statistics = results.remove(results.size() - 1);
-		LOGGER.info("Statistics : " + statistics);
-		for (HashMap<String, String> result : results) {
+		for (int i = 0; i < results.size() - 1; i++) {
+			HashMap<String, String> result = results.get(i);
 			Object[] cells = new Object[] { result.get(IConstants.INDEX), result.get(IConstants.ID), result.get(IConstants.SCORE),
 					result.get(IConstants.FRAGMENT) };
 			treeTable.addItem(cells, result.get(IConstants.INDEX));

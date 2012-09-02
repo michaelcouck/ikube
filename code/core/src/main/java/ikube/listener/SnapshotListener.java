@@ -75,7 +75,8 @@ public class SnapshotListener implements IListener {
 		double interval = snapshot.getTimestamp() - previous.getTimestamp();
 		double ratio = interval / 60000;
 		// LOGGER.info("Ratio : " + ratio);
-		return (long) ((snapshot.getNumDocs() - previous.getNumDocs()) / ratio);
+		long docsPerMinute = (long) ((snapshot.getNumDocs() - previous.getNumDocs()) / ratio);
+		return docsPerMinute < 50000 ? docsPerMinute : 0;
 	}
 
 	protected Date getLatestIndexDirectoryDate(final IndexContext<?> indexContext) {

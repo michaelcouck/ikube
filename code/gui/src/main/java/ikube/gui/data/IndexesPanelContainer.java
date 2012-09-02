@@ -23,42 +23,19 @@ import org.vaadin.dialogs.ConfirmDialog;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
-import com.vaadin.data.util.HierarchicalContainer;
 import com.vaadin.event.MouseEvents;
 import com.vaadin.event.MouseEvents.ClickEvent;
 import com.vaadin.terminal.ClassResource;
 import com.vaadin.terminal.Resource;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TreeTable;
 
 @Configurable
-public class IndexesPanelContainer extends HierarchicalContainer implements IContainer {
-
-	private static final String NAME_COLUMN = "Name";
-	private static final String DOCUMENTS_COLUMN = "Docs";
-	private static final String SIZE_COLUMN = "Size";
-	private static final String OPEN_COLUMN = "Open";
-	private static final String MAX_AGE_COLUMN = "Max age";
-	private static final String TIMESTAMP_COLUMN = "Timestamp";
-	private static final String PATH_COLUMN = "Path";
-	private static final String ACTION_COLUMN = "Action";
+public class IndexesPanelContainer extends AContainer {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(IndexesPanelContainer.class);
-
-	private Resource nameIcon;
-	private Resource documentsIcon;
-	private Resource sizeIcon;
-	private Resource openIcon;
-	private Resource maxAgeIcon;
-	private Resource timestampIcon;
-	private Resource pathIcon;
-	private Resource actionIcon;
-	private Resource resource;
-
-	private boolean initialized = false;
 
 	@Autowired
 	private transient IClusterManager clusterManager;
@@ -71,40 +48,12 @@ public class IndexesPanelContainer extends HierarchicalContainer implements ICon
 	public void setData(final Panel panel, final Object... parameters) {
 		// LOGGER.info("Init indexes panel : " + panel);
 		TreeTable treeTable = GuiTools.findComponent(panel, TreeTable.class);
-		if (!initialized) {
-			initialized = true;
-			createIcons();
-			createTreeTable(treeTable);
-		}
 		populateTable(treeTable);
-	}
-
-	private void createTreeTable(final TreeTable treeTable) {
-		treeTable.addContainerProperty(NAME_COLUMN, String.class, NAME_COLUMN, NAME_COLUMN, nameIcon, null);
-		treeTable.addContainerProperty(DOCUMENTS_COLUMN, String.class, DOCUMENTS_COLUMN, DOCUMENTS_COLUMN, documentsIcon, null);
-		treeTable.addContainerProperty(SIZE_COLUMN, String.class, SIZE_COLUMN, SIZE_COLUMN, sizeIcon, null);
-		treeTable.addContainerProperty(OPEN_COLUMN, String.class, OPEN_COLUMN, OPEN_COLUMN, openIcon, null);
-		treeTable.addContainerProperty(MAX_AGE_COLUMN, String.class, MAX_AGE_COLUMN, MAX_AGE_COLUMN, maxAgeIcon, null);
-		treeTable.addContainerProperty(TIMESTAMP_COLUMN, String.class, TIMESTAMP_COLUMN, TIMESTAMP_COLUMN, timestampIcon, null);
-		treeTable.addContainerProperty(PATH_COLUMN, String.class, PATH_COLUMN, PATH_COLUMN, pathIcon, null);
-		treeTable.addContainerProperty(ACTION_COLUMN, Component.class, ACTION_COLUMN, ACTION_COLUMN, actionIcon, null);
-	}
-
-	private void createIcons() {
-		nameIcon = new ClassResource(this.getClass(), "/images/icons/index.gif", Application.getApplication());
-		documentsIcon = new ClassResource(this.getClass(), "/images/icons/web.gif", Application.getApplication());
-		sizeIcon = new ClassResource(this.getClass(), "/images/icons/index_performance.gif", Application.getApplication());
-		openIcon = new ClassResource(this.getClass(), "/images/icons/open.gif", Application.getApplication());
-		maxAgeIcon = new ClassResource(this.getClass(), "/images/icons/progress_task.gif", Application.getApplication());
-		timestampIcon = new ClassResource(this.getClass(), "/images/icons/register_view.gif", Application.getApplication());
-		pathIcon = new ClassResource(this.getClass(), "/images/icons/memory_view.gif", Application.getApplication());
-		actionIcon = new ClassResource(this.getClass(), "/images/icons/launch_run.gif", Application.getApplication());
-
-		resource = new ClassResource(this.getClass(), "/images/icons/relaunch.gif", Application.getApplication());
 	}
 
 	@SuppressWarnings("rawtypes")
 	private void populateTable(final TreeTable treeTable) {
+		Resource resource = new ClassResource(this.getClass(), "/images/icons/relaunch.gif", Application.getApplication());
 		// treeTable.removeAllItems();
 		boolean mustRepaint = false;
 		Map<String, IndexContext> indexContexts = monitorService.getIndexContexts();
