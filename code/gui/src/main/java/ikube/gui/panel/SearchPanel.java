@@ -29,7 +29,7 @@ public class SearchPanel extends Panel {
 	private Resource scoreIcon;
 	private Resource fragmentIcon;
 
-	public SearchPanel(final IContainer indexOptionsContainer) {
+	public SearchPanel() {
 		setSizeFull();
 		getContent().setSizeFull();
 		setImmediate(Boolean.TRUE);
@@ -42,7 +42,7 @@ public class SearchPanel extends Panel {
 		HorizontalLayout searchInputLayout = new HorizontalLayout();
 		searchInputLayout.setMargin(Boolean.TRUE);
 		searchInputLayout.setSpacing(Boolean.TRUE);
-		createIndexOptions(indexOptionsContainer, searchInputLayout);
+		createIndexOptions(searchInputLayout);
 		createSearchFieldAndButton(searchInputLayout);
 		verticalLayout.addComponent(searchInputLayout);
 
@@ -53,15 +53,13 @@ public class SearchPanel extends Panel {
 		verticalLayout.addComponent(searchStatisticsLayout);
 
 		addComponent(verticalLayout);
-
-		indexOptionsContainer.setData(this);
 	}
 
 	public void setData(Object data) {
-		// ((IContainer) data).setData(this);
+		((IContainer) data).setData(this);
 	}
 
-	private void createIndexOptions(final IContainer indexOptionsContainer, final ComponentContainer componentContainer) {
+	private void createIndexOptions(final ComponentContainer componentContainer) {
 		ComboBox indexOptions = new ComboBox();
 		indexOptions.setImmediate(true);
 		indexOptions.setDescription(IConstant.INDEXES_OPTION_GROUP);
@@ -96,9 +94,9 @@ public class SearchPanel extends Panel {
 		treeTable.setDescription(IConstant.SEARCH_PANEL_TREE_TABLE);
 
 		indexIcon = new ClassResource(this.getClass(), "/images/icons/index.gif", Application.getApplication());
-		idIcon = new ClassResource(this.getClass(), "/images/icons/index.gif", Application.getApplication());
-		scoreIcon = new ClassResource(this.getClass(), "/images/icons/index.gif", Application.getApplication());
-		fragmentIcon = new ClassResource(this.getClass(), "/images/icons/index.gif", Application.getApplication());
+		idIcon = new ClassResource(this.getClass(), "/images/icons/alphab_sort_co.gif", Application.getApplication());
+		scoreIcon = new ClassResource(this.getClass(), "/images/icons/correction_cast.gif", Application.getApplication());
+		fragmentIcon = new ClassResource(this.getClass(), "/images/icons/drop_to_frame.gif", Application.getApplication());
 
 		treeTable.addContainerProperty(INDEX_COLUMN, String.class, null, INDEX_COLUMN, indexIcon, null);
 		treeTable.addContainerProperty(ID_COLUMN, String.class, null, ID_COLUMN, idIcon, null);

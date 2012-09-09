@@ -24,7 +24,6 @@ import com.vaadin.ui.themes.Reindeer;
 @Component(value = "application")
 public class Application extends com.vaadin.Application implements HttpServletRequestListener {
 
-	@SuppressWarnings("unused")
 	private static final Logger LOGGER = LoggerFactory.getLogger(Application.class);
 
 	private transient static Application APPLICATION;
@@ -44,12 +43,14 @@ public class Application extends com.vaadin.Application implements HttpServletRe
 		window.init();
 		setMainWindow(window);
 		// Set the theme and style for every component in the window hierarchy
-		Styler.setThemeAndStyle(Reindeer.THEME_NAME, Reindeer.LAYOUT_WHITE, getWindows());
+		Styler.setThemeAndStyle(Reindeer.THEME_NAME, Reindeer.WINDOW_LIGHT, getWindows());
 	}
 
 	@Override
 	public void terminalError(Terminal.ErrorEvent event) {
-		getMainWindow().showNotification(applicationObjectSupport.getMessage("accessdenied"), Notification.TYPE_ERROR_MESSAGE);
+		LOGGER.error("Terminal error : ", event.getThrowable());
+		String message = applicationObjectSupport.getMessage("accessdenied");
+		getMainWindow().showNotification(message, Notification.TYPE_ERROR_MESSAGE);
 	}
 
 	@Override

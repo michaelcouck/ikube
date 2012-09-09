@@ -58,25 +58,25 @@
 
 	<!-- Deploys the war to all the servers. -->
 	<target name="deploy-ikube">
-		<!-- Deploy to the server -->
-		<antcall target="copy-to-server">
+	    <!-- Deploy to the server -->
+		<!--  antcall target="copy-to-server">
 			<param name="file-to-copy" value="${target-directory}/${ikube-war}" />
-			<param name="server-directory" value="michael:caherline@ikube.be:/usr/share/apache-tomcat-7.0.27/webapps" />
-		</antcall>
-		<!-- <antcall target="copy-to-server">
+			<param name="server-directory" value="michael:caherline@192.168.1.4:/usr/share/apache-tomcat-7.0.27/webapps" />
+		</antcall -->
+		<antcall target="copy-to-server">
 			<param name="file-to-copy" value="${target-gui-directory}/${ikube-war}" />
-			<param name="server-directory" value="michael:caherline@ikube.be:/usr/share/apache-tomcat-7.0.27/webapps" />
-		</antcall> -->
+			<param name="server-directory" value="michael:caherline@192.168.1.4:/usr/share/apache-tomcat-7.0.27/webapps" />
+		</antcall>
 		<antcall target="copy-to-server">
-			<param name="file-to-copy" value="${target-directory}/${ikube-war}" />
+			<param name="file-to-copy" value="${target-gui-directory}/${ikube-war}" />
 			<param name="server-directory" value="michael:caherline@192.168.1.6:/usr/share/apache-tomcat-7.0.27/webapps" />
 		</antcall>
 		<antcall target="copy-to-server">
-			<param name="file-to-copy" value="${target-directory}/${ikube-war}" />
+			<param name="file-to-copy" value="${target-gui-directory}/${ikube-war}" />
 			<param name="server-directory" value="michael:caherline@192.168.1.7:/usr/share/apache-tomcat-7.0.27/webapps" />
 		</antcall>
 		<antcall target="copy-to-server">
-			<param name="file-to-copy" value="${target-directory}/${ikube-war}" />
+			<param name="file-to-copy" value="${target-gui-directory}/${ikube-war}" />
 			<param name="server-directory" value="michael:caherline@192.168.1.8:/usr/share/apache-tomcat-7.0.27/webapps" />
 		</antcall>
 	</target>
@@ -87,7 +87,7 @@
 
 	<target name="clean-all-servers">
 		<antcall target="clean-server">
-		    <param name="host" value="ikube.be" />
+		    <param name="host" value="192.168.1.4" />
 		</antcall>
 		<antcall target="clean-server">
 		    <param name="host" value="192.168.1.6" />
@@ -179,7 +179,7 @@
 		
 		<!-- Deploy configuration on server -->
 		<antcall target="copy-directory-to-server">
-			<param name="host" value="ikube.be" />
+			<param name="host" value="192.168.1.4" />
 			<param name="directory-to-copy" value="${output-configuration-directory}" />
 			<param name="server-directory" value="/usr/share/apache-tomcat-7.0.27/bin/ikube" />
 		</antcall>

@@ -25,14 +25,14 @@
 	<aop:aspectj-autoproxy proxy-target-class="false" />
 	<global-method-security secured-annotations="enabled" />
 
-	<!-- <http access-denied-page="/accessdenied.jsp" auto-config="true">
+	<http access-denied-page="/accessdenied.jsp" auto-config="true">
 		<form-login always-use-default-target="false" authentication-failure-url="/login.jsp?login_error=t" default-target-url="/app"
 			login-page="/login.jsp" login-processing-url="/j_spring_security_check" />
 		<logout logout-url="/j_spring_security_logout" />
 		<intercept-url filters="none" pattern="/VAADIN/**" />
 		<intercept-url filters="none" pattern="/*.jsp" />
 		<intercept-url access="IS_AUTHENTICATED_FULLY" pattern="/**" />
-	</http> -->
+	</http>
 
 	<!-- This is the authentication manager that will block access to the user interface if the user is not logged in. -->
 	<authentication-manager alias="authenticationManager">

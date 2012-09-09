@@ -48,9 +48,6 @@ public class ServersPanelContainer extends AContainer {
 	@Autowired
 	private transient IClusterManager clusterManager;
 
-	public void init() {
-	}
-
 	public void setData(final Panel panel, final Object... parameters) {
 		Table treeTable = (Table) GuiTools.findComponent(panel, IConstant.SERVERS_PANEL_TABLE, new ArrayList<Component>());
 		setData(treeTable);
@@ -69,7 +66,6 @@ public class ServersPanelContainer extends AContainer {
 			addSnapshotData(server, treeTable);
 		}
 		treeTable.requestRepaint();
-		treeTable.requestRepaintAll();
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -96,14 +92,7 @@ public class ServersPanelContainer extends AContainer {
 			Long numDocs = snapshot.getNumDocs();
 			Date timestamp = snapshot.getLatestIndexTimestamp();
 			Long docsPerMinute = snapshot.getDocsPerMinute();
-
-			String actionName = null;
-			if (server.getActions() != null) {
-				for (Action action : server.getActions()) {
-					actionName = action.getActionName();
-				}
-			}
-
+			String actionName = getActionName(server, indexContext);
 			HorizontalLayout horizontalLayout = new HorizontalLayout();
 
 			Object[] columnData = new Object[] { server.getIp(), indexName, indexSize, numDocs, timestamp, docsPerMinute, actionName,
@@ -129,6 +118,24 @@ public class ServersPanelContainer extends AContainer {
 				}
 			}
 		}
+	}
+
+	/**
+	 * This method will find the action that is currently being performed on the index context specified.
+	 * 
+	 * @param server the server that is performing actions on the index contexts
+	 * @param indexContext the index context that is being examined for actions being performed
+	 * @return the action name of the action that is currently performing tasks on the index context in question
+	 */
+	private String getActionName(final Server server, final IndexContext<?> indexContext) {
+		if (server.getActions() != null) {
+			for (Action action : server.getActions()) {
+				if (indexContext.getIndexName().equals(action.getIndexName())) {
+					return action.getActionName();
+				}
+			}
+		}
+		return null;
 	}
 
 	private void addListeners(final String indexName, final Embedded embedded) {

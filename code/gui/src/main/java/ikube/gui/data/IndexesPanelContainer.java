@@ -42,9 +42,6 @@ public class IndexesPanelContainer extends AContainer {
 	@Autowired
 	private transient IMonitorService monitorService;
 
-	public void init() {
-	}
-
 	public void setData(final Panel panel, final Object... parameters) {
 		// LOGGER.info("Init indexes panel : " + panel);
 		TreeTable treeTable = GuiTools.findComponent(panel, TreeTable.class);
@@ -54,7 +51,6 @@ public class IndexesPanelContainer extends AContainer {
 	@SuppressWarnings("rawtypes")
 	private void populateTable(final TreeTable treeTable) {
 		Resource resource = new ClassResource(this.getClass(), "/images/icons/relaunch.gif", Application.getApplication());
-		// treeTable.removeAllItems();
 		boolean mustRepaint = false;
 		Map<String, IndexContext> indexContexts = monitorService.getIndexContexts();
 		for (Map.Entry<String, IndexContext> mapEntry : indexContexts.entrySet()) {

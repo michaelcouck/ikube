@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.data.util.HierarchicalContainer;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TreeTable;
@@ -26,14 +27,20 @@ public class SearchPanelContainer extends HierarchicalContainer implements ICont
 	@Autowired
 	private transient ISearcherService searcherService;
 
-	public void init() {
-	}
-
 	public void setData(final Panel panel, final Object... parameters) {
-		TreeTable treeTable = (TreeTable) GuiTools.findComponent(panel, IConstant.SEARCH_PANEL_TREE_TABLE, new ArrayList<Component>());
-		setData(treeTable, parameters);
-		treeTable.requestRepaint();
-		treeTable.requestRepaintAll();
+		ComboBox optionGroup = (ComboBox) GuiTools.findComponent(panel, IConstant.INDEXES_OPTION_GROUP, new ArrayList<Component>());
+		String[] indexNames = monitorService.getIndexNames();
+		for (String indexName : indexNames) {
+			if (!optionGroup.containsId(indexName)) {
+				optionGroup.addItem(indexName);
+			}
+		}
+		if (parameters != null && parameters.length > 0) {
+			TreeTable treeTable = (TreeTable) GuiTools.findComponent(panel, IConstant.SEARCH_PANEL_TREE_TABLE, new ArrayList<Component>());
+			setData(treeTable, parameters);
+			treeTable.requestRepaint();
+			treeTable.requestRepaintAll();
+		}
 	}
 
 	private void setData(final TreeTable treeTable, final Object... parameters) {

@@ -367,7 +367,7 @@ public class SearcherService implements ISearcherService {
 		}
 		String correctedSearchString = stringBuilder.toString();
 		Search search = new Search();
-		search.setCount(1);
+		search.setCount(search.getCount() + 1);
 		search.setSearchStrings(Arrays.deepToString(searchStrings));
 		search.setIndexName(indexName);
 		search.setResults(results);

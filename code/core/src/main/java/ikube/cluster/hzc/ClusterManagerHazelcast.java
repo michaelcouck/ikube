@@ -58,7 +58,7 @@ public class ClusterManagerHazelcast extends AClusterManager {
 			ILock lock = Hazelcast.getLock(name);
 			boolean gotLock = false;
 			try {
-				gotLock = lock.tryLock(500, TimeUnit.MILLISECONDS);
+				gotLock = lock.tryLock(250, TimeUnit.MILLISECONDS);
 			} catch (InterruptedException e) {
 				logger.error("Exception trying for the lock : ", e);
 			}
@@ -105,13 +105,12 @@ public class ClusterManagerHazelcast extends AClusterManager {
 		Map<String, Server> servers = getServers();
 		for (Map.Entry<String, Server> mapEntry : servers.entrySet()) {
 			Server server = mapEntry.getValue();
-			if (server.isWorking()) {
-				if (server.getActions() != null) {
-					for (Action action : server.getActions()) {
-						if (indexName.equals(action.getIndexName())) {
-							return true;
-						}
-					}
+			if (!server.isWorking() || server.getActions() == null) {
+				continue;
+			}
+			for (Action action : server.getActions()) {
+				if (indexName.equals(action.getIndexName())) {
+					return true;
 				}
 			}
 		}
@@ -194,7 +193,7 @@ public class ClusterManagerHazelcast extends AClusterManager {
 		} finally {
 			if (!removedAndComitted) {
 				ThreadUtilities.sleep(10000);
-				logger.warn("Retrying to remove the action : " + retry + ", " + action);
+				logger.warn("Retrying to remove the action : " + retry + ", " + server.getIp() + ", " + action + ", " + server.getActions());
 				stopWorking(action, retry + 1);
 			}
 		}
@@ -255,11 +254,17 @@ public class ClusterManagerHazelcast extends AClusterManager {
 		return Collections.EMPTY_MAP;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Search getSearch(String searchKey) {
 		return (Search) Hazelcast.getMap(IConstants.SEARCH).get(searchKey);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void setSearch(final String searchKey, final Search search) {
 		Hazelcast.getMap(IConstants.SEARCH).put(searchKey, search);

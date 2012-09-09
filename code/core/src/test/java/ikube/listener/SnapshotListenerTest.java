@@ -103,6 +103,27 @@ public class SnapshotListenerTest extends ATest {
 		logger.info("Docs per minute : " + docsPerMinute);
 		assertTrue(docsPerMinute > 100 && docsPerMinute < 125);
 	}
+	
+	@Test
+	public void getSearchesPerMinute() {
+		Snapshot snapshot = new Snapshot();
+		long searchesPerMinute = snapshotListener.getSearchesPerMinute(indexContext, snapshot);
+		logger.info("Searches per minute : " + searchesPerMinute);
+		assertEquals(0, searchesPerMinute);
+
+		Snapshot previous = new Snapshot();
+		previous.setTimestamp(System.currentTimeMillis() - 65000);
+		previous.setTotalSearches(100);
+
+		snapshot.setTotalSearches(200);
+		snapshot.setTimestamp(System.currentTimeMillis());
+
+		when(indexContext.getSnapshots()).thenReturn(Arrays.asList(previous));
+
+		searchesPerMinute = snapshotListener.getSearchesPerMinute(indexContext, snapshot);
+		logger.info("Searches per minute : " + searchesPerMinute);
+		assertTrue(searchesPerMinute > 80 && searchesPerMinute < 125);
+	}
 
 	@Test
 	public void getLatestIndexDirectory() throws Exception {

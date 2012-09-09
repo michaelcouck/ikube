@@ -26,6 +26,8 @@ public class Snapshot extends Persistable {
 	private long timestamp;
 	private Date latestIndexTimestamp;
 	private long docsPerMinute;
+	private long searchesPerMinute;
+	private long totalSearches;
 
 	@ManyToOne(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST }, fetch = FetchType.EAGER)
 	private IndexContext<?> indexContext;
@@ -70,6 +72,14 @@ public class Snapshot extends Persistable {
 		this.docsPerMinute = docsPerMinute;
 	}
 
+	public long getSearchesPerMinute() {
+		return searchesPerMinute;
+	}
+
+	public void setSearchesPerMinute(long searchesPerMinute) {
+		this.searchesPerMinute = searchesPerMinute;
+	}
+
 	public IndexContext<?> getIndexContext() {
 		return indexContext;
 	}
@@ -77,7 +87,15 @@ public class Snapshot extends Persistable {
 	public void setIndexContext(IndexContext<?> indexContext) {
 		this.indexContext = indexContext;
 	}
-	
+
+	public long getTotalSearches() {
+		return totalSearches;
+	}
+
+	public void setTotalSearches(long totalSearches) {
+		this.totalSearches = totalSearches;
+	}
+
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
 	}

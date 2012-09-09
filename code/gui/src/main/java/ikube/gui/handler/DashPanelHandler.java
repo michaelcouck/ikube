@@ -1,5 +1,6 @@
 package ikube.gui.handler;
 
+import ikube.gui.IConstant;
 import ikube.gui.Window;
 import ikube.gui.data.IContainer;
 import ikube.gui.panel.DashPanel;
@@ -12,11 +13,9 @@ public class DashPanelHandler extends AHandler {
 
 	@Override
 	protected void registerHandlerInternal(final Component component, final IContainer container) {
-		final int interval = 10000;
-
 		// This poller will request changes from the server periodically
 		ProgressIndicator pollingIndicator = new ProgressIndicator();
-		pollingIndicator.setPollingInterval(interval);
+		pollingIndicator.setPollingInterval(IConstant.REFRESH_INTERVAL);
 		pollingIndicator.setVisible(Boolean.FALSE);
 		pollingIndicator.setIndeterminate(Boolean.TRUE);
 		pollingIndicator.setValidationVisible(Boolean.FALSE);
@@ -27,7 +26,7 @@ public class DashPanelHandler extends AHandler {
 		ThreadUtilities.submit(new Runnable() {
 			public void run() {
 				while (true) {
-					ThreadUtilities.sleep(interval);
+					ThreadUtilities.sleep(IConstant.REFRESH_INTERVAL);
 					((DashPanel) component).setData(container);
 				}
 			}

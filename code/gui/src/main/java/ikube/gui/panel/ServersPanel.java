@@ -45,7 +45,7 @@ public class ServersPanel extends Panel {
 	}
 
 	private Table createTable() {
-		Table treeTable = new Table(IConstant.SERVERS);
+		Table treeTable = new Table(IConstant.INDEXING);
 		treeTable.setWidth(100, Sizeable.UNITS_PERCENTAGE);
 		treeTable.setSelectable(Boolean.TRUE);
 		treeTable.setImmediate(Boolean.TRUE);
@@ -65,14 +65,14 @@ public class ServersPanel extends Panel {
 	}
 
 	private void createIcons() {
-		serverIcon = new ClassResource(this.getClass(), "/images/icons/index.gif", Application.getApplication());
+		serverIcon = new ClassResource(this.getClass(), "/images/icons/server.gif", Application.getApplication());
 		indexIcon = new ClassResource(this.getClass(), "/images/icons/index.gif", Application.getApplication());
-		sizeIcon = new ClassResource(this.getClass(), "/images/icons/index.gif", Application.getApplication());
-		docsIcon = new ClassResource(this.getClass(), "/images/icons/index.gif", Application.getApplication());
-		timestampIcon = new ClassResource(this.getClass(), "/images/icons/index.gif", Application.getApplication());
-		perMinIcon = new ClassResource(this.getClass(), "/images/icons/index.gif", Application.getApplication());
-		actionNameIcon = new ClassResource(this.getClass(), "/images/icons/index.gif", Application.getApplication());
-		actionIcon = new ClassResource(this.getClass(), "/images/icons/index.gif", Application.getApplication());
+		sizeIcon = new ClassResource(this.getClass(), "/images/icons/struct_obj.gif", Application.getApplication());
+		docsIcon = new ClassResource(this.getClass(), "/images/icons/doctype.gif", Application.getApplication());
+		timestampIcon = new ClassResource(this.getClass(), "/images/icons/time_obj.gif", Application.getApplication());
+		perMinIcon = new ClassResource(this.getClass(), "/images/icons/arguments_tab.gif", Application.getApplication());
+		actionNameIcon = new ClassResource(this.getClass(), "/images/icons/namespace_obj.gif", Application.getApplication());
+		actionIcon = new ClassResource(this.getClass(), "/images/icons/type_mode.gif", Application.getApplication());
 
 	}
 

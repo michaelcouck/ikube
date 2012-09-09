@@ -12,7 +12,6 @@ import com.vaadin.ui.ComponentContainer;
 
 public final class GuiTools {
 
-	@SuppressWarnings("unused")
 	private static final Logger LOGGER = LoggerFactory.getLogger(GuiTools.class);
 
 	@SuppressWarnings("unchecked")
@@ -29,6 +28,32 @@ public final class GuiTools {
 			}
 		}
 		return (T) result;
+	}
+
+	public static final Component findVisibleComponent(final Class<?> klass, final Component component, final List<Component> done) {
+		if (component == null || done.contains(component)) {
+			return null;
+		}
+		LOGGER.info("Component : " + component);
+		done.add(component);
+		if (klass.isAssignableFrom(component.getClass())) {
+			if (AbstractComponent.class.isAssignableFrom(component.getClass())) {
+				if (((AbstractComponent) component).isVisible()) {
+					return component;
+				}
+			}
+		}
+		if (ComponentContainer.class.isAssignableFrom(component.getClass())) {
+			Iterator<Component> componentIterator = ((ComponentContainer) component).getComponentIterator();
+			while (componentIterator.hasNext()) {
+				Component childComponent = componentIterator.next();
+				Component foundComponent = findVisibleComponent(klass, childComponent, done);
+				if (foundComponent != null) {
+					return foundComponent;
+				}
+			}
+		}
+		return findVisibleComponent(klass, component.getParent(), done);
 	}
 
 	public static final Component findComponent(final Component component, final Object description, final List<Component> done) {

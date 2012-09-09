@@ -3,7 +3,6 @@ package ikube.gui.toolkit;
 import static org.junit.Assert.assertNotNull;
 import ikube.gui.Application;
 import ikube.gui.IConstant;
-import ikube.gui.data.IContainer;
 import ikube.gui.panel.SearchPanel;
 import ikube.toolkit.Logging;
 
@@ -25,19 +24,17 @@ public class GuiToolsTest {
 		Logging.configure();
 	}
 
-	private IContainer container;
 	private Application application;
 
 	@Before
 	public void before() {
-		container = Mockito.mock(IContainer.class);
 		application = Mockito.mock(Application.class);
 		Deencapsulation.setField(Application.class, application);
 	}
 
 	@Test
 	public void findComponent() {
-		Panel searchPanel = new SearchPanel(container);
+		Panel searchPanel = new SearchPanel();
 		TreeTable treeTable = (TreeTable) GuiTools.findComponent((Component) searchPanel, IConstant.SEARCH_PANEL_TREE_TABLE,
 				new ArrayList<Component>());
 		assertNotNull(treeTable);

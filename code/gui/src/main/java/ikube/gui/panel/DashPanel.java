@@ -7,6 +7,8 @@ import java.util.LinkedHashSet;
 
 import com.invient.vaadin.charts.Color.RGB;
 import com.invient.vaadin.charts.InvientCharts;
+import com.invient.vaadin.charts.InvientCharts.DateTimePoint;
+import com.invient.vaadin.charts.InvientCharts.DateTimeSeries;
 import com.invient.vaadin.charts.InvientCharts.SeriesType;
 import com.invient.vaadin.charts.InvientChartsConfig;
 import com.invient.vaadin.charts.InvientChartsConfig.AxisBase.AxisTitle;
@@ -17,7 +19,11 @@ import com.invient.vaadin.charts.InvientChartsConfig.DateTimeAxis;
 import com.invient.vaadin.charts.InvientChartsConfig.NumberYAxis;
 import com.invient.vaadin.charts.InvientChartsConfig.XAxis;
 import com.invient.vaadin.charts.InvientChartsConfig.YAxis;
+import com.vaadin.terminal.Sizeable;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
+import com.vaadin.ui.VerticalLayout;
 
 public class DashPanel extends Panel {
 
@@ -26,28 +32,52 @@ public class DashPanel extends Panel {
 		getContent().setSizeFull();
 		setImmediate(true);
 
-		addChart(this);
+		HorizontalLayout horizontalLayout = new HorizontalLayout();
+		horizontalLayout.setMargin(true);
+		horizontalLayout.setSpacing(true);
+		horizontalLayout.setSizeFull();
+		horizontalLayout.setDescription(IConstant.DASH_HORIZONTAL_PANEL_LAYOUT);
+
+		Panel panel = new Panel();
+		panel.setDescription(IConstant.DASH_LEFT_PANEL);
+		Label label = new Label("<h2>Servers</h2>", Label.CONTENT_XHTML);
+		panel.addComponent(label);
+
+		horizontalLayout.addComponent(panel);
+		horizontalLayout.setExpandRatio(panel, .2f);
+
+		VerticalLayout verticalLayout = new VerticalLayout();
+		verticalLayout.setDescription(IConstant.DASH_PANEL_LAYOUT);
+		verticalLayout.setMargin(true);
+		verticalLayout.setSpacing(true);
+
+		addChart(verticalLayout, IConstant.DASH_SEARCHING_CHART, "Searches per second");
+		addChart(verticalLayout, IConstant.DASH_INDEXING_CHART, "Documents per second");
+
+		horizontalLayout.addComponent(verticalLayout);
+		horizontalLayout.setExpandRatio(verticalLayout, .8f);
+
+		getContent().addComponent(horizontalLayout);
 	}
 
 	public void setData(Object data) {
 		((IContainer) data).setData(this);
 	}
 
-	private void addChart(final Panel panel) {
+	private void addChart(final VerticalLayout verticalLayout, final String description, final String yAxisTitle) {
 		InvientChartsConfig chartConfig = new InvientChartsConfig();
 		chartConfig.getGeneralChartConfig().setType(SeriesType.SPLINE);
-
-		chartConfig.getTitle().setText("Server indexing performance");
+		chartConfig.getTitle().setText(description);
 
 		DateTimeAxis xAxis = new DateTimeAxis();
 		xAxis.setTick(new Tick());
-		xAxis.getTick().setPixelInterval(150);
+		xAxis.getTick().setPixelInterval(100);
 		LinkedHashSet<XAxis> xAxes = new LinkedHashSet<InvientChartsConfig.XAxis>();
 		xAxes.add(xAxis);
 		chartConfig.setXAxes(xAxes);
 
 		NumberYAxis yAxis = new NumberYAxis();
-		yAxis.setTitle(new AxisTitle("Documents per second"));
+		yAxis.setTitle(new AxisTitle(yAxisTitle));
 		NumberPlotLine plotLine;
 		yAxis.addPlotLine(plotLine = new NumberPlotLine("LineAt0"));
 		plotLine.setValue(new NumberValue(0.0));
@@ -63,20 +93,19 @@ public class DashPanel extends Panel {
 						+ " $wnd.Highcharts.numberFormat(this.y, 2);" + "}");
 
 		chartConfig.getLegend().setEnabled(false);
-
 		InvientCharts chart = new InvientCharts(chartConfig);
-
-		chart.setDescription(IConstant.DASH_CHART);
-
-		// addChart(chart, false, false, false);
-
-		panel.getContent().addComponent(chart);
-
-		// new SelfUpdateSplineThread(chart).start();
-
+		chart.setDescription(description);
 		chart.setSizeFull();
 		chart.setStyleName("v-chart-min-width");
-		chart.setHeight("410px");
+		chart.setHeight(200, Sizeable.UNITS_PIXELS);
+
+		// Add the default series so there is something on the chart
+		DateTimeSeries seriesData = new DateTimeSeries(IConstant.DEFAULT_TIME_SERIES, true);
+		LinkedHashSet<DateTimePoint> points = new LinkedHashSet<DateTimePoint>();
+		seriesData.setSeriesPoints(points);
+		chart.addSeries(seriesData);
+
+		verticalLayout.addComponent(chart);
 	}
 
 }

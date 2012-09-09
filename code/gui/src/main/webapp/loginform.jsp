@@ -1,32 +1,50 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<title>Foo</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>Foo</title>
+	<script language="JavaScript" type="text/javascript">
+		window.onload=document.login-form.j_username.focus()
+	</script>
 </head>
 
-<center>
 <body>
-	<p>You have tried to access a protected area of this application.</p>
-	<p>By default you can login as "admin", with a password of "admin".</p>
-	<p>You can also login as "user", with a password of "user".</p>
-	<%-- this form-login-page form is also used as the form-error-page to ask for a login again. --%>
-	<c:if test="${not empty param.login_error}">
-		<font color="red">Your login attempt was not successful,
-			tryagain.<br /> Reason: <c:out
-				value="${SPRING_SECURITY_LAST_EXCEPTION.message}" />.
-		</font>
-	</c:if>
-	<form name="f" action="<c:url value='/j_spring_security_check'/>"
-		method="POST">
-		<label for="j_username">Name:</label> <input id="j_username"
-			type='text' name='j_username' style="width: 150px" /> <br /> <label
-			for="j_password">Password:</label> <input id="j_password"
-			type='password' name='j_password' style="width: 150px" /> <br /> <input
-			id="proceed" type="submit" value="Submit" /> <input id="reset"
-			type="reset" value="Reset" />
+<center>
+	<form name="login-form" action="<c:url value='/j_spring_security_check'/>" method="POST">
+		<table>
+			<tr>
+				<td colspan="2">
+					You have tried to access a protected area of this application.
+					By default you can also login as "user", with a password of "user".
+				</td>
+			</tr>
+			
+			<c:if test="${not empty param.login_error}">
+			<tr>
+				<td colspan="2">
+					<font color="red">
+						Your login attempt was not successful, try again.<br /> 
+						Reason: <c:out value="${SPRING_SECURITY_LAST_EXCEPTION.message}" />.
+					</font>
+				</td>
+			</tr>
+			</c:if>
+						
+			<tr>
+				<td><label for="j_username">Name:</label></td>
+				<td><input id="j_username" type='text' name='j_username' style="width: 150px" /></td>
+			</tr>
+			<tr>
+				<td><label for="j_password">Password:</label></td>
+				<td><input id="j_password" type='password' name='j_password' style="width: 150px" /></td>
+			</tr>
+			<tr>
+				<td><input id="proceed" type="submit" value="Submit" /></td>
+				<td><input id="reset"	type="reset" value="Reset" /></td>
+			</tr>
+		</table>
 	</form>
-</body>
 </center>
+</body>
 
 </html>
