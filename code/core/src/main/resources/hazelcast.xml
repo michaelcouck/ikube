@@ -38,10 +38,6 @@
 		<max-pool-size>1000000</max-pool-size>
 		<keep-alive-seconds>60000</keep-alive-seconds>
 	</executor-service>
-	<queue name="default">
-		<max-size-per-jvm>100000</max-size-per-jvm>
-		<time-to-live-seconds>0</time-to-live-seconds>
-	</queue>
 	<map name="ikube">
 		<backup-count>5</backup-count>
 		<eviction-policy>LFU</eviction-policy>

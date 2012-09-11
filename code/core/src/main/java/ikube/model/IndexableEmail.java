@@ -1,5 +1,6 @@
 package ikube.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
@@ -10,21 +11,30 @@ import javax.persistence.InheritanceType;
  * @version 01.00
  */
 @Entity()
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@Inheritance(strategy = InheritanceType.JOINED)
 public class IndexableEmail extends Indexable<IndexableEmail> {
 
-	@Field()
+	@Field
+	@Column
 	private String idField;
-	@Field()
+	@Field
+	@Column
 	private String titleField;
-	@Field()
+	@Field
+	@Column
 	private String contentField;
 
+	@Column
 	private String mailHost;
+	@Column
 	private String username;
+	@Column
 	private String password;
+	@Column
 	private String port;
+	@Column
 	private String protocol;
+	@Column
 	private boolean secureSocketLayer;
 
 	public String getIdField() {

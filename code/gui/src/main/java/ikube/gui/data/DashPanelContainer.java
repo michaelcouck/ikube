@@ -2,17 +2,19 @@ package ikube.gui.data;
 
 import ikube.cluster.IClusterManager;
 import ikube.database.IDataBase;
+import ikube.gui.Application;
 import ikube.gui.IConstant;
 import ikube.gui.toolkit.GuiTools;
 import ikube.model.IndexContext;
-import ikube.model.Search;
 import ikube.model.Server;
 import ikube.model.Snapshot;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -23,9 +25,13 @@ import org.springframework.beans.factory.annotation.Configurable;
 import com.invient.vaadin.charts.InvientCharts;
 import com.invient.vaadin.charts.InvientCharts.DateTimePoint;
 import com.invient.vaadin.charts.InvientCharts.DateTimeSeries;
+import com.vaadin.terminal.ClassResource;
+import com.vaadin.terminal.Resource;
+import com.vaadin.terminal.Sizeable;
+import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
+import com.vaadin.ui.TextArea;
 
 @Configurable
 public class DashPanelContainer extends AContainer {
@@ -39,23 +45,53 @@ public class DashPanelContainer extends AContainer {
 
 	@Override
 	public void setData(final Panel panel, final Object... parameters) {
-		Panel leftPanel = (Panel) GuiTools.findComponent(panel, IConstant.DASH_LEFT_PANEL, new ArrayList<Component>());
-		for (Server server : clusterManager.getServers().values()) {
-			Label label = (Label) GuiTools.findComponent(leftPanel, server.getAddress(), new ArrayList<Component>());
-			if (label == null) {
-				label = new Label(server.getAddress());
-				leftPanel.addComponent(label);
-				label.setDescription(server.getAddress());
-			}
-		}
-		// Add some searches to the database
-		List<Search> searches = dataBase.find(Search.class, 0, 1000);
-		for (Search search : searches) {
-			search.setCount((int) (Math.random() * 100d));
-			dataBase.merge(search);
-		}
+		setServersData(panel);
 		setSearchingData(panel);
 		setIndexingData(panel);
+	}
+
+	private void setServersData(final Panel panel) {
+		Accordion accordion = (Accordion) GuiTools.findComponent(panel, IConstant.SERVERS_ACCORDION, new ArrayList<Component>());
+		for (Server server : clusterManager.getServers().values()) {
+			TextArea textArea = (TextArea) GuiTools.findComponent(panel, server.getAddress(), new ArrayList<Component>());
+			if (textArea == null) {
+				textArea = new TextArea();
+				textArea.setHeight(160, Sizeable.UNITS_PIXELS);
+				textArea.setWidth(100, Sizeable.UNITS_PERCENTAGE);
+				textArea.setDescription(server.getAddress());
+				Resource serverIcon = new ClassResource(this.getClass(), "/images/icons/server.gif", Application.getApplication());
+				accordion.addTab(textArea, server.getAddress(), serverIcon);
+			}
+			setServerData(server, textArea);
+		}
+	}
+
+	private void setServerData(final Server server, final TextArea textArea) {
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append("Age : ");
+		stringBuilder.append(new SimpleDateFormat("dd/MM/yyyy").format(new Date(server.getAge())));
+		stringBuilder.append("\n");
+		stringBuilder.append("Architecture : ");
+		stringBuilder.append(server.getArchitecture());
+		stringBuilder.append("\n");
+		stringBuilder.append("Free disk space : ");
+		stringBuilder.append(server.getFreeDiskSpace());
+		stringBuilder.append("\n");
+		stringBuilder.append("Free memory : ");
+		stringBuilder.append(server.getFreeMemory() / 1000000);
+		stringBuilder.append("\n");
+		stringBuilder.append("Max memory : ");
+		stringBuilder.append(server.getMaxMemory() / 1000000);
+		stringBuilder.append("\n");
+		stringBuilder.append("Total memory : ");
+		stringBuilder.append(server.getTotalMemory() / 1000000);
+		stringBuilder.append("\n");
+		stringBuilder.append("Processors : ");
+		stringBuilder.append(server.getProcessors());
+		stringBuilder.append("\n");
+		stringBuilder.append("Cpu load : ");
+		stringBuilder.append(server.getAverageCpuLoad());
+		textArea.setValue(stringBuilder.toString());
 	}
 
 	private void setSearchingData(final Panel panel) {
@@ -69,24 +105,12 @@ public class DashPanelContainer extends AContainer {
 				for (Snapshot snapshot : indexContext.getSnapshots()) {
 					searchesPerMinute += snapshot.getSearchesPerMinute();
 				}
-				lastSnapshotDate = new Date(indexContext.getLastSnapshot().getTimestamp());
+				if (indexContext.getLastSnapshot() != null) {
+					lastSnapshotDate = new Date(indexContext.getLastSnapshot().getTimestamp());
+				}
 			}
-			DateTimeSeries seriesData = (DateTimeSeries) chart.getSeries(server.getIp());
-			if (seriesData == null) {
-				LOGGER.info("Adding series : " + server.getIp());
-				seriesData = new DateTimeSeries(server.getIp(), true);
-				LinkedHashSet<DateTimePoint> points = new LinkedHashSet<DateTimePoint>();
-				seriesData.setSeriesPoints(points);
-				chart.addSeries(seriesData);
-			}
-			DateTimePoint point = new DateTimePoint(seriesData, lastSnapshotDate, searchesPerMinute);
-			if (!seriesData.getPoints().contains(point)) {
-				seriesData.addPoint(point, seriesData.getPoints().size() > 100);
-			}
+			addPoint(chart, server.getIp(), lastSnapshotDate, searchesPerMinute);
 		}
-		// Add a point to the default series to keep it visible
-		// DateTimeSeries defaultSeries = (DateTimeSeries) chart.getSeries(IConstant.DEFAULT_TIME_SERIES);
-		// defaultSeries.addPoint(new DateTimePoint(defaultSeries, new Date(), 0), Boolean.TRUE);
 	}
 
 	private void setIndexingData(final Panel panel) {
@@ -98,32 +122,44 @@ public class DashPanelContainer extends AContainer {
 			for (IndexContext<?> indexContext : mapEntry.getValue().getIndexContexts()) {
 				String indexName = indexContext.getIndexName();
 				String seriesKey = serverIp + "-" + indexName;
-				DateTimeSeries seriesData = (DateTimeSeries) chart.getSeries(seriesKey);
 				if (!isWorking(server, indexContext)) {
-					if (seriesData != null) {
+					if (chart.getSeries(seriesKey) != null) {
 						LOGGER.info("Removing series : " + seriesKey);
-						chart.removeSeries(seriesData);
 					}
+					chart.removeSeries(seriesKey);
 					continue;
 				}
-				if (seriesData == null) {
-					LOGGER.info("Adding series : " + seriesKey);
-					seriesData = new DateTimeSeries(seriesKey, true);
-					LinkedHashSet<DateTimePoint> points = new LinkedHashSet<DateTimePoint>();
-					seriesData.setSeriesPoints(points);
-					chart.addSeries(seriesData);
-				}
 				for (Snapshot snapshot : indexContext.getSnapshots()) {
-					DateTimePoint point = new DateTimePoint(seriesData, new Date(snapshot.getTimestamp()), snapshot.getDocsPerMinute());
-					if (!seriesData.getPoints().contains(point)) {
-						seriesData.addPoint(point, seriesData.getPoints().size() > 100);
-					}
+					addPoint(chart, seriesKey, new Date(snapshot.getTimestamp()), snapshot.getDocsPerMinute());
 				}
 			}
 		}
-		// Add a point to the default series to keep it visible
-		DateTimeSeries defaultSeries = (DateTimeSeries) chart.getSeries(IConstant.DEFAULT_TIME_SERIES);
-		defaultSeries.addPoint(new DateTimePoint(defaultSeries, new Date(), 0), Boolean.TRUE);
+	}
+
+	private void addPoint(final InvientCharts chart, final String seriesKey, final Date date, final double pointData) {
+		DateTimeSeries seriesData = (DateTimeSeries) chart.getSeries(seriesKey);
+		if (seriesData == null) {
+			LOGGER.info("Adding series : " + seriesKey);
+			seriesData = new DateTimeSeries(seriesKey, true);
+			LinkedHashSet<DateTimePoint> points = new LinkedHashSet<DateTimePoint>();
+			seriesData.setSeriesPoints(points);
+			chart.addSeries(seriesData);
+		}
+		DateTimePoint point = new DateTimePoint(seriesData, date, pointData);
+		if (!seriesData.getPoints().contains(point)) {
+			seriesData.addPoint(point);
+		}
+		long maxPoints = 90;
+		int pointSize = seriesData.getPoints().size();
+		boolean purge = pointSize >= maxPoints;
+		if (purge) {
+			// Remove some points from the series so it can be seen on the graph
+			Collection<DateTimePoint> dateTimePoints = seriesData.getPoints();
+			Iterator<InvientCharts.DateTimePoint> iterator = seriesData.getPoints().iterator();
+			while (iterator.hasNext() && dateTimePoints.size() > (maxPoints * 0.75)) {
+				iterator.remove();
+			}
+		}
 	}
 
 }

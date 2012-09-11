@@ -46,9 +46,13 @@ public class File extends Persistable {
 	@Transient
 	private String parsedContent;
 
+	@Column
 	private long hash;
+	@Column
 	private long urlId;
+	@Column
 	private boolean indexed;
+	@Column
 	private boolean temporary;
 	@Column(length = 64)
 	private String name;

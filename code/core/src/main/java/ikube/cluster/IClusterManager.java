@@ -97,5 +97,9 @@ public interface IClusterManager {
 	Search getSearch(final String searchKey);
 
 	void setSearch(final String searchKey, final Search search);
+	
+	<T> T getObject(final Object key);
+	
+	void putObject(final Object key, final Object value);
 
 }

@@ -2,6 +2,7 @@ package ikube.model;
 
 import java.io.Serializable;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -22,6 +23,7 @@ import javax.persistence.SequenceGenerator;
 public abstract class Persistable implements Serializable {
 
 	@Id
+	@Column
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "persistable")
 	@SequenceGenerator(name = "persistable", sequenceName = "persistable", allocationSize = 1000)
 	private long id;

@@ -6,6 +6,7 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 import ikube.ATest;
 import ikube.IConstants;
+import ikube.cluster.IClusterManager;
 import ikube.database.IDataBase;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.model.IndexContext;
@@ -39,8 +40,11 @@ public class SnapshotListenerTest extends ATest {
 
 	@Cascading
 	private IDataBase dataBase;
+	@Cascading
+	private IClusterManager clusterManager;
 	private SnapshotListener snapshotListener;
 	private File latestIndexDirectory;
+	private IMonitorService monitorService;
 
 	public SnapshotListenerTest() {
 		super(SnapshotListenerTest.class);
@@ -48,6 +52,11 @@ public class SnapshotListenerTest extends ATest {
 
 	@Before
 	public void before() throws Exception {
+		monitorService = Mockito.mock(IMonitorService.class);
+		Map<String, IndexContext> indexContexts = new HashMap<String, IndexContext>();
+		indexContexts.put(indexContext.getName(), indexContext);
+		when(monitorService.getIndexContexts()).thenReturn(indexContexts);
+		
 		latestIndexDirectory = createIndex(indexContext, "Any kind of data for the index");
 		snapshotListener = new SnapshotListener();
 		when(fsDirectory.fileLength(anyString())).thenReturn(Long.MAX_VALUE);
@@ -65,12 +74,9 @@ public class SnapshotListenerTest extends ATest {
 	@Test
 	@SuppressWarnings("rawtypes")
 	public void handleNotification() {
-		IMonitorService monitorService = Mockito.mock(IMonitorService.class);
-		Map<String, IndexContext> indexContexts = new HashMap<String, IndexContext>();
-		indexContexts.put(indexContext.getName(), indexContext);
-		when(monitorService.getIndexContexts()).thenReturn(indexContexts);
 		Deencapsulation.setField(snapshotListener, monitorService);
 		Deencapsulation.setField(snapshotListener, dataBase);
+		Deencapsulation.setField(snapshotListener, clusterManager);
 		Event event = new Event();
 		event.setType(Event.PERFORMANCE);
 		List<Snapshot> snapshots = new ArrayList<Snapshot>();
@@ -106,7 +112,10 @@ public class SnapshotListenerTest extends ATest {
 	
 	@Test
 	public void getSearchesPerMinute() {
+		List<Snapshot> snapshots = new ArrayList<Snapshot>();
+		when(indexContext.getSnapshots()).thenReturn(snapshots);
 		Snapshot snapshot = new Snapshot();
+		
 		long searchesPerMinute = snapshotListener.getSearchesPerMinute(indexContext, snapshot);
 		logger.info("Searches per minute : " + searchesPerMinute);
 		assertEquals(0, searchesPerMinute);
@@ -122,7 +131,7 @@ public class SnapshotListenerTest extends ATest {
 
 		searchesPerMinute = snapshotListener.getSearchesPerMinute(indexContext, snapshot);
 		logger.info("Searches per minute : " + searchesPerMinute);
-		assertTrue(searchesPerMinute > 80 && searchesPerMinute < 125);
+		assertTrue(searchesPerMinute > 50 && searchesPerMinute < 100);
 	}
 
 	@Test

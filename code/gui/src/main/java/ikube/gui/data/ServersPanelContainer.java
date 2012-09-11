@@ -49,11 +49,11 @@ public class ServersPanelContainer extends AContainer {
 	private transient IClusterManager clusterManager;
 
 	public void setData(final Panel panel, final Object... parameters) {
-		Table treeTable = (Table) GuiTools.findComponent(panel, IConstant.SERVERS_PANEL_TABLE, new ArrayList<Component>());
-		setData(treeTable);
+		Table table = (Table) GuiTools.findComponent(panel, IConstant.SERVERS_PANEL_TABLE, new ArrayList<Component>());
+		setData(table);
 	}
 
-	private void setData(final Table treeTable) {
+	private void setData(final Table table) {
 		Map<String, Server> servers = clusterManager.getServers();
 		List<Server> sortedServers = new ArrayList<Server>(servers.values());
 		Collections.sort(sortedServers, new Comparator<Server>() {
@@ -63,13 +63,13 @@ public class ServersPanelContainer extends AContainer {
 			}
 		});
 		for (Server server : sortedServers) {
-			addSnapshotData(server, treeTable);
+			addSnapshotData(server, table);
 		}
-		treeTable.requestRepaint();
+		table.requestRepaint();
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private void addSnapshotData(final Server server, final Table treeTable) {
+	private void addSnapshotData(final Server server, final Table table) {
 		for (final IndexContext indexContext : server.getIndexContexts()) {
 			List<Snapshot> snapshots = indexContext.getSnapshots();
 			if (snapshots == null || snapshots.size() == 0) {
@@ -80,8 +80,8 @@ public class ServersPanelContainer extends AContainer {
 			boolean isWorking = isWorking(server, indexContext);
 			// LOGGER.info("Server : " + server.getIp() + ", " + isWorking + ", " + indexName);
 			if (!isWorking) {
-				if (treeTable.getItem(itemId) != null) {
-					boolean removed = treeTable.removeItem(itemId);
+				if (table.getItem(itemId) != null) {
+					boolean removed = table.removeItem(itemId);
 					LOGGER.info("Removing : " + removed + ", " + itemId);
 				}
 				continue;
@@ -98,14 +98,14 @@ public class ServersPanelContainer extends AContainer {
 			Object[] columnData = new Object[] { server.getIp(), indexName, indexSize, numDocs, timestamp, docsPerMinute, actionName,
 					horizontalLayout };
 
-			Item item = treeTable.getItem(itemId);
+			Item item = table.getItem(itemId);
 			if (item == null) {
 				LOGGER.info("Adding item : " + itemId);
 				Resource resource = new ClassResource(this.getClass(), "/images/icons/red_square.gif", Application.getApplication());
 				Embedded embedded = new Embedded(null, resource);
 				horizontalLayout.addComponent(embedded);
 				addListeners(indexName, embedded);
-				treeTable.addItem(columnData, itemId);
+				table.addItem(columnData, itemId);
 			} else {
 				Object[] itemPropertyIds = item.getItemPropertyIds().toArray();
 				for (int i = 0; i < columnData.length - 1; i++) {
@@ -131,7 +131,7 @@ public class ServersPanelContainer extends AContainer {
 		if (server.getActions() != null) {
 			for (Action action : server.getActions()) {
 				if (indexContext.getIndexName().equals(action.getIndexName())) {
-					return action.getActionName();
+					return action.getId() + "-" + action.getActionName();
 				}
 			}
 		}

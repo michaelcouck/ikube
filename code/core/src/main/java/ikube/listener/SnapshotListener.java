@@ -1,20 +1,25 @@
 package ikube.listener;
 
 import ikube.IConstants;
+import ikube.cluster.IClusterManager;
 import ikube.database.IDataBase;
 import ikube.index.IndexManager;
 import ikube.model.IndexContext;
 import ikube.model.Search;
+import ikube.model.Server;
 import ikube.model.Snapshot;
 import ikube.service.IMonitorService;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
+import java.lang.management.OperatingSystemMXBean;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.FileSystemUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
@@ -37,6 +42,8 @@ public class SnapshotListener implements IListener {
 	private IDataBase dataBase;
 	@Autowired
 	private IMonitorService monitorService;
+	@Autowired
+	private IClusterManager clusterManager;
 
 	/**
 	 * {@inheritDoc}
@@ -45,9 +52,32 @@ public class SnapshotListener implements IListener {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void handleNotification(Event event) {
 		if (Event.PERFORMANCE.equals(event.getType())) {
+			Server server = clusterManager.getServer();
+			OperatingSystemMXBean operatingSystemMXBean = ManagementFactory.getOperatingSystemMXBean();
+			server.setArchitecture(operatingSystemMXBean.getArch());
+			server.setProcessors(operatingSystemMXBean.getAvailableProcessors());
+			server.setAverageCpuLoad(operatingSystemMXBean.getSystemLoadAverage());
+			try {
+				long availableDiskSpace = FileSystemUtils.freeSpaceKb("/") / 1000;
+				server.setFreeDiskSpace(availableDiskSpace);
+			} catch (IOException e) {
+				LOGGER.error("Exception accessing the disk space : ", e);
+			}
+			server.setFreeMemory(Runtime.getRuntime().freeMemory());
+			server.setMaxMemory(Runtime.getRuntime().maxMemory());
+			server.setTotalMemory(Runtime.getRuntime().totalMemory());
+			clusterManager.putObject(server.getAddress(), server);
+
 			Map<String, IndexContext> indexContexts = monitorService.getIndexContexts();
 			for (Map.Entry<String, IndexContext> mapEntry : indexContexts.entrySet()) {
 				IndexContext indexContext = mapEntry.getValue();
+				try {
+					long availableDiskSpace = FileSystemUtils.freeSpaceKb(indexContext.getIndexDirectoryPath()) / 1000;
+					indexContext.setAvailableDiskSpace(availableDiskSpace);
+				} catch (IOException e) {
+					LOGGER.error("Exception accessing the disk space : ", e);
+				}
+
 				int totalSearchesForIndex = 0;
 				List<Search> searches = null;
 				try {
@@ -85,10 +115,10 @@ public class SnapshotListener implements IListener {
 
 	protected long getSearchesPerMinute(final IndexContext<?> indexContext, final Snapshot snapshot) {
 		List<Snapshot> snapshots = indexContext.getSnapshots();
-		if (snapshots == null || snapshots.size() < 2) {
+		if (snapshots == null || snapshots.size() < 1) {
 			return 0;
 		}
-		Snapshot previous = snapshots.get(snapshots.size() - 2);
+		Snapshot previous = snapshots.get(snapshots.size() - 1);
 		double interval = snapshot.getTimestamp() - previous.getTimestamp();
 		double ratio = interval / 60000;
 		// LOGGER.info("Ratio : " + ratio);
@@ -106,6 +136,9 @@ public class SnapshotListener implements IListener {
 		double ratio = interval / 60000;
 		// LOGGER.info("Ratio : " + ratio);
 		long docsPerMinute = (long) ((snapshot.getNumDocs() - previous.getNumDocs()) / ratio);
+		if (docsPerMinute < 0) {
+			docsPerMinute = 0;
+		}
 		return docsPerMinute < 50000 ? docsPerMinute : 0;
 	}
 

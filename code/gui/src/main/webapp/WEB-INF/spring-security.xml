@@ -26,8 +26,12 @@
 	<global-method-security secured-annotations="enabled" />
 
 	<http access-denied-page="/accessdenied.jsp" auto-config="true">
-		<form-login always-use-default-target="false" authentication-failure-url="/login.jsp?login_error=t" default-target-url="/app"
-			login-page="/login.jsp" login-processing-url="/j_spring_security_check" />
+		<form-login 
+			always-use-default-target="false" 
+			authentication-failure-url="/login.jsp?login_error=t" 
+			default-target-url="/app"
+			login-page="/login.jsp" 
+			login-processing-url="/j_spring_security_check" />
 		<logout logout-url="/j_spring_security_logout" />
 		<intercept-url filters="none" pattern="/VAADIN/**" />
 		<intercept-url filters="none" pattern="/*.jsp" />
@@ -41,6 +45,8 @@
 	</authentication-manager>
 
 	<!-- This bean enables the authorization. -->
-	<beans:bean id="defaultWebSecurityExpressionHandler" class="org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler" />
+	<beans:bean 
+		id="defaultWebSecurityExpressionHandler" 
+		class="org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler" />
 
 </beans:beans>

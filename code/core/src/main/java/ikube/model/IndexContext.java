@@ -4,10 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
@@ -27,8 +30,11 @@ import org.apache.lucene.search.Searchable;
  */
 @Entity()
 @SuppressWarnings("serial")
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@Inheritance(strategy = InheritanceType.JOINED)
+@NamedQueries({ @NamedQuery(name = IndexContext.FIND_BY_NAME, query = IndexContext.FIND_BY_NAME) })
 public class IndexContext<T> extends Indexable<T> implements Comparable<IndexContext<?>> {
+
+	public static final String FIND_BY_NAME = "select i from IndexContext as i where i.name = :name";
 
 	private static final transient Logger LOGGER = Logger.getLogger(IndexContext.class);
 
@@ -40,28 +46,42 @@ public class IndexContext<T> extends Indexable<T> implements Comparable<IndexCon
 	private transient volatile MultiSearcher multiSearcher;
 
 	/** The maximum age of the index defined in minutes. */
+	@Column
 	private long maxAge;
 	/** The delay between documents being indexed, slows the indexing down. */
+	@Column
 	private long throttle;
 
 	/** Lucene properties. */
+	@Column
 	private int mergeFactor;
+	@Column
 	private int bufferedDocs;
+	@Column
 	private double bufferSize;
+	@Column
 	private int maxFieldLength;
+	@Column
 	private boolean compoundFile;
 
 	/** Jdbc properties. */
+	@Column
 	private int batchSize;
 	/** Internet properties. */
+	@Column
 	private int internetBatchSize;
 
 	/** The maximum length of a document that can be read. */
+	@Column
 	private long maxReadLength;
 	/** The path to the index directory, either relative or absolute. */
+	@Column
 	private String indexDirectoryPath;
 	/** The path to the backup index directory, either relative or absolute. */
+	@Column
 	private String indexDirectoryPathBackup;
+	@Column
+	private long availableDiskSpace;
 
 	@OneToMany(cascade = { CascadeType.ALL }, mappedBy = "indexContext", fetch = FetchType.EAGER)
 	private List<Snapshot> snapshots = new ArrayList<Snapshot>();
@@ -219,9 +239,17 @@ public class IndexContext<T> extends Indexable<T> implements Comparable<IndexCon
 	public void setSnapshots(List<Snapshot> snapshots) {
 		this.snapshots = snapshots;
 	}
-	
+
 	public Snapshot getLastSnapshot() {
 		return snapshots.size() > 0 ? snapshots.get(snapshots.size() - 1) : null;
+	}
+
+	public long getAvailableDiskSpace() {
+		return availableDiskSpace;
+	}
+
+	public void setAvailableDiskSpace(long availableDiskSpace) {
+		this.availableDiskSpace = availableDiskSpace;
 	}
 
 	@Override

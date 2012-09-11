@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.vaadin.googleanalytics.tracking.GoogleAnalyticsTracker;
 
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
@@ -37,9 +38,9 @@ public class Window extends com.vaadin.ui.Window {
 	@Autowired
 	private transient IndexesPanelContainer indexesPanelContainer;
 	@Autowired
-	private transient ApplicationObjectSupport applicationObjectSupport;
-	@Autowired
 	private transient ServersPanelContainer serversPanelContainer;
+	@Autowired
+	private transient ApplicationObjectSupport applicationObjectSupport;
 
 	public Window() {
 		Window.INSTANCE = this;
@@ -47,6 +48,10 @@ public class Window extends com.vaadin.ui.Window {
 	}
 
 	public void init() {
+		// This lets me know that someone is actually using Ikube
+		GoogleAnalyticsTracker tracker = new GoogleAnalyticsTracker("UA-13044914-5", "ikube.be");
+		addComponent(tracker);
+
 		VerticalLayout vertical = new VerticalLayout();
 		vertical.setSizeFull();
 		setContent(vertical);
@@ -58,7 +63,7 @@ public class Window extends com.vaadin.ui.Window {
 		dashPanel.setVisible(true);
 		dashPanel.setSizeFull();
 
-		Panel searchPanel = new SearchPanel(/* indexOptionsContainer */);
+		Panel searchPanel = new SearchPanel();
 		searchPanel.setDescription(IConstant.SEARCH);
 		searchPanel.setData(searchPanelContainer);
 

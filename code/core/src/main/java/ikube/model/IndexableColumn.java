@@ -1,5 +1,6 @@
 package ikube.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
@@ -12,7 +13,7 @@ import javax.persistence.Transient;
  */
 @Entity()
 @SuppressWarnings("serial")
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@Inheritance(strategy = InheritanceType.JOINED)
 public class IndexableColumn extends Indexable<IndexableColumn> {
 
 	@Transient
@@ -20,10 +21,14 @@ public class IndexableColumn extends Indexable<IndexableColumn> {
 	@Transient
 	private transient Object content;
 
-	@Field()
+	@Field
+	@Column
 	private String fieldName;
+	@Column
 	private boolean idColumn;
+	@Column
 	private boolean numeric;
+	@Column
 	private IndexableColumn foreignKey;
 
 	/**

@@ -231,6 +231,16 @@ public interface IDataBase {
 	 * @return the list of entities in the database that match the names and values for the fields
 	 */
 	<T> List<T> find(Class<T> klass, String sql, String[] names, Object[] values, int startPosition, int maxResults);
+	
+	/**
+	 * This method will return the first entity that satisfies the query.
+	 * 
+	 * @param klass the class type expected
+	 * @param fieldsToFilterOn the fields in the target entity to use for the selection/filtering
+	 * @param valuesToFilterOn the values in the target entity to use in the selection/filtering
+	 * @return the first entity that satisfies the query parameters ornull ifnosuch entity exists
+	 */
+	<T> T findCriteria(final Class<T> klass, final String[] fieldsToFilterOn, final Object[] valuesToFilterOn);
 
 	/**
 	 * This method will create a dynamic criteria query based on the field names and the values passed to the query. Note that this query is

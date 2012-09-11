@@ -94,6 +94,7 @@
 		<entry key="openjpa.Multithreaded" value="true" />
 		<entry key="openjpa.AutoDetach" value="commit" />
 		<entry key="openjpa.FlushBeforeQueries" value="true" />
+		<!-- <entry key="openjpa.DynamicEnhancementAgent" value="true" /> -->
 		<entry key="openjpa.RuntimeUnenhancedClasses" value="supported" />
 		<entry key="openjpa.jdbc.DBDictionary" value="${ikube.jdbc.dictionary}" />
 		
@@ -101,11 +102,11 @@
 			ForeignKeys=true,Indexes=true,SchemaAction='drop,add',
 			SchemaAction='add,deleteTableContents'
 		 -->
-		<!-- <entry key="openjpa.Connection2URL" value="${ikube.jdbc.url}" />
+		<entry key="openjpa.Connection2URL" value="${ikube.jdbc.url}" />
 		<entry key="openjpa.Connection2UserName" value="${ikube.jdbc.userid}" />
 		<entry key="openjpa.Connection2Password" value="${ikube.jdbc.password}" />
 		<entry key="openjpa.Connection2DriverName" value="${ikube.jdbc.driver}" />
-		<entry key="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" /> -->
+		<entry key="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
 	</util:map>
 
 	<transaction:advice id="transactionAdvice" transaction-manager="transactionManager">
@@ -180,6 +181,8 @@
 		<bean class="ikube.listener.SnapshotListener" />
 		<bean class="ikube.listener.ServerRemovalListener" />
 		<bean class="ikube.listener.IndexSizeListener" />
+		<bean class="ikube.listener.ActionListener" />
+		<bean class="ikube.listener.IndexContextListener" />
 	</util:list>
 	
 	<bean 
@@ -303,6 +306,9 @@
 	<bean 
 	   	id="ikube.cluster.hzc.StopListener" 
 	   	class="ikube.cluster.hzc.StopListener" />
+	<bean 
+	   	id="ikube.cluster.hzc.IndexContextListener" 
+	   	class="ikube.cluster.hzc.IndexContextListener" />
 	
 	<!-- The handlers that do the indexing logic. -->
 	<bean

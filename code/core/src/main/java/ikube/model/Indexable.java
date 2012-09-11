@@ -3,12 +3,14 @@ package ikube.model;
 import java.util.List;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.PrimaryKeyJoinColumn;
 
 /**
  * @author Michael Couck
@@ -16,18 +18,24 @@ import javax.persistence.OneToMany;
  * @version 01.00
  */
 @Entity()
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@Inheritance(strategy = InheritanceType.JOINED)
 public class Indexable<E> extends Persistable {
 
+	@Column
 	private String name;
+	@PrimaryKeyJoinColumn
 	@ManyToOne(cascade = { CascadeType.ALL }, fetch = FetchType.EAGER)
 	private Indexable<?> parent;
 	@OneToMany(cascade = { CascadeType.ALL }, mappedBy = "parent", fetch = FetchType.EAGER)
 	private List<Indexable<?>> children;
+	@Column
 	private boolean address;
 
+	@Column
 	private boolean stored = Boolean.FALSE;
+	@Column
 	private boolean analyzed = Boolean.TRUE;
+	@Column
 	private boolean vectored = Boolean.FALSE;
 
 	public void setName(final String name) {

@@ -27,6 +27,7 @@ import org.springframework.context.support.FileSystemXmlApplicationContext;
 public final class ApplicationContextManager implements ApplicationContextAware {
 
 	private static final Logger LOGGER;
+	/** The default location of the configuration files is in the ikbe folder at the base of the server. */
 	private static final String EXTERNAL_SPRING_CONFIGURATION_FILE = "." + IConstants.SEP + IConstants.IKUBE + IConstants.SEP
 			+ IConstants.SPRING_XML;
 
@@ -92,10 +93,8 @@ public final class ApplicationContextManager implements ApplicationContextAware 
 	/**
 	 * Convenience method to get the bean type from the class.
 	 * 
-	 * @param <T>
-	 *            the type of bean to return
-	 * @param klass
-	 *            the class of the bean
+	 * @param <T> the type of bean to return
+	 * @param klass the class of the bean
 	 * @return the bean with the specified class
 	 */
 	public static synchronized <T> T getBean(final Class<T> klass) {
@@ -124,8 +123,7 @@ public final class ApplicationContextManager implements ApplicationContextAware 
 	 * Convenience method to get the bean type from the bean name. Note that this method is not type checked and there is a distinct
 	 * possibility for a class cast exception.
 	 * 
-	 * @param name
-	 *            the name of the bean
+	 * @param name the name of the bean
 	 * @return the bean with the specified name
 	 */
 	@SuppressWarnings("unchecked")
@@ -140,10 +138,8 @@ public final class ApplicationContextManager implements ApplicationContextAware 
 	/**
 	 * Access to all the beans of a particular type.
 	 * 
-	 * @param <T>
-	 *            the expected type
-	 * @param klass
-	 *            the class of the beans
+	 * @param <T> the expected type
+	 * @param klass the class of the beans
 	 * @return a map of bean names and beans of type T
 	 */
 	public static synchronized <T> Map<String, T> getBeans(final Class<T> klass) {
@@ -157,8 +153,7 @@ public final class ApplicationContextManager implements ApplicationContextAware 
 	/**
 	 * Instantiates the application context using all the configuration files in the parameter list.
 	 * 
-	 * @param configFiles
-	 *            the locations of the configuration files
+	 * @param configFiles the locations of the configuration files
 	 * @return the merged application context for all the configuration files
 	 */
 	public static synchronized ApplicationContext getApplicationContextFilesystem(final String configLocation) {
@@ -178,8 +173,7 @@ public final class ApplicationContextManager implements ApplicationContextAware 
 	/**
 	 * Instantiates the application context using all the configuration files in the parameter list.
 	 * 
-	 * @param configLocation
-	 *            the locations of the configuration files
+	 * @param configLocation the locations of the configuration files
 	 * @return the merged application context for all the configuration files
 	 */
 	public static synchronized ApplicationContext getApplicationContext(final String configLocation) {
@@ -213,7 +207,7 @@ public final class ApplicationContextManager implements ApplicationContextAware 
 	@Override
 	public void setApplicationContext(final ApplicationContext applicationContext) throws BeansException {
 		if (APPLICATION_CONTEXT == null) {
-			LOGGER.info("Setting the application context : " + applicationContext);
+			LOGGER.info("Setting the application context : " + applicationContext + ", " + applicationContext.getClass());
 			ApplicationContextManager.APPLICATION_CONTEXT = applicationContext;
 			((AbstractApplicationContext) ApplicationContextManager.APPLICATION_CONTEXT).registerShutdownHook();
 		} else {

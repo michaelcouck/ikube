@@ -35,6 +35,7 @@ public class Event implements Serializable {
 	public static final String SERVER_CLUB = "serverClub";
 	public static final String STARTUP = "startup";
 	public static final String TERMINATE = "terminate";
+	public static final String INDEX_CONTEXT = "index context";
 
 	private String type;
 	private long timestamp;

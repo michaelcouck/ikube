@@ -1,21 +1,56 @@
 package ikube.gui.panel;
 
+import ikube.cluster.IClusterManager;
+import ikube.database.IDataBase;
 import ikube.gui.IConstant;
+import ikube.model.IndexContext;
+import ikube.model.Indexable;
+import ikube.model.IndexableEmail;
+import ikube.service.IMonitorService;
 
-import com.vaadin.terminal.ExternalResource;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Collection;
+
+import org.apache.commons.beanutils.BeanUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+import org.springframework.util.ReflectionUtils;
+
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Form;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Reindeer;
 
+@Configurable
+@Scope(value = "prototype")
+@Component(value = "MenuPanel")
 public class MenuPanel extends Panel {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(MenuPanel.class);
+
 	private static final String IKUBE_CAPTION = "<b>Ikube</b>";
+
+	@Autowired
+	private IMonitorService monitorService;
+	@Autowired
+	private IClusterManager clusterManager;
+	@Autowired
+	private IDataBase dataBase;
 
 	public MenuPanel(final Panel... panels) {
 		setSizeFull();
@@ -55,56 +90,125 @@ public class MenuPanel extends Panel {
 			}
 		};
 
-		final MenuBar.MenuItem file = menubar.addItem("File", null);
-		final MenuBar.MenuItem newItem = file.addItem("New", null);
-		file.addItem("Open file...", menuCommand);
-		file.addSeparator();
+		final MenuBar.MenuItem index = menubar.addItem("Index", null);
+		final MenuBar.MenuItem newIndex = index.addItem("New index", null);
+		final MenuBar.MenuItem deleteIndex = index.addItem("Delete index", menuCommand);
 
-		newItem.addItem("File", menuCommand);
-		newItem.addItem("Folder", menuCommand);
-		newItem.addItem("Project...", menuCommand);
+		addEmailForm(newIndex);
 
-		file.addItem("Close", menuCommand);
-		file.addItem("Close All", menuCommand);
-		file.addSeparator();
+		newIndex.addItem("Internet", menuCommand);
+		newIndex.addItem("File system", menuCommand);
+		newIndex.addItem("Database", menuCommand);
 
-		file.addItem("Save", menuCommand);
-		file.addItem("Save As...", menuCommand);
-		file.addItem("Save All", menuCommand);
+		addIndexContextForm(newIndex);
 
-		final MenuBar.MenuItem edit = menubar.addItem("Edit", null);
-		edit.addItem("Undo", menuCommand);
-		edit.addItem("Redo", menuCommand).setEnabled(false);
-		edit.addSeparator();
+		final MenuBar.MenuItem action = menubar.addItem("Action", null);
+		action.addItem("Terminate indexing", menuCommand);
+		action.addItem("Terminate all indexing", menuCommand).setEnabled(true);
 
-		edit.addItem("Cut", menuCommand);
-		edit.addItem("Copy", menuCommand);
-		edit.addItem("Paste", menuCommand);
-		edit.addSeparator();
+		final MenuBar.MenuItem help = menubar.addItem("Help", null);
+		help.addItem("Welcome", menuCommand);
+		help.addSeparator();
+		help.addItem("Contents", menuCommand);
+		help.addItem("Search help", menuCommand);
+		help.addSeparator();
 
-		final MenuBar.MenuItem find = edit.addItem("Find/Replace", menuCommand);
-
-		// Actions can be added inline as well, of course
-		find.addItem("Google Search", new Command() {
-			public void menuSelected(MenuItem selectedItem) {
-				getWindow().open(new ExternalResource("http://www.google.com"));
-			}
-		});
-		find.addSeparator();
-		find.addItem("Find/Replace...", menuCommand);
-		find.addItem("Find Next", menuCommand);
-		find.addItem("Find Previous", menuCommand);
-
-		final MenuBar.MenuItem view = menubar.addItem("View", null);
-		view.addItem("Show/Hide Status Bar", menuCommand);
-		view.addItem("Customize Toolbar...", menuCommand);
-		view.addSeparator();
-
-		view.addItem("Actual Size", menuCommand);
-		view.addItem("Zoom In", menuCommand);
-		view.addItem("Zoom Out", menuCommand);
+		final MenuBar.MenuItem indexing = help.addItem("Indexing", menuCommand);
+		indexing.addItem("E-mail", menuCommand);
+		indexing.addItem("Internet", menuCommand);
+		indexing.addItem("File system", menuCommand);
+		indexing.addItem("Database", menuCommand);
 
 		absoluteLayout.addComponent(menubar, "left: 0px; top: 0px;");
+	}
+
+	private void addIndexContextForm(final MenuBar.MenuItem menuItem) {
+		menuItem.addItem("Collection", new Command() {
+			@Override
+			public void menuSelected(MenuItem selectedItem) {
+				final Window window = new Window();
+				window.setWidth(80, Sizeable.UNITS_PERCENTAGE);
+				window.setHeight(80, Sizeable.UNITS_PERCENTAGE);
+				final Form form = new Form();
+				form.setSizeFull();
+				String[] fields = monitorService.getFieldNames(IndexContext.class);
+				for (String field : fields) {
+					// TODO Add column definition to the form
+					form.addField(field, new TextField(field + " : ", ""));
+				}
+				Button button = new Button("Add", new Button.ClickListener() {
+					@Override
+					@SuppressWarnings("rawtypes")
+					public void buttonClick(ClickEvent event) {
+						// Perform adding the indexable
+						IndexContext indexContext = new IndexContext();
+						populateIndexable(form, indexContext);
+						clusterManager.sendMessage(indexContext);
+						ikube.gui.Window.INSTANCE.removeWindow(window);
+					}
+				});
+				form.getFooter().addComponent(button);
+				window.addComponent(form);
+				ikube.gui.Window.INSTANCE.addWindow(window);
+			}
+		});
+	}
+
+	private void addEmailForm(final MenuBar.MenuItem menuItem) {
+		menuItem.addItem("E-mail", new Command() {
+			@Override
+			public void menuSelected(MenuItem selectedItem) {
+				final Window window = new Window();
+				window.setWidth(80, Sizeable.UNITS_PERCENTAGE);
+				window.setHeight(80, Sizeable.UNITS_PERCENTAGE);
+				final Form form = new Form();
+				form.setSizeFull();
+				final TextField indexNameField = new TextField("Index name : ", "index name here");
+				form.addField("indexName", indexNameField);
+				String[] fields = monitorService.getFieldNames(IndexableEmail.class);
+				for (String field : fields) {
+					// TODO Add column definition to the form
+					form.addField(field, new TextField(field + " : ", ""));
+				}
+				Button button = new Button("Add", new Button.ClickListener() {
+					@Override
+					public void buttonClick(ClickEvent event) {
+						// Perform adding the indexable
+						String indexName = indexNameField.getValue().toString();
+						String[] fieldNames = new String[] { "name" };
+						Object[] fieldValues = new Object[] { indexName };
+						IndexContext<?> indexContext = dataBase
+								.find(IndexContext.class, IndexContext.FIND_BY_NAME, fieldNames, fieldValues);
+						IndexableEmail indexableEmail = new IndexableEmail();
+						populateIndexable(form, indexableEmail);
+						indexContext.getChildren().add(indexableEmail);
+						clusterManager.sendMessage(indexContext);
+						ikube.gui.Window.INSTANCE.removeWindow(window);
+					}
+				});
+				form.getFooter().addComponent(button);
+				window.addComponent(form);
+				ikube.gui.Window.INSTANCE.addWindow(window);
+			}
+		});
+	}
+
+	private void populateIndexable(final Form form, final Indexable<?> indexable) {
+		final Collection<?> propertyIds = form.getItemPropertyIds();
+		ReflectionUtils.doWithFields(indexable.getClass(), new ReflectionUtils.FieldCallback() {
+			@Override
+			public void doWith(Field field) throws IllegalArgumentException, IllegalAccessException {
+				String fieldName = field.getName();
+				if (propertyIds.contains(fieldName)) {
+					Object fieldValue = form.getField(fieldName).getValue();
+					try {
+						BeanUtils.setProperty(indexable, fieldName, fieldValue);
+					} catch (InvocationTargetException e) {
+						LOGGER.error("Exception setting indexable field : " + field + ", " + fieldValue, e);
+					}
+				}
+			}
+		});
 	}
 
 }

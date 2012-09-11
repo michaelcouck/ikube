@@ -9,6 +9,7 @@ import ikube.database.IDataBase;
 import ikube.integration.AbstractIntegration;
 import ikube.model.Action;
 import ikube.model.File;
+import ikube.model.IndexContext;
 import ikube.model.Url;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.PerformanceTester;
@@ -19,6 +20,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,7 +40,7 @@ public class ADataBaseJpaIntegration extends AbstractIntegration {
 	@Before
 	public void before() {
 		dataBase = ApplicationContextManager.getBean(IDataBase.class);
-		delete(dataBase, Url.class, File.class, Action.class);
+		delete(dataBase, Url.class, File.class , Action.class);
 	}
 
 	@After
@@ -230,14 +233,23 @@ public class ADataBaseJpaIntegration extends AbstractIntegration {
 		int inserted = 10;
 		List<Url> urls = getUrls(inserted);
 		dataBase.persistBatch(urls);
-		
+
 		Long total = dataBase.count(Url.class);
 		assertEquals(inserted, total.intValue());
-		
+
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		parameters.put("urlId", 5l);
 		total = dataBase.count(Url.class, parameters);
 		assertEquals(1, total.intValue());
+	}
+
+	@Test
+	@SuppressWarnings("rawtypes")
+	public void persistIndexContext() {
+		IndexContext<?> indexContext = new IndexContext<Object>();
+		dataBase.persist(indexContext);
+		IndexContext dbIndexContext = dataBase.find(IndexContext.class, indexContext.getId());
+		assertNotNull(dbIndexContext);
 	}
 
 	protected List<Url> getUrls(int batchSize) throws Exception {

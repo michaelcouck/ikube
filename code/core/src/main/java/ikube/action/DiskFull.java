@@ -42,7 +42,7 @@ public class DiskFull extends Action<IndexContext<?>, Boolean> {
 				// This drive is on the network we can't check the space
 			} else if (directoryPath.startsWith(IConstants.SEP)) {
 				// This is unix, just get the space on the drive
-				drive = IConstants.SEP;
+				drive = directoryPath;
 			} else {
 				// Windows
 				char driveCharacter = indexesDirectory.getAbsolutePath().charAt(0);

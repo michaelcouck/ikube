@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Inheritance;
@@ -22,17 +23,35 @@ import javax.persistence.OneToMany;
 public class Server extends Persistable implements Comparable<Server> {
 
 	/** The ip of the server. */
+	@Column
 	private String ip;
 	/** The address of this machine. */
+	@Column
 	private String address;
 	/** The actions of this server. */
-	@OneToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
+	@OneToMany(cascade = { CascadeType.ALL }, mappedBy = "server", fetch = FetchType.LAZY)
 	private List<Action> actions;
 	@SuppressWarnings("rawtypes")
 	@OneToMany(cascade = { CascadeType.ALL }, fetch = FetchType.EAGER)
 	private List<IndexContext> indexContexts;
 	/** The age of this server. */
+	@Column
 	private long age;
+
+	@Column
+	private long freeMemory;
+	@Column
+	private long maxMemory;
+	@Column
+	private long totalMemory;
+	@Column
+	private long freeDiskSpace;
+	@Column
+	private String architecture;
+	@Column
+	private long processors;
+	@Column
+	private double averageCpuLoad;
 
 	public Server() {
 		this.actions = new ArrayList<Action>();
@@ -89,6 +108,62 @@ public class Server extends Persistable implements Comparable<Server> {
 
 	public void setAge(long age) {
 		this.age = age;
+	}
+
+	public long getFreeMemory() {
+		return freeMemory;
+	}
+
+	public void setFreeMemory(long freeMemory) {
+		this.freeMemory = freeMemory;
+	}
+
+	public long getMaxMemory() {
+		return maxMemory;
+	}
+
+	public void setMaxMemory(long maxMemory) {
+		this.maxMemory = maxMemory;
+	}
+
+	public long getTotalMemory() {
+		return totalMemory;
+	}
+
+	public void setTotalMemory(long totalMemory) {
+		this.totalMemory = totalMemory;
+	}
+
+	public long getFreeDiskSpace() {
+		return freeDiskSpace;
+	}
+
+	public void setFreeDiskSpace(long freeDiskSpace) {
+		this.freeDiskSpace = freeDiskSpace;
+	}
+
+	public String getArchitecture() {
+		return architecture;
+	}
+
+	public void setArchitecture(String architecture) {
+		this.architecture = architecture;
+	}
+
+	public long getProcessors() {
+		return processors;
+	}
+
+	public void setProcessors(long processors) {
+		this.processors = processors;
+	}
+
+	public double getAverageCpuLoad() {
+		return averageCpuLoad;
+	}
+
+	public void setAverageCpuLoad(double averageCpuLoad) {
+		this.averageCpuLoad = averageCpuLoad;
 	}
 
 	public boolean equals(final Object object) {

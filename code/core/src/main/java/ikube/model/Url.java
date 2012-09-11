@@ -46,9 +46,12 @@ public class Url extends Persistable {
 	@Transient
 	private String parsedContent;
 
+	@Column
 	@Index(name = "urlId_index", enabled = true)
 	private long urlId;
+	@Column
 	private boolean indexed;
+	@Column
 	@Index(name = "hash_index", enabled = true)
 	private long hash;
 	@Column(length = 64)

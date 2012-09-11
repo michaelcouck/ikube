@@ -5,4 +5,6 @@
 <module>
 	<inherits name="com.vaadin.terminal.gwt.DefaultWidgetSet" />
     <inherits name="com.invient.vaadin.charts.widgetset.InvientChartsWidgetset" />
+    <inherits name="org.vaadin.googleanalytics.tracking.GoogleAnalyticsWidgetset" />
+    <inherits name="org.vaadin.teemu.wizards.WizardsforvaadinWidgetset" />
 </module>

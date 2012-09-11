@@ -140,7 +140,7 @@ public interface IConstants {
 	String STRIP_CHARACTERS = ",[]{};";
 
 	long MAX_ACTIONS = 10000;
-	long MAX_SNAPSHOTS = 150;
+	long MAX_SNAPSHOTS = 90;
 	String TIER = "tier";
 
 	String SEARCH = "search";
@@ -170,6 +170,6 @@ public interface IConstants {
 
 	String TOPIC = "topic";
 	
-	int MAX_RETRY_CLUSTER_REMOVE = 10;
+	int MAX_RETRY_CLUSTER_REMOVE = 3;
 
 }

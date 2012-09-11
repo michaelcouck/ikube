@@ -220,6 +220,18 @@ public abstract class ADataBaseJpa implements IDataBase {
 	 * {@inheritDoc}
 	 */
 	@Override
+	public <T> T findCriteria(final Class<T> klass, final String[] fieldsToFilterOn, final Object[] valuesToFilterOn) {
+		List<T> entities = findCriteria(klass, fieldsToFilterOn, valuesToFilterOn, 0, 10);
+		if (entities.size() != 1) {
+			return null;
+		}
+		return entities.get(0);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public <T> List<T> findCriteria(final Class<T> klass, final String[] fieldsToFilterOn, final Object[] valuesToFilterOn,
 			final int firstResult, final int maxResults) {
 		CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();

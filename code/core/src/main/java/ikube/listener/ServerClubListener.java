@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @since 31.12.11
  * @version 01.00
  */
+@Deprecated
 public class ServerClubListener implements IListener {
 
 	@Autowired

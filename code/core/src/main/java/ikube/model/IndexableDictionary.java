@@ -1,5 +1,6 @@
 package ikube.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
@@ -10,9 +11,10 @@ import javax.persistence.InheritanceType;
  * @version 01.00
  */
 @Entity()
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@Inheritance(strategy = InheritanceType.JOINED)
 public class IndexableDictionary extends Indexable<IndexableDictionary> {
 
+	@Column
 	private String path;
 
 	public String getPath() {

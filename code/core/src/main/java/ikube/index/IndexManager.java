@@ -173,6 +173,7 @@ public final class IndexManager {
 		} catch (CorruptIndexException e) {
 			LOGGER.error("Corrput index : " + indexWriter, e);
 		} catch (IOException e) {
+			// TODO Open the index again and try the optimize a few times?
 			LOGGER.error("IO optimising the index : " + indexWriter, e);
 		} catch (Exception e) {
 			LOGGER.error("General exception comitting the index : " + indexWriter, e);
@@ -190,7 +191,7 @@ public final class IndexManager {
 				while (IndexWriter.isLocked(directory) && retry++ < maxRetry) {
 					if (IndexWriter.isLocked(directory)) {
 						LOGGER.warn("Index still locked : " + directory);
-						ThreadUtilities.sleep(1000);
+						ThreadUtilities.sleep(10000);
 					}
 				}
 			}

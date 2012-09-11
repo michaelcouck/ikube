@@ -90,7 +90,7 @@ public class ApplicationContextManagerMock {
 	}
 
 	@Mock
-	@SuppressWarnings({ "unchecked", "unused" })
+	@SuppressWarnings({ "unchecked" })
 	public static synchronized <T> T getBean(final String name) {
 		return (T) BEAN;
 	}

@@ -1,5 +1,6 @@
 package ikube.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
@@ -11,26 +12,37 @@ import javax.persistence.InheritanceType;
  */
 @Entity()
 @SuppressWarnings("serial")
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@Inheritance(strategy = InheritanceType.JOINED)
 public class IndexableFileSystem extends Indexable<IndexableFileSystem> {
 
+	@Column
 	private String path;
+	@Column
 	private String excludedPattern;
+	@Column
 	private String includedPattern;
+	@Column
 	private long maxReadLength = 1000000;
 
-	@Field()
+	@Field
+	@Column
 	private String nameFieldName;
-	@Field()
+	@Field
+	@Column
 	private String pathFieldName;
-	@Field()
+	@Field
+	@Column
 	private String lastModifiedFieldName;
-	@Field()
+	@Field
+	@Column
 	private String contentFieldName;
-	@Field()
+	@Field
+	@Column
 	private String lengthFieldName;
-	@Field()
+	@Field
+	@Column
 	private int batchSize;
+	@Column
 	private boolean unpackZips;
 
 	public String getPath() {

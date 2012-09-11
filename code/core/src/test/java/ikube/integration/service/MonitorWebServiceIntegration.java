@@ -1,7 +1,5 @@
 package ikube.integration.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import ikube.IConstants;
 import ikube.integration.AbstractIntegration;
@@ -38,13 +36,6 @@ public class MonitorWebServiceIntegration extends AbstractIntegration {
 	}
 
 	@Test
-	public void getIndexContextNames() {
-		String[] indexContextNames = monitorService.getIndexContextNames();
-		assertNotNull(indexContextNames);
-		assertTrue(indexContextNames.length > 0);
-	}
-
-	@Test
 	public void getIndexFieldNames() {
 		String[] fieldNames = monitorService.getIndexFieldNames(IConstants.GEOSPATIAL);
 		assertTrue(fieldNames.length > 0);
@@ -59,31 +50,6 @@ public class MonitorWebServiceIntegration extends AbstractIntegration {
 		assertTrue("The id field should be in the Ikube index : ", indexFieldNamesList.contains(IConstants.ID));
 		assertTrue("The title field should be in the Ikube index : ", indexFieldNamesList.contains(IConstants.TITLE));
 		assertTrue("The content field should be in the Ikube index : ", indexFieldNamesList.contains(IConstants.CONTENT));
-	}
-
-	@Test
-	public void getIndexSize() throws Exception {
-		createIndex(realIndexContext, "The strings to index");
-		long indexSize = monitorService.getIndexSize(realIndexContext.getIndexName());
-		logger.info("Index size : " + indexSize);
-		assertTrue("There should be some data in the index : ", indexSize > 0);
-	}
-
-	@Test
-	public void getIndexDocuments() throws Exception {
-		createIndex(realIndexContext, "The strings to index");
-		long indexDocuments = monitorService.getIndexDocuments(realIndexContext.getIndexName());
-		logger.info("Index documents : " + indexDocuments);
-		assertEquals("There should be at least one document in the index : ", 2, indexDocuments, 1);
-	}
-
-	@Test
-	public void getIndexableFieldNames() {
-		String[] indexableFieldNames = monitorService.getIndexableFieldNames("ikube.email");
-		logger.info("Indexable field names : " + Arrays.asList(indexableFieldNames));
-		assertEquals("The email is the first field : ", "email", indexableFieldNames[0]);
-		assertEquals("The identifier is the second field : ", "identifier", indexableFieldNames[1]);
-		assertEquals("The title is the third field : ", "title", indexableFieldNames[2]);
 	}
 
 }

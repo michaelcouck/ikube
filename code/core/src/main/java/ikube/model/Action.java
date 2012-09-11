@@ -2,10 +2,13 @@ package ikube.model;
 
 import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Temporal;
@@ -18,28 +21,10 @@ import org.apache.commons.lang.builder.ToStringStyle;
 
 @Entity()
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-@NamedQueries(value = { //
-@NamedQuery(name = Action.SELECT_FROM_ACTIONS, query = Action.SELECT_FROM_ACTIONS),
-		@NamedQuery(name = Action.SELECT_FROM_ACTIONS_COUNT, query = Action.SELECT_FROM_ACTIONS_COUNT),
-		@NamedQuery(name = Action.SELECT_FROM_ACTIONS_BY_NAME_COUNT, query = Action.SELECT_FROM_ACTIONS_BY_NAME_COUNT),
-		@NamedQuery(name = Action.SELECT_FROM_ACTIONS_BY_NAME_DESC, query = Action.SELECT_FROM_ACTIONS_BY_NAME_DESC),
-		@NamedQuery(name = Action.SELECT_FROM_ACTIONS_BY_ACTION_NAME_INDEX_NAME_AND_WORKING, //
-		query = Action.SELECT_FROM_ACTIONS_BY_ACTION_NAME_INDEX_NAME_AND_WORKING) })
+@NamedQueries(value = { @NamedQuery(name = Action.SELECT_FROM_ACTIONS_COUNT, query = Action.SELECT_FROM_ACTIONS_COUNT) })
 public class Action extends Persistable {
 
 	public static final String SELECT_FROM_ACTIONS_COUNT = "select count(a) from Action as a";
-	public static final String SELECT_FROM_ACTIONS_BY_NAME_COUNT = "select count(a) from Action as a " //
-			+ "where a.actionName = :actionName";
-	public static final String SELECT_FROM_ACTIONS = "select a from Action as a " //
-			+ "order by a.id asc";
-	public static final String SELECT_FROM_ACTIONS_BY_NAME_DESC = "select a from Action as a " //
-			+ "where a.actionName = :actionName " //
-			+ "order by a.id desc";
-	public static final String SELECT_FROM_ACTIONS_BY_ACTION_NAME_INDEX_NAME_AND_WORKING = "select a from Action as a " //
-			+ "where a.actionName = :actionName " //
-			+ "and a.indexName = :indexName " //
-			+ "and a.endTime is null " //
-			+ "order by a.startTime desc";
 
 	/** The name of the action that is executing. */
 	@Column
@@ -67,6 +52,8 @@ public class Action extends Persistable {
 	/** The number of documents that were added during the execution of the action. */
 	@Column
 	private int invocations;
+	@ManyToOne(cascade = { CascadeType.DETACH }, fetch = FetchType.EAGER)
+	private Server server;
 
 	public String getActionName() {
 		return actionName;
@@ -140,6 +127,14 @@ public class Action extends Persistable {
 		return (invocations / duration);
 	}
 
+	public Server getServer() {
+		return server;
+	}
+
+	public void setServer(Server server) {
+		this.server = server;
+	}
+
 	@Override
 	public int hashCode() {
 		return HashCodeBuilder.reflectionHashCode(this, Boolean.FALSE);
@@ -149,7 +144,7 @@ public class Action extends Persistable {
 	public boolean equals(Object obj) {
 		return EqualsBuilder.reflectionEquals(this, obj, Boolean.FALSE);
 	}
-	
+
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE, false);
 	}

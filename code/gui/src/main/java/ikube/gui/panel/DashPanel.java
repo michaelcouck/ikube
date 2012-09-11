@@ -7,8 +7,6 @@ import java.util.LinkedHashSet;
 
 import com.invient.vaadin.charts.Color.RGB;
 import com.invient.vaadin.charts.InvientCharts;
-import com.invient.vaadin.charts.InvientCharts.DateTimePoint;
-import com.invient.vaadin.charts.InvientCharts.DateTimeSeries;
 import com.invient.vaadin.charts.InvientCharts.SeriesType;
 import com.invient.vaadin.charts.InvientChartsConfig;
 import com.invient.vaadin.charts.InvientChartsConfig.AxisBase.AxisTitle;
@@ -20,6 +18,7 @@ import com.invient.vaadin.charts.InvientChartsConfig.NumberYAxis;
 import com.invient.vaadin.charts.InvientChartsConfig.XAxis;
 import com.invient.vaadin.charts.InvientChartsConfig.YAxis;
 import com.vaadin.terminal.Sizeable;
+import com.vaadin.ui.Accordion;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
@@ -33,22 +32,27 @@ public class DashPanel extends Panel {
 		setImmediate(true);
 
 		HorizontalLayout horizontalLayout = new HorizontalLayout();
-		horizontalLayout.setMargin(true);
+//		horizontalLayout.setMargin(true);
 		horizontalLayout.setSpacing(true);
 		horizontalLayout.setSizeFull();
 		horizontalLayout.setDescription(IConstant.DASH_HORIZONTAL_PANEL_LAYOUT);
 
 		Panel panel = new Panel();
 		panel.setDescription(IConstant.DASH_LEFT_PANEL);
-		Label label = new Label("<h2>Servers</h2>", Label.CONTENT_XHTML);
+		Label label = new Label("<h3>Servers</h3>", Label.CONTENT_XHTML);
 		panel.addComponent(label);
+
+		Accordion accordion = new Accordion();
+		accordion.setSizeFull();
+		accordion.setDescription(IConstant.SERVERS_ACCORDION);
+		panel.addComponent(accordion);
 
 		horizontalLayout.addComponent(panel);
 		horizontalLayout.setExpandRatio(panel, .2f);
 
 		VerticalLayout verticalLayout = new VerticalLayout();
 		verticalLayout.setDescription(IConstant.DASH_PANEL_LAYOUT);
-		verticalLayout.setMargin(true);
+//		verticalLayout.setMargin(true);
 		verticalLayout.setSpacing(true);
 
 		addChart(verticalLayout, IConstant.DASH_SEARCHING_CHART, "Searches per second");
@@ -98,12 +102,6 @@ public class DashPanel extends Panel {
 		chart.setSizeFull();
 		chart.setStyleName("v-chart-min-width");
 		chart.setHeight(200, Sizeable.UNITS_PIXELS);
-
-		// Add the default series so there is something on the chart
-		DateTimeSeries seriesData = new DateTimeSeries(IConstant.DEFAULT_TIME_SERIES, true);
-		LinkedHashSet<DateTimePoint> points = new LinkedHashSet<DateTimePoint>();
-		seriesData.setSeriesPoints(points);
-		chart.addSeries(seriesData);
 
 		verticalLayout.addComponent(chart);
 	}

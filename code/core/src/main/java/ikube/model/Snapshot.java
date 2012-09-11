@@ -3,11 +3,13 @@ package ikube.model;
 import java.util.Date;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.ManyToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
@@ -21,14 +23,22 @@ import org.apache.commons.lang.builder.ToStringStyle;
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Snapshot extends Persistable {
 
+	@Column
 	private long numDocs;
+	@Column
 	private long indexSize;
+	@Column
 	private long timestamp;
+	@Column
 	private Date latestIndexTimestamp;
+	@Column
 	private long docsPerMinute;
+	@Column
 	private long searchesPerMinute;
+	@Column
 	private long totalSearches;
 
+	@PrimaryKeyJoinColumn
 	@ManyToOne(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST }, fetch = FetchType.EAGER)
 	private IndexContext<?> indexContext;
 

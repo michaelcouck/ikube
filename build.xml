@@ -16,17 +16,33 @@
 	</target>
 	
 	<target name="stop-all-servers" >
-        <!-- 
-        	Is there a task to maintain conversation state in an ssh session? And not sshsession 
-        	because ant must be installed on the target machine.
-        -->
+        <antcall target="execute-remote-command">
+        	<param name="host" value="192.168.1.4" />
+        	<param name="command" value="killall java" />
+        </antcall>
+        <antcall target="execute-remote-command">
+        	<param name="host" value="192.168.1.6" />
+        	<param name="command" value="killall java" />
+        </antcall>
+        <antcall target="execute-remote-command">
+        	<param name="host" value="192.168.1.7" />
+        	<param name="command" value="killall java" />
+        </antcall>
     </target>
     
 	<target name="start-all-servers">
-	    <!-- 
-        	Is there a task to maintain conversation state in an ssh session? And not sshsession 
-        	because ant must be installed on the target machine.
-        -->
+	    <antcall target="execute-remote-command">
+        	<param name="host" value="192.168.1.4" />
+        	<param name="command" value="cd /usr/share/apache-tomcat-7.0.27/bin; ./startup.sh;" />
+        </antcall>
+        <antcall target="execute-remote-command">
+        	<param name="host" value="192.168.1.6" />
+        	<param name="command" value="cd /usr/share/apache-tomcat-7.0.27/bin; ./startup.sh;" />
+        </antcall>
+        <antcall target="execute-remote-command">
+        	<param name="host" value="192.168.1.7" />
+        	<param name="command" value="cd /usr/share/apache-tomcat-7.0.27/bin; ./startup.sh;" />
+        </antcall>
 	</target>
 	
 	<target name="prepare-everything">
@@ -61,23 +77,19 @@
 	    <!-- Deploy to the server -->
 		<!--  antcall target="copy-to-server">
 			<param name="file-to-copy" value="${target-directory}/${ikube-war}" />
-			<param name="server-directory" value="michael:caherline@192.168.1.4:/usr/share/apache-tomcat-7.0.27/webapps" />
+			<param name="server-directory" value="${userid}:${password}@192.168.1.4:/usr/share/apache-tomcat-7.0.27/webapps" />
 		</antcall -->
 		<antcall target="copy-to-server">
 			<param name="file-to-copy" value="${target-gui-directory}/${ikube-war}" />
-			<param name="server-directory" value="michael:caherline@192.168.1.4:/usr/share/apache-tomcat-7.0.27/webapps" />
+			<param name="server-directory" value="${userid}:${password}@192.168.1.4:/usr/share/apache-tomcat-7.0.27/webapps" />
 		</antcall>
 		<antcall target="copy-to-server">
 			<param name="file-to-copy" value="${target-gui-directory}/${ikube-war}" />
-			<param name="server-directory" value="michael:caherline@192.168.1.6:/usr/share/apache-tomcat-7.0.27/webapps" />
+			<param name="server-directory" value="${userid}:${password}@192.168.1.6:/usr/share/apache-tomcat-7.0.27/webapps" />
 		</antcall>
 		<antcall target="copy-to-server">
 			<param name="file-to-copy" value="${target-gui-directory}/${ikube-war}" />
-			<param name="server-directory" value="michael:caherline@192.168.1.7:/usr/share/apache-tomcat-7.0.27/webapps" />
-		</antcall>
-		<antcall target="copy-to-server">
-			<param name="file-to-copy" value="${target-gui-directory}/${ikube-war}" />
-			<param name="server-directory" value="michael:caherline@192.168.1.8:/usr/share/apache-tomcat-7.0.27/webapps" />
+			<param name="server-directory" value="${userid}:${password}@192.168.1.7:/usr/share/apache-tomcat-7.0.27/webapps" />
 		</antcall>
 	</target>
 	
@@ -95,48 +107,42 @@
 		<antcall target="clean-server">
 		    <param name="host" value="192.168.1.7" />
 		</antcall>
-		<antcall target="clean-server">
-		    <param name="host" value="192.168.1.8" />
-		</antcall>
 	</target>
 	
 	<target name="clean-server">
+		<antcall target="execute-remote-command">
+			<param name="host" value="${host}" />
+			<param name="command" value="rm -r /usr/share/apache-tomcat-7.0.27/bin/ikube" />
+		</antcall>
+		<antcall target="execute-remote-command">
+			<param name="host" value="${host}" />
+			<param name="command" value="rm -r /usr/share/apache-tomcat-7.0.27/webapps/ikube*" />
+		</antcall>
+		<antcall target="execute-remote-command">
+			<param name="host" value="${host}" />
+			<param name="command" value="rm -r /usr/share/apache-tomcat-7.0.27/logs" />
+		</antcall>
+		<antcall target="execute-remote-command">
+			<param name="host" value="${host}" />
+			<param name="command" value="mkdir -p /usr/share/apache-tomcat-7.0.27/bin/ikube" />
+		</antcall>
+		<antcall target="execute-remote-command">
+			<param name="host" value="${host}" />
+			<param name="command" value="mkdir -p /usr/share/apache-tomcat-7.0.27/logs" />
+		</antcall>
+		<antcall target="execute-remote-command">
+			<param name="host" value="${host}" />
+			<param name="command" value="chmod 777 -R /usr/share/apache-tomcat-7.0.27" />
+		</antcall>
+	</target>
+	
+	<target name="execute-remote-command">
 		<sshexec 
 		    host="${host}"
 			trust="true"
-			username="root"
-			password="caherline"
-			command="rm -r /usr/share/apache-tomcat-7.0.27/bin/ikube"
-			failonerror="false" />
-		<sshexec host="${host}"
-			trust="true"
-			username="root"
-			password="caherline"
-			command="rm -r /usr/share/apache-tomcat-7.0.27/webapps/ikube*" 
-			failonerror="false" />
-		<sshexec host="${host}"
-			trust="true"
-			username="root"
-			password="caherline"
-			command="rm -r /usr/share/apache-tomcat-7.0.27/logs" 
-			failonerror="false" />
-		<sshexec host="${host}"
-			trust="true"
-			username="root"
-			password="caherline"
-			command="mkdir -p /usr/share/apache-tomcat-7.0.27/bin/ikube" 
-			failonerror="false" />
-		<sshexec host="${host}"
-			trust="true"
-			username="root"
-			password="caherline"
-			command="mkdir -p /usr/share/apache-tomcat-7.0.27/logs" 
-			failonerror="false" />
-		<sshexec host="${host}"
-			trust="true"
-			username="root"
-			password="caherline"
-			command="chmod 777 -R /usr/share/apache-tomcat-7.0.27" 
+			username="${userid}"
+			password="${password}"
+			command="${command}"
 			failonerror="false" />
 	</target>
 	
@@ -193,23 +199,15 @@
 			<param name="directory-to-copy" value="${output-configuration-directory}" />
 			<param name="server-directory" value="/usr/share/apache-tomcat-7.0.27/bin/ikube" />
 		</antcall>
-		<antcall target="copy-directory-to-server">
-		    <param name="host" value="192.168.1.8" />
-			<param name="directory-to-copy" value="${output-configuration-directory}" />
-			<param name="server-directory" value="/usr/share/apache-tomcat-7.0.27/bin/ikube" />
-		</antcall>
 	</target>
 	
 	<target name="copy-directory-to-server">
 	    <!-- Create the ikube configuration directory -->
-	    <sshexec 
-		    host="${host}"
-			trust="true"
-			username="root"
-			password="caherline"
-			command="mkdir -p ${server-directory}"
-			failonerror="false" />
-	    <scp todir="michael:caherline@${host}:${server-directory}" trust="true" failonerror="false">
+	    <antcall target="execute-remote-command">
+			<param name="host" value="${host}" />
+			<param name="command" value="mkdir -p ${server-directory}" />
+		</antcall>
+	    <scp todir="${userid}:${password}@${host}:${server-directory}" trust="true" failonerror="false">
 	    	<fileset dir="${directory-to-copy}" />
 	    </scp>
 	</target>

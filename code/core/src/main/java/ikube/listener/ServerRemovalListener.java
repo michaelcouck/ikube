@@ -39,6 +39,7 @@ public class ServerRemovalListener implements IListener {
 			if (System.currentTimeMillis() - server.getAge() > IConstants.MAX_AGE) {
 				LOGGER.info("Removing server : " + server + ", " + (System.currentTimeMillis() - server.getAge() > IConstants.MAX_AGE));
 				iterator.remove();
+				clusterManager.putObject(server.getAddress(), null);
 			}
 		}
 	}

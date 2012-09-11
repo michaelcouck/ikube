@@ -1,5 +1,6 @@
 package ikube.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
@@ -11,13 +12,18 @@ import javax.persistence.InheritanceType;
  */
 @Entity()
 @SuppressWarnings("serial")
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@Inheritance(strategy = InheritanceType.JOINED)
 public class IndexableFileSystemLog extends Indexable<IndexableFileSystemLog> {
 
+	@Column
 	private String path;
+	@Column
 	private String fileFieldName;
+	@Column
 	private String pathFieldName;
+	@Column
 	private String lineFieldName;
+	@Column
 	private String contentFieldName;
 
 	public String getPath() {

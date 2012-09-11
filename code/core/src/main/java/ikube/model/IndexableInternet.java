@@ -5,6 +5,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.regex.Pattern;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
@@ -17,7 +18,7 @@ import javax.persistence.Transient;
  */
 @Entity()
 @SuppressWarnings("serial")
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@Inheritance(strategy = InheritanceType.JOINED)
 public class IndexableInternet extends Indexable<IndexableInternet> {
 
 	@Transient
@@ -31,18 +32,28 @@ public class IndexableInternet extends Indexable<IndexableInternet> {
 	@Transient
 	private transient String baseUrl;
 
+	@Column
 	private String url;
+	@Column
 	private String loginUrl;
+	@Column
 	private String userid;
+	@Column
 	private String password;
+	@Column
 	private int internetBatchSize;
+	@Column
 	private String excludedPattern;
+	@Column
 	private int timeout;
-	@Field()
+	@Field
+	@Column
 	private String titleFieldName;
-	@Field()
+	@Field
+	@Column
 	private String idFieldName;
-	@Field()
+	@Field
+	@Column
 	private String contentFieldName;
 
 	public URI getUri() {

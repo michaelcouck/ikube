@@ -20,6 +20,7 @@ import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
 import org.apache.lucene.index.IndexWriter;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -128,6 +129,20 @@ public class IndexManagerTest extends ATest {
 		assertFalse(newIndexDirectoryPathBackup.contains("\\.\\"));
 
 		when(indexContext.getIndexDirectoryPathBackup()).thenReturn(indexDirectoryPathBackup);
+	}
+	
+	
+	@Test
+	@Ignore
+	public void remoteOptimize() {
+		File indexDirectory = new File("/media/nas/xfs-one/history/index/wikiHistoryOne/1347197297617/192.168.1.4.8000");
+		IndexWriter indexWriter = null;
+		try {
+			indexWriter = IndexManager.openIndexWriter(indexContext, indexDirectory, false);
+			indexWriter.optimize(5, true);
+		} catch (Exception e) {
+			logger.error("Exception optimizing index : ", e);
+		}
 	}
 
 	private <T extends Reader> T getReader(Class<T> t) throws Exception {
