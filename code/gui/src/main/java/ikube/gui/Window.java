@@ -49,7 +49,8 @@ public class Window extends com.vaadin.ui.Window {
 
 	public void init() {
 		// This lets me know that someone is actually using Ikube
-		GoogleAnalyticsTracker tracker = new GoogleAnalyticsTracker("UA-13044914-5", "ikube.be");
+		GoogleAnalyticsTracker tracker = new GoogleAnalyticsTracker("UA-13044914-4", "ikube.dyndns.org");
+		tracker.trackPageview("/app");
 		addComponent(tracker);
 
 		VerticalLayout vertical = new VerticalLayout();
