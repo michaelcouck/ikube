@@ -195,8 +195,8 @@ public class ClusterManagerHazelcast extends AClusterManager {
 				logger.warn("Didn't remove action : {}", action);
 				logger.warn("Actions {}", server.getActions());
 			} else {
-				logger.warn("Removed action : {}", action);
-				logger.warn("Actions {}", server.getActions());
+				// logger.warn("Removed action : {}", action);
+				// logger.warn("Actions {}", server.getActions());
 			}
 		} catch (Exception e) {
 			logger.error("Exception stopping action : " + action, e);

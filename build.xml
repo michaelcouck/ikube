@@ -112,27 +112,13 @@
 	<target name="clean-server">
 		<antcall target="execute-remote-command">
 			<param name="host" value="${host}" />
-			<param name="command" value="rm -r /usr/share/apache-tomcat-7.0.27/bin/ikube" />
-		</antcall>
-		<antcall target="execute-remote-command">
-			<param name="host" value="${host}" />
-			<param name="command" value="rm -r /usr/share/apache-tomcat-7.0.27/webapps/ikube*" />
-		</antcall>
-		<antcall target="execute-remote-command">
-			<param name="host" value="${host}" />
-			<param name="command" value="rm -r /usr/share/apache-tomcat-7.0.27/logs" />
-		</antcall>
-		<antcall target="execute-remote-command">
-			<param name="host" value="${host}" />
-			<param name="command" value="mkdir -p /usr/share/apache-tomcat-7.0.27/bin/ikube" />
-		</antcall>
-		<antcall target="execute-remote-command">
-			<param name="host" value="${host}" />
-			<param name="command" value="mkdir -p /usr/share/apache-tomcat-7.0.27/logs" />
-		</antcall>
-		<antcall target="execute-remote-command">
-			<param name="host" value="${host}" />
-			<param name="command" value="chmod 777 -R /usr/share/apache-tomcat-7.0.27" />
+			<param name="command" 
+				value="rm -r /usr/share/apache-tomcat-7.0.27/bin/ikube;
+						  rm -r /usr/share/apache-tomcat-7.0.27/webapps/ikube*;
+						  rm -r /usr/share/apache-tomcat-7.0.27/logs;
+						  mkdir -p /usr/share/apache-tomcat-7.0.27/bin/ikube;
+						  mkdir -p /usr/share/apache-tomcat-7.0.27/logs;
+						  chmod 777 -R /usr/share/apache-tomcat-7.0.27" />
 		</antcall>
 	</target>
 	

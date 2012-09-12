@@ -91,6 +91,13 @@ public class DashPanelContainer extends AContainer {
 		stringBuilder.append("\n");
 		stringBuilder.append("Cpu load : ");
 		stringBuilder.append(server.getAverageCpuLoad());
+		long totalDocuments = 0;
+		for (IndexContext<?> indexContext : server.getIndexContexts()) {
+			totalDocuments += indexContext.getLastSnapshot().getNumDocs();
+		}
+		stringBuilder.append("\n");
+		stringBuilder.append("Total documents : ");
+		stringBuilder.append(totalDocuments);
 		textArea.setValue(stringBuilder.toString());
 	}
 
@@ -124,7 +131,7 @@ public class DashPanelContainer extends AContainer {
 				String seriesKey = serverIp + "-" + indexName;
 				if (!isWorking(server, indexContext)) {
 					if (chart.getSeries(seriesKey) != null) {
-						LOGGER.info("Removing series : " + seriesKey);
+						LOGGER.debug("Removing series : {} ", seriesKey);
 					}
 					chart.removeSeries(seriesKey);
 					continue;

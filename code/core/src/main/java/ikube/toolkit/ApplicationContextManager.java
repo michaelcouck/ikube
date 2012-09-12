@@ -11,6 +11,8 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.support.AbstractApplicationContext;
@@ -24,7 +26,7 @@ import org.springframework.context.support.FileSystemXmlApplicationContext;
  * @since 29.04.09
  * @version 01.00
  */
-public final class ApplicationContextManager implements ApplicationContextAware {
+public final class ApplicationContextManager implements ApplicationContextAware, BeanPostProcessor {
 
 	private static final Logger LOGGER;
 	/** The default location of the configuration files is in the ikbe folder at the base of the server. */
@@ -213,6 +215,18 @@ public final class ApplicationContextManager implements ApplicationContextAware 
 		} else {
 			LOGGER.info("Application context already loaded : " + APPLICATION_CONTEXT);
 		}
+	}
+
+	@Override
+	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+//		DefaultListableBeanFactory defaultListableBeanFactory = new DefaultListableBeanFactory(getApplicationContext());
+//		defaultListableBeanFactory.registerBeanDefinition(beanName, beanDefinition);
+		return null;
+	}
+
+	@Override
+	public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+		return null;
 	}
 
 }

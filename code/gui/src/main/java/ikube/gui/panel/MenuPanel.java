@@ -25,6 +25,7 @@ import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Form;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
@@ -123,7 +124,7 @@ public class MenuPanel extends Panel {
 	}
 
 	private void addIndexContextForm(final MenuBar.MenuItem menuItem) {
-		menuItem.addItem("Collection", new Command() {
+		menuItem.addItem("Index", new Command() {
 			@Override
 			public void menuSelected(MenuItem selectedItem) {
 				final Window window = new Window();
@@ -165,6 +166,13 @@ public class MenuPanel extends Panel {
 				form.setSizeFull();
 				final TextField indexNameField = new TextField("Index name : ", "index name here");
 				form.addField("indexName", indexNameField);
+
+				ComboBox indexContextComboBox = new ComboBox();
+				indexContextComboBox.setImmediate(true);
+				for (String indexName : monitorService.getIndexNames()) {
+					indexContextComboBox.addItem(indexName);
+				}
+
 				String[] fields = monitorService.getFieldNames(IndexableEmail.class);
 				for (String field : fields) {
 					// TODO Add column definition to the form

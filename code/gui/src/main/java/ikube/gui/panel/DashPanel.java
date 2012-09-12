@@ -32,7 +32,6 @@ public class DashPanel extends Panel {
 		setImmediate(true);
 
 		HorizontalLayout horizontalLayout = new HorizontalLayout();
-//		horizontalLayout.setMargin(true);
 		horizontalLayout.setSpacing(true);
 		horizontalLayout.setSizeFull();
 		horizontalLayout.setDescription(IConstant.DASH_HORIZONTAL_PANEL_LAYOUT);
@@ -52,7 +51,6 @@ public class DashPanel extends Panel {
 
 		VerticalLayout verticalLayout = new VerticalLayout();
 		verticalLayout.setDescription(IConstant.DASH_PANEL_LAYOUT);
-//		verticalLayout.setMargin(true);
 		verticalLayout.setSpacing(true);
 
 		addChart(verticalLayout, IConstant.DASH_SEARCHING_CHART, "Searches per second");

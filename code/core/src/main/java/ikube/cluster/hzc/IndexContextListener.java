@@ -34,13 +34,14 @@ public class IndexContextListener implements MessageListener<Object> {
 		if (dbIndexContext == null) {
 			LOGGER.info("Adding index context : " + indexContext);
 			dataBase.persist(indexContext);
-		}
-		// Check that all the indexables are in the local index context
-		boolean contextsEqual = EqualsBuilder.reflectionEquals(indexContext, dbIndexContext, false);
-		if (!contextsEqual) {
-			LOGGER.info("Adding index context : " + indexContext);
-			dataBase.remove(dbIndexContext);
-			dataBase.persist(indexContext);
+		} else {
+			// Check that all the indexables are in the local index context
+			boolean contextsEqual = EqualsBuilder.reflectionEquals(indexContext, dbIndexContext, false);
+			if (!contextsEqual) {
+				LOGGER.info("Adding index context : " + indexContext);
+				dataBase.remove(dbIndexContext);
+				dataBase.persist(indexContext);
+			}
 		}
 	}
 
