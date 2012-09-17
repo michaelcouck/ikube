@@ -67,12 +67,15 @@ public class SpringApplicationServlet extends AbstractApplicationServlet {
 		ServletRequestAttributes requestAttributes = new ServletRequestAttributes(request);
 		RequestContextHolder.setRequestAttributes(requestAttributes);
 		try {
-			super.service(new HttpServletRequestWrapper(request) {
-				@Override
-				public Locale getLocale() {
-					return locale;
-				}
-			}, response);
+			synchronized(this) {
+				super.service(new HttpServletRequestWrapper(request) {
+					@Override
+					public Locale getLocale() {
+						return locale;
+					}
+				}, response);
+				notifyAll();
+			}
 		} finally {
 			if (!locale.equals(LocaleContextHolder.getLocale())) {
 				logger.debug("locale changed, updating locale resolver");

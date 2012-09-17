@@ -45,7 +45,7 @@ public class ServersPanel extends Panel {
 	}
 
 	private Table createTable() {
-		Table treeTable = new Table(IConstant.INDEXING);
+		Table treeTable = new Table();
 		treeTable.setWidth(100, Sizeable.UNITS_PERCENTAGE);
 		treeTable.setSelectable(Boolean.TRUE);
 		treeTable.setImmediate(Boolean.TRUE);

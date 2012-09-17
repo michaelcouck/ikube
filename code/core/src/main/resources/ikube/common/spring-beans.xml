@@ -33,10 +33,15 @@
 	<transaction:annotation-driven transaction-manager="transactionManager" />
 	
 	<bean
+		name="ikube.toolkit.ApplicationContextManager" 
+		class="ikube.toolkit.ApplicationContextManager"
+		depends-on="ikube.database.IDataBase" />
+	
+	<!-- property:actions-ref="ikube.IndexEngine.actions"  -->
+	<bean
 		id="ikube.IndexEngine"
 		name="ikube.IndexEngine"
-		class="ikube.IndexEngine"
-		property:actions-ref="ikube.IndexEngine.actions" />
+		class="ikube.IndexEngine" />
 		
 	<!-- 
 		The default persistence manager so we can specify more than one persistence file, and 
@@ -135,6 +140,7 @@
 	<!-- The Jpa database for large sets of data. -->
 	<bean
 		id="ikube.database.IDataBase"
+		name="ikube.database.IDataBase"
 		class="ikube.database.jpa.DataBaseJpa"
 		lazy-init="false" />
 	<!-- <bean
@@ -201,34 +207,14 @@
 			property:period="${period}" />
 		<bean
 			class="ikube.listener.Schedule"
-			property:type="alive"
-			property:delay="60000"
-			property:period="60000" />
-		<bean
-			class="ikube.listener.Schedule"
-			property:type="clean"
-			property:delay="600000"
-			property:period="600000" />
-		<bean
-			class="ikube.listener.Schedule"
 			property:type="performance"
 			property:delay="10000"
 			property:period="60000" />
 		<bean
 			class="ikube.listener.Schedule"
-			property:type="lockRelease"
-			property:delay="30000"
-			property:period="30000" />
-		<bean
-			class="ikube.listener.Schedule"
 			property:type="serverRelease"
-			property:delay="600000"
-			property:period="600000" />
-		<bean
-			class="ikube.listener.Schedule"
-			property:type="serverClub"
-			property:delay="200000"
-			property:period="200000" />
+			property:delay="60000"
+			property:period="60000" />
 	</util:list>
 	
 	<!-- 
@@ -355,7 +341,15 @@
 		class="ikube.index.handler.filesystem.IndexableFilesystemWikiHandler"
 		property:threads="${filesystem.handler.threads}"
 		property:indexableClass="ikube.model.IndexableFileSystemWiki" />
-		
+
+	<!-- Validator bean -->
+	<bean 
+		id="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean" 
+		name="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"
+		class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean">
+		<property name="providerClass" value="org.apache.bval.jsr303.ApacheValidationProvider" />
+	</bean>
+	
 	<!-- <bean
 		id="ikube.cluster.udp.UdpBroadcaster"
 		class="ikube.cluster.udp.UdpBroadcaster"

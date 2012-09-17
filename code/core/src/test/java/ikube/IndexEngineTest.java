@@ -16,6 +16,7 @@ import ikube.toolkit.ApplicationContextManager;
 import java.util.ArrayList;
 import java.util.List;
 
+import mockit.Deencapsulation;
 import mockit.Mockit;
 
 import org.junit.After;
@@ -48,7 +49,8 @@ public class IndexEngineTest extends ATest {
 		when(server.isWorking()).thenReturn(Boolean.FALSE);
 		when(clusterManager.getServer()).thenReturn(server);
 
-		indexEngine.setActions(actions);
+		// indexEngine.setActions(actions);
+		Deencapsulation.setField(indexEngine, "actions", actions);
 		// indexEngine.setClusterManager(clusterManager);
 		// Deencapsulation.setField(indexEngine, clusterManager);
 

@@ -93,6 +93,9 @@ public class DashPanelContainer extends AContainer {
 		stringBuilder.append(server.getAverageCpuLoad());
 		long totalDocuments = 0;
 		for (IndexContext<?> indexContext : server.getIndexContexts()) {
+			if (indexContext.getLastSnapshot() == null) {
+				continue;
+			}
 			totalDocuments += indexContext.getLastSnapshot().getNumDocs();
 		}
 		stringBuilder.append("\n");

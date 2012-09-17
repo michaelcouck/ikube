@@ -24,23 +24,23 @@ public class IndexableFileSystem extends Indexable<IndexableFileSystem> {
 	@Column
 	private long maxReadLength = 1000000;
 
-	@Field
 	@Column
+	@Attribute(description = "This is the name of the name field int he Lucene index")
 	private String nameFieldName;
-	@Field
 	@Column
+	@Attribute(description = "This is the name of the path field in the Lucene index")
 	private String pathFieldName;
-	@Field
 	@Column
+	@Attribute(description = "This is the name of the last modified field in the Lucene index")
 	private String lastModifiedFieldName;
-	@Field
 	@Column
+	@Attribute(description = "This is the name of the content field in the Lucene index")
 	private String contentFieldName;
-	@Field
 	@Column
+	@Attribute(description = "This is the name of the length field in the Lucene index")
 	private String lengthFieldName;
-	@Field
 	@Column
+	@Attribute(description = "This is the name of the batch size for the indexable")
 	private int batchSize;
 	@Column
 	private boolean unpackZips;

@@ -2,7 +2,6 @@ package ikube.cluster.hzc;
 
 import ikube.IConstants;
 import ikube.cluster.AClusterManager;
-import ikube.cluster.jms.ClusterManagerJmsLock;
 import ikube.model.Action;
 import ikube.model.IndexContext;
 import ikube.model.Search;
@@ -15,7 +14,6 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -254,16 +252,6 @@ public class ClusterManagerHazelcast extends AClusterManager {
 	@Override
 	public void sendMessage(Serializable serializable) {
 		Hazelcast.getTopic(IConstants.TOPIC).publish(serializable);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	@SuppressWarnings("unchecked")
-	public Map<String, ClusterManagerJmsLock> getLocks() {
-		// Don't need to remove locks, should be done automatically
-		return Collections.EMPTY_MAP;
 	}
 
 	/**

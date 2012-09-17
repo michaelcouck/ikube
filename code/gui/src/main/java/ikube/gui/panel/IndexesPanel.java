@@ -43,7 +43,7 @@ public class IndexesPanel extends Panel {
 	}
 
 	private TreeTable createTreeTable() {
-		TreeTable treeTable = new TreeTable(IConstant.INDEXES);
+		TreeTable treeTable = new TreeTable();
 		treeTable.setWidth(100, Sizeable.UNITS_PERCENTAGE);
 		treeTable.setSelectable(Boolean.TRUE);
 		treeTable.setImmediate(Boolean.TRUE);

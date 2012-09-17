@@ -39,7 +39,7 @@ public class Snapshot extends Persistable {
 	private long totalSearches;
 
 	@PrimaryKeyJoinColumn
-	@ManyToOne(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST }, fetch = FetchType.EAGER)
+	@ManyToOne(cascade = { CascadeType.MERGE, CascadeType.REFRESH }, fetch = FetchType.EAGER)
 	private IndexContext<?> indexContext;
 
 	public long getTimestamp() {

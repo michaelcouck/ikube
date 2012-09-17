@@ -13,7 +13,6 @@ import ikube.search.SearchSingle;
 import ikube.search.SearchSpatial;
 import ikube.search.SearchSpatialAll;
 import ikube.search.spelling.SpellingChecker;
-import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.Logging;
 
 import java.lang.reflect.Constructor;
@@ -53,6 +52,8 @@ public class SearcherService implements ISearcherService {
 	private IClusterManager clusterManager;
 	@Autowired
 	private IDataBase dataBase;
+	@Autowired
+	private IMonitorService monitorService;
 
 	/**
 	 * {@inheritDoc}
@@ -315,7 +316,7 @@ public class SearcherService implements ISearcherService {
 	@SuppressWarnings("unchecked")
 	protected <T> T getSearch(final Class<?> klass, final String indexName) throws Exception {
 		@SuppressWarnings("rawtypes")
-		Map<String, IndexContext> indexContexts = ApplicationContextManager.getBeans(IndexContext.class);
+		Map<String, IndexContext> indexContexts = monitorService.getIndexContexts();
 		for (IndexContext<?> context : indexContexts.values()) {
 			if (context.getIndexName().equals(indexName)) {
 				if (context.getMultiSearcher() != null) {

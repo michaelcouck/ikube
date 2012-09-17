@@ -22,6 +22,7 @@ import javax.persistence.PrimaryKeyJoinColumn;
 public class Indexable<E> extends Persistable {
 
 	@Column
+	@Attribute(field = false, description = "The name of this indexable")
 	private String name;
 	@PrimaryKeyJoinColumn
 	@ManyToOne(cascade = { CascadeType.ALL }, fetch = FetchType.EAGER)
@@ -29,13 +30,17 @@ public class Indexable<E> extends Persistable {
 	@OneToMany(cascade = { CascadeType.ALL }, mappedBy = "parent", fetch = FetchType.EAGER)
 	private List<Indexable<?>> children;
 	@Column
+	@Attribute(field = false, description = "Whether this is a geospatial address field")
 	private boolean address;
 
 	@Column
+	@Attribute(field = false, description = "Whether this value should be stored in the index")
 	private boolean stored = Boolean.FALSE;
 	@Column
+	@Attribute(field = false, description = "Whether this field should be analyzed for stemming and so on")
 	private boolean analyzed = Boolean.TRUE;
 	@Column
+	@Attribute(field = false, description = "Whether this field should be vectored in the index")
 	private boolean vectored = Boolean.FALSE;
 
 	public void setName(final String name) {

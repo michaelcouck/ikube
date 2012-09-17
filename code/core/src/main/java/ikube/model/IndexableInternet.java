@@ -46,14 +46,14 @@ public class IndexableInternet extends Indexable<IndexableInternet> {
 	private String excludedPattern;
 	@Column
 	private int timeout;
-	@Field
 	@Column
+	@Attribute(description = "This is the name of the title field in the Lucene index")
 	private String titleFieldName;
-	@Field
 	@Column
+	@Attribute(description = "This is the name of the id field in the Lucene index")
 	private String idFieldName;
-	@Field
 	@Column
+	@Attribute(description = "This is the name of the content field int he Lucene index")
 	private String contentFieldName;
 
 	public URI getUri() {

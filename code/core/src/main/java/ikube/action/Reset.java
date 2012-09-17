@@ -26,7 +26,7 @@ public class Reset extends Action<IndexContext<?>, Boolean> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized boolean executeInternal(final IndexContext<?> indexContext) {
+	synchronized boolean executeInternal(final IndexContext<?> indexContext) {
 		ikube.model.Action action = null;
 		try {
 			action = start(indexContext.getIndexName(), "");
@@ -46,11 +46,11 @@ public class Reset extends Action<IndexContext<?>, Boolean> {
 		parameters.put(IConstants.NAME, indexable.getName());
 		delete(dataBase, Url.class, Url.SELECT_FROM_URL_BY_NAME, parameters);
 		delete(dataBase, File.class, File.SELECT_FROM_FILE_BY_NAME, parameters);
-		if (indexable.getChildren() != null) {
-			for (Indexable<?> child : indexable.getChildren()) {
-				delete(dataBase, child);
-			}
-		}
+//		if (indexable.getChildren() != null) {
+//			for (Indexable<?> child : indexable.getChildren()) {
+//				delete(dataBase, child);
+//			}
+//		}
 	}
 
 	protected synchronized void delete(final IDataBase dataBase, final Class<?> klass, final String sql,

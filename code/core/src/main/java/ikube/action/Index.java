@@ -31,7 +31,7 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean executeInternal(final IndexContext<?> indexContext) throws Exception {
+	boolean executeInternal(final IndexContext<?> indexContext) throws Exception {
 		String indexName = indexContext.getIndexName();
 		Server server = clusterManager.getServer();
 		List<Indexable<?>> indexables = indexContext.getIndexables();

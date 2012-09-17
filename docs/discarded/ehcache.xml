@@ -1,0 +1,36 @@
+<ehcache 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:noNamespaceSchemaLocation="ehcache.xsd" 
+	updateCheck="false"
+	monitoring="autodetect" 
+	dynamicConfig="true">
+
+	<cache 
+		name="UrlCache"
+		eternal="false" 
+		diskPersistent="false"
+		overflowToDisk="true"
+		timeToLiveSeconds="6000"
+		timeToIdleSeconds="6000"
+		maxElementsInMemory="100000"
+		diskExpiryThreadIntervalSeconds="600"
+		memoryStoreEvictionPolicy="LRU">
+	</cache>
+	<cache 
+		name="NewUrlCache"
+		eternal="true" 
+		maxElementsInMemory="10000"
+		overflowToDisk="true"
+		diskPersistent="true">
+	</cache>
+	<defaultCache 
+		maxElementsInMemory="10000" 
+		eternal="false" 
+		timeToIdleSeconds="120" 
+		timeToLiveSeconds="120" 
+		overflowToDisk="true"
+		maxElementsOnDisk="100000" 
+		diskPersistent="false" 
+		diskExpiryThreadIntervalSeconds="120" 
+		memoryStoreEvictionPolicy="LRU" />
+</ehcache>

@@ -1,13 +1,15 @@
 package ikube.action;
 
-
 import ikube.IConstants;
+import ikube.listener.Event;
+import ikube.listener.ListenerManager;
 import ikube.model.IndexContext;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
 
 import org.apache.commons.io.FileSystemUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * This action checks that the disk is not full, the one where the indexes are, if it is then this instance will close down.
@@ -23,11 +25,14 @@ public class DiskFull extends Action<IndexContext<?>, Boolean> {
 	/** The amount of space until we start sending notifications, 10 gig. */
 	private static final long MINIMUM_FREE_SPACE_FOR_NOTIFICATIONS = MINIMUM_FREE_SPACE * 10;
 
+	@Autowired
+	private ListenerManager listenerManager;
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean executeInternal(final IndexContext<?> indexContext) {
+	boolean executeInternal(final IndexContext<?> indexContext) {
 		ikube.model.Action action = null;
 		try {
 			action = start(indexContext.getIndexName(), "");
@@ -60,7 +65,8 @@ public class DiskFull extends Action<IndexContext<?>, Boolean> {
 								"This server will exit to save the machine : ", freeSpaceMegabytes.toString());
 						logger.error(subject + " " + body);
 						sendNotification(subject, body);
-						System.exit(0);
+						listenerManager.fireEvent(Event.TERMINATE, System.currentTimeMillis(), indexContext, Boolean.FALSE);
+						// System.exit(0);
 						return Boolean.TRUE;
 					}
 					if (freeSpaceMegabytes < MINIMUM_FREE_SPACE_FOR_NOTIFICATIONS) {

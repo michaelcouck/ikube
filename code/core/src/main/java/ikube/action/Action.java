@@ -83,7 +83,7 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
 	 * @return whether the execution was successful
 	 * @throws Exception
 	 */
-	public abstract boolean executeInternal(final IndexContext<?> indexContext) throws Exception;
+	abstract boolean executeInternal(final IndexContext<?> indexContext) throws Exception;
 
 	/**
 	 * This is a convenience method for the implementing classes to call to announce to the cluster that the action is started.

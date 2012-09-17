@@ -4,17 +4,18 @@ import ikube.action.IAction;
 import ikube.listener.Event;
 import ikube.listener.IListener;
 import ikube.model.IndexContext;
-import ikube.toolkit.ApplicationContextManager;
+import ikube.service.IMonitorService;
 import ikube.toolkit.Logging;
 import ikube.toolkit.SerializationUtilities;
 import ikube.toolkit.ThreadUtilities;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * This class is the central class for creating indexes.
@@ -33,6 +34,9 @@ public class IndexEngine implements IIndexEngine, IListener {
 
 	private static final Logger LOGGER = Logger.getLogger(IndexEngine.class);
 
+	@Autowired
+	private IMonitorService monitorService;
+	@Autowired
 	private List<IAction<IndexContext<?>, Boolean>> actions;
 
 	public IndexEngine() {
@@ -41,14 +45,14 @@ public class IndexEngine implements IIndexEngine, IListener {
 	}
 
 	@Override
+	@SuppressWarnings("rawtypes")
 	public void handleNotification(final Event event) {
 		if (!Event.TIMER.equals(event.getType())) {
 			return;
 		}
 		Random random = new Random();
-		@SuppressWarnings("rawtypes")
-		Map<String, IndexContext> indexContexts = ApplicationContextManager.getBeans(IndexContext.class);
-		for (IndexContext<?> indexContext : indexContexts.values()) {
+		Collection<IndexContext> indexContexts = monitorService.getIndexContexts().values();
+		for (IndexContext<?> indexContext : indexContexts) {
 			if (actions == null || actions.isEmpty()) {
 				LOGGER.warn("No actions configured for index engine : " + indexContext.getIndexName());
 				continue;
@@ -66,10 +70,6 @@ public class IndexEngine implements IIndexEngine, IListener {
 			}
 			LOGGER.debug(Logging.getString("Finished working : ", indexContext.getIndexName()));
 		}
-	}
-
-	public void setActions(final List<IAction<IndexContext<?>, Boolean>> actions) {
-		this.actions = actions;
 	}
 
 }

@@ -29,6 +29,7 @@
 		<class>ikube.model.Index</class>
 		<class>ikube.model.Search</class>
 		<class>ikube.model.Snapshot</class>
+		<class>ikube.model.DataSource</class>
 		
 		<class>ikube.model.geospatial.GeoName</class>
 		<class>ikube.model.geospatial.AlternateName</class>
@@ -89,6 +90,7 @@
 		<class>ikube.model.IndexableColumn</class>
 		<class>ikube.model.Search</class>
 		<class>ikube.model.Snapshot</class>
+		<class>ikube.model.DataSource</class>
 		
 		<class>ikube.model.geospatial.GeoName</class>
 		<class>ikube.model.geospatial.AlternateName</class>
@@ -139,6 +141,7 @@
 		<class>ikube.model.IndexableColumn</class>
 		<class>ikube.model.Search</class>
 		<class>ikube.model.Snapshot</class>
+		<class>ikube.model.DataSource</class>
 		
 		<class>ikube.model.geospatial.GeoName</class>
 		<class>ikube.model.geospatial.AlternateName</class>
@@ -189,6 +192,7 @@
 		<class>ikube.model.IndexableColumn</class>
 		<class>ikube.model.Search</class>
 		<class>ikube.model.Snapshot</class>
+		<class>ikube.model.DataSource</class>
 		
 		<class>ikube.model.geospatial.GeoName</class>
 		<class>ikube.model.geospatial.AlternateName</class>

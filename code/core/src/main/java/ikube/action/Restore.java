@@ -23,7 +23,7 @@ public class Restore extends Action<IndexContext<?>, Boolean> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean executeInternal(final IndexContext<?> indexContext) {
+	boolean executeInternal(final IndexContext<?> indexContext) {
 		ikube.model.Action action = null;
 		File latestIndexDirectoryBackup = null;
 		File restoredIndexDirectory = null;

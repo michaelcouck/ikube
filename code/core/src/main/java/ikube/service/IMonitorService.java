@@ -39,6 +39,11 @@ public interface IMonitorService {
 	@SuppressWarnings("rawtypes")
 	Map<String, IndexContext> getIndexContexts();
 	
+	@SuppressWarnings("rawtypes")
+	IndexContext getIndexContext(final String indexContextName);
+	
 	String[] getFieldNames(final Class<?> indexableClass);
+
+	public abstract String[] getFieldDescriptions(final Class<?> indexableClass);
 
 }

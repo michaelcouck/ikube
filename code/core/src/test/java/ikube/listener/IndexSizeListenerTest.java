@@ -9,6 +9,7 @@ import ikube.toolkit.FileUtilities;
 import java.io.File;
 import java.io.IOException;
 
+import mockit.Deencapsulation;
 import mockit.Mockit;
 
 import org.apache.lucene.index.CorruptIndexException;
@@ -37,14 +38,16 @@ public class IndexSizeListenerTest extends ATest {
 		Mockit.setUpMocks(ApplicationContextManagerMock.class);
 		ApplicationContextManagerMock.setIndexContext(indexContext);
 		Snapshot snapshot = Mockito.mock(Snapshot.class);
+		// Mockito.when(clusterManager.getServer()).thenReturn(server);
 		Mockito.when(snapshot.getIndexSize()).thenReturn(Long.MAX_VALUE);
 		Mockito.when(indexContext.getLastSnapshot()).thenReturn(snapshot);
 		Mockito.when(indexContext.getIndexWriter()).thenReturn(indexWriter);
 		File indexDirectory = FileUtilities.getFile(indexDirectoryPath + IConstants.SEP + "127.0.0.1.8000", Boolean.TRUE);
 		Mockito.when(fsDirectory.getFile()).thenReturn(indexDirectory);
 		indexSizeListener = new IndexSizeListener();
+		Deencapsulation.setField(indexSizeListener, clusterManager);
 	}
-	
+
 	@After
 	public void after() {
 		Mockit.tearDownMocks();

@@ -1,9 +1,13 @@
 package ikube.model;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Transient;
 
 /**
@@ -21,14 +25,16 @@ public class IndexableColumn extends Indexable<IndexableColumn> {
 	@Transient
 	private transient Object content;
 
-	@Field
 	@Column
+	@Attribute(description = "This is the name of the field in the Lucene index")
 	private String fieldName;
 	@Column
 	private boolean idColumn;
 	@Column
 	private boolean numeric;
 	@Column
+	@PrimaryKeyJoinColumn
+	@OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	private IndexableColumn foreignKey;
 
 	/**

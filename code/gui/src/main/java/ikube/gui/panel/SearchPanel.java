@@ -86,7 +86,7 @@ public class SearchPanel extends Panel {
 	}
 
 	private TreeTable createTable(final ComponentContainer componentContainer) {
-		TreeTable treeTable = new TreeTable(IConstant.SEARCH);
+		TreeTable treeTable = new TreeTable();
 		treeTable.setWidth(100, Sizeable.UNITS_PERCENTAGE);
 		treeTable.setSelectable(Boolean.TRUE);
 		treeTable.setImmediate(Boolean.TRUE);

@@ -2,6 +2,7 @@ package ikube.cluster.hzc;
 
 import ikube.database.IDataBase;
 import ikube.model.IndexContext;
+import ikube.service.IMonitorService;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.slf4j.Logger;
@@ -17,6 +18,8 @@ public class IndexContextListener implements MessageListener<Object> {
 
 	@Autowired
 	private IDataBase dataBase;
+	@Autowired
+	private IMonitorService monitorService;
 
 	@Override
 	@SuppressWarnings("rawtypes")
@@ -27,19 +30,20 @@ public class IndexContextListener implements MessageListener<Object> {
 		}
 		IndexContext<?> indexContext = (IndexContext<?>) object;
 		indexContext.setId(0);
+		indexContext.setSnapshots(null);
 		LOGGER.info("Got index context message : " + indexContext);
 		// Check the database for this context
-		IndexContext dbIndexContext = dataBase.findCriteria(IndexContext.class, new String[] { "name" },
-				new Object[] { indexContext.getIndexName() });
-		if (dbIndexContext == null) {
+
+		IndexContext localIndexContext = monitorService.getIndexContext(indexContext.getIndexName());
+		if (localIndexContext == null) {
 			LOGGER.info("Adding index context : " + indexContext);
 			dataBase.persist(indexContext);
 		} else {
 			// Check that all the indexables are in the local index context
-			boolean contextsEqual = EqualsBuilder.reflectionEquals(indexContext, dbIndexContext, false);
+			boolean contextsEqual = EqualsBuilder.reflectionEquals(indexContext, localIndexContext, false);
 			if (!contextsEqual) {
 				LOGGER.info("Adding index context : " + indexContext);
-				dataBase.remove(dbIndexContext);
+				dataBase.remove(localIndexContext);
 				dataBase.persist(indexContext);
 			}
 		}

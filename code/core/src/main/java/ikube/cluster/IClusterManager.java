@@ -1,6 +1,5 @@
 package ikube.cluster;
 
-import ikube.cluster.jms.ClusterManagerJmsLock;
 import ikube.model.Action;
 import ikube.model.Search;
 import ikube.model.Server;
@@ -85,14 +84,6 @@ public interface IClusterManager {
 	 * @param serializable the object to send to the cluster
 	 */
 	void sendMessage(final Serializable serializable);
-
-	/**
-	 * Access to the cluster locks. This lock set is exposed to allow listeners to remove locks that time out due to the server going down.
-	 * 
-	 * @return the locks for the cluster that are cached in this server
-	 */
-	@Deprecated
-	Map<String, ClusterManagerJmsLock> getLocks();
 
 	Search getSearch(final String searchKey);
 

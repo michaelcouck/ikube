@@ -20,8 +20,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,7 +38,7 @@ public class ADataBaseJpaIntegration extends AbstractIntegration {
 	@Before
 	public void before() {
 		dataBase = ApplicationContextManager.getBean(IDataBase.class);
-		delete(dataBase, Url.class, File.class , Action.class);
+		delete(dataBase, Url.class, File.class, Action.class);
 	}
 
 	@After

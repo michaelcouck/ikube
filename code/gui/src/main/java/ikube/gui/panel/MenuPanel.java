@@ -3,29 +3,19 @@ package ikube.gui.panel;
 import ikube.cluster.IClusterManager;
 import ikube.database.IDataBase;
 import ikube.gui.IConstant;
-import ikube.model.IndexContext;
-import ikube.model.Indexable;
-import ikube.model.IndexableEmail;
+import ikube.gui.panel.wizard.EmailForm;
+import ikube.gui.panel.wizard.IndexContextForm;
 import ikube.service.IMonitorService;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Collection;
-
-import org.apache.commons.beanutils.BeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.springframework.util.ReflectionUtils;
 
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.AbsoluteLayout;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Form;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
@@ -33,7 +23,6 @@ import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TabSheet;
-import com.vaadin.ui.TextField;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Reindeer;
 
@@ -42,16 +31,17 @@ import com.vaadin.ui.themes.Reindeer;
 @Component(value = "MenuPanel")
 public class MenuPanel extends Panel {
 
+	@SuppressWarnings("unused")
 	private static final Logger LOGGER = LoggerFactory.getLogger(MenuPanel.class);
 
 	private static final String IKUBE_CAPTION = "<b>Ikube</b>";
 
 	@Autowired
+	private IDataBase dataBase;
+	@Autowired
 	private IMonitorService monitorService;
 	@Autowired
 	private IClusterManager clusterManager;
-	@Autowired
-	private IDataBase dataBase;
 
 	public MenuPanel(final Panel... panels) {
 		setSizeFull();
@@ -93,6 +83,7 @@ public class MenuPanel extends Panel {
 
 		final MenuBar.MenuItem index = menubar.addItem("Index", null);
 		final MenuBar.MenuItem newIndex = index.addItem("New index", null);
+		@SuppressWarnings("unused")
 		final MenuBar.MenuItem deleteIndex = index.addItem("Delete index", menuCommand);
 
 		addEmailForm(newIndex);
@@ -130,26 +121,8 @@ public class MenuPanel extends Panel {
 				final Window window = new Window();
 				window.setWidth(80, Sizeable.UNITS_PERCENTAGE);
 				window.setHeight(80, Sizeable.UNITS_PERCENTAGE);
-				final Form form = new Form();
-				form.setSizeFull();
-				String[] fields = monitorService.getFieldNames(IndexContext.class);
-				for (String field : fields) {
-					// TODO Add column definition to the form
-					form.addField(field, new TextField(field + " : ", ""));
-				}
-				Button button = new Button("Add", new Button.ClickListener() {
-					@Override
-					@SuppressWarnings("rawtypes")
-					public void buttonClick(ClickEvent event) {
-						// Perform adding the indexable
-						IndexContext indexContext = new IndexContext();
-						populateIndexable(form, indexContext);
-						clusterManager.sendMessage(indexContext);
-						ikube.gui.Window.INSTANCE.removeWindow(window);
-					}
-				});
-				form.getFooter().addComponent(button);
-				window.addComponent(form);
+				Form indexContextForm = new IndexContextForm().initialize(window);
+				window.addComponent(indexContextForm);
 				ikube.gui.Window.INSTANCE.addWindow(window);
 			}
 		});
@@ -162,59 +135,9 @@ public class MenuPanel extends Panel {
 				final Window window = new Window();
 				window.setWidth(80, Sizeable.UNITS_PERCENTAGE);
 				window.setHeight(80, Sizeable.UNITS_PERCENTAGE);
-				final Form form = new Form();
-				form.setSizeFull();
-				final TextField indexNameField = new TextField("Index name : ", "index name here");
-				form.addField("indexName", indexNameField);
-
-				ComboBox indexContextComboBox = new ComboBox();
-				indexContextComboBox.setImmediate(true);
-				for (String indexName : monitorService.getIndexNames()) {
-					indexContextComboBox.addItem(indexName);
-				}
-
-				String[] fields = monitorService.getFieldNames(IndexableEmail.class);
-				for (String field : fields) {
-					// TODO Add column definition to the form
-					form.addField(field, new TextField(field + " : ", ""));
-				}
-				Button button = new Button("Add", new Button.ClickListener() {
-					@Override
-					public void buttonClick(ClickEvent event) {
-						// Perform adding the indexable
-						String indexName = indexNameField.getValue().toString();
-						String[] fieldNames = new String[] { "name" };
-						Object[] fieldValues = new Object[] { indexName };
-						IndexContext<?> indexContext = dataBase
-								.find(IndexContext.class, IndexContext.FIND_BY_NAME, fieldNames, fieldValues);
-						IndexableEmail indexableEmail = new IndexableEmail();
-						populateIndexable(form, indexableEmail);
-						indexContext.getChildren().add(indexableEmail);
-						clusterManager.sendMessage(indexContext);
-						ikube.gui.Window.INSTANCE.removeWindow(window);
-					}
-				});
-				form.getFooter().addComponent(button);
-				window.addComponent(form);
+				Form emailForm = new EmailForm(window);
+				window.addComponent(emailForm);
 				ikube.gui.Window.INSTANCE.addWindow(window);
-			}
-		});
-	}
-
-	private void populateIndexable(final Form form, final Indexable<?> indexable) {
-		final Collection<?> propertyIds = form.getItemPropertyIds();
-		ReflectionUtils.doWithFields(indexable.getClass(), new ReflectionUtils.FieldCallback() {
-			@Override
-			public void doWith(Field field) throws IllegalArgumentException, IllegalAccessException {
-				String fieldName = field.getName();
-				if (propertyIds.contains(fieldName)) {
-					Object fieldValue = form.getField(fieldName).getValue();
-					try {
-						BeanUtils.setProperty(indexable, fieldName, fieldValue);
-					} catch (InvocationTargetException e) {
-						LOGGER.error("Exception setting indexable field : " + field + ", " + fieldValue, e);
-					}
-				}
 			}
 		});
 	}

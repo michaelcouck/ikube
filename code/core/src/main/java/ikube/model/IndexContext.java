@@ -13,6 +13,10 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.index.IndexWriter;
@@ -47,43 +51,78 @@ public class IndexContext<T> extends Indexable<T> implements Comparable<IndexCon
 
 	/** The maximum age of the index defined in minutes. */
 	@Column
+	@Min(value = 1)
+	@Max(value = Integer.MAX_VALUE)
+	@Attribute(field = false, description = "This is the maximum age that the index can become before it is re-indexed")
 	private long maxAge;
 	/** The delay between documents being indexed, slows the indexing down. */
 	@Column
+	@Min(value = 0)
+	@Max(value = 60000)
+	@Attribute(field = false, description = "This is the throttle in mili seconds that will slow down the indexing")
 	private long throttle;
 
 	/** Lucene properties. */
 	@Column
+	@Min(value = 10)
+	@Max(value = 1000000)
+	@Attribute(field = false, description = "The number of documents to keep in the segments before they are merged to the main file during indexing")
 	private int mergeFactor;
 	@Column
+	@Min(value = 10)
+	@Max(value = 1000000)
+	@Attribute(field = false, description = "The number of documents to keep in memory before writing to the file")
 	private int bufferedDocs;
 	@Column
+	@Min(value = 1)
+	@Max(value = 1000)
+	@Attribute(field = false, description = "The size of the memory Lucene can occupy before the documents are written to the file")
 	private double bufferSize;
 	@Column
+	@Min(value = 10)
+	@Max(value = 1000000)
+	@Attribute(field = false, description = "The maximum length of a field in the Lucene index")
 	private int maxFieldLength;
 	@Column
+	@Attribute(field = false, description = "Whether this index should be in a compound file format")
 	private boolean compoundFile;
 
 	/** Jdbc properties. */
 	@Column
+	@Min(value = 1)
+	@Max(value = 1000000)
+	@Attribute(field = false, description = "The batch size of the result set for database indexing")
 	private int batchSize;
 	/** Internet properties. */
 	@Column
+	@Min(value = 1)
+	@Max(value = 1000000)
+	@Attribute(field = false, description = "The batch size of urls for the crawler")
 	private int internetBatchSize;
 
 	/** The maximum length of a document that can be read. */
 	@Column
+	@Min(value = 1)
+	@Max(value = 1000000000)
+	@Attribute(field = false, description = "The maximum read length for a document")
 	private long maxReadLength;
 	/** The path to the index directory, either relative or absolute. */
 	@Column
+	@NotNull
+	@Size(min = 2, max = 256)
+	@Attribute(field = false, description = "The absolute or relative path to the directory where the index will be written")
 	private String indexDirectoryPath;
 	/** The path to the backup index directory, either relative or absolute. */
 	@Column
+	@NotNull
+	@Size(min = 2, max = 256)
+	@Attribute(field = false, description = "The absolute or relative path to the directory where the index will be backed up")
 	private String indexDirectoryPathBackup;
 	@Column
+	@Attribute(field = false, description = "The is dynamically set by the logic to validate that there is disk space left on the drive where the index is")
 	private long availableDiskSpace;
 
-	@OneToMany(cascade = { CascadeType.ALL }, mappedBy = "indexContext", fetch = FetchType.EAGER)
+	@OneToMany(cascade = { CascadeType.ALL }, mappedBy = "indexContext", fetch = FetchType.LAZY)
 	private List<Snapshot> snapshots = new ArrayList<Snapshot>();
 
 	public String getIndexName() {

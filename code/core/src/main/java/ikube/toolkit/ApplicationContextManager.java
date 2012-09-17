@@ -1,21 +1,30 @@
 package ikube.toolkit;
 
 import ikube.IConstants;
+import ikube.database.IDataBase;
+import ikube.model.IndexContext;
 
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.context.support.AbstractRefreshableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
@@ -26,7 +35,7 @@ import org.springframework.context.support.FileSystemXmlApplicationContext;
  * @since 29.04.09
  * @version 01.00
  */
-public final class ApplicationContextManager implements ApplicationContextAware, BeanPostProcessor {
+public final class ApplicationContextManager implements ApplicationContextAware {
 
 	private static final Logger LOGGER;
 	/** The default location of the configuration files is in the ikbe folder at the base of the server. */
@@ -45,6 +54,9 @@ public final class ApplicationContextManager implements ApplicationContextAware,
 			}
 		});
 	}
+
+	@Autowired
+	private IDataBase dataBase;
 
 	/**
 	 * System wide access to the Spring context.
@@ -215,18 +227,39 @@ public final class ApplicationContextManager implements ApplicationContextAware,
 		} else {
 			LOGGER.info("Application context already loaded : " + APPLICATION_CONTEXT);
 		}
+		// registerIndexContexts(APPLICATION_CONTEXT);
 	}
 
-	@Override
-	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-//		DefaultListableBeanFactory defaultListableBeanFactory = new DefaultListableBeanFactory(getApplicationContext());
-//		defaultListableBeanFactory.registerBeanDefinition(beanName, beanDefinition);
-		return null;
-	}
-
-	@Override
-	public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-		return null;
+	@Deprecated
+	@SuppressWarnings({ "rawtypes", "unused" })
+	private void registerIndexContexts(final ApplicationContext applicationContext) {
+		DefaultListableBeanFactory defaultListableBeanFactory = null;
+		if (AbstractRefreshableApplicationContext.class.isAssignableFrom(APPLICATION_CONTEXT.getClass())) {
+			AbstractRefreshableApplicationContext xmlWebApplicationContext = (AbstractRefreshableApplicationContext) applicationContext;
+			defaultListableBeanFactory = (DefaultListableBeanFactory) xmlWebApplicationContext.getBeanFactory();
+		} else {
+			defaultListableBeanFactory = new DefaultListableBeanFactory();
+			defaultListableBeanFactory.setParentBeanFactory(applicationContext);
+		}
+		dataBase = applicationContext.getBean(IDataBase.class);
+		List<IndexContext> indexContexts = dataBase.find(IndexContext.class, 0, Integer.MAX_VALUE);
+		for (IndexContext indexContext : indexContexts) {
+			LOGGER.info("Post processing index context : " + indexContext);
+			if (applicationContext.getBean(indexContext.getName()) != null) {
+				LOGGER.info("Context already contains index : "
+						+ ToStringBuilder.reflectionToString(indexContext, ToStringStyle.SHORT_PREFIX_STYLE));
+				continue;
+			}
+			BeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(IndexContext.class).getBeanDefinition();
+			defaultListableBeanFactory.registerBeanDefinition(indexContext.getIndexName(), beanDefinition);
+			IndexContext registeredIndexContext = (IndexContext) APPLICATION_CONTEXT.getBean(indexContext.getIndexName());
+			try {
+				BeanUtils.copyProperties(registeredIndexContext, indexContext);
+			} catch (Exception e) {
+				LOGGER.error("Exception setting up the index context : ", e);
+			}
+			LOGGER.info("Populated index context : " + registeredIndexContext);
+		}
 	}
 
 }

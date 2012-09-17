@@ -28,7 +28,7 @@ public class Clean<E, F> extends Action<IndexContext<?>, Boolean> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean executeInternal(final IndexContext<?> indexContext) {
+	boolean executeInternal(final IndexContext<?> indexContext) {
 		ikube.model.Action action = null;
 		try {
 			action = start(indexContext.getIndexName(), "");
