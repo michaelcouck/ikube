@@ -171,5 +171,8 @@ public interface IConstants {
 	String TOPIC = "topic";
 	
 	int MAX_RETRY_CLUSTER_REMOVE = 3;
+	
+	String ROLE_USER = "ROLE_USER";
+	String ROLE_ADMIN = "ROLE_ADMIN";
 
 }

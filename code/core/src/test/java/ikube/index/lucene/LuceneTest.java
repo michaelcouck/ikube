@@ -4,9 +4,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import ikube.ATest;
 import ikube.IConstants;
+import ikube.action.Close;
+import ikube.action.Open;
+import ikube.cluster.IClusterManager;
+import ikube.model.IndexContext;
 import ikube.search.SearchSingle;
 import ikube.search.spelling.SpellingChecker;
 import ikube.toolkit.FileUtilities;
+import ikube.toolkit.SerializationUtilities;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -25,6 +30,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 /**
  * Various tests for Lucene indexes, including language indexing and searching. This is just a sanity test for language support etc. Can
@@ -36,7 +42,7 @@ import org.junit.Test;
  */
 public class LuceneTest extends ATest {
 
-	private String russian = "р";
+	private String russian = " русский язык  ";
 	private String german = "Produktivität";
 	private String french = "productivité";
 	private String somthingElseAlToGether = "Soleymān Khāţer";
@@ -70,9 +76,10 @@ public class LuceneTest extends ATest {
 
 	@Test
 	public void search() throws Exception {
-		File latestIndexDirectory = createIndex(indexContext, string);
+		File latestIndexDirectory = createIndex(indexContext, string, russian, german);
 		File serverIndexDirectory = new File(latestIndexDirectory.getAbsolutePath());
-		IndexSearcher indexSearcher = new IndexSearcher(FSDirectory.open(serverIndexDirectory));
+		Directory directory = FSDirectory.open(serverIndexDirectory);
+		IndexSearcher indexSearcher = new IndexSearcher(directory);
 		Searchable[] searchables = new Searchable[] { indexSearcher };
 		MultiSearcher searcher = new MultiSearcher(searchables);
 
@@ -97,14 +104,14 @@ public class LuceneTest extends ATest {
 
 			searchSingle.setSearchString(german + "~");
 			results = searchSingle.execute();
+			assertEquals(3, results.size());
+
+			searchSingle.setSearchString(russian + "~");
+			results = searchSingle.execute();
 			assertEquals(2, results.size());
 
 			// These don't work on Linux for some reason! Using the ATest.createIndex(...) method, but if you
 			// create the index in here like in the SearchTest then it works! Stranger than fiction.
-
-			// searchSingle.setSearchString(russian + "~");
-			// results = searchSingle.execute();
-			// assertEquals(2, results.size());
 
 			// searchSingle.setSearchString(somthingElseAlToGether);
 			// results = searchSingle.execute();
@@ -116,30 +123,32 @@ public class LuceneTest extends ATest {
 
 	@Test
 	@Ignore
-	public void characterEncodingTest() throws Exception {
-		IndexSearcher indexSearcher = null;
+	public void searchLargeIndex() throws Exception {
+		IClusterManager clusterManager = Mockito.mock(IClusterManager.class);
+		IndexContext<?> indexContext = new IndexContext<Object>();
 		try {
-			File serverIndexDirectory = createIndex(indexContext, string);
-			Directory directory = FSDirectory.open(serverIndexDirectory);
-			indexSearcher = new IndexSearcher(directory);
+			Open open = new Open();
+			Deencapsulation.setField(open, clusterManager);
+			indexContext.setName("wikiHistoryOne");
+			// /media/nas-z/1347785981667
+			indexContext.setIndexDirectoryPath("/media/nas/xfs-one/history/index");
+			open.executeInternal(indexContext);
 
-			SearchSingle searchSingle = new SearchSingle(indexSearcher);
+			SearchSingle searchSingle = new SearchSingle(indexContext.getMultiSearcher());
 			searchSingle.setFirstResult(0);
+			searchSingle.setFragment(true);
 			searchSingle.setMaxResults(10);
-			searchSingle.setFragment(Boolean.TRUE);
 			searchSingle.setSearchField(IConstants.CONTENTS);
 
-			searchSingle.setSearchString("Solţānābād");
+			searchSingle.setSearchString("hello world where are you java");
 			ArrayList<HashMap<String, String>> results = searchSingle.execute();
-			assertTrue("There must be at least one result : ", results.size() > 1);
-
-			searchSingle.setSearchString("Soleymān Khater");
-			results = searchSingle.execute();
-			assertTrue("There must be at least one result : ", results.size() > 1);
+			String xml = SerializationUtilities.serialize(results);
+			logger.info("Results : " + xml);
+			assertTrue(results.size() > 1);
 		} finally {
-			if (indexSearcher != null) {
-				indexSearcher.close();
-			}
+			Close close = new Close();
+			Deencapsulation.setField(close, clusterManager);
+			close.executeInternal(indexContext);
 		}
 	}
 

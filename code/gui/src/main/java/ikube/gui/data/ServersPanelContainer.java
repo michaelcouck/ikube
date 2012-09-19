@@ -90,7 +90,7 @@ public class ServersPanelContainer extends AContainer {
 			Snapshot snapshot = indexContext.getLastSnapshot();
 			String indexSize = Double.toString(((double) snapshot.getIndexSize()) / 1000000);
 			Long numDocs = snapshot.getNumDocs();
-			Date timestamp = snapshot.getLatestIndexTimestamp();
+			Date timestamp = new Date(snapshot.getTimestamp());
 			Long docsPerMinute = snapshot.getDocsPerMinute();
 			String actionName = getActionName(server, indexContext);
 			HorizontalLayout horizontalLayout = new HorizontalLayout();
@@ -100,7 +100,7 @@ public class ServersPanelContainer extends AContainer {
 
 			Item item = table.getItem(itemId);
 			if (item == null) {
-				LOGGER.info("Adding item : " + itemId);
+				// LOGGER.info("Adding item : " + itemId);
 				Resource resource = new ClassResource(this.getClass(), "/images/icons/red_square.gif", Application.getApplication());
 				Embedded embedded = new Embedded(null, resource);
 				horizontalLayout.addComponent(embedded);

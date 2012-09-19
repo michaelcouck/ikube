@@ -122,7 +122,7 @@ public class IndexContext<T> extends Indexable<T> implements Comparable<IndexCon
 	@Attribute(field = false, description = "The is dynamically set by the logic to validate that there is disk space left on the drive where the index is")
 	private long availableDiskSpace;
 
-	@OneToMany(cascade = { CascadeType.ALL }, mappedBy = "indexContext", fetch = FetchType.LAZY)
+	@OneToMany(cascade = { CascadeType.ALL }, mappedBy = "indexContext", fetch = FetchType.EAGER)
 	private List<Snapshot> snapshots = new ArrayList<Snapshot>();
 
 	public String getIndexName() {
@@ -272,6 +272,9 @@ public class IndexContext<T> extends Indexable<T> implements Comparable<IndexCon
 	}
 
 	public List<Snapshot> getSnapshots() {
+		if (snapshots == null) {
+			snapshots = new ArrayList<Snapshot>();
+		}
 		return snapshots;
 	}
 
@@ -280,7 +283,10 @@ public class IndexContext<T> extends Indexable<T> implements Comparable<IndexCon
 	}
 
 	public Snapshot getLastSnapshot() {
-		return snapshots.size() > 0 ? snapshots.get(snapshots.size() - 1) : null;
+		if (snapshots == null) {
+			return null;
+		}
+		return getSnapshots().size() > 0 ? getSnapshots().get(getSnapshots().size() - 1) : null;
 	}
 
 	public long getAvailableDiskSpace() {

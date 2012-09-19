@@ -159,7 +159,7 @@ public final class IndexManager {
 		try {
 			// We'll sleep a few seconds to give the other threads a chance
 			// to release themselves from work and more importantly the index files
-			ThreadUtilities.sleep(5000);
+			ThreadUtilities.sleep(3000);
 			directory = indexWriter.getDirectory();
 			indexWriter.prepareCommit();
 			indexWriter.commit();

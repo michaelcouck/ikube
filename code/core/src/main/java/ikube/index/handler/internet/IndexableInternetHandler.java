@@ -1,6 +1,7 @@
 package ikube.index.handler.internet;
 
 import ikube.IConstants;
+import ikube.database.IDataBase;
 import ikube.index.IndexManager;
 import ikube.index.content.ByteOutputStream;
 import ikube.index.content.IContentProvider;
@@ -57,6 +58,7 @@ import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * This is the crawler for internet and intranets sites. There are several levels of caches to improve performance in this class. Firstly
@@ -133,8 +135,7 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 		 * threads in the runnable state then all the urls have been visited on this base url. There will also be no more urls added so we
 		 * can exit this thread.
 		 * 
-		 * @param handlerWorkers
-		 *        the threads to check for the runnable state
+		 * @param handlerWorkers the threads to check for the runnable state
 		 * @return true if there is at least one other thread that is in the runnable state
 		 */
 		protected boolean areRunning(final List<IndexableInternetHandlerWorker> handlerWorkers) {
@@ -146,6 +147,10 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 			return Boolean.FALSE;
 		}
 	}
+
+	/** Access to the database. */
+	@Autowired
+	private IDataBase dataBase;
 
 	/**
 	 * {@inheritDoc}
@@ -175,16 +180,11 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	/**
 	 * This method iterates over the batch of urls and indexes the content, also extracting other links from the pages.
 	 * 
-	 * @param indexContext
-	 *        the index context for this internet url
-	 * @param indexable
-	 *        the indexable, which is the url configuration
-	 * @param urlBatch
-	 *        the batch of urls to index
-	 * @param contentProvider
-	 *        the content provider for http pages
-	 * @param httpClient
-	 *        the client to use for accessing the pages over http
+	 * @param indexContext the index context for this internet url
+	 * @param indexable the indexable, which is the url configuration
+	 * @param urlBatch the batch of urls to index
+	 * @param contentProvider the content provider for http pages
+	 * @param httpClient the client to use for accessing the pages over http
 	 * @throws InterruptedException
 	 */
 	protected void doUrls(final IndexContext<?> indexContext, final IndexableInternet indexable, final List<Url> urlBatch,
@@ -221,12 +221,9 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	 * This method gets the next batch of urls from the stack that have not been visited yet in this iteration. The urls that are returned
 	 * will have had the indexed flag set to true and merged back into the stack.
 	 * 
-	 * @param indexableInternet
-	 *        the base indexable for the url
-	 * @param in
-	 *        the input stack of urls that have not been indexed
-	 * @param out
-	 *        the output stack of hashes of urls that have been indexed
+	 * @param indexableInternet the base indexable for the url
+	 * @param in the input stack of urls that have not been indexed
+	 * @param out the output stack of hashes of urls that have been indexed
 	 * @return the list of urls that have not been visited, this list could be empty if there are no urls that have not been visited
 	 */
 	protected synchronized List<Url> getUrlBatch(final IndexableInternet indexableInternet, Stack<Url> in, Set<Long> out) {
@@ -251,16 +248,11 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	/**
 	 * This method will do the actions that visit the url, parse the data and add it to the index.
 	 * 
-	 * @param indexContext
-	 *        the index context for this index
-	 * @param indexable
-	 *        the internet base url configuration object
-	 * @param url
-	 *        the url that will be indexed in this call
-	 * @param contentProvider
-	 *        the content provider for internet http pages
-	 * @param httpClient
-	 *        the client for accessing the pages
+	 * @param indexContext the index context for this index
+	 * @param indexable the internet base url configuration object
+	 * @param url the url that will be indexed in this call
+	 * @param contentProvider the content provider for internet http pages
+	 * @param httpClient the client for accessing the pages
 	 * @throws InterruptedException
 	 */
 	protected void handle(final IndexContext<?> indexContext, final IndexableInternet indexable, final Url url,
@@ -303,10 +295,8 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	/**
 	 * Gets the raw data from the url.
 	 * 
-	 * @param indexable
-	 *        the indexable to set the transient data in
-	 * @param url
-	 *        the url to get the data from
+	 * @param indexable the indexable to set the transient data in
+	 * @param url the url to get the data from
 	 * @return the raw data from the url
 	 */
 	protected ByteOutputStream getContentFromUrl(final IContentProvider<IndexableInternet> contentProvider, final HttpClient httpClient,
@@ -344,10 +334,8 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	/**
 	 * Parses the content from the input stream into a string. The content can be anything, rich text, xml, etc.
 	 * 
-	 * @param url
-	 *        the url where the data is
-	 * @param byteOutputStream
-	 *        the output stream of data from the url
+	 * @param url the url where the data is
+	 * @param byteOutputStream the output stream of data from the url
 	 * @return the parsed content
 	 */
 	protected String getParsedContent(final Url url, final ByteOutputStream byteOutputStream) {
@@ -385,12 +373,9 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	 * Adds the document to the index with all the defined fields. Typically the fields are the title, the field names that are defined in
 	 * the configuration and the content field name.
 	 * 
-	 * @param indexable
-	 *        the indexable or base host for this crawl
-	 * @param url
-	 *        the url being added to the index, i.e. just been visited and the data has been extracted
-	 * @param parsedContent
-	 *        the content that was extracted from the url
+	 * @param indexable the indexable or base host for this crawl
+	 * @param url the url being added to the index, i.e. just been visited and the data has been extracted
+	 * @param parsedContent the content that was extracted from the url
 	 */
 	protected void addDocument(final IndexContext<?> indexContext, final IndexableInternet indexable, final Url url,
 			final String parsedContent) {
@@ -434,10 +419,8 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	 * Extracts all the links from the content and sets them in the cluster wide cache. The cache is persistence backed so any overflow then
 	 * goes to a local object oriented database on each server.
 	 * 
-	 * @param indexableInternet
-	 *        the indexable that is being crawled
-	 * @param inputStream
-	 *        the input stream of the data from the base url, i.e. the html
+	 * @param indexableInternet the indexable that is being crawled
+	 * @param inputStream the input stream of the data from the base url, i.e. the html
 	 */
 	protected void extractLinksFromContent(final IndexableInternet indexableInternet, final InputStream inputStream, final Stack<Url> in,
 			final Set<Long> out) {
@@ -503,10 +486,8 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	/**
 	 * This method will add the first or base url to the database. Typically this method gets called before starting the crawl.
 	 * 
-	 * @param dataBase
-	 *        the database for the persistence
-	 * @param indexableInternet
-	 *        the base url object from the configuration for the site/intranet
+	 * @param dataBase the database for the persistence
+	 * @param indexableInternet the base url object from the configuration for the site/intranet
 	 */
 	protected void seedUrl(final IndexableInternet indexableInternet, Stack<Url> in, Set<Long> out) {
 		String urlString = indexableInternet.getUrl();

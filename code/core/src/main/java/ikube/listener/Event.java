@@ -20,7 +20,9 @@ public class Event implements Serializable {
 	public static final String SERVER_RELEASE = "serverRelease";
 
 	public static final String STARTUP = "startup";
+	public static final String STARTUP_ALL = "startup-all";
 	public static final String TERMINATE = "terminate";
+	public static final String TERMINATE_ALL = "terminate-all";
 
 	private String type;
 	private long timestamp;

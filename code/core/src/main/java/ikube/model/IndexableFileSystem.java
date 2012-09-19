@@ -4,6 +4,10 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  * @author Michael Couck
@@ -16,33 +20,57 @@ import javax.persistence.InheritanceType;
 public class IndexableFileSystem extends Indexable<IndexableFileSystem> {
 
 	@Column
+	@NotNull
+	@Size(min = 1, max = 256 * 4)
+	@Attribute(field = false, description = "This is the path to the folder where the files to be indexed are")
 	private String path;
 	@Column
+	@Size(min = 0, max = 256 * 4)
+	@Attribute(field = false, description = "This is a pattern that will be applied to the file name and path to exclude resources that are not to be indexed")
 	private String excludedPattern;
 	@Column
+	@NotNull
+	@Size(min = 0, max = 256 * 4)
+	@Attribute(field = false, description = "This is a pattern that will be applied to the name and path to specifically include resources that are to be included in the index")
 	private String includedPattern;
 	@Column
+	@Min(value = 0)
+	@Max(value = 10000000)
+	@Attribute(field = false, description = "This is the maximum read length that will be read from a file. This is required where files are very large and need to be read into memory completely")
 	private long maxReadLength = 1000000;
 
 	@Column
-	@Attribute(description = "This is the name of the name field int he Lucene index")
+	@NotNull
+	@Size(min = 1, max = 256)
+	@Attribute(field = false, description = "This is the file name field in the Lucene index")
 	private String nameFieldName;
 	@Column
-	@Attribute(description = "This is the name of the path field in the Lucene index")
+	@NotNull
+	@Size(min = 1, max = 256)
+	@Attribute(field = false, description = "This is the name of the path field in the Lucene index")
 	private String pathFieldName;
 	@Column
-	@Attribute(description = "This is the name of the last modified field in the Lucene index")
+	@NotNull
+	@Size(min = 1, max = 256)
+	@Attribute(field = false, description = "This is the name of the last modified field in the Lucene index")
 	private String lastModifiedFieldName;
 	@Column
-	@Attribute(description = "This is the name of the content field in the Lucene index")
+	@NotNull
+	@Size(min = 1, max = 256)
+	@Attribute(field = false, description = "This is the name of the content field in the Lucene index")
 	private String contentFieldName;
 	@Column
-	@Attribute(description = "This is the name of the length field in the Lucene index")
+	@NotNull
+	@Size(min = 1, max = 256)
+	@Attribute(field = false, description = "This is the name of the length field in the Lucene index")
 	private String lengthFieldName;
 	@Column
-	@Attribute(description = "This is the name of the batch size for the indexable")
+	@Min(value = 1)
+	@Max(value = 100000)
+	@Attribute(description = "This is the name of the batch size for files, i.e. how many files each thread will batch, not read in one shot, typical would be 1000")
 	private int batchSize;
 	@Column
+	@Attribute(description = "Whether wo unpack the zip files found, this is deprecated and done automatically")
 	private boolean unpackZips;
 
 	public String getPath() {

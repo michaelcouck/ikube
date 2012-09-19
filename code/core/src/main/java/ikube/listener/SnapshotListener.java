@@ -78,39 +78,41 @@ public class SnapshotListener implements IListener {
 					LOGGER.error("Exception accessing the disk space : ", e);
 				}
 
-				int totalSearchesForIndex = 0;
-				List<Search> searches = null;
-				try {
-					searches = dataBase.find(Search.class, Search.SELECT_FROM_SEARCH_BY_INDEX_NAME, new String[] { "indexName" },
-							new Object[] { indexContext.getIndexName() }, 0, Integer.MAX_VALUE);
-					for (Search search : searches) {
-						totalSearchesForIndex += search.getCount();
-					}
-				} catch (Exception e) {
-					LOGGER.info("Error getting the search results : ", e);
-				}
-
 				Snapshot snapshot = new Snapshot();
 				snapshot.setIndexSize(getIndexSize(indexContext));
 				snapshot.setNumDocs(getNumDocs(indexContext));
 				snapshot.setTimestamp(System.currentTimeMillis());
 				snapshot.setLatestIndexTimestamp(getLatestIndexDirectoryDate(indexContext));
 				snapshot.setDocsPerMinute(getDocsPerMinute(indexContext, snapshot));
-				snapshot.setTotalSearches(totalSearchesForIndex);
+				snapshot.setTotalSearches(getTotalSearchesForIndex(indexContext));
 				// LOGGER.info("Setting searches per minute : " + getSearchesPerMinute(indexContext, snapshot));
 				snapshot.setSearchesPerMinute(getSearchesPerMinute(indexContext, snapshot));
 
 				dataBase.persist(snapshot);
-				// snapshot.setIndexContext(indexContext);
 				indexContext.getSnapshots().add(snapshot);
 				if (indexContext.getSnapshots().size() > IConstants.MAX_SNAPSHOTS) {
 					List<Snapshot> subListToRemove = indexContext.getSnapshots().subList(0,
 							(int) (((double) IConstants.MAX_SNAPSHOTS) * 0.25));
-					LOGGER.info("Removing : " + subListToRemove.size());
 					indexContext.getSnapshots().removeAll(subListToRemove);
 				}
 			}
 		}
+	}
+
+	@SuppressWarnings("rawtypes")
+	protected long getTotalSearchesForIndex(final IndexContext indexContext) {
+		int totalSearchesForIndex = 0;
+		List<Search> searches = null;
+		try {
+			searches = dataBase.find(Search.class, Search.SELECT_FROM_SEARCH_BY_INDEX_NAME, new String[] { "indexName" },
+					new Object[] { indexContext.getIndexName() }, 0, Integer.MAX_VALUE);
+			for (Search search : searches) {
+				totalSearchesForIndex += search.getCount();
+			}
+		} catch (Exception e) {
+			LOGGER.info("Error getting the search results : ", e);
+		}
+		return totalSearchesForIndex;
 	}
 
 	protected long getSearchesPerMinute(final IndexContext<?> indexContext, final Snapshot snapshot) {
@@ -121,7 +123,6 @@ public class SnapshotListener implements IListener {
 		Snapshot previous = snapshots.get(snapshots.size() - 1);
 		double interval = snapshot.getTimestamp() - previous.getTimestamp();
 		double ratio = interval / 60000;
-		// LOGGER.info("Ratio : " + ratio);
 		long searchesPerMinute = (long) ((snapshot.getTotalSearches() - previous.getTotalSearches()) / ratio);
 		return searchesPerMinute;
 	}
@@ -134,7 +135,6 @@ public class SnapshotListener implements IListener {
 		Snapshot previous = snapshots.get(snapshots.size() - 1);
 		double interval = snapshot.getTimestamp() - previous.getTimestamp();
 		double ratio = interval / 60000;
-		// LOGGER.info("Ratio : " + ratio);
 		long docsPerMinute = (long) ((snapshot.getNumDocs() - previous.getNumDocs()) / ratio);
 		if (docsPerMinute < 0) {
 			docsPerMinute = 0;

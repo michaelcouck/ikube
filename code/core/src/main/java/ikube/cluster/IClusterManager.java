@@ -1,11 +1,14 @@
 package ikube.cluster;
 
+import ikube.IConstants;
 import ikube.model.Action;
 import ikube.model.Search;
 import ikube.model.Server;
 
 import java.io.Serializable;
 import java.util.Map;
+
+import org.springframework.security.annotation.Secured;
 
 /**
  * This is the interface that will synchronize and coordinate the servers in the cluster. The implementors are critical to the functioning
@@ -83,14 +86,31 @@ public interface IClusterManager {
 	 * 
 	 * @param serializable the object to send to the cluster
 	 */
+	// @Secured({ IConstants.ROLE_ADMIN })
 	void sendMessage(final Serializable serializable);
 
+	/**
+	 * This method will get an object from the distributed cache by the key.
+	 * 
+	 * @param key the unique key of the object in the cache
+	 * @return the object ith the specified key or null if there is no such object with the key
+	 */
+	<T> T getObject(final Object key);
+
+	/**
+	 * This method will put an ibject in the cache with the specified key. Note that the keys should be globally unique for the cluster. If
+	 * the key already exists in the cache the object will be over written.
+	 * 
+	 * @param key the key to insert the object into the cache with
+	 * @param value the object to put in the cache. Note also that this object needs to be serializable and of course the entire graph needs
+	 *        to be serializable
+	 */
+	void putObject(final Object key, final Object value);
+
+	@Deprecated
 	Search getSearch(final String searchKey);
 
+	@Deprecated
 	void setSearch(final String searchKey, final Search search);
-	
-	<T> T getObject(final Object key);
-	
-	void putObject(final Object key, final Object value);
 
 }

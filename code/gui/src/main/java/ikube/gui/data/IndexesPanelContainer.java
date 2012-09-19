@@ -43,7 +43,6 @@ public class IndexesPanelContainer extends AContainer {
 	private transient IMonitorService monitorService;
 
 	public void setData(final Panel panel, final Object... parameters) {
-		// LOGGER.info("Init indexes panel : " + panel);
 		TreeTable treeTable = GuiTools.findComponent(panel, TreeTable.class);
 		populateTable(treeTable);
 	}
@@ -109,6 +108,9 @@ public class IndexesPanelContainer extends AContainer {
 				String childName = childIndexable.getName();
 				treeTable.addItem(new Object[] { childName, "", "", "", "", "", "", null }, childId);
 				treeTable.setParent(childId, parentId);
+				if (childIndexable.getId() == indexable.getId()) {
+					continue;
+				}
 				addIndexables(treeTable, childIndexable, childId);
 			}
 		}

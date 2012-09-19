@@ -1,7 +1,5 @@
 package ikube.index.handler;
 
-import ikube.cluster.IClusterManager;
-import ikube.database.IDataBase;
 import ikube.index.spatial.Coordinate;
 import ikube.index.spatial.enrich.IEnrichment;
 import ikube.index.spatial.geocode.IGeocoder;
@@ -28,17 +26,13 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IHandl
 	private int threads;
 	/** The class that this handler can handle. */
 	private Class<T> indexableClass;
-	/** Access to the database. */
-	@Autowired
-	protected IDataBase dataBase;
+
 	/** The geocoder to get the co-ordinates for the indexable. */
 	@Autowired
 	private IGeocoder geocoder;
 	/** The enricher that will add the spatial tiers to the document. */
 	@Autowired
 	private IEnrichment enrichment;
-	@Autowired
-	private IClusterManager clusterManager; 
 
 	public int getThreads() {
 		return threads;

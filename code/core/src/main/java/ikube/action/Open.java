@@ -2,6 +2,7 @@ package ikube.action;
 
 import ikube.index.IndexManager;
 import ikube.model.IndexContext;
+import ikube.service.SearcherService;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.Logging;
 
@@ -38,16 +39,15 @@ public class Open extends Action<IndexContext<?>, Boolean> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean executeInternal(final IndexContext<?> indexContext) {
-		// TODO Check why this always returns false, and fix the unit test
+	public boolean executeInternal(final IndexContext<?> indexContext) {
 		boolean succeeded = Boolean.FALSE;
 		ikube.model.Action action = null;
 		try {
 			action = start(indexContext.getIndexName(), "");
-			return openOnFile(indexContext);
+			succeeded = openOnFile(indexContext);
+			return succeeded;
 		} finally {
 			stop(action);
-			logger.info("Succeeded : " + succeeded);
 		}
 	}
 
@@ -72,7 +72,7 @@ public class Open extends Action<IndexContext<?>, Boolean> {
 				directory = FSDirectory.open(serverIndexDirectory);
 				boolean exists = IndexReader.indexExists(directory);
 				boolean locked = IndexWriter.isLocked(directory);
-				logger.info("Exists : " + exists + ", locked : " + locked);
+				logger.info("Exists : " + exists + ", locked : " + locked + ", server index direcory : " + serverIndexDirectory);
 				if (!exists || locked) {
 					// We don't open locked directories. Could be that one configuration is still indexing on this file system, but we still
 					// want to open the index on the other new indexes. Of course if the index doesn't exist in the directory for some odd
@@ -95,7 +95,7 @@ public class Open extends Action<IndexContext<?>, Boolean> {
 				}
 			}
 		}
-		return open(indexContext, searchers);
+		return !exceptionOpening & open(indexContext, searchers);
 	}
 
 	private boolean open(IndexContext<?> indexContext, List<Searchable> searchers) {

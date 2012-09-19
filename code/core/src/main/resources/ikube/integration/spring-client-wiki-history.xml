@@ -28,7 +28,7 @@
 		property:mergeFactor="${merge.factor}"
 		property:maxFieldLength="${max.field.length}"
 		property:maxReadLength="${max.read.length}"
-		property:throttle="0"
+		property:throttle="${wiki.history.throttle}"
 		property:indexDirectoryPath="/media/nas/xfs-one/history/index"
 		property:indexDirectoryPathBackup="/media/nas/xfs-one/history/index"
 		property:children-ref="wikiHistoryIndexablesOne" />
@@ -67,7 +67,7 @@
 		property:mergeFactor="${merge.factor}"
 		property:maxFieldLength="${max.field.length}"
 		property:maxReadLength="${max.read.length}"
-		property:throttle="0"
+		property:throttle="${wiki.history.throttle}"
 		property:indexDirectoryPath="/media/nas/xfs-two/history/index"
 		property:indexDirectoryPathBackup="/media/nas/xfs-two/history/index"
 		property:children-ref="wikiHistoryIndexablesTwo" />
@@ -106,7 +106,7 @@
 		property:mergeFactor="${merge.factor}"
 		property:maxFieldLength="${max.field.length}"
 		property:maxReadLength="${max.read.length}"
-		property:throttle="0"
+		property:throttle="${wiki.history.throttle}"
 		property:indexDirectoryPath="/media/nas/xfs-three/history/index"
 		property:indexDirectoryPathBackup="/media/nas/xfs-three/history/index"
 		property:children-ref="wikiHistoryIndexablesThree" />
@@ -145,7 +145,7 @@
 		property:mergeFactor="${merge.factor}"
 		property:maxFieldLength="${max.field.length}"
 		property:maxReadLength="${max.read.length}"
-		property:throttle="0"
+		property:throttle="${wiki.history.throttle}"
 		property:indexDirectoryPath="/media/nas/xfs-four/history/index"
 		property:indexDirectoryPathBackup="/media/nas/xfs-four/history/index"
 		property:children-ref="wikiHistoryIndexablesFour" />
@@ -184,7 +184,7 @@
 		property:mergeFactor="${merge.factor}"
 		property:maxFieldLength="${max.field.length}"
 		property:maxReadLength="${max.read.length}"
-		property:throttle="0"
+		property:throttle="${wiki.history.throttle}"
 		property:indexDirectoryPath="/media/nas/xfs-five/history/index"
 		property:indexDirectoryPathBackup="/media/nas/xfs-five/history/index"
 		property:children-ref="wikiHistoryIndexablesFive" />

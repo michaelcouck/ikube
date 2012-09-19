@@ -7,6 +7,7 @@ import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -65,30 +66,28 @@ public final class ObjectToolkit {
 					}
 					Object fieldValue = null;
 					boolean isCollection = Collection.class.isAssignableFrom(field.getType());
-					if (fieldValue == null) {
-						if (isCollection) {
-							if (collections) {
-								// Init the collection and add one member
-								ParameterizedType stringListType = (ParameterizedType) field.getGenericType();
-								Class<?> collectionKlass = (Class<?>) stringListType.getActualTypeArguments()[0];
-								Object collectionEntity = collectionKlass.newInstance();
-								populateFields(collectionKlass, collectionEntity, collections, depth + 1, maxDepth);
-								if (List.class.isAssignableFrom(field.getType())) {
-									fieldValue = new ArrayList();
-								} else if (Set.class.isAssignableFrom(field.getType())) {
-									fieldValue = new TreeSet();
-								} else {
-									field.getType().newInstance();
-								}
-								// fieldValue = Arrays.asList(collectionEntity);
-								((Collection) fieldValue).add(collectionEntity);
-							}
-						} else if (field.getType().isEnum()) {
-							// Enum type, just get any one
-							fieldValue = getEnum(field.getType());
+					if (isCollection && collections) {
+						// Init the collection and add one member
+						ParameterizedType stringListType = (ParameterizedType) field.getGenericType();
+						Class<?> collectionKlass = (Class<?>) stringListType.getActualTypeArguments()[0];
+						Object collectionEntity = collectionKlass.newInstance();
+						populateFields(collectionKlass, collectionEntity, collections, depth + 1, maxDepth);
+						if (List.class.isAssignableFrom(field.getType())) {
+							fieldValue = new ArrayList();
+						} else if (Set.class.isAssignableFrom(field.getType())) {
+							fieldValue = new TreeSet();
 						} else {
-							fieldValue = getObject(field.getType());
+							field.getType().newInstance();
 						}
+						// fieldValue = Arrays.asList(collectionEntity);
+						((Collection) fieldValue).add(collectionEntity);
+					} else if (field.getType().isEnum()) {
+						// Enum type, just get any one
+						fieldValue = getEnum(field.getType());
+					} else if (field.getType().isPrimitive()) {
+						fieldValue = getPrimitive(field.getType());
+					} else {
+						fieldValue = getObject(field.getType());
 					}
 					// If this is not a primitive or a collection and if maxDepth not reached -> populate all the fields
 					if (!isCollection && !field.getType().isPrimitive() && fieldValue != null && depth < maxDepth
@@ -112,6 +111,20 @@ public final class ObjectToolkit {
 			populateFields(klass.getSuperclass(), target, collections, depth, maxDepth);
 		}
 		return target;
+	}
+
+	private static final Object getPrimitive(final Class<?> klass) {
+		Random random = new Random();
+		if (int.class.getName().equals(klass.getSimpleName())) {
+			return Math.abs(random.nextInt());
+		} else if (long.class.getName().equals(klass.getSimpleName())) {
+			return Math.abs(random.nextLong());
+		} else if (boolean.class.getName().equals(klass.getSimpleName())) {
+			return random.nextBoolean();
+		} else if (double.class.getName().equals(klass.getSimpleName())) {
+			return Math.abs(random.nextDouble());
+		}
+		return null;
 	}
 
 	/**
@@ -172,6 +185,22 @@ public final class ObjectToolkit {
 			}
 		}
 		return null;
+	}
+
+	public static final Object getFieldValue(final Object target, final String fieldName) {
+		Field field = getField(target, fieldName);
+		return ReflectionUtils.getField(field, target);
+	}
+
+	public static final void setFieldValue(final Object target, final String fieldName, final Object value) {
+		Field field = getField(target, fieldName);
+		ReflectionUtils.setField(field, target, value);
+	}
+
+	public static final Field getField(final Object target, final String fieldName) {
+		Field field = ReflectionUtils.findField(target.getClass(), fieldName);
+		field.setAccessible(Boolean.TRUE);
+		return field;
 	}
 
 }

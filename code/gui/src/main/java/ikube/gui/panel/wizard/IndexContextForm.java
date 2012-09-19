@@ -1,8 +1,9 @@
 package ikube.gui.panel.wizard;
 
 import ikube.cluster.IClusterManager;
-import ikube.model.IndexContext;
+import ikube.model.Indexable;
 import ikube.service.IMonitorService;
+import ikube.toolkit.ObjectToolkit;
 
 import java.util.Iterator;
 import java.util.Set;
@@ -31,7 +32,7 @@ import com.vaadin.ui.Window;
 
 @Configurable
 @Scope(value = "prototype")
-@org.springframework.stereotype.Component(value = "IndexContextForm")
+@org.springframework.stereotype.Component(value = "IndexableForm")
 public class IndexContextForm extends AForm {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(IndexContextForm.class);
@@ -41,11 +42,12 @@ public class IndexContextForm extends AForm {
 	@Autowired
 	private IClusterManager clusterManager;
 
-	public Form initialize(final Window window) {
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public Form initialize(final Window window, final Indexable indexable) {
 		setSizeFull();
 
-		String[] fieldsNames = monitorService.getFieldNames(IndexContext.class);
-		String[] fieldDescriptions = monitorService.getFieldDescriptions(IndexContext.class);
+		String[] fieldsNames = monitorService.getFieldNames(indexable.getClass());
+		String[] fieldDescriptions = monitorService.getFieldDescriptions(indexable.getClass());
 
 		setLayout(new GridLayout(3, fieldsNames.length + 2));
 		getLayout().setSizeFull();
@@ -61,6 +63,8 @@ public class IndexContextForm extends AForm {
 			TextField textField = new TextField();
 			textField.setDescription(fieldName);
 			textField.setWidth(90, Sizeable.UNITS_PERCENTAGE);
+			Object fieldValue = ObjectToolkit.getFieldValue(indexable, fieldName);
+			textField.setValue(fieldValue);
 			getLayout().addComponent(textField);
 
 			Label validationLabel = new Label(fieldDescription, Label.CONTENT_XHTML);
@@ -69,25 +73,28 @@ public class IndexContextForm extends AForm {
 			validationLabel.setData(fieldDescription);
 			getLayout().addComponent(validationLabel);
 		}
-		addButton(window);
+		addButton(window, (Class<Indexable>) indexable.getClass());
 		return this;
 	}
 
-	private void addButton(final Window window) {
+	@SuppressWarnings({ "rawtypes" })
+	private void addButton(final Window window, final Class<Indexable> klass) {
 		Button.ClickListener clickListener = new Button.ClickListener() {
 			@Override
-			@SuppressWarnings("rawtypes")
 			public void buttonClick(ClickEvent event) {
 				// Perform adding the indexable
-				IndexContext indexContext = new IndexContext();
-				populateIndexable(IndexContextForm.this, indexContext);
-				// LOGGER.info("Index context : " + ToStringBuilder.reflectionToString(indexContext, ToStringStyle.SHORT_PREFIX_STYLE));
+				Indexable indexable;
+				try {
+					indexable = klass.newInstance();
+				} catch (Exception e) {
+					LOGGER.error("Exception initializing the indexable : ", e);
+					return;
+				}
+				populateIndexable(IndexContextForm.this, indexable);
 				// Validate the form before sending
-				Set<ConstraintViolation<IndexContext>> constraintViolations = validateIndexContext(indexContext);
-				// LOGGER.info("Constraint violations : " + constraintViolations.size());
-				// LOGGER.info("Constraint violations : " + constraintViolations);
+				Set<ConstraintViolation<Indexable>> constraintViolations = validateIndexContext(indexable);
 				if (constraintViolations == null || constraintViolations.size() == 0) {
-					clusterManager.sendMessage(indexContext);
+					clusterManager.sendMessage(indexable);
 					ikube.gui.Window.INSTANCE.removeWindow(window);
 					return;
 				}
@@ -99,7 +106,7 @@ public class IndexContextForm extends AForm {
 	}
 
 	@SuppressWarnings("rawtypes")
-	private Set<ConstraintViolation<IndexContext>> validateIndexContext(final IndexContext indexContext) {
+	private Set<ConstraintViolation<Indexable>> validateIndexContext(final Indexable indexContext) {
 		// Reset the labels to the original text less the validation message
 		Iterator<Component> iterator = getLayout().getComponentIterator();
 		while (iterator.hasNext()) {
@@ -115,8 +122,8 @@ public class IndexContextForm extends AForm {
 		}
 		ValidatorFactory validationFactory = Validation.buildDefaultValidatorFactory();
 		Validator validator = validationFactory.getValidator();
-		Set<ConstraintViolation<IndexContext>> constraintViolations = validator.validate(indexContext);
-		for (ConstraintViolation<IndexContext> constraintViolation : constraintViolations) {
+		Set<ConstraintViolation<Indexable>> constraintViolations = validator.validate(indexContext);
+		for (ConstraintViolation<Indexable> constraintViolation : constraintViolations) {
 			iterator = getLayout().getComponentIterator();
 			while (iterator.hasNext()) {
 				Component component = iterator.next();
@@ -127,7 +134,6 @@ public class IndexContextForm extends AForm {
 					}
 					Path path = constraintViolation.getPropertyPath();
 					if (label.getDescription().equals(path.toString())) {
-						// LOGGER.info("Property path : " + constraintViolation.getPropertyPath() + ", label : " + label.getDescription());
 						StringBuilder content = new StringBuilder();
 						content.append(label.getData());
 						content.append("<br>");

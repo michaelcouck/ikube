@@ -6,6 +6,8 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.Transient;
 import javax.sql.DataSource;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 
 /**
  * @author Michael Couck
@@ -26,13 +28,19 @@ public class IndexableTable extends Indexable<IndexableTable> {
 	private transient DataSource dataSource;
 
 	@Column
+	@Attribute(field = false, description = "This is a sql predicate, like 'where id > 1000'")
 	private String predicate;
 	@Column
+	@Attribute(field = false, description = "This flag for whether the table is primary, i.e. not a joined table or a child table in the configuration")
 	private boolean primaryTable;
 	@Column
+	@Min(value = 0)
+	@Max(value = Integer.MAX_VALUE)
+	@Attribute(field = false, description = "This is the maximum exceptions that will be allowed before the indexing of this table terminates, default is 10")
 	private int maxExceptions = 10;
 	@Column
-	private boolean allColumns = Boolean.FALSE;
+	@Attribute(field = false, description = "This flag is whether to index all the columns in the database, default is true")
+	private boolean allColumns = Boolean.TRUE;
 
 	public boolean isAllColumns() {
 		return allColumns;

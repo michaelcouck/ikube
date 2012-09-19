@@ -342,14 +342,6 @@
 		property:threads="${filesystem.handler.threads}"
 		property:indexableClass="ikube.model.IndexableFileSystemWiki" />
 
-	<!-- Validator bean -->
-	<bean 
-		id="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean" 
-		name="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"
-		class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean">
-		<property name="providerClass" value="org.apache.bval.jsr303.ApacheValidationProvider" />
-	</bean>
-	
 	<!-- <bean
 		id="ikube.cluster.udp.UdpBroadcaster"
 		class="ikube.cluster.udp.UdpBroadcaster"

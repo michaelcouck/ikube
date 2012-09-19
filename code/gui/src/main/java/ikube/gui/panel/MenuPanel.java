@@ -3,9 +3,16 @@ package ikube.gui.panel;
 import ikube.cluster.IClusterManager;
 import ikube.database.IDataBase;
 import ikube.gui.IConstant;
-import ikube.gui.panel.wizard.EmailForm;
 import ikube.gui.panel.wizard.IndexContextForm;
+import ikube.listener.ListenerManager;
+import ikube.model.IndexContext;
+import ikube.model.Indexable;
+import ikube.model.IndexableEmail;
+import ikube.model.IndexableFileSystem;
+import ikube.model.IndexableInternet;
+import ikube.model.IndexableTable;
 import ikube.service.IMonitorService;
+import ikube.toolkit.ObjectToolkit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.vaadin.dialogs.ConfirmDialog;
 
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.AbsoluteLayout;
@@ -31,7 +39,6 @@ import com.vaadin.ui.themes.Reindeer;
 @Component(value = "MenuPanel")
 public class MenuPanel extends Panel {
 
-	@SuppressWarnings("unused")
 	private static final Logger LOGGER = LoggerFactory.getLogger(MenuPanel.class);
 
 	private static final String IKUBE_CAPTION = "<b>Ikube</b>";
@@ -86,17 +93,15 @@ public class MenuPanel extends Panel {
 		@SuppressWarnings("unused")
 		final MenuBar.MenuItem deleteIndex = index.addItem("Delete index", menuCommand);
 
-		addEmailForm(newIndex);
-
-		newIndex.addItem("Internet", menuCommand);
-		newIndex.addItem("File system", menuCommand);
-		newIndex.addItem("Database", menuCommand);
-
-		addIndexContextForm(newIndex);
+		addNewIndexableForm(newIndex, "Email", new IndexableEmail());
+		addNewIndexableForm(newIndex, "Internet site", new IndexableInternet());
+		addNewIndexableForm(newIndex, "File system", new IndexableFileSystem());
+		addNewIndexableForm(newIndex, "Database table", new IndexableTable());
+		addNewIndexableForm(newIndex, "Collection", new IndexContext<Object>());
 
 		final MenuBar.MenuItem action = menubar.addItem("Action", null);
-		action.addItem("Terminate indexing", menuCommand);
-		action.addItem("Terminate all indexing", menuCommand).setEnabled(true);
+		addRestartIndexingItem(action);
+		addTerminateIndexingItem(action);
 
 		final MenuBar.MenuItem help = menubar.addItem("Help", null);
 		help.addItem("Welcome", menuCommand);
@@ -114,29 +119,62 @@ public class MenuPanel extends Panel {
 		absoluteLayout.addComponent(menubar, "left: 0px; top: 0px;");
 	}
 
-	private void addIndexContextForm(final MenuBar.MenuItem menuItem) {
-		menuItem.addItem("Index", new Command() {
+	private void addTerminateIndexingItem(final MenuBar.MenuItem menuItem) {
+		class DialogListener implements ConfirmDialog.Listener {
+			@Override
+			public void onClose(ConfirmDialog confirmDialog) {
+				if (confirmDialog.isConfirmed()) {
+					long time = System.currentTimeMillis();
+					ikube.listener.Event terminateEvent = ListenerManager.getEvent(ikube.listener.Event.TERMINATE_ALL, time, null,
+							Boolean.FALSE);
+					LOGGER.info("Sending terminate event : " + terminateEvent);
+					clusterManager.sendMessage(terminateEvent);
+				}
+			}
+		}
+		menuItem.addItem("Terminate indexing", new Command() {
 			@Override
 			public void menuSelected(MenuItem selectedItem) {
-				final Window window = new Window();
-				window.setWidth(80, Sizeable.UNITS_PERCENTAGE);
-				window.setHeight(80, Sizeable.UNITS_PERCENTAGE);
-				Form indexContextForm = new IndexContextForm().initialize(window);
-				window.addComponent(indexContextForm);
-				ikube.gui.Window.INSTANCE.addWindow(window);
+				String caption = "Terminate indexing";
+				String message = "Are you sure you want to terminate indexing for this server";
+				ConfirmDialog.show(ikube.gui.Window.INSTANCE, caption, message, "Yes", "No", new DialogListener());
 			}
 		});
 	}
 
-	private void addEmailForm(final MenuBar.MenuItem menuItem) {
-		menuItem.addItem("E-mail", new Command() {
+	private void addRestartIndexingItem(final MenuBar.MenuItem menuItem) {
+		class DialogListener implements ConfirmDialog.Listener {
+			@Override
+			public void onClose(ConfirmDialog confirmDialog) {
+				if (confirmDialog.isConfirmed()) {
+					long time = System.currentTimeMillis();
+					ikube.listener.Event terminateEvent = ListenerManager.getEvent(ikube.listener.Event.STARTUP_ALL, time, null,
+							Boolean.FALSE);
+					LOGGER.info("Sending startup event : " + terminateEvent);
+					clusterManager.sendMessage(terminateEvent);
+				}
+			}
+		}
+		menuItem.addItem("Restart indexing", new Command() {
+			@Override
+			public void menuSelected(MenuItem selectedItem) {
+				String caption = "Restart indexing";
+				String message = "Are you sure you want to restart indexing for this server";
+				ConfirmDialog.show(ikube.gui.Window.INSTANCE, caption, message, "Yes", "No", new DialogListener());
+			}
+		});
+	}
+
+	private void addNewIndexableForm(final MenuBar.MenuItem menuItem, final String indexableName, final Indexable<?> indexable) {
+		menuItem.addItem(indexableName, new Command() {
 			@Override
 			public void menuSelected(MenuItem selectedItem) {
 				final Window window = new Window();
 				window.setWidth(80, Sizeable.UNITS_PERCENTAGE);
 				window.setHeight(80, Sizeable.UNITS_PERCENTAGE);
-				Form emailForm = new EmailForm(window);
-				window.addComponent(emailForm);
+				ObjectToolkit.populateFields(indexable.getClass(), indexable, false, 0, 3);
+				Form indexContextForm = new IndexContextForm().initialize(window, indexable);
+				window.addComponent(indexContextForm);
 				ikube.gui.Window.INSTANCE.addWindow(window);
 			}
 		});

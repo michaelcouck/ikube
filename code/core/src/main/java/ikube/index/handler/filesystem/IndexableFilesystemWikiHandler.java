@@ -34,8 +34,11 @@ public class IndexableFilesystemWikiHandler extends IndexableHandler<IndexableFi
 	/** This is the start and end tags for the xml data, one per page essentially. */
 	private static final String PAGE_START = "<revision>";
 	private static final String PAGE_FINISH = "</revision>";
-	
-	private ThreadLocal<Integer> counter = new ThreadLocal<Integer>();
+	private static final String FILE_TYPE = "bz2";
+
+	private class Counter {
+		volatile int counter;
+	}
 
 	/**
 	 * {@inheritDoc}
@@ -45,16 +48,16 @@ public class IndexableFilesystemWikiHandler extends IndexableHandler<IndexableFi
 		List<Future<?>> futures = new ArrayList<Future<?>>();
 		String filePath = indexable.getPath();
 		File directory = FileUtilities.getFile(filePath, Boolean.TRUE);
-		final File[] bZip2Files = FileUtilities.findFiles(directory, new String[] { "bz2" });
+		final File[] bZip2Files = FileUtilities.findFiles(directory, new String[] { FILE_TYPE });
 		final Iterator<File> iterator = new ArrayList<File>(Arrays.asList(bZip2Files)).iterator();
+		final Counter counter = new Counter();
 		for (int i = 0; i < getThreads(); i++) {
 			Runnable runnable = new Runnable() {
 				public void run() {
-					counter.set(new Integer(0));
 					while (iterator.hasNext()) {
 						File bZip2File = iterator.next();
 						logger.info("Indexing compressed file : " + bZip2File);
-						handleFile(indexContext, indexable, bZip2File);
+						handleFile(indexContext, indexable, bZip2File, counter);
 					}
 				}
 			};
@@ -68,53 +71,28 @@ public class IndexableFilesystemWikiHandler extends IndexableHandler<IndexableFi
 	 * This method will take a Bzip2 file, read it, decompress it gradually. Parse the contents, extracting the revision data for the Wiki
 	 * which is in <revision> tags. Each revision will then be added to the index as a unique document.
 	 * 
-	 * @param indexContext
-	 *            the index context for the index
-	 * @param indexableFileSystem
-	 *            the file system object, i.e. the path to the bzip file
-	 * @param file
-	 *            the Bzip2 file with the Wiki data in it
+	 * @param indexContext the index context for the index
+	 * @param indexableFileSystem the file system object, i.e. the path to the bzip file
+	 * @param file the Bzip2 file with the Wiki data in it
 	 */
 	@SuppressWarnings("resource")
-	protected void handleFile(final IndexContext<?> indexContext, final IndexableFileSystemWiki indexableFileSystem, final File file) {
+	protected void handleFile(final IndexContext<?> indexContext, final IndexableFileSystemWiki indexableFileSystem, final File file,
+			Counter counter) {
 		// Get the wiki history file
+		long start = System.currentTimeMillis();
 		FileInputStream fileInputStream = null;
 		BZip2CompressorInputStream bZip2CompressorInputStream = null;
-		int localCounter = 0;
 		try {
-			long start = System.currentTimeMillis();
 			int read = -1;
 			fileInputStream = new FileInputStream(file);
 			bZip2CompressorInputStream = new BZip2CompressorInputStream(fileInputStream);
 			byte[] bytes = new byte[1024 * 1024 * 10];
 			StringBuilder stringBuilder = new StringBuilder();
 			// Read a chunk
-			while ((read = bZip2CompressorInputStream.read(bytes)) > -1 && counter.get() < indexableFileSystem.getMaxRevisions()) {
+			while ((read = bZip2CompressorInputStream.read(bytes)) > -1 && counter.counter < indexableFileSystem.getMaxRevisions()) {
 				String string = new String(bytes, 0, read, Charset.forName(IConstants.ENCODING));
 				stringBuilder.append(string);
-				// Parse the <revision> tags
-				while (true) {
-					int startOffset = stringBuilder.indexOf(PAGE_START);
-					int endOffset = stringBuilder.indexOf(PAGE_FINISH);
-					if (startOffset == -1 || endOffset == -1) {
-						break;
-					}
-					if (endOffset <= startOffset) {
-						startOffset = endOffset;
-					}
-					endOffset += PAGE_FINISH.length();
-					String content = stringBuilder.substring(startOffset, endOffset);
-					stringBuilder.delete(startOffset, endOffset);
-					// LOGGER.info("String buffer size : " + stringBuilder.length());
-					// Add the documents to the index
-					handleRevision(indexContext, indexableFileSystem, content);
-					localCounter++;
-					if (localCounter % 10000 == 0) {
-						long duration = System.currentTimeMillis() - start;
-						double perSecond = localCounter / (duration / 1000);
-						logger.info("Revisions done : " + localCounter + ", " + file.getName() + ", " + perSecond);
-					}
-				}
+				handleChunk(indexContext, indexableFileSystem, file, start, stringBuilder, counter);
 				if (Thread.currentThread().isInterrupted()) {
 					throw new InterruptedException();
 				}
@@ -127,20 +105,44 @@ public class IndexableFilesystemWikiHandler extends IndexableHandler<IndexableFi
 		} finally {
 			FileUtilities.close(fileInputStream);
 			FileUtilities.close(bZip2CompressorInputStream);
-			localCounter += counter.get();
-			counter.set(new Integer(localCounter));
+		}
+	}
+
+	@SuppressWarnings("rawtypes")
+	private void handleChunk(final IndexContext indexContext, final IndexableFileSystemWiki indexableFileSystem, final File file,
+			final long start, final StringBuilder stringBuilder, Counter counter) throws Exception {
+		// Parse the <revision> tags
+		while (true) {
+			ThreadUtilities.sleep(indexContext.getThrottle());
+			int startOffset = stringBuilder.indexOf(PAGE_START);
+			int endOffset = stringBuilder.indexOf(PAGE_FINISH);
+			if (startOffset == -1 || endOffset == -1) {
+				break;
+			}
+			if (endOffset <= startOffset) {
+				startOffset = endOffset;
+			}
+			endOffset += PAGE_FINISH.length();
+			String content = stringBuilder.substring(startOffset, endOffset);
+			stringBuilder.delete(startOffset, endOffset);
+			// LOGGER.info("String buffer size : " + stringBuilder.length());
+			// Add the documents to the index
+			handleRevision(indexContext, indexableFileSystem, content);
+			counter.counter++;
+			if (counter.counter % 10000 == 0) {
+				long duration = System.currentTimeMillis() - start;
+				double perSecond = counter.counter / (duration / 1000);
+				logger.info("Revisions done : " + counter.counter + ", " + file.getName() + ", " + perSecond);
+			}
 		}
 	}
 
 	/**
 	 * This method will read a log file line by line and add a document to the Lucene index for each line.
 	 * 
-	 * @param indexContext
-	 *            the context for this log file set
-	 * @param indexableFileSystem
-	 *            the log file, i.e. the directory where the log files are on the network
-	 * @param logFile
-	 *            and the individual log file that we will index
+	 * @param indexContext the context for this log file set
+	 * @param indexableFileSystem the log file, i.e. the directory where the log files are on the network
+	 * @param logFile and the individual log file that we will index
 	 * @throws Exception
 	 */
 	private void handleRevision(final IndexContext<?> indexContext, final IndexableFileSystem indexableFileSystem, final String content)

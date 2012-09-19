@@ -18,8 +18,8 @@ public interface IConstant {
 
 	String INDEXING = "Indexing";
 
-	String SEARCH_BUTTON = "Search button";
-	String SEARCH_FIELD = "Search field";
+	String SEARCH_BUTTON = "Go!";
+	String SEARCH_FIELD = "Search fields : ";
 
 	String SEARCH_PANEL_TREE_TABLE = "Search panel tree table";
 	String INDEXES_OPTION_GROUP = "Search panel option group";
@@ -34,5 +34,10 @@ public interface IConstant {
 	String DASH_LEFT_PANEL = "The left dashboard panel";
 
 	String SERVERS_ACCORDION = "The servers area on the gui";
+	
+	String TIME_TAKEN = "Time taken : ";
+	String TOTAL_RESULTS = "Total results : ";
+	
+	String PAGING_PANEL = "The paging panel";
 
 }

@@ -3,13 +3,17 @@ package ikube.model;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.regex.Pattern;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.Transient;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
 /**
  * @author Michael Couck
@@ -26,34 +30,53 @@ public class IndexableInternet extends Indexable<IndexableInternet> {
 	@Transient
 	private transient InputStream currentInputStream;
 	@Transient
-	private transient Pattern pattern;
+	private transient java.util.regex.Pattern pattern;
 	@Transient
 	private transient URI uri;
 	@Transient
 	private transient String baseUrl;
 
 	@Column
+	@NotNull
+	@Pattern(regexp = "^(https?|http?)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]", message = "The url must be valid")
+	@Attribute(field = false, description = "This is the primary url that will be crawled")
 	private String url;
 	@Column
+	@Pattern(regexp = "^(https?|http?)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]", message = "The url must be valid")
+	@Attribute(field = false, description = "This is the url to the login page if it is a protected site")
 	private String loginUrl;
 	@Column
+	@Size(min = 1, max = 256)
+	@Attribute(field = false, description = "This is the userid to login to the site")
 	private String userid;
 	@Column
+	@Size(min = 1, max = 256)
+	@Attribute(field = false, description = "This is the password to login to the site")
 	private String password;
 	@Column
+	@Min(value = 1)
+	@Max(value = 100000)
+	@Attribute(field = false, description = "This is the size that the batches of urls will be per thread")
 	private int internetBatchSize;
 	@Column
+	@Attribute(field = false, description = "This is is a pattern that will be appled to exclude any urls, i.e. urls that should not be crawled, like confidential pages etc.")
 	private String excludedPattern;
 	@Column
+	@Min(value = 1)
+	@Max(value = 60000)
+	@Attribute(field = false, description = "This is the length of time that the crawler will wait for a particular page to be delivered")
 	private int timeout;
 	@Column
-	@Attribute(description = "This is the name of the title field in the Lucene index")
+	@Size(min = 1, max = 256)
+	@Attribute(field = false, description = "This is the name of the title field in the Lucene index")
 	private String titleFieldName;
 	@Column
-	@Attribute(description = "This is the name of the id field in the Lucene index")
+	@Size(min = 1, max = 256)
+	@Attribute(field = false, description = "This is the name of the id field in the Lucene index")
 	private String idFieldName;
 	@Column
-	@Attribute(description = "This is the name of the content field int he Lucene index")
+	@Size(min = 1, max = 256)
+	@Attribute(field = false, description = "This is the name of the content field int he Lucene index")
 	private String contentFieldName;
 
 	public URI getUri() {
@@ -171,7 +194,7 @@ public class IndexableInternet extends Indexable<IndexableInternet> {
 	public boolean isExcluded(final String string) {
 		if (pattern == null) {
 			if (getExcludedPattern() != null) {
-				pattern = Pattern.compile(getExcludedPattern());
+				pattern = java.util.regex.Pattern.compile(getExcludedPattern());
 			} else {
 				return Boolean.FALSE;
 			}

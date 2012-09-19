@@ -1,7 +1,6 @@
 package ikube.service;
 
 import ikube.IConstants;
-import ikube.cluster.IClusterManager;
 import ikube.database.IDataBase;
 import ikube.index.spatial.Coordinate;
 import ikube.model.IndexContext;
@@ -15,6 +14,7 @@ import ikube.search.SearchSpatialAll;
 import ikube.search.spelling.SpellingChecker;
 import ikube.toolkit.Logging;
 
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,7 +30,11 @@ import javax.jws.soap.SOAPBinding;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.Searchable;
 import org.apache.lucene.search.Searcher;
+import org.apache.lucene.store.FSDirectory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -47,13 +51,11 @@ public class SearcherService implements ISearcherService {
 	private static final Logger LOGGER = Logger.getLogger(SearcherService.class);
 
 	@Autowired
-	private SpellingChecker spellingChecker;
-	@Autowired
-	private IClusterManager clusterManager;
-	@Autowired
 	private IDataBase dataBase;
 	@Autowired
 	private IMonitorService monitorService;
+	@Autowired
+	private SpellingChecker spellingChecker;
 
 	/**
 	 * {@inheritDoc}
@@ -66,12 +68,6 @@ public class SearcherService implements ISearcherService {
 			@WebParam(name = "fragment") final boolean fragment, @WebParam(name = "firstResult") final int firstResult,
 			@WebParam(name = "maxResults") final int maxResults) {
 		try {
-			String searchKey = getSearchKey(indexName, searchString, searchField, Boolean.toString(fragment),
-					Integer.toString(firstResult), Integer.toString(maxResults));
-			Search search = getSearch(searchKey);
-			if (search != null) {
-				return search.getSearchResults();
-			}
 			SearchSingle searchSingle = getSearch(SearchSingle.class, indexName);
 			if (searchSingle != null) {
 				searchSingle.setFirstResult(firstResult);
@@ -80,12 +76,7 @@ public class SearcherService implements ISearcherService {
 				searchSingle.setSearchField(searchField);
 				searchSingle.setSearchString(searchString);
 				ArrayList<HashMap<String, String>> results = searchSingle.execute();
-				double highScore = 0;
-				if (results.size() > 1) {
-					highScore = Double.parseDouble(results.get(0).get(IConstants.SCORE));
-				}
-				search = addSearchStatistics(indexName, new String[] { searchString }, results.size(), results, highScore);
-				clusterManager.setSearch(searchKey, search);
+				addSearchStatistics(indexName, new String[] { searchString }, results.size(), results);
 				return results;
 			}
 		} catch (Exception e) {
@@ -107,12 +98,6 @@ public class SearcherService implements ISearcherService {
 			@WebParam(name = "fragment") final boolean fragment, @WebParam(name = "firstResult") final int firstResult,
 			@WebParam(name = "maxResults") final int maxResults) {
 		try {
-			String searchKey = getSearchKey(indexName, Arrays.deepToString(searchStrings), Arrays.deepToString(searchFields),
-					Boolean.toString(fragment), Integer.toString(firstResult), Integer.toString(maxResults));
-			Search search = getSearch(searchKey);
-			if (search != null) {
-				return search.getSearchResults();
-			}
 			SearchMulti searchMulti = getSearch(SearchMulti.class, indexName);
 			if (searchMulti != null) {
 				searchMulti.setFirstResult(firstResult);
@@ -121,12 +106,7 @@ public class SearcherService implements ISearcherService {
 				searchMulti.setSearchField(searchFields);
 				searchMulti.setSearchString(searchStrings);
 				ArrayList<HashMap<String, String>> results = searchMulti.execute();
-				double highScore = 0;
-				if (results.size() > 1) {
-					highScore = Double.parseDouble(results.get(0).get(IConstants.SCORE));
-				}
-				search = addSearchStatistics(indexName, searchStrings, results.size(), results, highScore);
-				clusterManager.setSearch(searchKey, search);
+				addSearchStatistics(indexName, searchStrings, results.size(), results);
 				return results;
 			}
 		} catch (Exception e) {
@@ -148,13 +128,6 @@ public class SearcherService implements ISearcherService {
 			@WebParam(name = "sortFields") final String[] sortFields, @WebParam(name = "fragment") final boolean fragment,
 			@WebParam(name = "firstResult") final int firstResult, @WebParam(name = "maxResults") final int maxResults) {
 		try {
-			String searchKey = getSearchKey(indexName, Arrays.deepToString(searchStrings), Arrays.deepToString(searchFields),
-					Arrays.deepToString(sortFields), Boolean.toString(fragment), Integer.toString(firstResult),
-					Integer.toString(maxResults));
-			Search search = getSearch(searchKey);
-			if (search != null) {
-				return search.getSearchResults();
-			}
 			SearchMultiSorted searchMultiSorted = getSearch(SearchMultiSorted.class, indexName);
 			if (searchMultiSorted != null) {
 				searchMultiSorted.setFirstResult(firstResult);
@@ -164,12 +137,7 @@ public class SearcherService implements ISearcherService {
 				searchMultiSorted.setSearchString(searchStrings);
 				searchMultiSorted.setSortField(sortFields);
 				ArrayList<HashMap<String, String>> results = searchMultiSorted.execute();
-				double highScore = 0;
-				if (results.size() > 1) {
-					highScore = Double.parseDouble(results.get(0).get(IConstants.SCORE));
-				}
-				search = addSearchStatistics(indexName, searchStrings, results.size(), results, highScore);
-				clusterManager.setSearch(searchKey, search);
+				addSearchStatistics(indexName, searchStrings, results.size(), results);
 				return results;
 			}
 		} catch (Exception e) {
@@ -190,12 +158,6 @@ public class SearcherService implements ISearcherService {
 			@WebParam(name = "searchStrings") final String[] searchStrings, @WebParam(name = "fragment") final boolean fragment,
 			@WebParam(name = "firstResult") final int firstResult, @WebParam(name = "maxResults") final int maxResults) {
 		try {
-			String searchKey = getSearchKey(indexName, Arrays.deepToString(searchStrings), Boolean.toString(fragment),
-					Integer.toString(firstResult), Integer.toString(maxResults));
-			Search search = getSearch(searchKey);
-			if (search != null) {
-				return search.getSearchResults();
-			}
 			SearchMultiAll searchMultiAll = getSearch(SearchMultiAll.class, indexName);
 			if (searchMultiAll != null) {
 				searchMultiAll.setFirstResult(firstResult);
@@ -203,12 +165,7 @@ public class SearcherService implements ISearcherService {
 				searchMultiAll.setMaxResults(maxResults);
 				searchMultiAll.setSearchString(searchStrings);
 				ArrayList<HashMap<String, String>> results = searchMultiAll.execute();
-				double highScore = 0;
-				if (results.size() > 1) {
-					highScore = Double.parseDouble(results.get(0).get(IConstants.SCORE));
-				}
-				search = addSearchStatistics(indexName, searchStrings, results.size(), results, highScore);
-				clusterManager.setSearch(searchKey, search);
+				addSearchStatistics(indexName, searchStrings, results.size(), results);
 				return results;
 			}
 		} catch (Exception e) {
@@ -231,13 +188,6 @@ public class SearcherService implements ISearcherService {
 			@WebParam(name = "maxResults") final int maxResults, @WebParam(name = "distance") final int distance,
 			@WebParam(name = "latitude") final double latitude, @WebParam(name = "longitude") final double longitude) {
 		try {
-			String searchKey = getSearchKey(indexName, Arrays.deepToString(searchStrings), Arrays.deepToString(searchFields),
-					Boolean.toString(fragment), Integer.toString(firstResult), Integer.toString(maxResults), Integer.toString(distance),
-					Double.toString(latitude), Double.toString(longitude));
-			Search search = getSearch(searchKey);
-			if (search != null) {
-				return search.getSearchResults();
-			}
 			SearchSpatial searchSpatial = getSearch(SearchSpatial.class, indexName);
 			if (searchSpatial != null) {
 				searchSpatial.setFirstResult(firstResult);
@@ -248,9 +198,7 @@ public class SearcherService implements ISearcherService {
 				searchSpatial.setCoordinate(new Coordinate(latitude, longitude));
 				searchSpatial.setDistance(distance);
 				ArrayList<HashMap<String, String>> results = searchSpatial.execute();
-				double highScore = 0;
-				search = addSearchStatistics(indexName, searchStrings, results.size(), results, highScore);
-				clusterManager.setSearch(searchKey, search);
+				addSearchStatistics(indexName, searchStrings, results.size(), results);
 				return results;
 			}
 		} catch (Exception e) {
@@ -273,13 +221,6 @@ public class SearcherService implements ISearcherService {
 			@WebParam(name = "distance") final int distance, @WebParam(name = "latitude") final double latitude,
 			@WebParam(name = "longitude") final double longitude) {
 		try {
-			String searchKey = getSearchKey(indexName, Arrays.deepToString(searchStrings), Boolean.toString(fragment),
-					Integer.toString(firstResult), Integer.toString(maxResults), Integer.toString(distance), Double.toString(latitude),
-					Double.toString(longitude));
-			Search search = getSearch(searchKey);
-			if (search != null) {
-				return search.getSearchResults();
-			}
 			SearchSpatialAll searchSpatialAll = getSearch(SearchSpatialAll.class, indexName);
 			if (searchSpatialAll != null) {
 				searchSpatialAll.setFirstResult(firstResult);
@@ -289,9 +230,7 @@ public class SearcherService implements ISearcherService {
 				searchSpatialAll.setCoordinate(new Coordinate(latitude, longitude));
 				searchSpatialAll.setDistance(distance);
 				ArrayList<HashMap<String, String>> results = searchSpatialAll.execute();
-				double highScore = 0;
-				search = addSearchStatistics(indexName, searchStrings, results.size(), results, highScore);
-				clusterManager.setSearch(searchKey, search);
+				addSearchStatistics(indexName, searchStrings, results.size(), results);
 				return results;
 			}
 		} catch (Exception e) {
@@ -317,15 +256,29 @@ public class SearcherService implements ISearcherService {
 	protected <T> T getSearch(final Class<?> klass, final String indexName) throws Exception {
 		@SuppressWarnings("rawtypes")
 		Map<String, IndexContext> indexContexts = monitorService.getIndexContexts();
-		for (IndexContext<?> context : indexContexts.values()) {
-			if (context.getIndexName().equals(indexName)) {
-				if (context.getMultiSearcher() != null) {
+		for (IndexContext<?> indexContext : indexContexts.values()) {
+			if (indexContext.getIndexName().equals(indexName)) {
+				if (indexContext.getMultiSearcher() != null) {
 					Constructor<?> constructor = klass.getConstructor(Searcher.class);
-					return (T) constructor.newInstance(context.getMultiSearcher());
+					return (T) constructor.newInstance(indexContext.getMultiSearcher());
 				}
 			}
 		}
 		return null;
+	}
+
+	@SuppressWarnings({ "unused", "rawtypes" })
+	private void printSearchables(final IndexContext indexContext) throws IOException {
+		LOGGER.info("Multi searcher : " + indexContext.getMultiSearcher());
+		Searchable[] searchables = indexContext.getMultiSearcher().getSearchables();
+		for (Searchable searchable : searchables) {
+			IndexSearcher indexSearcher = (IndexSearcher) searchable;
+			IndexReader indexReader = indexSearcher.getIndexReader();
+			FSDirectory directory = (FSDirectory) indexReader.directory();
+			LOGGER.info("Max docs : " + indexReader.maxDoc());
+			LOGGER.info("Max docs : " + indexReader.numDocs());
+			LOGGER.info("Max docs : " + Arrays.deepToString(directory.listAll()));
+		}
 	}
 
 	/**
@@ -344,10 +297,6 @@ public class SearcherService implements ISearcherService {
 		return results;
 	}
 
-	protected Search getSearch(final String searchKey) {
-		return clusterManager.getSearch(searchKey);
-	}
-
 	protected String getSearchKey(final String indexName, final String... parameters) {
 		StringBuilder stringBuilder = new StringBuilder(indexName);
 		for (String parameter : parameters) {
@@ -358,7 +307,13 @@ public class SearcherService implements ISearcherService {
 	}
 
 	protected Search addSearchStatistics(final String indexName, final String[] searchStrings, final int results,
-			final ArrayList<HashMap<String, String>> searchResults, final double highScore) {
+			final ArrayList<HashMap<String, String>> searchResults) {
+
+		double highScore = 0;
+		if (searchResults.size() > 1) {
+			highScore = Double.parseDouble(searchResults.get(0).get(IConstants.SCORE));
+		}
+
 		searchResults.get(searchResults.size() - 1).put(IConstants.INDEX_NAME, indexName);
 		StringBuilder stringBuilder = new StringBuilder();
 		for (String searchString : searchStrings) {
@@ -377,6 +332,9 @@ public class SearcherService implements ISearcherService {
 		search.setCorrectedSearchStrings(correctedSearchString);
 		search.setSearchResults(searchResults);
 		dataBase.persist(search);
+		// LOGGER.info("Search : " + ToStringBuilder.reflectionToString(search, ToStringStyle.MULTI_LINE_STYLE));
+		// LOGGER.info("Search size : " + search.getResults());
+		// LOGGER.info("Search results : " + search.getSearchResults());
 		return search;
 	}
 

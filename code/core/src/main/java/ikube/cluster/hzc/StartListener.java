@@ -67,7 +67,11 @@ public class StartListener implements MessageListener<Object> {
 					}
 				}
 			});
+		} else if (Event.STARTUP_ALL.equals(event.getType())) {
+			LOGGER.info("Re-starting the indexing threads");
+			ThreadUtilities.initialize();
 		}
+		
 	}
 
 }

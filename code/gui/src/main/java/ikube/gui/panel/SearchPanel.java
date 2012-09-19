@@ -44,6 +44,8 @@ public class SearchPanel extends Panel {
 		searchInputLayout.setSpacing(Boolean.TRUE);
 		createIndexOptions(searchInputLayout);
 		createSearchFieldAndButton(searchInputLayout);
+		createPagingPanel(searchInputLayout);
+
 		verticalLayout.addComponent(searchInputLayout);
 
 		HorizontalLayout searchStatisticsLayout = new HorizontalLayout();
@@ -67,10 +69,10 @@ public class SearchPanel extends Panel {
 	}
 
 	private void createSearchFieldAndButton(final ComponentContainer componentContainer) {
-		Label searchLabel = new Label("Search terms : ");
+		Label searchLabel = new Label(IConstant.SEARCH_FIELD);
 		TextField searchField = new TextField();
 		searchField.setDescription(IConstant.SEARCH_FIELD);
-		Button searchButton = new Button("Go!");
+		Button searchButton = new Button(IConstant.SEARCH_BUTTON);
 		searchButton.setDescription(IConstant.SEARCH_BUTTON);
 
 		componentContainer.addComponent(searchLabel);
@@ -78,10 +80,22 @@ public class SearchPanel extends Panel {
 		componentContainer.addComponent(searchButton);
 	}
 
+	private void createPagingPanel(final ComponentContainer componentContainer) {
+		Panel pagingPanel = new Panel();
+		pagingPanel.setDescription(IConstant.PAGING_PANEL);
+		pagingPanel.setWidth(100, Sizeable.UNITS_PERCENTAGE);
+		componentContainer.addComponent(pagingPanel);
+	}
+
 	private void createSearchStatisticsFields(final ComponentContainer componentContainer) {
-		Label timeTaken = new Label("Time taken : ");
+		Label timeTaken = new Label(IConstant.TIME_TAKEN);
+		timeTaken.setDescription(IConstant.TIME_TAKEN);
+		timeTaken.setData(IConstant.TIME_TAKEN);
 		componentContainer.addComponent(timeTaken);
-		Label totalResults = new Label("Total results : ");
+
+		Label totalResults = new Label(IConstant.TOTAL_RESULTS);
+		totalResults.setDescription(IConstant.TOTAL_RESULTS);
+		totalResults.setData(IConstant.TOTAL_RESULTS);
 		componentContainer.addComponent(totalResults);
 	}
 

@@ -80,6 +80,11 @@
             <artifactId>wizards-for-vaadin</artifactId>
             <version>0.4.4</version>
         </dependency>
+		<dependency>
+			<groupId>org.vaadin.addons</groupId>
+			<artifactId>pagingcomponent</artifactId>
+			<version>0.9.3</version>
+		</dependency>
 	</dependencies>
 
 	<build>

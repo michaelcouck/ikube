@@ -62,9 +62,10 @@ public class DiskFull extends Action<IndexContext<?>, Boolean> {
 					if (freeSpaceMegabytes < MINIMUM_FREE_SPACE) {
 						// We need to exit this server as the disk will crash
 						String body = buildMessage("We have run out of disk space on this drive : ", indexesDirectory.toString(),
-								"This server will exit to save the machine : ", freeSpaceMegabytes.toString());
+								"All indexing will be terminated immediately : ", freeSpaceMegabytes.toString());
 						logger.error(subject + " " + body);
 						sendNotification(subject, body);
+						// Terminate all indexing
 						listenerManager.fireEvent(Event.TERMINATE, System.currentTimeMillis(), indexContext, Boolean.FALSE);
 						// System.exit(0);
 						return Boolean.TRUE;

@@ -28,11 +28,14 @@ public class StopListener implements MessageListener<Object> {
 		Object object = message.getMessageObject();
 		if (object != null && Event.class.isAssignableFrom(object.getClass())) {
 			Event event = (Event) object;
+			logger.info("Got message : " + source + ", " + object);
 			if (Event.TERMINATE.equals(event.getType())) {
-				logger.info("Got message : " + source + ", " + object);
 				if (event.getObject() != null && String.class.isAssignableFrom(event.getObject().getClass())) {
 					ThreadUtilities.destroy((String) event.getObject());
 				}
+			} else if (Event.TERMINATE_ALL.equals(event.getType())) {
+				logger.info("Terminating all indexing : ");
+				ThreadUtilities.destroy();
 			}
 		}
 	}

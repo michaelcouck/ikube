@@ -4,6 +4,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  * @author Michael Couck
@@ -16,14 +18,29 @@ import javax.persistence.InheritanceType;
 public class IndexableFileSystemLog extends Indexable<IndexableFileSystemLog> {
 
 	@Column
+	@NotNull
+	@Size(min = 2, max = 256 * 8)
+	@Attribute(field = false, description = "This is the path to the log folder")
 	private String path;
 	@Column
+	@NotNull
+	@Size(min = 2, max = 256)
+	@Attribute(field = false, description = "This is the file name field in the Lucene index")
 	private String fileFieldName;
 	@Column
+	@NotNull
+	@Size(min = 2, max = 256)
+	@Attribute(field = false, description = "This is the path name field in the Lucene index")
 	private String pathFieldName;
 	@Column
+	@NotNull
+	@Size(min = 2, max = 256)
+	@Attribute(field = false, description = "This is the line number field in the Lucene index")
 	private String lineFieldName;
 	@Column
+	@NotNull
+	@Size(min = 2, max = 256)
+	@Attribute(field = false, description = "This is the content field in the Lucene index")
 	private String contentFieldName;
 
 	public String getPath() {

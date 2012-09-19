@@ -4,6 +4,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  * @author Michael Couck
@@ -15,28 +17,44 @@ import javax.persistence.InheritanceType;
 public class IndexableEmail extends Indexable<IndexableEmail> {
 
 	@Column
-	@Attribute(description = "This is the name of the id field in the Lucene index")
+	@NotNull
+	@Size(min = 1, max = 256)
+	@Attribute(field = false, description = "This is the name of the id field in the Lucene index")
 	private String idField;
 	@Column
-	@Attribute(description = "This is the name of the title field in the Lucene index")
+	@NotNull
+	@Size(min = 1, max = 256)
+	@Attribute(field = false, description = "This is the name of the title field in the Lucene index")
 	private String titleField;
 	@Column
-	@Attribute(description = "This is the namd of the content field in the Lucene index")
+	@NotNull
+	@Size(min = 1, max = 256)
+	@Attribute(field = false, description = "This is the namd of the content field in the Lucene index")
 	private String contentField;
 
 	@Column
+	@NotNull
+	@Size(min = 1, max = 256)
 	@Attribute(field = false, description = "The url where the mail is hosted, i.e. the Imap or Pop server")
 	private String mailHost;
 	@Column
+	@NotNull
+	@Size(min = 1, max = 256)
 	@Attribute(field = false, description = "The user name of the mail account")
 	private String username;
 	@Column
+	@NotNull
+	@Size(min = 1, max = 256)
 	@Attribute(field = false, description = "The password for the mail account")
 	private String password;
 	@Column
+	@NotNull
+	@Size(min = 1, max = 5)
 	@Attribute(field = false, description = "The port number of the mail account")
 	private String port;
 	@Column
+	@NotNull
+	@Size(min = 1, max = 5)
 	@Attribute(field = false, description = "The protocol of the account, Imap or Pop3 for example")
 	private String protocol;
 	@Column

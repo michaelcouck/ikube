@@ -11,9 +11,7 @@ import ikube.model.Snapshot;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Map;
 
@@ -36,6 +34,7 @@ import com.vaadin.ui.TextArea;
 @Configurable
 public class DashPanelContainer extends AContainer {
 
+	@SuppressWarnings("unused")
 	private static final Logger LOGGER = LoggerFactory.getLogger(DashPanelContainer.class);
 
 	@Autowired
@@ -110,16 +109,11 @@ public class DashPanelContainer extends AContainer {
 		for (Map.Entry<String, Server> mapEntry : servers.entrySet()) {
 			Server server = mapEntry.getValue();
 			long searchesPerMinute = 0;
-			Date lastSnapshotDate = new Date();
 			for (IndexContext<?> indexContext : mapEntry.getValue().getIndexContexts()) {
-				for (Snapshot snapshot : indexContext.getSnapshots()) {
-					searchesPerMinute += snapshot.getSearchesPerMinute();
-				}
-				if (indexContext.getLastSnapshot() != null) {
-					lastSnapshotDate = new Date(indexContext.getLastSnapshot().getTimestamp());
-				}
+				Snapshot lastSnapshot = indexContext.getLastSnapshot();
+				searchesPerMinute += lastSnapshot.getSearchesPerMinute();
 			}
-			addPoint(chart, server.getIp(), lastSnapshotDate, searchesPerMinute);
+			addPoint(chart, server.getIp(), new Date(), searchesPerMinute);
 		}
 	}
 
@@ -134,7 +128,7 @@ public class DashPanelContainer extends AContainer {
 				String seriesKey = serverIp + "-" + indexName;
 				if (!isWorking(server, indexContext)) {
 					if (chart.getSeries(seriesKey) != null) {
-						LOGGER.debug("Removing series : {} ", seriesKey);
+						// LOGGER.debug("Removing series : {} ", seriesKey);
 					}
 					chart.removeSeries(seriesKey);
 					continue;
@@ -149,26 +143,17 @@ public class DashPanelContainer extends AContainer {
 	private void addPoint(final InvientCharts chart, final String seriesKey, final Date date, final double pointData) {
 		DateTimeSeries seriesData = (DateTimeSeries) chart.getSeries(seriesKey);
 		if (seriesData == null) {
-			LOGGER.info("Adding series : " + seriesKey);
+			// LOGGER.info("Adding series : " + seriesKey);
 			seriesData = new DateTimeSeries(seriesKey, true);
 			LinkedHashSet<DateTimePoint> points = new LinkedHashSet<DateTimePoint>();
 			seriesData.setSeriesPoints(points);
 			chart.addSeries(seriesData);
 		}
-		DateTimePoint point = new DateTimePoint(seriesData, date, pointData);
-		if (!seriesData.getPoints().contains(point)) {
-			seriesData.addPoint(point);
-		}
 		long maxPoints = 90;
-		int pointSize = seriesData.getPoints().size();
-		boolean purge = pointSize >= maxPoints;
-		if (purge) {
-			// Remove some points from the series so it can be seen on the graph
-			Collection<DateTimePoint> dateTimePoints = seriesData.getPoints();
-			Iterator<InvientCharts.DateTimePoint> iterator = seriesData.getPoints().iterator();
-			while (iterator.hasNext() && dateTimePoints.size() > (maxPoints * 0.75)) {
-				iterator.remove();
-			}
+		DateTimePoint point = new DateTimePoint(seriesData, date, pointData);
+		LinkedHashSet<InvientCharts.DateTimePoint> points = seriesData.getPoints();
+		if (!seriesData.getPoints().contains(point)) {
+			seriesData.addPoint(point, points.size() > maxPoints);
 		}
 	}
 

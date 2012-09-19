@@ -258,6 +258,7 @@ public class ClusterManagerHazelcast extends AClusterManager {
 	 * {@inheritDoc}
 	 */
 	@Override
+	@Deprecated
 	public Search getSearch(String searchKey) {
 		return (Search) Hazelcast.getMap(IConstants.SEARCH).get(searchKey);
 	}
@@ -266,6 +267,7 @@ public class ClusterManagerHazelcast extends AClusterManager {
 	 * {@inheritDoc}
 	 */
 	@Override
+	@Deprecated
 	public void setSearch(final String searchKey, final Search search) {
 		Hazelcast.getMap(IConstants.SEARCH).put(searchKey, search);
 	}

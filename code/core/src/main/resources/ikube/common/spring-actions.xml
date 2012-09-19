@@ -45,7 +45,6 @@
 		<ref bean="ikube.action.DiskFull" />
 		<ref bean="ikube.action.Validator" />
 		<ref bean="ikube.action.Prune" />
-		<!-- <ref bean="ikube.action.Enrichment" /> -->
 	</util:list>
 
 	<!-- !IsThisServerWorking &#38;&#38; -->
@@ -226,25 +225,6 @@
 			<util:list>
 				<ref local="ikube.action.rule.IsThisServerWorking" />
 				<ref local="ikube.action.rule.AnyServersWorking" />
-			</util:list>
-		</property>
-	</bean>
-	<bean 
-		id="ikube.action.Enrichment" 
-		class="ikube.action.Enrichment" 
-		property:ruleExpression="
-			!IsThisServerWorking &#38;&#38; 
-			!AnyServersWorking &#38;&#38;
-			AreIndexesCreated &#38;&#38; 
-			IsMultiSearcherInitialised &#38;&#38;
-			AreSearchablesInitialised">
-		<property name="rules">
-			<util:list>
-				<ref local="ikube.action.rule.IsThisServerWorking" />
-				<ref local="ikube.action.rule.AnyServersWorking" />
-				<ref local="ikube.action.rule.AreIndexesCreated" />
-				<ref local="ikube.action.rule.IsMultiSearcherInitialised" />
-				<ref local="ikube.action.rule.AreSearchablesInitialised" />
 			</util:list>
 		</property>
 	</bean>
