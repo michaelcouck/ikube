@@ -36,9 +36,9 @@ public class Window extends com.vaadin.ui.Window {
 	@Autowired
 	private transient SearchPanelContainer searchPanelContainer;
 	@Autowired
-	private transient IndexesPanelContainer indexesPanelContainer;
-	@Autowired
 	private transient ServersPanelContainer serversPanelContainer;
+	@Autowired
+	private transient IndexesPanelContainer indexesPanelContainer;
 	@Autowired
 	private transient ApplicationObjectSupport applicationObjectSupport;
 
@@ -50,8 +50,10 @@ public class Window extends com.vaadin.ui.Window {
 	public void init() {
 		// This lets me know that someone is actually using Ikube
 		GoogleAnalyticsTracker tracker = new GoogleAnalyticsTracker("UA-13044914-4", "ikube.dyndns.org");
-		tracker.trackPageview("/app");
-		addComponent(tracker);
+		INSTANCE.addComponent(tracker);
+		tracker.trackPageview("/ikube/app");
+		// This doesn't work so I'll hack it
+		INSTANCE.executeJavaScript("track()");
 
 		VerticalLayout vertical = new VerticalLayout();
 		vertical.setSizeFull();

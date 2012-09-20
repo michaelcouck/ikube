@@ -31,7 +31,7 @@ public class IndexContextListener implements MessageListener<Object> {
 		IndexContext<?> indexContext = (IndexContext<?>) object;
 		indexContext.setId(0);
 		indexContext.setSnapshots(null);
-		LOGGER.info("Got index context message : " + indexContext);
+		// LOGGER.info("Got index context message : " + indexContext);
 		// Check the database for this context
 		IndexContext localIndexContext = monitorService.getIndexContext(indexContext.getIndexName());
 		if (localIndexContext == null) {

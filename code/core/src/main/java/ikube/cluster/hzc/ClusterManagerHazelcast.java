@@ -4,7 +4,6 @@ import ikube.IConstants;
 import ikube.cluster.AClusterManager;
 import ikube.model.Action;
 import ikube.model.IndexContext;
-import ikube.model.Search;
 import ikube.model.Server;
 import ikube.service.IMonitorService;
 import ikube.toolkit.ThreadUtilities;
@@ -190,8 +189,8 @@ public class ClusterManagerHazelcast extends AClusterManager {
 				dataBase.merge(action);
 			}
 			if (!removedFromServerActions || !removedAndComitted) {
-				logger.warn("Didn't remove action : {}", action);
-				logger.warn("Actions {}", server.getActions());
+				// logger.warn("Didn't remove action : {}", action);
+				// logger.warn("Actions {}", server.getActions());
 			} else {
 				// logger.warn("Removed action : {}", action);
 				// logger.warn("Actions {}", server.getActions());
@@ -252,24 +251,6 @@ public class ClusterManagerHazelcast extends AClusterManager {
 	@Override
 	public void sendMessage(Serializable serializable) {
 		Hazelcast.getTopic(IConstants.TOPIC).publish(serializable);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	@Deprecated
-	public Search getSearch(String searchKey) {
-		return (Search) Hazelcast.getMap(IConstants.SEARCH).get(searchKey);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	@Deprecated
-	public void setSearch(final String searchKey, final Search search) {
-		Hazelcast.getMap(IConstants.SEARCH).put(searchKey, search);
 	}
 
 	/**

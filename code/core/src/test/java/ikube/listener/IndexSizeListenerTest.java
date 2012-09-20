@@ -1,13 +1,19 @@
 package ikube.listener;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import ikube.ATest;
 import ikube.IConstants;
 import ikube.mock.ApplicationContextManagerMock;
+import ikube.model.IndexContext;
 import ikube.model.Snapshot;
+import ikube.service.IMonitorService;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import mockit.Deencapsulation;
 import mockit.Mockit;
@@ -28,12 +34,14 @@ public class IndexSizeListenerTest extends ATest {
 
 	/** Class under test. */
 	private IndexSizeListener indexSizeListener;
+	private IMonitorService monitorService;
 
 	public IndexSizeListenerTest() {
 		super(IndexSizeListenerTest.class);
 	}
 
 	@Before
+	@SuppressWarnings("rawtypes")
 	public void before() {
 		Mockit.setUpMocks(ApplicationContextManagerMock.class);
 		ApplicationContextManagerMock.setIndexContext(indexContext);
@@ -46,6 +54,13 @@ public class IndexSizeListenerTest extends ATest {
 		Mockito.when(fsDirectory.getFile()).thenReturn(indexDirectory);
 		indexSizeListener = new IndexSizeListener();
 		Deencapsulation.setField(indexSizeListener, clusterManager);
+
+		monitorService = mock(IMonitorService.class);
+		Map<String, IndexContext> indexContexts = new HashMap<String, IndexContext>();
+		indexContexts.put(indexContext.getName(), indexContext);
+		when(monitorService.getIndexContexts()).thenReturn(indexContexts);
+
+		Deencapsulation.setField(indexSizeListener, monitorService);
 	}
 
 	@After

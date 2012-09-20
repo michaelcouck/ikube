@@ -162,6 +162,7 @@
 		<jar destfile="${output-configuration-directory}/${ikube-configuration-jar}" basedir="${output-configuration-directory}" />
 	</target>
 	<target name="deploy-configuration-for-jetty">
+		<unjar src="${output-configuration-directory}/${ikube-configuration-jar}" dest="code/core/ikube" overwrite="true" />
 		<unjar src="${output-configuration-directory}/${ikube-configuration-jar}" dest="code/war/ikube" overwrite="true" />
 		<unjar src="${output-configuration-directory}/${ikube-configuration-jar}" dest="code/gui/ikube" overwrite="true" />
 	</target>

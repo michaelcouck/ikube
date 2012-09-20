@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Stack;
 import java.util.regex.Pattern;
 
-import mockit.Deencapsulation;
 import mockit.Mockit;
 
 import org.junit.After;
@@ -58,7 +57,9 @@ public class IndexableFileSystemHandlerWorkerTest extends ATest {
 		when(indexableFilesystem.getBatchSize()).thenReturn(1000);
 
 		when(indexableFilesystem.getContentFieldName()).thenReturn("contentFieldName");
-		when(indexableFilesystem.getExcludedPattern()).thenReturn("svn");
+		when(indexableFilesystem.getExcludedPattern())
+				.thenReturn(
+						".*(.svn).*|.*(.db).*|.*(.gif).*|.*(.svg).*|.*(.jpg).*|.*(.exe).*|.*(.dll).*|.*(password).*|.*(enwiki-latest-pages-articles).*|.*(RSA).*|.*(MANIFEST).*|.*(lib).*");
 		when(indexableFilesystem.getLastModifiedFieldName()).thenReturn("lastModifiedFieldName");
 		when(indexableFilesystem.getLengthFieldName()).thenReturn("lengthFieldName");
 		when(indexableFilesystem.getMaxReadLength()).thenReturn(1000000l);
@@ -66,7 +67,7 @@ public class IndexableFileSystemHandlerWorkerTest extends ATest {
 		when(indexableFilesystem.getPathFieldName()).thenReturn("pathFieldName");
 		when(indexableFilesystem.isUnpackZips()).thenReturn(Boolean.TRUE);
 		ApplicationContextManagerMock.setDataBase(dataBase);
-		Deencapsulation.setField(indexableFilesystemHandler, dataBase);
+		// Deencapsulation.setField(indexableFilesystemHandler, "dataBase", dataBase);
 	}
 
 	@After
@@ -94,17 +95,6 @@ public class IndexableFileSystemHandlerWorkerTest extends ATest {
 	}
 
 	@Test
-	public void handleZipFile() throws Exception {
-		File zipFile = FileUtilities.findFileRecursively(new File("."), "zip\\.zip");
-		ikube.model.File file = new ikube.model.File();
-		file.setUrl(zipFile.getAbsolutePath());
-		indexableFileSystemHandlerWorker.handleZip(indexableFilesystem, new File(file.getUrl()));
-		IndexManager.closeIndexWriter(indexContext);
-		// Verify that the file is in the index
-		verify(indexContext, Mockito.atLeastOnce()).getIndexWriter();
-	}
-
-	@Test
 	public void getPattern() {
 		String excluded = "excluded";
 		Pattern pattern = indexableFileSystemHandlerWorker.getPattern(excluded);
@@ -122,7 +112,7 @@ public class IndexableFileSystemHandlerWorkerTest extends ATest {
 
 	@Test
 	public void handleZip() throws Exception {
-		File zipFile = FileUtilities.findFileRecursively(new File("./"), Boolean.FALSE, "zip\\.zip");
+		File zipFile = FileUtilities.findFileRecursively(new File("."), Boolean.FALSE, "zip\\.zip");
 		boolean unzipped = indexableFileSystemHandlerWorker.handleZip(indexableFilesystem, zipFile);
 		assertTrue("The file is fine to unzip : ", unzipped);
 		verify(indexContext, Mockito.atLeastOnce()).getIndexWriter();

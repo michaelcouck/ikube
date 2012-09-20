@@ -1,6 +1,8 @@
 package ikube.toolkit;
 
 import ikube.IConstants;
+import ikube.listener.Event;
+import ikube.listener.IListener;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,34 +25,9 @@ import org.apache.log4j.Logger;
  * @since 12.02.2011
  * @version 01.00
  */
-public final class ThreadUtilities {
+public final class ThreadUtilities implements IListener {
 
 	private static final Logger LOGGER = Logger.getLogger(ThreadUtilities.class);
-
-	/**
-	 * This class will iterate over the futures and remove the ones that are finished.
-	 * 
-	 * @author Michael Couck
-	 * @since 24.08.12
-	 * @version 01.00
-	 */
-	static class Cleaner implements Runnable {
-		public void run() {
-			while (true) {
-				ThreadUtilities.sleep(60000);
-				Collection<String> futureNames = new ArrayList<String>(FUTURES.keySet());
-				for (String futureName : futureNames) {
-					List<Future<?>> futures = FUTURES.get(futureName);
-					for (Future<?> future : futures) {
-						if (future.isCancelled() || future.isDone()) {
-							futures.remove(future);
-							LOGGER.info("Removed future : " + future);
-						}
-					}
-				}
-			}
-		}
-	}
 
 	/** Executes the 'threads' and returns a future. */
 	private static ExecutorService EXECUTER_SERVICE;
@@ -103,7 +80,6 @@ public final class ThreadUtilities {
 			return;
 		}
 		EXECUTER_SERVICE = Executors.newFixedThreadPool(IConstants.THREAD_POOL_SIZE);
-		submit(new Cleaner());
 	}
 
 	/**
@@ -149,7 +125,7 @@ public final class ThreadUtilities {
 	/**
 	 * This method will wait for all the futures to finish their logic.
 	 * 
-	 * @param futures the futures to wait for
+	 * @param futures the futures to wait for in seconds
 	 * @param maxWait and the maximum amount of time to wait
 	 */
 	public static void waitForFutures(final List<Future<?>> futures, final long maxWait) {
@@ -163,7 +139,7 @@ public final class ThreadUtilities {
 	 * service closing down and interrupting all it's threads, it will return immediately. If the future takes too long and passes the
 	 * maximum wait time, then the method will return immediately.
 	 * 
-	 * @param future the future to wait for
+	 * @param future the future to wait for in seconds
 	 * @param maxWait the maximum amount of time to wait
 	 */
 	public static void waitForFuture(final Future<?> future, final long maxWait) {
@@ -231,6 +207,22 @@ public final class ThreadUtilities {
 	 */
 	private ThreadUtilities() {
 		// Documented
+	}
+
+	@Override
+	public void handleNotification(Event event) {
+		if (Event.TIMER.equals(event.getType())) {
+			Collection<String> futureNames = new ArrayList<String>(FUTURES.keySet());
+			for (String futureName : futureNames) {
+				List<Future<?>> futures = FUTURES.get(futureName);
+				for (Future<?> future : futures) {
+					if (future.isCancelled() || future.isDone()) {
+						futures.remove(future);
+						LOGGER.info("Removed future : " + future);
+					}
+				}
+			}
+		}
 	}
 
 }

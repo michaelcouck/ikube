@@ -81,8 +81,9 @@ public class ServersPanelContainer extends AContainer {
 			// LOGGER.info("Server : " + server.getIp() + ", " + isWorking + ", " + indexName);
 			if (!isWorking) {
 				if (table.getItem(itemId) != null) {
+					@SuppressWarnings("unused")
 					boolean removed = table.removeItem(itemId);
-					LOGGER.info("Removing : " + removed + ", " + itemId);
+					// LOGGER.info("Removing : " + removed + ", " + itemId);
 				}
 				continue;
 			}

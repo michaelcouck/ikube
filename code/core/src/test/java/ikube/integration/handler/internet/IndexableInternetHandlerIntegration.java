@@ -42,7 +42,7 @@ public class IndexableInternetHandlerIntegration extends AbstractIntegration {
 
 	@Before
 	public void before() {
-		indexContext = ApplicationContextManager.getBean("indexContext");
+		indexContext = monitorService.getIndexContext("indexContext");
 		indexableInternet = ApplicationContextManager.getBean("ikubeGoogleCode");
 		indexableInternetHandler = ApplicationContextManager.getBean(IndexableInternetHandler.class);
 		dataBase = ApplicationContextManager.getBean(IDataBase.class);
@@ -54,16 +54,21 @@ public class IndexableInternetHandlerIntegration extends AbstractIntegration {
 
 	@Test
 	public void handle() throws Exception {
-		String ip = InetAddress.getLocalHost().getHostAddress();
-		IndexWriter indexWriter = IndexManager.openIndexWriter(realIndexContext, System.currentTimeMillis(), ip);
-		indexContext.setIndexWriter(indexWriter);
-		List<Future<?>> threads = indexableInternetHandler.handle(indexContext, indexableInternet);
-		ThreadUtilities.waitForFutures(threads, Integer.MAX_VALUE);
-		int expectedAtLeast = 10;
-		List<Url> urls = dataBase.find(Url.class, 0, Integer.MAX_VALUE);
-		int totalUrlsCrawled = urls.size();
-		logger.info("Urls crawled : " + totalUrlsCrawled);
-		assertTrue("Expected more than " + expectedAtLeast + " and got : " + totalUrlsCrawled, totalUrlsCrawled > expectedAtLeast);
+		ThreadUtilities.initialize();
+		try {
+			String ip = InetAddress.getLocalHost().getHostAddress();
+			IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
+			indexContext.setIndexWriter(indexWriter);
+			List<Future<?>> threads = indexableInternetHandler.handle(indexContext, indexableInternet);
+			ThreadUtilities.waitForFutures(threads, Integer.MAX_VALUE);
+			int expectedAtLeast = 1;
+			List<Url> urls = dataBase.find(Url.class, 0, Integer.MAX_VALUE);
+			int totalUrlsCrawled = urls.size();
+			logger.info("Urls crawled : " + totalUrlsCrawled);
+			assertTrue("Expected more than " + expectedAtLeast + " and got : " + totalUrlsCrawled, totalUrlsCrawled > expectedAtLeast);
+		} finally {
+			ThreadUtilities.destroy();
+		}
 	}
 
 	@Test

@@ -111,6 +111,9 @@ public class DashPanelContainer extends AContainer {
 			long searchesPerMinute = 0;
 			for (IndexContext<?> indexContext : mapEntry.getValue().getIndexContexts()) {
 				Snapshot lastSnapshot = indexContext.getLastSnapshot();
+				if (lastSnapshot == null) {
+					continue;
+				}
 				searchesPerMinute += lastSnapshot.getSearchesPerMinute();
 			}
 			addPoint(chart, server.getIp(), new Date(), searchesPerMinute);

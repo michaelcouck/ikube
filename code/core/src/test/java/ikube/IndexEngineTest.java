@@ -11,10 +11,13 @@ import ikube.action.Index;
 import ikube.listener.Event;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.model.IndexContext;
+import ikube.service.IMonitorService;
 import ikube.toolkit.ApplicationContextManager;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import mockit.Deencapsulation;
 import mockit.Mockit;
@@ -33,6 +36,7 @@ public class IndexEngineTest extends ATest {
 	private Index index;
 	/** Class under test. */
 	private IndexEngine indexEngine;
+	private IMonitorService monitorService;
 	private List<IAction<IndexContext<?>, Boolean>> actions;
 
 	public IndexEngineTest() {
@@ -40,19 +44,22 @@ public class IndexEngineTest extends ATest {
 	}
 
 	@Before
+	@SuppressWarnings("rawtypes")
 	public void before() {
 		indexEngine = new IndexEngine();
 		actions = new ArrayList<IAction<IndexContext<?>, Boolean>>();
 
 		index = mock(Index.class);
+		monitorService = mock(IMonitorService.class);
+		Map<String, IndexContext> indexContexts = new HashMap<String, IndexContext>();
+		indexContexts.put(indexContext.getName(), indexContext);
+		when(monitorService.getIndexContexts()).thenReturn(indexContexts);
 		actions.add(index);
 		when(server.isWorking()).thenReturn(Boolean.FALSE);
 		when(clusterManager.getServer()).thenReturn(server);
 
-		// indexEngine.setActions(actions);
 		Deencapsulation.setField(indexEngine, "actions", actions);
-		// indexEngine.setClusterManager(clusterManager);
-		// Deencapsulation.setField(indexEngine, clusterManager);
+		Deencapsulation.setField(indexEngine, monitorService);
 
 		Mockit.setUpMocks(ApplicationContextManagerMock.class);
 	}

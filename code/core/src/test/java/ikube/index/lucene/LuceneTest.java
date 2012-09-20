@@ -133,6 +133,11 @@ public class LuceneTest extends ATest {
 			// /media/nas-z/1347785981667
 			indexContext.setIndexDirectoryPath("/media/nas/xfs-one/history/index");
 			open.executeInternal(indexContext);
+			
+			for (Searchable searchable : indexContext.getMultiSearcher().getSearchables()) {
+				int numDocs = ((IndexSearcher) searchable).getIndexReader().numDocs();
+				logger.info("Num docs : " + numDocs);
+			}
 
 			SearchSingle searchSingle = new SearchSingle(indexContext.getMultiSearcher());
 			searchSingle.setFirstResult(0);

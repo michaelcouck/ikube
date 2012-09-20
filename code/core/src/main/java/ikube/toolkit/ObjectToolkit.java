@@ -4,12 +4,17 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
+
+import javax.persistence.Id;
 
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.log4j.Logger;
@@ -29,10 +34,23 @@ public final class ObjectToolkit {
 
 	private static final Logger LOGGER = Logger.getLogger(ObjectToolkit.class);
 
+	public interface Predicate {
+		public boolean perform(final Object target);
+	}
+
+	private static final List<Predicate> PREDICATES = new ArrayList<ObjectToolkit.Predicate>();
+	private static final Map<Class<?>, Field> ID_FIELDS = new HashMap<Class<?>, Field>();
+
 	/**
 	 * Private constructor to avoid instantiation
 	 */
 	private ObjectToolkit() {
+	}
+
+	public static final void registerPredicates(final Predicate... predicates) {
+		for (final Predicate predicate : predicates) {
+			PREDICATES.add(predicate);
+		}
 	}
 
 	/**
@@ -43,10 +61,10 @@ public final class ObjectToolkit {
 	 * @param collections whether collections should also be populated
 	 * @param depth the depth into the graph to descend to build it
 	 * @param maxDepth maximum depth to populate the fields
-	 * @param valueGenerators determine generators for specific types
+	 * @param excludedFields the fields that will not be populated
 	 * @return the target with populated fields
 	 */
-	public static <T> T populateFields(final Class<?> klass, final T target, final boolean collections, final int depth,
+	public static final <T> T populateFields(final Class<?> klass, final T target, final boolean collections, final int depth,
 			final int maxDepth, final String... excludedFields) {
 		if (depth > maxDepth) {
 			return null;
@@ -55,32 +73,35 @@ public final class ObjectToolkit {
 			@Override
 			@SuppressWarnings({ "rawtypes", "unchecked" })
 			public void doWith(Field field) throws IllegalArgumentException, IllegalAccessException {
+				Object fieldValue = null;
 				try {
-					if (excludedFields != null) {
-						for (final String excludedField : excludedFields) {
-							if (field.getName().equals(excludedField)) {
-								LOGGER.info("Ignoring field : " + field);
-								return;
-							}
+					if (isIgnored(field, excludedFields)) {
+						return;
+					}
+					for (Predicate predicate : PREDICATES) {
+						if (!predicate.perform(field)) {
+							return;
 						}
 					}
-					Object fieldValue = null;
 					boolean isCollection = Collection.class.isAssignableFrom(field.getType());
 					if (isCollection && collections) {
 						// Init the collection and add one member
 						ParameterizedType stringListType = (ParameterizedType) field.getGenericType();
-						Class<?> collectionKlass = (Class<?>) stringListType.getActualTypeArguments()[0];
-						Object collectionEntity = collectionKlass.newInstance();
-						populateFields(collectionKlass, collectionEntity, collections, depth + 1, maxDepth);
-						if (List.class.isAssignableFrom(field.getType())) {
-							fieldValue = new ArrayList();
-						} else if (Set.class.isAssignableFrom(field.getType())) {
-							fieldValue = new TreeSet();
-						} else {
-							field.getType().newInstance();
+						Type type = stringListType.getActualTypeArguments()[0];
+						if (Class.class.isAssignableFrom(type.getClass())) {
+							Class<?> collectionKlass = (Class<?>) type;
+							Object collectionEntity = collectionKlass.newInstance();
+							populateFields(collectionKlass, collectionEntity, collections, depth + 1, maxDepth, excludedFields);
+							if (List.class.isAssignableFrom(field.getType())) {
+								fieldValue = new ArrayList();
+							} else if (Set.class.isAssignableFrom(field.getType())) {
+								fieldValue = new TreeSet();
+							} else {
+								field.getType().newInstance();
+							}
+							// fieldValue = Arrays.asList(collectionEntity);
+							((Collection) fieldValue).add(collectionEntity);
 						}
-						// fieldValue = Arrays.asList(collectionEntity);
-						((Collection) fieldValue).add(collectionEntity);
 					} else if (field.getType().isEnum()) {
 						// Enum type, just get any one
 						fieldValue = getEnum(field.getType());
@@ -92,12 +113,15 @@ public final class ObjectToolkit {
 					// If this is not a primitive or a collection and if maxDepth not reached -> populate all the fields
 					if (!isCollection && !field.getType().isPrimitive() && fieldValue != null && depth < maxDepth
 							&& !field.getType().getName().startsWith("java")) {
-						populateFields(fieldValue.getClass(), fieldValue, collections, depth + 1, maxDepth);
+						populateFields(fieldValue.getClass(), fieldValue, collections, depth + 1, maxDepth, excludedFields);
 					}
-					field.setAccessible(Boolean.TRUE);
-					field.set(target, fieldValue);
+					if (fieldValue != null) {
+						// LOGGER.info("Setting field : " + field);
+						field.setAccessible(Boolean.TRUE);
+						field.set(target, fieldValue);
+					}
 				} catch (Exception e) {
-					LOGGER.error(e.getMessage());
+					LOGGER.error(e.getMessage() + ", " + field + ", " + fieldValue, e);
 				}
 			}
 		}, new ReflectionUtils.FieldFilter() {
@@ -108,9 +132,21 @@ public final class ObjectToolkit {
 			}
 		});
 		if (!Object.class.equals(klass.getSuperclass())) {
-			populateFields(klass.getSuperclass(), target, collections, depth, maxDepth);
+			populateFields(klass.getSuperclass(), target, collections, depth, maxDepth, excludedFields);
 		}
 		return target;
+	}
+
+	private static final boolean isIgnored(final Field field, final String[] excludedFields) {
+		if (excludedFields == null) {
+			return Boolean.FALSE;
+		}
+		for (final String excludedField : excludedFields) {
+			if (field.getName().equals(excludedField)) {
+				return Boolean.TRUE;
+			}
+		}
+		return Boolean.FALSE;
 	}
 
 	private static final Object getPrimitive(final Class<?> klass) {
@@ -134,7 +170,7 @@ public final class ObjectToolkit {
 	 * @param klass the class to instantiate
 	 * @return the instantiated class or null if there were not constructors that had no parameters or with one string
 	 */
-	public static Object getObject(final Class<?> klass) {
+	public static final Object getObject(final Class<?> klass) {
 		Constructor<?>[] constructors = klass.getConstructors();
 		// First try with parameters in the constructor
 		for (Constructor<?> constructor : constructors) {
@@ -201,6 +237,98 @@ public final class ObjectToolkit {
 		Field field = ReflectionUtils.findField(target.getClass(), fieldName);
 		field.setAccessible(Boolean.TRUE);
 		return field;
+	}
+
+	/**
+	 * This method will look into an object and try to find the field that is the id field in the object, then set it with the id specified
+	 * in the parameter list.
+	 * 
+	 * @param <T> the type of object to set the id field for
+	 * @param object the object to set the id field for
+	 * @param id the id to set in the object
+	 */
+	public static <T> void setIdField(final T object, final long id) {
+		if (object == null) {
+			return;
+		}
+		Field idField = getIdField(object.getClass(), null);
+		if (idField != null) {
+			try {
+				idField.set(object, id);
+			} catch (IllegalArgumentException e) {
+				LOGGER.error("Can't set the id : " + id + ", in the field : " + idField + ", of object : " + object, e);
+			} catch (IllegalAccessException e) {
+				LOGGER.error("Field not accessible : " + idField, e);
+			}
+		} else {
+			LOGGER.warn("No id field defined for object : " + object);
+		}
+	}
+
+	/**
+	 * Gets the id field in an object. The id field is defined by the {@link Id} annotation.
+	 * 
+	 * @param klass the class of the object
+	 * @param superKlass the super class of the object
+	 * @return the id field for the object or null if there is no field designated as the id
+	 */
+	public static Field getIdField(final Class<?> klass, final Class<?> superKlass) {
+		Field idField = ID_FIELDS.get(klass);
+		if (idField != null) {
+			return idField;
+		}
+		Field[] fields = superKlass != null ? superKlass.getDeclaredFields() : klass.getDeclaredFields();
+		for (Field field : fields) {
+			Id idAnnotation = field.getAnnotation(Id.class);
+			if (idAnnotation != null) {
+				ID_FIELDS.put(klass, field);
+				field.setAccessible(Boolean.TRUE);
+				return field;
+			}
+		}
+		// Try the super classes
+		Class<?> superClass = superKlass != null ? superKlass.getSuperclass() : klass.getSuperclass();
+		if (superClass != null && !Object.class.getName().equals(superClass.getName())) {
+			return getIdField(klass, superClass);
+		}
+		return null;
+	}
+
+	/**
+	 * Gets the value of the id foeld of an object.
+	 * 
+	 * @param <T> the type of object
+	 * @param object the object to find the id field value in
+	 * @return the id field value for the object or null if there is no id field or if the id field is null
+	 */
+	public static <T> Object getIdFieldValue(final T object) {
+		if (object == null) {
+			return null;
+		}
+		Field idField = getIdField(object.getClass(), null);
+		if (idField != null) {
+			try {
+				return idField.get(object);
+			} catch (IllegalArgumentException e) {
+				LOGGER.error("Can't get the id in the field : " + idField + ", of object : " + object, e);
+			} catch (IllegalAccessException e) {
+				LOGGER.error("Field not accessible : " + idField, e);
+			}
+		} else {
+			LOGGER.info(Logging.getString("Id field not found for object : ", object.getClass().getName()));
+		}
+		return null;
+	}
+
+	/**
+	 * Gets the name of the id field in the object.
+	 * 
+	 * @param klass the class of the object
+	 * @return the name of the id field or null if there is no id field defined
+	 */
+	public static String getIdFieldName(final Class<?> klass) {
+		Field field = getIdField(klass, null);
+		return field != null ? field.getName() : null;
 	}
 
 }

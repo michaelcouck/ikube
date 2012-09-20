@@ -3,6 +3,7 @@ package ikube.integration.handler.email;
 import ikube.index.IndexManager;
 import ikube.index.handler.email.IndexableEmailHandler;
 import ikube.integration.AbstractIntegration;
+import ikube.model.IndexContext;
 import ikube.model.IndexableEmail;
 import ikube.notify.IMailer;
 import ikube.notify.Mailer;
@@ -22,19 +23,23 @@ import org.junit.Test;
  * @version 102235366.2215.3688.744RC112556
  */
 public class IndexableEmailHandlerIntegration extends AbstractIntegration {
+	
+	@SuppressWarnings("rawtypes")
+	private IndexContext indexContext;
 
 	@Test
 	public void handle() throws Exception {
+		indexContext = monitorService.getIndexContext("indexContext");
 		IMailer mailer = ApplicationContextManager.getBean(Mailer.class);
 		mailer.sendMail("MailhandlerTest Subject", "Mail handler test mail body");
 		String ip = InetAddress.getLocalHost().getHostAddress();
-		IndexWriter indexWriter = IndexManager.openIndexWriter(realIndexContext, System.currentTimeMillis(), ip);
-		realIndexContext.setIndexWriter(indexWriter);
+		IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
+		indexContext.setIndexWriter(indexWriter);
 
 		IndexableEmail indexableEmail = ApplicationContextManager.getBean(IndexableEmail.class);
 		IndexableEmailHandler indexableEmailHandler = ApplicationContextManager.getBean(IndexableEmailHandler.class);
 
-		indexableEmailHandler.handle(realIndexContext, indexableEmail);
+		indexableEmailHandler.handle(indexContext, indexableEmail);
 
 		// TODO - check that there is some data in the index from the mail
 	}

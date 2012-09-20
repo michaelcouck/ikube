@@ -74,11 +74,11 @@ public class DatabaseUtilitiesTest extends ATest {
 	public void setIdFieldGetIdFieldValueGetIdFieldName() {
 		long id = System.nanoTime();
 		Url url = new Url();
-		DatabaseUtilities.setIdField(url, id);
+		ObjectToolkit.setIdField(url, id);
 		assertEquals("The id should have been set : ", url.getId(), id);
-		Object idField = DatabaseUtilities.getIdFieldValue(url);
+		Object idField = ObjectToolkit.getIdFieldValue(url);
 		assertEquals("The id field should be found : ", idField, id);
-		String idFieldName = DatabaseUtilities.getIdFieldName(Url.class);
+		String idFieldName = ObjectToolkit.getIdFieldName(Url.class);
 		assertEquals("The id field is 'id' : ", "id", idFieldName);
 	}
 
@@ -137,7 +137,7 @@ public class DatabaseUtilitiesTest extends ATest {
 			DatabaseUtilities.close(connection);
 		}
 	}
-	
+
 	@Test
 	public void getFieldNames() {
 		List<String> fieldNames = DatabaseUtilities.getFieldNames(GeoName.class, new ArrayList<String>());

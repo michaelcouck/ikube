@@ -5,10 +5,13 @@ import ikube.database.IDataBase;
 import ikube.index.IndexManager;
 import ikube.integration.toolkit.DataUtilities;
 import ikube.listener.ListenerManager;
+import ikube.listener.Scheduler;
 import ikube.model.IndexContext;
+import ikube.service.IMonitorService;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.Logging;
+import ikube.toolkit.ThreadUtilities;
 import ikube.toolkit.UriUtilities;
 
 import java.io.File;
@@ -28,6 +31,7 @@ import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
 import org.apache.lucene.index.IndexWriter;
 import org.dbunit.ext.h2.H2DataTypeFactory;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 
 @Ignore
@@ -35,26 +39,21 @@ public abstract class AbstractIntegration {
 
 	private static final Logger LOGGER = Logger.getLogger(AbstractIntegration.class);
 
+	private static boolean INITIALIZED = Boolean.FALSE;
 	private static final File DOT_DIRECTORY = new File(".");
 
-	static {
-		Logging.configure();
-		try {
-			FileUtilities.deleteFiles(//
-					DOT_DIRECTORY, //
-					"btm1.tlog", //
-					"btm2.tlog", //
-					"ikube.h2.db", //
-					"ikube.lobs.db", //
-					"ikube.log", //
-					"openjpa.log");
-			Thread.sleep(3000);
-			startContext();
-			Thread.sleep(3000);
-			insertData();
-		} catch (Exception e) {
-			LOGGER.error("Exception inserting the data for the base test : ", e);
+	@BeforeClass
+	public static void beforeClass() throws Exception {
+		if (INITIALIZED) {
+			return;
 		}
+		INITIALIZED = Boolean.TRUE;
+		Logging.configure();
+		startContext();
+		Thread.sleep(3000);
+		insertData();
+		Thread.sleep(3000);
+		FileUtilities.deleteFiles(DOT_DIRECTORY, "btm1.tlog", "btm2.tlog", "ikube.h2.db", "ikube.lobs.db", "ikube.log", "openjpa.log");
 	}
 
 	private static void startContext() {
@@ -62,6 +61,8 @@ public abstract class AbstractIntegration {
 		IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
 		dataBase.find(ikube.model.File.class, 0l);
 		ApplicationContextManager.getBean(ListenerManager.class).removeListeners();
+		ApplicationContextManager.getBean(Scheduler.class).shutdown();
+		ThreadUtilities.destroy();
 	}
 
 	private static void insertData() throws SQLException, FileNotFoundException {
@@ -89,22 +90,16 @@ public abstract class AbstractIntegration {
 		}
 	}
 
-	protected IndexContext<?> realIndexContext;
 	protected Logger logger = Logger.getLogger(this.getClass());
-	{
-		realIndexContext = ApplicationContextManager.getBean("indexContext");
-		FileUtilities.deleteFile(new File(realIndexContext.getIndexDirectoryPath()), 1);
-	}
+	protected IMonitorService monitorService = ApplicationContextManager.getBean(IMonitorService.class);
 
 	/**
 	 * This method creates an index using the index path in the context, the time and the ip and returns the latest index directory, i.e.
 	 * the index that has just been created. Note that if there are still cascading mocks from JMockit, the index writer sill not create the
 	 * index! So you have to tear down all mocks prior to using this method.
 	 * 
-	 * @param indexContext
-	 *            the index context to use for the path to the index
-	 * @param strings
-	 *            the data that must be in the index
+	 * @param indexContext the index context to use for the path to the index
+	 * @param strings the data that must be in the index
 	 * @return the latest index directory, i.e. the one that has just been created
 	 */
 	protected File createIndex(IndexContext<?> indexContext, String... strings) {

@@ -1,8 +1,11 @@
 package ikube.integration.database;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import ikube.IConstants;
 import ikube.database.IDataBase;
+import ikube.model.Action;
 import ikube.model.DataSource;
 import ikube.model.File;
 import ikube.model.IndexContext;
@@ -24,9 +27,6 @@ import ikube.toolkit.ObjectToolkit;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -36,7 +36,7 @@ import javax.persistence.OneToMany;
 import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.util.ReflectionUtils;
 
@@ -51,7 +51,6 @@ import org.springframework.util.ReflectionUtils;
  * @lastChangedBy Michael Couck
  * @lastChangedDate 16-may-12 14:22:16
  */
-@Ignore
 public class EntityIntegration {
 
 	private interface EntityTester {
@@ -59,15 +58,25 @@ public class EntityIntegration {
 	}
 
 	private static final Logger LOGGER = Logger.getLogger(EntityIntegration.class);
-	/** The maximum depth to build the object graph for an entity, generally one level is fine, could be more of course. */
-	private static final int MAX_DEPTH = 1;
 
 	private IDataBase dataBase;
 	/** The names of the classes that we will test in the package. */
-	private Class<?>[] entityClasses = new Class<?>[] { /* Action.class, */DataSource.class, File.class, IndexableColumn.class,
+	private Class<?>[] entityClasses = new Class<?>[] { Action.class, DataSource.class, File.class, IndexableColumn.class,
 			IndexableDictionary.class, IndexableEmail.class, IndexableFileSystem.class, IndexableFileSystemLog.class,
 			IndexableFileSystemWiki.class, IndexableInternet.class, IndexableTable.class, IndexContext.class, Search.class, Server.class,
 			Snapshot.class, Url.class };
+
+	@BeforeClass
+	public static void beforeClass() {
+		ObjectToolkit.registerPredicates(new ObjectToolkit.Predicate() {
+
+			@Override
+			public boolean perform(Object target) {
+				Field field = (Field) target;
+				return isCascadeTypeAll(field) && containsJpaAnnotations(field);
+			}
+		});
+	}
 
 	@Before
 	public void before() {
@@ -92,7 +101,8 @@ public class EntityIntegration {
 			@Override
 			public void doWithEntity(Object entity, Class<?> entityClass) {
 				// Build a graph for all the entities, penetrating one level deep
-				populateFields(entityClass, entity, true, 0);
+				ObjectToolkit.populateFields(entityClass, entity, true, 0, 3, IConstants.ID);
+				// populateFields(entityClass, entity, true, 0);
 				LOGGER.info("Entity : " + entity);
 				// Insert the object graph
 				dataBase.persist(entity);
@@ -113,7 +123,8 @@ public class EntityIntegration {
 			@Override
 			public void doWithEntity(final Object entity, final Class<?> entityClass) {
 				// Build a graph for all the entities, penetrating one level deep
-				populateFields(entityClass, entity, false, 0);
+				ObjectToolkit.populateFields(entityClass, entity, true, 0, 3, IConstants.ID);
+				// populateFields(entityClass, entity, false, 0);
 				LOGGER.info("Entity : " + entity);
 				// Insert the object graph
 				dataBase.persist(entity);
@@ -127,18 +138,28 @@ public class EntityIntegration {
 						LOGGER.info("Entity class : " + entityClass + ", " + field);
 						dataBase.merge(entity);
 						// Check the database that the entity is updated
-						String sql = buildSql(entityClass, field);
-						Object result;
+						Object result = null;
 						try {
-							result = dataBase.find(entityClass, sql, new String[] { field.getName() }, new Object[] { field.get(entity) });
+							Object id = ObjectToolkit.getIdFieldValue(entity);
+							if (id != null) {
+								result = dataBase.find(entity.getClass(), (Long) id);
+							}
 						} catch (RuntimeException e) {
 							throw e;
 						}
 						assertNotNull(result);
+						if (value != null) {
+							Object fieldValue = ReflectionUtils.getField(field, entity);
+							assertEquals(value, fieldValue);
+						}
 					}
 				}, new ReflectionUtils.FieldFilter() {
 					@Override
 					public boolean matches(Field field) {
+						if (field == null || field.getType() == null || field.getType().getPackage() == null
+								|| field.getType().getPackage().getName() == null) {
+							return false;
+						}
 						return containsJpaAnnotations(field)
 								&& field.getType().getPackage().getName().contains(Object.class.getPackage().getName());
 					}
@@ -153,12 +174,13 @@ public class EntityIntegration {
 	@Test
 	public void remove() throws Exception {
 		doTest(new EntityTester() {
-			@SuppressWarnings("synthetic-access")
 			@Override
+			@SuppressWarnings("synthetic-access")
 			public void doWithEntity(Object entity, Class<?> entityClass) {
 				int existingRecords = dataBase.count(entityClass).intValue();
 				// Build a graph for all the entities, penetrating one level deep
-				populateFields(entityClass, entity, true, 0);
+				ObjectToolkit.populateFields(entityClass, entity, true, 0, 3, IConstants.ID);
+				// populateFields(entityClass, entity, true, 0);
 				LOGGER.info("Entity : " + entity);
 				// Insert the object graph
 				dataBase.persist(entity);
@@ -170,73 +192,6 @@ public class EntityIntegration {
 		});
 	}
 
-	private String buildSql(final Class<?> entityClass, final Field field) {
-		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.append("select e from ");
-		stringBuilder.append(entityClass.getSimpleName());
-		stringBuilder.append(" as e where e.");
-		stringBuilder.append(field.getName());
-		stringBuilder.append(" = :");
-		stringBuilder.append(field.getName());
-		// Should be something like 'select e from CommercialOffer as e where e.id = :id'
-		return stringBuilder.toString();
-	}
-
-	/**
-	 * This method will build an object graph for the entity to e certain depth. In the case where the entity contains a collection of
-	 * classes then the collection will also be instantiated, and one member will be added to the collection.
-	 * 
-	 * @param klass the class to build a graph for
-	 * @param target the target object to populate
-	 * @param depth the current depth in the object graph
-	 * @return the target object populated to a certain depth
-	 */
-	@SuppressWarnings("synthetic-access")
-	private <T> T populateFields(final Class<?> klass, final T target, final boolean collections, final int depth) {
-		ReflectionUtils.doWithFields(klass, new ReflectionUtils.FieldCallback() {
-			@Override
-			public void doWith(Field field) throws IllegalArgumentException, IllegalAccessException {
-				try {
-					Object fieldValue = null;
-					boolean isCollection = Collection.class.isAssignableFrom(field.getType());
-					if (field.getType().isEnum()) {
-						// Enum type, just get any one
-						fieldValue = ObjectToolkit.getEnum(field.getType());
-					} else if (!isCollection && field.getType().getName().startsWith("java")) {
-						// Java type, get the most appropriate
-						fieldValue = ObjectToolkit.getObject(field.getType());
-					} else if (depth < MAX_DEPTH) {
-						if (!isCollection) {
-							// If this is not a primitive then populate all the fields
-							fieldValue = ObjectToolkit.getObject(field.getType());
-							populateFields(fieldValue.getClass(), fieldValue, collections, depth + 1);
-						} else if (collections && isCascadeTypeAll(field)) {
-							// Check that the mapping is CascadeType.ALL or the persist will throw an exception
-							// Init the collection and add one member
-							ParameterizedType stringListType = (ParameterizedType) field.getGenericType();
-							Class<?> collectionKlass = (Class<?>) stringListType.getActualTypeArguments()[0];
-							LOGGER.info("Collection class type : " + collectionKlass);
-							Object collectionEntity = collectionKlass.newInstance();
-							populateFields(collectionKlass, collectionEntity, collections, 0);
-							fieldValue = Arrays.asList(collectionEntity);
-						}
-					}
-					field.setAccessible(Boolean.TRUE);
-					field.set(target, fieldValue);
-				} catch (Exception e) {
-					LOGGER.error(null, e);
-				}
-			}
-		}, new ReflectionUtils.FieldFilter() {
-			@Override
-			public boolean matches(Field field) {
-				// We don't set the fields that are static or id fields, only the column fields
-				return containsJpaAnnotations(field);
-			}
-		});
-		return target;
-	}
-
 	/**
 	 * This method will check that the Jpa mapping is cascade type all so that adding one to the collection and persisting the parent will
 	 * not throw an exception that the child is not persisted or transient.
@@ -244,8 +199,11 @@ public class EntityIntegration {
 	 * @param field the field to check for the cascade type
 	 * @return whether the cascade type includes the all type
 	 */
-	private boolean isCascadeTypeAll(final Field field) {
+	private static boolean isCascadeTypeAll(final Field field) {
 		OneToMany oneToMany = field.getAnnotation(OneToMany.class);
+		if (oneToMany == null) {
+			return Boolean.FALSE;
+		}
 		CascadeType[] cascadeTypes = oneToMany.cascade();
 		for (CascadeType cascadeType : cascadeTypes) {
 			if (CascadeType.ALL.equals(cascadeType)) {
@@ -261,7 +219,7 @@ public class EntityIntegration {
 	 * @param field the field to check for Jpa annotations
 	 * @return whether this field is a persisted type
 	 */
-	private boolean containsJpaAnnotations(final Field field) {
+	private static boolean containsJpaAnnotations(final Field field) {
 		boolean isJpa = Boolean.FALSE;
 		Annotation[] annotations = field.getAnnotations();
 		for (Annotation annotation : annotations) {

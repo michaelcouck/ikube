@@ -106,6 +106,8 @@ public class SpringApplicationServlet extends AbstractApplicationServlet {
 		page.write("document.write(\"<script language='javascript' src='./jquery/jquery-1.4.4.min.js'><\\/script>\");\n");
 		page.write("document.write(\"<script language='javascript' src='./js/highcharts.js'><\\/script>\");\n");
 		page.write("document.write(\"<script language='javascript' src='./js/modules/exporting.js'><\\/script>\");\n");
+		page.write("document.write(\"<script language='javascript' src='http://www.google-analytics.com/ga.js'><\\/script>\");\n");
+		page.write("document.write(\"<script language='javascript' src='./js/ikube.js'><\\/script>\");\n");
 		page.write("//]]>\n</script>\n");
 		super.writeAjaxPageHtmlVaadinScripts(window, themeName, application, page, appUrl, themeUri, appId, request);
 	}

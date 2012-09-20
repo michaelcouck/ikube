@@ -189,6 +189,7 @@
 		<bean class="ikube.listener.IndexSizeListener" />
 		<bean class="ikube.listener.ActionListener" />
 		<bean class="ikube.listener.IndexContextListener" />
+		<bean class="ikube.toolkit.ThreadUtilities" />
 	</util:list>
 	
 	<bean 

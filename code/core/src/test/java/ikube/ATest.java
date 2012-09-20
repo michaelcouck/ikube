@@ -105,10 +105,13 @@ public abstract class ATest {
 	protected IClusterManager clusterManager = mock(IClusterManager.class);
 	protected IndexableTable indexableTable = mock(IndexableTable.class);
 	protected IndexableColumn indexableColumn = mock(IndexableColumn.class);
+	@SuppressWarnings("rawtypes")
+	protected Map<String, IndexContext> indexContexts;
 
 	protected String indexDirectoryPath = "./indexes";
 	protected String indexDirectoryPathBackup = "./indexes/backup";
 
+	@SuppressWarnings("rawtypes")
 	public ATest(Class<?> subClass) {
 		logger = LoggerFactory.getLogger(subClass);
 		searchables = new Searchable[] { indexSearcher };
@@ -171,6 +174,9 @@ public abstract class ATest {
 		IndexManagerMock.setIndexWriter(indexWriter);
 		ApplicationContextManagerMock.setIndexContext(indexContext);
 		ApplicationContextManagerMock.setClusterManager(clusterManager);
+		
+		indexContexts = new HashMap<String, IndexContext>();
+		indexContexts.put(indexContext.getIndexName(), indexContext);
 	}
 
 	protected void delete(final IDataBase dataBase, final Class<?>... klasses) {

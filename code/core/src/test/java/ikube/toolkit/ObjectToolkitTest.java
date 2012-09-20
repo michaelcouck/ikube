@@ -2,6 +2,7 @@ package ikube.toolkit;
 
 import static org.junit.Assert.assertTrue;
 import ikube.ATest;
+import ikube.IConstants;
 import ikube.model.IndexContext;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -20,10 +21,16 @@ public class ObjectToolkitTest extends ATest {
 	@Test
 	@SuppressWarnings("rawtypes")
 	public void populateFields() {
-		IndexContext<?> indexContext = ObjectToolkit.populateFields(IndexContext.class, new IndexContext(), true, 0, 3);
+		indexContext = ObjectToolkit.populateFields(IndexContext.class, new IndexContext(), true, 0, 3);
 		LOGGER.info("Index context : " + ToStringBuilder.reflectionToString(indexContext));
 		assertTrue(indexContext.getId() > 0);
 		assertTrue(indexContext.getName() != null);
+
+		indexContext = ObjectToolkit.populateFields(IndexContext.class, new IndexContext(), true, 0, 0, IConstants.ID);
+		LOGGER.info("Index context : " + ToStringBuilder.reflectionToString(indexContext));
+		assertTrue(indexContext.getId() == 0);
+		assertTrue(indexContext.getName() != null);
+		assertTrue(indexContext.getBufferSize() != 0.0);
 	}
 
 }

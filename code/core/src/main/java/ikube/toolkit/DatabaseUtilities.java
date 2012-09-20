@@ -8,12 +8,9 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.persistence.Column;
-import javax.persistence.Id;
 import javax.sql.DataSource;
 
 import org.apache.log4j.Logger;
@@ -29,7 +26,6 @@ import org.springframework.util.ReflectionUtils;
 public final class DatabaseUtilities {
 
 	private static final Logger LOGGER = Logger.getLogger(DatabaseUtilities.class);
-	private static final Map<Class<?>, Field> ID_FIELDS = new HashMap<Class<?>, Field>();
 
 	/**
 	 * Singularity.
@@ -163,87 +159,6 @@ public final class DatabaseUtilities {
 	}
 
 	/**
-	 * This method will look into an object and try to find the field that is the id field in the object, then set it with the id specified
-	 * in the parameter list.
-	 * 
-	 * @param <T> the type of object to set the id field for
-	 * @param object the object to set the id field for
-	 * @param id the id to set in the object
-	 */
-	public static <T> void setIdField(final T object, final long id) {
-		if (object == null) {
-			return;
-		}
-		Field idField = getIdField(object.getClass(), null);
-		if (idField != null) {
-			try {
-				idField.set(object, id);
-			} catch (IllegalArgumentException e) {
-				LOGGER.error("Can't set the id : " + id + ", in the field : " + idField + ", of object : " + object, e);
-			} catch (IllegalAccessException e) {
-				LOGGER.error("Field not accessible : " + idField, e);
-			}
-		} else {
-			LOGGER.warn("No id field defined for object : " + object);
-		}
-	}
-
-	/**
-	 * Gets the id field in an object. The id field is defined by the {@link Id} annotation.
-	 * 
-	 * @param klass the class of the object
-	 * @param superKlass the super class of the object
-	 * @return the id field for the object or null if there is no field designated as the id
-	 */
-	public static Field getIdField(final Class<?> klass, final Class<?> superKlass) {
-		Field idField = ID_FIELDS.get(klass);
-		if (idField != null) {
-			return idField;
-		}
-		Field[] fields = superKlass != null ? superKlass.getDeclaredFields() : klass.getDeclaredFields();
-		for (Field field : fields) {
-			Id idAnnotation = field.getAnnotation(Id.class);
-			if (idAnnotation != null) {
-				ID_FIELDS.put(klass, field);
-				field.setAccessible(Boolean.TRUE);
-				return field;
-			}
-		}
-		// Try the super classes
-		Class<?> superClass = superKlass != null ? superKlass.getSuperclass() : klass.getSuperclass();
-		if (superClass != null && !Object.class.getName().equals(superClass.getName())) {
-			return getIdField(klass, superClass);
-		}
-		return null;
-	}
-
-	/**
-	 * Gets the value of the id foeld of an object.
-	 * 
-	 * @param <T> the type of object
-	 * @param object the object to find the id field value in
-	 * @return the id field value for the object or null if there is no id field or if the id field is null
-	 */
-	public static <T> Object getIdFieldValue(final T object) {
-		if (object == null) {
-			return null;
-		}
-		Field idField = getIdField(object.getClass(), null);
-		if (idField != null) {
-			try {
-				return idField.get(object);
-			} catch (IllegalArgumentException e) {
-				LOGGER.error("Can't get the id in the field : " + idField + ", of object : " + object, e);
-			} catch (IllegalAccessException e) {
-				LOGGER.error("Field not accessible : " + idField, e);
-			}
-		} else {
-			LOGGER.info(Logging.getString("Id field not found for object : ", object.getClass().getName()));
-		}
-		return null;
-	}
-
-	/**
 	 * This method just returns all the column names for a particular table.
 	 * 
 	 * @param connection the connection to the database
@@ -339,17 +254,6 @@ public final class DatabaseUtilities {
 			close(importedKeys);
 		}
 		return foreignKeys;
-	}
-
-	/**
-	 * Gets the name of the id field in the object.
-	 * 
-	 * @param klass the class of the object
-	 * @return the name of the id field or null if there is no id field defined
-	 */
-	public static String getIdFieldName(final Class<?> klass) {
-		Field field = getIdField(klass, null);
-		return field != null ? field.getName() : null;
 	}
 
 	public static List<String> getFieldNames(final Class<?> klass, final List<String> fieldNames) {

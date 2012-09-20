@@ -34,8 +34,10 @@ import mockit.Deencapsulation;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
-import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -45,60 +47,71 @@ import org.junit.Test;
  * @since 12.10.2010
  * @version 01.00
  */
+@Ignore
 public class IndexableTableHandlerIntegration extends AbstractIntegration {
 
-	private IndexableTable faqIndexableTable;
-	private IndexableColumn faqIdIndexableColumn;
-	private IndexableTable attachmentIndexableTable;
-	private List<Indexable<?>> faqIndexableColumns;
-	private IndexableTableHandler indexableTableHandler;
-	private Connection connection;
+	@SuppressWarnings("rawtypes")
+	private static IndexContext INDEX_CONTEXT;
+	private static IndexableTable FAQ_INDEXABLE_TABLE;
+	private static IndexableColumn FAQ_INDEXABLE_COLUMN;
+	private static IndexableTable ATTACHMENT_INDEXABLE_TABLE;
+	private static List<Indexable<?>> FAQ_INDEXABLETABLE_CHILDREN;
+	private static IndexableTableHandler indexableTableHandler;
+	private static Connection connection;
 
-	@Before
-	public void before() throws Exception {
+	@BeforeClass
+	public static void beforeClass() throws Exception {
+		AbstractIntegration.beforeClass();
+		ThreadUtilities.initialize();
 		indexableTableHandler = ApplicationContextManager.getBean(IndexableTableHandler.class);
-		faqIndexableTable = ApplicationContextManager.getBean("faqTableH2");
-		attachmentIndexableTable = ApplicationContextManager.getBean("attachmentTableH2");
-		faqIndexableColumns = faqIndexableTable.getChildren();
-		faqIdIndexableColumn = Deencapsulation.invoke(indexableTableHandler, "getIdColumn", faqIndexableColumns);
+		FAQ_INDEXABLE_TABLE = ApplicationContextManager.getBean("faqTableH2");
+		ATTACHMENT_INDEXABLE_TABLE = ApplicationContextManager.getBean("attachmentTableH2");
+		FAQ_INDEXABLETABLE_CHILDREN = FAQ_INDEXABLE_TABLE.getChildren();
+		FAQ_INDEXABLE_COLUMN = Deencapsulation.invoke(indexableTableHandler, "getIdColumn", FAQ_INDEXABLETABLE_CHILDREN);
 		connection = ((DataSource) ApplicationContextManager.getBean("nonXaDataSourceH2")).getConnection();
 		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
 		clusterManager.getServer().getActions().clear();
 	}
 
-	@After
-	public void after() {
+	@Before
+	public void before() {
+		INDEX_CONTEXT = monitorService.getIndexContext("INDEX_CONTEXT");
+	}
+
+	@AfterClass
+	public static void afterClass() {
+		ThreadUtilities.destroy();
 		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
 		clusterManager.getServer().getActions().clear();
-		DatabaseUtilities.close(connection);
+		// DatabaseUtilities.close(connection);
 	}
 
 	@Test
 	public void handleTableSingleRow() throws Exception {
-		String predicate = faqIndexableTable.getPredicate();
+		String predicate = FAQ_INDEXABLE_TABLE.getPredicate();
 		try {
 			String ip = InetAddress.getLocalHost().getHostAddress();
-			IndexWriter indexWriter = IndexManager.openIndexWriter(realIndexContext, System.currentTimeMillis(), ip);
-			realIndexContext.setIndexWriter(indexWriter);
-			faqIndexableTable.setPredicate("where faq.faqId = 330451");
+			IndexWriter indexWriter = IndexManager.openIndexWriter(INDEX_CONTEXT, System.currentTimeMillis(), ip);
+			INDEX_CONTEXT.setIndexWriter(indexWriter);
+			FAQ_INDEXABLE_TABLE.setPredicate("where faq.faqId = 330451");
 			// DatabaseUtilities.printResultSet(connection.createStatement().executeQuery("select * from faq"));
-			List<Future<?>> threads = indexableTableHandler.handle(realIndexContext, faqIndexableTable);
+			List<Future<?>> threads = indexableTableHandler.handle(INDEX_CONTEXT, FAQ_INDEXABLE_TABLE);
 			ThreadUtilities.waitForFutures(threads, Integer.MAX_VALUE);
-			assertEquals("There must be exactly one document in the index : ", 1, realIndexContext.getIndexWriter().numDocs());
+			assertEquals("There must be exactly one document in the index : ", 1, INDEX_CONTEXT.getIndexWriter().numDocs());
 		} finally {
-			faqIndexableTable.setPredicate(predicate);
+			FAQ_INDEXABLE_TABLE.setPredicate(predicate);
 		}
 	}
 
 	@Test
 	public void buildSql() throws Exception {
-		realIndexContext.setBatchSize(10);
+		INDEX_CONTEXT.setBatchSize(10);
 		String expectedSql = "select faq.faqid, faq.answer, faq.creationtimestamp, faq.creator, faq.modifiedtimestamp, faq.modifier, "
 				+ "faq.published, faq.question from faq";
 		long nextIdNumber = 0;
-		long batchSize = realIndexContext.getBatchSize();
-		Deencapsulation.invoke(indexableTableHandler, "addAllColumns", faqIndexableTable, connection);
-		String sql = Deencapsulation.invoke(indexableTableHandler, "buildSql", faqIndexableTable, batchSize, nextIdNumber);
+		long batchSize = INDEX_CONTEXT.getBatchSize();
+		Deencapsulation.invoke(indexableTableHandler, "addAllColumns", FAQ_INDEXABLE_TABLE, connection);
+		String sql = Deencapsulation.invoke(indexableTableHandler, "buildSql", FAQ_INDEXABLE_TABLE, batchSize, nextIdNumber);
 		sql = sql.toLowerCase();
 		logger.info("Sql : " + sql);
 		assertTrue(sql.contains(expectedSql));
@@ -106,27 +119,27 @@ public class IndexableTableHandlerIntegration extends AbstractIntegration {
 
 	@Test
 	public void getIdFunction() throws Exception {
-		Long minId = Deencapsulation.invoke(indexableTableHandler, "getIdFunction", faqIndexableTable, connection, "min");
+		Long minId = Deencapsulation.invoke(indexableTableHandler, "getIdFunction", FAQ_INDEXABLE_TABLE, connection, "min");
 		logger.debug("Min id : " + minId);
 		assertTrue("This is dependant on the database being used : ", minId > 0);
-		Long maxId = Deencapsulation.invoke(indexableTableHandler, "getIdFunction", faqIndexableTable, connection, "max");
+		Long maxId = Deencapsulation.invoke(indexableTableHandler, "getIdFunction", FAQ_INDEXABLE_TABLE, connection, "max");
 		logger.debug("Max id : " + maxId);
 		assertTrue(maxId < 1000000000);
 	}
 
 	@Test
 	public void getIdColumn() throws Exception {
-		IndexableColumn idColumn = Deencapsulation.invoke(indexableTableHandler, "getIdColumn", faqIndexableTable.getChildren());
+		IndexableColumn idColumn = Deencapsulation.invoke(indexableTableHandler, "getIdColumn", FAQ_INDEXABLE_TABLE.getChildren());
 		assertNotNull(idColumn);
 		assertEquals("faqId", idColumn.getName());
 	}
 
 	@Test
 	public void setParameters() throws Exception {
-		faqIdIndexableColumn.setContent(1);
+		FAQ_INDEXABLE_COLUMN.setContent(1);
 		String sql = "select * from attachment where faqId = ?";
 		PreparedStatement preparedStatement = connection.prepareStatement(sql);
-		Deencapsulation.invoke(indexableTableHandler, "setParameters", attachmentIndexableTable, preparedStatement);
+		Deencapsulation.invoke(indexableTableHandler, "setParameters", ATTACHMENT_INDEXABLE_TABLE, preparedStatement);
 		// Execute this statement just for shits and giggles
 		ResultSet resultSet = preparedStatement.executeQuery();
 		assertNotNull(resultSet);
@@ -137,9 +150,9 @@ public class IndexableTableHandlerIntegration extends AbstractIntegration {
 
 	@Test
 	public void getResultSet() throws Exception {
-		faqIdIndexableColumn.setContent(1);
-		ResultSet resultSet = Deencapsulation.invoke(indexableTableHandler, "getResultSet", realIndexContext, faqIndexableTable,
-				connection, new AtomicLong(0), 1);
+		FAQ_INDEXABLE_COLUMN.setContent(1);
+		ResultSet resultSet = Deencapsulation.invoke(indexableTableHandler, "getResultSet", INDEX_CONTEXT, FAQ_INDEXABLE_TABLE, connection,
+				new AtomicLong(0), 1);
 		assertNotNull(resultSet);
 
 		Statement statement = resultSet.getStatement();
@@ -149,7 +162,7 @@ public class IndexableTableHandlerIntegration extends AbstractIntegration {
 
 	@Test
 	public void handleColumn() throws Exception {
-		IndexableColumn faqIdIndexableColumn = Deencapsulation.invoke(indexableTableHandler, "getIdColumn", faqIndexableColumns);
+		IndexableColumn faqIdIndexableColumn = Deencapsulation.invoke(indexableTableHandler, "getIdColumn", FAQ_INDEXABLETABLE_CHILDREN);
 		faqIdIndexableColumn.setContent("Hello World!");
 		faqIdIndexableColumn.setColumnType(Types.VARCHAR);
 		Document document = new Document();
@@ -166,8 +179,8 @@ public class IndexableTableHandlerIntegration extends AbstractIntegration {
 		ResultSet resultSet = statement.executeQuery("select * from faq");
 		resultSet.next();
 
-		Deencapsulation.invoke(indexableTableHandler, "setColumnTypesAndData", faqIndexableColumns, resultSet);
-		Deencapsulation.invoke(indexableTableHandler, "setIdField", faqIndexableTable, document);
+		Deencapsulation.invoke(indexableTableHandler, "setColumnTypesAndData", FAQ_INDEXABLETABLE_CHILDREN, resultSet);
+		Deencapsulation.invoke(indexableTableHandler, "setIdField", FAQ_INDEXABLE_TABLE, document);
 
 		logger.debug("Document : " + document);
 		String idFieldValue = document.get(IConstants.ID);
@@ -181,15 +194,15 @@ public class IndexableTableHandlerIntegration extends AbstractIntegration {
 
 	@Test
 	public void setColumnTypes() throws Exception {
-		faqIdIndexableColumn.setColumnType(0);
+		FAQ_INDEXABLE_COLUMN.setColumnType(0);
 		Statement statement = connection.createStatement();
 		ResultSet resultSet = statement.executeQuery("select * from faq");
 		resultSet.next();
 
-		Deencapsulation.invoke(indexableTableHandler, "setColumnTypesAndData", faqIndexableColumns, resultSet);
+		Deencapsulation.invoke(indexableTableHandler, "setColumnTypesAndData", FAQ_INDEXABLETABLE_CHILDREN, resultSet);
 
-		logger.debug("Faq id column type : " + faqIdIndexableColumn.getColumnType());
-		assertEquals(Types.BIGINT, faqIdIndexableColumn.getColumnType());
+		logger.debug("Faq id column type : " + FAQ_INDEXABLE_COLUMN.getColumnType());
+		assertEquals(Types.BIGINT, FAQ_INDEXABLE_COLUMN.getColumnType());
 
 		DatabaseUtilities.close(resultSet);
 		DatabaseUtilities.close(statement);
@@ -198,18 +211,18 @@ public class IndexableTableHandlerIntegration extends AbstractIntegration {
 	@Test
 	public void handleTable() throws Exception {
 		String ip = InetAddress.getLocalHost().getHostAddress();
-		IndexWriter indexWriter = IndexManager.openIndexWriter(realIndexContext, System.currentTimeMillis(), ip);
-		realIndexContext.setIndexWriter(indexWriter);
+		IndexWriter indexWriter = IndexManager.openIndexWriter(INDEX_CONTEXT, System.currentTimeMillis(), ip);
+		INDEX_CONTEXT.setIndexWriter(indexWriter);
 		// DatabaseUtilities.printResultSet(connection.createStatement().executeQuery("select * from faq"));
-		List<Future<?>> threads = indexableTableHandler.handle(realIndexContext, faqIndexableTable);
+		List<Future<?>> threads = indexableTableHandler.handle(INDEX_CONTEXT, FAQ_INDEXABLE_TABLE);
 		ThreadUtilities.waitForFutures(threads, Integer.MAX_VALUE);
-		assertTrue("There must be some data in the index : ", realIndexContext.getIndexWriter().numDocs() > 0);
+		assertTrue("There must be some data in the index : ", INDEX_CONTEXT.getIndexWriter().numDocs() > 0);
 	}
 
 	@Test
 	public void handleAllColumnsTable() throws Exception {
 		IndexableTable indexable = ApplicationContextManager.getBean("patientTableH2");
-		IndexContext<?> indexContext = ApplicationContextManager.getBean("indexContext");
+		IndexContext<?> indexContext = ApplicationContextManager.getBean("INDEX_CONTEXT");
 		String ip = InetAddress.getLocalHost().getHostAddress();
 		IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
 		indexContext.setIndexWriter(indexWriter);
@@ -221,7 +234,7 @@ public class IndexableTableHandlerIntegration extends AbstractIntegration {
 
 	@Test
 	public void handleAllColumnsAllTables() throws Exception {
-		IndexContext<?> indexContext = ApplicationContextManager.getBean("indexContext");
+		IndexContext<?> indexContext = ApplicationContextManager.getBean("INDEX_CONTEXT");
 		String ip = InetAddress.getLocalHost().getHostAddress();
 		IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
 		indexContext.setIndexWriter(indexWriter);

@@ -3,7 +3,6 @@ package ikube.action;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.when;
 import ikube.ATest;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.toolkit.FileUtilities;
@@ -36,19 +35,19 @@ public class DeleteTest extends ATest {
 
 	@Before
 	public void before() {
-		// , IndexSearcherMock.class, IndexReaderMock.class, MultiSearcherMock.class
-		Mockit.setUpMocks(ApplicationContextManagerMock.class);
-		when(indexContext.getIndexDirectoryPath()).thenReturn("./" + this.getClass().getSimpleName());
-		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
 		delete = new Delete();
 		Deencapsulation.setField(delete, clusterManager);
+		
+		Mockit.setUpMocks(ApplicationContextManagerMock.class);
+		// when(indexContext.getIndexDirectoryPath()).thenReturn("./" + this.getClass().getSimpleName());
+		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
 	}
 
 	@After
 	public void after() throws Exception {
 		Mockit.tearDownMocks();
 		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
-		when(indexContext.getIndexDirectoryPath()).thenReturn(indexDirectoryPath);
+		// when(indexContext.getIndexDirectoryPath()).thenReturn(indexDirectoryPath);
 	}
 
 	@Test
@@ -86,26 +85,26 @@ public class DeleteTest extends ATest {
 		Directory directory = FSDirectory.open(latestIndexDirectory);
 		Lock lock = getLock(directory, latestIndexDirectory);
 
-		// Three directories, one locked there should be three left
+		// Three directories, one locked there should be two left
 		deleted = delete.execute(indexContext);
-		assertFalse(deleted);
-		assertEquals(3, latestIndexDirectory.getParentFile().getParentFile().listFiles().length);
+		assertTrue(deleted);
+		assertEquals(2, latestIndexDirectory.getParentFile().getParentFile().listFiles().length);
 
 		lock.release();
 		directory.clearLock(IndexWriter.WRITE_LOCK_NAME);
 
 		/*************************************/
 		latestIndexDirectory = createIndex(indexContext, "some strings");
-		assertEquals(4, latestIndexDirectory.getParentFile().getParentFile().listFiles().length);
+		assertEquals(3, latestIndexDirectory.getParentFile().getParentFile().listFiles().length);
 
 		directory = FSDirectory.open(latestIndexDirectory);
 		lock = getLock(directory, latestIndexDirectory);
 		assertTrue(IndexWriter.isLocked(directory));
 
-		// Four directories, one locked, one should be gone
+		// Three directories, one locked, one should be gone
 		deleted = delete.execute(indexContext);
 		assertTrue(deleted);
-		assertEquals(3, latestIndexDirectory.getParentFile().getParentFile().listFiles().length);
+		assertEquals(2, latestIndexDirectory.getParentFile().getParentFile().listFiles().length);
 
 		lock.release();
 		directory.clearLock(IndexWriter.WRITE_LOCK_NAME);

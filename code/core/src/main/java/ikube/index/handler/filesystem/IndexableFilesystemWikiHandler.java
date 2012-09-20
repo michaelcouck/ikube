@@ -129,11 +129,11 @@ public class IndexableFilesystemWikiHandler extends IndexableHandler<IndexableFi
 			// Add the documents to the index
 			handleRevision(indexContext, indexableFileSystem, content);
 			counter.counter++;
-			if (counter.counter % 10000 == 0) {
-				long duration = System.currentTimeMillis() - start;
-				double perSecond = counter.counter / (duration / 1000);
-				logger.info("Revisions done : " + counter.counter + ", " + file.getName() + ", " + perSecond);
-			}
+			// if (counter.counter % 10000 == 0) {
+			// long duration = System.currentTimeMillis() - start;
+			// double perSecond = counter.counter / (duration / 1000);
+			// logger.info("Revisions done : " + counter.counter + ", " + file.getName() + ", " + perSecond);
+			// }
 		}
 	}
 

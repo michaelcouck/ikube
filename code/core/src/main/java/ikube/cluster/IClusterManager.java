@@ -1,14 +1,10 @@
 package ikube.cluster;
 
-import ikube.IConstants;
 import ikube.model.Action;
-import ikube.model.Search;
 import ikube.model.Server;
 
 import java.io.Serializable;
 import java.util.Map;
-
-import org.springframework.security.annotation.Secured;
 
 /**
  * This is the interface that will synchronize and coordinate the servers in the cluster. The implementors are critical to the functioning
@@ -106,11 +102,5 @@ public interface IClusterManager {
 	 *        to be serializable
 	 */
 	void putObject(final Object key, final Object value);
-
-	@Deprecated
-	Search getSearch(final String searchKey);
-
-	@Deprecated
-	void setSearch(final String searchKey, final Search search);
 
 }

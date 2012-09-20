@@ -42,27 +42,27 @@ public class IndexableFileSystem extends Indexable<IndexableFileSystem> {
 	@Column
 	@NotNull
 	@Size(min = 1, max = 256)
-	@Attribute(field = false, description = "This is the file name field in the Lucene index")
+	@Attribute(field = true, description = "This is the file name field in the Lucene index", name = "nameFieldName")
 	private String nameFieldName;
 	@Column
 	@NotNull
 	@Size(min = 1, max = 256)
-	@Attribute(field = false, description = "This is the name of the path field in the Lucene index")
+	@Attribute(field = true, description = "This is the name of the path field in the Lucene index", name = "pathFieldName")
 	private String pathFieldName;
 	@Column
 	@NotNull
 	@Size(min = 1, max = 256)
-	@Attribute(field = false, description = "This is the name of the last modified field in the Lucene index")
+	@Attribute(field = true, description = "This is the name of the last modified field in the Lucene index", name = "lastModifiedFieldName")
 	private String lastModifiedFieldName;
 	@Column
 	@NotNull
 	@Size(min = 1, max = 256)
-	@Attribute(field = false, description = "This is the name of the content field in the Lucene index")
+	@Attribute(field = true, description = "This is the name of the content field in the Lucene index", name = "contentFieldName")
 	private String contentFieldName;
 	@Column
 	@NotNull
 	@Size(min = 1, max = 256)
-	@Attribute(field = false, description = "This is the name of the length field in the Lucene index")
+	@Attribute(field = true, description = "This is the name of the length field in the Lucene index", name = "lengthFieldName")
 	private String lengthFieldName;
 	@Column
 	@Min(value = 1)
@@ -71,7 +71,7 @@ public class IndexableFileSystem extends Indexable<IndexableFileSystem> {
 	private int batchSize;
 	@Column
 	@Attribute(description = "Whether wo unpack the zip files found, this is deprecated and done automatically")
-	private boolean unpackZips;
+	private boolean unpackZips = Boolean.TRUE;
 
 	public String getPath() {
 		return path;
