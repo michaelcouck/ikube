@@ -42,7 +42,7 @@
 		<ref bean="ikube.action.Delete" />
 		<ref bean="ikube.action.Clean" />
 		<ref bean="ikube.action.Backup" />
-		<ref bean="ikube.action.DiskFull" />
+		<!-- <ref bean="ikube.action.DiskFull" /> -->
 		<ref bean="ikube.action.Validator" />
 		<ref bean="ikube.action.Prune" />
 	</util:list>

@@ -58,7 +58,7 @@
 			then OpenJpa will use these to get a connection to the db and can then commit on
 			that connection as it will not be xa. -->
 		
-		<properties>
+		<!-- <properties>
 			<property name="openjpa.Connection2UserName" value="sa" />
 			<property name="openjpa.Connection2Password" value="" />
 			<property name="openjpa.Connection2URL" value="jdbc:h2:file:ikube/ikube" />
@@ -68,7 +68,7 @@
 			<property name="openjpa.ConnectionURL" value="jdbc:h2:file:ikube/ikube" />
 			<property name="openjpa.ConnectionDriverName" value="org.h2.Driver" />
 			<property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
-		</properties>
+		</properties> -->
 	</persistence-unit>
 	
  	<persistence-unit name="IkubePersistenceUnitDb2" transaction-type="RESOURCE_LOCAL">

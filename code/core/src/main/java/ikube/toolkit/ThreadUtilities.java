@@ -31,6 +31,7 @@ public final class ThreadUtilities implements IListener {
 
 	/** Executes the 'threads' and returns a future. */
 	private static ExecutorService EXECUTER_SERVICE;
+
 	/** A list of futures by name so we can kill them. */
 	private static final Map<String, List<Future<?>>> FUTURES = new HashMap<String, List<Future<?>>>();
 
@@ -42,18 +43,34 @@ public final class ThreadUtilities implements IListener {
 	 * @return the future that is being submitted to execute
 	 */
 	public static Future<?> submit(final String name, final Runnable runnable) {
-		Future<?> future = submit(runnable);
-		getFutures(name).add(future);
-		LOGGER.info("Submit future : " + name);
-		return future;
+		synchronized (ThreadUtilities.class) {
+			try {
+				Future<?> future = submit(runnable);
+				getFutures(name).add(future);
+				LOGGER.info("Submit future : " + name);
+				return future;
+			} finally {
+				ThreadUtilities.class.notifyAll();
+			}
+		}
 	}
 
-	private static List<Future<?>> getFutures(final String name) {
-		List<Future<?>> futures = FUTURES.get(name);
-		if (futures == null) {
-			futures = new ArrayList<Future<?>>();
-			FUTURES.put(name, futures);
+	private static synchronized List<Future<?>> getFutures(final String name) {
+		try {
+			List<Future<?>> futures = FUTURES.get(name);
+			if (futures == null) {
+				futures = new ArrayList<Future<?>>();
+				FUTURES.put(name, futures);
+			}
+			return futures;
+		} finally {
+			ThreadUtilities.class.notifyAll();
 		}
+	}
+
+	private static synchronized Map<String, List<Future<?>>> getFutures() {
+		Map<String, List<Future<?>>> futures = new HashMap<String, List<Future<?>>>();
+		futures.putAll(FUTURES);
 		return futures;
 	}
 
@@ -90,7 +107,7 @@ public final class ThreadUtilities implements IListener {
 	 * @param name the name that was assigned to the future when it was submitted for execution
 	 */
 	public static void destroy(final String name) {
-		List<Future<?>> futures = FUTURES.remove(name);
+		List<Future<?>> futures = getFutures(name);
 		if (futures != null) {
 			for (Future<?> future : futures) {
 				if (future == null) {
@@ -212,13 +229,20 @@ public final class ThreadUtilities implements IListener {
 	@Override
 	public void handleNotification(Event event) {
 		if (Event.TIMER.equals(event.getType())) {
-			Collection<String> futureNames = new ArrayList<String>(FUTURES.keySet());
-			for (String futureName : futureNames) {
-				List<Future<?>> futures = FUTURES.get(futureName);
-				for (Future<?> future : futures) {
-					if (future.isCancelled() || future.isDone()) {
-						futures.remove(future);
-						LOGGER.info("Removed future : " + future);
+			for (Map.Entry<String, List<Future<?>>> mapEntry : getFutures().entrySet()) {
+				for (Future<?> future : mapEntry.getValue()) {
+					if (!future.isCancelled() || !future.isDone()) {
+						continue;
+					}
+					synchronized (ThreadUtilities.class) {
+						try {
+							getFutures(mapEntry.getKey()).remove(future);
+							LOGGER.info("Removed future : " + future);
+						} catch (Exception e) {
+							LOGGER.error("Exception ", e);
+						} finally {
+							ThreadUtilities.class.notifyAll();
+						}
 					}
 				}
 			}

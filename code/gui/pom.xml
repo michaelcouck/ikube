@@ -18,6 +18,7 @@
 		<aspectj.version>1.6.3.RELEASE</aspectj.version>
 		<spring-security.version>2.0.4</spring-security.version>
 		<gwtVersion>2.2.0</gwtVersion>
+		<jersey.version>1.9.1</jersey.version>
 	</properties>
 	
 	<dependencies>
@@ -80,6 +81,57 @@
 			<artifactId>pagingcomponent</artifactId>
 			<version>0.9.3</version>
 		</dependency>
+		<dependency>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-server</artifactId>
+			<version>1.0.3</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+            <groupId>com.sun.jersey.contribs</groupId>
+            <artifactId>jersey-multipart</artifactId>
+            <version>1.0.3</version>
+            <scope>compile</scope>
+        </dependency>
+		<dependency>
+			<groupId>com.sun.jersey.contribs</groupId>
+			<artifactId>jersey-spring</artifactId>
+			<version>1.0.1</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-core</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-beans</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-context</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-web</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.xml.bind</groupId>
+			<artifactId>jaxb-impl</artifactId>
+			<version>2.1.9</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.ws.rs</groupId>
+			<artifactId>jsr311-api</artifactId>
+			<version>1.0</version>
+			<scope>compile</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -130,6 +182,35 @@
 					</execution> -->
 				</executions>
 			</plugin>
+			
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.6</version>
+				<executions>
+					<execution>
+						<id>write-release-info</id>
+						<phase>pre-integration-test</phase>
+						<configuration>
+							<target>
+								<!-- <echo message="Writing release file : " />
+								<echo file="src/main/webapp/WEB-INF/templates/release.txt" append="false">
+									${project.version} - ${maven.build.timestamp}
+								</echo> -->
+								<copy todir="ikube" failonerror="false">
+									<fileset dir="../core/src/main/resources/ikube" />
+								</copy>
+								<copy todir="../../ikube" failonerror="false">
+									<fileset dir="../core/src/main/resources/ikube" />
+								</copy>
+							</target>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 
 			<!-- This plugin starts a Jetty server before the integration tests and stops it after the integration tests. It can also be used to start 
 				a jetty server from the command line for testing. -->
@@ -154,8 +235,23 @@
 					</connectors>
 				</configuration>
 				<executions>
-					<!-- <execution> <id>start-jetty</id> <phase>pre-integration-test</phase> <goals> <goal>run</goal> </goals> <configuration> <daemon>true</daemon> 
-						</configuration> </execution> <execution> <id>stop-jetty</id> <phase>post-integration-test</phase> <goals> <goal>stop</goal> </goals> </execution> -->
+					<execution>
+						<id>start-jetty</id>
+						<phase>pre-integration-test</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<daemon>true</daemon>
+						</configuration>
+					</execution>
+					<execution>
+						<id>stop-jetty</id>
+						<phase>post-integration-test</phase>
+						<goals>
+							<goal>stop</goal>
+						</goals>
+					</execution>
 				</executions>
 				<dependencies>
 					<dependency>

@@ -78,11 +78,10 @@
 								<echo file="src/main/webapp/WEB-INF/templates/release.txt" append="false">
 									${project.version} - ${maven.build.timestamp}
 								</echo>
-								<!-- <copy file="../core/src/main/resources/ikube" todir="ikube" overwrite="true" /> -->
-								<copy todir="ikube" failonerror="false">
+								<copy todir="ikube" failonerror="true">
 									<fileset dir="../core/src/main/resources/ikube" />
 								</copy>
-								<copy todir="../../ikube" failonerror="false">
+								<copy todir="../../ikube" failonerror="true">
 									<fileset dir="../core/src/main/resources/ikube" />
 								</copy>
 							</target>
