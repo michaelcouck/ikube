@@ -3,7 +3,7 @@ package ikube.gui.panel;
 import ikube.cluster.IClusterManager;
 import ikube.database.IDataBase;
 import ikube.gui.IConstant;
-import ikube.gui.panel.wizard.IndexContextForm;
+import ikube.gui.panel.wizard.IndexableForm;
 import ikube.listener.ListenerManager;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
@@ -173,7 +173,7 @@ public class MenuPanel extends Panel {
 				window.setWidth(80, Sizeable.UNITS_PERCENTAGE);
 				window.setHeight(80, Sizeable.UNITS_PERCENTAGE);
 				ObjectToolkit.populateFields(indexable.getClass(), indexable, false, 0, 3);
-				Form indexContextForm = new IndexContextForm().initialize(window, indexable);
+				Form indexContextForm = new IndexableForm().initialize(window, indexable);
 				window.addComponent(indexContextForm);
 				ikube.gui.Window.INSTANCE.addWindow(window);
 			}

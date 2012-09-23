@@ -1,12 +1,12 @@
-package ikube.integration.handler.internet;
+package ikube.handler.internet;
 
 import static org.junit.Assert.assertTrue;
+import ikube.Integration;
 import ikube.action.Index;
 import ikube.cluster.IClusterManager;
 import ikube.database.IDataBase;
 import ikube.index.IndexManager;
 import ikube.index.handler.internet.IndexableInternetHandler;
-import ikube.integration.AbstractIntegration;
 import ikube.model.IndexContext;
 import ikube.model.IndexableInternet;
 import ikube.model.Url;
@@ -26,7 +26,6 @@ import mockit.Deencapsulation;
 
 import org.apache.lucene.index.IndexWriter;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -34,8 +33,7 @@ import org.junit.Test;
  * @since 21.11.10
  * @version 01.00
  */
-@Ignore
-public class IndexableInternetHandlerIntegration extends AbstractIntegration {
+public class IndexableInternetHandlerIntegration extends Integration {
 
 	private IDataBase dataBase;
 	private IndexContext<?> indexContext;

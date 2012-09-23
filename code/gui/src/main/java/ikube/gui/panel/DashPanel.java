@@ -20,7 +20,6 @@ import com.invient.vaadin.charts.InvientChartsConfig.YAxis;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 
@@ -36,22 +35,17 @@ public class DashPanel extends Panel {
 		horizontalLayout.setSizeFull();
 		horizontalLayout.setDescription(IConstant.DASH_HORIZONTAL_PANEL_LAYOUT);
 
-		Panel panel = new Panel();
-		panel.setDescription(IConstant.DASH_LEFT_PANEL);
-		Label label = new Label("<h3>Servers</h3>", Label.CONTENT_XHTML);
-		panel.addComponent(label);
-
 		Accordion accordion = new Accordion();
 		accordion.setSizeFull();
 		accordion.setDescription(IConstant.SERVERS_ACCORDION);
-		panel.addComponent(accordion);
 
-		horizontalLayout.addComponent(panel);
-		horizontalLayout.setExpandRatio(panel, .2f);
+		horizontalLayout.addComponent(accordion);
+		horizontalLayout.setExpandRatio(accordion, .2f);
 
 		VerticalLayout verticalLayout = new VerticalLayout();
 		verticalLayout.setDescription(IConstant.DASH_PANEL_LAYOUT);
 		verticalLayout.setSpacing(true);
+		verticalLayout.setSizeFull();
 
 		addChart(verticalLayout, IConstant.DASH_SEARCHING_CHART, "Searches per second");
 		addChart(verticalLayout, IConstant.DASH_INDEXING_CHART, "Documents per second");

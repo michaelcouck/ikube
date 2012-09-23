@@ -51,6 +51,7 @@ public class SnapshotListenerTest extends ATest {
 	}
 
 	@Before
+	@SuppressWarnings("rawtypes")
 	public void before() throws Exception {
 		monitorService = Mockito.mock(IMonitorService.class);
 		Map<String, IndexContext> indexContexts = new HashMap<String, IndexContext>();
@@ -72,7 +73,6 @@ public class SnapshotListenerTest extends ATest {
 	}
 
 	@Test
-	@SuppressWarnings("rawtypes")
 	public void handleNotification() {
 		Deencapsulation.setField(snapshotListener, monitorService);
 		Deencapsulation.setField(snapshotListener, dataBase);
@@ -157,15 +157,10 @@ public class SnapshotListenerTest extends ATest {
 
 	@Test
 	public void getIndexSize() throws Exception {
-		when(fsDirectory.fileLength("file")).thenReturn(Long.MAX_VALUE);
+		createIndex(indexContext, "the ", "string ", "to add");
 		long indexSize = snapshotListener.getIndexSize(indexContext);
 		logger.info("Index size : " + indexSize);
-		assertEquals(Long.MAX_VALUE, indexSize);
-
-		when(indexContext.getIndexWriter()).thenReturn(null);
-		when(fsDirectory.fileLength("file")).thenReturn(Long.MIN_VALUE);
-		indexSize = snapshotListener.getIndexSize(indexContext);
-		assertEquals(Long.MIN_VALUE, indexSize);
+		assertTrue("There must be some size in the index : ", indexSize > 0);
 	}
 
 }

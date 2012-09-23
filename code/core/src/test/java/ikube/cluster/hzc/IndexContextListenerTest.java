@@ -3,6 +3,7 @@ package ikube.cluster.hzc;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import ikube.ATest;
+import ikube.database.IDataBase;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.model.IndexableFileSystem;
@@ -10,8 +11,11 @@ import ikube.model.IndexableFileSystem;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import mockit.Deencapsulation;
+
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 public class IndexContextListenerTest extends ATest {
 
@@ -56,6 +60,18 @@ public class IndexContextListenerTest extends ATest {
 		indexableTwo.setName("one");
 		equal = indexContextListener.indexablesEqual(indexContextOne, indexContextTwo);
 		assertTrue(equal);
+	}
+	
+	@Test
+	public void handleIndexable() {
+		IDataBase dataBase = Mockito.mock(IDataBase.class);
+		Deencapsulation.setField(indexContextListener, dataBase);
+		// indexContextListener.handleIndexable(indexable);
+	}
+	
+	@Test
+	public void handleIndexContext() {
+		// TODO Implement me
 	}
 
 }

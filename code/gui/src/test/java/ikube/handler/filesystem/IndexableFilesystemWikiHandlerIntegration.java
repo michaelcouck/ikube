@@ -1,10 +1,10 @@
-package ikube.integration.handler.filesystem;
+package ikube.handler.filesystem;
 
 import static org.junit.Assert.assertTrue;
+import ikube.Integration;
 import ikube.database.IDataBase;
 import ikube.index.IndexManager;
 import ikube.index.handler.filesystem.IndexableFilesystemWikiHandler;
-import ikube.integration.AbstractIntegration;
 import ikube.model.IndexContext;
 import ikube.model.IndexableFileSystemWiki;
 import ikube.toolkit.ApplicationContextManager;
@@ -19,11 +19,9 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
-@Ignore
-public class IndexableFilesystemWikiHandlerIntegration extends AbstractIntegration {
+public class IndexableFilesystemWikiHandlerIntegration extends Integration {
 
 	private IndexContext<?> wikiHistoryArabic;
 	private IndexableFileSystemWiki wikiHistoryDataArabic;

@@ -74,6 +74,36 @@
 					</dependency>
 				</dependencies>
 			</plugin>
+			
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.6</version>
+				<executions>
+					<execution>
+						<id>write-release-info</id>
+						<phase>test</phase>
+						<configuration>
+							<target>
+								<echo message="Base directory : ${basedir}, ">Base directory : ${basedir}</echo>
+								<copy todir="${basedir}/ikube" failonerror="true">
+									<fileset dir="${basedir}/src/main/resources/ikube" />
+								</copy>
+								<copy todir="ikube" failonerror="true">
+									<fileset dir="src/main/resources/ikube" />
+								</copy>
+								<!-- <copy todir="code/core/ikube" failonerror="true">
+									<fileset dir="code/core/src/main/resources/ikube" />
+								</copy> -->
+							</target>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			
 			<!-- <plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>

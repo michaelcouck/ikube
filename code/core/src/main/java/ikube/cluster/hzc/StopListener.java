@@ -26,9 +26,9 @@ public class StopListener implements MessageListener<Object> {
 		// thread utilities and kill it
 		Object source = message.getSource();
 		Object object = message.getMessageObject();
+		logger.info("Got message : " + source + ", " + object);
 		if (object != null && Event.class.isAssignableFrom(object.getClass())) {
 			Event event = (Event) object;
-			logger.info("Got message : " + source + ", " + object);
 			if (Event.TERMINATE.equals(event.getType())) {
 				if (event.getObject() != null && String.class.isAssignableFrom(event.getObject().getClass())) {
 					ThreadUtilities.destroy((String) event.getObject());

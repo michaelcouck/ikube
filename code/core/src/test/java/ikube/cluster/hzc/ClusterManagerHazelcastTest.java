@@ -230,8 +230,9 @@ public class ClusterManagerHazelcastTest extends ATest {
 	@Test
 	public void submitDestroy() {
 		Mockit.tearDownMocks();
-		Deencapsulation.setField(clusterManagerHazelcast, new StartListener());
-		Deencapsulation.setField(clusterManagerHazelcast, new StopListener());
+		Deencapsulation.setField(clusterManagerHazelcast, "startListener", new StartListener());
+		Deencapsulation.setField(clusterManagerHazelcast, "stopListener", new StopListener());
+		Deencapsulation.setField(clusterManagerHazelcast, "indexContextListener", new IndexContextListener());
 		ThreadUtilities.initialize();
 		clusterManagerHazelcast.initialize();
 

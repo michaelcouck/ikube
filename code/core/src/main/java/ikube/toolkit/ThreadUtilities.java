@@ -42,20 +42,18 @@ public final class ThreadUtilities implements IListener {
 	 * @param runnable the runnable to schedule for running
 	 * @return the future that is being submitted to execute
 	 */
-	public static Future<?> submit(final String name, final Runnable runnable) {
-		synchronized (ThreadUtilities.class) {
-			try {
-				Future<?> future = submit(runnable);
-				getFutures(name).add(future);
-				LOGGER.info("Submit future : " + name);
-				return future;
-			} finally {
-				ThreadUtilities.class.notifyAll();
-			}
+	public synchronized static Future<?> submit(final String name, final Runnable runnable) {
+		try {
+			Future<?> future = submit(runnable);
+			getFutures(name).add(future);
+			LOGGER.info("Submit future : " + name);
+			return future;
+		} finally {
+			ThreadUtilities.class.notifyAll();
 		}
 	}
 
-	private static synchronized List<Future<?>> getFutures(final String name) {
+	protected static synchronized List<Future<?>> getFutures(final String name) {
 		try {
 			List<Future<?>> futures = FUTURES.get(name);
 			if (futures == null) {
@@ -68,10 +66,14 @@ public final class ThreadUtilities implements IListener {
 		}
 	}
 
-	private static synchronized Map<String, List<Future<?>>> getFutures() {
-		Map<String, List<Future<?>>> futures = new HashMap<String, List<Future<?>>>();
-		futures.putAll(FUTURES);
-		return futures;
+	protected static synchronized Map<String, List<Future<?>>> getFutures() {
+		try {
+			Map<String, List<Future<?>>> futures = new HashMap<String, List<Future<?>>>();
+			futures.putAll(FUTURES);
+			return futures;
+		} finally {
+			ThreadUtilities.class.notifyAll();
+		}
 	}
 
 	/**
@@ -80,23 +82,16 @@ public final class ThreadUtilities implements IListener {
 	 * @param runnable the runnable to execute
 	 * @return the future that will be a handle to the thread running the runnable
 	 */
-	public static Future<?> submit(final Runnable runnable) {
-		if (EXECUTER_SERVICE == null || EXECUTER_SERVICE.isShutdown()) {
-			LOGGER.info("Executer service is shutdown : " + runnable);
-			return null;
+	public static synchronized Future<?> submit(final Runnable runnable) {
+		try {
+			if (EXECUTER_SERVICE == null || EXECUTER_SERVICE.isShutdown()) {
+				LOGGER.info("Executer service is shutdown : " + runnable);
+				return null;
+			}
+			return EXECUTER_SERVICE.submit(runnable);
+		} finally {
+			ThreadUtilities.class.notifyAll();
 		}
-		return EXECUTER_SERVICE.submit(runnable);
-	}
-
-	/**
-	 * This method initializes the executer service, and the thread pool that will execute runnables.
-	 */
-	public static void initialize() {
-		if (EXECUTER_SERVICE != null && !EXECUTER_SERVICE.isShutdown()) {
-			LOGGER.info("Executer service already initialized : ");
-			return;
-		}
-		EXECUTER_SERVICE = Executors.newFixedThreadPool(IConstants.THREAD_POOL_SIZE);
 	}
 
 	/**
@@ -106,17 +101,21 @@ public final class ThreadUtilities implements IListener {
 	 * 
 	 * @param name the name that was assigned to the future when it was submitted for execution
 	 */
-	public static void destroy(final String name) {
-		List<Future<?>> futures = getFutures(name);
-		if (futures != null) {
-			for (Future<?> future : futures) {
-				if (future == null) {
-					LOGGER.warn("No such future : " + name);
-					return;
+	public static synchronized void destroy(final String name) {
+		try {
+			List<Future<?>> futures = getFutures(name);
+			if (futures != null) {
+				for (Future<?> future : futures) {
+					if (future == null) {
+						LOGGER.warn("No such future : " + name);
+						return;
+					}
+					future.cancel(true);
+					LOGGER.info("Destroyed and removed future : " + name + ", " + future);
 				}
-				future.cancel(true);
-				LOGGER.info("Destroyed and removed future : " + name + ", " + future);
 			}
+		} finally {
+			ThreadUtilities.class.notifyAll();
 		}
 	}
 
@@ -124,19 +123,45 @@ public final class ThreadUtilities implements IListener {
 	 * This method will destroy the thread pool. All threads that are currently running will be interrupted,and should catch this exception
 	 * and exit the run method.
 	 */
-	public static void destroy() {
-		if (EXECUTER_SERVICE == null || EXECUTER_SERVICE.isShutdown()) {
-			LOGGER.info("Executer service already shutdown : ");
-			return;
+	public static synchronized void destroy() {
+		try {
+			if (EXECUTER_SERVICE == null || EXECUTER_SERVICE.isShutdown()) {
+				LOGGER.info("Executer service already shutdown : ");
+				return;
+			}
+			Collection<String> futureNames = new ArrayList<String>(FUTURES.keySet());
+			for (String futureName : futureNames) {
+				destroy(futureName);
+			}
+			EXECUTER_SERVICE.shutdown();
+			List<Runnable> runnables = EXECUTER_SERVICE.shutdownNow();
+			EXECUTER_SERVICE = null;
+			LOGGER.info("Shutdown runnables : " + runnables);
+		} finally {
+			ThreadUtilities.class.notifyAll();
 		}
-		Collection<String> futureNames = new ArrayList<String>(FUTURES.keySet());
-		for (String futureName : futureNames) {
-			destroy(futureName);
+	}
+
+	@Override
+	public void handleNotification(Event event) {
+		if (Event.TIMER.equals(event.getType())) {
+			synchronized (ThreadUtilities.class) {
+				try {
+					for (Map.Entry<String, List<Future<?>>> mapEntry : getFutures().entrySet()) {
+						List<Future<?>> futures = new ArrayList<Future<?>>(mapEntry.getValue());
+						for (Future<?> future : futures) {
+							if (!future.isCancelled() || !future.isDone()) {
+								continue;
+							}
+							getFutures(mapEntry.getKey()).remove(future);
+							LOGGER.info("Removed future : " + future);
+						}
+					}
+				} finally {
+					ThreadUtilities.class.notifyAll();
+				}
+			}
 		}
-		EXECUTER_SERVICE.shutdown();
-		List<Runnable> runnables = EXECUTER_SERVICE.shutdownNow();
-		EXECUTER_SERVICE = null;
-		LOGGER.info("Shutdown runnables : " + runnables);
 	}
 
 	/**
@@ -220,33 +245,18 @@ public final class ThreadUtilities implements IListener {
 	}
 
 	/**
-	 * Singularity.
+	 * This method initializes the executer service, and the thread pool that will execute runnables.
 	 */
-	private ThreadUtilities() {
-		// Documented
+	public static void initialize() {
+		if (EXECUTER_SERVICE != null && !EXECUTER_SERVICE.isShutdown()) {
+			LOGGER.info("Executer service already initialized : ");
+			return;
+		}
+		EXECUTER_SERVICE = Executors.newFixedThreadPool(IConstants.THREAD_POOL_SIZE);
 	}
 
-	@Override
-	public void handleNotification(Event event) {
-		if (Event.TIMER.equals(event.getType())) {
-			for (Map.Entry<String, List<Future<?>>> mapEntry : getFutures().entrySet()) {
-				for (Future<?> future : mapEntry.getValue()) {
-					if (!future.isCancelled() || !future.isDone()) {
-						continue;
-					}
-					synchronized (ThreadUtilities.class) {
-						try {
-							getFutures(mapEntry.getKey()).remove(future);
-							LOGGER.info("Removed future : " + future);
-						} catch (Exception e) {
-							LOGGER.error("Exception ", e);
-						} finally {
-							ThreadUtilities.class.notifyAll();
-						}
-					}
-				}
-			}
-		}
+	public ThreadUtilities() {
+		// Documented
 	}
 
 }

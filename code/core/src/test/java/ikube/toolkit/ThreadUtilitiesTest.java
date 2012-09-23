@@ -3,9 +3,12 @@ package ikube.toolkit;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import ikube.ATest;
+import ikube.listener.Event;
+import ikube.listener.ListenerManager;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Future;
 
 import org.junit.After;
@@ -111,14 +114,53 @@ public class ThreadUtilitiesTest extends ATest {
 		String name = "name";
 		Future<?> future = ThreadUtilities.submit(name, runnable);
 		logger.info("Future : " + future.isCancelled() + ", " + future.isDone());
-		
+
 		ThreadUtilities.sleep(3000);
 		ThreadUtilities.destroy(name);
 		ThreadUtilities.sleep(3000);
 		logger.info("Future : " + future.isCancelled() + ", " + future.isDone());
-		
+
 		assertTrue(future.isDone());
 		assertTrue(future.isCancelled());
+	}
+
+	@Test
+	public void multiThreaded() {
+		final int iterations = 100;
+		final ListenerManager listenerManager = new ListenerManager();
+		listenerManager.addListener(new ThreadUtilities());
+		List<Thread> threads = new ArrayList<Thread>();
+		for (int i = 0; i < 10; i++) {
+			Thread thread = new Thread(new Runnable() {
+				public void run() {
+					int i = iterations;
+					while (i-- > 0) {
+						ThreadUtilities.sleep(100);
+						ThreadUtilities.submit(this.toString(), new Runnable() {
+							public void run() {
+								ThreadUtilities.sleep(100);
+							}
+						});
+						ThreadUtilities.getFutures(this.toString());
+						ThreadUtilities.getFutures();
+						ThreadUtilities.submit(new Runnable() {
+							public void run() {
+								ThreadUtilities.sleep(100);
+							}
+						});
+						ThreadUtilities.destroy(this.toString());
+						listenerManager.fireEvent(Event.TIMER, System.currentTimeMillis(), null, Boolean.FALSE);
+					}
+				}
+			});
+			thread.start();
+			threads.add(thread);
+		}
+		ThreadUtilities.waitForThreads(threads);
+		Map<String, List<Future<?>>> allFutures = ThreadUtilities.getFutures();
+		for (Map.Entry<String, List<Future<?>>> mapEntry : allFutures.entrySet()) {
+			logger.info("Future list : " + mapEntry.getKey() + ", " + mapEntry.getValue().size());
+		}
 	}
 
 }

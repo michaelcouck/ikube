@@ -33,9 +33,9 @@ import com.vaadin.ui.Window;
 @Configurable
 @Scope(value = "prototype")
 @org.springframework.stereotype.Component(value = "IndexableForm")
-public class IndexContextForm extends AForm {
+public class IndexableForm extends AForm {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(IndexContextForm.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(IndexableForm.class);
 
 	@Autowired
 	private IMonitorService monitorService;
@@ -73,12 +73,14 @@ public class IndexContextForm extends AForm {
 			validationLabel.setData(fieldDescription);
 			getLayout().addComponent(validationLabel);
 		}
-		addButton(window, (Class<Indexable>) indexable.getClass());
+		addUpdateButton(window, "Add", (Class<Indexable>) indexable.getClass());
+		addUpdateButton(window, "Update", (Class<Indexable>) indexable.getClass());
+		cancelButton(window, "Cancel", (Class<Indexable>) indexable.getClass());
 		return this;
 	}
 
 	@SuppressWarnings({ "rawtypes" })
-	private void addButton(final Window window, final Class<Indexable> klass) {
+	private void addUpdateButton(final Window window, final String name, final Class<Indexable> klass) {
 		Button.ClickListener clickListener = new Button.ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
@@ -90,7 +92,7 @@ public class IndexContextForm extends AForm {
 					LOGGER.error("Exception initializing the indexable : ", e);
 					return;
 				}
-				populateIndexable(IndexContextForm.this, indexable);
+				populateIndexable(IndexableForm.this, indexable);
 				// Validate the form before sending
 				Set<ConstraintViolation<Indexable>> constraintViolations = validateIndexContext(indexable);
 				if (constraintViolations == null || constraintViolations.size() == 0) {
@@ -98,10 +100,22 @@ public class IndexContextForm extends AForm {
 					ikube.gui.Window.INSTANCE.removeWindow(window);
 					return;
 				}
-				IndexContextForm.this.getLayout().requestRepaintAll();
+				IndexableForm.this.getLayout().requestRepaintAll();
 			}
 		};
-		Button button = new Button("Add", clickListener);
+		Button button = new Button(name, clickListener);
+		getFooter().addComponent(button);
+	}
+	
+	@SuppressWarnings({ "rawtypes" })
+	private void cancelButton(final Window window, final String name, final Class<Indexable> klass) {
+		Button.ClickListener clickListener = new Button.ClickListener() {
+			@Override
+			public void buttonClick(ClickEvent event) {
+				ikube.gui.Window.INSTANCE.removeWindow(window);
+			}
+		};
+		Button button = new Button(name, clickListener);
 		getFooter().addComponent(button);
 	}
 

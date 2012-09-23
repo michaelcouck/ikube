@@ -1,8 +1,8 @@
-package ikube.integration.handler.email;
+package ikube.handler.email;
 
+import ikube.Integration;
 import ikube.index.IndexManager;
 import ikube.index.handler.email.IndexableEmailHandler;
-import ikube.integration.AbstractIntegration;
 import ikube.model.IndexContext;
 import ikube.model.IndexableEmail;
 import ikube.notify.IMailer;
@@ -12,7 +12,6 @@ import ikube.toolkit.ApplicationContextManager;
 import java.net.InetAddress;
 
 import org.apache.lucene.index.IndexWriter;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -23,8 +22,7 @@ import org.junit.Test;
  * @since this century
  * @version 102235366.2215.3688.744RC112556
  */
-@Ignore
-public class IndexableEmailHandlerIntegration extends AbstractIntegration {
+public class IndexableEmailHandlerIntegration extends Integration {
 	
 	@SuppressWarnings("rawtypes")
 	private IndexContext indexContext;

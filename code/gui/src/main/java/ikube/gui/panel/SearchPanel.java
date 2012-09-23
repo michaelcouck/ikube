@@ -40,18 +40,17 @@ public class SearchPanel extends Panel {
 		createTable(verticalLayout);
 
 		HorizontalLayout searchInputLayout = new HorizontalLayout();
-		searchInputLayout.setMargin(Boolean.TRUE);
+		// searchInputLayout.setMargin(Boolean.TRUE);
 		searchInputLayout.setSpacing(Boolean.TRUE);
 		createIndexOptions(searchInputLayout);
-		createSearchFieldAndButton(searchInputLayout);
-		createPagingPanel(searchInputLayout);
+		createSearchFields(searchInputLayout);
 
 		verticalLayout.addComponent(searchInputLayout);
 
 		HorizontalLayout searchStatisticsLayout = new HorizontalLayout();
-		searchStatisticsLayout.setMargin(Boolean.TRUE);
+		// searchStatisticsLayout.setMargin(Boolean.TRUE);
 		searchStatisticsLayout.setSpacing(Boolean.TRUE);
-		createSearchStatisticsFields(searchStatisticsLayout);
+		createSearchStatisticsFieldsAndButton(searchStatisticsLayout);
 		verticalLayout.addComponent(searchStatisticsLayout);
 
 		addComponent(verticalLayout);
@@ -62,32 +61,28 @@ public class SearchPanel extends Panel {
 	}
 
 	private void createIndexOptions(final ComponentContainer componentContainer) {
-		ComboBox indexOptions = new ComboBox();
+		ComboBox indexOptions = new ComboBox("Index : ");
 		indexOptions.setImmediate(true);
 		indexOptions.setDescription(IConstant.INDEXES_OPTION_GROUP);
 		componentContainer.addComponent(indexOptions);
 	}
 
-	private void createSearchFieldAndButton(final ComponentContainer componentContainer) {
-		Label searchLabel = new Label(IConstant.SEARCH_FIELD);
+	private void createSearchFields(final ComponentContainer componentContainer) {
 		TextField searchField = new TextField();
 		searchField.setDescription(IConstant.SEARCH_FIELD);
+		searchField.setCaption("Search string : ");
+		componentContainer.addComponent(searchField);
+
+		componentContainer.addComponent(new TextField("Latitude : "));
+		componentContainer.addComponent(new TextField("Longitude : "));
+		componentContainer.addComponent(new TextField("Distance : "));
+	}
+
+	private void createSearchStatisticsFieldsAndButton(final ComponentContainer componentContainer) {
 		Button searchButton = new Button(IConstant.SEARCH_BUTTON);
 		searchButton.setDescription(IConstant.SEARCH_BUTTON);
-
-		componentContainer.addComponent(searchLabel);
-		componentContainer.addComponent(searchField);
 		componentContainer.addComponent(searchButton);
-	}
-
-	private void createPagingPanel(final ComponentContainer componentContainer) {
-		Panel pagingPanel = new Panel();
-		pagingPanel.setDescription(IConstant.PAGING_PANEL);
-		pagingPanel.setWidth(100, Sizeable.UNITS_PERCENTAGE);
-		componentContainer.addComponent(pagingPanel);
-	}
-
-	private void createSearchStatisticsFields(final ComponentContainer componentContainer) {
+		
 		Label timeTaken = new Label(IConstant.TIME_TAKEN);
 		timeTaken.setDescription(IConstant.TIME_TAKEN);
 		timeTaken.setData(IConstant.TIME_TAKEN);

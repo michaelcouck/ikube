@@ -1,4 +1,4 @@
-package ikube.integration.database;
+package ikube.database;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -37,7 +37,6 @@ import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.util.ReflectionUtils;
 
@@ -52,7 +51,6 @@ import org.springframework.util.ReflectionUtils;
  * @lastChangedBy Michael Couck
  * @lastChangedDate 16-may-12 14:22:16
  */
-@Ignore
 public class EntityIntegration {
 
 	private interface EntityTester {

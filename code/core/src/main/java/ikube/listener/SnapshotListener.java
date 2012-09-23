@@ -72,9 +72,9 @@ public class SnapshotListener implements IListener {
 			for (Map.Entry<String, IndexContext> mapEntry : indexContexts.entrySet()) {
 				IndexContext indexContext = mapEntry.getValue();
 				try {
-					long availableDiskSpace = FileSystemUtils.freeSpaceKb(indexContext.getIndexDirectoryPath()) / 1000;
-					indexContext.setAvailableDiskSpace(availableDiskSpace);
-				} catch (IOException e) {
+					// long availableDiskSpace = FileSystemUtils.freeSpaceKb(indexContext.getIndexDirectoryPath()) / 1000;
+					// indexContext.setAvailableDiskSpace(availableDiskSpace);
+				} catch (Exception e) {
 					LOGGER.error("Exception accessing the disk space : ", e);
 				}
 
@@ -176,18 +176,22 @@ public class SnapshotListener implements IListener {
 	protected long getIndexSize(final IndexContext<?> indexContext) {
 		long indexSize = 0;
 		try {
-			IndexWriter indexWriter = indexContext.getIndexWriter();
-			MultiSearcher multiSearcher = indexContext.getMultiSearcher();
-			if (indexWriter != null) {
-				String[] files = indexWriter.getDirectory().listAll();
-				for (String file : files) {
-					indexSize += indexWriter.getDirectory().fileLength(file);
-				}
-			} else if (multiSearcher != null) {
-				for (Searchable searchable : multiSearcher.getSearchables()) {
-					String[] files = ((IndexSearcher) searchable).getIndexReader().directory().listAll();
-					for (String file : files) {
-						indexSize += ((IndexSearcher) searchable).getIndexReader().directory().fileLength(file);
+			File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
+			if (latestIndexDirectory == null || !latestIndexDirectory.exists() || !latestIndexDirectory.isDirectory()) {
+				return indexSize;
+			}
+			File[] serverIndexDirectories = latestIndexDirectory.listFiles();
+			if (serverIndexDirectories == null) {
+				return indexSize;
+			}
+			for (File serverIndexDirectory : serverIndexDirectories) {
+				if (serverIndexDirectory != null && serverIndexDirectory.exists() && serverIndexDirectory.isDirectory()) {
+					File[] indexFiles = serverIndexDirectory.listFiles();
+					if (indexFiles == null || indexFiles.length == 0) {
+						continue;
+					}
+					for (File indexFile : indexFiles) {
+						indexSize += indexFile.length();
 					}
 				}
 			}

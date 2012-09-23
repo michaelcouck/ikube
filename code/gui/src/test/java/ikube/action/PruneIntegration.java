@@ -1,13 +1,12 @@
-package ikube.integration.action;
+package ikube.action;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import ikube.IConstants;
-import ikube.action.Prune;
+import ikube.Integration;
 import ikube.cluster.IClusterManager;
 import ikube.database.IDataBase;
-import ikube.integration.AbstractIntegration;
 import ikube.model.Action;
 import ikube.toolkit.ApplicationContextManager;
 
@@ -17,7 +16,6 @@ import java.util.List;
 import mockit.Deencapsulation;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -25,8 +23,7 @@ import org.junit.Test;
  * @since 29.09.11
  * @version 01.00
  */
-@Ignore
-public class PruneIntegration extends AbstractIntegration {
+public class PruneIntegration extends Integration {
 
 	private Prune prune;
 	private IDataBase dataBase;

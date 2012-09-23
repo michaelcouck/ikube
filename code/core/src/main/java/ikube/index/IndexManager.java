@@ -129,15 +129,17 @@ public final class IndexManager {
 	/**
 	 * This method will close the index writer, provided it is not null. Also the index writer in the context will be removed.
 	 * 
-	 * @param indexContext
-	 *            the index context to close the writer for
+	 * @param indexContext the index context to close the writer for
 	 */
 	public static synchronized void closeIndexWriter(final IndexContext<?> indexContext) {
 		try {
 			if (indexContext != null && indexContext.getIndexWriter() != null) {
 				IndexWriter indexWriter = indexContext.getIndexWriter();
-				LOGGER.info("Optimizing and closing the index : " + indexContext.getIndexName() + ", snapshot : " + indexContext.getLastSnapshot());
+				LOGGER.info("Optimizing and closing the index : " + indexContext.getIndexName() + ", snapshot : "
+						+ indexContext.getLastSnapshot());
 				closeIndexWriter(indexWriter);
+				LOGGER.info("Index optimized and closed : " + indexWriter + ", " + indexContext.getIndexName() + ", snapshot : "
+						+ indexContext.getLastSnapshot());
 			}
 		} finally {
 			IndexManager.class.notifyAll();
@@ -198,7 +200,6 @@ public final class IndexManager {
 		} catch (Exception e) {
 			LOGGER.error("Exception releasing the lock on the index writer : " + indexWriter, e);
 		}
-		LOGGER.info("Index optimized and closed : " + indexWriter);
 	}
 
 	/**

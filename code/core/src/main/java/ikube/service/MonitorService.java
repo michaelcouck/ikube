@@ -17,7 +17,6 @@ import java.util.TreeSet;
 
 import javax.persistence.Column;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ReflectionUtils;
@@ -56,7 +55,7 @@ public class MonitorService implements IMonitorService {
 	public String[] getIndexFieldNames(final String indexName) {
 		IndexContext<?> indexContext = getIndexContext(indexName);
 		if (indexContext != null) {
-			LOGGER.info("Index context : " + indexContext + ", " + indexContext.getIndexables());
+			// LOGGER.info("Index context : " + indexContext + ", " + indexContext.getIndexables());
 			Set<String> fieldNames = getFields(indexContext.getIndexables(), new TreeSet<String>());
 			return fieldNames.toArray(new String[fieldNames.size()]);
 		}
@@ -126,7 +125,7 @@ public class MonitorService implements IMonitorService {
 	public IndexContext<?> getIndexContext(final String indexName) {
 		for (Map.Entry<String, IndexContext> mapEntry : getIndexContexts().entrySet()) {
 			if (mapEntry.getValue() == null || mapEntry.getValue().getIndexName() == null) {
-				LOGGER.info("Index context map entry : " + mapEntry + ", " + ToStringBuilder.reflectionToString(mapEntry.getValue()));
+				// LOGGER.info("Index context map entry : " + mapEntry + ", " + ToStringBuilder.reflectionToString(mapEntry.getValue()));
 				continue;
 			}
 			if (mapEntry.getValue().getIndexName().equals(indexName)) {
@@ -146,7 +145,7 @@ public class MonitorService implements IMonitorService {
 	protected Set<String> getFields(final List<Indexable<?>> indexables, final Set<String> fieldNames) {
 		if (indexables != null) {
 			for (Indexable<?> indexable : indexables) {
-				LOGGER.info("Indexable : " + indexable);
+				// LOGGER.info("Indexable : " + indexable);
 				getFields(indexable, fieldNames);
 			}
 		}

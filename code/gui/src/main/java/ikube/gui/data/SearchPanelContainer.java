@@ -40,7 +40,7 @@ public class SearchPanelContainer extends HierarchicalContainer implements ICont
 				optionGroup.addItem(indexName);
 			}
 		}
-		if (parameters == null || parameters.length != 4) {
+		if (parameters == null || parameters.length < 1) {
 			return;
 		}
 		TreeTable treeTable = (TreeTable) GuiTools.findComponent(panel, IConstant.SEARCH_PANEL_TREE_TABLE, new ArrayList<Component>());
@@ -76,11 +76,6 @@ public class SearchPanelContainer extends HierarchicalContainer implements ICont
 
 		Label totalResultsLabel = (Label) GuiTools.findComponent(treeTable, IConstant.TOTAL_RESULTS, new ArrayList<Component>());
 		setLabelValue(totalResultsLabel, statistics.get(IConstants.TOTAL));
-
-		// TODO Add the paging buttons tothe panel
-		int totalResults = Integer.parseInt(statistics.get(IConstants.TOTAL));
-		if (totalResults > 10) {
-		}
 	}
 
 	private void setLabelValue(final Label label, Object... values) {

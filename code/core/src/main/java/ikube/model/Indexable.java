@@ -20,7 +20,7 @@ import javax.persistence.PrimaryKeyJoinColumn;
 @Entity()
 @Inheritance(strategy = InheritanceType.JOINED)
 public class Indexable<E> extends Persistable {
-
+	
 	@Column
 	@Attribute(field = false, description = "The name of this indexable")
 	private String name;

@@ -193,10 +193,6 @@
 						<phase>pre-integration-test</phase>
 						<configuration>
 							<target>
-								<!-- <echo message="Writing release file : " />
-								<echo file="src/main/webapp/WEB-INF/templates/release.txt" append="false">
-									${project.version} - ${maven.build.timestamp}
-								</echo> -->
 								<copy todir="ikube" failonerror="false">
 									<fileset dir="../core/src/main/resources/ikube" />
 								</copy>

@@ -2,22 +2,17 @@ package ikube.servlet;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.util.Locale;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.LocaleResolver;
@@ -62,28 +57,30 @@ public class SpringApplicationServlet extends AbstractApplicationServlet {
 
 	@Override
 	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		final Locale locale = localeResolver.resolveLocale(request);
-		LocaleContextHolder.setLocale(locale);
-		ServletRequestAttributes requestAttributes = new ServletRequestAttributes(request);
-		RequestContextHolder.setRequestAttributes(requestAttributes);
-		try {
-			synchronized(this) {
-				super.service(new HttpServletRequestWrapper(request) {
-					@Override
-					public Locale getLocale() {
-						return locale;
-					}
-				}, response);
-				notifyAll();
-			}
-		} finally {
-			if (!locale.equals(LocaleContextHolder.getLocale())) {
-				logger.debug("locale changed, updating locale resolver");
-				localeResolver.setLocale(request, response, LocaleContextHolder.getLocale());
-			}
-			LocaleContextHolder.resetLocaleContext();
-			RequestContextHolder.resetRequestAttributes();
-		}
+		super.service(request, response);
+// 	This is just for the locale which we are not using at the moment
+//		final Locale locale = localeResolver.resolveLocale(request);
+//		LocaleContextHolder.setLocale(locale);
+//		ServletRequestAttributes requestAttributes = new ServletRequestAttributes(request);
+//		RequestContextHolder.setRequestAttributes(requestAttributes);
+//		try {
+//			synchronized(this) {
+//				super.service(new HttpServletRequestWrapper(request) {
+//					@Override
+//					public Locale getLocale() {
+//						return locale;
+//					}
+//				}, response);
+//				notifyAll();
+//			}
+//		} finally {
+//			if (!locale.equals(LocaleContextHolder.getLocale())) {
+//				logger.debug("locale changed, updating locale resolver");
+//				localeResolver.setLocale(request, response, LocaleContextHolder.getLocale());
+//			}
+//			LocaleContextHolder.resetLocaleContext();
+//			RequestContextHolder.resetRequestAttributes();
+//		}
 	}
 
 	@Override

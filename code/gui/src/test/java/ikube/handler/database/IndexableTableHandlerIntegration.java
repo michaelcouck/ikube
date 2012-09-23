@@ -1,4 +1,4 @@
-package ikube.index.handler.database;
+package ikube.handler.database;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -9,6 +9,7 @@ import ikube.cluster.IClusterManager;
 import ikube.index.IndexManager;
 import ikube.index.content.ColumnContentProvider;
 import ikube.index.content.IContentProvider;
+import ikube.index.handler.database.IndexableTableHandler;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.model.IndexableColumn;
@@ -21,6 +22,7 @@ import java.net.InetAddress;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.List;
@@ -51,22 +53,21 @@ public class IndexableTableHandlerIntegration extends Integration {
 	private IndexableTable faqIndexableTable;
 	private IndexableColumn faqIndexableColumn;
 	private IndexableTable attachmentIndexableTable;
-	private List<Indexable<?>> faqIndexableChildren;
+	private List<Indexable<?>> faqIndexableTableChildren;
 	private IndexableTableHandler indexableTableHandler;
 	private Connection connection;
 
 	@Before
-	public void before() throws Exception {
+	public void before() throws SQLException {
 		ThreadUtilities.initialize();
 		indexableTableHandler = ApplicationContextManager.getBean(IndexableTableHandler.class);
 		faqIndexableTable = ApplicationContextManager.getBean("faqTableH2");
 		attachmentIndexableTable = ApplicationContextManager.getBean("attachmentTableH2");
-		faqIndexableChildren = faqIndexableTable.getChildren();
-		faqIndexableColumn = Deencapsulation.invoke(indexableTableHandler, "getIdColumn", faqIndexableChildren);
+		faqIndexableTableChildren = faqIndexableTable.getChildren();
+		faqIndexableColumn = Deencapsulation.invoke(indexableTableHandler, "getIdColumn", faqIndexableTableChildren);
 		connection = ((DataSource) ApplicationContextManager.getBean("nonXaDataSourceH2")).getConnection();
 		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
 		clusterManager.getServer().getActions().clear();
-
 		indexContext = monitorService.getIndexContext("indexContext");
 	}
 
@@ -154,7 +155,7 @@ public class IndexableTableHandlerIntegration extends Integration {
 
 	@Test
 	public void handleColumn() throws Exception {
-		IndexableColumn faqIdIndexableColumn = Deencapsulation.invoke(indexableTableHandler, "getIdColumn", faqIndexableChildren);
+		IndexableColumn faqIdIndexableColumn = Deencapsulation.invoke(indexableTableHandler, "getIdColumn", faqIndexableTableChildren);
 		faqIdIndexableColumn.setContent("Hello World!");
 		faqIdIndexableColumn.setColumnType(Types.VARCHAR);
 		Document document = new Document();
@@ -171,7 +172,7 @@ public class IndexableTableHandlerIntegration extends Integration {
 		ResultSet resultSet = statement.executeQuery("select * from faq");
 		resultSet.next();
 
-		Deencapsulation.invoke(indexableTableHandler, "setColumnTypesAndData", faqIndexableChildren, resultSet);
+		Deencapsulation.invoke(indexableTableHandler, "setColumnTypesAndData", faqIndexableTableChildren, resultSet);
 		Deencapsulation.invoke(indexableTableHandler, "setIdField", faqIndexableTable, document);
 
 		logger.debug("Document : " + document);
@@ -191,7 +192,7 @@ public class IndexableTableHandlerIntegration extends Integration {
 		ResultSet resultSet = statement.executeQuery("select * from faq");
 		resultSet.next();
 
-		Deencapsulation.invoke(indexableTableHandler, "setColumnTypesAndData", faqIndexableChildren, resultSet);
+		Deencapsulation.invoke(indexableTableHandler, "setColumnTypesAndData", faqIndexableTableChildren, resultSet);
 
 		logger.debug("Faq id column type : " + faqIndexableColumn.getColumnType());
 		assertEquals(Types.BIGINT, faqIndexableColumn.getColumnType());

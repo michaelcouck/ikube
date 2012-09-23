@@ -1,11 +1,11 @@
-package ikube.integration.handler.filesystem;
+package ikube.handler.filesystem;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import ikube.Integration;
 import ikube.database.IDataBase;
 import ikube.index.IndexManager;
 import ikube.index.handler.filesystem.IndexableFilesystemHandler;
-import ikube.integration.AbstractIntegration;
 import ikube.model.IndexContext;
 import ikube.model.IndexableFileSystem;
 import ikube.toolkit.ApplicationContextManager;
@@ -24,11 +24,9 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
-@Ignore
-public class IndexableFilesystemHandlerIntegration extends AbstractIntegration {
+public class IndexableFilesystemHandlerIntegration extends Integration {
 
 	private IndexContext<?> desktop;
 	private IndexableFileSystem desktopFolder;

@@ -1,14 +1,13 @@
-package ikube.integration.action;
+package ikube.action;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import ikube.action.Reset;
+import ikube.Integration;
 import ikube.cluster.IClusterManager;
 import ikube.database.IDataBase;
-import ikube.integration.AbstractIntegration;
 import ikube.model.Action;
 import ikube.model.Url;
 import ikube.toolkit.ApplicationContextManager;
@@ -18,7 +17,6 @@ import java.util.List;
 import mockit.Deencapsulation;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -26,8 +24,7 @@ import org.junit.Test;
  * @since 21.11.10
  * @version 01.00
  */
-@Ignore
-public class ResetIntegration extends AbstractIntegration {
+public class ResetIntegration extends Integration {
 
 	private Reset reset;
 	private IDataBase dataBase;

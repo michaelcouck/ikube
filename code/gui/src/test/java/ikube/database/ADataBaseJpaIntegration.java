@@ -1,12 +1,11 @@
-package ikube.integration.database;
+package ikube.database;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import ikube.IConstants;
-import ikube.database.IDataBase;
-import ikube.integration.AbstractIntegration;
+import ikube.Integration;
 import ikube.model.Action;
 import ikube.model.File;
 import ikube.model.IndexContext;
@@ -22,7 +21,6 @@ import java.util.Map;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -32,8 +30,7 @@ import org.junit.Test;
  * @since long time
  * @version 01.00
  */
-@Ignore
-public class ADataBaseJpaIntegration extends AbstractIntegration {
+public class ADataBaseJpaIntegration extends Integration {
 
 	private IDataBase dataBase;
 

@@ -22,18 +22,40 @@ public class IndexContextListener implements MessageListener<Object> {
 	private IMonitorService monitorService;
 
 	@Override
-	@SuppressWarnings("rawtypes")
 	public void onMessage(Message<Object> message) {
 		Object object = message.getMessageObject();
-		if (object == null || !IndexContext.class.isAssignableFrom(object.getClass())) {
+		if (object == null) {
+			LOGGER.info("Message object null : ");
 			return;
 		}
-		IndexContext<?> indexContext = (IndexContext<?>) object;
+		if (IndexContext.class.isAssignableFrom(object.getClass())) {
+			handleIndexContext((IndexContext<?>) object);
+		} else if (Indexable.class.isAssignableFrom(object.getClass())) {
+			handleIndexable((Indexable<?>) object);
+		}
+	}
+
+	protected void handleIndexable(final Indexable<?> indexable) {
+		// Find the indexable in the database
+		Indexable<?> dbIndexable = dataBase.findCriteria(indexable.getClass(), new String[] { "name" },
+				new Object[] { indexable.getName() });
+		// Remove the old one from the index context
+		IndexContext<?> indexContext = (IndexContext<?>) dbIndexable.getParent();
+		indexContext.getChildren().remove(dbIndexable);
+		// Add the new one to the index context
+		indexable.setId(0);
+		indexContext.getChildren().add(indexable);
+		// Merge the index context
+		dataBase.merge(indexContext);
+
+	}
+
+	protected void handleIndexContext(final IndexContext<?> indexContext) {
 		indexContext.setId(0);
 		indexContext.setSnapshots(null);
 		// LOGGER.info("Got index context message : " + indexContext);
 		// Check the database for this context
-		IndexContext localIndexContext = monitorService.getIndexContext(indexContext.getIndexName());
+		IndexContext<?> localIndexContext = monitorService.getIndexContext(indexContext.getIndexName());
 		if (localIndexContext == null) {
 			LOGGER.info("Adding index context : " + indexContext);
 			dataBase.persist(indexContext);

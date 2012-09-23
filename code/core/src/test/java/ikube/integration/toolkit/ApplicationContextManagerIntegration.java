@@ -11,9 +11,11 @@ import java.io.File;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 
+@Ignore
 public class ApplicationContextManagerIntegration extends AbstractIntegration {
 
 	private String ikubeFolder = "./" + IConstants.IKUBE;
