@@ -116,7 +116,7 @@ public class DashPanelContainer extends AContainer {
 				}
 				searchesPerMinute += lastSnapshot.getSearchesPerMinute();
 			}
-			addPoint(chart, server.getIp(), new Date(), searchesPerMinute);
+			addPoint(chart, server.getIp(), new Date(), searchesPerMinute / 60);
 		}
 	}
 
@@ -130,14 +130,11 @@ public class DashPanelContainer extends AContainer {
 				String indexName = indexContext.getIndexName();
 				String seriesKey = serverIp + "-" + indexName;
 				if (!isWorking(server, indexContext)) {
-					if (chart.getSeries(seriesKey) != null) {
-						// LOGGER.debug("Removing series : {} ", seriesKey);
-					}
 					chart.removeSeries(seriesKey);
 					continue;
 				}
 				for (Snapshot snapshot : indexContext.getSnapshots()) {
-					addPoint(chart, seriesKey, new Date(snapshot.getTimestamp()), snapshot.getDocsPerMinute());
+					addPoint(chart, seriesKey, new Date(snapshot.getTimestamp()), snapshot.getDocsPerMinute() / 60);
 				}
 			}
 		}

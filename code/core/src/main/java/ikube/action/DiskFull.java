@@ -54,30 +54,30 @@ public class DiskFull extends Action<IndexContext<?>, Boolean> {
 				drive = driveCharacter + ":";
 			}
 			try {
-				if (drive != null) {
-					Long freeSpaceKilobytes = FileSystemUtils.freeSpaceKb(drive);
-					Long freeSpaceMegabytes = freeSpaceKilobytes / 1000;
-					logger.debug("Free space : " + freeSpaceMegabytes + ", " + MINIMUM_FREE_SPACE);
-					String subject = "No more disk space on server!";
-					if (freeSpaceMegabytes < MINIMUM_FREE_SPACE) {
-						// We need to exit this server as the disk will crash
-						String body = buildMessage("We have run out of disk space on this drive : ", indexesDirectory.toString(),
-								"All indexing will be terminated immediately : ", freeSpaceMegabytes.toString());
-						logger.error(subject + " " + body);
-						sendNotification(subject, body);
-						// Terminate all indexing
-						listenerManager.fireEvent(Event.TERMINATE, System.currentTimeMillis(), indexContext, Boolean.FALSE);
-						// System.exit(0);
-						return Boolean.TRUE;
-					}
-					if (freeSpaceMegabytes < MINIMUM_FREE_SPACE_FOR_NOTIFICATIONS) {
-						String body = buildMessage("We have run out of disk space on this drive : ", indexesDirectory.toString(),
-								"Please clean this disk, free space available : ", freeSpaceMegabytes.toString());
-						logger.error(subject + " " + body);
-						sendNotification(subject, body);
-						return Boolean.TRUE;
-					}
-				}
+//				if (drive != null) {
+//					Long freeSpaceKilobytes = FileSystemUtils.freeSpaceKb(drive);
+//					Long freeSpaceMegabytes = freeSpaceKilobytes / 1000;
+//					logger.debug("Free space : " + freeSpaceMegabytes + ", " + MINIMUM_FREE_SPACE);
+//					String subject = "No more disk space on server!";
+//					if (freeSpaceMegabytes < MINIMUM_FREE_SPACE) {
+//						// We need to exit this server as the disk will crash
+//						String body = buildMessage("We have run out of disk space on this drive : ", indexesDirectory.toString(),
+//								"All indexing will be terminated immediately : ", freeSpaceMegabytes.toString());
+//						logger.error(subject + " " + body);
+//						sendNotification(subject, body);
+//						// Terminate all indexing
+//						listenerManager.fireEvent(Event.TERMINATE, System.currentTimeMillis(), indexContext, Boolean.FALSE);
+//						// System.exit(0);
+//						return Boolean.TRUE;
+//					}
+//					if (freeSpaceMegabytes < MINIMUM_FREE_SPACE_FOR_NOTIFICATIONS) {
+//						String body = buildMessage("We have run out of disk space on this drive : ", indexesDirectory.toString(),
+//								"Please clean this disk, free space available : ", freeSpaceMegabytes.toString());
+//						logger.error(subject + " " + body);
+//						sendNotification(subject, body);
+//						return Boolean.TRUE;
+//					}
+//				}
 			} catch (Exception e) {
 				logger.error("Exception looking for the free space : " + indexesDirectory, e);
 			}

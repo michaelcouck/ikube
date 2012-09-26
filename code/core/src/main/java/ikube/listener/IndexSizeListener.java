@@ -12,6 +12,7 @@ import java.io.File;
 import java.util.Map;
 
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,12 +53,10 @@ public class IndexSizeListener implements IListener {
 			IndexContext<?> indexContext = mapEntry.getValue();
 			IndexWriter indexWriter = indexContext.getIndexWriter();
 			if (indexWriter == null) {
-				// LOGGER.info("Not indexing : " + indexWriter + ", " + indexContext.getIndexName() + ", " +
-				// indexContext.getLastSnapshot());
 				continue;
 			}
 			long meg = 1024 * 1000;
-			long indexSize = indexContext.getLastSnapshot().getIndexSize();
+			long indexSize = getIndexSize(mapEntry.getValue());
 			// LOGGER.info("Index size : " + indexSize + ", " + maxIndexSize + ", " + (indexSize / meg < maxIndexSize));
 			if (indexSize / meg < maxIndexSize) {
 				continue;
@@ -98,6 +97,51 @@ public class IndexSizeListener implements IListener {
 				LOGGER.error("Exception starting a new index : ", e);
 			}
 		}
+	}
+
+	protected long getIndexSize(final IndexContext<?> indexContext) {
+		long indexSize = 0;
+		try {
+			File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
+			if (latestIndexDirectory == null || !latestIndexDirectory.exists() || !latestIndexDirectory.isDirectory()) {
+				return indexSize;
+			}
+			File[] serverIndexDirectories = latestIndexDirectory.listFiles();
+			if (serverIndexDirectories == null) {
+				return indexSize;
+			}
+			for (File serverIndexDirectory : serverIndexDirectories) {
+				if (serverIndexDirectory != null && serverIndexDirectory.exists() && serverIndexDirectory.isDirectory()) {
+					Directory directory = null;
+					try {
+						directory = FSDirectory.open(serverIndexDirectory);
+						if (!IndexWriter.isLocked(directory)) {
+							// We are looking for the locked directory, i.e. the one that is being written to
+							continue;
+						}
+						File[] indexFiles = serverIndexDirectory.listFiles();
+						if (indexFiles == null || indexFiles.length == 0) {
+							continue;
+						}
+						for (File indexFile : indexFiles) {
+							indexSize += indexFile.length();
+						}
+						break;
+					} finally {
+						try {
+							if (directory != null) {
+								directory.close();
+							}
+						} catch (Exception e) {
+							LOGGER.error("Exception closing the directory : ", e);
+						}
+					}
+				}
+			}
+		} catch (Exception e) {
+			LOGGER.error("Exception getting the size of the index : " + this, e);
+		}
+		return indexSize;
 	}
 
 }

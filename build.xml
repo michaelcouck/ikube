@@ -12,6 +12,7 @@
 	    <antcall target="clean-all-servers" />
 	    <antcall target="deploy-configuration" />
 	    <antcall target="deploy-ikube" />
+	    <antcall target="chmod-all-servers" />
 	    <antcall target="start-all-servers" />
 	</target>
 	
@@ -109,6 +110,25 @@
 		</antcall>
 		<antcall target="clean-server">
 		    <param name="host" value="192.168.1.8" />
+		</antcall>
+	</target>
+	
+	<target name="chmod-all-servers">
+		<antcall target="execute-remote-command">
+			<param name="host" value="192.168.1.4" />
+			<param name="command" value="chmod 777 -R /usr/share/apache-tomcat-7.0.27;" />
+		</antcall>
+		<antcall target="execute-remote-command">
+			<param name="host" value="192.168.1.6" />
+			<param name="command" value="chmod 777 -R /usr/share/apache-tomcat-7.0.27;" />
+		</antcall>
+		<antcall target="execute-remote-command">
+			<param name="host" value="192.168.1.7" />
+			<param name="command" value="chmod 777 -R /usr/share/apache-tomcat-7.0.27;" />
+		</antcall>
+		<antcall target="execute-remote-command">
+			<param name="host" value="192.168.1.8" />
+			<param name="command" value="chmod 777 -R /usr/share/apache-tomcat-7.0.27;" />
 		</antcall>
 	</target>
 	

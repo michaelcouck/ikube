@@ -102,5 +102,12 @@ public interface IClusterManager {
 	 *        to be serializable
 	 */
 	void putObject(final Object key, final Object value);
+	
+	/**
+	 * This method will remove an object from the grid.
+	 * 
+	 * @param key the key of the object to remove
+	 */
+	void remove(final Object key);
 
 }

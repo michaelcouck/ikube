@@ -9,6 +9,7 @@ import mockit.Mockit;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -16,6 +17,7 @@ import org.junit.Test;
  * @since 02.06.11
  * @version 01.00
  */
+@Ignore
 public class DiskFullTest extends ATest {
 
 	private DiskFull diskFull;

@@ -274,4 +274,12 @@ public class ClusterManagerHazelcast extends AClusterManager {
 		Hazelcast.getMap(IConstants.IKUBE).put(key, value);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void remove(final Object key) {
+		Hazelcast.getMap(IConstants.IKUBE).remove(key);
+	}
+	
 }

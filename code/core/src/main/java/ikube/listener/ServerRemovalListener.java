@@ -4,8 +4,8 @@ import ikube.IConstants;
 import ikube.cluster.IClusterManager;
 import ikube.model.Server;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,14 +32,12 @@ public class ServerRemovalListener implements IListener {
 			return;
 		}
 		// Remove all servers that are past the max age
-		Collection<Server> servers = clusterManager.getServers().values();
-		Iterator<Server> iterator = servers.iterator();
-		while (iterator.hasNext()) {
-			Server server = iterator.next();
-			if (System.currentTimeMillis() - server.getAge() > IConstants.MAX_AGE) {
-				LOGGER.info("Removing server : " + server + ", " + (System.currentTimeMillis() - server.getAge() > IConstants.MAX_AGE));
-				iterator.remove();
-				clusterManager.putObject(server.getAddress(), null);
+		Collection<Server> servers = new ArrayList<Server>(clusterManager.getServers().values());
+		for (final Server server : servers) {
+			long age = System.currentTimeMillis() - server.getAge();
+			if (age > IConstants.MAX_AGE) {
+				LOGGER.info("Removing server : " + server.getAddress() + ", age : " + (age > IConstants.MAX_AGE));
+				clusterManager.remove(server.getAddress());
 			}
 		}
 	}

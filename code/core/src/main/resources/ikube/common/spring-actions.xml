@@ -203,7 +203,7 @@
 			</util:list>
 		</property>
 	</bean>
-	<bean 
+	<!-- <bean 
 		id="ikube.action.DiskFull" 
 		class="ikube.action.DiskFull" 
 		property:ruleExpression="
@@ -214,7 +214,7 @@
 				<ref local="ikube.action.rule.IsThisServerWorking" />
 			</util:list>
 		</property>
-	</bean>
+	</bean> -->
 	<bean 
 		id="ikube.action.Validator" 
 		class="ikube.action.Validator" 

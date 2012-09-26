@@ -1,5 +1,7 @@
 package ikube.listener;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import ikube.ATest;
@@ -20,6 +22,9 @@ import mockit.Mockit;
 
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.store.Lock;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -61,11 +66,13 @@ public class IndexSizeListenerTest extends ATest {
 		when(monitorService.getIndexContexts()).thenReturn(indexContexts);
 
 		Deencapsulation.setField(indexSizeListener, monitorService);
+		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
 	}
 
 	@After
 	public void after() {
 		Mockit.tearDownMocks();
+		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
 	}
 
 	@Test
@@ -77,6 +84,24 @@ public class IndexSizeListenerTest extends ATest {
 		// so the logic never calls the close on the index writer
 		Mockito.verify(indexWriter, Mockito.never()).close(Boolean.TRUE);
 		Mockito.verify(indexContext, Mockito.atLeastOnce()).setIndexWriter(Mockito.any(IndexWriter.class));
+	}
+
+	@Test
+	public void getIndexSize() throws Exception {
+		File serverIndexDirectory = createIndex(indexContext, "The index data");
+		logger.info("Server index directory : " + serverIndexDirectory);
+
+		long indexSize = indexSizeListener.getIndexSize(indexContext);
+		assertEquals("There should be no index size found : ", 0, indexSize);
+
+		File latestServerIndexDirectory = createIndex(indexContext, "The second index data", "Which has more data in it");
+		Directory directory = FSDirectory.open(latestServerIndexDirectory);
+		Lock lock = getLock(directory, latestServerIndexDirectory);
+
+		indexSize = indexSizeListener.getIndexSize(indexContext);
+		assertTrue("The locked directory is the index that is open : ", indexSize > 0);
+
+		lock.release();
 	}
 
 }
