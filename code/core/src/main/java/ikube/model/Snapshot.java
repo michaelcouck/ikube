@@ -28,8 +28,6 @@ public class Snapshot extends Persistable {
 	@Column
 	private long indexSize;
 	@Column
-	private long timestamp;
-	@Column
 	private Date latestIndexTimestamp;
 	@Column
 	private long docsPerMinute;
@@ -41,14 +39,6 @@ public class Snapshot extends Persistable {
 	@PrimaryKeyJoinColumn
 	@ManyToOne(cascade = { CascadeType.MERGE, CascadeType.REFRESH }, fetch = FetchType.EAGER)
 	private IndexContext<?> indexContext;
-
-	public long getTimestamp() {
-		return timestamp;
-	}
-
-	public void setTimestamp(long timestamp) {
-		this.timestamp = timestamp;
-	}
 
 	public long getIndexSize() {
 		return indexSize;

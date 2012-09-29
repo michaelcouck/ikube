@@ -1,6 +1,7 @@
 package ikube.database;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -9,12 +10,14 @@ import ikube.Integration;
 import ikube.model.Action;
 import ikube.model.File;
 import ikube.model.IndexContext;
+import ikube.model.Snapshot;
 import ikube.model.Url;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.PerformanceTester;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -247,6 +250,26 @@ public class ADataBaseJpaIntegration extends Integration {
 		dataBase.persist(indexContext);
 		IndexContext dbIndexContext = dataBase.find(IndexContext.class, indexContext.getId());
 		assertNotNull(dbIndexContext);
+	}
+
+	@Test
+	public void timestamp() {
+		IndexContext<?> indexContext = new IndexContext<Object>();
+		dataBase.persist(indexContext);
+		IndexContext<?> dbIndexContext = dataBase.find(IndexContext.class, indexContext.getId());
+		Date creationTimestamp = dbIndexContext.getTimestamp();
+		assertNotNull(creationTimestamp);
+
+		dbIndexContext.setIndexDirectoryPath("./indexes");
+		dbIndexContext = dataBase.merge(dbIndexContext);
+
+		Date updateTimestamp = dbIndexContext.getTimestamp();
+		assertNotNull(updateTimestamp);
+		assertFalse(creationTimestamp.equals(updateTimestamp));
+		
+		Snapshot snapshot = new Snapshot();
+		snapshot = dataBase.persist(snapshot);
+		assertNotNull(snapshot.getTimestamp());
 	}
 
 	protected List<Url> getUrls(int batchSize) throws Exception {

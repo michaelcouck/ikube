@@ -91,7 +91,7 @@ public class ServersPanelContainer extends AContainer {
 			Snapshot snapshot = indexContext.getLastSnapshot();
 			String indexSize = Double.toString(((double) snapshot.getIndexSize()) / 1000000);
 			Long numDocs = snapshot.getNumDocs();
-			Date timestamp = new Date(snapshot.getTimestamp());
+			Date timestamp = snapshot.getTimestamp();
 			Long docsPerMinute = snapshot.getDocsPerMinute();
 			String actionName = getActionName(server, indexContext);
 			HorizontalLayout horizontalLayout = new HorizontalLayout();

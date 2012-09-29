@@ -134,7 +134,7 @@ public class DashPanelContainer extends AContainer {
 					continue;
 				}
 				for (Snapshot snapshot : indexContext.getSnapshots()) {
-					addPoint(chart, seriesKey, new Date(snapshot.getTimestamp()), snapshot.getDocsPerMinute() / 60);
+					addPoint(chart, seriesKey, snapshot.getTimestamp(), snapshot.getDocsPerMinute() / 60);
 				}
 			}
 		}

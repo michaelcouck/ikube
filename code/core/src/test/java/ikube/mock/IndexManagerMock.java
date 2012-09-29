@@ -20,7 +20,6 @@ public class IndexManagerMock {
 	public static IndexWriter	INDEX_WRITER;
 
 	@Mock()
-	@SuppressWarnings("unused")
 	public static synchronized IndexWriter openIndexWriter(final IndexContext<?> indexContext, final long time, final String ip) {
 		return INDEX_WRITER;
 	}

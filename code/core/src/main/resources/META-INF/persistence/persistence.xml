@@ -35,22 +35,7 @@
 		<class>ikube.model.geospatial.GeoName</class>
 		<class>ikube.model.geospatial.AlternateName</class>
 		
-		<class>ikube.model.faq.Faq</class>
-		<class>ikube.model.faq.Attachment</class>
-		
-		<class>ikube.model.medical.Address</class>
-		<class>ikube.model.medical.Administration</class>
-		<class>ikube.model.medical.Condition</class>
-		<class>ikube.model.medical.Doctor</class>
-		<class>ikube.model.medical.Hospital</class>
-		<class>ikube.model.medical.Inpatient</class>
-		<class>ikube.model.medical.Medication</class>
-		<class>ikube.model.medical.Patient</class>
-		<class>ikube.model.medical.Person</class>
-		<class>ikube.model.medical.Record</class>
-		<class>ikube.model.medical.Treatment</class>
-		
-		<exclude-unlisted-classes>false</exclude-unlisted-classes>
+		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		
 			<!-- For the first run these have to be uncommented to allow OpenJpa to create the
 			tables in the database and commit the connection. Typically the connection
@@ -97,22 +82,7 @@
 		<class>ikube.model.geospatial.GeoName</class>
 		<class>ikube.model.geospatial.AlternateName</class>
 		
-		<class>ikube.model.faq.Faq</class>
-		<class>ikube.model.faq.Attachment</class>
-		
-		<class>ikube.model.medical.Address</class>
-		<class>ikube.model.medical.Administration</class>
-		<class>ikube.model.medical.Condition</class>
-		<class>ikube.model.medical.Doctor</class>
-		<class>ikube.model.medical.Hospital</class>
-		<class>ikube.model.medical.Inpatient</class>
-		<class>ikube.model.medical.Medication</class>
-		<class>ikube.model.medical.Patient</class>
-		<class>ikube.model.medical.Person</class>
-		<class>ikube.model.medical.Record</class>
-		<class>ikube.model.medical.Treatment</class>
-		
-		<exclude-unlisted-classes>false</exclude-unlisted-classes>
+		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		
 		<properties>
 			<property name="openjpa.Connection2UserName" value="ubuntu" />
@@ -149,22 +119,7 @@
 		<class>ikube.model.geospatial.GeoName</class>
 		<class>ikube.model.geospatial.AlternateName</class>
 		
-		<class>ikube.model.faq.Faq</class>
-		<class>ikube.model.faq.Attachment</class>
-		
-		<class>ikube.model.medical.Address</class>
-		<class>ikube.model.medical.Administration</class>
-		<class>ikube.model.medical.Condition</class>
-		<class>ikube.model.medical.Doctor</class>
-		<class>ikube.model.medical.Hospital</class>
-		<class>ikube.model.medical.Inpatient</class>
-		<class>ikube.model.medical.Medication</class>
-		<class>ikube.model.medical.Patient</class>
-		<class>ikube.model.medical.Person</class>
-		<class>ikube.model.medical.Record</class>
-		<class>ikube.model.medical.Treatment</class>
-		
-		<exclude-unlisted-classes>false</exclude-unlisted-classes>
+		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		
 		<properties>
 			<property name="openjpa.Connection2UserName" value="ikube" />
@@ -201,22 +156,7 @@
 		<class>ikube.model.geospatial.GeoName</class>
 		<class>ikube.model.geospatial.AlternateName</class>
 		
-		<class>ikube.model.faq.Faq</class>
-		<class>ikube.model.faq.Attachment</class>
-		
-		<class>ikube.model.medical.Address</class>
-		<class>ikube.model.medical.Administration</class>
-		<class>ikube.model.medical.Condition</class>
-		<class>ikube.model.medical.Doctor</class>
-		<class>ikube.model.medical.Hospital</class>
-		<class>ikube.model.medical.Inpatient</class>
-		<class>ikube.model.medical.Medication</class>
-		<class>ikube.model.medical.Patient</class>
-		<class>ikube.model.medical.Person</class>
-		<class>ikube.model.medical.Record</class>
-		<class>ikube.model.medical.Treatment</class>
-		
-		<exclude-unlisted-classes>false</exclude-unlisted-classes>
+		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		
 		<properties>
 			<property name="openjpa.Connection2UserName" value="ubuntu" />

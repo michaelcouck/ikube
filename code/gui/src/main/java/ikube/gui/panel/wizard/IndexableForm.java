@@ -1,6 +1,7 @@
 package ikube.gui.panel.wizard;
 
 import ikube.cluster.IClusterManager;
+import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.service.IMonitorService;
 import ikube.toolkit.ObjectToolkit;
@@ -23,6 +24,7 @@ import org.springframework.context.annotation.Scope;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Form;
 import com.vaadin.ui.GridLayout;
@@ -49,8 +51,19 @@ public class IndexableForm extends AForm {
 		String[] fieldsNames = monitorService.getFieldNames(indexable.getClass());
 		String[] fieldDescriptions = monitorService.getFieldDescriptions(indexable.getClass());
 
-		setLayout(new GridLayout(3, fieldsNames.length + 2));
-		getLayout().setSizeFull();
+		GridLayout gridLayout = new GridLayout(3, fieldsNames.length + 2);
+		gridLayout.setSizeFull();
+		setLayout(gridLayout);
+
+		Label indexesLabel = new Label("<font size='2'><b>Add indexable to collection : </b></font>", Label.CONTENT_XHTML);
+		gridLayout.addComponent(indexesLabel);
+
+		ComboBox comboBox = new ComboBox();
+		for (final IndexContext<?> indexContext : monitorService.getIndexContexts().values()) {
+			comboBox.addItem(indexContext.getIndexName());
+		}
+
+		gridLayout.addComponent(comboBox, 1, 0, 2, 0);
 
 		for (int i = 0; i < fieldsNames.length; i++) {
 			String fieldName = fieldsNames[i];
@@ -58,20 +71,20 @@ public class IndexableForm extends AForm {
 
 			Label fieldNameLabel = new Label("<b>" + fieldName + "</b>", Label.CONTENT_XHTML);
 			fieldNameLabel.setWidth(15, Sizeable.UNITS_PERCENTAGE);
-			getLayout().addComponent(fieldNameLabel);
+			gridLayout.addComponent(fieldNameLabel);
 
+			Object fieldValue = ObjectToolkit.getFieldValue(indexable, fieldName);
 			TextField textField = new TextField();
 			textField.setDescription(fieldName);
 			textField.setWidth(90, Sizeable.UNITS_PERCENTAGE);
-			Object fieldValue = ObjectToolkit.getFieldValue(indexable, fieldName);
 			textField.setValue(fieldValue);
-			getLayout().addComponent(textField);
+			gridLayout.addComponent(textField);
 
 			Label validationLabel = new Label(fieldDescription, Label.CONTENT_XHTML);
 			validationLabel.setSizeFull();
 			validationLabel.setDescription(fieldName);
 			validationLabel.setData(fieldDescription);
-			getLayout().addComponent(validationLabel);
+			gridLayout.addComponent(validationLabel);
 		}
 		addUpdateButton(window, "Add", (Class<Indexable>) indexable.getClass());
 		addUpdateButton(window, "Update", (Class<Indexable>) indexable.getClass());
@@ -106,7 +119,7 @@ public class IndexableForm extends AForm {
 		Button button = new Button(name, clickListener);
 		getFooter().addComponent(button);
 	}
-	
+
 	@SuppressWarnings({ "rawtypes" })
 	private void cancelButton(final Window window, final String name, final Class<Indexable> klass) {
 		Button.ClickListener clickListener = new Button.ClickListener() {
@@ -148,12 +161,13 @@ public class IndexableForm extends AForm {
 					}
 					Path path = constraintViolation.getPropertyPath();
 					if (label.getDescription().equals(path.toString())) {
+						// label.setCaption("<b color='red'>" + constraintViolation.getMessage() + "</b>");
 						StringBuilder content = new StringBuilder();
-						content.append(label.getData());
-						content.append("<br>");
-						content.append("<b>");
+						content.append("<font color='red'><b>");
 						content.append(constraintViolation.getMessage());
-						content.append("</b>");
+						content.append("</b></font>");
+						content.append("<br>");
+						content.append(label.getData());
 						label.setValue(content.toString());
 					}
 				}

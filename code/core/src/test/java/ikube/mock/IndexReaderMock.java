@@ -17,13 +17,11 @@ public class IndexReaderMock {
 	public static boolean	INDEX_EXISTS;
 
 	@Mock
-	@SuppressWarnings("unused")
 	public static boolean indexExists(Directory directory) throws IOException {
 		return INDEX_EXISTS;
 	}
 
 	@Mock
-	@SuppressWarnings("unused")
 	public static IndexReader open(final Directory directory, boolean readOnly) throws CorruptIndexException, IOException {
 		return mock(IndexReader.class);
 	}

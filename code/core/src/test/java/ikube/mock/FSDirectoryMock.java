@@ -14,7 +14,6 @@ import org.apache.lucene.store.FSDirectory;
 public class FSDirectoryMock {
 
 	@Mock
-	@SuppressWarnings("unused")
 	public static FSDirectory open(File path) throws IOException {
 		return mock(FSDirectory.class);
 	}

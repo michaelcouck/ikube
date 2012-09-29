@@ -71,24 +71,21 @@ public class SnapshotListener implements IListener {
 			Map<String, IndexContext> indexContexts = monitorService.getIndexContexts();
 			for (Map.Entry<String, IndexContext> mapEntry : indexContexts.entrySet()) {
 				IndexContext indexContext = mapEntry.getValue();
-				try {
-					// long availableDiskSpace = FileSystemUtils.freeSpaceKb(indexContext.getIndexDirectoryPath()) / 1000;
-					// indexContext.setAvailableDiskSpace(availableDiskSpace);
-				} catch (Exception e) {
-					LOGGER.error("Exception accessing the disk space : ", e);
-				}
 
 				Snapshot snapshot = new Snapshot();
+				// LOGGER.info("Snapshot : " + snapshot);
+				dataBase.persist(snapshot);
+
 				snapshot.setIndexSize(getIndexSize(indexContext));
 				snapshot.setNumDocs(getNumDocs(indexContext));
-				snapshot.setTimestamp(System.currentTimeMillis());
 				snapshot.setLatestIndexTimestamp(getLatestIndexDirectoryDate(indexContext));
 				snapshot.setDocsPerMinute(getDocsPerMinute(indexContext, snapshot));
 				snapshot.setTotalSearches(getTotalSearchesForIndex(indexContext));
 				// LOGGER.info("Setting searches per minute : " + getSearchesPerMinute(indexContext, snapshot));
 				snapshot.setSearchesPerMinute(getSearchesPerMinute(indexContext, snapshot));
 
-				dataBase.persist(snapshot);
+				dataBase.merge(snapshot);
+				// LOGGER.info("Snapshot : " + snapshot);
 				indexContext.getSnapshots().add(snapshot);
 				if (indexContext.getSnapshots().size() > IConstants.MAX_SNAPSHOTS) {
 					List<Snapshot> subListToRemove = indexContext.getSnapshots().subList(0,
@@ -121,7 +118,7 @@ public class SnapshotListener implements IListener {
 			return 0;
 		}
 		Snapshot previous = snapshots.get(snapshots.size() - 1);
-		double interval = snapshot.getTimestamp() - previous.getTimestamp();
+		double interval = snapshot.getTimestamp().getTime() - previous.getTimestamp().getTime();
 		double ratio = interval / 60000;
 		long searchesPerMinute = (long) ((snapshot.getTotalSearches() - previous.getTotalSearches()) / ratio);
 		return searchesPerMinute;
@@ -133,7 +130,8 @@ public class SnapshotListener implements IListener {
 			return 0;
 		}
 		Snapshot previous = snapshots.get(snapshots.size() - 1);
-		double interval = snapshot.getTimestamp() - previous.getTimestamp();
+		// LOGGER.info("Previous : " + previous.getTimestamp() + ", " + snapshot.getTimestamp());
+		double interval = snapshot.getTimestamp().getTime() - previous.getTimestamp().getTime();
 		double ratio = interval / 60000;
 		long docsPerMinute = (long) ((snapshot.getNumDocs() - previous.getNumDocs()) / ratio);
 		if (docsPerMinute < 0) {

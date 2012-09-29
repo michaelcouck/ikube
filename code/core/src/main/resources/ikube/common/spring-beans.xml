@@ -190,13 +190,18 @@
 		<ref bean="ikube.IndexEngine" />
 		<bean class="ikube.listener.StartupListener" />
 		<bean class="ikube.listener.TerminationListener" />
-		<bean class="ikube.listener.SnapshotListener" />
+		<ref bean="ikube.listener.SnapshotListener" />
 		<bean class="ikube.listener.ServerRemovalListener" />
 		<bean class="ikube.listener.IndexSizeListener" />
 		<bean class="ikube.listener.ActionListener" />
 		<bean class="ikube.listener.IndexContextListener" />
 		<bean class="ikube.toolkit.ThreadUtilities" />
 	</util:list>
+	
+	<bean
+		id="ikube.listener.SnapshotListener"
+		name="ikube.listener.SnapshotListener" 
+		class="ikube.listener.SnapshotListener" />
 	
 	<bean 
 		id="ikube.listener.Scheduler" 
