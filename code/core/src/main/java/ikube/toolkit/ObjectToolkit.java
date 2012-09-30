@@ -16,6 +16,7 @@ import java.util.TreeSet;
 
 import javax.persistence.Id;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.util.ReflectionUtils;
@@ -69,13 +70,35 @@ public final class ObjectToolkit {
 		if (depth > maxDepth) {
 			return null;
 		}
-		ReflectionUtils.doWithFields(klass, new ReflectionUtils.FieldCallback() {
+		ReflectionUtils.FieldFilter fieldFilter = getFieldFilter();
+		ReflectionUtils.FieldCallback fieldCallback = getFieldCallback(target, collections, depth, maxDepth, excludedFields);
+		ReflectionUtils.doWithFields(klass, fieldCallback, fieldFilter);
+		if (!Object.class.equals(klass.getSuperclass())) {
+			populateFields(klass.getSuperclass(), target, collections, depth, maxDepth, excludedFields);
+		}
+		return target;
+	}
+
+	private static ReflectionUtils.FieldFilter getFieldFilter() {
+		return new ReflectionUtils.FieldFilter() {
+			@Override
+			public boolean matches(Field field) {
+				// We don't set the fields that are static, final
+				return !Modifier.isStatic(field.getModifiers()) && !Modifier.isFinal(field.getModifiers());
+			}
+		};
+	}
+
+	private static ReflectionUtils.FieldCallback getFieldCallback(final Object target, final Boolean collections, final int depth,
+			final int maxDepth, final String... excludedFields) {
+		return new ReflectionUtils.FieldCallback() {
 			@Override
 			@SuppressWarnings({ "rawtypes", "unchecked" })
 			public void doWith(Field field) throws IllegalArgumentException, IllegalAccessException {
 				Object fieldValue = null;
 				try {
 					if (isIgnored(field, excludedFields)) {
+						// LOGGER.info("Excluding field : " + field + ", " + target);
 						return;
 					}
 					for (Predicate predicate : PREDICATES) {
@@ -115,26 +138,22 @@ public final class ObjectToolkit {
 							&& !field.getType().getName().startsWith("java")) {
 						populateFields(fieldValue.getClass(), fieldValue, collections, depth + 1, maxDepth, excludedFields);
 					}
-					if (fieldValue != null) {
-						// LOGGER.info("Setting field : " + field);
-						field.setAccessible(Boolean.TRUE);
-						field.set(target, fieldValue);
+					// Nulls are not interesting to set
+					if (fieldValue == null) {
+						return;
 					}
+					// Don't set a field that is 0, not useful
+					if (Number.class.isAssignableFrom(fieldValue.getClass()) && ((Number) fieldValue).doubleValue() == 0) {
+						// LOGGER.info("Not setting field : " + fieldValue + ", " + field + ", " + target);
+						return;
+					}
+					// LOGGER.info("Setting field : " + field + ", " + fieldValue + ", " + target);
+					BeanUtils.setProperty(target, field.getName(), fieldValue);
 				} catch (Exception e) {
 					LOGGER.error(e.getMessage() + ", " + field + ", " + fieldValue, e);
 				}
 			}
-		}, new ReflectionUtils.FieldFilter() {
-			@Override
-			public boolean matches(Field field) {
-				// We don't set the fields that are static, final
-				return !Modifier.isStatic(field.getModifiers()) && !Modifier.isFinal(field.getModifiers());
-			}
-		});
-		if (!Object.class.equals(klass.getSuperclass())) {
-			populateFields(klass.getSuperclass(), target, collections, depth, maxDepth, excludedFields);
-		}
-		return target;
+		};
 	}
 
 	private static final boolean isIgnored(final Field field, final String[] excludedFields) {

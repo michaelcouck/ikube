@@ -4,6 +4,7 @@ import static org.junit.Assert.assertTrue;
 import ikube.ATest;
 import ikube.IConstants;
 import ikube.model.IndexContext;
+import ikube.model.Snapshot;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.junit.Test;
@@ -31,6 +32,8 @@ public class ObjectToolkitTest extends ATest {
 		assertTrue(indexContext.getId() == 0);
 		assertTrue(indexContext.getName() != null);
 		assertTrue(indexContext.getBufferSize() != 0.0);
+		
+		logger.info("Snapshot : " + new Snapshot());
 	}
 
 }

@@ -84,13 +84,13 @@
 		
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		
-		<properties>
+		<!-- <properties>
 			<property name="openjpa.Connection2UserName" value="ubuntu" />
 			<property name="openjpa.Connection2Password" value="Caherl1ne" />
 			<property name="openjpa.Connection2URL" value="jdbc:db2://ikube.be:50000/ikube" />
 			<property name="openjpa.Connection2DriverName" value="com.ibm.db2.jcc.DB2Driver" />
 			<property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
-		</properties>
+		</properties> -->
 	</persistence-unit>
 	
 	<persistence-unit name="IkubePersistenceUnitOracle" transaction-type="RESOURCE_LOCAL">
@@ -121,13 +121,13 @@
 		
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		
-		<properties>
+		<!-- <properties>
 			<property name="openjpa.Connection2UserName" value="ikube" />
 			<property name="openjpa.Connection2Password" value="Caherl1ne" />
 			<property name="openjpa.Connection2URL" value="jdbc:oracle:thin:@//ikube.be:1521/ikube" />
 			<property name="openjpa.Connection2DriverName" value="oracle.jdbc.driver.OracleDriver" />
 			<property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
-		</properties>
+		</properties> -->
 	</persistence-unit>
 	
 	<persistence-unit name="IkubePersistenceUnitPostgres" transaction-type="RESOURCE_LOCAL">
@@ -158,13 +158,13 @@
 		
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		
-		<properties>
+		<!-- <properties>
 			<property name="openjpa.Connection2UserName" value="ubuntu" />
 			<property name="openjpa.Connection2Password" value="Caherl1ne" />
 			<property name="openjpa.Connection2URL" value="jdbc:postgresql://ikube.be:5432/ikube" />
 			<property name="openjpa.Connection2DriverName" value="org.postgresql.Driver" />
 			<property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
-		</properties>
+		</properties> -->
 	</persistence-unit>
 	
 </persistence>

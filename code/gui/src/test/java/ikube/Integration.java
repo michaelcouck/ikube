@@ -7,25 +7,21 @@ import ikube.index.parse.mime.MimeTypes;
 import ikube.listener.ListenerManager;
 import ikube.listener.Scheduler;
 import ikube.model.IndexContext;
+import ikube.model.Snapshot;
 import ikube.security.WebServiceAuthentication;
 import ikube.service.IMonitorService;
 import ikube.toolkit.ApplicationContextManager;
-import ikube.toolkit.DataUtilities;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.Logging;
+import ikube.toolkit.ObjectToolkit;
 import ikube.toolkit.ThreadUtilities;
 import ikube.toolkit.UriUtilities;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.sql.DataSource;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.NameValuePair;
@@ -35,10 +31,17 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
 import org.apache.lucene.index.IndexWriter;
-import org.dbunit.ext.h2.H2DataTypeFactory;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 
+/**
+ * This base class for the integration tests will load some snapshots into the database as well as initialize the application context. IT
+ * also provides
+ * 
+ * @author Michael Couck
+ * @since 12.10.2010
+ * @version 01.00
+ */
 @Ignore
 public abstract class Integration {
 
@@ -76,23 +79,28 @@ public abstract class Integration {
 
 	private static void startContext() {
 		ApplicationContextManager.getBean(ListenerManager.class).removeListeners();
-		IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
-		dataBase.find(ikube.model.File.class, 0l);
 		ApplicationContextManager.getBean(ListenerManager.class).removeListeners();
 		ApplicationContextManager.getBean(Scheduler.class).shutdown();
 		ThreadUtilities.destroy();
 	}
 
 	private static void insertData() throws SQLException, FileNotFoundException {
-		DataSource dataSource = ApplicationContextManager.getBean("nonXaDataSourceH2");
-		Connection connection = dataSource.getConnection();
-		LOGGER.info("Dot directory : " + DOT_DIRECTORY.getAbsolutePath());
-		File allData = FileUtilities.findFileRecursively(DOT_DIRECTORY, false, "allData");
-		InputStream inputStream = new FileInputStream(allData);
-		DataUtilities.setDataTypeFactory(new H2DataTypeFactory());
-		DataUtilities.insertData(connection, inputStream);
+		IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
+		List<Snapshot> snapshots = new ArrayList<Snapshot>();
+		for (int i = 0; i < 11000; i++) {
+			Snapshot snapshot = ObjectToolkit.populateFields(Snapshot.class, new Snapshot(), true, 0, 1, "id", "indexContext");
+			snapshot.setId(0);
+			snapshots.add(snapshot);
+		}
+		dataBase.persistBatch(snapshots);
 	}
 
+	/**
+	 * This method will delete all the specified classes from the database.
+	 * 
+	 * @param dataBase the database to use for deleting the data
+	 * @param klasses the classes to delete from the database
+	 */
 	public static void delete(final IDataBase dataBase, final Class<?>... klasses) {
 		int batchSize = 1000;
 		for (Class<?> klass : klasses) {
@@ -108,6 +116,14 @@ public abstract class Integration {
 		}
 	}
 
+	/**
+	 * This method will build an array of name value pairs that can be used in the HttpClient to parameterize the request to resources and
+	 * pages in fact.
+	 * 
+	 * @param names the names of the parameters
+	 * @param values the values to be assigned to the parameters
+	 * @return the array of name value pairs for the request
+	 */
 	protected static NameValuePair[] getNameValuePairs(String[] names, String[] values) {
 		List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
 		for (int i = 0; i < names.length && i < values.length; i++) {

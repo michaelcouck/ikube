@@ -107,15 +107,15 @@
 			ForeignKeys=true,Indexes=true,SchemaAction='drop,add',
 			SchemaAction='add,deleteTableContents'
 		 -->
-		<entry key="openjpa.Connection2URL" value="${ikube.jdbc.url}" />
+		<!-- <entry key="openjpa.Connection2URL" value="${ikube.jdbc.url}" />
 		<entry key="openjpa.Connection2UserName" value="${ikube.jdbc.userid}" />
 		<entry key="openjpa.Connection2Password" value="${ikube.jdbc.password}" />
-		<entry key="openjpa.Connection2DriverName" value="${ikube.jdbc.driver}" />
+		<entry key="openjpa.Connection2DriverName" value="${ikube.jdbc.driver}" /> -->
 		
-		<entry key="openjpa.ConnectionURL" value="${ikube.jdbc.url}" />
+		<!-- <entry key="openjpa.ConnectionURL" value="${ikube.jdbc.url}" />
 		<entry key="openjpa.ConnectionUserName" value="${ikube.jdbc.userid}" />
 		<entry key="openjpa.ConnectionPassword" value="${ikube.jdbc.password}" />
-		<entry key="openjpa.ConnectionDriverName" value="${ikube.jdbc.driver}" />
+		<entry key="openjpa.ConnectionDriverName" value="${ikube.jdbc.driver}" /> -->
 		
 		<entry key="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
 	</util:map>

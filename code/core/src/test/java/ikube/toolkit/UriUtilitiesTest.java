@@ -8,7 +8,6 @@ import ikube.ATest;
 import java.net.URI;
 import java.util.regex.Pattern;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -149,12 +148,12 @@ public class UriUtilitiesTest extends ATest {
 		logger.info("Stripped uri : " + strippedUri);
 		assertEquals("http://www.google.com/ikube/java", strippedUri.toString());
 	}
-	
-	@Test
-	@Ignore
-	public void getIp() throws Exception {
-		String ipAddress = UriUtilities.getIp();
-		assertFalse(ipAddress.equals("127.0.0.1"));
-		assertFalse(ipAddress.equals("127.0.1.1"));
-	}
+
+	// @Test
+	// @Ignore
+	// public void getIp() throws Exception {
+	// String ipAddress = UriUtilities.getIp();
+	// assertFalse(ipAddress.equals("127.0.0.1"));
+	// assertFalse(ipAddress.equals("127.0.1.1"));
+	// }
 }

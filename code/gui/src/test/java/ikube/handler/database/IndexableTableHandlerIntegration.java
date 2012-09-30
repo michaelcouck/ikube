@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 import ikube.IConstants;
 import ikube.Integration;
 import ikube.cluster.IClusterManager;
+import ikube.database.IDataBase;
 import ikube.index.IndexManager;
 import ikube.index.content.ColumnContentProvider;
 import ikube.index.content.IContentProvider;
@@ -14,6 +15,7 @@ import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.model.IndexableColumn;
 import ikube.model.IndexableTable;
+import ikube.model.Snapshot;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.DatabaseUtilities;
 import ikube.toolkit.ThreadUtilities;
@@ -35,7 +37,7 @@ import mockit.Deencapsulation;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
-import org.junit.AfterClass;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -48,103 +50,122 @@ import org.junit.Test;
  */
 public class IndexableTableHandlerIntegration extends Integration {
 
-	@SuppressWarnings("rawtypes")
-	private IndexContext indexContext;
-	private IndexableTable faqIndexableTable;
-	private IndexableColumn faqIndexableColumn;
-	private IndexableTable attachmentIndexableTable;
-	private List<Indexable<?>> faqIndexableTableChildren;
+	private IDataBase dataBase;
+	private IndexContext<?> indexContext;
+	private IndexableTable snapshotTable;
+	private IndexableColumn snapshotColumn;
+	private List<Indexable<?>> snapshotTableChildren;
 	private IndexableTableHandler indexableTableHandler;
 	private Connection connection;
 
 	@Before
 	public void before() throws SQLException {
 		ThreadUtilities.initialize();
+		dataBase = ApplicationContextManager.getBean(IDataBase.class);
 		indexableTableHandler = ApplicationContextManager.getBean(IndexableTableHandler.class);
-		faqIndexableTable = ApplicationContextManager.getBean("faqTableH2");
-		attachmentIndexableTable = ApplicationContextManager.getBean("attachmentTableH2");
-		faqIndexableTableChildren = faqIndexableTable.getChildren();
-		faqIndexableColumn = Deencapsulation.invoke(indexableTableHandler, "getIdColumn", faqIndexableTableChildren);
+
+		snapshotTable = ApplicationContextManager.getBean("snapshotTable");
+		snapshotTableChildren = snapshotTable.getChildren();
+		snapshotColumn = Deencapsulation.invoke(indexableTableHandler, "getIdColumn", snapshotTableChildren);
+
 		connection = ((DataSource) ApplicationContextManager.getBean("nonXaDataSourceH2")).getConnection();
+
 		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
 		clusterManager.getServer().getActions().clear();
 		indexContext = monitorService.getIndexContext("indexContext");
 	}
 
-	@AfterClass
-	public static void afterClass() {
+	@After
+	public void after() {
 		ThreadUtilities.destroy();
 		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
 		clusterManager.getServer().getActions().clear();
-		// DatabaseUtilities.close(connection);
+		DatabaseUtilities.close(connection);
+	}
+
+	private long getMinId() {
+		return dataBase.find(Snapshot.class, new String[] { "id" }, new Boolean[] { true }, 0, 1).get(0).getId();
+	}
+
+	private long getMaxId() {
+		return dataBase.find(Snapshot.class, new String[] { "id" }, new Boolean[] { false }, 0, 1).get(0).getId();
 	}
 
 	@Test
 	public void handleTableSingleRow() throws Exception {
-		String predicate = faqIndexableTable.getPredicate();
+		String predicate = snapshotTable.getPredicate();
 		try {
 			String ip = InetAddress.getLocalHost().getHostAddress();
 			IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
 			indexContext.setIndexWriter(indexWriter);
-			faqIndexableTable.setPredicate("where faq.faqId = 330451");
-			// DatabaseUtilities.printResultSet(connection.createStatement().executeQuery("select * from faq"));
-			List<Future<?>> threads = indexableTableHandler.handle(indexContext, faqIndexableTable);
+			Long minId = getMinId();
+			snapshotTable.setPredicate("where snapshot.id = " + minId);
+			List<Future<?>> threads = indexableTableHandler.handle(indexContext, snapshotTable);
 			ThreadUtilities.waitForFutures(threads, Integer.MAX_VALUE);
 			assertEquals("There must be exactly one document in the index : ", 1, indexContext.getIndexWriter().numDocs());
 		} finally {
-			faqIndexableTable.setPredicate(predicate);
+			snapshotTable.setPredicate(predicate);
 		}
 	}
 
 	@Test
 	public void buildSql() throws Exception {
-		indexContext.setBatchSize(10);
-		String expectedSql = "select faq.faqid, faq.answer, faq.creationtimestamp, faq.creator, faq.modifiedtimestamp, faq.modifier, "
-				+ "faq.published, faq.question from faq";
+		indexContext.setBatchSize(1000);
+		String expectedSql = "select snapshot.id, snapshot.numdocs, snapshot.timestamp, snapshot.docsperminute, "
+				+ "snapshot.indexsize, snapshot.latestindextimestamp, snapshot.searchesperminute, snapshot.totalsearches "
+				+ "from snapshot";
 		long nextIdNumber = 0;
 		long batchSize = indexContext.getBatchSize();
-		Deencapsulation.invoke(indexableTableHandler, "addAllColumns", faqIndexableTable, connection);
-		String sql = Deencapsulation.invoke(indexableTableHandler, "buildSql", faqIndexableTable, batchSize, nextIdNumber);
+		Deencapsulation.invoke(indexableTableHandler, "addAllColumns", snapshotTable, connection);
+		String sql = Deencapsulation.invoke(indexableTableHandler, "buildSql", snapshotTable, batchSize, nextIdNumber);
 		sql = sql.toLowerCase();
-		logger.info("Sql : " + sql);
 		assertTrue(sql.contains(expectedSql));
 	}
 
 	@Test
 	public void getIdFunction() throws Exception {
-		Long minId = Deencapsulation.invoke(indexableTableHandler, "getIdFunction", faqIndexableTable, connection, "min");
-		logger.debug("Min id : " + minId);
-		assertTrue("This is dependant on the database being used : ", minId > 0);
-		Long maxId = Deencapsulation.invoke(indexableTableHandler, "getIdFunction", faqIndexableTable, connection, "max");
-		logger.debug("Max id : " + maxId);
-		assertTrue(maxId < 1000000000);
+		Long jpaMinId = getMinId();
+		Long jpaMaxId = getMaxId();
+		Long minId = Deencapsulation.invoke(indexableTableHandler, "getIdFunction", snapshotTable, connection, "min");
+		assertTrue("The min id should be : " + jpaMinId, minId.equals(jpaMinId));
+		Long maxId = Deencapsulation.invoke(indexableTableHandler, "getIdFunction", snapshotTable, connection, "max");
+		assertTrue("The max id should be " + jpaMaxId, maxId.equals(jpaMaxId));
 	}
 
 	@Test
 	public void getIdColumn() throws Exception {
-		IndexableColumn idColumn = Deencapsulation.invoke(indexableTableHandler, "getIdColumn", faqIndexableTable.getChildren());
+		IndexableColumn idColumn = Deencapsulation.invoke(indexableTableHandler, "getIdColumn", snapshotTable.getChildren());
 		assertNotNull(idColumn);
-		assertEquals("faqId", idColumn.getName());
+		assertEquals("id", idColumn.getName());
 	}
 
 	@Test
 	public void setParameters() throws Exception {
-		faqIndexableColumn.setContent(1);
-		String sql = "select * from attachment where faqId = ?";
-		PreparedStatement preparedStatement = connection.prepareStatement(sql);
-		Deencapsulation.invoke(indexableTableHandler, "setParameters", attachmentIndexableTable, preparedStatement);
-		// Execute this statement just for shits and giggles
-		ResultSet resultSet = preparedStatement.executeQuery();
-		assertNotNull(resultSet);
+		try {
+			IndexableTable indexContextTable = ApplicationContextManager.getBean("indexContextTable");
+			IndexableColumn indexContextIdColumn = Deencapsulation.invoke(indexableTableHandler, "getIdColumn",
+					indexContextTable.getChildren());
+			snapshotColumn.setForeignKey(indexContextIdColumn);
+			snapshotColumn.setContent(1);
+			String sql = "select * from snapshot where id = ?";
+			PreparedStatement preparedStatement = connection.prepareStatement(sql);
+			Deencapsulation.invoke(indexableTableHandler, "setParameters", snapshotTable, preparedStatement);
+			// Execute this statement just for shits and giggles
+			ResultSet resultSet = preparedStatement.executeQuery();
+			assertNotNull(resultSet);
 
-		DatabaseUtilities.close(resultSet);
-		DatabaseUtilities.close(preparedStatement);
+			DatabaseUtilities.close(resultSet);
+			DatabaseUtilities.close(preparedStatement);
+		} finally {
+			snapshotColumn.setForeignKey(null);
+		}
 	}
 
 	@Test
 	public void getResultSet() throws Exception {
-		faqIndexableColumn.setContent(1);
-		ResultSet resultSet = Deencapsulation.invoke(indexableTableHandler, "getResultSet", indexContext, faqIndexableTable, connection,
+		long minId = getMinId();
+		snapshotColumn.setContent(minId);
+		ResultSet resultSet = Deencapsulation.invoke(indexableTableHandler, "getResultSet", indexContext, snapshotTable, connection,
 				new AtomicLong(0), 1);
 		assertNotNull(resultSet);
 
@@ -155,12 +176,12 @@ public class IndexableTableHandlerIntegration extends Integration {
 
 	@Test
 	public void handleColumn() throws Exception {
-		IndexableColumn faqIdIndexableColumn = Deencapsulation.invoke(indexableTableHandler, "getIdColumn", faqIndexableTableChildren);
-		faqIdIndexableColumn.setContent("Hello World!");
-		faqIdIndexableColumn.setColumnType(Types.VARCHAR);
+		IndexableColumn snapshotIdIndexableColumn = Deencapsulation.invoke(indexableTableHandler, "getIdColumn", snapshotTableChildren);
+		snapshotIdIndexableColumn.setContent("Hello World!");
+		snapshotIdIndexableColumn.setColumnType(Types.VARCHAR);
 		Document document = new Document();
 		IContentProvider<IndexableColumn> contentProvider = new ColumnContentProvider();
-		Deencapsulation.invoke(indexableTableHandler, "handleColumn", contentProvider, faqIdIndexableColumn, document);
+		Deencapsulation.invoke(indexableTableHandler, "handleColumn", contentProvider, snapshotIdIndexableColumn, document);
 		// This must just succeed as the sub components are tested separately
 		assertTrue(Boolean.TRUE);
 	}
@@ -169,17 +190,15 @@ public class IndexableTableHandlerIntegration extends Integration {
 	public void setIdField() throws Exception {
 		Document document = new Document();
 		Statement statement = connection.createStatement();
-		ResultSet resultSet = statement.executeQuery("select * from faq");
+		ResultSet resultSet = statement.executeQuery("select * from snapshot");
 		resultSet.next();
 
-		Deencapsulation.invoke(indexableTableHandler, "setColumnTypesAndData", faqIndexableTableChildren, resultSet);
-		Deencapsulation.invoke(indexableTableHandler, "setIdField", faqIndexableTable, document);
+		Deencapsulation.invoke(indexableTableHandler, "setColumnTypesAndData", snapshotTableChildren, resultSet);
+		Deencapsulation.invoke(indexableTableHandler, "setIdField", snapshotTable, document);
 
-		logger.debug("Document : " + document);
 		String idFieldValue = document.get(IConstants.ID);
-		logger.debug("Id field : " + idFieldValue);
-		assertTrue("The id field for the table is the name of the table and the column name, then the value : ",
-				idFieldValue.contains("faq faqId"));
+		assertTrue("The id field for the table is the name of the table and the column name, then the value : " + idFieldValue,
+				idFieldValue.contains("snapshot id"));
 
 		DatabaseUtilities.close(resultSet);
 		DatabaseUtilities.close(statement);
@@ -187,15 +206,14 @@ public class IndexableTableHandlerIntegration extends Integration {
 
 	@Test
 	public void setColumnTypes() throws Exception {
-		faqIndexableColumn.setColumnType(0);
+		snapshotColumn.setColumnType(0);
 		Statement statement = connection.createStatement();
-		ResultSet resultSet = statement.executeQuery("select * from faq");
+		ResultSet resultSet = statement.executeQuery("select * from snapshot");
 		resultSet.next();
 
-		Deencapsulation.invoke(indexableTableHandler, "setColumnTypesAndData", faqIndexableTableChildren, resultSet);
+		Deencapsulation.invoke(indexableTableHandler, "setColumnTypesAndData", snapshotTableChildren, resultSet);
 
-		logger.debug("Faq id column type : " + faqIndexableColumn.getColumnType());
-		assertEquals(Types.BIGINT, faqIndexableColumn.getColumnType());
+		assertEquals("Snapshot id column type : " + snapshotColumn.getColumnType(), Types.BIGINT, snapshotColumn.getColumnType());
 
 		DatabaseUtilities.close(resultSet);
 		DatabaseUtilities.close(statement);
@@ -206,28 +224,23 @@ public class IndexableTableHandlerIntegration extends Integration {
 		String ip = InetAddress.getLocalHost().getHostAddress();
 		IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
 		indexContext.setIndexWriter(indexWriter);
-		// DatabaseUtilities.printResultSet(connection.createStatement().executeQuery("select * from faq"));
-		List<Future<?>> threads = indexableTableHandler.handle(indexContext, faqIndexableTable);
+		List<Future<?>> threads = indexableTableHandler.handle(indexContext, snapshotTable);
 		ThreadUtilities.waitForFutures(threads, Integer.MAX_VALUE);
 		assertTrue("There must be some data in the index : ", indexContext.getIndexWriter().numDocs() > 0);
 	}
 
 	@Test
 	public void handleAllColumnsTable() throws Exception {
-		IndexableTable indexable = ApplicationContextManager.getBean("patientTableH2");
-		IndexContext<?> indexContext = ApplicationContextManager.getBean("indexContext");
 		String ip = InetAddress.getLocalHost().getHostAddress();
 		IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
 		indexContext.setIndexWriter(indexWriter);
-		// ((IndexableTable) indexable).setPredicate("where geoname.id > 18842835");
-		List<Future<?>> futures = indexableTableHandler.handle(indexContext, indexable);
+		List<Future<?>> futures = indexableTableHandler.handle(indexContext, snapshotTable);
 		ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
 		assertTrue("There must be some data in the index : ", indexContext.getIndexWriter().numDocs() > 0);
 	}
 
 	@Test
 	public void handleAllColumnsAllTables() throws Exception {
-		IndexContext<?> indexContext = ApplicationContextManager.getBean("indexContext");
 		String ip = InetAddress.getLocalHost().getHostAddress();
 		IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
 		indexContext.setIndexWriter(indexWriter);
@@ -252,26 +265,26 @@ public class IndexableTableHandlerIntegration extends Integration {
 	public void interrupt() throws Exception {
 		try {
 			long start = System.currentTimeMillis();
-			IndexableTable indexable = ApplicationContextManager.getBean("geoname");
-			IndexContext<?> indexContext = ApplicationContextManager.getBean("geospatial");
-			String ip = InetAddress.getLocalHost().getHostAddress();
-			IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
-			indexContext.setIndexWriter(indexWriter);
+			indexContext.setBatchSize(10);
+			indexContext.setThrottle(60000);
+			indexContext.setIndexWriter(IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), InetAddress.getLocalHost()
+					.getHostAddress()));
 			Thread thread = new Thread(new Runnable() {
 				public void run() {
-					ThreadUtilities.sleep(15000);
+					ThreadUtilities.sleep(10000);
 					ThreadUtilities.destroy();
 				}
 			});
 			thread.setDaemon(Boolean.TRUE);
 			thread.start();
-			List<Future<?>> futures = indexableTableHandler.handle(indexContext, indexable);
+			List<Future<?>> futures = indexableTableHandler.handle(indexContext, snapshotTable);
 			ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
 			// We should get here when the futures are interrupted
 			assertTrue(Boolean.TRUE);
 			assertTrue(System.currentTimeMillis() - start < 60000);
 		} finally {
 			ThreadUtilities.initialize();
+			indexContext.setThrottle(0);
 		}
 	}
 

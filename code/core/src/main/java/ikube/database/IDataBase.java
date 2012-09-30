@@ -21,7 +21,7 @@ public interface IDataBase {
 	 * @return the number of rows in the database
 	 */
 	<T> Long count(Class<T> klass);
-	
+
 	/**
 	 * This method counts the number of entities in the database reduced by the parameters.
 	 * 
@@ -144,9 +144,9 @@ public interface IDataBase {
 	 * @param <T> the type to expect
 	 * @param klass the class to select from the database
 	 * @param fieldsToSortOn the fields to sort on, in the order of the sort requirements, i.e. first on start time then on end time for
-	 *            example
+	 *        example
 	 * @param directionOfSort the direction of the sort for each field. For example sort acesnding on the start time and descending on the
-	 *            end time
+	 *        end time
 	 * @param firstResult the first result in the set, i.e. skip the first n results
 	 * @param maxResults and the size of the result set
 	 * @return the list of sorted entities from the database
@@ -218,7 +218,8 @@ public interface IDataBase {
 	<T> T find(Class<T> klass, String sql, String[] names, Object[] values);
 
 	/**
-	 * TODO Document me!
+	 * This method will execute a named suery on the database fintered by the parameters which will narrow the results and return a list
+	 * with of the specified type, starting at the posisiton specified and with a maximum results of that specified.
 	 * 
 	 * @param <T> the type to return
 	 * @param klass the class of the return type
@@ -226,12 +227,12 @@ public interface IDataBase {
 	 * @param names the names of the fields to use as filter in the query
 	 * @param values the values of the fields to use for the filter in the query
 	 * @param startPosition the first entity in the result, in the case that this list os sorted by the id for example thsn this will be the
-	 *            next page in the results, if not then the results are defined by the JPA implementation
+	 *        next page in the results, if not then the results are defined by the JPA implementation
 	 * @param maxResults the maximum results to return from the database
 	 * @return the list of entities in the database that match the names and values for the fields
 	 */
 	<T> List<T> find(Class<T> klass, String sql, String[] names, Object[] values, int startPosition, int maxResults);
-	
+
 	/**
 	 * This method will return the first entity that satisfies the query.
 	 * 
@@ -255,12 +256,12 @@ public interface IDataBase {
 	 * @return the resultant collection, can be empty, based on the fields and values specified for the selection
 	 */
 	<T> List<T> findCriteria(Class<T> klass, String[] fieldsToFilterOn, Object[] valuesToFilterOn, int firstResult, int maxResults);
-	
+
 	/**
 	 * This method will refresh the entity from the dtabase, essentially getting the changes in the case where it was updated out side of
 	 * the transaction, i.e. in another thread.
 	 * 
-	 * @param t the entity from the database to refresh with the latest data 
+	 * @param t the entity from the database to refresh with the latest data
 	 * @return the refreshed entity
 	 */
 	<T> T refresh(T t);
