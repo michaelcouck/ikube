@@ -239,7 +239,7 @@
 		property:analyzed="true" property:vectored="true" />
 	<bean id="ADR_ROMA_PDP_BASE" class="ikube.model.IndexableTable" property:name="ADR_ROMA_PDP_BASE" property:allColumns="true"
 		property:primaryTable="true" property:dataSource-ref="nonXaSumoDataSourceOracle" property:maxExceptions="10" property:stored="true"
-		property:analyzed="true" property:vectored="true" property:children-ref="pdpColumns" />
+		property:analyzed="true" property:vectored="true" />
 	<bean id="ADR_STATUS" class="ikube.model.IndexableTable" property:name="ADR_STATUS" property:allColumns="true" property:primaryTable="true"
 		property:dataSource-ref="nonXaSumoDataSourceOracle" property:maxExceptions="10" property:stored="false" property:analyzed="true"
 		property:vectored="true" />

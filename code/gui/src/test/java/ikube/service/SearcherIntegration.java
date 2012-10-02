@@ -44,8 +44,7 @@ public class SearcherIntegration extends Integration {
 		LOGGER.info("Query string : " + getMethod.getQueryString());
 		int result = HTTP_CLIENT.executeMethod(getMethod);
 		String actual = getMethod.getResponseBodyAsString();
-		LOGGER.info("Result : " + actual);
-		assertTrue("We should get something : " + result, actual.length() > 0);
+		assertTrue("We should get something : " + result + ", " + actual, actual.length() > 0);
 	}
 
 	@Test
@@ -76,8 +75,7 @@ public class SearcherIntegration extends Integration {
 		LOGGER.info("Query string : " + getMethod.getQueryString());
 		int result = HTTP_CLIENT.executeMethod(getMethod);
 		String actual = getMethod.getResponseBodyAsString();
-		LOGGER.info("Result : " + actual);
-		assertTrue("We should get something : " + result, actual.length() > 0);
+		assertTrue("We should get something : " + result + ", " + actual, actual.length() > 0);
 	}
 
 	@Test
@@ -106,8 +104,7 @@ public class SearcherIntegration extends Integration {
 		LOGGER.info("Query string : " + getMethod.getQueryString());
 		int result = HTTP_CLIENT.executeMethod(getMethod);
 		String actual = getMethod.getResponseBodyAsString();
-		LOGGER.info("Result : " + actual);
-		assertTrue("We should get something : " + result, actual.length() > 0);
+		assertTrue("We should get something : " + result + ", " + actual, actual.length() > 0);
 	}
 
 	@Test
@@ -140,8 +137,7 @@ public class SearcherIntegration extends Integration {
 		LOGGER.info("Query string : " + getMethod.getQueryString());
 		int result = HTTP_CLIENT.executeMethod(getMethod);
 		String actual = getMethod.getResponseBodyAsString();
-		LOGGER.info("Result : " + actual);
-		assertTrue("We should get something : " + result, actual.length() > 0);
+		assertTrue("We should get something : " + result + ", " + actual, actual.length() > 0);
 	}
 
 	@Test
@@ -178,8 +174,7 @@ public class SearcherIntegration extends Integration {
 		LOGGER.info("Query string : " + getMethod.getQueryString());
 		int result = HTTP_CLIENT.executeMethod(getMethod);
 		String actual = getMethod.getResponseBodyAsString();
-		LOGGER.info("Result : " + actual);
-		assertTrue("We should get something : " + result, actual.length() > 0);
+		assertTrue("We should get something : " + result + ", " + actual, actual.length() > 0);
 	}
 
 	@Test
@@ -214,8 +209,7 @@ public class SearcherIntegration extends Integration {
 		LOGGER.info("Query string : " + getMethod.getQueryString());
 		int result = HTTP_CLIENT.executeMethod(getMethod);
 		String actual = getMethod.getResponseBodyAsString();
-		LOGGER.info("Result : " + actual);
-		assertTrue("We should get something : " + result, actual.length() > 0);
+		assertTrue("We should get something : " + result + ", " + actual, actual.length() > 0);
 	}
 
 	@Test
@@ -243,8 +237,7 @@ public class SearcherIntegration extends Integration {
 		LOGGER.info("Query string : " + getMethod.getQueryString());
 		int result = HTTP_CLIENT.executeMethod(getMethod);
 		String actual = getMethod.getResponseBodyAsString();
-		LOGGER.info("Result : " + actual);
-		assertTrue("We should get something : " + result, actual.length() > 0);
+		assertTrue("We should get something : " + result + ", " + actual, actual.length() > 0);
 	}
 
 }

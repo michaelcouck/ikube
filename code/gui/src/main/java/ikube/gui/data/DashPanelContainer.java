@@ -118,6 +118,7 @@ public class DashPanelContainer extends AContainer {
 			}
 			addPoint(chart, server.getIp(), new Date(), searchesPerMinute / 60);
 		}
+		// chart.getConfig().getLegend().
 	}
 
 	private void setIndexingData(final Panel panel) {

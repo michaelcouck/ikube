@@ -11,6 +11,8 @@ import javax.persistence.InheritanceType;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.PrimaryKeyJoinColumn;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 
 /**
  * @author Michael Couck
@@ -42,6 +44,12 @@ public class Indexable<E> extends Persistable {
 	@Column
 	@Attribute(field = false, description = "Whether this field should be vectored in the index")
 	private boolean vectored = Boolean.FALSE;
+	
+	@Column
+	@Min(value = 1)
+	@Max(value = 1000000)
+	@Attribute(field = false, description = "This is the maximum exceptions during indexing before the indexing is stopped")
+	private long maxExceptions = 1000;
 
 	public void setName(final String name) {
 		this.name = name;
@@ -104,4 +112,12 @@ public class Indexable<E> extends Persistable {
 		this.vectored = vectored;
 	}
 
+	public long getMaxExceptions() {
+		return maxExceptions;
+	}
+
+	public void setMaxExceptions(long maxExceptions) {
+		this.maxExceptions = maxExceptions;
+	}
+	
 }

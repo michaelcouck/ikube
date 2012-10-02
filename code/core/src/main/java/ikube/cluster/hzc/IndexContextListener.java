@@ -47,6 +47,9 @@ public class IndexContextListener implements MessageListener<Object> {
 			dataBase.persist(remoteIndexContext);
 		} else {
 			// Check the time stamp of the contexts
+			if (remoteIndexContext.getTimestamp() == null || localIndexContext.getTimestamp() == null) {
+				return;
+			}
 			if (remoteIndexContext.getTimestamp().after(localIndexContext.getTimestamp())) {
 				LOGGER.info("Adding index context : " + remoteIndexContext);
 				dataBase.remove(localIndexContext);

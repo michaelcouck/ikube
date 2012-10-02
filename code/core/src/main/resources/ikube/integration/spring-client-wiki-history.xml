@@ -52,7 +52,8 @@
 		property:excludedPattern="${files.excluded.pattern}"
 		property:batchSize="${file.batch.size}"
 		property:maxReadLength="${file.max.read.length}" 
-		property:maxRevisions="${max.revisions}" />
+		property:maxRevisions="${max.revisions}"
+		property:maxExceptions="${max.exceptions}" />
 	
 	<bean
 		id="wikiHistoryTwo"
@@ -91,7 +92,8 @@
 		property:excludedPattern="${files.excluded.pattern}"
 		property:batchSize="${file.batch.size}"
 		property:maxReadLength="${file.max.read.length}" 
-		property:maxRevisions="${max.revisions}" />
+		property:maxRevisions="${max.revisions}" 
+		property:maxExceptions="${max.exceptions}" />
 
 	<bean
 		id="wikiHistoryThree"
@@ -130,7 +132,8 @@
 		property:excludedPattern="${files.excluded.pattern}"
 		property:batchSize="${file.batch.size}"
 		property:maxReadLength="${file.max.read.length}" 
-		property:maxRevisions="${max.revisions}" />
+		property:maxRevisions="${max.revisions}" 
+		property:maxExceptions="${max.exceptions}" />
 
 	<bean
 		id="wikiHistoryFour"
@@ -169,7 +172,8 @@
 		property:excludedPattern="${files.excluded.pattern}"
 		property:batchSize="${file.batch.size}"
 		property:maxReadLength="${file.max.read.length}" 
-		property:maxRevisions="${max.revisions}" />
+		property:maxRevisions="${max.revisions}" 
+		property:maxExceptions="${max.exceptions}" />
 
 	<bean
 		id="wikiHistoryFive"
@@ -208,6 +212,7 @@
 		property:excludedPattern="${files.excluded.pattern}"
 		property:batchSize="${file.batch.size}"
 		property:maxReadLength="${file.max.read.length}" 
-		property:maxRevisions="${max.revisions}" />
+		property:maxRevisions="${max.revisions}" 
+		property:maxExceptions="${max.exceptions}" />
 
 </beans>

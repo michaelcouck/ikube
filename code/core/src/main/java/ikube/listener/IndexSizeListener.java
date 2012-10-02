@@ -69,9 +69,9 @@ public class IndexSizeListener implements IListener {
 				stringBuilder.append(IConstants.SEP);
 				stringBuilder.append(clusterManager.getServer().getAddress());
 				stringBuilder.append(".");
-				stringBuilder.append(Integer.valueOf(indexDirectory.getName().charAt(indexDirectory.getName().length() - 1)) + 1);
+				stringBuilder.append(Long.toString(System.currentTimeMillis()));
 				File newIndexDirectory = FileUtilities.getFile(stringBuilder.toString(), Boolean.TRUE);
-				LOGGER.info("Starting new index : " + newIndexDirectory);
+				LOGGER.info("Starting new index : " + indexContext.getIndexName() + ", " + newIndexDirectory);
 				IndexWriter newIndexWriter = IndexManager.openIndexWriter(indexContext, newIndexDirectory, true);
 
 				int retry = 10;
@@ -88,7 +88,7 @@ public class IndexSizeListener implements IListener {
 				}
 
 				if (switched) {
-					LOGGER.info("Switched to the new index writer : ");
+					LOGGER.info("Switched to the new index writer : " + indexContext);
 					IndexManager.closeIndexWriter(indexWriter);
 				} else {
 					LOGGER.warn("Didn't switch to the new index writer, will try again next notification : ");

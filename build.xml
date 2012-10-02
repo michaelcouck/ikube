@@ -60,7 +60,7 @@
 		bin directory, then zip everything up again into a zip for distribution/deployment.
 	-->
 	<target name="zip-ikube">
-		<untar compression="gzip" dest="code/war/target" src="code/libs/tools/${tomcat-gzip}" />
+		<untar compression="gzip" dest="code/gui/target" src="code/libs/tools/${tomcat-gzip}" />
 		<unjar src="${output-configuration-directory}/${ikube-configuration-jar}" dest="${target-directory}/${tomcat-unpacked}/bin/ikube" overwrite="true" />
 		<copy file="${target-directory}/${ikube-war}" todir="${target-directory}/${tomcat-unpacked}/webapps" overwrite="true" />
 		<zip 
@@ -183,7 +183,7 @@
 	</target>
 	<target name="deploy-configuration-for-jetty">
 		<unjar src="${output-configuration-directory}/${ikube-configuration-jar}" dest="code/core/ikube" overwrite="true" />
-		<unjar src="${output-configuration-directory}/${ikube-configuration-jar}" dest="code/war/ikube" overwrite="true" />
+		<!-- <unjar src="${output-configuration-directory}/${ikube-configuration-jar}" dest="code/war/ikube" overwrite="true" /> -->
 		<unjar src="${output-configuration-directory}/${ikube-configuration-jar}" dest="code/gui/ikube" overwrite="true" />
 	</target>
 	

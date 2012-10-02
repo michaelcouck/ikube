@@ -35,6 +35,7 @@ public class IndexableDictionaryHandler extends IndexableHandler<IndexableDictio
 		try {
 			File spellingIndexDirectory = FileUtilities.getFile(indexContext.getIndexDirectoryPath(), Boolean.TRUE);
 			Directory directory = FSDirectory.open(spellingIndexDirectory);
+			@SuppressWarnings("resource")
 			final SpellChecker spellChecker = new SpellChecker(directory);
 			for (int i = 0; i < getThreads(); i++) {
 				Runnable runnable = new Runnable() {

@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.Future;
 
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
@@ -77,11 +78,12 @@ public class IndexableFilesystemWikiHandler extends IndexableHandler<IndexableFi
 	 */
 	@SuppressWarnings("resource")
 	protected void handleFile(final IndexContext<?> indexContext, final IndexableFileSystemWiki indexableFileSystem, final File file,
-			Counter counter) {
+			final Counter counter) {
 		// Get the wiki history file
 		long start = System.currentTimeMillis();
 		FileInputStream fileInputStream = null;
 		BZip2CompressorInputStream bZip2CompressorInputStream = null;
+		int exceptions = 0;
 		try {
 			int read = -1;
 			fileInputStream = new FileInputStream(file);
@@ -100,8 +102,14 @@ public class IndexableFilesystemWikiHandler extends IndexableHandler<IndexableFi
 		} catch (InterruptedException e) {
 			logger.error("Coitus interruptus... : " + file, e);
 			throw new RuntimeException(e);
+		} catch (CancellationException e) {
+			throw e;
 		} catch (Exception e) {
 			logger.error("Exception reading and uncompressing the zip file : " + file, e);
+			exceptions++;
+			if (exceptions > indexableFileSystem.getMaxExceptions()) {
+				throw new RuntimeException("Maximum exceptions reached : " + exceptions);
+			}
 		} finally {
 			FileUtilities.close(fileInputStream);
 			FileUtilities.close(bZip2CompressorInputStream);

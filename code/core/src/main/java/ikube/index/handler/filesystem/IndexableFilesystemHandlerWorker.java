@@ -17,6 +17,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
+import java.util.concurrent.CancellationException;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.input.ReaderInputStream;
@@ -111,6 +112,9 @@ class IndexableFilesystemHandlerWorker implements Runnable {
 		} catch (InterruptedException e) {
 			// This means that the scheduler has been forcefully destroyed
 			throw e;
+		} catch (CancellationException e) {
+			// This means that the scheduler has been forcefully destroyed
+			throw e;
 		} catch (Exception e) {
 			logger.error("Exception occured while trying to index the file " + file.getAbsolutePath());
 			if (logger.isDebugEnabled()) {
@@ -174,12 +178,14 @@ class IndexableFilesystemHandlerWorker implements Runnable {
 		if (isZipAndFile) {
 			de.schlichtherle.io.File trueZipFile = new de.schlichtherle.io.File(file);
 			File[] files = trueZipFile.listFiles();
-			for (File innerFile : files) {
-				try {
-					handleFile(innerFile);
-					handleZip(indexableFileSystem, innerFile);
-				} catch (Exception e) {
-					logger.error("Exception reading inner file : " + innerFile, e);
+			if (files != null) {
+				for (File innerFile : files) {
+					try {
+						handleFile(innerFile);
+						handleZip(indexableFileSystem, innerFile);
+					} catch (Exception e) {
+						logger.error("Exception reading inner file : " + innerFile, e);
+					}
 				}
 			}
 		}

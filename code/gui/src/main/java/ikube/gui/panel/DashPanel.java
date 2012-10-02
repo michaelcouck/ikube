@@ -14,7 +14,11 @@ import com.invient.vaadin.charts.InvientChartsConfig.AxisBase.NumberPlotLine;
 import com.invient.vaadin.charts.InvientChartsConfig.AxisBase.NumberPlotLine.NumberValue;
 import com.invient.vaadin.charts.InvientChartsConfig.AxisBase.Tick;
 import com.invient.vaadin.charts.InvientChartsConfig.DateTimeAxis;
+import com.invient.vaadin.charts.InvientChartsConfig.HorzAlign;
+import com.invient.vaadin.charts.InvientChartsConfig.Legend;
+import com.invient.vaadin.charts.InvientChartsConfig.Legend.Layout;
 import com.invient.vaadin.charts.InvientChartsConfig.NumberYAxis;
+import com.invient.vaadin.charts.InvientChartsConfig.VertAlign;
 import com.invient.vaadin.charts.InvientChartsConfig.XAxis;
 import com.invient.vaadin.charts.InvientChartsConfig.YAxis;
 import com.vaadin.terminal.Sizeable;
@@ -64,6 +68,18 @@ public class DashPanel extends Panel {
 		InvientChartsConfig chartConfig = new InvientChartsConfig();
 		chartConfig.getGeneralChartConfig().setType(SeriesType.SPLINE);
 		chartConfig.getTitle().setText(description);
+		Legend legend = new Legend();
+		legend.setLayout(Layout.VERTICAL);
+		legend.setPosition(new InvientChartsConfig.Position());
+		legend.getPosition().setAlign(HorzAlign.RIGHT);
+		legend.getPosition().setVertAlign(VertAlign.TOP);
+		legend.setFloating(true);
+		legend.setShadow(true);
+		legend.setBorderWidth(1);
+		legend.getPosition().setX(-100);
+		legend.getPosition().setY(100);
+		legend.setBackgroundColor(new RGB(255, 255, 255));
+		chartConfig.setLegend(legend);
 
 		DateTimeAxis xAxis = new DateTimeAxis();
 		xAxis.setTick(new Tick());
@@ -84,9 +100,11 @@ public class DashPanel extends Panel {
 		chartConfig.setYAxes(yAxes);
 
 		chartConfig.getTooltip().setFormatterJsFunc(
-				"function() {" + " return '<b>'+ this.series.name +'</b><br/>'+ "
+				"function() {" //
+						+ " return '<b>'+ this.series.name +'</b><br/>'+ "
 						+ " $wnd.Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) +'<br/>'+ "
-						+ " $wnd.Highcharts.numberFormat(this.y, 2);" + "}");
+						+ " $wnd.Highcharts.numberFormat(this.y, 2);" //
+						+ "}");
 
 		chartConfig.getLegend().setEnabled(false);
 		InvientCharts chart = new InvientCharts(chartConfig);
