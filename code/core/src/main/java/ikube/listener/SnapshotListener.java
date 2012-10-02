@@ -88,9 +88,11 @@ public class SnapshotListener implements IListener {
 				// LOGGER.info("Snapshot : " + snapshot);
 				indexContext.getSnapshots().add(snapshot);
 				if (indexContext.getSnapshots().size() > IConstants.MAX_SNAPSHOTS) {
+					List<Snapshot> snapshots = new ArrayList<Snapshot>(indexContext.getSnapshots());
 					List<Snapshot> subListToRemove = indexContext.getSnapshots().subList(0,
 							(int) (((double) IConstants.MAX_SNAPSHOTS) * 0.25));
-					indexContext.getSnapshots().removeAll(subListToRemove);
+					snapshots.removeAll(subListToRemove);
+					indexContext.setSnapshots(snapshots);
 				}
 			}
 		}

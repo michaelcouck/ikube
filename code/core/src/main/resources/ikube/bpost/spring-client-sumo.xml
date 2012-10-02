@@ -14,7 +14,7 @@
 	<bean id="sumoIndex" class="ikube.model.IndexContext" property:name="sumoIndex" property:maxAge="1200" property:compoundFile="${compound.file}"
 		property:bufferedDocs="${buffered.docs}" property:bufferSize="${buffer.size}" property:batchSize="${jdbc.batch.size}"
 		property:internetBatchSize="${internet.batch.size}" property:mergeFactor="${merge.factor}" property:maxFieldLength="${max.field.length}"
-		property:maxReadLength="${max.read.length}" property:throttle="10" property:indexDirectoryPath="${index.directory.path}"
+		property:maxReadLength="${max.read.length}" property:throttle="${post.db.throttle}" property:indexDirectoryPath="${index.directory.path}"
 		property:indexDirectoryPathBackup="${index.directory.path.backup}" property:children-ref="sumoIndexables" />
 	<util:list id="sumoIndexables">
 		<ref local="ABO2000" />
