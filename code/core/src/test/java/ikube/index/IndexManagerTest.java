@@ -20,6 +20,8 @@ import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
 import org.apache.lucene.index.IndexWriter;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -35,9 +37,25 @@ public class IndexManagerTest extends ATest {
 	private Store store = Store.YES;
 	private TermVector termVector = TermVector.YES;
 	private Index index = Index.ANALYZED;
+	
+	private File indexFolderOne;
+	private File indexFolderTwo;
+	private File indexFolderThree;
 
 	public IndexManagerTest() {
 		super(IndexManagerTest.class);
+	}
+	
+	@Before
+	public void before() {
+		indexFolderOne = FileUtilities.getFile("./" + IndexManagerTest.class.getSimpleName() + "/1234567889/127.0.0.1", Boolean.TRUE);
+		indexFolderTwo = FileUtilities.getFile("./" + IndexManagerTest.class.getSimpleName() + "/1234567891/127.0.0.2", Boolean.TRUE);
+		indexFolderThree = FileUtilities.getFile("./" + IndexManagerTest.class.getSimpleName() + "/1234567890/127.0.0.3", Boolean.TRUE);
+	}
+	
+	@After
+	public void after() {
+		FileUtilities.deleteFile(new File("./" + IndexManagerTest.class.getSimpleName()), 1);
 	}
 
 	@Test
@@ -129,6 +147,29 @@ public class IndexManagerTest extends ATest {
 		assertFalse(newIndexDirectoryPathBackup.contains("\\.\\"));
 
 		when(indexContext.getIndexDirectoryPathBackup()).thenReturn(indexDirectoryPathBackup);
+	}
+	
+	@Test
+	public void getLatestIndexDirectoryFileFile() {
+		// File, File
+		File latest = IndexManager.getLatestIndexDirectory(indexFolderOne.getParentFile().getParentFile(), null);
+		logger.info("Latest index directory : " + latest);
+		assertEquals(indexFolderTwo.getParentFile(), latest);
+		latest = IndexManager.getLatestIndexDirectory(indexFolderTwo.getParentFile().getParentFile(), null);
+		assertEquals(indexFolderTwo.getParentFile(), latest);
+		latest = IndexManager.getLatestIndexDirectory(indexFolderThree.getParentFile().getParentFile(), null);
+		assertEquals(indexFolderTwo.getParentFile(), latest);
+		
+		createIndex(indexContext, "The data in the index");
+		latest = IndexManager.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
+		assertTrue(latest != null && latest.exists());
+	}
+
+	@Test
+	public void getLatestIndexDirectoryString() {
+		// String
+		File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexFolderOne.getParentFile().getParentFile().getAbsolutePath());
+		assertEquals(indexFolderTwo.getParentFile().getName(), latestIndexDirectory.getName());
 	}
 	
 	

@@ -2,7 +2,6 @@ package ikube.action;
 
 import ikube.index.IndexManager;
 import ikube.model.IndexContext;
-import ikube.toolkit.FileUtilities;
 
 import java.io.File;
 
@@ -23,7 +22,7 @@ public class Optimizer extends Action<IndexContext<?>, Boolean> {
 		ikube.model.Action action = null;
 		try {
 			action = start(indexContext.getIndexName(), "");
-			File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
+			File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
 			logger.info("Latest index directory : " + latestIndexDirectory);
 			if (latestIndexDirectory != null && latestIndexDirectory.exists() && latestIndexDirectory.isDirectory()) {
 				File[] serverIndexDirectories = latestIndexDirectory.listFiles();

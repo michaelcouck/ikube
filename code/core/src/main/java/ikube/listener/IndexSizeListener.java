@@ -102,7 +102,7 @@ public class IndexSizeListener implements IListener {
 	protected long getIndexSize(final IndexContext<?> indexContext) {
 		long indexSize = 0;
 		try {
-			File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
+			File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
 			if (latestIndexDirectory == null || !latestIndexDirectory.exists() || !latestIndexDirectory.isDirectory()) {
 				return indexSize;
 			}

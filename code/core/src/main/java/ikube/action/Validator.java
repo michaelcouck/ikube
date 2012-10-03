@@ -7,13 +7,11 @@ import ikube.action.rule.IsIndexCorrupt;
 import ikube.action.rule.IsIndexCurrent;
 import ikube.index.IndexManager;
 import ikube.model.IndexContext;
-import ikube.toolkit.FileUtilities;
 
 import java.io.File;
 
 /**
- * This class will just validate that there are indexes in a searchable condition and if not send a mail to the
- * administrator.
+ * This class will just validate that there are indexes in a searchable condition and if not send a mail to the administrator.
  * 
  * @author Michael Couck
  * @since 31.10.10
@@ -30,8 +28,7 @@ public class Validator extends Action<IndexContext<?>, Boolean> {
 	 * 5) There are indexes but they are corrupt<br>
 	 * 6) Any of the above and the searcher is not opened for some reason<br>
 	 * <br>
-	 * There must be at least one index being generated, or one index created // and one being generated for each index
-	 * context
+	 * There must be at least one index being generated, or one index created // and one being generated for each index context
 	 */
 	@Override
 	boolean executeInternal(final IndexContext<?> indexContext) {
@@ -45,7 +42,7 @@ public class Validator extends Action<IndexContext<?>, Boolean> {
 			AreIndexesCreated areIndexesCreated = new AreIndexesCreated();
 			IsIndexBackedUp isIndexBackedUp = new IsIndexBackedUp();
 			String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
-			File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexDirectoryPath);
+			File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexDirectoryPath);
 			// Are there any indexes at all
 			if (!areIndexesCreated.evaluate(indexContext)) {
 				if (latestIndexDirectory == null || !latestIndexDirectory.exists()) {

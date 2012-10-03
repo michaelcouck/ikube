@@ -154,13 +154,13 @@ public class SnapshotListenerTest extends ATest {
 		when(indexWriter.numDocs()).thenReturn(Integer.MAX_VALUE);
 		long numDocs = snapshotListener.getNumDocs(indexContext);
 		logger.info("Num docs : " + numDocs);
-		assertEquals(Integer.MAX_VALUE, numDocs);
+		assertEquals(2147483648l, numDocs);
 
 		when(indexContext.getIndexWriter()).thenReturn(null);
 		when(indexReader.numDocs()).thenReturn(Integer.MIN_VALUE);
 		numDocs = snapshotListener.getNumDocs(indexContext);
 		logger.info("Num docs : " + numDocs);
-		assertEquals(Integer.MIN_VALUE, numDocs);
+		assertEquals(-2147483648l, numDocs);
 	}
 
 	@Test

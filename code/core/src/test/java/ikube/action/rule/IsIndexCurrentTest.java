@@ -3,12 +3,10 @@ package ikube.action.rule;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import ikube.ATest;
-import ikube.toolkit.FileUtilities;
+import ikube.mock.IndexManagerMock;
 
 import java.io.File;
 
-import mockit.Mock;
-import mockit.MockClass;
 import mockit.Mockit;
 
 import org.junit.After;
@@ -24,24 +22,8 @@ import org.junit.Test;
  */
 public class IsIndexCurrentTest extends ATest {
 
-	@MockClass(realClass = FileUtilities.class)
-	public static class FileUtilitiesMock {
-
-		private static File	LATEST_INDEX_DIRECTORY;
-
-		@Mock()
-		@SuppressWarnings("unused")
-		public static synchronized File getLatestIndexDirectory(final String baseIndexDirectoryPath) {
-			return LATEST_INDEX_DIRECTORY;
-		}
-
-		public static void setLatestIndexDirectory(File latestIndexDirectory) {
-			LATEST_INDEX_DIRECTORY = latestIndexDirectory;
-		}
-	}
-
 	/** Class under test. */
-	private IsIndexCurrent	isIndexCurrentRule	= new IsIndexCurrent();
+	private IsIndexCurrent isIndexCurrentRule = new IsIndexCurrent();
 
 	public IsIndexCurrentTest() {
 		super(IsIndexCurrentTest.class);
@@ -49,25 +31,25 @@ public class IsIndexCurrentTest extends ATest {
 
 	@Before
 	public void beforeClass() {
-		Mockit.setUpMock(FileUtilities.class, FileUtilitiesMock.class);
+		Mockit.setUpMock(IndexManagerMock.class);
 	}
 
 	@After
 	public void afterClass() {
-		Mockit.tearDownMocks(FileUtilities.class);
+		Mockit.tearDownMocks();
 	}
 
 	@Test
 	public void evaluate() {
 		String indexDirectory = "./indexes/index/";
 		File latestIndexDirectory = new File(indexDirectory + (System.currentTimeMillis() - (1000 * 60 * 60 * 10)));
-		FileUtilitiesMock.setLatestIndexDirectory(latestIndexDirectory);
+		IndexManagerMock.setLatestIndexDirectory(latestIndexDirectory);
 
 		boolean isIndexCurrent = isIndexCurrentRule.evaluate(indexContext);
 		assertFalse(isIndexCurrent);
 
 		latestIndexDirectory = new File(indexDirectory + System.currentTimeMillis());
-		FileUtilitiesMock.setLatestIndexDirectory(latestIndexDirectory);
+		IndexManagerMock.setLatestIndexDirectory(latestIndexDirectory);
 		isIndexCurrent = isIndexCurrentRule.evaluate(indexContext);
 		assertTrue(isIndexCurrent);
 	}

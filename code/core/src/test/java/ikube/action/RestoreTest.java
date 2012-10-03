@@ -83,7 +83,7 @@ public class RestoreTest extends ATest {
 	private void indexExists() throws Exception {
 		// Check that the index is restored
 		String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
-		File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexDirectoryPath);
+		File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexDirectoryPath);
 		File latestServerIndexDirectory = new File(latestIndexDirectory, ip);
 		Directory directory = null;
 		try {

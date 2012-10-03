@@ -246,73 +246,6 @@ public final class FileUtilities {
 	}
 
 	/**
-	 * This method gets the latest index directory. Index directories are defined by:<br>
-	 * 
-	 * 1) The path to the index on the file system<br>
-	 * 2) The name of the index<br>
-	 * 3) The time(as a long) that the index was created 4) The ip address of the server that created the index<br>
-	 * 
-	 * The result of this is something like ./indexes/ikube/123456789/127.0.0.1. This method will return the directory
-	 * ./indexes/ikube/123456789. In other words the timestamp directory, not the individual server index directories.
-	 * 
-	 * @param baseIndexDirectoryPath the base path to the indexes, i.e. the ./indexes part
-	 * @return the latest time stamped directory at this path, in other words the ./indexes/ikube/123456789 directory. Note that there is no
-	 *         Lucene index at this path, the Lucene index is still in the server ip address directory in this time stamp directory, i.e. at
-	 *         ./indexes/ikube/123456789/127.0.0.1
-	 */
-	public static synchronized File getLatestIndexDirectory(final String baseIndexDirectoryPath) {
-		try {
-			File baseIndexDirectory = FileUtilities.getFile(baseIndexDirectoryPath, Boolean.TRUE);
-			LOGGER.debug("Base index directory : " + baseIndexDirectory);
-			return getLatestIndexDirectory(baseIndexDirectory, null);
-		} finally {
-			FileUtilities.class.notifyAll();
-		}
-	}
-
-	protected static synchronized File getLatestIndexDirectory(final File file, final File latestSoFar) {
-		if (file == null) {
-			return latestSoFar;
-		}
-		File latest = latestSoFar;
-		if (file.isDirectory()) {
-			File[] children = file.listFiles();
-			for (File child : children) {
-				if (FileUtilities.isDigits(child.getName())) {
-					if (latest == null) {
-						latest = child;
-					}
-					long oneTime = Long.parseLong(child.getName());
-					long twoTime = Long.parseLong(latest.getName());
-					latest = oneTime > twoTime ? child : latest;
-				} else {
-					latest = getLatestIndexDirectory(child, latest);
-				}
-			}
-		}
-		return latest;
-	}
-
-	/**
-	 * Verifies that all the characters in a string are digits, ie. the string is a number.
-	 * 
-	 * @param string the string to verify for digit data
-	 * @return whether every character in a string is a digit
-	 */
-	public static boolean isDigits(final String string) {
-		if (string == null || string.trim().equals("")) {
-			return false;
-		}
-		char[] chars = string.toCharArray();
-		for (char c : chars) {
-			if (!Character.isDigit(c)) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	/**
 	 * Writes the contents of a byte array to a file.
 	 * 
 	 * @param file the file to write to
@@ -644,7 +577,7 @@ public final class FileUtilities {
 			}
 		}
 	}
-	
+
 	public static String cleanFilePath(final String path) {
 		String indexDirectoryPath = StringUtils.replace(path, "/./", "/");
 		indexDirectoryPath = StringUtils.replace(indexDirectoryPath, "\\.\\", "/");

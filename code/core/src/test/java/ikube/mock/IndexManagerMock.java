@@ -2,6 +2,9 @@ package ikube.mock;
 
 import ikube.index.IndexManager;
 import ikube.model.IndexContext;
+
+import java.io.File;
+
 import mockit.Mock;
 import mockit.MockClass;
 
@@ -17,7 +20,8 @@ import org.apache.lucene.index.IndexWriter;
 @MockClass(realClass = IndexManager.class)
 public class IndexManagerMock {
 
-	public static IndexWriter	INDEX_WRITER;
+	public static IndexWriter INDEX_WRITER;
+	private static File LATEST_INDEX_DIRECTORY;
 
 	@Mock()
 	public static synchronized IndexWriter openIndexWriter(final IndexContext<?> indexContext, final long time, final String ip) {
@@ -26,6 +30,15 @@ public class IndexManagerMock {
 
 	public static void setIndexWriter(IndexWriter indexWriter) {
 		IndexManagerMock.INDEX_WRITER = indexWriter;
+	}
+
+	@Mock()
+	public static synchronized File getLatestIndexDirectory(final String baseIndexDirectoryPath) {
+		return LATEST_INDEX_DIRECTORY;
+	}
+
+	public static void setLatestIndexDirectory(File latestIndexDirectory) {
+		LATEST_INDEX_DIRECTORY = latestIndexDirectory;
 	}
 
 }

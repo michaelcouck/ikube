@@ -55,7 +55,7 @@ public class IndexableFilesystemHandlerIntegration extends Integration {
 			IndexManager.closeIndexWriter(desktop);
 
 			logger.info("Data folder : " + dataIndexFolder.getAbsolutePath());
-			File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(desktop.getIndexDirectoryPath());
+			File latestIndexDirectory = IndexManager.getLatestIndexDirectory(desktop.getIndexDirectoryPath());
 			logger.info("Latest index directory : " + latestIndexDirectory.getAbsolutePath());
 			File indexDirectory = new File(latestIndexDirectory, ip);
 			logger.info("Index directory : " + indexDirectory);

@@ -24,8 +24,6 @@ public class FileUtilitiesTest extends ATest {
 	private File file;
 	private File dotFolder;
 	private File indexFolderOne;
-	private File indexFolderTwo;
-	private File indexFolderThree;
 	private String[] stringPatterns;
 
 	public FileUtilitiesTest() {
@@ -39,8 +37,6 @@ public class FileUtilitiesTest extends ATest {
 		file = new File(dotFolder, fileName);
 		String fileUtilitiesTestIndexdirectory = "fileUtilitiesTestIndexdirectory";
 		indexFolderOne = FileUtilities.getFile("./" + fileUtilitiesTestIndexdirectory + "/1234567889/127.0.0.1", Boolean.TRUE);
-		indexFolderTwo = FileUtilities.getFile("./" + fileUtilitiesTestIndexdirectory + "/1234567891/127.0.0.2", Boolean.TRUE);
-		indexFolderThree = FileUtilities.getFile("./" + fileUtilitiesTestIndexdirectory + "/1234567890/127.0.0.3", Boolean.TRUE);
 		stringPatterns = new String[] { fileName };
 
 		FileUtilities.deleteFile(new File("./common"), 1);
@@ -121,25 +117,6 @@ public class FileUtilitiesTest extends ATest {
 		FileUtilities.setContents(tempFile.getAbsolutePath(), data.getBytes());
 		assertTrue(tempFile.exists());
 		assertTrue(tempFile.length() > 5);
-	}
-
-	@Test
-	public void getLatestIndexDirectoryFileFile() {
-		// File, File
-		File latest = FileUtilities.getLatestIndexDirectory(indexFolderOne.getParentFile().getParentFile(), null);
-		logger.info("Latest index directory : " + latest);
-		assertEquals(indexFolderTwo.getParentFile(), latest);
-		latest = FileUtilities.getLatestIndexDirectory(indexFolderTwo.getParentFile().getParentFile(), null);
-		assertEquals(indexFolderTwo.getParentFile(), latest);
-		latest = FileUtilities.getLatestIndexDirectory(indexFolderThree.getParentFile().getParentFile(), null);
-		assertEquals(indexFolderTwo.getParentFile(), latest);
-	}
-
-	@Test
-	public void getLatestIndexDirectoryString() {
-		// String
-		File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexFolderOne.getParentFile().getParentFile().getAbsolutePath());
-		assertEquals(indexFolderTwo.getParentFile().getName(), latestIndexDirectory.getName());
 	}
 
 	@Test

@@ -2,7 +2,6 @@ package ikube.action.rule;
 
 import ikube.index.IndexManager;
 import ikube.model.IndexContext;
-import ikube.toolkit.FileUtilities;
 
 import java.io.File;
 
@@ -16,14 +15,13 @@ import java.io.File;
 public class DoesBackupIndexExist extends ARule<IndexContext<?>> {
 
 	/**
-	 * @param indexContext
-	 *            the index context to check if the index is expired
+	 * @param indexContext the index context to check if the index is expired
 	 * @return whether the backup index for this index exists
 	 */
 	@Override
 	public boolean evaluate(final IndexContext<?> indexContext) {
 		String indexDirectoryPathBackup = IndexManager.getIndexDirectoryPathBackup(indexContext);
-		File latestIndexDirectoryBackup = FileUtilities.getLatestIndexDirectory(indexDirectoryPathBackup);
+		File latestIndexDirectoryBackup = IndexManager.getLatestIndexDirectory(indexDirectoryPathBackup);
 		return latestIndexDirectoryBackup != null && latestIndexDirectoryBackup.exists();
 	}
 

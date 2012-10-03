@@ -3,14 +3,11 @@ package ikube.action;
 import static org.junit.Assert.assertTrue;
 import ikube.ATest;
 import ikube.index.IndexManager;
-import ikube.mock.ApplicationContextManagerMock;
-import ikube.mock.IndexManagerMock;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
 
 import mockit.Deencapsulation;
-import mockit.Mockit;
 
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.store.Directory;
@@ -37,7 +34,6 @@ public class BackupTest extends ATest {
 
 	@After
 	public void after() throws Exception {
-		Mockit.tearDownMocks();
 		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
 		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPathBackup()), 1);
 	}
@@ -46,13 +42,11 @@ public class BackupTest extends ATest {
 	public void execute() throws Exception {
 		createIndex(indexContext, "Some strings, like Michael Couck");
 
-		Mockit.setUpMocks(IndexManagerMock.class, ApplicationContextManagerMock.class);
 		backup.execute(indexContext);
-		Mockit.tearDownMocks();
 
 		File backupDirectory = new File(IndexManager.getIndexDirectoryPathBackup(indexContext));
 		assertTrue(backupDirectory.exists());
-		File latestBackupDirectory = FileUtilities.getLatestIndexDirectory(backupDirectory.getAbsolutePath());
+		File latestBackupDirectory = IndexManager.getLatestIndexDirectory(backupDirectory.getAbsolutePath());
 		Directory directory = null;
 		try {
 			directory = FSDirectory.open(new File(latestBackupDirectory, ip));

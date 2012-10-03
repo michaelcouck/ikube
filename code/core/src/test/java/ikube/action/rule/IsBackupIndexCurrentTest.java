@@ -54,7 +54,7 @@ public class IsBackupIndexCurrentTest extends ATest {
 		result = isBackupIndexCurrent.evaluate(indexContext);
 		assertTrue(result);
 
-		File latestIndexDirectoryBackup = FileUtilities.getLatestIndexDirectory(indexContext.getIndexDirectoryPathBackup());
+		File latestIndexDirectoryBackup = IndexManager.getLatestIndexDirectory(indexContext.getIndexDirectoryPathBackup());
 		String oldDirectoryName = Long.toString(System.currentTimeMillis() - (1000 * 60 * 60 * 24 * 365));
 		File latestIndexDirectoryBackupOld = new File(latestIndexDirectory.getParentFile(), oldDirectoryName);
 		boolean renamed = latestIndexDirectoryBackup.renameTo(latestIndexDirectoryBackupOld);

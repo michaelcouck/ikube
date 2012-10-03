@@ -26,8 +26,7 @@ public class Backup extends Action<IndexContext<?>, Boolean> {
 		ikube.model.Action action = null;
 		try {
 			action = start(indexContext.getIndexName(), "");
-			String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
-			File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexDirectoryPath);
+			File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
 			if (latestIndexDirectory == null || !latestIndexDirectory.exists()) {
 				logger.warn("No index created for context : " + indexContext.getName());
 				return Boolean.FALSE;

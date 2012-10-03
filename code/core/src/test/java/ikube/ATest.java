@@ -246,7 +246,7 @@ public abstract class ATest {
 			IndexManager.closeIndexWriter(indexWriter);
 		}
 		String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
-		File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexDirectoryPath);
+		File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexDirectoryPath);
 		File serverIndexDirectory = new File(latestIndexDirectory, ip);
 		logger.info("Created index in : " + serverIndexDirectory.getAbsolutePath());
 		return serverIndexDirectory;

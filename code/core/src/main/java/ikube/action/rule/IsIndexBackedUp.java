@@ -2,7 +2,6 @@ package ikube.action.rule;
 
 import ikube.index.IndexManager;
 import ikube.model.IndexContext;
-import ikube.toolkit.FileUtilities;
 
 import java.io.File;
 
@@ -22,7 +21,7 @@ public class IsIndexBackedUp extends ARule<IndexContext<?>> {
 	public boolean evaluate(final IndexContext<?> indexContext) {
 		// See if there is a latest index directory that is finished and not corrupt
 		String latestIndexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
-		File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(latestIndexDirectoryPath);
+		File latestIndexDirectory = IndexManager.getLatestIndexDirectory(latestIndexDirectoryPath);
 		logger.debug("Latest index directory : " + latestIndexDirectory);
 		if (latestIndexDirectory == null) {
 			return Boolean.FALSE;
@@ -34,7 +33,7 @@ public class IsIndexBackedUp extends ARule<IndexContext<?>> {
 		}
 		// There is a new index, lets see if it has been backed up
 		String indexDirectoryPathBackup = IndexManager.getIndexDirectoryPathBackup(indexContext);
-		File latestIndexDirectoryBackup = FileUtilities.getLatestIndexDirectory(indexDirectoryPathBackup);
+		File latestIndexDirectoryBackup = IndexManager.getLatestIndexDirectory(indexDirectoryPathBackup);
 		boolean backupExists = latestIndexDirectoryBackup != null && latestIndexDirectoryBackup.exists()
 				&& latestIndexDirectoryBackup.listFiles().length > 0;
 		logger.debug("Backup index directory exists : " + backupExists);

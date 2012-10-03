@@ -1,8 +1,8 @@
 package ikube.action.rule;
 
 import ikube.cluster.IClusterManager;
+import ikube.index.IndexManager;
 import ikube.model.IndexContext;
-import ikube.toolkit.FileUtilities;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,7 +39,7 @@ public abstract class ARule<T> implements IRule<T> {
 	 * @return whether all the server indexes are created and not corrupt
 	 */
 	protected boolean indexesExist(String baseIndexDirectoryPath) {
-		File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(baseIndexDirectoryPath);
+		File latestIndexDirectory = IndexManager.getLatestIndexDirectory(baseIndexDirectoryPath);
 		if (latestIndexDirectory == null) {
 			return Boolean.FALSE;
 		}
@@ -81,7 +81,7 @@ public abstract class ARule<T> implements IRule<T> {
 	 * @return whether the index defined by the index path is current
 	 */
 	protected boolean isIndexCurrent(IndexContext<?> indexContext, String indexDirectoryPath) {
-		File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexDirectoryPath);
+		File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexDirectoryPath);
 		if (latestIndexDirectory == null) {
 			return Boolean.FALSE;
 		}

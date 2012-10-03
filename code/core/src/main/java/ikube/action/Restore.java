@@ -31,7 +31,7 @@ public class Restore extends Action<IndexContext<?>, Boolean> {
 			action = start(indexContext.getIndexName(), "");
 			// Get the latest backup index
 			String indexDirectoryPathBackup = IndexManager.getIndexDirectoryPathBackup(indexContext);
-			latestIndexDirectoryBackup = FileUtilities.getLatestIndexDirectory(indexDirectoryPathBackup);
+			latestIndexDirectoryBackup = IndexManager.getLatestIndexDirectory(indexDirectoryPathBackup);
 			String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
 			// Change the name to the max age + 24 hours which will give enough time to run another index
 			long time = System.currentTimeMillis() + (1000 * 60 * 60 * 24);

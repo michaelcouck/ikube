@@ -2,7 +2,6 @@ package ikube.action.rule;
 
 import ikube.index.IndexManager;
 import ikube.model.IndexContext;
-import ikube.toolkit.FileUtilities;
 
 import java.io.File;
 
@@ -30,8 +29,8 @@ public class IsNewIndexCreated extends ARule<IndexContext<?>> {
 		Searchable[] searchables = searcher != null ? searcher.getSearchables() : null;
 
 		String baseIndexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
-		File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(baseIndexDirectoryPath);
-		
+		File latestIndexDirectory = IndexManager.getLatestIndexDirectory(baseIndexDirectoryPath);
+
 		if (searchables != null) {
 			IRule<File[]> areDirectoriesEqual = new AreDirectoriesEqual();
 			IRule<File> directoryExistsAndNotLocked = new DirectoryExistsAndNotLocked();

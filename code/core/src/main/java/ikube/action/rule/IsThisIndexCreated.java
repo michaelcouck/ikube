@@ -17,8 +17,7 @@ import java.io.File;
 public class IsThisIndexCreated extends ARule<IndexContext<?>> {
 
 	/**
-	 * @param indexContext
-	 *            the index context
+	 * @param indexContext the index context
 	 * @return something whether this server created this index
 	 */
 	@Override
@@ -26,7 +25,7 @@ public class IsThisIndexCreated extends ARule<IndexContext<?>> {
 		// Check that the timestamp in the servers that are still working is
 		// different from the timestamp of the latest index directory for this server
 		String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
-		File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexDirectoryPath);
+		File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexDirectoryPath);
 		Server server = clusterManager.getServer();
 		String address = server.getAddress();
 		// Check that this server has created the index. If so then this server

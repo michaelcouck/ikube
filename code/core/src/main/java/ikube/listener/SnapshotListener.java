@@ -9,7 +9,6 @@ import ikube.model.Search;
 import ikube.model.Server;
 import ikube.model.Snapshot;
 import ikube.service.IMonitorService;
-import ikube.toolkit.FileUtilities;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,10 +21,13 @@ import java.util.Map;
 
 import org.apache.commons.io.FileSystemUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.MultiSearcher;
 import org.apache.lucene.search.Searchable;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.FSDirectory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -144,8 +146,7 @@ public class SnapshotListener implements IListener {
 
 	protected Date getLatestIndexDirectoryDate(final IndexContext<?> indexContext) {
 		long timestamp = 0;
-		String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
-		File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexDirectoryPath);
+		File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
 		if (latestIndexDirectory != null) {
 			String name = latestIndexDirectory.getName();
 			if (StringUtils.isNumeric(name)) {
@@ -158,16 +159,48 @@ public class SnapshotListener implements IListener {
 	protected long getNumDocs(final IndexContext<?> indexContext) {
 		long numDocs = 0;
 		IndexWriter indexWriter = indexContext.getIndexWriter();
-		MultiSearcher multiSearcher = indexContext.getMultiSearcher();
 		if (indexWriter != null) {
 			try {
-				numDocs = (int) indexWriter.numDocs();
+				numDocs += indexWriter.numDocs();
 			} catch (IOException e) {
-				LOGGER.error("Exception getting the number of documents in the index : " + this, e);
+				LOGGER.error("Exception reading the number of documents from the writer", e);
 			}
-		} else if (numDocs == 0 && multiSearcher != null) {
-			for (Searchable searchable : multiSearcher.getSearchables()) {
-				numDocs += ((IndexSearcher) searchable).getIndexReader().numDocs();
+			File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
+			if (latestIndexDirectory != null) {
+				File[] serverIndexDirectories = latestIndexDirectory.listFiles();
+				if (serverIndexDirectories != null) {
+					Directory directory = null;
+					IndexReader indexReader = null;
+					for (File serverIndexDirectory : serverIndexDirectories) {
+						try {
+							directory = FSDirectory.open(serverIndexDirectory);
+							if (!IndexWriter.isLocked(directory)) {
+								indexReader = IndexReader.open(directory);
+								numDocs += indexReader.numDocs();
+							};
+						} catch (Exception e) {
+							LOGGER.error("Exception opening the reader on the index : " + serverIndexDirectory, e);
+						} finally {
+							try {
+								if (directory != null) {
+									directory.close();
+								}
+								if (indexReader != null) {
+									indexReader.close();
+								}
+							} catch (Exception e) {
+								LOGGER.error("Exception closing the readon on the index : ", e);
+							}
+						}
+					}
+				}
+			}
+		} else {
+			MultiSearcher multiSearcher = indexContext.getMultiSearcher();
+			if (multiSearcher != null) {
+				for (Searchable searchable : multiSearcher.getSearchables()) {
+					numDocs += ((IndexSearcher) searchable).getIndexReader().numDocs();
+				}
 			}
 		}
 		return numDocs;
@@ -176,7 +209,7 @@ public class SnapshotListener implements IListener {
 	protected long getIndexSize(final IndexContext<?> indexContext) {
 		long indexSize = 0;
 		try {
-			File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
+			File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
 			if (latestIndexDirectory == null || !latestIndexDirectory.exists() || !latestIndexDirectory.isDirectory()) {
 				return indexSize;
 			}

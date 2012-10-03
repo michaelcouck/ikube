@@ -3,7 +3,6 @@ package ikube.action;
 import ikube.index.IndexManager;
 import ikube.model.IndexContext;
 import ikube.service.SearcherService;
-import ikube.toolkit.FileUtilities;
 import ikube.toolkit.Logging;
 
 import java.io.File;
@@ -54,7 +53,7 @@ public class Open extends Action<IndexContext<?>, Boolean> {
 	private boolean openOnFile(final IndexContext<?> indexContext) {
 		ArrayList<Searchable> searchers = new ArrayList<Searchable>();
 		String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
-		File latestIndexDirectory = FileUtilities.getLatestIndexDirectory(indexDirectoryPath);
+		File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexDirectoryPath);
 		if (latestIndexDirectory == null) {
 			logger.info("No indexes : " + indexDirectoryPath);
 			return Boolean.FALSE;
