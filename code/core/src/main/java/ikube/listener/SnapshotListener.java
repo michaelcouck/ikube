@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.OperatingSystemMXBean;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -52,8 +53,8 @@ public class SnapshotListener implements IListener {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void handleNotification(Event event) {
 		if (Event.PERFORMANCE.equals(event.getType())) {
-			Server server = clusterManager.getServer();
 			OperatingSystemMXBean operatingSystemMXBean = ManagementFactory.getOperatingSystemMXBean();
+			Server server = clusterManager.getServer();
 			server.setArchitecture(operatingSystemMXBean.getArch());
 			server.setProcessors(operatingSystemMXBean.getAvailableProcessors());
 			server.setAverageCpuLoad(operatingSystemMXBean.getSystemLoadAverage());
@@ -89,8 +90,7 @@ public class SnapshotListener implements IListener {
 				indexContext.getSnapshots().add(snapshot);
 				if (indexContext.getSnapshots().size() > IConstants.MAX_SNAPSHOTS) {
 					List<Snapshot> snapshots = new ArrayList<Snapshot>(indexContext.getSnapshots());
-					List<Snapshot> subListToRemove = indexContext.getSnapshots().subList(0,
-							(int) (((double) IConstants.MAX_SNAPSHOTS) * 0.25));
+					List<Snapshot> subListToRemove = snapshots.subList(0, (int) (((double) IConstants.MAX_SNAPSHOTS) * 0.25));
 					snapshots.removeAll(subListToRemove);
 					indexContext.setSnapshots(snapshots);
 				}

@@ -20,6 +20,7 @@ import ikube.model.IndexableColumn;
 import ikube.model.IndexableTable;
 import ikube.model.Server;
 import ikube.search.spelling.SpellingChecker;
+import ikube.service.IMonitorService;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.Logging;
 import ikube.toolkit.ThreadUtilities;
@@ -103,6 +104,7 @@ public abstract class ATest {
 	protected IndexSearcher indexSearcher = mock(IndexSearcher.class);
 	protected IndexContext<?> indexContext = mock(IndexContext.class);
 	protected IClusterManager clusterManager = mock(IClusterManager.class);
+	protected IMonitorService monitorService  = mock(IMonitorService.class);
 	protected IndexableTable indexableTable = mock(IndexableTable.class);
 	protected IndexableColumn indexableColumn = mock(IndexableColumn.class);
 	@SuppressWarnings("rawtypes")
@@ -158,6 +160,11 @@ public abstract class ATest {
 		when(clusterManager.getServer()).thenReturn(server);
 		when(clusterManager.getServers()).thenReturn(servers);
 		when(clusterManager.lock(anyString())).thenReturn(Boolean.TRUE);
+		
+		Map<String, IndexContext> indexContexts = new HashMap<String, IndexContext>();
+		indexContexts.put(indexContext.getName(), indexContext);
+		when(monitorService.getIndexContexts()).thenReturn(indexContexts);
+		
 		when(server.isWorking()).thenReturn(Boolean.FALSE);
 		when(server.getAddress()).thenReturn(ip);
 		when(server.getIp()).thenReturn(ip);

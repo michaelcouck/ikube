@@ -41,7 +41,7 @@ public class ClusterManagerHazelcast extends AClusterManager {
 
 	public void initialize() {
 		ip = UriUtilities.getIp();
-		address = ip + ":" + Hazelcast.getConfig().getPort();
+		address = ip + "-" + Hazelcast.getConfig().getPort();
 		logger.info("Cluster manager : " + ip + ", " + address + ", " + startListener + ", " + stopListener);
 		if (startListener == null || stopListener == null || indexContextListener == null) {
 			logger.warn("Hazelcast listeners are null, are we in a test?");

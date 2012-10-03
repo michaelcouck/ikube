@@ -3,9 +3,7 @@ package ikube.integration.service;
 import static org.junit.Assert.assertTrue;
 import ikube.ATest;
 import ikube.IConstants;
-import ikube.database.IDataBase;
 import ikube.search.spelling.SpellingChecker;
-import ikube.service.IMonitorService;
 import ikube.service.SearcherService;
 
 import java.util.ArrayList;
@@ -18,7 +16,6 @@ import mockit.Mockit;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,11 +25,8 @@ public class SearcherServiceTest extends ATest {
 	private static final Logger LOGGER = LoggerFactory.getLogger(SearcherServiceTest.class);
 
 	@Cascading
-	private IDataBase dataBase;
-	@Cascading
 	private SpellingChecker spellingChecker;
 
-	private IMonitorService monitorService;
 	/** Class under test. */
 	private SearcherService searcherService;
 
@@ -50,12 +44,10 @@ public class SearcherServiceTest extends ATest {
 
 	@Before
 	public void before() {
-		Mockit.setUpMocks();
 		searcherService = new SearcherService();
-		monitorService = Mockito.mock(IMonitorService.class);
+		
+		Mockit.setUpMocks();
 		Deencapsulation.setField(searcherService, monitorService);
-		Mockito.when(monitorService.getIndexContexts()).thenReturn(indexContexts);
-
 		indexName = indexContext.getIndexName();
 	}
 
