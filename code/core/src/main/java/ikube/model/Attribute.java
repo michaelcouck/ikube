@@ -6,6 +6,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * This annotation is for meta data on the fields in an indexable, the name, the description and optionally whether this field is included
+ * as a field in the Lucene index.
+ * 
  * @author Michael Couck
  * @since 15.09.12
  * @version 01.00

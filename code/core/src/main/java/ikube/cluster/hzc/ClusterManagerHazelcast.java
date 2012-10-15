@@ -2,6 +2,7 @@ package ikube.cluster.hzc;
 
 import ikube.IConstants;
 import ikube.cluster.AClusterManager;
+import ikube.cluster.IClusterManager;
 import ikube.model.Action;
 import ikube.model.IndexContext;
 import ikube.model.Server;
@@ -22,34 +23,46 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.ILock;
+import com.hazelcast.core.MessageListener;
 
 /**
+ * @see IClusterManager
  * @author Michael Couck
  * @since 15.07.12
  * @version 01.00
  */
 public class ClusterManagerHazelcast extends AClusterManager {
 
+	/** This listener on Hazelcast will listen for start events, that indicate that  */
 	@Autowired
 	private StartListener startListener;
+	/** This listener will either stop one job or destroy the thread pool for all jobs. */
 	@Autowired
 	private StopListener stopListener;
-	@Autowired
-	private IndexContextListener indexContextListener;
+	/** This class had methods to query the state of the contexts. */
 	@Autowired
 	private IMonitorService monitorService;
+	/** This object is for listening for the size of the index and rolling over if necessary. */
+	@Autowired
+	private IndexContextListener indexContextListener;
 
+	@SuppressWarnings("unchecked")
 	public void initialize() {
 		ip = UriUtilities.getIp();
 		address = ip + "-" + Hazelcast.getConfig().getPort();
-		logger.info("Cluster manager : " + ip + ", " + address + ", " + startListener + ", " + stopListener);
-		if (startListener == null || stopListener == null || indexContextListener == null) {
-			logger.warn("Hazelcast listeners are null, are we in a test?");
-			return;
+		logger.info("Cluster manager : " + ip + ", " + address);
+		addListeners(startListener, stopListener, indexContextListener);
+	}
+
+	private void addListeners(final MessageListener<Object>... listeners) {
+		for (final MessageListener<Object> listener : listeners) {
+			if (listener == null) {
+				logger.warn("Listener null, are we in a test?");
+				continue;
+			}
+			logger.info("Listener : " + listener);
+			Hazelcast.getTopic(IConstants.TOPIC).addMessageListener(listener);
 		}
-		Hazelcast.getTopic(IConstants.TOPIC).addMessageListener(startListener);
-		Hazelcast.getTopic(IConstants.TOPIC).addMessageListener(stopListener);
-		Hazelcast.getTopic(IConstants.TOPIC).addMessageListener(indexContextListener);
 	}
 
 	/**
@@ -192,17 +205,10 @@ public class ClusterManagerHazelcast extends AClusterManager {
 			if (dataBase.find(Action.class, action.getId()) != null) {
 				dataBase.merge(action);
 			}
-			if (!removedFromServerActions || !removedAndComitted) {
-				// logger.warn("Didn't remove action : {}", action);
-				// logger.warn("Actions {}", server.getActions());
-			} else {
-				// logger.warn("Removed action : {}", action);
-				// logger.warn("Actions {}", server.getActions());
-			}
 		} catch (Exception e) {
 			logger.error("Exception stopping action : " + action, e);
-			Hazelcast.getTransaction().rollback();
 			logger.error("Removed action not comitted : " + toRemoveAction);
+			Hazelcast.getTransaction().rollback();
 		} finally {
 			if (!removedAndComitted) {
 				ThreadUtilities.sleep(1000);
@@ -281,5 +287,5 @@ public class ClusterManagerHazelcast extends AClusterManager {
 	public void remove(final Object key) {
 		Hazelcast.getMap(IConstants.IKUBE).remove(key);
 	}
-	
+
 }

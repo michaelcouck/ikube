@@ -11,15 +11,28 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.hazelcast.core.Message;
 import com.hazelcast.core.MessageListener;
 
+/**
+ * This class will listen for index context changes which will be sent over the cluster manager. If the index context is updated, either an
+ * indexable is added for example, or it is a new index context then it will be added to the local server contexts.
+ * 
+ * @author Michael Couck
+ * @since 11.09.12
+ * @version 01.00
+ */
 public class IndexContextListener implements MessageListener<Object> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(IndexContextListener.class);
 
+	/** The database wrapper to persist the index context. */
 	@Autowired
 	private IDataBase dataBase;
+	/** The general monitoring service for querying the index contexts. */
 	@Autowired
 	private IMonitorService monitorService;
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void onMessage(Message<Object> message) {
 		Object object = message.getMessageObject();

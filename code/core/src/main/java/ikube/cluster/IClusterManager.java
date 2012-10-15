@@ -33,12 +33,16 @@ public interface IClusterManager {
 	boolean unlock(final String name);
 
 	/**
+	 * This method checks whether there are any servers that are working on any index, anywhere in the cluster.
+	 * 
 	 * @return whether there are any servers in the cluster that are working excluding this one. If this server is working then the server
 	 *         must be retrieved with the {@link IClusterManager#getServer()} and check the {@link Server#getWorking()} method
 	 */
 	boolean anyWorking();
 
 	/**
+	 * This method checks whether there are any servers working on the index specified in the parameter list in the cluster.
+	 * 
 	 * @return whether there are any servers in the cluster that are working on this index
 	 */
 	boolean anyWorking(final String indexName);
@@ -94,7 +98,7 @@ public interface IClusterManager {
 	<T> T getObject(final Object key);
 
 	/**
-	 * This method will put an ibject in the cache with the specified key. Note that the keys should be globally unique for the cluster. If
+	 * This method will put an object in the cache with the specified key. Note that the keys should be globally unique for the cluster. If
 	 * the key already exists in the cache the object will be over written.
 	 * 
 	 * @param key the key to insert the object into the cache with

@@ -33,7 +33,7 @@
 		property:indexDirectoryPathBackup="${index.directory.path.backup}"
 		property:children-ref="dropboxIndexables" />
 	<util:list id="dropboxIndexables">
-		<ref local="dropboxIndexable" />
+		<!-- <ref local="dropboxIndexable" /> -->
 	</util:list>
 	
 	<bean

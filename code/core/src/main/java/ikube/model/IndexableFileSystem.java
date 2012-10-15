@@ -38,7 +38,6 @@ public class IndexableFileSystem extends Indexable<IndexableFileSystem> {
 	@Max(value = 10000000)
 	@Attribute(field = false, description = "This is the maximum read length that will be read from a file. This is required where files are very large and need to be read into memory completely")
 	private long maxReadLength = 1000000;
-
 	@Column
 	@NotNull
 	@Size(min = 1, max = 256)
@@ -70,7 +69,7 @@ public class IndexableFileSystem extends Indexable<IndexableFileSystem> {
 	@Attribute(description = "This is the name of the batch size for files, i.e. how many files each thread will batch, not read in one shot, typical would be 1000")
 	private int batchSize;
 	@Column
-	@Attribute(description = "Whether wo unpack the zip files found, this is deprecated and done automatically")
+	@Attribute(description = "Whether to unpack the zip files found, this is deprecated and done automatically by reading in the zips and jars")
 	private boolean unpackZips = Boolean.TRUE;
 
 	public String getPath() {
