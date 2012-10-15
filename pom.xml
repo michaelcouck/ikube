@@ -19,7 +19,7 @@
 		<site>
 			<id>ikube</id>
 			<name>ikube-releases</name>
-			<url>file:/root/.m2/repository</url>
+			<url>file:/home/michael/.m2/repository</url>
 		</site>
 		<repository>
 			<id>ikube</id>
