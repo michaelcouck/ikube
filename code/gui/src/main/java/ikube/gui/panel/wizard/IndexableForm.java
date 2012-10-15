@@ -55,6 +55,11 @@ public class IndexableForm extends AForm {
 		gridLayout.setSizeFull();
 		setLayout(gridLayout);
 
+		Label notImplementedLabel = new Label("<font size='2' color='red'><b>Adding indexables is via Spring XML. <br>"
+				+ "Funtionality to add indexables in the GUI will be available in the next release, sorry :)</b></font>",
+				Label.CONTENT_XHTML);
+		gridLayout.addComponent(notImplementedLabel, 0, 0, 2, 0);
+
 		Label indexesLabel = new Label("<font size='2'><b>Add indexable to collection : </b></font>", Label.CONTENT_XHTML);
 		gridLayout.addComponent(indexesLabel);
 
@@ -63,7 +68,7 @@ public class IndexableForm extends AForm {
 			comboBox.addItem(indexContext.getIndexName());
 		}
 
-		gridLayout.addComponent(comboBox, 1, 0, 2, 0);
+		gridLayout.addComponent(comboBox, 1, 1, 2, 1);
 
 		for (int i = 0; i < fieldsNames.length; i++) {
 			String fieldName = fieldsNames[i];
@@ -86,13 +91,13 @@ public class IndexableForm extends AForm {
 			validationLabel.setData(fieldDescription);
 			gridLayout.addComponent(validationLabel);
 		}
-		addUpdateButton(window, "Add", (Class<Indexable>) indexable.getClass());
-		addUpdateButton(window, "Update", (Class<Indexable>) indexable.getClass());
+		// addUpdateButton(window, "Add", (Class<Indexable>) indexable.getClass());
+		// addUpdateButton(window, "Update", (Class<Indexable>) indexable.getClass());
 		cancelButton(window, "Cancel", (Class<Indexable>) indexable.getClass());
 		return this;
 	}
 
-	@SuppressWarnings({ "rawtypes" })
+	@SuppressWarnings({ "rawtypes", "unused" })
 	private void addUpdateButton(final Window window, final String name, final Class<Indexable> klass) {
 		Button.ClickListener clickListener = new Button.ClickListener() {
 			@Override

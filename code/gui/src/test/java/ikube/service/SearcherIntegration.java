@@ -1,8 +1,8 @@
 package ikube.service;
 
 import static org.junit.Assert.assertTrue;
+import ikube.Base;
 import ikube.IConstants;
-import ikube.Integration;
 
 import java.net.URL;
 
@@ -12,7 +12,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SearcherIntegration extends Integration {
+public class SearcherIntegration extends Base {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SearcherIntegration.class);
 
