@@ -1,20 +1,34 @@
 package ikube.service;
 
 import ikube.IConstants;
-import ikube.service.ISearcherService;
+import ikube.toolkit.FileUtilities;
 import ikube.toolkit.SerializationUtilities;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.dom4j.Document;
+import org.dom4j.DocumentFactory;
+import org.dom4j.Element;
+import org.dom4j.io.OutputFormat;
+import org.dom4j.io.XMLWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -55,6 +69,11 @@ public class Searcher {
 	public static final String MULTI_ALL = "/multi/all";
 	public static final String MULTI_SPATIAL = "/multi/spatial";
 	public static final String MULTI_SPATIAL_ALL = "/multi/spatial/all";
+	public static final String MULTI_SPATIAL_ALL_TABLE = "/multi/spatial/all/table";
+
+	public static final String RESULTS_TO_TABLE = "/table";
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(Searcher.class);
 
 	@Autowired
 	private ISearcherService searcherService;
@@ -62,18 +81,12 @@ public class Searcher {
 	/**
 	 * Does a search on a single field on the index defined in the parameter list.
 	 * 
-	 * @param indexName
-	 *        the name of the index to search
-	 * @param searchString
-	 *        the search string to search for
-	 * @param searchField
-	 *        the search field in the index
-	 * @param fragment
-	 *        whether to add the text fragments to the results
-	 * @param firstResult
-	 *        the start document in the index, for paging
-	 * @param maxResults
-	 *        the end document in the index, also for paging
+	 * @param indexName the name of the index to search
+	 * @param searchString the search string to search for
+	 * @param searchField the search field in the index
+	 * @param fragment whether to add the text fragments to the results
+	 * @param firstResult the start document in the index, for paging
+	 * @param maxResults the end document in the index, also for paging
 	 * @return a serialized string of the results from the search
 	 */
 	@GET
@@ -93,18 +106,12 @@ public class Searcher {
 	/**
 	 * Does a search on multiple fields and multiple search strings.
 	 * 
-	 * @param indexName
-	 *        the name of the index to search
-	 * @param searchStrings
-	 *        the search strings to search for
-	 * @param searchFields
-	 *        the search fields in the index
-	 * @param fragment
-	 *        whether to add the text fragments to the results
-	 * @param firstResult
-	 *        the start document in the index, for paging
-	 * @param maxResults
-	 *        the end document in the index, also for paging
+	 * @param indexName the name of the index to search
+	 * @param searchStrings the search strings to search for
+	 * @param searchFields the search fields in the index
+	 * @param fragment whether to add the text fragments to the results
+	 * @param firstResult the start document in the index, for paging
+	 * @param maxResults the end document in the index, also for paging
 	 * @return a serialized string of the results from the search
 	 */
 	@GET
@@ -126,20 +133,13 @@ public class Searcher {
 	/**
 	 * Does a search on multiple fields and multiple search strings and sorts the results according the sort fields.
 	 * 
-	 * @param indexName
-	 *        the name of the index to search
-	 * @param searchStrings
-	 *        the search strings to search for
-	 * @param searchFields
-	 *        the search fields in the index
-	 * @param sortFields
-	 *        the fields to sort the results on
-	 * @param fragment
-	 *        whether to add the text fragments to the results
-	 * @param firstResult
-	 *        the start document in the index, for paging
-	 * @param maxResults
-	 *        the end document in the index, also for paging
+	 * @param indexName the name of the index to search
+	 * @param searchStrings the search strings to search for
+	 * @param searchFields the search fields in the index
+	 * @param sortFields the fields to sort the results on
+	 * @param fragment whether to add the text fragments to the results
+	 * @param firstResult the start document in the index, for paging
+	 * @param maxResults the end document in the index, also for paging
 	 * @return a serialized string of the results from the search
 	 */
 	@GET
@@ -163,16 +163,11 @@ public class Searcher {
 	/**
 	 * This is a convenient method to search for the specified strings in all the fields.
 	 * 
-	 * @param indexName
-	 *        the name of the index to search
-	 * @param searchStrings
-	 *        the search strings to search for
-	 * @param fragment
-	 *        whether to generate a fragment from the stored data for the matches
-	 * @param firstResult
-	 *        the first result for paging
-	 * @param maxResults
-	 *        the maximum results for paging
+	 * @param indexName the name of the index to search
+	 * @param searchStrings the search strings to search for
+	 * @param fragment whether to generate a fragment from the stored data for the matches
+	 * @param firstResult the first result for paging
+	 * @param maxResults the maximum results for paging
 	 * @return the results from the search serialized to an xml string
 	 */
 	@GET
@@ -184,8 +179,8 @@ public class Searcher {
 			@QueryParam(value = IConstants.FIRST_RESULT) final int firstResult,
 			@QueryParam(value = IConstants.MAX_RESULTS) final int maxResults) {
 		String[] searchStringsArray = StringUtils.split(searchStrings, IConstants.SEMI_COLON);
-		ArrayList<HashMap<String, String>> results = searcherService.searchMultiAll(indexName, searchStringsArray, fragment,
-				firstResult, maxResults);
+		ArrayList<HashMap<String, String>> results = searcherService.searchMultiAll(indexName, searchStringsArray, fragment, firstResult,
+				maxResults);
 		String xml = SerializationUtilities.serialize(results);
 		// LOGGER.info("Xml : " + xml);
 		return xml;
@@ -196,24 +191,15 @@ public class Searcher {
 	 * fragment and so on, but will sort the results according to the distance from the co-ordinate that was specified in the parameters
 	 * list.
 	 * 
-	 * @param indexName
-	 *        the name of the index to search
-	 * @param searchStrings
-	 *        the search strings to search for
-	 * @param searchFields
-	 *        the fields to search through
-	 * @param fragment
-	 *        whether to generate a fragment from the stored data for the matches
-	 * @param firstResult
-	 *        the first result for paging
-	 * @param maxResults
-	 *        the maximum results for paging
-	 * @param distance
-	 *        the maximum distance that should be allowed for the results
-	 * @param latitude
-	 *        the longitude of the co-ordinate to sort on
-	 * @param longitude
-	 *        the latitude of the co-ordinate to sort on
+	 * @param indexName the name of the index to search
+	 * @param searchStrings the search strings to search for
+	 * @param searchFields the fields to search through
+	 * @param fragment whether to generate a fragment from the stored data for the matches
+	 * @param firstResult the first result for paging
+	 * @param maxResults the maximum results for paging
+	 * @param distance the maximum distance that should be allowed for the results
+	 * @param latitude the longitude of the co-ordinate to sort on
+	 * @param longitude the latitude of the co-ordinate to sort on
 	 * @return the results from the search serialized to an xml string
 	 */
 	@GET
@@ -228,31 +214,22 @@ public class Searcher {
 			@QueryParam(value = IConstants.LATITUDE) final String latitude, @QueryParam(value = IConstants.LONGITUDE) final String longitude) {
 		String[] searchStringsArray = StringUtils.split(searchStrings, IConstants.SEMI_COLON);
 		String[] searchFieldsArray = StringUtils.split(searchFields, IConstants.SEMI_COLON);
-		ArrayList<HashMap<String, String>> results = searcherService
-				.searchMultiSpacial(indexName, searchStringsArray, searchFieldsArray, fragment, firstResult, maxResults, distance,
-						Double.parseDouble(latitude), Double.parseDouble(longitude));
+		ArrayList<HashMap<String, String>> results = searcherService.searchMultiSpacial(indexName, searchStringsArray, searchFieldsArray,
+				fragment, firstResult, maxResults, distance, Double.parseDouble(latitude), Double.parseDouble(longitude));
 		return SerializationUtilities.serialize(results);
 	}
 
 	/**
 	 * This method will search all the fields in the spatial index, and sort the results by distance from a point.
 	 * 
-	 * @param indexName
-	 *        the name of the index to search
-	 * @param searchStrings
-	 *        the search strings, note that all the search strings will be used to search all the fields
-	 * @param fragment
-	 *        whether the results should contain the fragment
-	 * @param firstResult
-	 *        the first result to page
-	 * @param maxResults
-	 *        the max results to return, for paging
-	 * @param distance
-	 *        the distance around the point specified to return results for
-	 * @param latitude
-	 *        the latitude for the starting point for sorting the results from, and for the distance calculation
-	 * @param longitude
-	 *        the longitude for the starting point for sorting the results from, and for the distance calculation
+	 * @param indexName the name of the index to search
+	 * @param searchStrings the search strings, note that all the search strings will be used to search all the fields
+	 * @param fragment whether the results should contain the fragment
+	 * @param firstResult the first result to page
+	 * @param maxResults the max results to return, for paging
+	 * @param distance the distance around the point specified to return results for
+	 * @param latitude the latitude for the starting point for sorting the results from, and for the distance calculation
+	 * @param longitude the longitude for the starting point for sorting the results from, and for the distance calculation
 	 * @return the results around the point specified, going the maximum distance specified, sorted according to the distance from teh point
 	 *         specified
 	 */
@@ -269,6 +246,111 @@ public class Searcher {
 		ArrayList<HashMap<String, String>> results = searcherService.searchMultiSpacialAll(indexName, searchStringsArray, fragment,
 				firstResult, maxResults, distance, Double.parseDouble(latitude), Double.parseDouble(longitude));
 		return SerializationUtilities.serialize(results);
+	}
+
+	/**
+	 * This method will search all the fields in the spatial index, and sort the results by distance from a point.
+	 * 
+	 * @param indexName the name of the index to search
+	 * @param searchStrings the search strings, note that all the search strings will be used to search all the fields
+	 * @param fragment whether the results should contain the fragment
+	 * @param firstResult the first result to page
+	 * @param maxResults the max results to return, for paging
+	 * @param distance the distance around the point specified to return results for
+	 * @param latitude the latitude for the starting point for sorting the results from, and for the distance calculation
+	 * @param longitude the longitude for the starting point for sorting the results from, and for the distance calculation
+	 * @return the results around the point specified, going the maximum distance specified, sorted according to the distance from teh point
+	 *         specified
+	 */
+	@GET
+	@Path(Searcher.MULTI_SPATIAL_ALL_TABLE)
+	@Consumes(MediaType.APPLICATION_XML)
+	public String searchMultiSpacialAllFormat(@QueryParam(value = IConstants.INDEX_NAME) final String indexName,
+			@QueryParam(value = IConstants.SEARCH_STRINGS) final String searchStrings,
+			@QueryParam(value = IConstants.FRAGMENT) final boolean fragment,
+			@QueryParam(value = IConstants.FIRST_RESULT) final int firstResult,
+			@QueryParam(value = IConstants.MAX_RESULTS) final int maxResults, @QueryParam(value = IConstants.DISTANCE) final int distance,
+			@QueryParam(value = IConstants.LATITUDE) final String latitude,
+			@QueryParam(value = IConstants.LONGITUDE) final String longitude, @QueryParam(value = IConstants.EXCLUDED) final String excluded) {
+		String[] searchStringsArray = StringUtils.split(searchStrings, IConstants.SEMI_COLON);
+		ArrayList<HashMap<String, String>> results = searcherService.searchMultiSpacialAll(indexName, searchStringsArray, fragment,
+				firstResult, maxResults, distance, Double.parseDouble(latitude), Double.parseDouble(longitude));
+		excludeFields(results, excluded);
+		return formatToHtml(results);
+	}
+
+	/**
+	 * This is not properly tested.
+	 * 
+	 * This method will just format the results to an html table for convenience and a parameter to filter out fields that are not to be
+	 * included in the table.
+	 * 
+	 * @param xml the xml results, i.e. a list of maps
+	 * @param excluded the delimited string of fields to be excluded from the results
+	 * @return the html table from the results
+	 * @throws IOException
+	 */
+	@POST
+	@Deprecated
+	@SuppressWarnings("unchecked")
+	@Path(Searcher.RESULTS_TO_TABLE)
+	@Consumes(MediaType.APPLICATION_XML)
+	public String formatToHtmlTable(@QueryParam(value = "excluded") final String excluded,
+			@Context final HttpServletRequest httpServletRequest) throws IOException {
+		// LOGGER.info("Format : ");
+		String xml = FileUtilities.getContents(httpServletRequest.getInputStream(), Integer.MAX_VALUE).toString();
+		// LOGGER.info("Format : " + xml);
+		ArrayList<HashMap<String, String>> results = (ArrayList<HashMap<String, String>>) SerializationUtilities.deserialize(xml);
+		// LOGGER.info("Format : " + xml + ", " + results);
+		// Strip the fields in the results that are to be excluded
+		excludeFields(results, excluded);
+		return formatToHtml(results);
+	}
+
+	private void excludeFields(final ArrayList<HashMap<String, String>> results, final String excluded) {
+		if (StringUtils.isEmpty(excluded)) {
+			return;
+		}
+		String[] excludedFields = StringUtils.split(excluded, ",;|:");
+		for (int i = 0; i < results.size() - 1; i++) {
+			HashMap<String, String> result = results.get(i);
+			for (String excludedField : excludedFields) {
+				result.remove(excludedField);
+			}
+		}
+	}
+
+	private String formatToHtml(final ArrayList<HashMap<String, String>> results) {
+		Document document = DocumentFactory.getInstance().createDocument();
+		Element table = document.addElement("table");
+		if (results.size() > 1) {
+			Element columns = table.addElement("tr");
+			HashMap<String, String> resultOne = results.get(0);
+			for (Map.Entry<String, String> mapEntry : resultOne.entrySet()) {
+				Element column = columns.addElement("th");
+				column.setText(mapEntry.getKey());
+			}
+			for (int i = 0; i < results.size() - 1; i++) {
+				Element row = table.addElement("tr");
+				HashMap<String, String> result = results.get(i);
+				for (Map.Entry<String, String> mapEntry : result.entrySet()) {
+					Element data = row.addElement("td");
+					data.setText(mapEntry.getValue());
+				}
+			}
+		}
+		try {
+			// Pretty print the document
+			ByteArrayOutputStream arrayOutputStream = new ByteArrayOutputStream();
+			OutputFormat format = OutputFormat.createPrettyPrint();
+			XMLWriter writer = new XMLWriter(arrayOutputStream, format);
+			writer.write(document);
+			String html = StringEscapeUtils.unescapeXml(arrayOutputStream.toString());
+			return html;
+		} catch (Exception e) {
+			LOGGER.error("Exception pretty printing : ", e);
+		}
+		return StringEscapeUtils.unescapeXml(document.asXML());
 	}
 
 }

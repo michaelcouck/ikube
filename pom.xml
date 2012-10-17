@@ -1003,6 +1003,11 @@
 			<artifactId>bval-core</artifactId>
 			<version>0.4</version>
 		</dependency>
+		<!-- <dependency>
+			<groupId>xmlunit</groupId>
+			<artifactId>xmlunit</artifactId>
+			<version>1.3</version>
+		</dependency> -->
 	</dependencies>
 
 	<repositories>

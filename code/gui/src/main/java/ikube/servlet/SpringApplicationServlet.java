@@ -100,7 +100,7 @@ public class SpringApplicationServlet extends AbstractApplicationServlet {
 			String appUrl, String themeUri, String appId, HttpServletRequest request) throws ServletException, IOException {
 		page.write("<script type=\"text/javascript\">\n");
 		page.write("//<![CDATA[\n");
-		page.write("document.write(\"<script language='javascript' src='./jquery/jquery-1.4.4.min.js'><\\/script>\");\n");
+		page.write("document.write(\"<script language='javascript' src='./js/jquery-1.4.4.min.js'><\\/script>\");\n");
 		page.write("document.write(\"<script language='javascript' src='./js/highcharts.js'><\\/script>\");\n");
 		page.write("document.write(\"<script language='javascript' src='./js/modules/exporting.js'><\\/script>\");\n");
 		page.write("document.write(\"<script language='javascript' src='http://www.google-analytics.com/ga.js'><\\/script>\");\n");

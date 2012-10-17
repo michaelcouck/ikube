@@ -133,6 +133,7 @@ public interface IConstants {
 
 	String LATITUDE = "latitude";
 	String LONGITUDE = "longitude";
+	String EXCLUDED = "excluded";
 
 	/** The maximum age that the server can get to before it is deleted from the cluster. */
 	int MAX_AGE = 1800000;

@@ -3,25 +3,26 @@ package ikube.service;
 import static org.junit.Assert.assertTrue;
 import ikube.Base;
 import ikube.IConstants;
+import ikube.toolkit.FileUtilities;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.junit.Ignore;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 
 public class SearcherIntegration extends Base {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(SearcherIntegration.class);
 
 	@Test
 	public void searchSingle() throws Exception {
 		// String, String, String, boolean, int, int
 		String path = IConstants.SEP + IConstants.IKUBE + Searcher.SERVICE + Searcher.SEARCH + Searcher.SINGLE;
 		String url = new URL("http", LOCALHOST, SERVER_PORT, path).toString();
-		LOGGER.info("Looking for url : " + url);
+		logger.info("Looking for url : " + url);
 
 		String[] names = { //
 		IConstants.INDEX_NAME, //
@@ -41,7 +42,7 @@ public class SearcherIntegration extends Base {
 
 		GetMethod getMethod = new GetMethod(url);
 		getMethod.setQueryString(params);
-		LOGGER.info("Query string : " + getMethod.getQueryString());
+		logger.info("Query string : " + getMethod.getQueryString());
 		int result = HTTP_CLIENT.executeMethod(getMethod);
 		String actual = getMethod.getResponseBodyAsString();
 		assertTrue("We should get something : " + result + ", " + actual, actual.length() > 0);
@@ -52,7 +53,7 @@ public class SearcherIntegration extends Base {
 		// String, String, String, boolean, int, int
 		String path = IConstants.SEP + IConstants.IKUBE + Searcher.SERVICE + Searcher.SEARCH + Searcher.MULTI;
 		String url = new URL("http", LOCALHOST, SERVER_PORT, path).toString();
-		LOGGER.info("Looking for url : " + url);
+		logger.info("Looking for url : " + url);
 
 		String[] names = { //
 		IConstants.INDEX_NAME, //
@@ -72,7 +73,7 @@ public class SearcherIntegration extends Base {
 
 		GetMethod getMethod = new GetMethod(url);
 		getMethod.setQueryString(params);
-		LOGGER.info("Query string : " + getMethod.getQueryString());
+		logger.info("Query string : " + getMethod.getQueryString());
 		int result = HTTP_CLIENT.executeMethod(getMethod);
 		String actual = getMethod.getResponseBodyAsString();
 		assertTrue("We should get something : " + result + ", " + actual, actual.length() > 0);
@@ -83,7 +84,7 @@ public class SearcherIntegration extends Base {
 		// String, String, boolean, int, int
 		String path = IConstants.SEP + IConstants.IKUBE + Searcher.SERVICE + Searcher.SEARCH + Searcher.MULTI_ALL;
 		String url = new URL("http", LOCALHOST, SERVER_PORT, path).toString();
-		LOGGER.info("Looking for url : " + url);
+		logger.info("Looking for url : " + url);
 
 		String[] names = { //
 		IConstants.INDEX_NAME, //
@@ -101,7 +102,7 @@ public class SearcherIntegration extends Base {
 
 		GetMethod getMethod = new GetMethod(url);
 		getMethod.setQueryString(params);
-		LOGGER.info("Query string : " + getMethod.getQueryString());
+		logger.info("Query string : " + getMethod.getQueryString());
 		int result = HTTP_CLIENT.executeMethod(getMethod);
 		String actual = getMethod.getResponseBodyAsString();
 		assertTrue("We should get something : " + result + ", " + actual, actual.length() > 0);
@@ -112,7 +113,7 @@ public class SearcherIntegration extends Base {
 		// String, String, String, String, boolean, int, int
 		String path = IConstants.SEP + IConstants.IKUBE + Searcher.SERVICE + Searcher.SEARCH + Searcher.MULTI_SORTED;
 		String url = new URL("http", LOCALHOST, SERVER_PORT, path).toString();
-		LOGGER.info("Looking for url : " + url);
+		logger.info("Looking for url : " + url);
 
 		String[] names = { //
 		IConstants.INDEX_NAME, //
@@ -134,7 +135,7 @@ public class SearcherIntegration extends Base {
 
 		GetMethod getMethod = new GetMethod(url);
 		getMethod.setQueryString(params);
-		LOGGER.info("Query string : " + getMethod.getQueryString());
+		logger.info("Query string : " + getMethod.getQueryString());
 		int result = HTTP_CLIENT.executeMethod(getMethod);
 		String actual = getMethod.getResponseBodyAsString();
 		assertTrue("We should get something : " + result + ", " + actual, actual.length() > 0);
@@ -145,7 +146,7 @@ public class SearcherIntegration extends Base {
 		// String, String, String, boolean, int, int, int, String, String
 		String path = IConstants.SEP + IConstants.IKUBE + Searcher.SERVICE + Searcher.SEARCH + Searcher.MULTI_SPATIAL;
 		String url = new URL("http", LOCALHOST, SERVER_PORT, path).toString();
-		LOGGER.info("Looking for url : " + url);
+		logger.info("Looking for url : " + url);
 
 		String[] names = { //
 		IConstants.INDEX_NAME, //
@@ -171,7 +172,7 @@ public class SearcherIntegration extends Base {
 
 		GetMethod getMethod = new GetMethod(url);
 		getMethod.setQueryString(params);
-		LOGGER.info("Query string : " + getMethod.getQueryString());
+		logger.info("Query string : " + getMethod.getQueryString());
 		int result = HTTP_CLIENT.executeMethod(getMethod);
 		String actual = getMethod.getResponseBodyAsString();
 		assertTrue("We should get something : " + result + ", " + actual, actual.length() > 0);
@@ -182,7 +183,7 @@ public class SearcherIntegration extends Base {
 		// String, String, boolean, int, int, int, String, String
 		String path = IConstants.SEP + IConstants.IKUBE + Searcher.SERVICE + Searcher.SEARCH + Searcher.MULTI_SPATIAL_ALL;
 		String url = new URL("http", LOCALHOST, SERVER_PORT, path).toString();
-		LOGGER.info("Looking for url : " + url);
+		logger.info("Looking for url : " + url);
 
 		String[] names = { //
 		IConstants.INDEX_NAME, //
@@ -206,7 +207,7 @@ public class SearcherIntegration extends Base {
 
 		GetMethod getMethod = new GetMethod(url);
 		getMethod.setQueryString(params);
-		LOGGER.info("Query string : " + getMethod.getQueryString());
+		logger.info("Query string : " + getMethod.getQueryString());
 		int result = HTTP_CLIENT.executeMethod(getMethod);
 		String actual = getMethod.getResponseBodyAsString();
 		assertTrue("We should get something : " + result + ", " + actual, actual.length() > 0);
@@ -216,7 +217,7 @@ public class SearcherIntegration extends Base {
 	public void adHoc() throws Exception {
 		String path = IConstants.SEP + IConstants.IKUBE + Searcher.SERVICE + Searcher.SEARCH + Searcher.MULTI_ALL;
 		String url = new URL("http", LOCALHOST, SERVER_PORT, path).toString();
-		LOGGER.info("Looking for url : " + url);
+		logger.info("Looking for url : " + url);
 
 		String[] names = { //
 		IConstants.INDEX_NAME, //
@@ -234,10 +235,25 @@ public class SearcherIntegration extends Base {
 
 		GetMethod getMethod = new GetMethod(url);
 		getMethod.setQueryString(params);
-		LOGGER.info("Query string : " + getMethod.getQueryString());
+		logger.info("Query string : " + getMethod.getQueryString());
 		int result = HTTP_CLIENT.executeMethod(getMethod);
 		String actual = getMethod.getResponseBodyAsString();
 		assertTrue("We should get something : " + result + ", " + actual, actual.length() > 0);
+	}
+
+	@Test
+	@Ignore
+	@Deprecated
+	@SuppressWarnings("unused")
+	public void formatToHtmlTable() throws SAXException, IOException {
+		Searcher searcher = new Searcher();
+		File file = FileUtilities.findFileRecursively(new File("."), "geospatial.results.xml");
+		String xml = FileUtilities.getContents(file, Integer.MAX_VALUE).toString();
+		String excluded = "score:countrycode:featureclass:modification:admin1code:asciiname:gtopo30:geonameid:featurecode:alternatenames";
+//		String html = searcher.formatToHtmlTable(xml, excluded);
+//		logger.info(html);
+//
+//		assertTrue(html.contains("<td>geoname id 18782822 18782822</td>"));
 	}
 
 }
