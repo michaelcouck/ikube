@@ -249,20 +249,101 @@ public class Searcher {
 	}
 
 	/**
-	 * This method will search all the fields in the spatial index, and sort the results by distance from a point.
-	 * 
-	 * @param indexName the name of the index to search
-	 * @param searchStrings the search strings, note that all the search strings will be used to search all the fields
-	 * @param fragment whether the results should contain the fragment
-	 * @param firstResult the first result to page
-	 * @param maxResults the max results to return, for paging
-	 * @param distance the distance around the point specified to return results for
-	 * @param latitude the latitude for the starting point for sorting the results from, and for the distance calculation
-	 * @param longitude the longitude for the starting point for sorting the results from, and for the distance calculation
-	 * @return the results around the point specified, going the maximum distance specified, sorted according to the distance from teh point
-	 *         specified
+	 * This method is a brute force calculation of the shortest route between the points. The more efficient option would be to use an
+	 * neural network, but this falls outside the scope of this simple search results example page.
 	 */
+	ArrayList<HashMap<String, String>> routed(final ArrayList<HashMap<String, String>> results) {
+		// These are the points sorted according to the shortest distance to visit them all
+		ArrayList<HashMap<String, String>> resultsRouted = new ArrayList<HashMap<String, String>>();
+		if (results.size() > 1) {
+			HashMap<String, String> topResult = results.get(0);
+			HashMap<String, String> statistics = results.remove(results.size() - 1);
+			resultsRouted.add(topResult);
+			do {
+				// Recursively find the closest result to the top result and add it to the sorted array
+				HashMap<String, String> bestResult = null;
+				double bestDistance = Long.MAX_VALUE;
+				for (final HashMap<String, String> nextResult : results) {
+					if (topResult == nextResult || resultsRouted.contains(nextResult)) {
+						continue;
+					}
+					double lat1 = Double.parseDouble(topResult.get(IConstants.LATITUDE));
+					double lon1 = Double.parseDouble(topResult.get(IConstants.LONGITUDE));
+					double lat2 = Double.parseDouble(nextResult.get(IConstants.LATITUDE));
+					double lon2 = Double.parseDouble(nextResult.get(IConstants.LONGITUDE));
+					double nextDistance = distance(lat1, lon1, lat2, lon2, 'K');
+					if (nextDistance < bestDistance) {
+						bestDistance = nextDistance;
+						bestResult = nextResult;
+					}
+				}
+				resultsRouted.add(bestResult);
+				topResult = bestResult;
+			} while (resultsRouted.size() < results.size());
+			results.add(statistics);
+			resultsRouted.add(statistics);
+		}
+		return resultsRouted;
+	}
+
+	/* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
+	/* :: : */
+	/* :: This routine calculates the distance between two points (given the : */
+	/* :: latitude/longitude of those points). It is being used to calculate : */
+	/* :: the distance between two ZIP Codes or Postal Codes using our : */
+	/* :: ZIPCodeWorld(TM) and PostalCodeWorld(TM) products. : */
+	/* :: : */
+	/* :: Definitions: : */
+	/* :: South latitudes are negative, east longitudes are positive : */
+	/* :: : */
+	/* :: Passed to function: : */
+	/* :: lat1, lon1 = Latitude and Longitude of point 1 (in decimal degrees) : */
+	/* :: lat2, lon2 = Latitude and Longitude of point 2 (in decimal degrees) : */
+	/* :: unit = the unit you desire for results : */
+	/* :: where: 'M' is statute miles : */
+	/* :: 'K' is kilometers (default) : */
+	/* :: 'N' is nautical miles : */
+	/* :: United States ZIP Code/ Canadian Postal Code databases with latitude & : */
+	/* :: longitude are available at http://www.zipcodeworld.com : */
+	/* :: : */
+	/* :: For enquiries, please contact sales@zipcodeworld.com : */
+	/* :: : */
+	/* :: Official Web site: http://www.zipcodeworld.com : */
+	/* :: : */
+	/* :: Hexa Software Development Center © All Rights Reserved 2004 : */
+	/* :: : */
+	/* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
+	double distance(double lat1, double lon1, double lat2, double lon2, char unit) {
+		double theta = lon1 - lon2;
+		double dist = Math.sin(deg2rad(lat1)) * Math.sin(deg2rad(lat2)) + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2))
+				* Math.cos(deg2rad(theta));
+		dist = Math.acos(dist);
+		dist = rad2deg(dist);
+		dist = dist * 60 * 1.1515;
+		if (unit == 'K') {
+			dist = dist * 1.609344;
+		} else if (unit == 'N') {
+			dist = dist * 0.8684;
+		}
+		return (dist);
+	}
+
+	/* ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
+	/* :: This function converts decimal degrees to radians : */
+	/* ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
+	double deg2rad(double deg) {
+		return (deg * Math.PI / 180.0);
+	}
+
+	/* ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
+	/* :: This function converts radians to decimal degrees : */
+	/* ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
+	double rad2deg(double rad) {
+		return (rad * 180.0 / Math.PI);
+	}
+
 	@GET
+	@Deprecated
 	@Path(Searcher.MULTI_SPATIAL_ALL_TABLE)
 	@Consumes(MediaType.APPLICATION_XML)
 	public String searchMultiSpacialAllFormat(@QueryParam(value = IConstants.INDEX_NAME) final String indexName,
