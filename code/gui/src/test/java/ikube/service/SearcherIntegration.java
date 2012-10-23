@@ -214,6 +214,36 @@ public class SearcherIntegration extends Base {
 	}
 
 	@Test
+	public void searchMultiAdvancedAll() throws Exception {
+		// String, String, boolean, int, int, int, String, String
+		String path = IConstants.SEP + IConstants.IKUBE + Searcher.SERVICE + Searcher.SEARCH + Searcher.MULTI_ADVANCED_ALL;
+		String url = new URL("http", LOCALHOST, SERVER_PORT, path).toString();
+		logger.info("Looking for url : " + url);
+
+		String[] names = { //
+		IConstants.INDEX_NAME, //
+				IConstants.SEARCH_STRINGS, //
+				IConstants.SEARCH_FIELDS, //
+				IConstants.FRAGMENT, //
+				IConstants.FIRST_RESULT,//
+				IConstants.MAX_RESULTS };
+		String[] values = { //
+		IConstants.GEOSPATIAL, //
+				"cape town university", //
+				"contente", Boolean.TRUE.toString(), //
+				"0", //
+				"10" };
+		NameValuePair[] params = getNameValuePairs(names, values);
+
+		GetMethod getMethod = new GetMethod(url);
+		getMethod.setQueryString(params);
+		logger.info("Query string : " + getMethod.getQueryString());
+		int result = HTTP_CLIENT.executeMethod(getMethod);
+		String actual = getMethod.getResponseBodyAsString();
+		assertTrue("We should get something : " + result + ", " + actual, actual.length() > 0);
+	}
+
+	@Test
 	public void adHoc() throws Exception {
 		String path = IConstants.SEP + IConstants.IKUBE + Searcher.SERVICE + Searcher.SEARCH + Searcher.MULTI_ALL;
 		String url = new URL("http", LOCALHOST, SERVER_PORT, path).toString();
@@ -250,10 +280,10 @@ public class SearcherIntegration extends Base {
 		File file = FileUtilities.findFileRecursively(new File("."), "geospatial.results.xml");
 		String xml = FileUtilities.getContents(file, Integer.MAX_VALUE).toString();
 		String excluded = "score:countrycode:featureclass:modification:admin1code:asciiname:gtopo30:geonameid:featurecode:alternatenames";
-//		String html = searcher.formatToHtmlTable(xml, excluded);
-//		logger.info(html);
-//
-//		assertTrue(html.contains("<td>geoname id 18782822 18782822</td>"));
+		// String html = searcher.formatToHtmlTable(xml, excluded);
+		// logger.info(html);
+		//
+		// assertTrue(html.contains("<td>geoname id 18782822 18782822</td>"));
 	}
 
 }

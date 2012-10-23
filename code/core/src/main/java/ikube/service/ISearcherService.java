@@ -130,7 +130,7 @@ public interface ISearcherService {
 	 * @param distance
 	 * @param latitude
 	 * @param longitude
-	 * @return
+	 * @return the results from the search serialized to an xml string
 	 */
 	@WebMethod
 	@WebResult(name = "result")
@@ -139,5 +139,23 @@ public interface ISearcherService {
 			@WebParam(name = "firstResult") final int firstResult, @WebParam(name = "maxResults") final int maxResults,
 			@WebParam(name = "distance") final int distance, @WebParam(name = "latitude") final double latitude,
 			@WebParam(name = "longitude") final double longitude);
+
+	/**
+	 * TODO Document me!
+	 * 
+	 * @param indexName
+	 * @param searchStrings
+	 * @param searchFields
+	 * @param fragment
+	 * @param firstResult
+	 * @param maxResults
+	 * @return the results from the search serialized to an xml string
+	 */
+	@WebMethod
+	@WebResult(name = "result")
+	ArrayList<HashMap<String, String>> searchMultiAdvanced(@WebParam(name = "indexName") final String indexName,
+			@WebParam(name = "searchStrings") final String[] searchStrings, @WebParam(name = "searchFields") final String[] searchFields,
+			@WebParam(name = "fragment") final boolean fragment, @WebParam(name = "firstResult") final int firstResult,
+			@WebParam(name = "maxResults") final int maxResults);
 
 }

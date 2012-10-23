@@ -5,6 +5,7 @@ import ikube.database.IDataBase;
 import ikube.index.spatial.Coordinate;
 import ikube.model.IndexContext;
 import ikube.model.Search;
+import ikube.search.SearchAdvanced;
 import ikube.search.SearchMulti;
 import ikube.search.SearchMultiAll;
 import ikube.search.SearchMultiSorted;
@@ -242,6 +243,36 @@ public class SearcherService implements ISearcherService {
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	@WebMethod
+	@WebResult(name = "result")
+	public ArrayList<HashMap<String, String>> searchMultiAdvanced(@WebParam(name = "indexName") final String indexName,
+			@WebParam(name = "searchStrings") final String[] searchStrings, @WebParam(name = "searchFields") final String[] searchFields,
+			@WebParam(name = "fragment") final boolean fragment, @WebParam(name = "firstResult") final int firstResult,
+			@WebParam(name = "maxResults") final int maxResults) {
+		try {
+			SearchAdvanced searchAdvanced = getSearch(SearchAdvanced.class, indexName);
+			if (searchAdvanced != null) {
+				searchAdvanced.setFirstResult(firstResult);
+				searchAdvanced.setFragment(fragment);
+				searchAdvanced.setMaxResults(maxResults);
+				searchAdvanced.setSearchString(searchStrings);
+				searchAdvanced.setSearchField(searchFields);
+				ArrayList<HashMap<String, String>> results = searchAdvanced.execute();
+				addSearchStatistics(indexName, searchStrings, results.size(), results);
+				return results;
+			}
+		} catch (Exception e) {
+			String message = Logging.getString("Exception doing search on index : ", indexName, searchStrings, searchFields, fragment,
+					firstResult, maxResults);
+			LOGGER.error(message, e);
+		}
+		return getMessageResults(indexName);
+	}
+
+	/**
 	 * This method will return an instance of the search class, based on the class in the parameter list and the index context name. For
 	 * each search there is an instance created for the searcher classes to avoid thread overlap. The instance is created using reflection
 	 * :( but is there a more elegant way?
@@ -276,8 +307,8 @@ public class SearcherService implements ISearcherService {
 			IndexReader indexReader = indexSearcher.getIndexReader();
 			FSDirectory directory = (FSDirectory) indexReader.directory();
 			LOGGER.info("Max docs : " + indexReader.maxDoc());
-			LOGGER.info("Max docs : " + indexReader.numDocs());
-			LOGGER.info("Max docs : " + Arrays.deepToString(directory.listAll()));
+			LOGGER.info("Num docs : " + indexReader.numDocs());
+			LOGGER.info("Directories : " + Arrays.deepToString(directory.listAll()));
 		}
 	}
 

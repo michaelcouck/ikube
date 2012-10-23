@@ -3,8 +3,6 @@ package ikube.search;
 import org.apache.lucene.search.Searcher;
 
 /**
- * TODO Implement this class:
- * 
  * This search is for all the fields in all the indexes.
  * 
  * @see Search

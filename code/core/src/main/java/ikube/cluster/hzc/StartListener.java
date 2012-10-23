@@ -49,8 +49,16 @@ public class StartListener implements MessageListener<Object> {
 		if (Event.STARTUP.equals(event.getType())) {
 			LOGGER.info("Manually starting indexing : " + ToStringBuilder.reflectionToString(event, ToStringStyle.SHORT_PREFIX_STYLE));
 			String indexName = event.getObject().toString();
-			IndexContext<?> indexContext = monitorService.getIndexContexts().get(indexName);
+			final IndexContext<?> indexContext = monitorService.getIndexContexts().get(indexName);
+			final long maxAge = indexContext.getMaxAge();
 			indexContext.setMaxAge(0);
+			// Start a thread to revert the max age of the index
+			ThreadUtilities.submit(new Runnable() {
+				public void run() {
+					ThreadUtilities.sleep(60000 * 3);
+					indexContext.setMaxAge(maxAge);
+				}
+			});
 		} else if (Event.STARTUP_ALL.equals(event.getType())) {
 			LOGGER.info("Re-starting the indexing threads");
 			ThreadUtilities.initialize();
