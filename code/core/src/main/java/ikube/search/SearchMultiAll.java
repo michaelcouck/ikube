@@ -7,7 +7,6 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.lucene.index.IndexReader.FieldOption;
 import org.apache.lucene.queryParser.MultiFieldQueryParser;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.search.IndexSearcher;
@@ -15,12 +14,13 @@ import org.apache.lucene.search.MultiSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Searchable;
 import org.apache.lucene.search.Searcher;
+import org.apache.lucene.util.ReaderUtil;
 
 /**
- * This class searches all the fields in the index with the specified search string. This is a convenience class that
- * will dynamically get all the fields in the index and add them to the fields to search rather than explicitly setting
- * the fields to search. Typically the usage of this class will be having one search string and the index name. In this
- * case the search string will be duplicated for each search field found in the index.
+ * This class searches all the fields in the index with the specified search string. This is a convenience class that will dynamically get
+ * all the fields in the index and add them to the fields to search rather than explicitly setting the fields to search. Typically the usage
+ * of this class will be having one search string and the index name. In this case the search string will be duplicated for each search
+ * field found in the index.
  * 
  * @see Search
  * @author Michael Couck
@@ -41,9 +41,10 @@ public class SearchMultiAll extends SearchMulti {
 		Searchable[] searchables = ((MultiSearcher) searcher).getSearchables();
 		Set<String> searchFieldNames = new TreeSet<String>();
 		for (Searchable searchable : searchables) {
-			Collection<String> fieldNames = ((IndexSearcher) searchable).getIndexReader().getFieldNames(FieldOption.ALL);
+			Collection<String> fieldNames = ReaderUtil.getIndexedFields(((IndexSearcher) searchable).getIndexReader());
 			searchFieldNames.addAll(fieldNames);
 		}
+		System.out.println("Field names : " + searchFieldNames);
 		searchFields = searchFieldNames.toArray(new String[searchFieldNames.size()]);
 		String[] newSearchStrings = new String[searchFields.length];
 		int minLength = Math.min(searchStrings.length, newSearchStrings.length);

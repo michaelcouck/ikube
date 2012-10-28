@@ -163,10 +163,10 @@ public final class IndexManager {
 			// to release themselves from work and more importantly the index files
 			ThreadUtilities.sleep(3000);
 			directory = indexWriter.getDirectory();
-			indexWriter.prepareCommit();
+			// indexWriter.prepareCommit();
 			indexWriter.commit();
 			indexWriter.maybeMerge();
-			indexWriter.optimize(5, Boolean.TRUE);
+			indexWriter.forceMerge(5, Boolean.TRUE);
 		} catch (NullPointerException e) {
 			LOGGER.error("Null pointer, in the index writer : " + indexWriter);
 			if (LOGGER.isDebugEnabled()) {

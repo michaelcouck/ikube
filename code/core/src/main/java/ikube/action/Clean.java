@@ -63,12 +63,12 @@ public class Clean<E, F> extends Action<IndexContext<?>, Boolean> {
 			try {
 				directory = FSDirectory.open(serverIndexDirectory);
 				if (IndexWriter.isLocked(directory)) {
-					IndexWriter.unlock(directory);
-					if (IndexWriter.isLocked(directory)) {
-						logger.warn("Directory still locked : " + serverIndexDirectory);
-						corrupt = Boolean.FALSE;
-						continue;
-					}
+					// IndexWriter.unlock(directory);
+					// if (IndexWriter.isLocked(directory)) {
+					// }
+					logger.warn("Directory still locked : " + serverIndexDirectory);
+					corrupt = Boolean.FALSE;
+					continue;
 				}
 				if (IndexReader.indexExists(directory)) {
 					// Try to delete the directory

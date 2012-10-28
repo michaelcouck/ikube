@@ -40,7 +40,6 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
 import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.IndexReader.FieldOption;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.IndexSearcher;
@@ -54,6 +53,7 @@ import org.apache.lucene.search.TopFieldDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.Lock;
+import org.apache.lucene.util.ReaderUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -138,8 +138,15 @@ public abstract class ATest {
 		topFieldDocs.totalHits = 0;
 		topFieldDocs.scoreDocs = scoreDocs;
 		when(indexReader.directory()).thenReturn(fsDirectory);
-		when(indexReader.getFieldNames(any(FieldOption.class))).thenReturn(
-				Arrays.asList(IConstants.ID, IConstants.FRAGMENT, IConstants.CONTENTS));
+		// when(ReaderUtil.getIndexedFields(any(IndexReader.class))).thenReturn(Arrays.asList(IConstants.CONTENTS));
+		//		when(indexReader.getFieldNames(any(FieldOption.class))).thenReturn(
+		//		Arrays.asList(IConstants.ID, IConstants.FRAGMENT, IConstants.CONTENTS));
+//		List<FieldInfo> fieldInfos = Arrays.asList(new FieldInfo());
+//		Iterator<FieldInfo> fieldInfosIterator = fieldInfos.iterator();
+//		when(indexReader.getFieldInfos().iterator()
+//				(any(FieldOption.class))).thenReturn(
+//				Arrays.asList(IConstants.ID, IConstants.FRAGMENT, IConstants.CONTENTS));
+		
 		when(fsDirectory.makeLock(anyString())).thenReturn(lock);
 
 		when(indexWriter.getDirectory()).thenReturn(fsDirectory);

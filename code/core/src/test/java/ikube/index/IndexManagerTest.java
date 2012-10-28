@@ -180,7 +180,7 @@ public class IndexManagerTest extends ATest {
 		IndexWriter indexWriter = null;
 		try {
 			indexWriter = IndexManager.openIndexWriter(indexContext, indexDirectory, false);
-			indexWriter.optimize(5, true);
+			indexWriter.forceMerge(5, true);
 		} catch (Exception e) {
 			logger.error("Exception optimizing index : ", e);
 		}

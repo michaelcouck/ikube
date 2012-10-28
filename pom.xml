@@ -51,7 +51,7 @@
 		<postgresql.driver.version>9.1-901-1.jdbc4</postgresql.driver.version>
 		<jetty.version>6.1.11</jetty.version>
 		
-		<lucene.version>3.0.1</lucene.version>	
+		<lucene.version>3.6.1</lucene.version>	
 	</properties>
 
 	<modules>

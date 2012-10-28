@@ -1,12 +1,8 @@
 package ikube;
 
-import java.io.Reader;
 import java.util.regex.Pattern;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.LowerCaseTokenizer;
-import org.apache.lucene.analysis.PorterStemFilter;
-import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.util.Version;
 
@@ -47,12 +43,14 @@ public interface IConstants {
 	/** Maps parsers to mime types. */
 	String MIME_MAPPING = "mime-mapping.xml";
 
-	Version VERSION = Version.LUCENE_30;
-	Analyzer ANALYZER = new StandardAnalyzer(VERSION) {
-		public final TokenStream tokenStream(String fieldName, Reader reader) {
-			return new PorterStemFilter(new LowerCaseTokenizer(reader));
-		}
-	};
+	Version VERSION = Version.LUCENE_36;
+	Analyzer ANALYZER = new StandardAnalyzer(VERSION);
+	// TODO We need to do stemming
+	// {
+	// public final TokenStream tokenStream(String fieldName, Reader reader) {
+	// return new PorterStemFilter(new LowerCaseTokenizer(reader));
+	// }
+	// };
 	long MAX_READ_LENGTH = 1000000;
 	int MAX_RESULT_FIELD_LENGTH = 100;
 
@@ -171,9 +169,9 @@ public interface IConstants {
 	String TOTAL_DOCS = "totalDocs";
 
 	String TOPIC = "topic";
-	
+
 	int MAX_RETRY_CLUSTER_REMOVE = 3;
-	
+
 	String ROLE_USER = "ROLE_USER";
 	String ROLE_ADMIN = "ROLE_ADMIN";
 

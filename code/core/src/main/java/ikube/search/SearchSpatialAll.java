@@ -4,10 +4,11 @@ import ikube.IConstants;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.lucene.index.IndexReader.FieldOption;
+import org.apache.lucene.index.FieldInfo;
 import org.apache.lucene.queryParser.MultiFieldQueryParser;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.search.IndexSearcher;
@@ -15,6 +16,7 @@ import org.apache.lucene.search.MultiSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Searchable;
 import org.apache.lucene.search.Searcher;
+import org.apache.lucene.util.ReaderUtil;
 
 /**
  * @see Search
@@ -36,7 +38,7 @@ public class SearchSpatialAll extends SearchSpatial {
 		Searchable[] searchables = ((MultiSearcher) searcher).getSearchables();
 		Set<String> searchFieldNames = new TreeSet<String>();
 		for (Searchable searchable : searchables) {
-			Collection<String> fieldNames = ((IndexSearcher) searchable).getIndexReader().getFieldNames(FieldOption.ALL);
+			Collection<String> fieldNames = ReaderUtil.getIndexedFields(((IndexSearcher) searchable).getIndexReader());
 			searchFieldNames.addAll(fieldNames);
 		}
 		searchFields = searchFieldNames.toArray(new String[searchFieldNames.size()]);

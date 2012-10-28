@@ -11,6 +11,7 @@ import java.io.InputStream;
 import java.util.StringTokenizer;
 
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.spell.PlainTextDictionary;
 import org.apache.lucene.search.spell.SpellChecker;
 import org.apache.lucene.store.Directory;
@@ -111,7 +112,8 @@ public final class SpellingChecker {
 					LOGGER.info("Language file : " + languageFile);
 					inputStream = new FileInputStream(languageFile);
 					LOGGER.info("Input stream : " + inputStream);
-					spellChecker.indexDictionary(new PlainTextDictionary(inputStream));
+					IndexWriterConfig indexWriterConfig = new IndexWriterConfig(IConstants.VERSION, IConstants.ANALYZER);
+					spellChecker.indexDictionary(new PlainTextDictionary(inputStream), indexWriterConfig, Boolean.TRUE);
 				} catch (Exception e) {
 					LOGGER.error("Exception indexing language file : " + languageFile, e);
 				} finally {

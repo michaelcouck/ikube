@@ -1,5 +1,6 @@
 package ikube.index.handler.filesystem;
 
+import ikube.IConstants;
 import ikube.index.handler.IndexableHandler;
 import ikube.model.IndexContext;
 import ikube.model.IndexableDictionary;
@@ -14,6 +15,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Future;
 
+import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.spell.PlainTextDictionary;
 import org.apache.lucene.search.spell.SpellChecker;
 import org.apache.lucene.store.Directory;
@@ -53,7 +55,8 @@ public class IndexableDictionaryHandler extends IndexableHandler<IndexableDictio
 							try {
 								logger.info("Indexing dictionary file : " + file);
 								inputStream = new FileInputStream(file);
-								spellChecker.indexDictionary(new PlainTextDictionary(inputStream));
+								IndexWriterConfig indexWriterConfig = new IndexWriterConfig(IConstants.VERSION, IConstants.ANALYZER);
+								spellChecker.indexDictionary(new PlainTextDictionary(inputStream), indexWriterConfig, Boolean.TRUE);
 							} catch (Exception e) {
 								logger.error("Exception indexing the dictionary file : " + file, e);
 							} finally {

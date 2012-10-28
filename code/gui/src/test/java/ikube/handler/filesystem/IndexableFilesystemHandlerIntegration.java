@@ -45,11 +45,13 @@ public class IndexableFilesystemHandlerIntegration extends Integration {
 	public void handle() throws Exception {
 		Directory directory = null;
 		try {
+			ThreadUtilities.initialize();
 			File dataIndexFolder = FileUtilities.findFileRecursively(new File("."), "data");
 			String dataIndexFolderPath = FileUtilities.cleanFilePath(dataIndexFolder.getAbsolutePath());
 			desktopFolder.setPath(dataIndexFolderPath);
 			String ip = InetAddress.getLocalHost().getHostAddress();
-			IndexManager.openIndexWriter(desktop, System.currentTimeMillis(), ip);
+			IndexWriter indexWriter = IndexManager.openIndexWriter(desktop, System.currentTimeMillis(), ip);
+			desktop.setIndexWriter(indexWriter);
 			List<Future<?>> threads = indexableFilesystemHandler.handle(desktop, desktopFolder);
 			ThreadUtilities.waitForFutures(threads, Integer.MAX_VALUE);
 			IndexManager.closeIndexWriter(desktop);

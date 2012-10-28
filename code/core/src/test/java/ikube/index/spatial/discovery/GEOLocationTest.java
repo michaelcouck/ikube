@@ -53,7 +53,7 @@ public class GEOLocationTest {
 
 		final List<String> result = new ArrayList<String>();
 		final DistanceQueryBuilder dq = new DistanceQueryBuilder(start.getLat(), start.getLon(), miles, SpatialHelper.LAT_FIELD,
-				SpatialHelper.LON_FIELD, CartesianTierPlotter.DEFALT_FIELD_PREFIX, true);
+				SpatialHelper.LON_FIELD, CartesianTierPlotter.DEFALT_FIELD_PREFIX, true, 1, 10);
 
 		// Create a distance sort
 		// As the radius filter has performed the distance calculations

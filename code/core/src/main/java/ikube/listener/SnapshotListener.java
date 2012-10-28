@@ -162,7 +162,7 @@ public class SnapshotListener implements IListener {
 		if (indexWriter != null) {
 			try {
 				numDocs += indexWriter.numDocs();
-			} catch (IOException e) {
+			} catch (Exception e) {
 				LOGGER.error("Exception reading the number of documents from the writer", e);
 			}
 			File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());

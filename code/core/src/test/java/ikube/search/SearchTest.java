@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 import ikube.ATest;
 import ikube.IConstants;
 import ikube.index.IndexManager;
+import ikube.mock.ReaderUtilMock;
 import ikube.search.spelling.SpellingChecker;
 import ikube.toolkit.FileUtilities;
 
@@ -15,6 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import mockit.Deencapsulation;
+import mockit.Mockit;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
@@ -23,10 +25,13 @@ import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriter.MaxFieldLength;
+import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.MultiSearcher;
+import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Searchable;
 import org.apache.lucene.search.Searcher;
+import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.junit.AfterClass;
@@ -42,10 +47,24 @@ public class SearchTest extends ATest {
 
 	private static Searcher SEARCHER;
 	private static String INDEX_DIRECTORY_PATH = "./" + SearchTest.class.getSimpleName();
-	private static String russian = "Россия";
+
+	private static String russian = "Россия   русский язык  ";
+	private static String german = "Produktivität";
+	private static String french = "productivité";
+	private static String somthingElseAlToGether = "Soleymān Khāţer";
+	private static String string = "Qu'est ce qui détermine la productivité, et comment est-il mesuré? " //
+			+ "Was bestimmt die Produktivität, und wie wird sie gemessen? " //
+			+ "русский язык " + //
+			"Soleymān Khāţer Solţānābād " + //
+			russian + " " + //
+			german + " " + //
+			french + " " + //
+			somthingElseAlToGether + " ";
+	private static String[] strings = { russian, german, french, somthingElseAlToGether, string };
 
 	@BeforeClass
 	public static void beforeClass() throws Exception {
+		Mockit.setUpMocks(ReaderUtilMock.class);
 		SpellingChecker checkerExt = new SpellingChecker();
 		Deencapsulation.setField(checkerExt, "languageWordListsDirectory", "languages");
 		Deencapsulation.setField(checkerExt, "spellingIndexDirectoryPath", "./spellingIndex");
@@ -54,7 +73,7 @@ public class SearchTest extends ATest {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 		// Create the index with multiple fields
 		File indexDirectory = new File(INDEX_DIRECTORY_PATH);
 		FileUtilities.deleteFile(indexDirectory, 1);
@@ -65,22 +84,34 @@ public class SearchTest extends ATest {
 		IndexWriter indexWriter = new IndexWriter(directory, IConstants.ANALYZER, true, MaxFieldLength.UNLIMITED);
 		int numDocs = 50;
 		for (int i = 0; i < numDocs; i++) {
-			String id = Integer.toString(i * 100);
-			String contents = new StringBuilder("Hello world. " + russian).append(i).toString();
-			
-			Document document = new Document();
-			IndexManager.addStringField(IConstants.ID, id, document, Store.YES, Index.ANALYZED, TermVector.YES);
-			IndexManager.addStringField(IConstants.CONTENTS, contents, document, Store.YES, Index.ANALYZED, TermVector.YES);
-			IndexManager.addStringField(IConstants.NAME, "Michael Couck." + russian, document, Store.YES, Index.ANALYZED, TermVector.YES);
-			indexWriter.addDocument(document);
+			for (final String string : strings) {
+				String id = Integer.toString(i * 100);
+				String contents = new StringBuilder("Hello world. " + string).append(i).toString();
+
+				Document document = new Document();
+				IndexManager.addStringField(IConstants.ID, id, document, Store.YES, Index.ANALYZED, TermVector.YES);
+				IndexManager.addStringField(IConstants.CONTENTS, contents, document, Store.YES, Index.ANALYZED, TermVector.YES);
+				IndexManager.addStringField(IConstants.NAME, "michael couck. " + string, document, Store.YES, Index.ANALYZED,
+						TermVector.YES);
+				indexWriter.addDocument(document);
+			}
 		}
-		
+
 		indexWriter.commit();
-		indexWriter.optimize();
+		indexWriter.forceMerge(5, Boolean.TRUE);
 		indexWriter.close();
 
 		Searchable[] searchables = new Searchable[] { new IndexSearcher(directory) };
 		SEARCHER = new MultiSearcher(searchables);
+
+		QueryParser queryParser = new QueryParser(IConstants.VERSION, IConstants.CONTENTS, IConstants.ANALYZER);
+		Query query = queryParser.parse(russian);
+		TopDocs topDocs = SEARCHER.search(query, 10);
+		System.out.println("Total hits : " + topDocs.totalHits);
+
+		query = queryParser.parse("michael");
+		topDocs = SEARCHER.search(query, 10);
+		System.out.println("Total hits : " + topDocs.totalHits);
 	}
 
 	@AfterClass
@@ -89,6 +120,7 @@ public class SearchTest extends ATest {
 			SEARCHER.close();
 		}
 		FileUtilities.deleteFile(new File(INDEX_DIRECTORY_PATH), 1);
+		Mockit.tearDownMocks();
 	}
 
 	private int maxResults = 10;
@@ -141,7 +173,7 @@ public class SearchTest extends ATest {
 			String id = result.get(IConstants.ID);
 			logger.info("Previous id : " + previousId + ", id : " + id);
 			if (previousId != null && id != null) {
-				assertTrue(previousId.compareTo(id) < 0);
+				assertTrue(previousId.compareTo(id) <= 0);
 			}
 			previousId = id;
 		}
@@ -153,9 +185,9 @@ public class SearchTest extends ATest {
 		searchMultiAll.setFirstResult(0);
 		searchMultiAll.setFragment(Boolean.TRUE);
 		searchMultiAll.setMaxResults(maxResults);
-		searchMultiAll.setSearchField("content");
-		searchMultiAll.setSearchString("Michael");
-		searchMultiAll.setSortField("content");
+		// searchMultiAll.setSearchField(IConstants.NAME);
+		// searchMultiAll.setSortField(IConstants.ID);
+		searchMultiAll.setSearchString("michael");
 		ArrayList<HashMap<String, String>> results = searchMultiAll.execute();
 		assertTrue(results.size() > 1);
 	}
@@ -172,7 +204,7 @@ public class SearchTest extends ATest {
 		logger.info("Search strings : " + statistics.get(IConstants.SEARCH_STRINGS));
 		logger.info("Corrected search strings : " + statistics.get(IConstants.CORRECTIONS));
 		assertEquals("michael AND couck", statistics.get(IConstants.SEARCH_STRINGS));
-		assertEquals("michael and houck", statistics.get(IConstants.CORRECTIONS));
+		assertEquals("michael and couch", statistics.get(IConstants.CORRECTIONS));
 	}
 
 	@Test
