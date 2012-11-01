@@ -16,6 +16,7 @@ import java.io.Writer;
 import java.util.Date;
 
 import org.apache.log4j.Logger;
+import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Field.Index;
@@ -117,7 +118,8 @@ public final class IndexManager {
 	public static synchronized IndexWriter openIndexWriter(IndexContext<?> indexContext, File indexDirectory, boolean create)
 			throws Exception {
 		Directory directory = FSDirectory.open(indexDirectory);
-		IndexWriter indexWriter = new IndexWriter(directory, IConstants.ANALYZER, create, MaxFieldLength.UNLIMITED);
+		Analyzer analyzer = indexContext.getAnalyzer() != null ? indexContext.getAnalyzer() : IConstants.ANALYZER;
+		IndexWriter indexWriter = new IndexWriter(directory, analyzer, create, MaxFieldLength.UNLIMITED);
 		indexWriter.setUseCompoundFile(indexContext.isCompoundFile());
 		indexWriter.setMaxBufferedDocs(indexContext.getBufferedDocs());
 		indexWriter.setMaxFieldLength(indexContext.getMaxFieldLength());

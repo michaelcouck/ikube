@@ -1,7 +1,10 @@
 package ikube.search;
 
+import ikube.IConstants;
+
 import java.io.IOException;
 
+import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Searcher;
@@ -15,10 +18,15 @@ import org.apache.lucene.search.TopDocs;
  * @since 22.08.08
  * @version 01.00
  */
+@SuppressWarnings("deprecation")
 public class SearchSingle extends Search {
 
 	public SearchSingle(final Searcher searcher) {
-		super(searcher);
+		this(searcher, IConstants.ANALYZER);
+	}
+
+	public SearchSingle(final Searcher searcher, final Analyzer analyzer) {
+		super(searcher, analyzer);
 	}
 
 	/**

@@ -2,11 +2,14 @@ package ikube;
 
 import ikube.index.IndexManager;
 import ikube.model.IndexContext;
+import ikube.search.spelling.SpellingChecker;
 import ikube.toolkit.UriUtilities;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import mockit.Deencapsulation;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.NameValuePair;
@@ -27,6 +30,17 @@ public abstract class Base {
 	protected static int SERVER_PORT = 9080;
 	protected static String REST_USER_NAME = "user";
 	protected static String REST_PASSWORD = "user";
+	
+	static {
+		SpellingChecker checkerExt = new SpellingChecker();
+		Deencapsulation.setField(checkerExt, "languageWordListsDirectory", "languages");
+		Deencapsulation.setField(checkerExt, "spellingIndexDirectoryPath", "./spellingIndex");
+		try {
+			checkerExt.initialize();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
 	/**
 	 * This method will build an array of name value pairs that can be used in the HttpClient to parameterize the request to resources and

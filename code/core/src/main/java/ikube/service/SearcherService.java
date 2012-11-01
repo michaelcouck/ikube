@@ -31,6 +31,7 @@ import javax.jws.soap.SOAPBinding;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Searchable;
@@ -290,6 +291,10 @@ public class SearcherService implements ISearcherService {
 		for (IndexContext<?> indexContext : indexContexts.values()) {
 			if (indexContext.getIndexName().equals(indexName)) {
 				if (indexContext.getMultiSearcher() != null) {
+					if (indexContext.getAnalyzer() != null) {
+						Constructor<?> constructor = klass.getConstructor(Searcher.class, Analyzer.class);
+						return (T) constructor.newInstance(indexContext.getMultiSearcher(), indexContext.getAnalyzer());
+					}
 					Constructor<?> constructor = klass.getConstructor(Searcher.class);
 					return (T) constructor.newInstance(indexContext.getMultiSearcher());
 				}

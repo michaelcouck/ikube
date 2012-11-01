@@ -19,6 +19,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.apache.log4j.Logger;
+import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.MultiSearcher;
 import org.apache.lucene.search.Searchable;
@@ -48,6 +49,9 @@ public class IndexContext<T> extends Indexable<T> implements Comparable<IndexCon
 	/** Can be null if there is no index created. */
 	@Transient
 	private transient volatile MultiSearcher multiSearcher;
+	/** This analyzer will be used to index the data, and indeed to do the searching. */
+	@Transient
+	private transient volatile Analyzer analyzer;
 
 	/** The maximum age of the index defined in minutes. */
 	@Column
@@ -269,6 +273,14 @@ public class IndexContext<T> extends Indexable<T> implements Comparable<IndexCon
 			}
 		}
 		this.multiSearcher = multiSearcher;
+	}
+
+	public Analyzer getAnalyzer() {
+		return analyzer;
+	}
+
+	public void setAnalyzer(Analyzer analyzer) {
+		this.analyzer = analyzer;
 	}
 
 	public List<Snapshot> getSnapshots() {

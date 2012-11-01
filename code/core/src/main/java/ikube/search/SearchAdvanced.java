@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.StringTokenizer;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.queryParser.MultiFieldQueryParser;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.search.Query;
@@ -37,7 +38,11 @@ import org.apache.lucene.search.TopDocs;
 public class SearchAdvanced extends Search {
 
 	public SearchAdvanced(final Searcher searcher) {
-		super(searcher);
+		this(searcher, IConstants.ANALYZER);
+	}
+
+	public SearchAdvanced(final Searcher searcher, final Analyzer analyzer) {
+		super(searcher, analyzer);
 	}
 
 	/**

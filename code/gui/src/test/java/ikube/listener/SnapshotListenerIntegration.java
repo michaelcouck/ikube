@@ -22,7 +22,7 @@ public class SnapshotListenerIntegration extends Integration {
 	public void handleNotification() {
 		Event event = new Event();
 		event.setType(Event.PERFORMANCE);
-		long maxSnapshots = IConstants.MAX_SNAPSHOTS + 10;
+		double maxSnapshots = IConstants.MAX_SNAPSHOTS + 10d;
 		for (int i = 0; i < maxSnapshots; i++) {
 			snapshotListener.handleNotification(event);
 		}

@@ -17,6 +17,7 @@ import java.util.TreeSet;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Fieldable;
@@ -67,10 +68,17 @@ public abstract class Search {
 	protected transient int firstResult;
 	/** The end position in the results to stop returning results from. */
 	protected transient int maxResults;
+	
+	protected transient Analyzer analyzer;
 
 	Search(final Searcher searcher) {
+		this(searcher, IConstants.ANALYZER);
+	}
+	
+	Search(final Searcher searcher, final Analyzer analyzer) {
 		this.logger = Logger.getLogger(this.getClass());
 		this.searcher = searcher;
+		this.analyzer = analyzer;
 	}
 
 	/**
@@ -98,7 +106,7 @@ public abstract class Search {
 				return fragment;
 			}
 			StringReader stringReader = new StringReader(content);
-			TokenStream tokenStream = IConstants.ANALYZER.tokenStream(fieldName, stringReader);
+			TokenStream tokenStream = analyzer.tokenStream(fieldName, stringReader);
 			fragment = highlighter.getBestFragments(tokenStream, content, IConstants.MAX_FRAGMENTS, IConstants.FRAGMENT_SEPERATOR);
 		} catch (Exception t) {
 			logger.error("Exception getting the best fragments for the search results", t);
@@ -252,7 +260,7 @@ public abstract class Search {
 	protected QueryParser getQueryParser(final String searchField) {
 		QueryParser queryParser = QUERY_PARSERS.get(searchField);
 		if (queryParser == null) {
-			queryParser = new QueryParser(IConstants.VERSION, searchField, IConstants.ANALYZER);
+			queryParser = new QueryParser(IConstants.VERSION, searchField, analyzer);
 			QUERY_PARSERS.put(searchField, queryParser);
 		}
 		return queryParser;

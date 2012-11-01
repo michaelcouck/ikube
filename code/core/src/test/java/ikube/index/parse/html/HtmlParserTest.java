@@ -2,12 +2,13 @@ package ikube.index.parse.html;
 
 import static org.junit.Assert.assertTrue;
 import ikube.ATest;
+import ikube.IConstants;
 import ikube.toolkit.FileUtilities;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.OutputStream;
-import java.net.URL;
 
 import org.junit.Test;
 
@@ -24,11 +25,13 @@ public class HtmlParserTest extends ATest {
 
 	@Test
 	public void parse() throws Exception {
-		URL url = new URL("http://www.oki.com");
+		File file = FileUtilities.findFileRecursively(new File("."), "html.html");
+		byte[] bytes = FileUtilities.getContents(file, IConstants.ENCODING).getBytes();
+		// URL url = new URL("http://www.oki.com");
 		HtmlParser parser = new HtmlParser();
-		byte[] bytes = FileUtilities.getContents(url.openStream(), Integer.MAX_VALUE).toByteArray();
+		// byte[] bytes = FileUtilities.getContents(url.openStream(), Integer.MAX_VALUE).toByteArray();
 		OutputStream parsed = parser.parse(new ByteArrayInputStream(bytes), new ByteArrayOutputStream());
-		assertTrue(parsed.toString().indexOf("Oki") > -1);
+		assertTrue(parsed.toString().indexOf("nodethirtythree") > -1);
 	}
 
 }

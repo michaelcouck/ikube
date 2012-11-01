@@ -152,7 +152,7 @@ class IndexableFilesystemHandlerWorker implements Runnable {
 			IndexManager.addStringField(modifiedFieldName, Long.toString(file.lastModified()), document, Store.YES, analyzed, termVector);
 			IndexManager.addStringField(lengthFieldName, Long.toString(file.length()), document, Store.YES, analyzed, termVector);
 			IndexManager.addStringField(contentFieldName, parsedContent, document, store, analyzed, termVector);
-			logger.info("Adding document : " + document);
+			// logger.info("Adding document : " + document);
 			indexableHandler.addDocument(indexContext, indexableFileSystem, document);
 
 			if (Thread.currentThread().isInterrupted()) {

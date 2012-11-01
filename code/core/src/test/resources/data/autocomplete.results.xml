@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<java version="1.7.0" class="java.beans.XMLDecoder">
+	<object class="java.util.ArrayList">
+		<void method="add">
+			<object class="java.util.HashMap">
+				<void method="put">
+					<string>content</string>
+					<string>something else altogether</string>
+				</void>
+				<void method="put">
+					<string>id</string>
+					<string>http://ikokoon.ikube.cloudbees.net/info/about.html</string>
+				</void>
+				<void method="put">
+					<string>title</string>
+					<string>http://ikokoon.ikube.cloudbees.net/info/about.html</string>
+				</void>
+				<void method="put">
+					<string>index</string>
+					<string>1</string>
+				</void>
+				<void method="put">
+					<string>score</string>
+					<string>0.0023601353</string>
+				</void>
+				<void method="put">
+					<string>fragment</string>
+					<string> to European company setup. Navigation Home Serenity &lt;B&gt;Ikube&lt;/B&gt; Enterprise Search The ftp ant task Free </string>
+				</void>
+			</object>
+		</void>
+		<void method="add">
+			<object class="java.util.HashMap">
+				<void method="put">
+					<string>content</string>
+					<string>search string</string>
+				</void>
+				<void method="put">
+					<string>id</string>
+					<string>http://ikokoon.ikube.cloudbees.net/reviews/reviews.html</string>
+				</void>
+				<void method="put">
+					<string>title</string>
+					<string>http://ikokoon.ikube.cloudbees.net/reviews/reviews.html</string>
+				</void>
+				<void method="put">
+					<string>index</string>
+					<string>6</string>
+				</void>
+				<void method="put">
+					<string>score</string>
+					<string>0.0016520949</string>
+				</void>
+				<void method="put">
+					<string>fragment</string>
+					<string> Serenity &lt;B&gt;Ikube&lt;/B&gt; Enterprise Search The ftp ant task Free Interesting Java Links Hudson CI Spring </string>
+				</void>
+			</object>
+		</void>
+		<void method="add">
+			<object class="java.util.HashMap">
+				<void method="put">
+					<string>content</string>
+					<string>the quick brown fox and the lazy dog</string>
+				</void>
+				<void method="put">
+					<string>id</string>
+					<string>http://ikokoon.ikube.cloudbees.net/index.html</string>
+				</void>
+				<void method="put">
+					<string>title</string>
+					<string>http://ikokoon.ikube.cloudbees.net/index.html</string>
+				</void>
+				<void method="put">
+					<string>index</string>
+					<string>0</string>
+				</void>
+				<void method="put">
+					<string>score</string>
+					<string>9.440542E-4</string>
+				</void>
+				<void method="put">
+					<string>fragment</string>
+					<string> on a blog of some sort. Navigation Home Serenity &lt;B&gt;Ikube&lt;/B&gt; Enterprise Search The ftp ant task Free </string>
+				</void>
+			</object>
+		</void>
+		<void method="add">
+			<object class="java.util.HashMap">
+				<void method="put">
+					<string>total</string>
+					<string>11</string>
+				</void>
+				<void method="put">
+					<string>searchStrings</string>
+					<string>[sear]</string>
+				</void>
+				<void method="put">
+					<string>duration</string>
+					<string>0</string>
+				</void>
+				<void method="put">
+					<string>corrections</string>
+					<string>cape town microgrammes characterism chalcon ike</string>
+				</void>
+			</object>
+		</void>
+	</object>
+</java>

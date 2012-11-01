@@ -1,7 +1,10 @@
 package ikube.search;
 
+import ikube.IConstants;
+
 import java.io.IOException;
 
+import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.QueryWrapperFilter;
@@ -21,7 +24,11 @@ import org.apache.lucene.search.TopDocs;
 public class SearchMultiSorted extends SearchMulti {
 
 	public SearchMultiSorted(final Searcher searcher) {
-		super(searcher);
+		this(searcher, IConstants.ANALYZER);
+	}
+
+	public SearchMultiSorted(final Searcher searcher, final Analyzer analyzer) {
+		super(searcher, analyzer);
 	}
 
 	/**

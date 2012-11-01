@@ -4,11 +4,10 @@ import ikube.IConstants;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.lucene.index.FieldInfo;
+import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.queryParser.MultiFieldQueryParser;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.search.IndexSearcher;
@@ -27,7 +26,11 @@ import org.apache.lucene.util.ReaderUtil;
 public class SearchSpatialAll extends SearchSpatial {
 
 	public SearchSpatialAll(final Searcher searcher) {
-		super(searcher);
+		this(searcher, IConstants.ANALYZER);
+	}
+
+	public SearchSpatialAll(final Searcher searcher, final Analyzer analyzer) {
+		super(searcher, analyzer);
 	}
 
 	/**

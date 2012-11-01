@@ -19,6 +19,7 @@ import ikube.model.Indexable;
 import ikube.model.IndexableColumn;
 import ikube.model.IndexableTable;
 import ikube.model.Server;
+import ikube.search.Search;
 import ikube.search.spelling.SpellingChecker;
 import ikube.service.IMonitorService;
 import ikube.toolkit.FileUtilities;
@@ -36,24 +37,28 @@ import java.util.Map;
 
 import mockit.Deencapsulation;
 
+import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.MultiSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.Searchable;
+import org.apache.lucene.search.Searcher;
 import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.TopFieldDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.Lock;
-import org.apache.lucene.util.ReaderUtil;
+import org.apache.lucene.store.RAMDirectory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,6 +70,7 @@ import org.slf4j.LoggerFactory;
  * @since 21.11.10
  * @version 01.00
  */
+@SuppressWarnings("deprecation")
 public abstract class ATest {
 
 	static {
@@ -104,7 +110,7 @@ public abstract class ATest {
 	protected IndexSearcher indexSearcher = mock(IndexSearcher.class);
 	protected IndexContext<?> indexContext = mock(IndexContext.class);
 	protected IClusterManager clusterManager = mock(IClusterManager.class);
-	protected IMonitorService monitorService  = mock(IMonitorService.class);
+	protected IMonitorService monitorService = mock(IMonitorService.class);
 	protected IndexableTable indexableTable = mock(IndexableTable.class);
 	protected IndexableColumn indexableColumn = mock(IndexableColumn.class);
 	@SuppressWarnings("rawtypes")
@@ -139,14 +145,14 @@ public abstract class ATest {
 		topFieldDocs.scoreDocs = scoreDocs;
 		when(indexReader.directory()).thenReturn(fsDirectory);
 		// when(ReaderUtil.getIndexedFields(any(IndexReader.class))).thenReturn(Arrays.asList(IConstants.CONTENTS));
-		//		when(indexReader.getFieldNames(any(FieldOption.class))).thenReturn(
-		//		Arrays.asList(IConstants.ID, IConstants.FRAGMENT, IConstants.CONTENTS));
-//		List<FieldInfo> fieldInfos = Arrays.asList(new FieldInfo());
-//		Iterator<FieldInfo> fieldInfosIterator = fieldInfos.iterator();
-//		when(indexReader.getFieldInfos().iterator()
-//				(any(FieldOption.class))).thenReturn(
-//				Arrays.asList(IConstants.ID, IConstants.FRAGMENT, IConstants.CONTENTS));
-		
+		// when(indexReader.getFieldNames(any(FieldOption.class))).thenReturn(
+		// Arrays.asList(IConstants.ID, IConstants.FRAGMENT, IConstants.CONTENTS));
+		// List<FieldInfo> fieldInfos = Arrays.asList(new FieldInfo());
+		// Iterator<FieldInfo> fieldInfosIterator = fieldInfos.iterator();
+		// when(indexReader.getFieldInfos().iterator()
+		// (any(FieldOption.class))).thenReturn(
+		// Arrays.asList(IConstants.ID, IConstants.FRAGMENT, IConstants.CONTENTS));
+
 		when(fsDirectory.makeLock(anyString())).thenReturn(lock);
 
 		when(indexWriter.getDirectory()).thenReturn(fsDirectory);
@@ -167,11 +173,11 @@ public abstract class ATest {
 		when(clusterManager.getServer()).thenReturn(server);
 		when(clusterManager.getServers()).thenReturn(servers);
 		when(clusterManager.lock(anyString())).thenReturn(Boolean.TRUE);
-		
+
 		Map<String, IndexContext> indexContexts = new HashMap<String, IndexContext>();
 		indexContexts.put(indexContext.getName(), indexContext);
 		when(monitorService.getIndexContexts()).thenReturn(indexContexts);
-		
+
 		when(server.isWorking()).thenReturn(Boolean.FALSE);
 		when(server.getAddress()).thenReturn(ip);
 		when(server.getIp()).thenReturn(ip);
@@ -188,7 +194,7 @@ public abstract class ATest {
 		IndexManagerMock.setIndexWriter(indexWriter);
 		ApplicationContextManagerMock.setIndexContext(indexContext);
 		ApplicationContextManagerMock.setClusterManager(clusterManager);
-		
+
 		indexContexts = new HashMap<String, IndexContext>();
 		indexContexts.put(indexContext.getIndexName(), indexContext);
 	}
@@ -286,6 +292,37 @@ public abstract class ATest {
 		}
 		logger.info("Is now locked : " + IndexWriter.isLocked(directory));
 		return lock;
+	}
+
+	/**
+	 * This method will create an index using the analyzer specified with the field and the strings to index, in memory. Then open a
+	 * searcher on the index and a {@link Search} class with the analyzer and the searcher for immediate use.
+	 * 
+	 * @param searchClass the class of search to instantiate with the searcher and the analyzer
+	 * @param analyzer the analyzer to use for the indexing and the searching
+	 * @param field the field in the index to create
+	 * @param strings the string to index into the index
+	 * @return the search class with the searcher and analyzer ready for use
+	 * @throws Exception
+	 */
+	public static <T extends Search> T createIndexAndSearch(final Class<T> searchClass, final Analyzer analyzer, final String field,
+			final String... strings) throws Exception {
+		IndexWriterConfig conf = new IndexWriterConfig(IConstants.VERSION, analyzer);
+		Directory directory = new RAMDirectory();
+		IndexWriter indexWriter = new IndexWriter(directory, conf);
+
+		for (final String string : strings) {
+			Document document = new Document();
+			IndexManager.addStringField(field, string, document, Store.YES, Index.ANALYZED, TermVector.YES);
+			indexWriter.addDocument(document, analyzer);
+		}
+
+		IndexManager.closeIndexWriter(indexWriter);
+
+		IndexReader indexReader = IndexReader.open(directory);
+		Searcher searcher = new IndexSearcher(indexReader);
+
+		return searchClass.getConstructor(Searcher.class, Analyzer.class).newInstance(searcher, analyzer);
 	}
 
 }

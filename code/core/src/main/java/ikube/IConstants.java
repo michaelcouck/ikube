@@ -1,9 +1,10 @@
 package ikube;
 
+import ikube.index.analyzer.StemmingAnalyzer;
+
 import java.util.regex.Pattern;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.util.Version;
 
 /**
@@ -44,13 +45,9 @@ public interface IConstants {
 	String MIME_MAPPING = "mime-mapping.xml";
 
 	Version VERSION = Version.LUCENE_36;
-	Analyzer ANALYZER = new StandardAnalyzer(VERSION);
-	// TODO We need to do stemming
-	// {
-	// public final TokenStream tokenStream(String fieldName, Reader reader) {
-	// return new PorterStemFilter(new LowerCaseTokenizer(reader));
-	// }
-	// };
+	Analyzer ANALYZER = new StemmingAnalyzer();
+	// new StandardAnalyzer(VERSION);
+
 	long MAX_READ_LENGTH = 1000000;
 	int MAX_RESULT_FIELD_LENGTH = 100;
 
@@ -90,6 +87,7 @@ public interface IConstants {
 	String INDEX_NAMES = "indexNames";
 	String INDEX_FIELD_NAMES_AND_VALUES = "indexFieldNamesAndValues";
 	String GEOSPATIAL = "geospatial";
+	String AUTOCOMPLETE = "autocomplete";
 	String DEFAULT = "default";
 	String FEATURECLASS = "featureclass";
 	String FEATURECODE = "featurecode";
@@ -140,7 +138,7 @@ public interface IConstants {
 	String STRIP_CHARACTERS = ",[]{};";
 
 	long MAX_ACTIONS = 10000;
-	long MAX_SNAPSHOTS = 90;
+	double MAX_SNAPSHOTS = 90;
 	String TIER = "tier";
 
 	String SEARCH = "search";

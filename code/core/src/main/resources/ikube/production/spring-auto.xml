@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:property="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
+
+	xsi:schemaLocation="
+			http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+            http://www.springframework.org/schema/context
+            http://www.springframework.org/schema/context/spring-context-3.0.xsd
+            http://www.springframework.org/schema/util
+            http://www.springframework.org/schema/util/spring-util.xsd">
+
+	<description>
+		This file is not to be modified by users generally.
+		This is the configuration for the AutoComplete index which is an index 
+		of the search table on the Ikube server.
+	</description>
+	
+	<bean
+		id="autocomplete"
+		class="ikube.model.IndexContext"
+		property:name="autocomplete"
+		property:maxAge="5"
+		property:compoundFile="${compound.file}"
+		property:bufferedDocs="${buffered.docs}"
+		property:bufferSize="${buffer.size}"
+		property:batchSize="${jdbc.batch.size}"
+		property:internetBatchSize="${internet.batch.size}"
+		property:mergeFactor="${merge.factor}"
+		property:maxFieldLength="${max.field.length}"
+		property:maxReadLength="${max.read.length}"
+		property:address="false"
+		property:throttle="${throttle}"
+		property:indexDirectoryPath="${index.directory.path}"
+		property:indexDirectoryPathBackup="${index.directory.path.backup}"
+		property:analyzer-ref="ikube.index.analyzer.NgramAnalyzer"
+		property:children-ref="autocompleteIndexables" />
+	<util:list id="autocompleteIndexables">
+		<ref local="search" />
+	</util:list>
+	
+	<bean 
+		id="ikube.index.analyzer.NgramAnalyzer" 
+		class="ikube.index.analyzer.NgramAnalyzer" />
+	
+	<bean
+		id="search"
+		class="ikube.model.IndexableTable"
+		property:name="search"
+		property:primaryTable="true"
+		property:address="false"
+		property:dataSource-ref="nonXaDataSourceH2"
+		property:children-ref="autocompleteColumnsH2" 
+		property:maxExceptions="10" />
+	<util:list id="autocompleteColumnsH2">
+		<ref local="id" />
+		<ref local="searchStrings" />
+	</util:list>
+	
+	<bean
+		id="id"
+		class="ikube.model.IndexableColumn"
+		property:name="id"
+		property:idColumn="true"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="searchStrings"
+		class="ikube.model.IndexableColumn"
+		property:name="searchStrings"
+		property:fieldName="content"
+		property:address="false"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	
+</beans>

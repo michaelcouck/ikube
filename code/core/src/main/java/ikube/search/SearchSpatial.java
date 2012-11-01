@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Searcher;
 import org.apache.lucene.search.Sort;
@@ -42,7 +43,11 @@ public class SearchSpatial extends SearchMulti {
 	 * @param searcher the searcher, with geolocation data in it, that we will perform the distance search on
 	 */
 	public SearchSpatial(final Searcher searcher) {
-		super(searcher);
+		this(searcher, IConstants.ANALYZER);
+	}
+
+	public SearchSpatial(final Searcher searcher, final Analyzer analyzer) {
+		super(searcher, analyzer);
 	}
 
 	/**

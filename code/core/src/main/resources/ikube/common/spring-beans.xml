@@ -180,6 +180,9 @@
 	<bean
 		id="ikube.service.MonitorService"
 		class="ikube.service.MonitorService" />
+	<bean
+		id="ikube.service.AutoComplete"
+		class="ikube.service.AutoComplete" />
 	
 	<bean 
 		id="ikube.listener.ListenerManager"

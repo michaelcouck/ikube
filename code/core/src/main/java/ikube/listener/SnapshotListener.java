@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.OperatingSystemMXBean;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -73,28 +74,30 @@ public class SnapshotListener implements IListener {
 
 			Map<String, IndexContext> indexContexts = monitorService.getIndexContexts();
 			for (Map.Entry<String, IndexContext> mapEntry : indexContexts.entrySet()) {
-				IndexContext indexContext = mapEntry.getValue();
+				try {
+					IndexContext indexContext = mapEntry.getValue();
 
-				Snapshot snapshot = new Snapshot();
-				// LOGGER.info("Snapshot : " + snapshot);
-				dataBase.persist(snapshot);
+					Snapshot snapshot = new Snapshot();
 
-				snapshot.setIndexSize(getIndexSize(indexContext));
-				snapshot.setNumDocs(getNumDocs(indexContext));
-				snapshot.setLatestIndexTimestamp(getLatestIndexDirectoryDate(indexContext));
-				snapshot.setDocsPerMinute(getDocsPerMinute(indexContext, snapshot));
-				snapshot.setTotalSearches(getTotalSearchesForIndex(indexContext));
-				// LOGGER.info("Setting searches per minute : " + getSearchesPerMinute(indexContext, snapshot));
-				snapshot.setSearchesPerMinute(getSearchesPerMinute(indexContext, snapshot));
+					snapshot.setTimestamp(new Timestamp(System.currentTimeMillis()));
+					snapshot.setIndexSize(getIndexSize(indexContext));
+					snapshot.setNumDocs(getNumDocs(indexContext));
+					snapshot.setLatestIndexTimestamp(getLatestIndexDirectoryDate(indexContext));
+					snapshot.setDocsPerMinute(getDocsPerMinute(indexContext, snapshot));
+					snapshot.setTotalSearches(getTotalSearchesForIndex(indexContext));
+					snapshot.setSearchesPerMinute(getSearchesPerMinute(indexContext, snapshot));
 
-				dataBase.merge(snapshot);
-				// LOGGER.info("Snapshot : " + snapshot);
-				indexContext.getSnapshots().add(snapshot);
-				if (indexContext.getSnapshots().size() > IConstants.MAX_SNAPSHOTS) {
-					List<Snapshot> snapshots = new ArrayList<Snapshot>(indexContext.getSnapshots());
-					List<Snapshot> subListToRemove = snapshots.subList(0, (int) (((double) IConstants.MAX_SNAPSHOTS) * 0.25));
-					snapshots.removeAll(subListToRemove);
-					indexContext.setSnapshots(snapshots);
+					dataBase.persist(snapshot);
+					// dataBase.merge(snapshot);
+					indexContext.getSnapshots().add(snapshot);
+					if (indexContext.getSnapshots().size() > IConstants.MAX_SNAPSHOTS) {
+						List<Snapshot> snapshots = new ArrayList<Snapshot>(indexContext.getSnapshots());
+						List<Snapshot> subListToRemove = snapshots.subList(0, (int) (IConstants.MAX_SNAPSHOTS * 0.25d));
+						snapshots.removeAll(subListToRemove);
+						indexContext.setSnapshots(snapshots);
+					}
+				} catch (Exception e) {
+					LOGGER.error("Exception persisting snapshot : ", e);
 				}
 			}
 		}
@@ -161,7 +164,10 @@ public class SnapshotListener implements IListener {
 		IndexWriter indexWriter = indexContext.getIndexWriter();
 		if (indexWriter != null) {
 			try {
-				numDocs += indexWriter.numDocs();
+				// Checking if the directory is locked is like checking that the writer is sill open
+				if (IndexWriter.isLocked(indexWriter.getDirectory())) {
+					numDocs += indexWriter.numDocs();
+				}
 			} catch (Exception e) {
 				LOGGER.error("Exception reading the number of documents from the writer", e);
 			}
@@ -177,7 +183,7 @@ public class SnapshotListener implements IListener {
 							if (!IndexWriter.isLocked(directory)) {
 								indexReader = IndexReader.open(directory);
 								numDocs += indexReader.numDocs();
-							};
+							}
 						} catch (Exception e) {
 							LOGGER.error("Exception opening the reader on the index : " + serverIndexDirectory, e);
 						} finally {
