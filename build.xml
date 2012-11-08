@@ -1,6 +1,8 @@
 <project name="Deploy Ikube Cluster" default="deploy">
 
 	<property file="build.properties" />
+	<property file="local-build.properties" />
+
 	<!-- The default profile to deploy. -->
 	<property name="profile" value="production" />
 	<property name="user-dir" value="${user.dir}" />
