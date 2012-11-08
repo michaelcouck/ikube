@@ -35,6 +35,7 @@ import org.apache.lucene.search.TopDocs;
  * @since 22.08.08
  * @version 01.00
  */
+@SuppressWarnings("deprecation")
 public class SearchAdvanced extends Search {
 
 	public SearchAdvanced(final Searcher searcher) {
@@ -60,8 +61,7 @@ public class SearchAdvanced extends Search {
 	protected Query getQuery() throws ParseException {
 		// The first in the array of search strings all of the words
 		StringBuilder stringBuilder = new StringBuilder();
-		if (!StringUtils.isEmpty(searchStrings[0])) {
-			boolean first = Boolean.TRUE;
+		if (searchStrings.length > 0 && !StringUtils.isEmpty(searchStrings[0])) {
 			stringBuilder.append("(");
 			StringTokenizer stringTokenizer = new StringTokenizer(searchStrings[0], " ");
 			while (stringTokenizer.hasMoreTokens()) {
@@ -69,16 +69,15 @@ public class SearchAdvanced extends Search {
 				if (StringUtils.isEmpty(word)) {
 					continue;
 				}
-				if (!first) {
+				stringBuilder.append(word);
+				if (stringTokenizer.hasMoreTokens()) {
 					stringBuilder.append(" AND ");
 				}
-				first = Boolean.FALSE;
-				stringBuilder.append(word);
 			}
 			stringBuilder.append(") ");
 		}
 
-		if (searchStrings.length >= 2) {
+		if (searchStrings.length >= 2 && !StringUtils.isEmpty(searchStrings[1])) {
 			// The second in the array is and exact phrase
 			if (!StringUtils.isEmpty(searchStrings[1])) {
 				stringBuilder.append("AND (");
@@ -88,46 +87,38 @@ public class SearchAdvanced extends Search {
 			}
 		}
 
-		if (searchStrings.length >= 3) {
+		if (searchStrings.length >= 3 && !StringUtils.isEmpty(searchStrings[2])) {
 			// And the third in the array is one of more of these words
-			if (!StringUtils.isEmpty(searchStrings[2])) {
-				StringTokenizer stringTokenizer = new StringTokenizer(searchStrings[2], " ");
-				boolean first = Boolean.TRUE;
-				stringBuilder.append("AND (");
-				while (stringTokenizer.hasMoreTokens()) {
-					String word = stringTokenizer.nextToken();
-					if (StringUtils.isEmpty(word)) {
-						continue;
-					}
-					if (!first) {
-						stringBuilder.append(" OR ");
-					}
-					first = Boolean.FALSE;
-					stringBuilder.append(word);
+			StringTokenizer stringTokenizer = new StringTokenizer(searchStrings[2], " ");
+			stringBuilder.append("AND (");
+			while (stringTokenizer.hasMoreTokens()) {
+				String word = stringTokenizer.nextToken();
+				if (StringUtils.isEmpty(word)) {
+					continue;
 				}
-				stringBuilder.append(") ");
+				stringBuilder.append(word);
+				if (stringTokenizer.hasMoreTokens()) {
+					stringBuilder.append(" OR ");
+				}
 			}
+			stringBuilder.append(") ");
 		}
 
-		if (searchStrings.length >= 4) {
+		if (searchStrings.length >= 4 && !StringUtils.isEmpty(searchStrings[3])) {
 			// And finally the fourth in the array is the excluded words
-			if (!StringUtils.isEmpty(searchStrings[3])) {
-				boolean first = Boolean.TRUE;
-				stringBuilder.append("NOT (");
-				StringTokenizer stringTokenizer = new StringTokenizer(searchStrings[3], " ");
-				while (stringTokenizer.hasMoreTokens()) {
-					String word = stringTokenizer.nextToken();
-					if (StringUtils.isEmpty(word)) {
-						continue;
-					}
-					if (!first) {
-						stringBuilder.append(" OR ");
-					}
-					first = Boolean.FALSE;
-					stringBuilder.append(word);
+			stringBuilder.append("NOT (");
+			StringTokenizer stringTokenizer = new StringTokenizer(searchStrings[3], " ");
+			while (stringTokenizer.hasMoreTokens()) {
+				String word = stringTokenizer.nextToken();
+				if (StringUtils.isEmpty(word)) {
+					continue;
 				}
-				stringBuilder.append(") ");
+				stringBuilder.append(word);
+				if (stringTokenizer.hasMoreTokens()) {
+					stringBuilder.append(" OR ");
+				}
 			}
+			stringBuilder.append(") ");
 		}
 		// logger.info("Query : " + stringBuilder.toString());
 		String[] newSearchStrings = new String[searchFields.length];

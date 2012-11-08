@@ -20,6 +20,7 @@ import com.hazelcast.core.MessageListener;
  */
 public class StopListener implements MessageListener<Object> {
 
+	@SuppressWarnings("unused")
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	/**
@@ -28,10 +29,11 @@ public class StopListener implements MessageListener<Object> {
 	@Override
 	public void onMessage(Message<Object> message) {
 		// If this is a stop working message then find the future in the thread utilities and kill it
+		@SuppressWarnings("unused")
 		Object source = message.getSource();
 		Object object = message.getMessageObject();
 		if (object != null && Event.class.isAssignableFrom(object.getClass())) {
-			logger.info("Got message : " + source + ", " + object);
+			// logger.info("Got message : " + source + ", " + object);
 			Event event = (Event) object;
 			if (Event.TERMINATE.equals(event.getType())) {
 				Object indexName = event.getObject();
@@ -39,7 +41,7 @@ public class StopListener implements MessageListener<Object> {
 					ThreadUtilities.destroy((String) indexName);
 				}
 			} else if (Event.TERMINATE_ALL.equals(event.getType())) {
-				logger.info("Terminating all indexing : ");
+				// logger.info("Terminating all indexing : ");
 				ThreadUtilities.destroy();
 			}
 		}

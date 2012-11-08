@@ -46,6 +46,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @version 01.00
  */
 @Remote(ISearcherService.class)
+@SuppressWarnings("deprecation")
 @SOAPBinding(style = SOAPBinding.Style.DOCUMENT)
 @WebService(name = ISearcherService.NAME, targetNamespace = ISearcherService.NAMESPACE, serviceName = ISearcherService.SERVICE)
 public class SearcherService implements ISearcherService {
@@ -342,7 +343,7 @@ public class SearcherService implements ISearcherService {
 		return stringBuilder.toString();
 	}
 
-	protected Search addSearchStatistics(final String indexName, final String[] searchStrings, final int results,
+	protected void addSearchStatistics(final String indexName, final String[] searchStrings, final int results,
 			final ArrayList<HashMap<String, String>> searchResults) {
 
 		double highScore = 0;
@@ -351,27 +352,40 @@ public class SearcherService implements ISearcherService {
 		}
 
 		searchResults.get(searchResults.size() - 1).put(IConstants.INDEX_NAME, indexName);
-		StringBuilder stringBuilder = new StringBuilder();
-		for (String searchString : searchStrings) {
-			String correctedSearchString = spellingChecker.checkWords(searchString);
-			stringBuilder.append(correctedSearchString);
-			stringBuilder.append(" ");
+
+		// Don't persist the auto complete searches
+		if (IConstants.AUTOCOMPLETE.equals(indexName)) {
+			return;
 		}
-		String correctedSearchString = stringBuilder.toString();
-		Search search = new Search();
-		search.setCount(search.getCount() + 1);
-		search.setSearchStrings(Arrays.deepToString(searchStrings));
-		search.setIndexName(indexName);
-		search.setResults(results);
-		search.setHighScore(highScore);
-		search.setCorrections(StringUtils.isNotEmpty(correctedSearchString));
-		search.setCorrectedSearchStrings(correctedSearchString);
-		search.setSearchResults(searchResults);
-		dataBase.persist(search);
+
+		for (final String searchString : searchStrings) {
+			String correctedSearchString = spellingChecker.checkWords(searchString);
+			Search dbSearch = dataBase.findCriteria(Search.class, new String[] { "indexName", "searchStrings" }, new Object[] { indexName,
+					searchString });
+			if (dbSearch == null) {
+				Search search = new Search();
+				search.setCount(1);
+				search.setSearchStrings(searchString);
+				search.setIndexName(indexName);
+				search.setResults(results);
+				search.setHighScore(highScore);
+				search.setCorrections(StringUtils.isNotEmpty(correctedSearchString));
+				search.setCorrectedSearchStrings(correctedSearchString);
+				search.setSearchResults(searchResults);
+				dataBase.persist(search);
+			} else {
+				dbSearch.setResults(results);
+				dbSearch.setHighScore(highScore);
+				dbSearch.setCorrections(StringUtils.isNotEmpty(correctedSearchString));
+				dbSearch.setCorrectedSearchStrings(correctedSearchString);
+				dbSearch.setSearchResults(searchResults);
+				dataBase.merge(dbSearch);
+			}
+		}
+
 		// LOGGER.info("Search : " + ToStringBuilder.reflectionToString(search, ToStringStyle.MULTI_LINE_STYLE));
 		// LOGGER.info("Search size : " + search.getResults());
 		// LOGGER.info("Search results : " + search.getSearchResults());
-		return search;
 	}
 
 }

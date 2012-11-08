@@ -3,11 +3,14 @@ package ikube.search;
 import ikube.IConstants;
 
 import java.util.Arrays;
-import java.util.Collection;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.index.FieldInfo;
+import org.apache.lucene.index.FieldInfos;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.queryParser.MultiFieldQueryParser;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.search.IndexSearcher;
@@ -28,6 +31,7 @@ import org.apache.lucene.util.ReaderUtil;
  * @since 02.09.08
  * @version 01.00
  */
+@SuppressWarnings("deprecation")
 public class SearchMultiAll extends SearchMulti {
 
 	public SearchMultiAll(final Searcher searcher) {
@@ -46,10 +50,14 @@ public class SearchMultiAll extends SearchMulti {
 		Searchable[] searchables = ((MultiSearcher) searcher).getSearchables();
 		Set<String> searchFieldNames = new TreeSet<String>();
 		for (Searchable searchable : searchables) {
-			Collection<String> fieldNames = ReaderUtil.getIndexedFields(((IndexSearcher) searchable).getIndexReader());
-			searchFieldNames.addAll(fieldNames);
+			IndexReader indexReader = ((IndexSearcher) searchable).getIndexReader();
+			FieldInfos fieldInfos = ReaderUtil.getMergedFieldInfos(indexReader); //  indexReader.getFieldInfos();
+			Iterator<FieldInfo> iterator = fieldInfos.iterator();
+			while (iterator.hasNext()) {
+				FieldInfo fieldInfo = iterator.next();
+				searchFieldNames.add(fieldInfo.name);
+			}
 		}
-		System.out.println("Field names : " + searchFieldNames);
 		searchFields = searchFieldNames.toArray(new String[searchFieldNames.size()]);
 		String[] newSearchStrings = new String[searchFields.length];
 		int minLength = Math.min(searchStrings.length, newSearchStrings.length);

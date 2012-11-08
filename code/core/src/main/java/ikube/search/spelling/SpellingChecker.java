@@ -29,7 +29,7 @@ import org.springframework.beans.factory.annotation.Value;
  * @since 05.03.10
  * @version 01.00
  */
-public final class SpellingChecker {
+public class SpellingChecker {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SpellingChecker.class);
 	private static SpellingChecker INSTANCE;

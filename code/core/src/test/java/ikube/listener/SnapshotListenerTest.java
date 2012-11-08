@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 import ikube.ATest;
 import ikube.IConstants;
 import ikube.mock.ApplicationContextManagerMock;
+import ikube.mock.IndexWriterMock;
 import ikube.model.IndexContext;
 import ikube.model.Snapshot;
 import ikube.toolkit.FileUtilities;
@@ -23,6 +24,7 @@ import java.util.Map;
 import mockit.Deencapsulation;
 import mockit.Mockit;
 
+import org.apache.lucene.index.IndexWriter;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -68,7 +70,7 @@ public class SnapshotListenerTest extends ATest {
 	@Test
 	@SuppressWarnings("rawtypes")
 	public void handleNotification() {
-		indexContext = new IndexContext<Object>();
+		IndexContext indexContext = new IndexContext<Object>();
 		indexContext.setIndexDirectoryPath("./indexes");
 		Map<String, IndexContext> indexContexts = new HashMap<String, IndexContext>();
 		indexContexts.put(indexContext.getName(), indexContext);
@@ -79,8 +81,6 @@ public class SnapshotListenerTest extends ATest {
 				Object[] args = invocation.getArguments();
 				Snapshot snapshot = (Snapshot) args[0];
 				snapshot.setTimestamp(new Timestamp(System.currentTimeMillis()));
-				// Object mock = invocation.getMock();
-				// logger.info("Mock : " + mock + ", args : " + Arrays.deepToString(args));
 				return null;
 			}
 		}).when(dataBase).persist(Mockito.any(Snapshot.class));
@@ -91,10 +91,8 @@ public class SnapshotListenerTest extends ATest {
 		for (int i = 0; i < maxSnapshots; i++) {
 			snapshotListener.handleNotification(event);
 		}
-		for (IndexContext<?> indexContext : monitorService.getIndexContexts().values()) {
-			logger.info("Snapshots : " + indexContext.getSnapshots().size());
-			assertTrue("There must be less snapshots than the maximum allowed : ", indexContext.getSnapshots().size() < maxSnapshots);
-		}
+		logger.info("Snapshots : " + indexContext.getSnapshots().size());
+		assertTrue("There must be less snapshots than the maximum allowed : ", indexContext.getSnapshots().size() < maxSnapshots);
 	}
 
 	@Test
@@ -151,16 +149,29 @@ public class SnapshotListenerTest extends ATest {
 
 	@Test
 	public void getNumDocs() throws Exception {
-		when(indexWriter.numDocs()).thenReturn(Integer.MAX_VALUE);
-		long numDocs = snapshotListener.getNumDocs(indexContext);
-		logger.info("Num docs : " + numDocs);
-		assertEquals(2147483648l, numDocs);
+		try {
+			IndexWriterMock.setIsLocked(Boolean.TRUE);
+			Mockit.setUpMocks(IndexWriterMock.class);
+			
+			when(fsDirectory.makeLock(anyString())).thenReturn(lock);
+			when(indexWriter.numDocs()).thenReturn(Integer.MAX_VALUE);
+			when(indexWriter.getDirectory()).thenReturn(fsDirectory);
+			when(indexContext.getIndexWriter()).thenReturn(indexWriter);
+			logger.info("Index writer test : " + indexWriter);
+			
+			long numDocs = snapshotListener.getNumDocs(indexContext);
+			logger.info("Num docs : " + numDocs);
+			assertEquals(Integer.MAX_VALUE, numDocs);
 
-		when(indexContext.getIndexWriter()).thenReturn(null);
-		when(indexReader.numDocs()).thenReturn(Integer.MIN_VALUE);
-		numDocs = snapshotListener.getNumDocs(indexContext);
-		logger.info("Num docs : " + numDocs);
-		assertEquals(-2147483648l, numDocs);
+			IndexWriterMock.setIsLocked(Boolean.FALSE);
+			when(indexContext.getIndexWriter()).thenReturn(null);
+			when(indexReader.numDocs()).thenReturn(Integer.MIN_VALUE);
+			numDocs = snapshotListener.getNumDocs(indexContext);
+			logger.info("Num docs : " + numDocs);
+			assertEquals(-2147483648l, numDocs);
+		} finally {
+			Mockit.tearDownMocks(IndexWriter.class);
+		}
 	}
 
 	@Test

@@ -75,8 +75,12 @@ public class ClusterManagerHazelcastTest extends ATest {
 	@Cascading
 	private IMonitorService monitorService;
 
+	@Cascading
 	private StartListener startListener;
+	@Cascading
 	private StopListener stopListener;
+	@Cascading
+	private IndexContextListener indexContextListener;
 
 	private ClusterManagerHazelcast clusterManagerHazelcast;
 
@@ -93,8 +97,8 @@ public class ClusterManagerHazelcastTest extends ATest {
 
 		server = mock(Server.class);
 		entry = mock(Map.Entry.class);
-		startListener = Mockito.mock(StartListener.class);
-		stopListener = Mockito.mock(StopListener.class);
+//		startListener = Mockito.mock(StartListener.class);
+//		stopListener = Mockito.mock(StopListener.class);
 		entrySet = new HashSet<Map.Entry<String, Server>>();
 
 		when(server.isWorking()).thenReturn(false);
@@ -296,6 +300,7 @@ public class ClusterManagerHazelcastTest extends ATest {
 		Deencapsulation.setField(clusterManagerHazelcast, monitorService);
 		Deencapsulation.setField(clusterManagerHazelcast, startListener);
 		Deencapsulation.setField(clusterManagerHazelcast, stopListener);
+		Deencapsulation.setField(clusterManagerHazelcast, indexContextListener);
 		clusterManagerHazelcast.initialize();
 	}
 

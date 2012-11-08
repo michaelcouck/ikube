@@ -527,12 +527,11 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	 */
 	protected synchronized long getIdFunction(final IndexableTable indexableTable, final Connection connection, final String function)
 			throws Exception {
-		IndexableColumn idColumn;
-		long result = 0;
 		Statement statement = null;
 		ResultSet resultSet = null;
 		try {
-			idColumn = getIdColumn(indexableTable.getChildren());
+			long result = 0;
+			IndexableColumn idColumn = getIdColumn(indexableTable.getChildren());
 
 			StringBuilder builder = new StringBuilder("select ");
 			builder.append(function);
@@ -552,9 +551,9 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 				Object object = resultSet.getObject(1);
 				if (object == null) {
 					logger.warn("No result from min or max from table : " + indexableTable.getName());
-					return 0;
+				} else {
+					result = Long.class.isAssignableFrom(object.getClass()) ? (Long) object : Long.parseLong(object.toString().trim());
 				}
-				result = Long.class.isAssignableFrom(object.getClass()) ? (Long) object : Long.parseLong(object.toString().trim());
 			}
 			return result;
 		} finally {

@@ -33,19 +33,14 @@ String.prototype.capitalize = function() {
  */
 function setup() {
 	$(document).ready(function() {
-		toggleMap();
-		initializeMap();
 		populateIndexNames();
+		// Make the map invisible initially
+		$('#map_canvas').toggle(false);
+		// The search button event on click
 		$('#button').click(function() {
-			var indexName = $('#indexName').val();
-			search(indexName);
+			search($('#indexName').val());
 		});
 	});
-}
-
-function toggleMap() {
-	$('#map_canvas').toggle();
-	initializeMap();
 }
 
 /**
@@ -53,6 +48,7 @@ function toggleMap() {
  * of the map with the single co-ordinate of the origin.
  */
 function initializeMap() {
+	$('#map_canvas').toggle(true);
 	var latitude = parseFloat($('#latitude').val());
 	var longitude = parseFloat($('#longitude').val());
 	var options = {
@@ -76,10 +72,11 @@ function initializeMap() {
  */
 function populateIndexNames() {
 	var url = getServiceUrl('/ikube/service/monitor/indexes');
+	// Get the semi-colon seperated list of index names
 	$.get(url, function(data) {
-		var select = [];
 		var indexNames = data.split(';');
 		var select = $('<select>').attr('id', 'indexName').appendTo('body');
+		// Iterate over them and add them to the drop down select
 		$(indexNames).each(function(index, value) {
 			select.append($('<option>').attr('value', value).text(value));
 		});
@@ -88,7 +85,7 @@ function populateIndexNames() {
 }
 
 /**
- * This function builds the url to the rest search service
+ * This function builds the url to the rest search service.
  * 
  * @returns the url to the search rest web service
  */
@@ -108,7 +105,6 @@ function getServiceUrl(path) {
  * @param indexName the name of the index to search
  */
 function search(indexName) {
-	initializeMap();
 	$('#results').empty();
 	// Check what type of index it is, if it is geospatial then go to the 
 	// geo service otherwise just the normal service
@@ -116,7 +112,22 @@ function search(indexName) {
 	$.get(monitorUrl, { indexName : indexName }, function(data) {
 		var parameters = null;
 		var webServiceUrl = null;
-		if ('true' != data) {
+		if ('true' == data) {
+			// If this is a geo-spatial search then set up the map
+			initializeMap();
+			webServiceUrl = getServiceUrl('/ikube/service/search/multi/spatial/all');
+			parameters = { 
+					indexName : indexName, 
+					searchStrings : $('#allWords').val(),
+					fragment : 'true',
+					firstResult : '0',
+					maxResults : '10',
+					distance : '20',
+					latitude : $('#latitude').val(),
+					longitude : $('#longitude').val()
+			};
+		} else {
+			$('#map_canvas').toggle(false);
 			webServiceUrl = getServiceUrl('/ikube/service/search/multi/advanced/all');
 			var searchStrings = [];
 			searchStrings.push($('#allWords').val());
@@ -124,24 +135,12 @@ function search(indexName) {
 			searchStrings.push($('#oneOrMore').val());
 			searchStrings.push($('#noneOfTheseWords').val());
 			parameters = { 
-				indexName : indexName, 
-				searchStrings : searchStrings.join(';'),
-				searchFields: 'contents', 
-				fragment : 'true',
-				firstResult : '0',
-				maxResults : '10'
-			};
-		} else {
-			webServiceUrl = getServiceUrl('/ikube/service/search/multi/spatial/all');
-			parameters = { 
-				indexName : indexName, 
-				searchStrings : $('#allWords').val(),
-				fragment : 'true',
-				firstResult : '0',
-				maxResults : '10',
-				distance : '20',
-				latitude : $('#latitude').val(),
-				longitude : $('#longitude').val()
+					indexName : indexName, 
+					searchStrings : searchStrings.join(';'),
+					searchFields: 'contents', 
+					fragment : 'true',
+					firstResult : '0',
+					maxResults : '10'
 			};
 		}
 		$.get(webServiceUrl, parameters, function(data) {
@@ -149,23 +148,79 @@ function search(indexName) {
 			setResults(xmlDom);
 		});
 	});
+	var results = $('#results').html();
+	return results;
+}
+
+function getParameters() {
+	var searchStrings = [];
+	searchStrings.push($('#allWords').val());
+	searchStrings.push($('#exactPhrase').val());
+	searchStrings.push($('#oneOrMore').val());
+	searchStrings.push($('#noneOfTheseWords').val());
+	var parameters = { 
+			indexName : indexName, 
+			searchStrings : searchStrings.join(';'),
+			searchFields: 'contents', 
+			fragment : 'true',
+			firstResult : '0',
+			maxResults : '10'
+	};
+	return parameters;
+}
+
+function getGeospatialParamteter() {
+	var parameters = { 
+			indexName : indexName, 
+			searchStrings : $('#allWords').val(),
+			fragment : 'true',
+			firstResult : '0',
+			maxResults : '10',
+			distance : '20',
+			latitude : $('#latitude').val(),
+			longitude : $('#longitude').val()
+	};
+	return parameters;
 }
 
 function setResults(xmlDom) {
 	waypoints = [];
 	origin = null;
 	destination = null;
+	var tbody = $('#results');
+	tbody.empty();
+	// The last hash map which is the statistics map
+	var statistics = null;
+	// This is the iteration over the array list objects in the xml
 	$(xmlDom).find('object').each(function() {
+		// This is the iteration over the hash maps objects in the xml
 		$(this).find('object').each(function() {
-			setResult($(this));
+			setResult(tbody, $(this));
+			addEmptyRow(tbody);
+			addEmptyRow(tbody);
+			statistics = $(this);
 		});
 	});
+	// Set the statistics for the search
+	$('#statistics').empty();
+	// TODO Set the paging for the results
 	if (waypoints.length > 0) {
 		setWaypoints(waypoints);
 	}
 }
 
-function setResult(resultMap) {
+function getXmlValue(xml) {
+	
+}
+
+function addEmptyRow(tbody) {
+	var emptyTrow = $("<tr>");
+	$("<td>").text("").appendTo(emptyTrow);
+	$("<td>").text("").appendTo(emptyTrow);
+	emptyTrow.appendTo(tbody);
+}
+
+function setResult(tbody, resultMap) {
 	var pointName = null;
 	var pointDistance = null;
 	var pointLatitude = null;
@@ -178,7 +233,7 @@ function setResult(resultMap) {
 			return;
 		}
 		var value = $(propertyArray).find('string:last').text();
-		var fields = ['distance', 'name', 'fragment', 'latitude', 'longitude'];
+		var fields = ['score', 'distance', 'name', 'fragment', 'latitude', 'longitude', 'path', 'id'];
 		$.each(fields, function(index, field) {
 			if (name == 'name') {
 				pointName = value;
@@ -190,11 +245,15 @@ function setResult(resultMap) {
 				pointLongitude = parseFloat(value);
 			}
 			if (name == field) {
-				$('#results').append(name.capitalize()).append(' : ').append(value).append('<br>');
+				var trow = $("<tr>");
+				var tdata = $("<td>").text(name.capitalize());
+				tdata.appendTo(trow);
+				tdata = $("<td>").html(value);
+				tdata.appendTo(trow);
+				trow.appendTo(tbody);
 			}
 		});
 	});
-	$('#results').append('<br>');
 	
 	if (pointLatitude != null && pointLongitude != null) {
 		var pointMarker = new google.maps.Marker({
@@ -205,7 +264,7 @@ function setResult(resultMap) {
 		setWaypoint(waypoints, pointLatitude, pointLongitude);
 	}
 }
-	
+
 function setWaypoint(waypoints, pointLatitude, pointLongitude) {
 	if (waypoints.length >= 8) {
 		return;
@@ -216,7 +275,7 @@ function setWaypoint(waypoints, pointLatitude, pointLongitude) {
 		origin = pointWaypoint;
 	}
 	destination = pointWaypoint;
-}	
+}
 
 function setWaypoints(waypoints) {
 	if (waypoints.length == 0) {
@@ -233,12 +292,18 @@ function setWaypoints(waypoints) {
 	};
 	var directionsService = new google.maps.DirectionsService();
 	directionsService.route(request, 
-			function(response, status) {
-		if (status == google.maps.DirectionsStatus.OK) {
-			directionsDisplay.setDirections(response);
-		} else {
-			alert ('Failed to get directions from Googy, sorry : ' + status);
+		function(response, status) {
+			if (status == google.maps.DirectionsStatus.OK) {
+				directionsDisplay.setDirections(response);
+			} else {
+				alert ('Failed to get directions from Googy, sorry : ' + status);
+			}
 		}
-	}
 	);
+}
+
+function addAutoComplete(inputField) {
+	inputField.autocomplete({
+		source : getServiceUrl("/ikube/service/auto/complete")
+	});
 }

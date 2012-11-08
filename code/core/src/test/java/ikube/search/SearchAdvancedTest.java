@@ -4,12 +4,12 @@ import static org.junit.Assert.assertEquals;
 import ikube.ATest;
 import ikube.IConstants;
 import ikube.index.IndexManager;
-import ikube.search.spelling.SpellingChecker;
+import ikube.mock.SpellingCheckerMock;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import mockit.Deencapsulation;
+import mockit.Mockit;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Index;
@@ -21,6 +21,7 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Searcher;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -29,6 +30,7 @@ import org.junit.Test;
  * @since 19.10.2012
  * @version 01.00
  */
+@SuppressWarnings("deprecation")
 public class SearchAdvancedTest extends ATest {
 
 	private Searcher searcher;
@@ -36,21 +38,16 @@ public class SearchAdvancedTest extends ATest {
 	// (cape AND town AND university) AND ("cape town") AND (one OR two OR three) NOT (caucasian)
 	private String[] contentStrings = { //
 	"cape town university", //
-			"cape university town caucation", //
+			"cape university town caucasian", //
 			"cape one", "cape town", //
 			"cape town university one" };
 
+	public SearchAdvancedTest() {
+		super(SearchAdvancedTest.class);
+	}
+
 	@Before
 	public void before() throws Exception {
-		SpellingChecker checkerExt = new SpellingChecker();
-		Deencapsulation.setField(checkerExt, "languageWordListsDirectory", "languages");
-		Deencapsulation.setField(checkerExt, "spellingIndexDirectoryPath", "./spellingIndex");
-		try {
-			checkerExt.initialize();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
 		Directory directory = new RAMDirectory();
 		IndexWriter indexWriter = new IndexWriter(directory, IConstants.ANALYZER, true, MaxFieldLength.UNLIMITED);
 
@@ -67,10 +64,13 @@ public class SearchAdvancedTest extends ATest {
 		indexWriter.close();
 
 		searcher = new IndexSearcher(directory);
+
+		Mockit.setUpMock(SpellingCheckerMock.class);
 	}
 
-	public SearchAdvancedTest() {
-		super(SearchAdvancedTest.class);
+	@After
+	public void after() {
+		Mockit.tearDownMocks();
 	}
 
 	@Test
@@ -85,7 +85,7 @@ public class SearchAdvancedTest extends ATest {
 		ArrayList<HashMap<String, String>> results = searchAdvanced.execute();
 		assertEquals("There should be just a statistics map : ", 1, results.size());
 
-		searchAdvanced.setSearchString("cape town university", "cape town", "one cape town university", "caucation");
+		searchAdvanced.setSearchString("cape town university", "cape town", "one cape town university", "caucasian");
 		results = searchAdvanced.execute();
 		assertEquals("There should be two results and a statistics : ", 3, results.size());
 
@@ -98,7 +98,7 @@ public class SearchAdvancedTest extends ATest {
 		searchSingle.setSortField(IConstants.CONTENTS);
 
 		searchSingle
-				.setSearchString("(cape AND town AND university) AND (\"cape town\") AND (one OR cape OR town OR university) NOT (caucation)");
+				.setSearchString("(cape AND town AND university) AND (\"cape town\") AND (one OR cape OR town OR university) NOT (caucasian)");
 		results = searchSingle.execute();
 		assertEquals("There should be two results and a statistics : ", 3, results.size());
 	}

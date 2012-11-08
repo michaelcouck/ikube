@@ -1,14 +1,12 @@
 package ikube.service;
 
 import ikube.IConstants;
-
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.SerializationUtilities;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,6 +19,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -75,7 +74,7 @@ public class Searcher {
 	public static final String MULTI_SPATIAL_ALL_TABLE = "/multi/spatial/all/table";
 
 	public static final String RESULTS_TO_TABLE = "/table";
-	
+
 	public static final String SEPARATOR = ",;:|";
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Searcher.class);
@@ -97,7 +96,7 @@ public class Searcher {
 	@GET
 	@Path(Searcher.SINGLE)
 	@Consumes(MediaType.APPLICATION_XML)
-	public String searchSingle(@QueryParam(value = IConstants.INDEX_NAME) final String indexName,
+	public Response searchSingle(@QueryParam(value = IConstants.INDEX_NAME) final String indexName,
 			@QueryParam(value = IConstants.SEARCH_STRINGS) final String searchStrings,
 			@QueryParam(value = IConstants.SEARCH_FIELDS) final String searchFields,
 			@QueryParam(value = IConstants.FRAGMENT) final boolean fragment,
@@ -105,7 +104,8 @@ public class Searcher {
 			@QueryParam(value = IConstants.MAX_RESULTS) final int maxResults) {
 		ArrayList<HashMap<String, String>> results = searcherService.searchSingle(indexName, searchStrings, searchFields, fragment,
 				firstResult, maxResults);
-		return SerializationUtilities.serialize(results);
+		return Response.status(200).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+				.entity(SerializationUtilities.serialize(results)).build();
 	}
 
 	/**
@@ -122,7 +122,7 @@ public class Searcher {
 	@GET
 	@Path(Searcher.MULTI)
 	@Consumes(MediaType.APPLICATION_XML)
-	public String searchMulti(@QueryParam(value = IConstants.INDEX_NAME) final String indexName,
+	public Response searchMulti(@QueryParam(value = IConstants.INDEX_NAME) final String indexName,
 			@QueryParam(value = IConstants.SEARCH_STRINGS) final String searchStrings,
 			@QueryParam(value = IConstants.SEARCH_FIELDS) final String searchFields,
 			@QueryParam(value = IConstants.FRAGMENT) final boolean fragment,
@@ -132,7 +132,8 @@ public class Searcher {
 		String[] searchFieldsArray = StringUtils.split(searchFields, SEPARATOR);
 		ArrayList<HashMap<String, String>> results = searcherService.searchMulti(indexName, searchStringsArray, searchFieldsArray,
 				fragment, firstResult, maxResults);
-		return SerializationUtilities.serialize(results);
+		return Response.status(200).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+				.entity(SerializationUtilities.serialize(results)).build();
 	}
 
 	/**
@@ -150,7 +151,7 @@ public class Searcher {
 	@GET
 	@Path(Searcher.MULTI_SORTED)
 	@Consumes(MediaType.APPLICATION_XML)
-	public String searchMultiSorted(@QueryParam(value = IConstants.INDEX_NAME) final String indexName,
+	public Response searchMultiSorted(@QueryParam(value = IConstants.INDEX_NAME) final String indexName,
 			@QueryParam(value = IConstants.SEARCH_STRINGS) final String searchStrings,
 			@QueryParam(value = IConstants.SEARCH_FIELDS) final String searchFields,
 			@QueryParam(value = IConstants.SORT_FIELDS) final String sortFields,
@@ -162,7 +163,8 @@ public class Searcher {
 		String[] sortFieldsArray = StringUtils.split(sortFields, SEPARATOR);
 		ArrayList<HashMap<String, String>> results = searcherService.searchMultiSorted(indexName, searchStringsArray, searchFieldsArray,
 				sortFieldsArray, fragment, firstResult, maxResults);
-		return SerializationUtilities.serialize(results);
+		return Response.status(200).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+				.entity(SerializationUtilities.serialize(results)).build();
 	}
 
 	/**
@@ -178,7 +180,7 @@ public class Searcher {
 	@GET
 	@Path(Searcher.MULTI_ALL)
 	@Consumes(MediaType.APPLICATION_XML)
-	public String searchMultiAll(@QueryParam(value = IConstants.INDEX_NAME) final String indexName,
+	public Response searchMultiAll(@QueryParam(value = IConstants.INDEX_NAME) final String indexName,
 			@QueryParam(value = IConstants.SEARCH_STRINGS) final String searchStrings,
 			@QueryParam(value = IConstants.FRAGMENT) final boolean fragment,
 			@QueryParam(value = IConstants.FIRST_RESULT) final int firstResult,
@@ -186,9 +188,8 @@ public class Searcher {
 		String[] searchStringsArray = StringUtils.split(searchStrings, SEPARATOR);
 		ArrayList<HashMap<String, String>> results = searcherService.searchMultiAll(indexName, searchStringsArray, fragment, firstResult,
 				maxResults);
-		String xml = SerializationUtilities.serialize(results);
-		// LOGGER.info("Xml : " + xml);
-		return xml;
+		return Response.status(200).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+				.entity(SerializationUtilities.serialize(results)).build();
 	}
 
 	/**
@@ -210,7 +211,7 @@ public class Searcher {
 	@GET
 	@Path(Searcher.MULTI_SPATIAL)
 	@Consumes(MediaType.APPLICATION_XML)
-	public String searchMultiSpacial(@QueryParam(value = IConstants.INDEX_NAME) final String indexName,
+	public Response searchMultiSpacial(@QueryParam(value = IConstants.INDEX_NAME) final String indexName,
 			@QueryParam(value = IConstants.SEARCH_STRINGS) final String searchStrings,
 			@QueryParam(value = IConstants.SEARCH_FIELDS) final String searchFields,
 			@QueryParam(value = IConstants.FRAGMENT) final boolean fragment,
@@ -221,7 +222,8 @@ public class Searcher {
 		String[] searchFieldsArray = StringUtils.split(searchFields, SEPARATOR);
 		ArrayList<HashMap<String, String>> results = searcherService.searchMultiSpacial(indexName, searchStringsArray, searchFieldsArray,
 				fragment, firstResult, maxResults, distance, Double.parseDouble(latitude), Double.parseDouble(longitude));
-		return SerializationUtilities.serialize(results);
+		return Response.status(200).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+				.entity(SerializationUtilities.serialize(results)).build();
 	}
 
 	/**
@@ -241,7 +243,7 @@ public class Searcher {
 	@GET
 	@Path(Searcher.MULTI_SPATIAL_ALL)
 	@Consumes(MediaType.APPLICATION_XML)
-	public String searchMultiSpacialAll(@QueryParam(value = IConstants.INDEX_NAME) final String indexName,
+	public Response searchMultiSpacialAll(@QueryParam(value = IConstants.INDEX_NAME) final String indexName,
 			@QueryParam(value = IConstants.SEARCH_STRINGS) final String searchStrings,
 			@QueryParam(value = IConstants.FRAGMENT) final boolean fragment,
 			@QueryParam(value = IConstants.FIRST_RESULT) final int firstResult,
@@ -250,13 +252,14 @@ public class Searcher {
 		String[] searchStringsArray = StringUtils.split(searchStrings, SEPARATOR);
 		ArrayList<HashMap<String, String>> results = searcherService.searchMultiSpacialAll(indexName, searchStringsArray, fragment,
 				firstResult, maxResults, distance, Double.parseDouble(latitude), Double.parseDouble(longitude));
-		return SerializationUtilities.serialize(results);
+		return Response.status(200).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+				.entity(SerializationUtilities.serialize(results)).build();
 	}
 
 	@GET
 	@Path(Searcher.MULTI_ADVANCED_ALL)
 	@Consumes(MediaType.APPLICATION_XML)
-	public String searchMultiAdvanced(@QueryParam(value = IConstants.INDEX_NAME) final String indexName,
+	public Response searchMultiAdvanced(@QueryParam(value = IConstants.INDEX_NAME) final String indexName,
 			@QueryParam(value = IConstants.SEARCH_STRINGS) final String searchStrings,
 			@QueryParam(value = IConstants.SEARCH_FIELDS) final String searchField,
 			@QueryParam(value = IConstants.FRAGMENT) final boolean fragment,
@@ -264,10 +267,10 @@ public class Searcher {
 			@QueryParam(value = IConstants.MAX_RESULTS) final int maxResults) {
 		String[] searchStringsArray = StringUtils.split(searchStrings, SEPARATOR);
 		String[] searchFields = { searchField };
-		LOGGER.info("Search string array : " + Arrays.deepToString(searchStringsArray));
 		ArrayList<HashMap<String, String>> results = searcherService.searchMultiAdvanced(indexName, searchStringsArray, searchFields,
 				fragment, firstResult, maxResults);
-		return SerializationUtilities.serialize(results);
+		return Response.status(200).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+				.entity(SerializationUtilities.serialize(results)).build();
 	}
 
 	/**

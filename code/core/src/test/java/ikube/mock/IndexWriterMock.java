@@ -14,11 +14,11 @@ public class IndexWriterMock {
 	public static boolean	IS_LOCKED;
 
 	@Mock
-	public static boolean isLocked(Directory directory) throws IOException {
+	public static boolean isLocked(final Directory directory) throws IOException {
 		return IS_LOCKED;
 	}
 
-	public static void setIsLocked(boolean isLocked) {
+	public static void setIsLocked(final boolean isLocked) {
 		IndexWriterMock.IS_LOCKED = isLocked;
 	}
 

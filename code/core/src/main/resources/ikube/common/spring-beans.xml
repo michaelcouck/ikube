@@ -181,8 +181,8 @@
 		id="ikube.service.MonitorService"
 		class="ikube.service.MonitorService" />
 	<bean
-		id="ikube.service.AutoComplete"
-		class="ikube.service.AutoComplete" />
+		id="ikube.service.AutoCompleteService"
+		class="ikube.service.AutoCompleteService" />
 	
 	<bean 
 		id="ikube.listener.ListenerManager"

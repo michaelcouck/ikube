@@ -31,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @since 21.11.10
  * @version 01.00
  */
+@SuppressWarnings("deprecation")
 public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> {
 
 	protected transient Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -207,22 +208,22 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
 	protected void sendNotification(final String subject, final String body) {
 		try {
 			String ip = UriUtilities.getIp();
-//			Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
-//			while (networkInterfaces.hasMoreElements()) {
-//				NetworkInterface networkInterface = networkInterfaces.nextElement();
-//				Enumeration<InetAddress> inetAddresses = networkInterface.getInetAddresses();
-//				while (inetAddresses.hasMoreElements()) {
-//					subjectBuilder.append(" - ");
-//					subjectBuilder.append(ip);
-//					byte[] mac = networkInterface.getHardwareAddress();
-//					if (mac != null && mac.length > 0) {
-//						bodyBuilder.append(" - ");
-//						bodyBuilder.append(new String(mac));
-//						bodyBuilder.append("\n\r");
-//					}
-//				}
-//				subjectBuilder.append(networkInterface.getInetAddresses());
-//			}
+			// Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
+			// while (networkInterfaces.hasMoreElements()) {
+			// NetworkInterface networkInterface = networkInterfaces.nextElement();
+			// Enumeration<InetAddress> inetAddresses = networkInterface.getInetAddresses();
+			// while (inetAddresses.hasMoreElements()) {
+			// subjectBuilder.append(" - ");
+			// subjectBuilder.append(ip);
+			// byte[] mac = networkInterface.getHardwareAddress();
+			// if (mac != null && mac.length > 0) {
+			// bodyBuilder.append(" - ");
+			// bodyBuilder.append(new String(mac));
+			// bodyBuilder.append("\n\r");
+			// }
+			// }
+			// subjectBuilder.append(networkInterface.getInetAddresses());
+			// }
 			mailer.sendMail(subject + ":" + ip, body);
 		} catch (Exception e) {
 			logger.error("Exception sending mail : " + subject, e);

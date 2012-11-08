@@ -117,6 +117,7 @@ public interface IConstants {
 
 	String SEARCH_FIELDS = "searchFields";
 	String SEARCH_STRINGS = "searchStrings";
+	String TERM = "term";
 	String TARGET_SEARCH_URL = "targetSearchUrl";
 	String SORT_FIELDS = "sortFields";
 	String FIRST_RESULT = "firstResult";

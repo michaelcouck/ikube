@@ -37,6 +37,9 @@ public class SearcherServiceTest extends ATest {
 	private boolean fragment = true;
 	private int firstResult = 0;
 	private int maxResults = 10;
+	private int distance = 10;
+	private double latitude = 0.0;
+	private double longitude = 0.0;
 
 	public SearcherServiceTest() {
 		super(SearcherServiceTest.class);
@@ -45,7 +48,7 @@ public class SearcherServiceTest extends ATest {
 	@Before
 	public void before() {
 		searcherService = new SearcherService();
-		
+
 		Mockit.setUpMocks();
 		Deencapsulation.setField(searcherService, monitorService);
 		indexName = indexContext.getIndexName();
@@ -85,12 +88,9 @@ public class SearcherServiceTest extends ATest {
 		initialize();
 		ArrayList<HashMap<String, String>> results = searcherService.searchMultiAll(indexName, searchStrings, fragment, firstResult,
 				maxResults);
+		logger.info("Results : " + results);
 		verifyResults(results);
 	}
-
-	private int distance = 10;
-	private double latitude = 0.0;
-	private double longitude = 0.0;
 
 	@Test
 	public void searchMultiSpacial() {
@@ -106,6 +106,11 @@ public class SearcherServiceTest extends ATest {
 		ArrayList<HashMap<String, String>> results = searcherService.searchMultiSpacialAll(indexName, searchStrings, fragment, firstResult,
 				maxResults, distance, latitude, longitude);
 		verifyResults(results);
+	}
+	
+	@Test
+	public void addSearchStatistics() {
+		// TODO Implement this test
 	}
 
 	private void verifyResults(final ArrayList<HashMap<String, String>> results) {

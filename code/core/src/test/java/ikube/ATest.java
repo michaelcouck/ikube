@@ -13,6 +13,7 @@ import ikube.index.parse.mime.MimeMapper;
 import ikube.index.parse.mime.MimeTypes;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.mock.IndexManagerMock;
+import ikube.mock.SpellingCheckerMock;
 import ikube.model.Action;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
@@ -20,7 +21,6 @@ import ikube.model.IndexableColumn;
 import ikube.model.IndexableTable;
 import ikube.model.Server;
 import ikube.search.Search;
-import ikube.search.spelling.SpellingChecker;
 import ikube.service.IMonitorService;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.Logging;
@@ -35,7 +35,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import mockit.Deencapsulation;
+import mockit.Mockit;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
@@ -78,14 +78,7 @@ public abstract class ATest {
 		new MimeTypes(IConstants.MIME_TYPES);
 		new MimeMapper(IConstants.MIME_MAPPING);
 		ThreadUtilities.initialize();
-		SpellingChecker checkerExt = new SpellingChecker();
-		Deencapsulation.setField(checkerExt, "languageWordListsDirectory", "languages");
-		Deencapsulation.setField(checkerExt, "spellingIndexDirectoryPath", "./spellingIndex");
-		try {
-			checkerExt.initialize();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		Mockit.setUpMock(SpellingCheckerMock.class);
 	}
 
 	protected Logger logger;
@@ -144,14 +137,6 @@ public abstract class ATest {
 		topFieldDocs.totalHits = 0;
 		topFieldDocs.scoreDocs = scoreDocs;
 		when(indexReader.directory()).thenReturn(fsDirectory);
-		// when(ReaderUtil.getIndexedFields(any(IndexReader.class))).thenReturn(Arrays.asList(IConstants.CONTENTS));
-		// when(indexReader.getFieldNames(any(FieldOption.class))).thenReturn(
-		// Arrays.asList(IConstants.ID, IConstants.FRAGMENT, IConstants.CONTENTS));
-		// List<FieldInfo> fieldInfos = Arrays.asList(new FieldInfo());
-		// Iterator<FieldInfo> fieldInfosIterator = fieldInfos.iterator();
-		// when(indexReader.getFieldInfos().iterator()
-		// (any(FieldOption.class))).thenReturn(
-		// Arrays.asList(IConstants.ID, IConstants.FRAGMENT, IConstants.CONTENTS));
 
 		when(fsDirectory.makeLock(anyString())).thenReturn(lock);
 

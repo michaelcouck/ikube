@@ -61,7 +61,7 @@ public class SearchPanel extends Panel {
 	}
 
 	private void createIndexOptions(final ComponentContainer componentContainer) {
-		ComboBox indexOptions = new ComboBox("Index : ");
+		ComboBox indexOptions = new ComboBox("Collection : ");
 		indexOptions.setImmediate(true);
 		indexOptions.setDescription(IConstant.INDEXES_OPTION_GROUP);
 		componentContainer.addComponent(indexOptions);
@@ -70,19 +70,15 @@ public class SearchPanel extends Panel {
 	private void createSearchFields(final ComponentContainer componentContainer) {
 		TextField searchField = new TextField();
 		searchField.setDescription(IConstant.SEARCH_FIELD);
-		searchField.setCaption("Search string : ");
+		searchField.setCaption("Search for : ");
 		componentContainer.addComponent(searchField);
-
-		componentContainer.addComponent(new TextField("Latitude : "));
-		componentContainer.addComponent(new TextField("Longitude : "));
-		componentContainer.addComponent(new TextField("Distance : "));
-	}
-
-	private void createSearchStatisticsFieldsAndButton(final ComponentContainer componentContainer) {
+		
 		Button searchButton = new Button(IConstant.SEARCH_BUTTON);
 		searchButton.setDescription(IConstant.SEARCH_BUTTON);
 		componentContainer.addComponent(searchButton);
-		
+	}
+
+	private void createSearchStatisticsFieldsAndButton(final ComponentContainer componentContainer) {
 		Label timeTaken = new Label(IConstant.TIME_TAKEN);
 		timeTaken.setDescription(IConstant.TIME_TAKEN);
 		timeTaken.setData(IConstant.TIME_TAKEN);

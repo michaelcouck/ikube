@@ -332,9 +332,9 @@
 				<executions>
 					<execution>
 						<id>gcode-upload</id>
-						<phase>site</phase>
+						<phase>deploy</phase>
 						<goals>
-							<goal>upload</goal>
+							<goal>site</goal>
 						</goals>
 					</execution>
 				</executions>
@@ -344,7 +344,7 @@
 					<projectName>${project.groupId}</projectName>
 					<uploads>
 						<upload>
-							<file>${project.build.directory}/${final.name}</file>
+							<file>code/gui/target/ikube-4.0.1.zip</file>
 							<summary>${project.groupId} release ${project.version}</summary>
 							<labels>
 								<label>Featured</label>
@@ -1012,6 +1012,12 @@
 			<artifactId>xmlunit</artifactId>
 			<version>1.3</version>
 		</dependency> -->
+		<dependency>
+			<groupId>org.mozilla</groupId>
+			<artifactId>rhino</artifactId>
+			<version>1.7R4</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<repositories>

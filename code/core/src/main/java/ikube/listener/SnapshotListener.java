@@ -1,6 +1,7 @@
 package ikube.listener;
 
 import ikube.IConstants;
+
 import ikube.cluster.IClusterManager;
 import ikube.database.IDataBase;
 import ikube.index.IndexManager;
@@ -27,6 +28,7 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.MultiSearcher;
 import org.apache.lucene.search.Searchable;
+import org.apache.lucene.store.AlreadyClosedException;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.slf4j.Logger;
@@ -38,6 +40,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @since 22.07.12
  * @version 01.00
  */
+@SuppressWarnings("deprecation")
 public class SnapshotListener implements IListener {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SnapshotListener.class);
@@ -168,6 +171,8 @@ public class SnapshotListener implements IListener {
 				if (IndexWriter.isLocked(indexWriter.getDirectory())) {
 					numDocs += indexWriter.numDocs();
 				}
+			} catch (AlreadyClosedException e) {
+				LOGGER.warn("Index writer is closed : " + e.getMessage());
 			} catch (Exception e) {
 				LOGGER.error("Exception reading the number of documents from the writer", e);
 			}

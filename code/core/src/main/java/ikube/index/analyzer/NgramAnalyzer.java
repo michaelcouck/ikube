@@ -24,6 +24,9 @@ import org.apache.lucene.analysis.shingle.ShingleMatrixFilter;
  */
 public final class NgramAnalyzer extends Analyzer {
 
+	private int minGram = 3;
+	private int maxGram = 12;
+
 	/**
 	 * This method will produce n-grams from the text stream. We don't want to stop the words and we don't need to stem them because n-grams
 	 * are essentially the stems.
@@ -34,6 +37,15 @@ public final class NgramAnalyzer extends Analyzer {
 	@Override
 	public final TokenStream tokenStream(String fieldName, Reader reader) {
 		Tokenizer tokenizer = new LowerCaseTokenizer(IConstants.VERSION, reader);
-		return new NGramTokenFilter(tokenizer, 2, 21);
+		return new NGramTokenFilter(tokenizer, minGram, maxGram);
 	}
+
+	public void setMinGram(int minGram) {
+		this.minGram = minGram;
+	}
+
+	public void setMaxGram(int maxGram) {
+		this.maxGram = maxGram;
+	}
+
 }

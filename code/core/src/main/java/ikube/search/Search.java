@@ -46,6 +46,7 @@ import org.apache.lucene.search.highlight.Scorer;
  * @since 22.08.08
  * @version 01.00
  */
+@SuppressWarnings("deprecation")
 public abstract class Search {
 
 	private static transient Map<String, QueryParser> QUERY_PARSERS = new HashMap<String, QueryParser>();
@@ -193,6 +194,9 @@ public abstract class Search {
 			// TODO If there are no results here then do a search for the
 			// corrected spelling to see if there are any results from that
 			results = getResults(topDocs, query);
+		} catch (IllegalArgumentException e) {
+			// Do nothing this is something weird in TopScoreDocCollector
+			exception = e;
 		} catch (Exception e) {
 			exception = e;
 			String searchString = searchStrings != null && searchStrings.length > 0 ? searchStrings[0] : "null";
@@ -357,7 +361,12 @@ public abstract class Search {
 		Set<String> correctedSearchStrings = new TreeSet<String>();
 		for (int i = 0; i < searchStrings.length; i++) {
 			String searchString = StringUtils.strip(searchStrings[i], IConstants.STRIP_CHARACTERS);
-			String correctedSearchString = SpellingChecker.getSpellingChecker().checkWords(searchString.toLowerCase());
+			if (searchString == null) {
+				continue;
+			}
+			SpellingChecker spellingChecker = SpellingChecker.getSpellingChecker();
+			logger.info("Spelling checker : " + spellingChecker + ", " + searchString);
+			String correctedSearchString = spellingChecker.checkWords(searchString.toLowerCase());
 			if (correctedSearchString != null) {
 				corrections = Boolean.TRUE;
 				correctedSearchStrings.add(correctedSearchString);

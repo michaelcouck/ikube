@@ -71,7 +71,10 @@ public class Delete extends Action<IndexContext<?>, Boolean> {
 		for (int i = 0; i < indexesToDelete; i++) {
 			File indexToDelete = timeIndexDirectories[i];
 			logger.info("Deleting index directory : " + indexToDelete.getAbsolutePath());
-			FileUtilities.deleteFile(indexToDelete, 1);
+			boolean deleted = FileUtilities.deleteFile(indexToDelete, 1);
+			if (!deleted) {
+				logger.warn("Didn't delete directory : " + indexToDelete.getAbsolutePath());
+			}
 		}
 		return Boolean.TRUE;
 	}

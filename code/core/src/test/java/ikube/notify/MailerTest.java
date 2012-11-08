@@ -3,6 +3,7 @@ package ikube.notify;
 import static org.junit.Assert.assertTrue;
 import ikube.ATest;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -10,6 +11,7 @@ import org.junit.Test;
  * @since 21.11.10
  * @version 01.00
  */
+@Ignore
 public class MailerTest extends ATest {
 
 	public MailerTest() {

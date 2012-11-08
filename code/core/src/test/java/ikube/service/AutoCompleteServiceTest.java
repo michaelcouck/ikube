@@ -20,18 +20,23 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-public class AutoCompleteTest extends ATest {
+/**
+ * @author Michael Couck
+ * @since 29.10.12
+ * @version 01.00
+ */
+public class AutoCompleteServiceTest extends ATest {
 
-	private AutoComplete autoComplete;
+	private AutoCompleteService autoCompleteService;
 
-	public AutoCompleteTest() {
-		super(AutoCompleteTest.class);
+	public AutoCompleteServiceTest() {
+		super(AutoCompleteServiceTest.class);
 	}
 
 	@Before
 	@SuppressWarnings("unchecked")
 	public void before() throws Exception {
-		autoComplete = new AutoComplete();
+		autoCompleteService = new AutoCompleteService();
 		File file = FileUtilities.findFileRecursively(new File("."), "autocomplete.results.xml");
 		String contents = FileUtilities.getContents(file, IConstants.ENCODING);
 		ArrayList<HashMap<String, String>> defaultResults = (ArrayList<HashMap<String, String>>) SerializationUtilities
@@ -39,19 +44,16 @@ public class AutoCompleteTest extends ATest {
 		ISearcherService searcherService = Mockito.mock(ISearcherService.class);
 		Mockito.when(searcherService.searchSingle(anyString(), anyString(), anyString(), anyBoolean(), anyInt(), anyInt())).thenReturn(
 				defaultResults);
-		Deencapsulation.setField(autoComplete, searcherService);
+		Deencapsulation.setField(autoCompleteService, searcherService);
 	}
 
 	@Test
 	public void suggestions() throws Exception {
-		String[] suggestions = autoComplete.suggestions("sear");
+		String[] suggestions = autoCompleteService.suggestions("ikube");
 		String suggestionsString = Arrays.deepToString(suggestions);
 		logger.info("Suggestions : " + suggestionsString);
-		assertTrue(
-				"All the suggestions from the results file should be in the suggestions : ",
-				suggestionsString
-						.contains("to European company setup. Navigation Home Serenity <B>Ikube</B> Enterprise Search The ftp ant task Free ,  Serenity <B>Ikube</B> Enterprise Search "
-								+ "The ftp ant task Free Interesting Java Links Hudson CI Spring ,  on a blog of some sort. Navigation Home Serenity <B>Ikube</B> Enterprise Search The ftp ant task Free"));
+		assertTrue("All the suggestions from the results file should be in the suggestions : ",
+				suggestionsString.contains("search string, something else altogether, the quick brown fox and the lazy dog"));
 	}
 
 }

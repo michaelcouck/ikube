@@ -3,11 +3,15 @@ package ikube.index.lucene;
 import static org.junit.Assert.assertEquals;
 import ikube.ATest;
 import ikube.IConstants;
+import ikube.mock.SpellingCheckerMock;
 import ikube.search.SearchSingle;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import mockit.Mockit;
+
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -35,6 +39,11 @@ public class LuceneTest extends ATest {
 
 	public LuceneTest() {
 		super(LuceneTest.class);
+	}
+
+	@Before
+	public void before() {
+		Mockit.setUpMock(SpellingCheckerMock.class);
 	}
 
 	@Test

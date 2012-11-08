@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.queryParser.MultiFieldQueryParser;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.search.IndexSearcher;
@@ -23,6 +24,7 @@ import org.apache.lucene.util.ReaderUtil;
  * @since 02.10.11
  * @version 01.00
  */
+@SuppressWarnings("deprecation")
 public class SearchSpatialAll extends SearchSpatial {
 
 	public SearchSpatialAll(final Searcher searcher) {
@@ -41,7 +43,8 @@ public class SearchSpatialAll extends SearchSpatial {
 		Searchable[] searchables = ((MultiSearcher) searcher).getSearchables();
 		Set<String> searchFieldNames = new TreeSet<String>();
 		for (Searchable searchable : searchables) {
-			Collection<String> fieldNames = ReaderUtil.getIndexedFields(((IndexSearcher) searchable).getIndexReader());
+			IndexReader indexReader = ((IndexSearcher) searchable).getIndexReader();
+			Collection<String> fieldNames = ReaderUtil.getIndexedFields(indexReader);
 			searchFieldNames.addAll(fieldNames);
 		}
 		searchFields = searchFieldNames.toArray(new String[searchFieldNames.size()]);

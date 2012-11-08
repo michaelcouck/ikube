@@ -4,12 +4,15 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import ikube.ATest;
 import ikube.IConstants;
+import ikube.mock.SpellingCheckerMock;
 import ikube.search.SearchSingle;
 
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import mockit.Mockit;
 
 import org.apache.lucene.analysis.TokenStream;
 import org.junit.Before;
@@ -31,6 +34,7 @@ public class StemmingAnalyzerTest extends ATest {
 	@Before
 	public void before() {
 		stemmingAnalyzer = new StemmingAnalyzer();
+		Mockit.setUpMock(SpellingCheckerMock.class);
 	}
 
 	@Test

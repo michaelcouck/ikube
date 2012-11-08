@@ -60,7 +60,7 @@ public class ClusterManagerHazelcast extends AClusterManager {
 				logger.warn("Listener null, are we in a test?");
 				continue;
 			}
-			logger.info("Listener : " + listener);
+			// logger.info("Listener : " + listener);
 			Hazelcast.getTopic(IConstants.TOPIC).addMessageListener(listener);
 		}
 	}
