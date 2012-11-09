@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -18,6 +19,7 @@ import org.junit.Test;
  * @since 20.03.11
  * @version 01.00
  */
+@Ignore
 public class RulesIntegration extends Integration {
 
 	private Logger logger = Logger.getLogger(this.getClass());
@@ -27,6 +29,7 @@ public class RulesIntegration extends Integration {
 	public void evaluate() {
 		Map<String, IAction> actions = ApplicationContextManager.getBeans(IAction.class);
 		for (IAction action : actions.values()) {
+			logger.info("Action : " + action);
 			Object rules = action.getRules();
 			logger.info("Rules : " + rules);
 			if (List.class.isAssignableFrom(rules.getClass())) {
