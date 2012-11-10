@@ -359,23 +359,24 @@ public abstract class Search {
 	protected String[] getCorrections() {
 		boolean corrections = Boolean.FALSE;
 		Set<String> correctedSearchStrings = new TreeSet<String>();
-		for (int i = 0; i < searchStrings.length; i++) {
-			String searchString = StringUtils.strip(searchStrings[i], IConstants.STRIP_CHARACTERS);
-			if (searchString == null) {
-				continue;
+		SpellingChecker spellingChecker = SpellingChecker.getSpellingChecker();
+		if (spellingChecker != null) {
+			for (int i = 0; i < searchStrings.length; i++) {
+				String searchString = StringUtils.strip(searchStrings[i], IConstants.STRIP_CHARACTERS);
+				if (searchString == null) {
+					continue;
+				}
+				String correctedSearchString = spellingChecker.checkWords(searchString.toLowerCase());
+				if (correctedSearchString != null) {
+					corrections = Boolean.TRUE;
+					correctedSearchStrings.add(correctedSearchString);
+				} else {
+					correctedSearchStrings.add(searchString);
+				}
 			}
-			SpellingChecker spellingChecker = SpellingChecker.getSpellingChecker();
-			logger.info("Spelling checker : " + spellingChecker + ", " + searchString);
-			String correctedSearchString = spellingChecker.checkWords(searchString.toLowerCase());
-			if (correctedSearchString != null) {
-				corrections = Boolean.TRUE;
-				correctedSearchStrings.add(correctedSearchString);
-			} else {
-				correctedSearchStrings.add(searchString);
+			if (corrections) {
+				return correctedSearchStrings.toArray(new String[correctedSearchStrings.size()]);
 			}
-		}
-		if (corrections) {
-			return correctedSearchStrings.toArray(new String[correctedSearchStrings.size()]);
 		}
 		return new String[0];
 	}

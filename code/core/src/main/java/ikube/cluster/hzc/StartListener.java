@@ -1,6 +1,9 @@
 package ikube.cluster.hzc;
 
+import java.io.File;
+
 import ikube.cluster.IClusterManager;
+import ikube.index.IndexManager;
 import ikube.listener.Event;
 import ikube.listener.ListenerManager;
 import ikube.model.IndexContext;
@@ -55,7 +58,14 @@ public class StartListener implements MessageListener<Object> {
 			// Start a thread to revert the max age of the index
 			ThreadUtilities.submit(new Runnable() {
 				public void run() {
-					ThreadUtilities.sleep(60000 * 3);
+					File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
+					File newLatestIndexDirectory = null;
+					do {
+						ThreadUtilities.sleep(60000 * 3);
+						newLatestIndexDirectory = IndexManager.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
+						LOGGER.info("Latest : " + latestIndexDirectory + ", new latest : " + newLatestIndexDirectory);
+					} while (latestIndexDirectory != null && latestIndexDirectory.equals(newLatestIndexDirectory));
+					LOGGER.info("Setting the max age back to the original : " + maxAge);
 					indexContext.setMaxAge(maxAge);
 				}
 			});

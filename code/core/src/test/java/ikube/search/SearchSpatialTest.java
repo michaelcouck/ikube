@@ -9,11 +9,14 @@ import ikube.index.IndexManager;
 import ikube.index.spatial.Coordinate;
 import ikube.index.spatial.enrich.Enrichment;
 import ikube.index.spatial.enrich.IEnrichment;
+import ikube.mock.SpellingCheckerMock;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import mockit.Mockit;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Index;
@@ -34,6 +37,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
+@SuppressWarnings("deprecation")
 public class SearchSpatialTest extends ATest {
 
 	private String searchString = " churches and cathedrals";
@@ -57,6 +61,7 @@ public class SearchSpatialTest extends ATest {
 
 	@Before
 	public void before() throws Exception {
+		Mockit.setUpMocks(SpellingCheckerMock.class);
 		// Create and index with the spatial data
 		indexDirectory = new File(indexContext.getIndexDirectoryPath());
 		boolean deleted = FileUtilities.deleteFile(indexDirectory, 1);
