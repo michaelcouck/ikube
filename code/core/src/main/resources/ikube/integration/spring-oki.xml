@@ -15,15 +15,11 @@
             http://www.springframework.org/schema/util
             http://www.springframework.org/schema/util/spring-util.xsd">
 
-	<!-- 
-		This configuration is to index the local file system. Please feel free to delete this 
-		index context from the configuration if not needed.
-	-->
 	<bean
-		id="desktop"
+		id="okiContext"
 		class="ikube.model.IndexContext"
-		property:name="desktop"
-		property:maxAge="6000"
+		property:name="okiContext"
+		property:maxAge="600"
 		property:compoundFile="${compound.file}"
 		property:bufferedDocs="${buffered.docs}"
 		property:bufferSize="${buffer.size}"
@@ -35,31 +31,23 @@
 		property:throttle="${throttle}"
 		property:indexDirectoryPath="${index.directory.path}"
 		property:indexDirectoryPathBackup="${index.directory.path.backup}"
-		property:children-ref="desktopFolders" />
-	<util:list id="desktopFolders">
-		<ref local="desktopFolder" />
+		property:children-ref="okiIndexables" />
+	<util:list id="okiIndexables">
+		<ref local="oki" />
 	</util:list>
 	
-	<!-- 
-		Note that the path to the files is a slash, on Linux this is the root and on Windows this will be the
-		root of the drive that the application is started on, so it would be C:/ if the Tomcat is on the C drive.  
-	-->
 	<bean
-		id="desktopFolder"
-		class="ikube.model.IndexableFileSystem"
-		property:name="desktopFolder"
-		property:path="/"
-		property:pathFieldName="path"
-		property:nameFieldName="name"
-		property:lengthFieldName="length"
-		property:contentFieldName="contents"
-		property:unpackZips="false"
-		property:stored="true"
+		id="oki"
+		class="ikube.model.IndexableInternet"
+		property:name="oki"
+		property:url="https://www.oki.com/" 
+		property:idFieldName="id"
+		property:titleFieldName="title"
+		property:contentFieldName="content"
 		property:analyzed="true"
+		property:stored="true"
 		property:vectored="true"
-		property:excludedPattern="${files.excluded.pattern}"
-		property:lastModifiedFieldName="lastmodified"
-		property:batchSize="${file.batch.size}"
-		property:maxReadLength="${file.max.read.length}" />
+		property:internetBatchSize="1000"
+		property:excludedPattern="${internet.excluded.pattern}" />
 	
 </beans>

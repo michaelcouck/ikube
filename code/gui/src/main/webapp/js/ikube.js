@@ -87,6 +87,7 @@ function populateIndexNames() {
 /**
  * This function builds the url to the rest search service.
  * 
+ * @param the path part of the url  
  * @returns the url to the search rest web service
  */
 function getServiceUrl(path) {
@@ -102,6 +103,7 @@ function getServiceUrl(path) {
  * This function will call the rest web service and get the results for the search in xml 
  * format(serialized list of maps) with the last map the statistics for the search.
  * 
+ * @param the name of the index
  * @param indexName the name of the index to search
  */
 function search(indexName) {
@@ -110,23 +112,24 @@ function search(indexName) {
 	// geo service otherwise just the normal service
 	var monitorUrl = getServiceUrl('/ikube/service/monitor/geospatial');
 	$.get(monitorUrl, { indexName : indexName }, function(data) {
-		var parameters = null;
+		var parameters = {};
 		var webServiceUrl = null;
 		if ('true' == data) {
 			// If this is a geo-spatial search then set up the map
 			initializeMap();
 			webServiceUrl = getServiceUrl('/ikube/service/search/multi/spatial/all');
 			parameters = { 
-					indexName : indexName, 
-					searchStrings : $('#allWords').val(),
-					fragment : 'true',
-					firstResult : '0',
-					maxResults : '10',
-					distance : '20',
-					latitude : $('#latitude').val(),
-					longitude : $('#longitude').val()
+				indexName : indexName, 
+				searchStrings : $('#allWords').val(),
+				fragment : 'true',
+				firstResult : '0',
+				maxResults : '10',
+				distance : '20',
+				latitude : $('#latitude').val(),
+				longitude : $('#longitude').val()
 			};
 		} else {
+			// Closethe map if open
 			$('#map_canvas').toggle(false);
 			webServiceUrl = getServiceUrl('/ikube/service/search/multi/advanced/all');
 			var searchStrings = [];
@@ -135,12 +138,12 @@ function search(indexName) {
 			searchStrings.push($('#oneOrMore').val());
 			searchStrings.push($('#noneOfTheseWords').val());
 			parameters = { 
-					indexName : indexName, 
-					searchStrings : searchStrings.join(';'),
-					searchFields: 'contents', 
-					fragment : 'true',
-					firstResult : '0',
-					maxResults : '10'
+				indexName : indexName, 
+				searchStrings : searchStrings.join(';'),
+				searchFields: 'contents', 
+				fragment : 'true',
+				firstResult : '0',
+				maxResults : '10'
 			};
 		}
 		$.get(webServiceUrl, parameters, function(data) {
@@ -150,37 +153,6 @@ function search(indexName) {
 	});
 	var results = $('#results').html();
 	return results;
-}
-
-function getParameters() {
-	var searchStrings = [];
-	searchStrings.push($('#allWords').val());
-	searchStrings.push($('#exactPhrase').val());
-	searchStrings.push($('#oneOrMore').val());
-	searchStrings.push($('#noneOfTheseWords').val());
-	var parameters = { 
-			indexName : indexName, 
-			searchStrings : searchStrings.join(';'),
-			searchFields: 'contents', 
-			fragment : 'true',
-			firstResult : '0',
-			maxResults : '10'
-	};
-	return parameters;
-}
-
-function getGeospatialParamteter() {
-	var parameters = { 
-			indexName : indexName, 
-			searchStrings : $('#allWords').val(),
-			fragment : 'true',
-			firstResult : '0',
-			maxResults : '10',
-			distance : '20',
-			latitude : $('#latitude').val(),
-			longitude : $('#longitude').val()
-	};
-	return parameters;
 }
 
 function setResults(xmlDom) {
@@ -197,26 +169,34 @@ function setResults(xmlDom) {
 		$(this).find('object').each(function() {
 			setResult(tbody, $(this));
 			addEmptyRow(tbody);
-			addEmptyRow(tbody);
-			statistics = $(this);
+			statistics = this;
 		});
 	});
 	// Set the statistics for the search
+	var text = [];
+	$(statistics).find('void').each(function() {
+		var propertyArray = $(this);
+		var name = $(propertyArray).find('string:first').text();
+		var value = $(propertyArray).find('string:last').text();
+		if ('searchStrings' != name && value != null && '' != value) {
+			text.push('<b>' + name + '</b>');
+			text.push(' : ');
+			text.push(value);
+			text.push('<br>');
+		}
+	});
 	$('#statistics').empty();
+	$('#statistics').append(text.join(''));
 	// TODO Set the paging for the results
 	if (waypoints.length > 0) {
 		setWaypoints(waypoints);
-	}
-}
-
-function getXmlValue(xml) {
-	
+	};
 }
 
 function addEmptyRow(tbody) {
 	var emptyTrow = $("<tr>");
-	$("<td>").text("").appendTo(emptyTrow);
-	$("<td>").text("").appendTo(emptyTrow);
+	$("<td>").text('&nbsp;').appendTo(emptyTrow);
+	$("<td>").text('&nbsp;').appendTo(emptyTrow);
 	emptyTrow.appendTo(tbody);
 }
 
@@ -232,9 +212,10 @@ function setResult(tbody, resultMap) {
 		if (name == null) {
 			return;
 		}
+		var id = null;
 		var value = $(propertyArray).find('string:last').text();
 		var fields = ['score', 'distance', 'name', 'fragment', 'latitude', 'longitude', 'path', 'id'];
-		$.each(fields, function(index, field) {
+			$.each(fields, function(index, field) {
 			if (name == 'name') {
 				pointName = value;
 			} else if (name == 'distance') {
@@ -243,10 +224,12 @@ function setResult(tbody, resultMap) {
 				pointLatitude = parseFloat(value);
 			} else if (name == 'longitude') {
 				pointLongitude = parseFloat(value);
+			} else if (name == 'id') {
+				id = value;
 			}
 			if (name == field) {
 				var trow = $("<tr>");
-				var tdata = $("<td>").text(name.capitalize());
+				var tdata = $("<td>").text('<b>' + name.capitalize() + '</b>');
 				tdata.appendTo(trow);
 				tdata = $("<td>").html(value);
 				tdata.appendTo(trow);

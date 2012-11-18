@@ -47,7 +47,6 @@
 		<memory.parameters>-Xms512m -Xmx1024m -XX:PermSize=64m -XX:MaxPermSize=128m</memory.parameters>
 
 		<war.base.root>code/war/target/ikube</war.base.root>
-		<!-- 9.1-901-1.jdbc4 -->
 		<postgresql.driver.version>9.1-901-1.jdbc4</postgresql.driver.version>
 		<jetty.version>6.1.11</jetty.version>
 		
@@ -56,9 +55,9 @@
 
 	<modules>
 		<module>code/core</module>
-		<!-- <module>code/war</module> -->
+		<module>code/war</module>
 		<!-- <module>code/web</module> -->
-		<module>code/gui</module>
+		<!-- <module>code/gui</module> -->
 		<!-- <module>code/libs</module> -->
 		<module>code/tool</module>
 	</modules>

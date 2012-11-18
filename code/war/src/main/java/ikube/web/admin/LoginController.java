@@ -20,14 +20,12 @@ public class LoginController extends BaseController {
 	 * typically under the WEB-INF folder.
 	 * 
 	 * @param model the model for the application if there is one
-	 * @param request the request
-	 * @param response the response
 	 * @return the login page view
 	 */
-	@RequestMapping(value = "/admin/login.html", method = { RequestMethod.GET, RequestMethod.POST })
-	public String get(Model model) {
+	@RequestMapping(value = "/login.html", method = { RequestMethod.GET, RequestMethod.POST })
+	public String get(final Model model) {
 		logger.debug("Login page : {}", model);
-		return "/admin/login";
+		return "/login";
 	}
 
 }

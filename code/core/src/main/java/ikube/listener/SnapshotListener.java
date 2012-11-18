@@ -185,7 +185,7 @@ public class SnapshotListener implements IListener {
 					for (File serverIndexDirectory : serverIndexDirectories) {
 						try {
 							directory = FSDirectory.open(serverIndexDirectory);
-							if (!IndexWriter.isLocked(directory)) {
+							if (!IndexWriter.isLocked(directory) && IndexReader.indexExists(directory)) {
 								indexReader = IndexReader.open(directory);
 								numDocs += indexReader.numDocs();
 							}

@@ -50,11 +50,14 @@
 			pattern="/documentation/**" 
 			access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		<intercept-url 
-			pattern="/admin/login**" 
+			pattern="/login**" 
 			access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		<intercept-url
 			pattern="/service/**" 
 			access="ROLE_USER,ROLE_ADMIN" />
+		<intercept-url 
+			pattern="/search**" 
+			access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		<!-- All resources are restricted to authentication except for the exclusions. -->
 		<intercept-url 
 			pattern="/**" 
@@ -62,14 +65,14 @@
 		<!-- The login page, this goes to the login controller then to the login view/page(login.jsp). -->
 		<form-login
 			always-use-default-target="false"
-			default-target-url="/" 
-			login-page="/admin/login.html" 
-			authentication-failure-url="/admin/login.html" 
+			default-target-url="/"
+			login-page="/login.html" 
+			authentication-failure-url="/login.html" 
 			login-processing-url="/login" />
 		<!-- The logout page that will be displayed. -->
 		<logout 
 			invalidate-session="true"
-			logout-success-url="/admin/login.html"
+			logout-success-url="/login.html"
 			logout-url="/logout" />
 	</http>
 

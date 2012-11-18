@@ -1,9 +1,10 @@
 package ikube.web.admin;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import ikube.toolkit.Logging;
-import ikube.web.MockFactory.ApplicationContextManagerMock;
+import ikube.web.toolkit.MockFactory.ApplicationContextManagerMock;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -16,9 +17,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class BaseControllerTest {
-	
+
 	private Logger logger = Logger.getLogger(BaseControllerTest.class);
-	
+
 	static {
 		Logging.configure();
 	}
@@ -26,12 +27,12 @@ public class BaseControllerTest {
 	@Mocked(inverse = true, methods = { "getViewUri" })
 	private BaseController baseController;
 	private HttpServletRequest request = mock(HttpServletRequest.class);
-	
+
 	@Before
 	public void before() {
 		Mockit.setUpMocks(ApplicationContextManagerMock.class);
 	}
-	
+
 	@After
 	public void after() {
 		Mockit.tearDownMocks();

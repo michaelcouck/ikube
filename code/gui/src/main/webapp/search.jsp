@@ -11,14 +11,14 @@
 	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
 	
 	<meta name="Description" content="Ikube Enterprise Search." />
-	<meta name="Keywords" content="Michael Couck, Ikube, Enterprise Search, Web Site Search, Database Search, High Volume" />
+	<meta name="Keywords" content="Ikube, Enterprise Search, Web Site Search, Database Search, High Volume" />
 
 	<link href="<c:url value="/style/style-white.css"/>" rel="stylesheet" type="text/css" media="screen" />
 	<link rel="stylesheet" href="http://code.jquery.com/ui/1.9.1/themes/base/jquery-ui.css" />
     
 	<script src="<c:url value="/js/ikube.js"/>" type="text/javascript"></script>
-    <script src="http://code.jquery.com/jquery-1.8.2.js"></script>
-    <script src="http://code.jquery.com/ui/1.9.1/jquery-ui.js"></script>
+    <script src="http://code.jquery.com/jquery-1.8.2.js" type="text/javascript"></script>
+    <script src="http://code.jquery.com/ui/1.9.1/jquery-ui.js" type="text/javascript"></script>
     <script src="http://www.google-analytics.com/ga.js" type="text/javascript"></script>
 	<script src="http://maps.google.com/maps/api/js?sensor=false" type="text/javascript"></script>
 	
@@ -87,7 +87,7 @@ $(document).ready(function() {
 </table>
 <br><br>
 
-<div id="statistics" ><!-- Filled by jQuery with the results totals and duration --></div>
+<div id="statistics" ><!-- Filled by jQuery with the results totals and duration --></div><br>
 
 <table id="results">
 	<tbody>

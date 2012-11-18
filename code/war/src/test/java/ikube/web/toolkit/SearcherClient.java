@@ -1,4 +1,4 @@
-package ikube.web.integration.service;
+package ikube.web.toolkit;
 
 import java.net.URL;
 import java.util.ArrayList;

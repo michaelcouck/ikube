@@ -1,4 +1,4 @@
-package ikube.web;
+package ikube.web.toolkit;
 
 import static org.mockito.Mockito.mock;
 import ikube.toolkit.ApplicationContextManager;

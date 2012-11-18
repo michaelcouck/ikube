@@ -37,8 +37,6 @@
 	
 	<!-- External file system resources. -->
 	<import resource="file:ikube/spring*.xml" />
-	<!-- <import resource="file:ikube/spring-*.xml" /> -->
-	<!-- <import resource="file:ikube/**/spring-*.xml" /> -->
 
 	<mvc:annotation-driven />
 	<context:annotation-config />
@@ -54,24 +52,7 @@
 		id="tilesConfigurer" 
 		class="org.springframework.web.servlet.view.tiles2.TilesConfigurer" 
 		property:definitions="/WEB-INF/tiles-defs/templates.xml" />
-
-	<!-- This is the first handler that will be invoked by the dispatcher servlet. -->
-	<bean 
-		id="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping" 
-		class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping"
-		property:order="1">
-		<property name="mappings">
-			<props>
-				<prop key="/results.html">ikube.web.admin.SearchController</prop>
-				<prop key="/admin/server.html">ikube.web.admin.ServerController</prop>
-				<prop key="/admin/servers.html">ikube.web.admin.ServersController</prop>
-				<prop key="/admin/logging.html">ikube.web.admin.LoggingController</prop>
-				<prop key="/admin/index.html">ikube.web.admin.IndexController</prop>
-				<prop key="/admin/search.html">ikube.web.admin.SearchIndexController</prop>
-			</props>
-		</property>
-	</bean>
-
+	
 	<!-- 
 		This is the second handler that will be called after the controller and will finally 
 		resolve the view, i.e. it will wire the templates together and forward to the correct page. 
@@ -85,17 +66,11 @@
 		property:viewClass="org.springbyexample.web.servlet.view.tiles2.DynamicTilesView" />
 
 	<!-- The controllers for the various pages that do the access logic if necessary. -->
-	<bean name="ikube.web.admin.SearchController" class="ikube.web.admin.SearchController" />
-	<bean name="ikube.web.admin.ServerController" class="ikube.web.admin.ServerController" />
-	<bean name="ikube.web.admin.ServersController" class="ikube.web.admin.ServersController" />
-	<bean name="ikube.web.admin.LoggingController" class="ikube.web.admin.LoggingController" />
-	<bean name="ikube.web.admin.IndexController" class="ikube.web.admin.IndexController" />
-	<bean name="ikube.web.admin.SearchIndexController" class="ikube.web.admin.SearchIndexController" />
+	<!-- <bean name="ikube.web.angular.AppController" class="ikube.web.angular.AppController" /> -->
+	<!-- <bean name="ikube.web.angular.LoginController" class="ikube.web.angular.LoginController" /> -->
 
 	<!-- These are static resources basically. -->
 	<mvc:view-controller path="/index.html" />
-	<mvc:view-controller path="/admin/admin.html" />
-	<mvc:view-controller path="/admin/indexContext.html" />
 	<mvc:view-controller path="/documentation/index.html" />
 	<mvc:view-controller path="/documentation/quickstart.html" />
 	

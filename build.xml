@@ -90,10 +90,6 @@
 			<param name="file-to-copy" value="${target-gui-directory}/${ikube-war}" />
 			<param name="server-directory" value="${userid}:${password}@192.168.1.7:/usr/share/apache-tomcat-7.0.27/webapps" />
 		</antcall>
-		<antcall target="copy-to-server">
-			<param name="file-to-copy" value="${target-gui-directory}/${ikube-war}" />
-			<param name="server-directory" value="${userid}:${password}@192.168.1.8:/usr/share/apache-tomcat-7.0.27/webapps" />
-		</antcall>
 	</target>
 	
 	<target name="copy-to-server">
@@ -110,9 +106,6 @@
 		<antcall target="clean-server">
 		    <param name="host" value="192.168.1.7" />
 		</antcall>
-		<antcall target="clean-server">
-		    <param name="host" value="192.168.1.8" />
-		</antcall>
 	</target>
 	
 	<target name="chmod-all-servers">
@@ -126,10 +119,6 @@
 		</antcall>
 		<antcall target="execute-remote-command">
 			<param name="host" value="192.168.1.7" />
-			<param name="command" value="chmod 777 -R /usr/share/apache-tomcat-7.0.27;" />
-		</antcall>
-		<antcall target="execute-remote-command">
-			<param name="host" value="192.168.1.8" />
 			<param name="command" value="chmod 777 -R /usr/share/apache-tomcat-7.0.27;" />
 		</antcall>
 	</target>
@@ -208,11 +197,6 @@
 		</antcall>
 		<antcall target="copy-directory-to-server">
 		    <param name="host" value="192.168.1.7" />
-			<param name="directory-to-copy" value="${output-configuration-directory}" />
-			<param name="server-directory" value="/usr/share/apache-tomcat-7.0.27/bin/ikube" />
-		</antcall>
-		<antcall target="copy-directory-to-server">
-		    <param name="host" value="192.168.1.8" />
 			<param name="directory-to-copy" value="${output-configuration-directory}" />
 			<param name="server-directory" value="/usr/share/apache-tomcat-7.0.27/bin/ikube" />
 		</antcall>

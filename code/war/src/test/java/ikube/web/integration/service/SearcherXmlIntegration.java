@@ -1,9 +1,10 @@
-package ikube.service;
+package ikube.web.integration.service;
 
 import static org.junit.Assert.assertTrue;
-import ikube.Base;
 import ikube.IConstants;
 import ikube.toolkit.FileUtilities;
+import ikube.web.Base;
+import ikube.web.service.SearcherXml;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,7 +16,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.xml.sax.SAXException;
 
-public class SearcherIntegration extends Base {
+public class SearcherXmlIntegration extends Base {
 
 	@Test
 	public void searchSingle() throws Exception {
