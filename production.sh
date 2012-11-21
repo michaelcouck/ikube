@@ -1,1 +1,1 @@
-mvn clean install -DskipTests=true -DskipITs=true -Dprofile=integration
+mvn clean install -DskipTests=true -DskipITs=true -Dprofile=production

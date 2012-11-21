@@ -19,4 +19,5 @@ public class ReaderUtilMock {
 		Collection<String> indexedFields = Arrays.asList(IConstants.ID, IConstants.FRAGMENT, IConstants.CONTENTS, IConstants.NAME);
 		return indexedFields;
 	}
+
 }

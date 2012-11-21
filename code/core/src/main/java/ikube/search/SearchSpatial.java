@@ -27,6 +27,7 @@ import org.apache.lucene.spatial.tier.projections.CartesianTierPlotter;
  * @since 06.03.11
  * @version 01.00
  */
+@SuppressWarnings("deprecation")
 public class SearchSpatial extends SearchMulti {
 
 	/** The distance from the origin that we will accept in the results. */

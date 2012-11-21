@@ -3,6 +3,7 @@ package ikube.integration.service;
 import static org.junit.Assert.assertTrue;
 import ikube.ATest;
 import ikube.IConstants;
+import ikube.mock.ReaderUtilMock;
 import ikube.search.spelling.SpellingChecker;
 import ikube.service.SearcherService;
 
@@ -48,8 +49,9 @@ public class SearcherServiceTest extends ATest {
 	@Before
 	public void before() {
 		searcherService = new SearcherService();
-
+		
 		Mockit.setUpMocks();
+		Mockit.setUpMocks(ReaderUtilMock.class);
 		Deencapsulation.setField(searcherService, monitorService);
 		indexName = indexContext.getIndexName();
 	}

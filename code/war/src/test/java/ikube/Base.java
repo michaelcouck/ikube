@@ -1,9 +1,9 @@
-package ikube.web;
+package ikube;
 
-import ikube.IConstants;
 import ikube.index.IndexManager;
 import ikube.model.IndexContext;
 import ikube.search.spelling.SpellingChecker;
+import ikube.toolkit.Logging;
 import ikube.toolkit.UriUtilities;
 
 import java.io.File;
@@ -19,6 +19,8 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
+import org.apache.lucene.document.Fieldable;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 
 public abstract class Base {
@@ -31,8 +33,9 @@ public abstract class Base {
 	protected static int SERVER_PORT = 9080;
 	protected static String REST_USER_NAME = "user";
 	protected static String REST_PASSWORD = "user";
-	
+
 	static {
+		Logging.configure();
 		SpellingChecker checkerExt = new SpellingChecker();
 		Deencapsulation.setField(checkerExt, "languageWordListsDirectory", "languages");
 		Deencapsulation.setField(checkerExt, "spellingIndexDirectoryPath", "./spellingIndex");
@@ -93,6 +96,26 @@ public abstract class Base {
 		// File serverIndexDirectory = new File(latestIndexDirectory, ip);
 		// logger.info("Created index in : " + serverIndexDirectory.getAbsolutePath());
 		return latestIndexDirectory;
+	}
+
+	/**
+	 * This method will just print the data in the index reader.L
+	 * 
+	 * @param indexReader the reader to print the documents for
+	 * @throws Exception
+	 */
+	protected void printIndex(final IndexReader indexReader) throws Exception {
+		for (int i = 0; i < indexReader.numDocs(); i++) {
+			Document document = indexReader.document(i);
+			logger.info("Document : " + i);
+			List<Fieldable> fields = document.getFields();
+			for (Fieldable fieldable : fields) {
+				String fieldName = fieldable.name();
+				String fieldValue = fieldable.stringValue();
+				int fieldLength = fieldValue != null ? fieldValue.length() : 0;
+				logger.info("        : " + fieldName + ", " + fieldLength);
+			}
+		}
 	}
 
 }

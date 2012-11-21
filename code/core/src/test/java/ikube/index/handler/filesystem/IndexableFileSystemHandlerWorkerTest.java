@@ -96,9 +96,19 @@ public class IndexableFileSystemHandlerWorkerTest extends ATest {
 
 	@Test
 	public void getPattern() {
-		String excluded = "excluded";
-		Pattern pattern = indexableFileSystemHandlerWorker.getPattern(excluded);
-		boolean isExcluded = pattern.matcher(excluded).matches();
+		String excluded = "password";
+		Pattern pattern = indexableFileSystemHandlerWorker.getPattern(indexableFilesystem.getExcludedPattern());
+		boolean isExcluded = indexableFileSystemHandlerWorker.isExcluded(new File(excluded), pattern);
+		assertTrue("This pattern is excluded : ", isExcluded);
+		
+		excluded = "lib";
+		pattern = indexableFileSystemHandlerWorker.getPattern(indexableFilesystem.getExcludedPattern());
+		isExcluded = indexableFileSystemHandlerWorker.isExcluded(new File(excluded), pattern);
+		assertTrue("This pattern is excluded : ", isExcluded);
+		
+		excluded = "/usr/share/eclipse/workspace/ikube/code/core/./target/test-classes/data/files/zip.zip/lib";
+		pattern = indexableFileSystemHandlerWorker.getPattern(indexableFilesystem.getExcludedPattern());
+		isExcluded = indexableFileSystemHandlerWorker.isExcluded(new File(excluded), pattern);
 		assertTrue("This pattern is excluded : ", isExcluded);
 	}
 

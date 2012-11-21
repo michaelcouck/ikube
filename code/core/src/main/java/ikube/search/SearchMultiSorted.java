@@ -21,6 +21,7 @@ import org.apache.lucene.search.TopDocs;
  * @since 02.09.08
  * @version 01.00
  */
+@SuppressWarnings("deprecation")
 public class SearchMultiSorted extends SearchMulti {
 
 	public SearchMultiSorted(final Searcher searcher) {

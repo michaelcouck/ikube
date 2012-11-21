@@ -3,9 +3,12 @@ package ikube.search.spelling;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import ikube.ATest;
+import ikube.mock.SpellingCheckerMock;
 import ikube.toolkit.PerformanceTester;
 import mockit.Deencapsulation;
+import mockit.Mockit;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -16,7 +19,7 @@ import org.junit.Test;
  */
 public class SpellingCheckerTest extends ATest {
 
-	private SpellingChecker checkerExt;
+	private SpellingChecker spellingChecker;
 
 	public SpellingCheckerTest() {
 		super(SpellingCheckerTest.class);
@@ -24,22 +27,29 @@ public class SpellingCheckerTest extends ATest {
 
 	@Before
 	public void before() throws Exception {
-		checkerExt = new SpellingChecker();
-		Deencapsulation.setField(checkerExt, "languageWordListsDirectory", "languages");
-		Deencapsulation.setField(checkerExt, "spellingIndexDirectoryPath", "./spellingIndex");
-		checkerExt.initialize();
+		Mockit.tearDownMocks(SpellingChecker.class);
+
+		spellingChecker = new SpellingChecker();
+		Deencapsulation.setField(spellingChecker, "languageWordListsDirectory", "languages");
+		Deencapsulation.setField(spellingChecker, "spellingIndexDirectoryPath", "./spellingIndex");
+		spellingChecker.initialize();
+	}
+
+	@After
+	public void after() {
+		Mockit.setUpMock(SpellingCheckerMock.class);
 	}
 
 	@Test
-	public void checkWord() {
+	public void checkWords() {
 		String wrong = "wrongk";
 		String correct = "wrongs";
-		String corrected = checkerExt.checkWords(wrong);
+		String corrected = spellingChecker.checkWords(wrong);
 		logger.info("Corrected words : " + corrected);
 		assertEquals(correct, corrected);
 
 		String phraseWrong = wrong + " AND " + wrong;
-		corrected = checkerExt.checkWords(phraseWrong);
+		corrected = spellingChecker.checkWords(phraseWrong);
 		logger.info("Corrected words : " + corrected);
 		assertEquals(correct + " AND " + correct, corrected);
 	}
@@ -49,14 +59,14 @@ public class SpellingCheckerTest extends ATest {
 		double iterationsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
 			@Override
 			public void execute() throws Throwable {
-				checkerExt.checkWords("michael");
+				spellingChecker.checkWords("michael");
 			}
 		}, "Spelling checking performance : ", 1000, Boolean.FALSE);
 		assertTrue(iterationsPerSecond > 100);
 		iterationsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
 			@Override
 			public void execute() throws Throwable {
-				checkerExt.checkWords("couck");
+				spellingChecker.checkWords("couck");
 			}
 		}, "Spelling checking performance : ", 1000, Boolean.FALSE);
 		assertTrue(iterationsPerSecond > 100);

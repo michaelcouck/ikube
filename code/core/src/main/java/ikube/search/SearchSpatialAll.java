@@ -3,20 +3,12 @@ package ikube.search;
 import ikube.IConstants;
 
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Set;
-import java.util.TreeSet;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.queryParser.MultiFieldQueryParser;
 import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.MultiSearcher;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.Searchable;
 import org.apache.lucene.search.Searcher;
-import org.apache.lucene.util.ReaderUtil;
 
 /**
  * @see Search
@@ -40,14 +32,7 @@ public class SearchSpatialAll extends SearchSpatial {
 	 */
 	@Override
 	protected Query getQuery() throws ParseException {
-		Searchable[] searchables = ((MultiSearcher) searcher).getSearchables();
-		Set<String> searchFieldNames = new TreeSet<String>();
-		for (Searchable searchable : searchables) {
-			IndexReader indexReader = ((IndexSearcher) searchable).getIndexReader();
-			Collection<String> fieldNames = ReaderUtil.getIndexedFields(indexReader);
-			searchFieldNames.addAll(fieldNames);
-		}
-		searchFields = searchFieldNames.toArray(new String[searchFieldNames.size()]);
+		searchFields = getFields(searcher);
 		String[] newSearchStrings = new String[searchFields.length];
 		int minLength = Math.min(searchStrings.length, newSearchStrings.length);
 		System.arraycopy(searchStrings, 0, newSearchStrings, 0, minLength);

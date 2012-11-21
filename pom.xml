@@ -59,7 +59,7 @@
 		<!-- <module>code/web</module> -->
 		<!-- <module>code/gui</module> -->
 		<!-- <module>code/libs</module> -->
-		<module>code/tool</module>
+		<!-- <module>code/tool</module> -->
 	</modules>
 
 	<build>

@@ -18,6 +18,7 @@ import org.apache.lucene.document.Field.TermVector;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriter.MaxFieldLength;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.MultiSearcher;
 import org.apache.lucene.search.Searcher;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
@@ -63,7 +64,7 @@ public class SearchAdvancedTest extends ATest {
 		indexWriter.optimize();
 		indexWriter.close();
 
-		searcher = new IndexSearcher(directory);
+		searcher = new MultiSearcher(new IndexSearcher(directory));
 
 		Mockit.setUpMock(SpellingCheckerMock.class);
 	}
@@ -74,7 +75,7 @@ public class SearchAdvancedTest extends ATest {
 	}
 
 	@Test
-	public void searchAdvancedAll() throws Exception {
+	public void searchAdvanced() throws Exception {
 		SearchAdvanced searchAdvanced = new SearchAdvanced(searcher);
 
 		searchAdvanced.setFirstResult(0);
@@ -87,6 +88,35 @@ public class SearchAdvancedTest extends ATest {
 
 		searchAdvanced.setSearchString("cape town university", "cape town", "one cape town university", "caucasian");
 		results = searchAdvanced.execute();
+		assertEquals("There should be two results and a statistics : ", 3, results.size());
+
+		SearchSingle searchSingle = new SearchSingle(searcher);
+		searchSingle.setFirstResult(0);
+		searchSingle.setFragment(true);
+		searchSingle.setMaxResults(10);
+		searchSingle.setSearchField(IConstants.CONTENTS);
+		searchSingle.setSearchString("cape town");
+		searchSingle.setSortField(IConstants.CONTENTS);
+
+		searchSingle
+				.setSearchString("(cape AND town AND university) AND (\"cape town\") AND (one OR cape OR town OR university) NOT (caucasian)");
+		results = searchSingle.execute();
+		assertEquals("There should be two results and a statistics : ", 3, results.size());
+	}
+	
+	@Test
+	public void searchAdvancedAll() throws Exception {
+		SearchAdvancedAll searchAdvancedAll = new SearchAdvancedAll(searcher);
+
+		searchAdvancedAll.setFirstResult(0);
+		searchAdvancedAll.setFragment(Boolean.TRUE);
+		searchAdvancedAll.setMaxResults(maxResults);
+		searchAdvancedAll.setSearchString("all of these", "exact phrase", "any of these", "none of these");
+		ArrayList<HashMap<String, String>> results = searchAdvancedAll.execute();
+		assertEquals("There should be just a statistics map : ", 1, results.size());
+
+		searchAdvancedAll.setSearchString("cape town university", "cape town", "one cape town university", "caucasian");
+		results = searchAdvancedAll.execute();
 		assertEquals("There should be two results and a statistics : ", 3, results.size());
 
 		SearchSingle searchSingle = new SearchSingle(searcher);

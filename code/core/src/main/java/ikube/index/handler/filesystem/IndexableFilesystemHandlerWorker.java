@@ -65,6 +65,7 @@ class IndexableFilesystemHandlerWorker implements Runnable {
 		this.indexContext = indexContext;
 		this.indexableFileSystem = indexableFileSystem;
 		this.directories = directories;
+		pattern = getPattern(indexableFileSystem.getExcludedPattern());
 	}
 
 	/**
@@ -76,7 +77,9 @@ class IndexableFilesystemHandlerWorker implements Runnable {
 		do {
 			for (File file : files) {
 				try {
-					if (handleZip(indexableFileSystem, file)) {
+					boolean handledZip = handleZip(indexableFileSystem, file);
+					if (handledZip) {
+						// If this file was a zip and was already handled then just continue
 						continue;
 					}
 					this.handleFile(indexContext, indexableFileSystem, file);
@@ -127,7 +130,8 @@ class IndexableFilesystemHandlerWorker implements Runnable {
 		ByteArrayInputStream byteInputStream = null;
 		ByteArrayOutputStream byteOutputStream = null;
 		try {
-			int length = Math.min((int) indexableFileSystem.getMaxReadLength(), (int) file.length());
+			int length = file.length() > 0 && file.length() < indexableFileSystem.getMaxReadLength() ? (int) file.length()
+					: (int) indexableFileSystem.getMaxReadLength();
 			byte[] byteBuffer = new byte[length];
 			int read = inputStream.read(byteBuffer, 0, byteBuffer.length);
 
@@ -165,6 +169,15 @@ class IndexableFilesystemHandlerWorker implements Runnable {
 		}
 	}
 
+	/**
+	 * This method will handle the zip file, it will look into the zip and read the contents, then index them. IT will then return 
+	 * whether the file was a zip file.
+	 * 
+	 * @param indexableFileSystem the indexable for the file system 
+	 * @param file the file to handle if it is a zip
+	 * @return whether the file was a zip and was handled
+	 * @throws Exception
+	 */
 	protected boolean handleZip(IndexableFileSystem indexableFileSystem, File file) throws Exception {
 		// We have to unpack the zip files
 		if (!indexableFileSystem.isUnpackZips()) {
@@ -180,6 +193,9 @@ class IndexableFilesystemHandlerWorker implements Runnable {
 			if (files != null) {
 				for (File innerFile : files) {
 					try {
+						if (isExcluded(innerFile, pattern)) {
+							continue;
+						}
 						handleFile(innerFile);
 						handleZip(indexableFileSystem, innerFile);
 					} catch (Exception e) {
@@ -188,7 +204,7 @@ class IndexableFilesystemHandlerWorker implements Runnable {
 				}
 			}
 		}
-		return Boolean.TRUE;
+		return isZipAndFile;
 	}
 
 	protected void handleFile(final File file) throws Exception {
@@ -209,7 +225,6 @@ class IndexableFilesystemHandlerWorker implements Runnable {
 	}
 
 	protected List<File> getBatch(IndexableFileSystem indexableFileSystem, Stack<File> directories) {
-		Pattern pattern = getPattern(indexableFileSystem.getExcludedPattern());
 		List<File> fileBatch = new ArrayList<File>();
 		if (!directories.isEmpty()) {
 			File directory = directories.pop();
@@ -260,6 +275,18 @@ class IndexableFilesystemHandlerWorker implements Runnable {
 	 */
 	protected synchronized boolean isExcluded(final File file, final Pattern pattern) {
 		// If it does not exist, we can't read it or directory excluded with the pattern
-		return file == null || !file.exists() || !file.canRead() || pattern.matcher(file.getName()).matches();
+		if (file == null) {
+			return Boolean.TRUE;
+		}
+		if (!file.exists() || !file.canRead()) {
+			return Boolean.TRUE;
+		}
+		if (file.getName() == null || file.getAbsolutePath() == null) {
+			return Boolean.TRUE;
+		}
+		boolean isNameExcluded = pattern.matcher(file.getName()).matches();
+		boolean isPathExcluded = pattern.matcher(file.getAbsolutePath()).matches();
+		// logger.info("Excluded : " + isExcluded + ", " + file.getName() + ", " + file.getAbsolutePath() + ", " + file.isDirectory());
+		return isNameExcluded || isPathExcluded;
 	}
 }

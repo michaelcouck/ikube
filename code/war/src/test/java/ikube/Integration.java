@@ -1,6 +1,5 @@
-package ikube.web;
+package ikube;
 
-import ikube.IConstants;
 import ikube.database.IDataBase;
 import ikube.index.parse.mime.MimeMapper;
 import ikube.index.parse.mime.MimeTypes;
@@ -11,7 +10,6 @@ import ikube.security.WebServiceAuthentication;
 import ikube.service.IMonitorService;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
-import ikube.toolkit.Logging;
 import ikube.toolkit.ObjectToolkit;
 import ikube.toolkit.ThreadUtilities;
 
@@ -47,8 +45,6 @@ public abstract class Integration extends Base {
 			return;
 		}
 		INITIALIZED = Boolean.TRUE;
-
-		Logging.configure();
 
 		new MimeTypes(IConstants.MIME_TYPES);
 		new MimeMapper(IConstants.MIME_MAPPING);

@@ -134,9 +134,9 @@ public class SpellingChecker {
 	 *         spelling errors
 	 */
 	public final String checkWords(String searchString) {
-		StringTokenizer tokenizer = new StringTokenizer(searchString);
+		boolean hasCorrections = Boolean.FALSE;
+		StringTokenizer tokenizer = new StringTokenizer(searchString, ",;|.& ");
 		StringBuilder correctWords = new StringBuilder();
-		boolean hasCorrections = false;
 		while (tokenizer.hasMoreTokens()) {
 			String token = tokenizer.nextToken();
 			// Skip the Lucene specific conjunctions like 'and' and 'or'
@@ -147,7 +147,8 @@ public class SpellingChecker {
 			}
 			String[] strings;
 			try {
-				if (spellChecker.exist(token)) {
+				boolean exists = spellChecker.exist(token);
+				if (exists) {
 					correctWords.append(token);
 					addSpace(tokenizer, correctWords);
 					continue;

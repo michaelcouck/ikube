@@ -163,7 +163,7 @@ public interface ISearcherService {
 	 * 
 	 * Note that this is an expensive query on the index.
 	 * 
-	 * @param indexName the nameof the index to search
+	 * @param indexName the name of the index to search
 	 * @param searchStrings the strings that are used to generate the Lucene query
 	 * @param searchFields the fields in the index to search
 	 * @param fragment whether to generate a fragment of highlight in the results
@@ -179,5 +179,30 @@ public interface ISearcherService {
 			@WebParam(name = "searchStrings") final String[] searchStrings, @WebParam(name = "searchFields") final String[] searchFields,
 			@WebParam(name = "fragment") final boolean fragment, @WebParam(name = "firstResult") final int firstResult,
 			@WebParam(name = "maxResults") final int maxResults);
+
+	/**
+	 * This method will do an advanced search, refining the results with a predicate like Lucene expression. The result of this is something
+	 * like:
+	 * 
+	 * <pre>
+	 * 		[any of these words] AND [this exact expression] AND [one or more of these] NOT [none of these]
+	 * </pre>
+	 * 
+	 * Note that this is an expensive query on the index.
+	 * 
+	 * @param indexName the name of the index to search
+	 * @param searchStrings the strings that are used to generate the Lucene query
+	 * @param fragment whether to generate a fragment of highlight in the results
+	 * @param firstResult the first result in the set, used for paging the results
+	 * @param maxResults the maximum number of results to return
+	 * @return the results from the search, an {@link ArrayList} of {@link HashMap}s, that have the id, score, fragment (optional), all the
+	 *         fields and their contents if they were stored in the index, and finally the statistics map, which contains the corrected
+	 *         search strings, the duration of the search and the total number of results for the search
+	 */
+	@WebMethod
+	@WebResult(name = "result")
+	ArrayList<HashMap<String, String>> searchMultiAdvancedAll(@WebParam(name = "indexName") final String indexName,
+			@WebParam(name = "searchStrings") final String[] searchStrings, @WebParam(name = "fragment") final boolean fragment,
+			@WebParam(name = "firstResult") final int firstResult, @WebParam(name = "maxResults") final int maxResults);
 
 }

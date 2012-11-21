@@ -25,24 +25,42 @@
 	<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.2/angular.min.js" type="text/javascript"></script>
 	
 	<script type="text/javascript">
-		var module = angular.module('ikube', []);
-		function SearcherJsonController($http, $scope) {
-			var url = 'http://localhost:9080/ikube/service/search/json/multi/all?indexName=geospatial&searchStrings=hotel&fragment=true&firstResult=0&maxResults=10';
+		var url = 'http://localhost:9080/ikube/service/search/json/multi/all?indexName=geospatial&searchStrings=hotel&fragment=true&firstResult=0&maxResults=10';
+		
+		var module = angular.module('ikube', ['ngResource']);
+		module.controller('SearcherController', function($http, $scope) {
 			$http.get(url).success(function(data) {
 				$scope.data = data;
+			});
+		});
+		function SearcherJsonController($http, $scope) {
+			$http.get(url).success(function(data) {
+				// $scope.data = data;
 			});
 		}
 	</script>
 </head>
 
-<style type="text/css">
-    li{list-style:none;float:left;padding:20px;}
-    a{text-decoration:none;}
-</style>
-
-<script type="text/javascript">track();</script>
-
 <body>
+
+<div ng-app="ikube" ng-controller="SearcherController">
+	<div ng-repeat="datum in data">
+		<b>Id</b> : {{datum.id}}<br>
+		<b>Score</b> : {{datum.score}}<br> 
+		<b>Fragment</b> : {{datum.fragment}}<br>
+		<br><br>
+	</div>
+</div>
+
+<div ng-app="ikube" ng-controller="SearcherJsonController">
+	<div ng-repeat="datum in data">
+		<b>Id</b> : {{datum.id}}<br>
+		<b>Score</b> : {{datum.score}}<br> 
+		<b>Fragment</b> : {{datum.fragment}}<br>
+		<br><br>
+	</div>
+</div>
+<br><br>
 
 <table>
 	<tr>
@@ -65,14 +83,6 @@
 </table>
 <br><br>
 
-<div ng-app="ikube" ng-controller="SearcherJsonController">
-	<div ng-repeat="datum in data">
-		<b>Id</b> : {{datum.id}}<br>
-		<b>Score</b> : {{datum.score}}<br> 
-		<b>Fragment</b> : {{datum.fragment}}<br>
-		<br><br>
-	</div>
-</div>
 </body>
 
 </html>

@@ -1,9 +1,11 @@
-package ikube.web.integration.service;
+package ikube.web.service;
 
 import static org.junit.Assert.assertEquals;
+
+import javax.ws.rs.core.Response;
+
+import ikube.Base;
 import ikube.service.IMonitorService;
-import ikube.web.Base;
-import ikube.web.service.Monitor;
 import mockit.Deencapsulation;
 
 import org.junit.Before;
@@ -24,9 +26,9 @@ public class MonitorTest extends Base {
 		IMonitorService monitorService = Mockito.mock(IMonitorService.class);
 		Deencapsulation.setField(monitor, monitorService);
 		Mockito.when(monitorService.getIndexFieldNames(Mockito.anyString())).thenReturn(new String[] { "one", "two", "three" });
-		String fields = monitor.fields("indexName");
-		logger.info("Fields : " + fields);
-		assertEquals("The string should be a concatenation of the fields : ", "one;two;three", fields);
+		Response fields = monitor.fields("indexName");
+		logger.info("Fields : " + fields.getEntity());
+		assertEquals("The string should be a concatenation of the fields : ", "[\"one\",\"two\",\"three\"]", fields.getEntity());
 	}
 
 }

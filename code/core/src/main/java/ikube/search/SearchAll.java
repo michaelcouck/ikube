@@ -13,6 +13,7 @@ import org.apache.lucene.search.Searcher;
  * @since 22.08.08
  * @version 01.00
  */
+@SuppressWarnings("deprecation")
 public class SearchAll extends SearchMultiAll {
 
 	public SearchAll(final Searcher searcher) {

@@ -11,6 +11,7 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -21,14 +22,21 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Fieldable;
+import org.apache.lucene.index.FieldInfo;
+import org.apache.lucene.index.FieldInfos;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.MultiSearcher;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.Searchable;
 import org.apache.lucene.search.Searcher;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.highlight.Highlighter;
 import org.apache.lucene.search.highlight.QueryScorer;
 import org.apache.lucene.search.highlight.Scorer;
+import org.apache.lucene.util.ReaderUtil;
 
 /**
  * This action does the actual search on the index. The searcher that is current in the Instance is passed to this action. The search is
@@ -69,13 +77,13 @@ public abstract class Search {
 	protected transient int firstResult;
 	/** The end position in the results to stop returning results from. */
 	protected transient int maxResults;
-	
+
 	protected transient Analyzer analyzer;
 
 	Search(final Searcher searcher) {
 		this(searcher, IConstants.ANALYZER);
 	}
-	
+
 	Search(final Searcher searcher, final Analyzer analyzer) {
 		this.logger = Logger.getLogger(this.getClass());
 		this.searcher = searcher;
@@ -360,25 +368,44 @@ public abstract class Search {
 		boolean corrections = Boolean.FALSE;
 		Set<String> correctedSearchStrings = new TreeSet<String>();
 		SpellingChecker spellingChecker = SpellingChecker.getSpellingChecker();
-		if (spellingChecker != null) {
-			for (int i = 0; i < searchStrings.length; i++) {
-				String searchString = StringUtils.strip(searchStrings[i], IConstants.STRIP_CHARACTERS);
-				if (searchString == null) {
-					continue;
-				}
-				String correctedSearchString = spellingChecker.checkWords(searchString.toLowerCase());
-				if (correctedSearchString != null) {
-					corrections = Boolean.TRUE;
-					correctedSearchStrings.add(correctedSearchString);
-				} else {
-					correctedSearchStrings.add(searchString);
-				}
+		for (int i = 0; i < searchStrings.length; i++) {
+			String searchString = StringUtils.strip(searchStrings[i], IConstants.STRIP_CHARACTERS);
+			if (searchString == null) {
+				continue;
 			}
-			if (corrections) {
-				return correctedSearchStrings.toArray(new String[correctedSearchStrings.size()]);
+			String correctedSearchString = spellingChecker.checkWords(searchString.toLowerCase());
+			if (correctedSearchString != null) {
+				corrections = Boolean.TRUE;
+				correctedSearchStrings.add(correctedSearchString);
+			} else {
+				correctedSearchStrings.add(searchString);
 			}
 		}
+		if (corrections) {
+			return correctedSearchStrings.toArray(new String[correctedSearchStrings.size()]);
+		}
 		return new String[0];
+	}
+
+	/**
+	 *	This method will get all the fields in the index from the readers in the searcher and return them as a string array.
+	 * 
+	 * @param searcher the searcher to get all the fields for
+	 * @return all the fields in the searcher that are searchable
+	 */
+	protected String[] getFields(final Searcher searcher) {
+		Searchable[] searchables = ((MultiSearcher) searcher).getSearchables();
+		Set<String> searchFieldNames = new TreeSet<String>();
+		for (Searchable searchable : searchables) {
+			IndexReader indexReader = ((IndexSearcher) searchable).getIndexReader();
+			FieldInfos fieldInfos = ReaderUtil.getMergedFieldInfos(indexReader);
+			Iterator<FieldInfo> iterator = fieldInfos.iterator();
+			while (iterator.hasNext()) {
+				FieldInfo fieldInfo = iterator.next();
+				searchFieldNames.add(fieldInfo.name);
+			}
+		}
+		return searchFieldNames.toArray(new String[searchFieldNames.size()]);
 	}
 
 }

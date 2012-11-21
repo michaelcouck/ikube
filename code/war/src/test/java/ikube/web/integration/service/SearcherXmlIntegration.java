@@ -1,9 +1,9 @@
 package ikube.web.integration.service;
 
 import static org.junit.Assert.assertTrue;
+import ikube.Base;
 import ikube.IConstants;
 import ikube.toolkit.FileUtilities;
-import ikube.web.Base;
 import ikube.web.service.SearcherXml;
 
 import java.io.File;
@@ -17,11 +17,13 @@ import org.junit.Test;
 import org.xml.sax.SAXException;
 
 public class SearcherXmlIntegration extends Base {
+	
+	public static final String SERVICE = "/service";
 
 	@Test
 	public void searchSingle() throws Exception {
 		// String, String, String, boolean, int, int
-		String path = IConstants.SEP + IConstants.IKUBE + SearcherXml.SERVICE + SearcherXml.SEARCH + SearcherXml.SINGLE;
+		String path = IConstants.SEP + IConstants.IKUBE + SERVICE + SearcherXml.SEARCH + SearcherXml.SINGLE;
 		String url = new URL("http", LOCALHOST, SERVER_PORT, path).toString();
 		logger.info("Looking for url : " + url);
 
@@ -52,7 +54,7 @@ public class SearcherXmlIntegration extends Base {
 	@Test
 	public void searchMulti() throws Exception {
 		// String, String, String, boolean, int, int
-		String path = IConstants.SEP + IConstants.IKUBE + SearcherXml.SERVICE + SearcherXml.SEARCH + SearcherXml.MULTI;
+		String path = IConstants.SEP + IConstants.IKUBE + SERVICE + SearcherXml.SEARCH + SearcherXml.MULTI;
 		String url = new URL("http", LOCALHOST, SERVER_PORT, path).toString();
 		logger.info("Looking for url : " + url);
 
@@ -83,7 +85,7 @@ public class SearcherXmlIntegration extends Base {
 	@Test
 	public void searchMultiAll() throws Exception {
 		// String, String, boolean, int, int
-		String path = IConstants.SEP + IConstants.IKUBE + SearcherXml.SERVICE + SearcherXml.SEARCH + SearcherXml.MULTI_ALL;
+		String path = IConstants.SEP + IConstants.IKUBE + SERVICE + SearcherXml.SEARCH + SearcherXml.MULTI_ALL;
 		String url = new URL("http", LOCALHOST, SERVER_PORT, path).toString();
 		logger.info("Looking for url : " + url);
 
@@ -112,7 +114,7 @@ public class SearcherXmlIntegration extends Base {
 	@Test
 	public void searchMultiSorted() throws Exception {
 		// String, String, String, String, boolean, int, int
-		String path = IConstants.SEP + IConstants.IKUBE + SearcherXml.SERVICE + SearcherXml.SEARCH + SearcherXml.MULTI_SORTED;
+		String path = IConstants.SEP + IConstants.IKUBE + SERVICE + SearcherXml.SEARCH + SearcherXml.MULTI_SORTED;
 		String url = new URL("http", LOCALHOST, SERVER_PORT, path).toString();
 		logger.info("Looking for url : " + url);
 
@@ -145,7 +147,7 @@ public class SearcherXmlIntegration extends Base {
 	@Test
 	public void searchMultiSpacial() throws Exception {
 		// String, String, String, boolean, int, int, int, String, String
-		String path = IConstants.SEP + IConstants.IKUBE + SearcherXml.SERVICE + SearcherXml.SEARCH + SearcherXml.MULTI_SPATIAL;
+		String path = IConstants.SEP + IConstants.IKUBE + SERVICE + SearcherXml.SEARCH + SearcherXml.MULTI_SPATIAL;
 		String url = new URL("http", LOCALHOST, SERVER_PORT, path).toString();
 		logger.info("Looking for url : " + url);
 
@@ -182,7 +184,7 @@ public class SearcherXmlIntegration extends Base {
 	@Test
 	public void searchMultiSpacialAll() throws Exception {
 		// String, String, boolean, int, int, int, String, String
-		String path = IConstants.SEP + IConstants.IKUBE + SearcherXml.SERVICE + SearcherXml.SEARCH + SearcherXml.MULTI_SPATIAL_ALL;
+		String path = IConstants.SEP + IConstants.IKUBE + SERVICE + SearcherXml.SEARCH + SearcherXml.MULTI_SPATIAL_ALL;
 		String url = new URL("http", LOCALHOST, SERVER_PORT, path).toString();
 		logger.info("Looking for url : " + url);
 
@@ -217,7 +219,7 @@ public class SearcherXmlIntegration extends Base {
 	@Test
 	public void searchMultiAdvancedAll() throws Exception {
 		// String, String, boolean, int, int, int, String, String
-		String path = IConstants.SEP + IConstants.IKUBE + SearcherXml.SERVICE + SearcherXml.SEARCH + SearcherXml.MULTI_ADVANCED_ALL;
+		String path = IConstants.SEP + IConstants.IKUBE + SERVICE + SearcherXml.SEARCH + SearcherXml.MULTI_ADVANCED_ALL;
 		String url = new URL("http", LOCALHOST, SERVER_PORT, path).toString();
 		logger.info("Looking for url : " + url);
 
@@ -231,7 +233,8 @@ public class SearcherXmlIntegration extends Base {
 		String[] values = { //
 		IConstants.GEOSPATIAL, //
 				"cape town university", //
-				"contente", Boolean.TRUE.toString(), //
+				IConstants.NAME, // 
+				Boolean.TRUE.toString(), //
 				"0", //
 				"10" };
 		NameValuePair[] params = getNameValuePairs(names, values);
@@ -246,7 +249,7 @@ public class SearcherXmlIntegration extends Base {
 
 	@Test
 	public void adHoc() throws Exception {
-		String path = IConstants.SEP + IConstants.IKUBE + SearcherXml.SERVICE + SearcherXml.SEARCH + SearcherXml.MULTI_ALL;
+		String path = IConstants.SEP + IConstants.IKUBE + SERVICE + SearcherXml.SEARCH + SearcherXml.MULTI_ALL;
 		String url = new URL("http", LOCALHOST, SERVER_PORT, path).toString();
 		logger.info("Looking for url : " + url);
 

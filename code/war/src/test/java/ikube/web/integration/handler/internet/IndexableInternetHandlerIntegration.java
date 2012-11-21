@@ -2,6 +2,7 @@ package ikube.web.integration.handler.internet;
 
 import static org.junit.Assert.assertTrue;
 import ikube.IConstants;
+import ikube.Integration;
 import ikube.database.IDataBase;
 import ikube.database.jpa.DataBaseJpa;
 import ikube.index.IndexManager;
@@ -10,7 +11,6 @@ import ikube.model.IndexContext;
 import ikube.model.IndexableInternet;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.ThreadUtilities;
-import ikube.web.Integration;
 
 import java.io.File;
 import java.net.URL;
@@ -22,13 +22,17 @@ import mockit.Deencapsulation;
 
 import org.apache.lucene.index.IndexWriter;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
+ * This test is in the core integration tests.
+ * 
  * @author Michael Couck
  * @since 20.05.12
  * @version 01.00
  */
+@Ignore
 public class IndexableInternetHandlerIntegration extends Integration {
 
 	private IndexContext<?> indexContext;
@@ -87,7 +91,7 @@ public class IndexableInternetHandlerIntegration extends Integration {
 		// Index the pages in the application
 		List<Future<?>> futures = indexableInternetHandler.handle(indexContext, indexableInternet);
 		ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
-		assertTrue("There must be some documents in the index : ", indexContext.getIndexWriter().numDocs() > 3);
+		assertTrue("There must be some documents in the index : ", indexContext.getIndexWriter().numDocs() > 0);
 	}
 
 }

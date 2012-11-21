@@ -6,6 +6,7 @@ import ikube.ATest;
 import ikube.IConstants;
 import ikube.index.IndexManager;
 import ikube.mock.ReaderUtilMock;
+import ikube.mock.SpellingCheckerMock;
 import ikube.search.spelling.SpellingChecker;
 import ikube.toolkit.FileUtilities;
 
@@ -34,7 +35,10 @@ import org.apache.lucene.search.Searcher;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.util.ReaderUtil;
+import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -62,6 +66,16 @@ public class SearchTest extends ATest {
 			french + " " + //
 			somthingElseAlToGether + " ";
 	private static String[] strings = { russian, german, french, somthingElseAlToGether, string };
+	
+	@Before
+	public void before() {
+		Mockit.tearDownMocks(SpellingChecker.class);
+	}
+	
+	@After
+	public void after() {
+		Mockit.setUpMock(SpellingCheckerMock.class);
+	}
 
 	@BeforeClass
 	public static void beforeClass() throws Exception {
@@ -121,7 +135,7 @@ public class SearchTest extends ATest {
 			SEARCHER.close();
 		}
 		FileUtilities.deleteFile(new File(INDEX_DIRECTORY_PATH), 1);
-		Mockit.tearDownMocks();
+		Mockit.tearDownMocks(ReaderUtil.class);
 	}
 
 	private int maxResults = 10;

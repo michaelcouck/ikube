@@ -6,6 +6,7 @@ import ikube.index.spatial.Coordinate;
 import ikube.model.IndexContext;
 import ikube.model.Search;
 import ikube.search.SearchAdvanced;
+import ikube.search.SearchAdvancedAll;
 import ikube.search.SearchMulti;
 import ikube.search.SearchMultiAll;
 import ikube.search.SearchMultiSorted;
@@ -268,6 +269,35 @@ public class SearcherService implements ISearcherService {
 			}
 		} catch (Exception e) {
 			String message = Logging.getString("Exception doing search on index : ", indexName, searchStrings, searchFields, fragment,
+					firstResult, maxResults);
+			LOGGER.error(message, e);
+		}
+		return getMessageResults(indexName);
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	@WebMethod
+	@WebResult(name = "result")
+	public ArrayList<HashMap<String, String>> searchMultiAdvancedAll(@WebParam(name = "indexName") final String indexName,
+			@WebParam(name = "searchStrings") final String[] searchStrings, 
+			@WebParam(name = "fragment") final boolean fragment, @WebParam(name = "firstResult") final int firstResult,
+			@WebParam(name = "maxResults") final int maxResults) {
+		try {
+			SearchAdvancedAll searchAdvanced = getSearch(SearchAdvancedAll.class, indexName);
+			if (searchAdvanced != null) {
+				searchAdvanced.setFirstResult(firstResult);
+				searchAdvanced.setFragment(fragment);
+				searchAdvanced.setMaxResults(maxResults);
+				searchAdvanced.setSearchString(searchStrings);
+				ArrayList<HashMap<String, String>> results = searchAdvanced.execute();
+				addSearchStatistics(indexName, searchStrings, results.size(), results);
+				return results;
+			}
+		} catch (Exception e) {
+			String message = Logging.getString("Exception doing search on index : ", indexName, searchStrings, fragment,
 					firstResult, maxResults);
 			LOGGER.error(message, e);
 		}

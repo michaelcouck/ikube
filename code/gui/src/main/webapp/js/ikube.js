@@ -279,7 +279,7 @@ function setWaypoints(waypoints) {
 			if (status == google.maps.DirectionsStatus.OK) {
 				directionsDisplay.setDirections(response);
 			} else {
-				alert ('Failed to get directions from Googy, sorry : ' + status);
+				// alert ('Failed to get directions from Googy, sorry : ' + status);
 			}
 		}
 	);

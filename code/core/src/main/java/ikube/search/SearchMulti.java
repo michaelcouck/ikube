@@ -16,6 +16,7 @@ import org.apache.lucene.search.Searcher;
  * @since 02.09.08
  * @version 01.00
  */
+@SuppressWarnings("deprecation")
 public class SearchMulti extends SearchSingle {
 
 	public SearchMulti(final Searcher searcher) {
