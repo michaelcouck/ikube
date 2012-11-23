@@ -1,58 +1,45 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="tiles" uri="http://tiles.apache.org/tags-tiles" %>
-<%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%@taglib prefix="spring" uri="http://www.springframework.org/tags" %>
-<%@taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-<%@taglib prefix="security" uri="http://www.springframework.org/security/tags" %>
 
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
-<html>
-	<head>
-		<meta http-equiv="Expires" content="-1">
-		<meta http-equiv="Pragma" content="no-cache">
-		<meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
-		
-		<title><tiles:insertAttribute name="title" /></title>
-
-		<meta name="Keywords" content="Ikube, Enterprise Search, Web Site Search, Database Search, High Volume" />
-		<meta name="Description" content="Ikube Enterprise Search." />
-		
-		<link rel="stylesheet" href="<c:url value="/style/style.css"/>" />
-		
-		<script src="<c:url value="/js/ikube.js"/>" type="text/javascript"></script>
-		<script src="http://www.google-analytics.com/ga.js" type="text/javascript"></script>
-		<script src="http://maps.google.com/maps/api/js?sensor=false" type="text/javascript"></script>
-		<script src="http://code.jquery.com/jquery-1.8.2.js" type="text/javascript"></script>
-	</head>
-
-	<script type="text/javascript">
-		try {
-			var pageTracker = _gat._getTracker("UA-13044914-4");
-			pageTracker._trackPageview();
-		} catch(err) {
-			document.write('<!-- ' + err + ' -->');
-		}
-	</script>
+<!doctype html>
+<html ng-app="ikube">
+<head>
+	<meta http-equiv="Expires" content="-1">
+	<meta http-equiv="Pragma" content="no-cache">
+	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
 	
-	<body>
-		<table>
-			<tr>
-				<td width="100%">
-					<tiles:insertAttribute name="header" />
-				</td>
-			</tr>
-			<tr>
-				<td width="100%">
-					<tiles:insertAttribute name="content" />
-				</td>
-			</tr>
-			<tr>
-				<td width="100%">
-					<tiles:insertAttribute name="footer" />
-				</td>
-			</tr>
-		</table>
-	</body>
+	<title><tiles:insertAttribute name="title" /></title>
+	<link rel="shortcut icon" href="<c:url value="/images/icons/favicon.ico" />">
+	
+	<meta name="Keywords" content="Ikube, Enterprise Search, Web Site Search, Database Search, High Volume" />
+	<meta name="Description" content="Ikube Enterprise Search." />
+			
+	<link rel="stylesheet" href="<c:url value="/style/style.css" />" />
+
+	<!-- External static resources when offline -->
+    <link rel="stylesheet" href="<c:url value="/style/codemirror.css" />" type="text/css" />
+	
+	<script src="<c:url value="/js/ga.js" />" type="text/javascript"></script>
+	<script src="<c:url value="/js/jquery-1.8.2.js" />" type="text/javascript"></script>
+	
+	<script src="<c:url value="/js/angular.min.js" />" type="text/javascript"></script>
+	<script src="<c:url value="/js/angular-ui.js" />" type="text/javascript"></script>
+	<script src="<c:url value="/js/codemirror.js" />" type="text/javascript"></script>
+    <script src="<c:url value="/js/runmode.js" />" type="text/javascript"></script>
+    <script src="<c:url value="/js/jsapi.js" />" type="text/javascript"></script>
+    <script src="https://www.google.com/jsapi" type="text/javascript"></script>
+    
+    <!-- Must be after Angular -->
+    <script src="<c:url value="/js/ikube.js" />" type="text/javascript"></script>
+</head>
+
+<body onload="JavaScript:track();">
+
+<tiles:insertAttribute name="header" />
+<tiles:insertAttribute name="content" />
+<tiles:insertAttribute name="footer" />
+
+</body>
 </html>

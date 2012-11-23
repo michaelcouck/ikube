@@ -23,6 +23,13 @@ import org.apache.lucene.document.Fieldable;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 
+/**
+ * This is the base test class for the unit tests.
+ * 
+ * @author Michael Couck
+ * @since 21.11.12
+ * @version 01.00
+ */
 public abstract class Base {
 
 	protected Logger logger = Logger.getLogger(this.getClass());
@@ -54,7 +61,7 @@ public abstract class Base {
 	 * @param values the values to be assigned to the parameters
 	 * @return the array of name value pairs for the request
 	 */
-	protected static NameValuePair[] getNameValuePairs(String[] names, String[] values) {
+	protected static NameValuePair[] getNameValuePairs(final String[] names, final String[] values) {
 		List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
 		for (int i = 0; i < names.length && i < values.length; i++) {
 			NameValuePair nameValuePair = new NameValuePair(names[i], values[i]);
@@ -72,7 +79,7 @@ public abstract class Base {
 	 * @param strings the data that must be in the index
 	 * @return the latest index directory, i.e. the one that has just been created
 	 */
-	protected File createIndex(IndexContext<?> indexContext, String... strings) {
+	protected File createIndex(final IndexContext<?> indexContext, final String... strings) {
 		IndexWriter indexWriter = null;
 		String ip = null;
 		try {
@@ -93,8 +100,6 @@ public abstract class Base {
 		}
 		String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
 		File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexDirectoryPath);
-		// File serverIndexDirectory = new File(latestIndexDirectory, ip);
-		// logger.info("Created index in : " + serverIndexDirectory.getAbsolutePath());
 		return latestIndexDirectory;
 	}
 

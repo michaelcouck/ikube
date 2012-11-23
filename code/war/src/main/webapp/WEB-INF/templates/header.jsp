@@ -2,11 +2,17 @@
 <%@ taglib prefix="security" uri="http://www.springframework.org/security/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
-Header : 
-
-<security:authorize access="isAuthenticated()">
-	<spring:message code="security.logged.in.as" /> : 
-	<security:authentication property="name" /> : 
-	<security:authentication property="authorities" /> : 
+<div id="header">
+	<a href="<c:url value="/index.html" />" >ikube</a>
+	<a href="<c:url value="/index.html" />">home</a>
+	<a href="<c:url value="/index.html" />">about</a>
+	<a href="<c:url value="/index.html" />">documentation</a>
+	
+	<security:authorize access="isAuthenticated()">
+	<a title="<security:authentication property="authorities" />" href="#">
+		<spring:message code="security.logged.in.as" /> <security:authentication property="name" /> 
+	</a>
 	<a href="<spring:url value="/logout" htmlEscape="true" />" title="<spring:message code="security.logout" />"><spring:message code="security.logout" /></a>
-</security:authorize>
+	</security:authorize>
+</div>
+

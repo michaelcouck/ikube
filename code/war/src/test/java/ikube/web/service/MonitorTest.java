@@ -1,13 +1,30 @@
 package ikube.web.service;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import ikube.Base;
+import ikube.IConstants;
+import ikube.cluster.IClusterManager;
+import ikube.model.IndexContext;
+import ikube.model.Server;
+import ikube.model.Snapshot;
+import ikube.service.IMonitorService;
+
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.core.Response;
 
-import ikube.Base;
-import ikube.service.IMonitorService;
+import mockit.Cascading;
 import mockit.Deencapsulation;
+import mockit.Mock;
+import mockit.MockClass;
+import mockit.Mockit;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -15,20 +32,136 @@ import org.mockito.Mockito;
 public class MonitorTest extends Base {
 
 	private Monitor monitor;
+	private IMonitorService monitorService;
+	private IClusterManager clusterManager;
+	@Cascading
+	@SuppressWarnings("rawtypes")
+	private IndexContext indexContext;
+	@Cascading
+	private Server server;
 
 	@Before
 	public void before() {
 		monitor = new Monitor();
+
+		monitorService = Mockito.mock(IMonitorService.class);
+		clusterManager = Mockito.mock(IClusterManager.class);
+		Deencapsulation.setField(monitor, monitorService);
+		Deencapsulation.setField(monitor, clusterManager);
+
+		Mockit.setUpMocks();
+	}
+
+	@After
+	public void after() {
+		Mockit.tearDownMocks();
 	}
 
 	@Test
 	public void fields() throws Exception {
-		IMonitorService monitorService = Mockito.mock(IMonitorService.class);
-		Deencapsulation.setField(monitor, monitorService);
 		Mockito.when(monitorService.getIndexFieldNames(Mockito.anyString())).thenReturn(new String[] { "one", "two", "three" });
 		Response fields = monitor.fields("indexName");
 		logger.info("Fields : " + fields.getEntity());
 		assertEquals("The string should be a concatenation of the fields : ", "[\"one\",\"two\",\"three\"]", fields.getEntity());
+	}
+
+	@Test
+	public void indexContext() {
+		Mockito.when(monitorService.getIndexContext(Mockito.anyString())).thenReturn(indexContext);
+		Response indexContext = monitor.indexContext(IConstants.GEOSPATIAL);
+		Object entity = indexContext.getEntity();
+		logger.info("Index context : " + entity);
+		assertTrue("The max age should be in the Json string : ", entity.toString().contains("maxAge"));
+	}
+
+	@Test
+	@SuppressWarnings("rawtypes")
+	public void indexContexts() {
+		Map<String, IndexContext> indexContexts = new HashMap<String, IndexContext>();
+		indexContexts.put(IConstants.GEOSPATIAL, indexContext);
+
+		Mockito.when(monitorService.getIndexContexts()).thenReturn(indexContexts);
+		Response indexContext = monitor.indexContexts();
+		Object entity = indexContext.getEntity();
+		logger.info("Index context : " + entity);
+		assertTrue("The max age should be in the Json string : ", entity.toString().contains("maxAge"));
+	}
+
+	@Test
+	public void servers() {
+		Map<String, Server> servers = new HashMap<String, Server>();
+		servers.put(IConstants.IKUBE, server);
+
+		Mockito.when(clusterManager.getServers()).thenReturn(servers);
+		Response indexContext = monitor.servers();
+		Object entity = indexContext.getEntity();
+		logger.info("Index context : " + entity);
+		assertTrue("The max age should be in the Json string : ", entity.toString().contains("averageCpuLoad"));
+	}
+
+	@MockClass(realClass = Server.class)
+	public static class ServerMock {
+		@Mock
+		public boolean isWorking() {
+			return Boolean.TRUE;
+		}
+	}
+
+	@Test
+	public void indexingStatistics() {
+		Mockit.tearDownMocks();
+		Mockit.setUpMocks(ServerMock.class);
+
+		Server serverOne = getServer("127.0.0.1-8000");
+		Server serverTwo = getServer("127.0.0.1-8001");
+		Server serverThree = getServer("127.0.0.1-8002");
+		Server serverFour = getServer("127.0.0.1-8003");
+
+		Map<String, Server> servers = new HashMap<String, Server>();
+		servers.put(serverOne.getAddress(), serverOne);
+		servers.put(serverTwo.getAddress(), serverTwo);
+		servers.put(serverThree.getAddress(), serverThree);
+		servers.put(serverFour.getAddress(), serverFour);
+
+		Mockito.when(clusterManager.getServers()).thenReturn(servers);
+		Response response = monitor.indexingStatistics();
+		Object entity = response.getEntity();
+		logger.info("Indexing statistics : " + entity);
+		// assertEquals("[[3.0,3.0,3.0,3.0],[6.0,6.0,6.0,6.0],[9.0,9.0,9.0,9.0]]", entity);
+	}
+
+	@SuppressWarnings("rawtypes")
+	private Server getServer(final String address) {
+		Server server = new Server();
+		server.setAddress(address);
+
+		List<IndexContext> indexContexts = new ArrayList<IndexContext>();
+		indexContexts.add(getIndexContext());
+		indexContexts.add(getIndexContext());
+		indexContexts.add(getIndexContext());
+
+		server.setIndexContexts(indexContexts);
+
+		return server;
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private IndexContext getIndexContext() {
+		IndexContext indexContext = new IndexContext();
+		List<Snapshot> snapshots = new ArrayList<Snapshot>();
+
+		snapshots.add(getSnapshot(1, 60000));
+		snapshots.add(getSnapshot(2, 120000));
+		snapshots.add(getSnapshot(3, 180000));
+		indexContext.setSnapshots(snapshots);
+		return indexContext;
+	}
+
+	private Snapshot getSnapshot(final long docsPerMinute, final long time) {
+		Snapshot snapshot = new Snapshot();
+		snapshot.setTimestamp(new Timestamp(time));
+		snapshot.setDocsPerMinute(docsPerMinute);
+		return snapshot;
 	}
 
 }

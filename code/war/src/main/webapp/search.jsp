@@ -4,29 +4,40 @@
 
 <% response.setHeader("Access-Control-Allow-Origin", "*"); %>
 
-<!Doctype html>
-<html xmlns:ng="http://angularjs.org">
+<!doctype html>
+<html>
 <head>
 	<meta http-equiv="Expires" content="-1">
 	<meta http-equiv="Pragma" content="no-cache">
 	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
 	
-	<meta name="Description" content="Ikube Enterprise Search." />
+	<title><tiles:insertAttribute name="title" /></title>
+	<link rel="shortcut icon" href="<c:url value="/images/icons/favicon.ico" />">
+	
 	<meta name="Keywords" content="Ikube, Enterprise Search, Web Site Search, Database Search, High Volume" />
-	
-	<link rel="stylesheet" href="<c:url value="/style/style.css"/>" />
-	
-	<script src="<c:url value="/js/ikube.js"/>" type="text/javascript"></script>
+	<meta name="Description" content="Ikube Enterprise Search." />
+			
+	<link rel="stylesheet" href="<c:url value="/style/style.css" />" />
+
+	<!-- External styles and JavaScript -->
+	<link rel="stylesheet" href="http://codemirror.net/lib/codemirror.css" type="text/css" />
 	
 	<script src="http://www.google-analytics.com/ga.js" type="text/javascript"></script>
 	<script src="http://maps.google.com/maps/api/js?sensor=false" type="text/javascript"></script>
+	<script src="http://code.jquery.com/jquery-1.8.2.js" type="text/javascript"></script>
+	
+	<script src="http://angular-ui.github.com/angular-ui/build/angular-ui.js" type="text/javascript"></script>
 	<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.2/angular.min.js" type="text/javascript"></script>
-	<script src="http//ajax.googleapis.com/ajax/libs/angularjs/1.0.2/angular-sanitize.min.js" type="text/javascript"></script>
+	<script src="http://codemirror.net/lib/codemirror.js" type="text/javascript"></script>
+    <script src="http://codemirror.net/lib/util/runmode.js" type="text/javascript"></script>
+    
+    <!-- Must be after Angular -->
+    <script src="<c:url value="/js/ikube.js" />" type="text/javascript"></script>
 </head>
 
+<body>
+
 <script type="text/javascript">
-	var module = angular.module('ikube', []);
-	
 	// Focus on the first field in the form
 	angular.element(document).ready(function() {
 		doFocus('allWords');
@@ -51,16 +62,16 @@
 	module.controller('SearcherController', function($http, $scope) {
 		
 		// The model data that we bind to in the form
-		$scope.allWords = 'hotel';
+		$scope.allWords = 'hotel'; // Default is hotel
 		$scope.exactPhrase = '';
 		$scope.oneOrMore = '';
 		$scope.noneOfTheseWords = '';
-		$scope.latitude = '-33.9693580';
-		$scope.longitude = '18.4622110';
-		$scope.pageBlock = 10;
+		$scope.latitude = '-33.9693580'; // Default is cape town
+		$scope.longitude = '18.4622110'; // Default is cape town
+		$scope.pageBlock = 10; // Only results per page
 
-		$scope.statistics = { total : 0, searchStrings : '', corrections : '', duration : 0};
-		$scope.pagination = [{ page : 1, firstResult : 0, active : true }, { page : 2, firstResult : 10, active : false }]
+		$scope.statistics = {};
+		$scope.pagination = []
 
 		// This function concatenates the search strings for all the predicate
 		// data into a semi colon separated string that can be used in the advanced
@@ -79,7 +90,7 @@
 		
 		// The form parameters we send to the server
 		$scope.searchParameters = { 
-			indexName : 'geospatial', 
+			indexName : 'geospatial', // The default is the geospatial
 			searchStrings : $scope.doSearchStrings(),
 			fragment : true,
 			firstResult : 0,
@@ -93,6 +104,7 @@
 		// Go to the web service for the results
 		$scope.url = getServiceUrl('/ikube/service/search/json/multi/advanced/all');
 		$scope.doSearch = function() {
+			$scope.searchParameters['searchStrings'] = $scope.doSearchStrings();
 			var promise = $http.get($scope.url, $scope.config);
 			promise.success(function(data, status) {
 				// Pop the statistics Json off the array
@@ -137,9 +149,7 @@
 	});
 </script>
 
-<body ng-app="ikube">
-
-<table ng-controller="SearcherController">
+<table ng-app="ikube" ng-controller="SearcherController">
 	<tr>
 		<td width="20%">Collection : </td>
 		<td width="80%">
@@ -210,6 +220,18 @@
 			<b>Score</b> : {{datum.score}}<br>
 			<b>Fragment</b> : {{datum.fragment}}<br>
 			<br>
+		</td>
+	</tr>
+	
+	<tr><td colspan="2">&nbsp;</td></tr>
+	
+	<tr>
+		<td colspan="2" nowrap="nowrap">
+			<span ng-repeat="page in pagination">
+				<a style="font-color : {{page.active}}" href="#" ng-click="
+					doFirstResult(page.firstResult);
+					doSearch();">{{page.page}}</a>
+			</span>
 		</td>
 	</tr>
 	

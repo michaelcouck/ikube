@@ -83,7 +83,7 @@ public class Server extends Persistable implements Comparable<Server> {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public void setIndexContexts(List<IndexContext> indexContexts) {
+	public void setIndexContexts(final List<IndexContext> indexContexts) {
 		this.indexContexts = indexContexts;
 	}
 
@@ -106,7 +106,7 @@ public class Server extends Persistable implements Comparable<Server> {
 		return age;
 	}
 
-	public void setAge(long age) {
+	public void setAge(final long age) {
 		this.age = age;
 	}
 
@@ -114,7 +114,7 @@ public class Server extends Persistable implements Comparable<Server> {
 		return freeMemory;
 	}
 
-	public void setFreeMemory(long freeMemory) {
+	public void setFreeMemory(final long freeMemory) {
 		this.freeMemory = freeMemory;
 	}
 
@@ -122,7 +122,7 @@ public class Server extends Persistable implements Comparable<Server> {
 		return maxMemory;
 	}
 
-	public void setMaxMemory(long maxMemory) {
+	public void setMaxMemory(final long maxMemory) {
 		this.maxMemory = maxMemory;
 	}
 
@@ -130,7 +130,7 @@ public class Server extends Persistable implements Comparable<Server> {
 		return totalMemory;
 	}
 
-	public void setTotalMemory(long totalMemory) {
+	public void setTotalMemory(final long totalMemory) {
 		this.totalMemory = totalMemory;
 	}
 
@@ -138,7 +138,7 @@ public class Server extends Persistable implements Comparable<Server> {
 		return freeDiskSpace;
 	}
 
-	public void setFreeDiskSpace(long freeDiskSpace) {
+	public void setFreeDiskSpace(final long freeDiskSpace) {
 		this.freeDiskSpace = freeDiskSpace;
 	}
 
@@ -146,7 +146,7 @@ public class Server extends Persistable implements Comparable<Server> {
 		return architecture;
 	}
 
-	public void setArchitecture(String architecture) {
+	public void setArchitecture(final String architecture) {
 		this.architecture = architecture;
 	}
 
@@ -154,7 +154,7 @@ public class Server extends Persistable implements Comparable<Server> {
 		return processors;
 	}
 
-	public void setProcessors(long processors) {
+	public void setProcessors(final long processors) {
 		this.processors = processors;
 	}
 
@@ -162,7 +162,7 @@ public class Server extends Persistable implements Comparable<Server> {
 		return averageCpuLoad;
 	}
 
-	public void setAverageCpuLoad(double averageCpuLoad) {
+	public void setAverageCpuLoad(final double averageCpuLoad) {
 		this.averageCpuLoad = averageCpuLoad;
 	}
 

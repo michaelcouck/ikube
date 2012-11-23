@@ -34,7 +34,7 @@ import org.apache.lucene.search.Searchable;
  * @version 01.00
  */
 @Entity()
-@SuppressWarnings("serial")
+@SuppressWarnings({ "serial", "deprecation" })
 @Inheritance(strategy = InheritanceType.JOINED)
 @NamedQueries({ @NamedQuery(name = IndexContext.FIND_BY_NAME, query = IndexContext.FIND_BY_NAME) })
 public class IndexContext<T> extends Indexable<T> implements Comparable<IndexContext<?>> {

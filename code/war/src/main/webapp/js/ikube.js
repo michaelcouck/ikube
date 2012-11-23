@@ -1,3 +1,26 @@
+/**
+ * This is the main Angular module for the iKube application on the 
+ * client. This module will spawn and create the controllers and other
+ * artifacts as required.
+ */
+var module = angular.module('ikube', []);
+
+/**
+ * This controller will get the server data from the grid. 
+ */
+module.controller('MonitorController', function($http, $scope) {
+	$scope.servers = [];
+	$scope.url = getServiceUrl('/ikube/service/monitor/servers');
+	var promise = $http.get($scope.url);
+	promise.success(function(data, status) {
+		$scope.servers = data;
+		$scope.status = status;
+	});
+	promise.error(function(data, status) {
+		$scope.status = status;
+	});
+});
+
 function writeDate() {
 	var d = new Date();
 	document.write(d.toLocaleTimeString());

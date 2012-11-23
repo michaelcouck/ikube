@@ -1,5 +1,6 @@
 package ikube.web.service;
 
+import ikube.cluster.IClusterManager;
 import ikube.service.IMonitorService;
 import ikube.service.ISearcherService;
 
@@ -42,6 +43,8 @@ public abstract class Resource {
 	protected IMonitorService monitorService;
 	@Autowired
 	protected ISearcherService searcherService;
+	@Autowired
+	protected IClusterManager clusterManager;
 
 	{
 		gson = new Gson();
