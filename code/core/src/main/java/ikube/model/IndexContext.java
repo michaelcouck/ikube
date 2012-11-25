@@ -1,6 +1,7 @@
 package ikube.model;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -42,6 +43,15 @@ public class IndexContext<T> extends Indexable<T> implements Comparable<IndexCon
 	public static final String FIND_BY_NAME = "select i from IndexContext as i where i.name = :name";
 
 	private static final transient Logger LOGGER = Logger.getLogger(IndexContext.class);
+
+	@Transient
+	private boolean open;
+	@Transient
+	private long numDocs;
+	@Transient
+	private long indexSize;
+	@Transient
+	private Date latestIndexTimestamp;
 
 	/** Can be null if there are no indexes running. */
 	@Transient
@@ -253,7 +263,43 @@ public class IndexContext<T> extends Indexable<T> implements Comparable<IndexCon
 		return multiSearcher;
 	}
 
+	public boolean isOpen() {
+		return open;
+	}
+
+	public void setOpen(final boolean open) {
+		this.open = open;
+	}
+
+	public long getNumDocs() {
+		setNumDocs(getLastSnapshot().getNumDocs());
+		return numDocs;
+	}
+
+	public void setNumDocs(long numDocs) {
+		this.numDocs = numDocs;
+	}
+
+	public long getIndexSize() {
+		setIndexSize(getLastSnapshot().getIndexSize());
+		return indexSize;
+	}
+
+	public void setIndexSize(long indexSize) {
+		this.indexSize = indexSize;
+	}
+
+	public Date getLatestIndexTimestamp() {
+		setLatestIndexTimestamp(getLastSnapshot().getLatestIndexTimestamp());
+		return latestIndexTimestamp;
+	}
+
+	public void setLatestIndexTimestamp(Date latestIndexTimestamp) {
+		this.latestIndexTimestamp = latestIndexTimestamp;
+	}
+
 	public void setMultiSearcher(final MultiSearcher multiSearcher) {
+		setOpen(multiSearcher != null);
 		// We'll close the current searcher if it is not already closed
 		if (this.multiSearcher != null && !this.multiSearcher.equals(multiSearcher)) {
 			try {

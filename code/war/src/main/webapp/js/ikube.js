@@ -6,9 +6,75 @@
 var module = angular.module('ikube', []);
 
 /**
- * This controller will get the server data from the grid. 
+ * This directive will draw and update the searching performance graph.
  */
-module.controller('MonitorController', function($http, $scope) {
+module.directive('searching', function($http) {
+	return {
+		restrict : 'A',
+		scope : true,
+		link : function($scope, $elm, $attr) {
+			$scope.options = { title : 'Searching performance', legend : { position : 'top', textStyle : { color : 'black', fontSize : 12 } } };
+			$scope.drawSearchingChart = function() {
+				$scope.url = getServiceUrl('/ikube/service/monitor/searching');
+				var promise = $http.get($scope.url);
+				promise.success(function(data, status) {
+					$scope.status = status;
+					var data = google.visualization.arrayToDataTable(data);
+					var searchingChart = new google.visualization.LineChart($elm[0]);
+					searchingChart.draw(data, $scope.options);
+				});
+				promise.error(function(data, status) {
+					$scope.status = status;
+				});
+			}
+			// Initially draw the chart from the server data
+			$scope.drawSearchingChart();
+			// And re-draw it every few seconds to give the live update feel
+			setInterval(function() {
+				$scope.drawSearchingChart();
+			}, 10000);
+		}
+	}
+});
+
+/**
+ * This directive will draw and update the indexing performance graph.
+ */
+module.directive('indexing', function($http) {
+	return {
+		restrict : 'A',
+		scope : true,
+		link : function($scope, $elm, $attr) {
+			$scope.options = { title : 'Indexing performance', legend : { position : 'top', textStyle : { color : 'black', fontSize : 12 } } };
+			$scope.drawIndexingChart = function() {
+				$scope.url = getServiceUrl('/ikube/service/monitor/indexing');
+				var promise = $http.get($scope.url);
+				promise.success(function(data, status) {
+					$scope.status = status;
+					var data = google.visualization.arrayToDataTable(data);
+					var indexingChart = new google.visualization.LineChart($elm[0]);
+					indexingChart.draw(data, $scope.options);
+				});
+				promise.error(function(data, status) {
+					$scope.status = status;
+				});
+			}
+			// Initially draw the chart from the server data
+			$scope.drawIndexingChart();
+			// And re-draw it every few seconds to give the live update feel
+			setInterval(function() {
+				$scope.drawIndexingChart();
+			}, 10000);
+		}
+	}
+});
+
+google.load('visualization', '1', { packages : [ 'corechart' ] });
+
+/**
+ * This controller will get the server data from the grid.
+ */
+module.controller('ServersController', function($http, $scope) {
 	$scope.servers = [];
 	$scope.url = getServiceUrl('/ikube/service/monitor/servers');
 	var promise = $http.get($scope.url);
@@ -19,6 +85,97 @@ module.controller('MonitorController', function($http, $scope) {
 	promise.error(function(data, status) {
 		$scope.status = status;
 	});
+});
+
+/**
+ * This controller will display the acitons currently being performed
+ * and additionally provide a function to terminate the indexing on the 
+ * action
+ */
+module.controller('ActionsController', function($http, $scope) {
+	
+	$scope.actions = {};
+	$scope.url = getServiceUrl('/ikube/service/monitor/actions');
+	
+	$scope.getActions = function() {
+		var promise = $http.get($scope.url);
+		promise.success(function(data, status) {
+			$scope.actions = data;
+			$scope.status = status;
+		});
+		promise.error(function(data, status) {
+			$scope.status = status;
+		});
+	}
+	$scope.getActions();
+	setInterval(function() {
+		$scope.getActions();
+	}, 10000);
+	
+	$scope.terminateIndexing = function(indexName) {
+		if (confirm('Terminate indexing of index : ' + indexName)) {
+			$scope.url = getServiceUrl('/ikube/service/monitor/terminate');
+			// The parameters for the terminate
+			$scope.parameters = { 
+				indexName : indexName
+			};
+			// The configuration for the request to the server
+			$scope.config = { params : $scope.parameters };
+			// And terminate the indexing for the index
+			var promise = $http.get($scope.url, $scope.config);
+			promise.success(function(data, status) {
+				$scope.status = status;
+			});
+			promise.error(function(data, status) {
+				$scope.status = status;
+			});
+		}
+	}
+});
+
+/**
+ * TODO Comment
+ */
+module.controller('IndexContextsController', function($http, $scope) {
+	$scope.indexContexts = [];
+	
+	$scope.refreshIndexContexts = function() {
+		$scope.url = getServiceUrl('/ikube/service/monitor/index-contexts');
+		var promise = $http.get($scope.url);
+		promise.success(function(data, status) {
+			$scope.indexContexts = data;
+			$scope.status = status;
+		});
+		promise.error(function(data, status) {
+			$scope.status = status;
+		});
+	}
+	
+	$scope.refreshIndexContexts();
+	// Refresh the index contexts every so often
+	setInterval(function() {
+		$scope.refreshIndexContexts();
+	}, 10000);
+	
+	$scope.startIndexing = function(indexName) {
+		if (confirm('Start indexing of index : ' + indexName)) {
+			$scope.url = getServiceUrl('/ikube/service/monitor/start');
+			// The parameters for the start
+			$scope.parameters = { 
+				indexName : indexName
+			};
+			// The configuration for the request to the server
+			$scope.config = { params : $scope.parameters };
+			// And terminate the indexing for the index
+			var promise = $http.get($scope.url, $scope.config);
+			promise.success(function(data, status) {
+				$scope.status = status;
+			});
+			promise.error(function(data, status) {
+				$scope.status = status;
+			});
+		}
+	}
 });
 
 function writeDate() {

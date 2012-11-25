@@ -5,13 +5,16 @@ import static org.junit.Assert.assertTrue;
 import ikube.Base;
 import ikube.IConstants;
 import ikube.cluster.IClusterManager;
+import ikube.model.Action;
 import ikube.model.IndexContext;
 import ikube.model.Server;
 import ikube.model.Snapshot;
 import ikube.service.IMonitorService;
+import ikube.toolkit.PerformanceTester;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -112,22 +115,99 @@ public class MonitorTest extends Base {
 		Mockit.tearDownMocks();
 		Mockit.setUpMocks(ServerMock.class);
 
-		Server serverOne = getServer("127.0.0.1-8000");
-		Server serverTwo = getServer("127.0.0.1-8001");
-		Server serverThree = getServer("127.0.0.1-8002");
-		Server serverFour = getServer("127.0.0.1-8003");
-
-		Map<String, Server> servers = new HashMap<String, Server>();
-		servers.put(serverOne.getAddress(), serverOne);
-		servers.put(serverTwo.getAddress(), serverTwo);
-		servers.put(serverThree.getAddress(), serverThree);
-		servers.put(serverFour.getAddress(), serverFour);
+		Map<String, Server> servers = getServers();
 
 		Mockito.when(clusterManager.getServers()).thenReturn(servers);
 		Response response = monitor.indexingStatistics();
 		Object entity = response.getEntity();
-		logger.info("Indexing statistics : " + entity);
-		// assertEquals("[[3.0,3.0,3.0,3.0],[6.0,6.0,6.0,6.0],[9.0,9.0,9.0,9.0]]", entity);
+		assertEquals(
+				"[[\"Times\", \"127.0.0.1-8002\", \"127.0.0.1-8003\", \"127.0.0.1-8000\", \"127.0.0.1-8001\"], [\"1.1\", 3, 3, 3, 3], "
+						+ "[\"1.2\", 6, 6, 6, 6], [\"1.3\", 9, 9, 9, 9]]", entity);
+
+		double perSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
+			@Override
+			public void execute() throws Throwable {
+				monitor.indexingStatistics();
+			}
+		}, "Indexing statistics", 1000, Boolean.TRUE);
+		assertTrue(perSecond > 100);
+	}
+
+	@Test
+	public void searchingStatistics() {
+		Mockit.tearDownMocks();
+		Mockit.setUpMocks(ServerMock.class);
+
+		Map<String, Server> servers = getServers();
+
+		Mockito.when(clusterManager.getServers()).thenReturn(servers);
+		Response response = monitor.searchingStatistics();
+		Object entity = response.getEntity();
+		assertEquals(
+				"[[\"Times\", \"127.0.0.1-8002\", \"127.0.0.1-8003\", \"127.0.0.1-8000\", \"127.0.0.1-8001\"], [\"1.1\", 300, 300, 300, 300], "
+						+ "[\"1.2\", 600, 600, 600, 600], [\"1.3\", 900, 900, 900, 900]]", entity);
+
+		double perSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
+			@Override
+			public void execute() throws Throwable {
+				monitor.searchingStatistics();
+			}
+		}, "Indexing statistics", 1000, Boolean.TRUE);
+		assertTrue(perSecond > 100);
+	}
+
+	@Test
+	public void actions() {
+		Mockit.tearDownMocks();
+		Mockit.setUpMocks(ServerMock.class);
+		Map<String, Server> servers = getServers();
+		Mockito.when(clusterManager.getServers()).thenReturn(servers);
+
+		Response response = monitor.actions();
+		logger.info(response.getEntity());
+
+		assertTrue(response
+				.getEntity()
+				.toString()
+				.contains(
+						"{\"127.0.0.1-8001\":[{\"actionName\":\"action\",\"indexableName\":"
+								+ "\"indexableName\",\"indexName\":\"indexName\",\"startTime\""));
+	}
+
+	private Map<String, Server> getServers() {
+		Server serverOne = getServer("127.0.0.1-8000");
+		//Server serverTwo = getServer("127.0.0.1-8001");
+		//Server serverThree = getServer("127.0.0.1-8002");
+		//Server serverFour = getServer("127.0.0.1-8003");
+
+		serverOne.getActions().add(getAction(serverOne));
+//		serverTwo.getActions().add(getAction(serverTwo));
+//		serverThree.getActions().add(getAction(serverThree));
+//		serverFour.getActions().add(getAction(serverFour));
+
+		Map<String, Server> servers = new HashMap<String, Server>();
+		servers.put(serverOne.getAddress(), serverOne);
+//		servers.put(serverTwo.getAddress(), serverTwo);
+//		servers.put(serverThree.getAddress(), serverThree);
+//		servers.put(serverFour.getAddress(), serverFour);
+
+		return servers;
+	}
+
+	private Action getAction(final Server server) {
+		Action action = new Action();
+		action.setActionName("action");
+		action.setDuration(Integer.MAX_VALUE);
+		action.setEndTime(null);
+		action.setId(Integer.MAX_VALUE);
+		action.setIndexableName("indexableName");
+		action.setIndexName("indexName");
+		action.setInvocations(Integer.MAX_VALUE);
+		action.setResult(Boolean.TRUE);
+		action.setStartTime(new Date());
+		action.setTimestamp(new Timestamp(System.currentTimeMillis()));
+		// action.setServer(server);
+		return action;
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -150,17 +230,18 @@ public class MonitorTest extends Base {
 		IndexContext indexContext = new IndexContext();
 		List<Snapshot> snapshots = new ArrayList<Snapshot>();
 
-		snapshots.add(getSnapshot(1, 60000));
-		snapshots.add(getSnapshot(2, 120000));
-		snapshots.add(getSnapshot(3, 180000));
+		snapshots.add(getSnapshot(1, 100, 60000));
+		snapshots.add(getSnapshot(2, 200, 120000));
+		snapshots.add(getSnapshot(3, 300, 180000));
 		indexContext.setSnapshots(snapshots);
 		return indexContext;
 	}
 
-	private Snapshot getSnapshot(final long docsPerMinute, final long time) {
+	private Snapshot getSnapshot(final long docsPerMinute, final long searchesPerMinute, final long time) {
 		Snapshot snapshot = new Snapshot();
 		snapshot.setTimestamp(new Timestamp(time));
 		snapshot.setDocsPerMinute(docsPerMinute);
+		snapshot.setSearchesPerMinute(searchesPerMinute);
 		return snapshot;
 	}
 

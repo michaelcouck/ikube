@@ -52,6 +52,7 @@ public class Action extends Persistable {
 	/** The number of documents that were added during the execution of the action. */
 	@Column
 	private int invocations;
+
 	@ManyToOne(cascade = { CascadeType.DETACH }, fetch = FetchType.EAGER)
 	private Server server;
 

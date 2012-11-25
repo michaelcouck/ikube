@@ -59,11 +59,6 @@ public abstract class Resource {
 	 */
 	protected Response buildResponse(final Object result) {
 		String jsonString = gson.toJson(result);
-		// logger.info("Json string : " + jsonString);
-		// Escape the unicode back to real characters
-		// String jsonStringUnescaped = StringEscapeUtils.unescapeHtml4(jsonString);
-		// jsonStringUnescaped = StringEscapeUtils.unescapeHtml3(jsonStringUnescaped);
-		// logger.info("Json string : " + jsonStringUnescaped);
 		return buildResponse().entity(jsonString).build();
 	}
 

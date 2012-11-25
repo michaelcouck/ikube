@@ -1,61 +1,8 @@
-<script type="text/javascript">
-
-var config = { packages : [ "corechart" ] };
-google.load("visualization", "1", config);
-google.setOnLoadCallback(drawSearchChart);
-google.setOnLoadCallback(drawIndexChart);
-
-setInterval(function() {
-	drawIndexChart();
-	// drawSearchChart();
-	// alert('Drawing : ');
-}, 10000);
-		
-function drawIndexChart() {
-	var data = google.visualization.arrayToDataTable([
-		[ 'Time', '192.168.1.4', '192.168.1.6' ], 
-		[ '7.23', 1000, 400 ],
-		[ '7.24', 1170, 460 ], 
-		[ '8.25', 660, 1120 ],
-		[ '9.26', 1030, 540 ],
-		[ '10.59', 1030, 540 ]
-	]);
-
-	var options = {
-		title : 'Indexing performance',
-		legend : { position : 'top', textStyle : { color : 'blue', fontSize : 12 }}
-	};
-
-	var indexingChartDiv = document.getElementById('indexingChart');
-	var indexingChart = new google.visualization.LineChart(indexingChartDiv);
-	indexingChart.draw(data, options);
-}
-
-function drawSearchChart() {
-	var data = google.visualization.arrayToDataTable([
-		[ 'Time', '192.168.1.4', '192.168.1.6' ], 
-		[ '7.23', 1000, 400 ],
-		[ '7.24', 1170, 460 ], 
-		[ '7.25', 660, 1120 ],
-		[ '7.26', 1030, 540 ] ]);
-
-	var options = {
-		title : 'Search performance',
-		legend : { position : 'top', textStyle : { color : 'blue', fontSize : 12 }}
-	};
-
-	var searchingChartDiv = document.getElementById('searchingChart');
-	var searchingChart = new google.visualization.LineChart(searchingChartDiv);
-	searchingChart.draw(data, options);
-}
-
-</script>
-
-<table ng-controller="MonitorController">
+<table>
 	<tr>
 		<td valign="top">
 			<!-- Servers data -->
-			<table>
+			<table ng-controller="ServersController">
 				<tr ng-repeat="server in servers">
 					<td style="border : 1px solid #aaaaaa; padding : 5px;" nowrap="nowrap" valign="top">
 						<b>Address</b> : {{server.address}} <br>
@@ -76,10 +23,44 @@ function drawSearchChart() {
 			<!-- Performance graphs -->
 			<table>
 				<tr>
-					<td><div id="searchingChart" style="width: 750px; height: 200px;"></div></td>
+					<td>
+						<div searching style="width: 900px; height: 200px;"><!-- Searching performance graph --></div>
+					</td>
 				</tr>
 				<tr>
-					<td><div id="indexingChart" style="width: 750px; height: 200px;"></div></td>
+					<td>
+						<div indexing style="width: 900px; height: 200px;"><!-- The indexing performance graph --></div>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<table ng-controller="ActionsController" width="100%">
+							<tr>
+								<th>Server</th>
+								<th>Action</th>
+								<th>Index</th>
+								<th>Indexable</th>
+								<th>Start time</th>
+								<th>Duration</th>
+								<th>Invocations</th>
+								<th>Timestamp</th>
+								<th>Functions</th>
+							</tr>
+							<tr ng-repeat="action in actions">
+								<td>{{action.server}}</td>
+								<td>{{action.actionName}}</td>
+								<td>{{action.indexName}}</td>
+								<td>{{action.indexableName}}</td>
+								<td>{{action.startTime}}</td>
+								<td>{{action.duration}}</td>
+								<td>{{action.invocations}}</td>
+								<td>{{action.timestamp}}</td>
+								<td>
+									<a style="font-color : red;" href="#" ng-click="terminateIndexing(action.indexName);">Terrminate</a>
+								</td>
+							</tr>
+						</table>
+					</td>
 				</tr>
 			</table>
 		</td>
