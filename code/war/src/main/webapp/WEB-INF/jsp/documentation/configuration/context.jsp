@@ -2,12 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <table class="table-content" width="100%">
-	<tr>
-		<td class="top-content" colspan="2">
-			<span class="top-content-header">configuration</span>
-			<span class="date" style="float: right;"><script type="text/javascript">writeDate();</script></span>
-		</td>
-	</tr>
+	<tr><td colspan="2"><span style="float: right;"><script type="text/javascript">writeDate();</script></span></td></tr>
 	<tr>
 		<td colspan="2">
 			<strong>context</strong>&nbsp;

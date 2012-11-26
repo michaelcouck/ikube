@@ -1,13 +1,9 @@
 <%@ page errorPage="/WEB-INF/jsp/error.jsp" contentType="text/html" %>
-<table class="table-content" width="100%">
+
+<table width="100%">
+	<tr><td><span style="float: right;"><script type="text/javascript">writeDate();</script></span></td></tr>
 	<tr>
-		<td class="top-content">
-			<span class="top-content-header">tutorial</span>
-			<span class="date" style="float: right;"><script type="text/javascript">writeDate();</script></span>
-		</td>
-	</tr>
-	<tr>
-		<td class="td-content" colspan="2">
+		<td colspan="2">
 			<strong>tutorial</strong>&nbsp;
 			 This is the step by step tutorial for setting up Ikube with the default configuration.<br><br>
 			 

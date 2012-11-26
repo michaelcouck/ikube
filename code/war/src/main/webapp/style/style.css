@@ -79,13 +79,13 @@ a {
 table {
 	margin : 0;
 	padding: 0;
-	border : 0;
+	border : 0; // 1px solid black
 }
 
 table td,table th {
 	margin : 0;
 	padding: 0;
-	border : 0;
+	border : 0; // 1px solid black
 }
 
 table thead {
@@ -94,7 +94,7 @@ table thead {
 	color: #999;
 	margin : 0;
 	padding: 0;
-	border : 0;
+	border : 0; // 1px solid black
 }
 
 table th {
@@ -102,12 +102,12 @@ table th {
 	border-bottom: 0px solid #fff;
 	margin : 0;
 	padding: 0;
-	border : 0;
+	border : 0; // 1px solid black
 }
 
 table td {
 	font: 12px Tahoma, Helvetica, sans-serif, Arial;
 	margin : 0;
 	padding: 0;
-	border : 0;
+	border : 0; // 1px solid black
 }

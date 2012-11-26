@@ -19,7 +19,7 @@
 		id="okiContext"
 		class="ikube.model.IndexContext"
 		property:name="okiContext"
-		property:maxAge="600"
+		property:maxAge="6000"
 		property:compoundFile="${compound.file}"
 		property:bufferedDocs="${buffered.docs}"
 		property:bufferSize="${buffer.size}"

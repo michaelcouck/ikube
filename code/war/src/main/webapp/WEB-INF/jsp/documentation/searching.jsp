@@ -1,31 +1,86 @@
 <%@ page errorPage="/WEB-INF/jsp/error.jsp" contentType="text/html" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<table class="table-content" width="100%">
+<table width="100%">
+	<tr><td><span style="float: right;"><script type="text/javascript">writeDate();</script></span></td></tr>
 	<tr>
-		<td class="top-content">
-			<span class="top-content-header">searching</span>
-			<span class="date" style="float: right;"><script type="text/javascript">writeDate();</script></span>
-		</td>
-	</tr>
-	<tr>
-		<td class="td-content">
+		<td>
 			<strong>access</strong>&nbsp;
-			The access to search results is a via a rest web service. Method signatures for the web service methods for 
-			searching are:<br><br>
+			The access to search results is a via a rest web service. The formats are Xml and Json. These links are the Xml services, but for Json just 
+			add json after the search in the path, i.e. http://ikube.be/ikube/service/search/json/single? . Method signatures for the web 
+			service methods for searching are:<br><br>
+			
+			<c:url var="single" value="http://ikube.be/ikube/service/search/single">
+				<c:param name="indexName" value="geospatial" />
+				<c:param name="searchStrings" value="cape AND town AND university" />
+				<c:param name="searchFields" value="name" />
+				<c:param name="fragment" value="true" />
+				<c:param name="firstResult" value="0" />
+				<c:param name="maxResults" value="10" />
+			</c:url>
+			
+			<c:url var="multi" value="http://ikube.be/ikube/service/search/multi">
+				<c:param name="indexName" value="geospatial" />
+				<c:param name="searchStrings" value="university:south AND africa" />
+				<c:param name="searchFields" value="name:country" />
+				<c:param name="fragment" value="true" />
+				<c:param name="firstResult" value="0" />
+				<c:param name="maxResults" value="10" />
+			</c:url>
+			
+			<c:url var="multiAll" value="http://ikube.be/ikube/service/search/multi/all">
+				<c:param name="indexName" value="geospatial" />
+				<c:param name="searchStrings" value="university:south AND africa" />
+				<c:param name="fragment" value="true" />
+				<c:param name="firstResult" value="0" />
+				<c:param name="maxResults" value="10" />
+			</c:url>
+			
+			<c:url var="multiSorted" value="http://ikube.be/ikube/service/search/multi/sorted">
+				<c:param name="indexName" value="geospatial" />
+				<c:param name="searchStrings" value="university:south AND africa" />
+				<c:param name="searchFields" value="name:country" />
+				<c:param name="sortFields" value="name:country" />
+				<c:param name="fragment" value="true" />
+				<c:param name="firstResult" value="0" />
+				<c:param name="maxResults" value="10" />
+			</c:url>
+			
+			<c:url var="multiSpatial" value="http://ikube.be/ikube/service/search/multi/spatial">
+				<c:param name="indexName" value="geospatial" />
+				<c:param name="searchStrings" value="cape AND town AND university" />
+				<c:param name="searchFields" value="name" />
+				<c:param name="fragment" value="true" />
+				<c:param name="firstResult" value="0" />
+				<c:param name="maxResults" value="10" />
+				<c:param name="distance" value="10" />
+				<c:param name="latitude" value="-33.95796" />
+				<c:param name="longitude" value="18.46082" />
+			</c:url>
+			
+			<c:url var="multiSpatialAll" value="http://ikube.be/ikube/service/search/multi/spatial/all">
+				<c:param name="indexName" value="geospatial" />
+				<c:param name="searchStrings" value="cape AND town AND university" />
+				<c:param name="fragment" value="true" />
+				<c:param name="firstResult" value="0" />
+				<c:param name="maxResults" value="10" />
+				<c:param name="distance" value="10" />
+				<c:param name="latitude" value="-33.95796" />
+				<c:param name="longitude" value="18.46082" />
+			</c:url>
 			
 			1) Search in a single field in the index - 
-				<a href="http://ikube.dyndns.org:8080/ikube/service/search/single?indexName=geospatial&searchStrings=cape%20AND%20town%20AND%20university&searchFields=name&fragment=true&firstResult=0&maxResults=10">go</a><br>
+				<a href="#" onclick="JavaScript:popup('<c:out value="${single}" />', 'Single Field Search');">single field</a><br>
 			2) Search multiple fields in the index - 
-				<a href="http://ikube.dyndns.org:8080/ikube/service/search/multi?indexName=geospatial&searchStrings=cape+AND+town+AND+university%3Bsouth+africa&searchFields=name%3Bcountry&fragment=true&firstResult=0&maxResults=10">go</a><br>
+				<a href="#" onclick="JavaScript:popup('<c:out value="${multi}" />', 'Multiple Field Search');">multiple fields</a><br>
 			3) Search all the fields in the index - 
-				<a href="http://ikube.dyndns.org:8080/ikube/service/search/multi/all?indexName=geospatial&searchStrings=cape+AND+town+AND+university%3Bsouth+africa&fragment=true&firstResult=0&maxResults=10">go</a><br>
+				<a href="#" onclick="JavaScript:popup('<c:out value="${multiAll}" />', 'Multi All Field Search');">multiple strings, all fields</a><br>
 			4) Search all the fields in the index and sort them according to the sort fields - 
-				<a href="http://ikube.dyndns.org:8080/ikube/service/search/multi/sorted?indexName=geospatial&searchStrings=cape+town+university%3Bsouth+africa&searchFields=name%3Bcountry&sortFields=name%3Bcountry&fragment=true&firstResult=0&maxResults=10">go</a><br>
+				<a href="#" onclick="JavaScript:popup('<c:out value="${multiSorted}" />', 'Multi Sorted Field Search');">multiple fields, sorted on two fields</a><br>
 			5) Search a single field and sort the results according to distance from a point - 
-				<a href="http://ikube.dyndns.org:8080/ikube/service/search/multi/spatial?indexName=geospatial&searchStrings=cape%20town%20university&searchFields=name&fragment=true&firstResult=0&maxResults=10&distance=10&latitude=-33.95796&longitude=18.46082">go</a><br>
+				<a href="#" onclick="JavaScript:popup('<c:out value="${multiSpatial}" />', 'Multi Spatial Field Search');">multiple fields, spatial</a><br>
 			6) Search all the fields and sort the results according to distance from a point - 
-				<a href="http://ikube.dyndns.org:8080/ikube/service/search/multi/spatial?indexName=geospatial&searchStrings=cape%20town%20university&fragment=true&firstResult=0&maxResults=10&distance=10&latitude=-33.95796&longitude=18.46082">go</a><br>
+				<a href="#" onclick="JavaScript:popup('<c:out value="${multiSpatialAll}" />', 'Multi Spatial All Field Search');">multiple string, all fields, spatial</a><br>
 			
 			<br><br>
 			<strong>Parameters for searching:</strong><br>
@@ -88,7 +143,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td class="td-content">
+		<td>
 			<strong>API</strong>&nbsp;
 			The API and parameters for the web service are:<br><br>
 			
@@ -155,7 +210,7 @@
 	</tr>
 	
 	<tr>
-		<td class="td-content">
+		<td>
 			<strong>more questions</strong>&nbsp;
 			If you have any questions please feel free to give me a shout at michael dot couck at gmail dot com.<br><br>
 			Happy searching!

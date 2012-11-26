@@ -148,6 +148,9 @@ public class Monitor extends Resource {
 				List<Snapshot> snapshots = indexContext.getSnapshots();
 				int index = 1;
 				for (final Snapshot snapshot : snapshots) {
+					if (serverData.length <= index) {
+						break;
+					}
 					Long docsPerMinute = (Long) serverData[index];
 					docsPerMinute += snapshot.getDocsPerMinute();
 					serverData[index] = docsPerMinute;
@@ -181,6 +184,9 @@ public class Monitor extends Resource {
 				List<Snapshot> snapshots = indexContext.getSnapshots();
 				int index = 1;
 				for (final Snapshot snapshot : snapshots) {
+					if (serverData.length <= index) {
+						break;
+					}
 					Long searchesPerMinute = (Long) serverData[index];
 					searchesPerMinute += snapshot.getSearchesPerMinute();
 					serverData[index] = searchesPerMinute;

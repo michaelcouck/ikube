@@ -1,13 +1,9 @@
 <%@ page errorPage="/WEB-INF/jsp/error.jsp" contentType="text/html" %>
-<table class="table-content" width="100%">
+
+<table width="100%">
+	<tr><td><span style="float: right;"><script type="text/javascript">writeDate();</script></span></td></tr>
 	<tr>
-		<td class="top-content">
-			<span class="top-content-header">extra, extra</span>
-			<span class="date" style="float: right;"><script type="text/javascript">writeDate();</script></span>
-		</td>
-	</tr>
-	<tr>
-		<td class="td-content">
+		<td>
 			<strong>geospatial</strong>&nbsp;
 			Geospatial search means adding co-ordinates to the results, addresses for example and sorting the 
 			results according to distance from each other. Ikube has included the GeoNames database in an index, 
@@ -19,7 +15,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td class="td-content">
+		<td>
 			Of course the accuracy of the results from the geospatial index are determined by the 
 			data that was used to generate the index. The data has been enriched, and addresses include city and 
 			country which should help to refine the search. When Telenet get around to giving me the subnet mask 
@@ -29,7 +25,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td class="td-content">
+		<td>
 			<strong>geospatial cont...</strong>&nbsp;
 			The geospatial enricher is defined in spring-aop.xml file. If the indexable is defined as an address 
 			then all the children will be iterated over to concatenate the address columns and data. The result of the concatenation 
@@ -40,7 +36,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td class="td-content">
+		<td>
 			<strong>lucene</strong>&nbsp;
 			Lucene in the indexing and search library that is at the heart of Ikube. Parameters can be 
 			specified in the configuration and are passed to Lucene during the indexing process. For more information 
@@ -48,7 +44,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td class="td-content">
+		<td>
 			<strong>disk full</strong>&nbsp;
 			If at any point the disk where the indexes are fills up to within 10 meg, the instance of Ikube will close down, exiting the 
 			Jvm completely. This is to prevent the disk becoming un-usable. This action, along with all other actions defined in the spring-actins.xml 
@@ -57,7 +53,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td class="td-content">
+		<td>
 			<strong>rules</strong>&nbsp;
 			The rules for the actions to be executed are defined in the Spring configuration. The actions will be intercepted 
 			by the rule intercepter, the rule(s) for those actions will be evaluated, and based on the result of the evaluation the 
@@ -66,7 +62,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td class="td-content">
+		<td>
 			<strong>production testing</strong>&nbsp;
 			There are some definitions to test indexes in production, to verify that they are indeed up and running 
 			and that they have some expected data. In the case where this is not the case a mail can be sent to one 
@@ -77,7 +73,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td class="td-content">
+		<td>
 			<strong>databases</strong>&nbsp;
 			The data sources must not be transactional. This is quite important as the connections are comitted 
 			to allow the cursors to be released.
@@ -86,7 +82,7 @@
 	</tr>
 
 	<tr>
-		<td class="td-content">
+		<td>
 			Have a fantastic day!<br>
 			Index the planet!<br>
 			You are here =><br>

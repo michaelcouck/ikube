@@ -84,6 +84,7 @@ public class MonitorTest extends Base {
 		indexContexts.put(IConstants.GEOSPATIAL, indexContext);
 
 		Mockito.when(monitorService.getIndexContexts()).thenReturn(indexContexts);
+		Mockito.when(monitorService.getIndexContext(Mockito.anyString())).thenReturn(indexContext);
 		Response indexContext = monitor.indexContexts();
 		Object entity = indexContext.getEntity();
 		logger.info("Index context : " + entity);
@@ -143,6 +144,7 @@ public class MonitorTest extends Base {
 		Mockito.when(clusterManager.getServers()).thenReturn(servers);
 		Response response = monitor.searchingStatistics();
 		Object entity = response.getEntity();
+		logger.info(entity);
 		assertEquals(
 				"[[\"Times\", \"127.0.0.1-8002\", \"127.0.0.1-8003\", \"127.0.0.1-8000\", \"127.0.0.1-8001\"], [\"1.1\", 300, 300, 300, 300], "
 						+ "[\"1.2\", 600, 600, 600, 600], [\"1.3\", 900, 900, 900, 900]]", entity);
@@ -170,26 +172,25 @@ public class MonitorTest extends Base {
 				.getEntity()
 				.toString()
 				.contains(
-						"{\"127.0.0.1-8001\":[{\"actionName\":\"action\",\"indexableName\":"
-								+ "\"indexableName\",\"indexName\":\"indexName\",\"startTime\""));
+						"[{\"result\":\"true\",\"actionName\":\"action\",\"invocations\":\"2147483647\""));
 	}
 
 	private Map<String, Server> getServers() {
 		Server serverOne = getServer("127.0.0.1-8000");
-		//Server serverTwo = getServer("127.0.0.1-8001");
-		//Server serverThree = getServer("127.0.0.1-8002");
-		//Server serverFour = getServer("127.0.0.1-8003");
+		Server serverTwo = getServer("127.0.0.1-8001");
+		Server serverThree = getServer("127.0.0.1-8002");
+		Server serverFour = getServer("127.0.0.1-8003");
 
 		serverOne.getActions().add(getAction(serverOne));
-//		serverTwo.getActions().add(getAction(serverTwo));
-//		serverThree.getActions().add(getAction(serverThree));
-//		serverFour.getActions().add(getAction(serverFour));
+		serverTwo.getActions().add(getAction(serverTwo));
+		serverThree.getActions().add(getAction(serverThree));
+		serverFour.getActions().add(getAction(serverFour));
 
 		Map<String, Server> servers = new HashMap<String, Server>();
 		servers.put(serverOne.getAddress(), serverOne);
-//		servers.put(serverTwo.getAddress(), serverTwo);
-//		servers.put(serverThree.getAddress(), serverThree);
-//		servers.put(serverFour.getAddress(), serverFour);
+		servers.put(serverTwo.getAddress(), serverTwo);
+		servers.put(serverThree.getAddress(), serverThree);
+		servers.put(serverFour.getAddress(), serverFour);
 
 		return servers;
 	}

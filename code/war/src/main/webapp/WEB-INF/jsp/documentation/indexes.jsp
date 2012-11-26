@@ -1,13 +1,9 @@
 <%@ page errorPage="/WEB-INF/jsp/error.jsp" contentType="text/html" %>
-<table class="table-content" width="100%">
+
+<table width="100%">
+	<tr><td><span style="float: right;"><script type="text/javascript">writeDate();</script></span></td></tr>
 	<tr>
-		<td class="top-content">
-			<span class="top-content-header">indexes</span>
-			<span class="date" style="float: right;"><script type="text/javascript">writeDate();</script></span>
-		</td>
-	</tr>
-	<tr>
-		<td class="td-content">
+		<td>
 			<strong>indexes</strong>&nbsp;
 			Indexes are created and written to the path on the network specified by the index path in the configuration. When 
 			Ikube is deployed in a cluster, each server will write it's index to the same base directory, and subsequently open it's index 
@@ -16,7 +12,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td class="td-content">
+		<td>
 			<strong>stopping and starting</strong>&nbsp;
 			Indexing can be stopped using the stop button on the monitoring page. This will terminate all threads, and indeed the pool of threads, immediately 
 			teminating all indexing jobs abruptly. This can be usefull fo various reasons, like for example the index disk running out of space, incorrect index definitions 

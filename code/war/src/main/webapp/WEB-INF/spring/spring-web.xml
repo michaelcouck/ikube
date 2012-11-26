@@ -65,15 +65,12 @@
 		property:prefix="/WEB-INF/jsp/" 
 		property:viewClass="org.springbyexample.web.servlet.view.tiles2.DynamicTilesView" />
 
-	<!-- The controllers for the various pages that do the access logic if necessary. -->
-	<!-- <bean name="ikube.web.angular.AppController" class="ikube.web.angular.AppController" /> -->
-	<!-- <bean name="ikube.web.angular.LoginController" class="ikube.web.angular.LoginController" /> -->
-
 	<!-- These are static resources basically. -->
 	<mvc:view-controller path="/index.html" />
-	<mvc:view-controller path="/documentation/index.html" />
-	<mvc:view-controller path="/documentation/quickstart.html" />
 	
+	<mvc:view-controller path="/documentation/index.html" />
+	<mvc:view-controller path="/documentation/intro.html" />
+	<mvc:view-controller path="/documentation/quickstart.html" />
 	<mvc:view-controller path="/documentation/searching.html" />
 	<mvc:view-controller path="/documentation/extra.html" />
 	<mvc:view-controller path="/documentation/clustering.html" />

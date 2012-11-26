@@ -1,13 +1,25 @@
+/** Note: This file must be loaded after all the other JavaScript files. */
+
+/**
+ * This function will track the page view for Google Analytics.
+ */ 
+function track() {
+	try {
+		var pageTracker = _gat._getTracker("UA-13044914-4");
+		pageTracker._trackPageview();
+	} catch (err) {
+		// document.write('<!-- ' + err + ' -->');
+	}
+}
+
 /**
  * This is the main Angular module for the iKube application on the 
  * client. This module will spawn and create the controllers and other
  * artifacts as required.
  */
-var module = angular.module('ikube', []);
+var module = angular.module('ikube', [ "google-maps" ]);
 
-/**
- * This directive will draw and update the searching performance graph.
- */
+/** This directive will draw and update the searching performance graph. */
 module.directive('searching', function($http) {
 	return {
 		restrict : 'A',
@@ -37,9 +49,7 @@ module.directive('searching', function($http) {
 	}
 });
 
-/**
- * This directive will draw and update the indexing performance graph.
- */
+/** This directive will draw and update the indexing performance graph. */
 module.directive('indexing', function($http) {
 	return {
 		restrict : 'A',
@@ -69,22 +79,28 @@ module.directive('indexing', function($http) {
 	}
 });
 
+/** Load the Google visual after the directives to avoid some kind of recursive lookup. */
 google.load('visualization', '1', { packages : [ 'corechart' ] });
 
-/**
- * This controller will get the server data from the grid.
- */
+/** This controller will get the server data from the grid. */
 module.controller('ServersController', function($http, $scope) {
 	$scope.servers = [];
-	$scope.url = getServiceUrl('/ikube/service/monitor/servers');
-	var promise = $http.get($scope.url);
-	promise.success(function(data, status) {
-		$scope.servers = data;
-		$scope.status = status;
-	});
-	promise.error(function(data, status) {
-		$scope.status = status;
-	});
+	
+	$scope.refreshServers = function() {
+		$scope.url = getServiceUrl('/ikube/service/monitor/servers');
+		var promise = $http.get($scope.url);
+		promise.success(function(data, status) {
+			$scope.servers = data;
+			$scope.status = status;
+		});
+		promise.error(function(data, status) {
+			$scope.status = status;
+		});
+	}
+	$scope.refreshServers();
+	setInterval(function() {
+		$scope.refreshServers();
+	}, 10000);
 });
 
 /**
@@ -93,10 +109,10 @@ module.controller('ServersController', function($http, $scope) {
  * action
  */
 module.controller('ActionsController', function($http, $scope) {
-	
+	// The data that we will iterate over
 	$scope.actions = {};
 	$scope.url = getServiceUrl('/ikube/service/monitor/actions');
-	
+	// The function to get the Json from the server
 	$scope.getActions = function() {
 		var promise = $http.get($scope.url);
 		promise.success(function(data, status) {
@@ -107,11 +123,13 @@ module.controller('ActionsController', function($http, $scope) {
 			$scope.status = status;
 		});
 	}
+	// Execute the action in startup
 	$scope.getActions();
+	// Refresh from time to time
 	setInterval(function() {
 		$scope.getActions();
 	}, 10000);
-	
+	// This function will send a terminate event to the cluster
 	$scope.terminateIndexing = function(indexName) {
 		if (confirm('Terminate indexing of index : ' + indexName)) {
 			$scope.url = getServiceUrl('/ikube/service/monitor/terminate');
@@ -133,9 +151,7 @@ module.controller('ActionsController', function($http, $scope) {
 	}
 });
 
-/**
- * TODO Comment
- */
+/** This directive gathers the index context data from the server for presentation. */
 module.controller('IndexContextsController', function($http, $scope) {
 	$scope.indexContexts = [];
 	
@@ -150,13 +166,13 @@ module.controller('IndexContextsController', function($http, $scope) {
 			$scope.status = status;
 		});
 	}
-	
+	// Immediately refresh the data
 	$scope.refreshIndexContexts();
 	// Refresh the index contexts every so often
 	setInterval(function() {
 		$scope.refreshIndexContexts();
 	}, 10000);
-	
+	// This function will publish a start event in the cluster
 	$scope.startIndexing = function(indexName) {
 		if (confirm('Start indexing of index : ' + indexName)) {
 			$scope.url = getServiceUrl('/ikube/service/monitor/start');
@@ -191,10 +207,94 @@ function addAutoComplete(inputField) {
 	});
 }
 
+var ua = navigator.userAgent.toLowerCase();
+var check = function(r) {
+    return r.test(ua);
+};
+var DOC = document;
+var isStrict = DOC.compatMode == "CSS1Compat";
+var isOpera = check(/opera/);
+var isChrome = check(/chrome/);
+var isWebKit = check(/webkit/);
+var isSafari = !isChrome && check(/safari/);
+var isSafari2 = isSafari && check(/applewebkit\/4/); // unique to
+// Safari 2
+var isSafari3 = isSafari && check(/version\/3/);
+var isSafari4 = isSafari && check(/version\/4/);
+var isIE = !isOpera && check(/msie/);
+var isIE7 = isIE && check(/msie 7/);
+var isIE8 = isIE && check(/msie 8/);
+var isIE9 = isIE && check(/msie 9/);
+var isIE6 = isIE && !isIE7 && !isIE8;
+var isGecko = !isWebKit && check(/gecko/);
+var isGecko2 = isGecko && check(/rv:1\.8/);
+var isGecko3 = isGecko && check(/rv:1\.9/);
+var isBorderBox = isIE && !isStrict;
+var isWindows = check(/windows|win32/);
+var isMac = check(/macintosh|mac os x/);
+var isAir = check(/adobeair/);
+var isLinux = check(/linux/);
+var isSecure = /^https/i.test(window.location.protocol);
+var isIE7InIE8 = isIE7 && DOC.documentMode == 7;
+
+var jsType = '', browserType = '', browserVersion = '', osName = '';
+var ua = navigator.userAgent.toLowerCase();
+var check = function(r) {
+    return r.test(ua);
+};
+
+if (isWindows) {
+	osName = 'Windows';
+	if (check(/windows nt/)) {
+		var start = ua.indexOf('windows nt');
+		var end = ua.indexOf(';', start);
+		osName = ua.substring(start, end);
+	}
+} else {
+	osName = isMac ? 'Mac' : isLinux ? 'Linux' : 'Other';
+} 
+
+if (isIE) {
+	browserType = 'IE';
+	jsType = 'IE';
+
+	var versionStart = ua.indexOf('msie') + 5;
+	var versionEnd = ua.indexOf(';', versionStart);
+	browserVersion = ua.substring(versionStart, versionEnd);
+
+	jsType = isIE6 ? 'IE6' : isIE7 ? 'IE7' : isIE8 ? 'IE8' : 'IE';
+} else if (isGecko) {
+	var isFF = check(/firefox/);
+	browserType = isFF ? 'Firefox' : 'Others';
+	;
+	jsType = isGecko2 ? 'Gecko2' : isGecko3 ? 'Gecko3' : 'Gecko';
+
+	if (isFF) {
+		var versionStart = ua.indexOf('firefox') + 8;
+		var versionEnd = ua.indexOf(' ', versionStart);
+		if (versionEnd == -1) {
+			versionEnd = ua.length;
+		}
+		browserVersion = ua.substring(versionStart, versionEnd);
+	}
+} else if (isChrome) {
+	browserType = 'Chrome';
+	jsType = isWebKit ? 'Web Kit' : 'Other';
+
+	var versionStart = ua.indexOf('chrome') + 7;
+	var versionEnd = ua.indexOf(' ', versionStart);
+	browserVersion = ua.substring(versionStart, versionEnd);
+} else {
+	browserType = isOpera ? 'Opera' : isSafari ? 'Safari' : '';
+}
+
 function doFocus(elementId) {
 	var element = document.getElementById(elementId);
 	if (element != null) {
-		element.focus();
+		// Bug in IE can't focus ... :)
+		if (!isIE) {
+			element.focus();
+		}
 	}
 }
 
@@ -208,7 +308,7 @@ function popup(mylink, windowname) {
 	} else {
 		href=mylink.href;
 	}
-	window.open(href, windowname, 'width=400,height=200,scrollbars=yes');
+	window.open(href, windowname, 'width=750,height=463,scrollbars=yes');
 	return false;
 }
 
@@ -222,18 +322,6 @@ var origin = null;
 var destination = null;
 
 /**
- * This function will track the page view for Google Analytics.
- */ 
-function track() {
-	try {
-		var pageTracker = _gat._getTracker("UA-13044914-4");
-		pageTracker._trackPageview();
-	} catch (err) {
-		// document.write('<!-- ' + err + ' -->');
-	}
-}
-
-/**
  * This function will capitalize the first letter of a string.
  * 
  * @returns the string with the first letter capital
@@ -241,21 +329,6 @@ function track() {
 String.prototype.capitalize = function() {
 	return this.charAt(0).toUpperCase() + this.slice(1);
 };
-
-/**
- * This function sets up the event listener on the search button. 
- */
-function setup() {
-	$(document).ready(function() {
-		populateIndexNames();
-		// Make the map invisible initially
-		$('#map_canvas').toggle(false);
-		// The search button event on click
-		$('#button').click(function() {
-			search($('#indexName').val());
-		});
-	});
-}
 
 /**
  * This function will set up the map including the center
@@ -281,15 +354,6 @@ function initializeMap() {
 }
 
 /**
- * This function will go to the monitor service and populate the drop down
- * with all the index names that are defined in the system.
- */
-function populateIndexNames() {
-	var url = getServiceUrl('/ikube/service/monitor/indexes');
-	// TODO implement with Angular
-}
-
-/**
  * This function builds the url to the rest search service.
  * 
  * @param the path part of the url  
@@ -302,18 +366,6 @@ function getServiceUrl(path) {
 	url.push(window.location.host);
 	url.push(path);
 	return url.join('');
-}
-
-/**
- * This function will call the rest web service and get the results for the search in xml 
- * format(serialized list of maps) with the last map the statistics for the search.
- * 
- * @param the name of the index
- * @param indexName the name of the index to search
- */
-function search(indexName) {
-	var monitorUrl = getServiceUrl('/ikube/service/monitor/geospatial');
-	// TODO implement with Angular
 }
 
 function setResults(xmlDom) {

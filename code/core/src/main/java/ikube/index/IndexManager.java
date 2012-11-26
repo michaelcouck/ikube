@@ -25,7 +25,9 @@ import org.apache.lucene.document.Field.TermVector;
 import org.apache.lucene.document.NumericField;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.IndexWriter.MaxFieldLength;
+import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.index.LogByteSizeMergePolicy;
+import org.apache.lucene.index.MergePolicy;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.LockObtainFailedException;
@@ -115,16 +117,30 @@ public final class IndexManager {
 	 * @return the index writer open on the specified directory
 	 * @throws Exception
 	 */
-	public static synchronized IndexWriter openIndexWriter(IndexContext<?> indexContext, File indexDirectory, boolean create)
-			throws Exception {
-		Directory directory = FSDirectory.open(indexDirectory);
+	public static synchronized IndexWriter openIndexWriter(final IndexContext<?> indexContext, final File indexDirectory,
+			final boolean create) throws Exception {
 		Analyzer analyzer = indexContext.getAnalyzer() != null ? indexContext.getAnalyzer() : IConstants.ANALYZER;
-		IndexWriter indexWriter = new IndexWriter(directory, analyzer, create, MaxFieldLength.UNLIMITED);
-		indexWriter.setUseCompoundFile(indexContext.isCompoundFile());
-		indexWriter.setMaxBufferedDocs(indexContext.getBufferedDocs());
-		indexWriter.setMaxFieldLength(indexContext.getMaxFieldLength());
-		indexWriter.setMergeFactor(indexContext.getMergeFactor());
-		indexWriter.setRAMBufferSizeMB(indexContext.getBufferSize());
+		IndexWriterConfig indexWriterConfig = new IndexWriterConfig(IConstants.VERSION, analyzer);
+		indexWriterConfig.setMaxBufferedDocs(indexContext.getBufferedDocs());
+		MergePolicy mergePolicy = new LogByteSizeMergePolicy() {
+			{
+				this.maxMergeDocs = indexContext.getMergeFactor();
+				this.maxMergeSize = (long) indexContext.getBufferSize();
+				this.useCompoundFile = indexContext.isCompoundFile();
+			}
+		};
+		indexWriterConfig.setMergePolicy(mergePolicy);
+		
+		Directory directory = FSDirectory.open(indexDirectory);
+		IndexWriter indexWriter = new IndexWriter(directory, indexWriterConfig);
+		
+		// Below is the deprecated code
+		// IndexWriter indexWriter = new IndexWriter(directory, analyzer, create, MaxFieldLength.UNLIMITED);
+		// indexWriter.setUseCompoundFile(indexContext.isCompoundFile());
+		// indexWriter.setMaxBufferedDocs(indexContext.getBufferedDocs());
+		// indexWriter.setMaxFieldLength(indexContext.getMaxFieldLength());
+		// indexWriter.setMergeFactor(indexContext.getMergeFactor());
+		// indexWriter.setRAMBufferSizeMB(indexContext.getBufferSize());
 		return indexWriter;
 	}
 
@@ -165,10 +181,9 @@ public final class IndexManager {
 			// to release themselves from work and more importantly the index files
 			ThreadUtilities.sleep(3000);
 			directory = indexWriter.getDirectory();
-			// indexWriter.prepareCommit();
 			indexWriter.commit();
 			indexWriter.maybeMerge();
-			indexWriter.forceMerge(5, Boolean.TRUE);
+			indexWriter.forceMerge(10, Boolean.TRUE);
 		} catch (NullPointerException e) {
 			LOGGER.error("Null pointer, in the index writer : " + indexWriter);
 			if (LOGGER.isDebugEnabled()) {
@@ -301,7 +316,7 @@ public final class IndexManager {
 		return getIndexDirectoryPath(indexContext, indexContext.getIndexDirectoryPathBackup());
 	}
 
-	private static String getIndexDirectoryPath(IndexContext<?> indexContext, String indexDirectory) {
+	private static String getIndexDirectoryPath(final IndexContext<?> indexContext, final String indexDirectory) {
 		StringBuilder builder = new StringBuilder();
 		builder.append(new File(indexDirectory).getAbsolutePath()); // Path
 		builder.append(File.separator);

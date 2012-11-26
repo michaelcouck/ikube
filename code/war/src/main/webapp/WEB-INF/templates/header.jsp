@@ -4,9 +4,6 @@
 
 <div id="header">
 	<a href="<c:url value="/index.html" />" >ikube</a>
-	<a href="<c:url value="/index.html" />">home</a>
-	<a href="<c:url value="/index.html" />">about</a>
-	<a href="<c:url value="/index.html" />">documentation</a>
 	
 	<security:authorize access="isAuthenticated()">
 	<a title="<security:authentication property="authorities" />" href="#">
