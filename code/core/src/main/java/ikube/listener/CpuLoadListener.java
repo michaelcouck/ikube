@@ -13,6 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 /**
+ * This class will check whether the cpu load on the server is constantly too high. If so then the throttle for the index contexts is
+ * increased, slowing the indexing down and relieving the load on the cpu.
+ * 
  * @author Michael Couck
  * @since 22.07.12
  * @version 01.00
@@ -79,5 +82,5 @@ public class CpuLoadListener implements IListener {
 			}
 		}
 	}
-	
+
 }
