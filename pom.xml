@@ -93,11 +93,11 @@
 						<workingDirectory>target/checkout/trunk</workingDirectory>
 					</configuration>
 				</plugin>
-				<plugin>
+				<!-- <plugin>
 					<groupId>com.googlecode.maven-gcu-plugin</groupId>
 					<artifactId>maven-gcu-plugin</artifactId>
 					<version>1.1</version>
-				</plugin>
+				</plugin> -->
 				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>
@@ -325,7 +325,7 @@
 				download. Unfortunately this can't run in the deploy phase because the artifacts are 
 				still SNAPSHOTS, which is not what is required as a download. 
 			-->
-			<plugin>
+			<!-- <plugin>
 				<groupId>com.googlecode.maven-gcu-plugin</groupId>
 				<artifactId>maven-gcu-plugin</artifactId>
 				<executions>
@@ -333,7 +333,7 @@
 						<id>gcode-upload</id>
 						<phase>deploy</phase>
 						<goals>
-							<goal>site</goal>
+							<goal>release</goal>
 						</goals>
 					</execution>
 				</executions>
@@ -352,7 +352,7 @@
 						</upload>
 					</uploads>
 				</configuration>
-			</plugin>
+			</plugin> -->
 			
 		</plugins>
 	</build>
