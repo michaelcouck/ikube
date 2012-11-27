@@ -41,8 +41,8 @@
 								<th>Action</th>
 								<th>Index</th>
 								<th>Indexable</th>
+								<th>Docs per minute</th>
 								<th>Start time</th>
-								<th>Timestamp</th>
 								<th>Functions</th>
 							</tr>
 							<tr ng-repeat="action in actions">
@@ -51,8 +51,8 @@
 								<td>{{action.actionName}}</td>
 								<td>{{action.indexName}}</td>
 								<td>{{action.indexableName}}</td>
+								<td>{{action.docsPerMinute}}</td>
 								<td>{{action.startTime}}</td>
-								<td>{{action.timestamp}}</td>
 								<td>
 									<a style="font-color : red;" href="#" ng-click="terminateIndexing(action.indexName);">Terrminate</a>
 								</td>

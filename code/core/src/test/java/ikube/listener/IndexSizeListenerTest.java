@@ -50,7 +50,7 @@ public class IndexSizeListenerTest extends ATest {
 		Mockito.when(indexContext.getLastSnapshot()).thenReturn(snapshot);
 		Mockito.when(indexContext.getIndexWriter()).thenReturn(indexWriter);
 		File indexDirectory = FileUtilities.getFile(indexDirectoryPath + IConstants.SEP + "127.0.0.1.8000", Boolean.TRUE);
-		Mockito.when(fsDirectory.getFile()).thenReturn(indexDirectory);
+		Mockito.when(fsDirectory.getDirectory()).thenReturn(indexDirectory);
 
 		Deencapsulation.setField(indexSizeListener, clusterManager);
 		Deencapsulation.setField(indexSizeListener, monitorService);

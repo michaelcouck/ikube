@@ -1,7 +1,6 @@
 package ikube.listener;
 
 import ikube.IConstants;
-
 import ikube.cluster.IClusterManager;
 import ikube.database.IDataBase;
 import ikube.index.IndexManager;
@@ -89,6 +88,8 @@ public class SnapshotListener implements IListener {
 					snapshot.setDocsPerMinute(getDocsPerMinute(indexContext, snapshot));
 					snapshot.setTotalSearches(getTotalSearchesForIndex(indexContext));
 					snapshot.setSearchesPerMinute(getSearchesPerMinute(indexContext, snapshot));
+					snapshot.setSystemLoad(operatingSystemMXBean.getSystemLoadAverage());
+					snapshot.setAvailableProcessors(operatingSystemMXBean.getAvailableProcessors());
 
 					dataBase.persist(snapshot);
 					// dataBase.merge(snapshot);

@@ -164,6 +164,7 @@ public class MonitorTest extends Base {
 		Mockit.setUpMocks(ServerMock.class);
 		Map<String, Server> servers = getServers();
 		Mockito.when(clusterManager.getServers()).thenReturn(servers);
+		Mockito.when(monitorService.getIndexContext(Mockito.anyString())).thenReturn(indexContext);
 
 		Response response = monitor.actions();
 		logger.info(response.getEntity());

@@ -74,7 +74,7 @@ public class IndexContext<T> extends Indexable<T> implements Comparable<IndexCon
 	@Min(value = 0)
 	@Max(value = 60000)
 	@Attribute(field = false, description = "This is the throttle in mili seconds that will slow down the indexing")
-	private long throttle;
+	private long throttle = 0;
 
 	/** Lucene properties. */
 	@Column

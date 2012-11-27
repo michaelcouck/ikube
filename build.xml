@@ -52,21 +52,20 @@
 		<antcall target="package-configuration" />
 		<antcall target="jar-configuration" />
 		<antcall target="deploy-configuration-for-jetty" />
-		<!-- Zip Ikube and the configuration directory for upload to Google Code -->
-		<echo message="Zipping ikube with configuration : " />
-		<antcall target="zip-ikube" />
+		<!-- Zip Tomcat and the configuration directory for upload to Google Code -->
+		<echo message="Zipping Tomcat with configuration : " />
+		<antcall target="zip-tomcat" />
 	</target>
 	
 	<!-- 
 		This target will unpack Tomcat, put the war in the web apps directory, unpack the configuration to the 
 		bin directory, then zip everything up again into a zip for distribution/deployment.
 	-->
-	<target name="zip-ikube">
-		<untar compression="gzip" dest="code/gui/target" src="code/libs/tools/${tomcat-gzip}" />
+	<target name="zip-tomcat">
+		<unzip dest="${target-directory}" src="code/libs/tools/${tomcat-zip}" />
 		<unjar src="${output-configuration-directory}/${ikube-configuration-jar}" dest="${target-directory}/${tomcat-unpacked}/bin/ikube" overwrite="true" />
-		<copy file="${target-directory}/${ikube-war}" todir="${target-directory}/${tomcat-unpacked}/webapps" overwrite="true" />
 		<zip 
-			destfile="${target-directory}/ikube.zip" 
+			destfile="${target-directory}/${tomcat-zip}"  
 			compress="true" 
 			filesonly="false" 
 			update="false" 
@@ -79,15 +78,15 @@
 	<target name="deploy-ikube">
 	    <!-- Deploy to the server -->
 		<antcall target="copy-to-server">
-			<param name="file-to-copy" value="${target-gui-directory}/${ikube-war}" />
+			<param name="file-to-copy" value="${target-directory}/${ikube-war}" />
 			<param name="server-directory" value="${userid}:${password}@192.168.1.4:/usr/share/apache-tomcat-7.0.27/webapps" />
 		</antcall>
 		<antcall target="copy-to-server">
-			<param name="file-to-copy" value="${target-gui-directory}/${ikube-war}" />
+			<param name="file-to-copy" value="${target-directory}/${ikube-war}" />
 			<param name="server-directory" value="${userid}:${password}@192.168.1.6:/usr/share/apache-tomcat-7.0.27/webapps" />
 		</antcall>
 		<antcall target="copy-to-server">
-			<param name="file-to-copy" value="${target-gui-directory}/${ikube-war}" />
+			<param name="file-to-copy" value="${target-directory}/${ikube-war}" />
 			<param name="server-directory" value="${userid}:${password}@192.168.1.7:/usr/share/apache-tomcat-7.0.27/webapps" />
 		</antcall>
 	</target>
@@ -174,8 +173,7 @@
 	</target>
 	<target name="deploy-configuration-for-jetty">
 		<unjar src="${output-configuration-directory}/${ikube-configuration-jar}" dest="code/core/ikube" overwrite="true" />
-		<!-- <unjar src="${output-configuration-directory}/${ikube-configuration-jar}" dest="code/war/ikube" overwrite="true" /> -->
-		<unjar src="${output-configuration-directory}/${ikube-configuration-jar}" dest="code/gui/ikube" overwrite="true" />
+		<unjar src="${output-configuration-directory}/${ikube-configuration-jar}" dest="code/war/ikube" overwrite="true" />
 	</target>
 	
 	<!-- This target will deploy the configuration to the servers. -->
@@ -213,40 +211,11 @@
 	    </scp>
 	</target>
 	
-	<target name="start-tomcat-cluster">
-		<antcall target="executeTomcatAction">
-			<param name="action" value="start" />
-			<param name="tomcat-bin" value="${tomcat-1-bin}" />
-			<param name="tomcat-home" value="${tomcat-1}" />
-		</antcall>
-		<sleep seconds="${sleep}" />
-		<antcall target="executeTomcatAction">
-			<param name="action" value="start" />
-			<param name="tomcat-bin" value="${tomcat-2-bin}" />
-			<param name="tomcat-home" value="${tomcat-2}" />
-		</antcall>
-		<sleep seconds="${sleep}" />
-		<antcall target="executeTomcatAction">
-			<param name="action" value="start" />
-			<param name="tomcat-bin" value="${tomcat-3-bin}" />
-			<param name="tomcat-home" value="${tomcat-3}" />
-		</antcall>
-	</target>
 	<target name="stop-tomcat-cluster">
 		<antcall target="executeTomcatAction">
-			<param name="action" value="stop" />
-			<param name="tomcat-bin" value="${tomcat-1-bin}" />
-			<param name="tomcat-home" value="${tomcat-1}" />
-		</antcall>
-		<antcall target="executeTomcatAction">
-			<param name="action" value="stop" />
-			<param name="tomcat-bin" value="${tomcat-2-bin}" />
-			<param name="tomcat-home" value="${tomcat-2}" />
-		</antcall>
-		<antcall target="executeTomcatAction">
-			<param name="action" value="stop" />
-			<param name="tomcat-bin" value="${tomcat-3-bin}" />
-			<param name="tomcat-home" value="${tomcat-3}" />
+			<param name="action" value="start" />
+			<param name="tomcat-bin" value="${tomcat-bin}" />
+			<param name="tomcat-home" value="${tomcat}" />
 		</antcall>
 	</target>
 

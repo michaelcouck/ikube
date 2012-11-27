@@ -35,6 +35,10 @@ public class Snapshot extends Persistable {
 	private long searchesPerMinute;
 	@Column
 	private long totalSearches;
+	@Column
+	private double systemLoad;
+	@Column
+	private double availableProcessors;
 
 	@PrimaryKeyJoinColumn
 	@ManyToOne(cascade = { CascadeType.MERGE, CascadeType.REFRESH }, fetch = FetchType.EAGER)
@@ -44,7 +48,7 @@ public class Snapshot extends Persistable {
 		return indexSize;
 	}
 
-	public void setIndexSize(long indexSize) {
+	public void setIndexSize(final long indexSize) {
 		this.indexSize = indexSize;
 	}
 
@@ -52,7 +56,7 @@ public class Snapshot extends Persistable {
 		return numDocs;
 	}
 
-	public void setNumDocs(long numDocs) {
+	public void setNumDocs(final long numDocs) {
 		this.numDocs = numDocs;
 	}
 
@@ -60,7 +64,7 @@ public class Snapshot extends Persistable {
 		return latestIndexTimestamp;
 	}
 
-	public void setLatestIndexTimestamp(Date latestIndexTimestamp) {
+	public void setLatestIndexTimestamp(final Date latestIndexTimestamp) {
 		this.latestIndexTimestamp = latestIndexTimestamp;
 	}
 
@@ -68,7 +72,7 @@ public class Snapshot extends Persistable {
 		return docsPerMinute;
 	}
 
-	public void setDocsPerMinute(long docsPerMinute) {
+	public void setDocsPerMinute(final long docsPerMinute) {
 		this.docsPerMinute = docsPerMinute;
 	}
 
@@ -76,7 +80,7 @@ public class Snapshot extends Persistable {
 		return searchesPerMinute;
 	}
 
-	public void setSearchesPerMinute(long searchesPerMinute) {
+	public void setSearchesPerMinute(final long searchesPerMinute) {
 		this.searchesPerMinute = searchesPerMinute;
 	}
 
@@ -84,7 +88,7 @@ public class Snapshot extends Persistable {
 		return indexContext;
 	}
 
-	public void setIndexContext(IndexContext<?> indexContext) {
+	public void setIndexContext(final IndexContext<?> indexContext) {
 		this.indexContext = indexContext;
 	}
 
@@ -92,8 +96,24 @@ public class Snapshot extends Persistable {
 		return totalSearches;
 	}
 
-	public void setTotalSearches(long totalSearches) {
+	public void setTotalSearches(final long totalSearches) {
 		this.totalSearches = totalSearches;
+	}
+
+	public double getSystemLoad() {
+		return systemLoad;
+	}
+
+	public void setSystemLoad(final double cpuLoad) {
+		this.systemLoad = cpuLoad;
+	}
+
+	public double getAvailableProcessors() {
+		return availableProcessors;
+	}
+
+	public void setAvailableProcessors(double availableProcessors) {
+		this.availableProcessors = availableProcessors;
 	}
 
 	public String toString() {

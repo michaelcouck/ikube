@@ -62,7 +62,7 @@ public class IndexSizeListener implements IListener {
 				continue;
 			}
 			FSDirectory directory = (FSDirectory) indexWriter.getDirectory();
-			File indexDirectory = directory.getFile();
+			File indexDirectory = directory.getDirectory();
 			try {
 				StringBuilder stringBuilder = new StringBuilder();
 				stringBuilder.append(indexDirectory.getParentFile().getAbsolutePath());

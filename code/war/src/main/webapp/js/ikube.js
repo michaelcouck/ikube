@@ -17,7 +17,8 @@ function track() {
  * client. This module will spawn and create the controllers and other
  * artifacts as required.
  */
-var module = angular.module('ikube', [ "google-maps" ]);
+// "google-maps"
+var module = angular.module('ikube', []);
 
 /** This directive will draw and update the searching performance graph. */
 module.directive('searching', function($http) {
@@ -205,6 +206,15 @@ function addAutoComplete(inputField) {
 	inputField.autocomplete({
 		source : getServiceUrl("/ikube/service/auto/complete")
 	});
+}
+
+function printMethods(object) {
+	if (object == null) {
+		return;
+	}
+	for (var m in object) {
+		alert('M : ' + m);
+	}
 }
 
 var ua = navigator.userAgent.toLowerCase();
@@ -406,6 +416,7 @@ function setWaypoint(waypoints, pointLatitude, pointLongitude) {
 		origin = pointWaypoint;
 	}
 	destination = pointWaypoint;
+	return waypoints;
 }
 
 function setWaypoints(waypoints) {

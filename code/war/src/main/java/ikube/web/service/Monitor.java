@@ -203,16 +203,21 @@ public class Monitor extends Resource {
 
 	@GET
 	@Path(Monitor.ACTIONS)
+	@SuppressWarnings("rawtypes")
 	@Consumes(MediaType.APPLICATION_XML)
 	public Response actions() {
 		List<Map<String, Object>> data = new ArrayList<Map<String, Object>>();
 		Map<String, Server> servers = clusterManager.getServers();
 		for (final Server server : servers.values()) {
 			for (final Action action : server.getActions()) {
+				IndexContext indexContext = monitorService.getIndexContext(action.getIndexName());
 				Map<String, Object> actionData = new HashMap<String, Object>();
 				action.setServer(null);
 				addFieldValues(action, actionData);
 				actionData.put("server", server.getAddress());
+				if (indexContext != null && indexContext.getLastSnapshot() != null) {
+					actionData.put("docsPerMinute", indexContext.getLastSnapshot().getDocsPerMinute());
+				}
 				data.add(actionData);
 			}
 		}

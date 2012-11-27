@@ -111,9 +111,9 @@ public class IndexableTableHandlerIntegration extends Integration {
 	@Test
 	public void buildSql() throws Exception {
 		indexContext.setBatchSize(1000);
-		String expectedSql = "select snapshot.id, snapshot.numdocs, snapshot.timestamp, snapshot.docsperminute, "
-				+ "snapshot.indexsize, snapshot.latestindextimestamp, snapshot.searchesperminute, snapshot.totalsearches "
-				+ "from snapshot";
+		String expectedSql = "select snapshot.id, snapshot.numdocs, snapshot.timestamp, snapshot.availableprocessors, "
+				+ "snapshot.docsperminute, snapshot.indexsize, snapshot.latestindextimestamp, snapshot.searchesperminute, "
+				+ "snapshot.systemload, snapshot.totalsearches from snapshot";
 		long nextIdNumber = 0;
 		long batchSize = indexContext.getBatchSize();
 		Deencapsulation.invoke(indexableTableHandler, "addAllColumns", snapshotTable, connection);

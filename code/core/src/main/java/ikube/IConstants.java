@@ -46,8 +46,7 @@ public interface IConstants {
 
 	Version VERSION = Version.LUCENE_36;
 	Analyzer ANALYZER = new StemmingAnalyzer();
-	// new StandardAnalyzer(VERSION);
-
+	
 	long MAX_READ_LENGTH = 1000000;
 	int MAX_RESULT_FIELD_LENGTH = 100;
 
