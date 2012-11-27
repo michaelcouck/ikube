@@ -4,12 +4,12 @@
 	<groupId>ikube</groupId>
 	<artifactId>ikube</artifactId>
 	<packaging>pom</packaging>
-	<version>4.0.3-SNAPSHOT</version>
+	<version>4.1.0</version>
 
 	<scm>
-		<url>https://ikube.googlecode.com/svn/trunk</url>
-		<connection>scm:svn:https://ikube.googlecode.com/svn/trunk</connection>
-		<developerConnection>scm:svn:https://ikube.googlecode.com/svn/trunk</developerConnection>
+		<url>https://ikube.googlecode.com/svn/tags/ikube-4.1.0</url>
+		<connection>scm:svn:https://ikube.googlecode.com/svn/tags/ikube-4.1.0</connection>
+		<developerConnection>scm:svn:https://ikube.googlecode.com/svn/tags/ikube-4.1.0</developerConnection>
 	</scm>
 
 	<distributionManagement>
