@@ -1,11 +1,14 @@
 package ikube.service;
 
+import ikube.IConstants;
 import ikube.database.IDataBase;
 import ikube.model.Attribute;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.toolkit.ApplicationContextManager;
+import ikube.toolkit.FileUtilities;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -131,6 +134,53 @@ public class MonitorService implements IMonitorService {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Map<String, String> getProperties() {
+		String ikubeConfiguration = System.getProperty(IConstants.IKUBE_CONFIGURATION);
+		if (ikubeConfiguration == null) {
+			ikubeConfiguration = ".";
+			System.setProperty(IConstants.IKUBE_CONFIGURATION, ikubeConfiguration);
+		}
+		Map<String, String> filesAndProperties = new HashMap<String, String>();
+		File dotFolder = new File(ikubeConfiguration);
+		List<File> propertyFiles = FileUtilities.findFilesRecursively(dotFolder, new ArrayList<File>(), "spring.properties");
+		for (File propertyFile : propertyFiles) {
+			try {
+				if (propertyFile == null || !propertyFile.canRead() || propertyFile.isDirectory()) {
+					continue;
+				}
+				String filePath = propertyFile.getAbsolutePath();
+				String fileContents = FileUtilities.getContents(propertyFile, Integer.MAX_VALUE).toString();
+				filesAndProperties.put(filePath, fileContents);
+			} catch (Exception e) {
+				LOGGER.error("Exception reading property file : " + propertyFile, e);
+			}
+		}
+		return filesAndProperties;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void setProperties(final Map<String, String> filesAndProperties) {
+		for (final Map.Entry<String, String> mapEntry : filesAndProperties.entrySet()) {
+			try {
+				File file = FileUtilities.getFile(mapEntry.getKey(), Boolean.FALSE);
+				if (file == null || !file.exists() || !file.isFile() || !file.canWrite()) {
+					LOGGER.warn("Can't write to file : " + file);
+					continue;
+				}
+				FileUtilities.setContents(mapEntry.getKey(), mapEntry.getValue().getBytes());
+			} catch (Exception e) {
+				LOGGER.error("Exception setting properties in file : " + mapEntry.getKey(), e);
+			}
+		}
 	}
 
 	/**

@@ -2,8 +2,12 @@ package ikube.search.spelling;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+
+import java.io.File;
+
 import ikube.ATest;
 import ikube.mock.SpellingCheckerMock;
+import ikube.toolkit.FileUtilities;
 import ikube.toolkit.PerformanceTester;
 import mockit.Deencapsulation;
 import mockit.Mockit;
@@ -30,7 +34,8 @@ public class SpellingCheckerTest extends ATest {
 		Mockit.tearDownMocks(SpellingChecker.class);
 
 		spellingChecker = new SpellingChecker();
-		Deencapsulation.setField(spellingChecker, "languageWordListsDirectory", "languages");
+		File languagesWordFileDirectory = FileUtilities.findFileRecursively(new File("."), "languages");
+		Deencapsulation.setField(spellingChecker, "languageWordListsDirectory", languagesWordFileDirectory.getAbsolutePath());
 		Deencapsulation.setField(spellingChecker, "spellingIndexDirectoryPath", "./spellingIndex");
 		spellingChecker.initialize();
 	}

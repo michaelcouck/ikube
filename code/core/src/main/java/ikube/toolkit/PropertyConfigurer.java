@@ -41,20 +41,22 @@ public class PropertyConfigurer extends Properties {
 	public void initialize() {
 		LOGGER.info("User directory : " + new File(".").getAbsolutePath());
 		// Load the properties from our own jar
-		ownJar();
+		checkOwnJar();
 		// Check all the jars on the class path
-		checkClasspath();
-		// Check the file system for properties files
-		systemProperties();
+		checkClasspathJars();
 		// Check the file system for jars that have the properties files
-		checkFileSystem();
+		checkJarsOnFileSystemFromDotFolder();
+		// Check the file system for properties files. We read these last as these
+		// will override the other properties that we might have found in the other
+		// locations
+		checkPropertiesFilesOnFileSystemFromDotFolder();
 		// If the system property for the configuration has not been set then set it to the dot directory
 		if (System.getProperty(IConstants.IKUBE_CONFIGURATION) == null) {
 			System.setProperty(IConstants.IKUBE_CONFIGURATION, ".");
 		}
 	}
 
-	private void ownJar() {
+	private void checkOwnJar() {
 		try {
 			// We check our own jar
 			File thisJar = new File(getClass().getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
@@ -65,7 +67,7 @@ public class PropertyConfigurer extends Properties {
 		}
 	}
 
-	private void systemProperties() {
+	private void checkPropertiesFilesOnFileSystemFromDotFolder() {
 		List<File> propertyFiles = FileUtilities.findFilesRecursively(new File("."), new ArrayList<File>(), fileNamePattern);
 		for (File propertyFile : propertyFiles) {
 			try {
@@ -80,7 +82,7 @@ public class PropertyConfigurer extends Properties {
 		}
 	}
 
-	private void checkFileSystem() {
+	private void checkJarsOnFileSystemFromDotFolder() {
 		// Check all the jars in the path of the server
 		List<File> jarFiles = FileUtilities.findFilesRecursively(new File("."), new ArrayList<File>(), ".jar\\Z");
 		for (File jarFile : jarFiles) {
@@ -93,7 +95,7 @@ public class PropertyConfigurer extends Properties {
 		}
 	}
 
-	private void checkClasspath() {
+	private void checkClasspathJars() {
 		try {
 			// Check the classpath, this could take a while of course
 			String classPathString = System.getProperty("java.class.path");

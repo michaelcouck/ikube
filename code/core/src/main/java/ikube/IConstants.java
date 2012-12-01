@@ -60,6 +60,7 @@ public interface IConstants {
 	String SCORE = "score";
 	String CONTENT = "content";
 	String CONTENTS = "contents";
+	String FILE = "file";
 	String FRAGMENT = "fragment";
 	String TOTAL = "total";
 	String DURATION = "duration";

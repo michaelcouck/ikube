@@ -192,7 +192,7 @@
 	<util:list id="ikube.listener.ListenerManager.listeners">
 		<ref bean="ikube.IndexEngine" />
 		<ref bean="ikube.listener.SnapshotListener" />
-		
+		<ref bean="ikube.listener.CpuLoadListener" />
 		<bean class="ikube.listener.StartupListener" />
 		<bean class="ikube.listener.TerminationListener" />
 		<bean class="ikube.listener.ServerRemovalListener" />

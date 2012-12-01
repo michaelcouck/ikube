@@ -15,6 +15,7 @@ import ikube.index.parse.xml.XMLParser;
 import ikube.model.IndexContext;
 import ikube.model.IndexableInternet;
 import ikube.model.Url;
+import ikube.security.WebServiceAuthentication;
 import ikube.toolkit.HashUtilities;
 import ikube.toolkit.SerializationUtilities;
 import ikube.toolkit.ThreadUtilities;
@@ -28,7 +29,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
@@ -48,9 +48,6 @@ import net.htmlparser.jericho.StartTag;
 import net.htmlparser.jericho.Tag;
 
 import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.httpclient.auth.AuthPolicy;
-import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Index;
@@ -503,20 +500,14 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 		out.add(HashUtilities.hash(url.getUrl()));
 	}
 
-	protected void login(IndexableInternet indexableInternet, HttpClient httpClient) {
-		List<String> authPrefs = new ArrayList<String>(2);
-		authPrefs.add(AuthPolicy.DIGEST);
-		authPrefs.add(AuthPolicy.BASIC);
-		httpClient.getParams().setParameter(AuthPolicy.AUTH_SCHEME_PRIORITY, authPrefs);
-		httpClient.getParams().setAuthenticationPreemptive(true);
+	public void login(IndexableInternet indexableInternet, HttpClient httpClient) {
 		URL loginUrl;
 		try {
 			loginUrl = new URL(indexableInternet.getLoginUrl());
-			AuthScope authScope = new AuthScope(loginUrl.getHost(), loginUrl.getPort(), AuthScope.ANY_REALM);
-			UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(indexableInternet.getUserid(),
-					indexableInternet.getPassword());
-			httpClient.getState().setCredentials(authScope, credentials);
-		} catch (MalformedURLException e) {
+			String userid = indexableInternet.getUserid();
+			String password = indexableInternet.getPassword();
+			WebServiceAuthentication.authenticate(httpClient, loginUrl.getHost(), loginUrl.getPort(), userid, password);
+		} catch (Exception e) {
 			logger.error("Exception logging in to site : " + indexableInternet, e);
 		}
 	}

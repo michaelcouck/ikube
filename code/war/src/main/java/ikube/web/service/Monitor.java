@@ -20,13 +20,16 @@ import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -55,6 +58,8 @@ public class Monitor extends Resource {
 	public static final String ACTIONS = "/actions";
 	public static final String START = "/start";
 	public static final String TERMINATE = "/terminate";
+	public static final String GET_PROPERTIES = "/get-properties";
+	public static final String SET_PROPERTIES = "/set-properties";
 
 	public static final String INDEX_CONTEXT = "/index-context";
 	public static final String INDEX_CONTEXTS = "/index-contexts";
@@ -242,6 +247,26 @@ public class Monitor extends Resource {
 		long time = System.currentTimeMillis();
 		Event terminateEvent = ListenerManager.getEvent(Event.TERMINATE, time, indexName, Boolean.FALSE);
 		clusterManager.sendMessage(terminateEvent);
+		return buildResponse().build();
+	}
+
+	@GET
+	@Path(Monitor.GET_PROPERTIES)
+	@Consumes(MediaType.APPLICATION_XML)
+	public Response getProperties() {
+		return buildResponse(monitorService.getProperties());
+	}
+
+	@POST
+	@Path(Monitor.SET_PROPERTIES)
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	public Response setProperties(@FormParam(value = IConstants.FILE) final String file,
+			@FormParam(value = IConstants.CONTENTS) final String contents) {
+		if (!StringUtils.isEmpty(file) && !StringUtils.isEmpty(contents)) {
+			Map<String, String> filesAndProperties = new HashMap<String, String>();
+			filesAndProperties.put(file, contents);
+			monitorService.setProperties(filesAndProperties);
+		}
 		return buildResponse().build();
 	}
 

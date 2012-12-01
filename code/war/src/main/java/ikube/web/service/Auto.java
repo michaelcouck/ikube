@@ -17,8 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.google.gson.Gson;
-
 /**
  * @author Michael couck
  * @since 01.03.12
@@ -28,7 +26,7 @@ import com.google.gson.Gson;
 @Path(Auto.AUTO)
 @Scope(Auto.REQUEST)
 @Produces(MediaType.TEXT_PLAIN)
-public class Auto {
+public class Auto extends Resource {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Auto.class);
 
@@ -37,19 +35,16 @@ public class Auto {
 	public static final String COMPLETE = "/complete";
 	public static final String REQUEST = "request";
 
-	private Gson gson;
-
 	@Autowired
 	private IAutoCompleteService autoCompleteService;
-
-	public Auto() {
-		gson = new Gson();
-	}
 
 	@GET
 	@Path(Auto.COMPLETE)
 	@Consumes(MediaType.APPLICATION_XML)
 	public String autocomplete(@QueryParam(value = IConstants.TERM) final String term) {
+		if (StringUtils.isEmpty(term)) {
+			return gson.toJson(new String[0]);
+		}
 		String[] suggestions = autoCompleteService.suggestions(term);
 		for (int i = 0; i < suggestions.length; i++) {
 			suggestions[i] = StringUtils.remove(suggestions[i], "[");

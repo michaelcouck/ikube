@@ -1,3 +1,5 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
 <table width="100%">
 	<tr>
 		<td valign="top">
@@ -5,15 +7,15 @@
 			<table ng-controller="ServersController">
 				<tr ng-repeat="server in servers">
 					<td style="border : 1px solid #aaaaaa; padding : 5px;" nowrap="nowrap" valign="top">
-						<b>Age</b> : {{server.age}} <br>
-						<b>Cpu load</b> : {{server.averageCpuLoad}} <br>
-						<b>Processors</b> : {{server.processors}} <br>
-						<b>Architecture</b> : {{server.architecture}} <br>
-						<b>Address</b> : {{server.address}} <br>
-						<b>Free memory</b> : {{server.freeMemory}} <br>
-						<b>Max memory</b> : {{server.maxMemory}} <br>
-						<b>Total memory</b> : {{server.totalMemory}} <br>
-						<b>Free disk space</b> : {{server.freeDiskSpace}} <br>
+						<img src="<c:url value="/images/icons/open.gif" />">&nbsp;<b>Cpu load</b> : {{server.averageCpuLoad}} <br>
+						<img src="<c:url value="/images/icons/open.gif" />">&nbsp;<b>Free memory</b> : {{server.freeMemory}} <br>
+						<img src="<c:url value="/images/icons/open.gif" />">&nbsp;<b>Max memory</b> : {{server.maxMemory}} <br>
+						<img src="<c:url value="/images/icons/open.gif" />">&nbsp;<b>Total memory</b> : {{server.totalMemory}} <br>
+						<img src="<c:url value="/images/icons/open.gif" />">&nbsp;<b>Free disk space</b> : {{server.freeDiskSpace}} <br>
+						<img src="<c:url value="/images/icons/web.gif" />">&nbsp;<b>Address</b> : {{server.address}} <br>
+						<img src="<c:url value="/images/icons/index_performance.gif" />">&nbsp;<b>Processors</b> : {{server.processors}} <br>
+						<img src="<c:url value="/images/icons/memory_view.gif" />">&nbsp;<b>Architecture</b> : {{server.architecture}} <br>
+						<img src="<c:url value="/images/icons/server.gif" />">&nbsp;<b>Age</b> : {{server.age}} <br>
 					</td>
 				</tr>
 				<tr><td>&nbsp;</td></tr>
@@ -32,18 +34,19 @@
 						<div indexing style="width: 95%; height: 200px;"><!-- The indexing performance graph --></div>
 					</td>
 				</tr>
+				<!-- Actions table -->
 				<tr>
 					<td width="100%" align="left">
 						<table ng-controller="ActionsController" width="100%">
 							<tr>
 								<th width="7%">&nbsp;</th>
-								<th>Server</th>
-								<th>Action</th>
-								<th>Index</th>
-								<th>Indexable</th>
-								<th>Docs per minute</th>
-								<th>Start time</th>
-								<th>Functions</th>
+								<th><img src="<c:url value="/images/icons/server.gif" />">&nbsp;Server</th>
+								<th><img src="<c:url value="/images/icons/jar_l_obj.gif" />">&nbsp;Action</th>
+								<th><img src="<c:url value="/images/icons/index.gif" />">&nbsp;Index</th>
+								<th><img src="<c:url value="/images/icons/run_on_server.gif" />">&nbsp;Indexable</th>
+								<th><img src="<c:url value="/images/icons/link_obj.gif" />">&nbsp;Docs per minute</th>
+								<th><img src="<c:url value="/images/icons/launch_run.gif" />">&nbsp;Start time</th>
+								<th><img src="<c:url value="/images/icons/relaunch.gif" />">&nbsp;Functions</th>
 							</tr>
 							<tr ng-repeat="action in actions">
 								<td width="7%">&nbsp;</td>

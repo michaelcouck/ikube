@@ -73,6 +73,20 @@ public interface IMonitorService {
 	 * @return the list of field descriptions that are defined in the indexable in the order that they are found using reflections. Note
 	 *         that this will be the same order for all the methods that return fields using reflection
 	 */
-	public abstract String[] getFieldDescriptions(final Class<?> indexableClass);
+	String[] getFieldDescriptions(final Class<?> indexableClass);
+
+	/**
+	 * This method will get the properties defined in the configuration files.
+	 * 
+	 * @return the map of properties, the key is the path to the file and the value is the contents of the file
+	 */
+	Map<String, String> getProperties();
+
+	/**
+	 * This method will set the contents of the properties files.
+	 * 
+	 * @param filesAndProperties the key is the file path and the value of the map is the contents of the file to write
+	 */
+	void setProperties(final Map<String, String> filesAndProperties);
 
 }

@@ -55,5 +55,8 @@
 		property:analyzed="true"
 		property:stored="true"
 		property:vectored="true"
+		property:loginUrl="${ikube.url}"
+		property:userid="guest"
+		property:password="guest"
 		property:internetBatchSize="${internet.batch.size}" />
 </beans>

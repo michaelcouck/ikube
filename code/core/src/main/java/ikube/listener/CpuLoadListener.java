@@ -44,8 +44,8 @@ public class CpuLoadListener implements IListener {
 			return;
 		}
 		if (Event.PERFORMANCE.equals(event.getType())) {
-			boolean increaseThrottle = Boolean.TRUE;
-			boolean decreaseThrottle = Boolean.TRUE;
+			boolean increaseThrottle = Boolean.FALSE;
+			boolean decreaseThrottle = Boolean.FALSE;
 			Map<String, IndexContext> indexContexts = monitorService.getIndexContexts();
 			for (Map.Entry<String, IndexContext> mapEntry : indexContexts.entrySet()) {
 				IndexContext indexContext = mapEntry.getValue();
@@ -53,15 +53,16 @@ public class CpuLoadListener implements IListener {
 				// of ten minutes. If so then we increase the throttle for all index contexts
 				// by one millisecond
 				List<Snapshot> snapshots = indexContext.getSnapshots();
-				if (snapshots != null && snapshots.size() > 0) {
+				if (snapshots != null && snapshots.size() >= period) {
+					boolean allOver = true;
+					boolean allUnder = true;
 					for (int i = snapshots.size() - 1, j = 0; i > 0 && j < period; i--, j++) {
 						Snapshot snapshot = snapshots.get(i);
-						if (snapshot.getSystemLoad() / snapshot.getAvailableProcessors() < threshold) {
-							increaseThrottle &= Boolean.FALSE;
-						} else {
-							decreaseThrottle &= Boolean.FALSE;
-						}
+						allOver &= snapshot.getSystemLoad() / snapshot.getAvailableProcessors() > threshold;
+						allUnder &= snapshot.getSystemLoad() / snapshot.getAvailableProcessors() < threshold;
 					}
+					increaseThrottle |= allOver;
+					decreaseThrottle |= allUnder;
 				}
 			}
 			if (increaseThrottle) {
@@ -74,8 +75,8 @@ public class CpuLoadListener implements IListener {
 			if (decreaseThrottle) {
 				for (Map.Entry<String, IndexContext> mapEntry : indexContexts.entrySet()) {
 					IndexContext indexContext = mapEntry.getValue();
-					LOGGER.info("Decreasing throttle for index context : " + indexContext.getName());
 					if (indexContext.getThrottle() > 0) {
+						LOGGER.info("Decreasing throttle for index context : " + indexContext.getName());
 						indexContext.setThrottle(indexContext.getThrottle() - 1);
 					}
 				}

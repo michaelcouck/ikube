@@ -9,16 +9,22 @@ import static org.mockito.Mockito.when;
 import ikube.ATest;
 import ikube.index.IndexManager;
 import ikube.index.handler.IHandler;
+import ikube.index.handler.database.IndexableTableHandler;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.mock.IndexManagerMock;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
+import ikube.model.IndexableTable;
 import ikube.model.Server;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
+import ikube.toolkit.ThreadUtilities;
 
 import java.io.File;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import mockit.Deencapsulation;
 import mockit.Mockit;
@@ -55,12 +61,14 @@ public class IndexTest extends ATest {
 		when(index.executeInternal(any(IndexContext.class))).thenCallRealMethod();
 		when(index.getHandler(any(Indexable.class))).thenReturn(handler);
 		Deencapsulation.setField(index, logger);
+		Deencapsulation.setField(index, clusterManager);
 	}
 
 	@After
 	public void after() {
 		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
 		Mockit.tearDownMocks(IndexManager.class, ApplicationContextManager.class);
+		ThreadUtilities.destroy();
 	}
 
 	@Test
@@ -70,6 +78,24 @@ public class IndexTest extends ATest {
 		boolean result = index.execute(indexContext);
 		assertTrue(result);
 		Mockito.verify(handler, Mockito.atLeastOnce()).handle(any(IndexContext.class), any(Indexable.class));
+	}
+
+	@Test
+	public void executeSuccess() throws Exception {
+		indexableTable = new IndexableTable();
+		List<Indexable<?>> indexables = new ArrayList<Indexable<?>>(Arrays.asList(indexableTable));
+		Mockito.when(indexContext.getIndexables()).thenReturn(indexables);
+		boolean result = index.execute(indexContext);
+		logger.info("Result from index action : " + result);
+		assertTrue("The index must execute properly : ", result);
+	}
+
+	@Test
+	public void getHandler() {
+		IndexableTable indexableTable = new IndexableTable();
+		Object handler = Deencapsulation.invoke(new Index(), "getHandler", indexableTable);
+		assertTrue("The handler for the Arabic data should be the wiki handler : ",
+				handler.getClass().getName().contains(IndexableTableHandler.class.getSimpleName()));
 	}
 
 }

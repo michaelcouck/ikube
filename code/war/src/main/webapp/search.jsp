@@ -4,37 +4,6 @@
 
 <% response.setHeader("Access-Control-Allow-Origin", "*"); %>
 
-<!doctype html>
-<html>
-<head>
-	<meta http-equiv="Expires" content="-1">
-	<meta http-equiv="Pragma" content="no-cache">
-	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
-	
-	<title><tiles:insertAttribute name="title" /></title>
-	<link rel="shortcut icon" href="<c:url value="/images/icons/favicon.ico" />">
-	
-	<meta name="Keywords" content="Ikube, Enterprise Search, Web Site Search, Database Search, High Volume" />
-	<meta name="Description" content="Ikube Enterprise Search." />
-			
-	<link rel="stylesheet" href="<c:url value="/style/style.css" />" />
-
-	<script src="http://www.google-analytics.com/ga.js" type="text/javascript"></script>
-	<script src="http://maps.google.com/maps/api/js?sensor=false" type="text/javascript"></script>
-    <script src="https://www.google.com/jsapi" type="text/javascript"></script>
-	
-    <link rel="stylesheet" href="<c:url value="/style/codemirror.css" />" type="text/css" />
-	
-	<script src="<c:url value="/js/angular.min.js" />" type="text/javascript"></script>
-	<script src="<c:url value="/js/codemirror.js" />" type="text/javascript"></script>
-    <script src="<c:url value="/js/runmode.js" />" type="text/javascript"></script>
-    
-    <!-- Must be after Angular -->
-    <script src="<c:url value="/js/ikube.js" />" type="text/javascript"></script>
-</head>
-
-<body>
-
 <script type="text/javascript">
 
 	// The global map
@@ -143,10 +112,10 @@
 		
 		// Creates the Json pagination array for the next pages in the search
 		$scope.doPagination = function(data) {
+			$scope.pagination = [];
 			var total = $scope.statistics.total;
 			// Exception or no results
 			if (total == null || total == 0) {
-				$scope.pagination = [];
 				$scope.searchParameters.firstResult = 0;
 				$scope.endResult = 0;
 				return;
@@ -260,49 +229,94 @@
 			}
 		};
 	});
+	
+	module.factory('autoCompleteDataService', function($rootScope, $http) {
+	    return {
+	        getSource: function() {
+	        	var suggestions = [];
+	        	var url = getServiceUrl("/ikube/service/auto/complete");
+	        	$rootScope.getSuggestions = function() {
+	        		var promise = $http.get(url);
+	        		promise.success(function(data, status) {
+	        			alert('Suggestions : ' + data);
+	        			suggestions = data;
+	        		});
+	        		promise.error(function(data, status) {
+	        			// TODO Something
+	        		});
+	        	};
+	        	$rootScope.getSuggestions();
+	        	return ['apples', 'oranges', 'bananas'];
+	        	// return suggestions;
+	        }
+	    }
+	});
+
+	module.directive('autoComplete', function(autoCompleteDataService) {
+	    return {
+	        restrict: 'A',
+	        link: function($scope, $elem, $attr, $ctrl) {
+	        	// alert('Ctrl : ' + $elem);
+	        	// elem is a jquery lite object if jquery is not present,
+	        	// but with jquery and jquery ui, it will be a full jquery object.
+	            $elem.autocomplete({
+	            	minLength: 3,
+	                source: autoCompleteDataService.getSource() //from your service
+	            });
+	        }
+	    };
+	});
+	
 </script>
 
 <table ng-app="ikube" ng-controller="SearcherController" width="100%">
 	<tr>
-		<td width="20%">Collection : </td>
-		<td width="20%" nowrap="nowrap">
-			<select ng-controller="IndexesController" ng-model="searchParameters.indexName">
-   				<option ng-repeat="index in indexes" value="{{index}}">{{index}}</option>
-			</select>
-			Geospatial : <input type="checkbox" ng-model="geospatial" name="geospatial">
+		<td width="100%" valign="top">
+			<table width="100%">
+				<tr>
+					<td>Collection : </td>
+					<td nowrap="nowrap">
+						<select ng-controller="IndexesController" ng-model="searchParameters.indexName">
+   							<option ng-repeat="index in indexes" value="{{index}}">{{index}}</option>
+						</select>
+						Geospatial : <input type="checkbox" ng-model="geospatial" name="geospatial">
+					</td>
+				</tr>
+				
+				<tr>
+					<td>All of these words:</td>
+					<td><input id="allWords" name="allWords" ng-model="allWords" value="allWords"></td>
+				</tr>
+				<tr>
+					<td>This exact word or phrase:</td>
+					<td><input ng-model="exactPhrase" value="exactPhrase"></td>
+				</tr>
+				<tr>
+					<td>One or more of these words:</td>
+					<td><input ng-model="oneOrMore" value="oneOrMore"></td>
+				</tr>
+				<tr>
+					<td>None of these words:</td>
+					<td><input ng-model="noneOfTheseWords" value="noneOfTheseWords"></td>
+				</tr>
+				<tr>
+					<td>Latitude:</td>
+					<td><input ng-model="latitude" placeholder="latitude"></td>
+				</tr>
+				<tr>
+					<td>Longitude:</td>
+					<td><input ng-model="longitude" placeholder="longitude"></td>
+				</tr>
+				<tr>
+					<td>Distance:</td>
+					<td><input ng-model="distance" placeholder="distance"></td>
+				</tr>
+				
+			</table>
 		</td>
-		<td width="340px" rowspan="8">
+		<td width="340px" rowspan="3">
 			<div id="map_canvas" google-map style="height: 340px; width: 550px; border : 1px solid black;"></div>
 		</td>
-	</tr>
-	
-	<tr>
-		<td>All of these words:</td>
-		<td><input id="allWords" name="allWords" ng-model="allWords" value="allWords"></td>
-	</tr>
-	<tr>
-		<td>This exact word or phrase:</td>
-		<td><input ng-model="exactPhrase" value="exactPhrase"></td>
-	</tr>
-	<tr>
-		<td>One or more of these words:</td>
-		<td><input ng-model="oneOrMore" value="oneOrMore"></td>
-	</tr>
-	<tr>
-		<td>None of these words:</td>
-		<td><input ng-model="noneOfTheseWords" value="noneOfTheseWords"></td>
-	</tr>
-	<tr>
-		<td>Latitude:</td>
-		<td><input ng-model="latitude" placeholder="latitude"></td>
-	</tr>
-	<tr>
-		<td>Longitude:</td>
-		<td><input ng-model="longitude" placeholder="longitude"></td>
-	</tr>
-	<tr>
-		<td>Distance:</td>
-		<td><input ng-model="distance" placeholder="distance"></td>
 	</tr>
 	
 	<tr>
@@ -314,7 +328,7 @@
 	<tr><td colspan="2">&nbsp;</td></tr>
 	
 	<tr>
-		<td colspan="3">
+		<td colspan="2">
 			Showing results '{{searchParameters.firstResult}} 
 			to {{endResult}} 
 			of {{statistics.total}}' 
@@ -324,7 +338,7 @@
 	</tr>
 	
 	<tr>
-		<td colspan="3" nowrap="nowrap">
+		<td colspan="2" nowrap="nowrap">
 			<span ng-repeat="page in pagination">
 				<a style="font-color : {{page.active}}" href="#" ng-click="
 					doFirstResult(page.firstResult);
@@ -336,7 +350,7 @@
 	<tr><td colspan="3">&nbsp;</td></tr>
 	
 	<tr ng-repeat="datum in data">
-		<td colspan="3">
+		<td colspan="2">
 			<b>Id</b> : {{datum.id}}<br> 
 			<b>Score</b> : {{datum.score}}<br>
 			<b>Fragment</b> : <span ng-bind-html-unsafe="datum.fragment"></span><br>
@@ -347,10 +361,10 @@
 		</td>
 	</tr>
 	
-	<tr><td colspan="3">&nbsp;</td></tr>
+	<tr><td colspan="2">&nbsp;</td></tr>
 	
 	<tr>
-		<td colspan="3" nowrap="nowrap">
+		<td colspan="2" nowrap="nowrap">
 			<span ng-repeat="page in pagination">
 				<a style="font-color : {{page.active}}" href="#" ng-click="
 					doFirstResult(page.firstResult);
@@ -360,6 +374,3 @@
 	</tr>
 	
 </table>
-
-</body>
-</html>

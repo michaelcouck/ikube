@@ -198,15 +198,17 @@ public final class FileUtilities {
 			} else {
 				if (!file.exists() || !file.isFile()) {
 					File parent = file.getParentFile();
-					parent = FileUtilities.getFile(parent.getAbsolutePath(), Boolean.TRUE);
 					if (parent != null) {
-						try {
-							boolean created = file.createNewFile();
-							if (!created) {
-								LOGGER.warn("Didn't create directory/file : " + file);
+						parent = FileUtilities.getFile(parent.getAbsolutePath(), Boolean.TRUE);
+						if (parent != null) {
+							try {
+								boolean created = file.createNewFile();
+								if (!created) {
+									LOGGER.warn("Didn't create directory/file : " + file);
+								}
+							} catch (IOException e) {
+								LOGGER.error("Exception creating file : " + file, e);
 							}
-						} catch (IOException e) {
-							LOGGER.error("Exception creating file : " + file, e);
 						}
 					}
 				}

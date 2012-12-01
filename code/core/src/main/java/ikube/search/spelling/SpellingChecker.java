@@ -4,13 +4,13 @@ import ikube.IConstants;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 
-import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.spell.PlainTextDictionary;
 import org.apache.lucene.search.spell.SpellChecker;
@@ -50,75 +50,27 @@ public class SpellingChecker {
 
 	public void initialize() throws Exception {
 		File spellingIndexDirectory = FileUtilities.getFile(spellingIndexDirectoryPath, Boolean.TRUE);
-		boolean mustIndex = true;
-
-		Directory directory = null;
-		try {
-			if (spellingIndexDirectory != null) {
-				directory = FSDirectory.open(spellingIndexDirectory);
-				if (IndexReader.indexExists(directory)) {
-					mustIndex = false;
-				}
-			}
-		} catch (Exception e) {
-			LOGGER.error("Exception checking spelling index : ", e);
-		} finally {
-			try {
-				if (directory != null) {
-					directory.close();
-					directory = null;
-				}
-			} catch (Exception e) {
-				LOGGER.error("Exception closing the spelling index : ", e);
-			}
-			if (mustIndex) {
-				FileUtilities.deleteFile(spellingIndexDirectory, 1);
-			}
-			spellingIndexDirectory = FileUtilities.getFile(spellingIndexDirectoryPath, Boolean.TRUE);
-		}
-
-		if (spellingIndexDirectory == null || !spellingIndexDirectory.exists()) {
-			LOGGER.warn("Spelling index directory null : " + spellingIndexDirectoryPath);
-			File file = new  File(spellingIndexDirectoryPath);
-			boolean mkdirs = file.mkdirs();
-			if (!mkdirs) {
-				LOGGER.warn("Mkdirs returned : " + mkdirs);
-			}
-		}
-		directory = FSDirectory.open(spellingIndexDirectory);
-
+		Directory directory = FSDirectory.open(spellingIndexDirectory);
 		spellChecker = new SpellChecker(directory);
-		if (mustIndex) {
-			indexLanguageFiles();
-		}
+		indexLanguageFiles();
 		LOGGER.info("Opened spelling index on : " + spellingIndexDirectory.getAbsolutePath());
 	}
 
 	private void indexLanguageFiles() {
-		File languagesDirectory = FileUtilities.findFileRecursively(new File("."), Boolean.TRUE, languageWordListsDirectory);
-		File[] languageFiles = null;
-		if (languagesDirectory != null && languagesDirectory.exists() && languagesDirectory.isDirectory()) {
-			languageFiles = languagesDirectory.listFiles(new FileFilter() {
-				@Override
-				public boolean accept(File pathname) {
-					return pathname.getName().endsWith(".txt");
-				}
-			});
-		}
-		if (languageFiles != null && languageFiles.length > 0) {
-			for (File languageFile : languageFiles) {
-				InputStream inputStream = null;
-				try {
-					LOGGER.info("Language file : " + languageFile);
-					inputStream = new FileInputStream(languageFile);
-					LOGGER.info("Input stream : " + inputStream);
-					IndexWriterConfig indexWriterConfig = new IndexWriterConfig(IConstants.VERSION, IConstants.ANALYZER);
-					spellChecker.indexDictionary(new PlainTextDictionary(inputStream), indexWriterConfig, Boolean.TRUE);
-				} catch (Exception e) {
-					LOGGER.error("Exception indexing language file : " + languageFile, e);
-				} finally {
-					FileUtilities.close(inputStream);
-				}
+		List<File> languageDictionaryFiles = FileUtilities.findFilesRecursively(new File(languageWordListsDirectory),
+				new ArrayList<File>(), "txt");
+		for (File languageDictionaryFile : languageDictionaryFiles) {
+			InputStream inputStream = null;
+			try {
+				LOGGER.info("Language file : " + languageDictionaryFile);
+				inputStream = new FileInputStream(languageDictionaryFile);
+				LOGGER.info("Input stream : " + inputStream);
+				IndexWriterConfig indexWriterConfig = new IndexWriterConfig(IConstants.VERSION, IConstants.ANALYZER);
+				spellChecker.indexDictionary(new PlainTextDictionary(inputStream), indexWriterConfig, Boolean.TRUE);
+			} catch (Exception e) {
+				LOGGER.error("Exception indexing language file : " + languageDictionaryFile, e);
+			} finally {
+				FileUtilities.close(inputStream);
 			}
 		}
 	}
@@ -128,8 +80,7 @@ public class SpellingChecker {
 	 * If there are no matches for some tokens, then the best match will be added to the result. If there are no spelling errors then this
 	 * method will return null, indicating that there were no corrections to be made.
 	 * 
-	 * @param searchString
-	 *        the search string with typically words in it
+	 * @param searchString the search string with typically words in it
 	 * @return the tokens in the original search string with the mis-spelled tokens corrected with the best result, or null if there were no
 	 *         spelling errors
 	 */

@@ -12,12 +12,14 @@ function track() {
 	}
 }
 
+/** The global refresh variable. */
+var refreshInterval = 15000;
+
 /**
  * This is the main Angular module for the iKube application on the 
  * client. This module will spawn and create the controllers and other
  * artifacts as required.
  */
-// "google-maps"
 var module = angular.module('ikube', []);
 
 /** This directive will draw and update the searching performance graph. */
@@ -45,7 +47,7 @@ module.directive('searching', function($http) {
 			// And re-draw it every few seconds to give the live update feel
 			setInterval(function() {
 				$scope.drawSearchingChart();
-			}, 10000);
+			}, refreshInterval);
 		}
 	}
 });
@@ -75,7 +77,7 @@ module.directive('indexing', function($http) {
 			// And re-draw it every few seconds to give the live update feel
 			setInterval(function() {
 				$scope.drawIndexingChart();
-			}, 10000);
+			}, refreshInterval);
 		}
 	}
 });
@@ -101,7 +103,7 @@ module.controller('ServersController', function($http, $scope) {
 	$scope.refreshServers();
 	setInterval(function() {
 		$scope.refreshServers();
-	}, 10000);
+	}, refreshInterval);
 });
 
 /**
@@ -129,7 +131,7 @@ module.controller('ActionsController', function($http, $scope) {
 	// Refresh from time to time
 	setInterval(function() {
 		$scope.getActions();
-	}, 10000);
+	}, refreshInterval);
 	// This function will send a terminate event to the cluster
 	$scope.terminateIndexing = function(indexName) {
 		if (confirm('Terminate indexing of index : ' + indexName)) {
@@ -172,7 +174,7 @@ module.controller('IndexContextsController', function($http, $scope) {
 	// Refresh the index contexts every so often
 	setInterval(function() {
 		$scope.refreshIndexContexts();
-	}, 10000);
+	}, refreshInterval);
 	// This function will publish a start event in the cluster
 	$scope.startIndexing = function(indexName) {
 		if (confirm('Start indexing of index : ' + indexName)) {
@@ -193,6 +195,30 @@ module.controller('IndexContextsController', function($http, $scope) {
 			});
 		}
 	}
+});
+
+/**
+ * This controller will just populate the page with the property files data, i.e. the
+ * absolute path to the file and the contents of the file in a text area that can be posted
+ * back to the server 
+ */
+module.controller('PropertiesController', function($http, $scope) {
+	// The map of files and contents
+	$scope.propertyFiles = {};
+	$scope.url = getServiceUrl('/ikube/service/monitor/get-properties');
+	
+	$scope.getProperties = function() {
+		var promise = $http.get($scope.url);
+		promise.success(function(data, status) {
+			$scope.status = status;
+			$scope.propertyFiles = data;
+		});
+		promise.error(function(data, status) {
+			$scope.status = status;
+		});
+	};
+	
+	$scope.getProperties();
 });
 
 function writeDate() {
