@@ -351,12 +351,13 @@
 	
 	<tr ng-repeat="datum in data">
 		<td colspan="2">
-			<b>Id</b> : {{datum.id}}<br> 
+			<span ng-hide="!datum.id"><b>Identifier</b> : {{datum.id}}<br></span> 
 			<b>Score</b> : {{datum.score}}<br>
 			<b>Fragment</b> : <span ng-bind-html-unsafe="datum.fragment"></span><br>
-			<b>Latitude</b> : {{datum.latitude}}<br>
-			<b>Longitude</b> : {{datum.longitude}}<br>
-			<b>Distance</b> : {{datum.distance}}<br>
+			<span ng-hide="!datum.latitude"><b>Latitude</b> : {{datum.latitude}}<br></span>
+			<span ng-hide="!datum.longitude"><b>Longitude</b> : {{datum.longitude}}<br></span>
+			<span ng-hide="!datum.distance"><b>Distance</b> : {{datum.distance}}<br></span>
+			<span ng-hide="!datum.path"><b>Path</b> : {{datum.path}}<br></span>
 			<br>
 		</td>
 	</tr>

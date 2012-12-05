@@ -13,8 +13,10 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.Writer;
+import java.util.Arrays;
 import java.util.Date;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
@@ -24,10 +26,15 @@ import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
 import org.apache.lucene.document.NumericField;
 import org.apache.lucene.index.CorruptIndexException;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.LogByteSizeMergePolicy;
 import org.apache.lucene.index.MergePolicy;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.MultiSearcher;
+import org.apache.lucene.search.Searchable;
+import org.apache.lucene.store.AlreadyClosedException;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.LockObtainFailedException;
@@ -40,6 +47,7 @@ import org.apache.lucene.store.LockObtainFailedException;
  * @since 21.11.10
  * @version 01.00
  */
+@SuppressWarnings("deprecation")
 public final class IndexManager {
 
 	private static final Logger LOGGER = Logger.getLogger(IndexManager.class);
@@ -56,15 +64,11 @@ public final class IndexManager {
 	 * documents to it during the index. The index writer is opened on a directory that will be the index path on the file system, the name
 	 * of the index, then the
 	 * 
-	 * @param ip
-	 *            the ip address of this machine
-	 * @param indexContext
-	 *            the index context to open the writer for
-	 * @param time
-	 *            the time stamp for the index directory. This can come from the system time but it can also come from another server. When
-	 *            an index is started the server will publish the time it started the index. In this way we can check the timestamp for the
-	 *            index, and if it is set then we use the cluster timestamp. As a result we write the index in the same 'timestamp'
-	 *            directory
+	 * @param ip the ip address of this machine
+	 * @param indexContext the index context to open the writer for
+	 * @param time the time stamp for the index directory. This can come from the system time but it can also come from another server. When
+	 *        an index is started the server will publish the time it started the index. In this way we can check the timestamp for the
+	 *        index, and if it is set then we use the cluster timestamp. As a result we write the index in the same 'timestamp' directory
 	 * @return the index writer opened for this index context or null if there was any exception opening the index
 	 */
 	public static synchronized IndexWriter openIndexWriter(final IndexContext<?> indexContext, final long time, final String ip) {
@@ -108,12 +112,9 @@ public final class IndexManager {
 	/**
 	 * This method will open the index writer using the index context and a directory.
 	 * 
-	 * @param indexContext
-	 *            the index context for the parameters for the index writer like compound file and buffer size
-	 * @param indexDirectory
-	 *            the directory to open the index in
-	 * @param create
-	 *            whether to create the index or open on an existing index
+	 * @param indexContext the index context for the parameters for the index writer like compound file and buffer size
+	 * @param indexDirectory the directory to open the index in
+	 * @param create whether to create the index or open on an existing index
 	 * @return the index writer open on the specified directory
 	 * @throws Exception
 	 */
@@ -130,10 +131,10 @@ public final class IndexManager {
 			}
 		};
 		indexWriterConfig.setMergePolicy(mergePolicy);
-		
+
 		Directory directory = FSDirectory.open(indexDirectory);
 		IndexWriter indexWriter = new IndexWriter(directory, indexWriterConfig);
-		
+
 		// Below is the deprecated code
 		// IndexWriter indexWriter = new IndexWriter(directory, analyzer, create, MaxFieldLength.UNLIMITED);
 		// indexWriter.setUseCompoundFile(indexContext.isCompoundFile());
@@ -167,8 +168,7 @@ public final class IndexManager {
 	/**
 	 * This method will close the index writer and optimize it too.
 	 * 
-	 * @param indexWriter
-	 *            the index writer to close and optimize
+	 * @param indexWriter the index writer to close and optimize
 	 */
 	public static void closeIndexWriter(final IndexWriter indexWriter) {
 		if (indexWriter == null) {
@@ -223,12 +223,9 @@ public final class IndexManager {
 	 * This method will get the path to the index directory that will be created, based on the path in the context, the time and the ip of
 	 * the machine.
 	 * 
-	 * @param indexContext
-	 *            the context to use for the path to the indexes for the context
-	 * @param time
-	 *            the time for the upper directory name
-	 * @param ip
-	 *            the ip for the index directory name
+	 * @param indexContext the context to use for the path to the indexes for the context
+	 * @param time the time for the upper directory name
+	 * @param ip the ip for the index directory name
 	 * @return the full path to the
 	 */
 	public static String getIndexDirectory(final IndexContext<?> indexContext, final long time, final String ip) {
@@ -240,7 +237,7 @@ public final class IndexManager {
 		builder.append(ip); // Ip
 		return builder.toString();
 	}
-	
+
 	/**
 	 * This method gets the latest index directory. Index directories are defined by:<br>
 	 * 
@@ -288,7 +285,7 @@ public final class IndexManager {
 		}
 		return latest;
 	}
-	
+
 	/**
 	 * Verifies that all the characters in a string are digits, ie. the string is a number.
 	 * 
@@ -306,6 +303,108 @@ public final class IndexManager {
 			}
 		}
 		return true;
+	}
+
+	public static long getIndexSize(final IndexContext<?> indexContext) {
+		long indexSize = 0;
+		try {
+			File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
+			if (latestIndexDirectory == null || !latestIndexDirectory.exists() || !latestIndexDirectory.isDirectory()) {
+				LOGGER.info("No latest index");
+				return indexSize;
+			}
+			File[] serverIndexDirectories = latestIndexDirectory.listFiles();
+			if (serverIndexDirectories == null) {
+				LOGGER.info("No server directories");
+				return indexSize;
+			}
+			LOGGER.info("Server index directories : " + Arrays.deepToString(serverIndexDirectories));
+			for (File serverIndexDirectory : serverIndexDirectories) {
+				if (serverIndexDirectory != null && serverIndexDirectory.exists() && serverIndexDirectory.isDirectory()) {
+					File[] indexFiles = serverIndexDirectory.listFiles();
+					if (indexFiles == null || indexFiles.length == 0) {
+						continue;
+					}
+					for (File indexFile : indexFiles) {
+						indexSize += indexFile.length();
+					}
+				}
+			}
+		} catch (Exception e) {
+			LOGGER.error("Exception getting the size of the index : ", e);
+		}
+		return indexSize;
+	}
+
+	public static long getNumDocs(final IndexContext<?> indexContext) {
+		long numDocs = 0;
+		MultiSearcher multiSearcher = indexContext.getMultiSearcher();
+		if (multiSearcher != null) {
+			for (Searchable searchable : multiSearcher.getSearchables()) {
+				numDocs += ((IndexSearcher) searchable).getIndexReader().numDocs();
+			}
+		}
+		return numDocs;
+	}
+
+	public static long getNumDocsIndexWriter(final IndexContext<?> indexContext) {
+		long numDocs = 0;
+		IndexWriter indexWriter = indexContext.getIndexWriter();
+		if (indexWriter != null) {
+			try {
+				// Checking if the directory is locked is like checking that the writer is sill open
+				if (IndexWriter.isLocked(indexWriter.getDirectory())) {
+					numDocs += indexWriter.numDocs();
+				}
+			} catch (AlreadyClosedException e) {
+				LOGGER.warn("Index writer is closed : " + e.getMessage());
+			} catch (Exception e) {
+				LOGGER.error("Exception reading the number of documents from the writer", e);
+			}
+			File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
+			if (latestIndexDirectory != null) {
+				File[] serverIndexDirectories = latestIndexDirectory.listFiles();
+				if (serverIndexDirectories != null) {
+					Directory directory = null;
+					IndexReader indexReader = null;
+					for (File serverIndexDirectory : serverIndexDirectories) {
+						try {
+							directory = FSDirectory.open(serverIndexDirectory);
+							if (!IndexWriter.isLocked(directory) && IndexReader.indexExists(directory)) {
+								indexReader = IndexReader.open(directory);
+								numDocs += indexReader.numDocs();
+							}
+						} catch (Exception e) {
+							LOGGER.error("Exception opening the reader on the index : " + serverIndexDirectory, e);
+						} finally {
+							try {
+								if (directory != null) {
+									directory.close();
+								}
+								if (indexReader != null) {
+									indexReader.close();
+								}
+							} catch (Exception e) {
+								LOGGER.error("Exception closing the readon on the index : ", e);
+							}
+						}
+					}
+				}
+			}
+		}
+		return numDocs;
+	}
+
+	public static Date getLatestIndexDirectoryDate(final IndexContext<?> indexContext) {
+		long timestamp = 0;
+		File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
+		if (latestIndexDirectory != null) {
+			String name = latestIndexDirectory.getName();
+			if (StringUtils.isNumeric(name)) {
+				timestamp = Long.parseLong(name);
+			}
+		}
+		return new Date(timestamp);
 	}
 
 	public static String getIndexDirectoryPath(final IndexContext<?> indexContext) {

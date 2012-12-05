@@ -44,7 +44,8 @@
 								<th><img src="<c:url value="/images/icons/jar_l_obj.gif" />">&nbsp;Action</th>
 								<th><img src="<c:url value="/images/icons/index.gif" />">&nbsp;Index</th>
 								<th><img src="<c:url value="/images/icons/run_on_server.gif" />">&nbsp;Indexable</th>
-								<th><img src="<c:url value="/images/icons/link_obj.gif" />">&nbsp;Docs per minute</th>
+								<th><img src="<c:url value="/images/icons/link_obj.gif" />">&nbsp;Per minute</th>
+								<th><img src="<c:url value="/images/icons/link_obj.gif" />">&nbsp;Total docs</th>
 								<th><img src="<c:url value="/images/icons/launch_run.gif" />">&nbsp;Start time</th>
 								<th><img src="<c:url value="/images/icons/relaunch.gif" />">&nbsp;Functions</th>
 							</tr>
@@ -55,6 +56,7 @@
 								<td>{{action.indexName}}</td>
 								<td>{{action.indexableName}}</td>
 								<td>{{action.docsPerMinute}}</td>
+								<td>{{action.totalDocsIndexed}}</td>
 								<td>{{action.startTime}}</td>
 								<td>
 									<a style="font-color : red;" href="#" ng-click="terminateIndexing(action.indexName);">Terrminate</a>

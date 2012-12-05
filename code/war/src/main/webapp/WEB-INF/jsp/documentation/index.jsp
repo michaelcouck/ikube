@@ -20,7 +20,6 @@ module.controller('NavigationController', function($scope) {
 		indexes : false,
 		quickstart : false,
 		searching : false,
-		tutorial : false,
 		context : false,
 		database : false,
 		email : false,
@@ -45,7 +44,6 @@ module.controller('NavigationController', function($scope) {
 	<a href="#" ng-click="navigate('clustering')">Clustering</a>&nbsp;
 	<a href="#" ng-click="navigate('customisation')">Customisation</a>&nbsp;
 	<a href="#" ng-click="navigate('searching')">Searching</a>&nbsp;
-	<a href="#" ng-click="navigate('tutorial')">Tutorial</a>&nbsp;
 	<a href="#" ng-click="navigate('extra')">Extra</a>&nbsp;
 	<a href="#" ng-click="navigate('context')">Context</a>&nbsp;
 	<a href="#" ng-click="navigate('database')">Database</a>&nbsp;
@@ -71,9 +69,6 @@ module.controller('NavigationController', function($scope) {
 	</div>
 	<div ng-model="visible.searching" ng-visible="visible.searching">
 		<jsp:include page="/WEB-INF/jsp/documentation/searching.jsp" />
-	</div>
-	<div ng-model="visible.tutorial" ng-visible="visible.tutorial">
-		<jsp:include page="/WEB-INF/jsp/documentation/tutorial.jsp" />
 	</div>
 	<div ng-model="visible.extra" ng-visible="visible.extra">
 		<jsp:include page="/WEB-INF/jsp/documentation/extra.jsp" />

@@ -196,6 +196,7 @@
 		<bean class="ikube.listener.StartupListener" />
 		<bean class="ikube.listener.TerminationListener" />
 		<bean class="ikube.listener.ServerRemovalListener" />
+		<bean class="ikube.listener.ClusterClubListener" />
 		<bean class="ikube.listener.IndexSizeListener" />
 		<bean class="ikube.listener.ActionListener" />
 		<bean class="ikube.listener.IndexContextListener" />

@@ -1,7 +1,5 @@
 package ikube.cluster.hzc;
 
-import java.io.File;
-
 import ikube.cluster.IClusterManager;
 import ikube.index.IndexManager;
 import ikube.listener.Event;
@@ -9,6 +7,8 @@ import ikube.listener.ListenerManager;
 import ikube.model.IndexContext;
 import ikube.service.IMonitorService;
 import ikube.toolkit.ThreadUtilities;
+
+import java.io.File;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
@@ -51,7 +51,7 @@ public class StartListener implements MessageListener<Object> {
 		final Event event = (Event) object;
 		if (Event.STARTUP.equals(event.getType())) {
 			LOGGER.info("Manually starting indexing : " + ToStringBuilder.reflectionToString(event, ToStringStyle.SHORT_PREFIX_STYLE));
-			String indexName = event.getObject().toString();
+			final String indexName = event.getObject().toString();
 			final IndexContext<?> indexContext = monitorService.getIndexContexts().get(indexName);
 			final long maxAge = indexContext.getMaxAge();
 			indexContext.setMaxAge(0);
@@ -61,7 +61,8 @@ public class StartListener implements MessageListener<Object> {
 					File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
 					File newLatestIndexDirectory = null;
 					do {
-						ThreadUtilities.sleep(60000 * 3);
+						listenerManager.fireEvent(Event.TIMER, System.currentTimeMillis(), indexName, Boolean.FALSE);
+						ThreadUtilities.sleep(10000);
 						newLatestIndexDirectory = IndexManager.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
 						LOGGER.info("Latest : " + latestIndexDirectory + ", new latest : " + newLatestIndexDirectory);
 					} while (latestIndexDirectory != null && latestIndexDirectory.equals(newLatestIndexDirectory));

@@ -154,6 +154,41 @@ module.controller('ActionsController', function($http, $scope) {
 	}
 });
 
+module.controller('StartupController', function($http, $scope) {
+	$scope.startupAll = function() {
+		if (confirm('Re-start all schedules and actions in the cluster : ')) {
+			$scope.url = getServiceUrl('/ikube/service/monitor/startup-all');
+			$scope.parameters = {};
+			// The configuration for the request to the server
+			$scope.config = { params : $scope.parameters };
+			// And start all the schedules again
+			var promise = $http.get($scope.url, $scope.config);
+			promise.success(function(data, status) {
+				$scope.status = status;
+			});
+			promise.error(function(data, status) {
+				$scope.status = status;
+			});
+		}
+	}
+	$scope.terminateAll = function() {
+		if (confirm('Terminate all schedules and actions in the cluster : ')) {
+			$scope.url = getServiceUrl('/ikube/service/monitor/terminate-all');
+			$scope.parameters = {};
+			// The configuration for the request to the server
+			$scope.config = { params : $scope.parameters };
+			// And terminate the schedules in the cluster
+			var promise = $http.get($scope.url, $scope.config);
+			promise.success(function(data, status) {
+				$scope.status = status;
+			});
+			promise.error(function(data, status) {
+				$scope.status = status;
+			});
+		}
+	}
+});
+
 /** This directive gathers the index context data from the server for presentation. */
 module.controller('IndexContextsController', function($http, $scope) {
 	$scope.indexContexts = [];
@@ -348,15 +383,6 @@ function popup(mylink, windowname) {
 	return false;
 }
 
-/** The Google map that we will add the points to */
-var map = null;
-/** The points array for the locations of the results found */
-var waypoints = null;
-/** The origin of the map */
-var origin = null;
-/** The destination of the points, i.e. last on on the route */
-var destination = null;
-
 /**
  * This function will capitalize the first letter of a string.
  * 
@@ -365,29 +391,6 @@ var destination = null;
 String.prototype.capitalize = function() {
 	return this.charAt(0).toUpperCase() + this.slice(1);
 };
-
-/**
- * This function will set up the map including the center
- * of the map with the single co-ordinate of the origin.
- */
-function initializeMap() {
-	$('#map_canvas').toggle(true);
-	var latitude = parseFloat($('#latitude').val());
-	var longitude = parseFloat($('#longitude').val());
-	var options = {
-		center: new google.maps.LatLng(latitude, longitude),
-		zoom: 13,
-		mapTypeId: google.maps.MapTypeId.ROADMAP
-	};
-	map = new google.maps.Map(document.getElementById('map_canvas'), options);
-	var coordinate = new google.maps.LatLng(latitude, longitude);
-	var marker = new google.maps.Marker({
-		position: coordinate,
-		map : map,
-		title : "Coordinate [" + latitude + ", " + longitude + "]",
-		icon: "/ikube/image/icon/center_pin.png"
-	});
-}
 
 /**
  * This function builds the url to the rest search service.
@@ -403,70 +406,3 @@ function getServiceUrl(path) {
 	url.push(path);
 	return url.join('');
 }
-
-function setResults(xmlDom) {
-	origin = null;
-	waypoints = [];
-	destination = null;
-	// The last hash map which is the statistics map
-	var statistics = null;
-	// This is the iteration over the array list objects in the xml
-	if (waypoints.length > 0) {
-		setWaypoints(waypoints);
-	};
-}
-
-function setResult(tbody, resultMap) {
-	var pointName = null;
-	var pointDistance = null;
-	var pointLatitude = null;
-	var pointLongitude = null;
-	// TODO implement with Angular
-	if (pointLatitude != null && pointLongitude != null) {
-		var pointMarker = new google.maps.Marker({
-			position: new google.maps.LatLng(pointLatitude, pointLongitude),
-			map : map,
-			title : 'Name : ' + pointName + ', distance : ' + pointDistance
-		});
-		setWaypoint(waypoints, pointLatitude, pointLongitude);
-	}
-}
-
-function setWaypoint(waypoints, pointLatitude, pointLongitude) {
-	if (waypoints.length >= 8) {
-		return;
-	}
-	var pointWaypoint = new google.maps.LatLng(pointLatitude, pointLongitude);
-	waypoints.push({ location: pointWaypoint });
-	if (origin == null) {
-		origin = pointWaypoint;
-	}
-	destination = pointWaypoint;
-	return waypoints;
-}
-
-function setWaypoints(waypoints) {
-	if (waypoints.length == 0) {
-		return;
-	}
-	var rendererOptions = { map: map };
-	var directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);
-	var request = {
-			origin: origin,
-			destination: destination,
-			waypoints: waypoints,
-			travelMode: google.maps.TravelMode.DRIVING,
-			unitSystem: google.maps.UnitSystem.METRIC
-	};
-	var directionsService = new google.maps.DirectionsService();
-	directionsService.route(request, 
-		function(response, status) {
-			if (status == google.maps.DirectionsStatus.OK) {
-				directionsDisplay.setDirections(response);
-			} else {
-				// alert ('Failed to get directions from Googy, sorry : ' + status);
-			}
-		}
-	);
-}
-

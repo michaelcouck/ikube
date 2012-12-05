@@ -19,7 +19,7 @@
 		id="wikiContext"
 		class="ikube.model.IndexContext"
 		property:name="wikiContext"
-		property:maxAge="60000"
+		property:maxAge="${wiki.index.age}"
 		property:compoundFile="${compound.file}"
 		property:bufferedDocs="${buffered.docs}"
 		property:bufferSize="${buffer.size}"

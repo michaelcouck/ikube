@@ -1,6 +1,7 @@
 package ikube.toolkit;
 
 import ikube.IConstants;
+import ikube.cluster.IClusterManager;
 import ikube.database.IDataBase;
 import ikube.model.IndexContext;
 
@@ -17,7 +18,6 @@ import org.apache.commons.lang.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
@@ -38,7 +38,7 @@ import org.springframework.context.support.FileSystemXmlApplicationContext;
 public final class ApplicationContextManager implements ApplicationContextAware {
 
 	private static final Logger LOGGER;
-	/** The default location of the configuration files is in the ikbe folder at the base of the server. */
+	/** The default location of the configuration files is in the ikube folder at the base of the server. */
 	private static final String EXTERNAL_SPRING_CONFIGURATION_FILE = "." + IConstants.SEP + IConstants.IKUBE + IConstants.SEP
 			+ IConstants.SPRING_XML;
 
@@ -51,12 +51,10 @@ public final class ApplicationContextManager implements ApplicationContextAware 
 			@Override
 			public void run() {
 				ThreadUtilities.destroy();
+				getBean(IClusterManager.class).destroy();
 			}
 		});
 	}
-
-	@Autowired
-	private IDataBase dataBase;
 
 	/**
 	 * System wide access to the Spring context.
@@ -227,11 +225,10 @@ public final class ApplicationContextManager implements ApplicationContextAware 
 		} else {
 			LOGGER.info("Application context already loaded : " + APPLICATION_CONTEXT);
 		}
-		// registerIndexContexts(APPLICATION_CONTEXT);
+		registerIndexContexts(APPLICATION_CONTEXT);
 	}
 
-	@Deprecated
-	@SuppressWarnings({ "rawtypes", "unused" })
+	@SuppressWarnings("rawtypes")
 	private void registerIndexContexts(final ApplicationContext applicationContext) {
 		DefaultListableBeanFactory defaultListableBeanFactory = null;
 		if (AbstractRefreshableApplicationContext.class.isAssignableFrom(APPLICATION_CONTEXT.getClass())) {
@@ -241,7 +238,7 @@ public final class ApplicationContextManager implements ApplicationContextAware 
 			defaultListableBeanFactory = new DefaultListableBeanFactory();
 			defaultListableBeanFactory.setParentBeanFactory(applicationContext);
 		}
-		dataBase = applicationContext.getBean(IDataBase.class);
+		IDataBase dataBase = applicationContext.getBean(IDataBase.class);
 		List<IndexContext> indexContexts = dataBase.find(IndexContext.class, 0, Integer.MAX_VALUE);
 		for (IndexContext indexContext : indexContexts) {
 			LOGGER.info("Post processing index context : " + indexContext);

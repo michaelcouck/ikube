@@ -59,8 +59,8 @@ class IndexableFilesystemHandlerWorker implements Runnable {
 	/** The 'parent' handler for this worker. */
 	private IndexableHandler<IndexableFileSystem> indexableHandler;
 
-	IndexableFilesystemHandlerWorker(IndexableHandler<IndexableFileSystem> indexableHandler, IndexContext<?> indexContext,
-			IndexableFileSystem indexableFileSystem, Stack<File> directories) {
+	IndexableFilesystemHandlerWorker(final IndexableHandler<IndexableFileSystem> indexableHandler, final IndexContext<?> indexContext,
+			final IndexableFileSystem indexableFileSystem, final Stack<File> directories) {
 		this.indexableHandler = indexableHandler;
 		this.indexContext = indexContext;
 		this.indexableFileSystem = indexableFileSystem;
@@ -119,8 +119,8 @@ class IndexableFilesystemHandlerWorker implements Runnable {
 			// This means that the scheduler has been forcefully destroyed
 			throw e;
 		} catch (Exception e) {
-			logger.error("Exception occured while trying to index the file " + file.getAbsolutePath());
-			logger.info(null, e);
+			logger.error("Exception occured while trying to index the file " + file.getAbsolutePath() + ", " + e.getMessage());
+			logger.debug(null, e);
 		} finally {
 			FileUtilities.close(inputStream);
 		}
@@ -170,24 +170,25 @@ class IndexableFilesystemHandlerWorker implements Runnable {
 	}
 
 	/**
-	 * This method will handle the zip file, it will look into the zip and read the contents, then index them. IT will then return 
-	 * whether the file was a zip file.
+	 * This method will handle the zip file, it will look into the zip and read the contents, then index them. IT will then return whether
+	 * the file was a zip file.
 	 * 
-	 * @param indexableFileSystem the indexable for the file system 
+	 * @param indexableFileSystem the indexable for the file system
 	 * @param file the file to handle if it is a zip
 	 * @return whether the file was a zip and was handled
 	 * @throws Exception
 	 */
-	protected boolean handleZip(IndexableFileSystem indexableFileSystem, File file) throws Exception {
+	protected boolean handleZip(final IndexableFileSystem indexableFileSystem, final File file) throws Exception {
 		// We have to unpack the zip files
 		if (!indexableFileSystem.isUnpackZips()) {
 			return Boolean.FALSE;
 		}
-		boolean isZip = IConstants.ZIP_JAR_WAR_EAR_PATTERN.matcher(file.getName()).matches();
 		boolean isFile = file.isFile();
+		boolean isZip = IConstants.ZIP_JAR_WAR_EAR_PATTERN.matcher(file.getName()).matches();
 		boolean isTrueFile = de.schlichtherle.io.File.class.isAssignableFrom(file.getClass());
 		boolean isZipAndFile = isZip && (isFile || isTrueFile);
 		if (isZipAndFile) {
+			// logger.info("Doing zip file : " + file);
 			de.schlichtherle.io.File trueZipFile = new de.schlichtherle.io.File(file);
 			File[] files = trueZipFile.listFiles();
 			if (files != null) {
@@ -224,7 +225,7 @@ class IndexableFilesystemHandlerWorker implements Runnable {
 		}
 	}
 
-	protected List<File> getBatch(IndexableFileSystem indexableFileSystem, Stack<File> directories) {
+	protected List<File> getBatch(final IndexableFileSystem indexableFileSystem, final Stack<File> directories) {
 		List<File> fileBatch = new ArrayList<File>();
 		if (!directories.isEmpty()) {
 			File directory = directories.pop();
@@ -254,7 +255,6 @@ class IndexableFilesystemHandlerWorker implements Runnable {
 				return getBatch(indexableFileSystem, directories);
 			}
 		}
-		logger.info("Directories : " + directories.size() + ", doing files : " + fileBatch.size());
 		return fileBatch;
 	}
 

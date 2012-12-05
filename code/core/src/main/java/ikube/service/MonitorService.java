@@ -1,7 +1,10 @@
 package ikube.service;
 
 import ikube.IConstants;
+import ikube.cluster.IClusterManager;
 import ikube.database.IDataBase;
+import ikube.listener.Event;
+import ikube.listener.ListenerManager;
 import ikube.model.Attribute;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
@@ -36,6 +39,8 @@ public class MonitorService implements IMonitorService {
 
 	@Autowired
 	private IDataBase dataBase;
+	@Autowired
+	private IClusterManager clusterManager;
 
 	/**
 	 * {@inheritDoc}
@@ -181,6 +186,28 @@ public class MonitorService implements IMonitorService {
 				LOGGER.error("Exception setting properties in file : " + mapEntry.getKey(), e);
 			}
 		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void terminateAll() {
+		long time = System.currentTimeMillis();
+		Event terminateEvent = ListenerManager.getEvent(Event.TERMINATE_ALL, time, null, Boolean.FALSE);
+		LOGGER.info("Sending terminate event for all actions : " + terminateEvent);
+		clusterManager.sendMessage(terminateEvent);
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void startupAll() {
+		long time = System.currentTimeMillis();
+		Event terminateEvent = ListenerManager.getEvent(Event.STARTUP_ALL, time, null, Boolean.FALSE);
+		LOGGER.info("Sending startup event for all actions : " + terminateEvent);
+		clusterManager.sendMessage(terminateEvent);
 	}
 
 	/**

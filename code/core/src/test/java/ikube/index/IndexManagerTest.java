@@ -6,13 +6,18 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import ikube.ATest;
+import ikube.mock.IndexWriterMock;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
 import java.io.Reader;
+import java.util.Date;
+
+import mockit.Mockit;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -30,6 +35,7 @@ import org.junit.Test;
  * @since 12.10.2010
  * @version 01.00
  */
+@SuppressWarnings("deprecation")
 public class IndexManagerTest extends ATest {
 
 	private String fieldName = "fieldName";
@@ -37,7 +43,7 @@ public class IndexManagerTest extends ATest {
 	private Store store = Store.YES;
 	private TermVector termVector = TermVector.YES;
 	private Index index = Index.ANALYZED;
-	
+
 	private File indexFolderOne;
 	private File indexFolderTwo;
 	private File indexFolderThree;
@@ -45,14 +51,14 @@ public class IndexManagerTest extends ATest {
 	public IndexManagerTest() {
 		super(IndexManagerTest.class);
 	}
-	
+
 	@Before
 	public void before() {
 		indexFolderOne = FileUtilities.getFile("./" + IndexManagerTest.class.getSimpleName() + "/1234567889/127.0.0.1", Boolean.TRUE);
 		indexFolderTwo = FileUtilities.getFile("./" + IndexManagerTest.class.getSimpleName() + "/1234567891/127.0.0.2", Boolean.TRUE);
 		indexFolderThree = FileUtilities.getFile("./" + IndexManagerTest.class.getSimpleName() + "/1234567890/127.0.0.3", Boolean.TRUE);
 	}
-	
+
 	@After
 	public void after() {
 		FileUtilities.deleteFile(new File("./" + IndexManagerTest.class.getSimpleName()), 1);
@@ -60,7 +66,6 @@ public class IndexManagerTest extends ATest {
 
 	@Test
 	public void openIndexWriter() throws Exception {
-		// String, IndexContext, long
 		IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
 		assertNotNull(indexWriter);
 		IndexManager.closeIndexWriter(indexContext);
@@ -69,8 +74,6 @@ public class IndexManagerTest extends ATest {
 
 	@Test
 	public void addStringField() throws Exception {
-		// String, String, Document, Store, Index, TermVector
-		// IndexableColumn, String
 		String stringFieldValue = "string field value";
 		IndexManager.addStringField(fieldName, stringFieldValue, document, store, index, termVector);
 
@@ -92,7 +95,6 @@ public class IndexManagerTest extends ATest {
 
 	@Test
 	public void addReaderField() throws Exception {
-		// String, Document, Store, TermVector, Reader
 		// We want to add a reader field to the document
 		Reader reader = getReader(Reader.class);
 		IndexManager.addReaderField(fieldName, document, store, termVector, reader);
@@ -117,7 +119,6 @@ public class IndexManagerTest extends ATest {
 
 	@Test
 	public void closeIndexWriter() throws Exception {
-		// IndexContext
 		IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
 		assertNotNull(indexWriter);
 		IndexManager.closeIndexWriter(indexContext);
@@ -148,10 +149,9 @@ public class IndexManagerTest extends ATest {
 
 		when(indexContext.getIndexDirectoryPathBackup()).thenReturn(indexDirectoryPathBackup);
 	}
-	
+
 	@Test
 	public void getLatestIndexDirectoryFileFile() {
-		// File, File
 		File latest = IndexManager.getLatestIndexDirectory(indexFolderOne.getParentFile().getParentFile(), null);
 		logger.info("Latest index directory : " + latest);
 		assertEquals(indexFolderTwo.getParentFile(), latest);
@@ -159,7 +159,7 @@ public class IndexManagerTest extends ATest {
 		assertEquals(indexFolderTwo.getParentFile(), latest);
 		latest = IndexManager.getLatestIndexDirectory(indexFolderThree.getParentFile().getParentFile(), null);
 		assertEquals(indexFolderTwo.getParentFile(), latest);
-		
+
 		createIndex(indexContext, "The data in the index");
 		latest = IndexManager.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
 		assertTrue(latest != null && latest.exists());
@@ -167,12 +167,69 @@ public class IndexManagerTest extends ATest {
 
 	@Test
 	public void getLatestIndexDirectoryString() {
-		// String
 		File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexFolderOne.getParentFile().getParentFile().getAbsolutePath());
 		assertEquals(indexFolderTwo.getParentFile().getName(), latestIndexDirectory.getName());
 	}
-	
-	
+
+	@Test
+	public void getLatestIndexDirectoryDate() throws Exception {
+		File latestIndexDirectory = createIndex(indexContext, "Any kind of data for the index");
+		Date latestIndexDirectoryDate = IndexManager.getLatestIndexDirectoryDate(indexContext);
+		logger.info("Latest index directory date : " + latestIndexDirectoryDate.getTime());
+		assertTrue(latestIndexDirectoryDate.getTime() == Long.parseLong(latestIndexDirectory.getParentFile().getName()));
+	}
+
+	@Test
+	public void getNumDocsIndexWriter() throws Exception {
+		try {
+			IndexWriterMock.setIsLocked(Boolean.TRUE);
+			Mockit.setUpMocks(IndexWriterMock.class);
+
+			when(fsDirectory.makeLock(anyString())).thenReturn(lock);
+			when(indexWriter.numDocs()).thenReturn(Integer.MAX_VALUE);
+			when(indexWriter.getDirectory()).thenReturn(fsDirectory);
+			when(indexContext.getIndexWriter()).thenReturn(indexWriter);
+			logger.info("Index writer test : " + indexWriter);
+
+			long numDocs = IndexManager.getNumDocsIndexWriter(indexContext);
+			logger.info("Num docs : " + numDocs);
+			assertEquals(Integer.MAX_VALUE, numDocs);
+
+			IndexWriterMock.setIsLocked(Boolean.FALSE);
+			when(indexContext.getIndexWriter()).thenReturn(null);
+			when(indexReader.numDocs()).thenReturn(Integer.MIN_VALUE);
+			numDocs = IndexManager.getNumDocs(indexContext);
+			logger.info("Num docs : " + numDocs);
+			assertEquals(-2147483648l, numDocs);
+		} finally {
+			Mockit.tearDownMocks(IndexWriter.class);
+		}
+	}
+
+	@Test
+	public void getNumDocs() throws Exception {
+		try {
+			logger.info("Index writer test : " + indexWriter);
+			when(indexContext.getMultiSearcher()).thenReturn(multiSearcher);
+			when(multiSearcher.getSearchables()).thenReturn(searchables);
+			when(indexSearcher.getIndexReader()).thenReturn(indexReader);
+			when(indexReader.numDocs()).thenReturn(Integer.MAX_VALUE);
+			long numDocs = IndexManager.getNumDocs(indexContext);
+			logger.info("Num docs : " + numDocs);
+			assertEquals(Integer.MAX_VALUE, numDocs);
+		} finally {
+			Mockit.tearDownMocks(IndexWriter.class);
+		}
+	}
+
+	@Test
+	public void getIndexSize() throws Exception {
+		createIndex(indexContext, "the ", "string ", "to add");
+		long indexSize = IndexManager.getIndexSize(indexContext);
+		logger.info("Index size : " + indexSize);
+		assertTrue("There must be some size in the index : ", indexSize > 0);
+	}
+
 	@Test
 	@Ignore
 	public void remoteOptimize() {

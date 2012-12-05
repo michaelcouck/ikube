@@ -1,5 +1,11 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
+<style type="text/css">
+.active {
+   	background-color: #e2f6c0;
+}
+</style>
+
 <table ng-controller="IndexContextsController" width="100%">
 	<tr>
 		<th><img src="<c:url value="/images/icons/index.gif" />">&nbsp;Index</th>
@@ -12,7 +18,7 @@
 		<th><img src="<c:url value="/images/icons/progress_task.gif" />">&nbsp;Throttle</th>
 		<th><img src="<c:url value="/images/icons/launch_run.gif" />">&nbsp;Function</th>
 	</tr>
-	<tr ng-repeat="indexContext in indexContexts">
+	<tr ng-repeat="indexContext in indexContexts" ng-class="{ active : indexContext.indexing == true }">
 		<td>{{indexContext.name}}</td>
 		<td>{{indexContext.open}}</td>
 		<td>{{indexContext.numDocs}}</td>

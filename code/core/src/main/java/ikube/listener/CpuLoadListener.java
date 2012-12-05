@@ -68,7 +68,7 @@ public class CpuLoadListener implements IListener {
 			if (increaseThrottle) {
 				for (Map.Entry<String, IndexContext> mapEntry : indexContexts.entrySet()) {
 					IndexContext indexContext = mapEntry.getValue();
-					LOGGER.info("Increasing throttle for index context : " + indexContext.getName());
+					LOGGER.debug("Increasing throttle for index context : " + indexContext.getName());
 					indexContext.setThrottle(indexContext.getThrottle() + 1);
 				}
 			}
@@ -76,7 +76,7 @@ public class CpuLoadListener implements IListener {
 				for (Map.Entry<String, IndexContext> mapEntry : indexContexts.entrySet()) {
 					IndexContext indexContext = mapEntry.getValue();
 					if (indexContext.getThrottle() > 0) {
-						LOGGER.info("Decreasing throttle for index context : " + indexContext.getName());
+						LOGGER.debug("Decreasing throttle for index context : " + indexContext.getName());
 						indexContext.setThrottle(indexContext.getThrottle() - 1);
 					}
 				}

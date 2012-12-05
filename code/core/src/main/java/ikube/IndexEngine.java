@@ -5,7 +5,6 @@ import ikube.listener.Event;
 import ikube.listener.IListener;
 import ikube.model.IndexContext;
 import ikube.service.IMonitorService;
-import ikube.toolkit.Logging;
 import ikube.toolkit.SerializationUtilities;
 import ikube.toolkit.ThreadUtilities;
 
@@ -44,6 +43,9 @@ public class IndexEngine implements IIndexEngine, IListener {
 		SerializationUtilities.setTransientFields(IndexContext.class, new ArrayList<Class<?>>());
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	@SuppressWarnings("rawtypes")
 	public void handleNotification(final Event event) {
@@ -57,7 +59,7 @@ public class IndexEngine implements IIndexEngine, IListener {
 				LOGGER.warn("No actions configured for index engine : " + indexContext.getIndexName());
 				continue;
 			}
-			LOGGER.debug(Logging.getString("Start working : ", indexContext.getIndexName()));
+			LOGGER.debug("Start working : " + indexContext.getIndexName());
 			for (IAction<IndexContext<?>, Boolean> action : actions) {
 				try {
 					action.execute(indexContext);
@@ -68,7 +70,7 @@ public class IndexEngine implements IIndexEngine, IListener {
 					LOGGER.error("Exception executing action : " + action, e);
 				}
 			}
-			LOGGER.debug(Logging.getString("Finished working : ", indexContext.getIndexName()));
+			LOGGER.debug("Finished working : " + indexContext.getIndexName());
 		}
 	}
 

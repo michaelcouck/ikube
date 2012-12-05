@@ -159,7 +159,7 @@ public abstract class ATest {
 		when(clusterManager.getServers()).thenReturn(servers);
 		when(clusterManager.lock(anyString())).thenReturn(Boolean.TRUE);
 
-		Map<String, IndexContext> indexContexts = new HashMap<String, IndexContext>();
+		indexContexts = new HashMap<String, IndexContext>();
 		indexContexts.put(indexContext.getName(), indexContext);
 		when(monitorService.getIndexContexts()).thenReturn(indexContexts);
 
@@ -179,9 +179,6 @@ public abstract class ATest {
 		IndexManagerMock.setIndexWriter(indexWriter);
 		ApplicationContextManagerMock.setIndexContext(indexContext);
 		ApplicationContextManagerMock.setClusterManager(clusterManager);
-
-		indexContexts = new HashMap<String, IndexContext>();
-		indexContexts.put(indexContext.getIndexName(), indexContext);
 	}
 
 	protected void delete(final IDataBase dataBase, final Class<?>... klasses) {

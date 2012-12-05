@@ -33,7 +33,7 @@ import com.hazelcast.core.MessageListener;
  */
 public class ClusterManagerHazelcast extends AClusterManager {
 
-	/** This listener on Hazelcast will listen for start events, that indicate that  */
+	/** This listener on Hazelcast will listen for start events, that indicate that */
 	@Autowired
 	private StartListener startListener;
 	/** This listener will either stop one job or destroy the thread pool for all jobs. */
@@ -60,7 +60,6 @@ public class ClusterManagerHazelcast extends AClusterManager {
 				logger.warn("Listener null, are we in a test?");
 				continue;
 			}
-			// logger.info("Listener : " + listener);
 			Hazelcast.getTopic(IConstants.TOPIC).addMessageListener(listener);
 		}
 	}
@@ -144,7 +143,6 @@ public class ClusterManagerHazelcast extends AClusterManager {
 		try {
 			action = getAction(actionName, indexName, indexableName);
 			server.getActions().add(action);
-			// action.setServer(server);
 			Hazelcast.getMap(IConstants.IKUBE).put(server.getAddress(), server);
 			Hazelcast.getTransaction().commit();
 		} catch (Exception e) {
@@ -176,7 +174,7 @@ public class ClusterManagerHazelcast extends AClusterManager {
 			return;
 		}
 		if (retry >= IConstants.MAX_RETRY_CLUSTER_REMOVE) {
-			logger.warn("Retried to remove the action, failed : " + retry);
+			logger.info("Retried to remove the action, failed : " + retry);
 			return;
 		}
 		Hazelcast.getTransaction().begin();
@@ -212,7 +210,7 @@ public class ClusterManagerHazelcast extends AClusterManager {
 		} finally {
 			if (!removedAndComitted) {
 				ThreadUtilities.sleep(1000);
-				logger.warn("Retrying to remove the action : " + retry + ", " + server.getIp() + ", " + action + ", " + server.getActions());
+				logger.debug("Retrying to remove the action : " + retry + ", " + server.getIp() + ", " + action + ", " + server.getActions());
 				stopWorking(action, retry + 1);
 			}
 		}
@@ -286,6 +284,14 @@ public class ClusterManagerHazelcast extends AClusterManager {
 	@Override
 	public void remove(final Object key) {
 		Hazelcast.getMap(IConstants.IKUBE).remove(key);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void destroy() {
+		Hazelcast.shutdownAll();
 	}
 
 }

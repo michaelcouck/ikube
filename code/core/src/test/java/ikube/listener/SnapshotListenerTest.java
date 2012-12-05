@@ -7,7 +7,6 @@ import static org.mockito.Mockito.when;
 import ikube.ATest;
 import ikube.IConstants;
 import ikube.mock.ApplicationContextManagerMock;
-import ikube.mock.IndexWriterMock;
 import ikube.model.IndexContext;
 import ikube.model.Snapshot;
 import ikube.toolkit.FileUtilities;
@@ -16,7 +15,6 @@ import java.io.File;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +22,6 @@ import java.util.Map;
 import mockit.Deencapsulation;
 import mockit.Mockit;
 
-import org.apache.lucene.index.IndexWriter;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,7 +36,6 @@ import org.mockito.stubbing.Answer;
  */
 public class SnapshotListenerTest extends ATest {
 
-	private File latestIndexDirectory;
 	private SnapshotListener snapshotListener;
 
 	public SnapshotListenerTest() {
@@ -50,7 +46,6 @@ public class SnapshotListenerTest extends ATest {
 	public void before() throws Exception {
 		snapshotListener = new SnapshotListener();
 
-		latestIndexDirectory = createIndex(indexContext, "Any kind of data for the index");
 		when(fsDirectory.fileLength(anyString())).thenReturn(Long.MAX_VALUE);
 		when(fsDirectory.listAll()).thenReturn(new String[] { "file" });
 
@@ -138,48 +133,6 @@ public class SnapshotListenerTest extends ATest {
 		searchesPerMinute = snapshotListener.getSearchesPerMinute(indexContext, snapshot);
 		logger.info("Searches per minute : " + searchesPerMinute);
 		assertTrue(searchesPerMinute > 50 && searchesPerMinute < 100);
-	}
-
-	@Test
-	public void getLatestIndexDirectory() throws Exception {
-		Date latestIndexDirectoryDate = snapshotListener.getLatestIndexDirectoryDate(indexContext);
-		logger.info("Latest index directory date : " + latestIndexDirectoryDate.getTime());
-		assertTrue(latestIndexDirectoryDate.getTime() == Long.parseLong(latestIndexDirectory.getParentFile().getName()));
-	}
-
-	@Test
-	public void getNumDocs() throws Exception {
-		try {
-			IndexWriterMock.setIsLocked(Boolean.TRUE);
-			Mockit.setUpMocks(IndexWriterMock.class);
-			
-			when(fsDirectory.makeLock(anyString())).thenReturn(lock);
-			when(indexWriter.numDocs()).thenReturn(Integer.MAX_VALUE);
-			when(indexWriter.getDirectory()).thenReturn(fsDirectory);
-			when(indexContext.getIndexWriter()).thenReturn(indexWriter);
-			logger.info("Index writer test : " + indexWriter);
-			
-			long numDocs = snapshotListener.getNumDocs(indexContext);
-			logger.info("Num docs : " + numDocs);
-			assertEquals(Integer.MAX_VALUE, numDocs);
-
-			IndexWriterMock.setIsLocked(Boolean.FALSE);
-			when(indexContext.getIndexWriter()).thenReturn(null);
-			when(indexReader.numDocs()).thenReturn(Integer.MIN_VALUE);
-			numDocs = snapshotListener.getNumDocs(indexContext);
-			logger.info("Num docs : " + numDocs);
-			assertEquals(-2147483648l, numDocs);
-		} finally {
-			Mockit.tearDownMocks(IndexWriter.class);
-		}
-	}
-
-	@Test
-	public void getIndexSize() throws Exception {
-		createIndex(indexContext, "the ", "string ", "to add");
-		long indexSize = snapshotListener.getIndexSize(indexContext);
-		logger.info("Index size : " + indexSize);
-		assertTrue("There must be some size in the index : ", indexSize > 0);
 	}
 
 }

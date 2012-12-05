@@ -150,11 +150,12 @@ public final class ThreadUtilities implements IListener {
 					for (Map.Entry<String, List<Future<?>>> mapEntry : getFutures().entrySet()) {
 						List<Future<?>> futures = new ArrayList<Future<?>>(mapEntry.getValue());
 						for (Future<?> future : futures) {
-							if (!future.isCancelled() || !future.isDone()) {
-								continue;
+							if (future.isCancelled() || future.isDone()) {
+								boolean removed = getFutures(mapEntry.getKey()).remove(future);
+								if (removed) {
+									LOGGER.info("Removed future : " + future);
+								}
 							}
-							getFutures(mapEntry.getKey()).remove(future);
-							LOGGER.info("Removed future : " + future);
 						}
 					}
 				} finally {
@@ -205,6 +206,14 @@ public final class ThreadUtilities implements IListener {
 			ThreadUtilities.sleep(1000);
 			if ((System.currentTimeMillis() - start) > maxWait * 1000) {
 				break;
+			}
+		}
+		// Remove the future from the list
+		for (Map.Entry<String, List<Future<?>>> mapEntry : getFutures().entrySet()) {
+			List<Future<?>> futures = new ArrayList<Future<?>>(mapEntry.getValue());
+			boolean removed = futures.remove(future);
+			if (removed) {
+				LOGGER.info("Removed future : " + future);
 			}
 		}
 	}

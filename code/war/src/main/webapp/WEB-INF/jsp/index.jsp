@@ -8,6 +8,10 @@
 			$(".tab_content").hide();
 			var activeTab = $(this).attr("rel");
 			$("#" + activeTab).fadeIn();
+			// Repaint the map and the graphs
+			google.maps.event.trigger(map, 'resize');
+			// indexingChart = null;
+			// searchingChart = null;
 		});
 	});
 </script>

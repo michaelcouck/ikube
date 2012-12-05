@@ -10,26 +10,15 @@ import ikube.model.Server;
 import ikube.model.Snapshot;
 import ikube.service.IMonitorService;
 
-import java.io.File;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.OperatingSystemMXBean;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileSystemUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.MultiSearcher;
-import org.apache.lucene.search.Searchable;
-import org.apache.lucene.store.AlreadyClosedException;
-import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.FSDirectory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +28,6 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @since 22.07.12
  * @version 01.00
  */
-@SuppressWarnings("deprecation")
 public class SnapshotListener implements IListener {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SnapshotListener.class);
@@ -82,9 +70,9 @@ public class SnapshotListener implements IListener {
 					Snapshot snapshot = new Snapshot();
 
 					snapshot.setTimestamp(new Timestamp(System.currentTimeMillis()));
-					snapshot.setIndexSize(getIndexSize(indexContext));
-					snapshot.setNumDocs(getNumDocs(indexContext));
-					snapshot.setLatestIndexTimestamp(getLatestIndexDirectoryDate(indexContext));
+					snapshot.setIndexSize(IndexManager.getIndexSize(indexContext));
+					snapshot.setNumDocs(IndexManager.getNumDocsIndexWriter(indexContext));
+					snapshot.setLatestIndexTimestamp(IndexManager.getLatestIndexDirectoryDate(indexContext));
 					snapshot.setDocsPerMinute(getDocsPerMinute(indexContext, snapshot));
 					snapshot.setTotalSearches(getTotalSearchesForIndex(indexContext));
 					snapshot.setSearchesPerMinute(getSearchesPerMinute(indexContext, snapshot));
@@ -149,101 +137,6 @@ public class SnapshotListener implements IListener {
 			docsPerMinute = 0;
 		}
 		return docsPerMinute < 50000 ? docsPerMinute : 0;
-	}
-
-	protected Date getLatestIndexDirectoryDate(final IndexContext<?> indexContext) {
-		long timestamp = 0;
-		File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
-		if (latestIndexDirectory != null) {
-			String name = latestIndexDirectory.getName();
-			if (StringUtils.isNumeric(name)) {
-				timestamp = Long.parseLong(name);
-			}
-		}
-		return new Date(timestamp);
-	}
-
-	protected long getNumDocs(final IndexContext<?> indexContext) {
-		long numDocs = 0;
-		IndexWriter indexWriter = indexContext.getIndexWriter();
-		if (indexWriter != null) {
-			try {
-				// Checking if the directory is locked is like checking that the writer is sill open
-				if (IndexWriter.isLocked(indexWriter.getDirectory())) {
-					numDocs += indexWriter.numDocs();
-				}
-			} catch (AlreadyClosedException e) {
-				LOGGER.warn("Index writer is closed : " + e.getMessage());
-			} catch (Exception e) {
-				LOGGER.error("Exception reading the number of documents from the writer", e);
-			}
-			File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
-			if (latestIndexDirectory != null) {
-				File[] serverIndexDirectories = latestIndexDirectory.listFiles();
-				if (serverIndexDirectories != null) {
-					Directory directory = null;
-					IndexReader indexReader = null;
-					for (File serverIndexDirectory : serverIndexDirectories) {
-						try {
-							directory = FSDirectory.open(serverIndexDirectory);
-							if (!IndexWriter.isLocked(directory) && IndexReader.indexExists(directory)) {
-								indexReader = IndexReader.open(directory);
-								numDocs += indexReader.numDocs();
-							}
-						} catch (Exception e) {
-							LOGGER.error("Exception opening the reader on the index : " + serverIndexDirectory, e);
-						} finally {
-							try {
-								if (directory != null) {
-									directory.close();
-								}
-								if (indexReader != null) {
-									indexReader.close();
-								}
-							} catch (Exception e) {
-								LOGGER.error("Exception closing the readon on the index : ", e);
-							}
-						}
-					}
-				}
-			}
-		} else {
-			MultiSearcher multiSearcher = indexContext.getMultiSearcher();
-			if (multiSearcher != null) {
-				for (Searchable searchable : multiSearcher.getSearchables()) {
-					numDocs += ((IndexSearcher) searchable).getIndexReader().numDocs();
-				}
-			}
-		}
-		return numDocs;
-	}
-
-	protected long getIndexSize(final IndexContext<?> indexContext) {
-		long indexSize = 0;
-		try {
-			File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
-			if (latestIndexDirectory == null || !latestIndexDirectory.exists() || !latestIndexDirectory.isDirectory()) {
-				return indexSize;
-			}
-			File[] serverIndexDirectories = latestIndexDirectory.listFiles();
-			if (serverIndexDirectories == null) {
-				return indexSize;
-			}
-			for (File serverIndexDirectory : serverIndexDirectories) {
-				if (serverIndexDirectory != null && serverIndexDirectory.exists() && serverIndexDirectory.isDirectory()) {
-					File[] indexFiles = serverIndexDirectory.listFiles();
-					if (indexFiles == null || indexFiles.length == 0) {
-						continue;
-					}
-					for (File indexFile : indexFiles) {
-						indexSize += indexFile.length();
-					}
-				}
-			}
-		} catch (Exception e) {
-			LOGGER.error("Exception getting the size of the index : " + this, e);
-		}
-		return indexSize;
 	}
 
 }

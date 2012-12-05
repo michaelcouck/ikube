@@ -60,6 +60,8 @@ public class Monitor extends Resource {
 	public static final String TERMINATE = "/terminate";
 	public static final String GET_PROPERTIES = "/get-properties";
 	public static final String SET_PROPERTIES = "/set-properties";
+	public static final String STARTUP_ALL = "/startup-all";
+	public static final String TERMINATE_ALL = "/terminate-all";
 
 	public static final String INDEX_CONTEXT = "/index-context";
 	public static final String INDEX_CONTEXTS = "/index-contexts";
@@ -91,6 +93,7 @@ public class Monitor extends Resource {
 	private IndexContext getIndexContext(final String indexName) {
 		IndexContext indexContext = monitorService.getIndexContext(indexName);
 		indexContext.isOpen();
+		indexContext.isIndexing();
 		indexContext.getNumDocs();
 		indexContext.getIndexSize();
 		indexContext.getLatestIndexTimestamp();
@@ -215,12 +218,13 @@ public class Monitor extends Resource {
 		Map<String, Server> servers = clusterManager.getServers();
 		for (final Server server : servers.values()) {
 			for (final Action action : server.getActions()) {
-				IndexContext indexContext = monitorService.getIndexContext(action.getIndexName());
+				IndexContext indexContext = getIndexContextFromServer(action.getIndexName(), server);
 				Map<String, Object> actionData = new HashMap<String, Object>();
 				action.setServer(null);
 				addFieldValues(action, actionData);
 				actionData.put("server", server.getAddress());
 				if (indexContext != null && indexContext.getLastSnapshot() != null) {
+					actionData.put("totalDocsIndexed", indexContext.getLastSnapshot().getNumDocs());
 					actionData.put("docsPerMinute", indexContext.getLastSnapshot().getDocsPerMinute());
 				}
 				data.add(actionData);
@@ -268,6 +272,35 @@ public class Monitor extends Resource {
 			monitorService.setProperties(filesAndProperties);
 		}
 		return buildResponse().build();
+	}
+
+	@GET
+	@Path(Monitor.TERMINATE_ALL)
+	@Consumes(MediaType.APPLICATION_XML)
+	public Response terminateAll() {
+		monitorService.terminateAll();
+		return buildResponse().build();
+	}
+
+	@GET
+	@Path(Monitor.STARTUP_ALL)
+	@Consumes(MediaType.APPLICATION_XML)
+	public Response startupAll() {
+		monitorService.startupAll();
+		return buildResponse().build();
+	}
+
+	@SuppressWarnings("rawtypes")
+	private IndexContext getIndexContextFromServer(final String indexName, final Server server) {
+		List<IndexContext> indexContexts = server.getIndexContexts();
+		if (indexContexts != null) {
+			for (final IndexContext indexContext : indexContexts) {
+				if (indexContext.getIndexName().equals(indexName)) {
+					return indexContext;
+				}
+			}
+		}
+		return null;
 	}
 
 	private void addFieldValues(final Action action, final Map<String, Object> actionData) {

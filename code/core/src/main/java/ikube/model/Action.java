@@ -49,9 +49,6 @@ public class Action extends Persistable {
 	/** The result from the rules and the predicate. */
 	@Column
 	private boolean result;
-	/** The number of documents that were added during the execution of the action. */
-	@Column
-	private int invocations;
 
 	@ManyToOne(cascade = { CascadeType.DETACH }, fetch = FetchType.EAGER)
 	private Server server;
@@ -110,22 +107,6 @@ public class Action extends Persistable {
 
 	public void setResult(boolean result) {
 		this.result = result;
-	}
-
-	public int getInvocations() {
-		return invocations;
-	}
-
-	public void setInvocations(int invocations) {
-		this.invocations = invocations;
-	}
-
-	public long getInvocationsPerSecond() {
-		long duration = (System.currentTimeMillis() - startTime.getTime()) / 1000;
-		if (duration == 0) {
-			return 0;
-		}
-		return (invocations / duration);
 	}
 
 	public Server getServer() {

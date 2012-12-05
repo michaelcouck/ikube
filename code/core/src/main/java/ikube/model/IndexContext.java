@@ -1,5 +1,7 @@
 package ikube.model;
 
+import ikube.index.IndexManager;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -135,6 +137,9 @@ public class IndexContext<T> extends Indexable<T> implements Comparable<IndexCon
 	@Column
 	@Attribute(field = false, description = "The is dynamically set by the logic to validate that there is disk space left on the drive where the index is")
 	private long availableDiskSpace;
+	@Column
+	@Attribute(field = false, description = "This flag indicates whether the index is being generated currently")
+	private boolean indexing;
 
 	@OneToMany(cascade = { CascadeType.ALL }, mappedBy = "indexContext", fetch = FetchType.EAGER)
 	private List<Snapshot> snapshots = new ArrayList<Snapshot>();
@@ -272,7 +277,7 @@ public class IndexContext<T> extends Indexable<T> implements Comparable<IndexCon
 	}
 
 	public long getNumDocs() {
-		setNumDocs(getLastSnapshot().getNumDocs());
+		numDocs = IndexManager.getNumDocs(this);
 		return numDocs;
 	}
 
@@ -281,7 +286,7 @@ public class IndexContext<T> extends Indexable<T> implements Comparable<IndexCon
 	}
 
 	public long getIndexSize() {
-		setIndexSize(getLastSnapshot().getIndexSize());
+
 		return indexSize;
 	}
 
@@ -290,7 +295,7 @@ public class IndexContext<T> extends Indexable<T> implements Comparable<IndexCon
 	}
 
 	public Date getLatestIndexTimestamp() {
-		setLatestIndexTimestamp(getLastSnapshot().getLatestIndexTimestamp());
+		latestIndexTimestamp = IndexManager.getLatestIndexDirectoryDate(this);
 		return latestIndexTimestamp;
 	}
 
@@ -341,10 +346,10 @@ public class IndexContext<T> extends Indexable<T> implements Comparable<IndexCon
 	}
 
 	public Snapshot getLastSnapshot() {
-		if (snapshots == null) {
+		if (snapshots == null || getSnapshots().size() == 0) {
 			return null;
 		}
-		return getSnapshots().size() > 0 ? getSnapshots().get(getSnapshots().size() - 1) : null;
+		return getSnapshots().get(getSnapshots().size() - 1);
 	}
 
 	public long getAvailableDiskSpace() {
@@ -353,6 +358,15 @@ public class IndexContext<T> extends Indexable<T> implements Comparable<IndexCon
 
 	public void setAvailableDiskSpace(long availableDiskSpace) {
 		this.availableDiskSpace = availableDiskSpace;
+	}
+
+	public boolean isIndexing() {
+		setIndexing(getIndexWriter() != null);
+		return indexing;
+	}
+
+	public void setIndexing(boolean indexing) {
+		this.indexing = indexing;
 	}
 
 	@Override

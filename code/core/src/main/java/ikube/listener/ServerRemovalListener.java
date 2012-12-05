@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * This listener is for removing any servers that have times out. We do not poll the servers, they send messages to maintain their status in
+ * This listener is for removing any servers that have timed out. We do not poll the servers, they send messages to maintain their status in
  * the cluster. If the timestamp of the server runs out then they are removed from each member in the cluster.
  * 
  * @author Michael Couck

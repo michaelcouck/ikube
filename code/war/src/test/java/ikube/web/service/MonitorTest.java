@@ -37,7 +37,6 @@ public class MonitorTest extends Base {
 	private Monitor monitor;
 	private IMonitorService monitorService;
 	private IClusterManager clusterManager;
-	@Cascading
 	@SuppressWarnings("rawtypes")
 	private IndexContext indexContext;
 	@Cascading
@@ -46,6 +45,7 @@ public class MonitorTest extends Base {
 	@Before
 	public void before() {
 		monitor = new Monitor();
+		indexContext = getIndexContext();
 
 		monitorService = Mockito.mock(IMonitorService.class);
 		clusterManager = Mockito.mock(IClusterManager.class);
@@ -64,7 +64,6 @@ public class MonitorTest extends Base {
 	public void fields() throws Exception {
 		Mockito.when(monitorService.getIndexFieldNames(Mockito.anyString())).thenReturn(new String[] { "one", "two", "three" });
 		Response fields = monitor.fields("indexName");
-		logger.info("Fields : " + fields.getEntity());
 		assertEquals("The string should be a concatenation of the fields : ", "[\"one\",\"two\",\"three\"]", fields.getEntity());
 	}
 
@@ -73,7 +72,6 @@ public class MonitorTest extends Base {
 		Mockito.when(monitorService.getIndexContext(Mockito.anyString())).thenReturn(indexContext);
 		Response indexContext = monitor.indexContext(IConstants.GEOSPATIAL);
 		Object entity = indexContext.getEntity();
-		logger.info("Index context : " + entity);
 		assertTrue("The max age should be in the Json string : ", entity.toString().contains("maxAge"));
 	}
 
@@ -87,7 +85,6 @@ public class MonitorTest extends Base {
 		Mockito.when(monitorService.getIndexContext(Mockito.anyString())).thenReturn(indexContext);
 		Response indexContext = monitor.indexContexts();
 		Object entity = indexContext.getEntity();
-		logger.info("Index context : " + entity);
 		assertTrue("The max age should be in the Json string : ", entity.toString().contains("maxAge"));
 	}
 
@@ -99,7 +96,6 @@ public class MonitorTest extends Base {
 		Mockito.when(clusterManager.getServers()).thenReturn(servers);
 		Response indexContext = monitor.servers();
 		Object entity = indexContext.getEntity();
-		logger.info("Index context : " + entity);
 		assertTrue("The max age should be in the Json string : ", entity.toString().contains("averageCpuLoad"));
 	}
 
@@ -144,7 +140,6 @@ public class MonitorTest extends Base {
 		Mockito.when(clusterManager.getServers()).thenReturn(servers);
 		Response response = monitor.searchingStatistics();
 		Object entity = response.getEntity();
-		logger.info(entity);
 		assertEquals(
 				"[[\"Times\", \"127.0.0.1-8002\", \"127.0.0.1-8003\", \"127.0.0.1-8000\", \"127.0.0.1-8001\"], [\"1.1\", 300, 300, 300, 300], "
 						+ "[\"1.2\", 600, 600, 600, 600], [\"1.3\", 900, 900, 900, 900]]", entity);
@@ -164,16 +159,11 @@ public class MonitorTest extends Base {
 		Mockit.setUpMocks(ServerMock.class);
 		Map<String, Server> servers = getServers();
 		Mockito.when(clusterManager.getServers()).thenReturn(servers);
-		Mockito.when(monitorService.getIndexContext(Mockito.anyString())).thenReturn(indexContext);
-
 		Response response = monitor.actions();
-		logger.info(response.getEntity());
+		Object entity = response.getEntity();
 
-		assertTrue(response
-				.getEntity()
-				.toString()
-				.contains(
-						"[{\"result\":\"true\",\"actionName\":\"action\",\"invocations\":\"2147483647\""));
+		assertTrue(entity.toString().contains(
+				"{\"result\":\"true\",\"docsPerMinute\":3,\"actionName\":\"action\",\"invocations\":\"2147483647\",\"startTime\""));
 	}
 
 	private Map<String, Server> getServers() {
@@ -204,11 +194,9 @@ public class MonitorTest extends Base {
 		action.setId(Integer.MAX_VALUE);
 		action.setIndexableName("indexableName");
 		action.setIndexName("indexName");
-		action.setInvocations(Integer.MAX_VALUE);
 		action.setResult(Boolean.TRUE);
 		action.setStartTime(new Date());
 		action.setTimestamp(new Timestamp(System.currentTimeMillis()));
-		// action.setServer(server);
 		return action;
 	}
 
@@ -230,6 +218,7 @@ public class MonitorTest extends Base {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private IndexContext getIndexContext() {
 		IndexContext indexContext = new IndexContext();
+		indexContext.setIndexName("indexName");
 		List<Snapshot> snapshots = new ArrayList<Snapshot>();
 
 		snapshots.add(getSnapshot(1, 100, 60000));

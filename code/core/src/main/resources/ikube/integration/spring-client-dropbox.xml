@@ -33,14 +33,14 @@
 		property:indexDirectoryPathBackup="${index.directory.path.backup}"
 		property:children-ref="dropboxIndexables" />
 	<util:list id="dropboxIndexables">
-		<!-- <ref local="dropboxIndexable" /> -->
+		<ref local="dropboxIndexable" />
 	</util:list>
 	
 	<bean
 		id="dropboxIndexable"
 		class="ikube.model.IndexableFileSystem"
 		property:name="dropboxIndexable"
-		property:path="/home/michael/Dropbox/Sumo"
+		property:path="/home/michael/Dropbox"
 		property:pathFieldName="title"
 		property:nameFieldName="name"
 		property:lengthFieldName="length"

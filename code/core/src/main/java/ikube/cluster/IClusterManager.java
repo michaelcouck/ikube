@@ -113,5 +113,10 @@ public interface IClusterManager {
 	 * @param key the key of the object to remove
 	 */
 	void remove(final Object key);
+	
+	/**
+	 * This method will release any resources and close down the cluster manager gracefully.
+	 */
+	void destroy();
 
 }

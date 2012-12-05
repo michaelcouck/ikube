@@ -89,4 +89,14 @@ public interface IMonitorService {
 	 */
 	void setProperties(final Map<String, String> filesAndProperties);
 
+	/**
+	 * This method will send a terminate event into the cluster, terminating all the actions in all the servers.
+	 */
+	void terminateAll();
+
+	/**
+	 * This method will send a re-start event into the cluster, re-starting all the schedules and consequently the actions and indexing.
+	 */
+	void startupAll();
+
 }

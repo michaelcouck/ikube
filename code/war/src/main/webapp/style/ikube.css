@@ -1,0 +1,113 @@
+#header {
+	font: normal 13px Arial, Helvetica Neue, Helvetica, sans-serif;
+	background-color: #000000;
+	padding-top : 5px;
+	padding-bottom : 5px;
+	padding-left : 5px;
+	color: #ffffff;
+}
+
+#header a {
+	color: #ffffff;
+	padding-left : 10px;
+}
+
+body {
+	font: 11px Tahoma, Helvetica, sans-serif, Arial;
+	border: 0;
+	margin: 0;
+	padding: 0;
+	background-color: #ffffff;
+}
+
+ul.tabs {
+	margin: 10px;
+	padding: 0px;
+	float: left;
+	list-style: none;
+	height: 20px;
+	width: 100%;
+}
+
+ul.tabs li {
+	font: bold 12px Arial, Helvetica Neue, Helvetica, sans-serif;
+	float: left;
+	margin: 0;
+	cursor: pointer;
+	padding: 5px 21px;
+	height: 19px;
+	line-height: 19px;
+	border-bottom : 1px solid #999999;
+	font-weight: bold;
+	background: #ffffff;
+	overflow: hidden;
+	position: relative;
+}
+
+ul.tabs li:hover {
+	background: #ffffff;
+}
+
+ul.tabs li.active {
+	background: #ffffff;
+	border-bottom: none;
+	border-left: 1px solid #999999;
+	border-top : 1px solid #999999;
+	border-right : 1px solid #999999;
+}
+
+.tab_container {
+	border: 0px solid #999999;
+	border-top: none;
+	clear: both;
+	float: left;
+	width: 100%;
+	background: #FFFFFF;
+}
+
+.tab_content {
+	padding: 20px;
+	font-size: 1.2em;
+	display: none;
+}
+
+a {
+	color: #aaaaaa;
+	text-decoration: none;
+}
+
+table {
+	margin : 0;
+	padding: 0;
+	border : 0; // 1px solid black
+}
+
+table td,table th {
+	margin : 0;
+	padding: 0;
+	border : 0; // 1px solid black
+}
+
+table thead {
+	font: normal 12px Arial, Helvetica Neue, Helvetica, sans-serif;
+	text-shadow: 0 0px 0 white;
+	color: #999;
+	margin : 0;
+	padding: 0;
+	border : 0; // 1px solid black
+}
+
+table th {
+	text-align: left;
+	border-bottom: 0px solid #fff;
+	margin : 0;
+	padding: 0;
+	border : 0; // 1px solid black
+}
+
+table td {
+	font: 12px Tahoma, Helvetica, sans-serif, Arial;
+	margin : 0;
+	padding: 0;
+	border : 0; // 1px solid black
+}
