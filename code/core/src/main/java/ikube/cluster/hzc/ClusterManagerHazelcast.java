@@ -46,6 +46,8 @@ public class ClusterManagerHazelcast extends AClusterManager {
 	@Autowired
 	private IndexContextListener indexContextListener;
 
+	private transient Server server;
+
 	@SuppressWarnings("unchecked")
 	public void initialize() {
 		ip = UriUtilities.getIp();
@@ -210,7 +212,8 @@ public class ClusterManagerHazelcast extends AClusterManager {
 		} finally {
 			if (!removedAndComitted) {
 				ThreadUtilities.sleep(1000);
-				logger.debug("Retrying to remove the action : " + retry + ", " + server.getIp() + ", " + action + ", " + server.getActions());
+				logger.debug("Retrying to remove the action : " + retry + ", " + server.getIp() + ", " + action + ", "
+						+ server.getActions());
 				stopWorking(action, retry + 1);
 			}
 		}
@@ -232,15 +235,25 @@ public class ClusterManagerHazelcast extends AClusterManager {
 	public Server getServer() {
 		try {
 			Server server = (Server) Hazelcast.getMap(IConstants.IKUBE).get(address);
-			if (server == null) {
-				server = new Server();
-				logger.info("Server null, creating new one : " + server);
+			if (server != null) {
+				// We set the instance server to the one in
+				// Hazelcast so if Hazelcast drops the server we have a
+				// copy to replace it
+				this.server = server;
+			} else {
+				// First check if the instance server is still active
+				if (this.server != null) {
+					server = this.server;
+					logger.warn("Server dropped from Hazelcast! " + server);
+				} else {
+					server = new Server();
+					server.setIp(ip);
+					server.setAddress(address);
+					server.setId(System.currentTimeMillis());
+					logger.info("Server null, creating new one : " + server);
+				}
 			}
-			long time = System.currentTimeMillis();
-			server.setIp(ip);
-			server.setId(time);
-			server.setAge(time);
-			server.setAddress(address);
+			server.setAge(System.currentTimeMillis());
 
 			Collection<IndexContext> collection = monitorService.getIndexContexts().values();
 			List<IndexContext> indexContexts = new ArrayList<IndexContext>(collection);

@@ -24,6 +24,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
+import org.springframework.beans.factory.annotation.Value;
 
 /**
  * @author Michael Couck
@@ -40,6 +41,9 @@ public class IndexableFilesystemWikiHandler extends IndexableHandler<IndexableFi
 	private class Counter {
 		volatile int counter;
 	}
+
+	@Value("${wiki.read.length}")
+	private long readLength = 1024 * 1024 * 100;
 
 	/**
 	 * {@inheritDoc}
@@ -90,7 +94,7 @@ public class IndexableFilesystemWikiHandler extends IndexableHandler<IndexableFi
 			int read = -1;
 			fileInputStream = new FileInputStream(file);
 			bZip2CompressorInputStream = new BZip2CompressorInputStream(fileInputStream);
-			byte[] bytes = new byte[1024 * 1024 * 10];
+			byte[] bytes = new byte[(int) readLength];
 			StringBuilder stringBuilder = new StringBuilder();
 			// Read a chunk
 			while ((read = bZip2CompressorInputStream.read(bytes)) > -1 && counter.counter < indexableFileSystem.getMaxRevisions()) {

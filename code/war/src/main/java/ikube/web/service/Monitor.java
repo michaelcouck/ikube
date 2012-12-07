@@ -93,7 +93,6 @@ public class Monitor extends Resource {
 	private IndexContext getIndexContext(final String indexName) {
 		IndexContext indexContext = monitorService.getIndexContext(indexName);
 		indexContext.isOpen();
-		indexContext.isIndexing();
 		indexContext.getNumDocs();
 		indexContext.getIndexSize();
 		indexContext.getLatestIndexTimestamp();

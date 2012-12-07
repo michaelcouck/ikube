@@ -367,9 +367,8 @@
 	<tr>
 		<td colspan="2" nowrap="nowrap">
 			<span ng-repeat="page in pagination">
-				<a style="font-color : {{page.active}}" href="#" ng-click="
-					doFirstResult(page.firstResult);
-					doSearch();">{{page.page}}</a>
+				<a style="font-color : {{page.active}}" href="#" 
+					ng-click="doFirstResult(page.firstResult);doSearch();">{{page.page}}</a>
 			</span>
 		</td>
 	</tr>

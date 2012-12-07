@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.Writer;
-import java.util.Arrays;
 import java.util.Date;
 
 import org.apache.commons.lang.StringUtils;
@@ -318,7 +317,6 @@ public final class IndexManager {
 				LOGGER.info("No server directories");
 				return indexSize;
 			}
-			LOGGER.info("Server index directories : " + Arrays.deepToString(serverIndexDirectories));
 			for (File serverIndexDirectory : serverIndexDirectories) {
 				if (serverIndexDirectory != null && serverIndexDirectory.exists() && serverIndexDirectory.isDirectory()) {
 					File[] indexFiles = serverIndexDirectory.listFiles();

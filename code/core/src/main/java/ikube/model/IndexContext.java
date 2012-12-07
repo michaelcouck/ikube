@@ -261,6 +261,7 @@ public class IndexContext<T> extends Indexable<T> implements Comparable<IndexCon
 	}
 
 	public void setIndexWriter(final IndexWriter indexWriter) {
+		setIndexing(indexWriter != null);
 		this.indexWriter = indexWriter;
 	}
 

@@ -1,6 +1,5 @@
 package ikube.listener;
 
-import ikube.IConstants;
 import ikube.cluster.IClusterManager;
 import ikube.index.IndexManager;
 import ikube.model.IndexContext;
@@ -57,7 +56,6 @@ public class IndexSizeListener implements IListener {
 			}
 			long meg = 1024 * 1000;
 			long indexSize = getIndexSize(mapEntry.getValue());
-			// LOGGER.info("Index size : " + indexSize + ", " + maxIndexSize + ", " + (indexSize / meg < maxIndexSize));
 			if (indexSize / meg < maxIndexSize) {
 				continue;
 			}
@@ -65,9 +63,7 @@ public class IndexSizeListener implements IListener {
 			File indexDirectory = directory.getDirectory();
 			try {
 				StringBuilder stringBuilder = new StringBuilder();
-				stringBuilder.append(indexDirectory.getParentFile().getAbsolutePath());
-				stringBuilder.append(IConstants.SEP);
-				stringBuilder.append(clusterManager.getServer().getAddress());
+				stringBuilder.append(indexDirectory.getAbsolutePath());
 				stringBuilder.append(".");
 				stringBuilder.append(Long.toString(System.currentTimeMillis()));
 				File newIndexDirectory = FileUtilities.getFile(stringBuilder.toString(), Boolean.TRUE);
