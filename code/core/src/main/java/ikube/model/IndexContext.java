@@ -287,7 +287,7 @@ public class IndexContext<T> extends Indexable<T> implements Comparable<IndexCon
 	}
 
 	public long getIndexSize() {
-
+		indexSize = IndexManager.getIndexSize(this);
 		return indexSize;
 	}
 
