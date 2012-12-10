@@ -282,7 +282,6 @@
 						Geospatial : <input type="checkbox" ng-model="geospatial" name="geospatial">
 					</td>
 				</tr>
-				
 				<tr>
 					<td>All of these words:</td>
 					<td><input id="allWords" name="allWords" ng-model="allWords" value="allWords"></td>
@@ -311,10 +310,9 @@
 					<td>Distance:</td>
 					<td><input ng-model="distance" placeholder="distance"></td>
 				</tr>
-				
 			</table>
 		</td>
-		<td width="340px" rowspan="3">
+		<td width="340px" rowspan="3" align="left">
 			<div id="map_canvas" google-map style="height: 340px; width: 550px; border : 1px solid black;"></div>
 		</td>
 	</tr>

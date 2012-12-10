@@ -1,4 +1,4 @@
-package ikube.integration.service;
+package ikube.service;
 
 import static org.junit.Assert.assertTrue;
 import ikube.ATest;

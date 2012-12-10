@@ -57,6 +57,7 @@ import org.apache.lucene.util.ReaderUtil;
 @SuppressWarnings("deprecation")
 public abstract class Search {
 
+	@SuppressWarnings("unused")
 	private static transient Map<String, QueryParser> QUERY_PARSERS = new HashMap<String, QueryParser>();
 
 	protected Logger logger;
@@ -270,12 +271,13 @@ public abstract class Search {
 	 * @return the query parser for the particular field
 	 */
 	protected QueryParser getQueryParser(final String searchField) {
-		QueryParser queryParser = QUERY_PARSERS.get(searchField);
-		if (queryParser == null) {
-			queryParser = new QueryParser(IConstants.VERSION, searchField, analyzer);
-			QUERY_PARSERS.put(searchField, queryParser);
-		}
-		return queryParser;
+		// QueryParser queryParser = QUERY_PARSERS.get(searchField);
+		// if (queryParser == null) {
+		// queryParser = new QueryParser(IConstants.VERSION, searchField, analyzer);
+		// QUERY_PARSERS.put(searchField, queryParser);
+		// }
+		// return queryParser;
+		return new QueryParser(IConstants.VERSION, searchField, analyzer);
 	}
 
 	/**
@@ -388,7 +390,7 @@ public abstract class Search {
 	}
 
 	/**
-	 *	This method will get all the fields in the index from the readers in the searcher and return them as a string array.
+	 * This method will get all the fields in the index from the readers in the searcher and return them as a string array.
 	 * 
 	 * @param searcher the searcher to get all the fields for
 	 * @return all the fields in the searcher that are searchable

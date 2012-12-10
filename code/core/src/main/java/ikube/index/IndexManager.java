@@ -307,14 +307,17 @@ public final class IndexManager {
 	public static long getIndexSize(final IndexContext<?> indexContext) {
 		long indexSize = 0;
 		try {
-			File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
+			StringBuilder stringBuilder = new StringBuilder(indexContext.getIndexDirectoryPath());
+			stringBuilder.append(IConstants.SEP);
+			stringBuilder.append(indexContext.getIndexName());
+			File latestIndexDirectory = IndexManager.getLatestIndexDirectory(stringBuilder.toString());
 			if (latestIndexDirectory == null || !latestIndexDirectory.exists() || !latestIndexDirectory.isDirectory()) {
-				LOGGER.info("No latest index");
+				LOGGER.info("No latest index : " + indexContext.getIndexName());
 				return indexSize;
 			}
 			File[] serverIndexDirectories = latestIndexDirectory.listFiles();
 			if (serverIndexDirectories == null) {
-				LOGGER.info("No server directories");
+				LOGGER.info("No server directories : " + indexContext.getIndexName());
 				return indexSize;
 			}
 			for (File serverIndexDirectory : serverIndexDirectories) {

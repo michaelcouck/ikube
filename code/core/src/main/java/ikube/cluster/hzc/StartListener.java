@@ -58,14 +58,17 @@ public class StartListener implements MessageListener<Object> {
 			// Start a thread to revert the max age of the index
 			ThreadUtilities.submit(new Runnable() {
 				public void run() {
-					File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
 					File newLatestIndexDirectory = null;
+					File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
 					do {
-						listenerManager.fireEvent(Event.TIMER, System.currentTimeMillis(), indexName, Boolean.FALSE);
+						if (latestIndexDirectory == null) {
+							break;
+						}
 						ThreadUtilities.sleep(10000);
+						listenerManager.fireEvent(Event.TIMER, System.currentTimeMillis(), indexName, Boolean.FALSE);
 						newLatestIndexDirectory = IndexManager.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
 						LOGGER.info("Latest : " + latestIndexDirectory + ", new latest : " + newLatestIndexDirectory);
-					} while (latestIndexDirectory != null && latestIndexDirectory.equals(newLatestIndexDirectory));
+					} while (latestIndexDirectory.equals(newLatestIndexDirectory));
 					LOGGER.info("Setting the max age back to the original : " + maxAge);
 					indexContext.setMaxAge(maxAge);
 				}

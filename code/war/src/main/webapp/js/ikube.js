@@ -28,7 +28,10 @@ module.directive('searching', function($http) {
 		restrict : 'A',
 		scope : true,
 		link : function($scope, $elm, $attr) {
-			$scope.options = { title : 'Searching performance', legend : { position : 'top', textStyle : { color : 'black', fontSize : 12 } } };
+			$scope.options = { 
+				title : 'Searching performance',
+				// chartArea : { left : 60, width : '80%' },
+				legend : { position : 'top', textStyle : { color : 'black', fontSize : 12 } } };
 			$scope.drawSearchingChart = function() {
 				$scope.url = getServiceUrl('/ikube/service/monitor/searching');
 				var promise = $http.get($scope.url);
@@ -58,7 +61,10 @@ module.directive('indexing', function($http) {
 		restrict : 'A',
 		scope : true,
 		link : function($scope, $elm, $attr) {
-			$scope.options = { title : 'Indexing performance', legend : { position : 'top', textStyle : { color : 'black', fontSize : 12 } } };
+			$scope.options = { 
+				title : 'Indexing performance',
+				// chartArea : { left : 60, width : '100%' },
+				legend : { position : 'top', textStyle : { color : 'black', fontSize : 12 } } };
 			$scope.drawIndexingChart = function() {
 				$scope.url = getServiceUrl('/ikube/service/monitor/indexing');
 				var promise = $http.get($scope.url);
@@ -150,6 +156,7 @@ module.controller('ActionsController', function($http, $scope) {
 			promise.error(function(data, status) {
 				$scope.status = status;
 			});
+			$scope.getActions();
 		}
 	}
 });

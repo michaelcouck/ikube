@@ -21,8 +21,8 @@
 	<tr ng-repeat="indexContext in indexContexts" ng-class="{ active : indexContext.indexing == true }">
 		<td>{{indexContext.name}}</td>
 		<td>{{indexContext.open}}</td>
-		<td>{{indexContext.numDocs}}</td>
-		<td>{{indexContext.indexSize}}</td>
+		<td>{{indexContext.numDocs / 1000000}}</td>
+		<td>{{indexContext.indexSize / 1000000}}</td>
 		<td>{{indexContext.maxAge}}</td>
 		<td>{{indexContext.latestIndexTimestamp}}</td>
 		<td>{{indexContext.indexDirectoryPath}}</td>

@@ -29,6 +29,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 /**
  * @author Michael Couck
@@ -225,6 +226,11 @@ public class IndexManagerTest extends ATest {
 	@Test
 	public void getIndexSize() throws Exception {
 		createIndex(indexContext, "the ", "string ", "to add");
+		IndexManager.getIndexSize(indexContext);
+		Mockito.when(indexContext.getIndexName()).thenReturn("anotherIndexName");
+		createIndex(indexContext, "the ", "string ", "to add", "bigger");
+		Mockito.when(indexContext.getIndexName()).thenReturn("index");
+		
 		long indexSize = IndexManager.getIndexSize(indexContext);
 		logger.info("Index size : " + indexSize);
 		assertTrue("There must be some size in the index : ", indexSize > 0);

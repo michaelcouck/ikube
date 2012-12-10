@@ -227,12 +227,9 @@ public abstract class ATest {
 		try {
 			indexWriter = IndexManager.openIndexWriter(indexContext, time, ip);
 			for (String string : strings) {
-				org.apache.lucene.document.Field.Index analyzed = org.apache.lucene.document.Field.Index.ANALYZED;
+				Index analyzed = Index.ANALYZED;
 				String id = Long.toString(System.currentTimeMillis());
-				Document document = new Document();
-				IndexManager.addStringField(IConstants.ID, id, document, Store.YES, analyzed, TermVector.YES);
-				IndexManager.addStringField(IConstants.CONTENTS, string, document, Store.YES, analyzed, TermVector.YES);
-				IndexManager.addStringField(IConstants.NAME, string, document, Store.YES, analyzed, TermVector.YES);
+				Document document = getDocument(id, string, analyzed);
 				indexWriter.addDocument(document);
 			}
 		} catch (Exception e) {
@@ -247,6 +244,23 @@ public abstract class ATest {
 		return serverIndexDirectory;
 	}
 
+	protected Document getDocument(final String id, final String string, final Index analyzed) {
+		Document document = new Document();
+		IndexManager.addStringField(IConstants.ID, id, document, Store.YES, analyzed, TermVector.YES);
+		IndexManager.addStringField(IConstants.CONTENTS, string, document, Store.YES, analyzed, TermVector.YES);
+		IndexManager.addStringField(IConstants.NAME, string, document, Store.YES, analyzed, TermVector.YES);
+		return document;
+	}
+
+	/**
+	 * This method will create multiple indexes and return the index directories.
+	 * 
+	 * @param indexContext the index context to create the indexes from
+	 * @param time the time of the indexes
+	 * @param ips the ip's of the servers that are creating the indexes
+	 * @param strings the data that should be indexed
+	 * @return the list of files that are the index directories
+	 */
 	protected List<File> createIndexes(final IndexContext<?> indexContext, final long time, final String[] ips, final String... strings) {
 		if (strings == null || strings.length == 0) {
 			throw new RuntimeException("There must be some strings to index : " + strings);

@@ -1,17 +1,33 @@
 package ikube.index.lucene;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import ikube.ATest;
 import ikube.IConstants;
+import ikube.index.IndexManager;
 import ikube.mock.SpellingCheckerMock;
 import ikube.search.SearchSingle;
+import ikube.toolkit.FileUtilities;
+import ikube.toolkit.ThreadUtilities;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.concurrent.Future;
 
 import mockit.Mockit;
 
+import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field.Index;
+import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.FSDirectory;
+import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -46,6 +62,11 @@ public class LuceneTest extends ATest {
 		Mockit.setUpMock(SpellingCheckerMock.class);
 	}
 
+	@After
+	public void after() {
+		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
+	}
+
 	@Test
 	public void search() throws Exception {
 		SearchSingle searchSingle = createIndexAndSearch(SearchSingle.class, IConstants.ANALYZER, IConstants.CONTENTS, russian, german,
@@ -72,6 +93,88 @@ public class LuceneTest extends ATest {
 		searchSingle.setSearchString(somthingElseAlToGether);
 		results = searchSingle.execute();
 		assertEquals(3, results.size());
+	}
+
+	@Test
+	public void concurrentReadAndWriteToIndex() {
+		final long sleep = 100;
+		final int iterations = 3;
+		long time = System.currentTimeMillis();
+		final File indexDirectory = createIndex(indexContext, time, "127.0.0.1", "the", "quick", "brown", "fox", "jumped");
+		logger.info("Index directories : " + indexDirectory);
+		List<Future<?>> futures = new ArrayList<Future<?>>();
+		for (int i = 0; i < 3; i++) {
+			Future<?> future = ThreadUtilities.submit(Integer.toHexString(i), new Runnable() {
+				@Override
+				public void run() {
+					try {
+						int index = iterations * 2;
+						while (index-- > 0) {
+							ThreadUtilities.sleep(sleep);
+
+							Directory directory = FSDirectory.open(indexDirectory);
+							IndexReader reader = IndexReader.open(directory);
+							IndexSearcher indexSearcher = new IndexSearcher(reader);
+
+							SearchSingle searchSingle = new SearchSingle(indexSearcher);
+							searchSingle.setFirstResult(0);
+							searchSingle.setFragment(Boolean.TRUE);
+							searchSingle.setMaxResults(Integer.MAX_VALUE);
+							searchSingle.setSearchField(IConstants.CONTENTS);
+							searchSingle.setSearchString("détermine");
+							searchSingle.setSortField(IConstants.CONTENTS);
+							ArrayList<HashMap<String, String>> results = searchSingle.execute();
+							logger.info("Results : " + results.size());
+							assertTrue("There should be four results because the writer added three hits : ", results.size() >= 2);
+
+							indexSearcher.close();
+						}
+					} catch (Exception e) {
+						throw new RuntimeException(e);
+					}
+				}
+			});
+			futures.add(future);
+		}
+		Future<?> future = ThreadUtilities.submit(new Runnable() {
+			public void run() {
+				try {
+					int index = iterations;
+					while (index-- > 0) {
+						IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, indexDirectory, Boolean.FALSE);
+						Document document = getDocument(Long.toHexString(System.currentTimeMillis()), string, Index.ANALYZED);
+						logger.info("Writing document : " + document);
+						indexWriter.addDocument(document);
+						indexWriter.commit();
+						indexWriter.close(Boolean.TRUE);
+						ThreadUtilities.sleep(sleep);
+					}
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+			}
+		});
+		futures.add(future);
+		ThreadUtilities.waitForFutures(futures, 10000);
+	}
+
+	@Test
+	@Ignore
+	public void adHocSearch() throws Exception {
+		Directory directory = FSDirectory.open(new File(
+				"/usr/share/eclipse/workspace/ikube/code/core/indexes/index/1355168391238/127.0.0.1"));
+		IndexReader reader = IndexReader.open(directory);
+		IndexSearcher indexSearcher = new IndexSearcher(reader);
+
+		SearchSingle searchSingle = new SearchSingle(indexSearcher);
+		searchSingle.setFirstResult(0);
+		searchSingle.setFragment(Boolean.TRUE);
+		searchSingle.setMaxResults(Integer.MAX_VALUE);
+		searchSingle.setSearchField(IConstants.CONTENTS);
+		searchSingle.setSearchString("détermine");
+		searchSingle.setSortField(IConstants.CONTENTS);
+		ArrayList<HashMap<String, String>> results = searchSingle.execute();
+		logger.info("Results : " + results);
 	}
 
 }
