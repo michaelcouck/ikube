@@ -36,7 +36,7 @@ public class Optimizer extends Action<IndexContext<?>, Boolean> {
 			}
 			return Boolean.TRUE;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Exception trying to optimize the index : ", e);
 		} finally {
 			stop(action);
 		}

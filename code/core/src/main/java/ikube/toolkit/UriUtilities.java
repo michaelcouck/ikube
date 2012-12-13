@@ -240,8 +240,8 @@ public final class UriUtilities {
 	
 	/**
 	 * This method will get the ip address of the machine. If the machine is connected to the net then the first ip that is not the home
-	 * interface, i.e. not the localhost which is not particularlyusefull in a cluster. So essentially we are looking for the ip that looks
-	 * like 192.... or 10.215.... could be the realy ip from the DNS on the ISP servers of course, but not 127.0.0.1, or on Linux 127.0.1.1
+	 * interface, i.e. not the localhost which is not particularly useful in a cluster. So essentially we are looking for the ip that looks
+	 * like 192.... or 10.215.... could be the real ip from the DNS on the ISP servers of course, but not 127.0.0.1, or on Linux 127.0.1.1
 	 * it turns out.
 	 * 
 	 * @return the first ip address that is not the localhost, something meaningful 
@@ -256,13 +256,15 @@ public final class UriUtilities {
 			throw new RuntimeException("Couldn't access the interfaces of this machine : ");
 		}
 		String ip = "127.0.0.1";
+		String linuxIp = "127.0.1.1";
+		String localhost = "localhost";
 		outer: while (networkInterfaces.hasMoreElements()) {
 			NetworkInterface networkInterface = networkInterfaces.nextElement();
 			Enumeration<InetAddress> inetAddresses = networkInterface.getInetAddresses();
 			while (inetAddresses.hasMoreElements()) {
 				InetAddress inetAddress = inetAddresses.nextElement();
 				String hostAddress = inetAddress.getHostAddress();
-				if (hostAddress.equals(ip) || hostAddress.equals("127.0.1.1") || hostAddress.equals("localhost")) {
+				if (hostAddress.equals(ip) || hostAddress.equals(linuxIp) || hostAddress.equals(localhost)) {
 					continue;
 				}
 				try {

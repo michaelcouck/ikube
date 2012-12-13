@@ -88,9 +88,6 @@ public class IndexableFilesystemWikiHandler extends IndexableHandler<IndexableFi
 		BZip2CompressorInputStream bZip2CompressorInputStream = null;
 		int exceptions = 0;
 		try {
-			if (Thread.currentThread().isInterrupted()) {
-				throw new InterruptedException("Table indexing teminated : ");
-			}
 			int read = -1;
 			fileInputStream = new FileInputStream(file);
 			bZip2CompressorInputStream = new BZip2CompressorInputStream(fileInputStream);
@@ -101,6 +98,9 @@ public class IndexableFilesystemWikiHandler extends IndexableHandler<IndexableFi
 				String string = new String(bytes, 0, read, Charset.forName(IConstants.ENCODING));
 				stringBuilder.append(string);
 				handleChunk(indexContext, indexableFileSystem, file, start, stringBuilder, counter);
+				if (Thread.currentThread().isInterrupted()) {
+					throw new InterruptedException("Wiki indexing teminated : ");
+				}
 			}
 		} catch (InterruptedException e) {
 			logger.error("Coitus interruptus... : " + file, e);

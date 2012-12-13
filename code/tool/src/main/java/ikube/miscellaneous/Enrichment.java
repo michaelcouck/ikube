@@ -58,7 +58,7 @@ public class Enrichment {
 				// Merge the entity batch
 				dataBase.mergeBatch(geoNames);
 				geoNames.clear();
-				action.setInvocations(id);
+				// action.setInvocations(id);
 				id += batch;
 				geoNames = dataBase.find(GeoName.class, GeoName.SELECT_FROM_GEONAME_BY_CITY_AND_COUNTRY_NULL, new String[] {},
 						new Object[] {}, id, batch);

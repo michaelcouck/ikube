@@ -159,6 +159,9 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
 							IndexWriter.unlock(directory);
 						}
 						close(directory, reader, searchable);
+					} catch (NullPointerException e) {
+						logger.error("Reader closed perhaps?");
+						logger.debug(null, e);
 					} catch (Exception e) {
 						logger.error("Exception trying to close the searcher", e);
 					}
@@ -208,22 +211,6 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
 	protected void sendNotification(final String subject, final String body) {
 		try {
 			String ip = UriUtilities.getIp();
-			// Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
-			// while (networkInterfaces.hasMoreElements()) {
-			// NetworkInterface networkInterface = networkInterfaces.nextElement();
-			// Enumeration<InetAddress> inetAddresses = networkInterface.getInetAddresses();
-			// while (inetAddresses.hasMoreElements()) {
-			// subjectBuilder.append(" - ");
-			// subjectBuilder.append(ip);
-			// byte[] mac = networkInterface.getHardwareAddress();
-			// if (mac != null && mac.length > 0) {
-			// bodyBuilder.append(" - ");
-			// bodyBuilder.append(new String(mac));
-			// bodyBuilder.append("\n\r");
-			// }
-			// }
-			// subjectBuilder.append(networkInterface.getInetAddresses());
-			// }
 			mailer.sendMail(subject + ":" + ip, body);
 		} catch (Exception e) {
 			logger.error("Exception sending mail : " + subject, e);
