@@ -16,7 +16,7 @@ public class SpellingCheckerMock {
 
 	@Mock
 	public final String checkWords(String searchString) {
-		return null;
+		return searchString;
 	}
 
 }

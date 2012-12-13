@@ -161,9 +161,9 @@ public class MonitorTest extends Base {
 		Mockito.when(clusterManager.getServers()).thenReturn(servers);
 		Response response = monitor.actions();
 		Object entity = response.getEntity();
+		logger.info("Actions : " + entity);
 
-		assertTrue(entity.toString().contains(
-				"{\"result\":\"true\",\"docsPerMinute\":3,\"actionName\":\"action\",\"invocations\":\"2147483647\",\"startTime\""));
+		assertTrue(entity.toString().contains(Integer.toString(Integer.MAX_VALUE)));
 	}
 
 	private Map<String, Server> getServers() {
@@ -219,6 +219,7 @@ public class MonitorTest extends Base {
 	private IndexContext getIndexContext() {
 		IndexContext indexContext = new IndexContext();
 		indexContext.setIndexName("indexName");
+		indexContext.setIndexDirectoryPath("indexDirectoryPath");
 		List<Snapshot> snapshots = new ArrayList<Snapshot>();
 
 		snapshots.add(getSnapshot(1, 100, 60000));

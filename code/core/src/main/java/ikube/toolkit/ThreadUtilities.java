@@ -119,29 +119,6 @@ public final class ThreadUtilities implements IListener {
 		}
 	}
 
-	/**
-	 * This method will destroy the thread pool. All threads that are currently running will be interrupted,and should catch this exception
-	 * and exit the run method.
-	 */
-	public static synchronized void destroy() {
-		try {
-			if (EXECUTER_SERVICE == null || EXECUTER_SERVICE.isShutdown()) {
-				LOGGER.info("Executer service already shutdown : ");
-				return;
-			}
-			Collection<String> futureNames = new ArrayList<String>(FUTURES.keySet());
-			for (String futureName : futureNames) {
-				destroy(futureName);
-			}
-			EXECUTER_SERVICE.shutdown();
-			List<Runnable> runnables = EXECUTER_SERVICE.shutdownNow();
-			EXECUTER_SERVICE = null;
-			LOGGER.info("Shutdown runnables : " + runnables);
-		} finally {
-			ThreadUtilities.class.notifyAll();
-		}
-	}
-
 	@Override
 	public void handleNotification(Event event) {
 		if (Event.TIMER.equals(event.getType())) {
@@ -256,12 +233,35 @@ public final class ThreadUtilities implements IListener {
 	/**
 	 * This method initializes the executer service, and the thread pool that will execute runnables.
 	 */
-	public static void initialize() {
+	public void initialize() {
 		if (EXECUTER_SERVICE != null && !EXECUTER_SERVICE.isShutdown()) {
 			LOGGER.info("Executer service already initialized : ");
 			return;
 		}
 		EXECUTER_SERVICE = Executors.newFixedThreadPool(IConstants.THREAD_POOL_SIZE);
+	}
+
+	/**
+	 * This method will destroy the thread pool. All threads that are currently running will be interrupted,and should catch this exception
+	 * and exit the run method.
+	 */
+	public synchronized void destroy() {
+		try {
+			if (EXECUTER_SERVICE == null || EXECUTER_SERVICE.isShutdown()) {
+				LOGGER.info("Executer service already shutdown : ");
+				return;
+			}
+			Collection<String> futureNames = new ArrayList<String>(FUTURES.keySet());
+			for (String futureName : futureNames) {
+				destroy(futureName);
+			}
+			EXECUTER_SERVICE.shutdown();
+			List<Runnable> runnables = EXECUTER_SERVICE.shutdownNow();
+			EXECUTER_SERVICE = null;
+			LOGGER.info("Shutdown runnables : " + runnables);
+		} finally {
+			notifyAll();
+		}
 	}
 
 	public ThreadUtilities() {

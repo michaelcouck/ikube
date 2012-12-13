@@ -31,9 +31,9 @@ import org.springframework.beans.factory.annotation.Value;
  */
 public class SpellingChecker {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(SpellingChecker.class);
 	private static SpellingChecker INSTANCE;
 
+	private Logger logger = LoggerFactory.getLogger(SpellingChecker.class);
 	private SpellChecker spellChecker;
 	@Value("${language.word.lists.directory}")
 	private String languageWordListsDirectory = "./ikube/common/languages";
@@ -50,25 +50,29 @@ public class SpellingChecker {
 
 	public void initialize() throws Exception {
 		File spellingIndexDirectory = FileUtilities.getFile(spellingIndexDirectoryPath, Boolean.TRUE);
+		System.out.println("Logger : " + logger);
+		logger.error("Spelling directory : " + spellingIndexDirectory + ", " + spellingIndexDirectoryPath);
 		Directory directory = FSDirectory.open(spellingIndexDirectory);
 		spellChecker = new SpellChecker(directory);
 		indexLanguageFiles();
-		LOGGER.info("Opened spelling index on : " + spellingIndexDirectory.getAbsolutePath());
+		logger.info("Opened spelling index on : " + spellingIndexDirectory);
 	}
 
 	private void indexLanguageFiles() {
-		List<File> languageDictionaryFiles = FileUtilities.findFilesRecursively(new File(languageWordListsDirectory),
-				new ArrayList<File>(), "txt");
+		File wordListDirectory = new File(languageWordListsDirectory);
+		logger.error("Word list directory : " + languageWordListsDirectory + ", " + wordListDirectory);
+		List<File> languageDictionaryFiles = FileUtilities.findFilesRecursively(wordListDirectory, new ArrayList<File>(), "txt");
+		logger.error("Language files : " + languageDictionaryFiles);
 		for (File languageDictionaryFile : languageDictionaryFiles) {
 			InputStream inputStream = null;
 			try {
-				LOGGER.info("Language file : " + languageDictionaryFile);
+				logger.info("Language file : " + languageDictionaryFile);
 				inputStream = new FileInputStream(languageDictionaryFile);
-				LOGGER.info("Input stream : " + inputStream);
+				logger.info("Input stream : " + inputStream);
 				IndexWriterConfig indexWriterConfig = new IndexWriterConfig(IConstants.VERSION, IConstants.ANALYZER);
 				spellChecker.indexDictionary(new PlainTextDictionary(inputStream), indexWriterConfig, Boolean.TRUE);
 			} catch (Exception e) {
-				LOGGER.error("Exception indexing language file : " + languageDictionaryFile, e);
+				logger.error("Exception indexing language file : " + languageDictionaryFile, e);
 			} finally {
 				FileUtilities.close(inputStream);
 			}
@@ -107,7 +111,7 @@ public class SpellingChecker {
 				hasCorrections = true;
 				strings = spellChecker.suggestSimilar(token, 1);
 			} catch (IOException e) {
-				LOGGER.error("Exception checking spelling for : " + token, e);
+				logger.error("Exception checking spelling for : " + token, e);
 				continue;
 			}
 			if (strings != null && strings.length > 0) {
@@ -132,7 +136,7 @@ public class SpellingChecker {
 			try {
 				this.spellChecker.close();
 			} catch (Exception e) {
-				LOGGER.error("Exception closing the spelling checker : ", e);
+				logger.error("Exception closing the spelling checker : ", e);
 			}
 		}
 	}

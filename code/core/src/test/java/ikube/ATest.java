@@ -24,7 +24,6 @@ import ikube.search.Search;
 import ikube.service.IMonitorService;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.Logging;
-import ikube.toolkit.ThreadUtilities;
 
 import java.io.File;
 import java.io.IOException;
@@ -77,7 +76,7 @@ public abstract class ATest {
 		Logging.configure();
 		new MimeTypes(IConstants.MIME_TYPES);
 		new MimeMapper(IConstants.MIME_MAPPING);
-		ThreadUtilities.initialize();
+		// ThreadUtilities.initialize();
 		Mockit.setUpMock(SpellingCheckerMock.class);
 	}
 

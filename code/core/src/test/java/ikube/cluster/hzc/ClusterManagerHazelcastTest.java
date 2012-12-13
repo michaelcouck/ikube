@@ -237,7 +237,7 @@ public class ClusterManagerHazelcastTest extends ATest {
 		Deencapsulation.setField(clusterManagerHazelcast, "startListener", new StartListener());
 		Deencapsulation.setField(clusterManagerHazelcast, "stopListener", new StopListener());
 		Deencapsulation.setField(clusterManagerHazelcast, "indexContextListener", new IndexContextListener());
-		ThreadUtilities.initialize();
+		new ThreadUtilities().initialize();
 		clusterManagerHazelcast.initialize();
 
 		Runnable runnable = new Runnable() {
@@ -256,7 +256,7 @@ public class ClusterManagerHazelcastTest extends ATest {
 		clusterManagerHazelcast.sendMessage(event);
 		ThreadUtilities.sleep(1000);
 		assertTrue(future.isCancelled());
-		ThreadUtilities.destroy();
+		new ThreadUtilities().destroy();
 	}
 
 	@Test
@@ -268,7 +268,7 @@ public class ClusterManagerHazelcastTest extends ATest {
 	public void threaded() {
 		injectServices();
 		Hazelcast.getLock(IConstants.IKUBE).forceUnlock();
-		ThreadUtilities.initialize();
+		// ThreadUtilities.initialize();
 		int threads = 3;
 		final int iterations = 100;
 		final double sleep = 10;
@@ -292,7 +292,7 @@ public class ClusterManagerHazelcastTest extends ATest {
 			futures.add(future);
 		}
 		ThreadUtilities.waitForFutures(futures, Long.MAX_VALUE);
-		ThreadUtilities.destroy();
+		// ThreadUtilities.destroy();
 	}
 
 	private void injectServices() {

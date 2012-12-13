@@ -30,12 +30,12 @@ public class ThreadUtilitiesTest extends ATest {
 
 	@Before
 	public void before() {
-		ThreadUtilities.initialize();
+		new ThreadUtilities().initialize();
 	}
 
 	@After
 	public void after() {
-		ThreadUtilities.destroy();
+		new ThreadUtilities().destroy();
 	}
 
 	@Test
@@ -93,7 +93,7 @@ public class ThreadUtilitiesTest extends ATest {
 		new Thread(new Runnable() {
 			public void run() {
 				ThreadUtilities.sleep(3000);
-				ThreadUtilities.destroy();
+				new ThreadUtilities().destroy();
 			}
 		}).start();
 		ThreadUtilities.waitForFuture(future, Integer.MAX_VALUE);

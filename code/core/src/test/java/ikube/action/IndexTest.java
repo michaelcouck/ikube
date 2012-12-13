@@ -18,7 +18,6 @@ import ikube.model.IndexableTable;
 import ikube.model.Server;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
-import ikube.toolkit.ThreadUtilities;
 
 import java.io.File;
 import java.sql.Timestamp;
@@ -68,7 +67,7 @@ public class IndexTest extends ATest {
 	public void after() {
 		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
 		Mockit.tearDownMocks(IndexManager.class, ApplicationContextManager.class);
-		ThreadUtilities.destroy();
+		// ThreadUtilities.destroy();
 	}
 
 	@Test

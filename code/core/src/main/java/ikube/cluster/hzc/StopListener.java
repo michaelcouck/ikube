@@ -5,6 +5,7 @@ import ikube.toolkit.ThreadUtilities;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.hazelcast.core.Message;
 import com.hazelcast.core.MessageListener;
@@ -22,6 +23,8 @@ public class StopListener implements MessageListener<Object> {
 
 	@SuppressWarnings("unused")
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
+	@Autowired
+	private ThreadUtilities threadUtilities;
 
 	/**
 	 * {@inheritDoc}
@@ -42,7 +45,7 @@ public class StopListener implements MessageListener<Object> {
 				}
 			} else if (Event.TERMINATE_ALL.equals(event.getType())) {
 				// logger.info("Terminating all indexing : ");
-				ThreadUtilities.destroy();
+				threadUtilities.destroy();
 			}
 		}
 	}

@@ -41,7 +41,7 @@ public class GeonamePopulator {
 		String sessionName = "geoname";
 		Session session = SessionFactory.getSession(sessionName);
 		IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
-		ThreadUtilities.destroy();
+		new ThreadUtilities().destroy();
 		int batchSize = 1000;
 		List<GeoName> geoNames = new ArrayList<GeoName>();
 		int count = 0;

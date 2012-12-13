@@ -193,6 +193,7 @@
 		<ref bean="ikube.IndexEngine" />
 		<ref bean="ikube.listener.SnapshotListener" />
 		<ref bean="ikube.listener.CpuLoadListener" />
+		<ref bean="ikube.toolkit.ThreadUtilities" />
 		<bean class="ikube.listener.StartupListener" />
 		<bean class="ikube.listener.TerminationListener" />
 		<bean class="ikube.listener.ServerRemovalListener" />
@@ -200,8 +201,13 @@
 		<bean class="ikube.listener.IndexSizeListener" />
 		<bean class="ikube.listener.ActionListener" />
 		<bean class="ikube.listener.IndexContextListener" />
-		<bean class="ikube.toolkit.ThreadUtilities" />
 	</util:list>
+	
+	<bean 
+	    id="ikube.toolkit.ThreadUtilities"
+	    class="ikube.toolkit.ThreadUtilities"
+	    init-method="initialize"
+	    destroy-method="destroy" />
 	
 	<bean
 		id="ikube.listener.SnapshotListener"
@@ -264,12 +270,6 @@
 		<value>/WEB-INF/i18n/i18n</value>
 	</util:list>
 	
-	<bean 
-		id="ikube.toolkit.ThreadUtilities.initializer" 
-		class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
-		property:staticMethod="ikube.toolkit.ThreadUtilities.initialize">
-	</bean>
-	
 	<!-- 
 		This bean is the geocoder, it will enrich the data with spatial co-ordinates if
 		the indexables contain address fields. The Url for this service  
@@ -306,6 +306,7 @@
 		id="ikube.cluster.IClusterManager"
 		class="ikube.cluster.hzc.ClusterManagerHazelcast"
 		init-method="initialize"
+		destroy-method="destroy"
 		lazy-init="false" />
 	<bean 
 	   	id="ikube.cluster.hzc.StartListener" 

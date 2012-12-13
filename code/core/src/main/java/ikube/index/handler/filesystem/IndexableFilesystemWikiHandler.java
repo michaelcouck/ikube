@@ -136,15 +136,9 @@ public class IndexableFilesystemWikiHandler extends IndexableHandler<IndexableFi
 			endOffset += PAGE_FINISH.length();
 			String content = stringBuilder.substring(startOffset, endOffset);
 			stringBuilder.delete(startOffset, endOffset);
-			// LOGGER.info("String buffer size : " + stringBuilder.length());
 			// Add the documents to the index
 			handleRevision(indexContext, indexableFileSystem, content);
 			counter.counter++;
-			// if (counter.counter % 10000 == 0) {
-			// long duration = System.currentTimeMillis() - start;
-			// double perSecond = counter.counter / (duration / 1000);
-			// logger.info("Revisions done : " + counter.counter + ", " + file.getName() + ", " + perSecond);
-			// }
 		}
 	}
 
@@ -163,9 +157,9 @@ public class IndexableFilesystemWikiHandler extends IndexableHandler<IndexableFi
 		TermVector termVector = indexableFileSystem.isVectored() ? TermVector.YES : TermVector.NO;
 
 		Document document = new Document();
-		// String pathFieldName = indexableFileSystem.getPathFieldName();
+		String pathFieldName = indexableFileSystem.getPathFieldName();
 		String contentFieldName = indexableFileSystem.getContentFieldName();
-		// IndexManager.addStringField(pathFieldName, indexableFileSystem.getPath(), document, Store.YES, Index.NO, TermVector.NO);
+		IndexManager.addStringField(pathFieldName, indexableFileSystem.getPath(), document, Store.YES, Index.ANALYZED, TermVector.YES);
 		IndexManager.addStringField(contentFieldName, content, document, store, analyzed, termVector);
 		addDocument(indexContext, indexableFileSystem, document);
 	}

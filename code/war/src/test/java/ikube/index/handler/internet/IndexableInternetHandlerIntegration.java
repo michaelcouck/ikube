@@ -30,6 +30,7 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.lucene.index.IndexWriter;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 /**
  * @author Michael Couck
@@ -57,7 +58,7 @@ public class IndexableInternetHandlerIntegration extends Integration {
 
 	@Test
 	public void handle() throws Exception {
-		ThreadUtilities.initialize();
+		new ThreadUtilities().initialize();
 		try {
 			String ip = InetAddress.getLocalHost().getHostAddress();
 			IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
@@ -69,10 +70,10 @@ public class IndexableInternetHandlerIntegration extends Integration {
 			List<Url> urls = dataBase.find(Url.class, 0, Integer.MAX_VALUE);
 			int totalUrlsCrawled = urls.size();
 			logger.info("Urls crawled : " + totalUrlsCrawled);
-			assertTrue("Expected more than " + expectedAtLeast + " and got : " + totalUrlsCrawled, totalUrlsCrawled > expectedAtLeast);
-			assertTrue("There must be some documents in the index : ", indexContext.getIndexWriter().numDocs() > expectedAtLeast);
+			assertTrue("Expected more than " + expectedAtLeast + " and got : " + totalUrlsCrawled, totalUrlsCrawled >= expectedAtLeast);
+			assertTrue("There must be some documents in the index : ", indexContext.getIndexWriter().numDocs() >= expectedAtLeast);
 		} finally {
-			ThreadUtilities.destroy();
+			new ThreadUtilities().destroy();
 		}
 	}
 
@@ -96,6 +97,8 @@ public class IndexableInternetHandlerIntegration extends Integration {
 		url.setContentType("text/html");
 		url.setRawContent(content.getBytes());
 		IndexContext<?> indexContext = mock(IndexContext.class);
+		IndexWriter indexWriter = Mockito.mock(IndexWriter.class);
+		Mockito.when(indexContext.getIndexWriter()).thenReturn(indexWriter);
 		indexableInternetHandler.addDocument(indexContext, indexableInternet, url, content);
 		assertNotNull(url.getTitle());
 		assertEquals(title, url.getTitle());

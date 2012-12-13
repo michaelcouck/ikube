@@ -27,13 +27,13 @@ public class IndexableFilesystemLogHandlerTest extends ATest {
 
 	@Before
 	public void before() {
-		ThreadUtilities.initialize();
+		new ThreadUtilities().initialize();
 		indexableFilesystemLogHandler = new IndexableFilesystemLogHandler();
 	}
 
 	@After
 	public void after() {
-		ThreadUtilities.destroy();
+		new ThreadUtilities().destroy();
 	}
 
 	@Test

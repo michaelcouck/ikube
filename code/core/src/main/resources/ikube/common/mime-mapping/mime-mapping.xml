@@ -7,11 +7,9 @@
 -->
 <parsers>
 
-	<!-- mime-type type="text/plain" parser="com.ikokoon.search.action.index.text.TextParser" / -->
 	<mime-type type="text/rtf" parser="ikube.index.parse.rtf.RtfParser" />
 	<mime-type type="text/xml" parser="ikube.index.parse.xml.XMLParser" />
 	<mime-type type="text/html" parser="ikube.index.parse.html.HtmlParser" />
-	<!-- <mime-type type="text/html" parser="ikube.index.parse.text.TextParser" /> -->
 	<mime-type type="text/plain" parser="ikube.index.parse.text.TextParser" />
 
 	<mime-type type="application/pdf" parser="ikube.index.parse.pdf.PdfParser" />

@@ -30,7 +30,6 @@ import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.URLName;
-import javax.mail.internet.MimeMultipart;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
@@ -205,34 +204,30 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 	 * @throws MessagingException If some problem occurs when trying to access the message content.
 	 */
 	private String getMessageContent(final Message message) throws IOException, MessagingException {
-		String messageContent = null;
+		StringBuilder messageContent = new StringBuilder();
 		Object obj = message.getContent();
 		if (obj.getClass().isAssignableFrom(Multipart.class)) {
-			if (logger.isDebugEnabled()) {
-				// TODO - we need to parse the attachments and add them to the accumulator
-				// Get the data. Get the name of the attachment
-				// IParser parser = ParserFactory.getParserFactory().getParser("text/html", bytes);
-				logger.info("Skiping attachment");
+			Multipart multipart = (Multipart) obj;
+			for (int i = 0; i < multipart.getCount(); i++) {
+				BodyPart bodyPart = multipart.getBodyPart(i);
+				Object content = bodyPart.getContent();
+				if (content != null) {
+					byte[] bytes = content.toString().getBytes();
+					IParser parser = ParserProvider.getParser(null, bytes);
+					try {
+						String parsedContent = parser.parse(new ByteArrayInputStream(bytes), new ByteArrayOutputStream()).toString();
+						messageContent.append(parsedContent);
+						messageContent.append(" ");
+					} catch (Exception e) {
+						logger.error("Exception getting the attachments of the messages : ", e);
+					}
+				}
 			}
 		} else {
-			if (obj.getClass().isAssignableFrom(MimeMultipart.class)) {
-				MimeMultipart mimeMultipart = (MimeMultipart) obj;
-				BodyPart bodyPart = mimeMultipart.getBodyPart(0);
-				Object content = bodyPart.getContent();
-				if (String.class.isAssignableFrom(content.getClass())) {
-					messageContent = (String) content;
-				} else {
-					// TODO - what am I
-					logger.info("What is this content : " + content);
-				}
-			} else {
-				if (obj.getClass().isAssignableFrom(String.class)) {
-					messageContent = (String) obj;
-				}
-			}
-
+			messageContent.append(obj);
 		}
-		return messageContent;
+		messageContent.append(" ");
+		return messageContent.toString();
 	}
 
 	/**

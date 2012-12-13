@@ -60,7 +60,7 @@ public class IndexableTableHandlerIntegration extends Integration {
 
 	@Before
 	public void before() throws SQLException {
-		ThreadUtilities.initialize();
+		new ThreadUtilities().initialize();
 		dataBase = ApplicationContextManager.getBean(IDataBase.class);
 		indexableTableHandler = ApplicationContextManager.getBean(IndexableTableHandler.class);
 
@@ -77,7 +77,7 @@ public class IndexableTableHandlerIntegration extends Integration {
 
 	@After
 	public void after() {
-		ThreadUtilities.destroy();
+		new ThreadUtilities().destroy();
 		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
 		clusterManager.getServer().getActions().clear();
 		DatabaseUtilities.close(connection);
@@ -272,7 +272,7 @@ public class IndexableTableHandlerIntegration extends Integration {
 			Thread thread = new Thread(new Runnable() {
 				public void run() {
 					ThreadUtilities.sleep(10000);
-					ThreadUtilities.destroy();
+					new ThreadUtilities().destroy();
 				}
 			});
 			thread.setDaemon(Boolean.TRUE);
@@ -283,7 +283,7 @@ public class IndexableTableHandlerIntegration extends Integration {
 			assertTrue(Boolean.TRUE);
 			assertTrue(System.currentTimeMillis() - start < 60000);
 		} finally {
-			ThreadUtilities.initialize();
+			new ThreadUtilities().initialize();
 			indexContext.setThrottle(0);
 		}
 	}

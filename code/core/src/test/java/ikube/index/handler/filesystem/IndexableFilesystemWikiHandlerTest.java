@@ -25,14 +25,14 @@ public class IndexableFilesystemWikiHandlerTest extends ATest {
 
 	@Before
 	public void before() {
-		ThreadUtilities.initialize();
+		new ThreadUtilities().initialize();
 		indexableFilesystemWikiHandler = new IndexableFilesystemWikiHandler();
 		indexableFilesystemWikiHandler.setThreads(3);
 	}
 
 	@After
 	public void after() {
-		ThreadUtilities.destroy();
+		new ThreadUtilities().destroy();
 	}
 
 	@Test

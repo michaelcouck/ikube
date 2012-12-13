@@ -2,17 +2,18 @@ package ikube.search.spelling;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-
-import java.io.File;
-
 import ikube.ATest;
 import ikube.mock.SpellingCheckerMock;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.PerformanceTester;
+
+import java.io.File;
+
 import mockit.Deencapsulation;
 import mockit.Mockit;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -29,12 +30,17 @@ public class SpellingCheckerTest extends ATest {
 		super(SpellingCheckerTest.class);
 	}
 
+	@AfterClass
+	public static void afterClass() {
+		FileUtilities.deleteFile(new File("./spellingIndex"), 1);
+	}
+
 	@Before
 	public void before() throws Exception {
 		Mockit.tearDownMocks(SpellingChecker.class);
 
 		spellingChecker = new SpellingChecker();
-		File languagesWordFileDirectory = FileUtilities.findFileRecursively(new File("."), "languages");
+		File languagesWordFileDirectory = FileUtilities.findFileRecursively(new File("."), "english.txt").getParentFile();
 		Deencapsulation.setField(spellingChecker, "languageWordListsDirectory", languagesWordFileDirectory.getAbsolutePath());
 		Deencapsulation.setField(spellingChecker, "spellingIndexDirectoryPath", "./spellingIndex");
 		spellingChecker.initialize();
@@ -42,7 +48,7 @@ public class SpellingCheckerTest extends ATest {
 
 	@After
 	public void after() {
-		Mockit.setUpMock(SpellingCheckerMock.class);
+		// Mockit.setUpMock(SpellingCheckerMock.class);
 	}
 
 	@Test
@@ -57,6 +63,11 @@ public class SpellingCheckerTest extends ATest {
 		corrected = spellingChecker.checkWords(phraseWrong);
 		logger.info("Corrected words : " + corrected);
 		assertEquals(correct + " AND " + correct, corrected);
+
+		String right = "AND there are AND some words WITH AND another";
+		corrected = spellingChecker.checkWords(right);
+		logger.info("Corrected words : " + corrected);
+		assertEquals("AND there are AND some words AND another", corrected);
 	}
 
 	@Test

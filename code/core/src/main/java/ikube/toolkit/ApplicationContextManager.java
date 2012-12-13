@@ -1,7 +1,6 @@
 package ikube.toolkit;
 
 import ikube.IConstants;
-import ikube.cluster.IClusterManager;
 import ikube.database.IDataBase;
 import ikube.model.IndexContext;
 
@@ -47,13 +46,6 @@ public final class ApplicationContextManager implements ApplicationContextAware 
 	static {
 		Logging.configure();
 		LOGGER = LoggerFactory.getLogger(ApplicationContextManager.class);
-		Runtime.getRuntime().addShutdownHook(new Thread() {
-			@Override
-			public void run() {
-				ThreadUtilities.destroy();
-				getBean(IClusterManager.class).destroy();
-			}
-		});
 	}
 
 	/**

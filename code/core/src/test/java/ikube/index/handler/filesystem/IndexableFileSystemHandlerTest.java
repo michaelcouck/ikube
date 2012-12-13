@@ -36,7 +36,7 @@ public class IndexableFileSystemHandlerTest extends ATest {
 
 	@Test
 	public void handle() throws Exception {
-		ThreadUtilities.destroy();
+		// ThreadUtilities.destroy();
 		IndexableFileSystem indexableFileSystem = new IndexableFileSystem();
 		indexableFileSystem.setPath("./");
 		List<Future<?>> futures = indexableFileSystemHandler.handle(indexContext, indexableFileSystem);

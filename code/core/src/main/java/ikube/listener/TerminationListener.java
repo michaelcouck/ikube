@@ -2,6 +2,8 @@ package ikube.listener;
 
 import ikube.toolkit.ThreadUtilities;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 /**
  * This listener is to terminate the executer service, essentially aborting any actions that may be submitted, like indexing for example.
  * 
@@ -11,13 +13,16 @@ import ikube.toolkit.ThreadUtilities;
  */
 public class TerminationListener implements IListener {
 
+	@Autowired
+	private ThreadUtilities threadUtilities;
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public void handleNotification(Event event) {
 		if (Event.TERMINATE.equals(event.getType())) {
-			ThreadUtilities.destroy();
+			threadUtilities.destroy();
 		}
 	}
 

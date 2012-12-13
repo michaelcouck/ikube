@@ -61,7 +61,7 @@ public abstract class Integration extends Base {
 		ApplicationContextManager.getBean(ListenerManager.class).removeListeners();
 		ApplicationContextManager.getBean(ListenerManager.class).removeListeners();
 		ApplicationContextManager.getBean(Scheduler.class).shutdown();
-		ThreadUtilities.destroy();
+		new ThreadUtilities().destroy();
 	}
 
 	private static void insertData() throws SQLException, FileNotFoundException {

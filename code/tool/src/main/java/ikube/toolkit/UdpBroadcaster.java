@@ -42,7 +42,7 @@ public class UdpBroadcaster {
 
 	@SuppressWarnings("unchecked")
 	public List<Future<?>> initialize() {
-		ThreadUtilities.initialize();
+		new ThreadUtilities().initialize();
 		List<Future<?>> futures = Arrays.asList(client(), server());
 		return futures;
 	}

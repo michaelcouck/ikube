@@ -26,6 +26,7 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.MultiSearcher;
 import org.apache.lucene.search.Searchable;
+import org.apache.lucene.search.SearcherManager;
 
 /**
  * This is the context for a single index. It has the properties that define the index like what it is going to index, i.e. the databases,
@@ -55,6 +56,8 @@ public class IndexContext<T> extends Indexable<T> implements Comparable<IndexCon
 	@Transient
 	private Date latestIndexTimestamp;
 
+	@Transient
+	private transient volatile SearcherManager searcherManager;
 	/** Can be null if there are no indexes running. */
 	@Transient
 	private transient volatile IndexWriter indexWriter;
@@ -368,6 +371,14 @@ public class IndexContext<T> extends Indexable<T> implements Comparable<IndexCon
 
 	public void setIndexing(boolean indexing) {
 		this.indexing = indexing;
+	}
+
+	public SearcherManager getSearcherManager() {
+		return searcherManager;
+	}
+
+	public void setSearcherManager(SearcherManager searcherManager) {
+		this.searcherManager = searcherManager;
 	}
 
 	@Override
