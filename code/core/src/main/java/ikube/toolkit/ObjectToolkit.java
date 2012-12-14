@@ -35,12 +35,18 @@ public final class ObjectToolkit {
 
 	private static final Logger LOGGER = Logger.getLogger(ObjectToolkit.class);
 
+	/**
+	 * This is the interface that will determine whether an object can be built by the object toolkit. In some cases this is not required
+	 * for example when the object is transient then the predicate would return false from a transient check.
+	 * 
+	 * @author U365981
+	 */
 	public interface Predicate {
 		public boolean perform(final Object target);
 	}
 
-	private static final List<Predicate> PREDICATES = new ArrayList<ObjectToolkit.Predicate>();
 	private static final Map<Class<?>, Field> ID_FIELDS = new HashMap<Class<?>, Field>();
+	private static final List<Predicate> PREDICATES = new ArrayList<ObjectToolkit.Predicate>();
 
 	/**
 	 * Private constructor to avoid instantiation

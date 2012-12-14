@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:property="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
+
+	xsi:schemaLocation="
+			http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+            http://www.springframework.org/schema/context
+            http://www.springframework.org/schema/context/spring-context-3.0.xsd
+            http://www.springframework.org/schema/util
+            http://www.springframework.org/schema/util/spring-util.xsd">
+
+	<description>
+	</description>
+	
+	<bean
+		id="roma-streets"
+		class="ikube.model.IndexContext"
+		property:name="roma-streets"
+		property:maxAge="600"
+		property:compoundFile="true"
+		property:bufferedDocs="${buffered.docs}"
+		property:bufferSize="${buffer.size}"
+		property:batchSize="${jdbc.batch.size}"
+		property:internetBatchSize="${internet.batch.size}"
+		property:mergeFactor="${merge.factor}"
+		property:maxFieldLength="${max.field.length}"
+		property:maxReadLength="${max.read.length}"
+		property:address="false"
+		property:throttle="1"
+		property:indexDirectoryPath="${index.directory.path}"
+		property:indexDirectoryPathBackup="${index.directory.path.backup}"
+		property:children-ref="streets-tables" />
+	<util:list id="streets-tables">
+		<ref local="DELIVERY_POINT2" />
+	</util:list>
+	
+	<bean
+		id="DELIVERY_POINT2"
+		class="ikube.model.IndexableTable"
+		property:name="DELIVERY_POINT2"
+		property:primaryTable="true"
+		property:address="false"
+		property:dataSource-ref="nonXaDataSourceOracleBpost"
+		property:children-ref="DELIVERY_POINT2_CHILDREN" 
+		property:maxExceptions="10" />
+	<util:list id="DELIVERY_POINT2_CHILDREN">
+		<ref local="PDP_ID" />
+		<ref local="ADMINISTRATIVE_AREA_NAME" />
+	</util:list>
+	<bean
+		id="PDP_ID"
+		class="ikube.model.IndexableColumn"
+		property:name="PDP_ID"
+		property:idColumn="true"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+		
+	<bean
+		id="ADMINISTRATIVE_AREA_NAME"
+		class="ikube.model.IndexableTable"
+		property:name="ADMINISTRATIVE_AREA_NAME"
+		property:children-ref="ADMINISTRATIVE_AREA_NAME_COLUMNS"
+		property:maxExceptions="10" />
+	<util:list id="ADMINISTRATIVE_AREA_NAME_COLUMNS">
+		<ref local="AAR_ADMIN_AREA_ID" />
+	</util:list>
+	<bean
+		id="AAR_ADMIN_AREA_ID"
+		class="ikube.model.IndexableColumn"
+		property:name="AAR_ADMIN_AREA_ID"
+		property:foreignKey-ref="PDP_ID"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	
+	<bean id="nonXaDataSourceOracleBpost"
+		class="com.mchange.v2.c3p0.ComboPooledDataSource"
+		destroy-method="close"
+		property:user="ROMAREAD"
+		property:password="ROMARDEV"
+		property:driverClass="${oracle.jdbc.driver}"
+		property:jdbcUrl="jdbc:oracle:thin:@ldap://asshxp1.netpost:389/MA3A2,cn=OracleContext,dc=pr,dc=netpost,dc=be"
+		property:initialPoolSize="${jdbc.minPoolSize}"
+		property:maxPoolSize="${jdbc.maxPoolSize}"
+		property:maxStatements="${jdbc.maxStatements}"
+		property:checkoutTimeout="${jdbc.checkOutTimeout}"
+		property:numHelperThreads="${jdbc.numHelperThreads}" 
+		property:breakAfterAcquireFailure="${jdbc.breakAfterAcquireFailure}"
+		property:debugUnreturnedConnectionStackTraces="${jdbc.debugUnreturnedConnectionStackTraces}"
+		property:testConnectionOnCheckin="${jdbc.testConnectionOnCheckin}"
+		property:testConnectionOnCheckout="${jdbc.testConnectionOnCheckout}"
+		property:unreturnedConnectionTimeout="${jdbc.unreturnedConnectionTimeout}" />
+		
+	<bean id="orcaleDataSourceBinder" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
+		property:staticMethod="ikube.toolkit.JndiInjector.bind">
+		<property name="arguments">
+			<array>
+				<value>nonXaDataSourceOracleBpost</value>
+				<ref local="nonXaDataSourceOracleBpost" />
+			</array>
+		</property>
+	</bean>
+	
+</beans>

@@ -23,6 +23,7 @@ import javax.persistence.TemporalType;
  * @version 01.00
  */
 @Entity
+@SuppressWarnings("serial")
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @EntityListeners(value = { TimestampListener.class })
 public abstract class Persistable implements Serializable {

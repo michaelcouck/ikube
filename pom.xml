@@ -59,7 +59,7 @@
 		<!-- <module>code/web</module> -->
 		<!-- <module>code/gui</module> -->
 		<!-- <module>code/libs</module> -->
-		<!-- <module>code/tool</module> -->
+		<module>code/tool</module>
 	</modules>
 
 	<build>
@@ -71,13 +71,13 @@
 				<directory>src/main/resources</directory>
 			</resource>
 		</resources>
-		<extensions>
+		<!-- <extensions>
 			<extension>
 				<groupId>org.jvnet.wagon-svn</groupId>
 				<artifactId>wagon-svn</artifactId>
 				<version>1.8</version>
 			</extension>
-		</extensions>
+		</extensions> -->
 		<pluginManagement>
 			<plugins>
 				<plugin>

@@ -8,6 +8,11 @@ import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthPolicy;
 import org.apache.commons.httpclient.auth.AuthScope;
 
+/**
+ * @author Michael Couck
+ * @since 12.12.12
+ * @version 01.00
+ */
 public class WebServiceAuthentication {
 
 	public static void authenticate(final HttpClient httpClient, final String domain, final int port, final String userid,
