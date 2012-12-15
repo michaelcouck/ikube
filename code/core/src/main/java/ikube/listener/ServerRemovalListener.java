@@ -34,6 +34,9 @@ public class ServerRemovalListener implements IListener {
 		// Remove all servers that are past the max age
 		Collection<Server> servers = new ArrayList<Server>(clusterManager.getServers().values());
 		for (final Server server : servers) {
+			if (server.getAddress().equals(clusterManager.getServer().getAddress())) {
+				continue;
+			}
 			long age = System.currentTimeMillis() - server.getAge();
 			if (age > IConstants.MAX_AGE) {
 				LOGGER.info("Removing server : " + server.getAddress() + ", age : " + (age > IConstants.MAX_AGE));
