@@ -16,8 +16,10 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import javax.ws.rs.core.Response;
 
@@ -32,6 +34,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import com.google.gson.Gson;
+
 public class MonitorTest extends Base {
 
 	private Monitor monitor;
@@ -41,11 +45,13 @@ public class MonitorTest extends Base {
 	private IndexContext indexContext;
 	@Cascading
 	private Server server;
+	private Random random;
 
 	@Before
 	public void before() {
 		monitor = new Monitor();
-		indexContext = getIndexContext();
+		random = new Random();
+		indexContext = getIndexContext(Integer.toString(random.nextInt()));
 
 		monitorService = Mockito.mock(IMonitorService.class);
 		clusterManager = Mockito.mock(IClusterManager.class);
@@ -76,15 +82,34 @@ public class MonitorTest extends Base {
 	}
 
 	@Test
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void indexContexts() {
 		Map<String, IndexContext> indexContexts = new HashMap<String, IndexContext>();
-		indexContexts.put(IConstants.GEOSPATIAL, indexContext);
+		IndexContext indexContextOne = getIndexContext("aaa");
+		IndexContext indexContextTwo = getIndexContext("bbb");
+		indexContexts.put(IConstants.GEOSPATIAL, indexContextOne);
+		indexContexts.put(IConstants.ADDRESS, indexContextTwo);
 
 		Mockito.when(monitorService.getIndexContexts()).thenReturn(indexContexts);
-		Mockito.when(monitorService.getIndexContext(Mockito.anyString())).thenReturn(indexContext);
-		Response indexContext = monitor.indexContexts();
+		Response indexContext = monitor.indexContexts("name", true);
 		Object entity = indexContext.getEntity();
+
+		Gson gson = new Gson();
+		List<LinkedHashMap<String, String>> sortedIndexContexts = gson.fromJson(entity.toString(), List.class);
+		String nameOne = sortedIndexContexts.get(0).get("name");
+		String nameTwo = sortedIndexContexts.get(1).get("name");
+
+		assertEquals("aaa", nameOne);
+		assertEquals("bbb", nameTwo);
+
+		indexContext = monitor.indexContexts("name", false);
+		entity = indexContext.getEntity();
+		sortedIndexContexts = gson.fromJson(entity.toString(), List.class);
+		nameOne = sortedIndexContexts.get(0).get("name");
+		nameTwo = sortedIndexContexts.get(1).get("name");
+		assertEquals("bbb", nameOne);
+		assertEquals("aaa", nameTwo);
+
 		assertTrue("The max age should be in the Json string : ", entity.toString().contains("maxAge"));
 	}
 
@@ -161,7 +186,6 @@ public class MonitorTest extends Base {
 		Mockito.when(clusterManager.getServers()).thenReturn(servers);
 		Response response = monitor.actions();
 		Object entity = response.getEntity();
-		logger.info("Actions : " + entity);
 
 		assertTrue(entity.toString().contains(Integer.toString(Integer.MAX_VALUE)));
 	}
@@ -206,9 +230,9 @@ public class MonitorTest extends Base {
 		server.setAddress(address);
 
 		List<IndexContext> indexContexts = new ArrayList<IndexContext>();
-		indexContexts.add(getIndexContext());
-		indexContexts.add(getIndexContext());
-		indexContexts.add(getIndexContext());
+		indexContexts.add(getIndexContext(Integer.toString(random.nextInt())));
+		indexContexts.add(getIndexContext(Integer.toString(random.nextInt())));
+		indexContexts.add(getIndexContext(Integer.toString(random.nextInt())));
 
 		server.setIndexContexts(indexContexts);
 
@@ -216,9 +240,9 @@ public class MonitorTest extends Base {
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private IndexContext getIndexContext() {
+	private IndexContext getIndexContext(final String indexName) {
 		IndexContext indexContext = new IndexContext();
-		indexContext.setIndexName("indexName");
+		indexContext.setIndexName(indexName);
 		indexContext.setIndexDirectoryPath("indexDirectoryPath");
 		List<Snapshot> snapshots = new ArrayList<Snapshot>();
 

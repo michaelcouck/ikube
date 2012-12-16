@@ -98,6 +98,8 @@ public interface IConstants {
 	String COUNTRY = "country";
 	String CORRECTIONS = "corrections";
 	String ACTION_NAME = "actionName";
+	String SORT_FIELD = "sortField";
+	String DESCENDING = "descending";
 
 	String ENCODING = "UTF-8";
 

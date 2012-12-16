@@ -5,11 +5,9 @@ import ikube.ATest;
 import ikube.IConstants;
 import ikube.mock.ReaderUtilMock;
 import ikube.search.spelling.SpellingChecker;
-import ikube.service.SearcherService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
 import mockit.Cascading;
 import mockit.Deencapsulation;
@@ -49,7 +47,7 @@ public class SearcherServiceTest extends ATest {
 	@Before
 	public void before() {
 		searcherService = new SearcherService();
-		
+
 		Mockit.setUpMocks();
 		Mockit.setUpMocks(ReaderUtilMock.class);
 		Deencapsulation.setField(searcherService, monitorService);
@@ -109,17 +107,14 @@ public class SearcherServiceTest extends ATest {
 				maxResults, distance, latitude, longitude);
 		verifyResults(results);
 	}
-	
+
 	@Test
 	public void addSearchStatistics() {
-		// TODO Implement this test
+		// searcherService.addSearchStatistics(indexName, searchStrings, 0, new ArrayList<HashMap<String,String>>());
 	}
 
 	private void verifyResults(final ArrayList<HashMap<String, String>> results) {
 		assertTrue(results.size() > 0);
-		Map<String, String> statistics = results.get(results.size() - 1);
-		assertTrue("The search strings should be in the statistics map : ",
-				statistics.get(IConstants.SEARCH_STRINGS).contains(searchStrings[0]));
 	}
 
 }

@@ -400,11 +400,19 @@ public abstract class Search {
 		Set<String> searchFieldNames = new TreeSet<String>();
 		for (Searchable searchable : searchables) {
 			IndexReader indexReader = ((IndexSearcher) searchable).getIndexReader();
-			FieldInfos fieldInfos = ReaderUtil.getMergedFieldInfos(indexReader);
-			Iterator<FieldInfo> iterator = fieldInfos.iterator();
-			while (iterator.hasNext()) {
-				FieldInfo fieldInfo = iterator.next();
-				searchFieldNames.add(fieldInfo.name);
+			FieldInfos fieldInfos = null;
+			try {
+				fieldInfos = ReaderUtil.getMergedFieldInfos(indexReader);
+			} catch (NullPointerException e) {
+				logger.warn("Null pointer : ");
+				logger.debug(null, e);
+			}
+			if (fieldInfos != null) {
+				Iterator<FieldInfo> iterator = fieldInfos.iterator();
+				while (iterator.hasNext()) {
+					FieldInfo fieldInfo = iterator.next();
+					searchFieldNames.add(fieldInfo.name);
+				}
 			}
 		}
 		return searchFieldNames.toArray(new String[searchFieldNames.size()]);

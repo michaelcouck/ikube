@@ -7,6 +7,7 @@ import ikube.model.Action;
 import ikube.model.IndexContext;
 import ikube.model.Server;
 import ikube.model.Snapshot;
+import ikube.toolkit.ObjectToolkit;
 import ikube.toolkit.SerializationUtilities;
 
 import java.lang.reflect.Field;
@@ -14,6 +15,8 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
@@ -30,6 +33,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -66,6 +70,8 @@ public class Monitor extends Resource {
 	public static final String INDEX_CONTEXT = "/index-context";
 	public static final String INDEX_CONTEXTS = "/index-contexts";
 
+	public static final String DELETE_INDEX = "/delete-index";
+
 	@GET
 	@Path(Monitor.FIELDS)
 	@Consumes(MediaType.APPLICATION_XML)
@@ -85,13 +91,12 @@ public class Monitor extends Resource {
 	@Path(Monitor.INDEX_CONTEXT)
 	@Consumes(MediaType.APPLICATION_XML)
 	public Response indexContext(@QueryParam(value = IConstants.INDEX_NAME) final String indexName) {
-		IndexContext indexContext = getIndexContext(indexName);
+		IndexContext indexContext = cloneIndexContext(monitorService.getIndexContext(indexName));
 		return buildResponse(indexContext);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private IndexContext getIndexContext(final String indexName) {
-		IndexContext indexContext = monitorService.getIndexContext(indexName);
+	private IndexContext cloneIndexContext(final IndexContext indexContext) {
 		indexContext.isOpen();
 		indexContext.getNumDocs();
 		indexContext.getIndexSize();
@@ -107,11 +112,22 @@ public class Monitor extends Resource {
 	@SuppressWarnings({ "rawtypes" })
 	@Path(Monitor.INDEX_CONTEXTS)
 	@Consumes(MediaType.APPLICATION_XML)
-	public Response indexContexts() {
+	public Response indexContexts(@QueryParam(value = IConstants.SORT_FIELD) final String sortField,
+			@QueryParam(value = IConstants.DESCENDING) final boolean descending) {
 		List<IndexContext> indexContexts = new ArrayList<IndexContext>();
 		for (final IndexContext indexContext : monitorService.getIndexContexts().values()) {
-			IndexContext cloneIndexContext = getIndexContext(indexContext.getIndexName());
+			IndexContext cloneIndexContext = cloneIndexContext(indexContext);
 			indexContexts.add(cloneIndexContext);
+		}
+		if (!StringUtils.isEmpty(sortField)) {
+			Collections.sort(indexContexts, new Comparator<Object>() {
+				@Override
+				public int compare(Object o1, Object o2) {
+					Object v1 = ObjectToolkit.getFieldValue(o1, sortField);
+					Object v2 = ObjectToolkit.getFieldValue(o2, sortField);
+					return descending ? CompareToBuilder.reflectionCompare(v1, v2) : -(CompareToBuilder.reflectionCompare(v1, v2));
+				}
+			});
 		}
 		return buildResponse(indexContexts);
 	}
@@ -286,6 +302,17 @@ public class Monitor extends Resource {
 	@Consumes(MediaType.APPLICATION_XML)
 	public Response startupAll() {
 		monitorService.startupAll();
+		return buildResponse().build();
+	}
+
+	@GET
+	@Path(Monitor.DELETE_INDEX)
+	@Consumes(MediaType.APPLICATION_XML)
+	public Response delete(@QueryParam(value = IConstants.INDEX_NAME) final String indexName) {
+		long time = System.currentTimeMillis();
+		Event startEvent = ListenerManager.getEvent(Event.DELETE_INDEX, time, indexName, Boolean.FALSE);
+		logger.info("Sending delete event : " + ToStringBuilder.reflectionToString(startEvent));
+		clusterManager.sendMessage(startEvent);
 		return buildResponse().build();
 	}
 

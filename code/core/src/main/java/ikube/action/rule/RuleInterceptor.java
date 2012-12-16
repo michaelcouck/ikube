@@ -71,6 +71,9 @@ public class RuleInterceptor implements IRuleInterceptor {
 			if (proceed) {
 				proceed(indexContext, proceedingJoinPoint);
 			}
+		} catch (NullPointerException e) {
+			LOGGER.warn("Context closing down : ");
+			LOGGER.debug(null, e);
 		} catch (Exception t) {
 			LOGGER.error("Exception evaluating the rules : target : " + target + ", context : " + indexContext, t);
 		} finally {

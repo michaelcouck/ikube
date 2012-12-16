@@ -76,38 +76,26 @@ a {
 	text-decoration: none;
 }
 
-table {
-	margin : 0;
-	padding: 0;
-	border : 0; // 1px solid black
+table, td {
+	margin : 0px;
+	padding: 2px;
+	border : 0;
+	border-collapse: collapse;
 }
 
-table td,table th {
-	margin : 0;
-	padding: 0;
-	border : 0; // 1px solid black
+table th {
+	margin : 0px;
+	padding: 3px;
+	border : 1px solid #aaaaaa;
+	border-collapse: collapse;
 }
 
-table thead {
+/* table thead {
 	font: normal 12px Arial, Helvetica Neue, Helvetica, sans-serif;
 	text-shadow: 0 0px 0 white;
 	color: #999;
 	margin : 0;
 	padding: 0;
-	border : 0; // 1px solid black
-}
+	border : 0;
+} */
 
-table th {
-	text-align: left;
-	border-bottom: 0px solid #fff;
-	margin : 0;
-	padding: 0;
-	border : 0; // 1px solid black
-}
-
-table td {
-	font: 12px Tahoma, Helvetica, sans-serif, Arial;
-	margin : 0;
-	padding: 0;
-	border : 0; // 1px solid black
-}

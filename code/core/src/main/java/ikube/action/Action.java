@@ -183,6 +183,9 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
 			if (directory != null) {
 				directory.close();
 			}
+		} catch (NullPointerException e) {
+			logger.error("Already closed perhaps?");
+			logger.debug(null, e);
 		} catch (Exception e) {
 			logger.error("Exception closing the directory : ", e);
 		}
@@ -190,6 +193,9 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
 			if (reader != null) {
 				reader.close();
 			}
+		} catch (NullPointerException e) {
+			logger.error("Already closed perhaps?");
+			logger.debug(null, e);
 		} catch (Exception e) {
 			logger.error("Exception closing the reader : ", e);
 		}
@@ -197,6 +203,9 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
 			if (searcher != null) {
 				searcher.close();
 			}
+		} catch (NullPointerException e) {
+			logger.error("Already closed perhaps?");
+			logger.debug(null, e);
 		} catch (Exception e) {
 			logger.error("Exception closing the searcher : ", e);
 		}

@@ -1,3 +1,6 @@
+<%@ page errorPage="/WEB-INF/jsp/error.jsp" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
 <script type="text/javascript">
 	$(document).ready(function() {
 		$(".tab_content").hide();
@@ -10,8 +13,6 @@
 			$("#" + activeTab).fadeIn();
 			// Repaint the map and the graphs
 			google.maps.event.trigger(map, 'resize');
-			// indexingChart = null;
-			// searchingChart = null;
 		});
 	});
 </script>

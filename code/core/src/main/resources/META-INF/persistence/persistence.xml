@@ -47,7 +47,7 @@
 			then OpenJpa will use these to get a connection to the db and can then commit on
 			that connection as it will not be xa. -->
 		
-		<properties>
+		<!-- <properties>
 			<property name="openjpa.Connection2UserName" value="sa" />
 			<property name="openjpa.Connection2Password" value="" />
 			<property name="openjpa.Connection2URL" value="jdbc:h2:file:ikube/ikube" />
@@ -57,7 +57,7 @@
 			<property name="openjpa.ConnectionURL" value="jdbc:h2:file:ikube/ikube" />
 			<property name="openjpa.ConnectionDriverName" value="org.h2.Driver" />
 			<property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
-		</properties>
+		</properties> -->
 	</persistence-unit>
 	
  	<persistence-unit name="IkubePersistenceUnitDb2" transaction-type="RESOURCE_LOCAL">
@@ -68,6 +68,10 @@
 		<class>ikube.model.File</class>
 		<class>ikube.model.Server</class>
 		<class>ikube.model.Action</class>
+		
+		<class>ikube.model.security.User</class>
+		<class>ikube.model.security.Group_</class>
+		<class>ikube.model.security.Role</class>
 		
 		<class>ikube.model.Indexable</class>
 		<class>ikube.model.IndexContext</class>
@@ -105,6 +109,10 @@
 		<class>ikube.model.File</class>
 		<class>ikube.model.Server</class>
 		<class>ikube.model.Action</class>
+		
+		<class>ikube.model.security.User</class>
+		<class>ikube.model.security.Group_</class>
+		<class>ikube.model.security.Role</class>
 
 		<class>ikube.model.Indexable</class>
 		<class>ikube.model.IndexContext</class>
@@ -142,6 +150,10 @@
 		<class>ikube.model.File</class>
 		<class>ikube.model.Server</class>
 		<class>ikube.model.Action</class>
+		
+		<class>ikube.model.security.User</class>
+		<class>ikube.model.security.Group_</class>
+		<class>ikube.model.security.Role</class>
 
 		<class>ikube.model.Indexable</class>
 		<class>ikube.model.IndexContext</class>

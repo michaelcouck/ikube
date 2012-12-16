@@ -408,10 +408,23 @@ public final class IndexManager {
 		return new Date(timestamp);
 	}
 
+	/**
+	 * This method will get the exact path to the indexes for this index context, i.e. '/path/to/index/and/indexName'.
+	 * 
+	 * @param indexContext the index context to the the path to the indexes for
+	 * @return the absolute, cleaned path to the indexes for this index context
+	 */
 	public static String getIndexDirectoryPath(final IndexContext<?> indexContext) {
 		return getIndexDirectoryPath(indexContext, indexContext.getIndexDirectoryPath());
 	}
 
+	/**
+	 * This method will get the exact path to the backup directory for the indexes indexes for this index context, i.e.
+	 * '/path/to/index/and/backup/indexName'.
+	 * 
+	 * @param indexContext the index context to the the path to the backup directory for the indexes
+	 * @return the absolute, cleaned path to the backup directory for the indexes for this index context
+	 */
 	public static String getIndexDirectoryPathBackup(final IndexContext<?> indexContext) {
 		return getIndexDirectoryPath(indexContext, indexContext.getIndexDirectoryPathBackup());
 	}

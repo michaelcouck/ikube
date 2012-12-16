@@ -375,19 +375,16 @@ public class SearcherService implements ISearcherService {
 
 	protected void addSearchStatistics(final String indexName, final String[] searchStrings, final int results,
 			final ArrayList<HashMap<String, String>> searchResults) {
-
-		double highScore = 0;
-		if (searchResults.size() > 1) {
-			highScore = Double.parseDouble(searchResults.get(0).get(IConstants.SCORE));
-		}
-
-		searchResults.get(searchResults.size() - 1).put(IConstants.INDEX_NAME, indexName);
-
 		// Don't persist the auto complete searches
 		if (IConstants.AUTOCOMPLETE.equals(indexName)) {
 			return;
 		}
-
+		
+		double highScore = 0;
+		if (searchResults.size() > 1) {
+			highScore = Double.parseDouble(searchResults.get(0).get(IConstants.SCORE));
+		}
+		searchResults.get(searchResults.size() - 1).put(IConstants.INDEX_NAME, indexName);
 		for (final String searchString : searchStrings) {
 			String correctedSearchString = spellingChecker.checkWords(searchString);
 			Search dbSearch = dataBase.findCriteria(Search.class, new String[] { "indexName", "searchStrings" }, new Object[] { indexName,
@@ -404,18 +401,10 @@ public class SearcherService implements ISearcherService {
 				search.setSearchResults(searchResults);
 				dataBase.persist(search);
 			} else {
-				dbSearch.setResults(results);
-				dbSearch.setHighScore(highScore);
-				dbSearch.setCorrections(StringUtils.isNotEmpty(correctedSearchString));
-				dbSearch.setCorrectedSearchStrings(correctedSearchString);
-				dbSearch.setSearchResults(searchResults);
+				dbSearch.setCount(dbSearch.getCount() + 1);
 				dataBase.merge(dbSearch);
 			}
 		}
-
-		// LOGGER.info("Search : " + ToStringBuilder.reflectionToString(search, ToStringStyle.MULTI_LINE_STYLE));
-		// LOGGER.info("Search size : " + search.getResults());
-		// LOGGER.info("Search results : " + search.getSearchResults());
 	}
 
 }

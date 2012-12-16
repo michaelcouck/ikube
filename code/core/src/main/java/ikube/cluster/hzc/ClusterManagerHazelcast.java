@@ -3,6 +3,10 @@ package ikube.cluster.hzc;
 import ikube.IConstants;
 import ikube.cluster.AClusterManager;
 import ikube.cluster.IClusterManager;
+import ikube.cluster.listener.hzc.DeleteListener;
+import ikube.cluster.listener.hzc.IndexContextListener;
+import ikube.cluster.listener.hzc.StartListener;
+import ikube.cluster.listener.hzc.StopListener;
 import ikube.model.Action;
 import ikube.model.IndexContext;
 import ikube.model.Server;
@@ -14,6 +18,7 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +50,9 @@ public class ClusterManagerHazelcast extends AClusterManager {
 	/** This object is for listening for the size of the index and rolling over if necessary. */
 	@Autowired
 	private IndexContextListener indexContextListener;
+	/** Ths listener will delete the index and the backup directory on the file system. */
+	@Autowired
+	private DeleteListener deleteListener;
 
 	private transient Server server;
 
@@ -53,7 +61,7 @@ public class ClusterManagerHazelcast extends AClusterManager {
 		ip = UriUtilities.getIp();
 		address = ip + "-" + Hazelcast.getConfig().getPort();
 		logger.info("Cluster manager : " + ip + ", " + address);
-		addListeners(startListener, stopListener, indexContextListener);
+		addListeners(startListener, stopListener, indexContextListener, deleteListener);
 	}
 
 	private void addListeners(final MessageListener<Object>... listeners) {
@@ -205,6 +213,8 @@ public class ClusterManagerHazelcast extends AClusterManager {
 			if (dataBase.find(Action.class, action.getId()) != null) {
 				dataBase.merge(action);
 			}
+		} catch (ConcurrentModificationException e) {
+			logger.warn("Concurrent error, will retry : " + e.getMessage());
 		} catch (Exception e) {
 			logger.error("Exception stopping action : " + action, e);
 			logger.error("Removed action not comitted : " + toRemoveAction);

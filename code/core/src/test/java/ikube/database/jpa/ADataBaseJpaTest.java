@@ -9,8 +9,10 @@ import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
+@Ignore
 public class ADataBaseJpaTest extends ATest {
 
 	private ADataBaseJpa dataBaseJpa;

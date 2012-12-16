@@ -309,14 +309,17 @@
 		destroy-method="destroy"
 		lazy-init="false" />
 	<bean 
-	   	id="ikube.cluster.hzc.StartListener" 
-	   	class="ikube.cluster.hzc.StartListener" />
+	   	id="ikube.cluster.listener.hzc.StartListener" 
+	   	class="ikube.cluster.listener.hzc.StartListener" />
 	<bean 
-	   	id="ikube.cluster.hzc.StopListener" 
-	   	class="ikube.cluster.hzc.StopListener" />
+	   	id="ikube.cluster.listener.hzc.StopListener" 
+	   	class="ikube.cluster.listener.hzc.StopListener" />
 	<bean 
-	   	id="ikube.cluster.hzc.IndexContextListener" 
-	   	class="ikube.cluster.hzc.IndexContextListener" />
+	   	id="ikube.cluster.listener.hzc.IndexContextListener" 
+	   	class="ikube.cluster.listener.hzc.IndexContextListener" />
+	<bean 
+	   	id="ikube.cluster.listener.hzc.DeleteListener" 
+	   	class="ikube.cluster.listener.hzc.DeleteListener" />
 	
 	<!-- The handlers that do the indexing logic. -->
 	<bean

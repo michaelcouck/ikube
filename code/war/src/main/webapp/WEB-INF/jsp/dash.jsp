@@ -1,3 +1,4 @@
+<%@ page errorPage="/WEB-INF/jsp/error.jsp" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <table width="100%">
@@ -24,20 +25,21 @@
 		<td valign="top" width="80%">
 			
 			<!-- Performance graphs -->
-			<table id="performance-graphs-table" name="performance-graphs-table" width="100%">
-				<tr>
-					<td>
-						<div indexing><!-- The indexing performance graph --></div>
-					</td>
-				</tr>
+			<table width="100%" style="border : 1px solid #aaaaaa;">
 				<tr>
 					<td>
 						<div searching><!-- Searching performance graph --></div>
 					</td>
 				</tr>
+				<tr>
+					<td>
+						<div indexing><!-- The indexing performance graph --></div>
+					</td>
+				</tr>
 			</table>
+			<br>
 			
-			<table ng-controller="ActionsController" width="100%">
+			<table ng-controller="ActionsController" width="100%" style="border : 1px solid #aaaaaa;">
 				<tr>
 					<th><img src="<c:url value="/images/icons/server.gif" />">&nbsp;Server</th>
 					<th><img src="<c:url value="/images/icons/jar_l_obj.gif" />">&nbsp;Action</th>

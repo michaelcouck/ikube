@@ -14,6 +14,7 @@ function track() {
 
 /** The global refresh variable. */
 var refreshInterval = 15000;
+var chartRefreshInterval = 5000;
 
 /**
  * This is the main Angular module for the iKube application on the 
@@ -30,7 +31,6 @@ module.directive('searching', function($http) {
 		link : function($scope, $elm, $attr) {
 			$scope.options = { 
 				title : 'Searching performance',
-				// chartArea : { left : 60, width : '80%' },
 				legend : { position : 'top', textStyle : { color : 'black', fontSize : 12 } } };
 			$scope.drawSearchingChart = function() {
 				$scope.url = getServiceUrl('/ikube/service/monitor/searching');
@@ -50,7 +50,7 @@ module.directive('searching', function($http) {
 			// And re-draw it every few seconds to give the live update feel
 			setInterval(function() {
 				$scope.drawSearchingChart();
-			}, refreshInterval);
+			}, chartRefreshInterval);
 		}
 	}
 });
@@ -63,7 +63,6 @@ module.directive('indexing', function($http) {
 		link : function($scope, $elm, $attr) {
 			$scope.options = { 
 				title : 'Indexing performance',
-				// chartArea : { left : 60, width : '100%' },
 				legend : { position : 'top', textStyle : { color : 'black', fontSize : 12 } } };
 			$scope.drawIndexingChart = function() {
 				$scope.url = getServiceUrl('/ikube/service/monitor/indexing');
@@ -83,7 +82,7 @@ module.directive('indexing', function($http) {
 			// And re-draw it every few seconds to give the live update feel
 			setInterval(function() {
 				$scope.drawIndexingChart();
-			}, refreshInterval);
+			}, chartRefreshInterval);
 		}
 	}
 });
@@ -196,13 +195,20 @@ module.controller('StartupController', function($http, $scope) {
 	}
 });
 
-/** This directive gathers the index context data from the server for presentation. */
+/** This controller gathers the index context data from the server for presentation. */
 module.controller('IndexContextsController', function($http, $scope) {
 	$scope.indexContexts = [];
 	
+	$scope.sortField = 'name';
+	$scope.descending = false;
 	$scope.refreshIndexContexts = function() {
 		$scope.url = getServiceUrl('/ikube/service/monitor/index-contexts');
-		var promise = $http.get($scope.url);
+		$scope.parameters = { 
+			sortField : $scope.sortField,
+			descending : $scope.descending
+		};
+		$scope.config = { params : $scope.parameters };
+		var promise = $http.get($scope.url, $scope.config);
 		promise.success(function(data, status) {
 			$scope.indexContexts = data;
 			$scope.status = status;
@@ -211,6 +217,18 @@ module.controller('IndexContextsController', function($http, $scope) {
 			$scope.status = status;
 		});
 	}
+	$scope.sortIndexContexts = function(sortField) {
+		if ($scope.sortField == sortField) {
+			// Switch the order
+			$scope.descending = !$scope.descending;
+		} else {
+			// Order ascending and switch the field
+			$scope.descending = false;
+			$scope.sortField = sortField;
+		}
+		// alert('Sort field : ' + sortField + ', ' + ($scope.sortField == sortField) + ', ' + $scope.descending);
+		$scope.refreshIndexContexts();
+	};
 	// Immediately refresh the data
 	$scope.refreshIndexContexts();
 	// Refresh the index contexts every so often
@@ -234,6 +252,28 @@ module.controller('IndexContextsController', function($http, $scope) {
 			});
 			promise.error(function(data, status) {
 				$scope.status = status;
+			});
+		}
+	}
+	
+	// This function will delete the index completely on the file system
+	$scope.startIndexing = function(indexName) {
+		if (confirm('Delete index completely for index : ' + indexName)) {
+			$scope.url = getServiceUrl('/ikube/service/monitor/delete-index');
+			// The parameters for the delete of the index
+			$scope.parameters = { 
+				indexName : indexName
+			};
+			// The configuration for the request to the server
+			$scope.config = { params : $scope.parameters };
+			// And delete the index
+			var promise = $http.get($scope.url, $scope.config);
+			promise.success(function(data, status) {
+				$scope.status = status;
+			});
+			promise.error(function(data, status) {
+				$scope.status = status;
+				alert('Error sending delete message : ' + status);
 			});
 		}
 	}
