@@ -37,11 +37,11 @@
 		class="ikube.toolkit.ApplicationContextManager"
 		depends-on="ikube.database.IDataBase" />
 	
-	<!-- property:actions-ref="ikube.IndexEngine.actions"  -->
 	<bean
 		id="ikube.IndexEngine"
 		name="ikube.IndexEngine"
-		class="ikube.IndexEngine" />
+		class="ikube.IndexEngine"
+		destroy-method="destroy" />
 		
 	<!-- 
 		The default persistence manager so we can specify more than one persistence file, and 
@@ -367,9 +367,4 @@
 		property:threads="${filesystem.handler.threads}"
 		property:indexableClass="ikube.model.IndexableFileSystemWiki" />
 
-	<!-- <bean
-		id="ikube.cluster.udp.UdpBroadcaster"
-		class="ikube.cluster.udp.UdpBroadcaster"
-		init-method="initialize" /> -->
-		
 </beans>
