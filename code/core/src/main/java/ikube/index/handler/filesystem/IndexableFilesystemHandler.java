@@ -71,7 +71,7 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 									handleFile(indexContext, indexableFileSystem, file);
 								} catch (InterruptedException e) {
 									logger.error("Thread terminated, and indexing stopped : ", e);
-									return;
+									throw new RuntimeException(e);
 								} catch (Exception e) {
 									logger.error("Exception handling file : " + file, e);
 								}
@@ -87,7 +87,7 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 				futures.add(future);
 			}
 		} catch (Exception e) {
-			logger.error("Exception starting the file system indexer threads : ", e);
+			logger.error("Exception executing the file system indexer threads : ", e);
 		}
 		return futures;
 	}
