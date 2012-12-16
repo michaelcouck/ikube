@@ -176,7 +176,7 @@ public final class ThreadUtilities implements IListener {
 				LOGGER.warn(message);
 				LOGGER.debug(message, e);
 			} catch (TimeoutException e) {
-				LOGGER.info("Timed out wairing for future : " + e.getMessage());
+				LOGGER.info("Timed out waiting for future : " + e.getMessage());
 			} catch (Exception e) {
 				LOGGER.error("Exception waiting for future : ", e);
 			}
