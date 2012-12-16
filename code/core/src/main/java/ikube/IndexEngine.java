@@ -73,5 +73,9 @@ public class IndexEngine implements IIndexEngine, IListener {
 			LOGGER.debug("Finished working : " + indexContext.getIndexName());
 		}
 	}
+	
+	public void destroy() {
+		actions.clear();
+	}
 
 }
