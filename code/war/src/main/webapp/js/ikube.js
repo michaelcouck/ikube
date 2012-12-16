@@ -155,7 +155,7 @@ module.controller('ActionsController', function($http, $scope) {
 			promise.error(function(data, status) {
 				$scope.status = status;
 			});
-			$scope.getActions();
+			// $scope.getActions();
 		}
 	}
 });
@@ -257,7 +257,7 @@ module.controller('IndexContextsController', function($http, $scope) {
 	}
 	
 	// This function will delete the index completely on the file system
-	$scope.startIndexing = function(indexName) {
+	$scope.deleteIndex = function(indexName) {
 		if (confirm('Delete index completely for index : ' + indexName)) {
 			$scope.url = getServiceUrl('/ikube/service/monitor/delete-index');
 			// The parameters for the delete of the index
