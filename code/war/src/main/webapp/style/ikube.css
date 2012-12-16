@@ -90,12 +90,22 @@ table th {
 	border-collapse: collapse;
 }
 
-/* table thead {
-	font: normal 12px Arial, Helvetica Neue, Helvetica, sans-serif;
-	text-shadow: 0 0px 0 white;
-	color: #999;
-	margin : 0;
-	padding: 0;
-	border : 0;
-} */
-
+.active {
+   	background-color: #e2f6c0;
+   	/* border : 1px solid #aaaaaa; */
+	border-collapse: collapse;
+}
+.even {
+	background-color: #ffffff;
+	border : 1px solid #aaaaaa;
+	border-collapse: collapse;
+}
+.odd {
+	background-color: #f1f1f1;
+	border : 1px solid #aaaaaa;
+	border-collapse: collapse;
+}
+.bordered {
+	border : 1px solid #aaaaaa;
+	border-collapse: collapse;
+}
