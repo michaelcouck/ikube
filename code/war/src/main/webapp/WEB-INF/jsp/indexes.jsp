@@ -1,24 +1,8 @@
 <%@ page errorPage="/WEB-INF/jsp/error.jsp" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<style type="text/css">
-.active {
-   	background-color: #e2f6c0;
-}
-.even {
-	background-color: #ffffff;
-}
-.odd {
-	background-color: #f1f1f1;
-}
-.bordered {
-	border : 1px solid #aaaaaa;
-	border-collapse: collapse;
-}
-</style>
-
 <table ng-controller="IndexContextsController" width="100%" style="border : 1px solid #aaaaaa;">
-	<tr style="border : 1px solid #aaaaaa;">
+	<tr>
 		<th><img src="<c:url value="/images/icons/index.gif" />"><a href="#" ng-click="sortIndexContexts('name')">Index</a></th>
 		<th><img src="<c:url value="/images/icons/open.gif" />"><a href="#" ng-click="sortIndexContexts('open')">Open</a></th>
 		<th><img src="<c:url value="/images/icons/link_obj.gif" />"><a href="#" ng-click="sortIndexContexts('numDocs')">Documents</a></th>
@@ -29,18 +13,18 @@
 		<th><img src="<c:url value="/images/icons/progress_task.gif" />"><a href="#" ng-click="sortIndexContexts('throttle')">Throttle</a></th>
 		<th><img src="<c:url value="/images/icons/launch_run.gif" />">Function</th>
 	</tr>
-	<tr ng-repeat="indexContext in indexContexts" ng-class-odd="'odd'" ng-class-even="'even'" ng-class="{ active : indexContext.indexing == true }">
-		<td ng-class="'bordered'">{{indexContext.name}}</td>
-		<td ng-class="'bordered'">{{indexContext.open}}</td>
-		<td ng-class="'bordered'">{{indexContext.numDocs / 1000000}}</td>
-		<td ng-class="'bordered'">{{indexContext.indexSize / 1000000}}</td>
-		<td ng-class="'bordered'">{{indexContext.maxAge}}</td>
-		<td ng-class="'bordered'">{{indexContext.latestIndexTimestamp}}</td>
-		<td ng-class="'bordered'">{{indexContext.indexDirectoryPath}}</td>
-		<td ng-class="'bordered'">{{indexContext.throttle}}</td>
-		<td ng-class="'bordered'" nowrap="nowrap">
+	<tr ng-repeat="indexContext in indexContexts" ng-class-odd="'odd'" ng-class-even="'even'">
+		<td ng-class="{ active : indexContext.indexing == true }">{{indexContext.name}}</td>
+		<td ng-class="{ active : indexContext.indexing == true }">{{indexContext.open}}</td>
+		<td ng-class="{ active : indexContext.indexing == true }">{{indexContext.numDocs / 1000000}}</td>
+		<td ng-class="{ active : indexContext.indexing == true }">{{indexContext.indexSize / 1000000}}</td>
+		<td ng-class="{ active : indexContext.indexing == true }">{{indexContext.maxAge}}</td>
+		<td ng-class="{ active : indexContext.indexing == true }">{{indexContext.latestIndexTimestamp}}</td>
+		<td ng-class="{ active : indexContext.indexing == true }">{{indexContext.indexDirectoryPath}}</td>
+		<td ng-class="{ active : indexContext.indexing == true }">{{indexContext.throttle}}</td>
+		<td ng-class="{ active : indexContext.indexing == true }" nowrap="nowrap">
 			<a href="#" ng-click="startIndexing(indexContext.name);">Index</a>&nbsp;|&nbsp;
-			<a href="#" ng-click="startIndexing(indexContext.name);">Delete</a>
+			<a href="#" ng-click="deleteIndex(indexContext.name);">Delete</a>
 		</td>
 	</tr>
 </table>

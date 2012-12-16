@@ -5,9 +5,9 @@
 	<tr>
 		<td valign="top">
 			<!-- Servers data -->
-			<table ng-controller="ServersController">
+			<table ng-controller="ServersController" style="border : 1px solid #aaaaaa;">
 				<tr ng-repeat="server in servers">
-					<td style="border : 1px solid #aaaaaa; padding : 5px;" nowrap="nowrap" valign="top">
+					<td class="bordered" nowrap="nowrap" valign="top">
 						<img src="<c:url value="/images/icons/open.gif" />">&nbsp;<b>Cpu load</b> : {{server.averageCpuLoad}} <br>
 						<img src="<c:url value="/images/icons/open.gif" />">&nbsp;<b>Free memory</b> : {{server.freeMemory}} <br>
 						<img src="<c:url value="/images/icons/open.gif" />">&nbsp;<b>Max memory</b> : {{server.maxMemory}} <br>
@@ -50,16 +50,16 @@
 					<th><img src="<c:url value="/images/icons/launch_run.gif" />">&nbsp;Start time</th>
 					<th><img src="<c:url value="/images/icons/relaunch.gif" />">&nbsp;Functions</th>
 				</tr>
-				<tr ng-repeat="action in actions">
-					<td>{{action.server}}</td>
-					<td>{{action.actionName}}</td>
-					<td>{{action.indexName}}</td>
-					<td>{{action.indexableName}}</td>
-					<td>{{action.docsPerMinute}}</td>
-					<td>{{action.totalDocsIndexed}}</td>
-					<td>{{action.startTime}}</td>
-					<td>
-						<a style="font-color : red;" href="#" ng-click="terminateIndexing(action.indexName);">Terrminate</a>
+				<tr ng-repeat="action in actions" ng-class-odd="'odd'" ng-class-even="'even'">
+					<td ng-class="'bordered'">{{action.server}}</td>
+					<td ng-class="'bordered'">{{action.actionName}}</td>
+					<td ng-class="'bordered'">{{action.indexName}}</td>
+					<td ng-class="'bordered'">{{action.indexableName}}</td>
+					<td ng-class="'bordered'">{{action.docsPerMinute}}</td>
+					<td ng-class="'bordered'">{{action.totalDocsIndexed}}</td>
+					<td ng-class="'bordered'">{{action.startTime}}</td>
+					<td ng-class="'bordered'">
+						<a href="#" ng-click="terminateIndexing(action.indexName);">Terrminate</a>
 					</td>
 				</tr>
 			</table>
