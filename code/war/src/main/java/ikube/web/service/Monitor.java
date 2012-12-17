@@ -139,15 +139,14 @@ public class Monitor extends Resource {
 		List<Server> result = new ArrayList<Server>();
 		Map<String, Server> servers = clusterManager.getServers();
 		for (Map.Entry<String, Server> mapEntry : servers.entrySet()) {
-			// TODO Clone these servers or everything
-			// will fall apart because the actions are removed!
 			Server server = mapEntry.getValue();
-			server.setIndexContexts(null);
-			List<Action> actions = server.getActions();
-			for (Action action : actions) {
-				action.setServer(null);
+			Server cloneServer = (Server) SerializationUtilities.clone(server);
+			cloneServer.setIndexContexts(null);
+			List<Action> actions = cloneServer.getActions();
+			for (Action cloneAction : actions) {
+				cloneAction.setServer(null);
 			}
-			result.add(server);
+			result.add(cloneServer);
 		}
 		return buildResponse(result);
 	}

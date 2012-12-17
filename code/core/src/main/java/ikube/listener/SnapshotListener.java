@@ -80,7 +80,6 @@ public class SnapshotListener implements IListener {
 					snapshot.setAvailableProcessors(operatingSystemMXBean.getAvailableProcessors());
 
 					dataBase.persist(snapshot);
-					// dataBase.merge(snapshot);
 					indexContext.getSnapshots().add(snapshot);
 					if (indexContext.getSnapshots().size() > IConstants.MAX_SNAPSHOTS) {
 						List<Snapshot> snapshots = new ArrayList<Snapshot>(indexContext.getSnapshots());
@@ -129,14 +128,11 @@ public class SnapshotListener implements IListener {
 			return 0;
 		}
 		Snapshot previous = snapshots.get(snapshots.size() - 1);
-		// LOGGER.info("Previous : " + previous.getTimestamp() + ", " + snapshot.getTimestamp());
 		double interval = snapshot.getTimestamp().getTime() - previous.getTimestamp().getTime();
 		double ratio = interval / 60000;
 		long docsPerMinute = (long) ((snapshot.getNumDocs() - previous.getNumDocs()) / ratio);
-		if (docsPerMinute < 0) {
-			docsPerMinute = 0;
-		}
-		return docsPerMinute < 50000 ? docsPerMinute : 0;
+		// LOGGER.info("Docs per minute : " + indexContext.getName() + ", " + indexContext.hashCode() + ", " + docsPerMinute);
+		return docsPerMinute < 0 ? 0 : docsPerMinute;
 	}
 
 }
