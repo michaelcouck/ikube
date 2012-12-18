@@ -26,6 +26,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
@@ -87,36 +88,32 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	public List<Future<?>> handle(final IndexContext<?> indexContext, final IndexableTable indexable) throws Exception {
 		// We start as many threads to access this table as defined. We return
 		// the threads to the caller that they can then wait for the threads to finish
-		DataSource dataSource = indexable.getDataSource();
-		logger.debug("Data source : " + dataSource);
+		final DataSource dataSource = indexable.getDataSource();
 		List<Future<?>> futures = new ArrayList<Future<?>>();
 		try {
 			final AtomicLong currentId = new AtomicLong(0);
 			for (int i = 0; i < getThreads(); i++) {
-				// One connection per thread, the connection will be closed by the thread when finished
-				final Connection connection = dataSource.getConnection();
 				// Because the transient state data is stored in the indexable during indexing we have
 				// to clone the indexable for each thread
 				logger.info("Indexable : " + indexable.getName());
 				final IndexableTable cloneIndexableTable = (IndexableTable) SerializationUtilities.clone(indexable);
 				if (cloneIndexableTable.isAllColumns()) {
 					logger.info("Adding all columns to table : " + cloneIndexableTable.getName());
-					addAllColumns(cloneIndexableTable, connection);
+					addAllColumns(cloneIndexableTable, dataSource);
 				}
 				final Runnable runnable = new Runnable() {
 					public void run() {
 						try {
-							connection.setAutoCommit(Boolean.FALSE);
 							final IContentProvider<IndexableColumn> contentProvider = new ColumnContentProvider();
-							handleTable(contentProvider, indexContext, cloneIndexableTable, connection, null, 0, currentId);
+							handleTable(contentProvider, indexContext, cloneIndexableTable, dataSource, null, 0, currentId);
 						} catch (InterruptedException e) {
 							throw new RuntimeException(e);
 						} catch (Exception e) {
 							throw new RuntimeException(e);
 						} finally {
-							logger.info("Closing connection : " + connection);
-							DatabaseUtilities.commit(connection);
-							DatabaseUtilities.close(connection);
+							// logger.info("Closing connection : " + connection);
+							// DatabaseUtilities.commit(connection);
+							// DatabaseUtilities.close(connection);
 						}
 					}
 				};
@@ -129,7 +126,8 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 		return futures;
 	}
 
-	protected void addAllColumns(IndexableTable indexableTable, Connection connection) {
+	protected void addAllColumns(IndexableTable indexableTable, final DataSource dataSource) throws SQLException {
+		Connection connection = getConnection(dataSource);
 		List<String> columnNames = DatabaseUtilities.getAllColumns(connection, indexableTable.getName());
 		List<String> primaryKeyColumns = DatabaseUtilities.getPrimaryKeys(connection, indexableTable.getName());
 		if (columnNames.size() == 0) {
@@ -158,6 +156,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 			children.add(indexableColumn);
 		}
 		indexableTable.setChildren(children);
+		DatabaseUtilities.close(connection);
 	}
 
 	protected boolean containsPrimaryKeyColumn(IndexableTable indexableTable) {
@@ -197,14 +196,15 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	 *        is null of course
 	 * @throws InterruptedException
 	 */
-	@SuppressWarnings("resource")
 	protected void handleTable(final IContentProvider<IndexableColumn> contentProvider, final IndexContext<?> indexContext,
-			final IndexableTable indexableTable, final Connection connection, final Document superDocument, final int superExceptions,
+			final IndexableTable indexableTable, final DataSource dataSource, final Document superDocument, final int superExceptions,
 			final AtomicLong currentId) throws InterruptedException {
 		Document currentDocument = superDocument;
 		int currentExceptions = superExceptions;
 		ResultSet resultSet = null;
+		// One connection per thread, the connection will be closed by the thread when finished
 		try {
+			Connection connection = getConnection(dataSource);
 			resultSet = getResultSet(indexContext, indexableTable, connection, currentId, 1);
 			do {
 				try {
@@ -254,7 +254,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 						// Here we recursively call this method with the child tables. We pass the document
 						// to the child table for this row in the parent table so they can add their fields to the
 						// index
-						handleTable(contentProvider, indexContext, childIndexableTable, connection, currentDocument, currentExceptions,
+						handleTable(contentProvider, indexContext, childIndexableTable, dataSource, currentDocument, currentExceptions,
 								currentId);
 					}
 					// Add the document to the index if this is the primary table
@@ -265,8 +265,11 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 					// Move to the next row in the result set
 					if (!resultSet.next()) {
 						if (indexableTable.isPrimaryTable()) {
+							// We must commit the connection to close the cursors
+							connection.commit();
+							DatabaseUtilities.closeAll(resultSet);
 							// We need to see if there are any more results
-							DatabaseUtilities.close(resultSet.getStatement());
+							connection = getConnection(dataSource);
 							resultSet = getResultSet(indexContext, indexableTable, connection, currentId, 1);
 						} else {
 							// If the table is not primary then we have exhausted the results
@@ -295,7 +298,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 			throw e;
 		} catch (Exception e) {
 			String message = Logging.getString("Exception indexing table : ", indexableTable.getName(), ", ",
-					indexableTable.getDataSource(), ", connection : ", connection, ", exceptions : ", currentExceptions);
+					indexableTable.getDataSource(), ", exceptions : ", currentExceptions);
 			logger.error(message, e);
 		} finally {
 			// Close the result set and the statement for this
@@ -311,6 +314,12 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 			DatabaseUtilities.close(resultSet);
 			DatabaseUtilities.close(statement);
 		}
+	}
+
+	private Connection getConnection(final DataSource dataSource) throws SQLException {
+		Connection connection = dataSource.getConnection();
+		connection.setAutoCommit(Boolean.FALSE);
+		return connection;
 	}
 
 	/**
@@ -478,7 +487,6 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 					}
 				}
 			}
-			// logger.info("Sql : " + Thread.currentThread().hashCode() + " - " + builder.toString());
 			return builder.toString();
 		} finally {
 			notifyAll();

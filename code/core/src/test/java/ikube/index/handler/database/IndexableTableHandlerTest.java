@@ -59,7 +59,7 @@ public class IndexableTableHandlerTest extends ATest {
 	public void addAllColumns() throws Exception {
 		IndexableTable indexableTable = new IndexableTable();
 		Connection connection = Mockito.mock(Connection.class);
-		indexableTableHandler.addAllColumns(indexableTable, connection);
+		// indexableTableHandler.addAllColumns(indexableTable, connection);
 		assertEquals("There should be three columns added : ", ALL_COLUMNS.size(), indexableTable.getChildren().size());
 		IndexableColumn indexableColumn = (IndexableColumn) indexableTable.getChildren().get(0);
 		assertTrue("The first column should be the id column : ", indexableColumn.isIdColumn());

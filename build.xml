@@ -201,7 +201,6 @@
 	</target>
 	
 	<target name="copy-directory-to-server">
-	    <!-- Create the ikube configuration directory -->
 	    <antcall target="execute-remote-command">
 			<param name="host" value="${host}" />
 			<param name="command" value="mkdir -p ${server-directory}" />

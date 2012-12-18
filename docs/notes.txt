@@ -1,7 +1,0 @@
-Console requirements:
-
-* Servers and the actions
-* Indexes, their configuration, possibility to edit
-* Searches and the statistics associated with them like most and results
-* Wizard to create indexes, perhaps even the database indexes
-* Tab for viewing the network of servers

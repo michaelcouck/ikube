@@ -6,6 +6,7 @@ import ikube.ATest;
 import ikube.IConstants;
 import ikube.index.IndexManager;
 import ikube.mock.SpellingCheckerMock;
+import ikube.search.SearchMultiAll;
 import ikube.search.SearchSingle;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.ThreadUtilities;
@@ -23,6 +24,7 @@ import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.MultiSearcher;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.junit.After;
@@ -158,23 +160,39 @@ public class LuceneTest extends ATest {
 		ThreadUtilities.waitForFutures(futures, 10000);
 	}
 
+	private String indexPath = "C:/media/nas/xfs-one/indexes/roma-streets/1355763362335/10.100.118.59";
+
 	@Test
 	@Ignore
+	@SuppressWarnings("deprecation")
 	public void adHocSearch() throws Exception {
-		Directory directory = FSDirectory.open(new File(
-				"/usr/share/eclipse/workspace/ikube/code/core/indexes/index/1355168391238/127.0.0.1"));
+		Directory directory = FSDirectory.open(new File(indexPath));
 		IndexReader reader = IndexReader.open(directory);
 		IndexSearcher indexSearcher = new IndexSearcher(reader);
+		MultiSearcher multiSearcher = new MultiSearcher(indexSearcher);
 
-		SearchSingle searchSingle = new SearchSingle(indexSearcher);
+		SearchMultiAll searchSingle = new SearchMultiAll(multiSearcher);
 		searchSingle.setFirstResult(0);
 		searchSingle.setFragment(Boolean.TRUE);
 		searchSingle.setMaxResults(Integer.MAX_VALUE);
 		searchSingle.setSearchField(IConstants.CONTENTS);
-		searchSingle.setSearchString("détermine");
+		searchSingle.setSearchString("sint amandstraat brussels brussel gent 9000");
 		searchSingle.setSortField(IConstants.CONTENTS);
 		ArrayList<HashMap<String, String>> results = searchSingle.execute();
 		logger.info("Results : " + results);
+	}
+
+	@Test
+	@Ignore
+	public void adHocRead() throws Exception {
+		Directory directory = FSDirectory.open(new File(indexPath));
+		IndexReader indexReader = IndexReader.open(directory);
+		System.out.println("Num docs : " + indexReader.numDocs());
+		for (int i = 0; i < indexReader.numDocs(); i++) {
+			Document document = indexReader.document(i);
+			System.out.println("Document : " + document);
+		}
+		indexReader.close();
 	}
 
 }

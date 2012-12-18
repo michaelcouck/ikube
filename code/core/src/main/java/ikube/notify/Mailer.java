@@ -1,15 +1,22 @@
 package ikube.notify;
 
+import java.io.File;
 import java.net.InetAddress;
 import java.security.Security;
 import java.util.Properties;
 
+import javax.activation.DataHandler;
+import javax.activation.FileDataSource;
 import javax.mail.Message;
+import javax.mail.MessagingException;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
+import javax.mail.Multipart;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.log4j.Logger;
@@ -52,7 +59,7 @@ public class Mailer implements IMailer {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean sendMail(final String subject, final String body) throws Exception {
+	public boolean sendMail(final String subject, final String body, final String... attachmentFilePaths) throws Exception {
 		Properties properties = System.getProperties();
 		properties.put("mail.transport.protocol", protocol);
 		properties.put("mail.host", mailHost);
@@ -80,6 +87,22 @@ public class Mailer implements IMailer {
 			message.setRecipient(Message.RecipientType.TO, new InternetAddress(recipients));
 		}
 
+		if (attachmentFilePaths != null && attachmentFilePaths.length > 0) {
+			Multipart multipart = new MimeMultipart();
+			MimeBodyPart mimeBodyPart = new MimeBodyPart();
+			for (final String attachmentFilePath : attachmentFilePaths) {
+				File file = new File(attachmentFilePath);
+				if (!file.exists() || !file.canRead() || !file.isFile() || file.isHidden()) {
+					logger.warn("Couldn't attach file as attachment : " + file);
+					continue;
+				}
+				MimeBodyPart bodyPart = getAttachment(file);
+				multipart.addBodyPart(bodyPart);
+			}
+			message.setContent(multipart);
+			multipart.addBodyPart(mimeBodyPart);
+		}
+
 		// Transport.send(message);
 		Transport transport = null;
 		try {
@@ -100,6 +123,13 @@ public class Mailer implements IMailer {
 			}
 		}
 		return Boolean.TRUE;
+	}
+
+	private MimeBodyPart getAttachment(final File file) throws MessagingException {
+		MimeBodyPart mimeBodyPart = new MimeBodyPart();
+		mimeBodyPart.setFileName(file.getName());
+		mimeBodyPart.setDataHandler(new DataHandler(new FileDataSource(file)));
+		return mimeBodyPart;
 	}
 
 	/**

@@ -453,3 +453,21 @@ function getServiceUrl(path) {
 	url.push(path);
 	return url.join('');
 }
+
+//This function will set the width of the iframe dynamically
+//so it can take advantage of more space on the screen if it is available
+function setIframeWidth(iframe) {
+	var PositionXY = {
+		Width : 0,
+		Height : 0
+	};
+	var db = document.body;
+	var dde = document.documentElement;
+	PositionXY.Width = Math.max(db.scrollTop, dde.scrollTop, db.offsetWidth, dde.offsetWidth, db.clientWidth, dde.clientWidth);
+	PositionXY.Height = Math.max(db.scrollHeight, dde.scrollHeight, db.offsetHeight, dde.offsetHeight, db.clientHeight, dde.clientHeight);
+	// Now take the smaller of the document width and the actual browser width
+	PositionXY.Width = Math.min(PositionXY.Width, $(window).width());
+	$('#' + iframe).attr('width', PositionXY.Width);
+	$('#' + iframe).attr('height', PositionXY.Height);
+	return PositionXY;
+}

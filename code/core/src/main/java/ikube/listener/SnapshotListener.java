@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.OperatingSystemMXBean;
 import java.sql.Timestamp;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -82,9 +82,11 @@ public class SnapshotListener implements IListener {
 					dataBase.persist(snapshot);
 					indexContext.getSnapshots().add(snapshot);
 					if (indexContext.getSnapshots().size() > IConstants.MAX_SNAPSHOTS) {
-						List<Snapshot> snapshots = new ArrayList<Snapshot>(indexContext.getSnapshots());
-						List<Snapshot> subListToRemove = snapshots.subList(0, (int) (IConstants.MAX_SNAPSHOTS * 0.25d));
-						snapshots.removeAll(subListToRemove);
+						LinkedList<Snapshot> snapshots = new LinkedList<Snapshot>();
+						snapshots.addAll(indexContext.getSnapshots());
+						while (snapshots.size() > (int) (IConstants.MAX_SNAPSHOTS * 0.25d)) {
+							snapshots.removeFirst();
+						}
 						indexContext.setSnapshots(snapshots);
 					}
 				} catch (Exception e) {
