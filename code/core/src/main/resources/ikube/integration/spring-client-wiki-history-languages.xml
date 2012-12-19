@@ -52,7 +52,8 @@
 		property:excludedPattern="${files.excluded.pattern}"
 		property:batchSize="${file.batch.size}"
 		property:maxReadLength="${file.max.read.length}"
-		property:maxRevisions="${max.revisions}" />
+		property:maxRevisions="${max.revisions}"
+		property:maxExceptions="${max.exceptions}" />
 	
 	<bean
 		id="wikiHistoryDutch"
@@ -130,7 +131,8 @@
 		property:excludedPattern="${files.excluded.pattern}"
 		property:batchSize="${file.batch.size}"
 		property:maxReadLength="${file.max.read.length}"
-		property:maxRevisions="${max.revisions}" />
+		property:maxRevisions="${max.revisions}"
+		property:maxExceptions="${max.exceptions}" />
 
 	<bean
 		id="wikiHistoryGerman"
@@ -169,7 +171,8 @@
 		property:excludedPattern="${files.excluded.pattern}"
 		property:batchSize="${file.batch.size}"
 		property:maxReadLength="${file.max.read.length}"
-		property:maxRevisions="${max.revisions}" />
+		property:maxRevisions="${max.revisions}"
+		property:maxExceptions="${max.exceptions}" />
 
 	<bean
 		id="wikiHistoryPolish"
@@ -208,7 +211,8 @@
 		property:excludedPattern="${files.excluded.pattern}"
 		property:batchSize="${file.batch.size}"
 		property:maxReadLength="${file.max.read.length}"
-		property:maxRevisions="${max.revisions}" />
+		property:maxRevisions="${max.revisions}" 
+		property:maxExceptions="${max.exceptions}" />
 		
 	<bean
 		id="wikiHistoryPortuguese"
@@ -247,7 +251,8 @@
 		property:excludedPattern="${files.excluded.pattern}"
 		property:batchSize="${file.batch.size}"
 		property:maxReadLength="${file.max.read.length}"
-		property:maxRevisions="${max.revisions}" />
+		property:maxRevisions="${max.revisions}" 
+		property:maxExceptions="${max.exceptions}" />
 		
 	<bean
 		id="wikiHistoryRussian"
@@ -286,7 +291,8 @@
 		property:excludedPattern="${files.excluded.pattern}"
 		property:batchSize="${file.batch.size}"
 		property:maxReadLength="${file.max.read.length}"
-		property:maxRevisions="${max.revisions}" />
+		property:maxRevisions="${max.revisions}" 
+		property:maxExceptions="${max.exceptions}" />
 	
 	<bean
 		id="wikiHistoryItalian"
@@ -325,7 +331,8 @@
 		property:excludedPattern="${files.excluded.pattern}"
 		property:batchSize="${file.batch.size}"
 		property:maxReadLength="${file.max.read.length}"
-		property:maxRevisions="${max.revisions}" />
+		property:maxRevisions="${max.revisions}" 
+		property:maxExceptions="${max.exceptions}" />
 	
 	<bean
 		id="wikiHistorySpanish"
@@ -364,6 +371,7 @@
 		property:excludedPattern="${files.excluded.pattern}"
 		property:batchSize="${file.batch.size}"
 		property:maxReadLength="${file.max.read.length}"
-		property:maxRevisions="${max.revisions}" />
+		property:maxRevisions="${max.revisions}" 
+		property:maxExceptions="${max.exceptions}" />
 
 </beans>

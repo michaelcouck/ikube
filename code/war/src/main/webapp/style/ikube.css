@@ -78,21 +78,20 @@ a {
 
 table, td {
 	margin : 0px;
-	padding: 2px;
+	padding: 1px;
 	border : 0;
 	border-collapse: collapse;
 }
 
 table th {
 	margin : 0px;
-	padding: 3px;
+	padding: 2px;
 	border : 1px solid #aaaaaa;
 	border-collapse: collapse;
 }
 
 .active {
    	background-color: #e2f6c0;
-   	/* border : 1px solid #aaaaaa; */
 	border-collapse: collapse;
 }
 .even {

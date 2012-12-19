@@ -52,6 +52,7 @@
 		property:excludedPattern="${files.excluded.pattern}"
 		property:lastModifiedFieldName="lastmodified"
 		property:batchSize="${file.batch.size}"
-		property:maxReadLength="${file.max.read.length}" />
+		property:maxReadLength="${file.max.read.length}" 
+		property:maxExceptions="${max.exceptions}" />
 
 </beans>
