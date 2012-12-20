@@ -88,8 +88,8 @@ public class Server extends Persistable implements Comparable<Server> {
 	}
 
 	public boolean isWorking() {
-		if (actions != null) {
-			for (Action action : actions) {
+		if (getActions() != null) {
+			for (Action action : getActions()) {
 				if (action.getEndTime() == null) {
 					return Boolean.TRUE;
 				}

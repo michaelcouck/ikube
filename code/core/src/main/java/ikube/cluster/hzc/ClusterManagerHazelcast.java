@@ -254,7 +254,15 @@ public class ClusterManagerHazelcast extends AClusterManager {
 				// First check if the instance server is still active
 				if (this.server != null) {
 					server = this.server;
-					logger.warn("Server dropped from Hazelcast! " + server);
+					logger.warn("Server dropped from Hazelcast! Re-inserting into the grid... " + server);
+					try {
+						Hazelcast.getTransaction().begin();
+						Hazelcast.getMap(IConstants.IKUBE).put(server.getAddress(), server);
+						Hazelcast.getTransaction().commit();
+					} catch (Exception e) {
+						logger.error("Exception re-injecting the server in the grid : " + server.getAddress(), e);
+						Hazelcast.getTransaction().rollback();
+					}
 				} else {
 					server = new Server();
 					server.setIp(ip);

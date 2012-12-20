@@ -224,13 +224,7 @@ public abstract class ATest {
 		}
 		IndexWriter indexWriter = null;
 		try {
-			indexWriter = IndexManager.openIndexWriter(indexContext, time, ip);
-			for (String string : strings) {
-				Index analyzed = Index.ANALYZED;
-				String id = Long.toString(System.currentTimeMillis());
-				Document document = getDocument(id, string, analyzed);
-				indexWriter.addDocument(document);
-			}
+			indexWriter = createIndexReturnWriter(indexContext, time, ip, strings);
 		} catch (Exception e) {
 			logger.error("Exception creating the index : ", e);
 		} finally {
@@ -241,6 +235,34 @@ public abstract class ATest {
 		File serverIndexDirectory = new File(latestIndexDirectory, ip);
 		logger.info("Created index in : " + serverIndexDirectory.getAbsolutePath());
 		return serverIndexDirectory;
+	}
+
+	/**
+	 * This method will create an index in the index context directory and return the writer without closing it.
+	 * 
+	 * @param indexContext the context to create the index for
+	 * @param time the time for the directory
+	 * @param ip the ip of the server creating the index
+	 * @param strings the data to put in the index
+	 * @return the index writer that was used to create the index
+	 */
+	protected IndexWriter createIndexReturnWriter(final IndexContext<?> indexContext, final long time, final String ip,
+			final String... strings) {
+		if (strings == null || strings.length == 0) {
+			throw new RuntimeException("There must be some strings to index : " + strings);
+		}
+		IndexWriter indexWriter = null;
+		try {
+			indexWriter = IndexManager.openIndexWriter(indexContext, time, ip);
+			for (String string : strings) {
+				String id = Long.toString(System.currentTimeMillis());
+				Document document = getDocument(id, string, Index.ANALYZED);
+				indexWriter.addDocument(document);
+			}
+		} catch (Exception e) {
+			logger.error("Exception creating the index : ", e);
+		}
+		return indexWriter;
 	}
 
 	protected Document getDocument(final String id, final String string, final Index analyzed) {

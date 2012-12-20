@@ -54,8 +54,20 @@
 		property:primaryTable="true"
 		property:address="false"
 		property:dataSource-ref="nonXaDataSourceOracleBpost"
+		property:children-ref="streetNameColumns"
 		property:maxExceptions="100"
 		property:allColumns="true"
+		property:analyzed="true"
+		property:stored="true"
+		property:vectored="true" />
+	<util:list id="streetNameColumns">
+		<ref local="STR_STREET_ID" />
+	</util:list>
+	<bean
+		id="STR_STREET_ID"
+		class="ikube.model.IndexableColumn"
+		property:name="STR_STREET_ID"
+		property:idColumn="true"
 		property:analyzed="true"
 		property:stored="true"
 		property:vectored="true" />

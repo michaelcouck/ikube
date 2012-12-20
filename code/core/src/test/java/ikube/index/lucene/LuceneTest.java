@@ -12,6 +12,7 @@ import ikube.toolkit.FileUtilities;
 import ikube.toolkit.ThreadUtilities;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,6 +26,8 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.MultiSearcher;
+import org.apache.lucene.search.SearcherFactory;
+import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.junit.After;
@@ -40,6 +43,7 @@ import org.junit.Test;
  * @since 06.03.10
  * @version 01.00
  */
+@SuppressWarnings("deprecation")
 public class LuceneTest extends ATest {
 
 	private String russian = " русский язык  ";
@@ -61,6 +65,7 @@ public class LuceneTest extends ATest {
 
 	@Before
 	public void before() {
+		new ThreadUtilities().initialize();
 		Mockit.setUpMock(SpellingCheckerMock.class);
 	}
 
@@ -112,7 +117,7 @@ public class LuceneTest extends ATest {
 					try {
 						int index = iterations * 2;
 						while (index-- > 0) {
-							ThreadUtilities.sleep(sleep);
+							ThreadUtilities.sleep(sleep * 10);
 
 							Directory directory = FSDirectory.open(indexDirectory);
 							IndexReader reader = IndexReader.open(directory);
@@ -160,11 +165,72 @@ public class LuceneTest extends ATest {
 		ThreadUtilities.waitForFutures(futures, 10000);
 	}
 
+	@Test
+	public void searcherManagerReadAndWrite() throws IOException {
+		final long sleep = 100;
+		final int iterations = 3;
+		long time = System.currentTimeMillis();
+		final IndexWriter indexWriter = createIndexReturnWriter(indexContext, time, "127.0.0.1", "the", "quick", "brown", "fox", "jumped");
+		logger.info("Index writer : " + indexWriter);
+		final SearcherManager searcherManager = new SearcherManager(indexWriter, true, new SearcherFactory());
+		List<Future<?>> futures = new ArrayList<Future<?>>();
+		for (int i = 0; i < 3; i++) {
+			Future<?> future = ThreadUtilities.submit(Integer.toHexString(i), new Runnable() {
+				@Override
+				public void run() {
+					try {
+						int index = iterations * 2;
+						while (index-- > 0) {
+							ThreadUtilities.sleep(sleep * 10);
+
+							IndexSearcher indexSearcher = searcherManager.acquire();
+
+							SearchSingle searchSingle = new SearchSingle(indexSearcher);
+							searchSingle.setFirstResult(0);
+							searchSingle.setFragment(Boolean.TRUE);
+							searchSingle.setMaxResults(Integer.MAX_VALUE);
+							searchSingle.setSearchField(IConstants.CONTENTS);
+							searchSingle.setSearchString("détermine");
+							searchSingle.setSortField(IConstants.CONTENTS);
+							ArrayList<HashMap<String, String>> results = searchSingle.execute();
+							logger.info("Results : " + results.size());
+							assertTrue("There should be four results because the writer added three hits : ", results.size() >= 2);
+
+							searcherManager.release(indexSearcher);
+						}
+					} catch (Exception e) {
+						throw new RuntimeException(e);
+					}
+				}
+			});
+			futures.add(future);
+		}
+		Future<?> future = ThreadUtilities.submit(new Runnable() {
+			public void run() {
+				try {
+					int index = iterations;
+					while (index-- > 0) {
+						Document document = getDocument(Long.toHexString(System.currentTimeMillis()), string, Index.ANALYZED);
+						logger.info("Writing document : " + document);
+						indexWriter.addDocument(document);
+						indexWriter.commit();
+						// indexWriter.close(Boolean.TRUE);
+						searcherManager.maybeRefresh();
+						ThreadUtilities.sleep(sleep);
+					}
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+			}
+		});
+		futures.add(future);
+		ThreadUtilities.waitForFutures(futures, 10000);
+	}
+
 	private String indexPath = "C:/media/nas/xfs-one/indexes/roma-streets/1355763362335/10.100.118.59";
 
 	@Test
 	@Ignore
-	@SuppressWarnings("deprecation")
 	public void adHocSearch() throws Exception {
 		Directory directory = FSDirectory.open(new File(indexPath));
 		IndexReader reader = IndexReader.open(directory);
