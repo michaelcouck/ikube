@@ -56,6 +56,7 @@ public class IndexableTableHandlerIntegration extends Integration {
 	private IndexableColumn snapshotColumn;
 	private List<Indexable<?>> snapshotTableChildren;
 	private IndexableTableHandler indexableTableHandler;
+	private DataSource dataSource;
 	private Connection connection;
 
 	@Before
@@ -68,7 +69,8 @@ public class IndexableTableHandlerIntegration extends Integration {
 		snapshotTableChildren = snapshotTable.getChildren();
 		snapshotColumn = Deencapsulation.invoke(indexableTableHandler, "getIdColumn", snapshotTableChildren);
 
-		connection = ((DataSource) ApplicationContextManager.getBean("nonXaDataSourceH2")).getConnection();
+		dataSource = ((DataSource) ApplicationContextManager.getBean("nonXaDataSourceH2"));
+		connection = dataSource.getConnection();
 
 		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
 		clusterManager.getServer().getActions().clear();
@@ -116,7 +118,7 @@ public class IndexableTableHandlerIntegration extends Integration {
 				+ "snapshot.systemload, snapshot.totalsearches from snapshot";
 		long nextIdNumber = 0;
 		long batchSize = indexContext.getBatchSize();
-		Deencapsulation.invoke(indexableTableHandler, "addAllColumns", snapshotTable, connection);
+		Deencapsulation.invoke(indexableTableHandler, "addAllColumns", snapshotTable, dataSource);
 		String sql = Deencapsulation.invoke(indexableTableHandler, "buildSql", snapshotTable, batchSize, nextIdNumber);
 		sql = sql.toLowerCase();
 		assertTrue(sql.contains(expectedSql));
@@ -166,7 +168,7 @@ public class IndexableTableHandlerIntegration extends Integration {
 		long minId = getMinId();
 		snapshotColumn.setContent(minId);
 		ResultSet resultSet = Deencapsulation.invoke(indexableTableHandler, "getResultSet", indexContext, snapshotTable, connection,
-				new AtomicLong(0), 1);
+				new AtomicLong(0));
 		assertNotNull(resultSet);
 
 		Statement statement = resultSet.getStatement();

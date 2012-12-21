@@ -10,6 +10,7 @@ import ikube.model.IndexContext;
 import ikube.model.Server;
 import ikube.model.Snapshot;
 import ikube.service.IMonitorService;
+import ikube.toolkit.ObjectToolkit;
 import ikube.toolkit.PerformanceTester;
 
 import java.sql.Timestamp;
@@ -111,6 +112,14 @@ public class MonitorTest extends Base {
 		assertEquals("aaa", nameTwo);
 
 		assertTrue("The max age should be in the Json string : ", entity.toString().contains("maxAge"));
+		
+		double executionsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
+			@Override
+			public void execute() throws Throwable {
+				monitor.indexContexts("name", false);
+			}
+		}, "Index contexts web service : ", 100, Boolean.TRUE);
+		assertTrue("This function must be quite fast because it is online : ", executionsPerSecond > 10);
 	}
 
 	@Test
@@ -241,7 +250,7 @@ public class MonitorTest extends Base {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private IndexContext getIndexContext(final String indexName) {
-		IndexContext indexContext = new IndexContext();
+		IndexContext indexContext = ObjectToolkit.populateFields(IndexContext.class, new IndexContext(), Boolean.TRUE, 0, 5); // new IndexContext();
 		indexContext.setIndexName(indexName);
 		indexContext.setIndexDirectoryPath("indexDirectoryPath");
 		List<Snapshot> snapshots = new ArrayList<Snapshot>();

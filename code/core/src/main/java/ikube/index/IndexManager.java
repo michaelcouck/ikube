@@ -312,7 +312,7 @@ public final class IndexManager {
 			stringBuilder.append(indexContext.getIndexName());
 			File latestIndexDirectory = IndexManager.getLatestIndexDirectory(stringBuilder.toString());
 			if (latestIndexDirectory == null || !latestIndexDirectory.exists() || !latestIndexDirectory.isDirectory()) {
-				LOGGER.info("No latest index : " + indexContext.getIndexName());
+				// LOGGER.info("No latest index : " + indexContext.getIndexName());
 				return indexSize;
 			}
 			File[] serverIndexDirectories = latestIndexDirectory.listFiles();

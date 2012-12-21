@@ -84,6 +84,13 @@ public class IndexSizeListener implements IListener {
 				}
 
 				if (switched) {
+					// We wait here for a while to allow the writers and so
+					// on to commit, and the readers to be returned or the JVM
+					// will access a memory address outside the allocated address
+					// area and crash because Lucene uses mapped virtual address
+					// for the readers if they are used after they have been closed
+					// they crash the JVM, violla
+					ThreadUtilities.sleep(10000);
 					LOGGER.info("Switched to the new index writer : " + indexContext);
 					IndexManager.closeIndexWriter(indexWriter);
 				} else {

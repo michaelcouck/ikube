@@ -97,7 +97,7 @@ public class Monitor extends Resource {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private IndexContext cloneIndexContext(final IndexContext indexContext) {
-		indexContext.isOpen();
+		// indexContext.isOpen();
 		indexContext.getNumDocs();
 		indexContext.getIndexSize();
 		indexContext.getLatestIndexTimestamp();

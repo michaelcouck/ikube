@@ -13,7 +13,7 @@ function track() {
 }
 
 /** The global refresh variable. */
-var refreshInterval = 15000;
+var refreshInterval = 20000;
 var chartRefreshInterval = 5000;
 
 /**
@@ -226,7 +226,6 @@ module.controller('IndexContextsController', function($http, $scope) {
 			$scope.descending = false;
 			$scope.sortField = sortField;
 		}
-		// alert('Sort field : ' + sortField + ', ' + ($scope.sortField == sortField) + ', ' + $scope.descending);
 		$scope.refreshIndexContexts();
 	};
 	// Immediately refresh the data
@@ -234,7 +233,7 @@ module.controller('IndexContextsController', function($http, $scope) {
 	// Refresh the index contexts every so often
 	setInterval(function() {
 		$scope.refreshIndexContexts();
-	}, refreshInterval);
+	}, 60000);
 	// This function will publish a start event in the cluster
 	$scope.startIndexing = function(indexName) {
 		if (confirm('Start indexing of index : ' + indexName)) {

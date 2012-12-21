@@ -65,22 +65,6 @@ import org.apache.lucene.document.Field.TermVector;
 public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 
 	/**
-	 * This value is how many times we will try to get a result set without any data before we give up. When looking for a result set the
-	 * predicate could be something like 'where id < 100000', if there are 100 000 000 records in the table then the getResultSet method
-	 * will recursively call it's self until there are records in the result set, incrementing the batch size each time. The first call will
-	 * be:<br>
-	 * where id > 0 and id < 10 and id < 100000<br>
-	 * But once we reach:<br>
-	 * where id > 100000 and id < 100010 and id < 100000<br>
-	 * There will be no records, so the method recursively calls it's self, until there are no more id's in the database, i.e. until the
-	 * predicate is:<br>
-	 * where id > 100 000 000 and id < 100 000 010 and id < 100000<br>
-	 * The problem is of course is that there will be 100 000 recursive calls, which can't happen; So this variable limits the number of
-	 * recursive calls, to 10, which I think is more than enough.
-	 */
-	private static final int MAX_REENTRANT = 10;
-
-	/**
 	 * This method starts threads and passes the indexable to them. The threads are added to the list of threads that are returned to the
 	 * caller that will have to wait for them to finish indexing all the data.
 	 */
@@ -105,15 +89,12 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 					public void run() {
 						try {
 							final IContentProvider<IndexableColumn> contentProvider = new ColumnContentProvider();
-							handleTable(contentProvider, indexContext, cloneIndexableTable, dataSource, null, 0, currentId);
+							setMinAndMaxId(cloneIndexableTable, dataSource);
+							handleTable(contentProvider, indexContext, cloneIndexableTable, dataSource, null, currentId);
 						} catch (InterruptedException e) {
 							throw new RuntimeException(e);
 						} catch (Exception e) {
 							throw new RuntimeException(e);
-						} finally {
-							// logger.info("Closing connection : " + connection);
-							// DatabaseUtilities.commit(connection);
-							// DatabaseUtilities.close(connection);
 						}
 					}
 				};
@@ -197,129 +178,90 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	 * @throws InterruptedException
 	 */
 	protected void handleTable(final IContentProvider<IndexableColumn> contentProvider, final IndexContext<?> indexContext,
-			final IndexableTable indexableTable, final DataSource dataSource, final Document superDocument, final int superExceptions,
-			final AtomicLong currentId) throws InterruptedException {
-		Document currentDocument = superDocument;
-		int currentExceptions = superExceptions;
-		ResultSet resultSet = null;
+			final IndexableTable indexableTable, final DataSource dataSource, final Document document, final AtomicLong currentId)
+			throws Exception {
+		Document currentDocument = document == null ? new Document() : document;
 		// One connection per thread, the connection will be closed by the thread when finished
-		try {
-			Connection connection = getConnection(dataSource);
-			resultSet = getResultSet(indexContext, indexableTable, connection, currentId, 1);
-			do {
-				try {
-					if (resultSet == null) {
-						break;
-					}
-					List<Indexable<?>> children = indexableTable.getChildren();
-					// Set the column types and the data from the table in the column objects
-					setColumnTypesAndData(children, resultSet);
-					// Set the id field if this is a primary table
-					if (indexableTable.isPrimaryTable()) {
-						currentDocument = new Document();
-						setIdField(indexableTable, currentDocument);
-					}
-					// Handle all the columns that are 'normal', i.e. that don't have references
-					// to the values in other columns, like the attachment that needs the name
-					// from the name column
-					for (Indexable<?> indexable : indexableTable.getChildren()) {
-						if (!IndexableColumn.class.isAssignableFrom(indexable.getClass())) {
-							continue;
-						}
-						IndexableColumn indexableColumn = (IndexableColumn) indexable;
-						if (indexableColumn.getNameColumn() != null) {
-							continue;
-						}
-						handleColumn(contentProvider, indexableColumn, currentDocument);
-					}
-					// Handle all the columns that rely on another column, like the attachment
-					// column that needs the name from the name column to get the content type
-					// for the parser
-					for (Indexable<?> indexable : indexableTable.getChildren()) {
-						if (!IndexableColumn.class.isAssignableFrom(indexable.getClass())) {
-							break;
-						}
-						IndexableColumn indexableColumn = (IndexableColumn) indexable;
-						if (indexableColumn.getNameColumn() == null) {
-							continue;
-						}
-						handleColumn(contentProvider, indexableColumn, currentDocument);
-					}
-					// Handle all the sub tables
-					for (Indexable<?> indexable : children) {
-						if (!IndexableTable.class.isAssignableFrom(indexable.getClass())) {
-							continue;
-						}
+		ResultSet resultSet = getResultSet(indexContext, indexableTable, dataSource, currentId);
+		while (resultSet != null) {
+			// We have results from the table and we are already on the first result
+			List<Indexable<?>> children = indexableTable.getChildren();
+			// Set the column types and the data from the table in the column objects
+			setColumnTypesAndData(children, resultSet);
+			// Set the id field if this is a primary table
+			if (indexableTable.isPrimaryTable()) {
+				setIdField(indexableTable, currentDocument);
+			}
+			for (Indexable<?> indexable : indexableTable.getChildren()) {
+				// Handle all the columns, if any column refers to another column then they
+				// must be configured in the correct order so that the name column is before the
+				// binary data for the document for example
+				if (IndexableColumn.class.isAssignableFrom(indexable.getClass())) {
+					IndexableColumn indexableColumn = (IndexableColumn) indexable;
+					handleColumn(contentProvider, indexableColumn, currentDocument);
+				} else {
+					if (IndexableTable.class.isAssignableFrom(indexable.getClass())) {
 						IndexableTable childIndexableTable = (IndexableTable) indexable;
 						// Here we recursively call this method with the child tables. We pass the document
 						// to the child table for this row in the parent table so they can add their fields to the
 						// index
-						handleTable(contentProvider, indexContext, childIndexableTable, dataSource, currentDocument, currentExceptions,
-								currentId);
-					}
-					// Add the document to the index if this is the primary table
-					if (indexableTable.isPrimaryTable()) {
-						addDocument(indexContext, indexableTable, currentDocument);
-					}
-					Thread.sleep(indexContext.getThrottle());
-					// Move to the next row in the result set
-					if (!resultSet.next()) {
-						if (indexableTable.isPrimaryTable()) {
-							// We must commit the connection to close the cursors
-							connection.commit();
-							DatabaseUtilities.closeAll(resultSet);
-							// We need to see if there are any more results
-							connection = getConnection(dataSource);
-							resultSet = getResultSet(indexContext, indexableTable, connection, currentId, 1);
-						} else {
-							// If the table is not primary then we have exhausted the results
-							// for this sub selection, we go up one level to the parent table
-							break;
-						}
-					}
-					if (Thread.currentThread().isInterrupted()) {
-						throw new InterruptedException("Table indexing teminated : ");
-					}
-				} catch (InterruptedException e) {
-					// If we are interrupted then this index action has
-					// been terminated by the executer service and we should exit
-					throw e;
-				} catch (Exception e) {
-					logger.error("Exception indexing table : " + indexableTable.getName() + ", connection : " + connection
-							+ ", exceptions : " + currentExceptions, e);
-					++currentExceptions;
-					if (currentExceptions > indexableTable.getMaxExceptions()) {
-						logger.error("Maximum exception exceeded, exiting indexing table : " + indexableTable.getName());
-						break;
+						handleTable(contentProvider, indexContext, childIndexableTable, dataSource, currentDocument, currentId);
 					}
 				}
-			} while (true);
-		} catch (InterruptedException e) {
-			throw e;
-		} catch (Exception e) {
-			String message = Logging.getString("Exception indexing table : ", indexableTable.getName(), ", ",
-					indexableTable.getDataSource(), ", exceptions : ", currentExceptions);
-			logger.error(message, e);
-		} finally {
-			// Close the result set and the statement for this
-			// table, could be the sub table of course
-			Statement statement = null;
-			try {
-				if (resultSet != null) {
-					statement = resultSet.getStatement();
-				}
-			} catch (Exception e) {
-				logger.error("Exception accessing the statement from the result set : " + resultSet, e);
 			}
-			DatabaseUtilities.close(resultSet);
-			DatabaseUtilities.close(statement);
+			// Add the document to the index if this is the primary table
+			if (indexableTable.isPrimaryTable()) {
+				addDocument(indexContext, indexableTable, currentDocument);
+			}
+			Thread.sleep(indexContext.getThrottle());
+			if (Thread.currentThread().isInterrupted()) {
+				throw new InterruptedException("Table indexing teminated : ");
+			}
+			if (!resultSet.next()) {
+				DatabaseUtilities.closeAll(resultSet);
+				resultSet = getResultSet(indexContext, indexableTable, dataSource, currentId);
+			}
 		}
+		DatabaseUtilities.closeAll(resultSet);
+	}
+
+	private ResultSet getResultSet(final IndexContext<?> indexContext, final IndexableTable indexableTable, final DataSource dataSource,
+			final AtomicLong currentId) throws Exception {
+		Connection connection = getConnection(dataSource);
+		ResultSet resultSet = getResultSet(indexContext, indexableTable, connection, currentId);
+		while (!resultSet.next()) {
+			DatabaseUtilities.closeAll(resultSet);
+			if (!indexableTable.isPrimaryTable()) {
+				return null;
+			}
+			if (currentId.get() >= indexableTable.getMaximumId()) {
+				// Finished indexing the table hierarchy
+				return null;
+			}
+			resultSet = getResultSet(indexContext, indexableTable, connection, currentId);
+		}
+		return resultSet;
 	}
 
 	private Connection getConnection(final DataSource dataSource) throws SQLException {
 		Connection connection = dataSource.getConnection();
 		connection.setAutoCommit(Boolean.FALSE);
 		return connection;
+	}
+
+	private void setMinAndMaxId(final IndexableTable indexableTable, final DataSource dataSource) throws Exception {
+		Connection connection = getConnection(dataSource);
+		long minimumId = indexableTable.getMinimumId();
+		if (minimumId <= 0) {
+			minimumId = getIdFunction(indexableTable, connection, "min");
+			indexableTable.setMinimumId(minimumId);
+		}
+		long maximumId = indexableTable.getMaximumId();
+		if (maximumId <= 0) {
+			maximumId = getIdFunction(indexableTable, connection, "max");
+			indexableTable.setMaximumId(maximumId);
+		}
+		DatabaseUtilities.close(connection);
 	}
 
 	/**
@@ -338,59 +280,17 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	 * @throws Exception
 	 */
 	protected synchronized ResultSet getResultSet(final IndexContext<?> indexContext, final IndexableTable indexableTable,
-			final Connection connection, final AtomicLong currentId, final int superReentrant) throws Exception {
-		int currentReentrant = superReentrant;
+			final Connection connection, final AtomicLong currentId) throws Exception {
 		try {
-			if (currentReentrant >= MAX_REENTRANT) {
-				return null;
-			}
-			long nextIdNumber = 0;
-			// If this is a primary table then we need to find the first id in the table. For example if we are just starting to access this
-			// table then the id number will be 0, but the first id in the table could be 1 234 567, in which case we will have no records,
-			// so we need to execute where id > 1 234 567 and < 1 234 567 + batchSize
-			if (indexableTable.isPrimaryTable()) {
-				long minimumId = indexableTable.getMinimumId();
-				if (minimumId <= 0) {
-					minimumId = getIdFunction(indexableTable, connection, "min");
-					indexableTable.setMinimumId(minimumId);
-				}
-				if (currentId.get() < minimumId) {
-					currentId.set(minimumId);
-				}
-				nextIdNumber = currentId.get();
-				currentId.set(new Long(currentId.get() + indexContext.getBatchSize()));
-			}
-
-			// Now we build the sql based on the columns defined in the configuration
-			String sql = buildSql(indexableTable, indexContext.getBatchSize(), nextIdNumber);
+			// Build the sql based on the columns defined in the configuration
+			String sql = buildSql(indexableTable, indexContext.getBatchSize(), currentId.get());
+			currentId.set(currentId.get() + indexContext.getBatchSize());
 			PreparedStatement preparedStatement = connection.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY,
 					ResultSet.CLOSE_CURSORS_AT_COMMIT);
 			// Set the parameters if this is a sub table, this typically means that the
 			// id from the primary table is set in the prepared statement for the sub table
 			setParameters(indexableTable, preparedStatement);
-			ResultSet resultSet = preparedStatement.executeQuery();
-			if (!resultSet.next()) {
-				DatabaseUtilities.close(resultSet);
-				DatabaseUtilities.close(preparedStatement);
-				// No results, if this is a primary table then check that we have reached the end of the table, it could be that the
-				// predicate is id > 1 234 567 and < 1 234 567 + batchSize but there are no results between these values, so the next
-				// predicate would be id > 1 234 567 + batchSize and < 1 234 567 + (batchSize * 2)
-				if (indexableTable.isPrimaryTable()) {
-					long maximumId = indexableTable.getMaximumId();
-					if (maximumId <= 0) {
-						maximumId = getIdFunction(indexableTable, connection, "max");
-						indexableTable.setMaximumId(maximumId);
-					}
-					// If we have exhausted the results then we return null and the thread dies
-					if (nextIdNumber < maximumId) {
-						// Try the next predicate + batchSize
-						return getResultSet(indexContext, indexableTable, connection, currentId, ++currentReentrant);
-					}
-				}
-				// No more results for the primary table, we are finished
-				return null;
-			}
-			return resultSet;
+			return preparedStatement.executeQuery();
 		} catch (Exception e) {
 			throw e;
 		} finally {
