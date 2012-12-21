@@ -212,6 +212,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 			// Add the document to the index if this is the primary table
 			if (indexableTable.isPrimaryTable()) {
 				addDocument(indexContext, indexableTable, currentDocument);
+				currentDocument = new Document();
 			}
 			Thread.sleep(indexContext.getThrottle());
 			if (Thread.currentThread().isInterrupted()) {
@@ -238,6 +239,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 				// Finished indexing the table hierarchy
 				return null;
 			}
+			connection = getConnection(dataSource);
 			resultSet = getResultSet(indexContext, indexableTable, connection, currentId);
 		}
 		return resultSet;
