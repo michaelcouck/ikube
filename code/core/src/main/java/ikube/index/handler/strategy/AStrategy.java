@@ -2,16 +2,19 @@ package ikube.index.handler.strategy;
 
 import ikube.index.handler.IStrategy;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
- * This is the delta strategy for the file system handler. Essentially what this class should do is to check to see if the document/file
- * being processed already exists in the current index. If it does, and the time stamp and the length are the same then return a false
- * indicator, meaning that the handler should not add this document to the index.
+ * TODO Comments...
  * 
  * @author Michael Couck
  * @since 12.12.12
  * @version 01.00
  */
 public abstract class AStrategy<T, U> implements IStrategy<T, U> {
+
+	protected Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
 	/** The next strategy in the chain. */
 	IStrategy<T, U> nextStrategy;
@@ -23,6 +26,28 @@ public abstract class AStrategy<T, U> implements IStrategy<T, U> {
 	 */
 	public AStrategy(final IStrategy<T, U> nextStrategy) {
 		this.nextStrategy = nextStrategy;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean preProcess(T t, U u) {
+		if (nextStrategy != null) {
+			return nextStrategy.preProcess(t, u);
+		}
+		return Boolean.TRUE;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean postProcess(T t, U u) {
+		if (nextStrategy != null) {
+			return nextStrategy.postProcess(t, u);
+		}
+		return Boolean.TRUE;
 	}
 
 }

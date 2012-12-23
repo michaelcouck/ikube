@@ -64,13 +64,13 @@ public interface IHandler<T extends Indexable<?>> {
 	void addDocument(IndexContext<?> indexContext, Indexable<?> indexable, Document document) throws Exception;
 
 	/**
-	 * This method executes all the strategies prior to proessing of the document. The contract is that if any of the strategies return a
-	 * false from the pre-process then the processing of the documentwill not get executed.
+	 * This method executes all the strategies prior to processing of the document. The contract is that if any of the strategies return a
+	 * false from the pre-process then the processing of the document will not get executed.
 	 * 
 	 * @param the chain of strategies to execute before performing the handling logic
 	 * @return whether all the strategies resulted in a true execution, i.e. the processing can continue on this document
 	 */
-	boolean preProcess(IStrategy<?, ?> strategy);
+	<P, Q> boolean preProcess(IStrategy<P, Q> strategy, P p, Q q);
 
 	/**
 	 * This method will execute strategies post processing of the document. The logic that is executed if any of the strategies returns a
@@ -79,6 +79,6 @@ public interface IHandler<T extends Indexable<?>> {
 	 * @param the chain of strategies to execute after performing the handling logic
 	 * @return whether all the strategies resulted in a true execution
 	 */
-	boolean postProcess(IStrategy<?, ?> strategy);
+	<P, Q> boolean postProcess(IStrategy<P, Q> strategy, P p, Q q);
 
 }

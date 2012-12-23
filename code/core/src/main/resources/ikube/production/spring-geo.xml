@@ -16,9 +16,8 @@
             http://www.springframework.org/schema/util/spring-util.xsd">
 
 	<description>
-		This file is not to be modified by users generally.
-		This is the configuration for the GeoSpatial index which is an index 
-		of the geonames table on the Ikube server.
+		This file is not to be modified by users generally. This is the configuration for the geospatial index which is an index 
+		of the geonames table on the Ikube server. 
 	</description>
 	
 	<bean
@@ -35,7 +34,7 @@
 		property:maxFieldLength="${max.field.length}"
 		property:maxReadLength="${max.read.length}"
 		property:address="true"
-		property:throttle="1"
+		property:throttle="0"
 		property:indexDirectoryPath="${index.directory.path}"
 		property:indexDirectoryPathBackup="${index.directory.path.backup}"
 		property:children-ref="geospatialIndexables" />
@@ -51,7 +50,11 @@
 		property:address="true"
 		property:dataSource-ref="nonXaDataSourceDb2"
 		property:children-ref="geonameColumnsDb2" 
-		property:maxExceptions="10" />
+		property:maxExceptions="10"
+		property:allColumns="true"
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true" />
 	<util:list id="geonameColumnsDb2">
 		<ref local="geospatialId" />
 		<ref local="geospatialName" />
@@ -75,6 +78,7 @@
 		<ref local="geospatialPopulation" />
 		<ref local="geospatialElevation" />
 		<ref local="geospatialGtopo30" />
+		<ref local="alternatename" />
 	</util:list>
 	
 	<bean
@@ -260,5 +264,41 @@
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
+	
+	<bean
+		id="alternatename"
+		class="ikube.model.IndexableTable"
+		property:name="alternatename"
+		property:primaryTable="false"
+		property:address="false"
+		property:dataSource-ref="nonXaDataSourceDb2"
+		property:children-ref="alternatenameColumnsDb2" 
+		property:maxExceptions="10"
+		property:allColumns="true" 
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true" />
+	<util:list id="alternatenameColumnsDb2">
+		<ref local="alternatenameId" />
+		<ref local="alternatenameGeonameid" />
+	</util:list>
+	
+	<bean
+		id="alternatenameId"
+		class="ikube.model.IndexableColumn"
+		property:name="id"
+		property:idColumn="true"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="alternatenameGeonameid"
+		class="ikube.model.IndexableColumn"
+		property:name="geonameid"
+		property:fieldName="alternatenamegeonameid"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}"
+		property:foreignKey-ref="geospatialGeonameid" />
 	
 </beans>

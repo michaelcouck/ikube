@@ -2,7 +2,6 @@ package ikube.index.handler.filesystem;
 
 import ikube.IConstants;
 import ikube.index.IndexManager;
-import ikube.index.handler.IStrategy;
 import ikube.index.handler.IndexableHandler;
 import ikube.index.parse.IParser;
 import ikube.index.parse.ParserProvider;
@@ -90,22 +89,6 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 			logger.error("Exception executing the file system indexer threads : ", e);
 		}
 		return futures;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean preProcess(IStrategy<?, ?> strategy) {
-		return true;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean postProcess(IStrategy<?, ?> strategy) {
-		return true;
 	}
 
 	protected List<File> getBatch(final IndexableFileSystem indexableFileSystem, final Stack<File> directories, final Pattern pattern) {

@@ -36,7 +36,7 @@ public class IndexableFilesystemHandlerDeltaStrategyTest extends ATest {
 
 	private File file;
 	private IndexableFileSystem indexableFileSystem;
-	private IndexableFilesystemHandlerDeltaStrategy deltaStrategy;
+	private DeltaIndexableFilesystemStrategy deltaStrategy;
 
 	public IndexableFilesystemHandlerDeltaStrategyTest() {
 		super(IndexableFilesystemHandlerDeltaStrategyTest.class);
@@ -45,7 +45,7 @@ public class IndexableFilesystemHandlerDeltaStrategyTest extends ATest {
 	@Before
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void before() {
-		deltaStrategy = new IndexableFilesystemHandlerDeltaStrategy(null);
+		deltaStrategy = new DeltaIndexableFilesystemStrategy(null);
 
 		file = Mockito.mock(File.class);
 		indexableFileSystem = Mockito.mock(IndexableFileSystem.class);

@@ -1,5 +1,9 @@
 package ikube.model;
 
+import ikube.index.handler.IStrategy;
+
+import java.util.List;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -22,8 +26,15 @@ public class IndexableColumn extends Indexable<IndexableColumn> {
 
 	@Transient
 	private transient int columnType;
+	/**
+	 * This is the content of the column in the database, it is therefore only valid while indexing and for the current row and table of
+	 * course.
+	 */
 	@Transient
 	private transient Object content;
+	/** These strategies will be processed before and after processing the column. */
+	@Transient
+	private transient List<IStrategy<?, ?>> strategies;
 
 	@Column
 	@Attribute(description = "This is the name of the field in the Lucene index")
@@ -97,6 +108,14 @@ public class IndexableColumn extends Indexable<IndexableColumn> {
 
 	public void setContent(final Object content) {
 		this.content = content;
+	}
+
+	public List<IStrategy<?, ?>> getStrategies() {
+		return strategies;
+	}
+
+	public void setStrategies(List<IStrategy<?, ?>> strategies) {
+		this.strategies = strategies;
 	}
 
 }
