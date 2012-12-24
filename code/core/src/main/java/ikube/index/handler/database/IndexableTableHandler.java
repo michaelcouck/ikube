@@ -212,7 +212,6 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 		setColumnTypesAndData(children, resultSet);
 		// Set the id field if this is a primary table
 		if (indexableTable.isPrimaryTable()) {
-			// TODO Create the strategies here and execute them
 			setIdField(indexableTable, currentDocument);
 		}
 		for (Indexable<?> indexable : indexableTable.getChildren()) {
@@ -235,7 +234,6 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 		// Add the document to the index if this is the primary table
 		if (indexableTable.isPrimaryTable()) {
 			addDocument(indexContext, indexableTable, currentDocument);
-			// TODO Create the strategies here and execute them
 			currentDocument = new Document();
 		}
 		Thread.sleep(indexContext.getThrottle());
@@ -608,17 +606,16 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	 */
 	protected void setColumnTypesAndData(final List<Indexable<?>> children, final ResultSet resultSet) throws Exception {
 		ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
-		int index = 1;
-		for (Indexable<?> indexable : children) {
+		for (int i = 0; i < children.size(); i++) {
+			Indexable<?> indexable = children.get(i);
 			if (!IndexableColumn.class.isAssignableFrom(indexable.getClass())) {
 				continue;
 			}
 			IndexableColumn indexableColumn = (IndexableColumn) indexable;
-			int columnType = resultSetMetaData.getColumnType(index);
+			int columnType = resultSetMetaData.getColumnType(i + 1);
 			Object object = resultSet.getObject(indexableColumn.getName());
 			indexableColumn.setColumnType(columnType);
 			indexableColumn.setContent(object);
-			index++;
 		}
 	}
 
