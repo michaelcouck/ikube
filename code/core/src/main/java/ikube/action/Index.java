@@ -43,6 +43,9 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 				// TODO If this is a delta index then open the index writer on all the indexes, there could be many
 				// and there must be one index writer open on each index to be able to delete the documents that are
 				// going to be updated
+				if (indexContext.isDelta()) {
+					// Open the index writer on all the indexes
+				}
 				IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, startTime, server.getAddress());
 				indexContext.setIndexWriter(indexWriter);
 				Iterator<Indexable<?>> iterator = indexables.iterator();

@@ -26,7 +26,6 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.MultiSearcher;
 import org.apache.lucene.search.Searchable;
-import org.apache.lucene.search.SearcherManager;
 
 /**
  * This is the context for a single index. It has the properties that define the index like what it is going to index, i.e. the databases,
@@ -56,8 +55,6 @@ public class IndexContext<T> extends Indexable<T> implements Comparable<IndexCon
 	@Transient
 	private Date latestIndexTimestamp;
 
-	@Transient
-	private transient volatile SearcherManager searcherManager;
 	/** Can be null if there are no indexes running. */
 	@Transient
 	private transient volatile IndexWriter indexWriter;
@@ -143,6 +140,9 @@ public class IndexContext<T> extends Indexable<T> implements Comparable<IndexCon
 	@Column
 	@Attribute(field = false, description = "This flag indicates whether the index is being generated currently")
 	private boolean indexing;
+	@Column
+	@Attribute(field = false, description = "This flag indicates whether the index should be delta indexed, i.e. no new index just the changes n the resources")
+	private boolean delta;
 
 	@OneToMany(cascade = { CascadeType.ALL }, mappedBy = "indexContext", fetch = FetchType.EAGER)
 	private List<Snapshot> snapshots = new ArrayList<Snapshot>();
@@ -373,12 +373,12 @@ public class IndexContext<T> extends Indexable<T> implements Comparable<IndexCon
 		this.indexing = indexing;
 	}
 
-	public SearcherManager getSearcherManager() {
-		return searcherManager;
+	public boolean isDelta() {
+		return delta;
 	}
 
-	public void setSearcherManager(SearcherManager searcherManager) {
-		this.searcherManager = searcherManager;
+	public void setDelta(boolean delta) {
+		this.delta = delta;
 	}
 
 	@Override
