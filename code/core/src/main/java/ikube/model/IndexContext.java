@@ -57,7 +57,7 @@ public class IndexContext<T> extends Indexable<T> implements Comparable<IndexCon
 
 	/** Can be null if there are no indexes running. */
 	@Transient
-	private transient volatile IndexWriter indexWriter;
+	private transient volatile IndexWriter[] indexWriters;
 	/** Can be null if there is no index created. */
 	@Transient
 	private transient volatile MultiSearcher multiSearcher;
@@ -259,13 +259,13 @@ public class IndexContext<T> extends Indexable<T> implements Comparable<IndexCon
 		super.setChildren(indexables);
 	}
 
-	public IndexWriter getIndexWriter() {
-		return indexWriter;
+	public IndexWriter[] getIndexWriters() {
+		return indexWriters;
 	}
 
-	public void setIndexWriter(final IndexWriter indexWriter) {
-		setIndexing(indexWriter != null);
-		this.indexWriter = indexWriter;
+	public void setIndexWriters(final IndexWriter... indexWriters) {
+		setIndexing(indexWriters != null && indexWriters.length > 0);
+		this.indexWriters = indexWriters;
 	}
 
 	public MultiSearcher getMultiSearcher() {
@@ -365,7 +365,7 @@ public class IndexContext<T> extends Indexable<T> implements Comparable<IndexCon
 	}
 
 	public boolean isIndexing() {
-		setIndexing(getIndexWriter() != null);
+		setIndexing(getIndexWriters() != null);
 		return indexing;
 	}
 

@@ -7,6 +7,7 @@ import ikube.model.IndexContext;
 import ikube.model.Indexable;
 
 import org.apache.lucene.document.Document;
+import org.apache.lucene.index.IndexWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,7 +67,10 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IHandl
 		if (indexable.isAddress()) {
 			addSpatialEnrichment(indexable, document);
 		}
-		indexContext.getIndexWriter().addDocument(document);
+		IndexWriter[] indexWriters = indexContext.getIndexWriters();
+		// Always add the document to the last index writer in the array, this will
+		// be the last one to be added in case the size of the index is exceeded
+		indexWriters[indexWriters.length - 1].addDocument(document);
 	}
 
 	private void addSpatialEnrichment(Indexable<?> indexable, Document document) {

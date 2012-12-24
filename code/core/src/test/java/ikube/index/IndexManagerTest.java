@@ -27,7 +27,6 @@ import org.apache.lucene.document.Field.TermVector;
 import org.apache.lucene.index.IndexWriter;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -62,15 +61,15 @@ public class IndexManagerTest extends ATest {
 
 	@After
 	public void after() {
+		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
 		FileUtilities.deleteFile(new File("./" + IndexManagerTest.class.getSimpleName()), 1);
 	}
 
 	@Test
 	public void openIndexWriter() throws Exception {
 		IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
-		assertNotNull(indexWriter);
 		IndexManager.closeIndexWriter(indexContext);
-		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
+		assertNotNull(indexWriter);
 	}
 
 	@Test
@@ -121,10 +120,8 @@ public class IndexManagerTest extends ATest {
 	@Test
 	public void closeIndexWriter() throws Exception {
 		IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
-		assertNotNull(indexWriter);
 		IndexManager.closeIndexWriter(indexContext);
-		// assertNull(INDEX_CONTEXT.getIndex().getIndexWriter());
-		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
+		assertNotNull(indexWriter);
 	}
 
 	@Test
@@ -189,7 +186,7 @@ public class IndexManagerTest extends ATest {
 			when(fsDirectory.makeLock(anyString())).thenReturn(lock);
 			when(indexWriter.numDocs()).thenReturn(Integer.MAX_VALUE);
 			when(indexWriter.getDirectory()).thenReturn(fsDirectory);
-			when(indexContext.getIndexWriter()).thenReturn(indexWriter);
+			when(indexContext.getIndexWriters()).thenReturn(new IndexWriter[] {indexWriter});
 			logger.info("Index writer test : " + indexWriter);
 
 			long numDocs = IndexManager.getNumDocsIndexWriter(indexContext);
@@ -197,7 +194,7 @@ public class IndexManagerTest extends ATest {
 			assertEquals(Integer.MAX_VALUE, numDocs);
 
 			IndexWriterMock.setIsLocked(Boolean.FALSE);
-			when(indexContext.getIndexWriter()).thenReturn(null);
+			when(indexContext.getIndexWriters()).thenReturn(null);
 			when(indexReader.numDocs()).thenReturn(Integer.MIN_VALUE);
 			numDocs = IndexManager.getNumDocs(indexContext);
 			logger.info("Num docs : " + numDocs);
@@ -209,18 +206,14 @@ public class IndexManagerTest extends ATest {
 
 	@Test
 	public void getNumDocs() throws Exception {
-		try {
-			logger.info("Index writer test : " + indexWriter);
-			when(indexContext.getMultiSearcher()).thenReturn(multiSearcher);
-			when(multiSearcher.getSearchables()).thenReturn(searchables);
-			when(indexSearcher.getIndexReader()).thenReturn(indexReader);
-			when(indexReader.numDocs()).thenReturn(Integer.MAX_VALUE);
-			long numDocs = IndexManager.getNumDocs(indexContext);
-			logger.info("Num docs : " + numDocs);
-			assertEquals(Integer.MAX_VALUE, numDocs);
-		} finally {
-			Mockit.tearDownMocks(IndexWriter.class);
-		}
+		logger.info("Index writer test : " + indexWriter);
+		when(indexContext.getMultiSearcher()).thenReturn(multiSearcher);
+		when(multiSearcher.getSearchables()).thenReturn(searchables);
+		when(indexSearcher.getIndexReader()).thenReturn(indexReader);
+		when(indexReader.numDocs()).thenReturn(Integer.MAX_VALUE);
+		long numDocs = IndexManager.getNumDocs(indexContext);
+		logger.info("Num docs : " + numDocs);
+		assertEquals(Integer.MAX_VALUE, numDocs);
 	}
 
 	@Test
@@ -230,23 +223,24 @@ public class IndexManagerTest extends ATest {
 		Mockito.when(indexContext.getIndexName()).thenReturn("anotherIndexName");
 		createIndex(indexContext, "the ", "string ", "to add", "bigger");
 		Mockito.when(indexContext.getIndexName()).thenReturn("index");
-		
+
 		long indexSize = IndexManager.getIndexSize(indexContext);
 		logger.info("Index size : " + indexSize);
 		assertTrue("There must be some size in the index : ", indexSize > 0);
 	}
 
 	@Test
-	@Ignore
-	public void remoteOptimize() {
-		File indexDirectory = new File("/media/nas/xfs-one/history/index/wikiHistoryOne/1347197297617/192.168.1.4.8000");
-		IndexWriter indexWriter = null;
-		try {
-			indexWriter = IndexManager.openIndexWriter(indexContext, indexDirectory, false);
-			indexWriter.forceMerge(5, true);
-		} catch (Exception e) {
-			logger.error("Exception optimizing index : ", e);
+	public void openIndexWriterDelta() throws Exception {
+		// First create several indexes in the same directory
+		long time = System.currentTimeMillis();
+		String[] ips = { "127.0.0.1", "127.0.0.2", "127.0.0.3" };
+		String[] strings = { "The ", "quick ", "brown ", "fox ", "jumped" };
+		createIndexes(indexContext, time, ips, strings);
+		IndexWriter[] indexWriters = IndexManager.openIndexWriterDelta(indexContext);
+		for (final IndexWriter indexWriter : indexWriters) {
+			IndexManager.closeIndexWriter(indexWriter);
 		}
+		assertEquals("There should be three writers open on the indexes : ", 3, indexWriters.length);
 	}
 
 	private <T extends Reader> T getReader(Class<T> t) throws Exception {

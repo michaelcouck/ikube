@@ -1,11 +1,9 @@
 package ikube.listener;
 
-import ikube.cluster.IClusterManager;
 import ikube.index.IndexManager;
 import ikube.model.IndexContext;
 import ikube.service.IMonitorService;
 import ikube.toolkit.FileUtilities;
-import ikube.toolkit.ThreadUtilities;
 
 import java.io.File;
 import java.util.Map;
@@ -34,8 +32,6 @@ public class IndexSizeListener implements IListener {
 	@Value("${max.index.size}")
 	private long maxIndexSize;
 	@Autowired
-	private IClusterManager clusterManager;
-	@Autowired
 	private IMonitorService monitorService;
 
 	/**
@@ -50,54 +46,38 @@ public class IndexSizeListener implements IListener {
 		Map<String, IndexContext> indexContexts = monitorService.getIndexContexts();
 		for (Map.Entry<String, IndexContext> mapEntry : indexContexts.entrySet()) {
 			IndexContext<?> indexContext = mapEntry.getValue();
-			IndexWriter indexWriter = indexContext.getIndexWriter();
-			if (indexWriter == null) {
-				continue;
-			}
-			long meg = 1024 * 1000;
-			long indexSize = getIndexSize(mapEntry.getValue());
-			if (indexSize / meg < maxIndexSize) {
-				continue;
-			}
-			FSDirectory directory = (FSDirectory) indexWriter.getDirectory();
-			File indexDirectory = directory.getDirectory();
-			try {
-				StringBuilder stringBuilder = new StringBuilder();
-				stringBuilder.append(indexDirectory.getAbsolutePath());
-				stringBuilder.append(".");
-				stringBuilder.append(Long.toString(System.currentTimeMillis()));
-				File newIndexDirectory = FileUtilities.getFile(stringBuilder.toString(), Boolean.TRUE);
-				LOGGER.info("Starting new index : " + indexContext.getIndexName() + ", " + newIndexDirectory);
-				IndexWriter newIndexWriter = IndexManager.openIndexWriter(indexContext, newIndexDirectory, true);
 
-				int retry = 10;
-				boolean switched = false;
-				while (retry-- > 0) {
-					// Because this variable is volatile we can 'miss' a write
-					// so we have to try a few times to be sure it is written to memory
-					indexContext.setIndexWriter(newIndexWriter);
-					if (indexContext.getIndexWriter() == newIndexWriter) {
-						switched = true;
-						break;
-					}
-					ThreadUtilities.sleep(100);
+			IndexWriter[] indexWriters = indexContext.getIndexWriters();
+			if (indexWriters == null || indexWriters.length == 0) {
+				continue;
+			}
+
+			for (final IndexWriter indexWriter : indexWriters) {
+				long meg = 1024 * 1000;
+				long indexSize = getIndexSize(mapEntry.getValue());
+				if (indexSize / meg < maxIndexSize) {
+					continue;
 				}
+				FSDirectory directory = (FSDirectory) indexWriter.getDirectory();
+				File indexDirectory = directory.getDirectory();
+				try {
+					StringBuilder stringBuilder = new StringBuilder();
+					stringBuilder.append(indexDirectory.getAbsolutePath());
+					stringBuilder.append(".");
+					stringBuilder.append(Long.toString(System.currentTimeMillis()));
+					File newIndexDirectory = FileUtilities.getFile(stringBuilder.toString(), Boolean.TRUE);
+					LOGGER.info("Starting new index : " + indexContext.getIndexName() + ", " + newIndexDirectory);
+					IndexWriter newIndexWriter = IndexManager.openIndexWriter(indexContext, newIndexDirectory, true);
 
-				if (switched) {
-					// We wait here for a while to allow the writers and so
-					// on to commit, and the readers to be returned or the JVM
-					// will access a memory address outside the allocated address
-					// area and crash because Lucene uses mapped virtual address
-					// for the readers if they are used after they have been closed
-					// they crash the JVM, violla
-					ThreadUtilities.sleep(10000);
+					IndexWriter[] newIndexWriters = new IndexWriter[indexWriters.length + 1];
+					System.arraycopy(indexWriters, 0, newIndexWriters, 0, indexWriters.length);
+					newIndexWriters[newIndexWriters.length - 1] = newIndexWriter;
 					LOGGER.info("Switched to the new index writer : " + indexContext);
-					IndexManager.closeIndexWriter(indexWriter);
-				} else {
-					LOGGER.warn("Didn't switch to the new index writer, will try again next notification : ");
+					// We don't close the index writers here any more because they can still be used in the delta indexing. And
+					// we close all the indexes in the context in the index manager at the end of the job
+				} catch (Exception e) {
+					LOGGER.error("Exception starting a new index : ", e);
 				}
-			} catch (Exception e) {
-				LOGGER.error("Exception starting a new index : ", e);
 			}
 		}
 	}

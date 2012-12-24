@@ -34,7 +34,7 @@ public class IndexableEmailHandlerIntegration extends Integration {
 		mailer.sendMail("MailhandlerTest Subject", "Mail handler test mail body");
 		String ip = InetAddress.getLocalHost().getHostAddress();
 		IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
-		indexContext.setIndexWriter(indexWriter);
+		indexContext.setIndexWriters(indexWriter);
 
 		IndexableEmail indexableEmail = ApplicationContextManager.getBean(IndexableEmail.class);
 		IndexableEmailHandler indexableEmailHandler = ApplicationContextManager.getBean(IndexableEmailHandler.class);

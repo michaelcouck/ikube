@@ -40,14 +40,15 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 			if (indexables != null) {
 				long startTime = System.currentTimeMillis();
 				// Start the indexing for this server
-				// TODO If this is a delta index then open the index writer on all the indexes, there could be many
-				// and there must be one index writer open on each index to be able to delete the documents that are
-				// going to be updated
+				IndexWriter[] indexWriters = null;
 				if (indexContext.isDelta()) {
 					// Open the index writer on all the indexes
+					indexWriters = IndexManager.openIndexWriterDelta(indexContext);
+				} else {
+					IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, startTime, server.getAddress());
+					indexWriters = new IndexWriter[] { indexWriter };
 				}
-				IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, startTime, server.getAddress());
-				indexContext.setIndexWriter(indexWriter);
+				indexContext.setIndexWriters(indexWriters);
 				Iterator<Indexable<?>> iterator = indexables.iterator();
 				while (iterator.hasNext()) {
 					try {
@@ -67,7 +68,7 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 						// index is still being optimized
 						if (!iterator.hasNext()) {
 							IndexManager.closeIndexWriter(indexContext);
-							indexContext.setIndexWriter(null);
+							indexContext.setIndexWriters();
 						}
 						stop(action);
 					}
@@ -77,7 +78,7 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 		} finally {
 			// We'll try to close the writer, even though it should already be closed
 			IndexManager.closeIndexWriter(indexContext);
-			indexContext.setIndexWriter(null);
+			indexContext.setIndexWriters();
 			stop(action);
 			logger.debug(Logging.getString("Finished indexing : ", indexName));
 		}

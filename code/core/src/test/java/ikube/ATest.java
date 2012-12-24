@@ -166,7 +166,7 @@ public abstract class ATest {
 		when(server.getAddress()).thenReturn(ip);
 		when(server.getIp()).thenReturn(ip);
 		when(server.getActions()).thenReturn(Arrays.asList(action));
-		when(indexContext.getIndexWriter()).thenReturn(indexWriter);
+		when(indexContext.getIndexWriters()).thenReturn(new IndexWriter[] { indexWriter });
 		when(indexableColumn.getContent()).thenReturn("9a avenue road, cape town, south africa");
 		when(indexableColumn.isAddress()).thenReturn(Boolean.TRUE);
 		when(indexableColumn.getName()).thenReturn("indexableName");

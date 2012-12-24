@@ -62,7 +62,7 @@ public class IndexableInternetHandlerIntegration extends Integration {
 		try {
 			String ip = InetAddress.getLocalHost().getHostAddress();
 			IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
-			indexContext.setIndexWriter(indexWriter);
+			indexContext.setIndexWriters(indexWriter);
 			List<Future<?>> threads = indexableInternetHandler.handle(indexContext, indexableInternet);
 			ThreadUtilities.waitForFutures(threads, Integer.MAX_VALUE);
 
@@ -71,7 +71,7 @@ public class IndexableInternetHandlerIntegration extends Integration {
 			int totalUrlsCrawled = urls.size();
 			logger.info("Urls crawled : " + totalUrlsCrawled);
 			assertTrue("Expected more than " + expectedAtLeast + " and got : " + totalUrlsCrawled, totalUrlsCrawled >= expectedAtLeast);
-			assertTrue("There must be some documents in the index : ", indexContext.getIndexWriter().numDocs() >= expectedAtLeast);
+			assertTrue("There must be some documents in the index : ", indexContext.getIndexWriters()[0].numDocs() >= expectedAtLeast);
 		} finally {
 			new ThreadUtilities().destroy();
 		}
@@ -98,7 +98,7 @@ public class IndexableInternetHandlerIntegration extends Integration {
 		url.setRawContent(content.getBytes());
 		IndexContext<?> indexContext = mock(IndexContext.class);
 		IndexWriter indexWriter = Mockito.mock(IndexWriter.class);
-		Mockito.when(indexContext.getIndexWriter()).thenReturn(indexWriter);
+		Mockito.when(indexContext.getIndexWriters()).thenReturn(new IndexWriter[] { indexWriter });
 		indexableInternetHandler.addDocument(indexContext, indexableInternet, url, content);
 		assertNotNull(url.getTitle());
 		assertEquals(title, url.getTitle());

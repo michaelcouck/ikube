@@ -30,7 +30,7 @@ import org.apache.lucene.search.Searcher;
  */
 @SuppressWarnings("deprecation")
 public class DeltaIndexableFilesystemStrategy extends AStrategy {
-	
+
 	public DeltaIndexableFilesystemStrategy() {
 		this(null);
 	}
@@ -54,21 +54,23 @@ public class DeltaIndexableFilesystemStrategy extends AStrategy {
 			if (results.size() > 1) {
 				LOGGER.warn("Found multiple files with the same attributes in the index : " + file);
 			}
-			IndexWriter indexWriter = indexContext.getIndexWriter();
-			Query query;
-			try {
-				query = search.getQuery();
-				indexWriter.deleteDocuments(query);
-			} catch (ParseException e) {
-				LOGGER.warn("Parse exception deleting an out of date document from the index : " + e.getMessage());
-			} catch (CorruptIndexException e) {
-				LOGGER.error("Index corrupt, can't really recover from this : ", e);
-				throw new RuntimeException(e);
-			} catch (IOException e) {
-				LOGGER.error("IO exception to the index? Network failure, disk failure? No recovery possible I think : ", e);
-				throw new RuntimeException(e);
-			} catch (Exception e) {
-				LOGGER.error("General exception deleting an out of date document : ", e);
+			IndexWriter[] indexWriters = indexContext.getIndexWriters();
+			for (final IndexWriter indexWriter : indexWriters) {
+				Query query;
+				try {
+					query = search.getQuery();
+					indexWriter.deleteDocuments(query);
+				} catch (ParseException e) {
+					LOGGER.warn("Parse exception deleting an out of date document from the index : " + e.getMessage());
+				} catch (CorruptIndexException e) {
+					LOGGER.error("Index corrupt, can't really recover from this : ", e);
+					throw new RuntimeException(e);
+				} catch (IOException e) {
+					LOGGER.error("IO exception to the index? Network failure, disk failure? No recovery possible I think : ", e);
+					throw new RuntimeException(e);
+				} catch (Exception e) {
+					LOGGER.error("General exception deleting an out of date document : ", e);
+				}
 			}
 		}
 		return foundFile & (nextStrategy != null ? nextStrategy.preProcess(parameters) : true);

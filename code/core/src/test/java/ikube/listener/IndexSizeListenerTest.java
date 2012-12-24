@@ -44,11 +44,11 @@ public class IndexSizeListenerTest extends ATest {
 
 		Mockit.setUpMocks(ApplicationContextManagerMock.class);
 		ApplicationContextManagerMock.setIndexContext(indexContext);
-		
+
 		Snapshot snapshot = Mockito.mock(Snapshot.class);
 		Mockito.when(snapshot.getIndexSize()).thenReturn(Long.MAX_VALUE);
 		Mockito.when(indexContext.getLastSnapshot()).thenReturn(snapshot);
-		Mockito.when(indexContext.getIndexWriter()).thenReturn(indexWriter);
+		Mockito.when(indexContext.getIndexWriters()).thenReturn(new IndexWriter[] { indexWriter });
 		File indexDirectory = FileUtilities.getFile(indexDirectoryPath + IConstants.SEP + "127.0.0.1.8000", Boolean.TRUE);
 		Mockito.when(fsDirectory.getDirectory()).thenReturn(indexDirectory);
 
@@ -71,7 +71,7 @@ public class IndexSizeListenerTest extends ATest {
 		// We never call this because the mock doesn't really get the new index writer
 		// so the logic never calls the close on the index writer
 		Mockito.verify(indexWriter, Mockito.never()).close(Boolean.TRUE);
-		Mockito.verify(indexContext, Mockito.atLeastOnce()).setIndexWriter(Mockito.any(IndexWriter.class));
+		Mockito.verify(indexContext, Mockito.atLeastOnce()).setIndexWriters(Mockito.any(IndexWriter.class));
 	}
 
 	@Test
@@ -86,10 +86,12 @@ public class IndexSizeListenerTest extends ATest {
 		Directory directory = FSDirectory.open(latestServerIndexDirectory);
 		Lock lock = getLock(directory, latestServerIndexDirectory);
 
-		indexSize = indexSizeListener.getIndexSize(indexContext);
-		assertTrue("The locked directory is the index that is open : ", indexSize > 0);
-
-		lock.release();
+		try {
+			indexSize = indexSizeListener.getIndexSize(indexContext);
+			assertTrue("The locked directory is the index that is open : ", indexSize > 0);
+		} finally {
+			lock.release();
+		}
 	}
 
 }

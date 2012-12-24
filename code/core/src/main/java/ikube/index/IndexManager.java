@@ -5,6 +5,7 @@ import ikube.model.IndexContext;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.Logging;
 import ikube.toolkit.ThreadUtilities;
+import ikube.toolkit.UriUtilities;
 
 import java.io.File;
 import java.io.FileReader;
@@ -51,11 +52,46 @@ public final class IndexManager {
 
 	private static final Logger LOGGER = Logger.getLogger(IndexManager.class);
 
+	public class MultiIndexWriter extends IndexWriter {
+		public MultiIndexWriter(Directory d, IndexWriterConfig conf) throws CorruptIndexException, LockObtainFailedException, IOException {
+			super(d, conf);
+		}
+	}
+
 	/**
 	 * Singularity.
 	 */
 	private IndexManager() {
 		// Documented
+	}
+
+	/**
+	 * This method will open index writers on each of the server index directories.
+	 * 
+	 * @param indexContext the index to open the writers for
+	 * @return the array of index writers opened on all the index directories for the context
+	 * @throws Exception
+	 */
+	public static synchronized IndexWriter[] openIndexWriterDelta(final IndexContext<?> indexContext) throws Exception {
+		String ip = UriUtilities.getIp();
+		String indexDirectoryPath = getIndexDirectoryPath(indexContext);
+		// Find all the indexes in the latest index directory and open a writer on each one
+		File latestIndexDirectory = getLatestIndexDirectory(indexDirectoryPath);
+		File[] latestServerIndexDirectories = latestIndexDirectory.listFiles();
+		IndexWriter[] indexWriters = null;
+		if (latestServerIndexDirectories == null || latestServerIndexDirectories.length == 0) {
+			// This means that we tried to do a delta index but there was no index, i.e. we still have to index from the start
+			indexWriters = new IndexWriter[] { openIndexWriter(indexContext, System.currentTimeMillis(), ip) };
+		} else {
+			indexWriters = new IndexWriter[latestServerIndexDirectories.length];
+			// Open an index writer on each one of the indexes in the set so we can delete the documents and update them
+			for (int i = 0; i < latestServerIndexDirectories.length; i++) {
+				final File latestServerIndexDirectory = latestServerIndexDirectories[i];
+				IndexWriter indexWriter = openIndexWriter(indexContext, latestServerIndexDirectory, Boolean.FALSE);
+				indexWriters[i] = indexWriter;
+			}
+		}
+		return indexWriters;
 	}
 
 	/**
@@ -127,6 +163,7 @@ public final class IndexManager {
 				this.maxMergeDocs = indexContext.getMergeFactor();
 				this.maxMergeSize = (long) indexContext.getBufferSize();
 				this.useCompoundFile = indexContext.isCompoundFile();
+				this.mergeFactor = indexContext.getMergeFactor();
 			}
 		};
 		indexWriterConfig.setMergePolicy(mergePolicy);
@@ -134,13 +171,10 @@ public final class IndexManager {
 		Directory directory = FSDirectory.open(indexDirectory);
 		IndexWriter indexWriter = new IndexWriter(directory, indexWriterConfig);
 
-		// Below is the deprecated code
-		// IndexWriter indexWriter = new IndexWriter(directory, analyzer, create, MaxFieldLength.UNLIMITED);
-		// indexWriter.setUseCompoundFile(indexContext.isCompoundFile());
-		// indexWriter.setMaxBufferedDocs(indexContext.getBufferedDocs());
-		// indexWriter.setMaxFieldLength(indexContext.getMaxFieldLength());
-		// indexWriter.setMergeFactor(indexContext.getMergeFactor());
+		// Where to set these properties
 		// indexWriter.setRAMBufferSizeMB(indexContext.getBufferSize());
+		// indexWriter.setMaxFieldLength(indexContext.getMaxFieldLength());
+
 		return indexWriter;
 	}
 
@@ -151,13 +185,14 @@ public final class IndexManager {
 	 */
 	public static synchronized void closeIndexWriter(final IndexContext<?> indexContext) {
 		try {
-			if (indexContext != null && indexContext.getIndexWriter() != null) {
-				IndexWriter indexWriter = indexContext.getIndexWriter();
-				LOGGER.info("Optimizing and closing the index : " + indexContext.getIndexName() + ", snapshot : "
-						+ indexContext.getLastSnapshot());
-				closeIndexWriter(indexWriter);
-				LOGGER.info("Index optimized and closed : " + indexWriter + ", " + indexContext.getIndexName() + ", snapshot : "
-						+ indexContext.getLastSnapshot());
+			if (indexContext != null && indexContext.getIndexWriters() != null) {
+				for (final IndexWriter indexWriter : indexContext.getIndexWriters()) {
+					LOGGER.info("Optimizing and closing the index : " + indexContext.getIndexName() + ", snapshot : "
+							+ indexContext.getLastSnapshot());
+					closeIndexWriter(indexWriter);
+					LOGGER.info("Index optimized and closed : " + indexWriter + ", " + indexContext.getIndexName() + ", snapshot : "
+							+ indexContext.getLastSnapshot());
+				}
 			}
 		} finally {
 			IndexManager.class.notifyAll();
@@ -182,7 +217,7 @@ public final class IndexManager {
 			directory = indexWriter.getDirectory();
 			indexWriter.commit();
 			indexWriter.maybeMerge();
-			indexWriter.forceMerge(10, Boolean.TRUE);
+			indexWriter.forceMerge(8, Boolean.TRUE);
 		} catch (NullPointerException e) {
 			LOGGER.error("Null pointer, in the index writer : " + indexWriter);
 			if (LOGGER.isDebugEnabled()) {
@@ -350,43 +385,45 @@ public final class IndexManager {
 
 	public static long getNumDocsIndexWriter(final IndexContext<?> indexContext) {
 		long numDocs = 0;
-		IndexWriter indexWriter = indexContext.getIndexWriter();
-		if (indexWriter != null) {
-			try {
-				// Checking if the directory is locked is like checking that the writer is sill open
-				if (IndexWriter.isLocked(indexWriter.getDirectory())) {
-					numDocs += indexWriter.numDocs();
+		IndexWriter[] indexWriters = indexContext.getIndexWriters();
+		if (indexWriters != null && indexWriters.length > 0) {
+			for (final IndexWriter indexWriter : indexWriters) {
+				try {
+					// Checking if the directory is locked is like checking that the writer is sill open
+					if (IndexWriter.isLocked(indexWriter.getDirectory())) {
+						numDocs += indexWriter.numDocs();
+					}
+				} catch (AlreadyClosedException e) {
+					LOGGER.warn("Index writer is closed : " + e.getMessage());
+				} catch (Exception e) {
+					LOGGER.error("Exception reading the number of documents from the writer", e);
 				}
-			} catch (AlreadyClosedException e) {
-				LOGGER.warn("Index writer is closed : " + e.getMessage());
-			} catch (Exception e) {
-				LOGGER.error("Exception reading the number of documents from the writer", e);
-			}
-			File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
-			if (latestIndexDirectory != null) {
-				File[] serverIndexDirectories = latestIndexDirectory.listFiles();
-				if (serverIndexDirectories != null) {
-					Directory directory = null;
-					IndexReader indexReader = null;
-					for (File serverIndexDirectory : serverIndexDirectories) {
-						try {
-							directory = FSDirectory.open(serverIndexDirectory);
-							if (!IndexWriter.isLocked(directory) && IndexReader.indexExists(directory)) {
-								indexReader = IndexReader.open(directory);
-								numDocs += indexReader.numDocs();
-							}
-						} catch (Exception e) {
-							LOGGER.error("Exception opening the reader on the index : " + serverIndexDirectory, e);
-						} finally {
+				File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
+				if (latestIndexDirectory != null) {
+					File[] serverIndexDirectories = latestIndexDirectory.listFiles();
+					if (serverIndexDirectories != null) {
+						Directory directory = null;
+						IndexReader indexReader = null;
+						for (File serverIndexDirectory : serverIndexDirectories) {
 							try {
-								if (directory != null) {
-									directory.close();
-								}
-								if (indexReader != null) {
-									indexReader.close();
+								directory = FSDirectory.open(serverIndexDirectory);
+								if (!IndexWriter.isLocked(directory) && IndexReader.indexExists(directory)) {
+									indexReader = IndexReader.open(directory);
+									numDocs += indexReader.numDocs();
 								}
 							} catch (Exception e) {
-								LOGGER.error("Exception closing the readon on the index : ", e);
+								LOGGER.error("Exception opening the reader on the index : " + serverIndexDirectory, e);
+							} finally {
+								try {
+									if (directory != null) {
+										directory.close();
+									}
+									if (indexReader != null) {
+										indexReader.close();
+									}
+								} catch (Exception e) {
+									LOGGER.error("Exception closing the readon on the index : ", e);
+								}
 							}
 						}
 					}

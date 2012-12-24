@@ -50,7 +50,7 @@ public class IndexableFilesystemWikiHandlerTest extends ATest {
 		List<Future<?>> futures = indexableFilesystemWikiHandler.handle(indexContext, indexableFileSystem);
 		ThreadUtilities.waitForFutures(futures, Long.MAX_VALUE);
 
-		verify(indexContext, atLeastOnce()).getIndexWriter();
+		verify(indexContext, atLeastOnce()).getIndexWriters();
 	}
 
 }

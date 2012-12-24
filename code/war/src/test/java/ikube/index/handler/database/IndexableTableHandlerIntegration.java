@@ -99,12 +99,12 @@ public class IndexableTableHandlerIntegration extends Integration {
 		try {
 			String ip = InetAddress.getLocalHost().getHostAddress();
 			IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
-			indexContext.setIndexWriter(indexWriter);
+			indexContext.setIndexWriters(indexWriter);
 			Long minId = getMinId();
 			snapshotTable.setPredicate("where snapshot.id = " + minId);
 			List<Future<?>> threads = indexableTableHandler.handle(indexContext, snapshotTable);
 			ThreadUtilities.waitForFutures(threads, Integer.MAX_VALUE);
-			assertEquals("There must be exactly one document in the index : ", 1, indexContext.getIndexWriter().numDocs());
+			assertEquals("There must be exactly one document in the index : ", 1, indexContext.getIndexWriters()[0].numDocs());
 		} finally {
 			snapshotTable.setPredicate(predicate);
 		}
@@ -225,27 +225,27 @@ public class IndexableTableHandlerIntegration extends Integration {
 	public void handleTable() throws Exception {
 		String ip = InetAddress.getLocalHost().getHostAddress();
 		IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
-		indexContext.setIndexWriter(indexWriter);
+		indexContext.setIndexWriters(indexWriter);
 		List<Future<?>> threads = indexableTableHandler.handle(indexContext, snapshotTable);
 		ThreadUtilities.waitForFutures(threads, Integer.MAX_VALUE);
-		assertTrue("There must be some data in the index : ", indexContext.getIndexWriter().numDocs() > 0);
+		assertTrue("There must be some data in the index : ", indexContext.getIndexWriters()[0].numDocs() > 0);
 	}
 
 	@Test
 	public void handleAllColumnsTable() throws Exception {
 		String ip = InetAddress.getLocalHost().getHostAddress();
 		IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
-		indexContext.setIndexWriter(indexWriter);
+		indexContext.setIndexWriters(indexWriter);
 		List<Future<?>> futures = indexableTableHandler.handle(indexContext, snapshotTable);
 		ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
-		assertTrue("There must be some data in the index : ", indexContext.getIndexWriter().numDocs() > 0);
+		assertTrue("There must be some data in the index : ", indexContext.getIndexWriters()[0].numDocs() > 0);
 	}
 
 	@Test
 	public void handleAllColumnsAllTables() throws Exception {
 		String ip = InetAddress.getLocalHost().getHostAddress();
 		IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
-		indexContext.setIndexWriter(indexWriter);
+		indexContext.setIndexWriters(indexWriter);
 		for (Indexable<?> indexable : indexContext.getChildren()) {
 			if (!IndexableTable.class.isAssignableFrom(indexable.getClass())) {
 				continue;
@@ -260,7 +260,7 @@ public class IndexableTableHandlerIntegration extends Integration {
 				logger.error(e.getMessage());
 			}
 		}
-		assertTrue("There must be some data in the index : ", indexContext.getIndexWriter().numDocs() > 0);
+		assertTrue("There must be some data in the index : ", indexContext.getIndexWriters()[0].numDocs() > 0);
 	}
 
 	@Test
@@ -269,7 +269,7 @@ public class IndexableTableHandlerIntegration extends Integration {
 			long start = System.currentTimeMillis();
 			indexContext.setBatchSize(10);
 			indexContext.setThrottle(60000);
-			indexContext.setIndexWriter(IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), InetAddress.getLocalHost()
+			indexContext.setIndexWriters(IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), InetAddress.getLocalHost()
 					.getHostAddress()));
 			Thread thread = new Thread(new Runnable() {
 				public void run() {

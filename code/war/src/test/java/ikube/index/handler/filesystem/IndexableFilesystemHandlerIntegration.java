@@ -46,7 +46,7 @@ public class IndexableFilesystemHandlerIntegration extends Integration {
 			desktopFolder.setPath(dataIndexFolderPath);
 			String ip = InetAddress.getLocalHost().getHostAddress();
 			IndexWriter indexWriter = IndexManager.openIndexWriter(desktop, System.currentTimeMillis(), ip);
-			desktop.setIndexWriter(indexWriter);
+			desktop.setIndexWriters(indexWriter);
 			List<Future<?>> threads = indexableFilesystemHandler.handle(desktop, desktopFolder);
 			ThreadUtilities.waitForFutures(threads, Integer.MAX_VALUE);
 
@@ -57,8 +57,8 @@ public class IndexableFilesystemHandlerIntegration extends Integration {
 			logger.info("Index directory : " + indexDirectory);
 
 			// Verify that there are some documents in the index
-			logger.info("Num docs : " + desktop.getIndexWriter().numDocs());
-			assertTrue("There should be at least one document in the index : ", desktop.getIndexWriter().numDocs() > 0);
+			logger.info("Num docs : " + desktop.getIndexWriters()[0].numDocs());
+			assertTrue("There should be at least one document in the index : ", desktop.getIndexWriters()[0].numDocs() > 0);
 		} finally {
 			IndexManager.closeIndexWriter(desktop);
 			if (directory != null) {
