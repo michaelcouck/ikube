@@ -226,7 +226,7 @@ public abstract class Search {
 	 * @return the Lucene query based on the parameters passed to the sub classes, like a span query etc.
 	 * @throws ParseException
 	 */
-	protected abstract Query getQuery() throws ParseException;
+	public abstract Query getQuery() throws ParseException;
 
 	/**
 	 * Does the actual search on the Lucene index.

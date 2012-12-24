@@ -150,7 +150,7 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 	 * @param file the file to parse and index
 	 * @throws InterruptedException
 	 */
-	protected void handleFile(final IndexContext<?> indexContext, final IndexableFileSystem indexableFileSystem, final File file)
+	public void handleFile(final IndexContext<?> indexContext, final IndexableFileSystem indexableFileSystem, final File file)
 			throws InterruptedException {
 		InputStream inputStream = null;
 		try {
@@ -235,7 +235,6 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 		boolean isTrueFile = de.schlichtherle.io.File.class.isAssignableFrom(file.getClass());
 		boolean isZipAndFile = isZip && (isFile || isTrueFile);
 		if (isZipAndFile) {
-			// logger.info("Doing zip file : " + file);
 			de.schlichtherle.io.File trueZipFile = new de.schlichtherle.io.File(file);
 			File[] files = trueZipFile.listFiles();
 			if (files != null) {
@@ -276,7 +275,6 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 		}
 		boolean isNameExcluded = pattern.matcher(file.getName()).matches();
 		boolean isPathExcluded = pattern.matcher(file.getAbsolutePath()).matches();
-		// logger.info("Excluded : " + isExcluded + ", " + file.getName() + ", " + file.getAbsolutePath() + ", " + file.isDirectory());
 		return isNameExcluded || isPathExcluded;
 	}
 

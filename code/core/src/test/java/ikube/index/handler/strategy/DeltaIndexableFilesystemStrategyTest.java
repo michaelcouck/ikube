@@ -6,33 +6,28 @@ import ikube.ATest;
 import ikube.model.Indexable;
 import ikube.model.IndexableFileSystem;
 import ikube.search.Search;
+import ikube.search.SearchMulti;
 import ikube.toolkit.PerformanceTester;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
 import mockit.Mock;
-import mockit.MockClass;
+import mockit.MockUp;
 import mockit.Mockit;
 
+import org.apache.lucene.index.CorruptIndexException;
+import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.search.Query;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
 public class DeltaIndexableFilesystemStrategyTest extends ATest {
-
-	@MockClass(realClass = Search.class)
-	public static class SearchMock {
-		static ArrayList<HashMap<String, String>> RESULTS;
-
-		@Mock
-		public ArrayList<HashMap<String, String>> execute() {
-			return RESULTS;
-		}
-	}
 
 	private File file;
 	private IndexableFileSystem indexableFileSystem;
@@ -51,31 +46,50 @@ public class DeltaIndexableFilesystemStrategyTest extends ATest {
 		indexableFileSystem = Mockito.mock(IndexableFileSystem.class);
 		Indexable indexable = (Indexable<?>) indexContext;
 		Mockito.when(indexableFileSystem.getParent()).thenReturn(indexable);
+
 		Mockito.when(indexContext.getMultiSearcher()).thenReturn(multiSearcher);
 
-		Mockit.setUpMock(SearchMock.class);
+		new MockUp<Search>() {
+			@Mock
+			public ArrayList<HashMap<String, String>> execute() {
+				return new ArrayList<HashMap<String, String>>();
+			}
+		};
+		new MockUp<SearchMulti>() {
+			@Mock
+			public Query getQuery() throws ParseException {
+				return Mockito.mock(Query.class);
+			}
+		};
+		Mockit.setUpMocks();
 	}
 
 	@After
 	public void after() {
-		Mockit.tearDownMocks(SearchMock.class);
+		Mockit.tearDownMocks();
 	}
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void preProcess() {
-		SearchMock.RESULTS = new ArrayList<HashMap<String, String>>();
-		boolean mustProcess = deltaStrategy.preProcess(indexableFileSystem, file);
+	public void preProcess() throws CorruptIndexException, IOException {
+		boolean mustProcess = deltaStrategy.preProcess(indexContext, indexableFileSystem, file);
 		assertFalse(mustProcess);
 
-		SearchMock.RESULTS = new ArrayList<HashMap<String, String>>(Arrays.asList(new HashMap<String, String>()));
-		mustProcess = deltaStrategy.preProcess(indexableFileSystem, file);
+		new MockUp<Search>() {
+			@Mock
+			public ArrayList<HashMap<String, String>> execute() {
+				return new ArrayList<HashMap<String, String>>(Arrays.asList(new HashMap<String, String>()));
+			}
+		};
+		mustProcess = deltaStrategy.preProcess(indexContext, indexableFileSystem, file);
 		assertTrue(mustProcess);
+
+		Mockito.verify(indexWriter, Mockito.atLeast(1)).deleteDocuments(Mockito.any(Query.class));
 	}
 
 	@Test
 	public void postProcess() {
-		boolean mustProcess = deltaStrategy.postProcess(indexableFileSystem, file);
+		boolean mustProcess = deltaStrategy.postProcess(indexContext, indexableFileSystem, file);
 		assertTrue(mustProcess);
 	}
 
@@ -84,7 +98,7 @@ public class DeltaIndexableFilesystemStrategyTest extends ATest {
 		int iterations = 1000;
 		double perSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
 			public void execute() throws Throwable {
-				deltaStrategy.preProcess(indexableFileSystem, file);
+				deltaStrategy.preProcess(indexContext, indexableFileSystem, file);
 			}
 		}, "Delta strategy ", iterations, Boolean.TRUE);
 		assertTrue(perSecond > 100);

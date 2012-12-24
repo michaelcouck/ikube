@@ -41,7 +41,7 @@ public class SearchSingle extends Search {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected Query getQuery() throws ParseException {
+	public Query getQuery() throws ParseException {
 		return getQueryParser(searchFields[0]).parse(searchStrings[0]);
 	}
 

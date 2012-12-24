@@ -12,19 +12,19 @@ import org.slf4j.LoggerFactory;
  * @since 12.12.12
  * @version 01.00
  */
-public abstract class AStrategy<T, U> implements IStrategy<T, U> {
+public abstract class AStrategy implements IStrategy {
 
 	protected Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
 	/** The next strategy in the chain. */
-	IStrategy<T, U> nextStrategy;
+	IStrategy nextStrategy;
 
 	/**
 	 * Constructor takes the next strategy, could be null.
 	 * 
 	 * @param next the chained strategy to execute
 	 */
-	public AStrategy(final IStrategy<T, U> nextStrategy) {
+	public AStrategy(final IStrategy nextStrategy) {
 		this.nextStrategy = nextStrategy;
 	}
 
@@ -32,9 +32,9 @@ public abstract class AStrategy<T, U> implements IStrategy<T, U> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean preProcess(T t, U u) {
+	public boolean preProcess(final Object... parameters) {
 		if (nextStrategy != null) {
-			return nextStrategy.preProcess(t, u);
+			return nextStrategy.preProcess(parameters);
 		}
 		return Boolean.TRUE;
 	}
@@ -43,9 +43,9 @@ public abstract class AStrategy<T, U> implements IStrategy<T, U> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean postProcess(T t, U u) {
+	public boolean postProcess(final Object... parameters) {
 		if (nextStrategy != null) {
-			return nextStrategy.postProcess(t, u);
+			return nextStrategy.postProcess(parameters);
 		}
 		return Boolean.TRUE;
 	}

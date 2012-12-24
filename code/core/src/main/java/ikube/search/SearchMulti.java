@@ -31,7 +31,7 @@ public class SearchMulti extends SearchSingle {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected Query getQuery() throws ParseException {
+	public Query getQuery() throws ParseException {
 		return MultiFieldQueryParser.parse(IConstants.VERSION, searchStrings, searchFields, IConstants.ANALYZER);
 	}
 

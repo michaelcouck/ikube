@@ -8,26 +8,24 @@ package ikube.index.handler;
  * @since 29.11.10
  * @version 01.00
  */
-public interface IStrategy<T, U> {
+public interface IStrategy {
 
 	/**
 	 * This method will perform pre-processing logic, and return a true or false result, defining whether the caller should proceed with
 	 * it's logic or not. This response can be ignored of course, or taken as an advice.
 	 * 
-	 * @param t the context object
-	 * @param u the object that will be inspected and or processed
+	 * @param parameters the parameters that this strategy needs to perform it's logic. The caller then needs to know this
 	 * @return whether the logic of this strategy indicates that the processing of this document should continue
 	 */
-	boolean preProcess(T t, U u);
+	boolean preProcess(final Object... parameters);
 
 	/**
 	 * This method will post process the resource, and potentially return a false result indicating to the caller that the resource was not
 	 * suitable. The caller can choose to ignore this result.
 	 * 
-	 * @param t the context object
-	 * @param u the object that will be inspected and or processed
+	 * @param parameters the parameters that this strategy needs to perform it's logic. The caller then needs to know this
 	 * @return whether the logic of this strategy indicates that the processing of this document should continue
 	 */
-	boolean postProcess(T t, U u);
+	boolean postProcess(final Object... parameters);
 
 }

@@ -40,6 +40,9 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 			if (indexables != null) {
 				long startTime = System.currentTimeMillis();
 				// Start the indexing for this server
+				// TODO If this is a delta index then open the index writer on all the indexes, there could be many
+				// and there must be one index writer open on each index to be able to delete the documents that are
+				// going to be updated
 				IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, startTime, server.getAddress());
 				indexContext.setIndexWriter(indexWriter);
 				Iterator<Indexable<?>> iterator = indexables.iterator();
@@ -58,7 +61,7 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 					} finally {
 						// Close the index writer before the last action is stopped or
 						// in the ui it looks like the action has completely stopped but the
-						// index is still being optimised
+						// index is still being optimized
 						if (!iterator.hasNext()) {
 							IndexManager.closeIndexWriter(indexContext);
 							indexContext.setIndexWriter(null);

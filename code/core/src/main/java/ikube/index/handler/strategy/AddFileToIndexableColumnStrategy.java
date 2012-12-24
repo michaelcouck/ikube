@@ -3,7 +3,6 @@ package ikube.index.handler.strategy;
 import ikube.index.handler.IStrategy;
 import ikube.index.parse.IParser;
 import ikube.index.parse.ParserProvider;
-import ikube.model.IndexContext;
 import ikube.model.IndexableColumn;
 import ikube.toolkit.FileUtilities;
 
@@ -19,14 +18,15 @@ import java.io.InputStream;
  * @since 22.12.12
  * @version 01.00
  */
-public class AddFileToIndexableColumnStrategy extends AStrategy<IndexContext<?>, IndexableColumn> {
+public class AddFileToIndexableColumnStrategy extends AStrategy {
 
-	public AddFileToIndexableColumnStrategy(IStrategy<IndexContext<?>, IndexableColumn> nextStrategy) {
+	public AddFileToIndexableColumnStrategy(IStrategy nextStrategy) {
 		super(nextStrategy);
 	}
 
 	@Override
-	public boolean preProcess(IndexContext<?> indexContext, IndexableColumn indexableColumn) {
+	public boolean preProcess(final Object... parameters) {
+		IndexableColumn indexableColumn = null;
 		Object content = indexableColumn.getContent();
 		if (content != null && String.class.isAssignableFrom(content.getClass())) {
 			try {
@@ -36,12 +36,12 @@ public class AddFileToIndexableColumnStrategy extends AStrategy<IndexContext<?>,
 				LOGGER.debug(null, e);
 			}
 		}
-		return super.preProcess(indexContext, indexableColumn);
+		return super.preProcess(parameters);
 	}
 
 	@Override
-	public boolean postProcess(IndexContext<?> indexContext, IndexableColumn indexableColumn) {
-		return super.postProcess(indexContext, indexableColumn);
+	public boolean postProcess(final Object... parameters) {
+		return super.postProcess(parameters);
 	}
 
 	protected void addFileContentToColumnContent(final IndexableColumn indexableColumn, final String filePath) throws Exception {

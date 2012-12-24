@@ -28,7 +28,7 @@ public class SearchAdvancedAll extends SearchAdvanced {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected Query getQuery() throws ParseException {
+	public Query getQuery() throws ParseException {
 		searchFields = getFields(searcher);
 		return super.getQuery();
 	}

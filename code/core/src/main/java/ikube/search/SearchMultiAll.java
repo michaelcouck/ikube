@@ -36,7 +36,7 @@ public class SearchMultiAll extends SearchMulti {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected Query getQuery() throws ParseException {
+	public Query getQuery() throws ParseException {
 		searchFields = getFields(searcher);
 		String[] newSearchStrings = new String[searchFields.length];
 		int minLength = Math.min(searchStrings.length, newSearchStrings.length);

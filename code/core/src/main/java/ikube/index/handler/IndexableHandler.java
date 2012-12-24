@@ -69,22 +69,6 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IHandl
 		indexContext.getIndexWriter().addDocument(document);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public <P, Q> boolean preProcess(IStrategy<P, Q> strategy, P p, Q q) {
-		return Boolean.TRUE;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public <P, Q> boolean postProcess(IStrategy<P, Q> strategy, P p, Q q) {
-		return Boolean.TRUE;
-	}
-
 	private void addSpatialEnrichment(Indexable<?> indexable, Document document) {
 		// We look for the first latitude and longitude from the children
 		Coordinate coordinate = enrichment.getCoordinate(indexable);

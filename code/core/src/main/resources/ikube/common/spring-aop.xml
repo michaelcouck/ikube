@@ -41,4 +41,13 @@
 		</aop:aspect>
 	</aop:config>
 	
+	<bean 
+		id="ikube.index.handler.IStrategyInterceptor" 
+		class="ikube.index.handler.StrategyInterceptor" />
+	<aop:config proxy-target-class="true">
+		<aop:aspect ref="ikube.index.handler.IStrategyInterceptor">
+			<aop:around method="preProcess" pointcut="execution(* ikube.index.handler.filesystem.IndexableFilesystemHandler.handleFile(..))"  />
+		</aop:aspect>
+	</aop:config>
+	
 </beans>

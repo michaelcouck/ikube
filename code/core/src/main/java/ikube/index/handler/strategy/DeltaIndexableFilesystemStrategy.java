@@ -8,10 +8,15 @@ import ikube.search.Search;
 import ikube.search.SearchMulti;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.index.CorruptIndexException;
+import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Searcher;
 
 /**
@@ -24,9 +29,13 @@ import org.apache.lucene.search.Searcher;
  * @version 01.00
  */
 @SuppressWarnings("deprecation")
-public class DeltaIndexableFilesystemStrategy extends AStrategy<IndexableFileSystem, File> {
+public class DeltaIndexableFilesystemStrategy extends AStrategy {
+	
+	public DeltaIndexableFilesystemStrategy() {
+		this(null);
+	}
 
-	public DeltaIndexableFilesystemStrategy(final IStrategy<IndexableFileSystem, File> nextStrategy) {
+	public DeltaIndexableFilesystemStrategy(final IStrategy nextStrategy) {
 		super(nextStrategy);
 	}
 
@@ -34,28 +43,52 @@ public class DeltaIndexableFilesystemStrategy extends AStrategy<IndexableFileSys
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean preProcess(final IndexableFileSystem indexableFileSystem, final File file) {
-		Search search = getSearch(indexableFileSystem, file);
+	public boolean preProcess(final Object... parameters) {
+		IndexableFileSystem indexableFileSystem = (IndexableFileSystem) parameters[1];
+		File file = (File) parameters[2];
+		IndexContext<?> indexContext = (IndexContext<?>) indexableFileSystem.getParent();
+		Search search = getSearch(indexContext, indexableFileSystem, file);
 		ArrayList<HashMap<String, String>> results = search.execute();
 		boolean foundFile = results.size() >= 1;
-		return foundFile & (nextStrategy != null ? nextStrategy.preProcess(indexableFileSystem, file) : true);
+		if (foundFile) {
+			if (results.size() > 1) {
+				LOGGER.warn("Found multiple files with the same attributes in the index : " + file);
+			}
+			IndexWriter indexWriter = indexContext.getIndexWriter();
+			Query query;
+			try {
+				query = search.getQuery();
+				indexWriter.deleteDocuments(query);
+			} catch (ParseException e) {
+				LOGGER.warn("Parse exception deleting an out of date document from the index : " + e.getMessage());
+			} catch (CorruptIndexException e) {
+				LOGGER.error("Index corrupt, can't really recover from this : ", e);
+				throw new RuntimeException(e);
+			} catch (IOException e) {
+				LOGGER.error("IO exception to the index? Network failure, disk failure? No recovery possible I think : ", e);
+				throw new RuntimeException(e);
+			} catch (Exception e) {
+				LOGGER.error("General exception deleting an out of date document : ", e);
+			}
+		}
+		return foundFile & (nextStrategy != null ? nextStrategy.preProcess(parameters) : true);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean postProcess(final IndexableFileSystem indexableFileSystem, final File file) {
-		return nextStrategy != null ? nextStrategy.postProcess(indexableFileSystem, file) : true;
+	public boolean postProcess(final Object... parameters) {
+		return nextStrategy != null ? nextStrategy.postProcess(parameters) : true;
 	}
 
-	Search getSearch(final IndexableFileSystem indexableFileSystem, final File file) {
-		IndexContext<?> indexContext = (IndexContext<?>) indexableFileSystem.getParent();
+	@SuppressWarnings("rawtypes")
+	Search getSearch(final IndexContext indexContext, final IndexableFileSystem indexableFileSystem, final File file) {
 		Searcher searcher = indexContext.getMultiSearcher();
 		Analyzer analyzer = indexContext.getAnalyzer() != null ? indexContext.getAnalyzer() : IConstants.ANALYZER;
 		Search search = new SearchMulti(searcher, analyzer);
 		search.setFirstResult(0);
-		search.setMaxResults(1);
+		search.setMaxResults(10);
 		search.setFragment(Boolean.FALSE);
 		search.setSearchField(indexableFileSystem.getPathFieldName(), indexableFileSystem.getNameFieldName(),
 				indexableFileSystem.getLastModifiedFieldName(), indexableFileSystem.getLengthFieldName());

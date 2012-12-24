@@ -6,7 +6,6 @@ import ikube.index.IndexManager;
 import ikube.index.content.ByteOutputStream;
 import ikube.index.content.ColumnContentProvider;
 import ikube.index.content.IContentProvider;
-import ikube.index.handler.IStrategy;
 import ikube.index.handler.IndexableHandler;
 import ikube.index.parse.IParser;
 import ikube.index.parse.ParserProvider;
@@ -189,46 +188,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 		ResultSet resultSet = getResultSet(indexContext, indexableTable, dataSource, currentId);
 		while (resultSet != null) {
 			try {
-				// We have results from the table and we are already on the first result
-				List<Indexable<?>> children = indexableTable.getChildren();
-				// Set the column types and the data from the table in the column objects
-				setColumnTypesAndData(children, resultSet);
-				// Set the id field if this is a primary table
-				if (indexableTable.isPrimaryTable()) {
-					// TODO Create the strategies here and execute them
-					setIdField(indexableTable, currentDocument);
-				}
-				for (Indexable<?> indexable : indexableTable.getChildren()) {
-					// Handle all the columns, if any column refers to another column then they
-					// must be configured in the correct order so that the name column is before the
-					// binary data for the document for example
-					if (IndexableColumn.class.isAssignableFrom(indexable.getClass())) {
-						IndexableColumn indexableColumn = (IndexableColumn) indexable;
-						handleColumn(contentProvider, indexableColumn, currentDocument);
-					} else {
-						if (IndexableTable.class.isAssignableFrom(indexable.getClass())) {
-							IndexableTable childIndexableTable = (IndexableTable) indexable;
-							// Here we recursively call this method with the child tables. We pass the document
-							// to the child table for this row in the parent table so they can add their fields to the
-							// index
-							handleTable(contentProvider, indexContext, childIndexableTable, dataSource, currentDocument, currentId);
-						}
-					}
-				}
-				// Add the document to the index if this is the primary table
-				if (indexableTable.isPrimaryTable()) {
-					addDocument(indexContext, indexableTable, currentDocument);
-					// TODO Create the strategies here and execute them
-					currentDocument = new Document();
-				}
-				Thread.sleep(indexContext.getThrottle());
-				if (Thread.currentThread().isInterrupted()) {
-					throw new InterruptedException("Table indexing teminated : ");
-				}
-				if (!resultSet.next()) {
-					DatabaseUtilities.closeAll(resultSet);
-					resultSet = getResultSet(indexContext, indexableTable, dataSource, currentId);
-				}
+				handleRow(indexContext, indexableTable, dataSource, resultSet, currentDocument, contentProvider, currentId);
 			} catch (InterruptedException e) {
 				throw e;
 			} catch (Exception e) {
@@ -242,18 +202,50 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 		DatabaseUtilities.closeAll(resultSet);
 	}
 
-	@Override
-	@SuppressWarnings("hiding")
-	public <IndexContext, IndexableColumn> boolean preProcess(IStrategy<IndexContext, IndexableColumn> strategy, IndexContext indexContext,
-			IndexableColumn indexableColumn) {
-		return strategy.preProcess(indexContext, indexableColumn);
-	}
-
-	@Override
-	@SuppressWarnings("hiding")
-	public <IndexContext, IndexableColumn> boolean postProcess(IStrategy<IndexContext, IndexableColumn> strategy,
-			IndexContext indexContext, IndexableColumn indexableColumn) {
-		return strategy.postProcess(indexContext, indexableColumn);
+	@SuppressWarnings("rawtypes")
+	public void handleRow(final IndexContext indexContext, final IndexableTable indexableTable, final DataSource dataSource,
+			ResultSet resultSet, Document currentDocument, final IContentProvider<IndexableColumn> contentProvider,
+			final AtomicLong currentId) throws Exception {
+		// We have results from the table and we are already on the first result
+		List<Indexable<?>> children = indexableTable.getChildren();
+		// Set the column types and the data from the table in the column objects
+		setColumnTypesAndData(children, resultSet);
+		// Set the id field if this is a primary table
+		if (indexableTable.isPrimaryTable()) {
+			// TODO Create the strategies here and execute them
+			setIdField(indexableTable, currentDocument);
+		}
+		for (Indexable<?> indexable : indexableTable.getChildren()) {
+			// Handle all the columns, if any column refers to another column then they
+			// must be configured in the correct order so that the name column is before the
+			// binary data for the document for example
+			if (IndexableColumn.class.isAssignableFrom(indexable.getClass())) {
+				IndexableColumn indexableColumn = (IndexableColumn) indexable;
+				handleColumn(contentProvider, indexableColumn, currentDocument);
+			} else {
+				if (IndexableTable.class.isAssignableFrom(indexable.getClass())) {
+					IndexableTable childIndexableTable = (IndexableTable) indexable;
+					// Here we recursively call this method with the child tables. We pass the document
+					// to the child table for this row in the parent table so they can add their fields to the
+					// index
+					handleTable(contentProvider, indexContext, childIndexableTable, dataSource, currentDocument, currentId);
+				}
+			}
+		}
+		// Add the document to the index if this is the primary table
+		if (indexableTable.isPrimaryTable()) {
+			addDocument(indexContext, indexableTable, currentDocument);
+			// TODO Create the strategies here and execute them
+			currentDocument = new Document();
+		}
+		Thread.sleep(indexContext.getThrottle());
+		if (Thread.currentThread().isInterrupted()) {
+			throw new InterruptedException("Table indexing teminated : ");
+		}
+		if (!resultSet.next()) {
+			DatabaseUtilities.closeAll(resultSet);
+			resultSet = getResultSet(indexContext, indexableTable, dataSource, currentId);
+		}
 	}
 
 	private ResultSet getResultSet(final IndexContext<?> indexContext, final IndexableTable indexableTable, final DataSource dataSource,

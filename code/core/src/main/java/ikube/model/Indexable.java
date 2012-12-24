@@ -1,5 +1,7 @@
 package ikube.model;
 
+import ikube.index.handler.IStrategy;
+
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -11,6 +13,7 @@ import javax.persistence.InheritanceType;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.Transient;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 
@@ -22,7 +25,11 @@ import javax.validation.constraints.Min;
 @Entity()
 @Inheritance(strategy = InheritanceType.JOINED)
 public class Indexable<E> extends Persistable {
-	
+
+	/** These strategies will be processed before processing the indexable. */
+	@Transient
+	private transient List<IStrategy> strategies;
+
 	@Column
 	@Attribute(field = false, description = "The name of this indexable")
 	private String name;
@@ -44,7 +51,7 @@ public class Indexable<E> extends Persistable {
 	@Column
 	@Attribute(field = false, description = "Whether this field should be vectored in the index")
 	private boolean vectored = Boolean.FALSE;
-	
+
 	@Column
 	@Min(value = 1)
 	@Max(value = 1000000)
@@ -119,5 +126,13 @@ public class Indexable<E> extends Persistable {
 	public void setMaxExceptions(long maxExceptions) {
 		this.maxExceptions = maxExceptions;
 	}
-	
+
+	public List<IStrategy> getStrategies() {
+		return strategies;
+	}
+
+	public void setStrategies(List<IStrategy> strategies) {
+		this.strategies = strategies;
+	}
+
 }

@@ -58,7 +58,7 @@ public class SearchAdvanced extends Search {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected Query getQuery() throws ParseException {
+	public Query getQuery() throws ParseException {
 		// The first in the array of search strings all of the words
 		StringBuilder stringBuilder = new StringBuilder();
 		if (searchStrings.length > 0 && !StringUtils.isEmpty(searchStrings[0])) {
