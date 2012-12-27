@@ -52,7 +52,6 @@ public class IndexSizeListenerTest extends ATest {
 		File indexDirectory = FileUtilities.getFile(indexDirectoryPath + IConstants.SEP + "127.0.0.1.8000", Boolean.TRUE);
 		Mockito.when(fsDirectory.getDirectory()).thenReturn(indexDirectory);
 
-		Deencapsulation.setField(indexSizeListener, clusterManager);
 		Deencapsulation.setField(indexSizeListener, monitorService);
 		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
 	}
@@ -71,7 +70,9 @@ public class IndexSizeListenerTest extends ATest {
 		// We never call this because the mock doesn't really get the new index writer
 		// so the logic never calls the close on the index writer
 		Mockito.verify(indexWriter, Mockito.never()).close(Boolean.TRUE);
-		Mockito.verify(indexContext, Mockito.atLeastOnce()).setIndexWriters(Mockito.any(IndexWriter.class));
+		IndexWriter[] indexWriters = indexContext.getIndexWriters();
+		logger.info("Index writers : " + indexWriters.length);
+		assertTrue(indexWriters.length == 1);
 	}
 
 	@Test

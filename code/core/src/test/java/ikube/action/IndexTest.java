@@ -23,6 +23,7 @@ import java.io.File;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import mockit.Deencapsulation;
@@ -58,7 +59,9 @@ public class IndexTest extends ATest {
 		when(index.getAction(any(Server.class), anyLong())).thenReturn(action);
 		when(index.execute(any(IndexContext.class))).thenCallRealMethod();
 		when(index.executeInternal(any(IndexContext.class))).thenCallRealMethod();
+		when(index.executeIndexables(any(IndexContext.class), any(Iterator.class))).thenCallRealMethod();
 		when(index.getHandler(any(Indexable.class))).thenReturn(handler);
+		
 		Deencapsulation.setField(index, logger);
 		Deencapsulation.setField(index, clusterManager);
 	}

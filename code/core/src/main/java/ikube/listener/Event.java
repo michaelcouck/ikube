@@ -16,6 +16,7 @@ import org.apache.commons.lang.builder.ToStringStyle;
 public class Event implements Serializable {
 
 	public static final String TIMER = "timer";
+	public static final String TIMER_DELTA = "timer-delta";
 	public static final String PERFORMANCE = "performance";
 	public static final String SERVER_RELEASE = "serverRelease";
 

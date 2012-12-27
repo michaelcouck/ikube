@@ -186,7 +186,7 @@ public class IndexManagerTest extends ATest {
 			when(fsDirectory.makeLock(anyString())).thenReturn(lock);
 			when(indexWriter.numDocs()).thenReturn(Integer.MAX_VALUE);
 			when(indexWriter.getDirectory()).thenReturn(fsDirectory);
-			when(indexContext.getIndexWriters()).thenReturn(new IndexWriter[] {indexWriter});
+			when(indexContext.getIndexWriters()).thenReturn(new IndexWriter[] { indexWriter });
 			logger.info("Index writer test : " + indexWriter);
 
 			long numDocs = IndexManager.getNumDocsIndexWriter(indexContext);
@@ -231,12 +231,15 @@ public class IndexManagerTest extends ATest {
 
 	@Test
 	public void openIndexWriterDelta() throws Exception {
+		IndexWriter[] indexWriters = IndexManager.openIndexWriterDelta(indexContext);
+		assertEquals("There should be one new writers open : ", 1, indexWriters.length);
+
 		// First create several indexes in the same directory
 		long time = System.currentTimeMillis();
 		String[] ips = { "127.0.0.1", "127.0.0.2", "127.0.0.3" };
 		String[] strings = { "The ", "quick ", "brown ", "fox ", "jumped" };
 		createIndexes(indexContext, time, ips, strings);
-		IndexWriter[] indexWriters = IndexManager.openIndexWriterDelta(indexContext);
+		indexWriters = IndexManager.openIndexWriterDelta(indexContext);
 		for (final IndexWriter indexWriter : indexWriters) {
 			IndexManager.closeIndexWriter(indexWriter);
 		}

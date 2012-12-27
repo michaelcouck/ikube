@@ -66,7 +66,7 @@ public class SerializationUtilitiesTest extends ATest {
 		boolean containsIndex = Boolean.FALSE;
 		for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
 			String name = propertyDescriptor.getName();
-			if (name != null && name.equals("indexWriter")) {
+			if (name != null && name.equals("indexWriters")) {
 				containsIndex = Boolean.TRUE;
 			}
 		}

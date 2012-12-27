@@ -77,12 +77,12 @@ public final class IndexManager {
 		String indexDirectoryPath = getIndexDirectoryPath(indexContext);
 		// Find all the indexes in the latest index directory and open a writer on each one
 		File latestIndexDirectory = getLatestIndexDirectory(indexDirectoryPath);
-		File[] latestServerIndexDirectories = latestIndexDirectory.listFiles();
 		IndexWriter[] indexWriters = null;
-		if (latestServerIndexDirectories == null || latestServerIndexDirectories.length == 0) {
+		if (latestIndexDirectory == null || latestIndexDirectory.listFiles() == null || latestIndexDirectory.listFiles().length == 0) {
 			// This means that we tried to do a delta index but there was no index, i.e. we still have to index from the start
 			indexWriters = new IndexWriter[] { openIndexWriter(indexContext, System.currentTimeMillis(), ip) };
 		} else {
+			File[] latestServerIndexDirectories = latestIndexDirectory.listFiles();
 			indexWriters = new IndexWriter[latestServerIndexDirectories.length];
 			// Open an index writer on each one of the indexes in the set so we can delete the documents and update them
 			for (int i = 0; i < latestServerIndexDirectories.length; i++) {

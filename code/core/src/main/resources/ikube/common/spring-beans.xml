@@ -234,6 +234,11 @@
 			property:period="${period}" />
 		<bean
 			class="ikube.listener.Schedule"
+			property:type="timer-delta"
+			property:delay="${delay-delta}"
+			property:period="${period-delta}" />
+		<bean
+			class="ikube.listener.Schedule"
 			property:type="performance"
 			property:delay="10000"
 			property:period="60000" />

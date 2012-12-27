@@ -33,6 +33,7 @@
 		property:maxFieldLength="${max.field.length}"
 		property:maxReadLength="${max.read.length}"
 		property:throttle="${throttle}"
+		property:delta="true"
 		property:indexDirectoryPath="${index.directory.path}"
 		property:indexDirectoryPathBackup="${index.directory.path.backup}"
 		property:children-ref="desktopFolders" />
@@ -60,6 +61,14 @@
 		property:excludedPattern="${files.excluded.pattern}"
 		property:lastModifiedFieldName="lastmodified"
 		property:batchSize="${file.batch.size}"
-		property:maxReadLength="${file.max.read.length}" />
+		property:maxReadLength="${file.max.read.length}" 
+		property:strategies-ref="desktopStrategies" />
+	
+	<bean 
+	    id="ikube.index.handler.strategy.DeltaIndexableFilesystemStrategyDesktop"
+	    class="ikube.index.handler.strategy.DeltaIndexableFilesystemStrategy" />
+	<util:list id="desktopStrategies">
+	    <ref local="ikube.index.handler.strategy.DeltaIndexableFilesystemStrategyDesktop" />
+	</util:list>
 	
 </beans>

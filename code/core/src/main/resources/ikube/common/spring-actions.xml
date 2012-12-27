@@ -38,16 +38,16 @@
 		<ref bean="ikube.action.Reset" />
 		<ref bean="ikube.action.Restore" />
 		<ref bean="ikube.action.Index"  />
+		<ref bean="ikube.action.IndexDelta"  />
 		<ref bean="ikube.action.Open"  />
 		<ref bean="ikube.action.Delete" />
 		<ref bean="ikube.action.Clean" />
 		<ref bean="ikube.action.Backup" />
-		<!-- <ref bean="ikube.action.DiskFull" /> -->
+		<ref bean="ikube.action.DiskFull" />
 		<ref bean="ikube.action.Validator" />
 		<ref bean="ikube.action.Prune" />
 	</util:list>
 
-	<!-- !IsThisServerWorking &#38;&#38; -->
 	<bean 
 		id="ikube.action.Reset" 
 		class="ikube.action.Reset" 
@@ -55,8 +55,6 @@
 			!AnyServersWorkingThisIndex">
 		<property name="rules">
 			<util:list>
-				<!-- <ref local="ikube.action.rule.ChainedRule" /> -->
-				<!-- <ref local="ikube.action.rule.IsThisServerWorking" /> -->
 				<ref local="ikube.action.rule.AnyServersWorkingThisIndex" />
 			</util:list>
 		</property>
@@ -69,7 +67,6 @@
 		<property name="rules">
 			<util:list>
 				<ref local="ikube.action.rule.IsThisServerWorking" />
-				<!-- <ref local="ikube.action.rule.AnyServersWorkingThisIndex" /> -->
 			</util:list>
 		</property>
 	</bean>
@@ -92,12 +89,6 @@
 			</util:list>
 		</property>
 	</bean>
-	<!-- 
-		!IsThisServerWorking &#38;&#38;
-		!AnyServersWorkingThisIndex &#38;&#38; 
-		  (IsNewIndexCreated &#38;&#38; !IsIndexCurrent) ||
-		  (AreIndexesCreated &#38;&#38; AreUnopenedIndexes) 
-	-->
 	<bean 
 		id="ikube.action.Close" 
 		class="ikube.action.Close" 
@@ -106,12 +97,9 @@
 		<property name="rules">
 			<util:list>
 				<ref local="ikube.action.rule.IsIndexCorrupt" />
-				<!-- <ref local="ikube.action.rule.IsNewIndexCreated" />
-				<ref local="ikube.action.rule.AreUnopenedIndexes" /> -->
 			</util:list>
 		</property>
 	</bean>
-	<!-- !IsThisServerWorking &#38;&#38; -->
 	<bean 
 		id="ikube.action.Open" 
 		class="ikube.action.Open" 
@@ -125,7 +113,6 @@
 			    AreUnopenedIndexes))">
 		<property name="rules">
 			<util:list>
-				<!-- <ref local="ikube.action.rule.IsThisServerWorking" /> -->
 				<ref local="ikube.action.rule.IsNewIndexCreated" />
 				<ref local="ikube.action.rule.AreIndexesCreated" />
 				<ref local="ikube.action.rule.AreUnopenedIndexes" />
@@ -135,10 +122,6 @@
 			</util:list>
 		</property>
 	</bean>
-	<!-- 
-		!AnyServersWorkingThisIndex &#38;&#38;
-		!IsThisServerWorking &#38;&#38; 
-	-->
 	<bean 
 		id="ikube.action.Index" 
 		class="ikube.action.Index" 
@@ -161,6 +144,17 @@
 				<ref local="ikube.action.rule.AreOtherServers" />
 				<ref local="ikube.action.rule.TooManyActionsRule" />
 				<ref local="ikube.action.rule.AnyServersIdle" />
+			</util:list>
+		</property>
+	</bean>
+	<bean 
+		id="ikube.action.IndexDelta" 
+		class="ikube.action.IndexDelta" 
+		property:ruleExpression="
+			!AnyServersWorkingThisIndex">
+		<property name="rules">
+			<util:list>
+				<ref local="ikube.action.rule.AnyServersWorkingThisIndex" />
 			</util:list>
 		</property>
 	</bean>
@@ -205,18 +199,17 @@
 			</util:list>
 		</property>
 	</bean>
-	<!-- <bean 
+	<bean 
 		id="ikube.action.DiskFull" 
 		class="ikube.action.DiskFull" 
 		property:ruleExpression="
-			!IsThisServerWorking || 
-			IsThisServerWorking">
+			AnyServersWorking">
 		<property name="rules">
 			<util:list>
-				<ref local="ikube.action.rule.IsThisServerWorking" />
+				<ref local="ikube.action.rule.AnyServersWorking" />
 			</util:list>
 		</property>
-	</bean> -->
+	</bean>
 	<bean 
 		id="ikube.action.Validator" 
 		class="ikube.action.Validator" 

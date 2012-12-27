@@ -49,31 +49,42 @@ public class IndexEngine implements IIndexEngine, IListener {
 	@Override
 	@SuppressWarnings("rawtypes")
 	public void handleNotification(final Event event) {
-		if (!Event.TIMER.equals(event.getType())) {
-			return;
-		}
 		Random random = new Random();
-		Collection<IndexContext> indexContexts = monitorService.getIndexContexts().values();
-		for (IndexContext<?> indexContext : indexContexts) {
-			if (actions == null || actions.isEmpty()) {
-				LOGGER.warn("No actions configured for index engine : " + indexContext.getIndexName());
-				continue;
-			}
-			LOGGER.debug("Start working : " + indexContext.getIndexName());
-			for (IAction<IndexContext<?>, Boolean> action : actions) {
-				try {
-					action.execute(indexContext);
-					ThreadUtilities.sleep(Math.abs(random.nextLong()) % 3000l);
-				} catch (InterruptedException e) {
-					LOGGER.warn("Sleep interrupted : " + action + ", " + e.getMessage());
-				} catch (Exception e) {
-					LOGGER.error("Exception executing action : " + action, e);
+		if (Event.TIMER.equals(event.getType())) {
+			Collection<IndexContext> indexContexts = monitorService.getIndexContexts().values();
+			for (IndexContext<?> indexContext : indexContexts) {
+				if (indexContext.isDelta()) {
+					continue;
 				}
+				processIndexContext(indexContext, random);
 			}
-			LOGGER.debug("Finished working : " + indexContext.getIndexName());
+		} else if (Event.TIMER_DELTA.equals(event.getType())) {
+			Collection<IndexContext> indexContexts = monitorService.getIndexContexts().values();
+			for (IndexContext<?> indexContext : indexContexts) {
+				if (!indexContext.isDelta()) {
+					continue;
+				}
+				processIndexContext(indexContext, random);
+			}
 		}
 	}
-	
+
+	@SuppressWarnings("rawtypes")
+	private void processIndexContext(final IndexContext indexContext, final Random random) {
+		LOGGER.debug("Start working : " + indexContext.getIndexName());
+		for (IAction<IndexContext<?>, Boolean> action : actions) {
+			try {
+				action.execute(indexContext);
+				ThreadUtilities.sleep(Math.abs(random.nextLong()) % 3000l);
+			} catch (InterruptedException e) {
+				LOGGER.warn("Sleep interrupted : " + action + ", " + e.getMessage());
+			} catch (Exception e) {
+				LOGGER.error("Exception executing action : " + action, e);
+			}
+		}
+		LOGGER.debug("Finished working : " + indexContext.getIndexName());
+	}
+
 	public void destroy() {
 		actions.clear();
 	}

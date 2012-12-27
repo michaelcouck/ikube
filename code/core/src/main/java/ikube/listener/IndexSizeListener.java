@@ -73,6 +73,7 @@ public class IndexSizeListener implements IListener {
 					System.arraycopy(indexWriters, 0, newIndexWriters, 0, indexWriters.length);
 					newIndexWriters[newIndexWriters.length - 1] = newIndexWriter;
 					LOGGER.info("Switched to the new index writer : " + indexContext);
+					indexContext.setIndexWriters(newIndexWriters);
 					// We don't close the index writers here any more because they can still be used in the delta indexing. And
 					// we close all the indexes in the context in the index manager at the end of the job
 				} catch (Exception e) {
