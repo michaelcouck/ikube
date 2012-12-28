@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
 import java.util.concurrent.CancellationException;
@@ -62,6 +63,7 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 						do {
 							for (File file : files) {
 								try {
+									logger.info("Doing file : " + file);
 									boolean handledZip = handleZip(indexContext, indexableFileSystem, file, pattern);
 									if (handledZip) {
 										// If this file was a zip and was already handled then just continue
@@ -234,15 +236,18 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 		boolean isZip = IConstants.ZIP_JAR_WAR_EAR_PATTERN.matcher(file.getName()).matches();
 		boolean isTrueFile = de.schlichtherle.io.File.class.isAssignableFrom(file.getClass());
 		boolean isZipAndFile = isZip && (isFile || isTrueFile);
+		logger.info("Is zip and file : " + isZipAndFile);
 		if (isZipAndFile) {
 			de.schlichtherle.io.File trueZipFile = new de.schlichtherle.io.File(file);
 			File[] files = trueZipFile.listFiles();
+			logger.info("Compressed files : " + Arrays.deepToString(files));
 			if (files != null) {
 				for (File innerFile : files) {
 					try {
 						if (isExcluded(innerFile, pattern)) {
 							continue;
 						}
+						logger.info("Indexing compressed file : " + innerFile);
 						processFile(indexContext, indexableFileSystem, innerFile);
 						handleZip(indexContext, indexableFileSystem, innerFile, pattern);
 					} catch (Exception e) {
@@ -275,7 +280,9 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 		}
 		boolean isNameExcluded = pattern.matcher(file.getName()).matches();
 		boolean isPathExcluded = pattern.matcher(file.getAbsolutePath()).matches();
-		return isNameExcluded || isPathExcluded;
+		boolean isExcluded = isNameExcluded || isPathExcluded;
+		logger.info("Is excluded : " + isExcluded);
+		return isExcluded;
 	}
 
 	protected synchronized Pattern getPattern(final String pattern) {

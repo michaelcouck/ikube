@@ -36,12 +36,22 @@ public class IndexableFileSystemHandlerTest extends ATest {
 
 	@Test
 	public void handle() throws Exception {
-		// ThreadUtilities.destroy();
 		IndexableFileSystem indexableFileSystem = new IndexableFileSystem();
 		indexableFileSystem.setPath("./");
 		List<Future<?>> futures = indexableFileSystemHandler.handle(indexContext, indexableFileSystem);
 		ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
 		assertTrue("There should be some nulls in the futures as the executer is whut down : ", futures.size() > 0);
+	}
+
+	@Test
+	public void handleLargeGzip() throws Exception {
+		new ThreadUtilities().initialize();
+		IndexableFileSystem indexableFileSystem = new IndexableFileSystem();
+		indexableFileSystem.setUnpackZips(Boolean.TRUE);
+		indexableFileSystem.setPath("C:/Temp/compressed");
+		List<Future<?>> futures = indexableFileSystemHandler.handle(indexContext, indexableFileSystem);
+		ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
+		new ThreadUtilities().destroy();
 	}
 
 }
