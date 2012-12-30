@@ -57,7 +57,6 @@ public class DiskFull extends Action<IndexContext<?>, Boolean> {
 				if (drive != null) {
 					Long freeSpaceKilobytes = FileSystemUtils.freeSpaceKb(drive);
 					Long freeSpaceMegabytes = freeSpaceKilobytes / 1000;
-					logger.info("Free space : " + freeSpaceMegabytes + ", " + MINIMUM_FREE_SPACE);
 					String subject = "No more disk space on server!";
 					if (freeSpaceMegabytes < MINIMUM_FREE_SPACE) {
 						// We need to exit this server as the disk will crash

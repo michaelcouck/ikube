@@ -13,6 +13,7 @@ import org.apache.lucene.search.MultiSearcher;
  * @since 12.02.2011
  * @version 01.00
  */
+@SuppressWarnings("deprecation")
 public class AreSearchablesInitialised implements IRule<IndexContext<?>> {
 
 	private static final transient Logger LOGGER = Logger.getLogger(AreSearchablesInitialised.class);

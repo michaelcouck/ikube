@@ -371,5 +371,5 @@
 		class="ikube.index.handler.filesystem.IndexableFilesystemWikiHandler"
 		property:threads="${filesystem.handler.threads}"
 		property:indexableClass="ikube.model.IndexableFileSystemWiki" />
-
+	
 </beans>

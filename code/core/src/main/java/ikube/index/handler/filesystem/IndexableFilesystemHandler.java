@@ -15,22 +15,27 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.Future;
 import java.util.regex.Pattern;
+import java.util.zip.GZIPInputStream;
 
-import org.apache.commons.io.input.ReaderInputStream;
+import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.apache.commons.compress.archivers.ArchiveException;
+import org.apache.commons.compress.archivers.ArchiveInputStream;
+import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
 
-import de.schlichtherle.io.FileReader;
+import de.schlichtherle.truezip.file.TFile;
+import de.schlichtherle.truezip.file.TFileInputStream;
 
 /**
  * This class indexes a file share on the network. It is multi threaded but not cluster load balanced.
@@ -51,46 +56,78 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 	@Override
 	public List<Future<?>> handle(final IndexContext<?> indexContext, final IndexableFileSystem indexable) throws Exception {
 		List<Future<?>> futures = new ArrayList<Future<?>>();
-		try {
-			final Stack<File> directories = new Stack<File>();
-			directories.push(new File(indexable.getPath()));
-			final Pattern pattern = getPattern(indexable.getExcludedPattern());
-			for (int i = 0; i < getThreads(); i++) {
-				final IndexableFileSystem indexableFileSystem = (IndexableFileSystem) SerializationUtilities.clone(indexable);
-				Runnable runnable = new Runnable() {
-					public void run() {
-						List<File> files = getBatch(indexableFileSystem, directories, pattern);
-						do {
-							for (File file : files) {
-								try {
-									logger.info("Doing file : " + file);
-									boolean handledZip = handleZip(indexContext, indexableFileSystem, file, pattern);
-									if (handledZip) {
-										// If this file was a zip and was already handled then just continue
-										continue;
-									}
-									handleFile(indexContext, indexableFileSystem, file);
-								} catch (InterruptedException e) {
-									logger.error("Thread terminated, and indexing stopped : ", e);
-									throw new RuntimeException(e);
-								} catch (Exception e) {
-									logger.error("Exception handling file : " + file, e);
-								}
-							}
-							files = getBatch(indexableFileSystem, directories, pattern);
-							if (files.size() == 0) {
-								break;
-							}
-						} while (true);
-					}
-				};
-				Future<?> future = ThreadUtilities.submit(indexContext.getIndexName(), runnable);
-				futures.add(future);
-			}
-		} catch (Exception e) {
-			logger.error("Exception executing the file system indexer threads : ", e);
+
+		final Stack<File> directories = new Stack<File>();
+		directories.push(new File(indexable.getPath()));
+		final Pattern pattern = getPattern(indexable.getExcludedPattern());
+		for (int i = 0; i < getThreads(); i++) {
+			final IndexableFileSystem indexableFileSystem = (IndexableFileSystem) SerializationUtilities.clone(indexable);
+			Runnable runnable = new Runnable() {
+				public void run() {
+					handleFiles(indexContext, indexableFileSystem, directories, pattern);
+				}
+			};
+			Future<?> future = ThreadUtilities.submit(indexContext.getIndexName(), runnable);
+			futures.add(future);
 		}
+
 		return futures;
+	}
+
+	void handleFiles(final IndexContext<?> indexContext, final IndexableFileSystem indexableFileSystem, final Stack<File> directories,
+			final Pattern pattern) {
+		List<File> files = getBatch(indexableFileSystem, directories, pattern);
+		do {
+			for (File file : files) {
+				try {
+					// logger.error("Doing file : " + file);
+					if (handleZip(indexContext, indexableFileSystem, file, pattern)) {
+						// If this file was a zip and was already handled then just continue
+						continue;
+					}
+					handleFile(indexContext, indexableFileSystem, file);
+				} catch (CancellationException e) {
+					logger.error("Thread terminated, and indexing stopped : ", e);
+					throw new RuntimeException(e);
+				} catch (InterruptedException e) {
+					logger.error("Thread terminated, and indexing stopped : ", e);
+					throw new RuntimeException(e);
+				} catch (Exception e) {
+					logger.error("Exception handling file : " + file, e);
+				}
+			}
+			files = getBatch(indexableFileSystem, directories, pattern);
+		} while (files.size() > 0 && !Thread.currentThread().isInterrupted());
+	}
+
+	/**
+	 * As the name suggests this method accesses a file, and hopefully indexes the data adding it to the index.
+	 * 
+	 * @param indexContext the context for this index
+	 * @param indexableFileSystem the file system object for storing data during the indexing
+	 * @param file the file to parse and index
+	 * @throws InterruptedException
+	 */
+	public void handleFile(final IndexContext<?> indexContext, final IndexableFileSystem indexableFileSystem, final File file)
+			throws InterruptedException {
+		// logger.error("Doing file : " + file);
+		InputStream inputStream = null;
+		try {
+			Document document = new Document();
+			inputStream = new FileInputStream(file);
+			addDocumentToIndex(indexContext, indexableFileSystem, file, inputStream, document);
+		} catch (InterruptedException e) {
+			// This means that the scheduler has been forcefully destroyed
+			throw e;
+		} catch (CancellationException e) {
+			// This means that the scheduler has been forcefully destroyed
+			throw e;
+		} catch (Exception e) {
+			logger.error("Exception occured while trying to index the file " + file.getAbsolutePath() + ", " + e.getMessage());
+			logger.debug(null, e);
+		} finally {
+			FileUtilities.close(inputStream);
+		}
 	}
 
 	protected List<File> getBatch(final IndexableFileSystem indexableFileSystem, final Stack<File> directories, final Pattern pattern) {
@@ -128,48 +165,25 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 
 	protected void processFile(final IndexContext<?> indexContext, final IndexableFileSystem indexableFileSystem, final File file)
 			throws Exception {
-		FileReader fileReader = null;
-		try {
-			if (file.isDirectory()) {
-				for (File innerFile : file.listFiles()) {
-					processFile(indexContext, indexableFileSystem, innerFile);
-				}
-			} else {
-				fileReader = new FileReader((de.schlichtherle.io.File) file);
-				InputStream inputStream = new ReaderInputStream(fileReader);
-				addDocumentToIndex(indexContext, indexableFileSystem, file, inputStream, new Document());
+		if (file.isDirectory()) {
+			for (File innerFile : file.listFiles()) {
+				processFile(indexContext, indexableFileSystem, innerFile);
 			}
-		} finally {
-			FileUtilities.close(fileReader);
-		}
-	}
-
-	/**
-	 * As the name suggests this method accesses a file, and hopefully indexes the data adding it to the index.
-	 * 
-	 * @param indexContext the context for this index
-	 * @param indexableFileSystem the file system object for storing data during the indexing
-	 * @param file the file to parse and index
-	 * @throws InterruptedException
-	 */
-	public void handleFile(final IndexContext<?> indexContext, final IndexableFileSystem indexableFileSystem, final File file)
-			throws InterruptedException {
-		InputStream inputStream = null;
-		try {
-			Document document = new Document();
-			inputStream = new FileInputStream(file);
-			addDocumentToIndex(indexContext, indexableFileSystem, file, inputStream, document);
-		} catch (InterruptedException e) {
-			// This means that the scheduler has been forcefully destroyed
-			throw e;
-		} catch (CancellationException e) {
-			// This means that the scheduler has been forcefully destroyed
-			throw e;
-		} catch (Exception e) {
-			logger.error("Exception occured while trying to index the file " + file.getAbsolutePath() + ", " + e.getMessage());
-			logger.debug(null, e);
-		} finally {
-			FileUtilities.close(inputStream);
+		} else {
+			InputStream inputStream = null;
+			try {
+				if (TFile.class.isAssignableFrom(file.getClass())) {
+					inputStream = new TFileInputStream(file);
+				} else {
+					inputStream = new FileInputStream(file);
+				}
+				addDocumentToIndex(indexContext, indexableFileSystem, file, inputStream, new Document());
+			} catch (Exception e) {
+				logger.error("Exception occured while trying to index the file " + file.getAbsolutePath() + ", " + e.getMessage());
+				logger.debug(null, e);
+			} finally {
+				FileUtilities.close(inputStream);
+			}
 		}
 	}
 
@@ -204,12 +218,8 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 			IndexManager.addStringField(modifiedFieldName, Long.toString(file.lastModified()), document, Store.YES, analyzed, termVector);
 			IndexManager.addStringField(lengthFieldName, Long.toString(file.length()), document, Store.YES, analyzed, termVector);
 			IndexManager.addStringField(contentFieldName, parsedContent, document, store, analyzed, termVector);
-			// logger.info("Adding document : " + document);
 			addDocument(indexContext, indexableFileSystem, document);
 
-			if (Thread.currentThread().isInterrupted()) {
-				throw new InterruptedException("Interrupted...");
-			}
 			Thread.sleep(indexContext.getThrottle());
 		} finally {
 			FileUtilities.close(byteInputStream);
@@ -234,29 +244,37 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 		}
 		boolean isFile = file.isFile();
 		boolean isZip = IConstants.ZIP_JAR_WAR_EAR_PATTERN.matcher(file.getName()).matches();
-		boolean isTrueFile = de.schlichtherle.io.File.class.isAssignableFrom(file.getClass());
+		boolean isTrueFile = TFile.class.isAssignableFrom(file.getClass());
 		boolean isZipAndFile = isZip && (isFile || isTrueFile);
-		logger.info("Is zip and file : " + isZipAndFile);
+		// logger.error("Is zip and file : " + isZipAndFile);
 		if (isZipAndFile) {
-			de.schlichtherle.io.File trueZipFile = new de.schlichtherle.io.File(file);
-			File[] files = trueZipFile.listFiles();
-			logger.info("Compressed files : " + Arrays.deepToString(files));
+			TFile trueZipFile = new TFile(file);
+			TFile[] files = trueZipFile.listFiles();
 			if (files != null) {
 				for (File innerFile : files) {
 					try {
 						if (isExcluded(innerFile, pattern)) {
 							continue;
 						}
-						logger.info("Indexing compressed file : " + innerFile);
 						processFile(indexContext, indexableFileSystem, innerFile);
 						handleZip(indexContext, indexableFileSystem, innerFile, pattern);
-					} catch (Exception e) {
+					} catch (IOException e) {
 						logger.error("Exception reading inner file : " + innerFile, e);
 					}
 				}
 			}
 		}
 		return isZipAndFile;
+	}
+
+	@SuppressWarnings("unused")
+	private boolean handleGZip(final String filePath) throws ArchiveException, IOException {
+		InputStream is = new FileInputStream(filePath);
+		ArchiveInputStream input = new ArchiveStreamFactory().createArchiveInputStream("tar", new GZIPInputStream(is));
+		ArchiveEntry entry;
+		while ((entry = input.getNextEntry()) != null) {
+		}
+		return Boolean.TRUE;
 	}
 
 	/**
@@ -278,10 +296,13 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 		if (file.getName() == null || file.getAbsolutePath() == null) {
 			return Boolean.TRUE;
 		}
-		boolean isNameExcluded = pattern.matcher(file.getName()).matches();
-		boolean isPathExcluded = pattern.matcher(file.getAbsolutePath()).matches();
+		String name = file.getName();
+		String path = file.getAbsolutePath();
+		boolean isNameExcluded = pattern.matcher(name).matches();
+		boolean isPathExcluded = pattern.matcher(path).matches();
 		boolean isExcluded = isNameExcluded || isPathExcluded;
-		logger.info("Is excluded : " + isExcluded);
+		// logger.error("Excluded : " + isExcluded + ", " + isNameExcluded + ", " + isPathExcluded + ", " + name + ", " + path + ", "
+		// + pattern);
 		return isExcluded;
 	}
 

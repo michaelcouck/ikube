@@ -76,10 +76,18 @@
 									${project.version} - ${maven.build.timestamp}
 								</echo>
 								<copy todir="ikube" failonerror="true">
-									<fileset dir="../core/src/main/resources/ikube" />
+									<fileset dir="../core/src/main/resources/ikube">
+									    <include name="spring.xml" />
+									</fileset>
 								</copy>
-								<copy todir="../../ikube" failonerror="true">
-									<fileset dir="../core/src/main/resources/ikube" />
+								<copy todir="ikube/common" failonerror="true">
+									<fileset dir="../core/src/main/resources/ikube/common" />
+								</copy>
+								<copy todir="ikube/production" failonerror="true">
+									<fileset dir="../core/src/main/resources/ikube/production" />
+								</copy>
+								<copy todir="ikube/integration" failonerror="true">
+									<fileset dir="../core/src/main/resources/ikube/integration" />
 								</copy>
 							</target>
 						</configuration>

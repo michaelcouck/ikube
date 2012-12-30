@@ -6,7 +6,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import org.apache.log4j.Logger;
 import org.apache.poi.poifs.eventfilesystem.POIFSReader;
 import org.apache.poi.poifs.eventfilesystem.POIFSReaderEvent;
 import org.apache.poi.poifs.eventfilesystem.POIFSReaderListener;
@@ -22,8 +21,6 @@ import org.apache.poi.util.LittleEndian;
  */
 public class PowerPointParser implements IParser, POIFSReaderListener {
 
-	/** Logger for the parser class. */
-	private static final Logger LOGGER = Logger.getLogger(PowerPointParser.class);
 	/** The output stream for the parsed data. */
 	private transient final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
@@ -60,8 +57,8 @@ public class PowerPointParser implements IParser, POIFSReaderListener {
 					i = (i + 4 + 4 + (int) size) - 1;
 				}
 			}
-		} catch (Exception t) {
-			LOGGER.error("Exception thrown during parse", t);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
 		}
 	}
 }

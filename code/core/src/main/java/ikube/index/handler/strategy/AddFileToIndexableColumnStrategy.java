@@ -12,7 +12,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 
 /**
- * TODO Comments...
+ * TODO Comments... And complete this strategy of course. And a test...
  * 
  * @author Michael Couck
  * @since 22.12.12
@@ -25,6 +25,7 @@ public class AddFileToIndexableColumnStrategy extends AStrategy {
 	}
 
 	@Override
+	@SuppressWarnings("null")
 	public boolean preProcess(final Object... parameters) {
 		IndexableColumn indexableColumn = null;
 		Object content = indexableColumn.getContent();

@@ -443,6 +443,7 @@
 	<mime-type name="text/plain" description="Text File">
 		<ext>asc</ext>
 		<ext>txt</ext>
+		<ext>dtd</ext>
 	</mime-type>
 	<mime-type name="text/richtext" description="Rich Text Document">
 		<ext>rtx</ext>

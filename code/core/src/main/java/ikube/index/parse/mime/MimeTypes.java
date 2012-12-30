@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -61,7 +60,6 @@ public final class MimeTypes {
 		} catch (Exception e) {
 			String message = "Exception loading the mapping file for mime types : ";
 			LOGGER.error(message, e);
-			// throw new RuntimeException(message, e);
 		} finally {
 			FileUtilities.close(inputStream);
 		}
@@ -83,7 +81,6 @@ public final class MimeTypes {
 		if (mimeType == null) {
 			for (MimeType m : TYPES.values()) {
 				String[] extensions = m.getExtensions();
-				LOGGER.debug("Mime type : " + Arrays.asList(extensions));
 				if (extensions != null) {
 					for (String extension : extensions) {
 						if (type.endsWith(extension)) {
@@ -101,9 +98,8 @@ public final class MimeTypes {
 	 * Find the Mime Content Type of a stream from its content.
 	 * 
 	 * @param data are the first bytes of data of the content to analyze. Depending on the length of provided data, all known MimeTypes are
-	 *            checked. If the length of provided data is greater or egals to the value returned by {@link #getMinLength()}, then all
-	 *            known MimeTypes are checked, otherwise only the MimeTypes that could be analyzed with the length of provided data are
-	 *            analyzed.
+	 *        checked. If the length of provided data is greater or egals to the value returned by {@link #getMinLength()}, then all known
+	 *        MimeTypes are checked, otherwise only the MimeTypes that could be analyzed with the length of provided data are analyzed.
 	 * 
 	 * @return The Mime Content Type found for the specified data, or <code>null</code> if none is found.
 	 * @see #getMinLength()

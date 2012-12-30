@@ -18,6 +18,7 @@ import org.apache.lucene.store.FSDirectory;
  * @since 11.06.11
  * @version 01.00
  */
+@SuppressWarnings("deprecation")
 public class IsNewIndexCreated extends ARule<IndexContext<?>> {
 
 	/**

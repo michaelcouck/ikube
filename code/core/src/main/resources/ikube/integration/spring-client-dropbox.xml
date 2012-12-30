@@ -51,6 +51,7 @@
 		property:maxReadLength="${file.max.read.length}"
 		property:stored="true"
 		property:vectored="true"
-		property:analyzed="true" />
+		property:analyzed="true"
+		property:unpackZips="true" />
 	
 </beans>

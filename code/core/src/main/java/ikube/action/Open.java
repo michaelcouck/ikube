@@ -6,7 +6,6 @@ import ikube.service.SearcherService;
 import ikube.toolkit.Logging;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,8 +14,6 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.MultiSearcher;
 import org.apache.lucene.search.Searchable;
-import org.apache.lucene.search.SearcherFactory;
-import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
@@ -64,16 +61,6 @@ public class Open extends Action<IndexContext<?>, Boolean> {
 		}
 		// Make sure that the old one is closed first
 		closeSearchables(indexContext);
-		
-//		try {
-//			IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), "");
-//			SearcherFactory searcherFactory =  new SearcherFactory() {
-//			};
-//			SearcherManager searcherManager = new SearcherManager(indexWriter, true, searcherFactory);
-//			searcherManager.acquire();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
 
 		File[] serverIndexDirectories = latestIndexDirectory.listFiles();
 		Directory directory = null;

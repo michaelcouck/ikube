@@ -44,13 +44,22 @@ public class DeltaIndexableFilesystemStrategy extends AStrategy {
 	 */
 	@Override
 	public boolean preProcess(final Object... parameters) {
+		if (parameters == null || parameters.length != 3) {
+			return Boolean.TRUE;
+		}
+		LOGGER.error("Delta file strategy : ");
 		IndexableFileSystem indexableFileSystem = (IndexableFileSystem) parameters[1];
-		File file = (File) parameters[2];
 		IndexContext<?> indexContext = (IndexContext<?>) indexableFileSystem.getParent();
+		// If the searcher is null then we need to process this resource
+		if (indexContext.getMultiSearcher() == null) {
+			return Boolean.TRUE;
+		}
+		File file = (File) parameters[2];
 		Search search = getSearch(indexContext, indexableFileSystem, file);
 		ArrayList<HashMap<String, String>> results = search.execute();
 		boolean foundFile = results.size() >= 1;
 		if (foundFile) {
+			LOGGER.info("Deleting index entry to replace with latest version : " + file);
 			if (results.size() > 1) {
 				LOGGER.warn("Found multiple files with the same attributes in the index : " + file);
 			}
@@ -73,7 +82,9 @@ public class DeltaIndexableFilesystemStrategy extends AStrategy {
 				}
 			}
 		}
-		return foundFile & (nextStrategy != null ? nextStrategy.preProcess(parameters) : true);
+		boolean mustProcess = foundFile & (nextStrategy != null ? nextStrategy.preProcess(parameters) : true);
+		LOGGER.info("Continuing with processing : " + mustProcess);
+		return mustProcess;
 	}
 
 	/**

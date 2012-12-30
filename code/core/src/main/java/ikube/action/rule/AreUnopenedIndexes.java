@@ -22,6 +22,7 @@ import org.apache.lucene.store.FSDirectory;
  * @since 12.02.2011
  * @version 01.00
  */
+@SuppressWarnings("deprecation")
 public class AreUnopenedIndexes implements IRule<IndexContext<?>> {
 
 	private static final transient Logger LOGGER = Logger.getLogger(AreUnopenedIndexes.class);

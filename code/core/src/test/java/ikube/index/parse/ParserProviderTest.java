@@ -37,6 +37,11 @@ public class ParserProviderTest extends ATest {
 		parser = ParserProvider.getParser(mimeTypeString, bytes);
 		assertNotNull("Xml parser can never be null : ", parser);
 		assertEquals("This should be the Xml parser : ", XMLParser.class, parser.getClass());
+		
+		mimeTypeString = "dtd";
+		parser = ParserProvider.getParser(mimeTypeString, bytes);
+		assertNotNull("Text parser can never be null : ", parser);
+		assertEquals("This should be the text parser : ", TextParser.class, parser.getClass());
 	}
 
 	@Test

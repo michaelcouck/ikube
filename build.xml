@@ -165,7 +165,7 @@
 		</copy>
 		<!-- Copy the profile configuration -->
 		<copy todir="${output-configuration-directory}/${profile}" failonerror="false">
-			<fileset dir="code/core/src/main/resources/ikube/${profile}" />
+		    <fileset dir="code/core/src/main/resources/ikube/${profile}" />
 		</copy>
 	</target>
 	<target name="jar-configuration">

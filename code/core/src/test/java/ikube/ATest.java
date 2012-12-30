@@ -76,7 +76,6 @@ public abstract class ATest {
 		Logging.configure();
 		new MimeTypes(IConstants.MIME_TYPES);
 		new MimeMapper(IConstants.MIME_MAPPING);
-		// ThreadUtilities.initialize();
 		Mockit.setUpMock(SpellingCheckerMock.class);
 	}
 

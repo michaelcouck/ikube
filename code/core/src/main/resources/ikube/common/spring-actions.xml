@@ -38,7 +38,7 @@
 		<ref bean="ikube.action.Reset" />
 		<ref bean="ikube.action.Restore" />
 		<ref bean="ikube.action.Index"  />
-		<ref bean="ikube.action.IndexDelta"  />
+		<!-- <ref bean="ikube.action.IndexDelta"  /> -->
 		<ref bean="ikube.action.Open"  />
 		<ref bean="ikube.action.Delete" />
 		<ref bean="ikube.action.Clean" />
@@ -147,7 +147,7 @@
 			</util:list>
 		</property>
 	</bean>
-	<bean 
+	<!-- <bean 
 		id="ikube.action.IndexDelta" 
 		class="ikube.action.IndexDelta" 
 		property:ruleExpression="
@@ -157,7 +157,7 @@
 				<ref local="ikube.action.rule.AnyServersWorkingThisIndex" />
 			</util:list>
 		</property>
-	</bean>
+	</bean> -->
 	<bean 
 		id="ikube.action.Delete" 
 		class="ikube.action.Delete" 

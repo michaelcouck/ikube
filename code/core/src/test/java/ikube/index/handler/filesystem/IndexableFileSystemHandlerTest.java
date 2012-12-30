@@ -5,11 +5,17 @@ import ikube.ATest;
 import ikube.model.IndexableFileSystem;
 import ikube.toolkit.ThreadUtilities;
 
+import java.io.File;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.concurrent.Future;
+import java.util.regex.Pattern;
 
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 /**
  * Tests the general functionality of the file system handler. There are no specific checks on the data that is indexed as the sub
@@ -28,6 +34,16 @@ public class IndexableFileSystemHandlerTest extends ATest {
 		super(IndexableFileSystemHandlerTest.class);
 	}
 
+	@BeforeClass
+	public static void beforeClass() {
+		new ThreadUtilities().initialize();
+	}
+
+	@AfterClass
+	public static void afterClass() {
+		new ThreadUtilities().destroy();
+	}
+
 	@Before
 	public void before() {
 		indexableFileSystemHandler = new IndexableFilesystemHandler();
@@ -36,22 +52,46 @@ public class IndexableFileSystemHandlerTest extends ATest {
 
 	@Test
 	public void handle() throws Exception {
-		IndexableFileSystem indexableFileSystem = new IndexableFileSystem();
-		indexableFileSystem.setPath("./");
+		IndexableFileSystem indexableFileSystem = getIndexableFileSystem(".");
 		List<Future<?>> futures = indexableFileSystemHandler.handle(indexContext, indexableFileSystem);
 		ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
-		assertTrue("There should be some nulls in the futures as the executer is whut down : ", futures.size() > 0);
+		assertTrue("There should be some nulls in the futures as the executer is shut down : ", futures.size() > 0);
+		// TODO Verify the output of the gzips
 	}
 
 	@Test
 	public void handleLargeGzip() throws Exception {
-		new ThreadUtilities().initialize();
-		IndexableFileSystem indexableFileSystem = new IndexableFileSystem();
-		indexableFileSystem.setUnpackZips(Boolean.TRUE);
-		indexableFileSystem.setPath("C:/Temp/compressed");
+		IndexableFileSystem indexableFileSystem = getIndexableFileSystem("/tmp/compressed");
 		List<Future<?>> futures = indexableFileSystemHandler.handle(indexContext, indexableFileSystem);
 		ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
-		new ThreadUtilities().destroy();
+	}
+	
+	@Test
+	public void isExcluded() {
+		File file = Mockito.mock(File.class);
+		Mockito.when(file.getName()).thenReturn("image.png");
+		Mockito.when(file.getAbsolutePath()).thenReturn("/tmp/image.png");
+		Pattern pattern = Pattern.compile(".*(png).*");
+		boolean isExcluded = indexableFileSystemHandler.isExcluded(file, pattern);
+		assertTrue(isExcluded);
+	}
+
+	private IndexableFileSystem getIndexableFileSystem(final String folderPath) {
+		IndexableFileSystem indexableFileSystem = new IndexableFileSystem();
+		indexableFileSystem.setPath(folderPath);
+		indexableFileSystem.setBatchSize(10);
+		indexableFileSystem.setContentFieldName("content");
+		indexableFileSystem.setExcludedPattern(".*(couck).*");
+		indexableFileSystem.setIncludedPattern("everything");
+		indexableFileSystem.setLastModifiedFieldName("last-modified");
+		indexableFileSystem.setLengthFieldName("length");
+		indexableFileSystem.setMaxExceptions(100l);
+		indexableFileSystem.setMaxReadLength(1000000l);
+		indexableFileSystem.setName("name");
+		indexableFileSystem.setNameFieldName("name");
+		indexableFileSystem.setPathFieldName("path");
+		indexableFileSystem.setTimestamp(new Timestamp(System.currentTimeMillis()));
+		return indexableFileSystem;
 	}
 
 }

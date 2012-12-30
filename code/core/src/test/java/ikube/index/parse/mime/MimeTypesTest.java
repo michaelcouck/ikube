@@ -20,15 +20,13 @@ public class MimeTypesTest extends ATest {
 	public void getMimeTypesFromName() {
 		MimeType mimeType = MimeTypes.getMimeTypeFromName("text/html");
 		assertNotNull(mimeType);
-		logger.debug("Mime type : text/html : " + mimeType.getName() + ", " + mimeType.getPrimaryType() + ", " + mimeType.getSubType());
 		mimeType = MimeTypes.getMimeTypeFromName("index.html");
 		assertNotNull(mimeType);
-		logger.debug("Mime type : index.html : " + mimeType.getName() + ", " + mimeType.getPrimaryType() + ", " + mimeType.getSubType());
 		mimeType = MimeTypes.getMimeTypeFromName("word.doc");
 		assertNotNull(mimeType);
-		logger.debug("Mime type : word.doc : " + mimeType.getName() + ", " + mimeType.getPrimaryType() + ", " + mimeType.getSubType());
 		mimeType = MimeTypes.getMimeTypeFromName("/thePath/to/the/file.xml");
 		assertNotNull(mimeType);
-		logger.debug("Mime type : file.xml : " + mimeType.getName() + ", " + mimeType.getPrimaryType() + ", " + mimeType.getSubType());
+		mimeType = MimeTypes.getMimeTypeFromName("/thePath/to/the/file.dtd");
+		assertNotNull(mimeType);
 	}
 }
