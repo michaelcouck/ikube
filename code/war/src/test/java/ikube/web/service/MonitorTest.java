@@ -250,7 +250,7 @@ public class MonitorTest extends Base {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private IndexContext getIndexContext(final String indexName) {
-		IndexContext indexContext = ObjectToolkit.populateFields(IndexContext.class, new IndexContext(), Boolean.TRUE, 0, 5); // new IndexContext();
+		IndexContext indexContext = ObjectToolkit.populateFields(IndexContext.class, new IndexContext(), Boolean.TRUE, 0, 5, "strategies");
 		indexContext.setIndexName(indexName);
 		indexContext.setIndexDirectoryPath("indexDirectoryPath");
 		List<Snapshot> snapshots = new ArrayList<Snapshot>();

@@ -76,18 +76,7 @@
 									${project.version} - ${maven.build.timestamp}
 								</echo>
 								<copy todir="ikube" failonerror="true">
-									<fileset dir="../core/src/main/resources/ikube">
-									    <include name="spring.xml" />
-									</fileset>
-								</copy>
-								<copy todir="ikube/common" failonerror="true">
-									<fileset dir="../core/src/main/resources/ikube/common" />
-								</copy>
-								<copy todir="ikube/production" failonerror="true">
-									<fileset dir="../core/src/main/resources/ikube/production" />
-								</copy>
-								<copy todir="ikube/integration" failonerror="true">
-									<fileset dir="../core/src/main/resources/ikube/integration" />
+									<fileset dir="../core/src/main/resources/ikube" />
 								</copy>
 							</target>
 						</configuration>
@@ -123,7 +112,7 @@
 					</connectors>
 				</configuration>
 				<executions>
-					<execution>
+					<!-- <execution>
 						<id>start-jetty</id>
 						<phase>pre-integration-test</phase>
 						<goals>
@@ -139,7 +128,7 @@
 						<goals>
 							<goal>stop</goal>
 						</goals>
-					</execution>
+					</execution> -->
 				</executions>
 				<dependencies>
 					<dependency>

@@ -20,7 +20,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
-import java.util.concurrent.CancellationException;
 import java.util.concurrent.Future;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
@@ -86,9 +85,6 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 						continue;
 					}
 					handleFile(indexContext, indexableFileSystem, file);
-				} catch (CancellationException e) {
-					logger.error("Thread terminated, and indexing stopped : ", e);
-					throw new RuntimeException(e);
 				} catch (InterruptedException e) {
 					logger.error("Thread terminated, and indexing stopped : ", e);
 					throw new RuntimeException(e);
@@ -117,9 +113,6 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 			inputStream = new FileInputStream(file);
 			addDocumentToIndex(indexContext, indexableFileSystem, file, inputStream, document);
 		} catch (InterruptedException e) {
-			// This means that the scheduler has been forcefully destroyed
-			throw e;
-		} catch (CancellationException e) {
 			// This means that the scheduler has been forcefully destroyed
 			throw e;
 		} catch (Exception e) {
@@ -178,6 +171,8 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 					inputStream = new FileInputStream(file);
 				}
 				addDocumentToIndex(indexContext, indexableFileSystem, file, inputStream, new Document());
+			} catch (InterruptedException e) {
+				throw new RuntimeException(e);
 			} catch (Exception e) {
 				logger.error("Exception occured while trying to index the file " + file.getAbsolutePath() + ", " + e.getMessage());
 				logger.debug(null, e);

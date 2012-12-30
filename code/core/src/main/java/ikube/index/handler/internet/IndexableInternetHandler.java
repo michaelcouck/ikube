@@ -121,7 +121,7 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 				try {
 					doUrls(indexContext, indexableInternet, urls, contentProvider, httpClient, in, out);
 				} catch (InterruptedException e) {
-					logger.error("Indeing terminated : ", e);
+					logger.error("Indexing terminated : ", e);
 					return;
 				}
 			}
@@ -351,7 +351,7 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 			} catch (Exception e) {
 				// If this is an XML exception then try the HTML parser
 				if (XMLParser.class.isAssignableFrom(parser.getClass())) {
-					contentType = "html";
+					contentType = "text/html";
 					parser = ParserProvider.getParser(contentType, bytes);
 					outputStream = parser.parse(byteArrayInputStream, new ByteArrayOutputStream());
 				} else {

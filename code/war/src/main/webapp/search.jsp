@@ -270,6 +270,7 @@
 </script>
 
 <table ng-app="ikube" ng-controller="SearcherController" width="100%">
+	<form ng-submit="doSearch()">
 	<tr>
 		<td width="100%" valign="top">
 			<table width="100%">
@@ -319,9 +320,10 @@
 	
 	<tr>
 		<td colspan="2">
-			<input type="button" value="Advanced search" ng-click="doSearch();">
+			<button>Go!</button>
 		</td>
 	</tr>
+	</form>
 	
 	<tr><td colspan="2">&nbsp;</td></tr>
 	

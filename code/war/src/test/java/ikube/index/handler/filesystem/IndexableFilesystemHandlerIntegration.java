@@ -4,7 +4,6 @@ import static org.junit.Assert.assertTrue;
 import ikube.Integration;
 import ikube.database.IDataBase;
 import ikube.index.IndexManager;
-import ikube.index.handler.filesystem.IndexableFilesystemHandler;
 import ikube.model.IndexContext;
 import ikube.model.IndexableFileSystem;
 import ikube.toolkit.ApplicationContextManager;
@@ -64,6 +63,28 @@ public class IndexableFilesystemHandlerIntegration extends Integration {
 			if (directory != null) {
 				directory.close();
 			}
+		}
+	}
+
+	@Test
+	public void interrupt() throws Exception {
+		new ThreadUtilities().initialize();
+		desktopFolder.setPath("/");
+		String ip = InetAddress.getLocalHost().getHostAddress();
+		IndexWriter indexWriter = IndexManager.openIndexWriter(desktop, System.currentTimeMillis(), ip);
+		desktop.setIndexWriters(indexWriter);
+
+		ThreadUtilities.submit(new Runnable() {
+			public void run() {
+				ThreadUtilities.sleep(15000);
+				new ThreadUtilities().destroy();
+			}
+		});
+
+		List<Future<?>> futures = indexableFilesystemHandler.handle(desktop, desktopFolder);
+		ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
+		for (final Future<?> future : futures) {
+			assertTrue(future.isCancelled());
 		}
 	}
 
