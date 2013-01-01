@@ -11,7 +11,6 @@ import ikube.service.IMonitorService;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.ObjectToolkit;
-import ikube.toolkit.ThreadUtilities;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -61,7 +60,7 @@ public abstract class Integration extends Base {
 		ApplicationContextManager.getBean(ListenerManager.class).removeListeners();
 		ApplicationContextManager.getBean(ListenerManager.class).removeListeners();
 		ApplicationContextManager.getBean(Scheduler.class).shutdown();
-		new ThreadUtilities().destroy();
+		ApplicationContextManager.getBean(Scheduler.class).shutdown();
 	}
 
 	private static void insertData() throws SQLException, FileNotFoundException {

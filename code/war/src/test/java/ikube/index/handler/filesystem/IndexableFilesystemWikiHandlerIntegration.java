@@ -40,7 +40,6 @@ public class IndexableFilesystemWikiHandlerIntegration extends Integration {
 	public void handle() throws Exception {
 		Directory directory = null;
 		try {
-			new ThreadUtilities().initialize();
 			String ip = InetAddress.getLocalHost().getHostAddress();
 			IndexWriter indexWriter = IndexManager.openIndexWriter(wikiHistoryArabic, System.currentTimeMillis(), ip);
 			wikiHistoryArabic.setIndexWriters(indexWriter);
@@ -48,7 +47,7 @@ public class IndexableFilesystemWikiHandlerIntegration extends Integration {
 
 			Thread.sleep(10000);
 
-			new ThreadUtilities().destroy();
+			ThreadUtilities.destroy(wikiHistoryArabic.getIndexName());
 			IndexManager.closeIndexWriter(wikiHistoryArabic);
 
 			File latestIndexDirectory = IndexManager.getLatestIndexDirectory(wikiHistoryArabic.getIndexDirectoryPath());

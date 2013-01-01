@@ -32,14 +32,13 @@ public class IndexableFilesystemHandlerIntegration extends Integration {
 		desktopFolder = ApplicationContextManager.getBean("desktopFolder");
 		indexableFilesystemHandler = ApplicationContextManager.getBean(IndexableFilesystemHandler.class);
 		delete(ApplicationContextManager.getBean(IDataBase.class), ikube.model.File.class);
-		// FileUtilities.deleteFile(new File(desktop.getIndexDirectoryPath()), 1);
+		FileUtilities.deleteFile(new File(desktop.getIndexDirectoryPath()), 1);
 	}
 
 	@Test
 	public void handle() throws Exception {
 		Directory directory = null;
 		try {
-			new ThreadUtilities().initialize();
 			File dataIndexFolder = FileUtilities.findFileRecursively(new File("."), "data");
 			String dataIndexFolderPath = FileUtilities.cleanFilePath(dataIndexFolder.getAbsolutePath());
 			desktopFolder.setPath(dataIndexFolderPath);
@@ -49,14 +48,7 @@ public class IndexableFilesystemHandlerIntegration extends Integration {
 			List<Future<?>> threads = indexableFilesystemHandler.handle(desktop, desktopFolder);
 			ThreadUtilities.waitForFutures(threads, Integer.MAX_VALUE);
 
-			logger.info("Data folder : " + dataIndexFolder.getAbsolutePath());
-			File latestIndexDirectory = IndexManager.getLatestIndexDirectory(desktop.getIndexDirectoryPath());
-			logger.info("Latest index directory : " + latestIndexDirectory.getAbsolutePath());
-			File indexDirectory = new File(latestIndexDirectory, ip);
-			logger.info("Index directory : " + indexDirectory);
-
 			// Verify that there are some documents in the index
-			logger.info("Num docs : " + desktop.getIndexWriters()[0].numDocs());
 			assertTrue("There should be at least one document in the index : ", desktop.getIndexWriters()[0].numDocs() > 0);
 		} finally {
 			IndexManager.closeIndexWriter(desktop);
@@ -68,7 +60,6 @@ public class IndexableFilesystemHandlerIntegration extends Integration {
 
 	@Test
 	public void interrupt() throws Exception {
-		new ThreadUtilities().initialize();
 		desktopFolder.setPath("/");
 		String ip = InetAddress.getLocalHost().getHostAddress();
 		IndexWriter indexWriter = IndexManager.openIndexWriter(desktop, System.currentTimeMillis(), ip);
@@ -77,15 +68,13 @@ public class IndexableFilesystemHandlerIntegration extends Integration {
 		ThreadUtilities.submit(new Runnable() {
 			public void run() {
 				ThreadUtilities.sleep(15000);
-				new ThreadUtilities().destroy();
+				ThreadUtilities.destroy(desktop.getIndexName());
 			}
 		});
 
 		List<Future<?>> futures = indexableFilesystemHandler.handle(desktop, desktopFolder);
 		ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
-		for (final Future<?> future : futures) {
-			assertTrue(future.isCancelled());
-		}
+		// If we don't get here then the test failed :)
 	}
 
 }

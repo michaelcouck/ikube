@@ -52,14 +52,14 @@ public class SnapshotListener implements IListener {
 			server.setProcessors(operatingSystemMXBean.getAvailableProcessors());
 			server.setAverageCpuLoad(operatingSystemMXBean.getSystemLoadAverage());
 			try {
-				long availableDiskSpace = FileSystemUtils.freeSpaceKb("/") / 1000;
+				long availableDiskSpace = FileSystemUtils.freeSpaceKb("/") / IConstants.MILLION;
 				server.setFreeDiskSpace(availableDiskSpace);
 			} catch (IOException e) {
 				LOGGER.error("Exception accessing the disk space : ", e);
 			}
-			server.setFreeMemory(Runtime.getRuntime().freeMemory());
-			server.setMaxMemory(Runtime.getRuntime().maxMemory());
-			server.setTotalMemory(Runtime.getRuntime().totalMemory());
+			server.setFreeMemory(Runtime.getRuntime().freeMemory() / IConstants.MILLION);
+			server.setMaxMemory(Runtime.getRuntime().maxMemory() / IConstants.MILLION);
+			server.setTotalMemory(Runtime.getRuntime().totalMemory() / IConstants.MILLION);
 			clusterManager.putObject(server.getAddress(), server);
 
 			Map<String, IndexContext> indexContexts = monitorService.getIndexContexts();

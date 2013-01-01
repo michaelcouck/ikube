@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <log4j:configuration>
-	<appender name="file" class="org.apache.log4j.FileAppender">
-		<param name="file" value="/usr/local/post/app-rep/sum-st/sum-v000618-batch-UC4-st1-node1/ikube/ikube.log" />
+	<appender name="file" class="org.apache.log4j.RollingFileAppender">
+		<param name="file" value="ikube/ikube.log" />
 		<param name="Threshold" value="DEBUG" />
 		<param name="Append" value="false" />
+		log4j.appender.LOGFILE.MaxFileSize=50000KB log4j.appender.LOGFILE.MaxBackupIndex=2
+		<param name="MaxFileSize" value="100000KB" />
+		<param name="MaxBackupIndex" value="10" />
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="%d{HH:mm:ss,SSS} %-5p %C:%L - %m%n" />
 		</layout>

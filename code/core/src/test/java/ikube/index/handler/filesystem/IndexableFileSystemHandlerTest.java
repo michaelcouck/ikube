@@ -3,9 +3,12 @@ package ikube.index.handler.filesystem;
 import static org.junit.Assert.assertTrue;
 import ikube.ATest;
 import ikube.model.IndexableFileSystem;
+import ikube.toolkit.FileUtilities;
 import ikube.toolkit.ThreadUtilities;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.concurrent.Future;
@@ -65,15 +68,30 @@ public class IndexableFileSystemHandlerTest extends ATest {
 		List<Future<?>> futures = indexableFileSystemHandler.handle(indexContext, indexableFileSystem);
 		ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
 	}
-	
+
 	@Test
-	public void isExcluded() {
+	public void isExcluded() throws Exception {
 		File file = Mockito.mock(File.class);
 		Mockito.when(file.getName()).thenReturn("image.png");
 		Mockito.when(file.getAbsolutePath()).thenReturn("/tmp/image.png");
 		Pattern pattern = Pattern.compile(".*(png).*");
 		boolean isExcluded = indexableFileSystemHandler.isExcluded(file, pattern);
 		assertTrue(isExcluded);
+
+		File folder = null;
+		File symlinkFile = null;
+		Path symlink = null;
+		try {
+			folder = FileUtilities.getFile("/tmp/folder", Boolean.TRUE);
+			symlinkFile = new File("/tmp/symlink");
+			symlink = Files.createSymbolicLink(symlinkFile.toPath(), folder.toPath());
+
+			isExcluded = indexableFileSystemHandler.isExcluded(symlinkFile, pattern);
+			assertTrue(isExcluded);
+		} finally {
+			FileUtilities.deleteFile(folder, 1);
+			Files.deleteIfExists(symlink);
+		}
 	}
 
 	private IndexableFileSystem getIndexableFileSystem(final String folderPath) {

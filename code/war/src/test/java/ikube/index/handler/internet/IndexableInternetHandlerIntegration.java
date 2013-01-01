@@ -58,7 +58,6 @@ public class IndexableInternetHandlerIntegration extends Integration {
 
 	@Test
 	public void handle() throws Exception {
-		new ThreadUtilities().initialize();
 		try {
 			String ip = InetAddress.getLocalHost().getHostAddress();
 			IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
@@ -73,7 +72,7 @@ public class IndexableInternetHandlerIntegration extends Integration {
 			assertTrue("Expected more than " + expectedAtLeast + " and got : " + totalUrlsCrawled, totalUrlsCrawled >= expectedAtLeast);
 			assertTrue("There must be some documents in the index : ", indexContext.getIndexWriters()[0].numDocs() >= expectedAtLeast);
 		} finally {
-			new ThreadUtilities().destroy();
+			ThreadUtilities.destroy(indexContext.getIndexName());
 		}
 	}
 

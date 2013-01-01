@@ -6,7 +6,6 @@ import ikube.ATest;
 import ikube.IConstants;
 import ikube.index.IndexManager;
 import ikube.mock.SpellingCheckerMock;
-import ikube.search.SearchMultiAll;
 import ikube.search.SearchSingle;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.ThreadUtilities;
@@ -25,14 +24,12 @@ import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.MultiSearcher;
 import org.apache.lucene.search.SearcherFactory;
 import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -43,7 +40,6 @@ import org.junit.Test;
  * @since 06.03.10
  * @version 01.00
  */
-@SuppressWarnings("deprecation")
 public class LuceneTest extends ATest {
 
 	private String russian = " русский язык  ";
@@ -108,7 +104,6 @@ public class LuceneTest extends ATest {
 		final int iterations = 3;
 		long time = System.currentTimeMillis();
 		final File indexDirectory = createIndex(indexContext, time, "127.0.0.1", "the", "quick", "brown", "fox", "jumped");
-		logger.info("Index directories : " + indexDirectory);
 		List<Future<?>> futures = new ArrayList<Future<?>>();
 		for (int i = 0; i < 3; i++) {
 			Future<?> future = ThreadUtilities.submit(Integer.toHexString(i), new Runnable() {
@@ -131,7 +126,6 @@ public class LuceneTest extends ATest {
 							searchSingle.setSearchString("détermine");
 							searchSingle.setSortField(IConstants.CONTENTS);
 							ArrayList<HashMap<String, String>> results = searchSingle.execute();
-							logger.info("Results : " + results.size());
 							assertTrue("There should be four results because the writer added three hits : ", results.size() >= 2);
 
 							indexSearcher.close();
@@ -150,7 +144,6 @@ public class LuceneTest extends ATest {
 					while (index-- > 0) {
 						IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, indexDirectory, Boolean.FALSE);
 						Document document = getDocument(Long.toHexString(System.currentTimeMillis()), string, Index.ANALYZED);
-						logger.info("Writing document : " + document);
 						indexWriter.addDocument(document);
 						indexWriter.commit();
 						indexWriter.close(Boolean.TRUE);
@@ -171,7 +164,6 @@ public class LuceneTest extends ATest {
 		final int iterations = 3;
 		long time = System.currentTimeMillis();
 		final IndexWriter indexWriter = createIndexReturnWriter(indexContext, time, "127.0.0.1", "the", "quick", "brown", "fox", "jumped");
-		logger.info("Index writer : " + indexWriter);
 		final SearcherManager searcherManager = new SearcherManager(indexWriter, true, new SearcherFactory());
 		List<Future<?>> futures = new ArrayList<Future<?>>();
 		for (int i = 0; i < 3; i++) {
@@ -193,7 +185,6 @@ public class LuceneTest extends ATest {
 							searchSingle.setSearchString("détermine");
 							searchSingle.setSortField(IConstants.CONTENTS);
 							ArrayList<HashMap<String, String>> results = searchSingle.execute();
-							logger.info("Results : " + results.size());
 							assertTrue("There should be four results because the writer added three hits : ", results.size() >= 2);
 
 							searcherManager.release(indexSearcher);
@@ -211,7 +202,6 @@ public class LuceneTest extends ATest {
 					int index = iterations;
 					while (index-- > 0) {
 						Document document = getDocument(Long.toHexString(System.currentTimeMillis()), string, Index.ANALYZED);
-						logger.info("Writing document : " + document);
 						indexWriter.addDocument(document);
 						indexWriter.commit();
 						// indexWriter.close(Boolean.TRUE);
@@ -225,40 +215,6 @@ public class LuceneTest extends ATest {
 		});
 		futures.add(future);
 		ThreadUtilities.waitForFutures(futures, 10000);
-	}
-
-	private String indexPath = "C:/media/nas/xfs-one/indexes/roma-streets/1355763362335/10.100.118.59";
-
-	@Test
-	@Ignore
-	public void adHocSearch() throws Exception {
-		Directory directory = FSDirectory.open(new File(indexPath));
-		IndexReader reader = IndexReader.open(directory);
-		IndexSearcher indexSearcher = new IndexSearcher(reader);
-		MultiSearcher multiSearcher = new MultiSearcher(indexSearcher);
-
-		SearchMultiAll searchSingle = new SearchMultiAll(multiSearcher);
-		searchSingle.setFirstResult(0);
-		searchSingle.setFragment(Boolean.TRUE);
-		searchSingle.setMaxResults(Integer.MAX_VALUE);
-		searchSingle.setSearchField(IConstants.CONTENTS);
-		searchSingle.setSearchString("sint amandstraat brussels brussel gent 9000");
-		searchSingle.setSortField(IConstants.CONTENTS);
-		ArrayList<HashMap<String, String>> results = searchSingle.execute();
-		logger.info("Results : " + results);
-	}
-
-	@Test
-	@Ignore
-	public void adHocRead() throws Exception {
-		Directory directory = FSDirectory.open(new File(indexPath));
-		IndexReader indexReader = IndexReader.open(directory);
-		System.out.println("Num docs : " + indexReader.numDocs());
-		for (int i = 0; i < indexReader.numDocs(); i++) {
-			Document document = indexReader.document(i);
-			System.out.println("Document : " + document);
-		}
-		indexReader.close();
 	}
 
 }

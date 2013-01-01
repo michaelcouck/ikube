@@ -477,7 +477,6 @@ public final class IndexManager {
 	public static void addStringField(final String fieldName, final String fieldContent, final Document document, final Store store,
 			final Index analyzed, final TermVector termVector) {
 		if (fieldName == null || fieldContent == null) {
-			Thread.dumpStack();
 			LOGGER.warn("Field and content can't be null : " + fieldName);
 			return;
 		}

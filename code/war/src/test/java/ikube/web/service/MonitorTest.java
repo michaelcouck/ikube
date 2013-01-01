@@ -10,9 +10,12 @@ import ikube.model.IndexContext;
 import ikube.model.Server;
 import ikube.model.Snapshot;
 import ikube.service.IMonitorService;
+import ikube.toolkit.FileUtilities;
 import ikube.toolkit.ObjectToolkit;
 import ikube.toolkit.PerformanceTester;
 
+import java.io.File;
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
@@ -63,8 +66,9 @@ public class MonitorTest extends Base {
 	}
 
 	@After
-	public void after() {
+	public void after() throws IOException {
 		Mockit.tearDownMocks();
+		FileUtilities.deleteFile(new File(".", "indexDirectoryPath"), 1);
 	}
 
 	@Test
@@ -112,7 +116,7 @@ public class MonitorTest extends Base {
 		assertEquals("aaa", nameTwo);
 
 		assertTrue("The max age should be in the Json string : ", entity.toString().contains("maxAge"));
-		
+
 		double executionsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
 			@Override
 			public void execute() throws Throwable {

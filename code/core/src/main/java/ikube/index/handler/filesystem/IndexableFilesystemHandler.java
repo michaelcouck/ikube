@@ -295,9 +295,15 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 		String path = file.getAbsolutePath();
 		boolean isNameExcluded = pattern.matcher(name).matches();
 		boolean isPathExcluded = pattern.matcher(path).matches();
-		boolean isExcluded = isNameExcluded || isPathExcluded;
-		// logger.error("Excluded : " + isExcluded + ", " + isNameExcluded + ", " + isPathExcluded + ", " + name + ", " + path + ", "
-		// + pattern);
+		boolean isSymLink = Boolean.TRUE;
+		try {
+			isSymLink = !file.getAbsolutePath().equals(file.getCanonicalPath());
+		} catch (IOException e) {
+			logger.error("Exception checking sym link : " + file);
+		}
+		boolean isExcluded = isNameExcluded || isPathExcluded || isSymLink;
+		// logger.error("Excluded : " + isExcluded + ", " + isNameExcluded + ", " + isPathExcluded + ", " + isSymLink + ", " + name + ", "
+		// + path + ", " + pattern);
 		return isExcluded;
 	}
 

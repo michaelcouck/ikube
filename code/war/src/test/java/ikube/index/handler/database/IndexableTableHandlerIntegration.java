@@ -6,16 +6,13 @@ import static org.junit.Assert.assertTrue;
 import ikube.IConstants;
 import ikube.Integration;
 import ikube.cluster.IClusterManager;
-import ikube.database.IDataBase;
 import ikube.index.IndexManager;
 import ikube.index.content.ColumnContentProvider;
 import ikube.index.content.IContentProvider;
-import ikube.index.handler.database.IndexableTableHandler;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.model.IndexableColumn;
 import ikube.model.IndexableTable;
-import ikube.model.Snapshot;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.DatabaseUtilities;
 import ikube.toolkit.ThreadUtilities;
@@ -50,7 +47,6 @@ import org.junit.Test;
  */
 public class IndexableTableHandlerIntegration extends Integration {
 
-	private IDataBase dataBase;
 	private IndexContext<?> indexContext;
 	private IndexableTable snapshotTable;
 	private IndexableColumn snapshotColumn;
@@ -61,10 +57,9 @@ public class IndexableTableHandlerIntegration extends Integration {
 
 	@Before
 	public void before() throws SQLException {
-		new ThreadUtilities().initialize();
-		dataBase = ApplicationContextManager.getBean(IDataBase.class);
 		indexableTableHandler = ApplicationContextManager.getBean(IndexableTableHandler.class);
 
+		indexContext = ApplicationContextManager.getBean("indexContext");
 		snapshotTable = ApplicationContextManager.getBean("snapshotTable");
 		snapshotTableChildren = snapshotTable.getChildren();
 		snapshotColumn = Deencapsulation.invoke(indexableTableHandler, "getIdColumn", snapshotTableChildren);
@@ -74,23 +69,14 @@ public class IndexableTableHandlerIntegration extends Integration {
 
 		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
 		clusterManager.getServer().getActions().clear();
-		indexContext = monitorService.getIndexContext("indexContext");
+		Deencapsulation.invoke(indexableTableHandler, "setMinAndMaxId", snapshotTable, dataSource);
 	}
 
 	@After
 	public void after() {
-		new ThreadUtilities().destroy();
 		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
 		clusterManager.getServer().getActions().clear();
 		DatabaseUtilities.close(connection);
-	}
-
-	private long getMinId() {
-		return dataBase.find(Snapshot.class, new String[] { "id" }, new Boolean[] { true }, 0, 1).get(0).getId();
-	}
-
-	private long getMaxId() {
-		return dataBase.find(Snapshot.class, new String[] { "id" }, new Boolean[] { false }, 0, 1).get(0).getId();
 	}
 
 	@Test
@@ -100,8 +86,7 @@ public class IndexableTableHandlerIntegration extends Integration {
 			String ip = InetAddress.getLocalHost().getHostAddress();
 			IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
 			indexContext.setIndexWriters(indexWriter);
-			Long minId = getMinId();
-			snapshotTable.setPredicate("where snapshot.id = " + minId);
+			snapshotTable.setPredicate("where snapshot.id = " + snapshotTable.getMinimumId());
 			List<Future<?>> threads = indexableTableHandler.handle(indexContext, snapshotTable);
 			ThreadUtilities.waitForFutures(threads, Integer.MAX_VALUE);
 			assertEquals("There must be exactly one document in the index : ", 1, indexContext.getIndexWriters()[0].numDocs());
@@ -126,12 +111,10 @@ public class IndexableTableHandlerIntegration extends Integration {
 
 	@Test
 	public void getIdFunction() throws Exception {
-		Long jpaMinId = getMinId();
-		Long jpaMaxId = getMaxId();
 		Long minId = Deencapsulation.invoke(indexableTableHandler, "getIdFunction", snapshotTable, connection, "min");
-		assertTrue("The min id should be : " + jpaMinId, minId.equals(jpaMinId));
+		assertTrue("The min id should be : " + snapshotTable.getMinimumId(), minId.equals(snapshotTable.getMinimumId()));
 		Long maxId = Deencapsulation.invoke(indexableTableHandler, "getIdFunction", snapshotTable, connection, "max");
-		assertTrue("The max id should be " + jpaMaxId, maxId.equals(jpaMaxId));
+		assertTrue("The max id should be " + snapshotTable.getMaximumId(), maxId.equals(snapshotTable.getMaximumId()));
 	}
 
 	@Test
@@ -164,9 +147,23 @@ public class IndexableTableHandlerIntegration extends Integration {
 	}
 
 	@Test
-	public void getResultSet() throws Exception {
-		long minId = getMinId();
-		snapshotColumn.setContent(minId);
+	public void getResultSetDatasource() throws Exception {
+		snapshotColumn.setContent(snapshotTable.getMinimumId());
+		snapshotTable.setMaximumId(snapshotTable.getMaximumId());
+		ResultSet resultSet = Deencapsulation.invoke(indexableTableHandler, "getResultSet", indexContext, snapshotTable, dataSource,
+				new AtomicLong(0));
+		assertNotNull(resultSet);
+		assertTrue(resultSet.next());
+
+		Statement statement = resultSet.getStatement();
+		DatabaseUtilities.close(resultSet);
+		DatabaseUtilities.close(statement);
+	}
+
+	@Test
+	public void getResultSetConnection() throws Exception {
+		snapshotColumn.setContent(snapshotTable.getMinimumId());
+		snapshotTable.setMaximumId(snapshotTable.getMaximumId());
 		ResultSet resultSet = Deencapsulation.invoke(indexableTableHandler, "getResultSet", indexContext, snapshotTable, connection,
 				new AtomicLong(0));
 		assertNotNull(resultSet);
@@ -274,7 +271,7 @@ public class IndexableTableHandlerIntegration extends Integration {
 			Thread thread = new Thread(new Runnable() {
 				public void run() {
 					ThreadUtilities.sleep(10000);
-					new ThreadUtilities().destroy();
+					ThreadUtilities.destroy(indexContext.getIndexName());
 				}
 			});
 			thread.setDaemon(Boolean.TRUE);
@@ -285,7 +282,6 @@ public class IndexableTableHandlerIntegration extends Integration {
 			assertTrue(Boolean.TRUE);
 			assertTrue(System.currentTimeMillis() - start < 60000);
 		} finally {
-			new ThreadUtilities().initialize();
 			indexContext.setThrottle(0);
 		}
 	}

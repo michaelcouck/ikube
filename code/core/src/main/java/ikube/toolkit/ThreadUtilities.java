@@ -46,7 +46,7 @@ public final class ThreadUtilities implements IListener {
 		try {
 			Future<?> future = submit(runnable);
 			getFutures(name).add(future);
-			LOGGER.info("Submit future : " + name);
+			LOGGER.debug("Submit future : " + name);
 			return future;
 		} finally {
 			ThreadUtilities.class.notifyAll();
@@ -111,7 +111,7 @@ public final class ThreadUtilities implements IListener {
 						return;
 					}
 					future.cancel(true);
-					LOGGER.info("Destroyed and removed future : " + name + ", " + future);
+					LOGGER.debug("Destroyed and removed future : " + name + ", " + future);
 				}
 			}
 		} finally {
@@ -119,6 +119,9 @@ public final class ThreadUtilities implements IListener {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void handleNotification(Event event) {
 		if (Event.TIMER.equals(event.getType())) {
@@ -130,7 +133,7 @@ public final class ThreadUtilities implements IListener {
 							if (future.isCancelled() || future.isDone()) {
 								boolean removed = getFutures(mapEntry.getKey()).remove(future);
 								if (removed) {
-									LOGGER.info("Removed future : " + future);
+									LOGGER.debug("Removed future : " + future);
 								}
 							}
 						}
@@ -164,7 +167,7 @@ public final class ThreadUtilities implements IListener {
 	 */
 	public static void waitForFuture(final Future<?> future, final long maxWait) {
 		if (future == null) {
-			LOGGER.info("Future null returning : ");
+			LOGGER.debug("Future null returning : ");
 			return;
 		}
 		long start = System.currentTimeMillis();
@@ -174,11 +177,12 @@ public final class ThreadUtilities implements IListener {
 			} catch (InterruptedException e) {
 				String message = "Coitus interruptus... : " + e.getMessage();
 				LOGGER.warn(message);
-				LOGGER.debug(message, e);
+				LOGGER.debug(null, e);
 			} catch (TimeoutException e) {
 				LOGGER.info("Timed out waiting for future : " + e.getMessage());
 			} catch (Exception e) {
-				LOGGER.error("Exception waiting for future : ", e);
+				LOGGER.error("Exception waiting for future : ");
+				LOGGER.debug(null, e);
 			}
 			ThreadUtilities.sleep(1000);
 			if ((System.currentTimeMillis() - start) > maxWait * 1000) {
@@ -190,7 +194,7 @@ public final class ThreadUtilities implements IListener {
 			List<Future<?>> futures = new ArrayList<Future<?>>(mapEntry.getValue());
 			boolean removed = futures.remove(future);
 			if (removed) {
-				LOGGER.info("Removed future : " + future);
+				LOGGER.debug("Removed future : " + future);
 			}
 		}
 	}

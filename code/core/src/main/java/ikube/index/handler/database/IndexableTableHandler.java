@@ -64,8 +64,6 @@ import org.apache.lucene.document.Field.TermVector;
  */
 public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 
-	private ThreadLocal<Integer> exceptions = new ThreadLocal<Integer>();
-
 	/**
 	 * This method starts threads and passes the indexable to them. The threads are added to the list of threads that are returned to the
 	 * caller that will have to wait for them to finish indexing all the data.
@@ -76,7 +74,6 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 		// the threads to the caller that they can then wait for the threads to finish
 		final DataSource dataSource = indexable.getDataSource();
 		List<Future<?>> futures = new ArrayList<Future<?>>();
-		exceptions.set(new Integer(0));
 		try {
 			final AtomicLong currentId = new AtomicLong(0);
 			for (int i = 0; i < getThreads(); i++) {
@@ -110,64 +107,6 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 		return futures;
 	}
 
-	protected void addAllColumns(IndexableTable indexableTable, final DataSource dataSource) throws SQLException {
-		Connection connection = getConnection(dataSource);
-		List<String> columnNames = DatabaseUtilities.getAllColumns(connection, indexableTable.getName());
-		List<String> primaryKeyColumns = DatabaseUtilities.getPrimaryKeys(connection, indexableTable.getName());
-		if (columnNames.size() == 0) {
-			logger.warn("No columns found for table : " + indexableTable.getName());
-			return;
-		}
-		String primaryKeyColumn = primaryKeyColumns.size() > 0 ? primaryKeyColumns.get(0) : columnNames.get(0);
-		List<Indexable<?>> children = indexableTable.getChildren();
-		if (children == null) {
-			children = new ArrayList<Indexable<?>>();
-		}
-		for (String columnName : columnNames) {
-			// We skip the columns that have been explicitly defined in the configuration
-			if (containsColumn(indexableTable, columnName)) {
-				continue;
-			}
-			IndexableColumn indexableColumn = new IndexableColumn();
-			indexableColumn.setAddress(Boolean.FALSE);
-			indexableColumn.setFieldName(columnName);
-			indexableColumn.setIdColumn(columnName.equalsIgnoreCase(primaryKeyColumn));
-			indexableColumn.setName(columnName);
-			indexableColumn.setParent(indexableTable);
-			indexableColumn.setAnalyzed(indexableTable.isAnalyzed());
-			indexableColumn.setStored(indexableTable.isStored());
-			indexableColumn.setVectored(indexableTable.isVectored());
-			children.add(indexableColumn);
-		}
-		indexableTable.setChildren(children);
-		DatabaseUtilities.close(connection);
-	}
-
-	protected boolean containsPrimaryKeyColumn(IndexableTable indexableTable) {
-		for (Indexable<?> child : indexableTable.getChildren()) {
-			if (IndexableColumn.class.isAssignableFrom(child.getClass())) {
-				if (((IndexableColumn) child).isIdColumn()) {
-					return Boolean.TRUE;
-				}
-			}
-		}
-		return Boolean.FALSE;
-	}
-
-	protected boolean containsColumn(IndexableTable indexableTable, String columnName) {
-		if (indexableTable.getChildren() == null) {
-			return Boolean.FALSE;
-		}
-		for (Indexable<?> child : indexableTable.getChildren()) {
-			if (IndexableColumn.class.isAssignableFrom(child.getClass())) {
-				if (((IndexableColumn) child).getName().equalsIgnoreCase(columnName)) {
-					return Boolean.TRUE;
-				}
-			}
-		}
-		return Boolean.FALSE;
-	}
-
 	/**
 	 * This method does the actual indexing, and calls it's self recursively.
 	 * 
@@ -186,19 +125,24 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 		Document currentDocument = document == null ? new Document() : document;
 		// One connection per thread, the connection will be closed by the thread when finished
 		ResultSet resultSet = getResultSet(indexContext, indexableTable, dataSource, currentId);
-		while (resultSet != null) {
+		do {
 			try {
+				if (resultSet == null) {
+					break;
+				}
+				// The result set is already moved to the first row, i.e. next()
 				handleRow(indexContext, indexableTable, dataSource, resultSet, currentDocument, contentProvider, currentId);
+				if (!resultSet.next()) {
+					DatabaseUtilities.closeAll(resultSet);
+					resultSet = getResultSet(indexContext, indexableTable, dataSource, currentId);
+				}
 			} catch (InterruptedException e) {
 				throw e;
 			} catch (Exception e) {
 				logger.error("Exception indexing table : " + indexableTable.getName(), e);
-				exceptions.set(new Integer(exceptions.get() + 1));
-				if (exceptions.get() > indexableTable.getMaxExceptions()) {
-					throw e;
-				}
+				throw e;
 			}
-		}
+		} while (resultSet != null);
 		DatabaseUtilities.closeAll(resultSet);
 	}
 
@@ -240,10 +184,6 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 		if (Thread.currentThread().isInterrupted()) {
 			throw new InterruptedException("Table indexing teminated : ");
 		}
-		if (!resultSet.next()) {
-			DatabaseUtilities.closeAll(resultSet);
-			resultSet = getResultSet(indexContext, indexableTable, dataSource, currentId);
-		}
 	}
 
 	private ResultSet getResultSet(final IndexContext<?> indexContext, final IndexableTable indexableTable, final DataSource dataSource,
@@ -251,10 +191,14 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 		Connection connection = getConnection(dataSource);
 		ResultSet resultSet = getResultSet(indexContext, indexableTable, connection, currentId);
 		while (!resultSet.next()) {
+			// logger.info("Next : " + currentId.get());
 			DatabaseUtilities.closeAll(resultSet);
+			// logger.info("Primary table : " + indexableTable.isPrimaryTable());
 			if (!indexableTable.isPrimaryTable()) {
+				// If this is not the primary table then we have exhausted the results
 				return null;
 			}
+			// logger.info("Max id : " + indexableTable.getMaximumId());
 			if (currentId.get() >= indexableTable.getMaximumId()) {
 				// Finished indexing the table hierarchy
 				return null;
@@ -263,27 +207,6 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 			resultSet = getResultSet(indexContext, indexableTable, connection, currentId);
 		}
 		return resultSet;
-	}
-
-	private Connection getConnection(final DataSource dataSource) throws SQLException {
-		Connection connection = dataSource.getConnection();
-		connection.setAutoCommit(Boolean.FALSE);
-		return connection;
-	}
-
-	private void setMinAndMaxId(final IndexableTable indexableTable, final DataSource dataSource) throws Exception {
-		Connection connection = getConnection(dataSource);
-		long minimumId = indexableTable.getMinimumId();
-		if (minimumId <= 0) {
-			minimumId = getIdFunction(indexableTable, connection, "min");
-			indexableTable.setMinimumId(minimumId);
-		}
-		long maximumId = indexableTable.getMaximumId();
-		if (maximumId <= 0) {
-			maximumId = getIdFunction(indexableTable, connection, "max");
-			indexableTable.setMaximumId(maximumId);
-		}
-		DatabaseUtilities.close(connection);
 	}
 
 	/**
@@ -309,8 +232,8 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 			if (indexableTable.isPrimaryTable()) {
 				currentId.set(currentId.get() + indexContext.getBatchSize());
 			}
-			PreparedStatement preparedStatement = connection.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY,
-					ResultSet.CLOSE_CURSORS_AT_COMMIT);
+			PreparedStatement preparedStatement = connection.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY,
+					ResultSet.CONCUR_READ_ONLY, ResultSet.CLOSE_CURSORS_AT_COMMIT);
 			// Set the parameters if this is a sub table, this typically means that the
 			// id from the primary table is set in the prepared statement for the sub table
 			setParameters(indexableTable, preparedStatement);
@@ -415,6 +338,28 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 		} finally {
 			notifyAll();
 		}
+	}
+
+	private Connection getConnection(final DataSource dataSource) throws SQLException {
+		Connection connection = dataSource.getConnection();
+		connection.setAutoCommit(Boolean.FALSE);
+		return connection;
+	}
+
+	private void setMinAndMaxId(final IndexableTable indexableTable, final DataSource dataSource) throws Exception {
+		Connection connection = getConnection(dataSource);
+		long minimumId = indexableTable.getMinimumId();
+		if (minimumId <= 0) {
+			minimumId = getIdFunction(indexableTable, connection, "min");
+			indexableTable.setMinimumId(minimumId);
+		}
+		long maximumId = indexableTable.getMaximumId();
+		if (maximumId <= 0) {
+			maximumId = getIdFunction(indexableTable, connection, "max");
+			indexableTable.setMaximumId(maximumId);
+		}
+		logger.info("Min and max id : " + indexableTable.getMinimumId() + ", " + indexableTable.getMaximumId());
+		DatabaseUtilities.close(connection);
 	}
 
 	/**
@@ -570,6 +515,64 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 			FileUtilities.close(parsedOutputStream);
 			FileUtilities.close(byteOutputStream);
 		}
+	}
+
+	protected void addAllColumns(IndexableTable indexableTable, final DataSource dataSource) throws SQLException {
+		Connection connection = getConnection(dataSource);
+		List<String> columnNames = DatabaseUtilities.getAllColumns(connection, indexableTable.getName());
+		List<String> primaryKeyColumns = DatabaseUtilities.getPrimaryKeys(connection, indexableTable.getName());
+		if (columnNames.size() == 0) {
+			logger.warn("No columns found for table : " + indexableTable.getName());
+			return;
+		}
+		String primaryKeyColumn = primaryKeyColumns.size() > 0 ? primaryKeyColumns.get(0) : columnNames.get(0);
+		List<Indexable<?>> children = indexableTable.getChildren();
+		if (children == null) {
+			children = new ArrayList<Indexable<?>>();
+		}
+		for (String columnName : columnNames) {
+			// We skip the columns that have been explicitly defined in the configuration
+			if (containsColumn(indexableTable, columnName)) {
+				continue;
+			}
+			IndexableColumn indexableColumn = new IndexableColumn();
+			indexableColumn.setAddress(Boolean.FALSE);
+			indexableColumn.setFieldName(columnName);
+			indexableColumn.setIdColumn(columnName.equalsIgnoreCase(primaryKeyColumn));
+			indexableColumn.setName(columnName);
+			indexableColumn.setParent(indexableTable);
+			indexableColumn.setAnalyzed(indexableTable.isAnalyzed());
+			indexableColumn.setStored(indexableTable.isStored());
+			indexableColumn.setVectored(indexableTable.isVectored());
+			children.add(indexableColumn);
+		}
+		indexableTable.setChildren(children);
+		DatabaseUtilities.close(connection);
+	}
+
+	protected boolean containsPrimaryKeyColumn(IndexableTable indexableTable) {
+		for (Indexable<?> child : indexableTable.getChildren()) {
+			if (IndexableColumn.class.isAssignableFrom(child.getClass())) {
+				if (((IndexableColumn) child).isIdColumn()) {
+					return Boolean.TRUE;
+				}
+			}
+		}
+		return Boolean.FALSE;
+	}
+
+	protected boolean containsColumn(IndexableTable indexableTable, String columnName) {
+		if (indexableTable.getChildren() == null) {
+			return Boolean.FALSE;
+		}
+		for (Indexable<?> child : indexableTable.getChildren()) {
+			if (IndexableColumn.class.isAssignableFrom(child.getClass())) {
+				if (((IndexableColumn) child).getName().equalsIgnoreCase(columnName)) {
+					return Boolean.TRUE;
+				}
+			}
+		}
+		return Boolean.FALSE;
 	}
 
 	/**

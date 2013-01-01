@@ -58,7 +58,7 @@ public class Scheduler {
 		this.schedules.clear();
 		this.scheduledExecuterService.shutdown();
 		List<Runnable> runnables = this.scheduledExecuterService.shutdownNow();
-		LOGGER.info("Shutdown runnables : " + runnables);
+		LOGGER.info("Shutdown schedules : " + runnables);
 	}
 
 	public void setSchedule(Schedule schedule) {

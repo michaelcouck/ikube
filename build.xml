@@ -33,20 +33,32 @@
         </antcall>
     </target>
     
-	<target name="start-all-servers">
-	    <antcall target="execute-remote-command">
-        	<param name="host" value="ikube.be" />
-        	<param name="command" value="cd /usr/share/apache-tomcat-7.0.27/bin; ./startup.sh;" />
+    <target name="start-all-servers" >
+        <antcall target="execute-remote-command" >
+            <param name="host" value="ikube.be" />
+            <param name="command" value="cd /usr/share/apache-tomcat-7.0.27/bin; ./startup.sh;" />
         </antcall>
-        <antcall target="execute-remote-command">
-        	<param name="host" value="192.168.1.6" />
-        	<param name="command" value="cd /usr/share/apache-tomcat-7.0.27/bin; ./startup.sh;" />
+        <!-- antcall target="execute-remote-command" >
+            <param name="host" value="ikube.be" />
+            <param name="command" value="cd /usr/share/apache-tomcat-6.0.29-1/bin; ./startup.sh;" />
         </antcall>
-        <antcall target="execute-remote-command">
-        	<param name="host" value="192.168.1.7" />
-        	<param name="command" value="cd /usr/share/apache-tomcat-7.0.27/bin; ./startup.sh;" />
+        <antcall target="execute-remote-command" >
+            <param name="host" value="ikube.be" />
+            <param name="command" value="cd /usr/share/apache-tomcat-6.0.29-2/bin; ./startup.sh;" />
         </antcall>
-	</target>
+        <antcall target="execute-remote-command" >
+            <param name="host" value="ikube.be" />
+            <param name="command" value="cd /usr/share/apache-tomcat-6.0.29-3/bin; ./startup.sh;" />
+        </antcall -->
+        <antcall target="execute-remote-command" >
+            <param name="host" value="192.168.1.6" />
+            <param name="command" value="cd /usr/share/apache-tomcat-7.0.27/bin; ./startup.sh;" />
+        </antcall>
+        <antcall target="execute-remote-command" >
+            <param name="host" value="192.168.1.7" />
+            <param name="command" value="cd /usr/share/apache-tomcat-7.0.27/bin; ./startup.sh;" />
+        </antcall>
+    </target>
 	
 	<target name="prepare-everything">
 		<antcall target="package-configuration" />
@@ -81,6 +93,18 @@
 			<param name="file-to-copy" value="${target-directory}/${ikube-war}" />
 			<param name="server-directory" value="${userid}:${password}@ikube.be:/usr/share/apache-tomcat-7.0.27/webapps" />
 		</antcall>
+		<!-- antcall target="copy-to-server">
+			<param name="file-to-copy" value="${target-directory}/${ikube-war}" />
+			<param name="server-directory" value="${userid}:${password}@ikube.be:/usr/share/apache-tomcat-6.0.29-1/webapps" />
+		</antcall>
+		<antcall target="copy-to-server">
+			<param name="file-to-copy" value="${target-directory}/${ikube-war}" />
+			<param name="server-directory" value="${userid}:${password}@ikube.be:/usr/share/apache-tomcat-6.0.29-2/webapps" />
+		</antcall>
+		<antcall target="copy-to-server">
+			<param name="file-to-copy" value="${target-directory}/${ikube-war}" />
+			<param name="server-directory" value="${userid}:${password}@ikube.be:/usr/share/apache-tomcat-6.0.29-3/webapps" />
+		</antcall -->
 		<antcall target="copy-to-server">
 			<param name="file-to-copy" value="${target-directory}/${ikube-war}" />
 			<param name="server-directory" value="${userid}:${password}@192.168.1.6:/usr/share/apache-tomcat-7.0.27/webapps" />
@@ -112,6 +136,18 @@
 			<param name="host" value="ikube.be" />
 			<param name="command" value="chmod 777 -R /usr/share/apache-tomcat-7.0.27;" />
 		</antcall>
+		<!-- antcall target="execute-remote-command">
+			<param name="host" value="ikube.be" />
+			<param name="command" value="chmod 777 -R /usr/share/apache-tomcat-6.0.29-1;" />
+		</antcall>
+		<antcall target="execute-remote-command">
+			<param name="host" value="ikube.be" />
+			<param name="command" value="chmod 777 -R /usr/share/apache-tomcat-6.0.29-2;" />
+		</antcall>
+		<antcall target="execute-remote-command">
+			<param name="host" value="ikube.be" />
+			<param name="command" value="chmod 777 -R /usr/share/apache-tomcat-6.0.29-3;" />
+		</antcall -->
 		<antcall target="execute-remote-command">
 			<param name="host" value="192.168.1.6" />
 			<param name="command" value="chmod 777 -R /usr/share/apache-tomcat-7.0.27;" />
@@ -126,13 +162,33 @@
 		<antcall target="execute-remote-command">
 			<param name="host" value="${host}" />
 			<param name="command" 
-				value="rm -r /usr/share/apache-tomcat-7.0.27/bin/ikube;
+				value="
+						  rm -r /usr/share/apache-tomcat-7.0.27/bin/ikube;
+						  rm -r /usr/share/apache-tomcat-6.0.29-1/bin/ikube;
+						  rm -r /usr/share/apache-tomcat-6.0.29-2/bin/ikube;
+						  rm -r /usr/share/apache-tomcat-6.0.29-3/bin/ikube;
+						  
 						  rm -r /usr/share/apache-tomcat-7.0.27/webapps/ikube*;
+						  rm -r /usr/share/apache-tomcat-6.0.29-1/webapps/ikube*;
+						  rm -r /usr/share/apache-tomcat-6.0.29-2/webapps/ikube*;
+						  rm -r /usr/share/apache-tomcat-6.0.29-3/webapps/ikube*;
+						  
 						  rm -r /usr/share/apache-tomcat-7.0.27/logs;
+						  rm -r /usr/share/apache-tomcat-6.0.29-1/logs;
+						  rm -r /usr/share/apache-tomcat-6.0.29-2/logs;
+						  rm -r /usr/share/apache-tomcat-6.0.29-3/logs;
+						  
 						  mkdir -p /usr/share/apache-tomcat-7.0.27/bin/ikube;
+						  mkdir -p /usr/share/apache-tomcat-6.0.29-1/bin/ikube;
+						  mkdir -p /usr/share/apache-tomcat-6.0.29-2/bin/ikube;
+						  mkdir -p /usr/share/apache-tomcat-6.0.29-3/bin/ikube;
+						  
 						  mkdir -p /usr/share/apache-tomcat-7.0.27/logs;
-						  chmod 777 -R /usr/share/apache-tomcat-7.0.27" />
+						  mkdir -p /usr/share/apache-tomcat-6.0.29-1/logs;
+						  mkdir -p /usr/share/apache-tomcat-6.0.29-2/logs;
+						  mkdir -p /usr/share/apache-tomcat-6.0.29-3/logs;" />
 		</antcall>
+		<antcall target="chmod-all-servers" />
 	</target>
 	
 	<target name="execute-remote-command">
@@ -188,6 +244,21 @@
 			<param name="directory-to-copy" value="${output-configuration-directory}" />
 			<param name="server-directory" value="/usr/share/apache-tomcat-7.0.27/bin/ikube" />
 		</antcall>
+		<!-- antcall target="copy-directory-to-server">
+			<param name="host" value="ikube.be" />
+			<param name="directory-to-copy" value="${output-configuration-directory}" />
+			<param name="server-directory" value="/usr/share/apache-tomcat-6.0.29-1/bin/ikube" />
+		</antcall>
+		<antcall target="copy-directory-to-server">
+			<param name="host" value="ikube.be" />
+			<param name="directory-to-copy" value="${output-configuration-directory}" />
+			<param name="server-directory" value="/usr/share/apache-tomcat-6.0.29-2/bin/ikube" />
+		</antcall>
+		<antcall target="copy-directory-to-server">
+			<param name="host" value="ikube.be" />
+			<param name="directory-to-copy" value="${output-configuration-directory}" />
+			<param name="server-directory" value="/usr/share/apache-tomcat-6.0.29-3/bin/ikube" />
+		</antcall -->
 		<antcall target="copy-directory-to-server">
 		    <param name="host" value="192.168.1.6" />
 			<param name="directory-to-copy" value="${output-configuration-directory}" />
