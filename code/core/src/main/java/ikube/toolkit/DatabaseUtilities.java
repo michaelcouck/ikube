@@ -171,8 +171,8 @@ public final class DatabaseUtilities {
 		try {
 			String tableName = null;
 			String databaseName = connection.getMetaData().getDatabaseProductName();
-			if (databaseName.contains("Postgre")) {
-				// No upper case for Postgres!
+			if (databaseName.toLowerCase().contains("postgre") || databaseName.toLowerCase().contains("mysql")) {
+				// No upper case for Postgres or MySQL!
 				tableName = table;
 			} else {
 				// Oracle and Db2 are fine with upper case
@@ -200,7 +200,7 @@ public final class DatabaseUtilities {
 		List<String> primaryKeyColumns = new ArrayList<String>();
 		try {
 			databaseMetaData = connection.getMetaData();
-			primaryKeyResultSet = databaseMetaData.getPrimaryKeys(null, null, table.toUpperCase());
+			primaryKeyResultSet = databaseMetaData.getPrimaryKeys(null, null, table);
 			while (primaryKeyResultSet.next()) {
 				Object columnName = primaryKeyResultSet.getObject("COLUMN_NAME");
 				primaryKeyColumns.add(columnName.toString());
@@ -234,7 +234,7 @@ public final class DatabaseUtilities {
 	}
 
 	public static List<String[]> getForeignKeys(final Connection connection, final String table) {
-		String tableName = table.toUpperCase();
+		String tableName = table;
 		List<String[]> foreignKeys = new ArrayList<String[]>();
 		DatabaseMetaData databaseMetaData = null;
 		ResultSet importedKeys = null;
@@ -274,7 +274,7 @@ public final class DatabaseUtilities {
 		try {
 			return field.get(object);
 		} catch (Exception e) {
-			LOGGER.error("Exceptino accing field : " + field, e);
+			LOGGER.error("Exception accing field : " + field, e);
 		}
 		return null;
 	}

@@ -25,10 +25,6 @@
 		This is the security configuration for the application.
 	</beans:description>
 	
-	<context:annotation-config />
-	<context:component-scan base-package="ikube" />
-	<aop:aspectj-autoproxy proxy-target-class="false" />
-	
 	<http auto-config="true">
 		<anonymous />
 		<intercept-url 

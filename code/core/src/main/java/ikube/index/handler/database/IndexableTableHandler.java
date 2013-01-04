@@ -132,6 +132,11 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 				}
 				// The result set is already moved to the first row, i.e. next()
 				handleRow(indexContext, indexableTable, dataSource, resultSet, currentDocument, contentProvider, currentId);
+				// Add the document to the index if this is the primary table
+				if (indexableTable.isPrimaryTable()) {
+					addDocument(indexContext, indexableTable, currentDocument);
+					currentDocument = new Document();
+				}
 				if (!resultSet.next()) {
 					DatabaseUtilities.closeAll(resultSet);
 					resultSet = getResultSet(indexContext, indexableTable, dataSource, currentId);
@@ -175,11 +180,6 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 				}
 			}
 		}
-		// Add the document to the index if this is the primary table
-		if (indexableTable.isPrimaryTable()) {
-			addDocument(indexContext, indexableTable, currentDocument);
-			currentDocument = new Document();
-		}
 		Thread.sleep(indexContext.getThrottle());
 		if (Thread.currentThread().isInterrupted()) {
 			throw new InterruptedException("Table indexing teminated : ");
@@ -191,14 +191,11 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 		Connection connection = getConnection(dataSource);
 		ResultSet resultSet = getResultSet(indexContext, indexableTable, connection, currentId);
 		while (!resultSet.next()) {
-			// logger.info("Next : " + currentId.get());
 			DatabaseUtilities.closeAll(resultSet);
-			// logger.info("Primary table : " + indexableTable.isPrimaryTable());
 			if (!indexableTable.isPrimaryTable()) {
 				// If this is not the primary table then we have exhausted the results
 				return null;
 			}
-			// logger.info("Max id : " + indexableTable.getMaximumId());
 			if (currentId.get() >= indexableTable.getMaximumId()) {
 				// Finished indexing the table hierarchy
 				return null;
@@ -414,13 +411,10 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 			StringBuilder builder = new StringBuilder("select ");
 			builder.append(function);
 			builder.append('(');
-
 			builder.append(indexableTable.getName());
 			builder.append('.');
 			builder.append(idColumn.getName());
-
 			builder.append(") from ");
-
 			builder.append(indexableTable.getName());
 
 			statement = connection.createStatement();
@@ -587,8 +581,8 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	protected void setIdField(final IndexableTable indexableTable, final Document document) throws Exception {
 		List<Indexable<?>> children = indexableTable.getChildren();
 		IndexableColumn idColumn = getIdColumn(children);
-		StringBuilder builder = new StringBuilder();
 
+		StringBuilder builder = new StringBuilder();
 		builder.append(indexableTable.getName());
 		builder.append(' ');
 		builder.append(idColumn.getName());

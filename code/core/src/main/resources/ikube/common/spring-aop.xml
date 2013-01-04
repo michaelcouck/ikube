@@ -24,9 +24,6 @@
 		This is the configuration for the intercepter for the rules.
 	</description>
 	
-	<aop:config proxy-target-class="true" />
-	<aop:aspectj-autoproxy proxy-target-class="true" />
-	
 	<!--
 		This bean will intercept the actions, execute the rules that are associated with the 
 		actions, and based on the results from the execution of the rules and the evaluation 
