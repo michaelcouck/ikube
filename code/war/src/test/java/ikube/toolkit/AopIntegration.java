@@ -7,8 +7,6 @@ import ikube.model.IndexContext;
 import ikube.model.IndexableFileSystem;
 
 import java.io.File;
-import java.util.List;
-import java.util.concurrent.Future;
 
 import mockit.Cascading;
 import mockit.Mockit;
@@ -17,7 +15,6 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -30,7 +27,6 @@ import org.mockito.Mockito;
  * @since 30.04.2011
  * @version 01.00
  */
-@Ignore
 public class AopIntegration extends Base {
 
 	@Cascading
@@ -50,17 +46,17 @@ public class AopIntegration extends Base {
 	@SuppressWarnings("rawtypes")
 	public void intercept() throws Exception {
 		IndexContext indexContext = ApplicationContextManager.getBean("desktop");
-		indexContext.setIndexWriters(Mockito.mock(IndexWriter.class));
 		IndexableFileSystem indexableFileSystem = ApplicationContextManager.getBean("desktopFolder");
-		indexableFileSystem.setPath(FileUtilities.findFileRecursively(new File("."), Boolean.TRUE, "data").getAbsolutePath());
+		IndexableFilesystemHandler indexableHandler = ApplicationContextManager.getBean(IndexableFilesystemHandler.class);
+
+		indexContext.setIndexWriters(Mockito.mock(IndexWriter.class));
 		IStrategy strategy = Mockito.mock(IStrategy.class);
 		Mockito.when(strategy.preProcess(Mockito.any(IndexContext.class), Mockito.any(IndexableFileSystem.class), Mockito.any(File.class)))
 				.thenReturn(Boolean.TRUE);
 		indexableFileSystem.getStrategies().add(strategy);
-		IndexableFilesystemHandler indexableHandler = ApplicationContextManager.getBean(IndexableFilesystemHandler.class);
 
-		List<Future<?>> futures = indexableHandler.handle(indexContext, indexableFileSystem);
-		ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
+		File file = FileUtilities.findFileRecursively(new File("."), Boolean.FALSE, "default.results.xml");
+		indexableHandler.handleFile(indexContext, indexableFileSystem, file);
 
 		Mockito.verify(strategy, Mockito.atLeastOnce()).preProcess(Mockito.any(IndexContext.class), Mockito.any(IndexableFileSystem.class),
 				Mockito.any(File.class));

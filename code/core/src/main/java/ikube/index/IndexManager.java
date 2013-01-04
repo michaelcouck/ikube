@@ -14,7 +14,10 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.Writer;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Date;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -38,6 +41,7 @@ import org.apache.lucene.store.AlreadyClosedException;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.LockObtainFailedException;
+import org.springframework.util.ReflectionUtils;
 
 /**
  * This class opens and closes the Lucene index writer. There are also methods that get the path to the index directory based on the path in
@@ -389,8 +393,28 @@ public final class IndexManager {
 		if (indexWriters != null && indexWriters.length > 0) {
 			for (final IndexWriter indexWriter : indexWriters) {
 				try {
+					final AtomicBoolean isClosed = new AtomicBoolean();
+					ReflectionUtils.MethodFilter methodFilter = new ReflectionUtils.MethodFilter() {
+						@Override
+						public boolean matches(Method method) {
+							return method.getName().equals("isClosed");
+						}
+					};
+					ReflectionUtils.MethodCallback methodCallback = new ReflectionUtils.MethodCallback() {
+						@Override
+						public void doWith(Method method) throws IllegalArgumentException, IllegalAccessException {
+							try {
+								Boolean result = (Boolean) method.invoke(indexWriter);
+								isClosed.set(result);
+							} catch (InvocationTargetException e) {
+								isClosed.set(Boolean.TRUE);
+								LOGGER.warn("Exception checking the closed status of the writer : ", e);
+							}
+						}
+					};
+					ReflectionUtils.doWithMethods(IndexWriter.class, methodCallback, methodFilter);
 					// Checking if the directory is locked is like checking that the writer is sill open
-					if (IndexWriter.isLocked(indexWriter.getDirectory())) {
+					if (!isClosed.get()) {
 						numDocs += indexWriter.numDocs();
 					}
 				} catch (AlreadyClosedException e) {
@@ -398,33 +422,33 @@ public final class IndexManager {
 				} catch (Exception e) {
 					LOGGER.error("Exception reading the number of documents from the writer", e);
 				}
-				File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
-				if (latestIndexDirectory != null) {
-					File[] serverIndexDirectories = latestIndexDirectory.listFiles();
-					if (serverIndexDirectories != null) {
-						Directory directory = null;
-						IndexReader indexReader = null;
-						for (File serverIndexDirectory : serverIndexDirectories) {
-							try {
-								directory = FSDirectory.open(serverIndexDirectory);
-								if (!IndexWriter.isLocked(directory) && IndexReader.indexExists(directory)) {
-									indexReader = IndexReader.open(directory);
-									numDocs += indexReader.numDocs();
-								}
-							} catch (Exception e) {
-								LOGGER.error("Exception opening the reader on the index : " + serverIndexDirectory, e);
-							} finally {
-								try {
-									if (directory != null) {
-										directory.close();
-									}
-									if (indexReader != null) {
-										indexReader.close();
-									}
-								} catch (Exception e) {
-									LOGGER.error("Exception closing the readon on the index : ", e);
-								}
+			}
+		}
+		File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
+		if (latestIndexDirectory != null) {
+			File[] serverIndexDirectories = latestIndexDirectory.listFiles();
+			if (serverIndexDirectories != null) {
+				Directory directory = null;
+				IndexReader indexReader = null;
+				for (File serverIndexDirectory : serverIndexDirectories) {
+					try {
+						directory = FSDirectory.open(serverIndexDirectory);
+						if (!IndexWriter.isLocked(directory) && IndexReader.indexExists(directory)) {
+							indexReader = IndexReader.open(directory);
+							numDocs += indexReader.numDocs();
+						}
+					} catch (Exception e) {
+						LOGGER.error("Exception opening the reader on the index : " + serverIndexDirectory, e);
+					} finally {
+						try {
+							if (directory != null) {
+								directory.close();
 							}
+							if (indexReader != null) {
+								indexReader.close();
+							}
+						} catch (Exception e) {
+							LOGGER.error("Exception closing the readon on the index : ", e);
 						}
 					}
 				}

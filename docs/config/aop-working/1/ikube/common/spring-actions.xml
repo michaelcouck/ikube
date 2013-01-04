@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:property="http://www.springframework.org/schema/p"
+	xmlns:transaction="http://www.springframework.org/schema/tx"
+	xmlns:context="http://www.springframework.org/schema/context"
+
+	xsi:schemaLocation="
+			http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+			http://www.springframework.org/schema/aop
+            http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+            http://www.springframework.org/schema/util
+            http://www.springframework.org/schema/util/spring-util.xsd
+            http://www.springframework.org/schema/context
+            http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+            
+	<description>
+		This file is not to be modified by users generally.
+		This file contains the actions that generate the indexes, and open and close the indexes 
+		when necessary. These actions are governed by rules. The rules that determine when actions 
+		get executed are also defined in this configuration file. Rules like for instance 'if the server is not working'
+		and the 'index is out of date' then start a new index.
+	</description>
+	
+	<util:list id="ikube.IndexEngine.actions">
+		<ref bean="ikube.action.Close"  />
+		<ref bean="ikube.action.Reset" />
+		<ref bean="ikube.action.Restore" />
+		<ref bean="ikube.action.Index"  />
+		<!-- <ref bean="ikube.action.IndexDelta"  /> -->
+		<ref bean="ikube.action.Open"  />
+		<ref bean="ikube.action.Delete" />
+		<ref bean="ikube.action.Clean" />
+		<ref bean="ikube.action.Backup" />
+		<ref bean="ikube.action.DiskFull" />
+		<ref bean="ikube.action.Validator" />
+		<ref bean="ikube.action.Prune" />
+	</util:list>
+
+	<bean 
+		id="ikube.action.Reset" 
+		class="ikube.action.Reset" 
+		property:ruleExpression="
+			!AnyServersWorkingThisIndex">
+		<property name="rules">
+			<util:list>
+				<ref local="ikube.action.rule.AnyServersWorkingThisIndex" />
+			</util:list>
+		</property>
+	</bean>
+	<bean 
+		id="ikube.action.Prune" 
+		class="ikube.action.Prune" 
+		property:ruleExpression="
+			!IsThisServerWorking">
+		<property name="rules">
+			<util:list>
+				<ref local="ikube.action.rule.IsThisServerWorking" />
+			</util:list>
+		</property>
+	</bean>
+	<bean 
+		id="ikube.action.Restore" 
+		class="ikube.action.Restore" 
+		property:ruleExpression="
+			!IsThisServerWorking &#38;&#38; 
+			!AnyServersWorking &#38;&#38;
+			DoesBackupIndexExist &#38;&#38;
+			(!AreIndexesCreated || 
+			IsIndexCorrupt)">
+		<property name="rules">
+			<util:list>
+				<ref local="ikube.action.rule.IsThisServerWorking" />
+				<ref local="ikube.action.rule.AnyServersWorking" />
+				<ref local="ikube.action.rule.DoesBackupIndexExist" />
+				<ref local="ikube.action.rule.AreIndexesCreated" />
+				<ref local="ikube.action.rule.IsIndexCorrupt" />
+			</util:list>
+		</property>
+	</bean>
+	<bean 
+		id="ikube.action.Close" 
+		class="ikube.action.Close" 
+		property:ruleExpression="
+			IsIndexCorrupt">
+		<property name="rules">
+			<util:list>
+				<ref local="ikube.action.rule.IsIndexCorrupt" />
+			</util:list>
+		</property>
+	</bean>
+	<bean 
+		id="ikube.action.Open" 
+		class="ikube.action.Open" 
+		property:ruleExpression="
+			(!AnyServersWorkingThisIndex &#38;&#38; 
+			  IsNewIndexCreated) || 
+			(!AnyServersWorkingThisIndex &#38;&#38; 
+			  (!IsMultiSearcherInitialised ||  
+			    !AreSearchablesInitialised) &#38;&#38;
+			  (AreIndexesCreated || 
+			    AreUnopenedIndexes))">
+		<property name="rules">
+			<util:list>
+				<ref local="ikube.action.rule.IsNewIndexCreated" />
+				<ref local="ikube.action.rule.AreIndexesCreated" />
+				<ref local="ikube.action.rule.AreUnopenedIndexes" />
+				<ref local="ikube.action.rule.IsMultiSearcherInitialised" />
+				<ref local="ikube.action.rule.AreSearchablesInitialised" />
+				<ref local="ikube.action.rule.AnyServersWorkingThisIndex" />
+			</util:list>
+		</property>
+	</bean>
+	<bean 
+		id="ikube.action.Index" 
+		class="ikube.action.Index" 
+		property:ruleExpression="
+			!AnyServersWorkingThisIndex &#38;&#38; 
+			!TooManyActionsRule &#38;&#38; 
+			(!IsIndexCurrent || 
+			 IsIndexCorrupt) &#38;&#38; 
+			!(IsThisServerWorking &#38;&#38; 
+			 AreOtherServers  &#38;&#38; 
+			 !AnyServersWorking) &#38;&#38;
+			 !AnyServersIdle">
+		<property name="rules">
+			<util:list>
+				<ref local="ikube.action.rule.IsThisServerWorking" />
+				<ref local="ikube.action.rule.AnyServersWorkingThisIndex" />
+				<ref local="ikube.action.rule.IsIndexCurrent" />
+				<ref local="ikube.action.rule.IsIndexCorrupt" />
+				<ref local="ikube.action.rule.AnyServersWorking" />
+				<ref local="ikube.action.rule.AreOtherServers" />
+				<ref local="ikube.action.rule.TooManyActionsRule" />
+				<ref local="ikube.action.rule.AnyServersIdle" />
+			</util:list>
+		</property>
+	</bean>
+	<!-- <bean 
+		id="ikube.action.IndexDelta" 
+		class="ikube.action.IndexDelta" 
+		property:ruleExpression="
+			!AnyServersWorkingThisIndex">
+		<property name="rules">
+			<util:list>
+				<ref local="ikube.action.rule.AnyServersWorkingThisIndex" />
+			</util:list>
+		</property>
+	</bean> -->
+	<bean 
+		id="ikube.action.Delete" 
+		class="ikube.action.Delete" 
+		property:ruleExpression="
+			!IsThisServerWorking &#38;&#38; 
+			!AnyServersWorking">
+		<property name="rules">
+			<util:list>
+				<ref local="ikube.action.rule.IsThisServerWorking" />
+				<ref local="ikube.action.rule.AnyServersWorking" />
+			</util:list>
+		</property>
+	</bean>
+	<bean 
+		id="ikube.action.Clean" 
+		class="ikube.action.Clean" 
+		property:ruleExpression="
+			!IsThisServerWorking &#38;&#38; 
+			!AnyServersWorking">
+		<property name="rules">
+			<util:list>
+				<ref local="ikube.action.rule.IsThisServerWorking" />
+				<ref local="ikube.action.rule.AnyServersWorking" />
+			</util:list>
+		</property>
+	</bean>
+	<bean 
+		id="ikube.action.Backup" 		
+		class="ikube.action.Backup" 
+		property:ruleExpression="
+			!IsThisServerWorking &#38;&#38; 
+			!AnyServersWorking &#38;&#38;  
+			!IsIndexBackedUp">
+		<property name="rules">
+			<util:list>
+				<ref local="ikube.action.rule.IsThisServerWorking" />
+				<ref local="ikube.action.rule.AnyServersWorking" />
+				<ref local="ikube.action.rule.IsIndexBackedUp" />
+			</util:list>
+		</property>
+	</bean>
+	<bean 
+		id="ikube.action.DiskFull" 
+		class="ikube.action.DiskFull" 
+		property:ruleExpression="
+			AnyServersWorking">
+		<property name="rules">
+			<util:list>
+				<ref local="ikube.action.rule.AnyServersWorking" />
+			</util:list>
+		</property>
+	</bean>
+	<bean 
+		id="ikube.action.Validator" 
+		class="ikube.action.Validator" 
+		property:ruleExpression="
+			!IsThisServerWorking &#38;&#38; 
+			!AnyServersWorking">
+		<property name="rules">
+			<util:list>
+				<ref local="ikube.action.rule.IsThisServerWorking" />
+				<ref local="ikube.action.rule.AnyServersWorking" />
+			</util:list>
+		</property>
+	</bean>
+	
+	<bean id="ikube.action.rule.AnyServersWorking" class="ikube.action.rule.AnyServersWorking" />
+	<bean id="ikube.action.rule.AreDirectoriesEqual" class="ikube.action.rule.AreDirectoriesEqual" />
+	<bean id="ikube.action.rule.AreIndexesCreated" class="ikube.action.rule.AreIndexesCreated" />
+	<bean id="ikube.action.rule.AreSearchablesInitialised" class="ikube.action.rule.AreSearchablesInitialised" />
+	<bean id="ikube.action.rule.AreUnopenedIndexes" class="ikube.action.rule.AreUnopenedIndexes" />
+	<bean id="ikube.action.rule.DirectoryExistsAndIsLocked" class="ikube.action.rule.DirectoryExistsAndIsLocked" />
+	<bean id="ikube.action.rule.DirectoryExistsAndNotLocked" class="ikube.action.rule.DirectoryExistsAndNotLocked" />
+	<bean id="ikube.action.rule.IsIndexCurrent" class="ikube.action.rule.IsIndexCurrent" />
+	<bean id="ikube.action.rule.IsMultiSearcherInitialised" class="ikube.action.rule.IsMultiSearcherInitialised" />
+	<bean id="ikube.action.rule.IsThisIndexCreated" class="ikube.action.rule.IsThisIndexCreated" />
+	<bean id="ikube.action.rule.IsIndexCorrupt" class="ikube.action.rule.IsIndexCorrupt" />
+	<bean id="ikube.action.rule.IsIndexBackedUp" class="ikube.action.rule.IsIndexBackedUp" />
+	<bean id="ikube.action.rule.IsBackupIndexCurrent" class="ikube.action.rule.IsBackupIndexCurrent" />
+	<bean id="ikube.action.rule.AnyServersWorkingThisIndex" class="ikube.action.rule.AnyServersWorkingThisIndex" />
+	<bean id="ikube.action.rule.IsThisServerWorking" class="ikube.action.rule.IsThisServerWorking" />
+	<bean id="ikube.action.rule.IsNewIndexCreated" class="ikube.action.rule.IsNewIndexCreated" />
+	<bean id="ikube.action.rule.DoesBackupIndexExist" class="ikube.action.rule.DoesBackupIndexExist" />
+	<bean id="ikube.action.rule.AreOtherServers" class="ikube.action.rule.AreOtherServers" />
+	<bean id="ikube.action.rule.ChainedRule" class="ikube.action.rule.ChainedRule" />
+	<bean id="ikube.action.rule.TooManyActionsRule" class="ikube.action.rule.TooManyActionsRule" />
+	<bean id="ikube.action.rule.AnyServersIdle" class="ikube.action.rule.AnyServersIdle" />
+	
+</beans>

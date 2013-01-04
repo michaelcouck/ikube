@@ -1,0 +1,375 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:property="http://www.springframework.org/schema/p"
+	xmlns:transaction="http://www.springframework.org/schema/tx"
+	xmlns:context="http://www.springframework.org/schema/context"
+
+	xsi:schemaLocation="
+			http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+			http://www.springframework.org/schema/aop
+            http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+            http://www.springframework.org/schema/util
+            http://www.springframework.org/schema/util/spring-util.xsd
+            http://www.springframework.org/schema/tx
+            http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+            http://www.springframework.org/schema/context
+            http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+	
+	<description>
+		This file is not to be modified by users generally.
+		This is the configuration for the beans used by Ikube. It contains the entity manager for Jpa,
+		the handlers for the data sources and the schedulers for the timing of jobs.
+	</description>
+	
+	<context:spring-configured />
+	<context:annotation-config />
+	<context:component-scan base-package="ikube" />
+	<transaction:annotation-driven transaction-manager="transactionManager" />
+	
+	<bean
+		name="ikube.toolkit.ApplicationContextManager" 
+		class="ikube.toolkit.ApplicationContextManager"
+		depends-on="ikube.database.IDataBase" />
+	
+	<bean
+		id="ikube.IndexEngine"
+		name="ikube.IndexEngine"
+		class="ikube.IndexEngine"
+		destroy-method="destroy" />
+		
+	<!-- 
+		The default persistence manager so we can specify more than one persistence file, and 
+		also we can hide the persistence xml file from the application servers so they don't try to 
+		inject the persistence resources into the classes.
+	-->
+	<bean 
+		id="defaultPersistenceUnitManager"
+		class="org.springframework.orm.jpa.persistenceunit.DefaultPersistenceUnitManager"
+		property:persistenceXmlLocations-ref="persistenceXmlLocations"
+		property:defaultDataSource-ref="${ikube.dataSource}" />
+	<util:list id="persistenceXmlLocations">
+		<value>classpath*:META-INF/persistence/persistence.xml</value>
+	</util:list>
+
+	<!-- This bean does the injection of the entity manager into the dao. -->
+	<bean 
+		class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor" />
+	<bean 
+		id="transactionManager" 
+		class="org.springframework.orm.jpa.JpaTransactionManager" 
+		property:entityManagerFactory-ref="entityManagerFactory" />
+	<bean 
+		id="entityManagerFactory" 
+		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean" 
+		lazy-init="false"
+		property:jpaVendorAdapter-ref="jpaAdapter"
+		property:jpaPropertyMap-ref="jpaPropertyMap"
+		property:dataSource-ref="${ikube.dataSource}"
+		property:persistenceUnitName="${ikube.persistenceUnit}"  
+		property:persistenceUnitManager-ref="defaultPersistenceUnitManager"
+		property:loadTimeWeaver-ref="loadTimeWeaver" />
+	<bean
+		id="loadTimeWeaver" 
+		class="org.springframework.instrument.classloading.InstrumentationLoadTimeWeaver" />
+	<bean 
+		id="jpaAdapter" 
+		class="org.springframework.orm.jpa.vendor.OpenJpaVendorAdapter"
+		property:database="${ikube.dataSourceType}" 
+		property:showSql="false" />
+	<util:map id="jpaPropertyMap">
+		<entry key="openjpa.ConnectionFactoryProperties" value="PrettyPrint=true,PrettyPrintLineLength=150" />
+		<entry key="openjpa.Log" 
+			value="DefaultLevel=ERROR,JDBC=ERROR,SQL=ERROR,File=ikube/openjpa.log,Runtime=ERROR,Tool=ERROR" />
+
+		<entry key="openjpa.DataCache" value="true(CacheSize=100000,SoftReferenceSize=100000)" />
+		<entry key="openjpa.QueryCache" value="true(CacheSize=100000,SoftReferenceSize=100000)" />
+
+		<entry key="openjpa.Optimistic" value="false" />
+		<entry key="openjpa.ReadLockLevel" value="write" />
+		<entry key="openjpa.WriteLockLevel" value="write" />
+		<entry key="openjpa.NontransactionalRead" value="true" />
+		<entry key="openjpa.LockTimeout" value="60000" />
+
+		<entry key="openjpa.Multithreaded" value="true" />
+		<entry key="openjpa.AutoDetach" value="commit" />
+		<entry key="openjpa.FlushBeforeQueries" value="true" />
+		<!-- <entry key="openjpa.DynamicEnhancementAgent" value="true" /> -->
+		<entry key="openjpa.RuntimeUnenhancedClasses" value="supported" />
+		<entry key="openjpa.jdbc.DBDictionary" value="${ikube.jdbc.dictionary}" />
+		
+		<!-- 
+			ForeignKeys=true,Indexes=true,SchemaAction='drop,add',
+			SchemaAction='add,deleteTableContents'
+		 -->
+		<!-- <entry key="openjpa.Connection2URL" value="${ikube.jdbc.url}" />
+		<entry key="openjpa.Connection2UserName" value="${ikube.jdbc.userid}" />
+		<entry key="openjpa.Connection2Password" value="${ikube.jdbc.password}" />
+		<entry key="openjpa.Connection2DriverName" value="${ikube.jdbc.driver}" /> -->
+		
+		<!-- <entry key="openjpa.ConnectionURL" value="${ikube.jdbc.url}" />
+		<entry key="openjpa.ConnectionUserName" value="${ikube.jdbc.userid}" />
+		<entry key="openjpa.ConnectionPassword" value="${ikube.jdbc.password}" />
+		<entry key="openjpa.ConnectionDriverName" value="${ikube.jdbc.driver}" /> -->
+		
+		<entry key="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
+	</util:map>
+
+	<transaction:advice id="transactionAdvice" transaction-manager="transactionManager">
+		<transaction:attributes>
+			<transaction:method name="find*" />
+			<transaction:method name="merge*" />
+			<transaction:method name="persist*" />
+			<transaction:method name="remove*" />
+			<transaction:method name="execute*" />
+		</transaction:attributes>
+	</transaction:advice>
+
+	<aop:config>
+		<aop:pointcut id="dataBaseJpa" expression="execution(* ikube.database.jpa.DataBaseJpa.*(..))" />
+		<aop:pointcut id="dataBaseJpaDb2" expression="execution(* ikube.database.jpa.DataBaseJpaDb2.*(..))" />
+		<aop:pointcut id="dataBaseJpaOracle" expression="execution(* ikube.database.jpa.DataBaseJpaOracle.*(..))" />
+		<aop:pointcut id="dataBaseJpaPostgres" expression="execution(* ikube.database.jpa.DataBaseJpaPostgres.*(..))" />
+		<aop:pointcut id="dataBaseAbstract" expression="execution(* ikube.database.jpa.ADataBaseJpa.*(..))" />
+		<aop:advisor advice-ref="transactionAdvice" pointcut-ref="dataBaseJpa" />
+		<aop:advisor advice-ref="transactionAdvice" pointcut-ref="dataBaseJpaDb2" />
+		<aop:advisor advice-ref="transactionAdvice" pointcut-ref="dataBaseJpaOracle" />
+		<aop:advisor advice-ref="transactionAdvice" pointcut-ref="dataBaseJpaPostgres" />
+		<aop:advisor advice-ref="transactionAdvice" pointcut-ref="dataBaseAbstract"/>
+	</aop:config>
+	
+	<!-- The Jpa database for large sets of data. -->
+	<bean
+		id="ikube.database.IDataBase"
+		name="ikube.database.IDataBase"
+		class="ikube.database.jpa.DataBaseJpa"
+		lazy-init="false" />
+	<!-- <bean
+		id="ikube.database.IDataBase.Db2"
+		class="ikube.database.jpa.DataBaseJpaDb2"
+		lazy-init="false" />  -->
+	<!-- <bean
+		id="ikube.database.IDataBase.Postgres"
+		class="ikube.database.jpa.DataBaseJpaPostgres"
+		lazy-init="false" /> -->
+	<!-- <bean
+		id="ikube.database.IDataBase.Oracle"
+		class="ikube.database.jpa.DataBaseJpaOracle"
+		lazy-init="false" /> -->
+	
+	<bean 
+		id="ikube.index.parse.mime.MimeMapper" 
+		class="ikube.index.parse.mime.MimeMapper">
+		<constructor-arg value="mime-mapping.xml" />
+	</bean>
+	<bean 
+		id="ikube.index.parse.mime.MimeTypes" 
+		class="ikube.index.parse.mime.MimeTypes">
+		<constructor-arg value="mime-types.xml" />
+	</bean>
+	
+	<!-- The search and monitoring services. -->
+	<bean
+		id="ikube.service.SearcherService"
+		class="ikube.service.SearcherService" />
+	<bean
+		id="ikube.service.MonitorService"
+		class="ikube.service.MonitorService" />
+	<bean
+		id="ikube.service.AutoCompleteService"
+		class="ikube.service.AutoCompleteService" />
+	
+	<bean 
+		id="ikube.listener.ListenerManager"
+		class="ikube.listener.ListenerManager"
+		destroy-method="removeListeners"
+		property:listeners-ref="ikube.listener.ListenerManager.listeners" />
+	<util:list id="ikube.listener.ListenerManager.listeners">
+		<ref bean="ikube.IndexEngine" />
+		<ref bean="ikube.listener.SnapshotListener" />
+		<ref bean="ikube.listener.CpuLoadListener" />
+		<ref bean="ikube.toolkit.ThreadUtilities" />
+		<bean class="ikube.listener.StartupListener" />
+		<bean class="ikube.listener.TerminationListener" />
+		<bean class="ikube.listener.ServerRemovalListener" />
+		<bean class="ikube.listener.ClusterClubListener" />
+		<bean class="ikube.listener.IndexSizeListener" />
+		<bean class="ikube.listener.ActionListener" />
+		<bean class="ikube.listener.IndexContextListener" />
+	</util:list>
+	
+	<bean 
+	    id="ikube.toolkit.ThreadUtilities"
+	    class="ikube.toolkit.ThreadUtilities"
+	    init-method="initialize"
+	    destroy-method="destroy" />
+	
+	<bean
+		id="ikube.listener.SnapshotListener"
+		name="ikube.listener.SnapshotListener" 
+		class="ikube.listener.SnapshotListener" />
+	<bean
+		id="ikube.listener.CpuLoadListener"
+		name="ikube.listener.CpuLoadListener" 
+		class="ikube.listener.CpuLoadListener" />
+	
+	<bean 
+		id="ikube.listener.Scheduler" 
+		class="ikube.listener.Scheduler"
+		init-method="initialize"
+		destroy-method="shutdown"
+		property:schedules-ref="ikube.listener.Scheduler.schedules"
+		property:listenerManager-ref="ikube.listener.ListenerManager" />
+	<!-- The schedules that fire events to start actions. -->
+	<util:list id="ikube.listener.Scheduler.schedules">
+		<bean
+			class="ikube.listener.Schedule"
+			property:type="timer"
+			property:delay="${delay}"
+			property:period="${period}" />
+		<bean
+			class="ikube.listener.Schedule"
+			property:type="timer-delta"
+			property:delay="${delay-delta}"
+			property:period="${period-delta}" />
+		<bean
+			class="ikube.listener.Schedule"
+			property:type="performance"
+			property:delay="10000"
+			property:period="60000" />
+		<bean
+			class="ikube.listener.Schedule"
+			property:type="serverRelease"
+			property:delay="60000"
+			property:period="60000" />
+	</util:list>
+	
+	<!-- 
+		This is the mailer that will send mail to targets when things go right, and wrong in fact. This 
+		you would want to modify, otherwise I will be getting many, many mails from your system. 
+	-->
+	<bean
+		class="ikube.notify.Mailer"
+		property:port="465"
+		property:auth="true"
+		property:protocol="pop3"
+		property:user="ikube.ikube"
+		property:password="Caherl2ne"
+		property:mailHost="smtp.gmail.com"
+		property:sender="ikube.ikube@gmail.com"
+		property:recipients="ikube.ikube@gmail.com" />
+
+	<bean 
+		id="messageSource" 
+		class="org.springframework.context.support.ReloadableResourceBundleMessageSource"
+		property:basenames-ref="messageProperties">
+		<property name="defaultEncoding" value="UTF-8" />
+	</bean>
+	
+	<util:list id="messageProperties">
+		<value>/WEB-INF/i18n/i18n</value>
+	</util:list>
+	
+	<!-- 
+		This bean is the geocoder, it will enrich the data with spatial co-ordinates if
+		the indexables contain address fields. The Url for this service  
+	-->
+	<bean
+		id="ikube.index.spatial.geocode.Geocoder"
+		class="ikube.index.spatial.geocode.Geocoder"
+		property:searchFields-ref="geospatialFields" 
+		property:userid="user"
+		property:password="user" 
+		property:searchUrl="${searcher.web.service.url}" />
+	<util:list id="geospatialFields">
+		<value>name</value>
+		<value>city</value>
+		<value>country</value>
+		<value>latitude</value>
+		<value>longitude</value>
+		<value>asciiname</value>
+		<value>alternatenames</value>
+	</util:list>
+	<bean 
+		id="ikube.index.spatial.enrich.IEnrichment"
+		class="ikube.index.spatial.enrich.Enrichment"
+		property:minKm="10"
+		property:maxKm="20"  />
+	
+	<bean
+		id="ikube.search.spelling.SpellingChecker"
+		class="ikube.search.spelling.SpellingChecker"
+		init-method="initialize"
+		destroy-method="destroy" />
+		
+	<bean 
+		id="ikube.cluster.IClusterManager"
+		class="ikube.cluster.hzc.ClusterManagerHazelcast"
+		init-method="initialize"
+		destroy-method="destroy"
+		lazy-init="false" />
+	<bean 
+	   	id="ikube.cluster.listener.hzc.StartListener" 
+	   	class="ikube.cluster.listener.hzc.StartListener" />
+	<bean 
+	   	id="ikube.cluster.listener.hzc.StopListener" 
+	   	class="ikube.cluster.listener.hzc.StopListener" />
+	<bean 
+	   	id="ikube.cluster.listener.hzc.IndexContextListener" 
+	   	class="ikube.cluster.listener.hzc.IndexContextListener" />
+	<bean 
+	   	id="ikube.cluster.listener.hzc.DeleteListener" 
+	   	class="ikube.cluster.listener.hzc.DeleteListener" />
+	
+	<!-- The handlers that do the indexing logic. -->
+	<bean
+		id="ikube.index.handler.IHandler"
+		class="ikube.index.handler.IHandler"
+		abstract="true" />
+	<bean 
+		id="ikube.index.handler.IndexableHandler"
+		parent="ikube.index.handler.IHandler"
+		class="ikube.index.handler.IndexableHandler" 
+		abstract="true" />
+	<bean
+		parent="ikube.index.handler.IndexableHandler"
+		class="ikube.index.handler.internet.IndexableInternetHandler"
+		property:threads="${internet.handler.threads}" 
+		property:indexableClass="ikube.model.IndexableInternet" />
+	<bean
+		parent="ikube.index.handler.IndexableHandler"
+		class="ikube.index.handler.email.IndexableEmailHandler"
+		property:threads="${email.handler.threads}"
+		property:indexableClass="ikube.model.IndexableEmail" />
+	<bean
+		parent="ikube.index.handler.IndexableHandler"
+		class="ikube.index.handler.filesystem.IndexableFilesystemHandler"
+		property:threads="${filesystem.handler.threads}"
+		property:indexableClass="ikube.model.IndexableFileSystem" />
+	<bean
+		parent="ikube.index.handler.IndexableHandler"
+		class="ikube.index.handler.database.IndexableTableHandler"
+		property:threads="${table.handler.threads}"
+		property:indexableClass="ikube.model.IndexableTable" />
+	<bean
+		parent="ikube.index.handler.IndexableHandler"
+		class="ikube.index.handler.filesystem.IndexableDictionaryHandler"
+		property:threads="${filesystem.handler.threads}"
+		property:indexableClass="ikube.model.IndexableDictionary" />
+	<bean
+		parent="ikube.index.handler.IndexableHandler"
+		class="ikube.index.handler.filesystem.IndexableFilesystemLogHandler"
+		property:threads="${filesystem.handler.threads}"
+		property:indexableClass="ikube.model.IndexableFileSystemLog" />
+	<bean
+		parent="ikube.index.handler.IndexableHandler"
+		class="ikube.index.handler.filesystem.IndexableFilesystemWikiHandler"
+		property:threads="${filesystem.handler.threads}"
+		property:indexableClass="ikube.model.IndexableFileSystemWiki" />
+	
+</beans>

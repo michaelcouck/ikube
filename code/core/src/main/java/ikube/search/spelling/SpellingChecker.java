@@ -50,8 +50,7 @@ public class SpellingChecker {
 
 	public void initialize() throws Exception {
 		File spellingIndexDirectory = FileUtilities.getFile(spellingIndexDirectoryPath, Boolean.TRUE);
-		System.out.println("Logger : " + logger);
-		logger.error("Spelling directory : " + spellingIndexDirectory + ", " + spellingIndexDirectoryPath);
+		logger.info("Spelling directory : " + spellingIndexDirectory + ", " + spellingIndexDirectoryPath);
 		Directory directory = FSDirectory.open(spellingIndexDirectory);
 		spellChecker = new SpellChecker(directory);
 		indexLanguageFiles();
@@ -60,9 +59,9 @@ public class SpellingChecker {
 
 	private void indexLanguageFiles() {
 		File wordListDirectory = new File(languageWordListsDirectory);
-		logger.error("Word list directory : " + languageWordListsDirectory + ", " + wordListDirectory);
+		logger.info("Word list directory : " + languageWordListsDirectory + ", " + wordListDirectory);
 		List<File> languageDictionaryFiles = FileUtilities.findFilesRecursively(wordListDirectory, new ArrayList<File>(), "txt");
-		logger.error("Language files : " + languageDictionaryFiles);
+		logger.info("Language files : " + languageDictionaryFiles);
 		for (File languageDictionaryFile : languageDictionaryFiles) {
 			InputStream inputStream = null;
 			try {

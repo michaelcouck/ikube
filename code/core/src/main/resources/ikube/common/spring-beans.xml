@@ -30,11 +30,6 @@
 	<context:spring-configured />
 	<context:annotation-config />
 	<context:component-scan base-package="ikube" />
-	<aop:aspectj-autoproxy proxy-target-class="true" />
-	<aop:config proxy-target-class="true" />
-	<!-- <context:load-time-weaver 
-		aspectj-weaving="on" 
-		weaver-class="org.springframework.instrument.classloading.SimpleLoadTimeWeaver" /> -->
 	<transaction:annotation-driven transaction-manager="transactionManager" />
 	
 	<bean

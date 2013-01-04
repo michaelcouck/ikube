@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:property="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
+
+	xsi:schemaLocation="
+			http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+            http://www.springframework.org/schema/context
+            http://www.springframework.org/schema/context/spring-context-3.0.xsd
+            http://www.springframework.org/schema/util
+            http://www.springframework.org/schema/util/spring-util.xsd">
+
+	<description>
+		This file is not to be modified by users generally. This is the configuration for the geospatial index which is an index 
+		of the geonames table on the Ikube server. 
+	</description>
+	
+	<bean
+		id="geospatial"
+		class="ikube.model.IndexContext"
+		property:name="geospatial"
+		property:maxAge="${max.age.geospatial}"
+		property:compoundFile="${compound.file}"
+		property:bufferedDocs="${buffered.docs}"
+		property:bufferSize="${buffer.size}"
+		property:batchSize="${jdbc.batch.size}"
+		property:internetBatchSize="${internet.batch.size}"
+		property:mergeFactor="${merge.factor}"
+		property:maxFieldLength="${max.field.length}"
+		property:maxReadLength="${max.read.length}"
+		property:address="true"
+		property:throttle="0"
+		property:indexDirectoryPath="${index.directory.path}"
+		property:indexDirectoryPathBackup="${index.directory.path.backup}"
+		property:children-ref="geospatialIndexables" />
+	<util:list id="geospatialIndexables">
+		<ref local="geoname" />
+	</util:list>
+	
+	<bean
+		id="geoname"
+		class="ikube.model.IndexableTable"
+		property:name="geoname"
+		property:primaryTable="true"
+		property:address="true"
+		property:dataSource-ref="nonXaDataSourceDb2"
+		property:children-ref="geonameColumnsDb2" 
+		property:maxExceptions="10"
+		property:allColumns="true"
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true" />
+	<util:list id="geonameColumnsDb2">
+		<ref local="geospatialId" />
+		<ref local="geospatialName" />
+		<ref local="geospatialCity" />
+		<ref local="geospatialCountry" />
+		<ref local="geospatialAsciiname" />
+		<ref local="geospatialAlternatenames" />
+		<ref local="geospatialLatitude" />
+		<ref local="geospatialLongitude" />
+		<ref local="geospatialFeatureClass" />
+		<ref local="geospatialFeatureCode" />
+		<ref local="geospatialCountryCode" />
+		<ref local="geospatialTimezone" />
+		<ref local="geospatialCc2" />
+		<ref local="geospatialGeonameid" />
+		<ref local="geospatialAdmin1Code" />
+		<ref local="geospatialAdmin2Code" />
+		<ref local="geospatialAdmin3Code" />
+		<ref local="geospatialAdmin4Code" />
+		<ref local="geospatialModification" />
+		<ref local="geospatialPopulation" />
+		<ref local="geospatialElevation" />
+		<ref local="geospatialGtopo30" />
+		<!-- <ref local="alternatename" /> -->
+	</util:list>
+	
+	<bean
+		id="geospatialId"
+		class="ikube.model.IndexableColumn"
+		property:name="id"
+		property:idColumn="true"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="geospatialName"
+		class="ikube.model.IndexableColumn"
+		property:name="name"
+		property:fieldName="name"
+		property:address="true"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="geospatialGeonameid"
+		class="ikube.model.IndexableColumn"
+		property:name="geonameid"
+		property:fieldName="geonameid"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="geospatialCity"
+		class="ikube.model.IndexableColumn"
+		property:name="city"
+		property:fieldName="city"
+		property:address="true"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="geospatialCountry"
+		class="ikube.model.IndexableColumn"
+		property:name="country"
+		property:fieldName="country"
+		property:address="true"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="geospatialAsciiname"
+		class="ikube.model.IndexableColumn"
+		property:name="asciiname"
+		property:fieldName="asciiname"
+		property:address="true"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="geospatialAlternatenames"
+		class="ikube.model.IndexableColumn"
+		property:name="alternatenames"
+		property:fieldName="alternatenames"
+		property:address="true"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="geospatialLatitude"
+		class="ikube.model.IndexableColumn"
+		property:name="latitude"
+		property:fieldName="latitude"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}"
+		property:numeric="true" />
+	<bean
+		id="geospatialLongitude"
+		class="ikube.model.IndexableColumn"
+		property:name="longitude"
+		property:fieldName="longitude"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}"
+		property:numeric="true" />
+	<bean
+		id="geospatialFeatureClass"
+		class="ikube.model.IndexableColumn"
+		property:name="featureclass"
+		property:fieldName="featureclass"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="geospatialFeatureCode"
+		class="ikube.model.IndexableColumn"
+		property:name="featurecode"
+		property:fieldName="featurecode"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="geospatialCountryCode"
+		class="ikube.model.IndexableColumn"
+		property:name="countrycode"
+		property:fieldName="countrycode"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="geospatialCc2"
+		class="ikube.model.IndexableColumn"
+		property:name="cc2"
+		property:fieldName="cc2"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="geospatialAdmin1Code"
+		class="ikube.model.IndexableColumn"
+		property:name="admin1code"
+		property:fieldName="admin1code"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="geospatialAdmin2Code"
+		class="ikube.model.IndexableColumn"
+		property:name="admin2code"
+		property:fieldName="admin2code"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="geospatialAdmin3Code"
+		class="ikube.model.IndexableColumn"
+		property:name="admin3code"
+		property:fieldName="admin3code"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="geospatialAdmin4Code"
+		class="ikube.model.IndexableColumn"
+		property:name="admin4code"
+		property:fieldName="admin4code"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="geospatialPopulation"
+		class="ikube.model.IndexableColumn"
+		property:name="population"
+		property:fieldName="population"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="geospatialElevation"
+		class="ikube.model.IndexableColumn"
+		property:name="elevation"
+		property:fieldName="elevation"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="geospatialGtopo30"
+		class="ikube.model.IndexableColumn"
+		property:name="gtopo30"
+		property:fieldName="gtopo30"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="geospatialTimezone"
+		class="ikube.model.IndexableColumn"
+		property:name="timezone"
+		property:fieldName="timezone"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="geospatialModification"
+		class="ikube.model.IndexableColumn"
+		property:name="modification"
+		property:fieldName="modification"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	
+	<bean
+		id="alternatename"
+		class="ikube.model.IndexableTable"
+		property:name="alternatename"
+		property:primaryTable="false"
+		property:address="false"
+		property:dataSource-ref="nonXaDataSourceDb2"
+		property:children-ref="alternatenameColumnsDb2" 
+		property:maxExceptions="10"
+		property:allColumns="true" 
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true" />
+	<util:list id="alternatenameColumnsDb2">
+		<ref local="alternatenameId" />
+		<ref local="alternatenameGeonameid" />
+	</util:list>
+	
+	<bean
+		id="alternatenameId"
+		class="ikube.model.IndexableColumn"
+		property:name="id"
+		property:idColumn="true"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" />
+	<bean
+		id="alternatenameGeonameid"
+		class="ikube.model.IndexableColumn"
+		property:name="geonameid"
+		property:fieldName="alternatenamegeonameid"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}"
+		property:foreignKey-ref="geospatialGeonameid" />
+	
+</beans>

@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
  * @since 27.12.12
  * @version 01.00
  */
+// @Aspect
 public class StrategyInterceptor implements IStrategyInterceptor {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(StrategyInterceptor.class);
@@ -25,9 +26,9 @@ public class StrategyInterceptor implements IStrategyInterceptor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public Object preProcess(final ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
+	// @Around(IStrategyInterceptor.AROUND_EXPRESSION)
+	public Object aroundProcess(final ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
 		// This method intercepts the handle... methods in the handlers. Each indexable will then define
 		// strategies. These strategies will be executed and the accumulated result will be used to verify if the
 		// method is to be executed or not
@@ -44,8 +45,9 @@ public class StrategyInterceptor implements IStrategyInterceptor {
 					List<IStrategy> strategies = ((Indexable) arg).getStrategies();
 					if (strategies != null && !strategies.isEmpty()) {
 						for (final IStrategy strategy : strategies) {
-							LOGGER.error("Strategy : " + strategy);
-							mustProcess &= strategy.preProcess(args);
+							boolean preProcess = strategy.preProcess(args);
+							LOGGER.error("Strategy : " + strategy + ", " + preProcess);
+							mustProcess &= preProcess;
 						}
 					}
 				}

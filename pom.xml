@@ -1056,6 +1056,11 @@
 			<artifactId>truezip-driver-file</artifactId>
 			<version>7.7.1</version>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-agent</artifactId>
+			<version>2.5.6</version>
+		</dependency>
 	</dependencies>
 
 	<repositories>

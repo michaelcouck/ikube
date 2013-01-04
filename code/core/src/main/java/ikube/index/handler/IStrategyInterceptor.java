@@ -2,8 +2,16 @@ package ikube.index.handler;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 
+/**
+ * @author Michael Couck
+ * @since 27.12.12
+ * @version 01.00
+ */
 public interface IStrategyInterceptor {
 
-	Object preProcess(final ProceedingJoinPoint call) throws Throwable;
+	String AROUND_EXPRESSION = "execution(* ikube.index.handler.filesystem.IndexableFilesystemHandler.handleFile(..))";
+	String POINTCUT_EXPRESSION = "execution(* ikube.index.handler.filesystem.IndexableFilesystemHandler.handleFile(..))";
+
+	Object aroundProcess(final ProceedingJoinPoint call) throws Throwable;
 
 }

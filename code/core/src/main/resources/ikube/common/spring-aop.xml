@@ -32,12 +32,6 @@
 	<bean 
 		id="ikube.action.rule.IRuleInterceptor" 
 		class="ikube.action.rule.RuleInterceptor" />
-	<aop:config proxy-target-class="true">
-		<aop:aspect ref="ikube.action.rule.IRuleInterceptor">
-			<aop:around method="decide" pointcut="execution(* ikube.action.*.*(..))"  />
-		</aop:aspect>
-	</aop:config>
-	
 	<!-- 
 		This interceptor will intercept the handlers. The indexable isthen accessed and the strategies are executed
 		to determine whether to process the resource or not. The chain of strategies must result in a true return value
@@ -59,10 +53,13 @@
 		id="ikube.index.handler.IStrategyInterceptor" 
 		class="ikube.index.handler.StrategyInterceptor" />
 	<aop:config proxy-target-class="true">
+		<aop:aspect ref="ikube.action.rule.IRuleInterceptor">
+			<aop:around method="decide" pointcut="execution(* ikube.action.*.*(..))"  />
+		</aop:aspect>
 		<aop:aspect ref="ikube.index.handler.IStrategyInterceptor">
 		    <aop:pointcut id="strategy-pointcut" 
-		        expression="execution(* ikube.index.handler.filesystem.*.*(..))" />
-			<aop:around pointcut-ref="strategy-pointcut" method="preProcess" />
+		        expression="execution(* ikube.index.handler.filesystem.IndexableFilesystemHandler.handleFile(..))" />
+			<aop:around method="aroundProcess" pointcut-ref="strategy-pointcut" />
 		</aop:aspect>
 	</aop:config>
 	
