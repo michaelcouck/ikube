@@ -1,6 +1,8 @@
 package ikube.index.handler.strategy;
 
 import ikube.index.handler.IStrategy;
+import ikube.model.IndexContext;
+import ikube.model.Indexable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +50,13 @@ public abstract class AStrategy implements IStrategy {
 			return nextStrategy.postProcess(parameters);
 		}
 		return Boolean.TRUE;
+	}
+
+	protected IndexContext<?> getIndexContext(final Indexable<?> indexable) {
+		if (IndexContext.class.isAssignableFrom(indexable.getClass())) {
+			return (IndexContext<?>) indexable;
+		}
+		return getIndexContext(indexable.getParent());
 	}
 
 }

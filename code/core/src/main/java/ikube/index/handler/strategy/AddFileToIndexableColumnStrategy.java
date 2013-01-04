@@ -8,8 +8,10 @@ import ikube.toolkit.FileUtilities;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * TODO Comments... And complete this strategy of course. And a test...
@@ -19,6 +21,8 @@ import java.io.InputStream;
  * @version 01.00
  */
 public class AddFileToIndexableColumnStrategy extends AStrategy {
+
+	private static final byte[] SPACE = " ".getBytes();
 
 	public AddFileToIndexableColumnStrategy(IStrategy nextStrategy) {
 		super(nextStrategy);
@@ -50,9 +54,10 @@ public class AddFileToIndexableColumnStrategy extends AStrategy {
 		ByteArrayInputStream byteInputStream = null;
 		ByteArrayOutputStream byteOutputStream = null;
 		try {
-			inputStream = new FileInputStream(filePath);
-			int length = 1000000;
-			byte[] byteBuffer = new byte[length];
+			File file = new File(filePath);
+			inputStream = new FileInputStream(file);
+			long length = getIndexContext(indexableColumn).getMaxReadLength();
+			byte[] byteBuffer = new byte[(int) length];
 			int read = inputStream.read(byteBuffer, 0, byteBuffer.length);
 
 			byteInputStream = new ByteArrayInputStream(byteBuffer, 0, read);
@@ -61,9 +66,13 @@ public class AddFileToIndexableColumnStrategy extends AStrategy {
 			byteOutputStream.write(" ".getBytes());
 
 			IParser parser = ParserProvider.getParser(filePath, byteBuffer);
-			String parsedContent = parser.parse(byteInputStream, byteOutputStream).toString();
+			OutputStream contentOutputStream = parser.parse(byteInputStream, byteOutputStream);
+			contentOutputStream.write(SPACE);
+			contentOutputStream.write(filePath.getBytes());
+			contentOutputStream.write(SPACE);
+			contentOutputStream.write(Long.toString(file.lastModified()).getBytes());
 
-			indexableColumn.setContent(parsedContent);
+			indexableColumn.setContent(contentOutputStream.toString());
 		} finally {
 			FileUtilities.close(inputStream);
 			FileUtilities.close(byteInputStream);
