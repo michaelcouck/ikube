@@ -30,7 +30,7 @@ public class IndexableTable extends Indexable<IndexableTable> {
 	private String predicate;
 	@Column
 	@Attribute(field = false, description = "This flag for whether the table is primary, i.e. not a joined table or a child table in the configuration")
-	private boolean primaryTable;
+	private boolean primaryTable = Boolean.TRUE;
 	@Column
 	@Attribute(field = false, description = "This flag is whether to index all the columns in the database, default is true")
 	private boolean allColumns = Boolean.TRUE;

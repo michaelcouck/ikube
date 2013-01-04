@@ -40,17 +40,17 @@ public class Indexable<E> extends Persistable {
 	private List<Indexable<?>> children;
 	@Column
 	@Attribute(field = false, description = "Whether this is a geospatial address field")
-	private boolean address;
+	private boolean address = Boolean.FALSE;
 
 	@Column
 	@Attribute(field = false, description = "Whether this value should be stored in the index")
-	private boolean stored = Boolean.FALSE;
+	private boolean stored = Boolean.TRUE;
 	@Column
 	@Attribute(field = false, description = "Whether this field should be analyzed for stemming and so on")
 	private boolean analyzed = Boolean.TRUE;
 	@Column
 	@Attribute(field = false, description = "Whether this field should be vectored in the index")
-	private boolean vectored = Boolean.FALSE;
+	private boolean vectored = Boolean.TRUE;
 
 	@Column
 	@Min(value = 1)

@@ -177,5 +177,7 @@ public interface IConstants {
 	String ROLE_ADMIN = "ROLE_ADMIN";
 	
 	long MILLION = 1000000;
+	
+	String DELIMITER_CHARACTERS = ";,|:";
 
 }
