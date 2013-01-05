@@ -346,7 +346,8 @@ public final class IndexManager {
 	public static long getIndexSize(final IndexContext<?> indexContext) {
 		long indexSize = 0;
 		try {
-			StringBuilder stringBuilder = new StringBuilder(indexContext.getIndexDirectoryPath());
+			StringBuilder stringBuilder = new StringBuilder();
+			stringBuilder.append(indexContext.getIndexDirectoryPath());
 			stringBuilder.append(IConstants.SEP);
 			stringBuilder.append(indexContext.getIndexName());
 			File latestIndexDirectory = IndexManager.getLatestIndexDirectory(stringBuilder.toString());
@@ -404,6 +405,7 @@ public final class IndexManager {
 						@Override
 						public void doWith(Method method) throws IllegalArgumentException, IllegalAccessException {
 							try {
+								method.setAccessible(Boolean.TRUE);
 								Boolean result = (Boolean) method.invoke(indexWriter);
 								isClosed.set(result);
 							} catch (InvocationTargetException e) {

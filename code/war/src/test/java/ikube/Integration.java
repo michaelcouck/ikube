@@ -50,7 +50,7 @@ public abstract class Integration extends Base {
 
 		startContext();
 		Thread.sleep(3000);
-		insertData();
+		insertData(Snapshot.class, 11000);
 		Thread.sleep(3000);
 		FileUtilities.deleteFiles(DOT_DIRECTORY, "btm1.tlog", "btm2.tlog", "ikube.h2.db", "ikube.lobs.db", "ikube.log", "openjpa.log");
 		WebServiceAuthentication.authenticate(HTTP_CLIENT, LOCALHOST, SERVER_PORT, REST_USER_NAME, REST_PASSWORD);
@@ -63,15 +63,23 @@ public abstract class Integration extends Base {
 		ApplicationContextManager.getBean(Scheduler.class).shutdown();
 	}
 
-	private static void insertData() throws SQLException, FileNotFoundException {
+	public static <T> void insertData(final Class<T> klass, final int entities) throws SQLException, FileNotFoundException {
 		IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
-		List<Snapshot> snapshots = new ArrayList<Snapshot>();
-		for (int i = 0; i < 11000; i++) {
-			Snapshot snapshot = ObjectToolkit.populateFields(Snapshot.class, new Snapshot(), true, 0, 1, "id", "indexContext");
-			snapshot.setId(0);
-			snapshots.add(snapshot);
+		List<T> tees = new ArrayList<T>();
+		for (int i = 0; i < entities; i++) {
+			try {
+				T tee = ObjectToolkit.populateFields(klass, klass.newInstance(), true, 0, 1, "id", "indexContext");
+				// Deencapsulation.setField(tee, "id", new Integer(0));
+				tees.add(tee);
+				if (i % 10000 == 0) {
+					dataBase.persistBatch(tees);
+					tees.clear();
+				}
+			} catch (Exception e) {
+				LOGGER.error(null, e);
+			}
 		}
-		dataBase.persistBatch(snapshots);
+		dataBase.persistBatch(tees);
 	}
 
 	/**

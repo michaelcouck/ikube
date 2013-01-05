@@ -11,6 +11,7 @@ import ikube.toolkit.DatabaseUtilities;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
+import java.util.Arrays;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.concurrent.Future;
@@ -54,7 +55,7 @@ public class IndexableDataSourceHandler extends IndexableHandler<IndexableDataSo
 			}
 		}
 		// We return no futures because this operation just adds the tables to the context
-		return null;
+		return Arrays.asList();
 	}
 
 	private IndexableTable getIndexableTable(final String tableName, final IndexableDataSource indexable) {

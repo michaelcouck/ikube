@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 import ikube.IConstants;
 import ikube.Integration;
 import ikube.cluster.IClusterManager;
+import ikube.database.IDataBase;
 import ikube.index.IndexManager;
 import ikube.index.content.ColumnContentProvider;
 import ikube.index.content.IContentProvider;
@@ -13,6 +14,7 @@ import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.model.IndexableColumn;
 import ikube.model.IndexableTable;
+import ikube.model.Snapshot;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.DatabaseUtilities;
 import ikube.toolkit.ThreadUtilities;
@@ -47,13 +49,13 @@ import org.junit.Test;
  */
 public class IndexableTableHandlerIntegration extends Integration {
 
+	private Connection connection;
+	private DataSource dataSource;
 	private IndexContext<?> indexContext;
 	private IndexableTable snapshotTable;
 	private IndexableColumn snapshotColumn;
 	private List<Indexable<?>> snapshotTableChildren;
 	private IndexableTableHandler indexableTableHandler;
-	private DataSource dataSource;
-	private Connection connection;
 
 	@Before
 	public void before() throws SQLException {
@@ -211,21 +213,28 @@ public class IndexableTableHandlerIntegration extends Integration {
 		resultSet.next();
 
 		Deencapsulation.invoke(indexableTableHandler, "setColumnTypesAndData", snapshotTableChildren, resultSet);
-
-		assertEquals("Snapshot id column type : " + snapshotColumn.getColumnType(), Types.BIGINT, snapshotColumn.getColumnType());
-
 		DatabaseUtilities.close(resultSet);
 		DatabaseUtilities.close(statement);
+
+		assertEquals("Snapshot id column type : " + snapshotColumn.getColumnType(), Types.BIGINT, snapshotColumn.getColumnType());
 	}
 
 	@Test
 	public void handleTable() throws Exception {
-		String ip = InetAddress.getLocalHost().getHostAddress();
-		IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
-		indexContext.setIndexWriters(indexWriter);
-		List<Future<?>> threads = indexableTableHandler.handle(indexContext, snapshotTable);
-		ThreadUtilities.waitForFutures(threads, Integer.MAX_VALUE);
-		assertTrue("There must be some data in the index : ", indexContext.getIndexWriters()[0].numDocs() > 0);
+		IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
+		try {
+			delete(dataBase, Snapshot.class);
+			insertData(Snapshot.class, 100000);
+			String ip = InetAddress.getLocalHost().getHostAddress();
+			IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
+			indexContext.setIndexWriters(indexWriter);
+			List<Future<?>> threads = indexableTableHandler.handle(indexContext, snapshotTable);
+			ThreadUtilities.waitForFutures(threads, Integer.MAX_VALUE);
+			assertTrue("There must be some data in the index : ", indexContext.getIndexWriters()[0].numDocs() > 0);
+		} finally {
+			delete(dataBase, Snapshot.class);
+			insertData(Snapshot.class, 11000);
+		}
 	}
 
 	@Test
@@ -283,6 +292,7 @@ public class IndexableTableHandlerIntegration extends Integration {
 			assertTrue(System.currentTimeMillis() - start < 60000);
 		} finally {
 			indexContext.setThrottle(0);
+			indexContext.setBatchSize(1000);
 		}
 	}
 

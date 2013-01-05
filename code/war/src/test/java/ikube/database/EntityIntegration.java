@@ -4,12 +4,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import ikube.IConstants;
-import ikube.database.IDataBase;
 import ikube.model.Action;
-import ikube.model.DataSource;
 import ikube.model.File;
 import ikube.model.IndexContext;
 import ikube.model.IndexableColumn;
+import ikube.model.IndexableDataSource;
 import ikube.model.IndexableDictionary;
 import ikube.model.IndexableEmail;
 import ikube.model.IndexableFileSystem;
@@ -64,7 +63,7 @@ public class EntityIntegration {
 
 	private IDataBase dataBase;
 	/** The names of the classes that we will test in the package. */
-	private Class<?>[] entityClasses = new Class<?>[] { Action.class, DataSource.class, File.class, IndexableColumn.class,
+	private Class<?>[] entityClasses = new Class<?>[] { Action.class, IndexableDataSource.class, File.class, IndexableColumn.class,
 			IndexableDictionary.class, IndexableEmail.class, IndexableFileSystem.class, IndexableFileSystemLog.class,
 			IndexableFileSystemWiki.class, IndexableInternet.class, IndexableTable.class, IndexContext.class, Search.class, Server.class,
 			Snapshot.class, Url.class, User.class, Role.class, Group_.class };

@@ -371,5 +371,10 @@
 		class="ikube.index.handler.filesystem.IndexableFilesystemWikiHandler"
 		property:threads="${filesystem.handler.threads}"
 		property:indexableClass="ikube.model.IndexableFileSystemWiki" />
+	<bean
+		parent="ikube.index.handler.IndexableHandler"
+		class="ikube.index.handler.database.IndexableDataSourceHandler"
+		property:threads="${filesystem.handler.threads}"
+		property:indexableClass="ikube.model.IndexableDataSource" />
 	
 </beans>

@@ -23,6 +23,7 @@
 		
 		<class>ikube.model.Indexable</class>
 		<class>ikube.model.IndexContext</class>
+		<class>ikube.model.IndexableDataSource</class>
 		<class>ikube.model.IndexableTable</class>
 		<class>ikube.model.IndexableInternet</class>
 		<class>ikube.model.IndexableFileSystem</class>
@@ -75,6 +76,7 @@
 		
 		<class>ikube.model.Indexable</class>
 		<class>ikube.model.IndexContext</class>
+		<class>ikube.model.IndexableDataSource</class>
 		<class>ikube.model.IndexableTable</class>
 		<class>ikube.model.IndexableInternet</class>
 		<class>ikube.model.IndexableFileSystem</class>
@@ -116,6 +118,7 @@
 
 		<class>ikube.model.Indexable</class>
 		<class>ikube.model.IndexContext</class>
+		<class>ikube.model.IndexableDataSource</class>
 		<class>ikube.model.IndexableTable</class>
 		<class>ikube.model.IndexableInternet</class>
 		<class>ikube.model.IndexableFileSystem</class>
@@ -157,6 +160,7 @@
 
 		<class>ikube.model.Indexable</class>
 		<class>ikube.model.IndexContext</class>
+		<class>ikube.model.IndexableDataSource</class>
 		<class>ikube.model.IndexableTable</class>
 		<class>ikube.model.IndexableInternet</class>
 		<class>ikube.model.IndexableFileSystem</class>

@@ -6,6 +6,7 @@ import ikube.model.Indexable;
 import ikube.model.Server;
 import ikube.toolkit.Logging;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -26,6 +27,7 @@ public class Index extends AIndex {
 	 * {@inheritDoc}
 	 */
 	@Override
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	boolean executeInternal(final IndexContext<?> indexContext) throws Exception {
 		String indexName = indexContext.getIndexName();
 		Server server = clusterManager.getServer();
@@ -38,7 +40,7 @@ public class Index extends AIndex {
 				IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, startTime, server.getAddress());
 				IndexWriter[] indexWriters = new IndexWriter[] { indexWriter };
 				indexContext.setIndexWriters(indexWriters);
-				Iterator<Indexable<?>> iterator = indexables.iterator();
+				Iterator<Indexable<?>> iterator = new ArrayList(indexables).iterator();
 				action = executeIndexables(indexContext, iterator);
 			}
 			return Boolean.TRUE;
