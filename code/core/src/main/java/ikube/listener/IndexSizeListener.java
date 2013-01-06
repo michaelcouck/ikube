@@ -9,7 +9,6 @@ import java.io.File;
 import java.util.Map;
 
 import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,80 +51,33 @@ public class IndexSizeListener implements IListener {
 				continue;
 			}
 
-			for (final IndexWriter indexWriter : indexWriters) {
-				long meg = 1024 * 1000;
-				long indexSize = getIndexSize(mapEntry.getValue());
-				if (indexSize / meg < maxIndexSize) {
-					continue;
-				}
-				FSDirectory directory = (FSDirectory) indexWriter.getDirectory();
-				File indexDirectory = directory.getDirectory();
-				try {
-					StringBuilder stringBuilder = new StringBuilder();
-					stringBuilder.append(indexDirectory.getAbsolutePath());
-					stringBuilder.append(".");
-					stringBuilder.append(Long.toString(System.currentTimeMillis()));
-					File newIndexDirectory = FileUtilities.getFile(stringBuilder.toString(), Boolean.TRUE);
-					LOGGER.info("Starting new index : " + indexContext.getIndexName() + ", " + newIndexDirectory);
-					IndexWriter newIndexWriter = IndexManager.openIndexWriter(indexContext, newIndexDirectory, true);
+			long meg = 1024 * 1000;
+			FSDirectory directory = (FSDirectory) indexWriters[indexWriters.length - 1].getDirectory();
+			File indexDirectory = directory.getDirectory();
+			long indexSize = IndexManager.getDirectorySize(indexDirectory);
+			if (indexSize / meg < maxIndexSize) {
+				continue;
+			}
+			try {
+				StringBuilder stringBuilder = new StringBuilder();
+				stringBuilder.append(indexDirectory.getAbsolutePath());
+				stringBuilder.append(".");
+				stringBuilder.append(Long.toString(System.currentTimeMillis()));
+				File newIndexDirectory = FileUtilities.getFile(stringBuilder.toString(), Boolean.TRUE);
+				LOGGER.info("Starting new index : " + indexContext.getIndexName() + ", " + newIndexDirectory);
+				IndexWriter newIndexWriter = IndexManager.openIndexWriter(indexContext, newIndexDirectory, true);
 
-					IndexWriter[] newIndexWriters = new IndexWriter[indexWriters.length + 1];
-					System.arraycopy(indexWriters, 0, newIndexWriters, 0, indexWriters.length);
-					newIndexWriters[newIndexWriters.length - 1] = newIndexWriter;
-					LOGGER.info("Switched to the new index writer : " + indexContext);
-					indexContext.setIndexWriters(newIndexWriters);
-					// We don't close the index writers here any more because they can still be used in the delta indexing. And
-					// we close all the indexes in the context in the index manager at the end of the job
-				} catch (Exception e) {
-					LOGGER.error("Exception starting a new index : ", e);
-				}
+				IndexWriter[] newIndexWriters = new IndexWriter[indexWriters.length + 1];
+				System.arraycopy(indexWriters, 0, newIndexWriters, 0, indexWriters.length);
+				newIndexWriters[newIndexWriters.length - 1] = newIndexWriter;
+				LOGGER.info("Switched to the new index writer : " + indexContext);
+				indexContext.setIndexWriters(newIndexWriters);
+				// We don't close the index writers here any more because they can still be used in the delta indexing. And
+				// we close all the indexes in the context in the index manager at the end of the job
+			} catch (Exception e) {
+				LOGGER.error("Exception starting a new index : ", e);
 			}
 		}
-	}
-
-	protected long getIndexSize(final IndexContext<?> indexContext) {
-		long indexSize = 0;
-		try {
-			File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
-			if (latestIndexDirectory == null || !latestIndexDirectory.exists() || !latestIndexDirectory.isDirectory()) {
-				return indexSize;
-			}
-			File[] serverIndexDirectories = latestIndexDirectory.listFiles();
-			if (serverIndexDirectories == null) {
-				return indexSize;
-			}
-			for (File serverIndexDirectory : serverIndexDirectories) {
-				if (serverIndexDirectory != null && serverIndexDirectory.exists() && serverIndexDirectory.isDirectory()) {
-					Directory directory = null;
-					try {
-						directory = FSDirectory.open(serverIndexDirectory);
-						if (!IndexWriter.isLocked(directory)) {
-							// We are looking for the locked directory, i.e. the one that is being written to
-							continue;
-						}
-						File[] indexFiles = serverIndexDirectory.listFiles();
-						if (indexFiles == null || indexFiles.length == 0) {
-							continue;
-						}
-						for (File indexFile : indexFiles) {
-							indexSize += indexFile.length();
-						}
-						break;
-					} finally {
-						try {
-							if (directory != null) {
-								directory.close();
-							}
-						} catch (Exception e) {
-							LOGGER.error("Exception closing the directory : ", e);
-						}
-					}
-				}
-			}
-		} catch (Exception e) {
-			LOGGER.error("Exception getting the size of the index : " + this, e);
-		}
-		return indexSize;
 	}
 
 }

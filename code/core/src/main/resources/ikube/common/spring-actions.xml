@@ -146,11 +146,13 @@
 		class="ikube.action.IndexDelta" 
 		property:ruleExpression="
 			!AnyServersWorkingThisIndex &#38;&#38;
-			!TooManyActionsRule">
+			!TooManyActionsRule &#38;&#38; 
+			IsMultiSearcherInitialised">
 		<property name="rules">
 			<util:list>
 				<ref local="ikube.action.rule.AnyServersWorkingThisIndex" />
 				<ref local="ikube.action.rule.TooManyActionsRule" />
+				<ref local="ikube.action.rule.IsMultiSearcherInitialised" />
 			</util:list>
 		</property>
 	</bean>

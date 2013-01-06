@@ -274,7 +274,7 @@ public class SearcherService implements ISearcherService {
 		}
 		return getMessageResults(indexName);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -282,9 +282,8 @@ public class SearcherService implements ISearcherService {
 	@WebMethod
 	@WebResult(name = "result")
 	public ArrayList<HashMap<String, String>> searchMultiAdvancedAll(@WebParam(name = "indexName") final String indexName,
-			@WebParam(name = "searchStrings") final String[] searchStrings, 
-			@WebParam(name = "fragment") final boolean fragment, @WebParam(name = "firstResult") final int firstResult,
-			@WebParam(name = "maxResults") final int maxResults) {
+			@WebParam(name = "searchStrings") final String[] searchStrings, @WebParam(name = "fragment") final boolean fragment,
+			@WebParam(name = "firstResult") final int firstResult, @WebParam(name = "maxResults") final int maxResults) {
 		try {
 			SearchAdvancedAll searchAdvanced = getSearch(SearchAdvancedAll.class, indexName);
 			if (searchAdvanced != null) {
@@ -297,8 +296,8 @@ public class SearcherService implements ISearcherService {
 				return results;
 			}
 		} catch (Exception e) {
-			String message = Logging.getString("Exception doing search on index : ", indexName, searchStrings, fragment,
-					firstResult, maxResults);
+			String message = Logging.getString("Exception doing search on index : ", indexName, searchStrings, fragment, firstResult,
+					maxResults);
 			LOGGER.error(message, e);
 		}
 		return getMessageResults(indexName);
@@ -320,15 +319,19 @@ public class SearcherService implements ISearcherService {
 		@SuppressWarnings("rawtypes")
 		Map<String, IndexContext> indexContexts = monitorService.getIndexContexts();
 		for (IndexContext<?> indexContext : indexContexts.values()) {
-			if (indexContext.getIndexName().equals(indexName)) {
-				if (indexContext.getMultiSearcher() != null) {
-					if (indexContext.getAnalyzer() != null) {
-						Constructor<?> constructor = klass.getConstructor(Searcher.class, Analyzer.class);
-						return (T) constructor.newInstance(indexContext.getMultiSearcher(), indexContext.getAnalyzer());
+			try {
+				if (indexContext.getIndexName().equals(indexName)) {
+					if (indexContext.getMultiSearcher() != null) {
+						if (indexContext.getAnalyzer() != null) {
+							Constructor<?> constructor = klass.getConstructor(Searcher.class, Analyzer.class);
+							return (T) constructor.newInstance(indexContext.getMultiSearcher(), indexContext.getAnalyzer());
+						}
+						Constructor<?> constructor = klass.getConstructor(Searcher.class);
+						return (T) constructor.newInstance(indexContext.getMultiSearcher());
 					}
-					Constructor<?> constructor = klass.getConstructor(Searcher.class);
-					return (T) constructor.newInstance(indexContext.getMultiSearcher());
 				}
+			} catch (NullPointerException e) {
+				LOGGER.error(null, e);
 			}
 		}
 		return null;
@@ -379,7 +382,7 @@ public class SearcherService implements ISearcherService {
 		if (IConstants.AUTOCOMPLETE.equals(indexName)) {
 			return;
 		}
-		
+
 		double highScore = 0;
 		if (searchResults.size() > 1) {
 			highScore = Double.parseDouble(searchResults.get(0).get(IConstants.SCORE));

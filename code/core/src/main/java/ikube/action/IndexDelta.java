@@ -3,8 +3,8 @@ package ikube.action;
 import ikube.index.IndexManager;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
-import ikube.toolkit.Logging;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -25,25 +25,15 @@ public class IndexDelta extends AIndex {
 		if (!indexContext.isDelta()) {
 			return Boolean.TRUE;
 		}
-		String indexName = indexContext.getIndexName();
 		List<Indexable<?>> indexables = indexContext.getIndexables();
-		ikube.model.Action action = null;
-		try {
-			if (indexables != null) {
-				// Start the indexing for this server
-				IndexWriter[] indexWriters = IndexManager.openIndexWriterDelta(indexContext);
-				indexContext.setIndexWriters(indexWriters);
-				Iterator<Indexable<?>> iterator = indexables.iterator();
-				action = executeIndexables(indexContext, iterator);
-			}
-			return Boolean.TRUE;
-		} finally {
-			// We'll try to close the writer, even though it should already be closed
-			IndexManager.closeIndexWriter(indexContext);
-			indexContext.setIndexWriters();
-			stop(action);
-			logger.debug(Logging.getString("Finished indexing : ", indexName));
-		}
+		logger.info("Index delta : " + indexables.size());
+		// Start the indexing for this server
+		IndexWriter[] indexWriters = IndexManager.openIndexWriterDelta(indexContext);
+		indexContext.setIndexWriters(indexWriters);
+		logger.info("Index delta : " + Arrays.deepToString(indexWriters) + ", " + indexContext);
+		Iterator<Indexable<?>> iterator = indexables.iterator();
+		executeIndexables(indexContext, iterator);
+		return Boolean.TRUE;
 	}
 
 }

@@ -4,7 +4,6 @@ import ikube.index.IndexManager;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.model.Server;
-import ikube.toolkit.Logging;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -29,28 +28,16 @@ public class Index extends AIndex {
 	@Override
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	boolean executeInternal(final IndexContext<?> indexContext) throws Exception {
-		String indexName = indexContext.getIndexName();
 		Server server = clusterManager.getServer();
 		List<Indexable<?>> indexables = indexContext.getIndexables();
-		ikube.model.Action action = null;
-		try {
-			if (indexables != null) {
-				long startTime = System.currentTimeMillis();
-				// Start the indexing for this server
-				IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, startTime, server.getAddress());
-				IndexWriter[] indexWriters = new IndexWriter[] { indexWriter };
-				indexContext.setIndexWriters(indexWriters);
-				Iterator<Indexable<?>> iterator = new ArrayList(indexables).iterator();
-				action = executeIndexables(indexContext, iterator);
-			}
-			return Boolean.TRUE;
-		} finally {
-			// We'll try to close the writer, even though it should already be closed
-			IndexManager.closeIndexWriter(indexContext);
-			indexContext.setIndexWriters();
-			stop(action);
-			logger.debug(Logging.getString("Finished indexing : ", indexName));
-		}
+		long startTime = System.currentTimeMillis();
+		// Start the indexing for this server
+		IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, startTime, server.getAddress());
+		IndexWriter[] indexWriters = new IndexWriter[] { indexWriter };
+		indexContext.setIndexWriters(indexWriters);
+		Iterator<Indexable<?>> iterator = new ArrayList(indexables).iterator();
+		executeIndexables(indexContext, iterator);
+		return Boolean.TRUE;
 	}
 
 }

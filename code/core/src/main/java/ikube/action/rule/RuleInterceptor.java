@@ -41,6 +41,7 @@ public class RuleInterceptor implements IRuleInterceptor {
 	 * {@inheritDoc}
 	 */
 	@Override
+	@SuppressWarnings("rawtypes")
 	public Object decide(final ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
 		Object target = proceedingJoinPoint.getTarget();
 		boolean proceed = Boolean.FALSE;
@@ -54,7 +55,7 @@ public class RuleInterceptor implements IRuleInterceptor {
 				LOGGER.warn("Can't intercept non action class, proceeding : " + target);
 				proceed = Boolean.TRUE;
 			} else if (!clusterManager.lock(IConstants.IKUBE)) {
-				LOGGER.debug("Couldn't aquire lock : ");
+				LOGGER.info("Couldn't aquire lock : ");
 				proceed = Boolean.FALSE;
 			} else {
 				// Find the index context
@@ -62,18 +63,16 @@ public class RuleInterceptor implements IRuleInterceptor {
 				if (indexContext == null) {
 					LOGGER.warn("Couldn't find the index context : " + proceedingJoinPoint);
 				} else {
-					LOGGER.debug("Aquired lock : ");
-					@SuppressWarnings("rawtypes")
 					IAction action = (IAction) target;
 					proceed = evaluateRules(indexContext, action);
 				}
 			}
+			// LOGGER.error("Proceeding : " + proceed);
 			if (proceed) {
 				proceed(indexContext, proceedingJoinPoint);
 			}
 		} catch (NullPointerException e) {
 			LOGGER.warn("Context closing down : ");
-			LOGGER.debug(null, e);
 		} catch (Exception t) {
 			LOGGER.error("Exception evaluating the rules : target : " + target + ", context : " + indexContext, t);
 		} finally {
@@ -94,13 +93,14 @@ public class RuleInterceptor implements IRuleInterceptor {
 	protected boolean evaluateRules(final IndexContext<?> indexContext, final IAction action) {
 		boolean finalResult = Boolean.TRUE;
 		// Get the rules associated with this action
-		List<IRule<IndexContext<?>>> classRules = action.getRules();
-		if (classRules == null || classRules.size() == 0) {
+		List<IRule<IndexContext<?>>> rules = action.getRules();
+		// LOGGER.error("Rules : " + rules);
+		if (rules == null || rules.size() == 0) {
 			LOGGER.info("No rules defined, proceeding : " + action);
 		} else {
 			JEP jep = new JEP();
 			Object result = null;
-			for (IRule<IndexContext<?>> rule : classRules) {
+			for (IRule<IndexContext<?>> rule : rules) {
 				boolean evaluation = rule.evaluate(indexContext);
 				String ruleName = rule.getClass().getSimpleName();
 				jep.addVariable(ruleName, evaluation);
@@ -117,10 +117,6 @@ public class RuleInterceptor implements IRuleInterceptor {
 				result = jep.getValue();
 			}
 			finalResult = result != null && (result.equals(1.0d) || result.equals(Boolean.TRUE));
-			if (LOGGER.isDebugEnabled()) {
-				LOGGER.info("Rule intercepter proceeding : {} {} {}", new Object[] { finalResult, action, indexContext.getIndexName() });
-				printSymbolTable(jep, indexContext.getIndexName());
-			}
 		}
 		return finalResult;
 	}

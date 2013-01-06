@@ -4,9 +4,6 @@ import ikube.index.handler.IStrategy;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * TODO Comments...
  * 
@@ -15,8 +12,6 @@ import org.slf4j.LoggerFactory;
  * @version 01.00
  */
 public abstract class AStrategy implements IStrategy {
-
-	protected Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
 	/** The next strategy in the chain. */
 	IStrategy nextStrategy;

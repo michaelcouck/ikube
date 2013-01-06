@@ -68,7 +68,7 @@ public class IndexManagerTest extends ATest {
 	@Test
 	public void openIndexWriter() throws Exception {
 		IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
-		IndexManager.closeIndexWriter(indexContext);
+		IndexManager.closeIndexWriters(indexContext);
 		assertNotNull(indexWriter);
 	}
 
@@ -120,7 +120,7 @@ public class IndexManagerTest extends ATest {
 	@Test
 	public void closeIndexWriter() throws Exception {
 		IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
-		IndexManager.closeIndexWriter(indexContext);
+		IndexManager.closeIndexWriters(indexContext);
 		assertNotNull(indexWriter);
 	}
 

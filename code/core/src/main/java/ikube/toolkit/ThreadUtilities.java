@@ -111,7 +111,7 @@ public final class ThreadUtilities implements IListener {
 						return;
 					}
 					future.cancel(true);
-					LOGGER.debug("Destroyed and removed future : " + name + ", " + future);
+					LOGGER.info("Destroyed and removed future : " + name + ", " + future);
 				}
 			}
 		} finally {

@@ -32,7 +32,7 @@ public class SearchMulti extends SearchSingle {
 	 */
 	@Override
 	public Query getQuery() throws ParseException {
-		return MultiFieldQueryParser.parse(IConstants.VERSION, searchStrings, searchFields, IConstants.ANALYZER);
+		return MultiFieldQueryParser.parse(IConstants.VERSION, searchStrings, searchFields, analyzer);
 	}
 
 }

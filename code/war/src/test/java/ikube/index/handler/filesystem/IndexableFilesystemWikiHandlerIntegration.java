@@ -48,7 +48,7 @@ public class IndexableFilesystemWikiHandlerIntegration extends Integration {
 			Thread.sleep(10000);
 
 			ThreadUtilities.destroy(wikiHistoryArabic.getIndexName());
-			IndexManager.closeIndexWriter(wikiHistoryArabic);
+			IndexManager.closeIndexWriters(wikiHistoryArabic);
 
 			File latestIndexDirectory = IndexManager.getLatestIndexDirectory(wikiHistoryArabic.getIndexDirectoryPath());
 			logger.info("Latest index directory : " + latestIndexDirectory.getAbsolutePath());

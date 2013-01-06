@@ -37,8 +37,8 @@ public class AddFileToIndexableColumnStrategy extends AStrategy {
 			try {
 				addFileContentToColumnContent(indexableColumn, content.toString());
 			} catch (Exception e) {
-				LOGGER.warn("Error processing file : " + content);
-				LOGGER.debug(null, e);
+				System.out.println("Error processing file : " + content);
+				e.printStackTrace();
 			}
 		}
 		return super.preProcess(parameters);

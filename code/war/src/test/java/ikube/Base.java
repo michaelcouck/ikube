@@ -22,6 +22,9 @@ import org.apache.lucene.document.Field.TermVector;
 import org.apache.lucene.document.Fieldable;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.MultiSearcher;
+import org.apache.lucene.search.Searchable;
 
 /**
  * This is the base test class for the unit tests.
@@ -30,6 +33,7 @@ import org.apache.lucene.index.IndexWriter;
  * @since 21.11.12
  * @version 01.00
  */
+@SuppressWarnings("deprecation")
 public abstract class Base {
 
 	protected Logger logger = Logger.getLogger(this.getClass());
@@ -103,6 +107,14 @@ public abstract class Base {
 		return latestIndexDirectory;
 	}
 
+	protected void printIndex(final MultiSearcher multiSearcher) throws Exception {
+		Searchable[] searchables = multiSearcher.getSearchables();
+		for (final Searchable searchable : searchables) {
+			IndexReader indexReader = ((IndexSearcher) searchable).getIndexReader();
+			printIndex(indexReader);
+		}
+	}
+
 	/**
 	 * This method will just print the data in the index reader.L
 	 * 
@@ -110,9 +122,10 @@ public abstract class Base {
 	 * @throws Exception
 	 */
 	protected void printIndex(final IndexReader indexReader) throws Exception {
+		logger.info("Num docs : " + indexReader.numDocs());
 		for (int i = 0; i < indexReader.numDocs(); i++) {
 			Document document = indexReader.document(i);
-			logger.info("Document : " + i);
+			logger.info("Document : " + i + ", is deleted : " + indexReader.isDeleted(i));
 			List<Fieldable> fields = document.getFields();
 			for (Fieldable fieldable : fields) {
 				String fieldName = fieldable.name();

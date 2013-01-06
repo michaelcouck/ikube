@@ -1,11 +1,14 @@
 package ikube.index.handler;
 
+import ikube.model.IndexContext;
 import ikube.model.Indexable;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Pointcut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,42 +21,51 @@ import org.slf4j.LoggerFactory;
  * @since 27.12.12
  * @version 01.00
  */
-// @Aspect
+@Aspect
 public class StrategyInterceptor implements IStrategyInterceptor {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(StrategyInterceptor.class);
+
+	@Pointcut(IStrategyInterceptor.POINTCUT_EXPRESSION)
+	public void pointcut() {
+		LOGGER.info("Point cut : ");
+	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	// @Around(IStrategyInterceptor.AROUND_EXPRESSION)
+	@Around(IStrategyInterceptor.AROUND_EXPRESSION)
 	public Object aroundProcess(final ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
 		// This method intercepts the handle... methods in the handlers. Each indexable will then define
 		// strategies. These strategies will be executed and the accumulated result will be used to verify if the
 		// method is to be executed or not
-		LOGGER.error("Strategy interceptor : ");
 		boolean mustProcess = Boolean.TRUE;
 		Object[] args = proceedingJoinPoint.getArgs();
+		// LOGGER.info("Args : " + Arrays.deepToString(args));
 		if (args != null && args.length > 0) {
-			LOGGER.error("Args : " + Arrays.deepToString(args));
 			for (final Object arg : args) {
 				if (arg == null) {
 					continue;
 				}
-				if (Indexable.class.isAssignableFrom(arg.getClass())) {
+				Class<?> indexableClass = arg.getClass();
+				// LOGGER.error("Is indexable : " + Indexable.class.isAssignableFrom(indexableClass) + ", " + indexableClass + ", " + arg);
+				if (!IndexContext.class.isAssignableFrom(indexableClass) && Indexable.class.isAssignableFrom(indexableClass)) {
 					List<IStrategy> strategies = ((Indexable) arg).getStrategies();
+					// LOGGER.error("Strategies : " + strategies);
 					if (strategies != null && !strategies.isEmpty()) {
 						for (final IStrategy strategy : strategies) {
 							boolean preProcess = strategy.preProcess(args);
-							LOGGER.error("Strategy : " + strategy + ", " + preProcess);
+							// LOGGER.error("Strategy : " + strategy + ", " + preProcess);
 							mustProcess &= preProcess;
 						}
+						// LOGGER.error("Processing : " + mustProcess + ", " + Arrays.deepToString(args));
+						break;
 					}
 				}
 			}
 		}
-		LOGGER.error("Processing : " + mustProcess);
+		LOGGER.error("Must process : " + mustProcess);
 		if (mustProcess) {
 			return proceedingJoinPoint.proceed(args);
 		}

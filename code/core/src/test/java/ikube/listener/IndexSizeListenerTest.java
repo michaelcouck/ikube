@@ -1,6 +1,5 @@
 package ikube.listener;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import ikube.ATest;
 import ikube.IConstants;
@@ -16,9 +15,6 @@ import mockit.Mockit;
 
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.FSDirectory;
-import org.apache.lucene.store.Lock;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -73,26 +69,6 @@ public class IndexSizeListenerTest extends ATest {
 		IndexWriter[] indexWriters = indexContext.getIndexWriters();
 		logger.info("Index writers : " + indexWriters.length);
 		assertTrue(indexWriters.length == 1);
-	}
-
-	@Test
-	public void getIndexSize() throws Exception {
-		File serverIndexDirectory = createIndex(indexContext, "The index data");
-		logger.info("Server index directory : " + serverIndexDirectory);
-
-		long indexSize = indexSizeListener.getIndexSize(indexContext);
-		assertEquals("There should be no index size found : ", 0, indexSize);
-
-		File latestServerIndexDirectory = createIndex(indexContext, "The second index data", "Which has more data in it");
-		Directory directory = FSDirectory.open(latestServerIndexDirectory);
-		Lock lock = getLock(directory, latestServerIndexDirectory);
-
-		try {
-			indexSize = indexSizeListener.getIndexSize(indexContext);
-			assertTrue("The locked directory is the index that is open : ", indexSize > 0);
-		} finally {
-			lock.release();
-		}
 	}
 
 }

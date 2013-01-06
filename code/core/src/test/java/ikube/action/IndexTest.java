@@ -4,6 +4,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import ikube.ATest;
@@ -33,6 +34,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 /**
  * @author Michael Couck
@@ -59,9 +62,13 @@ public class IndexTest extends ATest {
 		when(index.getAction(any(Server.class), anyLong())).thenReturn(action);
 		when(index.execute(any(IndexContext.class))).thenCallRealMethod();
 		when(index.executeInternal(any(IndexContext.class))).thenCallRealMethod();
-		when(index.executeIndexables(any(IndexContext.class), any(Iterator.class))).thenCallRealMethod();
+		doAnswer(new Answer<Object>() {
+			@Override
+			public Object answer(InvocationOnMock invocation) throws Throwable {
+				return invocation.callRealMethod();
+			}
+		}).when(index).executeIndexables(any(IndexContext.class), any(Iterator.class));
 		when(index.getHandler(any(Indexable.class))).thenReturn(handler);
-		
 		Deencapsulation.setField(index, logger);
 		Deencapsulation.setField(index, clusterManager);
 	}

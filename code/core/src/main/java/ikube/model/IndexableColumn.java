@@ -35,6 +35,8 @@ public class IndexableColumn extends Indexable<IndexableColumn> {
 	@Column
 	private boolean idColumn;
 	@Column
+	private boolean filePath;
+	@Column
 	private boolean numeric;
 	@Column
 	@PrimaryKeyJoinColumn
@@ -61,6 +63,14 @@ public class IndexableColumn extends Indexable<IndexableColumn> {
 
 	public void setIdColumn(final boolean idColumn) {
 		this.idColumn = idColumn;
+	}
+
+	public boolean isFilePath() {
+		return filePath;
+	}
+
+	public void setFilePath(boolean filePath) {
+		this.filePath = filePath;
 	}
 
 	public boolean isNumeric() {

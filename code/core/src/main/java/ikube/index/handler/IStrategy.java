@@ -8,7 +8,7 @@ package ikube.index.handler;
  * @since 29.11.10
  * @version 01.00
  */
-public interface IStrategy {
+public interface IStrategy /* extends Serializable */{
 
 	/**
 	 * This method will perform pre-processing logic, and return a true or false result, defining whether the caller should proceed with

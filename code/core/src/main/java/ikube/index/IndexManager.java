@@ -77,6 +77,7 @@ public final class IndexManager {
 	 * @throws Exception
 	 */
 	public static synchronized IndexWriter[] openIndexWriterDelta(final IndexContext<?> indexContext) throws Exception {
+		LOGGER.info("Opening delta writers on index context : " + indexContext);
 		String ip = UriUtilities.getIp();
 		String indexDirectoryPath = getIndexDirectoryPath(indexContext);
 		// Find all the indexes in the latest index directory and open a writer on each one
@@ -84,7 +85,9 @@ public final class IndexManager {
 		IndexWriter[] indexWriters = null;
 		if (latestIndexDirectory == null || latestIndexDirectory.listFiles() == null || latestIndexDirectory.listFiles().length == 0) {
 			// This means that we tried to do a delta index but there was no index, i.e. we still have to index from the start
-			indexWriters = new IndexWriter[] { openIndexWriter(indexContext, System.currentTimeMillis(), ip) };
+			IndexWriter indexWriter = openIndexWriter(indexContext, System.currentTimeMillis(), ip);
+			indexWriters = new IndexWriter[] { indexWriter };
+			LOGGER.info("Opened index writer new : " + indexWriter);
 		} else {
 			File[] latestServerIndexDirectories = latestIndexDirectory.listFiles();
 			indexWriters = new IndexWriter[latestServerIndexDirectories.length];
@@ -93,6 +96,7 @@ public final class IndexManager {
 				final File latestServerIndexDirectory = latestServerIndexDirectories[i];
 				IndexWriter indexWriter = openIndexWriter(indexContext, latestServerIndexDirectory, Boolean.FALSE);
 				indexWriters[i] = indexWriter;
+				LOGGER.info("Opened index writer on old index : " + latestServerIndexDirectory);
 			}
 		}
 		return indexWriters;
@@ -187,7 +191,7 @@ public final class IndexManager {
 	 * 
 	 * @param indexContext the index context to close the writer for
 	 */
-	public static synchronized void closeIndexWriter(final IndexContext<?> indexContext) {
+	public static synchronized void closeIndexWriters(final IndexContext<?> indexContext) {
 		try {
 			if (indexContext != null && indexContext.getIndexWriters() != null) {
 				for (final IndexWriter indexWriter : indexContext.getIndexWriters()) {
@@ -230,7 +234,6 @@ public final class IndexManager {
 		} catch (CorruptIndexException e) {
 			LOGGER.error("Corrput index : " + indexWriter, e);
 		} catch (IOException e) {
-			// TODO Open the index again and try the optimize a few times?
 			LOGGER.error("IO optimising the index : " + indexWriter, e);
 		} catch (Exception e) {
 			LOGGER.error("General exception comitting the index : " + indexWriter, e);
@@ -362,17 +365,23 @@ public final class IndexManager {
 			}
 			for (File serverIndexDirectory : serverIndexDirectories) {
 				if (serverIndexDirectory != null && serverIndexDirectory.exists() && serverIndexDirectory.isDirectory()) {
-					File[] indexFiles = serverIndexDirectory.listFiles();
-					if (indexFiles == null || indexFiles.length == 0) {
-						continue;
-					}
-					for (File indexFile : indexFiles) {
-						indexSize += indexFile.length();
-					}
+					indexSize += getDirectorySize(serverIndexDirectory);
 				}
 			}
 		} catch (Exception e) {
 			LOGGER.error("Exception getting the size of the index : ", e);
+		}
+		return indexSize;
+	}
+
+	public static long getDirectorySize(final File directory) {
+		long indexSize = 0;
+		File[] indexFiles = directory.listFiles();
+		if (indexFiles == null || indexFiles.length == 0) {
+			return 0;
+		}
+		for (File indexFile : indexFiles) {
+			indexSize += indexFile.length();
 		}
 		return indexSize;
 	}

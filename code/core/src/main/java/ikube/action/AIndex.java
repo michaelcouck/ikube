@@ -20,9 +20,9 @@ import java.util.concurrent.Future;
  */
 public abstract class AIndex extends Action<IndexContext<?>, Boolean> {
 
-	ikube.model.Action executeIndexables(final IndexContext<?> indexContext, final Iterator<Indexable<?>> iterator) {
-		ikube.model.Action action = null;
+	void executeIndexables(final IndexContext<?> indexContext, final Iterator<Indexable<?>> iterator) {
 		while (iterator.hasNext()) {
+			ikube.model.Action action = null;
 			try {
 				Indexable<?> indexable = iterator.next();
 				// Get the right handler for this indexable
@@ -39,13 +39,12 @@ public abstract class AIndex extends Action<IndexContext<?>, Boolean> {
 				// in the ui it looks like the action has completely stopped but the
 				// index is still being optimized
 				if (!iterator.hasNext()) {
-					IndexManager.closeIndexWriter(indexContext);
+					IndexManager.closeIndexWriters(indexContext);
 					indexContext.setIndexWriters();
 				}
 				stop(action);
 			}
 		}
-		return action;
 	}
 
 	protected ikube.model.Action getAction(Server server, long id) {

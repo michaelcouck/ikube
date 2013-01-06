@@ -24,6 +24,8 @@
 		This is the configuration for the intercepter for the rules.
 	</description>
 	
+	<context:load-time-weaver aspectj-weaving="on" />
+	
 	<!--
 		This bean will intercept the actions, execute the rules that are associated with the 
 		actions, and based on the results from the execution of the rules and the evaluation 
@@ -50,17 +52,16 @@
 		Note that the strategies are to be defined on the indexables, not on the handlers. 
 	 -->
 	<bean 
-		id="ikube.index.handler.IStrategyInterceptor" 
+		id="ikube.index.handler.StrategyInterceptor" 
 		class="ikube.index.handler.StrategyInterceptor" />
 	<aop:config proxy-target-class="true">
 		<aop:aspect ref="ikube.action.rule.IRuleInterceptor">
 			<aop:around method="decide" pointcut="execution(* ikube.action.*.*(..))"  />
 		</aop:aspect>
-		<aop:aspect ref="ikube.index.handler.IStrategyInterceptor">
-		    <aop:pointcut id="strategy-pointcut" 
-		        expression="execution(* ikube.index.handler.filesystem.IndexableFilesystemHandler.handleFile(..))" />
-			<aop:around method="aroundProcess" pointcut-ref="strategy-pointcut" />
-		</aop:aspect>
+		<!-- <aop:aspect ref="ikube.index.handler.StrategyInterceptor">
+		    <aop:pointcut id="strategy-pointcut-one" expression="execution(* ikube.index.handler.filesystem.IndexableFilesystemHandler.handleFile(..))" />
+			<aop:around method="aroundProcess" pointcut-ref="strategy-pointcut-one" />
+		</aop:aspect> -->
 	</aop:config>
 	
 </beans>

@@ -32,10 +32,10 @@
 		property:mergeFactor="${merge.factor}"
 		property:maxFieldLength="${max.field.length}"
 		property:maxReadLength="${max.read.length}"
-		property:throttle="1"
+		property:throttle="10"
 		property:delta="true"
-		property:indexDirectoryPath="${index.directory.path}"
-		property:indexDirectoryPathBackup="${index.directory.path.backup}"
+		property:indexDirectoryPath="./ikube/index"
+		property:indexDirectoryPathBackup="./ikube/index/backup"
 		property:children-ref="desktopFolders" />
 	<util:list id="desktopFolders">
 		<ref local="desktopFolder" />

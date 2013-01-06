@@ -28,6 +28,7 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
+import org.apache.commons.io.FileUtils;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
@@ -61,6 +62,9 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 		final Pattern pattern = getPattern(indexable.getExcludedPattern());
 		for (int i = 0; i < getThreads(); i++) {
 			final IndexableFileSystem indexableFileSystem = (IndexableFileSystem) SerializationUtilities.clone(indexable);
+			// Must set the strategies because they are transient and will not be included in the clone
+			indexableFileSystem.setParent(indexable.getParent());
+			indexableFileSystem.setStrategies(indexable.getStrategies());
 			Runnable runnable = new Runnable() {
 				public void run() {
 					handleFiles(indexContext, indexableFileSystem, directories, pattern);
@@ -297,7 +301,8 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 		boolean isPathExcluded = pattern.matcher(path).matches();
 		boolean isSymLink = Boolean.TRUE;
 		try {
-			isSymLink = !file.getAbsolutePath().equals(file.getCanonicalPath());
+			isSymLink = FileUtils.isSymlink(file);
+			// isSymLink = !file.getAbsolutePath().equals(file.getCanonicalPath());
 		} catch (IOException e) {
 			logger.error("Exception checking sym link : " + file);
 		}
