@@ -55,7 +55,6 @@ public class RuleInterceptor implements IRuleInterceptor {
 				LOGGER.warn("Can't intercept non action class, proceeding : " + target);
 				proceed = Boolean.TRUE;
 			} else if (!clusterManager.lock(IConstants.IKUBE)) {
-				LOGGER.info("Couldn't aquire lock : ");
 				proceed = Boolean.FALSE;
 			} else {
 				// Find the index context
@@ -67,7 +66,6 @@ public class RuleInterceptor implements IRuleInterceptor {
 					proceed = evaluateRules(indexContext, action);
 				}
 			}
-			// LOGGER.error("Proceeding : " + proceed);
 			if (proceed) {
 				proceed(indexContext, proceedingJoinPoint);
 			}

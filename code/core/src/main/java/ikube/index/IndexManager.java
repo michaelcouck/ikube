@@ -226,6 +226,7 @@ public final class IndexManager {
 			indexWriter.commit();
 			indexWriter.maybeMerge();
 			indexWriter.forceMerge(8, Boolean.TRUE);
+			indexWriter.deleteUnusedFiles();
 		} catch (NullPointerException e) {
 			LOGGER.error("Null pointer, in the index writer : " + indexWriter);
 			if (LOGGER.isDebugEnabled()) {

@@ -31,6 +31,8 @@ public final class ThreadUtilities implements IListener {
 
 	/** Executes the 'threads' and returns a future. */
 	private static ExecutorService EXECUTER_SERVICE;
+	/** The number of times to try to cancel the future(s). */
+	private static int MAX_RETRY_COUNT = 3;
 
 	/** A list of futures by name so we can kill them. */
 	private static final Map<String, List<Future<?>>> FUTURES = new HashMap<String, List<Future<?>>>();
@@ -110,8 +112,16 @@ public final class ThreadUtilities implements IListener {
 						LOGGER.warn("No such future : " + name);
 						return;
 					}
-					future.cancel(true);
-					LOGGER.info("Destroyed and removed future : " + name + ", " + future);
+					boolean cancelled = future.cancel(true);
+					int maxRetryCount = MAX_RETRY_COUNT;
+					while (!(cancelled = future.cancel(true)) && maxRetryCount-- > 0) {
+						ThreadUtilities.sleep(100);
+						if (future.isCancelled() || future.isDone()) {
+							break;
+						}
+						LOGGER.info("Still not cancelled : " + future);
+					}
+					LOGGER.info("Destroyed and removed future : " + name + ", " + future + ", " + cancelled);
 				}
 			}
 		} finally {
@@ -260,9 +270,22 @@ public final class ThreadUtilities implements IListener {
 				destroy(futureName);
 			}
 			EXECUTER_SERVICE.shutdown();
+			try {
+				int maxRetryCount = MAX_RETRY_COUNT;
+				while (!EXECUTER_SERVICE.awaitTermination(10, TimeUnit.SECONDS) && maxRetryCount-- > 0) {
+					List<Runnable> runnables = EXECUTER_SERVICE.shutdownNow();
+					LOGGER.info("Shutdown runnables : " + runnables);
+					LOGGER.info("Still waiting to shutdown : ");
+					EXECUTER_SERVICE.shutdown();
+				}
+			} catch (InterruptedException e) {
+				LOGGER.error("Executer service thread interrupted : ", e);
+				// Preserve interrupt status
+				Thread.currentThread().interrupt();
+			}
 			List<Runnable> runnables = EXECUTER_SERVICE.shutdownNow();
-			EXECUTER_SERVICE = null;
 			LOGGER.info("Shutdown runnables : " + runnables);
+			EXECUTER_SERVICE = null;
 		} finally {
 			notifyAll();
 		}

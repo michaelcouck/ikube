@@ -56,6 +56,7 @@ public interface IConstants {
 	int RESET_DELETE_BATCH_SIZE = 1000;
 
 	String ID = "id";
+	String FILE_ID = "file-id";
 	String INDEX = "index";
 	String SCORE = "score";
 	String CONTENT = "content";
@@ -138,7 +139,7 @@ public interface IConstants {
 	/** The maximum age that the server can get to before it is deleted from the cluster. */
 	int MAX_AGE = 1800000;
 
-	String STRIP_CHARACTERS = ",[]{};";
+	String STRIP_CHARACTERS = ",[]{};:/\\.-_";
 
 	long MAX_ACTIONS = 10000;
 	double MAX_SNAPSHOTS = 90;

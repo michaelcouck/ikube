@@ -8,6 +8,7 @@ import ikube.index.parse.ParserProvider;
 import ikube.model.IndexContext;
 import ikube.model.IndexableFileSystem;
 import ikube.toolkit.FileUtilities;
+import ikube.toolkit.HashUtilities;
 import ikube.toolkit.SerializationUtilities;
 import ikube.toolkit.ThreadUtilities;
 
@@ -38,9 +39,9 @@ import de.schlichtherle.truezip.file.TFile;
 import de.schlichtherle.truezip.file.TFileInputStream;
 
 /**
- * This class indexes a file share on the network. It is multi threaded but not cluster load balanced.
+ * This class indexes a file share on the network. It is multi-threaded but not cluster load balanced.
  * 
- * This class is optimised for performance, as such it is not very elegant.
+ * This class is optimized for performance, as such it is not very elegant.
  * 
  * @author Cristi Bozga
  * @author Michael Couck
@@ -110,21 +111,69 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 	 */
 	public void handleFile(final IndexContext<?> indexContext, final IndexableFileSystem indexableFileSystem, final File file)
 			throws InterruptedException {
-		// logger.error("Doing file : " + file);
-		InputStream inputStream = null;
-		try {
-			Document document = new Document();
-			inputStream = new FileInputStream(file);
-			addDocumentToIndex(indexContext, indexableFileSystem, file, inputStream, document);
-		} catch (InterruptedException e) {
-			// This means that the scheduler has been forcefully destroyed
-			throw e;
-		} catch (Exception e) {
-			logger.error("Exception occured while trying to index the file " + file.getAbsolutePath() + ", " + e.getMessage());
-			logger.debug(null, e);
-		} finally {
-			FileUtilities.close(inputStream);
+		if (file.isDirectory()) {
+			for (File innerFile : file.listFiles()) {
+				handleFile(indexContext, indexableFileSystem, innerFile);
+			}
+		} else {
+			InputStream inputStream = null;
+			try {
+				if (TFile.class.isAssignableFrom(file.getClass())) {
+					inputStream = new TFileInputStream(file);
+				} else {
+					inputStream = new FileInputStream(file);
+				}
+				Document document = new Document();
+				addDocumentToIndex(indexContext, indexableFileSystem, file, inputStream, document);
+			} catch (InterruptedException e) {
+				throw new RuntimeException(e);
+			} catch (Exception e) {
+				logger.error("Exception occured while trying to index the file " + file.getAbsolutePath() + ", " + e.getMessage());
+				logger.debug(null, e);
+			} finally {
+				FileUtilities.close(inputStream);
+			}
 		}
+	}
+
+	/**
+	 * This method will handle the zip file, it will look into the zip and read the contents, then index them. IT will then return whether
+	 * the file was a zip file.
+	 * 
+	 * @param indexableFileSystem the indexable for the file system
+	 * @param file the file to handle if it is a zip
+	 * @return whether the file was a zip and was handled
+	 * @throws Exception
+	 */
+	protected boolean handleZip(final IndexContext<?> indexContext, final IndexableFileSystem indexableFileSystem, final File file,
+			final Pattern pattern) throws Exception {
+		// We have to unpack the zip files
+		if (!indexableFileSystem.isUnpackZips()) {
+			return Boolean.FALSE;
+		}
+		boolean isFile = file.isFile();
+		boolean isZip = IConstants.ZIP_JAR_WAR_EAR_PATTERN.matcher(file.getName()).matches();
+		boolean isTrueFile = TFile.class.isAssignableFrom(file.getClass());
+		boolean isZipAndFile = isZip && (isFile || isTrueFile);
+		// logger.error("Is zip and file : " + isZipAndFile);
+		if (isZipAndFile) {
+			TFile trueZipFile = new TFile(file);
+			TFile[] tFiles = trueZipFile.listFiles();
+			if (tFiles != null) {
+				for (File innerTFile : tFiles) {
+					try {
+						if (isExcluded(innerTFile, pattern)) {
+							continue;
+						}
+						handleFile(indexContext, indexableFileSystem, innerTFile);
+						handleZip(indexContext, indexableFileSystem, innerTFile, pattern);
+					} catch (IOException e) {
+						logger.error("Exception reading inner file : " + innerTFile, e);
+					}
+				}
+			}
+		}
+		return isZipAndFile;
 	}
 
 	protected List<File> getBatch(final IndexableFileSystem indexableFileSystem, final Stack<File> directories, final Pattern pattern) {
@@ -160,32 +209,6 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 		return fileBatch;
 	}
 
-	protected void processFile(final IndexContext<?> indexContext, final IndexableFileSystem indexableFileSystem, final File file)
-			throws Exception {
-		if (file.isDirectory()) {
-			for (File innerFile : file.listFiles()) {
-				processFile(indexContext, indexableFileSystem, innerFile);
-			}
-		} else {
-			InputStream inputStream = null;
-			try {
-				if (TFile.class.isAssignableFrom(file.getClass())) {
-					inputStream = new TFileInputStream(file);
-				} else {
-					inputStream = new FileInputStream(file);
-				}
-				addDocumentToIndex(indexContext, indexableFileSystem, file, inputStream, new Document());
-			} catch (InterruptedException e) {
-				throw new RuntimeException(e);
-			} catch (Exception e) {
-				logger.error("Exception occured while trying to index the file " + file.getAbsolutePath() + ", " + e.getMessage());
-				logger.debug(null, e);
-			} finally {
-				FileUtilities.close(inputStream);
-			}
-		}
-	}
-
 	protected void addDocumentToIndex(final IndexContext<?> indexContext, final IndexableFileSystem indexableFileSystem, final File file,
 			final InputStream inputStream, final Document document) throws Exception {
 		ByteArrayInputStream byteInputStream = null;
@@ -206,12 +229,17 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 			Index analyzed = indexableFileSystem.isAnalyzed() ? Index.ANALYZED : Index.NOT_ANALYZED;
 			TermVector termVector = indexableFileSystem.isVectored() ? TermVector.YES : TermVector.NO;
 
+			// This is the unique id of the resource to be able to delete it
+			String fileId = HashUtilities.hash(file.getAbsolutePath()).toString();
 			String pathFieldName = indexableFileSystem.getPathFieldName();
 			String nameFieldName = indexableFileSystem.getNameFieldName();
 			String modifiedFieldName = indexableFileSystem.getLastModifiedFieldName();
 			String lengthFieldName = indexableFileSystem.getLengthFieldName();
 			String contentFieldName = indexableFileSystem.getContentFieldName();
 
+			// NOTE to self: To be able to delete using the index writer the identifier field must be non analyzed and non
+			// tokenized/vectored!
+			IndexManager.addStringField(IConstants.FILE_ID, fileId, document, Store.YES, Index.NOT_ANALYZED, TermVector.NO);
 			IndexManager.addStringField(pathFieldName, file.getAbsolutePath(), document, Store.YES, analyzed, termVector);
 			IndexManager.addStringField(nameFieldName, file.getName(), document, Store.YES, analyzed, termVector);
 			IndexManager.addStringField(modifiedFieldName, Long.toString(file.lastModified()), document, Store.YES, analyzed, termVector);
@@ -224,46 +252,6 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 			FileUtilities.close(byteInputStream);
 			FileUtilities.close(byteOutputStream);
 		}
-	}
-
-	/**
-	 * This method will handle the zip file, it will look into the zip and read the contents, then index them. IT will then return whether
-	 * the file was a zip file.
-	 * 
-	 * @param indexableFileSystem the indexable for the file system
-	 * @param file the file to handle if it is a zip
-	 * @return whether the file was a zip and was handled
-	 * @throws Exception
-	 */
-	protected boolean handleZip(final IndexContext<?> indexContext, final IndexableFileSystem indexableFileSystem, final File file,
-			final Pattern pattern) throws Exception {
-		// We have to unpack the zip files
-		if (!indexableFileSystem.isUnpackZips()) {
-			return Boolean.FALSE;
-		}
-		boolean isFile = file.isFile();
-		boolean isZip = IConstants.ZIP_JAR_WAR_EAR_PATTERN.matcher(file.getName()).matches();
-		boolean isTrueFile = TFile.class.isAssignableFrom(file.getClass());
-		boolean isZipAndFile = isZip && (isFile || isTrueFile);
-		// logger.error("Is zip and file : " + isZipAndFile);
-		if (isZipAndFile) {
-			TFile trueZipFile = new TFile(file);
-			TFile[] files = trueZipFile.listFiles();
-			if (files != null) {
-				for (File innerFile : files) {
-					try {
-						if (isExcluded(innerFile, pattern)) {
-							continue;
-						}
-						processFile(indexContext, indexableFileSystem, innerFile);
-						handleZip(indexContext, indexableFileSystem, innerFile, pattern);
-					} catch (IOException e) {
-						logger.error("Exception reading inner file : " + innerFile, e);
-					}
-				}
-			}
-		}
-		return isZipAndFile;
 	}
 
 	@SuppressWarnings("unused")

@@ -9,9 +9,11 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import ikube.ATest;
+import ikube.IConstants;
 import ikube.model.Indexable;
 import ikube.model.IndexableFileSystem;
 import ikube.service.ISearcherService;
+import ikube.toolkit.HashUtilities;
 import ikube.toolkit.PerformanceTester;
 
 import java.io.File;
@@ -22,7 +24,7 @@ import java.util.HashMap;
 import mockit.Deencapsulation;
 
 import org.apache.lucene.index.CorruptIndexException;
-import org.apache.lucene.search.Query;
+import org.apache.lucene.index.Term;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -75,6 +77,10 @@ public class DeltaIndexableFilesystemStrategyTest extends ATest {
 		HashMap<String, String> result = new HashMap<String, String>();
 		result.put(indexableFileSystem.getLengthFieldName(), "1000");
 		result.put(indexableFileSystem.getLastModifiedFieldName(), "1000");
+		result.put(indexableFileSystem.getNameFieldName(), "file-name");
+		result.put(indexableFileSystem.getPathFieldName(), "absolute-path");
+		result.put(IConstants.FILE_ID, HashUtilities.hash(file.getAbsolutePath()).toString());
+
 		results.add(result);
 		results.add(result);
 
@@ -86,7 +92,7 @@ public class DeltaIndexableFilesystemStrategyTest extends ATest {
 		mustProcess = deltaStrategy.preProcess(indexContext, indexableFileSystem, file);
 		assertTrue(mustProcess);
 
-		Mockito.verify(indexWriter, Mockito.atLeast(1)).deleteDocuments(Mockito.any(Query.class));
+		Mockito.verify(indexWriter, Mockito.atLeast(1)).deleteDocuments(Mockito.any(Term.class));
 	}
 
 	@Test

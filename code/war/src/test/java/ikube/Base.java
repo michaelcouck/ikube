@@ -125,13 +125,13 @@ public abstract class Base {
 		logger.info("Num docs : " + indexReader.numDocs());
 		for (int i = 0; i < indexReader.numDocs(); i++) {
 			Document document = indexReader.document(i);
-			logger.info("Document : " + i + ", is deleted : " + indexReader.isDeleted(i));
+			logger.info("Document : " + i);
 			List<Fieldable> fields = document.getFields();
 			for (Fieldable fieldable : fields) {
 				String fieldName = fieldable.name();
 				String fieldValue = fieldable.stringValue();
 				int fieldLength = fieldValue != null ? fieldValue.length() : 0;
-				logger.info("        : " + fieldName + ", " + fieldLength);
+				logger.info("        : " + fieldName + ", " + fieldLength + ", " + fieldValue);
 			}
 		}
 	}

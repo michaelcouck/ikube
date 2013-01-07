@@ -5,6 +5,7 @@ import ikube.index.handler.IStrategy;
 import ikube.model.IndexContext;
 import ikube.model.IndexableFileSystem;
 import ikube.service.ISearcherService;
+import ikube.toolkit.HashUtilities;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,12 +13,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
-import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.queryParser.MultiFieldQueryParser;
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.search.Query;
+import org.apache.lucene.index.Term;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,35 +54,34 @@ public class DeltaIndexableFilesystemStrategy extends AStrategy {
 			return Boolean.TRUE;
 		}
 		boolean mustProcess = Boolean.TRUE;
-		// LOGGER.error("Delta file strategy : ");
 		IndexContext<?> indexContext = (IndexContext<?>) parameters[0];
 		IndexableFileSystem indexableFileSystem = (IndexableFileSystem) parameters[1];
 		File file = (File) parameters[2];
 		String indexName = indexContext.getIndexName();
-		String[] searchFields = new String[] { indexableFileSystem.getPathFieldName(), indexableFileSystem.getNameFieldName() };
-		String[] searchStrings = new String[] { file.getAbsolutePath(), file.getName() };
-		ArrayList<HashMap<String, String>> results = searcherService.searchMulti(indexName, searchStrings, searchFields, Boolean.FALSE, 0,
-				3);
-		// LOGGER.error("Results : " + results);
-		boolean foundFileWithExactlyTheSamePath = results.size() >= 2;
-		if (foundFileWithExactlyTheSamePath) {
+		String[] searchFields = new String[] { indexableFileSystem.getPathFieldName() };
+		String[] searchStrings = new String[] { file.getAbsolutePath() };
+
+		String fileId = HashUtilities.hash(file.getAbsolutePath()).toString();
+		ArrayList<HashMap<String, String>> results = null;
+		results = searcherService.searchMulti(indexName, searchStrings, searchFields, Boolean.FALSE, 0, 10);
+
+		HashMap<String, String> result = isPathSame(fileId, results);
+		// LOGGER.info("File id : " + fileId + ", " + results);
+		if (result != null) {
+			// LOGGER.info("Found : " + result);
 			// If the length and the time stamp are different then delete the file and process again
-			if (isLengthAndTimestampSame(indexableFileSystem, file, results.get(0))) {
+			boolean lengthAndTimestampSame = isLengthAndTimestampSame(indexableFileSystem, file, result);
+			// LOGGER.info("Length and timestamp same : " + lengthAndTimestampSame);
+			if (lengthAndTimestampSame) {
 				mustProcess = Boolean.FALSE;
 			} else {
-				LOGGER.error("Deleting index entry to replace with latest version : " + file);
-				if (results.size() > 2) {
-					LOGGER.error("Found multiple files with the same attributes in the index : " + file);
-				}
+				LOGGER.error("Deleting index entry to replace with latest version : " + fileId + ", " + file.getAbsolutePath());
+				Term term = new Term(IConstants.FILE_ID, fileId);
 				IndexWriter[] indexWriters = indexContext.getIndexWriters();
-				LOGGER.info("Index context : " + indexContext + ", " + Arrays.deepToString(indexWriters));
+				// LOGGER.info("Index context : " + indexContext + ", " + Arrays.deepToString(indexWriters));
 				for (final IndexWriter indexWriter : indexWriters) {
-					Analyzer analyzer = indexContext.getAnalyzer() != null ? indexContext.getAnalyzer() : IConstants.ANALYZER;
 					try {
-						Query query = MultiFieldQueryParser.parse(IConstants.VERSION, searchStrings, searchFields, analyzer);
-						indexWriter.deleteDocuments(query);
-					} catch (ParseException e) {
-						LOGGER.error("Parse exception deleting an out of date document from the index : ", e);
+						indexWriter.deleteDocuments(term);
 					} catch (CorruptIndexException e) {
 						LOGGER.error("Index corrupt, can't really recover from this : ", e);
 						throw new RuntimeException(e);
@@ -97,14 +94,29 @@ public class DeltaIndexableFilesystemStrategy extends AStrategy {
 				}
 			}
 		}
-		LOGGER.error("Continuing with processing : " + mustProcess + ", " + indexContext.getIndexName() + ", " + file.getAbsolutePath());
+		// LOGGER.error("Continuing with processing : " + mustProcess + ", " + indexContext.getIndexName() + ", " + file.getAbsolutePath());
 		return mustProcess;
+	}
+
+	private HashMap<String, String> isPathSame(final String fileId, final ArrayList<HashMap<String, String>> results) {
+		for (final HashMap<String, String> result : results) {
+			String indexFileId = result.get(IConstants.FILE_ID);
+			if (indexFileId == null) {
+				continue;
+			}
+			// LOGGER.info("File id : " + indexFileId);
+			if (indexFileId.equals(fileId)) {
+				return result;
+			}
+		}
+		return null;
 	}
 
 	private boolean isLengthAndTimestampSame(final IndexableFileSystem indexableFileSystem, final File file,
 			final HashMap<String, String> result) {
 		String indexLength = result.get(indexableFileSystem.getLengthFieldName());
 		String indexTimestamp = result.get(indexableFileSystem.getLastModifiedFieldName());
+		// LOGGER.info("Length : " + indexLength + ", " + file.length() + ", timestamp : " + indexTimestamp + ", " + file.lastModified());
 		if (Long.parseLong(indexLength) == file.length() && Long.parseLong(indexTimestamp) == file.lastModified()) {
 			return Boolean.TRUE;
 		}

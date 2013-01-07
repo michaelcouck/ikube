@@ -6,7 +6,6 @@ import static org.junit.Assert.assertTrue;
 import ikube.IConstants;
 import ikube.Integration;
 import ikube.cluster.IClusterManager;
-import ikube.database.IDataBase;
 import ikube.index.IndexManager;
 import ikube.index.content.ColumnContentProvider;
 import ikube.index.content.IContentProvider;
@@ -14,7 +13,6 @@ import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.model.IndexableColumn;
 import ikube.model.IndexableTable;
-import ikube.model.Snapshot;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.DatabaseUtilities;
 import ikube.toolkit.ThreadUtilities;
@@ -221,10 +219,10 @@ public class IndexableTableHandlerIntegration extends Integration {
 
 	@Test
 	public void handleTable() throws Exception {
-		IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
+		// IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
 		try {
-			delete(dataBase, Snapshot.class);
-			insertData(Snapshot.class, 100000);
+			// delete(dataBase, Snapshot.class);
+			// insertData(Snapshot.class, 100000);
 			String ip = InetAddress.getLocalHost().getHostAddress();
 			IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
 			indexContext.setIndexWriters(indexWriter);
@@ -232,8 +230,8 @@ public class IndexableTableHandlerIntegration extends Integration {
 			ThreadUtilities.waitForFutures(threads, Integer.MAX_VALUE);
 			assertTrue("There must be some data in the index : ", indexContext.getIndexWriters()[0].numDocs() > 0);
 		} finally {
-			delete(dataBase, Snapshot.class);
-			insertData(Snapshot.class, 11000);
+			// delete(dataBase, Snapshot.class);
+			// insertData(Snapshot.class, 11000);
 		}
 	}
 

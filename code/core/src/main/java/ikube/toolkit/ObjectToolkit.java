@@ -90,7 +90,8 @@ public final class ObjectToolkit {
 			@Override
 			public boolean matches(Field field) {
 				// We don't set the fields that are static, final
-				return !Modifier.isStatic(field.getModifiers()) && !Modifier.isFinal(field.getModifiers());
+				return !Modifier.isStatic(field.getModifiers()) && !Modifier.isFinal(field.getModifiers())
+						&& !Modifier.isTransient(field.getModifiers());
 			}
 		};
 	}
@@ -100,7 +101,7 @@ public final class ObjectToolkit {
 		return new ReflectionUtils.FieldCallback() {
 			@Override
 			@SuppressWarnings({ "rawtypes", "unchecked" })
-			public void doWith(Field field) throws IllegalArgumentException, IllegalAccessException {
+			public void doWith(final Field field) throws IllegalArgumentException, IllegalAccessException {
 				Object fieldValue = null;
 				try {
 					if (isIgnored(field, excludedFields)) {

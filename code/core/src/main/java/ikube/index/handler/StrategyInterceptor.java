@@ -65,7 +65,7 @@ public class StrategyInterceptor implements IStrategyInterceptor {
 				}
 			}
 		}
-		LOGGER.error("Must process : " + mustProcess);
+		// LOGGER.error("Must process : " + mustProcess);
 		if (mustProcess) {
 			return proceedingJoinPoint.proceed(args);
 		}
