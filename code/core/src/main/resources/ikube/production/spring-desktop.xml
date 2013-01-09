@@ -32,7 +32,7 @@
 		property:mergeFactor="${merge.factor}"
 		property:maxFieldLength="${max.field.length}"
 		property:maxReadLength="${max.read.length}"
-		property:throttle="100"
+		property:throttle="1000"
 		property:delta="true"
 		property:indexDirectoryPath="./index"
 		property:indexDirectoryPathBackup="./index"
@@ -58,10 +58,10 @@
 		property:stored="true"
 		property:analyzed="true"
 		property:vectored="true"
-		property:excludedPattern="${files.excluded.pattern}"
+		property:excludedPattern=".*(.svn).*|.*(.db).*|.*(.exe).*|.*(.dll).*|.*(Password).*|.*(password).*|.*(RSA).*|.*(MANIFEST).*|.*(root).*|.*(/proc).*|.*(/bin).*|.*(/boot).*|.*(/sbin).*|.*(/sys).*|.*(/media).*|.*(/mnt).*|.*(Backup).*|.*(/sys).*"
 		property:lastModifiedFieldName="lastmodified"
-		property:batchSize="${file.batch.size}"
-		property:maxReadLength="${file.max.read.length}" 
+		property:batchSize="1000"
+		property:maxReadLength="1000000" 
 		property:strategies-ref="desktopStrategies" />
 	
 	<bean 
