@@ -83,12 +83,8 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IHandl
 		// see if there is a geocoder to get the coordinate
 		if (coordinate == null) {
 			String address = enrichment.buildAddress(indexable, new StringBuilder()).toString();
-			try {
-				// The GeoCoder is a last resort in fact
-				coordinate = geocoder.getCoordinate(address);
-			} catch (Exception e) {
-				logger.error("Exception accessing the geocoder : " + geocoder + ", " + address, e);
-			}
+			// The GeoCoder is a last resort in fact
+			coordinate = geocoder.getCoordinate(address);
 			if (coordinate == null) {
 				return;
 			}
@@ -103,7 +99,7 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IHandl
 		}
 		if (threadLocal.get() > indexable.getMaxExceptions()) {
 			threadLocal.set(new Integer(0));
-			throw new RuntimeException(exception);
+			throw new RuntimeException("Maximum exceptions exceeded for resource : ", exception);
 		} else {
 			threadLocal.set(threadLocal.get() + 1);
 		}
