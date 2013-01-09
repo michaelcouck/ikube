@@ -24,6 +24,32 @@ import org.junit.Test;
  */
 public class ThreadUtilitiesTest extends ATest {
 
+	// The runnable to sleep for a while
+	class Sleepy implements Runnable {
+
+		long sleep;
+
+		public Sleepy(long sleep) {
+			this.sleep = sleep;
+		}
+
+		public Sleepy() {
+			this(1000);
+		}
+
+		public void run() {
+			ThreadUtilities.sleep(sleep);
+		}
+	}
+
+	// The class to destroy the executer pool
+	class Destroyer implements Runnable {
+		public void run() {
+			ThreadUtilities.sleep(1000);
+			new ThreadUtilities().destroy();
+		}
+	}
+
 	public ThreadUtilitiesTest() {
 		super(ThreadUtilitiesTest.class);
 	}
@@ -42,16 +68,7 @@ public class ThreadUtilitiesTest extends ATest {
 	public void waitForThreads() {
 		List<Thread> threads = new ArrayList<Thread>();
 		for (int i = 0; i < 3; i++) {
-			Thread thread = new Thread(new Runnable() {
-				public void run() {
-					try {
-						Thread.sleep((long) (Math.random() * 10000));
-					} catch (Exception e) {
-						logger.error("Spit or swallow : ", e);
-					}
-					logger.debug("Thread exiting : " + Thread.currentThread());
-				}
-			});
+			Thread thread = new Thread(new Sleepy());
 			thread.start();
 			threads.add(thread);
 		}
@@ -64,55 +81,28 @@ public class ThreadUtilitiesTest extends ATest {
 	}
 
 	@Test
-	public void waitForFutures() {
-		// We just wait for this future to finish
-		Runnable runnable = new Runnable() {
-			public void run() {
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					logger.error(null, e);
-				}
-			}
-		};
-		Future<?> future = ThreadUtilities.submit(runnable);
-		ThreadUtilities.waitForFuture(future, Integer.MAX_VALUE);
-		// We must get here
-		assertTrue(true);
+	public void waitForFuture() {
+		// We just wait for this future to finish, must be less than the time we expect to wait
+		long start = System.currentTimeMillis();
+		Future<?> future = ThreadUtilities.submit(new Sleepy(3000));
+		ThreadUtilities.waitForFuture(future, 3);
+		assertTrue(System.currentTimeMillis() - start < 4000);
 
 		// We destroy this future and return from the wait method
-		runnable = new Runnable() {
-			public void run() {
-				while (true) {
-					ThreadUtilities.sleep(1000);
-				}
-			}
-		};
-		future = ThreadUtilities.submit(runnable);
-		logger.info("Going into wait : " + future);
-		new Thread(new Runnable() {
-			public void run() {
-				ThreadUtilities.sleep(3000);
-				new ThreadUtilities().destroy();
-			}
-		}).start();
+		start = System.currentTimeMillis();
+		future = ThreadUtilities.submit(new Sleepy(Integer.MAX_VALUE));
+		logger.info("Going into wait before destroying the thread pool : " + future);
+		new Thread(new Destroyer()).start();
 		ThreadUtilities.waitForFuture(future, Integer.MAX_VALUE);
-		// We must get here!
-		assertTrue(true);
+		long duration = System.currentTimeMillis() - start;
+		logger.info("Duration : " + duration);
+		assertTrue(duration < 20000);
 	}
 
 	@Test
 	public void submitDestroy() {
-		Runnable runnable = new Runnable() {
-			@Override
-			public void run() {
-				while (true) {
-					ThreadUtilities.sleep(1000);
-				}
-			}
-		};
 		String name = "name";
-		Future<?> future = ThreadUtilities.submit(name, runnable);
+		Future<?> future = ThreadUtilities.submit(name, new Sleepy(Integer.MAX_VALUE));
 		logger.info("Future : " + future.isCancelled() + ", " + future.isDone());
 
 		ThreadUtilities.sleep(3000);
@@ -124,6 +114,7 @@ public class ThreadUtilitiesTest extends ATest {
 		assertTrue(future.isCancelled());
 	}
 
+	/** This method just checks the concurrency of the threading, that there are no blocking synchronized blocks. */
 	@Test
 	public void multiThreaded() {
 		final int iterations = 100;
@@ -136,18 +127,10 @@ public class ThreadUtilitiesTest extends ATest {
 					int i = iterations;
 					while (i-- > 0) {
 						ThreadUtilities.sleep(100);
-						ThreadUtilities.submit(this.toString(), new Runnable() {
-							public void run() {
-								ThreadUtilities.sleep(100);
-							}
-						});
+						ThreadUtilities.submit(this.toString(), new Sleepy());
 						ThreadUtilities.getFutures(this.toString());
 						ThreadUtilities.getFutures();
-						ThreadUtilities.submit(new Runnable() {
-							public void run() {
-								ThreadUtilities.sleep(100);
-							}
-						});
+						ThreadUtilities.submit(new Sleepy());
 						ThreadUtilities.destroy(this.toString());
 						listenerManager.fireEvent(Event.TIMER, System.currentTimeMillis(), null, Boolean.FALSE);
 					}

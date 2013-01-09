@@ -27,6 +27,8 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IHandl
 	private int threads;
 	/** The class that this handler can handle. */
 	private Class<T> indexableClass;
+	/** A local storage for the maximum exceptions per thread. */
+	private ThreadLocal<Integer> threadLocal = new ThreadLocal<Integer>();
 
 	/** The geocoder to get the co-ordinates for the indexable. */
 	@Autowired
@@ -93,6 +95,18 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IHandl
 			logger.info("Got co-ordinate for : " + indexable.getName() + ", " + coordinate);
 		}
 		enrichment.addSpatialLocationFields(coordinate, document);
+	}
+
+	protected void handleMaxExceptions(final Indexable<?> indexable, final Exception exception) {
+		if (threadLocal.get() == null) {
+			threadLocal.set(new Integer(0));
+		}
+		if (threadLocal.get() > indexable.getMaxExceptions()) {
+			threadLocal.set(new Integer(0));
+			throw new RuntimeException(exception);
+		} else {
+			threadLocal.set(threadLocal.get() + 1);
+		}
 	}
 
 }

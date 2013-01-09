@@ -362,7 +362,7 @@ public final class FileUtilities {
 	}
 
 	/**
-	 * Reads the contents of the file and returns the contents in a byte array form.
+	 * Reads the contents of the stream and returns the contents in a byte array form.
 	 * 
 	 * @param inputStream the file to read the contents from
 	 * @param outputStream the output stream to write the data to

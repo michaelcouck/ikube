@@ -33,10 +33,6 @@ public class IndexableFileSystemHandlerTest extends ATest {
 	/** Class under test. */
 	private IndexableFilesystemHandler indexableFileSystemHandler;
 
-	public IndexableFileSystemHandlerTest() {
-		super(IndexableFileSystemHandlerTest.class);
-	}
-
 	@BeforeClass
 	public static void beforeClass() {
 		new ThreadUtilities().initialize();
@@ -45,6 +41,10 @@ public class IndexableFileSystemHandlerTest extends ATest {
 	@AfterClass
 	public static void afterClass() {
 		new ThreadUtilities().destroy();
+	}
+
+	public IndexableFileSystemHandlerTest() {
+		super(IndexableFileSystemHandlerTest.class);
 	}
 
 	@Before

@@ -32,7 +32,7 @@ public final class ThreadUtilities implements IListener {
 	/** Executes the 'threads' and returns a future. */
 	private static ExecutorService EXECUTER_SERVICE;
 	/** The number of times to try to cancel the future(s). */
-	private static int MAX_RETRY_COUNT = 3;
+	private static int MAX_RETRY_COUNT = 100;
 
 	/** A list of futures by name so we can kill them. */
 	private static final Map<String, List<Future<?>>> FUTURES = new HashMap<String, List<Future<?>>>();
@@ -112,16 +112,19 @@ public final class ThreadUtilities implements IListener {
 						LOGGER.warn("No such future : " + name);
 						return;
 					}
-					boolean cancelled = future.cancel(true);
 					int maxRetryCount = MAX_RETRY_COUNT;
-					while (!(cancelled = future.cancel(true)) && maxRetryCount-- > 0) {
+					while (!future.cancel(true) && maxRetryCount-- > 0) {
 						ThreadUtilities.sleep(100);
-						if (future.isCancelled() || future.isDone()) {
+						if (future.isCancelled()) {
 							break;
 						}
 						LOGGER.info("Still not cancelled : " + future);
 					}
-					LOGGER.info("Destroyed and removed future : " + name + ", " + future + ", " + cancelled);
+					if (future.isCancelled()) {
+						LOGGER.info("Cancelled future : " + name + ", " + future);
+					} else {
+						LOGGER.warn("Couldn't cancel future : " + name + ", " + future);
+					}
 				}
 			}
 		} finally {
@@ -130,7 +133,7 @@ public final class ThreadUtilities implements IListener {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * This method will be called by the scheduler and will remove futures that are still hanging around but are cancelled.
 	 */
 	@Override
 	public void handleNotification(Event event) {
@@ -140,7 +143,7 @@ public final class ThreadUtilities implements IListener {
 					for (Map.Entry<String, List<Future<?>>> mapEntry : getFutures().entrySet()) {
 						List<Future<?>> futures = new ArrayList<Future<?>>(mapEntry.getValue());
 						for (Future<?> future : futures) {
-							if (future.isCancelled() || future.isDone()) {
+							if (future.isCancelled()) {
 								boolean removed = getFutures(mapEntry.getKey()).remove(future);
 								if (removed) {
 									LOGGER.debug("Removed future : " + future);
@@ -180,33 +183,34 @@ public final class ThreadUtilities implements IListener {
 			LOGGER.debug("Future null returning : ");
 			return;
 		}
-		long start = System.currentTimeMillis();
-		while (!future.isDone()) {
-			try {
-				future.get(maxWait, TimeUnit.SECONDS);
-			} catch (InterruptedException e) {
-				String message = "Coitus interruptus... : " + e.getMessage();
-				LOGGER.warn(message);
-				LOGGER.debug(null, e);
-			} catch (TimeoutException e) {
-				LOGGER.info("Timed out waiting for future : " + e.getMessage());
-			} catch (Exception e) {
-				LOGGER.error("Exception waiting for future : ");
-				LOGGER.debug(null, e);
-			}
-			ThreadUtilities.sleep(1000);
-			if ((System.currentTimeMillis() - start) > maxWait * 1000) {
-				break;
-			}
+		// long start = System.currentTimeMillis();
+		try {
+			future.get(maxWait, TimeUnit.SECONDS);
+		} catch (InterruptedException e) {
+			String message = "Coitus interruptus... : " + e.getMessage();
+			LOGGER.warn(message);
+			LOGGER.debug(null, e);
+		} catch (TimeoutException e) {
+			LOGGER.info("Timed out waiting for future : " + e.getMessage());
+		} catch (Exception e) {
+			LOGGER.error("Exception waiting for future : ");
+			LOGGER.debug(null, e);
 		}
+//		while (!future.isDone()) {
+//			ThreadUtilities.sleep(1000);
+//			if ((System.currentTimeMillis() - start) > maxWait * 1000) {
+//				break;
+//			}
+//		}
 		// Remove the future from the list
-		for (Map.Entry<String, List<Future<?>>> mapEntry : getFutures().entrySet()) {
-			List<Future<?>> futures = new ArrayList<Future<?>>(mapEntry.getValue());
-			boolean removed = futures.remove(future);
-			if (removed) {
-				LOGGER.debug("Removed future : " + future);
-			}
-		}
+		// WHY DID I REMOVE THE FUTURE?!
+//		for (Map.Entry<String, List<Future<?>>> mapEntry : getFutures().entrySet()) {
+//			List<Future<?>> futures = new ArrayList<Future<?>>(mapEntry.getValue());
+//			boolean removed = futures.remove(future);
+//			if (removed) {
+//				LOGGER.debug("Removed future : " + future);
+//			}
+//		}
 	}
 
 	/**

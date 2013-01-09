@@ -95,6 +95,7 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 					throw new RuntimeException(e);
 				} catch (Exception e) {
 					logger.error("Exception handling file : " + file, e);
+					handleMaxExceptions(indexableFileSystem, e);
 				}
 			}
 			files = getBatch(indexableFileSystem, directories, pattern);
@@ -110,7 +111,7 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 	 * @throws InterruptedException
 	 */
 	public void handleFile(final IndexContext<?> indexContext, final IndexableFileSystem indexableFileSystem, final File file)
-			throws InterruptedException {
+			throws Exception {
 		if (file.isDirectory()) {
 			for (File innerFile : file.listFiles()) {
 				handleFile(indexContext, indexableFileSystem, innerFile);
@@ -125,11 +126,6 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 				}
 				Document document = new Document();
 				addDocumentToIndex(indexContext, indexableFileSystem, file, inputStream, document);
-			} catch (InterruptedException e) {
-				throw new RuntimeException(e);
-			} catch (Exception e) {
-				logger.error("Exception occured while trying to index the file " + file.getAbsolutePath() + ", " + e.getMessage());
-				logger.debug(null, e);
 			} finally {
 				FileUtilities.close(inputStream);
 			}
@@ -161,15 +157,11 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 			TFile[] tFiles = trueZipFile.listFiles();
 			if (tFiles != null) {
 				for (File innerTFile : tFiles) {
-					try {
-						if (isExcluded(innerTFile, pattern)) {
-							continue;
-						}
-						handleFile(indexContext, indexableFileSystem, innerTFile);
-						handleZip(indexContext, indexableFileSystem, innerTFile, pattern);
-					} catch (IOException e) {
-						logger.error("Exception reading inner file : " + innerTFile, e);
+					if (isExcluded(innerTFile, pattern)) {
+						continue;
 					}
+					handleFile(indexContext, indexableFileSystem, innerTFile);
+					handleZip(indexContext, indexableFileSystem, innerTFile, pattern);
 				}
 			}
 		}
