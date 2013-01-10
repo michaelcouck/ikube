@@ -348,6 +348,7 @@
 		property:indexableClass="ikube.model.IndexableEmail" />
 	<bean
 		parent="ikube.index.handler.IndexableHandler"
+		id="ikube.index.handler.filesystem.IndexableFilesystemHandler"
 		class="ikube.index.handler.filesystem.IndexableFilesystemHandler"
 		property:threads="${filesystem.handler.threads}"
 		property:indexableClass="ikube.model.IndexableFileSystem" />
@@ -376,5 +377,11 @@
 		class="ikube.index.handler.database.IndexableDataSourceHandler"
 		property:threads="${filesystem.handler.threads}"
 		property:indexableClass="ikube.model.IndexableDataSource" />
+	<bean
+		parent="ikube.index.handler.IndexableHandler"
+		id="ikube.index.handler.filesystem.IndexableFilesystemCsvHandler" 
+		class="ikube.index.handler.filesystem.IndexableFilesystemCsvHandler"
+		property:threads="${filesystem.handler.threads}"
+		property:indexableClass="ikube.model.IndexableFileSystemCsv" />
 	
 </beans>

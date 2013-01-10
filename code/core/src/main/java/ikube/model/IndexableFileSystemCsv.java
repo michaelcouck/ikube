@@ -15,6 +15,7 @@ import javax.persistence.InheritanceType;
 public class IndexableFileSystemCsv extends IndexableFileSystem {
 
 	private char separator;
+	private String lineNumberFieldName;
 
 	public char getSeparator() {
 		return separator;
@@ -22,6 +23,14 @@ public class IndexableFileSystemCsv extends IndexableFileSystem {
 
 	public void setSeparator(char separator) {
 		this.separator = separator;
+	}
+
+	public String getLineNumberFieldName() {
+		return lineNumberFieldName;
+	}
+
+	public void setLineNumberFieldName(String lineNumberFieldName) {
+		this.lineNumberFieldName = lineNumberFieldName;
 	}
 
 }

@@ -69,40 +69,30 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	 * caller that will have to wait for them to finish indexing all the data.
 	 */
 	@Override
-	public List<Future<?>> handle(final IndexContext<?> indexContext, final IndexableTable indexable) throws Exception {
+	public List<Future<?>> handle(final IndexContext<?> indexContext, final IndexableTable indexable) {
 		// We start as many threads to access this table as defined. We return
 		// the threads to the caller that they can then wait for the threads to finish
 		final DataSource dataSource = indexable.getDataSource();
 		List<Future<?>> futures = new ArrayList<Future<?>>();
-		try {
-			final AtomicLong currentId = new AtomicLong(0);
-			for (int i = 0; i < getThreads(); i++) {
-				// Because the transient state data is stored in the indexable during indexing we have
-				// to clone the indexable for each thread
-				logger.info("Indexable : " + indexable.getName());
-				final IndexableTable cloneIndexableTable = (IndexableTable) SerializationUtilities.clone(indexable);
-				if (cloneIndexableTable.isAllColumns()) {
-					logger.info("Adding all columns to table : " + cloneIndexableTable.getName());
-					addAllColumns(cloneIndexableTable, dataSource);
-				}
-				final Runnable runnable = new Runnable() {
-					public void run() {
-						try {
-							final IContentProvider<IndexableColumn> contentProvider = new ColumnContentProvider();
-							setMinAndMaxId(cloneIndexableTable, dataSource);
-							handleTable(contentProvider, indexContext, cloneIndexableTable, dataSource, null, currentId);
-						} catch (InterruptedException e) {
-							throw new RuntimeException(e);
-						} catch (Exception e) {
-							throw new RuntimeException(e);
-						}
-					}
-				};
-				final Future<?> future = ThreadUtilities.submit(indexContext.getIndexName(), runnable);
-				futures.add(future);
+		final AtomicLong currentId = new AtomicLong(0);
+		for (int i = 0; i < getThreads(); i++) {
+			// Because the transient state data is stored in the indexable during indexing we have
+			// to clone the indexable for each thread
+			logger.info("Indexable : " + indexable.getName());
+			final IndexableTable cloneIndexableTable = (IndexableTable) SerializationUtilities.clone(indexable);
+			if (cloneIndexableTable.isAllColumns()) {
+				logger.info("Adding all columns to table : " + cloneIndexableTable.getName());
+				addAllColumns(cloneIndexableTable, dataSource);
 			}
-		} catch (Exception e) {
-			logger.error("Exception starting the table handler threads : " + indexable.getName(), e);
+			final Runnable runnable = new Runnable() {
+				public void run() {
+					final IContentProvider<IndexableColumn> contentProvider = new ColumnContentProvider();
+					setMinAndMaxId(cloneIndexableTable, dataSource);
+					handleTable(contentProvider, indexContext, cloneIndexableTable, dataSource, null, currentId);
+				}
+			};
+			final Future<?> future = ThreadUtilities.submit(indexContext.getIndexName(), runnable);
+			futures.add(future);
 		}
 		return futures;
 	}
@@ -120,8 +110,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	 * @throws InterruptedException
 	 */
 	protected void handleTable(final IContentProvider<IndexableColumn> contentProvider, final IndexContext<?> indexContext,
-			final IndexableTable indexableTable, final DataSource dataSource, final Document document, final AtomicLong currentId)
-			throws Exception {
+			final IndexableTable indexableTable, final DataSource dataSource, final Document document, final AtomicLong currentId) {
 		Document currentDocument = document == null ? new Document() : document;
 		// One connection per thread, the connection will be closed by the thread when finished
 		ResultSet resultSet = getResultSet(indexContext, indexableTable, dataSource, currentId);
@@ -142,10 +131,10 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 					resultSet = getResultSet(indexContext, indexableTable, dataSource, currentId);
 				}
 			} catch (InterruptedException e) {
-				throw e;
+				throw new RuntimeException(e);
 			} catch (Exception e) {
 				logger.error("Exception indexing table : " + indexableTable.getName(), e);
-				throw e;
+				handleMaxExceptions(indexableTable, e);
 			}
 		} while (resultSet != null);
 		DatabaseUtilities.closeAll(resultSet);
@@ -154,7 +143,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	@SuppressWarnings("rawtypes")
 	public void handleRow(final IndexContext indexContext, final IndexableTable indexableTable, final DataSource dataSource,
 			ResultSet resultSet, Document currentDocument, final IContentProvider<IndexableColumn> contentProvider,
-			final AtomicLong currentId) throws Exception {
+			final AtomicLong currentId) throws InterruptedException {
 		// We have results from the table and we are already on the first result
 		List<Indexable<?>> children = indexableTable.getChildren();
 		// Set the column types and the data from the table in the column objects
@@ -180,30 +169,38 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 				}
 			}
 		}
-		Thread.sleep(indexContext.getThrottle());
+		try {
+			Thread.sleep(indexContext.getThrottle());
+		} catch (InterruptedException e) {
+			throw new InterruptedException("Table indexing teminated : ");
+		}
 		if (Thread.currentThread().isInterrupted()) {
 			throw new InterruptedException("Table indexing teminated : ");
 		}
 	}
 
 	private ResultSet getResultSet(final IndexContext<?> indexContext, final IndexableTable indexableTable, final DataSource dataSource,
-			final AtomicLong currentId) throws Exception {
+			final AtomicLong currentId) {
 		Connection connection = getConnection(dataSource);
 		ResultSet resultSet = getResultSet(indexContext, indexableTable, connection, currentId);
-		while (!resultSet.next()) {
-			DatabaseUtilities.closeAll(resultSet);
-			if (!indexableTable.isPrimaryTable()) {
-				// If this is not the primary table then we have exhausted the results
-				return null;
+		try {
+			while (!resultSet.next()) {
+				DatabaseUtilities.closeAll(resultSet);
+				if (!indexableTable.isPrimaryTable()) {
+					// If this is not the primary table then we have exhausted the results
+					return null;
+				}
+				if (currentId.get() >= indexableTable.getMaximumId()) {
+					// Finished indexing the table hierarchy
+					return null;
+				}
+				connection = getConnection(dataSource);
+				resultSet = getResultSet(indexContext, indexableTable, connection, currentId);
 			}
-			if (currentId.get() >= indexableTable.getMaximumId()) {
-				// Finished indexing the table hierarchy
-				return null;
-			}
-			connection = getConnection(dataSource);
-			resultSet = getResultSet(indexContext, indexableTable, connection, currentId);
+			return resultSet;
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
 		}
-		return resultSet;
 	}
 
 	/**
@@ -222,21 +219,21 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	 * @throws Exception
 	 */
 	protected synchronized ResultSet getResultSet(final IndexContext<?> indexContext, final IndexableTable indexableTable,
-			final Connection connection, final AtomicLong currentId) throws Exception {
+			final Connection connection, final AtomicLong currentId) {
 		try {
 			// Build the sql based on the columns defined in the configuration
 			String sql = buildSql(indexableTable, indexContext.getBatchSize(), currentId.get());
 			if (indexableTable.isPrimaryTable()) {
 				currentId.set(currentId.get() + indexContext.getBatchSize());
 			}
-			PreparedStatement preparedStatement = connection.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY,
-					ResultSet.CONCUR_READ_ONLY, ResultSet.CLOSE_CURSORS_AT_COMMIT);
+			PreparedStatement preparedStatement = connection.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY,
+					ResultSet.CLOSE_CURSORS_AT_COMMIT);
 			// Set the parameters if this is a sub table, this typically means that the
 			// id from the primary table is set in the prepared statement for the sub table
 			setParameters(indexableTable, preparedStatement);
 			return preparedStatement.executeQuery();
-		} catch (Exception e) {
-			throw e;
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
 		} finally {
 			notifyAll();
 		}
@@ -251,8 +248,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	 * @return the string sql for the table
 	 * @throws Exception
 	 */
-	protected synchronized String buildSql(final IndexableTable indexableTable, final long batchSize, final long nextIdNumber)
-			throws Exception {
+	protected synchronized String buildSql(final IndexableTable indexableTable, final long batchSize, final long nextIdNumber) {
 		try {
 			StringBuilder builder = new StringBuilder();
 			builder.append("select ");
@@ -337,13 +333,17 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 		}
 	}
 
-	private Connection getConnection(final DataSource dataSource) throws SQLException {
-		Connection connection = dataSource.getConnection();
-		connection.setAutoCommit(Boolean.FALSE);
-		return connection;
+	private Connection getConnection(final DataSource dataSource) {
+		try {
+			Connection connection = dataSource.getConnection();
+			connection.setAutoCommit(Boolean.FALSE);
+			return connection;
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
-	private void setMinAndMaxId(final IndexableTable indexableTable, final DataSource dataSource) throws Exception {
+	private void setMinAndMaxId(final IndexableTable indexableTable, final DataSource dataSource) {
 		Connection connection = getConnection(dataSource);
 		long minimumId = indexableTable.getMinimumId();
 		if (minimumId <= 0) {
@@ -367,8 +367,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	 *        no foreign key references, but in the case of a sub table the parent id will be accessed
 	 * @param preparedStatement the statement to set the parameters in
 	 */
-	protected synchronized void setParameters(final IndexableTable indexableTable, final PreparedStatement preparedStatement)
-			throws Exception {
+	protected synchronized void setParameters(final IndexableTable indexableTable, final PreparedStatement preparedStatement) {
 		try {
 			List<Indexable<?>> children = indexableTable.getChildren();
 			int index = 1;
@@ -382,7 +381,12 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 				}
 				IndexableColumn foreignKey = indexableColumn.getForeignKey();
 				Object parameter = foreignKey.getContent();
-				preparedStatement.setObject(index, parameter);
+				try {
+					preparedStatement.setObject(index, parameter);
+				} catch (SQLException e) {
+					logger.error("Exception getting results : ", e);
+					handleMaxExceptions(indexableTable, e);
+				}
 				index++;
 			}
 		} finally {
@@ -400,8 +404,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	 * @return the id that resulted from the function
 	 * @throws Exception
 	 */
-	protected synchronized long getIdFunction(final IndexableTable indexableTable, final Connection connection, final String function)
-			throws Exception {
+	protected synchronized long getIdFunction(final IndexableTable indexableTable, final Connection connection, final String function) {
 		Statement statement = null;
 		ResultSet resultSet = null;
 		try {
@@ -428,6 +431,9 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 				}
 			}
 			return result;
+		} catch (SQLException e) {
+			logger.error("", e);
+			throw new RuntimeException(e);
 		} finally {
 			DatabaseUtilities.close(resultSet);
 			DatabaseUtilities.close(statement);
@@ -504,6 +510,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 			}
 		} catch (Exception e) {
 			logger.error("Exception accessing the column content : " + byteOutputStream, e);
+			handleMaxExceptions(indexable, e);
 		} finally {
 			FileUtilities.close(inputStream);
 			FileUtilities.close(parsedOutputStream);
@@ -511,7 +518,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 		}
 	}
 
-	protected void addAllColumns(IndexableTable indexableTable, final DataSource dataSource) throws SQLException {
+	protected void addAllColumns(IndexableTable indexableTable, final DataSource dataSource) {
 		Connection connection = getConnection(dataSource);
 		List<String> columnNames = DatabaseUtilities.getAllColumns(connection, indexableTable.getName());
 		List<String> primaryKeyColumns = DatabaseUtilities.getPrimaryKeys(connection, indexableTable.getName());
@@ -578,7 +585,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	 * @param document the document to set the id field in
 	 * @throws Exception
 	 */
-	protected void setIdField(final IndexableTable indexableTable, final Document document) throws Exception {
+	protected void setIdField(final IndexableTable indexableTable, final Document document) {
 		List<Indexable<?>> children = indexableTable.getChildren();
 		IndexableColumn idColumn = getIdColumn(children);
 
@@ -601,18 +608,22 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	 * @param resultSet the result set for the table
 	 * @throws Exception
 	 */
-	protected void setColumnTypesAndData(final List<Indexable<?>> children, final ResultSet resultSet) throws Exception {
-		ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
-		for (int i = 0; i < children.size(); i++) {
-			Indexable<?> indexable = children.get(i);
-			if (!IndexableColumn.class.isAssignableFrom(indexable.getClass())) {
-				continue;
+	protected void setColumnTypesAndData(final List<Indexable<?>> children, final ResultSet resultSet) {
+		try {
+			ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
+			for (int i = 0; i < children.size(); i++) {
+				Indexable<?> indexable = children.get(i);
+				if (!IndexableColumn.class.isAssignableFrom(indexable.getClass())) {
+					continue;
+				}
+				IndexableColumn indexableColumn = (IndexableColumn) indexable;
+				int columnType = resultSetMetaData.getColumnType(i + 1);
+				Object object = resultSet.getObject(indexableColumn.getName());
+				indexableColumn.setColumnType(columnType);
+				indexableColumn.setContent(object);
 			}
-			IndexableColumn indexableColumn = (IndexableColumn) indexable;
-			int columnType = resultSetMetaData.getColumnType(i + 1);
-			Object object = resultSet.getObject(indexableColumn.getName());
-			indexableColumn.setColumnType(columnType);
-			indexableColumn.setContent(object);
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
 		}
 	}
 

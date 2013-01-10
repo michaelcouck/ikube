@@ -1,5 +1,6 @@
 package ikube.index.handler.filesystem;
 
+import ikube.IConstants;
 import ikube.index.IndexManager;
 import ikube.model.IndexContext;
 import ikube.model.IndexableFileSystem;
@@ -7,6 +8,7 @@ import ikube.model.IndexableFileSystemCsv;
 import ikube.toolkit.ThreadUtilities;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
@@ -39,20 +41,39 @@ public class IndexableFilesystemCsvHandler extends IndexableFilesystemHandler {
 		Store store = indexableFileSystem.isStored() ? Store.YES : Store.NO;
 		Index analyzed = indexableFileSystem.isAnalyzed() ? Index.ANALYZED : Index.NOT_ANALYZED;
 		TermVector termVector = indexableFileSystem.isVectored() ? TermVector.YES : TermVector.NO;
+		char separator = indexableFileSystemCsv.getSeparator();
+		int lineNumber = 0;
+		String lineNumberFieldName = indexableFileSystemCsv.getLineNumberFieldName() != null ? indexableFileSystemCsv
+				.getLineNumberFieldName() : IConstants.ID;
 		while (lineIterator.hasNext()) {
 			try {
 				String line = lineIterator.nextLine();
 				Document document = new Document();
-				String[] values = StringUtils.split(line, indexableFileSystemCsv.getSeparator());
-				for (int i = 0; i < values.length; i++) {
-					String strippedValue = StringUtils.strip(values[i], "\"");
-					IndexManager.addStringField(columns[i], strippedValue, document, store, analyzed, termVector);
+				String[] values = StringUtils.split(line, separator);
+				if (columns.length != values.length) {
+					logger.warn("Columns and values different on line : " + lineNumber + ", columns : " + columns.length + ", values : "
+							+ values.length + ", of file : " + file + ", data : " + Arrays.deepToString(values));
 				}
+				String identifier = StringUtils.join(new Object[] { file.getName(), Integer.toString(lineNumber) }, IConstants.SPACE);
+				// Add the line number field
+				IndexManager.addStringField(lineNumberFieldName, identifier, document, Store.YES, Index.ANALYZED, TermVector.NO);
+				for (int i = 0; i < columns.length && i < values.length; i++) {
+					if (StringUtils.isNumeric(values[i])) {
+						IndexManager.addNumericField(columns[i], values[i], document, store);
+					} else {
+						IndexManager.addStringField(columns[i], values[i], document, store, analyzed, termVector);
+					}
+				}
+				// logger.info("Adding document : " + document);
 				addDocument(indexContext, indexableFileSystemCsv, document);
 				ThreadUtilities.sleep(indexContext.getThrottle());
 			} catch (Exception e) {
 				logger.error("Exception processing file : " + file, e);
 				handleMaxExceptions(indexableFileSystemCsv, e);
+			}
+			++lineNumber;
+			if (lineNumber % 10000 == 0) {
+				logger.info("Lines done : " + lineNumber);
 			}
 		}
 	}

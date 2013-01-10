@@ -29,6 +29,7 @@
 		<class>ikube.model.IndexableFileSystem</class>
 		<class>ikube.model.IndexableFileSystemWiki</class>
 		<class>ikube.model.IndexableFileSystemLog</class>
+		<class>ikube.model.IndexableFileSystemCsv</class>
 		<class>ikube.model.IndexableEmail</class>
 		<class>ikube.model.IndexableColumn</class>
 		<class>ikube.model.Index</class>
@@ -82,6 +83,7 @@
 		<class>ikube.model.IndexableFileSystem</class>
 		<class>ikube.model.IndexableFileSystemWiki</class>
 		<class>ikube.model.IndexableFileSystemLog</class>
+		<class>ikube.model.IndexableFileSystemCsv</class>
 		<class>ikube.model.IndexableEmail</class>
 		<class>ikube.model.IndexableColumn</class>
 		<class>ikube.model.Search</class>
@@ -124,6 +126,7 @@
 		<class>ikube.model.IndexableFileSystem</class>
 		<class>ikube.model.IndexableFileSystemWiki</class>
 		<class>ikube.model.IndexableFileSystemLog</class>
+		<class>ikube.model.IndexableFileSystemCsv</class>
 		<class>ikube.model.IndexableEmail</class>
 		<class>ikube.model.IndexableColumn</class>
 		<class>ikube.model.Search</class>
@@ -166,6 +169,7 @@
 		<class>ikube.model.IndexableFileSystem</class>
 		<class>ikube.model.IndexableFileSystemWiki</class>
 		<class>ikube.model.IndexableFileSystemLog</class>
+		<class>ikube.model.IndexableFileSystemCsv</class>
 		<class>ikube.model.IndexableEmail</class>
 		<class>ikube.model.IndexableColumn</class>
 		<class>ikube.model.Search</class>

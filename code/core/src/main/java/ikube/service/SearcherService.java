@@ -117,7 +117,6 @@ public class SearcherService implements ISearcherService {
 			String message = Logging.getString("Exception doing search on index : ", indexName, searchStrings, searchFields, fragment,
 					firstResult, maxResults);
 			LOGGER.error(message, e);
-			System.exit(1);
 		}
 		return getMessageResults(indexName);
 	}

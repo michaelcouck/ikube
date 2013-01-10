@@ -126,7 +126,7 @@ public class ThreadUtilitiesTest extends ATest {
 				public void run() {
 					int i = iterations;
 					while (i-- > 0) {
-						ThreadUtilities.sleep(100);
+						ThreadUtilities.sleep(10);
 						ThreadUtilities.submit(this.toString(), new Sleepy());
 						ThreadUtilities.getFutures(this.toString());
 						ThreadUtilities.getFutures();

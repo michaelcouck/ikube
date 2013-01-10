@@ -30,7 +30,7 @@ public class IndexableFilesystemHandlerIntegration extends Integration {
 	public void before() {
 		dropbox = ApplicationContextManager.getBean("dropboxIndex");
 		dropboxIndexable = ApplicationContextManager.getBean("dropboxIndexable");
-		indexableFilesystemHandler = ApplicationContextManager.getBean(IndexableFilesystemHandler.class);
+		indexableFilesystemHandler = ApplicationContextManager.getBean(IndexableFilesystemHandler.class.getName());
 		delete(ApplicationContextManager.getBean(IDataBase.class), ikube.model.File.class);
 		FileUtilities.deleteFile(new File(dropbox.getIndexDirectoryPath()), 1);
 	}

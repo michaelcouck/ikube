@@ -1,11 +1,13 @@
 package ikube.index.handler.filesystem;
 
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import ikube.ATest;
 import ikube.model.IndexableFileSystemCsv;
 import ikube.toolkit.FileUtilities;
+import ikube.toolkit.PerformanceTester;
 import ikube.toolkit.ThreadUtilities;
 
 import java.io.File;
@@ -18,6 +20,7 @@ import org.junit.Test;
 
 public class IndexableFilesystemCsvHandlerTest extends ATest {
 
+	private IndexableFileSystemCsv indexableFileSystem;
 	/** Class under test. */
 	private IndexableFilesystemCsvHandler filesystemCsvHandler;
 
@@ -37,16 +40,26 @@ public class IndexableFilesystemCsvHandlerTest extends ATest {
 
 	@Before
 	public void before() {
+		indexableFileSystem = new IndexableFileSystemCsv();
 		filesystemCsvHandler = new IndexableFilesystemCsvHandler();
 	}
 
 	@Test
 	public void handleFile() throws Exception {
-		// final IndexContext<?> indexContext, final IndexableFileSystem indexableFileSystem, final File file
-		IndexableFileSystemCsv indexableFileSystem = new IndexableFileSystemCsv();
 		File file = FileUtilities.findFileRecursively(new File("."), Boolean.FALSE, "csv.csv");
+		// File file = new File("/home/michael/Desktop/TEST_VAT.csv");
 		filesystemCsvHandler.handleFile(indexContext, indexableFileSystem, file);
-		verify(indexWriter, atLeastOnce()).addDocument(any(Document.class));
+		verify(indexWriter, times(1)).addDocument(any(Document.class));
+
+		double executionsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
+			public void execute() throws Throwable {
+				File file = FileUtilities.findFileRecursively(new File("."), Boolean.FALSE, "csv-large.csv");
+				filesystemCsvHandler.handleFile(indexContext, indexableFileSystem, file);
+			}
+		}, "Csv file reader performance : ", 1, Boolean.TRUE);
+		double linesPerSecond = executionsPerSecond * 100000;
+		logger.info("Per second : " + linesPerSecond);
+		assertTrue(linesPerSecond > 1000);
 	}
 
 }

@@ -52,7 +52,7 @@ public class AopIntegration extends Base {
 	public void intercept() throws Exception {
 		IndexContext indexContext = ApplicationContextManager.getBean("dropboxIndex");
 		IndexableFileSystem indexableFileSystem = ApplicationContextManager.getBean("dropboxIndexable");
-		IndexableFilesystemHandler indexableHandler = ApplicationContextManager.getBean(IndexableFilesystemHandler.class);
+		IndexableFilesystemHandler indexableHandler = ApplicationContextManager.getBean(IndexableFilesystemHandler.class.getName());
 
 		indexContext.setIndexWriters(mock(IndexWriter.class));
 		IStrategy strategy = mock(IStrategy.class);

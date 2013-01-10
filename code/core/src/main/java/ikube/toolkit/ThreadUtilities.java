@@ -114,11 +114,11 @@ public final class ThreadUtilities implements IListener {
 					}
 					int maxRetryCount = MAX_RETRY_COUNT;
 					while (!future.cancel(true) && maxRetryCount-- > 0) {
-						ThreadUtilities.sleep(100);
+						ThreadUtilities.sleep(10);
 						if (future.isCancelled()) {
 							break;
 						}
-						LOGGER.info("Still not cancelled : " + future);
+						// LOGGER.info("Still not cancelled : " + future);
 					}
 					if (future.isCancelled()) {
 						LOGGER.info("Cancelled future : " + name + ", " + future);

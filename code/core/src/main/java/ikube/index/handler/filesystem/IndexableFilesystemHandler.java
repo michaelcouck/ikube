@@ -57,7 +57,6 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 	@Override
 	public List<Future<?>> handle(final IndexContext<?> indexContext, final IndexableFileSystem indexable) throws Exception {
 		List<Future<?>> futures = new ArrayList<Future<?>>();
-
 		final Stack<File> directories = new Stack<File>();
 		directories.push(new File(indexable.getPath()));
 		final Pattern pattern = getPattern(indexable.getExcludedPattern());
@@ -85,10 +84,6 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 			for (File file : files) {
 				try {
 					// logger.error("Doing file : " + file);
-					if (handleZip(indexContext, indexableFileSystem, file, pattern)) {
-						// If this file was a zip and was already handled then just continue
-						continue;
-					}
 					handleFile(indexContext, indexableFileSystem, file);
 				} catch (InterruptedException e) {
 					logger.error("Thread terminated, and indexing stopped : ", e);
@@ -112,6 +107,27 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 	 */
 	public void handleFile(final IndexContext<?> indexContext, final IndexableFileSystem indexableFileSystem, final File file)
 			throws Exception {
+		// First we handle the zips if necessary
+		if (indexableFileSystem.isUnpackZips()) {
+			boolean isFile = file.isFile();
+			boolean isZip = IConstants.ZIP_JAR_WAR_EAR_PATTERN.matcher(file.getName()).matches();
+			boolean isTrueFile = TFile.class.isAssignableFrom(file.getClass());
+			boolean isZipAndFile = isZip && (isFile || isTrueFile);
+			if (isZipAndFile) {
+				TFile trueZipFile = new TFile(file);
+				TFile[] tFiles = trueZipFile.listFiles();
+				if (tFiles != null) {
+					Pattern pattern = getPattern(indexableFileSystem.getExcludedPattern());
+					for (File innerTFile : tFiles) {
+						if (isExcluded(innerTFile, pattern)) {
+							continue;
+						}
+						handleFile(indexContext, indexableFileSystem, innerTFile);
+					}
+				}
+			}
+		}
+		// And noow the files
 		if (file.isDirectory()) {
 			for (File innerFile : file.listFiles()) {
 				handleFile(indexContext, indexableFileSystem, innerFile);
@@ -130,42 +146,6 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 				FileUtilities.close(inputStream);
 			}
 		}
-	}
-
-	/**
-	 * This method will handle the zip file, it will look into the zip and read the contents, then index them. IT will then return whether
-	 * the file was a zip file.
-	 * 
-	 * @param indexableFileSystem the indexable for the file system
-	 * @param file the file to handle if it is a zip
-	 * @return whether the file was a zip and was handled
-	 * @throws Exception
-	 */
-	protected boolean handleZip(final IndexContext<?> indexContext, final IndexableFileSystem indexableFileSystem, final File file,
-			final Pattern pattern) throws Exception {
-		// We have to unpack the zip files
-		if (!indexableFileSystem.isUnpackZips()) {
-			return Boolean.FALSE;
-		}
-		boolean isFile = file.isFile();
-		boolean isZip = IConstants.ZIP_JAR_WAR_EAR_PATTERN.matcher(file.getName()).matches();
-		boolean isTrueFile = TFile.class.isAssignableFrom(file.getClass());
-		boolean isZipAndFile = isZip && (isFile || isTrueFile);
-		// logger.error("Is zip and file : " + isZipAndFile);
-		if (isZipAndFile) {
-			TFile trueZipFile = new TFile(file);
-			TFile[] tFiles = trueZipFile.listFiles();
-			if (tFiles != null) {
-				for (File innerTFile : tFiles) {
-					if (isExcluded(innerTFile, pattern)) {
-						continue;
-					}
-					handleFile(indexContext, indexableFileSystem, innerTFile);
-					handleZip(indexContext, indexableFileSystem, innerTFile, pattern);
-				}
-			}
-		}
-		return isZipAndFile;
 	}
 
 	protected List<File> getBatch(final IndexableFileSystem indexableFileSystem, final Stack<File> directories, final Pattern pattern) {

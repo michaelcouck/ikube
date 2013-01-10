@@ -24,6 +24,7 @@ public interface IConstants {
 	String IKUBE_LOG = IKUBE + ".log";
 	/** The file separator for the system. */
 	String SEP = "/";
+	String SPACE = " ";
 	String BCK_SEP = "\\";
 	String META_INF = SEP + "META-INF";
 	/** The name of the spring file. */
@@ -180,5 +181,6 @@ public interface IConstants {
 	long MILLION = 1000000;
 	
 	String DELIMITER_CHARACTERS = ";,|:";
+	String LINE_NUMBER = "lineNumber";
 
 }
