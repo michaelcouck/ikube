@@ -11,6 +11,13 @@ import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+/**
+ * This class will scan zip files and look for entries that are specified by name.
+ * 
+ * @author Michael Couck
+ * @since 08.02.2011
+ * @version 01.00
+ */
 public class ZipLocator {
 
 	public static void main(String[] args) {

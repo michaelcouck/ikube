@@ -59,11 +59,7 @@ public class IndexSizeListener implements IListener {
 				continue;
 			}
 			try {
-				StringBuilder stringBuilder = new StringBuilder();
-				stringBuilder.append(indexDirectory.getAbsolutePath());
-				stringBuilder.append(".");
-				stringBuilder.append(Long.toString(System.currentTimeMillis()));
-				File newIndexDirectory = FileUtilities.getFile(stringBuilder.toString(), Boolean.TRUE);
+				File newIndexDirectory = getNewIndexDirectory(indexWriters);
 				LOGGER.info("Starting new index : " + indexContext.getIndexName() + ", " + newIndexDirectory);
 				IndexWriter newIndexWriter = IndexManager.openIndexWriter(indexContext, newIndexDirectory, true);
 
@@ -78,6 +74,20 @@ public class IndexSizeListener implements IListener {
 				LOGGER.error("Exception starting a new index : ", e);
 			}
 		}
+	}
+
+	private File getNewIndexDirectory(final IndexWriter[] indexWriters) {
+		// We take the first index directory and append a system time stamp to it
+		FSDirectory directory = (FSDirectory) indexWriters[0].getDirectory();
+		File indexDirectory = directory.getDirectory();
+
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append(indexDirectory.getAbsolutePath());
+		stringBuilder.append(".");
+		stringBuilder.append(Long.toString(System.currentTimeMillis()));
+		File newIndexDirectory = FileUtilities.getFile(stringBuilder.toString(), Boolean.TRUE);
+
+		return newIndexDirectory;
 	}
 
 }

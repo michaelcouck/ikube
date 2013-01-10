@@ -61,7 +61,8 @@
 		property:batchSize="1000"
 		property:maxReadLength="1000000"  
 		property:separator="," 
-		property:maxExceptions="10000" />
+		property:maxExceptions="10000"
+		property:encoding="Windows-1252" />
 
     <bean
         id="min-eco-data-source"

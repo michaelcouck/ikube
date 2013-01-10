@@ -1,6 +1,10 @@
 package ikube.listener;
 
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import ikube.ATest;
 import ikube.IConstants;
 import ikube.mock.ApplicationContextManagerMock;
@@ -18,7 +22,6 @@ import org.apache.lucene.index.IndexWriter;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 /**
  * @author Michael Couck
@@ -41,12 +44,12 @@ public class IndexSizeListenerTest extends ATest {
 		Mockit.setUpMocks(ApplicationContextManagerMock.class);
 		ApplicationContextManagerMock.setIndexContext(indexContext);
 
-		Snapshot snapshot = Mockito.mock(Snapshot.class);
-		Mockito.when(snapshot.getIndexSize()).thenReturn(Long.MAX_VALUE);
-		Mockito.when(indexContext.getLastSnapshot()).thenReturn(snapshot);
-		Mockito.when(indexContext.getIndexWriters()).thenReturn(new IndexWriter[] { indexWriter });
+		Snapshot snapshot = mock(Snapshot.class);
+		when(snapshot.getIndexSize()).thenReturn(Long.MAX_VALUE);
+		when(indexContext.getLastSnapshot()).thenReturn(snapshot);
+		when(indexContext.getIndexWriters()).thenReturn(new IndexWriter[] { indexWriter });
 		File indexDirectory = FileUtilities.getFile(indexDirectoryPath + IConstants.SEP + "127.0.0.1.8000", Boolean.TRUE);
-		Mockito.when(fsDirectory.getDirectory()).thenReturn(indexDirectory);
+		when(fsDirectory.getDirectory()).thenReturn(indexDirectory);
 
 		Deencapsulation.setField(indexSizeListener, monitorService);
 		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
@@ -60,13 +63,18 @@ public class IndexSizeListenerTest extends ATest {
 
 	@Test
 	public void handleNotification() throws CorruptIndexException, IOException {
-		Event event = Mockito.mock(Event.class);
-		Mockito.when(event.getType()).thenReturn(Event.TIMER);
+		Event event = mock(Event.class);
+		when(event.getType()).thenReturn(Event.TIMER);
 		indexSizeListener.handleNotification(event);
 		// We never call this because the mock doesn't really get the new index writer
 		// so the logic never calls the close on the index writer
-		Mockito.verify(indexWriter, Mockito.never()).close(Boolean.TRUE);
+		verify(indexWriter, never()).close(Boolean.TRUE);
 		IndexWriter[] indexWriters = indexContext.getIndexWriters();
+		logger.info("Index writers : " + indexWriters.length);
+		assertTrue(indexWriters.length == 1);
+
+		indexSizeListener.handleNotification(event);
+		indexWriters = indexContext.getIndexWriters();
 		logger.info("Index writers : " + indexWriters.length);
 		assertTrue(indexWriters.length == 1);
 	}

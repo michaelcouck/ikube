@@ -4,6 +4,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import ikube.ATest;
 import ikube.model.IndexableFileSystemCsv;
 import ikube.toolkit.FileUtilities;
@@ -18,6 +19,11 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+/**
+ * @author Michael Couck
+ * @since 08.02.2011
+ * @version 01.00
+ */
 public class IndexableFilesystemCsvHandlerTest extends ATest {
 
 	private IndexableFileSystemCsv indexableFileSystem;
@@ -47,7 +53,9 @@ public class IndexableFilesystemCsvHandlerTest extends ATest {
 	@Test
 	public void handleFile() throws Exception {
 		File file = FileUtilities.findFileRecursively(new File("."), Boolean.FALSE, "csv.csv");
-		// File file = new File("/home/michael/Desktop/TEST_VAT.csv");
+		// File file = new File("E:/TEST_VAT.csv");
+		indexableFileSystem.setEncoding("Windows-1252");
+		when(indexContext.getThrottle()).thenReturn(1000l);
 		filesystemCsvHandler.handleFile(indexContext, indexableFileSystem, file);
 		verify(indexWriter, times(1)).addDocument(any(Document.class));
 

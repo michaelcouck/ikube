@@ -34,47 +34,54 @@ public class IndexableFilesystemCsvHandler extends IndexableFilesystemHandler {
 	public void handleFile(final IndexContext<?> indexContext, final IndexableFileSystem indexableFileSystem, final File file)
 			throws Exception {
 		IndexableFileSystemCsv indexableFileSystemCsv = (IndexableFileSystemCsv) indexableFileSystem;
-		LineIterator lineIterator = FileUtils.lineIterator(file);
-		// The first line is the header, i.e. the columns of the file
-		String headerLine = lineIterator.nextLine();
-		String[] columns = StringUtils.split(headerLine, indexableFileSystemCsv.getSeparator());
-		Store store = indexableFileSystem.isStored() ? Store.YES : Store.NO;
-		Index analyzed = indexableFileSystem.isAnalyzed() ? Index.ANALYZED : Index.NOT_ANALYZED;
-		TermVector termVector = indexableFileSystem.isVectored() ? TermVector.YES : TermVector.NO;
-		char separator = indexableFileSystemCsv.getSeparator();
-		int lineNumber = 0;
-		String lineNumberFieldName = indexableFileSystemCsv.getLineNumberFieldName() != null ? indexableFileSystemCsv
-				.getLineNumberFieldName() : IConstants.ID;
-		while (lineIterator.hasNext()) {
-			try {
-				String line = lineIterator.nextLine();
-				Document document = new Document();
-				String[] values = StringUtils.split(line, separator);
-				if (columns.length != values.length) {
-					logger.warn("Columns and values different on line : " + lineNumber + ", columns : " + columns.length + ", values : "
-							+ values.length + ", of file : " + file + ", data : " + Arrays.deepToString(values));
-				}
-				String identifier = StringUtils.join(new Object[] { file.getName(), Integer.toString(lineNumber) }, IConstants.SPACE);
-				// Add the line number field
-				IndexManager.addStringField(lineNumberFieldName, identifier, document, Store.YES, Index.ANALYZED, TermVector.NO);
-				for (int i = 0; i < columns.length && i < values.length; i++) {
-					if (StringUtils.isNumeric(values[i])) {
-						IndexManager.addNumericField(columns[i], values[i], document, store);
-					} else {
-						IndexManager.addStringField(columns[i], values[i], document, store, analyzed, termVector);
+		String encoding = indexableFileSystemCsv.getEncoding() != null ? indexableFileSystemCsv.getEncoding() : IConstants.ENCODING;
+		logger.info("Using encoding for file : " + encoding + ", " + file);
+		LineIterator lineIterator = FileUtils.lineIterator(file, encoding);
+		try {
+			// The first line is the header, i.e. the columns of the file
+			String headerLine = lineIterator.nextLine();
+			String[] columns = StringUtils.split(headerLine, indexableFileSystemCsv.getSeparator());
+			Store store = indexableFileSystem.isStored() ? Store.YES : Store.NO;
+			Index analyzed = indexableFileSystem.isAnalyzed() ? Index.ANALYZED : Index.NOT_ANALYZED;
+			TermVector termVector = indexableFileSystem.isVectored() ? TermVector.YES : TermVector.NO;
+			char separator = indexableFileSystemCsv.getSeparator();
+			int lineNumber = 0;
+			String lineNumberFieldName = indexableFileSystemCsv.getLineNumberFieldName() != null ? indexableFileSystemCsv
+					.getLineNumberFieldName() : IConstants.ID;
+			while (lineIterator.hasNext()) {
+				try {
+					String line = lineIterator.nextLine();
+					Document document = new Document();
+					String[] values = StringUtils.split(line, separator);
+					logger.warn("Data : " + Arrays.deepToString(values));
+					if (columns.length != values.length) {
+						logger.warn("Columns and values different on line : " + lineNumber + ", columns : " + columns.length
+								+ ", values : " + values.length + ", of file : " + file + ", data : " + Arrays.deepToString(values));
 					}
+					String identifier = StringUtils.join(new Object[] { file.getName(), Integer.toString(lineNumber) }, IConstants.SPACE);
+					// Add the line number field
+					IndexManager.addStringField(lineNumberFieldName, identifier, document, Store.YES, Index.ANALYZED, TermVector.NO);
+					for (int i = 0; i < columns.length && i < values.length; i++) {
+						if (StringUtils.isNumeric(values[i])) {
+							IndexManager.addNumericField(columns[i], values[i], document, store);
+						} else {
+							IndexManager.addStringField(columns[i], values[i], document, store, analyzed, termVector);
+						}
+					}
+					// logger.info("Adding document : " + document);
+					addDocument(indexContext, indexableFileSystemCsv, document);
+					ThreadUtilities.sleep(indexContext.getThrottle());
+				} catch (Exception e) {
+					logger.error("Exception processing file : " + file, e);
+					handleMaxExceptions(indexableFileSystemCsv, e);
 				}
-				// logger.info("Adding document : " + document);
-				addDocument(indexContext, indexableFileSystemCsv, document);
-				ThreadUtilities.sleep(indexContext.getThrottle());
-			} catch (Exception e) {
-				logger.error("Exception processing file : " + file, e);
-				handleMaxExceptions(indexableFileSystemCsv, e);
+				++lineNumber;
+				if (lineNumber % 10000 == 0) {
+					logger.info("Lines done : " + lineNumber);
+				}
 			}
-			++lineNumber;
-			if (lineNumber % 10000 == 0) {
-				logger.info("Lines done : " + lineNumber);
-			}
+		} finally {
+			LineIterator.closeQuietly(lineIterator);
 		}
 	}
 
