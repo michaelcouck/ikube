@@ -53,7 +53,6 @@ public class IndexableFilesystemCsvHandler extends IndexableFilesystemHandler {
 					String line = lineIterator.nextLine();
 					Document document = new Document();
 					String[] values = StringUtils.split(line, separator);
-					logger.warn("Data : " + Arrays.deepToString(values));
 					if (columns.length != values.length) {
 						logger.warn("Columns and values different on line : " + lineNumber + ", columns : " + columns.length
 								+ ", values : " + values.length + ", of file : " + file + ", data : " + Arrays.deepToString(values));

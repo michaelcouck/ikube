@@ -36,11 +36,13 @@ import java.util.Map;
 
 import mockit.Mockit;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
+import org.apache.lucene.document.Fieldable;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
@@ -267,7 +269,12 @@ public abstract class ATest {
 	protected Document getDocument(final String id, final String string, final Index analyzed) {
 		Document document = new Document();
 		IndexManager.addStringField(IConstants.ID, id, document, Store.YES, analyzed, TermVector.YES);
-		IndexManager.addStringField(IConstants.CONTENTS, string, document, Store.YES, analyzed, TermVector.YES);
+		if (StringUtils.isNumeric(string.trim())) {
+			logger.info("Adding numeric field : " + string);
+			IndexManager.addNumericField(IConstants.CONTENTS, string.trim(), document, Store.YES);
+		} else {
+			IndexManager.addStringField(IConstants.CONTENTS, string, document, Store.YES, Index.ANALYZED, TermVector.NO);
+		}
 		IndexManager.addStringField(IConstants.NAME, string, document, Store.YES, analyzed, TermVector.YES);
 		return document;
 	}
@@ -329,7 +336,12 @@ public abstract class ATest {
 
 		for (final String string : strings) {
 			Document document = new Document();
-			IndexManager.addStringField(field, string, document, Store.YES, Index.ANALYZED, TermVector.YES);
+			if (StringUtils.isNumeric(string.trim())) {
+				System.out.println("Adding numeric field : " + string);
+				IndexManager.addNumericField(field, string.trim(), document, Store.YES);
+			} else {
+				IndexManager.addStringField(field, string, document, Store.YES, Index.ANALYZED, TermVector.YES);
+			}
 			indexWriter.addDocument(document, analyzer);
 		}
 
@@ -339,6 +351,39 @@ public abstract class ATest {
 		Searcher searcher = new IndexSearcher(indexReader);
 
 		return searchClass.getConstructor(Searcher.class, Analyzer.class).newInstance(searcher, analyzer);
+	}
+
+	public static Search getSearch(final Class<? extends Search> searchClass, final File indexDirectory) throws Exception {
+		Directory directory = FSDirectory.open(indexDirectory);
+		IndexReader indexReader = IndexReader.open(directory);
+		MultiSearcher searcher = new MultiSearcher(new IndexSearcher(indexReader));
+		return searchClass.getConstructor(Searcher.class, Analyzer.class).newInstance(searcher, IConstants.ANALYZER);
+	}
+
+	protected void printIndex(final Searchable multiSearcher) throws Exception {
+		IndexReader indexReader = indexSearcher.getIndexReader();
+		printIndex(indexReader);
+	}
+
+	/**
+	 * This method will just print the data in the index reader.L
+	 * 
+	 * @param indexReader the reader to print the documents for
+	 * @throws Exception
+	 */
+	protected void printIndex(final IndexReader indexReader) throws Exception {
+		logger.info("Num docs : " + indexReader.numDocs());
+		for (int i = 0; i < indexReader.numDocs(); i++) {
+			Document document = indexReader.document(i);
+			logger.info("Document : " + i);
+			List<Fieldable> fields = document.getFields();
+			for (Fieldable fieldable : fields) {
+				String fieldName = fieldable.name();
+				String fieldValue = fieldable.stringValue();
+				int fieldLength = fieldValue != null ? fieldValue.length() : 0;
+				logger.info("        : " + fieldName + ", " + fieldLength + ", " + fieldValue);
+			}
+		}
 	}
 
 }

@@ -132,4 +132,29 @@ public abstract class Searcher extends Resource {
 	abstract Response searchMultiAdvancedAll(final String indexName, final String searchStrings, final boolean fragment,
 			final int firstResult, final int maxResults);
 
+	/**
+	 * TODO Comment me.
+	 * 
+	 * @param indexName
+	 * @param searchStrings
+	 * @param fragment
+	 * @param firstResult
+	 * @param maxResults
+	 * @return
+	 */
+	abstract Response searchNumericAll(final String indexName, final String searchStrings, final boolean fragment, final int firstResult,
+			final int maxResults);
+
+	/**
+	 * TODO Comment me.
+	 * 
+	 * @param indexName
+	 * @param searchStrings
+	 * @param fragment
+	 * @param firstResult
+	 * @param maxResults
+	 * @return
+	 */
+	abstract Response searchNumericRange(final String indexName, final String searchStrings, final boolean fragment, final int firstResult,
+			final int maxResults);
 }

@@ -205,4 +205,36 @@ public interface ISearcherService {
 			@WebParam(name = "searchStrings") final String[] searchStrings, @WebParam(name = "fragment") final boolean fragment,
 			@WebParam(name = "firstResult") final int firstResult, @WebParam(name = "maxResults") final int maxResults);
 
+	/**
+	 * TODO Document me...
+	 * 
+	 * @param indexName
+	 * @param searchStrings
+	 * @param fragment
+	 * @param firstResult
+	 * @param maxResults
+	 * @return
+	 */
+	@WebMethod
+	@WebResult(name = "result")
+	ArrayList<HashMap<String, String>> searchNumericAll(@WebParam(name = "indexName") final String indexName,
+			@WebParam(name = "searchStrings") final String[] searchStrings, @WebParam(name = "fragment") final boolean fragment,
+			@WebParam(name = "firstResult") final int firstResult, @WebParam(name = "maxResults") final int maxResults);
+
+	/**
+	 * TODO Document me...
+	 * 
+	 * @param indexName
+	 * @param searchStrings
+	 * @param fragment
+	 * @param firstResult
+	 * @param maxResults
+	 * @return
+	 */
+	@WebMethod
+	@WebResult(name = "result")
+	ArrayList<HashMap<String, String>> searchNumericRange(@WebParam(name = "indexName") final String indexName,
+			@WebParam(name = "searchStrings") final String[] searchStrings, @WebParam(name = "fragment") final boolean fragment,
+			@WebParam(name = "firstResult") final int firstResult, @WebParam(name = "maxResults") final int maxResults);
+
 }

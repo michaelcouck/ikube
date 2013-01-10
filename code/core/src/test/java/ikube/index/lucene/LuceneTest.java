@@ -23,11 +23,16 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.Term;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.SearcherFactory;
 import org.apache.lucene.search.SearcherManager;
+import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.util.NumericUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,7 +50,7 @@ public class LuceneTest extends ATest {
 	private String russian = " русский язык  ";
 	private String german = "Produktivität";
 	private String french = "productivité";
-	private String somthingElseAlToGether = "Soleymān Khāţer";
+	private String somethingElseAlToGether = "Soleymān Khāţer";
 	private String string = "Qu'est ce qui détermine la productivité, et comment est-il mesuré? " //
 			+ "Was bestimmt die Produktivität, und wie wird sie gemessen? " //
 			+ "русский язык " + //
@@ -53,7 +58,8 @@ public class LuceneTest extends ATest {
 			russian + " " + //
 			german + " " + //
 			french + " " + //
-			somthingElseAlToGether + " ";
+			somethingElseAlToGether + " ";
+	private String somethingNumeric = " 123456789 ";
 
 	public LuceneTest() {
 		super(LuceneTest.class);
@@ -73,7 +79,7 @@ public class LuceneTest extends ATest {
 	@Test
 	public void search() throws Exception {
 		SearchSingle searchSingle = createIndexAndSearch(SearchSingle.class, IConstants.ANALYZER, IConstants.CONTENTS, russian, german,
-				french, somthingElseAlToGether, string);
+				french, somethingElseAlToGether, string, somethingNumeric);
 		searchSingle.setFirstResult(0);
 		searchSingle.setFragment(true);
 		searchSingle.setMaxResults(10);
@@ -93,7 +99,7 @@ public class LuceneTest extends ATest {
 		results = searchSingle.execute();
 		assertEquals(3, results.size());
 
-		searchSingle.setSearchString(somthingElseAlToGether);
+		searchSingle.setSearchString(somethingElseAlToGether);
 		results = searchSingle.execute();
 		assertEquals(3, results.size());
 	}
@@ -215,6 +221,26 @@ public class LuceneTest extends ATest {
 		});
 		futures.add(future);
 		ThreadUtilities.waitForFutures(futures, 10000);
+	}
+
+	@Test
+	public void numeric() throws Exception {
+		// Doesn't work
+		// new QueryParser(IConstants.VERSION, IConstants.CONTENTS, IConstants.ANALYZER).parse(somethingNumeric.trim())
+
+		File serverDirectory = createIndex(indexContext, russian, german, french, somethingElseAlToGether, string, somethingNumeric.trim());
+		Directory directory = FSDirectory.open(serverDirectory);
+		IndexReader indexReader = IndexReader.open(directory);
+		printIndex(indexReader);
+
+		IndexSearcher indexSearcher = new IndexSearcher(indexReader);
+		TermQuery numberQuery = new TermQuery(new Term(IConstants.CONTENTS, NumericUtils.longToPrefixCoded(123456789L)));
+		TopDocs topDocs = indexSearcher.search(numberQuery, 100);
+		logger.info("Top docs : " + topDocs);
+		for (final ScoreDoc scoreDoc : topDocs.scoreDocs) {
+			logger.info("Score doc : " + scoreDoc);
+		}
+		assertEquals("There must be exactly one result from the search : ", 1, topDocs.scoreDocs.length);
 	}
 
 }

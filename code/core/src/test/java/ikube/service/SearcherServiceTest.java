@@ -109,6 +109,22 @@ public class SearcherServiceTest extends ATest {
 	}
 
 	@Test
+	public void searchNumericAll() {
+		initialize();
+		ArrayList<HashMap<String, String>> results = searcherService.searchNumericAll(indexName, searchStrings, fragment, firstResult,
+				maxResults);
+		verifyResults(results);
+	}
+
+	@Test
+	public void searchNumericRange() {
+		initialize();
+		ArrayList<HashMap<String, String>> results = searcherService.searchNumericRange(indexName, searchStrings, fragment, firstResult,
+				maxResults);
+		verifyResults(results);
+	}
+
+	@Test
 	public void addSearchStatistics() {
 		// searcherService.addSearchStatistics(indexName, searchStrings, 0, new ArrayList<HashMap<String,String>>());
 	}

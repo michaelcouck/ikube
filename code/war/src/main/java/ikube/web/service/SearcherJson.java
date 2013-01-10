@@ -1,7 +1,5 @@
 package ikube.web.service;
 
-import ikube.IConstants;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -191,6 +189,18 @@ public class SearcherJson extends Searcher {
 		ArrayList<HashMap<String, String>> results = searcherService.searchMultiAdvancedAll(indexName, searchStringsArray, fragment,
 				firstResult, maxResults);
 		return buildResponse(results);
+	}
+
+	public Response searchNumericAll(final String indexName, final String searchStrings, final boolean fragment, final int firstResult,
+			final int maxResults) {
+		// TODO Implement me
+		return null;
+	}
+
+	public Response searchNumericRange(final String indexName, final String searchStrings, final boolean fragment, final int firstResult,
+			final int maxResults) {
+		// TODO Implement me
+		return null;
 	}
 
 }

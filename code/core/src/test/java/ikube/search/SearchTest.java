@@ -20,6 +20,7 @@ import java.util.Map;
 import mockit.Deencapsulation;
 import mockit.Mockit;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
@@ -65,17 +66,18 @@ public class SearchTest extends ATest {
 			german + " " + //
 			french + " " + //
 			somthingElseAlToGether + " ";
-	private static String[] strings = { russian, german, french, somthingElseAlToGether, string };
+	private static String somethingNumeric = " 123456789 ";
+
+	private static String[] strings = { russian, german, french, somthingElseAlToGether, string, somethingNumeric, "123456790",
+			"123456791", "123456792", "123456793", "123456794" };
 
 	@Before
 	public void before() {
-		// Mockit.tearDownMocks(SpellingChecker.class);
 		Mockit.setUpMock(SpellingCheckerMock.class);
 	}
 
 	@After
 	public void after() {
-		// Mockit.setUpMock(SpellingCheckerMock.class);
 		Mockit.tearDownMocks(SpellingChecker.class);
 	}
 
@@ -85,11 +87,7 @@ public class SearchTest extends ATest {
 		SpellingChecker checkerExt = new SpellingChecker();
 		Deencapsulation.setField(checkerExt, "languageWordListsDirectory", "languages");
 		Deencapsulation.setField(checkerExt, "spellingIndexDirectoryPath", "./spellingIndex");
-		try {
-			checkerExt.initialize();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		checkerExt.initialize();
 
 		// Create the index with multiple fields
 		File indexDirectory = new File(INDEX_DIRECTORY_PATH);
@@ -107,7 +105,11 @@ public class SearchTest extends ATest {
 
 				Document document = new Document();
 				IndexManager.addStringField(IConstants.ID, id, document, Store.YES, Index.ANALYZED, TermVector.YES);
-				IndexManager.addStringField(IConstants.CONTENTS, contents, document, Store.YES, Index.ANALYZED, TermVector.YES);
+				if (StringUtils.isNumeric(string.trim())) {
+					IndexManager.addNumericField(IConstants.CONTENTS, string.trim(), document, Store.YES);
+				} else {
+					IndexManager.addStringField(IConstants.CONTENTS, contents, document, Store.YES, Index.ANALYZED, TermVector.YES);
+				}
 				IndexManager.addStringField(IConstants.NAME, "michael couck. " + string, document, Store.YES, Index.ANALYZED,
 						TermVector.YES);
 				indexWriter.addDocument(document);
@@ -206,6 +208,33 @@ public class SearchTest extends ATest {
 		// searchMultiAll.setSortField(IConstants.ID);
 		searchMultiAll.setSearchString("michael");
 		ArrayList<HashMap<String, String>> results = searchMultiAll.execute();
+		assertTrue(results.size() > 1);
+	}
+
+	@Test
+	public void searchNumericAll() {
+		SearchNumericAll searchNumericAll = new SearchNumericAll(SEARCHER);
+		searchNumericAll.setFirstResult(0);
+		searchNumericAll.setFragment(Boolean.TRUE);
+		searchNumericAll.setMaxResults(10);
+		searchNumericAll.setSearchField(IConstants.CONTENTS);
+		searchNumericAll.setSearchString("123456789");
+		searchNumericAll.setSortField();
+		ArrayList<HashMap<String, String>> results = searchNumericAll.execute();
+		assertTrue(results.size() > 1);
+	}
+
+	@Test
+	public void searchNumericRange() {
+		SearchNumericRange searchNumericRange = new SearchNumericRange(SEARCHER);
+		searchNumericRange.setFirstResult(0);
+		searchNumericRange.setFragment(Boolean.TRUE);
+		searchNumericRange.setMaxResults(10);
+		searchNumericRange.setSearchField(IConstants.CONTENTS);
+		searchNumericRange.setSearchString("123456790", "123456796");
+		searchNumericRange.setSortField();
+		ArrayList<HashMap<String, String>> results = searchNumericRange.execute();
+		logger.info("Results : " + results);
 		assertTrue(results.size() > 1);
 	}
 

@@ -1,8 +1,5 @@
 package ikube.web.service;
 
-import ikube.IConstants;
-import ikube.toolkit.SerializationUtilities;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -205,6 +202,18 @@ public class SearcherXml extends Searcher {
 		ArrayList<HashMap<String, String>> results = searcherService.searchMultiAdvancedAll(indexName, searchStringsArray, fragment,
 				firstResult, maxResults);
 		return buildResponse().entity(SerializationUtilities.serialize(results)).build();
+	}
+
+	public Response searchNumericAll(final String indexName, final String searchStrings, final boolean fragment, final int firstResult,
+			final int maxResults) {
+		// TODO Implement me
+		return null;
+	}
+
+	public Response searchNumericRange(final String indexName, final String searchStrings, final boolean fragment, final int firstResult,
+			final int maxResults) {
+		// TODO Implement me
+		return null;
 	}
 
 }

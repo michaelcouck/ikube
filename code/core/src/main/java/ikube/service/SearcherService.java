@@ -10,6 +10,8 @@ import ikube.search.SearchAdvancedAll;
 import ikube.search.SearchMulti;
 import ikube.search.SearchMultiAll;
 import ikube.search.SearchMultiSorted;
+import ikube.search.SearchNumericAll;
+import ikube.search.SearchNumericRange;
 import ikube.search.SearchSingle;
 import ikube.search.SearchSpatial;
 import ikube.search.SearchSpatialAll;
@@ -292,6 +294,56 @@ public class SearcherService implements ISearcherService {
 				searchAdvanced.setMaxResults(maxResults);
 				searchAdvanced.setSearchString(searchStrings);
 				ArrayList<HashMap<String, String>> results = searchAdvanced.execute();
+				addSearchStatistics(indexName, searchStrings, results.size(), results);
+				return results;
+			}
+		} catch (Exception e) {
+			String message = Logging.getString("Exception doing search on index : ", indexName, searchStrings, fragment, firstResult,
+					maxResults);
+			LOGGER.error(message, e);
+		}
+		return getMessageResults(indexName);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public ArrayList<HashMap<String, String>> searchNumericAll(String indexName, String[] searchStrings, boolean fragment, int firstResult,
+			int maxResults) {
+		try {
+			SearchNumericAll searchNumericAll = getSearch(SearchNumericAll.class, indexName);
+			if (searchNumericAll != null) {
+				searchNumericAll.setFirstResult(firstResult);
+				searchNumericAll.setFragment(fragment);
+				searchNumericAll.setMaxResults(maxResults);
+				searchNumericAll.setSearchString(searchStrings[0]);
+				ArrayList<HashMap<String, String>> results = searchNumericAll.execute();
+				addSearchStatistics(indexName, searchStrings, results.size(), results);
+				return results;
+			}
+		} catch (Exception e) {
+			String message = Logging.getString("Exception doing search on index : ", indexName, searchStrings, fragment, firstResult,
+					maxResults);
+			LOGGER.error(message, e);
+		}
+		return getMessageResults(indexName);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public ArrayList<HashMap<String, String>> searchNumericRange(String indexName, String[] searchStrings, boolean fragment,
+			int firstResult, int maxResults) {
+		try {
+			SearchNumericRange searchNumericAll = getSearch(SearchNumericRange.class, indexName);
+			if (searchNumericAll != null) {
+				searchNumericAll.setFirstResult(firstResult);
+				searchNumericAll.setFragment(fragment);
+				searchNumericAll.setMaxResults(maxResults);
+				searchNumericAll.setSearchString(searchStrings);
+				ArrayList<HashMap<String, String>> results = searchNumericAll.execute();
 				addSearchStatistics(indexName, searchStrings, results.size(), results);
 				return results;
 			}

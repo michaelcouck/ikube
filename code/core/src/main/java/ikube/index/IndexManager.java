@@ -528,9 +528,7 @@ public final class IndexManager {
 	}
 
 	public static void addNumericField(final String fieldName, final String fieldContent, final Document document, final Store store) {
-		NumericField field = new NumericField(fieldName, 10, store, true);
-		field.setDoubleValue(Double.parseDouble(fieldContent));
-		document.add(field);
+		document.add(new NumericField(fieldName, store, true).setLongValue(Long.parseLong(fieldContent)));
 	}
 
 	public static void addReaderField(final String fieldName, final Document document, final Store store, final TermVector termVector,
