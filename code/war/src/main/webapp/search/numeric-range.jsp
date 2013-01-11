@@ -7,20 +7,30 @@
 <script type="text/javascript">
 
 	// The controller that does the search
-	module.controller('NumericSearcherController', function($http, $scope) {
+	module.controller('NumericRangeSearcherController', function($http, $scope) {
 		
 		// The model data that we bind to in the form
-		$scope.numericSearchString = '123456789';
+		$scope.numericSearchStringStart = '000000000';
+		$scope.numericSearchStringEnd = '999999999';
 		$scope.pageBlock = 10; // Only results per page
 		$scope.endResult = 0;
 
 		$scope.statistics = {};
-		$scope.pagination = []
+		$scope.pagination = [];
+		
+		// This function concatenates the search strings for all the search predicate
+		$scope.doSearchStrings = function() {
+			var searchStrings = [];
+			searchStrings.push($scope.numericSearchStringStart);
+			searchStrings.push(';');
+			searchStrings.push($scope.numericSearchStringEnd);
+			return searchStrings.join('');
+		};
 
 		// The form parameters we send to the server
 		$scope.searchParameters = { 
-			indexName : 'geospatial', // The default is the geospatial index
-			searchStrings : $scope.numericSearchString,
+			indexName : 'desktop', // The default is the geospatial index
+			searchStrings : $scope.doSearchStrings(),
 			fragment : true,
 			firstResult : 0,
 			maxResults : $scope.pageBlock
@@ -32,8 +42,8 @@
 		// Go to the web service for the results
 		$scope.doSearch = function() {
 			// Numeric search against all the fields
-			$scope.url = getServiceUrl('/ikube/service/search/json/numeric/all');
-			$scope.searchParameters['searchStrings'] = $scope.numericSearchString;
+			$scope.url = getServiceUrl('/ikube/service/search/json/numeric/range');
+			$scope.searchParameters['searchStrings'] = $scope.doSearchStrings();
 			var promise = $http.get($scope.url, $scope.config);
 			promise.success(function(data, status) {
 				// Pop the statistics Json off the array
@@ -78,7 +88,7 @@
 	
 </script>
 
-<table ng-app="ikube" ng-controller="NumericSearcherController" width="100%">
+<table ng-app="ikube" ng-controller="NumericRangeSearcherController" width="100%">
 	<form ng-submit="doSearch()">
 	<tr>
 		<td>Collection : </td>
@@ -89,9 +99,14 @@
 		</td>
 	</tr>
 	<tr>
-		<td>Numeric term to search for:</td>
-		<td><input id="numericSearchString" name="numericSearchString" ng-model="numericSearchString" value="numericSearchString"></td>
+		<td>Numeric start of range:</td>
+		<td><input id="numericSearchStringStart" name="numericSearchStringStart" ng-model="numericSearchStringStart" value="numericSearchStringStart"></td>
 	</tr>
+	<tr>
+		<td>Numeric end of range:</td>
+		<td><input id="numericSearchStringEnd" name="numericSearchStringEnd" ng-model="numericSearchStringEnd" value="numericSearchStringEnd"></td>
+	</tr>
+
 	<tr>
 		<td colspan="2">
 			<button>Go!</button>
@@ -128,9 +143,6 @@
 			<span ng-hide="!datum.id"><b>Identifier</b> : {{datum.id}}<br></span> 
 			<b>Score</b> : {{datum.score}}<br>
 			<b>Fragment</b> : <span ng-bind-html-unsafe="datum.fragment"></span><br>
-			<span ng-hide="!datum.latitude"><b>Latitude</b> : {{datum.latitude}}<br></span>
-			<span ng-hide="!datum.longitude"><b>Longitude</b> : {{datum.longitude}}<br></span>
-			<span ng-hide="!datum.distance"><b>Distance</b> : {{datum.distance}}<br></span>
 			<span ng-hide="!datum.path"><b>Path</b> : {{datum.path}}<br></span>
 			<br>
 		</td>

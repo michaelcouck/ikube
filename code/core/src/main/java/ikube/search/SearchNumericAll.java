@@ -53,7 +53,7 @@ public class SearchNumericAll extends SearchMultiAll {
 			String searchField = searchFields[i];
 			String newSearchString = newSearchStrings[i];
 			Long numeric = Long.parseLong(newSearchString);
-			TermQuery numberQuery = new TermQuery(new Term(searchField, NumericUtils.longToPrefixCoded(numeric)));
+			TermQuery numberQuery = new TermQuery(new Term(searchField, NumericUtils.doubleToPrefixCoded(numeric)));
 			booleanQuery.add(numberQuery, BooleanClause.Occur.SHOULD);
 		}
 

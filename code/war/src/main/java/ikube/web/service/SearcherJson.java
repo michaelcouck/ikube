@@ -1,5 +1,7 @@
 package ikube.web.service;
 
+import ikube.IConstants;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -191,16 +193,40 @@ public class SearcherJson extends Searcher {
 		return buildResponse(results);
 	}
 
-	public Response searchNumericAll(final String indexName, final String searchStrings, final boolean fragment, final int firstResult,
-			final int maxResults) {
-		// TODO Implement me
-		return null;
+	/**
+	 * {@inheritDoc}
+	 */
+	@GET
+	@Override
+	@Path(SearcherJson.NUMERIC_ALL)
+	@Consumes(MediaType.APPLICATION_XML)
+	public Response searchNumericAll(@QueryParam(value = IConstants.INDEX_NAME) final String indexName,
+			@QueryParam(value = IConstants.SEARCH_STRINGS) final String searchStrings,
+			@QueryParam(value = IConstants.FRAGMENT) final boolean fragment,
+			@QueryParam(value = IConstants.FIRST_RESULT) final int firstResult,
+			@QueryParam(value = IConstants.MAX_RESULTS) final int maxResults) {
+		String[] searchStringsArray = StringUtils.split(searchStrings, SEPARATOR);
+		ArrayList<HashMap<String, String>> results = searcherService.searchNumericAll(indexName, searchStringsArray, fragment, firstResult,
+				maxResults);
+		return buildResponse(results);
 	}
 
-	public Response searchNumericRange(final String indexName, final String searchStrings, final boolean fragment, final int firstResult,
-			final int maxResults) {
-		// TODO Implement me
-		return null;
+	/**
+	 * {@inheritDoc}
+	 */
+	@GET
+	@Override
+	@Path(SearcherJson.NUMERIC_RANGE)
+	@Consumes(MediaType.APPLICATION_XML)
+	public Response searchNumericRange(@QueryParam(value = IConstants.INDEX_NAME) final String indexName,
+			@QueryParam(value = IConstants.SEARCH_STRINGS) final String searchStrings,
+			@QueryParam(value = IConstants.FRAGMENT) final boolean fragment,
+			@QueryParam(value = IConstants.FIRST_RESULT) final int firstResult,
+			@QueryParam(value = IConstants.MAX_RESULTS) final int maxResults) {
+		String[] searchStringsArray = StringUtils.split(searchStrings, SEPARATOR);
+		ArrayList<HashMap<String, String>> results = searcherService.searchNumericRange(indexName, searchStringsArray, fragment,
+				firstResult, maxResults);
+		return buildResponse(results);
 	}
 
 }

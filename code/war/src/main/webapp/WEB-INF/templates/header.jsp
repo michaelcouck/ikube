@@ -4,6 +4,8 @@
 <%@ taglib prefix="security" uri="http://www.springframework.org/security/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
+<c:url var="documentation" value="/documentation/index.html" />
+
 <div id="header" ng-controller="StartupController">
 	<a href="<c:url value="/index.html" />" >ikube</a>
 	
@@ -11,6 +13,7 @@
 		<a href="#" ng-click="startupAll();">Start all</a>
 		<a href="#" ng-click="terminateAll();">Terminate all</a>
 		<div style="float : right; padding-right : 10px;">
+			<%-- <a href="#" onclick="JavaScript:popup('<c:out value="${documentation}" />', 'Documentation');">Documentation</a>&nbsp; --%>
 			<a title="<security:authentication property="authorities" />" href="#">
 				<spring:message code="security.logged.in.as" />
 				&nbsp;
@@ -18,7 +21,7 @@
 				&nbsp;
 				<security:authentication property="name" /> 
 			</a>
-		<a href="<spring:url value="/logout" htmlEscape="true" />" title="<spring:message code="security.logout" />"><spring:message code="security.logout" /></a>
+			<a href="<spring:url value="/logout" htmlEscape="true" />" title="<spring:message code="security.logout" />"><spring:message code="security.logout" /></a>
 		</div>
 	</security:authorize>
 </div>

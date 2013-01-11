@@ -33,9 +33,9 @@ public class SearchNumericRange extends SearchSingle {
 	 */
 	@Override
 	public Query getQuery() throws ParseException {
-		Long min = Long.parseLong(searchStrings[0]);
-		Long max = Long.parseLong(searchStrings[1]);
-		return NumericRangeQuery.newLongRange(searchFields[0], min, max, Boolean.TRUE, Boolean.TRUE);
+		Double min = Double.parseDouble(searchStrings[0]);
+		Double max = Double.parseDouble(searchStrings[1]);
+		return NumericRangeQuery.newDoubleRange(searchFields[0], min, max, Boolean.TRUE, Boolean.TRUE);
 	}
 
 }

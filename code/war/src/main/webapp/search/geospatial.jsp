@@ -9,34 +9,11 @@
 	// The global map
 	var map = null;
 	
-	// Focus on the first field in the form
-	angular.element(document).ready(function() {
-		doFocus('allWords');
-	});
-	
-	// The controller that populates the indexes drop down
-	module.controller('IndexesController', function($http, $scope) {
-		$scope.index = null;
-		$scope.indexes = null;
-		$scope.doIndexes = function() {
-			$scope.url = getServiceUrl('/ikube/service/monitor/indexes');
-			var promise = $http.get($scope.url);
-			promise.success(function(data, status) {
-				$scope.indexes = data;
-				$scope.status = status;
-			});
-		}
-		$scope.doIndexes();
-	});
-
 	// The controller that does the search
-	module.controller('SearcherController', function($http, $scope) {
+	module.controller('GeospatialSearcherController', function($http, $scope) {
 		
 		// The model data that we bind to in the form
 		$scope.allWords = 'hotel'; // Default is hotel
-		$scope.exactPhrase = '';
-		$scope.oneOrMore = '';
-		$scope.noneOfTheseWords = '';
 		$scope.latitude = '-33.9693580'; // Default is cape town
 		$scope.longitude = '18.4622110'; // Default is cape town
 		$scope.distance = '20'; // Distance from point of origin
@@ -47,25 +24,10 @@
 		$scope.statistics = {};
 		$scope.pagination = []
 
-		// This function concatenates the search strings for all the predicate
-		// data into a semi colon separated string that can be used in the advanced
-		// search
-		$scope.doSearchStrings = function() {
-			var searchStrings = [];
-			searchStrings.push($scope.allWords);
-			searchStrings.push(';');
-			searchStrings.push($scope.exactPhrase);
-			searchStrings.push(';');
-			searchStrings.push($scope.oneOrMore);
-			searchStrings.push(';');
-			searchStrings.push($scope.noneOfTheseWords);
-			return searchStrings.join('');
-		};
-		
 		// The form parameters we send to the server
 		$scope.searchParameters = { 
 			indexName : 'geospatial', // The default is the geospatial index
-			searchStrings : $scope.doSearchStrings(),
+			searchStrings : $scope.allWords,
 			fragment : true,
 			firstResult : 0,
 			maxResults : $scope.pageBlock
@@ -76,21 +38,12 @@
 		
 		// Go to the web service for the results
 		$scope.doSearch = function() {
-			if (!$scope.geospatial) {
-				// Advanced search
-				$scope.url = getServiceUrl('/ikube/service/search/json/multi/advanced/all');
-				$scope.searchParameters['searchStrings'] = $scope.doSearchStrings();
-				delete $scope.searchParameters['distance'];
-				delete $scope.searchParameters['latitude'];
-				delete $scope.searchParameters['longitude'];
-			} else {
-				// Geospatial search
-				$scope.url = getServiceUrl('/ikube/service/search/json/multi/spatial/all');
-				$scope.searchParameters['searchStrings'] = $scope.allWords;
-				$scope.searchParameters['distance'] = $scope.distance;
-				$scope.searchParameters['latitude'] = $scope.latitude;
-				$scope.searchParameters['longitude'] = $scope.longitude;
-			}
+			// Geospatial search
+			$scope.url = getServiceUrl('/ikube/service/search/json/multi/spatial/all');
+			$scope.searchParameters['searchStrings'] = $scope.allWords;
+			$scope.searchParameters['distance'] = $scope.distance;
+			$scope.searchParameters['latitude'] = $scope.latitude;
+			$scope.searchParameters['longitude'] = $scope.longitude;
 			var promise = $http.get($scope.url, $scope.config);
 			promise.success(function(data, status) {
 				// Pop the statistics Json off the array
@@ -135,37 +88,35 @@
 		
 		// This function will put the markers on the map
 		$scope.doMarkers = function() {
-			if ($scope.geospatial) {
-				var latitude = $scope.searchParameters.latitude;
-				var longitude = $scope.searchParameters.longitude;
-				var origin = new google.maps.LatLng(latitude, longitude);
-				var mapElement = document.getElementById('map_canvas');
-				var options = {
-					zoom: 13,
-					center: new google.maps.LatLng(latitude, longitude),
-					mapTypeId: google.maps.MapTypeId.ROADMAP
-				};
-				map = new google.maps.Map(mapElement, options);
-				// Add the point or origin marker
-				var marker = new google.maps.Marker({
-					map : map,
-					position: origin,
-					title : 'You are here :) => [' + latitude + ', ' + longitude + ']',
-					icon: '/ikube/images/icons/center_pin.png'
-				});
-				for (var key in $scope.data) {
-					var datum = $scope.data[key];
-					if (datum.latitude != null && datum.longitude) {
-						pointMarker = new google.maps.Marker({
-							map : map,
-							position: new google.maps.LatLng(datum.latitude, datum.longitude),
-							title : 'Name : ' + datum.name + ', distance : ' + datum.distance
-						});
-					}
+			var latitude = $scope.searchParameters.latitude;
+			var longitude = $scope.searchParameters.longitude;
+			var origin = new google.maps.LatLng(latitude, longitude);
+			var mapElement = document.getElementById('map_canvas');
+			var options = {
+				zoom: 13,
+				center: new google.maps.LatLng(latitude, longitude),
+				mapTypeId: google.maps.MapTypeId.ROADMAP
+			};
+			map = new google.maps.Map(mapElement, options);
+			// Add the point or origin marker
+			var marker = new google.maps.Marker({
+				map : map,
+				position: origin,
+				title : 'You are here :) => [' + latitude + ', ' + longitude + ']',
+				icon: '/ikube/images/icons/center_pin.png'
+			});
+			for (var key in $scope.data) {
+				var datum = $scope.data[key];
+				if (datum.latitude != null && datum.longitude) {
+					pointMarker = new google.maps.Marker({
+						map : map,
+						position: new google.maps.LatLng(datum.latitude, datum.longitude),
+						title : 'Name : ' + datum.name + ', distance : ' + datum.distance
+					});
 				}
-				// And finally set the waypoints
-				$scope.doWaypoints(origin);
 			}
+			// And finally set the waypoints
+			$scope.doWaypoints(origin);
 		}
 		
 		// This function will put the way points on the map
@@ -202,7 +153,6 @@
 				}
 			);
 		}
-		
 	});
 	
 	/** This directive will just init the map and put it on the page. */
@@ -229,47 +179,9 @@
 			}
 		};
 	});
-	
-	module.factory('autoCompleteDataService', function($rootScope, $http) {
-	    return {
-	        getSource: function() {
-	        	var suggestions = [];
-	        	var url = getServiceUrl("/ikube/service/auto/complete");
-	        	$rootScope.getSuggestions = function() {
-	        		var promise = $http.get(url);
-	        		promise.success(function(data, status) {
-	        			alert('Suggestions : ' + data);
-	        			suggestions = data;
-	        		});
-	        		promise.error(function(data, status) {
-	        			// TODO Something
-	        		});
-	        	};
-	        	$rootScope.getSuggestions();
-	        	return ['apples', 'oranges', 'bananas'];
-	        	// return suggestions;
-	        }
-	    }
-	});
-
-	module.directive('autoComplete', function(autoCompleteDataService) {
-	    return {
-	        restrict: 'A',
-	        link: function($scope, $elem, $attr, $ctrl) {
-	        	// alert('Ctrl : ' + $elem);
-	        	// elem is a jquery lite object if jquery is not present,
-	        	// but with jquery and jquery ui, it will be a full jquery object.
-	            $elem.autocomplete({
-	            	minLength: 3,
-	                source: autoCompleteDataService.getSource() //from your service
-	            });
-	        }
-	    };
-	});
-	
 </script>
 
-<table ng-app="ikube" ng-controller="SearcherController" width="100%">
+<table ng-app="ikube" ng-controller="GeospatialSearcherController" width="100%">
 	<form ng-submit="doSearch()">
 	<tr>
 		<td width="100%" valign="top">
@@ -280,24 +192,11 @@
 						<select ng-controller="IndexesController" ng-model="searchParameters.indexName">
    							<option ng-repeat="index in indexes" value="{{index}}">{{index}}</option>
 						</select>
-						Geospatial : <input type="checkbox" ng-model="geospatial" name="geospatial">
 					</td>
 				</tr>
 				<tr>
 					<td>All of these words:</td>
 					<td><input id="allWords" name="allWords" ng-model="allWords" value="allWords"></td>
-				</tr>
-				<tr>
-					<td>This exact word or phrase:</td>
-					<td><input ng-model="exactPhrase" value="exactPhrase"></td>
-				</tr>
-				<tr>
-					<td>One or more of these words:</td>
-					<td><input ng-model="oneOrMore" value="oneOrMore"></td>
-				</tr>
-				<tr>
-					<td>None of these words:</td>
-					<td><input ng-model="noneOfTheseWords" value="noneOfTheseWords"></td>
 				</tr>
 				<tr>
 					<td>Latitude:</td>

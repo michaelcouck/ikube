@@ -10,6 +10,7 @@ import ikube.mock.ReaderUtilMock;
 import ikube.mock.SpellingCheckerMock;
 import ikube.search.spelling.SpellingChecker;
 import ikube.toolkit.FileUtilities;
+import ikube.toolkit.StringUtilities;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -20,7 +21,6 @@ import java.util.Map;
 import mockit.Deencapsulation;
 import mockit.Mockit;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
@@ -66,10 +66,10 @@ public class SearchTest extends ATest {
 			german + " " + //
 			french + " " + //
 			somthingElseAlToGether + " ";
-	private static String somethingNumeric = " 123456789 ";
+	private static String somethingNumeric = " 123.456789 ";
 
-	private static String[] strings = { russian, german, french, somthingElseAlToGether, string, somethingNumeric, "123456790",
-			"123456791", "123456792", "123456793", "123456794" };
+	private static String[] strings = { russian, german, french, somthingElseAlToGether, string, somethingNumeric, "123.456789",
+			"123.456790", "123.456791", "123.456792", "123.456793", "123.456794", "123456789", "123456790" };
 
 	@Before
 	public void before() {
@@ -105,7 +105,7 @@ public class SearchTest extends ATest {
 
 				Document document = new Document();
 				IndexManager.addStringField(IConstants.ID, id, document, Store.YES, Index.ANALYZED, TermVector.YES);
-				if (StringUtils.isNumeric(string.trim())) {
+				if (StringUtilities.isNumeric(string.trim())) {
 					IndexManager.addNumericField(IConstants.CONTENTS, string.trim(), document, Store.YES);
 				} else {
 					IndexManager.addStringField(IConstants.CONTENTS, contents, document, Store.YES, Index.ANALYZED, TermVector.YES);
@@ -218,8 +218,7 @@ public class SearchTest extends ATest {
 		searchNumericAll.setFragment(Boolean.TRUE);
 		searchNumericAll.setMaxResults(10);
 		searchNumericAll.setSearchField(IConstants.CONTENTS);
-		searchNumericAll.setSearchString("123456789");
-		searchNumericAll.setSortField();
+		searchNumericAll.setSearchString("123456790");
 		ArrayList<HashMap<String, String>> results = searchNumericAll.execute();
 		assertTrue(results.size() > 1);
 	}
@@ -231,7 +230,7 @@ public class SearchTest extends ATest {
 		searchNumericRange.setFragment(Boolean.TRUE);
 		searchNumericRange.setMaxResults(10);
 		searchNumericRange.setSearchField(IConstants.CONTENTS);
-		searchNumericRange.setSearchString("123456790", "123456796");
+		searchNumericRange.setSearchString("123.456790", "123.456796");
 		searchNumericRange.setSortField();
 		ArrayList<HashMap<String, String>> results = searchNumericRange.execute();
 		logger.info("Results : " + results);

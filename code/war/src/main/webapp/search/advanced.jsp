@@ -7,20 +7,38 @@
 <script type="text/javascript">
 
 	// The controller that does the search
-	module.controller('NumericSearcherController', function($http, $scope) {
+	module.controller('SearcherController', function($http, $scope) {
 		
 		// The model data that we bind to in the form
-		$scope.numericSearchString = '123456789';
+		$scope.allWords = 'find me';
+		$scope.exactPhrase = '';
+		$scope.oneOrMore = '';
+		$scope.noneOfTheseWords = '';
 		$scope.pageBlock = 10; // Only results per page
 		$scope.endResult = 0;
 
 		$scope.statistics = {};
 		$scope.pagination = []
 
+		// This function concatenates the search strings for all the predicate
+		// data into a semi colon separated string that can be used in the advanced
+		// search
+		$scope.doSearchStrings = function() {
+			var searchStrings = [];
+			searchStrings.push($scope.allWords);
+			searchStrings.push(';');
+			searchStrings.push($scope.exactPhrase);
+			searchStrings.push(';');
+			searchStrings.push($scope.oneOrMore);
+			searchStrings.push(';');
+			searchStrings.push($scope.noneOfTheseWords);
+			return searchStrings.join('');
+		};
+		
 		// The form parameters we send to the server
 		$scope.searchParameters = { 
-			indexName : 'geospatial', // The default is the geospatial index
-			searchStrings : $scope.numericSearchString,
+			indexName : 'desktop', // The default is the desktop index
+			searchStrings : $scope.doSearchStrings(),
 			fragment : true,
 			firstResult : 0,
 			maxResults : $scope.pageBlock
@@ -31,9 +49,12 @@
 		
 		// Go to the web service for the results
 		$scope.doSearch = function() {
-			// Numeric search against all the fields
-			$scope.url = getServiceUrl('/ikube/service/search/json/numeric/all');
-			$scope.searchParameters['searchStrings'] = $scope.numericSearchString;
+			// Advanced search
+			$scope.url = getServiceUrl('/ikube/service/search/json/multi/advanced/all');
+			$scope.searchParameters['searchStrings'] = $scope.doSearchStrings();
+			delete $scope.searchParameters['distance'];
+			delete $scope.searchParameters['latitude'];
+			delete $scope.searchParameters['longitude'];
 			var promise = $http.get($scope.url, $scope.config);
 			promise.success(function(data, status) {
 				// Pop the statistics Json off the array
@@ -78,7 +99,7 @@
 	
 </script>
 
-<table ng-app="ikube" ng-controller="NumericSearcherController" width="100%">
+<table ng-app="ikube" ng-controller="SearcherController" width="100%">
 	<form ng-submit="doSearch()">
 	<tr>
 		<td>Collection : </td>
@@ -89,9 +110,22 @@
 		</td>
 	</tr>
 	<tr>
-		<td>Numeric term to search for:</td>
-		<td><input id="numericSearchString" name="numericSearchString" ng-model="numericSearchString" value="numericSearchString"></td>
+		<td>All of these words:</td>
+		<td><input id="allWords" name="allWords" ng-model="allWords"></td>
 	</tr>
+	<tr>
+		<td>This exact word or phrase:</td>
+		<td><input id="exactPhrase" name="exactPhrase" ng-model="exactPhrase"></td>
+	</tr>
+	<tr>
+		<td>One or more of these words:</td>
+		<td><input id="oneOrMore" name="oneOrMore" ng-model="oneOrMore"></td>
+	</tr>
+	<tr>
+		<td>None of these words:</td>
+		<td><input id="noneOfTheseWords" name="noneOfTheseWords" ng-model="noneOfTheseWords"></td>
+	</tr>
+	
 	<tr>
 		<td colspan="2">
 			<button>Go!</button>
