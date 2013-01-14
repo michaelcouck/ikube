@@ -200,7 +200,7 @@
 		<bean class="ikube.listener.ClusterClubListener" />
 		<bean class="ikube.listener.IndexSizeListener" />
 		<bean class="ikube.listener.ActionListener" />
-		<bean class="ikube.listener.IndexContextListener" />
+		<!-- <bean class="ikube.listener.IndexContextListener" /> -->
 	</util:list>
 	
 	<bean 

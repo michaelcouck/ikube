@@ -20,6 +20,7 @@ import com.hazelcast.core.MessageListener;
  * @since 11.09.12
  * @version 01.00
  */
+@Deprecated
 public class IndexContextListener implements IListener<Message<Object>>, MessageListener<Object> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(IndexContextListener.class);
