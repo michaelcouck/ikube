@@ -52,7 +52,7 @@ public class SearchNumericAll extends SearchMultiAll {
 		for (int i = 0; i < searchFields.length; i++) {
 			String searchField = searchFields[i];
 			String newSearchString = newSearchStrings[i];
-			Long numeric = Long.parseLong(newSearchString);
+			Double numeric = Double.parseDouble(newSearchString);
 			TermQuery numberQuery = new TermQuery(new Term(searchField, NumericUtils.doubleToPrefixCoded(numeric)));
 			booleanQuery.add(numberQuery, BooleanClause.Occur.SHOULD);
 		}

@@ -100,17 +100,18 @@ public class SearchTest extends ATest {
 		int numDocs = 50;
 		for (int i = 0; i < numDocs; i++) {
 			for (final String string : strings) {
+				String stringTrimmed = string.trim();
 				String id = Integer.toString(i * 100);
-				String contents = new StringBuilder("Hello world. " + string).append(i).toString();
+				String contents = new StringBuilder("Hello world. " + stringTrimmed).append(i).toString();
 
 				Document document = new Document();
 				IndexManager.addStringField(IConstants.ID, id, document, Store.YES, Index.ANALYZED, TermVector.YES);
-				if (StringUtilities.isNumeric(string.trim())) {
-					IndexManager.addNumericField(IConstants.CONTENTS, string.trim(), document, Store.YES);
+				if (StringUtilities.isNumeric(stringTrimmed)) {
+					IndexManager.addNumericField(IConstants.CONTENTS, stringTrimmed, document, Store.YES);
 				} else {
 					IndexManager.addStringField(IConstants.CONTENTS, contents, document, Store.YES, Index.ANALYZED, TermVector.YES);
 				}
-				IndexManager.addStringField(IConstants.NAME, "michael couck. " + string, document, Store.YES, Index.ANALYZED,
+				IndexManager.addStringField(IConstants.NAME, "michael couck. " + stringTrimmed, document, Store.YES, Index.ANALYZED,
 						TermVector.YES);
 				indexWriter.addDocument(document);
 			}
@@ -221,6 +222,10 @@ public class SearchTest extends ATest {
 		searchNumericAll.setSearchString("123456790");
 		ArrayList<HashMap<String, String>> results = searchNumericAll.execute();
 		assertTrue(results.size() > 1);
+
+		searchNumericAll.setSearchString("123.456790");
+		results = searchNumericAll.execute();
+		assertTrue(results.size() > 1);
 	}
 
 	@Test
@@ -231,10 +236,16 @@ public class SearchTest extends ATest {
 		searchNumericRange.setMaxResults(10);
 		searchNumericRange.setSearchField(IConstants.CONTENTS);
 		searchNumericRange.setSearchString("123.456790", "123.456796");
-		searchNumericRange.setSortField();
 		ArrayList<HashMap<String, String>> results = searchNumericRange.execute();
-		logger.info("Results : " + results);
 		assertTrue(results.size() > 1);
+
+		searchNumericRange.setSearchString("888888888", "999999999");
+		results = searchNumericRange.execute();
+		assertEquals("There shoud be no results, i.e. only the statistics from this range : ", 1, results.size());
+
+		searchNumericRange.setSearchString("111", "122");
+		results = searchNumericRange.execute();
+		assertEquals("There shoud be no results, i.e. only the statistics from this range : ", 1, results.size());
 	}
 
 	@Test

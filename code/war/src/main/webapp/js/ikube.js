@@ -88,7 +88,11 @@ module.directive('indexing', function($http) {
 });
 
 /** Load the Google visual after the directives to avoid some kind of recursive lookup. */
-google.load('visualization', '1', { packages : [ 'corechart' ] });
+try {
+	google.load('visualization', '1', { packages : [ 'corechart' ] });
+} catch (err) {
+	// alert('Oops : ' + err);
+}
 
 /** This controller will get the server data from the grid. */
 module.controller('ServersController', function($http, $scope) {
@@ -361,6 +365,17 @@ function writeDate() {
 	document.write(d.toLocaleDateString());
 }
 
+var json = [{ "1":"one" }, { "2":"two" }, { "3":"three" }];
+
+function jsonToArray() {
+	var objs=[];
+	for (var i = json.length; i--;) {
+		JSON.parse(json[i]);
+	};
+}
+
+// jsonToArray(json);
+
 function addAutoComplete(inputField) {
 	inputField.autocomplete({
 		source : getServiceUrl("/ikube/service/auto/complete")
@@ -372,7 +387,7 @@ function printMethods(object) {
 		return;
 	}
 	for (var m in object) {
-		alert('M : ' + m);
+		print('M : ' + m);
 	}
 }
 

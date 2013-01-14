@@ -103,7 +103,7 @@
 	<form ng-submit="doSearch()">
 	<tr>
 		<td>Collection : </td>
-		<td nowrap="nowrap">
+		<td>
 			<select ng-controller="IndexesController" ng-model="searchParameters.indexName">
 				<option ng-repeat="index in indexes" value="{{index}}">{{index}}</option>
 			</select>
@@ -155,7 +155,7 @@
 		</td>
 	</tr>
 	
-	<tr><td colspan="3">&nbsp;</td></tr>
+	<tr><td colspan="2">&nbsp;</td></tr>
 	
 	<tr ng-repeat="datum in data">
 		<td colspan="2">

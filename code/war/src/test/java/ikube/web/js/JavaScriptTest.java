@@ -25,50 +25,44 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
 @Ignore
 public class JavaScriptTest extends Base {
 
-	private Context javaScriptContext;
-	private ScriptableObject javaScriptObject;
+	private Context context;
+	private ScriptableObject scriptableObject;
 
 	@Before
 	public void setup() throws Exception {
-		javaScriptContext = ContextFactory.getGlobal().enterContext();
-		javaScriptContext.setOptimizationLevel(-1);
-		javaScriptContext.setLanguageVersion(Context.VERSION_1_8);
-		javaScriptObject = javaScriptContext.initStandardObjects();
+		context = ContextFactory.getGlobal().enterContext();
+		context.setOptimizationLevel(-1);
+		context.setLanguageVersion(Context.VERSION_1_8);
+		scriptableObject = context.initStandardObjects();
 
 		// Create the print function
 		String printFunction = "function print(message) { java.lang.System.out.println(message); }";
-		javaScriptContext.evaluateString(javaScriptObject, printFunction, "print", 1, null);
+		context.evaluateString(scriptableObject, printFunction, "print", 1, null);
 
 		// Assumes we have env.rhino.js as a resource on the classpath.
-		loadJavaScriptFiles("env.rhino", "ikube.js");
-		loadJavaScriptUrls("http://code.jquery.com/jquery-1.8.2.js", "http://code.jquery.com/ui/1.9.1/jquery-ui.js",
-				"http://www.google-analytics.com/ga.js", "http://maps.google.com/maps/api/js?sensor=false");
+		loadJavaScriptFiles("env.rhino");
+		loadJavaScriptUrls(//
+				"http://ajax.googleapis.com/ajax/libs/angularjs/1.0.3/angular.min.js", //
+				"http://code.jquery.com/jquery-1.8.2.js", //
+				"http://code.jquery.com/ui/1.9.1/jquery-ui.js", //
+				"http://www.google-analytics.com/ga.js", //
+				"http://maps.google.com/maps/api/js?sensor=false");
 
 		// This will load the home page DOM.
-		run("window.location='http://ikube.be/ikube/search.jsp'");
-
-		// Whatever happens on document ready.
-		run("track()");
-	}
-
-	private void loadJavaScriptUrls(final String... urls) throws Exception {
-		for (final String urlString : urls) {
-			URL url = new URL(urlString);
-			String javaScript = FileUtilities.getContents(url.openStream(), Integer.MAX_VALUE).toString();
-			javaScriptContext.evaluateString(javaScriptObject, javaScript, url.getFile(), 1, null);
-		}
-	}
-
-	private void loadJavaScriptFiles(final String... files) {
-		for (final String fileName : files) {
-			File file = FileUtilities.findFileRecursively(new File("."), fileName);
-			String javaScript = FileUtilities.getContents(file, Integer.MAX_VALUE).toString();
-			javaScriptContext.evaluateString(javaScriptObject, javaScript, fileName, 1, null);
-		}
+		// run("window.location='http://ikube.be/ikube/search.jsp'");
 	}
 
 	@Test
 	public void javaScript() throws Exception {
+		loadJavaScriptFiles("ikube.js");
+		// Whatever happens on document ready.
+		run("track()");
+		String jsonParse = "JSON.parse = function parse(message) { java.lang.System.out.println('Parsing JSON'); }";
+		Object result = context.evaluateString(scriptableObject, jsonParse, "parse", 1, null);
+		logger.info("Result : " + result);
+
+		context.evaluateString(scriptableObject, "jsonToArray();", "jsonToArray", 1, null);
+
 		ScriptEngineManager scriptEngineManager = new ScriptEngineManager();
 		ScriptEngine scriptEngine = scriptEngineManager.getEngineByName("JavaScript");
 		logger.info("Script engine : " + scriptEngineManager + ", " + scriptEngine);
@@ -93,8 +87,24 @@ public class JavaScriptTest extends Base {
 		button.click();
 	}
 
+	private void loadJavaScriptUrls(final String... urls) throws Exception {
+		for (final String urlString : urls) {
+			URL url = new URL(urlString);
+			String javaScript = FileUtilities.getContents(url.openStream(), Integer.MAX_VALUE).toString();
+			context.evaluateString(scriptableObject, javaScript, url.getFile(), 1, null);
+		}
+	}
+
+	private void loadJavaScriptFiles(final String... files) {
+		for (final String fileName : files) {
+			File file = FileUtilities.findFileRecursively(new File("."), fileName);
+			String javaScript = FileUtilities.getContents(file, Integer.MAX_VALUE).toString();
+			context.evaluateString(scriptableObject, javaScript, fileName, 1, null);
+		}
+	}
+
 	private String run(String js) throws Exception {
-		Object result = javaScriptContext.evaluateString(javaScriptObject, js, "run", 1, null);
+		Object result = context.evaluateString(scriptableObject, js, "run", 1, null);
 		return Context.toString(result);
 	}
 

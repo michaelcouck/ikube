@@ -188,7 +188,7 @@
 			<table width="100%">
 				<tr>
 					<td>Collection : </td>
-					<td nowrap="nowrap">
+					<td>
 						<select ng-controller="IndexesController" ng-model="searchParameters.indexName">
    							<option ng-repeat="index in indexes" value="{{index}}">{{index}}</option>
 						</select>
@@ -196,32 +196,32 @@
 				</tr>
 				<tr>
 					<td>All of these words:</td>
-					<td><input id="allWords" name="allWords" ng-model="allWords" value="allWords"></td>
+					<td><input id="allWords" name="allWords" ng-model="allWords"></td>
 				</tr>
 				<tr>
 					<td>Latitude:</td>
-					<td><input ng-model="latitude" placeholder="latitude"></td>
+					<td><input id="latitude" ng-model="latitude" placeholder="latitude"></td>
 				</tr>
 				<tr>
 					<td>Longitude:</td>
-					<td><input ng-model="longitude" placeholder="longitude"></td>
+					<td><input id="longitude" ng-model="longitude" placeholder="longitude"></td>
 				</tr>
 				<tr>
 					<td>Distance:</td>
-					<td><input ng-model="distance" placeholder="distance"></td>
+					<td><input id="distance" ng-model="distance" placeholder="distance"></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<button>Go!</button>
+					</td>
 				</tr>
 			</table>
 		</td>
-		<td width="340px" rowspan="3" align="left">
+		<td width="340px" align="left">
 			<div id="map_canvas" google-map style="height: 340px; width: 550px; border : 1px solid black;"></div>
 		</td>
 	</tr>
 	
-	<tr>
-		<td colspan="2">
-			<button>Go!</button>
-		</td>
-	</tr>
 	</form>
 	
 	<tr><td colspan="2">&nbsp;</td></tr>
@@ -246,7 +246,7 @@
 		</td>
 	</tr>
 	
-	<tr><td colspan="3">&nbsp;</td></tr>
+	<tr><td colspan="2">&nbsp;</td></tr>
 	
 	<tr ng-repeat="datum in data">
 		<td colspan="2">

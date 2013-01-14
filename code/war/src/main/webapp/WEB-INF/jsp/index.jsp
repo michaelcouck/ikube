@@ -19,10 +19,10 @@
 
 <ul class="tabs">
 	<li class="active" rel="dash">Dash</li>
-	<li rel="search-advanced">Advanced search</li>
-	<li rel="search-geospatial">Geospatial search</li>
-	<li rel="search-numeric">Search numeric</li>
-	<li rel="search-numeric-range">Search numeric range</li>
+	<li rel="search-advanced">Advanced</li>
+	<li rel="search-geospatial">Geospatial</li>
+	<li rel="search-numeric">Numeric</li>
+	<li rel="search-numeric-range">Numeric range</li>
 	<li rel="indexes">Indexes</li>
 	<li rel="properties">Properties</li>
 	<li rel="place-holder" style="width : 150px;">&nbsp;</li>

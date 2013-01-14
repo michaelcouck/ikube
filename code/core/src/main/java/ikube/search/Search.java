@@ -57,6 +57,22 @@ import org.apache.lucene.util.ReaderUtil;
 @SuppressWarnings("deprecation")
 public abstract class Search {
 
+	enum TypeField {
+
+		NUMERIC("numeric"), //
+		STRING("string");
+
+		String fieldType;
+
+		TypeField(final String fieldType) {
+			this.fieldType = fieldType;
+		}
+
+		public String fieldType() {
+			return this.fieldType;
+		}
+	}
+
 	@SuppressWarnings("unused")
 	private static transient Map<String, QueryParser> QUERY_PARSERS = new HashMap<String, QueryParser>();
 
@@ -71,6 +87,8 @@ public abstract class Search {
 	protected transient String[] searchFields;
 	/** The fields to sort the results by. */
 	protected transient String[] sortFields;
+	/** The types of fields for the search queries, like numeric etc. */
+	protected transient String[] typeFields;
 
 	/** Whether to generate fragments for the search string or not. */
 	protected transient boolean fragment;
@@ -180,6 +198,15 @@ public abstract class Search {
 	 */
 	public void setSortField(final String... sortFields) {
 		this.sortFields = sortFields;
+	}
+
+	/**
+	 * Sets the types of fields that will be used in the search like numeric etc.
+	 * 
+	 * @param typeFields the types of fields that map to the search strings and the field names
+	 */
+	public void setTypeFields(final String... typeFields) {
+		this.typeFields = typeFields;
 	}
 
 	/**
@@ -306,7 +333,7 @@ public abstract class Search {
 				if (fragment) {
 					StringBuilder builder = new StringBuilder();
 					int fragments = 0;
-					for (String searchField : searchFields) {
+					for (final String searchField : searchFields) {
 						String fragment = getFragments(document, searchField, query);
 						if (fragment == null || "".equals(fragment.trim())) {
 							continue;

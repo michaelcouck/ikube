@@ -82,10 +82,12 @@ public class IndexableFilesystemCsvHandler extends IndexableFilesystemHandler {
 		// Add the line number field
 		IndexManager.addStringField(lineNumberFieldName, identifier, document, Store.YES, Index.ANALYZED, TermVector.NO);
 		for (int i = 0; i < columns.length && i < values.length; i++) {
-			if (StringUtilities.isNumeric(values[i])) {
-				IndexManager.addNumericField(columns[i], values[i], document, store);
+			String value = values[i];
+			if (StringUtilities.isNumeric(value)) {
+				IndexManager.addNumericField(columns[i], value, document, store);
 			} else {
-				IndexManager.addStringField(columns[i], values[i], document, store, index, termVector);
+				value = StringUtilities.strip(value, "\"");
+				IndexManager.addStringField(columns[i], value, document, store, index, termVector);
 			}
 		}
 		return document;

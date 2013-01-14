@@ -40,9 +40,9 @@ public class SearchComplex extends SearchMultiAll {
 			final String searchField = searchFields[i];
 			final String searchString = searchStrings[i];
 			Query query = null;
-			if (TypeField.STRING.equals(typeField)) {
+			if (TypeField.STRING.fieldType().equals(typeField)) {
 				query = getQueryParser(searchField).parse(searchString);
-			} else if (TypeField.NUMERIC.equals(typeField)) {
+			} else if (TypeField.NUMERIC.fieldType().equals(typeField)) {
 				Long numeric = Long.parseLong(searchField);
 				query = new TermQuery(new Term(searchField, NumericUtils.longToPrefixCoded(numeric)));
 			}

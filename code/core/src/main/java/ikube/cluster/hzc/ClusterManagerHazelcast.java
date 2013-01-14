@@ -4,7 +4,6 @@ import ikube.IConstants;
 import ikube.cluster.AClusterManager;
 import ikube.cluster.IClusterManager;
 import ikube.cluster.listener.hzc.DeleteListener;
-import ikube.cluster.listener.hzc.IndexContextListener;
 import ikube.cluster.listener.hzc.StartListener;
 import ikube.cluster.listener.hzc.StopListener;
 import ikube.model.Action;
@@ -48,8 +47,8 @@ public class ClusterManagerHazelcast extends AClusterManager {
 	@Autowired
 	private IMonitorService monitorService;
 	/** This object is for listening for the size of the index and rolling over if necessary. */
-	@Autowired
-	private IndexContextListener indexContextListener;
+	// @Autowired
+	// private IndexContextListener indexContextListener;
 	/** Ths listener will delete the index and the backup directory on the file system. */
 	@Autowired
 	private DeleteListener deleteListener;
@@ -59,9 +58,9 @@ public class ClusterManagerHazelcast extends AClusterManager {
 	@SuppressWarnings("unchecked")
 	public void initialize() {
 		ip = UriUtilities.getIp();
-		address = ip + "-" + Hazelcast.getConfig().getPort();
+		address = ip + "-" + Hazelcast.getCluster().getLocalMember().getInetSocketAddress().getPort();
 		logger.info("Cluster manager : " + ip + ", " + address);
-		addListeners(startListener, stopListener, indexContextListener, deleteListener);
+		addListeners(startListener, stopListener, /* indexContextListener, */deleteListener);
 	}
 
 	private void addListeners(final MessageListener<Object>... listeners) {

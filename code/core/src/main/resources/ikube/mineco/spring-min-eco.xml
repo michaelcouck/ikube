@@ -40,7 +40,6 @@
 
     <util:list id="min-eco-indexables" >
         <ref local="min-eco-csv-files" />
-        <ref local="min-eco-data-source" />
     </util:list>
     
     <bean
@@ -61,34 +60,7 @@
 		property:batchSize="1000"
 		property:maxReadLength="1000000"  
 		property:separator="," 
-		property:maxExceptions="10000" 
+		property:maxExceptions="10000"
 		property:encoding="Windows-1252" />
-
-    <bean
-        id="min-eco-data-source"
-        property:name="min_eco"
-        class="ikube.model.IndexableDataSource"
-        property:dataSource-ref="min-eco-data-source-pool"
-        property:excludedTablePatterns="SYS:$:db2:sys" />
-    
-    <bean 
-		id="min-eco-data-source-pool"
-		class="com.mchange.v2.c3p0.ComboPooledDataSource"
-		destroy-method="close"
-		property:user="db2admin"
-		property:password="caherline"
-		property:driverClass="${db2.jdbc.driver}"
-		property:jdbcUrl="jdbc:db2://ikube.be:50000/min_eco"
-		property:initialPoolSize="${jdbc.minPoolSize}"
-		property:maxPoolSize="${jdbc.maxPoolSize}"
-		property:maxStatements="${jdbc.maxStatements}"
-		property:maxStatementsPerConnection="${jdbc.maxStatements}"
-		property:checkoutTimeout="${jdbc.checkOutTimeout}"
-		property:numHelperThreads="${jdbc.numHelperThreads}"
-		property:breakAfterAcquireFailure="${jdbc.breakAfterAcquireFailure}"
-		property:debugUnreturnedConnectionStackTraces="${jdbc.debugUnreturnedConnectionStackTraces}"
-		property:testConnectionOnCheckin="${jdbc.testConnectionOnCheckin}"
-		property:testConnectionOnCheckout="${jdbc.testConnectionOnCheckout}"
-		property:unreturnedConnectionTimeout="${jdbc.unreturnedConnectionTimeout}" />
 
 </beans>
