@@ -247,6 +247,20 @@ public class SearchTest extends ATest {
 		results = searchNumericRange.execute();
 		assertEquals("There shoud be no results, i.e. only the statistics from this range : ", 1, results.size());
 	}
+	
+	@Test
+	public void searchComplex() {
+		SearchComplex searchComplex = new SearchComplex();
+		searchComplex.setTypeField(IConstants.CONTENTS, IConstants.CONTENTS);
+		searchComplex.setSearchString("Produktivität", "123.456789");
+		searchComplex.setSearchField(IConstants.CONTENTS, IConstants.CONTENTS);
+		
+		searchComplex.setFirstResult(0);
+		searchComplex.setFragment(Boolean.TRUE);
+		searchComplex.setMaxResults(10);
+		ArrayList<HashMap<String, String>> results = searchComplex.execute();
+		assertTrue(results.size() > 1);
+	}
 
 	@Test
 	public void addStatistics() {
