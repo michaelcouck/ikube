@@ -19,10 +19,15 @@ import javax.persistence.Transient;
 @Entity()
 @Table(name = "file_")
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-@NamedQueries(value = { @NamedQuery(name = File.SELECT_FROM_FILE_BY_NAME, query = File.SELECT_FROM_FILE_BY_NAME) })
+@NamedQueries(value = { 
+		@NamedQuery(name = File.SELECT_FROM_FILE_BY_NAME, query = File.SELECT_FROM_FILE_BY_NAME),
+		@NamedQuery(name = File.SELECT_FROM_FILE_BY_INDEX_NAME, query = File.SELECT_FROM_FILE_BY_INDEX_NAME),
+		@NamedQuery(name = File.SELECT_FROM_FILE_BY_INDEX_NAME_AND_PATH, query = File.SELECT_FROM_FILE_BY_INDEX_NAME_AND_PATH) })
 public class File extends Persistable {
 
 	public static final String SELECT_FROM_FILE_BY_NAME = "select f from File as f where f.name = :name";
+	public static final String SELECT_FROM_FILE_BY_INDEX_NAME = "select f from File as f where f.indexName = :indexName";
+	public static final String SELECT_FROM_FILE_BY_INDEX_NAME_AND_PATH = "select f from File as f where f.indexName = :indexName and f.path = :path";
 
 	@Transient
 	private String title;
@@ -36,22 +41,28 @@ public class File extends Persistable {
 	@Column
 	private long hash;
 	@Column
-	private long urlId;
+	private long pathId;
 	@Column
 	private boolean indexed;
 	@Column
 	private boolean temporary;
 	@Column(length = 64)
 	private String name;
+	@Column(length = 32)
+	private String indexName;
 	@Column(length = 255)
-	private String url;
+	private String path;
+	@Column
+	private long length;
+	@Column
+	private long lastModified;
 
-	public long getUrlId() {
-		return urlId;
+	public long getPathId() {
+		return pathId;
 	}
 
-	public void setUrlId(long urlId) {
-		this.urlId = urlId;
+	public void setPathId(long urlId) {
+		this.pathId = urlId;
 	}
 
 	public String getName() {
@@ -62,12 +73,20 @@ public class File extends Persistable {
 		this.name = name;
 	}
 
-	public String getUrl() {
-		return url;
+	public String getIndexName() {
+		return indexName;
 	}
 
-	public void setUrl(final String url) {
-		this.url = url;
+	public void setIndexName(String indexContextName) {
+		this.indexName = indexContextName;
+	}
+
+	public String getPath() {
+		return path;
+	}
+
+	public void setPath(final String url) {
+		this.path = url;
 	}
 
 	public String getTitle() {
@@ -131,6 +150,22 @@ public class File extends Persistable {
 
 	public void setHash(final long hash) {
 		this.hash = hash;
+	}
+
+	public long getLength() {
+		return length;
+	}
+
+	public void setLength(long length) {
+		this.length = length;
+	}
+
+	public long getLastModified() {
+		return lastModified;
+	}
+
+	public void setLastModified(long lastModified) {
+		this.lastModified = lastModified;
 	}
 
 }

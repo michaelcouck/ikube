@@ -1,21 +1,16 @@
 package ikube.index.handler.strategy;
 
-import ikube.IConstants;
 import ikube.index.handler.IStrategy;
 import ikube.model.IndexContext;
 import ikube.model.IndexableFileSystem;
 import ikube.service.ISearcherService;
-import ikube.toolkit.HashUtilities;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 
+import org.apache.lucene.document.Document;
 import org.apache.lucene.index.CorruptIndexException;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.Term;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,89 +41,50 @@ public class DeltaIndexableFilesystemStrategy extends AStrategy {
 
 	/**
 	 * {@inheritDoc}
+	 * 
+	 * @throws IOException
+	 * @throws CorruptIndexException
 	 */
 	@Override
-	public boolean preProcess(final Object... parameters) {
-		if (parameters == null || parameters.length != 3) {
-			LOGGER.warn("Wrong strategy interceptor : " + Arrays.deepToString(parameters));
-			return Boolean.TRUE;
-		}
-		boolean mustProcess = Boolean.TRUE;
+	public boolean preProcess(final Object... parameters) throws Exception {
+		// Iterate over the index documents and build a file with all the resources
+		// in it, including the time stamp and the length and sort the file lexicographically
 		IndexContext<?> indexContext = (IndexContext<?>) parameters[0];
 		IndexableFileSystem indexableFileSystem = (IndexableFileSystem) parameters[1];
-		File file = (File) parameters[2];
-		String indexName = indexContext.getIndexName();
-		String[] searchFields = new String[] { indexableFileSystem.getPathFieldName() };
-		String[] searchStrings = new String[] { file.getAbsolutePath() };
-
-		String fileId = HashUtilities.hash(file.getAbsolutePath()).toString();
-		ArrayList<HashMap<String, String>> results = null;
-		results = searcherService.searchMulti(indexName, searchStrings, searchFields, Boolean.FALSE, 0, 10);
-
-		HashMap<String, String> result = isPathSame(fileId, results);
-		// LOGGER.info("File id : " + fileId + ", " + results);
-		if (result != null) {
-			// LOGGER.info("Found : " + result);
-			// If the length and the time stamp are different then delete the file and process again
-			boolean lengthAndTimestampSame = isLengthAndTimestampSame(indexableFileSystem, file, result);
-			// LOGGER.info("Length and timestamp same : " + lengthAndTimestampSame);
-			if (lengthAndTimestampSame) {
-				mustProcess = Boolean.FALSE;
-			} else {
-				LOGGER.error("Deleting index entry to replace with latest version : " + fileId + ", " + file.getAbsolutePath());
-				Term term = new Term(IConstants.FILE_ID, fileId);
-				IndexWriter[] indexWriters = indexContext.getIndexWriters();
-				// LOGGER.info("Index context : " + indexContext + ", " + Arrays.deepToString(indexWriters));
-				for (final IndexWriter indexWriter : indexWriters) {
-					try {
-						indexWriter.deleteDocuments(term);
-					} catch (CorruptIndexException e) {
-						LOGGER.error("Index corrupt, can't really recover from this : ", e);
-						throw new RuntimeException(e);
-					} catch (IOException e) {
-						LOGGER.error("IO exception to the index? Network failure, disk failure? No recovery possible I think : ", e);
-						throw new RuntimeException(e);
-					} catch (Exception e) {
-						LOGGER.error("General exception deleting an out of date document : ", e);
-					}
-				}
+		for (final IndexWriter indexWriter : indexContext.getIndexWriters()) {
+			IndexReader indexReader = IndexReader.open(indexWriter.getDirectory());
+			for (int i = 0; i < indexReader.numDocs(); i++) {
+				Document document = indexReader.document(i);
+				String path = document.get(indexableFileSystem.getPathFieldName());
+				String length = document.get(indexableFileSystem.getLengthFieldName());
+				String lastModified = document.get(indexableFileSystem.getLastModifiedFieldName());
 			}
 		}
-		// LOGGER.error("Continuing with processing : " + mustProcess + ", " + indexContext.getIndexName() + ", " + file.getAbsolutePath());
-		return mustProcess;
-	}
-
-	private HashMap<String, String> isPathSame(final String fileId, final ArrayList<HashMap<String, String>> results) {
-		for (final HashMap<String, String> result : results) {
-			String indexFileId = result.get(IConstants.FILE_ID);
-			if (indexFileId == null) {
-				continue;
-			}
-			// LOGGER.info("File id : " + indexFileId);
-			if (indexFileId.equals(fileId)) {
-				return result;
-			}
-		}
-		return null;
-	}
-
-	private boolean isLengthAndTimestampSame(final IndexableFileSystem indexableFileSystem, final File file,
-			final HashMap<String, String> result) {
-		String indexLength = result.get(indexableFileSystem.getLengthFieldName());
-		String indexTimestamp = result.get(indexableFileSystem.getLastModifiedFieldName());
-		// LOGGER.info("Length : " + indexLength + ", " + file.length() + ", timestamp : " + indexTimestamp + ", " + file.lastModified());
-		if (Long.parseLong(indexLength) == file.length() && Long.parseLong(indexTimestamp) == file.lastModified()) {
-			return Boolean.TRUE;
-		}
-		return Boolean.FALSE;
+		return super.preProcess(parameters);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean postProcess(final Object... parameters) {
-		return nextStrategy != null ? nextStrategy.postProcess(parameters) : true;
+	public boolean aroundProcess(final Object... parameters) throws Exception {
+		boolean mustProceed = Boolean.FALSE;
+		// Check that the file is changed of doesn't exist, if changed or doesn't exist then process the
+		// method, add the resource to the file system file as a reference against the index
+		IndexContext<?> indexContext = (IndexContext<?>) parameters[0];
+		IndexableFileSystem indexableFileSystem = (IndexableFileSystem) parameters[1];
+		java.io.File file = (java.io.File) parameters[2];
+		return mustProceed && super.preProcess(parameters);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean postProcess(final Object... parameters) throws Exception {
+		// Check the output file from iterating the file system and for all the entries that are in the file
+		// but are not in the file created from the index delete the resources from the index
+		return super.preProcess(parameters);
 	}
 
 }
