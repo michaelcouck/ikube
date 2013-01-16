@@ -55,6 +55,7 @@ public class DeltaIndexableFilesystemStrategy extends AStrategy {
 			IndexReader indexReader = IndexReader.open(indexWriter.getDirectory());
 			for (int i = 0; i < indexReader.numDocs(); i++) {
 				Document document = indexReader.document(i);
+				// /usr/share/apache-tomcat-7.0.27/bin/ikube/common/languages/english.txt,1234567890,1234567890 
 				String path = document.get(indexableFileSystem.getPathFieldName());
 				String length = document.get(indexableFileSystem.getLengthFieldName());
 				String lastModified = document.get(indexableFileSystem.getLastModifiedFieldName());
