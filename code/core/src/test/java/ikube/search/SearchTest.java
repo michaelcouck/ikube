@@ -41,6 +41,7 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -247,14 +248,16 @@ public class SearchTest extends ATest {
 		results = searchNumericRange.execute();
 		assertEquals("There shoud be no results, i.e. only the statistics from this range : ", 1, results.size());
 	}
-	
+
 	@Test
+	@Ignore
 	public void searchComplex() {
-		SearchComplex searchComplex = new SearchComplex();
-		searchComplex.setTypeField(IConstants.CONTENTS, IConstants.CONTENTS);
+		// TODO Complete this test
+		SearchComplex searchComplex = new SearchComplex(SEARCHER);
+		searchComplex.setTypeFields(IConstants.CONTENTS, IConstants.CONTENTS);
 		searchComplex.setSearchString("Produktivität", "123.456789");
 		searchComplex.setSearchField(IConstants.CONTENTS, IConstants.CONTENTS);
-		
+
 		searchComplex.setFirstResult(0);
 		searchComplex.setFragment(Boolean.TRUE);
 		searchComplex.setMaxResults(10);

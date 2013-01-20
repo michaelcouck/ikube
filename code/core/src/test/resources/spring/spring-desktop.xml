@@ -24,18 +24,18 @@
 		class="ikube.model.IndexContext"
 		property:name="desktop"
 		property:maxAge="60000"
-		property:compoundFile="${compound.file}"
-		property:bufferedDocs="${buffered.docs}"
-		property:bufferSize="${buffer.size}"
-		property:batchSize="${jdbc.batch.size}"
-		property:internetBatchSize="${internet.batch.size}"
-		property:mergeFactor="${merge.factor}"
-		property:maxFieldLength="${max.field.length}"
-		property:maxReadLength="${max.read.length}"
+		property:compoundFile="true"
+		property:bufferedDocs="1000"
+		property:bufferSize="1000"
+		property:batchSize="1000"
+		property:internetBatchSize="1000"
+		property:mergeFactor="1000"
+		property:maxFieldLength="1000000"
+		property:maxReadLength="1000"
 		property:throttle="1000"
 		property:delta="true"
-		property:indexDirectoryPath="/media/nas/xfs-one/indexes"
-		property:indexDirectoryPathBackup="/media/nas/xfs-one/indexes/backup"
+		property:indexDirectoryPath="./indexes"
+		property:indexDirectoryPathBackup="./indexes"
 		property:children-ref="desktopFolders" />
 	<util:list id="desktopFolders">
 		<ref local="desktopFolder" />
@@ -71,5 +71,7 @@
 	<util:list id="desktopStrategies">
 	    <ref local="ikube.index.handler.strategy.DeltaIndexableFilesystemStrategyDesktop" />
 	</util:list>
+	
+	<bean class="ikube.action.IndexDelta" />
 	
 </beans>

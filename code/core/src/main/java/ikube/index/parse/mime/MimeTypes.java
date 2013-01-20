@@ -58,8 +58,7 @@ public final class MimeTypes {
 				}
 			}
 		} catch (Exception e) {
-			String message = "Exception loading the mapping file for mime types : ";
-			LOGGER.error(message, e);
+			LOGGER.error("Exception loading the mapping file for mime types : ", e);
 		} finally {
 			FileUtilities.close(inputStream);
 		}

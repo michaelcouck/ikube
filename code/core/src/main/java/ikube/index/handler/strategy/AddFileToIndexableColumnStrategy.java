@@ -30,7 +30,7 @@ public class AddFileToIndexableColumnStrategy extends AStrategy {
 
 	@Override
 	@SuppressWarnings("null")
-	public boolean preProcess(final Object... parameters) {
+	public boolean preProcess(final Object... parameters) throws Exception {
 		IndexableColumn indexableColumn = null;
 		Object content = indexableColumn.getContent();
 		if (content != null && String.class.isAssignableFrom(content.getClass())) {
@@ -45,7 +45,7 @@ public class AddFileToIndexableColumnStrategy extends AStrategy {
 	}
 
 	@Override
-	public boolean postProcess(final Object... parameters) {
+	public boolean postProcess(final Object... parameters) throws Exception {
 		return super.postProcess(parameters);
 	}
 

@@ -1,4 +1,4 @@
-package ikube.action.rule;
+package ikube.interceptor;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 

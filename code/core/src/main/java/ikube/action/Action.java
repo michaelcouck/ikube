@@ -1,9 +1,9 @@
 package ikube.action;
 
 import ikube.action.rule.IRule;
-import ikube.action.rule.RuleInterceptor;
 import ikube.cluster.IClusterManager;
 import ikube.database.IDataBase;
+import ikube.interceptor.RuleInterceptor;
 import ikube.model.IndexContext;
 import ikube.notify.IMailer;
 import ikube.toolkit.UriUtilities;
@@ -68,7 +68,16 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Boolean execute(IndexContext<?> context) throws Exception {
+	public boolean preProcess(final IndexContext<?> context) throws Exception {
+		logger.info("Pre process : ");
+		return Boolean.TRUE;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Boolean execute(final IndexContext<?> context) throws Exception {
 		if (dependent != null) {
 			logger.info("Executing dependent action : " + dependent);
 			dependent.execute(context);
@@ -85,6 +94,15 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
 	 * @throws Exception
 	 */
 	abstract boolean executeInternal(final IndexContext<?> indexContext) throws Exception;
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean postProcess(final IndexContext<?> context) throws Exception {
+		logger.info("Post process : ");
+		return Boolean.TRUE;
+	}
 
 	/**
 	 * This is a convenience method for the implementing classes to call to announce to the cluster that the action is started.

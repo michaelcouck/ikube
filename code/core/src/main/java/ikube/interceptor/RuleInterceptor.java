@@ -1,9 +1,10 @@
-package ikube.action.rule;
+package ikube.interceptor;
 
 import ikube.IConstants;
 import ikube.action.IAction;
 import ikube.action.Index;
 import ikube.action.Open;
+import ikube.action.rule.IRule;
 import ikube.cluster.IClusterManager;
 import ikube.model.IndexContext;
 import ikube.toolkit.ThreadUtilities;

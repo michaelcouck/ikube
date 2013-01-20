@@ -64,6 +64,8 @@ public class IndexContext<T> extends Indexable<T> implements Comparable<IndexCon
 	/** This analyzer will be used to index the data, and indeed to do the searching. */
 	@Transient
 	private transient volatile Analyzer analyzer;
+	@Transient
+	private transient volatile List<Long> hashes;
 
 	/** The maximum age of the index defined in minutes. */
 	@Column
@@ -336,6 +338,14 @@ public class IndexContext<T> extends Indexable<T> implements Comparable<IndexCon
 
 	public void setAnalyzer(Analyzer analyzer) {
 		this.analyzer = analyzer;
+	}
+
+	public List<Long> getHashes() {
+		return hashes;
+	}
+
+	public void setHashes(List<Long> hashes) {
+		this.hashes = hashes;
 	}
 
 	public List<Snapshot> getSnapshots() {

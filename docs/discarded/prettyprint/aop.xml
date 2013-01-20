@@ -11,6 +11,6 @@
 
 	<aspects>
 		<!-- <aspect name="ikube.action.rule.RuleInterceptor" /> -->
-		<aspect name="ikube.index.handler.StrategyInterceptor" />
+		<!-- <aspect name="ikube.index.handler.StrategyInterceptor" /> -->
 	</aspects>
 </aspectj>

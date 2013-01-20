@@ -1,4 +1,4 @@
-package ikube.action.rule;
+package ikube.interceptor;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -8,6 +8,12 @@ import static org.mockito.Mockito.when;
 import ikube.ATest;
 import ikube.action.Close;
 import ikube.action.IAction;
+import ikube.action.rule.AreIndexesCreated;
+import ikube.action.rule.AreSearchablesInitialised;
+import ikube.action.rule.AreUnopenedIndexes;
+import ikube.action.rule.IRule;
+import ikube.action.rule.IsIndexCurrent;
+import ikube.action.rule.IsMultiSearcherInitialised;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.mock.ClusterManagerMock;
 import ikube.model.IndexContext;

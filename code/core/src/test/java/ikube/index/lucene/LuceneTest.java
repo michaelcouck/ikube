@@ -234,7 +234,7 @@ public class LuceneTest extends ATest {
 		printIndex(indexReader);
 
 		IndexSearcher indexSearcher = new IndexSearcher(indexReader);
-		TermQuery numberQuery = new TermQuery(new Term(IConstants.CONTENTS, NumericUtils.longToPrefixCoded(123456789L)));
+		TermQuery numberQuery = new TermQuery(new Term(IConstants.CONTENTS, NumericUtils.doubleToPrefixCoded(123456789L)));
 		TopDocs topDocs = indexSearcher.search(numberQuery, 100);
 		logger.info("Top docs : " + topDocs);
 		for (final ScoreDoc scoreDoc : topDocs.scoreDocs) {

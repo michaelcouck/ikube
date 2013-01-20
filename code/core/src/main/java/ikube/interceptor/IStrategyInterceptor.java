@@ -1,4 +1,4 @@
-package ikube.index.handler;
+package ikube.interceptor;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 
@@ -12,6 +12,6 @@ public interface IStrategyInterceptor {
 	String AROUND_EXPRESSION = "execution(* ikube.index.handler.filesystem.IndexableFilesystemHandler.handleFile(..))";
 	String POINTCUT_EXPRESSION = "execution(* ikube.index.handler.filesystem.IndexableFilesystemHandler.handleFile(..))";
 
-	Object aroundProcess(final ProceedingJoinPoint call) throws Throwable;
+	Object aroundProcess(final ProceedingJoinPoint proceedingJoinPoint) throws Throwable;
 
 }

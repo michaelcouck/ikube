@@ -29,6 +29,7 @@ import org.apache.lucene.search.MultiSearcher;
 import org.apache.lucene.search.Searchable;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -36,6 +37,7 @@ import org.junit.Test;
  * @since 05.01.12
  * @version 01.00
  */
+@Ignore
 @SuppressWarnings("deprecation")
 public class IndexDeltaIntegration extends Integration {
 

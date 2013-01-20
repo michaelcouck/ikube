@@ -7,6 +7,7 @@ import ikube.model.IndexContext;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -160,13 +161,13 @@ public final class ApplicationContextManager implements ApplicationContextAware 
 	 * @param configFiles the locations of the configuration files
 	 * @return the merged application context for all the configuration files
 	 */
-	public static synchronized ApplicationContext getApplicationContextFilesystem(final String configLocation) {
+	public static synchronized ApplicationContext getApplicationContextFilesystem(final String... configLocations) {
 		try {
 			if (APPLICATION_CONTEXT == null) {
-				LOGGER.info("Loading the application context with configuration : " + configLocation);
-				APPLICATION_CONTEXT = new FileSystemXmlApplicationContext(configLocation);
+				LOGGER.info("Loading the application context with configuration : " + Arrays.deepToString(configLocations));
+				APPLICATION_CONTEXT = new FileSystemXmlApplicationContext(configLocations);
 				((AbstractApplicationContext) APPLICATION_CONTEXT).registerShutdownHook();
-				LOGGER.info("Loaded the application context with configuration : " + configLocation);
+				LOGGER.info("Loaded the application context with configuration : " + Arrays.deepToString(configLocations));
 			}
 			return APPLICATION_CONTEXT;
 		} finally {
@@ -180,13 +181,13 @@ public final class ApplicationContextManager implements ApplicationContextAware 
 	 * @param configLocation the locations of the configuration files
 	 * @return the merged application context for all the configuration files
 	 */
-	public static synchronized ApplicationContext getApplicationContext(final String configLocation) {
+	public static synchronized ApplicationContext getApplicationContext(final String... configLocations) {
 		try {
 			if (APPLICATION_CONTEXT == null) {
-				LOGGER.info("Loading the application context with configurations : " + configLocation);
-				APPLICATION_CONTEXT = new ClassPathXmlApplicationContext(configLocation);
+				LOGGER.info("Loading the application context with configurations : " + Arrays.deepToString(configLocations));
+				APPLICATION_CONTEXT = new ClassPathXmlApplicationContext(configLocations);
 				((AbstractApplicationContext) APPLICATION_CONTEXT).registerShutdownHook();
-				LOGGER.info("Loaded the application context with configurations : " + configLocation);
+				LOGGER.info("Loaded the application context with configurations : " + Arrays.deepToString(configLocations));
 			}
 			return APPLICATION_CONTEXT;
 		} finally {
@@ -217,10 +218,10 @@ public final class ApplicationContextManager implements ApplicationContextAware 
 		} else {
 			LOGGER.info("Application context already loaded : " + APPLICATION_CONTEXT);
 		}
-		registerIndexContexts(APPLICATION_CONTEXT);
+		// registerIndexContexts(APPLICATION_CONTEXT);
 	}
 
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({ "rawtypes", "unused" })
 	private void registerIndexContexts(final ApplicationContext applicationContext) {
 		DefaultListableBeanFactory defaultListableBeanFactory = null;
 		if (AbstractRefreshableApplicationContext.class.isAssignableFrom(APPLICATION_CONTEXT.getClass())) {

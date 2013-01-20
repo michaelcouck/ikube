@@ -28,7 +28,7 @@ public interface IAction<E, F> {
 	String getRuleExpression();
 
 	/**
-	 * Sets the rules that are 
+	 * Sets the rules that are
 	 * 
 	 * @param rules
 	 */
@@ -42,17 +42,19 @@ public interface IAction<E, F> {
 	 */
 	List<IRule<E>> getRules();
 
+	boolean preProcess(E context) throws Exception;
+
 	/**
 	 * Executes the action on the index context. The generic parameter E is the index context and the return value is typically a boolean
 	 * indicating that the action executed completely or not.
 	 * 
-	 * @param context
-	 *            the index context
+	 * @param context the index context
 	 * @return whether the action completed the logic successfully
-	 * @throws Exception
-	 *             any exception during the action. This should be propagated up the stack to the caller, which is generally the
-	 *             {@link IndexEngine}
+	 * @throws Exception any exception during the action. This should be propagated up the stack to the caller, which is generally the
+	 *         {@link IndexEngine}
 	 */
 	F execute(E context) throws Exception;
+
+	boolean postProcess(E context) throws Exception;
 
 }

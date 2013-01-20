@@ -1,8 +1,9 @@
-package ikube.index.handler;
+package ikube.interceptor;
 
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import ikube.ATest;
+import ikube.index.handler.IStrategy;
 import ikube.model.Indexable;
 
 import java.util.Arrays;

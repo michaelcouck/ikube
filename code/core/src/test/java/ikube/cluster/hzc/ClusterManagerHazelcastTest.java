@@ -9,7 +9,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import ikube.ATest;
 import ikube.IConstants;
-import ikube.cluster.listener.hzc.IndexContextListener;
 import ikube.cluster.listener.hzc.StartListener;
 import ikube.cluster.listener.hzc.StopListener;
 import ikube.database.IDataBase;
@@ -82,8 +81,6 @@ public class ClusterManagerHazelcastTest extends ATest {
 	private StartListener startListener;
 	@Cascading
 	private StopListener stopListener;
-	@Cascading
-	private IndexContextListener indexContextListener;
 
 	private ClusterManagerHazelcast clusterManagerHazelcast;
 
@@ -100,8 +97,8 @@ public class ClusterManagerHazelcastTest extends ATest {
 
 		server = mock(Server.class);
 		entry = mock(Map.Entry.class);
-//		startListener = Mockito.mock(StartListener.class);
-//		stopListener = Mockito.mock(StopListener.class);
+		// startListener = Mockito.mock(StartListener.class);
+		// stopListener = Mockito.mock(StopListener.class);
 		entrySet = new HashSet<Map.Entry<String, Server>>();
 
 		when(server.isWorking()).thenReturn(false);
@@ -239,7 +236,7 @@ public class ClusterManagerHazelcastTest extends ATest {
 		Mockit.tearDownMocks();
 		Deencapsulation.setField(clusterManagerHazelcast, "startListener", new StartListener());
 		Deencapsulation.setField(clusterManagerHazelcast, "stopListener", new StopListener());
-		Deencapsulation.setField(clusterManagerHazelcast, "indexContextListener", new IndexContextListener());
+		// Deencapsulation.setField(clusterManagerHazelcast, "indexContextListener", new IndexContextListener());
 		new ThreadUtilities().initialize();
 		clusterManagerHazelcast.initialize();
 
@@ -303,7 +300,7 @@ public class ClusterManagerHazelcastTest extends ATest {
 		Deencapsulation.setField(clusterManagerHazelcast, monitorService);
 		Deencapsulation.setField(clusterManagerHazelcast, startListener);
 		Deencapsulation.setField(clusterManagerHazelcast, stopListener);
-		Deencapsulation.setField(clusterManagerHazelcast, indexContextListener);
+		// Deencapsulation.setField(clusterManagerHazelcast, indexContextListener);
 		clusterManagerHazelcast.initialize();
 	}
 

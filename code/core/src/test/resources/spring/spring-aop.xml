@@ -69,14 +69,14 @@
 		<aop:aspect ref="ikube.interceptor.IRuleInterceptor">
 			<aop:around method="decide" pointcut="execution(* ikube.action.*.execute(..))"  />
 		</aop:aspect>
-		<aop:aspect ref="ikube.interceptor.IStrategyInterceptor">
-			<aop:around method="aroundProcess" pointcut="execution(* ikube.index.handler.filesystem.*.handleFile(..))"  />
-		</aop:aspect>
 		<aop:aspect ref="ikube.interceptor.IActionInterceptor">
 			<aop:around method="preProcess" pointcut="execution(* ikube.action.*.preProcess(..))"  />
 		</aop:aspect>
 		<aop:aspect ref="ikube.interceptor.IActionInterceptor">
 			<aop:around method="postProcess" pointcut="execution(* ikube.action.*.postProcess(..))"  />
+		</aop:aspect>
+		<aop:aspect ref="ikube.interceptor.IStrategyInterceptor">
+			<aop:around method="aroundProcess" pointcut="execution(* ikube.index.handler.filesystem.*.handleFile(..))"  />
 		</aop:aspect>
 	</aop:config>
 	
