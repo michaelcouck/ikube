@@ -11,32 +11,11 @@ package ikube.index.handler;
 public interface IStrategy /* extends Serializable */{
 
 	/**
-	 * This method will perform pre-processing logic, and return a true or false result, defining whether the caller should proceed with
-	 * it's logic or not. This response can be ignored of course, or taken as an advice.
-	 * 
-	 * @param parameters
-	 *            the parameters that this strategy needs to perform it's logic. The caller then needs to know this
-	 * @return whether the logic of this strategy indicates that the processing of this document should continue
-	 */
-	boolean preProcess(final Object... parameters) throws Exception;
-
-	/**
 	 * This method will be called around strategic methods in the handlers signifying if the resource should be processed or not.
 	 * 
-	 * @param parameters
-	 *            the parameters that are passed to the handler method, i.e. the join point parameters
+	 * @param parameters the parameters that are passed to the handler method, i.e. the join point parameters
 	 * @return whether the processing should continue on this resource
 	 */
 	boolean aroundProcess(final Object... parameters) throws Exception;
-
-	/**
-	 * This method will post process the resource, and potentially return a false result indicating to the caller that the resource was not
-	 * suitable. The caller can choose to ignore this result.
-	 * 
-	 * @param parameters
-	 *            the parameters that this strategy needs to perform it's logic. The caller then needs to know this
-	 * @return whether the logic of this strategy indicates that the processing of this document should continue
-	 */
-	boolean postProcess(final Object... parameters) throws Exception;
 
 }

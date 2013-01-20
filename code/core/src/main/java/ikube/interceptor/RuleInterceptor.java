@@ -7,10 +7,8 @@ import ikube.action.Open;
 import ikube.action.rule.IRule;
 import ikube.cluster.IClusterManager;
 import ikube.model.IndexContext;
-import ikube.toolkit.ThreadUtilities;
 
 import java.util.List;
-import java.util.concurrent.Future;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.nfunk.jep.JEP;
@@ -56,6 +54,7 @@ public class RuleInterceptor implements IRuleInterceptor {
 				LOGGER.warn("Can't intercept non action class, proceeding : " + target);
 				proceed = Boolean.TRUE;
 			} else if (!clusterManager.lock(IConstants.IKUBE)) {
+				// LOGGER.info("Couldn't get cluster lock : " + target + ", " + proceedingJoinPoint.getSignature());
 				proceed = Boolean.FALSE;
 			} else {
 				// Find the index context
@@ -67,6 +66,7 @@ public class RuleInterceptor implements IRuleInterceptor {
 					proceed = evaluateRules(indexContext, action);
 				}
 			}
+			// LOGGER.info("Action intercepted : " + target);
 			if (proceed) {
 				proceed(indexContext, proceedingJoinPoint);
 			}
@@ -144,29 +144,13 @@ public class RuleInterceptor implements IRuleInterceptor {
 	 * action is started in a separate thread because we don't want a queue of actions building up.
 	 * 
 	 * @param proceedingJoinPoint the intercepted action join point
+	 * @throws Throwable
 	 */
-	protected synchronized void proceed(final IndexContext<?> indexContext, final ProceedingJoinPoint proceedingJoinPoint) {
+	protected synchronized void proceed(final IndexContext<?> indexContext, final ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
 		try {
-			// We set the working flag in the action within the cluster lock when setting to true
-			Runnable runnable = new Runnable() {
-				public void run() {
-					try {
-						Object returnValue = proceedingJoinPoint.proceed();
-						LOGGER.debug("Returned from join point : " + returnValue);
-					} catch (Throwable e) {
-						LOGGER.error("Exception proceeding on join point : " + proceedingJoinPoint, e);
-					} finally {
-						if (LOGGER.isDebugEnabled()) {
-							Object[] objects = new Object[] { proceedingJoinPoint, indexContext.getIndexName() };
-							LOGGER.debug("Action finished : {} {}", objects);
-						}
-					}
-				}
-			};
-			Future<?> future = ThreadUtilities.submit(runnable);
-			// We'll wait a few seconds for this action, perhaps it is a fast one
-			ThreadUtilities.waitForFuture(future, 3);
-			LOGGER.debug("Finished waiting for future : {} ", future);
+			LOGGER.info("Proceeding on method : " + proceedingJoinPoint.getSignature());
+			Object returnValue = proceedingJoinPoint.proceed(proceedingJoinPoint.getArgs());
+			LOGGER.info("Returned from join point : " + returnValue + ", " + proceedingJoinPoint.getSignature());
 		} finally {
 			notifyAll();
 		}

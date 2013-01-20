@@ -26,7 +26,7 @@ public class Reset extends Action<IndexContext<?>, Boolean> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	synchronized boolean executeInternal(final IndexContext<?> indexContext) {
+	synchronized boolean internalExecute(final IndexContext<?> indexContext) {
 		ikube.model.Action action = null;
 		try {
 			action = start(indexContext.getIndexName(), "");

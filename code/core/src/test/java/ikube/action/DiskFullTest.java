@@ -46,7 +46,7 @@ public class DiskFullTest extends ATest {
 	public void before() throws Exception {
 		diskFull = Mockito.mock(DiskFull.class);
 		Mockito.when(diskFull.execute(Mockito.any(IndexContext.class))).thenCallRealMethod();
-		Mockito.when(diskFull.executeInternal(Mockito.any(IndexContext.class))).thenCallRealMethod();
+		Mockito.when(diskFull.internalExecute(Mockito.any(IndexContext.class))).thenCallRealMethod();
 		Deencapsulation.setField(diskFull, logger);
 		Deencapsulation.setField(diskFull, clusterManager);
 		Deencapsulation.setField(diskFull, Mockito.mock(ListenerManager.class));

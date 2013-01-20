@@ -20,23 +20,43 @@ import org.apache.lucene.index.IndexWriter;
  * @since 21.11.10
  * @version 01.00
  */
-public class Index extends AIndex {
+public class Index extends Action<IndexContext<?>, Boolean> {
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean preExecute(final IndexContext<?> indexContext) throws Exception {
+		logger.info("Pre process action : " + this.getClass());
+		Server server = clusterManager.getServer();
+		long startTime = System.currentTimeMillis();
+		// Start the indexing for this server
+		IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, startTime, server.getAddress());
+		IndexWriter[] indexWriters = new IndexWriter[] { indexWriter };
+		indexContext.setIndexWriters(indexWriters);
+		return Boolean.TRUE;
+	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	boolean executeInternal(final IndexContext<?> indexContext) throws Exception {
-		Server server = clusterManager.getServer();
+	boolean internalExecute(final IndexContext<?> indexContext) throws Exception {
 		List<Indexable<?>> indexables = indexContext.getIndexables();
-		long startTime = System.currentTimeMillis();
-		// Start the indexing for this server
-		IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, startTime, server.getAddress());
-		IndexWriter[] indexWriters = new IndexWriter[] { indexWriter };
-		indexContext.setIndexWriters(indexWriters);
 		Iterator<Indexable<?>> iterator = new ArrayList(indexables).iterator();
 		executeIndexables(indexContext, iterator);
+		return Boolean.TRUE;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean postExecute(final IndexContext<?> indexContext) throws Exception {
+		logger.info("Post process action : " + this.getClass());
+		IndexManager.closeIndexWriters(indexContext);
+		indexContext.setIndexWriters();
 		return Boolean.TRUE;
 	}
 

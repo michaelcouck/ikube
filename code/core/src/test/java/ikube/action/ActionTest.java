@@ -33,7 +33,7 @@ public class ActionTest extends ATest {
 			}
 
 			@Override
-			public boolean executeInternal(IndexContext<?> indexContext) throws Exception {
+			public boolean internalExecute(IndexContext<?> indexContext) throws Exception {
 				return false;
 			}
 		};

@@ -42,7 +42,7 @@ public interface IAction<E, F> {
 	 */
 	List<IRule<E>> getRules();
 
-	boolean preProcess(E context) throws Exception;
+	boolean preExecute(final E indexContext) throws Exception;
 
 	/**
 	 * Executes the action on the index context. The generic parameter E is the index context and the return value is typically a boolean
@@ -53,8 +53,8 @@ public interface IAction<E, F> {
 	 * @throws Exception any exception during the action. This should be propagated up the stack to the caller, which is generally the
 	 *         {@link IndexEngine}
 	 */
-	F execute(E context) throws Exception;
+	F execute(final E indexContext) throws Exception;
 
-	boolean postProcess(E context) throws Exception;
+	boolean postExecute(final E indexContext) throws Exception;
 
 }

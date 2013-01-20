@@ -19,8 +19,7 @@ public abstract class AStrategy implements IStrategy {
 	/**
 	 * Constructor takes the next strategy, could be null.
 	 * 
-	 * @param next
-	 *            the chained strategy to execute
+	 * @param next the chained strategy to execute
 	 */
 	public AStrategy(final IStrategy nextStrategy) {
 		this.nextStrategy = nextStrategy;
@@ -30,31 +29,9 @@ public abstract class AStrategy implements IStrategy {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean preProcess(final Object... parameters) throws Exception {
-		if (nextStrategy != null) {
-			return nextStrategy.preProcess(parameters);
-		}
-		return Boolean.TRUE;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	public boolean aroundProcess(final Object... parameters) throws Exception {
 		if (nextStrategy != null) {
-			return nextStrategy.postProcess(parameters);
-		}
-		return Boolean.TRUE;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean postProcess(final Object... parameters) throws Exception {
-		if (nextStrategy != null) {
-			return nextStrategy.postProcess(parameters);
+			return nextStrategy.aroundProcess(parameters);
 		}
 		return Boolean.TRUE;
 	}

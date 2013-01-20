@@ -32,13 +32,13 @@ public class StrategyInterceptorTest extends ATest {
 		ProceedingJoinPoint proceedingJoinPoint = Mockito.mock(ProceedingJoinPoint.class);
 		Indexable indexable = Mockito.mock(Indexable.class);
 		IStrategy strategy = Mockito.mock(IStrategy.class);
-		Mockito.when(strategy.preProcess(Mockito.any())).thenReturn(Boolean.TRUE);
+		Mockito.when(strategy.aroundProcess(Mockito.any())).thenReturn(Boolean.TRUE);
 		Mockito.when(indexable.getStrategies()).thenReturn(Arrays.asList(strategy));
 		Object[] args = new Object[] { indexable };
 		Mockito.when(proceedingJoinPoint.getArgs()).thenReturn(args);
 		strategyInterceptor.aroundProcess(proceedingJoinPoint);
 
-		Mockito.verify(strategy, Mockito.atLeastOnce()).preProcess(Mockito.any());
+		Mockito.verify(strategy, Mockito.atLeastOnce()).aroundProcess(Mockito.any());
 		Mockito.verify(proceedingJoinPoint, Mockito.atLeastOnce()).proceed((Object[]) Mockito.any());
 
 		Mockito.when(proceedingJoinPoint.proceed((Object[]) Mockito.any())).thenReturn(Boolean.TRUE);
@@ -46,7 +46,7 @@ public class StrategyInterceptorTest extends ATest {
 		assertTrue(Boolean.TRUE.equals(result));
 
 		IStrategy strategyFail = Mockito.mock(IStrategy.class);
-		Mockito.when(strategyFail.preProcess(Mockito.any())).thenReturn(Boolean.FALSE);
+		Mockito.when(strategyFail.aroundProcess(Mockito.any())).thenReturn(Boolean.FALSE);
 		Mockito.when(indexable.getStrategies()).thenReturn(Arrays.asList(strategy, strategyFail));
 
 		result = strategyInterceptor.aroundProcess(proceedingJoinPoint);

@@ -35,23 +35,24 @@ public class DeltaIndexableFilesystemStrategy extends AStrategy {
 	 */
 	@Override
 	public boolean aroundProcess(final Object... parameters) throws Exception {
-		boolean mustProceed = Boolean.FALSE;
-		// Check that the file is changed of doesn't exist, if changed or doesn't exist then process the
-		// method, add the resource to the file system file as a reference against the index
-		IndexContext<?> indexContext = (IndexContext<?>) parameters[0];
-		java.io.File file = (java.io.File) parameters[2];
-		String path = file.getAbsolutePath();
-		String length = Long.toString(file.length());
-		String lastModified = Long.toString(file.lastModified());
-		Long identifier = HashUtilities.hash(path, length, lastModified);
-		int index = Collections.binarySearch(indexContext.getHashes(), identifier);
-		if (index < 0) {
-			mustProceed = Boolean.TRUE;
-			LOGGER.info("Didn't find key for, proceeding with file : " + identifier + ", " + length + ", " + lastModified + ", " + path);
-		} else {
-			// Remove the key because at the end of processing we will delete
-			// all the documents in the index that are still in the hash list
-			indexContext.getHashes().remove(index);
+		boolean mustProceed = Boolean.TRUE;
+		if (parameters != null && parameters.length == 3) {
+			// Check that the file is changed of doesn't exist, if changed or doesn't exist then process the
+			// method, add the resource to the file system file as a reference against the index
+			IndexContext<?> indexContext = (IndexContext<?>) parameters[0];
+			java.io.File file = (java.io.File) parameters[2];
+			String path = file.getAbsolutePath();
+			String length = Long.toString(file.length());
+			String lastModified = Long.toString(file.lastModified());
+			Long identifier = HashUtilities.hash(path, length, lastModified);
+			int index = Collections.binarySearch(indexContext.getHashes(), identifier);
+			LOGGER.info("Key for, proceeding with file : " + identifier + ", " + length + ", " + lastModified + ", " + path);
+			if (index >= 0) {
+				mustProceed = Boolean.FALSE;
+				// Remove the key because at the end of processing we will delete
+				// all the documents in the index that are still in the hash list
+				indexContext.getHashes().remove(index);
+			}
 		}
 		return mustProceed && super.aroundProcess(parameters);
 	}

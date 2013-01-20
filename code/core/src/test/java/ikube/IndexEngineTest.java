@@ -13,6 +13,7 @@ import ikube.mock.ApplicationContextManagerMock;
 import ikube.model.IndexContext;
 import ikube.service.IMonitorService;
 import ikube.toolkit.ApplicationContextManager;
+import ikube.toolkit.ThreadUtilities;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -46,6 +47,7 @@ public class IndexEngineTest extends ATest {
 	@Before
 	@SuppressWarnings("rawtypes")
 	public void before() {
+		new ThreadUtilities().initialize();
 		indexEngine = new IndexEngine();
 		actions = new ArrayList<IAction<IndexContext<?>, Boolean>>();
 
@@ -66,6 +68,7 @@ public class IndexEngineTest extends ATest {
 
 	@After
 	public void after() {
+		new ThreadUtilities().destroy();
 		Mockit.tearDownMocks(ApplicationContextManager.class);
 	}
 
@@ -74,12 +77,15 @@ public class IndexEngineTest extends ATest {
 		Event event = new Event();
 		event.setTimestamp(System.currentTimeMillis());
 		event.setType(Event.TIMER);
+
 		indexEngine.handleNotification(event);
+
 		verify(index, atLeast(1)).execute(any(IndexContext.class));
 		verify(index, atMost(1)).execute(any(IndexContext.class));
 
 		when(server.isWorking()).thenReturn(Boolean.TRUE);
 		indexEngine.handleNotification(event);
+
 		verify(index, atLeast(1)).execute(any(IndexContext.class));
 		verify(index, atMost(2)).execute(any(IndexContext.class));
 	}

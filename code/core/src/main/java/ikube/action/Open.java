@@ -39,7 +39,7 @@ public class Open extends Action<IndexContext<?>, Boolean> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean executeInternal(final IndexContext<?> indexContext) {
+	public boolean internalExecute(final IndexContext<?> indexContext) {
 		boolean succeeded = Boolean.FALSE;
 		ikube.model.Action action = null;
 		try {

@@ -30,23 +30,17 @@ public class AddFileToIndexableColumnStrategy extends AStrategy {
 
 	@Override
 	@SuppressWarnings("null")
-	public boolean preProcess(final Object... parameters) throws Exception {
+	public boolean aroundProcess(final Object... parameters) throws Exception {
 		IndexableColumn indexableColumn = null;
 		Object content = indexableColumn.getContent();
 		if (content != null && String.class.isAssignableFrom(content.getClass())) {
 			try {
 				addFileContentToColumnContent(indexableColumn, content.toString());
 			} catch (Exception e) {
-				System.out.println("Error processing file : " + content);
-				e.printStackTrace();
+				throw new RuntimeException(e);
 			}
 		}
-		return super.preProcess(parameters);
-	}
-
-	@Override
-	public boolean postProcess(final Object... parameters) throws Exception {
-		return super.postProcess(parameters);
+		return super.aroundProcess(parameters);
 	}
 
 	protected void addFileContentToColumnContent(final IndexableColumn indexableColumn, final String filePath) throws Exception {

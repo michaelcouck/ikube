@@ -37,6 +37,11 @@ public class IndexManagerMock {
 		return LATEST_INDEX_DIRECTORY;
 	}
 
+	@Mock()
+	public static synchronized IndexWriter[] openIndexWriterDelta(final IndexContext<?> indexContext) throws Exception {
+		return new IndexWriter[] { INDEX_WRITER };
+	}
+
 	public static void setLatestIndexDirectory(File latestIndexDirectory) {
 		LATEST_INDEX_DIRECTORY = latestIndexDirectory;
 	}

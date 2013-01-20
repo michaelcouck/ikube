@@ -18,7 +18,7 @@ public class Copy<E, F> extends Action<IndexContext<?>, Boolean> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean executeInternal(final IndexContext<?> indexContext) {
+	boolean internalExecute(final IndexContext<?> indexContext) {
 		ikube.model.Action action = null;
 		try {
 			action = start(indexContext.getIndexName(), "");

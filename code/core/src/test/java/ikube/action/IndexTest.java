@@ -61,7 +61,7 @@ public class IndexTest extends ATest {
 		when(action.getStartTime()).thenReturn(new Timestamp(System.currentTimeMillis()));
 		when(index.getAction(any(Server.class), anyLong())).thenReturn(action);
 		when(index.execute(any(IndexContext.class))).thenCallRealMethod();
-		when(index.executeInternal(any(IndexContext.class))).thenCallRealMethod();
+		when(index.internalExecute(any(IndexContext.class))).thenCallRealMethod();
 		doAnswer(new Answer<Object>() {
 			@Override
 			public Object answer(InvocationOnMock invocation) throws Throwable {

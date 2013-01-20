@@ -25,6 +25,7 @@
 	</description>
 	
 	<!-- <context:load-time-weaver aspectj-weaving="on" /> -->
+	<aop:config proxy-target-class="true" />
 	<aop:aspectj-autoproxy proxy-target-class="true" />
 	
 	<!--
@@ -60,23 +61,23 @@
 		the preProcess will create an index of the resources in the index that will be used to ignore resources that have
 		not become outdated and to re-index resources that are out of date. 
 	 -->
-	<bean 
+	<!-- <bean 
 		id="ikube.interceptor.IActionInterceptor" 
-		class="ikube.interceptor.ActionInterceptor" />
+		class="ikube.interceptor.ActionInterceptor" /> -->
 	
 	<!-- The aop point cuts for the interceptors. -->
 	<aop:config proxy-target-class="true">
 		<aop:aspect ref="ikube.interceptor.IRuleInterceptor">
 			<aop:around method="decide" pointcut="execution(* ikube.action.*.execute(..))"  />
 		</aop:aspect>
+		<!-- <aop:aspect ref="ikube.interceptor.IActionInterceptor">
+			<aop:around method="preProcess" pointcut="execution(* ikube.action.*.preProcess*(..))"  />
+		</aop:aspect>
+		<aop:aspect ref="ikube.interceptor.IActionInterceptor">
+			<aop:around method="postProcess" pointcut="execution(* ikube.action.*.postProcess*(..))"  />
+		</aop:aspect> -->
 		<aop:aspect ref="ikube.interceptor.IStrategyInterceptor">
 			<aop:around method="aroundProcess" pointcut="execution(* ikube.index.handler.filesystem.*.handleFile(..))"  />
-		</aop:aspect>
-		<aop:aspect ref="ikube.interceptor.IActionInterceptor">
-			<aop:around method="preProcess" pointcut="execution(* ikube.action.*.preProcess(..))"  />
-		</aop:aspect>
-		<aop:aspect ref="ikube.interceptor.IActionInterceptor">
-			<aop:around method="postProcess" pointcut="execution(* ikube.action.*.postProcess(..))"  />
 		</aop:aspect>
 	</aop:config>
 	

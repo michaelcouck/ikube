@@ -127,7 +127,7 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 				}
 			}
 		}
-		// And noow the files
+		// And now the files
 		if (file.isDirectory()) {
 			for (File innerFile : file.listFiles()) {
 				handleFile(indexContext, indexableFileSystem, innerFile);

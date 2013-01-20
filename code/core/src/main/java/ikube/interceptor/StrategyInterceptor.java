@@ -20,12 +20,10 @@ import org.slf4j.LoggerFactory;
  * @since 27.12.12
  * @version 01.00
  */
-// @Aspect
 public class StrategyInterceptor implements IStrategyInterceptor {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(StrategyInterceptor.class);
 
-	// @Pointcut(IStrategyInterceptor.POINTCUT_EXPRESSION)
 	public void pointcut() {
 		LOGGER.info("Point cut : ");
 	}
@@ -34,7 +32,6 @@ public class StrategyInterceptor implements IStrategyInterceptor {
 	 * {@inheritDoc}
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	// @Around(IStrategyInterceptor.AROUND_EXPRESSION)
 	public Object aroundProcess(final ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
 		// This method intercepts the handle... methods in the handlers. Each indexable will then define
 		// strategies. These strategies will be executed and the accumulated result will be used to verify if the
@@ -54,9 +51,9 @@ public class StrategyInterceptor implements IStrategyInterceptor {
 					LOGGER.error("Strategies : " + strategies);
 					if (strategies != null && !strategies.isEmpty()) {
 						for (final IStrategy strategy : strategies) {
-							boolean preProcess = strategy.preProcess(args);
-							LOGGER.error("Strategy : " + strategy + ", " + preProcess);
-							mustProcess &= preProcess;
+							boolean aroundProcess = strategy.aroundProcess(args);
+							LOGGER.error("Strategy : " + strategy + ", " + aroundProcess);
+							mustProcess &= aroundProcess;
 						}
 						LOGGER.error("Processing : " + mustProcess + ", " + Arrays.deepToString(args));
 						break;

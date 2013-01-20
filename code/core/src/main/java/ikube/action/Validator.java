@@ -31,7 +31,7 @@ public class Validator extends Action<IndexContext<?>, Boolean> {
 	 * There must be at least one index being generated, or one index created // and one being generated for each index context
 	 */
 	@Override
-	boolean executeInternal(final IndexContext<?> indexContext) {
+	boolean internalExecute(final IndexContext<?> indexContext) {
 		String subject = null;
 		String body = null;
 		boolean everythingInitialized = Boolean.TRUE;

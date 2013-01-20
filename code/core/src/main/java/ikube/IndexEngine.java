@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.Future;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,18 +72,24 @@ public class IndexEngine implements IIndexEngine, IListener {
 
 	@SuppressWarnings("rawtypes")
 	private void processIndexContext(final IndexContext indexContext, final Random random) {
-		LOGGER.debug("Start working : " + indexContext.getIndexName());
-		for (IAction<IndexContext<?>, Boolean> action : actions) {
+		for (final IAction<IndexContext<?>, Boolean> action : actions) {
 			try {
-				action.execute(indexContext);
-				ThreadUtilities.sleep(Math.abs(random.nextLong()) % 3000l);
-			} catch (InterruptedException e) {
-				LOGGER.warn("Sleep interrupted : " + action + ", " + e.getMessage());
+				Runnable runnable = new Runnable() {
+					public void run() {
+						try {
+							action.execute(indexContext);
+						} catch (Throwable e) {
+							LOGGER.error("Exception executing action : " + action, e);
+						}
+					}
+				};
+				Future<?> future = ThreadUtilities.submit(runnable);
+				// We'll wait a few seconds for this action, perhaps it is a fast one
+				ThreadUtilities.waitForFuture(future, 3);
 			} catch (Exception e) {
 				LOGGER.error("Exception executing action : " + action, e);
 			}
 		}
-		LOGGER.debug("Finished working : " + indexContext.getIndexName());
 	}
 
 	public void destroy() {

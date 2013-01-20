@@ -8,11 +8,13 @@ import static org.mockito.Mockito.when;
 import ikube.IConstants;
 import ikube.action.IndexDelta;
 import ikube.cluster.IClusterManager;
+import ikube.index.IndexManager;
 import ikube.index.handler.IStrategy;
 import ikube.index.handler.filesystem.IndexableFilesystemHandler;
 import ikube.index.parse.mime.MimeMapper;
 import ikube.index.parse.mime.MimeTypes;
 import ikube.interceptor.IRuleInterceptor;
+import ikube.mock.IndexManagerMock;
 import ikube.model.IndexContext;
 import ikube.model.IndexableFileSystem;
 
@@ -47,7 +49,7 @@ public class AopTest {
 
 	@Before
 	public void before() {
-		Mockit.setUpMocks();
+		Mockit.setUpMocks(IndexManagerMock.class);
 		new MimeTypes(IConstants.MIME_TYPES);
 		new MimeMapper(IConstants.MIME_MAPPING);
 		ApplicationContextManager.getApplicationContext(configLocations);
@@ -55,7 +57,7 @@ public class AopTest {
 
 	@After
 	public void after() {
-		Mockit.tearDownMocks();
+		Mockit.tearDownMocks(IndexManager.class);
 		ApplicationContextManager.closeApplicationContext();
 	}
 
@@ -68,13 +70,13 @@ public class AopTest {
 
 		indexContext.setIndexWriters(mock(IndexWriter.class));
 		IStrategy strategy = mock(IStrategy.class);
-		when(strategy.preProcess(any(IndexContext.class), any(IndexableFileSystem.class), any(File.class))).thenReturn(Boolean.TRUE);
+		when(strategy.aroundProcess(any(IndexContext.class), any(IndexableFileSystem.class), any(File.class))).thenReturn(Boolean.TRUE);
 		indexableFileSystem.setStrategies(Arrays.asList(strategy));
 
 		File file = FileUtilities.findFileRecursively(new File("."), Boolean.FALSE, "default.results.xml");
 		indexableHandler.handleFile(indexContext, indexableFileSystem, file);
 
-		verify(strategy, atLeastOnce()).preProcess(any(IndexContext.class), any(IndexableFileSystem.class), any(File.class));
+		verify(strategy, atLeastOnce()).aroundProcess(any(IndexContext.class), any(IndexableFileSystem.class), any(File.class));
 	}
 
 	@Test
@@ -86,7 +88,7 @@ public class AopTest {
 		IndexDelta indexDelta = ApplicationContextManager.getBean(IndexDelta.class);
 		IndexContext<?> indexContext = mock(IndexContext.class);
 		when(indexContext.isDelta()).thenReturn(Boolean.TRUE);
-		indexDelta.preProcess(indexContext);
+		indexDelta.preExecute(indexContext);
 
 		verify(indexContext, atLeastOnce()).setHashes(any(List.class));
 	}
