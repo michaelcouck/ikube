@@ -39,7 +39,7 @@ public interface IHandler<T extends Indexable<?>> {
 	 * 
 	 * @param indexableClass the class that this handler can handle
 	 */
-	void setIndexableClass(Class<T> indexableClass);
+	void setIndexableClass(final Class<T> indexableClass);
 
 	/**
 	 * This method executes the handler logic. The method returns a list of threads(if it is multi-threaded) that the caller must wait for.
@@ -50,7 +50,7 @@ public interface IHandler<T extends Indexable<?>> {
 	 * @return the list of threads that the caller must wait for
 	 * @throws Exception
 	 */
-	List<Future<?>> handle(IndexContext<?> indexContext, T indexable) throws Exception;
+	List<Future<?>> handle(final IndexContext<?> indexContext, final T indexable) throws Exception;
 
 	/**
 	 * This method is to add the document to the index during the processing. Typically this method will be intercepted and other logic
@@ -61,6 +61,6 @@ public interface IHandler<T extends Indexable<?>> {
 	 * @throws CorruptIndexException
 	 * @throws IOException
 	 */
-	void addDocument(IndexContext<?> indexContext, Indexable<?> indexable, Document document) throws Exception;
+	void addDocument(final IndexContext<?> indexContext, final Indexable<?> indexable, final Document document) throws Exception;
 
 }

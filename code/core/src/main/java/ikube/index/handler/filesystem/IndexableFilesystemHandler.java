@@ -73,7 +73,6 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 			Future<?> future = ThreadUtilities.submit(indexContext.getIndexName(), runnable);
 			futures.add(future);
 		}
-
 		return futures;
 	}
 
@@ -133,18 +132,8 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 				handleFile(indexContext, indexableFileSystem, innerFile);
 			}
 		} else {
-			InputStream inputStream = null;
-			try {
-				if (TFile.class.isAssignableFrom(file.getClass())) {
-					inputStream = new TFileInputStream(file);
-				} else {
-					inputStream = new FileInputStream(file);
-				}
-				Document document = new Document();
-				addDocumentToIndex(indexContext, indexableFileSystem, file, inputStream, document);
-			} finally {
-				FileUtilities.close(inputStream);
-			}
+			Document document = new Document();
+			addDocumentToIndex(indexContext, indexableFileSystem, file, document);
 		}
 	}
 
@@ -182,13 +171,21 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 	}
 
 	protected void addDocumentToIndex(final IndexContext<?> indexContext, final IndexableFileSystem indexableFileSystem, final File file,
-			final InputStream inputStream, final Document document) throws Exception {
+			final Document document) throws Exception {
+		InputStream inputStream = null;
 		ByteArrayInputStream byteInputStream = null;
 		ByteArrayOutputStream byteOutputStream = null;
 		try {
 			int length = file.length() > 0 && file.length() < indexableFileSystem.getMaxReadLength() ? (int) file.length()
 					: (int) indexableFileSystem.getMaxReadLength();
 			byte[] byteBuffer = new byte[length];
+
+			if (TFile.class.isAssignableFrom(file.getClass())) {
+				inputStream = new TFileInputStream(file);
+			} else {
+				inputStream = new FileInputStream(file);
+			}
+
 			int read = inputStream.read(byteBuffer, 0, byteBuffer.length);
 
 			byteInputStream = new ByteArrayInputStream(byteBuffer, 0, read);
@@ -221,6 +218,7 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 
 			Thread.sleep(indexContext.getThrottle());
 		} finally {
+			FileUtilities.close(inputStream);
 			FileUtilities.close(byteInputStream);
 			FileUtilities.close(byteOutputStream);
 		}
