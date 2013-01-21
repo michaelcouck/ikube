@@ -1,8 +1,5 @@
 package ikube.web.service;
 
-import ikube.IConstants;
-import ikube.toolkit.SerializationUtilities;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -194,7 +191,7 @@ public class SearcherXml extends Searcher {
 	 */
 	@GET
 	@Override
-	@Path(SearcherJson.MULTI_ADVANCED_ALL)
+	@Path(SearcherXml.MULTI_ADVANCED_ALL)
 	@Consumes(MediaType.APPLICATION_XML)
 	public Response searchMultiAdvancedAll(@QueryParam(value = IConstants.INDEX_NAME) final String indexName,
 			@QueryParam(value = IConstants.SEARCH_STRINGS) final String searchStrings,
@@ -212,7 +209,7 @@ public class SearcherXml extends Searcher {
 	 */
 	@GET
 	@Override
-	@Path(SearcherJson.NUMERIC_ALL)
+	@Path(SearcherXml.NUMERIC_ALL)
 	@Consumes(MediaType.APPLICATION_XML)
 	public Response searchNumericAll(@QueryParam(value = IConstants.INDEX_NAME) final String indexName,
 			@QueryParam(value = IConstants.SEARCH_STRINGS) final String searchStrings,
@@ -230,7 +227,7 @@ public class SearcherXml extends Searcher {
 	 */
 	@GET
 	@Override
-	@Path(SearcherJson.NUMERIC_RANGE)
+	@Path(SearcherXml.NUMERIC_RANGE)
 	@Consumes(MediaType.APPLICATION_XML)
 	public Response searchNumericRange(@QueryParam(value = IConstants.INDEX_NAME) final String indexName,
 			@QueryParam(value = IConstants.SEARCH_STRINGS) final String searchStrings,
@@ -240,6 +237,28 @@ public class SearcherXml extends Searcher {
 		String[] searchStringsArray = StringUtils.split(searchStrings, SEPARATOR);
 		ArrayList<HashMap<String, String>> results = searcherService.searchNumericRange(indexName, searchStringsArray, fragment,
 				firstResult, maxResults);
+		return buildResponse().entity(SerializationUtilities.serialize(results)).build();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@GET
+	@Override
+	@Path(SearcherXml.COMPLEX)
+	@Consumes(MediaType.APPLICATION_XML)
+	public Response searchComplex(@QueryParam(value = IConstants.INDEX_NAME) final String indexName,
+			@QueryParam(value = IConstants.SEARCH_STRINGS) final String searchStrings,
+			@QueryParam(value = IConstants.SEARCH_FIELDS) final String searchFields,
+			@QueryParam(value = IConstants.FIELD_TYPES) final String typeFields,
+			@QueryParam(value = IConstants.FRAGMENT) final boolean fragment,
+			@QueryParam(value = IConstants.FIRST_RESULT) final int firstResult,
+			@QueryParam(value = IConstants.MAX_RESULTS) final int maxResults) {
+		String[] searchStringsArray = StringUtils.split(searchStrings, SEPARATOR);
+		String[] searchFieldsArray = StringUtils.split(searchFields, SEPARATOR);
+		String[] typeFieldsArray = StringUtils.split(typeFields, SEPARATOR);
+		ArrayList<HashMap<String, String>> results = searcherService.searchComplex(indexName, searchStringsArray, searchFieldsArray,
+				typeFieldsArray, fragment, firstResult, maxResults);
 		return buildResponse().entity(SerializationUtilities.serialize(results)).build();
 	}
 

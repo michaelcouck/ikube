@@ -3,13 +3,19 @@ package ikube.index.handler.filesystem;
 import ikube.IConstants;
 import ikube.index.IndexManager;
 import ikube.model.IndexContext;
+import ikube.model.Indexable;
+import ikube.model.IndexableColumn;
 import ikube.model.IndexableFileSystem;
 import ikube.model.IndexableFileSystemCsv;
 import ikube.toolkit.StringUtilities;
 import ikube.toolkit.ThreadUtilities;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
@@ -45,23 +51,28 @@ public class IndexableFilesystemCsvHandler extends IndexableFilesystemHandler {
 			// The first line is the header, i.e. the columns of the file
 			String headerLine = lineIterator.nextLine();
 			String[] columns = StringUtils.split(headerLine, indexableFileSystemCsv.getSeparator());
-			Store store = indexableFileSystem.isStored() ? Store.YES : Store.NO;
-			Index index = indexableFileSystem.isAnalyzed() ? Index.ANALYZED : Index.NOT_ANALYZED;
-			TermVector termVector = indexableFileSystem.isVectored() ? TermVector.YES : TermVector.NO;
-			char separator = indexableFileSystemCsv.getSeparator();
+
+			List<IndexableColumn> indexableColumns = getIndexableColumns(indexableFileSystemCsv, columns);
+
 			int lineNumber = 0;
-			String lineNumberFieldName = indexableFileSystemCsv.getLineNumberFieldName() != null ? indexableFileSystemCsv
-					.getLineNumberFieldName() : IConstants.ID;
+			String fileName = file.getName();
+			char separator = indexableFileSystemCsv.getSeparator();
+			String lineNumberFieldName = indexableFileSystemCsv.getLineNumberFieldName();
 			while (lineIterator.hasNext()) {
 				try {
 					String line = lineIterator.nextLine();
 					String[] values = StringUtils.split(line, separator);
-					if (columns.length != values.length) {
+					if (indexableColumns.size() != values.length) {
 						logger.warn("Columns and values different on line : " + lineNumber + ", columns : " + columns.length
 								+ ", values : " + values.length + ", data : " + Arrays.deepToString(values));
 					}
-					handleResource(indexContext, indexableFileSystemCsv, new Document(), file.getName(), lineNumber, lineNumberFieldName,
-							columns, values, separator, store, index, termVector);
+					for (int i = 0; i < values.length && i < indexableColumns.size(); i++) {
+						IndexableColumn indexableColumn = indexableColumns.get(i);
+						indexableColumn.setContent(values[i]);
+					}
+					// columns, values, separator, store, index, termVector, indexableColumns
+					handleResource(indexContext, indexableFileSystemCsv, new Document(), fileName, lineNumber, lineNumberFieldName,
+							indexableColumns);
 					ThreadUtilities.sleep(indexContext.getThrottle());
 				} catch (Exception e) {
 					logger.error("Exception processing file : " + file, e);
@@ -81,40 +92,36 @@ public class IndexableFilesystemCsvHandler extends IndexableFilesystemHandler {
 	 * {@inheritDoc}
 	 */
 	@Override
+	@SuppressWarnings("unchecked")
 	public void handleResource(final IndexContext<?> indexContext, final IndexableFileSystem indexableFileSystem, final Document document,
 			final Object... resources) {
-
-		// String fileName
-		// int lineNumber,
-		// String lineNumberFieldName,
-		// String[] columns,
-		// String[] values,
-		// char separator,
-		// Store store,
-		// Index index,
-		// TermVector termVector,
-
+		// fileName, lineNumber, lineNumberFieldName
 		String fileName = (String) resources[0];
 		int lineNumber = (Integer) resources[1];
 		String lineNumberFieldName = (String) resources[2];
-		String[] columns = (String[]) resources[3];
-		String[] values = (String[]) resources[4];
-		Store store = (Store) resources[5];
-		Index index = (Index) resources[6];
-		TermVector termVector = (TermVector) resources[7];
+		List<IndexableColumn> indexableColumns = (List<IndexableColumn>) resources[3];
 
 		String identifier = StringUtils.join(new Object[] { fileName, Integer.toString(lineNumber) }, IConstants.SPACE);
 		// Add the line number field
 		IndexManager.addStringField(lineNumberFieldName, identifier, document, Store.YES, Index.ANALYZED, TermVector.NO);
-		for (int i = 0; i < columns.length && i < values.length; i++) {
-			String value = values[i];
-			if (StringUtilities.isNumeric(value)) {
-				IndexManager.addNumericField(columns[i], value, document, store);
+
+		for (IndexableColumn indexableColumn : indexableColumns) {
+			String fieldName = indexableColumn.getFieldName();
+			String fieldValue = (String) indexableColumn.getContent();
+
+			Store store = indexableColumn.isStored() ? Store.YES : Store.NO;
+			Index index = indexableColumn.isAnalyzed() ? Index.ANALYZED : Index.NOT_ANALYZED;
+			TermVector termVector = indexableColumn.isVectored() ? TermVector.YES : TermVector.NO;
+
+			if (StringUtilities.isNumeric(fieldValue)) {
+				IndexManager.addNumericField(fieldName, fieldValue, document, store);
 			} else {
-				value = StringUtilities.strip(value, "\"");
-				IndexManager.addStringField(columns[i], value, document, store, index, termVector);
+				fieldValue = StringUtilities.strip(fieldValue, "\"");
+				IndexManager.addStringField(fieldName, fieldValue, document, store, index, termVector);
 			}
+			indexableColumn.setContent(null);
 		}
+
 		try {
 			addDocument(indexContext, indexableFileSystem, document);
 		} catch (Exception e) {
@@ -124,6 +131,51 @@ public class IndexableFilesystemCsvHandler extends IndexableFilesystemHandler {
 
 	protected synchronized boolean isExcluded(final File file, final Pattern pattern) {
 		return !file.getName().endsWith(".csv") || super.isExcluded(file, pattern);
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private List<IndexableColumn> getIndexableColumns(final Indexable<?> indexable, final String[] columns) {
+		class IndexableColumnComparator<T extends IndexableColumn> implements Comparator<IndexableColumn> {
+			@Override
+			public int compare(IndexableColumn o1, IndexableColumn o2) {
+				return o1.getFieldName().compareTo(o2.getFieldName());
+			}
+		}
+		List<Indexable<?>> indexableColumns = indexable.getChildren();
+		Comparator indexableColumnComparator = new IndexableColumnComparator();
+		Collections.sort(indexableColumns, indexableColumnComparator);
+		// Add all the columns that are not present in the configuration
+		for (final String columnName : columns) {
+			IndexableColumn indexableColumn = new IndexableColumn();
+			indexableColumn.setFieldName(columnName);
+			if (Collections.binarySearch(indexableColumns, columnName, indexableColumnComparator) < 0) {
+				// Add the column to the list
+				indexableColumn.setName(columnName);
+				indexableColumn.setAddress(Boolean.FALSE);
+				indexableColumn.setAnalyzed(Boolean.TRUE);
+				indexableColumn.setFieldName(columnName);
+				indexableColumn.setIdColumn(Boolean.FALSE);
+				indexableColumn.setNumeric(Boolean.FALSE);
+				indexableColumn.setParent(indexable);
+				indexableColumn.setStored(Boolean.TRUE);
+				indexableColumn.setStrategies(indexable.getStrategies());
+				indexableColumn.setVectored(Boolean.TRUE);
+				indexableColumns.add(indexableColumn);
+				// We need to re-sort each time there is an addition column
+				Collections.sort(indexableColumns, indexableColumnComparator);
+			}
+		}
+		// Now sort the columns in the list according to the columns in the header of the file
+		List<IndexableColumn> sortedIndexableColumns = new ArrayList<IndexableColumn>();
+		for (final String columnName : columns) {
+			for (final Indexable<?> indexableColumn : indexableColumns) {
+				if (indexableColumn.getName().equals(columnName)) {
+					sortedIndexableColumns.add((IndexableColumn) indexableColumn);
+					break;
+				}
+			}
+		}
+		return sortedIndexableColumns;
 	}
 
 }

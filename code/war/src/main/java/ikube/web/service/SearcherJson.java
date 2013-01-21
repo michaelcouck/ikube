@@ -1,7 +1,5 @@
 package ikube.web.service;
 
-import ikube.IConstants;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -226,6 +224,28 @@ public class SearcherJson extends Searcher {
 		String[] searchStringsArray = StringUtils.split(searchStrings, SEPARATOR);
 		ArrayList<HashMap<String, String>> results = searcherService.searchNumericRange(indexName, searchStringsArray, fragment,
 				firstResult, maxResults);
+		return buildResponse(results);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@GET
+	@Override
+	@Path(SearcherJson.COMPLEX)
+	@Consumes(MediaType.APPLICATION_XML)
+	public Response searchComplex(@QueryParam(value = IConstants.INDEX_NAME) final String indexName,
+			@QueryParam(value = IConstants.SEARCH_STRINGS) final String searchStrings,
+			@QueryParam(value = IConstants.SEARCH_FIELDS) final String searchFields,
+			@QueryParam(value = IConstants.FIELD_TYPES) final String typeFields,
+			@QueryParam(value = IConstants.FRAGMENT) final boolean fragment,
+			@QueryParam(value = IConstants.FIRST_RESULT) final int firstResult,
+			@QueryParam(value = IConstants.MAX_RESULTS) final int maxResults) {
+		String[] searchStringsArray = StringUtils.split(searchStrings, SEPARATOR);
+		String[] searchFieldsArray = StringUtils.split(searchFields, SEPARATOR);
+		String[] typeFieldsArray = StringUtils.split(typeFields, SEPARATOR);
+		ArrayList<HashMap<String, String>> results = searcherService.searchComplex(indexName, searchStringsArray, searchFieldsArray,
+				typeFieldsArray, fragment, firstResult, maxResults);
 		return buildResponse(results);
 	}
 

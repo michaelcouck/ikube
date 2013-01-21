@@ -2,11 +2,13 @@ package ikube.search;
 
 import ikube.IConstants;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.NumericRangeQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Searcher;
 import org.apache.lucene.search.TermQuery;
@@ -39,12 +41,21 @@ public class SearchComplex extends SearchMultiAll {
 			final String typeField = typeFields[i];
 			final String searchField = searchFields[i];
 			final String searchString = searchStrings[i];
+			if (StringUtils.isEmpty(searchString)) {
+				// Just ignore the empty strings
+				continue;
+			}
 			Query query = null;
 			if (TypeField.STRING.fieldType().equals(typeField)) {
 				query = getQueryParser(searchField).parse(searchString);
 			} else if (TypeField.NUMERIC.fieldType().equals(typeField)) {
 				Long numeric = Long.parseLong(searchField);
 				query = new TermQuery(new Term(searchField, NumericUtils.longToPrefixCoded(numeric)));
+			} else if (TypeField.RANGE.fieldType().equals(typeField)) {
+				String[] values = StringUtils.split(searchString, '-');
+				double min = Double.parseDouble(values[0]);
+				double max = Double.parseDouble(values[1]);
+				query = NumericRangeQuery.newDoubleRange(searchField, min, max, Boolean.TRUE, Boolean.TRUE);
 			}
 			booleanQuery.add(query, BooleanClause.Occur.SHOULD);
 		}

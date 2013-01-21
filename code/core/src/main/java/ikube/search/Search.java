@@ -59,8 +59,9 @@ public abstract class Search {
 
 	enum TypeField {
 
+		STRING("string"), //
 		NUMERIC("numeric"), //
-		STRING("string");
+		RANGE("range");
 
 		String fieldType;
 
@@ -117,9 +118,12 @@ public abstract class Search {
 	 * <br>
 	 * The fragments are from the current document, so calling get next document will move the document to the next on in the Hits object.
 	 * 
-	 * @param the document to get the fragments from
-	 * @param fieldName the name of the field that was searched
-	 * @param the query that generated the results
+	 * @param the
+	 *            document to get the fragments from
+	 * @param fieldName
+	 *            the name of the field that was searched
+	 * @param the
+	 *            query that generated the results
 	 * @return the best fragments of text containing the search keywords
 	 */
 	protected String getFragments(final Document document, final String fieldName, final Query query) {
@@ -145,8 +149,10 @@ public abstract class Search {
 	/**
 	 * Adds the fields to the results.
 	 * 
-	 * @param document the document to get the fields from to add to the result
-	 * @param result the result map to add the field values to
+	 * @param document
+	 *            the document to get the fields from to add to the result
+	 * @param result
+	 *            the result map to add the field values to
 	 * @throws Exception
 	 */
 	protected void addFieldsToResults(final Document document, final HashMap<String, String> result) throws Exception {
@@ -170,7 +176,8 @@ public abstract class Search {
 	/**
 	 * Sets the strings that will be searched for.
 	 * 
-	 * @param searchStrings the search strings
+	 * @param searchStrings
+	 *            the search strings
 	 */
 	public void setSearchString(final String... searchStrings) {
 		if (searchStrings != null) {
@@ -185,7 +192,8 @@ public abstract class Search {
 	/**
 	 * Sets the fields in the index that will be searched for.
 	 * 
-	 * @param searchFields the fields in the index to search through
+	 * @param searchFields
+	 *            the fields in the index to search through
 	 */
 	public void setSearchField(final String... searchFields) {
 		this.searchFields = searchFields;
@@ -194,7 +202,8 @@ public abstract class Search {
 	/**
 	 * Sets the fields that will be used to sort the results by Lucene.
 	 * 
-	 * @param sortFields the fields to sort with in the index
+	 * @param sortFields
+	 *            the fields to sort with in the index
 	 */
 	public void setSortField(final String... sortFields) {
 		this.sortFields = sortFields;
@@ -203,7 +212,8 @@ public abstract class Search {
 	/**
 	 * Sets the types of fields that will be used in the search like numeric etc.
 	 * 
-	 * @param typeFields the types of fields that map to the search strings and the field names
+	 * @param typeFields
+	 *            the types of fields that map to the search strings and the field names
 	 */
 	public void setTypeFields(final String... typeFields) {
 		this.typeFields = typeFields;
@@ -258,7 +268,8 @@ public abstract class Search {
 	/**
 	 * Does the actual search on the Lucene index.
 	 * 
-	 * @param query the query to execute against the index
+	 * @param query
+	 *            the query to execute against the index
 	 * @return the top documents from the search
 	 * @throws IOException
 	 */
@@ -267,7 +278,8 @@ public abstract class Search {
 	/**
 	 * Sets whether the fragment made of the best part of the document should be included in the search results.
 	 * 
-	 * @param fragment the flag for generating the best fragments in the results
+	 * @param fragment
+	 *            the flag for generating the best fragments in the results
 	 */
 	public void setFragment(final boolean fragment) {
 		this.fragment = fragment;
@@ -276,7 +288,8 @@ public abstract class Search {
 	/**
 	 * Sets the first result in the index.
 	 * 
-	 * @param start the first result to return from the results
+	 * @param start
+	 *            the first result to return from the results
 	 */
 	public void setFirstResult(final int start) {
 		this.firstResult = start;
@@ -285,7 +298,8 @@ public abstract class Search {
 	/**
 	 * Sets the maximum results to return.
 	 * 
-	 * @param maxResults the maximum results to return
+	 * @param maxResults
+	 *            the maximum results to return
 	 */
 	public void setMaxResults(final int maxResults) {
 		this.maxResults = maxResults;
@@ -294,24 +308,21 @@ public abstract class Search {
 	/**
 	 * Access to the query parsers for a particular field in the documents.
 	 * 
-	 * @param searchField the name of the field that needs to be searched
+	 * @param searchField
+	 *            the name of the field that needs to be searched
 	 * @return the query parser for the particular field
 	 */
 	protected QueryParser getQueryParser(final String searchField) {
-		// QueryParser queryParser = QUERY_PARSERS.get(searchField);
-		// if (queryParser == null) {
-		// queryParser = new QueryParser(IConstants.VERSION, searchField, analyzer);
-		// QUERY_PARSERS.put(searchField, queryParser);
-		// }
-		// return queryParser;
 		return new QueryParser(IConstants.VERSION, searchField, analyzer);
 	}
 
 	/**
 	 * Builds the list of results(a list of maps) from the top documents returned from Lucene.
 	 * 
-	 * @param topDocs the top documents from the Lucene search
-	 * @param query the query that was used for the query
+	 * @param topDocs
+	 *            the top documents from the Lucene search
+	 * @param query
+	 *            the query that was used for the query
 	 * @return the list of results from the search
 	 */
 	protected ArrayList<HashMap<String, String>> getResults(final TopDocs topDocs, final Query query) {
@@ -358,9 +369,12 @@ public abstract class Search {
 	/**
 	 * Adds the time it took for the search and adds the spelling corrected strings.
 	 * 
-	 * @param results the total number of results
-	 * @param totalHits the total hits
-	 * @param duration how long the search took in milliseconds
+	 * @param results
+	 *            the total number of results
+	 * @param totalHits
+	 *            the total hits
+	 * @param duration
+	 *            how long the search took in milliseconds
 	 */
 	protected void addStatistics(final ArrayList<HashMap<String, String>> results, final long totalHits, final long duration,
 			final Exception exception) {
@@ -419,7 +433,8 @@ public abstract class Search {
 	/**
 	 * This method will get all the fields in the index from the readers in the searcher and return them as a string array.
 	 * 
-	 * @param searcher the searcher to get all the fields for
+	 * @param searcher
+	 *            the searcher to get all the fields for
 	 * @return all the fields in the searcher that are searchable
 	 */
 	protected String[] getFields(final Searcher searcher) {

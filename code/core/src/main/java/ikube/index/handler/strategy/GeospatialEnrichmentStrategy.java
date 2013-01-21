@@ -71,9 +71,9 @@ public final class GeospatialEnrichmentStrategy extends AStrategy {
 				IndexableColumn indexableColumn = (IndexableColumn) child;
 				if (indexableColumn.isAddress()) {
 					Object content = indexableColumn.getContent();
-					if (indexableColumn.getName().equals(IConstants.LATITUDE)) {
+					if (indexableColumn.getName().toLowerCase().contains(IConstants.LATITUDE.toLowerCase())) {
 						latitude = Double.parseDouble(content.toString());
-					} else if (indexableColumn.getName().equals(IConstants.LONGITUDE)) {
+					} else if (indexableColumn.getName().toLowerCase().equals(IConstants.LONGITUDE.toLowerCase())) {
 						longitude = Double.parseDouble(content.toString());
 					}
 				}

@@ -23,6 +23,7 @@
 	<li rel="search-geospatial">Geospatial</li>
 	<li rel="search-numeric">Numeric</li>
 	<li rel="search-numeric-range">Numeric range</li>
+	<li rel="search-min-eco">Min Eco</li>
 	<li rel="indexes">Indexes</li>
 	<li rel="properties">Properties</li>
 	<li rel="place-holder" style="width : 150px;">&nbsp;</li>
@@ -43,6 +44,9 @@
 	</div>
 	<div id="search-numeric-range" class="tab_content">
 		<jsp:include page="/search/numeric-range.jsp" />
+	</div>
+	<div id="search-min-eco" class="tab_content">
+		<jsp:include page="/search/min-eco.jsp" />
 	</div>
 	<div id="indexes" class="tab_content">
 		<jsp:include page="/WEB-INF/jsp/indexes.jsp" />

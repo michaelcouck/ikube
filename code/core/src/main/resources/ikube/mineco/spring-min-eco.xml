@@ -61,6 +61,38 @@
 		property:maxReadLength="1000000"  
 		property:separator="," 
 		property:maxExceptions="10000"
-		property:encoding="Windows-1252" />
-
+		property:encoding="Windows-1252"
+		property:strategies-ref="min-eco-csv-files-strategies"
+		property:children-ref="min-eco-csv-files-columns" />
+	<util:list id="min-eco-csv-files-columns">
+		<ref local="min-eco-csv-latitude" />
+		<ref local="min-eco-csv-longitude" />
+	</util:list>
+	
+	<bean 
+	    id="ikube.index.handler.strategy.GeospatialEnrichmentStrategyMin"
+	    class="ikube.index.handler.strategy.GeospatialEnrichmentStrategy" />
+	<util:list id="min-eco-csv-files-strategies">
+	    <ref local="ikube.index.handler.strategy.GeospatialEnrichmentStrategy" />
+	</util:list>
+	
+	<bean
+		id="min-eco-csv-latitude"
+		class="ikube.model.IndexableColumn"
+		property:name="latitude"
+		property:fieldName="CD_LATITUDE"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}"
+		property:numeric="true" />
+	<bean
+		id="min-eco-csv-longitude"
+		class="ikube.model.IndexableColumn"
+		property:name="longitude"
+		property:fieldName="CD_LONGITUDE"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}"
+		property:numeric="true" />
+		
 </beans>

@@ -7,6 +7,7 @@ import ikube.model.IndexContext;
 import ikube.model.Search;
 import ikube.search.SearchAdvanced;
 import ikube.search.SearchAdvancedAll;
+import ikube.search.SearchComplex;
 import ikube.search.SearchMulti;
 import ikube.search.SearchMultiAll;
 import ikube.search.SearchMultiSorted;
@@ -356,13 +357,47 @@ public class SearcherService implements ISearcherService {
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	@WebMethod
+	@WebResult(name = "result")
+	public ArrayList<HashMap<String, String>> searchComplex(@WebParam(name = "indexName") final String indexName,
+			@WebParam(name = "searchStrings") final String[] searchStrings, @WebParam(name = "searchFields") final String[] searchFields,
+			@WebParam(name = "typeFields") final String[] typeFields, @WebParam(name = "fragment") final boolean fragment,
+			@WebParam(name = "firstResult") final int firstResult, @WebParam(name = "maxResults") final int maxResults) {
+		try {
+			SearchComplex searchComplex = getSearch(SearchComplex.class, indexName);
+			if (searchComplex != null) {
+				searchComplex.setFirstResult(firstResult);
+				searchComplex.setFragment(fragment);
+				searchComplex.setMaxResults(maxResults);
+				searchComplex.setSearchField(searchFields);
+				searchComplex.setSearchString(searchStrings);
+				searchComplex.setTypeFields(typeFields);
+				ArrayList<HashMap<String, String>> results = searchComplex.execute();
+				addSearchStatistics(indexName, searchStrings, results.size(), results);
+				return results;
+			}
+		} catch (Exception e) {
+			String message = Logging.getString("Exception doing search on index : ", indexName, searchStrings, searchFields, fragment,
+					firstResult, maxResults);
+			LOGGER.error(message, e);
+		}
+		return getMessageResults(indexName);
+	}
+
+	/**
 	 * This method will return an instance of the search class, based on the class in the parameter list and the index context name. For
 	 * each search there is an instance created for the searcher classes to avoid thread overlap. The instance is created using reflection
 	 * :( but is there a more elegant way?
 	 * 
-	 * @param <T> the type of class that is expected as a result
-	 * @param klass the class of the searcher
-	 * @param indexName the name of the index
+	 * @param <T>
+	 *            the type of class that is expected as a result
+	 * @param klass
+	 *            the class of the searcher
+	 * @param indexName
+	 *            the name of the index
 	 * @return the searcher with the searchable injected
 	 * @throws Exception
 	 */
@@ -407,7 +442,8 @@ public class SearcherService implements ISearcherService {
 	 * This method returns the default message if there is no searcher defined for the index context, or the index is not generated or
 	 * opened.
 	 * 
-	 * @param indexName the name of the index
+	 * @param indexName
+	 *            the name of the index
 	 * @return the message/map that will be sent to the client
 	 */
 	protected ArrayList<HashMap<String, String>> getMessageResults(final String indexName) {

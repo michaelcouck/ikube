@@ -120,6 +120,7 @@ public interface IConstants {
 	String MAX_RESULTS = "maxResults";
 
 	String SEARCH_FIELDS = "searchFields";
+	String TYPE_FIELDS = "typeFields";
 	String SEARCH_STRINGS = "searchStrings";
 	String TERM = "term";
 	String TARGET_SEARCH_URL = "targetSearchUrl";
