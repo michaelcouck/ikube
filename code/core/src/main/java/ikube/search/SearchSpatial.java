@@ -31,12 +31,11 @@ import org.apache.lucene.spatial.tier.projections.CartesianTierPlotter;
 public class SearchSpatial extends SearchMulti {
 
 	/** The distance from the origin that we will accept in the results. */
-	private transient int distance;
+	protected transient int distance;
 	/** The origin, i.e. the starting point for the distance search. */
-	private transient Coordinate coordinate;
-
+	protected transient Coordinate coordinate;
 	/** The distances from the point of origin, i.e. the input coordinate. */
-	private transient Map<Integer, Double> distances;
+	protected transient Map<Integer, Double> distances;
 
 	/**
 	 * Constructor takes the searcher. This class needs to be instantiated for each search performed, and is certainly not thread safe.
@@ -86,14 +85,16 @@ public class SearchSpatial extends SearchMulti {
 			totalHits = topDocs.totalHits;
 			scoreHits = topDocs.scoreDocs.length;
 			results = getResults(topDocs, query);
-			for (int i = 0, j = 0; i < totalHits && i < scoreHits; i++) {
-				if (i < firstResult) {
-					continue;
+			if (distances != null) {
+				for (int i = 0, j = 0; i < totalHits && i < scoreHits; i++) {
+					if (i < firstResult) {
+						continue;
+					}
+					final int docID = topDocs.scoreDocs[i].doc;
+					double distanceFromOrigin = distances.get(docID);
+					Map<String, String> result = results.get(j++);
+					result.put(IConstants.DISTANCE, Double.toString(distanceFromOrigin));
 				}
-				final int docID = topDocs.scoreDocs[i].doc;
-				double distanceFromOrigin = distances.get(docID);
-				Map<String, String> result = results.get(j++);
-				result.put(IConstants.DISTANCE, Double.toString(distanceFromOrigin));
 			}
 		} catch (Exception e) {
 			exception = e;

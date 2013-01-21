@@ -2,6 +2,8 @@ package ikube.search;
 
 import ikube.IConstants;
 
+import java.io.IOException;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.Term;
@@ -12,6 +14,7 @@ import org.apache.lucene.search.NumericRangeQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Searcher;
 import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.util.NumericUtils;
 
 /**
@@ -21,7 +24,7 @@ import org.apache.lucene.util.NumericUtils;
  * @version 01.00
  */
 @SuppressWarnings("deprecation")
-public class SearchComplex extends SearchMultiAll {
+public class SearchComplex extends SearchSpatial {
 
 	public SearchComplex(final Searcher searcher) {
 		this(searcher, IConstants.ANALYZER);
@@ -29,6 +32,17 @@ public class SearchComplex extends SearchMultiAll {
 
 	public SearchComplex(final Searcher searcher, final Analyzer analyzer) {
 		super(searcher, analyzer);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected TopDocs search(final Query query) throws IOException {
+		if (coordinate != null) {
+			return super.search(query);
+		}
+		return searcher.search(query, firstResult + maxResults);
 	}
 
 	/**
@@ -49,15 +63,15 @@ public class SearchComplex extends SearchMultiAll {
 			if (TypeField.STRING.fieldType().equals(typeField)) {
 				query = getQueryParser(searchField).parse(searchString);
 			} else if (TypeField.NUMERIC.fieldType().equals(typeField)) {
-				Long numeric = Long.parseLong(searchField);
-				query = new TermQuery(new Term(searchField, NumericUtils.longToPrefixCoded(numeric)));
+				Double numeric = Double.parseDouble(searchString);
+				query = new TermQuery(new Term(searchField, NumericUtils.doubleToPrefixCoded(numeric)));
 			} else if (TypeField.RANGE.fieldType().equals(typeField)) {
 				String[] values = StringUtils.split(searchString, '-');
 				double min = Double.parseDouble(values[0]);
 				double max = Double.parseDouble(values[1]);
 				query = NumericRangeQuery.newDoubleRange(searchField, min, max, Boolean.TRUE, Boolean.TRUE);
 			}
-			booleanQuery.add(query, BooleanClause.Occur.SHOULD);
+			booleanQuery.add(query, BooleanClause.Occur.MUST);
 		}
 		return booleanQuery;
 	}

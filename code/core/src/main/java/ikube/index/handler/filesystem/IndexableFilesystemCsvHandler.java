@@ -143,6 +143,9 @@ public class IndexableFilesystemCsvHandler extends IndexableFilesystemHandler {
 		}
 		List<Indexable<?>> indexableColumns = indexable.getChildren();
 		Comparator indexableColumnComparator = new IndexableColumnComparator();
+		if (indexableColumns == null) {
+			indexableColumns = new ArrayList<Indexable<?>>();
+		}
 		Collections.sort(indexableColumns, indexableColumnComparator);
 		// Add all the columns that are not present in the configuration
 		for (final String columnName : columns) {

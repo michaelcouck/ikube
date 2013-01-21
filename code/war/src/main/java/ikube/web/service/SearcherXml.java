@@ -1,5 +1,8 @@
 package ikube.web.service;
 
+import ikube.IConstants;
+import ikube.toolkit.SerializationUtilities;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -250,7 +253,7 @@ public class SearcherXml extends Searcher {
 	public Response searchComplex(@QueryParam(value = IConstants.INDEX_NAME) final String indexName,
 			@QueryParam(value = IConstants.SEARCH_STRINGS) final String searchStrings,
 			@QueryParam(value = IConstants.SEARCH_FIELDS) final String searchFields,
-			@QueryParam(value = IConstants.FIELD_TYPES) final String typeFields,
+			@QueryParam(value = IConstants.TYPE_FIELDS) final String typeFields,
 			@QueryParam(value = IConstants.FRAGMENT) final boolean fragment,
 			@QueryParam(value = IConstants.FIRST_RESULT) final int firstResult,
 			@QueryParam(value = IConstants.MAX_RESULTS) final int maxResults) {

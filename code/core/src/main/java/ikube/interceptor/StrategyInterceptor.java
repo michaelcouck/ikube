@@ -4,7 +4,6 @@ import ikube.index.handler.IStrategy;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -38,7 +37,7 @@ public class StrategyInterceptor implements IStrategyInterceptor {
 		// method is to be executed or not
 		boolean mustProcess = Boolean.TRUE;
 		Object[] args = proceedingJoinPoint.getArgs();
-		LOGGER.info("Args : " + Arrays.deepToString(args));
+		// LOGGER.info("Args : " + Arrays.deepToString(args));
 		if (args != null && args.length > 0) {
 			for (final Object arg : args) {
 				if (arg == null) {
@@ -55,7 +54,7 @@ public class StrategyInterceptor implements IStrategyInterceptor {
 							LOGGER.error("Strategy : " + strategy + ", " + aroundProcess);
 							mustProcess &= aroundProcess;
 						}
-						LOGGER.error("Processing : " + mustProcess + ", " + Arrays.deepToString(args));
+						// LOGGER.error("Processing : " + mustProcess + ", " + Arrays.deepToString(args));
 						break;
 					}
 				}

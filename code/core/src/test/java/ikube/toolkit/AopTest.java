@@ -19,6 +19,7 @@ import ikube.model.IndexContext;
 import ikube.model.IndexableFileSystem;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -27,6 +28,7 @@ import mockit.Deencapsulation;
 import mockit.Mockit;
 
 import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Fieldable;
 import org.apache.lucene.index.IndexWriter;
 import org.junit.After;
 import org.junit.Before;
@@ -71,12 +73,14 @@ public class AopTest {
 		indexContext.setIndexWriters(mock(IndexWriter.class));
 		IStrategy strategy = mock(IStrategy.class);
 		when(strategy.aroundProcess(any(IndexContext.class), any(IndexableFileSystem.class), any(File.class))).thenReturn(Boolean.TRUE);
+		Deencapsulation.setField(document, new ArrayList<Fieldable>());
 		indexableFileSystem.setStrategies(Arrays.asList(strategy));
 
 		File file = FileUtilities.findFileRecursively(new File("."), Boolean.FALSE, "default.results.xml");
-		indexableHandler.handleFile(indexContext, indexableFileSystem, file);
+		indexableHandler.handleResource(indexContext, indexableFileSystem, document, file);
 
-		verify(strategy, atLeastOnce()).aroundProcess(any(IndexContext.class), any(IndexableFileSystem.class), any(File.class));
+		verify(strategy, atLeastOnce()).aroundProcess(any(IndexContext.class), any(IndexableFileSystem.class), any(Document.class),
+				any(Object[].class));
 	}
 
 	@Test
