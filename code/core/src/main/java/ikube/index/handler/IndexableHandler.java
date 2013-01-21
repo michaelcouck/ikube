@@ -65,6 +65,15 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IHandl
 	 * {@inheritDoc}
 	 */
 	@Override
+	public void handleResource(final IndexContext<?> indexContext, final T indexable, final Document document, final Object... resources) {
+		// Default implementation for handlers that don't get intercepted
+		logger.info("Handle resource : ");
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public void addDocument(final IndexContext<?> indexContext, final Indexable<?> indexable, final Document document) throws Exception {
 		if (indexable.isAddress()) {
 			addSpatialEnrichment(indexable, document);

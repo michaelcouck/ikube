@@ -16,6 +16,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -99,13 +100,15 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 	/**
 	 * As the name suggests this method accesses a file, and hopefully indexes the data adding it to the index.
 	 * 
-	 * @param indexContext the context for this index
-	 * @param indexableFileSystem the file system object for storing data during the indexing
-	 * @param file the file to parse and index
+	 * @param indexContext
+	 *            the context for this index
+	 * @param indexableFileSystem
+	 *            the file system object for storing data during the indexing
+	 * @param file
+	 *            the file to parse and index
 	 * @throws InterruptedException
 	 */
-	public void handleFile(final IndexContext<?> indexContext, final IndexableFileSystem indexableFileSystem, final File file)
-			throws Exception {
+	void handleFile(final IndexContext<?> indexContext, final IndexableFileSystem indexableFileSystem, final File file) throws Exception {
 		// First we handle the zips if necessary
 		if (indexableFileSystem.isUnpackZips()) {
 			boolean isFile = file.isFile();
@@ -133,7 +136,7 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 			}
 		} else {
 			Document document = new Document();
-			addDocumentToIndex(indexContext, indexableFileSystem, file, document);
+			handleResource(indexContext, indexableFileSystem, document, file);
 		}
 	}
 
@@ -170,11 +173,16 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 		return fileBatch;
 	}
 
-	protected void addDocumentToIndex(final IndexContext<?> indexContext, final IndexableFileSystem indexableFileSystem, final File file,
-			final Document document) throws Exception {
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void handleResource(IndexContext<?> indexContext, IndexableFileSystem indexableFileSystem, Document document,
+			Object... resources) {
 		InputStream inputStream = null;
 		ByteArrayInputStream byteInputStream = null;
 		ByteArrayOutputStream byteOutputStream = null;
+		File file = (File) resources[0];
 		try {
 			int length = file.length() > 0 && file.length() < indexableFileSystem.getMaxReadLength() ? (int) file.length()
 					: (int) indexableFileSystem.getMaxReadLength();
@@ -217,6 +225,14 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 			addDocument(indexContext, indexableFileSystem, document);
 
 			Thread.sleep(indexContext.getThrottle());
+		} catch (FileNotFoundException e) {
+			throw new RuntimeException(e);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} catch (InterruptedException e) {
+			throw new RuntimeException(e);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
 		} finally {
 			FileUtilities.close(inputStream);
 			FileUtilities.close(byteInputStream);
@@ -238,8 +254,10 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 	 * This method checks to see if the file can be read, that it exists and that it is not in the excluded pattern defined in the
 	 * configuration.
 	 * 
-	 * @param file the file to check for inclusion in the processing
-	 * @param pattern the pattern that excludes explicitly files and folders
+	 * @param file
+	 *            the file to check for inclusion in the processing
+	 * @param pattern
+	 *            the pattern that excludes explicitly files and folders
 	 * @return whether this file is included and can be processed
 	 */
 	protected synchronized boolean isExcluded(final File file, final Pattern pattern) {
@@ -262,7 +280,7 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 			isSymLink = FileUtils.isSymlink(file);
 			// isSymLink = !file.getAbsolutePath().equals(file.getCanonicalPath());
 		} catch (IOException e) {
-			logger.error("Exception checking sym link : " + file);
+			throw new RuntimeException(e);
 		}
 		boolean isExcluded = isNameExcluded || isPathExcluded || isSymLink;
 		// logger.error("Excluded : " + isExcluded + ", " + isNameExcluded + ", " + isPathExcluded + ", " + isSymLink + ", " + name + ", "

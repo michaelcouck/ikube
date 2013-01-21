@@ -46,9 +46,6 @@ public class ClusterManagerHazelcast extends AClusterManager {
 	/** This class had methods to query the state of the contexts. */
 	@Autowired
 	private IMonitorService monitorService;
-	/** This object is for listening for the size of the index and rolling over if necessary. */
-	// @Autowired
-	// private IndexContextListener indexContextListener;
 	/** Ths listener will delete the index and the backup directory on the file system. */
 	@Autowired
 	private DeleteListener deleteListener;
@@ -60,7 +57,7 @@ public class ClusterManagerHazelcast extends AClusterManager {
 		ip = UriUtilities.getIp();
 		address = ip + "-" + Hazelcast.getCluster().getLocalMember().getInetSocketAddress().getPort();
 		logger.info("Cluster manager : " + ip + ", " + address);
-		addListeners(startListener, stopListener, /* indexContextListener, */deleteListener);
+		addListeners(startListener, stopListener, deleteListener);
 	}
 
 	private void addListeners(final MessageListener<Object>... listeners) {

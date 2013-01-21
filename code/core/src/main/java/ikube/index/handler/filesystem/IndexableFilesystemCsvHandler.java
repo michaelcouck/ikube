@@ -31,6 +31,9 @@ import org.apache.lucene.document.Field.TermVector;
  */
 public class IndexableFilesystemCsvHandler extends IndexableFilesystemHandler {
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void handleFile(final IndexContext<?> indexContext, final IndexableFileSystem indexableFileSystem, final File file)
 			throws Exception {
@@ -43,7 +46,7 @@ public class IndexableFilesystemCsvHandler extends IndexableFilesystemHandler {
 			String headerLine = lineIterator.nextLine();
 			String[] columns = StringUtils.split(headerLine, indexableFileSystemCsv.getSeparator());
 			Store store = indexableFileSystem.isStored() ? Store.YES : Store.NO;
-			Index analyzed = indexableFileSystem.isAnalyzed() ? Index.ANALYZED : Index.NOT_ANALYZED;
+			Index index = indexableFileSystem.isAnalyzed() ? Index.ANALYZED : Index.NOT_ANALYZED;
 			TermVector termVector = indexableFileSystem.isVectored() ? TermVector.YES : TermVector.NO;
 			char separator = indexableFileSystemCsv.getSeparator();
 			int lineNumber = 0;
@@ -57,9 +60,8 @@ public class IndexableFilesystemCsvHandler extends IndexableFilesystemHandler {
 						logger.warn("Columns and values different on line : " + lineNumber + ", columns : " + columns.length
 								+ ", values : " + values.length + ", data : " + Arrays.deepToString(values));
 					}
-					Document document = handleLine(columns, values, lineNumberFieldName, separator, lineNumber, store, analyzed,
-							termVector, file);
-					addDocument(indexContext, indexableFileSystemCsv, document);
+					handleResource(indexContext, indexableFileSystemCsv, new Document(), file.getName(), lineNumber, lineNumberFieldName,
+							columns, values, separator, store, index, termVector);
 					ThreadUtilities.sleep(indexContext.getThrottle());
 				} catch (Exception e) {
 					logger.error("Exception processing file : " + file, e);
@@ -75,10 +77,33 @@ public class IndexableFilesystemCsvHandler extends IndexableFilesystemHandler {
 		}
 	}
 
-	public Document handleLine(final String[] columns, final String[] values, final String lineNumberFieldName, final char separator,
-			final int lineNumber, final Store store, final Index index, final TermVector termVector, final File file) {
-		Document document = new Document();
-		String identifier = StringUtils.join(new Object[] { file.getName(), Integer.toString(lineNumber) }, IConstants.SPACE);
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void handleResource(final IndexContext<?> indexContext, final IndexableFileSystem indexableFileSystem, final Document document,
+			final Object... resources) {
+
+		// String fileName
+		// int lineNumber,
+		// String lineNumberFieldName,
+		// String[] columns,
+		// String[] values,
+		// char separator,
+		// Store store,
+		// Index index,
+		// TermVector termVector,
+
+		String fileName = (String) resources[0];
+		int lineNumber = (Integer) resources[1];
+		String lineNumberFieldName = (String) resources[2];
+		String[] columns = (String[]) resources[3];
+		String[] values = (String[]) resources[4];
+		Store store = (Store) resources[5];
+		Index index = (Index) resources[6];
+		TermVector termVector = (TermVector) resources[7];
+
+		String identifier = StringUtils.join(new Object[] { fileName, Integer.toString(lineNumber) }, IConstants.SPACE);
 		// Add the line number field
 		IndexManager.addStringField(lineNumberFieldName, identifier, document, Store.YES, Index.ANALYZED, TermVector.NO);
 		for (int i = 0; i < columns.length && i < values.length; i++) {
@@ -90,7 +115,11 @@ public class IndexableFilesystemCsvHandler extends IndexableFilesystemHandler {
 				IndexManager.addStringField(columns[i], value, document, store, index, termVector);
 			}
 		}
-		return document;
+		try {
+			addDocument(indexContext, indexableFileSystem, document);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	protected synchronized boolean isExcluded(final File file, final Pattern pattern) {

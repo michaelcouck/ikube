@@ -5,10 +5,7 @@ import ikube.index.spatial.Coordinate;
 import ikube.model.Indexable;
 import ikube.model.IndexableColumn;
 import ikube.model.IndexableTable;
-import ikube.toolkit.Logging;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -23,6 +20,7 @@ import org.apache.lucene.util.NumericUtils;
  * @since 12.04.11
  * @version 01.00
  */
+@SuppressWarnings("deprecation")
 public class Enrichment implements IEnrichment {
 
 	private static final Logger LOGGER = Logger.getLogger(Enrichment.class);
