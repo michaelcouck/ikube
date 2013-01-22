@@ -36,6 +36,8 @@ import org.junit.Test;
 public class SearchComplexTest extends ATest {
 
 	private SearchComplex searchComplex;
+        private IndexSearcher indexSearcher;
+        private IndexWriter indexWriter;
 
 	public SearchComplexTest() {
 		super(SearchComplexTest.class);
@@ -45,7 +47,7 @@ public class SearchComplexTest extends ATest {
 	public void before() throws Exception {
 		File file = FileUtilities.findFileRecursively(new File("."), "index-data.csv");
 		File indexDirectory = FileUtilities.getFile("./indexes", Boolean.TRUE);
-		IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, indexDirectory, Boolean.TRUE);
+		indexWriter = IndexManager.openIndexWriter(indexContext, indexDirectory, Boolean.TRUE);
 		LineIterator lineIterator = FileUtils.lineIterator(file, IConstants.ENCODING);
 		String headerLine = lineIterator.nextLine();
 		String[] columns = StringUtils.split(headerLine, ',');
@@ -63,13 +65,15 @@ public class SearchComplexTest extends ATest {
 			indexWriter.addDocument(document);
 		}
 		IndexReader indexReader = IndexReader.open(indexWriter, Boolean.TRUE);
-		IndexSearcher indexSearcher = new IndexSearcher(indexReader);
+		indexSearcher = new IndexSearcher(indexReader);
 		searchComplex = new SearchComplex(indexSearcher);
 	}
 
 	@After
-	public void after() {
+	public void after() throws Exception {
+                indexWriter.close();
 		FileUtilities.deleteFile(new File("./indexes"), 1);
+                indexSearcher.close();
 	}
 
 	@Test

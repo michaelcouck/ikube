@@ -73,7 +73,7 @@
 	    id="ikube.index.handler.strategy.GeospatialEnrichmentStrategyMin"
 	    class="ikube.index.handler.strategy.GeospatialEnrichmentStrategy" />
 	<util:list id="min-eco-csv-files-strategies">
-	    <ref local="ikube.index.handler.strategy.GeospatialEnrichmentStrategy" />
+	    <ref local="ikube.index.handler.strategy.GeospatialEnrichmentStrategyMin" />
 	</util:list>
 	
 	<bean

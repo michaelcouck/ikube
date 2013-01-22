@@ -200,7 +200,6 @@
 		<bean class="ikube.listener.ClusterClubListener" />
 		<bean class="ikube.listener.IndexSizeListener" />
 		<bean class="ikube.listener.ActionListener" />
-		<!-- <bean class="ikube.listener.IndexContextListener" /> -->
 	</util:list>
 	
 	<bean 
@@ -319,9 +318,6 @@
 	<bean 
 	   	id="ikube.cluster.listener.hzc.StopListener" 
 	   	class="ikube.cluster.listener.hzc.StopListener" />
-	<bean 
-	   	id="ikube.cluster.listener.hzc.IndexContextListener" 
-	   	class="ikube.cluster.listener.hzc.IndexContextListener" />
 	<bean 
 	   	id="ikube.cluster.listener.hzc.DeleteListener" 
 	   	class="ikube.cluster.listener.hzc.DeleteListener" />
