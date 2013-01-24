@@ -248,20 +248,24 @@ public class SearcherXmlIntegration extends Base {
 	}
 
 	@Test
-	public void adHoc() throws Exception {
-		String path = IConstants.SEP + IConstants.IKUBE + SERVICE + SearcherXml.SEARCH + SearcherXml.MULTI_ALL;
+	public void searchComplex() throws Exception {
+		String path = IConstants.SEP + IConstants.IKUBE + SERVICE + SearcherXml.SEARCH + SearcherXml.COMPLEX;
 		String url = new URL("http", LOCALHOST, SERVER_PORT, path).toString();
 		logger.info("Looking for url : " + url);
 
 		String[] names = { //
 		IConstants.INDEX_NAME, //
 				IConstants.SEARCH_STRINGS, //
+				IConstants.SEARCH_FIELDS, //
+				IConstants.TYPE_FIELDS, //
 				IConstants.FRAGMENT, //
 				IConstants.FIRST_RESULT,//
 				IConstants.MAX_RESULTS };
 		String[] values = { //
 		"wikiContext",//
-				"Небесные создания", //
+				"Небесные|создания", //
+				IConstants.NAME + "|" + IConstants.NAME, //
+				"string|string", //
 				Boolean.TRUE.toString(), //
 				"0", //
 				"10" };
@@ -273,21 +277,6 @@ public class SearcherXmlIntegration extends Base {
 		int result = HTTP_CLIENT.executeMethod(getMethod);
 		String actual = getMethod.getResponseBodyAsString();
 		assertTrue("We should get something : " + result + ", " + actual, actual.length() > 0);
-	}
-
-	@Test
-	@Ignore
-	@Deprecated
-	@SuppressWarnings("unused")
-	public void formatToHtmlTable() throws SAXException, IOException {
-		SearcherXml searcherXml = new SearcherXml();
-		File file = FileUtilities.findFileRecursively(new File("."), "geospatial.results.xml");
-		String xml = FileUtilities.getContents(file, Integer.MAX_VALUE).toString();
-		String excluded = "score:countrycode:featureclass:modification:admin1code:asciiname:gtopo30:geonameid:featurecode:alternatenames";
-		// String html = searcher.formatToHtmlTable(xml, excluded);
-		// logger.info(html);
-		//
-		// assertTrue(html.contains("<td>geoname id 18782822 18782822</td>"));
 	}
 
 }

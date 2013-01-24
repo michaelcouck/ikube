@@ -4,6 +4,7 @@ import static org.junit.Assert.assertTrue;
 import ikube.ATest;
 import ikube.IConstants;
 import ikube.mock.ReaderUtilMock;
+import ikube.search.Search;
 import ikube.search.spelling.SpellingChecker;
 
 import java.util.ArrayList;
@@ -32,6 +33,7 @@ public class SearcherServiceTest extends ATest {
 	private String indexName;
 	private String[] searchStrings = new String[] { "hello" };
 	private String[] searchFields = new String[] { IConstants.CONTENTS };
+	private String[] typeFields = new String[] { "string" };
 	private String[] sortFields = new String[] { IConstants.ID };
 	private boolean fragment = true;
 	private int firstResult = 0;
@@ -120,6 +122,14 @@ public class SearcherServiceTest extends ATest {
 	public void searchNumericRange() {
 		initialize();
 		ArrayList<HashMap<String, String>> results = searcherService.searchNumericRange(indexName, searchStrings, fragment, firstResult,
+				maxResults);
+		verifyResults(results);
+	}
+	
+	@Test
+	public void searchComplex() {
+		initialize();
+		ArrayList<HashMap<String, String>> results = searcherService.searchComplex(indexName, searchStrings, searchFields, typeFields,  fragment, firstResult,
 				maxResults);
 		verifyResults(results);
 	}
