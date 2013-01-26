@@ -1,22 +1,14 @@
 package ikube.index.handler.filesystem;
 
 import ikube.IConstants;
-import ikube.index.IndexManager;
 import ikube.index.handler.IndexableHandler;
-import ikube.index.parse.IParser;
-import ikube.index.parse.ParserProvider;
 import ikube.model.IndexContext;
 import ikube.model.IndexableFileSystem;
-import ikube.toolkit.FileUtilities;
-import ikube.toolkit.HashUtilities;
 import ikube.toolkit.SerializationUtilities;
 import ikube.toolkit.ThreadUtilities;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -32,12 +24,9 @@ import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.io.FileUtils;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field.Index;
-import org.apache.lucene.document.Field.Store;
-import org.apache.lucene.document.Field.TermVector;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import de.schlichtherle.truezip.file.TFile;
-import de.schlichtherle.truezip.file.TFileInputStream;
 
 /**
  * This class indexes a file share on the network. It is multi-threaded but not cluster load balanced.
@@ -52,11 +41,14 @@ import de.schlichtherle.truezip.file.TFileInputStream;
  */
 public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSystem> {
 
+	@Autowired
+	private ResourceFileHandler resourceHandler;
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<Future<?>> handle(final IndexContext<?> indexContext, final IndexableFileSystem indexable) throws Exception {
+	public List<Future<?>> handleIndexable(final IndexContext<?> indexContext, final IndexableFileSystem indexable) throws Exception {
 		List<Future<?>> futures = new ArrayList<Future<?>>();
 		final Stack<File> directories = new Stack<File>();
 		directories.push(new File(indexable.getPath()));
@@ -80,14 +72,14 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 	void handleFiles(final IndexContext<?> indexContext, final IndexableFileSystem indexableFileSystem, final Stack<File> directories,
 			final Pattern pattern) {
 		List<File> files = getBatch(indexableFileSystem, directories, pattern);
-		do {
+		outer : do {
 			for (File file : files) {
 				try {
-					// logger.error("Doing file : " + file);
 					handleFile(indexContext, indexableFileSystem, file);
 				} catch (InterruptedException e) {
 					logger.error("Thread terminated, and indexing stopped : ", e);
-					throw new RuntimeException(e);
+					// throw new RuntimeException(e);
+					break outer;
 				} catch (Exception e) {
 					logger.error("Exception handling file : " + file, e);
 					handleMaxExceptions(indexableFileSystem, e);
@@ -100,15 +92,13 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 	/**
 	 * As the name suggests this method accesses a file, and hopefully indexes the data adding it to the index.
 	 * 
-	 * @param indexContext
-	 *            the context for this index
-	 * @param indexableFileSystem
-	 *            the file system object for storing data during the indexing
-	 * @param file
-	 *            the file to parse and index
+	 * @param indexContext the context for this index
+	 * @param indexableFileSystem the file system object for storing data during the indexing
+	 * @param file the file to parse and index
 	 * @throws InterruptedException
 	 */
 	void handleFile(final IndexContext<?> indexContext, final IndexableFileSystem indexableFileSystem, final File file) throws Exception {
+		logger.error("Doing file : " + file);
 		// First we handle the zips if necessary
 		if (indexableFileSystem.isUnpackZips()) {
 			boolean isFile = file.isFile();
@@ -135,8 +125,8 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 				handleFile(indexContext, indexableFileSystem, innerFile);
 			}
 		} else {
-			Document document = new Document();
-			handleResource(indexContext, indexableFileSystem, document, file);
+			resourceHandler.handleResource(indexContext, indexableFileSystem, new Document(), file);
+			Thread.sleep(indexContext.getThrottle());
 		}
 	}
 
@@ -173,73 +163,6 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 		return fileBatch;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void handleResource(IndexContext<?> indexContext, IndexableFileSystem indexableFileSystem, Document document,
-			Object... resources) {
-		InputStream inputStream = null;
-		ByteArrayInputStream byteInputStream = null;
-		ByteArrayOutputStream byteOutputStream = null;
-		File file = (File) resources[0];
-		try {
-			int length = file.length() > 0 && file.length() < indexableFileSystem.getMaxReadLength() ? (int) file.length()
-					: (int) indexableFileSystem.getMaxReadLength();
-			byte[] byteBuffer = new byte[length];
-
-			if (TFile.class.isAssignableFrom(file.getClass())) {
-				inputStream = new TFileInputStream(file);
-			} else {
-				inputStream = new FileInputStream(file);
-			}
-
-			int read = inputStream.read(byteBuffer, 0, byteBuffer.length);
-
-			byteInputStream = new ByteArrayInputStream(byteBuffer, 0, read);
-			byteOutputStream = new ByteArrayOutputStream();
-
-			IParser parser = ParserProvider.getParser(file.getName(), byteBuffer);
-			String parsedContent = parser.parse(byteInputStream, byteOutputStream).toString();
-
-			Store store = indexableFileSystem.isStored() ? Store.YES : Store.NO;
-			Index analyzed = indexableFileSystem.isAnalyzed() ? Index.ANALYZED : Index.NOT_ANALYZED;
-			TermVector termVector = indexableFileSystem.isVectored() ? TermVector.YES : TermVector.NO;
-
-			// This is the unique id of the resource to be able to delete it
-			String fileId = HashUtilities.hash(file.getAbsolutePath()).toString();
-			String pathFieldName = indexableFileSystem.getPathFieldName();
-			String nameFieldName = indexableFileSystem.getNameFieldName();
-			String modifiedFieldName = indexableFileSystem.getLastModifiedFieldName();
-			String lengthFieldName = indexableFileSystem.getLengthFieldName();
-			String contentFieldName = indexableFileSystem.getContentFieldName();
-
-			// NOTE to self: To be able to delete using the index writer the identifier field must be non analyzed and non
-			// tokenized/vectored!
-			IndexManager.addStringField(IConstants.FILE_ID, fileId, document, Store.YES, Index.NOT_ANALYZED, TermVector.NO);
-			IndexManager.addStringField(pathFieldName, file.getAbsolutePath(), document, Store.YES, analyzed, termVector);
-			IndexManager.addStringField(nameFieldName, file.getName(), document, Store.YES, analyzed, termVector);
-			IndexManager.addStringField(modifiedFieldName, Long.toString(file.lastModified()), document, Store.YES, analyzed, termVector);
-			IndexManager.addStringField(lengthFieldName, Long.toString(file.length()), document, Store.YES, analyzed, termVector);
-			IndexManager.addStringField(contentFieldName, parsedContent, document, store, analyzed, termVector);
-			addDocument(indexContext, indexableFileSystem, document);
-
-			Thread.sleep(indexContext.getThrottle());
-		} catch (FileNotFoundException e) {
-			throw new RuntimeException(e);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		} catch (InterruptedException e) {
-			throw new RuntimeException(e);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		} finally {
-			FileUtilities.close(inputStream);
-			FileUtilities.close(byteInputStream);
-			FileUtilities.close(byteOutputStream);
-		}
-	}
-
 	@SuppressWarnings("unused")
 	private boolean handleGZip(final String filePath) throws ArchiveException, IOException {
 		InputStream is = new FileInputStream(filePath);
@@ -254,10 +177,8 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 	 * This method checks to see if the file can be read, that it exists and that it is not in the excluded pattern defined in the
 	 * configuration.
 	 * 
-	 * @param file
-	 *            the file to check for inclusion in the processing
-	 * @param pattern
-	 *            the pattern that excludes explicitly files and folders
+	 * @param file the file to check for inclusion in the processing
+	 * @param pattern the pattern that excludes explicitly files and folders
 	 * @return whether this file is included and can be processed
 	 */
 	protected synchronized boolean isExcluded(final File file, final Pattern pattern) {

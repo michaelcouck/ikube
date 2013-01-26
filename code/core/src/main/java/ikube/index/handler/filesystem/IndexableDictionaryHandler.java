@@ -32,7 +32,7 @@ public class IndexableDictionaryHandler extends IndexableHandler<IndexableDictio
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<Future<?>> handle(final IndexContext<?> indexContext, final IndexableDictionary indexable) throws Exception {
+	public List<Future<?>> handleIndexable(final IndexContext<?> indexContext, final IndexableDictionary indexable) throws Exception {
 		List<Future<?>> futures = new ArrayList<Future<?>>();
 		try {
 			File spellingIndexDirectory = FileUtilities.getFile(indexContext.getIndexDirectoryPath(), Boolean.TRUE);

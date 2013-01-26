@@ -33,7 +33,7 @@
 		property:maxFieldLength="${max.field.length}"
 		property:maxReadLength="${max.read.length}"
 		property:throttle="1000"
-		property:delta="true"
+		property:delta="false"
 		property:indexDirectoryPath="/media/nas/xfs-one/indexes"
 		property:indexDirectoryPathBackup="/media/nas/xfs-one/indexes/backup"
 		property:children-ref="desktopFolders" />
@@ -63,13 +63,10 @@
 		property:batchSize="1000"
 		property:maxReadLength="1000000" 
 		property:strategies-ref="desktopStrategies"
-		property:maxExceptions="10000" />
+		property:maxExceptions="100" />
 	
-	<bean 
-	    id="ikube.index.handler.strategy.DeltaIndexableFilesystemStrategyDesktop"
-	    class="ikube.index.handler.strategy.DeltaIndexableFilesystemStrategy" />
 	<util:list id="desktopStrategies">
-	    <ref local="ikube.index.handler.strategy.DeltaIndexableFilesystemStrategyDesktop" />
+	    <!-- <ref local="ikube.index.handler.strategy.DeltaIndexableFilesystemStrategy" /> -->
 	</util:list>
 	
 </beans>

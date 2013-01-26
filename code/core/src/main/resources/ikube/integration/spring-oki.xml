@@ -40,7 +40,7 @@
 		id="oki"
 		class="ikube.model.IndexableInternet"
 		property:name="oki"
-		property:url="https://www.oki.com/" 
+		property:url="http://www.oki.com/" 
 		property:idFieldName="id"
 		property:titleFieldName="title"
 		property:contentFieldName="content"

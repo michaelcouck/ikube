@@ -9,7 +9,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import ikube.ATest;
 import ikube.index.IndexManager;
-import ikube.index.handler.IHandler;
+import ikube.index.handler.IIndexableHandler;
 import ikube.index.handler.database.IndexableTableHandler;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.mock.IndexManagerMock;
@@ -46,7 +46,7 @@ public class IndexTest extends ATest {
 
 	private Index index = mock(Index.class);
 	@SuppressWarnings("rawtypes")
-	private IHandler handler = mock(IHandler.class);
+	private IIndexableHandler indexableHandler = mock(IIndexableHandler.class);
 
 	public IndexTest() {
 		super(IndexTest.class);
@@ -68,7 +68,7 @@ public class IndexTest extends ATest {
 				return invocation.callRealMethod();
 			}
 		}).when(index).executeIndexables(any(IndexContext.class), any(Iterator.class));
-		when(index.getHandler(any(Indexable.class))).thenReturn(handler);
+		when(index.getHandler(any(Indexable.class))).thenReturn(indexableHandler);
 		Deencapsulation.setField(index, logger);
 		Deencapsulation.setField(index, clusterManager);
 	}
@@ -86,7 +86,7 @@ public class IndexTest extends ATest {
 		Deencapsulation.setField(index, clusterManager);
 		boolean result = index.execute(indexContext);
 		assertTrue(result);
-		Mockito.verify(handler, Mockito.atLeastOnce()).handle(any(IndexContext.class), any(Indexable.class));
+		Mockito.verify(indexableHandler, Mockito.atLeastOnce()).handleIndexable(any(IndexContext.class), any(Indexable.class));
 	}
 
 	@Test

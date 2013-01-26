@@ -32,6 +32,9 @@ public final class StringUtilities {
 	 * @return whether the string has only numbers and potentially one separator a comma or a dot, but no spaces
 	 */
 	public static final boolean isNumeric(final String string) {
+		if (string == null) {
+			return Boolean.FALSE;
+		}
 		final char[] chars = string.toCharArray();
 		boolean before = Boolean.FALSE;
 		boolean dot = Boolean.FALSE;

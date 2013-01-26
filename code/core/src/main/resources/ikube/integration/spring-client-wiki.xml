@@ -57,11 +57,8 @@
 		property:maxExceptions="${max.exceptions}"
 		property:strategies-ref="wikidataStrategies" />
 	
-	<bean 
-	    id="ikube.index.handler.strategy.DeltaIndexableFilesystemStrategy"
-	    class="ikube.index.handler.strategy.DeltaIndexableFilesystemStrategy" />
 	<util:list id="wikidataStrategies">
-	    <ref local="ikube.index.handler.strategy.DeltaIndexableFilesystemStrategy" />
+		<bean class="ikube.index.handler.strategy.DeltaIndexableFilesystemStrategy" />
 	</util:list>
 	
 </beans>

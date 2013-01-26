@@ -27,7 +27,7 @@ import javax.sql.DataSource;
 public class IndexableDataSourceHandler extends IndexableHandler<IndexableDataSource> {
 
 	@Override
-	public List<Future<?>> handle(final IndexContext<?> indexContext, final IndexableDataSource indexable) throws Exception {
+	public List<Future<?>> handleIndexable(final IndexContext<?> indexContext, final IndexableDataSource indexable) throws Exception {
 		// We just add all the tables individually to the index context, only if they are not there of course
 		ResultSet resultSet = null;
 		String excludedTablePatterns = indexable.getExcludedTablePatterns();

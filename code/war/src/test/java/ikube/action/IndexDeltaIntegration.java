@@ -5,12 +5,13 @@ import ikube.IConstants;
 import ikube.Integration;
 import ikube.cluster.IClusterManager;
 import ikube.database.IDataBase;
+import ikube.index.IndexManager;
 import ikube.model.IndexContext;
 import ikube.model.IndexableFileSystem;
-import ikube.service.ISearcherService;
+import ikube.search.SearchSingle;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
-import ikube.toolkit.ThreadUtilities;
+import ikube.toolkit.UriUtilities;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -25,8 +26,8 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.MultiSearcher;
-import org.apache.lucene.search.Searchable;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.FSDirectory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -38,29 +39,26 @@ import org.junit.Test;
  * @version 01.00
  */
 @Ignore
-@SuppressWarnings("deprecation")
 public class IndexDeltaIntegration extends Integration {
 
-	private Open open;
 	/** Class under test. */
 	private IndexDelta indexDelta;
 	private IndexContext<?> indexContext;
-	private ISearcherService searcherService;
 	private IndexableFileSystem indexableFileSystem;
 
 	@Before
 	public void before() {
-		open = new Open();
 		indexDelta = new IndexDelta();
 		indexableFileSystem = ApplicationContextManager.getBean("desktopFolder");
 		indexContext = (IndexContext<?>) indexableFileSystem.getParent();
-		searcherService = ApplicationContextManager.getBean(ISearcherService.class);
 
 		IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
 		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
 		clusterManager.getServer().getActions().clear();
 
-		setFields(new Object[] { open, open, indexDelta, indexDelta }, new Object[] { dataBase, clusterManager, dataBase, clusterManager });
+		setFields(new Object[] { indexDelta, indexDelta }, new Object[] { dataBase, clusterManager });
+
+		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
 	}
 
 	private void setFields(final Object[] targets, final Object[] fields) {
@@ -71,29 +69,30 @@ public class IndexDeltaIntegration extends Integration {
 
 	@After
 	public void after() {
-		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
+		// FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
 	}
 
 	@Test
 	public void execute() throws Exception {
 		File secondDeltaFile = null;
 		try {
+			String inserted = "Delta file data";
 			// Create the index, delta or otherwise
 			File deltaFile = FileUtilities.findFileRecursively(new File("."), Boolean.FALSE, "delta.txt");
 			OutputStream outputStream = new FileOutputStream(deltaFile);
-			IOUtils.write("Delta file".getBytes(), outputStream);
+			IOUtils.write(inserted.getBytes(), outputStream);
 			IOUtils.closeQuietly(outputStream);
 			indexableFileSystem.setPath(deltaFile.getParentFile().getAbsolutePath());
 
 			// Indexes the file and results in one hit
 			executeDelta(deltaFile);
-			verifyIndex("Delta file", 2);
+			verifyIndex(inserted, 2);
 			verifyNumDocs(1);
 
 			// Touch the file and it should be re-indexed
 			FileUtils.touch(deltaFile);
 			executeDelta(deltaFile);
-			verifyIndex("Delta file", 2);
+			verifyIndex(inserted, 2);
 			verifyNumDocs(1);
 
 			// Modify a file on the file system
@@ -119,13 +118,13 @@ public class IndexDeltaIntegration extends Integration {
 			// Only a hit from the second delta file
 			executeDelta(secondDeltaFile);
 			logger.info("Searching for random : " + random);
-			ArrayList<HashMap<String, String>> results = verifyIndex(random, 2);
+			ArrayList<HashMap<String, String>> results = verifyIndex(random, 3);
 			verifyNumDocs(2);
 
 			// No documents should be added after here
 			logger.warn("******************** NO DOCUMENTS *************************************");
 			executeDelta(secondDeltaFile);
-			ArrayList<HashMap<String, String>> secondResults = verifyIndex(random, 2);
+			ArrayList<HashMap<String, String>> secondResults = verifyIndex(random, 3);
 
 			// Verify that the length and the time stamps are the same and the number in the index
 			for (int i = 0; i < results.size(); i++) {
@@ -146,34 +145,56 @@ public class IndexDeltaIntegration extends Integration {
 		}
 	}
 
-	private ArrayList<HashMap<String, String>> verifyIndex(final String random, final int resultsSize) {
-		// Verify that the new data is searchable
-		ArrayList<HashMap<String, String>> results = searcherService
-				.searchMultiAll("desktop", new String[] { random }, Boolean.TRUE, 0, 10);
-		logger.info("Results : " + results);
-		assertEquals("There must be this number of hits for the search string : ", resultsSize, results.size());
-		return results;
+	private ArrayList<HashMap<String, String>> verifyIndex(final String random, final int resultsSize) throws Exception {
+		IndexSearcher indexSearcher = null;
+		ArrayList<HashMap<String, String>> results = null;
+		try {
+			indexSearcher = getIndexSearcher();
+
+			SearchSingle searchSingle = new SearchSingle(indexSearcher);
+			searchSingle.setFirstResult(0);
+			searchSingle.setFragment(Boolean.TRUE);
+			searchSingle.setMaxResults(10);
+			searchSingle.setSearchField(IConstants.CONTENTS);
+			searchSingle.setSearchString("delta");
+
+			results = searchSingle.execute();
+			logger.info("Results : " + results);
+			assertEquals("There must be this number of hits for the search string : ", resultsSize, results.size());
+			return results;
+		} catch (Exception e) {
+			logger.error(null, e);
+			throw e;
+		} finally {
+			indexSearcher.getIndexReader().close();
+			indexSearcher.close();
+		}
 	}
 
-	private void verifyNumDocs(final int numDocs) {
-		int totalNumDocs = 0;
-		MultiSearcher multiSearcher = indexContext.getMultiSearcher();
-		Searchable[] searchables = multiSearcher.getSearchables();
-		for (final Searchable searchable : searchables) {
-			IndexReader indexReader = ((IndexSearcher) searchable).getIndexReader();
-			totalNumDocs += indexReader.numDocs();
-		}
-		assertEquals("There should be this number of documents in the index : ", numDocs, totalNumDocs);
+	private void verifyNumDocs(final int numDocs) throws Exception {
+		IndexReader indexReader = getIndexReader();
+		assertEquals("There should be this number of documents in the index : ", numDocs, indexReader.numDocs());
+	}
+
+	private IndexSearcher getIndexSearcher() throws Exception {
+		IndexReader indexReader = getIndexReader();
+		return new IndexSearcher(indexReader);
+	}
+
+	private IndexReader getIndexReader() throws Exception {
+		String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
+		File indexDirectory = IndexManager.getLatestIndexDirectory(indexDirectoryPath);
+		File indexDirectoryServer = new File(indexDirectory, UriUtilities.getIp());
+
+		Directory directory = FSDirectory.open(indexDirectoryServer);
+		IndexReader indexReader = IndexReader.open(directory);
+		printIndex(indexReader);
+		return indexReader;
 	}
 
 	private void executeDelta(final File deltaFile) throws Exception {
 		// Execute the delta index
 		indexDelta.execute(indexContext);
-		ThreadUtilities.sleep(5000);
-		open.execute(indexContext);
-		ThreadUtilities.sleep(5000);
-		// Verify that only the changed file was updated
-		printIndex(indexContext.getMultiSearcher());
 	}
 
 	private String appendRandomString(final File deltaFile) throws Exception {

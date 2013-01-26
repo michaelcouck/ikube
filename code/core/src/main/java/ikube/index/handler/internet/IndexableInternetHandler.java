@@ -7,6 +7,7 @@ import ikube.index.content.ByteOutputStream;
 import ikube.index.content.IContentProvider;
 import ikube.index.content.InternetContentProvider;
 import ikube.index.handler.IndexableHandler;
+import ikube.index.handler.ResourceBaseHandler;
 import ikube.index.parse.IParser;
 import ikube.index.parse.ParserProvider;
 import ikube.index.parse.mime.MimeType;
@@ -148,12 +149,15 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	/** Access to the database. */
 	@Autowired
 	private IDataBase dataBase;
+	@Autowired
+	@SuppressWarnings("rawtypes")
+	private ResourceBaseHandler resourceUrlHandler;
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<Future<?>> handle(final IndexContext<?> indexContext, final IndexableInternet indexable) throws Exception {
+	public List<Future<?>> handleIndexable(final IndexContext<?> indexContext, final IndexableInternet indexable) throws Exception {
 		// The start url
 		List<Future<?>> futures = new ArrayList<Future<?>>();
 		try {
@@ -280,7 +284,7 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 			}
 
 			// Add the document to the index
-			addDocument(indexContext, indexable, url, parsedContent);
+			handleResource(indexContext, indexable, new Document(), url);
 			Thread.sleep(indexContext.getThrottle());
 		} catch (InterruptedException e) {
 			throw e;
@@ -374,10 +378,11 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	 * @param url the url being added to the index, i.e. just been visited and the data has been extracted
 	 * @param parsedContent the content that was extracted from the url
 	 */
-	protected void addDocument(final IndexContext<?> indexContext, final IndexableInternet indexable, final Url url,
-			final String parsedContent) {
+	@SuppressWarnings("unchecked")
+	public Document handleResource(final IndexContext<?> indexContext, final IndexableInternet indexable, final Document document,
+			final Object resource) {
+		Url url = (Url) resource;
 		try {
-			Document document = new Document();
 			Store store = indexable.isStored() ? Store.YES : Store.NO;
 			Index analyzed = indexable.isAnalyzed() ? Index.ANALYZED : Index.NOT_ANALYZED;
 			TermVector termVector = indexable.isVectored() ? TermVector.YES : TermVector.NO;
@@ -401,8 +406,8 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 				IndexManager.addStringField(indexable.getTitleFieldName(), url.getUrl(), document, store, analyzed, termVector);
 			}
 			// Add the contents field
-			IndexManager.addStringField(indexable.getContentFieldName(), parsedContent, document, store, analyzed, termVector);
-			this.addDocument(indexContext, indexable, document);
+			IndexManager.addStringField(indexable.getContentFieldName(), url.getParsedContent(), document, store, analyzed, termVector);
+			resourceUrlHandler.handleResource(indexContext, indexable, document, null);
 		} catch (Exception e) {
 			if (url != null) {
 				url.setParsedContent(null);
@@ -410,6 +415,7 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 			}
 			logger.error("Exception accessing url : " + url, e);
 		}
+		return document;
 	}
 
 	/**

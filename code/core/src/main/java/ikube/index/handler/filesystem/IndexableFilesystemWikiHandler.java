@@ -3,8 +3,8 @@ package ikube.index.handler.filesystem;
 import ikube.IConstants;
 import ikube.index.IndexManager;
 import ikube.index.handler.IndexableHandler;
+import ikube.index.handler.ResourceBaseHandler;
 import ikube.model.IndexContext;
-import ikube.model.IndexableFileSystem;
 import ikube.model.IndexableFileSystemWiki;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.ThreadUtilities;
@@ -24,6 +24,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 /**
@@ -44,12 +45,14 @@ public class IndexableFilesystemWikiHandler extends IndexableHandler<IndexableFi
 
 	@Value("${wiki.read.length}")
 	private long readLength = 1024 * 1024 * 100;
+	@Autowired
+	private ResourceBaseHandler<IndexableFileSystemWiki> resourceHandler;
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<Future<?>> handle(final IndexContext<?> indexContext, final IndexableFileSystemWiki indexable) throws Exception {
+	public List<Future<?>> handleIndexable(final IndexContext<?> indexContext, final IndexableFileSystemWiki indexable) throws Exception {
 		List<Future<?>> futures = new ArrayList<Future<?>>();
 		String filePath = indexable.getPath();
 		File directory = FileUtilities.getFile(filePath, Boolean.TRUE);
@@ -138,7 +141,7 @@ public class IndexableFilesystemWikiHandler extends IndexableHandler<IndexableFi
 			String content = stringBuilder.substring(startOffset, endOffset);
 			stringBuilder.delete(startOffset, endOffset);
 			// Add the documents to the index
-			handleRevision(indexContext, indexableFileSystem, content);
+			handleResource(indexContext, indexableFileSystem, new Document(), content);
 			counter.counter++;
 		}
 	}
@@ -151,18 +154,18 @@ public class IndexableFilesystemWikiHandler extends IndexableHandler<IndexableFi
 	 * @param logFile and the individual log file that we will index
 	 * @throws Exception
 	 */
-	private void handleRevision(final IndexContext<?> indexContext, final IndexableFileSystem indexableFileSystem, final String content)
-			throws Exception {
+	Document handleResource(final IndexContext<?> indexContext, final IndexableFileSystemWiki indexableFileSystem, final Document document,
+			final Object content) throws Exception {
 		Store store = indexableFileSystem.isStored() ? Store.YES : Store.NO;
 		Index analyzed = indexableFileSystem.isAnalyzed() ? Index.ANALYZED : Index.NOT_ANALYZED_NO_NORMS;
 		TermVector termVector = indexableFileSystem.isVectored() ? TermVector.YES : TermVector.NO;
 
-		Document document = new Document();
 		String pathFieldName = indexableFileSystem.getPathFieldName();
 		String contentFieldName = indexableFileSystem.getContentFieldName();
 		IndexManager.addStringField(pathFieldName, indexableFileSystem.getPath(), document, Store.YES, Index.ANALYZED, TermVector.YES);
-		IndexManager.addStringField(contentFieldName, content, document, store, analyzed, termVector);
-		addDocument(indexContext, indexableFileSystem, document);
+		IndexManager.addStringField(contentFieldName, (String) content, document, store, analyzed, termVector);
+		resourceHandler.handleResource(indexContext, indexableFileSystem, document, null);
+		return document;
 	}
 
 }

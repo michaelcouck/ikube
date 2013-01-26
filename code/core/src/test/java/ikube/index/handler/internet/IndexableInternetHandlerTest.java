@@ -6,6 +6,7 @@ import ikube.ATest;
 import ikube.model.IndexableInternet;
 import ikube.model.Url;
 
+import org.apache.lucene.document.Document;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -32,7 +33,7 @@ public class IndexableInternetHandlerTest extends ATest {
 		String content = "<html><head><title>" + title + "</title></head></html>";
 		url.setContentType("text/html");
 		url.setRawContent(content.getBytes());
-		indexableInternetHandler.addDocument(indexContext, indexableInternet, url, content);
+		indexableInternetHandler.handleResource(indexContext, indexableInternet, new Document(), url);
 		assertNotNull(url.getTitle());
 		assertEquals(title, url.getTitle());
 	}

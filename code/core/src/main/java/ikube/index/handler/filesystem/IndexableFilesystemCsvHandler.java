@@ -1,30 +1,25 @@
 package ikube.index.handler.filesystem;
 
 import ikube.IConstants;
-import ikube.index.IndexManager;
+import ikube.index.handler.IndexableHandler;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.model.IndexableColumn;
-import ikube.model.IndexableFileSystem;
 import ikube.model.IndexableFileSystemCsv;
-import ikube.toolkit.StringUtilities;
 import ikube.toolkit.ThreadUtilities;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.Future;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.LineIterator;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field.Index;
-import org.apache.lucene.document.Field.Store;
-import org.apache.lucene.document.Field.TermVector;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * This handler is a custom handler for the CSV files. Rather than inserting the data into the database, meaning creating tables and the
@@ -35,14 +30,40 @@ import org.apache.lucene.document.Field.TermVector;
  * @since 08.02.2011
  * @version 01.00
  */
-public class IndexableFilesystemCsvHandler extends IndexableFilesystemHandler {
+public class IndexableFilesystemCsvHandler extends IndexableHandler<IndexableFileSystemCsv> {
+
+	@Autowired
+	private ResourceRowHandler resourceRowHandler;
+
+	@Override
+	public List<Future<?>> handleIndexable(final IndexContext<?> indexContext, final IndexableFileSystemCsv indexableFileSystem)
+			throws Exception {
+		List<Future<?>> futures = new ArrayList<Future<?>>();
+		Runnable runnable = new Runnable() {
+			public void run() {
+				File[] files = new File(indexableFileSystem.getPath()).listFiles();
+				if (files == null || files.length == 0) {
+					logger.warn("No files in directory : " + indexableFileSystem.getPath());
+					return;
+				}
+				for (final File file : files) {
+					try {
+						handleFile(indexContext, indexableFileSystem, file);
+					} catch (Exception e) {
+						logger.error("Exception indexing csv file : " + file, e);
+					}
+				}
+			}
+		};
+		Future<?> future = ThreadUtilities.submit(indexContext.getIndexName(), runnable);
+		futures.add(future);
+		return futures;
+	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
-	public void handleFile(final IndexContext<?> indexContext, final IndexableFileSystem indexableFileSystem, final File file)
-			throws Exception {
+	void handleFile(final IndexContext<?> indexContext, final IndexableFileSystemCsv indexableFileSystem, final File file) throws Exception {
 		IndexableFileSystemCsv indexableFileSystemCsv = (IndexableFileSystemCsv) indexableFileSystem;
 		String encoding = indexableFileSystemCsv.getEncoding() != null ? indexableFileSystemCsv.getEncoding() : IConstants.ENCODING;
 		logger.info("Using encoding for file : " + encoding + ", " + file);
@@ -51,14 +72,22 @@ public class IndexableFilesystemCsvHandler extends IndexableFilesystemHandler {
 			// The first line is the header, i.e. the columns of the file
 			String headerLine = lineIterator.nextLine();
 			String[] columns = StringUtils.split(headerLine, indexableFileSystemCsv.getSeparator());
+			// Trim any space on the column headers
+			for (int i = 0; i < columns.length; i++) {
+				String column = columns[i];
+				columns[i] = column.trim();
+			}
 
-			List<IndexableColumn> indexableColumns = getIndexableColumns(indexableFileSystemCsv, columns);
+			// logger.info("Columns : " + indexableFileSystemCsv.getChildren().size());
+			List<Indexable<?>> indexableColumns = getIndexableColumns(indexableFileSystemCsv, columns);
+			// logger.info("Columns : " + indexableColumns.size());
+			indexableFileSystemCsv.setChildren(indexableColumns);
 
 			int lineNumber = 0;
-			String fileName = file.getName();
+			indexableFileSystemCsv.setFile(file);
 			char separator = indexableFileSystemCsv.getSeparator();
-			String lineNumberFieldName = indexableFileSystemCsv.getLineNumberFieldName();
 			while (lineIterator.hasNext()) {
+				indexableFileSystemCsv.setLineNumber(lineNumber);
 				try {
 					String line = lineIterator.nextLine();
 					String[] values = StringUtils.split(line, separator);
@@ -67,12 +96,13 @@ public class IndexableFilesystemCsvHandler extends IndexableFilesystemHandler {
 								+ ", values : " + values.length + ", data : " + Arrays.deepToString(values));
 					}
 					for (int i = 0; i < values.length && i < indexableColumns.size(); i++) {
-						IndexableColumn indexableColumn = indexableColumns.get(i);
+						IndexableColumn indexableColumn = (IndexableColumn) indexableColumns.get(i);
 						indexableColumn.setContent(values[i]);
+						// logger.info("Column : " + i + ", " + indexableColumn.getName() + ", " + indexableColumn.getContent() + ", "
+						// + indexableColumn.hashCode());
 					}
 					// columns, values, separator, store, index, termVector, indexableColumns
-					handleResource(indexContext, indexableFileSystemCsv, new Document(), fileName, lineNumber, lineNumberFieldName,
-							indexableColumns);
+					resourceRowHandler.handleResource(indexContext, indexableFileSystemCsv, new Document(), file);
 					ThreadUtilities.sleep(indexContext.getThrottle());
 				} catch (Exception e) {
 					logger.error("Exception processing file : " + file, e);
@@ -88,72 +118,34 @@ public class IndexableFilesystemCsvHandler extends IndexableFilesystemHandler {
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	@SuppressWarnings("unchecked")
-	public void handleResource(final IndexContext<?> indexContext, final IndexableFileSystem indexableFileSystem, final Document document,
-			final Object... resources) {
-		// fileName, lineNumber, lineNumberFieldName
-		String fileName = (String) resources[0];
-		int lineNumber = (Integer) resources[1];
-		String lineNumberFieldName = (String) resources[2];
-		List<IndexableColumn> indexableColumns = (List<IndexableColumn>) resources[3];
-
-		String identifier = StringUtils.join(new Object[] { fileName, Integer.toString(lineNumber) }, IConstants.SPACE);
-		// Add the line number field
-		IndexManager.addStringField(lineNumberFieldName, identifier, document, Store.YES, Index.ANALYZED, TermVector.NO);
-
-		for (IndexableColumn indexableColumn : indexableColumns) {
-			String fieldName = indexableColumn.getFieldName();
-			String fieldValue = (String) indexableColumn.getContent();
-
-			Store store = indexableColumn.isStored() ? Store.YES : Store.NO;
-			Index index = indexableColumn.isAnalyzed() ? Index.ANALYZED : Index.NOT_ANALYZED;
-			TermVector termVector = indexableColumn.isVectored() ? TermVector.YES : TermVector.NO;
-
-			if (StringUtilities.isNumeric(fieldValue)) {
-				IndexManager.addNumericField(fieldName, fieldValue, document, store);
-			} else {
-				fieldValue = StringUtilities.strip(fieldValue, "\"");
-				IndexManager.addStringField(fieldName, fieldValue, document, store, index, termVector);
-			}
-			indexableColumn.setContent(null);
-		}
-
-		try {
-			addDocument(indexContext, indexableFileSystem, document);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
 	protected synchronized boolean isExcluded(final File file, final Pattern pattern) {
-		return !file.getName().endsWith(".csv") || super.isExcluded(file, pattern);
+		return !file.getName().endsWith(".csv");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private List<IndexableColumn> getIndexableColumns(final Indexable<?> indexable, final String[] columns) {
-		class IndexableColumnComparator<T extends IndexableColumn> implements Comparator<IndexableColumn> {
-			@Override
-			public int compare(IndexableColumn o1, IndexableColumn o2) {
-				return o1.getFieldName().compareTo(o2.getFieldName());
-			}
-		}
+	protected List<Indexable<?>> getIndexableColumns(final Indexable<?> indexable, final String[] columns) {
 		List<Indexable<?>> indexableColumns = indexable.getChildren();
-		Comparator indexableColumnComparator = new IndexableColumnComparator();
 		if (indexableColumns == null) {
 			indexableColumns = new ArrayList<Indexable<?>>();
+			indexable.setChildren(indexableColumns);
 		}
-		Collections.sort(indexableColumns, indexableColumnComparator);
+		// logger.info("Columns : " + indexableColumns.size());
+		List<Indexable<?>> sortedIndexableColumns = new ArrayList<Indexable<?>>();
 		// Add all the columns that are not present in the configuration
 		for (final String columnName : columns) {
-			IndexableColumn indexableColumn = new IndexableColumn();
-			indexableColumn.setFieldName(columnName);
-			if (Collections.binarySearch(indexableColumns, columnName, indexableColumnComparator) < 0) {
+			IndexableColumn indexableColumn = null;
+			for (final Indexable<?> child : indexableColumns) {
+				// logger.info("Exists : " + ((IndexableColumn) child).getFieldName().equals(columnName) + ", " + columnName + ", "
+				// + ((IndexableColumn) child).getFieldName());
+				if (((IndexableColumn) child).getFieldName().equals(columnName)) {
+					indexableColumn = (IndexableColumn) child;
+					break;
+				}
+			}
+			if (indexableColumn == null) {
 				// Add the column to the list
+				indexableColumn = new IndexableColumn();
 				indexableColumn.setName(columnName);
+				indexableColumn.setFieldName(columnName);
 				indexableColumn.setAddress(Boolean.FALSE);
 				indexableColumn.setAnalyzed(Boolean.TRUE);
 				indexableColumn.setFieldName(columnName);
@@ -163,20 +155,9 @@ public class IndexableFilesystemCsvHandler extends IndexableFilesystemHandler {
 				indexableColumn.setStored(Boolean.TRUE);
 				indexableColumn.setStrategies(indexable.getStrategies());
 				indexableColumn.setVectored(Boolean.TRUE);
-				indexableColumns.add(indexableColumn);
-				// We need to re-sort each time there is an addition column
-				Collections.sort(indexableColumns, indexableColumnComparator);
+				// logger.info("Adding column : " + columnName + ", " + indexableColumn.getFieldName() + ", " + indexableColumn.hashCode());
 			}
-		}
-		// Now sort the columns in the list according to the columns in the header of the file
-		List<IndexableColumn> sortedIndexableColumns = new ArrayList<IndexableColumn>();
-		for (final String columnName : columns) {
-			for (final Indexable<?> indexableColumn : indexableColumns) {
-				if (indexableColumn.getName().equals(columnName)) {
-					sortedIndexableColumns.add((IndexableColumn) indexableColumn);
-					break;
-				}
-			}
+			sortedIndexableColumns.add(indexableColumn);
 		}
 		return sortedIndexableColumns;
 	}

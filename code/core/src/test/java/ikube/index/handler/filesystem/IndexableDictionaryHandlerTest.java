@@ -48,7 +48,7 @@ public class IndexableDictionaryHandlerTest extends ATest {
 		when(indexableDictionary.getPath()).thenReturn(dictionariesDirectory.getAbsolutePath());
 		IndexableDictionaryHandler dictionaryHandler = new IndexableDictionaryHandler();
 		dictionaryHandler.setThreads(1);
-		List<Future<?>> threads = dictionaryHandler.handle(indexContext, indexableDictionary);
+		List<Future<?>> threads = dictionaryHandler.handleIndexable(indexContext, indexableDictionary);
 		ThreadUtilities.waitForFutures(threads, Integer.MAX_VALUE);
 		File dictionaryIndexDirectory = FileUtilities.getFile(indexContext.getIndexDirectoryPath(), Boolean.TRUE);
 		boolean indexExists = IndexReader.indexExists(FSDirectory.open(dictionaryIndexDirectory));

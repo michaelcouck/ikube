@@ -39,7 +39,7 @@ public class IndexableEmailHandlerIntegration extends Integration {
 		IndexableEmail indexableEmail = ApplicationContextManager.getBean(IndexableEmail.class);
 		IndexableEmailHandler indexableEmailHandler = ApplicationContextManager.getBean(IndexableEmailHandler.class);
 
-		indexableEmailHandler.handle(indexContext, indexableEmail);
+		indexableEmailHandler.handleIndexable(indexContext, indexableEmail);
 
 		// TODO - check that there is some data in the index from the mail
 	}

@@ -513,7 +513,7 @@ public final class IndexManager {
 	public static void addStringField(final String fieldName, final String fieldContent, final Document document, final Store store,
 			final Index analyzed, final TermVector termVector) {
 		if (fieldName == null || fieldContent == null) {
-			LOGGER.warn("Field and content can't be null : " + fieldName);
+			// LOGGER.warn("Field and content can't be null : " + fieldName);
 			return;
 		}
 		Field field = document.getField(fieldName);

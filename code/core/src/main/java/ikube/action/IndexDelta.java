@@ -8,7 +8,6 @@ import ikube.model.IndexableFileSystem;
 import ikube.toolkit.HashUtilities;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -17,6 +16,10 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.search.BooleanClause;
+import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.TermQuery;
 
 /**
  * @author Michael Couck
@@ -30,23 +33,21 @@ public class IndexDelta extends Action<IndexContext<?>, Boolean> {
 	 */
 	@Override
 	public boolean preExecute(final IndexContext<?> indexContext) throws Exception {
-		logger.info("Pre process action : " + this.getClass());
-		List<Indexable<?>> indexables = indexContext.getIndexables();
-		logger.info("Index delta : " + indexables.size());
-		// Start the indexing for this server
+		logger.info("Pre process action : " + this.getClass() + ", " + indexContext.getName());
 		IndexWriter[] indexWriters = IndexManager.openIndexWriterDelta(indexContext);
 		indexContext.setIndexWriters(indexWriters);
-		logger.info("Index delta : " + Arrays.deepToString(indexWriters) + ", " + indexContext);
 
 		List<Long> hashes = new ArrayList<Long>();
 		for (final Indexable<?> indexable : indexContext.getChildren()) {
 			if (IndexableFileSystem.class.isAssignableFrom(indexable.getClass())) {
 				IndexableFileSystem indexableFileSystem = (IndexableFileSystem) indexable;
 				for (final IndexWriter indexWriter : indexContext.getIndexWriters()) {
+					if (!IndexReader.indexExists(indexWriter.getDirectory())) {
+						continue;
+					}
 					IndexReader indexReader = IndexReader.open(indexWriter.getDirectory());
 					for (int i = 0; i < indexReader.numDocs(); i++) {
 						Document document = indexReader.document(i);
-						// /usr/share/apache-tomcat-7.0.27/bin/ikube/common/languages/english.txt,1234567890,1234567890
 						String path = document.get(indexableFileSystem.getPathFieldName());
 						String length = document.get(indexableFileSystem.getLengthFieldName());
 						String lastModified = document.get(indexableFileSystem.getLastModifiedFieldName());
@@ -80,11 +81,15 @@ public class IndexDelta extends Action<IndexContext<?>, Boolean> {
 	 */
 	@Override
 	public boolean postExecute(final IndexContext<?> indexContext) throws Exception {
+		logger.info("Post process action : " + this.getClass() + ", " + indexContext.getName());
 		List<Long> hashes = indexContext.getHashes();
 		for (final Indexable<?> indexable : indexContext.getChildren()) {
 			if (IndexableFileSystem.class.isAssignableFrom(indexable.getClass())) {
 				IndexableFileSystem indexableFileSystem = (IndexableFileSystem) indexable;
 				for (final IndexWriter indexWriter : indexContext.getIndexWriters()) {
+					if (!IndexReader.indexExists(indexWriter.getDirectory())) {
+						continue;
+					}
 					IndexReader indexReader = IndexReader.open(indexWriter.getDirectory());
 					for (int i = 0; i < indexReader.numDocs(); i++) {
 						Document document = indexReader.document(i);
@@ -94,16 +99,25 @@ public class IndexDelta extends Action<IndexContext<?>, Boolean> {
 						long identifier = HashUtilities.hash(path, length, lastModified);
 						int index = Collections.binarySearch(hashes, identifier);
 						if (index >= 0) {
+							logger.info("Num docs : " + indexWriter.numDocs());
 							String fileId = document.get(IConstants.FILE_ID);
-							Term term = new Term(IConstants.FILE_ID, fileId);
-							indexWriter.deleteDocuments(term);
-							logger.info("Removed old file : " + identifier + ", " + length + ", " + lastModified + ", " + path);
+							// Term term = new Term(IConstants.FILE_ID, fileId);
+							// indexWriter.deleteDocuments(term);
+
+							BooleanQuery booleanQuery = new BooleanQuery();
+							Query termQuery = new TermQuery(new Term(IConstants.FILE_ID, fileId));
+							booleanQuery.add(termQuery, BooleanClause.Occur.MUST);
+							indexWriter.deleteDocuments(booleanQuery);
+
+							logger.info("Removed old file : " + identifier + ", " + length + ", " + lastModified + ", " + path + ", "
+									+ indexWriter.numDocs());
 						}
 					}
+					indexReader.close();
 				}
 			}
 		}
-		indexContext.getHashes().clear();
+		hashes.clear();
 		IndexManager.closeIndexWriters(indexContext);
 		indexContext.setIndexWriters();
 		return Boolean.TRUE;

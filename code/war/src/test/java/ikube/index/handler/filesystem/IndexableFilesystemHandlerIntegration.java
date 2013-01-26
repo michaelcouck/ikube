@@ -45,7 +45,7 @@ public class IndexableFilesystemHandlerIntegration extends Integration {
 			String ip = InetAddress.getLocalHost().getHostAddress();
 			IndexWriter indexWriter = IndexManager.openIndexWriter(dropbox, System.currentTimeMillis(), ip);
 			dropbox.setIndexWriters(indexWriter);
-			List<Future<?>> threads = indexableFilesystemHandler.handle(dropbox, dropboxIndexable);
+			List<Future<?>> threads = indexableFilesystemHandler.handleIndexable(dropbox, dropboxIndexable);
 			ThreadUtilities.waitForFutures(threads, Integer.MAX_VALUE);
 
 			// Verify that there are some documents in the index
@@ -72,7 +72,7 @@ public class IndexableFilesystemHandlerIntegration extends Integration {
 			}
 		});
 
-		List<Future<?>> futures = indexableFilesystemHandler.handle(dropbox, dropboxIndexable);
+		List<Future<?>> futures = indexableFilesystemHandler.handleIndexable(dropbox, dropboxIndexable);
 		ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
 		boolean atLeastOneCancelled = Boolean.FALSE;
 		for (final Future<?> future : futures) {

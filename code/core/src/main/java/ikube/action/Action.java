@@ -3,7 +3,7 @@ package ikube.action;
 import ikube.action.rule.IRule;
 import ikube.cluster.IClusterManager;
 import ikube.database.IDataBase;
-import ikube.index.handler.IHandler;
+import ikube.index.handler.IIndexableHandler;
 import ikube.interceptor.RuleInterceptor;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
@@ -87,14 +87,18 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
 	@Override
 	public Boolean execute(final IndexContext<?> indexContext) throws Exception {
 		try {
-			logger.info("Action pre execute : " + indexContext.getIndexName());
+			logger.info("Action pre execute : 1 : " + indexContext.getIndexName());
 			preExecute(indexContext);
+			logger.info("Action pre execute : 2 : " + indexContext.getIndexName());
 			if (dependent != null) {
 				logger.info("Executing dependent action : " + dependent);
 				dependent.execute(indexContext);
 			}
 			logger.info("Action internal execute : " + indexContext.getIndexName());
 			return internalExecute(indexContext);
+		} catch (Exception e) {
+			logger.error(null, e);
+			throw e;
 		} finally {
 			logger.info("Action post execute : " + indexContext.getIndexName());
 			postExecute(indexContext);
@@ -178,11 +182,11 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
 			try {
 				Indexable<?> indexable = iterator.next();
 				// Get the right handler for this indexable
-				IHandler<Indexable<?>> handler = getHandler(indexable);
+				IIndexableHandler<Indexable<?>> handler = getHandler(indexable);
 				action = start(indexContext.getIndexName(), indexable.getName());
 				logger.info("Indexable : " + indexable.getName());
 				// Execute the handler and wait for the threads to finish
-				List<Future<?>> futures = handler.handle(indexContext, indexable);
+				List<Future<?>> futures = handler.handleIndexable(indexContext, indexable);
 				ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
 			} catch (Exception e) {
 				logger.error("Exception indexing data : " + indexContext.getIndexName(), e);
@@ -209,10 +213,10 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
 	 * @return the handler for the indexable or null if there is no handler for the indexable. This will fail with a warning if there is no
 	 *         handler for the indexable
 	 */
-	protected IHandler<Indexable<?>> getHandler(final Indexable<?> indexable) {
+	protected IIndexableHandler<Indexable<?>> getHandler(final Indexable<?> indexable) {
 		@SuppressWarnings("rawtypes")
-		Map<String, IHandler> indexableHandlers = ApplicationContextManager.getBeans(IHandler.class);
-		for (IHandler<Indexable<?>> handler : indexableHandlers.values()) {
+		Map<String, IIndexableHandler> indexableHandlers = ApplicationContextManager.getBeans(IIndexableHandler.class);
+		for (IIndexableHandler<Indexable<?>> handler : indexableHandlers.values()) {
 			if (handler.getIndexableClass().equals(indexable.getClass())) {
 				return handler;
 			}

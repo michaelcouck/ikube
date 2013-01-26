@@ -2,12 +2,13 @@ package ikube.index.handler.strategy;
 
 import ikube.index.handler.IStrategy;
 import ikube.model.IndexContext;
+import ikube.model.Indexable;
 import ikube.toolkit.HashUtilities;
 
+import java.io.File;
 import java.util.Collections;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.lucene.document.Document;
 
 /**
  * This is the delta strategy for the file system handler. Essentially what this class should do is to check to see if the document/file
@@ -19,8 +20,6 @@ import org.slf4j.LoggerFactory;
  * @version 01.00
  */
 public class DeltaIndexableFilesystemStrategy extends AStrategy {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(DeltaIndexableFilesystemStrategy.class);
 
 	public DeltaIndexableFilesystemStrategy() {
 		this(null);
@@ -34,27 +33,26 @@ public class DeltaIndexableFilesystemStrategy extends AStrategy {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean aroundProcess(final Object... parameters) throws Exception {
+	public boolean aroundProcess(final IndexContext<?> indexContext, final Indexable<?> indexable, final Document document,
+			final Object resource) throws Exception {
 		boolean mustProceed = Boolean.TRUE;
-		if (parameters != null && parameters.length == 3) {
-			// Check that the file is changed of doesn't exist, if changed or doesn't exist then process the
-			// method, add the resource to the file system file as a reference against the index
-			IndexContext<?> indexContext = (IndexContext<?>) parameters[0];
-			java.io.File file = (java.io.File) parameters[2];
-			String path = file.getAbsolutePath();
-			String length = Long.toString(file.length());
-			String lastModified = Long.toString(file.lastModified());
-			Long identifier = HashUtilities.hash(path, length, lastModified);
-			int index = Collections.binarySearch(indexContext.getHashes(), identifier);
-			LOGGER.info("Key for, proceeding with file : " + identifier + ", " + length + ", " + lastModified + ", " + path);
-			if (index >= 0) {
-				mustProceed = Boolean.FALSE;
-				// Remove the key because at the end of processing we will delete
-				// all the documents in the index that are still in the hash list
-				indexContext.getHashes().remove(index);
-			}
+		// Check that the file is changed of doesn't exist, if changed or doesn't exist then process the
+		// method, add the resource to the file system file as a reference against the index
+		File file = (File) resource;
+		String path = file.getAbsolutePath();
+		String length = Long.toString(file.length());
+		String lastModified = Long.toString(file.lastModified());
+		Long identifier = HashUtilities.hash(path, length, lastModified);
+		int index = Collections.binarySearch(indexContext.getHashes(), identifier);
+		logger.info("Key for, proceeding with file : " + identifier + ", " + length + ", " + lastModified + ", " + path);
+		if (index >= 0) {
+			mustProceed = Boolean.FALSE;
+			// Remove the key because at the end of processing we will delete
+			// all the documents in the index that are still in the hash list
+			indexContext.getHashes().remove(index);
 		}
-		return mustProceed && super.aroundProcess(parameters);
+		logger.info("Around process delta file strategy : " + mustProceed);
+		return mustProceed && super.aroundProcess(indexContext, indexable, document, resource);
 	}
 
 }

@@ -4,6 +4,7 @@ import ikube.index.handler.IStrategy;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
 
+import org.apache.lucene.document.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,8 +25,7 @@ public abstract class AStrategy implements IStrategy {
 	/**
 	 * Constructor takes the next strategy, could be null.
 	 * 
-	 * @param next
-	 *            the chained strategy to execute
+	 * @param next the chained strategy to execute
 	 */
 	public AStrategy(final IStrategy nextStrategy) {
 		this.nextStrategy = nextStrategy;
@@ -36,9 +36,10 @@ public abstract class AStrategy implements IStrategy {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean aroundProcess(final Object... parameters) throws Exception {
+	public boolean aroundProcess(final IndexContext<?> indexContext, final Indexable<?> indexable, final Document document,
+			final Object resource) throws Exception {
 		if (nextStrategy != null) {
-			return nextStrategy.aroundProcess(parameters);
+			return nextStrategy.aroundProcess(indexContext, indexable, document, resource);
 		}
 		return Boolean.TRUE;
 	}

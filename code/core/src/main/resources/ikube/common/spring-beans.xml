@@ -323,13 +323,8 @@
 	   	class="ikube.cluster.listener.hzc.DeleteListener" />
 	
 	<!-- The handlers that do the indexing logic. -->
-	<bean
-		id="ikube.index.handler.IHandler"
-		class="ikube.index.handler.IHandler"
-		abstract="true" />
 	<bean 
 		id="ikube.index.handler.IndexableHandler"
-		parent="ikube.index.handler.IHandler"
 		class="ikube.index.handler.IndexableHandler" 
 		abstract="true" />
 	<bean
@@ -379,5 +374,18 @@
 		class="ikube.index.handler.filesystem.IndexableFilesystemCsvHandler"
 		property:threads="${filesystem.handler.threads}"
 		property:indexableClass="ikube.model.IndexableFileSystemCsv" />
+	
+	<bean 
+		id="ikube.index.handler.ResourceHandler" 
+		class="ikube.index.handler.ResourceHandler" />
+	<bean 
+		id="ikube.index.handler.ResourceBaseHandler" 
+		class="ikube.index.handler.ResourceBaseHandler" />
+	<bean 
+		id="ikube.index.handler.filesystem.ResourceFileHandler" 
+		class="ikube.index.handler.filesystem.ResourceFileHandler" />
+	<bean 
+		id="ikube.index.handler.filesystem.ResourceRowHandler" 
+		class="ikube.index.handler.filesystem.ResourceRowHandler" />
 	
 </beans>

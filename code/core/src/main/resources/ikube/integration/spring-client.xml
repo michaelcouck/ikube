@@ -36,8 +36,6 @@
 		<ref local="mail" />
 		<ref local="hazelcast" />
 		<ref local="ikubeGoogleCode" />
-		<ref local="internetMillion" />
-		<ref local="filesystemMillion" />
 		<ref local="indexContextTable" />
 		<ref local="snapshotTable" />
 	</util:list>
@@ -144,33 +142,4 @@
 		property:internetBatchSize="${internet.batch.size}"
 		property:excludedPattern="${internet.excluded.pattern}" />
 	
-	<bean
-		id="internetMillion"
-		class="ikube.model.IndexableInternet"
-		property:name="internetMillion"
-		property:url="${url.million}" 
-		property:idFieldName="id"
-		property:titleFieldName="title"
-		property:contentFieldName="content"
-		property:analyzed="${analyzed}"
-		property:stored="${not.stored}"
-		property:vectored="${vectored}"
-		property:internetBatchSize="${internet.batch.size}"
-		property:excludedPattern="${internet.excluded.pattern}" />
-	
-	<bean
-		id="filesystemMillion"
-		class="ikube.model.IndexableFileSystem"
-		property:name="filesMillionOne"
-		property:path="${files.path.million}"
-		property:pathFieldName="path"
-		property:nameFieldName="name"
-		property:lengthFieldName="length"
-		property:contentFieldName="contents"
-		property:stored="${not.stored}"
-		property:excludedPattern="${files.excluded.pattern}"
-		property:lastModifiedFieldName="lastmodified" 
-		property:batchSize="${file.batch.size}" 
-		property:maxReadLength="${file.max.read.length}" />
-
 </beans>

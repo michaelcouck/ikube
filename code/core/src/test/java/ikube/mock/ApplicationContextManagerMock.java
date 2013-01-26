@@ -5,7 +5,7 @@ import static org.mockito.Mockito.when;
 import ikube.IConstants;
 import ikube.cluster.IClusterManager;
 import ikube.database.IDataBase;
-import ikube.index.handler.IHandler;
+import ikube.index.handler.IIndexableHandler;
 import ikube.index.handler.database.IndexableTableHandler;
 import ikube.model.IndexContext;
 import ikube.model.IndexableTable;
@@ -78,7 +78,7 @@ public class ApplicationContextManagerMock {
 		Map<String, T> beans = new HashMap<String, T>();
 		if (IndexContext.class.isAssignableFrom(klass)) {
 			beans.put(INDEX_CONTEXT.getIndexName(), (T) INDEX_CONTEXT);
-		} else if (IHandler.class.isAssignableFrom(klass)) {
+		} else if (IIndexableHandler.class.isAssignableFrom(klass)) {
 			beans.put(HANDLER.getClass().toString(), (T) HANDLER);
 		} else {
 			T t = getBean(klass);

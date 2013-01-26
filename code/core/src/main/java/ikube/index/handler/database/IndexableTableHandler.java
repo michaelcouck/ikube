@@ -7,6 +7,7 @@ import ikube.index.content.ByteOutputStream;
 import ikube.index.content.ColumnContentProvider;
 import ikube.index.content.IContentProvider;
 import ikube.index.handler.IndexableHandler;
+import ikube.index.handler.ResourceBaseHandler;
 import ikube.index.parse.IParser;
 import ikube.index.parse.ParserProvider;
 import ikube.model.IndexContext;
@@ -39,6 +40,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * This class performs the indexing of tables. It is the primary focus of Ikube. This class is essentially a database crawler, and is multi
@@ -64,12 +66,15 @@ import org.apache.lucene.document.Field.TermVector;
  */
 public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 
+	@Autowired
+	private ResourceBaseHandler<IndexableTable> resourceTableHandler;
+
 	/**
 	 * This method starts threads and passes the indexable to them. The threads are added to the list of threads that are returned to the
 	 * caller that will have to wait for them to finish indexing all the data.
 	 */
 	@Override
-	public List<Future<?>> handle(final IndexContext<?> indexContext, final IndexableTable indexable) {
+	public List<Future<?>> handleIndexable(final IndexContext<?> indexContext, final IndexableTable indexable) {
 		// We start as many threads to access this table as defined. We return
 		// the threads to the caller that they can then wait for the threads to finish
 		final DataSource dataSource = indexable.getDataSource();
@@ -80,6 +85,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 			// to clone the indexable for each thread
 			logger.info("Indexable : " + indexable.getName());
 			final IndexableTable cloneIndexableTable = (IndexableTable) SerializationUtilities.clone(indexable);
+			cloneIndexableTable.setStrategies(indexable.getStrategies());
 			if (cloneIndexableTable.isAllColumns()) {
 				logger.info("Adding all columns to table : " + cloneIndexableTable.getName());
 				addAllColumns(cloneIndexableTable, dataSource);
@@ -122,8 +128,10 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 				// The result set is already moved to the first row, i.e. next()
 				handleRow(indexContext, indexableTable, dataSource, resultSet, currentDocument, contentProvider, currentId);
 				// Add the document to the index if this is the primary table
+				// Add the document to the index if this is the primary table
 				if (indexableTable.isPrimaryTable()) {
-					addDocument(indexContext, indexableTable, currentDocument);
+					// addDocument(indexContext, indexableTable, document);
+					resourceTableHandler.handleResource(indexContext, indexableTable, currentDocument, null);
 					currentDocument = new Document();
 				}
 				if (!resultSet.next()) {
@@ -142,7 +150,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 
 	@SuppressWarnings("rawtypes")
 	public void handleRow(final IndexContext indexContext, final IndexableTable indexableTable, final DataSource dataSource,
-			ResultSet resultSet, Document currentDocument, final IContentProvider<IndexableColumn> contentProvider,
+			final ResultSet resultSet, final Document currentDocument, final IContentProvider<IndexableColumn> contentProvider,
 			final AtomicLong currentId) throws InterruptedException {
 		// We have results from the table and we are already on the first result
 		List<Indexable<?>> children = indexableTable.getChildren();

@@ -2,6 +2,7 @@ package ikube.index.handler.email;
 
 import ikube.index.IndexManager;
 import ikube.index.handler.IndexableHandler;
+import ikube.index.handler.ResourceBaseHandler;
 import ikube.index.parse.IParser;
 import ikube.index.parse.ParserProvider;
 import ikube.model.IndexContext;
@@ -34,6 +35,7 @@ import javax.mail.URLName;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.sun.mail.pop3.POP3SSLStore;
 
@@ -50,11 +52,14 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 	private static final String SSL_FACTORY = "javax.net.ssl.SSLSocketFactory";
 	private static final String MAIL_PROTOCOL = "pop3";
 
+	@Autowired
+	private ResourceBaseHandler<IndexableEmail> resourceHandler;
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<Future<?>> handle(final IndexContext<?> indexContext, final IndexableEmail indexable) throws Exception {
+	public List<Future<?>> handleIndexable(final IndexContext<?> indexContext, final IndexableEmail indexable) throws Exception {
 		Runnable runnable = new Runnable() {
 			@Override
 			public void run() {
@@ -132,42 +137,47 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 		// For each message found in the server, index it.
 		logger.info("Message count : " + folder.getMessageCount() + ", " + folder.getFullName());
 		for (Message message : folder.getMessages()) {
-			// Builds the identifier
-			Date recievedDate = message.getReceivedDate();
-			Date sentDate = message.getSentDate();
-			int messageNumber = message.getMessageNumber();
-			long timestamp = recievedDate != null ? recievedDate.getTime() : sentDate != null ? sentDate.getTime() : 0;
-			String messageId = getMessageId(indexableMail, messageNumber, timestamp);
-
-			if (logger.isDebugEnabled()) {
-				logger.debug("Sent : " + sentDate);
-				logger.debug("Recieved : " + recievedDate);
-				logger.debug("Timestamp : " + timestamp);
-				logger.debug("Message number : " + messageNumber);
-			}
-
-			Field.Store mustStore = indexableMail.isStored() ? Field.Store.YES : Field.Store.NO;
-			Field.Index analyzed = indexableMail.isAnalyzed() ? Field.Index.ANALYZED : Field.Index.NOT_ANALYZED;
-			Field.TermVector termVector = indexableMail.isVectored() ? Field.TermVector.YES : Field.TermVector.NO;
-
-			Document document = new Document();
-			// Add the id field to the document
-			IndexManager.addStringField(indexableMail.getIdField(), messageId, document, mustStore, analyzed, termVector);
-			// Add the title field to the document
-			IndexManager.addStringField(indexableMail.getTitleField(), message.getSubject(), document, mustStore, analyzed, termVector);
-			String messageContent = getMessageContent(message);
-			if (StringUtils.isNotEmpty(messageContent)) {
-				byte[] bytes = messageContent.getBytes();
-				IParser parser = ParserProvider.getParser(message.getContentType(), bytes);
-				OutputStream outputStream = parser.parse(new ByteArrayInputStream(bytes), new ByteArrayOutputStream());
-				String fieldContent = outputStream.toString();
-				// Add the content field to the document
-				IndexManager.addStringField(indexableMail.getContentField(), fieldContent, document, mustStore, analyzed, termVector);
-			}
-			addDocument(indexContext, indexableMail, document);
+			handleResource(indexContext, indexableMail, new Document(), message);
 			Thread.sleep(indexContext.getThrottle());
 		}
 		folder.close(true);
+	}
+
+	Document handleResource(IndexContext<?> indexContext, IndexableEmail indexableMail, Document document, Object resource)
+			throws Exception {
+		Message message = (Message) resource;
+		Date recievedDate = message.getReceivedDate();
+		Date sentDate = message.getSentDate();
+		int messageNumber = message.getMessageNumber();
+		long timestamp = recievedDate != null ? recievedDate.getTime() : sentDate != null ? sentDate.getTime() : 0;
+		String messageId = getMessageId(indexableMail, messageNumber, timestamp);
+
+		if (logger.isDebugEnabled()) {
+			logger.debug("Sent : " + sentDate);
+			logger.debug("Recieved : " + recievedDate);
+			logger.debug("Timestamp : " + timestamp);
+			logger.debug("Message number : " + messageNumber);
+		}
+
+		Field.Store mustStore = indexableMail.isStored() ? Field.Store.YES : Field.Store.NO;
+		Field.Index analyzed = indexableMail.isAnalyzed() ? Field.Index.ANALYZED : Field.Index.NOT_ANALYZED;
+		Field.TermVector termVector = indexableMail.isVectored() ? Field.TermVector.YES : Field.TermVector.NO;
+
+		// Add the id field to the document
+		IndexManager.addStringField(indexableMail.getIdField(), messageId, document, mustStore, analyzed, termVector);
+		// Add the title field to the document
+		IndexManager.addStringField(indexableMail.getTitleField(), message.getSubject(), document, mustStore, analyzed, termVector);
+		String messageContent = getMessageContent(message);
+		if (StringUtils.isNotEmpty(messageContent)) {
+			byte[] bytes = messageContent.getBytes();
+			IParser parser = ParserProvider.getParser(message.getContentType(), bytes);
+			OutputStream outputStream = parser.parse(new ByteArrayInputStream(bytes), new ByteArrayOutputStream());
+			String fieldContent = outputStream.toString();
+			// Add the content field to the document
+			IndexManager.addStringField(indexableMail.getContentField(), fieldContent, document, mustStore, analyzed, termVector);
+		}
+		resourceHandler.handleResource(indexContext, indexableMail, document, message);
+		return document;
 	}
 
 	protected String getMessageId(final IndexableEmail indexableMail, final int messageNumber, final long timestamp) {

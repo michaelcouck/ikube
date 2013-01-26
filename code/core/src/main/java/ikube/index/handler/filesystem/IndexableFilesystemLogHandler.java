@@ -2,6 +2,7 @@ package ikube.index.handler.filesystem;
 
 import ikube.index.IndexManager;
 import ikube.index.handler.IndexableHandler;
+import ikube.index.handler.ResourceBaseHandler;
 import ikube.model.IndexContext;
 import ikube.model.IndexableFileSystemLog;
 import ikube.toolkit.FileUtilities;
@@ -21,6 +22,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * This handler is a custom handler for the BPost. It will index log files in a particular directory, and unlike the
@@ -32,11 +34,14 @@ import org.apache.lucene.document.Field.TermVector;
  */
 public class IndexableFilesystemLogHandler extends IndexableHandler<IndexableFileSystemLog> {
 
+	@Autowired
+	private ResourceBaseHandler<IndexableFileSystemLog> resourceHandler;
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<Future<?>> handle(final IndexContext<?> indexContext, final IndexableFileSystemLog indexable) throws Exception {
+	public List<Future<?>> handleIndexable(final IndexContext<?> indexContext, final IndexableFileSystemLog indexable) throws Exception {
 		List<Future<?>> futures = new ArrayList<Future<?>>();
 		try {
 			final IndexableFileSystemLog indexableFileSystem = (IndexableFileSystemLog) SerializationUtilities.clone(indexable);
@@ -101,7 +106,7 @@ public class IndexableFilesystemLogHandler extends IndexableHandler<IndexableFil
 				IndexManager.addStringField(pathFieldName, logFile.getAbsolutePath(), document, Store.YES, Index.ANALYZED, TermVector.YES);
 				IndexManager.addStringField(lineFieldName, stringLineNumber, document, Store.YES, Index.ANALYZED, TermVector.YES);
 				IndexManager.addStringField(contentFieldName, line, document, store, analyzed, termVector);
-				addDocument(indexContext, indexableFileSystem, document);
+				resourceHandler.handleResource(indexContext, indexableFileSystem, document, null);
 				line = bufferedReader.readLine();
 				lineNumber++;
 			}

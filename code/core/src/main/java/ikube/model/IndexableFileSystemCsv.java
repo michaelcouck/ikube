@@ -3,6 +3,7 @@ package ikube.model;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.Transient;
 
 /**
  * @author Michael Couck
@@ -13,6 +14,11 @@ import javax.persistence.InheritanceType;
 @SuppressWarnings("serial")
 @Inheritance(strategy = InheritanceType.JOINED)
 public class IndexableFileSystemCsv extends IndexableFileSystem {
+
+	@Transient
+	private transient java.io.File file;
+	@Transient
+	private transient int lineNumber;
 
 	private char separator;
 	private String encoding;
@@ -40,6 +46,22 @@ public class IndexableFileSystemCsv extends IndexableFileSystem {
 
 	public void setLineNumberFieldName(String lineNumberFieldName) {
 		this.lineNumberFieldName = lineNumberFieldName;
+	}
+
+	public java.io.File getFile() {
+		return file;
+	}
+
+	public void setFile(java.io.File file) {
+		this.file = file;
+	}
+
+	public int getLineNumber() {
+		return lineNumber;
+	}
+
+	public void setLineNumber(int lineNumber) {
+		this.lineNumber = lineNumber;
 	}
 
 }

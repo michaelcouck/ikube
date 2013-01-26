@@ -87,7 +87,7 @@ public class IndexableTableHandlerIntegration extends Integration {
 			IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
 			indexContext.setIndexWriters(indexWriter);
 			snapshotTable.setPredicate("where snapshot.id = " + snapshotTable.getMinimumId());
-			List<Future<?>> threads = indexableTableHandler.handle(indexContext, snapshotTable);
+			List<Future<?>> threads = indexableTableHandler.handleIndexable(indexContext, snapshotTable);
 			ThreadUtilities.waitForFutures(threads, Integer.MAX_VALUE);
 			assertEquals("There must be exactly one document in the index : ", 1, indexContext.getIndexWriters()[0].numDocs());
 		} finally {
@@ -226,7 +226,7 @@ public class IndexableTableHandlerIntegration extends Integration {
 			String ip = InetAddress.getLocalHost().getHostAddress();
 			IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
 			indexContext.setIndexWriters(indexWriter);
-			List<Future<?>> threads = indexableTableHandler.handle(indexContext, snapshotTable);
+			List<Future<?>> threads = indexableTableHandler.handleIndexable(indexContext, snapshotTable);
 			ThreadUtilities.waitForFutures(threads, Integer.MAX_VALUE);
 			assertTrue("There must be some data in the index : ", indexContext.getIndexWriters()[0].numDocs() > 0);
 		} finally {
@@ -240,7 +240,7 @@ public class IndexableTableHandlerIntegration extends Integration {
 		String ip = InetAddress.getLocalHost().getHostAddress();
 		IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
 		indexContext.setIndexWriters(indexWriter);
-		List<Future<?>> futures = indexableTableHandler.handle(indexContext, snapshotTable);
+		List<Future<?>> futures = indexableTableHandler.handleIndexable(indexContext, snapshotTable);
 		ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
 		assertTrue("There must be some data in the index : ", indexContext.getIndexWriters()[0].numDocs() > 0);
 	}
@@ -258,7 +258,7 @@ public class IndexableTableHandlerIntegration extends Integration {
 				continue;
 			}
 			try {
-				List<Future<?>> futures = indexableTableHandler.handle(indexContext, (IndexableTable) indexable);
+				List<Future<?>> futures = indexableTableHandler.handleIndexable(indexContext, (IndexableTable) indexable);
 				ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
 			} catch (Exception e) {
 				logger.error(e.getMessage());
@@ -283,7 +283,7 @@ public class IndexableTableHandlerIntegration extends Integration {
 			});
 			thread.setDaemon(Boolean.TRUE);
 			thread.start();
-			List<Future<?>> futures = indexableTableHandler.handle(indexContext, snapshotTable);
+			List<Future<?>> futures = indexableTableHandler.handleIndexable(indexContext, snapshotTable);
 			ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
 			// We should get here when the futures are interrupted
 			assertTrue(Boolean.TRUE);

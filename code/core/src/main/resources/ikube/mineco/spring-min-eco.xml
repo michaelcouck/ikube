@@ -20,7 +20,6 @@
         class="ikube.model.IndexContext"
 		property:throttle="0"
         property:maxAge="6000"
-        property:address="false"
         property:batchSize="${jdbc.batch.size}"
         property:bufferSize="${buffer.size}"
         property:bufferedDocs="${buffered.docs}"
@@ -32,7 +31,8 @@
         property:maxFieldLength="${max.field.length}"
         property:maxReadLength="${max.read.length}"
         property:mergeFactor="${merge.factor}"
-        property:analyzer-ref="min-eco-analyzer" />
+        property:analyzer-ref="min-eco-analyzer"
+        property:address="true" />
     
 	<bean 
 		id="min-eco-analyzer" 
@@ -63,17 +63,15 @@
 		property:maxExceptions="10000"
 		property:encoding="Windows-1252"
 		property:strategies-ref="min-eco-csv-files-strategies"
-		property:children-ref="min-eco-csv-files-columns" />
+		property:children-ref="min-eco-csv-files-columns"
+		property:address="true" />
 	<util:list id="min-eco-csv-files-columns">
 		<ref local="min-eco-csv-latitude" />
 		<ref local="min-eco-csv-longitude" />
 	</util:list>
 	
-	<bean 
-	    id="ikube.index.handler.strategy.GeospatialEnrichmentStrategyMin"
-	    class="ikube.index.handler.strategy.GeospatialEnrichmentStrategy" />
 	<util:list id="min-eco-csv-files-strategies">
-	    <ref local="ikube.index.handler.strategy.GeospatialEnrichmentStrategyMin" />
+		<bean class="ikube.index.handler.strategy.GeospatialEnrichmentStrategy" />
 	</util:list>
 	
 	<bean
@@ -84,7 +82,8 @@
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}"
-		property:numeric="true" />
+		property:numeric="true"
+		property:address="true" />
 	<bean
 		id="min-eco-csv-longitude"
 		class="ikube.model.IndexableColumn"
@@ -93,6 +92,7 @@
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}"
-		property:numeric="true" />
+		property:numeric="true"
+		property:address="true" />
 		
 </beans>

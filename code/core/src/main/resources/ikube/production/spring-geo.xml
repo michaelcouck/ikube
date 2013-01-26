@@ -54,7 +54,8 @@
 		property:allColumns="true"
 		property:stored="true"
 		property:analyzed="true"
-		property:vectored="true" />
+		property:vectored="true"
+		property:strategies-ref="geoname-strategies" />
 	<util:list id="geonameColumnsDb2">
 		<ref local="geospatialId" />
 		<ref local="geospatialName" />
@@ -78,7 +79,10 @@
 		<ref local="geospatialPopulation" />
 		<ref local="geospatialElevation" />
 		<ref local="geospatialGtopo30" />
-		<!-- <ref local="alternatename" /> -->
+		<ref local="alternatename" />
+	</util:list>
+	<util:list id="geoname-strategies">
+	    <bean class="ikube.index.handler.strategy.GeospatialEnrichmentStrategy" />
 	</util:list>
 	
 	<bean

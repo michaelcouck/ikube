@@ -74,7 +74,7 @@ public class IndexableDataSourceHandlerTest extends ATest {
 		when(indexableDataSource.getExcludedTablePatterns()).thenReturn("someOtherTableName");
 		when(indexableDataSource.getDataSource()).thenReturn(dataSource);
 
-		indexableTableHandler.handle(indexContext, indexableDataSource);
+		indexableTableHandler.handleIndexable(indexContext, indexableDataSource);
 
 		verify(indexContext, atLeastOnce()).getChildren();
 	}

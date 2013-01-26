@@ -66,6 +66,21 @@ public final class ObjectToolkit {
 	 * @param klass the class of object to build the graph for
 	 * @param target the original target object, could be the sub class
 	 * @param collections whether collections should also be populated
+	 * @param maxDepth maximum depth to populate the fields
+	 * @param excludedFields the fields that will not be populated
+	 * @return the target with populated fields
+	 */
+	public static final <T> T populateFields(final Class<?> klass, final T target, final boolean collections, final int maxDepth,
+			final String... excludedFields) {
+		return populateFields(klass, target, collections, 0, maxDepth, excludedFields);
+	}
+
+	/**
+	 * This method will populate and object and the related graph of the object, i.e. building an object graph from a prototype.
+	 * 
+	 * @param klass the class of object to build the graph for
+	 * @param target the original target object, could be the sub class
+	 * @param collections whether collections should also be populated
 	 * @param depth the depth into the graph to descend to build it
 	 * @param maxDepth maximum depth to populate the fields
 	 * @param excludedFields the fields that will not be populated

@@ -27,6 +27,7 @@ import java.util.concurrent.Future;
 import mockit.Deencapsulation;
 
 import org.apache.commons.httpclient.HttpClient;
+import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
 import org.junit.Before;
 import org.junit.Test;
@@ -62,7 +63,7 @@ public class IndexableInternetHandlerIntegration extends Integration {
 			String ip = InetAddress.getLocalHost().getHostAddress();
 			IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
 			indexContext.setIndexWriters(indexWriter);
-			List<Future<?>> threads = indexableInternetHandler.handle(indexContext, indexableInternet);
+			List<Future<?>> threads = indexableInternetHandler.handleIndexable(indexContext, indexableInternet);
 			ThreadUtilities.waitForFutures(threads, Integer.MAX_VALUE);
 
 			int expectedAtLeast = 1;
@@ -98,7 +99,7 @@ public class IndexableInternetHandlerIntegration extends Integration {
 		IndexContext<?> indexContext = mock(IndexContext.class);
 		IndexWriter indexWriter = Mockito.mock(IndexWriter.class);
 		Mockito.when(indexContext.getIndexWriters()).thenReturn(new IndexWriter[] { indexWriter });
-		indexableInternetHandler.addDocument(indexContext, indexableInternet, url, content);
+		indexableInternetHandler.handleResource(indexContext, indexableInternet, new Document(), url);
 		assertNotNull(url.getTitle());
 		assertEquals(title, url.getTitle());
 	}

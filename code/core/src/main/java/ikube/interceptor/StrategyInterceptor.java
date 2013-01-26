@@ -6,6 +6,7 @@ import ikube.model.Indexable;
 
 import java.util.List;
 
+import org.apache.lucene.document.Document;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,46 +22,35 @@ import org.slf4j.LoggerFactory;
  */
 public class StrategyInterceptor implements IStrategyInterceptor {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(StrategyInterceptor.class);
-
-	public void pointcut() {
-		LOGGER.info("Point cut : ");
-	}
+	static final Logger LOGGER = LoggerFactory.getLogger(StrategyInterceptor.class);
 
 	/**
 	 * {@inheritDoc}
 	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public Object aroundProcess(final ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
 		// This method intercepts the handle... methods in the handlers. Each indexable will then define
 		// strategies. These strategies will be executed and the accumulated result will be used to verify if the
 		// method is to be executed or not
 		boolean mustProcess = Boolean.TRUE;
 		Object[] args = proceedingJoinPoint.getArgs();
-		// LOGGER.info("Args : " + Arrays.deepToString(args));
-		if (args != null && args.length > 0) {
-			for (final Object arg : args) {
-				if (arg == null) {
-					continue;
-				}
-				Class<?> indexableClass = arg.getClass();
-				LOGGER.error("Is indexable : " + Indexable.class.isAssignableFrom(indexableClass) + ", " + indexableClass + ", " + arg);
-				if (!IndexContext.class.isAssignableFrom(indexableClass) && Indexable.class.isAssignableFrom(indexableClass)) {
-					List<IStrategy> strategies = ((Indexable) arg).getStrategies();
-					LOGGER.error("Strategies : " + strategies);
-					if (strategies != null && !strategies.isEmpty()) {
-						for (final IStrategy strategy : strategies) {
-							boolean aroundProcess = strategy.aroundProcess(args);
-							LOGGER.error("Strategy : " + strategy + ", " + aroundProcess);
-							mustProcess &= aroundProcess;
-						}
-						// LOGGER.error("Processing : " + mustProcess + ", " + Arrays.deepToString(args));
-						break;
-					}
-				}
+		// LOGGER.info("Args : " + args + ", " + proceedingJoinPoint.getSignature());
+
+		final IndexContext<?> indexContext = (IndexContext<?>) args[0];
+		final Indexable<?> indexable = (Indexable<?>) args[1];
+		final Document document = (Document) args[2];
+		final Object resource = args[3];
+
+		List<IStrategy> strategies = indexable.getStrategies();
+		// LOGGER.error("Strategies : " + strategies);
+		if (strategies != null && !strategies.isEmpty()) {
+			for (final IStrategy strategy : strategies) {
+				boolean aroundProcess = strategy.aroundProcess(indexContext, indexable, document, resource);
+				// LOGGER.error("Strategy : " + strategy + ", " + aroundProcess);
+				mustProcess &= aroundProcess;
 			}
 		}
-		LOGGER.error("Must process : " + mustProcess);
+
+		// LOGGER.error("Must process : " + mustProcess);
 		if (mustProcess) {
 			return proceedingJoinPoint.proceed(args);
 		}

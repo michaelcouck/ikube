@@ -3,6 +3,8 @@ package ikube.index.handler.strategy;
 import ikube.index.handler.IStrategy;
 import ikube.index.parse.IParser;
 import ikube.index.parse.ParserProvider;
+import ikube.model.IndexContext;
+import ikube.model.Indexable;
 import ikube.model.IndexableColumn;
 import ikube.toolkit.FileUtilities;
 
@@ -12,6 +14,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+
+import org.apache.lucene.document.Document;
 
 /**
  * TODO Comments... And complete this strategy of course. And a test...
@@ -30,7 +34,8 @@ public class AddFileToIndexableColumnStrategy extends AStrategy {
 
 	@Override
 	@SuppressWarnings("null")
-	public boolean aroundProcess(final Object... parameters) throws Exception {
+	public boolean aroundProcess(final IndexContext<?> indexContext, final Indexable<?> indexable, final Document document,
+			final Object resource) throws Exception {
 		IndexableColumn indexableColumn = null;
 		Object content = indexableColumn.getContent();
 		if (content != null && String.class.isAssignableFrom(content.getClass())) {
@@ -40,7 +45,7 @@ public class AddFileToIndexableColumnStrategy extends AStrategy {
 				throw new RuntimeException(e);
 			}
 		}
-		return super.aroundProcess(parameters);
+		return super.aroundProcess(indexContext, indexable, document, resource);
 	}
 
 	protected void addFileContentToColumnContent(final IndexableColumn indexableColumn, final String filePath) throws Exception {

@@ -4,6 +4,7 @@ import ikube.IConstants;
 import ikube.index.handler.IStrategy;
 import ikube.index.spatial.Coordinate;
 import ikube.index.spatial.geocode.IGeocoder;
+import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.model.IndexableColumn;
 
@@ -49,51 +50,57 @@ public final class GeospatialEnrichmentStrategy extends AStrategy {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean aroundProcess(final Object... parameters) throws Exception {
+	public boolean aroundProcess(final IndexContext<?> indexContext, final Indexable<?> indexable, final Document document,
+			final Object resource) throws Exception {
 		boolean mustProceed = Boolean.TRUE;
 		// The parameters can be either the columns and values from a csv file
 		// or the columns from a table filled in with the values. All the logic from the Enrichment class can
 		// be used in here to keep all the enrichment logic in the same place
-		Indexable<?> indexable = (Indexable<?>) parameters[1];
-		Document document = (Document) parameters[2];
 		Coordinate coordinate = getCoordinate(indexable);
 		if (coordinate != null) {
 			addSpatialLocationFields(coordinate, document);
 		}
-		return mustProceed && super.aroundProcess(parameters);
+		return mustProceed && super.aroundProcess(indexContext, indexable, document, resource);
 	}
 
-	private Coordinate getCoordinate(final Indexable<?> indexable) {
+	final Coordinate getCoordinate(final Indexable<?> indexable) {
 		Double latitude = null;
 		Double longitude = null;
 		for (final Indexable<?> child : indexable.getChildren()) {
 			if (IndexableColumn.class.isAssignableFrom(child.getClass())) {
 				IndexableColumn indexableColumn = (IndexableColumn) child;
-				if (indexableColumn.isAddress()) {
-					Object content = indexableColumn.getContent();
-					if (indexableColumn.getName().toLowerCase().contains(IConstants.LATITUDE.toLowerCase())) {
-						latitude = Double.parseDouble(content.toString());
-					} else if (indexableColumn.getName().toLowerCase().equals(IConstants.LONGITUDE.toLowerCase())) {
-						longitude = Double.parseDouble(content.toString());
-					}
+				// logger.info("Column : " + indexableColumn.getFieldName() + ", " + indexableColumn.hashCode() + ", "
+				// + indexableColumn.getContent() + ", " + indexableColumn.isAddress());
+				Object content = indexableColumn.getContent();
+				if (indexableColumn.getFieldName() == null) {
+					continue;
+				}
+				if (indexableColumn.getFieldName().toLowerCase().contains(IConstants.LATITUDE.toLowerCase())) {
+					latitude = Double.parseDouble(content.toString());
+					// logger.info("Lat : " + indexableColumn.getFieldName().toLowerCase().contains(IConstants.LATITUDE.toLowerCase())
+					// + ", " + latitude);
+				} else if (indexableColumn.getFieldName().toLowerCase().contains(IConstants.LONGITUDE.toLowerCase())) {
+					longitude = Double.parseDouble(content.toString());
+					// logger.info("Lon : " + indexableColumn.getFieldName().toLowerCase().contains(IConstants.LONGITUDE.toLowerCase())
+					// + ", " + longitude);
 				}
 			}
 		}
 		if (latitude == null || longitude == null) {
+			logger.warn("Lat and/or long are null, have you configured the columns correctly : ");
 			String address = buildAddress(indexable, new StringBuilder()).toString();
 			// The GeoCoder is a last resort in fact
 			Coordinate coordinate = geocoder.getCoordinate(address);
 			if (coordinate != null) {
-				logger.info("Got co-ordinate for : " + indexable.getName() + ", " + coordinate);
+				// logger.info("Got co-ordinate for : " + indexable.getName() + ", " + coordinate);
 				return coordinate;
 			}
-			logger.warn("Lat and/or long are null, have you configured the columns correctly : ");
 			return null;
 		}
 		return new Coordinate(latitude, longitude);
 	}
 
-	private final void addSpatialLocationFields(final Coordinate coordinate, final Document document) {
+	final void addSpatialLocationFields(final Coordinate coordinate, final Document document) {
 		document.add(new Field(IConstants.LAT, NumericUtils.doubleToPrefixCoded(coordinate.getLat()), Field.Store.YES,
 				Field.Index.NOT_ANALYZED));
 		document.add(new Field(IConstants.LNG, NumericUtils.doubleToPrefixCoded(coordinate.getLon()), Field.Store.YES,
@@ -101,7 +108,7 @@ public final class GeospatialEnrichmentStrategy extends AStrategy {
 		addCartesianTiers(coordinate, document);
 	}
 
-	private final void addCartesianTiers(final Coordinate coordinate, final Document document) {
+	final void addCartesianTiers(final Coordinate coordinate, final Document document) {
 		for (int tier = startTier; tier <= endTier; tier++) {
 			CartesianTierPlotter cartesianTierPlotter = new CartesianTierPlotter(tier, sinusodialProjector,
 					CartesianTierPlotter.DEFALT_FIELD_PREFIX);
@@ -113,9 +120,9 @@ public final class GeospatialEnrichmentStrategy extends AStrategy {
 		}
 	}
 
-	private final StringBuilder buildAddress(final Indexable<?> indexable, final StringBuilder builder) {
+	final StringBuilder buildAddress(final Indexable<?> indexable, final StringBuilder builder) {
 		if (indexable.isAddress()) {
-			if (IndexableColumn.class.isAssignableFrom(indexable.getClass())) {
+			if (indexable instanceof IndexableColumn) {
 				IndexableColumn indexableColumn = (IndexableColumn) indexable;
 				if (builder.length() > 0) {
 					builder.append(" ");

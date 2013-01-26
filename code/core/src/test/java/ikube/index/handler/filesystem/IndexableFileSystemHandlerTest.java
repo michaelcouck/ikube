@@ -56,7 +56,7 @@ public class IndexableFileSystemHandlerTest extends ATest {
 	@Test
 	public void handle() throws Exception {
 		IndexableFileSystem indexableFileSystem = getIndexableFileSystem(".");
-		List<Future<?>> futures = indexableFileSystemHandler.handle(indexContext, indexableFileSystem);
+		List<Future<?>> futures = indexableFileSystemHandler.handleIndexable(indexContext, indexableFileSystem);
 		ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
 		assertTrue("There should be some nulls in the futures as the executer is shut down : ", futures.size() > 0);
 		// TODO Verify the output of the gzips
@@ -65,7 +65,7 @@ public class IndexableFileSystemHandlerTest extends ATest {
 	@Test
 	public void handleLargeGzip() throws Exception {
 		IndexableFileSystem indexableFileSystem = getIndexableFileSystem("/tmp/compressed");
-		List<Future<?>> futures = indexableFileSystemHandler.handle(indexContext, indexableFileSystem);
+		List<Future<?>> futures = indexableFileSystemHandler.handleIndexable(indexContext, indexableFileSystem);
 		ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
 	}
 
