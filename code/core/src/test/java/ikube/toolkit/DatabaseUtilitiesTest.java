@@ -9,14 +9,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import ikube.ATest;
 import ikube.model.Url;
-import ikube.model.geospatial.GeoName;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.sql.DataSource;
@@ -136,13 +134,6 @@ public class DatabaseUtilitiesTest extends ATest {
 		} finally {
 			DatabaseUtilities.close(connection);
 		}
-	}
-
-	@Test
-	public void getFieldNames() {
-		List<String> fieldNames = DatabaseUtilities.getFieldNames(GeoName.class, new ArrayList<String>());
-		assertTrue(fieldNames.contains("name"));
-		logger.info(fieldNames.toString());
 	}
 
 	private Connection getDb2Connection() throws SQLException {

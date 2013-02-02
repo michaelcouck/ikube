@@ -32,7 +32,7 @@
         property:maxReadLength="${max.read.length}"
         property:mergeFactor="${merge.factor}"
         property:analyzer-ref="min-eco-analyzer"
-        property:address="true" />
+        property:address="false" />
     
 	<bean 
 		id="min-eco-analyzer" 
@@ -62,9 +62,7 @@
 		property:separator="," 
 		property:maxExceptions="10000"
 		property:encoding="Windows-1252"
-		property:strategies-ref="min-eco-csv-files-strategies"
-		property:children-ref="min-eco-csv-files-columns"
-		property:address="true" />
+		property:address="false" />
 	<util:list id="min-eco-csv-files-columns">
 		<ref local="min-eco-csv-latitude" />
 		<ref local="min-eco-csv-longitude" />
@@ -83,7 +81,7 @@
 		property:stored="${stored}"
 		property:vectored="${vectored}"
 		property:numeric="true"
-		property:address="true" />
+		property:address="false" />
 	<bean
 		id="min-eco-csv-longitude"
 		class="ikube.model.IndexableColumn"
@@ -93,6 +91,6 @@
 		property:stored="${stored}"
 		property:vectored="${vectored}"
 		property:numeric="true"
-		property:address="true" />
+		property:address="false" />
 		
 </beans>

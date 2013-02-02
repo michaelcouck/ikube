@@ -229,9 +229,7 @@ public final class IndexManager {
 			indexWriter.deleteUnusedFiles();
 		} catch (NullPointerException e) {
 			LOGGER.error("Null pointer, in the index writer : " + indexWriter);
-			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug("Stack trace : ", e);
-			}
+			LOGGER.debug(null, e);
 		} catch (CorruptIndexException e) {
 			LOGGER.error("Corrput index : " + indexWriter, e);
 		} catch (IOException e) {

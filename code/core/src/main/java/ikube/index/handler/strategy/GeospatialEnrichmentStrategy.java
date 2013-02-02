@@ -27,10 +27,10 @@ import org.springframework.beans.factory.annotation.Value;
 @SuppressWarnings("deprecation")
 public final class GeospatialEnrichmentStrategy extends AStrategy {
 
-	@Value("${end.tier}")
-	private transient int endTier;
 	@Value("${start.tier}")
-	private transient int startTier;
+	private transient int startTier = 10;
+	@Value("${end.tier}")
+	private transient int endTier = 20;
 	/** No idea what this does :) */
 	private transient IProjector sinusodialProjector;
 	/** The geocoder to get the co-ordinates for the indexable. */
@@ -57,6 +57,7 @@ public final class GeospatialEnrichmentStrategy extends AStrategy {
 		// or the columns from a table filled in with the values. All the logic from the Enrichment class can
 		// be used in here to keep all the enrichment logic in the same place
 		Coordinate coordinate = getCoordinate(indexable);
+		// logger.info("Geospatial strategy : "+ coordinate);
 		if (coordinate != null) {
 			addSpatialLocationFields(coordinate, document);
 		}

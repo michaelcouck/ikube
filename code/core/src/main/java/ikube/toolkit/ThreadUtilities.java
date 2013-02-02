@@ -114,7 +114,7 @@ public final class ThreadUtilities implements IListener {
 					}
 					int maxRetryCount = MAX_RETRY_COUNT;
 					while (!future.cancel(true) && maxRetryCount-- > 0) {
-						ThreadUtilities.sleep(10);
+						ThreadUtilities.sleep(100);
 						if (future.isCancelled()) {
 							break;
 						}
@@ -193,8 +193,7 @@ public final class ThreadUtilities implements IListener {
 		} catch (TimeoutException e) {
 			LOGGER.info("Timed out waiting for future : " + e.getMessage());
 		} catch (Exception e) {
-			LOGGER.error("Exception waiting for future : ");
-			LOGGER.debug(null, e);
+			LOGGER.error("Exception waiting for future : ", e);
 		}
 //		while (!future.isDone()) {
 //			ThreadUtilities.sleep(1000);

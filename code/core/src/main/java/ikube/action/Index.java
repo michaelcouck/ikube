@@ -1,13 +1,16 @@
 package ikube.action;
 
 import ikube.index.IndexManager;
+import ikube.index.handler.IIndexableHandler;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.model.Server;
+import ikube.toolkit.ThreadUtilities;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.Future;
 
 import org.apache.lucene.index.IndexWriter;
 
@@ -42,10 +45,26 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 	 */
 	@Override
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	boolean internalExecute(final IndexContext<?> indexContext) throws Exception {
+	protected boolean internalExecute(final IndexContext<?> indexContext) throws Exception {
 		List<Indexable<?>> indexables = indexContext.getIndexables();
 		Iterator<Indexable<?>> iterator = new ArrayList(indexables).iterator();
-		executeIndexables(indexContext, iterator);
+		while (iterator.hasNext()) {
+			ikube.model.Action action = null;
+			try {
+				Indexable<?> indexable = iterator.next();
+				// Get the right handler for this indexable
+				IIndexableHandler<Indexable<?>> handler = getHandler(indexable);
+				action = start(indexContext.getIndexName(), indexable.getName());
+				logger.info("Indexable : " + indexable.getName());
+				// Execute the handler and wait for the threads to finish
+				List<Future<?>> futures = handler.handleIndexable(indexContext, indexable);
+				ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
+			} catch (Exception e) {
+				logger.error("Exception indexing data : " + indexContext.getIndexName(), e);
+			} finally {
+				stop(action);
+			}
+		}
 		return Boolean.TRUE;
 	}
 

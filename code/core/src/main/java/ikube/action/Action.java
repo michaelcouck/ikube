@@ -10,15 +10,12 @@ import ikube.model.Indexable;
 import ikube.model.Server;
 import ikube.notify.IMailer;
 import ikube.toolkit.ApplicationContextManager;
-import ikube.toolkit.ThreadUtilities;
 import ikube.toolkit.UriUtilities;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Future;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.log4j.Logger;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
@@ -26,8 +23,6 @@ import org.apache.lucene.search.MultiSearcher;
 import org.apache.lucene.search.Searchable;
 import org.apache.lucene.store.Directory;
 import org.nfunk.jep.JEP;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -42,7 +37,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 @SuppressWarnings("deprecation")
 public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> {
 
-	protected transient Logger logger = LoggerFactory.getLogger(this.getClass());
+	protected transient Logger logger = Logger.getLogger(this.getClass());
 
 	/** This class sends mails to the configured recipient from the configured sender. */
 	@Autowired
@@ -77,7 +72,7 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
 	 */
 	@Override
 	public boolean preExecute(final IndexContext<?> indexContext) throws Exception {
-		logger.info("Pre process action : " + this.getClass());
+		// logger.info("Pre process action : " + this.getClass());
 		return Boolean.TRUE;
 	}
 
@@ -87,20 +82,20 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
 	@Override
 	public Boolean execute(final IndexContext<?> indexContext) throws Exception {
 		try {
-			logger.info("Action pre execute : 1 : " + indexContext.getIndexName());
+			// logger.info("Action pre execute : 1 : " + indexContext.getIndexName());
 			preExecute(indexContext);
-			logger.info("Action pre execute : 2 : " + indexContext.getIndexName());
+			// logger.info("Action pre execute : 2 : " + indexContext.getIndexName());
 			if (dependent != null) {
-				logger.info("Executing dependent action : " + dependent);
+				// logger.info("Executing dependent action : " + dependent);
 				dependent.execute(indexContext);
 			}
-			logger.info("Action internal execute : " + indexContext.getIndexName());
+			// logger.info("Action internal execute : " + indexContext.getIndexName());
 			return internalExecute(indexContext);
 		} catch (Exception e) {
 			logger.error(null, e);
 			throw e;
 		} finally {
-			logger.info("Action post execute : " + indexContext.getIndexName());
+			// logger.info("Action post execute : " + indexContext.getIndexName());
 			postExecute(indexContext);
 		}
 	}
@@ -120,7 +115,7 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
 	 */
 	@Override
 	public boolean postExecute(final IndexContext<?> indexContext) throws Exception {
-		logger.info("Post process action : " + this.getClass());
+		// logger.info("Post process action : " + this.getClass());
 		return Boolean.TRUE;
 	}
 
@@ -174,26 +169,6 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
 	@Override
 	public void setRules(final List<IRule<IndexContext<?>>> rules) {
 		this.rules = rules;
-	}
-
-	void executeIndexables(final IndexContext<?> indexContext, final Iterator<Indexable<?>> iterator) {
-		while (iterator.hasNext()) {
-			ikube.model.Action action = null;
-			try {
-				Indexable<?> indexable = iterator.next();
-				// Get the right handler for this indexable
-				IIndexableHandler<Indexable<?>> handler = getHandler(indexable);
-				action = start(indexContext.getIndexName(), indexable.getName());
-				logger.info("Indexable : " + indexable.getName());
-				// Execute the handler and wait for the threads to finish
-				List<Future<?>> futures = handler.handleIndexable(indexContext, indexable);
-				ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
-			} catch (Exception e) {
-				logger.error("Exception indexing data : " + indexContext.getIndexName(), e);
-			} finally {
-				stop(action);
-			}
-		}
 	}
 
 	protected ikube.model.Action getAction(Server server, long id) {
@@ -309,8 +284,9 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
 			String ip = UriUtilities.getIp();
 			mailer.sendMail(subject + ":" + ip, body);
 		} catch (Exception e) {
-			logger.error("Exception sending mail : " + subject, e);
-			logger.error("Mailer details : " + ToStringBuilder.reflectionToString(mailer), e);
+			logger.error("Exception sending mail : " + subject + ", " + e.getMessage());
+			logger.debug(null, e);
+			// logger.error("Mailer details : " + ToStringBuilder.reflectionToString(mailer), e);
 		}
 	}
 

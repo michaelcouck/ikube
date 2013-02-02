@@ -9,7 +9,6 @@ import ikube.toolkit.HashUtilities;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.lucene.document.Document;
@@ -26,7 +25,7 @@ import org.apache.lucene.search.TermQuery;
  * @since 26.12.12
  * @version 01.00
  */
-public class IndexDelta extends Action<IndexContext<?>, Boolean> {
+public class IndexDelta extends Index {
 
 	/**
 	 * {@inheritDoc}
@@ -61,18 +60,6 @@ public class IndexDelta extends Action<IndexContext<?>, Boolean> {
 		Collections.sort(hashes);
 		indexContext.setHashes(hashes);
 
-		return Boolean.TRUE;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	boolean internalExecute(final IndexContext<?> indexContext) throws Exception {
-		logger.info("Execute internal : " + this.getClass() + ", " + indexContext.getName());
-		List<Indexable<?>> indexables = indexContext.getIndexables();
-		Iterator<Indexable<?>> iterator = indexables.iterator();
-		executeIndexables(indexContext, iterator);
 		return Boolean.TRUE;
 	}
 

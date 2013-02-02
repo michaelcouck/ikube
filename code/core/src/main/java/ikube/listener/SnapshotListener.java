@@ -134,7 +134,7 @@ public class SnapshotListener implements IListener {
 		double ratio = interval / 60000;
 		long docsPerMinute = (long) ((snapshot.getNumDocs() - previous.getNumDocs()) / ratio);
 		// LOGGER.info("Docs per minute : " + indexContext.getName() + ", " + indexContext.hashCode() + ", " + docsPerMinute);
-		return docsPerMinute < 0 ? 0 : docsPerMinute;
+		return docsPerMinute < 0 ? 0 : Math.min(docsPerMinute, 1000000);
 	}
 
 }

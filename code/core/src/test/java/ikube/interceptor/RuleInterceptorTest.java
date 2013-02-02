@@ -17,7 +17,6 @@ import ikube.action.rule.IsMultiSearcherInitialised;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.mock.ClusterManagerMock;
 import ikube.model.IndexContext;
-import ikube.toolkit.Logging;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -110,7 +109,7 @@ public class RuleInterceptorTest extends ATest {
 		joinPoint = mock(ProceedingJoinPoint.class);
 		when(joinPoint.getTarget()).thenReturn(close);
 		when(joinPoint.getArgs()).thenReturn(new Object[] { indexContext });
-		when(joinPoint.proceed()).thenReturn(Boolean.TRUE);
+		when(joinPoint.proceed(any(Object[].class))).thenReturn(Boolean.TRUE);
 		ruleInterceptor = new RuleInterceptor();
 
 		when(action.getRules()).thenReturn(rules);
@@ -136,8 +135,8 @@ public class RuleInterceptorTest extends ATest {
 
 		Object result = ruleInterceptor.decide(joinPoint);
 		Object expected = true;
-		String message = Logging.getString("Expected : ", expected, ", result : ", result);
-		logger.debug("Result : " + message);
+		String message = "Expected : " + expected + " result : " + result;
+		logger.info("Result : " + message);
 		assertEquals(message, expected, result);
 	}
 

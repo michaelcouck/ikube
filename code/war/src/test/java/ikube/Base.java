@@ -122,8 +122,19 @@ public abstract class Base {
 	 * @throws Exception
 	 */
 	protected void printIndex(final IndexReader indexReader) throws Exception {
+		printIndex(indexReader, indexReader.numDocs());
+	}
+
+	/**
+	 * This method will just print the data in the index reader.L
+	 * 
+	 * @param indexReader the reader to print the documents for
+	 * @param numDocs the maximum number of documents to print from this index reader
+	 * @throws Exception
+	 */
+	protected void printIndex(final IndexReader indexReader, final int numDocs) throws Exception {
 		logger.info("Num docs : " + indexReader.numDocs());
-		for (int i = 0; i < indexReader.numDocs(); i++) {
+		for (int i = 0; i < indexReader.numDocs() && i < numDocs; i++) {
 			Document document = indexReader.document(i);
 			logger.info("Document : " + i);
 			List<Fieldable> fields = document.getFields();

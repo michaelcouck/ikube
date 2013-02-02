@@ -68,6 +68,13 @@ public class IndexSizeListener implements IListener {
 				newIndexWriters[newIndexWriters.length - 1] = newIndexWriter;
 				LOGGER.info("Switched to the new index writer : " + indexContext);
 				indexContext.setIndexWriters(newIndexWriters);
+				for (final IndexWriter indexWriter : indexWriters) {
+					LOGGER.info("Merging index writer : " + indexWriter.getDirectory());
+					indexWriter.commit();
+					indexWriter.maybeMerge();
+					indexWriter.forceMerge(8, Boolean.TRUE);
+					indexWriter.deleteUnusedFiles();
+				}
 				// We don't close the index writers here any more because they can still be used in the delta indexing. And
 				// we close all the indexes in the context in the index manager at the end of the job
 			} catch (Exception e) {

@@ -37,7 +37,8 @@
 		property:throttle="0"
 		property:indexDirectoryPath="${index.directory.path}"
 		property:indexDirectoryPathBackup="${index.directory.path.backup}"
-		property:children-ref="geospatialIndexables" />
+		property:children-ref="geospatialIndexables"
+		property:strategies-ref="geoname-strategies" />
 	<util:list id="geospatialIndexables">
 		<ref local="geoname" />
 	</util:list>
@@ -154,7 +155,7 @@
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}"
-		property:numeric="true" />
+		property:numeric="false" />
 	<bean
 		id="geospatialLongitude"
 		class="ikube.model.IndexableColumn"
@@ -163,7 +164,7 @@
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}"
-		property:numeric="true" />
+		property:numeric="false" />
 	<bean
 		id="geospatialFeatureClass"
 		class="ikube.model.IndexableColumn"

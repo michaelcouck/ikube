@@ -85,7 +85,7 @@ public class IndexEngine implements IIndexEngine, IListener {
 				};
 				Future<?> future = ThreadUtilities.submit(runnable);
 				// We'll wait a few seconds for this action, perhaps it is a fast one
-				ThreadUtilities.waitForFuture(future, 3);
+				ThreadUtilities.waitForFuture(future, Math.max(1, random.nextInt(5)));
 			} catch (Exception e) {
 				LOGGER.error("Exception executing action : " + action, e);
 			}

@@ -76,6 +76,10 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 			for (File file : files) {
 				try {
 					handleFile(indexContext, indexableFileSystem, file);
+					Thread.sleep(indexContext.getThrottle());
+					if (Thread.currentThread().isInterrupted()) {
+						throw new InterruptedException("Table indexing teminated : ");
+					}
 				} catch (InterruptedException e) {
 					logger.error("Thread terminated, and indexing stopped : ", e);
 					// throw new RuntimeException(e);
@@ -98,7 +102,7 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 	 * @throws InterruptedException
 	 */
 	void handleFile(final IndexContext<?> indexContext, final IndexableFileSystem indexableFileSystem, final File file) throws Exception {
-		logger.error("Doing file : " + file);
+		// logger.error("Doing file : " + file);
 		// First we handle the zips if necessary
 		if (indexableFileSystem.isUnpackZips()) {
 			boolean isFile = file.isFile();
@@ -126,7 +130,6 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 			}
 		} else {
 			resourceHandler.handleResource(indexContext, indexableFileSystem, new Document(), file);
-			Thread.sleep(indexContext.getThrottle());
 		}
 	}
 
@@ -199,7 +202,6 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 		boolean isSymLink = Boolean.TRUE;
 		try {
 			isSymLink = FileUtils.isSymlink(file);
-			// isSymLink = !file.getAbsolutePath().equals(file.getCanonicalPath());
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}

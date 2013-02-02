@@ -111,7 +111,8 @@ public class Mailer implements IMailer {
 			transport.connect(mailHost, Integer.parseInt(port), user, password);
 			transport.sendMessage(message, message.getAllRecipients());
 		} catch (Exception e) {
-			logger.error("Exception sending mail to : " + ToStringBuilder.reflectionToString(this), e);
+			logger.error("Exception sending mail to : " + ToStringBuilder.reflectionToString(this));
+			logger.debug(null, e);
 			return Boolean.FALSE;
 		} finally {
 			if (transport != null) {

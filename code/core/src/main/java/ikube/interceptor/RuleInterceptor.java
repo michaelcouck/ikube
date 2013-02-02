@@ -7,14 +7,14 @@ import ikube.action.Open;
 import ikube.action.rule.IRule;
 import ikube.cluster.IClusterManager;
 import ikube.model.IndexContext;
+import ikube.toolkit.ThreadUtilities;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.nfunk.jep.JEP;
 import org.nfunk.jep.SymbolTable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -31,7 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class RuleInterceptor implements IRuleInterceptor {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(RuleInterceptor.class);
+	private static final Logger LOGGER = Logger.getLogger(RuleInterceptor.class);
 
 	@Autowired
 	private IClusterManager clusterManager;
@@ -54,7 +54,7 @@ public class RuleInterceptor implements IRuleInterceptor {
 				LOGGER.warn("Can't intercept non action class, proceeding : " + target);
 				proceed = Boolean.TRUE;
 			} else if (!clusterManager.lock(IConstants.IKUBE)) {
-				// LOGGER.info("Couldn't get cluster lock : " + target + ", " + proceedingJoinPoint.getSignature());
+				LOGGER.info("Couldn't get cluster lock : " + proceedingJoinPoint.getTarget());
 				proceed = Boolean.FALSE;
 			} else {
 				// Find the index context
@@ -66,19 +66,50 @@ public class RuleInterceptor implements IRuleInterceptor {
 					proceed = evaluateRules(indexContext, action);
 				}
 			}
-			// LOGGER.info("Action intercepted : " + target);
+			LOGGER.debug("Action intercepted : " + target + ", " + proceed);
 			if (proceed) {
 				proceed(indexContext, proceedingJoinPoint);
 			}
 		} catch (NullPointerException e) {
 			LOGGER.warn("Context closing down : ");
 		} catch (Exception t) {
-			LOGGER.error("Exception evaluating the rules : target : " + target + ", context : " + indexContext, t);
+			LOGGER.error("Exception proceeding on target : " + target, t);
 		} finally {
 			boolean unlocked = clusterManager.unlock(IConstants.IKUBE);
-			LOGGER.debug("Unlocked : {} ", unlocked);
+			LOGGER.debug("Unlocked : " + unlocked);
 		}
-		return proceed;
+		return Boolean.TRUE;
+	}
+
+	/**
+	 * Proceeds on the join point. A scheduled task will be started by the scheduler. The task is the action that has been given the green
+	 * light to start. The current thread will wait for the action to complete, but will only wait for a few seconds then continue. The
+	 * action is started in a separate thread because we don't want a queue of actions building up.
+	 * 
+	 * @param proceedingJoinPoint the intercepted action join point
+	 */
+	protected synchronized void proceed(final IndexContext<?> indexContext, final ProceedingJoinPoint proceedingJoinPoint) {
+		try {
+			// We set the working flag in the action within the cluster lock when setting to true
+			Runnable runnable = new Runnable() {
+				public void run() {
+					try {
+						Object returnValue = proceedingJoinPoint.proceed();
+						LOGGER.debug("Returned from join point : " + returnValue);
+					} catch (Throwable e) {
+						LOGGER.error("Exception proceeding on join point : " + proceedingJoinPoint, e);
+					} finally {
+						if (LOGGER.isDebugEnabled()) {
+							Object[] objects = new Object[] { proceedingJoinPoint, indexContext.getIndexName() };
+							LOGGER.debug("Action finished : " + objects);
+						}
+					}
+				}
+			};
+			ThreadUtilities.submit(runnable);
+		} finally {
+			notifyAll();
+		}
 	}
 
 	/**
@@ -103,8 +134,9 @@ public class RuleInterceptor implements IRuleInterceptor {
 				boolean evaluation = rule.evaluate(indexContext);
 				String ruleName = rule.getClass().getSimpleName();
 				jep.addVariable(ruleName, evaluation);
-				// LOGGER.info("Rule : rule {}, : name : {}, evaluation {} : ", new Object[] { rule, ruleName, evaluation });
+				// LOGGER.info("Rule : " + rule + ", name : " + ruleName + ", evaludation : " + evaluation);
 			}
+			printSymbolTable(jep, indexContext.getIndexName(), action.getClass().getSimpleName());
 			String predicate = action.getRuleExpression();
 			jep.parseExpression(predicate);
 			if (jep.hasError()) {
@@ -138,29 +170,10 @@ public class RuleInterceptor implements IRuleInterceptor {
 		return null;
 	}
 
-	/**
-	 * Proceeds on the join point. A scheduled task will be started by the scheduler. The task is the action that has been given the green
-	 * light to start. The current thread will wait for the action to complete, but will only wait for a few seconds then continue. The
-	 * action is started in a separate thread because we don't want a queue of actions building up.
-	 * 
-	 * @param proceedingJoinPoint the intercepted action join point
-	 * @throws Throwable
-	 */
-	protected synchronized void proceed(final IndexContext<?> indexContext, final ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
-		try {
-			LOGGER.info("Proceeding on method : " + proceedingJoinPoint.getSignature());
-			Object returnValue = proceedingJoinPoint.proceed(proceedingJoinPoint.getArgs());
-			LOGGER.info("Returned from join point : " + returnValue + ", " + proceedingJoinPoint.getSignature());
-		} finally {
-			notifyAll();
-		}
-	}
-
-	protected void printSymbolTable(final JEP jep, final String indexName) {
+	protected void printSymbolTable(final JEP jep, final String indexName, final String target) {
 		try {
 			SymbolTable symbolTable = jep.getSymbolTable();
-			LOGGER.info("Index : " + indexName);
-			LOGGER.info("Symbol table : " + symbolTable);
+			LOGGER.info("Symbol table : " + indexName + ", " + target + " : " + symbolTable);
 		} catch (Exception e) {
 			LOGGER.error("Exception printing the nodes : ", e);
 		}

@@ -9,11 +9,11 @@ import ikube.model.IndexableFileSystemCsv;
 import ikube.toolkit.ThreadUtilities;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Future;
-import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.LineIterator;
@@ -41,7 +41,12 @@ public class IndexableFilesystemCsvHandler extends IndexableHandler<IndexableFil
 		List<Future<?>> futures = new ArrayList<Future<?>>();
 		Runnable runnable = new Runnable() {
 			public void run() {
-				File[] files = new File(indexableFileSystem.getPath()).listFiles();
+				File[] files = new File(indexableFileSystem.getPath()).listFiles(new FileFilter() {
+					@Override
+					public boolean accept(File pathname) {
+						return !isExcluded(pathname);
+					}
+				});
 				if (files == null || files.length == 0) {
 					logger.warn("No files in directory : " + indexableFileSystem.getPath());
 					return;
@@ -118,7 +123,7 @@ public class IndexableFilesystemCsvHandler extends IndexableHandler<IndexableFil
 		}
 	}
 
-	protected synchronized boolean isExcluded(final File file, final Pattern pattern) {
+	protected synchronized boolean isExcluded(final File file) {
 		return !file.getName().endsWith(".csv");
 	}
 

@@ -60,9 +60,6 @@
 		the preProcess will create an index of the resources in the index that will be used to ignore resources that have
 		not become outdated and to re-index resources that are out of date. 
 	 -->
-	<bean 
-		id="ikube.interceptor.IActionInterceptor" 
-		class="ikube.interceptor.ActionInterceptor" />
 	
 	<!-- The aop point cuts for the interceptors. -->
 	<aop:config proxy-target-class="true">

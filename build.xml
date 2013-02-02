@@ -1,4 +1,4 @@
-<project name="Deploy Ikube Cluster" default="deploy">
+<project name="Deploy Ikube Cluster" default="go">
 
 	<property file="build.properties" />
 	<property file="local-build.properties" />
@@ -8,43 +8,17 @@
 	<property name="user-dir" value="${user.dir}" />
 	<property name="user-home" value="${user.home}" />
 
-	<target name="everything">
-	    <antcall target="prepare-everything" />
-	    <antcall target="stop-all-servers" />
-	    <antcall target="clean-all-servers" />
-	    <antcall target="deploy-configuration" />
-	    <antcall target="deploy-ikube" />
-	    <antcall target="chmod-all-servers" />
-	    <antcall target="start-all-servers" />
+	<target name="go">
+		<antcall target="prepare" />
+		<antcall target="stop-servers" />
+		<antcall target="clean-servers" />
+		<antcall target="deploy-configuration" />
+		<antcall target="deploy-ikube" />
+		<antcall target="chmod-servers" />
+		<antcall target="start-servers" />
 	</target>
-	
-	<target name="stop-all-servers" >
-        <antcall target="execute-remote-command">
-        	<param name="host" value="ikube.be" />
-        	<param name="command" value="killall java" />
-        </antcall>
-    </target>
-    
-    <target name="start-all-servers" >
-        <antcall target="execute-remote-command" >
-            <param name="host" value="ikube.be" />
-            <param name="command" value="cd /usr/share/apache-tomcat-7.0.27/bin; ./startup.sh;" />
-        </antcall>
-        <antcall target="execute-remote-command" >
-            <param name="host" value="ikube.be" />
-            <param name="command" value="cd /usr/share/apache-tomcat-6.0.29-1/bin; ./startup.sh;" />
-        </antcall>
-        <antcall target="execute-remote-command" >
-            <param name="host" value="ikube.be" />
-            <param name="command" value="cd /usr/share/apache-tomcat-6.0.29-2/bin; ./startup.sh;" />
-        </antcall>
-        <antcall target="execute-remote-command" >
-            <param name="host" value="ikube.be" />
-            <param name="command" value="cd /usr/share/apache-tomcat-6.0.29-3/bin; ./startup.sh;" />
-        </antcall>
-    </target>
-	
-	<target name="prepare-everything">
+
+	<target name="prepare">
 		<antcall target="package-configuration" />
 		<antcall target="jar-configuration" />
 		<antcall target="deploy-configuration-for-jetty" />
@@ -52,7 +26,100 @@
 		<echo message="Zipping Tomcat with configuration : " />
 		<antcall target="zip-tomcat" />
 	</target>
-	
+
+	<target name="stop-servers">
+		<antcall target="execute-remote-command">
+			<param name="command" value="killall java" />
+		</antcall>
+	</target>
+
+	<target name="clean-servers">
+		<antcall target="execute-remote-command">
+			<param name="command" value="
+				rm -r /usr/share/apache-tomcat-7.0.27/bin/ikube;
+				rm -r /usr/share/apache-tomcat-7.0.27/webapps/ikube*;
+				rm -r /usr/share/apache-tomcat-7.0.27/logs;
+				mkdir -p /usr/share/apache-tomcat-7.0.27/bin/ikube;
+				mkdir -p /usr/share/apache-tomcat-7.0.27/logs;
+				
+				rm -r /usr/share/apache-tomcat-6.0.29-2/webapps/ikube*;
+				rm -r /usr/share/apache-tomcat-6.0.29-1/logs;
+				mkdir -p /usr/share/apache-tomcat-6.0.29-1/logs;
+						  
+				rm -r /usr/share/apache-tomcat-6.0.29-2/bin/ikube;
+				rm -r /usr/share/apache-tomcat-6.0.29-2/webapps/ikube*;
+				rm -r /usr/share/apache-tomcat-6.0.29-2/logs;
+				mkdir -p /usr/share/apache-tomcat-6.0.29-2/bin/ikube;
+				mkdir -p /usr/share/apache-tomcat-6.0.29-2/logs;
+						  
+				rm -r /usr/share/apache-tomcat-6.0.29-3/bin/ikube;
+				rm -r /usr/share/apache-tomcat-6.0.29-3/webapps/ikube*;
+				rm -r /usr/share/apache-tomcat-6.0.29-3/logs;
+				mkdir -p /usr/share/apache-tomcat-6.0.29-3/bin/ikube;
+				mkdir -p /usr/share/apache-tomcat-6.0.29-3/logs;" />
+		</antcall>
+	</target>
+
+	<!-- This target will deploy the configuration to the servers. -->
+	<target name="deploy-configuration">
+		<echo>User dir: ${user-dir}</echo>
+		<echo>User home: ${user-home}</echo>
+		<copy file="${output-configuration-directory}/${ikube-configuration-jar}" todir="code/core/src/main/webapp/docs" failonerror="true" />
+		<!-- Deploy configuration on server -->
+		<antcall target="copy-directory-to-server">
+			<param name="directory-to-copy" value="${output-configuration-directory}" />
+			<param name="server-directory" value="/usr/share/apache-tomcat-7.0.27/bin/ikube" />
+		</antcall>
+		<!-- antcall target="copy-directory-to-server">
+			<param name="directory-to-copy" value="${output-configuration-directory}" />
+			<param name="server-directory" value="/usr/share/apache-tomcat-6.0.29-1/bin/ikube" />
+		</antcall -->
+		<antcall target="copy-directory-to-server">
+			<param name="directory-to-copy" value="${output-configuration-directory}" />
+			<param name="server-directory" value="/usr/share/apache-tomcat-6.0.29-2/bin/ikube" />
+		</antcall>
+		<antcall target="copy-directory-to-server">
+			<param name="directory-to-copy" value="${output-configuration-directory}" />
+			<param name="server-directory" value="/usr/share/apache-tomcat-6.0.29-3/bin/ikube" />
+		</antcall>
+	</target>
+
+	<!-- Deploys the war to all the servers. -->
+	<target name="deploy-ikube">
+		<!-- Deploy to the server -->
+		<antcall target="copy-to-server">
+			<param name="server-directory" value="${userid}:${password}@${host-server}:/usr/share/apache-tomcat-7.0.27/webapps" />
+		</antcall>
+		<antcall target="copy-to-server">
+			<param name="server-directory" value="${userid}:${password}@${host-server}:/usr/share/apache-tomcat-6.0.29-1/webapps" />
+		</antcall>
+		<antcall target="copy-to-server">
+			<param name="server-directory" value="${userid}:${password}@${host-server}:/usr/share/apache-tomcat-6.0.29-2/webapps" />
+		</antcall>
+		<antcall target="copy-to-server">
+			<param name="server-directory" value="${userid}:${password}@${host-server}:/usr/share/apache-tomcat-6.0.29-3/webapps" />
+		</antcall>
+	</target>
+
+	<target name="chmod-servers">
+		<antcall target="execute-remote-command">
+			<param name="command" value="
+					chmod 777 -R /usr/share/apache-tomcat-7.0.27;
+					chmod 777 -R /usr/share/apache-tomcat-6.0.29-1;
+					chmod 777 -R /usr/share/apache-tomcat-6.0.29-2;
+					chmod 777 -R /usr/share/apache-tomcat-6.0.29-3;" />
+		</antcall>
+	</target>
+
+	<!-- cd /usr/share/apache-tomcat-6.0.29-1/bin; ./startup.sh; -->
+	<target name="start-servers">
+		<antcall target="execute-remote-command">
+			<param name="command" value="
+				cd /usr/share/apache-tomcat-7.0.27/bin; ./startup.sh;
+				cd /usr/share/apache-tomcat-6.0.29-1/bin; ./startup.sh;" />
+		</antcall>
+	</target>
+
 	<!-- 
 		This target will unpack Tomcat, put the war in the web apps directory, unpack the configuration to the 
 		bin directory, then zip everything up again into a zip for distribution/deployment.
@@ -60,120 +127,28 @@
 	<target name="zip-tomcat">
 		<unzip dest="${target-directory}" src="code/libs/tools/${tomcat-zip}" />
 		<unjar src="${output-configuration-directory}/${ikube-configuration-jar}" dest="${target-directory}/${tomcat-unpacked}/bin/ikube" overwrite="true" />
-		<zip 
-			destfile="${target-directory}/${tomcat-zip}"  
-			compress="true" 
-			filesonly="false" 
-			update="false" 
-			whenempty="skip">
+		<zip destfile="${target-directory}/${tomcat-zip}" compress="true" filesonly="false" update="false" whenempty="skip">
 			<zipfileset dir="${target-directory}/${tomcat-unpacked}" prefix="${tomcat-unpacked}" />
 		</zip>
 	</target>
 
-	<!-- Deploys the war to all the servers. -->
-	<target name="deploy-ikube">
-	    <!-- Deploy to the server -->
-		<antcall target="copy-to-server">
-			<param name="file-to-copy" value="${target-directory}/${ikube-war}" />
-			<param name="server-directory" value="${userid}:${password}@ikube.be:/usr/share/apache-tomcat-7.0.27/webapps" />
-		</antcall>
-		<antcall target="copy-to-server">
-			<param name="file-to-copy" value="${target-directory}/${ikube-war}" />
-			<param name="server-directory" value="${userid}:${password}@ikube.be:/usr/share/apache-tomcat-6.0.29-1/webapps" />
-		</antcall>
-		<antcall target="copy-to-server">
-			<param name="file-to-copy" value="${target-directory}/${ikube-war}" />
-			<param name="server-directory" value="${userid}:${password}@ikube.be:/usr/share/apache-tomcat-6.0.29-2/webapps" />
-		</antcall>
-		<antcall target="copy-to-server">
-			<param name="file-to-copy" value="${target-directory}/${ikube-war}" />
-			<param name="server-directory" value="${userid}:${password}@ikube.be:/usr/share/apache-tomcat-6.0.29-3/webapps" />
-		</antcall>
-	</target>
-	
 	<target name="copy-to-server">
-	    <scp file="${file-to-copy}" todir="${server-directory}" trust="true" failonerror="false" />
+		<scp file="${target-directory}/${ikube-war}" todir="${server-directory}" trust="true" failonerror="false" />
 	</target>
 
-	<target name="clean-all-servers">
-		<antcall target="clean-server">
-		    <param name="host" value="ikube.be" />
-		</antcall>
-	</target>
-	
-	<target name="chmod-all-servers">
-		<antcall target="execute-remote-command">
-			<param name="host" value="ikube.be" />
-			<param name="command" value="chmod 777 -R /usr/share/apache-tomcat-7.0.27;" />
-		</antcall>
-		<antcall target="execute-remote-command">
-			<param name="host" value="ikube.be" />
-			<param name="command" value="chmod 777 -R /usr/share/apache-tomcat-6.0.29-1;" />
-		</antcall>
-		<antcall target="execute-remote-command">
-			<param name="host" value="ikube.be" />
-			<param name="command" value="chmod 777 -R /usr/share/apache-tomcat-6.0.29-2;" />
-		</antcall>
-		<antcall target="execute-remote-command">
-			<param name="host" value="ikube.be" />
-			<param name="command" value="chmod 777 -R /usr/share/apache-tomcat-6.0.29-3;" />
-		</antcall>
-	</target>
-	
-	<target name="clean-server">
-		<antcall target="execute-remote-command">
-			<param name="host" value="${host}" />
-			<param name="command" 
-				value="
-					rm -r /usr/share/apache-tomcat-7.0.27/bin/ikube;
-					rm -r /usr/share/apache-tomcat-7.0.27/webapps/ikube*;
-					rm -r /usr/share/apache-tomcat-7.0.27/logs;
-					mkdir -p /usr/share/apache-tomcat-7.0.27/bin/ikube;
-					mkdir -p /usr/share/apache-tomcat-7.0.27/logs;
-					  
-					rm -r /usr/share/apache-tomcat-6.0.29-1/webapps/ikube*;
-					rm -r /usr/share/apache-tomcat-6.0.29-1/logs;
-					mkdir -p /usr/share/apache-tomcat-6.0.29-1/logs;
-					  
-					rm -r /usr/share/apache-tomcat-6.0.29-2/bin/ikube;
-					rm -r /usr/share/apache-tomcat-6.0.29-2/webapps/ikube*;
-					rm -r /usr/share/apache-tomcat-6.0.29-2/logs;
-					mkdir -p /usr/share/apache-tomcat-6.0.29-2/bin/ikube;
-					mkdir -p /usr/share/apache-tomcat-6.0.29-2/logs;
-					  
-					rm -r /usr/share/apache-tomcat-6.0.29-3/bin/ikube;
-					rm -r /usr/share/apache-tomcat-6.0.29-3/webapps/ikube*;
-					rm -r /usr/share/apache-tomcat-6.0.29-3/logs;
-					mkdir -p /usr/share/apache-tomcat-6.0.29-3/bin/ikube;
-					mkdir -p /usr/share/apache-tomcat-6.0.29-3/logs;" />
-		</antcall>
-		<antcall target="chmod-all-servers" />
-	</target>
-	
 	<target name="execute-remote-command">
-		<sshexec 
-		    host="${host}"
-			trust="true"
-			username="${userid}"
-			password="${password}"
-			command="${command}"
-			failonerror="false" />
+		<sshexec host="${host-server}" trust="true" username="${userid}" password="${password}" command="${command}" failonerror="false" />
 	</target>
-	
+
 	<!-- 
 		This target will copy the common, the production and the profile configuration to the 
 		specified output directory. The profile must be the name of the configuration directory 
 		in the conf folder int he core resources folder.  
 	-->
 	<target name="package-configuration">
-	    <delete dir="${output-configuration-directory}" />
+		<delete dir="${output-configuration-directory}" />
 		<!-- Copy the common configuration -->
-		<copy 
-		    	file="code/core/src/main/resources/ikube/spring.xml" 
-		    	todir="${output-configuration-directory}" failonerror="false" />
-		<copy 
-		    	file="code/core/src/main/resources/ikube/spring-agent-2.5.6.jar" 
-		    	todir="${output-configuration-directory}" failonerror="false" />
+		<copy file="code/core/src/main/resources/ikube/spring.xml" todir="${output-configuration-directory}" failonerror="false" />
 		<copy todir="${output-configuration-directory}/common" failonerror="false">
 			<fileset dir="code/core/src/main/resources/ikube/common" />
 		</copy>
@@ -183,7 +158,7 @@
 		</copy>
 		<!-- Copy the profile configuration -->
 		<copy todir="${output-configuration-directory}/${profile}" failonerror="false">
-		    <fileset dir="code/core/src/main/resources/ikube/${profile}" />
+			<fileset dir="code/core/src/main/resources/ikube/${profile}" />
 		</copy>
 	</target>
 	<target name="jar-configuration">
@@ -193,58 +168,11 @@
 		<unjar src="${output-configuration-directory}/${ikube-configuration-jar}" dest="code/core/ikube" overwrite="true" />
 		<unjar src="${output-configuration-directory}/${ikube-configuration-jar}" dest="code/war/ikube" overwrite="true" />
 	</target>
-	
-	<!-- This target will deploy the configuration to the servers. -->
-	<target name="deploy-configuration">
-		<echo>User dir: ${user-dir}</echo>
-		<echo>User home: ${user-home}</echo>
-		<copy file="${output-configuration-directory}/${ikube-configuration-jar}" todir="code/core/src/main/webapp/docs" failonerror="true" />
-		
-		<!-- Deploy configuration on server -->
-		<antcall target="copy-directory-to-server">
-			<param name="host" value="ikube.be" />
-			<param name="directory-to-copy" value="${output-configuration-directory}" />
-			<param name="server-directory" value="/usr/share/apache-tomcat-7.0.27/bin/ikube" />
-		</antcall>
-		<antcall target="copy-directory-to-server">
-			<param name="host" value="ikube.be" />
-			<param name="directory-to-copy" value="${output-configuration-directory}" />
-			<param name="server-directory" value="/usr/share/apache-tomcat-6.0.29-2/bin/ikube" />
-		</antcall>
-		<antcall target="copy-directory-to-server">
-			<param name="host" value="ikube.be" />
-			<param name="directory-to-copy" value="${output-configuration-directory}" />
-			<param name="server-directory" value="/usr/share/apache-tomcat-6.0.29-3/bin/ikube" />
-		</antcall>
-	</target>
-	
-	<target name="copy-directory-to-server">
-	    <antcall target="execute-remote-command">
-			<param name="host" value="${host}" />
-			<param name="command" value="mkdir -p ${server-directory}" />
-		</antcall>
-	    <scp todir="${userid}:${password}@${host}:${server-directory}" trust="true" failonerror="false">
-	    	<fileset dir="${directory-to-copy}" />
-	    </scp>
-	</target>
-	
-	<target name="stop-tomcat-cluster">
-		<antcall target="executeTomcatAction">
-			<param name="action" value="start" />
-			<param name="tomcat-bin" value="${tomcat-bin}" />
-			<param name="tomcat-home" value="${tomcat}" />
-		</antcall>
-	</target>
 
-	<target name="executeTomcatAction">
-		<java jar="${tomcat-bin}/bootstrap.jar" dir="${tomcat-bin}" fork="yes" spawn="true">
-			<jvmarg value="-Dcatalina.home=${tomcat-home}" />
-			<jvmarg value="-Xms512m" />
-			<jvmarg value="-Xmx2048m" />
-			<jvmarg value="-XX:PermSize=64m" />
-			<jvmarg value="-XX:MaxPermSize=256m" />
-			<arg line="${action}" />
-		</java>
+	<target name="copy-directory-to-server">
+		<scp todir="${userid}:${password}@${host-server}:${server-directory}" trust="true" failonerror="false">
+			<fileset dir="${directory-to-copy}" />
+		</scp>
 	</target>
 
 </project>

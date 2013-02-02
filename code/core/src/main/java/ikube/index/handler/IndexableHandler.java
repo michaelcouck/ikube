@@ -51,11 +51,9 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IIndex
 		if (threadLocal.get() == null) {
 			threadLocal.set(new Integer(0));
 		}
+		threadLocal.set(threadLocal.get() + 1);
 		if (threadLocal.get() > indexable.getMaxExceptions()) {
-			threadLocal.set(new Integer(0));
 			throw new RuntimeException("Maximum exceptions exceeded for resource : ", exception);
-		} else {
-			threadLocal.set(threadLocal.get() + 1);
 		}
 	}
 

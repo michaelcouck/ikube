@@ -14,6 +14,10 @@ import java.util.List;
 import java.util.concurrent.Future;
 import java.util.regex.Pattern;
 
+import mockit.Cascading;
+import mockit.Deencapsulation;
+import mockit.Mockit;
+
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -32,15 +36,19 @@ public class IndexableFileSystemHandlerTest extends ATest {
 
 	/** Class under test. */
 	private IndexableFilesystemHandler indexableFileSystemHandler;
+	@Cascading
+	private ResourceFileHandler resourceHandler;
 
 	@BeforeClass
 	public static void beforeClass() {
 		new ThreadUtilities().initialize();
+		Mockit.setUpMocks();
 	}
 
 	@AfterClass
 	public static void afterClass() {
 		new ThreadUtilities().destroy();
+		Mockit.tearDownMocks();
 	}
 
 	public IndexableFileSystemHandlerTest() {
@@ -55,6 +63,8 @@ public class IndexableFileSystemHandlerTest extends ATest {
 
 	@Test
 	public void handle() throws Exception {
+		logger.info("Resource handler : " + resourceHandler);
+		Deencapsulation.setField(indexableFileSystemHandler, "resourceHandler", resourceHandler);
 		IndexableFileSystem indexableFileSystem = getIndexableFileSystem(".");
 		List<Future<?>> futures = indexableFileSystemHandler.handleIndexable(indexContext, indexableFileSystem);
 		ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
@@ -64,6 +74,7 @@ public class IndexableFileSystemHandlerTest extends ATest {
 
 	@Test
 	public void handleLargeGzip() throws Exception {
+		Deencapsulation.setField(indexableFileSystemHandler, "resourceHandler", resourceHandler);
 		IndexableFileSystem indexableFileSystem = getIndexableFileSystem("/tmp/compressed");
 		List<Future<?>> futures = indexableFileSystemHandler.handleIndexable(indexContext, indexableFileSystem);
 		ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);

@@ -10,11 +10,9 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.Column;
 import javax.sql.DataSource;
 
 import org.apache.log4j.Logger;
-import org.springframework.util.ReflectionUtils;
 
 /**
  * General database operations like closing result sets etc.
@@ -254,20 +252,6 @@ public final class DatabaseUtilities {
 			close(importedKeys);
 		}
 		return foreignKeys;
-	}
-
-	public static List<String> getFieldNames(final Class<?> klass, final List<String> fieldNames) {
-		ReflectionUtils.doWithFields(klass, new ReflectionUtils.FieldCallback() {
-			@Override
-			public void doWith(Field field) throws IllegalArgumentException, IllegalAccessException {
-				ReflectionUtils.makeAccessible(field);
-				Column column = field.getAnnotation(Column.class);
-				if (column != null) {
-					fieldNames.add(field.getName());
-				}
-			}
-		});
-		return fieldNames;
 	}
 
 	public static Object getFieldValue(final Field field, final Object object) {

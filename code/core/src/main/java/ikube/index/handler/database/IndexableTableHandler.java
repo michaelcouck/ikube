@@ -378,7 +378,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	protected synchronized void setParameters(final IndexableTable indexableTable, final PreparedStatement preparedStatement) {
 		try {
 			List<Indexable<?>> children = indexableTable.getChildren();
-			int index = 1;
+			int parameterIndex = 1;
 			for (Indexable<?> child : children) {
 				if (!IndexableColumn.class.isAssignableFrom(child.getClass())) {
 					continue;
@@ -390,12 +390,12 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 				IndexableColumn foreignKey = indexableColumn.getForeignKey();
 				Object parameter = foreignKey.getContent();
 				try {
-					preparedStatement.setObject(index, parameter);
+					preparedStatement.setObject(parameterIndex, parameter);
 				} catch (SQLException e) {
 					logger.error("Exception getting results : ", e);
 					handleMaxExceptions(indexableTable, e);
 				}
-				index++;
+				parameterIndex++;
 			}
 		} finally {
 			notifyAll();
