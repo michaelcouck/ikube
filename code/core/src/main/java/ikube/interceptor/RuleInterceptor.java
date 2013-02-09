@@ -66,7 +66,7 @@ public class RuleInterceptor implements IRuleInterceptor {
 					proceed = evaluateRules(indexContext, action);
 				}
 			}
-			LOGGER.debug("Action intercepted : " + target + ", " + proceed);
+			// LOGGER.debug("Action intercepted : " + target + ", " + proceed);
 			if (proceed) {
 				proceed(indexContext, proceedingJoinPoint);
 			}
@@ -130,13 +130,14 @@ public class RuleInterceptor implements IRuleInterceptor {
 		} else {
 			JEP jep = new JEP();
 			Object result = null;
+			// LOGGER.info("Rules start : " + indexContext.getIndexName());
 			for (IRule<IndexContext<?>> rule : rules) {
 				boolean evaluation = rule.evaluate(indexContext);
 				String ruleName = rule.getClass().getSimpleName();
 				jep.addVariable(ruleName, evaluation);
-				// LOGGER.info("Rule : " + rule + ", name : " + ruleName + ", evaludation : " + evaluation);
+				// LOGGER.info("Rule : " + ruleName + ", evaluation : " + evaluation + ", action : " + action.getClass().getSimpleName());
 			}
-			printSymbolTable(jep, indexContext.getIndexName(), action.getClass().getSimpleName());
+			// printSymbolTable(jep, indexContext.getIndexName(), action.getClass().getSimpleName());
 			String predicate = action.getRuleExpression();
 			jep.parseExpression(predicate);
 			if (jep.hasError()) {
@@ -147,6 +148,7 @@ public class RuleInterceptor implements IRuleInterceptor {
 			if (result == null) {
 				result = jep.getValue();
 			}
+			// LOGGER.info("Rules end : " + indexContext.getIndexName() + ", " + result);
 			finalResult = result != null && (result.equals(1.0d) || result.equals(Boolean.TRUE));
 		}
 		return finalResult;

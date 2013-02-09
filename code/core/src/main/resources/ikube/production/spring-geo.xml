@@ -80,7 +80,7 @@
 		<ref local="geospatialPopulation" />
 		<ref local="geospatialElevation" />
 		<ref local="geospatialGtopo30" />
-		<ref local="alternatename" />
+		<!-- <ref local="alternatename" /> -->
 	</util:list>
 	<util:list id="geoname-strategies">
 	    <bean class="ikube.index.handler.strategy.GeospatialEnrichmentStrategy" />
@@ -110,7 +110,8 @@
 		property:fieldName="geonameid"
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
-		property:vectored="${vectored}" />
+		property:vectored="${vectored}"
+		property:numeric="false" />
 	<bean
 		id="geospatialCity"
 		class="ikube.model.IndexableColumn"
@@ -236,7 +237,8 @@
 		property:fieldName="population"
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
-		property:vectored="${vectored}" />
+		property:vectored="${vectored}"
+		property:numeric="false" />
 	<bean
 		id="geospatialElevation"
 		class="ikube.model.IndexableColumn"
@@ -244,7 +246,8 @@
 		property:fieldName="elevation"
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
-		property:vectored="${vectored}" />
+		property:vectored="${vectored}"
+		property:numeric="false" />
 	<bean
 		id="geospatialGtopo30"
 		class="ikube.model.IndexableColumn"
@@ -295,7 +298,8 @@
 		property:idColumn="true"
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
-		property:vectored="${vectored}" />
+		property:vectored="${vectored}"
+		property:numeric="false" />
 	<bean
 		id="alternatenameGeonameid"
 		class="ikube.model.IndexableColumn"
@@ -304,6 +308,7 @@
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}"
-		property:foreignKey-ref="geospatialGeonameid" />
+		property:foreignKey-ref="geospatialGeonameid"
+		property:numeric="false" />
 	
 </beans>

@@ -32,7 +32,7 @@ public final class ThreadUtilities implements IListener {
 	/** Executes the 'threads' and returns a future. */
 	private static ExecutorService EXECUTER_SERVICE;
 	/** The number of times to try to cancel the future(s). */
-	private static int MAX_RETRY_COUNT = 100;
+	private static int MAX_RETRY_COUNT = 10;
 
 	/** A list of futures by name so we can kill them. */
 	private static final Map<String, List<Future<?>>> FUTURES = new HashMap<String, List<Future<?>>>();
@@ -114,7 +114,7 @@ public final class ThreadUtilities implements IListener {
 					}
 					int maxRetryCount = MAX_RETRY_COUNT;
 					while (!future.cancel(true) && maxRetryCount-- > 0) {
-						ThreadUtilities.sleep(100);
+						ThreadUtilities.sleep(10);
 						if (future.isCancelled()) {
 							break;
 						}

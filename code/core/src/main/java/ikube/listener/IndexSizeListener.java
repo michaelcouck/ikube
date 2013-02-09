@@ -58,27 +58,39 @@ public class IndexSizeListener implements IListener {
 			if (indexSize / meg < maxIndexSize) {
 				continue;
 			}
+			boolean success = Boolean.TRUE;
+			File newIndexDirectory = null;
+			IndexWriter newIndexWriter = null;
 			try {
-				File newIndexDirectory = getNewIndexDirectory(indexWriters);
+				newIndexDirectory = getNewIndexDirectory(indexWriters);
 				LOGGER.info("Starting new index : " + indexContext.getIndexName() + ", " + newIndexDirectory);
-				IndexWriter newIndexWriter = IndexManager.openIndexWriter(indexContext, newIndexDirectory, true);
+				newIndexWriter = IndexManager.openIndexWriter(indexContext, newIndexDirectory, true);
 
 				IndexWriter[] newIndexWriters = new IndexWriter[indexWriters.length + 1];
 				System.arraycopy(indexWriters, 0, newIndexWriters, 0, indexWriters.length);
 				newIndexWriters[newIndexWriters.length - 1] = newIndexWriter;
 				LOGGER.info("Switched to the new index writer : " + indexContext);
 				indexContext.setIndexWriters(newIndexWriters);
-				for (final IndexWriter indexWriter : indexWriters) {
-					LOGGER.info("Merging index writer : " + indexWriter.getDirectory());
-					indexWriter.commit();
-					indexWriter.maybeMerge();
-					indexWriter.forceMerge(8, Boolean.TRUE);
-					indexWriter.deleteUnusedFiles();
-				}
 				// We don't close the index writers here any more because they can still be used in the delta indexing. And
 				// we close all the indexes in the context in the index manager at the end of the job
 			} catch (Exception e) {
 				LOGGER.error("Exception starting a new index : ", e);
+				success = Boolean.FALSE;
+			} finally {
+				if (!success) {
+					// Try to close and delete the new index writer and index directory
+					IndexManager.closeIndexWriter(newIndexWriter);
+					FileUtilities.deleteFile(newIndexDirectory, 1);
+					// Remove the new index writer from the end of the array
+					if (newIndexWriter != null) {
+						indexWriters = indexContext.getIndexWriters();
+						if (indexWriters[indexWriters.length - 1] == newIndexWriter) {
+							IndexWriter[] newIndexWriters = new IndexWriter[indexWriters.length - 1];
+							System.arraycopy(indexWriters, 0, newIndexWriters, 0, indexWriters.length - 1);
+							indexContext.setIndexWriters(newIndexWriters);
+						}
+					}
+				}
 			}
 		}
 	}

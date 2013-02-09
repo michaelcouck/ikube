@@ -55,6 +55,7 @@ public class SearchSpatial extends SearchMulti {
 	 */
 	@Override
 	protected TopDocs search(final Query query) throws IOException {
+		logger.error("Coordinate : " + coordinate);
 		DistanceQueryBuilder queryBuilder = new DistanceQueryBuilder(coordinate.getLat(), coordinate.getLon(), distance, IConstants.LAT,
 				IConstants.LNG, CartesianTierPlotter.DEFALT_FIELD_PREFIX, Boolean.TRUE, 0, 100);
 		// As the radius filter has performed the distance calculations already, pass in the filter to reuse the results
