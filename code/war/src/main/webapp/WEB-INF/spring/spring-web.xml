@@ -37,10 +37,6 @@
 	<!-- External file system resources. -->
 	<import resource="file:ikube/spring*.xml" />
 
-	<mvc:annotation-driven />
-	<context:annotation-config />
-	<context:component-scan base-package="ikube" />
-
 	<bean class="ikube.toolkit.ApplicationContextManager" />
 	<bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping" />
     <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter" />
