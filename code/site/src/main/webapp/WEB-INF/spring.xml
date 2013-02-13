@@ -46,6 +46,7 @@
 	<mvc:view-controller path="/downloads.html" />
 	<mvc:view-controller path="/documentation.html" />
 	<mvc:view-controller path="/use.html" />
+	<mvc:view-controller path="/search.html" />
 	<mvc:view-controller path="/license.html" />
 	
 	<mvc:view-controller path="/bugs.html" />
@@ -55,6 +56,9 @@
 	<mvc:view-controller path="/source.html" />
 	<mvc:view-controller path="/testing.html" />
 	<mvc:view-controller path="/release.html" />
+	
+	<mvc:view-controller path="/use-cases/database.html" />
+	<mvc:view-controller path="/use-cases/file-system.html" />
 	
 	<mvc:interceptors>
 		<bean 

@@ -92,18 +92,19 @@ body {
 }
 
 div#page {
-	width: 900px; height: 100%;
+	width: 1100px; 
+	height: 100%;
 	margin: 0 auto;
 }
 
 div#header {
-	width: 900px;
+	width: 1100px;
 	display: table; clear: both;
 	padding: 20px 0;
 }
 
 ul#menu {
-	width: 900px;
+	width: 1100px;
 	text-transform: uppercase;
 	border-top: 1px solid #CCC;
 	border-bottom: 1px solid #CCC;
@@ -113,14 +114,14 @@ ul#menu {
 }
 
 div#content {
-	width: 900px;
+	width: 1100px;
 	text-align: left;
 	clear: both;
 	padding: 40px 0; margin: 0 auto;
 }
 
 div#maincontent {
-	width: 600px;
+	width: 800px;
 	float: left;
 }
 
@@ -130,7 +131,7 @@ div#sidebar {
 }
 
 div#footer {
-	width: 900px;
+	width: 1100px;
 	border-top: 1px solid #CCC;
 	display: block; 
 	clear: both;
@@ -164,7 +165,7 @@ bordered {
 
 .post,
 .comment {
-	width: 600px;
+	width: 800px;
 	overflow: hidden;
 	border-bottom: 1px solid #CCC;
 	display: table; clear: both;
@@ -172,7 +173,7 @@ bordered {
 }
 
 .singlepost {
-	width: 600px;
+	width: 800px;
 	overflow: hidden;
 	display: table; clear: both;
 }
@@ -189,7 +190,7 @@ bordered {
 }
 
 #pagination {
-	width: 600px;
+	width: 800px;
 	overflow: hidden;
 	border-top: 1px solid #CCC;
 	display: table; clear: both;

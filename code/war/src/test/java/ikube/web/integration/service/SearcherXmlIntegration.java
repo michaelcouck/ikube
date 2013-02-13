@@ -263,7 +263,7 @@ public class SearcherXmlIntegration extends Base {
 				IConstants.MAX_RESULTS };
 		String[] values = { //
 		"wikiContext",//
-				"Небесные|создания", //
+				"string|string", //
 				IConstants.NAME + "|" + IConstants.NAME, //
 				"string|string", //
 				Boolean.TRUE.toString(), //
