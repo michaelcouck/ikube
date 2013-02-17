@@ -7,5 +7,6 @@
 	the startup script is. Ikube will look for the configuration in the user directory first, this is the directory where you start the server, i.e. the 'bin' directory in Tomcat and JBoss. Start the server, either ./startup.sh or startup.bat.
 	<br><br>
 	
-	Ikube will start indexing the file system, where you specified the start directory, in five minutes. Note that depending on the number of files, this could take some time, and you can monitor 
+	Ikube will start indexing the data you specified, in about five minutes (this is the default delay before indexing, this can be changed of course). 
+	Note that depending on the volume of data, this could take some time, and you can monitor 
 	the progress of the indexing process in the user interface (<a href="http://localhost:8080/ikube">user interface</a>).

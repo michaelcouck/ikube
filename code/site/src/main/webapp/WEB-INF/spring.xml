@@ -59,6 +59,12 @@
 	
 	<mvc:view-controller path="/use-cases/database.html" />
 	<mvc:view-controller path="/use-cases/file-system.html" />
+	<mvc:view-controller path="/use-cases/internet.html" />
+	<mvc:view-controller path="/use-cases/log-files.html" />
+	<mvc:view-controller path="/use-cases/csv-geospatial-file.html" />
+	<mvc:view-controller path="/use-cases/database-geospatial.html" />
+	<mvc:view-controller path="/use-cases/file-system-delta.html" />
+	<mvc:view-controller path="/use-cases/database-ngram.html" />
 	
 	<mvc:interceptors>
 		<bean 

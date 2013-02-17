@@ -154,10 +154,16 @@
 			for interests' sake. The last map will also contain the spelling corrections, or the original search string if there were no spelling errors.
 			<br><br>
 			
-			<strong>The API and parameters for the web service are:</strong>
+			<strong>Examples of the rest API and parameters for the web service are:</strong>
 			<br><br>
 			
-			<c:out value="${single}" />
+			<h3>Single search : </h3><textarea rows="3" cols="80"><c:out value="${single}" /></textarea><br><br>
+			<h3>Single search : </h3><textarea rows="3" cols="80"><c:out value="${multi}" /></textarea><br><br>
+			<h3>Single search : </h3><textarea rows="3" cols="80"><c:out value="${multiAll}" /></textarea><br><br>
+			<h3>Single search : </h3><textarea rows="3" cols="80"><c:out value="${multiSorted}" /></textarea><br><br>
+			<h3>Single search : </h3><textarea rows="3" cols="80"><c:out value="${multiSpatial}" /></textarea><br><br>
+			<h3>Single search : </h3><textarea rows="3" cols="80"><c:out value="${multiSpatialAll}" /></textarea><br><br>
+			<h3>Single search : </h3><textarea rows="3" cols="80"><c:out value="${complex}" /></textarea><br><br>
 			
 			<br><br>
 	

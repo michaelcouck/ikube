@@ -5,7 +5,7 @@
 	<h4>Use case one: The file system</h4>
 	Index a set of files on the file system. This can be the full hard disk of the machine, a remote file share or just a specific directory, or a set of directories:<br><br>
 
-	<jsp:include page="/WEB-INF/jsp/use-cases/index-context.jspf" />
+	<jsp:include page="/WEB-INF/jsp/use-cases/index-context.jsp" />
 	<br><br>
 	
 	2) Create the directory configuration: We first create the 'children' of the index, and then the directory 'bean', in this case there will be the only child of the index. The list of children 
@@ -43,6 +43,6 @@
 	</textarea>
 	<br><br>
 	
-	<jsp:include page="/WEB-INF/jsp/use-cases/add-config.jspf" />
+	<jsp:include page="/WEB-INF/jsp/use-cases/add-config.jsp" />
 	
 </div>
