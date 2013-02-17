@@ -24,7 +24,7 @@
 	
 	We define the columns that have the longitude and latitude values in them so the strategy knows where to get the values from . Note that the values must be in radians 
 	not degrees format. In the columns we define the names of the fields for latitude and longitude, and again we store the data, and analyze it and vector it, but not as a numeric 
-	field. We soecify that this is not part of the address it's self.<br><br>
+	field. We specify that this is not part of the address it's self.<br><br>
 	
 	Take the snippit below and copy it under the myIndex bean.
 	<br><br>
@@ -87,6 +87,12 @@
 			property:numeric="false"
 			property:address="false" />
 	</textarea>
+	<br><br>
+	
+	Once finished indexing you can use the generic search pages to search your data. If you need some data to start with please feel free to 
+	export the geospatial data from the Db2 database, the geoname table. The login details are ubuntu/Caherl1ne and jdbc:db2://ikube.be:50000/ikube. Export to 
+	a csv file of course. If you have indeed used the data from the geoname table you can use the following parameters for your search, hotel, -33.9693580, 18.4622110 and 
+	20 km max.
 	<br><br>
 	
 	<jsp:include page="/WEB-INF/jsp/use-cases/add-config.jsp" />

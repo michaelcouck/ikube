@@ -2,8 +2,8 @@
 
 <div id="maincontent">
 	<h2>Use cases</h2>
-	<h4>Use case six: Index a database</h4>
-	Index a database, with geospatial data, specific columns for performance:<br><br>
+	<h4>Use case six: Geospatial database</h4>
+	Index a database with geospatial data for geo-searching. <br><br>
 
 	<jsp:include page="/WEB-INF/jsp/use-cases/index-context.jsp" />
 	<br><br>
