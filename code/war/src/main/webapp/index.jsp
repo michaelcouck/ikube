@@ -2,7 +2,7 @@
 
 <html>
 	<head>
-		<title>Ikokoon</title>
+		<title>Ikube</title>
 		<link rel="shortcut icon" href="/images/icon.ico">
 	</head>
 	<body>
