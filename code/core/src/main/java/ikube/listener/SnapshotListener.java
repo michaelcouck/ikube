@@ -45,53 +45,54 @@ public class SnapshotListener implements IListener {
 	@Override
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void handleNotification(Event event) {
-		if (Event.PERFORMANCE.equals(event.getType())) {
-			OperatingSystemMXBean operatingSystemMXBean = ManagementFactory.getOperatingSystemMXBean();
-			Server server = clusterManager.getServer();
-			server.setArchitecture(operatingSystemMXBean.getArch());
-			server.setProcessors(operatingSystemMXBean.getAvailableProcessors());
-			server.setAverageCpuLoad(operatingSystemMXBean.getSystemLoadAverage());
+		if (!Event.PERFORMANCE.equals(event.getType())) {
+			return;
+		}
+		OperatingSystemMXBean operatingSystemMXBean = ManagementFactory.getOperatingSystemMXBean();
+		Server server = clusterManager.getServer();
+		server.setArchitecture(operatingSystemMXBean.getArch());
+		server.setProcessors(operatingSystemMXBean.getAvailableProcessors());
+		server.setAverageCpuLoad(operatingSystemMXBean.getSystemLoadAverage());
+		try {
+			long availableDiskSpace = FileSystemUtils.freeSpaceKb("/") / IConstants.MILLION;
+			server.setFreeDiskSpace(availableDiskSpace);
+		} catch (IOException e) {
+			LOGGER.error("Exception accessing the disk space : ", e);
+		}
+		server.setFreeMemory(Runtime.getRuntime().freeMemory() / IConstants.MILLION);
+		server.setMaxMemory(Runtime.getRuntime().maxMemory() / IConstants.MILLION);
+		server.setTotalMemory(Runtime.getRuntime().totalMemory() / IConstants.MILLION);
+		clusterManager.putObject(server.getAddress(), server);
+
+		Map<String, IndexContext> indexContexts = monitorService.getIndexContexts();
+		for (Map.Entry<String, IndexContext> mapEntry : indexContexts.entrySet()) {
 			try {
-				long availableDiskSpace = FileSystemUtils.freeSpaceKb("/") / IConstants.MILLION;
-				server.setFreeDiskSpace(availableDiskSpace);
-			} catch (IOException e) {
-				LOGGER.error("Exception accessing the disk space : ", e);
-			}
-			server.setFreeMemory(Runtime.getRuntime().freeMemory() / IConstants.MILLION);
-			server.setMaxMemory(Runtime.getRuntime().maxMemory() / IConstants.MILLION);
-			server.setTotalMemory(Runtime.getRuntime().totalMemory() / IConstants.MILLION);
-			clusterManager.putObject(server.getAddress(), server);
+				IndexContext indexContext = mapEntry.getValue();
 
-			Map<String, IndexContext> indexContexts = monitorService.getIndexContexts();
-			for (Map.Entry<String, IndexContext> mapEntry : indexContexts.entrySet()) {
-				try {
-					IndexContext indexContext = mapEntry.getValue();
+				Snapshot snapshot = new Snapshot();
 
-					Snapshot snapshot = new Snapshot();
+				snapshot.setTimestamp(new Timestamp(System.currentTimeMillis()));
+				snapshot.setIndexSize(IndexManager.getIndexSize(indexContext));
+				snapshot.setNumDocs(IndexManager.getNumDocsIndexWriter(indexContext));
+				snapshot.setLatestIndexTimestamp(IndexManager.getLatestIndexDirectoryDate(indexContext));
+				snapshot.setDocsPerMinute(getDocsPerMinute(indexContext, snapshot));
+				snapshot.setTotalSearches(getTotalSearchesForIndex(indexContext));
+				snapshot.setSearchesPerMinute(getSearchesPerMinute(indexContext, snapshot));
+				snapshot.setSystemLoad(operatingSystemMXBean.getSystemLoadAverage());
+				snapshot.setAvailableProcessors(operatingSystemMXBean.getAvailableProcessors());
 
-					snapshot.setTimestamp(new Timestamp(System.currentTimeMillis()));
-					snapshot.setIndexSize(IndexManager.getIndexSize(indexContext));
-					snapshot.setNumDocs(IndexManager.getNumDocsIndexWriter(indexContext));
-					snapshot.setLatestIndexTimestamp(IndexManager.getLatestIndexDirectoryDate(indexContext));
-					snapshot.setDocsPerMinute(getDocsPerMinute(indexContext, snapshot));
-					snapshot.setTotalSearches(getTotalSearchesForIndex(indexContext));
-					snapshot.setSearchesPerMinute(getSearchesPerMinute(indexContext, snapshot));
-					snapshot.setSystemLoad(operatingSystemMXBean.getSystemLoadAverage());
-					snapshot.setAvailableProcessors(operatingSystemMXBean.getAvailableProcessors());
-
-					dataBase.persist(snapshot);
-					indexContext.getSnapshots().add(snapshot);
-					if (indexContext.getSnapshots().size() > IConstants.MAX_SNAPSHOTS) {
-						LinkedList<Snapshot> snapshots = new LinkedList<Snapshot>();
-						snapshots.addAll(indexContext.getSnapshots());
-						while (snapshots.size() > (int) (IConstants.MAX_SNAPSHOTS * 0.25d)) {
-							snapshots.removeFirst();
-						}
-						indexContext.setSnapshots(snapshots);
+				dataBase.persist(snapshot);
+				indexContext.getSnapshots().add(snapshot);
+				if (indexContext.getSnapshots().size() > IConstants.MAX_SNAPSHOTS) {
+					LinkedList<Snapshot> snapshots = new LinkedList<Snapshot>();
+					snapshots.addAll(indexContext.getSnapshots());
+					while (snapshots.size() > (int) (IConstants.MAX_SNAPSHOTS * 0.25d)) {
+						snapshots.removeFirst();
 					}
-				} catch (Exception e) {
-					LOGGER.error("Exception persisting snapshot : ", e);
+					indexContext.setSnapshots(snapshots);
 				}
+			} catch (Exception e) {
+				LOGGER.error("Exception persisting snapshot : ", e);
 			}
 		}
 	}

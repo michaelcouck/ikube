@@ -112,7 +112,7 @@ public class IndexableFilesystemLogHandler extends IndexableHandler<IndexableFil
 				Thread.sleep(indexContext.getThrottle());
 			}
 		} catch (Exception e) {
-			logger.error("Exception reading log file : ", e);
+			handleMaxExceptions(indexableFileSystem, e);
 		} finally {
 			FileUtilities.close(bufferedReader);
 			FileUtilities.close(reader);

@@ -90,7 +90,6 @@ public class IndexableFilesystemWikiHandler extends IndexableHandler<IndexableFi
 		long start = System.currentTimeMillis();
 		FileInputStream fileInputStream = null;
 		BZip2CompressorInputStream bZip2CompressorInputStream = null;
-		int exceptions = 0;
 		try {
 			int read = -1;
 			fileInputStream = new FileInputStream(file);
@@ -113,11 +112,7 @@ public class IndexableFilesystemWikiHandler extends IndexableHandler<IndexableFi
 		} catch (CancellationException e) {
 			throw e;
 		} catch (Exception e) {
-			logger.error("Exception reading and uncompressing the zip file : " + file, e);
-			exceptions++;
-			if (exceptions > indexableFileSystem.getMaxExceptions()) {
-				throw new RuntimeException("Maximum exceptions reached : " + exceptions);
-			}
+			handleMaxExceptions(indexableFileSystem, e);
 		} finally {
 			FileUtilities.close(fileInputStream);
 			FileUtilities.close(bZip2CompressorInputStream);

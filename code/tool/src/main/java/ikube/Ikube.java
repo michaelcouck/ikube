@@ -1,5 +1,7 @@
 package ikube;
 
+import ikube.toolkit.Logging;
+
 import java.lang.reflect.Method;
 
 import org.slf4j.Logger;
@@ -7,7 +9,12 @@ import org.slf4j.LoggerFactory;
 
 public final class Ikube {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(Ikube.class);
+	private static final Logger LOGGER;
+
+	static {
+		Logging.configure();
+		LOGGER = LoggerFactory.getLogger(Ikube.class);
+	}
 
 	public static void main(String[] args) {
 		try {

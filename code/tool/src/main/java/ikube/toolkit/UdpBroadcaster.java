@@ -1,12 +1,9 @@
 package ikube.toolkit;
 
-import ikube.toolkit.Logging;
-import ikube.toolkit.ThreadUtilities;
-import ikube.toolkit.UriUtilities;
-
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.MulticastSocket;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Future;
@@ -27,46 +24,47 @@ import org.slf4j.LoggerFactory;
  */
 public class UdpBroadcaster {
 
-	static {
-		Logging.configure();
-	}
-
 	private static final Logger LOGGER = LoggerFactory.getLogger(UdpBroadcaster.class);
 
 	private static final int PORT = 9876;
+	private static final String MCAST_ADDR = "224.0.0.1";
+
+	private static InetAddress GROUP;
 
 	public static void main(String[] args) {
-		List<Future<?>> futures = new UdpBroadcaster().initialize();
-		ThreadUtilities.waitForFutures(futures, 60000);
+		try {
+			GROUP = InetAddress.getByName(MCAST_ADDR);
+			List<Future<?>> futures = new UdpBroadcaster().initialize();
+			ThreadUtilities.waitForFutures(futures, 60000);
+		} catch (Exception e) {
+			LOGGER.error("Usage : [group-ip] [port]");
+		}
 	}
 
 	@SuppressWarnings("unchecked")
 	public List<Future<?>> initialize() {
 		new ThreadUtilities().initialize();
-		List<Future<?>> futures = Arrays.asList(client(), server());
-		return futures;
+
+		Future<?> server = server();
+		ThreadUtilities.sleep(3000);
+		Future<?> client = client();
+
+		return Arrays.asList(server, client);
 	}
 
 	private Future<?> client() {
 		return ThreadUtilities.submit(new Runnable() {
 			public void run() {
-				DatagramSocket clientSocket = null;
+				MulticastSocket multicastSocket = null;
 				try {
-					clientSocket = new DatagramSocket();
+					multicastSocket = new MulticastSocket(PORT);
+					multicastSocket.joinGroup(GROUP);
 					while (true) {
 						try {
-							ThreadUtilities.sleep(10000);
-							InetAddress ipAddress = InetAddress.getByName("localhost");
-
-							byte[] sendData = UriUtilities.getIp().getBytes();
-							DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, ipAddress, PORT);
-							LOGGER.info("Sending : " + new String(sendData));
-							clientSocket.send(sendPacket);
-
-							byte[] receiveData = new byte[64];
+							byte[] receiveData = new byte[256];
 							DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
-							clientSocket.receive(receivePacket);
-							LOGGER.info("Received from : " + receivePacket.getAddress() + ", " + new String(receivePacket.getData()));
+							multicastSocket.receive(receivePacket);
+							LOGGER.info("Client received from : " + receivePacket.getAddress() + ", " + new String(receivePacket.getData()));
 						} catch (Exception e) {
 							LOGGER.error(null, e);
 						}
@@ -74,7 +72,7 @@ public class UdpBroadcaster {
 				} catch (Exception e) {
 					LOGGER.error(null, e);
 				} finally {
-					clientSocket.close();
+					multicastSocket.close();
 				}
 			}
 		});
@@ -85,20 +83,13 @@ public class UdpBroadcaster {
 			public void run() {
 				DatagramSocket serverSocket = null;
 				try {
-					serverSocket = new DatagramSocket(PORT);
+					serverSocket = new DatagramSocket();
 					try {
 						while (true) {
-							ThreadUtilities.sleep(10000);
-							byte[] receiveData = new byte[64];
-							DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
-							serverSocket.receive(receivePacket);
-							LOGGER.info("Server received from : " + receivePacket.getAddress() + ", " + new String(receivePacket.getData()));
-
-							InetAddress IPAddress = receivePacket.getAddress();
-							int port = receivePacket.getPort();
-							byte[] sendData = new String(receivePacket.getData()).toUpperCase().getBytes();
-							DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, port);
+							byte[] sendData = new byte[256];
+							DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, GROUP, PORT);
 							serverSocket.send(sendPacket);
+							ThreadUtilities.sleep(10000);
 						}
 					} catch (Exception e) {
 						LOGGER.error(null, e);

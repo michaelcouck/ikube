@@ -43,42 +43,43 @@ public class CpuLoadListener implements IListener {
 		if (!active) {
 			return;
 		}
-		if (Event.PERFORMANCE.equals(event.getType())) {
-			boolean increaseThrottle = Boolean.FALSE;
-			boolean decreaseThrottle = Boolean.FALSE;
-			Map<String, IndexContext> indexContexts = monitorService.getIndexContexts();
+		if (!Event.PERFORMANCE.equals(event.getType())) {
+			return;
+		}
+		boolean increaseThrottle = Boolean.FALSE;
+		boolean decreaseThrottle = Boolean.FALSE;
+		Map<String, IndexContext> indexContexts = monitorService.getIndexContexts();
+		for (Map.Entry<String, IndexContext> mapEntry : indexContexts.entrySet()) {
+			IndexContext indexContext = mapEntry.getValue();
+			// We check if the cpu load has been more than 1 per core for a period
+			// of x minutes. If so then we increase the throttle for all index contexts
+			// by one millisecond
+			List<Snapshot> snapshots = indexContext.getSnapshots();
+			if (snapshots != null && snapshots.size() >= period) {
+				boolean allOver = true;
+				boolean allUnder = true;
+				for (int i = snapshots.size() - 1, j = 0; i > 0 && j < period; i--, j++) {
+					Snapshot snapshot = snapshots.get(i);
+					allOver &= snapshot.getSystemLoad() / snapshot.getAvailableProcessors() > threshold;
+					allUnder &= snapshot.getSystemLoad() / snapshot.getAvailableProcessors() < threshold;
+				}
+				increaseThrottle |= allOver;
+				decreaseThrottle |= allUnder;
+			}
+		}
+		if (increaseThrottle) {
 			for (Map.Entry<String, IndexContext> mapEntry : indexContexts.entrySet()) {
 				IndexContext indexContext = mapEntry.getValue();
-				// We check if the cpu load has been more than 1 per core for a period
-				// of ten minutes. If so then we increase the throttle for all index contexts
-				// by one millisecond
-				List<Snapshot> snapshots = indexContext.getSnapshots();
-				if (snapshots != null && snapshots.size() >= period) {
-					boolean allOver = true;
-					boolean allUnder = true;
-					for (int i = snapshots.size() - 1, j = 0; i > 0 && j < period; i--, j++) {
-						Snapshot snapshot = snapshots.get(i);
-						allOver &= snapshot.getSystemLoad() / snapshot.getAvailableProcessors() > threshold;
-						allUnder &= snapshot.getSystemLoad() / snapshot.getAvailableProcessors() < threshold;
-					}
-					increaseThrottle |= allOver;
-					decreaseThrottle |= allUnder;
-				}
+				LOGGER.debug("Increasing throttle for index context : " + indexContext.getName());
+				indexContext.setThrottle(indexContext.getThrottle() + 1);
 			}
-			if (increaseThrottle) {
-				for (Map.Entry<String, IndexContext> mapEntry : indexContexts.entrySet()) {
-					IndexContext indexContext = mapEntry.getValue();
-					LOGGER.debug("Increasing throttle for index context : " + indexContext.getName());
-					indexContext.setThrottle(indexContext.getThrottle() + 1);
-				}
-			}
-			if (decreaseThrottle) {
-				for (Map.Entry<String, IndexContext> mapEntry : indexContexts.entrySet()) {
-					IndexContext indexContext = mapEntry.getValue();
-					if (indexContext.getThrottle() > 0) {
-						LOGGER.debug("Decreasing throttle for index context : " + indexContext.getName());
-						indexContext.setThrottle(indexContext.getThrottle() - 1);
-					}
+		}
+		if (decreaseThrottle) {
+			for (Map.Entry<String, IndexContext> mapEntry : indexContexts.entrySet()) {
+				IndexContext indexContext = mapEntry.getValue();
+				if (indexContext.getThrottle() > 0) {
+					LOGGER.debug("Decreasing throttle for index context : " + indexContext.getName());
+					indexContext.setThrottle(indexContext.getThrottle() - 1);
 				}
 			}
 		}
