@@ -20,8 +20,12 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -161,6 +165,30 @@ public final class FileUtilities {
 			}
 		}
 		return files;
+	}
+
+	public static Collection<File> findDuplicateFilesRecursively(final File folder) {
+		Set<File> allFiles = new TreeSet<File>();
+		Set<File> duplicateFiles = new TreeSet<File>();
+		File[] files = folder.listFiles();
+		allFiles.addAll(Arrays.asList(files));
+		do {
+			if (files == null || files.length == 0) {
+				return duplicateFiles;
+			}
+			for (final File file : files) {
+				if (file.isDirectory()) {
+					continue;
+				}
+				Iterator<File> allFilesIterator = allFiles.iterator();
+				while (allFilesIterator.hasNext()) {
+					File next = allFilesIterator.next();
+					if (file.getName().equals(next.getName()) && file.length() == next.length()) {
+						duplicateFiles.add(file);
+					}
+				}
+			}
+		} while (true);
 	}
 
 	/**

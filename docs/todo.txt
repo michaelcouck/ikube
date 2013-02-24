@@ -127,4 +127,32 @@ Won't Do:
    3) Ram usage
    4) Up time
    5) Open files
-   
+
+Notes:
+==Some features of Ikube:==
+
+ * Cost €0.00
+ * Auto cpu load tuning
+ * Embeddable, theoretically
+ * Multi-threaded per Jvm and cluster-able
+ * High volume, 100 000 000 documents/records++
+ * Highly configurable and customizable
+ * Spelling checking, any language that you care to add, English included
+ * Spelling suggestions, can add any language you want, comes with English of course
+ * Geo-spatial search, i.e. results sorted by distance
+ * Geo-spatial indexing, i.e. if you have the address, Ikube will find the co-ordinates, enrich your data with it, and you can have the results sorted by distance
+ * Multi field search, i.e. span queries, and the data is segmented into individual fields. This means that applications can search for 'name = xxx' and 'birthdate < yyy' and 'country in (z,z,z)' sort by distance from point (-33.9693580, 18.4622110), which is Cape Town as it turns out.
+ * Of course the usual things like fuzzy search, wildcard and everything offered by Lucene
+ * Results in pure XML or Json via a (secured by Spring) rest web service
+ * Of course open source is always welcome in the enterprise environment
+ * Queries per minute in a single thread, quad core Dell rack 310, around 300. Note that this is distance(spatial) sorted queries, with 7 500 000 records, so you can multiply that by 3 for a normal query in the same size document set, we all know what Lucene can do no?
+ * Flexible continuous crawl schedules
+ * Multi lingual or course, i.e. the indexes can be any language, like French for example
+ * Administration notification by email, and soon by text message, you will have to get your own account at [http://www.twilio.com/ Twilio]
+ * Indexing and search monitoring and performance
+ * Deploy stand alone, in a server(any one, Tomcat, JBoss...), as a Jar, War, Ear
+ * Automatic clustering via UDP broardcasting, i.e. you start another stand alone and they will find each other and automatically synchronize with each other
+ * Any database, tested extensively on Db2, H2, Oracle and Postgres
+ * Any operating system, tested on Linux and a little on Windows
+ * Spring enabled, in fact based on Spring and Maven
+ * Examples for iterating over results in EL, currently in AngularJS   

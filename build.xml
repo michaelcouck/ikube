@@ -36,8 +36,10 @@
 	<target name="clean-servers">
 		<antcall target="execute-remote-command">
 			<param name="command" value="
-				rm -r /usr/share/apache-tomcat-6.0.29-2/webapps/ikube*;
+				rm -r /usr/share/apache-tomcat-6.0.29-1/bin/ikube;
+				rm -r /usr/share/apache-tomcat-6.0.29-1/webapps/ikube*;
 				rm -r /usr/share/apache-tomcat-6.0.29-1/logs;
+				mkdir -p /usr/share/apache-tomcat-6.0.29-1/bin/ikube;
 				mkdir -p /usr/share/apache-tomcat-6.0.29-1/logs;
 						  
 				rm -r /usr/share/apache-tomcat-6.0.29-2/bin/ikube;
@@ -60,10 +62,10 @@
 		<echo>User home: ${user-home}</echo>
 		<copy file="${output-configuration-directory}/${ikube-configuration-jar}" todir="code/core/src/main/webapp/docs" failonerror="true" />
 		<!-- Deploy configuration on server -->
-		<!-- antcall target="copy-directory-to-server">
+		<antcall target="copy-directory-to-server">
 			<param name="directory-to-copy" value="${output-configuration-directory}" />
 			<param name="server-directory" value="/usr/share/apache-tomcat-6.0.29-1/bin/ikube" />
-		</antcall -->
+		</antcall>
 		<antcall target="copy-directory-to-server">
 			<param name="directory-to-copy" value="${output-configuration-directory}" />
 			<param name="server-directory" value="/usr/share/apache-tomcat-6.0.29-2/bin/ikube" />
@@ -88,12 +90,17 @@
 		</antcall>
 	</target>
 
+	<target name="deploy-ikube-site">
+		<scp file="code/site/target/site.war" todir="${userid}:${password}@${host-server}:/usr/share/apache-tomcat-7.0.27/webapps" trust="true" failonerror="false" />
+	</target>
+
 	<target name="chmod-servers">
 		<antcall target="execute-remote-command">
 			<param name="command" value="
-					chmod 777 -R /usr/share/apache-tomcat-6.0.29-1;
-					chmod 777 -R /usr/share/apache-tomcat-6.0.29-2;
-					chmod 777 -R /usr/share/apache-tomcat-6.0.29-3;" />
+				chmod 777 -R /usr/share/apache-tomcat-7.0.27;
+				chmod 777 -R /usr/share/apache-tomcat-6.0.29-1;
+				chmod 777 -R /usr/share/apache-tomcat-6.0.29-2;
+				chmod 777 -R /usr/share/apache-tomcat-6.0.29-3;" />
 		</antcall>
 	</target>
 
@@ -101,6 +108,7 @@
 	<target name="start-servers">
 		<antcall target="execute-remote-command">
 			<param name="command" value="
+				cd /usr/share/apache-tomcat-7.0.27/bin; ./startup.sh;
 				cd /usr/share/apache-tomcat-6.0.29-1/bin; ./startup.sh;
 				cd /usr/share/apache-tomcat-6.0.29-2/bin; ./startup.sh;
 				cd /usr/share/apache-tomcat-6.0.29-3/bin; ./startup.sh;" />

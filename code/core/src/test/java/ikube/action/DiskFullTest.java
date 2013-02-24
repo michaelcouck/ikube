@@ -16,6 +16,7 @@ import mockit.MockClass;
 import mockit.Mockit;
 
 import org.apache.commons.io.FileSystemUtils;
+import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,6 +46,7 @@ public class DiskFullTest extends ATest {
 	@Before
 	public void before() throws Exception {
 		diskFull = Mockito.mock(DiskFull.class);
+		Logger logger = Mockito.mock(Logger.class);
 		Mockito.when(diskFull.execute(Mockito.any(IndexContext.class))).thenCallRealMethod();
 		Mockito.when(diskFull.internalExecute(Mockito.any(IndexContext.class))).thenCallRealMethod();
 		Deencapsulation.setField(diskFull, logger);

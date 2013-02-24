@@ -80,7 +80,7 @@
 		<ref local="geospatialPopulation" />
 		<ref local="geospatialElevation" />
 		<ref local="geospatialGtopo30" />
-		<!-- <ref local="alternatename" /> -->
+		<ref local="alternatename" />
 	</util:list>
 	<util:list id="geoname-strategies">
 	    <bean class="ikube.index.handler.strategy.GeospatialEnrichmentStrategy" />

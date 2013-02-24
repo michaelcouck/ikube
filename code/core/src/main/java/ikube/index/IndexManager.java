@@ -32,6 +32,7 @@ import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.index.IndexWriterConfig.OpenMode;
 import org.apache.lucene.index.LogByteSizeMergePolicy;
 import org.apache.lucene.index.MergePolicy;
 import org.apache.lucene.search.IndexSearcher;
@@ -165,6 +166,8 @@ public final class IndexManager {
 			final boolean create) throws Exception {
 		Analyzer analyzer = indexContext.getAnalyzer() != null ? indexContext.getAnalyzer() : IConstants.ANALYZER;
 		IndexWriterConfig indexWriterConfig = new IndexWriterConfig(IConstants.VERSION, analyzer);
+		indexWriterConfig.setOpenMode(create ? OpenMode.CREATE : OpenMode.APPEND);
+		indexWriterConfig.setRAMBufferSizeMB(indexContext.getBufferSize());
 		indexWriterConfig.setMaxBufferedDocs(indexContext.getBufferedDocs());
 		MergePolicy mergePolicy = new LogByteSizeMergePolicy() {
 			{
@@ -179,8 +182,7 @@ public final class IndexManager {
 		Directory directory = FSDirectory.open(indexDirectory);
 		IndexWriter indexWriter = new IndexWriter(directory, indexWriterConfig);
 
-		// Where to set these properties
-		// indexWriter.setRAMBufferSizeMB(indexContext.getBufferSize());
+		// Where to set this?
 		// indexWriter.setMaxFieldLength(indexContext.getMaxFieldLength());
 
 		return indexWriter;

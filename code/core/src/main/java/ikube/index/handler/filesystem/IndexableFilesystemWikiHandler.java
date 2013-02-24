@@ -105,6 +105,7 @@ public class IndexableFilesystemWikiHandler extends IndexableHandler<IndexableFi
 				if (Thread.currentThread().isInterrupted()) {
 					throw new InterruptedException("Wiki indexing teminated : ");
 				}
+				Thread.sleep(indexContext.getThrottle());
 			}
 		} catch (InterruptedException e) {
 			logger.error("Coitus interruptus... : " + file, e);

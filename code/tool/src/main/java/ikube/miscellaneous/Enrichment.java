@@ -27,6 +27,7 @@ public class Enrichment {
 	public static final String FEATURECLASS = "featureclass";
 	public static final String FEATURECODE = "featurecode";
 	public static final String COUNTRYCODE = "countrycode";
+	@SuppressWarnings("unused")
 	private static final String[] SEARCH_FIELDS = { FEATURECLASS, FEATURECODE, COUNTRYCODE };
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -37,6 +38,7 @@ public class Enrichment {
 	/**
 	 * {@inheritDoc}
 	 */
+	@SuppressWarnings("unused")
 	boolean executeInternal(final IndexContext<?> context) throws Exception {
 		logger.info("Running the enrichment : ");
 		ikube.model.Action action = null;
@@ -75,6 +77,7 @@ public class Enrichment {
 
 	}
 
+	@SuppressWarnings("unused")
 	protected void setCountry(final GeoName geoName) {
 		values[0] = geoName.getCountryCode();
 		values[1] = geoName.getLongitude();

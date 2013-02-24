@@ -12,7 +12,7 @@
             http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 	
 	<description>
-		This file is only used int he integration tests to load all the configuration files when normally 
+		This file is only used in the integration tests to load all the configuration files when normally 
 		all the configuration files will be loaded by the web application configuration by scanning the 
 		starting/user directory for spring-*.xml files.
 	</description>

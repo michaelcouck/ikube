@@ -29,6 +29,7 @@ import java.util.List;
 import mockit.Deencapsulation;
 import mockit.Mockit;
 
+import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -68,6 +69,7 @@ public class IndexTest extends ATest {
 			}
 		}).when(index).internalExecute(any(IndexContext.class));
 		when(index.getHandler(any(Indexable.class))).thenReturn(indexableHandler);
+		Logger logger = Mockito.mock(Logger.class);
 		Deencapsulation.setField(index, logger);
 		Deencapsulation.setField(index, clusterManager);
 	}

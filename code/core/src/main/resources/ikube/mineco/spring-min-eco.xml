@@ -25,8 +25,8 @@
         property:bufferedDocs="${buffered.docs}"
         property:children-ref="min-eco-indexables"
         property:compoundFile="${compound.file}"
-        property:indexDirectoryPath="./min-eco"
-        property:indexDirectoryPathBackup="./min-eco"
+        property:indexDirectoryPath="/media/nas/xfs-five/geoname/index"
+        property:indexDirectoryPathBackup="/media/nas/xfs-five/geoname/index"
         property:internetBatchSize="${internet.batch.size}"
         property:maxFieldLength="${max.field.length}"
         property:maxReadLength="${max.read.length}"
@@ -46,7 +46,7 @@
 		id="min-eco-csv-files"
 		class="ikube.model.IndexableFileSystemCsv"
 		property:name="min-eco-csv-files"
-		property:path="/media/nas/xfs-one/min-eco"
+		property:path="/media/nas/xfs-five/geoname/geoname.csv"
 		property:pathFieldName="path"
 		property:nameFieldName="name"
 		property:lengthFieldName="length"
@@ -59,10 +59,12 @@
 		property:lastModifiedFieldName="lastmodified"
 		property:batchSize="1000"
 		property:maxReadLength="1000000"  
-		property:separator="," 
+		property:separator=";" 
 		property:maxExceptions="10000"
 		property:encoding="Windows-1252"
-		property:address="false" />
+		property:address="false"
+		property:children-ref="min-eco-csv-files-columns"
+		property:strategies-ref="min-eco-csv-files-strategies" />
 	<util:list id="min-eco-csv-files-columns">
 		<ref local="min-eco-csv-latitude" />
 		<ref local="min-eco-csv-longitude" />
@@ -76,21 +78,21 @@
 		id="min-eco-csv-latitude"
 		class="ikube.model.IndexableColumn"
 		property:name="latitude"
-		property:fieldName="CD_LATITUDE"
+		property:fieldName="LATITUDE"
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}"
-		property:numeric="true"
+		property:numeric="false"
 		property:address="false" />
 	<bean
 		id="min-eco-csv-longitude"
 		class="ikube.model.IndexableColumn"
 		property:name="longitude"
-		property:fieldName="CD_LONGITUDE"
+		property:fieldName="LONGITUDE"
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}"
-		property:numeric="true"
+		property:numeric="false"
 		property:address="false" />
 		
 </beans>

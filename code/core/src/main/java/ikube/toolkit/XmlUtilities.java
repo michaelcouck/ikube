@@ -120,15 +120,11 @@ public final class XmlUtilities {
 			}
 		});
 	}
-
-	public static void main(String[] args) {
-		Logging.configure();
-		File file = FileUtilities.findFileRecursively(new File("."), "doctors.xml");
-		try {
-			XmlUtilities.parse(file);
-		} catch (Exception e) {
-			LOGGER.error("", e);
-		}
+	
+	public static Element addElement(final Element parent,final String name, final String text) {
+		Element child = parent.addElement(name);
+		child.setText(text);
+		return child;
 	}
 
 }

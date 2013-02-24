@@ -158,12 +158,12 @@
 			<br><br>
 			
 			<h3>Single search : </h3><textarea rows="3" cols="80"><c:out value="${single}" /></textarea><br><br>
-			<h3>Single search : </h3><textarea rows="3" cols="80"><c:out value="${multi}" /></textarea><br><br>
-			<h3>Single search : </h3><textarea rows="3" cols="80"><c:out value="${multiAll}" /></textarea><br><br>
-			<h3>Single search : </h3><textarea rows="3" cols="80"><c:out value="${multiSorted}" /></textarea><br><br>
-			<h3>Single search : </h3><textarea rows="3" cols="80"><c:out value="${multiSpatial}" /></textarea><br><br>
-			<h3>Single search : </h3><textarea rows="3" cols="80"><c:out value="${multiSpatialAll}" /></textarea><br><br>
-			<h3>Single search : </h3><textarea rows="3" cols="80"><c:out value="${complex}" /></textarea><br><br>
+			<h3>Single multi : </h3><textarea rows="3" cols="80"><c:out value="${multi}" /></textarea><br><br>
+			<h3>Single multi all : </h3><textarea rows="3" cols="80"><c:out value="${multiAll}" /></textarea><br><br>
+			<h3>Single multi sorted : </h3><textarea rows="3" cols="80"><c:out value="${multiSorted}" /></textarea><br><br>
+			<h3>Single multi spatial : </h3><textarea rows="3" cols="80"><c:out value="${multiSpatial}" /></textarea><br><br>
+			<h3>Single multi spatial all : </h3><textarea rows="3" cols="80"><c:out value="${multiSpatialAll}" /></textarea><br><br>
+			<h3>Single complex : </h3><textarea rows="3" cols="80"><c:out value="${complex}" /></textarea><br><br>
 			
 			<br><br>
 	

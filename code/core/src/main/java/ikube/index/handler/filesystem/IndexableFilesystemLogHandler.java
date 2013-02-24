@@ -109,6 +109,7 @@ public class IndexableFilesystemLogHandler extends IndexableHandler<IndexableFil
 				resourceHandler.handleResource(indexContext, indexableFileSystem, document, null);
 				line = bufferedReader.readLine();
 				lineNumber++;
+				Thread.sleep(indexContext.getThrottle());
 			}
 		} catch (Exception e) {
 			logger.error("Exception reading log file : ", e);

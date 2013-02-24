@@ -18,7 +18,7 @@
 	<jsp:include page="/WEB-INF/jsp/use-cases/index-context.jsp" />
 	<br><br>
 	
-	2) Create the directory configuration: First change the delta property in the index context to true, 'property:delta="false"'. Then create the folder/file system that you would like to index. Add the 
+	2) Create the directory configuration: First change the delta property in the index context to true, 'property:delta="true"'. Then create the folder/file system that you would like to index. Add the 
 	file system bean to the children of the index, i.e. to the myIndexChildren list. We define the path as the base of the disk, like the desktop folder for example. Also specify the path field name, the name 
 	field name, the length and content field names. We won't unpack the compressed files for this one. And again stored, analyzed and vectored. Add some excluded patterns, like /mnt so Ikube doesn't 
 	wonder off over the network, unless you want to of course. The batch size of the files per thread, not critical, but 1000 is a good number, and we'll allow 100 exceptions, we should allow more for a 

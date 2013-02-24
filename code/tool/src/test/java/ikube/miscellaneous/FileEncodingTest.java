@@ -4,8 +4,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
+@Ignore
 public class FileEncodingTest {
 
 	@Test
@@ -16,6 +18,7 @@ public class FileEncodingTest {
 		for (int i = 0; i < 10; i++) {
 			System.out.println(bufferedReader.readLine());
 		}
+		bufferedReader.close();
 	}
 
 }

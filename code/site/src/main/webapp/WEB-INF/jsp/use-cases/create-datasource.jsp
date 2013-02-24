@@ -6,7 +6,8 @@
 	or com.ibm.db2.jcc.DB2Driver for DB2, or oracle.jdbc.driver.OracleDriver forOracle or org.postgresql.Driver for Postgres.If you have another database then you must add the 
 	driver jar to the common libs directory in the server, and specify the class name of your driver, perhaps MySql for example. But we will assume that you are using a database which has direct driver 
 	support in Ikube(DB2, Oracle, Postgres and H2). Copy the snippit below and paste it into your configuration file below the myIndex bean. Replacing the userid, the password, the url and the driver placeholders with your details 
-	of course.  
+	of course.
+	<br><br>
 	
 	<textarea rows="15" cols="30">
 		<bean id="myIndexDatasource"

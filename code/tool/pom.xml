@@ -14,7 +14,7 @@
 	</parent>
 	
 	<properties>
-		<main.class>ikube.data.wiki.WikiDataUnpacker</main.class>
+		<main.class>ikube.Ikube</main.class>
 	</properties>
 
 	<build>
