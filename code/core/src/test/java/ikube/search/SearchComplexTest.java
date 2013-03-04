@@ -36,8 +36,8 @@ import org.junit.Test;
 public class SearchComplexTest extends ATest {
 
 	private SearchComplex searchComplex;
-        private IndexSearcher indexSearcher;
-        private IndexWriter indexWriter;
+	private IndexSearcher indexSearcher;
+	private IndexWriter indexWriter;
 
 	public SearchComplexTest() {
 		super(SearchComplexTest.class);
@@ -71,9 +71,9 @@ public class SearchComplexTest extends ATest {
 
 	@After
 	public void after() throws Exception {
-                indexWriter.close();
+		indexWriter.close();
 		FileUtilities.deleteFile(new File("./indexes"), 1);
-                indexSearcher.close();
+		indexSearcher.close();
 	}
 
 	@Test

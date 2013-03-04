@@ -69,7 +69,7 @@ public class IndexDeltaIntegration extends Integration {
 
 	@After
 	public void after() {
-		// FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
+		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
 	}
 
 	@Test

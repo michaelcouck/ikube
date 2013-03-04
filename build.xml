@@ -116,8 +116,12 @@
 	</target>
 
 	<target name="deploy-configuration-for-jetty" description="Copies the configuration folder to the base of the project modules so Jetty can start">
-		<unjar src="${output-configuration-directory}/${ikube-configuration-jar}" dest="code/core/ikube" overwrite="true" />
-		<unjar src="${output-configuration-directory}/${ikube-configuration-jar}" dest="code/war/ikube" overwrite="true" />
+		<copy todir="code/core/ikube">
+			<fileset dir="${configuration-directory}" />
+		</copy>
+		<copy todir="code/war/ikube">
+			<fileset dir="${configuration-directory}" />
+		</copy>
 	</target>
 
 </project>
