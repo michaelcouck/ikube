@@ -140,9 +140,11 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 				}
 			} catch (InterruptedException e) {
 				throw new RuntimeException(e);
-			} catch (Exception e) {
+			} catch (SQLException e) {
 				logger.error("Exception indexing table : " + indexableTable.getName(), e);
 				handleMaxExceptions(indexableTable, e);
+			} catch (Exception e) {
+				throw new RuntimeException(e);
 			}
 		} while (resultSet != null);
 		DatabaseUtilities.closeAll(resultSet);
