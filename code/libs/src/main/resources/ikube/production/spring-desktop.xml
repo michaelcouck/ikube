@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:property="http://www.springframework.org/schema/p"
+	xmlns:util="http://www.springframework.org/schema/util"
+
+	xsi:schemaLocation="
+			http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+            http://www.springframework.org/schema/context
+            http://www.springframework.org/schema/context/spring-context-3.0.xsd
+            http://www.springframework.org/schema/util
+            http://www.springframework.org/schema/util/spring-util.xsd">
+
+	<!-- 
+		This configuration is to index the local file system. Please feel free to delete this 
+		index context from the configuration if not needed.
+	-->
+	<bean
+		id="desktop"
+		class="ikube.model.IndexContext"
+		property:name="desktop"
+		property:maxAge="60000"
+		property:compoundFile="${compound.file}"
+		property:bufferedDocs="${buffered.docs}"
+		property:bufferSize="${buffer.size}"
+		property:batchSize="${jdbc.batch.size}"
+		property:internetBatchSize="${internet.batch.size}"
+		property:mergeFactor="${merge.factor}"
+		property:maxFieldLength="${max.field.length}"
+		property:maxReadLength="${max.read.length}"
+		property:throttle="1000"
+		property:delta="false"
+		property:indexDirectoryPath="/media/nas/xfs-one/indexes"
+		property:indexDirectoryPathBackup="/media/nas/xfs-one/indexes/backup"
+		property:children-ref="desktopFolders" />
+	<util:list id="desktopFolders">
+		<ref local="desktopFolder" />
+	</util:list>
+	
+	<!-- 
+		Note that the path to the files is a slash, on Linux this is the root and on Windows this will be the
+		root of the drive that the application is started on, so it would be C:/ if the Tomcat is on the C drive.  
+	-->
+	<bean
+		id="desktopFolder"
+		class="ikube.model.IndexableFileSystem"
+		property:name="desktopFolder"
+		property:path="/"
+		property:pathFieldName="path"
+		property:nameFieldName="name"
+		property:lengthFieldName="length"
+		property:contentFieldName="contents"
+		property:unpackZips="true"
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true"
+		property:excludedPattern=".*(.svn).*|.*(.db).*|.*(.exe).*|.*(.dll).*|.*(Password).*|.*(password).*|.*(RSA).*|.*(MANIFEST).*|.*(root).*|.*(/proc).*|.*(/bin).*|.*(/boot).*|.*(/sbin).*|.*(/sys).*|.*(/media).*|.*(/mnt).*|.*(Backup).*|.*(/sys).*"
+		property:lastModifiedFieldName="lastmodified"
+		property:batchSize="1000"
+		property:maxReadLength="1000000" 
+		property:strategies-ref="desktopStrategies"
+		property:maxExceptions="100" />
+	
+	<util:list id="desktopStrategies">
+	    <bean class="ikube.index.handler.strategy.DeltaIndexableFilesystemStrategy" />
+	</util:list>
+	
+</beans>

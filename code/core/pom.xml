@@ -92,9 +92,6 @@
 								<copy todir="ikube" failonerror="true">
 									<fileset dir="src/main/resources/ikube" />
 								</copy>
-								<!-- <copy todir="code/core/ikube" failonerror="true">
-									<fileset dir="code/core/src/main/resources/ikube" />
-								</copy> -->
 							</target>
 						</configuration>
 						<goals>
@@ -103,41 +100,6 @@
 					</execution>
 				</executions>
 			</plugin>
-			
-			<!-- <plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<version>2.3.1</version>
-				<configuration>
-					<verbose>true</verbose>
-					<archive>
-						<index>true</index>
-						<manifest>
-							<addClasspath>true</addClasspath>
-							<classpathPrefix>lib/</classpathPrefix>
-							<mainClass>${main.class}</mainClass>
-						</manifest>
-					</archive>
-				</configuration>
-			</plugin> -->
-			<!-- <plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>copy-dependencies</id>
-						<phase>package</phase>
-						<goals>
-							<goal>copy-dependencies</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>target/lib</outputDirectory>
-							<overWriteReleases>false</overWriteReleases>
-							<overWriteSnapshots>false</overWriteSnapshots>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin> -->
 		</plugins>
 	</build>
 	

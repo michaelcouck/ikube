@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:property="http://www.springframework.org/schema/p"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:util="http://www.springframework.org/schema/util"
+    xmlns="http://www.springframework.org/schema/beans"
+    xsi:schemaLocation="
+			http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+            http://www.springframework.org/schema/context
+            http://www.springframework.org/schema/context/spring-context-3.0.xsd
+            http://www.springframework.org/schema/util
+            http://www.springframework.org/schema/util/spring-util.xsd" >
+
+    <description>This is the configuration for the Ministry of Economics.</description>
+
+    <bean
+        id="min-eco"
+        property:name="min-eco"
+        class="ikube.model.IndexContext"
+		property:throttle="0"
+        property:maxAge="6000"
+        property:batchSize="${jdbc.batch.size}"
+        property:bufferSize="${buffer.size}"
+        property:bufferedDocs="${buffered.docs}"
+        property:children-ref="min-eco-indexables"
+        property:compoundFile="${compound.file}"
+        property:indexDirectoryPath="/media/nas/xfs-five/geoname/index"
+        property:indexDirectoryPathBackup="/media/nas/xfs-five/geoname/index"
+        property:internetBatchSize="${internet.batch.size}"
+        property:maxFieldLength="${max.field.length}"
+        property:maxReadLength="${max.read.length}"
+        property:mergeFactor="${merge.factor}"
+        property:analyzer-ref="min-eco-analyzer"
+        property:address="false" />
+    
+	<bean 
+		id="min-eco-analyzer" 
+		class="ikube.index.analyzer.NgramAnalyzer" />
+
+    <util:list id="min-eco-indexables" >
+        <ref local="min-eco-csv-files" />
+    </util:list>
+    
+    <bean
+		id="min-eco-csv-files"
+		class="ikube.model.IndexableFileSystemCsv"
+		property:name="min-eco-csv-files"
+		property:path="/media/nas/xfs-five/geoname/geoname.csv"
+		property:pathFieldName="path"
+		property:nameFieldName="name"
+		property:lengthFieldName="length"
+		property:contentFieldName="contents"
+		property:unpackZips="false"
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true"
+		property:excludedPattern="none"
+		property:lastModifiedFieldName="lastmodified"
+		property:batchSize="1000"
+		property:maxReadLength="1000000"  
+		property:separator=";" 
+		property:maxExceptions="10000"
+		property:encoding="Windows-1252"
+		property:address="false"
+		property:children-ref="min-eco-csv-files-columns"
+		property:strategies-ref="min-eco-csv-files-strategies" />
+	<util:list id="min-eco-csv-files-columns">
+		<ref local="min-eco-csv-latitude" />
+		<ref local="min-eco-csv-longitude" />
+	</util:list>
+	
+	<util:list id="min-eco-csv-files-strategies">
+		<bean class="ikube.index.handler.strategy.GeospatialEnrichmentStrategy" />
+	</util:list>
+	
+	<bean
+		id="min-eco-csv-latitude"
+		class="ikube.model.IndexableColumn"
+		property:name="latitude"
+		property:fieldName="LATITUDE"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}"
+		property:numeric="false"
+		property:address="false" />
+	<bean
+		id="min-eco-csv-longitude"
+		class="ikube.model.IndexableColumn"
+		property:name="longitude"
+		property:fieldName="LONGITUDE"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}"
+		property:numeric="false"
+		property:address="false" />
+		
+</beans>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+		<beans
+			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			xmlns="http://www.springframework.org/schema/beans"
+			xmlns:context="http://www.springframework.org/schema/context"
+			xmlns:property="http://www.springframework.org/schema/p"
+			xmlns:util="http://www.springframework.org/schema/util"
+			xsi:schemaLocation="
+				http://www.springframework.org/schema/beans
+				http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+				http://www.springframework.org/schema/context
+				http://www.springframework.org/schema/context/spring-context-3.0.xsd
+				http://www.springframework.org/schema/util
+				http://www.springframework.org/schema/util/spring-util.xsd">
+		
+		<bean
+			id="myIndex"
+			class="ikube.model.IndexContext"
+			property:name="myIndex"
+			property:maxAge="600"
+			property:compoundFile="true"
+			property:bufferedDocs="100"
+			property:bufferSize="32"
+			property:internetBatchSize="10"
+			property:mergeFactor="100"
+			property:maxFieldLength="10000"
+			property:maxReadLength="10000000"
+			property:throttle="0"
+			property:indexDirectoryPath="./ikube/index"
+			property:indexDirectoryPathBackup="./ikube/index/backup"
+			property:children-ref="myIndexFolders" />
+			
+			<util:list id="myIndexFolders">
+			<ref local="myIndexFolder" />
+		</util:list>
+		
+		<bean
+			id="myIndexFolder"
+			class="ikube.model.IndexableFileSystem"
+			property:name="myIndexFolder"
+			property:path="/tmp"
+			property:pathFieldName="path"
+			property:nameFieldName="name"
+			property:lengthFieldName="length"
+			property:contentFieldName="contents"
+			property:lastModifiedFieldName="lastmodified"
+			property:unpackZips="false"
+			property:stored="true"
+			property:analyzed="true"
+			property:vectored="true"
+			property:excludedPattern=".*(sys).*"
+			property:batchSize="1000"
+			property:maxReadLength="1000000" 
+			property:maxExceptions="100" />
+			
+		</beans>
