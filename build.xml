@@ -10,7 +10,7 @@
 
 	<target name="go">
 		<antcall target="prepare" />
-		<antcall target="stop-servers-deploy-site" />
+		<antcall target="stop-servers-deploy" />
 		<!-- Deploy the configuration and ikube and start the servers -->
 		<antcall target="go-server" inheritall="true">
 			<param name="server-ip" value="192.168.1.4" />
@@ -26,7 +26,7 @@
 		</antcall>
 	</target>
 
-	<target name="stop-servers-deploy-site">
+	<target name="stop-servers-deploy">
 		<!-- Stop all the processes, the only way to stop Tomcat -->
 		<antcall target="execute-remote-command">
 			<param name="server-ip" value="192.168.1.4" />
@@ -40,18 +40,25 @@
 			<param name="server-ip" value="192.168.1.7" />
 			<param name="command" value="killall java" />
 		</antcall>
-		<antcall target="deploy-site" />
+	</target>
+
+	<target name="deploy-site">
+		<antcall target="execute-remote-command">
+			<param name="server-ip" value="192.168.1.4" />
+			<param name="command" value="cd /usr/share/apache-tomcat-7.0.27/bin; ./shutdown.sh;" />
+		</antcall>
+		<antcall target="deploy-ikube-site">
+			<param name="server-ip" value="192.168.1.4" />
+			<param name="tomcat-home" value="/usr/share/apache-tomcat-7.0.27" />
+		</antcall>
 		<antcall target="execute-remote-command">
 			<param name="server-ip" value="192.168.1.4" />
 			<param name="command" value="cd /usr/share/apache-tomcat-7.0.27/bin; ./startup.sh;" />
 		</antcall>
 	</target>
 
-	<target name="deploy-site">
-		<antcall target="deploy-ikube-site">
-			<param name="server-ip" value="192.168.1.4" />
-			<param name="tomcat-home" value="/usr/share/apache-tomcat-7.0.27" />
-		</antcall>
+	<target name="deploy-ikube-site">
+		<scp file="code/site/target/site.war" todir="${userid}:${password}@${server-ip}:${tomcat-home}/webapps" trust="true" failonerror="false" verbose="${verbose}" />
 	</target>
 
 	<target name="go-server">
@@ -89,16 +96,7 @@
 	</target>
 
 	<target name="prepare">
-		<antcall target="package-configuration" />
-		<antcall target="jar-configuration" />
 		<antcall target="deploy-configuration-for-jetty" />
-		<!-- Zip Tomcat and the configuration directory for upload to Google Code -->
-		<echo message="Zipping Tomcat with configuration : " />
-		<antcall target="zip-tomcat" />
-	</target>
-
-	<target name="deploy-ikube-site">
-		<scp file="code/site/target/site.war" todir="${userid}:${password}@${server-ip}:${tomcat-home}/webapps" trust="true" failonerror="false" verbose="${verbose}" />
 	</target>
 
 	<target name="copy-directory-to-server">
@@ -117,48 +115,9 @@
 		<sshexec host="${server-ip}" trust="true" username="${userid}" password="${password}" command="${command}" failonerror="false" />
 	</target>
 
-	<!-- 
-		This target will copy the common, the production and the profile configuration to the 
-		specified output directory. The profile must be the name of the configuration directory 
-		in the conf folder int he core resources folder.  
-	-->
-	<target name="package-configuration">
-		<delete dir="${output-configuration-directory}" />
-		<!-- Copy the common configuration -->
-		<copy file="code/core/src/main/resources/ikube/spring.xml" todir="${output-configuration-directory}" failonerror="false" />
-		<copy todir="${output-configuration-directory}/common" failonerror="false">
-			<fileset dir="code/core/src/main/resources/ikube/common" />
-		</copy>
-		<!-- Copy the production configuration, with the geo name stuff -->
-		<copy todir="${output-configuration-directory}/production" failonerror="false">
-			<fileset dir="code/core/src/main/resources/ikube/production" />
-		</copy>
-		<!-- Copy the profile configuration -->
-		<copy todir="${output-configuration-directory}/${profile}" failonerror="false">
-			<fileset dir="code/core/src/main/resources/ikube/${profile}" />
-		</copy>
-	</target>
-
-	<target name="jar-configuration" description="Packages the configuration into a jar for uploading to Artifactory">
-		<jar destfile="${output-configuration-directory}/${ikube-configuration-jar}" basedir="${output-configuration-directory}" />
-		<copy file="${output-configuration-directory}/${ikube-configuration-jar}" todir="code/core/src/main/webapp/docs" failonerror="true" />
-	</target>
-
 	<target name="deploy-configuration-for-jetty" description="Copies the configuration folder to the base of the project modules so Jetty can start">
 		<unjar src="${output-configuration-directory}/${ikube-configuration-jar}" dest="code/core/ikube" overwrite="true" />
 		<unjar src="${output-configuration-directory}/${ikube-configuration-jar}" dest="code/war/ikube" overwrite="true" />
-	</target>
-
-	<!-- 
-			This target will unpack Tomcat, put the war in the web apps directory, unpack the configuration to the 
-			bin directory, then zip everything up again into a zip for distribution/deployment.
-		-->
-	<target name="zip-tomcat">
-		<unzip dest="${target-directory}" src="code/libs/tools/${tomcat-zip}" />
-		<unjar src="${output-configuration-directory}/${ikube-configuration-jar}" dest="${target-directory}/${tomcat-unpacked}/bin/ikube" overwrite="true" />
-		<zip destfile="${target-directory}/${tomcat-zip}" compress="true" filesonly="false" update="false" whenempty="skip">
-			<zipfileset dir="${target-directory}/${tomcat-unpacked}" prefix="${tomcat-unpacked}" />
-		</zip>
 	</target>
 
 </project>
