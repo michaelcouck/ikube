@@ -41,7 +41,7 @@ public abstract class Base {
 	protected static String LOCALHOST = "localhost";
 	/** This client({@link HttpClient}) is for the web services. */
 	protected static HttpClient HTTP_CLIENT = new HttpClient();
-	protected static int SERVER_PORT = 9080;
+	protected static int SERVER_PORT = 9090;
 	protected static String REST_USER_NAME = "user";
 	protected static String REST_PASSWORD = "user";
 
