@@ -109,6 +109,8 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 						synchronized (this) {
 							try {
 								wait(1000);
+							} catch (InterruptedException e) {
+								throw new RuntimeException(e);
 							} catch (Exception e) {
 								logger.error("Exception waiting for more resources to crawl : ", e);
 							}
