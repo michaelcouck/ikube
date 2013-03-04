@@ -5,11 +5,11 @@
 	
 	To get Ikube running in less than 5 minutes.<br>
 	
-	1) Down-load the latest version at <a href="http://code.google.com/p/ikube/downloads/list" target="_top">ikube</a>.<br>
-	2) Down-load the acompanying <a href="http://code.google.com/p/ikube/downloads/list" target="_top">Tomcat</a>.<br>
-	3) Copy the ikube.war file to the $TOMCAT_INSTALL/webapps directory of Tomcat.<br>
-	4) The default configuration is already in the bin directory, $TOMCAT_INSTALL/bin/ikube<br>
-	5) Change the name of the war to ikube.war if not already so.<br>
+	1) Down-load the latest version at <a href="http://ikube.be/artifactory/libs-release-local/ikube/ikube-war/4.2.0/ikube-war-4.2.0.war">ikube</a>.<br>
+	2) Down-load the acompanying <a href="http://ikube.be/artifactory/libs-release-local/ikube/ikube-libs/4.2.0/ikube-libs-4.2.0.jar">configuration</a>.<br>
+	3) Download <a href="http://tomcat.apache.org/download-70.cgi">Tomcat</a> from the Apache site
+	4) Change the name of the war from ikube-war-xxx.war to ikube.war and copy the file to the $TOMCAT_INSTALL/webapps directory of Tomcat.<br>
+	5) Unpack the configuration file (ikube-libs-4.2.0.jar) into the $TOMCAT_INSTALL/bin directory<br>
 	6) Start Tomcat (with the ./startup.sh or startup.bat files). <br>
 	7) Have a cup of coffee.<br><br>
 			
@@ -21,5 +21,7 @@
 			 
 	The default wait period for the scheduler to start is generally around five minutes. Of course you can change this we'll get into this in 
 	the configuration section.<br><br>
+	
+	Note that all the integration configurations are in the configuration folder. Most of these can be deleted and or modified to suit your needs.
 			 
 </div>

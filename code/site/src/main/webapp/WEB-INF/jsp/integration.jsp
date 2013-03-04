@@ -4,6 +4,6 @@
 
 	<h2>Integration</h2>
 	
-	Integration? Continuous perhaps or the system test environment?
+	Continuous integration includes running long week long tests on the integration cluster, which is three Dell servers and a 10 tera nas.
 	
 </div>
