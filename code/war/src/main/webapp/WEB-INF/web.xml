@@ -10,7 +10,7 @@
         http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" id="WebApp_ID"
 	version="2.5">
 
-	<display-name>Ikube</display-name>
+	<display-name>Ikube Project Search Application</display-name>
 
 	<listener>
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>

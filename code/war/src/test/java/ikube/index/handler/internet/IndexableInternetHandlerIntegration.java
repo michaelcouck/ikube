@@ -67,10 +67,6 @@ public class IndexableInternetHandlerIntegration extends Integration {
 			ThreadUtilities.waitForFutures(threads, Integer.MAX_VALUE);
 
 			int expectedAtLeast = 1;
-			List<Url> urls = dataBase.find(Url.class, 0, Integer.MAX_VALUE);
-			int totalUrlsCrawled = urls.size();
-			logger.info("Urls crawled : " + totalUrlsCrawled);
-			assertTrue("Expected more than " + expectedAtLeast + " and got : " + totalUrlsCrawled, totalUrlsCrawled >= expectedAtLeast);
 			assertTrue("There must be some documents in the index : ", indexContext.getIndexWriters()[0].numDocs() >= expectedAtLeast);
 		} finally {
 			ThreadUtilities.destroy(indexContext.getIndexName());

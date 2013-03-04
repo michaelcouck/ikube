@@ -1,7 +1,6 @@
 package ikube.index.handler.internet;
 
 import ikube.IConstants;
-import ikube.database.IDataBase;
 import ikube.index.IndexManager;
 import ikube.index.content.ByteOutputStream;
 import ikube.index.content.IContentProvider;
@@ -146,9 +145,6 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 		}
 	}
 
-	/** Access to the database. */
-	@Autowired
-	private IDataBase dataBase;
 	@Autowired
 	@SuppressWarnings("rawtypes")
 	private ResourceBaseHandler resourceUrlHandler;
@@ -215,7 +211,6 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 				}
 			}
 		}
-		dataBase.persistBatch(urlBatch);
 	}
 
 	/**
@@ -277,11 +272,6 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 			}
 			Long hash = HashUtilities.hash(parsedContent);
 			url.setHash(hash.longValue());
-
-			if (dataBase.find(Url.class, Url.SELECT_FROM_URL_BY_HASH, new String[] { "hash" }, new Object[] { hash }, 0, 1).size() > 0) {
-				logger.info("Skipping duplicate content : ");
-				return;
-			}
 
 			// Add the document to the index
 			handleResource(indexContext, indexable, new Document(), url);
@@ -362,6 +352,7 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 					throw e;
 				}
 			}
+			url.setParsedContent(outputStream.toString());
 			url.setContentType(contentType);
 			return outputStream.toString();
 		} catch (Exception e) {
@@ -409,10 +400,6 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 			IndexManager.addStringField(indexable.getContentFieldName(), url.getParsedContent(), document, store, analyzed, termVector);
 			resourceUrlHandler.handleResource(indexContext, indexable, document, null);
 		} catch (Exception e) {
-			if (url != null) {
-				url.setParsedContent(null);
-				url.setRawContent(null);
-			}
 			logger.error("Exception accessing url : " + url, e);
 		}
 		return document;

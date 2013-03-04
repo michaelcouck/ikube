@@ -48,6 +48,7 @@
 	<mvc:view-controller path="/use.html" />
 	<mvc:view-controller path="/search.html" />
 	<mvc:view-controller path="/license.html" />
+	<mvc:view-controller path="/results.html" />
 	
 	<mvc:view-controller path="/bugs.html" />
 	<mvc:view-controller path="/comitters.html" />

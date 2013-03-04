@@ -4,6 +4,8 @@
 
 	<h2>Comitters</h2>
 	
-	Should this page be removed?
+	Michael Couck<br>
+	Cristi Bozga<br>
+	Bruno Barin<br>
 	
 </div>

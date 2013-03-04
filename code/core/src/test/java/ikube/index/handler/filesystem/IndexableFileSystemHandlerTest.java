@@ -66,10 +66,10 @@ public class IndexableFileSystemHandlerTest extends ATest {
 		logger.info("Resource handler : " + resourceHandler);
 		Deencapsulation.setField(indexableFileSystemHandler, "resourceHandler", resourceHandler);
 		IndexableFileSystem indexableFileSystem = getIndexableFileSystem(".");
+		indexableFileSystem.setUnpackZips(Boolean.FALSE);
 		List<Future<?>> futures = indexableFileSystemHandler.handleIndexable(indexContext, indexableFileSystem);
 		ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
 		assertTrue("There should be some nulls in the futures as the executer is shut down : ", futures.size() > 0);
-		// TODO Verify the output of the gzips
 	}
 
 	@Test

@@ -3,21 +3,16 @@ package ikube.web.integration.service;
 import static org.junit.Assert.assertTrue;
 import ikube.Base;
 import ikube.IConstants;
-import ikube.toolkit.FileUtilities;
 import ikube.web.service.SearcherXml;
 
-import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.GetMethod;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.xml.sax.SAXException;
 
 public class SearcherXmlIntegration extends Base {
-	
+
 	public static final String SERVICE = "/service";
 
 	@Test
@@ -48,6 +43,7 @@ public class SearcherXmlIntegration extends Base {
 		logger.info("Query string : " + getMethod.getQueryString());
 		int result = HTTP_CLIENT.executeMethod(getMethod);
 		String actual = getMethod.getResponseBodyAsString();
+		logger.info("Results : " + actual);
 		assertTrue("We should get something : " + result + ", " + actual, actual.length() > 0);
 	}
 
@@ -79,6 +75,7 @@ public class SearcherXmlIntegration extends Base {
 		logger.info("Query string : " + getMethod.getQueryString());
 		int result = HTTP_CLIENT.executeMethod(getMethod);
 		String actual = getMethod.getResponseBodyAsString();
+		logger.info("Results : " + actual);
 		assertTrue("We should get something : " + result + ", " + actual, actual.length() > 0);
 	}
 
@@ -108,6 +105,7 @@ public class SearcherXmlIntegration extends Base {
 		logger.info("Query string : " + getMethod.getQueryString());
 		int result = HTTP_CLIENT.executeMethod(getMethod);
 		String actual = getMethod.getResponseBodyAsString();
+		logger.info("Results : " + actual);
 		assertTrue("We should get something : " + result + ", " + actual, actual.length() > 0);
 	}
 
@@ -141,6 +139,7 @@ public class SearcherXmlIntegration extends Base {
 		logger.info("Query string : " + getMethod.getQueryString());
 		int result = HTTP_CLIENT.executeMethod(getMethod);
 		String actual = getMethod.getResponseBodyAsString();
+		logger.info("Results : " + actual);
 		assertTrue("We should get something : " + result + ", " + actual, actual.length() > 0);
 	}
 
@@ -178,6 +177,7 @@ public class SearcherXmlIntegration extends Base {
 		logger.info("Query string : " + getMethod.getQueryString());
 		int result = HTTP_CLIENT.executeMethod(getMethod);
 		String actual = getMethod.getResponseBodyAsString();
+		logger.info("Results : " + actual);
 		assertTrue("We should get something : " + result + ", " + actual, actual.length() > 0);
 	}
 
@@ -213,6 +213,7 @@ public class SearcherXmlIntegration extends Base {
 		logger.info("Query string : " + getMethod.getQueryString());
 		int result = HTTP_CLIENT.executeMethod(getMethod);
 		String actual = getMethod.getResponseBodyAsString();
+		logger.info("Results : " + actual);
 		assertTrue("We should get something : " + result + ", " + actual, actual.length() > 0);
 	}
 
@@ -233,7 +234,7 @@ public class SearcherXmlIntegration extends Base {
 		String[] values = { //
 		IConstants.GEOSPATIAL, //
 				"cape town university", //
-				IConstants.NAME, // 
+				IConstants.NAME, //
 				Boolean.TRUE.toString(), //
 				"0", //
 				"10" };
@@ -244,6 +245,7 @@ public class SearcherXmlIntegration extends Base {
 		logger.info("Query string : " + getMethod.getQueryString());
 		int result = HTTP_CLIENT.executeMethod(getMethod);
 		String actual = getMethod.getResponseBodyAsString();
+		logger.info("Results : " + actual);
 		assertTrue("We should get something : " + result + ", " + actual, actual.length() > 0);
 	}
 
@@ -276,6 +278,7 @@ public class SearcherXmlIntegration extends Base {
 		logger.info("Query string : " + getMethod.getQueryString());
 		int result = HTTP_CLIENT.executeMethod(getMethod);
 		String actual = getMethod.getResponseBodyAsString();
+		logger.info("Results : " + actual);
 		assertTrue("We should get something : " + result + ", " + actual, actual.length() > 0);
 	}
 

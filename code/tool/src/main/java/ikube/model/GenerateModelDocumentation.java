@@ -38,21 +38,22 @@ public class GenerateModelDocumentation {
 		for (final Class<?> klass : CLASSES) {
 			createEntityTableRow(klass, tableElement);
 		}
-		return document.asXML();
+		return document.asXML().replaceAll("zzz", "<br>");
 	}
 
 	private void createEntityTableRow(final Class<?> klass, final Element tableElement) {
-		Element rowElement = tableElement.addElement("tr");
+		final Element rowElement = tableElement.addElement("tr");
 		XmlUtilities.addElement(rowElement, "td", klass.getSimpleName());
+		final StringBuilder propertyBuilder = new  StringBuilder();
+		final StringBuilder luceneFieldBuilder = new  StringBuilder();
+		final StringBuilder descriptionBuilder = new  StringBuilder();
 		class ModelAttributeFieldCallback implements ReflectionUtils.FieldCallback {
 			@Override
 			public void doWith(final Field field) throws IllegalArgumentException, IllegalAccessException {
-				Element rowElement = tableElement.addElement("tr");
 				Attribute attribute = field.getAnnotation(Attribute.class);
-				XmlUtilities.addElement(rowElement, "td", "");
-				XmlUtilities.addElement(rowElement, "td", field.getName());
-				XmlUtilities.addElement(rowElement, "td", Boolean.toString(attribute.field()));
-				XmlUtilities.addElement(rowElement, "td", attribute.description());
+				propertyBuilder.append(field.getName() + "zzz");
+				luceneFieldBuilder.append(attribute.field() + "zzz");
+				descriptionBuilder.append(attribute.description() + "zzz");
 			}
 		}
 		class ModelAttributeFieldFilter implements ReflectionUtils.FieldFilter {
@@ -62,8 +63,10 @@ public class GenerateModelDocumentation {
 			}
 		}
 		ReflectionUtils.doWithFields(klass, new ModelAttributeFieldCallback(), new ModelAttributeFieldFilter());
-		rowElement = tableElement.addElement("tr");
-		XmlUtilities.addElement(rowElement, "td", "");
+		XmlUtilities.addElement(rowElement, "td", propertyBuilder.toString());
+		XmlUtilities.addElement(rowElement, "td", luceneFieldBuilder.toString());
+		Element descriptionElement = XmlUtilities.addElement(rowElement, "td", descriptionBuilder.toString());
+		descriptionElement.addAttribute("nowrap", "nowrap");
 	}
 
 }

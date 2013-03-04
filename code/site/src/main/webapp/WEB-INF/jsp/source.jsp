@@ -4,6 +4,7 @@
 
 	<h2>Source</h2>
 	
-	Point to Google code source. Perhaps this page can be removed and a link to the source from the index page?
+	The source may be downloaded from <a href="http://code.google.com/p/ikube">Google Code</a>, 
+	or as a zip file from <a href="<c:url value="/downloads.html" />">Artifactory</a>
 	
 </div>

@@ -31,7 +31,7 @@
 		property:throttle="${throttle}"
 		property:indexDirectoryPath="/media/nas/xfs-one/data/index"
 		property:indexDirectoryPathBackup="/media/nas/xfs-one/data/index"
-		property:delta="true"
+		property:delta="false"
 		property:children-ref="wikiIndexables" />
 	<util:list id="wikiIndexables">
 		<ref local="wikidata" />

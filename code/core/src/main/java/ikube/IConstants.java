@@ -141,7 +141,7 @@ public interface IConstants {
 	/** The maximum age that the server can get to before it is deleted from the cluster. */
 	int MAX_AGE = 1800000;
 
-	String STRIP_CHARACTERS = ",[]{};:/\\.-_";
+	String STRIP_CHARACTERS = "|!,[]{};:/\\.-_";
 
 	long MAX_ACTIONS = 10000;
 	double MAX_SNAPSHOTS = 90;

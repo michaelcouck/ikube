@@ -43,12 +43,12 @@ public class ClusterManagerHazelcast extends AClusterManager {
 	/** This listener will either stop one job or destroy the thread pool for all jobs. */
 	@Autowired
 	private StopListener stopListener;
-	/** This class had methods to query the state of the contexts. */
-	@Autowired
-	private IMonitorService monitorService;
 	/** Ths listener will delete the index and the backup directory on the file system. */
 	@Autowired
 	private DeleteListener deleteListener;
+	/** This class had methods to query the state of the contexts. */
+	@Autowired
+	private IMonitorService monitorService;
 
 	private transient Server server;
 
@@ -63,7 +63,6 @@ public class ClusterManagerHazelcast extends AClusterManager {
 	private void addListeners(final MessageListener<Object>... listeners) {
 		for (final MessageListener<Object> listener : listeners) {
 			if (listener == null) {
-				logger.warn("Listener null, are we in a test?");
 				continue;
 			}
 			Hazelcast.getTopic(IConstants.TOPIC).addMessageListener(listener);

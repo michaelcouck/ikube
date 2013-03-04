@@ -30,6 +30,7 @@ public class BackupTest extends ATest {
 		Deencapsulation.setField(backup, clusterManager);
 		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
 		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPathBackup()), 1);
+		
 	}
 
 	@After

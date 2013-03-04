@@ -33,6 +33,10 @@ body, table, tr, td, th, input, textarea {
 	border-collapse: collapse; */
 }
 
+th {
+	text-align: left;
+}
+
 hr {
 	height: 0; 
 	line-height: 0; 

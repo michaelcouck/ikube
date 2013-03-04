@@ -18,11 +18,11 @@
 		</antcall>
 		<antcall target="go-server" inheritall="true">
 			<param name="server-ip" value="192.168.1.6" />
-			<param name="tomcat-home" value="/usr/share/apache-tomcat-7.0.27" />
+			<param name="tomcat-home" value="/usr/share/apache-tomcat-6.0.29-1" />
 		</antcall>
 		<antcall target="go-server" inheritall="true">
 			<param name="server-ip" value="192.168.1.7" />
-			<param name="tomcat-home" value="/usr/share/apache-tomcat-7.0.27" />
+			<param name="tomcat-home" value="/usr/share/apache-tomcat-6.0.29-1" />
 		</antcall>
 	</target>
 
@@ -40,13 +40,17 @@
 			<param name="server-ip" value="192.168.1.7" />
 			<param name="command" value="killall java" />
 		</antcall>
-		<antcall target="deploy-ikube-site">
-			<param name="server-ip" value="192.168.1.4" />
-			<param name="tomcat-home" value="/usr/share/apache-tomcat-7.0.27" />
-		</antcall>
+		<antcall target="deploy-site" />
 		<antcall target="execute-remote-command">
 			<param name="server-ip" value="192.168.1.4" />
 			<param name="command" value="cd /usr/share/apache-tomcat-7.0.27/bin; ./startup.sh;" />
+		</antcall>
+	</target>
+
+	<target name="deploy-site">
+		<antcall target="deploy-ikube-site">
+			<param name="server-ip" value="192.168.1.4" />
+			<param name="tomcat-home" value="/usr/share/apache-tomcat-7.0.27" />
 		</antcall>
 	</target>
 

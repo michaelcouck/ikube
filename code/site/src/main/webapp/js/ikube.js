@@ -1,5 +1,90 @@
 /** Note: This file must be loaded after all the other JavaScript files. */
 
+jQuery.support.cors = true;
+
+/**
+ * This is the main Angular module for the iKube site on the 
+ * client. This module will spawn and create the controllers and other
+ * artifacts as required.
+ */
+var module = angular.module('site', []);
+
+// The controller that does the search
+var searcherController = module.controller('SearcherController', function($http, $scope, $location, $rootScope) {
+			
+	// The model data that we bind to in the form
+	$scope.pageBlock = 10; // Results per page
+	$scope.endResult = 0;
+	$scope.data = {};
+	$scope.status = null;
+		
+	$scope.statistics = {};
+	$scope.pagination = [];
+			
+	// The form parameters we send to the server
+	$scope.searchParameters = { 
+		indexName : 'ikube',
+		searchStrings : '', 
+		searchFields : 'content', 
+		typeFields : 'string', 
+		fragment : true,
+		firstResult : 0,
+		maxResults : $scope.pageBlock
+	};
+			
+	// The configuration for the request to the server for the results
+	$scope.config = { params : $scope.searchParameters };
+			
+	// Go to the web service for the results. The parameter sets the first resultindex
+	// in the Lucene index, i.e. for the first search the first result would be 1 but for the 
+	// 10 th page the first result would then be 100 probably
+	$scope.doSearch = function(firstResult) {
+		var searchString = document.getElementById('search-form').searchString.value;
+		// Numeric search against all the fields
+		$scope.url = 'http://www.ikube.be/ikube/service/search/json/complex';
+		$scope.searchParameters.firstResult = firstResult;
+		$scope.searchParameters['searchStrings'] = searchString;
+		delete $http.defaults.headers.common['X-Requested-With'];
+		var promise = $http.get($scope.url, $scope.config);
+		promise.success(function(data, status) {
+			// Pop the statistics Json off the array
+			$scope.data = data;
+			$scope.status = status;
+			$scope.statistics = $scope.data.pop();
+			$scope.doPagination($scope.data);
+		});
+		promise.error(function(data, status, config, errorResponse) {
+			$scope.status = status;
+			alert('Search error : sstatus : ' + status + ', response : ' + errorResponse);
+		});
+	};
+			
+	// Creates the Json pagination array for the next pages in the search
+	$scope.doPagination = function(data) {
+		$scope.pagination = [];
+		var total = $scope.statistics.total;
+		// Exception or no results
+		if (total == null || total == 0) {
+			$scope.searchParameters.firstResult = 0;
+			$scope.endResult = 0;
+			return;
+		}
+		// We just started a search and got the first results
+		var pages = total / $scope.pageBlock;
+		// Create one 'page' for each block of results
+		for (var i = 0; i < pages && i < $scope.pageBlock; i++) {
+			var firstResult = i * $scope.pageBlock;
+			var active = firstResult == $scope.searchParameters.firstResult ? 'black' : 'blue';
+			$scope.pagination[i] = { page : i, firstResult : firstResult, active : active };
+		};
+		// Find the 'to' result being displayed
+		var modulo = total % $scope.pageBlock;
+		$scope.endResult = $scope.searchParameters.firstResult + modulo == total ? total : $scope.searchParameters.firstResult + $scope.pageBlock;
+	};
+});
+
+searcherController.$inject = ['$scope', '$routeParams', '$filter', 'storage', '$location'];
+
 /**
  * This function will track the page view for Google Analytics.
  */ 
@@ -11,30 +96,6 @@ function track() {
 		// document.write('<!-- ' + err + ' -->');
 	}
 }
-
-/** The global refresh variable. */
-var refreshInterval = 20000;
-var chartRefreshInterval = 5000;
-
-/**
- * This is the main Angular module for the iKube application on the 
- * client. This module will spawn and create the controllers and other
- * artifacts as required.
- */
-var module = angular.module('ikube', []);
-
-module.controller('DownloadsController', function($http, $scope) {
-	$scope.downloads = null;
-	$scope.doDownloads = function() {
-		$scope.url = getServiceUrl('/ikube/service/monitor/indexes');
-		var promise = $http.get($scope.url);
-		promise.success(function(data, status) {
-			$scope.downloads = data;
-			$scope.status = status;
-		});
-	}
-	$scope.doDownloads();
-});
 
 function writeDate() {
 	var d = new Date();

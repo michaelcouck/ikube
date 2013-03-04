@@ -27,6 +27,7 @@
 	
 	<http auto-config="true">
 		<anonymous />
+		<!-- The restriction exceptions -->
 		<intercept-url 
 			pattern="/docs/**" 
 			access="IS_AUTHENTICATED_ANONYMOUSLY" />
@@ -40,21 +41,19 @@
 			pattern="/style/**" 
 			access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		<intercept-url 
-			pattern="/service/**" 
-			access="IS_AUTHENTICATED_ANONYMOUSLY" />
-		<intercept-url 
 			pattern="/documentation/**" 
 			access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		<intercept-url 
 			pattern="/login**" 
 			access="IS_AUTHENTICATED_ANONYMOUSLY" />
-		<intercept-url
-			pattern="/service/**" 
-			access="ROLE_USER,ROLE_ADMIN" />
 		<intercept-url 
-			pattern="/search**" 
+			pattern="/search**"
 			access="IS_AUTHENTICATED_ANONYMOUSLY" />
-		<!-- All resources are restricted to authentication except for the exclusions. -->
+		<!-- By default the search web services are open!  -->
+		<intercept-url 
+			pattern="/service/**" 
+			access="IS_AUTHENTICATED_ANONYMOUSLY" />
+		<!-- Everything restricted -->
 		<intercept-url 
 			pattern="/**" 
 			access="ROLE_USER,ROLE_ADMIN" />

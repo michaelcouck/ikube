@@ -4,6 +4,7 @@
 
 	<h2>Testing</h2>
 	
-	Some text on testing, unit and integration, and of course the test environment.
+	Ikube is continuously tested with unit tests, integration tests and in a system test environment. Because some of the tests take days and weeks to 
+	execute they are mostly unattended and fully automated. Bla bla...
 	
 </div>

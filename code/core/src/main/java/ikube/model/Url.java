@@ -10,6 +10,8 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Transient;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
 import org.apache.openjpa.persistence.jdbc.Index;
 
 /**
@@ -34,7 +36,7 @@ public class Url extends Persistable {
 	@Transient
 	private String title;
 	@Transient
-	private byte[] rawContent;
+	private transient byte[] rawContent;
 	@Transient
 	private String parsedContent;
 
@@ -129,6 +131,10 @@ public class Url extends Persistable {
 
 	public void setHash(final long hash) {
 		this.hash = hash;
+	}
+	
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this, ToStringStyle.DEFAULT_STYLE, false);
 	}
 
 }

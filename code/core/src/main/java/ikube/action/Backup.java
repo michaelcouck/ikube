@@ -37,6 +37,10 @@ public class Backup extends Action<IndexContext<?>, Boolean> {
 			if (indexDirectoryBackup == null || !indexDirectoryBackup.exists()) {
 				logger.warn("Backup directory could not be created : " + indexDirectoryBackup);
 			}
+			if (indexDirectoryPath.equals(indexDirectoryPathBackup)) {
+				// The index and the backup are the same to save disk space
+				return Boolean.TRUE;
+			}
 			try {
 				String latestIndexDirectoryBackupPath = indexDirectoryPathBackup + IConstants.SEP + latestIndexDirectory.getName();
 				File latestIndexDirectoryBackup = FileUtilities.getFile(latestIndexDirectoryBackupPath, Boolean.TRUE);
