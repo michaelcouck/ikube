@@ -64,7 +64,7 @@ public class StringUtilitiesTest extends ATest {
 			}
 		}, "Strip characters ", 1000, Boolean.TRUE);
 		logger.info("Per second : " + executionsPerSecond);
-		assertTrue(executionsPerSecond > 1000);
+		assertTrue(executionsPerSecond > 100);
 	}
 
 }
