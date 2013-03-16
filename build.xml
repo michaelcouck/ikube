@@ -16,30 +16,30 @@
 			<param name="server-ip" value="192.168.1.4" />
 			<param name="tomcat-home" value="/usr/share/apache-tomcat-6.0.29-1" />
 		</antcall>
-		<antcall target="go-server" inheritall="true">
+		<!-- antcall target="go-server" inheritall="true">
 			<param name="server-ip" value="192.168.1.6" />
 			<param name="tomcat-home" value="/usr/share/apache-tomcat-6.0.29-1" />
 		</antcall>
 		<antcall target="go-server" inheritall="true">
 			<param name="server-ip" value="192.168.1.7" />
 			<param name="tomcat-home" value="/usr/share/apache-tomcat-6.0.29-1" />
-		</antcall>
+		</antcall -->
 	</target>
 
 	<target name="stop-servers-deploy">
 		<!-- Stop all the processes, the only way to stop Tomcat -->
 		<antcall target="execute-remote-command">
 			<param name="server-ip" value="192.168.1.4" />
-			<param name="command" value="killall java" />
+			<param name="command" value="cd /usr/share/apache-tomcat-6.0.29-1/bin; ./shutdown.sh;" />
 		</antcall>
-		<antcall target="execute-remote-command">
+		<!-- antcall target="execute-remote-command">
 			<param name="server-ip" value="192.168.1.6" />
 			<param name="command" value="killall java" />
 		</antcall>
 		<antcall target="execute-remote-command">
 			<param name="server-ip" value="192.168.1.7" />
 			<param name="command" value="killall java" />
-		</antcall>
+		</antcall -->
 	</target>
 
 	<target name="deploy-site">
@@ -47,13 +47,22 @@
 			<param name="server-ip" value="192.168.1.4" />
 			<param name="command" value="cd /usr/share/apache-tomcat-7.0.27/bin; ./shutdown.sh;" />
 		</antcall>
+		<antcall target="execute-remote-command">
+			<param name="server-ip" value="192.168.1.4" />
+			<param name="command" value="
+				rm -r /usr/share/apache-tomcat-7.0.27/webapps/site*;
+				rm -r /usr/share/apache-tomcat-7.0.27/logs;
+				mkdir -p /usr/share/apache-tomcat-7.0.27/logs;" />
+		</antcall>
 		<antcall target="deploy-ikube-site">
 			<param name="server-ip" value="192.168.1.4" />
 			<param name="tomcat-home" value="/usr/share/apache-tomcat-7.0.27" />
 		</antcall>
 		<antcall target="execute-remote-command">
 			<param name="server-ip" value="192.168.1.4" />
-			<param name="command" value="cd /usr/share/apache-tomcat-7.0.27/bin; ./startup.sh;" />
+			<param name="command" value="
+				chmod 777 -R /usr/share/apache-tomcat-7.0.27;
+				cd /usr/share/apache-tomcat-7.0.27/bin; ./startup.sh;" />
 		</antcall>
 	</target>
 
@@ -75,7 +84,7 @@
 		<!-- Deploy the configuration to the server -->
 		<antcall target="copy-directory-to-server">
 			<param name="server-ip" value="${server-ip}" />
-			<param name="directory-to-copy" value="${output-configuration-directory}" />
+			<param name="directory-to-copy" value="${configuration-directory}" />
 			<param name="server-directory" value="${tomcat-home}/bin/ikube" />
 		</antcall>
 		<!-- Deploy Ikube to the server -->

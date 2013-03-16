@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:property="http://www.springframework.org/schema/p"
+	xmlns:util="http://www.springframework.org/schema/util"
+
+	xsi:schemaLocation="
+			http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+            http://www.springframework.org/schema/context
+            http://www.springframework.org/schema/context/spring-context-3.0.xsd
+            http://www.springframework.org/schema/util
+            http://www.springframework.org/schema/util/spring-util.xsd">
+
+	<bean
+		id="indexContext"
+		class="ikube.model.IndexContext"
+		property:name="indexContext"
+		property:maxAge="6000"
+		property:compoundFile="${compound.file}"
+		property:bufferedDocs="${buffered.docs}"
+		property:bufferSize="${buffer.size}"
+		property:batchSize="${jdbc.batch.size}"
+		property:internetBatchSize="${internet.batch.size}"
+		property:mergeFactor="${merge.factor}"
+		property:maxFieldLength="${max.field.length}"
+		property:maxReadLength="${max.read.length}"
+		property:throttle="${throttle}"
+		property:indexDirectoryPath="${index.directory.path}"
+		property:indexDirectoryPathBackup="${index.directory.path.backup}"
+		property:children-ref="indexables" />
+	<util:list id="indexables">
+		<ref local="mail" />
+		<ref local="hazelcast" />
+		<ref local="ikubeGoogleCode" />
+		<ref local="indexContextTable" />
+		<ref local="snapshotTable" />
+	</util:list>
+	
+	<bean 
+		id="indexContextTable" 
+		class="ikube.model.IndexableTable" 
+		property:name="indexContext" 
+		property:allColumns="true" 
+		property:primaryTable="true"
+		property:dataSource-ref="nonXaDataSourceH2" 
+		property:maxExceptions="100" 
+		property:stored="true" 
+		property:analyzed="true"
+		property:vectored="true"
+		property:children-ref="indexContextColumns" />
+	<util:list id="indexContextColumns">
+		<ref local="indexContextId" />
+		<ref local="snapshotTable" />
+	</util:list>
+	<bean
+		id="indexContextId"
+		class="ikube.model.IndexableColumn"
+		property:name="id"
+		property:idColumn="true"
+		property:analyzed="true"
+		property:stored="true"
+		property:vectored="true" />
+	
+	<!-- property:primaryTable="true" -->
+	<bean 
+		id="snapshotTable" 
+		class="ikube.model.IndexableTable" 
+		property:name="snapshot" 
+		property:primaryTable="true"
+		property:allColumns="true" 
+		property:dataSource-ref="nonXaDataSourceH2" 
+		property:maxExceptions="100" 
+		property:stored="true" 
+		property:analyzed="true"
+		property:vectored="true"
+		property:children-ref="snapshotColumns" />
+	<util:list id="snapshotColumns">
+		<ref local="snapshotId" />
+		<ref local="snapshotNumDocs" />
+	</util:list>
+	<bean
+		id="snapshotId"
+		class="ikube.model.IndexableColumn"
+		property:name="id"
+		property:idColumn="true"
+		property:analyzed="true"
+		property:stored="true"
+		property:vectored="true" />
+	<bean
+		id="snapshotNumDocs"
+		class="ikube.model.IndexableColumn"
+		property:name="numDocs"
+		property:fieldName="numDocs"
+		property:address="true"
+		property:analyzed="true"
+		property:stored="true"
+		property:vectored="true" />	
+
+	<bean
+		id="mail"
+		class="ikube.model.IndexableEmail"
+		property:mailHost="pop.gmail.com"
+		property:name="ikube.email"
+		property:port="995"
+		property:protocol="pop3"
+		property:secureSocketLayer="true"
+		property:password="Caherl2ne"
+		property:username="ikube.ikube@gmail.com" 
+		property:idField="identifier"
+		property:contentField="email"
+		property:titleField="title" />
+	
+	<bean
+		id="hazelcast"
+		class="ikube.model.IndexableInternet"
+		property:name="internet"
+		property:url="http://hazelcast.com/" 
+		property:idFieldName="id"
+		property:titleFieldName="title"
+		property:contentFieldName="content"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}" 
+		property:internetBatchSize="${internet.batch.size}"
+		property:excludedPattern="${internet.excluded.pattern}" />
+	
+	<bean
+		id="ikubeGoogleCode"
+		class="ikube.model.IndexableInternet"
+		property:name="ikubeGoogleCode"
+		property:url="http://code.google.com/p/ikube/" 
+		property:idFieldName="id"
+		property:titleFieldName="title"
+		property:contentFieldName="content"
+		property:analyzed="${analyzed}"
+		property:stored="${stored}"
+		property:vectored="${vectored}"
+		property:internetBatchSize="${internet.batch.size}"
+		property:excludedPattern="${internet.excluded.pattern}" />
+	
+</beans>

@@ -35,8 +35,8 @@
 		property:maxReadLength="${max.read.length}"
 		property:address="true"
 		property:throttle="0"
-		property:indexDirectoryPath="${index.directory.path}"
-		property:indexDirectoryPathBackup="${index.directory.path.backup}"
+		property:indexDirectoryPath="./indexes"
+		property:indexDirectoryPathBackup="./indexes"
 		property:children-ref="geospatialIndexables"
 		property:strategies-ref="geoname-strategies" />
 	<util:list id="geospatialIndexables">

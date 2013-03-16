@@ -1030,7 +1030,7 @@
 		</repository>
 		<repository>
 			<id>ikube</id>
-			<url>http://ikube.be:8080/artifactory/libs-release-local/</url>
+			<url>http://ikube.be/artifactory/libs-release-local/</url>
 			<snapshots>
 				<enabled>true</enabled>
 			</snapshots>
