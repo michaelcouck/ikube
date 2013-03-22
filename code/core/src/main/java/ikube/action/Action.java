@@ -72,7 +72,6 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
 	 */
 	@Override
 	public boolean preExecute(final IndexContext<?> indexContext) throws Exception {
-		// logger.info("Pre process action : " + this.getClass());
 		return Boolean.TRUE;
 	}
 
@@ -82,20 +81,16 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
 	@Override
 	public Boolean execute(final IndexContext<?> indexContext) throws Exception {
 		try {
-			// logger.info("Action pre execute : 1 : " + indexContext.getIndexName());
 			preExecute(indexContext);
-			// logger.info("Action pre execute : 2 : " + indexContext.getIndexName());
+			boolean result = internalExecute(indexContext);
 			if (dependent != null) {
-				// logger.info("Executing dependent action : " + dependent);
-				dependent.execute(indexContext);
+				result &= dependent.execute(indexContext);
 			}
-			// logger.info("Action internal execute : " + indexContext.getIndexName());
-			return internalExecute(indexContext);
+			return result;
 		} catch (Exception e) {
 			logger.error(null, e);
 			throw e;
 		} finally {
-			// logger.info("Action post execute : " + indexContext.getIndexName());
 			postExecute(indexContext);
 		}
 	}
@@ -115,7 +110,6 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
 	 */
 	@Override
 	public boolean postExecute(final IndexContext<?> indexContext) throws Exception {
-		// logger.info("Post process action : " + this.getClass());
 		return Boolean.TRUE;
 	}
 
@@ -286,7 +280,6 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
 		} catch (Exception e) {
 			logger.error("Exception sending mail : " + subject + ", " + e.getMessage());
 			logger.debug(null, e);
-			// logger.error("Mailer details : " + ToStringBuilder.reflectionToString(mailer), e);
 		}
 	}
 

@@ -37,7 +37,6 @@ import org.mockito.stubbing.Answer;
  */
 public class ValidatorTest extends ATest {
 
-	// @Mocked(methods = { "sendNotification" })
 	private Validator validator;
 
 	public ValidatorTest() {
@@ -110,14 +109,12 @@ public class ValidatorTest extends ATest {
 		result = validator.execute(indexContext);
 		assertFalse("The index is corrupt : ", result);
 		// There should be a mail sent because the index is corrupt
-		invocations++;
-		invocations++;
+		invocations += 2;
 		verify(validator, Mockito.times(invocations)).sendNotification(anyString(), anyString());
 
 		result = validator.execute(indexContext);
 		// There should be another mail sent
-		invocations++;
-		invocations++;
+		invocations += 2;
 		verify(validator, Mockito.times(invocations)).sendNotification(anyString(), anyString());
 	}
 

@@ -14,7 +14,6 @@ import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthPolicy;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -24,17 +23,15 @@ import org.junit.Test;
  * @since 03.03.12
  * @version 01.00
  */
-@Ignore
 public class SearcherClientIntegration {
 
 	@Test
 	public void main() throws Exception {
-		String path = "/ikube/service/search/multi/spatial";
+		String path = "/ikube/service/search/multi/spatial/all";
 		String url = new URL("http", "ikube.be", 80, path).toString();
 
-		String[] names = { "indexName", "searchStrings", "searchFields", "fragment", "firstResult", "maxResults", "distance", "latitude",
-				"longitude" };
-		String[] values = { "geospatial", "cape AND town", "name", "true", "0", "10", "20", "-33.9693580", "18.4622110" };
+		String[] names = { "indexName", "searchStrings", "fragment", "firstResult", "maxResults", "distance", "latitude", "longitude" };
+		String[] values = { "geospatial", "berlin", "true", "0", "10", "10", "52.52274", "13.4166" };
 		NameValuePair[] params = getNameValuePairs(names, values);
 
 		GetMethod getMethod = new GetMethod(url);

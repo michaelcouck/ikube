@@ -47,8 +47,6 @@ public class IsIndexCorruptTest extends ATest {
 		if (!lock.isLocked()) {
 			logger.warn("Couldn't get lock on index : " + lock);
 		}
-		// when(indexContext.getIndexDirectoryPath()).thenReturn("/media/nas/xfs/indexes");
-		// when(indexContext.getIndexName()).thenReturn("desktop");
 		boolean isCorrupt = isIndexCorrupt.evaluate(indexContext);
 		// It should not be corrupt
 		assertFalse(isCorrupt);

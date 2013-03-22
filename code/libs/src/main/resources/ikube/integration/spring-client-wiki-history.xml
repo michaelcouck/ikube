@@ -29,8 +29,8 @@
 		property:maxFieldLength="${max.field.length}"
 		property:maxReadLength="${max.read.length}"
 		property:throttle="${wiki.history.throttle}"
-		property:indexDirectoryPath="/media/nas/xfs-one/history/index"
-		property:indexDirectoryPathBackup="/media/nas/xfs-one/history/index"
+		property:indexDirectoryPath="${index.directory.path}/history/index"
+		property:indexDirectoryPathBackup="${index.directory.path.backup}/history/index"
 		property:children-ref="wikiHistoryIndexablesOne" />
 	<util:list id="wikiHistoryIndexablesOne">
 		<ref local="wikiHistoryDataOne" />
@@ -69,8 +69,8 @@
 		property:maxFieldLength="${max.field.length}"
 		property:maxReadLength="${max.read.length}"
 		property:throttle="${wiki.history.throttle}"
-		property:indexDirectoryPath="/media/nas/xfs-two/history/index"
-		property:indexDirectoryPathBackup="/media/nas/xfs-two/history/index"
+		property:indexDirectoryPath="${index.directory.path}/history/index"
+		property:indexDirectoryPathBackup="${index.directory.path.backup}/history/index"
 		property:children-ref="wikiHistoryIndexablesTwo" />
 	<util:list id="wikiHistoryIndexablesTwo">
 		<ref local="wikiHistoryDataTwo" />
@@ -109,8 +109,8 @@
 		property:maxFieldLength="${max.field.length}"
 		property:maxReadLength="${max.read.length}"
 		property:throttle="${wiki.history.throttle}"
-		property:indexDirectoryPath="/media/nas/xfs-three/history/index"
-		property:indexDirectoryPathBackup="/media/nas/xfs-three/history/index"
+		property:indexDirectoryPath="${index.directory.path}/history/index"
+		property:indexDirectoryPathBackup="${index.directory.path.backup}/history/index"
 		property:children-ref="wikiHistoryIndexablesThree" />
 	<util:list id="wikiHistoryIndexablesThree">
 		<ref local="wikiHistoryDataThree" />
@@ -149,8 +149,8 @@
 		property:maxFieldLength="${max.field.length}"
 		property:maxReadLength="${max.read.length}"
 		property:throttle="${wiki.history.throttle}"
-		property:indexDirectoryPath="/media/nas/xfs-four/history/index"
-		property:indexDirectoryPathBackup="/media/nas/xfs-four/history/index"
+		property:indexDirectoryPath="${index.directory.path}/history/index"
+		property:indexDirectoryPathBackup="${index.directory.path.backup}/history/index"
 		property:children-ref="wikiHistoryIndexablesFour" />
 	<util:list id="wikiHistoryIndexablesFour">
 		<ref local="wikiHistoryDataFour" />
@@ -189,8 +189,8 @@
 		property:maxFieldLength="${max.field.length}"
 		property:maxReadLength="${max.read.length}"
 		property:throttle="${wiki.history.throttle}"
-		property:indexDirectoryPath="/media/nas/xfs-five/history/index"
-		property:indexDirectoryPathBackup="/media/nas/xfs-five/history/index"
+		property:indexDirectoryPath="${index.directory.path}/history/index"
+		property:indexDirectoryPathBackup="${index.directory.path.backup}/history/index"
 		property:children-ref="wikiHistoryIndexablesFive" />
 	<util:list id="wikiHistoryIndexablesFive">
 		<ref local="wikiHistoryDataFive" />

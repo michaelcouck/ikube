@@ -25,11 +25,15 @@ import org.apache.commons.lang.math.RandomUtils;
 import org.apache.lucene.document.Document;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-@Ignore
+/**
+ * @author Michael Couck
+ * @since 21.11.12
+ * @version 01.00
+ */
+// @Ignore
 public class DeltaIndexableFilesystemStrategyTest extends ATest {
 
 	@MockClass(realClass = Collections.class)

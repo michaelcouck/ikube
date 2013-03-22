@@ -143,6 +143,10 @@ public final class ThreadUtilities implements IListener {
 					for (Map.Entry<String, List<Future<?>>> mapEntry : getFutures().entrySet()) {
 						List<Future<?>> futures = new ArrayList<Future<?>>(mapEntry.getValue());
 						for (Future<?> future : futures) {
+							if (future == null) {
+								LOGGER.warn("Future null : ");
+								continue;
+							}
 							if (future.isCancelled()) {
 								boolean removed = getFutures(mapEntry.getKey()).remove(future);
 								if (removed) {

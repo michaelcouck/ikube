@@ -43,7 +43,6 @@ public class TooManyActionsRuleTest extends ATest {
 			actions.add(action);
 		}
 		when(server.getActions()).thenReturn(actions);
-		// when(clusterManager.getServers()).thenReturn(Arrays.asList(server));
 		result = tooManyActionsRule.evaluate(indexContext);
 		assertTrue("There are too many actions : ", result);
 	}

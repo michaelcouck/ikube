@@ -16,6 +16,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+/**
+ * @author Michael Couck
+ * @since 16.01.12
+ * @version 01.00
+ */
 public class BackupTest extends ATest {
 
 	private Backup backup;

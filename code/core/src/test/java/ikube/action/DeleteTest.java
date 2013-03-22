@@ -37,9 +37,8 @@ public class DeleteTest extends ATest {
 	public void before() {
 		delete = new Delete();
 		Deencapsulation.setField(delete, clusterManager);
-		
+
 		Mockit.setUpMocks(ApplicationContextManagerMock.class);
-		// when(indexContext.getIndexDirectoryPath()).thenReturn("./" + this.getClass().getSimpleName());
 		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
 	}
 
@@ -47,7 +46,6 @@ public class DeleteTest extends ATest {
 	public void after() throws Exception {
 		Mockit.tearDownMocks();
 		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
-		// when(indexContext.getIndexDirectoryPath()).thenReturn(indexDirectoryPath);
 	}
 
 	@Test
@@ -57,35 +55,32 @@ public class DeleteTest extends ATest {
 		baseIndexDirectory = FileUtilities.getFile(indexContext.getIndexDirectoryPath(), Boolean.TRUE);
 		assertTrue("We should start with no directories : ", baseIndexDirectory.exists());
 
-		// No indexes so far, nothing to delete
+		// 1) No indexes so far, nothing to delete
 		boolean deleted = delete.execute(indexContext);
 		assertFalse("There are not indexes to delete : ", deleted);
-		/*******************************************/
 
 		File latestIndexDirectory = createIndex(indexContext, "whatever");
 		assertTrue("Server index directory created : ", latestIndexDirectory.exists());
 
-		// Only one directory so nothing to delete
+		// 2) Only one directory so nothing to delete
 		deleted = delete.execute(indexContext);
 		assertFalse("The index should not have been deleted : ", deleted);
 		assertEquals("There should be only one index : ", 1, latestIndexDirectory.getParentFile().listFiles().length);
-		/**************************************************/
 
 		latestIndexDirectory = createIndex(indexContext, "some more whatever");
 		assertEquals(2, latestIndexDirectory.getParentFile().getParentFile().listFiles().length);
-		// Two directories so both should stay
+		// 3) Two directories so both should stay
 		deleted = delete.execute(indexContext);
 		assertFalse(deleted);
 		assertEquals(2, latestIndexDirectory.getParentFile().getParentFile().listFiles().length);
 
-		/****************************/
 		latestIndexDirectory = createIndex(indexContext, "Tired of this?");
 		assertEquals(3, latestIndexDirectory.getParentFile().getParentFile().listFiles().length);
 
 		Directory directory = FSDirectory.open(latestIndexDirectory);
 		Lock lock = getLock(directory, latestIndexDirectory);
 
-		// Three directories, one locked there should be two left
+		// 4) Three directories, one locked there should be two left
 		deleted = delete.execute(indexContext);
 		assertTrue(deleted);
 		assertEquals(2, latestIndexDirectory.getParentFile().getParentFile().listFiles().length);
@@ -93,7 +88,6 @@ public class DeleteTest extends ATest {
 		lock.release();
 		directory.clearLock(IndexWriter.WRITE_LOCK_NAME);
 
-		/*************************************/
 		latestIndexDirectory = createIndex(indexContext, "some strings");
 		assertEquals(3, latestIndexDirectory.getParentFile().getParentFile().listFiles().length);
 
@@ -101,7 +95,7 @@ public class DeleteTest extends ATest {
 		lock = getLock(directory, latestIndexDirectory);
 		assertTrue(IndexWriter.isLocked(directory));
 
-		// Three directories, one locked, one should be gone
+		// 4) Three directories, one locked, one should be gone
 		deleted = delete.execute(indexContext);
 		assertTrue(deleted);
 		assertEquals(2, latestIndexDirectory.getParentFile().getParentFile().listFiles().length);

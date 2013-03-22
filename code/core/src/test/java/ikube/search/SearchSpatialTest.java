@@ -5,17 +5,21 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import ikube.ATest;
 import ikube.IConstants;
+import ikube.action.Open;
+import ikube.cluster.IClusterManager;
 import ikube.index.IndexManager;
 import ikube.index.spatial.Coordinate;
 import ikube.index.spatial.enrich.Enrichment;
 import ikube.index.spatial.enrich.IEnrichment;
 import ikube.mock.SpellingCheckerMock;
+import ikube.model.IndexContext;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import mockit.Deencapsulation;
 import mockit.Mockit;
 
 import org.apache.lucene.document.Document;
@@ -26,17 +30,21 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.MultiSearcher;
-import org.apache.lucene.search.NumericRangeQuery;
 import org.apache.lucene.search.Searchable;
 import org.apache.lucene.search.Searcher;
-import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.mockito.Mockito;
 
+/**
+ * @author Michael Couck
+ * @since 20.02.2012
+ * @version 01.00
+ */
 @SuppressWarnings("deprecation")
 public class SearchSpatialTest extends ATest {
 
@@ -127,69 +135,30 @@ public class SearchSpatialTest extends ATest {
 		assertTrue(results.get(2).get(IConstants.CONTENTS).equals(seebackCoordinate.toString()));
 		assertTrue(results.get(3).get(IConstants.CONTENTS).equals(adliswilCoordinate.toString()));
 	}
-	
-	@Test
-	@Ignore
-	public void searchGeospatial() throws Exception {
-		IndexSearcher searcher = getIndexSearcher(); 
-		SearchSpatialAll searchSpatialAll = new SearchSpatialAll(searcher);
-		Coordinate coordinate = new Coordinate(52.52274, 13.4166);
-		searchSpatialAll.setCoordinate(coordinate);
-		searchSpatialAll.setDistance(10);
-		searchSpatialAll.setFirstResult(0);
-		searchSpatialAll.setFragment(true);
-		searchSpatialAll.setMaxResults(1000);
-		searchSpatialAll.setSearchField();
-		searchSpatialAll.setSearchString("berlin");
-		searchSpatialAll.setSortField();
-		ArrayList<HashMap<String, String>> results = searchSpatialAll.execute();
-		logger.info("Results : " + results);
-	}
 
 	@Test
 	@Ignore
 	public void searchGeospatialIndex() throws Exception {
-		IndexSearcher indexSearcher = getIndexSearcher();
+		MultiSearcher indexSearcher = getIndexSearcher();
 		try {
-			indexSearcher = new IndexSearcher(directory);
-			SearchSpatial searchSpatial = new SearchSpatial(indexSearcher);
-
-			searchGeospatialIndex(searchSpatial, 1); // Minimum results within 1 km
+			SearchSpatialAll searchSpatial = new SearchSpatialAll(indexSearcher);
 			searchGeospatialIndex(searchSpatial, 10); // Minimum results within 10 km
-			searchGeospatialIndex(searchSpatial, 15); // In between results within 15 km
-			searchGeospatialIndex(searchSpatial, 20); // Maximum results within 20 km
-			searchGeospatialIndex(searchSpatial, 30); // Out side the bounding box, i.e. no results
-			searchGeospatialIndex(searchSpatial, 50); // Out side the bounding box, i.e. no results
-
-			searchGeospatialRange("latitude", 1, 50f, 55f);
-			searchGeospatialRange("latitude", 1, 50f, 55f);
-			searchGeospatialRange("latitude", 10, 50f, 55f);
-			searchGeospatialRange("latitude", 100, 50f, 55f);
-			searchGeospatialRange("latitude", 1000, 50f, 55f);
-			searchGeospatialRange("latitude", 10000, 50f, 55f);
-			searchGeospatialRange("latitude", 100000, 50f, 55f);
-			searchGeospatialRange("latitude", 1000000, 50f, 55f);
-			searchGeospatialRange("latitude", 10000000, 50f, 55f);
-			searchGeospatialRange("latitude", 100000000, 50f, 55f);
-
-			searchGeospatialRange("latitude", 100000000, 0f, 1000000f);
 		} finally {
 			if (indexSearcher != null) {
 				indexSearcher.close();
 			}
 		}
 	}
-	
-	private IndexSearcher getIndexSearcher() throws Exception {
-		File file = new File("/temp/geospatial");
-		Directory directory = FSDirectory.open(file);
-		return new IndexSearcher(directory);
-	}
 
-	private void searchGeospatialRange(String field, int precision, float min, float max) throws Exception {
-		NumericRangeQuery<Float> numericRangeQuery = NumericRangeQuery.newFloatRange(field, precision, min, max, true, true);
-		TopDocs topDocs = indexSearcher.search(numericRangeQuery, 10);
-		logger.info("Top docs : " + topDocs.totalHits);
+	@SuppressWarnings("rawtypes")
+	private MultiSearcher getIndexSearcher() throws Exception {
+		IndexContext indexContext = new IndexContext();
+		indexContext.setIndexDirectoryPath("/usr/share/eclipse/workspace/ikube/code/war");
+		indexContext.setIndexName("geospatial");
+		Open open = new Open();
+		Deencapsulation.setField(open, Mockito.mock(IClusterManager.class));
+		open.execute(indexContext);
+		return indexContext.getMultiSearcher();
 	}
 
 	private void searchGeospatialIndex(SearchSpatial searchSpatial, int distance) throws Exception {
@@ -200,8 +169,7 @@ public class SearchSpatialTest extends ATest {
 		searchSpatial.setFragment(true);
 		searchSpatial.setMaxResults(1);
 		String searchString = "berlin";
-		searchSpatial.setSearchField(IConstants.ASCIINAME, IConstants.CITY, IConstants.COUNTRY, IConstants.NAME);
-		searchSpatial.setSearchString(searchString, searchString, searchString, searchString);
+		searchSpatial.setSearchString(searchString); // searchString, searchString, searchString
 		ArrayList<HashMap<String, String>> results = searchSpatial.execute();
 		logger.info("Results : " + distance + ", " + results.get(results.size() - 1));
 		for (HashMap<String, String> result : results) {

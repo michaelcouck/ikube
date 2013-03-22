@@ -68,7 +68,7 @@ public class DiskFullTest extends ATest {
 		try {
 			Mockit.setUpMocks(FileSystemUtilsMock.class);
 			diskFull = this.diskFull.execute(indexContext);
-			assertTrue("The should be fullnow : ", diskFull);
+			assertTrue("The should be full now : ", diskFull);
 		} finally {
 			Mockit.tearDownMocks(FileSystemUtilsMock.class);
 		}

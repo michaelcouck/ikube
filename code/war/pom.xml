@@ -75,11 +75,12 @@
 								<echo file="src/main/webapp/WEB-INF/templates/release.txt" append="false">
 									${project.version} - ${maven.build.timestamp}
 								</echo>
+								<echo message="Base directory : ${basedir}, ">Base directory : ${basedir}</echo>
 								<copy todir="ikube" failonerror="true">
-									<fileset dir="../core/src/main/resources/ikube" />
+									<fileset dir="../libs/src/main/resources/ikube" />
 								</copy>
 								<copy todir="../../ikube" failonerror="true">
-									<fileset dir="../core/src/main/resources/ikube" />
+									<fileset dir="../libs/src/main/resources/ikube" />
 								</copy>
 							</target>
 						</configuration>

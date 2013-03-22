@@ -15,6 +15,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+/**
+ * @author Michael Couck
+ * @since 16.01.12
+ * @version 01.00
+ */
 public class ActionTest extends ATest {
 
 	private Action<?, ?> action;
@@ -51,7 +56,6 @@ public class ActionTest extends ATest {
 		action.getRuleExpression();
 		action.setRules(null);
 		action.getRules();
-		// IClusterManager clusterManager = action.getClusterManager();
 		IMailer mailer = mock(IMailer.class);
 		Deencapsulation.setField(action, mailer);
 		assertNotNull("This should be the mocked cluster manager : ", clusterManager);

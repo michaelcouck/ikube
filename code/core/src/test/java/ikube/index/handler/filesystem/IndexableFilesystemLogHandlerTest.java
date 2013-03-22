@@ -22,6 +22,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+/**
+ * @author Michael Couck
+ * @since 21.11.10
+ * @version 01.00
+ */
 public class IndexableFilesystemLogHandlerTest extends ATest {
 
 	private IndexableFilesystemLogHandler indexableFilesystemLogHandler;

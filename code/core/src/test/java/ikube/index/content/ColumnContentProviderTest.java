@@ -106,18 +106,18 @@ public class ColumnContentProviderTest extends ATest {
 		// TODO Find out why the Maven compile doesn't like this character encoding
 		// note that the encoding has been set in all the places I could find on the net
 		// string = "Saint-Herménégilde";
-		// outputStream = new ByteArrayOutputStream();
-		// when(indexable.getColumnType()).thenReturn(Types.LONGVARCHAR);
-		// when(indexable.getContent()).thenReturn(string);
-		// contentProvider.getContent(indexable, outputStream);
-		// assertEquals(string, outputStream.toString(IConstants.ENCODING));
-		//
-		// string = "Soleymān Khāţer";
-		// outputStream = new ByteArrayOutputStream();
-		// when(indexable.getColumnType()).thenReturn(Types.LONGVARCHAR);
-		// when(indexable.getContent()).thenReturn(string);
-		// contentProvider.getContent(indexable, outputStream);
-		// assertEquals(string, outputStream.toString(IConstants.ENCODING));
+		 outputStream = new ByteArrayOutputStream();
+		 when(indexable.getColumnType()).thenReturn(Types.LONGVARCHAR);
+		 when(indexable.getContent()).thenReturn(string);
+		 contentProvider.getContent(indexable, outputStream);
+		 assertEquals(string, outputStream.toString(IConstants.ENCODING));
+		
+		 string = "Soleymān Khāţer";
+		 outputStream = new ByteArrayOutputStream();
+		 when(indexable.getColumnType()).thenReturn(Types.LONGVARCHAR);
+		 when(indexable.getContent()).thenReturn(string);
+		 contentProvider.getContent(indexable, outputStream);
+		 assertEquals(string, outputStream.toString(IConstants.ENCODING));
 	}
 
 	/**

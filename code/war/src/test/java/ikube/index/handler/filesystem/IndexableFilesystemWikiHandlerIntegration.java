@@ -31,6 +31,8 @@ public class IndexableFilesystemWikiHandlerIntegration extends Integration {
 	public void before() {
 		wikiHistoryArabic = ApplicationContextManager.getBean("wikiHistoryArabic");
 		wikiHistoryDataArabic = ApplicationContextManager.getBean("wikiHistoryDataArabic");
+		File file = FileUtilities.findFileRecursively(new File("."), "arwiki-latest-pages-meta-history.xml.bz2.100.gig.bz2");
+		wikiHistoryDataArabic.setPath(file.getParentFile().getAbsolutePath());
 		indexableFilesystemHandler = ApplicationContextManager.getBean(IndexableFilesystemWikiHandler.class);
 		delete(ApplicationContextManager.getBean(IDataBase.class), ikube.model.File.class);
 		FileUtilities.deleteFile(new File(wikiHistoryArabic.getIndexDirectoryPath()), 1);

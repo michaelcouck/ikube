@@ -29,8 +29,8 @@
 		property:maxFieldLength="${max.field.length}"
 		property:maxReadLength="${max.read.length}"
 		property:throttle="${throttle}"
-		property:indexDirectoryPath="/media/nas/xfs-one/data/index"
-		property:indexDirectoryPathBackup="/media/nas/xfs-one/data/index"
+		property:indexDirectoryPath="${index.directory.path}/data/index"
+		property:indexDirectoryPathBackup="${index.directory.path.backup}/data/index"
 		property:delta="false"
 		property:children-ref="wikiIndexables" />
 	<util:list id="wikiIndexables">

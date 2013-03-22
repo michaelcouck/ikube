@@ -43,6 +43,7 @@ public class IsNewIndexCreatedTest extends ATest {
 	}
 
 	@Test
+	@SuppressWarnings("deprecation")
 	public void evaluate() throws Exception {
 		// final IndexContext<?> indexContext
 		IsNewIndexCreated isNewIndexCreated = new IsNewIndexCreated();

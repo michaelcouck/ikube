@@ -36,8 +36,8 @@
 		property:maxFieldLength="10000"
 		property:maxReadLength="10000000"
 		property:throttle="0"
-		property:indexDirectoryPath="./ikube/index"
-		property:indexDirectoryPathBackup="./ikube/index/backup"
+		property:indexDirectoryPath="${index.directory.path}"
+		property:indexDirectoryPathBackup="${index.directory.path.backup}"
 		property:children-ref="ikubeIndexables" />
 	<util:list id="ikubeIndexables">
 		<ref local="ikubeInternet" />

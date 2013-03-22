@@ -224,6 +224,7 @@ public class LuceneTest extends ATest {
 	}
 
 	@Test
+	@SuppressWarnings("resource")
 	public void numeric() throws Exception {
 		// Doesn't work
 		// new QueryParser(IConstants.VERSION, IConstants.CONTENTS, IConstants.ANALYZER).parse(somethingNumeric.trim())

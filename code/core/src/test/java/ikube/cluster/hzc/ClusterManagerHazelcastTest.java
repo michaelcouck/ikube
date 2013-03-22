@@ -39,14 +39,17 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.IMap;
 import com.hazelcast.core.Message;
 import com.hazelcast.core.MessageListener;
 
+/**
+ * @author Michael Couck
+ * @since 17.04.11
+ * @version 01.00
+ */
 public class ClusterManagerHazelcastTest extends ATest {
 
 	@MockClass(realClass = Hazelcast.class)
@@ -61,8 +64,6 @@ public class ClusterManagerHazelcastTest extends ATest {
 			return (IMap<K, V>) servers;
 		}
 	}
-
-	protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	private Server server;
 	private Map.Entry<String, Server> entry;
@@ -260,11 +261,6 @@ public class ClusterManagerHazelcastTest extends ATest {
 	}
 
 	@Test
-	public void getLocks() {
-		// Not implemented
-	}
-
-	@Test
 	public void threaded() {
 		injectServices();
 		Hazelcast.getLock(IConstants.IKUBE).forceUnlock();
@@ -292,7 +288,6 @@ public class ClusterManagerHazelcastTest extends ATest {
 			futures.add(future);
 		}
 		ThreadUtilities.waitForFutures(futures, Long.MAX_VALUE);
-		// ThreadUtilities.destroy();
 	}
 
 	private void injectServices() {

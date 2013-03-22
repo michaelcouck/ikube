@@ -6,8 +6,10 @@
 	index it, making fast searches available to any application in XML or JSON format over rest web services.<br><br>
 
 	* Complex full text search<br>
-	* Automatic clustering for scalability and performance in high volume environments<br><br>
+	* Automatic clustering for scalability and performance in high volume environments<br>
 	* Geospatial search out of the box, either with data from database or CSV file, can be extended to any data format<br>
+	* Cluster monitoring application for indexing and searching performance<br>
+	* GUI for index action administration
 	* Flexible and pluggable with configuration to integrate with any source of data<br>
 	* Configurable text analysis, and pluggable/customizable<br>
 	* Search API based on REST with formats in XML and Json for integration with any technology platform<br>
@@ -15,6 +17,10 @@
 	* Auto index backup and restore for failover and fault tolerance<br>
 	* Indexing performance optimizations for high volumes<br>
 	* Rich document parsing, like Word, PDF etc. Most human readable formats will be parsed and indexed<br>
+	* Email notification of system health and index availability<br>
+	* Indexable CSV files with geospatial data<br>
+	* Indexing of hierarchical/relational tables in databases<br>
+	* Plugin points for strategies to combine sources of data, tables and internet for example<br><br>
 	
 	<h3>Detailed features:</h3> <br>
 	* Possibility to define fields and types per resource, i.e. per column in a database or CSV file for example<br>

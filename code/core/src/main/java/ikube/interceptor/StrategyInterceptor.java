@@ -33,7 +33,6 @@ public class StrategyInterceptor implements IStrategyInterceptor {
 		// method is to be executed or not
 		boolean mustProcess = Boolean.TRUE;
 		Object[] args = proceedingJoinPoint.getArgs();
-		// LOGGER.info("Args : " + args + ", " + proceedingJoinPoint.getSignature());
 
 		final IndexContext<?> indexContext = (IndexContext<?>) args[0];
 		final Indexable<?> indexable = (Indexable<?>) args[1];
@@ -41,20 +40,13 @@ public class StrategyInterceptor implements IStrategyInterceptor {
 		final Object resource = args[3];
 
 		List<IStrategy> strategies = indexable.getStrategies();
-		// LOGGER.error("Strategies : " + strategies);
 		if (strategies != null && !strategies.isEmpty()) {
 			for (final IStrategy strategy : strategies) {
-				boolean aroundProcess = strategy.aroundProcess(indexContext, indexable, document, resource);
-				// LOGGER.error("Strategy : " + strategy + ", " + aroundProcess);
-				mustProcess &= aroundProcess;
+				mustProcess &= strategy.aroundProcess(indexContext, indexable, document, resource);
 			}
 		}
 
-		// LOGGER.error("Must process : " + mustProcess);
-		if (mustProcess) {
-			return proceedingJoinPoint.proceed(args);
-		}
-		return null;
+		return mustProcess ? proceedingJoinPoint.proceed(args) : null;
 	}
 
 }

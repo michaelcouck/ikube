@@ -51,7 +51,6 @@ public class GeocoderTest extends ATest {
 	public static class HttpClientMock {
 
 		@Mock()
-		@SuppressWarnings("unused")
 		public int executeMethod(final HttpMethod method) throws IOException, HttpException {
 			return 200;
 		}
@@ -67,7 +66,6 @@ public class GeocoderTest extends ATest {
 		}
 
 		@Mock()
-		@SuppressWarnings("unused")
 		public void setQueryString(final NameValuePair[] params) {
 			// Do nothing
 		}

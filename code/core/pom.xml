@@ -86,11 +86,8 @@
 						<configuration>
 							<target>
 								<echo message="Base directory : ${basedir}, ">Base directory : ${basedir}</echo>
-								<copy todir="${basedir}/ikube" failonerror="true">
-									<fileset dir="${basedir}/src/main/resources/ikube" />
-								</copy>
 								<copy todir="ikube" failonerror="true">
-									<fileset dir="src/main/resources/ikube" />
+									<fileset dir="../libs/src/main/resources/ikube" />
 								</copy>
 							</target>
 						</configuration>
