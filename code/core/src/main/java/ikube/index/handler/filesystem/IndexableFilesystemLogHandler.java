@@ -2,7 +2,7 @@ package ikube.index.handler.filesystem;
 
 import ikube.index.IndexManager;
 import ikube.index.handler.IndexableHandler;
-import ikube.index.handler.ResourceBaseHandler;
+import ikube.index.handler.ResourceHandlerBase;
 import ikube.model.IndexContext;
 import ikube.model.IndexableFileSystemLog;
 import ikube.toolkit.FileUtilities;
@@ -35,7 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class IndexableFilesystemLogHandler extends IndexableHandler<IndexableFileSystemLog> {
 
 	@Autowired
-	private ResourceBaseHandler<IndexableFileSystemLog> resourceHandler;
+	private ResourceHandlerBase<IndexableFileSystemLog> resourceHandler;
 
 	/**
 	 * {@inheritDoc}

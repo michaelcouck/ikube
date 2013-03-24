@@ -3,7 +3,7 @@ package ikube.index.handler.filesystem;
 import ikube.IConstants;
 import ikube.index.IndexManager;
 import ikube.index.handler.IndexableHandler;
-import ikube.index.handler.ResourceBaseHandler;
+import ikube.index.handler.ResourceHandlerBase;
 import ikube.model.IndexContext;
 import ikube.model.IndexableFileSystemWiki;
 import ikube.toolkit.FileUtilities;
@@ -46,7 +46,7 @@ public class IndexableFilesystemWikiHandler extends IndexableHandler<IndexableFi
 	@Value("${wiki.read.length}")
 	private long readLength = 1024 * 1024 * 100;
 	@Autowired
-	private ResourceBaseHandler<IndexableFileSystemWiki> resourceHandler;
+	private ResourceHandlerBase<IndexableFileSystemWiki> resourceHandler;
 
 	/**
 	 * {@inheritDoc}

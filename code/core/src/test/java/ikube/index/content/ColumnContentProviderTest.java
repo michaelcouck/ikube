@@ -29,8 +29,8 @@ import org.junit.Test;
  */
 public class ColumnContentProviderTest extends ATest {
 
-	private IndexableColumn						indexable		= mock(IndexableColumn.class);
-	private IContentProvider<IndexableColumn>	contentProvider	= new ColumnContentProvider();
+	private IndexableColumn indexable = mock(IndexableColumn.class);
+	private IContentProvider<IndexableColumn> contentProvider = new ColumnContentProvider();
 
 	public ColumnContentProviderTest() {
 		super(ColumnContentProviderTest.class);
@@ -103,29 +103,26 @@ public class ColumnContentProviderTest extends ATest {
 
 		assertTrue(outputStream.toString().contains(string));
 
-		// TODO Find out why the Maven compile doesn't like this character encoding
-		// note that the encoding has been set in all the places I could find on the net
-		// string = "Saint-Herménégilde";
-		 outputStream = new ByteArrayOutputStream();
-		 when(indexable.getColumnType()).thenReturn(Types.LONGVARCHAR);
-		 when(indexable.getContent()).thenReturn(string);
-		 contentProvider.getContent(indexable, outputStream);
-		 assertEquals(string, outputStream.toString(IConstants.ENCODING));
-		
-		 string = "Soleymān Khāţer";
-		 outputStream = new ByteArrayOutputStream();
-		 when(indexable.getColumnType()).thenReturn(Types.LONGVARCHAR);
-		 when(indexable.getContent()).thenReturn(string);
-		 contentProvider.getContent(indexable, outputStream);
-		 assertEquals(string, outputStream.toString(IConstants.ENCODING));
+		string = "Saint-Herménégilde";
+		outputStream = new ByteArrayOutputStream();
+		when(indexable.getColumnType()).thenReturn(Types.LONGVARCHAR);
+		when(indexable.getContent()).thenReturn(string);
+		contentProvider.getContent(indexable, outputStream);
+		assertEquals(string, outputStream.toString(IConstants.ENCODING));
+
+		string = "Soleymān Khāţer";
+		outputStream = new ByteArrayOutputStream();
+		when(indexable.getColumnType()).thenReturn(Types.LONGVARCHAR);
+		when(indexable.getContent()).thenReturn(string);
+		contentProvider.getContent(indexable, outputStream);
+		assertEquals(string, outputStream.toString(IConstants.ENCODING));
 	}
 
 	/**
-	 * Returns the max read length byte array plus 1000, i.e. more than the max bytes that the application can read.
-	 * This forces the indexer to get a reader rather than a string.
+	 * Returns the max read length byte array plus 1000, i.e. more than the max bytes that the application can read. This forces the indexer
+	 * to get a reader rather than a string.
 	 * 
-	 * @param string
-	 *            the string to copy to the byte array until the max read length is exceeded
+	 * @param string the string to copy to the byte array until the max read length is exceeded
 	 * @return the byte array of the string copied several times more than the max read length
 	 * @throws UnsupportedEncodingException
 	 */

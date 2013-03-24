@@ -376,11 +376,12 @@
 		property:indexableClass="ikube.model.IndexableFileSystemCsv" />
 	
 	<bean 
-		id="ikube.index.handler.ResourceHandler" 
+		id="ikube.index.handler.ResourceHandler"
+		name="ikube.index.handler.ResourceHandler" 
 		class="ikube.index.handler.ResourceHandler" />
 	<bean 
-		id="ikube.index.handler.ResourceBaseHandler" 
-		class="ikube.index.handler.ResourceBaseHandler" />
+		id="ikube.index.handler.ResourceHandlerBase" 
+		class="ikube.index.handler.ResourceHandlerBase" />
 	<bean 
 		id="ikube.index.handler.filesystem.ResourceFileHandler" 
 		class="ikube.index.handler.filesystem.ResourceFileHandler" />

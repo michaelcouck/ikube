@@ -179,7 +179,7 @@ public class ClusterManagerHazelcast extends AClusterManager {
 			return;
 		}
 		if (retry >= IConstants.MAX_RETRY_CLUSTER_REMOVE) {
-			logger.info("Retried to remove the action, failed : " + retry);
+			logger.info("Retried to remove the action, failed : " + retry + ", action : " + action + ", actions : " + server.getActions());
 			return;
 		}
 		Hazelcast.getTransaction().begin();

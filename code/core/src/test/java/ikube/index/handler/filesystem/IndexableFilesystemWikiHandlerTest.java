@@ -4,7 +4,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 import ikube.ATest;
-import ikube.index.handler.ResourceBaseHandler;
+import ikube.index.handler.ResourceHandlerBase;
 import ikube.model.IndexContext;
 import ikube.model.IndexableFileSystemLog;
 import ikube.model.IndexableFileSystemWiki;
@@ -62,7 +62,7 @@ public class IndexableFilesystemWikiHandlerTest extends ATest {
 		File file = FileUtilities.findFileRecursively(new File("."), "enwiki-revisions.bz2");
 		indexableFileSystem.setPath(file.getParentFile().getAbsolutePath());
 
-		ResourceBaseHandler<IndexableFileSystemLog> resourceBaseHandler = Mockito.mock(ResourceBaseHandler.class);
+		ResourceHandlerBase<IndexableFileSystemLog> resourceBaseHandler = Mockito.mock(ResourceHandlerBase.class);
 		Deencapsulation.setField(indexableFilesystemWikiHandler, "resourceHandler", resourceBaseHandler);
 
 		List<Future<?>> futures = indexableFilesystemWikiHandler.handleIndexable(indexContext, indexableFileSystem);

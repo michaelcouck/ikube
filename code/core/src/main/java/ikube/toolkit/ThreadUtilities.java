@@ -118,12 +118,11 @@ public final class ThreadUtilities implements IListener {
 						if (future.isCancelled()) {
 							break;
 						}
-						// LOGGER.info("Still not cancelled : " + future);
 					}
 					if (future.isCancelled()) {
 						LOGGER.info("Cancelled future : " + name + ", " + future);
 					} else {
-						LOGGER.warn("Couldn't cancel future : " + name + ", " + future);
+						LOGGER.warn("Couldn't cancel future : " + name + ", " + future + ", " + FUTURES.size() + ", " + FUTURES.entrySet());
 					}
 				}
 			}
@@ -187,7 +186,6 @@ public final class ThreadUtilities implements IListener {
 			LOGGER.debug("Future null returning : ");
 			return;
 		}
-		// long start = System.currentTimeMillis();
 		try {
 			future.get(maxWait, TimeUnit.SECONDS);
 		} catch (InterruptedException e) {
@@ -199,21 +197,6 @@ public final class ThreadUtilities implements IListener {
 		} catch (Exception e) {
 			LOGGER.error("Exception waiting for future : ", e);
 		}
-//		while (!future.isDone()) {
-//			ThreadUtilities.sleep(1000);
-//			if ((System.currentTimeMillis() - start) > maxWait * 1000) {
-//				break;
-//			}
-//		}
-		// Remove the future from the list
-		// WHY DID I REMOVE THE FUTURE?!
-//		for (Map.Entry<String, List<Future<?>>> mapEntry : getFutures().entrySet()) {
-//			List<Future<?>> futures = new ArrayList<Future<?>>(mapEntry.getValue());
-//			boolean removed = futures.remove(future);
-//			if (removed) {
-//				LOGGER.debug("Removed future : " + future);
-//			}
-//		}
 	}
 
 	/**
@@ -242,6 +225,11 @@ public final class ThreadUtilities implements IListener {
 		}
 	}
 
+	/**
+	 * This method will just sleep for the specified time without the interrupted exception needing to be caught.
+	 * 
+	 * @param sleep the time for the current thread to sleep
+	 */
 	public static void sleep(final long sleep) {
 		try {
 			Thread.sleep(sleep);

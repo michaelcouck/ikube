@@ -5,21 +5,17 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import ikube.ATest;
 import ikube.IConstants;
-import ikube.action.Open;
-import ikube.cluster.IClusterManager;
 import ikube.index.IndexManager;
 import ikube.index.spatial.Coordinate;
 import ikube.index.spatial.enrich.Enrichment;
 import ikube.index.spatial.enrich.IEnrichment;
 import ikube.mock.SpellingCheckerMock;
-import ikube.model.IndexContext;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import mockit.Deencapsulation;
 import mockit.Mockit;
 
 import org.apache.lucene.document.Document;
@@ -38,7 +34,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 /**
  * @author Michael Couck
@@ -150,15 +145,11 @@ public class SearchSpatialTest extends ATest {
 		}
 	}
 
-	@SuppressWarnings("rawtypes")
 	private MultiSearcher getIndexSearcher() throws Exception {
-		IndexContext indexContext = new IndexContext();
-		indexContext.setIndexDirectoryPath("/usr/share/eclipse/workspace/ikube/code/war");
-		indexContext.setIndexName("geospatial");
-		Open open = new Open();
-		Deencapsulation.setField(open, Mockito.mock(IClusterManager.class));
-		open.execute(indexContext);
-		return indexContext.getMultiSearcher();
+		Directory directory = FSDirectory.open(new File("/usr/share/eclipse/workspace/ikube/code/war/geospatial"));
+		IndexReader indexReader = IndexReader.open(directory);
+		IndexSearcher indexSearcher = new IndexSearcher(indexReader);
+		return new MultiSearcher(indexSearcher);
 	}
 
 	private void searchGeospatialIndex(SearchSpatial searchSpatial, int distance) throws Exception {

@@ -6,7 +6,7 @@ import ikube.index.content.ByteOutputStream;
 import ikube.index.content.IContentProvider;
 import ikube.index.content.InternetContentProvider;
 import ikube.index.handler.IndexableHandler;
-import ikube.index.handler.ResourceBaseHandler;
+import ikube.index.handler.ResourceHandlerBase;
 import ikube.index.parse.IParser;
 import ikube.index.parse.ParserProvider;
 import ikube.index.parse.mime.MimeType;
@@ -149,7 +149,7 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 
 	@Autowired
 	@SuppressWarnings("rawtypes")
-	private ResourceBaseHandler resourceUrlHandler;
+	private ResourceHandlerBase resourceUrlHandler;
 
 	/**
 	 * {@inheritDoc}

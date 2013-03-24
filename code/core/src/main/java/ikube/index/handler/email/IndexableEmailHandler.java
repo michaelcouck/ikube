@@ -2,7 +2,7 @@ package ikube.index.handler.email;
 
 import ikube.index.IndexManager;
 import ikube.index.handler.IndexableHandler;
-import ikube.index.handler.ResourceBaseHandler;
+import ikube.index.handler.ResourceHandlerBase;
 import ikube.index.parse.IParser;
 import ikube.index.parse.ParserProvider;
 import ikube.model.IndexContext;
@@ -53,7 +53,7 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 	private static final String MAIL_PROTOCOL = "pop3";
 
 	@Autowired
-	private ResourceBaseHandler<IndexableEmail> resourceHandler;
+	private ResourceHandlerBase<IndexableEmail> resourceHandler;
 
 	/**
 	 * {@inheritDoc}

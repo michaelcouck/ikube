@@ -7,7 +7,7 @@ import ikube.index.content.ByteOutputStream;
 import ikube.index.content.ColumnContentProvider;
 import ikube.index.content.IContentProvider;
 import ikube.index.handler.IndexableHandler;
-import ikube.index.handler.ResourceBaseHandler;
+import ikube.index.handler.ResourceHandlerBase;
 import ikube.index.parse.IParser;
 import ikube.index.parse.ParserProvider;
 import ikube.model.IndexContext;
@@ -67,7 +67,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 
 	@Autowired
-	private ResourceBaseHandler<IndexableTable> resourceTableHandler;
+	private ResourceHandlerBase<IndexableTable> resourceTableHandler;
 
 	/**
 	 * This method starts threads and passes the indexable to them. The threads are added to the list of threads that are returned to the

@@ -5,7 +5,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import ikube.ATest;
 import ikube.IConstants;
-import ikube.index.handler.ResourceBaseHandler;
+import ikube.index.handler.ResourceHandlerBase;
 import ikube.model.IndexContext;
 import ikube.model.IndexableInternet;
 import ikube.model.Url;
@@ -34,7 +34,7 @@ public class IndexableInternetHandlerTest extends ATest {
 	private List<Document> documents;
 	private IndexableInternet indexableInternet;
 	private IndexableInternetHandler indexableInternetHandler;
-	private ResourceBaseHandler<?> resourceBaseHandler;
+	private ResourceHandlerBase<?> resourceBaseHandler;
 
 	public IndexableInternetHandlerTest() {
 		super(IndexableInternetHandlerTest.class);
@@ -54,7 +54,7 @@ public class IndexableInternetHandlerTest extends ATest {
 		indexableInternetHandler = new IndexableInternetHandler();
 		indexableInternetHandler.setThreads(1);
 
-		resourceBaseHandler = new ResourceBaseHandler<IndexableInternet>() {
+		resourceBaseHandler = new ResourceHandlerBase<IndexableInternet>() {
 			public Document handleResource(IndexContext<?> indexContext, IndexableInternet indexable, Document document, Object resource)
 					throws Exception {
 				documents.add(document);
