@@ -4,7 +4,7 @@
 	<groupId>ikube</groupId>
 	<artifactId>ikube-site</artifactId>
 	<packaging>war</packaging>
-	<version>4.2.2-SNAPSHOT</version>
+	<version>4.2.1-SNAPSHOT</version>
 
 	<properties>
 		<webapps>webapps</webapps>
