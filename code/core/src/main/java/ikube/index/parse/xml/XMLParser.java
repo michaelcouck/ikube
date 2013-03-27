@@ -16,22 +16,23 @@ import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.xml.sax.ErrorHandler;
+import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
 
 /**
+ * This class will extract text data from an xml file. It will completely ignore dtd files, going so far as to return dummy files so it doesn't validate against
+ * a non existing file and crash.
+ * 
  * @author Michael Couck
  * @since 03.09.10
  * @version 01.00
  */
 public class XMLParser implements IParser {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(XMLParser.class);
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public final OutputStream parse(final InputStream inputStream, final OutputStream outputStream) throws Exception {
 		Reader reader = new InputStreamReader(inputStream, IConstants.ENCODING);
@@ -39,27 +40,18 @@ public class XMLParser implements IParser {
 
 		SAXReader saxReader = new SAXReader();
 		saxReader.setValidation(Boolean.FALSE);
-		saxReader.setErrorHandler(new ErrorHandler() {
-
-			@Override
-			public void warning(SAXParseException exception) throws SAXException {
-				LOGGER.warn(exception.toString());
-			}
-
-			@Override
-			public void fatalError(SAXParseException exception) throws SAXException {
-				LOGGER.warn(exception.toString());
-			}
-
-			@Override
-			public void error(SAXParseException exception) throws SAXException {
-				LOGGER.warn(exception.toString());
-			}
-		});
 		saxReader.setIgnoreComments(Boolean.FALSE);
 		saxReader.setIncludeExternalDTDDeclarations(Boolean.FALSE);
 		saxReader.setIncludeInternalDTDDeclarations(Boolean.FALSE);
 		saxReader.setStripWhitespaceText(Boolean.FALSE);
+		// We completely turn off the dtd resolution
+		saxReader.setEntityResolver(new EntityResolver() {
+			@Override
+			public InputSource resolveEntity(final String arg0, final String arg1) throws SAXException, IOException {
+				InputStream in = getClass().getResourceAsStream("/empty.dtd");
+				return new InputSource(in);
+			}
+		});
 
 		Document doc = saxReader.read(inputSource);
 		Element root = doc.getRootElement();

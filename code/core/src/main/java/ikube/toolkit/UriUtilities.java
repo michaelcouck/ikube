@@ -22,7 +22,7 @@ import org.apache.log4j.Logger;
 public final class UriUtilities {
 
 	protected static final Logger LOGGER = Logger.getLogger(UriUtilities.class);
-	
+
 	/**
 	 * Singularity.
 	 */
@@ -50,13 +50,10 @@ public final class UriUtilities {
 	}
 
 	/**
-	 * Resolves a URI reference against a base URI. Work-around for bug in java.net.URI
-	 * (<http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4708535>)
+	 * Resolves a URI reference against a base URI. Work-around for bug in java.net.URI (<http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4708535>)
 	 * 
-	 * @param baseURI
-	 *            the base URI
-	 * @param reference
-	 *            the URI reference
+	 * @param baseURI the base URI
+	 * @param reference the URI reference
 	 * @return the resulting URI
 	 */
 	public static String resolve(final URI baseURI, final String reference) {
@@ -83,13 +80,10 @@ public final class UriUtilities {
 	}
 
 	/**
-	 * Resolves a URI reference against a base URI. Work-around for bugs in java.net.URI (e.g.
-	 * <http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4708535>)
+	 * Resolves a URI reference against a base URI. Work-around for bugs in java.net.URI (e.g. <http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4708535>)
 	 * 
-	 * @param baseURI
-	 *            the base URI
-	 * @param reference
-	 *            the URI reference
+	 * @param baseURI the base URI
+	 * @param reference the URI reference
 	 * @return the resulting URI
 	 */
 	public static URI resolve(final URI baseURI, URI reference) {
@@ -122,8 +116,7 @@ public final class UriUtilities {
 	/**
 	 * Removes dot segments according to RFC 3986, section 5.2.4
 	 * 
-	 * @param uri
-	 *            the original URI
+	 * @param uri the original URI
 	 * @return the URI without dot segments
 	 */
 	public static URI removeDotSegments(final URI uri) {
@@ -139,7 +132,7 @@ public final class UriUtilities {
 			throw new IllegalArgumentException(e);
 		}
 	}
-	
+
 	public static StringBuilder removeDotSegments(String path) {
 		String[] inputSegments = path.split("/");
 		Stack<String> outputSegments = new Stack<String>();
@@ -164,10 +157,8 @@ public final class UriUtilities {
 	/**
 	 * Resolves a reference starting with a query string.
 	 * 
-	 * @param baseURI
-	 *            the base URI
-	 * @param reference
-	 *            the URI reference starting with a query string
+	 * @param baseURI the base URI
+	 * @param reference the URI reference starting with a query string
 	 * @return the resulting URI
 	 */
 	private static URI resolveReferenceStartingWithQueryString(final URI baseURI, final URI reference) {
@@ -237,14 +228,13 @@ public final class UriUtilities {
 		}
 		return null;
 	}
-	
+
 	/**
-	 * This method will get the ip address of the machine. If the machine is connected to the net then the first ip that is not the home
-	 * interface, i.e. not the localhost which is not particularly useful in a cluster. So essentially we are looking for the ip that looks
-	 * like 192.... or 10.215.... could be the real ip from the DNS on the ISP servers of course, but not 127.0.0.1, or on Linux 127.0.1.1
-	 * it turns out.
+	 * This method will get the ip address of the machine. If the machine is connected to the net then the first ip that is not the home interface, i.e. not the
+	 * localhost which is not particularly useful in a cluster. So essentially we are looking for the ip that looks like 192.... or 10.215.... could be the real
+	 * ip from the DNS on the ISP servers of course, but not 127.0.0.1, or on Linux 127.0.1.1 it turns out.
 	 * 
-	 * @return the first ip address that is not the localhost, something meaningful 
+	 * @return the first ip address that is not the localhost, something meaningful
 	 */
 	public static String getIp() {
 		Pattern ipPattern = Pattern.compile("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$");
@@ -258,6 +248,8 @@ public final class UriUtilities {
 		String ip = "127.0.0.1";
 		String linuxIp = "127.0.1.1";
 		String localhost = "localhost";
+		// This is the preferred ip address for the machine
+		String networkAssignedIp = "192.168";
 		outer: while (networkInterfaces.hasMoreElements()) {
 			NetworkInterface networkInterface = networkInterfaces.nextElement();
 			Enumeration<InetAddress> inetAddresses = networkInterface.getInetAddresses();
@@ -265,24 +257,32 @@ public final class UriUtilities {
 				InetAddress inetAddress = inetAddresses.nextElement();
 				String hostAddress = inetAddress.getHostAddress();
 				if (hostAddress.equals(ip) || hostAddress.equals(linuxIp) || hostAddress.equals(localhost)) {
+					// If the ip address is localhost then just continue
 					continue;
 				}
 				try {
-					if (!inetAddress.isReachable(1000)) {
+					if (!isReachable(inetAddress, 1000)) {
 						continue;
+					}
+					if (hostAddress.startsWith(networkAssignedIp)) {
+						// The preferred ip address
+						ip = hostAddress;
+						break outer;
+					} else if (ipPattern.matcher(hostAddress).matches()) {
+						ip = hostAddress;
 					}
 				} catch (IOException e) {
 					LOGGER.error("Exception checking the ip address : " + hostAddress, e);
 					continue;
 				}
-				if (ipPattern.matcher(hostAddress).matches()) {
-					ip = hostAddress;
-					break outer;
-				}
 			}
 		}
 		LOGGER.info("Ip address : " + ip);
 		return ip;
+	}
+
+	private static boolean isReachable(final InetAddress inetAddress, final int timeout) throws IOException {
+		return inetAddress.isReachable(timeout);
 	}
 
 }

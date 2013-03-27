@@ -20,25 +20,48 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
+import org.xml.sax.SAXParseException;
 
 import de.schlichtherle.truezip.file.TFile;
 import de.schlichtherle.truezip.file.TFileInputStream;
 
+/**
+ * This ersource handler will do files, getting the correct parser for the type and extracting the data, eventually adding the data to the specified fields int
+ * he Lucene index.
+ * 
+ * @author Michael Couck
+ * @since 25.03.13
+ * @version 01.00
+ */
 public class ResourceFileHandler extends ResourceHandler<IndexableFileSystem> {
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Document handleResource(IndexContext<?> indexContext, IndexableFileSystem indexableFileSystem, Document document, Object resource)
-			throws Exception {
+	public Document handleResource(final IndexContext<?> indexContext, final IndexableFileSystem indexableFileSystem, final Document document,
+			final Object resource) throws Exception {
+		File file = (File) resource;
+		try {
+			handleResource(indexContext, indexableFileSystem, document, file, file.getName());
+		} catch (Exception e) {
+			if (SAXParseException.class.isAssignableFrom(e.getClass())) {
+				// If this is an xml exception then try the html parser it is more lenient
+				handleResource(indexContext, indexableFileSystem, document, file, "text/html");
+			}
+		}
+		return document;
+	}
+
+	private Document handleResource(final IndexContext<?> indexContext, final IndexableFileSystem indexableFileSystem, final Document document,
+			final File file, final String mimeType) throws Exception {
 		InputStream inputStream = null;
 		ByteArrayInputStream byteInputStream = null;
 		ByteArrayOutputStream byteOutputStream = null;
-		File file = (File) resource;
+
 		try {
-			int length = file.length() > 0 && file.length() < indexableFileSystem.getMaxReadLength() ? (int) file.length()
-					: (int) indexableFileSystem.getMaxReadLength();
+			int length = file.length() > 0 && file.length() < indexableFileSystem.getMaxReadLength() ? (int) file.length() : (int) indexableFileSystem
+					.getMaxReadLength();
 			byte[] byteBuffer = new byte[length];
 
 			if (TFile.class.isAssignableFrom(file.getClass())) {

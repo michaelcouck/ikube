@@ -16,6 +16,7 @@ import ikube.toolkit.UriUtilities;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
@@ -52,20 +53,21 @@ public class ClusterManagerHazelcast extends AClusterManager {
 
 	private transient Server server;
 
-	@SuppressWarnings("unchecked")
 	public void initialize() {
 		ip = UriUtilities.getIp();
 		address = ip + "-" + Hazelcast.getCluster().getLocalMember().getInetSocketAddress().getPort();
 		logger.info("Cluster manager : " + ip + ", " + address);
 		addListeners(startListener, stopListener, deleteListener);
+		Hazelcast.getConfig().getNetworkConfig().getInterfaces().setInterfaces(Arrays.asList(ip));
 	}
 
-	private void addListeners(final MessageListener<Object>... listeners) {
-		for (final MessageListener<Object> listener : listeners) {
+	@SuppressWarnings("unchecked")
+	private void addListeners(final MessageListener<?>... listeners) {
+		for (final MessageListener<?> listener : listeners) {
 			if (listener == null) {
 				continue;
 			}
-			Hazelcast.getTopic(IConstants.TOPIC).addMessageListener(listener);
+			Hazelcast.getTopic(IConstants.TOPIC).addMessageListener((MessageListener<Object>) listener);
 		}
 	}
 
@@ -178,10 +180,6 @@ public class ClusterManagerHazelcast extends AClusterManager {
 			logger.warn("Action null : " + action);
 			return;
 		}
-		if (retry >= IConstants.MAX_RETRY_CLUSTER_REMOVE) {
-			logger.info("Retried to remove the action, failed : " + retry + ", action : " + action + ", actions : " + server.getActions());
-			return;
-		}
 		Hazelcast.getTransaction().begin();
 		boolean removedAndComitted = false;
 		Server server = getServer();
@@ -217,8 +215,11 @@ public class ClusterManagerHazelcast extends AClusterManager {
 		} finally {
 			if (!removedAndComitted) {
 				ThreadUtilities.sleep(1000);
-				logger.debug("Retrying to remove the action : " + retry + ", " + server.getIp() + ", " + action + ", "
-						+ server.getActions());
+				if (retry >= IConstants.MAX_RETRY_CLUSTER_REMOVE) {
+					logger.info("Retried to remove the action, failed : " + retry + ", action : " + action + ", actions : " + server.getActions());
+					return;
+				}
+				logger.debug("Retrying to remove the action : " + retry + ", " + server.getIp() + ", " + action + ", " + server.getActions());
 				stopWorking(action, retry + 1);
 			}
 		}

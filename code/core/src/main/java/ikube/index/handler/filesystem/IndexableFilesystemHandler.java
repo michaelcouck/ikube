@@ -85,7 +85,8 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 					// throw new RuntimeException(e);
 					break outer;
 				} catch (Exception e) {
-					logger.error("Exception handling file : " + file, e);
+					logger.error("Exception handling file : " + file + ", " + e.getMessage());
+					logger.debug(null, e);
 					handleMaxExceptions(indexableFileSystem, e);
 				}
 			}

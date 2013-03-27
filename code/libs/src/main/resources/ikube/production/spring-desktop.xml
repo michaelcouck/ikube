@@ -32,7 +32,7 @@
 		property:mergeFactor="${merge.factor}"
 		property:maxFieldLength="${max.field.length}"
 		property:maxReadLength="${max.read.length}"
-		property:throttle="1000"
+		property:throttle="100"
 		property:delta="false"
 		property:indexDirectoryPath="${index.directory.path}"
 		property:indexDirectoryPathBackup="${index.directory.path.backup}/backup"
@@ -62,6 +62,6 @@
 		property:lastModifiedFieldName="lastmodified"
 		property:batchSize="1000"
 		property:maxReadLength="1000000" 
-		property:maxExceptions="100" />
+		property:maxExceptions="1000000" />
 	
 </beans>
