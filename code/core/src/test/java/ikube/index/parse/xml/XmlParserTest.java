@@ -12,6 +12,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.OutputStream;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -28,6 +29,19 @@ public class XmlParserTest extends ATest {
 	@Test
 	public void parse() throws Exception {
 		File file = FileUtilities.findFileRecursively(new File("."), new String[] { "xml.xml" });
+		byte[] bytes = FileUtilities.getContents(file, Integer.MAX_VALUE).toByteArray();
+		IParser parser = ParserProvider.getParser("text/xml", bytes);
+		OutputStream parsed = parser.parse(new ByteArrayInputStream(bytes), new ByteArrayOutputStream());
+		assertNotNull(parsed);
+		assertTrue(parsed.toString().length() > 0);
+		assertTrue(parsed.toString().contains("ikube"));
+		assertTrue(parsed.toString().contains("modelVersion"));
+	}
+	
+	@Test
+	@Ignore
+	public void fail() throws Exception {
+		File file = FileUtilities.findFileRecursively(new File("."), new String[] { "69-language-selector-zh-cn.conf" });
 		byte[] bytes = FileUtilities.getContents(file, Integer.MAX_VALUE).toByteArray();
 		IParser parser = ParserProvider.getParser("text/xml", bytes);
 		OutputStream parsed = parser.parse(new ByteArrayInputStream(bytes), new ByteArrayOutputStream());

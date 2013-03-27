@@ -172,6 +172,7 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 		ArchiveInputStream input = new ArchiveStreamFactory().createArchiveInputStream("tar", new GZIPInputStream(is));
 		ArchiveEntry entry;
 		while ((entry = input.getNextEntry()) != null) {
+			// TODO implement this logic for tar on Linux
 		}
 		return Boolean.TRUE;
 	}
@@ -205,10 +206,7 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
-		boolean isExcluded = isNameExcluded || isPathExcluded || isSymLink;
-		// logger.error("Excluded : " + isExcluded + ", " + isNameExcluded + ", " + isPathExcluded + ", " + isSymLink + ", " + name + ", "
-		// + path + ", " + pattern);
-		return isExcluded;
+		return isNameExcluded || isPathExcluded || isSymLink;
 	}
 
 	protected synchronized Pattern getPattern(final String pattern) {

@@ -16,7 +16,12 @@ import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 /**
  * @author Michael Couck
@@ -25,6 +30,8 @@ import org.xml.sax.InputSource;
  */
 public class XMLParser implements IParser {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(XMLParser.class);
+
 	@Override
 	public final OutputStream parse(final InputStream inputStream, final OutputStream outputStream) throws Exception {
 		Reader reader = new InputStreamReader(inputStream, IConstants.ENCODING);
@@ -32,6 +39,23 @@ public class XMLParser implements IParser {
 
 		SAXReader saxReader = new SAXReader();
 		saxReader.setValidation(Boolean.FALSE);
+		saxReader.setErrorHandler(new ErrorHandler() {
+
+			@Override
+			public void warning(SAXParseException exception) throws SAXException {
+				LOGGER.warn(exception.toString());
+			}
+
+			@Override
+			public void fatalError(SAXParseException exception) throws SAXException {
+				LOGGER.warn(exception.toString());
+			}
+
+			@Override
+			public void error(SAXParseException exception) throws SAXException {
+				LOGGER.warn(exception.toString());
+			}
+		});
 		saxReader.setIgnoreComments(Boolean.FALSE);
 		saxReader.setIncludeExternalDTDDeclarations(Boolean.FALSE);
 		saxReader.setIncludeInternalDTDDeclarations(Boolean.FALSE);
@@ -48,10 +72,8 @@ public class XMLParser implements IParser {
 	/**
 	 * Visits each tag up and down the tree recursively getting the text content from the tag.
 	 * 
-	 * @param parent
-	 *            the parent tag to start recursing
-	 * @param content
-	 *            the content buffer to accumulate the text in
+	 * @param parent the parent tag to start recursing
+	 * @param content the content buffer to accumulate the text in
 	 * @throws IOException
 	 */
 	@SuppressWarnings("unchecked")

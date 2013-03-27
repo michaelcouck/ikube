@@ -40,7 +40,7 @@
 	* Soft landing for indexing failover and recovery on large indexes<br>
 	* Flexible scheduled indexing<br>
 	* Start and stop indexing in the user interface<br>
-	* Auto cpu throttling, i.e. slowe the indexing down if the cpu load gets to a certain level<br><br>
+	* Auto cpu throttling, i.e.the indexing gets throttled as the cpu load goes past the threshold set in the parameters<br><br>
 	
 	<h3>Crawlers/indexers/connectors for:</h3><br>
 	* Databases - any database, Oracle, Db2,  Postgres etc.<br>

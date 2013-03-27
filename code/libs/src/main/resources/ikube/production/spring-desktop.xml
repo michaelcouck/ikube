@@ -34,8 +34,8 @@
 		property:maxReadLength="${max.read.length}"
 		property:throttle="1000"
 		property:delta="false"
-		property:indexDirectoryPath="${index.directory.path}/indexes"
-		property:indexDirectoryPathBackup="${index.directory.path.backup}/indexes/backup"
+		property:indexDirectoryPath="${index.directory.path}"
+		property:indexDirectoryPathBackup="${index.directory.path.backup}/backup"
 		property:children-ref="desktopFolders" />
 	<util:list id="desktopFolders">
 		<ref local="desktopFolder" />
@@ -62,11 +62,6 @@
 		property:lastModifiedFieldName="lastmodified"
 		property:batchSize="1000"
 		property:maxReadLength="1000000" 
-		property:strategies-ref="desktopStrategies"
 		property:maxExceptions="100" />
-	
-	<util:list id="desktopStrategies">
-	    <bean class="ikube.index.handler.strategy.DeltaIndexableFilesystemStrategy" />
-	</util:list>
 	
 </beans>
