@@ -61,18 +61,18 @@ public class Scheduler {
 		LOGGER.info("Shutdown schedules : " + runnables);
 	}
 
-	public void setSchedule(Schedule schedule) {
+	public void setSchedule(final Schedule schedule) {
 		if (this.schedules == null) {
 			this.schedules = new ArrayList<Schedule>();
 		}
 		this.schedules.add(schedule);
 	}
 
-	public void setSchedules(List<Schedule> schedules) {
+	public void setSchedules(final List<Schedule> schedules) {
 		this.schedules = schedules;
 	}
 
-	public void setListenerManager(ListenerManager listenerManager) {
+	public void setListenerManager(final ListenerManager listenerManager) {
 		this.listenerManager = listenerManager;
 	}
 

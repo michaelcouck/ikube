@@ -215,12 +215,17 @@ public class ClusterManagerHazelcast extends AClusterManager {
 		} finally {
 			if (!removedAndComitted) {
 				ThreadUtilities.sleep(1000);
-				if (retry >= IConstants.MAX_RETRY_CLUSTER_REMOVE) {
-					logger.info("Retried to remove the action, failed : " + retry + ", action : " + action + ", actions : " + server.getActions());
-					return;
+				if (server.getActions() != null && server.getActions().size() > 0) {
+					if (retry >= IConstants.MAX_RETRY_CLUSTER_REMOVE) {
+						logger.info("Retried to remove the action, failed : " + retry + ", action : " + action + ", actions : "
+								+ server.getActions());
+						return;
+					} else {
+						logger.debug("Retrying to remove the action : " + retry + ", " + server.getIp() + ", " + action + ", "
+								+ server.getActions());
+						stopWorking(action, retry + 1);
+					}
 				}
-				logger.debug("Retrying to remove the action : " + retry + ", " + server.getIp() + ", " + action + ", " + server.getActions());
-				stopWorking(action, retry + 1);
 			}
 		}
 	}

@@ -10,7 +10,7 @@
 
 	<target name="go">
 		<antcall target="prepare" />
-		<antcall target="stop-servers-deploy" />
+		<antcall target="stop-servers" />
 		<!-- Deploy the configuration and ikube and start the servers -->
 		<antcall target="go-server" inheritall="true">
 			<param name="server-ip" value="ikube.be" />
@@ -26,20 +26,23 @@
 		</antcall -->
 	</target>
 
-	<target name="stop-servers-deploy">
+	<target name="stop-servers">
 		<!-- Stop all the processes, the only way to stop Tomcat -->
 		<antcall target="execute-remote-command">
 			<param name="server-ip" value="ikube.be" />
 			<param name="command" value="cd /usr/share/apache-tomcat-6.0.29-1/bin; ./shutdown.sh;" />
 		</antcall>
+		<sleep seconds="15" />
 		<!-- antcall target="execute-remote-command">
 			<param name="server-ip" value="192.168.1.6" />
 			<param name="command" value="killall java" />
 		</antcall>
+		<sleep seconds="15" />
 		<antcall target="execute-remote-command">
 			<param name="server-ip" value="192.168.1.7" />
 			<param name="command" value="killall java" />
-		</antcall -->
+		</antcall>
+		<sleep seconds="15" / -->
 	</target>
 
 	<target name="deploy-site">
@@ -47,6 +50,7 @@
 			<param name="server-ip" value="ikube.be" />
 			<param name="command" value="cd /usr/share/apache-tomcat-7.0.27/bin; ./shutdown.sh;" />
 		</antcall>
+		<sleep seconds="15" />
 		<antcall target="execute-remote-command">
 			<param name="server-ip" value="ikube.be" />
 			<param name="command" value="

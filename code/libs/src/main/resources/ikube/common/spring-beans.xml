@@ -216,6 +216,10 @@
 		id="ikube.listener.CpuLoadListener"
 		name="ikube.listener.CpuLoadListener" 
 		class="ikube.listener.CpuLoadListener" />
+	<bean
+		id="ikube.listener.MemoryListener"
+		name="ikube.listener.MemoryListener" 
+		class="ikube.listener.MemoryListener" />
 	
 	<bean 
 		id="ikube.listener.Scheduler" 
@@ -244,6 +248,11 @@
 		<bean
 			class="ikube.listener.Schedule"
 			property:type="serverRelease"
+			property:delay="60000"
+			property:period="60000" />
+		<bean
+			class="ikube.listener.Schedule"
+			property:type="memory-size"
 			property:delay="60000"
 			property:period="60000" />
 	</util:list>

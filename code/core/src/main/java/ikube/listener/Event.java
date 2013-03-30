@@ -26,6 +26,7 @@ public class Event implements Serializable {
 	public static final String TERMINATE_ALL = "terminate-all";
 	
 	public static final String DELETE_INDEX = "delete-index";
+	public static final String MEMORY_SIZE = "memory-size";
 
 	private String type;
 	private long timestamp;
