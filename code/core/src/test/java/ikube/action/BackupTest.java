@@ -2,7 +2,7 @@ package ikube.action;
 
 import static org.junit.Assert.assertTrue;
 import ikube.ATest;
-import ikube.index.IndexManager;
+import ikube.action.index.IndexManager;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;

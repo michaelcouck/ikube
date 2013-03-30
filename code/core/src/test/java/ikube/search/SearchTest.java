@@ -5,7 +5,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import ikube.ATest;
 import ikube.IConstants;
-import ikube.index.IndexManager;
+import ikube.action.index.IndexManager;
 import ikube.mock.ReaderUtilMock;
 import ikube.mock.SpellingCheckerMock;
 import ikube.search.spelling.SpellingChecker;

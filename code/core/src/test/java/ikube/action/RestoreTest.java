@@ -4,7 +4,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 import ikube.ATest;
-import ikube.index.IndexManager;
+import ikube.action.index.IndexManager;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;

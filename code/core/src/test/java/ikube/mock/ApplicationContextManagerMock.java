@@ -3,14 +3,14 @@ package ikube.mock;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import ikube.IConstants;
+import ikube.action.index.handler.IIndexableHandler;
+import ikube.action.index.handler.database.IndexableTableHandler;
 import ikube.cluster.IClusterManager;
+import ikube.cluster.IMonitorService;
 import ikube.database.IDataBase;
-import ikube.index.handler.IIndexableHandler;
-import ikube.index.handler.database.IndexableTableHandler;
 import ikube.model.IndexContext;
 import ikube.model.IndexableTable;
 import ikube.model.Server;
-import ikube.service.IMonitorService;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.Logging;
 

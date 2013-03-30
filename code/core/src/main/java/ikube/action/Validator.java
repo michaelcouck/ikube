@@ -1,11 +1,11 @@
 package ikube.action;
 
+import ikube.action.index.IndexManager;
 import ikube.action.rule.AreIndexesCreated;
 import ikube.action.rule.DirectoryExistsAndIsLocked;
 import ikube.action.rule.IsIndexBackedUp;
 import ikube.action.rule.IsIndexCorrupt;
 import ikube.action.rule.IsIndexCurrent;
-import ikube.index.IndexManager;
 import ikube.model.IndexContext;
 
 import java.io.File;

@@ -7,11 +7,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import ikube.IConstants;
 import ikube.action.IndexDelta;
+import ikube.action.index.IndexManager;
+import ikube.action.index.parse.mime.MimeMapper;
+import ikube.action.index.parse.mime.MimeTypes;
+import ikube.action.rule.IRuleInterceptor;
 import ikube.cluster.IClusterManager;
-import ikube.index.IndexManager;
-import ikube.index.parse.mime.MimeMapper;
-import ikube.index.parse.mime.MimeTypes;
-import ikube.interceptor.IRuleInterceptor;
 import ikube.mock.IndexManagerMock;
 import ikube.model.IndexContext;
 

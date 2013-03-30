@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import ikube.ATest;
 import ikube.IConstants;
-import ikube.index.IndexManager;
+import ikube.action.index.IndexManager;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.StringUtilities;
 

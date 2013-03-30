@@ -1,7 +1,7 @@
 package ikube.cluster.listener.hzc;
 
 import ikube.cluster.listener.IListener;
-import ikube.listener.Event;
+import ikube.scheduling.listener.Event;
 import ikube.toolkit.ThreadUtilities;
 
 import org.slf4j.Logger;

@@ -1,7 +1,7 @@
 package ikube.search;
 
 import ikube.IConstants;
-import ikube.index.spatial.Coordinate;
+import ikube.action.index.handler.enrich.geocode.Coordinate;
 
 import java.io.IOException;
 import java.util.ArrayList;

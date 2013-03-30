@@ -1,7 +1,7 @@
 package ikube.action;
 
+import ikube.action.index.IndexManager;
 import ikube.action.rule.DirectoryExistsAndIsLocked;
-import ikube.index.IndexManager;
 import ikube.model.IndexContext;
 import ikube.toolkit.FileUtilities;
 

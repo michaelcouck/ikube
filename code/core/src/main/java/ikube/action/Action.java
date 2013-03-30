@@ -1,15 +1,15 @@
 package ikube.action;
 
+import ikube.action.index.handler.IIndexableHandler;
 import ikube.action.rule.IRule;
+import ikube.action.rule.RuleInterceptor;
 import ikube.cluster.IClusterManager;
 import ikube.database.IDataBase;
-import ikube.index.handler.IIndexableHandler;
-import ikube.interceptor.RuleInterceptor;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.model.Server;
-import ikube.notify.IMailer;
 import ikube.toolkit.ApplicationContextManager;
+import ikube.toolkit.IMailer;
 import ikube.toolkit.UriUtilities;
 
 import java.util.List;

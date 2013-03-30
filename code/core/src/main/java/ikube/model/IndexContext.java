@@ -1,6 +1,6 @@
 package ikube.model;
 
-import ikube.index.IndexManager;
+import ikube.action.index.IndexManager;
 
 import java.util.ArrayList;
 import java.util.Date;

@@ -1,8 +1,8 @@
 package ikube.action;
 
-import ikube.index.IndexManager;
+import ikube.action.index.IndexManager;
 import ikube.model.IndexContext;
-import ikube.service.SearcherService;
+import ikube.search.SearcherService;
 import ikube.toolkit.Logging;
 
 import java.io.File;

@@ -1,6 +1,6 @@
 package ikube;
 
-import ikube.index.IndexManager;
+import ikube.action.index.IndexManager;
 import ikube.model.IndexContext;
 import ikube.search.spelling.SpellingChecker;
 import ikube.toolkit.Logging;

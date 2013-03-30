@@ -1,6 +1,6 @@
 package ikube.action.rule;
 
-import ikube.index.IndexManager;
+import ikube.action.index.IndexManager;
 import ikube.model.IndexContext;
 
 /**

@@ -2,8 +2,9 @@ package ikube.index.handler.filesystem;
 
 import static org.junit.Assert.assertTrue;
 import ikube.Integration;
+import ikube.action.index.IndexManager;
+import ikube.action.index.handler.filesystem.IndexableFilesystemHandler;
 import ikube.database.IDataBase;
-import ikube.index.IndexManager;
 import ikube.model.IndexContext;
 import ikube.model.IndexableFileSystem;
 import ikube.toolkit.ApplicationContextManager;

@@ -4,6 +4,8 @@ import static org.junit.Assert.assertTrue;
 import ikube.IConstants;
 import ikube.Integration;
 import ikube.model.IndexContext;
+import ikube.scheduling.listener.Event;
+import ikube.scheduling.listener.SnapshotListener;
 import ikube.toolkit.ApplicationContextManager;
 
 import org.junit.Before;

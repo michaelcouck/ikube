@@ -1,8 +1,8 @@
 package ikube.web.service;
 
 import ikube.cluster.IClusterManager;
-import ikube.service.IMonitorService;
-import ikube.service.ISearcherService;
+import ikube.cluster.IMonitorService;
+import ikube.search.ISearcherService;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;

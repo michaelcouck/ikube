@@ -1,8 +1,8 @@
 package ikube.toolkit;
 
 import ikube.IConstants;
-import ikube.listener.Event;
-import ikube.listener.IListener;
+import ikube.scheduling.listener.Event;
+import ikube.scheduling.listener.IListener;
 
 import java.util.ArrayList;
 import java.util.Collection;

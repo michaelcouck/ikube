@@ -1,7 +1,7 @@
 package ikube.mock;
 
 import static org.mockito.Mockito.mock;
-import ikube.index.IndexManager;
+import ikube.action.index.IndexManager;
 
 import java.io.IOException;
 

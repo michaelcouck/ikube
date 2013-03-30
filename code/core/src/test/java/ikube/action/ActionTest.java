@@ -6,7 +6,7 @@ import ikube.ATest;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.mock.ClusterManagerMock;
 import ikube.model.IndexContext;
-import ikube.notify.IMailer;
+import ikube.toolkit.IMailer;
 import mockit.Deencapsulation;
 import mockit.Mockit;
 

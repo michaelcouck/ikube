@@ -1,7 +1,7 @@
 package ikube.action;
 
-import ikube.index.IndexManager;
-import ikube.index.handler.IIndexableHandler;
+import ikube.action.index.IndexManager;
+import ikube.action.index.handler.IIndexableHandler;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.model.Server;

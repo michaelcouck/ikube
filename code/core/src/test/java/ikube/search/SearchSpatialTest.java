@@ -5,10 +5,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import ikube.ATest;
 import ikube.IConstants;
-import ikube.index.IndexManager;
-import ikube.index.spatial.Coordinate;
-import ikube.index.spatial.enrich.Enrichment;
-import ikube.index.spatial.enrich.IEnrichment;
+import ikube.action.index.IndexManager;
+import ikube.action.index.handler.enrich.Enrichment;
+import ikube.action.index.handler.enrich.IEnrichment;
+import ikube.action.index.handler.enrich.geocode.Coordinate;
 import ikube.mock.SpellingCheckerMock;
 import ikube.toolkit.FileUtilities;
 

@@ -3,7 +3,7 @@ package ikube.search;
 import static org.junit.Assert.assertEquals;
 import ikube.ATest;
 import ikube.IConstants;
-import ikube.index.IndexManager;
+import ikube.action.index.IndexManager;
 import ikube.mock.SpellingCheckerMock;
 
 import java.util.ArrayList;

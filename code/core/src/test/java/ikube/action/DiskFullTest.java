@@ -3,10 +3,10 @@ package ikube.action;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import ikube.ATest;
-import ikube.listener.ListenerManager;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.mock.ClusterManagerMock;
 import ikube.model.IndexContext;
+import ikube.scheduling.listener.ListenerManager;
 
 import java.io.IOException;
 

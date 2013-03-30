@@ -2,8 +2,8 @@ package ikube.cluster.listener.hzc;
 
 import static org.junit.Assert.assertFalse;
 import ikube.ATest;
-import ikube.index.IndexManager;
-import ikube.listener.Event;
+import ikube.action.index.IndexManager;
+import ikube.scheduling.listener.Event;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;

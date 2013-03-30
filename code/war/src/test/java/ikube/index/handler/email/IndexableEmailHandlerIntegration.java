@@ -1,13 +1,13 @@
 package ikube.index.handler.email;
 
 import ikube.Integration;
-import ikube.index.IndexManager;
-import ikube.index.handler.email.IndexableEmailHandler;
+import ikube.action.index.IndexManager;
+import ikube.action.index.handler.email.IndexableEmailHandler;
 import ikube.model.IndexContext;
 import ikube.model.IndexableEmail;
-import ikube.notify.IMailer;
-import ikube.notify.Mailer;
 import ikube.toolkit.ApplicationContextManager;
+import ikube.toolkit.IMailer;
+import ikube.toolkit.Mailer;
 
 import java.net.InetAddress;
 

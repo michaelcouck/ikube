@@ -33,8 +33,8 @@
 		of the boolean rule expression execute the action or not. 
 	 -->
 	<bean 
-		id="ikube.interceptor.IRuleInterceptor" 
-		class="ikube.interceptor.RuleInterceptor" />
+		id="ikube.action.rule.IRuleInterceptor" 
+		class="ikube.action.rule.RuleInterceptor" />
 	<!-- 
 		This interceptor will intercept the handlers. The indexable isthen accessed and the strategies are executed
 		to determine whether to process the resource or not. The chain of strategies must result in a true return value
@@ -53,8 +53,8 @@
 		Note that the strategies are to be defined on the indexables, not on the handlers. 
 	 -->
 	<bean 
-		id="ikube.interceptor.IStrategyInterceptor" 
-		class="ikube.interceptor.StrategyInterceptor" />
+		id="ikube.action.index.handler.strategy.IStrategyInterceptor" 
+		class="ikube.action.index.handler.strategy.StrategyInterceptor" />
 	<!--
 		This interceptor will execute logic before and after processing the action. In the case of the delta indexing 
 		the preProcess will create an index of the resources in the index that will be used to ignore resources that have
@@ -63,10 +63,10 @@
 	
 	<!-- The aop point cuts for the interceptors. -->
 	<aop:config proxy-target-class="true">
-		<aop:aspect ref="ikube.interceptor.IRuleInterceptor">
+		<aop:aspect ref="ikube.action.rule.IRuleInterceptor">
 			<aop:around method="decide" pointcut="execution(* ikube.action.*.execute(..))"  />
 		</aop:aspect>
-		<aop:aspect ref="ikube.interceptor.IStrategyInterceptor">
+		<aop:aspect ref="ikube.action.index.handler.strategy.IStrategyInterceptor">
 			<aop:around method="aroundProcess" pointcut="execution(* ikube.index.handler.filesystem.*.handleResource*(..))"  />
 		</aop:aspect>
 	</aop:config>

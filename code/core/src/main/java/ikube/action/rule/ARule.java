@@ -1,7 +1,7 @@
 package ikube.action.rule;
 
+import ikube.action.index.IndexManager;
 import ikube.cluster.IClusterManager;
-import ikube.index.IndexManager;
 import ikube.model.IndexContext;
 
 import java.io.File;

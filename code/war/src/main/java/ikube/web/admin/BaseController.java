@@ -1,7 +1,7 @@
 package ikube.web.admin;
 
 import ikube.cluster.IClusterManager;
-import ikube.service.IMonitorService;
+import ikube.cluster.IMonitorService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

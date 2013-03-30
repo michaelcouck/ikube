@@ -3,8 +3,8 @@ package ikube.toolkit;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import ikube.ATest;
-import ikube.listener.Event;
-import ikube.listener.ListenerManager;
+import ikube.scheduling.listener.Event;
+import ikube.scheduling.listener.ListenerManager;
 
 import java.util.ArrayList;
 import java.util.List;

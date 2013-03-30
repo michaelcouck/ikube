@@ -7,26 +7,26 @@
 -->
 <parsers>
 
-	<mime-type type="text/rtf" parser="ikube.index.parse.rtf.RtfParser" />
-	<mime-type type="text/xml" parser="ikube.index.parse.xml.XMLParser" />
-	<mime-type type="text/html" parser="ikube.index.parse.html.HtmlParser" />
-	<mime-type type="text/plain" parser="ikube.index.parse.text.TextParser" />
+	<mime-type type="text/rtf" parser="ikube.action.index.parse.RtfParser" />
+	<mime-type type="text/xml" parser="ikube.action.index.parse.XMLParser" />
+	<mime-type type="text/html" parser="ikube.action.index.parse.HtmlParser" />
+	<mime-type type="text/plain" parser="ikube.action.index.parse.TextParser" />
 
-	<mime-type type="application/pdf" parser="ikube.index.parse.pdf.PdfParser" />
+	<mime-type type="application/pdf" parser="ikube.action.index.parse.PdfParser" />
 	
-	<mime-type type="application/msword" parser="ikube.index.parse.word.WordParser" />
-	<mime-type type="application/vnd.ms-excel" parser="ikube.index.parse.excel.ExcelParser" />
-	<mime-type type="application/vnd.ms-powerpoint" parser="ikube.index.parse.pp.PowerPointParser" />
+	<mime-type type="application/msword" parser="ikube.action.index.parse.WordParser" />
+	<mime-type type="application/vnd.ms-excel" parser="ikube.action.index.parse.ExcelParser" />
+	<mime-type type="application/vnd.ms-powerpoint" parser="ikube.action.index.parse.PowerPointParser" />
 	
-	<!-- <mime-type type="application/msword" parser="ikube.index.parse.word.AsposeWordParser" />
-	<mime-type type="application/vnd.ms-excel" parser="ikube.index.parse.excel.AsposeExcelParser" />
-	<mime-type type="application/vnd.ms-powerpoint" parser="ikube.index.parse.pp.AsposePowerPointParser" /> -->
+	<!-- <mime-type type="application/msword" parser="ikube.action.index.parse.AsposeWordParser" />
+	<mime-type type="application/vnd.ms-excel" parser="ikube.action.index.parse.AsposeExcelParser" />
+	<mime-type type="application/vnd.ms-powerpoint" parser="ikube.action.index.parse.AsposePowerPointParser" /> -->
 	
 	<mime-type type="application/vnd.openxmlformats-officedocument.wordprocessingml.document" 
-		parser="ikube.index.parse.word.AsposeWordParser" />
+		parser="ikube.action.index.parse.AsposeWordParser" />
 	<mime-type type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" 
-		parser="ikube.index.parse.excel.AsposeExcelParser" />
+		parser="ikube.action.index.parse.AsposeExcelParser" />
 	<mime-type type="application/vnd.openxmlformats-officedocument.presentationml.presentation" 
-		parser="ikube.index.parse.pp.AsposePowerPointParser" />
+		parser="ikube.action.index.parse.AsposePowerPointParser" />
 
 </parsers>

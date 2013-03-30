@@ -1,7 +1,7 @@
 package ikube.action;
 
 import ikube.IConstants;
-import ikube.index.IndexManager;
+import ikube.action.index.IndexManager;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.model.IndexableFileSystem;

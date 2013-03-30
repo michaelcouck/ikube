@@ -1,6 +1,6 @@
 package ikube;
 
-import ikube.index.analyzer.StemmingAnalyzer;
+import ikube.action.index.analyzer.StemmingAnalyzer;
 
 import java.util.regex.Pattern;
 

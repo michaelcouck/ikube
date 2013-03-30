@@ -26,25 +26,25 @@
 		class="ikube.index.handler.IHandler"
 		abstract="true" />
 	<bean 
-		id="ikube.index.handler.IndexableHandler"
+		id="ikube.action.index.handler.IndexableHandler"
 		parent="ikube.index.handler.IHandler"
-		class="ikube.index.handler.IndexableHandler" 
+		class="ikube.action.index.handler.IndexableHandler" 
 		abstract="true" />
 	<bean
-		parent="ikube.index.handler.IndexableHandler"
-		id="ikube.index.handler.filesystem.IndexableFilesystemHandler"
-		class="ikube.index.handler.filesystem.IndexableFilesystemHandler"
+		parent="ikube.action.index.handler.IndexableHandler"
+		id="ikube.action.index.handler.filesystem.IndexableFilesystemHandler"
+		class="ikube.action.index.handler.filesystem.IndexableFilesystemHandler"
 		property:threads="1"
 		property:indexableClass="ikube.model.IndexableFileSystem" />
 	<bean
-		parent="ikube.index.handler.IndexableHandler"
-		class="ikube.index.handler.database.IndexableTableHandler"
+		parent="ikube.action.index.handler.IndexableHandler"
+		class="ikube.action.index.handler.database.IndexableTableHandler"
 		property:threads="1"
 		property:indexableClass="ikube.model.IndexableTable" />
 	<bean
-		parent="ikube.index.handler.IndexableHandler"
-		id="ikube.index.handler.filesystem.IndexableFilesystemCsvHandler" 
-		class="ikube.index.handler.filesystem.IndexableFilesystemCsvHandler"
+		parent="ikube.action.index.handler.IndexableHandler"
+		id="ikube.action.index.handler.filesystem.IndexableFilesystemCsvHandler" 
+		class="ikube.action.index.handler.filesystem.IndexableFilesystemCsvHandler"
 		property:threads="1"
 		property:indexableClass="ikube.model.IndexableFileSystemCsv" />
 	

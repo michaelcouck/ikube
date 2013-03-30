@@ -1,6 +1,6 @@
 package ikube.model;
 
-import ikube.index.handler.IStrategy;
+import ikube.action.index.handler.IStrategy;
 
 import java.util.List;
 

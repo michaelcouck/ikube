@@ -1,7 +1,12 @@
 package ikube.web.service;
 
 import ikube.IConstants;
-import ikube.service.IAutoCompleteService;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Set;
+import java.util.StringTokenizer;
+import java.util.TreeSet;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -13,7 +18,6 @@ import javax.ws.rs.core.MediaType;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -35,9 +39,6 @@ public class Auto extends Resource {
 	public static final String COMPLETE = "/complete";
 	public static final String REQUEST = "request";
 
-	@Autowired
-	private IAutoCompleteService autoCompleteService;
-
 	@GET
 	@Path(Auto.COMPLETE)
 	@Consumes(MediaType.APPLICATION_XML)
@@ -45,7 +46,7 @@ public class Auto extends Resource {
 		if (StringUtils.isEmpty(term)) {
 			return gson.toJson(new String[0]);
 		}
-		String[] suggestions = autoCompleteService.suggestions(term);
+		String[] suggestions = suggestions(term);
 		for (int i = 0; i < suggestions.length; i++) {
 			suggestions[i] = StringUtils.remove(suggestions[i], "[");
 			suggestions[i] = StringUtils.remove(suggestions[i], "]");
@@ -53,6 +54,36 @@ public class Auto extends Resource {
 		String result = gson.toJson(suggestions);
 		LOGGER.info("Term : " + term + ", " + result);
 		return result;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	String[] suggestions(String searchString) {
+		boolean first = Boolean.TRUE;
+		StringTokenizer stringTokenizer = new StringTokenizer(searchString, " ,;|.");
+		StringBuilder stringBuilder = new StringBuilder();
+		while (stringTokenizer.hasMoreTokens()) {
+			String token = stringTokenizer.nextToken();
+			if (!first) {
+				stringBuilder.append(" AND ");
+			}
+			stringBuilder.append(token);
+			first = Boolean.FALSE;
+		}
+		ArrayList<HashMap<String, String>> results = searcherService.searchSingle(IConstants.AUTOCOMPLETE, stringBuilder.toString(),
+				IConstants.CONTENT, Boolean.TRUE, 0, 100);
+		if (results.size() > 0) {
+			results.remove(results.size() - 1);
+		}
+		Set<String> suggestions = new TreeSet<String>();
+		for (final HashMap<String, String> result : results) {
+			suggestions.add(result.get(IConstants.CONTENT));
+			if (suggestions.size() >= 10) {
+				break;
+			}
+		}
+		return suggestions.toArray(new String[suggestions.size()]);
 	}
 
 }

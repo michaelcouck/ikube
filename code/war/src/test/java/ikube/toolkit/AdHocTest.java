@@ -1,7 +1,7 @@
 package ikube.toolkit;
 
 import ikube.Base;
-import ikube.index.spatial.Coordinate;
+import ikube.action.index.handler.enrich.geocode.Coordinate;
 import ikube.search.SearchSpatial;
 
 import java.io.File;
