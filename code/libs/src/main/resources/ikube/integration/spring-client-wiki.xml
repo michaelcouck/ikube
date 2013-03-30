@@ -58,7 +58,7 @@
 		property:strategies-ref="wikidataStrategies" />
 	
 	<util:list id="wikidataStrategies">
-		<bean class="ikube.index.handler.strategy.DeltaIndexableFilesystemStrategy" />
+		<bean class="ikube.action.index.handler.strategy.DeltaIndexableFilesystemStrategy" />
 	</util:list>
 	
 </beans>

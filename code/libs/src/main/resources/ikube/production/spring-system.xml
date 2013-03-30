@@ -38,15 +38,15 @@
 		property:throttle="${throttle}"
 		property:indexDirectoryPath="${index.directory.path}"
 		property:indexDirectoryPathBackup="${index.directory.path.backup}"
-		property:analyzer-ref="ikube.index.analyzer.NgramAnalyzer"
+		property:analyzer-ref="ikube.action.index.analyzer.NgramAnalyzer"
 		property:children-ref="ikube-system-indexables" />
 	<util:list id="ikube-system-indexables">
 		<ref local="ikube-data-source" />
 	</util:list>
 	
 	<bean 
-		id="ikube.index.analyzer.NgramAnalyzer" 
-		class="ikube.index.analyzer.NgramAnalyzer" />
+		id="ikube.action.index.analyzer.NgramAnalyzer" 
+		class="ikube.action.index.analyzer.NgramAnalyzer" />
 	
 	<bean
 		id="ikube-data-source"

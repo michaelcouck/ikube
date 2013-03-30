@@ -38,9 +38,9 @@
 		depends-on="ikube.database.IDataBase" />
 	
 	<bean
-		id="ikube.IndexEngine"
-		name="ikube.IndexEngine"
-		class="ikube.IndexEngine"
+		id="ikube.scheduling.listener.IndexEngine"
+		name="ikube.scheduling.listener.IndexEngine"
+		class="ikube.scheduling.listener.IndexEngine"
 		destroy-method="destroy" />
 		
 	<!-- 
@@ -163,43 +163,40 @@
 		lazy-init="false" /> -->
 	
 	<bean 
-		id="ikube.index.parse.mime.MimeMapper" 
-		class="ikube.index.parse.mime.MimeMapper">
+		id="ikube.action.index.parse.mime.MimeMapper" 
+		class="ikube.action.index.parse.mime.MimeMapper">
 		<constructor-arg value="mime-mapping.xml" />
 	</bean>
 	<bean 
-		id="ikube.index.parse.mime.MimeTypes" 
-		class="ikube.index.parse.mime.MimeTypes">
+		id="ikube.action.index.parse.mime.MimeTypes" 
+		class="ikube.action.index.parse.mime.MimeTypes">
 		<constructor-arg value="mime-types.xml" />
 	</bean>
 	
 	<!-- The search and monitoring services. -->
 	<bean
-		id="ikube.service.SearcherService"
-		class="ikube.service.SearcherService" />
+		id="ikube.search.SearcherService"
+		class="ikube.search.SearcherService" />
 	<bean
-		id="ikube.service.MonitorService"
-		class="ikube.service.MonitorService" />
-	<bean
-		id="ikube.service.AutoCompleteService"
-		class="ikube.service.AutoCompleteService" />
+		id="ikube.cluster.MonitorService"
+		class="ikube.cluster.MonitorService" />
 	
 	<bean 
-		id="ikube.listener.ListenerManager"
-		class="ikube.listener.ListenerManager"
+		id="ikube.scheduling.listener.ListenerManager"
+		class="ikube.scheduling.listener.ListenerManager"
 		destroy-method="removeListeners"
-		property:listeners-ref="ikube.listener.ListenerManager.listeners" />
-	<util:list id="ikube.listener.ListenerManager.listeners">
-		<ref bean="ikube.IndexEngine" />
-		<ref bean="ikube.listener.SnapshotListener" />
-		<ref bean="ikube.listener.CpuLoadListener" />
+		property:listeners-ref="ikube.scheduling.listener.ListenerManager.listeners" />
+	<util:list id="ikube.scheduling.listener.ListenerManager.listeners">
+		<ref bean="ikube.scheduling.listener.IndexEngine" />
+		<ref bean="ikube.scheduling.listener.SnapshotListener" />
+		<ref bean="ikube.scheduling.listener.CpuLoadListener" />
 		<ref bean="ikube.toolkit.ThreadUtilities" />
-		<bean class="ikube.listener.StartupListener" />
-		<bean class="ikube.listener.TerminationListener" />
-		<bean class="ikube.listener.ServerRemovalListener" />
-		<bean class="ikube.listener.ClusterClubListener" />
-		<bean class="ikube.listener.IndexSizeListener" />
-		<bean class="ikube.listener.ActionListener" />
+		<bean class="ikube.scheduling.listener.StartupListener" />
+		<bean class="ikube.scheduling.listener.TerminationListener" />
+		<bean class="ikube.scheduling.listener.ServerRemovalListener" />
+		<bean class="ikube.scheduling.listener.ClusterClubListener" />
+		<bean class="ikube.scheduling.listener.IndexSizeListener" />
+		<bean class="ikube.scheduling.listener.ActionListener" />
 	</util:list>
 	
 	<bean 
@@ -209,50 +206,46 @@
 	    destroy-method="destroy" />
 	
 	<bean
-		id="ikube.listener.SnapshotListener"
-		name="ikube.listener.SnapshotListener" 
-		class="ikube.listener.SnapshotListener" />
+		id="ikube.scheduling.listener.SnapshotListener"
+		name="ikube.scheduling.listener.SnapshotListener" 
+		class="ikube.scheduling.listener.SnapshotListener" />
 	<bean
-		id="ikube.listener.CpuLoadListener"
-		name="ikube.listener.CpuLoadListener" 
-		class="ikube.listener.CpuLoadListener" />
-	<bean
-		id="ikube.listener.MemoryListener"
-		name="ikube.listener.MemoryListener" 
-		class="ikube.listener.MemoryListener" />
+		id="ikube.scheduling.listener.CpuLoadListener"
+		name="ikube.scheduling.listener.CpuLoadListener" 
+		class="ikube.scheduling.listener.CpuLoadListener" />
 	
 	<bean 
-		id="ikube.listener.Scheduler" 
-		class="ikube.listener.Scheduler"
+		id="ikube.scheduling.Scheduler" 
+		class="ikube.scheduling.Scheduler"
 		init-method="initialize"
 		destroy-method="shutdown"
-		property:schedules-ref="ikube.listener.Scheduler.schedules"
-		property:listenerManager-ref="ikube.listener.ListenerManager" />
+		property:schedules-ref="ikube.scheduling.Scheduler.schedules"
+		property:listenerManager-ref="ikube.scheduling.listener.ListenerManager" />
 	<!-- The schedules that fire events to start actions. -->
-	<util:list id="ikube.listener.Scheduler.schedules">
+	<util:list id="ikube.scheduling.Scheduler.schedules">
 		<bean
-			class="ikube.listener.Schedule"
+			class="ikube.scheduling.Schedule"
 			property:type="timer"
 			property:delay="${delay}"
 			property:period="${period}" />
 		<bean
-			class="ikube.listener.Schedule"
+			class="ikube.scheduling.Schedule"
 			property:type="timer-delta"
 			property:delay="${delay-delta}"
 			property:period="${period-delta}" />
 		<bean
-			class="ikube.listener.Schedule"
+			class="ikube.scheduling.Schedule"
 			property:type="performance"
 			property:delay="10000"
 			property:period="60000" />
 		<bean
-			class="ikube.listener.Schedule"
+			class="ikube.scheduling.Schedule"
 			property:type="serverRelease"
 			property:delay="60000"
 			property:period="60000" />
 		<bean
-			class="ikube.listener.Schedule"
-			property:type="memory-size"
+			class="ikube.scheduling.Schedule"
+			property:type="memorySize"
 			property:delay="60000"
 			property:period="60000" />
 	</util:list>
@@ -262,7 +255,7 @@
 		you would want to modify, otherwise I will be getting many, many mails from your system. 
 	-->
 	<bean
-		class="ikube.notify.Mailer"
+		class="ikube.toolkit.Mailer"
 		property:port="465"
 		property:auth="true"
 		property:protocol="pop3"
@@ -288,8 +281,8 @@
 		the indexables contain address fields. The Url for this service  
 	-->
 	<bean
-		id="ikube.index.spatial.geocode.Geocoder"
-		class="ikube.index.spatial.geocode.Geocoder"
+		id="ikube.action.index.handler.enrich.geocode.Geocoder"
+		class="ikube.action.index.handler.enrich.geocode.Geocoder"
 		property:searchFields-ref="geospatialFields" 
 		property:userid="user"
 		property:password="user" 
@@ -304,8 +297,8 @@
 		<value>alternatenames</value>
 	</util:list>
 	<bean 
-		id="ikube.index.spatial.enrich.IEnrichment"
-		class="ikube.index.spatial.enrich.Enrichment"
+		id="ikube.action.index.handler.enrich.IEnrichment"
+		class="ikube.action.index.handler.enrich.Enrichment"
 		property:minKm="10"
 		property:maxKm="20"  />
 	
@@ -333,69 +326,69 @@
 	
 	<!-- The handlers that do the indexing logic. -->
 	<bean 
-		id="ikube.index.handler.IndexableHandler"
-		class="ikube.index.handler.IndexableHandler" 
+		id="ikube.action.index.handler.IndexableHandler"
+		class="ikube.action.index.handler.IndexableHandler" 
 		abstract="true" />
 	<bean
-		parent="ikube.index.handler.IndexableHandler"
-		class="ikube.index.handler.internet.IndexableInternetHandler"
+		parent="ikube.action.index.handler.IndexableHandler"
+		class="ikube.action.index.handler.internet.IndexableInternetHandler"
 		property:threads="${internet.handler.threads}" 
 		property:indexableClass="ikube.model.IndexableInternet" />
 	<bean
-		parent="ikube.index.handler.IndexableHandler"
-		class="ikube.index.handler.email.IndexableEmailHandler"
+		parent="ikube.action.index.handler.IndexableHandler"
+		class="ikube.action.index.handler.email.IndexableEmailHandler"
 		property:threads="${email.handler.threads}"
 		property:indexableClass="ikube.model.IndexableEmail" />
 	<bean
-		parent="ikube.index.handler.IndexableHandler"
-		id="ikube.index.handler.filesystem.IndexableFilesystemHandler"
-		class="ikube.index.handler.filesystem.IndexableFilesystemHandler"
+		parent="ikube.action.index.handler.IndexableHandler"
+		id="ikube.action.index.handler.filesystem.IndexableFilesystemHandler"
+		class="ikube.action.index.handler.filesystem.IndexableFilesystemHandler"
 		property:threads="${filesystem.handler.threads}"
 		property:indexableClass="ikube.model.IndexableFileSystem" />
 	<bean
-		parent="ikube.index.handler.IndexableHandler"
-		class="ikube.index.handler.database.IndexableTableHandler"
+		parent="ikube.action.index.handler.IndexableHandler"
+		class="ikube.action.index.handler.database.IndexableTableHandler"
 		property:threads="${table.handler.threads}"
 		property:indexableClass="ikube.model.IndexableTable" />
 	<bean
-		parent="ikube.index.handler.IndexableHandler"
-		class="ikube.index.handler.filesystem.IndexableDictionaryHandler"
+		parent="ikube.action.index.handler.IndexableHandler"
+		class="ikube.action.index.handler.filesystem.IndexableDictionaryHandler"
 		property:threads="${filesystem.handler.threads}"
 		property:indexableClass="ikube.model.IndexableDictionary" />
 	<bean
-		parent="ikube.index.handler.IndexableHandler"
-		class="ikube.index.handler.filesystem.IndexableFilesystemLogHandler"
+		parent="ikube.action.index.handler.IndexableHandler"
+		class="ikube.action.index.handler.filesystem.IndexableFilesystemLogHandler"
 		property:threads="${filesystem.handler.threads}"
 		property:indexableClass="ikube.model.IndexableFileSystemLog" />
 	<bean
-		parent="ikube.index.handler.IndexableHandler"
-		class="ikube.index.handler.filesystem.IndexableFilesystemWikiHandler"
+		parent="ikube.action.index.handler.IndexableHandler"
+		class="ikube.action.index.handler.filesystem.IndexableFilesystemWikiHandler"
 		property:threads="${filesystem.handler.threads}"
 		property:indexableClass="ikube.model.IndexableFileSystemWiki" />
 	<bean
-		parent="ikube.index.handler.IndexableHandler"
-		class="ikube.index.handler.database.IndexableDataSourceHandler"
+		parent="ikube.action.index.handler.IndexableHandler"
+		class="ikube.action.index.handler.database.IndexableDataSourceHandler"
 		property:threads="${filesystem.handler.threads}"
 		property:indexableClass="ikube.model.IndexableDataSource" />
 	<bean
-		parent="ikube.index.handler.IndexableHandler"
-		id="ikube.index.handler.filesystem.IndexableFilesystemCsvHandler" 
-		class="ikube.index.handler.filesystem.IndexableFilesystemCsvHandler"
+		parent="ikube.action.index.handler.IndexableHandler"
+		id="ikube.action.index.handler.filesystem.IndexableFilesystemCsvHandler" 
+		class="ikube.action.index.handler.filesystem.IndexableFilesystemCsvHandler"
 		property:threads="${filesystem.handler.threads}"
 		property:indexableClass="ikube.model.IndexableFileSystemCsv" />
 	
 	<bean 
-		id="ikube.index.handler.ResourceHandler"
-		name="ikube.index.handler.ResourceHandler" 
-		class="ikube.index.handler.ResourceHandler" />
+		id="ikube.action.index.handler.ResourceHandler"
+		name="ikube.action.index.handler.ResourceHandler" 
+		class="ikube.action.index.handler.ResourceHandler" />
 	<bean 
-		id="ikube.index.handler.ResourceHandlerBase" 
-		class="ikube.index.handler.ResourceHandlerBase" />
+		id="ikube.action.index.handler.ResourceHandlerBase" 
+		class="ikube.action.index.handler.ResourceHandlerBase" />
 	<bean 
-		id="ikube.index.handler.filesystem.ResourceFileHandler" 
-		class="ikube.index.handler.filesystem.ResourceFileHandler" />
+		id="ikube.action.index.handler.filesystem.ResourceFileHandler" 
+		class="ikube.action.index.handler.filesystem.ResourceFileHandler" />
 	<bean 
-		id="ikube.index.handler.filesystem.ResourceRowHandler" 
-		class="ikube.index.handler.filesystem.ResourceRowHandler" />
+		id="ikube.action.index.handler.filesystem.ResourceRowHandler" 
+		class="ikube.action.index.handler.filesystem.ResourceRowHandler" />
 	
 </beans>

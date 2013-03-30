@@ -83,7 +83,7 @@
 		<!-- <ref local="alternatename" /> -->
 	</util:list>
 	<util:list id="geoname-strategies">
-	    <bean class="ikube.index.handler.strategy.GeospatialEnrichmentStrategy" />
+	    <bean class="ikube.action.index.handler.strategy.GeospatialEnrichmentStrategy" />
 	</util:list>
 	
 	<bean

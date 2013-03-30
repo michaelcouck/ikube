@@ -27,7 +27,7 @@
 		and the 'index is out of date' then start a new index.
 	</description>
 	
-	<util:list id="ikube.IndexEngine.actions">
+	<util:list id="ikube.scheduling.listener.IndexEngine.actions">
 		<ref bean="ikube.action.Close"  />
 		<ref bean="ikube.action.Reset" />
 		<ref bean="ikube.action.Restore" />
