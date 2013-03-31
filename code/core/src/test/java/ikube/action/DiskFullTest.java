@@ -3,24 +3,21 @@ package ikube.action;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import ikube.ATest;
-import ikube.mock.ApplicationContextManagerMock;
-import ikube.mock.ClusterManagerMock;
-import ikube.model.IndexContext;
-import ikube.scheduling.listener.ListenerManager;
+import ikube.toolkit.Mailer;
+import ikube.toolkit.ThreadUtilities;
 
 import java.io.IOException;
 
+import mockit.Cascading;
 import mockit.Deencapsulation;
 import mockit.Mock;
 import mockit.MockClass;
 import mockit.Mockit;
 
 import org.apache.commons.io.FileSystemUtils;
-import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 /**
  * @author Michael Couck
@@ -37,7 +34,13 @@ public class DiskFullTest extends ATest {
 		}
 	}
 
+	/** Class under test. */
 	private DiskFull diskFull;
+
+	@Cascading
+	private Mailer mailer;
+	@Cascading
+	private ThreadUtilities threadUtilities;
 
 	public DiskFullTest() {
 		super(DiskFullTest.class);
@@ -45,14 +48,8 @@ public class DiskFullTest extends ATest {
 
 	@Before
 	public void before() throws Exception {
-		diskFull = Mockito.mock(DiskFull.class);
-		Logger logger = Mockito.mock(Logger.class);
-		Mockito.when(diskFull.execute(Mockito.any(IndexContext.class))).thenCallRealMethod();
-		Mockito.when(diskFull.internalExecute(Mockito.any(IndexContext.class))).thenCallRealMethod();
-		Deencapsulation.setField(diskFull, logger);
-		Deencapsulation.setField(diskFull, clusterManager);
-		Deencapsulation.setField(diskFull, Mockito.mock(ListenerManager.class));
-		Mockit.setUpMocks(ApplicationContextManagerMock.class, ClusterManagerMock.class);
+		diskFull = new DiskFull();
+		Mockit.setUpMocks();
 	}
 
 	@After
@@ -62,9 +59,11 @@ public class DiskFullTest extends ATest {
 
 	@Test
 	public void execute() throws Exception {
+		Deencapsulation.setField(diskFull, mailer);
+		Deencapsulation.setField(diskFull, threadUtilities);
+		Deencapsulation.setField(diskFull, clusterManager);
 		boolean diskFull = this.diskFull.execute(indexContext);
 		assertFalse("The disk should never be too full : ", diskFull);
-
 		try {
 			Mockit.setUpMocks(FileSystemUtilsMock.class);
 			diskFull = this.diskFull.execute(indexContext);

@@ -80,13 +80,13 @@ public class IndexEngineTest extends ATest {
 		event.setTimestamp(System.currentTimeMillis());
 		event.setType(Event.TIMER);
 
-		indexEngine.handleNotification(event);
+		indexEngine.run();
 
 		verify(index, atLeast(1)).execute(any(IndexContext.class));
 		verify(index, atMost(1)).execute(any(IndexContext.class));
 
 		when(server.isWorking()).thenReturn(Boolean.TRUE);
-		indexEngine.handleNotification(event);
+		indexEngine.run();
 
 		verify(index, atLeast(1)).execute(any(IndexContext.class));
 		verify(index, atMost(2)).execute(any(IndexContext.class));

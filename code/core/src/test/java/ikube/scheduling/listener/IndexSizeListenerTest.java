@@ -9,8 +9,6 @@ import ikube.ATest;
 import ikube.IConstants;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.model.Snapshot;
-import ikube.scheduling.listener.Event;
-import ikube.scheduling.listener.IndexSizeListener;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
@@ -65,9 +63,7 @@ public class IndexSizeListenerTest extends ATest {
 
 	@Test
 	public void handleNotification() throws CorruptIndexException, IOException {
-		Event event = mock(Event.class);
-		when(event.getType()).thenReturn(Event.TIMER);
-		indexSizeListener.handleNotification(event);
+		indexSizeListener.run();
 		// We never call this because the mock doesn't really get the new index writer
 		// so the logic never calls the close on the index writer
 		verify(indexWriter, never()).close(Boolean.TRUE);
@@ -75,7 +71,7 @@ public class IndexSizeListenerTest extends ATest {
 		logger.info("Index writers : " + indexWriters.length);
 		assertTrue(indexWriters.length == 1);
 
-		indexSizeListener.handleNotification(event);
+		indexSizeListener.run();
 		indexWriters = indexContext.getIndexWriters();
 		logger.info("Index writers : " + indexWriters.length);
 		assertTrue(indexWriters.length == 1);

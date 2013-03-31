@@ -5,19 +5,11 @@ package ikube.scheduling;
  * @since 21.11.10
  * @version 01.00
  */
-public class Schedule {
+public abstract class Schedule implements Runnable {
 
-	private String type;
-	private long delay;
-	private long period;
-
-	public String getType() {
-		return type;
-	}
-
-	public void setType(final String type) {
-		this.type = type;
-	}
+	private long delay = 10;
+	private long period = 10;
+	private boolean single = Boolean.FALSE;
 
 	public long getDelay() {
 		return delay;
@@ -33,6 +25,14 @@ public class Schedule {
 
 	public void setPeriod(final long period) {
 		this.period = period;
+	}
+
+	public boolean isSingle() {
+		return single;
+	}
+
+	public void setSingle(boolean single) {
+		this.single = single;
 	}
 
 }

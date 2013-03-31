@@ -143,7 +143,7 @@ public class LuceneTest extends ATest {
 			});
 			futures.add(future);
 		}
-		Future<?> future = ThreadUtilities.submit(new Runnable() {
+		Future<?> future = ThreadUtilities.submit(null, new Runnable() {
 			public void run() {
 				try {
 					int index = iterations;
@@ -202,7 +202,7 @@ public class LuceneTest extends ATest {
 			});
 			futures.add(future);
 		}
-		Future<?> future = ThreadUtilities.submit(new Runnable() {
+		Future<?> future = ThreadUtilities.submit(null, new Runnable() {
 			public void run() {
 				try {
 					int index = iterations;

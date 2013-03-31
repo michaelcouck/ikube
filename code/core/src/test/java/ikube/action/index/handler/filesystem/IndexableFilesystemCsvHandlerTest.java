@@ -66,6 +66,7 @@ public class IndexableFilesystemCsvHandlerTest extends ATest {
 	public void handleFile() throws Exception {
 		File file = FileUtilities.findFileRecursively(new File("."), Boolean.FALSE, "csv.csv");
 		indexableFileSystem.setEncoding(IConstants.ENCODING);
+		indexableFileSystem.setSeparator(",");
 
 		ResourceRowHandler resourceRowHandler = Mockito.mock(ResourceRowHandler.class);
 		Deencapsulation.setField(filesystemCsvHandler, "resourceRowHandler", resourceRowHandler);

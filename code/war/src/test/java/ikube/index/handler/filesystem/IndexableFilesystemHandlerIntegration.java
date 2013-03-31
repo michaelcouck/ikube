@@ -66,7 +66,7 @@ public class IndexableFilesystemHandlerIntegration extends Integration {
 		dropbox.setThrottle(60000);
 		dropbox.setIndexWriters(indexWriter);
 
-		ThreadUtilities.submit(new Runnable() {
+		ThreadUtilities.submit(null, new Runnable() {
 			public void run() {
 				ThreadUtilities.sleep(15000);
 				ThreadUtilities.destroy(dropbox.getIndexName());

@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
  * @since 17.04.10
  * @version 01.00
  */
+@Deprecated
 public class ListenerManager {
 
 	private static final Logger LOGGER = Logger.getLogger(ListenerManager.class);

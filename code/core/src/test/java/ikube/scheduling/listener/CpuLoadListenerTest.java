@@ -5,9 +5,6 @@ import ikube.ATest;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.model.IndexContext;
 import ikube.model.Snapshot;
-import ikube.scheduling.listener.CpuLoadListener;
-import ikube.scheduling.listener.Event;
-import ikube.scheduling.listener.ListenerManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -60,20 +57,18 @@ public class CpuLoadListenerTest extends ATest {
 		List<Snapshot> snapshots = addSnapshots(12, 4, 8.0, new ArrayList<Snapshot>());
 		when(indexContext.getSnapshots()).thenReturn(snapshots);
 
-		Event event = ListenerManager.getEvent(Event.PERFORMANCE, System.currentTimeMillis(), null, Boolean.FALSE);
-
-		snapshotListener.handleNotification(event);
+		snapshotListener.run();
 
 		// The throttle must be more than 0
 		Mockito.verify(indexContext).setThrottle(1);
 
 		when(indexContext.getThrottle()).thenReturn(1l);
-		snapshotListener.handleNotification(event);
+		snapshotListener.run();
 		Mockito.verify(indexContext).setThrottle(2);
 
 		snapshots = addSnapshots(12, 4, 0.5, new ArrayList<Snapshot>());
 		when(indexContext.getSnapshots()).thenReturn(snapshots);
-		snapshotListener.handleNotification(event);
+		snapshotListener.run();
 		when(indexContext.getThrottle()).thenReturn(2l);
 		Mockito.verify(indexContext).setThrottle(1);
 	}
@@ -85,8 +80,7 @@ public class CpuLoadListenerTest extends ATest {
 		snapshots = addSnapshots(6, 4, 1.5, snapshots);
 		when(indexContext.getSnapshots()).thenReturn(snapshots);
 
-		Event event = ListenerManager.getEvent(Event.PERFORMANCE, System.currentTimeMillis(), null, Boolean.FALSE);
-		snapshotListener.handleNotification(event);
+		snapshotListener.run();
 
 		// Verify that the set throttle was never called
 		Mockito.verify(indexContext, Mockito.never()).setThrottle(Mockito.anyLong());

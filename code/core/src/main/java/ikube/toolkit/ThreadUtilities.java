@@ -1,6 +1,5 @@
 package ikube.toolkit;
 
-import ikube.IConstants;
 import ikube.scheduling.listener.Event;
 import ikube.scheduling.listener.IListener;
 
@@ -35,7 +34,7 @@ public final class ThreadUtilities implements IListener {
 	private static int MAX_RETRY_COUNT = 10;
 
 	/** A list of futures by name so we can kill them. */
-	private static final Map<String, List<Future<?>>> FUTURES = new HashMap<String, List<Future<?>>>();
+	private static Map<String, List<Future<?>>> FUTURES;
 
 	/**
 	 * This method will submit the runnable and add it to a map so the caller can cancel the future if necessary.
@@ -46,9 +45,16 @@ public final class ThreadUtilities implements IListener {
 	 */
 	public synchronized static Future<?> submit(final String name, final Runnable runnable) {
 		try {
-			Future<?> future = submit(runnable);
-			getFutures(name).add(future);
-			LOGGER.debug("Submit future : " + name);
+			if (EXECUTER_SERVICE == null || EXECUTER_SERVICE.isShutdown()) {
+				LOGGER.info("Executer service is shutdown : " + runnable);
+				return null;
+			}
+			Future<?> future = EXECUTER_SERVICE.submit(runnable);
+			if (name != null) {
+				getFutures(name).add(future);
+			} else {
+				getFutures(ThreadUtilities.class.getSimpleName()).add(future);
+			}
 			return future;
 		} finally {
 			ThreadUtilities.class.notifyAll();
@@ -73,24 +79,6 @@ public final class ThreadUtilities implements IListener {
 			Map<String, List<Future<?>>> futures = new HashMap<String, List<Future<?>>>();
 			futures.putAll(FUTURES);
 			return futures;
-		} finally {
-			ThreadUtilities.class.notifyAll();
-		}
-	}
-
-	/**
-	 * This method submits a runnable with the executer service from the concurrent package and returns the future immediately.
-	 * 
-	 * @param runnable the runnable to execute
-	 * @return the future that will be a handle to the thread running the runnable
-	 */
-	public static synchronized Future<?> submit(final Runnable runnable) {
-		try {
-			if (EXECUTER_SERVICE == null || EXECUTER_SERVICE.isShutdown()) {
-				LOGGER.info("Executer service is shutdown : " + runnable);
-				return null;
-			}
-			return EXECUTER_SERVICE.submit(runnable);
 		} finally {
 			ThreadUtilities.class.notifyAll();
 		}
@@ -126,6 +114,7 @@ public final class ThreadUtilities implements IListener {
 					}
 				}
 			}
+			futures.clear();
 		} finally {
 			ThreadUtilities.class.notifyAll();
 		}
@@ -246,7 +235,8 @@ public final class ThreadUtilities implements IListener {
 			LOGGER.info("Executer service already initialized : ");
 			return;
 		}
-		EXECUTER_SERVICE = Executors.newFixedThreadPool(IConstants.THREAD_POOL_SIZE);
+		FUTURES = new HashMap<String, List<Future<?>>>();
+		EXECUTER_SERVICE = Executors.newCachedThreadPool();
 	}
 
 	/**
@@ -279,6 +269,8 @@ public final class ThreadUtilities implements IListener {
 			}
 			List<Runnable> runnables = EXECUTER_SERVICE.shutdownNow();
 			LOGGER.info("Shutdown runnables : " + runnables);
+			FUTURES.clear();
+			FUTURES = null;
 			EXECUTER_SERVICE = null;
 		} finally {
 			notifyAll();

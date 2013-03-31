@@ -4,6 +4,7 @@ import ikube.cluster.IClusterManager;
 import ikube.database.IDataBase;
 import ikube.model.Action;
 import ikube.model.Server;
+import ikube.scheduling.Schedule;
 
 import java.util.Iterator;
 
@@ -16,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @since 10.09.12
  * @version 01.00
  */
-public class ActionListener implements IListener {
+public class ActionListener extends Schedule {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ActionListener.class);
 
@@ -29,10 +30,7 @@ public class ActionListener implements IListener {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void handleNotification(Event event) {
-		if (!Event.TIMER.equals(event.getType())) {
-			return;
-		}
+	public void run() {
 		Server server = clusterManager.getServer();
 		Iterator<Action> iterator = server.getActions().iterator();
 		while (iterator.hasNext()) {

@@ -3,6 +3,7 @@ package ikube.scheduling.listener;
 import ikube.cluster.IClusterManager;
 import ikube.cluster.IMonitorService;
 import ikube.model.IndexContext;
+import ikube.scheduling.Schedule;
 
 import java.util.Map;
 
@@ -15,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @since 10.09.12
  * @version 01.00
  */
-public class IndexContextListener implements IListener {
+public class IndexContextListener extends Schedule {
 
 	@Autowired
 	private IMonitorService monitorService;
@@ -27,10 +28,7 @@ public class IndexContextListener implements IListener {
 	 */
 	@Override
 	@SuppressWarnings("rawtypes")
-	public void handleNotification(Event event) {
-		if (!Event.TIMER.equals(event.getType())) {
-			return;
-		}
+	public void run() {
 		// Check the database for new index contexts
 		Map<String, IndexContext> indexContexts = monitorService.getIndexContexts();
 		for (IndexContext indexContext : indexContexts.values()) {

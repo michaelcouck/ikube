@@ -9,6 +9,7 @@ import ikube.model.IndexContext;
 import ikube.model.Search;
 import ikube.model.Server;
 import ikube.model.Snapshot;
+import ikube.scheduling.Schedule;
 
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
@@ -28,7 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @since 22.07.12
  * @version 01.00
  */
-public class SnapshotListener implements IListener {
+public class SnapshotListener extends Schedule {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SnapshotListener.class);
 
@@ -44,10 +45,7 @@ public class SnapshotListener implements IListener {
 	 */
 	@Override
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public void handleNotification(Event event) {
-		if (!Event.PERFORMANCE.equals(event.getType())) {
-			return;
-		}
+	public void run() {
 		OperatingSystemMXBean operatingSystemMXBean = ManagementFactory.getOperatingSystemMXBean();
 		Server server = clusterManager.getServer();
 		server.setArchitecture(operatingSystemMXBean.getArch());

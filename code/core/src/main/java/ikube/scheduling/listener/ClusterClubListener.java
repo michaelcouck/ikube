@@ -2,6 +2,7 @@ package ikube.scheduling.listener;
 
 import ikube.cluster.IClusterManager;
 import ikube.model.Server;
+import ikube.scheduling.Schedule;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -13,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @since 05.12.12
  * @version 01.00
  */
-public class ClusterClubListener implements IListener {
+public class ClusterClubListener extends Schedule {
 
 	@Autowired
 	private IClusterManager clusterManager;
@@ -22,10 +23,7 @@ public class ClusterClubListener implements IListener {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void handleNotification(Event event) {
-		if (!Event.TIMER.equals(event.getType())) {
-			return;
-		}
+	public void run() {
 		Server server = clusterManager.getServer();
 		server.setAge(System.currentTimeMillis());
 		clusterManager.putObject(server.getAddress(), server);

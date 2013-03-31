@@ -2,9 +2,8 @@ package ikube.action;
 
 import ikube.IConstants;
 import ikube.model.IndexContext;
-import ikube.scheduling.listener.Event;
-import ikube.scheduling.listener.ListenerManager;
 import ikube.toolkit.FileUtilities;
+import ikube.toolkit.ThreadUtilities;
 
 import java.io.File;
 
@@ -26,7 +25,7 @@ public class DiskFull extends Action<IndexContext<?>, Boolean> {
 	private static final long MINIMUM_FREE_SPACE_FOR_NOTIFICATIONS = MINIMUM_FREE_SPACE * 10;
 
 	@Autowired
-	private ListenerManager listenerManager;
+	private ThreadUtilities threadUtilities;
 
 	/**
 	 * {@inheritDoc}
@@ -65,7 +64,7 @@ public class DiskFull extends Action<IndexContext<?>, Boolean> {
 						logger.error(subject + " " + body);
 						sendNotification(subject, body);
 						// Terminate all indexing
-						listenerManager.fireEvent(Event.TERMINATE, System.currentTimeMillis(), indexContext, Boolean.FALSE);
+						threadUtilities.destroy();
 						// System.exit(0);
 						return Boolean.TRUE;
 					}

@@ -43,10 +43,6 @@ public class RuleInterceptor implements IRuleInterceptor {
 	public Object decide(final ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
 		Object target = proceedingJoinPoint.getTarget();
 		boolean proceed = Boolean.FALSE;
-		// During the execution of the rules the cluster needs to be locked completely for the duration of the evaluation of the rules
-		// because there exists a race condition where the rules evaluate to true for server one, and evaluate to true for server two before
-		// server one can set the values that would make server two evaluate to false, so they both start the action they shouldn't start.
-		// Generally this will never happen because the timers will be different, but in a very small percentage of cases they overlap
 		IndexContext<?> indexContext = null;
 		try {
 			if (!IAction.class.isAssignableFrom(target.getClass())) {
@@ -65,7 +61,6 @@ public class RuleInterceptor implements IRuleInterceptor {
 					proceed = evaluateRules(indexContext, action);
 				}
 			}
-			// LOGGER.debug("Action intercepted : " + target + ", " + proceed);
 			if (proceed) {
 				proceed(indexContext, proceedingJoinPoint);
 			}
@@ -105,7 +100,7 @@ public class RuleInterceptor implements IRuleInterceptor {
 					}
 				}
 			};
-			ThreadUtilities.submit(runnable);
+			ThreadUtilities.submit(null, runnable);
 		} finally {
 			notifyAll();
 		}
@@ -123,20 +118,16 @@ public class RuleInterceptor implements IRuleInterceptor {
 		boolean finalResult = Boolean.TRUE;
 		// Get the rules associated with this action
 		List<IRule<IndexContext<?>>> rules = action.getRules();
-		// LOGGER.error("Rules : " + rules);
 		if (rules == null || rules.size() == 0) {
 			LOGGER.info("No rules defined, proceeding : " + action);
 		} else {
 			JEP jep = new JEP();
 			Object result = null;
-			// LOGGER.info("Rules start : " + indexContext.getIndexName());
 			for (IRule<IndexContext<?>> rule : rules) {
 				boolean evaluation = rule.evaluate(indexContext);
 				String ruleName = rule.getClass().getSimpleName();
 				jep.addVariable(ruleName, evaluation);
-				// LOGGER.info("Rule : " + ruleName + ", evaluation : " + evaluation + ", action : " + action.getClass().getSimpleName());
 			}
-			// printSymbolTable(jep, indexContext.getIndexName(), action.getClass().getSimpleName());
 			String predicate = action.getRuleExpression();
 			jep.parseExpression(predicate);
 			if (jep.hasError()) {
@@ -147,7 +138,6 @@ public class RuleInterceptor implements IRuleInterceptor {
 			if (result == null) {
 				result = jep.getValue();
 			}
-			// LOGGER.info("Rules end : " + indexContext.getIndexName() + ", " + result);
 			finalResult = result != null && (result.equals(1.0d) || result.equals(Boolean.TRUE));
 		}
 		return finalResult;

@@ -1,5 +1,6 @@
 package ikube.scheduling.listener;
 
+import ikube.scheduling.Schedule;
 import ikube.toolkit.ThreadUtilities;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @since 24.12.11
  * @version 01.00
  */
-public class TerminationListener implements IListener {
+public class TerminationListener extends Schedule {
 
 	@Autowired
 	private ThreadUtilities threadUtilities;
@@ -20,10 +21,8 @@ public class TerminationListener implements IListener {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void handleNotification(Event event) {
-		if (Event.TERMINATE.equals(event.getType())) {
-			threadUtilities.destroy();
-		}
+	public void run() {
+		threadUtilities.destroy();
 	}
 
 }

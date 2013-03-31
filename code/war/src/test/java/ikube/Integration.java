@@ -6,7 +6,6 @@ import ikube.cluster.IMonitorService;
 import ikube.database.IDataBase;
 import ikube.model.Snapshot;
 import ikube.scheduling.Scheduler;
-import ikube.scheduling.listener.ListenerManager;
 import ikube.security.WebServiceAuthentication;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
@@ -23,8 +22,7 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 
 /**
- * This base class for the integration tests will load some snapshots into the database as well as initialize the application context. IT
- * also provides
+ * This base class for the integration tests will load some snapshots into the database as well as initialize the application context.
  * 
  * @author Michael Couck
  * @since 12.10.2010
@@ -57,9 +55,6 @@ public abstract class Integration extends Base {
 	}
 
 	private static void startContext() {
-		ApplicationContextManager.getBean(ListenerManager.class).removeListeners();
-		ApplicationContextManager.getBean(ListenerManager.class).removeListeners();
-		ApplicationContextManager.getBean(Scheduler.class).shutdown();
 		ApplicationContextManager.getBean(Scheduler.class).shutdown();
 	}
 
@@ -69,7 +64,6 @@ public abstract class Integration extends Base {
 		for (int i = 0; i < entities; i++) {
 			try {
 				T tee = ObjectToolkit.populateFields(klass, klass.newInstance(), true, 0, 1, "id", "indexContext");
-				// Deencapsulation.setField(tee, "id", new Integer(0));
 				tees.add(tee);
 				if (i % 10000 == 0) {
 					dataBase.persistBatch(tees);
@@ -90,7 +84,7 @@ public abstract class Integration extends Base {
 	 */
 	public static void delete(final IDataBase dataBase, final Class<?>... klasses) {
 		int batchSize = 1000;
-		for (Class<?> klass : klasses) {
+		for (final Class<?> klass : klasses) {
 			try {
 				List<?> list = dataBase.find(klass, 0, batchSize);
 				do {

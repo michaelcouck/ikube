@@ -3,6 +3,7 @@ package ikube.scheduling.listener;
 import ikube.cluster.IMonitorService;
 import ikube.model.IndexContext;
 import ikube.model.Snapshot;
+import ikube.scheduling.Schedule;
 
 import java.util.List;
 import java.util.Map;
@@ -20,7 +21,7 @@ import org.springframework.beans.factory.annotation.Value;
  * @since 22.07.12
  * @version 01.00
  */
-public class CpuLoadListener implements IListener {
+public class CpuLoadListener extends Schedule {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CpuLoadListener.class);
 
@@ -39,11 +40,8 @@ public class CpuLoadListener implements IListener {
 	 */
 	@Override
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public void handleNotification(Event event) {
+	public void run() {
 		if (!active) {
-			return;
-		}
-		if (!Event.PERFORMANCE.equals(event.getType())) {
 			return;
 		}
 		boolean increaseThrottle = Boolean.FALSE;

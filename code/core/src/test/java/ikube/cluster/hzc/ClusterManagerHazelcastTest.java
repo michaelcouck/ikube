@@ -284,7 +284,7 @@ public class ClusterManagerHazelcastTest extends ATest {
 					}
 				}
 			};
-			Future<?> future = ThreadUtilities.submit(runnable);
+			Future<?> future = ThreadUtilities.submit(null, runnable);
 			futures.add(future);
 		}
 		ThreadUtilities.waitForFutures(futures, Long.MAX_VALUE);

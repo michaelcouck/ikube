@@ -51,8 +51,16 @@ public final class SerializationUtilities {
 
 	static {
 		try {
-			SerializationUtilities.setTransientFields(File.class, Url.class, IndexableInternet.class, IndexableEmail.class,
-					IndexableFileSystem.class, IndexableColumn.class, IndexableTable.class, IndexContext.class);
+			SerializationUtilities.setTransientFields(//
+					File.class, //
+					Url.class, //
+					IndexableInternet.class, //
+					IndexableEmail.class, //
+					IndexableFileSystem.class, //
+					IndexableColumn.class, //
+					IndexableTable.class, //
+					IndexContext.class, //
+					ArrayList.class);
 		} catch (Exception e) {
 			LOGGER.error("Exception setting the transient fields : ", e);
 		}
@@ -61,7 +69,6 @@ public final class SerializationUtilities {
 	public static String serialize(final Object object) {
 		XMLEncoder xmlEncoder = null;
 		try {
-			// LOGGER.info("Serializing object : " + object.getClass());
 			SerializationUtilities.setTransientFields(object.getClass(), new ArrayList<Class<?>>());
 			ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 			xmlEncoder = new XMLEncoder(byteArrayOutputStream);
@@ -116,85 +123,80 @@ public final class SerializationUtilities {
 	}
 
 	public static void setTransientFields(final Class<?> klass, final List<Class<?>> doneClasses) {
-		if (doneClasses.contains(klass)) {
-			return;
-		}
-		doneClasses.add(klass);
-		BeanInfo info;
-		try {
-			info = Introspector.getBeanInfo(klass);
-		} catch (IntrospectionException e) {
-			LOGGER.error("Exception setting the transient fields in the serializer : ", e);
-			return;
-		}
-		PropertyDescriptor[] propertyDescriptors = info.getPropertyDescriptors();
-		for (PropertyDescriptor pd : propertyDescriptors) {
-			String fieldName = pd.getName();
+		Class<?> currentClass = klass;
+		do {
+			if (doneClasses.contains(currentClass)) {
+				return;
+			}
+			doneClasses.add(currentClass);
+			BeanInfo info;
 			try {
-				Field field = SerializationUtilities.getField(klass, fieldName);
-				if (field == null) {
-					continue;
-				}
-				Transient transientAnnotation = field.getAnnotation(Transient.class);
-				boolean isTransient = Modifier.isTransient(field.getModifiers());
-				if (transientAnnotation != null || isTransient) {
-					field.setAccessible(Boolean.TRUE);
-					pd.setValue("transient", Boolean.TRUE);
-				}
-				if (Collection.class.isAssignableFrom(field.getType())) {
-					Type parameterizedType = field.getGenericType();
-					if (parameterizedType != null) {
-						if (ParameterizedType.class.isAssignableFrom(parameterizedType.getClass())) {
-							Type[] typeArguments = ((ParameterizedType) parameterizedType).getActualTypeArguments();
-							for (Type typeArgument : typeArguments) {
-								if (ParameterizedType.class.isAssignableFrom(typeArgument.getClass())) {
-									Type rawType = ((ParameterizedType) typeArgument).getRawType();
-									if (Class.class.isAssignableFrom(rawType.getClass())) {
-										setTransientFields((Class<?>) rawType, doneClasses);
+				info = Introspector.getBeanInfo(currentClass);
+			} catch (IntrospectionException e) {
+				LOGGER.error("Exception setting the transient fields in the serializer : ", e);
+				return;
+			}
+			PropertyDescriptor[] propertyDescriptors = info.getPropertyDescriptors();
+			for (PropertyDescriptor pd : propertyDescriptors) {
+				String fieldName = pd.getName();
+				try {
+					Field field = SerializationUtilities.getField(currentClass, fieldName);
+					if (field == null) {
+						continue;
+					}
+					Transient transientAnnotation = field.getAnnotation(Transient.class);
+					boolean isTransient = Modifier.isTransient(field.getModifiers());
+					if (transientAnnotation != null || isTransient) {
+						field.setAccessible(Boolean.TRUE);
+						pd.setValue("transient", Boolean.TRUE);
+					}
+					if (Collection.class.isAssignableFrom(field.getType())) {
+						Type parameterizedType = field.getGenericType();
+						if (parameterizedType != null) {
+							if (ParameterizedType.class.isAssignableFrom(parameterizedType.getClass())) {
+								Type[] typeArguments = ((ParameterizedType) parameterizedType).getActualTypeArguments();
+								for (Type typeArgument : typeArguments) {
+									if (ParameterizedType.class.isAssignableFrom(typeArgument.getClass())) {
+										Type rawType = ((ParameterizedType) typeArgument).getRawType();
+										if (Class.class.isAssignableFrom(rawType.getClass())) {
+											setTransientFields((Class<?>) rawType, doneClasses);
+										}
 									}
 								}
 							}
 						}
 					}
+				} catch (SecurityException e) {
+					LOGGER.error("Exception setting the transient fields in the serializer : ", e);
 				}
-			} catch (SecurityException e) {
-				LOGGER.error("Exception setting the transient fields in the serializer : ", e);
 			}
-		}
-		Field[] fields = klass.getDeclaredFields();
-		for (Field field : fields) {
-			Class<?> fieldClass = field.getType();
-			setTransientFields(fieldClass, doneClasses);
-		}
-		Class<?> superKlass = klass.getSuperclass();
-		if (superKlass != null && !Object.class.getName().equals(superKlass.getName())) {
-			setTransientFields(superKlass, doneClasses);
-		}
+			Field[] fields = currentClass.getDeclaredFields();
+			for (Field field : fields) {
+				Class<?> fieldClass = field.getType();
+				setTransientFields(fieldClass, doneClasses);
+			}
+			currentClass = currentClass.getSuperclass();
+		} while (currentClass != null);
 	}
 
 	/**
 	 * Gets a field in the class or in the hierarchy of the class.
 	 * 
-	 * @param klass
-	 *            the original class
-	 * @param name
-	 *            the name of the field
+	 * @param klass the original class
+	 * @param name the name of the field
 	 * @return the field in the object or super classes of the object
 	 */
 	public static Field getField(final Class<?> klass, final String name) {
-		Field field = null;
-		try {
-			field = klass.getDeclaredField(name);
-		} catch (Exception t) {
-			t.getCause();
-		}
-		if (field == null) {
-			Class<?> superClass = klass.getSuperclass();
-			if (superClass != null) {
-				field = getField(superClass, name);
+		Class<?> currentClass = klass;
+		do {
+			try {
+				return klass.getDeclaredField(name);
+			} catch (Exception e) {
+				// Swallow
 			}
-		}
-		return field;
+			currentClass = currentClass.getSuperclass();
+		} while (currentClass != null);
+		return null;
 	}
 
 	/**

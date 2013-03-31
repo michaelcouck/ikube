@@ -3,6 +3,7 @@ package ikube.scheduling.listener;
 import ikube.action.index.IndexManager;
 import ikube.cluster.IMonitorService;
 import ikube.model.IndexContext;
+import ikube.scheduling.Schedule;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
@@ -24,7 +25,7 @@ import org.springframework.beans.factory.annotation.Value;
  * @since 29.08.12
  * @version 01.00
  */
-public class IndexSizeListener implements IListener {
+public class IndexSizeListener extends Schedule {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(IndexSizeListener.class);
 
@@ -38,10 +39,7 @@ public class IndexSizeListener implements IListener {
 	 */
 	@Override
 	@SuppressWarnings("rawtypes")
-	public void handleNotification(Event event) {
-		if (!Event.TIMER.equals(event.getType())) {
-			return;
-		}
+	public void run() {
 		Map<String, IndexContext> indexContexts = monitorService.getIndexContexts();
 		for (Map.Entry<String, IndexContext> mapEntry : indexContexts.entrySet()) {
 			IndexContext<?> indexContext = mapEntry.getValue();

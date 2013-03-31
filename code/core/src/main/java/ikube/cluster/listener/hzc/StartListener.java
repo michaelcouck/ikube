@@ -6,7 +6,6 @@ import ikube.cluster.IMonitorService;
 import ikube.cluster.listener.IListener;
 import ikube.model.IndexContext;
 import ikube.scheduling.listener.Event;
-import ikube.scheduling.listener.ListenerManager;
 import ikube.toolkit.ThreadUtilities;
 
 import java.io.File;
@@ -38,8 +37,6 @@ public class StartListener implements IListener<Message<Object>>, MessageListene
 	@Autowired
 	private IClusterManager clusterManager;
 	@Autowired
-	private ListenerManager listenerManager;
-	@Autowired
 	private ThreadUtilities threadUtilities;
 
 	/**
@@ -59,7 +56,7 @@ public class StartListener implements IListener<Message<Object>>, MessageListene
 			final long maxAge = indexContext.getMaxAge();
 			indexContext.setMaxAge(0);
 			// Start a thread to revert the max age of the index
-			ThreadUtilities.submit(new Runnable() {
+			ThreadUtilities.submit(null, new Runnable() {
 				public void run() {
 					File newLatestIndexDirectory = null;
 					File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
@@ -68,7 +65,6 @@ public class StartListener implements IListener<Message<Object>>, MessageListene
 							break;
 						}
 						ThreadUtilities.sleep(10000);
-						listenerManager.fireEvent(Event.TIMER, System.currentTimeMillis(), indexName, Boolean.FALSE);
 						newLatestIndexDirectory = IndexManager.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
 						LOGGER.info("Latest : " + latestIndexDirectory + ", new latest : " + newLatestIndexDirectory);
 					} while (latestIndexDirectory.equals(newLatestIndexDirectory));

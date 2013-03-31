@@ -1,17 +1,10 @@
 package ikube.scheduling;
 
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import ikube.ATest;
-import ikube.scheduling.Schedule;
-import ikube.scheduling.Scheduler;
-import ikube.scheduling.listener.Event;
-import ikube.scheduling.listener.ListenerManager;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -22,39 +15,26 @@ import org.mockito.Mockito;
  */
 public class SchedulerTest extends ATest {
 
-	private Scheduler	scheduler;
-
 	public SchedulerTest() {
 		super(SchedulerTest.class);
 	}
 
-	@Before
-	public void before() {
-		scheduler = new Scheduler();
-	}
-
-	@After
-	public void after() {
-		scheduler.shutdown();
-	}
-
 	@Test
 	public void initialize() throws Exception {
-		ListenerManager listenerManager = mock(ListenerManager.class);
-		Schedule schedule = mock(Schedule.class);
-		when(schedule.getDelay()).thenReturn(10l);
-		when(schedule.getPeriod()).thenReturn(10l);
-		when(schedule.getType()).thenReturn(Event.TIMER);
+		Scheduler scheduler = new Scheduler();
+		try {
+			Schedule schedule = mock(Schedule.class);
+			when(schedule.getDelay()).thenReturn(10l);
+			when(schedule.getPeriod()).thenReturn(10l);
 
-		scheduler.setListenerManager(listenerManager);
-		scheduler.setSchedule(schedule);
-		scheduler.initialize();
+			scheduler.setSchedule(schedule);
+			scheduler.initialize();
 
-		Thread.sleep(1000);
-		verify(listenerManager, Mockito.atLeastOnce()).fireEvent(any(Event.class));
-
-		Thread.sleep(1000);
-		verify(listenerManager, Mockito.atLeast(10)).fireEvent(any(Event.class));
+			Thread.sleep(1000);
+			verify(schedule, Mockito.atLeastOnce()).run();
+		} finally {
+			scheduler.shutdown();
+		}
 	}
 
 }

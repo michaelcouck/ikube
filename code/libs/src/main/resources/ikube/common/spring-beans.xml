@@ -37,12 +37,6 @@
 		class="ikube.toolkit.ApplicationContextManager"
 		depends-on="ikube.database.IDataBase" />
 	
-	<bean
-		id="ikube.scheduling.listener.IndexEngine"
-		name="ikube.scheduling.listener.IndexEngine"
-		class="ikube.scheduling.listener.IndexEngine"
-		destroy-method="destroy" />
-		
 	<!-- 
 		The default persistence manager so we can specify more than one persistence file, and 
 		also we can hide the persistence xml file from the application servers so they don't try to 
@@ -102,21 +96,6 @@
 		<!-- <entry key="openjpa.DynamicEnhancementAgent" value="true" /> -->
 		<entry key="openjpa.RuntimeUnenhancedClasses" value="supported" />
 		<entry key="openjpa.jdbc.DBDictionary" value="${ikube.jdbc.dictionary}" />
-		
-		<!-- 
-			ForeignKeys=true,Indexes=true,SchemaAction='drop,add',
-			SchemaAction='add,deleteTableContents'
-		 -->
-		<!-- <entry key="openjpa.Connection2URL" value="${ikube.jdbc.url}" />
-		<entry key="openjpa.Connection2UserName" value="${ikube.jdbc.userid}" />
-		<entry key="openjpa.Connection2Password" value="${ikube.jdbc.password}" />
-		<entry key="openjpa.Connection2DriverName" value="${ikube.jdbc.driver}" /> -->
-		
-		<!-- <entry key="openjpa.ConnectionURL" value="${ikube.jdbc.url}" />
-		<entry key="openjpa.ConnectionUserName" value="${ikube.jdbc.userid}" />
-		<entry key="openjpa.ConnectionPassword" value="${ikube.jdbc.password}" />
-		<entry key="openjpa.ConnectionDriverName" value="${ikube.jdbc.driver}" /> -->
-		
 		<entry key="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
 	</util:map>
 
@@ -149,18 +128,6 @@
 		name="ikube.database.IDataBase"
 		class="ikube.database.jpa.DataBaseJpa"
 		lazy-init="false" />
-	<!-- <bean
-		id="ikube.database.IDataBase.Db2"
-		class="ikube.database.jpa.DataBaseJpaDb2"
-		lazy-init="false" />  -->
-	<!-- <bean
-		id="ikube.database.IDataBase.Postgres"
-		class="ikube.database.jpa.DataBaseJpaPostgres"
-		lazy-init="false" /> -->
-	<!-- <bean
-		id="ikube.database.IDataBase.Oracle"
-		class="ikube.database.jpa.DataBaseJpaOracle"
-		lazy-init="false" /> -->
 	
 	<bean 
 		id="ikube.action.index.parse.mime.MimeMapper" 
@@ -182,73 +149,85 @@
 		class="ikube.cluster.MonitorService" />
 	
 	<bean 
-		id="ikube.scheduling.listener.ListenerManager"
-		class="ikube.scheduling.listener.ListenerManager"
-		destroy-method="removeListeners"
-		property:listeners-ref="ikube.scheduling.listener.ListenerManager.listeners" />
-	<util:list id="ikube.scheduling.listener.ListenerManager.listeners">
-		<ref bean="ikube.scheduling.listener.IndexEngine" />
-		<ref bean="ikube.scheduling.listener.SnapshotListener" />
-		<ref bean="ikube.scheduling.listener.CpuLoadListener" />
-		<ref bean="ikube.toolkit.ThreadUtilities" />
-		<bean class="ikube.scheduling.listener.StartupListener" />
-		<bean class="ikube.scheduling.listener.TerminationListener" />
-		<bean class="ikube.scheduling.listener.ServerRemovalListener" />
-		<bean class="ikube.scheduling.listener.ClusterClubListener" />
-		<bean class="ikube.scheduling.listener.IndexSizeListener" />
-		<bean class="ikube.scheduling.listener.ActionListener" />
-	</util:list>
-	
-	<bean 
 	    id="ikube.toolkit.ThreadUtilities"
 	    class="ikube.toolkit.ThreadUtilities"
 	    init-method="initialize"
 	    destroy-method="destroy" />
-	
-	<bean
-		id="ikube.scheduling.listener.SnapshotListener"
-		name="ikube.scheduling.listener.SnapshotListener" 
-		class="ikube.scheduling.listener.SnapshotListener" />
-	<bean
-		id="ikube.scheduling.listener.CpuLoadListener"
-		name="ikube.scheduling.listener.CpuLoadListener" 
-		class="ikube.scheduling.listener.CpuLoadListener" />
 	
 	<bean 
 		id="ikube.scheduling.Scheduler" 
 		class="ikube.scheduling.Scheduler"
 		init-method="initialize"
 		destroy-method="shutdown"
-		property:schedules-ref="ikube.scheduling.Scheduler.schedules"
-		property:listenerManager-ref="ikube.scheduling.listener.ListenerManager" />
+		property:schedules-ref="ikube.scheduling.Scheduler.schedules" />
 	<!-- The schedules that fire events to start actions. -->
 	<util:list id="ikube.scheduling.Scheduler.schedules">
-		<bean
-			class="ikube.scheduling.Schedule"
-			property:type="timer"
-			property:delay="${delay}"
-			property:period="${period}" />
-		<bean
-			class="ikube.scheduling.Schedule"
-			property:type="timer-delta"
-			property:delay="${delay-delta}"
-			property:period="${period-delta}" />
-		<bean
-			class="ikube.scheduling.Schedule"
-			property:type="performance"
-			property:delay="10000"
-			property:period="60000" />
-		<bean
-			class="ikube.scheduling.Schedule"
-			property:type="serverRelease"
-			property:delay="60000"
-			property:period="60000" />
-		<bean
-			class="ikube.scheduling.Schedule"
-			property:type="memorySize"
-			property:delay="60000"
-			property:period="60000" />
+		<ref local="ikube.scheduling.listener.IndexEngine" />
+		<ref local="ikube.scheduling.listener.StartupListener" />
+		<ref local="ikube.scheduling.listener.TerminationListener" />
+		<ref local="ikube.scheduling.listener.ServerRemovalListener" />
+		<ref local="ikube.scheduling.listener.ClusterClubListener" />
+		<ref local="ikube.scheduling.listener.IndexSizeListener" />
+		<ref local="ikube.scheduling.listener.ActionListener" />
+		<ref local="ikube.scheduling.listener.SnapshotListener" />
+		<ref local="ikube.scheduling.listener.CpuLoadListener" />
 	</util:list>
+	
+	<!-- Scheduled objects. -->
+	<bean
+		id="ikube.scheduling.listener.IndexEngine"
+		name="ikube.scheduling.listener.IndexEngine"
+		class="ikube.scheduling.listener.IndexEngine" 
+		property:delay="${delay}"
+		property:period="${period}" />
+	<bean
+		id="ikube.scheduling.listener.StartupListener"
+		name="ikube.scheduling.listener.StartupListener" 
+		class="ikube.scheduling.listener.StartupListener"
+		property:delay="${delay}"
+		property:period="${period}" />
+	<bean 
+		id="ikube.scheduling.listener.TerminationListener"
+		name="ikube.scheduling.listener.TerminationListener"
+		class="ikube.scheduling.listener.TerminationListener"
+		property:delay="${delay}"
+		property:period="${period}" />
+	<bean 
+		id="ikube.scheduling.listener.ServerRemovalListener"
+		name="ikube.scheduling.listener.ServerRemovalListener"
+		class="ikube.scheduling.listener.ServerRemovalListener" 
+		property:delay="${delay}"
+		property:period="${period}" />
+	<bean 
+		id="ikube.scheduling.listener.ClusterClubListener"
+		name="ikube.scheduling.listener.ClusterClubListener"
+		class="ikube.scheduling.listener.ClusterClubListener" 
+		property:delay="${delay}"
+		property:period="${period}" />
+	<bean 
+		id="ikube.scheduling.listener.IndexSizeListener"
+		name="ikube.scheduling.listener.IndexSizeListener"
+		class="ikube.scheduling.listener.IndexSizeListener" 
+		property:delay="${delay}"
+		property:period="${period}" />
+	<bean 
+		id="ikube.scheduling.listener.ActionListener"
+		name="ikube.scheduling.listener.ActionListener"
+		class="ikube.scheduling.listener.ActionListener" 
+		property:delay="${delay}"
+		property:period="${period}" />
+	<bean
+		id="ikube.scheduling.listener.SnapshotListener"
+		name="ikube.scheduling.listener.SnapshotListener" 
+		class="ikube.scheduling.listener.SnapshotListener" 
+		property:delay="${delay}"
+		property:period="${period}" />
+	<bean
+		id="ikube.scheduling.listener.CpuLoadListener"
+		name="ikube.scheduling.listener.CpuLoadListener" 
+		class="ikube.scheduling.listener.CpuLoadListener" 
+		property:delay="${delay}"
+		property:period="${period}" />
 	
 	<!-- 
 		This is the mailer that will send mail to targets when things go right, and wrong in fact. This 

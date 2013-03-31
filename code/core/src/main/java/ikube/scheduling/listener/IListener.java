@@ -9,6 +9,7 @@ package ikube.scheduling.listener;
  * @since 22.08.08
  * @version 01.00
  */
+@Deprecated
 public interface IListener {
 
 	/**

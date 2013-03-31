@@ -84,13 +84,13 @@ public class ThreadUtilitiesTest extends ATest {
 	public void waitForFuture() {
 		// We just wait for this future to finish, must be less than the time we expect to wait
 		long start = System.currentTimeMillis();
-		Future<?> future = ThreadUtilities.submit(new Sleepy(3000));
+		Future<?> future = ThreadUtilities.submit(null, new Sleepy(3000));
 		ThreadUtilities.waitForFuture(future, 3);
 		assertTrue(System.currentTimeMillis() - start < 4000);
 
 		// We destroy this future and return from the wait method
 		start = System.currentTimeMillis();
-		future = ThreadUtilities.submit(new Sleepy(Integer.MAX_VALUE));
+		future = ThreadUtilities.submit(null, new Sleepy(Integer.MAX_VALUE));
 		logger.info("Going into wait before destroying the thread pool : " + future);
 		new Thread(new Destroyer()).start();
 		ThreadUtilities.waitForFuture(future, Integer.MAX_VALUE);
@@ -130,7 +130,7 @@ public class ThreadUtilitiesTest extends ATest {
 						ThreadUtilities.submit(this.toString(), new Sleepy());
 						ThreadUtilities.getFutures(this.toString());
 						ThreadUtilities.getFutures();
-						ThreadUtilities.submit(new Sleepy());
+						ThreadUtilities.submit(null, new Sleepy());
 						ThreadUtilities.destroy(this.toString());
 						listenerManager.fireEvent(Event.TIMER, System.currentTimeMillis(), null, Boolean.FALSE);
 					}

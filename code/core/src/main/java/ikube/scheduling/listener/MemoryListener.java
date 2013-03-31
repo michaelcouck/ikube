@@ -1,6 +1,7 @@
 package ikube.scheduling.listener;
 
 import ikube.IConstants;
+import ikube.scheduling.Schedule;
 import ikube.toolkit.ThreadUtilities;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -10,7 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
  * @since 28.03.13
  * @version 01.00
  */
-public class MemoryListener implements IListener {
+public class MemoryListener extends Schedule {
 
 	@Value("${max.memory}")
 	private String maxMemory;
@@ -19,10 +20,7 @@ public class MemoryListener implements IListener {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void handleNotification(final Event event) {
-		if (!Event.MEMORY_SIZE.equals(event.getType())) {
-			return;
-		}
+	public void run() {
 		if (Runtime.getRuntime().totalMemory() / IConstants.MILLION > Integer.parseInt(maxMemory)) {
 			new ThreadUtilities().destroy();
 		}

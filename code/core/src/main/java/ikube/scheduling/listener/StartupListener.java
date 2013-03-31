@@ -1,5 +1,6 @@
 package ikube.scheduling.listener;
 
+import ikube.scheduling.Schedule;
 import ikube.toolkit.ThreadUtilities;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @since 24.12.11
  * @version 01.00
  */
-public class StartupListener implements IListener {
+public class StartupListener extends Schedule {
 
 	@Autowired
 	private ThreadUtilities threadUtilities;
@@ -21,10 +22,8 @@ public class StartupListener implements IListener {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void handleNotification(Event event) {
-		if (Event.STARTUP.equals(event.getType())) {
-			threadUtilities.initialize();
-		}
+	public void run() {
+		threadUtilities.initialize();
 	}
 
 }

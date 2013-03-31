@@ -3,6 +3,7 @@ package ikube.scheduling.listener;
 import ikube.IConstants;
 import ikube.cluster.IClusterManager;
 import ikube.model.Server;
+import ikube.scheduling.Schedule;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -19,7 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @since 31.12.11
  * @version 01.00
  */
-public class ServerRemovalListener implements IListener {
+public class ServerRemovalListener extends Schedule {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ServerRemovalListener.class);
 
@@ -27,10 +28,7 @@ public class ServerRemovalListener implements IListener {
 	private IClusterManager clusterManager;
 
 	@Override
-	public void handleNotification(Event event) {
-		if (!Event.SERVER_RELEASE.equals(event.getType())) {
-			return;
-		}
+	public void run() {
 		// Remove all servers that are past the max age
 		Collection<Server> servers = new ArrayList<Server>(clusterManager.getServers().values());
 		for (final Server server : servers) {

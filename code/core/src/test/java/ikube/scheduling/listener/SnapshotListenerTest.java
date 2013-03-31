@@ -9,8 +9,6 @@ import ikube.IConstants;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.model.IndexContext;
 import ikube.model.Snapshot;
-import ikube.scheduling.listener.Event;
-import ikube.scheduling.listener.SnapshotListener;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
@@ -82,11 +80,9 @@ public class SnapshotListenerTest extends ATest {
 			}
 		}).when(dataBase).persist(Mockito.any(Snapshot.class));
 
-		Event event = new Event();
-		event.setType(Event.PERFORMANCE);
 		double maxSnapshots = IConstants.MAX_SNAPSHOTS + 10d;
 		for (int i = 0; i < maxSnapshots; i++) {
-			snapshotListener.handleNotification(event);
+			snapshotListener.run();
 		}
 		logger.info("Snapshots : " + indexContext.getSnapshots().size());
 		assertTrue("There must be less snapshots than the maximum allowed : ", indexContext.getSnapshots().size() < maxSnapshots);

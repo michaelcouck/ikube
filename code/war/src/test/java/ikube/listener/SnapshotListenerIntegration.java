@@ -4,7 +4,6 @@ import static org.junit.Assert.assertTrue;
 import ikube.IConstants;
 import ikube.Integration;
 import ikube.model.IndexContext;
-import ikube.scheduling.listener.Event;
 import ikube.scheduling.listener.SnapshotListener;
 import ikube.toolkit.ApplicationContextManager;
 
@@ -22,11 +21,9 @@ public class SnapshotListenerIntegration extends Integration {
 
 	@Test
 	public void handleNotification() {
-		Event event = new Event();
-		event.setType(Event.PERFORMANCE);
 		double maxSnapshots = IConstants.MAX_SNAPSHOTS + 10d;
 		for (int i = 0; i < maxSnapshots; i++) {
-			snapshotListener.handleNotification(event);
+			snapshotListener.run();
 		}
 		for (IndexContext<?> indexContext : monitorService.getIndexContexts().values()) {
 			logger.info("Snapshots : " + indexContext.getSnapshots().size());
