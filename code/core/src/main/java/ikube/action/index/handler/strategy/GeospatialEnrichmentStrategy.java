@@ -57,7 +57,6 @@ public final class GeospatialEnrichmentStrategy extends AStrategy {
 		// or the columns from a table filled in with the values. All the logic from the Enrichment class can
 		// be used in here to keep all the enrichment logic in the same place
 		Coordinate coordinate = getCoordinate(indexable);
-		// logger.info("Geospatial strategy : "+ coordinate);
 		if (coordinate != null) {
 			addSpatialLocationFields(coordinate, document);
 		}
@@ -70,20 +69,14 @@ public final class GeospatialEnrichmentStrategy extends AStrategy {
 		for (final Indexable<?> child : indexable.getChildren()) {
 			if (IndexableColumn.class.isAssignableFrom(child.getClass())) {
 				IndexableColumn indexableColumn = (IndexableColumn) child;
-				// logger.info("Column : " + indexableColumn.getFieldName() + ", " + indexableColumn.hashCode() + ", "
-				// + indexableColumn.getContent() + ", " + indexableColumn.isAddress());
 				Object content = indexableColumn.getContent();
 				if (indexableColumn.getFieldName() == null) {
 					continue;
 				}
 				if (indexableColumn.getFieldName().toLowerCase().contains(IConstants.LATITUDE.toLowerCase())) {
 					latitude = Double.parseDouble(content.toString());
-					// logger.info("Lat : " + indexableColumn.getFieldName().toLowerCase().contains(IConstants.LATITUDE.toLowerCase())
-					// + ", " + latitude);
 				} else if (indexableColumn.getFieldName().toLowerCase().contains(IConstants.LONGITUDE.toLowerCase())) {
 					longitude = Double.parseDouble(content.toString());
-					// logger.info("Lon : " + indexableColumn.getFieldName().toLowerCase().contains(IConstants.LONGITUDE.toLowerCase())
-					// + ", " + longitude);
 				}
 			}
 		}
@@ -93,7 +86,6 @@ public final class GeospatialEnrichmentStrategy extends AStrategy {
 			// The GeoCoder is a last resort in fact
 			Coordinate coordinate = geocoder.getCoordinate(address);
 			if (coordinate != null) {
-				// logger.info("Got co-ordinate for : " + indexable.getName() + ", " + coordinate);
 				return coordinate;
 			}
 			return null;
@@ -114,8 +106,6 @@ public final class GeospatialEnrichmentStrategy extends AStrategy {
 			CartesianTierPlotter cartesianTierPlotter = new CartesianTierPlotter(tier, sinusodialProjector,
 					CartesianTierPlotter.DEFALT_FIELD_PREFIX);
 			final double boxId = cartesianTierPlotter.getTierBoxId(coordinate.getLat(), coordinate.getLon());
-			// LOGGER.info(Logging.getString("Tier : ", tier, ", box id : ", boxId, ", cartesian tier : ",
-			// ToStringBuilder.reflectionToString(cartesianTierPlotter, ToStringStyle.SHORT_PREFIX_STYLE)));
 			document.add(new Field(cartesianTierPlotter.getTierFieldName(), NumericUtils.doubleToPrefixCoded(boxId), Field.Store.YES,
 					Field.Index.NOT_ANALYZED_NO_NORMS));
 		}

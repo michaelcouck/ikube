@@ -122,7 +122,7 @@ public final class ThreadUtilities implements IListener {
 					if (future.isCancelled()) {
 						LOGGER.info("Cancelled future : " + name + ", " + future);
 					} else {
-						LOGGER.warn("Couldn't cancel future : " + name + ", " + future + ", " + FUTURES.size() + ", " + FUTURES.entrySet());
+						LOGGER.warn("Couldn't cancel future : " + name + ", " + future + ", " + FUTURES.size());
 					}
 				}
 			}
@@ -149,7 +149,7 @@ public final class ThreadUtilities implements IListener {
 							if (future.isCancelled()) {
 								boolean removed = getFutures(mapEntry.getKey()).remove(future);
 								if (removed) {
-									LOGGER.debug("Removed future : " + future);
+									LOGGER.info("Removed future : " + future);
 								}
 							}
 						}
@@ -189,9 +189,8 @@ public final class ThreadUtilities implements IListener {
 		try {
 			future.get(maxWait, TimeUnit.SECONDS);
 		} catch (InterruptedException e) {
-			String message = "Coitus interruptus... : " + e.getMessage();
-			LOGGER.warn(message);
 			LOGGER.debug(null, e);
+			LOGGER.warn("Coitus interruptus... : " + e.getMessage());
 		} catch (TimeoutException e) {
 			LOGGER.info("Timed out waiting for future : " + e.getMessage());
 		} catch (Exception e) {

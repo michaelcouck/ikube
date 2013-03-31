@@ -20,15 +20,15 @@ public class IndexableFileSystemCsv extends IndexableFileSystem {
 	@Transient
 	private transient int lineNumber;
 
-	private char separator;
+	private String separator;
 	private String encoding;
 	private String lineNumberFieldName;
 
-	public char getSeparator() {
+	public String getSeparator() {
 		return separator;
 	}
 
-	public void setSeparator(char separator) {
+	public void setSeparator(final String separator) {
 		this.separator = separator;
 	}
 

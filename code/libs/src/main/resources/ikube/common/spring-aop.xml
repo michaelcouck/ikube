@@ -67,10 +67,10 @@
 			<aop:around method="decide" pointcut="execution(* ikube.action.*.execute(..))"  />
 		</aop:aspect>
 		<aop:aspect ref="ikube.action.index.handler.strategy.IStrategyInterceptor">
-			<aop:around method="aroundProcess" pointcut="execution(* ikube.index.handler.*.handleResource*(..))"  />
+			<aop:around method="aroundProcess" pointcut="execution(* ikube.action.index.handler.*.handleResource*(..))"  />
 		</aop:aspect>
 		<aop:aspect ref="ikube.action.index.handler.strategy.IStrategyInterceptor">
-			<aop:around method="aroundProcess" pointcut="execution(* ikube.index.handler.*.*.handleResource*(..))"  />
+			<aop:around method="aroundProcess" pointcut="execution(* ikube.action.index.handler.*.*.handleResource*(..))"  />
 		</aop:aspect>
 	</aop:config>
 	

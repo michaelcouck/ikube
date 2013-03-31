@@ -249,7 +249,7 @@ public final class UriUtilities {
 		String linuxIp = "127.0.1.1";
 		String localhost = "localhost";
 		// This is the preferred ip address for the machine
-		String networkAssignedIp = "192.168";
+		String networkAssignedIp = "192.168.1.";
 		outer: while (networkInterfaces.hasMoreElements()) {
 			NetworkInterface networkInterface = networkInterfaces.nextElement();
 			Enumeration<InetAddress> inetAddresses = networkInterface.getInetAddresses();

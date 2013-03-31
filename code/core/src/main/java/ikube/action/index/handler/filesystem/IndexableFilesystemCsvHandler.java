@@ -75,22 +75,20 @@ public class IndexableFilesystemCsvHandler extends IndexableHandler<IndexableFil
 		LineIterator lineIterator = FileUtils.lineIterator(file, encoding);
 		try {
 			// The first line is the header, i.e. the columns of the file
+			String separator = indexableFileSystemCsv.getSeparator();
 			String headerLine = lineIterator.nextLine();
-			String[] columns = StringUtils.split(headerLine, indexableFileSystemCsv.getSeparator());
+			String[] columns = StringUtils.split(headerLine, separator);
 			// Trim any space on the column headers
 			for (int i = 0; i < columns.length; i++) {
 				String column = columns[i];
 				columns[i] = column.trim();
 			}
 
-			// logger.info("Columns : " + indexableFileSystemCsv.getChildren().size());
 			List<Indexable<?>> indexableColumns = getIndexableColumns(indexableFileSystemCsv, columns);
-			// logger.info("Columns : " + indexableColumns.size());
 			indexableFileSystemCsv.setChildren(indexableColumns);
 
 			int lineNumber = 0;
 			indexableFileSystemCsv.setFile(file);
-			char separator = indexableFileSystemCsv.getSeparator();
 			while (lineIterator.hasNext()) {
 				indexableFileSystemCsv.setLineNumber(lineNumber);
 				try {
@@ -103,10 +101,7 @@ public class IndexableFilesystemCsvHandler extends IndexableHandler<IndexableFil
 					for (int i = 0; i < values.length && i < indexableColumns.size(); i++) {
 						IndexableColumn indexableColumn = (IndexableColumn) indexableColumns.get(i);
 						indexableColumn.setContent(values[i]);
-						// logger.info("Column : " + i + ", " + indexableColumn.getName() + ", " + indexableColumn.getContent() + ", "
-						// + indexableColumn.hashCode());
 					}
-					// columns, values, separator, store, index, termVector, indexableColumns
 					resourceRowHandler.handleResource(indexContext, indexableFileSystemCsv, new Document(), file);
 					ThreadUtilities.sleep(indexContext.getThrottle());
 				} catch (Exception e) {
@@ -133,14 +128,11 @@ public class IndexableFilesystemCsvHandler extends IndexableHandler<IndexableFil
 			indexableColumns = new ArrayList<Indexable<?>>();
 			indexable.setChildren(indexableColumns);
 		}
-		// logger.info("Columns : " + indexableColumns.size());
 		List<Indexable<?>> sortedIndexableColumns = new ArrayList<Indexable<?>>();
 		// Add all the columns that are not present in the configuration
 		for (final String columnName : columns) {
 			IndexableColumn indexableColumn = null;
 			for (final Indexable<?> child : indexableColumns) {
-				// logger.info("Exists : " + ((IndexableColumn) child).getFieldName().equals(columnName) + ", " + columnName + ", "
-				// + ((IndexableColumn) child).getFieldName());
 				if (((IndexableColumn) child).getFieldName().equals(columnName)) {
 					indexableColumn = (IndexableColumn) child;
 					break;
@@ -160,7 +152,6 @@ public class IndexableFilesystemCsvHandler extends IndexableHandler<IndexableFil
 				indexableColumn.setStored(Boolean.TRUE);
 				indexableColumn.setStrategies(indexable.getStrategies());
 				indexableColumn.setVectored(Boolean.TRUE);
-				// logger.info("Adding column : " + columnName + ", " + indexableColumn.getFieldName() + ", " + indexableColumn.hashCode());
 			}
 			sortedIndexableColumns.add(indexableColumn);
 		}

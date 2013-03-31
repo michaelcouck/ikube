@@ -59,7 +59,7 @@ public class EntityIntegration {
 		void doWithEntity(Object entity, Class<?> entityClass);
 	}
 
-	private static final Logger LOGGER = Logger.getLogger(EntityIntegration.class);
+	static final Logger LOGGER = Logger.getLogger(EntityIntegration.class);
 
 	private IDataBase dataBase;
 	/** The names of the classes that we will test in the package. */
@@ -104,8 +104,6 @@ public class EntityIntegration {
 			public void doWithEntity(Object entity, Class<?> entityClass) {
 				// Build a graph for all the entities, penetrating one level deep
 				ObjectToolkit.populateFields(entityClass, entity, true, 0, 3, IConstants.ID);
-				// populateFields(entityClass, entity, true, 0);
-				LOGGER.info("Entity : " + entity);
 				// Insert the object graph
 				dataBase.persist(entity);
 				// Verify that the object is inserted
@@ -126,8 +124,6 @@ public class EntityIntegration {
 			public void doWithEntity(final Object entity, final Class<?> entityClass) {
 				// Build a graph for all the entities, penetrating one level deep
 				ObjectToolkit.populateFields(entityClass, entity, true, 0, 3, IConstants.ID);
-				// populateFields(entityClass, entity, false, 0);
-				LOGGER.info("Entity : " + entity);
 				// Insert the object graph
 				dataBase.persist(entity);
 				// Update each field independently
@@ -137,7 +133,6 @@ public class EntityIntegration {
 						Object value = ObjectToolkit.getObject(field.getType());
 						field.setAccessible(Boolean.TRUE);
 						ReflectionUtils.setField(field, entity, value);
-						LOGGER.info("Entity class : " + entityClass + ", " + field);
 						dataBase.merge(entity);
 						// Check the database that the entity is updated
 						Object result = null;
@@ -182,8 +177,6 @@ public class EntityIntegration {
 				int existingRecords = dataBase.count(entityClass).intValue();
 				// Build a graph for all the entities, penetrating one level deep
 				ObjectToolkit.populateFields(entityClass, entity, true, 0, 3, IConstants.ID);
-				// populateFields(entityClass, entity, true, 0);
-				LOGGER.info("Entity : " + entity);
 				// Insert the object graph
 				dataBase.persist(entity);
 				// Remove the entity
