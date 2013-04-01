@@ -1,4 +1,4 @@
-package ikube.index.handler.strategy;
+package ikube.action.index.handler.strategy;
 
 import static org.junit.Assert.assertNotNull;
 import ikube.IConstants;

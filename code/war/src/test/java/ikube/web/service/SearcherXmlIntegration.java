@@ -1,4 +1,4 @@
-package ikube.web.integration.service;
+package ikube.web.service;
 
 import static org.junit.Assert.assertTrue;
 import ikube.Base;

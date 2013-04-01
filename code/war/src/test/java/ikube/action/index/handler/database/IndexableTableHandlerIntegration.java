@@ -1,4 +1,4 @@
-package ikube.index.handler.database;
+package ikube.action.index.handler.database;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

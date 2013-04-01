@@ -1,4 +1,4 @@
-package ikube.index.handler.internet;
+package ikube.action.index.handler.internet;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

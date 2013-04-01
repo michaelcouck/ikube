@@ -1,4 +1,4 @@
-package ikube.index.handler.filesystem;
+package ikube.action.index.handler.filesystem;
 
 import static org.junit.Assert.assertTrue;
 import ikube.Integration;

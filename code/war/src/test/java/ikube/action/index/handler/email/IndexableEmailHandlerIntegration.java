@@ -1,4 +1,4 @@
-package ikube.index.handler.email;
+package ikube.action.index.handler.email;
 
 import ikube.Integration;
 import ikube.action.index.IndexManager;
