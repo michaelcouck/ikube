@@ -4,9 +4,6 @@ import ikube.IConstants;
 import ikube.cluster.AClusterManager;
 import ikube.cluster.IClusterManager;
 import ikube.cluster.IMonitorService;
-import ikube.cluster.listener.hzc.DeleteListener;
-import ikube.cluster.listener.hzc.StartListener;
-import ikube.cluster.listener.hzc.StopListener;
 import ikube.model.Action;
 import ikube.model.IndexContext;
 import ikube.model.Server;
@@ -38,37 +35,21 @@ import com.hazelcast.core.MessageListener;
  */
 public class ClusterManagerHazelcast extends AClusterManager {
 
-	/** This listener on Hazelcast will listen for start events, that indicate that */
-	@Autowired
-	private StartListener startListener;
-	/** This listener will either stop one job or destroy the thread pool for all jobs. */
-	@Autowired
-	private StopListener stopListener;
-	/** Ths listener will delete the index and the backup directory on the file system. */
-	@Autowired
-	private DeleteListener deleteListener;
-	/** This class had methods to query the state of the contexts. */
 	@Autowired
 	private IMonitorService monitorService;
 
 	private transient Server server;
 
-	public void initialize() {
+	public void setListeners(final List<MessageListener<Object>> listeners) {
 		ip = UriUtilities.getIp();
 		address = ip + "-" + Hazelcast.getCluster().getLocalMember().getInetSocketAddress().getPort();
 		logger.info("Cluster manager : " + ip + ", " + address);
-		addListeners(startListener, stopListener, deleteListener);
-		Hazelcast.getExecutorService();
 		Hazelcast.getConfig().getNetworkConfig().getInterfaces().setInterfaces(Arrays.asList(ip));
-	}
-
-	@SuppressWarnings("unchecked")
-	private void addListeners(final MessageListener<?>... listeners) {
-		for (final MessageListener<?> listener : listeners) {
+		for (final MessageListener<Object> listener : listeners) {
 			if (listener == null) {
 				continue;
 			}
-			Hazelcast.getTopic(IConstants.TOPIC).addMessageListener((MessageListener<Object>) listener);
+			Hazelcast.getTopic(IConstants.TOPIC).addMessageListener(listener);
 		}
 	}
 

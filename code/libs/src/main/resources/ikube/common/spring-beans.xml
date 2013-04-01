@@ -162,70 +162,56 @@
 		property:schedules-ref="ikube.scheduling.Scheduler.schedules" />
 	<!-- The schedules that fire events to start actions. -->
 	<util:list id="ikube.scheduling.Scheduler.schedules">
-		<ref local="ikube.scheduling.listener.IndexEngine" />
-		<ref local="ikube.scheduling.listener.StartupListener" />
-		<ref local="ikube.scheduling.listener.TerminationListener" />
-		<ref local="ikube.scheduling.listener.ServerRemovalListener" />
-		<ref local="ikube.scheduling.listener.ClusterClubListener" />
-		<ref local="ikube.scheduling.listener.IndexSizeListener" />
-		<ref local="ikube.scheduling.listener.ActionListener" />
-		<ref local="ikube.scheduling.listener.SnapshotListener" />
-		<ref local="ikube.scheduling.listener.CpuLoadListener" />
+		<ref local="ikube.scheduling.schedule.IndexSchedule" />
+		<ref local="ikube.scheduling.schedule.ServerRemovalSchedule" />
+		<ref local="ikube.scheduling.schedule.ClusterSchedule" />
+		<ref local="ikube.scheduling.schedule.IndexSizeSchedule" />
+		<ref local="ikube.scheduling.schedule.ActionSchedule" />
+		<ref local="ikube.scheduling.schedule.SnapshotSchedule" />
+		<ref local="ikube.scheduling.schedule.CpuLoadSchedule" />
 	</util:list>
 	
 	<!-- Scheduled objects. -->
 	<bean
-		id="ikube.scheduling.listener.IndexEngine"
-		name="ikube.scheduling.listener.IndexEngine"
-		class="ikube.scheduling.listener.IndexEngine" 
+		id="ikube.scheduling.schedule.IndexSchedule"
+		name="ikube.scheduling.schedule.IndexSchedule"
+		class="ikube.scheduling.schedule.IndexSchedule" 
+		property:delay="${delay}"
+		property:period="${period}" />
+	<bean 
+		id="ikube.scheduling.schedule.ServerRemovalSchedule"
+		name="ikube.scheduling.schedule.ServerRemovalSchedule"
+		class="ikube.scheduling.schedule.ServerRemovalSchedule" 
+		property:delay="${delay}"
+		property:period="${period}" />
+	<bean 
+		id="ikube.scheduling.schedule.ClusterSchedule"
+		name="ikube.scheduling.schedule.ClusterSchedule"
+		class="ikube.scheduling.schedule.ClusterSchedule" 
+		property:delay="${delay}"
+		property:period="${period}" />
+	<bean 
+		id="ikube.scheduling.schedule.IndexSizeSchedule"
+		name="ikube.scheduling.schedule.IndexSizeSchedule"
+		class="ikube.scheduling.schedule.IndexSizeSchedule" 
+		property:delay="${delay}"
+		property:period="${period}" />
+	<bean 
+		id="ikube.scheduling.schedule.ActionSchedule"
+		name="ikube.scheduling.schedule.ActionSchedule"
+		class="ikube.scheduling.schedule.ActionSchedule" 
 		property:delay="${delay}"
 		property:period="${period}" />
 	<bean
-		id="ikube.scheduling.listener.StartupListener"
-		name="ikube.scheduling.listener.StartupListener" 
-		class="ikube.scheduling.listener.StartupListener"
-		property:delay="${delay}"
-		property:period="${period}" />
-	<bean 
-		id="ikube.scheduling.listener.TerminationListener"
-		name="ikube.scheduling.listener.TerminationListener"
-		class="ikube.scheduling.listener.TerminationListener"
-		property:delay="${delay}"
-		property:period="${period}" />
-	<bean 
-		id="ikube.scheduling.listener.ServerRemovalListener"
-		name="ikube.scheduling.listener.ServerRemovalListener"
-		class="ikube.scheduling.listener.ServerRemovalListener" 
-		property:delay="${delay}"
-		property:period="${period}" />
-	<bean 
-		id="ikube.scheduling.listener.ClusterClubListener"
-		name="ikube.scheduling.listener.ClusterClubListener"
-		class="ikube.scheduling.listener.ClusterClubListener" 
-		property:delay="${delay}"
-		property:period="${period}" />
-	<bean 
-		id="ikube.scheduling.listener.IndexSizeListener"
-		name="ikube.scheduling.listener.IndexSizeListener"
-		class="ikube.scheduling.listener.IndexSizeListener" 
-		property:delay="${delay}"
-		property:period="${period}" />
-	<bean 
-		id="ikube.scheduling.listener.ActionListener"
-		name="ikube.scheduling.listener.ActionListener"
-		class="ikube.scheduling.listener.ActionListener" 
+		id="ikube.scheduling.schedule.SnapshotSchedule"
+		name="ikube.scheduling.schedule.SnapshotSchedule" 
+		class="ikube.scheduling.schedule.SnapshotSchedule" 
 		property:delay="${delay}"
 		property:period="${period}" />
 	<bean
-		id="ikube.scheduling.listener.SnapshotListener"
-		name="ikube.scheduling.listener.SnapshotListener" 
-		class="ikube.scheduling.listener.SnapshotListener" 
-		property:delay="${delay}"
-		property:period="${period}" />
-	<bean
-		id="ikube.scheduling.listener.CpuLoadListener"
-		name="ikube.scheduling.listener.CpuLoadListener" 
-		class="ikube.scheduling.listener.CpuLoadListener" 
+		id="ikube.scheduling.schedule.CpuLoadSchedule"
+		name="ikube.scheduling.schedule.CpuLoadSchedule" 
+		class="ikube.scheduling.schedule.CpuLoadSchedule" 
 		property:delay="${delay}"
 		property:period="${period}" />
 	
@@ -290,18 +276,26 @@
 	<bean 
 		id="ikube.cluster.IClusterManager"
 		class="ikube.cluster.hzc.ClusterManagerHazelcast"
-		init-method="initialize"
 		destroy-method="destroy"
+		property:listeners-ref="messageListeners"
 		lazy-init="false" />
-	<bean 
-	   	id="ikube.cluster.listener.hzc.StartListener" 
-	   	class="ikube.cluster.listener.hzc.StartListener" />
-	<bean 
-	   	id="ikube.cluster.listener.hzc.StopListener" 
-	   	class="ikube.cluster.listener.hzc.StopListener" />
-	<bean 
-	   	id="ikube.cluster.listener.hzc.DeleteListener" 
-	   	class="ikube.cluster.listener.hzc.DeleteListener" />
+	<util:list id="messageListeners">
+		<bean 
+		   	id="ikube.cluster.listener.hzc.StartListener" 
+		   	class="ikube.cluster.listener.hzc.StartListener" />
+		<bean 
+		   	id="ikube.cluster.listener.hzc.StopListener" 
+		   	class="ikube.cluster.listener.hzc.StopListener" />
+		<bean 
+		   	id="ikube.cluster.listener.hzc.DeleteListener" 
+		   	class="ikube.cluster.listener.hzc.DeleteListener" />
+		<bean
+			id="ikube.cluster.listener.hzc.StartupListener" 
+			class="ikube.cluster.listener.hzc.StartupListener" />
+		<bean 
+			id="ikube.cluster.listener.hzc.TerminationListener"
+			class="ikube.cluster.listener.hzc.TerminationListener" />
+	</util:list>
 	
 	<!-- The handlers that do the indexing logic. -->
 	<bean 

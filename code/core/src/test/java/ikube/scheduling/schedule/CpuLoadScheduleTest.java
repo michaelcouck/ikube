@@ -1,10 +1,11 @@
-package ikube.scheduling.listener;
+package ikube.scheduling.schedule;
 
 import static org.mockito.Mockito.when;
 import ikube.ATest;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.model.IndexContext;
 import ikube.model.Snapshot;
+import ikube.scheduling.schedule.CpuLoadSchedule;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,17 +25,17 @@ import org.mockito.Mockito;
  * @since 22.07.12
  * @version 01.00
  */
-public class CpuLoadListenerTest extends ATest {
+public class CpuLoadScheduleTest extends ATest {
 
-	private CpuLoadListener snapshotListener;
+	private CpuLoadSchedule snapshotListener;
 
-	public CpuLoadListenerTest() {
-		super(CpuLoadListenerTest.class);
+	public CpuLoadScheduleTest() {
+		super(CpuLoadScheduleTest.class);
 	}
 
 	@Before
 	public void before() throws Exception {
-		snapshotListener = new CpuLoadListener();
+		snapshotListener = new CpuLoadSchedule();
 
 		Mockit.setUpMock(ApplicationContextManagerMock.class);
 

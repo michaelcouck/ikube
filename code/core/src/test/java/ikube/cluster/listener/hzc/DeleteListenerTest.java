@@ -3,7 +3,7 @@ package ikube.cluster.listener.hzc;
 import static org.junit.Assert.assertFalse;
 import ikube.ATest;
 import ikube.action.index.IndexManager;
-import ikube.scheduling.listener.Event;
+import ikube.scheduling.schedule.Event;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;

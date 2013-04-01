@@ -1,4 +1,4 @@
-package ikube.scheduling.listener;
+package ikube.scheduling.schedule;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -9,6 +9,7 @@ import ikube.IConstants;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.model.IndexContext;
 import ikube.model.Snapshot;
+import ikube.scheduling.schedule.SnapshotSchedule;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
@@ -34,26 +35,26 @@ import org.mockito.stubbing.Answer;
  * @since 22.07.12
  * @version 01.00
  */
-public class SnapshotListenerTest extends ATest {
+public class SnapshotScheduleTest extends ATest {
 
-	private SnapshotListener snapshotListener;
+	private SnapshotSchedule snapshotSchedule;
 
-	public SnapshotListenerTest() {
-		super(SnapshotListenerTest.class);
+	public SnapshotScheduleTest() {
+		super(SnapshotScheduleTest.class);
 	}
 
 	@Before
 	public void before() throws Exception {
-		snapshotListener = new SnapshotListener();
+		snapshotSchedule = new SnapshotSchedule();
 
 		when(fsDirectory.fileLength(anyString())).thenReturn(Long.MAX_VALUE);
 		when(fsDirectory.listAll()).thenReturn(new String[] { "file" });
 
 		Mockit.setUpMock(ApplicationContextManagerMock.class);
 
-		Deencapsulation.setField(snapshotListener, dataBase);
-		Deencapsulation.setField(snapshotListener, monitorService);
-		Deencapsulation.setField(snapshotListener, clusterManager);
+		Deencapsulation.setField(snapshotSchedule, dataBase);
+		Deencapsulation.setField(snapshotSchedule, monitorService);
+		Deencapsulation.setField(snapshotSchedule, clusterManager);
 	}
 
 	@After
@@ -82,7 +83,7 @@ public class SnapshotListenerTest extends ATest {
 
 		double maxSnapshots = IConstants.MAX_SNAPSHOTS + 10d;
 		for (int i = 0; i < maxSnapshots; i++) {
-			snapshotListener.run();
+			snapshotSchedule.run();
 		}
 		logger.info("Snapshots : " + indexContext.getSnapshots().size());
 		assertTrue("There must be less snapshots than the maximum allowed : ", indexContext.getSnapshots().size() < maxSnapshots);
@@ -91,7 +92,7 @@ public class SnapshotListenerTest extends ATest {
 	@Test
 	public void getDocsPerMinute() {
 		Snapshot snapshot = new Snapshot();
-		long docsPerMinute = snapshotListener.getDocsPerMinute(indexContext, snapshot);
+		long docsPerMinute = snapshotSchedule.getDocsPerMinute(indexContext, snapshot);
 		logger.info("Docs per minute : " + docsPerMinute);
 		assertEquals(0, docsPerMinute);
 
@@ -104,7 +105,7 @@ public class SnapshotListenerTest extends ATest {
 
 		when(indexContext.getSnapshots()).thenReturn(Arrays.asList(previous));
 
-		docsPerMinute = snapshotListener.getDocsPerMinute(indexContext, snapshot);
+		docsPerMinute = snapshotSchedule.getDocsPerMinute(indexContext, snapshot);
 		logger.info("Docs per minute : " + docsPerMinute);
 		assertTrue(docsPerMinute > 100 && docsPerMinute < 125);
 	}
@@ -115,7 +116,7 @@ public class SnapshotListenerTest extends ATest {
 		when(indexContext.getSnapshots()).thenReturn(snapshots);
 		Snapshot snapshot = new Snapshot();
 
-		long searchesPerMinute = snapshotListener.getSearchesPerMinute(indexContext, snapshot);
+		long searchesPerMinute = snapshotSchedule.getSearchesPerMinute(indexContext, snapshot);
 		logger.info("Searches per minute : " + searchesPerMinute);
 		assertEquals(0, searchesPerMinute);
 
@@ -128,7 +129,7 @@ public class SnapshotListenerTest extends ATest {
 
 		when(indexContext.getSnapshots()).thenReturn(Arrays.asList(previous));
 
-		searchesPerMinute = snapshotListener.getSearchesPerMinute(indexContext, snapshot);
+		searchesPerMinute = snapshotSchedule.getSearchesPerMinute(indexContext, snapshot);
 		logger.info("Searches per minute : " + searchesPerMinute);
 		assertTrue(searchesPerMinute > 50 && searchesPerMinute < 100);
 	}

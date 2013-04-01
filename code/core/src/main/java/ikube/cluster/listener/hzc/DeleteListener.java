@@ -4,7 +4,7 @@ import ikube.action.index.IndexManager;
 import ikube.cluster.IMonitorService;
 import ikube.cluster.listener.IListener;
 import ikube.model.IndexContext;
-import ikube.scheduling.listener.Event;
+import ikube.scheduling.schedule.Event;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
@@ -33,7 +33,7 @@ public class DeleteListener implements IListener<Message<Object>>, MessageListen
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onMessage(Message<Object> message) {
+	public void onMessage(final Message<Object> message) {
 		Object object = message.getMessageObject();
 		if (object != null && Event.class.isAssignableFrom(object.getClass())) {
 			Event event = (Event) object;

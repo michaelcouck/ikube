@@ -11,13 +11,13 @@ import ikube.ATest;
 import ikube.IConstants;
 import ikube.cluster.IMonitorService;
 import ikube.cluster.MonitorService;
+import ikube.cluster.listener.IListener;
 import ikube.cluster.listener.hzc.StartListener;
 import ikube.cluster.listener.hzc.StopListener;
 import ikube.database.IDataBase;
 import ikube.model.Action;
 import ikube.model.Server;
-import ikube.scheduling.listener.Event;
-import ikube.scheduling.listener.ListenerManager;
+import ikube.scheduling.schedule.Event;
 import ikube.toolkit.ThreadUtilities;
 
 import java.util.ArrayList;
@@ -224,7 +224,6 @@ public class ClusterManagerHazelcastTest extends ATest {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void sendMessage() {
 		injectServices();
-		clusterManagerHazelcast.initialize();
 		MessageListener messageListener = Mockito.mock(MessageListener.class);
 		Hazelcast.getTopic(IConstants.TOPIC).addMessageListener(messageListener);
 		clusterManagerHazelcast.sendMessage(new Event());
@@ -235,11 +234,8 @@ public class ClusterManagerHazelcastTest extends ATest {
 	@Test
 	public void submitDestroy() {
 		Mockit.tearDownMocks();
-		Deencapsulation.setField(clusterManagerHazelcast, "startListener", new StartListener());
-		Deencapsulation.setField(clusterManagerHazelcast, "stopListener", new StopListener());
-		// Deencapsulation.setField(clusterManagerHazelcast, "indexContextListener", new IndexContextListener());
+		injectServices();
 		new ThreadUtilities().initialize();
-		clusterManagerHazelcast.initialize();
 
 		Runnable runnable = new Runnable() {
 			@Override
@@ -253,7 +249,7 @@ public class ClusterManagerHazelcastTest extends ATest {
 		Future<?> future = ThreadUtilities.submit(name, runnable);
 		logger.info("Future : " + future.isCancelled() + ", " + future.isDone());
 
-		Event event = ListenerManager.getEvent(Event.TERMINATE, System.currentTimeMillis(), name, Boolean.FALSE);
+		Event event = IListener.EventGenerator.getEvent(Event.TERMINATE, System.currentTimeMillis(), name, Boolean.FALSE);
 		clusterManagerHazelcast.sendMessage(event);
 		ThreadUtilities.sleep(1000);
 		assertTrue(future.isCancelled());
@@ -290,18 +286,16 @@ public class ClusterManagerHazelcastTest extends ATest {
 		ThreadUtilities.waitForFutures(futures, Long.MAX_VALUE);
 	}
 
+	@SuppressWarnings("unchecked")
 	private void injectServices() {
 		Deencapsulation.setField(clusterManagerHazelcast, dataBase);
 		Deencapsulation.setField(clusterManagerHazelcast, monitorService);
-		Deencapsulation.setField(clusterManagerHazelcast, startListener);
-		Deencapsulation.setField(clusterManagerHazelcast, stopListener);
-		// Deencapsulation.setField(clusterManagerHazelcast, indexContextListener);
-		clusterManagerHazelcast.initialize();
+		List<MessageListener<Object>> listeners = new ArrayList<MessageListener<Object>>(Arrays.asList(startListener, stopListener));
+		clusterManagerHazelcast.setListeners(listeners);
 	}
 
 	private void validate(final Boolean[] locks) {
 		int count = 0;
-		// logger.info("Validate ; " + Arrays.deepToString(locks));
 		for (Boolean lock : locks) {
 			count = lock == null ? count : lock ? count + 1 : count;
 		}

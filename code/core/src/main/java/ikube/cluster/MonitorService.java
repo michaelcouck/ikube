@@ -1,12 +1,12 @@
 package ikube.cluster;
 
 import ikube.IConstants;
+import ikube.cluster.listener.IListener;
 import ikube.database.IDataBase;
 import ikube.model.Attribute;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
-import ikube.scheduling.listener.Event;
-import ikube.scheduling.listener.ListenerManager;
+import ikube.scheduling.schedule.Event;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
 
@@ -193,18 +193,18 @@ public class MonitorService implements IMonitorService {
 	@Override
 	public void terminateAll() {
 		long time = System.currentTimeMillis();
-		Event terminateEvent = ListenerManager.getEvent(Event.TERMINATE_ALL, time, null, Boolean.FALSE);
+		Event terminateEvent = IListener.EventGenerator.getEvent(Event.TERMINATE_ALL, time, null, Boolean.FALSE);
 		LOGGER.info("Sending terminate event for all actions : " + terminateEvent);
 		clusterManager.sendMessage(terminateEvent);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public void startupAll() {
 		long time = System.currentTimeMillis();
-		Event terminateEvent = ListenerManager.getEvent(Event.STARTUP_ALL, time, null, Boolean.FALSE);
+		Event terminateEvent = IListener.EventGenerator.getEvent(Event.STARTUP_ALL, time, null, Boolean.FALSE);
 		LOGGER.info("Sending startup event for all actions : " + terminateEvent);
 		clusterManager.sendMessage(terminateEvent);
 	}

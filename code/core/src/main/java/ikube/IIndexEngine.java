@@ -1,9 +1,9 @@
 package ikube;
 
-import ikube.scheduling.listener.IndexEngine;
+import ikube.scheduling.schedule.IndexSchedule;
 
 /**
- * @see IndexEngine
+ * @see IndexSchedule
  * @author Michael Couck
  * @since 21.11.10
  * @version 01.00

@@ -5,7 +5,7 @@ import ikube.cluster.IClusterManager;
 import ikube.cluster.IMonitorService;
 import ikube.cluster.listener.IListener;
 import ikube.model.IndexContext;
-import ikube.scheduling.listener.Event;
+import ikube.scheduling.schedule.Event;
 import ikube.toolkit.ThreadUtilities;
 
 import java.io.File;

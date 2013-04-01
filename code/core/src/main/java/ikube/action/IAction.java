@@ -1,7 +1,7 @@
 package ikube.action;
 
 import ikube.action.rule.IRule;
-import ikube.scheduling.listener.IndexEngine;
+import ikube.scheduling.schedule.IndexSchedule;
 
 import java.util.List;
 
@@ -51,7 +51,7 @@ public interface IAction<E, F> {
 	 * @param context the index context
 	 * @return whether the action completed the logic successfully
 	 * @throws Exception any exception during the action. This should be propagated up the stack to the caller, which is generally the
-	 *         {@link IndexEngine}
+	 *         {@link IndexSchedule}
 	 */
 	F execute(final E indexContext) throws Exception;
 

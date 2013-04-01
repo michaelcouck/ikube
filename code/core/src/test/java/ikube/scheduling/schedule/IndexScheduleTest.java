@@ -1,4 +1,4 @@
-package ikube.scheduling;
+package ikube.scheduling.schedule;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.atLeast;
@@ -12,8 +12,8 @@ import ikube.action.Index;
 import ikube.cluster.IMonitorService;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.model.IndexContext;
-import ikube.scheduling.listener.Event;
-import ikube.scheduling.listener.IndexEngine;
+import ikube.scheduling.schedule.Event;
+import ikube.scheduling.schedule.IndexSchedule;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.ThreadUtilities;
 
@@ -34,23 +34,23 @@ import org.junit.Test;
  * @since 12.10.2010
  * @version 01.00
  */
-public class IndexEngineTest extends ATest {
+public class IndexScheduleTest extends ATest {
 
 	private Index index;
 	/** Class under test. */
-	private IndexEngine indexEngine;
+	private IndexSchedule indexSchedule;
 	private IMonitorService monitorService;
 	private List<IAction<IndexContext<?>, Boolean>> actions;
 
-	public IndexEngineTest() {
-		super(IndexEngineTest.class);
+	public IndexScheduleTest() {
+		super(IndexScheduleTest.class);
 	}
 
 	@Before
 	@SuppressWarnings("rawtypes")
 	public void before() {
 		new ThreadUtilities().initialize();
-		indexEngine = new IndexEngine();
+		indexSchedule = new IndexSchedule();
 		actions = new ArrayList<IAction<IndexContext<?>, Boolean>>();
 
 		index = mock(Index.class);
@@ -62,8 +62,8 @@ public class IndexEngineTest extends ATest {
 		when(server.isWorking()).thenReturn(Boolean.FALSE);
 		when(clusterManager.getServer()).thenReturn(server);
 
-		Deencapsulation.setField(indexEngine, "actions", actions);
-		Deencapsulation.setField(indexEngine, monitorService);
+		Deencapsulation.setField(indexSchedule, "actions", actions);
+		Deencapsulation.setField(indexSchedule, monitorService);
 
 		Mockit.setUpMocks(ApplicationContextManagerMock.class);
 	}
@@ -80,13 +80,13 @@ public class IndexEngineTest extends ATest {
 		event.setTimestamp(System.currentTimeMillis());
 		event.setType(Event.TIMER);
 
-		indexEngine.run();
+		indexSchedule.run();
 
 		verify(index, atLeast(1)).execute(any(IndexContext.class));
 		verify(index, atMost(1)).execute(any(IndexContext.class));
 
 		when(server.isWorking()).thenReturn(Boolean.TRUE);
-		indexEngine.run();
+		indexSchedule.run();
 
 		verify(index, atLeast(1)).execute(any(IndexContext.class));
 		verify(index, atMost(2)).execute(any(IndexContext.class));

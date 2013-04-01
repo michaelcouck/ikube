@@ -1,12 +1,12 @@
 package ikube.web.service;
 
 import ikube.IConstants;
+import ikube.cluster.listener.IListener;
 import ikube.model.Action;
 import ikube.model.IndexContext;
 import ikube.model.Server;
 import ikube.model.Snapshot;
-import ikube.scheduling.listener.Event;
-import ikube.scheduling.listener.ListenerManager;
+import ikube.scheduling.schedule.Event;
 import ikube.toolkit.ObjectToolkit;
 import ikube.toolkit.SerializationUtilities;
 
@@ -252,7 +252,7 @@ public class Monitor extends Resource {
 	@Consumes(MediaType.APPLICATION_XML)
 	public Response start(@QueryParam(value = IConstants.INDEX_NAME) final String indexName) {
 		long time = System.currentTimeMillis();
-		Event startEvent = ListenerManager.getEvent(Event.STARTUP, time, indexName, Boolean.FALSE);
+		Event startEvent = IListener.EventGenerator.getEvent(Event.STARTUP, time, indexName, Boolean.FALSE);
 		logger.info("Sending start event : " + ToStringBuilder.reflectionToString(startEvent));
 		clusterManager.sendMessage(startEvent);
 		return buildResponse().build();
@@ -263,7 +263,7 @@ public class Monitor extends Resource {
 	@Consumes(MediaType.APPLICATION_XML)
 	public Response terminate(@QueryParam(value = IConstants.INDEX_NAME) final String indexName) {
 		long time = System.currentTimeMillis();
-		Event terminateEvent = ListenerManager.getEvent(Event.TERMINATE, time, indexName, Boolean.FALSE);
+		Event terminateEvent = IListener.EventGenerator.getEvent(Event.TERMINATE, time, indexName, Boolean.FALSE);
 		clusterManager.sendMessage(terminateEvent);
 		return buildResponse().build();
 	}
@@ -309,7 +309,7 @@ public class Monitor extends Resource {
 	@Consumes(MediaType.APPLICATION_XML)
 	public Response delete(@QueryParam(value = IConstants.INDEX_NAME) final String indexName) {
 		long time = System.currentTimeMillis();
-		Event startEvent = ListenerManager.getEvent(Event.DELETE_INDEX, time, indexName, Boolean.FALSE);
+		Event startEvent = IListener.EventGenerator.getEvent(Event.DELETE_INDEX, time, indexName, Boolean.FALSE);
 		logger.info("Sending delete event : " + ToStringBuilder.reflectionToString(startEvent));
 		clusterManager.sendMessage(startEvent);
 		return buildResponse().build();

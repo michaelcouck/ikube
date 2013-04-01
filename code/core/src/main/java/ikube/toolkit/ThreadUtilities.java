@@ -1,8 +1,5 @@
 package ikube.toolkit;
 
-import ikube.scheduling.listener.Event;
-import ikube.scheduling.listener.IListener;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -24,7 +21,7 @@ import org.apache.log4j.Logger;
  * @since 12.02.2011
  * @version 01.00
  */
-public final class ThreadUtilities implements IListener {
+public final class ThreadUtilities {
 
 	private static final Logger LOGGER = Logger.getLogger(ThreadUtilities.class);
 
@@ -117,36 +114,6 @@ public final class ThreadUtilities implements IListener {
 			futures.clear();
 		} finally {
 			ThreadUtilities.class.notifyAll();
-		}
-	}
-
-	/**
-	 * This method will be called by the scheduler and will remove futures that are still hanging around but are cancelled.
-	 */
-	@Override
-	public void handleNotification(Event event) {
-		if (Event.TIMER.equals(event.getType())) {
-			synchronized (ThreadUtilities.class) {
-				try {
-					for (Map.Entry<String, List<Future<?>>> mapEntry : getFutures().entrySet()) {
-						List<Future<?>> futures = new ArrayList<Future<?>>(mapEntry.getValue());
-						for (Future<?> future : futures) {
-							if (future == null) {
-								LOGGER.warn("Future null : ");
-								continue;
-							}
-							if (future.isCancelled()) {
-								boolean removed = getFutures(mapEntry.getKey()).remove(future);
-								if (removed) {
-									LOGGER.info("Removed future : " + future);
-								}
-							}
-						}
-					}
-				} finally {
-					ThreadUtilities.class.notifyAll();
-				}
-			}
 		}
 	}
 

@@ -3,8 +3,6 @@ package ikube.toolkit;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import ikube.ATest;
-import ikube.scheduling.listener.Event;
-import ikube.scheduling.listener.ListenerManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -118,8 +116,6 @@ public class ThreadUtilitiesTest extends ATest {
 	@Test
 	public void multiThreaded() {
 		final int iterations = 100;
-		final ListenerManager listenerManager = new ListenerManager();
-		listenerManager.addListener(new ThreadUtilities());
 		List<Thread> threads = new ArrayList<Thread>();
 		for (int i = 0; i < 10; i++) {
 			Thread thread = new Thread(new Runnable() {
@@ -132,7 +128,6 @@ public class ThreadUtilitiesTest extends ATest {
 						ThreadUtilities.getFutures();
 						ThreadUtilities.submit(null, new Sleepy());
 						ThreadUtilities.destroy(this.toString());
-						listenerManager.fireEvent(Event.TIMER, System.currentTimeMillis(), null, Boolean.FALSE);
 					}
 				}
 			});
