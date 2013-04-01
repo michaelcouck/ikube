@@ -28,8 +28,7 @@ public final class ThreadUtilities {
 	/** Executes the 'threads' and returns a future. */
 	private static ExecutorService EXECUTER_SERVICE;
 	/** The number of times to try to cancel the future(s). */
-	private static int MAX_RETRY_COUNT = 10;
-
+	private static int MAX_RETRY_COUNT = 3;
 	/** A list of futures by name so we can kill them. */
 	private static Map<String, List<Future<?>>> FUTURES;
 
@@ -58,29 +57,6 @@ public final class ThreadUtilities {
 		}
 	}
 
-	protected static synchronized List<Future<?>> getFutures(final String name) {
-		try {
-			List<Future<?>> futures = FUTURES.get(name);
-			if (futures == null) {
-				futures = new ArrayList<Future<?>>();
-				FUTURES.put(name, futures);
-			}
-			return futures;
-		} finally {
-			ThreadUtilities.class.notifyAll();
-		}
-	}
-
-	protected static synchronized Map<String, List<Future<?>>> getFutures() {
-		try {
-			Map<String, List<Future<?>>> futures = new HashMap<String, List<Future<?>>>();
-			futures.putAll(FUTURES);
-			return futures;
-		} finally {
-			ThreadUtilities.class.notifyAll();
-		}
-	}
-
 	/**
 	 * This method will terminate the future(s) with the specified name, essentially interrupting it and remove it from the list. In the
 	 * case where this future is running an action the action will terminate abruptly. Note that futures typically run in groups of three or
@@ -92,22 +68,21 @@ public final class ThreadUtilities {
 		try {
 			List<Future<?>> futures = getFutures(name);
 			if (futures != null) {
-				for (Future<?> future : futures) {
-					if (future == null) {
-						LOGGER.warn("No such future : " + name);
+				for (final Future<?> future : futures) {
+					if (future == null || future.isDone()) {
+						LOGGER.warn("No such future or completed already : " + future + ", " + name);
 						return;
 					}
 					int maxRetryCount = MAX_RETRY_COUNT;
-					while (!future.cancel(true) && maxRetryCount-- > 0) {
-						ThreadUtilities.sleep(10);
-						if (future.isCancelled()) {
+					while (maxRetryCount-- > 0) {
+						if (future.cancel(true) || future.isCancelled()) {
+							LOGGER.info("Cancelled future : " + name + ", " + future + ", " + maxRetryCount);
 							break;
 						}
+						ThreadUtilities.sleep(10);
 					}
-					if (future.isCancelled()) {
-						LOGGER.info("Cancelled future : " + name + ", " + future);
-					} else {
-						LOGGER.warn("Couldn't cancel future : " + name + ", " + future + ", " + FUTURES.size());
+					if (!future.isCancelled() && !future.isDone()) {
+						LOGGER.warn("Couldn't cancel future : " + name + ", " + future + ", " + FUTURES.size() + ", " + maxRetryCount);
 					}
 				}
 			}
@@ -190,6 +165,7 @@ public final class ThreadUtilities {
 			Thread.sleep(sleep);
 		} catch (InterruptedException e) {
 			LOGGER.error("Sleep interrupted : " + Thread.currentThread());
+			Thread.currentThread().interrupt();
 			throw new RuntimeException(e);
 		}
 	}
@@ -197,7 +173,7 @@ public final class ThreadUtilities {
 	/**
 	 * This method initializes the executer service, and the thread pool that will execute runnables.
 	 */
-	public void initialize() {
+	public static void initialize() {
 		if (EXECUTER_SERVICE != null && !EXECUTER_SERVICE.isShutdown()) {
 			LOGGER.info("Executer service already initialized : ");
 			return;
@@ -210,7 +186,7 @@ public final class ThreadUtilities {
 	 * This method will destroy the thread pool. All threads that are currently running will be interrupted,and should catch this exception
 	 * and exit the run method.
 	 */
-	public synchronized void destroy() {
+	public static synchronized void destroy() {
 		try {
 			if (EXECUTER_SERVICE == null || EXECUTER_SERVICE.isShutdown()) {
 				LOGGER.info("Executer service already shutdown : ");
@@ -240,7 +216,30 @@ public final class ThreadUtilities {
 			FUTURES = null;
 			EXECUTER_SERVICE = null;
 		} finally {
-			notifyAll();
+			ThreadUtilities.class.notifyAll();
+		}
+	}
+
+	protected static synchronized List<Future<?>> getFutures(final String name) {
+		try {
+			List<Future<?>> futures = FUTURES.get(name);
+			if (futures == null) {
+				futures = new ArrayList<Future<?>>();
+				FUTURES.put(name, futures);
+			}
+			return futures;
+		} finally {
+			ThreadUtilities.class.notifyAll();
+		}
+	}
+
+	protected static synchronized Map<String, List<Future<?>>> getFutures() {
+		try {
+			Map<String, List<Future<?>>> futures = new HashMap<String, List<Future<?>>>();
+			futures.putAll(FUTURES);
+			return futures;
+		} finally {
+			ThreadUtilities.class.notifyAll();
 		}
 	}
 

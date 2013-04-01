@@ -360,9 +360,9 @@ public abstract class ATest {
 		return searchClass.getConstructor(Searcher.class, Analyzer.class).newInstance(searcher, IConstants.ANALYZER);
 	}
 
-	protected void printIndex(final Searchable multiSearcher) throws Exception {
+	protected void printIndex(final Searchable multiSearcher, final int numDocs) throws Exception {
 		IndexReader indexReader = indexSearcher.getIndexReader();
-		printIndex(indexReader);
+		printIndex(indexReader, numDocs);
 	}
 
 	/**
@@ -371,18 +371,22 @@ public abstract class ATest {
 	 * @param indexReader the reader to print the documents for
 	 * @throws Exception
 	 */
-	protected void printIndex(final IndexReader indexReader) throws Exception {
+	protected void printIndex(final IndexReader indexReader, final int numDocs) throws Exception {
 		logger.info("Num docs : " + indexReader.numDocs());
-		for (int i = 0; i < indexReader.numDocs(); i++) {
+		for (int i = 0; i < numDocs && i < indexReader.numDocs(); i++) {
 			Document document = indexReader.document(i);
 			logger.info("Document : " + i);
-			List<Fieldable> fields = document.getFields();
-			for (Fieldable fieldable : fields) {
-				String fieldName = fieldable.name();
-				String fieldValue = fieldable.stringValue();
-				int fieldLength = fieldValue != null ? fieldValue.length() : 0;
-				logger.info("        : " + fieldName + ", " + fieldLength + ", " + fieldValue);
-			}
+			printDocument(document);
+		}
+	}
+
+	protected void printDocument(final Document document) {
+		List<Fieldable> fields = document.getFields();
+		for (Fieldable fieldable : fields) {
+			String fieldName = fieldable.name();
+			String fieldValue = fieldable.stringValue();
+			int fieldLength = fieldValue != null ? fieldValue.length() : 0;
+			logger.info("        : " + fieldName + ", " + fieldLength + ", " + fieldValue);
 		}
 	}
 

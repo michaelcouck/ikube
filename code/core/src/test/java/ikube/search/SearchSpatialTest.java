@@ -85,6 +85,7 @@ public class SearchSpatialTest extends ATest {
 		indexReader = IndexReader.open(directory);
 		IndexSearcher indexSearcher = new IndexSearcher(indexReader);
 		searcher = new MultiSearcher(new Searchable[] { indexSearcher });
+		printIndex(indexReader, Integer.MAX_VALUE);
 	}
 
 	@After
@@ -146,8 +147,10 @@ public class SearchSpatialTest extends ATest {
 	}
 
 	private MultiSearcher getIndexSearcher() throws Exception {
-		Directory directory = FSDirectory.open(new File("/usr/share/eclipse/workspace/ikube/code/war/geospatial"));
+		File file = new File("/usr/share/eclipse/workspace/ikube/code/war/indexes/geospatial/1364831155776/192.168.1.8-8000");
+		Directory directory = FSDirectory.open(file);
 		IndexReader indexReader = IndexReader.open(directory);
+		printIndex(indexReader, 10);
 		IndexSearcher indexSearcher = new IndexSearcher(indexReader);
 		return new MultiSearcher(indexSearcher);
 	}

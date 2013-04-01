@@ -44,7 +44,7 @@ public class ThreadUtilitiesTest extends ATest {
 	class Destroyer implements Runnable {
 		public void run() {
 			ThreadUtilities.sleep(1000);
-			new ThreadUtilities().destroy();
+			ThreadUtilities.destroy();
 		}
 	}
 
@@ -54,12 +54,12 @@ public class ThreadUtilitiesTest extends ATest {
 
 	@Before
 	public void before() {
-		new ThreadUtilities().initialize();
+		ThreadUtilities.initialize();
 	}
 
 	@After
 	public void after() {
-		new ThreadUtilities().destroy();
+		ThreadUtilities.destroy();
 	}
 
 	@Test

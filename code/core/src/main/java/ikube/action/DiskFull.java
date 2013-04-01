@@ -8,7 +8,6 @@ import ikube.toolkit.ThreadUtilities;
 import java.io.File;
 
 import org.apache.commons.io.FileSystemUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * This action checks that the disk is not full, the one where the indexes are, if it is then this instance will close down.
@@ -23,9 +22,6 @@ public class DiskFull extends Action<IndexContext<?>, Boolean> {
 	private static final long MINIMUM_FREE_SPACE = 1000;
 	/** The amount of space until we start sending notifications, 10 gig. */
 	private static final long MINIMUM_FREE_SPACE_FOR_NOTIFICATIONS = MINIMUM_FREE_SPACE * 10;
-
-	@Autowired
-	private ThreadUtilities threadUtilities;
 
 	/**
 	 * {@inheritDoc}
@@ -64,7 +60,7 @@ public class DiskFull extends Action<IndexContext<?>, Boolean> {
 						logger.error(subject + " " + body);
 						sendNotification(subject, body);
 						// Terminate all indexing
-						threadUtilities.destroy();
+						ThreadUtilities.destroy();
 						// System.exit(0);
 						return Boolean.TRUE;
 					}

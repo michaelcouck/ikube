@@ -41,7 +41,7 @@
 		<class>ikube.model.geospatial.GeoName</class>
 		<class>ikube.model.geospatial.AlternateName</class>
 		
-		<exclude-unlisted-classes>true</exclude-unlisted-classes>
+		<exclude-unlisted-classes>false</exclude-unlisted-classes>
 		
 			<!-- For the first run these have to be uncommented to allow OpenJpa to create the
 			tables in the database and commit the connection. Typically the connection
@@ -94,7 +94,7 @@
 		<class>ikube.model.geospatial.GeoName</class>
 		<class>ikube.model.geospatial.AlternateName</class>
 		
-		<exclude-unlisted-classes>true</exclude-unlisted-classes>
+		<exclude-unlisted-classes>false</exclude-unlisted-classes>
 		
 		<!-- <properties>
 			<property name="openjpa.Connection2UserName" value="ubuntu" />
@@ -137,7 +137,7 @@
 		<class>ikube.model.geospatial.GeoName</class>
 		<class>ikube.model.geospatial.AlternateName</class>
 		
-		<exclude-unlisted-classes>true</exclude-unlisted-classes>
+		<exclude-unlisted-classes>false</exclude-unlisted-classes>
 		
 		<!-- <properties>
 			<property name="openjpa.Connection2UserName" value="ikube" />
@@ -180,7 +180,7 @@
 		<class>ikube.model.geospatial.GeoName</class>
 		<class>ikube.model.geospatial.AlternateName</class>
 		
-		<exclude-unlisted-classes>true</exclude-unlisted-classes>
+		<exclude-unlisted-classes>false</exclude-unlisted-classes>
 		
 		<!-- <properties>
 			<property name="openjpa.Connection2UserName" value="ubuntu" />

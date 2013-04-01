@@ -44,12 +44,12 @@ public class IndexableFilesystemCsvHandlerTest extends ATest {
 
 	@BeforeClass
 	public static void beforeClass() {
-		new ThreadUtilities().initialize();
+		ThreadUtilities.initialize();
 	}
 
 	@AfterClass
 	public static void afterClass() {
-		new ThreadUtilities().destroy();
+		ThreadUtilities.destroy();
 	}
 
 	public IndexableFilesystemCsvHandlerTest() {

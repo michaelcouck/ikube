@@ -43,7 +43,7 @@ public class IndexableInternetHandlerTest extends ATest {
 
 	@Before
 	public void before() {
-		new ThreadUtilities().initialize();
+		ThreadUtilities.initialize();
 		documents = new ArrayList<Document>();
 
 		indexableInternet = new IndexableInternet();
@@ -67,7 +67,7 @@ public class IndexableInternetHandlerTest extends ATest {
 
 	@After
 	public void after() {
-		new ThreadUtilities().destroy();
+		ThreadUtilities.destroy();
 	}
 
 	@Test

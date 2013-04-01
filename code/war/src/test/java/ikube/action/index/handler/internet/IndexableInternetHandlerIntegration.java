@@ -7,7 +7,6 @@ import static org.mockito.Mockito.mock;
 import ikube.Integration;
 import ikube.action.Index;
 import ikube.action.index.IndexManager;
-import ikube.action.index.handler.internet.IndexableInternetHandler;
 import ikube.cluster.IClusterManager;
 import ikube.database.IDataBase;
 import ikube.model.IndexContext;
@@ -27,7 +26,6 @@ import java.util.concurrent.Future;
 
 import mockit.Deencapsulation;
 
-import org.apache.commons.httpclient.HttpClient;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
 import org.junit.Before;

@@ -4,8 +4,6 @@ import ikube.cluster.listener.IListener;
 import ikube.scheduling.schedule.Event;
 import ikube.toolkit.ThreadUtilities;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.hazelcast.core.Message;
 import com.hazelcast.core.MessageListener;
 
@@ -18,9 +16,6 @@ import com.hazelcast.core.MessageListener;
  */
 public class TerminationListener implements IListener<Message<Object>>, MessageListener<Object> {
 
-	@Autowired
-	private ThreadUtilities threadUtilities;
-
 	/**
 	 * {@inheritDoc}
 	 */
@@ -30,7 +25,7 @@ public class TerminationListener implements IListener<Message<Object>>, MessageL
 		if (object != null && Event.class.isAssignableFrom(object.getClass())) {
 			Event event = (Event) object;
 			if (Event.TERMINATE.equals(event.getType())) {
-				threadUtilities.destroy();
+				ThreadUtilities.destroy();
 			}
 		}
 	}

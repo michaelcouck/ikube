@@ -3,7 +3,6 @@ package ikube.action.index.handler.filesystem;
 import static org.junit.Assert.assertTrue;
 import ikube.Integration;
 import ikube.action.index.IndexManager;
-import ikube.action.index.handler.filesystem.IndexableFilesystemHandler;
 import ikube.database.IDataBase;
 import ikube.model.IndexContext;
 import ikube.model.IndexableFileSystem;
@@ -37,7 +36,7 @@ public class IndexableFilesystemHandlerIntegration extends Integration {
 	}
 
 	@Test
-	public void handle() throws Exception {
+	public void handleAndInterrupt() throws Exception {
 		Directory directory = null;
 		try {
 			File dataIndexFolder = FileUtilities.findFileRecursively(new File("."), "data");
@@ -46,8 +45,25 @@ public class IndexableFilesystemHandlerIntegration extends Integration {
 			String ip = InetAddress.getLocalHost().getHostAddress();
 			IndexWriter indexWriter = IndexManager.openIndexWriter(dropbox, System.currentTimeMillis(), ip);
 			dropbox.setIndexWriters(indexWriter);
-			List<Future<?>> threads = indexableFilesystemHandler.handleIndexable(dropbox, dropboxIndexable);
-			ThreadUtilities.waitForFutures(threads, Integer.MAX_VALUE);
+			dropbox.setThrottle(60000);
+
+			ThreadUtilities.submit("interrupt-test", new Runnable() {
+				public void run() {
+					ThreadUtilities.sleep(15000);
+					ThreadUtilities.destroy(dropbox.getIndexName());
+				}
+			});
+
+			List<Future<?>> futures = indexableFilesystemHandler.handleIndexable(dropbox, dropboxIndexable);
+			ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
+
+			boolean atLeastOneCancelled = Boolean.FALSE;
+			for (final Future<?> future : futures) {
+				logger.info("Future : " + future);
+				atLeastOneCancelled |= future.isCancelled();
+			}
+			dropbox.setThrottle(0);
+			assertTrue(atLeastOneCancelled);
 
 			// Verify that there are some documents in the index
 			assertTrue("There should be at least one document in the index : ", dropbox.getIndexWriters()[0].numDocs() > 0);
@@ -57,31 +73,6 @@ public class IndexableFilesystemHandlerIntegration extends Integration {
 				directory.close();
 			}
 		}
-	}
-
-	@Test
-	public void interrupt() throws Exception {
-		String ip = InetAddress.getLocalHost().getHostAddress();
-		IndexWriter indexWriter = IndexManager.openIndexWriter(dropbox, System.currentTimeMillis(), ip);
-		dropbox.setThrottle(60000);
-		dropbox.setIndexWriters(indexWriter);
-
-		ThreadUtilities.submit(null, new Runnable() {
-			public void run() {
-				ThreadUtilities.sleep(15000);
-				ThreadUtilities.destroy(dropbox.getIndexName());
-			}
-		});
-
-		List<Future<?>> futures = indexableFilesystemHandler.handleIndexable(dropbox, dropboxIndexable);
-		ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
-		boolean atLeastOneCancelled = Boolean.FALSE;
-		for (final Future<?> future : futures) {
-			logger.info("Future : " + future);
-			atLeastOneCancelled |= future.isCancelled();
-		}
-		dropbox.setThrottle(0);
-		assertTrue(atLeastOneCancelled);
 	}
 
 }

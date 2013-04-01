@@ -50,5 +50,12 @@ public abstract class AStrategy implements IStrategy {
 		}
 		return getIndexContext(indexable.getParent());
 	}
+	
+	/**
+	 * Opportunity to init anything in the strategies.
+	 */
+	public void initialize() {
+		// To be over ridden by sub classes
+	}
 
 }

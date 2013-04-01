@@ -4,7 +4,6 @@ import static org.junit.Assert.assertTrue;
 import ikube.ATest;
 import ikube.IConstants;
 import ikube.mock.ReaderUtilMock;
-import ikube.search.Search;
 import ikube.search.SearcherService;
 import ikube.search.spelling.SpellingChecker;
 
@@ -126,12 +125,12 @@ public class SearcherServiceTest extends ATest {
 				maxResults);
 		verifyResults(results);
 	}
-	
+
 	@Test
 	public void searchComplex() {
 		initialize();
-		ArrayList<HashMap<String, String>> results = searcherService.searchComplex(indexName, searchStrings, searchFields, typeFields,  fragment, firstResult,
-				maxResults);
+		ArrayList<HashMap<String, String>> results = searcherService.searchComplex(indexName, searchStrings, searchFields, typeFields,
+				fragment, firstResult, maxResults);
 		verifyResults(results);
 	}
 

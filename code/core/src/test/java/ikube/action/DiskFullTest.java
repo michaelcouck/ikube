@@ -60,7 +60,6 @@ public class DiskFullTest extends ATest {
 	@Test
 	public void execute() throws Exception {
 		Deencapsulation.setField(diskFull, mailer);
-		Deencapsulation.setField(diskFull, threadUtilities);
 		Deencapsulation.setField(diskFull, clusterManager);
 		boolean diskFull = this.diskFull.execute(indexContext);
 		assertFalse("The disk should never be too full : ", diskFull);

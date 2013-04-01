@@ -3,7 +3,6 @@ package ikube.search.spelling;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import ikube.ATest;
-import ikube.mock.SpellingCheckerMock;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.PerformanceTester;
 

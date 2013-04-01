@@ -43,13 +43,13 @@ public class IndexableFileSystemHandlerTest extends ATest {
 
 	@BeforeClass
 	public static void beforeClass() {
-		new ThreadUtilities().initialize();
+		ThreadUtilities.initialize();
 		Mockit.setUpMocks();
 	}
 
 	@AfterClass
 	public static void afterClass() {
-		new ThreadUtilities().destroy();
+		ThreadUtilities.destroy();
 		Mockit.tearDownMocks();
 	}
 

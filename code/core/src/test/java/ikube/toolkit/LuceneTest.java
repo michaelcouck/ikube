@@ -67,7 +67,7 @@ public class LuceneTest extends ATest {
 
 	@Before
 	public void before() {
-		new ThreadUtilities().initialize();
+		ThreadUtilities.initialize();
 		Mockit.setUpMock(SpellingCheckerMock.class);
 	}
 
@@ -232,7 +232,7 @@ public class LuceneTest extends ATest {
 		File serverDirectory = createIndex(indexContext, russian, german, french, somethingElseAlToGether, string, somethingNumeric.trim());
 		Directory directory = FSDirectory.open(serverDirectory);
 		IndexReader indexReader = IndexReader.open(directory);
-		printIndex(indexReader);
+		printIndex(indexReader, 10);
 
 		IndexSearcher indexSearcher = new IndexSearcher(indexReader);
 		TermQuery numberQuery = new TermQuery(new Term(IConstants.CONTENTS, NumericUtils.doubleToPrefixCoded(123456789L)));

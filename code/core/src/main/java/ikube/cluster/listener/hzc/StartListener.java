@@ -36,8 +36,6 @@ public class StartListener implements IListener<Message<Object>>, MessageListene
 	private IMonitorService monitorService;
 	@Autowired
 	private IClusterManager clusterManager;
-	@Autowired
-	private ThreadUtilities threadUtilities;
 
 	/**
 	 * {@inheritDoc}
@@ -74,7 +72,7 @@ public class StartListener implements IListener<Message<Object>>, MessageListene
 			});
 		} else if (Event.STARTUP_ALL.equals(event.getType())) {
 			LOGGER.info("Re-starting the indexing threads");
-			threadUtilities.initialize();
+			ThreadUtilities.initialize();
 		}
 	}
 

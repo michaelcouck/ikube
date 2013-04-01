@@ -42,20 +42,16 @@ public abstract class Integration extends Base {
 			return;
 		}
 		INITIALIZED = Boolean.TRUE;
+		FileUtilities.deleteFiles(DOT_DIRECTORY, "btm1.tlog", "btm2.tlog", "ikube.h2.db", "ikube.lobs.db", "ikube.log", "openjpa.log");
 
 		new MimeTypes(IConstants.MIME_TYPES);
 		new MimeMapper(IConstants.MIME_MAPPING);
 
-		startContext();
+		ApplicationContextManager.getBean(Scheduler.class).shutdown();
 		Thread.sleep(3000);
 		insertData(Snapshot.class, 11000);
 		Thread.sleep(3000);
-		FileUtilities.deleteFiles(DOT_DIRECTORY, "btm1.tlog", "btm2.tlog", "ikube.h2.db", "ikube.lobs.db", "ikube.log", "openjpa.log");
 		WebServiceAuthentication.authenticate(HTTP_CLIENT, LOCALHOST, SERVER_PORT, REST_USER_NAME, REST_PASSWORD);
-	}
-
-	private static void startContext() {
-		ApplicationContextManager.getBean(Scheduler.class).shutdown();
 	}
 
 	public static <T> void insertData(final Class<T> klass, final int entities) throws SQLException, FileNotFoundException {

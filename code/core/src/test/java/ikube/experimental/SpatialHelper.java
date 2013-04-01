@@ -11,6 +11,7 @@ import org.apache.lucene.spatial.tier.projections.IProjector;
 import org.apache.lucene.spatial.tier.projections.SinusoidalProjector;
 import org.apache.lucene.util.NumericUtils;
 
+@SuppressWarnings("deprecation")
 public class SpatialHelper {
 
 	private final IProjector projector;

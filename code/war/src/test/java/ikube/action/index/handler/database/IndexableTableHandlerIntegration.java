@@ -8,7 +8,6 @@ import ikube.Integration;
 import ikube.action.index.IndexManager;
 import ikube.action.index.content.ColumnContentProvider;
 import ikube.action.index.content.IContentProvider;
-import ikube.action.index.handler.database.IndexableTableHandler;
 import ikube.cluster.IClusterManager;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
@@ -37,6 +36,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -46,6 +46,7 @@ import org.junit.Test;
  * @since 12.10.2010
  * @version 01.00
  */
+@Ignore
 public class IndexableTableHandlerIntegration extends Integration {
 
 	private Connection connection;

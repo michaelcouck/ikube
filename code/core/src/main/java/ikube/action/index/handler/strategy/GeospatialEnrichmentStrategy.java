@@ -28,9 +28,13 @@ import org.springframework.beans.factory.annotation.Value;
 public final class GeospatialEnrichmentStrategy extends AStrategy {
 
 	@Value("${start.tier}")
-	private transient int startTier = 10;
+	private transient int startTierParam = 10;
 	@Value("${end.tier}")
-	private transient int endTier = 20;
+	private transient int endTierParam = 20;
+
+	private transient int startTier;
+	private transient int endTier;
+
 	/** No idea what this does :) */
 	private transient IProjector sinusodialProjector;
 	/** The geocoder to get the co-ordinates for the indexable. */
@@ -43,7 +47,6 @@ public final class GeospatialEnrichmentStrategy extends AStrategy {
 
 	public GeospatialEnrichmentStrategy(final IStrategy nextStrategy) {
 		super(nextStrategy);
-		sinusodialProjector = new SinusoidalProjector();
 	}
 
 	/**
@@ -81,13 +84,13 @@ public final class GeospatialEnrichmentStrategy extends AStrategy {
 			}
 		}
 		if (latitude == null || longitude == null) {
-			logger.warn("Lat and/or long are null, have you configured the columns correctly : ");
 			String address = buildAddress(indexable, new StringBuilder()).toString();
 			// The GeoCoder is a last resort in fact
 			Coordinate coordinate = geocoder.getCoordinate(address);
 			if (coordinate != null) {
 				return coordinate;
 			}
+			logger.warn("Lat and/or long are null, have you configured the columns and address properties correctly : ");
 			return null;
 		}
 		return new Coordinate(latitude, longitude);
@@ -127,6 +130,14 @@ public final class GeospatialEnrichmentStrategy extends AStrategy {
 			}
 		}
 		return builder;
+	}
+
+	public void initialize() {
+		sinusodialProjector = new SinusoidalProjector();
+		CartesianTierPlotter cartesianTierPlotter = new CartesianTierPlotter(0, sinusodialProjector,
+				CartesianTierPlotter.DEFALT_FIELD_PREFIX);
+		startTier = cartesianTierPlotter.bestFit(startTierParam);
+		endTier = cartesianTierPlotter.bestFit(endTierParam);
 	}
 
 }

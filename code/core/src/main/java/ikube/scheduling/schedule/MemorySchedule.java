@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 public class MemorySchedule extends Schedule {
 
 	@Value("${max.memory}")
-	private String maxMemory;
+	private String maxMemory = "2000";
 
 	/**
 	 * {@inheritDoc}
@@ -22,7 +22,7 @@ public class MemorySchedule extends Schedule {
 	@Override
 	public void run() {
 		if (Runtime.getRuntime().totalMemory() / IConstants.MILLION > Integer.parseInt(maxMemory)) {
-			new ThreadUtilities().destroy();
+			ThreadUtilities.destroy();
 		}
 	}
 
