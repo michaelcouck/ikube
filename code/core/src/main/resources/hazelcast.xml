@@ -16,7 +16,7 @@
 			</tcp-ip>
 		</join>
 		<interfaces enabled="true">
-			<interface>192.168.*.*</interface>
+			<interface>192.168.1.*</interface>
 		</interfaces>
 		<symmetric-encryption enabled="false">
 			<algorithm>PBEWithMD5AndDES</algorithm>

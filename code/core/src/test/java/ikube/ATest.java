@@ -181,7 +181,7 @@ public abstract class ATest {
 		ApplicationContextManagerMock.setClusterManager(clusterManager);
 	}
 
-	protected void delete(final IDataBase dataBase, final Class<?>... klasses) {
+	protected static void delete(final IDataBase dataBase, final Class<?>... klasses) {
 		for (Class<?> klass : klasses) {
 			try {
 				List<?> list = dataBase.find(klass, 0, 1000);
@@ -190,7 +190,7 @@ public abstract class ATest {
 					list = dataBase.find(klass, 0, 1000);
 				} while (list.size() > 0);
 			} catch (Exception e) {
-				logger.error(e.getMessage(), e);
+				e.printStackTrace();
 			}
 		}
 	}
