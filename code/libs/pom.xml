@@ -305,6 +305,23 @@
 							<url>${artifactory}</url>
 						</configuration>
 					</execution>
+					<execution>
+						<id>install-jsonic</id>
+						<goals>
+							<goal>deploy-file</goal>
+						</goals>
+						<phase>${phase}</phase>
+						<configuration>
+							<groupId>jsonic</groupId>
+							<artifactId>jsonic</artifactId>
+							<version>1.2.4</version>
+							<file>tools/jsonic-1.2.4.jar</file>
+							<packaging>${packaging}</packaging>
+							<generatePom>${generate-pom}</generatePom>
+							<repositoryId>${repository-id}</repositoryId>
+							<url>${artifactory}</url>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
 		</plugins>
