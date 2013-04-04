@@ -43,7 +43,7 @@ public class UdpBroadcaster {
 
 	@SuppressWarnings("unchecked")
 	public List<Future<?>> initialize() {
-		new ThreadUtilities().initialize();
+		ThreadUtilities.initialize();
 
 		Future<?> server = server();
 		ThreadUtilities.sleep(3000);
@@ -53,7 +53,7 @@ public class UdpBroadcaster {
 	}
 
 	private Future<?> client() {
-		return ThreadUtilities.submit(new Runnable() {
+		return ThreadUtilities.submit(this.getClass().getSimpleName(), new Runnable() {
 			public void run() {
 				MulticastSocket multicastSocket = null;
 				try {
@@ -79,7 +79,7 @@ public class UdpBroadcaster {
 	}
 
 	private Future<?> server() {
-		return ThreadUtilities.submit(new Runnable() {
+		return ThreadUtilities.submit(this.getClass().getSimpleName(), new Runnable() {
 			public void run() {
 				DatagramSocket serverSocket = null;
 				try {
