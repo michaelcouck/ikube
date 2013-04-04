@@ -99,6 +99,8 @@ public class ResourceFileHandler extends ResourceHandler<IndexableFileSystem> {
 			IndexManager.addStringField(lengthFieldName, Long.toString(file.length()), document, Store.YES, analyzed, termVector);
 			IndexManager.addStringField(contentFieldName, parsedContent, document, store, analyzed, termVector);
 			addDocument(indexContext, indexableFileSystem, document);
+			
+			indexableFileSystem.setContent(parsedContent);
 		} finally {
 			FileUtilities.close(inputStream);
 			FileUtilities.close(byteInputStream);

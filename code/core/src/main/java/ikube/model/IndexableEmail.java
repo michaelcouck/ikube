@@ -12,7 +12,8 @@ import javax.validation.constraints.Size;
  * @since 21.11.10
  * @version 01.00
  */
-@Entity()
+@Entity
+@SuppressWarnings("serial")
 @Inheritance(strategy = InheritanceType.JOINED)
 public class IndexableEmail extends Indexable<IndexableEmail> {
 

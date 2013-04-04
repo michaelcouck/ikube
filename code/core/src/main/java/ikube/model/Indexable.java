@@ -22,13 +22,19 @@ import javax.validation.constraints.Min;
  * @since 21.11.10
  * @version 01.00
  */
-@Entity()
+@Entity
+@SuppressWarnings("serial")
 @Inheritance(strategy = InheritanceType.JOINED)
 public class Indexable<E> extends Persistable {
 
 	/** These strategies will be processed before processing the indexable. */
 	@Transient
 	private transient List<IStrategy> strategies;
+	/**
+	 * This is the content of the indexable, it is therefore only valid while indexing and for the current resource.
+	 */
+	@Transient
+	private transient Object content;
 
 	@Column
 	@Attribute(field = false, description = "The name of this indexable")
@@ -133,6 +139,14 @@ public class Indexable<E> extends Persistable {
 
 	public void setStrategies(List<IStrategy> strategies) {
 		this.strategies = strategies;
+	}
+
+	public Object getContent() {
+		return content;
+	}
+
+	public void setContent(final Object content) {
+		this.content = content;
 	}
 
 }

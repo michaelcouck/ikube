@@ -1,45 +1,31 @@
 package ikube.action.index.handler.strategy;
 
 import ikube.IConstants;
+import ikube.action.index.IndexManager;
 import ikube.action.index.handler.IStrategy;
-import ikube.action.index.handler.enrich.geocode.Coordinate;
-import ikube.action.index.handler.enrich.geocode.IGeocoder;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
-import ikube.model.IndexableColumn;
+import ikube.toolkit.FileUtilities;
 
+import java.io.File;
+
+import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.spatial.tier.projections.CartesianTierPlotter;
-import org.apache.lucene.spatial.tier.projections.IProjector;
-import org.apache.lucene.spatial.tier.projections.SinusoidalProjector;
-import org.apache.lucene.util.NumericUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.apache.lucene.document.Field.Index;
+import org.apache.lucene.document.Field.Store;
+import org.apache.lucene.document.Field.TermVector;
+
+import com.cybozu.labs.langdetect.Detector;
+import com.cybozu.labs.langdetect.DetectorFactory;
 
 /**
- * TODO Document me.
+ * This strategy will detect the language of the resource and add the language field to the index document.
  * 
  * @author Michael Couck
- * @since 20.01.2012
+ * @since 04.04.2013
  * @version 01.00
  */
-@SuppressWarnings("deprecation")
 public final class LanguageDetectionStrategy extends AStrategy {
-
-	@Value("${start.tier}")
-	private transient int startTierParam = 10;
-	@Value("${end.tier}")
-	private transient int endTierParam = 20;
-
-	private transient int startTier;
-	private transient int endTier;
-
-	/** No idea what this does :) */
-	private transient IProjector sinusodialProjector;
-	/** The geocoder to get the co-ordinates for the indexable. */
-	@Autowired
-	private IGeocoder geocoder;
 
 	public LanguageDetectionStrategy() {
 		this(null);
@@ -53,91 +39,42 @@ public final class LanguageDetectionStrategy extends AStrategy {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean aroundProcess(final IndexContext<?> indexContext, final Indexable<?> indexable, final Document document,
-			final Object resource) throws Exception {
-		boolean mustProceed = Boolean.TRUE;
-		// The parameters can be either the columns and values from a csv file
-		// or the columns from a table filled in with the values. All the logic from the Enrichment class can
-		// be used in here to keep all the enrichment logic in the same place
-		Coordinate coordinate = getCoordinate(indexable);
-		if (coordinate != null) {
-			addSpatialLocationFields(coordinate, document);
+	public boolean aroundProcess(final IndexContext<?> indexContext, final Indexable<?> indexable, final Document document, final Object resource)
+			throws Exception {
+		// Concatenate the data in the indexable
+		String content = getContent(indexable, new StringBuilder()).toString();
+		if (!StringUtils.isEmpty(content)) {
+			Detector detector = DetectorFactory.create();
+			detector.append(content.toString());
+			String language = detector.detect();
+			IndexManager.addStringField(IConstants.LANGUAGE, language, document, Store.YES, Index.ANALYZED, TermVector.NO);
 		}
-		return mustProceed && super.aroundProcess(indexContext, indexable, document, resource);
+		return Boolean.TRUE;
 	}
 
-	final Coordinate getCoordinate(final Indexable<?> indexable) {
-		Double latitude = null;
-		Double longitude = null;
+	final StringBuilder getContent(final Indexable<?> indexable, final StringBuilder builder) {
+		if (indexable.getContent() != null) {
+			builder.append(indexable.getContent());
+		}
 		for (final Indexable<?> child : indexable.getChildren()) {
-			if (IndexableColumn.class.isAssignableFrom(child.getClass())) {
-				IndexableColumn indexableColumn = (IndexableColumn) child;
-				Object content = indexableColumn.getContent();
-				if (indexableColumn.getFieldName() == null) {
-					continue;
-				}
-				if (indexableColumn.getFieldName().toLowerCase().contains(IConstants.LATITUDE.toLowerCase())) {
-					latitude = Double.parseDouble(content.toString());
-				} else if (indexableColumn.getFieldName().toLowerCase().contains(IConstants.LONGITUDE.toLowerCase())) {
-					longitude = Double.parseDouble(content.toString());
-				}
-			}
-		}
-		if (latitude == null || longitude == null) {
-			String address = buildAddress(indexable, new StringBuilder()).toString();
-			// The GeoCoder is a last resort in fact
-			Coordinate coordinate = geocoder.getCoordinate(address);
-			if (coordinate != null) {
-				return coordinate;
-			}
-			logger.warn("Lat and/or long are null, have you configured the columns and address properties correctly : ");
-			return null;
-		}
-		return new Coordinate(latitude, longitude);
-	}
-
-	final void addSpatialLocationFields(final Coordinate coordinate, final Document document) {
-		document.add(new Field(IConstants.LAT, NumericUtils.doubleToPrefixCoded(coordinate.getLat()), Field.Store.YES,
-				Field.Index.NOT_ANALYZED));
-		document.add(new Field(IConstants.LNG, NumericUtils.doubleToPrefixCoded(coordinate.getLon()), Field.Store.YES,
-				Field.Index.NOT_ANALYZED));
-		addCartesianTiers(coordinate, document);
-	}
-
-	final void addCartesianTiers(final Coordinate coordinate, final Document document) {
-		for (int tier = startTier; tier <= endTier; tier++) {
-			CartesianTierPlotter cartesianTierPlotter = new CartesianTierPlotter(tier, sinusodialProjector,
-					CartesianTierPlotter.DEFALT_FIELD_PREFIX);
-			final double boxId = cartesianTierPlotter.getTierBoxId(coordinate.getLat(), coordinate.getLon());
-			document.add(new Field(cartesianTierPlotter.getTierFieldName(), NumericUtils.doubleToPrefixCoded(boxId), Field.Store.YES,
-					Field.Index.NOT_ANALYZED_NO_NORMS));
-		}
-	}
-
-	final StringBuilder buildAddress(final Indexable<?> indexable, final StringBuilder builder) {
-		if (indexable.isAddress()) {
-			if (indexable instanceof IndexableColumn) {
-				IndexableColumn indexableColumn = (IndexableColumn) indexable;
-				if (builder.length() > 0) {
-					builder.append(" ");
-				}
-				builder.append(indexableColumn.getContent());
-			}
-		}
-		if (indexable.getChildren() != null) {
-			for (Indexable<?> child : indexable.getChildren()) {
-				buildAddress(child, builder);
-			}
+			getContent(child, builder);
 		}
 		return builder;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public void initialize() {
-		sinusodialProjector = new SinusoidalProjector();
-		CartesianTierPlotter cartesianTierPlotter = new CartesianTierPlotter(0, sinusodialProjector,
-				CartesianTierPlotter.DEFALT_FIELD_PREFIX);
-		startTier = cartesianTierPlotter.bestFit(startTierParam);
-		endTier = cartesianTierPlotter.bestFit(endTierParam);
+		File profileDirectory = FileUtilities.findFileRecursively(new File("." + IConstants.SEP + IConstants.IKUBE + IConstants.SEP), Boolean.TRUE,
+				IConstants.LANGUAGE_DETECT_PROFILES_DIRECTORY);
+		try {
+			logger.info("Loading language profiles from : " + profileDirectory.getAbsolutePath());
+			DetectorFactory.loadProfile(profileDirectory);
+		} catch (Exception e) {
+			logger.error("Exception starting the language detector, configuration issues : profile directory : " + profileDirectory, e);
+		}
 	}
 
 }

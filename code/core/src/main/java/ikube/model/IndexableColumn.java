@@ -22,12 +22,6 @@ public class IndexableColumn extends Indexable<IndexableColumn> {
 
 	@Transient
 	private transient int columnType;
-	/**
-	 * This is the content of the column in the database, it is therefore only valid while indexing and for the current row and table of
-	 * course.
-	 */
-	@Transient
-	private transient Object content;
 
 	@Column
 	@Attribute(description = "This is the name of the field in the Lucene index")
@@ -44,8 +38,8 @@ public class IndexableColumn extends Indexable<IndexableColumn> {
 	private IndexableColumn foreignKey;
 
 	/**
-	 * This is the column where the name of the column is stored. In the case of a file in the database the name of the file can be used to
-	 * get the correct parser for that type of content. This will typically be a sibling in the same table.
+	 * This is the column where the name of the column is stored. In the case of a file in the database the name of the file can be used to get the correct
+	 * parser for that type of content. This will typically be a sibling in the same table.
 	 */
 	private IndexableColumn nameColumn;
 
@@ -103,14 +97,6 @@ public class IndexableColumn extends Indexable<IndexableColumn> {
 
 	public void setColumnType(final int columnType) {
 		this.columnType = columnType;
-	}
-
-	public Object getContent() {
-		return content;
-	}
-
-	public void setContent(final Object content) {
-		this.content = content;
 	}
 
 }

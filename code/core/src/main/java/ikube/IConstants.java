@@ -183,5 +183,8 @@ public interface IConstants {
 	
 	String DELIMITER_CHARACTERS = ";,|:";
 	String LINE_NUMBER = "lineNumber";
+	
+	String LANGUAGE = "language";
+	String LANGUAGE_DETECT_PROFILES_DIRECTORY = "profiles";
 
 }
