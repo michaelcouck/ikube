@@ -49,7 +49,7 @@ public final class LanguageDetectionStrategy extends AStrategy {
 			String language = detector.detect();
 			IndexManager.addStringField(IConstants.LANGUAGE, language, document, Store.YES, Index.ANALYZED, TermVector.NO);
 		}
-		return Boolean.TRUE;
+		return super.aroundProcess(indexContext, indexable, document, resource);
 	}
 
 	final StringBuilder getContent(final Indexable<?> indexable, final StringBuilder builder) {
