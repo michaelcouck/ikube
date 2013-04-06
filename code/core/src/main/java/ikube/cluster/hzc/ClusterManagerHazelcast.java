@@ -26,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.ILock;
 import com.hazelcast.core.MessageListener;
+import com.hazelcast.nio.HazelcastSerializationException;
 
 /**
  * @see IClusterManager
@@ -57,7 +58,7 @@ public class ClusterManagerHazelcast extends AClusterManager {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized boolean lock(String name) {
+	public synchronized boolean lock(final String name) {
 		try {
 			ILock lock = Hazelcast.getLock(name);
 			boolean gotLock = false;
@@ -76,7 +77,7 @@ public class ClusterManagerHazelcast extends AClusterManager {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized boolean unlock(String name) {
+	public synchronized boolean unlock(final String name) {
 		try {
 			ILock lock = Hazelcast.getLock(name);
 			lock.unlock();
@@ -105,7 +106,7 @@ public class ClusterManagerHazelcast extends AClusterManager {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean anyWorking(String indexName) {
+	public boolean anyWorking(final String indexName) {
 		Map<String, Server> servers = getServers();
 		for (Map.Entry<String, Server> mapEntry : servers.entrySet()) {
 			Server server = mapEntry.getValue();
@@ -125,7 +126,7 @@ public class ClusterManagerHazelcast extends AClusterManager {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized Action startWorking(String actionName, String indexName, String indexableName) {
+	public synchronized Action startWorking(final String actionName, final String indexName, final String indexableName) {
 		Hazelcast.getTransaction().begin();
 		Action action = null;
 		Server server = getServer();
@@ -162,7 +163,6 @@ public class ClusterManagerHazelcast extends AClusterManager {
 			logger.warn("Action null : " + action);
 			return;
 		}
-		Hazelcast.getTransaction().begin();
 		boolean removedAndComitted = false;
 		Server server = getServer();
 		Action toRemoveAction = null;
@@ -181,15 +181,22 @@ public class ClusterManagerHazelcast extends AClusterManager {
 					break;
 				}
 			}
-			Hazelcast.getMap(IConstants.IKUBE).put(server.getAddress(), server);
-			// Commit the grid because the database is not as important as the cluster
-			Hazelcast.getTransaction().commit();
-			removedAndComitted = removedFromServerActions;
-			if (dataBase.find(Action.class, action.getId()) != null) {
-				dataBase.merge(action);
+			if (removedFromServerActions) {
+				Hazelcast.getTransaction().begin();
+				Hazelcast.getMap(IConstants.IKUBE).put(server.getAddress(), server);
+				// Commit the grid because the database is not as important as the cluster
+				Hazelcast.getTransaction().commit();
+				removedAndComitted = true;
+				if (dataBase.find(Action.class, action.getId()) != null) {
+					dataBase.merge(action);
+				}
 			}
 		} catch (ConcurrentModificationException e) {
 			logger.warn("Concurrent error, will retry : " + e.getMessage());
+			Hazelcast.getTransaction().rollback();
+		} catch (HazelcastSerializationException e) {
+			logger.warn("Concurrent error, will retry : " + e.getMessage());
+			Hazelcast.getTransaction().rollback();
 		} catch (Exception e) {
 			logger.error("Exception stopping action : " + action, e);
 			logger.error("Removed action not comitted : " + toRemoveAction);
@@ -271,7 +278,7 @@ public class ClusterManagerHazelcast extends AClusterManager {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void sendMessage(Serializable serializable) {
+	public void sendMessage(final Serializable serializable) {
 		Hazelcast.getTopic(IConstants.TOPIC).publish(serializable);
 	}
 

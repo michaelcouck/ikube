@@ -944,6 +944,16 @@
 			<artifactId>org.eclipse.jgit</artifactId>
 			<version>0.9.3</version>
 		</dependency>
+		<dependency>
+			<groupId>cybozu</groupId>
+			<artifactId>langdetect</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>jsonic</groupId>
+			<artifactId>jsonic</artifactId>
+			<version>1.2.4</version>
+		</dependency>
 	</dependencies>
 
 	<repositories>
