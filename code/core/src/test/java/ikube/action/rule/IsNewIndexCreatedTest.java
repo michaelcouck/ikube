@@ -3,7 +3,7 @@ package ikube.action.rule;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
-import ikube.ATest;
+import ikube.AbstractTest;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
@@ -20,7 +20,7 @@ import org.junit.Test;
  * @since 11.06.11
  * @version 01.00
  */
-public class IsNewIndexCreatedTest extends ATest {
+public class IsNewIndexCreatedTest extends AbstractTest {
 
 	private String	originalDirectoryPath;
 

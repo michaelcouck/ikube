@@ -7,7 +7,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import ikube.ATest;
+import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.cluster.IMonitorService;
 import ikube.cluster.MonitorService;
@@ -50,7 +50,7 @@ import com.hazelcast.core.MessageListener;
  * @since 17.04.11
  * @version 01.00
  */
-public class ClusterManagerHazelcastTest extends ATest {
+public class ClusterManagerHazelcastTest extends AbstractTest {
 
 	@MockClass(realClass = Hazelcast.class)
 	public static class HazelcastMock {
@@ -96,13 +96,10 @@ public class ClusterManagerHazelcastTest extends ATest {
 		Mockit.setUpMocks(HazelcastMock.class);
 		clusterManagerHazelcast = new ClusterManagerHazelcast();
 
-		server = mock(Server.class);
+		server = new Server();
 		entry = mock(Map.Entry.class);
-		// startListener = Mockito.mock(StartListener.class);
-		// stopListener = Mockito.mock(StopListener.class);
 		entrySet = new HashSet<Map.Entry<String, Server>>();
 
-		when(server.isWorking()).thenReturn(false);
 		when(entry.getValue()).thenReturn(server);
 		when(HazelcastMock.servers.entrySet()).thenReturn(entrySet);
 		when(HazelcastMock.servers.get(anyString())).thenReturn(server);
@@ -165,7 +162,10 @@ public class ClusterManagerHazelcastTest extends ATest {
 		anyworking = clusterManagerHazelcast.anyWorking();
 		assertFalse(anyworking);
 
-		when(server.isWorking()).thenReturn(true);
+		Action action = new Action();
+		server.setActions(Arrays.asList(action));
+		clusterManagerHazelcast.putObject(server.getIp(), server);
+
 		anyworking = clusterManagerHazelcast.anyWorking();
 		assertTrue(anyworking);
 	}
@@ -178,10 +178,9 @@ public class ClusterManagerHazelcastTest extends ATest {
 
 		Action action = mock(Action.class);
 		when(action.getIndexName()).thenReturn(indexName);
-		when(server.getActions()).thenReturn(Arrays.asList(action));
+		server.setActions(Arrays.asList(action));
 
 		entrySet.add(entry);
-		when(server.isWorking()).thenReturn(true);
 		anyWorkingIndex = clusterManagerHazelcast.anyWorking(indexName);
 		assertTrue(anyWorkingIndex);
 	}
@@ -196,11 +195,11 @@ public class ClusterManagerHazelcastTest extends ATest {
 	@Test
 	public void stopWorking() {
 		injectServices();
-		Action action = mock(Action.class);
-		when(action.getStartTime()).thenReturn(new Date());
-		when(action.getEndTime()).thenReturn(new Date());
-		when(action.getIndexName()).thenReturn(indexName);
-		when(server.getActions()).thenReturn(new ArrayList<Action>(Arrays.asList(action)));
+		Action action = new Action();
+		action.setStartTime(new Date());
+		action.setEndTime(new Date());
+		action.setIndexName(indexName);
+		server.setActions(new ArrayList<Action>(Arrays.asList(action)));
 
 		clusterManagerHazelcast.stopWorking(action);
 		assertNotNull(action.getEndTime());
@@ -260,7 +259,7 @@ public class ClusterManagerHazelcastTest extends ATest {
 	public void threaded() {
 		injectServices();
 		Hazelcast.getLock(IConstants.IKUBE).forceUnlock();
-		// ThreadUtilities.initialize();
+		ThreadUtilities.initialize();
 		int threads = 3;
 		final int iterations = 100;
 		final double sleep = 10;

@@ -3,7 +3,7 @@ package ikube.action.rule;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
-import ikube.ATest;
+import ikube.AbstractTest;
 import ikube.model.Action;
 
 import java.util.ArrayList;
@@ -19,7 +19,7 @@ import org.junit.Test;
  * @since 16.01.12
  * @version 01.00
  */
-public class TooManyActionsRuleTest extends ATest {
+public class TooManyActionsRuleTest extends AbstractTest {
 
 	private TooManyActionsRule tooManyActionsRule;
 

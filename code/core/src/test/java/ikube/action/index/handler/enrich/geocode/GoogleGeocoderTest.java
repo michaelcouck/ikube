@@ -2,7 +2,7 @@ package ikube.action.index.handler.enrich.geocode;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import ikube.ATest;
+import ikube.AbstractTest;
 import ikube.action.index.handler.enrich.geocode.Coordinate;
 import ikube.action.index.handler.enrich.geocode.GoogleGeocoder;
 import ikube.mock.FileUtilitiesMock;
@@ -22,7 +22,7 @@ import org.junit.Test;
  * @since 06.03.11
  * @version 01.00
  */
-public class GoogleGeocoderTest extends ATest {
+public class GoogleGeocoderTest extends AbstractTest {
 
 	public GoogleGeocoderTest() {
 		super(GoogleGeocoderTest.class);

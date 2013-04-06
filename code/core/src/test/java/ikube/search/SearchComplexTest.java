@@ -2,7 +2,7 @@ package ikube.search;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import ikube.ATest;
+import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.action.index.IndexManager;
 import ikube.toolkit.FileUtilities;
@@ -33,7 +33,7 @@ import org.junit.Test;
  * @since 20.02.2012
  * @version 01.00
  */
-public class SearchComplexTest extends ATest {
+public class SearchComplexTest extends AbstractTest {
 
 	private SearchComplex searchComplex;
 	private IndexSearcher indexSearcher;

@@ -2,7 +2,7 @@ package ikube.action.index.handler.database;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import ikube.ATest;
+import ikube.AbstractTest;
 import ikube.action.index.handler.database.IndexableTableHandler;
 import ikube.model.IndexableColumn;
 import ikube.model.IndexableTable;
@@ -28,7 +28,7 @@ import org.mockito.Mockito;
  * @since 29.11.10
  * @version 01.00
  */
-public class IndexableTableHandlerTest extends ATest {
+public class IndexableTableHandlerTest extends AbstractTest {
 
 	private static List<String> PRIMARY_KEYS = Arrays.asList("id");
 	private static List<String> ALL_COLUMNS = Arrays.asList("id", "name", "address");

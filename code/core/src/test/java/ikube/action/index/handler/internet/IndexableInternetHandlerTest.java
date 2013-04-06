@@ -3,7 +3,7 @@ package ikube.action.index.handler.internet;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import ikube.ATest;
+import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.action.index.handler.ResourceHandlerBase;
 import ikube.action.index.handler.internet.IndexableInternetHandler;
@@ -30,7 +30,7 @@ import org.junit.Test;
  * @since 21.11.10
  * @version 01.00
  */
-public class IndexableInternetHandlerTest extends ATest {
+public class IndexableInternetHandlerTest extends AbstractTest {
 
 	private List<Document> documents;
 	private IndexableInternet indexableInternet;

@@ -3,7 +3,7 @@ package ikube.action.rule;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
-import ikube.ATest;
+import ikube.AbstractTest;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.mock.ClusterManagerMock;
 import ikube.toolkit.FileUtilities;
@@ -22,7 +22,7 @@ import org.junit.Test;
  * @since 14.07.11
  * @version 01.00
  */
-public class IsThisIndexCreatedTest extends ATest {
+public class IsThisIndexCreatedTest extends AbstractTest {
 
 	private IsThisIndexCreated isThisIndexCreated;
 

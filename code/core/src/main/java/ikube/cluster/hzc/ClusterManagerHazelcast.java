@@ -7,6 +7,7 @@ import ikube.cluster.IMonitorService;
 import ikube.model.Action;
 import ikube.model.IndexContext;
 import ikube.model.Server;
+import ikube.toolkit.SerializationUtilities;
 import ikube.toolkit.ThreadUtilities;
 import ikube.toolkit.UriUtilities;
 
@@ -34,7 +35,7 @@ import com.hazelcast.nio.HazelcastSerializationException;
  * @since 15.07.12
  * @version 01.00
  */
-public class ClusterManagerHazelcast extends AClusterManager {
+public final class ClusterManagerHazelcast extends AClusterManager {
 
 	@Autowired
 	private IMonitorService monitorService;
@@ -133,12 +134,13 @@ public class ClusterManagerHazelcast extends AClusterManager {
 		try {
 			action = getAction(actionName, indexName, indexableName);
 			server.getActions().add(action);
+			server = (Server) SerializationUtilities.clone(server);
 			Hazelcast.getMap(IConstants.IKUBE).put(server.getAddress(), server);
 			Hazelcast.getTransaction().commit();
 		} catch (Exception e) {
 			logger.error("Exception starting action : " + actionName + ", " + indexName + ", " + indexableName, e);
 			Hazelcast.getTransaction().rollback();
-			server.getActions().remove(action);
+			stopWorking(action);
 			action = null;
 		} finally {
 			notifyAll();
@@ -164,6 +166,7 @@ public class ClusterManagerHazelcast extends AClusterManager {
 			return;
 		}
 		boolean removedAndComitted = false;
+		Hazelcast.getTransaction().begin();
 		Server server = getServer();
 		Action toRemoveAction = null;
 		try {
@@ -182,14 +185,14 @@ public class ClusterManagerHazelcast extends AClusterManager {
 				}
 			}
 			if (removedFromServerActions) {
-				Hazelcast.getTransaction().begin();
+				server = (Server) SerializationUtilities.clone(server);
 				Hazelcast.getMap(IConstants.IKUBE).put(server.getAddress(), server);
-				// Commit the grid because the database is not as important as the cluster
-				Hazelcast.getTransaction().commit();
-				removedAndComitted = true;
-				if (dataBase.find(Action.class, action.getId()) != null) {
-					dataBase.merge(action);
-				}
+			}
+			// Commit the grid because the database is not as important as the cluster
+			Hazelcast.getTransaction().commit();
+			removedAndComitted = true;
+			if (dataBase.find(Action.class, action.getId()) != null) {
+				dataBase.merge(action);
 			}
 		} catch (ConcurrentModificationException e) {
 			logger.warn("Concurrent error, will retry : " + e.getMessage());
@@ -247,6 +250,7 @@ public class ClusterManagerHazelcast extends AClusterManager {
 					logger.warn("Server dropped from Hazelcast! Re-inserting into the grid... " + server);
 					try {
 						Hazelcast.getTransaction().begin();
+						server = (Server) SerializationUtilities.clone(server);
 						Hazelcast.getMap(IConstants.IKUBE).put(server.getAddress(), server);
 						Hazelcast.getTransaction().commit();
 					} catch (Exception e) {

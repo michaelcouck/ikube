@@ -2,7 +2,7 @@ package ikube.action.index.handler.enrich.geocode;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import ikube.ATest;
+import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.action.index.handler.enrich.geocode.Coordinate;
 import ikube.action.index.handler.enrich.geocode.Geocoder;
@@ -33,7 +33,7 @@ import org.junit.Test;
  * @since 06.03.11
  * @version 01.00
  */
-public class GeocoderTest extends ATest {
+public class GeocoderTest extends AbstractTest {
 
 	static ArrayList<HashMap<String, String>> results = new ArrayList<HashMap<String, String>>();
 	// Add the target result

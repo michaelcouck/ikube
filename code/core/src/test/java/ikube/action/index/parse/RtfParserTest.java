@@ -2,7 +2,7 @@ package ikube.action.index.parse;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import ikube.ATest;
+import ikube.AbstractTest;
 import ikube.action.index.parse.IParser;
 import ikube.action.index.parse.ParserProvider;
 import ikube.toolkit.FileUtilities;
@@ -19,7 +19,7 @@ import org.junit.Test;
  * @since 21.11.10
  * @version 01.00
  */
-public class RtfParserTest extends ATest {
+public class RtfParserTest extends AbstractTest {
 
 	public RtfParserTest() {
 		super(RtfParserTest.class);

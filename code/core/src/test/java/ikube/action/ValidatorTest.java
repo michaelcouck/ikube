@@ -7,7 +7,7 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import ikube.ATest;
+import ikube.AbstractTest;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.mock.ClusterManagerMock;
 import ikube.toolkit.FileUtilities;
@@ -35,7 +35,7 @@ import org.mockito.stubbing.Answer;
  * @since 17.04.11
  * @version 01.00
  */
-public class ValidatorTest extends ATest {
+public class ValidatorTest extends AbstractTest {
 
 	private Validator validator;
 

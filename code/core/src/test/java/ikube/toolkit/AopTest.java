@@ -6,7 +6,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import ikube.IConstants;
-import ikube.action.IndexDelta;
+import ikube.action.Index;
 import ikube.action.index.IndexManager;
 import ikube.action.index.parse.mime.MimeMapper;
 import ikube.action.index.parse.mime.MimeTypes;
@@ -56,31 +56,14 @@ public class AopTest {
 	}
 
 	@Test
-	public void handlerInterceptor() throws Exception {
-		// IndexContext indexContext = ApplicationContextManager.getBean("desktop");
-		// IndexableFileSystem indexableFileSystem = ApplicationContextManager.getBean("desktopFolder");
-		// IndexableFilesystemHandler indexableHandler = ApplicationContextManager.getBean(IndexableFilesystemHandler.class.getName());
-		//
-		// indexContext.setIndexWriters(mock(IndexWriter.class));
-		// IStrategy strategy = mock(IStrategy.class);
-		// when(strategy.aroundProcess(any(IndexContext.class), any(IndexableFileSystem.class), any(File.class))).thenReturn(Boolean.TRUE);
-		// Deencapsulation.setField(document, new ArrayList<Fieldable>());
-		// indexableFileSystem.setStrategies(Arrays.asList(strategy));
-		//
-		// File file = FileUtilities.findFileRecursively(new File("."), Boolean.FALSE, "default.results.xml");
-		// indexableHandler.handleResource(indexContext, indexableFileSystem, document, file);
-		//
-		// verify(strategy, atLeastOnce()).aroundProcess(any(IndexContext.class), any(IndexableFileSystem.class), any(Document.class),
-		// any(Object[].class));
-	}
-
-	@Test
 	@SuppressWarnings("unchecked")
 	public void actionInterceptor() throws Exception {
 		IRuleInterceptor ruleInterceptor = ApplicationContextManager.getBean(IRuleInterceptor.class);
 		IClusterManager clusterManager = mock(IClusterManager.class);
 		Deencapsulation.setField(ruleInterceptor, clusterManager);
-		IndexDelta indexDelta = ApplicationContextManager.getBean(IndexDelta.class);
+
+		Index indexDelta = ApplicationContextManager.getBean(Index.class);
+		Deencapsulation.setField(indexDelta, clusterManager);
 		IndexContext<?> indexContext = mock(IndexContext.class);
 		when(indexContext.isDelta()).thenReturn(Boolean.TRUE);
 		indexDelta.preExecute(indexContext);

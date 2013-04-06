@@ -3,7 +3,7 @@ package ikube.toolkit;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import ikube.ATest;
+import ikube.AbstractTest;
 import ikube.IConstants;
 
 import org.apache.commons.lang.StringUtils;
@@ -14,7 +14,7 @@ import org.junit.Test;
  * @since 10.01.2012
  * @version 01.00
  */
-public class StringUtilitiesTest extends ATest {
+public class StringUtilitiesTest extends AbstractTest {
 
 	public StringUtilitiesTest() {
 		super(StringUtilitiesTest.class);

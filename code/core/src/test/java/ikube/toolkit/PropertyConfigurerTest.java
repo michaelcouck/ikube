@@ -1,7 +1,7 @@
 package ikube.toolkit;
 
 import static org.junit.Assert.assertNotNull;
-import ikube.ATest;
+import ikube.AbstractTest;
 
 import java.io.File;
 import java.util.jar.JarFile;
@@ -14,7 +14,7 @@ import org.junit.Test;
  * @since 27.03.11
  * @version 01.00
  */
-public class PropertyConfigurerTest extends ATest {
+public class PropertyConfigurerTest extends AbstractTest {
 
 	private String				fileBatchSize	= "file.batch.size";
 	private PropertyConfigurer	propertyConfigurer;

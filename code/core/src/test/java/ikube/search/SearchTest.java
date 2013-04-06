@@ -3,7 +3,7 @@ package ikube.search;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import ikube.ATest;
+import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.action.index.IndexManager;
 import ikube.mock.ReaderUtilMock;
@@ -49,7 +49,7 @@ import org.junit.Test;
  * @version 01.00
  */
 @SuppressWarnings("deprecation")
-public class SearchTest extends ATest {
+public class SearchTest extends AbstractTest {
 
 	private static Searcher SEARCHER;
 	private static String INDEX_DIRECTORY_PATH = "./" + SearchTest.class.getSimpleName();

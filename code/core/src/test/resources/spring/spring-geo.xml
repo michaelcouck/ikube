@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:property="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
+
+	xsi:schemaLocation="
+			http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+            http://www.springframework.org/schema/context
+            http://www.springframework.org/schema/context/spring-context-3.0.xsd
+            http://www.springframework.org/schema/util
+            http://www.springframework.org/schema/util/spring-util.xsd">
+
+	<description>
+		This file is not to be modified by users generally. This is the configuration for the geospatial index which is an index 
+		of the geonames table on the Ikube server. 
+	</description>
+	
+	<bean
+		id="geospatial"
+		class="ikube.model.IndexContext"
+		property:name="geospatial"
+		property:maxAge="100"
+		property:compoundFile="true"
+		property:bufferedDocs="1000"
+		property:bufferSize="1000"
+		property:batchSize="1000"
+		property:internetBatchSize="1000"
+		property:mergeFactor="1000"
+		property:maxFieldLength="1000"
+		property:maxReadLength="1000"
+		property:address="true"
+		property:throttle="0"
+		property:indexDirectoryPath="/"
+		property:indexDirectoryPathBackup="/"
+		property:children-ref="geospatialIndexables" />
+	<util:list id="geospatialIndexables">
+		<ref local="geoname" />
+	</util:list>
+	
+	<bean
+		id="geoname"
+		class="ikube.model.IndexableTable"
+		property:name="geoname"
+		property:primaryTable="true"
+		property:address="true"
+		property:children-ref="geonameColumnsDb2" 
+		property:maxExceptions="10"
+		property:allColumns="true"
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true"
+		property:predicate="geoname.id > 0" />
+	<util:list id="geonameColumnsDb2">
+		<ref local="geospatialId" />
+		<ref local="geospatialName" />
+		<ref local="geospatialGeonameid" />
+		<ref local="geospatialCity" />
+		<ref local="alternatename" />
+		<ref local="condition" />
+	</util:list>
+	
+	<bean
+		id="geospatialId"
+		class="ikube.model.IndexableColumn"
+		property:name="id"
+		property:idColumn="true"
+		property:analyzed="true"
+		property:stored="true"
+		property:vectored="true" />
+	<bean
+		id="geospatialName"
+		class="ikube.model.IndexableColumn"
+		property:name="name"
+		property:fieldName="name"
+		property:address="true"
+		property:analyzed="true"
+		property:stored="true"
+		property:vectored="true" />
+	<bean
+		id="geospatialGeonameid"
+		class="ikube.model.IndexableColumn"
+		property:name="geonameid"
+		property:fieldName="geonameid"
+		property:analyzed="true"
+		property:stored="true"
+		property:vectored="true"
+		property:numeric="false" />
+	<bean
+		id="geospatialCity"
+		class="ikube.model.IndexableColumn"
+		property:name="city"
+		property:fieldName="city"
+		property:address="true"
+		property:analyzed="true"
+		property:stored="true"
+		property:vectored="true" />
+	
+	<bean
+		id="alternatename"
+		class="ikube.model.IndexableTable"
+		property:name="alternatename"
+		property:primaryTable="false"
+		property:address="false"
+		property:children-ref="alternatenameColumnsDb2" 
+		property:maxExceptions="10"
+		property:allColumns="true" 
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true"
+		property:predicate="alternatename.id > 0" />
+	<util:list id="alternatenameColumnsDb2">
+		<ref local="alternatenameId" />
+		<ref local="alternatenameGeonameid" />
+	</util:list>
+	
+	<bean
+		id="alternatenameId"
+		class="ikube.model.IndexableColumn"
+		property:name="id"
+		property:idColumn="true"
+		property:analyzed="true"
+		property:stored="true"
+		property:vectored="true"
+		property:numeric="false" />
+	<bean
+		id="alternatenameGeonameid"
+		class="ikube.model.IndexableColumn"
+		property:name="geonameid"
+		property:fieldName="alternatenamegeonameid"
+		property:analyzed="true"
+		property:stored="true"
+		property:vectored="true"
+		property:foreignKey-ref="geospatialGeonameid"
+		property:numeric="false" />
+		
+		<bean
+		id="condition"
+		class="ikube.model.IndexableTable"
+		property:name="condition"
+		property:primaryTable="false"
+		property:address="false"
+		property:children-ref="conditionColumnsDb2" 
+		property:maxExceptions="10"
+		property:allColumns="true" 
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true"
+		property:predicate="condition.id > 0 and condition.description is not null" />
+	<util:list id="conditionColumnsDb2">
+		<ref local="conditionId" />
+		<ref local="conditionGeonameid" />
+	</util:list>
+	
+	<bean
+		id="conditionId"
+		class="ikube.model.IndexableColumn"
+		property:name="id"
+		property:idColumn="true"
+		property:analyzed="true"
+		property:stored="true"
+		property:vectored="true"
+		property:numeric="false" />
+	<bean
+		id="conditionGeonameid"
+		class="ikube.model.IndexableColumn"
+		property:name="name"
+		property:fieldName="conditiongeonameid"
+		property:analyzed="true"
+		property:stored="true"
+		property:vectored="true"
+		property:foreignKey-ref="geospatialGeonameid"
+		property:numeric="false" />
+	
+</beans>

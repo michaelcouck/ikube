@@ -2,7 +2,7 @@ package ikube.toolkit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import ikube.ATest;
+import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.action.index.IndexManager;
 import ikube.mock.SpellingCheckerMock;
@@ -45,7 +45,7 @@ import org.junit.Test;
  * @since 06.03.10
  * @version 01.00
  */
-public class LuceneTest extends ATest {
+public class LuceneTest extends AbstractTest {
 
 	private String russian = " русский язык  ";
 	private String german = "Produktivität";

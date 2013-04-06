@@ -1,7 +1,7 @@
 package ikube.cluster;
 
 import static org.junit.Assert.assertTrue;
-import ikube.ATest;
+import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.mock.ReaderUtilMock;
 import ikube.search.SearcherService;
@@ -19,7 +19,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SearcherServiceTest extends ATest {
+public class SearcherServiceTest extends AbstractTest {
 
 	@SuppressWarnings("unused")
 	private static final Logger LOGGER = LoggerFactory.getLogger(SearcherServiceTest.class);

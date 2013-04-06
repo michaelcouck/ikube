@@ -8,7 +8,7 @@ import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import ikube.ATest;
+import ikube.AbstractTest;
 import ikube.action.index.handler.database.IndexableDataSourceHandler;
 import ikube.model.Indexable;
 import ikube.model.IndexableDataSource;
@@ -34,7 +34,7 @@ import org.mockito.stubbing.Answer;
  * @since 29.11.10
  * @version 01.00
  */
-public class IndexableDataSourceHandlerTest extends ATest {
+public class IndexableDataSourceHandlerTest extends AbstractTest {
 
 	private IndexableDataSourceHandler indexableTableHandler;
 

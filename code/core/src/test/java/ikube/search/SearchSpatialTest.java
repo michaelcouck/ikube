@@ -3,7 +3,7 @@ package ikube.search;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import ikube.ATest;
+import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.action.index.IndexManager;
 import ikube.action.index.handler.enrich.Enrichment;
@@ -41,7 +41,7 @@ import org.junit.Test;
  * @version 01.00
  */
 @SuppressWarnings("deprecation")
-public class SearchSpatialTest extends ATest {
+public class SearchSpatialTest extends AbstractTest {
 
 	private String searchString = " churches and cathedrals";
 	private Coordinate zurichCoordinate = new Coordinate(47.3690239, 8.5380326, "Zürich in 8000" + searchString);

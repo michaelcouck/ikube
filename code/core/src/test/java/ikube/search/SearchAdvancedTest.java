@@ -1,7 +1,7 @@
 package ikube.search;
 
 import static org.junit.Assert.assertEquals;
-import ikube.ATest;
+import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.action.index.IndexManager;
 import ikube.mock.SpellingCheckerMock;
@@ -32,7 +32,7 @@ import org.junit.Test;
  * @version 01.00
  */
 @SuppressWarnings("deprecation")
-public class SearchAdvancedTest extends ATest {
+public class SearchAdvancedTest extends AbstractTest {
 
 	private Searcher searcher;
 	private int maxResults = 10;

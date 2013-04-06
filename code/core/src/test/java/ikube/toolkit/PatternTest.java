@@ -2,14 +2,14 @@ package ikube.toolkit;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import ikube.ATest;
+import ikube.AbstractTest;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.junit.Test;
 
-public class PatternTest extends ATest {
+public class PatternTest extends AbstractTest {
 
 	public PatternTest() {
 		super(PatternTest.class);

@@ -3,7 +3,7 @@ package ikube.action.index.parse;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import ikube.ATest;
+import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.action.index.parse.IParser;
 import ikube.action.index.parse.ParserProvider;
@@ -21,7 +21,7 @@ import org.junit.Test;
  * @since 21.11.10
  * @version 01.00
  */
-public class ParserProviderTest extends ATest {
+public class ParserProviderTest extends AbstractTest {
 
 	public ParserProviderTest() {
 		super(ParserProviderTest.class);

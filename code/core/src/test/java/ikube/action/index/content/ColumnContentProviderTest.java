@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import ikube.ATest;
+import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.action.index.content.ColumnContentProvider;
 import ikube.action.index.content.IContentProvider;
@@ -29,7 +29,7 @@ import org.junit.Test;
  * @since 21.11.10
  * @version 01.00
  */
-public class ColumnContentProviderTest extends ATest {
+public class ColumnContentProviderTest extends AbstractTest {
 
 	private IndexableColumn indexable = mock(IndexableColumn.class);
 	private IContentProvider<IndexableColumn> contentProvider = new ColumnContentProvider();

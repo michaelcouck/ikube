@@ -2,7 +2,7 @@ package ikube.search.spelling;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import ikube.ATest;
+import ikube.AbstractTest;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.PerformanceTester;
 
@@ -21,7 +21,7 @@ import org.junit.Test;
  * @since 27.03.11
  * @version 01.00
  */
-public class SpellingCheckerTest extends ATest {
+public class SpellingCheckerTest extends AbstractTest {
 
 	private SpellingChecker spellingChecker;
 

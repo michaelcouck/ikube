@@ -1,6 +1,6 @@
 package ikube.toolkit;
 
-import ikube.ATest;
+import ikube.AbstractTest;
 import ikube.database.IDataBase;
 import ikube.model.IndexContext;
 
@@ -18,7 +18,7 @@ import org.springframework.context.ApplicationContext;
  * @version 01.00
  */
 @Ignore
-public class ApplicationContextManagerTest extends ATest {
+public class ApplicationContextManagerTest extends AbstractTest {
 
 	private ApplicationContextManager applicationContextManager;
 

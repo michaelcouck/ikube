@@ -2,7 +2,7 @@ package ikube.toolkit;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import ikube.ATest;
+import ikube.AbstractTest;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +20,7 @@ import org.junit.Test;
  * @since 20.03.11
  * @version 01.00
  */
-public class ThreadUtilitiesTest extends ATest {
+public class ThreadUtilitiesTest extends AbstractTest {
 
 	// The runnable to sleep for a while
 	class Sleepy implements Runnable {

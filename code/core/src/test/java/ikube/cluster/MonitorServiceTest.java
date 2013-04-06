@@ -2,7 +2,7 @@ package ikube.cluster;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import ikube.ATest;
+import ikube.AbstractTest;
 import ikube.cluster.IMonitorService;
 import ikube.cluster.MonitorService;
 import ikube.database.IDataBase;
@@ -28,7 +28,7 @@ import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MonitorServiceTest extends ATest {
+public class MonitorServiceTest extends AbstractTest {
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 

@@ -1,7 +1,7 @@
 package ikube.toolkit;
 
 import static org.junit.Assert.assertTrue;
-import ikube.ATest;
+import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.model.IndexContext;
 import ikube.model.Snapshot;
@@ -11,7 +11,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ObjectToolkitTest extends ATest {
+public class ObjectToolkitTest extends AbstractTest {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ObjectToolkitTest.class);
 

@@ -2,7 +2,7 @@ package ikube.action;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import ikube.ATest;
+import ikube.AbstractTest;
 import ikube.toolkit.Mailer;
 import ikube.toolkit.ThreadUtilities;
 
@@ -24,7 +24,7 @@ import org.junit.Test;
  * @since 02.06.11
  * @version 01.00
  */
-public class DiskFullTest extends ATest {
+public class DiskFullTest extends AbstractTest {
 
 	@MockClass(realClass = FileSystemUtils.class)
 	public static class FileSystemUtilsMock {

@@ -2,7 +2,7 @@ package ikube.action;
 
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
-import ikube.ATest;
+import ikube.AbstractTest;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.mock.ClusterManagerMock;
 import ikube.model.IndexContext;
@@ -20,7 +20,7 @@ import org.mockito.Mockito;
  * @since 16.01.12
  * @version 01.00
  */
-public class ActionTest extends ATest {
+public class ActionTest extends AbstractTest {
 
 	private Action<?, ?> action;
 

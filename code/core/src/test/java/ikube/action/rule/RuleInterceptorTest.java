@@ -5,7 +5,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import ikube.ATest;
+import ikube.AbstractTest;
 import ikube.action.Close;
 import ikube.action.IAction;
 import ikube.action.rule.AreIndexesCreated;
@@ -40,7 +40,7 @@ import org.nfunk.jep.JEP;
  * @since 26.02.2011
  * @version 01.00
  */
-public class RuleInterceptorTest extends ATest {
+public class RuleInterceptorTest extends AbstractTest {
 
 	@MockClass(realClass = JEP.class)
 	public static class JEPMock {

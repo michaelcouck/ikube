@@ -72,7 +72,7 @@ import org.slf4j.LoggerFactory;
  * @version 01.00
  */
 @SuppressWarnings("deprecation")
-public abstract class ATest {
+public abstract class AbstractTest {
 
 	static {
 		Logging.configure();
@@ -113,7 +113,7 @@ public abstract class ATest {
 	protected String indexDirectoryPathBackup = "./indexes/backup";
 
 	@SuppressWarnings("rawtypes")
-	public ATest(Class<?> subClass) {
+	public AbstractTest(Class<?> subClass) {
 		logger = LoggerFactory.getLogger(subClass);
 		searchables = new Searchable[] { indexSearcher };
 		scoreDocs = new ScoreDoc[0];
@@ -308,7 +308,7 @@ public abstract class ATest {
 		if (!gotLock) {
 			// If the lock is not created then we have to create it. Sometimes
 			// this fails to create a lock for some unknown reason, similar to the index writer
-			// not really creating the index in ATest, strange!!
+			// not really creating the index in AbstractTest, strange!!
 			FileUtilities.getFile(new File(serverIndexDirectory, IndexWriter.WRITE_LOCK_NAME).getAbsolutePath(), Boolean.FALSE);
 		} else {
 			assertTrue(IndexWriter.isLocked(directory));

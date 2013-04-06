@@ -1,7 +1,7 @@
 package ikube.action;
 
 import static org.junit.Assert.assertTrue;
-import ikube.ATest;
+import ikube.AbstractTest;
 import ikube.cluster.IClusterManager;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.mock.ClusterManagerMock;
@@ -20,7 +20,7 @@ import org.mockito.Mockito;
  * @version 01.00
  */
 @SuppressWarnings("deprecation")
-public class CloseTest extends ATest {
+public class CloseTest extends AbstractTest {
 
 	private Close close;
 

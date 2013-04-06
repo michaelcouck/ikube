@@ -1,6 +1,6 @@
 package ikube.action.index.parse;
 
-import ikube.ATest;
+import ikube.AbstractTest;
 
 import org.junit.Test;
 
@@ -9,7 +9,7 @@ import org.junit.Test;
  * @since 21.11.10
  * @version 01.00
  */
-public class AsposePdfParserTest extends ATest {
+public class AsposePdfParserTest extends AbstractTest {
 
 	public AsposePdfParserTest() {
 		super(AsposePdfParserTest.class);

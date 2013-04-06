@@ -2,7 +2,7 @@ package ikube.action.rule;
 
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import ikube.ATest;
+import ikube.AbstractTest;
 import ikube.action.index.handler.IStrategy;
 import ikube.action.index.handler.strategy.StrategyInterceptor;
 import ikube.model.IndexContext;
@@ -26,7 +26,7 @@ import org.mockito.Mockito;
  * @version 01.00
  */
 @Deprecated
-public class StrategyInterceptorTest extends ATest {
+public class StrategyInterceptorTest extends AbstractTest {
 
 	@Cascading
 	private Document document;

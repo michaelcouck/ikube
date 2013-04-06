@@ -54,11 +54,6 @@
 		property:lastModifiedFieldName="lastmodified"
 		property:batchSize="${file.batch.size}"
 		property:maxReadLength="${file.max.read.length}" 
-		property:maxExceptions="${max.exceptions}"
-		property:strategies-ref="wikidataStrategies" />
-	
-	<util:list id="wikidataStrategies">
-		<bean class="ikube.action.index.handler.strategy.DeltaIndexableFilesystemStrategy" />
-	</util:list>
+		property:maxExceptions="${max.exceptions}" />
 	
 </beans>

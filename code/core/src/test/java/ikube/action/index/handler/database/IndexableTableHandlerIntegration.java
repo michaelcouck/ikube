@@ -7,7 +7,7 @@ import static mockit.Deencapsulation.invoke;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import ikube.ATest;
+import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.action.index.IndexManager;
 import ikube.action.index.content.ColumnContentProvider;
@@ -52,7 +52,7 @@ import org.junit.Test;
  * @since 12.10.2010
  * @version 01.00
  */
-public class IndexableTableHandlerIntegration extends ATest {
+public class IndexableTableHandlerIntegration extends AbstractTest {
 
 	private Connection connection;
 	private DataSource dataSource;
@@ -99,7 +99,7 @@ public class IndexableTableHandlerIntegration extends ATest {
 		indexContext = getBean("indexContext");
 		snapshotTable = getBean("snapshotTable");
 		snapshotTableChildren = snapshotTable.getChildren();
-		snapshotColumn = invoke(indexableTableHandler, "getIdColumn", snapshotTableChildren);
+		snapshotColumn = QueryBuilder.getIdColumn(snapshotTableChildren);
 
 		dataSource = (DataSource) getBean("nonXaDataSourceH2");
 		connection = dataSource.getConnection();
@@ -123,27 +123,13 @@ public class IndexableTableHandlerIntegration extends ATest {
 			String ip = InetAddress.getLocalHost().getHostAddress();
 			IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
 			indexContext.setIndexWriters(indexWriter);
-			snapshotTable.setPredicate("where snapshot.id = " + snapshotTable.getMinimumId());
+			snapshotTable.setPredicate("snapshot.id = " + snapshotTable.getMinimumId());
 			List<Future<?>> threads = indexableTableHandler.handleIndexable(indexContext, snapshotTable);
 			ThreadUtilities.waitForFutures(threads, Integer.MAX_VALUE);
 			assertEquals("There must be exactly one document in the index : ", 1, indexContext.getIndexWriters()[0].numDocs());
 		} finally {
 			snapshotTable.setPredicate(predicate);
 		}
-	}
-
-	@Test
-	public void buildSql() throws Exception {
-		indexContext.setBatchSize(1000);
-		String expectedSql = "select snapshot.id, snapshot.numdocs, snapshot.timestamp, snapshot.availableprocessors, "
-				+ "snapshot.docsperminute, snapshot.indexsize, snapshot.latestindextimestamp, snapshot.searchesperminute, "
-				+ "snapshot.systemload, snapshot.totalsearches from snapshot";
-		long nextIdNumber = 0;
-		long batchSize = indexContext.getBatchSize();
-		invoke(indexableTableHandler, "addAllColumns", snapshotTable, dataSource);
-		String sql = invoke(indexableTableHandler, "buildSql", snapshotTable, batchSize, nextIdNumber);
-		sql = sql.toLowerCase();
-		assertTrue(sql.contains(expectedSql));
 	}
 
 	@Test
@@ -155,17 +141,10 @@ public class IndexableTableHandlerIntegration extends ATest {
 	}
 
 	@Test
-	public void getIdColumn() throws Exception {
-		IndexableColumn idColumn = invoke(indexableTableHandler, "getIdColumn", snapshotTable.getChildren());
-		assertNotNull(idColumn);
-		assertEquals("id", idColumn.getName());
-	}
-
-	@Test
 	public void setParameters() throws Exception {
 		try {
 			IndexableTable indexContextTable = getBean("indexContextTable");
-			IndexableColumn indexContextIdColumn = invoke(indexableTableHandler, "getIdColumn", indexContextTable.getChildren());
+			IndexableColumn indexContextIdColumn = QueryBuilder.getIdColumn(indexContextTable.getChildren());
 			snapshotColumn.setForeignKey(indexContextIdColumn);
 			snapshotColumn.setContent(1);
 			String sql = "select * from snapshot where id = ?";
@@ -209,7 +188,7 @@ public class IndexableTableHandlerIntegration extends ATest {
 
 	@Test
 	public void handleColumn() throws Exception {
-		IndexableColumn snapshotIdIndexableColumn = invoke(indexableTableHandler, "getIdColumn", snapshotTableChildren);
+		IndexableColumn snapshotIdIndexableColumn = QueryBuilder.getIdColumn(snapshotTableChildren);
 		snapshotIdIndexableColumn.setContent("Hello World!");
 		snapshotIdIndexableColumn.setColumnType(Types.VARCHAR);
 		Document document = new Document();
@@ -253,20 +232,12 @@ public class IndexableTableHandlerIntegration extends ATest {
 
 	@Test
 	public void handleTable() throws Exception {
-		// IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
-		try {
-			// delete(dataBase, Snapshot.class);
-			// insertData(Snapshot.class, 100000);
-			String ip = InetAddress.getLocalHost().getHostAddress();
-			IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
-			indexContext.setIndexWriters(indexWriter);
-			List<Future<?>> threads = indexableTableHandler.handleIndexable(indexContext, snapshotTable);
-			ThreadUtilities.waitForFutures(threads, Integer.MAX_VALUE);
-			assertTrue("There must be some data in the index : ", indexContext.getIndexWriters()[0].numDocs() > 0);
-		} finally {
-			// delete(dataBase, Snapshot.class);
-			// insertData(Snapshot.class, 11000);
-		}
+		String ip = InetAddress.getLocalHost().getHostAddress();
+		IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
+		indexContext.setIndexWriters(indexWriter);
+		List<Future<?>> threads = indexableTableHandler.handleIndexable(indexContext, snapshotTable);
+		ThreadUtilities.waitForFutures(threads, Integer.MAX_VALUE);
+		assertTrue("There must be some data in the index : ", indexContext.getIndexWriters()[0].numDocs() > 0);
 	}
 
 	@Test

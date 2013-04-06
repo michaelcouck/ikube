@@ -3,7 +3,7 @@ package ikube.action.index.handler.filesystem;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import ikube.ATest;
+import ikube.AbstractTest;
 import ikube.action.index.handler.filesystem.IndexableDictionaryHandler;
 import ikube.model.IndexableDictionary;
 import ikube.toolkit.FileUtilities;
@@ -24,7 +24,7 @@ import org.junit.Test;
  * @since 01.10.11
  * @version 01.00
  */
-public class IndexableDictionaryHandlerTest extends ATest {
+public class IndexableDictionaryHandlerTest extends AbstractTest {
 
 	public IndexableDictionaryHandlerTest() {
 		super(IndexableDictionaryHandlerTest.class);

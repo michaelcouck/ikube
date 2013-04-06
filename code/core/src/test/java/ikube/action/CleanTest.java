@@ -6,7 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import static org.mockito.Mockito.*;
 
-import ikube.ATest;
+import ikube.AbstractTest;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.mock.ClusterManagerMock;
 import ikube.model.IndexContext;
@@ -33,7 +33,7 @@ import org.junit.Test;
  * @since 16.01.12
  * @version 01.00
  */
-public class CleanTest extends ATest {
+public class CleanTest extends AbstractTest {
 
 	public CleanTest() {
 		super(CleanTest.class);

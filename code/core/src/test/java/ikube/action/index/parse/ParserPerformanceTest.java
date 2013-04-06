@@ -1,7 +1,7 @@
 package ikube.action.index.parse;
 
 import static org.junit.Assert.assertTrue;
-import ikube.ATest;
+import ikube.AbstractTest;
 import ikube.action.index.parse.IParser;
 import ikube.action.index.parse.ParserProvider;
 import ikube.toolkit.FileUtilities;
@@ -22,7 +22,7 @@ import org.junit.Test;
  * @since 12.10.2010
  * @version 01.00
  */
-public class ParserPerformanceTest extends ATest {
+public class ParserPerformanceTest extends AbstractTest {
 
 	private int			iterations	= 10;
 	private String[]	files		= { "pdf.pdf", "xml.xml", "html.html", "xls.xls", "doc.doc", "txt.txt", "pot.pot", "docx.docx", "xlsx.xlsx",

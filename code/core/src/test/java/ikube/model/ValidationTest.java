@@ -1,7 +1,7 @@
 package ikube.model;
 
 import static org.junit.Assert.assertTrue;
-import ikube.ATest;
+import ikube.AbstractTest;
 
 import java.util.Set;
 
@@ -12,7 +12,7 @@ import javax.validation.ValidatorFactory;
 
 import org.junit.Test;
 
-public class ValidationTest extends ATest {
+public class ValidationTest extends AbstractTest {
 
 	public ValidationTest() {
 		super(ValidationTest.class);

@@ -2,7 +2,7 @@ package ikube.action.index.analyzer;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import ikube.ATest;
+import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.action.index.analyzer.NgramAnalyzer;
 import ikube.mock.SpellingCheckerMock;
@@ -24,7 +24,7 @@ import org.junit.Test;
  * @since 29.10.12
  * @version 01.00
  */
-public class NgramAnalyzerTest extends ATest {
+public class NgramAnalyzerTest extends AbstractTest {
 
 	private NgramAnalyzer ngramAnalyzer;
 

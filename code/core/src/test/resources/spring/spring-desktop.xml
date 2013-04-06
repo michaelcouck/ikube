@@ -72,6 +72,6 @@
 	    <ref local="ikube.index.handler.strategy.DeltaIndexableFilesystemStrategyDesktop" />
 	</util:list>
 	
-	<bean class="ikube.action.IndexDelta" />
+	<bean class="ikube.action.Index" />
 	
 </beans>

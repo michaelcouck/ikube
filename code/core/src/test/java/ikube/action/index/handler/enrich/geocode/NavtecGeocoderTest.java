@@ -1,7 +1,7 @@
 package ikube.action.index.handler.enrich.geocode;
 
 import static org.junit.Assert.assertNull;
-import ikube.ATest;
+import ikube.AbstractTest;
 import ikube.action.index.handler.enrich.geocode.Coordinate;
 import ikube.action.index.handler.enrich.geocode.NavtecGeocoder;
 
@@ -12,7 +12,7 @@ import org.junit.Test;
  * @since 09.04.11
  * @version 01.00
  */
-public class NavtecGeocoderTest extends ATest {
+public class NavtecGeocoderTest extends AbstractTest {
 
 	public NavtecGeocoderTest() {
 		super(NavtecGeocoderTest.class);

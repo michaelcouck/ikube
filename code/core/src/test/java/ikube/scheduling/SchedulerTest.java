@@ -3,7 +3,7 @@ package ikube.scheduling;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import ikube.ATest;
+import ikube.AbstractTest;
 
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -13,7 +13,7 @@ import org.mockito.Mockito;
  * @since 12.10.2010
  * @version 01.00
  */
-public class SchedulerTest extends ATest {
+public class SchedulerTest extends AbstractTest {
 
 	public SchedulerTest() {
 		super(SchedulerTest.class);

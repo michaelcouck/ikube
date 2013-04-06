@@ -3,7 +3,7 @@ package ikube.action.rule;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
-import ikube.ATest;
+import ikube.AbstractTest;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -13,7 +13,7 @@ import org.junit.Test;
  * @since 29.03.2011
  * @version 01.00
  */
-public class IsMultiSearcherInitialisedTest extends ATest {
+public class IsMultiSearcherInitialisedTest extends AbstractTest {
 
 	private IsMultiSearcherInitialised rule;
 

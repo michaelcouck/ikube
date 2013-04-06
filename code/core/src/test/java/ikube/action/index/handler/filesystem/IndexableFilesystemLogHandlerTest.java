@@ -3,7 +3,7 @@ package ikube.action.index.handler.filesystem;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
-import ikube.ATest;
+import ikube.AbstractTest;
 import ikube.action.index.handler.ResourceHandlerBase;
 import ikube.action.index.handler.filesystem.IndexableFilesystemLogHandler;
 import ikube.model.IndexContext;
@@ -28,7 +28,7 @@ import org.mockito.Mockito;
  * @since 21.11.10
  * @version 01.00
  */
-public class IndexableFilesystemLogHandlerTest extends ATest {
+public class IndexableFilesystemLogHandlerTest extends AbstractTest {
 
 	private IndexableFilesystemLogHandler indexableFilesystemLogHandler;
 

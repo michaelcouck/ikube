@@ -1,7 +1,7 @@
 package ikube.toolkit;
 
 import static org.junit.Assert.assertTrue;
-import ikube.ATest;
+import ikube.AbstractTest;
 import ikube.toolkit.IMailer;
 import ikube.toolkit.Mailer;
 
@@ -14,7 +14,7 @@ import org.junit.Test;
  * @version 01.00
  */
 @Ignore
-public class MailerTest extends ATest {
+public class MailerTest extends AbstractTest {
 
 	public MailerTest() {
 		super(MailerTest.class);

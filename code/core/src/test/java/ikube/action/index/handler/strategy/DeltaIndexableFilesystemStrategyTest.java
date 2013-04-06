@@ -5,7 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import ikube.ATest;
+import ikube.AbstractTest;
 import ikube.action.index.handler.strategy.DeltaIndexableFilesystemStrategy;
 import ikube.mock.IndexReaderMock;
 import ikube.model.Indexable;
@@ -35,7 +35,7 @@ import org.mockito.Mockito;
  * @version 01.00
  */
 // @Ignore
-public class DeltaIndexableFilesystemStrategyTest extends ATest {
+public class DeltaIndexableFilesystemStrategyTest extends AbstractTest {
 
 	@MockClass(realClass = Collections.class)
 	public static class CollectionsMock {

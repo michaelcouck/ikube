@@ -6,7 +6,7 @@ import static org.mockito.Mockito.atMost;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import ikube.ATest;
+import ikube.AbstractTest;
 import ikube.action.IAction;
 import ikube.action.Index;
 import ikube.cluster.IMonitorService;
@@ -32,7 +32,7 @@ import org.junit.Test;
  * @since 12.10.2010
  * @version 01.00
  */
-public class IndexScheduleTest extends ATest {
+public class IndexScheduleTest extends AbstractTest {
 
 	private Index index;
 	/** Class under test. */

@@ -2,7 +2,7 @@ package ikube.toolkit;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import ikube.ATest;
+import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.model.IndexContext;
 import ikube.model.IndexableTable;
@@ -22,7 +22,7 @@ import org.junit.Test;
  * @since 21.05.2011
  * @version 01.00
  */
-public class SerializationUtilitiesTest extends ATest {
+public class SerializationUtilitiesTest extends AbstractTest {
 
 	private String russian = "Что определяет производительность";
 	private String arabic = "تيات تبحث عن ابن الحلالللصداقة و الزوا";

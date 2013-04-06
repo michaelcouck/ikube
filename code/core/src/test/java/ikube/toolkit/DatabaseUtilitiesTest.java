@@ -7,7 +7,7 @@ import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import ikube.ATest;
+import ikube.AbstractTest;
 import ikube.model.Url;
 
 import java.sql.Connection;
@@ -28,7 +28,7 @@ import org.junit.Test;
  * @since 12.10.2010
  * @version 01.00
  */
-public class DatabaseUtilitiesTest extends ATest {
+public class DatabaseUtilitiesTest extends AbstractTest {
 
 	private ResultSet resultSet;
 	private Statement statement;

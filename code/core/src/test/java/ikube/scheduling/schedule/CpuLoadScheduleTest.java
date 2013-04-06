@@ -1,7 +1,7 @@
 package ikube.scheduling.schedule;
 
 import static org.mockito.Mockito.when;
-import ikube.ATest;
+import ikube.AbstractTest;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.model.IndexContext;
 import ikube.model.Snapshot;
@@ -25,7 +25,7 @@ import org.mockito.Mockito;
  * @since 22.07.12
  * @version 01.00
  */
-public class CpuLoadScheduleTest extends ATest {
+public class CpuLoadScheduleTest extends AbstractTest {
 
 	private CpuLoadSchedule snapshotListener;
 

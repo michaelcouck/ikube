@@ -3,7 +3,7 @@ package ikube.action.index.handler.enrich;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import ikube.ATest;
+import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.action.index.handler.enrich.Enrichment;
 import ikube.action.index.handler.enrich.IEnrichment;
@@ -28,7 +28,7 @@ import org.springframework.util.ReflectionUtils;
  * @since 21.11.10
  * @version 01.00
  */
-public class EnrichmentTest extends ATest {
+public class EnrichmentTest extends AbstractTest {
 
 	@Cascading
 	private Document	document;

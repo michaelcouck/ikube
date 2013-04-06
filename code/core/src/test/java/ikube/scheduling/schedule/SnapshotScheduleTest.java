@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
-import ikube.ATest;
+import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.model.IndexContext;
@@ -35,7 +35,7 @@ import org.mockito.stubbing.Answer;
  * @since 22.07.12
  * @version 01.00
  */
-public class SnapshotScheduleTest extends ATest {
+public class SnapshotScheduleTest extends AbstractTest {
 
 	private SnapshotSchedule snapshotSchedule;
 

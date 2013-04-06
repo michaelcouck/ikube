@@ -1,7 +1,7 @@
 package ikube.action.index.parse;
 
 import static org.junit.Assert.assertTrue;
-import ikube.ATest;
+import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.action.index.parse.HtmlParser;
 import ikube.toolkit.FileUtilities;
@@ -18,7 +18,7 @@ import org.junit.Test;
  * @since 10.02.10
  * @version 01.00
  */
-public class HtmlParserTest extends ATest {
+public class HtmlParserTest extends AbstractTest {
 
 	public HtmlParserTest() {
 		super(HtmlParserTest.class);

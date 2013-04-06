@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
-import ikube.ATest;
+import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.action.index.handler.enrich.geocode.Coordinate;
 import ikube.action.index.handler.enrich.geocode.IGeocoder;
@@ -30,7 +30,7 @@ import org.junit.Test;
  * @since 20.01.2012
  * @version 01.00
  */
-public class GeospatialEnrichmentStrategyTest extends ATest {
+public class GeospatialEnrichmentStrategyTest extends AbstractTest {
 
 	@Cascading
 	private IGeocoder geocoder;

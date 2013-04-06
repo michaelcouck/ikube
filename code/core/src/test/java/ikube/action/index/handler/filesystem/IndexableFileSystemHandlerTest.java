@@ -1,7 +1,7 @@
 package ikube.action.index.handler.filesystem;
 
 import static org.junit.Assert.assertTrue;
-import ikube.ATest;
+import ikube.AbstractTest;
 import ikube.action.index.handler.filesystem.IndexableFilesystemHandler;
 import ikube.action.index.handler.filesystem.ResourceFileHandler;
 import ikube.model.IndexableFileSystem;
@@ -34,7 +34,7 @@ import org.mockito.Mockito;
  * @since 21.11.10
  * @version 01.00
  */
-public class IndexableFileSystemHandlerTest extends ATest {
+public class IndexableFileSystemHandlerTest extends AbstractTest {
 
 	/** Class under test. */
 	private IndexableFilesystemHandler indexableFileSystemHandler;

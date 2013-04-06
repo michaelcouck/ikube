@@ -2,7 +2,7 @@ package ikube.action.rule;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import ikube.ATest;
+import ikube.AbstractTest;
 import ikube.mock.FSDirectoryMock;
 import ikube.mock.IndexReaderMock;
 import ikube.mock.IndexWriterMock;
@@ -21,7 +21,7 @@ import org.junit.Test;
  * @since 29.03.2011
  * @version 01.00
  */
-public class DirectoryExistsAndNotLockedTest extends ATest {
+public class DirectoryExistsAndNotLockedTest extends AbstractTest {
 
 	@BeforeClass
 	public static void beforeClass() {

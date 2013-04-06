@@ -3,7 +3,7 @@ package ikube.action.index.handler.strategy;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
-import ikube.ATest;
+import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.model.Indexable;
 import ikube.toolkit.PerformanceTester;
@@ -22,7 +22,7 @@ import org.junit.Test;
  * @since 05.04.13
  * @version 01.00
  */
-public class LanguageDetectionStrategyTest extends ATest {
+public class LanguageDetectionStrategyTest extends AbstractTest {
 
 	private static LanguageDetectionStrategy LANGUAGE_DETECTION_STRATEGY;
 
@@ -46,16 +46,20 @@ public class LanguageDetectionStrategyTest extends ATest {
 
 	@Test
 	public void aroundProcess() throws Exception {
-		Document document = new Document();
-		LANGUAGE_DETECTION_STRATEGY.aroundProcess(indexContext, indexableTable, document, null);
-		String language = document.get(IConstants.LANGUAGE);
-		assertEquals("We expect English for this one : ", "en", language);
+		try {
+			Document document = new Document();
+			LANGUAGE_DETECTION_STRATEGY.aroundProcess(indexContext, indexableTable, document, null);
+			String language = document.get(IConstants.LANGUAGE);
+			assertEquals("We expect English for this one : ", "en", language);
 
-		when(indexableColumn.getContent()).thenReturn("soms een andere taal");
-		document = new Document();
-		LANGUAGE_DETECTION_STRATEGY.aroundProcess(indexContext, indexableTable, document, null);
-		language = document.get(IConstants.LANGUAGE);
-		assertTrue("We expect Afrikaans for this one : ", "af".equals(language) || "nl".equals(language));
+			when(indexableColumn.getContent()).thenReturn("soms een andere taal");
+			document = new Document();
+			LANGUAGE_DETECTION_STRATEGY.aroundProcess(indexContext, indexableTable, document, null);
+			language = document.get(IConstants.LANGUAGE);
+			assertTrue("We expect Afrikaans for this one : ", "af".equals(language) || "nl".equals(language));
+		} catch (Throwable t) {
+			logger.error(null, t);
+		}
 	}
 
 	@Test

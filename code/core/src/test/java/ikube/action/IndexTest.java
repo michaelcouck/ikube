@@ -7,7 +7,7 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import ikube.ATest;
+import ikube.AbstractTest;
 import ikube.action.index.IndexManager;
 import ikube.action.index.handler.IIndexableHandler;
 import ikube.action.index.handler.database.IndexableTableHandler;
@@ -42,7 +42,7 @@ import org.mockito.stubbing.Answer;
  * @since 21.11.10
  * @version 01.00
  */
-public class IndexTest extends ATest {
+public class IndexTest extends AbstractTest {
 
 	private Index index = mock(Index.class);
 	@SuppressWarnings("rawtypes")

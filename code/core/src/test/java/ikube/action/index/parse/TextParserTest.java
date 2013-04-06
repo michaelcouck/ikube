@@ -2,7 +2,7 @@ package ikube.action.index.parse;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import ikube.ATest;
+import ikube.AbstractTest;
 import ikube.action.index.parse.TextParser;
 import ikube.toolkit.FileUtilities;
 
@@ -21,7 +21,7 @@ import org.junit.Test;
  * @since 12.10.2010
  * @version 01.00
  */
-public class TextParserTest extends ATest {
+public class TextParserTest extends AbstractTest {
 
 	private TextParser textParser;
 	private String russian = "бронежилет";

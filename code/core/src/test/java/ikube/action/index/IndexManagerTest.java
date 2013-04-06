@@ -9,7 +9,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import ikube.ATest;
+import ikube.AbstractTest;
 import ikube.action.index.IndexManager;
 import ikube.mock.IndexWriterMock;
 import ikube.toolkit.FileUtilities;
@@ -37,7 +37,7 @@ import org.mockito.Mockito;
  * @version 01.00
  */
 @SuppressWarnings("deprecation")
-public class IndexManagerTest extends ATest {
+public class IndexManagerTest extends AbstractTest {
 
 	private String fieldName = "fieldName";
 	private Document document = new Document();

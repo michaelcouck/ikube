@@ -5,7 +5,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import ikube.ATest;
+import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.action.index.handler.filesystem.IndexableFilesystemCsvHandler;
 import ikube.action.index.handler.filesystem.ResourceRowHandler;
@@ -36,7 +36,7 @@ import org.mockito.Mockito;
  * @since 08.02.2011
  * @version 01.00
  */
-public class IndexableFilesystemCsvHandlerTest extends ATest {
+public class IndexableFilesystemCsvHandlerTest extends AbstractTest {
 
 	private IndexableFileSystemCsv indexableFileSystem;
 	/** Class under test. */

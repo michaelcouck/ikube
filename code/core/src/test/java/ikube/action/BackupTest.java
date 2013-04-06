@@ -1,7 +1,7 @@
 package ikube.action;
 
 import static org.junit.Assert.assertTrue;
-import ikube.ATest;
+import ikube.AbstractTest;
 import ikube.action.index.IndexManager;
 import ikube.toolkit.FileUtilities;
 
@@ -21,7 +21,7 @@ import org.junit.Test;
  * @since 16.01.12
  * @version 01.00
  */
-public class BackupTest extends ATest {
+public class BackupTest extends AbstractTest {
 
 	private Backup backup;
 

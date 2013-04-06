@@ -2,7 +2,7 @@ package ikube.action.rule;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import ikube.ATest;
+import ikube.AbstractTest;
 import ikube.model.Server;
 
 import java.util.HashMap;
@@ -19,7 +19,7 @@ import org.mockito.Mockito;
  * @since 29.03.2011
  * @version 01.00
  */
-public class AnyServersIdleTest extends ATest {
+public class AnyServersIdleTest extends AbstractTest {
 
 	private AnyServersIdle anyServersIdle;
 

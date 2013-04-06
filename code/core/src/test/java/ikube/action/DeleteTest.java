@@ -3,7 +3,7 @@ package ikube.action;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import ikube.ATest;
+import ikube.AbstractTest;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.toolkit.FileUtilities;
 
@@ -25,7 +25,7 @@ import org.junit.Test;
  * @since 21.11.10
  * @version 01.00
  */
-public class DeleteTest extends ATest {
+public class DeleteTest extends AbstractTest {
 
 	private Delete delete;
 

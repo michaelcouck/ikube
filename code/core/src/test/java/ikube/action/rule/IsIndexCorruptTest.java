@@ -2,7 +2,7 @@ package ikube.action.rule;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import ikube.ATest;
+import ikube.AbstractTest;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
@@ -22,7 +22,7 @@ import org.junit.Test;
  * @since 29.03.2011
  * @version 01.00
  */
-public class IsIndexCorruptTest extends ATest {
+public class IsIndexCorruptTest extends AbstractTest {
 
 	public IsIndexCorruptTest() {
 		super(IsIndexCorruptTest.class);

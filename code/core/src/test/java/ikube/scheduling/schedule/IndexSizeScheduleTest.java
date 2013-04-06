@@ -5,7 +5,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import ikube.ATest;
+import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.model.Snapshot;
@@ -29,7 +29,7 @@ import org.junit.Test;
  * @since 29.08.12
  * @version 01.00
  */
-public class IndexSizeScheduleTest extends ATest {
+public class IndexSizeScheduleTest extends AbstractTest {
 
 	/** Class under test. */
 	private IndexSizeSchedule indexSizeSchedule;

@@ -1,7 +1,7 @@
 package ikube.cluster.listener.hzc;
 
 import static org.junit.Assert.assertFalse;
-import ikube.ATest;
+import ikube.AbstractTest;
 import ikube.action.index.IndexManager;
 import ikube.scheduling.schedule.Event;
 import ikube.toolkit.FileUtilities;
@@ -23,7 +23,7 @@ import com.hazelcast.core.Message;
  * @version 01.00
  * @since 15.12.12
  */
-public class DeleteListenerTest extends ATest {
+public class DeleteListenerTest extends AbstractTest {
 
 	private DeleteListener deleteListener;
 

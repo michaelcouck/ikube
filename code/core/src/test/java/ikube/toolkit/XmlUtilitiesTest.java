@@ -2,7 +2,7 @@ package ikube.toolkit;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import ikube.ATest;
+import ikube.AbstractTest;
 import ikube.IConstants;
 
 import java.io.File;
@@ -15,7 +15,7 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 import org.junit.Test;
 
-public class XmlUtilitiesTest extends ATest {
+public class XmlUtilitiesTest extends AbstractTest {
 
 	public XmlUtilitiesTest() {
 		super(XmlUtilitiesTest.class);

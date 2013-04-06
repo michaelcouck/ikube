@@ -1,7 +1,7 @@
 package ikube.action.index.parse;
 
 import static org.junit.Assert.assertTrue;
-import ikube.ATest;
+import ikube.AbstractTest;
 import ikube.action.index.parse.PdfParser;
 import ikube.toolkit.FileUtilities;
 
@@ -17,7 +17,7 @@ import org.junit.Test;
  * @since 21.11.10
  * @version 01.00
  */
-public class PdfParserTest extends ATest {
+public class PdfParserTest extends AbstractTest {
 
 	public PdfParserTest() {
 		super(PdfParserTest.class);

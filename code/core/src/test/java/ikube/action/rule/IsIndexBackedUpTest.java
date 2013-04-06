@@ -2,7 +2,7 @@ package ikube.action.rule;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import ikube.ATest;
+import ikube.AbstractTest;
 import ikube.action.index.IndexManager;
 import ikube.toolkit.FileUtilities;
 
@@ -21,7 +21,7 @@ import org.junit.Test;
  * @since 29.03.2011
  * @version 01.00
  */
-public class IsIndexBackedUpTest extends ATest {
+public class IsIndexBackedUpTest extends AbstractTest {
 
 	private IsIndexBackedUp isIndexBackedUp;
 
