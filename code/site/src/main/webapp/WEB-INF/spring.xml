@@ -29,6 +29,9 @@
     <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter" />
     <bean class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter" />
     
+    <!-- External file system resources. -->
+	<import resource="file:site/*.xml" />
+    
 	<!-- This configures the tiles container. -->
 	<bean 
 		id="tilesConfigurer" 

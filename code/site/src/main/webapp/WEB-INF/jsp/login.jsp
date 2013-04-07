@@ -15,6 +15,8 @@
 <div id="maincontent">
 	<h2>Login</h2>
 
+	For access to advanced documentation registration is required. Please mail Michael Couck at michael.couck@gmail.com<br> 
+	
 	<form id="form" name="form" action="<spring:url value="/login" htmlEscape="true" />" method="POST">
 		<c:if test="${not empty SPRING_SECURITY_LAST_EXCEPTION.message}">
 			<spring:message code="login.failed" /><br>
@@ -35,6 +37,6 @@
 			</tr>
 		</table>
 	</form>
-
+	
 </div>
 
