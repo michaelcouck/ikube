@@ -1,6 +1,7 @@
 <beans xmlns="http://www.springframework.org/schema/beans" 
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:util="http://www.springframework.org/schema/util"
 	xmlns:property="http://www.springframework.org/schema/p"
 	xmlns:mvc="http://www.springframework.org/schema/mvc"
 	xmlns:transaction="http://www.springframework.org/schema/tx"
@@ -15,10 +16,18 @@
 		http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
 		http://www.springframework.org/schema/tx
         http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+        http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util.xsd
 		http://www.springframework.org/schema/context
 		http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
-	<bean class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter" />
+	<context:spring-configured />
+    <context:annotation-config />
+	<context:component-scan base-package="ikube" />
+	
+	<bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping" />
+    <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter" />
+    <bean class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter" />
     
 	<!-- This configures the tiles container. -->
 	<bean 
@@ -40,6 +49,7 @@
 
 	<!-- These are static resources basically. -->
 	<mvc:view-controller path="/index.html" />
+	<mvc:view-controller path="/login.html" />
 	
 	<mvc:view-controller path="/index.html" />
 	<mvc:view-controller path="/quick.html" />
@@ -78,5 +88,16 @@
 		class="org.springframework.web.servlet.i18n.CookieLocaleResolver"
 		property:cookieName="language"
 		property:cookieMaxAge="604800" />
+	
+	<bean 
+		id="messageSource" 
+		class="org.springframework.context.support.ReloadableResourceBundleMessageSource"
+		property:basenames-ref="messageProperties">
+		<property name="defaultEncoding" value="UTF-8" />
+	</bean>
+	
+	<util:list id="messageProperties">
+		<value>/WEB-INF/i18n/i18n</value>
+	</util:list>
 	
 </beans>

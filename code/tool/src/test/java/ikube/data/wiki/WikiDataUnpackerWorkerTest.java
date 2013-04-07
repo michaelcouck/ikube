@@ -22,15 +22,15 @@ public class WikiDataUnpackerWorkerTest {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(WikiDataUnpackerWorkerTest.class);
 
-	private File disk;
+	private File folder;
 	private File bZip2File;
 	private WikiDataUnpackerWorker wikiDataUnpackerWorker;
 
 	@Before
 	public void before() {
 		bZip2File = FileUtilities.findFileRecursively(new File("."), Boolean.FALSE, "bzip2");
-		disk = bZip2File.getParentFile();
-		wikiDataUnpackerWorker = new WikiDataUnpackerWorker(disk);
+		folder = bZip2File.getParentFile();
+		wikiDataUnpackerWorker = new WikiDataUnpackerWorker(folder);
 	}
 
 	@Test

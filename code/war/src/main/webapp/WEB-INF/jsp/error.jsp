@@ -1,4 +1,4 @@
-<%@ page errorPage="/WEB-INF/jsp/error.jsp" %>
+<%@ page isErrorPage = "true" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <table class="table-content">
@@ -14,12 +14,18 @@
 	</tr>
 	<tr>
 		<td class="td-content">
-			Exception: ${pageContext.errorData.throwable}
+			Exception: ${pageContext.errorData.throwable}<br>
+			Error data: ${pageContext.errorData}
 		</td>
 	</tr>
 	<tr>
 		<td class="td-content">
-			${pageContext.errorData.servletName}
+			Servlet name: ${pageContext.errorData.servletName}
 		</td>
 	</tr>
+	<% 
+		if (exception != null) {
+			exception.printStackTrace();
+		} 
+	%>
 </table>

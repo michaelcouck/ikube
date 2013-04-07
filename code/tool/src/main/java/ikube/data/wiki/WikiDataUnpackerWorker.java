@@ -18,7 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This class will read a Bzip2 file with a big xml in it, unpack the xml, parse it and write individual files to disk.
+ * This class will read a Bzip2 file with a big xml in it, unpack the xml, parse it and write individual files to folder.
  * 
  * @author Michael Couck
  * @since at least 14.04.2012
@@ -32,16 +32,16 @@ public class WikiDataUnpackerWorker implements Runnable {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(WikiDataUnpackerWorker.class);
 
-	/** The disk where this file is to be unpacked. */
-	private File disk;
+	/** The folder where this file is to be unpacked. */
+	private File folder;
 
 	/**
-	 * Constructor takes the input file, i.e. the Bzip file with the xml data, and the disk where the file is to be unpacked.
+	 * Constructor takes the input file, i.e. the Bzip file with the xml data, and the folder where the file is to be unpacked.
 	 * 
-	 * @param disk the output disk
+	 * @param folder the output folder and where the bzip files are
 	 */
-	public WikiDataUnpackerWorker(final File disk) {
-		this.disk = disk;
+	public WikiDataUnpackerWorker(final File folder) {
+		this.folder = folder;
 	}
 
 	/**
@@ -49,22 +49,15 @@ public class WikiDataUnpackerWorker implements Runnable {
 	 */
 	@Override
 	public void run() {
-		File[] bZip2Files = FileUtilities.findFiles(disk, new String[]{"bz2"});
-//		// Sort them by the name
-//		Collections.sort(bZip2Files, new Comparator<File>() {
-//			@Override
-//			public int compare(File o1, File o2) {
-//				return o1.getName().compareTo(o2.getName());
-//			}
-//		});
+		File[] bZip2Files = FileUtilities.findFiles(folder, new String[] { "bz2" });
 		LOGGER.info("Files : " + bZip2Files);
 		for (File bZip2File : bZip2Files) {
-			File baseDirectory = new File(disk, FilenameUtils.removeExtension(bZip2File.getName()));
+			File baseDirectory = new File(folder, FilenameUtils.removeExtension(bZip2File.getName()));
 			if (baseDirectory.exists() && baseDirectory.isDirectory()) {
-				LOGGER.info("Not doing file : " + bZip2File + ", on disk : " + disk);
+				LOGGER.info("Not doing file : " + bZip2File + ", on folder : " + folder);
 				continue;
 			}
-			LOGGER.info("Doing file : " + bZip2File + ", on disk : " + disk);
+			LOGGER.info("Doing file : " + bZip2File + ", on folder : " + folder);
 			FileInputStream fileInputStream = null;
 			BZip2CompressorInputStream bZip2CompressorInputStream = null;
 			int totalCount = 0;
@@ -87,7 +80,7 @@ public class WikiDataUnpackerWorker implements Runnable {
 					}
 				}
 			} catch (Exception e) {
-				LOGGER.error("Exception reading and uncompressing the zip file : " + bZip2File + ", " + disk, e);
+				LOGGER.error("Exception reading and uncompressing the zip file : " + bZip2File + ", " + folder, e);
 			} finally {
 				FileUtilities.close(fileInputStream);
 				FileUtilities.close(bZip2CompressorInputStream);
@@ -102,7 +95,7 @@ public class WikiDataUnpackerWorker implements Runnable {
 	 * @return the set of file names that are already unpacked
 	 */
 	protected Set<String> getFileHashes(final File bZip2File) {
-		File baseDirectory = new File(disk, FilenameUtils.removeExtension(bZip2File.getName()));
+		File baseDirectory = new File(folder, FilenameUtils.removeExtension(bZip2File.getName()));
 		Set<String> fileHashes = new TreeSet<String>();
 		if (baseDirectory.exists() && baseDirectory.isDirectory()) {
 			// Get all the files in the directory and add them to the set of names
@@ -122,7 +115,7 @@ public class WikiDataUnpackerWorker implements Runnable {
 	 * 
 	 * @param outputDirectory the directory where to write the output files
 	 * @param stringBuilder the string of xml data to parse and write
-	 * @return the number of files written to the disk
+	 * @return the number of files written to the folder
 	 * @throws Exception
 	 */
 	protected int unpack(final File outputDirectory, final StringBuilder stringBuilder) throws Exception {
@@ -149,7 +142,7 @@ public class WikiDataUnpackerWorker implements Runnable {
 
 	private File getNextDirectory(final File bZip2File, final long fileName) {
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.append(disk.getAbsolutePath());
+		stringBuilder.append(folder.getAbsolutePath());
 		stringBuilder.append(File.separator);
 		stringBuilder.append(FilenameUtils.removeExtension(bZip2File.getName()));
 		stringBuilder.append(File.separator);
