@@ -18,7 +18,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 /**
- * TODO Document me.
+ * This strategy will intercept typically databases that have co-ordinate data, geo co-ordinates. It will then add ge-hash fields to the documents in the Lucene
+ * index that can then be queried and the results can be sorted by distance. Another application of course is that the query can limit all results from a
+ * specific point, i.e. only places that have 'Julia Roberts' but limited to Hollywood Boulevard.
  * 
  * @author Michael Couck
  * @since 20.01.2012
@@ -53,8 +55,8 @@ public final class GeospatialEnrichmentStrategy extends AStrategy {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean aroundProcess(final IndexContext<?> indexContext, final Indexable<?> indexable, final Document document,
-			final Object resource) throws Exception {
+	public boolean aroundProcess(final IndexContext<?> indexContext, final Indexable<?> indexable, final Document document, final Object resource)
+			throws Exception {
 		boolean mustProceed = Boolean.TRUE;
 		// The parameters can be either the columns and values from a csv file
 		// or the columns from a table filled in with the values. All the logic from the Enrichment class can
@@ -66,6 +68,15 @@ public final class GeospatialEnrichmentStrategy extends AStrategy {
 		return mustProceed && super.aroundProcess(indexContext, indexable, document, resource);
 	}
 
+	/**
+	 * This method will look through the children of the indexable, and try to find the latitude and longitude to generate a co-ordinate. If there is no
+	 * c-ordinate data in the indexable hierarchy, then this method will potentially go to a reverse geo-coding web service to get the co-ordinate based on the
+	 * name, as a last resort.
+	 * 
+	 * @param indexable the indexable to try to find ge-spatial data in
+	 * @return the co-ordinate generated from the latitude and longitude in the indexable, or null if there is no geo-data in the indexable, and the reverse
+	 *         geo-coder didn't match anything either
+	 */
 	final Coordinate getCoordinate(final Indexable<?> indexable) {
 		Double latitude = null;
 		Double longitude = null;
@@ -97,17 +108,14 @@ public final class GeospatialEnrichmentStrategy extends AStrategy {
 	}
 
 	final void addSpatialLocationFields(final Coordinate coordinate, final Document document) {
-		document.add(new Field(IConstants.LAT, NumericUtils.doubleToPrefixCoded(coordinate.getLat()), Field.Store.YES,
-				Field.Index.NOT_ANALYZED));
-		document.add(new Field(IConstants.LNG, NumericUtils.doubleToPrefixCoded(coordinate.getLon()), Field.Store.YES,
-				Field.Index.NOT_ANALYZED));
+		document.add(new Field(IConstants.LAT, NumericUtils.doubleToPrefixCoded(coordinate.getLat()), Field.Store.YES, Field.Index.NOT_ANALYZED));
+		document.add(new Field(IConstants.LNG, NumericUtils.doubleToPrefixCoded(coordinate.getLon()), Field.Store.YES, Field.Index.NOT_ANALYZED));
 		addCartesianTiers(coordinate, document);
 	}
 
 	final void addCartesianTiers(final Coordinate coordinate, final Document document) {
 		for (int tier = startTier; tier <= endTier; tier++) {
-			CartesianTierPlotter cartesianTierPlotter = new CartesianTierPlotter(tier, sinusodialProjector,
-					CartesianTierPlotter.DEFALT_FIELD_PREFIX);
+			CartesianTierPlotter cartesianTierPlotter = new CartesianTierPlotter(tier, sinusodialProjector, CartesianTierPlotter.DEFALT_FIELD_PREFIX);
 			final double boxId = cartesianTierPlotter.getTierBoxId(coordinate.getLat(), coordinate.getLon());
 			document.add(new Field(cartesianTierPlotter.getTierFieldName(), NumericUtils.doubleToPrefixCoded(boxId), Field.Store.YES,
 					Field.Index.NOT_ANALYZED_NO_NORMS));
@@ -134,8 +142,7 @@ public final class GeospatialEnrichmentStrategy extends AStrategy {
 
 	public void initialize() {
 		sinusodialProjector = new SinusoidalProjector();
-		CartesianTierPlotter cartesianTierPlotter = new CartesianTierPlotter(0, sinusodialProjector,
-				CartesianTierPlotter.DEFALT_FIELD_PREFIX);
+		CartesianTierPlotter cartesianTierPlotter = new CartesianTierPlotter(0, sinusodialProjector, CartesianTierPlotter.DEFALT_FIELD_PREFIX);
 		startTier = cartesianTierPlotter.bestFit(startTierParam);
 		endTier = cartesianTierPlotter.bestFit(endTierParam);
 	}

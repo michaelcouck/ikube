@@ -15,7 +15,7 @@ public interface IResourceHandler<T> {
 
 	/**
 	 * This method will process the resource, extracting the data from whatever type of document or resource it is, and adding all the data to the fields in the
-	 * document. This could take a column in a table sof rexample.
+	 * document. This could take a column in a tables for example.
 	 * 
 	 * @param indexContext the index context to add the document to the index for
 	 * @param indexable the indexable that is being processed currently

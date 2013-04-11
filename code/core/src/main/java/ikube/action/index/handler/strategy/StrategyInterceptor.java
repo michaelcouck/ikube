@@ -12,10 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This is the interceptor for the file system and data base handlers. Essentially this interceptor will execute strategies on the handlers
- * before processing and based on the result allow the handler to proceed to index the resource or not. This facilitates delta indexing and
- * adding data to the document before comitting the data to the index, like adding a file while processing the database.
- * 
+ * @see IStrategyInterceptor
  * @author Michael Couck
  * @since 27.12.12
  * @version 01.00

@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.OperatingSystemMXBean;
 import java.sql.Timestamp;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -80,15 +79,16 @@ public class SnapshotSchedule extends Schedule {
 				snapshot.setAvailableProcessors(operatingSystemMXBean.getAvailableProcessors());
 
 				dataBase.persist(snapshot);
-				indexContext.getSnapshots().add(snapshot);
-				if (indexContext.getSnapshots().size() > IConstants.MAX_SNAPSHOTS) {
-					LinkedList<Snapshot> snapshots = new LinkedList<Snapshot>();
-					snapshots.addAll(indexContext.getSnapshots());
-					while (snapshots.size() > (int) (IConstants.MAX_SNAPSHOTS * 0.25d)) {
-						snapshots.removeFirst();
-					}
-					indexContext.setSnapshots(snapshots);
-				}
+				List<Snapshot> snapshots = dataBase.find(Snapshot.class, Snapshot.SELECT_SNAPSHOTS_ORDER_BY_TIMESTAMP_DESC, null, 0, 90);
+				indexContext.setSnapshots(snapshots);
+				// if (indexContext.getSnapshots().size() > IConstants.MAX_SNAPSHOTS) {
+				// LinkedList<Snapshot> snapshots = new LinkedList<Snapshot>();
+				// snapshots.addAll(indexContext.getSnapshots());
+				// while (snapshots.size() > (int) (IConstants.MAX_SNAPSHOTS * 0.25d)) {
+				// snapshots.removeFirst();
+				// }
+				// indexContext.setSnapshots(snapshots);
+				// }
 			} catch (Exception e) {
 				LOGGER.error("Exception persisting snapshot : ", e);
 			}

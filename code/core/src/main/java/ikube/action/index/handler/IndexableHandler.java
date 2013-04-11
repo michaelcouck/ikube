@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Base class for the handlers that contains access to common functionality like the threads etc.
  * 
+ * @see IIndexableHandler
  * @author Michael Couck
  * @since 29.11.10
  * @version 01.00

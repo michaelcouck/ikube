@@ -9,6 +9,8 @@ import javax.persistence.FetchType;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.PrimaryKeyJoinColumn;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -21,7 +23,10 @@ import org.apache.commons.lang.builder.ToStringStyle;
  */
 @Entity()
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@NamedQueries(value = { @NamedQuery(name = Snapshot.SELECT_SNAPSHOTS_ORDER_BY_TIMESTAMP_DESC, query = Snapshot.SELECT_SNAPSHOTS_ORDER_BY_TIMESTAMP_DESC) })
 public class Snapshot extends Persistable {
+
+	public static final String SELECT_SNAPSHOTS_ORDER_BY_TIMESTAMP_DESC = "select s from Snapshot as s order by timestamp desc";
 
 	@Column
 	private long numDocs;
