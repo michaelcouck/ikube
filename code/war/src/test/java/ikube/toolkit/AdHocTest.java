@@ -1,48 +1,33 @@
 package ikube.toolkit;
 
 import ikube.Base;
-import ikube.action.index.handler.enrich.geocode.Coordinate;
-import ikube.search.SearchSpatial;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.io.InputStream;
+import java.util.List;
 
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.MultiSearcher;
-import org.apache.lucene.store.FSDirectory;
+import org.apache.commons.io.IOUtils;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.springframework.core.io.ClassPathResource;
 
-@SuppressWarnings("deprecation")
 public class AdHocTest extends Base {
 
 	@Test
 	@Ignore
 	public void print() throws Exception {
-		String indexPath = "/tmp/1359663404552/192.168.122.1-8000";
-		IndexReader indexReader = IndexReader.open(FSDirectory.open(new File(indexPath)));
-		printIndex(indexReader, 10);
-		IndexSearcher indexSearcher = new IndexSearcher(indexReader);
-		MultiSearcher multiSearcher = new MultiSearcher(indexSearcher);
+		Thread.currentThread().getContextClassLoader();
+		InputStream inputStream = getClass().getClassLoader().getResourceAsStream("META-INF/maven/ikube/ikube-core/pom.properties");
+		logger.info("Input stream : " + inputStream);
 
-		Coordinate coordinate = new Coordinate(52.52274, 13.4166);
+		ClassPathResource classPathResource = new ClassPathResource("META-INF/maven/ikube/ikube-core/pom.properties", getClass().getClassLoader());
+		inputStream = classPathResource.getInputStream();
+		logger.info("Input stream : " + inputStream);
 
-		SearchSpatial searchSpatialAll = new SearchSpatial(multiSearcher);
-		searchSpatialAll.setCoordinate(coordinate);
-		searchSpatialAll.setDistance(10);
-		searchSpatialAll.setFirstResult(0);
-		searchSpatialAll.setFragment(true);
-		searchSpatialAll.setMaxResults(10);
-		searchSpatialAll.setSearchField("name");
-		searchSpatialAll.setSearchString("hotel");
-		searchSpatialAll.setSortField();
-		ArrayList<HashMap<String, String>> results = searchSpatialAll.execute();
-		logger.info("Results : " + results);
-
-		indexReader.close();
-		indexSearcher.close();
+		List<String> lines = IOUtils.readLines(inputStream);
+		for (final String line : lines) {
+			logger.info("Line : " + line);
+		}
+		logger.info("Timestamp : " + lines.get(1));
 	}
 
 }

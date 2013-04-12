@@ -85,4 +85,16 @@
 		<function-class>ikube.web.tag.Toolkit</function-class>
 		<function-signature>java.lang.String documentIcon(java.lang.Object, java.lang.String, java.lang.String)</function-signature>
 	</function>
+	
+	<function>
+		<name>version</name>
+		<function-class>ikube.web.tag.Toolkit</function-class>
+		<function-signature>java.lang.String version()</function-signature>
+	</function>
+	
+	<function>
+		<name>timestamp</name>
+		<function-class>ikube.web.tag.Toolkit</function-class>
+		<function-signature>java.lang.String timestamp()</function-signature>
+	</function>
 </taglib>

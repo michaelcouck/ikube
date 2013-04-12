@@ -2,18 +2,23 @@ package ikube.web.tag;
 
 import ikube.toolkit.DatabaseUtilities;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.StringTokenizer;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.ReflectionUtils;
 
 /**
@@ -24,14 +29,16 @@ import org.springframework.util.ReflectionUtils;
  * @version 01.00
  */
 public class Toolkit {
-	
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(Toolkit.class);
+
+	private static String VERSION;
+	private static String TIMESTAMP;
 
 	/**
 	 * Returns the size of a collection to the pate.
 	 * 
-	 * @param collection
-	 *        the collection to get the size for
+	 * @param collection the collection to get the size for
 	 * @return the size of the collection
 	 */
 	public static int size(Collection<?> collection) {
@@ -44,10 +51,8 @@ public class Toolkit {
 	/**
 	 * This method removes the target collection from the source.
 	 * 
-	 * @param one
-	 *        the source collection to have purged by the target
-	 * @param two
-	 *        the target collection who's entries are to be removesd from the source
+	 * @param one the source collection to have purged by the target
+	 * @param two the target collection who's entries are to be removesd from the source
 	 * @return the purged collection sans the elements in the target collection
 	 */
 	public static Collection<?> remove(Collection<?> one, Collection<?> two) {
@@ -123,17 +128,13 @@ public class Toolkit {
 	}
 
 	/**
-	 * This method will build a query string using the parameters in the map in the signature. This avoids scripting in the Jsp or very long
-	 * urls built parameter by parameter.
+	 * This method will build a query string using the parameters in the map in the signature. This avoids scripting in the Jsp or very long urls built
+	 * parameter by parameter.
 	 * 
-	 * @param parameterMap
-	 *        the map of parameters to use in the query string
-	 * @param parameterNamesReplacements
-	 *        the names of the parameters to be replaced in the original map
-	 * @param parameterValuesReplacements
-	 *        the values of the parameters to be replaced in the original map
-	 * @return the string query for he parameters and replacements, would be something like
-	 *         '?paramOne=paramValueOne&paramTwo=paramValueTwo&...'
+	 * @param parameterMap the map of parameters to use in the query string
+	 * @param parameterNamesReplacements the names of the parameters to be replaced in the original map
+	 * @param parameterValuesReplacements the values of the parameters to be replaced in the original map
+	 * @return the string query for he parameters and replacements, would be something like '?paramOne=paramValueOne&paramTwo=paramValueTwo&...'
 	 */
 	public static String queryString(final Map<Object, Object> parameterMap, final List<Object> parameterNamesReplacements,
 			final List<Object> parameterValuesReplacements) {
@@ -186,6 +187,42 @@ public class Toolkit {
 			LOGGER.error("Icon access error : " + path + ", " + icons + ", " + def, e);
 		}
 		return def;
+	}
+
+	public static String version() {
+		if (VERSION == null) {
+			readPomProperties();
+		}
+		return VERSION;
+	}
+
+	public static String timestamp() {
+		if (TIMESTAMP == null) {
+			readPomProperties();
+		}
+		return TIMESTAMP;
+	}
+
+	/**
+	 * This method will read the pom properties file where the version and the build timestamp are and make them available to the web pages via the static class
+	 * properties of the same name.
+	 */
+	private static void readPomProperties() {
+		String pomPropertiesFile = "META-INF/maven/ikube/ikube-war/pom.properties";
+		ClassPathResource classPathResource = new ClassPathResource(pomPropertiesFile, Toolkit.class.getClassLoader());
+		InputStream inputStream = null;
+		try {
+			inputStream = classPathResource.getInputStream();
+			List<String> lines = IOUtils.readLines(inputStream);
+			TIMESTAMP = lines.get(1);
+			Properties properties = new Properties();
+			properties.load(inputStream);
+			VERSION = properties.getProperty("version");
+		} catch (IOException e) {
+			LOGGER.error("Exception reading the Maven properties for the build : " + pomPropertiesFile, e);
+		} finally {
+			IOUtils.closeQuietly(inputStream);
+		}
 	}
 
 }
