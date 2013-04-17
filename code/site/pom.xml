@@ -51,28 +51,6 @@
 				<artifactId>maven-war-plugin</artifactId>
 				<version>2.2</version>
 			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-antrun-plugin</artifactId>
-				<version>1.6</version>
-				<executions>
-					<execution>
-						<id>write-release-info</id>
-						<phase>pre-integration-test</phase>
-						<configuration>
-							<target>
-								<echo message="Writing release file : " />
-								<echo file="src/main/webapp/WEB-INF/tiles/release.txt" append="false">
-									${project.version} - ${maven.build.timestamp}
-								</echo>
-							</target>
-						</configuration>
-						<goals>
-							<goal>run</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
 			<!-- 
 				This plugin starts a Jetty server before the integration tests and stops it after the 
 				integration tests. It can also be used to start a jetty server from the command line for testing. 

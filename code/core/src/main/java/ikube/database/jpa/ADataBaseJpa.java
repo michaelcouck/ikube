@@ -68,7 +68,6 @@ public abstract class ADataBaseJpa implements IDataBase {
 				stringBuilder.append(parameter.getKey());
 			}
 		}
-		LOGGER.info("Query : " + stringBuilder);
 		Query query = getEntityManager().createQuery(stringBuilder.toString());
 		setParameters(query, parameters);
 		return (Long) query.getSingleResult();
@@ -354,6 +353,9 @@ public abstract class ADataBaseJpa implements IDataBase {
 	 * @param parameters and the parameter map, key value pairs
 	 */
 	private void setParameters(final Query query, final Map<String, Object> parameters) {
+		if (parameters == null) {
+			return;
+		}
 		for (Map.Entry<String, Object> entry : parameters.entrySet()) {
 			String key = entry.getKey();
 			Object value = entry.getValue();

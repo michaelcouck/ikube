@@ -7,7 +7,7 @@
 	<tr>
 		<td align="center" nowrap="nowrap">
 			<p>
-				Version ${ikube:version()} - ${ikube:timestamp()}
+				Version - ${ikube:version()} - ${ikube:timestamp()}
 			</p>
 		</td>
 	</tr>
