@@ -1,7 +1,8 @@
+<%@ page errorPage="/WEB-INF/jsp/error.jsp" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ page errorPage="/WEB-INF/jsp/error.jsp" contentType="text/html" %>
 
 <table width="100%">
+	<tr><td><span style="float: right;"><script type="text/javascript">writeDate();</script></span></td></tr>
 	<tr>
 		<td>
 			<strong>ikube</strong>
@@ -36,11 +37,6 @@
 			Have a fantastic day!<br>
 			Documentation brought to you by Ikube<br>
 			You are here =&gt;
-		</td>
-	</tr>
-	<tr>
-		<td>
-			<a href="<c:url value="/documentation/quickstart.html" />" >Quick start</a>
 		</td>
 	</tr>
 </table>

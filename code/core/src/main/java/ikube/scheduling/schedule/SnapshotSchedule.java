@@ -15,6 +15,9 @@ import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.OperatingSystemMXBean;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -68,6 +71,7 @@ public class SnapshotSchedule extends Schedule {
 
 				Snapshot snapshot = new Snapshot();
 
+				snapshot.setIndexContext(indexContext.getName());
 				snapshot.setTimestamp(new Timestamp(System.currentTimeMillis()));
 				snapshot.setIndexSize(IndexManager.getIndexSize(indexContext));
 				snapshot.setNumDocs(IndexManager.getNumDocsIndexWriter(indexContext));
@@ -79,16 +83,19 @@ public class SnapshotSchedule extends Schedule {
 				snapshot.setAvailableProcessors(operatingSystemMXBean.getAvailableProcessors());
 
 				dataBase.persist(snapshot);
-				List<Snapshot> snapshots = dataBase.find(Snapshot.class, Snapshot.SELECT_SNAPSHOTS_ORDER_BY_TIMESTAMP_DESC, null, 0, 90);
+				String[] names = new String[] { "indexContext" };
+				Object[] values = new Object[] { indexContext.getName() };
+				List<Snapshot> snapshots = dataBase.find(Snapshot.class, Snapshot.SELECT_SNAPSHOTS_ORDER_BY_TIMESTAMP_DESC, names, values,
+						0, 90);
+				snapshots = new ArrayList<Snapshot>(snapshots);
+				// We have the last snapshots, now reverse the order for the gui
+				Collections.sort(snapshots, new Comparator<Snapshot>() {
+					@Override
+					public int compare(Snapshot o1, Snapshot o2) {
+						return o1.getTimestamp().compareTo(o2.getTimestamp());
+					}
+				});
 				indexContext.setSnapshots(snapshots);
-				// if (indexContext.getSnapshots().size() > IConstants.MAX_SNAPSHOTS) {
-				// LinkedList<Snapshot> snapshots = new LinkedList<Snapshot>();
-				// snapshots.addAll(indexContext.getSnapshots());
-				// while (snapshots.size() > (int) (IConstants.MAX_SNAPSHOTS * 0.25d)) {
-				// snapshots.removeFirst();
-				// }
-				// indexContext.setSnapshots(snapshots);
-				// }
 			} catch (Exception e) {
 				LOGGER.error("Exception persisting snapshot : ", e);
 			}

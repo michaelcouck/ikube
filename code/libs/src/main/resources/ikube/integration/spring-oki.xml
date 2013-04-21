@@ -31,6 +31,7 @@
 		property:throttle="${throttle}"
 		property:indexDirectoryPath="${index.directory.path}"
 		property:indexDirectoryPathBackup="${index.directory.path.backup}"
+		property:analyzer-ref="ikube.action.index.analyzer.NgramAnalyzer"
 		property:children-ref="okiIndexables" />
 	<util:list id="okiIndexables">
 		<ref local="oki" />
@@ -48,6 +49,11 @@
 		property:stored="true"
 		property:vectored="true"
 		property:internetBatchSize="1000"
-		property:excludedPattern="${internet.excluded.pattern}" />
+		property:excludedPattern="${internet.excluded.pattern}"
+		property:strategies-ref="oki-strategies" />
+		
+	<util:list id="oki-strategies">
+	    <ref bean="ikube.action.index.handler.strategy.LanguageDetectionStrategy" />
+	</util:list>
 	
 </beans>

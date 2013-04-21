@@ -363,5 +363,16 @@
 	<bean 
 		id="ikube.action.index.handler.filesystem.ResourceRowHandler" 
 		class="ikube.action.index.handler.filesystem.ResourceRowHandler" />
+		
+	<bean 
+		id="ikube.action.index.analyzer.NgramAnalyzer"
+		name="ikube.action.index.analyzer.NgramAnalyzer" 
+		class="ikube.action.index.analyzer.NgramAnalyzer" />
+	
+	<bean 
+		id="ikube.action.index.handler.strategy.LanguageDetectionStrategy"
+		name="ikube.action.index.handler.strategy.LanguageDetectionStrategy" 
+		class="ikube.action.index.handler.strategy.LanguageDetectionStrategy" 
+		init-method="initialize" />
 	
 </beans>

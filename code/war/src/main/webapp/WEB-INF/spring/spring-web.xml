@@ -63,21 +63,6 @@
 	<!-- These are static resources basically. -->
 	<mvc:view-controller path="/index.html" />
 	
-	<mvc:view-controller path="/documentation/index.html" />
-	<mvc:view-controller path="/documentation/intro.html" />
-	<mvc:view-controller path="/documentation/quickstart.html" />
-	<mvc:view-controller path="/documentation/searching.html" />
-	<mvc:view-controller path="/documentation/extra.html" />
-	<mvc:view-controller path="/documentation/clustering.html" />
-	<mvc:view-controller path="/documentation/indexes.html" />
-	<mvc:view-controller path="/documentation/customisation.html" />
-	
-	<mvc:view-controller path="/documentation/configuration/context.html" />
-	<mvc:view-controller path="/documentation/configuration/database.html" />
-	<mvc:view-controller path="/documentation/configuration/email.html" />
-	<mvc:view-controller path="/documentation/configuration/filesystem.html" />
-	<mvc:view-controller path="/documentation/configuration/internet.html" />
-	
 	<mvc:interceptors>
 		<bean 
 			class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor"

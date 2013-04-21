@@ -38,6 +38,7 @@
 		property:indexDirectoryPath="${index.directory.path}"
 		property:indexDirectoryPathBackup="${index.directory.path.backup}"
 		property:children-ref="geospatialIndexables"
+		property:analyzer-ref="ikube.action.index.analyzer.NgramAnalyzer"
 		property:strategies-ref="geoname-strategies" />
 	<util:list id="geospatialIndexables">
 		<ref local="geoname" />
@@ -80,9 +81,10 @@
 		<ref local="geospatialPopulation" />
 		<ref local="geospatialElevation" />
 		<ref local="geospatialGtopo30" />
-		<!-- <ref local="alternatename" /> -->
+		<ref local="alternatename" />
 	</util:list>
 	<util:list id="geoname-strategies">
+	    <ref bean="ikube.action.index.handler.strategy.LanguageDetectionStrategy" />
 	    <bean 
 	    	class="ikube.action.index.handler.strategy.GeospatialEnrichmentStrategy"
 	    	init-method="initialize" />

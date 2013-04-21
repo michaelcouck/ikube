@@ -36,6 +36,7 @@
 		property:delta="false"
 		property:indexDirectoryPath="${index.directory.path}"
 		property:indexDirectoryPathBackup="${index.directory.path.backup}/backup"
+		property:analyzer-ref="ikube.action.index.analyzer.NgramAnalyzer"
 		property:children-ref="desktopFolders" />
 	<util:list id="desktopFolders">
 		<ref local="desktopFolder" />
@@ -62,13 +63,11 @@
 		property:lastModifiedFieldName="lastmodified"
 		property:batchSize="1000"
 		property:maxReadLength="1000000" 
-		property:maxExceptions="1000000" 
+		property:maxExceptions="1000000"
 		property:strategies-ref="desktop-strategies" />
-		
+
 	<util:list id="desktop-strategies">
-	    <bean 
-	    	class="ikube.action.index.handler.strategy.LanguageDetectionStrategy"
-	    	init-method="initialize" />
+		<ref bean="ikube.action.index.handler.strategy.LanguageDetectionStrategy" />
 	</util:list>
 	
 </beans>

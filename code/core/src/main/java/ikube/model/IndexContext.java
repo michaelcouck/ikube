@@ -146,7 +146,7 @@ public class IndexContext<T> extends Indexable<T> implements Comparable<IndexCon
 	@Attribute(field = false, description = "This flag indicates whether the index should be delta indexed, i.e. no new index just the changes n the resources")
 	private boolean delta;
 
-	@OneToMany(cascade = { CascadeType.ALL }, mappedBy = "indexContext", fetch = FetchType.EAGER)
+	@OneToMany(cascade = { CascadeType.ALL }, fetch = FetchType.EAGER)
 	private List<Snapshot> snapshots = new ArrayList<Snapshot>();
 
 	public String getIndexName() {

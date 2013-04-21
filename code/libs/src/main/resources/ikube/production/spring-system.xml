@@ -39,14 +39,15 @@
 		property:indexDirectoryPath="${index.directory.path}"
 		property:indexDirectoryPathBackup="${index.directory.path.backup}"
 		property:analyzer-ref="ikube.action.index.analyzer.NgramAnalyzer"
+		property:strategies-ref="ikube-system-strategies"
 		property:children-ref="ikube-system-indexables" />
 	<util:list id="ikube-system-indexables">
 		<ref local="ikube-data-source" />
 	</util:list>
 	
-	<bean 
-		id="ikube.action.index.analyzer.NgramAnalyzer" 
-		class="ikube.action.index.analyzer.NgramAnalyzer" />
+	<util:list id="ikube-system-strategies">
+		<ref bean="ikube.action.index.handler.strategy.LanguageDetectionStrategy" />
+	</util:list>
 	
 	<bean
 		id="ikube-data-source"

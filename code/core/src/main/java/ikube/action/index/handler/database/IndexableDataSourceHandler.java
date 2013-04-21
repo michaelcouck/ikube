@@ -46,7 +46,7 @@ public class IndexableDataSourceHandler extends IndexableHandler<IndexableDataSo
 					continue;
 				}
 				IndexableTable indexableTable = getIndexableTable(tableName, indexable);
-				logger.info("Dynamically adding table to context : ");
+				logger.info("Dynamically adding table to context : " + indexableTable.getName());
 				indexContext.getChildren().add(indexableTable);
 			}
 		} finally {

@@ -2,19 +2,12 @@ package ikube.model;
 
 import java.util.Date;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
-import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.PrimaryKeyJoinColumn;
-
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
 
 /**
  * @author Michael Couck
@@ -26,7 +19,7 @@ import org.apache.commons.lang.builder.ToStringStyle;
 @NamedQueries(value = { @NamedQuery(name = Snapshot.SELECT_SNAPSHOTS_ORDER_BY_TIMESTAMP_DESC, query = Snapshot.SELECT_SNAPSHOTS_ORDER_BY_TIMESTAMP_DESC) })
 public class Snapshot extends Persistable {
 
-	public static final String SELECT_SNAPSHOTS_ORDER_BY_TIMESTAMP_DESC = "select s from Snapshot as s order by timestamp desc";
+	public static final String SELECT_SNAPSHOTS_ORDER_BY_TIMESTAMP_DESC = "select s from Snapshot as s where s.indexContext = :indexContext order by s.timestamp desc";
 
 	@Column
 	private long numDocs;
@@ -44,32 +37,30 @@ public class Snapshot extends Persistable {
 	private double systemLoad;
 	@Column
 	private double availableProcessors;
-
-	@PrimaryKeyJoinColumn
-	@ManyToOne(cascade = { CascadeType.MERGE, CascadeType.REFRESH }, fetch = FetchType.EAGER)
-	private IndexContext<?> indexContext;
-
-	public long getIndexSize() {
-		return indexSize;
-	}
-
-	public void setIndexSize(final long indexSize) {
-		this.indexSize = indexSize;
-	}
+	@Column
+	private String indexContext;
 
 	public long getNumDocs() {
 		return numDocs;
 	}
 
-	public void setNumDocs(final long numDocs) {
+	public void setNumDocs(long numDocs) {
 		this.numDocs = numDocs;
+	}
+
+	public long getIndexSize() {
+		return indexSize;
+	}
+
+	public void setIndexSize(long indexSize) {
+		this.indexSize = indexSize;
 	}
 
 	public Date getLatestIndexTimestamp() {
 		return latestIndexTimestamp;
 	}
 
-	public void setLatestIndexTimestamp(final Date latestIndexTimestamp) {
+	public void setLatestIndexTimestamp(Date latestIndexTimestamp) {
 		this.latestIndexTimestamp = latestIndexTimestamp;
 	}
 
@@ -77,7 +68,7 @@ public class Snapshot extends Persistable {
 		return docsPerMinute;
 	}
 
-	public void setDocsPerMinute(final long docsPerMinute) {
+	public void setDocsPerMinute(long docsPerMinute) {
 		this.docsPerMinute = docsPerMinute;
 	}
 
@@ -85,23 +76,15 @@ public class Snapshot extends Persistable {
 		return searchesPerMinute;
 	}
 
-	public void setSearchesPerMinute(final long searchesPerMinute) {
+	public void setSearchesPerMinute(long searchesPerMinute) {
 		this.searchesPerMinute = searchesPerMinute;
-	}
-
-	public IndexContext<?> getIndexContext() {
-		return indexContext;
-	}
-
-	public void setIndexContext(final IndexContext<?> indexContext) {
-		this.indexContext = indexContext;
 	}
 
 	public long getTotalSearches() {
 		return totalSearches;
 	}
 
-	public void setTotalSearches(final long totalSearches) {
+	public void setTotalSearches(long totalSearches) {
 		this.totalSearches = totalSearches;
 	}
 
@@ -109,8 +92,8 @@ public class Snapshot extends Persistable {
 		return systemLoad;
 	}
 
-	public void setSystemLoad(final double cpuLoad) {
-		this.systemLoad = cpuLoad;
+	public void setSystemLoad(double systemLoad) {
+		this.systemLoad = systemLoad;
 	}
 
 	public double getAvailableProcessors() {
@@ -121,8 +104,16 @@ public class Snapshot extends Persistable {
 		this.availableProcessors = availableProcessors;
 	}
 
-	public String toString() {
-		return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+	public String getIndexContext() {
+		return indexContext;
+	}
+
+	public void setIndexContext(String indexContext) {
+		this.indexContext = indexContext;
+	}
+
+	public static String getSelectSnapshotsOrderByTimestampDesc() {
+		return SELECT_SNAPSHOTS_ORDER_BY_TIMESTAMP_DESC;
 	}
 
 }

@@ -207,7 +207,7 @@ public final class ClusterManagerHazelcast extends AClusterManager {
 		} finally {
 			if (!removedAndComitted) {
 				ThreadUtilities.sleep(1000);
-				if (server.getActions() != null && server.getActions().size() > 0) {
+				if (server != null && server.getActions() != null && server.getActions().size() > 0) {
 					if (retry >= IConstants.MAX_RETRY_CLUSTER_REMOVE) {
 						logger.info("Retried to remove the action, failed : " + retry + ", action : " + action + ", actions : "
 								+ server.getActions());

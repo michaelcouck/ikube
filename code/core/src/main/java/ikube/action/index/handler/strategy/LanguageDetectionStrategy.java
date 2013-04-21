@@ -17,6 +17,7 @@ import org.apache.lucene.document.Field.TermVector;
 
 import com.cybozu.labs.langdetect.Detector;
 import com.cybozu.labs.langdetect.DetectorFactory;
+import com.cybozu.labs.langdetect.LangDetectException;
 
 /**
  * This strategy will detect the language of the resource and add the language field to the index document.
@@ -39,15 +40,19 @@ public final class LanguageDetectionStrategy extends AStrategy {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean aroundProcess(final IndexContext<?> indexContext, final Indexable<?> indexable, final Document document, final Object resource)
-			throws Exception {
+	public boolean aroundProcess(final IndexContext<?> indexContext, final Indexable<?> indexable, final Document document,
+			final Object resource) throws Exception {
 		// Concatenate the data in the indexable
 		String content = getContent(indexable, new StringBuilder()).toString();
 		if (!StringUtils.isEmpty(content)) {
 			Detector detector = DetectorFactory.create();
 			detector.append(content.toString());
-			String language = detector.detect();
-			IndexManager.addStringField(IConstants.LANGUAGE, language, document, Store.YES, Index.ANALYZED, TermVector.NO);
+			try {
+				String language = detector.detect();
+				IndexManager.addStringField(IConstants.LANGUAGE, language, document, Store.YES, Index.ANALYZED, TermVector.NO);
+			} catch (LangDetectException e) {
+				logger.info("Language processing error : " + e.getMessage());
+			}
 		}
 		return super.aroundProcess(indexContext, indexable, document, resource);
 	}
@@ -56,8 +61,10 @@ public final class LanguageDetectionStrategy extends AStrategy {
 		if (indexable.getContent() != null) {
 			builder.append(indexable.getContent());
 		}
-		for (final Indexable<?> child : indexable.getChildren()) {
-			getContent(child, builder);
+		if (indexable.getChildren() != null) {
+			for (final Indexable<?> child : indexable.getChildren()) {
+				getContent(child, builder);
+			}
 		}
 		return builder;
 	}
@@ -67,8 +74,8 @@ public final class LanguageDetectionStrategy extends AStrategy {
 	 */
 	@Override
 	public void initialize() {
-		File profileDirectory = FileUtilities.findFileRecursively(new File("." + IConstants.SEP + IConstants.IKUBE + IConstants.SEP), Boolean.TRUE,
-				IConstants.LANGUAGE_DETECT_PROFILES_DIRECTORY);
+		File profileDirectory = FileUtilities.findFileRecursively(new File("." + IConstants.SEP + IConstants.IKUBE + IConstants.SEP),
+				Boolean.TRUE, IConstants.LANGUAGE_DETECT_PROFILES_DIRECTORY);
 		try {
 			logger.info("Loading language profiles from : " + profileDirectory.getAbsolutePath());
 			DetectorFactory.loadProfile(profileDirectory);

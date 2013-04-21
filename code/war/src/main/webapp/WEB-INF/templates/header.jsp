@@ -13,7 +13,7 @@
 		<a href="#" ng-click="startupAll();">Start all</a>
 		<a href="#" ng-click="terminateAll();">Terminate all</a>
 		<div style="float : right; padding-right : 10px;">
-			<a href="#" onclick="JavaScript:popup('<c:out value="${documentation}" />', 'Documentation');">Documentation</a>&nbsp;
+			<a href="http://www.ikube.be/site">Documentation</a>&nbsp;
 			<a title="<security:authentication property="authorities" />" href="#">
 				<spring:message code="security.logged.in.as" />
 				&nbsp;
