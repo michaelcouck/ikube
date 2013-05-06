@@ -20,11 +20,7 @@ import edu.cmu.sphinx.util.props.ConfigurationManager;
  * @since 21.04.13
  * @version 01.00
  */
-public class IndexableInternetHandler extends IndexableHandler<IndexableInternet> {
-
-	@Autowired
-	@SuppressWarnings("rawtypes")
-	private ResourceHandlerBase resourceUrlHandler;
+public class AudioHandler extends IndexableHandler<IndexableInternet> {
 
 	/**
 	 * {@inheritDoc}
