@@ -51,7 +51,7 @@ public abstract class Integration extends Base {
 		Thread.sleep(3000);
 		insertData(Snapshot.class, 11000);
 		Thread.sleep(3000);
-		WebServiceAuthentication.authenticate(HTTP_CLIENT, LOCALHOST, SERVER_PORT, REST_USER_NAME, REST_PASSWORD);
+		new WebServiceAuthentication().authenticate(HTTP_CLIENT, LOCALHOST, Integer.toString(SERVER_PORT), REST_USER_NAME, REST_PASSWORD);
 	}
 
 	public static <T> void insertData(final Class<T> klass, final int entities) throws SQLException, FileNotFoundException {

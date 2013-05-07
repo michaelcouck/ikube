@@ -501,7 +501,7 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 			loginUrl = new URL(indexableInternet.getLoginUrl());
 			String userid = indexableInternet.getUserid();
 			String password = indexableInternet.getPassword();
-			WebServiceAuthentication.authenticate(httpClient, loginUrl.getHost(), loginUrl.getPort(), userid, password);
+			new WebServiceAuthentication().authenticate(httpClient, loginUrl.getHost(), Integer.toString(loginUrl.getPort()), userid, password);
 		} catch (Exception e) {
 			logger.error("Exception logging in to site : " + indexableInternet, e);
 		}

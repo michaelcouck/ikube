@@ -99,7 +99,7 @@ public class Geocoder implements IGeocoder, InitializingBean {
 		URL url;
 		try {
 			url = new URL(searchUrl);
-			WebServiceAuthentication.authenticate(httpClient, url.getHost(), url.getPort(), userid, password);
+			new WebServiceAuthentication().authenticate(httpClient, url.getHost(), Integer.toString(url.getPort()), userid, password);
 		} catch (MalformedURLException e) {
 			LOGGER.error(null, e);
 		}
