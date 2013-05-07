@@ -45,9 +45,8 @@ public final class FileUtilities {
 	}
 
 	/**
-	 * Deletes all files recursively, that have the specified pattern in the path. Note that this is dangerous and you really need to know
-	 * what files are in the directory that you feed this method. There is no turning back, these files will be completely deleted, no
-	 * re-cycle bin and all that.
+	 * Deletes all files recursively, that have the specified pattern in the path. Note that this is dangerous and you really need to know what files are in the
+	 * directory that you feed this method. There is no turning back, these files will be completely deleted, no re-cycle bin and all that.
 	 * 
 	 * @param file the top level directory or file to start looking into
 	 * @param stringPatterns the patterns to look for in the file paths
@@ -114,8 +113,7 @@ public final class FileUtilities {
 	}
 
 	/**
-	 * This method looks through all the files defined in the folder in the parameter list, recursively, and gets the first one that matches
-	 * the pattern.
+	 * This method looks through all the files defined in the folder in the parameter list, recursively, and gets the first one that matches the pattern.
 	 * 
 	 * @param folder the folder to start looking through
 	 * @param stringPatterns the patterns to look for in the file paths
@@ -143,8 +141,8 @@ public final class FileUtilities {
 	}
 
 	/**
-	 * This method will look through all the files in the top level folder, and all the sub folders, adding files to the list when they
-	 * match the patterns that are provided.
+	 * This method will look through all the files in the top level folder, and all the sub folders, adding files to the list when they match the patterns that
+	 * are provided.
 	 * 
 	 * @param folder the folder to start looking through
 	 * @param stringPatterns the patterns to match the file paths with
@@ -192,8 +190,8 @@ public final class FileUtilities {
 	}
 
 	/**
-	 * Deletes the file/folder recursively. If the file cannot be deleted then the file is set to delete on exit of the JVM, which doesn't
-	 * generally work of course, but we try anyway.
+	 * Deletes the file/folder recursively. If the file cannot be deleted then the file is set to delete on exit of the JVM, which doesn't generally work of
+	 * course, but we try anyway.
 	 * 
 	 * @param file the file/folder to delete
 	 * @param maxRetryCount the number of times to re-try the delete operation
@@ -283,14 +281,24 @@ public final class FileUtilities {
 	 */
 	public static void setContents(final String filePath, final byte[] bytes) {
 		File file = FileUtilities.getFile(filePath, Boolean.FALSE);
+		setContents(file, bytes);
+	}
+
+	/**
+	 * Writes the contents of a byte array to the file.
+	 * 
+	 * @param outputFile the file to write to
+	 * @param bytes the data to write to the file
+	 */
+	public static final void setContents(final File outputFile, final byte[] bytes) {
 		FileOutputStream fileOutputStream = null;
 		try {
-			file.setReadable(true);
-			file.setWritable(true, false);
-			fileOutputStream = new FileOutputStream(file);
+			outputFile.setReadable(true);
+			outputFile.setWritable(true, false);
+			fileOutputStream = new FileOutputStream(outputFile);
 			fileOutputStream.write(bytes, 0, bytes.length);
 		} catch (FileNotFoundException e) {
-			LOGGER.error("File " + file + " not found", e);
+			LOGGER.error("File " + outputFile + " not found", e);
 		} catch (IOException e) {
 			LOGGER.error("IO exception writing file contents", e);
 		} finally {

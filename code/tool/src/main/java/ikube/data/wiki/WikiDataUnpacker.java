@@ -116,5 +116,9 @@ public class WikiDataUnpacker {
 		}
 		ThreadUtilities.waitForFutures(futures, Long.MAX_VALUE);
 	}
+	
+	protected static void read7ZAndUnpackFiles(final String directoryPath, final String... outputDirectories) throws Exception {
+		
+	}
 
 }

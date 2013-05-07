@@ -20,12 +20,12 @@
 	<br><br>
 	
 	<div ng-repeat="datum in data">
-		<b>Url</b> : <a href="{{datum.id}}">{{datum.id}}</a><br>
+		<span ng-hide="!datum.id"><b>Url</b> : <a href="{{datum.id}}">{{datum.id}}</a></span><br>
+		<span ng-hide="!datum.path"><b>Path</b> : <a href="{{datum.path}}">{{datum.path}}</a></span><br>
 		<b>Score</b> : {{datum.score}}<br>
-		<b>Title</b> : {{datum.title}}<br>
+		<span ng-hide="!datum.title"><b>Title</b> : {{datum.title}}</span><br>
 		<b>Index</b> : {{datum.index}}<br>
 		<b>Fragment</b> : <span ng-bind-html-unsafe="datum.fragment"></span> 
-		<!-- <span><b>Datum</b> : {{datum}}<br></span> -->
 		<br><br>
 	</div>
 	<br>
