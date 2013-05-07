@@ -39,16 +39,15 @@ import org.apache.lucene.search.highlight.Scorer;
 import org.apache.lucene.util.ReaderUtil;
 
 /**
- * This action does the actual search on the index. The searcher that is current in the Instance is passed to this action. The search is
- * done on the index. The results are then processed for use in the front end. A list of maps is generated from the results. There are three
- * standard fields in each map. Each map then represents one record or result from the search. The three standard items in the map are the
- * index in the lucene result set, id of the record and the score that the result got. Optionally the fragment generated from the result if
- * this is specified.
+ * This action does the actual search on the index. The searcher that is current in the Instance is passed to this action. The search is done on the index. The
+ * results are then processed for use in the front end. A list of maps is generated from the results. There are three standard fields in each map. Each map then
+ * represents one record or result from the search. The three standard items in the map are the index in the lucene result set, id of the record and the score
+ * that the result got. Optionally the fragment generated from the result if this is specified.
  * 
  * The id of the record generated using the name of the object indexed and the primary field in the database.
  * 
- * For paging functionality the search method can be called specifying the start and end parameters which will give logical paging. Although
- * the search will be done for each page forward the search is so fast that this is not relevant.
+ * For paging functionality the search method can be called specifying the start and end parameters which will give logical paging. Although the search will be
+ * done for each page forward the search is so fast that this is not relevant.
  * 
  * @author Michael Couck
  * @since 22.08.08
@@ -111,19 +110,15 @@ public abstract class Search {
 	}
 
 	/**
-	 * Takes a result from the Lucene search query and selects the fragments that have the search word(s) in it, taking only the first few
-	 * instances of the data where the term appears and returns the fragments. For example in the document the data is the following
-	 * "The quick brown fox jumps over the lazy dog" and we search for 'quick', 'fox' and 'lazy'. The result will be '...The quick brown fox
-	 * jumps...the lazy dog...'.<br>
+	 * Takes a result from the Lucene search query and selects the fragments that have the search word(s) in it, taking only the first few instances of the data
+	 * where the term appears and returns the fragments. For example in the document the data is the following "The quick brown fox jumps over the lazy dog" and
+	 * we search for 'quick', 'fox' and 'lazy'. The result will be '...The quick brown fox jumps...the lazy dog...'.<br>
 	 * <br>
 	 * The fragments are from the current document, so calling get next document will move the document to the next on in the Hits object.
 	 * 
-	 * @param the
-	 *            document to get the fragments from
-	 * @param fieldName
-	 *            the name of the field that was searched
-	 * @param the
-	 *            query that generated the results
+	 * @param the document to get the fragments from
+	 * @param fieldName the name of the field that was searched
+	 * @param the query that generated the results
 	 * @return the best fragments of text containing the search keywords
 	 */
 	protected String getFragments(final Document document, final String fieldName, final Query query) {
@@ -149,18 +144,15 @@ public abstract class Search {
 	/**
 	 * Adds the fields to the results.
 	 * 
-	 * @param document
-	 *            the document to get the fields from to add to the result
-	 * @param result
-	 *            the result map to add the field values to
+	 * @param document the document to get the fields from to add to the result
+	 * @param result the result map to add the field values to
 	 * @throws Exception
 	 */
 	protected void addFieldsToResults(final Document document, final HashMap<String, String> result) throws Exception {
 		for (Fieldable field : document.getFields()) {
 			String fieldName = field.name();
 			// Don't add the latitude and longitude tier field, very ugly data, and not useful
-			if (fieldName != null
-					&& ((fieldName.equals(IConstants.LAT) || fieldName.equals(IConstants.LNG)) || (fieldName.contains(IConstants.TIER)))) {
+			if (fieldName != null && ((fieldName.equals(IConstants.LAT) || fieldName.equals(IConstants.LNG)) || (fieldName.contains(IConstants.TIER)))) {
 				continue;
 			}
 			String stringValue = field.stringValue();
@@ -176,8 +168,7 @@ public abstract class Search {
 	/**
 	 * Sets the strings that will be searched for.
 	 * 
-	 * @param searchStrings
-	 *            the search strings
+	 * @param searchStrings the search strings
 	 */
 	public void setSearchString(final String... searchStrings) {
 		if (searchStrings != null) {
@@ -192,8 +183,7 @@ public abstract class Search {
 	/**
 	 * Sets the fields in the index that will be searched for.
 	 * 
-	 * @param searchFields
-	 *            the fields in the index to search through
+	 * @param searchFields the fields in the index to search through
 	 */
 	public void setSearchField(final String... searchFields) {
 		this.searchFields = searchFields;
@@ -202,8 +192,7 @@ public abstract class Search {
 	/**
 	 * Sets the fields that will be used to sort the results by Lucene.
 	 * 
-	 * @param sortFields
-	 *            the fields to sort with in the index
+	 * @param sortFields the fields to sort with in the index
 	 */
 	public void setSortField(final String... sortFields) {
 		this.sortFields = sortFields;
@@ -212,8 +201,7 @@ public abstract class Search {
 	/**
 	 * Sets the types of fields that will be used in the search like numeric etc.
 	 * 
-	 * @param typeFields
-	 *            the types of fields that map to the search strings and the field names
+	 * @param typeFields the types of fields that map to the search strings and the field names
 	 */
 	public void setTypeFields(final String... typeFields) {
 		this.typeFields = typeFields;
@@ -222,8 +210,8 @@ public abstract class Search {
 	/**
 	 * This executed the search with the parameters set for the search fields and the search strings.
 	 * 
-	 * @return the results which are a list of maps. Each map has the fields in it if they are strings, not readers, and the map entries for
-	 *         index, score, fragment, total and duration
+	 * @return the results which are a list of maps. Each map has the fields in it if they are strings, not readers, and the map entries for index, score,
+	 *         fragment, total and duration
 	 */
 	public ArrayList<HashMap<String, String>> execute() {
 		if (searcher == null) {
@@ -268,8 +256,7 @@ public abstract class Search {
 	/**
 	 * Does the actual search on the Lucene index.
 	 * 
-	 * @param query
-	 *            the query to execute against the index
+	 * @param query the query to execute against the index
 	 * @return the top documents from the search
 	 * @throws IOException
 	 */
@@ -278,8 +265,7 @@ public abstract class Search {
 	/**
 	 * Sets whether the fragment made of the best part of the document should be included in the search results.
 	 * 
-	 * @param fragment
-	 *            the flag for generating the best fragments in the results
+	 * @param fragment the flag for generating the best fragments in the results
 	 */
 	public void setFragment(final boolean fragment) {
 		this.fragment = fragment;
@@ -288,8 +274,7 @@ public abstract class Search {
 	/**
 	 * Sets the first result in the index.
 	 * 
-	 * @param start
-	 *            the first result to return from the results
+	 * @param start the first result to return from the results
 	 */
 	public void setFirstResult(final int start) {
 		this.firstResult = start;
@@ -298,8 +283,7 @@ public abstract class Search {
 	/**
 	 * Sets the maximum results to return.
 	 * 
-	 * @param maxResults
-	 *            the maximum results to return
+	 * @param maxResults the maximum results to return
 	 */
 	public void setMaxResults(final int maxResults) {
 		this.maxResults = maxResults;
@@ -308,8 +292,7 @@ public abstract class Search {
 	/**
 	 * Access to the query parsers for a particular field in the documents.
 	 * 
-	 * @param searchField
-	 *            the name of the field that needs to be searched
+	 * @param searchField the name of the field that needs to be searched
 	 * @return the query parser for the particular field
 	 */
 	protected QueryParser getQueryParser(final String searchField) {
@@ -319,10 +302,8 @@ public abstract class Search {
 	/**
 	 * Builds the list of results(a list of maps) from the top documents returned from Lucene.
 	 * 
-	 * @param topDocs
-	 *            the top documents from the Lucene search
-	 * @param query
-	 *            the query that was used for the query
+	 * @param topDocs the top documents from the Lucene search
+	 * @param query the query that was used for the query
 	 * @return the list of results from the search
 	 */
 	protected ArrayList<HashMap<String, String>> getResults(final TopDocs topDocs, final Query query) {
@@ -369,15 +350,11 @@ public abstract class Search {
 	/**
 	 * Adds the time it took for the search and adds the spelling corrected strings.
 	 * 
-	 * @param results
-	 *            the total number of results
-	 * @param totalHits
-	 *            the total hits
-	 * @param duration
-	 *            how long the search took in milliseconds
+	 * @param results the total number of results
+	 * @param totalHits the total hits
+	 * @param duration how long the search took in milliseconds
 	 */
-	protected void addStatistics(final ArrayList<HashMap<String, String>> results, final long totalHits, final long duration,
-			final Exception exception) {
+	protected void addStatistics(final ArrayList<HashMap<String, String>> results, final long totalHits, final long duration, final Exception exception) {
 		// Add the search results size as a last result
 		HashMap<String, String> statistics = new HashMap<String, String>();
 		statistics.put(IConstants.TOTAL, Long.toString(totalHits));
@@ -402,30 +379,35 @@ public abstract class Search {
 	}
 
 	/**
-	 * This method will return an array of strings that have been corrected using the spelling and words defined in the languages directory.
-	 * If there are no corrections, i.e. the strings are all correct then this array will be empty.
+	 * This method will return an array of strings that have been corrected using the spelling and words defined in the languages directory. If there are no
+	 * corrections, i.e. the strings are all correct then this array will be empty.
 	 * 
 	 * @return the array of strings that have been corrected using the language and word lists in the language directory
 	 */
 	protected String[] getCorrections() {
+		String[] correctedSearchStrings = new String[searchStrings.length];
+		System.arraycopy(searchStrings, 0, correctedSearchStrings, 0, correctedSearchStrings.length);
 		boolean corrections = Boolean.FALSE;
-		Set<String> correctedSearchStrings = new TreeSet<String>();
 		SpellingChecker spellingChecker = SpellingChecker.getSpellingChecker();
 		for (int i = 0; i < searchStrings.length; i++) {
+			correctedSearchStrings[i] = searchStrings[i];
 			String searchString = StringUtils.strip(searchStrings[i], IConstants.STRIP_CHARACTERS);
 			if (searchString == null) {
 				continue;
 			}
-			String correctedSearchString = spellingChecker.checkWords(searchString.toLowerCase());
-			if (correctedSearchString != null) {
-				corrections = Boolean.TRUE;
-				correctedSearchStrings.add(correctedSearchString);
-			} else {
-				correctedSearchStrings.add(searchString);
+			// Break the search string up into tokens to check individually
+			String[] searchStringTokens = StringUtils.split(searchString, " ");
+			for (final String searchStringToken : searchStringTokens) {
+				String correctedSearchStringToken = spellingChecker.checkWords(searchStringToken);
+				if (correctedSearchStringToken != null) {
+					// Replace the incorrect token in the original string
+					correctedSearchStrings[i] = StringUtils.replace(correctedSearchStrings[i], searchStringToken, correctedSearchStringToken);
+					corrections = Boolean.TRUE;
+				}
 			}
 		}
 		if (corrections) {
-			return correctedSearchStrings.toArray(new String[correctedSearchStrings.size()]);
+			return correctedSearchStrings;
 		}
 		return new String[0];
 	}
@@ -433,8 +415,7 @@ public abstract class Search {
 	/**
 	 * This method will get all the fields in the index from the readers in the searcher and return them as a string array.
 	 * 
-	 * @param searcher
-	 *            the searcher to get all the fields for
+	 * @param searcher the searcher to get all the fields for
 	 * @return all the fields in the searcher that are searchable
 	 */
 	protected String[] getFields(final Searcher searcher) {

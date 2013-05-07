@@ -8,7 +8,7 @@
 			service methods for searching are:
 			<br><br>
 			
-			<c:url var="single" value="http://www.ikube.be:8080/ikube/service/search/single">
+			<c:url var="single" value="http://www.ikube.be/ikube/service/search/single">
 				<c:param name="indexName" value="geospatial" />
 				<c:param name="searchStrings" value="cape AND town AND university" />
 				<c:param name="searchFields" value="name" />
@@ -17,7 +17,7 @@
 				<c:param name="maxResults" value="10" />
 			</c:url>
 			
-			<c:url var="multi" value="http://www.ikube.be:8080/ikube/service/search/multi">
+			<c:url var="multi" value="http://www.ikube.be/ikube/service/search/multi">
 				<c:param name="indexName" value="geospatial" />
 				<c:param name="searchStrings" value="university:south AND africa" />
 				<c:param name="searchFields" value="name:country" />
@@ -26,7 +26,7 @@
 				<c:param name="maxResults" value="10" />
 			</c:url>
 			
-			<c:url var="multiAll" value="http://www.ikube.be:8080/ikube/service/search/multi/all">
+			<c:url var="multiAll" value="http://www.ikube.be/ikube/service/search/multi/all">
 				<c:param name="indexName" value="geospatial" />
 				<c:param name="searchStrings" value="university:south AND africa" />
 				<c:param name="fragment" value="true" />
@@ -34,7 +34,7 @@
 				<c:param name="maxResults" value="10" />
 			</c:url>
 			
-			<c:url var="multiSorted" value="http://www.ikube.be:8080/ikube/service/search/multi/sorted">
+			<c:url var="multiSorted" value="http://www.ikube.be/ikube/service/search/multi/sorted">
 				<c:param name="indexName" value="geospatial" />
 				<c:param name="searchStrings" value="university:south AND africa" />
 				<c:param name="searchFields" value="name:country" />
@@ -44,7 +44,7 @@
 				<c:param name="maxResults" value="10" />
 			</c:url>
 			
-			<c:url var="multiSpatial" value="http://www.ikube.be:8080/ikube/service/search/multi/spatial">
+			<c:url var="multiSpatial" value="http://www.ikube.be/ikube/service/search/multi/spatial">
 				<c:param name="indexName" value="geospatial" />
 				<c:param name="searchStrings" value="cape AND town AND university" />
 				<c:param name="searchFields" value="name" />
@@ -56,7 +56,7 @@
 				<c:param name="longitude" value="18.46082" />
 			</c:url>
 			
-			<c:url var="multiSpatialAll" value="http://www.ikube.be:8080/ikube/service/search/multi/spatial/all">
+			<c:url var="multiSpatialAll" value="http://www.ikube.be/ikube/service/search/multi/spatial/all">
 				<c:param name="indexName" value="geospatial" />
 				<c:param name="searchStrings" value="cape AND town AND university" />
 				<c:param name="fragment" value="true" />
@@ -67,7 +67,7 @@
 				<c:param name="longitude" value="18.46082" />
 			</c:url>
 			
-			<c:url var="complex" value="http://www.ikube.be:8080/ikube/service/search/complex">
+			<c:url var="complex" value="http://www.ikube.be/ikube/service/search/complex">
 				<c:param name="indexName" value="geospatial" />
 				<c:param name="searchStrings" value="cape|town" />
 				<c:param name="searchFields" value="name|name" />

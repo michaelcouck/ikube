@@ -265,6 +265,7 @@ public class SearchTest extends AbstractTest {
 
 	@Test
 	public void getCorrections() {
+		Mockit.tearDownMocks();
 		String[] searchStrings = { "some words", "are niet corect", "AND there are AND some words WITH AND another" };
 		Search search = new SearchSingle(SEARCHER);
 		search.setSearchString(searchStrings);
