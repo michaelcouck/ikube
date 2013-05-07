@@ -3,21 +3,24 @@ package ikube.search;
 import ikube.IConstants;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.StringTokenizer;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.queryParser.MultiFieldQueryParser;
+import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.search.BooleanClause;
+import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.PhraseQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Searcher;
 import org.apache.lucene.search.TopDocs;
 
 /**
- * This is the complex search for combinations of queries, like all of these words and none of these. There are four categories/strings. The
- * first is all the words in the string. The second is an exact phrase. The third is any of the following words and the fourth is none of
- * the words in the string. The result of this query would be something like:
+ * This is the complex search for combinations of queries, like all of these words and none of these. There are four categories/strings. The first is all the
+ * words in the string. The second is an exact phrase. The third is any of the following words and the fourth is none of the words in the string. The result of
+ * this query would be something like:
  * 
  * <pre>
  * 		Data:
@@ -27,8 +30,8 @@ import org.apache.lucene.search.TopDocs;
  * 		(cape AND town AND university) AND ("cape town") AND (one OR two OR three) NOT (caucasian)
  * </pre>
  * 
- * In a data set where the content is as in the data above, there will be one result. But in fact in the test there are two results,
- * something in Lucene perhaps? Perhaps my logic is not working correctly?
+ * In a data set where the content is as in the data above, there will be one result. But in fact in the test there are two results, something in Lucene
+ * perhaps? Perhaps my logic is not working correctly?
  * 
  * @see Search
  * @author Michael Couck
@@ -59,71 +62,41 @@ public class SearchAdvanced extends Search {
 	 */
 	@Override
 	public Query getQuery() throws ParseException {
-		// The first in the array of search strings all of the words
-		StringBuilder stringBuilder = new StringBuilder();
-		if (searchStrings.length > 0 && !StringUtils.isEmpty(searchStrings[0])) {
-			stringBuilder.append("(");
-			StringTokenizer stringTokenizer = new StringTokenizer(searchStrings[0], " ");
-			while (stringTokenizer.hasMoreTokens()) {
-				String word = stringTokenizer.nextToken();
-				if (StringUtils.isEmpty(word)) {
-					continue;
-				}
-				stringBuilder.append(word);
-				if (stringTokenizer.hasMoreTokens()) {
-					stringBuilder.append(" AND ");
-				}
-			}
-			stringBuilder.append(") ");
+		BooleanQuery booleanQuery = new BooleanQuery();
+
+		if (searchStrings[0] != null) {
+			Query query = getQueryParser(searchFields[0]).parse(searchStrings[0]);
+			booleanQuery.add(query, BooleanClause.Occur.MUST);
 		}
 
-		if (searchStrings.length >= 2 && !StringUtils.isEmpty(searchStrings[1])) {
-			// The second in the array is and exact phrase
-			if (!StringUtils.isEmpty(searchStrings[1])) {
-				stringBuilder.append("AND (");
-				stringBuilder.append("\"");
-				stringBuilder.append(searchStrings[1]);
-				stringBuilder.append("\") ");
+		if (searchStrings[1] != null) {
+			Set<Term> phraseTerms = new HashSet<Term>();
+			PhraseQuery phraseQuery = new PhraseQuery();
+			String[] phraseStrings = StringUtils.split(searchStrings[1], " ");
+			for (final String phraseString : phraseStrings) {
+				phraseTerms.add(new Term(searchFields[1], phraseString));
+			}
+			phraseQuery.extractTerms(phraseTerms);
+			booleanQuery.add(phraseQuery, BooleanClause.Occur.MUST);
+		}
+
+		if (searchStrings[2] != null) {
+			String[] atLeastOneOfTheseStrings = StringUtils.split(searchStrings[2], " ");
+			for (final String atLeastOneOfTheseString : atLeastOneOfTheseStrings) {
+				Query query = getQueryParser(searchFields[2]).parse(atLeastOneOfTheseString);
+				booleanQuery.add(query, BooleanClause.Occur.SHOULD);
 			}
 		}
 
-		if (searchStrings.length >= 3 && !StringUtils.isEmpty(searchStrings[2])) {
-			// And the third in the array is one of more of these words
-			StringTokenizer stringTokenizer = new StringTokenizer(searchStrings[2], " ");
-			stringBuilder.append("AND (");
-			while (stringTokenizer.hasMoreTokens()) {
-				String word = stringTokenizer.nextToken();
-				if (StringUtils.isEmpty(word)) {
-					continue;
-				}
-				stringBuilder.append(word);
-				if (stringTokenizer.hasMoreTokens()) {
-					stringBuilder.append(" OR ");
-				}
+		if (searchStrings[3] != null) {
+			String[] noneOfTheseStrings = StringUtils.split(searchStrings[2], " ");
+			for (final String atLeastOneOfTheseString : noneOfTheseStrings) {
+				Query query = getQueryParser(searchFields[3]).parse(atLeastOneOfTheseString);
+				booleanQuery.add(query, BooleanClause.Occur.MUST_NOT);
 			}
-			stringBuilder.append(") ");
 		}
 
-		if (searchStrings.length >= 4 && !StringUtils.isEmpty(searchStrings[3])) {
-			// And finally the fourth in the array is the excluded words
-			stringBuilder.append("NOT (");
-			StringTokenizer stringTokenizer = new StringTokenizer(searchStrings[3], " ");
-			while (stringTokenizer.hasMoreTokens()) {
-				String word = stringTokenizer.nextToken();
-				if (StringUtils.isEmpty(word)) {
-					continue;
-				}
-				stringBuilder.append(word);
-				if (stringTokenizer.hasMoreTokens()) {
-					stringBuilder.append(" OR ");
-				}
-			}
-			stringBuilder.append(") ");
-		}
-		// logger.info("Query : " + stringBuilder.toString());
-		String[] newSearchStrings = new String[searchFields.length];
-		Arrays.fill(newSearchStrings, 0, newSearchStrings.length, stringBuilder.toString());
-		return MultiFieldQueryParser.parse(IConstants.VERSION, newSearchStrings, searchFields, IConstants.ANALYZER);
+		return booleanQuery;
 	}
 
 }
